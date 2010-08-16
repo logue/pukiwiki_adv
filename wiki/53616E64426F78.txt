@@ -1,0 +1,133 @@
+#nofollow
+#norelated
+* SandBox: お砂場(練習ページ)です [#v299c566]
+|SEO SPAMボットの攻撃対象になるため、デフォルトでこのページは凍結されています。|
+
+#contents
+[[PukiWiki/1.4/Manual/Plugin#vf3c6f93]]
+* ''見出し'' [#n151e840]
+
+* 大見出し 1 [#a6dc7f79]
+
+** 中見出し 1-1 [#qa1c1e8c]
+
+*** 小見出し 1-1-1 [#k28ac390]
+- 項目1
+- 項目2
+- 項目3
+
+段落1段落1段落1段落1段落1段落1段落1段落1段落1段落1段落1段落1
+段落1段落1段落1段落1段落1段落''強調''1段落1段落1段落1段落1段落1
+段落1段落1段落1段落1段落1段落1段落1段落1段落1段落1段落1段落1
+
+段落2段落2段落2段落2段落2段落2段落2段落2段落2段落2段落2段落2
+段落2段落2段落2段落2段落2段落2段落2段落2段落2段落2段落2段落2
+段落2段落2段落2段落2段落2段落2段落2段落2段落2段落2段落2段落2
+
+** 中見出し 1-2 [#zcbf4116]
+:用語1|いろいろ書いた解説文1と''強調単語'' ((注釈1: WikiName))
+段落1段落1段落1段落1段落1段落1段落1段落1段落1段落1段落1段落1
+段落1段落1段落1段落1段落1段落1段落1段落1段落1段落1段落1段落1
+段落1段落1段落1段落1段落1段落1段落1段落1段落1段落1段落1段落1
+:用語2|いろいろ書いた解説文2 ((注釈2: [[SandBox]]へのリンク))
+:用語3|いろいろ書いた解説文3 ((注釈3: 注釈の中にも((注釈の注釈を))作ることができます))
+
+-----------------------------------------
+* 大見出し 2 [#z3909cff]
+
+** 小見出し 2-1 [#l26a869a]
+
+** 小見出し 2-2 [#s6844309]
+段落1段落1段落1段落1段落1段落1段落1段落1段落1段落1段落1段落1
+段落1段落1段落1段落'''イタリック'''1段落1段落1段落1段落1段落1段落1段落1
+段落1段落1段落1段落'''''イタリックボールド'''''1段落1段落1段落1段落1段落1
+> 段落2段落2段落2段落2段落2段落2段落2段落2段落2段落2段落2段落2
+> 段落2段落2段落2段落2段落2段落2段落2段落2段落2段落2段落2段落2
+> 段落2段落2段落2段落2段落2段落2段落2段落2段落2段落2段落2段落2
+
+レベル0レベル0レベル0レベル0レベル0レベル0
+> レベル1
+> レベル1
+> レベル1
+>> レベル2
+>> レベル2
+>> レベル2
+>>> レベル3
+- はろ1
+-- はろ2
+ろろろろ2
+--- はろ3
+-- はろ2
+--- はろ3
+-- はろ2
+--- はろ3
+>>> レベル3
+>>> レベル3
+>>> レベル3
+
+* ''日付'' [#jfce72b9]
+ 日付 &date;
+- 日付 2004-08-16
+
+ date?
+- 2004-08-16
+
+ 時刻 &time;
+- 時刻 07:29:03
+
+ time?
+- 07:29:03
+
+ 日時 &now;
+- 日時 2004-08-16 (月) 07:30:27
+
+ now?
+- 2004-08-16 (月) 07:29:03
+
+
+* ''リンク'' [#jb6d4e84]
+
+URLやメールアドレスは自動的にリンクになります
+- URL -- http://example.org/
+- メールアドレス -- foo@example.org
+- URLが各種画像ファイルであればそのまま表示します
+-- http://pukiwiki.sourceforge.jp/image/b_pukiwiki.official.png
+
+
+* ''その他の文字装飾'' [#l89b765d]
+
+ 整形済みテキスト整形済みテキスト整形済みテキスト
+ 整形済みテキスト整形済みテキスト整形済みテキスト
+
+COLOR(#993333){ 色の変更も可能なルール(COLOR(#993333)) }
+
+SIZE(10){ サイズの変更も可能なルール(SIZE(10)) }
+
+SIZE(20){ COLOR(#333399){ 両方指定(SIZE(20)COLOR(#333399)) } }
+
+%%打ち消し線%%
+
+左寄せ
+CENTER:中寄せ
+RIGHT:右寄せ
+
+
+|~1|~2|~3|
+|a|b|c|
+|A|B|C|
+
+*メディア [#a0b6ed69]
+:MP3ファイル|
+http://www.muzie.co.jp/download/271869/songs424/soutanka_2008-04-23_14-55-18.mp3
+:MML|
+#mml(Air on the G String){{
+/** Flute **/
+$conf0=@2 @w52 @E1,8,48,80,24 @F1,36,80,18 @L8,36,0,128 @P96 v8l4o5;
+$conf0 t120l64<d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&dv0l2ct32v13f+f+f+8l16bgf+32e32dc+dl64c+dc+dc+8.l16>ba8aa8b+b<c8f+c>a<f+cred+agd8edef+rere>ba<dc+gf+f+4.g+ad8d32e32f+f+eedc+>bb32<c+32dd8l48c+dc+l16>bc+2<c+4c+l32dc+c-c+l16>aabb+8.bagf+gaf+<bagf+g4l32gf+rdl16c+>bc+def+gf+ge<edc+>ba+b<c+8edc+c-c+d32e32>f+ed2d8b8<df+ed>e8f+g+aa<agl32f+ea16>a8b8b16<c+dl64c+dc+dc+8l16>bc+drc+a8bb+b<c+f+ed8c+c-c+d+gf+e8d+c+d+eagf+d+e>brbgeec+eab<c+eggec+d>a8<f+g32a32d4rf+ab+b4.d8>ec+egbagf+<edef+32g32gf+8ed32c+32c-8c+el48dedc+16d16t120d1.;
+$conf0 r1v13<d2d2d>baal8ed+d+eb.b4&b16<g4.g>e2d4.ef+g+16a16bg+af+f+g+e2e4e4el16d+ef+4r8<b8>d+8<d+8e4ee8.>a+b<c+8c+de8rf+>edc+8f+8f+8edg8<d8>f+2<d4>ag+a8<b4.l8>bbrf+ee.d16ee<d4.de4.ef+4.f+g4>a4a4<c+>aa<f+4>aaga4g2l16<c+eg8g8d8r8c+>br8b8a4gl48f+gf+g8d1.;
+$conf0 r1v13a2b2dee2<a2>f+2b2aa<d.l8d>addeeaaea2a4a4<a4.c>b4bbb2<e4er4g4f+>bbbab2e4f+4g+4eeeerg+a4a4ed4f+f+e4c+c+g4f+e2rgf+edddddef+4d2ab<ee>aaagf+4edf+1.;
+
+/** Mandolin **/
+$conf1=@1 @w20 @E1,0,48,36,12 @F1,32,72,64 @P32 v8l4o5;
+$conf1 t120l64d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&d&dv0d2t32v15l8>d<dc+>c+c-ba>ag<gg+>g+a<ag>gf+<f+e>ed+<d+c-b>e<ed>dc+<c+>a<ad<dc+>c+c-bg+eade>el16ab<c+degf+el8>a<ag>gf+<f+e>ed+<d+f+c-e<ed>dc+<c+>b>ba+b<c+>a+b<gef+c-ba>ag+<g+f+>f+e<ed>dc+<c+de>a<ag>gf+<f+g>gg+<g+a>aa+<a+bc-e<ed>dc+<c+>e<c+d>dcb+b>ba<ag>gf+<f+e>ed<dc+>a<dgaga>at120d1.;
+}}

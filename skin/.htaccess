@@ -1,0 +1,54 @@
+# Apache .htaccess for PukiWiki
+#
+# $Id: .htaccess,v 1.14.5 2010/07/21 17:30:00 Logue Exp $
+# Copyright (C)
+#   2010      PukiWiki Advance Team
+#   2006      PukiWiki Plus! Developers Team
+#   2002-2005 PukiWiki Developers Team
+#   2001      Originally written by yu-ji
+# License: GPL v2 or (at your option) any later version
+#
+# NOTE: Correct permission of this file 644(or 604)
+
+# for HTC file. (such as iepngfix.htc)
+AddType text/x-component .htc
+
+# disable mod rewrite.
+<IfModule mod_rewrite.c>
+	RewriteEngine off
+</IfModule>
+
+# Fix *.css.php
+# If you use CGI mode, the content type will be force text/html.
+# This command will fix it problem. (Problem in Firefox)
+<FilesMatch "\.(css\.php)$">
+	AddHandler application/x-httpd-php .php
+</FilesMatch>
+
+# Fix *.js.php
+#<FilesMatch "\.(js\.php)$">
+#	AddHandler application/x-httpd-php .php
+#</FilesMatch>
+
+<FilesMatch "\.(skin\.php)$">
+	Order allow,deny
+	Deny from all
+</FilesMatch>
+
+# disable ETag
+<Files ~ "\.(gif|jpe?g|png|flv|mp4|ico|js|css)$">
+	FileETag None
+</Files>
+
+# Enable Gzip compression.
+<IfModule mod_deflate.c>
+	SetOutputFilter DEFLATE
+	BrowserMatch ^Mozilla/4 gzip-only-text/html
+	BrowserMatch ^Mozilla/4\.0[678] no-gzip
+	BrowserMatch \bMSI[E] !no-gzip !gzip-only-text/html
+	SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png|js|css)$ no-gzip dont-vary
+	Header append Vary User-Agent env=!dont-vary
+</IfModule>
+
+# xrea fix.
+# LayoutIgnoreURI *

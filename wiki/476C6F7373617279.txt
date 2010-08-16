@@ -1,0 +1,6 @@
+*用語集 [#tf1b0bf5]
+:PukiWiki|PukiWikiは Wiki(WikiWikiWeb) と呼ばれているもののひとつで、基本的に誰でも全てのページを作成・編集することができます。
+:WikiWikiWeb|Cunningham & Cunningham, Inc.が作ったシステムです。
+:BracketName|WikiNameの書式で表現できない日本語などをページ名として扱えるようにする書式。テキストを[[ ]]で囲うとBracketNameになります。
+:WikiName|大文字で始まる単語を二つ以上連結したものは(自動的に)ページ名として扱われます。そのページが存在していない場合は Dangling link (未決定のリンク) が表示されます。
+:PHP|Hypertext Preprocessor

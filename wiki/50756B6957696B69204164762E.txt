@@ -1,0 +1,113 @@
+*PukiWiki Advance [#od4500a8]
+#contents
+
+*PukiWiki Adv.とは [#dcafc390]
+原則的にPukiWiki Plus!の派生型です。互換性にとらわれず新機能を追加し、Web2.0時代にふさわしいPukiWikiを目指しております。
+
+*特徴 [#a6ca0ccf]
+:３段組対応 COLOR(red){SIZE(9){plus!}}|
+ページの３段組に対応しています。
+:オートグロッサリ COLOR(red){SIZE(9){plus!}}|
+ページ「Glossary」に用語を追加するとその単語がページ内にあるとき、自動的にツールチップが追加されます。
+:オートエイリアス(1.4.4u5) COLOR(red){SIZE(9){plus!}}|
+ページ「AutoAliasName」に用語を追加すると、その単語が出てきたときにページ名がなくても外部リンクすることができます。
+:自由なタイトル付け COLOR(red){SIZE(9){plus!}}|
+独自タグ"TITLE:[タイトル名]"で上に表示するタイトルを変更可能にしています。
+:インラインプラグインが使える整形済みテキスト COLOR(pink){SIZE(9){tips}}|
+行の先頭が '# ' の場合は整形済みテキストでインラインプラグインが使用できます。
+:カレンダの祝日対応 COLOR(pink){SIZE(9){tips}}|
+[[upk>http://jo1upk.blogdns.net/saito/]]さんの祝日カレンダ public_holiday.php を使用して、calendar2プラグインおよびminicalendarプラグインを祝日対応しています。
+:フェイスマークの追加・変更|
+フェイスマークを pukiwiki.dev の珠玉にしています。（本家だと灰色ベースでちょっとキモいので(^^;）
+:検索をGETで楽に COLOR(red){SIZE(9){plus!}}|
+検索を POST でなく GET にすることによって、IEなどで「情報の再送信」をしなくてもよくなるようにしました。
+:添付ファイルのプロパティ追加 COLOR(red){SIZE(9){plus!}}|
+ページの添付ファイルを分かりやすくするためにプレビューやすでに添付されている一覧を表示しています。。
+:国際化(I18N)対応 COLOR(red){SIZE(9){plus!i18n}}|
+コンテンツ・ネゴシエーションの対応と、gettextの採用により、翻訳作業の効率化が行えるようになりました。台湾版のサポートに加え、一部ですが、中国・韓国版にも対応しています。
+#hr
+:jQueryによるajax処理 COLOR(blue){SIZE(9){Adv.}}|
+ajaxや表示周りの処理をjQueryを用いて実現しています。
+:jQuery UIによるインラインウィンドウ COLOR(blue){SIZE(9){Adv.}}|
+インラインウィンドウを用いてページを表示します。jQuery UIを用いているためTheme rollerを用いてデザイン可能です。
+:swfuploadによる添付フォーム COLOR(blue){SIZE(9){Adv.}}|
+ページ切り替えなしで一度に複数の添付ファイルをアップロードできます。
+
+*編集関連 [#y331bef8]
+:ajaxedit COLOR(red){SIZE(9){plus!i18n}}|
+リアルタイムにプレビューが可能になります。WYSIWYG もどきで編集が可能になります。
+:入力アシスト COLOR(red){SIZE(9){plus!}}|
+文字に関する入力の（カラー、サイズ、強調、顔文字）アシスト機能を追加しました。（1.4.5u1より添付、変換など入力アシストが拡張されています。）
+:見出し毎の編集 COLOR(red){SIZE(9){plus!}} COLOR(pink){SIZE(9){tips}}|
+見出し毎に編集が可能になっています。また、編集後にはその編集した位置にできるだけ戻り、編集の連続性を保てるようにいたします。((一部戻れない部分もあります。))
+:最後の引数は複数行可能'' COLOR(red){SIZE(9){plus!}}|
+ブロック型プラグインの最後の引数に複数行を指定することが可能となっています。書式は２個以上の中括弧です。例：
+ #sh(c){{
+ void main(int argc, char *argv[])
+ {
+     printf("Hello! PukiWiki!¥n");
+ }
+ }}
+#sh(c){{
+#ifdef hoge
+#include "hoge"
+#endif // hoge
+#pragma hoge
+void main(int argc, char *argv[])
+{
+/*
+ * hoge
+ */
+    printf("Hello! PukiWiki!¥n"); // hoge
+}
+}}
+:テキストエリア高さの調整 COLOR(blue){SIZE(9){Adv.}}|
+編集フォームのサイズを変更できるようにしました。また、横幅もウィンドウもしくはCSSでデザインした幅に自動調整されます。
+:realeditの改良 COLOR(blue){SIZE(9){Adv.}}|
+Plus!で好評だったRealEditをSafariなどのWebKit系ブラウザでも使用できるようにしました。
+
+*認証関連 [#a440cf0e]
+:NetBIOSのサポート COLOR(red){SIZE(9){plus!i18n}}|
+NetBIOSのサポートにより、Windowsのログオン情報から認証済みユーザが特定できるようになりました。
+:[[Digest認証のサポート>plus:Documents/How to use Digest Authentication]]'' COLOR(red){SIZE(9){plus!i18n}}|
+PHP 5.1からDigest認証がサポートされました。PukiWiki Plus! でも、このDigest認証の機能が利用できるようになりました。
+
+*携帯デバイス対応 [#wec78ec9]
+:携帯でも画像を表示 COLOR(red){SIZE(9){plus!}}|
+サイズ(画像サイズ、ファイルサイズ両方の意味)が小さい場合は携帯でも画像を表示するようにしました。
+:パケット節約|
+携帯に最適化をかけるために、パケットを節約しています。また、携帯ユーザは長い文章は読まないので文章で読める程度(10KB)にしてあります。
+
+*プラグイン [#q0f938d8]
+:スキン変更プラグイン COLOR(red){SIZE(9){plus!}}|
+&#35;skin([スキン名])で、スキンを変更することができます。((スキンは自分で作ってください(^-^))
+:トピックパス COLOR(pink){SIZE(9){tips}}|
+本家では、自分で埋め込む機能になってましたが、標準添付のスキンでトップページに表示しています。
+:自作プラグインの幾つかを同梱|
+有益に使用できるプラグイン（attachref, adsense, tooltip, qrcode, code, etc.）をいくつか同梱しています。
+:mixiRSS|
+RSSの表示をページ名ばかりでなく見出しを拾えるようにしています。
+:プラグインの初期値の手当て COLOR(red){SIZE(9){plus!i18n}}|
+初期値の変更が必要となるプラグインに関しては、別ファイルに切り出して管理できるようになりました。プラグインの保守時に、毎回、修正する作業から解放されます。
+:拡張(自作)プラグインの分離 COLOR(red){SIZE(9){plus!i18n}}|
+自作プラグインなどの配置先を独立させることで、本体に付属しているプラグインと分離して管理できるようになりました。本体のバージョンアップなどの更新作業がスムースに行えます。
+
+*スキン [#b9738155]
+:自作スキンの幾つかを同梱|
+有益に使用できるスキン（orangebox, bluebox, etc.）をいくつか同梱しています。
+
+*サイト管理者関連 [#cf875a4d]
+:文字列置換プラグイン COLOR(red){SIZE(9){plus!}}|
+サイト管理者の移行のお手伝いができるように、PukiWiki標準バックアップ機能付き文字列置換プラグインを用意しています。
+:ビジュアル差分プラグイン拡張 COLOR(red){SIZE(9){plus!}}|
+バックアップ(backup)プラグインをさらに拡張して、ビジュアルな差分を表示((ただし、ビジュアル差分表示はXHTML1.1/1.0 Not Vaildです(T-T ))できるようになりました。それに伴い、履歴情報もコンボボックス表示できるようにしてあります。
+:ロギング対応 COLOR(red){SIZE(9){plus!i18n}}|
+閲覧ログ・更新ログ・ダウンロードログなど、管理者にとって便利なロギングの機能が標準装備されました。
+:曖昧な利用者特定機能'' COLOR(red){SIZE(9){plus!i18n}}|
+更新ログ・NetBIOS情報・ブラウザ情報などから、過去に足跡を残した情報を駆使し、利用者を特定する機能が実装されました。
+:[[SPAM対策>Documents/Blocking SPAM]] COLOR(red){SIZE(9){plus!i18n}}|
+2chで利用している niku.2ch.net や、bulkfeeds.jp で試験的にサービスしている rbl.bulkfeeds.jp などを利用したSPAM対策が行えるようになりました。
+
+*開発者関連（将来バージョンへの布石） [#rc477af8]
+:セッションの使用を可能に COLOR(red){SIZE(9){plus!}}|
+$session をセッション変数として新規に定義しています。セッションを使いたいプラグインが出てきたとき用です。

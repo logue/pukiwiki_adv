@@ -1,0 +1,81 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-01-06 00:43+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../plugin/skin.inc.php:16
+msgid "Change Theme"
+msgstr ""
+
+#: ../../plugin/skin.inc.php:17
+msgid "Update of config page"
+msgstr ""
+
+#: ../../plugin/skin.inc.php:18
+msgid "Theme list"
+msgstr ""
+
+#: ../../plugin/skin.inc.php:19
+msgid "The update work ended."
+msgstr ""
+
+#: ../../plugin/skin.inc.php:20
+msgid "Management of skin theme"
+msgstr ""
+
+#: ../../plugin/skin.inc.php:21
+msgid "Management ledger"
+msgstr ""
+
+#: ../../plugin/skin.inc.php:22
+msgid "Update of management ledger"
+msgstr ""
+
+#: ../../plugin/skin.inc.php:23
+msgid "Present theme"
+msgstr ""
+
+#: ../../plugin/skin.inc.php:24
+msgid "Management operation"
+msgstr ""
+
+#: ../../plugin/skin.inc.php:25
+msgid "Theme Name"
+msgstr ""
+
+#: ../../plugin/skin.inc.php:26
+msgid "Use"
+msgstr ""
+
+#: ../../plugin/skin.inc.php:27
+msgid "Display Name"
+msgstr ""
+
+#: ../../plugin/skin.inc.php:28
+msgid "Color"
+msgstr ""
+
+#: ../../plugin/skin.inc.php:29
+msgid "Memo"
+msgstr ""
+
+#: ../../plugin/skin.inc.php:30
+msgid "This plugin function cannot be used."
+msgstr ""
+
+#: ../../plugin/skin.inc.php:31
+msgid "Only Webmaster for World Wide Web Site can do the update work."
+msgstr ""

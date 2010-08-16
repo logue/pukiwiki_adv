@@ -1,0 +1,34 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-01-09 22:34+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../plugin/sbm.inc.php:16
+#, php-format
+msgid "This entry is added to %s."
+msgstr ""
+
+#: ../../plugin/sbm.inc.php:17
+msgid "It mutters."
+msgstr ""
+
+#: ../../plugin/sbm.inc.php:18
+msgid "This page translates by way of Google Translate."
+msgstr ""
+
+#: ../../plugin/sbm.inc.php:19
+msgid "Hatena bookmark including this page."
+msgstr ""

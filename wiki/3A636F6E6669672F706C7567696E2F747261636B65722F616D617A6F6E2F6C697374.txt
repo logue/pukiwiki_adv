@@ -1,0 +1,2 @@
+|~[_page]|~[group]|~[date]|~[title]|h
+|[[[asin]>[_page,date]]]|[group]|[date]|[title]|

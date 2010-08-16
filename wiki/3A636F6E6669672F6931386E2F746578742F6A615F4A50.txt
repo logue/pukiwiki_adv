@@ -1,0 +1,9 @@
+*Text [#o3b25254]
+|~Original|~Translation|h
+|Link|リンク|
+|Glossary|用語集|
+|formatRule|テキストの整形ルール|
+|Plugin|プラグイン|
+|Total|合計|
+|Yesterday|昨日|
+|Today|今日|

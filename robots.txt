@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: ./skin/
+Disallow: ./?:config
+Disallow: ./:config/
+Disallow: ./:config.html
+Disallow: ./?cmd=*
+Disallow: ./?plugin=attach&pcmd=open&file=*
+
+Sitemap: ./?plugin=sitemap

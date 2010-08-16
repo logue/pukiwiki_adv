@@ -1,0 +1,12 @@
+-[[AutoAliasName]] AutoAliasName
+-[[FormatRule]] FormatRule
+-[[FrontPage]] FrontPage
+-[[Glossary]] Glossary
+-[[Help]] Help
+-[[InterWiki]] InterWiki
+-[[InterWikiName]] InterWikiName
+-[[MenuBar]] MenuBar
+-[[PukiWiki]] PukiWiki
+-[[PukiWiki Adv.]] PukiWiki Adv.
+-[[RecentDeleted]] RecentDeleted
+-[[SandBox]] SandBox

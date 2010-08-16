@@ -1,0 +1,26 @@
+# Apache .htaccess for PukiWiki
+#
+# $Id: .htaccess,v 1.14.4 2010/07/16 17:27:00 Logue Exp $
+# Copyright (C)
+#   2010      PukiPlus! Developer Team
+#   2006      PukiWiki Plus! Developers Team
+#   2002-2005 PukiWiki Developers Team
+#   2001      Originally written by yu-ji
+# License: GPL v2 or (at your option) any later version
+#
+# NOTE: Correct permission of this file 644(or 604)
+
+# Disable ETags
+<Files ~ "\.(gif|jpe?g|png|flv|mp4|ico)$">
+	FileETag None
+</Files>
+
+# if mod_deflate usable, enable gzip compression.
+<IfModule mod_deflate.c>
+	SetOutputFilter DEFLATE
+	BrowserMatch ^Mozilla/4 gzip-only-text/html
+	BrowserMatch ^Mozilla/4\.0[678] no-gzip
+	BrowserMatch \bMSI[E] !no-gzip !gzip-only-text/html
+	SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png)$ no-gzip dont-vary
+	Header append Vary User-Agent env=!dont-vary
+</IfModule>

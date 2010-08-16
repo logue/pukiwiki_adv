@@ -1,0 +1,1274 @@
+@charset "Shift_JIS";
+/* this @charset is for mozilla's bug */
+/*
+/////////////////////////////////////////////////
+// PukiWiki Plus! skin for PukiWiki Advance
+// Original version written by miko and upk.
+// Adv version by Logue.
+// 
+// $Id: orange.css,v 1.33.6 2010/08/15 00:19:00 Logue Exp $
+//
+*/
+
+pre, dl, ol, p, blockquote
+{
+	line-height:140%;
+}
+
+blockquote{
+	margin-left:32px;
+}
+
+body{
+	margin-left:0%;
+	margin-right:0%;
+	font-family:"Trebuchet MS", arial, helvetica, Sans-Serif;
+}
+
+td{
+	margin-left:0%;
+	margin-right:0%;
+	font-size: 84%;
+}
+
+div#body a{
+	line-break:strict;
+	word-break:break-all;
+	word-wrap:break-word;
+}
+
+div#header{
+	display:block;
+}
+
+a:link{
+	text-decoration:none;
+}
+
+a:active{
+	text-decoration:none;
+}
+
+a:visited{
+	text-decoration:none;
+}
+
+a:hover{
+	text-decoration:underline;
+}
+
+h1{
+	font-family:"Trebuchet MS", arial, helvetica, Sans-Serif;
+	font-size: 20px;
+	border:0px;
+	margin:.2em 0px .2em .5em;
+}
+
+h2{
+	font-family:"Trebuchet MS", arial, helvetica, Sans-Serif;
+	font-size:133%;
+	margin:.2em -10px .2em -18px;
+	padding:.3em .3em .15em .5em;
+	border:0px;
+	border-left:8px solid;
+	border-bottom:1px solid;
+}
+
+h3{
+	font-family:"Trebuchet MS", arial, helvetica, Sans-Serif;
+	font-size:124%;
+	margin:.2em -10px .5em -14px;
+	padding:.3em .3em .15em .5em;
+	border:0px;
+	border-left:8px solid;
+	border-bottom:1px solid;
+}
+
+h4, h5, h6{
+	font-family:"Trebuchet MS", arial, helvetica, Sans-Serif;
+	font-size:112%;
+	margin:.2em -10px .5em -10px;
+	padding:.3em .3em .15em .5em;
+	border:0px;
+	border-left:8px solid;
+	border-bottom:1px solid;
+}
+
+h1.title{
+	font-size: 30px;
+	font-weight:bold;
+	background-color:transparent;
+	padding: 12px 0px 0px 0px;
+	border: 0px;
+	margin: 12px 0px 0px 0px;
+}
+
+dt{
+	font-weight:bold;
+	margin-top:1em;
+}
+dd{
+	margin-left:1em;
+}
+
+pre{
+	padding:.5em;
+	margin-left:1em;
+	margin-right:2em;
+	font-size:80%;
+	line-break:strict;
+	word-break:break-all;
+	word-wrap:break-word;
+}
+
+img{
+	border:none;
+	vertical-align:middle;
+}
+
+/* pukiwiki extend anchor */
+img.ext
+{
+	margin-left: 2px;
+	vertical-align: baseline;
+}
+img.inn
+{
+	margin-left: 2px;
+	vertical-align: baseline;
+}
+
+ul{
+	margin-top:.5em;
+	margin-bottom:.5em;
+	line-height:130%;
+}
+
+em{
+	font-style:italic;
+}
+
+strong{
+	font-weight:bold;
+}
+
+blockquote{
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+blockquote p{
+	margin: 0.5em 1em;
+}
+
+address{
+	display:inline;
+}
+
+.style_table{
+	padding:0px;
+	border:0px;
+	margin:auto;
+	text-align:left;
+}
+.style_th{
+	padding:5px;
+	margin:1px;
+	text-align:center;
+}
+.style_td{
+	padding:5px;
+	margin:1px;
+}
+
+ul.list1{
+	list-style-type:disc;
+}
+ul.list2{
+	list-style-type:circle;
+}
+ul.list3{
+	list-style-type:square;
+}
+ol.list1{
+	list-style-type:decimal;
+}
+ol.list2{
+	list-style-type:lower-roman;
+}
+ol.list3{
+	list-style-type:lower-alpha;
+}
+
+div.ie5{
+	text-align:center;
+}
+
+small, .small{
+	font-size:80%;
+}
+
+.small1{
+	font-size:70%;
+}
+
+.super_index{
+	font-weight:bold;
+	font-size:60%;
+	vertical-align:super;
+}
+
+a.note_super{
+	font-weight:bold;
+	font-size:60%;
+	vertical-align:super;
+	margin: 0px 1%;
+}
+
+div.jumpmenu{
+	font-size:50%;
+	text-align:right;
+}
+
+hr {
+	text-align:center;
+	border-width: 1px 0px 0px 0px;
+	border-style: solid;
+	height: 1px;
+	margin:0.5em;
+	width:99%;
+	display:block;
+}
+
+hr.full_hr{
+}
+
+hr.short_line{
+	width:80%;
+}
+hr.note_hr{
+	margin:1em 1% 0em 1%;
+}
+
+span.size1{
+	font-size:xx-small;
+	line-height:130%;
+	text-indent:0px;
+	display:inline;
+}
+span.size2{
+	font-size:x-small;
+	line-height:130%;
+	text-indent:0px;
+	display:inline;
+}
+span.size3{
+	font-size:small;
+	line-height:130%;
+	text-indent:0px;
+	display:inline;
+}
+span.size4{
+	font-size:medium;
+	line-height:130%;
+	text-indent:0px;
+	display:inline;
+}
+span.size5{
+	font-size:large;
+	line-height:130%;
+	text-indent:0px;
+	display:inline;
+}
+span.size6{
+	font-size:x-large;
+	line-height:130%;
+	text-indent:0px;
+	display:inline;
+}
+span.size7{
+	font-size:xx-large;
+	line-height:130%;
+	text-indent:0px;
+	display:inline;
+}
+
+/* html.php/edit_form() */
+.edit_form{
+	clear:both;
+}
+
+/** Misc ******************************************************************************************/
+div#body{
+	padding:0px;
+	margin:0px 0px 0px 0px;
+}
+
+div#note
+{
+	clear:both;
+	padding:0px;
+	font-size: 78%;
+}
+
+div#note ul{
+	padding:0px;
+	list-style-type:none;
+}
+
+div#attach
+{
+	clear:both;
+	padding:0px;
+	margin:0px 1%;
+	font-size: 78%;
+}
+div#attach img
+{
+	vertical-align: middle;
+}
+
+div#toolbar{
+	clear:both;
+	padding:0px;
+	margin:0px 1%;
+	float:right;
+	white-space: nowrap;
+}
+
+div#toolbar .pkwk-icon, div#toolbar .pkwk-icon_splitter{
+	float:left;
+}
+
+div#lastmodified
+{
+	font-size:80%;
+	padding:0px;
+	margin:0px 1%;
+	text-align:right;
+}
+
+div#related
+{
+	font-size:80%;
+	padding:0px;
+	margin:16px 1% 0px 1%;
+}
+
+div#footer
+{
+	clear:both;
+	font-size:70%;
+	padding:0px;
+	margin:0px 1% 0px 1%; 
+}
+
+img#logo
+{
+	float:left;
+	margin-right:20px;
+}
+
+div#header{
+	padding:0px;
+	margin:1% 1%;
+}
+
+div#navigator{
+	clear:both;
+	padding:4px 0px 0px 0px;
+	margin:0px 1%;
+	white-space: nowrap;
+	font-size:84%;
+}
+
+td.menubar, td.sidebar{
+	width:160px;
+	vertical-align:top;
+}
+
+/* PukiWiki Plus! Skin */
+td.ltable{
+	width:160px;
+	vertical-align:top;
+}
+
+td.rtable{
+	width:160px;
+	vertical-align:top;
+}
+
+td.ctable{
+	vertical-align:top;
+	padding-left:28px;
+	padding-right:28px;
+}
+
+div#floattable{
+	min-width:620px;
+}
+
+div#ltable{
+	width:160px;
+	vertical-align:top;
+	float:left;
+}
+
+div#rtable{
+	width:160px;
+	vertical-align:top;
+	float:right;
+}
+
+div#ctablelr{
+	vertical-align:top;
+	padding-left:1%;
+	padding-right:1%;
+	margin-left:180px;
+	margin-right:180px;
+}
+
+div#ctablel{
+	vertical-align:top;
+	padding-left:1%;
+	padding-right:1%;
+	margin-left:180px;
+	margin-right:20px;
+}
+
+div#ctabler{
+	vertical-align:top;
+	padding-left:1%;
+	padding-right:1%;
+	margin-left:20px;
+	margin-right:180px;
+}
+
+div#ctable{
+	vertical-align:top;
+	padding-left:1%;
+	padding-right:1%;
+	margin-left:20px;
+	margin-right:20px;
+}
+
+div#cleartable{
+	clear:both;
+}
+
+div#topicpath{
+/*	font-size:80%;	*/
+}
+
+div#footerltable{
+	float:left;
+}
+
+div#footerrtable{
+}
+
+/* popup toc */
+#poptoc{
+	font-size:12px;
+	min-width:18em;
+	max-width:25em;
+	/*width:22em;*/
+	margin-right:-10em;
+	z-index:1;
+	position:absolute;
+	display:none;
+}
+#poptoc h2{
+	font-size:small;
+	font-weight:normal;
+	padding:0.3em;
+	margin:0;
+	text-align:center;
+}
+#poptoc h2 a{
+	font-size:90%;
+	text-decoration:none;
+}
+#poptoc h2 img{
+	margin-bottom:-3px;
+	margin-right: 2px;
+}
+#poptoc .nav{
+	padding-top:0.2em;
+	text-align:center;
+}
+#poptoc a.here{
+	text-decoration: none;
+/*	cursor:default;	*/
+}
+
+/* headarea extend */
+#header .style_table{
+	background-color: transparent;
+}
+
+#header .style_table .style_th{
+	margin: 0px;
+	padding: 0px;
+	background-color: transparent;
+}
+
+#header .style_table .style_td{
+	margin: 0px;
+	padding: 0px;
+	background-color: transparent;
+}
+
+#header .style_table .style_td h1.title{
+	font-size: 30px;
+	font-weight:bold;
+	background-color:transparent;
+	padding: 0px;
+	border: 0px;
+	margin: 0px;
+}
+
+#footer .style_table{
+	background-color: transparent;
+}
+
+#footer .style_table .style_th{
+	margin: 0px;
+	padding: 0px;
+	background-color: transparent;
+}
+
+#footer .style_table .style_td{
+	margin: 0px;
+	padding: 0px;
+	background-color: transparent;
+}
+
+div#qr_code{
+	float:left;
+}
+
+div#banner_box
+{
+	float:right;
+	white-space:nowrap;
+}
+
+div#sigunature{
+	float:left;
+	white-space:nowrap;
+	font-size: 12px;
+	line-height: 122%;
+	padding-top:8px;
+}
+
+#footerctable{
+	width:98%;
+}
+
+/** MenuBar ***************************************************************************************/
+
+div#menubar{
+	width:160px;
+	padding:0px;
+	margin:0px 2px;
+	word-break:break-all;
+	font-size:90%;
+	overflow:hidden;
+}
+
+div#menubar ul.menu{
+	list-style-type: none;
+	list-style-position: outside;
+	margin: 0px;
+	padding: 0px;
+}
+
+div#menubar ul.menu li{
+	padding: 0px 0.3em;
+	margin: 0px;
+}
+
+div#menubar ul.menu li a{
+	text-decoration: none;
+	display:block;
+	padding:0.1em 0.3em;
+	margin:0px -0.3em;
+}
+
+div#menubar h2,div#menubar h3,div#menubar h4{
+	margin:0px 0px 0px 0px;
+	padding:4px;
+	text-align:center;
+}
+
+div#menubar h5{
+	margin:0px 0px 4px 0px;
+	padding:3px;
+	text-align:center;
+}
+/** SideBar ***************************************************************************************/
+div#sidebar{
+	width:160px;
+	padding:0px;
+	margin:0px 2px;
+	word-break:break-all;
+	font-size:90%;
+	overflow:hidden;
+}
+
+div#sidebar ul{
+	margin:0px 0px 0px .5em;
+	padding:0px 0px 0px .5em;
+}
+
+div#sidebar ul li{
+	line-height:110%;
+}
+
+div#sidebar h2, div#sidebar h3, div#sidebar h4{
+	margin:0px 0px 4px 0px;
+	padding:4px;
+	text-align:center;
+	font-size:110%;
+}
+
+/** Plugin ****************************************************************************************/
+
+/* aname.inc.php */
+.anchor
+{
+}
+.anchor_super
+{
+	font-size:xx-small;
+	vertical-align:super;
+}
+
+/* attach.inc.php, related.inc.php */
+div#attach span.plugin_title, div#related span.plugin_title{
+	display:block;
+	float:left;
+}
+
+div#attach ul, div#related ul{
+	padding:0px;
+	list-style-type:none;
+}
+
+div#attach ul li, div#related ul li{
+	display:block;
+	float:left;
+	padding:0px 4px;
+}
+
+table.attach_table{
+	padding:0px;
+	border:0px;
+	margin:auto;
+	text-align:left;
+}
+
+th.attach_th{
+	padding:2px;
+	margin:1px;
+	text-align:center;
+}
+
+/* br.inc.php */
+br.spacer
+{
+}
+
+/* calendar.inc.php */
+#body .calendar {
+	width:15em;
+	margin:auto;
+}
+#menubar .calendar,
+#sidebar .calendar {
+	width:90%;
+	margin:auto;
+}
+
+.calendar_td_caltop {
+	text-align:center;
+}
+
+.calendar_td_week {
+	text-align:center;
+	font-size:small;
+	width:2em;
+}
+
+.calendar_td_blank {
+	text-align:center;
+	height:1.6em;
+}
+.calendar_td_today {
+	text-align:center;
+	height:1.6em;
+}
+.calendar_td_sun {
+	text-align:center;
+	height:1.6em;
+}
+.calendar_td_day {
+	text-align:center;
+	height:1.6em;
+}
+.calendar_td_sat {
+	text-align:center;
+	height:1.6em;
+}
+.calendar_td_today a,
+.calendar_td_sun a,
+.calendar_td_day a,
+.calendar_td_sat a
+{
+	display:block;
+}
+
+/* calendar2.inc.php */
+.style_calendar
+{
+	padding:0px;
+	border:0px;
+	margin:3px;
+	text-align:center;
+}
+
+.style_td_caltop
+{
+	padding:5px 3px;
+	margin:1px;
+	font-size:80%;
+	text-align:center;
+}
+
+.style_td_today
+{
+	padding:5px 3px;
+	margin:1px;
+	text-align:center;
+}
+
+.style_td_sat
+{
+	padding:5px 3px;
+	margin:1px;
+	text-align:center;
+}
+
+.style_td_sun
+{
+	padding:5px 3px;
+	margin:1px;
+	text-align:center;
+}
+
+.style_td_blank
+{
+	padding:5px 3px;
+	margin:1px;
+	text-align:center;
+}
+
+.style_td_day
+{
+	padding:5px 3px;
+	margin:1px;
+	text-align:center;
+}
+
+.style_td_week
+{
+	padding:5px 5px;
+	margin:1px;
+	font-size:80%;
+	font-weight:bold;
+	text-align:center;
+}
+
+/* clear.inc.php */
+.clear
+{
+	display:block;
+	clear:both;
+}
+
+/* counter.inc.php */
+div.counter
+{
+	font-size:70%;
+}
+
+/* include.inc.php */
+h5.side_label
+{
+	text-align:center;
+}
+
+/* navi.inc.php */
+ul.navi{
+	margin:0px;
+	padding:0px;
+	text-align:center;
+}
+
+li.navi_none{
+	display:inline;
+	float:none;
+}
+
+li.navi_left{
+	display:inline;
+	float:left;
+	text-align:left;
+}
+
+li.navi_right{
+	display:inline;
+	float:right;
+	text-align:right;
+}
+
+/* new.inc.php */
+span.comment_date{
+	font-size:x-small;
+}
+span.new1{
+	font-size:x-small;
+}
+span.new5{
+	font-size:xx-small;
+}
+
+/* popular.inc.php */
+span.counter{
+	font-size:70%;
+}
+ul.popular_list{
+	padding:0px 0px 0px .5em;
+	margin:0px 0px 0px .5em;
+	border:0px;
+	word-wrap:break-word;
+	word-break:break-all;
+}
+
+/* recent.inc.php,showrss.inc.php */
+ul.recent_list{
+	padding:0px 0px 0px .5em;
+	margin:0px 0px 0px .5em;
+	border:0px;
+	word-wrap:break-word;
+	word-break:break-all;
+}
+ul.recent_list li{
+	line-height:110%;
+}
+
+/* ref.inc.php */
+div.img_margin{
+	margin-left:6px;
+	margin-right:6px;
+}
+
+/* vote.inc.php */
+.style_table_vote{
+	padding:0px;
+	border:0px;
+	margin:auto auto auto 32px !important;
+	text-align:left;
+}
+
+/* amazon.inc.php */
+div.amazon_img {
+	margin:16px 10px 8px 8px;
+	text-align:center;
+}
+
+div.amazon_imgetc {
+	 margin:0px 8px 8px 8px;
+	 text-align:center;
+}
+
+div.amazon_sub {
+	 font-size:90%;
+}
+
+div.amazon_avail {
+	 margin-left:150px;
+	 font-size:90%;
+}
+
+td.amazon_td {
+	 font-size:90%;
+	 text-align:center;
+}
+
+table.amazon_tbl {
+	 border:0;
+	 width:115px;
+	 font-size:90%;
+	 text-align:center;
+}
+
+/* calendar_viewer.inc.php, minicalendar_viewer.inc.php */
+div.trackback {
+	font-size:80%;
+	text-align:right;
+}
+
+div.prevnext {
+}
+
+div.prevnext_l {
+	float:left;
+}
+
+div.prevnext_r {
+	float:right;
+}
+
+/* minicalendar.inc.php */
+.ministyle_calendar{
+	width:150px;
+	padding:0px;
+	margin:2px;
+	text-align:center;
+}
+
+.ministyle_td_caltop{
+	padding:2px;
+	margin:1px;
+	font-size:12px;
+	text-align:center;
+}
+
+.ministyle_td_today{
+	padding:1px;
+	margin:1px;
+	font-size:16px;
+	text-align:center;
+}
+
+.ministyle_td_sat{
+	padding:1px;
+	margin:1px;
+	font-size:16px;
+	text-align:center;
+}
+
+.ministyle_td_sun{
+	height:20px;
+	padding:1px;
+	margin:1px;
+	font-size:16px;
+	text-align:center;
+}
+
+.ministyle_td_blank{
+	padding:1px;
+	margin:1px;
+	font-size:16px;
+	text-align:center;
+}
+
+.ministyle_td_day{
+	padding:1px;
+	margin:1px;
+	font-size:16px;
+	text-align:center;
+	vertical-align:center;
+}
+
+.ministyle_td_week{
+	width:23px;
+	padding:2px 0px;
+	margin:2px 0px;
+	font-size:12px;
+	font-weight:bold;
+	text-align:center;
+}
+
+/* minicalendar_viewer */
+h3.minicalendar
+{
+	margin: 8px -8px 0px -6px;
+	font-size:100%;
+	border:0px;
+	border-left:8px solid;
+	border-bottom:1px solid;
+}
+
+h4.minicalendar
+{
+	margin: 8px -8px 0px -6px;
+	font-size:100%;
+	border:0px;
+	border-left:8px solid;
+	border-bottom:1px solid;
+}
+
+.minicalendar_viewer
+{
+	margin: 0px 0px 0px 0px;
+}
+
+.minicalendar_viewer h4
+{
+	margin: 0.5em 0px 0px 0.5em;
+}
+
+.minicalendar_viewer p
+{
+	margin: 0.5em 0px 0px 1.5em;
+}
+
+/* minicalendar+public_holiday view */
+.date_weekday, .date_weekend, .date_holiday {
+	font-family: verdana, arial, sans-serif;
+	font-size: 100%;
+	line-height: 110%;
+	font-weight: normal;
+	padding: 3px 0;
+	border: none;
+	margin-bottom: 10px;
+}
+
+.day {
+	float: left;
+	font-size: 200%;
+	line-height: 100%;
+	font-weight: normal;
+	letter-spacing: 0.02em;
+	padding-left: 4pt;
+	padding-right: 3pt;
+	padding-top: 3pt;
+	padding-bottom: 3pt;
+	margin: 0px;
+	margin-top:3pt;
+	margin-right:4pt;
+}
+
+/* suckerfish.inc.php */
+#nav {
+	width: 99%;
+	height:24px;
+	font-size:86%;
+	clear:both;
+	white-space: nowrap;
+	margin: 4px 0px;
+}
+
+#nav, #nav * {
+	margin:			0;
+	padding:		0;
+	list-style:		none;
+}
+#nav {
+	line-height:	1.0;
+}
+#nav ul {
+	position:		absolute;
+	top:			23px;
+	left:			0px;
+	width:			10em;
+	display:		none;
+}
+#nav ul li {
+	width:			100%;
+	padding:4px;
+}
+#nav ul ul {
+	top:0;
+	left:100%;
+}
+#nav li:hover {
+	visibility:		inherit; /* fixes IE7 'sticky bug' */
+}
+#nav li {
+	float:			left;
+	position:		relative;
+	padding:4px;
+	margin:0;
+}
+#nav img{
+	display:inline;
+	vertical-align:middle;
+}
+
+#nav li a, #nav span.noexists {
+	display:inline;
+	color:#fff;
+	text-decoration:none;
+}
+#nav a {
+	font-weight: bold;
+	text-decoration: none;
+}
+
+#nav a:visited, #nav a:active, #nav a:focus, #nav a:hover, #nav a:active {
+	text-decoration: none;
+}
+
+#nav li li {
+	width:12em;
+}
+
+#nav li:hover ul ul,
+#nav li li:hover ul ul, 
+#nav li li li:hover ul ul, 
+#nav li li li li:hover ul ul, 
+#nav li.sfhover ul ul, 
+#nav li li.sfhover ul ul, 
+#nav li li li.sfhover ul ul, 
+#nav li li li li.sfhover ul ul {
+	display:none;
+}
+#nav li:hover ul, 
+#nav li li:hover ul, 
+#nav li li li:hover ul, 
+#nav li li li li:hover ul, 
+#nav li.sfhover ul, 
+#nav li li.sfhover ul, 
+#nav li li li.sfhover ul, 
+#nav li li li li.sfhover ul {
+	display:block;
+}
+
+#nav .noexists {
+	background-color:transparent;
+}
+
+/* for BugTrack/1 */
+.dummyblock
+{
+	width:77%;
+	float:left;
+	display:block;
+}
+
+.center_form
+{
+	text-align:center;
+	padding:4px 0px 8px;
+	margin:0px;
+}
+
+/* code.inc.php */
+pre.code {
+	margin: 1em 2em 0.5em 1em;
+	padding: 0.5em;
+	line-height: 120%;
+}
+
+table.code_table pre.code,
+div.code_table pre.code
+{
+	margin: 0;
+	padding: 0;
+	padding-left: 0.5em;
+	border: 1px;
+	line-height: 120%;
+}
+
+pre.code_number {
+	margin: 0;
+	padding: 0;
+	padding-right: 0.5em;
+	border: 1px;
+	line-height: 120%;
+	min-width: 3ex;
+}
+
+pre.code_outline {
+	margin:  0;
+	padding: 0;
+	border: 1px;
+	width: 10px;
+	text-align: center;
+	line-height: 120%;
+}
+
+div.code_table {
+	margin: 1em 2em 0.5em 1em;
+	white-space: pre;
+}
+
+table.code_table,
+table.code_table td,
+div.code_number pre,
+div.code_outline pre,
+div.code_src pre
+{
+	margin:  0;
+	padding: 0;
+	border: none;
+}
+
+td.code_src {width:100%;}
+
+div.code_number,
+div.code_outline,
+div.code_src
+{
+	position: relative;
+	margin: 0;
+	padding: 0;
+	left: 0;
+	float: left;
+}
+
+img.code_dotimage {width:20px;height:8px;margin:0;padding:0;}
+
+a.code_outline, a.code_outline:link, a.code_outline:visited, a.code_outline:hover, a.code_outline:active{
+	text-decoration: none;
+}
+
+/* navibar2.inc.php */
+div#navigator2 {
+	margin: 4px 0px;
+	padding: 0px 4px;
+	left: 0px;
+	width: 99%;
+	clear:both;
+	white-space: nowrap;
+}
+
+td.navimenu {
+	margin: 2px 5px 2px 5px;
+	font-size:84%;
+}
+td.navimenu a {
+	padding: 0px 4px;
+	font-weight: bold;
+}
+
+div.naviblock {
+	padding: 5px 5px 5px 8px;
+	font-size:84%;
+	visibility: hidden;
+	position: absolute;
+}
+
+td.navimenu a, td.navimenu a:active, td.navimenu a:visited, td.navimenu a:hover,
+div.naviblock a, div.naviblock a:active, div.naviblock a:visited, div.naviblock a:hover {
+	text-decoration: none;
+}
+
+/* form */
+
+.edit_form textarea {
+	width:100%;
+}
+
+/* for blikifooter */
+div.blikiFooter {
+	text-align:right;
+}
+
+#banner_box a:hover{
+	background-color:transparent;
+}

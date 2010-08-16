@@ -1,0 +1,14 @@
+#recent(20)
+
+#popular(10)
+
+#hr
+//[[:config/i18n/text]]
+//常に表示されるメニューバーです。
+//&edit(MenuBar,noicon){edit};
+//を記述しておくとMenuBarを気軽に修正できるようになって便利かも。
+LEFT:
+SIZE(10){&_(en){Yesterday};: &color(green){&counter(yesterday);};}
+SIZE(10){&_(en){Today};: &color(green){&counter(today);};}~
+SIZE(10){[[&_(en){Online};>:onlinelist]]: &color(green){&online;};}~
+SIZE(10){[[&_(en){Total};>:counter]]: &color(green){&counter;};}

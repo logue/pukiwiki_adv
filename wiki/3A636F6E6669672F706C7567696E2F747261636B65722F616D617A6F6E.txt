@@ -1,0 +1,13 @@
+*amazonプラグインの項目設定
+#ls(./)
+
+* fields
+|項目名|見出し|形式|オプション|デフォルト値|h
+|title|タイトル|page|50||
+|asin|ASIN|text|15||
+|author|製作者|text|50||
+|group|カテゴリ|text|50||
+|critic|評者|text|50||
+|date|日付|text|50||
+|recommendation|お薦め対象|title|60||
+|body|感想|textarea|60,6||

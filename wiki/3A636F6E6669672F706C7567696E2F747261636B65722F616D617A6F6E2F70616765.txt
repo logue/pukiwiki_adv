@@ -1,0 +1,15 @@
+#amazon($1,$2,image)
+*[title]
+-製作者: [author]
+-ASIN: [asin]
+-カテゴリ: [group]
+-評者: [critic]
+-日付: [date]
+**お薦め対象
+[recommendation]
+
+#amazon(c)
+**感想
+[body]
+
+#comment
