@@ -39,6 +39,7 @@ function plugin_suckerfish_convert()
 
 	$navi_page = plugin_suckerfish_search_navipage($page);
 	if (! empty($navi_page)){
+		$head_tags[] = '<script type="text/javascript" src="'.SKIN_DIR.'/js/plugin/jquery.superfish.js"></script>';
 		return plugin_suckerfish_makehtml($navi_page);
 	}else{
 		exist_plugin('navibar');

@@ -19,8 +19,8 @@ define('S_REVSION', '20100815');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &copy; 2010' .
-	' <a href="http://pukiplus.sf.net/">PukiWiki Advance Team</a>.' .
-	' Licensed under the <a href="http://www.gnu.org/licenses/gpl-2.0.html">GPLv2</a>.<br />' .
+	' <a href="http://pukiwiki.logue.be/">PukiWiki Advance Developers Team</a>.' .
+	' Licensed under the <a href="http://www.gnu.org/licenses/gpl-2.0.html" rel="license">GPLv2</a>.<br />' .
 	' Based on <a href="http://pukiwiki.cafelounge.net/plus/">"PukiWiki Plus! i18n"</a>'
 );
 
@@ -112,9 +112,11 @@ $user_agent['agent'] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_
 
 foreach ($agents as $agent) {
 	if (preg_match($agent['pattern'], $user_agent['agent'], $matches)) {
-		$user_agent['profile'] = isset($agent['profile']) ? $agent['profile'] : '';
-		$user_agent['name']    = isset($matches[1]) ? $matches[1] : '';	// device or browser name
-		$user_agent['vers']    = isset($matches[2]) ? $matches[2] : ''; // 's version
+		$user_agent = array(
+			'profile'	=> isset($agent['profile']) ? $agent['profile'] : '',
+			'name'		=> isset($matches[1]) ? $matches[1] : '',	// device or browser name
+			'vers'		=> isset($matches[2]) ? $matches[2] : ''	// 's version
+		);
 		break;
 	}
 }
@@ -178,7 +180,7 @@ foreach(array($defaultpage, $whatsnew, $interwiki) as $page){
 
 // Prohibit $_GET attack
 foreach (array('msg', 'pass') as $key) {
-	if (isset($_GET[$key])) die_message('Sorry, already reserved: ' . $key . '=');
+	if (isset($_GET[$key])) die_message(sprintf(_('Sorry, %s is already reserved'),$key));
 }
 
 // Expire risk
@@ -238,10 +240,10 @@ if (isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != '') {
         $arg = & $_SERVER['argv'][0];
 }
 if (PKWK_QUERY_STRING_MAX && strlen($arg) > PKWK_QUERY_STRING_MAX) {
-        // Something nasty attack?
-        pkwk_common_headers();
-        echo( _('Query string too long') );
-        exit;
+	// Something nasty attack?
+	pkwk_common_headers();
+	echo( _('Query string too long.') );
+	exit;
 }
 $arg = input_filter($arg); // \0 除去
 // for QA/250

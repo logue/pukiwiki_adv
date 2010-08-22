@@ -808,8 +808,41 @@ function is_webdav()
 // HTML4.0で廃止された化石のようなxmpタグでタグ無効化・・・
 // var_dumpにhtmlspecialcharとかは通用しないため。
 function pr($value){
-	echo '<pre class="debug"><xmp>';
+	echo '<pre class="blush: php"><xmp>';
 	var_dump($value);
 	echo '</xmp></pre>';
+}
+
+
+function tag_helper($data){
+//	array(
+//		タグ名 => array(
+//			属性 => 値,
+//			...
+//		)
+//	array(
+//		タグ名２=>array(
+//			...
+//		)
+//	);
+	foreach ($data as $lines=>$line) {
+		$ret = array();
+		if (typeof($line) === 'object'){
+			foreach ($lines as $line=>$tagname) {
+				
+				foreach ($line as $content) {
+					$data = '<'.$tagname.' ';
+					while(list ($key, $val) = each($tagname)) {
+						$data .=$key.'="'.$val.'" ';
+					}
+					$tmp .= '/>';
+					$ret[] = $data;
+				}
+			}
+		}else{
+			$ret[] = $line;
+		}
+	}
+	return join("\n\t[t",$ret)."\n";
 }
 ?>

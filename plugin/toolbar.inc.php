@@ -113,8 +113,11 @@ function plugin_toolbar_convert()
 			break;
 		}
 	}
-
-	return '<div id="toolbar">'. $body . '</div>';
+	if ($pkwk_dtd == PKWK_DTD_HTML_5){
+		return '<navi id="toolbar">'. $body . '</navi>';
+	}else{
+		return '<div id="toolbar">'. $body . '</div>';
+	}
 }
 
 function _toolbar($key, $x = 20, $y = 20)

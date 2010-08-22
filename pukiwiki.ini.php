@@ -1,8 +1,8 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone
-// $Id: pukiwiki.ini.php,v 1.148.46 2010/07/26 00:20:00 upk Exp $
+// $Id: pukiwiki.ini.php,v 1.148.47 2010/08/19 10:41:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiWiki Advance Developer Team
+//   2010      PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
 //   2002-2007 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -58,6 +58,7 @@ defined('PKWK_QUERY_STRING_MAX') or define('PKWK_QUERY_STRING_MAX', 1280); // By
 
 // PKWK_ZLIB_LOADABLE_MODULE
 defined('PKWK_ZLIB_LOADABLE_MODULE') or define('PKWK_ZLIB_LOADABLE_MODULE', true);
+
 /////////////////////////////////////////////////
 // Experimental features
 

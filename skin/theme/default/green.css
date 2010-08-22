@@ -1,4 +1,4 @@
-@charset "UTF-8";
+@charset "Shift_JIS";
 /* this @charset is for mozilla's bug */
 /*
 /////////////////////////////////////////////////
@@ -6,7 +6,7 @@
 // Original version written by miko and upk.
 // Adv version by Logue.
 // 
-// $Id: blue.css,v 1.0.0 2010/08/15 00:19:00 Logue Exp $
+// $Id: green.css,v 1.0.0 2010/08/15 00:19:00 Logue Exp $
 //
 */
 
@@ -22,7 +22,7 @@ a:link{
 
 a:active{
 	color:#215dc6;
-	background-color:#CCDDEE;
+	background-color:#CCEEDD;
 }
 
 a:visited{
@@ -32,47 +32,47 @@ a:visited{
 
 a:hover{
 	color:#215dc6;
-	background-color:#CCDDEE;
+	background-color:#CCEEDD;
 }
 
 h1{
-	color:#0000cc;
+	color:#00cc00;
 	background-color:transparent;
 }
 
 h2{
 	color:#000000;
 	background-color:transparent;
-	border-color:#ffffff #ffffff #999999 #1177ff;
+	border-color:#ffffff #ffffff #999999 #11ff77;
 }
 
 h3{
 	color:#000000;
 	background-color:transparent;
-	border-color:#ffffff #ffffff #999999 CornflowerBlue;
+	border-color:#ffffff #ffffff #999999 #33ff99;
 }
 
 h4, h5, h6{
 	color:#000000;
 	background-color:transparent;
-	border-color:#f8f8ff #f8f8ff #999999 #66ccff;
+	border-color:#f8fff8 #f8fff8 #999999 #66ffcc;
 }
 
 dt{
-	color: #333366;
+	color: #336633;
 }
 
 pre, .syntaxhighlighter{
-	border-top:#DDDDEE 1px solid;
-	border-bottom:#888899 1px solid;
-	border-left:#DDDDEE 1px solid;
-	border-right:#888899 1px solid;
+	border-top:#DDEEDD 1px solid;
+	border-bottom:#889988 1px solid;
+	border-left:#DDEEDD 1px solid;
+	border-right:#889988 1px solid;
 	color:black;
-	background-color:#F0F8FF;
+	background-color:#F0FFF8;
 }
 
 blockquote{
-	border: 1px solid #99CCFF;
+	border: 1px solid #99FFCC;
 }
 
 hr{
@@ -86,22 +86,22 @@ hr.short_line{
 }
 
 hr.note_hr{
-	border-color:#2288FF;
+	border-color:#22FF88;
 }
 
 thead td.style_td,
 tfoot td.style_td{
 	color:inherit;
-	background-color:#D0D8E0;
+	background-color:#D0E0D8;
 }
 thead th.style_th,
 tfoot th.style_th{
 	color:inherit;
-	background-color:#E0E8F0;
+	background-color:#E0F0E8;
 }
 .style_table{
 	color:inherit;
-	background-color:#ccd5dd;
+	background-color:#ccddd5;
 }
 .style_th{
 	color:inherit;
@@ -109,7 +109,7 @@ tfoot th.style_th{
 }
 .style_td{
 	color:inherit;
-	background-color:#EEF5FF;
+	background-color:#EEFFF5;
 }
 
 span.noexists
@@ -189,11 +189,11 @@ div#preview{
 
 /* Layout */
 td.ltable{
-	background-color: #EEFCFF;
+	background-color: #EEFFFC;
 }
 
 td.rtable{
-	background-color: #EEFCFF;
+	background-color: #EEFFFC;
 }
 
 div#topicpath{
@@ -230,23 +230,23 @@ div#topicpath{
 }
 /** MenuBar ***************************************************************************************/
 div#menubar ul.menu li{
-	border-bottom: 1px dotted #EEFCFF;
+	border-bottom: 1px dotted #EEFFFC;
 }
 
 div#menubar h2, div#menubar h3, div#menubar h4{
-	border: 1px #99CCFF solid;
-	background-color: #DDF0FF;
+	border: 1px #99FFCC solid;
+	background-color: #DDFFF0;
 }
 
 div#menubar h5{
-	border: 1px #99CCFF solid;
-	background-color: #DDF0FF;
+	border: 1px #99FFCC solid;
+	background-color: #DDFFF0;
 }
 
 /** SideBar ***************************************************************************************/
 div#sidebar h2, div#sidebar h3, div#sidebar h4{
-	border: 1px #99CCFF solid;
-	background-color: #DDF0FF;
+	border: 1px #99FFCC solid;
+	background-color: #DDFFF0;
 }
 
 /* Plugin *****************************************************************************************/
@@ -258,7 +258,7 @@ table.attach_table{
 
 th.attach_th{
 	color:inherit;
-	background-color: #CCEEFF;
+	background-color: #CCFFEE;
 }
 
 td.attach_td1{
@@ -266,7 +266,7 @@ td.attach_td1{
 }
 
 td.attach_td2{
-	background-color: #CCFFCC;
+	background-color: #CCCCFF;
 }
 
 /* calendar.inc.php */
@@ -275,7 +275,7 @@ td.attach_td2{
 }
 
 .calendar_td_caltop {
-	background-color:#EEF5FF;
+	background-color:#EEFFF5;
 }
 
 .calendar_td_week {
@@ -317,12 +317,12 @@ td.attach_td2{
 /* calendar2.inc.php */
 .style_calendar{
 	color:inherit;
-	background-color:#CCD5DD;
+	background-color:#CCDDD5;
 }
 
 .style_td_caltop{
 	color:inherit;
-	background-color:#EEF5FF;
+	background-color:#EEFFF5;
 }
 
 .style_td_today{
@@ -350,17 +350,17 @@ td.attach_td2{
 
 .style_td_blank{
 	color:inherit;
-	background-color:#EEF5FF;
+	background-color:#EEFFF5;
 }
 
 .style_td_day{
 	color:inherit;
-	background-color:#EEF5FF;
+	background-color:#EEFFF5;
 }
 
 .style_td_week{
 	color:inherit;
-	background-color:#DDE5EE;
+	background-color:#DDEEE5;
 }
 
 /* minicalendar.inc.php */
@@ -371,7 +371,7 @@ td.attach_td2{
 
 .ministyle_td_caltop{
 	color:inherit;
-	background-color:#EEF5FF;
+	background-color:#EEFFF5;
 }
 
 .ministyle_td_today{
@@ -407,13 +407,13 @@ td.attach_td2{
 /* minicalendar_viewer */
 h3.minicalendar
 {
-	border-color:#ffffff #ffffff #999999 #3399ff;
+	border-color:#ffffff #ffffff #999999 #33ff99;
 	color:inherit;
 }
 
 h4.minicalendar
 {
-	border-color:#ffffff #ffffff #999999 #66CCff;
+	border-color:#ffffff #ffffff #999999 #66ffCC;
 	color:inherit;
 }
 
@@ -470,7 +470,7 @@ span.new5{
 /* vote.inc.php */
 .style_table_vote{
 	color:inherit;
-	background-color:#ccd5dd;
+	background-color:#ccddd5;
 }
 td.vote_label
 {
@@ -480,12 +480,12 @@ td.vote_label
 td.vote_td1
 {
 	color:inherit;
-	background-color:#DDE5FF;
+	background-color:#DDFFE5;
 }
 td.vote_td2
 {
 	color:inherit;
-	background-color:#EEF5FF;
+	background-color:#EEFFF5;
 }
 
 /* navibar2.inc.php */

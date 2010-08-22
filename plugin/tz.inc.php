@@ -7,9 +7,8 @@
  * @license	http://opensource.org/licenses/gpl-license.php GNU Public License
  * @link	http://www.desisoftsystems.com/white-papers/timeZoneCalculation/
  */
-function plugin_tz_convert()
-{
-	global $use_local_time, $head_tags;
+function plugin_tz_convert(){
+	global $use_local_time, $head_tags, $foot_tags;
 
 	if ($use_local_time) return '';
 	if (isset($_COOKIE['timezone'])) return '';
@@ -18,15 +17,12 @@ function plugin_tz_convert()
 	if (empty($url['host'])) return '';
 	
 	$head_tags[] = '<script type="text/javascript" src="'.SKIN_URI.'js/plugin/tzCalculation_LocalTimeZone.js"></script>';
-
-	return <<<EOD
-
+	$foot_tags[] =  <<<EOD
 <script type="text/javascript">
 //<![CDATA[
 	tzCalculation_LocalTimeZone ('{$url['host']}',false);
 //]]></script>
 EOD;
-
 }
 
 ?>

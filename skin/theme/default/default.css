@@ -1,4 +1,4 @@
-@charset "Shift_JIS";
+@charset "UTF-8";
 /* this @charset is for mozilla's bug */
 /*
 /////////////////////////////////////////////////
@@ -299,6 +299,17 @@ span.size7{
 }
 
 /** Misc ******************************************************************************************/
+table.main{
+	border:0px;
+	padding:0px;
+	margin:0px;
+	width:100%;
+}
+
+table.main tr td{
+	vertical-align:top;
+}
+
 div#body{
 	padding:0px;
 	margin:0px 0px 0px 0px;

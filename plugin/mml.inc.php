@@ -23,12 +23,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-define(JSMML_PATH, SKIN_DIR . 'js/plugin/jsmml');
-define(JQUERY, false);	// jQueryを読み込むか？
-
-define(PLAY_BUTTON  , IMAGE_DIR.'player/play_n.gif');
-define(PAUSE_BUTTON , IMAGE_DIR.'player/pause_n.gif');
-define(STOP_BUTTON  , IMAGE_DIR.'player/stop_n.gif');
+define(JSMML_PATH, SKIN_URI . 'js/plugin/jsmml');
 
 function plugin_mml_convert(){
 	global $script, $mml_count;
@@ -100,8 +95,6 @@ HTML;
 	height:16px;
 }
 /*]]>*/</style>
-<script type="text/javascript" src="'.$sh_dir.'scripts/shBrushPlain.js"></script>
-
 <script type="text/javascript" src="$jsmml_path/JSMML.js"></script>
 <script type="text/javascript">
 // <![CDATA[
@@ -233,10 +226,6 @@ $(document).ready(function(){
 	};
 });
 
-$(window).unload(function(){
-	
-});
-
 JSMML.swfurl = '$jsmml_path/JSMML.swf';
 JSMML.init();
 
@@ -246,13 +235,4 @@ HTML;
 	$mml_count++;
 	return $html;
 }
-/*
-甘き死よ来たれ[BWV161]（デモ）
-
-t54o4@3@w20@E1,4,32,96,12 
-o3r4v15c8>c8l16o4gffee8.<feddcc>bb8l64b+bb+bb+bb+bb+bb+bl32abb+8g8<c16edl16eco3deef+<baagg8.<edcc>bbaag<b+bbaaedc>b8aggaabb<c+c+dd8.fedcdc>bab<cddee8.f32g32fedc>baaggffee<ffeeddcc>bb8<cd+d+ddffeo3g8>g8b+8c8o5gffee8.feddcg4r8o3g8b+bbaa8>a8<dcc>bo5dcc>bb8.b+baagbaabbbaag32f+32gaf+8.gg4;
-t54o4@3@w20@E1,4,32,96,12 
-r2v15l16b+bbaa8.<agffeedd8dfefe8.eab+32b32b+af+8edl8o3gabb+bl16ag<d8>d8<g4r<g32f+32gage8gg4deeff8.agfefedcdeffgg8.a32a+32agfedffeeddcc8.agffeeddeef+f+gg8.cc8c-.c32c8r8>eddcc8.agffeedd8dfefe8r8ab+32b32b+af+8ed<baagg8.edccc-l8edcdel16dcc8c>bb4;
-t54o4@3@w20@E1,4,32,96,12 
-r2l8rv15>gabb+cg>gr<gl16b+bbal8a>ao4abo6d1o3edcc-16c16d>dg<gfedefga>agfe<cf>fg1&gl16<gg+g+aaa+a+bb<ce8d.e32e8r4l8>gabb+fg>gr1b<decg>g<cdedc>g<d>d<g4;
-*/
+?>

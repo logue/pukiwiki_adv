@@ -108,9 +108,6 @@ var pukiwiki_skin = {
 		// フォームロックを解除
 		$('input, button, select, textarea').removeAttr('disabled');
 
-		// ボタンをjQuery UIのものに
-		$("button, input[type=submit], input[type=reset], input[type=button]").button();
-		
 		// IE PNG Fix
 		if (!$.support.boxModel) {
 			require(SKIN_DIR+'js/iepngfix/iepngfix_tilebg.js');
@@ -140,6 +137,12 @@ var pukiwiki_skin = {
 				$(this).fadeTo(200,0.3);
 			}
 		);
+		
+		/* SyntaxHighlighter */
+		this.sh();
+		
+		// ボタンをjQuery UIのものに
+		$("button, input[type=submit], input[type=reset], input[type=button]").button();
 	},
 	custom : {},	// 消さないこと。（スキン用カスタムネームスペース）
 	/* ページを閉じたとき */
@@ -158,15 +161,17 @@ var pukiwiki_skin = {
 	},
 	/* ポップアップメニュー */
 	suckerfish : function(target){
-		var superfish_cond = {
-			autoArrows:		false,	// if true, arrow mark-up generated automatically = cleaner source code at expense of initialisation performance
-			dropShadows:	false
-		};
-		
-		if (typeof(pukiwiki_skin.custom.suckerfish) == 'object'){
-			superfish_cond = this.custom.suckerfish;
+		if ($(target).length != 0){
+			var superfish_cond = {
+				autoArrows:		false,	// if true, arrow mark-up generated automatically = cleaner source code at expense of initialisation performance
+				dropShadows:	false
+			};
+			
+			if (typeof(pukiwiki_skin.custom.suckerfish) == 'object'){
+				superfish_cond = this.custom.suckerfish;
+			}
+			$(target).superfish(superfish_cond);
 		}
-		$(target).superfish(superfish_cond);
 	},
 /*
 ajaxダイアログ
@@ -385,14 +390,14 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 					'</div>'
 				].join("\n");
 				dialog_option.title = 'Error!';
-				dialog_option.width = '';
-				dialog_option.height = '';
+//				dialog_option.width = '';
+//				dialog_option.height = '120px';
 				container.html(content).dialog(dialog_option);
 				try{
 					$('p#ajax_error').after([
 						'<ul>',
 						'<li>readyState:'+data.readyState+'</li>',
-						'<li>responseText:'+data.responseText+'</li>',
+//						'<li>responseText:'+data.responseText+'</li>',
 						'<li>status:'+data.status+'</li>',
 						'<li>statusText:'+data.statusText+'</li>',
 						'</ul>'
@@ -429,7 +434,9 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		}); // end of dialog
 		var self = this;
 		$(document)
-		.ajaxSend(function() {
+		.ajaxSend(function(e, xhr, settings) {
+			self.loadingScreen.dialog("option", "title", 'Send');
+			if(DEBUG){ console.info('load: ',settings.url); }
 			$('body').css('cursor','wait');
 			self.loadingScreen.dialog('open');
 		})
@@ -447,7 +454,6 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			self.loadingScreen.dialog('close');
 			$('body').css('cursor','auto');
 		});
-
 	},
 	iframeWin : function(params){
 		if (!params.width){ params.width = 800; }
@@ -1406,6 +1412,47 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			});
 		}
 	},
+	sh : function(prefix){
+		if (prefix){
+			prefix = prefix + ' ';
+		}else{
+			prefix = '';
+		}
+		if (typeof(SyntaxHighlighter) == 'object'){
+			$(prefix + '.sh').each(function(){
+				$(this).removeClass('sh');
+				switch($(this).attr('class')){
+					case 'AS3':
+					case 'Bash':
+					case 'Cpp':
+					case 'Csharp':
+					case 'Css':
+					case 'Delphi':
+					case 'Diff':
+					case 'Erlang':
+					case 'Groovy':
+					case 'Java':
+					case 'JavaFX':
+					case 'JScript':
+					case 'Perl':
+					case 'Php':
+					case 'PowerShell':
+					case 'Python':
+					case 'Ruby':
+					case 'Scala':
+					case 'Sql':
+					case 'Vb':
+					case 'Xml':
+						$(this).addClass('brush:'+$(this).attr('class'));
+					break;
+					default:
+						$(this).addClass('brush: Plain');
+					break;
+				};
+			});
+			SyntaxHighlighter.all();
+		}
+	},
 	/** Collects link types from head element. */
 	linkattrs : function(){
 		var links = $('link[rel]');
@@ -1934,12 +1981,27 @@ function pukiwiki_pos(){
 	}
 }
 
-function require(url){
-	var ele = document.createElement('script');
-	ele.type = 'text/javascript';
-	ele.src = url;
-	ele.defer = 'defer';
-	document.body.appendChild(ele);
+function loadScript(url,callback){
+	var script = document.createElement('script'),done = false;
+	
+	script.src = url;
+	script.type = 'text/javascript';
+	script.async = true;
+	script.language = 'javascript';
+	script.onload = script.onreadystatechange = function(){
+		if (!done && (!this.readyState || this.readyState == 'loaded' || this.readyState == 'complete')){
+			done = true;
+
+			if (typeof(callback) == 'function'){ callback(); }
+			
+			// Handle memory leak in IE
+			script.onload = script.onreadystatechange = null;
+			script.parentNode.removeChild(script);
+		}
+	};
+	
+	// sync way of adding script tags to the page
+	document.body.appendChild(script);
 }
 
 var $buoop = {
@@ -1951,33 +2013,49 @@ var $buoop = {
 		n:9
 	}
 };
+
 /*************************************************************************************************/
 // onLoad/onUnload
 $(document).ready(function($){
 	// フレームハイジャック対策
 	if( self !== top ){ top.location = self.location; }
 
+	$.ajax({
+		type: "GET",
+		global : false,
+		url: 'http://browser-update.org/update.js',
+		dataType: "script"
+	});
+
 	if (typeof(pukiwiki_skin.custom) == 'object'){
 		if( typeof(pukiwiki_skin.custom.before_init) == 'function'){
 			pukiwiki_skin.custom.before_init();
 		}
-		require('http://browser-update.org/update.js');
 		pukiwiki_skin.init();
 		if (typeof(pukiwiki_skin.custom.init) == 'function'){
 			pukiwiki_skin.custom.init();
 		}
 	}else{
-		require('http://browser-update.org/update.js');
 		pukiwiki_skin.init();
 	}
-	
+
 	// Google Analyticsを実行
 	// http://www.google.com/support/analytics/bin/answer.py?answer=174090
 	if (typeof(_gaq) !== 'undefined'){
+		$.ajax({
+			type: "GET",
+			global : false,
+			url: ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js',
+			dataType: "script"
+		});
+		/*
 		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
 		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
 		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		*/
 	}
+
+	tzCalculation_LocalTimeZone(location.host,false);
 });
 
 $(window).unload(function(){

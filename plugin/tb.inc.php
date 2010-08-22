@@ -332,8 +332,7 @@ function plugin_tb_mode_view_set($page)
 	}
 
 	$body .= '<div style="text-align:right">' .
-		 '<a href="' . get_cmd_uri('tb','','','__mode=view') . '">' .
-		 '<img src="'.IMAGE_URI.'plus/trackback.png" alt="" title="" />' .
+		 '<a href="' . get_cmd_uri('tb','','','__mode=view') . '" class="pkwk-icon_linktext cmd-trackback">' .
 		 'Trackback List' . 
 		 '</a>'. "</div>\n";
 

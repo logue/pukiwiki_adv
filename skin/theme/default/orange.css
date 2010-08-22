@@ -62,7 +62,7 @@ dt{
 	color: #663333;
 }
 
-pre{
+pre, .syntaxhighlighter{
 	border-top:#DDDDEE 1px solid;
 	border-bottom:#888899 1px solid;
 	border-left:#DDDDEE 1px solid;

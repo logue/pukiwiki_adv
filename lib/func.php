@@ -878,7 +878,7 @@ function init_script_uri($init_uri = '',$get_init_value=0)
 			$script, $matches)) $script = $matches[1];
 	}
 
-        return $absolute_uri ? get_script_absuri() : $script;
+	return $absolute_uri ? get_script_absuri() : $script;
 }
 
 // Get absolute-URI of this script
@@ -950,7 +950,7 @@ function get_script_absuri()
 			$uri, $matches)) $uri = $matches[1];
 	}
 
-        return $uri;
+	return $uri;
 }
 
 // function get_cmd_uri($cmd='', $page='', $query='', $fragment='')

@@ -12,8 +12,8 @@
 --------------------------------------------------------------------------- */
 
 // SyntaxHighlighter [folder path]
-define('PLUGIN_SH_PATH', SKIN_DIR.'js/plugin/syntaxhighlighter'.'/');
-// define('PLUGIN_SH_PATH', 'http://alexgorbatchev.com/pub/sh/current/');
+define('PLUGIN_SH_PATH', SKIN_URI.'js/syntaxhighlighter'.'/');
+//define('PLUGIN_SH_PATH', 'http://alexgorbatchev.com/pub/sh/2.1.382/');
 
 // SyntaxHighlighter [tag name]
 define('PLUGIN_SH_TAG_NAME', 'pre'); // 'pre' or 'textarea'
@@ -21,9 +21,12 @@ define('PLUGIN_SH_TAG_NAME', 'pre'); // 'pre' or 'textarea'
 define('PLUGIN_SH_USAGE', 
 	   '<p class="error">Usage:<br />#sh[(Lang)]{{<br />src<br />}}</p>');
 
+define('PLUGIN_SH_LANGUAGE', 'Plain');
+
 // SyntaxHiglighter Theme
 // Default, Django, Eclipse, Emacs, FadeToGrey, Midnight, RDark
 define('PLUGIN_SH_THEME', 'Default');
+
 /* ---------------------------------------------------------------------------
  functions
 --------------------------------------------------------------------------- */
@@ -36,24 +39,78 @@ function plugin_sh_init(){
 }
 
 function plugin_sh_convert(){
-	global $head_tags, $sh_count, $langs, $foot_tags;
-	$sh_dir = PLUGIN_SH_PATH;
+	global $head_tags, $foot_tags, $sh_count, $langs;
 
+	$params = array(
+		'number'      => false,  // 行番号を表示する
+		'nonumber'    => false,  // 行番号を表示しない
+		'outline'     => false,  // アウトライン モード
+		'nooutline'   => false,  // アウトライン 無効
+//		'comment'     => false,  // コメント開閉する
+//		'nocomment'   => false,  // コメント開閉しない
+		'menu'        => false,  // メニューを表示する
+		'nomenu'      => false,  // メニューを表示しない
+//		'icon'        => false,  // アイコンを表示する
+//		'noicon'      => false,  // アイコンを表示しない
+		'link'        => false,  // オートリンク 有効
+		'nolink'      => false,  // オートリンク 無効
+		);
+	
+	
+	$num_of_arg = func_num_args();
+	$args = func_get_args();
+	if ($num_of_arg < 1) {
+		return PLUGIN_SH_USAGE;
+	}
+
+	$arg = $args[$num_of_arg-1];
+	if (strlen($arg) == 0) {
+		return PLUGIN_SH_USAGE;
+	}
+
+	//  @ 引数取り
+	for ($i = 1; $i < $argc; $i++) {
+		switch($argc){
+			case 'number':
+				$prop = 'gutter: true;';
+				break;
+			case 'nonumber':
+				$prop = 'gutter: false;';
+				break;
+			case 'outline':
+				$prop = 'collapse:true;';
+				break;
+			case 'nooutline':
+				$prop = 'collapse:false;';
+				break;
+			case 'menu':
+				$props = 'toolbar:true;';
+				break;
+			case 'nomenu':
+				$props = 'toolbar:false;';
+				break;
+			case 'link':
+				$props = 'auto-links:true;';
+				break;
+			case 'nolink':
+				$props = 'auto-links:false;';
+				break;
+			}
+		$ext[] = $props;
+	}
+	
 	if(!$sh_count){
-		$sh_theme = PLUGIN_SH_THEME;
-		$head_tags[] = <<<HTML
-<script type="text/javascript" src="{$sh_dir}scripts/shCore.js"></script>
-<link type="text/css" rel="stylesheet" href="{$sh_dir}styles/shCore.css" />
-<link type="text/css" rel="stylesheet" href="{$sh_dir}styles/shTheme{$sh_theme}.css" id="shTheme" />
-HTML;
+		$head_tags[] = '<script type="text/javascript" src="'.PLUGIN_SH_PATH.'scripts/shCore.js"></script>';
+		$head_tags[] = '<link type="text/css" rel="stylesheet" href="'.PLUGIN_SH_PATH.'styles/shCore.css" />';
+		$head_tags[] = '<link type="text/css" rel="stylesheet" href="'.PLUGIN_SH_PATH.'styles/shTheme'.PLUGIN_SH_THEME.'.css" id="shTheme" />';
+/*
 		$foot_tags[] = <<<HTML
 <script type="text/javascript">
 //<![CDATA[
-SyntaxHighlighter.defaults['auto-links'] = false;
 SyntaxHighlighter.all();
 //]]></script>
 HTML;
-		// 使用可能なスクリプト言語と、呼び出しフラグ
+*/
 		$langs = array(
 			'AS3'			=> false,
 			'Bash'			=> false,
@@ -96,8 +153,7 @@ HTML;
 	}
 
 	if ($num_of_arg != 1) {
-		$lang = htmlspecialchars(strtolower($args[0])); // 言語名かオプションの判定
-		// 該当する言語がある場合、上記のスクリプト言語名を$langに代入
+		$lang = htmlspecialchars(strtolower($args[0]));
 		switch($lang){
 			case 'actionscript':
 			case 'as':
@@ -184,17 +240,15 @@ HTML;
 			break;
 		}
 		if ($langs[$lang] == false){
-			// もし、falseだった場合、ヘッダータグに該当する言語のスクリプトを挿入し、呼び出しフラグをtrueにする。
 			$langs[$lang] = true;
-			$head_tags[] = '<script type="text/javascript" src="'.$sh_dir.'scripts/shBrush'.$lang.'.js"></script>';
+			$head_tags[] = '<script type="text/javascript" src="'.PLUGIN_SH_PATH.'scripts/shBrush'.$lang.'.js"></script>';
 		}
 	} else {
 		$lang = 'Plain'; // default
-		$head_tags[] = '<script type="text/javascript" src="'.$sh_dir.'scripts/shBrushPlain.js"></script>';
-		$langs['Plain'] = true;
 	}
 
-	return '<pre class="brush: '.strtolower($lang).'">'."\n".htmlspecialchars($arg)."\n".'</pre>'."\n";
+	return '<pre class="brush: '.strtolower($lang).' '.join(' ',$ret).'">'."\n".htmlspecialchars($arg)."\n".'</pre>'."\n";
+//	return '<pre class="sh '.$lang.'">'."\n".htmlspecialchars($arg)."\n".'</pre>'."\n";
 }
 
 ?>

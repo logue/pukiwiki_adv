@@ -109,11 +109,11 @@ EOD;
 {$menubarstr}
 </tr></tbody></table></div>
 {$menublkstr}
-<script type="text/javascript" src="{$skin_uri}navibar.js"></script>
+<script type="text/javascript" src="{$skin_uri}js/plugin/navibar.js"></script>
 <script type="text/javascript">
-<!-- <![CDATA[
+//<![CDATA[
 startNaviMenu( "navigator2", "navimenutd", "navimenu", "NaviMenuLink", "naviblock", "MenuItem");
-//]]>-->
+//]]>
 </script>
 EOD;
 }

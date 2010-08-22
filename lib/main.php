@@ -1,9 +1,9 @@
 <?php
 // PukiWiki Advance.
-// $Id: main.php,v 1.21.23 2010/07/25 14:10:00 upk Exp $
+// $Id: main.php,v 1.21.24 2010/08/17 14:10:00 Logue Exp $
 //
 // PukiWiki Advance
-//  Copyright (C) 2010 by PukiWiki Advance Team
+//  Copyright (C) 2010 by PukiWiki Advance Developers Team
 //  http://pukiplus.sf.net/
 //
 // PukiPlus
@@ -98,8 +98,8 @@ if ($referer)	require(LIB_DIR . 'referer.php');
 // Main
 
 $retvars = array();
-$page  = isset($vars['page'])  ? $vars['page']  : '';
-$refer = isset($vars['refer']) ? $vars['refer'] : '';
+$page    = isset($vars['page'])  ? $vars['page']  : '';
+$referer = isset($vars['referer']) ? $vars['referer'] : '';
 
 if (isset($vars['cmd'])) {
 	$plugin = & $vars['cmd'];
@@ -110,7 +110,7 @@ if (isset($vars['cmd'])) {
 }
 
 // SPAM
-if (SpamCheckBAN($_SERVER['REMOTE_ADDR'])) die();
+if (SpamCheckBAN($_SERVER['REMOTE_ADDR'])) die('403 Forbidden.');
 
 // Spam filtering
 if ($spam && $method != 'GET') {
@@ -118,12 +118,12 @@ if ($spam && $method != 'GET') {
 	if (isset($_SERVER['GEOIP_COUNTRY_CODE'])) {
 		if (isset($deny_countory) && !empty($deny_countory)) {
 			if (in_array($_SERVER['GEOIP_COUNTRY_CODE'], $deny_countory)) {
-				die('Sorry');
+				die('Unsupported region or country.');
 			}
 		}
 		if (isset($allow_countory) && !empty($allow_countory)) {
 			if (!in_array($_SERVER['GEOIP_COUNTRY_CODE'], $allow_countory)) {
-				die('Sorry');
+				die('Unsupported region or country.');
 			}
 		}
 	}
@@ -144,7 +144,7 @@ if ($spam && $method != 'GET') {
 		case 'bugtrack': $_page = & $vars['base'];  break;
 		case 'tracker':  $_page = & $vars['_base']; break;
 		case 'read':     $_page = & $page;  break;
-		default: $_page = & $refer; break;
+		default: $_page = & $referer; break;
 	}
 
 	if ($_spam) {
@@ -217,10 +217,12 @@ if ($plugin != '') {
 			$base = isset($vars['refer']) ? $vars['refer'] : '';
 		}
 		*/
-		$base = (!empty($page)) ? $page : $refer;
+		$base = (!empty($page)) ? $page : $referer;
 	} else {
-		$msg = 'plugin=' . htmlspecialchars($plugin) . ' is not implemented.';
-		$retvars = array('msg'=>$msg,'body'=>$msg);
+		$retvars = array(
+			'msg'	=> _('Plugin Error'),
+			'body'	=> sprintf(_('plugin=%s is not implemented.'), htmlspecialchars($plugin))
+		);
 		$base    = & $defaultpage;
 	}
 }

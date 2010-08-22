@@ -190,7 +190,7 @@ function plugin_referer_set_color()
 
 	if (! isset($color)) {
 		// Default color
-		$color = array('cur' => '#88ff88', 'etc' => '#E0E8F0');
+		$color = array('cur' => '#8888ff', 'etc' => '#E0E8F0');
 
 		$config = new Config(CONFIG_REFERER);
 		$config->read();

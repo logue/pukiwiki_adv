@@ -69,7 +69,7 @@ function catbody($title, $page, $body)
 		'log_login'		=> get_cmd_uri('logview',		'',		'',	array('kind'=>'login')),
 		'log_update'	=> get_cmd_uri('logview',		$_page),
 		'new'			=> get_cmd_uri('newpage',		'',		'',	array('refer'=>$_page)),
-		'newsub'		=> get_cmd_uri('newpage_subdir',''		,	'',	array('directory'=>$_page)),
+		'newsub'		=> get_cmd_uri('newpage_subdir','',		'',	array('directory'=>$_page)),
 		'print'			=> get_cmd_uri('print',			$_page),
 		'referer'		=> get_cmd_uri('referer',		$_page),
 		'rename'		=> get_cmd_uri('rename',		'',		'',	array('refer'=>$_page)),
@@ -81,7 +81,7 @@ function catbody($title, $page, $body)
 		'upload'		=> get_cmd_uri('attach',		$_page,	'',	array('pcmd'=>'upload')), // link rel="alternate" にも利用するため absuri にしておく
 		
 		'rss'			=> get_cmd_absuri('rss'),
-		'rdf'			=> get_cmd_absuri('rss',		'',	'	ver=1.0'),
+		'rdf'			=> get_cmd_absuri('rss',		'',		'ver=1.0'),
 		'rss10'			=> get_cmd_absuri('rss',		'',		'ver=1.0'), // Same as 'rdf'
 		'rss20'			=> get_cmd_absuri('rss',		'',		'ver=2.0'),
 		'mixirss'		=> get_cmd_absuri('mixirss'), // Same as 'rdf' for mixi
@@ -115,21 +115,21 @@ function catbody($title, $page, $body)
 	$filetime = get_filetime($_page);
 	
 	// List of related pages
-	$related  = ($related_link && $is_read) ? make_related($_page) : '';
+	$related  = ($related_link && $is_read) ? make_related($_page,'p') : '';
 
 	if ($vars['ajax']=='json'){
 		// JSONで出力（仮）
 		$obj = array(
-			'body'		=> $body,
-			'is_read'	=> $is_read,
-			'is_freeze'	=> $is_freeze,
-			'is_page'	=> $is_page,
+			'body'			=> $body,
+			'is_read'		=> $is_read,
+			'is_freeze'		=> $is_freeze,
+			'is_page'		=> $is_page,
 			'lastmodified'	=> $filetime,
-			'newtitle'	=> $newtitle,
-			'page'		=> $_page,
-			'related'	=> $related,
-			'taketime'	=> elapsedtime(),
-			'title'		=> $title
+			'newtitle'		=> $newtitle,
+			'page'			=> $_page,
+			'related'		=> $related,
+			'taketime'		=> elapsedtime(),
+			'title'			=> $title
 		);
 		pkwk_common_headers();
 		header('Content-Type: application/json; charset=' . CONTENT_CHARSET);
@@ -141,11 +141,125 @@ function catbody($title, $page, $body)
 		echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 		echo $body;
 	}else{
-		// Last modification date (string) of the page
+		if ($pkwk_dtd == PKWK_DTD_HTML_5){
+			$meta_tags[] = array('charset'	=> CONTENT_CHARSET);
+		}else{
+			if (!isset($x_ua_compatible)) $x_ua_compatible = 'IE=edge';
+			$meta_tags = array(
+				array('http-equiv'	=> 'content-language',		'content'	=> 'text/html; charset='.CONTENT_CHARSET),
+				array('http-equiv'	=> 'content-style-type',	'content'	=> 'text/css'),
+				array('http-equiv'	=> 'content-script-type',	'content'	=> 'text/javascript'),
+				array('http-equiv'	=> 'X-UA-Compatible',		'content'	=> $x_ua_compatible),
+				array('http-equiv'	=> 'X-Frame-Options',		'content'	=> 'deny')	// フレームハイジャック禁止
+			);
+		}
+		$meta_tags[] = array('name' => 'generator',	'content' => strip_tags(GENERATOR));
+
+		if (!empty($google_site_verification)){	$meta_tags[] = array('name' => 'google-site-verification',	'content' => $google_site_verification); }
+		if (!empty($yahoo_site_explorer_id)){	$meta_tags[] = array('name' => 'y_key',						'content' => $yahoo_site_explorer_id); }
+		if (!empty($bing_siteid)){				$meta_tags[] = array('name' => 'msvalidate.01',				'content' => $bing_siteid); }
+		if ($modifier !== 'anonymous'){			$meta_tags[] = array('name' => 'author',					'content' => $modifier); }
+		if ($nofollow || ! $is_read){			$meta_tags[] = array('name' => 'robots',					'content' => 'NOINDEX,NOFOLLOW'); }
 		
-		$lastmodified = $is_read ? 
-			'<time pubdate="pubdate" datetime="'.get_date(DATE_ISO8601,$filetime).'">'.get_date('D, d M Y H:i:s T', $filetime).
-			' ' . get_pg_passage($_page, FALSE).'</time>' : '';
+		$link_tags = array(
+			array('rel'=>'alternate',	'href'=>$_LINK['mixirss'],	'type'=>'application/rss+xml',	'title'=>'RSS'),
+			array('rel'=>'canonical',	'href'=>$_LINK['reload'],	'type'=>'text/html'),
+			array('rel'=>'contents',	'href'=>$_LINK['menu'],		'type'=>'text/html',	'title'=>$_LANG['skin']['menu']),
+			array('rel'=>'sidebar',		'href'=>$_LINK['side'],		'type'=>'text/html',	'title'=>$_LANG['skin']['side']),
+			array('rel'=>'glossary',	'href'=>$_LINK['glossary'],	'type'=>'text/html',	'title'=>$_LANG['skin']['glossary']),
+			array('rel'=>'help',		'href'=>$_LINK['help'],		'type'=>'text/html',	'title'=>$_LANG['skin']['help']),
+			array('rel'=>'home',		'href'=>$_LINK['top'],		'type'=>'text/html',	'title'=>$_LANG['skin']['top']),
+			array('rel'=>'index',		'href'=>$_LINK['list'],		'type'=>'text/html',	'title'=>$_LANG['skin']['list']),
+			array('rel'=>'search',		'href'=>$_LINK['search'],	'type'=>'text/html',	'title'=>$_LANG['skin']['search']),
+		);
+//		if ($notify_from !== 'from@example.com') $link_tags[] = array('rev'=>'made',	'href'=>'mailto:'.$notify_from,	'title'=>	'Contact to '.$modifier);
+
+		foreach ($meta_tags as $meta_tag) {
+			$tmp = '<meta ';
+			foreach( $meta_tag as $key=>$val) $tmp .=$key.'="'.$val.'" ';
+			$tmp .= '/>';
+			$ret[] = $tmp;
+		}
+		unset($meta_tags,$meta_tag);
+		foreach ($link_tags as $link_tag) {
+			$tmp = '<link ';
+			foreach( $link_tag as $key=>$val) $tmp .=$key.'="'.$val.'" ';
+			$tmp .= '/>';
+			$ret[] = $tmp;
+		}
+		$pkwk_meta = join("\n\t\t",$ret)."\n";
+		unset($link_tags, $link_tag, $ret);
+
+		// JavaScriptタグの組み立て
+		$const = array(
+			'DEBUG'=>DEBUG,
+			'SKIN_DIR'=>'SKIN_URI',
+			'IMAGE_DIR'=>'IMAGE_URI',
+			'DEFAULT_LANG'=>'DEFAULT_LANG',
+			'THEME_NAME'=>'PLUS_THEME',
+		);
+		$js[] = 'google.load("jquery", "1.4.2");';
+		$js[] = 'google.load("jqueryui", "1.8.4");';
+		$js[] = 'google.load("swfobject", "2.2");';
+		$js[] = 'var SCRIPT="'.get_script_absuri().'";';
+		$js[] = 'var PAGE="'.$_page.'";';
+		$js[] = 'var LANG="'.$language.'";';
+		foreach( $const as $key=>$val){
+			$js[] = 'var '.$key.'="'.constant($val).'";';
+		}
+		unset($const);
+
+		// Google Analytics
+		if ($google_analytics) {
+			$js[] = 'var _gaq = _gaq || [];';
+			$js[] = '_gaq.push(["_setAccount", "'.$google_analytics.'"]);';
+			$js[] = '_gaq.push(["_trackPageview"]);';
+		}
+
+		$ret[] = '<script type="text/javascript" src="http://www.google.com/jsapi?key='.$google_api_key.'"></script>';
+		$ret[] = '<script type="text/javascript">'."\n".'//<![CDATA['."\n".join($js,"\n")."\n".'//]]></script>';
+		$ret[] = ($pkwk_dtd == PKWK_DTD_HTML_5) ? '<!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->' : '';
+		$ret[] = '<script type="text/javascript" src="'.SKIN_URI.'js/locale.js"></script>';
+		
+		if (DEBUG === true) {
+			// 読み込むsrcディレクトリ内のJavaScript
+			$files = array(
+				/* libraly */
+				'swfupload','tzCalculation_LocalTimeZone',
+				
+				/* Use plugins */ 
+				'jquery.cookie','jquery.lazyload', 'jquery.query','jquery.scrollTo','jquery.colorbox-min','jquery.a-tools.min',
+				'jquery.swfupload','jquery.tablesorter','jquery.textarearesizer','jquery.jplayer.min',	/* 'jquery.beautyOfCode-min', */
+				
+				/* MUST BE LOAD LAST */
+				'skin.original'
+			);
+			
+			foreach($files as $script_file) $ret[] = '<script type="text/javascript" src="'.SKIN_URI.'js/src/'.$script_file.'.js"></script>';
+			unset($files);
+		} else {
+			$ret[] = '<script type="text/javascript" src="'.SKIN_URI.'js/skin.js.php"></script>';
+/*
+			$ret[] = '<script type="text/javascript" src="'.SKIN_URI.'js/syntaxhighlighter/shCore.js"></script>';
+			$ret[] = '<script type="text/javascript" src="'.SKIN_URI.'js/syntaxhighlighter/shBrushPlain.js"></script>';
+			$ret[] = '<script type="text/javascript" src="'.SKIN_URI.'js/syntaxhighlighter/shBrushDiff.js"></script>';
+*/
+			$ret[] = '<script type="text/javascript" src="'.SKIN_URI.'js/skin.js.php"></script>';
+		}
+		$ret[] = ! empty($js_blocks) ? '<script type="text/javascript">'."\n".'//<![CDATA['."\n".join($js_blocks,"\n")."\n".'//]]></script>' : '';
+
+		$pkwk_head = join("\n\t\t",$ret).(! empty($head_tags) ? join("\n\t\t", $head_tags) : '')."\n";
+		unset($ret,$js,$js_blocks,$head_tags);
+		$foot_tag = ! empty($foot_tags) ? join("\n", $foot_tags) ."\n" : '';
+
+		// Last modification date (string) of the page
+		if ($pkwk_dtd == PKWK_DTD_HTML_5){
+			$lastmodified = $is_read ? 
+				'<time pubdate="pubdate" datetime="'.get_date('c',$filetime).'">'.get_date('D, d M Y H:i:s T', $filetime).
+				' ' . get_pg_passage($_page, FALSE).'</time>' : '';
+		}else{
+			$lastmodified = $is_read ? get_date('D, d M Y H:i:s T', $filetime). ' ' . get_pg_passage($_page, FALSE) : '';
+		}
 
 		// List of attached files to the page
 		$attaches = '';
@@ -158,12 +272,7 @@ function catbody($title, $page, $body)
 		// List of footnotes
 		ksort($foot_explain, SORT_NUMERIC);
 		$notes = ! empty($foot_explain) ? $note_hr . '<ul>'.join("\n", $foot_explain).'</ul>' : '';
-
-		// Tags will be inserted into <head></head>
-		$head_tag = ! empty($head_tags) ? join("\n", $head_tags) ."\n" : '';
-		$foot_tag = ! empty($foot_tags) ? join("\n", $foot_tags) ."\n" : '';
-		$js_block = ! empty($js_blocks) ? join("\n", $js_blocks) ."\n" : '';
-
+		
 		// Search words
 		if ($search_word_color && isset($vars['word'])) {
 			$body = '<div class="small">' . $_string['word'] . htmlspecialchars($vars['word']) .
@@ -212,7 +321,6 @@ function catbody($title, $page, $body)
 		pkwk_common_headers();
 		header('Content-Type: text/html; charset=' . CONTENT_CHARSET);
 		header('ETag: ' . md5(MUTIME));
-		$taketime = showtaketime(); // 互換性のために配置
 		require(SKIN_FILE);
 	}
 
@@ -264,18 +372,17 @@ function edit_form($page, $postdata, $digest = FALSE, $b_template = TRUE)
 			if (is_cantedit($_page) || check_non_list($_page))
 				continue;
 			$s_page = htmlspecialchars($_page);
-			$pages[$_page] = '	<option value="' . $s_page . '">' .
-				$s_page . '</option>'."\n";
+			$pages[$_page] = '		<option value="' . $s_page . '">' .$s_page . '</option>'."\n";
 		}
 		ksort($pages, SORT_STRING);
 		$s_pages  = join("\n", $pages);
 		$template = <<<EOD
 <div class="template_form">
- <select name="template_page" class="template">
-  <option value="">-- {$_button['template']} --</option>
+	<select name="template_page" class="template">
+		<option value="">-- {$_button['template']} --</option>
 $s_pages
- </select>
- <input type="submit" name="template" value="{$_button['load']}" accesskey="r" />
+	</select>
+	<input type="submit" name="template" value="{$_button['load']}" accesskey="r" />
 </div>
 
 EOD;
@@ -292,7 +399,8 @@ EOD;
 	$s_original  = isset($vars['original']) ? htmlspecialchars($vars['original']) : $s_postdata;
 	$s_id        = isset($vars['id']) ? htmlspecialchars($vars['id']) : '';
 	$b_preview   = isset($vars['preview']); // TRUE when preview
-	$s_ticket = md5(MUTIME);
+	$s_ticket    = md5(MUTIME);
+
 	if (function_exists('pkwk_session_start') && pkwk_session_start() != 0) {
 		// BugTrack/95 fix Problem: browser RSS request with session
 		$_SESSION[$s_ticket] = md5(get_ticket() . $digest);
@@ -318,23 +426,23 @@ EOD;
 
 	$body = <<<EOD
 <form action="$script" method="post" id="form">
- <input type="hidden" name="cmd"    value="edit" />
- <input type="hidden" name="page"   value="$s_page" />
- <input type="hidden" name="digest" value="$s_digest" />
- <input type="hidden" name="ticket" value="$s_ticket" />
- <input type="hidden" name="id"     value="$s_id" />
- <div class="edit_form">
+	<input type="hidden" name="cmd"    value="edit" />
+	<input type="hidden" name="page"   value="$s_page" />
+	<input type="hidden" name="digest" value="$s_digest" />
+	<input type="hidden" name="ticket" value="$s_ticket" />
+	<input type="hidden" name="id"     value="$s_id" />
+	<div class="edit_form">
 $template
 $addtag
-  <textarea name="msg" id="msg" rows="$rows" cols="$cols">$s_postdata</textarea>
-  $add_assistant
-  <input type="submit" name="write" value="{$_button['update']}" accesskey="s" />
-  $add_top
-  <input type="submit" name="preview" value="{$_button['preview']}" accesskey="p" />
-  $add_notimestamp
-  <input type="submit" id="cancel" name="cancel" value="{$_button['cancel']}" accesskey="c" />
- </div>
- <textarea id="original" name="original" rows="1" cols="1" style="display:none">$s_original</textarea>
+		<textarea name="msg" id="msg" rows="$rows" cols="$cols">$s_postdata</textarea>
+		$add_assistant
+		<input type="submit" name="write" value="{$_button['update']}" accesskey="s" />
+		$add_top
+		<input type="submit" name="preview" value="{$_button['preview']}" accesskey="p" />
+		$add_notimestamp
+		<input type="submit" id="cancel" name="cancel" value="{$_button['cancel']}" accesskey="c" />
+	</div>
+	<textarea id="original" name="original" rows="1" cols="1" style="display:none">$s_original</textarea>
 </form>
 
 EOD;
@@ -351,6 +459,7 @@ function edit_form_assistant(){
 	return '<div class="assistant"></div>';
 }
 
+// Related pages
 // Related pages
 function make_related($page, $tag = '')
 {
@@ -372,18 +481,24 @@ function make_related($page, $tag = '')
 		$s_page   = htmlspecialchars($page);
 		$passage  = get_passage($lastmod);
 		$_links[] = $tag ?
-			'<li><a href="' . get_page_uri($page) . '" title="' .
+			'<a href="' . get_page_uri($page) . '" title="' .
 			$s_page . ' ' . $passage . '">' . $s_page . '</a>' :
 			'<a href="' . get_page_uri($page) . '">' .
-			$s_page . '</a>' . $passage.'</li>'."\n";
+			$s_page . '</a>' . $passage;
 	}
 	if (empty($_links)) return ''; // Nothing
-/*
+
 	if ($tag == 'p') { // From the line-head
 		$margin = $_ul_left_margin + $_ul_margin;
 		$style  = sprintf($_list_pad_str, 1, $margin, $margin);
 		$retval =  "\n" . '<ul' . $style . '>' . "\n" .
 			'<li>' . join($rule_related_str, $_links) . '</li>' . "\n" .
+			'</ul>' . "\n";
+	}else if ($tag == 'ul') {
+		$margin = $_ul_left_margin + $_ul_margin;
+		$style  = sprintf($_list_pad_str, 1, $margin, $margin);
+		$retval =  "\n" . '<ul' . $style . '>' . "\n" .
+			'<li>' . join($related_str, $_links) . '</li>' . "\n" .
 			'</ul>' . "\n";
 	} else if ($tag) {
 		$retval = join($rule_related_str, $_links);
@@ -392,8 +507,6 @@ function make_related($page, $tag = '')
 	}
 
 	return $retval;
-*/
-	return '<ul><li>'.join("</li>\n<li>", $_links).'</li></ul>'."\n";
 }
 
 // User-defined rules (convert without replacing source)
@@ -510,8 +623,7 @@ function pkwk_headers_sent()
 }
 
 // Output common HTTP headers
-function pkwk_common_headers($compress)
-{
+function pkwk_common_headers(){
 	if (! PKWK_OPTIMISE) pkwk_headers_sent();
 
 	if(PKWK_ZLIB_LOADABLE_MODULE == true && $compress != false) {
@@ -560,9 +672,6 @@ define('PKWK_DTD_TYPE_HTML',         0);
 function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_XHTML_1_1, $charset = CONTENT_CHARSET)
 {
 	static $called;
-	global $x_ua_compatible;
-	
-	if (!isset($x_ua_compatible)) $x_ua_compatible = 'IE=edge';
 
 	if (isset($called)) die('pkwk_output_dtd() already called. Why?');
 	$called = TRUE;
@@ -616,6 +725,7 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_XHTML_1_1, $charset = CONTENT_CHAR
 	}
 
 	$charset = htmlspecialchars($charset);
+	
 
 	// Output XML or not
 	if ($type == PKWK_DTD_TYPE_XHTML) {
@@ -623,6 +733,11 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_XHTML_1_1, $charset = CONTENT_CHAR
 //		if (!(CONTENT_CHARSET == 'UTF-8' && UA_NAME == 'MSIE')) {
 			echo '<?xml version="1.0" encoding="' . CONTENT_CHARSET . '" ?' . '>' . "\n";
 //		}
+		$end_slash = ' /';
+	}else if($pkwk_dtd == PKWK_DTD_HTML_5){
+		$end_slash = ' /';
+	}else{
+		$end_slash = '';
 	}
 
 	if ($pkwk_dtd != PKWK_DTD_HTML_5){
@@ -650,34 +765,5 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_XHTML_1_1, $charset = CONTENT_CHAR
 	}
 	echo '>' . "\n"; // <html>
 	unset($lang_code);
-
-	// Return content-type (with MIME type)
-	if ($type == PKWK_DTD_TYPE_XHTML) {
-		// NOTE: XHTML 1.1 browser will ignore http-equiv
-		return join("\n\t\t",array(
-			'<meta http-equiv="content-type" content="application/xhtml+xml; charset=' . $charset . '" />',
-			'<meta http-equiv="content-style-type" content="text/css" />',
-			'<meta http-equiv="content-script-type" content="text/javascript" />',
-			'<meta http-equiv="X-UA-Compatible" content="'.$x_ua_compatible.'" />',
-			'<meta name="generator" content="'.strip_tags(GENERATOR).'" />'
-		))."\n";
-	}else{
-		if ($pkwk_dtd == PKWK_DTD_HTML_5){
-			return join("\n\t\t",array(
-				'<meta charset="' . $charset . '" />',
-				'<meta http-equiv="X-UA-Compatible" content="'.$x_ua_compatible.'">',
-				'<meta name="generator" content="'.strip_tags(GENERATOR).'" />',
-				'<!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->'
-			))."\n";
-		}else{
-			return join("\n\t\t",array(
-				'<meta http-equiv="content-type" content="text/html; charset=' . $charset . '">',
-				'<meta http-equiv="content-style-type" content="text/css">',
-				'<meta http-equiv="content-script-type" content="text/javascript">',
-				'<meta http-equiv="X-UA-Compatible" content="'.$x_ua_compatible.'">',
-				'<meta name="generator" content="'.strip_tags(GENERATOR).'">'
-			))."\n";
-		}
-	}
 }
 ?>

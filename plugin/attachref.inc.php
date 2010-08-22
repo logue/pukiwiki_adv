@@ -132,11 +132,13 @@ EOD;
 	    if ( $button ){
 		} else {
 			$f_btn_text = preg_replace('/<[^<>]+>/','',$btn_text);
-			$f_page = rawurlencode($vars['page']);
-			$f_args = rawurlencode($s_args);
-			$ret = <<<EOD
-  $ret<a href="$script?plugin=attachref&amp;attachref_no=$attachref_no&amp;attachref_opt=$f_args&amp;refer=$f_page&amp;digest=$digest" title="$f_btn_text">$btn_text</a>
-EOD;
+			$btn_url = get_cmd_uri('attachref', $_page,	'',	array(
+				'attachref_no'	=> $attachref_no,
+				'attachref_opt'	=> $s_args,
+				'refer'			=> $vars['page'],
+				'digest'		=> $digest
+			));
+			$ret = $ret.'<a href="'.$btn_url.'" title="'.$f_btn_text.'">'.$btn_text.'</a>';
 		}
 	}
 
@@ -224,12 +226,14 @@ function plugin_attachref_inline()
 </form>
 EOD;
 	    } else {
-			$f_btn_text = preg_replace('/<[^<>]+>/', '', $btn_text);
-			$f_page = rawurlencode($vars['page']);
-			$f_args = rawurlencode($s_args);
-			$ret = <<<EOD
-  $ret<a href="$script?plugin=attachref&amp;attachref_no=$attachref_no&amp;attachref_opt=$f_args&amp;refer=$f_page&amp;digest=$digest" title="$f_btn_text">$btn_text</a>
-EOD;
+			$f_btn_text = preg_replace('/<[^<>]+>/','',$btn_text);
+			$btn_url = get_cmd_uri('attachref', $_page,	'',	array(
+				'attachref_no'	=> $attachref_no,
+				'attachref_opt'	=> $s_args,
+				'refer'			=> $vars['page'],
+				'digest'		=> $digest
+			));
+			$ret = $ret.'<a class="pkwk-icon_linktext attach-upload" href="'.$btn_url.'" title="'.$f_btn_text.'">'.$btn_text.'</a>';
 	    }
 	}
 	return $ret;

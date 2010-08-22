@@ -1,17 +1,17 @@
 <?php
 /**
 @prefix : <http://purl.org/net/ns/doas#> .
-</skin/iconset/default.css> a :CSSstylesheet;
+</skin/iconset/default_iconset.css.php> a :CSSstylesheet;
  :title "Default Iconset";
  :shortdesc "PukiWiki Adv. Default Iconset Stylesheet";
- :created "2007-08-14";
- :release [:revision "2.0.1"; :created "2007-12-25"];
+ :created "2010-08-15";
+ :release [:revision "1.0.1"; :created "2010-08-16"];
  :author [:name "Logue"; :homepage <http://logue.be/> ];
  :license <http://www.gnu.org/licenses/gpl-2.0.html> .
 */
 
 // PukiWiki Advance default iconset CSS.
-// $Id: default_iconset.css.php,v 1.6.5 2010/08/15 20:57:00 Logue Exp $
+// $Id: default_iconset.css.php,v 1.0.1 2010/08/16 20:15:00 Logue Exp $
 // Copyright (C) 2010 PukiWiki Advance Developer Team
 
 // Send header
@@ -21,15 +21,13 @@ if(extension_loaded('zlib') &&
 	!ini_get('zlib.output_compression') && 
 	ini_get('output_handler') !== 'ob_gzhandler' && 
 	ini_get('output_handler') !== 'mb_output_handler'){
-	
-	// http://jp.php.net/manual/ja/function.ob-gzhandler.php
 	ob_start("ob_gzhandler");
 }else if(ini_get('zlib.output_compression') &&
 	preg_match('/\b(gzip|deflate)\b/i', $_SERVER['HTTP_ACCEPT_ENCODING'], $matches)) {
-	// Bug #29350 output_compression compresses everything _without header_ as loadable module
-	// http://bugs.php.net/bug.php?id=29350
 	header('Content-Encoding: ' . $matches[1]);
-	header('Vary: Accept-Encoding');
+	$vary = get_language_header_vary();
+	if (! empty($vary)) $vary .= ',';
+	header('Vary: '.$vary.' Accept-Encoding');
 }
 header('Cache-Control: must-revalidate');
 header('Expires: ' . gmdate ('D, d M Y H:i:s', time() + 60 * 60 * 24 * 30) . ' GMT');
@@ -80,6 +78,9 @@ flush();
 	margin:2px;
 }
 
+.pkwk-clear{
+	clear:both;
+}
 
 /* commands */
 .cmd-add		{ background-image:url("<?php echo $image_dir;?>add.png"); }
@@ -131,12 +132,18 @@ flush();
 .page-top		{ background-image:url("<?php echo $image_dir;?>home.png"); }
 .page-recent	{ background-image:url("<?php echo $image_dir;?>recent.png"); }
 .page-deleted	{ background-image:url("<?php echo $image_dir;?>delated.png"); }
-.page-interwiki	{ background-image:url("<?php echo $image_dir;?>interwiki.png"); }
+.page-interwiki	{ background-image:url("<?php echo $image_dir;?>interwikiname.png"); }
 .page-alias		{ background-image:url("<?php echo $image_dir;?>autoalias.png"); }
 .page-menu, .page-side, .page-navigation, .page-head
 				{ background-image:url("<?php echo $image_dir;?>page.png"); }	/* ! */
-
 /* symbol */
 .symbol-edit	{ background-image:url("<?php echo $image_dir;?>symbol/edit.png"); }
 .symbol-guiedit	{ background-image:url("<?php echo $image_dir;?>symbol/guiedit.png"); }
 .symbol-attach	{ background-image:url("<?php echo $image_dir;?>symbol/attach.png"); }
+
+/* Special Link */
+.link-interwiki	{ background-image:url("<?php echo $image_dir;?>interwikiname.png"); }
+.link-parmalink	{ background-image:url("<?php echo $image_dir;?>parmalink.png"); }
+.link-mail		{ background-image:url("<?php echo $image_dir;?>mail.png"); }
+
+<?php if(extension_loaded('zlib')){ob_end_flush();}?>

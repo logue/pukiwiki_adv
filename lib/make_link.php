@@ -327,7 +327,7 @@ EOD;
 		$page = isset($vars['page']) ? rawurlencode($vars['page']) : '';
 
 		// Footnote
-		$foot_explain[$id] = '<li><a id="notefoot_' . $id . '" href="' .
+		$foot_explain[$id] = '<li id="notefoot_' . $id . '"><a href="' .
 			$script . '#notetext_' . $id . '" class="note_super">*' .
 			$id . '</a>' . $note . '</li>';
 
@@ -440,7 +440,7 @@ EOD;
 		$rel = ( FALSE ? '': ' rel="nofollow"');
 //		return '<a href="' . $this->name . '" rel="nofollow">' . $this->alias . '</a>';
 		$target = (empty($this->redirect)) ? $this->name : $this->redirect.rawurlencode($this->name);
-		return open_uri_in_new_window('<a href="' . $target . '"' . $rel . '>' . $this->alias . '</a>', get_class($this));
+		return open_uri_in_new_window('<a href="' . $target . '"' . $rel . ' class="pkwk-icon_linktext link-interwiki">' . $this->alias . '</a>', get_class($this));
 	}
 }
 
@@ -480,7 +480,7 @@ EOD;
 	
 	function toString()
 	{
-		return '<a href="mailto:' . $this->name . '" rel="nofollow" class="mail-link">' . $this->alias . '</a>';
+		return '<a href="mailto:' . $this->name . '" rel="nofollow" class=".pkwk-icon_linktext link-mail">' . $this->alias . '</a>';
 	}
 }
 
@@ -553,7 +553,7 @@ EOD;
 //			$this->name . '" rel="nofollow">' . $this->alias . '</a>';
 		$target = (empty($this->redirect)) ? $this->url : $this->redirect.rawurlencode($this->url);
 		return open_uri_in_new_window('<a href="' . $target . $this->anchor .
-			'" title="' . $this->name . '"' . $rel . '>' . $this->alias . '</a>', get_class($this));
+			'" title="' . $this->name . '"' . $rel . ' class="pkwk-icon_linktext link-interwiki" >' . $this->alias . '</a>', get_class($this));
 	}
 }
 
@@ -740,7 +740,7 @@ class Link_autoalias extends Link
 			return;
 		}
 		$autoaliasfile = CACHE_DIR . PKWK_AUTOALIAS_REGEX_CACHE;
-		if(!file_exists($autoaliasfile)) touch($autoaliasfile);	// ファイル作成
+		pkwk_touch_file($autoaliasfile);	// ファイル作成
 		@list($auto, $auto_a, $forceignorepages) = file($autoaliasfile);
 		$this->auto = $auto;
 		$this->auto_a = $auto_a;
@@ -872,7 +872,7 @@ function make_tooltips($term,$glossary_page='')
 	$page = strip_bracket($term);
 	if ( is_page($page) ) {
 		$passage = get_pg_passage($page,FALSE);
-		return '<a href="' . get_page_uri($page) . '" class="linktip" title="' . $s_glossary . $passage . '">' . $term . '</a>';
+		return '<a href="' . get_page_uri($page) . '" class="tooltip" title="' . $page . $s_glossary. $passage . '">' . $term . '</a>';
 	} elseif ($ajax) {
 		return '<span class="tooltip">' . $term . '</span>';
 	} else {
