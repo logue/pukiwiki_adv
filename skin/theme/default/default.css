@@ -657,20 +657,23 @@ div#sidebar h2, div#sidebar h3, div#sidebar h4{
 }
 
 /* attach.inc.php, related.inc.php */
-div#attach span.plugin_title, div#related span.plugin_title{
-	display:block;
-	float:left;
+#attach dl, #related dl{
+	margin:10px;
 }
 
-div#attach ul, div#related ul{
-	padding:0px;
-	list-style-type:none;
+#attach dl dt, #related dl dt{
+	margin-top:0px;
+	float:left;
+	clear: left;
+	font-weight:normal;
+	vertical-align: top;
 }
 
-div#attach ul li, div#related ul li{
+#attach dl dd, #related dl dd{
+	margin-left:0.5em;
 	display:block;
 	float:left;
-	padding:0px 4px;
+	vertical-align: top;
 }
 
 table.attach_table{

@@ -2,7 +2,7 @@
 // xxxloggue skin script.
 // Copyright (c)2010 PukiWiki Advance Developers Team
 
-// $Id: xxxlogue.js,v 1.0.0 2010/08/19 16:27:00 Logue Exp$
+// $Id: default.js,v 1.0.0 2010/08/23 14:35:00 Logue Exp$
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,27 +19,29 @@
 
 var colorset = ['blue',		'green',		'orange'];
 var ui_theme = ['redmond',	'south-street',	'ui-lightness'];
+// var symbol = '&#x25fc;';
+var symbol = 'â– ';
 var default_set_num = 0;
 
 pukiwiki_skin.custom = {
-	// ƒXƒLƒ“ƒXƒNƒŠƒvƒg‚Ìinit‚ªÀs‚³‚ê‚é‘O‚ÉÀs‚³‚ê‚éŠÖ”
+	// ã‚¹ã‚­ãƒ³ã‚¹ã‚¯ãƒªãƒ—ãƒˆã®initãŒå®Ÿè¡Œã•ã‚Œã‚‹å‰ã«å®Ÿè¡Œã•ã‚Œã‚‹é–¢æ•°
 	before_init : function(){
-		// ƒNƒbƒL[‚ª’è‹`‚³‚ê‚Ä‚¢‚È‚¢‚Æ‚«‚ÍAblue‚Æ‚µAƒNƒbƒL[‚É•Û‘¶
+		// ã‚¯ãƒƒã‚­ãƒ¼ãŒå®šç¾©ã•ã‚Œã¦ã„ãªã„ã¨ãã¯ã€blueã¨ã—ã€ã‚¯ãƒƒã‚­ãƒ¼ã«ä¿å­˜
 		if (!$.cookie('pkwk-colorset')){ $.cookie('pkwk-colorset',default_set_num,{expires:30,path:'/'}); }
 		document.getElementById('coloring').href = SKIN_DIR+'theme/'+THEME_NAME+'/'+colorset[$.cookie('pkwk-colorset')]+'.css';
 		document.getElementById('ui-theme').href = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/themes/'+ui_theme[$.cookie('pkwk-colorset')]+'/jquery-ui.css';
 
-		// ƒJƒ‰[ƒZƒbƒg‚ÌƒŠƒ“ƒNƒ{ƒ^ƒ“‚ğ¶¬
+		// ã‚«ãƒ©ãƒ¼ã‚»ãƒƒãƒˆã®ãƒªãƒ³ã‚¯ãƒœã‚¿ãƒ³ã‚’ç”Ÿæˆ
 		var buffer = '';
-		$('#header').before('<p id="colorset" style="float:right;"></p>');
+		$('#header').before('<p id="colorset" style="float:right; font-size:12px;"></p>');
 		for (var n=0; n<colorset.length; n++){
-			buffer += '<span style="color:'+colorset[n]+';cursor:pointer;" id="colorset-'+n+'">&#x25fc;</span>&nbsp;';
+			buffer += '<span style="color:'+colorset[n]+';cursor:pointer;" id="colorset-'+n+'">'+symbol+'</span>&nbsp;';
 		}
-		$('#colorset').html(buffer);
+		$('#colorset').html('Color: '+buffer);
 	},
-	// ƒXƒLƒ“ƒXƒNƒŠƒvƒg‚Ìinit‚ªÀs‚³‚ê‚½‘O‚ÉÀs‚³‚ê‚éŠÖ”
+	// ã‚¹ã‚­ãƒ³ã‚¹ã‚¯ãƒªãƒ—ãƒˆã®initãŒå®Ÿè¡Œã•ã‚ŒãŸå‰ã«å®Ÿè¡Œã•ã‚Œã‚‹é–¢æ•°
 	init : function(){
-		// ƒJƒ‰[ƒZƒbƒg‚ÌƒŠƒ“ƒNƒ{ƒ^ƒ“‚ÉƒCƒxƒ“ƒgŠ„‚è“–‚Ä
+		// ã‚«ãƒ©ãƒ¼ã‚»ãƒƒãƒˆã®ãƒªãƒ³ã‚¯ãƒœã‚¿ãƒ³ã«ã‚¤ãƒ™ãƒ³ãƒˆå‰²ã‚Šå½“ã¦
 		$('#colorset span').click(function(){
 			var no = this.id.split('-')[1];
 			document.getElementById('coloring').href = SKIN_DIR+'theme/'+THEME_NAME+'/'+colorset[no]+'.css';
@@ -47,13 +49,13 @@ pukiwiki_skin.custom = {
 			$.cookie('pkwk-colorset',no,{expires:30,path:'/'});
 		});
 	},
-	// ƒXƒLƒ“ƒXƒNƒŠƒvƒg‚Ìunload‚ªÀs‚³‚ê‚é‘O‚ÉÀs‚³‚ê‚éŠÖ”
+	// ã‚¹ã‚­ãƒ³ã‚¹ã‚¯ãƒªãƒ—ãƒˆã®unloadãŒå®Ÿè¡Œã•ã‚Œã‚‹å‰ã«å®Ÿè¡Œã•ã‚Œã‚‹é–¢æ•°
 	before_unload : function(){
 	},
-	// ƒXƒLƒ“ƒXƒNƒŠƒvƒg‚Ìinit‚ªÀs‚³‚ê‚½Œã‚ÉÀs‚³‚ê‚éŠÖ”
+	// ã‚¹ã‚­ãƒ³ã‚¹ã‚¯ãƒªãƒ—ãƒˆã®initãŒå®Ÿè¡Œã•ã‚ŒãŸå¾Œã«å®Ÿè¡Œã•ã‚Œã‚‹é–¢æ•°
 	unload: function(){
 	},
-	// Superfishİ’è
+	// Superfishè¨­å®š
 	// http://users.tpg.com.au/j_birch/plugins/superfish/#options
 //	suckerfish : { }
 }

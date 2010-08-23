@@ -1,0 +1,45 @@
+#freeze
+*mime-type [#j2aa9440]
+
+この表は、attach.inc.phpがファイルのContent-typeを決定するときに使用します。ここで指定されないものは application/octet-stream として扱われます。
+
+|~Content-type|~拡張子|~説明|h
+|application/ms-access|mdb mde|MS-Access データベース|
+|application/ms-download|exe|Windows 実行ファイル|
+|application/ms-excel|xls|MS-Excel 文書ファイル|
+|application/ms-powerpoint|ppt pps|MS-パワーポイントプレゼンテーション|
+|application/ms-word|doc|MS-Word 文書ファイル|
+|application/pdf|pdf|pdf ファイル|
+|application/rtf|rtf|リッチテキスト形式|
+|application/xml|xml|XML|
+|application/vnd.rn-realmedia|rm|RealPlay ビデオファイル|
+|application/x-java-archive|jar|JAVA|
+|application/x-7z-compressed|7z|7zip 圧縮ファイル|
+|application/x-bz2-compressed|bz2|bz2 圧縮ファイル|
+|application/x-cab-compressed|cab|cab 圧縮ファイル|
+|application/x-compress|z tgz|compress 圧縮ファイル|
+|application/x-gzip|gz|g-zip 圧縮ファイル|
+|application/x-lzh-compressed|lzh|lzh 圧縮ファイル|
+|application/x-rar-compressed|rar|RAR 圧縮ファイル|
+|application/x-shockwave-flash|swf|フラッシュファイル|
+|application/x-stuffit|sit|stuffit 圧縮ファイル|
+|application/x-tar|tar|tar 書庫ファイル|
+|application/x-zip-compressed|zip|zip 圧縮ファイル|
+|audio/midi|mid midi|midi オーディオファイル|
+|audio/mp3|mp3|MP3 音声ファイル|
+|audio/vnd.rn-realaudio|ra ram|RealPlay 音声ファイル|
+|audio/wav|wav wave|wave 音声ファイル|
+|image/gif|gif|gif 画像|
+|image/jpeg|jpeg jpg|jpeg 画像|
+|image/png|png|png 画像|
+|image/svg-xml|svg|svg(Scalable Vector Graphics)|
+|text/plain|txt text dat jis euc sjis sjs asc utf utf8 csv|プレーンテキスト|
+|video/avi|avi|avi ビデオファイル|
+|video/mpg|mpg|mpg ビデオファイル|
+|video/quicktime|mov|QuickTimeファイル|
+|video/x-ms-wmv|wmv|Windows ビデオファイル|
+|video/mp4|mp4|MPEG4ビデオ|
+
+*セキュリティのため削除 [#r136abc1]
+以下は使用しません
+ ｜text/html｜html htm｜html文書｜

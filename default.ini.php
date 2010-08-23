@@ -1,7 +1,8 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: default.ini.php,v 1.25.13 2009/12/27 15:38:00 upk Exp $
+// $Id: default.ini.php,v 1.25.14 2010/08/23 15:38:00 upk Exp $
 // Copyright (C)
+//   2010      PukiWiki Advance Developer Team
 //   2005-2006,2009 PukiWiki Plus! Team
 //   2003-2005 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji

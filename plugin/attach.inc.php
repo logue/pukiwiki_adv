@@ -200,8 +200,8 @@ function attach_filelist()
 	if (! isset($obj->pages[$page])) {
 		return '';
 	} else {
-		return $_attach_messages['msg_file'] . ': ' .
-		$obj->toString($page, FALSE, TRUE) . "\n";
+		return '<dl>'."\n".'<dt>'.$_attach_messages['msg_file'].' :</dt>'."\n".
+		$obj->toString($page, TRUE, 'dl') . "</dl>\n";
 	}
 }
 
@@ -472,7 +472,7 @@ function attach_is_compress($type,$compress=1)
 			'zip'			=> 0, // zip
 			'x-7z-compressed'	=> 0, // 7zip
 			'x-lzh-compressed'	=> 0, // LZH
-			'-rar-compressed'	=> 0, //RAR
+			'x-rar-compressed'	=> 0, //RAR
 			'x-java-archive'	=> 0, // jar
 			'x-javascript'		=> 1, // js
 			'ogg'			=> 0, // ogg
@@ -1086,14 +1086,16 @@ class AttachFiles
 	}
 
 	// ファイル一覧を取得
-	function toString($flat,$hidepagename)
+	function toString($flat,$tag)
 	{
 		global $_title;
 
 		if (! check_readable($this->page, FALSE, FALSE)) {
 			return str_replace('$1', make_pagelink($this->page), $_title['cannotread']);
+		} else if ($tag == 'dl'){
+			return $this->to_ddtag();
 		} else if ($flat) {
-			return $this->to_flat();
+			return $this->to_flat($tag);
 		}
 
 		$ret = '';
@@ -1117,15 +1119,11 @@ class AttachFiles
 			}
 			$ret .= " </li>\n";
 		}
-		if ($hidepagename){
-			return "\n<ul>\n$ret</ul>\n";
-		}else{
-			return make_pagelink($this->page) . "\n<ul>\n$ret</ul>\n";
-		}
+		return make_pagelink($this->page) . "\n<ul>\n$ret</ul>\n";
 	}
 
 	// ファイル一覧を取得(inline)
-	function to_flat()
+	function to_flat($tag)
 	{
 		$ret = '';
 		$files = array();
@@ -1137,6 +1135,24 @@ class AttachFiles
 		uasort($files, array('AttachFile', 'datecomp'));
 		foreach (array_keys($files) as $file) {
 			$ret .= $files[$file]->toString(TRUE, TRUE) . ' ';
+		}
+
+		return $ret;
+	}
+	
+	// dlタグで一覧
+	function to_ddtag($tag)
+	{
+		$ret = '';
+		$files = array();
+		foreach (array_keys($this->files) as $file) {
+			if (isset($this->files[$file][0])) {
+				$files[$file] = & $this->files[$file][0];
+			}
+		}
+		uasort($files, array('AttachFile', 'datecomp'));
+		foreach (array_keys($files) as $file) {
+			$ret .= '<dd>'.str_replace("\n",'',$files[$file]->toString(TRUE, TRUE)) . '</dd>'."\n";
 		}
 
 		return $ret;
@@ -1218,13 +1234,13 @@ class AttachPages
 		closedir($dir);
 	}
 
-	function toString($page = '', $flat = FALSE, $hidepagename = FALSE)
+	function toString($page = '', $flat = FALSE, $tag = '')
 	{
 		if ($page != '') {
 			if (! isset($this->pages[$page])) {
 				return '';
 			} else {
-				return $this->pages[$page]->toString($flat,$hidepagename);
+				return $this->pages[$page]->toString($flat,$tag);
 			}
 		}
 		$ret = '';

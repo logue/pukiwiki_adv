@@ -440,7 +440,7 @@ EOD;
 		$rel = ( FALSE ? '': ' rel="nofollow"');
 //		return '<a href="' . $this->name . '" rel="nofollow">' . $this->alias . '</a>';
 		$target = (empty($this->redirect)) ? $this->name : $this->redirect.rawurlencode($this->name);
-		return open_uri_in_new_window('<a href="' . $target . '"' . $rel . ' class="pkwk-icon_linktext link-interwiki">' . $this->alias . '</a>', get_class($this));
+		return open_uri_in_new_window('<a href="' . $target . '"' . $rel . '>' . $this->alias . '</a>', get_class($this));
 	}
 }
 
@@ -553,7 +553,7 @@ EOD;
 //			$this->name . '" rel="nofollow">' . $this->alias . '</a>';
 		$target = (empty($this->redirect)) ? $this->url : $this->redirect.rawurlencode($this->url);
 		return open_uri_in_new_window('<a href="' . $target . $this->anchor .
-			'" title="' . $this->name . '"' . $rel . ' class="pkwk-icon_linktext link-interwiki" >' . $this->alias . '</a>', get_class($this));
+			'" title="' . $this->name . '"' . $rel . '>' . $this->alias . '</a>', get_class($this));
 	}
 }
 

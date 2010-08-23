@@ -50,9 +50,10 @@ if ($title != $defaultpage) {
 }
 
 // Output HTML DTD, <html>, and receive content-type
-(isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_output_dtd();
+$meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_output_dtd();
 ?>
 	<head>
+		<?php echo $meta_content_type; ?>
 		<?php echo $pkwk_meta; ?>
 		<link rel="shortcut icon" href="<?php echo ROOT_URI ?>favicon.ico" type="image/x-icon" />
 		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/themes/<?php echo $ui_theme; ?>/jquery-ui.css" type="text/css" id="ui-theme" />
@@ -82,16 +83,24 @@ if ($title != $defaultpage) {
 			<table class="main">
 				<tr>
 <?php if (!empty($body_menu)) { ?>
-					<td class="ltable"><div id="menubar"><?php echo $body_menu; ?></div></td>
+					<td class="ltable">
+						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="menubar">'."\n" : '<div id="menubar">'; ?>
+						<?php echo $body_menu; ?>
+						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</section>'."\n" : '</div>'."\n"; ?>
+					</td>
 <?php } ?>
 					<td class="ctable">
 						<?php echo ($is_page and exist_plugin_convert('topicpath')) ?do_plugin_convert('topicpath') : ''; ?>
-						<div id="body">
+						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="body">'."\n" : '<div id="body">'."\n"; ?>
 							<?php echo $body ?>
-						</div>
+						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</section>'."\n" : '</div>'."\n"; ?>
 					</td>
 <?php if (!empty($body_side)) { ?>
-					<td class="rtable"><div id="sidebar"><?php echo $body_side; ?></div></td>
+					<td class="rtable">
+						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="sidebar">' : '<div id="sidebar">'; ?>
+							<?php echo $body_side; ?>
+						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</section>'."\n" : '</div>'."\n"; ?>
+					</td>
 <?php } ?>
 				</tr>
 			</table>
@@ -106,7 +115,7 @@ if (!empty($footarea)) {
 	unset($footarea);
 } else {
 	echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','reload,|,new,newsub,edit,guiedit,freeze,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,|,help,|,mixirss').'<div class="pkwk-clear"></div>' : '';
-	echo ($related) ?'<div id="related"><span class="plugin_title">Link:</span>'.$related.'</div><div class="pkwk-clear"></div>'."\n" : '';
+	echo ($related) ?'<div id="related">'.$related.'</div>'."\n" : '';
 ?>
 		<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<footer id="footer">'."\n" : '<div id="footer">'."\n"; ?>
 			<div id="qr_code">
@@ -124,7 +133,7 @@ if (!empty($footarea)) {
 				HTML convert time: <?php echo showtaketime() ?> sec. 
 			</div>
 			<div id="banner_box">
-				<a href="http://pukiplus.sf.net/"><img src="<?php echo IMAGE_URI; ?>pukiwiki_adv.banner.png" width="88" height="31" alt="PukiWiki Advance" title="PukiWiki Advance" /></a>
+				<a href="http://pukiplus.logue.be/"><img src="<?php echo IMAGE_URI; ?>pukiwiki_adv.banner.png" width="88" height="31" alt="PukiWiki Advance" title="PukiWiki Advance" /></a>
 <?php	if (! isset($pkwk_dtd) || $pkwk_dtd == PKWK_DTD_XHTML_1_1) { ?>
 				<a href="http://validator.w3.org/check/referer"><img src="http://www.w3.org/Icons/valid-xhtml11-blue" width="88" height="31" alt="Valid XHTML 1.1" title="Valid XHTML 1.1" /></a>
 <?php	} else if ($pkwk_dtd >= PKWK_DTD_XHTML_1_0_FRAMESET) {  ?>

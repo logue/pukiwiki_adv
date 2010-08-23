@@ -40,64 +40,6 @@ function plugin_sh_init(){
 
 function plugin_sh_convert(){
 	global $head_tags, $foot_tags, $sh_count, $langs;
-
-	$params = array(
-		'number'      => false,  // 行番号を表示する
-		'nonumber'    => false,  // 行番号を表示しない
-		'outline'     => false,  // アウトライン モード
-		'nooutline'   => false,  // アウトライン 無効
-//		'comment'     => false,  // コメント開閉する
-//		'nocomment'   => false,  // コメント開閉しない
-		'menu'        => false,  // メニューを表示する
-		'nomenu'      => false,  // メニューを表示しない
-//		'icon'        => false,  // アイコンを表示する
-//		'noicon'      => false,  // アイコンを表示しない
-		'link'        => false,  // オートリンク 有効
-		'nolink'      => false,  // オートリンク 無効
-		);
-	
-	
-	$num_of_arg = func_num_args();
-	$args = func_get_args();
-	if ($num_of_arg < 1) {
-		return PLUGIN_SH_USAGE;
-	}
-
-	$arg = $args[$num_of_arg-1];
-	if (strlen($arg) == 0) {
-		return PLUGIN_SH_USAGE;
-	}
-
-	//  @ 引数取り
-	for ($i = 1; $i < $argc; $i++) {
-		switch($argc){
-			case 'number':
-				$prop = 'gutter: true;';
-				break;
-			case 'nonumber':
-				$prop = 'gutter: false;';
-				break;
-			case 'outline':
-				$prop = 'collapse:true;';
-				break;
-			case 'nooutline':
-				$prop = 'collapse:false;';
-				break;
-			case 'menu':
-				$props = 'toolbar:true;';
-				break;
-			case 'nomenu':
-				$props = 'toolbar:false;';
-				break;
-			case 'link':
-				$props = 'auto-links:true;';
-				break;
-			case 'nolink':
-				$props = 'auto-links:false;';
-				break;
-			}
-		$ext[] = $props;
-	}
 	
 	if(!$sh_count){
 		$head_tags[] = '<script type="text/javascript" src="'.PLUGIN_SH_PATH.'scripts/shCore.js"></script>';
@@ -246,8 +188,53 @@ HTML;
 	} else {
 		$lang = 'Plain'; // default
 	}
+	
+	$params = array(
+		'number'      => false,  // 行番号を表示する
+		'nonumber'    => false,  // 行番号を表示しない
+		'outline'     => false,  // アウトライン モード
+		'nooutline'   => false,  // アウトライン 無効
+//		'comment'     => false,  // コメント開閉する
+//		'nocomment'   => false,  // コメント開閉しない
+		'menu'        => false,  // メニューを表示する
+		'nomenu'      => false,  // メニューを表示しない
+//		'icon'        => false,  // アイコンを表示する
+//		'noicon'      => false,  // アイコンを表示しない
+		'link'        => false,  // オートリンク 有効
+		'nolink'      => false,  // オートリンク 無効
+		);
+	
+	//  @ 引数取り
+	for ($i = 1; $i < $num_of_arg-1; $i++) {
+		switch($argc){
+			case 'number':
+				$ret[] = 'gutter: true;';
+				break;
+			case 'nonumber':
+				$ret[] = 'gutter: false;';
+				break;
+			case 'outline':
+				$ret[] = 'collapse:true;';
+				break;
+			case 'nooutline':
+				$ret[] = 'collapse:false;';
+				break;
+			case 'menu':
+				$ret = 'toolbar:true;';
+				break;
+			case 'nomenu':
+				$ret[] = 'toolbar:false;';
+				break;
+			case 'link':
+				$ret[] = 'auto-links:true;';
+				break;
+			case 'nolink':
+				$ret[] = 'auto-links:false;';
+				break;
+		}
+	}
 
-	return '<pre class="brush: '.strtolower($lang).' '.join(' ',$ret).'">'."\n".htmlspecialchars($arg)."\n".'</pre>'."\n";
+	return '<pre class="brush: '.strtolower($lang).((is_array($ret)) ? join(' ',$ret):'') .'">'."\n".htmlspecialchars($arg)."\n".'</pre>'."\n";
 //	return '<pre class="sh '.$lang.'">'."\n".htmlspecialchars($arg)."\n".'</pre>'."\n";
 }
 

@@ -435,13 +435,13 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		var self = this;
 		$(document)
 		.ajaxSend(function(e, xhr, settings) {
-			self.loadingScreen.dialog("option", "title", 'Send');
-			if(DEBUG){ console.info('load: ',settings.url); }
+			self.loadingScreen.dialog("option", "title", 'Loading...');
+		//	if(DEBUG && console){ console.info('load: ',settings.url); }
 			$('body').css('cursor','wait');
 			self.loadingScreen.dialog('open');
 		})
 		.ajaxStart(function(){
-			self.loadingScreen.dialog("option", "title", 'Loading...');
+			self.loadingScreen.dialog("option", "title", 'Start');
 		})
 		.ajaxSuccess(function(){
 			self.loadingScreen.dialog("option", "title", 'Success');
@@ -449,8 +449,11 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		.ajaxComplete(function() {
 			self.loadingScreen.dialog("option", "title", 'Complete');
 		})
+		.ajaxError(function(){
+			self.loadingScreen.dialog("option", "title", 'Error');
+		})
 		.ajaxStop(function(){
-			self.loadingScreen.dialog("option", "title", 'Finish');
+			self.loadingScreen.dialog("option", "title", 'Ready');
 			self.loadingScreen.dialog('close');
 			$('body').css('cursor','auto');
 		});
@@ -1024,7 +1027,13 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		}
 	},
 	/* swfuploderのフォームに書き換え */
-	set_uploader: function(){
+	set_uploader: function(prefix){
+		if (prefix){
+			prefix = prefix + ' ';
+		}else{
+			prefix = '';
+		}
+
 		var pass_form;
 		if ($("input[name=pass]").length !== 0){
 			pass_form = '<label for="pass">Password:</label><input type="password" name="pass" id="pass" size="8" value="" /><br />';
@@ -1032,20 +1041,21 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 
 		// swfuploadがスクリプトに渡す値
 		var params = {
-			encode_hint:	$('input[name=encode_hint]').val(),	// エンコード判別用
-			max_file_size:	$('input[name=max_file_size]').val(),// 上限容量
-			pcmd:			$('input[name=pcmd]').val(),		// プラグインコマンド（通常post）
-			plugin:			$('input[name=plugin]').val(),		// プラグイン（通常attach）
-			refer:			$('input[name=refer]').val(),		// 添付先のページ
+			encode_hint:	$(prefix+'input[name=encode_hint]').val(),	// エンコード判別用
+			max_file_size:	$(prefix+'input[name=max_file_size]').val(),// 上限容量
+			pcmd:			$(prefix+'input[name=pcmd]').val(),		// プラグインコマンド（通常post）
+			plugin:			$(prefix+'input[name=plugin]').val(),		// プラグイン（通常attach）
+			refer:			$(prefix+'input[name=refer]').val(),		// 添付先のページ
 			ajax:			'json'	// 送信完了時にページをjson化したデーターを読み込む。（スキンの処理を確認せよ）
 		};
+
 		if ($("input[name=pass]").length !== 0){ params.pass = $("input[name=pass]").val(); }	// パスワード
 		
 		if (params.pcmd == 'attachref'){
 			params = {
-				attachref_no:	$('input[name=attachref_no]').val(),
-				attachref_opt:	$('input[name=attachref_opt]').val(),
-				digest:			$('input[name=digest]').val()
+				attachref_no:	$(prefix+'input[name=attachref_no]').val(),
+				attachref_opt:	$(prefix+'input[name=attachref_opt]').val(),
+				digest:			$(prefix+'input[name=digest]').val()
 			};
 		}
 		
@@ -1092,7 +1102,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			file_queue_limit : 5,
 			
 			// デバッグ
-			debug: false,
+			debug: DEBUG,
 
 			// 添付ボタン設定
 			button_image_url: IMAGE_DIR+'ajax/swfupload/wdp_buttons_upload_114x29.png',
@@ -1110,7 +1120,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 				'	File: <em>'+file.name+'</em> ('+Math.round(file.size/1024)+' KB) <span class="progressvalue" ></span>',
 				'	<div class="progressbar"></div>',
 				'	<p class="status"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>Pending</p>',
-				'	<button class="cancel" >Close</button>',
+				'	<button class="cancel">Close</button>',
 				'</li>'
 			].join("\n");
 	
