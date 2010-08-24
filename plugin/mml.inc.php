@@ -3,7 +3,7 @@
  :prefix <http://purl.org/net/ns/doas#> .
  :about "<mml.inc.php>", a: ":PHPScript",
  :shortdesc "JSMML Player for PukiWiki";
- :created "2008-07-28", release: {revision: "1.2.0", created: "2010-06-18"},
+ :created "2008-07-28", release: {revision: "1.2.3", created: "2010-08-24"},
  :author [:name "Logue"; :homepage <http://logue.be/> ];
  :license <http://www.gnu.org/licenses/gpl-3.0.html>;
 */
@@ -68,22 +68,26 @@ function plugin_mml_convert(){
 	}
 
 	$encorded_data = htmlspecialchars($data, ENT_QUOTES, SOURCE_ENCODING);
-
+	
+	if (exist_plugin('sh')){
+		$ret = do_plugin_convert('sh','plain,nolink,class=mml-source,'.$data);
+	}else{
+		$ret = '<pre class="mml-source">'.htmlspecialchars($data, ENT_QUOTES, SOURCE_ENCODING).'</pre>';
+	}
 	if($title){
 		$html = <<<HTML
 <fieldset>
 	<legend class="mml-title">$title</legend>
-	<pre class="mml-source blush:plain">$encorded_data</pre>
+	$ret
 </fieldset>
 HTML;
 	}else{
-		$html = <<<HTML
-<pre class="mml-source blush:plain">$encorded_data</pre>
-HTML;
+		$html = $ret;
 	}
 	
 	if ($mml_count == 0){
 		global $head_tags, $foot_tags;
+
 		$head_tags[] = <<< HTML
 <style type="text/css">/*<![CDATA[*/
 .mml-player button{

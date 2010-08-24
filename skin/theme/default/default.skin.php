@@ -71,10 +71,12 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 		<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<header id="header">'."\n" : '<div id="header">'."\n"; ?>
 <?php if (exist_plugin_convert('headarea') && do_plugin_convert('headarea') != '') { ?>
 			<h1 style="display:none;"><?php echo(($newtitle!='' && $is_read) ? $newtitle: $page) ?></h1>
+			<p id="parmalink"><a href="<?php echo $link['reload'] ?>"><span class="small"><?php echo $_LINK['reload'] ?></a></p>
 			<?php echo do_plugin_convert('headarea') ?>
 <?php } else { ?>
 			<a href="<?php echo $modifierlink ?>"><img id="logo" src="<?php echo $site_titleimage ?>" width="<?php echo $titleimagesize_w ?>" height="<?php echo $titleimagesize_h ?>" alt="<?php echo $titleimage_alt ?>" title="<?php echo $titleimage_alt ?>" /></a>
 			<h1 class="title"><?php echo(($newtitle!='' && $is_read)?$newtitle:$page) ?></h1>
+			<div id="parmalink" class="small"><a href="<?php echo $link['reload'] ?>"><?php echo $_LINK['reload'] ?></a></div>
 <?php } ?>
 		<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</header>'."\n" : '</div>'."\n"; ?>
 		<?php echo (!empty($lastmodified)) ? '<div id="lastmodified">Last-modified: '.$lastmodified.'</div>'."\n" : '' ?>

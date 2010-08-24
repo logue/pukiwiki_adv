@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: sh.inc.php,v 0.6.2 2010/07/30 17:02:00 Logue Exp $
+// $Id: sh.inc.php,v 0.6.3 2010/08/24 17:02:00 Logue Exp $
 // SyntaxHighlighter for PukiWiki
 //
 // Copyright (C)
@@ -45,14 +45,6 @@ function plugin_sh_convert(){
 		$head_tags[] = '<script type="text/javascript" src="'.PLUGIN_SH_PATH.'scripts/shCore.js"></script>';
 		$head_tags[] = '<link type="text/css" rel="stylesheet" href="'.PLUGIN_SH_PATH.'styles/shCore.css" />';
 		$head_tags[] = '<link type="text/css" rel="stylesheet" href="'.PLUGIN_SH_PATH.'styles/shTheme'.PLUGIN_SH_THEME.'.css" id="shTheme" />';
-/*
-		$foot_tags[] = <<<HTML
-<script type="text/javascript">
-//<![CDATA[
-SyntaxHighlighter.all();
-//]]></script>
-HTML;
-*/
 		$langs = array(
 			'AS3'			=> false,
 			'Bash'			=> false,
@@ -94,8 +86,16 @@ HTML;
 		return PLUGIN_SH_USAGE;
 	}
 
-	if ($num_of_arg != 1) {
-		$lang = htmlspecialchars(strtolower($args[0]));
+	if ($num_of_arg == 1) {
+		$lang = 'Plain'; // default
+		if ($langs[$lang] == false){
+			$langs[$lang] = true;
+			$head_tags[] = '<script type="text/javascript" src="'.PLUGIN_SH_PATH.'scripts/shBrush'.$lang.'.js"></script>';
+		}
+		return '<pre class="brush: Plain">'."\n".htmlspecialchars($arg)."\n".'</pre>'."\n";
+	}else{
+		$lang = htmlspecialchars(strtolower(array_shift($args)));
+		$text = htmlspecialchars(array_pop($args));
 		switch($lang){
 			case 'actionscript':
 			case 'as':
@@ -185,57 +185,63 @@ HTML;
 			$langs[$lang] = true;
 			$head_tags[] = '<script type="text/javascript" src="'.PLUGIN_SH_PATH.'scripts/shBrush'.$lang.'.js"></script>';
 		}
-	} else {
-		$lang = 'Plain'; // default
-	}
-	
-	$params = array(
-		'number'      => false,  // 行番号を表示する
-		'nonumber'    => false,  // 行番号を表示しない
-		'outline'     => false,  // アウトライン モード
-		'nooutline'   => false,  // アウトライン 無効
-//		'comment'     => false,  // コメント開閉する
-//		'nocomment'   => false,  // コメント開閉しない
-		'menu'        => false,  // メニューを表示する
-		'nomenu'      => false,  // メニューを表示しない
-//		'icon'        => false,  // アイコンを表示する
-//		'noicon'      => false,  // アイコンを表示しない
-		'link'        => false,  // オートリンク 有効
-		'nolink'      => false,  // オートリンク 無効
+/*
+		$params = array(
+			'number'		=> false,	// 行番号を表示する
+			'nonumber'		=> false,	// 行番号を表示しない
+			'outline'		=> false,	// アウトライン モード
+			'nooutline'		=> false,	// アウトライン 無効
+	//		'comment'		=> false,	// コメント開閉する
+	//		'nocomment'		=> false,	// コメント開閉しない
+			'menu'			=> false,	// メニューを表示する
+			'nomenu'		=> false,	// メニューを表示しない
+	//		'icon'			=> false,	// アイコンを表示する
+	//		'noicon'		=> false,	// アイコンを表示しない
+			'link'			=> false,	// オートリンク 有効
+			'nolink'		=> false,	// オートリンク 無効
 		);
-	
-	//  @ 引数取り
-	for ($i = 1; $i < $num_of_arg-1; $i++) {
-		switch($argc){
-			case 'number':
-				$ret[] = 'gutter: true;';
-				break;
-			case 'nonumber':
-				$ret[] = 'gutter: false;';
-				break;
-			case 'outline':
-				$ret[] = 'collapse:true;';
-				break;
-			case 'nooutline':
-				$ret[] = 'collapse:false;';
-				break;
-			case 'menu':
-				$ret = 'toolbar:true;';
-				break;
-			case 'nomenu':
-				$ret[] = 'toolbar:false;';
-				break;
-			case 'link':
-				$ret[] = 'auto-links:true;';
-				break;
-			case 'nolink':
-				$ret[] = 'auto-links:false;';
-				break;
-		}
-	}
+*/
 
-	return '<pre class="brush: '.strtolower($lang).((is_array($ret)) ? join(' ',$ret):'') .'">'."\n".htmlspecialchars($arg)."\n".'</pre>'."\n";
-//	return '<pre class="sh '.$lang.'">'."\n".htmlspecialchars($arg)."\n".'</pre>'."\n";
+		$ret = array();
+		//  @ 引数取り
+		for ($i = 0; $i <= count($args); $i++) {
+			$cond = htmlspecialchars($args[$i]);
+			switch($cond){
+				case 'number':
+					$ret[] = 'gutter: true;';
+					break;
+				case 'nonumber':
+					$ret[] = 'gutter: false;';
+					break;
+				case 'outline':
+					$ret[] = 'collapse:true;';
+					break;
+				case 'nooutline':
+					$ret[] = 'collapse:false;';
+					break;
+				case 'menu':
+					$ret[] = 'toolbar:true;';
+					break;
+				case 'nomenu':
+					$ret[] = 'toolbar:false;';
+					break;
+				case 'link':
+					$ret[] = 'auto-links:true;';
+					break;
+				case 'nolink':
+					$ret[] = 'auto-links:false;';
+					break;
+				default : 
+					if(preg_match('/class=\"?([^\"]*)\"?/',$cond,$match)){	// class属性のオーバーライド
+						$ret[] = $match[1];
+					}
+					break;
+			}
+			
+		}
+		$option =  ' '.join(' ',$ret);
+		return '<pre class="brush: '.strtolower($lang).$option .'">'."\n".$text."\n".'</pre>'."\n";
+	}
 }
 
 ?>

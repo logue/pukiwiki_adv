@@ -480,7 +480,7 @@ EOD;
 	
 	function toString()
 	{
-		return '<a href="mailto:' . $this->name . '" rel="nofollow" class=".pkwk-icon_linktext link-mail">' . $this->alias . '</a>';
+		return '<a href="mailto:' . $this->name . '" rel="nofollow" class="pkwk-icon_linktext link-mail">' . $this->alias . '</a>';
 	}
 }
 

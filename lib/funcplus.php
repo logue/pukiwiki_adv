@@ -1,8 +1,8 @@
 <?php
 // PukiPlus.
-// $Id: funcplus.php,v 0.1.60 2010/06/28 23:25:00 Logue Exp $
+// $Id: funcplus.php,v 0.1.62 2010/08/23 23:42:00 Logue Exp $
 // Copyright (C)
-//   2010 PukiPlus Team
+//   2010      PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team
 // License: GPL v2 or (at your option) any later version
 //

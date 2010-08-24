@@ -1,8 +1,8 @@
 <?php
 // PukPukiPlus.
-// $Id: attach.inc.php,v 1.87.41 2010/08/16 11:17:00 Logue Exp $
+// $Id: attach.inc.php,v 1.87.43 2010/08/24 23:57:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiWiki Advance Developer Team
+//   2010      PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team
 //   2003-2007 PukiWiki Developers Team
 //   2002-2003 PANDA <panda@arino.jp> http://home.arino.jp/
@@ -40,7 +40,7 @@ defined('PLUGIN_ATTACH_FILE_MODE')		or define('PLUGIN_ATTACH_FILE_MODE', 0644);
 // mime-typeを記述したページ
 define('PLUGIN_ATTACH_CONFIG_PAGE_MIME', 'plugin/attach/mime-type');
 
-defined('PLUGIN_ATTACH_UNKNOWN_COMPRESS')	or define('PLUGIN_ATTACH_UNKNOWN_COMPRESS', 1);			// 1(compress) or 0(raw)
+defined('PLUGIN_ATTACH_UNKNOWN_COMPRESS')	or define('PLUGIN_ATTACH_UNKNOWN_COMPRESS', 0);			// 1(compress) or 0(raw)
 defined('PLUGIN_ATTACH_COMPRESS_TYPE')		or define('PLUGIN_ATTACH_COMPRESS_TYPE', 'TGZ');		// TGZ, GZ or ZIP
 
 function plugin_attach_init()
@@ -1095,7 +1095,7 @@ class AttachFiles
 		} else if ($tag == 'dl'){
 			return $this->to_ddtag();
 		} else if ($flat) {
-			return $this->to_flat($tag);
+			return $this->to_flat();
 		}
 
 		$ret = '';
@@ -1123,7 +1123,7 @@ class AttachFiles
 	}
 
 	// ファイル一覧を取得(inline)
-	function to_flat($tag)
+	function to_flat()
 	{
 		$ret = '';
 		$files = array();
@@ -1141,7 +1141,7 @@ class AttachFiles
 	}
 	
 	// dlタグで一覧
-	function to_ddtag($tag)
+	function to_ddtag()
 	{
 		$ret = '';
 		$files = array();

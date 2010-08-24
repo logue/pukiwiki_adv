@@ -111,7 +111,7 @@ dd{
 	margin-left:1em;
 }
 
-pre{
+pre, .pre{
 	padding:.5em;
 	margin-left:1em;
 	margin-right:2em;
@@ -119,6 +119,10 @@ pre{
 	line-break:strict;
 	word-break:break-all;
 	word-wrap:break-word;
+	white-space: pre-wrap;		/* css-3 */
+	white-space: -moz-pre-wrap;	/* Mozilla, since 1999 */
+	white-space: -pre-wrap;		/* Opera 4-6 */
+	white-space: -o-pre-wrap;	/* Opera 7 */
 }
 
 img{
@@ -327,18 +331,6 @@ div#note ul{
 	list-style-type:none;
 }
 
-div#attach
-{
-	clear:both;
-	padding:0px;
-	margin:0px 1%;
-	font-size: 78%;
-}
-div#attach img
-{
-	vertical-align: middle;
-}
-
 div#toolbar{
 	clear:both;
 	padding:0px;
@@ -357,13 +349,6 @@ div#lastmodified
 	padding:0px;
 	margin:0px 1%;
 	text-align:right;
-}
-
-div#related
-{
-	font-size:80%;
-	padding:0px;
-	margin:16px 1% 0px 1%;
 }
 
 div#footer
@@ -393,12 +378,13 @@ div#navigator{
 	font-size:84%;
 }
 
+
+/* PukiWiki Plus! Skin */
 td.menubar, td.sidebar{
 	width:160px;
 	vertical-align:top;
 }
 
-/* PukiWiki Plus! Skin */
 td.ltable{
 	width:160px;
 	vertical-align:top;
@@ -577,6 +563,26 @@ div#sigunature{
 	width:98%;
 }
 
+#attach dl, #related dl{
+	margin:16px 1% 0px 1%;
+}
+
+#attach dl dt, #related dl dt{
+	margin-left:0.5em;
+	margin-top:0px;
+	float:left;
+	clear: left;
+	font-weight:normal;
+	vertical-align: top;
+}
+
+#attach dl dd, #related dl dd{
+	margin-left:0.5em;
+	display:block;
+	float:left;
+	vertical-align: top;
+}
+
 /** MenuBar ***************************************************************************************/
 
 div#menubar{
@@ -656,25 +662,20 @@ div#sidebar h2, div#sidebar h3, div#sidebar h4{
 	vertical-align:super;
 }
 
-/* attach.inc.php, related.inc.php */
-#attach dl, #related dl{
-	margin:10px;
+#attach{
+	clear:both;
+	padding:0px;
+	margin:0px 1%;
+	font-size: 78%;
 }
 
-#attach dl dt, #related dl dt{
-	margin-top:0px;
-	float:left;
-	clear: left;
-	font-weight:normal;
-	vertical-align: top;
+#related{
+	font-size:80%;
+	padding:0px;
 }
 
-#attach dl dd, #related dl dd{
-	margin-left:0.5em;
-	display:block;
-	float:left;
-	vertical-align: top;
-}
+/* attach.inc.php */
+
 
 table.attach_table{
 	padding:0px;

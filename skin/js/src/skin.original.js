@@ -23,14 +23,13 @@ var pukiwiki_skin = {
 		"@prefix": "<http://purl.org/net/ns/doas#>",
 		"@about": "<skin.js>", a: ":JavaScript",
 		 title: "Pukiwiki skin script for jQuery",
-		 created: "2008-11-25", release: {revision: "2.2.18", created: "2010-07-30"},
+		 created: "2008-11-25", release: {revision: "2.2.19", created: "2010-08-24"},
 		 author: {name: "Logue", homepage: "<http://logue.be/>"},
 		 license: "<http://www.gnu.org/licenses/gpl-2.0.html>"
 	},
 	init : function(){
 		var self = this;
 		var protocol = (document.location.protocol == 'https:') ? 'https:' : 'http:';
-		
 		$('input, button, select, textarea').attr('disabled','disabled');	// フォームをロック
 
 		// metaタグのGenereterから、Plusかそうでないかを判別
@@ -82,6 +81,7 @@ var pukiwiki_skin = {
 		this.glossaly();
 
 		/* Table Sorter（テーブル自動ソート） */
+		this.tablesorter.counter = 0;	// ページングのDOMのIDで使う。非同期通信した結果でもtablesorterを使うのでグローバル関数に・・・
 		this.tablesorter();
 
 /*
@@ -104,13 +104,10 @@ var pukiwiki_skin = {
 			$('input','button','select','textarea').attr('disabled','disabled');
 			$('body').css('cursor','wait');
 		});
-		
-		// フォームロックを解除
-		$('input, button, select, textarea').removeAttr('disabled');
 
 		// IE PNG Fix
 		if (!$.support.boxModel) {
-			require(SKIN_DIR+'js/iepngfix/iepngfix_tilebg.js');
+			loadScript(SKIN_DIR+'js/iepngfix/iepngfix_tilebg.js');
 			$('img[src$=png], .pkwk-icon, .pkwk-symbol, .pkwk-icon_linktext').css({
 				'behavior': 'url('+SKIN_DIR+'js/iepngfix/iepngfix.htc)'
 			});
@@ -127,6 +124,7 @@ var pukiwiki_skin = {
 				effect : "fadeIn"
 			});
 		}
+		
 		/* バナーボックス */
 		$("#banner_box img").fadeTo(200,0.3);
 		$("#banner_box img").hover(
@@ -141,8 +139,12 @@ var pukiwiki_skin = {
 		/* SyntaxHighlighter */
 		this.sh();
 		
+		// フォームロックを解除
+		$('input, button, select, textarea').removeAttr('disabled');
+		
 		// ボタンをjQuery UIのものに
 		$("button, input[type=submit], input[type=reset], input[type=button]").button();
+		$('input, select, textarea').addClass('ui-widget-content');
 	},
 	custom : {},	// 消さないこと。（スキン用カスタムネームスペース）
 	/* ページを閉じたとき */
@@ -340,7 +342,8 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 
 				if(typeof(callback) == 'function'){ callback(); }
 
-				$(prefix+"button, input[type=submit], input[type=reset], input[type=button]").button();
+				$(prefix+'button, '+prefix+'input[type=submit], '+prefix+'input[type=reset], '+prefix+'input[type=button]').button();
+				$(prefix+'input, '+prefix+'select, '+prefix+'textarea').addClass('ui-widget-content');
 
 				// オーバーレイでウィンドウを閉じる
 				var parent = this;
@@ -672,45 +675,85 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		});
 	},
 	/* テーブル自動ソート */
-	tablesorter:function(){
-		$('.body table').addClass("tablesorter");
-/*
-		var pager_widget = [
-			'<div class="table_pager_widget">',
-			'	<ul class="ui-widget ui-helper-clearfix">',
-			'		<li class="first ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthickstop-1-w"></span></li>',
-			'		<li class="prev ui-state-default ui-corner-all"><span class="ui-icon ui-icon ui-icon-arrowthick-1-w"></span></li>',
-			'		<li><input type="text" class="pagedisplay"/></li>',
-			'		<li class="next ui-state-default ui-corner-all"><span class="ui-icon ui-icon ui-icon-arrowthick-1-e"></span></li>',
-			'		<li class="last ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthickstop-1-e"></span></li>',
-			'		<li><select class="pagesize">',
-			'			<option selected="selected"  value="10">10</option>',
-			'			<option value="20">20</option>',
-			'			<option value="30">30</option>',
-			'			<option  value="40">40</option>',
-			'		</select></li>',
-			'	</ul>',
-			'</ul>'
-		].join("\n");
-		
-		if ($('table.style_table').length !== 0 ){
-			$('table.style_table').before(pager_widget);
-			$('table.style_table').tablesorter({widthFixed: true, widgets: ['zebra']}).tablesorterPager({container: $(".table_pager_widget")});
+	tablesorter:function(prefix){
+		var self = this;
+		if (prefix){
+			prefix = prefix + ' ';
+		}else{
+			prefix = '';
 		}
+		$(prefix+'.style_table, '+prefix+'.attach_table').addClass('tablesorter');
 		
-		if ($('table.attach_table').length !== 0 ){
-			$('table.attach_table').before(pager_widget);
-			$('table.attach_table').tablesorter({widthFixed: true, widgets: ['zebra']}).tablesorterPager({container: $(".table_pager_widget")});
+		/* デフォルト値 */
+		var config = {
+			sorter: {
+				widthFixed: true,
+//				debug:DEBUG
+			},
+			pager : {
+				minimum_lines : 10,
+				size:[10,20,30,40],
+				location_before:true
+			}
+		};
+
+		if (typeof(this.custom.tablesorter) == 'object'){
+			config = this.custom.tablesorter;
 		}
-		
+
+		$(prefix+'.tablesorter').each(function(){
+			if ( $('tr',this).length > config.pager.minimum_lines){	// 10行以上の場合ページャーを表示
+				// テーブルのページングウィジット
+				var pager_id = 'table_pager_'+self.tablesorter.counter;
+				
+				var pager_widget = [
+					'<div class="table_pager_widget ui-helper-clearfix" id="'+pager_id+'">',
+					'	<ul class="ui-widget">',
+					'		<li class="first ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthickstop-1-w"></span></li>',
+					'		<li class="prev ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthick-1-w"></span></li>',
+					'		<li><input class="pagedisplay" type="text" disabled="disabled" /></li>',
+					'		<li class="next ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthick-1-e"></span></li>',
+					'		<li class="last ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthickstop-1-e"></span></li>',
+					'		<li><select class="pagesize"></select></li>',
+		//			'		<li class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowreturn-1-w"></span></li>',
+					'	</ul>',
+					'</div>'
+				].join("\n");
+				
+				$(this).tablesorter(config.sorter);
+				
+				if (config.pager.location_before === true){
+					$(this).before(pager_widget);
+				}else{
+					$(this).after(pager_widget);
+				}
+
+				var i = 0;
+				while (i < config.pager.size.length){
+					$('#'+pager_id+' .pagesize').append($('<option>').attr({ value: config.pager.size[i] }).text(config.pager.size[i]));
+					i++;
+				}
+
+				// ページャーを生成（ID重複しないようにグローバル変数のpukiwiki_skin.tablesorter.counterをカウンタとして使用
+				$(this).tablesorterPager({
+					container: $('#'+pager_id),
+					positionFixed: false
+				});
+
+				$('#'+pager_id).show('clip');
+
+				self.tablesorter.counter++;
+			}else{
+				
+				$(this).tablesorter(config.sorter);
+			}
+		});
+
 		//hover states on the static widgets
-		$('.table_pager_widget li').hover(
+		$(prefix+'.table_pager_widget li.ui-state-default').hover(
 			function() { $(this).addClass('ui-state-hover'); },
 			function() { $(this).removeClass('ui-state-hover'); }
 		);
-*/
-		$('table.style_table').tablesorter();
-		$('table.attach_table').tablesorter();
 	},
 	/* 独自のGlossaly処理 */
 	glossaly: function(prefix){
@@ -1040,24 +1083,72 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		}
 
 		// swfuploadがスクリプトに渡す値
+		
 		var params = {
-			encode_hint:	$(prefix+'input[name=encode_hint]').val(),	// エンコード判別用
-			max_file_size:	$(prefix+'input[name=max_file_size]').val(),// 上限容量
-			pcmd:			$(prefix+'input[name=pcmd]').val(),		// プラグインコマンド（通常post）
-			plugin:			$(prefix+'input[name=plugin]').val(),		// プラグイン（通常attach）
-			refer:			$(prefix+'input[name=refer]').val(),		// 添付先のページ
+			encode_hint		: $(prefix+'input[name=encode_hint]').val(),	// エンコード判別用
+			max_file_size	: $(prefix+'input[name=max_file_size]').val(),// 上限容量
+			pcmd			: $(prefix+'input[name=pcmd]').val(),		// プラグインコマンド（通常post）
+			plugin			: $(prefix+'input[name=plugin]').val(),		// プラグイン（通常attach）
+			refer			: $(prefix+'input[name=refer]').val(),		// 添付先のページ
 			ajax:			'json'	// 送信完了時にページをjson化したデーターを読み込む。（スキンの処理を確認せよ）
 		};
-
-		if ($("input[name=pass]").length !== 0){ params.pass = $("input[name=pass]").val(); }	// パスワード
 		
-		if (params.pcmd == 'attachref'){
-			params = {
-				attachref_no:	$(prefix+'input[name=attachref_no]').val(),
-				attachref_opt:	$(prefix+'input[name=attachref_opt]').val(),
-				digest:			$(prefix+'input[name=digest]').val()
-			};
+		if (params.plugin == 'attachref'){
+			params.attachref_no		= $(prefix+'input[name=attachref_no]').val();
+			params.attachref_opt	= $(prefix+'input[name=attachref_opt]').val();
+			params.digest			= $(prefix+'input[name=digest]').val();
 		}
+		
+		// デフォルト値
+		var config = {	
+			// swfuploadの位置
+			flash_url : SKIN_DIR+'js/swfupload.swf',
+			// アップロード先のURL
+			upload_url: SCRIPT,
+			// POST時に送られるファイルのフォーム名（重要）
+			// attachプラグインでは、attach_fileにアップロードするファイル名が格納される。
+			// Flashの仕様上、本来は変更せずにFiledataとすることが望ましい。
+			file_post_name :'attach_file',
+			// POST時に送るパラメータ
+			post_params: params,
+			// 上限容量
+			file_size_limit : params.max_file_size,
+			// ファイルタイプ
+			file_types : "*.*",
+			// ファイルタイプの説明
+			file_types_description : "All Files",
+			// 一度にアップロードできるファイルの上限（ファイル選択画面でShiftキーで選択できるファイル数）
+			file_upload_limit : 10,	// 変更しないこと
+			// キューに入れられる上限
+			file_queue_limit : 10,
+			
+			// デバッグ
+			debug: DEBUG,
+
+			// 添付ボタン設定
+			button_image_url: IMAGE_DIR+'ajax/swfupload/wdp_buttons_upload_114x29.png',
+			button_width : 114,
+			button_height : 29,
+			// 書き換える場所のID
+			button_placeholder_id: "swfupload_button",
+			button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
+
+			moving_average_history_size: 40
+		};
+		
+		if (typeof(this.custom.swfupload) == 'object'){
+			config = this.custom.swfupload;
+		}
+		
+		// attachrefの場合、１つのみファイルをアップ可能
+		if (params.plugin == 'attachref'){
+			config.file_upload_limit=1;
+			config.file_queue_limit=1;
+		}
+		
+//		console.dir(params);
+
+//		if ($("input[name=pass]").length !== 0){ params.pass = $("input[name=pass]").val(); }	// パスワード
 		
 		// 添付画面のテンプレート
 		$('.attach_form').html( [
@@ -1079,41 +1170,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			display:'none'
 		});
 
-		$('#swfupload-control').swfupload({	// ファイル添付のフォームをswfupload.swfに置き換え
-			// swfuploadの位置
-			flash_url : SKIN_DIR+'js/swfupload.swf',
-			// アップロード先のURL
-			upload_url: SCRIPT,
-			// POST時に送られるファイルのフォーム名（重要）
-			// attachプラグインでは、attach_fileにアップロードするファイル名が格納される。
-			// Flashの仕様上、本来は変更せずにFiledataとすることが望ましい。
-			file_post_name :'attach_file',
-			// POST時に送るパラメータ
-			post_params: params,
-			// 上限容量
-			file_size_limit : params.max_file_size,
-			// ファイルタイプ
-			file_types : "*.*",
-			// ファイルタイプの説明
-			file_types_description : "All Files",
-			// 一度にアップロードできるファイルの上限
-			file_upload_limit : 5,	// 変更しないこと
-			// キューに入れられる上限
-			file_queue_limit : 5,
-			
-			// デバッグ
-			debug: DEBUG,
-
-			// 添付ボタン設定
-			button_image_url: IMAGE_DIR+'ajax/swfupload/wdp_buttons_upload_114x29.png',
-			button_width : 114,
-			button_height : 29,
-			// 書き換える場所のID
-			button_placeholder_id: "swfupload_button",
-			button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
-
-			moving_average_history_size: 40
-		})
+		$('#swfupload-control').swfupload(config)	// ファイル添付のフォームをswfupload.swfに置き換え
 		.bind('fileQueued', function(event, file){
 			var listitem = [
 				'<li id="'+file.id+'" class="ui-widget-content ui-corner-all">',
@@ -1168,7 +1225,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			});
 		})
 		.bind('fileDialogComplete', function(event, numFilesSelected, numFilesQueued){
-			$('#queuestatus').text('Files Selected: '+numFilesSelected+' / Queued Files: '+numFilesQueued);
+			$('#swfupload-queuestatus').text('Files Selected: '+numFilesSelected+' / Queued Files: '+numFilesQueued);
 		})
 		.bind('uploadStart', function(event, file){
 			$('#swfupload-log li#'+file.id).find('p.status').text('Uploading...');
@@ -1182,24 +1239,30 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			$('#swfupload-log li#'+file.id).find('span.progressvalue').text(percentage+'%');
 		})
 		.bind('uploadSuccess', function(event, file, serverData){
-			var ret = eval("(" + serverData + ")");
-			var item=$('#swfupload-log  li#'+file.id);
-			$('#swfupload-log li#'+file.id+' .progressbar').progressbar({ value: 100 });
-			item.find('span.progressvalue').text('100%');
-			var pathtofile = '<a href="'+SCRIPT+'?plugin=attach&pcmd=open&refer='+PAGE+'&file='+file.name+'" id="view_'+file.id+'"><span style="float: right; margin-right: 0.3em;" class="ui-icon ui-icon-newwin"></span>view &raquo;</a>';
-			item.addClass('success').find('p.status').html(ret.title+' | '+pathtofile);
-			$('#swfupload-log li#'+file.id+' a#view_'+file.id).click(function(){
-				var href = $(this).attr('href');
-				
-				if (href.match(/\.(jpg|jpeg|gif|png)$/i)){
-					$(this).colorbox();
-				}else if (href.match(/\.(mp3|ogg|m4a)$/i)){
-					pukiwiki_skin.music_player(this);
-				}else{
-					window.open(href);
-				}
-				return false;
-			});
+			if (params.plugin != 'attachref'){
+				var ret = eval("(" + serverData + ")");
+				var item=$('#swfupload-log  li#'+file.id);
+				$('#swfupload-log li#'+file.id+' .progressbar').progressbar({ value: 100 });
+				item.find('span.progressvalue').text('100%');
+				var pathtofile = '<a href="'+SCRIPT+'?plugin=attach&pcmd=open&refer='+PAGE+'&file='+file.name+'" id="view_'+file.id+'"><span style="float: right; margin-right: 0.3em;" class="ui-icon ui-icon-newwin"></span>view &raquo;</a>';
+				item.addClass('success').find('p.status').html(ret.title+' | '+pathtofile);
+				$('#swfupload-log li#'+file.id+' a#view_'+file.id).click(function(){
+					var href = $(this).attr('href');
+/*
+					if (href.match(/\.(jpg|jpeg|gif|png)$/i)){
+						$(this).colorbox();
+					}else if (href.match(/\.(mp3|ogg|m4a)$/i)){
+						pukiwiki_skin.music_player(this);
+					}else{
+*/
+						window.open(href);
+//					}
+					$(prefix).dialog('option', 'close', function(){ location.reload(); });
+					return false;
+				});
+			}else{
+				location.reload();
+			}
 		})
 		.bind('uploadComplete', function(event, file){
 			// upload has completed, try the next one in the queue

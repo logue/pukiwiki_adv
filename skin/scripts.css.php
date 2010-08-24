@@ -70,7 +70,7 @@ img.helper, img.tocpic, map area, a{
 .ui-widget{
 	font-size:10pt !important;
 }
-
+/*
 input[type='text'], input[type='password'], textarea, select, iframe {
 	border:1px solid #AAA;
 	margin:0px;
@@ -78,7 +78,7 @@ input[type='text'], input[type='password'], textarea, select, iframe {
 	font-family:monospace !important;
 	font-size:10pt;
 }
-
+*/
 input[type='text']:focus, input[type='password']:focus, textarea:focus, select:focus, iframe:focus{
 <?php if ($engine == "Gecko"){ ?>
 	-moz-box-shadow:0 0 8px #6CF;
@@ -89,6 +89,7 @@ input[type='text']:focus, input[type='password']:focus, textarea:focus, select:f
 <?php } ?>
 	border:1px solid #6CF;
 }
+
 
 /* for realedit.js */
 #realview_outer {
@@ -632,28 +633,26 @@ ul#jplayer_icons #jplayer_volume-min {
 }
 /**************************************************************************************************/
 div.table_pager_widget{
-	position:relative;
-	height:36px;
-	display:block;
-}
-
-div.table_pager_widget ul{
-	margin: 0;
-	padding: 0;
+	display:none;
 }
 
 div.table_pager_widget ul li{
 	margin: 2px;
-	position: relative;
-	padding: 4px 0;
 	cursor: pointer;
 	float: left;
 	list-style: none;
 }
 
-div.table_pager_widget ul li span.ui-icon {
-	margin: 0 4px;
-	float: left;
+div.table_pager_widget ul li.ui-state-default{
+	height:1.2em;
+	width:1.2em;
+	padding:2px;
+}
+
+div.table_pager_widget button{
+	height:1.2em;
+	width:1.2em;
+	padding:2px;
 }
 
 div.table_pager_widget input.pagedisplay{

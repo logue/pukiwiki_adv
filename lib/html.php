@@ -1,8 +1,8 @@
 <?php
 // PukiPlus.
-// $Id: html.php,v 1.65.36 2010/07/24 22:29:00 upk Exp $
+// $Id: html.php,v 1.65.38 2010/08/23 23:41:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiPlus Team <http://pukiplus.sf.net/>
+//   2010      PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team <http://pukiwiki.cafelounge.net/plus/>
 //   2002-2007 PukiWiki Developers Team <http://pukiwiki.sourceforge.jp/>
 //   2001-2002 Originally written by yu-ji <http://www.hyuki.com/yukiwiki/>
@@ -201,7 +201,7 @@ function catbody($title, $page, $body)
 				
 				/* Use plugins */ 
 				'jquery.cookie','jquery.lazyload', 'jquery.query','jquery.scrollTo','jquery.colorbox-min','jquery.a-tools.min',
-				'jquery.swfupload','jquery.tablesorter','jquery.textarearesizer','jquery.jplayer.min',	/* 'jquery.beautyOfCode-min', */
+				'jquery.swfupload','jquery.tablesorter-min','jquery.textarearesizer','jquery.jplayer.min',	/* 'jquery.beautyOfCode-min', */
 				
 				/* MUST BE LOAD LAST */
 				'skin.original'
