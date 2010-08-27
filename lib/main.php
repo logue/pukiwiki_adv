@@ -4,7 +4,7 @@
 //
 // PukiWiki Advance
 //  Copyright (C) 2010 by PukiWiki Advance Developers Team
-//  http://pukiplus.sf.net/
+//  http://pukiwiki.logue.be/
 //
 // PukiPlus
 //  Copyright (C) 2010 by PukiPlus Team
@@ -190,6 +190,13 @@ if (isset($auth_api['remoteip']['use']) && $auth_api['remoteip']['use']) {
 if (is_webdav() && exist_plugin('dav')) {
 	do_plugin_action('dav');
 	exit;
+}
+
+$info[] = 'Powered by PHP '.PHP_VERSION.' '.((substr(php_sapi_name(), 0, 3) == 'cgi') ? 'CGI' : 'MODULE').' mode. PHP is running as '.(ini_get('safe_mode') ? "SAFE" : "CGI").' mode.';
+;
+global $adminpass;
+if ($adminpass == '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72'){
+	$info[] = 'WARNING: <code>$adminpass</code> is not changed! Click <a href="'.get_cmd_uri('md5').'">here</a> to generate crypted password.';
 }
 
 $is_protect = auth::is_protect();

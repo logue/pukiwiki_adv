@@ -259,9 +259,11 @@ function add_homedir($file)
 function add_skindir($skin_name)
 {
 	$file = basepagename($skin_name).'.skin.php';
+	$conf = basepagename($skin_name).'.ini.php';
 	foreach(array(EXT_SKIN_DIR, EXT_SKIN_DIR.THEME_PLUS_NAME, EXT_SKIN_DIR.THEME_PLUS_NAME.$skin_name.'/',
 			SKIN_DIR, SKIN_DIR.THEME_PLUS_NAME, SKIN_DIR.THEME_PLUS_NAME.$skin_name.'/',
 			SKIN_URI, DATA_HOME.SKIN_DIR) as $dir) {
+		if (file_exists($dir.$conf) && is_readable($dir.$conf)) require $dir.$conf;
 		if (file_exists($dir.$file) && is_readable($dir.$file)) return $dir.$file;
 	}
 	return $file;
@@ -814,37 +816,16 @@ function pr($value){
 	echo '</xmp></pre>';
 }
 
-/*
-function tag_helper($data){
-//	array(
-//		タグ名 => array(
-//			属性 => 値,
-//			...
-//		)
-//	array(
-//		タグ名２=>array(
-//			...
-//		)
-//	);
-	foreach ($data as $lines=>$line) {
-		$ret = array();
-		if (typeof($line) === 'object'){
-			foreach ($lines as $line=>$tagname) {
-				
-				foreach ($line as $content) {
-					$data = '<'.$tagname.' ';
-					while(list ($key, $val) = each($tagname)) {
-						$data .=$key.'="'.$val.'" ';
-					}
-					$tmp .= '/>';
-					$ret[] = $data;
-				}
-			}
-		}else{
-			$ret[] = $line;
-		}
+//バックトレースを表示
+// http://techblog.ecstudio.jp/tech-tips/php/debug-basics.html
+function print_backtrace($backtrace){
+	echo '<table class="style_table">';
+	echo '<thead><tr><th class="style_th">#</th><th class="style_th">call</th><th class="style_th">path</th></tr></thead><tbody>';
+	foreach ($backtrace as $key => $val){
+		echo '<tr><td class="style_td">'.$key.'</td>';
+		echo '<td class="style_td">'.$val['function']."(".print_r($val['args'],true).")</td>";
+		echo '<td class="style_td">'.$val['file']." on line ".$val['line']."</td></tr>";
 	}
-	return join("\n\t[t",$ret)."\n";
+	echo "</tbody></table>";
 }
-*/
 ?>

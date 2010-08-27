@@ -39,12 +39,12 @@ function plugin_sh_init(){
 }
 
 function plugin_sh_convert(){
-	global $head_tags, $foot_tags, $sh_count, $langs;
+	global $js_tags, $link_tags, $sh_count, $langs;
 	
 	if(!$sh_count){
-		$head_tags[] = '<script type="text/javascript" src="'.PLUGIN_SH_PATH.'scripts/shCore.js"></script>';
-		$head_tags[] = '<link type="text/css" rel="stylesheet" href="'.PLUGIN_SH_PATH.'styles/shCore.css" />';
-		$head_tags[] = '<link type="text/css" rel="stylesheet" href="'.PLUGIN_SH_PATH.'styles/shTheme'.PLUGIN_SH_THEME.'.css" id="shTheme" />';
+		$js_tags[] = array('type'=>'text/javascript', 'src'=>PLUGIN_SH_PATH.'scripts/shCore.js');
+		$link_tags[] = array('type'=>'text/css', 'rel'=>'stylesheet', 'href'=>PLUGIN_SH_PATH.'styles/shCore.css');
+		$link_tags[] = array('type'=>'text/css', 'rel'=>'stylesheet', 'href'=>PLUGIN_SH_PATH.'styles/shTheme'.PLUGIN_SH_THEME.'.css', 'id'=>'shTheme');
 		$langs = array(
 			'AS3'			=> false,
 			'Bash'			=> false,
@@ -90,7 +90,7 @@ function plugin_sh_convert(){
 		$lang = 'Plain'; // default
 		if ($langs[$lang] == false){
 			$langs[$lang] = true;
-			$head_tags[] = '<script type="text/javascript" src="'.PLUGIN_SH_PATH.'scripts/shBrush'.$lang.'.js"></script>';
+			$js_tags[] = array('type'=>'text/javascript', 'src'=>PLUGIN_SH_PATH.'scripts/shBrush'.$lang.'.js');
 		}
 		return '<pre class="brush: Plain">'."\n".htmlspecialchars($arg)."\n".'</pre>'."\n";
 	}else{
@@ -183,7 +183,7 @@ function plugin_sh_convert(){
 		}
 		if ($langs[$lang] == false){
 			$langs[$lang] = true;
-			$head_tags[] = '<script type="text/javascript" src="'.PLUGIN_SH_PATH.'scripts/shBrush'.$lang.'.js"></script>';
+			$js_tags[] = array('type'=>'text/javascript', 'src'=>PLUGIN_SH_PATH.'scripts/shBrush'.$lang.'.js');
 		}
 /*
 		$params = array(

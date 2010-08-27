@@ -10,6 +10,17 @@
 //
 */
 
+::-moz-selection{
+	background: Chocolate;
+	color:#fff;
+	text-shadow: none;
+}
+::selection {
+	background:Chocolate;
+	color:#fff;
+	text-shadow: none;
+}
+
 body{
 	color:#333322;
 	background-color:white;
@@ -17,6 +28,7 @@ body{
 
 a:link{
 	color:#215dc6;
+	-webkit-tap-highlight-color: #FF995E;
 	background-color:inherit;
 }
 
@@ -32,7 +44,7 @@ a:visited{
 
 a:hover{
 	color:#215dc6;
-	background-color:#CCDDEE;
+	background-color:#EEDDCC;
 }
 
 h1{
@@ -230,22 +242,22 @@ div#topicpath{
 }
 
 /** MenuBar ***************************************************************************************/
-div#menubar ul.menu li{
+#menubar ul.menu li{
 	border-bottom: 1px dotted #FFFCEE;
 }
 
-div#menubar h2, div#menubar h3, div#menubar h4{
+#menubar h2, #menubar h3, #menubar h4{
 	border: 1px #FFCC99 solid;
 	background-color: #FFF0DD;
 }
 
-div#menubar h5{
+#menubar h5{
 	border: 1px #FFCC99 solid;
 	background-color: #FFF0DD;
 }
 
 /** SideBar ***************************************************************************************/
-div#sidebar h2, div#sidebar h3, div#sidebar h4{
+#sidebar h2, #sidebar h3, #sidebar h4{
 	border: 1px #FFCC99 solid;
 	background-color: #FFF0DD;
 }
@@ -490,7 +502,7 @@ td.vote_td2
 }
 
 /* navibar2.inc.php */
-div#navigator2 {
+#navigator2 {
 	background-color: #ff9933;
 }
 
@@ -541,10 +553,6 @@ div.naviblock a:hover {
 	border: 1px Chocolate solid;
 }
 
-#nav ul{
-	margin: 0px;
-	box-shadow: gray 1px 2px 1px;
-}
 #nav a {
 	color: white;
 }
@@ -560,7 +568,6 @@ div.naviblock a:hover {
 	background-color: DarkOrange;
 	border: 1px DarkOrange solid;
 }
-
 
 #nav li:hover, #nav li.sfHover{
 	color: white;

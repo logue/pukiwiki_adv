@@ -1037,7 +1037,7 @@ function pkwk_chown($filename, $preserve_time = TRUE)
 	// Unlock for pkwk_chown()
 	// flock($flock, LOCK_UN) or die('pkwk_chown(): flock() failed for lock');
 	@flock($flock, LOCK_UN);
-	fclose($flock) or die('pkwk_chown(): fclose() failed for lock');
+	fclose($flock) or die_message('pkwk_chown(): fclose() failed for lock');
 
 	return $result;
 }
@@ -1056,8 +1056,18 @@ function pkwk_touch_file($filename, $time = FALSE, $atime = FALSE)
 		}
 		return $result;
 	} else {
-		die('pkwk_touch_file(): Invalid UID and (not writable for the directory or not a flie): ' .
+		die_message('pkwk_touch_file(): Invalid UID and (not writable for the directory or not a flie): ' .
 			htmlspecialchars(basename($filename)));
+	}
+}
+
+function load_entities(){
+	$fp = file(CACHE_DIR . PKWK_ENTITIES_REGEX_CACHE);
+	if ($fp == FALSE){
+		$info[] = 'Cannot read '.PKWK_ENTITIES_REGEX_CACHE.'. Please click <a href="'.get_cmd_uri('update_entities').'">here</a> and regenerete '.PKWK_ENTITIES_REGEX_CACHE.'.';
+		return '[a-zA-Z0-9]{2,8}';
+	}else{
+		return trim(join('', $fp));
 	}
 }
 ?>

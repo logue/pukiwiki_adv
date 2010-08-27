@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiPlus.
 // Copyright (C)
-//   2010      PukiPlus Team
+//   2010      PukiWiki Advance Developers Team
 //   2009      PukiWiki Plus! Team
 
 // License: GPL v2 or (at your option) any later version
@@ -10,7 +10,7 @@
 //
 function plugin_navibar_convert()
 {
-	global $_LINK;
+	global $_LINK, $pkwk_dtd;
 	global $do_backup, $trackback, $referer;
 	global $function_freeze;
 	global $vars;
@@ -155,7 +155,7 @@ function plugin_navibar_convert()
 		$line .= '[ ' . $body . ' ]' . "\n\n";
 		$body = '';
 	}
-	return '<div id="navigator">'. $line . '</div>';
+	return (($pkwk_dtd == PKWK_DTD_HTML_5) ? '<nav id="navigator">'.$line.'</nav>' : '<div id="navigator">'.$line.'</div>')."\n";
 }
 
 function _navigator($key, $val = '')

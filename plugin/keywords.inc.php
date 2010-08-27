@@ -7,14 +7,14 @@
 
 function plugin_keywords_convert()
 {
-	global $head_tags;
+	global $keywords;
 
 	$num = func_num_args();
 	if ($num == 0) { return 'Usage: #keywords(keyword,...)'; }
 	$args = func_get_args();
 	$contents = array_map(htmlspecialchars,$args);
 
-	$head_tags[] = ' <meta http-equiv="Keywords" content="'.join(',', $contents).'" />';
+	$keywords = join(',', $contents);
 	return '';
 }
 ?>

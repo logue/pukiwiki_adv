@@ -2,19 +2,18 @@
 /////////////////////////////////////////////////
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
 //
-// $Id: description.inc.php,v 0.2 2004/09/30 09:41:57 miko Exp $
+// $Id: description.inc.php,v 0.3 2010/08/26 22:26:57 Logue Exp $
 //
 
 function plugin_description_convert()
 {
-	global $head_tags;
+	global $description;
 
 	$num = func_num_args();
 	if ($num == 0) { return 'Usage: #description(description)'; }
 	$args = func_get_args();
-	$content = htmlspecialchars($args[0]);
 
-	$head_tags[] = ' <meta http-equiv="Description" content="'.$content.'" />';
+	$description = htmlspecialchars($args[0]);
 	return '';
 }
 ?>

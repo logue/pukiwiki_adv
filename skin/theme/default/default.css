@@ -6,50 +6,252 @@
 // Original version written by miko and upk.
 // Adv version by Logue.
 // 
-// $Id: orange.css,v 1.33.6 2010/08/15 00:19:00 Logue Exp $
+// $Id: default.css,v 1.33.6 2010/08/27 14:35:00 Logue Exp $
 //
 */
 
-pre, dl, ol, p, blockquote
-{
-	line-height:140%;
+/* 
+html5doctor.com Reset Stylesheet
+http://code.google.com/p/html5resetcss/
+v1.6
+Last Updated: 2010-08-18
+Author: Richard Clark - http://richclarkdesign.com 
+Twitter: @rich_clark
+*/
+
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+abbr, address, cite, code,
+del, dfn, em, img, ins, kbd, q, samp,
+small, strong, sub, sup, var,
+b, i,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section, summary,
+time, mark, audio, video {
+	margin:0;
+	padding:0;
+	border:0;
+	outline:0;
+	font-size:100%;
+	vertical-align:baseline;
+	background:transparent;
 }
 
-blockquote{
-	margin-left:32px;
-}
-
-body{
-	margin-left:0%;
-	margin-right:0%;
-	font-family:"Trebuchet MS", arial, helvetica, Sans-Serif;
-}
-
-td{
-	margin-left:0%;
-	margin-right:0%;
-	font-size: 84%;
-}
-
-div#body a{
-	line-break:strict;
-	word-break:break-all;
-	word-wrap:break-word;
-}
-
-div#header{
+article,aside,details,figcaption,figure,
+footer,header,hgroup,menu,nav,section { 
 	display:block;
 }
 
-a:link{
+nav ul {
+	list-style:none;
+}
+
+blockquote,pre,ul,ol,p{
+	margin:0.5em;
+}
+
+blockquote, q {
+	quotes:none;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content:'';
+	content:none;
+}
+
+a {
+	margin:0;
+	padding:0;
+	font-size:100%;
+	vertical-align:baseline;
+	background:transparent;
+}
+
+/* change colours to suit your needs */
+ins {
+	background-color:#ff9;
+	color:#000;
 	text-decoration:none;
 }
 
-a:active{
-	text-decoration:none;
+/* change colours to suit your needs */
+mark {
+	background-color:#ff9;
+	color:#000; 
+	font-style:italic;
+	font-weight:bold;
 }
 
-a:visited{
+del {
+	text-decoration: line-through;
+}
+
+abbr[title], dfn[title] {
+	border-bottom:1px dotted inherit;
+	cursor:help;
+}
+
+table {
+	border-collapse:collapse;
+	border-spacing:0;
+}
+
+/* change border colour to suit your needs */
+hr {
+	display:block;
+	height:1px;
+	border:0;   
+	border-top:1px solid #cccccc;
+	margin:1em 0;
+	padding:0;
+}
+
+input, select {
+    vertical-align:middle;
+}
+/* END RESET CSS */
+
+/*
+fonts.css from the YUI Library: http://developer.yahoo.com/yui/
+          Please refer to http://developer.yahoo.com/yui/fonts/ for font sizing percentages
+*/
+
+
+/**
+ * Percents could work for IE, but for backCompat purposes, we are using keywords.
+ * x-small is for IE6/7 quirks mode.
+ */
+body {
+	font:13px/1.231 arial,helvetica,clean,sans-serif;
+	/* for IE6/7 */ 
+	*font-size:small; 
+	/* for IE Quirks Mode */
+	*font:x-small; 
+}
+
+/**
+ * To help tables remember to inherit
+ */
+table {
+	font-size:inherit;
+	font:100%;
+}
+
+/**
+ * Bump up IE to get to 13px equivalent for these fixed-width elements
+ */
+select,
+input,
+button,
+textarea,
+button,
+pre,
+code,
+kbd,
+samp,
+tt,
+.ui-button {
+	font-family:monospace;
+	*font-size:108%;
+/*	line-height:100%;	*/
+}
+
+/* 
+ * minimal base styles 
+ */
+
+/* Headers (h1,h2,etc) have no default font-size or margin,
+   you'll want to define those yourself. */ 
+ 
+/* www.aestheticallyloyal.com/public/optimize-legibility/ */ 
+h1,h2,h3,h4,h5,h6 { font-weight: bold; text-rendering: optimizeLegibility; }
+
+/* maxvoltar.com/archive/-webkit-font-smoothing */
+html { -webkit-font-smoothing: antialiased; }
+
+ 
+/* Accessible focus treatment: people.opera.com/patrickl/experiments/keyboard/test */
+a:hover, a:active { outline: none; }
+
+ul { margin-left:30px; }
+ol { margin-left:30px; list-style-type: decimal; }
+
+small { font-size:85%; }
+strong, th { font-weight: bold; }
+
+td, td img { vertical-align:top; } 
+
+sub { vertical-align: sub; font-size: smaller; }
+sup { vertical-align: super; font-size: smaller; }
+
+pre { 
+	padding: 15px; 
+
+	/* www.pathf.com/blogs/2008/05/formatting-quoted-code-in-blog-posts-css21-white-space-pre-wrap/ */
+	white-space: pre; /* CSS2 */
+	white-space: pre-wrap; /* CSS 2.1 */
+	white-space: pre-line; /* CSS 3 (and 2.1 as well, actually) */
+	word-wrap: break-word; /* IE */
+}
+
+/* align checkboxes, radios, text inputs with their label
+   by: Thierry Koblentz tjkdesign.com/ez-css/css/base.css  */
+input[type="radio"] { vertical-align: text-bottom; }
+input[type="checkbox"] { vertical-align: bottom; *vertical-align: baseline; }
+.ie6 input { vertical-align: text-bottom; }
+
+/* hand cursor on clickable input elements */
+label, input[type=button], input[type=submit], button { cursor: pointer; }
+
+/* always force a scrollbar in non-IE */
+html { overflow-y: scroll; }
+
+/* make buttons play nice in IE:    
+   www.viget.com/inspire/styling-the-button-element-in-internet-explorer/ */
+button,.ui-button {  width: auto; overflow: visible; }
+ 
+/* bicubic resizing for non-native sized IMG: 
+   code.flickr.com/blog/2008/11/12/on-ui-quality-the-little-things-client-side-image-resizing/ */
+.ie7 img { -ms-interpolation-mode: bicubic; }
+
+/* 
+ * Non-semantic helper classes 
+ */
+
+/* for image replacement */
+.ir { display:block; text-indent:-999em; overflow:hidden; background-repeat: no-repeat; }
+
+/* Hide for both screenreaders and browsers
+   css-discuss.incutio.com/wiki/Screenreader_Visibility */
+.hidden { display:none; visibility:hidden; } 
+
+/* Hide only visually, but have it available for screenreaders 
+   www.webaim.org/techniques/css/invisiblecontent/ 
+   Solution from: j.mp/visuallyhidden - Thanks Jonathan Neal! */
+.visuallyhidden { position:absolute !important;    
+  clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+  clip: rect(1px, 1px, 1px, 1px); }
+
+/* Hide visually and from screenreaders, but maintain layout */
+.invisible { visibility: hidden; }
+
+/* >> The Magnificent CLEARFIX << */
+.clearfix:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+.clearfix { display: inline-block; }
+* html .clearfix { height: 1%; } /* Hides from IE-mac \*/
+.clearfix { display: block; }
+
+/** PukiWiki Plus! CSS set Start *******************************************************************/
+
+body, h1, h2, h3, h4, h5{
+	font-family:"Trebuchet MS", Meiryo, Sans-Serif;
+}
+
+a:link, a:active, a:visited{
 	text-decoration:none;
 }
 
@@ -58,15 +260,13 @@ a:hover{
 }
 
 h1{
-	font-family:"Trebuchet MS", arial, helvetica, Sans-Serif;
-	font-size: 20px;
+	font-size: 161.6%;
 	border:0px;
 	margin:.2em 0px .2em .5em;
 }
 
 h2{
-	font-family:"Trebuchet MS", arial, helvetica, Sans-Serif;
-	font-size:133%;
+	font-size:146%;
 	margin:.2em -10px .2em -18px;
 	padding:.3em .3em .15em .5em;
 	border:0px;
@@ -75,8 +275,7 @@ h2{
 }
 
 h3{
-	font-family:"Trebuchet MS", arial, helvetica, Sans-Serif;
-	font-size:124%;
+	font-size:131%;
 	margin:.2em -10px .5em -14px;
 	padding:.3em .3em .15em .5em;
 	border:0px;
@@ -85,8 +284,7 @@ h3{
 }
 
 h4, h5, h6{
-	font-family:"Trebuchet MS", arial, helvetica, Sans-Serif;
-	font-size:112%;
+	font-size:116%;
 	margin:.2em -10px .5em -10px;
 	padding:.3em .3em .15em .5em;
 	border:0px;
@@ -95,7 +293,7 @@ h4, h5, h6{
 }
 
 h1.title{
-	font-size: 30px;
+	font-size: 232%;
 	font-weight:bold;
 	background-color:transparent;
 	padding: 12px 0px 0px 0px;
@@ -111,18 +309,15 @@ dd{
 	margin-left:1em;
 }
 
+blockquote, pre, ul ,ol ,p{
+	margin:0.5em;
+}
+
 pre, .pre{
 	padding:.5em;
-	margin-left:1em;
-	margin-right:2em;
-	font-size:80%;
 	line-break:strict;
 	word-break:break-all;
 	word-wrap:break-word;
-	white-space: pre-wrap;		/* css-3 */
-	white-space: -moz-pre-wrap;	/* Mozilla, since 1999 */
-	white-space: -pre-wrap;		/* Opera 4-6 */
-	white-space: -o-pre-wrap;	/* Opera 7 */
 }
 
 img{
@@ -142,23 +337,12 @@ img.inn
 	vertical-align: baseline;
 }
 
-ul{
-	margin-top:.5em;
-	margin-bottom:.5em;
-	line-height:130%;
-}
-
 em{
 	font-style:italic;
 }
 
 strong{
 	font-weight:bold;
-}
-
-blockquote{
-	margin-top: 0.5em;
-	margin-bottom: 0.5em;
 }
 
 blockquote p{
@@ -170,10 +354,13 @@ address{
 }
 
 .style_table{
+	border-spacing:2px;
 	padding:0px;
 	border:0px;
 	margin:auto;
 	text-align:left;
+	border-collapse:separate;
+	border-spacing:1px;
 }
 .style_th{
 	padding:5px;
@@ -209,49 +396,40 @@ div.ie5{
 }
 
 small, .small{
-	font-size:80%;
+	font-size:85%;
 }
 
 .small1{
-	font-size:70%;
+	font-size:77%;
 }
 
 .super_index{
 	font-weight:bold;
-	font-size:60%;
+	font-size:77%;
 	vertical-align:super;
 }
 
 a.note_super{
 	font-weight:bold;
-	font-size:60%;
+	font-size:77%;
 	vertical-align:super;
 	margin: 0px 1%;
 }
 
 div.jumpmenu{
-	font-size:50%;
+	font-size:77%;
 	text-align:right;
 }
 
-hr {
-	text-align:center;
-	border-width: 1px 0px 0px 0px;
-	border-style: solid;
-	height: 1px;
-	margin:0.5em;
-	width:99%;
-	display:block;
-}
-
 hr.full_hr{
+	width:100%;
 }
 
 hr.short_line{
 	width:80%;
 }
 hr.note_hr{
-	margin:1em 1% 0em 1%;
+	margin:1em 0.5em 0em 0.5em;
 }
 
 span.size1{
@@ -297,87 +475,95 @@ span.size7{
 	display:inline;
 }
 
-/* html.php/edit_form() */
-.edit_form{
-	clear:both;
-}
-
 /** Misc ******************************************************************************************/
-table.main{
-	border:0px;
+#lastmodified{
+	display:block;
+	text-align:right;
+	font-size:93%;
 	padding:0px;
-	margin:0px;
-	width:100%;
+	margin:0px 1%;
 }
 
-table.main tr td{
-	vertical-align:top;
+#header{
+	padding:0px;
+	margin:1% 1%;
+	display:block;
 }
 
-div#body{
+#header .style_table{
+	background-color: transparent;
+}
+
+#header .style_table .style_th{
+	margin: 0px;
+	padding: 0px;
+	background-color: transparent;
+}
+
+#header .style_table .style_td{
+	margin: 0px;
+	padding: 0px;
+	background-color: transparent;
+}
+
+#header .style_table .style_td h1.title{
+	font-size: 232%;
+	font-weight:bold;
+	background-color:transparent;
+	padding: 0px;
+	border: 0px;
+	margin: 0px;
+}
+
+#body{
+	display:block;
 	padding:0px;
 	margin:0px 0px 0px 0px;
 }
 
-div#note
-{
+#body a{
+	line-break:strict;
+	word-break:break-all;
+	word-wrap:break-word;
+}
+
+#footer{
+	dispaly:block;
 	clear:both;
+	display:block;
+	font-size:77%;
 	padding:0px;
-	font-size: 78%;
+	margin:0px 1% 0px 1%;
 }
 
-div#note ul{
-	padding:0px;
-	list-style-type:none;
+#footer .style_table{
+	background-color: transparent;
 }
 
-div#toolbar{
-	clear:both;
-	padding:0px;
-	margin:0px 1%;
-	float:right;
-	white-space: nowrap;
+#footer .style_table .style_th{
+	margin: 0px;
+	padding: 0px;
+	background-color: transparent;
 }
 
-div#toolbar .pkwk-icon, div#toolbar .pkwk-icon_splitter{
-	float:left;
+#footer .style_table .style_td{
+	margin: 0px;
+	padding: 0px;
+	background-color: transparent;
 }
 
-div#lastmodified
-{
-	font-size:80%;
-	padding:0px;
-	margin:0px 1%;
-	text-align:right;
-}
-
-div#footer
-{
-	clear:both;
-	font-size:70%;
-	padding:0px;
-	margin:0px 1% 0px 1%; 
-}
-
-img#logo
-{
+#logo{
 	float:left;
 	margin-right:20px;
 }
 
-div#header{
-	padding:0px;
-	margin:1% 1%;
-}
-
-div#navigator{
+#navigator{
+	display:block;
 	clear:both;
 	padding:4px 0px 0px 0px;
 	margin:0px 1%;
 	white-space: nowrap;
-	font-size:84%;
 }
-
 
 /* PukiWiki Plus! Skin */
 td.menubar, td.sidebar{
@@ -401,72 +587,153 @@ td.ctable{
 	padding-right:28px;
 }
 
-div#floattable{
+table.main{
+	border:0px;
+	padding:0px;
+	margin:0px;
+	width:100%;
+}
+
+table.main tr td{
+	vertical-align:top;
+}
+
+#floattable{
 	min-width:620px;
 }
 
-div#ltable{
+#ltable{
 	width:160px;
 	vertical-align:top;
 	float:left;
 }
 
-div#rtable{
+#rtable{
 	width:160px;
 	vertical-align:top;
 	float:right;
 }
 
-div#ctablelr{
-	vertical-align:top;
+#ctablelr{
 	padding-left:1%;
 	padding-right:1%;
 	margin-left:180px;
 	margin-right:180px;
 }
 
-div#ctablel{
-	vertical-align:top;
+#ctablel{
 	padding-left:1%;
 	padding-right:1%;
 	margin-left:180px;
 	margin-right:20px;
 }
 
-div#ctabler{
-	vertical-align:top;
+#ctabler{
 	padding-left:1%;
 	padding-right:1%;
 	margin-left:20px;
 	margin-right:180px;
 }
 
-div#ctable{
-	vertical-align:top;
+#ctable{
 	padding-left:1%;
 	padding-right:1%;
 	margin-left:20px;
 	margin-right:20px;
 }
 
-div#cleartable{
+#cleartable{
 	clear:both;
 }
 
-div#topicpath{
+#topicpath{
 /*	font-size:80%;	*/
 }
 
-div#footerltable{
+#footerltable{
 	float:left;
 }
 
-div#footerrtable{
+#qr_code{
+	display:block;
+	float:left;
+}
+
+#banner_box{
+	display:block;
+	float:right;
+	white-space:nowrap;
+}
+
+#sigunature{
+	float:left;
+	white-space:nowrap;
+	line-height: 122%;
+}
+
+#footerctable{
+	width:98%;
+}
+
+#note{
+	clear:both;
+	padding:0px;
+	font-size: 86%;
+	
+}
+
+#note ul{
+	padding:0px;
+	list-style-type:none;
+}
+
+#toolbar{
+	display:block;
+	clear:both;
+	padding:0px;
+	margin:0px 1%;
+	float:right;
+	white-space: nowrap;
+}
+
+#toolbar .pkwk-icon, #toolbar .pkwk-icon_splitter{
+	float:left;
+}
+
+#attach{
+	margin:0px 1%;
+}
+
+#related{
+	font-size:93%;
+}
+
+#attach, #related{
+	clear:both;
+	margin:10px 0px;
+}
+
+#attach dl, #related dl{
+	display:block;
+}
+
+#attach dl dt, #related dl dt{
+	margin-left:0.5em;
+	margin-top:0px;
+	float:left;
+	font-weight:normal;
+}
+
+#attach dl dd, #related dl dd{
+	margin-left:0.5em;
+	padding:0.1em;
+	display:block;
+	float:left;
 }
 
 /* popup toc */
 #poptoc{
-	font-size:12px;
+	font-size:93%;
 	min-width:18em;
 	max-width:25em;
 	/*width:22em;*/
@@ -483,7 +750,7 @@ div#footerrtable{
 	text-align:center;
 }
 #poptoc h2 a{
-	font-size:90%;
+	font-size:93%;
 	text-decoration:none;
 }
 #poptoc h2 img{
@@ -499,155 +766,73 @@ div#footerrtable{
 /*	cursor:default;	*/
 }
 
-/* headarea extend */
-#header .style_table{
-	background-color: transparent;
-}
+/** MenuBar/SideBar*********************************************************************************/
 
-#header .style_table .style_th{
-	margin: 0px;
-	padding: 0px;
-	background-color: transparent;
-}
-
-#header .style_table .style_td{
-	margin: 0px;
-	padding: 0px;
-	background-color: transparent;
-}
-
-#header .style_table .style_td h1.title{
-	font-size: 30px;
-	font-weight:bold;
-	background-color:transparent;
-	padding: 0px;
-	border: 0px;
-	margin: 0px;
-}
-
-#footer .style_table{
-	background-color: transparent;
-}
-
-#footer .style_table .style_th{
-	margin: 0px;
-	padding: 0px;
-	background-color: transparent;
-}
-
-#footer .style_table .style_td{
-	margin: 0px;
-	padding: 0px;
-	background-color: transparent;
-}
-
-div#qr_code{
-	float:left;
-}
-
-div#banner_box
-{
-	float:right;
-	white-space:nowrap;
-}
-
-div#sigunature{
-	float:left;
-	white-space:nowrap;
-	font-size: 12px;
-	line-height: 122%;
-	padding-top:8px;
-}
-
-#footerctable{
-	width:98%;
-}
-
-#attach dl, #related dl{
-	margin:16px 1% 0px 1%;
-}
-
-#attach dl dt, #related dl dt{
-	margin-left:0.5em;
-	margin-top:0px;
-	float:left;
-	clear: left;
-	font-weight:normal;
-	vertical-align: top;
-}
-
-#attach dl dd, #related dl dd{
-	margin-left:0.5em;
+#menubar{
 	display:block;
-	float:left;
-	vertical-align: top;
-}
-
-/** MenuBar ***************************************************************************************/
-
-div#menubar{
 	width:160px;
 	padding:0px;
 	margin:0px 2px;
 	word-break:break-all;
-	font-size:90%;
+	font-size:93%;
 	overflow:hidden;
 }
 
-div#menubar ul.menu{
+#menubar ul.menu{
 	list-style-type: none;
 	list-style-position: outside;
 	margin: 0px;
 	padding: 0px;
 }
 
-div#menubar ul.menu li{
+#menubar ul.menu li{
 	padding: 0px 0.3em;
 	margin: 0px;
 }
 
-div#menubar ul.menu li a{
+#menubar ul.menu li a{
 	text-decoration: none;
 	display:block;
 	padding:0.1em 0.3em;
 	margin:0px -0.3em;
 }
 
-div#menubar h2,div#menubar h3,div#menubar h4{
+#menubar h2, #menubar h3, #menubar h4, #menubar h5,
+#sidebar h2, #sidebar h3, #sidebar h4, #sidebar h5{
+	border: 1px grey solid;
+	background-color: white;
+}
+
+#menubar h2, #menubar h3, #menubar h4,
+#sidebar h2, #sidebar h3, #sidebar h4{
 	margin:0px 0px 0px 0px;
 	padding:4px;
 	text-align:center;
 }
 
-div#menubar h5{
+#menubar h5{
 	margin:0px 0px 4px 0px;
 	padding:3px;
 	text-align:center;
 }
-/** SideBar ***************************************************************************************/
-div#sidebar{
+
+#sidebar{
+	display:block;
 	width:160px;
 	padding:0px;
 	margin:0px 2px;
 	word-break:break-all;
-	font-size:90%;
+	font-size:93%;
 	overflow:hidden;
 }
 
-div#sidebar ul{
+#sidebar ul{
 	margin:0px 0px 0px .5em;
 	padding:0px 0px 0px .5em;
 }
 
-div#sidebar ul li{
+#sidebar ul li{
 	line-height:110%;
-}
-
-div#sidebar h2, div#sidebar h3, div#sidebar h4{
-	margin:0px 0px 4px 0px;
-	padding:4px;
-	text-align:center;
-	font-size:110%;
 }
 
 /** Plugin ****************************************************************************************/
@@ -662,37 +847,20 @@ div#sidebar h2, div#sidebar h3, div#sidebar h4{
 	vertical-align:super;
 }
 
-#attach{
-	clear:both;
-	padding:0px;
-	margin:0px 1%;
-	font-size: 78%;
-}
-
-#related{
-	font-size:80%;
-	padding:0px;
-}
-
 /* attach.inc.php */
-
-
 table.attach_table{
 	padding:0px;
 	border:0px;
 	margin:auto;
 	text-align:left;
+	border-collapse:separate;
+	border-spacing:1px;
 }
 
 th.attach_th{
 	padding:2px;
 	margin:1px;
 	text-align:center;
-}
-
-/* br.inc.php */
-br.spacer
-{
 }
 
 /* calendar.inc.php */
@@ -800,7 +968,7 @@ br.spacer
 {
 	padding:5px 5px;
 	margin:1px;
-	font-size:80%;
+	font-size:85%;
 	font-weight:bold;
 	text-align:center;
 }
@@ -815,7 +983,7 @@ br.spacer
 /* counter.inc.php */
 div.counter
 {
-	font-size:70%;
+	font-size:77%;
 }
 
 /* include.inc.php */
@@ -825,24 +993,24 @@ h5.side_label
 }
 
 /* navi.inc.php */
-ul.navi{
+.navi{
 	margin:0px;
 	padding:0px;
 	text-align:center;
 }
 
-li.navi_none{
+.navi_none{
 	display:inline;
 	float:none;
 }
 
-li.navi_left{
+.navi_left{
 	display:inline;
 	float:left;
 	text-align:left;
 }
 
-li.navi_right{
+.navi_right{
 	display:inline;
 	float:right;
 	text-align:right;
@@ -909,23 +1077,23 @@ div.amazon_imgetc {
 }
 
 div.amazon_sub {
-	 font-size:90%;
+	 font-size:93%;
 }
 
 div.amazon_avail {
 	 margin-left:150px;
-	 font-size:90%;
+	 font-size:93%;
 }
 
 td.amazon_td {
-	 font-size:90%;
+	 font-size:93%;
 	 text-align:center;
 }
 
 table.amazon_tbl {
 	 border:0;
 	 width:115px;
-	 font-size:90%;
+	 font-size:93%;
 	 text-align:center;
 }
 
@@ -957,21 +1125,21 @@ div.prevnext_r {
 .ministyle_td_caltop{
 	padding:2px;
 	margin:1px;
-	font-size:12px;
+	font-size:93%;
 	text-align:center;
 }
 
 .ministyle_td_today{
 	padding:1px;
 	margin:1px;
-	font-size:16px;
+	font-size:116%;
 	text-align:center;
 }
 
 .ministyle_td_sat{
 	padding:1px;
 	margin:1px;
-	font-size:16px;
+	font-size:116%;
 	text-align:center;
 }
 
@@ -979,21 +1147,21 @@ div.prevnext_r {
 	height:20px;
 	padding:1px;
 	margin:1px;
-	font-size:16px;
+	font-size:116%;
 	text-align:center;
 }
 
 .ministyle_td_blank{
 	padding:1px;
 	margin:1px;
-	font-size:16px;
+	font-size:116%;
 	text-align:center;
 }
 
 .ministyle_td_day{
 	padding:1px;
 	margin:1px;
-	font-size:16px;
+	font-size:116%;
 	text-align:center;
 	vertical-align:center;
 }
@@ -1002,7 +1170,7 @@ div.prevnext_r {
 	width:23px;
 	padding:2px 0px;
 	margin:2px 0px;
-	font-size:12px;
+	font-size:93%;
 	font-weight:bold;
 	text-align:center;
 }
@@ -1011,7 +1179,6 @@ div.prevnext_r {
 h3.minicalendar
 {
 	margin: 8px -8px 0px -6px;
-	font-size:100%;
 	border:0px;
 	border-left:8px solid;
 	border-bottom:1px solid;
@@ -1020,7 +1187,6 @@ h3.minicalendar
 h4.minicalendar
 {
 	margin: 8px -8px 0px -6px;
-	font-size:100%;
 	border:0px;
 	border-left:8px solid;
 	border-bottom:1px solid;
@@ -1044,7 +1210,6 @@ h4.minicalendar
 /* minicalendar+public_holiday view */
 .date_weekday, .date_weekend, .date_holiday {
 	font-family: verdana, arial, sans-serif;
-	font-size: 100%;
 	line-height: 110%;
 	font-weight: normal;
 	padding: 3px 0;
@@ -1054,7 +1219,6 @@ h4.minicalendar
 
 .day {
 	float: left;
-	font-size: 200%;
 	line-height: 100%;
 	font-weight: normal;
 	letter-spacing: 0.02em;
@@ -1069,28 +1233,31 @@ h4.minicalendar
 
 /* suckerfish.inc.php */
 #nav {
-	width: 99%;
-	height:24px;
-	font-size:86%;
-	clear:both;
-	white-space: nowrap;
-	margin: 4px 0px;
+	width:			99%;
+	height:			22px;
+	font-size:		12px;
+	display:		block;
+	clear:			both;
+	white-space:	nowrap;
+	margin:			4px 0px;
+	line-height:	1.0;
+	padding:		0px 10px;
 }
 
-#nav, #nav * {
-	margin:			0;
-	padding:		0;
+#nav * {
+	margin:			0px;
+	padding:		0px;
 	list-style:		none;
 }
-#nav {
-	line-height:	1.0;
-}
+
 #nav ul {
+	margin: 0px;
 	position:		absolute;
-	top:			23px;
+	top:			100%;
 	left:			0px;
 	width:			10em;
 	display:		none;
+	
 }
 #nav ul li {
 	width:			100%;
@@ -1116,7 +1283,6 @@ h4.minicalendar
 
 #nav li a, #nav span.noexists {
 	display:inline;
-	color:#fff;
 	text-decoration:none;
 }
 #nav a {
@@ -1250,27 +1416,6 @@ div#navigator2 {
 	width: 99%;
 	clear:both;
 	white-space: nowrap;
-}
-
-td.navimenu {
-	margin: 2px 5px 2px 5px;
-	font-size:84%;
-}
-td.navimenu a {
-	padding: 0px 4px;
-	font-weight: bold;
-}
-
-div.naviblock {
-	padding: 5px 5px 5px 8px;
-	font-size:84%;
-	visibility: hidden;
-	position: absolute;
-}
-
-td.navimenu a, td.navimenu a:active, td.navimenu a:visited, td.navimenu a:hover,
-div.naviblock a, div.naviblock a:active, div.naviblock a:visited, div.naviblock a:hover {
-	text-decoration: none;
 }
 
 /* form */

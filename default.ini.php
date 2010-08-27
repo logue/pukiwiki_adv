@@ -19,11 +19,8 @@ if (isset($_COOKIE['tdiary_theme'])) {
 if (defined('TDIARY_THEME')) {
 	defined('SKIN_FILE_DEFAULT') or define('SKIN_FILE_DEFAULT', add_skindir('tdiary'));
 } else {
-	if (defined('PLUS_THEME')) {
-		defined('SKIN_FILE_DEFAULT') or define('SKIN_FILE_DEFAULT', add_skindir(PLUS_THEME));
-	} else {
-		defined('SKIN_FILE_DEFAULT') or define('SKIN_FILE_DEFAULT', add_skindir('default'));
-	}
+	(!defined('PLUS_THEME')) ? define('PLUS_THEME','default') : '';
+	defined('SKIN_FILE_DEFAULT') or define('SKIN_FILE_DEFAULT', add_skindir(PLUS_THEME));
 }
 $skin_file = (isset($_COOKIE['skin_file'])) ? $_COOKIE['skin_file'] : SKIN_FILE_DEFAULT;
 
@@ -98,7 +95,7 @@ $rule_related_str = "</li>\n<li>";
 
 /////////////////////////////////////////////////
 // 水平線のタグ
-$hr = '<hr class="full_hr" />';
+$hr = '<hr class="full_hr" />'."\n";
 
 /////////////////////////////////////////////////
 // 脚注機能関連
@@ -113,7 +110,7 @@ define('PKWK_FOOTNOTE_TITLE_MAX', 16); // Characters
 define('PKWK_ALLOW_RELATIVE_FOOTNOTE_ANCHOR', 1);
 
 // 文末の脚注の直前に表示するタグ
-$note_hr = '<hr class="note_hr" />';
+$note_hr = '<hr class="note_hr" />'."\n";
 
 /////////////////////////////////////////////////
 // WikiName,BracketNameに経過時間を付加する

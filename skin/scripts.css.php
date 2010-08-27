@@ -1,7 +1,7 @@
 <?php
 
-// PukiPlus JavaScript CSS.
-// $Id: scripts.css.php,v 1.6.5 2010/07/16 20:57:00 Logue Exp $
+// PukiWiki Advance JavaScript CSS.
+// $Id: scripts.css.php,v 1.6.6 2010/08/26 19:44:00 Logue Exp $
 // Copyright (C) 2010 PukiWiki Advance Developer Team
 //
 // JavaScriptで使用するスタイルシート
@@ -63,22 +63,13 @@ img.helper, img.tocpic, map area, a{
 <?php } ?>
 }
 
-.ui-dialog ul, .ui-dialog dl{
-	white-space:nowrap;
-}
-
-.ui-widget{
-	font-size:10pt !important;
-}
-/*
 input[type='text'], input[type='password'], textarea, select, iframe {
 	border:1px solid #AAA;
 	margin:0px;
-	padding:2px;
 	font-family:monospace !important;
 	font-size:10pt;
 }
-*/
+
 input[type='text']:focus, input[type='password']:focus, textarea:focus, select:focus, iframe:focus{
 <?php if ($engine == "Gecko"){ ?>
 	-moz-box-shadow:0 0 8px #6CF;
@@ -89,7 +80,6 @@ input[type='text']:focus, input[type='password']:focus, textarea:focus, select:f
 <?php } ?>
 	border:1px solid #6CF;
 }
-
 
 /* for realedit.js */
 #realview_outer {
@@ -568,7 +558,6 @@ ul.sf-navbar .current ul ul {
 	order/nesting of the generated HTML, so that the structure easier to understand.
 */
 
-#colorbox{}
 #cboxTopLeft{width:5px; height:5px;}
 #cboxTopRight{width:5px; height:5px;}
 #cboxBottomLeft{width:5px; height:5px;}
@@ -586,7 +575,6 @@ ul.sf-navbar .current ul ul {
 #cboxClose{position:absolute; bottom:0; right:0;}
 #cboxLoadingOverlay{background:url(<?php echo $image_dir ?>ajax/colorbox/loading_background.png) center center no-repeat;}
 #cboxLoadingGraphic{background:url(<?php echo $image_dir ?>ajax/colorbox/loading.gif) center center no-repeat;}
-
 
 /**************************************************************************************************/
 #jplayer_container {
@@ -609,7 +597,6 @@ ul#jplayer_icons #jplayer_volume-min {
 	width:110px;
 	height:.4em;
 }
-
 
 #jplayer_sliderVolume .ui-slider-handle {
 	height:.8em;
@@ -670,74 +657,5 @@ div.table_pager_widget select.pagesize{
 #swfupload-log li .progressbar{ height:5px;}
 #swfupload-log li p{ margin:0; line-height:18px; }
 #swfupload-log li.success{ border:1px solid #339933; background:#ccf9b9; }
-
-/* mediaplayer.inc.php */
-/* for MediaPlayer */
-.mediaplayerbutton
-{
-	margin:2px 2px;
-	width:24px;
-}
-
-.playercontainer
-{
-	border:solid 1px #333;
-	width:320px;
-	text-align:center;
-	vertical-align:middle;
-	position:relative;
-}
-
-.videosplash
-{
-	position:expression('absolute');
-	display:block;
-}
-
-.player
-{
-	display:none;
-	display:expression(PlayerSupported(this)?'block':'none');
-	background-color:Black;
-	font-size:0px;
-}
-
-.controlstable
-{
-	width:320px;
-	margin:0px;
-	background-image:url(<?php echo $image_dir ?>player/base.gif);
-/*	background-repeat:no-repeat;	*/
-}
-
-table.controlstable tr td
-{
-	background-color:transparent;
-}
-
-.controlstablenoscript
-{
-	display:expression(PlayerSupported(this)?'none':'block');
-	margin:0px;
-	background-image:url(<?php echo $image_dir ?>player/base.gif);
-	background-repeat:no-repeat;
-}
-
-.slider{
-	background-image:url(<?php echo $image_dir ?>player/playbar.gif);
-	background-repeat:no-repeat;
-	background-position:center center;
-}
-
-.indicator,.downloadindicator{
-	width:0px;
-	height:3px;
-	margin-left:1px;
-	margin-top:2px;
-}
-
-.indicatorhandle{
-	margin-top:2px;
-}
 
 <?php if(extension_loaded('zlib')){ob_end_flush();}?>

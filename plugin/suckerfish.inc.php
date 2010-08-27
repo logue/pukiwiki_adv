@@ -31,15 +31,18 @@
 // Default dom id.
 define('PLUGIN_SUKERFISH_DEFAULT_ID', 'nav');
 
-function plugin_suckerfish_convert()
-{
-	global $vars, $hr, $head_tags;
-
+function plugin_suckerfish_convert(){
+	global $vars, $hr, $suckerfish_count, $js_tags;
+	
+	if(!$suckerfish_count){
+		$js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_DIR.'js/plugin/jquery.superfish.js');
+		$suckerfish_count++;
+	}
+	
 	$page = strip_bracket($vars['page']);
 
 	$navi_page = plugin_suckerfish_search_navipage($page);
 	if (! empty($navi_page)){
-		$head_tags[] = '<script type="text/javascript" src="'.SKIN_DIR.'/js/plugin/jquery.superfish.js"></script>';
 		return plugin_suckerfish_makehtml($navi_page);
 	}else{
 		exist_plugin('navibar');
@@ -47,8 +50,7 @@ function plugin_suckerfish_convert()
 	}
 }
 
-function plugin_suckerfish_search_navipage($page)
-{
+function plugin_suckerfish_search_navipage($page){
 	global $navigation;
 	
 	if (!$navigation){
@@ -62,12 +64,12 @@ function plugin_suckerfish_search_navipage($page)
 		if (empty($page)) break;
 		$page = substr($page,0,strrpos($page,'/'));
 	}
-	return '';
+	return null;
 }
 
 function plugin_suckerfish_makehtml($page)
 {
-	global $vars;
+	global $vars,$pkwk_dtd;
 
 	$lines = get_source($page);
 	convert_html( $lines ); // Processing for prior execution of plug-in.
@@ -91,13 +93,13 @@ function plugin_suckerfish_makehtml($page)
 			if ($item == '') {
 				continue;
 			} else {
-				$item = '	<li>' . $item;
+				$item = '<li>' . $item;
 				if ($before_level < $level){
 					/* 直前のレベルよりも現在のレベルが高いときは、そのまま<ul>タグを開く */
-					$item = "\n	<ul>\n" . $item;
+					$item = "\n<ul>\n" . $item;
 				}else if ($before_level > $level){
 					/* 直前のレベルと現在のレベルの差の分だけ<ul>タグを閉じる */
-					$item = "</li>\n</ul>\n</li>\n" . $item;
+					$item = "</li>\n</ul></li>\n" . $item;
 				}else if ($loop != 0){
 					$item = '</li>' ."\n" . $item;
 				}
@@ -112,31 +114,44 @@ function plugin_suckerfish_makehtml($page)
 	if ($level != 1){
 		$output .= "</li></ul>\n</li>\n";
 	}
+	$output = '<ul id="'.PLUGIN_SUKERFISH_DEFAULT_ID.'">'."\n".$output.'</ul>';
 	
-	return '<div id="navigator2"><ul id="'.PLUGIN_SUKERFISH_DEFAULT_ID.'">'.$output.'</ul></div>';
+//	return '<div id="navigator2">'."\n".'<ul id="'.PLUGIN_SUKERFISH_DEFAULT_ID.'">'."\n".$output.'</ul></div>';
+	return (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<nav id="navigator2">'.$output.'</nav>'."\n" : '<div id="navigator2">'.$output.'</div>')."\n";
 }
 
-function plugin_suckerfish_to_item($line)
-{
+function plugin_suckerfish_to_item($line){
 	list($rc,$interurl,$intername,$conv) = plugin_suckerfish_convert_html($line);
 	$name = trim($line);
 	$interkey = plugin_suckerfish_keyword($name);
+	if (isset($interkey) && is_string($interkey)) {
+		return $interkey;
+	}else{
+		if ($rc) {
+			$rep = '<a href="' . $interurl . '">' . $intername . '</a>';
+			return str_replace('__sukerfish__', $rep, $conv);
+		}else{
+	//		return '<span class="noexists">' . $name . '</span>';
+		}
+	}
+	/*
 	if (isset($interkey['url'])) {
-		$str = '<a href="' . $interkey['url'] . '" rel="nofollow">' . $interkey['img'] . $interkey['text'] . '</a>';
+		$str = '<a href="' . $interkey['url'] . '" rel="nofollow">' . $interkey['text'] . '</a>';
 	}else{
 		if ($rc) {
 			$rep = '<a href="' . $interurl . '">' . $intername . '</a>';
 			$str = str_replace('__sukerfish__', $rep, $conv);
-//		}else{
-//			$str = '<span class="noexists">' . $name . '</span>';
+		}else{
+			$str = '<span class="noexists">' . $name . '</span>';
 		}
 	}
+	*/
 
 	return $str;
 }
 
-function plugin_suckerfish_convert_html($str)
-{
+function plugin_suckerfish_convert_html($str){
+	
 	$conv = preg_replace(
 		array("'<p>'si","'</p>'si"),
 		array('',''),
@@ -146,117 +161,125 @@ function plugin_suckerfish_convert_html($str)
 	// $regs[0] - HIT Strings
 	// $regs[1] - URL String
 	// $regs[2] - LinkName
-
+	
 	if ( preg_match('#<a href="(.*?)"[^>]*>(.*?)</a>#si', $conv, $regs) )
 		return array( TRUE, $regs[1], $regs[2], str_replace($regs[0], '__sukerfish__', $conv) );
 
-	if ( preg_match('#<a class="inn" href="(.*?)" .*?>(.*?)<img src="' . IMAGE_URI . 'plus/inn.png".*?</a>#si', $conv, $regs) )
+	if ( preg_match('#<a class="inn" href="(.*?)" .*?>(.*?)<img src="' . IMAGE_URI . 'iconset/default/symbol/inn.png".*?</a>#si', $conv, $regs) )
 		return array( TRUE, $regs[1], $regs[2], str_replace($regs[0], '__sukerfish__', $conv) );
 	
-	if ( preg_match('#<a class="ext" href="(.*?)" .*?>(.*?)<img src="' . IMAGE_URI . 'plus/ext.png".*?</a>#si', $conv, $regs) )
+	if ( preg_match('#<a class="ext" href="(.*?)" .*?>(.*?)<img src="' . IMAGE_URI . 'iconset/default/symbol/ext.png".*?</a>#si', $conv, $regs) )
 		return array( TRUE, $regs[1], $regs[2], str_replace($regs[0], '__sukerfish__', $conv) );
 
 	// rc, $interurl, $intername, $conv
 	return array( FALSE, '', '', $conv );
 }
 
-function plugin_suckerfish_keyword($name)
-{
-	global $_LINK;
+function plugin_suckerfish_keyword($name){
 	global $do_backup, $trackback, $referer;
 	global $function_freeze;
 	global $vars;
-	global $whatsnew,$whatsdeleted;
+	
+	// $is_read = (arg_check('read') && is_page($vars['page']));
+	$is_read = is_page($vars['page']);
+	$is_readonly = auth::check_role('readonly');
+	$is_safemode = auth::check_role('safemode');
+	$is_createpage = auth::is_check_role(PKWK_CREATE_PAGE);
 
-	if ($_LINK['reload'] == '') return array();
-
-	$_page  = isset($vars['page']) ? $vars['page'] : '';
-	$is_read = (arg_check('read') && is_page($_page));
-	$is_freeze = is_freeze($_page);
+	$num = func_num_args();
+	$args = $num ? func_get_args() : array();
 
 	switch ($name) {
-	case 'edit':
-	case 'guiedit':
-	case 'add':
-		if ($is_read && !$is_freeze) return _suckerfish($name);
-		break;
-	case 'freeze':
-	case 'unfreeze':
-		if ($is_read && $function_freeze) {
-			$name = $is_freeze ? 'unfreeze' : 'freeze';
-			return _suckerfish($name);
-		}
-		break;
-	case 'upload':
-		if ($is_read && (bool)ini_get('file_uploads') && !$is_freeze && !($_page == $whatsnew || $_page == $whatsdeleted)) return _suckerfish($name);
-		break;
-	case 'filelist':
-		if (arg_check('list') && (bool)ini_get('file_uploads')) return _suckerfish($name);
-		break;
-	case 'backup':
-		if ($do_backup) return _suckerfish($name);
-		break;
-	case 'brokenlink':
-	case 'template':
-	case 'source':
-		if (!empty($_page)) return _suckerfish($name);
-		break;
-	case 'trackback':
-		if ($trackback) {
-			$tbcount = tb_count($_page);
-			
-			if ($vars['cmd'] == 'list') {
-				return _suckerfish($name, 'Trackback list');
-			}else{
-				return _suckerfish($name, 'Trackback(' . $tbcount . ')');
+		case 'freeze':
+			if ($is_readonly) break;
+			if (!$is_read) break;
+			if ($function_freeze) {
+				if (!is_freeze($vars['page'])) {
+					$name = 'freeze';
+				} else {
+					$name = 'unfreeze';
+				}
+				return _suckerfish($name);
 			}
-		}
-		break;
-	case 'refer':
-	case 'skeylist':
-	case 'linklist':
-		if ($referer) {
-			if (!isset($refcount)) $refcount = tb_count($_page,'.ref');
-			if ($refcount > 0) return _suckerfish($name);
-		}
-		break;
-	case 'log_login':
-		if (log_exist('login',$_page)) return  _suckerfish($name);
-		break;
-	case 'log_check':
-		if (log_exist('check',$_page)) return _suckerfish($name);
-		break;
-	case 'log_browse':
-		if (log_exist('browse',$_page)) return _suckerfish($name);
-		break;
-	case 'log_update':
-		if (log_exist('update',$_page)) return _suckerfish($name);
-		break;
-	case 'log_down':
-		if (log_exist('download',$_page)) return _suckerfish($name);	
-		break;
-	// case 'new':
-	case 'newsub':
-	case 'edit':
-	case 'guiedit':
-	case 'diff':
-		if (!$is_read) break;
-	default:
-		return _suckerfish($name);
-		break;
+			break;
+		case 'upload':
+			if ($is_readonly) break;
+			if (!$is_read) break;
+			if ($function_freeze && is_freeze($vars['page'])) break;
+			if ((bool)ini_get('file_uploads')) {
+				return _suckerfish($name);
+			}
+			break;
+		case 'filelist':
+			if (arg_check('list')) {
+				return _suckerfish($name);
+			}
+			break;
+		case 'backup':
+			if ($do_backup) {
+				return _suckerfish($name);
+			}
+			break;
+		case 'trackback':
+			if ($trackback) {
+				$tbcount = tb_count($vars['page']);
+				if ($tbcount > 0) {
+					return _suckerfish($name);
+				} else if (!$is_read) {
+					return _suckerfish($name);
+				}
+			}
+			break;
+		case 'referer':
+			if ($referer) {
+				return _suckerfish($name);
+			}
+			break;
+		case 'rss':
+		case 'mixirss':
+			return _suckerfish($name);
+			break;
+		case 'diff':
+			if (!$is_read) break;
+			if ($is_safemode) break;
+			return _suckerfish($name);
+			break;
+		case 'edit':
+		case 'guiedit':
+			if (!$is_read) break;
+			if ($is_readonly) break;
+			if ($function_freeze && is_freeze($vars['page'])) break;
+			return _suckerfish($name);
+			break;
+		case 'new':
+		case 'newsub':
+			if ($is_createpage) break;
+		case 'rename':
+		case 'copy':
+			if ($is_readonly) break;
+		case 'reload':
+		case 'print':
+		case 'full':
+			if (!$is_read) break;
+		default:
+			return _suckerfish($name);
+			break;
 	}
 	return array();
 }
 
-function _suckerfish($key, $val = '', $x = 20, $y = 20)
+function _suckerfish($key, $val = '')
 {
 	global $_LINK, $_LANG, $showicon;
 
 	$lang  = $_LANG['skin'];
 	$link  = $_LINK;
 
-	if (!isset($lang[$key])) { return '<!--LANG NOT FOUND-->'; }
-	if (!isset($link[$key])) { return '<!--LINK NOT FOUND-->'; }
+//	if (!isset($lang[$key])) { return '<!--LANG NOT FOUND-->'; }
+//	if (!isset($link[$key])) { return '<!--LINK NOT FOUND-->'; }
+	
+	if (!isset($lang[$key])) { return null; }
+	if (!isset($link[$key])) { return null; }
 
 	if ($showicon){
 		return '<a href="' . $link[$key] . '" rel="nofollow" class="pkwk-icon_linktext cmd-'.$key.'">' . $lang[$key]. '</a>';

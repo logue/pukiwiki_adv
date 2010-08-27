@@ -21,9 +21,14 @@ defined('PLUGIN_TOPICPATH_THIS_PAGE_LINK') or define('PLUGIN_TOPICPATH_THIS_PAGE
 
 function plugin_topicpath_convert()
 {
-	global $topicpath;
+	global $topicpath, $pkwk_dtd;
 	if (isset($topicpath) && $topicpath == false) return '';
-	return '<div id ="topicpath">' . plugin_topicpath_inline() . '</div>';
+	
+	$ret = plugin_topicpath_inline();
+	
+	if ($ret != ''){
+		return (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<nav id="topicpath">'.$ret.'</nav>'."\n" : '<div id="topicpath">'.$ret.'</div>')."\n";
+	}
 }
 
 function plugin_topicpath_inline()

@@ -46,7 +46,7 @@ define('PLUGIN_NAVI_LINK_TAGS', TRUE);	// FALSE, TRUE
 
 function plugin_navi_convert()
 {
-	global $vars, $head_tags;
+	global $vars, $link_tags;
 //	global $_navi_prev, $_navi_next, $_navi_up, $_navi_home;
 	static $navi = array();
 	$_navi_prev = _('Prev');
@@ -133,10 +133,13 @@ function plugin_navi_convert()
 			    'prev'=>$prev, 'up'=>$up) as $rel=>$_page) {
 				if ($_page != '') {
 					$s_page = htmlspecialchars($_page);
+					$link_tags[] = array('rel'=>$rel, 'href'=>get_page_uri($_page), 'title'=>$s_page);
+				/*
 					$head_tags[] = ' <link rel="' .
 						$rel . '" href="' .
 						get_page_uri($_page) . '" title="' .
 						$s_page . '" />';
+				*/
 				}
 			}
 		}
@@ -165,10 +168,10 @@ function plugin_navi_convert()
 	} else if (! $footer) {
 		// Header
 		$ret = <<<EOD
-<ul class="navi">
- <li class="navi_left">{$navi[$home]['prev1']}</li>
- <li class="navi_right">{$navi[$home]['next1']}</li>
- <li class="navi_none">{$navi[$home]['home']}</li>
+<ul>
+	<li class="navi_left">{$navi[$home]['prev1']}</li>
+	<li class="navi_right">{$navi[$home]['next1']}</li>
+	<li class="navi_none">{$navi[$home]['home']}</li>
 </ul>
 <hr class="full_hr" />
 EOD;
@@ -177,13 +180,13 @@ EOD;
 		// Footer
 		$ret = <<<EOD
 <hr class="full_hr" />
-<ul class="navi">
- <li class="navi_left">{$navi[$home]['prev1']}<br />{$navi[$home]['prev']}</li>
- <li class="navi_right">{$navi[$home]['next1']}<br />{$navi[$home]['next']}</li>
- <li class="navi_none">{$navi[$home]['home1']}<br />{$navi[$home]['up']}</li>
+<ul>
+	<li class="navi_left">{$navi[$home]['prev1']}<br />{$navi[$home]['prev']}</li>
+	<li class="navi_right">{$navi[$home]['next1']}<br />{$navi[$home]['next']}</li>
+	<li class="navi_none">{$navi[$home]['home1']}<br />{$navi[$home]['up']}</li>
 </ul>
 EOD;
 	}
-	return $ret;
+	return (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<nav class="navi">'.$ret.'</nav>'."\n" : '<div class="navi">'.$ret.'</div>')."\n";
 }
 ?>

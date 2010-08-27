@@ -3,7 +3,7 @@
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
 //
-// $Id: print.css,v 1.4.3 2004/05/19 18:38:52 miko Exp $
+// $Id: print.css,v 1.4.3 2010/08/26 22:43:52 miko Exp $
 //
 */
 @import url("default.css");
@@ -17,7 +17,7 @@ a:visited
 	text-decoration: underline;
 }
 /*
-div#header
+#header
 {
 	display:none;
 }
@@ -38,16 +38,14 @@ td.rtable
 {
 	display:none;
 }
-div#navigator
+#navigator
 {
 	display:none;
 }
-div#navibar
-{
+#navibar{
 	display:none;
 }
-/* for plus! navibar2 */
-div#navigator2
+#nav
 {
 	display:none;
 }
@@ -55,7 +53,7 @@ td.menubar
 {
 	display:none;
 }
-div#menubar
+#menubar
 {
 	display:none;
 }
@@ -63,34 +61,34 @@ td.sidebar
 {
 	display:none;
 }
-div#sidebar
+#sidebar
 {
 	display:none;
 }
 /*
-div#note
+#note
 {
 	display:none;
 }
 */
-div#attach
+#attach
 {
 	display:none;
 }
-div#toolbar
+#toolbar
 {
 	display:none;
 }
-div#lastmodified
+#lastmodified
 {
 	display:none;
 }
-div#related
+#related
 {
 	display:none;
 }
 /*
-div#footer
+#footer
 {
 	display:none;
 }

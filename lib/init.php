@@ -1,8 +1,8 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: init.php,v 1.54.37 2010/07/22 23:19:00 upk Exp $
+// $Id: init.php,v 1.54.37 2010/08/27 13:21:00 upk Exp $
 // Copyright (C)
-//   2010      PukiPlus Team
+//   2010      PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
 //   2002-2007,2009 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -43,10 +43,14 @@ foreach (array('SCRIPT_NAME', 'SERVER_ADMIN', 'SERVER_NAME',
 
 $foot_explain = array();	// Footnotes
 $related      = array();	// Related pages
-$head_tags    = array();	// XHTML tags in <head></head>
-$foot_tags    = array();
-$js_blocks    = array();
 
+$meta_tags    = array();	// <meta />Tags
+$link_tags    = array();	// <link />Tags
+$js_tags      = array();	// <script></script>Tags
+$js_blocks    = array();	// Inline scripts
+$css_blocks   = array();	// Inline styleseets
+
+$info         = array();	// For debug use.
 /////////////////////////////////////////////////
 // Require INI_FILE
 
@@ -381,7 +385,7 @@ unset($facemark_rules);
 
 // 実体参照パターンおよびシステムで使用するパターンを$line_rulesに加える
 //$entity_pattern = '[a-zA-Z0-9]{2,8}';
-$entity_pattern = trim(join('', file(CACHE_DIR . PKWK_ENTITIES_REGEX_CACHE)));
+$entity_pattern = load_entities();
 
 $line_rules = array_merge(array(
 	'&amp;(#[0-9]+|#x[0-9a-f]+|' . $entity_pattern . ');' => '&$1;',

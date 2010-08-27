@@ -14,8 +14,8 @@ error_reporting(E_ERROR | E_PARSE); // Avoid E_WARNING, E_NOTICE, etc
 
 // Debug mode.
 define('DEBUG', true);
-
-define('PKWK_WARNING', 1);
+// Show infomation message.
+//define('PKWK_WARNING', false);
 
 // Special
 //define('PKWK_READONLY',  1); // 0,1,2,3,4
@@ -27,7 +27,7 @@ define('PKWK_WARNING', 1);
 //define('TDIARY_THEME', 'digital_gadgets');
 // PukiWiki Adv. THEME
 // ex. bluebox, cloudwalk, classic, iridwire, iridorange, orangebox, pukiwiki, xxxlogue
-define('PLUS_THEME',   'default');
+// define('PLUS_THEME',   'default');
 
 // Directory definition
 // (Ended with a slash like '../path/to/pkwk/', or '')

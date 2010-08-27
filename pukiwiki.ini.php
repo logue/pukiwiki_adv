@@ -238,7 +238,7 @@ $bing_webmaster_tool = '';
 
 // Some web browser's bug, and / or Java apprets may needs not-Strict DTD.
 // Some plugin (e.g. paint) set this PKWK_DTD_XHTML_1_0_TRANSITIONAL.
-//$pkwk_dtd = PKWK_DTD_HTML_5;	// Experimental.
+$pkwk_dtd = PKWK_DTD_HTML_5;	// Experimental.
 //$pkwk_dtd = PKWK_DTD_XHTML_1_1; // Default
 //$pkwk_dtd = PKWK_DTD_XHTML_1_0_STRICT;
 //$pkwk_dtd = PKWK_DTD_XHTML_1_0_TRANSITIONAL;
@@ -247,7 +247,7 @@ $bing_webmaster_tool = '';
 
 // Change IE rendering mode.
 // http://msdn.microsoft.com/en-us/library/cc288325(VS.85).aspx
-// ここの値がChrome=1のみときChrome Frameをインストールするインラインウィンドウを表示します。
+// ここの値がChrome=1のみのときChrome Frameをインストールするインラインウィンドウを表示します。
 
 // $x_ua_compatible = "IE=edge";	// Render as latest IE (Default)
 // $x_ua_compatible = "IE=emulateIE7";	// Render as latest IE7

@@ -28,10 +28,6 @@ define(JSMML_PATH, SKIN_URI . 'js/plugin/jsmml');
 function plugin_mml_convert(){
 	global $script, $mml_count;
 	$lang = null;
-	$jsmml_path = JSMML_PATH;
-	$play_button = PLAY_BUTTON;
-	$pause_button = PAUSE_BUTTON;
-	$stop_button = STOP_BUTTON;
 
 	if ($mml_count == '') $mml_count = 0;
 
@@ -86,10 +82,9 @@ HTML;
 	}
 	
 	if ($mml_count == 0){
-		global $head_tags, $foot_tags;
-
-		$head_tags[] = <<< HTML
-<style type="text/css">/*<![CDATA[*/
+		global $js_tags, $js_blocks, $css_blocks;
+		
+		$css_blocks[] = <<< CSS
 .mml-player button{
 	width:20px;
 	height:20px;
@@ -98,10 +93,10 @@ HTML;
 	width:200px;
 	height:16px;
 }
-/*]]>*/</style>
-<script type="text/javascript" src="$jsmml_path/JSMML.js"></script>
-<script type="text/javascript">
-// <![CDATA[
+CSS;
+		$jsmml_path = JSMML_PATH;
+		$js_tags[] = array('type'=>'text/javascript', 'src'=>$jsmml_path.'/jsmml.js');
+		$js_blocks[] = <<<JAVASCRIPT
 var MMLplayers;
 var MMLPlayer = function(playButton, stopButton, pauseButton, mmlSource, mmlCast, mmlProgress) {
 	this.mml = new JSMML();
@@ -232,9 +227,7 @@ $(document).ready(function(){
 
 JSMML.swfurl = '$jsmml_path/JSMML.swf';
 JSMML.init();
-
-// ]]></script>
-HTML;
+JAVASCRIPT;
 	}
 	$mml_count++;
 	return $html;

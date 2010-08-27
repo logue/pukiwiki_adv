@@ -10,12 +10,6 @@
 // Image refernce plugin
 // Include an attached image-file as an inline-image
 
-// File icon image
-if (! defined('FILE_ICON'))
-	define('FILE_ICON',
-	'<img src="' . IMAGE_URI . 'file.png" width="20" height="20"' .
-	' alt="file" style="border-width:0px" />');
-
 /////////////////////////////////////////////////
 // Default settings
 
@@ -393,11 +387,11 @@ function plugin_ref_body($args)
 				$params['_body'] = '<a href="' . $url2 . '" title="' . $title . '">' . $params['_body'] . '</a>';
 		}
 	} else {
-		$icon = $params['noicon'] ? '' : FILE_ICON;
+		$icon = $params['noicon'] ? '' : ' class="pkwk-icon_linktext attach-download"';
 		if (defined('PLUGIN_REF_DOWNLOAD_OTHER_WINDOW') && PLUGIN_REF_DOWNLOAD_OTHER_WINDOW) {
-			$params['_body'] = '<a href="' . $url . '" title="' . $info . '" onclick="return open_attach_uri(' . "'" . $url . "', '_blank'" . ');">' . $icon . $title . '</a>';
+			$params['_body'] = '<a href="' . $url . '" title="' . $info . '" onclick="return open_attach_uri(' . "'" . $url . "', '_blank'" . ');"'. $icon .'>'.  $title . '</a>';
 		} else {
-			$params['_body'] = '<a href="' . $url . '" title="' . $info . '">' . $icon . $title .  '</a>';
+			$params['_body'] = '<a href="' . $url . '" title="' . $info . '"'.$icon.'>' .  $title .  '</a>';
 		}
 	}
 

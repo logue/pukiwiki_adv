@@ -16,21 +16,33 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-/*jslint evil: true */
+/* jslint evil: true */
 
 var pukiwiki_skin = {
 	meta : {
-		"@prefix": "<http://purl.org/net/ns/doas#>",
-		"@about": "<skin.js>", a: ":JavaScript",
-		 title: "Pukiwiki skin script for jQuery",
-		 created: "2008-11-25", release: {revision: "2.2.19", created: "2010-08-24"},
-		 author: {name: "Logue", homepage: "<http://logue.be/>"},
-		 license: "<http://www.gnu.org/licenses/gpl-2.0.html>"
+		'@prefix': '<http://purl.org/net/ns/doas#>',
+		'@about': '<skin.js>', a: ':JavaScript',
+		 title: 'Pukiwiki skin script for jQuery',
+		 created: '2008-11-25', release: {revision: '2.2.19', created: '2010-08-24'},
+		 author: {name: 'Logue', homepage: '<http://logue.be/>'},
+		 license: '<http://www.gnu.org/licenses/gpl-2.0.html>'
 	},
 	init : function(){
 		var self = this;
 		var protocol = (document.location.protocol == 'https:') ? 'https:' : 'http:';
 		$('input, button, select, textarea').attr('disabled','disabled');	// フォームをロック
+
+		if(!jQuery.support.opacity){
+			if(!jQuery.support.style){
+				if (typeof document.documentElement.style.maxHeight != "undefined") {
+					$('body').addClass('ie7');
+				}else {
+					$('body').addClass('ie6');
+				}
+			}else{
+				$('body').addClass('ie8');
+			}
+		}
 
 		// metaタグのGenereterから、Plusかそうでないかを判別
 		var generetor = $('meta[name=generator]')[0].content;
@@ -113,13 +125,13 @@ var pukiwiki_skin = {
 			});
 			
 			/* Lazyload（遅延画像ロード） */
-			$("#body img[src!=\.png]").lazyload({ 
+			$('#body img[src!=\.png]').lazyload({ 
 				placeholder : this.image_dir+'grey.gif',
 				effect : "fadeIn"
 			});
 		}else{
 			/* Lazyload（遅延画像ロード） */
-			$("#body img").lazyload({ 
+			$('#body img').lazyload({ 
 				placeholder : this.image_dir+'grey.gif',
 				effect : "fadeIn"
 			});
@@ -144,7 +156,6 @@ var pukiwiki_skin = {
 		
 		// ボタンをjQuery UIのものに
 		$("button, input[type=submit], input[type=reset], input[type=button]").button();
-		$('input, select, textarea').addClass('ui-widget-content');
 	},
 	custom : {},	// 消さないこと。（スキン用カスタムネームスペース）
 	/* ページを閉じたとき */
@@ -163,17 +174,15 @@ var pukiwiki_skin = {
 	},
 	/* ポップアップメニュー */
 	suckerfish : function(target){
-		if ($(target).length != 0){
-			var superfish_cond = {
-				autoArrows:		false,	// if true, arrow mark-up generated automatically = cleaner source code at expense of initialisation performance
-				dropShadows:	false
-			};
-			
-			if (typeof(pukiwiki_skin.custom.suckerfish) == 'object'){
-				superfish_cond = this.custom.suckerfish;
-			}
-			$(target).superfish(superfish_cond);
+		var superfish_cond = {
+			autoArrows:		false,	// if true, arrow mark-up generated automatically = cleaner source code at expense of initialisation performance
+			dropShadows:	false
+		};
+		
+		if (typeof(pukiwiki_skin.custom.suckerfish) == 'object'){
+			superfish_cond = this.custom.suckerfish;
 		}
+		$(target).superfish(superfish_cond);
 	},
 /*
 ajaxダイアログ
@@ -273,6 +282,12 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 					params.cmd = params.plugin;
 					params.plugin = undefined;
 				}
+				
+				// ページ名に空白が含まれるときに+に変換されてしまうため
+				if (params.refer){
+					params.refer = params.refer.replace(/\+/g, ' ').replace(/%2F/g, '/');
+				}
+
 				if (params.cmd){
 					if (typeof(params.file) !== 'undefined' && params.pcmd == 'open' || typeof(params.openfile) !== 'undefined'){
 						var filename;
@@ -343,7 +358,6 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 				if(typeof(callback) == 'function'){ callback(); }
 
 				$(prefix+'button, '+prefix+'input[type=submit], '+prefix+'input[type=reset], '+prefix+'input[type=button]').button();
-				$(prefix+'input, '+prefix+'select, '+prefix+'textarea').addClass('ui-widget-content');
 
 				// オーバーレイでウィンドウを閉じる
 				var parent = this;
@@ -416,7 +430,6 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		this.loadingScreen = $("div#loadingScreen");
 		this.loadingScreen.dialog({
 			autoOpen: false,	// set this to false so we can manually open it
-			dialogClass: "loadingScreenWindow",
 			closeOnEscape: false,
 			draggable: false,
 			width: 150,
@@ -500,7 +513,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 */
 	// アンカースクロール＆ハイライト
 	anchor_scroll: function(href,highlight){
-		if (href.split('#')[1] == ''){
+		if (href.split('#')[1] === ''){
 			$.scrollTo('#header');
 		}else if (href !== ''){
 			var target = '#'+href.split('#')[1];
@@ -687,7 +700,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		/* デフォルト値 */
 		var config = {
 			sorter: {
-				widthFixed: true,
+				widthFixed: true
 //				debug:DEBUG
 			},
 			pager : {
@@ -702,7 +715,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		}
 
 		$(prefix+'.tablesorter').each(function(){
-			if ( $('tr',this).length > config.pager.minimum_lines){	// 10行以上の場合ページャーを表示
+			if ( $('tr',this).length > config.pager.minimum_lines && $('thead',this).length !== 0){	// 10行以上の場合ページャーを表示
 				// テーブルのページングウィジット
 				var pager_id = 'table_pager_'+self.tablesorter.counter;
 				
@@ -1354,7 +1367,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		// アシスタント
 		// pukiwiki_elemは、pukiwiki_skin.elemになりました。
 		
-		if (!self.elem) self.elem = $('textarea[name=msg]')[0];
+		if (!self.elem){ self.elem = $('textarea[name=msg]')[0]; }
 		
 		$('input[type=text]').focus(function(e){
 			self.elem = this;
@@ -1407,7 +1420,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			var str, ret;
 			if (this.alt == 'ncr'){
 				var str = $(self.elem).getSelection().text;
-				if (str == ''){
+				if (str === ''){
 					alert( $.i18n('pukiwiki', 'select'));
 					return;
 				}
@@ -1426,7 +1439,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		$('map area.helper').click(function(){
 			var ret;
 			var str = $(self.elem).getSelection().text;
-			if (str == '' || !self.elem){
+			if (str === '' || !self.elem){
 				alert( $.i18n('pukiwiki', 'select'));
 				return;
 			}
@@ -1450,6 +1463,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 				break;
 				case 's':
 					ret = '%%' + str + '%%';
+				brea;
 				case 'url':
 				//	var regex = "^s?https?://[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#]+$";
 					var my_link = prompt( $.i18n('pukiwiki', 'url'), 'http://');
@@ -1936,7 +1950,7 @@ var _eventScrPos = function(e){
 };
 
 /** display on mouseclick */
-var _dispToc = function(ev,tg,type){
+_dispToc = function(ev,tg,type){
 	var doc = _eventDocPos(ev);
 	var scr = _eventScrPos(ev);
 	var h = pukiwiki_skin.toc.height;
@@ -1954,7 +1968,7 @@ var _dispToc = function(ev,tg,type){
 	}
 	pukiwiki_skin.toc.style.left = ((scr.x < scr.w - w) ? doc.x + "px" :
 		(doc.x - w) + "px");
-	if(type) pukiwiki_skin.setCurPos(tg,type);
+	if(type){ pukiwiki_skin.setCurPos(tg,type); }
 	$(pukiwiki_skin.toc).fadeIn("fast");
 };
 
@@ -2144,3 +2158,22 @@ $(window).unload(function(){
 		pukiwiki_skin.unload();
 	}
 });
+
+// usage: log('inside coolFunc',this,arguments);
+// paulirish.com/2009/log-a-lightweight-wrapper-for-consolelog/
+window.log = function(){
+	log.history = log.history || [];	// store logs to an array for reference
+	log.history.push(arguments);
+	if(this.console){
+		console.log( Array.prototype.slice.call(arguments) );
+	}
+};
+
+// catch all document.write() calls
+(function(doc){
+	var write = doc.write;
+	doc.write = function(q){
+		log('document.write(): ',arguments);
+		if (/docwriteregexwhitelist/.test(q)){ write.apply(doc,arguments); }
+	};
+})(document);

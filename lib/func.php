@@ -1,8 +1,8 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: func.php,v 1.93.40 2010/07/09 17:55:00 Logue Exp $
+// $Id: func.php,v 1.93.41 2010/08/26 19:57:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiPlus Team
+//   2010      PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
 //   2002-2007 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -470,38 +470,42 @@ function catrule()
 }
 
 // Show (critical) error message
-function die_message($msg)
-{
-	global $skin_file;
+function die_message($msg){
+	global $skin_file, $page_title;
 	$title = $page = 'Runtime error';
+	
+	if (!PKWK_WARNING || DEBUG){	// PKWK_WARNINGが有効でない場合は、詳細なエラーを隠す
+		$msg = 'A runtime error has occurred.<br />Please contact to site admin. If you want more information, <code>PKWK_WARNING</code> please change the value.';
+	}
 	$body = <<<EOD
-<h3>Runtime error</h3>
-<strong>Error message : $msg</strong>
+<detail style="padding: 0pt 0.7em;" class="ui-state-error ui-corner-all">
+	<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span> 
+	<strong>$page:</strong> $msg</p>
+</detail>
 EOD;
 
-	// @miko:recover: $trackback is unused.
 	global $trackback;
 	$trackback = 0;
-	// @miko
 
 	pkwk_common_headers();
+	header('HTTP', true, 500);	// サーバーエラーとする
+	
 	if(defined('SKIN_FILE') && file_exists(SKIN_FILE) && is_readable(SKIN_FILE)) {
 		catbody($title, $page, $body);
 	} elseif ($skin_file != '' && file_exists($skin_file) && is_readable($skin_file)) {
 		define('SKIN_FILE', $skin_file);
 		catbody($title, $page, $body);
 	} else {
-		header('Content-Type: text/html; charset=euc-jp');
+		header('Content-Type: text/html; charset=utf-8');
 		print <<<EOD
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!doctype html>
 <html>
- <head>
-  <title>$title</title>
-  <meta http-equiv="content-type" content="text/html; charset=euc-jp">
- </head>
- <body>
- $body
- </body>
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/themes/base/jquery-ui.css" type="text/css" media="all" />
+		<title>$title - $page_title</title>
+	</head>
+	<body>$body</body>
 </html>
 EOD;
 	}
