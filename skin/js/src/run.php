@@ -75,10 +75,8 @@ foreach(explode(',', $loadFirst) as $filePreLoad)
 }
 
 // Look in the folder for javascript files
-while ($file = @readdir($temp))
-{
-	if (!in_array($file,$arr) and !is_dir('./' . $file) and (substr($file, -3, 3) == '.js'))
-	{
+while ($file = @readdir($temp)){
+	if (!in_array($file,$arr) and !is_dir('./' . $file) and (substr($file, -3, 3) == '.js')){
 		// Load Found File
 		loadFiles($file);
 	}
@@ -102,12 +100,12 @@ if(function_exists('gzdeflate'))
 	$runGZip = true;
 	
 	// The Gzip Inflating Magic! :D
-$php = '<'.'?php 
-header("Content-type: text/javascript; charset: UTF-8");
-header("Content-Encoding: deflate");
-header("Cache-Control: must-revalidate");
-header("Expires: " .gmdate("D, d M Y H:i:s",time() + (60 * 60)) . " GMT");
-readfile("'.$filePrefix.'.gz");';
+	$php = '<'.'?php 
+	header("Content-type: text/javascript; charset: UTF-8");
+	header("Content-Encoding: deflate");
+	header("Cache-Control: must-revalidate");
+	header("Expires: " .gmdate("D, d M Y H:i:s",time() + (60 * 60)) . " GMT");
+	readfile("'.$filePrefix.'.gz");';
 }
 
 $javascript = JSMin::minify($script);
@@ -117,8 +115,7 @@ $javascript = JSMin::minify($script);
 file_put_contents('../'.$filePrefix.'.js', $javascript);
 
 // If GZip, create GZip file
-if($runGZip)
-{
+if($runGZip){
 	file_put_contents('../'.$filePrefix.'.gz', gzdeflate($javascript, 9));
 }
 

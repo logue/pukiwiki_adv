@@ -157,7 +157,6 @@ tt,
 .ui-button {
 	font-family:monospace;
 	*font-size:108%;
-/*	line-height:100%;	*/
 }
 
 /* 
@@ -207,9 +206,6 @@ input[type="checkbox"] { vertical-align: bottom; *vertical-align: baseline; }
 /* hand cursor on clickable input elements */
 label, input[type=button], input[type=submit], button { cursor: pointer; }
 
-/* always force a scrollbar in non-IE */
-html { overflow-y: scroll; }
-
 /* make buttons play nice in IE:    
    www.viget.com/inspire/styling-the-button-element-in-internet-explorer/ */
 button,.ui-button {  width: auto; overflow: visible; }
@@ -248,7 +244,7 @@ button,.ui-button {  width: auto; overflow: visible; }
 /** PukiWiki Plus! CSS set Start *******************************************************************/
 
 body, h1, h2, h3, h4, h5{
-	font-family:"Trebuchet MS", Meiryo, Sans-Serif;
+	font-family:"Trebuchet MS", Meiryo, Osaka, Sans-Serif;
 }
 
 a:link, a:active, a:visited{
@@ -305,12 +301,18 @@ dt{
 	font-weight:bold;
 	margin-top:1em;
 }
+
 dd{
 	margin-left:1em;
 }
 
 blockquote, pre, ul ,ol ,p{
 	margin:0.5em;
+}
+
+ul, ol, dl {
+	padding-left:16px;
+	margin-left:16px
 }
 
 pre, .pre{
@@ -326,13 +328,11 @@ img{
 }
 
 /* pukiwiki extend anchor */
-img.ext
-{
+img.ext{
 	margin-left: 2px;
 	vertical-align: baseline;
 }
-img.inn
-{
+img.inn{
 	margin-left: 2px;
 	vertical-align: baseline;
 }
@@ -475,6 +475,13 @@ span.size7{
 	display:inline;
 }
 
+input[type='text'], input[type='password'], textarea, select, iframe {
+	border:1px solid #AAA;
+	margin:0px;
+	font-family:monospace !important;
+	font-size: 93%;
+}
+	
 /** Misc ******************************************************************************************/
 #lastmodified{
 	display:block;
@@ -766,9 +773,13 @@ table.main tr td{
 /*	cursor:default;	*/
 }
 
+#poptoc ul, #poptoc ol {
+	padding-left:12px;
+	margin-left:12px
+}
 /** MenuBar/SideBar*********************************************************************************/
 
-#menubar{
+#menubar, #sidebar{
 	display:block;
 	width:160px;
 	padding:0px;
@@ -778,23 +789,54 @@ table.main tr td{
 	overflow:hidden;
 }
 
-#menubar ul.menu{
+#menubar ul{
 	list-style-type: none;
 	list-style-position: outside;
 	margin: 0px;
 	padding: 0px;
 }
 
-#menubar ul.menu li{
+#menubar ul li{
 	padding: 0px 0.3em;
 	margin: 0px;
 }
 
-#menubar ul.menu li a{
+#sidebar ul{
+	margin:0px 0px 0px .5em;
+	padding:0px 0px 0px .5em;
+}
+
+#sidebar ul li{
+	line-height:110%;
+}
+
+#menubar ul li a, #menubar ul li span.noexists,
+#sidebar ul li a, #sidebar ul li span.noexists{
 	text-decoration: none;
 	display:block;
 	padding:0.1em 0.3em;
 	margin:0px -0.3em;
+}
+
+#menubar ul li span.noexists a,
+#sidebar ul li span.noexists a{
+	display:inline;
+	background-color:transparent;
+	padding:0px 5px;
+}
+
+#menubar ul.recent_list, #menubar ul.popular_list,
+#sidebar ul.recent_list, #sidebar ul.popular_list {
+	list-style-type:disc;
+	margin:0 0 0 0.5em;
+	padding:0 0 0 0.5em;
+	word-wrap:break-word;
+}
+
+#menubar ul.recent_list a, #menubar ul.popular_list a,
+#sidebar ul.recent_list a, #sidebar ul.popular_list a {
+	display:inline;
+	padding:0px;
 }
 
 #menubar h2, #menubar h3, #menubar h4, #menubar h5,
@@ -810,37 +852,14 @@ table.main tr td{
 	text-align:center;
 }
 
-#menubar h5{
+#menubar h5, #sidebar h5{
 	margin:0px 0px 4px 0px;
 	padding:3px;
 	text-align:center;
 }
 
-#sidebar{
-	display:block;
-	width:160px;
-	padding:0px;
-	margin:0px 2px;
-	word-break:break-all;
-	font-size:93%;
-	overflow:hidden;
-}
-
-#sidebar ul{
-	margin:0px 0px 0px .5em;
-	padding:0px 0px 0px .5em;
-}
-
-#sidebar ul li{
-	line-height:110%;
-}
-
 /** Plugin ****************************************************************************************/
 
-/* aname.inc.php */
-.anchor
-{
-}
 .anchor_super
 {
 	font-size:xx-small;

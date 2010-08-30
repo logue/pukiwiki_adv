@@ -10,7 +10,7 @@
 //	PukiWiki : Copyright (C) 2001-2006 PukiWiki Developers Team
 //	FCKeditor : Copyright (C) 2003-2008 Frederico Caldeira Knabben
 //      PukiWiki Plus! : Copyright (C) 2009 Katsumi Saito
-//	PukiPlus :  Copyright (C) 2010 Katsumi Saito
+//
 //
 //	File:
 //	  xhtml2wiki.php

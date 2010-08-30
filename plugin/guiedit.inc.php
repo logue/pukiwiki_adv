@@ -2,7 +2,7 @@
 //
 //	guiedit - PukiWiki Plugin
 //
-//	$Id: guiedit.inc.php,v 1.63.2 2009/04/20 23:06:00 upk Exp $
+//	$Id: guiedit.inc.php,v 1.63.3 2010/08/30 16:57:00 Logue Exp $
 //
 //	License:
 //	  GNU General Public License Version 2 or later (GPL)
@@ -12,13 +12,11 @@
 //	PukiWiki : Copyright (C) 2001-2006 PukiWiki Developers Team
 //	FCKeditor : Copyright (C) 2003-2008 Frederico Caldeira Knabben
 //	PukiWiki Plus! : Copyright (C) 2009 Katsumi Saito
-//
-
-
-define('GUIEDIT_DEBUG', 0);
+//	PukiWiki Advance : Copyright (C) 2010 PukiWiki Advance Developers Team
 
 defined('GUIEDIT_FCK_PATH')  or define('GUIEDIT_FCK_PATH', SKIN_URI . 'fckeditor/');
 defined('GUIEDIT_LIB_PATH')  or define('GUIEDIT_LIB_PATH', SKIN_URI . 'guiedit/');
+defined('GUIEDIT_CONF_PATH')  or define('GUIEDIT_CONF_PATH', PLUGIN_DIR . 'guiedit/');
 defined('GUIEDIT_FULL_SIZE') or define('GUIEDIT_FULL_SIZE', 0);
 
 define('PLUGIN_GUIEDIT_FREEZE_REGEX', '/^(?:#freeze(?!\w)\s*)+/im');
@@ -88,16 +86,27 @@ function plugin_guiedit_action()
 	return array('msg'=>$_title_edit, 'body'=>plugin_guiedit_edit_form($page, $postdata));
 }
 
-//	XML 形式で出力
-function plugin_guiedit_send_xml($postdata)
+function plugin_guiedit_send_ajax($postdata)
 {
 	//	文字コードを UTF-8 に変換
 	//$postdata = mb_convert_encoding($postdata, 'UTF-8', SOURCE_ENCODING);
 	
 	//	出力
-	header('Content-Type: application/xml; charset=UTF-8');
-	echo '<?xml version="1.0" encoding="UTF-8" ?>' . "\n";
-	echo '<res><![CDATA[' . $postdata . ']]></res>';
+	pkwk_common_headers();
+	$longtaketime = getmicrotime() - MUTIME;
+	$taketime     = sprintf('%01.03f', $longtaketime);
+	if ($vars['type'] == 'json'){
+		$obj = array(
+			'data'			=> $postdata,
+			'taketime'		=> $taketime
+		);
+		header("Content-Type: application/json; charset=".CONTENT_CHARSET);
+		echo json_encode($obj); 
+	}else{
+		header('Content-type: text/xml; charset=UTF-8');
+		print '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+		print '<res><![CDATA[' .$postdata. ']]></res>';
+	}
 	exit;
 }
 
@@ -119,10 +128,10 @@ function plugin_guiedit_edit_data($page)
 	if ($postdata == '') $postdata = auto_template($page);
 
 	//	構文の変換
-	require_once(GUIEDIT_LIB_PATH . 'wiki2xhtml.php');
+	require_once(GUIEDIT_CONF_PATH . 'wiki2xhtml.php');
 	$postdata = guiedit_convert_html($postdata);
 	
-	plugin_guiedit_send_xml($postdata);
+	plugin_guiedit_send_ajax($postdata);
 }
 
 //	テンプレート
@@ -146,10 +155,10 @@ function plugin_guiedit_template()
 	}
 	
 	//	構文の変換
-	require_once(GUIEDIT_LIB_PATH . 'wiki2xhtml.php');
+	require(GUIEDIT_CONF_PATH . 'wiki2xhtml.php');
 	$vars['msg'] = guiedit_convert_html($vars['msg']);
 	
-	plugin_guiedit_send_xml($vars['msg']);
+	plugin_guiedit_send_ajax($vars['msg']);
 }
 
 //	プレビュー
@@ -166,7 +175,7 @@ function plugin_guiedit_preview()
 
 	if ($guiedit_use_fck) {
 		//	構文の変換
-		require_once(GUIEDIT_LIB_PATH . 'xhtml2wiki.php');
+		require_once(GUIEDIT_CONF_PATH . 'xhtml2wiki.php');
 		// $source = $vars['msg'];
 		$vars['msg'] = xhtml2wiki($vars['msg']);
 	}
@@ -198,12 +207,12 @@ function plugin_guiedit_preview()
 	$postdata .= ! empty($foot_explain) ? $note_hr . join("\n", $foot_explain) : '';
 	
 	//	通常の編集フォーム
-	if (GUIEDIT_DEBUG) {
+	if (DEBUG) {
 		global $hr;
 		$postdata .= $hr . edit_form($vars['page'], $vars['msg']);
 	}
 	
-	plugin_guiedit_send_xml($postdata);
+	plugin_guiedit_send_ajax($postdata);
 }
 
 //	ページの更新
@@ -214,7 +223,7 @@ function plugin_guiedit_write()
 
 	if ($guiedit_use_fck) {
 		//	構文の変換
-		require_once(GUIEDIT_LIB_PATH . 'xhtml2wiki.php');
+		require_once(GUIEDIT_CONF_PATH . 'xhtml2wiki.php');
 		$vars['msg'] = xhtml2wiki($vars['msg']);
 	}
 
@@ -246,7 +255,7 @@ function plugin_guiedit_edit_form($page, $postdata, $digest = FALSE, $b_template
 	global $load_template_func, $whatsnew;
 	global $_button;
 	global $notimeupdate;
-	global $head_tags, $javascript;
+	global $js_tags,$link_tags,$js_blocks;
 	global $guiedit_use_fck;
 
 	// Newly generate $digest or not
@@ -265,7 +274,7 @@ function plugin_guiedit_edit_form($page, $postdata, $digest = FALSE, $b_template
 		return $body;
 	}
 	
-	require_once(GUIEDIT_LIB_PATH . 'guiedit.ini.php');
+	require_once(GUIEDIT_CONF_PATH . 'guiedit.ini.php');
 	
 	//	フォームの値の設定
 	$s_digest    = htmlspecialchars($digest);
@@ -292,16 +301,16 @@ function plugin_guiedit_edit_form($page, $postdata, $digest = FALSE, $b_template
 					continue 2;
 			}
 			$_s_page = htmlspecialchars($_page);
-			$pages[$_page] = '   <option value="' . $_s_page . '">' . $_s_page . '</option>';
+			$pages[$_page] = '		<option value="' . $_s_page . '">' . $_s_page . '</option>';
 		}
 		ksort($pages);
 		$s_pages  = join("\n", $pages);
 		$template = <<<EOD
-  <select name="template_page" onchange="Template()">
-   <option value="">-- {$_button['template']} --</option>
+<select name="template_page" onchange="Template()">
+	<option value="">-- {$_button['template']} --</option>
 $s_pages
-  </select>
-  <br />
+</select>
+<br />
 EOD;
 	}
 	
@@ -326,48 +335,41 @@ EOD;
 	$body = <<<EOD
 
 <div class="edit_form">
- <form id="edit_form" action="$script" method="post" style="margin-bottom:0px;">
-$template
-  <input type="hidden" name="cmd"    value="guiedit" />
-  <input type="hidden" name="page"   value="$s_page" />
-  <input type="hidden" name="digest" value="$s_digest" />
-  <input type="hidden" name="ticket" value="$s_ticket" />
-  <input type="hidden" name="id"     value="$s_id" />
-  <textarea name="msg" rows="1" cols="1" style="display:none"></textarea>
-  <div style="float:left;">
-   <input type="submit" name="write"   value="{$_button['update']}" accesskey="s" onclick="Write()" />
-   <input type="button" name="preview" value="{$_button['preview']}" accesskey="p" onclick="Preview()" />
-   $add_notimestamp
-  </div>
-  <textarea name="original" rows="1" cols="1" style="display:none">$s_original</textarea>
- </form>
- <form action="$script" method="post" style="margin-top:0px;">
-  <input type="hidden" name="cmd"    value="guiedit" />
-  <input type="hidden" name="page"   value="$s_page" />
-  <input type="submit" name="cancel" value="{$_button['cancel']}" accesskey="c" />
- </form>
+	<form id="edit_form" action="$script" method="post" style="margin-bottom:0px;">
+	$template
+		<input type="hidden" name="cmd"    value="guiedit" />
+		<input type="hidden" name="page"   value="$s_page" />
+		<input type="hidden" name="digest" value="$s_digest" />
+		<input type="hidden" name="ticket" value="$s_ticket" />
+		<input type="hidden" name="id"     value="$s_id" />
+		<textarea name="msg" rows="1" cols="1" style="display:none"></textarea>
+		<div style="float:left;">
+		<input type="submit" name="write"   value="{$_button['update']}" accesskey="s" onclick="Write()" />
+		<input type="button" name="preview" value="{$_button['preview']}" accesskey="p" onclick="Preview()" />
+		$add_notimestamp
+		</div>
+		<textarea name="original" rows="1" cols="1" style="display:none">$s_original</textarea>
+	</form>
+	<form action="$script" method="post" style="margin-top:0px;">
+		<input type="hidden" name="cmd"    value="guiedit" />
+		<input type="hidden" name="page"   value="$s_page" />
+		<input type="submit" name="cancel" value="{$_button['cancel']}" accesskey="c" />
+	</form>
 </div>
 <div id="preview_indicator" style="display:none"></div>
 <div id="preview_area" style="display:none"></div>
 
 EOD;
 
-	//	JavaScript を有効にする
-	$javascript = 1;
 	$root = get_baseuri('abs');
 
 	//	ヘッダの設定
-	$head_tags[] = ' <link rel="stylesheet" type="text/css" href="' . GUIEDIT_LIB_PATH . 'guiedit.css" charset="UTF-8" />';
-	$head_tags[] = ' <script type="text/javascript" src="' . GUIEDIT_FCK_PATH . 'fckeditor.js" charset="UTF-8"></script>';
-	$head_tags[] = ' <script type="text/javascript" src="' . GUIEDIT_LIB_PATH . 'ajax.js" charset="UTF-8"></script>';
-	$head_tags[] = ' <script type="text/javascript" src="' . GUIEDIT_LIB_PATH . 'guiedit.js" charset="UTF-8"></script>';
-	$head_tags[] = ' <script type="text/javascript">';
-	$head_tags[] = ' <!-- <![CDATA[';
-	$head_tags[] = ' var SMILEY_PATH="' . $root . IMAGE_URI . "face/" . '";';
-	$head_tags[] = ' var FCK_PATH="' . $root . GUIEDIT_FCK_PATH . '";';
-	$head_tags[] = ' var GUIEDIT_PATH="' . $root . GUIEDIT_LIB_PATH . '";';
-	$head_tags[] = ' //]]>-->';
-	$head_tags[] = ' </script>';
+	$js_tags[] = array('type'=>'text/javascript', 'src'=>GUIEDIT_FCK_PATH.'fckeditor.js');
+	$js_tags[] = array('type'=>'text/javascript', 'src'=>GUIEDIT_LIB_PATH.'guiedit.js');
+	$link_tags[] = array('rel'=>'stylesheet','href'=>GUIEDIT_LIB_PATH . 'guiedit.css');
+	$js_blocks[] = 'var SMILEY_PATH="' . $root . IMAGE_URI . "face/" . '";';
+	$js_blocks[] = 'var FCK_PATH="' . $root . GUIEDIT_FCK_PATH . '";';
+	$js_blocks[] = 'var GUIEDIT_PATH="' . $root . GUIEDIT_LIB_PATH . '";';
 	
 	return $body;
 }

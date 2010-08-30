@@ -63,13 +63,6 @@ img.helper, img.tocpic, map area, a{
 <?php } ?>
 }
 
-input[type='text'], input[type='password'], textarea, select, iframe {
-	border:1px solid #AAA;
-	margin:0px;
-	font-family:monospace !important;
-	font-size:10pt;
-}
-
 input[type='text']:focus, input[type='password']:focus, textarea:focus, select:focus, iframe:focus{
 <?php if ($engine == "Gecko"){ ?>
 	-moz-box-shadow:0 0 8px #6CF;
@@ -189,7 +182,7 @@ th.headerSortDown {
 	z-index: 2;
 	padding-left: 0;
 	color: #27537a;
-	font-size: 12px;
+	font-size: 93%;
 	font-weight: bold;
 	line-height: 1.2;
 	text-align: center;
@@ -496,7 +489,7 @@ ul.sf-navbar .current ul ul {
 
 .ajaxtooltip{
 	color:black;
-	font-size:12px;
+	font-size:93%;
 	text-shadow: white 1px 1px 0px;
 	position: absolute; /*leave this alone*/
 	display: none; /*leave this alone*/
@@ -651,9 +644,9 @@ div.table_pager_widget select.pagesize{
 }
 /**************************************************************************************************/
 
-#swfupload-control p{ margin:10px 5px; font-size:0.9em; }
+#swfupload-control p{ margin:10px 5px; font-size:93%; }
 #swfupload-log{ margin:0; padding:0; width:500px;}
-#swfupload-log li{ list-style-position:inside; margin:2px; padding:10px; font-size:12px; position:relative;}
+#swfupload-log li{ list-style-position:inside; margin:2px; padding:10px; font-size:93%; position:relative;}
 #swfupload-log li .progressbar{ height:5px;}
 #swfupload-log li p{ margin:0; line-height:18px; }
 #swfupload-log li.success{ border:1px solid #339933; background:#ccf9b9; }

@@ -156,6 +156,11 @@ var pukiwiki_skin = {
 		
 		// ボタンをjQuery UIのものに
 		$("button, input[type=submit], input[type=reset], input[type=button]").button();
+		
+		// アンカーがURLに含まれていた場合（アニメーションする必要はあるのだろうか？）
+		if (location.hash){
+			this.anchor_scroll(location.hash,true);
+		}
 	},
 	custom : {},	// 消さないこと。（スキン用カスタムネームスペース）
 	/* ページを閉じたとき */
@@ -208,7 +213,6 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			next			: '<span class="ui-icon ui-icon-circle-arrow-w" style="margin:4px;"></span>',
 			close			: '<span class="ui-icon ui-icon-circle-close" style="margin:4px;"></span>',
 			onOpen:function(){
-				$('object').css('display','none');	// objectは常に最上部に表示されるため
 				// jQueryUI Fix
 				$('div#cboxOverlay').addClass('ui-widget-overlay');				// オーバーレイをjQueryUIのものに変更
 				$('div#colorbox').addClass('ui-widget-content ui-corner-all');		// colorboxのウィンドウをjQueryUIのモノに変更
@@ -252,9 +256,6 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 				}
 				$(window).bind("resize", autoResizer);
 */
-			},
-			onClosed:function(){
-				$('object').css('display','block');
 			}
 		};
 
@@ -441,11 +442,13 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			dialogClass: 'blockUI',
 			open: function() {
 				// scrollbar fix for IE
-			//	if ($.browser.msie){ $('body').css('overflow','hidden'); }
+				//	if ($.browser.msie){ $('body').css('overflow','hidden'); }
+				$('body').css('cursor','wait');
 			},
 			close: function() {
 				// reset overflow
-				$('body').css('overflow','auto');
+				// $('body').css('overflow','auto');
+				$('body').css('cursor','auto');
 			}
 		}); // end of dialog
 		var self = this;
@@ -453,7 +456,6 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		.ajaxSend(function(e, xhr, settings) {
 			self.loadingScreen.dialog("option", "title", 'Loading...');
 		//	if(DEBUG && console){ console.info('load: ',settings.url); }
-			$('body').css('cursor','wait');
 			self.loadingScreen.dialog('open');
 		})
 		.ajaxStart(function(){
@@ -471,7 +473,6 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		.ajaxStop(function(){
 			self.loadingScreen.dialog("option", "title", 'Ready');
 			self.loadingScreen.dialog('close');
-			$('body').css('cursor','auto');
 		});
 	},
 	iframeWin : function(params){
@@ -700,7 +701,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		/* デフォルト値 */
 		var config = {
 			sorter: {
-				widthFixed: true
+				widthFixed: false
 //				debug:DEBUG
 			},
 			pager : {
@@ -1091,7 +1092,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		}
 
 		var pass_form;
-		if ($("input[name=pass]").length !== 0){
+		if ($(prefix+'input[name=pass]').length !== 0){
 			pass_form = '<label for="pass">Password:</label><input type="password" name="pass" id="pass" size="8" value="" /><br />';
 		}
 
@@ -1164,7 +1165,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 //		if ($("input[name=pass]").length !== 0){ params.pass = $("input[name=pass]").val(); }	// パスワード
 		
 		// 添付画面のテンプレート
-		$('.attach_form').html( [
+		$(prefix+'.attach_form').html( [
 			'<div id="swfupload-control">',
 			'	<input type="button" id="swfupload_button" />',
 			'	<p id="swfupload-queuestatus" ></p>',
@@ -1173,7 +1174,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			'</div>'
 		].join("\n"));
 		
-		$('#execute').button({
+		$(prefix+'#execute').button({
 			icons : { primary: 'ui-icon-check' },
 			disabled:true
 		}).click(function(){
@@ -1183,7 +1184,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			display:'none'
 		});
 
-		$('#swfupload-control').swfupload(config)	// ファイル添付のフォームをswfupload.swfに置き換え
+		$(prefix+'#swfupload-control').swfupload(config)	// ファイル添付のフォームをswfupload.swfに置き換え
 		.bind('fileQueued', function(event, file){
 			var listitem = [
 				'<li id="'+file.id+'" class="ui-widget-content ui-corner-all">',
@@ -1194,9 +1195,9 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 				'</li>'
 			].join("\n");
 	
-			$('#swfupload-log').append(listitem);
+			$(prefix+'#swfupload-log').append(listitem);
 			
-			$('li#'+file.id+' button:first').button({
+			$(prefix+'li#'+file.id+' button:first').button({
 				icons: {
 					primary: 'ui-icon-close'
 				}
@@ -1207,9 +1208,9 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 				return false;
 			});
 			
-			$('#swfupload-log li#'+file.id+' .progressbar').progressbar();
+			$(prefix+'#swfupload-log li#'+file.id+' .progressbar').progressbar();
 			
-			$('#execute').button({
+			$(prefix+'#execute').button({
 				disabled:false
 			}).css({
 				display:''
@@ -1226,9 +1227,9 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 				'</li>'
 			].join("\n");
 
-			$('#swfupload-log').append(listitem);
+			$(prefix+'#swfupload-log').append(listitem);
 			
-			$('li#error button').button({
+			$(prefix+'li#error button').button({
 				icons: {
 					primary: 'ui-icon-close'
 				}
@@ -1254,12 +1255,12 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		.bind('uploadSuccess', function(event, file, serverData){
 			if (params.plugin != 'attachref'){
 				var ret = eval("(" + serverData + ")");
-				var item=$('#swfupload-log  li#'+file.id);
-				$('#swfupload-log li#'+file.id+' .progressbar').progressbar({ value: 100 });
+				var item=$(prefix+'#swfupload-log  li#'+file.id);
+				$(prefix+'#swfupload-log li#'+file.id+' .progressbar').progressbar({ value: 100 });
 				item.find('span.progressvalue').text('100%');
 				var pathtofile = '<a href="'+SCRIPT+'?plugin=attach&pcmd=open&refer='+PAGE+'&file='+file.name+'" id="view_'+file.id+'"><span style="float: right; margin-right: 0.3em;" class="ui-icon ui-icon-newwin"></span>view &raquo;</a>';
 				item.addClass('success').find('p.status').html(ret.title+' | '+pathtofile);
-				$('#swfupload-log li#'+file.id+' a#view_'+file.id).click(function(){
+				$(prefix+'#swfupload-log li#'+file.id+' a#view_'+file.id).click(function(){
 					var href = $(this).attr('href');
 /*
 					if (href.match(/\.(jpg|jpeg|gif|png)$/i)){
@@ -1443,7 +1444,8 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 				alert( $.i18n('pukiwiki', 'select'));
 				return;
 			}
-			switch ($(this).attr('alt')){
+			var v = $(this).attr('alt');
+			switch (v){
 				case 'size' :
 					var default_size = "%";
 					var v = prompt($.i18n('pukiwiki', 'fontsize'), default_size);
@@ -1506,37 +1508,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			prefix = '';
 		}
 		if (typeof(SyntaxHighlighter) == 'object'){
-			$(prefix + '.sh').each(function(){
-				$(this).removeClass('sh');
-				switch($(this).attr('class')){
-					case 'AS3':
-					case 'Bash':
-					case 'Cpp':
-					case 'Csharp':
-					case 'Css':
-					case 'Delphi':
-					case 'Diff':
-					case 'Erlang':
-					case 'Groovy':
-					case 'Java':
-					case 'JavaFX':
-					case 'JScript':
-					case 'Perl':
-					case 'Php':
-					case 'PowerShell':
-					case 'Python':
-					case 'Ruby':
-					case 'Scala':
-					case 'Sql':
-					case 'Vb':
-					case 'Xml':
-						$(this).addClass('brush:'+$(this).attr('class'));
-					break;
-					default:
-						$(this).addClass('brush: Plain');
-					break;
-				};
-			});
+			SyntaxHighlighter.config.clipboardSwf = SKIN_DIR+'js/syntaxhighlighter/scripts/clipboard.swf';
 			SyntaxHighlighter.all();
 		}
 	},

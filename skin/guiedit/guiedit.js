@@ -9,6 +9,7 @@
 //	PukiWiki : Copyright (C) 2001-2006 PukiWiki Developers Team
 //	FCKeditor : Copyright (C) 2003-2007 Frederico Caldeira Knabben
 //	PukiWiki Plus! : Copyright (C) 2009 Katsumi Saito
+//	PukiWiki Advance : Copyright (C) 2010 PukiWiki Advance Developers Team
 //
 //	File:
 //	  guiedit.js
@@ -69,84 +70,74 @@ function SetBeforeUnload(bEnable) {
 
 //	編集するデータ
 function GetSource() {
-	var element = document.getElementById('edit_form');
-	var postdata = new Array();
-	postdata['cmd'] = 'guiedit';
-	postdata['edit'] = 1;
-	postdata['page'] = element.page.value;
-	postdata['id'] = element.id.value;
-
-	sendRequest(OnSourceLoaded, postdata, 'POST', element.action, true, true);
-}
-
-//	編集するデータを受信した時
-function OnSourceLoaded(obj) {
-	var doc = obj.responseXML;
-	html = doc.documentElement.firstChild.nodeValue;
-	
-	if (editor) {
-		editor.SetHTML(html, true);
-		html = '';
-	}
+	$.ajax({
+		dataType:'xml',
+		type:'POST',
+		data: {
+			cmd : 'guiedit',
+			edit: 1,
+			page: PAGE,
+			id:$('#edit_form').val()
+		},
+		success: function(data){
+			html = data.documentElement.firstChild.nodeValue;
+			if (editor) {
+				editor.SetHTML(html, true);
+				html = '';
+			}
+		}
+	});
 }
 
 //	テンプレート
 function Template() {
-	var element = document.getElementById('edit_form');
-	
-	if (element.template_page.selectedIndex == '0') {
-		return;
-	}
-	
-	var postdata = new Array();
-	postdata['cmd'] = 'guiedit';
-	postdata['template'] = 1;
-	postdata['page'] = element.page.value;
-	postdata['template_page'] = element.template_page.value;
-
-	sendRequest(OnTemplateLoaded, postdata, 'POST', element.action, true, true);
-}
-
-//	テンプレートのデータを受信した時
-function OnTemplateLoaded(obj) {
-	var doc = obj.responseXML;
-	var html = doc.documentElement.firstChild.nodeValue;
-	
-	editor.SetHTML(html);
+	$.ajax({
+		dataType:'xml',
+		type:'POST',
+		data: {
+			cmd : 'guiedit',
+			edit: 1,
+			page: PAGE,
+			template_page:$('select[name=template_page]').val()
+		},
+		success: function(data){
+			html = data.documentElement.firstChild.nodeValue;
+			if (editor) {
+				editor.SetHTML(html, true);
+				html = '';
+			}
+		}
+	});
 }
 
 //	プレビュー
 function Preview() {
-	var element = document.getElementById('edit_form');
-	start_time = (new Date()).getTime();
-	
-	var indicator = document.getElementById('preview_indicator');
-	if (indicator.style.display == 'none') {
-		indicator.style.display = 'block';
-		document.getElementById('preview_area').style.display = 'block';
-	}
-	indicator.innerHTML = "プレビュー ： 受信中";
-	
-	
-	var postdata = new Array();
-	postdata['cmd'] = 'guiedit';
-	postdata['preview'] = 1;
-	postdata['page'] = element.page.value;
-	postdata['msg'] = editor.GetXHTML(true);
-	
-	sendRequest(OnPreviewLoaded, postdata, 'POST', element.action, true, true);
-}
-
-//	プレビューのデータを受信した時
-function OnPreviewLoaded(obj) {
-	var doc = obj.responseXML;
-	var text = doc.documentElement.firstChild.nodeValue;
-	document.getElementById('preview_area').innerHTML = text;
-	
-	var time = ((new Date()).getTime() - start_time) / 1000;
-	start_time = 0;
-	
-	document.getElementById('preview_indicator').innerHTML = "プレビュー ： 完了 (" + time + " s)";
+	var start_time = (new Date()).getTime();
+	$.ajax({
+		dataType:'xml',
+		type:'POST',
+		global : false,
+		data: {
+			cmd : 'guiedit',
+			edit: 1,
+			page: PAGE,
+			msg : editor.GetXHTML(true)
+		},
+		beforeSend: function(){
+			$('#preview_indicator').html('Now Loading...');
+			if ($('#preview_indicator').css('display') == 'none'){
+				$('#preview_indicator').css('display','block');
+				$('#preview_area').css('display','block');
+			}
+		},
+		success: function(data){
+			var html = data.documentElement.firstChild.nodeValue;
+			var time = ((new Date()).getTime() - start_time) / 1000;
+			start_time = 0;
+			$('#preview_indicator').html('Convert time : '+time);
+			$('#preview_area').html(html);
+		}
+	});
 }
 
 //	ページの更新
