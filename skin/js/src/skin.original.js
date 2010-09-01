@@ -214,11 +214,11 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			close			: '<span class="ui-icon ui-icon-circle-close" style="margin:4px;"></span>',
 			onOpen:function(){
 				// jQueryUI Fix
-				$('div#cboxOverlay').addClass('ui-widget-overlay');				// オーバーレイをjQueryUIのものに変更
-				$('div#colorbox').addClass('ui-widget-content ui-corner-all');		// colorboxのウィンドウをjQueryUIのモノに変更
-				$('div#cboxPrevious').button();
-				$('div#cboxNext').button();
-				$('div#cboxClose').button();
+				$(prefix+'#cboxOverlay').addClass('ui-widget-overlay');				// オーバーレイをjQueryUIのものに変更
+				$(prefix+'#colorbox').addClass('ui-widget-content ui-corner-all');		// colorboxのウィンドウをjQueryUIのモノに変更
+				$(prefix+'#cboxPrevious').button();
+				$(prefix+'#cboxNext').button();
+				$(prefix+'#cboxClose').button();
 /*
 				function autoResizer() {
 					(function(doms) {
@@ -252,7 +252,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 							}
 						}
 						
-					})($('div#colorbox #cboxLoadedContent'));
+					})($(prefix+'div#colorbox #cboxLoadedContent'));
 				}
 				$(window).bind("resize", autoResizer);
 */
@@ -310,7 +310,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 						$(this).colorbox(colorbox_config);
 					}else if (params.cmd.match(/attach|search|backup|source|newpage|template|freeze|rename|logview|tb|diff/) && params.pcmd !== 'list' || params.help == 'true'){
 						if (params.help == 'true'){
-							params = {cmd:'read',page:'FormatRule'};
+							params = {cmd:'read', page:'FormatRule'};
 						}
 						params.ajax = 'json';
 

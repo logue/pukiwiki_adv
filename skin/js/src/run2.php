@@ -1,8 +1,9 @@
 <?php
 /*
 JS-AIO-Packer - Javascript File Condenser
-Copyright (C) 2006-2007  Matthew Glinski and XtraFile.com
-Link: http://www.xtrafile.com/JS-AIO-Packer
+Copyright (C) 
+	2010	   PukiWiki Advance Developers Team
+	2006-2007  Matthew Glinski and XtraFile.com
 -----------------------------------------------------------------
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,10 +20,11 @@ along with this program(LICENSE.txt); if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-
 ######################
 ### Config Section ###
 ######################
+
+$comment_prefix = 'PukiWiki Advance combined skin script.';
 
 //The file name you want to give all your outputed files, eg: NAME.js, NAME.gz, NAME.php
 $filePrefix = 'skin';
@@ -39,11 +41,11 @@ $loadDir = '.';
 $skip_file = 'modernizr-1.5.min.js';
 
 ############################################
-######[          WARNING!!!          ]######
+######[		  WARNING!!!		  ]######
 ######[------------------------------]######
 ######[ Only edit the folloring code ]######
 ######[ if you know exactly what you ]######
-######[          are doing!          ]######
+######[		  are doing!		  ]######
 ############################################
 
 
@@ -52,12 +54,19 @@ $skip_file = 'modernizr-1.5.min.js';
 ####################
 
 // Load up JS-Min for PHP
-require('php-bin/jsmin.php');
+require('php-bin/JSMinPlus.php');
 
 //Spit out crappy processing header, v2 will look much nicer!
-echo "<pre><code>// JS-AIO-Packer \n// Pack all individual JS files in a folder into one to save bandwith and server load\n// By: Matthew Glinski\n################################################
+echo <<< HTML
+<pre><code>
+// JS-AIO-Packer Plus
+// Pack all individual JS files in a folder into one to save bandwith and server load
+// By: Matthew Glinski
+// Modified by PukiWiki Advance Developers Team
 ################################################
-";
+################################################
+
+HTML;
 
 // Declare some needed global variables
 $script = '';
@@ -71,14 +80,8 @@ $temp = @opendir($loadDir);
 
 // Skip These Files
 $arr = array('index.php', 'run.php');
-foreach(explode(',', $loadFirst) as $filePreLoad)
-{
+foreach(explode(',', $loadFirst) as $filePreLoad){
 	$arr[] = $filePreLoad;
-}
-
-foreach(explode(',', $skip_file) as $filePreLoad)
-{
-	$arr2[] = $filePreLoad;
 }
 
 // Look in the folder for javascript files
@@ -86,7 +89,7 @@ while ($file = @readdir($temp)){
 	if (!in_array($file,$arr) and !is_dir('./' . $file) and (substr($file, -3, 3) == '.js')){
 		// Load Found File
 		if (!in_array($file,$arr2)){
-			$script[] = loadFiles($file);
+			$scriptdata[] = loadFiles($file);
 		}else{
 			$skipped[] = loadFiles($file);
 		}
@@ -119,24 +122,29 @@ if(function_exists('gzdeflate'))
 	readfile("'.$filePrefix.'.gz");';
 }
 
-$javascript = JSMin::minify(join('',$script))."\n".join('',$skipped);
+$rawdata = join("\n\n",$scriptdata)."\n".join('',$skipped);;
 
-// Output a minified version of the js file.
-file_put_contents('../'.$filePrefix.'.js', $javascript);
+$rawdata = '/* Generated in '.gmdate("Y\/m\/d H:i:s",time()). 'GMT */'."\n".$rawdata;
+if($comment_prefix){ $rawdata = '/* '.$comment_prefix.' */'."\n".$rawdata; }
+
+echo "\n".'Combining to '.$filePrefix.'.js...'."\n";
+file_put_contents('../'.$filePrefix.'.js', $rawdata);
 
 // If GZip, create GZip file
 if($runGZip){
-	file_put_contents('../'.$filePrefix.'.gz', gzdeflate($javascript, 9));
+	echo 'Gzip to '.$filePrefix.'.js...'."\n";
+	file_put_contents('../'.$filePrefix.'.gz', gzdeflate($rawdata, 9));
+	// file_put_contents('../'.$filePrefix.'.gz', gzencode($rawdata, 9));
 }
 
 // Create php file to load javascript
 file_put_contents('../'.$filePrefix.'.js.php', $php);
 
-
 echo "-> Javascript Files combined into ".$filePrefix.".js!
+
 ################################################
 ################################################";
-echo "</code></pre>";
+echo "</code></pre>\n";
 
 // End Of Execution
 
@@ -150,7 +158,6 @@ echo "</code></pre>";
 *  Function: loadFiles()
 *  Param: $file -> The name of the file to load
 *  
-*  Return: void()
 *  
 */
 function loadFiles($file)
@@ -163,8 +170,21 @@ function loadFiles($file)
 		if(!in_array($fileN, $loaded))
 		{
 			$loaded[] = $fileN;
-			echo "-> Loaded File: ".$fileN."\n";
-			return file_get_contents($loadDir.'/'.$fileN)."\n\n\n";
+			echo "Loaded File: ".$fileN. " -> ";
+			$file = str_replace(pack("CCC",0xef,0xbb,0xbf), "", file_get_contents($loadDir.'/'.$fileN));
+			
+			if (!preg_match('/min\./',$fileN)){
+				$result = JSMinPlus::minify($file);
+				if ($result === false){
+					return remove_comments($file);
+				}else{
+					echo "OK!\n";
+					return $result;
+				}
+			}else{
+				echo "Pass\n";
+				return remove_comments($file);
+			}
 		}
 	}
 }
@@ -188,5 +208,26 @@ if(!function_exists('file_put_contents'))
 			return false;
 		}
 	}
+}
+
+function remove_comments($data){
+	$ret = array();
+	$tokens = token_get_all($data);
+	foreach ($tokens as $token){
+		if (is_array($token)){
+			switch ($token[0]){
+				case T_COMMENT:
+					break;
+					
+				case T_DOC_COMMENT:
+				default:
+					$ret[] = $token[1];
+					break;
+			}
+		}else{
+			$ret[] = $token;
+		}
+	}
+	return join("\n",$ret);
 }
 ?>
