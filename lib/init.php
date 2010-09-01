@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: init.php,v 1.54.37 2010/08/27 13:21:00 upk Exp $
+// $Id: init.php,v 1.56.1 2010/09/01 20:13:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -14,8 +14,8 @@
 
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
-define('S_VERSION', 'v0.0 alpha');
-define('S_REVSION', '20100815');
+define('S_VERSION', 'v1.0 alpha');
+define('S_REVSION', '20100901');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &copy; 2010' .
@@ -100,9 +100,9 @@ define('PKWK_ENCODING_HINT', (isset($_LANG['encode_hint']) && $_LANG['encode_hin
 // INI_FILE: Init $script
 
 if (isset($script)) {
-	init_script_uri($script); // Init manually
+	get_script_uri($script);		// Init manually
 } else {
-	$script = init_script_uri(); // Init automatically
+	$script = get_script_uri();	// Init automatically
 }
 
 /////////////////////////////////////////////////
@@ -239,9 +239,9 @@ if (isset($_GET['encode_hint']) && $_GET['encode_hint'] != '')
 
 $arg = '';
 if (isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != '') {
-        $arg = & $_SERVER['QUERY_STRING'];
+	$arg = & $_SERVER['QUERY_STRING'];
 } else if (isset($_SERVER['argv']) && ! empty($_SERVER['argv'])) {
-        $arg = & $_SERVER['argv'][0];
+	$arg = & $_SERVER['argv'][0];
 }
 if (PKWK_QUERY_STRING_MAX && strlen($arg) > PKWK_QUERY_STRING_MAX) {
 	// Something nasty attack?

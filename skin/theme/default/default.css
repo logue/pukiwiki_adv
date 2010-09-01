@@ -30,7 +30,8 @@ fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
 article, aside, canvas, details, figcaption, figure, 
 footer, header, hgroup, menu, nav, section, summary,
-time, mark, audio, video {
+time, mark, audio, video
+ {
 	margin:0;
 	padding:0;
 	border:0;
@@ -481,7 +482,45 @@ input[type='text'], input[type='password'], textarea, select, iframe {
 	font-family:monospace !important;
 	font-size: 93%;
 }
-	
+
+ruby {
+	display:inline-table !important;
+	text-align:center !important;
+	white-space:nowrap !important;
+	text-indent:0 !important;
+	margin:0 !important;
+	vertical-align:text-bottom !important;
+	line-height:1 !important;
+}
+
+ruby>rb,ruby>rbc {
+	display:table-row-group !important;
+	line-height:1.0 !important;
+}
+ruby>rt,ruby>rbc+rtc {
+	display:table-header-group !important;
+	font-size:50% !important;
+	line-height:1.0 !important;
+	letter-spacing:0 !important;
+}
+
+ruby>rbc+rtc+rtc {
+	display:table-footer-group !important;
+	font-size:50% !important;
+	line-height:1.0 !important;
+	letter-spacing:0 !important;
+}
+
+rbc>rb,rtc>rt {
+	display:table-cell !important;
+	letter-spacing:0 !important;
+}
+
+rp {
+	display:none !important;
+}
+
+
 /** Misc ******************************************************************************************/
 #lastmodified{
 	display:block;

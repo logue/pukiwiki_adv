@@ -71,13 +71,15 @@ function SetBeforeUnload(bEnable) {
 //	編集するデータ
 function GetSource() {
 	$.ajax({
-		dataType:'xml',
+		url:SCRIPT,
+		dataType:'json',
 		type:'POST',
 		data: {
+			type:'json',
 			cmd : 'guiedit',
 			edit: 1,
 			page: PAGE,
-			id:$('#edit_form').val()
+			id:$('input[name=id]').val()
 		},
 		success: function(data){
 			html = data.documentElement.firstChild.nodeValue;
@@ -85,6 +87,10 @@ function GetSource() {
 				editor.SetHTML(html, true);
 				html = '';
 			}
+		},
+		error : function(data,status,thrown){
+			alert('Error! '+status);
+			console.error(data);
 		}
 	});
 }
@@ -92,6 +98,7 @@ function GetSource() {
 //	テンプレート
 function Template() {
 	$.ajax({
+		url:SCRIPT,
 		dataType:'xml',
 		type:'POST',
 		data: {
@@ -114,6 +121,7 @@ function Template() {
 function Preview() {
 	var start_time = (new Date()).getTime();
 	$.ajax({
+		url:SCRIPT,
 		dataType:'xml',
 		type:'POST',
 		global : false,

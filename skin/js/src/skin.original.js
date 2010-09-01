@@ -924,7 +924,12 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		}
 		*/
 	},
-	set_editform: function(){
+	set_editform: function(prefix){
+		if (prefix){
+			prefix = prefix + ' ';
+		}else{
+			prefix = '';
+		}
 		$('input','button','select','textarea').attr('disabled','disabled');
 		this.ajax_apx = false;
 		this.ajax_count = 0;
@@ -932,10 +937,10 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		var self = this;
 
 		//プレビューボタンを書き換え
-		$('input[name=write]').after('<input type="button" name="add_ajax" value="'+$('input[name=preview]').attr('value')+'" accesskey="p" />');
-		$('input[name=preview]').remove();
+		$(prefix+'input[name=write]').after('<input type="button" name="add_ajax" value="'+$('input[name=preview]').attr('value')+'" accesskey="p" />');
+		$(prefix+'input[name=preview]').remove();
 		
-		$('input[name=add_ajax]').click(function(){
+		$(prefix+'input[name=add_ajax]').click(function(){
 			$('textarea').attr('disabled', 'disabled');
 			// フォームの高さを取得
 			// Textarea Resizerで高さが可変になっているため。
@@ -944,21 +949,21 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 				self.ajax_apx = false;
 				// realview_outerを消したあと、フォームの高さを２倍にする
 				// 同時でない理由はFireFoxで表示がバグるため
-				$("div#indicator").animate({height:'0px'});
-				$("div#realview_outer").animate({
+				$(prefix+"div#indicator").animate({height:'0px'});
+				$(prefix+"div#realview_outer").animate({
 					height:'toggle'
 				},function(){
-					$("textarea#msg").animate({height:msg_height*2});
-					$('div#indicator').remove();
-					$('div#realview').remove();
-					$('div#realview_outer').remove();
-					$('textarea#previous').remove();
-					$('textarea').removeAttr('disabled');
+					$(prefix+"textarea#msg").animate({height:msg_height*2});
+					$(prefix+'div#indicator').remove();
+					$(prefix+'div#realview').remove();
+					$(prefix+'div#realview_outer').remove();
+					$(prefix+'textarea#previous').remove();
+					$(prefix+'textarea').removeAttr('disabled');
 				});
 			} else {
 				if (!self.ajax_apx){
 					// Realedit用のDOMを生成
-					$("textarea[name='msg']").before([
+					$(prefix+"textarea[name='msg']").before([
 						'<div id="indicator" style="text-align:right;"></div>',
 						'<div id="realview_outer">',
 						'	<div id="realview"></div>',
@@ -967,24 +972,24 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 						'<textarea id="previous" style="display:none;"></textarea>'
 					);
 					
-					$('div#indicator').html('<img src="'+self.image_dir+'spinner.gif" alt="Loading..." />Now Loading...');
-					$('div#indicator').animate({height:'20px'});
-					$('textarea#previous').val($('textarea#msg').val());
+					$(prefix+'div#indicator').html('<img src="'+self.image_dir+'spinner.gif" alt="Loading..." />Now Loading...');
+					$(prefix+'div#indicator').animate({height:'20px'});
+					$(prefix+'textarea#previous').val($('textarea#msg').val());
 					
 					// 初回実行時、realview_outerの大きさを、フォームの大きさに揃える。
 					// なお、realview_outerの高さは、フォームの半分とする。
-					$("div#realview_outer").css("height",msg_height/2);
-					$("div#realview_outer").css("width", $("#msg").width());
-					$("div#indicator").css("width", $("#msg").width());
+					$(prefix+"div#realview_outer").css("height",msg_height/2);
+					$(prefix+"div#realview_outer").css("width", $("#msg").width());
+					$(prefix+"div#indicator").css("width", $("#msg").width());
 				}
 				self.ajax_apx = true;
 				
 				// フォームの高さを半分にしたあと、realview_outerを表示
-				$("textarea#msg").animate({
+				$(prefix+"textarea#msg").animate({
 					height:$(this).height()+$("div#realview_outer").height()
 				},function(){
-					$("div#realview_outer").animate({ height:'toggle'});
-					$('textarea').removeAttr('disabled');
+					$(prefix+"div#realview_outer").animate({ height:'toggle'});
+					$(prefix+'textarea').removeAttr('disabled');
 				});
 				// このときにフォームの大きさを変更すると、戻したときに恐ろしいことに・・・
 				self.realtime_preview();
@@ -992,11 +997,11 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			return false;
 		});
 		
-		$('textarea[name=msg]').blur(function(){
+		$(prefix+'textarea[name=msg]').blur(function(){
 			self.realtime_preview();
 		});
 
-		$('textarea[name=msg]').mouseup(function(){
+		$(prefix+'textarea[name=msg]').mouseup(function(){
 			if ($(this).val() !== $('textarea#previous').val()){
 				self.realtime_preview();
 			}

@@ -1,15 +1,14 @@
 <?php
-// PukiPlus.
-// $Id: file.php,v 1.87.44 2010/07/11 22:13:00 upk Exp $
+// PukiWiki - Yet another WikiWikiWeb clone.
+// $Id: file.php,v 1.94.1 2010/09/01 19:25:00 Logue Exp $
 // Copyright (C)
-//   2010 PukiPlus Team
+//   2010      PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
-//   2002-2007 PukiWiki Developers Team
+//   2002-2009 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
 // License: GPL v2 or (at your option) any later version
 //
 // File related functions
-// Plus!NOTE:(policy)not merge official cvs(1.77->1.78) See Question/181
 
 // RecentChanges
 define('PKWK_MAXSHOW_ALLOWANCE', 10);
@@ -18,22 +17,26 @@ define('PKWK_MAXSHOW_CACHE', 'recent.dat');
 // XHTML entities
 define('PKWK_ENTITIES_REGEX_CACHE', 'entities.dat');
 
-// AutoLink 
-define('PKWK_AUTOLINK_REGEX_CACHE',  'autolink.dat');
+// AutoLink
+define('PKWK_AUTOLINK_REGEX_CACHE', 'autolink.dat');
+
+// AutoAlias
 define('PKWK_AUTOALIAS_REGEX_CACHE', 'autoalias.dat');
+
+// Auto Glossary (Plus!)
 define('PKWK_GLOSSARY_REGEX_CACHE',  'glossary.dat');
 
-// AutoAlias AutoBase cache
+// AutoAlias AutoBase cache (Plus!)
 define('PKWK_AUTOBASEALIAS_CACHE', 'autobasealias.dat');
 
 // Get source(wiki text) data of the page
 // Returns FALSE if error occurerd
 function get_source($page = NULL, $lock = TRUE, $join = FALSE)
 {
-	// $result = NULL;	// File is not found
+	//$result = NULL;	// File is not found
 	$result = $join ? '' : array();
 		// Compat for "implode('', get_source($file))",
-		//      -- this is slower than "get_source($file, TRUE, TRUE)"
+		// 	-- this is slower than "get_source($file, TRUE, TRUE)"
 		// Compat for foreach(get_source($file) as $line) {} not to warns
 
 	$path = get_filename($page);
@@ -41,13 +44,11 @@ function get_source($page = NULL, $lock = TRUE, $join = FALSE)
 
 		if ($lock || $join) {
 			$fp = @fopen($path, 'r');
-			if ($fp == FALSE) return $result;
+			if ($fp === FALSE) return FALSE;
 		}
-		if ($lock) {
-			@flock($fp, LOCK_SH);
-		}
+
+		if ($lock) flock($fp, LOCK_SH);
 		if ($join) {
-			// Returns a value
 			$size = filesize($path);
 			if ($size === FALSE) {
 				$result = FALSE;
@@ -59,12 +60,12 @@ function get_source($page = NULL, $lock = TRUE, $join = FALSE)
 		} else {
 			$result = file($path);	// Returns an array
 		}
-		if ($lock) {
-			@flock($fp, LOCK_UN);
-		}
+		if ($lock) flock($fp, LOCK_UN);
+
 		if ($lock || $join) {
 			@fclose($fp);
 		}
+
 		if ($result !== FALSE) {
 			// Removing line-feeds
 			$result = str_replace("\r", '', $result);
@@ -77,7 +78,7 @@ function get_source($page = NULL, $lock = TRUE, $join = FALSE)
 // Get last-modified filetime of the page
 function get_filetime($page)
 {
-	return is_page($page, TRUE) ? filemtime(get_filename($page)) : 0;
+	return is_page($page) ? filemtime(get_filename($page)) - LOCALZONE : 0;
 }
 
 // Get physical file name of the page
@@ -89,35 +90,20 @@ function get_filename($page)
 // Put a data(wiki text) into a physical file(diff, backup, text)
 function page_write($page, $postdata, $notimestamp = FALSE)
 {
+//	global $autoalias, $aliaspage;
 	global $trackback, $autoalias, $aliaspage;
 	global $autoglossary, $glossarypage;
 	global $use_spam_check;
 
-	// if (PKWK_READONLY) return; // Do nothing
+//	if (PKWK_READONLY) return; // Do nothing
+	/* Plus!ここから */
 	if (auth::check_role('readonly')) return; // Do nothing
-
-	if (is_page($page)) {
-		$oldpostdata = get_source($page, TRUE, TRUE);
-	} else {
-		if (auth::is_check_role(PKWK_CREATE_PAGE))
-			die_message(_('PKWK_CREATE_PAGE prohibits editing'));
-		$oldpostdata = '';
-	}
-
-	$postdata = make_str_rules($postdata);
-
-	// Create and write diff
-	$diffdata    = do_diff($oldpostdata, $postdata);
-
+	
 	$role_adm_contents = auth::check_role('role_adm_contents');
-	$links = array();
-	if ( ($trackback > 1) || ( $role_adm_contents && $use_spam_check['page_contents']) ) {
-		$links = get_this_time_links($postdata, $diffdata);
-	}
 
 	// Blocking SPAM
 	if ($role_adm_contents) {
-		if ($use_spam_check['page_remote_addr'] && SpamCheck( get_remoteip(),'ip')) {
+		if ($use_spam_check['page_remote_addr'] && SpamCheck($_SERVER['REMOTE_ADDR'],'ip')) {
 			die_message('Writing was limited by IPBL (Blocking SPAM).');
 		}
 		if ($use_spam_check['page_contents'] && SpamCheck($links)) {
@@ -128,11 +114,21 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 		}
 	}
 
+	if (function_exists('senna_update')) {
+		senna_update($page, $oldpostdata, $postdata);
+	}
+
 	// Logging postdata
 	postdata_write();
+	/* Plus!ここまで */
 
-	// Create diff text
+	$postdata = make_str_rules($postdata);
+
+	// Create and write diff
+	$oldpostdata = is_page($page) ? get_source($page, TRUE, TRUE) : '';
+	$diffdata    = do_diff($oldpostdata, $postdata);
 	file_write(DIFF_DIR, $page, $diffdata);
+	unset($oldpostdata, $diffdata);
 
 	// Create backup
 	make_backup($page, $postdata == ''); // Is $postdata null?
@@ -140,21 +136,15 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	// Create wiki text
 	file_write(DATA_DIR, $page, $postdata, $notimestamp);
 
-	if (function_exists('senna_update')) {
-		senna_update($page, $oldpostdata, $postdata);
-	}
-
-	if ($trackback > 1) {
-		// TrackBack Ping
-		tb_send($page, $links);
-	}
-
-	if (empty($oldpostdata)) cache_timestamp_touch();
-	unset($oldpostdata,$diffdata,$links);
 	links_update($page);
+	
+	$links = array();
+	if ( ($trackback > 1) || ( $role_adm_contents && $use_spam_check['page_contents']) ) {
+		tb_send($page, get_this_time_links($postdata, $diffdata));
+	}
 
 	// Update autoalias.dat (AutoAliasName)
-	if ($autoalias && $page == $aliaspage) {
+	if ($autoalias && $page === $aliaspage) {
 		$aliases = get_autoaliases();
 		if (empty($aliases)) {
 			// Remove
@@ -167,7 +157,7 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	}
 
 	// Update glossary.dat (AutoGlossary)
-	if ($autoglossary && $page == $glossarypage) {
+	if ($autoglossary && $page === $glossarypage) {
 		$words = get_autoglossaries();
 		if (empty($words)) {
 			// Remove
@@ -179,88 +169,7 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 		}
 	}
 
-	if (exist_plugin('ajaxtree')) {
-		plugin_ajaxtree_write_after();
-	}
-
 	log_write('update',$page);
-}
-
-function get_link_list($diffdata)
-{
-	$links = array();
-
-	list($plus, $minus) = get_diff_lines($diffdata);
-
-	// Get URLs from <a>(anchor) tag from convert_html()
-	$plus  = convert_html($plus); // WARNING: heavy and may cause side-effect
-	preg_match_all('#href="(https?://[^"]+)"#', $plus, $links, PREG_PATTERN_ORDER);
-	$links = array_unique($links[1]);
-
-	// Reject from minus list
-	if ($minus != '') {
-		$links_m = array();
-		$minus = convert_html($minus); // WARNING: heavy and may cause side-effect
-		preg_match_all('#href="(https?://[^"]+)"#', $minus, $links_m, PREG_PATTERN_ORDER);
-		$links_m = array_unique($links_m[1]);
-
-		$links = array_diff($links, $links_m);
-	}
-
-	unset($plus,$minus);
-
-	// Reject own URL (Pattern _NOT_ started with '$script' and '?')
-	$links = preg_grep('/^(?!' . preg_quote(get_script_absuri(), '/') . '\?)./', $links);
-
-	// No link, END
-	if (! is_array($links) || empty($links)) return;
-
-	return $links;
-}
-
-function get_diff_lines($diffdata)
-{
-	$_diff = explode("\n", $diffdata);
-	$plus  = join("\n", preg_replace('/^\+/', '', preg_grep('/^\+/', $_diff)));
-	$minus = join("\n", preg_replace('/^-/',  '', preg_grep('/^-/',  $_diff)));
-	unset($_diff);
-	return array($plus, $minus);
-}
-
-function replace_plugin_link2null($data)
-{
-	global $exclude_link_plugin;
-
-	$pattern = $replacement = array();
-	foreach($exclude_link_plugin as $plugin) {
-		$pattern[] = '/^#'.$plugin.'\(/i';
-		$replacement[] = '#null(';
-	}
-
-	$exclude = preg_replace($pattern,$replacement, explode("\n", $data));
-	$html = convert_html($exclude);
-	preg_match_all('#href="(https?://[^"]+)"#', $html, $links, PREG_PATTERN_ORDER);
-	$links = array_unique($links[1]);
-	unset($except, $html);
-	return $links;
-}
-
-function get_this_time_links($post,$diff)
-{
-	$links = array();
-	$post_links = (array)replace_plugin_link2null($post);
-	$diff_links = (array)get_link_list($diff);
-
-	foreach($diff_links as $d) {
-		foreach($post_links as $p) {
-			if ($p == $d) {
-				$links[] = $p;
-				break;
-			}
-		}
-	}
-	unset($post_links, $diff_links);
-	return $links;
 }
 
 // Modify original text with user-defined / system-defined rules
@@ -284,7 +193,7 @@ function make_str_rules($source)
 		if ($modify) {
 			if (! PKWKEXP_DISABLE_MULTILINE_PLUGIN_HACK &&
 			    $multiline == 0 &&
-			    preg_match('/^#[^{]*(\{\{+)\s*$/', $line, $matches)) {
+			    preg_match('/#[^{]*(\{\{+)\s*$/', $line, $matches)) {
 			    	// Multiline convert plugin start
 				$modify    = FALSE;
 				$multiline = strlen($matches[1]); // Set specific number
@@ -325,7 +234,7 @@ function make_str_rules($source)
 // Generate ID
 function generate_fixed_heading_anchor_id($seed)
 {
-	// A random alphabetic letter + 7 letters of random strings from md()
+	// A random alphabetic letter + 7 letters of random strings from md5()
 	return chr(mt_rand(ord('a'), ord('z'))) .
 		substr(md5(uniqid(substr($seed, 0, 100), TRUE)),
 		mt_rand(0, 24), 7);
@@ -333,22 +242,34 @@ function generate_fixed_heading_anchor_id($seed)
 
 // Read top N lines as an array
 // (Use PHP file() function if you want to get ALL lines)
-function file_head($file, $count = 1, $lock = TRUE, $buffer = 8192)
+function file_head($file, $count = 1, $lock = TRUE, $buffer = NULL)
 {
 	$array = array();
 
 	$fp = @fopen($file, 'r');
 	if ($fp === FALSE) return FALSE;
+
 	set_file_buffer($fp, 0);
-	if ($lock) @flock($fp, LOCK_SH);
+	if ($lock) flock($fp, LOCK_SH);
 	rewind($fp);
-	$index = 0;
-	while (! feof($fp)) {
-		$line = fgets($fp, $buffer);
-		if ($line != FALSE) $array[] = $line;
-		if (++$index >= $count) break;
+
+	$index  = 0;
+	if ($buffer === NULL) {
+		while (! feof($fp)) {
+			$line = fgets($fp);
+			if ($line != FALSE) $array[] = $line;
+			if (++$index >= $count) break;
+		}
+	} else {
+		$buffer = max(16, intval($buffer));
+		while (! feof($fp)) {
+			$line = fgets($fp, $buffer);
+			if ($line != FALSE) $array[] = $line;
+			if (++$index >= $count) break;
+		}
 	}
-	if ($lock) @flock($fp, LOCK_UN);
+
+	if ($lock) flock($fp, LOCK_UN);
 	if (! fclose($fp)) return FALSE;
 
 	return $array;
@@ -357,19 +278,16 @@ function file_head($file, $count = 1, $lock = TRUE, $buffer = 8192)
 // Output to a file
 function file_write($dir, $page, $str, $notimestamp = FALSE)
 {
-	global $update_exec;
+	//global $_msg_invalidiwn, $notify, $notify_diff_only, $notify_subject;
 	global $notify, $notify_diff_only, $notify_subject;
-	global $notify_exclude;
 	global $whatsdeleted, $maxshow_deleted;
-	global $_string;
 
-	// if (PKWK_READONLY) return; // Do nothing
+	//if (PKWK_READONLY) return; // Do nothing
 	if (auth::check_role('readonly')) return; // Do nothing
-
 	if ($dir != DATA_DIR && $dir != DIFF_DIR) die('file_write(): Invalid directory');
 
-	$page      = strip_bracket($page);
-	$file      = $dir . encode($page) . '.txt';
+	$page = strip_bracket($page);
+	$file = $dir . encode($page) . '.txt';
 	$file_exists = file_exists($file);
 
 	// ----
@@ -388,11 +306,11 @@ function file_write($dir, $page, $str, $notimestamp = FALSE)
 		// Update RecentDeleted, and remove the page from RecentChanges
 		lastmodified_add($whatsdeleted, $page);
 
-		cache_timestamp_touch();
-
 		// Clear is_page() cache
 		is_page($page, TRUE);
+
 		return;
+
 	} else if ($dir == DIFF_DIR && $str === " \n") {
 		return; // Ignore null posting for DIFF_DIR
 	}
@@ -402,60 +320,44 @@ function file_write($dir, $page, $str, $notimestamp = FALSE)
 
 	if (! is_pagename($page))
 		die_message(str_replace('$1', htmlspecialchars($page),
-			str_replace('$2', 'WikiName', $_msg_invalidiwn)));
+		            str_replace('$2', 'WikiName', $_msg_invalidiwn)));
 
 	$str = rtrim(preg_replace('/' . "\r" . '/', '', $str)) . "\n";
 	$timestamp = ($file_exists && $notimestamp) ? filemtime($file) : FALSE;
 
-	pkwk_touch_file($file);
 	$fp = fopen($file, 'a') or die('fopen() failed: ' .
 		htmlspecialchars(basename($dir) . '/' . encode($page) . '.txt') .	
 		'<br />' . "\n" .
 		'Maybe permission is not writable or filename is too long');
 	set_file_buffer($fp, 0);
-	@flock($fp, LOCK_EX);
-	$last = ignore_user_abort(1);
+	flock($fp, LOCK_EX);
 	ftruncate($fp, 0);
 	rewind($fp);
 	fputs($fp, $str);
-	ignore_user_abort($last);
-	@flock($fp, LOCK_UN);
+	flock($fp, LOCK_UN);
 	fclose($fp);
 
 	if ($timestamp) pkwk_touch_file($file, $timestamp);
 
 	// Optional actions
 	if ($dir == DATA_DIR) {
+		// Update RecentChanges (Add or renew the $page)
 		if ($timestamp === FALSE) lastmodified_add($page);
 
 		// Command execution per update
 		if (defined('PKWK_UPDATE_EXEC') && PKWK_UPDATE_EXEC)
 			system(PKWK_UPDATE_EXEC . ' > /dev/null &');
-		elseif ($update_exec)
-			system($update_exec . ' > /dev/null &');
 
 	} else if ($dir == DIFF_DIR && $notify) {
-		$notify_exec = TRUE;
-		foreach ($notify_exclude as $exclude) {
-			$exclude = preg_quote($exclude);
-			if (substr($exclude, -1) == '.')
-				$exclude = $exclude . '*';
-			if (preg_match('/^' . $exclude . '/', get_remoteip())) {
-				$notify_exec = FALSE;
-				break;
-			}
-		}
-		if ($notify_exec !== FALSE) {
-			if ($notify_diff_only) $str = preg_replace('/^[^-+].*\n/m', '', $str);
-			$summary['ACTION'] = 'Page update';
-			$summary['PAGE']   = & $page;
-			$summary['URI']    = get_page_absuri($page);
-			$summary['USER_AGENT']  = TRUE;
-			$summary['REMOTE_ADDR'] = TRUE;
-			pkwk_mail_notify($notify_subject, $str, $summary);
-//			pkwk_mail_notify($notify_subject, $str, $summary) or
-//				die('pkwk_mail_notify(): Failed');
-		}
+		if ($notify_diff_only) $str = preg_replace('/^[^-+].*\n/m', '', $str);
+		$summary = array();
+		$summary['ACTION'] = 'Page update';
+		$summary['PAGE']   = & $page;
+		$summary['URI']    = get_script_uri() . '?' . rawurlencode($page);
+		$summary['USER_AGENT']  = TRUE;
+		$summary['REMOTE_ADDR'] = TRUE;
+		pkwk_mail_notify($notify_subject, $str, $summary) or
+			die('pkwk_mail_notify(): Failed');
 	}
 
 	is_page($page, TRUE); // Clear is_page() cache
@@ -464,7 +366,7 @@ function file_write($dir, $page, $str, $notimestamp = FALSE)
 // Update RecentDeleted
 function add_recent($page, $recentpage, $subject = '', $limit = 0)
 {
-	// if (PKWK_READONLY || $limit == 0 || $page == '' || $recentpage == '' ||
+	//if (PKWK_READONLY || $limit == 0 || $page == '' || $recentpage == '' ||
 	if (auth::check_role('readonly') || $limit == 0 || $page == '' || $recentpage == '' ||
 		check_non_list($page)) return;
 
@@ -494,21 +396,23 @@ function add_recent($page, $recentpage, $subject = '', $limit = 0)
 		htmlspecialchars($recentpage) .
 		'<br />Maybe permission is not writable or filename is too long');
 	set_file_buffer($fp, 0);
-	@flock($fp, LOCK_EX);
+	flock($fp, LOCK_EX);
 	rewind($fp);
 	fputs($fp, '#norelated' . "\n"); // :)
 	fputs($fp, join('', $lines));
-	@flock($fp, LOCK_UN);
-	@fclose($fp);
+	flock($fp, LOCK_UN);
+	fclose($fp);
 }
 
 // Update PKWK_MAXSHOW_CACHE itself (Add or renew about the $page) (Light)
 // Use without $autolink
 function lastmodified_add($update = '', $remove = '')
 {
+	// global $maxshow, $whatsnew, $autolink;
 	global $maxshow, $whatsnew, $autolink, $autobasealias;
 
 	// AutoLink implimentation needs everything, for now
+	//if ($autolink) {
 	if ($autolink || $autobasealias) {
 		put_lastmodified(); // Try to (re)create ALL
 		return;
@@ -523,67 +427,81 @@ function lastmodified_add($update = '', $remove = '')
 		return;
 	}
 
+	// Open
+	pkwk_touch_file($file);
+	$fp = fopen($file, 'r+') or
+		die_message('Cannot open ' . 'CACHE_DIR/' . PKWK_MAXSHOW_CACHE);
+	set_file_buffer($fp, 0);
+	flock($fp, LOCK_EX);
+
 	// Read (keep the order of the lines)
 	$recent_pages = $matches = array();
-	foreach(file_head($file, $maxshow + PKWK_MAXSHOW_ALLOWANCE, FALSE) as $line)
-		if (preg_match('/^([0-9]+)\t(.+)/', $line, $matches))
+	foreach(file_head($file, $maxshow + PKWK_MAXSHOW_ALLOWANCE, FALSE) as $line) {
+		if (preg_match('/^([0-9]+)\t(.+)/', $line, $matches)) {
 			$recent_pages[$matches[2]] = $matches[1];
+		}
+	}
 
 	// Remove if it exists inside
 	if (isset($recent_pages[$update])) unset($recent_pages[$update]);
 	if (isset($recent_pages[$remove])) unset($recent_pages[$remove]);
 
 	// Add to the top: like array_unshift()
-	if ($update != '' && $update != $whatsnew && ! check_non_list($update))
+	if ($update != '')
 		$recent_pages = array($update => get_filetime($update)) + $recent_pages;
 
 	// Check
-	if (count($recent_pages) < $maxshow) {
+	$abort = count($recent_pages) < $maxshow;
+
+	if (! $abort) {
+		// Write
+		ftruncate($fp, 0);
+		rewind($fp);
+		foreach ($recent_pages as $_page=>$time)
+			fputs($fp, $time . "\t" . $_page . "\n");
+	}
+
+	flock($fp, LOCK_UN);
+	fclose($fp);
+
+	if ($abort) {
 		put_lastmodified(); // Try to (re)create ALL
 		return;
 	}
 
-	// Sort decending order of last-modification date(Pointed Question/119)
-	arsort($recent_pages, SORT_NUMERIC);
 
-	// Re-create PKWK_MAXSHOW_CACHE
-	pkwk_touch_file($file);
-	$fp = fopen($file, 'r+') or
-		die_message('Cannot open ' . 'CACHE_DIR/' . PKWK_MAXSHOW_CACHE);
-	set_file_buffer($fp, 0);
-	@flock($fp, LOCK_EX);
-	$last = ignore_user_abort(1);
-	ftruncate($fp, 0);
-	rewind($fp);
-	foreach ($recent_pages as $page=>$time)
-		fputs($fp, $time . "\t" . $page . "\n");
-	ignore_user_abort($last);
-	@flock($fp, LOCK_UN);
-	@fclose($fp);
 
-	// Update 'RecentChanges'
+	// ----
+	// Update the page 'RecentChanges'
+
 	$recent_pages = array_splice($recent_pages, 0, $maxshow);
 	$file = get_filename($whatsnew);
+
+	// Open
 	pkwk_touch_file($file);
 	$fp = fopen($file, 'r+') or
 		die_message('Cannot open ' . htmlspecialchars($whatsnew));
 	set_file_buffer($fp, 0);
-	@flock($fp, LOCK_EX);
-	$last = ignore_user_abort(1);
+	flock($fp, LOCK_EX);
+
+	// Recreate
 	ftruncate($fp, 0);
 	rewind($fp);
-	foreach ($recent_pages as $page=>$time)
+	foreach ($recent_pages as $_page=>$time)
 		fputs($fp, '-' . htmlspecialchars(format_date($time)) .
-			' - ' . '[[' . htmlspecialchars($page) . ']]' . "\n");
+			' - ' . '[[' . htmlspecialchars($_page) . ']]' . "\n");
 	fputs($fp, '#norelated' . "\n"); // :)
-	ignore_user_abort($last);
-	@flock($fp, LOCK_UN);
-	@fclose($fp);
+
+	ignore_user_abort($last);	// Plus!
+
+	flock($fp, LOCK_UN);
+	fclose($fp);
 }
 
-// Update RecentChanges
+// Re-create PKWK_MAXSHOW_CACHE (Heavy)
 function put_lastmodified()
 {
+	// global $maxshow, $whatsnew, $autolink;
 	global $maxshow, $whatsnew, $autolink, $autobasealias;
 
 	// if (PKWK_READONLY) return; // Do nothing
@@ -595,7 +513,7 @@ function put_lastmodified()
 	// Check ALL filetime
 	$recent_pages = array();
 	foreach($pages as $page)
-		if ($page != $whatsnew && ! check_non_list($page))
+		if ($page !== $whatsnew && ! check_non_list($page))
 			$recent_pages[$page] = get_filetime($page);
 
 	// Sort decending order of last-modification date
@@ -618,15 +536,13 @@ function put_lastmodified()
 	$fp = fopen($file, 'r+') or
 		die_message('Cannot open' . 'CACHE_DIR/' . PKWK_MAXSHOW_CACHE);
 	set_file_buffer($fp, 0);
-	@flock($fp, LOCK_EX);
-	$last = ignore_user_abort(1);
+	flock($fp, LOCK_EX);
 	ftruncate($fp, 0);
 	rewind($fp);
 	foreach ($recent_pages as $page=>$time)
 		fputs($fp, $time . "\t" . $page . "\n");
-	ignore_user_abort($last);
-	@flock($fp, LOCK_UN);
-	@fclose($fp);
+	flock($fp, LOCK_UN);
+	fclose($fp);
 
 	// Create RecentChanges
 	$file = get_filename($whatsnew);
@@ -634,75 +550,46 @@ function put_lastmodified()
 	$fp = fopen($file, 'r+') or
 		die_message('Cannot open ' . htmlspecialchars($whatsnew));
 	set_file_buffer($fp, 0);
-	@flock($fp, LOCK_EX);
-	$last = ignore_user_abort(1);
+	flock($fp, LOCK_EX);
 	ftruncate($fp, 0);
 	rewind($fp);
 	foreach (array_keys($recent_pages) as $page) {
 		$time      = $recent_pages[$page];
-		// $s_lastmod = htmlspecialchars(format_date($time));
-		$s_lastmod = '&epoch('.$time.');';
+		$s_lastmod = htmlspecialchars(format_date($time));
 		$s_page    = htmlspecialchars($page);
 		fputs($fp, '-' . $s_lastmod . ' - [[' . $s_page . ']]' . "\n");
 	}
 	fputs($fp, '#norelated' . "\n"); // :)
-	ignore_user_abort($last);
-	@flock($fp, LOCK_UN);
-	@fclose($fp);
+	flock($fp, LOCK_UN);
+	fclose($fp);
 
 	// For AutoLink
-	if ($autolink) {
+	if ($autolink){
 		autolink_pattern_write(CACHE_DIR . PKWK_AUTOLINK_REGEX_CACHE,
 			get_autolink_pattern($pages, $autolink));
 	}
-
-	// AutoBaseAlias
+	
+	// AutoBaseAlias (Plus!)
 	if ($autobasealias) {
 		autobasealias_write(CACHE_DIR . PKWK_AUTOBASEALIAS_CACHE, $pages);
 	}
 }
 
-// Update AutoBaseAlias data
-function autobasealias_write($filename, &$pages)
-{
-	global $autobasealias_nonlist;
-	$pairs = array();
-	foreach ($pages as $page) {
-		if (preg_match('/' . $autobasealias_nonlist . '/', $page)) continue;
-		$base = get_short_pagename($page);
-		if ($base !== $page) {
-			if (! isset($pairs[$base])) $pairs[$base] = array();
-			$pairs[$base][] = $page;
-		}
-	}
-	$data = serialize($pairs);
-
-	pkwk_touch_file($filename);
-	$fp = fopen($filename, 'w') or
-			die_message('Cannot open ' . $filename . '<br />Maybe permission is not writable');
-	set_file_buffer($fp, 0);
-	@flock($fp, LOCK_EX);
-	rewind($fp);
-	fputs($fp, $data);
-	@flock($fp, LOCK_UN);
-	@fclose($fp);
-}
-
-// Update autolink data
+// update autolink data
 function autolink_pattern_write($filename, $autolink_pattern)
 {
 	list($pattern, $pattern_a, $forceignorelist) = $autolink_pattern;
 
 	$fp = fopen($filename, 'w') or
-			die_message('Cannot open ' . $filename . '<br />Maybe permission is not writable');
+			die_message('Cannot open ' . $filename);
 	set_file_buffer($fp, 0);
-	@flock($fp, LOCK_EX);
+	flock($fp, LOCK_EX);
 	rewind($fp);
 	fputs($fp, $pattern   . "\n");
 	fputs($fp, $pattern_a . "\n");
 	fputs($fp, join("\t", $forceignorelist) . "\n");
-	@flock($fp, LOCK_UN);
-	@fclose($fp);
+	flock($fp, LOCK_UN);
+	fclose($fp);
 }
 
 // Get elapsed date of the page
@@ -729,38 +616,50 @@ function header_lastmod($page = NULL)
 	}
 }
 
+// Get a list of encoded files (must specify a directory and a suffix)
+function get_existfiles($dir = DATA_DIR, $ext = '.txt')
+{
+	$aryret = array();
+	$pattern = '/^(?:[0-9A-F]{2})+' . preg_quote($ext, '/') . '$/';
+
+	$dp = @opendir($dir) or die_message($dir . ' is not found or not readable.');
+	while (($file = readdir($dp)) !== FALSE) {
+		if (preg_match($pattern, $file)) {
+			$aryret[] = $dir . $file;
+		}
+	}
+	closedir($dp);
+
+	return $aryret;
+}
+
 // Get a page list of this wiki
 function get_existpages($dir = DATA_DIR, $ext = '.txt')
 {
 	$aryret = array();
+	$pattern = '/^((?:[0-9A-F]{2})+)' . preg_quote($ext, '/') . '$/';
 
-	$pattern = '((?:[0-9A-F]{2})+)';
-	if ($ext != '') $ext = preg_quote($ext, '/');
-	$pattern = '/^' . $pattern . $ext . '$/';
-
-	$dp = @opendir($dir) or
-		die_message($dir . ' is not found or not readable.');
+	$dp = @opendir($dir) or die_message($dir . ' is not found or not readable.');
 	$matches = array();
-	while ($file = readdir($dp))
-		if (preg_match($pattern, $file, $matches))
+	while (($file = readdir($dp)) !== FALSE) {
+		if (preg_match($pattern, $file, $matches)) {
 			$aryret[$file] = decode($matches[1]);
+		}
+	}
 	closedir($dp);
 
 	return $aryret;
 }
 
 // Get PageReading(pronounce-annotated) data in an array()
-function get_readings($pages = null)
+function get_readings()
 {
 	global $pagereading_enable, $pagereading_kanji2kana_converter;
-	global $pagereading_kanji2kana_encoding;
-	global $pagereading_config_page;
+	global $pagereading_kanji2kana_encoding, $pagereading_chasen_path;
+	global $pagereading_kakasi_path, $pagereading_config_page;
+	global $pagereading_config_dict;
 
-	// For BugTrack/142
-	// $pages = get_existpages();
-	if (! isset($pages)) {
-		$pages = get_existpages();
-	}
+	$pages = get_existpages();
 
 	$readings = array();
 	foreach ($pages as $page) 
@@ -781,7 +680,7 @@ function get_readings($pages = null)
 		}
 	}
 
-	// If enabled ChaSen/KAKASI/MeCab execution
+	// If enabled ChaSen/KAKASI execution
 	if($pagereading_enable) {
 
 		// Check there's non-clear-pronouncing page
@@ -797,7 +696,6 @@ function get_readings($pages = null)
 		if($unknownPage) {
 			switch(strtolower($pagereading_kanji2kana_converter)) {
 			case 'chasen':
-				global $pagereading_chasen_path;
 				if(! file_exists($pagereading_chasen_path))
 					die_message('ChaSen not found: ' . $pagereading_chasen_path);
 
@@ -834,7 +732,6 @@ function get_readings($pages = null)
 
 			case 'kakasi':	/*FALLTHROUGH*/
 			case 'kakashi':
-				global $pagereading_kakasi_path;
 				if(! file_exists($pagereading_kakasi_path))
 					die_message('KAKASI not found: ' . $pagereading_kakasi_path);
 
@@ -871,7 +768,6 @@ function get_readings($pages = null)
 				break;
 
 			case 'none':
-				global $pagereading_config_dict;
 				$patterns = $replacements = $matches = array();
 				foreach (get_source($pagereading_config_dict) as $line) {
 					$line = chop($line);
@@ -887,39 +783,6 @@ function get_readings($pages = null)
 					foreach ($patterns as $no => $pattern)
 						$readings[$page] = mb_convert_kana(mb_ereg_replace($pattern,
 							$replacements[$no], $readings[$page]), 'aKCV');
-				}
-				break;
-
-			// http://pukiwiki.sourceforge.jp/dev/?BugTrack%2F496
-			case 'mecab':
-				global $pagereading_mecab_path;
-			
-				$tmpfname = tempnam(CACHE_DIR, 'PageReading');
-				$fp = fopen($tmpfname, "w")
-					or die_message("cannot write temporary file '$tmpfname'.\n");
-				foreach ($readings as $page => $reading) {
-					if($reading=='') {
-						fputs($fp, mb_convert_encoding("$page\n", $pagereading_kanji2kana_encoding, SOURCE_ENCODING));
-					}
-				}
-				fclose($fp);
-				if(!file_exists($pagereading_mecab_path)) {
-					unlink($tmpfname);
-					die_message("MECAB not found: $pagereading_mecab_path");
-				}
-				$fp = popen("$pagereading_mecab_path -Oyomi $tmpfname", "r");
-				if(!$fp) {
-					unlink($tmpfname);
-					die_message("MeCab execution failed: $pagereading_mecab_path -Oyomi $tmpfname");
-				}
-				foreach ($readings as $page => $reading) {
-					if($reading=='') {
-						$line = fgets($fp);
-						$line = mb_convert_encoding($line, SOURCE_ENCODING, $pagereading_kanji2kana_encoding);
-						$line = chop($line);
-						$line = mb_convert_kana($line, "C");
-						$readings[$page] = $line;
-					}
 				}
 				break;
 
@@ -949,19 +812,6 @@ function get_readings($pages = null)
 	return $readings;
 }
 
-// Get a list of encoded files (must specify a directory and a suffix)
-function get_existfiles($dir, $ext)
-{
-	$pattern = '/^(?:[0-9A-F]{2})+' . preg_quote($ext, '/') . '$/';
-	$aryret = array();
-	$dp = @opendir($dir) or die_message($dir . ' is not found or not readable.');
-	while ($file = readdir($dp))
-		if (preg_match($pattern, $file))
-			$aryret[] = $dir . $file;
-	closedir($dp);
-	return $aryret;
-}
-
 // Get a list of related pages of the page
 function links_get_related($page)
 {
@@ -971,7 +821,7 @@ function links_get_related($page)
 	if (isset($links[$page])) return $links[$page];
 
 	// If possible, merge related pages generated by make_link()
-	$links[$page] = ($page == $vars['page']) ? $related : array();
+	$links[$page] = ($page === $vars['page']) ? $related : array();
 
 	// Get repated pages from DB
 	$links[$page] += links_get_related_db($vars['page']);
@@ -996,10 +846,9 @@ function pkwk_chown($filename, $preserve_time = TRUE)
 	// Lock for pkwk_chown()
 	$lockfile = CACHE_DIR . 'pkwk_chown.lock';
 	$flock = fopen($lockfile, 'a') or
-		die('pkwk_chown(): fopen() failed for: CACHEDIR/' .
+		die_message('pkwk_chown(): fopen() failed for: CACHEDIR/' .
 			basename(htmlspecialchars($lockfile)));
-	// flock($flock, LOCK_EX) or die('pkwk_chown(): flock() failed for lock');
-	@flock($flock, LOCK_EX);
+	flock($flock, LOCK_EX) or die_message('pkwk_chown(): flock() failed for lock');
 
 	// Check owner
 	$stat = stat($filename) or
@@ -1013,7 +862,7 @@ function pkwk_chown($filename, $preserve_time = TRUE)
 		// Lock source $filename to avoid file corruption
 		// NOTE: Not 'r+'. Don't check write permission here
 		$ffile = fopen($filename, 'r') or
-			die('pkwk_chown(): fopen() failed for: ' .
+			die_message('pkwk_chown(): fopen() failed for: ' .
 				basename(htmlspecialchars($filename)));
 
 		// Try to chown by re-creating files
@@ -1021,22 +870,19 @@ function pkwk_chown($filename, $preserve_time = TRUE)
 		//   * touch() before copy() is for 'rw-r--r--' instead of 'rwxr-xr-x' (with umask 022).
 		//   * (PHP 4 < PHP 4.2.0) touch() with the third argument is not implemented and retuns NULL and Warn.
 		//   * @unlink() before rename() is for Windows but here's for Unix only
-		// flock($ffile, LOCK_EX) or die('pkwk_chown(): flock() failed');
-		@flock($ffile, LOCK_EX);
+		flock($ffile, LOCK_EX) or die_message('pkwk_chown(): flock() failed');
 		$result = touch($tmp) && copy($filename, $tmp) &&
 			($preserve_time ? (touch($tmp, $stat[9], $stat[8]) || touch($tmp, $stat[9])) : TRUE) &&
 			rename($tmp, $filename);
-		// flock($ffile, LOCK_UN) or die('pkwk_chown(): flock() failed');
-		@flock($ffile, LOCK_UN);
+		flock($ffile, LOCK_UN) or die_message('pkwk_chown(): flock() failed');
 
-		fclose($ffile) or die('pkwk_chown(): fclose() failed');
+		fclose($ffile) or die_message('pkwk_chown(): fclose() failed');
 
 		if ($result === FALSE) @unlink($tmp);
 	}
 
 	// Unlock for pkwk_chown()
-	// flock($flock, LOCK_UN) or die('pkwk_chown(): flock() failed for lock');
-	@flock($flock, LOCK_UN);
+	flock($flock, LOCK_UN) or die_message('pkwk_chown(): flock() failed for lock');
 	fclose($flock) or die_message('pkwk_chown(): fclose() failed for lock');
 
 	return $result;
@@ -1045,29 +891,20 @@ function pkwk_chown($filename, $preserve_time = TRUE)
 // touch() with trying pkwk_chown()
 function pkwk_touch_file($filename, $time = FALSE, $atime = FALSE)
 {
+	$message = _('pkwk_touch_file(): Invalid UID and (not writable for the directory or not a flie):')
+		.htmlspecialchars(basename($filename));
 	// Is the owner incorrected and unable to correct?
 	if (! file_exists($filename) || pkwk_chown($filename)) {
 		if ($time === FALSE) {
-			$result = touch($filename);
+			$result = touch($filename) or die_message($message);
 		} else if ($atime === FALSE) {
-			$result = touch($filename, $time);
+			$result = touch($filename, $time) or die_message($message);
 		} else {
-			$result = touch($filename, $time, $atime);
+			$result = touch($filename, $time, $atime) or die_message($message);
 		}
 		return $result;
 	} else {
-		die_message('pkwk_touch_file(): Invalid UID and (not writable for the directory or not a flie): ' .
-			htmlspecialchars(basename($filename)));
-	}
-}
-
-function load_entities(){
-	$fp = file(CACHE_DIR . PKWK_ENTITIES_REGEX_CACHE);
-	if ($fp == FALSE){
-		$info[] = 'Cannot read '.PKWK_ENTITIES_REGEX_CACHE.'. Please click <a href="'.get_cmd_uri('update_entities').'">here</a> and regenerete '.PKWK_ENTITIES_REGEX_CACHE.'.';
-		return '[a-zA-Z0-9]{2,8}';
-	}else{
-		return trim(join('', $fp));
+		die_message($message);
 	}
 }
 ?>

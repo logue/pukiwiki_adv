@@ -62,11 +62,11 @@ function do_update_diff($pagestr, $poststr, $original)
 <p>l : between backup data and stored page data.<br />
  r : between backup data and your post data.</p>
 <table class="style_table">
- <tr>
-  <th>l</th>
-  <th>r</th>
-  <th>text</th>
- </tr>
+	<tr>
+		<th class="style_th">l</th>
+		<th class="style_th">r</th>
+		<th class="style_th">text</th>
+	</tr>
 EOD;
 		$tags = array('th', 'th', 'td');
 		foreach ($arr as $_obj) {

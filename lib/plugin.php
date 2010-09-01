@@ -1,9 +1,10 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: plugin.php,v 1.15.17 2008/01/13 23:29:00 upk Exp $
+// $Id: plugin.php,v 1.19.18 2010/08/28 09:58:00 Logue Exp $
 // Copyright (C)
+//   2010      PukiWiki Advance Developers Team
 //   2005-2006,2008 PukiWiki Plus! Team
-//   2002-2005 PukiWiki Developers Team
+//   2002-2005,2007 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
 // License: GPL v2 or (at your option) any later version
 //
@@ -70,7 +71,7 @@ function limit_plugin($name)
 		$count[$name] = 1;
 	}
 	if (++$count[$name] > PKWK_PLUGIN_CALL_TIME_LIMIT) {
-		die('Alert: plugin "' . htmlspecialchars($name) .
+		die_message('Alert: plugin "' . htmlspecialchars($name) .
 		'" was called over ' . PKWK_PLUGIN_CALL_TIME_LIMIT .
 		' times. SPAM or someting?<br />' . "\n" .
 		'<a href="' . get_cmd_uri('edit',$vars['page']) .
@@ -133,13 +134,12 @@ function exist_plugin_inline($name) {
 	return exist_plugin_function($name, 'plugin_' . $name . '_inline');
 }
 
-// Do init the plugin
+// Call 'init' function for the plugin
+// NOTE: Returning FALSE means "An erorr occurerd"
 function do_plugin_init($name)
 {
 	global $plugin_lang_path;
-	static $checked = array();
-
-	if (isset($checked[$name])) return $checked[$name];
+	static $done = array();
 
 	if (empty($plugin_lang_path[$name])) {
 		bindtextdomain($name, LANG_DIR);
@@ -147,20 +147,12 @@ function do_plugin_init($name)
 		bindtextdomain($name, $plugin_lang_path[$name]);
 	}
 	bind_textdomain_codeset($name, SOURCE_ENCODING);
-	$func = 'plugin_' . $name . '_init';
-	if (function_exists($func)) {
-		// TRUE or FALSE or NULL (return nothing)
-		textdomain($name);
-		$checked[$name] = call_user_func($func);
-		textdomain(DOMAIN);
-		if (!isset($checked[$name])) {
-			$checked[$name] = TRUE; // checked.
-		}
-	} else {
-		$checked[$name] = TRUE; // checked.
+	if (! isset($done[$name])) {
+		$func = 'plugin_' . $name . '_init';
+		$done[$name] = (! function_exists($func) || call_user_func($func) !== FALSE);
 	}
 
-	return $checked[$name];
+	return $done[$name];
 }
 
 // Call API 'action' of the plugin
@@ -168,8 +160,9 @@ function do_plugin_action($name)
 {
 	if (! exist_plugin_action($name)) return array();
 
-	if(do_plugin_init($name) === FALSE)
-		die_message('Plugin init failed: ' . $name);
+	if (do_plugin_init($name) === FALSE) {
+		die_message('Plugin init failed: ' . htmlspecialchars($name));
+	}
 
 	textdomain($name);
 	$retvar = call_user_func('plugin_' . $name . '_action');
@@ -189,8 +182,9 @@ function do_plugin_convert($name, $args = '')
 {
 	global $digest;
 
-	if(do_plugin_init($name) === FALSE)
-		return '[Plugin init failed: ' . $name . ']';
+	if (do_plugin_init($name) === FALSE) {
+		return '[Plugin init failed: ' . htmlspecialchars($name) . ']';
+	}
 
 	if (! PKWKEXP_DISABLE_MULTILINE_PLUGIN_HACK) {
 		// Multiline plugin?
@@ -234,13 +228,14 @@ function do_plugin_inline($name, $args, & $body)
 {
 	global $digest;
 
-	if(do_plugin_init($name) === FALSE)
-		return '[Plugin init failed: ' . $name . ']';
+	if (do_plugin_init($name) === FALSE) {
+		return '[Plugin init failed: ' . htmlspecialchars($name) . ']';
+	}
 
-	if ($args !== '') {
-		$aryargs = csv_explode(',', $args);
-	} else {
+	if ($args === '') {
 		$aryargs = array();
+	} else {
+		$aryargs = csv_explode(',', $args);
 	}
 
 	// NOTE: A reference of $body is always the last argument
