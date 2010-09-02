@@ -119,8 +119,10 @@ function catbody($title, $page, $body)
 	$is_read = (arg_check('read') && is_page($_page));
 	$is_freeze = is_freeze($_page);
 	$filetime = get_filetime($_page);
+	
+	if (!isset($vars['ajax'])){ $vars['ajax'] = false; }
 
-	if ($vars['ajax']=='json'){
+	if ($vars['ajax'] ==='json'){
 		// JSONで出力（仮）
 		$obj = array(
 			'body'			=> $body,
@@ -145,8 +147,8 @@ function catbody($title, $page, $body)
 	}else{
 		$meta_tags[] = array('name' => 'generator',	'content' => strip_tags(GENERATOR));
 		$meta_tags[] = array('name' => 'viewport',	'content' => (isset($viewport) ? $viewport : 'width=device-width; initial-scale=1.0; maximum-scale=1.0;'));
-		($modifier !== 'anonymous') ?			$meta_tags[] = array('name' => 'author',					'content' =>  $modifier) : '';
-		(!empty($google_site_verification)) ?	$meta_tags[] = array('name' => 'google-site-verification',	'content' => $google_site_verification) : '';
+		($modifier !== 'anonymous') ?			$meta_tags[] = array('name' => 'author',					'content' => $modifier) : '';
+		(!empty($google_site_verification)) ?	$meta_tags[] = array('name' => 'google-site-verification',	'content' => $google_analytics) : '';
 		(!empty($yahoo_site_explorer_id)) ?		$meta_tags[] = array('name' => 'y_key',						'content' => $yahoo_site_explorer_id) : '';
 		(!empty($bing_siteid)) ?				$meta_tags[] = array('name' => 'msvalidate.01',				'content' => $bing_siteid) : '';
 
@@ -228,7 +230,7 @@ function catbody($title, $page, $body)
 		unset($js_var, $key, $val);
 
 		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>SKIN_DIR.'js/dd_belatedpng.js', 'IE_flag'=>7);
-		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://www.google.com/jsapi?key='.$google_api_key);
+		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://www.google.com/jsapi'.((isset($google_api_key)) ? '?key='.$google_api_key : ''));
 		$pkwk_head_js[] = array('type'=>'text/javascript', 'content'=>join($default_js,"\n"));
 		/* ヘッダー部分の処理ここまで */
 	
@@ -256,7 +258,6 @@ function catbody($title, $page, $body)
 			$default_js_libs[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/profiling/config.js');
 */
 			unset($files);
-			$info[] = 'This program is running in debug mode. ';
 		} else {
 			$default_js_libs[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/skin.js.php');
 		}
@@ -357,7 +358,7 @@ function catbody($title, $page, $body)
 		if ((PKWK_WARNING === true || DEBUG === true) && ! empty($info)){
 			$body = '<div style="padding: 0pt 0.7em;" class="ui-state-highlight ui-corner-all">'.
 					'<p><span class="ui-icon ui-icon-info" style="float: left; margin-right: 0.3em;"></span>'.
-					join("<br />",$info).'</p></div>'.$body;
+					_('This program is running in debug mode.')."</p>\n<ul>\n<li>".join("</li>\n<li>",$info)."</li>\n</ul>\n</div>\n".$body;
 		}
 
 		// global $always_menu_displayed;
@@ -843,6 +844,7 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_XHTML_1_1, $charset = CONTENT_CHAR
 function tag_helper($tagname,$tags,$suffix=' /'){
 	foreach ($tags as $tag) {
 		foreach( $tag as $key=>$val){
+			$IE_flag = '';
 			if ($key == 'content' && ($tagname == 'script' || $tagname == 'style')){
 				if ($tagname == 'script'){
 					$content = "\n".'//<![CDATA['."\n".$val."\n".'//]]>';

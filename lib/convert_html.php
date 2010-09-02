@@ -1,9 +1,10 @@
 <?php
-// PukiWiki Plus! - Yet another WikiWikiWeb clone
-// $Id: convert_html.php,v 1.19.22 2008/05/04 19:53:00 upk Exp $
+// PukiWiki - Yet another WikiWikiWeb clone
+// $Id: convert_html.php,v 1.20.23 2010/09/02 21:01:00 Logue Exp $
 // Copyright (C)
+//   2010      PukiWiki Advance Developers Team
 //   2005-2008 PukiWiki Plus! Team
-//   2002-2007 PukiWiki Developers Team
+//   2002-2005, 2007 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
 // License: GPL v2 or (at your option) any later version
 //
@@ -260,8 +261,9 @@ class Heading extends Element
 
 	function toString()
 	{
+
 		$fixed_anchor = make_heading($this->text, FALSE);
-		$id = (empty($fixed_anchor)) ? 'h' . $this->level . '_' . $this->id : $fixed_anchor;
+		$id = (empty($fixed_anchor)) ? $this->id : $fixed_anchor;
 		return $this->msg_top .  $this->wrap(parent::toString(),
 			'h' . $this->level, ' id="' . $id . '"');
 	}
@@ -508,11 +510,8 @@ class TableCell extends Element
 				$text = $matches[5];
 			}
 		}
-		if ($is_template && is_numeric($text)) {
+		if ($is_template && is_numeric($text))
 			$this->style['width'] = 'width:' . $text . 'px;';
-		} elseif ($is_template && is_numeric(substr($text,0,-1)) && substr($text,-1) == '%') {
-			$this->style['width'] = 'width:' . $text . ';';
-		}
 
 		if ($text == '>') {
 			$this->colspan = 0;
@@ -662,46 +661,61 @@ class Table extends Element
 	}
 }
 
-// , title1 , title2 , title3
-// , cell1  , cell2  , cell3
-// , cell4  , cell5  , cell6
+// , cell1  , cell2  ,  cell3 
+// , cell4  , cell5  ,  cell6 
+// , cell7  ,        right,==
+// ,left          ,==,  cell8
 class YTable extends Element
 {
-	var $col;
+	var $col;	// Number of columns
 
-	function YTable($_value)
+	// TODO: Seems unable to show literal '==' without tricks.
+	//       But it will be imcompatible.
+	// TODO: Why toString() or toXHTML() here
+	function YTable($row = array('cell1 ', ' cell2 ', ' cell3'))
 	{
 		parent::Element();
 
-		$align = $value = $matches = array();
-		foreach($_value as $val) {
-			if (preg_match('/^(\s+)?(.+?)(\s+)?$/', $val, $matches)) {
-				$align[] =($matches[1] != '') ?
-					((isset($matches[3]) && $matches[3] != '') ?
-						' style="text-align:center"' :
-						' style="text-align:right"'
-					) : '';
-				$value[] = $matches[2];
+		$str = array();
+		$col = count($row);
+
+		$matches = $_value = $_align = array();
+		foreach($row as $cell) {
+			if (preg_match('/^(\s+)?(.+?)(\s+)?$/', $cell, $matches)) {
+				if ($matches[2] == '==') {
+					// Colspan
+					$_value[] = FALSE;
+					$_align[] = FALSE;
+				} else {
+					$_value[] = $matches[2];
+					if ($matches[1] == '') {
+						$_align[] = '';	// left
+					} else if (isset($matches[3])) {
+						$_align[] = 'center';
+					} else {
+						$_align[] = 'right';
+					}
+				}
 			} else {
-				$align[] = '';
-				$value[] = $val;
+				$_value[] = $cell;
+				$_align[] = '';
 			}
 		}
-		$this->col = count($value);
-		$colspan = array();
-		foreach ($value as $val)
-			$colspan[] = ($val == '==') ? 0 : 1;
-		$str = '';
-		$count = count($value);
-		for ($i = 0; $i < $count; $i++) {
-			if ($colspan[$i]) {
-				while ($i + $colspan[$i] < $count && $value[$i + $colspan[$i]] == '==')
-					$colspan[$i]++;
-				$colspan[$i] = ($colspan[$i] > 1) ? ' colspan="' . $colspan[$i] . '"' : '';
-				$str .= '<td class="style_td"' . $align[$i] . $colspan[$i] . '>' . make_link($value[$i]) . '</td>';
-			}
+
+		for ($i = 0; $i < $col; $i++) {
+			if ($_value[$i] === FALSE) continue;
+			$colspan = 1;
+			while (isset($_value[$i + $colspan]) && $_value[$i + $colspan] === FALSE) ++$colspan;
+			$colspan = ($colspan > 1) ? ' colspan="' . $colspan . '"' : '';
+			$align = $_align[$i] ? ' style="text-align:' . $_align[$i] . '"' : '';
+			$str[] = '<td class="style_td"' . $align . $colspan . '>';
+			$str[] = make_link($_value[$i]);
+			$str[] = '</td>';
+			unset($_value[$i], $_align[$i]);
 		}
-		$this->elements[] = $str;
+
+		$this->col        = $col;
+		$this->elements[] = implode('', $str);
 	}
 
 	function canContain(& $obj)
@@ -756,44 +770,7 @@ class Pre extends Element
 	}
 }
 
-// ' 'Space-beginning sentence with color(started with '# ')
-// ' 'Space-beginning sentence with color
-// ' 'Space-beginning sentence with color
-class CPre extends Element
-{
-	function CPre(&$root,$text)
-	{
-		global $preformat_ltrim;
-
-		parent::Element();
-		if (substr($text, 0, 2) === '# ') $text=substr($text,1);
-		$this->elements[] = (!$preformat_ltrim or $text == '' or substr($text, 0, 1) !== ' ') ? $text : substr($text,1);
-	}
-	function canContain(&$obj)
-	{
-		return is_a($obj, 'CPre');
-	}
-	function &insert(&$obj)
-	{
-		$this->elements[] = $obj->elements[0];
-		return $this;
-	}
-	function toString()
-	{
-		static $saved_glossary, $saved_autolink, $make_link;
-		global $glossary, $autolink;
-		$saved_glossary=$glossary;
-		$saved_autolink=$autolink;
-		$glossary=FALSE;
-		$autolink=FALSE;
-		$made_link=make_link(join("\n",$this->elements));
-		$autolink=$saved_autolink;
-		$glossary=$saved_glossary;
-		return $this->wrap($made_link,'pre');
-	}
-}
-
-// #something (started with '#')
+// Block plugin: #something (started with '#')
 class Div extends Element
 {
 	var $name;
@@ -920,7 +897,7 @@ class Body extends Element
 				$len = strlen($matches[1]);
 				$line .= "\r"; // Delimiter
 				while (! empty($lines)) {
-					$next_line = rtrim(array_shift($lines), "\r\n");
+					$next_line = preg_replace("/[\r\n]*$/", '', array_shift($lines));
 					if (preg_match('/\}{' . $len . '}/', $next_line)) {
 						$line .= $next_line;
 						break;
@@ -944,8 +921,8 @@ class Body extends Element
 				$this->last = & $this->last->add(new Pre($this, $line));
 				continue;
 			}
-
-			// CPre
+			
+			// CPre (Plus!)
 			if (substr($line,0,2) == '# ' or substr($line,0,2) == "#\t") {
 				$this->last = &$this->last->add(new CPre($this,$line));
 				continue;
@@ -977,7 +954,7 @@ class Body extends Element
 	function getAnchor($text, $level)
 	{
 		global $top, $_symbol_anchor;
-		global $fixed_heading_edited;
+		global $fixed_heading_edited;	// Plus!
 
 		// Heading id (auto-generated)
 		$autoid = 'content_' . $this->id . '_' . $this->count;
@@ -985,12 +962,12 @@ class Body extends Element
 
 		// Heading id (specified by users)
 		$id = make_heading($text, FALSE); // Cut fixed-anchor from $text
-		$anchor = '';
 		if ($id == '') {
 			// Not specified
 			$id     = & $autoid;
+			$anchor = '';
 		} else {
-			// $anchor = ' &aname(' . $id . ',super,full){' . $_symbol_anchor . '};';
+			//$anchor = ' &aname(' . $id . ',super,full){' . $_symbol_anchor . '};';
 			//if ($fixed_heading_edited) $anchor .= " &edit(,$id);";
 			if ($fixed_heading_edited) $anchor = " &edit(,$id);";
 		}
@@ -1000,7 +977,7 @@ class Body extends Element
 		// Add 'page contents' link to its heading
 		$this->contents_last = & $this->contents_last->add(new Contents_UList($text, $level, $id));
 
-		// Add heading
+		// Add heding
 		return array($text . $anchor, $this->count > 1 ? "\n" . $top : '', $autoid);
 	}
 
@@ -1025,8 +1002,12 @@ class Body extends Element
 
 	function replace_contents($arr)
 	{
-		$contents  = '<div class="contents">' . "\n" .
+/*		$contents  = '<div class="contents">' . "\n" .
 				'<a id="contents_' . $this->id . '"></a>' . "\n" .
+				$this->contents->toString() . "\n" .
+				'</div>' . "\n";
+*/
+		$contents  = '<div class="contents" id="contents_' . $this->id . '">' . "\n" .
 				$this->contents->toString() . "\n" .
 				'</div>' . "\n";
 		return $contents;
@@ -1060,4 +1041,42 @@ class Contents_UList extends ListContainer
 		$this->style = sprintf($_list_pad_str, $this->level, $margin, $margin);
 	}
 }
+/*************************************************************************************************/
+// ' 'Space-beginning sentence with color(started with '# ')
+// ' 'Space-beginning sentence with color
+// ' 'Space-beginning sentence with color
+class CPre extends Element
+{
+	function CPre(&$root,$text)
+	{
+		global $preformat_ltrim;
+
+		parent::Element();
+		if (substr($text, 0, 2) === '# ') $text=substr($text,1);
+		$this->elements[] = (!$preformat_ltrim or $text == '' or substr($text, 0, 1) !== ' ') ? $text : substr($text,1);
+	}
+	function canContain(&$obj)
+	{
+		return is_a($obj, 'CPre');
+	}
+	function &insert(&$obj)
+	{
+		$this->elements[] = $obj->elements[0];
+		return $this;
+	}
+	function toString()
+	{
+		static $saved_glossary, $saved_autolink, $make_link;
+		global $glossary, $autolink;
+		$saved_glossary=$glossary;
+		$saved_autolink=$autolink;
+		$glossary=FALSE;
+		$autolink=FALSE;
+		$made_link=make_link(join("\n",$this->elements));
+		$autolink=$saved_autolink;
+		$glossary=$saved_glossary;
+		return $this->wrap($made_link,'pre');
+	}
+}
+
 ?>

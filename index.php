@@ -15,7 +15,7 @@ error_reporting(E_ERROR | E_PARSE); // Avoid E_WARNING, E_NOTICE, etc
 // Debug mode.
 define('DEBUG', true);
 // Show infomation message.
-//define('PKWK_WARNING', false);
+define('PKWK_WARNING', true);
 
 // Special
 //define('PKWK_READONLY',  1); // 0,1,2,3,4

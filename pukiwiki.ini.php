@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone
-// $Id: pukiwiki.ini.php,v 1.148.47 2010/08/19 10:41:00 Logue Exp $
+// $Id: pukiwiki.ini.php,v 1.149.48 2010/08/19 10:41:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -18,7 +18,8 @@
 // PKWK_OPTIMISE - Ignore verbose but understandable checking and warning
 //   If you end testing this PukiWiki, set '1'.
 //   If you feel in trouble about this PukiWiki, set '0'.
-defined('PKWK_OPTIMISE') or define('PKWK_OPTIMISE', 0); // 0,1
+if (! defined('PKWK_OPTIMISE'))
+	define('PKWK_OPTIMISE', 0);
 
 /////////////////////////////////////////////////
 // Security settings
@@ -34,10 +35,12 @@ defined('PLUS_PROTECT_MODE') or define('PLUS_PROTECT_MODE', 0); // 0,2,3,4,5
 
 // PKWK_READONLY - Prohibits editing and maintain via WWW
 //   NOTE: Counter-related functions will work now (counter, attach count, etc)
-defined('PKWK_READONLY') or define('PKWK_READONLY', 0); // 0,1,2,3,4,5
+if (! defined('PKWK_READONLY'))
+	define('PKWK_READONLY', 0);		// 0,1,2,3,4,5
 
 // PKWK_SAFE_MODE - Prohibits some unsafe(but compatible) functions 
-defined('PKWK_SAFE_MODE') or define('PKWK_SAFE_MODE', 0); // 0,1,2,3,4,5
+if (! defined('PKWK_SAFE_MODE'))
+	define('PKWK_SAFE_MODE', 0);	// 0,1,2,3,4,5
 
 // PKWK_CREATE_PAGE - New page making is prohibited.
 defined('PKWK_CREATE_PAGE') or define('PKWK_CREATE_PAGE', 0); // 0,1,2,3,4,5
@@ -49,12 +52,13 @@ defined('PKWK_USE_REDIRECT') or define('PKWK_USE_REDIRECT', 0); // 0,1
 //   Inline-image-tag for URIs may allow leakage of Wiki readers' information
 //   (in short, 'Web bug') or external malicious CGI (looks like an image's URL)
 //   attack to Wiki readers, but easy way to show images.
-defined('PKWK_DISABLE_INLINE_IMAGE_FROM_URI') or define('PKWK_DISABLE_INLINE_IMAGE_FROM_URI', 0);
+if (! defined('PKWK_DISABLE_INLINE_IMAGE_FROM_URI'))
+	define('PKWK_DISABLE_INLINE_IMAGE_FROM_URI', 0);
 
 // PKWK_QUERY_STRING_MAX
 //   Max length of GET method, prohibits some worm attack ASAP
 //   NOTE: Keep (page-name + attach-file-name) <= PKWK_QUERY_STRING_MAX
-defined('PKWK_QUERY_STRING_MAX') or define('PKWK_QUERY_STRING_MAX', 1280); // Bytes, 0 = OFF
+define('PKWK_QUERY_STRING_MAX', 640); // Bytes, 0 = OFF
 
 // PKWK_ZLIB_LOADABLE_MODULE
 defined('PKWK_ZLIB_LOADABLE_MODULE') or define('PKWK_ZLIB_LOADABLE_MODULE', true);
@@ -71,7 +75,7 @@ defined('PKWK_ZLIB_LOADABLE_MODULE') or define('PKWK_ZLIB_LOADABLE_MODULE', true
 //   argsN+1
 //   }}
 //   #memo(This makes '#memo(foo)' to this)
-defined('PKWKEXP_DISABLE_MULTILINE_PLUGIN_HACK') or define('PKWKEXP_DISABLE_MULTILINE_PLUGIN_HACK', 0); // 1 = Disabled
+define('PKWKEXP_DISABLE_MULTILINE_PLUGIN_HACK', 0); // 1 = Disabled
 
 /////////////////////////////////////////////////
 // Language / Encoding settings
@@ -116,43 +120,44 @@ $public_holiday_guest_view = 0;
 // You may hide these directories (from web browsers)
 // by setting DATA_HOME at index.php.
 
-defined('DATA_DIR')       or define('DATA_DIR',      DATA_HOME . 'wiki/'     ); // Latest wiki texts
-defined('DIFF_DIR')       or define('DIFF_DIR',      DATA_HOME . 'diff/'     ); // Latest diffs
-defined('BACKUP_DIR')     or define('BACKUP_DIR',    DATA_HOME . 'backup/'   ); // Backups
-defined('CACHE_DIR')      or define('CACHE_DIR',     DATA_HOME . 'cache/'    ); // Some sort of caches
-defined('UPLOAD_DIR')     or define('UPLOAD_DIR',    DATA_HOME . 'attach/'   ); // Attached files and logs
-defined('COUNTER_DIR')    or define('COUNTER_DIR',   DATA_HOME . 'counter/'  ); // Counter plugin's counts
-defined('TRACKBACK_DIR')  or define('TRACKBACK_DIR', DATA_HOME . 'trackback/'); // TrackBack logs
-defined('REFERER_DIR')    or define('REFERER_DIR',   DATA_HOME . 'trackback/'); // Referer logs
-defined('LOG_DIR')        or define('LOG_DIR',       DATA_HOME . 'log/'      ); // Logging file
-defined('INIT_DIR')       or define('INIT_DIR',      DATA_HOME . 'init/'     ); // Initial value (Contents)
+defined('DATA_DIR')			or define('DATA_DIR',		DATA_HOME . 'wiki/'     );	// Latest wiki texts
+defined('DIFF_DIR')			or define('DIFF_DIR',		DATA_HOME . 'diff/'     );	// Latest diffs
+defined('BACKUP_DIR')		or define('BACKUP_DIR',		DATA_HOME . 'backup/'   );	// Backups
+defined('CACHE_DIR')		or define('CACHE_DIR',		DATA_HOME . 'cache/'    );	// Some sort of caches
+defined('UPLOAD_DIR')		or define('UPLOAD_DIR',		DATA_HOME . 'attach/'   );	// Attached files and logs
+defined('COUNTER_DIR')		or define('COUNTER_DIR',	DATA_HOME . 'counter/'  );	// Counter plugin's counts
+defined('TRACKBACK_DIR')	or define('TRACKBACK_DIR',	DATA_HOME . 'trackback/');	// TrackBack logs
+defined('REFERER_DIR')		or define('REFERER_DIR',	DATA_HOME . 'trackback/');	// Referer logs
+defined('LOG_DIR')			or define('LOG_DIR',		DATA_HOME . 'log/'      );	// Logging file
+defined('INIT_DIR')			or define('INIT_DIR',		DATA_HOME . 'init/'     );	// Initial value (Contents)
 
-defined('PLUGIN_DIR')     or define('PLUGIN_DIR',    SITE_HOME . 'plugin/'   ); // Plugin directory
-defined('LANG_DIR')       or define('LANG_DIR',      SITE_HOME . 'locale/'   ); // Language file
-defined('SITE_INIT_DIR')  or define('SITE_INIT_DIR', SITE_HOME . 'init/'     ); // Initial value (Site)
+defined('PLUGIN_DIR')		or define('PLUGIN_DIR',		SITE_HOME . 'plugin/'   );	// Plugin directory
+defined('LANG_DIR')			or define('LANG_DIR',		SITE_HOME . 'locale/'   );	// Language file
+defined('SITE_INIT_DIR')	or define('SITE_INIT_DIR',	SITE_HOME . 'init/'     );	// Initial value (Site)
 
-defined('EXTEND_DIR')     or define('EXTEND_DIR',    SITE_HOME . 'extend/'   ); // Extend directory
-defined('EXT_PLUGIN_DIR') or define('EXT_PLUGIN_DIR',EXTEND_DIR. 'plugin/'   ); // Extend Plugin directory
-defined('EXT_LANG_DIR')   or define('EXT_LANG_DIR',  EXTEND_DIR. 'locale/'   ); // Extend Language file
-defined('EXT_SKIN_DIR')   or define('EXT_SKIN_DIR',  EXTEND_DIR. 'skin/'     ); // Extend Skin directory
+defined('EXTEND_DIR')		or define('EXTEND_DIR',		SITE_HOME . 'extend/'   );	// Extend directory
+defined('EXT_PLUGIN_DIR')	or define('EXT_PLUGIN_DIR',	EXTEND_DIR. 'plugin/'   );	// Extend Plugin directory
+defined('EXT_LANG_DIR')		or define('EXT_LANG_DIR',	EXTEND_DIR. 'locale/'   );	// Extend Language file
+defined('EXT_SKIN_DIR')		or define('EXT_SKIN_DIR',	EXTEND_DIR. 'skin/'     );	// Extend Skin directory
 
 /////////////////////////////////////////////////
 // Directory settings II (ended with '/')
 
 // Skins / Stylesheets
-defined('SKIN_DIR')       or define('SKIN_DIR',  WWW_HOME . 'skin/');	// Skin files (SKIN_DIR/*.skin.php) are needed at
-									// ./DATAHOME/SKIN_DIR from index.php.
-defined('IMAGE_DIR')      or define('IMAGE_DIR', WWW_HOME . 'image/');	// Static image files
+
+defined('SKIN_DIR')		or define('SKIN_DIR',  WWW_HOME . 'skin/');		// Skin files (SKIN_DIR/*.skin.php) are needed at
+																		// ./DATAHOME/SKIN_DIR from index.php.
+defined('IMAGE_DIR')	or define('IMAGE_DIR', WWW_HOME . 'image/');	// Static image files
 
 // for Fancy URL
-defined('SKIN_URI')       or define('SKIN_URI',  ROOT_URI . 'skin/');	// CSSs(*.css) and JavaScripts(*.js) are needed at
-									// ./SKIN_URI from index.php.
-defined('IMAGE_URI')      or define('IMAGE_URI', ROOT_URI . 'image/');	// Keep this directory shown via web browsers like
-									// ./IMAGE_URI from index.php.
+defined('SKIN_URI')		or define('SKIN_URI',  ROOT_URI . 'skin/');		// CSSs(*.css) and JavaScripts(*.js) are needed at
+																		// ./SKIN_URI from index.php.
+defined('IMAGE_URI')	or define('IMAGE_URI', ROOT_URI . 'image/');	// Keep this directory shown via web browsers like
+																		// ./IMAGE_URI from index.php.
 
 // THEME
 // *.skin.php => SKIN_DIR or SKIN_DIR + THEME_PLUS_NAME or EXT_SKIN_DIR + THEME_PLUS_NAME
-defined('THEME_PLUS_NAME')   or define('THEME_PLUS_NAME',  'theme/');		// SKIN_URI + THEME_PLUS_NAME
+defined('THEME_PLUS_NAME')   or define('THEME_PLUS_NAME',  'theme/');			// SKIN_URI + THEME_PLUS_NAME
 defined('THEME_TDIARY_NAME') or define('THEME_TDIARY_NAME','tdiary-theme/');	// SKIN_URI + THEME_TDIARY_NAME
 
 /////////////////////////////////////////////////
@@ -160,10 +165,7 @@ defined('THEME_TDIARY_NAME') or define('THEME_TDIARY_NAME','tdiary-theme/');	// 
 // Also used as RSS feed's channel name etc
 $page_title = 'PukiWiki Advance';
 
-// Specify PukiPlus URI(absoluteURI or relativeURI) (default: auto)
-// 必要であれば、絶対URIまたは相対URIを指定して下さい。
-// 省略時は、絶対URIが自動で設定されます。
-//$script = 'http://example.com/pukiwiki/';
+// Specify PukiWiki Advance URL (default: auto)
 //$script = './';
 
 // Shorten $script: Cut its file name (default: not cut)
@@ -191,18 +193,19 @@ $modifierlink = get_script_absuri();
 //$modifierlink = dirname($_SCRIPT_NAME);
 
 // Default page name
-$defaultpage  = 'FrontPage';		// Top / Default page
-$whatsnew     = 'RecentChanges';	// Modified page list
-$whatsdeleted = 'RecentDeleted';	// Removeed page list
-$interwiki    = 'InterWikiName';	// Set InterWiki definition here
-$aliaspage    = 'AutoAliasName';	// Set AutoAlias definition here
-$glossarypage = 'Glossary';	 	// Set Glossary definition here
-$menubar      = 'MenuBar';		// Menu
-$sidebar      = 'SideBar';		// Side
-$navigation   = 'Navigation';
-$headarea     = ':Header';
-$footarea     = ':Footer';
-$protect      = ':login';		// Protect mode
+$defaultpage	= 'FrontPage';		// Top / Default page
+$whatsnew		= 'RecentChanges';	// Modified page list
+$whatsdeleted	= 'RecentDeleted';	// Removeed page list
+$interwiki		= 'InterWikiName';	// Set InterWiki definition here
+$aliaspage		= 'AutoAliasName';	// Set AutoAlias definition here
+$menubar		= 'MenuBar';		// Menu
+
+$sidebar		= 'SideBar';		// Side
+$navigation		= 'Navigation';		// Popupmenu Defintion here.
+$glossarypage	= 'Glossary';	 	// Set Glossary definition here
+$headarea		= ':Header';
+$footarea		= ':Footer';
+$protect		= ':login';			// Protect mode
 
 // Google API key
 // Googlemapsなどのプラグインを使用する際必要です。APIKeyは以下のアドレスから取得可能です。
@@ -211,6 +214,9 @@ $google_api_key = '';
 
 /////////////////////////////////////////////////
 // for Access Analyze and SEO use
+
+// Always output "nofollow,noindex" attribute
+$nofollow = 0; // 1 = Try hiding from search engines
 
 // Static URL
 // アドレスを.htmlのような静的なアドレスにします。（別途htaccessの変更が必要です）
@@ -238,8 +244,8 @@ $bing_webmaster_tool = '';
 
 // Some web browser's bug, and / or Java apprets may needs not-Strict DTD.
 // Some plugin (e.g. paint) set this PKWK_DTD_XHTML_1_0_TRANSITIONAL.
-$pkwk_dtd = PKWK_DTD_HTML_5;	// Experimental.
-//$pkwk_dtd = PKWK_DTD_XHTML_1_1; // Default
+$pkwk_dtd = PKWK_DTD_HTML_5;	// Adv. Default
+//$pkwk_dtd = PKWK_DTD_XHTML_1_1;
 //$pkwk_dtd = PKWK_DTD_XHTML_1_0_STRICT;
 //$pkwk_dtd = PKWK_DTD_XHTML_1_0_TRANSITIONAL;
 //$pkwk_dtd = PKWK_DTD_HTML_4_01_STRICT;
@@ -247,17 +253,12 @@ $pkwk_dtd = PKWK_DTD_HTML_5;	// Experimental.
 
 // Change IE rendering mode.
 // http://msdn.microsoft.com/en-us/library/cc288325(VS.85).aspx
-// ここの値がChrome=1のみのときChrome Frameをインストールするインラインウィンドウを表示します。
+// Note: This setting ignore when edit page for fix IE8 scrolling bug.
 
 // $x_ua_compatible = "IE=edge";	// Render as latest IE (Default)
 // $x_ua_compatible = "IE=emulateIE7";	// Render as latest IE7
 // $x_ua_compatible = "chrome=1";	// Render as Chrome Frame
 // $x_ua_compatible = "IE=edge,chrome=1";	// Render as latest IE, if Chrome Frame installed, render as Chrome Frame.
-
-/////////////////////////////////////////////////
-// Always output "nofollow,noindex" attribute
-
-$nofollow = 0; // 1 = Try hiding from search engines
 
 /////////////////////////////////////////////////
 
@@ -291,16 +292,15 @@ if ($spam) {
 
 	// Threshold and rules for insertion (default)
 	$spam['method']['_default'] = array(
-		'_comment'    => '_default',
-		'quantity'    => 8,
-		//'non_uniquri'  =>  3,
-		'non_uniqhost' =>  3,
-		'area_anchor' => 0,
-		'area_bbcode' => 0,
-		'uniqhost'    => TRUE,
-		'badhost'     => TRUE,
-		'asap'         => TRUE, // Stop as soon as possible (quick but less-info)
-	);
+		'_comment'		=> '_default',
+		'quantity'		=>  8,
+		//'non_uniquri'	=>  3,
+		'non_uniqhost'	=>  3,
+		'area_anchor'	=>  0,
+		'area_bbcode'	=>  0,
+		'uniqhost'		=> TRUE,
+		'badhost'		=> TRUE,
+		'asap'			=> TRUE, // Stop as soon as possible (quick but less-info)
 
 	// For editing
 	// NOTE:
@@ -308,16 +308,16 @@ if ($spam) {
 	// "posting one URL" many times.
 	// Any rules will lock contents that have NG things already.
 	$spam['method']['edit'] = array(
-		// Supposed_by_you(n) * Edit_form_spec(2) * Margin(1.5)
-		'_comment'    => 'edit',
-		//'quantity'    => 60 * 3,
-		//'non_uniquri'  =>  5 * 3,
-		//'non_uniqhost' => 50 * 3,
-		//'area_anchor' => 30 * 3,
-		//'area_bbcode' => 15 * 3,
-		'uniqhost'    => TRUE,
-		'badhost'     => TRUE,
-		'asap'        => TRUE,
+		// Supposed_by_you(n) * Margin(1.5)
+		'_comment'     => 'edit',
+		//'quantity'     => 60 * 1.5,
+		//'non_uniquri'  =>  5 * 1.5,
+		//'non_uniqhost' => 50 * 1.5,
+		//'area_anchor'  => 30 * 1.5,
+		//'area_bbcode'  => 15 * 1.5,
+		'uniqhost'     => TRUE,
+		'badhost'      => TRUE,
+		'asap'         => TRUE,
 	);
 
 	//$spam['exitmode'] = 'dump'; // Dump progress
@@ -360,7 +360,7 @@ $_symbol_noexists = '?';
 // Automatic link to existing pages (especially helpful for non-wikiword pages, but heavy)
 
 // Minimum length of page name
-// Pukiwiki Plus! Recommended "5"
+// Pukiwiki Adv. Recommended "5"
 $autolink = 5; // Bytes, 0 = OFF (try 8)
 
 /////////////////////////////////////////////////
@@ -368,7 +368,7 @@ $autolink = 5; // Bytes, 0 = OFF (try 8)
 // Automatic link from specified word, to specifiled URI, page or InterWiki
 
 // Minimum length of alias "from" word
-// Pukiwiki Plus! Recommended "4"
+// Pukiwiki Adv. Recommended "4"
 $autoalias = 4; // Bytes, 0 = OFF (try 8)
 
 // Limit loading valid alias pairs in AutoAliasName page
@@ -385,7 +385,7 @@ $autobasealias_nonlist = '^\:|(^|\/)template$';
 // Automatic tooltip from specified word
 
 // Minimum length of glossary "from" word
-// Pukiwiki Plus! Recommended "2"
+// Pukiwiki Adv. Recommended "2"
 $autoglossary = 2; // NChars, 0 = OFF
 
 // Limit loading valid glossary pairs
@@ -398,7 +398,7 @@ $function_freeze = 1;
 /////////////////////////////////////////////////
 // Allow to use 'Do not change timestamp' checkbox
 // (0:Disable, 1:For everyone,  2:Only for the administrator)
-$notimeupdate = 1;
+$notimeupdate = 2;
 
 // Authentication
 require_once(add_homedir('auth.ini.php'));
@@ -497,20 +497,19 @@ $do_backup = 1;
 $del_backup = 0;
 
 // Bacukp interval and generation
-$cycle  = 1;    // Wait N hours between backup (0 = no wait)
-$maxage = 360; // Stock latest N backups
+$cycle  =   3; // Wait N hours between backup (0 = no wait)
+$maxage = 120; // Stock latest N backups
 
 // NOTE: $cycle x $maxage / 24 = Minimum days to lost your data
-//          1   x   360   / 24 = 15
+//          3   x   120   / 24 = 15
 
 // Splitter of backup data (NOTE: Too dangerous to change)
-defined('PKWK_SPLITTER') or define('PKWK_SPLITTER', '>>>>>>>>>>');
+define('PKWK_SPLITTER', '>>>>>>>>>>');
 
 /////////////////////////////////////////////////
-// Command executed per update
+// Command execution per update
 
-defined('PKWK_UPDATE_EXEC') or define('PKWK_UPDATE_EXEC', '');
-$update_exec = PKWK_UPDATE_EXEC;
+define('PKWK_UPDATE_EXEC', '');
 
 // Sample: Namazu (Search engine)
 //$target     = '/var/www/wiki/';
@@ -561,7 +560,7 @@ $notify_to   = 'to@example.com';	// To:
 $notify_from = 'from@example.com';	// From:
 
 // Subject: ($page = Page name wll be replaced)
-$notify_subject = '[PukiPlus] $page';
+$notify_subject = '[PukiWiki Adv.] $page';
 
 // Mail header
 // NOTE: Multiple items must be divided by "\r\n", not "\n".

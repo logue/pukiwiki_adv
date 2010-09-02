@@ -1,9 +1,24 @@
 User-agent: *
+Disallow: ./attach/
+Disallow: ./backup/
+Disallow: ./cache/
+Disallow: ./counter/
+Disallow: ./diff/
+Disallow: ./doc/
+Disallow: ./extend/
+Disallow: ./image/
+Disallow: ./init/
+Disallow: ./lib/
+Disallow: ./locale/
+Disallow: ./log/
+Disallow: ./plugin/
 Disallow: ./skin/
+Disallow: ./tools/
+Disallow: ./trackback/
+Disallow: ./wiki/
 Disallow: ./?:config
 Disallow: ./:config/
 Disallow: ./:config.html
 Disallow: ./?cmd=*
-Disallow: ./?plugin=attach&pcmd=open&file=*
 
 Sitemap: ./?plugin=sitemap

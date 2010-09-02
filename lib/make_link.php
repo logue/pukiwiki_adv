@@ -1,10 +1,10 @@
 <?php
 // PukiPlus.
-// $Id: make_link.php,v 1.35.27 2010/07/07 21:20:00 Logue Exp $
+// $Id: make_link.php,v 1.37.27 2010/08/28 09:50:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiPlus Team
+//   2010      PukiWiki Advance Developers Team
 //   2005-2008 PukiWiki Plus! Team
-//   2003-2006 PukiWiki Developers Team
+//   2003-2007 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
 // License: GPL v2 or (at your option) any later version
 //
@@ -902,7 +902,7 @@ function make_pagelink($page, $alias = '', $anchor = '', $refer = '', $isautolin
 
 	$r_refer = ($refer == '') ? '' : '&amp;refer=' . rawurlencode($refer);
 
-	if (! isset($related[$page]) && $page != $vars['page'] && is_page($page))
+	if (! isset($related[$page]) && $page !== $vars['page'] && is_page($page))
 		$related[$page] = get_filetime($page);
 
 	if ($isautolink || is_page($page)) {

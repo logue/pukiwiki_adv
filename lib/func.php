@@ -1,16 +1,17 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: func.php,v 1.93.41 2010/08/26 19:57:00 Logue Exp $
+// $Id: func.php,v 1.103.42 2010/09/02 20:16:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
-//   2002-2007 PukiWiki Developers Team
+//   2002-2007,2009-2010 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
 // License: GPL v2 or (at your option) any later version
 //
 // General functions
 // Plus!NOTE:(policy)not merge official cvs(1.86->1.87)
 
+// Adv. merged official cvs 
 function is_interwiki($str)
 {
 	global $InterWikiName;
@@ -97,12 +98,10 @@ function is_freeze($page, $clearcache = FALSE)
 	} else {
 		$fp = fopen(get_filename($page), 'rb') or
 			die('is_freeze(): fopen() failed: ' . htmlspecialchars($page));
-		// flock($fp, LOCK_SH) or die('is_freeze(): flock() failed');
-		@flock($fp, LOCK_SH);
+		flock($fp, LOCK_SH) or die('is_freeze(): flock() failed');
 		rewind($fp);
 		$buffer = fgets($fp, 9);
-		// flock($fp, LOCK_UN) or die('is_freeze(): flock() failed');
-		@flock($fp, LOCK_UN);
+		flock($fp, LOCK_UN) or die('is_freeze(): flock() failed');
 		fclose($fp) or die('is_freeze(): fclose() failed: ' . htmlspecialchars($page));
 
 		$is_freeze[$page] = ($buffer != FALSE && rtrim($buffer, "\r\n") == '#freeze');
@@ -241,6 +240,9 @@ function do_search($word, $type = 'AND', $non_format = FALSE, $base = '')
 
 	$pages = auth::get_existpages();
 
+	// SAFE_MODE の場合は、コンテンツ管理者以上のみ、カテゴリページ(:)も検索可能
+	$role_adm_contents = (auth::check_role('safemode')) ? auth::check_role('role_adm_contents') : FALSE;
+
 	// Avoid
 	if ($base != '') {
 		$pages = preg_grep('/^' . preg_quote($base, '/') . '/S', $pages);
@@ -251,19 +253,9 @@ function do_search($word, $type = 'AND', $non_format = FALSE, $base = '')
 	$pages = array_flip($pages);
 	unset($pages[$whatsnew]);
 
-	// SAFE_MODE の場合は、コンテンツ管理者以上のみ、カテゴリページ(:)も検索可能
-	$role_adm_contents = (auth::check_role('safemode')) ? auth::check_role('role_adm_contents') : FALSE;
-
 	$count = count($pages);
 	foreach (array_keys($pages) as $page) {
 		$b_match = FALSE;
-
-		// Search hidden for page name
-		if (substr($page, 0, 1) == ':' && $role_adm_contents) {
-			unset($pages[$page]);
-			--$count;
-			continue;
-		} 
 
 		// Search for page name
 		if (! $non_format) {
@@ -278,26 +270,23 @@ function do_search($word, $type = 'AND', $non_format = FALSE, $base = '')
 		if ($search_auth && ! check_readable($page, false, false)) {
 			unset($pages[$page]);
 			--$count;
-			continue;
 		}
 
 		// Search for page contents
 		foreach ($keys as $key) {
 			$b_match = preg_match($key, get_source($page, TRUE, TRUE));
-			if ($b_match xor $b_type) break; // OR
+			if ($b_type xor $b_match) break; // OR
 		}
 		if ($b_match) continue;
 
 		unset($pages[$page]); // Miss
 	}
-
-	unset($role_adm_contents);
 	if ($non_format) return array_keys($pages);
 
 	$r_word = rawurlencode($word);
 	$s_word = htmlspecialchars($word);
 	if (empty($pages))
-		return str_replace('$1', $s_word, $_string['notfoundresult']);
+		return str_replace('$1', $s_word, $_msg_notfoundresult);
 
 	ksort($pages, SORT_STRING);
 
@@ -359,101 +348,114 @@ function strip_bracket($str)
 	}
 }
 
-// Create list of pages
-function page_list($pages, $cmd = 'read', $withfilename = FALSE)
+// Generate sorted "list of pages" XHTML, with page-reading hints
+function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', $withfilename = FALSE)
 {
-	global $script, $list_index;
-	global $pagereading_enable;
-	global $_string;
+	global $pagereading_enable, $list_index, $_msg_symbol, $_msg_other;
 
-	// ソートキーを決定する。 ' ' < '[a-zA-Z]' < 'zz'という前提。
-	$symbol = ' ';
-	$other = 'zz';
+	// Sentinel: symbolic-chars < alphabetic-chars < another(multibyte)-chars
+	// = ' ' < '[a-zA-Z]' < 'zz'
+	$sentinel_symbol  = ' ';
+	$sentinel_another = 'zz';
 
-	$retval = '';
+	$href = get_script_uri() . '?' . ($cmd == 'read' ? '' : 'cmd=' . rawurlencode($cmd) . '&amp;page=');
+	$array = $matches = array();
 
-	if($pagereading_enable) {
+	if ($pagereading_enable) {
 		mb_regex_encoding(SOURCE_ENCODING);
 		$readings = get_readings($pages);
 	}
-
-	$list = $matches = array();
-
-	foreach($pages as $file=>$page) {
-		$s_page  = htmlspecialchars($page, ENT_QUOTES);
-		$passage = get_pg_passage($page);
-
-		// Shrink URI for read
-		if ($cmd == 'read') {
-			$url = get_page_uri($page);
-		} else {
-			$url = get_resolve_uri($cmd,$page);
-		}
-
-		$str = '   <li><a href="' . $url . '">' .
-			$s_page . '</a>' . $passage;
-
-		if ($withfilename) {
-			$s_file = htmlspecialchars($file);
-			$str .= "\n" . '    <ul><li>' . $s_file . '</li></ul>' .
-				"\n" . '   ';
-		}
-		$str .= '</li>';
-
-		// WARNING: Japanese code hard-wired
-		if($pagereading_enable) {
+	foreach($pages as $file => $page) {
+		// Get the initial letter of the page name
+		if ($pagereading_enable) {
+			// WARNING: Japanese code hard-wired
 			if(mb_ereg('^([A-Za-z])', mb_convert_kana($page, 'a'), $matches)) {
-				$head = $matches[1];
+				$initial = & $matches[1];
 			} elseif (isset($readings[$page]) && mb_ereg('^([ァ-ヶ])', $readings[$page], $matches)) { // here
-				$head = $matches[1];
+				$initial = & $matches[1];
 			} elseif (mb_ereg('^[ -~]|[^ぁ-ん亜-熙]', $page)) { // and here
-				$head = $symbol;
+				$initial = & $sentinel_symbol;
 			} else {
-				$head = $other;
+				$initial = & $sentinel_another;
 			}
 		} else {
-			$head = (preg_match('/^([A-Za-z])/', $page, $matches)) ? $matches[1] :
-				(preg_match('/^([ -~])/', $page) ? $symbol : $other);
+			if (preg_match('/^([A-Za-z])/', $page, $matches)) {
+				$initial = & $matches[1];
+			} elseif (preg_match('/^([ -~])/', $page)) {
+				$initial = & $sentinel_symbol;
+			} else {
+				$initial = & $sentinel_another;
+			}
 		}
-
-		$list[$head][$page] = $str;
+		$str = '   <li>' .
+			'<a href="' . $href . rawurlencode($page) . '">' .
+			htmlspecialchars($page, ENT_QUOTES) .
+			'</a>' .
+			get_pg_passage($page);
+		if ($withfilename) {
+			$str .= "\n" .
+				'    <ul><li>' . htmlspecialchars($file) . '</li></ul>' . "\n" .
+				'   ';
+		}
+		$str .= '</li>';
+		$array[$initial][$page] = $str;
 	}
-	ksort($list);
+	unset($pages);
+	ksort($array, SORT_STRING);
 
+	if ($list_index) {
+		$s_msg_symbol  = htmlspecialchars($_msg_symbol);
+		$s_msg_another = htmlspecialchars($_msg_other);
+	}
 	$cnt = 0;
-	$arr_index = array();
-	$retval .= '<ul>' . "\n";
-	foreach ($list as $head=>$pages) {
-		if ($head === $symbol) {
-			$head = $_string['symbol'];
-		} else if ($head === $other) {
-			$head = $_string['other'];
-		}
-
+	$retval = $contents = array();
+	$retval[] = '<ul>';
+	foreach ($array as $_initial => $pages) {
+		ksort($pages, SORT_STRING);
 		if ($list_index) {
 			++$cnt;
-			$arr_index[] = '<a id="top_' . $cnt .
-				'" href="#head_' . $cnt . '"><strong>' .
-				$head . '</strong></a>';
-			$retval .= ' <li><a id="head_' . $cnt . '" href="#top_' . $cnt .
-				'"><strong>' . $head . '</strong></a>' . "\n" .
-				'  <ul>' . "\n";
-		}
-		ksort($pages);
-		$retval .= join("\n", $pages);
-		if ($list_index)
-			$retval .= "\n  </ul>\n </li>\n";
-	}
-	$retval .= '</ul>' . "\n";
-	if ($list_index && $cnt > 0) {
-		$top = array();
-		while (! empty($arr_index))
-			$top[] = join(' | ' . "\n", array_splice($arr_index, 0, 16)) . "\n";
+			if ($_initial == $sentinel_symbol) {
+				$_initial = & $s_msg_symbol;
+			} else if ($_initial == $sentinel_another) {
+				$_initial = & $s_msg_another;
+			}
+			$retval[] = ' <li><a id="head_' . $cnt .
+				'" href="#top_' . $cnt .
+				'"><strong>' . $_initial . '</strong></a>';
+			$retval[] = '  <ul>';
 
-		$retval = '<div id="top" style="text-align:center">' . "\n" .
-			join('<br />', $top) . '</div>' . "\n" . $retval;
+			$contents[] = '<a id="top_' . $cnt .
+				'" href="#head_' . $cnt . '"><strong>' .
+				$_initial . '</strong></a>';
+		}
+		$retval[] = join("\n", $pages);
+		if ($list_index) {
+			$retval[] = '  </ul>';
+			$retval[] = ' </li>';
+		}
 	}
-	return $retval;
+	$retval[] = '</ul>';
+	unset($array);
+
+	// Insert a table of contents
+	if ($list_index && $cnt) {
+
+		// Breaks in every N characters
+		$N = 16;
+		$tmp = array();
+		while (! empty($contents)) {
+			$tmp[] = join(' | ' . "\n", array_splice($contents, 0, $N));
+		}
+		$contents = & $tmp;
+
+		array_unshift(
+			$retval,
+			'<div id="top" style="text-align:center">',
+			join("\n" . '<br />' . "\n", $contents),
+			'</div>');
+	}
+
+	return implode("\n", $retval) . "\n";
 }
 
 // Show text formatting rules
@@ -532,26 +534,12 @@ function elapsedtime()
 // Get the date
 function get_date($format, $timestamp = NULL)
 {
-	/*
-	 * $format で指定される T を ZONE で置換したいが、
-	 * date 関数での書式指定文字となってしまう可能性を回避するための事前処理
-	 */
-	$l = strlen(ZONE);
-	$zone = '';
-	for($i=0;$i<$l;$i++) {
-		$zone .= '\\'.substr(ZONE,$i,1);
-	}
-
-	$format = str_replace('\T','$$$',$format); // \T の置換は除く
-	$format = str_replace('T',$zone,$format);
-	$format = str_replace('$$$','\T',$format); // \T に戻す
+	$format = preg_replace('/(?<!\\\)T/',
+		preg_replace('/(.)/', '\\\$1', ZONE), $format);
 
 	$time = ZONETIME + (($timestamp !== NULL) ? $timestamp : UTIME);
-	$str = gmdate($format, $time);
-	if (ZONETIME == 0) return $str;
 
-	$zonetime = get_zonetime_offset(ZONETIME);
-	return str_replace('+0000', $zonetime, $str);
+	return date($format, $time);
 }
 
 function get_zonetime_offset($zonetime)
@@ -570,9 +558,9 @@ function format_date($val, $paren = FALSE)
 
 	$val += ZONETIME;
 
-        $date = gmdate($date_format, $val) .
-                ' (' . $weeklabels[gmdate('w', $val)] . ') ' .
-                gmdate($time_format, $val);
+	$date = date($date_format, $val) .
+		' (' . $weeklabels[date('w', $val)] . ') ' .
+		date($time_format, $val);
 
 	return $paren ? '(' . $date . ')' : $date;
 }
@@ -678,70 +666,96 @@ function get_autolink_pattern(& $pages, $min_len = -1)
 	return array($result, $result_a, $forceignorepages);
 }
 
+// preg_quote(), and also escape PCRE_EXTENDED-related chars
+// REFERENCE: http://www.php.net/manual/en/reference.pcre.pattern.modifiers.php
+// NOTE: Some special whitespace characters may warned by PCRE_EXTRA,
+//       because of mismatch-possibility between PCRE_EXTENDED and '[:space:]#'.
+function preg_quote_extended($string, $delimiter = NULL)
+{
+	// Escape some more chars
+	$regex_from = '/([[:space:]#])/';
+	$regex_to   = '\\\\$1';
+
+	if (is_string($delimiter) && preg_match($regex_from, $delimiter)) {
+		$delimiter = NULL;
+	}
+
+	return preg_replace($regex_from, $regex_to, preg_quote($string, $delimiter));
+}
 
 // Generate one compact regex for quick reTRIEval,
-// that just matches with all $array values.
+// that just matches with all $array-values.
 //
-// USAGE:
-//   sort($array, SORT_STRING); // Keys are replaced, as we had expected
-//   $regex = generate_trie_regex($array);
+// USAGE (PHP >= 4.4.0, PHP >= 5.0.2):
+//   $array = array(7 => 'fooa', 5 => 'foob');
+//   $array = array_unique($array);
+//   sort($array, SORT_LOCALE_STRING);	// Keys will be replaced
+//   echo generate_trie_regex($array);	// 'foo(?:a|b)'
+//
+// USAGE (PHP >= 5.2.9):
+//   $array = array(7 => 'fooa', 5 => 'foob');
+//   $array = array_unique($array, SORT_LOCALE_STRING);
+//   $array = array_values($array);
+//   echo generate_trie_regex($array);	// 'foo(?:a|b)'
+//
 // ARGUMENTS:
-//   $array  : (_sorted_ _string_ array)
-//     array_keys($array) MUST BE _continuous integers started with 0_.
-//     All $array values MUST BE strings.
-//     Passing the reference, of the $array here, will save the memories,
-//     from flood of recursive call.
-//   $offset : (int) $array[$offset] is the first value to check
-//   $sentry : (int) $array[$sentry - 1] is the last value to check  
-//   $pos    : (int) Position of the letter to start checking. (0 = the first letter)
-// REFERENCE:
-//   http://en.wikipedia.org/wiki/Trie
-function generate_trie_regex(& $array, $offset = 0, $sentry = NULL, $pos = 0)
+//   $array  : A _sorted_string_ array
+//     * array_keys($array) MUST BE _continuous_integers_started_with_0_.
+//     * Type of all $array-values MUST BE string.
+//   $_offset : (int) internal use. $array[$_offset    ] is the first value to check
+//   $_sentry : (int) internal use. $array[$_sentry - 1] is the last  value to check  
+//   $_pos    : (int) internal use. Position of the letter to start checking. (0 = the first letter)
+//
+// REFERENCE: http://en.wikipedia.org/wiki/Trie
+//
+function generate_trie_regex($array, $_offset = 0, $_sentry = NULL, $_pos = 0)
 {
-	if (empty($array)) return '(?!)'; // Zero
-	if ($sentry === NULL) $sentry = count($array);
+	if (empty($array)) return '(?!)'; // Match with nothing
+	if ($_sentry === NULL) $_sentry = count($array);
 
-	// Too short. Skip this
-	$skip = ($pos >= mb_strlen($array[$offset]));
-	if ($skip) ++$offset;
+	// Question mark: array('', 'something') => '(?:something)?'
+	$skip = ($_pos >= mb_strlen($array[$_offset]));
+	if ($skip) ++$_offset;
 
 	// Generate regex for each value
-	$regex = '';
-	$index = $offset;
+	$regex = array();
+	$index = $_offset;
 	$multi = FALSE;
-	while ($index < $sentry) {
-		if ($index != $offset) {
+	while ($index < $_sentry) {
+		if ($index != $_offset) {
 			$multi = TRUE;
-			$regex .= '|'; // OR
+			$regex[] = '|'; // OR
 		}
 
 		// Get one character from left side of the value
-		$char = mb_substr($array[$index], $pos, 1);
+		$char = mb_substr($array[$index], $_pos, 1);
 
 		// How many continuous keys have the same letter
 		// at the same position?
-		for ($i = $index; $i < $sentry; $i++)
-			if (mb_substr($array[$i], $pos, 1) != $char) break;
+		for ($i = $index + 1; $i < $_sentry; $i++) {
+			if (mb_substr($array[$i], $_pos, 1) != $char) break;
+		}
 
 		if ($index < ($i - 1)) {
 			// Some more keys found
 			// Recurse
-			$regex .= str_replace(' ', '\\ ', preg_quote($char, '/')) .
-				generate_trie_regex($array, $index, $i, $pos + 1);
+			$regex[] = preg_quote_extended($char, '/');
+			$regex[] = generate_trie_regex($array, $index, $i, $_pos + 1);
 		} else {
 			// Not found
-			$regex .= str_replace(' ', '\\ ',
-				preg_quote(mb_substr($array[$index], $pos), '/'));
+			$regex[] = preg_quote_extended(mb_substr($array[$index], $_pos), '/');
 		}
 		$index = $i;
 	}
 
-	if ($skip || $multi) $regex = '(?:' . $regex . ')';
-	if ($skip) $regex .= '?'; // Match for $pages[$offset - 1]
+	if ($skip || $multi) {
+		array_unshift($regex, '(?:');
+		$regex[] = ')';
+	}
+	if ($skip) $regex[] = '?'; // Match for $pages[$_offset - 1]
 
-	return $regex;
+	return implode('', $regex);
 }
-
 // Compat
 function get_autolink_pattern_sub(& $pages, $start, $end, $pos)
 {
@@ -795,7 +809,6 @@ function get_autoaliases_from_aliaspage()
 ((?:(?!\]\]).)+)    # (2) alias link
 \]\]                # close bracket
 EOD;
-
 		$postdata = get_source($aliaspage, TRUE, TRUE);
 		$matches = array();
 		$count = 0;

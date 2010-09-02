@@ -244,7 +244,7 @@ button,.ui-button {  width: auto; overflow: visible; }
 
 /** PukiWiki Plus! CSS set Start *******************************************************************/
 
-body, h1, h2, h3, h4, h5{
+body, h1, h2, h3, h4, h5, .ui-widget{
 	font-family:"Trebuchet MS", Meiryo, Osaka, Sans-Serif;
 }
 
@@ -264,7 +264,6 @@ h1{
 
 h2{
 	font-size:146%;
-	margin:.2em -10px .2em -18px;
 	padding:.3em .3em .15em .5em;
 	border:0px;
 	border-left:8px solid;
@@ -273,7 +272,7 @@ h2{
 
 h3{
 	font-size:131%;
-	margin:.2em -10px .5em -14px;
+	
 	padding:.3em .3em .15em .5em;
 	border:0px;
 	border-left:8px solid;
@@ -282,7 +281,6 @@ h3{
 
 h4, h5, h6{
 	font-size:116%;
-	margin:.2em -10px .5em -10px;
 	padding:.3em .3em .15em .5em;
 	border:0px;
 	border-left:8px solid;
@@ -296,6 +294,16 @@ h1.title{
 	padding: 12px 0px 0px 0px;
 	border: 0px;
 	margin: 12px 0px 0px 0px;
+}
+#body h2{
+	margin:.2em -10px .2em -21px;
+}
+
+#body h3{
+	margin:.2em -10px .5em -14px;
+}
+#body h4, h5, h6{
+	margin:.2em -10px .5em -7px;
 }
 
 dt{
@@ -919,6 +927,11 @@ th.attach_th{
 	padding:2px;
 	margin:1px;
 	text-align:center;
+}
+
+table.attach_table tr td{
+	padding:2px;
+	margin:1px;
 }
 
 /* calendar.inc.php */

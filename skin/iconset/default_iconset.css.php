@@ -39,6 +39,7 @@ flush();
 	background-repeat: no-repeat;
 	background-position: center center;
 	color:transparent !important;
+	background-color:transparent;
 	text-indent: -9999px;
 	overflow: hidden;
 	width: 16px;
@@ -63,6 +64,7 @@ flush();
 	color:transparent !important;
 	text-indent: -9999px;
 	overflow: hidden;
+	background-color:transparent;
 	background-repeat: no-repeat;
 	background-position: center center;
 	width:8px;
@@ -71,6 +73,7 @@ flush();
 
 .pkwk-icon_linktext{
 	background-repeat:no-repeat;
+	background-color:transparent;
 	padding-left:18px;
 	height:16px;
 	margin:2px;

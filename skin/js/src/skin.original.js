@@ -23,7 +23,7 @@ var pukiwiki_skin = {
 		'@prefix': '<http://purl.org/net/ns/doas#>',
 		'@about': '<skin.js>', a: ':JavaScript',
 		 title: 'Pukiwiki skin script for jQuery',
-		 created: '2008-11-25', release: {revision: '2.2.19', created: '2010-08-24'},
+		 created: '2008-11-25', release: {revision: '2.2.20', created: '2010-09-02'},
 		 author: {name: 'Logue', homepage: '<http://logue.be/>'},
 		 license: '<http://www.gnu.org/licenses/gpl-2.0.html>'
 	},
@@ -119,7 +119,12 @@ var pukiwiki_skin = {
 
 		// IE PNG Fix
 		if (!$.support.boxModel) {
-			loadScript(SKIN_DIR+'js/iepngfix/iepngfix_tilebg.js');
+			$.ajax({
+				type: "GET",
+				global : false,
+				url: SKIN_DIR+'js/iepngfix/iepngfix_tilebg.js',
+				dataType: "script"
+			});
 			$('img[src$=png], .pkwk-icon, .pkwk-symbol, .pkwk-icon_linktext').css({
 				'behavior': 'url('+SKIN_DIR+'js/iepngfix/iepngfix.htc)'
 			});
@@ -274,7 +279,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 				for(var i = 0; i < hashes.length; i++) { 
 					var hash = hashes[i].split('='); 
 					try{
-						params[hash[0]] = decodeURIComponent(hash[1]);
+						params[hash[0]] = decodeURIComponent(hash[1]).replace(/\+/g, ' ').replace(/%2F/g, '/');
 					}catch(e){}
 				}
 
@@ -282,11 +287,6 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 				if (params.plugin){
 					params.cmd = params.plugin;
 					params.plugin = undefined;
-				}
-				
-				// ページ名に空白が含まれるときに+に変換されてしまうため
-				if (params.refer){
-					params.refer = params.refer.replace(/\+/g, ' ').replace(/%2F/g, '/');
 				}
 
 				if (params.cmd){
@@ -2045,29 +2045,7 @@ function pukiwiki_pos(){
 	}
 }
 
-function loadScript(url,callback){
-	var script = document.createElement('script'),done = false;
-	
-	script.src = url;
-	script.type = 'text/javascript';
-	script.async = true;
-	script.language = 'javascript';
-	script.onload = script.onreadystatechange = function(){
-		if (!done && (!this.readyState || this.readyState == 'loaded' || this.readyState == 'complete')){
-			done = true;
-
-			if (typeof(callback) == 'function'){ callback(); }
-			
-			// Handle memory leak in IE
-			script.onload = script.onreadystatechange = null;
-			script.parentNode.removeChild(script);
-		}
-	};
-	
-	// sync way of adding script tags to the page
-	document.body.appendChild(script);
-}
-
+// ブラウザの設定
 var $buoop = {
 	vs:{
 		i:8,		// IE

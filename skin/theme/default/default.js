@@ -17,8 +17,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-var colorset = ['blue',		'green',		'orange'];
-var ui_theme = ['redmond',	'south-street',	'ui-lightness'];
+var colorset = ['blue',		'green',		'orange', 'red'];
+var ui_theme = ['redmond',	'south-street',	'ui-lightness','blitzer'];
 // var symbol = '&#x25fc;';
 var symbol = '■';
 var default_set_num = 0;
@@ -54,7 +54,7 @@ pukiwiki_skin.custom = {
 	},
 	// スキンスクリプトのinitが実行された後に実行される関数
 	unload: function(){
-	},
+	}
 	// Superfish設定
 	// http://users.tpg.com.au/j_birch/plugins/superfish/#options
 //	suckerfish : { }
