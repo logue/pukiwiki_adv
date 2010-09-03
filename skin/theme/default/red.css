@@ -194,6 +194,10 @@ strong.word9{
 	color:white;
 }
 
+fieldset {
+	border: 1px pink solid;
+}
+
 #preview{
 	color:inherit;
 	background-color:#F5F8FF;

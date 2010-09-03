@@ -473,17 +473,17 @@ function catrule()
 
 // Show (critical) error message
 function die_message($msg){
-	global $skin_file, $page_title;
-	$title = $page = 'Runtime error';
+	global $skin_file, $page_title, $_string;
+	$title = $page = $_string['error'];
 	
 	if (!PKWK_WARNING || DEBUG){	// PKWK_WARNINGが有効でない場合は、詳細なエラーを隠す
-		$msg = 'A runtime error has occurred.<br />Please contact to site admin. If you want more information, <code>PKWK_WARNING</code> please change the value.';
+		$msg = $_string['error_msg'];
 	}
 	$body = <<<EOD
-<detail style="padding: 0pt 0.7em;" class="ui-state-error ui-corner-all">
+<div style="padding: 0pt 0.7em;" class="ui-state-error ui-corner-all">
 	<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span> 
 	<strong>$page:</strong> $msg</p>
-</detail>
+</div>
 EOD;
 
 	global $trackback;

@@ -3,7 +3,7 @@
  :prefix <http://purl.org/net/ns/doas#> .
  :about "<mml.inc.php>", a: ":PHPScript",
  :shortdesc "JSMML Player for PukiWiki";
- :created "2008-07-28", release: {revision: "1.2.3", created: "2010-08-24"},
+ :created "2008-07-28", release: {revision: "1.2.4", created: "2010-09-03"},
  :author [:name "Logue"; :homepage <http://logue.be/> ];
  :license <http://www.gnu.org/licenses/gpl-3.0.html>;
 */
@@ -65,11 +65,7 @@ function plugin_mml_convert(){
 
 	$encorded_data = htmlspecialchars($data, ENT_QUOTES, SOURCE_ENCODING);
 	
-	if (exist_plugin('sh')){
-		$ret = do_plugin_convert('sh','plain,nolink,class=mml-source,'.$data);
-	}else{
-		$ret = '<pre class="mml-source">'.htmlspecialchars($data, ENT_QUOTES, SOURCE_ENCODING).'</pre>';
-	}
+	$ret = '<pre class="mml-source">'.$encorded_data.'</pre>';
 	if($title){
 		$html = <<<HTML
 <fieldset>
@@ -83,25 +79,14 @@ HTML;
 	
 	if ($mml_count == 0){
 		global $js_tags, $js_blocks, $css_blocks;
-		
-		$css_blocks[] = <<< CSS
-.mml-player button{
-	width:20px;
-	height:20px;
-}
-.mml-progress{
-	width:200px;
-	height:16px;
-}
-CSS;
+
 		$jsmml_path = JSMML_PATH;
 		$js_tags[] = array('type'=>'text/javascript', 'src'=>$jsmml_path.'/jsmml.js');
 		$js_blocks[] = <<<JAVASCRIPT
 var MMLplayers;
-var MMLPlayer = function(playButton, stopButton, pauseButton, mmlSource, mmlCast, mmlProgress) {
+var MMLPlayer = function(playButton, stopButton, mmlSource, mmlCast, mmlProgress) {
 	this.mml = new JSMML();
 	this.playButton = playButton;
-	this.pauseButton= pauseButton;
 	this.stopButton = stopButton;
 	this.mmlSource  = mmlSource;
 	this.mmlCast    = mmlCast;
@@ -120,53 +105,29 @@ MMLPlayer.prototype = {
 		this.thread = '';
 		var self = this;
 		$(this.mmlProgress).progressbar();
-		$(this.playButton).button({
-			icons: {
-				primary: 'ui-icon-play'
-			},
-			text: false
-		}).click(function() {
+		$(this.playButton).click(function() {
 			self.playButtonClickHandler.call(self);
 		});
-		$(this.pauseButton).button({
-			icons: {
-				primary: 'ui-icon-pause'
-			},
-			text: false
-		}).click(function() {
-			self.playButtonClickHandler.call(self);
-		}).css('display','none');
-		$(this.stopButton).button({
-			icons: {
-				primary: 'ui-icon-stop'
-			},
-			text: false
-		}).click(function() {
+		$(this.stopButton).click(function() {
 			self.stopButtonClickHandler.call(self);
 		});
 	},
 	playStart: function() {
 		this.nowPlaying = true;
-		$(this.playButton).button({
-			icons: {
-				primary: 'ui-icon-pause'
-			},
-			text: false
-		});
+		$(this.playButton).html('<span class="ui-icon ui-icon-pause"></span>');
+		$(this.pauseButton).css('display','inline');
 		this.mml.play(this.mmlSource);
 	},
 	playButtonClickHandler: function() {
 		if (this.nowPlaying) {
-			$(this.playButton).css('display','inline');
-			$(this.pauseButton).css('display','none');
+			$(this.playButton).html('<span class="ui-icon ui-icon-play"></span>');
 			this.nowPlaying = false;
 			this.playFinishHandler();
 			this.mml.pause();
 			this.nowPausing = true;
 		} else {
 			this.nowPlaying = true;
-			$(this.playButton).css('display','none');
-			$(this.pauseButton).css('display','inline');
+			$(this.playButton).html('<span class="ui-icon ui-icon-pause"></span>');
 			if (this.nowPausing) {
 			    this.nowPausing = false;
 			    this.mml.play();
@@ -196,38 +157,67 @@ MMLPlayer.prototype = {
 	}
 };
 
+var mml_player_widget = [
+	'<div class="mml-player ui-helper-clearfix">',
+	'	<ul class="ui-widget">',
+	'		<li class="mml-player-play ui-state-default ui-corner-all"><span class="ui-icon ui-icon-play"></span></li>',
+	'		<li class="mml-player-stop ui-state-default ui-corner-all"><span class="ui-icon ui-icon-stop"></span></li>',
+	'		<li class="mml-progress"></li>',
+	'		<li><span class="ui-icon ui-icon-clock" style="float:left;"></span><span class="mml-cast">[00:00 / ??:??]</span></li>',
+	'	</ul>',
+	'</div>'
+].join("\\n");
+
 $(document).ready(function(){
-	$('.mml-source').before('<div class="mml-player"></div>');
-	$('.mml-player').each(function(index,nodeOj){
-		$(this).html([
-			'<table border="0" class="mml-toolbar"><tr>',
-			'<td>',
-			'	<button class="mml-player-play">Play</button>',
-			'	<button class="mml-player-pause">Pause</button>',
-			'	<button class="mml-player-stop">Stop</button>',
-			'</td>',
-			'<td><div class="mml-progress"></div></td>',
-			'<td><span class="ui-icon ui-icon-clock" style="float:left;"></span><span class="mml-cast">[00:00 / ??:??]</span></td>',
-			'</tr></table>'
-		].join(''));
-	});
+	$('.mml-source').before(mml_player_widget);
 	JSMML.onLoad = function() {
 		var mml;
 		for (var i = 0; i < $('.mml-player').length; i++) {
 			var playButton  = $('.mml-player-play')[i];
-			var pauseButton = $('.mml-player-pause')[i];
 			var stopButton  = $('.mml-player-stop')[i];
 			var mmlSource   = $('.mml-source')[i].childNodes[0].nodeValue;
 			var mmlCast     = $('.mml-cast')[i];
 			var mmlProgress = $(".mml-progress")[i];
-			mml = new MMLPlayer(playButton, stopButton, pauseButton, mmlSource, mmlCast, mmlProgress);
+			mml = new MMLPlayer(playButton, stopButton, mmlSource, mmlCast, mmlProgress);
 		}
+		$('.mml-player li.ui-state-default').hover(
+			function() { $(this).addClass('ui-state-hover'); },
+			function() { $(this).removeClass('ui-state-hover'); }
+		).show('clip');
 	};
 });
 
 JSMML.swfurl = '$jsmml_path/JSMML.swf';
 JSMML.init();
 JAVASCRIPT;
+		$css_blocks[] = <<< CSS
+div.mml-player ul{
+	margin:1%;
+	padding:0px;
+}
+
+div.mml-player ul li{
+	display:none;
+}
+
+div.mml-player ul li{
+	margin: 2px;
+	cursor: pointer;
+	display:block;
+	float: left;
+	list-style: none;
+	height:1.2em;
+}
+
+div.mml-player ul li.ui-state-default{
+	width:1.2em;
+}
+
+div.mml-player ul li.mml-progress{
+	width:15em;
+}
+
+CSS;
 	}
 	$mml_count++;
 	return $html;

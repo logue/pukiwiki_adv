@@ -193,11 +193,6 @@ if (is_webdav() && exist_plugin('dav')) {
 }
 
 $info[] = 'Powered by PHP '.PHP_VERSION.' '.((substr(php_sapi_name(), 0, 3) == 'cgi') ? 'CGI' : 'MODULE').' mode. PHP is running as '.(ini_get('safe_mode') ? "SAFE" : "CGI").' mode.';
-;
-global $adminpass;
-if ($adminpass == '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72'){
-	$info[] = 'WARNING: <code>$adminpass</code> is not changed! Click <a href="'.get_cmd_uri('md5').'">here</a> to generate crypted password.';
-}
 
 $is_protect = auth::is_protect();
 
@@ -301,6 +296,14 @@ $body_menu = $body_side = '';
 if ($always_menu_displayed) {
 	if (exist_plugin_convert('menu')) $body_menu = do_plugin_convert('menu');
 	if (exist_plugin_convert('side')) $body_side = do_plugin_convert('side');
+}
+
+global $adminpass;
+if ($adminpass == '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72' || $adminpass == ''){
+	$body = '<div style="padding: 0pt 0.7em;" class="ui-state-error ui-corner-all">'.
+		'<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>'.
+		'<strong>'.$_string['warning'].'</strong> '.$_string['changeadminpass'].'</p></div>'."\n".
+		$body;
 }
 
 // Output

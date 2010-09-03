@@ -1,10 +1,10 @@
 <?php
 // PukPukiPlus.
-// $Id: attach.inc.php,v 1.87.43 2010/08/24 23:57:00 Logue Exp $
+// $Id: attach.inc.php,v 1.91.43 2010/08/28 23:57:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team
-//   2003-2007 PukiWiki Developers Team
+//   2003-2007,2009 PukiWiki Developers Team
 //   2002-2003 PANDA <panda@arino.jp> http://home.arino.jp/
 //   2002      Y.MASUI <masui@hisec.co.jp> http://masui.net/pukiwiki/
 //   2001-2002 Originally written by yu-ji
@@ -388,7 +388,7 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 	}
 
 	if (is_page($page))
-		touch(get_filename($page));
+		pkwk_touch_file(get_filename($page));
 
 	$obj->getstatus();
 	$obj->status['pass'] = ($pass !== TRUE && $pass !== NULL) ? md5($pass) : '';
@@ -950,7 +950,7 @@ EOD;
 			if (PLUGIN_ATTACH_DELETE_ADMIN_ONLY || $this->age) {
 				return attach_info('err_adminpass');
 			} else if (PLUGIN_ATTACH_PASSWORD_REQUIRE &&
-				md5($pass) != $this->status['pass']) {
+				md5($pass) !== $this->status['pass']) {
 				return attach_info('err_password');
 			}
 		}
@@ -1217,9 +1217,8 @@ class AttachPages
 		$pattern = "/^({$page_pattern})_((?:[0-9A-F]{2})+){$age_pattern}$/";
 
 		$matches = array();
-		while ($file = readdir($dir)) {
-			if (! preg_match($pattern, $file, $matches))
-				continue;
+		while (($file = readdir($dir)) !== FALSE) {
+			if (! preg_match($pattern, $file, $matches)) continue;
 
 			$_page = decode($matches[1]);
 			if (! check_readable($_page, FALSE, FALSE)) continue;

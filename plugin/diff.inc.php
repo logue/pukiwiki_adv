@@ -1,9 +1,10 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: diff.inc.php,v 1.18.7 2008/01/05 18:14:00 upk Exp $
+// $Id: diff.inc.php,v 1.19.7 2010/08/28 10:41:00 Logue Exp $
 // Copyright (C)
+//   2010      PukiWiki Advance Developers Team
 //   2005-2006,2008 PukiWiki Plus! Team
-//   2002-2005 PukiWiki Developers Team
+//   2002-2005,2007 PukiWiki Developers Team
 //   2002      Originally written by yu-ji
 // License: GPL v2 or (at your option) any later version
 //

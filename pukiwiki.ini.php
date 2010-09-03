@@ -244,8 +244,8 @@ $bing_webmaster_tool = '';
 
 // Some web browser's bug, and / or Java apprets may needs not-Strict DTD.
 // Some plugin (e.g. paint) set this PKWK_DTD_XHTML_1_0_TRANSITIONAL.
-//$pkwk_dtd = PKWK_DTD_HTML_5;	// Adv. Default
-$pkwk_dtd = PKWK_DTD_XHTML_1_1;
+$pkwk_dtd = PKWK_DTD_HTML_5;	// Adv. Default
+//$pkwk_dtd = PKWK_DTD_XHTML_1_1;
 //$pkwk_dtd = PKWK_DTD_XHTML_1_0_STRICT;
 //$pkwk_dtd = PKWK_DTD_XHTML_1_0_TRANSITIONAL;
 //$pkwk_dtd = PKWK_DTD_HTML_4_01_STRICT;

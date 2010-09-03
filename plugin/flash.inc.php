@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiPlus.
 //
-// $Id: flash.inc.php,v 1.2.1 2010/07/06 00:04:oo upk Exp $
+// $Id: flash.inc.php,v 1.2.2 2010/09/03 22:11:00 Logue Exp $
 //
 // flash plugin for pukiwiki
 // Author Nekyo.(http://nekyo.hp.infoseek.co.jp/)
@@ -166,7 +166,7 @@ cVoSOahq6oC2PC1thv7kcphs6DfYmIAYH4k6rmYu7afJQFUzLRdie6YtEomdlOw9+YxGQeSh1dsz
 0xl8S/eQfId4R0f+55VnSz5tx/KZSyJ7Piq138zpPOw=
 BASE64;
 	}else{
-		return "Unknown Method";
+		die_message('flash.inc.php : Unknown Method');
 	}
 }
 ?>

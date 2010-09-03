@@ -1,7 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: md5.inc.php,v 1.24.3 2008/01/05 23:16:00 upk Exp $
+// $Id: md5.inc.php,v 1.24.4 2010/09/03 21:50:00 Logue Exp $
 // Copyright (C)
+//   2010      PukiWiki Advance Developers Team
 //   2005-2006,2008 PukiWiki Plus! Team
 //   2001-2006 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
@@ -32,7 +33,7 @@ function plugin_md5_action()
 		$value  = isset($get['md5']) ? $get['md5'] : '';
 
 		return array(
-			'msg' =>'Compute userPassword',
+			'msg' =>_('Compute userPassword'),
 			'body'=>plugin_md5_show_form(isset($post['phrase']), $value));
 
 	} else {

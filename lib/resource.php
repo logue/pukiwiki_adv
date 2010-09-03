@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: resource.php,v 0.8 2009/03/26 03:43:00 upk Exp $
+// $Id: resource.php,v 0.8.1 2010/09/03 15:38:00 Logue Exp $
 //
 // Resource of String
 // Warning: This file is PukiWiki "core" resource strings.
@@ -31,6 +31,12 @@ $_string = array(
 	'invalidpass'		=> _('Invalid password.'),
 	'invalidiwn'		=> _('$1 is not a valid $2.'),
 	'collided_comment'	=> _('It seems that someone has already updated the page you were editing.<br />The string was added, alhough it may be inserted in the wrong position.<br />'),
+	
+	// Error messages
+	'error_msg'			=> _('A runtime error has occurred.').'<br />'._('Please contact to site admin. If you want more information, please change <code>PKWK_WARNING</code> value.'),
+	'debugmode'			=> _('This program is running in debug mode.'),
+	'changeadminpass'	=> _('WARNING').' '.sprintf(_('<code>$adminpass</code> is not changed! Click <a href="%s">here</a> to generate crypted password and modify auth.ini.php!'),get_cmd_uri('md5')),
+	'cannotload'		=> _('Cannot open %s.<br />Maybe permission is not writable.')
 );
 
 $_button = array(
@@ -63,6 +69,7 @@ $_title = array(
 	'collided'		=> _('On updating $1, a collision has occurred.'),
 	'updated'		=> _('$1 was updated'),
 	'preview'		=> _('Preview of  $1'),
+	'error'			=> _('Runtime Error'),
 );
 
 

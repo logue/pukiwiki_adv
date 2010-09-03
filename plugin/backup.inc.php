@@ -1,9 +1,10 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: backup.inc.php,v 1.27.20 2008/12/07 17:23:00 upk Exp $
+// $Id: backup.inc.php,v 1.28.21 2010/08/28 17:23:00 Logue Exp $
 // Copyright (C)
+//   2010      PukiWiki Advance Developers Team
 //   2005-2008 PukiWiki Plus! Team
-//   2002-2005 PukiWiki Developers Team
+//   2002-2005,2007 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
 // License: GPL v2 or (at your option) any later version
 //
@@ -130,13 +131,13 @@ $_title_backuplist     = _('Backup list');
 		if (auth::check_role('safemode')) die_message( _('PKWK_SAFE_MODE prohibits this') );
 		$title = & $_title_backupnowdiff;
 		$old = join('', $backups[$s_age]['data']);
-		$cur = join('', get_source($page));
+		$cur = get_source($page, TRUE, TRUE);
 		auth::is_role_page($old);
                 auth::is_role_page($cur);
 		$body .= plugin_backup_diff(do_diff($old, $cur));
 	} else if ($s_action == 'visualdiff') {
 		$old = join('', $backups[$s_age]['data']);
-		$cur = join('', get_source($page));
+		$cur = get_source($page, TRUE, TRUE);
 		auth::is_role_page($old);
                 auth::is_role_page($cur);
 		$source = do_diff($old,$cur);

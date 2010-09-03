@@ -357,8 +357,10 @@ function catbody($title, $page, $body)
 		
 		if ((PKWK_WARNING === true || DEBUG === true) && ! empty($info)){
 			$body = '<div style="padding: 0pt 0.7em;" class="ui-state-highlight ui-corner-all">'.
-					'<p><span class="ui-icon ui-icon-info" style="float: left; margin-right: 0.3em;"></span>'.
-					_('This program is running in debug mode.')."</p>\n<ul>\n<li>".join("</li>\n<li>",$info)."</li>\n</ul>\n</div>\n".$body;
+					'<p><span class="ui-icon ui-icon-info" style="float: left; margin-right: 0.3em;"></span>'.$_string['debugmode'].'</p>'."\n".
+					'<ul>'."\n".
+					'<li>'.join("</li>\n<li>",$info).'</li>'."\n".
+					'</ul>'."\n".'</div>'."\n\n".$body;
 		}
 
 		// global $always_menu_displayed;
@@ -368,10 +370,13 @@ function catbody($title, $page, $body)
 			if (exist_plugin_convert('menu')) $body_menu = do_plugin_convert('menu');
 			if (exist_plugin_convert('side')) $body_side = do_plugin_convert('side');
 		}
+		
+		if (empty($x_ua_compatible)) $x_ua_compatible = 'IE=edge';
 
 		pkwk_common_headers();
 		header('Content-Type: text/html; charset=' . CONTENT_CHARSET);
 		header('ETag: ' . md5(MUTIME));
+		header('X-UA-Compatible: '.$x_ua_compatible);
 		require(SKIN_FILE);
 	}
 
@@ -401,6 +406,8 @@ function edit_form($page, $postdata, $digest = FALSE, $b_template = TRUE)
 	global $notimeupdate;
 	global $_button, $_string;
 	global $ctrl_unload;
+	
+	global $x_ua_compatible;
 
 	// Newly generate $digest or not
 	if ($digest === FALSE) $digest = md5(get_source($page, TRUE, TRUE));
@@ -502,6 +509,7 @@ EOD;
 	} else {
 		$body .= '<ul><li><a href="'.get_cmd_uri('edit',$r_page,'','help=true').'">' . $_string['help'] . '</a></li></ul>';
 	}
+	$x_ua_compatible = 'IE=7';
 	return $body;
 }
 // Input Assistant
@@ -510,7 +518,6 @@ function edit_form_assistant(){
 	return '<div class="assistant"></div>';
 }
 
-// Related pages
 // Related pages
 function make_related($page, $tag = '')
 {
@@ -554,7 +561,7 @@ function make_related($page, $tag = '')
 	}else if ($tag == 'dl') {
 		$retval =  "\n" .
 			'<dl>'."\n".
-			'<dt>Links: </dt>' . "\n" .
+			'<dt>Links:</dt>' . "\n" .
 			'<dd>' . join("</dd>\n<dd>", $_links) . '</dd>' . "\n" .
 			'</dl>' . "\n";
 	} else if ($tag) {
@@ -789,7 +796,6 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_XHTML_1_1, $charset = CONTENT_CHAR
 	}
 
 	$charset = htmlspecialchars($charset);
-	
 
 	// Output XML or not
 	if ($type == PKWK_DTD_TYPE_XHTML) {

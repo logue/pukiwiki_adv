@@ -362,6 +362,17 @@ address{
 	display:inline;
 }
 
+fieldset {
+	padding: 0;
+	border: 1px silver groove;
+	border-radius:10px;
+	-moz-border-radius:10px;
+}
+
+legend {
+	padding: 0em 1em;
+}
+
 .style_table{
 	border-spacing:2px;
 	padding:0px;

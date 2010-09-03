@@ -1,5 +1,5 @@
 <?php
-// $Id: article.inc.php,v 1.25.6 2008/01/05 17:58:00 upk Exp $
+// $Id: article.inc.php,v 1.27.6 2010/09/01 22:58:00 Logue Exp $
 // Copyright (C)
 //   2005-2006,2008 PukiWiki Plus! Team
 //   2002-2005 PukiWiki Developers Team
@@ -99,7 +99,7 @@ $_msg_article_mail_page = _('Page: ');
 	$postdata_input = $article . "\n";
 	$body = '';
 
-	if (md5(@join('', get_source($post['refer']))) != $post['digest']) {
+	if (md5(get_source($post['refer'], TRUE, TRUE)) !== $post['digest']) {
 		$title = $_title_collided;
 
 		$body = $_msg_collided . "\n";
@@ -108,12 +108,13 @@ $_msg_article_mail_page = _('Page: ');
 		$s_digest   = htmlspecialchars($post['digest']);
 		$s_postdata = htmlspecialchars($postdata_input);
 		$body .= <<<EOD
-<form action="$script?cmd=preview" method="post">
- <div>
-  <input type="hidden" name="refer" value="$s_refer" />
-  <input type="hidden" name="digest" value="$s_digest" />
-  <textarea name="msg" rows="$rows" cols="$cols" id="textarea">$s_postdata</textarea><br />
- </div>
+<form action="$script" method="post">
+	<div>
+		<input type="hidden" name="refer" value="$s_refer" />
+		<input type="hidden" name="digest" value="$s_digest" />
+		<input type="hidden" name="cmd" value="preview" />
+		<textarea name="msg" rows="$rows" cols="$cols" id="textarea">$s_postdata</textarea>
+	</div>
 </form>
 EOD;
 
@@ -132,7 +133,7 @@ EOD;
 			$mailbody .= "\n\n" . '---' . "\n";
 			$mailbody .= _('Author: ') . $post['name'] . ' (' . $now . ')' . "\n";
 			$mailbody .= _('Page: ') . $post['refer'] . "\n";
-			$mailbody .= '　 URL: ' . get_page_absuri($post['refer']) . "\n";
+			$mailbody .= 'URL: ' . get_page_absuri($post['refer']) . "\n";
 			$mailbody = mb_convert_encoding($mailbody, 'JIS');
 
 			$mailaddheader = 'From: ' . PLUGIN_ARTICLE_MAIL_FROM;
@@ -177,22 +178,21 @@ function plugin_article_convert()
 	$article_cols = PLUGIN_ARTICLE_COLS;
 	$string = <<<EOD
 <form action="$script" method="post">
- <div class="articleform" onmouseup="pukiwiki_pos()" onkeyup="pukiwiki_pos()">
-  <input type="hidden" name="article_no" value="$article_no" />
-  <input type="hidden" name="plugin" value="article" />
-  <input type="hidden" name="digest" value="$s_digest" />
-  <input type="hidden" name="refer" value="$s_page" />
-  <label for="_p_article_name_$article_no">$_btn_name</label>
-  <input type="text" name="name" id="_p_article_name_$article_no" size="$name_cols" /><br />
-  <label for="_p_article_subject_$article_no">$_btn_subject</label>
-  <input type="text" name="subject" id="_p_article_subject_$article_no" size="$subject_cols" /><br />
-  <textarea name="msg" rows="$article_rows" cols="$article_cols">\n</textarea><br />
-  <input type="submit" name="article" value="$_btn_article" />
-  $helptags
- </div>
+	<input type="hidden" name="article_no" value="$article_no" />
+	<input type="hidden" name="plugin" value="article" />
+	<input type="hidden" name="digest" value="$s_digest" />
+	<input type="hidden" name="refer" value="$s_page" />
+	<div class="article_form">
+		<label for="_p_article_name_$article_no">$_btn_name</label>
+		<input type="text" name="name" id="_p_article_name_$article_no" size="$name_cols" /><br />
+		<label for="_p_article_subject_$article_no">$_btn_subject</label>
+		<input type="text" name="subject" id="_p_article_subject_$article_no" size="$subject_cols" /><br />
+		<textarea name="msg" class="msg" rows="$article_rows" cols="$article_cols">\n</textarea><br />
+		$helptags
+		<input type="submit" name="article" value="$_btn_article" />
+	</div>
 </form>
 EOD;
-
 	return $string;
 }
 ?>

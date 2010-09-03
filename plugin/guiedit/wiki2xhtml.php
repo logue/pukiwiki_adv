@@ -19,7 +19,7 @@
 
 
 //	設定の読み込み
-require_once(GUIEDIT_LIB_PATH . 'guiedit.ini.php');
+require_once('guiedit.ini.php');
 
 //	PukiWiki の構文を XHTML に変換
 function guiedit_convert_html($lines) {

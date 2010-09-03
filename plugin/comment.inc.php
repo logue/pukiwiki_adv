@@ -1,10 +1,10 @@
 <?php
 // PukiPlus - Yet another WikiWikiWeb clone
-// $Id: comment.inc.php,v 1.36.22 2010/01/18 23:36:00 upk Exp $
+// $Id: comment.inc.php,v 1.40.23 2010/08/28 10:38:00 Logue Exp $
 // Copyright (C)
-//  2010 PukiPlus Team
+//  2010      PukiWiki Advance Developers Team
 //  2005-2008 PukiWiki Plus! Team
-//  2002-2005 PukiWiki Developers Team
+//  2002-2007 PukiWiki Developers Team
 //  2001-2002 Originally written by yu-ji
 // License: GPL v2 or (at your option) any later version
 //
@@ -105,7 +105,7 @@ function plugin_comment_write()
 
 	$title = $_title_updated;
 	$body = '';
-	if (md5(@join('', get_source($vars['refer']))) != $vars['digest']) {
+	if (md5(get_source($vars['refer'], TRUE, TRUE)) !== $vars['digest']) {
 		$title = $_title_comment_collided;
 		$body  = $_msg_comment_collided . make_pagelink($vars['refer']);
 	}
@@ -205,20 +205,20 @@ function plugin_comment_convert()
 <br />
 $auth_guide
 <form action="$script" method="post">
- <div class="commentform" onmouseup="pukiwiki_pos()" onkeyup="pukiwiki_pos()">
-  <input type="hidden" name="refpage" value="$refpage" />
-  <input type="hidden" name="plugin" value="comment" />
-  <input type="hidden" name="refer"  value="$s_page" />
-  <input type="hidden" name="comment_no" value="$comment_no" />
-  <input type="hidden" name="nodate" value="$nodate" />
-  <input type="hidden" name="above"  value="$above" />
-  <input type="hidden" name="digest" value="$digest" />
-  <input type="hidden" name="ticket" value="$ticket" />
-  $nametags
-  <input type="text"   name="msg" id="p_comment_comment_{$comment_all_no}" size="$comment_cols" />
-  <input type="submit" name="comment" value="$_btn_comment" />
-  $helptags
- </div>
+	<div class="commentform">
+		<input type="hidden" name="refpage" value="$refpage" />
+		<input type="hidden" name="plugin" value="comment" />
+		<input type="hidden" name="refer"  value="$s_page" />
+		<input type="hidden" name="comment_no" value="$comment_no" />
+		<input type="hidden" name="nodate" value="$nodate" />
+		<input type="hidden" name="above"  value="$above" />
+		<input type="hidden" name="digest" value="$digest" />
+		<input type="hidden" name="ticket" value="$ticket" />
+		$nametags
+		<input type="text"   name="msg" id="p_comment_comment_{$comment_all_no}" size="$comment_cols" />
+		<input type="submit" name="comment" value="$_btn_comment" />
+		$helptags
+	</div>
 </form>
 EOD;
 

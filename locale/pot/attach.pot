@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-07-11 22:58+0900\n"
+"POT-Creation-Date: 2010-09-03 16:24+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,237 +16,237 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/attach.inc.php:54
+#: ../../plugin/attach.inc.php:50
 msgid "Uploaded the file to $1"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:55
+#: ../../plugin/attach.inc.php:51
 msgid "Deleted the file in $1"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:56
+#: ../../plugin/attach.inc.php:52
 msgid "The file has been frozen."
 msgstr ""
 
-#: ../../plugin/attach.inc.php:57
+#: ../../plugin/attach.inc.php:53
 msgid "The file has been unfrozen"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:58
+#: ../../plugin/attach.inc.php:54
 msgid "Upload to $1"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:59
+#: ../../plugin/attach.inc.php:55
 msgid "File information"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:60
+#: ../../plugin/attach.inc.php:56
 #, php-format
 msgid "<p>Delete %s.</p>"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:61
+#: ../../plugin/attach.inc.php:57
 msgid "List of attached file(s)"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:62
+#: ../../plugin/attach.inc.php:58
 msgid "List of attached file(s) in $1"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:63
+#: ../../plugin/attach.inc.php:59
 msgid "Attached file list of all pages"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:64
+#: ../../plugin/attach.inc.php:60
 msgid "Attach file"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:65
+#: ../../plugin/attach.inc.php:61
 #, php-format
 msgid "Maximum file size is %s."
 msgstr ""
 
-#: ../../plugin/attach.inc.php:66
+#: ../../plugin/attach.inc.php:62
 #, php-format
 msgid " <span class=\"small\">%s download</span>"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:67
+#: ../../plugin/attach.inc.php:63
 msgid "password"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:68
+#: ../../plugin/attach.inc.php:64
 msgid "Administrator password"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:69
+#: ../../plugin/attach.inc.php:65
 msgid "Delete file."
 msgstr ""
 
-#: ../../plugin/attach.inc.php:70
+#: ../../plugin/attach.inc.php:66
 msgid "Freeze file."
 msgstr ""
 
-#: ../../plugin/attach.inc.php:71
+#: ../../plugin/attach.inc.php:67
 msgid "Unfreeze file."
 msgstr ""
 
-#: ../../plugin/attach.inc.php:72
+#: ../../plugin/attach.inc.php:68
 msgid "The file has been renamed"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:73
+#: ../../plugin/attach.inc.php:69
 msgid "File is frozen."
 msgstr ""
 
-#: ../../plugin/attach.inc.php:74
+#: ../../plugin/attach.inc.php:70
 msgid "Rename"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:75
+#: ../../plugin/attach.inc.php:71
 msgid "New file name"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:76
+#: ../../plugin/attach.inc.php:72
 msgid "(require administrator password)"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:77
+#: ../../plugin/attach.inc.php:73
 msgid "size"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:78
+#: ../../plugin/attach.inc.php:74
 msgid "type"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:79
+#: ../../plugin/attach.inc.php:75
 msgid "date"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:80
+#: ../../plugin/attach.inc.php:76
 msgid "access count"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:81
+#: ../../plugin/attach.inc.php:77
 msgid "MD5 hash"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:82
+#: ../../plugin/attach.inc.php:78
 msgid "Page"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:83
+#: ../../plugin/attach.inc.php:79
 msgid "Stored filename"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:84
+#: ../../plugin/attach.inc.php:80
 msgid "Cannot upload/delete file in $1"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:85
+#: ../../plugin/attach.inc.php:81
 msgid "File size too large to $1"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:86
+#: ../../plugin/attach.inc.php:82
 msgid "File already exists in $1"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:87
+#: ../../plugin/attach.inc.php:83
 msgid "Could not find the file in $1"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:88
+#: ../../plugin/attach.inc.php:84
 msgid "File does not exist."
 msgstr ""
 
-#: ../../plugin/attach.inc.php:89
+#: ../../plugin/attach.inc.php:85
 msgid "Cannot delete file in  $1"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:90
+#: ../../plugin/attach.inc.php:86
 msgid "Cannot rename this file"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:91
+#: ../../plugin/attach.inc.php:87
 msgid "Wrong password."
 msgstr ""
 
-#: ../../plugin/attach.inc.php:92
+#: ../../plugin/attach.inc.php:88
 msgid "It failed in uploading."
 msgstr ""
 
-#: ../../plugin/attach.inc.php:93
+#: ../../plugin/attach.inc.php:89
 msgid "Wrong administrator password"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:94
+#: ../../plugin/attach.inc.php:90
 msgid "The value of the upload_max_filesize directive of php.ini is exceeded."
 msgstr ""
 
-#: ../../plugin/attach.inc.php:95
+#: ../../plugin/attach.inc.php:91
 msgid "MAX_FILE_SIZE specified by the HTML form is exceeded."
 msgstr ""
 
-#: ../../plugin/attach.inc.php:96
+#: ../../plugin/attach.inc.php:92
 msgid "Only part is uploaded."
 msgstr ""
 
-#: ../../plugin/attach.inc.php:97
+#: ../../plugin/attach.inc.php:93
 msgid "The file was not uploaded."
 msgstr ""
 
-#: ../../plugin/attach.inc.php:98
+#: ../../plugin/attach.inc.php:94
 msgid "There is no temporary directory."
 msgstr ""
 
-#: ../../plugin/attach.inc.php:99
+#: ../../plugin/attach.inc.php:95
 msgid "It failed in writing in the disk."
 msgstr ""
 
-#: ../../plugin/attach.inc.php:100
+#: ../../plugin/attach.inc.php:96
 msgid "The uploading of the file was stopped by the enhancement module."
 msgstr ""
 
-#: ../../plugin/attach.inc.php:101
+#: ../../plugin/attach.inc.php:97
 msgid "Upload"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:102
+#: ../../plugin/attach.inc.php:98
 msgid "Information"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:103
+#: ../../plugin/attach.inc.php:99
 msgid "Submit"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:175
+#: ../../plugin/attach.inc.php:171
 msgid "PKWK_READONLY prohibits editing"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:236
+#: ../../plugin/attach.inc.php:233
 msgid "Query string (page name and/or file name) too long"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:239
+#: ../../plugin/attach.inc.php:236
 msgid "No such page"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:344
+#: ../../plugin/attach.inc.php:340
 msgid "It failed in the generation of a temporary file."
 msgstr ""
 
-#: ../../plugin/attach.inc.php:359
+#: ../../plugin/attach.inc.php:355
 msgid "The uploaded file cannot be read."
 msgstr ""
 
-#: ../../plugin/attach.inc.php:361
+#: ../../plugin/attach.inc.php:357
 msgid "The compression file cannot be written."
 msgstr ""
 
-#: ../../plugin/attach.inc.php:379
+#: ../../plugin/attach.inc.php:375
 msgid "The error occurred"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:592 ../../plugin/attach.inc.php:611
+#: ../../plugin/attach.inc.php:596 ../../plugin/attach.inc.php:615
 msgid "PKWK_SAFE_MODE prohibits this"
 msgstr ""

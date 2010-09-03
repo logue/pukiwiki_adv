@@ -1,6 +1,7 @@
 <?php
-// $Id: dump.inc.php,v 1.40.8 2009/04/17 19:27:00 upk Exp $
+// $Id: dump.inc.php,v 1.41.9 2010/08/28 10:42:00 Logue Exp $
 // Copyright (C)
+//   2010      PukiWiki Advance Developers Team
 //   2005-2007,2009 PukiWiki Plus! Team
 //   2004-2007 PukiWiki Developers Team
 //   2004      teanan / Interfair Laboratory
@@ -13,7 +14,7 @@
 // User defines
 
 // Allow using resture function
-define('PLUGIN_DUMP_ALLOW_RESTORE', FALSE); // FALSE, TRUE
+define('PLUGIN_DUMP_ALLOW_RESTORE', TRUE); // FALSE, TRUE
 
 // ページ名をディレクトリ構造に変換する際の文字コード (for mbstring)
 define('PLUGIN_DUMP_FILENAME_ENCORDING', 'SJIS');
@@ -228,7 +229,7 @@ function plugin_dump_disp_form()
 	$_dump_form    = _("form");
 	$_dump_backdir = _("Backup directory");
 	$_dump_option  = _("Options");
-	$_dump_namedecode  = _("Virtual of page name encode is converted into the file name with the directory.") .
+	$_dump_namedecode  = _("Virtual of page name encode is converted into the file name with the directory.") . '<br />'.
 		_("(The restoration that uses this data cannot be done.") .
 		_("Moreover, a part of character is substituted for '_'.)");
 	// $_dump_admin   = _("Administrator password");
@@ -241,64 +242,60 @@ function plugin_dump_disp_form()
 	$_dump_btn_up = _("Upload execution");
 
 	$data = <<<EOD
-<span class="small">
-</span>
-<h3>$_dump_h3_data</h3>
+<h2 id="dump">$_dump_h3_data</h2>
 <form action="$script" method="post">
- <div>
-  <input type="hidden" name="cmd"  value="dump" />
-  <input type="hidden" name="page" value="$defaultpage" />
-  <input type="hidden" name="act"  value="$act_down" />
-  <input type="hidden" name="menu" value="1" />
-
-<p><strong>$_dump_arc</strong>
-<br />
-  <input type="radio" name="pcmd" id="_p_dump_tgz" value="tgz" checked="checked" />
-  <label for="_p_dump_tgz"> .tar.gz $_dump_form</label><br />
-  <input type="radio" name="pcmd" id="_p_dump_tar" value="tar" />
-  <label for="_p_dump_tar"> .tar $_dump_form</label>
-</p>
-<p><strong>$_dump_backdir</strong>
-<br />
-  <input type="checkbox" name="bk_wiki" id="_p_dump_d_wiki" checked="checked" />
-  <label for="_p_dump_d_wiki">wiki</label><br />
-  <input type="checkbox" name="bk_attach" id="_p_dump_d_attach" />
-  <label for="_p_dump_d_attach">attach</label><br />
-  <input type="checkbox" name="bk_backup" id="_p_dump_d_backup" />
-  <label for="_p_dump_d_backup">backup</label><br />
-</p>
-<p><strong>$_dump_option</strong>
-<br />
-  <input type="checkbox" name="namedecode" id="_p_dump_namedecode" />
-  <label for="_p_dump_namedecode">$_dump_namedecode</label><br />
-</p>
-<p>
-  <input type="submit" name="ok" value="$_dump_btn_down" />
-</p>
- </div>
+	<div>
+		<input type="hidden" name="cmd"  value="dump" />
+		<input type="hidden" name="page" value="$defaultpage" />
+		<input type="hidden" name="act"  value="$act_down" />
+		<input type="hidden" name="menu" value="1" />
+		<dl>
+			<dt>$_dump_arc</dt>
+			<dd>
+				<input type="radio" name="pcmd" id="_p_dump_tgz" value="tgz" checked="checked" />
+				<label for="_p_dump_tgz"> .tar.gz $_dump_form</label>&nbsp;
+				<input type="radio" name="pcmd" id="_p_dump_tar" value="tar" />
+				<label for="_p_dump_tar"> .tar $_dump_form</label>
+			</dd>
+			<dt>$_dump_backdir</dt>
+			<dd>
+				<input type="checkbox" name="bk_wiki" id="_p_dump_d_wiki" checked="checked" />
+				<label for="_p_dump_d_wiki">wiki</label><br />
+				<input type="checkbox" name="bk_attach" id="_p_dump_d_attach" />
+				<label for="_p_dump_d_attach">attach</label><br />
+				<input type="checkbox" name="bk_backup" id="_p_dump_d_backup" />
+				<label for="_p_dump_d_backup">backup</label>
+			</dd>
+			<dt>$_dump_option</dt>
+			<dd>
+				<input type="checkbox" name="namedecode" id="_p_dump_namedecode" />
+				<label for="_p_dump_namedecode">$_dump_namedecode</label>
+			</dd>
+		</dl>
+		<p><input type="submit" name="ok" value="$_dump_btn_down" id="download" /></p>
+	</div>
 </form>
 EOD;
 
 	if(PLUGIN_DUMP_ALLOW_RESTORE) {
 		$data .= <<<EOD
-<h3>$_dump_h3_store (*.tar, *.tar.gz)</h3>
-<form enctype="multipart/form-data" action="$script" method="post">
- <div>
-  <input type="hidden" name="cmd"  value="dump" />
-  <input type="hidden" name="page" value="$defaultpage" />
-  <input type="hidden" name="act"  value="$act_up" />
-<p><strong>$_dump_caution $_dump_write</strong></p>
-<p><span class="small">
-$_dump_upload
-</span>
-  <label for="_p_dump_upload_file">$_dump_file:</label>
-  <input type="file" name="upload_file" id="_p_dump_upload_file" size="40" />
-</p>
-<p>
-  <input type="submit" name="ok" value="$_dump_btn_up" />
-</p>
- </div>
-</form>
+<h2 id="restore">$_dump_h3_store (*.tar, *.tar.gz)</h2>
+<div>
+	<form enctype="multipart/form-data" action="$script" method="post">
+		<input type="hidden" name="cmd"  value="dump" />
+		<input type="hidden" name="page" value="$defaultpage" />
+		<input type="hidden" name="act"  value="$act_up" />
+		<p>$_dump_caution $_dump_write</p>
+		<dl>
+			<dt><label for="_p_dump_upload_file">$_dump_file:</label></dt>
+			<dd>
+				<input type="file" name="upload_file" id="_p_dump_upload_file" size="40" /><br />
+				<span class="small">$_dump_upload</span>
+			</dd>
+		</dl>
+		<p><input type="submit" name="ok" value="$_dump_btn_up" /></p>
+	</form>
+</div>
 EOD;
 	}
 
@@ -483,9 +480,10 @@ class tarlib
 			die_message($dir . ' is not found or not readable.');
 		}
 
-		while ($filename = readdir($dp)) {
-			if (preg_match("/$mask/", $filename))
+		while (($filename = readdir($dp)) !== FALSE) {
+			if (preg_match('/' . $mask . '/', $filename)) {
 				$files[] = $dir . $filename;
+			}
 		}
 		closedir($dp);
 		

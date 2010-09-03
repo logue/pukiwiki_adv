@@ -6,6 +6,13 @@
 */
 
 $auth_wkgrp_user = array(
+	// For Administer 
+	'admin'		=> array(
+		'role'			=> ROLE_ADM,
+		'displayname'	=> $modifier,
+		'group'			=> 'Administrator',
+		'mypage'		=> $modifier
+	),
 	// ex. 'user_name' => array('role'=>ROLE_ADM, 'displayname'=>'ななし','group'=>'','home'=>'','mypage'=>''),
 	'openid'	=> array(
 		// openid_identity (openid.delegate)

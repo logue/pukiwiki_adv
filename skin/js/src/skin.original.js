@@ -84,7 +84,7 @@ var pukiwiki_skin = {
 		}
 		
 		/* Textarea Resizer */
-		if ($("textarea[name='msg']").length !== 0){
+		if ($("textarea[name='msg']").length !== 0 && $.query.get('cmd') !== 'guiedit'){
 			$("textarea[name='msg']").addClass("resizable");
 			$('textarea.resizable:not(.processed)').TextAreaResizer();
 		}
@@ -362,7 +362,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 
 				// オーバーレイでウィンドウを閉じる
 				var parent = this;
-				$('.ui-widget-overlay').click(function(){
+				$(prefix+'.ui-widget-overlay').click(function(){
 					$(parent).dialog('close');
 				});
 				return false;
