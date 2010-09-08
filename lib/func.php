@@ -7,9 +7,6 @@
 //   2002-2007,2009-2010 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
 // License: GPL v2 or (at your option) any later version
-//
-// General functions
-// Plus!NOTE:(policy)not merge official cvs(1.86->1.87)
 
 // Adv. merged official cvs 
 function is_interwiki($str)
@@ -230,6 +227,10 @@ function do_search($word, $type = 'AND', $non_format = FALSE, $base = '')
  	global $search_auth, $show_passage, $search_word_color, $ajax;
 //	global $_msg_andresult, $_msg_orresult, $_msg_notfoundresult;
 	global $_string;
+	
+	$_msg_andresult = $_string['andresult'];
+	$_msg_orresult = $_string['orresult'];
+	$_msg_notfoundresult = $_string['notfoundresult'];
 
 	$retval = array();
 
@@ -257,6 +258,13 @@ function do_search($word, $type = 'AND', $non_format = FALSE, $base = '')
 	foreach (array_keys($pages) as $page) {
 		$b_match = FALSE;
 
+		// Search hidden for page name (Plus!)
+		if (substr($page, 0, 1) == ':' && $role_adm_contents) {
+			unset($pages[$page]);
+			--$count;
+			continue;
+		}
+
 		// Search for page name
 		if (! $non_format) {
 			foreach ($keys as $key) {
@@ -281,6 +289,8 @@ function do_search($word, $type = 'AND', $non_format = FALSE, $base = '')
 
 		unset($pages[$page]); // Miss
 	}
+	unset($role_adm_contents);	// Plus!
+
 	if ($non_format) return array_keys($pages);
 
 	$r_word = rawurlencode($word);
@@ -351,7 +361,11 @@ function strip_bracket($str)
 // Generate sorted "list of pages" XHTML, with page-reading hints
 function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', $withfilename = FALSE)
 {
-	global $pagereading_enable, $list_index, $_msg_symbol, $_msg_other;
+//	global $pagereading_enable, $list_index, $_msg_symbol, $_msg_other;
+	global $pagereading_enable, $list_index;
+
+	$_msg_symbol = $_string['symbol'];
+	$_msg_symbol = $_string['other'];
 
 	// Sentinel: symbolic-chars < alphabetic-chars < another(multibyte)-chars
 	// = ' ' < '[a-zA-Z]' < 'zz'
@@ -402,11 +416,12 @@ function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', 
 	}
 	unset($pages);
 	ksort($array, SORT_STRING);
-
+/*
 	if ($list_index) {
 		$s_msg_symbol  = htmlspecialchars($_msg_symbol);
 		$s_msg_another = htmlspecialchars($_msg_other);
 	}
+*/
 	$cnt = 0;
 	$retval = $contents = array();
 	$retval[] = '<ul>';
@@ -473,8 +488,8 @@ function catrule()
 
 // Show (critical) error message
 function die_message($msg){
-	global $skin_file, $page_title, $_string;
-	$title = $page = $_string['error'];
+	global $skin_file, $page_title, $_string, $_title;
+	$title = $page = $_title['error'];
 	
 	if (!PKWK_WARNING || DEBUG){	// PKWK_WARNINGが有効でない場合は、詳細なエラーを隠す
 		$msg = $_string['error_msg'];
@@ -498,7 +513,7 @@ EOD;
 		define('SKIN_FILE', $skin_file);
 		catbody($title, $page, $body);
 	} else {
-		header('Content-Type: text/html; charset=utf-8');
+		pkwk_common_headers();
 		print <<<EOD
 <!doctype html>
 <html>

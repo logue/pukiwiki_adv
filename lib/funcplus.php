@@ -263,7 +263,7 @@ function add_skindir($skin_name)
 	foreach(array(EXT_SKIN_DIR, EXT_SKIN_DIR.THEME_PLUS_NAME, EXT_SKIN_DIR.THEME_PLUS_NAME.$skin_name.'/',
 			SKIN_DIR, SKIN_DIR.THEME_PLUS_NAME, SKIN_DIR.THEME_PLUS_NAME.$skin_name.'/',
 			SKIN_URI, DATA_HOME.SKIN_DIR) as $dir) {
-		if (file_exists($dir.$conf) && is_readable($dir.$conf)) require $dir.$conf;
+		if (file_exists($dir.$conf) && is_readable($dir.$conf)) require $dir.$conf;	// あまり良い実装ではない
 		if (file_exists($dir.$file) && is_readable($dir.$file)) return $dir.$file;
 	}
 	return $file;
@@ -649,9 +649,9 @@ function change_uri($cmd='',$force=0)
 	case 'reset':
 		foreach($target_fields as $org=>$bkup) {
 			if (isset($$bkup)) {
-                                $$org = $$bkup;
+				$$org = $$bkup;
 			} else {
-                                if (isset($$org)) unset($$org);
+				if (isset($$org)) unset($$org);
 			}
 		}
 		return;
@@ -827,5 +827,15 @@ function print_backtrace($backtrace){
 		echo '<td class="style_td">'.$val['file']." on line ".$val['line']."</td></tr>";
 	}
 	echo "</tbody></table>";
+}
+
+function load_entities(){
+	$fp = file(CACHE_DIR . PKWK_ENTITIES_REGEX_CACHE);
+	if ($fp == FALSE){
+		$info[] = 'Cannot read '.PKWK_ENTITIES_REGEX_CACHE.'. Please click <a href="'.get_cmd_uri('update_entities').'">here</a> and regenerete '.PKWK_ENTITIES_REGEX_CACHE.'.';
+		return '[a-zA-Z0-9]{2,8}';
+	}else{
+		return trim(join('', $fp));
+	}
 }
 ?>

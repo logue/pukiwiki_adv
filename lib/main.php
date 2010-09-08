@@ -1,10 +1,10 @@
 <?php
 // PukiWiki Advance.
-// $Id: main.php,v 1.21.24 2010/08/17 14:10:00 Logue Exp $
+// $Id: main.php,v 1.21.23 2010/07/25 14:10:00 upk Exp $
 //
 // PukiWiki Advance
-//  Copyright (C) 2010 by PukiWiki Advance Developers Team
-//  http://pukiwiki.logue.be/
+//  Copyright (C) 2010 by PukiWiki Advance Team
+//  http://pukiplus.sf.net/
 //
 // PukiPlus
 //  Copyright (C) 2010 by PukiPlus Team
@@ -98,8 +98,8 @@ if ($referer)	require(LIB_DIR . 'referer.php');
 // Main
 
 $retvars = array();
-$page    = isset($vars['page'])  ? $vars['page']  : '';
-$referer = isset($vars['referer']) ? $vars['referer'] : '';
+$page  = isset($vars['page'])  ? $vars['page']  : '';
+$refer = isset($vars['refer']) ? $vars['refer'] : '';
 
 if (isset($vars['cmd'])) {
 	$plugin = & $vars['cmd'];
@@ -110,7 +110,7 @@ if (isset($vars['cmd'])) {
 }
 
 // SPAM
-if (SpamCheckBAN($_SERVER['REMOTE_ADDR'])) die('403 Forbidden.');
+if (SpamCheckBAN($_SERVER['REMOTE_ADDR'])) die();
 
 // Spam filtering
 if ($spam && $method != 'GET') {
@@ -118,12 +118,12 @@ if ($spam && $method != 'GET') {
 	if (isset($_SERVER['GEOIP_COUNTRY_CODE'])) {
 		if (isset($deny_countory) && !empty($deny_countory)) {
 			if (in_array($_SERVER['GEOIP_COUNTRY_CODE'], $deny_countory)) {
-				die('Unsupported region or country.');
+				die('Sorry');
 			}
 		}
 		if (isset($allow_countory) && !empty($allow_countory)) {
 			if (!in_array($_SERVER['GEOIP_COUNTRY_CODE'], $allow_countory)) {
-				die('Unsupported region or country.');
+				die('Sorry');
 			}
 		}
 	}
@@ -144,7 +144,7 @@ if ($spam && $method != 'GET') {
 		case 'bugtrack': $_page = & $vars['base'];  break;
 		case 'tracker':  $_page = & $vars['_base']; break;
 		case 'read':     $_page = & $page;  break;
-		default: $_page = & $referer; break;
+		default: $_page = & $refer; break;
 	}
 
 	if ($_spam) {
@@ -192,9 +192,9 @@ if (is_webdav() && exist_plugin('dav')) {
 	exit;
 }
 
-$info[] = 'Powered by PHP '.PHP_VERSION.' '.((substr(php_sapi_name(), 0, 3) == 'cgi') ? 'CGI' : 'MODULE').' mode. PHP is running as '.(ini_get('safe_mode') ? "SAFE" : "CGI").' mode.';
-
 $is_protect = auth::is_protect();
+
+$info[] = 'Powered by PHP '.PHP_VERSION.' '.((substr(php_sapi_name(), 0, 3) == 'cgi') ? 'CGI' : 'MODULE').' mode. PHP is running as '.(ini_get('safe_mode') ? "SAFE" : "CGI").' mode.';
 
 // Plugin execution
 if ($plugin != '') {
@@ -219,12 +219,10 @@ if ($plugin != '') {
 			$base = isset($vars['refer']) ? $vars['refer'] : '';
 		}
 		*/
-		$base = (!empty($page)) ? $page : $referer;
+		$base = (!empty($page)) ? $page : $refer;
 	} else {
-		$retvars = array(
-			'msg'	=> _('Plugin Error'),
-			'body'	=> sprintf(_('plugin=%s is not implemented.'), htmlspecialchars($plugin))
-		);
+		$msg = 'plugin=' . htmlspecialchars($plugin) . ' is not implemented.';
+		$retvars = array('msg'=>$msg,'body'=>$msg);
 		$base    = & $defaultpage;
 	}
 }
@@ -305,6 +303,7 @@ if ($adminpass == '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72' || $adminpass ==
 		'<strong>'.$_string['warning'].'</strong> '.$_string['changeadminpass'].'</p></div>'."\n".
 		$body;
 }
+
 
 // Output
 catbody($title, $page, $body);

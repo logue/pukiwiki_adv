@@ -1,31 +1,26 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: fileplus.php,v 1.2.5 2010/09/01 19:27:00 Logue Exp $
+// $Id: fileplus.php,v 1.2.4 2010/07/23 22:46:00 upk Exp $
 // Copyright (C)
-//   2010      PukiWiki Advance Developers Team
+//   2010 PukiPlus Team
 //   2005-2006,2009 PukiWiki Plus! Team
 // License: GPL v2 or (at your option) any later version
 //
 // File related functions - extra functions
 
-// Ticket
-define('PKWK_TICKET', 'ticket.dat');
-
-
-
 // Get Ticket
 function get_ticket($newticket = FALSE)
 {
-	$file = CACHE_DIR . PKWK_TICKET;
+	$file = CACHE_DIR . 'ticket.dat';
 
 	if (file_exists($file) && $newticket !== TRUE) {
-		$fp = fopen($file, 'r') or die_message('Cannot open ' . $file);
+		$fp = fopen($file, 'r') or die_message('Cannot open ' . 'CACHE_DIR/' . 'ticket.dat');
 		$ticket = trim(fread($fp, filesize($file)));
 		fclose($fp);
 	} else {
 		$ticket = md5(mt_rand());
 		pkwk_touch_file($file);
-		$fp = fopen($file, 'r+') or die_message('Cannot open ' . $file);
+		$fp = fopen($file, 'r+') or die_message('Cannot open ' . 'CACHE_DIR/' . 'ticket.dat');
 		set_file_buffer($fp, 0);
 		@flock($fp, LOCK_EX);
 		$last = ignore_user_abort(1);
@@ -58,16 +53,6 @@ function plus_readfile($filename)
 		flush();
 	}
 	fclose($fp);
-}
-
-function load_entities(){
-	$fp = file(CACHE_DIR . PKWK_ENTITIES_REGEX_CACHE);
-	if ($fp == FALSE){
-		$info[] = 'Cannot read '.PKWK_ENTITIES_REGEX_CACHE.'. Please click <a href="'.get_cmd_uri('update_entities').'">here</a> and regenerete '.PKWK_ENTITIES_REGEX_CACHE.'.';
-		return '[a-zA-Z0-9]{2,8}';
-	}else{
-		return trim(join('', $fp));
-	}
 }
 
 // structure
@@ -277,109 +262,5 @@ function get_attachfiles_cache_read($filename,$page)
 	@flock($fp, LOCK_UN);
 	if(! fclose($fp)) return array();
 	return $retval;
-}
-
-// file.php‚æ‚èˆÚ“®
-function get_link_list($diffdata)
-{
-	$links = array();
-
-	list($plus, $minus) = get_diff_lines($diffdata);
-
-	// Get URLs from <a>(anchor) tag from convert_html()
-	$plus  = convert_html($plus); // WARNING: heavy and may cause side-effect
-	preg_match_all('#href="(https?://[^"]+)"#', $plus, $links, PREG_PATTERN_ORDER);
-	$links = array_unique($links[1]);
-
-	// Reject from minus list
-	if ($minus != '') {
-		$links_m = array();
-		$minus = convert_html($minus); // WARNING: heavy and may cause side-effect
-		preg_match_all('#href="(https?://[^"]+)"#', $minus, $links_m, PREG_PATTERN_ORDER);
-		$links_m = array_unique($links_m[1]);
-
-		$links = array_diff($links, $links_m);
-	}
-
-	unset($plus,$minus);
-
-	// Reject own URL (Pattern _NOT_ started with '$script' and '?')
-	$links = preg_grep('/^(?!' . preg_quote(get_script_absuri(), '/') . '\?)./', $links);
-
-	// No link, END
-	if (! is_array($links) || empty($links)) return;
-
-	return $links;
-}
-
-function get_diff_lines($diffdata)
-{
-	$_diff = explode("\n", $diffdata);
-	$plus  = join("\n", preg_replace('/^\+/', '', preg_grep('/^\+/', $_diff)));
-	$minus = join("\n", preg_replace('/^-/',  '', preg_grep('/^-/',  $_diff)));
-	unset($_diff);
-	return array($plus, $minus);
-}
-
-function replace_plugin_link2null($data)
-{
-	global $exclude_link_plugin;
-
-	$pattern = $replacement = array();
-	foreach($exclude_link_plugin as $plugin) {
-		$pattern[] = '/^#'.$plugin.'\(/i';
-		$replacement[] = '#null(';
-	}
-
-	$exclude = preg_replace($pattern,$replacement, explode("\n", $data));
-	$html = convert_html($exclude);
-	preg_match_all('#href="(https?://[^"]+)"#', $html, $links, PREG_PATTERN_ORDER);
-	$links = array_unique($links[1]);
-	unset($except, $html);
-	return $links;
-}
-
-function get_this_time_links($post,$diff)
-{
-	$links = array();
-	$post_links = (array)replace_plugin_link2null($post);
-	$diff_links = (array)get_link_list($diff);
-
-	foreach($diff_links as $d) {
-		foreach($post_links as $p) {
-			if ($p == $d) {
-				$links[] = $p;
-				break;
-			}
-		}
-	}
-	unset($post_links, $diff_links);
-	return $links;
-}
-
-// Update AutoBaseAlias data
-function autobasealias_write($filename, &$pages)
-{
-	global $autobasealias_nonlist;
-	$pairs = array();
-	foreach ($pages as $page) {
-		if (preg_match('/' . $autobasealias_nonlist . '/', $page)) continue;
-		$base = get_short_pagename($page);
-		if ($base !== $page) {
-			if (! isset($pairs[$base])) $pairs[$base] = array();
-			$pairs[$base][] = $page;
-		}
-	}
-	$data = serialize($pairs);
-
-	pkwk_touch_file($filename);
-	$fp = fopen($filename, 'w') or
-			die_message('Cannot open ' . $filename . '<br />Maybe permission is not writable');
-	set_file_buffer($fp, 0);
-	@flock($fp, LOCK_EX);
-	rewind($fp);
-	fputs($fp, $data);
-	@flock($fp, LOCK_UN);
-	@fclose($fp);
 }
 ?>

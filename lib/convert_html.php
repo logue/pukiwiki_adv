@@ -1002,11 +1002,6 @@ class Body extends Element
 
 	function replace_contents($arr)
 	{
-/*		$contents  = '<div class="contents">' . "\n" .
-				'<a id="contents_' . $this->id . '"></a>' . "\n" .
-				$this->contents->toString() . "\n" .
-				'</div>' . "\n";
-*/
 		$contents  = '<div class="contents" id="contents_' . $this->id . '">' . "\n" .
 				$this->contents->toString() . "\n" .
 				'</div>' . "\n";

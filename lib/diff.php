@@ -43,6 +43,7 @@ function diff_style_to_css($str = '')
 // Merge helper (when it conflicts)
 function do_update_diff($pagestr, $poststr, $original)
 {
+	global $_strings;
 	$obj = new line_diff();
 
 	$obj->set_str('left', $original, $pagestr);

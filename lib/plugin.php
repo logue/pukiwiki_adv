@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: plugin.php,v 1.19.18 2010/08/28 09:58:00 Logue Exp $
+// $Id: plugin.php,v 1.19.19 2010/09/08 14:10:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team
 //   2005-2006,2008 PukiWiki Plus! Team
@@ -147,11 +147,26 @@ function do_plugin_init($name)
 		bindtextdomain($name, $plugin_lang_path[$name]);
 	}
 	bind_textdomain_codeset($name, SOURCE_ENCODING);
+	
+	// i18n (Plus!)
+	$func = 'plugin_' . $name . '_init';
+	if (function_exists($func)) {
+		// TRUE or FALSE or NULL (return nothing)
+		textdomain($name);
+		$done[$name] = call_user_func($func);
+		textdomain(DOMAIN);
+		if (!isset($checked[$name])) {
+			$done[$name] = TRUE; // checked.
+		}
+	} else {
+		$done[$name] = TRUE; // checked.
+	}
+/*
 	if (! isset($done[$name])) {
 		$func = 'plugin_' . $name . '_init';
 		$done[$name] = (! function_exists($func) || call_user_func($func) !== FALSE);
 	}
-
+*/
 	return $done[$name];
 }
 

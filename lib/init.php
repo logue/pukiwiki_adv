@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: init.php,v 1.56.1 2010/09/01 20:13:00 Logue Exp $
+// $Id: init.php,v 1.56.2 2010/09/08 15:40:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -15,7 +15,7 @@
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
 define('S_VERSION', 'v1.0 alpha');
-define('S_REVSION', '20100901');
+define('S_REVSION', '20100908');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &copy; 2010' .
@@ -43,14 +43,24 @@ foreach (array('SCRIPT_NAME', 'SERVER_ADMIN', 'SERVER_NAME',
 
 $foot_explain = array();	// Footnotes
 $related      = array();	// Related pages
+$head_tags    = array();	// XHTML tags in <head></head> (Obsolete in Adv.)
+$foot_tags    = array();	// XHTML tags before </body> (Obsolete in Adv.)
 
 $meta_tags    = array();	// <meta />Tags
 $link_tags    = array();	// <link />Tags
 $js_tags      = array();	// <script></script>Tags
-$js_blocks    = array();	// Inline scripts
-$css_blocks   = array();	// Inline styleseets
+$js_blocks    = array();	// Inline scripts(<script>//<![CDATA[ ... //]]></script>)
+$css_blocks   = array();	// Inline styleseets(<style>/*<![CDATA[*/ ... /*]]>*/</style>)
 
 $info         = array();	// For debug use.
+
+/////////////////////////////////////////////////
+// Time settings (Plus!)
+
+define('LOCALZONE', date('Z'));
+define('UTIME', time() - LOCALZONE);
+define('MUTIME', getmicrotime());
+
 /////////////////////////////////////////////////
 // Require INI_FILE
 

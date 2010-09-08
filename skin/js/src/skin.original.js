@@ -88,6 +88,9 @@ var pukiwiki_skin = {
 			$("textarea[name='msg']").addClass("resizable");
 			$('textarea.resizable:not(.processed)').TextAreaResizer();
 		}
+		
+		// テキストエリアでタブ入力できるように
+		$("textarea").tabby();
 
 		/* Glossaly（ツールチップ） */
 		this.glossaly();
@@ -771,149 +774,55 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 	},
 	/* 独自のGlossaly処理 */
 	glossaly: function(prefix){
+		var self = this;
 		if (prefix){
 			prefix = prefix + ' ';
 		}else{
 			prefix = '';
 		}
 
-		// http://www.javascriptkit.com/script/script2/ajaxtooltip.shtml
-		ajaxtooltip.iebody=(document.compatMode && document.compatMode!="BackCompat")? document.documentElement : document.body;
-		var tooltips=[]; //array to contain references to all tooltip DIVs on the page
-
 		/* タイトル属性がある場合 */
-		$(prefix+'*[title]').each(function(index){
-			this.content=this.getAttribute('title');	// タイトル属性を取得
-			this.titleposition=index+' pos';
-			tooltips.push($('<div class="ajaxtooltip"></div>').appendTo('body'));
-			var $target=$(this);
-			$target.removeAttr('title');	// タイトル属性を削除
-			if (this.content !== ''){
-				$target.hover(
-					function(e){ //onMouseover element
-						var $tooltip = tooltips[parseInt(this.titleposition)];
-						$tooltip.html(this.content).show();
-					},
-					function(e){ //onMouseout element
-						ajaxtooltip.hideall();
-					}
-				);
-				$target.bind("mousemove", function(e){
-					var $tooltip=tooltips[parseInt(this.titleposition)];
-					ajaxtooltip.positiontip($tooltip, e);
-				});
-			}
+		$(prefix+'*[title]').tooltip({
+			bodyHandler: function() { 
+				return $(this).context.tooltipText; 
+			},
+			track: true,
+			delay: 0,
+			showURL: false
 		});
 		
 		if (this.plus === true){
 			// Plusの場合、Glossaly機能をオーバーライド
-			$(prefix+'.tooltip').each(function(index){
-				this.titleposition=index+' pos';
-				var content=$(this).attr('title');
-				tooltips.push($('<div class="ajaxtooltip"></div>').appendTo('body'));
-				var $target=$(this);
-				$target.removeAttr('title');
-				$target.hover(
-					function(e){ //onMouseover element
-						var $tooltip = tooltips[parseInt(this.titleposition)];
-						if (content){
-							// title属性が含まれている場合、そのまま表示
-							$tooltip.html(this.content).show();
-						}else{
-							// title属性が含まれていない場合ajax通信
-							if (!$tooltip.get(0).loadsuccess){ //first time fetching Ajax content for this tooltip?
-								$tooltip.html(ajaxtooltip.loadingHTML).show();
-								$.ajax({
-									url:SCRIPT,
-									type:'get',
-									cache: true,
-									timeout:2000,
-									dataType : 'html',
-									global:false,
-									data : {
-										plugin:'tooltip',
-										q:$(this).text()
-									},
-									success: function(data){
-										data = data.replace(/<script[^>]*>[^<]+/ig,'');
-										$tooltip.html(data);
-										ajaxtooltip.positiontip($tooltip, e);
-										ajaxtooltip.showtip($tooltip, e);
-										$tooltip.get(0).loadsuccess=true;
-									},
-									error : function(data){
-										$tooltip.html(data);
-									}
-								});
-							}else{
-								ajaxtooltip.positiontip($tooltip, e);
-								ajaxtooltip.showtip($tooltip, e);
-							}
-						}
-					},
-					function(e){ //onMouseout element
-						ajaxtooltip.hideall();
-					}
-				);
-				$target.bind("mousemove", function(e){
-					var $tooltip=tooltips[parseInt(this.titleposition)];
-					ajaxtooltip.positiontip($tooltip, e);
-				});
-			});
+			$(prefix+'.tooltip').hover(
+				function(){
+					$('body').css('cursor','wait');
+					self.getGlossary(this,{
+						cmd:'tooltip',
+						q:$(this).text(),
+						cache:true
+					});
+				},
+				function(){
+					$('body').css('cursor','auto');
+				}
+			);
 
 			/* 検索画面 */
 			if ($.query.get('cmd') == 'search'){
-				$(prefix+'a.linktip').each(function(index){
-					this.titleposition=index+' pos';
-					tooltips.push($('<div class="ajaxtooltip"></div>').appendTo('body'));
-					var $target=$(this);
-					$target.removeAttr('title');
-					$target.removeAttr('onmouseover');
-					$target.removeAttr('onmouseout');
-					$target.hover(
-						function(e){ //onMouseover element
-							var $tooltip=tooltips[parseInt(this.titleposition)];
-							if (!$tooltip.get(0).loadsuccess){ //first time fetching Ajax content for this tooltip?
-								$tooltip.html(ajaxtooltip.loadingHTML).show();
-								$.ajax({
-									url:SCRIPT,
-									type:'get',
-									cache: true,
-									timeout:2000,
-									dataType : 'html',
-									global:false,
-									data : {
-										cmd:'preview',
-										page:$(this).text(),
-										word: $.query.get('word')
-									},
-									success: function(data){
-										data = data.replace(/<script[^>]*>[^<]+/ig,'');
-										$tooltip.html(data);
-										ajaxtooltip.positiontip($tooltip, e);
-										ajaxtooltip.showtip($tooltip, e);
-										$tooltip.get(0).loadsuccess=true;
-									},
-									error : function(data){
-										$tooltip.html(data);
-									}
-								});
-							}else{
-								ajaxtooltip.positiontip($tooltip, e);
-								ajaxtooltip.showtip($tooltip, e);
-							}
-						},
-						function(e){ //onMouseout element
-	//						var $tooltip=tooltips[parseInt(this.titleposition)];
-	//						ajaxtooltip.hidetip($tooltip, e);
-							ajaxtooltip.hideall();
-						}
-					);
-					$target.bind("mousemove", function(e){
-						var $tooltip=tooltips[parseInt(this.titleposition)];
-						ajaxtooltip.positiontip($tooltip, e);
-					});
-				});
+				$(prefix+'.linktip').hover(
+					function(){
+						$('body').css('cursor','wait');
+						self.getGlossary(this,{
+							cmd:'preview',
+							page:$(this).text(),
+							word: $.query.get('word'),
+							cache:true
+						});
+					},
+					function(){
+						$('body').css('cursor','auto');
+					}
+				);
 			}
 		}
 		/*
@@ -923,6 +832,38 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			});
 		}
 		*/
+	},
+	// jquery.tooltip.jsのajax化
+	getGlossary: function(target,params,tooltip_opts){
+		var text;
+		$.ajax({
+			url:SCRIPT,
+			type:'GET',
+			cache: true,
+			timeout:2000,
+			dataType : 'html',
+			global:false,
+			data : params,
+			async:false,
+			beforeSend: function(){
+				$('body').css('cursor','wait');
+				
+			},
+			success: function(data){
+				text = data;
+			},
+			complete : function(XMLHttpRequest, textStatus){
+				$('body').css('cursor','help');
+				$(target).tooltip({
+					bodyHandler: function() { 
+						return text.replace(/<script[^>]*>[^<]+/ig,'');
+					}, 
+					track: true,
+					delay: 0,
+					showURL: false
+	    		});
+			}
+		});
 	},
 	set_editform: function(prefix){
 		if (prefix){
@@ -1953,51 +1894,6 @@ _dispToc = function(ev,tg,type){
 function _hideToc(){
 	$(pukiwiki_skin.toc).fadeOut("fast");
 }
-/**************************************************************************************************/
-//Ajax Tooltip script: By JavaScript Kit: http://www.javascriptkit.com
-//Last update (July 10th, 08): Modified tooltip to follow mouse, added Ajax "loading" message.
-
-var ajaxtooltip = {
-	fadeeffect: [true, 300], //enable Fade? [true/false, duration_milliseconds]
-	useroffset: [10, 10], //additional x and y offset of tooltip from mouse cursor, respectively
-	loadingHTML: '<img src="'+IMAGE_DIR+'ajax/spinner.gif" alt="Loading..." />',
-
-	positiontip:function($tooltip, e){
-		var docwidth=(window.innerWidth)? window.innerWidth-15 : ajaxtooltip.iebody.clientWidth-15;
-		var docheight=(window.innerHeight)? window.innerHeight-18 : ajaxtooltip.iebody.clientHeight-15;
-		var twidth=$tooltip.get(0).offsetWidth;
-		var theight=$tooltip.get(0).offsetHeight;
-		var tipx=e.pageX+this.useroffset[0];
-		var tipy=e.pageY+this.useroffset[1];
-		tipx=(e.clientX+twidth>docwidth)? tipx-twidth-(2*this.useroffset[0]) : tipx; //account for right edge
-		tipy=(e.clientY+theight>docheight)? tipy-theight-(2*this.useroffset[0]) : tipy; //account for bottom edge
-		$tooltip.css({left: tipx, top: tipy});
-	},
-
-	showtip:function($tooltip, e){
-		if (this.fadeeffect[0]){
-			$tooltip.hide().fadeIn(this.fadeeffect[1]);
-		}else{
-			$tooltip.show();
-		}
-	},
-
-	hidetip:function($tooltip, e){
-		if (this.fadeeffect[0]){
-			$tooltip.fadeOut(this.fadeeffect[1]);
-		}else{
-			$tooltip.hide();
-		}
-	},
-	
-	hideall:function(){
-		if (this.fadeeffect[0]){
-			$('.ajaxtooltip').fadeOut(this.fadeeffect[1]);
-		}else{
-			$('.ajaxtooltip').hide();
-		}
-	}
-};
 /*************************************************************************************************/
 // default.jsのオーバーライド
 function pukiwiki_area_highlite(id,mode){
@@ -2096,6 +1992,20 @@ $(document).ready(function($){
 		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 		*/
 	}
+	
+	// FaceBookを実行
+	if (typeof(fb_appId) && $('#fb-root').length !== 0){
+		window.fbAsyncInit = function() {
+			FB.init({appId: fb_appId, status: true, cookie: true, xfbml: true});
+		};
+		$.ajax({
+			type: "GET",
+			global : false,
+			url: document.location.protocol + '//connect.facebook.net/'+LANG+'/all.js',
+			dataType: "script"
+		});
+	}
+
 
 	tzCalculation_LocalTimeZone(location.host,false);
 });

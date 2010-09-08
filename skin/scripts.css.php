@@ -487,7 +487,7 @@ ul.sf-navbar .current ul ul {
 	background-color: #e1ffe4;
 }
 
-.ajaxtooltip{
+.ajaxtooltip, #tooltip{
 	color:black;
 	font-size:93%;
 	text-shadow: white 1px 1px 0px;
@@ -526,7 +526,7 @@ ul.sf-navbar .current ul ul {
 	background-repeat:repeat-x;
 <?php } ?>
 }
-.ajaxtooltip p{
+.ajaxtooltip p, #tooltip p{
 	margin:0px;
 	padding:0px;
 }

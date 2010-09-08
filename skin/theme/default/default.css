@@ -363,14 +363,14 @@ address{
 }
 
 fieldset {
-	padding: 0;
 	border: 1px silver groove;
-	border-radius:10px;
-	-moz-border-radius:10px;
+	border-radius:0.5em;
+	-moz-border-radius:0.5em;
+	padding:0.5em;
 }
 
 legend {
-	padding: 0em 1em;
+	text-indent:0.5em;
 }
 
 .style_table{
@@ -382,6 +382,7 @@ legend {
 	border-collapse:separate;
 	border-spacing:1px;
 }
+
 .style_th{
 	padding:5px;
 	margin:1px;

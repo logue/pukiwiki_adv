@@ -38,6 +38,7 @@ function catbody($title, $page, $body)
 	global $head_tags, $foot_tags;	// Obsolete
 	
 	global $meta_tags, $link_tags, $js_tags, $js_blocks, $css_blocks, $info;
+	global  $google_analytics;
 	global $keywords, $description, $google_loader, $ui_theme;
 
 	if (! defined('SKIN_FILE') || ! file_exists(SKIN_FILE) || ! is_readable(SKIN_FILE)) {
@@ -145,6 +146,8 @@ function catbody($title, $page, $body)
 		echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 		echo $body;
 	}else{
+		
+		/* Adv. ここから。（あまりいい実装ではない） */
 		$meta_tags[] = array('name' => 'generator',	'content' => strip_tags(GENERATOR));
 		$meta_tags[] = array('name' => 'viewport',	'content' => (isset($viewport) ? $viewport : 'width=device-width; initial-scale=1.0; maximum-scale=1.0;'));
 		($modifier !== 'anonymous') ?			$meta_tags[] = array('name' => 'author',					'content' => $modifier) : '';
@@ -161,7 +164,7 @@ function catbody($title, $page, $body)
 				'jqueryui'=>'1.8.4',
 				'swfobject'=>'2.2'
 			);
-			if ($x_ua_compatible == 'chrome=1'){ $default_google_loader['chrome-frame'] = '1.0.2'; }
+			if ($x_ua_compatible == 'chrome=1'){ $default_google_loader['chrome-frame'] = '1.0.2'; }	// X-UA-CompatibleでChromeをレンダリングにするよう指定した場合
 			if (!isset($ui_theme)) { $ui_theme = 'base'; }
 			
 			$default_link_tags[] = array(
@@ -243,7 +246,7 @@ function catbody($title, $page, $body)
 				
 				/* Use plugins */ 
 				'jquery.cookie','jquery.lazyload', 'jquery.query','jquery.scrollTo','jquery.colorbox-min','jquery.a-tools.min','jquery.superfish',
-				'jquery.swfupload','jquery.tablesorter-min','jquery.textarearesizer','jquery.jplayer.min',	/* 'jquery.beautyOfCode-min', */
+				'jquery.swfupload','jquery.tablesorter-min','jquery.textarearesizer','jquery.jplayer.min', 'jquery.textarea-min', 'jquery.tooltip.min',
 				
 				/* MUST BE LOAD LAST */
 				'skin.original'
@@ -296,6 +299,9 @@ function catbody($title, $page, $body)
 			$pkwk_tags .= join("\n", $foot_tags) ."\n";
 			$info[] = '<code>$foot_tags</code> is obsolate. Use $meta_tags, $link_tags, $js_tags, $js_blocks, $css_blocks.';
 		}
+		
+		/* Adv.ここまで */
+		
 		// Last modification date (string) of the page
 		if ($is_read){
 			$lastmodified = ($pkwk_dtd == PKWK_DTD_HTML_5) ? 
@@ -375,7 +381,7 @@ function catbody($title, $page, $body)
 
 		pkwk_common_headers();
 		header('Content-Type: text/html; charset=' . CONTENT_CHARSET);
-		header('ETag: ' . md5(MUTIME));
+		header('X-UA-Compatible: '.$x_ua_compatible);	// とりあえずIE8対策
 		header('X-UA-Compatible: '.$x_ua_compatible);
 		require(SKIN_FILE);
 	}
@@ -522,7 +528,7 @@ function edit_form_assistant(){
 function make_related($page, $tag = '')
 {
 	global $vars, $rule_related_str, $related_str;
-	global $_ul_left_margin, $_ul_margin, $_list_pad_str;
+	// global $_ul_left_margin, $_ul_margin, $_list_pad_str;	// Adv. does not use default.ini.php config.
 
 	$links = links_get_related($page);
 
@@ -553,7 +559,7 @@ function make_related($page, $tag = '')
 
 	if ($tag == 'p') { // From the line-head
 		$margin = $_ul_left_margin + $_ul_margin;
-		$style  = sprintf($_list_pad_str, 1, $margin, $margin);
+//		$style  = sprintf($_list_pad_str, 1, $margin, $margin);
 		$retval =  "\n" .
 			'<ul' . $style . '>' . "\n" .
 			'<li>' . join("</li>\n<li>", $_links) . '</li>' . "\n" .
@@ -686,7 +692,7 @@ function pkwk_headers_sent()
 }
 
 // Output common HTTP headers
-function pkwk_common_headers(){
+function pkwk_common_headers($compress = true, $date){
 	if (! PKWK_OPTIMISE) pkwk_headers_sent();
 
 	if(PKWK_ZLIB_LOADABLE_MODULE == true && $compress != false) {
@@ -704,19 +710,25 @@ function pkwk_common_headers(){
 			// Bug #29350 output_compression compresses everything _without header_ as loadable module
 			// http://bugs.php.net/bug.php?id=29350
 			header('Content-Encoding: ' . $matches[1]);
-			$vary = get_language_header_vary();
-			if (! empty($vary)) $vary .= ',';
-			header('Vary: '.$vary.' Accept-Encoding');
 		}
 	}
+
+	// RFC2616
+	$vary = get_language_header_vary();
+	if (! empty($vary)) $vary .= ',';
+	header('Vary: '.$vary.' Accept-Encoding');
+
 	// PHPで動的に生成されるページはキャシュすべきではない
-	header('Cache-Control: no-cache, must-revalidate');
-	header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
-	header('Pragma: no-cache');
+	if ($cache == false){
+		header('Cache-Control: no-cache, must-revalidate');
+		header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
+		header('Pragma: no-cache');
+	}
+	header('ETag: ' . md5(MUTIME));
 }
 
 // DTD definitions
-define('PKWK_DTD_HTML_5',                 18); // HTML5
+define('PKWK_DTD_HTML_5',                 18); // HTML5(XHTML5)
 define('PKWK_DTD_XHTML_1_1',              17); // Strict only
 define('PKWK_DTD_XHTML_1_0',              16); // Strict
 define('PKWK_DTD_XHTML_1_0_STRICT',       16);
@@ -847,11 +859,25 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_XHTML_1_1, $charset = CONTENT_CHAR
 }
 
 /* タグヘルパー */
-function tag_helper($tagname,$tags,$suffix=' /'){
+function tag_helper($tagname,$tags){
+	global $suffix;
+
 	foreach ($tags as $tag) {
+		// linkタグで、rel属性やtype属性がない場合スタイルシートとする。
+		if ($tagname == 'link' && (empty($tags['rel']) || empty($tags['type'])) ){
+			$tags['rel'] = 'stylesheet';
+			$tags['type'] = 'text/css';
+		}
+		
+		// scriptタグでtypeが省略されていた場合JavaScriptとする。
+		if ($tagname == 'script' && empty($tags['type'])){
+			$tags['type'] = 'text/javascript';
+		}
+		// タグをパース
 		foreach( $tag as $key=>$val){
 			$IE_flag = '';
 			if ($key == 'content' && ($tagname == 'script' || $tagname == 'style')){
+				// CDATA内はエンコードする必要が無い・・・ハズ
 				if ($tagname == 'script'){
 					$content = "\n".'//<![CDATA['."\n".$val."\n".'//]]>';
 				}else{
@@ -863,6 +889,8 @@ function tag_helper($tagname,$tags,$suffix=' /'){
 				$tag_contents[] = $key.'="'.htmlspecialchars($val).'"';
 			}
 		}
+		unset($tag, $key, $val);
+		// タグの属性を結合
 		$tag_content = join(' ',$tag_contents);
 		if ($tagname == 'script' || $tagname == 'style'){
 			if (empty($content)){
@@ -881,7 +909,7 @@ function tag_helper($tagname,$tags,$suffix=' /'){
 		}
 		unset($tag_contents,$tag_content,$key,$val,$content,$IE_flag,$ret);
 	}
-	unset($tag);
+	
 	return join("\n\t\t",$out)."\n";
 }
 ?>

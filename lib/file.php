@@ -78,7 +78,7 @@ function get_source($page = NULL, $lock = TRUE, $join = FALSE)
 // Get last-modified filetime of the page
 function get_filetime($page)
 {
-	return is_page($page) ? filemtime(get_filename($page)) - LOCALZONE : 0;
+	return is_page($page) ? filemtime(get_filename($page)) /*- LOCALZONE*/ : 0;
 }
 
 // Get physical file name of the page
@@ -118,11 +118,8 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 		senna_update($page, $oldpostdata, $postdata);
 	}
 
-	// Logging postdata
-	postdata_write();
-	/* Plus!ここまで */
-
 	$postdata = make_str_rules($postdata);
+	/* Plus!ここまで */
 
 	// Create and write diff
 	$oldpostdata = is_page($page) ? get_source($page, TRUE, TRUE) : '';
@@ -137,6 +134,9 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	file_write(DATA_DIR, $page, $postdata, $notimestamp);
 
 	links_update($page);
+
+	// Logging postdata (Plus!)
+	postdata_write();
 	
 	$links = array();
 	if ( ($trackback > 1) || ( $role_adm_contents && $use_spam_check['page_contents']) ) {
@@ -357,7 +357,7 @@ function file_write($dir, $page, $str, $notimestamp = FALSE)
 		$summary['USER_AGENT']  = TRUE;
 		$summary['REMOTE_ADDR'] = TRUE;
 		pkwk_mail_notify($notify_subject, $str, $summary) or
-			die('pkwk_mail_notify(): Failed');
+			die_message('pkwk_mail_notify(): Failed');
 	}
 
 	is_page($page, TRUE); // Clear is_page() cache
