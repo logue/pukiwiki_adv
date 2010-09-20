@@ -146,5 +146,3 @@ JSMML.prototype = {
 		return this.mmlPlayer._getNowTimeStr(this.uNum());
 	}
 };
-
-jQuery(document).ready(JSMML.eventInit);

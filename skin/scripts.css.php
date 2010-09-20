@@ -1,7 +1,7 @@
 <?php
 
 // PukiWiki Advance JavaScript CSS.
-// $Id: scripts.css.php,v 1.6.6 2010/08/26 19:44:00 Logue Exp $
+// $Id: scripts.css.php,v 1.6.7 2010/09/09 19:44:00 Logue Exp $
 // Copyright (C) 2010 PukiWiki Advance Developer Team
 //
 // JavaScriptで使用するスタイルシート
@@ -470,13 +470,8 @@ ul.sf-navbar .current ul ul {
 	-webkit-border-bottom-left-radius: 0px;
 <?php } ?>
 }
-
-/***********************************************
-* Ajax Tooltip script- by JavaScript Kit (www.javascriptkit.com)
-* This notice must stay intact for usage
-* Visit JavaScript Kit at http://www.javascriptkit.com/ for this script and 100s more
 ***********************************************/
-.tooltip, .linktip, .ajaxtooltip{
+.tooltip, .linktip{
 	 color: #006565;
 	 border-style: none none dotted none;
 	 border-width: medium medium 1px medium;
@@ -487,7 +482,7 @@ ul.sf-navbar .current ul ul {
 	background-color: #e1ffe4;
 }
 
-.ajaxtooltip, #tooltip{
+#tooltip{
 	color:black;
 	font-size:93%;
 	text-shadow: white 1px 1px 0px;
@@ -526,7 +521,7 @@ ul.sf-navbar .current ul ul {
 	background-repeat:repeat-x;
 <?php } ?>
 }
-.ajaxtooltip p, #tooltip p{
+#tooltip p{
 	margin:0px;
 	padding:0px;
 }

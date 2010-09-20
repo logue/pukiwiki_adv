@@ -17,7 +17,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* jslint evil: true */
-
 var pukiwiki_skin = {
 	meta : {
 		'@prefix': '<http://purl.org/net/ns/doas#>',
@@ -32,12 +31,16 @@ var pukiwiki_skin = {
 		var protocol = (document.location.protocol == 'https:') ? 'https:' : 'http:';
 		$('input, button, select, textarea').attr('disabled','disabled');	// フォームをロック
 
+		// ブラウザ判定
+		// http://paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/
 		if(!jQuery.support.opacity){
 			if(!jQuery.support.style){
 				if (typeof document.documentElement.style.maxHeight != "undefined") {
 					$('body').addClass('ie7');
 				}else {
 					$('body').addClass('ie6');
+					// Fix Background flicker
+					try{ document.execCommand('BackgroundImageCache', false, true); }catch(e){}
 				}
 			}else{
 				$('body').addClass('ie8');
@@ -58,6 +61,9 @@ var pukiwiki_skin = {
 			this.plus = false;
 			this.image_dir = SKIN_DIR+this.name+'/image/';	// PukiWiki用
 		}
+		
+		/* HTML5サポート */
+		this.enableHTML5();
 
 		/* 言語設定 */
 		$.i18n(LANG);
@@ -170,15 +176,72 @@ var pukiwiki_skin = {
 			this.anchor_scroll(location.hash,true);
 		}
 	},
+	// HTML5の各種機能をJavaScriptで有効化するための処理
+	enableHTML5 : function(){
+		// Placeholder属性のサポート
+		if (!Modernizr.input.placeholder){
+			$('[placeholder]').each(function () {
+				var 
+				input = $(this),
+				placeholderText = input.attr('placeholder'),
+				placeholderColor = 'GrayText',
+				defaultColor = input.css('color');
+
+				input. 
+					focus(function () { 
+						if (input.val() === placeholderText) { 
+							input.val('').css('color', defaultColor); 
+						}
+					}).
+					blur(function () {
+						if (input.val() === '') {
+							input.val(placeholderText).css('color', placeholderColor);
+						} else if (input.val() === placeholderText) {
+							input.css('color', placeholderColor);
+						}
+					}).
+					blur().
+					parents('form').
+					submit(function () {
+						if (input.val() === placeholderText) {
+							input.val('');
+						}
+					});
+			});
+		}
+
+		// rel="noreferer"のサポート
+		// WebKitのNightly版でサポートされているが、JavaScriptで実装されているのかを確認する方法がわからないため常に実行
+		$('a[rel*=noreferer]').click(function () {
+			// http://forum.logue.be/index.php/topic,353.0.html
+
+			// encodeURIComponent命令使うため変換し直し
+			var uri = encodeURIComponent($(this).attr('href').replace(/&#37;/g,"%"));
+			if(navigator.userAgent.indexOf("MSIE")!==-1){
+				// IEの場合、location.replaeでリファラー消えるからいいや
+				location.href = uri;
+			}else{
+				// IE以外の場合、dataスキーマーでリファラーを消すためのページを偽造
+				location.href = "data:text/html;charset=utf-8,%3Chtml%3E%0D%0A%3Cscript%20%3E%0D%0Alocation.replace(%22" + uri + "%22)%3B%0D%0A%3C%2Fscript%3E%0D%0A%3C%2Fhtml%3E%0D%0A";
+			}
+			return false;
+		});
+	},
 	custom : {},	// 消さないこと。（スキン用カスタムネームスペース）
 	/* ページを閉じたとき */
-	unload : function(){
+	unload : function(prefix){
+		if (prefix){
+			prefix = prefix + ' ';
+		}else{
+			prefix = '';
+		}
+
 		$('input, button, select, textarea').attr('disabled','disabled');
 		// フォームが変更されている場合
-		if ($('#msg').length !== 0 && $('#msg').val() !== $('#original').val() && confirm( $.i18n('pukiwiki', 'unload'))) {
+		if ($(prefix+'#msg').val() !== $(prefix+'#original').val() && confirm( $.i18n('pukiwiki', 'unload'))) {
 			this.appendChild(document.createElement('input')).setAttribute('name', 'write');
 			$('<input name="write" />').appendTo(this);
-			this.submit();
+			$(prefix+'form').submit();
 			alert( $.i18n('pukiwiki', 'submit'));
 		}else{
 			$('input, button, select, textarea').removeAttr('disabled');
@@ -294,6 +357,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 
 				if (params.cmd){
 					if (typeof(params.file) !== 'undefined' && params.pcmd == 'open' || typeof(params.openfile) !== 'undefined'){
+						// 添付ファイルを開く（refによる呼び出しの場合とattachによる呼び出しの場合とでQueryStringが異なるのがやっかいだ）
 						var filename;
 						if (params.file){
 							filename = params.file;
@@ -309,9 +373,11 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 							self.music_player(this);
 						}
 					}else if (params.cmd == 'qrcode'){
+						// QRcodeの場合（たぶん使われない）
 						$(this).attr('href',href+'&type=.gif');
 						$(this).colorbox(colorbox_config);
 					}else if (params.cmd.match(/attach|search|backup|source|newpage|template|freeze|rename|logview|tb|diff/) && params.pcmd !== 'list' || params.help == 'true'){
+						// その他の主要なプラグインは、インラインウィンドウで表示
 						if (params.help == 'true'){
 							params = {cmd:'read', page:'FormatRule'};
 						}
@@ -825,13 +891,13 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 				);
 			}
 		}
-		/*
+		
 		if ($.support.leadingWhitespace !== true){
-			$('div.ajaxtooltip').css({
+			$('div.tooltip').css({
 				'behavior': 'url('+SKIN_DIR+'js/ie-css3.htc)'
 			});
 		}
-		*/
+		
 	},
 	// jquery.tooltip.jsのajax化
 	getGlossary: function(target,params,tooltip_opts){
@@ -856,7 +922,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 				$('body').css('cursor','help');
 				$(target).tooltip({
 					bodyHandler: function() { 
-						return text.replace(/<script[^>]*>[^<]+/ig,'');
+						return text.replace(/<script[^>]*>[^<]+/ig,'');	// <script>タグを無効化
 					}, 
 					track: true,
 					delay: 0,
@@ -871,40 +937,58 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		}else{
 			prefix = '';
 		}
-		$('input','button','select','textarea').attr('disabled','disabled');
+		
+		// テキストエリアの内容をlocalStrageから取得
+		if (Modernizr.localstorage){
+			var msg = $(prefix+'.edit_form textarea[name=msg]').val();
+			var storage = window.localStorage.getItem(PAGE);
+			var data = JSON.parse(storage);
+
+			if (data){
+				// 「タイムスタンプを更新しない」で更新した場合、それを検知する方法がないという致命的問題あり。
+				var ask = (MODIFIED > data.modified && data.msg !== msg) ? 
+					'過去に編集したデーターよりもページが新しいようです。復元しますか？' : 
+					'過去に編集したデーターがあるようです。復元しますか？';
+
+				// データーを復元
+				if (confirm(ask)){ $(prefix+'.edit_form textarea[name=msg]').val(data.msg); }
+			}
+		}
+
+		$('.edit_form input','.edit_form button','.edit_form select','.edit_form textarea').attr('disabled','disabled');
 		this.ajax_apx = false;
 		this.ajax_count = 0;
 		this.ajax_tim = 0;
 		var self = this;
 
 		//プレビューボタンを書き換え
-		$(prefix+'input[name=write]').after('<input type="button" name="add_ajax" value="'+$('input[name=preview]').attr('value')+'" accesskey="p" />');
-		$(prefix+'input[name=preview]').remove();
+		$(prefix+'.edit_form input[name=write]').after('<input type="button" name="add_ajax" value="'+$('.edit_form input[name=preview]').attr('value')+'" accesskey="p" />');
+		$(prefix+'.edit_form input[name=preview]').remove();
 		
-		$(prefix+'input[name=add_ajax]').click(function(){
+		$(prefix+'.edit_form input[name=add_ajax]').click(function(){
 			$('textarea').attr('disabled', 'disabled');
 			// フォームの高さを取得
 			// Textarea Resizerで高さが可変になっているため。
-			var msg_height = $("textarea#msg").height();
+			var msg_height = $(".edit_form textarea[name='msg']").height();
 			if (self.ajax_apx) {
 				self.ajax_apx = false;
 				// realview_outerを消したあと、フォームの高さを２倍にする
 				// 同時でない理由はFireFoxで表示がバグるため
-				$(prefix+"div#indicator").animate({height:'0px'});
-				$(prefix+"div#realview_outer").animate({
+				$(prefix+".edit_form #indicator").animate({height:'0px'});
+				$(prefix+".edit_form #realview_outer").animate({
 					height:'toggle'
 				},function(){
-					$(prefix+"textarea#msg").animate({height:msg_height*2});
-					$(prefix+'div#indicator').remove();
-					$(prefix+'div#realview').remove();
-					$(prefix+'div#realview_outer').remove();
-					$(prefix+'textarea#previous').remove();
-					$(prefix+'textarea').removeAttr('disabled');
+					$(prefix+".edit_form textarea[name='msg']").animate({height:msg_height*2});
+					$(prefix+'.edit_form #indicator').remove();
+					$(prefix+'.edit_form #realview').remove();
+					$(prefix+'.edit_form #realview_outer').remove();
+					$(prefix+'.edit_form #previous').remove();
+					$(prefix+'.edit_form textarea').removeAttr('disabled');
 				});
 			} else {
 				if (!self.ajax_apx){
 					// Realedit用のDOMを生成
-					$(prefix+"textarea[name='msg']").before([
+					$(prefix+".edit_form textarea[name='msg']").before([
 						'<div id="indicator" style="text-align:right;"></div>',
 						'<div id="realview_outer">',
 						'	<div id="realview"></div>',
@@ -913,24 +997,24 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 						'<textarea id="previous" style="display:none;"></textarea>'
 					);
 					
-					$(prefix+'div#indicator').html('<img src="'+self.image_dir+'spinner.gif" alt="Loading..." />Now Loading...');
-					$(prefix+'div#indicator').animate({height:'20px'});
-					$(prefix+'textarea#previous').val($('textarea#msg').val());
+					$(prefix+'.edit_form #indicator').html('<img src="'+self.image_dir+'spinner.gif" alt="Loading..." />Now Loading...');
+					$(prefix+'.edit_form #indicator').animate({height:'20px'});
+					$(prefix+'.edit_form #previous').val($('textarea#msg').val());
 					
 					// 初回実行時、realview_outerの大きさを、フォームの大きさに揃える。
 					// なお、realview_outerの高さは、フォームの半分とする。
-					$(prefix+"div#realview_outer").css("height",msg_height/2);
-					$(prefix+"div#realview_outer").css("width", $("#msg").width());
-					$(prefix+"div#indicator").css("width", $("#msg").width());
+					$(prefix+".edit_form #realview_outer").css("height",msg_height/2);
+					$(prefix+".edit_form #realview_outer").css("width", $(".edit_form textarea[name='msg']").width());
+					$(prefix+".edit_form #indicator").css("width", $(".edit_form textarea[name='msg']").width());
 				}
 				self.ajax_apx = true;
 				
 				// フォームの高さを半分にしたあと、realview_outerを表示
-				$(prefix+"textarea#msg").animate({
-					height:$(this).height()+$("div#realview_outer").height()
+				$(prefix+".edit_form textarea[name='msg']").animate({
+					height:$(this).height()+$(".edit_form #realview_outer").height()
 				},function(){
-					$(prefix+"div#realview_outer").animate({ height:'toggle'});
-					$(prefix+'textarea').removeAttr('disabled');
+					$(prefix+".edit_form #realview_outer").animate({ height:'toggle'});
+					$(prefix+'.edit_form textarea').removeAttr('disabled');
 				});
 				// このときにフォームの大きさを変更すると、戻したときに恐ろしいことに・・・
 				self.realtime_preview();
@@ -938,13 +1022,32 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			return false;
 		});
 		
-		$(prefix+'textarea[name=msg]').blur(function(){
+		$(prefix+'.edit_form textarea[name=msg]').blur(function(){
 			self.realtime_preview();
 		});
 
-		$(prefix+'textarea[name=msg]').mouseup(function(){
+		$(prefix+'.edit_form textarea[name=msg]').mouseup(function(){
 			if ($(this).val() !== $('textarea#previous').val()){
 				self.realtime_preview();
+			}
+		});
+		
+		$(prefix+'.edit_form textarea[name=msg]').keypress(function(){
+			// テキストエリアの内容をlocalStrageにページ名と共に保存
+			if (Modernizr.localstorage){
+				var d=new Date();
+				window.localStorage.setItem(PAGE,JSON.stringify({
+					msg : $(this).val(),
+					modified: d.getTime()
+				}));
+			}
+		});
+		
+		// 送信が押された時の処理
+		$(prefix+'form').submit(function(){
+			// localStrageをフラッシュ（キャンセルボタンを押した場合も）
+			if (Modernizr.localstorage){
+				localStorage.removeItem(PAGE);
 			}
 		});
 
@@ -1811,6 +1914,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		return res.replace(/\s*$/,"");
 	}
 };
+
 /**************************************************************************************************/
 // kanzaki.jsユーティリティ関数
 /** keyboard event handler */
@@ -1952,9 +2056,31 @@ var $buoop = {
 	}
 };
 
+(function(){
+	// JSON.stringify, JSON.parseのサポート
+	if (typeof JSON !== "object") {
+		$.ajax({
+			type: "GET",
+			global : false,
+			url: SKIN_DIR+'js/json2.js',
+			dataType: "script"
+		});
+	}
+	
+	// IEのCanvasサポート
+	if (!Modernizr.canvas) {
+		$.ajax({
+			type: "GET",
+			global : false,
+			url: SKIN_DIR+'js/excanvas.compiled.js',
+			dataType: "script"
+		});
+	}
+}())
+
 /*************************************************************************************************/
 // onLoad/onUnload
-$(document).ready(function($){
+$(document).ready(function(){
 	// フレームハイジャック対策
 	if( self !== top ){ top.location = self.location; }
 
@@ -1963,8 +2089,8 @@ $(document).ready(function($){
 		global : false,
 		url: 'http://browser-update.org/update.js',
 		dataType: "script"
-	});
-
+	})
+	
 	if (typeof(pukiwiki_skin.custom) == 'object'){
 		if( typeof(pukiwiki_skin.custom.before_init) == 'function'){
 			pukiwiki_skin.custom.before_init();
@@ -1994,18 +2120,17 @@ $(document).ready(function($){
 	}
 	
 	// FaceBookを実行
-	if (typeof(fb_appId) && $('#fb-root').length !== 0){
+	if (typeof(fb_appId) !== 'undefined' && $('#fb-root').length !== 0){
 		window.fbAsyncInit = function() {
 			FB.init({appId: fb_appId, status: true, cookie: true, xfbml: true});
 		};
 		$.ajax({
 			type: "GET",
+			dataType: 'script',
 			global : false,
-			url: document.location.protocol + '//connect.facebook.net/'+LANG+'/all.js',
-			dataType: "script"
+			url: document.location.protocol + '//connect.facebook.net/'+LANG+'/all.js'
 		});
 	}
-
 
 	tzCalculation_LocalTimeZone(location.host,false);
 });

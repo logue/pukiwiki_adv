@@ -83,7 +83,7 @@ if (!empty($footarea)) {
 			<div id="sigunature">
 				<address>Founded by <a href="<?php echo $modifierlink ?>"><?php echo $modifier ?></a></address><br />
 				Powered by <?php echo GENERATOR ?>. HTML convert time: <?php echo showtaketime() ?> sec. <br />
-				Design by <a href="http://pukiwiki.cafelounge.net/plus/">PukiWiki Plus!</a> Team.
+				Theme Design by <a href="http://pukiwiki.cafelounge.net/plus/">PukiWiki Plus!</a> Team.
 			</div>
 			<div id="banner_box">
 				<a href="http://pukiwiki.logue.be/"><img src="<?php echo IMAGE_URI; ?>pukiwiki_adv.banner.png" width="88" height="31" alt="PukiWiki Advance" title="PukiWiki Advance" /></a>

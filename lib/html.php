@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone
-// $Id: html.php,v 1.65.38 2010/08/23 23:41:00 Logue Exp $
+// $Id: html.php,v 1.65.39 2010/09/20 14:43:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team <http://pukiwiki.cafelounge.net/plus/>
@@ -161,7 +161,7 @@ function catbody($title, $page, $body)
 		if(!isset($default_google_loader)){
 			$default_google_loader = array(
 				'jquery'=>'1.4.2',
-				'jqueryui'=>'1.8.4',
+				'jqueryui'=>'1.8.5',
 				'swfobject'=>'2.2'
 			);
 			if ($x_ua_compatible == 'chrome=1'){ $default_google_loader['chrome-frame'] = '1.0.2'; }	// X-UA-CompatibleでChromeをレンダリングにするよう指定した場合
@@ -218,6 +218,7 @@ function catbody($title, $page, $body)
 		$js_var = array(
 			'SCRIPT'=>get_script_absuri(),
 			'PAGE'=>rawurlencode($_page),
+			'MODIFIED'=>$filetime,
 			'LANG'=>$language,
 			'DEBUG'=>constant('DEBUG'),
 			'SKIN_DIR'=>constant('SKIN_URI'),
@@ -242,7 +243,7 @@ function catbody($title, $page, $body)
 			// 読み込むsrcディレクトリ内のJavaScript
 			$files = array(
 				/* libraly */
-				'modernizr-1.5.min','swfupload','tzCalculation_LocalTimeZone',
+				'swfupload','tzCalculation_LocalTimeZone',
 				
 				/* Use plugins */ 
 				'jquery.cookie','jquery.lazyload', 'jquery.query','jquery.scrollTo','jquery.colorbox-min','jquery.a-tools.min','jquery.superfish',
@@ -278,10 +279,8 @@ function catbody($title, $page, $body)
 		if (!empty($css_blocks)){
 			$pkwk_head .= "\t\t".tag_helper('style',array(array('type'=>'text/css', 'content'=>join("\n",$css_blocks))));
 		}
-		if ($pkwk_dtd == PKWK_DTD_HTML_5){
-			// html5.jsに限り、ヘッダー内にないと正常に動作しない
-			$pkwk_head .= "\t\t".'<!--[if lt IE 9]><script type="text/javascript" src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->'."\n";
-		}
+		// HTML5対応化処理は、ヘッダー内にないと正常に動作しない
+		$pkwk_head .= "\t\t".'<script type="text/javascript" src="'.SKIN_DIR.'js/modernizr-1.5.min.js"></script>'."\n";
 		
 		/* フッター部のタグ */
 		$pkwk_tags = tag_helper('script',$pkwk_head_js)."\t\t".tag_helper('script',array_merge($default_js_libs,$js_tags));
@@ -692,7 +691,7 @@ function pkwk_headers_sent()
 }
 
 // Output common HTTP headers
-function pkwk_common_headers($compress = true, $date){
+function pkwk_common_headers($compress = true){
 	if (! PKWK_OPTIMISE) pkwk_headers_sent();
 
 	if(PKWK_ZLIB_LOADABLE_MODULE == true && $compress != false) {
@@ -840,7 +839,7 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_XHTML_1_1, $charset = CONTENT_CHAR
 	} else {
 		echo ' lang="' . $lang_code . '"'; // HTML
 	}
-	echo '>' . "\n"; // <html>
+	echo ' class="no-js">' . "\n"; // <html>
 	unset($lang_code);
 	
 	if ($pkwk_dtd == PKWK_DTD_HTML_5){

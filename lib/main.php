@@ -4,7 +4,7 @@
 //
 // PukiWiki Advance
 //  Copyright (C) 2010 by PukiWiki Advance Team
-//  http://pukiplus.sf.net/
+//  http://pukiwiki.logue.be/
 //
 // PukiPlus
 //  Copyright (C) 2010 by PukiPlus Team
@@ -195,6 +195,10 @@ if (is_webdav() && exist_plugin('dav')) {
 $is_protect = auth::is_protect();
 
 $info[] = 'Powered by PHP '.PHP_VERSION.' '.((substr(php_sapi_name(), 0, 3) == 'cgi') ? 'CGI' : 'MODULE').' mode. PHP is running as '.(ini_get('safe_mode') ? "SAFE" : "CGI").' mode.';
+
+if (DEBUG) {
+	$exclude_plugin = array();
+}
 
 // Plugin execution
 if ($plugin != '') {
