@@ -1,6 +1,6 @@
 <?php
 // PukiPlus.
-// $Id: funcplus.php,v 0.1.62 2010/08/23 23:42:00 Logue Exp $
+// $Id: funcplus.php,v 0.1.63 2010/10/22 09:55:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team
@@ -13,6 +13,12 @@ defined('FUNC_SPAMLOG')   or define('FUNC_SPAMLOG', FALSE);
 defined('FUNC_BLACKLIST') or define('FUNC_BLACKLIST', TRUE);
 defined('FUNC_SPAMREGEX') or define('FUNC_SPAMREGEX', '#(?:cialis|hydrocodone|viagra|levitra|tramadol|xanax|\[/link\]|\[/url\])#i');
 defined('FUNC_SPAMCOUNT') or define('FUNC_SPAMCOUNT', 2);
+
+function showtaketime(){
+	// http://pukiwiki.sourceforge.jp/dev/?BugTrack2%2F251
+	$longtaketime = getmicrotime() - MUTIME;
+	return sprintf('%01.03f', $longtaketime);
+}
 
 // Session start
 function pkwk_session_start()
@@ -260,11 +266,21 @@ function add_skindir($skin_name)
 {
 	$file = basepagename($skin_name).'.skin.php';
 	$conf = basepagename($skin_name).'.ini.php';
-	foreach(array(EXT_SKIN_DIR, EXT_SKIN_DIR.THEME_PLUS_NAME, EXT_SKIN_DIR.THEME_PLUS_NAME.$skin_name.'/',
-			SKIN_DIR, SKIN_DIR.THEME_PLUS_NAME, SKIN_DIR.THEME_PLUS_NAME.$skin_name.'/',
-			SKIN_URI, DATA_HOME.SKIN_DIR) as $dir) {
-		if (file_exists($dir.$conf) && is_readable($dir.$conf)) require $dir.$conf;	// あまり良い実装ではない
-		if (file_exists($dir.$file) && is_readable($dir.$file)) return $dir.$file;
+	foreach(
+		array(
+			EXT_SKIN_DIR, 
+			EXT_SKIN_DIR.THEME_PLUS_NAME, 
+			EXT_SKIN_DIR.THEME_PLUS_NAME.$skin_name.'/',
+			SKIN_DIR,
+			SKIN_DIR.THEME_PLUS_NAME,
+			SKIN_DIR.THEME_PLUS_NAME.$skin_name.'/',
+			SKIN_URI, DATA_HOME.SKIN_DIR
+		) as $dir) {
+
+		if (file_exists($dir.$file) && is_readable($dir.$file)){
+			if (is_readable($dir.$conf)){ require $dir.$conf; }	// あまり良い実装ではない
+			return $dir.$file;
+		}
 	}
 	return $file;
 }

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-03 16:31+0900\n"
+"POT-Creation-Date: 2010-09-14 23:09+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,38 +22,29 @@ msgid ""
 "flie):"
 msgstr ""
 
-#: ../../lib/init.php:149
+#: ../../lib/init.php:159
 msgid "Directory is not found or not writable"
 msgstr ""
 
-#: ../../lib/init.php:160
+#: ../../lib/init.php:170
 msgid "Variable(s) not found: (Maybe the old *.ini.php?)"
 msgstr ""
 
-#: ../../lib/init.php:169
+#: ../../lib/init.php:179
 msgid "Define(s) not found: (Maybe the old *.ini.php?)"
 msgstr ""
 
-#: ../../lib/init.php:187
+#: ../../lib/init.php:197
 #, php-format
 msgid "Sorry, %s is already reserved"
 msgstr ""
 
-#: ../../lib/init.php:249
+#: ../../lib/init.php:259
 msgid "Query string too long."
 msgstr ""
 
-#: ../../lib/init.php:304
+#: ../../lib/init.php:314
 msgid "Using both cmd= and plugin= is not allowed"
-msgstr ""
-
-#: ../../lib/main.php:225
-msgid "Plugin Error"
-msgstr ""
-
-#: ../../lib/main.php:226
-#, php-format
-msgid "plugin=%s is not implemented."
 msgstr ""
 
 #: ../../lib/resource.php:13

@@ -2,12 +2,14 @@
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
 // $Id: referer.php,v 1.8.4 2010/07/11 09:50:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiPlus Developers Team
+//   2010      PukiWiki Advance Developers Team
 //   2006-2008 PukiWiki Plus! Team
 //   2003      Originally written by upk
 // License: GPL v2 or (at your option) any later version
 //
 // Referer function
+
+define('REFERER_SPAM_LIST', CACHE_DIR.'referer_spam.log');
 
 function ref_get_data($page, $uniquekey=1)
 {
@@ -48,8 +50,8 @@ function ref_save($page)
 	if ($use_spam_check['referer'] && SpamCheck($parse_url['host']))
 		return TRUE;
 
-	if (! is_dir(REFERER_DIR))      die('No such directory: REFERER_DIR');
-	if (! is_writable(REFERER_DIR)) die('Permission denied to write: REFERER_DIR');
+	if (! is_dir(REFERER_DIR))      die_message('No such directory: REFERER_DIR');
+	if (! is_writable(REFERER_DIR)) die_message('Permission denied to write: REFERER_DIR');
 
 	// Update referer data
 	if (ereg("[,\"\n\r]", $url))
@@ -105,4 +107,104 @@ function ref_count($page)
 	unset($data);
 	return $i;
 }
+
+// Referer元spamかのチェック
+function ref_checkspam($url){
+	$is_refspam = false;
+	// リファラースパムリストを読み込み
+	// アドレスに,が含まれていた場合の処理がめんどうだからTSV形式
+
+	// というか、:config/referer/blacklistに自動更新したいが、ホストが保存されないのでこの実装
+
+	$file = REFERER_SPAM_LIST;
+	if (! file_exists($file)) return false;
+
+	$fp = @fopen($file, 'r');
+	set_file_buffer($fp, 0);
+	@flock($fp, LOCK_EX);
+	rewind($fp);
+	
+	while (($data = fgetcsv($fp, 1000, "\t")) !== FALSE) {
+		if ($data[0] == $url){
+			$is_refspam = true;	// ここで処理を中断するのはまずいだろう・・・
+			break;
+		}
+	}
+	@flock($fp, LOCK_UN);
+	fclose ($fp);
+	unset($fp);
+
+	// リファラースパムログに記載されていない場合
+	if (!$is_refspam){
+		// リファラーにサイトへのアドレスが存在すかを確認
+		$is_refspam = is_valid_ref();
+		if ($is_refspam === true){
+			// 存在しない場合スパムログに記載
+			pkwk_touch_file($file);
+			$fp = fopen($file, 'w');
+			@flock($fp, LOCK_EX);
+			rewind($fp);
+			foreach ($data as $line) {
+				$str = trim(join(',', $line));
+				if ($str != '') fwrite($fp, $str . "\n");
+			}
+			@flock($fp, LOCK_UN);
+			fclose($fp);
+			unset($fp);
+		}
+	}
+	return $is_refspam;
+}
+
+// 実際、リンク元にアクセスしてじサイトへのアドレスが存在するかのチェック
+function is_valid_ref(){
+	// 本来は正規化されたアドレスでチェックするべきだろうが、
+	// めんどうだからスクリプトのアドレスを含むかでチェック
+	// global $vars;
+	// $script = get_page_absuri(isset($vars['page']) ? $vars['page'] : '');
+
+	$script = get_script_uri();
+	$error_count = 0;
+
+	do{
+		$http = new HTTP_Request($url, array(
+				"timeout" => "300",	//HTTP_Requestタイムアウトの秒数指定
+			)
+		);
+		$http->addHeader("User-Agent", 'Mozilla/5.0 (compatible; '.GENERATOR.')');
+//		$http->addHeader("Referer", $script);	// Refererは吐かない方がいいかな？
+//		$http->setBasicAuth($GLOBALS['id'], $GLOBALS['pass']);
+		$http->sendRequest();
+
+		// FIXME
+		switch ($http->getResponseCode()){
+			case 200 :
+				$ret = $http->getResponseBody();
+			break;
+			case 301 :	// Moved Permanently
+			case 302 :	// Moved Temporarily
+			case 307 :	// Moved Temporarily(HTTP1.1)
+			case 403 :	// Forbidden
+			case 404 :	// Not Found
+			case 401 :	// Unauthorized
+				return true;	// そもそもページじゃねぇ。spamとする
+			break;
+			default:
+				$error_count++;
+				sleep(10);	// 10秒間待機
+			break;
+		}
+	}while($error_count < 2);
+	
+	unset($error_count);
+	
+	foreach($ret->find('a') as $element){	// aタグを走査
+		if (preg_match('/^'.$script.'/',$element->href)){	// aタグに自分のサイトのアドレスが含まれていた場合false
+			return false;
+			break;
+		}
+	}
+	return true;
+}
+
 ?>

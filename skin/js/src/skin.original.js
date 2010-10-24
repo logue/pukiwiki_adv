@@ -1765,7 +1765,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		var lis = '';
 		var hd = $(prefix+'h2');
 		var tocs = $(prefix+'.contents ul').removeAttr('class').removeAttr('style');
-		var ptocImg = '<img src="'+this.image_dir+'toc.png" class="tocpic" title="Table of Contents of this page" alt="" />';
+		var ptocImg = '<img src="'+this.image_dir+'toc.png" class="noprint" title="Table of Contents of this page" alt="Toc" />';
 //		var ptocMsg = "Click heading, and Table of Contents will pop up";
 		
 		if(tocs.length !== 0){
@@ -2076,7 +2076,7 @@ var $buoop = {
 			dataType: "script"
 		});
 	}
-}())
+}());
 
 /*************************************************************************************************/
 // onLoad/onUnload

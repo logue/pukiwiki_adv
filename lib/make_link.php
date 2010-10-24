@@ -16,7 +16,7 @@ function make_link($string, $page = '')
 	global $vars;
 	static $converter;
 
-	if (! isset($converter)) $converter = new InlineConverter();
+	if (! isset($converter)){ $converter = new InlineConverter(); }
 
 	$clone = $converter->get_clone($converter);
 

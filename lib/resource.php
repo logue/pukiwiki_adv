@@ -33,9 +33,10 @@ $_string = array(
 	'collided_comment'	=> _('It seems that someone has already updated the page you were editing.<br />The string was added, alhough it may be inserted in the wrong position.<br />'),
 	
 	// Error messages
+	'warning'			=> _('WARNING'),
 	'error_msg'			=> _('A runtime error has occurred.').'<br />'._('Please contact to site admin. If you want more information, please change <code>PKWK_WARNING</code> value.'),
 	'debugmode'			=> _('This program is running in debug mode.'),
-	'changeadminpass'	=> _('WARNING').' '.sprintf(_('<code>$adminpass</code> is not changed! Click <a href="%s">here</a> to generate crypted password and modify auth.ini.php!'),get_cmd_uri('md5')),
+	'changeadminpass'	=> sprintf(_('<code>$adminpass</code> is not changed! Click <a href="%s">here</a> to generate crypted password and modify auth.ini.php!'),get_cmd_uri('md5')),
 	'cannotload'		=> _('Cannot open %s.<br />Maybe permission is not writable.')
 );
 

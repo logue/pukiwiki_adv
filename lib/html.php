@@ -171,7 +171,8 @@ function catbody($title, $page, $body)
 				'rel'=>'stylesheet',
 				'href'=>'http://ajax.googleapis.com/ajax/libs/jqueryui/'.$default_google_loader['jqueryui'].'/themes/'.$ui_theme.'/jquery-ui.css',
 				'type'=>'text/css',
-				'id'=>'ui-theme');
+				'id'=>'ui-theme'
+			);
 		}
 
 		if (!isset($shortcut_icon)){ $shortcut_icon = ROOT_URI.'favicon.ico'; }
@@ -233,7 +234,7 @@ function catbody($title, $page, $body)
 		
 		unset($js_var, $key, $val);
 
-		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>SKIN_DIR.'js/dd_belatedpng.js', 'IE_flag'=>7);
+		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/dd_belatedpng.js', 'IE_flag'=>7);
 		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://www.google.com/jsapi'.((isset($google_api_key)) ? '?key='.$google_api_key : ''));
 		$pkwk_head_js[] = array('type'=>'text/javascript', 'content'=>join($default_js,"\n"));
 		/* ヘッダー部分の処理ここまで */
@@ -257,8 +258,8 @@ function catbody($title, $page, $body)
 
 			// yui profiler and profileviewer
 /*
-			$link_tags[] = array('rel'=>'stylesheet','type'=>'text/css','href'=>SKIN_DIR.'js/profiling/yahoo-profiling.css');
-			$default_js_libs[] = array('type'=>'text/javascript', 'src'=>SKIN_DIR.'js/profiling/yahoo-profiling.min.js');
+			$link_tags[] = array('rel'=>'stylesheet','type'=>'text/css','href'=>SKIN_URI.'js/profiling/yahoo-profiling.css');
+			$default_js_libs[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/profiling/yahoo-profiling.min.js');
 			$default_js_libs[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/profiling/config.js');
 */
 			unset($files);
@@ -280,7 +281,7 @@ function catbody($title, $page, $body)
 			$pkwk_head .= "\t\t".tag_helper('style',array(array('type'=>'text/css', 'content'=>join("\n",$css_blocks))));
 		}
 		// HTML5対応化処理は、ヘッダー内にないと正常に動作しない
-		$pkwk_head .= "\t\t".'<script type="text/javascript" src="'.SKIN_DIR.'js/modernizr-1.5.min.js"></script>'."\n";
+		$pkwk_head .= "\t\t".'<script type="text/javascript" src="'.SKIN_URI.'js/modernizr-1.5.min.js"></script>'."\n";
 		
 		/* フッター部のタグ */
 		$pkwk_tags = tag_helper('script',$pkwk_head_js)."\t\t".tag_helper('script',array_merge($default_js_libs,$js_tags));
@@ -381,7 +382,7 @@ function catbody($title, $page, $body)
 		pkwk_common_headers();
 		header('Content-Type: text/html; charset=' . CONTENT_CHARSET);
 		header('X-UA-Compatible: '.$x_ua_compatible);	// とりあえずIE8対策
-		header('X-UA-Compatible: '.$x_ua_compatible);
+		header('X-Frame-Options: deny');
 		require(SKIN_FILE);
 	}
 
@@ -395,12 +396,6 @@ function catbody($title, $page, $body)
 	}
 
 	exit;
-}
-
-function showtaketime(){
-	// http://pukiwiki.sourceforge.jp/dev/?BugTrack2%2F251
-	$longtaketime = getmicrotime() - MUTIME;
-	return sprintf('%01.03f', $longtaketime);
 }
 
 // Show 'edit' form
@@ -514,7 +509,7 @@ EOD;
 	} else {
 		$body .= '<ul><li><a href="'.get_cmd_uri('edit',$r_page,'','help=true').'">' . $_string['help'] . '</a></li></ul>';
 	}
-	$x_ua_compatible = 'IE=7';
+	$x_ua_compatible = 'IE=7';	// Fix IE8 scrollbar Bug
 	return $body;
 }
 // Input Assistant
@@ -693,7 +688,7 @@ function pkwk_headers_sent()
 // Output common HTTP headers
 function pkwk_common_headers($compress = true){
 	if (! PKWK_OPTIMISE) pkwk_headers_sent();
-
+/*
 	if(PKWK_ZLIB_LOADABLE_MODULE == true && $compress != false) {
 		$matches = array();
 		if(extension_loaded('zlib') && 
@@ -711,7 +706,7 @@ function pkwk_common_headers($compress = true){
 			header('Content-Encoding: ' . $matches[1]);
 		}
 	}
-
+*/
 	// RFC2616
 	$vary = get_language_header_vary();
 	if (! empty($vary)) $vary .= ',';
@@ -885,7 +880,7 @@ function tag_helper($tagname,$tags){
 			}else if($key == 'IE_flag'){
 				$IE_flag = $val;
 			}else{
-				$tag_contents[] = $key.'="'.htmlspecialchars($val).'"';
+				$tag_contents[] = $key.'="'.$val.'"';
 			}
 		}
 		unset($tag, $key, $val);

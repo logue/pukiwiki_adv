@@ -5,7 +5,7 @@
 // PukiWiki Plus! skin for PukiWiki Advance.
 // Override to skin config.
 //
-// $Id: default.skin.php,v 1.0.0 2010/08/16 20:44:00 Logue Exp $
+// $Id: default.skin.php,v 1.0.1 2010/10/23 17:07:00 Logue Exp $
 //
 global $ui_theme, $showicon, $link_tags,$js_tags, $_SKIN;
 /*
@@ -29,6 +29,8 @@ $_SKIN = array(
 	'logo_h'=>'80'
 );
 
+defined(PLUS_THEME) or define(PLUS_THEME,'default');
+
 // 読み込むスタイルシート
 $link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.'scripts.css.php', 'media'=>'screen');
 $link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.'iconset/default_iconset.css.php', 'media'=>'screen');
@@ -40,3 +42,4 @@ $link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_T
 $js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/default.js');
 // Navibar系プラグインでもアイコンを表示する
 $showicon     = false;
+?>

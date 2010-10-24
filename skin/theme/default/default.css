@@ -6,15 +6,14 @@
 // Original version written by miko and upk.
 // Adv version by Logue.
 // 
-// $Id: default.css,v 1.33.6 2010/08/27 14:35:00 Logue Exp $
+// $Id: default.css,v 1.33.7 2010/10/22 17:40:00 Logue Exp $
 //
 */
 
 /* 
 html5doctor.com Reset Stylesheet
-http://code.google.com/p/html5resetcss/
-v1.6
-Last Updated: 2010-08-18
+v1.6.1
+Last Updated: 2010-09-17
 Author: Richard Clark - http://richclarkdesign.com 
 Twitter: @rich_clark
 */
@@ -30,15 +29,18 @@ fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
 article, aside, canvas, details, figcaption, figure, 
 footer, header, hgroup, menu, nav, section, summary,
-time, mark, audio, video
- {
-	margin:0;
-	padding:0;
-	border:0;
-	outline:0;
-	font-size:100%;
-	vertical-align:baseline;
-	background:transparent;
+time, mark, audio, video {
+    margin:0;
+    padding:0;
+    border:0;
+    outline:0;
+    font-size:100%;
+    vertical-align:baseline;
+    background:transparent;
+}
+
+body {
+    line-height:1;
 }
 
 article,aside,details,figcaption,figure,
@@ -47,68 +49,64 @@ footer,header,hgroup,menu,nav,section {
 }
 
 nav ul {
-	list-style:none;
-}
-
-blockquote,pre,ul,ol,p{
-	margin:0.5em;
+    list-style:none;
 }
 
 blockquote, q {
-	quotes:none;
+    quotes:none;
 }
 
 blockquote:before, blockquote:after,
 q:before, q:after {
-	content:'';
-	content:none;
+    content:'';
+    content:none;
 }
 
 a {
-	margin:0;
-	padding:0;
-	font-size:100%;
-	vertical-align:baseline;
-	background:transparent;
+    margin:0;
+    padding:0;
+    font-size:100%;
+    vertical-align:baseline;
+    background:transparent;
 }
 
 /* change colours to suit your needs */
 ins {
-	background-color:#ff9;
-	color:#000;
-	text-decoration:none;
+    background-color:#ff9;
+    color:#000;
+    text-decoration:none;
 }
 
 /* change colours to suit your needs */
 mark {
-	background-color:#ff9;
-	color:#000; 
-	font-style:italic;
-	font-weight:bold;
+    background-color:#ff9;
+    color:#000; 
+    font-style:italic;
+    font-weight:bold;
 }
 
 del {
-	text-decoration: line-through;
+    text-decoration: line-through;
 }
 
 abbr[title], dfn[title] {
-	border-bottom:1px dotted inherit;
-	cursor:help;
+    border-bottom:1px dotted;
+    cursor:help;
 }
 
 table {
-	border-collapse:collapse;
-	border-spacing:0;
+    border-collapse:collapse;
+    border-spacing:0;
 }
 
 /* change border colour to suit your needs */
 hr {
-	display:block;
-	height:1px;
-	border:0;   
-	border-top:1px solid #cccccc;
-	margin:1em 0;
-	padding:0;
+    display:block;
+    height:1px;
+    border:0;   
+    border-top:1px solid #cccccc;
+    margin:1em 0;
+    padding:0;
 }
 
 input, select {

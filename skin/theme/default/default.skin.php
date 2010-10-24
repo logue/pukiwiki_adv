@@ -1,9 +1,10 @@
 <?php
 /////////////////////////////////////////////////
-// PukiPlus - Yet another WikiWikiWeb clone.
+// PukiWiki - Yet another WikiWikiWeb clone.
 //
-// PukiWiki Plus! skin
+// PukiWiki Plus! skin for PukiWiki Advance.
 // Original version by miko and upk.
+// Modified by Logue
 //
 // $Id: default.skin.php,v 1.4.14 2010/08/16 20:44:00 Logue Exp $
 //
@@ -37,16 +38,16 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 			<h1 class="title"><?php echo(($newtitle!='' && $is_read)?$newtitle:$page) ?></h1>
 			<div class="small"><a href="<?php echo $_LINK['reload'] ?>" id="parmalink"><?php echo $_LINK['reload'] ?></a></div>
 <?php } ?>
-		<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</header>' : '</div>')."\n";; ?>
+		<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</header>' : '</div>')."\n"; ?>
 		<?php echo (!empty($lastmodified)) ? '<div id="lastmodified">Last-modified: '.$lastmodified.'</div>'."\n" : '' ?>
 		<?php if (exist_plugin('suckerfish')) echo do_plugin_convert('suckerfish'); ?>
 		<table class="main">
 			<tr>
 <?php if (!empty($body_menu)) { ?>
 				<td class="ltable">
-					<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="menubar">'."\n" : '<div id="menubar">')."\n"; ?>
+					<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="menubar">'."\n" : '<div id="menubar">')."\n"; ?>
 					<?php echo $body_menu; ?>
-					<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>')."\n"; ?>
+					<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</section>'."\n" : '</div>')."\n"; ?>
 				</td>
 <?php } ?>
 				<td class="ctable">
@@ -57,9 +58,9 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 				</td>
 <?php if (!empty($body_side)) { ?>
 				<td class="rtable">
-					<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="sidebar">' : '<div id="sidebar">')."\n"; ?>
+					<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="sidebar">' : '<div id="sidebar">')."\n"; ?>
 						<?php echo $body_side; ?>
-					<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>')."\n"; ?>
+					<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</section>'."\n" : '</div>')."\n"; ?>
 				</td>
 <?php } ?>
 			</tr>

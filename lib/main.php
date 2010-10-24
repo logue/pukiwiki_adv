@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance.
-// $Id: main.php,v 1.21.23 2010/07/25 14:10:00 upk Exp $
+// $Id: main.php,v 1.21.25 2010/10/22 17:23:00 upk Exp $
 //
 // PukiWiki Advance
 //  Copyright (C) 2010 by PukiWiki Advance Team
@@ -70,6 +70,10 @@ require(LIB_DIR . 'proxy.cls.php');
 require(LIB_DIR . 'auth.cls.php');
 require(LIB_DIR . 'netbios.cls.php');
 require(LIB_DIR . 'ua/user_agent.cls.php');
+
+require(LIB_DIR . 'simple_html_dom.php');
+
+ini_set("memory_limit", "128M");  
 
 if (! extension_loaded('mbstring')) require(LIB_DIR . 'mbstring.php');
 if (! extension_loaded('json')) require(LIB_DIR . 'JSON.php');	// JSON対応 by Logue
@@ -194,7 +198,7 @@ if (is_webdav() && exist_plugin('dav')) {
 
 $is_protect = auth::is_protect();
 
-$info[] = 'Powered by PHP '.PHP_VERSION.' '.((substr(php_sapi_name(), 0, 3) == 'cgi') ? 'CGI' : 'MODULE').' mode. PHP is running as '.(ini_get('safe_mode') ? "SAFE" : "CGI").' mode.';
+$info[] = 'Powered by PHP '.PHP_VERSION.' '.((substr(php_sapi_name(), 0, 3) == 'cgi') ? 'CGI' : 'MODULE').' mode. PHP is running as '.(ini_get('safe_mode') ? "SAFE" : "NOT SAFE").' mode.';
 
 if (DEBUG) {
 	$exclude_plugin = array();

@@ -491,7 +491,7 @@ function die_message($msg){
 	global $skin_file, $page_title, $_string, $_title;
 	$title = $page = $_title['error'];
 	
-	if (!PKWK_WARNING || DEBUG){	// PKWK_WARNINGが有効でない場合は、詳細なエラーを隠す
+	if (PKWK_WARNING === false){	// PKWK_WARNINGが有効でない場合は、詳細なエラーを隠す
 		$msg = $_string['error_msg'];
 	}
 	$body = <<<EOD
@@ -549,12 +549,34 @@ function elapsedtime()
 // Get the date
 function get_date($format, $timestamp = NULL)
 {
+/*
 	$format = preg_replace('/(?<!\\\)T/',
 		preg_replace('/(.)/', '\\\$1', ZONE), $format);
 
 	$time = ZONETIME + (($timestamp !== NULL) ? $timestamp : UTIME);
 
 	return date($format, $time);
+*/
+	/*
+	 * $format で指定される T を ZONE で置換したいが、
+	 * date 関数での書式指定文字となってしまう可能性を回避するための事前処理
+	 */
+	$l = strlen(ZONE);
+	$zone = '';
+	for($i=0;$i<$l;$i++) {
+		$zone .= '\\'.substr(ZONE,$i,1);
+	}
+
+	$format = str_replace('\T','$$$',$format); // \T の置換は除く
+	$format = str_replace('T',$zone,$format);
+	$format = str_replace('$$$','\T',$format); // \T に戻す
+
+	$time = ZONETIME + (($timestamp !== NULL) ? $timestamp : UTIME);
+	$str = gmdate($format, $time);
+	if (ZONETIME == 0) return $str;
+
+	$zonetime = get_zonetime_offset(ZONETIME);
+	return str_replace('+0000', $zonetime, $str);
 }
 
 function get_zonetime_offset($zonetime)
@@ -592,7 +614,7 @@ function get_passage($time, $paren = TRUE)
 {
 	static $units = array('m'=>60, 'h'=>24, 'd'=>1);
 
-	$time = max(0, (UTIME - $time) / 60); // minutes
+	$time = max(0, (MUTIME - $time) / 60); // minutes
 
 	foreach ($units as $unit=>$card) {
 		if ($time < $card) break;
@@ -1001,7 +1023,7 @@ function get_page_uri($page, $path_reference='rel', $query='', $fragment='')
 //function get_resolve_uri($cmd='', $page='', $query='', $fragment='', $abs=1, $location=1)
 function get_resolve_uri($cmd='', $page='', $path_reference='rel', $query='', $fragment='', $location=1)
 {
-	global $static_url;
+	global $static_url, $vars;
 	// global $script, $absolute_uri;
 	// $ret = ($absolute_uri || $path_reference == 'abs') ? get_script_absuri() : $script;
 	$path = (empty($path_reference)) ? 'rel' : $path_reference;
