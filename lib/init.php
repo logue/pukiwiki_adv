@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: init.php,v 1.56.2 2010/09/08 15:40:00 Logue Exp $
+// $Id: init.php,v 1.56.2 2010/10/27 16:10:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -15,7 +15,7 @@
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
 define('S_VERSION', 'v1.0 alpha');
-define('S_REVSION', '20100908');
+define('S_REVSION', '20101027');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &copy; 2010' .
@@ -57,9 +57,9 @@ $info         = array();	// For debug use.
 /////////////////////////////////////////////////
 // Time settings (Plus!)
 
-define('LOCALZONE', date('Z'));
-define('UTIME', time() - LOCALZONE);
-define('MUTIME', getmicrotime());
+defined('LOCALZONE')	or define('LOCALZONE', date('Z'));
+defined('UTIME')		or define('UTIME', time() - LOCALZONE);
+defined('MUTIME')		or define('MUTIME', getmicrotime());
 
 /////////////////////////////////////////////////
 // Require INI_FILE
@@ -74,7 +74,7 @@ if (file_exists(USR_INI_FILE) && is_readable(USR_INI_FILE)) {
 define('INI_FILE',  add_homedir('pukiwiki.ini.php'));
 $die = '';
 if (! file_exists(INI_FILE) || ! is_readable(INI_FILE)) {
-	$die .= 'File is not found. (INI_FILE)' . "\n";
+	$die .= _('File is not found.').' (INI_FILE)' . "\n";
 } else {
 	require(INI_FILE);
 }
@@ -255,9 +255,7 @@ if (isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != '') {
 }
 if (PKWK_QUERY_STRING_MAX && strlen($arg) > PKWK_QUERY_STRING_MAX) {
 	// Something nasty attack?
-	pkwk_common_headers();
-	echo( _('Query string too long.') );
-	exit;
+	die_message(_('Query string is too long.'));
 }
 $arg = input_filter($arg); // \0 除去
 // for QA/250
@@ -401,5 +399,18 @@ $line_rules = array_merge(array(
 	'&amp;(#[0-9]+|#x[0-9a-f]+|' . $entity_pattern . ');' => '&$1;',
 	"\r"          => '<br />' . "\n",	/* 行末にチルダは改行 */
 ), $line_rules);
+
+//////////////////////////////////////////////////
+// DTD definitions
+define('PKWK_DTD_HTML_5',                 18); // HTML5(XHTML5)
+define('PKWK_DTD_XHTML_1_1',              17); // Strict only
+define('PKWK_DTD_XHTML_1_0',              16); // Strict
+define('PKWK_DTD_XHTML_1_0_STRICT',       16);
+define('PKWK_DTD_XHTML_1_0_TRANSITIONAL', 15);
+define('PKWK_DTD_XHTML_1_0_FRAMESET',     14);
+define('PKWK_DTD_XHTML_BASIC_1_0',        11);
+
+define('PKWK_DTD_TYPE_XHTML',        1);
+define('PKWK_DTD_TYPE_HTML',         0);
 
 ?>

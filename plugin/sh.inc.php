@@ -1,10 +1,10 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: sh.inc.php,v 0.6.3 2010/08/24 17:02:00 Logue Exp $
+// $Id: sh.inc.php,v 0.6.4 2010/09/04 08:51:00 Logue Exp $
 // SyntaxHighlighter for PukiWiki
 //
 // Copyright (C)
-//    2010 PukiPlus Team
+//    2010 PukiWiki Advance Developers Team
 //    2009 ortk. http://ortk.main.jp/blog/
 
 /* ---------------------------------------------------------------------------
@@ -45,6 +45,21 @@ function plugin_sh_convert(){
 		$js_tags[] = array('type'=>'text/javascript', 'src'=>PLUGIN_SH_PATH.'scripts/shCore.js');
 		$link_tags[] = array('type'=>'text/css', 'rel'=>'stylesheet', 'href'=>PLUGIN_SH_PATH.'styles/shCore.css');
 		$link_tags[] = array('type'=>'text/css', 'rel'=>'stylesheet', 'href'=>PLUGIN_SH_PATH.'styles/shTheme'.PLUGIN_SH_THEME.'.css', 'id'=>'shTheme');
+/*
+for Plus! use
+		global $head_tags, $foot_tags;
+		$head_tags[] = '<script type="text/javascript" src="'.PLUGIN_SH_PATH.'scripts/shCore.js"></script>';
+		$head_tags[] = '<link type="text/css" rel="stylesheet" href="'.PLUGIN_SH_PATH.'styles/shCore.css"></script>';
+		$head_tags[] = '<link type="text/css" rel="stylesheet" href="'.PLUGIN_SH_PATH.'styles/shTheme'.PLUGIN_SH_THEME.'.css" id="shTheme"></script>';
+		$sh_path = PLUGIN_SH_PATH;
+		$foot_tags[] = <<<HTML
+<script type="text/javascript">
+//<![CDATA[
+SyntaxHighlighter.config.clipboardSwf = '$sh_path/scripts/clipboard.swf';
+SyntaxHighlighter.all();
+//]]></script>
+HTML;
+*/
 		$langs = array(
 			'AS3'			=> false,
 			'Bash'			=> false,
@@ -86,122 +101,11 @@ function plugin_sh_convert(){
 		return PLUGIN_SH_USAGE;
 	}
 
+	$text = htmlspecialchars(array_pop($args), ENT_QUOTES, SOURCE_ENCODING);
 	if ($num_of_arg == 1) {
 		$lang = 'Plain'; // default
-		if ($langs[$lang] == false){
-			$langs[$lang] = true;
-			$js_tags[] = array('type'=>'text/javascript', 'src'=>PLUGIN_SH_PATH.'scripts/shBrush'.$lang.'.js');
-		}
-		return '<pre class="brush: Plain">'."\n".htmlspecialchars($arg)."\n".'</pre>'."\n";
 	}else{
-		$lang = htmlspecialchars(strtolower(array_shift($args)));
-		$text = htmlspecialchars(array_pop($args));
-		switch($lang){
-			case 'actionscript':
-			case 'as':
-			case 'as3':
-				$lang = 'AS3';
-			break;
-			case 'bash':
-			case 'shell':
-				$lang = 'Bash';
-			break;
-			case 'c':
-			case 'cpp':
-			case 'c++':
-				$lang = 'Cpp';
-			break;
-			case 'csharp':
-			case 'c#':
-			case 'cs':
-				$lang = 'Csharp';
-			break;
-			case 'css':
-			case 'style':
-			case 'stylesheet':
-				$lang = 'Css';
-			break;
-			case 'delphi':
-				$lang = 'Delphi';
-			break;
-			case 'diff':
-				$lang = 'Diff';
-			break;
-			case 'erlang':
-				$lang = 'Erlang';
-			break;
-			case 'groovy':
-				$lang = 'Groovy';
-			break;
-			case 'java':
-				$lang = 'Java';
-			break;
-			case 'javafx':
-				$lang = 'JavaFX';
-			break;
-			case 'javascript':
-			case 'js':
-			case 'jscript':
-				$lang = 'JScript';
-			break;
-			case 'perl':
-			case 'pl':
-				$lang = 'Perl';
-			break;
-			case 'php':
-				$lang = 'Php';
-			break;
-			case 'powershell':
-				$lang = 'PowerShell';
-			break;
-			case 'python':
-			case 'py':
-				$lang = 'Python';
-			break;
-			case 'ruby':
-			case 'rb':
-				$lang = 'Ruby';
-			break;
-			case 'scala':
-				$lang = 'Scala';
-			break;
-			case 'sql':
-				$lang = 'Sql';
-			break;
-			case 'vb':
-			case 'visualbasic':
-				$lang = 'Vb';
-			break;
-			case 'xml':
-			case 'html':
-			case 'xslt':
-				$lang = 'Xml';
-			break;
-			default:
-				$lang = 'Plain';
-			break;
-		}
-		if ($langs[$lang] == false){
-			$langs[$lang] = true;
-			$js_tags[] = array('type'=>'text/javascript', 'src'=>PLUGIN_SH_PATH.'scripts/shBrush'.$lang.'.js');
-		}
-/*
-		$params = array(
-			'number'		=> false,	// 行番号を表示する
-			'nonumber'		=> false,	// 行番号を表示しない
-			'outline'		=> false,	// アウトライン モード
-			'nooutline'		=> false,	// アウトライン 無効
-	//		'comment'		=> false,	// コメント開閉する
-	//		'nocomment'		=> false,	// コメント開閉しない
-			'menu'			=> false,	// メニューを表示する
-			'nomenu'		=> false,	// メニューを表示しない
-	//		'icon'			=> false,	// アイコンを表示する
-	//		'noicon'		=> false,	// アイコンを表示しない
-			'link'			=> false,	// オートリンク 有効
-			'nolink'		=> false,	// オートリンク 無効
-		);
-*/
-
+		$lang = htmlspecialchars(strtolower(array_shift($args)), ENT_QUOTES, SOURCE_ENCODING);
 		$ret = array();
 		//  @ 引数取り
 		for ($i = 0; $i <= count($args); $i++) {
@@ -237,11 +141,100 @@ function plugin_sh_convert(){
 					}
 					break;
 			}
-			
+			$option =  ' '.join(' ',$ret);
 		}
-		$option =  ' '.join(' ',$ret);
-		return '<pre class="brush: '.strtolower($lang).$option .'">'."\n".$text."\n".'</pre>'."\n";
 	}
-}
+	switch($lang){
+		case 'actionscript':
+		case 'as':
+		case 'as3':
+			$lang = 'AS3';
+		break;
+		case 'bash':
+		case 'shell':
+			$lang = 'Bash';
+		break;
+		case 'c':
+		case 'cpp':
+		case 'c++':
+			$lang = 'Cpp';
+		break;
+		case 'csharp':
+		case 'c#':
+		case 'cs':
+			$lang = 'Csharp';
+		break;
+		case 'css':
+		case 'style':
+		case 'stylesheet':
+			$lang = 'Css';
+		break;
+		case 'delphi':
+			$lang = 'Delphi';
+		break;
+		case 'diff':
+			$lang = 'Diff';
+		break;
+		case 'erlang':
+			$lang = 'Erlang';
+		break;
+		case 'groovy':
+			$lang = 'Groovy';
+		break;
+		case 'java':
+			$lang = 'Java';
+		break;
+		case 'javafx':
+			$lang = 'JavaFX';
+		break;
+		case 'javascript':
+		case 'js':
+		case 'jscript':
+			$lang = 'JScript';
+		break;
+		case 'perl':
+		case 'pl':
+			$lang = 'Perl';
+		break;
+		case 'php':
+			$lang = 'Php';
+		break;
+		case 'powershell':
+			$lang = 'PowerShell';
+		break;
+		case 'python':
+		case 'py':
+			$lang = 'Python';
+		break;
+		case 'ruby':
+		case 'rb':
+			$lang = 'Ruby';
+		break;
+		case 'scala':
+			$lang = 'Scala';
+		break;
+		case 'sql':
+			$lang = 'Sql';
+		break;
+		case 'vb':
+		case 'visualbasic':
+			$lang = 'Vb';
+		break;
+		case 'xml':
+		case 'html':
+		case 'xslt':
+			$lang = 'Xml';
+		break;
+		default:
+			$lang = 'Plain';
+		break;
+	}
+	if ($langs[$lang] == false){
+		$langs[$lang] = true;
+		$js_tags[] = array('type'=>'text/javascript', 'src'=>PLUGIN_SH_PATH.'scripts/shBrush'.$lang.'.js');
+		// $head_tags[] = '<script type="text/javascript" src="'.PLUGIN_SH_PATH.'scripts/sh'.$lang.'.js"></script>';	// for Plus! use
+	}
 
+	return '<pre class="brush: '.strtolower($lang).$option .';">'."\n".$text."\n".'</pre>'."\n";
+}
 ?>

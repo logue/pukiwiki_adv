@@ -1,7 +1,9 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: config.php,v 1.7 2007/10/20 04:46:55 henoheno Exp $
-// Copyright (C) 2003-2005 PukiWiki Developers Team
+// $Id: config.php,v 1.7.1 2010/10/25 17:34:00 Logue Exp $
+// Copyright (C) 
+//               2010      PukiWiki Advance Developers Team
+//               2003-2005 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
 //
 // Parse a PukiWiki page as a configuration page
@@ -39,7 +41,7 @@ class Config
 		if (! is_page($this->page)) return FALSE;
 
 		$this->objs = array();
-		$obj        = & new ConfigTable('');
+		$obj        = new ConfigTable('');
 		$matches = array();
 
 		foreach (get_source($this->page) as $line) {
@@ -57,22 +59,22 @@ class Config
 
 				if ($level == 1) {
 					$this->objs[$obj->title] = $obj;
-					$obj = & new ConfigTable($line);
+					$obj = new ConfigTable($line);
 				} else {
 					if (! is_a($obj, 'ConfigTable_Direct'))
-						$obj = & new ConfigTable_Direct('', $obj);
+						$obj = new ConfigTable_Direct('', $obj);
 					$obj->set_key($line);
 				}
 				
 			} else if ($head == '-' && $level > 1) {
 				if (! is_a($obj, 'ConfigTable_Direct'))
-					$obj = & new ConfigTable_Direct('', $obj);
+					$obj = new ConfigTable_Direct('', $obj);
 				$obj->add_value($line);
 
 			} else if ($head == '|' && preg_match('/^\|(.+)\|\s*$/', $line, $matches)) {
 				// Table row
 				if (! is_a($obj, 'ConfigTable_Sequential'))
-					$obj = & new ConfigTable_Sequential('', $obj);
+					$obj = new ConfigTable_Sequential('', $obj);
 				// Trim() each table cell
 				$obj->add_value(array_map('trim', explode('|', $matches[1])));
 			} else {
@@ -109,7 +111,7 @@ class Config
 	function & get_object($title)
 	{
 		if (! isset($this->objs[$title]))
-			$this->objs[$title] = & new ConfigTable('*' . trim($title) . "\n");
+			$this->objs[$title] = new ConfigTable('*' . trim($title) . "\n");
 		return $this->objs[$title];
 	}
 

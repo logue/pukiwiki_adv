@@ -1,19 +1,19 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: edit.inc.php,v 1.41.42 2009/12/05 03:37:00 upk Exp $
+// $Id: edit.inc.php,v 1.48.43 2010/09/17 10:24:00 Logue Exp $
 // Copyright (C)
+//   2010      PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
 //   2001-2007 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
 //
 // Edit plugin (cmd=edit)
-// Plus!NOTE:(policy)not merge official cvs(1.40->1.41) See Question/181
+// Plus! NOTE:(policy)not merge official cvs(1.40->1.41) See Question/181
 
 // Remove #freeze written by hand
 define('PLUGIN_EDIT_FREEZE_REGEX', '/^(?:#freeze(?!\w)\s*)+/im');
 
 // Define part-edit area - 'compat':1.4.4compat, 'level':level
-//defined('PLUGIN_EDIT_PARTAREA') or define('PLUGIN_EDIT_PARTAREA', 'compat');
 defined('PLUGIN_EDIT_PARTAREA') or define('PLUGIN_EDIT_PARTAREA', 'compat');
 
 function plugin_edit_action()
@@ -101,8 +101,11 @@ function plugin_edit_realview()
 // Preview
 function plugin_edit_preview()
 {
-	global $vars;
+	global $post, $vars;
 	// global $_title_preview, $_msg_preview, $_msg_preview_delete;
+	$_title_preview			= _('Preview of $1');
+	$_msg_preview			= _('To confirm the changes, click the button at the bottom of the page');
+	$_msg_preview_delete	= _('(The contents of the page are empty. Updating deletes this page.)');
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
 
@@ -115,23 +118,21 @@ function plugin_edit_preview()
 		$vars['msg'] = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/m', '$1$2', $vars['msg']);
 	}
 
-	// Delete "#freeze" command for form edit.
-	$vars['msg'] = preg_replace(PLUGIN_EDIT_FREEZE_REGEX, '' ,$vars['msg']);
-	$postdata = $vars['msg'];
+	$post['msg'] = preg_replace(PLUGIN_EDIT_FREEZE_REGEX, '', $post['msg']);
+	$postdata = $post['msg'];
 
+	// Compat: add plugin and adding contents
 	if (isset($vars['add']) && $vars['add']) {
-		if (isset($vars['add_top']) && $vars['add_top']) {
-			$postdata  = $postdata . "\n\n" . @join('', get_source($page));
+		if (isset($post['add_top']) && $post['add_top']) {
+			$postdata  = $postdata . "\n\n" . get_source($page, TRUE, TRUE);
 		} else {
-			$postdata  = @join('', get_source($page)) . "\n\n" . $postdata;
+			$postdata  = get_source($page, TRUE, TRUE) . "\n\n" . $postdata;
 		}
 	}
 
-	$body = _('To confirm the changes, click the button at the bottom of the page') . '<br />' . "\n";
+	$body = $_msg_preview . '<br />' . "\n";
 	if ($postdata == '')
-		$body .= '<strong>' .
-			 _('(The contents of the page are empty. Updating deletes this page.)') .
-			 '</strong>';
+		$body .= '<strong>' . $_msg_preview_delete . '</strong>';
 	$body .= '<br />' . "\n";
 
 	if ($postdata) {
@@ -140,9 +141,9 @@ function plugin_edit_preview()
 		$postdata = drop_submit(convert_html($postdata));
 		$body .= '<div id="preview">' . $postdata . '</div>' . "\n";
 	}
-	$body .= edit_form($page, $vars['msg'], $vars['digest'], FALSE);
+	$body .= edit_form($page, $post['msg'], $post['digest'], FALSE);
 
-	return array('msg'=> _('Preview of  $1'), 'body'=>$body);
+	return array('msg'=>$_title_preview, 'body'=>$body);
 }
 
 // Inline: Show edit (or unfreeze text) link
@@ -266,15 +267,15 @@ function plugin_edit_write()
 
 	// Action?
 	if ($add) {
-		// Add
-		if (isset($vars['add_top']) && $vars['add_top']) {
-			$postdata  = $msg . "\n\n" . @join('', get_source($page));
+		// Compat: add plugin and adding contents
+		if (isset($post['add_top']) && $post['add_top']) {
+			$postdata  = $msg . "\n\n" . get_source($page, TRUE, TRUE);
 		} else {
-			$postdata  = @join('', get_source($page)) . "\n\n" . $msg;
+			$postdata  = get_source($page, TRUE, TRUE) . "\n\n" . $msg;
 		}
 	} else {
 		// Edit or Remove
-		$postdata = & $msg; // Reference
+		$postdata = & $msg;
 	}
 
 	// NULL POSTING, OR removing existing page
@@ -296,7 +297,7 @@ function plugin_edit_write()
 		return $retvars;
 	}
 
-	page_write($page, $postdata, $notimestamp);
+	page_write($page, $postdata, $notimeupdate != 0 && $notimestamp);
 	pkwk_headers_sent();
 	if (isset($vars['refpage']) && $vars['refpage'] != '') {
 		if ($partid) {

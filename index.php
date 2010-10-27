@@ -9,11 +9,12 @@
 
 // Error reporting
 //error_reporting(0); // Nothing
-error_reporting(E_ERROR | E_PARSE); // Avoid E_WARNING, E_NOTICE, etc
-//error_reporting(E_ALL); // Debug purpose
+error_reporting(E_ALL & ~E_NOTICE); // Avoid E_WARNING, E_NOTICE, etc
+//error_reporting(E_COMPILE_ERROR|E_RECOVERABLE_ERROR|E_ERROR|E_CORE_ERROR);	// Show only errors 
+//error_reporting(E_ALL); // Show all errors
 
 // Debug mode.
-define('DEBUG', true);
+define('DEBUG', false);
 // Show infomation message.
 define('PKWK_WARNING', true);
 
@@ -27,16 +28,17 @@ define('PKWK_WARNING', true);
 //define('TDIARY_THEME', 'digital_gadgets');
 // PukiWiki Adv. THEME
 // ex. bluebox, cloudwalk, classic, iridwire, iridorange, orangebox, pukiwiki, xxxlogue
-// define('PLUS_THEME',   'default');
+define('PLUS_THEME',   'default');
 
 // Directory definition
 // (Ended with a slash like '../path/to/pkwk/', or '')
-// define('SITE_HOME',     '../wiki-common/');
+// define('SITE_HOME',     realpath('../wiki-common/'));
 define('SITE_HOME',	'');
-// define('DATA_HOME',     '../../wiki-data/contents/');
+// define('DATA_HOME',     realpath('../../wiki-data/contents/'));
 define('DATA_HOME',	'');
 
-define('ROOT_URI', '');
+// define('ROOT_URI', '');
+define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');	// when skin directory and index.php is same directory.
 define('WWW_HOME', '');
 
 define('LIB_DIR',	SITE_HOME . 'lib/');

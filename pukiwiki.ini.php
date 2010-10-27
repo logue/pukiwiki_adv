@@ -220,7 +220,7 @@ $nofollow = 0; // 1 = Try hiding from search engines
 
 // Static URL
 // アドレスを.htmlのような静的なアドレスにします。（別途htaccessの変更が必要です）
-$static_url = 0;
+$static_url = 1;
 
 // Google Webmasters Tools
 // http://www.google.com/webmasters/sitemaps/
@@ -274,12 +274,12 @@ require_once(add_homedir('config-log.ini.php'));
 /////////////////////////////////////////////////
 // Blocking SPAM
 $use_spam_check = array(
-	'page_view'		=> 0,
-	'page_remote_addr'	=> 0,
-	'page_contents'		=> 0,
-	'page_write_proxy'	=> 0,
-	'trackback'		=> 0,
-	'referer'		=> 0,
+	'page_view'			=> 0,	// 閲覧規制（管理者指定による）
+	'page_remote_addr'	=> 0,	// 書き込み端末規制（IPBL）
+	'page_contents'		=> 0,	// 書き込み内容規制（DNSBL）
+	'page_write_proxy'	=> 0,	// Proxy経由での書き込み規制
+	'trackback'			=> 0,	// TrackBack。splogなど。（DNSBL）
+	'referer'			=> 0,	// Referer SPAM（DNSBL）
 );
 
 /////////////////////////////////////////////////

@@ -5,7 +5,7 @@
  * @copyright	
  *	 Copyright &copy; 2010 PukiPlus Developers Team
  *					  2004-2006,2008-2009, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version	$Id: log.php,v 0.12 2010/07/11 09:40:00 Logue Exp $
+ * @version	$Id: log.php,v 0.13 2010/10/25 19:46:00 Logue Exp $
  * @license	http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 
@@ -75,7 +75,6 @@ function log_write($kind,$page)
 	if ($kind == 'update' && $log['guess_user']['use']) {
 		log_put_guess($rc);
 	}
-
 }
 
 function log_read($filename, $join = false)

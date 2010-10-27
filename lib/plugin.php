@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: plugin.php,v 1.19.19 2010/09/08 14:10:00 Logue Exp $
+// $Id: plugin.php,v 1.19.20 2010/10/25 19:32:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team
 //   2005-2006,2008 PukiWiki Plus! Team
@@ -30,7 +30,7 @@ function get_plugin_option($args, &$params, $tolower=TRUE, $separator=':')
 	$keys = array_keys($params);
 
 	foreach($args as $val) {
-		list($_key, $_val) = array_pad(split($separator, $val, 2), 2, TRUE);
+		list($_key, $_val) = array_pad(explode($separator, $val, 2), 2, TRUE);
 		if ($tolower === TRUE) $_key = strtolower($_key);
 		$_key = trim($_key);
 		if (is_string($_val)) $_val = trim($_val);

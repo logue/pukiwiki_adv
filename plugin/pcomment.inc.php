@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: pcomment.inc.php,v 1.44.19 2008/08/03 13:33:00 upk Exp $
+// $Id: pcomment.inc.php,v 1.47.21 2010/10/22 10:57:00 Logue Exp $
 //
 // pcomment plugin - Show/Insert comments into specified (another) page
 //
@@ -41,16 +41,16 @@ define('PLUGIN_PCOMMENT_FORMAT_STRING',
 
 function plugin_pcomment_action()
 {
-	global $post, $vars;
+	global $vars;
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
 	if (auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
 
 	// Petit SPAM Check (Client(Browser)-Server Ticket Check)
 	$b = FALSE;
-	if (!isset($post['encode_hint']) && PKWK_ENCODING_HINT == '') {
+	if (!isset($vars['encode_hint']) && PKWK_ENCODING_HINT == '') {
 		$b = TRUE;
-	} elseif (isset($post['encode_hint']) && $post['encode_hint'] == PKWK_ENCODING_HINT) {
+	} elseif (isset($vars['encode_hint']) && $vars['encode_hint'] == PKWK_ENCODING_HINT) {
 		$b = TRUE;
 	}
 	if ($b === FALSE) {
@@ -85,7 +85,7 @@ function plugin_pcomment_action()
 
 function plugin_pcomment_convert()
 {
-	global $vars, $script;
+	global $vars;
 //	global $_pcmt_messages;
 	$_pcmt_messages = array(
 		'btn_name'       => _('Name: '),
@@ -159,9 +159,9 @@ function plugin_pcomment_convert()
 		$s_nodate = htmlspecialchars($params['nodate']);
 		$helptags = edit_form_assistant();
 
-		$form_start = '<form action="' . $script . '" method="post">' . "\n";
+		$form_start = '<form action="' . get_script_uri() . '" method="post">' . "\n";
 		$form = <<<EOD
-  <div class="pcommentform" onmouseup="pukiwiki_pos()" onkeyup="pukiwiki_pos()">
+  <div class="pcomment_form">
   <input type="hidden" name="digest" value="$digest" />
   <input type="hidden" name="plugin" value="pcomment" />
   <input type="hidden" name="refer"  value="$s_refer" />
@@ -229,6 +229,10 @@ function plugin_pcomment_insert()
 
 	$msg = str_replace('$msg', rtrim($vars['msg']), PLUGIN_PCOMMENT_FORMAT_MSG);
 	$name = (! isset($vars['name']) || $vars['name'] == '') ? $_no_name : $vars['name'];
+
+	$name = ($name == '') ? '' : str_replace('$name', $name, PLUGIN_PCOMMENT_FORMAT_NAME);
+	$date = (! isset($vars['nodate']) || $vars['nodate'] != '1') ?
+		str_replace('$now', $now, PLUGIN_PCOMMENT_FORMAT_NOW) : '';
 
 	list($nick,$link) = plugin_pcomment_get_nick();
 	if (! empty($link)) $name = $link;

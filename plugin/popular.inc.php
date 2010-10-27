@@ -1,7 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: popular.inc.php,v 1.18.6 2007/07/28 19:56:00 miko Exp $
+// $Id: popular.inc.php,v 1.19.8 2010/10/26 14:51:00 Logue Exp $
 // Copyright (C)
+//   2010      PukiWiki Advance Developers Team
 //   2005-2007 PukiWiki Plus! Team
 //   2003-2005, 2007 PukiWiki Developers Team
 //   2002 Kazunori Mizushima <kazunori@uc.netyou.jp>
@@ -82,7 +83,7 @@ function plugin_popular_convert()
 
 	$counters = array();
 	foreach (auth::get_existpages(COUNTER_DIR, '.count') as $file=>$page) {
-		if (($except != '' && ereg($except, $page)) ||
+		if (($except != '' && preg_match("/".$except."/", $page)) ||
 		    is_cantedit($page) || check_non_list($page) ||
 		    ! is_page($page))
 			continue;
@@ -118,7 +119,7 @@ function plugin_popular_convert()
 
 	// BugTrack2/106: Only variables can be passed by reference from PHP 5.0.5
 	$counters = array_reverse($counters, TRUE); // with array_splice()
-	$counters = array_splice($counters, 0, $max);
+	if ($max && $max!= 0) { $counters = array_splice($counters, '0', $max); }
 
 	$items = '';
 	if (! empty($counters)) {
@@ -128,7 +129,7 @@ function plugin_popular_convert()
 			$page = substr($page, 1);
 
 			$s_page = htmlspecialchars($page);
-			if ($page == $vars['page']) {
+			if ($page === $vars['page']) {
 				// No need to link itself, notifies where you just read
 				$pg_passage = get_pg_passage($page,FALSE);
 				$items .= ' <li><span title="' . $s_page . ' ' . $pg_passage . '">' .
@@ -144,19 +145,19 @@ function plugin_popular_convert()
 	}
 
 	switch ($view) {
-	case 'today':
-		$frame = $_popular_plugin_today_frame;
-		break;
-	case 'yesterday':
-		$frame = $_popular_plugin_yesterday_frame;
-		break;
-	case 'recent':
-		$frame = $_popular_plugin_recent_frame;
-		break;
-	case 'total':
-	default:
-		$frame = $_popular_plugin_frame;
-		break;
+		case 'today':
+			$frame = $_popular_plugin_today_frame;
+			break;
+		case 'yesterday':
+			$frame = $_popular_plugin_yesterday_frame;
+			break;
+		case 'recent':
+			$frame = $_popular_plugin_recent_frame;
+			break;
+		case 'total':
+		default:
+			$frame = $_popular_plugin_frame;
+			break;
 	}
 	return sprintf($frame, count($counters), $items);
 }

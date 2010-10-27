@@ -10,6 +10,8 @@ function plugin_toolbar_convert()
 	global $do_backup, $trackback, $referer;
 	global $function_freeze;
 	global $vars;
+	
+	global $pkwk_dtd;
 
 	// $is_read = (arg_check('read') && is_page($vars['page']));
 	$is_read = is_page($vars['page']);

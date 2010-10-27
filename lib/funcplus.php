@@ -266,17 +266,29 @@ function add_skindir($skin_name)
 {
 	$file = basepagename($skin_name).'.skin.php';
 	$conf = basepagename($skin_name).'.ini.php';
-	foreach(
-		array(
-			EXT_SKIN_DIR, 
+	
+	
+//	if(defined(THEME_PLUS_NAME)){
+		$cond = array(
+			EXT_SKIN_DIR,
 			EXT_SKIN_DIR.THEME_PLUS_NAME, 
 			EXT_SKIN_DIR.THEME_PLUS_NAME.$skin_name.'/',
 			SKIN_DIR,
+			SKIN_URI,
+			DATA_HOME.SKIN_DIR,
 			SKIN_DIR.THEME_PLUS_NAME,
-			SKIN_DIR.THEME_PLUS_NAME.$skin_name.'/',
-			SKIN_URI, DATA_HOME.SKIN_DIR
-		) as $dir) {
-
+			SKIN_DIR.THEME_PLUS_NAME.$skin_name.'/'
+		);
+/*	}else{
+		$cond = array(
+			EXT_SKIN_DIR,
+			SKIN_DIR,
+			SKIN_URI,
+			DATA_HOME.SKIN_DIR
+		);
+	}
+*/
+	foreach($cond as $dir) {
 		if (file_exists($dir.$file) && is_readable($dir.$file)){
 			if (is_readable($dir.$conf)){ require $dir.$conf; }	// あまり良い実装ではない
 			return $dir.$file;

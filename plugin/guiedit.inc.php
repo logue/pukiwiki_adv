@@ -2,7 +2,7 @@
 //
 //	guiedit - PukiWiki Plugin
 //
-//	$Id: guiedit.inc.php,v 1.63.3 2010/08/30 16:57:00 Logue Exp $
+//	$Id: guiedit.inc.php,v 1.64.4 2010/09/03 16:57:00 Logue Exp $
 //
 //	License:
 //	  GNU General Public License Version 2 or later (GPL)
@@ -14,9 +14,7 @@
 //	PukiWiki Plus! : Copyright (C) 2009 Katsumi Saito
 //	PukiWiki Advance : Copyright (C) 2010 PukiWiki Advance Developers Team
 
-defined('GUIEDIT_FCK_PATH')  or define('GUIEDIT_FCK_PATH', SKIN_URI . 'fckeditor/');
-defined('GUIEDIT_LIB_PATH')  or define('GUIEDIT_LIB_PATH', SKIN_URI . 'guiedit/');
-defined('GUIEDIT_CONF_PATH')  or define('GUIEDIT_CONF_PATH', PLUGIN_DIR . 'guiedit/');
+defined('GUIEDIT_CONF_PATH')  or define('GUIEDIT_CONF_PATH',  'guiedit/');
 defined('GUIEDIT_FULL_SIZE') or define('GUIEDIT_FULL_SIZE', 0);
 
 define('PLUGIN_GUIEDIT_FREEZE_REGEX', '/^(?:#freeze(?!\w)\s*)+/im');
@@ -46,10 +44,10 @@ function plugin_guiedit_action()
 	global $guiedit_use_fck;
 	$guiedit_use_fck = isset($vars['text']) ? false : true;
 
-        if ($guiedit_use_fck) {
-                global $guiedit_pkwk_root;
+	if ($guiedit_use_fck) {
+		global $guiedit_pkwk_root;
 		$guiedit_pkwk_root = get_baseuri('abs');
-        }
+	}
 
 	if (GUIEDIT_FULL_SIZE) {
 		$menubar = $sidebar = '';
@@ -86,27 +84,19 @@ function plugin_guiedit_action()
 	return array('msg'=>$_title_edit, 'body'=>plugin_guiedit_edit_form($page, $postdata));
 }
 
-function plugin_guiedit_send_ajax($postdata)
-{
+function plugin_guiedit_send_ajax($postdata){
 	//	文字コードを UTF-8 に変換
 	//$postdata = mb_convert_encoding($postdata, 'UTF-8', SOURCE_ENCODING);
 	
 	//	出力
 	pkwk_common_headers();
-	$longtaketime = getmicrotime() - MUTIME;
-	$taketime     = sprintf('%01.03f', $longtaketime);
-	if ($vars['type'] == 'json'){
-		$obj = array(
-			'data'			=> $postdata,
-			'taketime'		=> $taketime
-		);
-		header("Content-Type: application/json; charset=".CONTENT_CHARSET);
-		echo json_encode($obj); 
-	}else{
-		header('Content-type: text/xml; charset=UTF-8');
-		print '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-		print '<res><![CDATA[' .$postdata. ']]></res>';
-	}
+	header("Content-Type: application/json; charset=".CONTENT_CHARSET);
+	echo json_encode(
+		array(
+			'msg'		=> $postdata,
+			'taketime'	=> sprintf('%01.03f', getmicrotime() - MUTIME)
+		)
+	); 
 	exit;
 }
 
@@ -128,9 +118,14 @@ function plugin_guiedit_edit_data($page)
 	if ($postdata == '') $postdata = auto_template($page);
 
 	//	構文の変換
-	require_once(GUIEDIT_CONF_PATH . 'wiki2xhtml.php');
-	$postdata = guiedit_convert_html($postdata);
-	
+	$inc = include_once(GUIEDIT_CONF_PATH . 'wiki2xhtml.php');
+	if ($inc === false){
+		die_message('guiedit.inc.php : Cannot load Wiki2XHTML Libraly.');
+		$postdata = 'ERROR!';
+	}else{
+		$postdata = guiedit_convert_html($postdata);
+	}
+
 	plugin_guiedit_send_ajax($postdata);
 }
 
@@ -155,10 +150,14 @@ function plugin_guiedit_template()
 	}
 	
 	//	構文の変換
-	require(GUIEDIT_CONF_PATH . 'wiki2xhtml.php');
-	$vars['msg'] = guiedit_convert_html($vars['msg']);
-	
-	plugin_guiedit_send_ajax($vars['msg']);
+	$inc = include_once(GUIEDIT_CONF_PATH . 'wiki2xhtml.php');
+	if ($inc === false){
+		die_message('guiedit.inc.php : Cannot load Wiki2XHTML Libraly.');
+		$postdata = 'ERROR!';
+	}else{
+		$postdata = guiedit_convert_html($vars['msg']);
+	}
+	plugin_guiedit_send_ajax($postdata);
 }
 
 //	プレビュー
@@ -175,12 +174,18 @@ function plugin_guiedit_preview()
 
 	if ($guiedit_use_fck) {
 		//	構文の変換
-		require_once(GUIEDIT_CONF_PATH . 'xhtml2wiki.php');
-		// $source = $vars['msg'];
-		$vars['msg'] = xhtml2wiki($vars['msg']);
+
+		
+		//	構文の変換
+		$inc = include_once(GUIEDIT_CONF_PATH . 'xhtml2wiki.php');
+		if ($inc === false){
+			die_message('guiedit.inc.php : Cannot load XHTML2Wiki Libraly.');
+			$postdata = 'ERROR!';
+		}else{
+			$postdata = xhtml2wiki($vars['msg']);
+		}
 	}
-	
-	$postdata = $vars['msg'];
+
 	if ($postdata) {
 		$postdata = make_str_rules($postdata);
 		$postdata = explode("\n", $postdata);
@@ -222,14 +227,27 @@ function plugin_guiedit_write()
 	global $guiedit_use_fck;
 
 	if ($guiedit_use_fck) {
-		//	構文の変換
-		require_once(GUIEDIT_CONF_PATH . 'xhtml2wiki.php');
-		$vars['msg'] = xhtml2wiki($vars['msg']);
+		$inc = include_once(GUIEDIT_CONF_PATH . 'xhtml2wiki.php');
+		if ($inc === false){
+			die_message('guiedit.inc.php : Cannot load XHTML2Wiki Libraly.');
+		}else{
+			$vars['msg'] = xhtml2wiki($vars['msg']);
+			
+		}
+	}
+	
+	if (isset($vars['id']) && $vars['id']) {
+		$source = preg_split('/([^\n]*\n)/', $vars['original'], -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+		if (plugin_guiedit_parts($vars['id'], $source, $vars['msg']) !== FALSE) {
+			$vars['msg'] = join('', $source);
+		}
+		else {
+			$vars['msg'] = rtrim($vars['original']) . "\n\n" . $vars['msg'];
+		}
 	}
 
 	//	書き込み
 	exist_plugin('edit');
-	// require_once("edit.inc.php");
 	return plugin_edit_write();
 }
 
@@ -306,7 +324,7 @@ function plugin_guiedit_edit_form($page, $postdata, $digest = FALSE, $b_template
 		ksort($pages);
 		$s_pages  = join("\n", $pages);
 		$template = <<<EOD
-<select name="template_page" onchange="Template()">
+<select name="template_page">
 	<option value="">-- {$_button['template']} --</option>
 $s_pages
 </select>
@@ -333,22 +351,21 @@ EOD;
 	
 	//	フォーム
 	$body = <<<EOD
-
-<div class="edit_form">
-	<form id="edit_form" action="$script" method="post" style="margin-bottom:0px;">
+<div id="guiedit">
+	<form id="guiedit_form" action="$script" method="post" style="margin-bottom:0px;">
 	$template
 		<input type="hidden" name="cmd"    value="guiedit" />
 		<input type="hidden" name="page"   value="$s_page" />
 		<input type="hidden" name="digest" value="$s_digest" />
 		<input type="hidden" name="ticket" value="$s_ticket" />
 		<input type="hidden" name="id"     value="$s_id" />
+		<textarea name="original" rows="1" cols="1" style="display:none">$s_original</textarea>
 		<textarea name="msg" rows="1" cols="1" style="display:none"></textarea>
 		<div style="float:left;">
-		<input type="submit" name="write"   value="{$_button['update']}" accesskey="s" onclick="Write()" />
-		<input type="button" name="preview" value="{$_button['preview']}" accesskey="p" onclick="Preview()" />
+		<button type="submit" name="write"   accesskey="s">{$_button['update']}</button>
+		<button type="button" name="preview" accesskey="p">{$_button['preview']}</button>
 		$add_notimestamp
 		</div>
-		<textarea name="original" rows="1" cols="1" style="display:none">$s_original</textarea>
 	</form>
 	<form action="$script" method="post" style="margin-top:0px;">
 		<input type="hidden" name="cmd"    value="guiedit" />
@@ -356,22 +373,28 @@ EOD;
 		<input type="submit" name="cancel" value="{$_button['cancel']}" accesskey="c" />
 	</form>
 </div>
-<div id="preview_indicator" style="display:none"></div>
-<div id="preview_area" style="display:none"></div>
-
 EOD;
 
 	$root = get_baseuri('abs');
-
-	//	ヘッダの設定
-	$js_tags[] = array('type'=>'text/javascript', 'src'=>GUIEDIT_FCK_PATH.'fckeditor.js');
-	$js_tags[] = array('type'=>'text/javascript', 'src'=>GUIEDIT_LIB_PATH.'guiedit.js');
-	$link_tags[] = array('rel'=>'stylesheet','href'=>GUIEDIT_LIB_PATH . 'guiedit.css');
-	$js_blocks[] = 'var SMILEY_PATH="' . $root . IMAGE_URI . "face/" . '";';
-	$js_blocks[] = 'var FCK_PATH="' . $root . GUIEDIT_FCK_PATH . '";';
-	$js_blocks[] = 'var GUIEDIT_PATH="' . $root . GUIEDIT_LIB_PATH . '";';
-	
+	$js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/plugin/guiedit/ckeditor/ckeditor.js');
+	$js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/plugin/guiedit/ckeditor/adapters/jquery.js');
+	$js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/plugin/guiedit/guiedit.js');
 	return $body;
 }
 
+// ソースの一部を抽出/置換
+function plugin_guiedit_parts($id, & $source, $postdata = '')
+{
+	$postdata = rtrim($postdata)."\n";
+	$heads = preg_grep('/^\*{1,3}.+$/', $source);
+	$heads[count($source)] = '';
+
+	while (list($start, $line) = each($heads)) {
+		if (preg_match("/\[#$id\]/", $line)) {
+			list($end, $line) = each($heads);
+			return join('', array_splice($source, $start, $end - $start, $postdata));
+		}
+	}
+	return FALSE;
+}
 ?>

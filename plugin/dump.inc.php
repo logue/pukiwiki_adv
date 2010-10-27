@@ -1,5 +1,5 @@
 <?php
-// $Id: dump.inc.php,v 1.41.9 2010/08/28 10:42:00 Logue Exp $
+// $Id: dump.inc.php,v 1.41.10 2010/10/21 10:07:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team
 //   2005-2007,2009 PukiWiki Plus! Team
@@ -110,18 +110,28 @@ function plugin_dump_download()
 	$namedecode = isset($vars['namedecode']) ? TRUE : FALSE;
 
 	// バックアップディレクトリ
-	$bk_wiki   = isset($vars['bk_wiki'])   ? TRUE : FALSE;
-	$bk_attach = isset($vars['bk_attach']) ? TRUE : FALSE;
-	$bk_backup = isset($vars['bk_backup']) ? TRUE : FALSE;
+	$bk_attach		= isset($vars['bk_attach'])		? TRUE : FALSE;
+	$bk_backup		= isset($vars['bk_backup'])		? TRUE : FALSE;
+	$bk_cache		= isset($vars['bk_cache'])		? TRUE : FALSE;
+	$bk_counter		= isset($vars['bk_counter'])	? TRUE : FALSE;
+	$bk_diff		= isset($vars['bk_diff'])		? TRUE : FALSE;
+	$bk_log			= isset($vars['bk_log'])		? TRUE : FALSE;
+	$bk_trackback	= isset($vars['bk_trackback'])	? TRUE : FALSE;
+	$bk_wiki		= isset($vars['bk_wiki'])		? TRUE : FALSE;
 
 	$filecount = 0;
 	$tar = new tarlib();
 	$tar->create(CACHE_DIR, $arc_kind) or
 		die_message( _("It failed in the generation of a temporary file.") );
 
-	if ($bk_wiki)   $filecount += $tar->add_dir(DATA_DIR,   $_STORAGE['DATA_DIR']['add_filter'],   $namedecode);
-	if ($bk_attach) $filecount += $tar->add_dir(UPLOAD_DIR, $_STORAGE['UPLOAD_DIR']['add_filter'], $namedecode);
-	if ($bk_backup) $filecount += $tar->add_dir(BACKUP_DIR, $_STORAGE['BACKUP_DIR']['add_filter'], $namedecode);
+	if ($bk_attach)		$filecount += $tar->add_dir(UPLOAD_DIR,		$_STORAGE['UPLOAD_DIR']['add_filter'],		$namedecode);
+	if ($bk_backup)		$filecount += $tar->add_dir(BACKUP_DIR,		$_STORAGE['BACKUP_DIR']['add_filter'],		$namedecode);
+	if ($bk_cache)		$filecount += $tar->add_dir(CACHE_DIR,		$_STORAGE['CACHE_DIR']['add_filter'],		$namedecode);
+	if ($bk_counter)	$filecount += $tar->add_dir(COUNTER_DIR,	$_STORAGE['COUNTER_DIR']['add_filter'],		$namedecode);
+	if ($bk_diff)		$filecount += $tar->add_dir(DIFF_DIR,		$_STORAGE['DIFF_DIR']['add_filter'],		$namedecode);
+	if ($bk_log)		$filecount += $tar->add_dir(LOG_DIR,		$_STORAGE['LOG_DIR']['add_filter'],			$namedecode);
+	if ($bk_trackback)	$filecount += $tar->add_dir(TRACKBACK_DIR,	$_STORAGE['TRACKBACK_DIR']['add_filter'],	$namedecode);
+	if ($bk_wiki)		$filecount += $tar->add_dir(DATA_DIR,		$_STORAGE['DATA_DIR']['add_filter'],		$namedecode);
 
 	$tar->close();
 
@@ -259,12 +269,22 @@ function plugin_dump_disp_form()
 			</dd>
 			<dt>$_dump_backdir</dt>
 			<dd>
-				<input type="checkbox" name="bk_wiki" id="_p_dump_d_wiki" checked="checked" />
-				<label for="_p_dump_d_wiki">wiki</label><br />
-				<input type="checkbox" name="bk_attach" id="_p_dump_d_attach" />
+				<input type="checkbox" name="bk_attach" id="_p_dump_d_attach" checked="checked" />
 				<label for="_p_dump_d_attach">attach</label><br />
-				<input type="checkbox" name="bk_backup" id="_p_dump_d_backup" />
-				<label for="_p_dump_d_backup">backup</label>
+				<input type="checkbox" name="bk_backup" id="_p_dump_d_backup" checked="checked" />
+				<label for="_p_dump_d_backup">backup</label><br />
+				<input type="checkbox" name="bk_cache" id="_p_dump_d_cache" />
+				<label for="_p_dump_d_cache">cache</label><br />
+				<input type="checkbox" name="bk_counter" id="_p_dump_d_counter" />
+				<label for="_p_dump_d_counter">counter</label><br />
+				<input type="checkbox" name="bk_diff" id="_p_dump_d_diff" />
+				<label for="_p_dump_d_diff">diff</label><br />
+				<input type="checkbox" name="bk_log" id="_p_dump_d_log" />
+				<label for="_p_dump_d_diff">log</label><br />
+				<input type="checkbox" name="bk_trackback" id="_p_dump_d_trackback" />
+				<label for="_p_dump_d_trackback">trackback</label><br />
+				<input type="checkbox" name="bk_wiki" id="_p_dump_d_wiki" checked="checked" />
+				<label for="_p_dump_d_wiki">wiki</label>
 			</dd>
 			<dt>$_dump_option</dt>
 			<dd>

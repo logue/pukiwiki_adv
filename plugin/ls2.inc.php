@@ -1,7 +1,13 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-//
-// $Id: ls2.inc.php,v 1.25.6 2008/01/05 18:24:00 upk Exp $
+// $Id: ls2.inc.php,v 1.29.7 2010/09/21 19:30:31 Logue Exp $
+// Copyright (C)
+//   2010       PukiWiki Advance Developers Team
+//   2005-2008  PukiWiki Plus! Team
+//   2002-2004, 2006-2007 PukiWiki Developers Team
+//   2002       panda  http://home.arino.jp/?ls2.inc.php 
+//   2002       Y.MASUI GPL2 http://masui.net/pukiwiki/ masui@masui.net (ls.inc.php)
+// License: GPL version 2
 //
 // List plugin 2
 
@@ -47,7 +53,7 @@ function plugin_ls2_action()
 
 function plugin_ls2_convert()
 {
-	global $script, $vars;
+	global $vars;
 
 	$params = array(
 		'link'    => FALSE,
@@ -59,13 +65,10 @@ function plugin_ls2_convert()
 		'_done'   => FALSE
 	);
 
-	$args = array();
+	$args = func_get_args();
 	$prefix = '';
-	if (func_num_args()) {
-		$args   = func_get_args();
-		$prefix = array_shift($args);
-	}
-	if ($prefix == '') $prefix = strip_bracket($vars['page']) . '/';
+	if (! empty($args)) $prefix = array_shift($args);
+	if ($prefix == '')  $prefix = strip_bracket($vars['page']) . '/';
 
 	foreach ($args as $arg)
 		plugin_ls2_check_arg($arg, $params);
@@ -77,11 +80,10 @@ function plugin_ls2_convert()
 		return plugin_ls2_show_lists($prefix, $params);
 
 	$tmp = array();
-	$tmp[] = 'plugin=ls2&amp;prefix=' . rawurlencode($prefix);
 	if (isset($params['title']))   $tmp[] = 'title=1';
 	if (isset($params['include'])) $tmp[] = 'include=1';
 
-	return '<p><a href="' . $script . '?' . join('&amp;', $tmp) . '">' .
+	return '<p><a href="' . get_cmd_uri('ls2',	$prefix) . join('&amp;', $tmp) . '">' .
 		$title . '</a></p>' . "\n";
 }
 
@@ -91,9 +93,10 @@ function plugin_ls2_show_lists($prefix, & $params)
 
 	$pages = array();
 	if ($prefix != '') {
-		foreach (auth::get_existpages() as $_page)
+		foreach (auth::get_existpages() as $_page){
 			if (strpos($_page, $prefix) === 0)
 				$pages[] = $_page;
+		}
 	} else {
 		$pages = auth::get_existpages();
 	}
@@ -137,6 +140,7 @@ function plugin_ls2_get_headings($page, & $params, $level, $include = FALSE)
 
 	$ret .= '<a id="list_' . $params["page_$page"] . '" href="' . $href .
 		'" title="' . $title . '">' . $s_page . '</a>';
+		
 	array_push($params['result'], $ret);
 
 	$anchor = PLUGIN_LS2_ANCHOR_ORIGIN;
@@ -145,12 +149,7 @@ function plugin_ls2_get_headings($page, & $params, $level, $include = FALSE)
 		if ($params['title'] && preg_match('/^(\*{1,3})/', $line, $matches)) {
 			$id    = make_heading($line);
 			$level = strlen($matches[1]);
-			if ($id == '') {
-				$id = PLUGIN_LS2_ANCHOR_PREFIX . $anchor;
-			} else {
-				$id = '#' . $id;
-			}
-			$anchor++;
+			$id    = PLUGIN_LS2_ANCHOR_PREFIX . $anchor++;
 			plugin_ls2_list_push($params, $level + strlen($level));
 			array_push($params['result'],
 				'<li><a href="' . $href . $id . '">' . $line . '</a>');
@@ -166,7 +165,7 @@ function plugin_ls2_get_headings($page, & $params, $level, $include = FALSE)
 //リスト構造を構築する
 function plugin_ls2_list_push(& $params, $level)
 {
-	global $_ul_left_margin, $_ul_margin, $_list_pad_str;
+	// global $_ul_left_margin, $_ul_margin, $_list_pad_str;
 
 	$result = & $params['result'];
 	$saved  = & $params['saved'];

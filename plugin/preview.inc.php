@@ -16,7 +16,7 @@ function plugin_preview_action()
 		array_splice($source, 10);
 		$body = convert_html($source);
 
-		pkwk_common_headers();
+		pkwk_common_headers(true,true);
 		header('Content-type: text/xml');
 		print '<' . '?xml version="1.0" encoding="UTF-8"?' . ">\n";
 		print $body;

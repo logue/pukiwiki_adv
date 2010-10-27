@@ -362,7 +362,7 @@ function strip_bracket($str)
 function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', $withfilename = FALSE)
 {
 //	global $pagereading_enable, $list_index, $_msg_symbol, $_msg_other;
-	global $pagereading_enable, $list_index;
+	global $pagereading_enable, $list_index, $_string;
 
 	$_msg_symbol = $_string['symbol'];
 	$_msg_symbol = $_string['other'];
@@ -507,13 +507,13 @@ EOD;
 	pkwk_common_headers();
 	header('HTTP', true, 500);	// サーバーエラーとする
 	
+	pkwk_common_headers();
 	if(defined('SKIN_FILE') && file_exists(SKIN_FILE) && is_readable(SKIN_FILE)) {
 		catbody($title, $page, $body);
 	} elseif ($skin_file != '' && file_exists($skin_file) && is_readable($skin_file)) {
 		define('SKIN_FILE', $skin_file);
 		catbody($title, $page, $body);
 	} else {
-		pkwk_common_headers();
 		print <<<EOD
 <!doctype html>
 <html>
@@ -636,7 +636,7 @@ function get_glossary_pattern(& $pages, $min_len = -1)
 {
 	global $WikiName, $autoglossary, $nowikiname;
 
-	$config = &new Config('Glossary');
+	$config = new Config('Glossary');
 	$config->read();
 	$ignorepages      = $config->get('IgnoreList');
 	$forceignorepages = $config->get('ForceIgnoreList');
@@ -672,7 +672,7 @@ function get_autolink_pattern(& $pages, $min_len = -1)
 {
 	global $WikiName, $autolink, $nowikiname;
 
-	$config = &new Config('AutoLink');
+	$config = new Config('AutoLink');
 	$config->read();
 	$ignorepages      = $config->get('IgnoreList');
 	$forceignorepages = $config->get('ForceIgnoreList');

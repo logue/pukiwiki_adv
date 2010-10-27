@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone
-// $Id: html.php,v 1.65.39 2010/09/20 14:43:00 Logue Exp $
+// $Id: html.php,v 1.65.40 2010/10/21 19:21:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team <http://pukiwiki.cafelounge.net/plus/>
@@ -33,7 +33,7 @@ function catbody($title, $page, $body)
 	global $modifierlink;	// Site administrator's name
 
 	global $skin_file;
-	global $_string;
+	global $_string, $always_menu_displayed;
 	
 	global $head_tags, $foot_tags;	// Obsolete
 	
@@ -361,7 +361,7 @@ function catbody($title, $page, $body)
 			}
 		}
 		
-		if ((PKWK_WARNING === true || DEBUG === true) && ! empty($info)){
+		if (DEBUG === true && ! empty($info)){
 			$body = '<div style="padding: 0pt 0.7em;" class="ui-state-highlight ui-corner-all">'.
 					'<p><span class="ui-icon ui-icon-info" style="float: left; margin-right: 0.3em;"></span>'.$_string['debugmode'].'</p>'."\n".
 					'<ul>'."\n".
@@ -386,12 +386,8 @@ function catbody($title, $page, $body)
 		require(SKIN_FILE);
 	}
 
-	if(extension_loaded('zlib') && 
-		ob_get_length() === FALSE && 
-		!ini_get('zlib.output_compression') && 
-		ini_get('output_handler') !== 'ob_gzhandler' && 
-		ini_get('output_handler') !== 'mb_output_handler'){
-		
+	global $ob_flag;
+	if($ob_flag){
 		ob_end_flush();
 	}
 
@@ -687,8 +683,10 @@ function pkwk_headers_sent()
 
 // Output common HTTP headers
 function pkwk_common_headers($compress = true){
+	global $cache, $ob_flag;
+	$ob_flag = false;
 	if (! PKWK_OPTIMISE) pkwk_headers_sent();
-/*
+
 	if(PKWK_ZLIB_LOADABLE_MODULE == true && $compress != false) {
 		$matches = array();
 		if(extension_loaded('zlib') && 
@@ -699,6 +697,7 @@ function pkwk_common_headers($compress = true){
 			
 			// http://jp.php.net/manual/ja/function.ob-gzhandler.php
 			ob_start('ob_gzhandler');
+			$ob_flag = true;
 		}else if(ini_get('zlib.output_compression') &&
 			preg_match('/\b(gzip|deflate)\b/i', $_SERVER['HTTP_ACCEPT_ENCODING'], $matches)) {
 			// Bug #29350 output_compression compresses everything _without header_ as loadable module
@@ -706,7 +705,6 @@ function pkwk_common_headers($compress = true){
 			header('Content-Encoding: ' . $matches[1]);
 		}
 	}
-*/
 	// RFC2616
 	$vary = get_language_header_vary();
 	if (! empty($vary)) $vary .= ',';
@@ -720,22 +718,6 @@ function pkwk_common_headers($compress = true){
 	}
 	header('ETag: ' . md5(MUTIME));
 }
-
-// DTD definitions
-define('PKWK_DTD_HTML_5',                 18); // HTML5(XHTML5)
-define('PKWK_DTD_XHTML_1_1',              17); // Strict only
-define('PKWK_DTD_XHTML_1_0',              16); // Strict
-define('PKWK_DTD_XHTML_1_0_STRICT',       16);
-define('PKWK_DTD_XHTML_1_0_TRANSITIONAL', 15);
-define('PKWK_DTD_XHTML_1_0_FRAMESET',     14);
-define('PKWK_DTD_XHTML_BASIC_1_0',        11);
-define('PKWK_DTD_HTML_4_01',               3); // Strict
-define('PKWK_DTD_HTML_4_01_STRICT',        3);
-define('PKWK_DTD_HTML_4_01_TRANSITIONAL',  2);
-define('PKWK_DTD_HTML_4_01_FRAMESET',      1);
-
-define('PKWK_DTD_TYPE_XHTML',        1);
-define('PKWK_DTD_TYPE_HTML',         0);
 
 // Output HTML DTD, <html> start tag. Return content-type.
 function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_XHTML_1_1, $charset = CONTENT_CHARSET)
@@ -751,49 +733,29 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_XHTML_1_1, $charset = CONTENT_CHAR
 	switch($pkwk_dtd){
 	case PKWK_DTD_HTML_5:
 		$type    = PKWK_DTD_TYPE_HTML;
-		$suffix  = '/';
 		break;
 
 	case PKWK_DTD_XHTML_1_1:
 		$version = '1.1' ;
 		$dtd     = 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd';
-		$suffix  = '/';
 		break;
 
 	case PKWK_DTD_XHTML_1_0_STRICT:
 		$version = '1.0' ;
 		$option  = 'Strict';
 		$dtd     = 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd';
-		$suffix  = '/';
 		break;
 
 	case PKWK_DTD_XHTML_1_0_TRANSITIONAL:
 		$version = '1.0' ;
 		$option  = 'Transitional';
 		$dtd     = 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd';
-		$suffix  = '/';
 		break;
 
 	case PKWK_DTD_XHTML_BASIC_1_0:
 		$version = '1.0' ;
 		$option  = 'Basic';
 		$dtd     = 'http://www.w3.org/TR/xhtml-basic/xhtml-basic10.dtd';
-		$suffix  = '/';
-		break;
-
-	case PKWK_DTD_HTML_4_01_STRICT:
-		$type    = PKWK_DTD_TYPE_HTML;
-		$version = '4.01';
-		$dtd     = 'http://www.w3.org/TR/html4/strict.dtd';
-		$suffix  = '';
-		break;
-
-	case PKWK_DTD_HTML_4_01_TRANSITIONAL:
-		$type    = PKWK_DTD_TYPE_HTML;
-		$version = '4.01';
-		$option  = 'Transitional';
-		$dtd     = 'http://www.w3.org/TR/html4/loose.dtd';
-		$suffix  = '';
 		break;
 
 	default:
@@ -854,8 +816,6 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_XHTML_1_1, $charset = CONTENT_CHAR
 
 /* タグヘルパー */
 function tag_helper($tagname,$tags){
-	global $suffix;
-
 	foreach ($tags as $tag) {
 		// linkタグで、rel属性やtype属性がない場合スタイルシートとする。
 		if ($tagname == 'link' && (empty($tags['rel']) || empty($tags['type'])) ){
@@ -893,7 +853,7 @@ function tag_helper($tagname,$tags){
 				$ret = '<'.$tagname.' '.$tag_content.'>'.$content.'</'.$tagname.'>';
 			}
 		}else{
-			$ret = '<'.$tagname.' '.$tag_content.$suffix.'>';
+			$ret = '<'.$tagname.' '.$tag_content.' />';
 		}
 		
 		if ($IE_flag){ 

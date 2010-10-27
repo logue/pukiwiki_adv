@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: tracker.inc.php,v 1.123.1 2010/08/29 13:28:00 Logue Exp $
+// $Id: tracker.inc.php,v 1.123.2 2010/10/25 19:24:00 Logue Exp $
 // Copyright (C) 
 //     2010      PukiWiki Advance Developers Team
 //     2004-2009 PukiWiki Plus! Team
@@ -63,7 +63,7 @@ define('PLUGIN_TRACKER_SORT_ORDER_DEFAULT', PLUGIN_TRACKER_SORT_ORDER_ASC);
 // Show a form
 function plugin_tracker_convert()
 {
-	global $vars;
+	global $vars, $config_name;
 
 //	if (PKWK_READONLY) return ''; // Show nothing
 	if (auth::check_role('readonly')) return ''; // Show nothing
@@ -92,7 +92,7 @@ function plugin_tracker_convert()
 	}
 	unset($args, $argc, $arg);
 
-	$tracker_form = & new Tracker_form();
+	$tracker_form = new Tracker_form();
 	if (! $tracker_form->init($base, $refer, $config, $rel)) {
 		return '#tracker: ' . htmlspecialchars($tracker_form->error) . '<br />';
 	}
@@ -148,7 +148,7 @@ EOD;
 // Add new page
 function plugin_tracker_action()
 {
-	global $post, $vars, $now;
+	global $post, $vars, $now, $config_name;
 
 //	if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
 	// Plus! code start
@@ -211,7 +211,7 @@ function plugin_tracker_action()
 
 	$from = $to = array();
 
-	$tracker_form = & new Tracker_form();
+	$tracker_form = new Tracker_form();
 	if (! $tracker_form->init($base, $refer, $config)) {
 		return array(
 			'msg'  => 'Cannot write',
@@ -444,7 +444,7 @@ class Tracker_form
 			return FALSE;
 		}
 
-		$this->fields[$fieldname] = & new $class(
+		$this->fields[$fieldname] = new $class(
 			$this,			// Reference
 			array(
 				$fieldname,
@@ -964,7 +964,7 @@ function plugin_tracker_list_render($base, $refer, $rel = '', $config = '', $ord
 	$tracker_count++;
 //miko
 
-	$tracker_list = & new Tracker_list();
+	$tracker_list = new Tracker_list();
 
 	if (! $tracker_list->init($base, $refer, $config, $rel)  ||
 		! $tracker_list->setSortOrder($order)) {
@@ -981,7 +981,23 @@ function plugin_tracker_list_render($base, $refer, $rel = '', $config = '', $ord
 	}
 	unset($tracker_list);
 
-	return convert_html($result);
+//miko
+	global $sortable_tracker;
+//	if ($sortable_tracker) {
+		$trackerid = 'trackerlist' . $count;
+		$trackerso = join(',', array_fill(0, $cols, '"String"'));
+		$html = convert_html($result);
+		$html = preg_replace('/<table class="style_table"/', '<table id="' . $trackerid . '" class="style_table"', $html);
+		return $html . <<<EOD
+<script type="text/javascript">
+//<![CDATA[
+var st = new SortableTable(document.getElementById('{$trackerid}'),[{$trackerso}]);
+//]]></script>
+EOD;
+//	}
+//miko
+
+//	return convert_html($result);
 }
 
 // Listing class
@@ -1009,7 +1025,7 @@ class Tracker_list
 
 	function init($base, $refer, $config = NULL, $relative = '')
 	{
-		$this->form = & new Tracker_form();
+		$this->form = new Tracker_form();
 		return $this->form->init($base, $refer, $config, $relative);
 	}
 

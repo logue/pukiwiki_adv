@@ -2,8 +2,8 @@
 /**
  * bluff プラグイン
  *
- * @copyright   Copyright &copy; 2009, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: bluff.inc.php,v 0.1 200/04/04 05:22:00 upk Exp $
+ * @copyright   Copyright &copy; 2010, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
+ * @version     $Id: bluff.inc.php,v 0.2 2010/09/20 13:00:00 Logue Exp $
  *
  */
 
@@ -66,7 +66,6 @@ function plugin_bluff_convert()
 		// $head_tags[] = ' <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />';
 		$head_tags[] = ' <script type="text/javascript" src="'.SKIN_URI.'js/plugin/bluff/js-class.js"></script>';
 		$head_tags[] = ' <script type="text/javascript" src="'.SKIN_URI.'js/plugin/bluff/bluff-min.js"></script>';
-		$head_tags[] = ' <script type="text/javascript" src="'.SKIN_URI.'js/plugin/bluff/excanvas.js"></script>';
 		// アイディア
 		// http://www.remus.dti.ne.jp/~a-satomi/nikki/tmp/multiExtJS/test.html
 		$retval .= 'var array_onload = new Array();';

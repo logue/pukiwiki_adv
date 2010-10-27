@@ -15,8 +15,8 @@ function set_time()
 {
 	global $language, $use_local_time;
 
-	defined('UTIME')	or define('UTIME', time());
-	defined('MUTIME')	or define('MUTIME', getmicrotime());
+//	defined('UTIME')	or define('UTIME', time());
+//	defined('MUTIME')	or define('MUTIME', getmicrotime());
 
 	if ($use_local_time) {
 		list($zone, $zonetime) = set_timezone( DEFAULT_LANG );

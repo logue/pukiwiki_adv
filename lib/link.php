@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone
-// $Id: link.php,v 1.19.6 2010/08/29 23:32:09 Logue Exp $
+// $Id: link.php,v 1.19.7 2010/10/25 19:19:09 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team
 //   2005-2007 PukiWiki Plus! Team
@@ -262,7 +262,7 @@ function & links_get_objects($page, $refresh = FALSE)
 	static $obj;
 
 	if (! isset($obj) || $refresh)
-		$obj = & new InlineConverter(NULL, array('note'));
+		$obj = new InlineConverter(NULL, array('note'));
 
 	$result = $obj->get_objects(join('', preg_grep('/^(?!\/\/|\s)./', get_source($page))), $page);
 	return $result;

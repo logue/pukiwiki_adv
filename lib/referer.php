@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: referer.php,v 1.8.4 2010/07/11 09:50:00 Logue Exp $
+// $Id: referer.php,v 1.8.5 2010/10/25 19:43:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team
 //   2006-2008 PukiWiki Plus! Team
@@ -54,7 +54,7 @@ function ref_save($page)
 	if (! is_writable(REFERER_DIR)) die_message('Permission denied to write: REFERER_DIR');
 
 	// Update referer data
-	if (ereg("[,\"\n\r]", $url))
+	if (preg_match("[,\"\n\r]", $url))
 		$url = '"' . str_replace('"', '""', $url) . '"';
 
 	$data  = ref_get_data($page, 3);

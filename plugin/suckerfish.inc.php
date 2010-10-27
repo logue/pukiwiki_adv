@@ -165,9 +165,11 @@ function plugin_suckerfish_convert_html($str){
 	if ( preg_match('#<a href="(.*?)"[^>]*>(.*?)</a>#si', $conv, $regs) )
 		return array( TRUE, $regs[1], $regs[2], str_replace($regs[0], '__sukerfish__', $conv) );
 
+	// 内部リンクアイコンを削除
 	if ( preg_match('#<a class="inn" href="(.*?)" .*?>(.*?)<img src="' . IMAGE_URI . 'iconset/default/symbol/inn.png".*?</a>#si', $conv, $regs) )
 		return array( TRUE, $regs[1], $regs[2], str_replace($regs[0], '__sukerfish__', $conv) );
 	
+	// リンクアイコンを削除
 	if ( preg_match('#<a class="ext" href="(.*?)" .*?>(.*?)<img src="' . IMAGE_URI . 'iconset/default/symbol/ext.png".*?</a>#si', $conv, $regs) )
 		return array( TRUE, $regs[1], $regs[2], str_replace($regs[0], '__sukerfish__', $conv) );
 

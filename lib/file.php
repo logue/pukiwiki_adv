@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: file.php,v 1.94.1 2010/09/01 19:25:00 Logue Exp $
+// $Id: file.php,v 1.94.2 2010/10/25 07:45:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -655,7 +655,7 @@ function get_existpages($dir = DATA_DIR, $ext = '.txt')
 function get_readings()
 {
 	global $pagereading_enable, $pagereading_kanji2kana_converter;
-	global $pagereading_kanji2kana_encoding, $pagereading_chasen_path;
+	global $pagereading_kanji2kana_encoding, $pagereading_chasen_path, $pagereading_mecab_path;
 	global $pagereading_kakasi_path, $pagereading_config_page;
 	global $pagereading_config_dict;
 
@@ -766,6 +766,35 @@ function get_readings()
 				unlink($tmpfname) or
 					die_message('Temporary file can not be removed: ' . $tmpfname);
 				break;
+			
+			case 'mecab':
+				$tmpfname = tempnam(CACHE_DIR, 'PageReading');
+				$fp = fopen($tmpfname, "w")
+					or die_message("cannot write temporary file '$tmpfname'.\n");
+				foreach ($readings as $page => $reading) {
+					if($reading=='') {
+						fputs($fp, mb_convert_encoding("$page\n", $pagereading_kanji2kana_encoding, SOURCE_ENCODING));
+					}
+				}
+				fclose($fp);
+				if(!file_exists($pagereading_mecab_path)) {
+					unlink($tmpfname);
+					die_message("MECAB not found: $pagereading_mecab_path");
+				}
+				$fp = popen("$pagereading_mecab_path -Oyomi $tmpfname", "r");
+				if(!$fp) {
+					unlink($tmpfname);
+					die_message("MeCab execution failed: $pagereading_mecab_path -Oyomi $tmpfname");
+				}
+				foreach ($readings as $page => $reading) {
+					if($reading=='') {
+						$line = fgets($fp);
+						$line = mb_convert_encoding($line, SOURCE_ENCODING, $pagereading_kanji2kana_encoding);
+						$line = chop($line);
+						$line = mb_convert_kana($line, "C");
+						$readings[$page] = $line;
+					}
+				}
 
 			case 'none':
 				$patterns = $replacements = $matches = array();

@@ -16,14 +16,17 @@ function plugin_referer_init()
 {
 	$messages = array(
 		'_referer_msg' => array(
-			'msg_H0_Refer'       => _('Referer'),
-			'msg_Hed_LastUpdate' => _('LastUpdate'),
-			'msg_Hed_1stDate'    => _('First Register'),
-			'msg_Hed_RefCounter' => _('RefCounter'),
-			'msg_Hed_Referer'    => _('Referer'),
-			'msg_Fmt_Date'       => _('F j, Y, g:i A'),
-			'msg_Chr_uarr'       => _('&uArr;'),
-			'msg_Chr_darr'       => _('&dArr;'),
+			'msg_referer'			=> _('Referer'),
+			'msg_referer_list'		=> _('Referer List'),
+			'msg_no_data'			=> _('No data'),
+			'msg_H0_Refer'			=> _('Referer'),
+			'msg_Hed_LastUpdate'	=> _('LastUpdate'),
+			'msg_Hed_1stDate'		=> _('First Register'),
+			'msg_Hed_RefCounter'	=> _('RefCounter'),
+			'msg_Hed_Referer'		=> _('Referer'),
+			'msg_Fmt_Date'			=> _('F j, Y, g:i A'),
+			'msg_Chr_uarr'			=> _('&uArr;'),
+			'msg_Chr_darr'			=> _('&dArr;'),
 		),
 	);
 	set_plugin_messages($messages);
@@ -51,7 +54,7 @@ function plugin_referer_action()
 	} else {
 		return array(
 			'msg'  => 'referer list',
-			'body' => page_list($pages, 'referer', FALSE));
+			'body' => page_list($pages, $_referer_msg['msg_referer'], FALSE));
 	}
 }
 
@@ -62,7 +65,7 @@ function plugin_referer_body($page, $sort)
 	global $referer;
 
 	$data = ref_get_data($page);
-	if (empty($data)) return '<p>no data.</p>';
+	if (empty($data)) return '<p>'.$_referer_msg['no data'].'</p>';
 
 	$bg = plugin_referer_set_color();
 
@@ -154,7 +157,7 @@ function plugin_referer_body($page, $sort)
 		// 適用不可データのときはアンカーをつけない
 		$body .= ($sw_ignore) ?
 			'			<td class="style_td">' . $s_url . '</td>' . "\n" :
-			'			<td class="style_td"><a href="' . $e_url . '" rel="nofollow">' . $s_url . '</a></td>' . "\n";
+			'			<td class="style_td"><a href="' . $e_url . '" rel="nofollow noreferer">' . $s_url . '</a></td>' . "\n";
 
 		$body .= '		</tr>' . "\n";
 		$ctr++;
@@ -166,7 +169,7 @@ function plugin_referer_body($page, $sort)
 	return <<<EOD
 <table summary="Referer" class="style_table" cellspacing="1" border="0">
 	<tr>
-		<th style="background-color:$color_last"class="style_th" colspan="2">
+		<th style="background-color:$color_last" class="style_th" colspan="2">
 			 <a href="$href&amp;sort=$sort_last">{$_referer_msg['msg_Hed_LastUpdate']}$arrow_last</a>
 		</th>
 		<th class="style_th" style="background-color:$color_1st" colspan="2">
@@ -190,14 +193,13 @@ function plugin_referer_set_color()
 
 	if (! isset($color)) {
 		// Default color
-		$color = array('cur' => '#8888ff', 'etc' => '#E0E8F0');
+		$color = array('cur' => '#99CCFF', 'etc' => '#E0E8F0');
 
 		$config = new Config(CONFIG_REFERER);
 		$config->read();
 		$pconfig_color = $config->get('COLOR');
 		unset($config);
 
-		// BGCOLOR(#88ff88)
 		$matches = array();
 		foreach ($pconfig_color as $x)
 			$color[$x[0]] = htmlspecialchars(

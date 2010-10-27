@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: include.inc.php,v 1.21.4 2008/01/05 18:18:00 upk Exp $
+// $Id: include.inc.php,v 1.22.5 2010/09/21 19:20:00 Logue Exp $
 //
 // Include-once plugin
 
@@ -114,7 +114,7 @@ function plugin_include_convert()
 			$body = '<span align="center"><h5 class="side_label">' .
 				$link . '</h5></span><small>' . $body . '</small>';
 		} else {
-			$body = '<h1>' . $link . '</h1>' . "\n" . $body . "\n";
+			$body = '<article>'."\n".'<h1>' . $link . '</h1>' . "\n" . $body . "\n".'</article>'."\n";
 		}
 	}
 

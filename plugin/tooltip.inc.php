@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
 //
-// $Id: tooltip.inc.php,v 0.6.3 2008/11/18 01:50:00 upk Exp $
+// $Id: tooltip.inc.php,v 0.6.4 2010/15/10 15:10:00 Logue Exp $
 //
 /* 
 *プラグイン tooltip
@@ -33,16 +33,29 @@ function plugin_tooltip_init()
 // Plus! ajax Glossary for UTF-8
 function plugin_tooltip_action()
 {
-	global $vars;
+	global $vars, $glossarypage;
 
 	$term = $vars['q'];
 	if (trim($term) == '') { exit; }
 	$glossary = plugin_tooltip_get_glossary($term, '', TRUE);
 	if ($glossary == FALSE) { exit; }
 	$s_glossary = convert_html($glossary);
-
+	$glossary_lastmod = get_filetime($glossarypage);	// なんども通信するのを防ぐためlastmodを出力
+	
 	pkwk_common_headers();
+/*
+	// FIXME
+	$request_headers = apache_request_headers();
+	$etag = md5( $_SERVER["REQUEST_URI"], $glossary_lastmod);
+	if( $request_headers["If-Modified-Since"] ) {
+		header( "HTTP/1.1 304 Not Modified" );
+		header( "Etag: \"$etag\"" );
+		exit();
+	}
+*/
 	header('Content-type: text/xml');
+	header('Last-Modified: ' . gmdate( "D, d M Y H:i:s", $glossary_lastmod ) . ' GMT');
+	header('ETag: ' . $etag );
 	print '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 	print $s_glossary;
 	exit;
@@ -77,7 +90,7 @@ EOD;
 	}
 	else {
 	return <<<EOD
-<span class="tooltip" title="$s_glossary" onmouseover="javascript:this.style.backgroundColor='#ffe4e1';" onmouseout="javascript:this.style.backgroundColor='transparent';">$term</span>
+<span class="tooltip" title="$s_glossary">$term</span>
 EOD;
 	}
 }

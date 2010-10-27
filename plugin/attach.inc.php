@@ -1,6 +1,6 @@
 <?php
 // PukPukiPlus.
-// $Id: attach.inc.php,v 1.91.43 2010/08/28 23:57:00 Logue Exp $
+// $Id: attach.inc.php,v 1.91.44 2010/10/25 19:18:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team
@@ -120,7 +120,7 @@ function plugin_attach_convert()
 
 	$ret = '';
 	if (! $nolist) {
-		$obj  = & new AttachPages($page);
+		$obj  = new AttachPages($page);
 		$ret .= $obj->toString($page, TRUE);
 	}
 	if (! $noform) {
@@ -195,7 +195,7 @@ function attach_filelist()
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
 
-	$obj = & new AttachPages($page, 0);
+	$obj = new AttachPages($page, 0);
 
 	if (! isset($obj->pages[$page])) {
 		return '';
@@ -329,7 +329,7 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 
 	if ($must_compress && is_uploaded_file($file['tmp_name'])) {
 		if (PLUGIN_ATTACH_COMPRESS_TYPE == 'TGZ' && exist_plugin('dump')) {
-			$obj = & new AttachFile($page, $file['name'] . '.tgz');
+			$obj = new AttachFile($page, $file['name'] . '.tgz');
 			if ($obj->exist)
 				return array('result'=>FALSE,
 					'msg'=>$_attach_messages['err_exists']);
@@ -345,7 +345,7 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 			@unlink($tar->filename);
 		} else
 		if (PLUGIN_ATTACH_COMPRESS_TYPE == 'GZ' && extension_loaded('zlib')) {
-			$obj = & new AttachFile($page, $file['name'] . '.gz');
+			$obj = new AttachFile($page, $file['name'] . '.gz');
 			if ($obj->exist)
 				return array('result'=>FALSE,
 					'msg'=>$_attach_messages['err_exists']);
@@ -362,7 +362,7 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 			@unlink($file['tmp_name']);
 		} else
 		if (PLUGIN_ATTACH_COMPRESS_TYPE == 'ZIP' && class_exists('ZipArchive')) {
-			$obj = & new AttachFile($page, $file['name'] . '.zip');
+			$obj = new AttachFile($page, $file['name'] . '.zip');
 			if ($obj->exist)
 				return array('result'=>FALSE,
 					'msg'=>$_attach_messages['err_exists']);
@@ -378,7 +378,7 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 		}
 	} else {
 //miko
-		$obj = & new AttachFile($page, $file['name']);
+		$obj = new AttachFile($page, $file['name']);
 		if ($obj->exist)
 			return array('result'=>FALSE,
 				'msg'=>$_attach_messages['err_exists']);
@@ -507,7 +507,7 @@ function attach_info($err = '')
 
 	check_editable($refer, true, true);
 
-	$obj = & new AttachFile($refer, $file, $age);
+	$obj = new AttachFile($refer, $file, $age);
 	return $obj->getstatus() ?
 		$obj->info($err) :
 		array('msg'=>$_attach_messages['err_notfound']);
@@ -524,7 +524,7 @@ function attach_delete()
 	if (is_freeze($refer) || ! is_editable($refer))
 		return array('msg'=>$_attach_messages['err_noparm']);
 
-	$obj = & new AttachFile($refer, $file, $age);
+	$obj = new AttachFile($refer, $file, $age);
 	if (! $obj->getstatus())
 		return array('msg'=>$_attach_messages['err_notfound']);
 
@@ -544,7 +544,7 @@ function attach_freeze($freeze)
 	if (is_freeze($refer) || ! is_editable($refer)) {
 		return array('msg'=>$_attach_messages['err_noparm']);
 	} else {
-		$obj = & new AttachFile($refer, $file, $age);
+		$obj = new AttachFile($refer, $file, $age);
 		return $obj->getstatus() ?
 			$obj->freeze($freeze, $pass) :
 			array('msg'=>$_attach_messages['err_notfound']);
@@ -563,7 +563,7 @@ function attach_rename()
 	if (is_freeze($refer) || ! is_editable($refer)) {
 		return array('msg'=>$_attach_messages['err_noparm']);
 	}
-	$obj = & new AttachFile($refer, $file, $age);
+	$obj = new AttachFile($refer, $file, $age);
 	if (! $obj->getstatus())
 		return array('msg'=>$_attach_messages['err_notfound']);
 
@@ -580,7 +580,7 @@ function attach_open()
 		${$var} = isset($vars[$var]) ? $vars[$var] : '';
 	}
 
-	$obj = & new AttachFile($refer, $file, $age);
+	$obj = new AttachFile($refer, $file, $age);
 	return $obj->getstatus() ?
 		$obj->open() :
 		array('msg'=>$_attach_messages['err_notfound']);
@@ -595,7 +595,7 @@ function attach_list()
 
 	$refer = isset($vars['refer']) ? $vars['refer'] : '';
 
-	$obj = & new AttachPages($refer);
+	$obj = new AttachPages($refer);
 
 	$msg = $_attach_messages[($refer == '') ? 'msg_listall' : 'msg_listpage'];
 	$body = ($refer == '' || isset($obj->pages[$refer])) ?
@@ -722,7 +722,7 @@ EOD;
 </form>
 EOD;
 	if ($listview) {
-		$obj = & new AttachPages($page);
+		$obj = new AttachPages($page);
 		$body = ($refer == '' || isset($obj->pages[$page])) ?
 			$obj->toRender($page, FALSE) :
 			$_attach_messages['err_noexist'];
@@ -1082,7 +1082,7 @@ class AttachFiles
 
 	function add($file, $age)
 	{
-		$this->files[$file][$age] = & new AttachFile($this->page, $file, $age);
+		$this->files[$file][$age] = new AttachFile($this->page, $file, $age);
 	}
 
 	// ファイル一覧を取得
@@ -1226,7 +1226,7 @@ class AttachPages
 			$_file = decode($matches[2]);
 			$_age  = isset($matches[3]) ? $matches[3] : 0;
 			if (! isset($this->pages[$_page])) {
-				$this->pages[$_page] = & new AttachFiles($_page);
+				$this->pages[$_page] = new AttachFiles($_page);
 			}
 			$this->pages[$_page]->add($_file, $_age);
 		}

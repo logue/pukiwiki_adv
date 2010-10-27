@@ -87,6 +87,7 @@ if (! extension_loaded('gettext')) {
 	}
 }
 
+
 // Defaults
 $notify = $trackback = $referer = 0;
 

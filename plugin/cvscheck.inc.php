@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
 //
-// $Id: cvscheck.inc.php,v 0.19 2006/10/04 01:31:00 miko Exp $
+// $Id: cvscheck.inc.php,v 0.19.1 2010/09/08 16:50:00 Logue Exp $
 /* 
 *プラグイン cvscheck
  cvsのversionと比較して異なるものを表示
@@ -16,8 +16,8 @@
   <数字>d: キャッシュを有効にして、<数字>日だけ保存。
 */
 // 項目の取り出しに失敗したページを一覧に表示する
-define('CVSCHECK_CACHE_FILE','cvscheck_cache.txt');
-define('CVSCHECK_CACHE_LOCAL_FILE','cvscheck_cache_local.txt');
+define('CVSCHECK_CACHE_FILE','cvscheck_cache.dat');
+define('CVSCHECK_CACHE_LOCAL_FILE','cvscheck_cache_local.dat');
 
 //=========================================================
 function plugin_cvscheck_init()
@@ -202,6 +202,7 @@ function plugin_cvscheck_cache_write($file,$acvs){
 			$buf[] = "$plugin $ver\n";
 		}
 	}
+	pkwk_touch($file);
 	$fp = fopen($file, 'w+');
 	if ( ! $fp ) return $file;
 	flock($fp,LOCK_EX);
@@ -232,16 +233,16 @@ function plugin_cvscheck_diff($alocal,$acvs)
 			$lver = ( $lver == '' ) ? $_cvscheck_messages['title_not_found'] : $lver;
 			$s = preg_replace('/^\//','',$sites[$site]) . $file;
 			if (version_compare($lver,$cver) >= 0) {
-				$outs[] = "|[[$s&nbsp;:$url/$s]]|COLOR(green)" . '{' . $lver . '}' . "|[[$cver:$curl/$s?rev=$cver]]|\n";
+				$outs[] = "|[[$s>$url/$s?view=log]]|COLOR(green)" . '{' . $lver . '}' . "|[[$cver>$curl/$s?rev=$cver]]|\n";
 			} else {
-				$outs[] = "|[[$s&nbsp;:$url/$s]]|COLOR(red)" . '{' . $lver . '}' . "|[[$cver:$curl/$s?rev=$cver]]|\n";
+				$outs[] = "|[[$s>$url/$s?view=log]]|COLOR(red)" . '{' . $lver . '}' . "|[[$cver>$curl/$s?rev=$cver]]|\n";
 			}
 		}
 	}
 	if ( count($outs) ){
 		array_unshift($outs, 
 			"|LEFT:|LEFT:|LEFT:|c\n",
-			"|{$_cvscheck_messages['title_name']}|{$_cvscheck_messages['title_local']}|{$_cvscheck_messages['title_cvs']}|h\n"
+			"|~{$_cvscheck_messages['title_name']}|~{$_cvscheck_messages['title_local']}|~{$_cvscheck_messages['title_cvs']}|h\n"
 		);
 	}
 	else {

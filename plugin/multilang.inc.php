@@ -80,7 +80,7 @@ function plugin_multilang_inline_link($option, $args)
 
 			if (! empty($country)) {
 				$country = strtolower($country);
-				$title = '<img src="' . IMAGE_URI . 'icon/flags/' . $country . '.png" alt="' . $title . '" title="'. $title . '" />';
+				$title = '<img src="' . IMAGE_URI . 'plugin/logview/flags/' . $country . '.png" width="16" height="11" alt="' . $title . '" title="'. $title . '" />';
 			}
 		}
 

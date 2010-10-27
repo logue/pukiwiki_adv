@@ -1,14 +1,14 @@
 <?php
-/*
- * PukiWiki lsプラグイン
- *
- * CopyRight 2002 Y.MASUI GPL2
- * http://masui.net/pukiwiki/ masui@masui.net
- *
- * 2005-2006 PukiWiki Plus! Team
- *
- * $Id: ls.inc.php,v 1.9.1 2006/11/04 18:06:00 upk Exp $
- */
+// PukiWiki - Yet another WikiWikiWeb clone.
+// $Id: ls.inc.php,v 1.11.2 2010/09/21 19:28:45 Logue Exp $
+// Copyright (C)
+//   2010      PukiWiki Advance Developers Team
+//   2005-2006 PukiWiki Plus! Team
+//   2002-2004, 2007 PukiWiki Developers Team
+//   2002      Y.MASUI GPL2 http://masui.net/pukiwiki/ masui@masui.net
+// License: GPL version 2
+//
+// List plugin
 
 function plugin_ls_convert()
 {
@@ -24,7 +24,9 @@ function plugin_ls_convert()
 
 	$prefix = $vars['page'].'/';
 
-	$pages = array();
+	$page  = isset($vars['page']) ? $vars['page'] : '';
+	$pages = preg_grep('#^' .  preg_quote($page . '/' , '#') . '#', get_existpages());
+
 	foreach (auth::get_existpages() as $page)
 	{
 		if (strpos($page,$prefix) === 0)
@@ -38,13 +40,22 @@ function plugin_ls_convert()
 	foreach ($pages as $page)
 	{
 		$comment = '';
-		if ($with_title)
-		{
-			list($comment) = get_source($page);
-			// 見出しの固有ID部を削除
-			$comment = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/','$1$2',$comment);
-
-			$comment = '- ' . ereg_replace('^[-*]+','',$comment);
+		if ($with_title) {
+			$array = file_head(get_filename($page), 1);
+			if ($array) {
+				$comment = ' - ' .
+					preg_replace(
+						array(
+							'/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/S',	// Remove fixed-heading anchors
+							'/^(?:-+|\*+)/',	// Remove syntax garbages at this situation
+						),
+						array(
+							'$1$2',
+							'',
+						),
+						current($array)
+					);
+			}
 		}
 		$ls[] = "-[[$page]] $comment";
 	}
