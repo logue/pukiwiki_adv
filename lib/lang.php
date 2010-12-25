@@ -3,7 +3,7 @@
  * Language judgment (言語判定)
  *
  * @copyright   Copyright &copy; 2005-2006,2008, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: lang.php,v 0.27 2010/10/27 16:15:00 Logue Exp $
+ * @version     $Id: lang.php,v 0.27.2 2010/12/19 11:25:00 Logue Exp $
  *
  */
 
@@ -23,6 +23,12 @@ function set_language()
 	global $public_holiday_guest_view;
 
 	$language = get_language($language_considering_setting_level);
+/*
+LANG
+LANG_ENCODING
+DOMAIN
+PO_LANG
+*/
 
 	// LANG - Internal content encoding ('en', 'ja', or ...)
 	define('LANG', $language);
@@ -54,13 +60,14 @@ function set_language()
 	define('LANG_ENCODING', 'UTF-8');
 
 	// I18N
+	if (extension_loaded('intl')){
+		locale_set_default($language);
+	}
 
 	// LOCALE Name specified by GETTEXT().
 	define('DOMAIN', 'pukiwiki');
 	// LOCALE Name specified by SETLOCALE().
-	if (! defined('PO_LANG')) {
-		define('PO_LANG', $language); // 'en_US', 'ja_JP'
-	}
+	defined('PO_LANG') or define('PO_LANG', $language); // 'en_US', 'ja_JP'
 
 	// PHP mbstring process.
 	set_mbstring($language);
@@ -72,7 +79,7 @@ function set_language()
  */
 function set_mbstring($lang)
 {
-       	// Internal content encoding = Output content charset (for skin)
+	// Internal content encoding = Output content charset (for skin)
 	define('CONTENT_CHARSET', get_content_charset($lang) ); // 'UTF-8', 'iso-8859-1', 'EUC-JP' or ...
 	// Internal content encoding (for mbstring extension)
 	define('SOURCE_ENCODING', get_source_encoding($lang) );  // 'UTF-8', 'ASCII', or 'EUC-JP'
@@ -414,7 +421,11 @@ class accept_language
 		$accept_language = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
 		// TEST:
 		//$accept_language = 'ko,en,ja,fr;q=0.7,DE;q=0.3';
-		return accept_language::split_str($accept_language);
+		if (extension_loaded('intl')){
+			return locale_accept_from_http($accept_language);
+		}else{
+			return accept_language::split_str($accept_language);
+		}
 	}
 
 	/*

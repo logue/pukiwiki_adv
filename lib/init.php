@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: init.php,v 1.56.2 2010/10/27 16:10:00 Logue Exp $
+// $Id: init.php,v 1.56.3 2010/11/25 16:10:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -15,7 +15,7 @@
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
 define('S_VERSION', 'v1.0 alpha');
-define('S_REVSION', '20101027');
+define('S_REVSION', '20101224');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &copy; 2010' .
@@ -55,13 +55,6 @@ $css_blocks   = array();	// Inline styleseets(<style>/*<![CDATA[*/ ... /*]]>*/</
 $info         = array();	// For debug use.
 
 /////////////////////////////////////////////////
-// Time settings (Plus!)
-
-defined('LOCALZONE')	or define('LOCALZONE', date('Z'));
-defined('UTIME')		or define('UTIME', time() - LOCALZONE);
-defined('MUTIME')		or define('MUTIME', getmicrotime());
-
-/////////////////////////////////////////////////
 // Require INI_FILE
 
 define('USR_INI_FILE', add_homedir('pukiwiki.usr.ini.php'));
@@ -92,11 +85,17 @@ set_time();
 require(LIB_DIR . 'public_holiday.php');
 
 // Init Resource(for gettext)
-if (! ini_get('safe_mode')) putenv('LC_ALL=' . PO_LANG);
-setlocale(LC_ALL, PO_LANG);
-bindtextdomain(DOMAIN, LANG_DIR);
-bind_textdomain_codeset(DOMAIN, SOURCE_ENCODING);
-textdomain(DOMAIN);
+if (! ini_get('safe_mode')){
+	putenv('LANGUAGE='.PO_LANG);
+	putenv('LANG='.PO_LANG);
+	putenv('LC_ALL='.PO_LANG);
+	putenv('LC_MESSAGES='.PO_LANG);
+}
+T_setlocale(LC_ALL,PO_LANG);
+T_setlocale(LC_CTYPE,PO_LANG);
+T_bindtextdomain(DOMAIN,LANG_DIR);
+T_bind_textdomain_codeset(DOMAIN,SOURCE_ENCODING); 
+T_textdomain(DOMAIN);
 
 /////////////////////////////////////////////////
 // リソースファイルの読み込み
@@ -153,33 +152,31 @@ unset($user_agent);	// Unset after reading UA_INI_FILE
 /////////////////////////////////////////////////
 // ディレクトリのチェック
 
-$die = '';
+$die = array();
 foreach(array('DATA_DIR', 'DIFF_DIR', 'BACKUP_DIR', 'CACHE_DIR') as $dir){
 	if (! is_writable(constant($dir)))
-		$die .= _( 'Directory is not found or not writable' ) . ' (' . $dir . ')' . "\n";
+		$die[] = sprintf($_string,$dir);
 }
 
 // 設定ファイルの変数チェック
 $temp = '';
 foreach(array('rss_max', 'page_title', 'note_hr', 'related_link', 'show_passage',
 	'rule_related_str', 'load_template_func') as $var){
-	if (! isset(${$var})) $temp .= '$' . $var . "\n";
+	if (! isset(${$var})) $temp .= '<li>$' . $var . "</li>\n";
 }
 if ($temp) {
-	if ($die) $die .= "\n";	// A breath
-	$die .= _( 'Variable(s) not found: (Maybe the old *.ini.php?)' ) . "\n" . $temp;
+	$die[] = sprintf('The following values were not found (Maybe the old *.ini.php?): <ul>%s</ul>',$temp);
 }
 
 $temp = '';
 foreach(array('LANG', 'PLUGIN_DIR') as $def){
-	if (! defined($def)) $temp .= $def . "\n";
+	if (! defined($def)) $temp .= '<li>'.$def . "</li>\n";
 }
 if ($temp) {
-	if ($die) $die .= "\n";	// A breath
-	$die .= _( 'Define(s) not found: (Maybe the old *.ini.php?)' ) . "\n" . $temp;
+	$die[] = sprintf('The following values were not definded (Maybe the old *.ini.php?): <ul>%s</ul>',$temp);
 }
 
-if($die) die_message(nl2br("\n\n" . $die));
+if($die) die_message(join("\n",$die));
 unset($die, $temp);
 
 /////////////////////////////////////////////////
@@ -194,7 +191,7 @@ foreach(array($defaultpage, $whatsnew, $interwiki) as $page){
 
 // Prohibit $_GET attack
 foreach (array('msg', 'pass') as $key) {
-	if (isset($_GET[$key])) die_message(sprintf(_('Sorry, %s is already reserved'),$key));
+	if (isset($_GET[$key])) die_message(sprintf(T_('Sorry, %s is already reserved.'),$key));
 }
 
 // Expire risk
@@ -309,7 +306,7 @@ if (empty($_POST)) {
 
 // 入力チェック: 'cmd=' prohibits nasty 'plugin='
 if (isset($vars['cmd']) && isset($vars['plugin']))
-	die( _( 'Using both cmd= and plugin= is not allowed' ) );
+	die( _( 'Using both cmd= and plugin= is not allowed.' ) );
 
 // 入力チェック: cmd, plugin の文字列は英数字以外ありえない
 foreach(array('cmd', 'plugin') as $var) {
@@ -380,9 +377,6 @@ require(add_homedir('rules.ini.php'));
 /////////////////////////////////////////////////
 // 初期設定(その他のグローバル変数)
 
-// 現在時刻
-$now = format_date(UTIME);
-
 // 日時置換ルールを$line_rulesに加える
 if ($usedatetime) $line_rules = array_merge($datetime_rules,$line_rules);
 unset($datetime_rules);
@@ -399,18 +393,4 @@ $line_rules = array_merge(array(
 	'&amp;(#[0-9]+|#x[0-9a-f]+|' . $entity_pattern . ');' => '&$1;',
 	"\r"          => '<br />' . "\n",	/* 行末にチルダは改行 */
 ), $line_rules);
-
-//////////////////////////////////////////////////
-// DTD definitions
-define('PKWK_DTD_HTML_5',                 18); // HTML5(XHTML5)
-define('PKWK_DTD_XHTML_1_1',              17); // Strict only
-define('PKWK_DTD_XHTML_1_0',              16); // Strict
-define('PKWK_DTD_XHTML_1_0_STRICT',       16);
-define('PKWK_DTD_XHTML_1_0_TRANSITIONAL', 15);
-define('PKWK_DTD_XHTML_1_0_FRAMESET',     14);
-define('PKWK_DTD_XHTML_BASIC_1_0',        11);
-
-define('PKWK_DTD_TYPE_XHTML',        1);
-define('PKWK_DTD_TYPE_HTML',         0);
-
 ?>

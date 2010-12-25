@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: func.php,v 1.103.42 2010/09/02 20:16:00 Logue Exp $
+// $Id: func.php,v 1.103.43 2010/11/25 22:32:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -253,6 +253,18 @@ function do_search($word, $type = 'AND', $non_format = FALSE, $base = '')
 	}
 	$pages = array_flip($pages);
 	unset($pages[$whatsnew]);
+	
+	// MeCab使用時
+	// 参考：http://www.kudelab.com/2008/03/phpmecab.html
+	global $pagereading_mecab_path;
+	$process = '';
+	if(file_exists($pagereading_mecab_path)) {
+		$descriptorspec = array(
+			0 => array("pipe", "r"),	// stdin は、子プロセスが読み込むパイプです。
+			1 => array("pipe", "w")		// stdout は、子プロセスが書き込むパイプです。
+		);
+		$process = proc_open($pagereading_mecab_path, $descriptorspec, $pipes);
+	}
 
 	$count = count($pages);
 	foreach (array_keys($pages) as $page) {
@@ -282,7 +294,18 @@ function do_search($word, $type = 'AND', $non_format = FALSE, $base = '')
 
 		// Search for page contents
 		foreach ($keys as $key) {
-			$b_match = preg_match($key, get_source($page, TRUE, TRUE));
+			
+
+			if (!is_resource($process)) {
+				$b_match = preg_match($key, get_source($page, TRUE, TRUE));
+			}else{
+				fwrite($pipes[0], get_source($page, TRUE, TRUE));
+				fclose($pipes[0]);
+				$b_match = stream_get_contents($pipes[1]);
+				fclose($pipes[1]);
+				proc_close($process);
+			}
+			
 			if ($b_type xor $b_match) break; // OR
 		}
 		if ($b_match) continue;
@@ -491,7 +514,7 @@ function die_message($msg){
 	global $skin_file, $page_title, $_string, $_title;
 	$title = $page = $_title['error'];
 	
-	if (PKWK_WARNING === false){	// PKWK_WARNINGが有効でない場合は、詳細なエラーを隠す
+	if (PKWK_WARNING === false || auth::check_role('role_auth')){	// PKWK_WARNINGが有効でない場合は、詳細なエラーを隠す
 		$msg = $_string['error_msg'];
 	}
 	$body = <<<EOD
@@ -504,16 +527,17 @@ EOD;
 	global $trackback;
 	$trackback = 0;
 
-	pkwk_common_headers();
-	header('HTTP', true, 500);	// サーバーエラーとする
-	
-	pkwk_common_headers();
+	if (!headers_sent()){
+		pkwk_common_headers();
+		header('HTTP', true, 500);	// サーバーエラーとする
+	}
+
 	if(defined('SKIN_FILE') && file_exists(SKIN_FILE) && is_readable(SKIN_FILE)) {
 		catbody($title, $page, $body);
 	} elseif ($skin_file != '' && file_exists($skin_file) && is_readable($skin_file)) {
 		define('SKIN_FILE', $skin_file);
 		catbody($title, $page, $body);
-	} else {
+	}else{	
 		print <<<EOD
 <!doctype html>
 <html>
@@ -526,7 +550,8 @@ EOD;
 </html>
 EOD;
 	}
-	exit;
+//	exit();
+	die();
 }
 
 function die_msg($msg) { die($msg); }
@@ -539,7 +564,6 @@ function getmicrotime()
 }
 
 // Elapsed time by second
-//define('MUTIME', getmicrotime());
 function elapsedtime()
 {
 	$at_the_microtime = MUTIME;
@@ -598,7 +622,7 @@ function format_date($val, $paren = FALSE)
 	$date = date($date_format, $val) .
 		' (' . $weeklabels[date('w', $val)] . ') ' .
 		date($time_format, $val);
-
+	
 	return $paren ? '(' . $date . ')' : $date;
 }
 
@@ -1023,7 +1047,7 @@ function get_page_uri($page, $path_reference='rel', $query='', $fragment='')
 //function get_resolve_uri($cmd='', $page='', $query='', $fragment='', $abs=1, $location=1)
 function get_resolve_uri($cmd='', $page='', $path_reference='rel', $query='', $fragment='', $location=1)
 {
-	global $static_url, $vars;
+	global $static_url, $url_suffix, $vars;
 	// global $script, $absolute_uri;
 	// $ret = ($absolute_uri || $path_reference == 'abs') ? get_script_absuri() : $script;
 	$path = (empty($path_reference)) ? 'rel' : $path_reference;
@@ -1044,7 +1068,7 @@ function get_resolve_uri($cmd='', $page='', $path_reference='rel', $query='', $f
 			if (empty($cmd) && $static_url == 1 && $vars['cmd'] != 'search'){
 			// To static URL
 			$ret = str_replace('?', '', $ret);
-			$ret = str_replace('%2F', '/', $ret) . '.html';
+			$ret = str_replace('%2F', '/', $ret) . $url_suffix;
 		}else{
 			$flag = '&';
 		}

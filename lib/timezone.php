@@ -3,9 +3,12 @@
  * TimeZone
  *
  * @copyright   Copyright &copy; 2005-2006, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: timezone.php,v 0.11.1 2010/10/21 12:05:00 Logue Exp $
+ * @version     $Id: timezone.php,v 0.11.2 2010/10/21 23:35:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License
  */
+
+define('UTIME',time());
+define('MUTIME',getmicrotime());
 
 /*
  * set_time
@@ -14,9 +17,6 @@
 function set_time()
 {
 	global $language, $use_local_time;
-
-//	defined('UTIME')	or define('UTIME', time());
-//	defined('MUTIME')	or define('MUTIME', getmicrotime());
 
 	if ($use_local_time) {
 		list($zone, $zonetime) = set_timezone( DEFAULT_LANG );
@@ -29,8 +29,9 @@ function set_time()
 		}
 	}
 
-	define('ZONE', $zone);
-	define('ZONETIME', $zonetime);
+	foreach(array('UTIME'=>time(),'MUTIME'=>getmicrotime(),'ZONE'=>$zone,'ZONETIME'=>$zonetime) as $key => $value ){
+		defined($key) or define($key,$value);
+	}
 }
 
 /*

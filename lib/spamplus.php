@@ -3,21 +3,21 @@
  * PukiWiki Plus! Blocking SPAM
  *
  * @copyright   Copyright &copy; 2006-2007, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: spamplus.php,v 0.9 2007/12/20 04:34:00 upk Exp $
- * @license     http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @version	 $Id: spamplus.php,v 0.9 2007/12/20 04:34:00 upk Exp $
+ * @license	 http://opensource.org/licenses/gpl-license.php GNU Public License
  *
  * Plus! - lib/file.php, lib/func.php, lib/config.php
  *
  */
 
-defined('CONFIG_SPAM_BANLIST')        or define('CONFIG_SPAM_BANLIST',        'spam/BANList');
-defined('CONFIG_SPAM_BLOCKLIST')      or define('CONFIG_SPAM_BLOCKLIST',      'spam/BlockList');
-defined('CONFIG_SPAM_BL')             or define('CONFIG_SPAM_BL',             'spam/BlackList');
+defined('CONFIG_SPAM_BANLIST')		or define('CONFIG_SPAM_BANLIST',		'spam/BANList');
+defined('CONFIG_SPAM_BLOCKLIST')	  or define('CONFIG_SPAM_BLOCKLIST',	  'spam/BlockList');
+defined('CONFIG_SPAM_BL')			 or define('CONFIG_SPAM_BL',			 'spam/BlackList');
 defined('CONFIG_SPAM_WL_PRIVATE_NET') or define('CONFIG_SPAM_WL_PRIVATE_NET', 'spam/WhiteList/praivate_network');
 defined('CONFIG_SPAM_WL_SKIP_DOMAIN') or define('CONFIG_SPAM_WL_SKIP_DOMAIN', 'spam/WhiteList/skip_domain');
 
 // Zero is Unlimited
-defined('SPAM_MAX_COUNTER')           or define('SPAM_MAX_COUNTER', 2); 
+defined('SPAM_MAX_COUNTER')		   or define('SPAM_MAX_COUNTER', 2); 
 
 function SpamCheck($link,$mode='dns')
 {
@@ -201,11 +201,11 @@ class SPAMBAN extends SPAMBL
 {
 	function BlackCheck($target,$ua)
 	{
-                $this->target = $target;
-                $this->ua = $ua;
+				$this->target = $target;
+				$this->ua = $ua;
 
 		$this->setBlackList( $this->getConfig(CONFIG_SPAM_BANLIST, 'IP,HOST,UA') );
-                return $this->Check();
+				return $this->Check();
 	}
 }
 
@@ -215,12 +215,12 @@ class DNSBL extends SPAMCHECK
 	var $host, $reverse;
 	var $TLD = array(
 		// TLD
-		'com'    => 1, 'net'    => 1, 'org'    => 1, 'edu'    => 1, 'gov'    => 1,
-		'mil'    => 1, 'int'    => 1,
-		'biz'    => 1, 'info'   => 1, 'name'   => 1, 'pro'    => 1, 'museum' => 1,
-		'aero'   => 1, 'coop'   => 1,
+		'com'  => 1, 'net'  => 1, 'org'  => 1, 'edu' => 1, 'gov'    => 1,
+		'mil'  => 1, 'int'  => 1,
+		'biz'  => 1, 'info' => 1, 'name' => 1, 'pro' => 1, 'museum' => 1,
+		'aero' => 1, 'coop' => 1,
 		// Infrastructure TLD
-		'arpa'   => 2, // e164.arpa, ip6.arpa, in-addr.arpa
+		'arpa' => 2, // e164.arpa, ip6.arpa, in-addr.arpa
 		// ccTLD は、2 とする
 	);
 

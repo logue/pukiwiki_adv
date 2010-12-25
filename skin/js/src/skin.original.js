@@ -98,9 +98,6 @@ var pukiwiki_skin = {
 		// テキストエリアでタブ入力できるように
 		$("textarea").tabby();
 
-		/* Glossaly（ツールチップ） */
-		this.glossaly();
-
 		/* Table Sorter（テーブル自動ソート） */
 		this.tablesorter.counter = 0;	// ページングのDOMのIDで使う。非同期通信した結果でもtablesorterを使うのでグローバル関数に・・・
 		this.tablesorter();
@@ -165,6 +162,9 @@ var pukiwiki_skin = {
 		/* SyntaxHighlighter */
 		this.sh();
 		
+		/* Glossaly（ツールチップ） */
+		this.glossaly();
+		
 		// フォームロックを解除
 		$('input, button, select, textarea').removeAttr('disabled');
 		
@@ -216,13 +216,13 @@ var pukiwiki_skin = {
 			// http://forum.logue.be/index.php/topic,353.0.html
 
 			// encodeURIComponent命令使うため変換し直し
-			var uri = encodeURIComponent($(this).attr('href').replace(/&#37;/g,"%"));
+			var uri = $(this).attr('href').replace(/&#37;/g,"%");
 			if(navigator.userAgent.indexOf("MSIE")!==-1){
 				// IEの場合、location.replaeでリファラー消えるからいいや
 				location.href = uri;
 			}else{
 				// IE以外の場合、dataスキーマーでリファラーを消すためのページを偽造
-				location.href = "data:text/html;charset=utf-8,%3Chtml%3E%0D%0A%3Cscript%20%3E%0D%0Alocation.replace(%22" + uri + "%22)%3B%0D%0A%3C%2Fscript%3E%0D%0A%3C%2Fhtml%3E%0D%0A";
+				location.href = "data:text/html;charset=utf-8,%3Chtml%3E%0D%0A%3Cscript%20%3E%0D%0Alocation.replace(%22" + encodeURIComponent(uri) + "%22)%3B%0D%0A%3C%2Fscript%3E%0D%0A%3C%2Fhtml%3E%0D%0A";
 			}
 			return false;
 		});
@@ -961,10 +961,11 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		this.ajax_tim = 0;
 		var self = this;
 
-		//プレビューボタンを書き換え
+		// プレビューボタンを書き換え
 		$(prefix+'.edit_form input[name=write]').after('<input type="button" name="add_ajax" value="'+$('.edit_form input[name=preview]').attr('value')+'" accesskey="p" />');
 		$(prefix+'.edit_form input[name=preview]').remove();
 		
+		// プレビューボタンが押された時の処理
 		$(prefix+'.edit_form input[name=add_ajax]').click(function(){
 			$('textarea').attr('disabled', 'disabled');
 			// フォームの高さを取得
@@ -1043,12 +1044,49 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			}
 		});
 		
-		// 送信が押された時の処理
-		$(prefix+'form').submit(function(){
-			// localStrageをフラッシュ（キャンセルボタンを押した場合も）
+		// 送信イベント時の処理
+		$(prefix+'form').submit(function(e){
+/*
+			var postdata = $(this).serializeObject();	// フォームの内容をサニタイズ
+			$('input, button, select, textarea').attr('disabled','disabled');	// フォームをロック
+			postdata.ajax = 'json';
+*/
 			if (Modernizr.localstorage){
 				localStorage.removeItem(PAGE);
 			}
+/*
+			$.ajax({
+				url:SCRIPT,
+				type:'post',
+				data: postdata,
+				cache: false,
+				dataType : 'json',
+				success : function(data){
+					// localStrageをフラッシュ（キャンセルボタンを押した場合も）
+					
+					console.log(data.body);
+				},
+				error : function(data){
+					$(prefix+'input, button, select, textarea').removeAttr('disabled');
+					alert('よきせぬエラーが発生しました。');
+				}
+			});
+			$.ajax({
+				url : SCRIPT,
+				type : 'post',
+				data: {
+					cmd : 'recaptcha',
+					action : 'status'
+				},
+				cache : false,
+				success: function(res){
+					if (res.responseText == 1){
+						return true;
+					}else{
+						
+
+			return false;	// Submitで直接送信しないようにする
+*/
 		});
 
 		this.assistant(false);
@@ -1624,7 +1662,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			var key_label = String.fromCharCode(key);	// キーのラベル（ESCキーなどは取得できない）
 
 			if(elem.target.nodeName.match(/(input|textarea)/i)){ return true; }	// inputタグ、textareaタグ内ではキーバインド取得を無効化
-//			console.log(key,key_label);
+		//	console.log(key,key_label);
 			
 			switch(key_label){
 				case '?':
@@ -1727,9 +1765,9 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 				default:
 					if(self.toc){
 						if (self.toc.style.display !== 'none'){
-/*
 							if(key == 27 || key == 47){
 								_hideToc(); //Esc, slash
+/*
 							}else if(key >= 48 && key <=57){ //0-9
 								key -= 48;
 								if(self.nkeylink[key]){
@@ -1737,10 +1775,11 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 									self.anchor_scroll(self.nkeylink[key],false);
 									_hideToc();
 								}
-							}
 */
+							}
 						}else{
 							if(key == 47) {
+								
 								try{
 									self.toc.style.top = ((document.body.scrollTop + document.documentElement.scrollTop) || self.pageYOffset) + "px";
 								}catch(e){
@@ -1765,8 +1804,9 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		var lis = '';
 		var hd = $(prefix+'h2');
 		var tocs = $(prefix+'.contents ul').removeAttr('class').removeAttr('style');
-		var ptocImg = '<img src="'+this.image_dir+'toc.png" class="noprint" title="Table of Contents of this page" alt="Toc" />';
+		var ptocImg = '<img src="'+this.image_dir+'toc.png" class="tocpic" title="Table of Contents of this page" alt="Toc" />';
 //		var ptocMsg = "Click heading, and Table of Contents will pop up";
+		var self = this;
 		
 		if(tocs.length !== 0){
 			// #contentsが呼び出されているときは、その内容をTocに入れる。
@@ -1780,7 +1820,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			});
 /*
 			$(prefix+'h4').click(function(index){
-				self.popToc();
+				self.popToc(this);
 			});
 */
 		}else if(hd.length !== 0){
@@ -1798,15 +1838,18 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			lis = '<div style="text-align:center;">'+$('#top').html()+'</div>';
 			$(prefix+'#top').html($(prefix+'#top').html()+ptocImg);
 		}
+	
 		return lis;
 	},
 	/** generate the popup TOC division */
 	genTocDiv : function(lis){
 		this.toc = document.createElement("div");
 		this.toc.id = 'poptoc';
+		this.toc.style.top = 0;
+		this.toc.style.left = 0;
 
 		var tochtml = [
-			'<h2><a href="#">'+$('h1.title').text()+'</a><span class="c"> [TOC]</span></h2>',
+			'<h2><a href="#">'+$('h1#title').text()+'</a><span class="c"> [TOC]</span></h2>',
 			lis.replace(/href/g,"tabindex='1' href"),
 			'<hr />',
 			this.getNaviLink() + '</div>'
@@ -1868,10 +1911,10 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 /** Show/hide TOC on click event according to its location */
 	popToc : function(ev){
 		var tg;
+		if (!ev){ ev = event; }
 		if(window.event){
-			ev = event;
 			tg = ev.srcElement;
-		}else if(ev){
+		}else{
 			tg = ev.target;
 		}
 
@@ -1913,6 +1956,23 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		res = res.replace(/^\s*/,"");
 		return res.replace(/\s*$/,"");
 	}
+};
+
+// $().serializeArrayをJSONにする
+$.fn.serializeObject = function(){
+	var o = {};
+	var a = this.serializeArray();
+	$.each(a, function() {
+		if (o[this.name]) {
+			if (!o[this.name].push) {
+				o[this.name] = [o[this.name]];
+			}
+			o[this.name].push(this.value || '');
+		} else {
+			o[this.name] = this.value || '';
+		}
+	});
+	return o;
 };
 
 /**************************************************************************************************/
@@ -1972,7 +2032,7 @@ var _eventScrPos = function(e){
 };
 
 /** display on mouseclick */
-_dispToc = function(ev,tg,type){
+var _dispToc = function(ev,tg,type){
 	var doc = _eventDocPos(ev);
 	var scr = _eventScrPos(ev);
 	var h = pukiwiki_skin.toc.height;

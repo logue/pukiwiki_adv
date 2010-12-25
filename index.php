@@ -1,6 +1,6 @@
 <?php
 // PukiPlus
-// $Id: index.php,v 1.9.5 2010/08/17 21:26:00 Logue Exp $
+// $Id: index.php,v 1.9.6 2010/11/14 22:29:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team
 //   2005-2007,2009 PukiWiki Plus! Team
@@ -9,12 +9,12 @@
 
 // Error reporting
 //error_reporting(0); // Nothing
-error_reporting(E_ALL & ~E_NOTICE); // Avoid E_WARNING, E_NOTICE, etc
+//error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 //error_reporting(E_COMPILE_ERROR|E_RECOVERABLE_ERROR|E_ERROR|E_CORE_ERROR);	// Show only errors 
-//error_reporting(E_ALL); // Show all errors
+error_reporting(E_ALL); // Show all errors
 
 // Debug mode.
-define('DEBUG', false);
+define('DEBUG', true);
 // Show infomation message.
 define('PKWK_WARNING', true);
 
@@ -26,22 +26,23 @@ define('PKWK_WARNING', true);
 // THEME
 // tDiary THEME
 //define('TDIARY_THEME', 'digital_gadgets');
-// PukiWiki Adv. THEME
+// PukiWiki Adv. THEME (NOT compatible as Original and Plus! skin)
 // ex. bluebox, cloudwalk, classic, iridwire, iridorange, orangebox, pukiwiki, xxxlogue
-define('PLUS_THEME',   'default');
+define('PLUS_THEME',	'default');
 
 // Directory definition
 // (Ended with a slash like '../path/to/pkwk/', or '')
-// define('SITE_HOME',     realpath('../wiki-common/'));
-define('SITE_HOME',	'');
-// define('DATA_HOME',     realpath('../../wiki-data/contents/'));
-define('DATA_HOME',	'');
+// define('SITE_HOME',	'../wiki-common/');
+define('SITE_HOME',		'./');
+// define('DATA_HOME',	'../../wiki-data/contents/');
+define('DATA_HOME',		'./');
 
-// define('ROOT_URI', '');
 define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');	// when skin directory and index.php is same directory.
+// define('ROOT_URI', '');
 define('WWW_HOME', '');
 
-define('LIB_DIR',	SITE_HOME . 'lib/');
-
-require(LIB_DIR . 'main.php');
+// to absolute path
+// Do not change following lines
+define('LIB_DIR',	realpath(SITE_HOME) . '/lib/');
+require(LIB_DIR .	'main.php');
 ?>

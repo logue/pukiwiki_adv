@@ -9,7 +9,7 @@
 // Plus! extension function(s)
 
 defined('FUNC_POSTLOG')   or define('FUNC_POSTLOG', FALSE);
-defined('FUNC_SPAMLOG')   or define('FUNC_SPAMLOG', FALSE);
+defined('FUNC_SPAMLOG')   or define('FUNC_SPAMLOG', TRUE);
 defined('FUNC_BLACKLIST') or define('FUNC_BLACKLIST', TRUE);
 defined('FUNC_SPAMREGEX') or define('FUNC_SPAMREGEX', '#(?:cialis|hydrocodone|viagra|levitra|tramadol|xanax|\[/link\]|\[/url\])#i');
 defined('FUNC_SPAMCOUNT') or define('FUNC_SPAMCOUNT', 2);
@@ -835,13 +835,20 @@ function is_webdav()
 	return false;
 }
 
+/* PukiWiki Adv. Extend codes *********************************************************************/
+
 // for debug use
 // HTML4.0で廃止された化石のようなxmpタグでタグ無効化・・・
 // var_dumpにhtmlspecialcharとかは通用しないため。
+// xDebug有効時はそのままvar_dump
 function pr($value){
-	echo '<pre class="blush: php"><xmp>';
-	var_dump($value);
-	echo '</xmp></pre>';
+	if (!extension_loaded('xdebug')){
+		echo '<pre class="blush: php"><xmp>';
+		var_dump($value);
+		echo '</xmp></pre>';
+	}else{
+		var_dump($value);
+	}
 }
 
 //バックトレースを表示
@@ -857,13 +864,282 @@ function print_backtrace($backtrace){
 	echo "</tbody></table>";
 }
 
+// Marge to update_entities.inc.php
+// Fixme
 function load_entities(){
-	$fp = file(CACHE_DIR . PKWK_ENTITIES_REGEX_CACHE);
-	if ($fp == FALSE){
-		$info[] = 'Cannot read '.PKWK_ENTITIES_REGEX_CACHE.'. Please click <a href="'.get_cmd_uri('update_entities').'">here</a> and regenerete '.PKWK_ENTITIES_REGEX_CACHE.'.';
-		return '[a-zA-Z0-9]{2,8}';
-	}else{
-		return trim(join('', $fp));
+	$entities = (CACHE_DIR . PKWK_ENTITIES_REGEX_CACHE);
+	if (!file_exists($entities)){
+		update_entities_create();
+	}
+	$fp = file($entities);
+	return trim(join('', $fp));
+}
+
+define('W3C_XHTML_DTD_LOCATION', 'http://www.w3.org/TR/xhtml1/DTD/');
+function update_entities_create($do = FALSE)
+{
+	$files = array('xhtml-lat1.ent', 'xhtml-special.ent', 'xhtml-symbol.ent');
+	
+	$entities = array_map('update_entities_strtr',
+		array_values(get_html_translation_table(HTML_ENTITIES)));
+	$items   = array('php:html_translation_table');
+	$matches = array();
+	foreach ($files as $file) {
+		// FIXME: 'allow_url_fopen = Off' will stop this
+		$source = file(W3C_XHTML_DTD_LOCATION . $file)
+			or die_message('cannot receive ' . W3C_XHTML_DTD_LOCATION . $file . '.');
+		if (! is_array($source)) {
+			$items[] = 'w3c:' . $file . ' COLOR(red):not found.';
+			continue;
+		}
+		$items[] = 'w3c:' . $file;
+		if (preg_match_all('/<!ENTITY\s+([A-Za-z0-9]+)/',
+			join('', $source), $matches, PREG_PATTERN_ORDER))
+		{
+			$entities = array_merge($entities, $matches[1]);
+		}
+	}
+	if (! $do) return $items;
+
+	$entities = array_unique($entities);
+	sort($entities, SORT_STRING);
+	$min = 999;
+	$max = 0;
+	foreach ($entities as $entity) {
+		$len = strlen($entity);
+		$max = max($max, $len);
+		$min = min($min, $len);
+	}
+
+	$pattern = "(?=[a-zA-Z0-9]\{$min,$max})" . generate_trie_regex($entities);
+	pkwk_touch(CACHE_DIR . PKWK_ENTITIES_REGEX_CACHE);
+
+	$fp = fopen(CACHE_DIR . PKWK_ENTITIES_REGEX_CACHE, 'w')
+		or die_message('cannot write file PKWK_ENTITIES_REGEX_CACHE<br />' . "\n" .
+			'maybe permission is not writable or filename is too long');
+	fwrite($fp, $pattern);
+	fclose($fp);
+
+	return $items;
+}
+
+// Remove &amp; => amp
+function update_entities_strtr($entity){
+	return strtr($entity, array('&'=>'', ';'=>''));
+}
+
+/**************************************************************************************************/
+// move from snots's akismet.inc.php
+
+/////////////// PHP Extesnion ///////////////
+if (! function_exists('slide_rename')) {
+	function slide_rename($basename, $max, $extfmt = '.%d') {
+		for ($i = $max - 1; $i >= 1; $i--) {
+			if (file_exists($basename . sprintf($extfmt, $i))) {
+				$max = $i;
+				break;
+			}
+		}
+		for ($i = $max; $i >= 1; $i--) {
+			@move($basename . sprintf($extfmt, $i), $basename . sprintf($extfmt, $i+1));
+		}
 	}
 }
+if (! function_exists('move')) {
+	/**
+	 * Move a file (rename does not overwrite if $newname exists on Win)
+	 *
+	 * @param string $oldname
+	 * @param string $newname
+	 * @return boolean
+	 */
+	function move($oldname, $newname) {
+		if (! rename($oldname, $newname)) {
+			if (copy ($oldname, $newname)) {
+				unlink($oldname);
+				return TRUE;
+			}
+			return FALSE;
+		}
+		return TRUE;
+	}
+}
+if (! function_exists('file_put_contents')) {
+	/**
+	 * Write a string to a file (PHP5 has this function)
+	 *
+	 * @param string $filename
+	 * @param string $data
+	 * @param int $flags
+	 * @return int the amount of bytes that were written to the file, or FALSE if failure
+	 */
+	if (! defined('FILE_APPEND')) define('FILE_APPEND', 8);
+	if (! defined('FILE_USE_INCLUDE_PATH')) define('FILE_USE_INCLUDE_PATH', 1);
+	function file_put_contents($filename, $data, $flags = 0)
+	{
+		$mode = ($flags & FILE_APPEND) ? 'a' : 'w';
+		$fp = fopen($filename, $mode);
+		if ($fp === FALSE) {
+			return FALSE;
+		}
+		if (is_array($data)) $data = implode('', $data);
+		if ($flags & LOCK_EX) flock($fp, LOCK_EX);
+		$bytes = fwrite($fp, $data);
+		if ($flags & LOCK_EX) flock($fp, LOCK_UN);
+		fclose($fp);
+		return $bytes;
+	}
+}
+
+/////// PukiWiki API Extension //////////////
+if (! function_exists('is_human')) {
+	/**
+	 * Human recognition using PukiWiki Auth methods
+	 *
+	 * @param boolean $is_human Tell this is a human (Use TRUE to store into session)
+	 * @param boolean $use_session Use Session log
+	 * @param int $use_rolelevel accepts users whose role levels are stronger than this
+	 * @return boolean
+	 */
+	if (! defined('ROLE_AUTH')) define('ROLE_AUTH', 5); // define for PukiWiki Official
+	if (! defined('ROLE_ENROLLEE')) define('ROLE_ENROLLEE', 4);
+	if (! defined('ROLE_ADM_CONTENTS')) define('ROLE_ADM_CONTENTS', 3);
+	if (! defined('ROLE_ADM')) define('ROLE_ADM', 2);
+	if (! defined('ROLE_GUEST')) define('ROLE_GUEST', 0);
+	function is_human($is_human = FALSE, $use_session = FALSE, $use_rolelevel = 0)
+	{
+		if (! $is_human) {
+			if ($use_session) {
+				session_start();
+				$is_human = isset($_SESSION['pkwk_is_human']) && $_SESSION['pkwk_is_human'];
+			}
+		}
+		if (! $is_human) {
+			if (ROLE_GUEST < $use_rolelevel && $use_rolelevel <= ROLE_AUTH) {
+				if (is_callable(array('auth', 'check_role'))) { // Plus!
+					$is_human = ! auth::check_role('role_auth');
+				} else { // PukiWiki Official
+					$is_human = isset($_SERVER['PHP_AUTH_USER']);
+				}
+			}
+		}
+		if (! $is_human) {
+			if (ROLE_GUEST < $use_rolelevel && $use_rolelevel <= ROLE_ADM_CONTENTS) {
+				$is_human = is_admin(NULL, $use_session, TRUE);
+				// In PukiWiki Official, username 'admin' is the Admin
+			}
+		}
+		if ($use_session) {
+			session_start();
+			$_SESSION['pkwk_is_human'] = $is_human;
+		} else {
+			global $vars;
+			$vars['pkwk_is_human'] = $is_human;
+		}
+		return $is_human;
+	}
+}
+if (! function_exists('is_admin')) {
+	/**
+	 * PukiWiki admin login with session
+	 *
+	 * @param string $pass Password. Use NULL when to get current session state. 
+	 * @param boolean $use_session Use Session log
+	 * @param boolean $use_authlog Use Auth log. 
+	 *  Username 'admin' is deemed to be Admin in PukiWiki Official. 
+	 *  PukiWiki Plus! has role management, roles ROLE_ADM and ROLE_ADM_CONTENTS are deemed to be Admin. 
+	 * @return boolean
+	 */
+	function is_admin($pass = NULL, $use_session = FALSE, $use_authlog = FALSE)
+	{
+		$is_admin = FALSE;
+		if (! $is_admin) {
+			
+			if ($use_session) {
+				session_start();
+				$is_admin = isset($_SESSION['pkwk_is_admin']) && $_SESSION['pkwk_is_admin'];
+			}
+			
+			// BasicAuth (etc) login
+			if ($use_authlog) {
+				if (is_callable(array('auth', 'check_role'))) { // Plus!
+					$is_admin = ! auth::check_role('role_adm_contents');
+				} else {
+					$is_admin = (isset($_SERVER['PHP_AUTH_USER']) && $_SERVER['PHP_AUTH_USER'] === 'admin');
+				}
+			}
+			
+			// PukiWiki Admin login
+			if (isset($pass)) {
+				$is_admin = function_exists('pkwk_login') ? pkwk_login($pass) : 
+					md5($pass) === $GLOBALS['adminpass']; // 1.4.3
+			}
+		}
+		if ($use_session) {
+			session_start();
+			if ($is_admin) $_SESSION['pkwk_is_admin'] = TRUE;
+		} else {
+			global $vars;
+			$vars['pkwk_is_admin'] = $is_admin;
+		}
+		return $is_admin;
+	}
+}
+
+/**************************************************************************************************/
+
+function MeCab($input){
+	global $mecab_path;
+	$pipes = array();
+	$descriptorspec = array (
+		0 => array ("pipe", "r"), // stdin
+		1 => array ("pipe", "w"), // stdout
+	);
+	$process = proc_open($mecab_path, $descriptorspec, $pipes);
+	if (is_resource($process)){
+		stream_set_blocking($pipes[0], 0);
+		stream_set_blocking($pipes[1], 0);
+		
+		fwrite($pipes[0], $input, 4096);
+		fclose($pipes[0]);
+		
+		//$result = stream_get_contents($pipes[1]);
+		while(!feof($pipes[1])){
+			$result .= fgets($pipes[1], 4096);
+		}
+		fclose($pipes[1]);
+		
+		proc_close($process);
+
+		if(strtolower($this->mecab_config['encoding']) != 'utf-8'){
+			$result = mb_convert_encoding($result, 'utf-8', $this->mecab_config['encoding']);
+		}
+
+		$result = str_replace(array("\r\n", "\r"), "\n", $result);
+		$lines = explode("\n", $result);
+		foreach($lines as $line){
+			if(in_array(trim($line), array('EOS', ''))){
+				continue;
+			}
+			$s = explode("\t", $line);
+			$word = $s[0];
+			$info = explode(',', $s[1]);
+			$analisys[] = array(
+			'word' => $word,
+			'class' => $info[0],
+			/*
+			 'detail1' => $info[1],
+			 'detail2' => $info[2],
+			 'detail3' => $info[3],
+			 'conjugation1' => $info[4],
+			 'conjugation2' => $info[5]
+			 */
+			);
+		}
+	}else{
+		return false;
+	}
+	return $analisys;
+}
+
 ?>

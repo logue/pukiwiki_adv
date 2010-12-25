@@ -58,16 +58,6 @@ $_msg_content_back_to_top = '';
 //$_msg_content_back_to_top = '<div class="jumpmenu"><a href="#header">▲</a>&nbsp;<a href="#footer">▼</a></div>';
 
 /////////////////////////////////////////////////
-// リスト構造の左マージン
-$_ul_left_margin = 0;   // リストと画面左端との間隔(px)
-$_ul_margin = 16;       // リストの階層間の間隔(px)
-$_ol_left_margin = 0;   // リストと画面左端との間隔(px)
-$_ol_margin = 16;       // リストの階層間の間隔(px)
-$_dl_left_margin = 0;   // リストと画面左端との間隔(px)
-$_dl_margin = 16;        // リストの階層間の間隔(px)
-$_list_pad_str = ' class="list%d" style="padding-left:%dpx;margin-left:%dpx"';
-
-/////////////////////////////////////////////////
 // テキストエリアのカラム数
 $cols = 80;
 
@@ -141,8 +131,8 @@ $line_rules = array(
 	'SIZE\(([^\(\)]*)\){([^}]*)}'	=> '<span style="font-size:$1px">$2</span>',
 	'COLOR\(([^\(\)]*)\):((?:(?!COLOR\([^\)]+\)\:).)*)'	=> '<span style="color:$1">$2</span>',
 	'SIZE\(([^\(\)]*)\):((?:(?!SIZE\([^\)]+\)\:).)*)'	=> '<span class="size$1">$2</span>',
-	'SUP{([^}]*)}' => '<span style="font-size:60%;vertical-align:super;">$1</span>',
-	'SUB{([^}]*)}' => '<span style="font-size:60%;vertical-align:sub;">$1</span>',
+	'SUP{([^}]*)}' => '<sup>$1</sup>',
+	'SUB{([^}]*)}' => '<sub>$1</sub>',
 	'%%%(?!%)((?:(?!%%%).)*)%%%'	=> '<ins>$1</ins>',
 	'%%(?!%)((?:(?!%%).)*)%%'	=> '<del>$1</del>',
 	"'''(?!')((?:(?!''').)*)'''"	=> '<em>$1</em>',

@@ -143,18 +143,23 @@ function do_plugin_init($name)
 
 	if (empty($plugin_lang_path[$name])) {
 		bindtextdomain($name, LANG_DIR);
+		T_bindtextdomain($name,LANG_DIR);
 	} else {
 		bindtextdomain($name, $plugin_lang_path[$name]);
+		T_bindtextdomain($name,$plugin_lang_path[$name]);
 	}
 	bind_textdomain_codeset($name, SOURCE_ENCODING);
+	T_bind_textdomain_codeset($name,SOURCE_ENCODING); 
 	
 	// i18n (Plus!)
 	$func = 'plugin_' . $name . '_init';
 	if (function_exists($func)) {
 		// TRUE or FALSE or NULL (return nothing)
 		textdomain($name);
+		T_textdomain($name);
 		$done[$name] = call_user_func($func);
 		textdomain(DOMAIN);
+		T_textdomain(DOMAIN);
 		if (!isset($checked[$name])) {
 			$done[$name] = TRUE; // checked.
 		}
@@ -180,8 +185,10 @@ function do_plugin_action($name)
 	}
 
 	textdomain($name);
+	T_textdomain($name);
 	$retvar = call_user_func('plugin_' . $name . '_action');
 	textdomain(DOMAIN);
+	T_textdomain(DOMAIN);
 
 	// Insert a hidden field, supports idenrtifying text enconding
 	if (PKWK_ENCODING_HINT != '')
@@ -221,8 +228,10 @@ function do_plugin_convert($name, $args = '')
 
 	$_digest = $digest;
 	textdomain($name);
+	T_textdomain($name);
 	$retvar  = call_user_func_array('plugin_' . $name . '_convert', $aryargs);
 	textdomain(DOMAIN);
+	T_textdomain(DOMAIN);
 	$digest  = $_digest; // Revert
 
 	if ($retvar === FALSE) {
@@ -258,8 +267,10 @@ function do_plugin_inline($name, $args, & $body)
 
 	$_digest = $digest;
 	textdomain($name);
+	T_textdomain($name);
 	$retvar  = call_user_func_array('plugin_' . $name . '_inline', $aryargs);
 	textdomain(DOMAIN);
+	T_textdomain(DOMAIN);
 	$digest  = $_digest; // Revert
 
 	if($retvar === FALSE) {

@@ -1,6 +1,6 @@
 @echo.
 @echo off
 
-php -q "run.php"
+php -q "run2.php"
 pause.
 echo.

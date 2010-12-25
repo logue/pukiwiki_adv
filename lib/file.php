@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: file.php,v 1.94.2 2010/10/25 07:45:00 Logue Exp $
+// $Id: file.php,v 1.94.3 2010/12/05 16:25:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -28,6 +28,9 @@ define('PKWK_GLOSSARY_REGEX_CACHE',  'glossary.dat');
 
 // AutoAlias AutoBase cache (Plus!)
 define('PKWK_AUTOBASEALIAS_CACHE', 'autobasealias.dat');
+
+// PageReading cache (Adv.)
+define('PKWK_PAGEREADING_CACHE', 'PageReading.dat');
 
 // Get source(wiki text) data of the page
 // Returns FALSE if error occurerd
@@ -124,6 +127,13 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	// Create and write diff
 	$oldpostdata = is_page($page) ? get_source($page, TRUE, TRUE) : '';
 	$diffdata    = do_diff($oldpostdata, $postdata);
+	
+	// add client info (Adv.)
+	global $now;
+	$referer = htmlspecialchars($_SERVER['HTTP_REFERER']);
+	$user_agent = htmlspecialchars($_SERVER['HTTP_USER_AGENT']);
+	$diffdata .= "IP:\"{$_SERVER['REMOTE_ADDR']}\" TIME:\"$now\" REFERER:\"$referer\" USER_AGENT:\"$user_agent\"\n";
+
 	file_write(DIFF_DIR, $page, $diffdata);
 	unset($oldpostdata, $diffdata);
 
@@ -394,7 +404,7 @@ function add_recent($page, $recentpage, $subject = '', $limit = 0)
 	$fp = fopen(get_filename($recentpage), 'w') or
 		die_message('Cannot write page file ' .
 		htmlspecialchars($recentpage) .
-		'<br />Maybe permission is not writable or filename is too long');
+		'<br />Maybe permission is not writable, or filename is too long');
 	set_file_buffer($fp, 0);
 	flock($fp, LOCK_EX);
 	rewind($fp);
@@ -447,7 +457,8 @@ function lastmodified_add($update = '', $remove = '')
 	if (isset($recent_pages[$remove])) unset($recent_pages[$remove]);
 
 	// Add to the top: like array_unshift()
-	if ($update != '')
+	// if ($update != '')
+	if ($update != '' && $update != $whatsnew && ! check_non_list($update))
 		$recent_pages = array($update => get_filetime($update)) + $recent_pages;
 
 	// Check
@@ -469,8 +480,6 @@ function lastmodified_add($update = '', $remove = '')
 		return;
 	}
 
-
-
 	// ----
 	// Update the page 'RecentChanges'
 
@@ -487,9 +496,15 @@ function lastmodified_add($update = '', $remove = '')
 	// Recreate
 	ftruncate($fp, 0);
 	rewind($fp);
+/*
 	foreach ($recent_pages as $_page=>$time)
 		fputs($fp, '-' . htmlspecialchars(format_date($time)) .
 			' - ' . '[[' . htmlspecialchars($_page) . ']]' . "\n");
+*/
+	foreach ($recent_pages as $_page=>$time)
+		fputs($fp, '- &epoch('.$time.');' .
+			' - ' . '[[' . htmlspecialchars($_page) . ']]' . "\n");
+
 	fputs($fp, '#norelated' . "\n"); // :)
 
 	ignore_user_abort($last);	// Plus!
@@ -537,10 +552,12 @@ function put_lastmodified()
 		die_message('Cannot open' . 'CACHE_DIR/' . PKWK_MAXSHOW_CACHE);
 	set_file_buffer($fp, 0);
 	flock($fp, LOCK_EX);
+	$last = ignore_user_abort(1);	// Plus!
 	ftruncate($fp, 0);
 	rewind($fp);
 	foreach ($recent_pages as $page=>$time)
 		fputs($fp, $time . "\t" . $page . "\n");
+	ignore_user_abort($last);	// Plus!
 	flock($fp, LOCK_UN);
 	fclose($fp);
 
@@ -580,6 +597,7 @@ function autolink_pattern_write($filename, $autolink_pattern)
 {
 	list($pattern, $pattern_a, $forceignorelist) = $autolink_pattern;
 
+	pkwk_touch_file($filename);
 	$fp = fopen($filename, 'w') or
 			die_message('Cannot open ' . $filename);
 	set_file_buffer($fp, 0);
@@ -601,7 +619,7 @@ function get_pg_passage($page, $sw = TRUE)
 	$time = get_filetime($page);
 	$pg_passage = ($time != 0) ? get_passage($time) : '';
 
-	return $sw ? '<small>' . $pg_passage . '</small>' : ' ' . $pg_passage;
+	return $sw ? '<small class="passage">' . $pg_passage . '</small>' : ' ' . $pg_passage;
 }
 
 // Last-Modified header
@@ -655,9 +673,11 @@ function get_existpages($dir = DATA_DIR, $ext = '.txt')
 function get_readings()
 {
 	global $pagereading_enable, $pagereading_kanji2kana_converter;
-	global $pagereading_kanji2kana_encoding, $pagereading_chasen_path, $pagereading_mecab_path;
+//	global $pagereading_kanji2kana_encoding, $pagereading_chasen_path, $pagereading_mecab_path;
 	global $pagereading_kakasi_path, $pagereading_config_page;
 	global $pagereading_config_dict;
+	
+	global $pagereading_path, $pagereading_api;
 
 	$pages = get_existpages();
 
@@ -694,109 +714,56 @@ function get_readings()
 
 		// Execute ChaSen/KAKASI, and get annotation
 		if($unknownPage) {
-			switch(strtolower($pagereading_kanji2kana_converter)) {
-			case 'chasen':
-				if(! file_exists($pagereading_chasen_path))
-					die_message('ChaSen not found: ' . $pagereading_chasen_path);
+			if ($pagereading_api != 'none'){
+				$pagereading_command = $pagereading_path.'/'.$pagereading_api;
+				if(! file_exists($pagereading_command))
+					die_message(sprintf(_('%s is not found or cannot execute: '),$pagereading_api).' '.$pagereading_command);
 
-				$tmpfname = tempnam(realpath(CACHE_DIR), 'PageReading');
+				$tmpfname = (CACHE_DIR . PKWK_PAGEREADING_CACHE);
+				pkwk_touch_file($tmpfname);
 				$fp = fopen($tmpfname, 'w') or
-					die_message('Cannot write temporary file "' . $tmpfname . '".' . "\n");
+					die_message('Cannot write ' . 'CACHE_DIR/' . PKWK_PAGEREADING_CACHE);
+				// ページ名一覧をキャッシュへ保存
 				foreach ($readings as $page => $reading) {
 					if($reading != '') continue;
-					fputs($fp, mb_convert_encoding($page . "\n",
-						$pagereading_kanji2kana_encoding, SOURCE_ENCODING));
+					fputs($fp, $page . "\n");
 				}
 				fclose($fp);
-
-				$chasen = "$pagereading_chasen_path -F %y $tmpfname";
-				$fp     = popen($chasen, 'r');
-				if($fp === FALSE) {
-					unlink($tmpfname);
-					die_message('ChaSen execution failed: ' . $chasen);
+		
+				// APIによって処理を分ける
+				switch(strtolower($pagereading_api)) {
+					case 'chasen':
+						// echo [読み込ませたいテキスト] | chasen -F
+						$exec_option = '-F %y';
+						break;
+					case 'kakasi':	/*FALLTHROUGH*/
+					case 'kakashi':
+						// echo [読み込ませたいテキスト] | kakasi -kK -HK -JK
+						$exec_option = '-kK -HK -JK <';
+					case 'mecab':
+						// echo [読み込ませたいテキスト] mecab -Oyomi
+						$exec_option = '-Oyomi';
+					break;
+					default:
+						die_message('Unknown kanji-kana converter: ' . $pagereading_api . '.');
+						break;
 				}
+				// コマンド実行
+				$fp = popen($pagereading_command.' '.$exec_option.' '.$tmpfname, 'r');
+				
+				if($fp === FALSE) {
+					die_message(sprintf(_('%s execution failed:'),$pagereading_api.' '.$pagereading_command));
+				}
+
 				foreach ($readings as $page => $reading) {
 					if($reading != '') continue;
-
 					$line = fgets($fp);
-					$line = mb_convert_encoding($line, SOURCE_ENCODING,
-						$pagereading_kanji2kana_encoding);
 					$line = chop($line);
 					$readings[$page] = $line;
 				}
 				pclose($fp);
-
-				unlink($tmpfname) or
-					die_message('Temporary file can not be removed: ' . $tmpfname);
-				break;
-
-			case 'kakasi':	/*FALLTHROUGH*/
-			case 'kakashi':
-				if(! file_exists($pagereading_kakasi_path))
-					die_message('KAKASI not found: ' . $pagereading_kakasi_path);
-
-				$tmpfname = tempnam(realpath(CACHE_DIR), 'PageReading');
-				$fp       = fopen($tmpfname, 'w') or
-					die_message('Cannot write temporary file "' . $tmpfname . '".' . "\n");
-				foreach ($readings as $page => $reading) {
-					if($reading != '') continue;
-					fputs($fp, mb_convert_encoding($page . "\n",
-						$pagereading_kanji2kana_encoding, SOURCE_ENCODING));
-				}
-				fclose($fp);
-
-				$kakasi = "$pagereading_kakasi_path -kK -HK -JK < $tmpfname";
-				$fp     = popen($kakasi, 'r');
-				if($fp === FALSE) {
-					unlink($tmpfname);
-					die_message('KAKASI execution failed: ' . $kakasi);
-				}
-
-				foreach ($readings as $page => $reading) {
-					if($reading != '') continue;
-
-					$line = fgets($fp);
-					$line = mb_convert_encoding($line, SOURCE_ENCODING,
-						$pagereading_kanji2kana_encoding);
-					$line = chop($line);
-					$readings[$page] = $line;
-				}
-				pclose($fp);
-
-				unlink($tmpfname) or
-					die_message('Temporary file can not be removed: ' . $tmpfname);
-				break;
-			
-			case 'mecab':
-				$tmpfname = tempnam(CACHE_DIR, 'PageReading');
-				$fp = fopen($tmpfname, "w")
-					or die_message("cannot write temporary file '$tmpfname'.\n");
-				foreach ($readings as $page => $reading) {
-					if($reading=='') {
-						fputs($fp, mb_convert_encoding("$page\n", $pagereading_kanji2kana_encoding, SOURCE_ENCODING));
-					}
-				}
-				fclose($fp);
-				if(!file_exists($pagereading_mecab_path)) {
-					unlink($tmpfname);
-					die_message("MECAB not found: $pagereading_mecab_path");
-				}
-				$fp = popen("$pagereading_mecab_path -Oyomi $tmpfname", "r");
-				if(!$fp) {
-					unlink($tmpfname);
-					die_message("MeCab execution failed: $pagereading_mecab_path -Oyomi $tmpfname");
-				}
-				foreach ($readings as $page => $reading) {
-					if($reading=='') {
-						$line = fgets($fp);
-						$line = mb_convert_encoding($line, SOURCE_ENCODING, $pagereading_kanji2kana_encoding);
-						$line = chop($line);
-						$line = mb_convert_kana($line, "C");
-						$readings[$page] = $line;
-					}
-				}
-
-			case 'none':
+//				unlink($tmpfname) or die_message('Temporary file can not be removed: ' . $tmpfname);
+			}else{
 				$patterns = $replacements = $matches = array();
 				foreach (get_source($pagereading_config_dict) as $line) {
 					$line = chop($line);
@@ -813,16 +780,10 @@ function get_readings()
 						$readings[$page] = mb_convert_kana(mb_ereg_replace($pattern,
 							$replacements[$no], $readings[$page]), 'aKCV');
 				}
-				break;
-
-			default:
-				die_message('Unknown kanji-kana converter: ' . $pagereading_kanji2kana_converter . '.');
-				break;
 			}
 		}
 
 		if($unknownPage || $deletedPage) {
-
 			asort($readings, SORT_STRING); // Sort by pronouncing(alphabetical/reading) order
 			$body = '';
 			foreach ($readings as $page => $reading)
@@ -858,7 +819,6 @@ function links_get_related($page)
 	return $links[$page];
 }
 
-// _If needed_, re-create the file to change/correct ownership into PHP's
 // NOTE: Not works for Windows
 function pkwk_chown($filename, $preserve_time = TRUE)
 {
@@ -875,9 +835,9 @@ function pkwk_chown($filename, $preserve_time = TRUE)
 	// Lock for pkwk_chown()
 	$lockfile = CACHE_DIR . 'pkwk_chown.lock';
 	$flock = fopen($lockfile, 'a') or
-		die_message('pkwk_chown(): fopen() failed for: CACHEDIR/' .
+		die('pkwk_chown(): fopen() failed for: CACHEDIR/' .
 			basename(htmlspecialchars($lockfile)));
-	flock($flock, LOCK_EX) or die_message('pkwk_chown(): flock() failed for lock');
+	flock($flock, LOCK_EX) or die('pkwk_chown(): flock() failed for lock');
 
 	// Check owner
 	$stat = stat($filename) or
@@ -891,7 +851,7 @@ function pkwk_chown($filename, $preserve_time = TRUE)
 		// Lock source $filename to avoid file corruption
 		// NOTE: Not 'r+'. Don't check write permission here
 		$ffile = fopen($filename, 'r') or
-			die_message('pkwk_chown(): fopen() failed for: ' .
+			die('pkwk_chown(): fopen() failed for: ' .
 				basename(htmlspecialchars($filename)));
 
 		// Try to chown by re-creating files
@@ -899,20 +859,20 @@ function pkwk_chown($filename, $preserve_time = TRUE)
 		//   * touch() before copy() is for 'rw-r--r--' instead of 'rwxr-xr-x' (with umask 022).
 		//   * (PHP 4 < PHP 4.2.0) touch() with the third argument is not implemented and retuns NULL and Warn.
 		//   * @unlink() before rename() is for Windows but here's for Unix only
-		flock($ffile, LOCK_EX) or die_message('pkwk_chown(): flock() failed');
+		flock($ffile, LOCK_EX) or die('pkwk_chown(): flock() failed');
 		$result = touch($tmp) && copy($filename, $tmp) &&
 			($preserve_time ? (touch($tmp, $stat[9], $stat[8]) || touch($tmp, $stat[9])) : TRUE) &&
 			rename($tmp, $filename);
-		flock($ffile, LOCK_UN) or die_message('pkwk_chown(): flock() failed');
+		flock($ffile, LOCK_UN) or die('pkwk_chown(): flock() failed');
 
-		fclose($ffile) or die_message('pkwk_chown(): fclose() failed');
+		fclose($ffile) or die('pkwk_chown(): fclose() failed');
 
 		if ($result === FALSE) @unlink($tmp);
 	}
 
 	// Unlock for pkwk_chown()
-	flock($flock, LOCK_UN) or die_message('pkwk_chown(): flock() failed for lock');
-	fclose($flock) or die_message('pkwk_chown(): fclose() failed for lock');
+	flock($flock, LOCK_UN) or die('pkwk_chown(): flock() failed for lock');
+	fclose($flock) or die('pkwk_chown(): fclose() failed for lock');
 
 	return $result;
 }
@@ -920,20 +880,19 @@ function pkwk_chown($filename, $preserve_time = TRUE)
 // touch() with trying pkwk_chown()
 function pkwk_touch_file($filename, $time = FALSE, $atime = FALSE)
 {
-	$message = _('pkwk_touch_file(): Invalid UID and (not writable for the directory or not a flie):')
-		.htmlspecialchars(basename($filename));
 	// Is the owner incorrected and unable to correct?
 	if (! file_exists($filename) || pkwk_chown($filename)) {
 		if ($time === FALSE) {
-			$result = touch($filename) or die_message($message);
+			$result = touch($filename);
 		} else if ($atime === FALSE) {
-			$result = touch($filename, $time) or die_message($message);
+			$result = touch($filename, $time);
 		} else {
-			$result = touch($filename, $time, $atime) or die_message($message);
+			$result = touch($filename, $time, $atime);
 		}
 		return $result;
 	} else {
-		die_message($message);
+		die('pkwk_touch_file(): Invalid UID and (not writable for the directory or not a flie): ' .
+			htmlspecialchars(basename($filename)));
 	}
 }
 ?>

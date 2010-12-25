@@ -54,7 +54,8 @@ $skip_file = 'modernizr-1.5.min.js';
 ####################
 
 // Load up JS-Min for PHP
-require('php-bin/JSMinPlus.php');
+//require('php-bin/JSMinPlus.php');
+require('php-bin/jsmin.php');
 
 //Spit out crappy processing header, v2 will look much nicer!
 echo <<< HTML
@@ -88,7 +89,7 @@ foreach(explode(',', $loadFirst) as $filePreLoad){
 while ($file = @readdir($temp)){
 	if (!in_array($file,$arr) and !is_dir('./' . $file) and (substr($file, -3, 3) == '.js')){
 		// Load Found File
-		if (!in_array($file,$arr2)){
+		if (!in_array($file,$arr)){
 			$scriptdata[] = loadFiles($file);
 		}else{
 			$skipped[] = loadFiles($file);
@@ -174,7 +175,8 @@ function loadFiles($file)
 			$file = str_replace(pack("CCC",0xef,0xbb,0xbf), "", file_get_contents($loadDir.'/'.$fileN));
 			
 			if (!preg_match('/min\./',$fileN)){
-				$result = JSMinPlus::minify($file);
+//				$result = JSMinPlus::minify($file);
+				$result = JSMin::minify($file);
 				if ($result === false){
 					return remove_comments($file);
 				}else{
@@ -211,6 +213,7 @@ if(!function_exists('file_put_contents'))
 }
 
 function remove_comments($data){
+
 	$ret = array();
 	$tokens = token_get_all($data);
 	foreach ($tokens as $token){
@@ -229,5 +232,11 @@ function remove_comments($data){
 		}
 	}
 	return join("\n",$ret);
+/*
+	$pattern = <<<EOF
+/("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\/(?!\*)(?:\\.|[^\/\\])+\/(?:[im]{0,3}|\b)(?=[^\/\\a-hj-ln-zA-Z0-9<>\*+%'"\(\{\[$_-]|[\s=|,;:?\)\}\]&]|$))|(?:\/{2,}[^\n]*|\/\*[^\*]*\*+([^\/\*][^\*]*\*+)*\/|^(?:\s*|$))/im
+EOF;
+	return preg_replace($pattern,'',$data);
+*/
 }
 ?>

@@ -61,8 +61,9 @@ class Element
 			$obj->setParent($this);
 			$this->elements[] = & $obj;
 
-			return $this->last = & $obj->last;
+			$this->last = & $obj->last;
 		}
+		return $this->last;
 	}
 
 	function canContain($obj)

@@ -75,18 +75,9 @@ require(LIB_DIR . 'simple_html_dom.php');
 
 ini_set("memory_limit", "128M");  
 
-if (! extension_loaded('mbstring')) require(LIB_DIR . 'mbstring.php');
+if (! extension_loaded('mbstring')) die('PukiWiki Adv. needs mbstring extention.');
 if (! extension_loaded('json')) require(LIB_DIR . 'JSON.php');	// JSON対応 by Logue
-
-if (! extension_loaded('gettext')) {
-	require(LIB_DIR . 'gettext.php');
-} else {
-	function N_($message) { return $message; }
-	if (! function_exists('bind_textdomain_codeset')) {
-		function bind_textdomain_codeset($domain, $codeset) { return; }
-	}
-}
-
+require(LIB_DIR . 'gettext/gettext.inc');
 
 // Defaults
 $notify = $trackback = $referer = 0;
@@ -199,7 +190,8 @@ if (is_webdav() && exist_plugin('dav')) {
 
 $is_protect = auth::is_protect();
 
-$info[] = 'Powered by PHP '.PHP_VERSION.' '.((substr(php_sapi_name(), 0, 3) == 'cgi') ? 'CGI' : 'MODULE').' mode. PHP is running as '.(ini_get('safe_mode') ? "SAFE" : "NOT SAFE").' mode.';
+$info[] = '<var>PHP '.PHP_VERSION.'</var> as <var>'.php_sapi_name().'</var> mode.';
+$info[] = 'Powerd by <var>'.getenv('SERVER_SOFTWARE').'</var>.';
 
 if (DEBUG) {
 	$exclude_plugin = array();
@@ -312,7 +304,6 @@ if ($adminpass == '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72' || $adminpass ==
 		'<strong>'.$_string['warning'].'</strong> '.$_string['changeadminpass'].'</p></div>'."\n".
 		$body;
 }
-
 
 // Output
 catbody($title, $page, $body);

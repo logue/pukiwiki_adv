@@ -10,235 +10,88 @@
 //
 */
 
-/* 
-html5doctor.com Reset Stylesheet
-v1.6.1
-Last Updated: 2010-09-17
-Author: Richard Clark - http://richclarkdesign.com 
-Twitter: @rich_clark
-*/
+/*  HTML5 ✰ Boilerplate  */
 
-html, body, div, span, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-abbr, address, cite, code,
-del, dfn, em, img, ins, kbd, q, samp,
-small, strong, sub, sup, var,
-b, i,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, figcaption, figure, 
-footer, header, hgroup, menu, nav, section, summary,
-time, mark, audio, video {
-    margin:0;
-    padding:0;
-    border:0;
-    outline:0;
-    font-size:100%;
-    vertical-align:baseline;
-    background:transparent;
-}
-
-body {
-    line-height:1;
-}
-
-article,aside,details,figcaption,figure,
-footer,header,hgroup,menu,nav,section { 
-	display:block;
-}
-
-nav ul {
-    list-style:none;
-}
-
-blockquote, q {
-    quotes:none;
-}
-
-blockquote:before, blockquote:after,
-q:before, q:after {
-    content:'';
-    content:none;
-}
-
-a {
-    margin:0;
-    padding:0;
-    font-size:100%;
-    vertical-align:baseline;
-    background:transparent;
-}
-
-/* change colours to suit your needs */
-ins {
-    background-color:#ff9;
-    color:#000;
-    text-decoration:none;
-}
-
-/* change colours to suit your needs */
-mark {
-    background-color:#ff9;
-    color:#000; 
-    font-style:italic;
-    font-weight:bold;
-}
-
-del {
-    text-decoration: line-through;
-}
-
-abbr[title], dfn[title] {
-    border-bottom:1px dotted;
-    cursor:help;
-}
-
-table {
-    border-collapse:collapse;
-    border-spacing:0;
-}
-
-/* change border colour to suit your needs */
-hr {
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp,
+small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, figcaption, figure,  footer, header, hgroup, 
+menu, nav, section, summary, time, mark, audio, video {
+  margin:0;
+  padding:0;
+  border:0;
+  outline:0;
+  font-size:100%;
+  vertical-align:baseline;
+  background:transparent;
+}                  
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section { 
     display:block;
-    height:1px;
-    border:0;   
-    border-top:1px solid #cccccc;
-    margin:1em 0;
-    padding:0;
 }
+nav ul { list-style:none; }
+blockquote, q { quotes:none; }
+blockquote:before, blockquote:after,
+q:before, q:after { content:''; content:none; }
+a { margin:0; padding:0; font-size:100%; vertical-align:baseline; background:transparent; }
+ins { background-color:#ff9; color:#000; text-decoration:none; }
+mark { background-color:#ff9; color:#000; font-style:italic; font-weight:bold; }
+del { text-decoration: line-through; }
+abbr[title], dfn[title] { border-bottom:1px dotted; cursor:help; }
+table { border-collapse:collapse; border-spacing:0; }
+hr { display:block; height:1px; border:0; border-top:1px solid #ccc; margin:1em 0; padding:0; }
+input, select { vertical-align:middle; }
 
-input, select {
-    vertical-align:middle;
-}
-/* END RESET CSS */
 
-/*
-fonts.css from the YUI Library: http://developer.yahoo.com/yui/
-          Please refer to http://developer.yahoo.com/yui/fonts/ for font sizing percentages
-*/
+body { font:13px/1.231 sans-serif; *font-size:small; } 
+select, input, textarea, button { font:99% sans-serif; }
+pre, code, kbd, samp { font-family: monospace, sans-serif; }
 
+body, select, input, textarea {   color: #444; }
+h1,h2,h3,h4,h5,h6 { font-weight: bold; }
+html { overflow-y: scroll; }
 
-/**
- * Percents could work for IE, but for backCompat purposes, we are using keywords.
- * x-small is for IE6/7 quirks mode.
- */
-body {
-	font:13px/1.231 arial,helvetica,clean,sans-serif;
-	/* for IE6/7 */ 
-	*font-size:small; 
-	/* for IE Quirks Mode */
-	*font:x-small; 
-}
-
-/**
- * To help tables remember to inherit
- */
-table {
-	font-size:inherit;
-	font:100%;
-}
-
-/**
- * Bump up IE to get to 13px equivalent for these fixed-width elements
- */
-select,
-input,
-button,
-textarea,
-button,
-pre,
-code,
-kbd,
-samp,
-tt,
-.ui-button {
-	font-family:monospace;
-	*font-size:108%;
-}
-
-/* 
- * minimal base styles 
- */
-
-/* Headers (h1,h2,etc) have no default font-size or margin,
-   you'll want to define those yourself. */ 
- 
-/* www.aestheticallyloyal.com/public/optimize-legibility/ */ 
-h1,h2,h3,h4,h5,h6 { font-weight: bold; text-rendering: optimizeLegibility; }
-
-/* maxvoltar.com/archive/-webkit-font-smoothing */
-html { -webkit-font-smoothing: antialiased; }
-
- 
-/* Accessible focus treatment: people.opera.com/patrickl/experiments/keyboard/test */
 a:hover, a:active { outline: none; }
+a, a:active, a:visited { color: #607890; }
+a:hover { color: #036; }
 
-ul { margin-left:30px; }
-ol { margin-left:30px; list-style-type: decimal; }
+ul, ol { margin-left: 1.8em; }
+ol { list-style-type: decimal; }
 
-small { font-size:85%; }
+nav ul, nav li { margin: 0; } 
+small { font-size: 85%; }
 strong, th { font-weight: bold; }
-
-td, td img { vertical-align:top; } 
-
+td, td img { vertical-align: top; } 
 sub { vertical-align: sub; font-size: smaller; }
 sup { vertical-align: super; font-size: smaller; }
-
-pre { 
-	padding: 15px; 
-
-	/* www.pathf.com/blogs/2008/05/formatting-quoted-code-in-blog-posts-css21-white-space-pre-wrap/ */
-	white-space: pre; /* CSS2 */
-	white-space: pre-wrap; /* CSS 2.1 */
-	white-space: pre-line; /* CSS 3 (and 2.1 as well, actually) */
-	word-wrap: break-word; /* IE */
-}
-
-/* align checkboxes, radios, text inputs with their label
-   by: Thierry Koblentz tjkdesign.com/ez-css/css/base.css  */
+pre {  padding: 15px;  white-space: pre;  white-space: pre-wrap;  white-space: pre-line;  word-wrap: break-word; }
+textarea { overflow: auto; } 
+.ie6 legend, .ie7 legend { margin-left: -7px; } 
 input[type="radio"] { vertical-align: text-bottom; }
-input[type="checkbox"] { vertical-align: bottom; *vertical-align: baseline; }
+input[type="checkbox"] { vertical-align: bottom; }
+.ie7 input[type="checkbox"] { vertical-align: baseline; }
 .ie6 input { vertical-align: text-bottom; }
-
-/* hand cursor on clickable input elements */
 label, input[type=button], input[type=submit], button { cursor: pointer; }
+button, input, select, textarea { margin: 0; }
+input:valid, textarea:valid   {  }
+input:invalid, textarea:invalid { border-radius: 1px;  -moz-box-shadow: 0px 0px 5px red; -webkit-box-shadow: 0px 0px 5px red;  box-shadow: 0px 0px 5px red; }
+.no-boxshadow input:invalid, 
+.no-boxshadow textarea:invalid { background-color: #f0dddd; }
 
-/* make buttons play nice in IE:    
-   www.viget.com/inspire/styling-the-button-element-in-internet-explorer/ */
-button,.ui-button {  width: auto; overflow: visible; }
- 
-/* bicubic resizing for non-native sized IMG: 
-   code.flickr.com/blog/2008/11/12/on-ui-quality-the-little-things-client-side-image-resizing/ */
+::-moz-selection{ background: #FF5E99; color:#fff; text-shadow: none; }
+::selection { background:#FF5E99; color:#fff; text-shadow: none; } 
+a:link { -webkit-tap-highlight-color: #FF5E99; } 
+
+button {  width: auto; overflow: visible; }
 .ie7 img { -ms-interpolation-mode: bicubic; }
 
-/* 
- * Non-semantic helper classes 
- */
-
-/* for image replacement */
-.ir { display:block; text-indent:-999em; overflow:hidden; background-repeat: no-repeat; }
-
-/* Hide for both screenreaders and browsers
-   css-discuss.incutio.com/wiki/Screenreader_Visibility */
-.hidden { display:none; visibility:hidden; } 
-
-/* Hide only visually, but have it available for screenreaders 
-   www.webaim.org/techniques/css/invisiblecontent/ 
-   Solution from: j.mp/visuallyhidden - Thanks Jonathan Neal! */
-.visuallyhidden { position:absolute !important;    
-  clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
-  clip: rect(1px, 1px, 1px, 1px); }
-
-/* Hide visually and from screenreaders, but maintain layout */
+.ir { display: block; text-indent: -999em; overflow: hidden; background-repeat: no-repeat; text-align: left; direction: ltr; }
+.hidden { display: none; visibility: hidden; } 
+.visuallyhidden { position: absolute !important; clip: rect(1px 1px 1px 1px);  clip: rect(1px, 1px, 1px, 1px); }
 .invisible { visibility: hidden; }
-
-/* >> The Magnificent CLEARFIX << */
-.clearfix:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
-.clearfix { display: inline-block; }
-* html .clearfix { height: 1%; } /* Hides from IE-mac \*/
-.clearfix { display: block; }
+.clearfix:before, .clearfix:after {  content: "\0020"; display: block; height: 0; visibility: hidden;	 } 
+.clearfix:after { clear: both; }
+.clearfix { zoom: 1; }
 
 /** PukiWiki Plus! CSS set Start *******************************************************************/
 
@@ -498,7 +351,7 @@ input[type='text'], input[type='password'], textarea, select, iframe {
 	border:1px solid #AAA;
 	margin:0px;
 	font-family:monospace !important;
-	font-size: 93%;
+/*	font-size: 93%;	*/
 }
 
 ruby {
@@ -537,7 +390,6 @@ rbc>rb,rtc>rt {
 rp {
 	display:none !important;
 }
-
 
 /** Misc ******************************************************************************************/
 #lastmodified{
@@ -629,36 +481,40 @@ rp {
 	white-space: nowrap;
 }
 
+#banner_box a:hover{
+	background-color:transparent;
+}
+
 /* PukiWiki Plus! Skin */
-td.menubar, td.sidebar{
+.menubar, .sidebar{
 	width:160px;
 	vertical-align:top;
 }
 
-td.ltable{
+.ltable{
 	width:160px;
 	vertical-align:top;
 }
 
-td.rtable{
+.rtable{
 	width:160px;
 	vertical-align:top;
 }
 
-td.ctable{
+.ctable{
 	vertical-align:top;
 	padding-left:28px;
 	padding-right:28px;
 }
 
-table.main{
+.main{
 	border:0px;
 	padding:0px;
 	margin:0px;
 	width:100%;
 }
 
-table.main tr td{
+.main tr td{
 	vertical-align:top;
 }
 
@@ -743,7 +599,6 @@ table.main tr td{
 	clear:both;
 	padding:0px;
 	font-size: 86%;
-	
 }
 
 #note ul{
@@ -875,23 +730,23 @@ table.main tr td{
 	margin:0px -0.3em;
 }
 
-#menubar ul li span.noexists a,
-#sidebar ul li span.noexists a{
+#menubar ul li .noexists a,
+#sidebar ul li .noexists a{
 	display:inline;
 	background-color:transparent;
 	padding:0px 5px;
 }
 
-#menubar ul.recent_list, #menubar ul.popular_list,
-#sidebar ul.recent_list, #sidebar ul.popular_list {
+#menubar .recent_list, #menubar .popular_list,
+#sidebar .recent_list, #sidebar .popular_list {
 	list-style-type:disc;
 	margin:0 0 0 0.5em;
 	padding:0 0 0 0.5em;
 	word-wrap:break-word;
 }
 
-#menubar ul.recent_list a, #menubar ul.popular_list a,
-#sidebar ul.recent_list a, #sidebar ul.popular_list a {
+#menubar .recent_list a, #menubar .popular_list a,
+#sidebar .recent_list a, #sidebar .popular_list a {
 	display:inline;
 	padding:0px;
 }
@@ -924,7 +779,7 @@ table.main tr td{
 }
 
 /* attach.inc.php */
-table.attach_table{
+.attach_table{
 	padding:0px;
 	border:0px;
 	margin:auto;
@@ -933,13 +788,13 @@ table.attach_table{
 	border-spacing:1px;
 }
 
-th.attach_th{
+.attach_th{
 	padding:2px;
 	margin:1px;
 	text-align:center;
 }
 
-table.attach_table tr td{
+.attach_table tr td{
 	padding:2px;
 	margin:1px;
 }
@@ -1062,13 +917,13 @@ table.attach_table tr td{
 }
 
 /* counter.inc.php */
-div.counter
+.counter
 {
 	font-size:77%;
 }
 
 /* include.inc.php */
-h5.side_label
+.side_label
 {
 	text-align:center;
 }
@@ -1098,21 +953,21 @@ h5.side_label
 }
 
 /* new.inc.php */
-span.comment_date{
+.comment_date{
 	font-size:x-small;
 }
-span.new1{
+.new1{
 	font-size:x-small;
 }
-span.new5{
+.new5{
 	font-size:xx-small;
 }
 
 /* popular.inc.php */
-span.counter{
+.counter{
 	font-size:70%;
 }
-ul.popular_list{
+.popular_list{
 	padding:0px 0px 0px .5em;
 	margin:0px 0px 0px .5em;
 	border:0px;
@@ -1121,19 +976,19 @@ ul.popular_list{
 }
 
 /* recent.inc.php,showrss.inc.php */
-ul.recent_list{
+.recent_list{
 	padding:0px 0px 0px .5em;
 	margin:0px 0px 0px .5em;
 	border:0px;
 	word-wrap:break-word;
 	word-break:break-all;
 }
-ul.recent_list li{
+.recent_list li{
 	line-height:110%;
 }
 
 /* ref.inc.php */
-div.img_margin{
+.img_margin{
 	margin-left:6px;
 	margin-right:6px;
 }
@@ -1147,31 +1002,31 @@ div.img_margin{
 }
 
 /* amazon.inc.php */
-div.amazon_img {
+.amazon_img {
 	margin:16px 10px 8px 8px;
 	text-align:center;
 }
 
-div.amazon_imgetc {
+.amazon_imgetc {
 	 margin:0px 8px 8px 8px;
 	 text-align:center;
 }
 
-div.amazon_sub {
+.amazon_sub {
 	 font-size:93%;
 }
 
-div.amazon_avail {
+.amazon_avail {
 	 margin-left:150px;
 	 font-size:93%;
 }
 
-td.amazon_td {
+.amazon_td {
 	 font-size:93%;
 	 text-align:center;
 }
 
-table.amazon_tbl {
+.amazon_tbl {
 	 border:0;
 	 width:115px;
 	 font-size:93%;
@@ -1179,19 +1034,19 @@ table.amazon_tbl {
 }
 
 /* calendar_viewer.inc.php, minicalendar_viewer.inc.php */
-div.trackback {
+.trackback {
 	font-size:80%;
 	text-align:right;
 }
 
-div.prevnext {
+.prevnext {
 }
 
-div.prevnext_l {
+.prevnext_l {
 	float:left;
 }
 
-div.prevnext_r {
+.prevnext_r {
 	float:right;
 }
 
@@ -1265,7 +1120,7 @@ h3.minicalendar
 	border-bottom:1px solid;
 }
 
-h4.minicalendar
+.minicalendar
 {
 	margin: 8px -8px 0px -6px;
 	border:0px;
@@ -1419,78 +1274,8 @@ h4.minicalendar
 	margin:0px;
 }
 
-/* code.inc.php */
-pre.code {
-	margin: 1em 2em 0.5em 1em;
-	padding: 0.5em;
-	line-height: 120%;
-}
-
-table.code_table pre.code,
-div.code_table pre.code
-{
-	margin: 0;
-	padding: 0;
-	padding-left: 0.5em;
-	border: 1px;
-	line-height: 120%;
-}
-
-pre.code_number {
-	margin: 0;
-	padding: 0;
-	padding-right: 0.5em;
-	border: 1px;
-	line-height: 120%;
-	min-width: 3ex;
-}
-
-pre.code_outline {
-	margin:  0;
-	padding: 0;
-	border: 1px;
-	width: 10px;
-	text-align: center;
-	line-height: 120%;
-}
-
-div.code_table {
-	margin: 1em 2em 0.5em 1em;
-	white-space: pre;
-}
-
-table.code_table,
-table.code_table td,
-div.code_number pre,
-div.code_outline pre,
-div.code_src pre
-{
-	margin:  0;
-	padding: 0;
-	border: none;
-}
-
-td.code_src {width:100%;}
-
-div.code_number,
-div.code_outline,
-div.code_src
-{
-	position: relative;
-	margin: 0;
-	padding: 0;
-	left: 0;
-	float: left;
-}
-
-img.code_dotimage {width:20px;height:8px;margin:0;padding:0;}
-
-a.code_outline, a.code_outline:link, a.code_outline:visited, a.code_outline:hover, a.code_outline:active{
-	text-decoration: none;
-}
-
 /* navibar2.inc.php */
-div#navigator2 {
+#navigator2 {
 	margin: 4px 0px;
 	padding: 0px 4px;
 	left: 0px;
@@ -1505,11 +1290,3 @@ div#navigator2 {
 	width:100%;
 }
 
-/* for blikifooter */
-div.blikiFooter {
-	text-align:right;
-}
-
-#banner_box a:hover{
-	background-color:transparent;
-}

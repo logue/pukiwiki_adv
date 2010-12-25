@@ -1006,22 +1006,12 @@ function spam_dispose()
 // NOTE: Call this function from various blocking feature, to disgueise the reason 'why blocked'
 function spam_exit($mode = '', $data = array())
 {
-	$exit = TRUE;
-
-	switch ($mode) {
-		case '':
-			echo("\n");
-			break;
-		case 'dump':
-			echo('<pre>' . "\n");
-			echo htmlspecialchars(var_export($data, TRUE));
-			echo('</pre>' . "\n");
-			break;
-	};
-
-	if ($exit) exit;	// Force exit
+	if ($mode == 'dump' && $data){
+		die_message('<pre>' . "\n".  htmlspecialchars(var_export($data, TRUE)). "\n".'</pre>');
+	}else{
+		die_message('Runtime Error');
+	}
 }
-
 
 // ---------------------
 // Simple filtering

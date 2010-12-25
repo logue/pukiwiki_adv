@@ -349,12 +349,18 @@ function log_put($filename,$data)
 function log_update($kind,$filename,$key,$mustkey,$data)
 {
 	$log_data = log_read($filename);
+	$log_length = count($log_data);
+	
+	// ログの件数が200件を超えた場合カット
+	if ($log_length < 200){
+		$log_length = 200;
+	}
 
 	$_key = explode(':',$key);
 	$name = log::set_fieldname($kind);
 
 	$put = false;
-	for($i=0;$i<count($log_data);$i++) {
+	for($i=0;$i<$log_length;$i++) {
 				$fld = log::line2field($log_data[$i],$name);
 
 		$sw_update = true;

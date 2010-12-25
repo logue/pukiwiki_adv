@@ -1,6 +1,6 @@
 # Apache .htaccess for PukiWiki
 #
-# $Id: .htaccess,v 1.14.5 2010/07/21 17:30:00 Logue Exp $
+# $Id: .htaccess,v 1.14.6 2010/11/03 17:30:00 Logue Exp $
 # Copyright (C)
 #   2010      PukiWiki Advance Team
 #   2006      PukiWiki Plus! Developers Team
@@ -41,14 +41,17 @@ AddType text/x-component .htc
 </Files>
 
 # Enable Gzip compression.
-
+<IfModule mod_deflate.c>
 	SetOutputFilter DEFLATE
 	BrowserMatch ^Mozilla/4 gzip-only-text/html
 	BrowserMatch ^Mozilla/4\.0[678] no-gzip
 	BrowserMatch \bMSI[E] !no-gzip !gzip-only-text/html
 	SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png|js|css)$ no-gzip dont-vary
-	Header append Vary User-Agent env=!dont-vary
+</IfModule>
 
+<IfModule mod_headers.c>
+	Header append Vary User-Agent env=!dont-vary
+</IfModule>
 
 # xrea fix.
 # LayoutIgnoreURI *
