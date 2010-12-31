@@ -168,14 +168,14 @@ function plugin_typekey_init()
 {
 	$msg = array(
 	  '_typekey_msg' => array(
-		'msg_typekey'		=> _("TypeKey"),
-		'msg_logout'		=> _("logout"),
-		'msg_logined'		=> _("%s has been approved by TypeKey."),
-		'msg_error'		=> _("site_token must be set."),
-		'msg_invalid'		=> _("The function of TypeKey is invalid."),
-		'msg_not_found'		=> _("pkwk_session_start() doesn't exist."),
-		'msg_not_start'		=> _("The session is not start."),
-		'btn_login'		=> _("LOGIN(TypeKey)"),
+		'msg_typekey'		=> T_("TypeKey"),
+		'msg_logout'		=> T_("logout"),
+		'msg_logined'		=> T_("%s has been approved by TypeKey."),
+		'msg_error'			=> T_("site_token must be set."),
+		'msg_invalid'		=> T_("The function of TypeKey is invalid."),
+		'msg_not_found'		=> T_("pkwk_session_start() doesn't exist."),
+		'msg_not_start'		=> T_("The session is not start."),
+		'btn_login'			=> T_("LOGIN(TypeKey)"),
 	  )
 	);
 	set_plugin_messages($msg);
@@ -217,7 +217,7 @@ EOD;
 	$login_url = plugin_typekey_jump_url();
 	return <<<EOD
 <form action="$login_url" method="post">
-	<div>
+	<div class="typekey_form">
 		<input type="submit" value="{$_typekey_msg['btn_login']}" />
 	</div>
 </form>

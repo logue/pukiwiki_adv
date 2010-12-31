@@ -23,35 +23,39 @@ define('CVSCHECK_CACHE_LOCAL_FILE','cvscheck_cache_local.dat');
 function plugin_cvscheck_init()
 {
 	$messages = array(
-	  '_cvscheck_messages' => array(
-		 'URL'      => 'http://cvs.sourceforge.jp/cgi-bin/viewcvs.cgi/pukiwiki/pukiwiki',
-		 'URL_FILE' => 'http://cvs.sourceforge.jp/cgi-bin/viewcvs.cgi/*checkout*/pukiwiki/pukiwiki/',
-		 'OPTIONAL_URL' => 'http://pukiwiki.sourceforge.jp/?',
-		 'OPTIONAL_OPT' => 'plugin=ls2&prefix=',
-		 'OPTIONAL_DIR' => '%E8%87%AA%E4%BD%9C%E3%83%97%E3%83%A9%E3%82%B0%E3%82%A4%E3%83%B3%2F',
-		 'DIRS' => array("DATA_HOME"   => '/',
-				 "PLUGIN_DIR"  =>'/plugin/',
-				 "LIB_DIR"     =>'/lib/',
-				 "SKIN_DIR"    =>'/skin/',
-				 "DOC_DIR"     =>'/doc/' ),
-		 'LDIRS' => array("DATA_HOME"  => DATA_HOME ,
-				  "PLUGIN_DIR" => PLUGIN_DIR, 
-				  "LIB_DIR"    => LIB_DIR,
-				  "SKIN_DIR"   => SKIN_DIR,
-				  "DOC_DIR"    => SITE_HOME . 'doc/', ),
-		 'title_name'  => _('file name'),
-		 'title_cvs'    => _('cvs versions'),
-		 'title_local'  => _('local versions'),
-		 'title_not_found' => _('not found'),
-		 'msg_title'    => _('diff in cvscheck'),
-		 'body_title'       => _('Difference of file version of this site and CVS'),
-		 'body_title_local' => _('Version of file where only this site exists'),
-		 'msg_new_files'   => _('It is not necessary to update it.'),
-		 'msg_load_error'  => _('File Load Error'),
-		 'body_load_error' => _('The file was not able to be read.'),
-		 'msg_access_error'  => _('Access Error'),
-		 'body_access_error' => _('It was not able to access the CVS site.'),
-      ),
+		'_cvscheck_messages' => array(
+			'URL'      => 'http://cvs.sourceforge.jp/cgi-bin/viewcvs.cgi/pukiwiki/pukiwiki',
+			'URL_FILE' => 'http://cvs.sourceforge.jp/cgi-bin/viewcvs.cgi/*checkout*/pukiwiki/pukiwiki/',
+			'OPTIONAL_URL' => 'http://pukiwiki.sourceforge.jp/?',
+			'OPTIONAL_OPT' => 'plugin=ls2&prefix=',
+			'OPTIONAL_DIR' => '%E8%87%AA%E4%BD%9C%E3%83%97%E3%83%A9%E3%82%B0%E3%82%A4%E3%83%B3%2F',
+			'DIRS' => array(
+				"DATA_HOME"		=> '/',
+				"PLUGIN_DIR"	=>'/plugin/',
+				"LIB_DIR"		=>'/lib/',
+				"SKIN_DIR"		=>'/skin/',
+				"DOC_DIR"		=>'/doc/'
+			),
+			'LDIRS' => array(
+				"DATA_HOME"		=> DATA_HOME ,
+				"PLUGIN_DIR"	=> PLUGIN_DIR, 
+				"LIB_DIR"		=> LIB_DIR,
+				"SKIN_DIR"		=> SKIN_DIR,
+				"DOC_DIR"		=> SITE_HOME . 'doc/',
+			),
+			'title_name'		=> T_('file name'),
+			'title_cvs'			=> T_('cvs versions'),
+			'title_local'		=> T_('local versions'),
+			'title_not_found'	=> T_('not found'),
+			'msg_title'			=> T_('diff in cvscheck'),
+			'body_title'		=> T_('Difference of file version of this site and CVS'),
+			'body_title_local'	=> T_('Version of file where only this site exists'),
+			'msg_new_files'		=> T_('It is not necessary to update it.'),
+			'msg_load_error'	=> T_('File Load Error'),
+			'body_load_error'	=> T_('The file was not able to be read.'),
+			'msg_access_error'	=> T_('Access Error'),
+			'body_access_error'	=> T_('It was not able to access the CVS site.'),
+		),
 	);
 	set_plugin_messages($messages);
 }
@@ -359,7 +363,7 @@ function plugin_cvscheck_localversions()
 				$file = htmlspecialchars($matches[1]);
 				$ver  = htmlspecialchars($matches[2]);
 				if ( plugin_cvscheck_greaterp($ver, $ary[$file]) ) $ary[$file] = $ver;
-				$debug .= "$adir - $file : $ver ---<br />\n";
+//				$debug .= "$adir - $file : $ver ---<br />\n";
 			}
 			else {
 				$file = htmlspecialchars($file);

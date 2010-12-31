@@ -83,7 +83,7 @@ function plugin_toolbar_convert()
 			$body .= _toolbar($name);
 			break;
 		case '|':
-			$body .= '<span class="pkwk-icon_splitter">&nbsp;</span>'."\n";
+			$body .= '<span class="pkwk-icon_splitter">&#xA0;</span>'."\n";
 			break;
 		case 'diff':
 			if (!$is_read) break;
@@ -116,7 +116,7 @@ function plugin_toolbar_convert()
 		}
 	}
 	if ($pkwk_dtd == PKWK_DTD_HTML_5){
-		return '<navi id="toolbar">'. $body . '</navi>';
+		return '<nav id="toolbar">'. $body . '</nav>';
 	}else{
 		return '<div id="toolbar">'. $body . '</div>';
 	}

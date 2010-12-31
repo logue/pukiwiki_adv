@@ -298,7 +298,7 @@ if ($always_menu_displayed) {
 }
 
 global $adminpass;
-if ($adminpass == '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72' || $adminpass == ''){
+if (($adminpass == '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72' || $adminpass == '') && !isset($vars['ajax'])){
 	$body = '<div style="padding: 0pt 0.7em;" class="ui-state-error ui-corner-all">'.
 		'<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>'.
 		'<strong>'.$_string['warning'].'</strong> '.$_string['changeadminpass'].'</p></div>'."\n".

@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: popular.inc.php,v 1.19.8 2010/10/26 14:51:00 Logue Exp $
+// $Id: popular.inc.php,v 1.19.8 2010/12/26 23:24:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team
 //   2005-2007 PukiWiki Plus! Team
@@ -36,10 +36,10 @@ function plugin_popular_convert()
 //	global $_popular_plugin_frame, $_popular_plugin_today_frame;
 	static $localtime;
 
-	$_popular_plugin_frame_s       = _('popular(%d)');
-	$_popular_plugin_today_frame_s = _('today\'s(%d)');
-	$_popular_plugin_yesterday_frame_s = _('yesterday\'s(%d)');
-	$_popular_plugin_recent_frame_s    = _('recent\'s(%d)');
+	$_popular_plugin_frame_s       = T_('popular(%d)');
+	$_popular_plugin_today_frame_s = T_('today\'s(%d)');
+	$_popular_plugin_yesterday_frame_s = T_('yesterday\'s(%d)');
+	$_popular_plugin_recent_frame_s    = T_('recent\'s(%d)');
 	$_popular_plugin_frame         = sprintf('<h5>%s</h5><div>%%s</div>', $_popular_plugin_frame_s);
 	$_popular_plugin_today_frame   = sprintf('<h5>%s</h5><div>%%s</div>', $_popular_plugin_today_frame_s);
 	$_popular_plugin_yesterday_frame = sprintf('<h5>%s</h5><div>%%s</div>', $_popular_plugin_yesterday_frame_s);

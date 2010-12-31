@@ -117,7 +117,7 @@ function plugin_suckerfish_makehtml($page)
 	$output = '<ul id="'.PLUGIN_SUKERFISH_DEFAULT_ID.'">'."\n".$output.'</ul>';
 	
 //	return '<div id="navigator2">'."\n".'<ul id="'.PLUGIN_SUKERFISH_DEFAULT_ID.'">'."\n".$output.'</ul></div>';
-	return (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<nav id="navigator2">'.$output.'</nav>'."\n" : '<div id="navigator2">'.$output.'</div>')."\n";
+	return (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<div><nav id="navigator2">'.$output.'</nav></div>'."\n" : '<div id="navigator2">'.$output.'</div>')."\n";
 }
 
 function plugin_suckerfish_to_item($line){

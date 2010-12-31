@@ -85,12 +85,12 @@ function plugin_tooltip_inline()
 		$url = get_page_uri($page);
 		$passage = get_pg_passage($page,FALSE);
 		return <<<EOD
-<a href="$url" class="linktip" title="$s_glossary$passage">$term</a>
+<a href="$url"><abbr class="linktip" title="$s_glossary$passage">$term</abbr></a>
 EOD;
 	}
 	else {
 	return <<<EOD
-<span class="tooltip" title="$s_glossary">$term</span>
+<dfn class="tooltip" title="$s_glossary">$term</dfn>
 EOD;
 	}
 }

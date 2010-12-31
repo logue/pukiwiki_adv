@@ -56,7 +56,7 @@ function plugin_include_convert()
 	static $included = array();
 	static $count = 1;
 
-	$_msg_include_restrict = _('Due to the blocking, $1 cannot be include(d).');
+	$_msg_include_restrict = T_('Due to the blocking, $1 cannot be include(d).');
 
 	if (func_num_args() == 0) return PLUGIN_INCLUDE_USAGE . '<br />' . "\n";;
 

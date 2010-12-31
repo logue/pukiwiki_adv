@@ -3,7 +3,7 @@
  * PukiWiki Plus! 推定ユーザリスト更新プラグイン
  *
  * @copyright	Copyright &copy; 2004-2005,2008, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version	$Id: log_guess_user.php,v 0.4 2008/06/27 00:33:00 upk Exp $
+ * @version	$Id: log_guess_user.php,v 0.4.1 2010/12/26 17:25:00 Logue Exp $
  * @license	http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 
@@ -13,8 +13,8 @@
 function plugin_log_guess_user_init()
 {
 	$messages = array(
-	'_log_guess_user_msg' => array(
-		'msg_put'	=> _('<div>PUT: %s</div>'),
+		'_log_guess_user_msg' => array(
+			'msg_put'	=> T_('PUT: %s'),
 		)
 	);
 	set_plugin_messages($messages);

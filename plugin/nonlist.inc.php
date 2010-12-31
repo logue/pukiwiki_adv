@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: nonlist.inc.php,v 0.0.2 2007/04/23 22:11:00 upk Exp $
+// $Id: nonlist.inc.php,v 0.0.3 2010/12/26 17:55:00 Logue Exp $
 //
 
 function plugin_nonlist_convert()
@@ -29,7 +29,7 @@ function plugin_nonlist_convert()
 function plugin_nonlist_action()
 {
 	global $vars;
-	$_title_nonlist = _('List of non_list pages');
+	$_title_nonlist = T_('List of non_list pages');
 
 	if (auth::check_role('role_adm_contents')) return '';
 

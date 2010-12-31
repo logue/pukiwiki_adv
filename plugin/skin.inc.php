@@ -3,10 +3,10 @@
  * skin plugin
  *
  * @copyright   Copyright &copy; 2009-2010, Katsumi Saito <jo1upk@users.sourceforge.net>
- * @version     $Id: skin.inc.php,v 2.1 2010/01/03 14:42:00 upk Exp $
+ * @version	 $Id: skin.inc.php,v 2.1 2010/01/03 14:42:00 upk Exp $
  *
  */
-defined('PLUGIN_SKIN_USE')    or define('PLUGIN_SKIN_USE', 1);		// 0:not use, 1:use
+defined('PLUGIN_SKIN_USE')	or define('PLUGIN_SKIN_USE', 1);		// 0:not use, 1:use
 // 有効日数を定義(0 は、ブラウザ終了時消滅)
 defined('PLUGIN_SKIN_EXPIRE') or define('PLUGIN_SKIN_EXPIRE', 0);	// Effective days are defined. (0: Disappearance when a browser ends)
 
@@ -18,13 +18,13 @@ function plugin_skin_init()
 			'msg_config_update'	=> _('Update of config page'),						// config page の更新
 			'msg_config_list'	=> _('Theme list'),
 			'msg_update_end'	=> _('The update work ended.'),						// 更新作業が終わりました。
-			'adm_titme'		=> _('Management of skin theme'),					// スキン・テーマの管理
+			'adm_titme'			=> _('Management of skin theme'),					// スキン・テーマの管理
 			'adm_config_name'	=> _('Management ledger'),						// 管理台帳
 			'adm_config_update'	=> _('Update of management ledger'),					// 管理台帳の更新
 			'adm_present_theme'	=> _('Present theme'),							// 現在のテーマ
 			'adm_amnagement_op'	=> _('Management operation'),						// 管理操作
 			'field_theme_name'	=> _('Theme Name'),
-			'field_use'		=> _('Use'),
+			'field_use'			=> _('Use'),
 			'field_display_name'	=> _('Display Name'),
 			'field_color'		=> _('Color'),
 			'field_memo'		=> _('Memo'),
@@ -145,9 +145,9 @@ function skin_menu_admin()
 	$theme_tdiary_name = substr(THEME_TDIARY_NAME,0,-1);
 	$array_theme = array($theme_plus_name=>'Plus!',$theme_tdiary_name=>'tDiary');
 
-        $update = $list = get_script_uri().'?cmd=skin';
-        $list .= '&list';
-        $update .= '&update';
+		$update = $list = get_script_uri().'?cmd=skin';
+		$list .= '&list';
+		$update .= '&update';
 	$image_uri = IMAGE_URI;
 
 	$retval = <<<EOD
@@ -210,15 +210,15 @@ EOD;
 		// Input data is separated. 
 		// 入力データを分離
 		$list_plus = $list_tdiary = array();
-                foreach($list as $skin=>$name) {
-                        $val = explode('.', $skin);
-                        $val[1] = (empty($val[1])) ? $val[0] : $val[1];
+		foreach($list as $skin=>$name) {
+			$val = explode('.', $skin);
+			$val[1] = (empty($val[1])) ? $val[0] : $val[1];
 			if ($val[0] == 'tdiary') {
 				$list_tdiary[ $val[1] ] = array('use'=>'1','name'=>$name);
 			} else {
 				$list_plus[ $val[1] ] = array('use'=>'1','name'=>$name);
 			}
-                }
+				}
 	}
 
 	// plus theme
@@ -235,7 +235,7 @@ EOD;
 				$selected = (!empty($theme) && $theme == $skin) ? ' selected="selected"' : '';
 				$name = (empty($val['name'])) ? $skin : $val['name'];
 				$style = (empty($val['color'])) ? '' : skin_set_color($val['color']);
-				$retval .= '     <option value="'.$skin.'"'.$style.$selected.'>'.htmlspecialchars($name).'</option>'."\n";
+				$retval .= '	 <option value="'.$skin.'"'.$style.$selected.'>'.htmlspecialchars($name).'</option>'."\n";
 			}
 		}
 		$retval .= '   </optgroup>'."\n";
@@ -250,8 +250,8 @@ EOD;
 			$selected = (!empty($theme) && $theme == $skin) ? ' selected="selected"' : '';
 			$name = (empty($val['name'])) ? $skin : $val['name'];
 			$style = (empty($val['color'])) ? '' : skin_set_color($val['color']);
-			$retval .= '     <option value="tdiary.'.$skin.'"'.$style.$selected.'>'.htmlspecialchars($name).'</option>'."\n";
-               	}
+			$retval .= '	 <option value="tdiary.'.$skin.'"'.$style.$selected.'>'.htmlspecialchars($name).'</option>'."\n";
+			   	}
 		$retval .= '   </optgroup>'."\n";
 	}
 
@@ -280,14 +280,14 @@ function skin_search()
 
 function skin_find_file($dir, & $config)
 {
-        $retval = $matches = array();
+		$retval = $matches = array();
 
 	if ($dp = opendir($dir)) {
-        	while ($file = readdir($dp)) {
-                	if ($file==='.' || $file==='..') continue;
-                	if (filetype($dir.$file) === 'dir') {
-                        	$rc = skin_find_file($dir.$file.'/', $config);
-                        	if (!empty($rc)) $retval = array_merge($retval,$rc);
+			while ($file = readdir($dp)) {
+					if ($file==='.' || $file==='..') continue;
+					if (filetype($dir.$file) === 'dir') {
+							$rc = skin_find_file($dir.$file.'/', $config);
+							if (!empty($rc)) $retval = array_merge($retval,$rc);
 				continue;
 			}
 			if (preg_match('/(.*)\.skin\.php$/i', $file, $matches)) {
@@ -302,7 +302,7 @@ function skin_find_file($dir, & $config)
 		ksort($retval);
 		closedir($dp);
 	}
-        return $retval;
+		return $retval;
 }
 
 function skin_search_tdiary()
@@ -338,7 +338,7 @@ function skin_config_update()
 
 function skin_config_list()
 {
-        global $_skin_msg;
+		global $_skin_msg;
 	list($list_plus, $list_tdiary) = skin_config_maintenance();
 
 	$title  = 'Plus! Theme';
@@ -428,11 +428,11 @@ function skin_put_config($update, & $list, $master, $locale, $title)
 	global $_skin_msg;
 
 	if ($update || !is_page($master)) {
-        	$postdata = '*'.$title."\n\n";
+			$postdata = '*'.$title."\n\n";
 		$postdata .= '|'.$_skin_msg['field_theme_name'].'|'.$_skin_msg['field_use'].'|'.$_skin_msg['field_color'].'|'.$_skin_msg['field_memo']."|h\n";
-        	foreach($list as $theme=>$val) {
-                	$postdata .= '|'.$theme.'|'.$val['use'].'|'.$val['color'].'|'.$val['memo']."|\n";
-        	}
+			foreach($list as $theme=>$val) {
+				$postdata .= '|'.$theme.'|'.$val['use'].'|'.$val['color'].'|'.$val['memo']."|\n";
+			}
 		page_write($master, $postdata);
 	}
 

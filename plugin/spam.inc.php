@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: spam.inc.php,v 1.9 2010/08/29 12:49:00 Logue Exp $
+// $Id: spam.inc.php,v 1.9.1 2010/12/26 19:43:00 Logue Exp $
 // Copyright (C) 
 //    2010      PukiWiki Advance Developers Team
 //    2003-2005, 2007 PukiWiki Developers Team
@@ -8,14 +8,31 @@
 //
 // lib/spam.php related maintenance tools
 
-function plugin_spam_init(){}
+function plugin_spam_init(){
+	$msg = array(
+		'_spam_messages' => array(
+			'title'			=> T_('Spam tools: '),
+			'title_menu'	=> T_('Menu'),
+			'err_prohibit'	=> T_('PKWK_READONLY prohibits this'),
+			'label_start'	=> T_('Start from: '),
+			'label_sort'	=> T_('Sort (heavy)'),
+			'label_pass'	=> T_('Pass: '),
+			'check'			=> T_('Check'),
+			'msg_pages'		=> T_('Check existing pages. (badhost only at this time)'),
+			'msg_found'		=> T_('FOUND at %s.'),
+			'msg_hits'		=> T_('Pages: %1s hit / %2s checked / %3s all'),
+			'title_pages'	=> T_('Pages')
+		)
+	);
+	set_plugin_messages($msg);
+}
 
 // Menu and dispatch
 function plugin_spam_action()
 {
-	global $vars;
+	global $vars, $_spam_messages;
 
-	if (PKWK_READONLY) die_message('PKWK_READONLY prohibits this');
+	if (PKWK_READONLY) die_message($_spam_messages['msg_prohibit']);
 
 	// Dispatch
 	$mode = isset($vars['mode']) ? $vars['mode'] : '';
@@ -27,12 +44,11 @@ function plugin_spam_action()
 	// Check text
 	// Check attach
 
-	$msg    = 'Spam tools: Menu';
-	$script = get_script_uri() . '?plugin=spam';
+	$script = get_script_uri() . '?cmd=spam';
 	$body   = 'Choose one: ' . "\n" .
-		'<a href="'. $script . '&mode=pages' . '">Pages</a>' . "\n"
+		'<a href="'. get_cmd_uri('spam','','',array('mode'=>'pages')) . '">'.$_spam_messages['title_pages'].'</a>' . "\n"
 		;
-	return array('msg'=>$msg, 'body'=>nl2br($body));
+	return array('msg'=>$_spam_messages['title'].$_spam_messages['title_menu'], 'body'=>nl2br($body));
 }
 
 // mode=pages: Check existing pages
@@ -41,7 +57,7 @@ function plugin_spam_pages()
 	require_once(LIB_DIR . 'spam.php');
 	require_once(LIB_DIR . 'spam_pickup.php');
 
-	global $vars, $post, $_msg_invalidpass;
+	global $vars, $post, $_msg_invalidpass, $_spam_messages;
 
 	$ob      = ob_get_level();
 	$script  = get_script_uri() . '?plugin=spam&mode=pages';
@@ -54,15 +70,17 @@ function plugin_spam_pages()
 	$per     = 100;
 
 	$form    = <<<EOD
-<p>Pages: Check existing pages (badhost only at this time)</p>
-<form action="$script" method="post">
-	<div>
-		<label for="start">Start from: </label><input type="text" name="start" id="start" size="40" value="$s_start" /><br/>
-		<input type="checkbox" name="sort" value="on"$s_sort /><label for="sort">Sort (heavy)</label><br />
-		<label for="pass">Pass: </label><input type="password" name="pass" id="pass" size="12" /><br />
-		<input type="submit" name="check" value="check" />
-	</div>
-</form>
+<fieldset>
+	<legend>{$_spam_messages['msg_pages']}</legend>
+	<form action="$script" method="post">
+		<div class="spam_form">
+			<label for="start">{$_spam_messages['label_start']}</label><input type="text" name="start" id="start" size="40" value="$s_start" /><br/>
+			<input type="checkbox" name="sort" value="on" id="sort" $s_sort /><label for="sort">{$_spam_messages['label_sort']}</label><br />
+			<label for="pass">{$_spam_messages['label_pass']}</label><input type="password" name="pass" id="pass" size="12" /><br />
+			<input type="submit" name="check" value="{$_spam_messages['check']}" />
+		</div>
+	</form>
+</fieldset>
 EOD;
 
 	if ($pass !== NULL && pkwk_login($pass)) {
@@ -110,8 +128,10 @@ EOD;
 				echo '<br />' . "\n";
 			} else {
 				++$hit;
-				echo '<font color="red"><strong>FOUND at "' . htmlspecialchars($pagename) . '"</strong></font>';
-				echo ':<br />' . "\n";
+				echo '<div style="padding: 0pt 0.7em;" class="ui-state-error ui-corner-all">'.
+					'<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>'.
+					sprintf($_spam_messages['msg_found'],htmlspecialchars($pagename)).'</p>';
+				echo '<p>' . "\n";
 				$tmp = summarize_detail_badhost($progress);
 				if ($tmp != '') {
 					echo '&nbsp; DETAIL_BADHOST: ' . 
@@ -119,17 +139,17 @@ EOD;
 				}
 			}
 		}
-		echo '<br />' . "\n";
-		echo '----' . '<br />' . "\n";
-		echo 'Pages: ' . $hit . ' hit / ' . $search . ' checked / ' . $count . ' all';
+		echo '</p>' . "\n";
+		echo '<hr />' . "\n";
+	
+		echo sprintf( $_spam_messages['msg_hits'], $hit, $search, $count);
 
 		exit;
 	}
 
-	$msg   = 'Spam tools: Pages';
 	$body  = ($pass === NULL) ? '' : '<p><strong>' . $_msg_invalidpass . '</strong></p>' . "\n";
 	$body .= $form;
-	return array('msg'=>$msg, 'body'=>$body);
+	return array('msg'=>$_spam_messages['title'].$_spam_messages['title_pages'], 'body'=>$body);
 }
 
 ?>

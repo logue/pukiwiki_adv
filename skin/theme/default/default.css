@@ -18,16 +18,16 @@ small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td,
 article, aside, canvas, details, figcaption, figure,  footer, header, hgroup, 
 menu, nav, section, summary, time, mark, audio, video {
-  margin:0;
-  padding:0;
-  border:0;
-  outline:0;
-  font-size:100%;
-  vertical-align:baseline;
-  background:transparent;
+	margin:0;
+	padding:0;
+	border:0;
+	outline:0;
+	font-size:100%;
+	vertical-align:baseline;
+	background:transparent;
 }                  
 article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section { 
-    display:block;
+	display:block;
 }
 nav ul { list-style:none; }
 blockquote, q { quotes:none; }
@@ -43,7 +43,7 @@ hr { display:block; height:1px; border:0; border-top:1px solid #ccc; margin:1em 
 input, select { vertical-align:middle; }
 
 
-body { font:13px/1.231 sans-serif; *font-size:small; } 
+body { font:13px/1.231 sans-serif; *font-size:small; }
 select, input, textarea, button { font:99% sans-serif; }
 pre, code, kbd, samp { font-family: monospace, sans-serif; }
 
@@ -61,15 +61,17 @@ ol { list-style-type: decimal; }
 nav ul, nav li { margin: 0; } 
 small { font-size: 85%; }
 strong, th { font-weight: bold; }
-td, td img { vertical-align: top; } 
+/* td, td img { vertical-align: top; } */
 sub { vertical-align: sub; font-size: smaller; }
 sup { vertical-align: super; font-size: smaller; }
 pre {  padding: 15px;  white-space: pre;  white-space: pre-wrap;  white-space: pre-line;  word-wrap: break-word; }
 textarea { overflow: auto; } 
 .ie6 legend, .ie7 legend { margin-left: -7px; } 
 input[type="radio"] { vertical-align: text-bottom; }
+/*
 input[type="checkbox"] { vertical-align: bottom; }
 .ie7 input[type="checkbox"] { vertical-align: baseline; }
+*/
 .ie6 input { vertical-align: text-bottom; }
 label, input[type=button], input[type=submit], button { cursor: pointer; }
 button, input, select, textarea { margin: 0; }
@@ -93,11 +95,82 @@ button {  width: auto; overflow: visible; }
 .clearfix:after { clear: both; }
 .clearfix { zoom: 1; }
 
-/** PukiWiki Plus! CSS set Start *******************************************************************/
-
-body, h1, h2, h3, h4, h5, .ui-widget{
-	font-family:"Trebuchet MS", Meiryo, Osaka, Sans-Serif;
+/** Font set **************************************************************************************/
+body{
+	font-family: 'Segoe UI', 'Trebuchet MS', Verdana, Arial, Sans-Serif;
 }
+pre, code, kbd, samp, textarea, select, option, input, var{
+	font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace;
+}
+
+/* Japanese */
+:lang(ja-JP)	{
+	font-family: 'メイリオ', 'ヒラギノ角ゴ Pro W3', Osaka, 'ＭＳＰ ゴシック' !important;
+}
+:lang(ja-JP) pre,
+:lang(ja-JP) code,
+:lang(ja-JP) kbd,
+:lang(ja-JP) samp,
+:lang(ja-JP) textarea,
+:lang(ja-JP) select,
+:lang(ja-JP) option,
+:lang(ja-JP) input
+:lang(ja-JP) var{
+	font-family:'Osaka−等幅', 'ＭＳ ゴシック' !important;
+}
+
+/* Korean */
+:lang(ko-KR)	{
+	font-family: '맑은 고딕', Gulim, Dotum, AppleGothic !important;
+}
+:lang(ko-KR) pre,
+:lang(ko-KR) code,
+:lang(ko-KR) kbd,
+:lang(ko-KR) samp,
+:lang(ko-KR) textarea,
+:lang(ko-KR) select,
+:lang(ko-KR) option,
+:lang(ko-KR) input
+:lang(ko-KR) var{
+	font-family:GulimChe !important;
+}
+
+/* Traditional Chinese */
+:lang(zh-TW)	{
+	font-family: 'Heiti TC', '微軟正黑體', '華康超黑體', '華康新特黑體', '華康粗黑體' !important;
+}
+:lang(zh-TW) pre,
+:lang(zh-TW) code,
+:lang(zh-TW) kbd,
+:lang(zh-TW) samp,
+:lang(zh-TW) textarea,
+:lang(zh-TW) select,
+:lang(zh-TW) option,
+:lang(zh-TW) input
+:lang(zh-TW) var{
+	font-family:'中易黑体' !important;
+}
+
+/* Simplified Chinese */
+:lang(zh-CN)	{
+	font-family: 'Heiti SC', '微软雅黑' !important;
+}
+:lang(zh-CN) pre,
+:lang(zh-CN) code,
+:lang(zh-CN) kbd,
+:lang(zh-CN) samp,
+:lang(zh-CN) textarea,
+:lang(zh-CN) select,
+:lang(zh-CN) option,
+:lang(zh-CN) input
+:lang(zh-CN) var{
+	font-family:'中易黑体','Kozuka Gothic Pro' !important;
+}
+
+.ui-widget{
+	font-size:100%;
+}
+/** PukiWiki Plus! CSS set Start ******************************************************************/
 
 a:link, a:active, a:visited{
 	text-decoration:none;
@@ -188,11 +261,11 @@ img{
 }
 
 /* pukiwiki extend anchor */
-img.ext{
+.ext{
 	margin-left: 2px;
 	vertical-align: baseline;
 }
-img.inn{
+.inn{
 	margin-left: 2px;
 	vertical-align: baseline;
 }
@@ -263,10 +336,6 @@ ol.list3{
 	list-style-type:lower-alpha;
 }
 
-div.ie5{
-	text-align:center;
-}
-
 small, .small{
 	font-size:85%;
 }
@@ -281,66 +350,66 @@ small, .small{
 	vertical-align:super;
 }
 
-a.note_super{
+.note_super{
 	font-weight:bold;
 	font-size:77%;
 	vertical-align:super;
 	margin: 0px 1%;
 }
 
-div.jumpmenu{
+.jumpmenu{
 	font-size:77%;
 	text-align:right;
 }
 
-hr.full_hr{
+.full_hr{
 	width:100%;
 }
 
-hr.short_line{
+.short_line{
 	width:80%;
 }
-hr.note_hr{
+.note_hr{
 	margin:1em 0.5em 0em 0.5em;
 }
 
-span.size1{
+.size1{
 	font-size:xx-small;
 	line-height:130%;
 	text-indent:0px;
 	display:inline;
 }
-span.size2{
+.size2{
 	font-size:x-small;
 	line-height:130%;
 	text-indent:0px;
 	display:inline;
 }
-span.size3{
+.size3{
 	font-size:small;
 	line-height:130%;
 	text-indent:0px;
 	display:inline;
 }
-span.size4{
+.size4{
 	font-size:medium;
 	line-height:130%;
 	text-indent:0px;
 	display:inline;
 }
-span.size5{
+.size5{
 	font-size:large;
 	line-height:130%;
 	text-indent:0px;
 	display:inline;
 }
-span.size6{
+.size6{
 	font-size:x-large;
 	line-height:130%;
 	text-indent:0px;
 	display:inline;
 }
-span.size7{
+.size7{
 	font-size:xx-large;
 	line-height:130%;
 	text-indent:0px;
@@ -348,10 +417,9 @@ span.size7{
 }
 
 input[type='text'], input[type='password'], textarea, select, iframe {
+	padding:1px;
+	margin:1px;
 	border:1px solid #AAA;
-	margin:0px;
-	font-family:monospace !important;
-/*	font-size: 93%;	*/
 }
 
 ruby {
@@ -991,14 +1059,6 @@ rp {
 .img_margin{
 	margin-left:6px;
 	margin-right:6px;
-}
-
-/* vote.inc.php */
-.style_table_vote{
-	padding:0px;
-	border:0px;
-	margin:auto auto auto 32px !important;
-	text-align:left;
 }
 
 /* amazon.inc.php */

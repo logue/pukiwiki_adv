@@ -20,10 +20,10 @@ function plugin_skeylist_init()
 {
 	$msg = array(
 		'_skeylist_msg' => array(
-			'h5_title'	=> _('Search Key Top %d'),
-			'title'		=> _('All the Search Key of %s'),
-			'not_effective'	=> _('The function of Referer is not effective.'),
-			'no_data'	=> _('no data.'),
+			'h5_title'		=> T_('Search Key Top %d'),
+			'title'			=> T_('All the Search Key of %s'),
+			'not_effective'	=> T_('The function of Referer is not effective.'),
+			'no_data'		=> T_('no data.'),
 		)
 	);
 	set_plugin_messages($msg);
@@ -39,7 +39,7 @@ function plugin_skeylist_action()
 	check_readable($page, false);
 	$retval['msg']  = sprintf($_skeylist_msg['title'],$page);
 	if (! $referer) {
-		$retval['body'] = '<div>'.$_skeylist_msg['not_effective']."</div>\n";
+		$retval['body'] = '<p>'.$_skeylist_msg['not_effective']."</p>\n";
 		return $retval;
 	}
 
@@ -50,7 +50,7 @@ function plugin_skeylist_action()
 	//  データ無し
 	if (count($data) == 0)
 	{
-		$retval['body'] = '<div>'.$_skeylist_msg['no_data']."</div>\n";
+		$retval['body'] = '<p>'.$_skeylist_msg['no_data']."</p>\n";
 		return $retval;
 	}
 
@@ -59,9 +59,9 @@ function plugin_skeylist_action()
 	usort($data,create_function('$a,$b','return $b[1] - $a[1];'));
 	$data = skeylist_print($data,$max);
 
-	$retval['body']  = '<div>';
+	$retval['body']  = '<p>';
 	$retval['body'] .= (empty($data)) ? $_skeylist_msg['no_data'] : $data;
-	$retval['body'] .= "</div>\n";
+	$retval['body'] .= "</p>\n";
 	return $retval;
 }
 
@@ -219,7 +219,7 @@ function skeylist_print($data,$max)
 			$key = mb_convert_encoding($x[0],'utf-8',SOURCE_ENCODING);
 		}
 		$key = rawurlencode($key);
-		$tmp = '<a href="'.SKEYLIST_SEARCH_URL.$key.'">'.$x[0].'</a>('.$x[1].')';
+		$tmp = '<a href="'.SKEYLIST_SEARCH_URL.$key.'" rel="nofollow noreferer">'.$x[0].'</a>('.$x[1].')';
 		if ($max > 0) {
 			$rc .= '<li>'.$tmp."</li>\n";
 		} else {

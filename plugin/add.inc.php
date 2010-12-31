@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: add.inc.php,v 1.7.3 2006/01/11 23:15:00 upk Exp $
+// $Id: add.inc.php,v 1.7.4 2010/12/23 12:58:00 Logue Exp $
 //
 // Add plugin - Append new text below/above existing page
 // Usage: cmd=add&page=pagename
@@ -19,7 +19,7 @@ function plugin_add_action()
 	return array(
 		'msg'  => _("Add to $1"),
 		'body' => '<ul>' . "\n" .
-		          ' <li>' . _('Two and the contents of an input are added for a new-line to the contents of a page of present addition.') . '</li>' . "\n" .
+		          ' <li>' . T_('Two and the contents of an input are added for a new-line to the contents of a page of present addition.') . '</li>' . "\n" .
 		          '</ul>' . "\n" . edit_form($page, '')
 	);
 }

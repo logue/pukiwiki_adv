@@ -3,7 +3,7 @@
  * bluff プラグイン
  *
  * @copyright   Copyright &copy; 2010, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: bluff.inc.php,v 0.2 2010/09/20 13:00:00 Logue Exp $
+ * @version	 $Id: bluff.inc.php,v 0.3 2010/12/26 13:32:00 Logue Exp $
  *
  */
 
@@ -11,13 +11,13 @@ defined('BLUFF_CANVAS_NAME_PREF') or define('BLUFF_CANVAS_NAME_PREF', 'bluff_gra
 
 function plugin_bluff_init()
 {
-        $msg = array(
-                '_bluff_msg' => array(
-                        'msg_no_data'		=> _('No Data'),
-			'msg_no_attach_file'	=> _('attach file not found.'),
-                )
-        );
-        set_plugin_messages($msg);
+		$msg = array(
+			'_bluff_msg' => array(
+				'msg_no_data'			=> _('No Data'),
+				'msg_no_attach_file'	=> _('attach file not found.'),
+			)
+		);
+		set_plugin_messages($msg);
 }
 
 function plugin_bluff_convert()
@@ -32,7 +32,7 @@ function plugin_bluff_convert()
 	//array_pop($argv);
 	$parm = bluff_set_parm($argv);
 
-        $title = $fields = array();
+		$title = $fields = array();
 	if (isset($parm['page']) || isset($parm['label']) || isset($parm['file'])) {
 		$page = (isset($parm['page'])) ? $parm['page'] : $vars['page'];
 		if (isset($parm['label'])) {
@@ -240,10 +240,10 @@ function bluff_make_parameter(& $parm)
 
 	// boolean fields
 	$bool_f = array('sort');
-        foreach($bool_f as $x) {
-                if (!isset($parm[$x])) continue;
-                $retval .= 'g.'.$x.' = false;';
-        }
+		foreach($bool_f as $x) {
+				if (!isset($parm[$x])) continue;
+				$retval .= 'g.'.$x.' = false;';
+		}
 	$bool_t = array('hide_dots','hide_legend','hide_lines','hide_line_markers','hide_line_numbers','hide_title');
 	foreach($bool_t as $x) {
 		if (empty($parm[$x])) continue;
@@ -273,21 +273,21 @@ function bluff_get_inline_data(& $data)
 	$title = $fields = array();
 	$lines = line2array($data);
 
-        foreach($lines as $line) {
+		foreach($lines as $line) {
 		if (empty($line)) continue;
 		$head  = $line{0};
 		if ($head  !== '|' && $head  !== ',') continue;
-                //if (substr($line,0,2) == '//') continue;
+			//if (substr($line,0,2) == '//') continue;
 
-                // ヘッダーありか？
-                if (is_header($line)) {
-                        $title = tbl2dat($line);
-                        array_pop($title);
-                        continue;
-                }
+			// ヘッダーありか？
+			if (is_header($line)) {
+					$title = tbl2dat($line);
+					array_pop($title);
+					continue;
+			}
 
-                $fields[] = tbl2dat($line);
-        }
+			$fields[] = tbl2dat($line);
+		}
 	return array($title, $fields);
 }
 
@@ -327,7 +327,7 @@ function bluff_get_page_data($page, $label)
 		if ($head == '|') {
 			$lines[] = trim($line);
 		}
-        }
+		}
 
 	foreach($lines as $line) {
 		// ヘッダーありか？
@@ -440,7 +440,7 @@ function bluff_make_data(& $title, & $fields, & $parm)
 		$delm = ',';
 	}
 	$retval .= '};';
-        return $retval;
+	return $retval;
 }
 
 ?>

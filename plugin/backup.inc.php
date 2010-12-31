@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: backup.inc.php,v 1.28.21 2010/08/28 17:23:00 Logue Exp $
+// $Id: backup.inc.php,v 1.28.22 2010/12/26 12:26:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team
 //   2005-2008 PukiWiki Plus! Team
@@ -23,21 +23,21 @@ function plugin_backup_action()
 //	global $_title_backupdiff, $_title_backupnowdiff, $_title_backupsource;
 //	global $_title_backup, $_title_pagebackuplist, $_title_backuplist;
 
-$_msg_backuplist       = _('Backup list');
-$_msg_diff             = _('diff');
-$_msg_nowdiff          = _('diff current');
-$_msg_source           = _('source');
-$_msg_backup           = _('backup');
-$_msg_visualdiff       = _('diff for visual');
-$_msg_view             = _('View the $1.');
-$_msg_goto             = _('Go to $1.');
-$_msg_deleted          = _(' $1 has been deleted.');
-$_title_backupdiff     = _('Backup diff of $1(No. $2)');
-$_title_backupnowdiff  = _('Backup diff of $1 vs current(No. $2)');
-$_title_backupsource   = _('Backup source of $1(No. $2)');
-$_title_backup         = _('Backup of $1(No. $2)');
-$_title_pagebackuplist = _('Backup list of $1');
-$_title_backuplist     = _('Backup list');
+$_msg_backuplist       = T_('Backup list');
+$_msg_diff             = T_('diff');
+$_msg_nowdiff          = T_('diff current');
+$_msg_source           = T_('source');
+$_msg_backup           = T_('backup');
+$_msg_visualdiff       = T_('diff for visual');
+$_msg_view             = T_('View the $1.');
+$_msg_goto             = T_('Go to $1.');
+$_msg_deleted          = T_(' $1 has been deleted.');
+$_title_backupdiff     = T_('Backup diff of $1(No. $2)');
+$_title_backupnowdiff  = T_('Backup diff of $1 vs current(No. $2)');
+$_title_backupsource   = T_('Backup source of $1(No. $2)');
+$_title_backup         = T_('Backup of $1(No. $2)');
+$_title_pagebackuplist = T_('Backup list of $1');
+$_title_backuplist     = T_('Backup list');
 
 	if (! $do_backup) return;
 
@@ -120,7 +120,7 @@ $_title_backuplist     = _('Backup list');
 	$body .= '</ul>'  . "\n";
 
 	if ($action == 'diff') {
-		if (auth::check_role('safemode')) die_message( _('PKWK_SAFE_MODE prohibits this') );
+		if (auth::check_role('safemode')) die_message( T_('PKWK_SAFE_MODE prohibits this') );
 		$title = & $_title_backupdiff;
 		$old = ($s_age > 1) ? join('', $backups[$s_age - 1]['data']) : '';
 		$cur = join('', $backups[$s_age]['data']);
@@ -128,7 +128,7 @@ $_title_backuplist     = _('Backup list');
 		auth::is_role_page($cur);
 		$body .= plugin_backup_diff(do_diff($old, $cur));
 	} else if ($s_action == 'nowdiff') {
-		if (auth::check_role('safemode')) die_message( _('PKWK_SAFE_MODE prohibits this') );
+		if (auth::check_role('safemode')) die_message( T_('PKWK_SAFE_MODE prohibits this') );
 		$title = & $_title_backupnowdiff;
 		$old = join('', $backups[$s_age]['data']);
 		$cur = get_source($page, TRUE, TRUE);
@@ -151,14 +151,14 @@ $_title_backuplist     = _('Backup list');
 		$body = preg_replace('#&amp;spanend;#i', '</span>', $body);
 		$title = & $_title_backupnowdiff;
 	} else if ($s_action == 'source') {
-		if (auth::check_role('safemode')) die_message( _('PKWK_SAFE_MODE prohibits this') );
+		if (auth::check_role('safemode')) die_message( T_('PKWK_SAFE_MODE prohibits this') );
 		$title = & $_title_backupsource;
 		auth::is_role_page($backups[$s_age]['data']);
 		$body .= '<pre>' . htmlspecialchars(join('', $backups[$s_age]['data'])) .
 			'</pre>' . "\n";
 	} else {
 		if (PLUGIN_BACKUP_DISABLE_BACKUP_RENDERING) {
-			die_message( _('This feature is prohibited') );
+			die_message( T_('This feature is prohibited') );
 		} else {
 			$title = & $_title_backup;
 			auth::is_role_page($backups[$s_age]['data']);
@@ -177,13 +177,13 @@ function plugin_backup_delete($page)
 //	global $_title_backup_delete, $_title_pagebackuplist, $_msg_backup_deleted;
 //	global $_msg_backup_adminpass, $_btn_delete, $_msg_invalidpass;
 
-$_title_backup_delete  = _('Deleting backup of $1');
-$_title_pagebackuplist = _('Backup list of $1');
-$_title_backuplist     = _('Backup list');
-$_msg_backup_deleted   = _('Backup of $1 has been deleted.');
-$_msg_backup_adminpass = _('Please input the password for deleting.');
-$_btn_delete      = _('Delete');
-$_msg_invalidpass = _('Invalid password.');
+$_title_backup_delete  = T_('Deleting backup of $1');
+$_title_pagebackuplist = T_('Backup list of $1');
+$_title_backuplist     = T_('Backup list');
+$_msg_backup_deleted   = T_('Backup of $1 has been deleted.');
+$_msg_backup_adminpass = T_('Please input the password for deleting.');
+$_btn_delete      = T_('Delete');
+$_msg_invalidpass = T_('Invalid password.');
 
 	if (! _backup_file_exists($page))
 		return array('msg'=>$_title_pagebackuplist, 'body'=>plugin_backup_get_list($page)); // Say "is not found"
@@ -230,8 +230,8 @@ function plugin_backup_diff($str)
 {
 //	global $_msg_addline, $_msg_delline;
 	global $hr;
-	$_msg_addline = _('The added line is <span class="diff_added">THIS COLOR</span>.');
-	$_msg_delline = _('The deleted line is <span class="diff_removed">THIS COLOR</span>.');
+	$_msg_addline = T_('The added line is <span class="diff_added">THIS COLOR</span>.');
+	$_msg_delline = T_('The deleted line is <span class="diff_removed">THIS COLOR</span>.');
 
 	$ul = <<<EOD
 $hr
@@ -250,12 +250,12 @@ function plugin_backup_get_list($page)
 //	global $_msg_backuplist, $_msg_diff, $_msg_nowdiff, $_msg_source, $_msg_nobackup;
 //	global $_title_backup_delete;
 
-$_msg_backuplist       = _('List of Backups');
-$_msg_nobackup         = _('There are no backup(s) of $1.');
-$_msg_diff             = _('diff');
-$_msg_nowdiff          = _('diff current');
-$_msg_source           = _('source');
-$_title_backup_delete  = _('Deleting backup of $1');
+$_msg_backuplist       = T_('List of Backups');
+$_msg_nobackup         = T_('There are no backup(s) of $1.');
+$_msg_diff             = T_('diff');
+$_msg_nowdiff          = T_('diff current');
+$_msg_source           = T_('source');
+$_title_backup_delete  = T_('Deleting backup of $1');
 
 	$r_page = rawurlencode($page);
 	$s_page = htmlspecialchars($page);
@@ -322,7 +322,7 @@ function plugin_backup_get_list_all($withfilename = FALSE)
 {
 	global $cantedit;
 
-	if (auth::check_role('safemode')) die_message( _('PKWK_SAFE_MODE prohibits this') );
+	if (auth::check_role('safemode')) die_message( T_('PKWK_SAFE_MODE prohibits this') );
 
 	$pages = array_diff(auth::get_existpages(BACKUP_DIR, BACKUP_EXT), $cantedit);
 
@@ -356,12 +356,12 @@ function plugin_backup_convert()
 	$page   = isset($vars['page']) ? $vars['page']   : '';
 	check_readable($page, false);
 
-$_msg_backuplist       = _('List of Backups');
-$_msg_diff             = _('diff');
-$_msg_nowdiff          = _('diff current');
-$_msg_source           = _('source');
-$_msg_nobackup         = _('There are no backup(s) of $1.');
-$_title_backup_delete  = _('Deleting backup of $1');
+$_msg_backuplist       = T_('List of Backups');
+$_msg_diff             = T_('diff');
+$_msg_nowdiff          = T_('diff current');
+$_msg_source           = T_('source');
+$_msg_nobackup         = T_('There are no backup(s) of $1.');
+$_title_backup_delete  = T_('Deleting backup of $1');
 
 	// Get arguments
 	$with_label = TRUE;
@@ -405,11 +405,11 @@ EOD;
 	$backups = _backup_file_exists($page) ? get_backup($page) : array();
 	if (count($backups) == 0)
 	{
-		$retval[1] .= '<option value="' . get_page_uri($page) . '" selected="selected">' . _('->') . " $date(No.1)</option>\n";
+		$retval[1] .= '<option value="' . get_page_uri($page) . '" selected="selected">' . T_('->') . " $date(No.1)</option>\n";
 		return join('',$retval);
 	}
 	$maxcnt = count($backups) + 1;
-	$retval[1] .= '<option value="' . get_page_uri($page) . '" selected="selected">' . _('->') . " $date(No.$maxcnt)</option>\n";
+	$retval[1] .= '<option value="' . get_page_uri($page) . '" selected="selected">' . T_('->') . " $date(No.$maxcnt)</option>\n";
 	$backups = array_reverse($backups, True);
 	foreach ($backups as $age=>$data) {
 		$time = (isset($data['real'])) ? $data['real'] : $data['time'];

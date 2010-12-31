@@ -1,6 +1,6 @@
 <?php
 // PukPukiPlus.
-// $Id: attach.inc.php,v 1.91.44 2010/10/25 19:18:00 Logue Exp $
+// $Id: attach.inc.php,v 1.91.45 2010/12/23 18:24:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team
@@ -47,56 +47,62 @@ function plugin_attach_init()
 {
 	$messages = array(
 		'_attach_messages' => array(
-			'msg_uploaded' => _('Uploaded the file to $1'),
-			'msg_deleted'  => _('Deleted the file in $1'),
-			'msg_freezed'  => _('The file has been frozen.'),
-			'msg_unfreezed'=> _('The file has been unfrozen'),
-			'msg_upload'   => _('Upload to $1'),
-			'msg_info'     => _('File information'),
-			'msg_confirm'  => _('<p>Delete %s.</p>'),
-			'msg_list'     => _('List of attached file(s)'),
-			'msg_listpage' => _('List of attached file(s) in $1'),
-			'msg_listall'  => _('Attached file list of all pages'),
-			'msg_file'     => _('Attach file'),
-			'msg_maxsize'  => _('Maximum file size is %s.'),
-			'msg_count'    => _(' <span class="small">%s download</span>'),
-			'msg_password' => _('password'),
-			'msg_adminpass'=> _('Administrator password'),
-			'msg_delete'   => _('Delete file.'),
-			'msg_freeze'   => _('Freeze file.'),
-			'msg_unfreeze' => _('Unfreeze file.'),
-			'msg_renamed'  => _('The file has been renamed'),
-			'msg_isfreeze' => _('File is frozen.'),
-			'msg_rename'   => _('Rename'),
-			'msg_newname'  => _('New file name'),
-			'msg_require'  => _('(require administrator password)'),
-			'msg_filesize' => _('size'),
-			'msg_type'     => _('type'),
-			'msg_date'     => _('date'),
-			'msg_dlcount'  => _('access count'),
-			'msg_md5hash'  => _('MD5 hash'),
-			'msg_page'     => _('Page'),
-			'msg_filename' => _('Stored filename'),
-			'err_noparm'   => _('Cannot upload/delete file in $1'),
-			'err_exceed'   => _('File size too large to $1'),
-			'err_exists'   => _('File already exists in $1'),
-			'err_notfound' => _('Could not find the file in $1'),
-			'err_noexist'  => _('File does not exist.'),
-			'err_delete'   => _('Cannot delete file in  $1'),
-			'err_rename'   => _('Cannot rename this file'),
-			'err_password' => _('Wrong password.'),
-			'err_upload'   => _('It failed in uploading.'),
-			'err_adminpass'=> _('Wrong administrator password'),
-			'err_ini_size' => _('The value of the upload_max_filesize directive of php.ini is exceeded.'),
-			'err_form_size'=> _('MAX_FILE_SIZE specified by the HTML form is exceeded.'),
-			'err_partial'  => _('Only part is uploaded.'),
-			'err_no_file'  => _('The file was not uploaded.'),
-			'err_no_tmp_dir'=> _('There is no temporary directory.'),
-			'err_cant_write'=> _('It failed in writing in the disk.'),
-			'err_extension'=> _('The uploading of the file was stopped by the enhancement module.'),
-			'btn_upload'   => _('Upload'),
-			'btn_info'     => _('Information'),
-			'btn_submit'   => _('Submit')
+			'msg_uploaded'	=> T_('Uploaded the file to $1'),
+			'msg_deleted'	=> T_('Deleted the file in $1'),
+			'msg_freezed'	=> T_('The file has been frozen.'),
+			'msg_unfreezed'	=> T_('The file has been unfrozen'),
+			'msg_upload'	=> T_('Upload to $1'),
+			'msg_info'		=> T_('File information'),
+			'msg_confirm'	=> T_('<p>Delete %s.</p>'),
+			'msg_list'		=> T_('List of attached file(s)'),
+			'msg_listpage'	=> T_('List of attached file(s) in $1'),
+			'msg_listall'	=> T_('Attached file list of all pages'),
+			'msg_file'		=> T_('Attach file'),
+			'msg_maxsize'	=> T_('Maximum file size is %s.'),
+			'msg_count'		=> T_(' <span class="small">%s download</span>'),
+			'msg_password'	=> T_('password'),
+			'msg_adminpass'	=> T_('Administrator password'),
+			'msg_delete'	=> T_('Delete file.'),
+			'msg_freeze'	=> T_('Freeze file.'),
+			'msg_unfreeze'	=> T_('Unfreeze file.'),
+			'msg_renamed'	=> T_('The file has been renamed'),
+			'msg_isfreeze'	=> T_('File is frozen.'),
+			'msg_rename'	=> T_('Rename'),
+			'msg_newname'	=> T_('New file name'),
+			'msg_require'	=> T_('(require administrator password)'),
+			'msg_filesize'	=> T_('size'),
+			'msg_type'		=> T_('type'),
+			'msg_date'		=> T_('date'),
+			'msg_dlcount'	=> T_('access count'),
+			'msg_md5hash'	=> T_('MD5 hash'),
+			'msg_page'		=> T_('Page'),
+			'msg_filename'	=> T_('Stored filename'),
+			'err_noparm'	=> T_('Cannot upload/delete file in $1'),
+			'err_exceed'	=> T_('File size too large to $1'),
+			'err_exists'	=> T_('File already exists in $1'),
+			'err_notfound'	=> T_('Could not find the file in $1'),
+			'err_noexist'	=> T_('File does not exist.'),
+			'err_delete'	=> T_('Cannot delete file in  $1'),
+			'err_rename'	=> T_('Cannot rename this file'),
+			'err_password'	=> T_('Wrong password.'),
+			'err_upload'	=> T_('It failed in uploading.'),
+			'err_adminpass'	=> T_('Wrong administrator password'),
+			'err_ini_size'	=> T_('The value of the upload_max_filesize directive of php.ini is exceeded.'),
+			'err_form_size'	=> T_('MAX_FILE_SIZE specified by the HTML form is exceeded.'),
+			'err_partial'	=> T_('Only part is uploaded.'),
+			'err_no_file'	=> T_('The file was not uploaded.'),
+			'err_no_tmp_dir'=> T_('There is no temporary directory.'),
+			'err_cant_write'=> T_('It failed in writing in the disk.'),
+			'err_extension'	=> T_('The uploading of the file was stopped by the enhancement module.'),
+			'btn_upload'	=> T_('Upload'),
+			'btn_info'		=> T_('Information'),
+			'btn_submit'	=> T_('Submit'),
+			'err_prohibit'	=> T_('This Wiki is <code>PKWK_READONLY</code> mode now. Therefore, attach function is prohibited.'),
+			'err_too_long'	=> T_('Query string (page name and/or file name) too long'),
+			'err_nopage'	=> T_('No such page'),
+			'err_tmp_fail'	=> T_('It failed in the generation of a temporary file.'),
+			'err_load_file'	=> T_('The uploaded file cannot be read.'),			// アップロードされたファイルが読めません。
+			'err_write_tgz'	=> T_('The compression file cannot be written.')	// 圧縮ファイルが書けません。
 		),
 	);
 	set_plugin_messages($messages);
@@ -168,7 +174,7 @@ function plugin_attach_action()
 		case 'freeze':
 		case 'unfreeze':
 			// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-			if (auth::check_role('readonly')) die_message( _('PKWK_READONLY prohibits editing') );
+			if (auth::check_role('readonly')) die_message( $_attach_messages['err_prohibit'] );
 		}
 		switch ($pcmd) {
 		case 'info'     : return attach_info();
@@ -200,7 +206,7 @@ function attach_filelist()
 	if (! isset($obj->pages[$page])) {
 		return '';
 	} else {
-		return '<dl>'."\n".'<dt>'.$_attach_messages['msg_file'].' :</dt>'."\n".
+		return '<dl class="attach_filelist">'."\n".'<dt>'.$_attach_messages['msg_file'].' :</dt>'."\n".
 		$obj->toString($page, TRUE, 'dl') . "</dl>\n";
 	}
 }
@@ -214,7 +220,7 @@ function attach_upload($file, $page, $pass = NULL)
 	global $_attach_messages;
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	if (auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
+	if (auth::check_role('readonly')) die_message($_attach_messages['err_prohibit']);
 
 	// Check query-string
 	$query = 'plugin=attach&amp;pcmd=info&amp;refer=' . rawurlencode($page) .
@@ -229,10 +235,10 @@ function attach_upload($file, $page, $pass = NULL)
 
 	if (PKWK_QUERY_STRING_MAX && strlen($query) > PKWK_QUERY_STRING_MAX) {
 		pkwk_common_headers();
-		echo(_("Query string (page name and/or file name) too long")); 
+		echo($_attach_messages['err_too_long']); 
 		exit;
 	} else if (! is_page($page)) {
-		die_message(_("No such page"));
+		die_message($_attach_messages['err_nopage']);
 	} else if ($file['tmp_name'] == '' || ! is_uploaded_file($file['tmp_name'])) {
 		return array(
 			'result'=>FALSE,
@@ -336,7 +342,7 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 
 			$tar = new tarlib();
 			$tar->create(CACHE_DIR, 'tgz') or
-				die_message( _("It failed in the generation of a temporary file.") );
+				die_message( $_attach_messages['err_tmp_fail'] );
 			$tar->add_file($file['tmp_name'], $file['name']);
 			$tar->close();
 
@@ -351,9 +357,9 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 					'msg'=>$_attach_messages['err_exists']);
 
 			$tp = fopen($file['tmp_name'],'rb') or
-				die_message( _("The uploaded file cannot be read.") ); // アップロードされたファイルが読めません。
+				die_message($_attach_messages['err_load_file']);
 			$zp = gzopen($obj->filename, 'wb') or
-				die_message( _("The compression file cannot be written.") );	// 圧縮ファイルが書けません。
+				die_message($_attach_messages['err_write_tgz']);	
 
 			while (!feof($tp)) { gzwrite($zp,fread($tp, 8192)); }
 			gzclose($zp);
@@ -371,7 +377,7 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 			$zip->addFile($file['tmp_name'],$file['name']);
 			// if ($zip->status !== ZIPARCHIVE::ER_OK)
 			if ($zip->status !== 0)
-				die_message( _('The error occurred').'('.$zip->status.').' );
+				die_message( $_attach_messages['err_upload'].'('.$zip->status.').' );
 			$zip->close();
 			chmod($obj->filename, PLUGIN_ATTACH_FILE_MODE);
 			@unlink($file['tmp_name']);
@@ -417,6 +423,7 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 		$footer['FILESIZE'] = & $file['size'];
 		$footer['PAGE']     = & $page;
 
+/*
 		$footer['URI']      = get_script_absuri() .
 			//'?' . rawurlencode($page);
 
@@ -425,7 +432,8 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 				'&refer=' . rawurlencode($page) .
 				'&file='  . rawurlencode($file['name']) .
 				'&pcmd=info';
-
+*/
+		$footer['URI'] = get_cmd_uri('attach','',array('refer'=>$page,'file'=>$file['name'],'pcmd'=>'info'));
 		$footer['USER_AGENT']  = TRUE;
 		$footer['REMOTE_ADDR'] = TRUE;
 
@@ -591,7 +599,7 @@ function attach_list()
 {
 	global $vars, $_attach_messages;
 
-	if (auth::check_role('safemode')) die_message( _('PKWK_SAFE_MODE prohibits this') );
+	if (auth::check_role('safemode')) die_message( $_attach_messages['err_prohibit'] );
 
 	$refer = isset($vars['refer']) ? $vars['refer'] : '';
 
@@ -610,7 +618,7 @@ function attach_showform()
 {
 	global $vars, $_attach_messages;
 
-	if (auth::check_role('safemode')) die_message( _('PKWK_SAFE_MODE prohibits this') );
+	if (auth::check_role('safemode')) die_message( $_attach_messages['err_prohibit'] );
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
 	check_editable($page, true, true);
@@ -679,7 +687,7 @@ function attach_form($page, $listview = FALSE)
 </p>
 EOD;
 
-	if (! ini_get('file_uploads')) return '#attach(): file_uploads disabled<br />' . $navi;
+	if (! ini_get('file_uploads')) return '#attach(): <code>file_uploads</code> disabled.<br />' . $navi;
 	if (! is_page($page))          return '#attach(): No such page<br />'          . $navi;
 
 	$maxsize = PLUGIN_ATTACH_MAX_FILESIZE;
@@ -830,7 +838,7 @@ class AttachFile
 	// 情報表示
 	function info($err)
 	{
-		global $script, $_attach_messages;
+		global $script, $_attach_messages,$pkwk_dtd;
 
 		$r_page = rawurlencode($this->page);
 		$s_page = htmlspecialchars($this->page);
@@ -885,10 +893,11 @@ class AttachFile
 		if ($size[2] > 0 && $size[2] < 3) {
 			if ($size[0] < 200) { $w = $size[0]; $h = $size[1]; }
 			else { $w = 200; $h = $size[1] * (200 / ($size[0]!=0?$size[0]:1) ); }
-			$_attach_setimage  = '<div class="img_margin" style="float:right;"><img src="';
-			$_attach_setimage .= get_cmd_uri('ref','','',array('page'=>$r_page,'src'=>$s_file));
+			$_attach_setimage  = ($pkwk_dtd == PKWK_DTD_HTML_5) ? '<figure class="img_margin" style="float:right;">' : '<div class="img_margin" style="float:right;">';
+			$_attach_setimage .= '<img src="'.get_cmd_uri('ref','','',array('page'=>$r_page,'src'=>$s_file));
 		//	$_attach_setimage .= "$script?plugin=ref&amp;src={$s_file}&amp;page={$r_page}";
-			$_attach_setimage .= '" width="' . $w .'" height="' . $h . '" /></div>';
+			$_attach_setimage .= '" width="' . $w .'" height="' . $h . '" />';
+			$_attach_setimage .= ($pkwk_dtd == PKWK_DTD_HTML_5) ? '</figure>' : '</div>';
 		} else {
 			$_attach_setimage = '';
 		}

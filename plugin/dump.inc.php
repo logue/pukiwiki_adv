@@ -51,9 +51,9 @@ function plugin_dump_action()
 	global $vars, $auth_users, $realm;
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits this');
-	if (auth::check_role('readonly')) die_message( _("PKWK_READONLY prohibits this") );
+	if (auth::check_role('readonly')) die_message( T_("PKWK_READONLY prohibits this") );
 
-	$msg = (PLUGIN_DUMP_ALLOW_RESTORE) ? _("dump & restore") : _("dump");
+	$msg = (PLUGIN_DUMP_ALLOW_RESTORE) ? T_("dump & restore") : T_("dump");
 	$body = '';
 
  	while (auth::check_role('role_adm')) {
@@ -63,7 +63,7 @@ function plugin_dump_action()
 			header('WWW-Authenticate: Basic realm="'.$realm.'"');
 			header( 'HTTP/1.0 401 Unauthorized' );
 
-			$body = "<p><strong>" . _("The password is different.") . "</strong></p>\n";
+			$body = "<p><strong>" . T_("The password is different.") . "</strong></p>\n";
 			return array('msg' => $msg, 'body' => $body);
 
 		}
@@ -85,12 +85,12 @@ function plugin_dump_action()
 		break;
 	case PLUGIN_DUMP_RESTORE:
 		$retcode = plugin_dump_upload();
-		$msg = ($retcode['code'] == TRUE) ? _("Up-loading was completed.") : _("It failed in up-loading.");
+		$msg = ($retcode['code'] == TRUE) ? T_("Up-loading was completed.") : T_("It failed in up-loading.");
 		$body = $retcode['msg'];
 		break;
 	default:
 		// 無効な命令です。
-		$body = _("It is an invalid instruction.");
+		$body = T_("It is an invalid instruction.");
 	}
 
 	return array('msg' => $msg, 'body' => $body);
@@ -122,7 +122,7 @@ function plugin_dump_download()
 	$filecount = 0;
 	$tar = new tarlib();
 	$tar->create(CACHE_DIR, $arc_kind) or
-		die_message( _("It failed in the generation of a temporary file.") );
+		die_message( T_("It failed in the generation of a temporary file.") );
 
 	if ($bk_attach)		$filecount += $tar->add_dir(UPLOAD_DIR,		$_STORAGE['UPLOAD_DIR']['add_filter'],		$namedecode);
 	if ($bk_backup)		$filecount += $tar->add_dir(BACKUP_DIR,		$_STORAGE['BACKUP_DIR']['add_filter'],		$namedecode);
@@ -137,7 +137,7 @@ function plugin_dump_download()
 
 	if ($filecount === 0) {
 		@unlink($tar->filename);
-		return '<p><strong>' . _("The file was not found.") . '</strong></p>';
+		return '<p><strong>' . T_("The file was not found.") . '</strong></p>';
 	} else {
 		// ダウンロード
 		download_tarfile($tar->filename, $arc_kind);
@@ -153,7 +153,7 @@ function plugin_dump_upload()
 	global $vars, $_STORAGE;
 
 	if (! PLUGIN_DUMP_ALLOW_RESTORE)
-		return array('code' => FALSE , 'msg' => _("Restoring function is not allowed") );
+		return array('code' => FALSE , 'msg' => T_("Restoring function is not allowed") );
 
 	$filename = $_FILES['upload_file']['name'];
 	$matches  = array();
@@ -166,11 +166,11 @@ function plugin_dump_upload()
 		case '.tar':    $arc_kind = 'tar'; break;
 		case '.tgz':    $arc_kind = 'tar'; break;
 		case '.tar.gz': $arc_kind = 'tgz'; break;
-		default: die_message( _("Invalid file suffix: ") . $matches[1]); }
+		default: die_message( T_("Invalid file suffix: ") . $matches[1]); }
 	}
 
 	if ($_FILES['upload_file']['size'] >  PLUGIN_DUMP_MAX_FILESIZE * 1024)
-		die_message( _("Max file size exceeded: ") . PLUGIN_DUMP_MAX_FILESIZE . 'KB');
+		die_message( T_("Max file size exceeded: ") . PLUGIN_DUMP_MAX_FILESIZE . 'KB');
 
 	// Create a temporary tar file
 	$uploadfile = tempnam(realpath(CACHE_DIR), 'tarlib_uploaded_');
@@ -187,10 +187,10 @@ function plugin_dump_upload()
 	$files = $tar->extract($pattern);
 	if (empty($files)) {
 		@unlink($uploadfile);
-		return array('code' => FALSE, 'msg' => '<p>' . _("There was no file that was able to be expanded.") . '</p>');
+		return array('code' => FALSE, 'msg' => '<p>' . T_("There was no file that was able to be expanded.") . '</p>');
 	}
 
-	$msg  = '<p><strong>' . _("Progressing file list") . '</strong><ul>';
+	$msg  = '<p><strong>' . T_("Progressing file list") . '</strong><ul>';
 	foreach($files as $name) {
 		$msg .= "<li>$name</li>\n";
 	}
@@ -234,22 +234,22 @@ function plugin_dump_disp_form()
 	$act_up   = PLUGIN_DUMP_RESTORE;
 	$maxsize  = PLUGIN_DUMP_MAX_FILESIZE;
 
-	$_dump_h3_data = _("Download of data");
-	$_dump_arc     = _("Form of archive");
-	$_dump_form    = _("form");
-	$_dump_backdir = _("Backup directory");
-	$_dump_option  = _("Options");
-	$_dump_namedecode  = _("Virtual of page name encode is converted into the file name with the directory.") . '<br />'.
-		_("(The restoration that uses this data cannot be done.") .
-		_("Moreover, a part of character is substituted for '_'.)");
-	// $_dump_admin   = _("Administrator password");
-	$_dump_h3_store = _(" Restoration of data");
-	$_dump_caution = _("[IMPORTANCE]");
-	$_dump_write   = _("Attention: Please note that the data file of the same name is overwrited.");
-	$_dump_upload  = _("The size of the maximum file that can be up-loaded is up to $maxsize KByte.<br />");
-	$_dump_file = _("File");
-	$_dump_btn_down = _("Download execution");
-	$_dump_btn_up = _("Upload execution");
+	$_dump_h3_data = T_("Download of data");
+	$_dump_arc     = T_("Form of archive");
+	$_dump_form    = T_("form");
+	$_dump_backdir = T_("Backup directory");
+	$_dump_option  = T_("Options");
+	$_dump_namedecode  = T_("Virtual of page name encode is converted into the file name with the directory.") . '<br />'.
+		T_("(The restoration that uses this data cannot be done.") .
+		T_("Moreover, a part of character is substituted for '_'.)");
+	// $_dump_admin   = T_("Administrator password");
+	$_dump_h3_store = T_(" Restoration of data");
+	$_dump_caution = T_("[IMPORTANCE]");
+	$_dump_write   = T_("Attention: Please note that the data file of the same name is overwrited.");
+	$_dump_upload  = T_("The size of the maximum file that can be up-loaded is up to $maxsize KByte.<br />");
+	$_dump_file = T_("File");
+	$_dump_btn_down = T_("Download execution");
+	$_dump_btn_up = T_("Upload execution");
 
 	$data = <<<EOD
 <h2 id="dump">$_dump_h3_data</h2>

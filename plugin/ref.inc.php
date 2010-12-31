@@ -1,7 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: ref.inc.php,v 1.50.11 2009/04/17 19:22:00 upk Exp $
+// $Id: ref.inc.php,v 1.50.11 2010/12/26 19:49:00 Logue Exp $
 // Copyright (C)
+//   2010      PukiWiki Advance Developers Team
 //   2005-2007,2009 PukiWiki Plus! Team
 //   2002-2006 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -69,6 +70,7 @@ function plugin_ref_inline()
 
 function plugin_ref_convert()
 {
+	global $pkwk_dtd;
 	if (! func_num_args())
 		return '<p>#ref(): Usage:' . PLUGIN_REF_USAGE . "</p>\n";
 
@@ -78,29 +80,6 @@ function plugin_ref_convert()
 		return "<p>#ref(): {$params['_error']}</p>\n";
 	}
 
-	if ((PLUGIN_REF_WRAP_TABLE && ! $params['nowrap']) || $params['wrap']) {
-		// 枠で包む
-		// margin:auto
-		//	Mozilla 1.x  = x (wrap,aroundが効かない)
-		//	Opera 6      = o
-		//	Netscape 6   = x (wrap,aroundが効かない)
-		//	IE 6         = x (wrap,aroundが効かない)
-		// margin:0px
-		//	Mozilla 1.x  = x (wrapで寄せが効かない)
-		//	Opera 6      = x (wrapで寄せが効かない)
-		//	Netscape 6   = x (wrapで寄せが効かない)
-		//	IE6          = o
-		$margin = ($params['around'] ? '0px' : 'auto');
-		$margin_align = ($params['_align'] == 'center') ? '' : ";margin-{$params['_align']}:0px";
-		$params['_body'] = <<<EOD
-<table class="style_table" style="margin:$margin$margin_align">
- <tr>
-  <td class="style_td">{$params['_body']}</td>
- </tr>
-</table>
-EOD;
-	}
-
 	if ($params['around']) {
 		$style = ($params['_align'] == 'right') ? 'float:right' : 'float:left';
 	} else {
@@ -108,10 +87,12 @@ EOD;
 	}
 
 	// divで包む
-	if ($params['nomargin']) {
-		return "<div class=\"img_nomargin\" style=\"$style\">{$params['_body']}</div>\n";
+	$class = ($params['nomargin']) ? 'img_nomargin' : 'img_margin';
+	if ($pkwk_dtd === PKWK_DTD_HTML_5){
+		return '<figure class="'.$class.'" style="'.$style.'">'.$params['_body'].'</figure>'."\n";
+	}else{
+		return '<div class="'.$class.'" style="'.$style.'">'.$params['_body'].'</div>'."\n";
 	}
-	return "<div class=\"img_margin\" style=\"$style\">{$params['_body']}</div>\n";
 }
 
 function plugin_ref_body($args)
@@ -442,7 +423,7 @@ function plugin_ref_action()
 	$size = filesize($ref);
 
 	// Output
-	pkwk_common_headers();
+	pkwk_common_headers(false);
 	if ($type == 'text/html' || $type == 'application/octet-stream') {
 		header('Content-Disposition: attachment; filename="' . $filename . '"');
 		header('Content-Type: application/octet-stream; name="' . $filename . '"');
@@ -452,6 +433,7 @@ function plugin_ref_action()
 		header('Content-Length: ' . $size);
 		header('Content-Type: '   . $type);
 	}
+	header('X-Sendfile: '.$filename);	// for reduce server load
 
 	// @readfile($ref);
 	plus_readfile($ref);

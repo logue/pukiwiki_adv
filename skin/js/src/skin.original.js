@@ -22,7 +22,7 @@ var pukiwiki_skin = {
 		'@prefix': '<http://purl.org/net/ns/doas#>',
 		'@about': '<skin.js>', a: ':JavaScript',
 		 title: 'Pukiwiki skin script for jQuery',
-		 created: '2008-11-25', release: {revision: '2.2.20', created: '2010-09-02'},
+		 created: '2008-11-25', release: {revision: '2.2.20', created: '2010-12-31'},
 		 author: {name: 'Logue', homepage: '<http://logue.be/>'},
 		 license: '<http://www.gnu.org/licenses/gpl-2.0.html>'
 	},
@@ -216,11 +216,12 @@ var pukiwiki_skin = {
 			// http://forum.logue.be/index.php/topic,353.0.html
 
 			// encodeURIComponent命令使うため変換し直し
-			var uri = $(this).attr('href').replace(/&#37;/g,"%");
+			var uri = $(this).attr('href');
 			if(navigator.userAgent.indexOf("MSIE")!==-1){
 				// IEの場合、location.replaeでリファラー消えるからいいや
 				location.href = uri;
 			}else{
+				uri = uri.replace(/&#37;/g,"%");
 				// IE以外の場合、dataスキーマーでリファラーを消すためのページを偽造
 				location.href = "data:text/html;charset=utf-8,%3Chtml%3E%0D%0A%3Cscript%20%3E%0D%0Alocation.replace(%22" + encodeURIComponent(uri) + "%22)%3B%0D%0A%3C%2Fscript%3E%0D%0A%3C%2Fhtml%3E%0D%0A";
 			}
@@ -798,7 +799,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 					'		<li class="next ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthick-1-e"></span></li>',
 					'		<li class="last ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthickstop-1-e"></span></li>',
 					'		<li><select class="pagesize"></select></li>',
-		//			'		<li class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowreturn-1-w"></span></li>',
+					'		<li class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-reflesh"></span></li>',
 					'	</ul>',
 					'</div>'
 				].join("\n");

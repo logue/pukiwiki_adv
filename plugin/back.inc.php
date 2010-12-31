@@ -1,7 +1,8 @@
 <?php
-// $Id: back.inc.php,v 1.9.3 2008/01/05 18:05:00 upk Exp $
+// $Id: back.inc.php,v 1.9.4 2010/12/26 12:12:00 upk Exp $
 // Copyright (C)
-//   2008 PukiWiki Plus! Developers Team
+//   2010      PukiWiki Advance Developers Team
+//   2008      PukiWiki Plus! Developers Team
 //   2003-2004 PukiWiki Developers Team
 //   2002,2006 Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
 //
@@ -19,7 +20,7 @@ define('PLUGIN_BACK_ALLOW_JAVASCRIPT', TRUE); // TRUE(Compat), FALSE, PKWK_ALLOW
 define('PLUGIN_BACK_USAGE', '#back([text],[center|left|right][,0(no hr)[,Page-or-URI-to-back]])');
 function plugin_back_convert()
 {
-	$_msg_back_word = _('Back');
+	$_msg_back_word = T_('Back');
 	if (func_num_args() > 4) return PLUGIN_BACK_USAGE;
 	list($word, $align, $hr, $href) = array_pad(func_get_args(), 4, '');
 
@@ -28,12 +29,12 @@ function plugin_back_convert()
 
 	$align = strtolower(trim($align));
 	switch($align){
-	case ''      : $align = 'center';
-	               /*FALLTHROUGH*/
-	case 'center': /*FALLTHROUGH*/
-	case 'left'  : /*FALLTHROUGH*/
-	case 'right' : break;
-	default      : return PLUGIN_BACK_USAGE;
+	case ''			: $align = 'center';
+					/*FALLTHROUGH*/
+	case 'center'	:	/*FALLTHROUGH*/
+	case 'left'		:	/*FALLTHROUGH*/
+	case 'right'	: break;
+	default			: return PLUGIN_BACK_USAGE;
 	}
 
 	$hr = (trim($hr) != '0') ? '<hr class="full_hr" />' . "\n" : '';

@@ -3,7 +3,7 @@
  * PukiWiki Plus! Homeページジャンププラグイン
  *
  * @copyright   Copyright &copy; 2009, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: mypage.php,v 0.1 2009/02/01 01:46:00 upk Exp $
+ * @version     $Id: mypage.php,v 0.1.1 2010/12/26 17:50:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 require_once(LIB_DIR . 'auth.cls.php');
@@ -11,10 +11,10 @@ require_once(LIB_DIR . 'auth.cls.php');
 function plugin_mypage_init()
 {
 	$msg = array(
-                '_mypage_msg' => array(
-                        'err_jump'	=> _('Jump Fail.'),
-			'msg_no_page'	=> _('The page cannot be prepared.'),
-                )
+		'_mypage_msg' => array(
+			'err_jump'		=> T_('Jump Fail.'),
+			'msg_no_page'	=> T_('The page cannot be prepared.'),
+		)
 	);
 	set_plugin_messages($msg);
 }

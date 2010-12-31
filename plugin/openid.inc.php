@@ -4,7 +4,7 @@
  *
  * @copyright   Copyright &copy; 2007-2009, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
  * @author      Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: openid.inc.php,v 0.15 2009/05/31 04:32:00 upk Exp $
+ * @version     $Id: openid.inc.php,v 0.15.1 2010/12/26 17:58:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 require_once(LIB_DIR . 'auth_api.cls.php');
@@ -21,7 +21,7 @@ class auth_openid_plus extends auth_api
 		// nickname,email,fullname,dob,gender,postcode,country,language,timezone
 		$this->field_name = array('author','nickname','email','local_id','identity_url','fullname');
 		$this->response = array();
-        }
+	}
 }
 
 class auth_openid_plus_verify extends auth_openid_plus
@@ -50,25 +50,25 @@ class auth_openid_plus_verify extends auth_openid_plus
 function plugin_openid_init()
 {
 	$msg = array(
-          '_openid_msg' => array(
-                'msg_logout'		=> _("logout"),
-                'msg_logined'		=> _("%s has been approved by openid."),
-                'msg_invalid'		=> _("The function of opeind is invalid."),
-                'msg_not_found'		=> _("pkwk_session_start() doesn't exist."),
-                'msg_not_start'		=> _("The session is not start."),
-                'msg_openid'		=> _("OpenID"),
-		'msg_openid_url'	=> _("OpenID URL:"),
-		'msg_anonymouse'	=> _("anonymouse"),
-		'btn_login'		=> _("LOGIN"),
-		'msg_title'		=> _("OpenID login form."),
-		'err_store_path'	=> _("Could not create the FileStore directory %s. Please check the effective permissions."),
-		'err_cancel'		=> _("Verification cancelled."),
-		'err_failure'		=> _("OpenID authentication failed: "),
-		'err_nickname'		=> _("nickname must be set."),
-		'err_authentication'	=> _("Authentication error; not a valid OpenID."),
-		'err_redirect'		=> _("Could not redirect to server: %s"),
-          )
-        );
+		'_openid_msg' => array(
+			'msg_logout'			=> T_("logout"),
+			'msg_logined'			=> T_("%s has been approved by openid."),
+			'msg_invalid'			=> T_("The function of opeind is invalid."),
+			'msg_not_found'			=> T_("pkwk_session_start() doesn't exist."),
+			'msg_not_start'			=> T_("The session is not start."),
+			'msg_openid'			=> T_("OpenID"),
+			'msg_openid_url'		=> T_("OpenID URL:"),
+			'msg_anonymouse'		=> T_("anonymouse"),
+			'btn_login'				=> T_("LOGIN"),
+			'msg_title'				=> T_("OpenID login form."),
+			'err_store_path'		=> T_("Could not create the FileStore directory %s. Please check the effective permissions."),
+			'err_cancel'			=> T_("Verification cancelled."),
+			'err_failure'			=> T_("OpenID authentication failed: "),
+			'err_nickname'			=> T_("nickname must be set."),
+			'err_authentication'	=> T_("Authentication error; not a valid OpenID."),
+			'err_redirect'			=> T_("Could not redirect to server: %s"),
+		)
+	);
 	set_plugin_messages($msg);
 }
 
@@ -136,31 +136,31 @@ function plugin_openid_inline()
 	if (! isset($auth_api['openid']['use'])) return '';
 	if (! $auth_api['openid']['use']) return $_openid_msg['msg_invalid'];
 
-        if (! function_exists('pkwk_session_start')) return $_openid_msg['msg_not_found'];
-        if (pkwk_session_start() == 0) return $_openid_msg['msg_not_start'];
+	if (! function_exists('pkwk_session_start')) return $_openid_msg['msg_not_found'];
+	if (pkwk_session_start() == 0) return $_openid_msg['msg_not_start'];
 
-        $obj = new auth_openid_plus();
-        $name = $obj->auth_session_get();
+	$obj = new auth_openid_plus();
+	$name = $obj->auth_session_get();
 
-        if (!empty($name['api']) && $obj->auth_name !== $name['api']) return;
+	if (!empty($name['api']) && $obj->auth_name !== $name['api']) return;
 
-        $page = (empty($vars['page'])) ? '' : $vars['page'];
-        $cmd = get_cmd_uri('openid', $page);
+	$page = (empty($vars['page'])) ? '' : $vars['page'];
+	$cmd = get_cmd_uri('openid', $page);
 
-        if (! empty($name['nickname'])) {
-                if (empty($name['local_id'])) {
-                        $link = $name['nickname'];
-                } else {
-                        $link = '<a href="'.$name['local_id'].'">'.$name['nickname'].'</a>';
-                }
-                return sprintf($_openid_msg['msg_logined'],$link) .
-                        '(<a href="'.$cmd.'&amp;logout'.'">'.$_openid_msg['msg_logout'].'</a>)';
-        }
+	if (! empty($name['nickname'])) {
+		if (empty($name['local_id'])) {
+			$link = $name['nickname'];
+		} else {
+			$link = '<a href="'.$name['local_id'].'">'.$name['nickname'].'</a>';
+		}
+		return sprintf($_openid_msg['msg_logined'],$link) .
+			'(<a href="'.$cmd.'&amp;logout'.'">'.$_openid_msg['msg_logout'].'</a>)';
+	}
 
-         $auth_key = auth::get_user_name();
-        if (! empty($auth_key['nick'])) return $_openid_msg['msg_openid'];
+	 $auth_key = auth::get_user_name();
+	if (! empty($auth_key['nick'])) return $_openid_msg['msg_openid'];
 
-        return '<a href="'.$cmd.'">'.$_openid_msg['msg_openid'].'</a>';
+	return '<a href="'.$cmd.'">'.$_openid_msg['msg_openid'].'</a>';
 }
 
 function plugin_openid_action()
@@ -235,14 +235,14 @@ function plugin_openid_login_form()
 
 	$rc = <<<EOD
 <form method="get" action="$script">
-  <div class="openid">
-    {$_openid_msg['msg_openid_url']}
-    <input type="hidden" name="plugin" value="openid" />
-    <input type="hidden" name="action" value="verify" />
-    <input type="hidden" name="page" value="$r_page" />
-    <input type="text" name="openid_url" size="$size" style="background: url(http://www.openid.net/login-bg.gif) no-repeat; padding-left:18px;" value="" />
-    <input type="submit" value="{$_openid_msg['btn_login']}" />
-  </div>
+	<input type="hidden" name="plugin" value="openid" />
+	<input type="hidden" name="action" value="verify" />
+	<input type="hidden" name="page" value="$r_page" />
+	<div class="openid_form">
+		{$_openid_msg['msg_openid_url']}
+		<input type="text" name="openid_url" size="$size" style="background: url(http://www.openid.net/login-bg.gif) no-repeat; padding-left:18px;" value="" />
+		<input type="submit" value="{$_openid_msg['btn_login']}" />
+	</div>
 </form>
 
 EOD;
@@ -294,13 +294,13 @@ function plugin_openid_verify($consumer)
 	// v1			v2
 	// openid.server	openid2.provider	=> $auth_request->endpoint->server_url	ex. http://www.myopenid.com/server
 	// openid.delegate	openid2.local_id	=> $auth_request->endpoint->local_id	ex. http://youraccount.myopenid.com/
-        $obj = new auth_openid_plus_verify();
-        $obj->response = array( 'server_url' => $auth_request->endpoint->server_url,
-                                'local_id'   => $auth_request->endpoint->local_id,
-                                'page'       => $page,
-				'author'     => $author
-                        );
-        $obj->auth_session_put();
+	$obj = new auth_openid_plus_verify();
+	$obj->response = array( 'server_url' => $auth_request->endpoint->server_url,
+		'local_id'   => $auth_request->endpoint->local_id,
+		'page'       => $page,
+		'author'     => $author
+	);
+	$obj->auth_session_put();
 
 	if ($shouldSendRedirect) {
 		header('Location: '.$redirect_url);
@@ -334,9 +334,9 @@ die();
 
 	switch($response->status) {
 	case Auth_OpenID_CANCEL:
-                $die_message( $_openid_msg['err_cancel'] );
+		$die_message( $_openid_msg['err_cancel'] );
 	case Auth_OpenID_FAILURE:
-                $die_message( $_openid_msg['err_failure'] . $response->message );
+		$die_message( $_openid_msg['err_failure'] . $response->message );
 	case Auth_OpenID_SUCCESS:
 		$sreg_resp = Auth_OpenID_SRegResponse::fromSuccessResponse($response);
 		$sreg = $sreg_resp->contents();
@@ -357,7 +357,7 @@ die();
 		$obj->response['identity_url'] = $response->getDisplayIdentifier();
 		$obj->auth_session_put();
 		break;
-        }
+	}
 
 	// オリジナルの画面に戻る
 	header('Location: '. get_page_location_uri($page));
@@ -403,7 +403,7 @@ function plugin_openid_get_call_func($openid)
 {
 	// 今後、OpenID で色々な制限が可能となった場合に、固有判定が行えるような I/F をもっておく
 	$sub_api = array(
-		'https://id.mixi.jp/'		=> 'auth_mixi',
+		'https://id.mixi.jp/'			=> 'auth_mixi',
 		'https://openid.excite.co.jp/'	=> 'auth_openid_btn',
 	);
 

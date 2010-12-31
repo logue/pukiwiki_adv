@@ -1,7 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: map.inc.php,v 1.17.4 2008/03/09 19:04:00 upk Exp $
+// $Id: map.inc.php,v 1.17.4 2010/12/26 17:36:00 Logue Exp $
 // Copyright (C)
+//   2010 PukiWiki Advance Developers Team
 //   2008 PukiWiki Plus! Developers Team
 //   2002-2005, 2007 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
@@ -26,7 +27,7 @@ function plugin_map_action()
 		$vars['refer'] = $refer = $defaultpage;
 	}
 
-	$retval['msg']  = $reverse ? _('Relation map (link from)') : sprintf(_('Relation map, from %s'),$refer);
+	$retval['msg']  = $reverse ? T_('Relation map (link from)') : sprintf(T_('Relation map, from %s'),$refer);
 
 	// Get pages
 	$pages = array_values(array_diff(auth::get_existpages(), array($whatsnew)));
@@ -34,7 +35,7 @@ function plugin_map_action()
 		$pages = array_diff($pages, preg_grep('/' . $non_list . '/', $pages));
 	}
 	if (empty($pages)) {
-		$retval['body'] = _('No pages.');
+		$retval['body'] = T_('No pages.');
 		return $retval;
 	}
 
@@ -67,7 +68,7 @@ function plugin_map_action()
 		$body[] = '</ul>';
 		if (! empty($alone)) {
 			$body[] = '<hr />';
-			$body[] = _('<p>No link from anywhere in this site.</p>');
+			$body[] = T_('<p>No link from anywhere in this site.</p>');
 			$body[] = '<ul>';
 			foreach ($alone as $page) {
 				$body[] = $nodes[$page]->toString($nodes, 1, $nodes[$page]->parent_id);
@@ -79,7 +80,7 @@ function plugin_map_action()
 		$body[] = '<ul>';
 		$body[] = $nodes[$refer]->toString($nodes) . '</ul>';
 		$body[] = '<hr />';
-		$body[] = sprintf(_('<p>Not related from %s.</p>'),htmlspecialchars($refer));
+		$body[] = sprintf(T_('<p>Not related from %s.</p>'),htmlspecialchars($refer));
 		$keys = array_keys($nodes);
 		sort($keys, SORT_STRING);
 		$body[] = '<ul>';
@@ -93,7 +94,7 @@ function plugin_map_action()
 	}
 	
 	$body[] = '<hr />';
-	$body[] = sprintf(_('<p>Total: %d page(s) on this site.</p>'),count($pages));
+	$body[] = sprintf(T_('<p>Total: %d page(s) on this site.</p>'),count($pages));
 	$retval['body'] = implode("\n", $body) . "\n";
 	return $retval;
 }

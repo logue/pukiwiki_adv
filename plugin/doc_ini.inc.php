@@ -3,7 +3,7 @@
  * ドキュメントの初期化プラグイン
  *
  * @copyright   Copyright &copy; 2007, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: login.php,v 0.4 2007/08/12 18:17:00 upk Exp $
+ * @version     $Id: login.php,v 0.4.1 2010/12/26 16:52:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 
@@ -11,14 +11,14 @@ function plugin_doc_ini_init()
 {
 	$msg = array(
 	'_doc_ini_msg' => array(
-		'title_confirmation'	=> _('Confirmation of page initialization'),	// ページ初期化の確認
-		'msg_confirmation'	=> _('May I really initialize the page of %s'),	// %s のページを本当に初期化してもよろしいでしょうか？
-		'title_end'		=> _('Initialization ended'),			// 初期化終了
-		'msg_end'		=> _('The initialization of %s ended.'),
-		'msg_abend_diff'	=> _('It failed in the initialization of the DIFF file.'),
-		'msg_abend_backup'	=> _('It failed in the initialization of the BACKUP file.'),
-		'btn_init'		=> _('DOC INI'),
-		'btn_exec'		=> _('EXEC'),
+		'title_confirmation'	=> T_('Confirmation of page initialization'),	// ページ初期化の確認
+		'msg_confirmation'		=> T_('May I really initialize the page of %s'),	// %s のページを本当に初期化してもよろしいでしょうか？
+		'title_end'				=> T_('Initialization ended'),			// 初期化終了
+		'msg_end'				=> T_('The initialization of %s ended.'),
+		'msg_abend_diff'		=> T_('It failed in the initialization of the DIFF file.'),
+		'msg_abend_backup'		=> T_('It failed in the initialization of the BACKUP file.'),
+		'btn_init'				=> T_('DOC INI'),
+		'btn_exec'				=> T_('EXEC'),
 		)
 	);
         set_plugin_messages($msg);
@@ -35,10 +35,10 @@ function plugin_doc_ini_convert()
 	// ボタンを表示するだけ
 	$rc = <<<EOD
 <form action="$script" method="post">
-	<div>
-		<input type="hidden" name="plugin" value="doc_ini" />
+	<input type="hidden" name="plugin" value="doc_ini" />
 		<input type="hidden" name="action" value="delete" />
 		<input type="hidden" name="page" value="{$vars['page']}" />
+	<div class="doc_ini_form">
 		<input type="submit" value="{$_doc_ini_msg['btn_init']}" />
 	</div>
 </form>
@@ -66,13 +66,13 @@ function plugin_doc_ini_action()
 
 	$retval['body'] = <<<EOD
 <form action="$script" method="post">
-        <div>
-	$msg_title
-                <input type="hidden" name="plugin" value="doc_ini" />
-                <input type="hidden" name="action" value="exec" />
-                <input type="hidden" name="page" value="{$vars['page']}" />
-                <input type="submit" value="{$_doc_ini_msg['btn_exec']}" />
-        </div>
+	<input type="hidden" name="plugin" value="doc_ini" />
+	<input type="hidden" name="action" value="exec" />
+	<input type="hidden" name="page" value="{$vars['page']}" />
+	<div class="doc_ini_form">
+		$msg_title
+		<input type="submit" value="{$_doc_ini_msg['btn_exec']}" />
+	</div>
 </form>
 
 EOD;

@@ -44,21 +44,31 @@ $_plugin_article_mailto = array (
 	''
 );
 
+function plugin_article_init()
+{
+	$msg = array(
+		'_article_msg' => array(
+			'title_collided'			=> T_('On updating $1, a collision has occurred.'),
+			'title_updated'				=> T_('$1 was updated'),
+			'msg_collided'				=> T_('It seems that someone has already updated this page while you were editing it.<br />
+ + is placed at the beginning of a line that was newly added.<br />
+ ! is placed at the beginning of a line that has possibly been updated.<br />
+ Edit those lines, and submit again.'),
+			'msg_article_mail_sender'	=> T_('Author: '),
+			'msg_article_mail_page'		=> T_('Page: '),
+			'btn_name'					=> T_('Name: '),
+			'btn_article'				=> T_('Submit'),
+			'btn_subject'				=> T_('Subject: ')
+		)
+	);
+	set_plugin_messages($msg);
+}
+
 function plugin_article_action()
 {
 	global $script, $post, $vars, $cols, $rows, $now;
-//	global $_title_collided, $_msg_collided, $_title_updated;
 	global $_plugin_article_mailto, $_no_subject, $_no_name;
-//	global $_msg_article_mail_sender, $_msg_article_mail_page;
-
-$_title_collided   = _('On updating $1, a collision has occurred.');
-$_title_updated    = _('$1 was updated');
-$_msg_collided = _('It seems that someone has already updated this page while you were editing it.<br />
- + is placed at the beginning of a line that was newly added.<br />
- ! is placed at the beginning of a line that has possibly been updated.<br />
- Edit those lines, and submit again.');
-$_msg_article_mail_sender = _('Author: ');
-$_msg_article_mail_page = _('Page: ');
+	global $_article_msg;
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
 	if (auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
@@ -100,19 +110,17 @@ $_msg_article_mail_page = _('Page: ');
 	$body = '';
 
 	if (md5(get_source($post['refer'], TRUE, TRUE)) !== $post['digest']) {
-		$title = $_title_collided;
-
-		$body = $_msg_collided . "\n";
-
+		$title = $_article_msg['title_collided'];
+		$body = $_article_msg['msg_collided'] . "\n";
 		$s_refer    = htmlspecialchars($post['refer']);
 		$s_digest   = htmlspecialchars($post['digest']);
 		$s_postdata = htmlspecialchars($postdata_input);
 		$body .= <<<EOD
 <form action="$script" method="post">
-	<div>
-		<input type="hidden" name="refer" value="$s_refer" />
-		<input type="hidden" name="digest" value="$s_digest" />
-		<input type="hidden" name="cmd" value="preview" />
+	<input type="hidden" name="refer" value="$s_refer" />
+	<input type="hidden" name="digest" value="$s_digest" />
+	<input type="hidden" name="cmd" value="preview" />
+	<div class="article_form">
 		<textarea name="msg" rows="$rows" cols="$cols" id="textarea">$s_postdata</textarea>
 	</div>
 </form>
@@ -129,19 +137,20 @@ EOD;
 				$mailsubject .= '/' . $post['name'];
 			$mailsubject = mb_encode_mimeheader($mailsubject);
 
-			$mailbody = $post['msg'];
-			$mailbody .= "\n\n" . '---' . "\n";
-			$mailbody .= _('Author: ') . $post['name'] . ' (' . $now . ')' . "\n";
-			$mailbody .= _('Page: ') . $post['refer'] . "\n";
-			$mailbody .= 'URL: ' . get_page_absuri($post['refer']) . "\n";
-			$mailbody = mb_convert_encoding($mailbody, 'JIS');
+			$mailbody = array():
+			$mailbody[] = $post['msg'];
+			$mailbody[] = "\n" . '---';
+			$mailbody[] = $_article_msg['msg_article_mail_sender'] . $post['name'] . ' (' . $now . ')';
+			$mailbody[] = $_article_msg['msg_article_mail_page'] . $post['refer'];
+			$mailbody[] = 'URL: ' . get_page_absuri($post['refer']);
+			$output = mb_convert_encoding(join("\n",$mailbody), 'JIS');
 
 			$mailaddheader = 'From: ' . PLUGIN_ARTICLE_MAIL_FROM;
 
 			mail($mailaddress, $mailsubject, $mailbody, $mailaddheader);
 		}
 
-		$title = $_title_updated;
+		$title = $_article_msg['title_updated'];
 	}
 	$retvars['msg'] = $title;
 	$retvars['body'] = $body;
@@ -156,11 +165,9 @@ function plugin_article_convert()
 {
 	global $script, $vars, $digest;
 //	global $_btn_article, $_btn_name, $_btn_subject;
+	global $_article_msg;
 	static $numbers = array();
 
-	$_btn_name    = _('Name: ');
-	$_btn_article = _('Submit');
-	$_btn_subject = _('Subject: ');
 	// if (PKWK_READONLY) return ''; // Show nothing
 	if (auth::check_role('readonly')) return ''; // Show nothing
 
@@ -183,13 +190,13 @@ function plugin_article_convert()
 	<input type="hidden" name="digest" value="$s_digest" />
 	<input type="hidden" name="refer" value="$s_page" />
 	<div class="article_form">
-		<label for="_p_article_name_$article_no">$_btn_name</label>
+		<label for="_p_article_name_$article_no">$_article_msg['btn_name']</label>
 		<input type="text" name="name" id="_p_article_name_$article_no" size="$name_cols" /><br />
-		<label for="_p_article_subject_$article_no">$_btn_subject</label>
+		<label for="_p_article_subject_$article_no">$_article_msg['btn_subject']</label>
 		<input type="text" name="subject" id="_p_article_subject_$article_no" size="$subject_cols" /><br />
 		<textarea name="msg" class="msg" rows="$article_rows" cols="$article_cols">\n</textarea><br />
 		$helptags
-		<input type="submit" name="article" value="$_btn_article" />
+		<input type="submit" name="article" value="$_article_msg['btn_article']" />
 	</div>
 </form>
 EOD;

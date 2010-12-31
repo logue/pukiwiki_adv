@@ -3,7 +3,7 @@
  * PukiWiki Plus! role確認プラグイン
  *
  * @copyright	Copyright &copy; 2006-2008, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version	$Id: role.inc.php,v 0.3 2008/08/05 00:40:00 upk Exp $
+ * @version	$Id: role.inc.php,v 0.3 2010/12/26 19:05:00 Logue Exp $
  * @license	http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 
@@ -13,13 +13,13 @@
 function plugin_role_init()
 {
 	$msg = array(
-	'_role_msg' => array(
-		'role'		=> _('Role'),
-		'role_0'	=> _('Guest'),
-		'role_2'	=> _('Webmaster'),
-		'role_3'	=> _('Contents manager'),
-		'role_4'	=> _('Enrollee'),
-		'role_5'	=> _('Authorized'),
+		'_role_msg' => array(
+			'role'		=> T_('Role'),
+			'role_0'	=> T_('Guest'),
+			'role_2'	=> T_('Webmaster'),
+			'role_3'	=> T_('Contents manager'),
+			'role_4'	=> T_('Enrollee'),
+			'role_5'	=> T_('Authorized'),
 		)
 	);
 	set_plugin_messages($msg);
@@ -57,8 +57,8 @@ function role_list($role)
 
 	return <<<EOD
 <div>
-        <label>{$_role_msg['role']}</label>:
-        {$role_name[(int)$role]}($role)
+	<label>{$_role_msg['role']}</label>:
+	{$role_name[(int)$role]}($role)
 </div>
 
 EOD;

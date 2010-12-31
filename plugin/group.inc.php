@@ -10,8 +10,8 @@
 function plugin_group_init()
 {
 	$msg = array(
-        '_group_msg' => array(
-		'group' => _('Group'),
+		'_group_msg' => array(
+			'group' => T_('Group'),
 		)
 	);
 	set_plugin_messages($msg);
@@ -29,8 +29,8 @@ function plugin_group_convert()
 	if ($i < 2) {
 		return <<<EOD
 <div>
-        <label>{$_group_msg['group']}</label>:
-        {$auth_key['group']}
+	<label>{$_group_msg['group']}</label>:
+	{$auth_key['group']}
 </div>
 
 EOD;

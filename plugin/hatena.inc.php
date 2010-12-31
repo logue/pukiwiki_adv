@@ -4,7 +4,7 @@
  *
  * @copyright   Copyright &copy; 2006,2008, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
  * @author      Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: hatena.inc.php,v 0.14 2008/08/07 21:29:00 upk Exp $
+ * @version     $Id: hatena.inc.php,v 0.14.1 2010/12/26 17:17:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 require_once(LIB_DIR . 'auth_api.cls.php');
@@ -79,22 +79,22 @@ class auth_hatena extends auth_api
 function plugin_hatena_init()
 {
 	$msg = array(
-	  '_hatena_msg' => array(
-		'msg_logout'		=> _("logout"),
-		'msg_logined'		=> _("%s has been approved by Hatena."),
-		'msg_invalid'		=> _("The function of Hatena is invalid."),
-		'msg_not_found'		=> _("pkwk_session_start() doesn't exist."),
-		'msg_not_start'		=> _("The session is not start."),
-		'msg_hatena'		=> _("Hatena"),
-		'btn_login'		=> _("LOGIN(Hatena)"),
-          )
-        );
-        set_plugin_messages($msg);
+		'_hatena_msg' => array(
+			'msg_logout'		=> T_("logout"),
+			'msg_logined'		=> T_("%s has been approved by Hatena."),
+			'msg_invalid'		=> T_("The function of Hatena is invalid."),
+			'msg_not_found'		=> T_("pkwk_session_start() doesn't exist."),
+			'msg_not_start'		=> T_("The session is not start."),
+			'msg_hatena'		=> T_("Hatena"),
+			'btn_login'			=> T_("LOGIN(Hatena)"),
+		)
+	);
+	set_plugin_messages($msg);
 }
 
 function plugin_hatena_convert()
 {
-        global $script,$vars,$auth_api,$_hatena_msg;
+	global $script,$vars,$auth_api,$_hatena_msg;
 
 	if (! $auth_api['hatena']['use']) return '<p>'.$_hatena_msg['msg_invalid'].'</p>';
 

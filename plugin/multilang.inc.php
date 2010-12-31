@@ -3,7 +3,7 @@
  * Detect user's language, and show only messages written in that.  
  *
  * @copyright	Copyright &copy; 2005-2006,2008, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version	$Id: multilang.inc.php,v 0.18 2008/03/15 01:24:00 upk Exp $
+ * @version	$Id: multilang.inc.php,v 0.18.1 2010/12/26 17:49:00 Logue Exp $
  *
  */
 
@@ -84,7 +84,7 @@ function plugin_multilang_inline_link($option, $args)
 			}
 		}
 
-		array_push($body, '<a href="'.$url.$lang.'">'.$title.'</a>');
+		array_push($body, '<a href="'.$url.$lang.'" rel="alternate" hreflang="'.$lang.'">'.$title.'</a>');
 	}
 	
 	if($option == 'delim') { // default: nodelim
@@ -92,7 +92,7 @@ function plugin_multilang_inline_link($option, $args)
 			. PLUGIN_MULTILANG_INLINE_AFTER;
 	}
 
-	return join(' ', $body);
+	return '<span class="multilang">'.join(' ', $body).'</span>';
 }
 
 function plugin_multilang_accept($lang)

@@ -28,9 +28,9 @@ function plugin_search_convert()
 function plugin_search_action()
 {
 	global $post, $vars;
-	$_title_search  = _('Search for word(s)');
-	$_title_result  = _('Search result of  $1');
-	$_msg_searching = _('Key words are case-insenstive, and are searched for in all pages.');
+	$_title_search  = T_('Search for word(s)');
+	$_title_result  = T_('Search result of  $1');
+	$_msg_searching = T_('Key words are case-insenstive, and are searched for in all pages.');
 
 	if (PLUGIN_SEARCH_DISABLE_GET_ACCESS) {
 		$s_word = isset($post['word']) ? htmlspecialchars($post['word']) : '';
@@ -66,11 +66,11 @@ function plugin_search_action()
 function plugin_search_search_form($s_word = '', $type = '', $bases = array())
 {
 	global $script;
-	$_btn_search    = _('Search');
-	$_btn_and       = _('AND');
-	$_btn_or        = _('OR');
-	$_search_pages  = _('Search for page starts from $1');
-	$_search_all    = _('Search for all pages');
+	$_btn_search    = T_('Search');
+	$_btn_and       = T_('AND');
+	$_btn_or        = T_('OR');
+	$_search_pages  = T_('Search for page starts from $1');
+	$_search_all    = T_('Search for all pages');
 
 	$and_check = $or_check = '';
 	if ($type == 'OR') {
@@ -92,46 +92,36 @@ function plugin_search_search_form($s_word = '', $type = '', $bases = array())
 			$base_str = '<strong>' . $s_base . '</strong>';
 			$base_label = str_replace('$1', $base_str, $_search_pages);
 			$base_msg  .=<<<EOD
- <div>
-  <input type="radio" name="base" id="$label_id" value="$s_base" $check />
-  <label for="$label_id">$base_label</label>
- </div>
+	<div>
+		<input type="radio" name="base" id="$label_id" value="$s_base" $check />
+		<label for="$label_id">$base_label</label>
+	</div>
 EOD;
 			$check = '';
 		}
 		$base_msg .=<<<EOD
-  <input type="radio" name="base" id="_p_search_base_id_all" value="" />
-  <label for="_p_search_base_id_all">$_search_all</label>
+		<input type="radio" name="base" id="_p_search_base_id_all" value="" />
+		<label for="_p_search_base_id_all">$_search_all</label>
 EOD;
 		$base_option = '<div class="small">' . $base_msg . '</div>';
 	}
 
 	if (! PLUGIN_SEARCH_DISABLE_GET_ACCESS) {
-	return <<<EOD
-<form action="$script" method="get">
- <div>
-  <input type="hidden" name="cmd" value="search" />
-  <input type="text"  name="word" value="$s_word" size="20" />
-  <input type="radio" name="type" id="_p_search_AND" value="AND" $and_check />
-  <label for="_p_search_AND">$_btn_and</label>
-  <input type="radio" name="type" id="_p_search_OR" value="OR"  $or_check />
-  <label for="_p_search_OR">$_btn_or</label>
-  &nbsp;<input type="submit" value="$_btn_search" />
- </div>
-$base_option
-</form>
-EOD;
+		$method = "get";
+	}else{
+		$method = "post";
 	}
 	return <<<EOD
-<form action="$script?cmd=search" method="post">
- <div>
-  <input type="text"  name="word" value="$s_word" size="20" />
-  <input type="radio" name="type" id="_p_search_AND" value="AND" $and_check />
-  <label for="_p_search_AND">$_btn_and</label>
-  <input type="radio" name="type" id="_p_search_OR" value="OR"  $or_check />
-  <label for="_p_search_OR">$_btn_or</label>
-  &nbsp;<input type="submit" value="$_btn_search" />
- </div>
+<form action="$script" method="{$method}">
+	<input type="hidden" name="cmd" value="search" />
+	<div class="search_form">
+		<input type="text"  name="word" value="$s_word" size="20" />
+		<input type="radio" name="type" id="_p_search_AND" value="AND" $and_check />
+		<label for="_p_search_AND">$_btn_and</label>
+		<input type="radio" name="type" id="_p_search_OR" value="OR"  $or_check />
+		<label for="_p_search_OR">$_btn_or</label>
+		&nbsp;<input type="submit" value="$_btn_search" />
+	</div>
 $base_option
 </form>
 EOD;

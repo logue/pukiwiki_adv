@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: color.inc.php,v 1.24.2 2010/08/28 10:35:08 Logue Exp $
+// $Id: color.inc.php,v 1.24.3 2010/12/26 16:38:08 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team
 //   2005      PukiWiki Plus! Team
@@ -12,10 +12,6 @@
 // See Also:
 // CCS 2.1 Specification: 4.3.6 Colors
 // http://www.w3.org/TR/CSS21/syndata.html#value-def-color
-
-// Allow CSS instead of <font> tag
-// NOTE: <font> tag become invalid from XHTML 1.1
- define('PLUGIN_COLOR_ALLOW_CSS', 1);
 
 // ----
 define('PLUGIN_COLOR_USAGE', '&amp;color(foreground[,background]){text};');
@@ -47,17 +43,10 @@ function plugin_color_inline()
 		}
 	}
 
-	if (PLUGIN_COLOR_ALLOW_CSS || ! isset($pkwk_dtd) || $pkwk_dtd == PKWK_DTD_XHTML_1_1) {
-		if ($color   != '') $color   = 'color:' . $color;
-		if ($bgcolor != '') $bgcolor = 'background-color:' . $bgcolor;
-		$delimiter = ($color != '' && $bgcolor != '') ? ';' : '';
-		return '<span class="wikicolor" style="' . $color . $delimiter . $bgcolor . '">' .
-			$text . '</span>';
-	} else {
-		if ($bgcolor != '') {
-			return '&amp;color(): bgcolor not allowed;';
-		}
-		return '<font color="' . $color . '">' . $text . '</font>';
-	}
+	if ($color   != '') $color   = 'color:' . $color;
+	if ($bgcolor != '') $bgcolor = 'background-color:' . $bgcolor;
+	$delimiter = ($color != '' && $bgcolor != '') ? ';' : '';
+	return '<span class="wikicolor" style="' . $color . $delimiter . $bgcolor . '">' .
+		$text . '</span>';
 }
 ?>

@@ -13,10 +13,10 @@ function plugin_sbm_init()
 {
   $msg = array(
 	'_sbm_msg' => array(
-		'msg_alt'		=> _('This entry is added to %s.'), 				// このエントリーを%s に追加
-		'msg_twitter'		=> _('It mutters.'),						// つぶやく
-		'msg_google_translate'	=> _('This page translates by way of Google Translate.'),	// このページは、Google Translateを通して翻訳されます。
-		'msg_hatena_entry'	=> _('Hatena bookmark including this page.'), 			// このページを含むはてなブックマーク
+		'msg_alt'				=> T_('This entry is added to %s.'), 				// このエントリーを%s に追加
+		'msg_twitter'			=> T_('It mutters.'),								// つぶやく
+		'msg_google_translate'	=> T_('This page translates by way of Google Translate.'),	// このページは、Google Translateを通して翻訳されます。
+		'msg_hatena_entry'		=> T_('Hatena bookmark including this page.'), 			// このページを含むはてなブックマーク
 	)
   );
   set_plugin_messages($msg);

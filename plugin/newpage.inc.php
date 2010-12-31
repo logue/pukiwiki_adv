@@ -1,7 +1,7 @@
 <?php
-// $Id: newpage.inc.php,v 1.15.6 2010/01/18 23:37:00 upk Exp $
+// $Id: newpage.inc.php,v 1.15.7 2010/12/26 17:52:00 Logue Exp $
 // Copyright (C)
-//  2010 PukiPlus Team
+//  2010 PukiWiki Advance Developers Team
 //  2007-2008 PukiWiki Plus! Team
 //
 // Newpage plugin
@@ -10,8 +10,8 @@ function plugin_newpage_convert()
 {
 	global $script, $vars, $BracketName;
 	static $id = 0;
-	$_btn_edit = _('Edit');
-	$_msg_newpage = _('New page');
+	$_btn_edit = T_('Edit');
+	$_msg_newpage = T_('New page');
 
 	// if (PKWK_READONLY) return ''; // Show nothing
 	if (auth::check_role('readonly')) return ''; // Show nothing
@@ -27,13 +27,13 @@ function plugin_newpage_convert()
 
 	$ret = <<<EOD
 <form action="$script" method="post">
- <div>
-  <input type="hidden" name="plugin" value="newpage" />
-  <input type="hidden" name="refer"  value="$s_page" />
-  <label for="p_newpage_$id">$_msg_newpage:</label>
-  <input type="text"   name="page" id="p_newpage_$id" value="$s_newpage" size="30" />
-  <input type="submit" value="$_btn_edit" />
- </div>
+	<input type="hidden" name="plugin" value="newpage" />
+	<input type="hidden" name="refer"  value="$s_page" />
+	<div class="newpage_form">
+		<label for="p_newpage_$id">$_msg_newpage:</label>
+		<input type="text"   name="page" id="p_newpage_$id" value="$s_newpage" size="30" />
+		<input type="submit" value="$_btn_edit" />
+	</div>
 </form>
 EOD;
 
@@ -43,12 +43,12 @@ EOD;
 function plugin_newpage_action()
 {
 	global $vars;
-	$_btn_edit = _('Edit');
-	$_msg_newpage = _('New page');
+	$_btn_edit = T_('Edit');
+	$_msg_newpage = T_('New page');
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	if (auth::check_role('readonly')) die_message( _('PKWK_READONLY prohibits editing') );
-	if (auth::is_check_role(PKWK_CREATE_PAGE)) die_message( _('PKWK_CREATE_PAGE prohibits editing') );
+	if (auth::check_role('readonly')) die_message( T_('PKWK_READONLY prohibits editing') );
+	if (auth::is_check_role(PKWK_CREATE_PAGE)) die_message( T_('PKWK_CREATE_PAGE prohibits editing') );
 
 	if ($vars['page'] == '') {
 		$retvars['msg']  = $_msg_newpage;

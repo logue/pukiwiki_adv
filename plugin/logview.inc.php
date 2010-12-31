@@ -1,10 +1,10 @@
 <?php
 /**
- * PukiPlus ログ閲覧プラグイン
+ * PukiWiki Advance ログ閲覧プラグイン
  *
- * @copyright	Copyright (c) 2010, PukiPlus Team.
+ * @copyright	Copyright (c) 2010, PukiWiki Advance Developers Team.
  *                            2004-2009, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version	$Id: logview.php,v 0.23 2010/08/16 09:59:00 Logue Exp $
+ * @version	$Id: logview.php,v 0.24 2010/12/26 17:32:00 Logue Exp $
  * @license	http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 
@@ -20,30 +20,30 @@ defined('PLUGIN_LOGVIEW_DISPLAY_AUTH_API') or define('PLUGIN_LOGVIEW_DISPLAY_AUT
 function plugin_logview_init()
 {
 	$messages = array(
-	'_logview_msg' => array(
-		'msg_title'	=> _('LogView (%s)'),
-		'msg_not_auth'	=> _('Login is required in order to refer to.'),
-		'ts'		=> _('Date'),
-		'ip'		=> _('IP Address'),
-		'host'		=> _('Host Name'),
-		'auth_api'	=> _('Authentication API Name'),
-		'user'		=> _('User Name'),
-		'ntlm'		=> _('NTLM Auth Name'),
-		'proxy'		=> _('Proxy Infomation'),
-		'ua'		=> _('Browse Infomation'),
-		'del'		=> _('Delete'),
-		'sig'		=> _('Signature'),
-		'file'		=> _('Faile Name'),
-		'page'		=> _('Page'),
-		'cmd'		=> _('CMD'),
-		'local_id'	=> _('local_id'),
-		'@diff'		=> _('Contents'),
-		'@guess'	=> _('Provisional User Name'),	// Guess
-		'@guess_diff'	=> _('Provisional Browse Contents'),  // Guess
-		'info_unused'   => _('Unused user list'),
-		'all_user'	=> _('Number of enrollees'),
-		'number_unused' => _('Number of Unused'),
-		'availability'  => _('Availability'),
+		'_logview_msg' => array(
+			'msg_title'		=> T_('LogView (%s)'),
+			'msg_not_auth'	=> T_('Login is required in order to refer to.'),
+			'ts'			=> T_('Date'),
+			'ip'			=> T_('IP Address'),
+			'host'			=> T_('Host Name'),
+			'auth_api'		=> T_('Authentication API Name'),
+			'user'			=> T_('User Name'),
+			'ntlm'			=> T_('NTLM Auth Name'),
+			'proxy'			=> T_('Proxy Infomation'),
+			'ua'			=> T_('Browse Infomation'),
+			'del'			=> T_('Delete'),
+			'sig'			=> T_('Signature'),
+			'file'			=> T_('Faile Name'),
+			'page'			=> T_('Page'),
+			'cmd'			=> T_('CMD'),
+			'local_id'		=> T_('local_id'),
+			'@diff'			=> T_('Contents'),
+			'@guess'		=> T_('Provisional User Name'),	// Guess
+			'@guess_diff'	=> T_('Provisional Browse Contents'),  // Guess
+			'info_unused'   => T_('Unused user list'),
+			'all_user'		=> T_('Number of enrollees'),
+			'number_unused' => T_('Number of Unused'),
+			'availability'  => T_('Availability'),
 		)
 	);
 	set_plugin_messages($messages);
@@ -345,10 +345,10 @@ function logview_user_list(& $fld, $page,$kind)
 	$ctr = count($check_list);
 	if ($ctr == 0) return '';
 
-	$ret = '<h4>'.$_logview_msg['info_unused'].'</h4>'."\n"; // 未確認者一覧
-	$ret .= '<div><fieldset>'.$_logview_msg['all_user'].': '.$all_user_idx.' '.
+	$ret = '<fieldset>'."\n".'<legend>'.$_logview_msg['info_unused'].'</legend>'."\n"; // 未確認者一覧
+	$ret .= '<div>'.$_logview_msg['all_user'].': '.$all_user_idx.' '.
 			$_logview_msg['number_unused'].': '.$ctr.' '.
-			$_logview_msg['availability'].': '.floor(100-($ctr/$all_user_idx)*100).'%</fieldset></div><div>&nbsp;</div>'."\n"; // 人数
+			$_logview_msg['availability'].': '.floor(100-($ctr/$all_user_idx)*100).'%</div></fieldset>'."\n"; // 人数
 
 	sort($check_list);
 	$ctr = 0;

@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: memo.inc.php,v 1.16.3 2007/08/19 14:20:58 miko Exp $
+// $Id: memo.inc.php,v 1.16.4 2010/12/26 17:38:00 Logue Exp $
 //
 // Memo box plugin
 
@@ -12,9 +12,9 @@ function plugin_memo_action()
 	global $script, $vars, $cols, $rows;
 //	global $_title_collided, $_msg_collided, $_title_updated;
 
-$_title_collided   = _('On updating $1, a collision has occurred.');
-$_title_updated    = _('$1 was updated');
-$_msg_collided = _('It seems that someone has already updated this page while you were editing it.<br />
+$_title_collided   = T_('On updating $1, a collision has occurred.');
+$_title_updated    = T_('$1 was updated');
+$_msg_collided = T_('It seems that someone has already updated this page while you were editing it.<br />
  + is placed at the beginning of a line that was newly added.<br />
  ! is placed at the beginning of a line that has possibly been updated.<br />
  Edit those lines, and submit again.');
@@ -55,11 +55,12 @@ $_msg_collided = _('It seems that someone has already updated this page while yo
 
 		$body .= <<<EOD
 <form action="$script?cmd=preview" method="post">
- <div>
-  <input type="hidden" name="refer"  value="$s_refer" />
-  <input type="hidden" name="digest" value="$s_digest" />
-  <textarea name="msg" rows="$rows" cols="$cols" id="textarea">$s_postdata_input</textarea><br />
- </div>
+	<input type="hidden" name="cmd" value="preview" />
+	<input type="hidden" name="refer"  value="$s_refer" />
+	<input type="hidden" name="digest" value="$s_digest" />
+	<div class="memo_form">
+		<textarea name="msg" rows="$rows" cols="$cols" id="textarea">$s_postdata_input</textarea>
+	</div>
 </form>
 EOD;
 	} else {
@@ -95,7 +96,7 @@ function plugin_memo_convert()
 		$_submit = '';	
 	} else {
 		$_script = & $script;
-		$_submit = '<input type="submit" name="memo"    value="' . _('update') . '" />';
+		$_submit = '<input type="submit" name="memo" value="' . T_('update') . '" />';
 	}
 
 	$s_page   = htmlspecialchars($vars['page']);
@@ -104,14 +105,14 @@ function plugin_memo_convert()
 	$s_rows   = MEMO_ROWS;
 	$string   = <<<EOD
 <form action="$_script" method="post" class="memo">
- <div>
-  <input type="hidden" name="memo_no" value="$memo_no" />
-  <input type="hidden" name="refer"   value="$s_page" />
-  <input type="hidden" name="plugin"  value="memo" />
-  <input type="hidden" name="digest"  value="$s_digest" />
-  <textarea name="msg" rows="$s_rows" cols="$s_cols">$data</textarea><br />
-  $_submit
- </div>
+	<input type="hidden" name="memo_no" value="$memo_no" />
+	<input type="hidden" name="refer"   value="$s_page" />
+	<input type="hidden" name="plugin"  value="memo" />
+	<input type="hidden" name="digest"  value="$s_digest" />
+	<div class="memo_form">
+		<textarea name="msg" rows="$s_rows" cols="$s_cols">$data</textarea><br />
+		$_submit
+	</div>
 </form>
 EOD;
 

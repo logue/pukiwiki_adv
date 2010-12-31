@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: deleted.inc.php,v 1.6.2 2006/11/04 18:37:00 upk Exp $
+// $Id: deleted.inc.php,v 1.6.3 2010/12/26 16:50:00 Logue Exp $
 //
 // Show deleted (= Exists in BACKUP_DIR or DIFF_DIR but not in DATA_DIR)
 // page list to clean them up
@@ -9,11 +9,21 @@
 //   index.php?plugin=deleted[&file=on]
 //   index.php?plugin=deleted&dir=diff[&file=on]
 
+function plugin_deleted_init()
+{
+	$msg = array(
+		'_deleted_msg' => array(
+			'title_collision'		=> T_('On updating $1, a collision has occurred.'),
+			'title_withfilename'	=> T_('$1 was updated'),
+			'no_such_setting'		=> T_('No such setting: Choose backup or diff')
+		)
+	);
+	set_plugin_messages($msg);
+}
+
 function plugin_deleted_action()
 {
-	global $vars;
-	$_deleted_plugin_title = _('The list of deleted pages');
-	$_deleted_plugin_title_withfilename = _('The list of deleted pages (with filename)');
+	global $vars, $_deleted_msg;
 
 	$dir = isset($vars['dir']) ? $vars['dir'] : 'backup';
 	$withfilename  = isset($vars['file']);
@@ -27,16 +37,16 @@ function plugin_deleted_action()
 	//$_DIR['cache' ]['ext'] = '.rel';
 
 	if (! isset($_DIR[$dir]))
-		return array('msg'=>'Deleted plugin', 'body'=>'No such setting: Choose backup or diff');
+		return array('msg'=>'Deleted plugin', 'body'=>$_deleted_msg['no_such_setting']);
 
 	$deleted_pages  = array_diff(
 		auth::get_existpages($_DIR[$dir]['dir'], $_DIR[$dir]['ext']),
 		auth::get_existpages());
 
 	if ($withfilename) {
-		$retval['msg'] = $_deleted_plugin_title_withfilename;
+		$retval['msg'] = $_deleted_msg['title_withfilename'];
 	} else {
-		$retval['msg'] = $_deleted_plugin_title;
+		$retval['msg'] = $_deleted_msg['title_collision'];
 	}
 	$retval['body'] = page_list($deleted_pages, $dir, $withfilename);
 

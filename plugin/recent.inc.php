@@ -1,5 +1,5 @@
 <?php
-// $Id: recent.inc.php,v 1.26.5 2010/09/22 16:54:00 Logue Exp $
+// $Id: recent.inc.php,v 1.26.6 2010/12/26 23:25:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team
 //   2005-2008 PukiWiki Plus! Team
@@ -49,7 +49,7 @@ function plugin_recent_convert()
 		return '#recent(): File can not open' . '<br />';
 	}
 
-	$_recent_title = sprintf(_('recent(%d)'),count($lines));
+	$_recent_title = sprintf(T_('recent(%d)'),count($lines));
 	$_recent_plugin_frame = '<h5>'.$_recent_title.'</h5>'.
 				'<div class="hslice" id="webslice">'.
 				'<span class="entry-title" style="display:none;">'.$page_title.'</span>'.

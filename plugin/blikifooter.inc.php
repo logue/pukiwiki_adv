@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id$
+ * $Id: blikifooter.inc.php,v 1.0.1 2010/12/26 12:26:00 Logue Exp $
  * 
  * License:  GNU General Public License
  *
@@ -10,6 +10,7 @@
  *   http://kinowiki.net/
  *
  * MODIFICATION BY:
+ * (C) 2010      PukiWiki Advance Developers Team
  * (C) 2006,2008 PukiWiki Plus! Developers Team
  *
  * This software is free software; you can redistribute it and/or
@@ -38,11 +39,11 @@ function plugin_blikifooter_init()
 
 	$msg = array(
 		'_blikifooter_msg' => array(
-			'msg_author'		=> _('Author'),
-			'msg_permalink'		=> _('Permalink'),
-			'msg_trackback'		=> _('Trackback'),
-			'msg_comment'		=> _('Comments(%s)'),
-			'seplater'		=> _(' | '),		// 区切り文字
+			'msg_author'		=> T_('Author'),
+			'msg_permalink'		=> T_('Permalink'),
+			'msg_trackback'		=> T_('Trackback'),
+			'msg_comment'		=> T_('Comments(%s)'),
+			'seplater'			=> T_(' | '),		// 区切り文字
 		)
 	);
 	set_plugin_messages($msg);

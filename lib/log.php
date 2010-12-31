@@ -351,9 +351,9 @@ function log_update($kind,$filename,$key,$mustkey,$data)
 	$log_data = log_read($filename);
 	$log_length = count($log_data);
 	
-	// ログの件数が200件を超えた場合カット
-	if ($log_length < 200){
-		$log_length = 200;
+	// ログの件数が1000件を超えた場合カット
+	if ($log_length > 1000){
+		$log_length = 1000;
 	}
 
 	$_key = explode(':',$key);

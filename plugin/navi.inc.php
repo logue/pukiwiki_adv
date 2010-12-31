@@ -46,7 +46,7 @@ define('PLUGIN_NAVI_LINK_TAGS', TRUE);	// FALSE, TRUE
 
 function plugin_navi_convert()
 {
-	global $vars, $link_tags;
+	global $vars, $link_tags, $pkwk_dtd;
 //	global $_navi_prev, $_navi_next, $_navi_up, $_navi_home;
 	static $navi = array();
 	$_navi_prev = _('Prev');

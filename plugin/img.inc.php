@@ -1,7 +1,9 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: img.inc.php,v 1.17 2007/04/08 13:16:09 henoheno Exp $
-// Copyright (C) 2002-2005, 2007 PukiWiki Developers Team
+// $Id: img.inc.php,v 1.17.1 2010/12/26 17:14:00 Logue Exp $
+// Copyright (C)
+//     2010 PukiWiki Advance Developers Team
+//     2002-2005, 2007 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
 //
 // Inline-image plugin (Output inline-image tag from a URI)
@@ -11,6 +13,7 @@ define('PLUGIN_IMG_CLEAR', '<div style="clear:both"></div>'); // Stop word-wrapp
 
 function plugin_img_convert()
 {
+	global $pkwk_dtd;
 	if (PKWK_DISABLE_INLINE_IMAGE_FROM_URI)
 		return '#img(): PKWK_DISABLE_INLINE_IMAGE_FROM_URI prohibits this' .
 			'<br />' . "\n";
@@ -47,9 +50,16 @@ function plugin_img_convert()
 		$clear = '';
 	}
 
-	return
-		'<div style="float:' . $align . ';padding:.5em 1.5em .5em 1.5em">'. "\n" .
-		' <img src="' . $url . '" alt="" />' . "\n" .
-		'</div>' . $clear;
+	if ($pkwk_dtd == PKWK_DTD_HTML_5){
+		return
+			'<figure style="float:' . $align . ';padding:.5em 1.5em .5em 1.5em">'. "\n" .
+			'	<img src="' . $url . '" alt="" />' . "\n" .
+			'</figure>' . $clear;
+	}else{
+		return
+			'<div style="float:' . $align . ';padding:.5em 1.5em .5em 1.5em">'. "\n" .
+			'	<img src="' . $url . '" alt="" />' . "\n" .
+			'</div>' . $clear;
+	}
 }
 ?>

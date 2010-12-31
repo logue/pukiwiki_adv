@@ -3,13 +3,11 @@
  * Skype プラグイン
  *
  * @copyright   Copyright &copy; 2006, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: skype.inc.php,v 0.2 2006/04/13 00:57:00 upk Exp $
+ * @version     $Id: skype.inc.php,v 0.2 2010/12/26 19:11:00 Logue Exp $
  *
  */
 
-if (!defined('SKYPE_MYSTATUS_URL')) {
-	define('SKYPE_MYSTATUS_URL', 'http://mystatus.skype.com/');
-}
+defined('SKYPE_MYSTATUS_URL') or define('SKYPE_MYSTATUS_URL', 'http://mystatus.skype.com/');
 
 function plugin_skype_convert()
 {
@@ -38,7 +36,6 @@ function plugin_skype_convert()
 		$call = TRUE;
 		$rc = <<<EOD
 <script type="text/javascript" src="http://download.skype.com/share/skypebuttons/js/skypeCheck.js"></script>
-
 EOD;
 	}
 

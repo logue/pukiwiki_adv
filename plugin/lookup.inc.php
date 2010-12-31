@@ -1,7 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: lookup.inc.php,v 1.22.1 2008/01/05 23:10:00 upk Exp $
+// $Id: lookup.inc.php,v 1.22.2 2010/12/26 17:34:00 Logue Exp $
 // Copyright (C)
+//   2008 PukiWiki Advance Developers Team
 //   2008 PukiWiki Plus! Developers Team
 //   2002-2005 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -29,14 +30,14 @@ function plugin_lookup_convert()
 
 	$ret = <<<EOD
 <form action="$script" method="post">
- <div>
-  <input type="hidden" name="plugin" value="lookup" />
-  <input type="hidden" name="refer"  value="$s_page" />
-  <input type="hidden" name="inter"  value="$interwiki" />
-  <label for="_p_lookup_$id">$interwiki:</label>
-  <input type="text" name="page" id="_p_lookup_$id" size="30" value="$default" />
-  <input type="submit" value="$button" />
- </div>
+	<input type="hidden" name="plugin" value="lookup" />
+	<input type="hidden" name="refer"  value="$s_page" />
+	<input type="hidden" name="inter"  value="$interwiki" />
+	<div class="lookup_form">
+		<label for="_p_lookup_$id">$interwiki:</label>
+		<input type="text" name="page" id="_p_lookup_$id" size="30" value="$default" />
+		<input type="submit" value="$button" />
+	</div>
 </form>
 EOD;
 	return $ret;
@@ -53,7 +54,7 @@ function plugin_lookup_action()
 
 	$url = get_interwiki_url($inter, $page);
 	if ($url === FALSE) {
-		$msg = sprintf('InterWikiName "%s" not found', $inter);
+		$msg = sprintf(T_('InterWikiName "%s" not found'), $inter);
 		$msg = htmlspecialchars($msg);
 		return array('msg'=>'Not found', 'body'=>$msg);
 	}

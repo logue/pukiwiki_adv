@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: edit.inc.php,v 1.48.43 2010/09/17 10:24:00 Logue Exp $
+// $Id: edit.inc.php,v 1.48.44 2010/12/26 16:55:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -21,11 +21,11 @@ function plugin_edit_action()
 	// global $vars, $_title_edit, $load_template_func;
 	global $vars, $load_template_func;
 
-	// if (PKWK_READONLY) die_message( _('PKWK_READONLY prohibits editing') );
-	if (auth::check_role('readonly')) die_message( _('PKWK_READONLY prohibits editing') );
+	// if (PKWK_READONLY) die_message( T_('PKWK_READONLY prohibits editing') );
+	if (auth::check_role('readonly')) die_message( T_('PKWK_READONLY prohibits editing') );
 
 	if (PKWK_READONLY == ROLE_AUTH && auth::get_role_level() > ROLE_AUTH) {
-		die_message( _('PKWK_READONLY prohibits editing') );
+		die_message( T_('PKWK_READONLY prohibits editing') );
 	}
 
 	if (isset($vars['realview'])) {
@@ -36,7 +36,7 @@ function plugin_edit_action()
 	check_editable($page, true, true);
 
 	if (!is_page($page) && auth::is_check_role(PKWK_CREATE_PAGE)) {
-		die_message( _('PKWK_CREATE_PAGE prohibits editing') );
+		die_message( T_('PKWK_CREATE_PAGE prohibits editing') );
 	}
 
 	if (isset($vars['preview']) || ($load_template_func && isset($vars['template']))) {
@@ -62,7 +62,7 @@ function plugin_edit_action()
 	}
 	if ($postdata == '') $postdata = auto_template($page);
 
-	return array('msg'=> _('Edit of  $1'), 'body'=>edit_form($page, $postdata));
+	return array('msg'=> T_('Edit of  $1'), 'body'=>edit_form($page, $postdata));
 }
 
 // Preview by Ajax
@@ -103,9 +103,9 @@ function plugin_edit_preview()
 {
 	global $post, $vars;
 	// global $_title_preview, $_msg_preview, $_msg_preview_delete;
-	$_title_preview			= _('Preview of $1');
-	$_msg_preview			= _('To confirm the changes, click the button at the bottom of the page');
-	$_msg_preview_delete	= _('(The contents of the page are empty. Updating deletes this page.)');
+	$_title_preview			= T_('Preview of $1');
+	$_msg_preview			= T_('To confirm the changes, click the button at the bottom of the page');
+	$_msg_preview_delete	= T_('(The contents of the page are empty. Updating deletes this page.)');
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
 
@@ -196,8 +196,8 @@ function plugin_edit_write()
 	global $use_trans_sid_address;
 //	global $_title_collided, $_msg_collided_auto, $_msg_collided, $_title_deleted;
 //	global $_msg_invalidpass;
-	$_title_deleted = _(' $1 was deleted');
-	$_msg_invalidpass = _('Invalid password.');
+	$_title_deleted = T_(' $1 was deleted');
+	$_msg_invalidpass = T_('Invalid password.');
 
 	$page   = isset($vars['page']) ? $vars['page']     : '';
 	$add    = isset($vars['add'])    ? $vars['add']    : '';
@@ -246,17 +246,17 @@ function plugin_edit_write()
 		list($postdata_input, $auto) = do_update_diff($oldpagesrc, $msg, $original);
 
 		$_msg_collided_auto =
-		_('It seems that someone has already updated this page while you were editing it.<br />') .
-		_('The collision has been corrected automatically, but there may still be some problems with the page.<br />') .
-		_('To confirm the changes to the page, press [Update].<br />');
+		T_('It seems that someone has already updated this page while you were editing it.<br />') .
+		T_('The collision has been corrected automatically, but there may still be some problems with the page.<br />') .
+		T_('To confirm the changes to the page, press [Update].<br />');
 
 		$_msg_collided =
-		_('It seems that someone has already updated this page while you were editing it.<br />') .
-		_(' + is placed at the beginning of a line that was newly added.<br />') .
-		_(' ! is placed at the beginning of a line that has possibly been updated.<br />') .
-		_(' Edit those lines, and submit again.');
+		T_('It seems that someone has already updated this page while you were editing it.<br />') .
+		T_(' + is placed at the beginning of a line that was newly added.<br />') .
+		T_(' ! is placed at the beginning of a line that has possibly been updated.<br />') .
+		T_(' Edit those lines, and submit again.');
 
-		$retvars['msg'] = _('On updating  $1, a collision has occurred.');
+		$retvars['msg'] = T_('On updating  $1, a collision has occurred.');
 		$retvars['body'] = ($auto ? $_msg_collided_auto : $_msg_collided)."\n";
 		$retvars['body'] .= $do_update_diff_table;
 

@@ -22,27 +22,28 @@ function plugin_bugtrack_init()
 	$init = TRUE;
 
 	$_plugin_bugtrack = array(
-		'priority_list'  => array(_('Emergency'), _('Importance'), _('Normal'), _('Low')),
-		'state_list'     => array(_('Proposal'), _('Start'), _('CVS Waiting'), _('Completion'), _('Reservation'), _('Rejection')),
-		'state_sort'     => array(_('Start'), _('CVS Waiting'), _('Reservation'), _('Completion'), _('Proposal'), _('Rejection')),
-		'state_bgcolor'  => array('#ccccff', '#ffcc99', '#ccddcc', '#ccffcc', '#ffccff', '#cccccc', '#ff3333'),
-		'header_bgcolor' => '#ffffcc',
-		'base'     => _('Page'),
-		'summary'  => _('Summary'),
-		'nosummary'=> _('Fill in the summary here. '),
-		'priority' => _('Priority'),
-		'state'    => _('State'),
-		'name'     => _('Name'),
-		'noname'   => _('Anonymous'),
-		'date'     => _('Date'),
-		'body'     => _('Message'),
-		'category' => _('Category'),
-		'pagename' => _('Page Name'),
-		'pagename_comment' => _('Page name is automatically given for an empty column.'),
-		'version_comment'  => _('It is acceptable also in an empty column.'),
-		'version'  => _('Version'),
-		'submit'   => _('Submit'),
-		);
+		'priority_list'		=> array(T_('Emergency'), T_('Importance'), T_('Normal'), T_('Low')),
+		'state_list'		=> array(T_('Proposal'), T_('Start'), T_('CVS Waiting'), T_('Completion'), T_('Reservation'), T_('Rejection')),
+		'state_sort'		=> array(T_('Start'), T_('CVS Waiting'), T_('Reservation'), T_('Completion'), T_('Proposal'), T_('Rejection')),
+		'state_bgcolor'		=> array('#ccccff', '#ffcc99', '#ccddcc', '#ccffcc', '#ffccff', '#cccccc', '#ff3333'),
+		'header_bgcolor'	=> '#ffffcc',
+		'base'				=> T_('Page'),
+		'summary'			=> T_('Summary'),
+		'nosummary'			=> T_('Fill in the summary here. '),
+		'priority'			=> T_('Priority'),
+		'state'				=> T_('State'),
+		'name'				=> T_('Name'),
+		'noname'			=> T_('Anonymous'),
+		'date'				=> T_('Date'),
+		'body'				=> T_('Message'),
+		'category'			=> T_('Category'),
+		'pagename'			=> T_('Page Name'),
+		'pagename_comment'	=> T_('Page name is automatically given for an empty column.'),
+		'version_comment'	=> T_('It is acceptable also in an empty column.'),
+		'version'			=> T_('Version'),
+		'submit'			=> T_('Submit'),
+		'err_prohibit'		=> T_('This Wiki is <code>%s</code> mode now. Therefore, bugtrack function is prohibited.'),
+	);
 }
 
 // #bugtrack: Show bugtrack form
@@ -180,8 +181,8 @@ function plugin_bugtrack_action()
 	global $_plugin_bugtrack;
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	if (auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
-	if (auth::is_check_role(PKWK_CREATE_PAGE)) die_message(_('PKWK_CREATE_PAGE prohibits editing'));
+	if (auth::check_role('readonly')) die_message(sprintf($_plugin_bugtrack['err_prohibit'],'PKWK_READONLY'));
+	if (auth::is_check_role(PKWK_CREATE_PAGE)) die_message(sprintf($_plugin_bugtrack['err_prohibit'],'PKWK_CREATE_PAGE'));
 	if ($post['mode'] != 'submit') return FALSE;
 
 	// Petit SPAM Check (Client(Browser)-Server Ticket Check)

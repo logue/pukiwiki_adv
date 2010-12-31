@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: diff.inc.php,v 1.19.7 2010/08/28 10:41:00 Logue Exp $
+// $Id: diff.inc.php,v 1.19.8 2010/12/26 16:51:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team
 //   2005-2006,2008 PukiWiki Plus! Team
@@ -33,13 +33,13 @@ function plugin_diff_view($page)
 
 	if (auth::check_role('safemode')) die_message('PKWK_SAFE_MODE prohibits this');
 
-	$_msg_notfound       = _('The page was not found.');
-	$_msg_addline        = _('The added line is <span class="diff_added">THIS COLOR</span>.');
-	$_msg_delline        = _('The deleted line is <span class="diff_removed">THIS COLOR</span>.');
-	$_msg_goto           = _('Go to $1.');
-	$_msg_deleted        = _(' $1 has been deleted.');
-	$_title_diff         = _('Diff of $1');
-	$_title_diff_delete  = _('Deleting diff of $1');
+	$_msg_notfound       = T_('The page was not found.');
+	$_msg_addline        = T_('The added line is <span class="diff_added">THIS COLOR</span>.');
+	$_msg_delline        = T_('The deleted line is <span class="diff_removed">THIS COLOR</span>.');
+	$_msg_goto           = T_('Go to $1.');
+	$_msg_deleted        = T_(' $1 has been deleted.');
+	$_title_diff         = T_('Diff of $1');
+	$_title_diff_delete  = T_('Deleting diff of $1');
 
 	$r_page = rawurlencode($page);
 	$s_page = htmlspecialchars($page);
@@ -95,11 +95,11 @@ function plugin_diff_delete($page)
 
 	if (auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
 
-	$_title_diff_delete  = _('Deleting diff of $1');
-	$_msg_diff_deleted   = _('Diff of  $1 has been deleted.');
-	$_msg_diff_adminpass = _('Please input the password for deleting.');
-	$_btn_delete         = _('Delete');
-	$_msg_invalidpass    = _('Invalid password.');
+	$_title_diff_delete  = T_('Deleting diff of $1');
+	$_msg_diff_deleted   = T_('Diff of  $1 has been deleted.');
+	$_msg_diff_adminpass = T_('Please input the password for deleting.');
+	$_btn_delete         = T_('Delete');
+	$_msg_invalidpass    = T_('Invalid password.');
 
 	$filename = DIFF_DIR . encode($page) . '.txt';
 	$body = '';

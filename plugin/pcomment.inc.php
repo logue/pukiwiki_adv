@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: pcomment.inc.php,v 1.47.21 2010/10/22 10:57:00 Logue Exp $
+// $Id: pcomment.inc.php,v 1.47.22 2010/10/26 18:52:00 Logue Exp $
 //
 // pcomment plugin - Show/Insert comments into specified (another) page
 //
@@ -88,13 +88,13 @@ function plugin_pcomment_convert()
 	global $vars;
 //	global $_pcmt_messages;
 	$_pcmt_messages = array(
-		'btn_name'       => _('Name: '),
-		'btn_comment'    => _('Post Comment'),
-		'msg_comment'    => _('Comment: '),
-		'msg_recent'     => _('Show recent %d comments.'),
-		'msg_all'        => _('Go to the comment page.'),
-		'msg_none'       => _('No comment.'),
-		'err_pagename'   => _('[[%s]] : not a valid page name.'),
+		'btn_name'       => T_('Name: '),
+		'btn_comment'    => T_('Post Comment'),
+		'msg_comment'    => T_('Comment: '),
+		'msg_recent'     => T_('Show recent %d comments.'),
+		'msg_all'        => T_('Go to the comment page.'),
+		'msg_none'       => T_('No comment.'),
+		'err_pagename'   => T_('[[%s]] : not a valid page name.'),
 	);
 
 	$params = array(
@@ -161,18 +161,19 @@ function plugin_pcomment_convert()
 
 		$form_start = '<form action="' . get_script_uri() . '" method="post">' . "\n";
 		$form = <<<EOD
-  <div class="pcomment_form">
-  <input type="hidden" name="digest" value="$digest" />
-  <input type="hidden" name="plugin" value="pcomment" />
-  <input type="hidden" name="refer"  value="$s_refer" />
-  <input type="hidden" name="page"   value="$s_page" />
-  <input type="hidden" name="nodate" value="$s_nodate" />
-  <input type="hidden" name="dir"    value="$dir" />
-  <input type="hidden" name="count"  value="$count" />
-  $radio $title $name $comment
-  <input type="submit" value="{$_pcmt_messages['btn_comment']}" />
-  $helptags
-  </div>
+
+	<input type="hidden" name="digest" value="$digest" />
+	<input type="hidden" name="plugin" value="pcomment" />
+	<input type="hidden" name="refer"  value="$s_refer" />
+	<input type="hidden" name="page"   value="$s_page" />
+	<input type="hidden" name="nodate" value="$s_nodate" />
+	<input type="hidden" name="dir"    value="$dir" />
+	<input type="hidden" name="count"  value="$count" />
+	<div class="pcomment_form">
+	$radio $title $name $comment
+		<input type="submit" value="{$_pcmt_messages['btn_comment']}" />
+	$helptags
+	</div>
 EOD;
 		$form_end = '</form>' . "\n";
 	}
@@ -261,8 +262,8 @@ function plugin_pcomment_insert()
 
 		$digest = isset($vars['digest']) ? $vars['digest'] : '';
 		if (md5(join('', $postdata)) != $digest) {
-			$ret['msg']  = _('On updating  $1, there was a collision.');
-			$ret['body'] = _('It seems that someone has already updated this page while you were editing it.<br />' .
+			$ret['msg']  = T_('On updating  $1, there was a collision.');
+			$ret['body'] = T_('It seems that someone has already updated this page while you were editing it.<br />' .
 			                 'The comment was added to the page, but there may be a problem.<br />');
 		}
 

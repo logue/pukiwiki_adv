@@ -1,13 +1,17 @@
 <?php
 /**
- * PukiPlus GFC 認証処理
+ * PukiWiki Advance Google Friend Connect 認証処理
  *
  * @copyright   Copyright &copy; 2010, Katsumi Saito <jo1upk@users.sourceforge.net>
  * @author      Katsumi Saito <jo1upk@users.sourceforge.net>
- * @version     $Id: auth_gfc.inc.php,v 0.2 2010/05/07 00:26:00 jo1upk Exp $
+ * @version     $Id: auth_gfc.inc.php,v 0.2.1 2010/12/25 10:55:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 require_once(LIB_DIR . 'auth_api.cls.php');
+
+// Google Friend Conect APIのバージョン
+// http://code.google.com/intl/ja/apis/friendconnect/
+define('GOOGLE_FRIEND_CONNECT_API_VER',1);
 
 class auth_gfc extends auth_api
 {
@@ -24,26 +28,33 @@ class auth_gfc extends auth_api
 
 function plugin_auth_gfc_init()
 {
+	global $google_loader, $js_blocks;
+	// メッセージ定義
 	$msg = array(
-	  '_auth_gfc_msg' => array(
-		'msg_logout'		=> _("logout"),
-		'msg_logined'		=> _("%s has been approved by GFC."),
-		'msg_invalid'		=> _("The function of GFC is invalid."),
-		'msg_not_found'		=> _("pkwk_session_start() doesn't exist."),
-		'msg_not_start'		=> _("The session is not start."),
-		'msg_gfc'		=> _("GFC"),
-		'msg_wait'		=> _("Please wait for a while."),
-		'btn_login'		=> _("Login"),
-		'btn_settings'		=> _("Settings"),
-		'btn_invite'		=> _("Invite"),
-          )
-        );
-        set_plugin_messages($msg);
+		'_auth_gfc_msg' => array(
+			'msg_logout'		=> T_("logout"),
+			'msg_logined'		=> T_("%s has been approved by GFC."),
+			'msg_invalid'		=> T_("The function of GFC is invalid."),
+			'msg_not_found'		=> T_("pkwk_session_start() doesn't exist."),
+			'msg_not_start'		=> T_("The session is not start."),
+			'msg_gfc'			=> T_("GFC"),
+			'msg_wait'			=> T_("Please wait for a while."),
+			'btn_login'			=> T_("Login"),
+			'btn_settings'		=> T_("Settings"),
+			'btn_invite'		=> T_("Invite"),
+		)
+	);
+	// GFCを読み込む
+	$google_loader[] = array('friendconnect'=>GOOGLE_FRIEND_CONNECT_API_VER);
+	// GFCに渡すアドレス（SCRIPTから）
+	$js_blocks[] = 'google.friendconnect.container.setParentUrl(SCRIPT);';
+
+	set_plugin_messages($msg);
 }
 
 function plugin_auth_gfc_convert()
 {
-        global $script,$vars,$auth_api,$_auth_gfc_msg;
+	global $script,$vars,$auth_api,$_auth_gfc_msg, $js_blocks;
 
 	if (! $auth_api['auth_gfc']['use']) return '<p>'.$_auth_gfc_msg['msg_invalid'].'</p>';
 
@@ -71,18 +82,7 @@ function plugin_auth_gfc_convert()
 		$logout_url = get_cmd_uri('auth_gfc', $page).'&amp;logout';
 		// get_location_uri('auth_gfc', $page).'&logout';
 		return <<<EOD
-<script type="text/javascript" src="http://www.google.com/jsapi"></script>
-<script type="text/javascript">
-  google.load('friendconnect', '0.8');
-</script>
-<script type="text/javascript">    
-  google.friendconnect.container.setParentUrl('{$abs}');
-  google.friendconnect.container.loadOpenSocialApi({
-    site: '{$obj->site}',
-    onload: function(securityToken) {}
-  });
-</script>
-<table>
+<table class="no-js">
  <tr><td rowspan="3">{$img}</td></tr>
  <tr><td>{$nick}</td></tr>
  <tr><td>
@@ -98,35 +98,23 @@ EOD;
 	// ログイン済
 	$login_url = get_location_uri('auth_gfc', $page);
 	$id = 'auth_gfc_'.uniqid();
-	return <<<EOD
-<span id="${id}">
-<script type="text/javascript" src="http://www.google.com/jsapi"></script>
-<script type="text/javascript">
-  google.load('friendconnect', '0.8');
-</script>
-<script type="text/javascript">
-  google.friendconnect.container.setParentUrl('{$abs}');
-
-  google.friendconnect.container.loadOpenSocialApi({
-    site: '{$obj->site}',
-    onload: function() {
-      if (!window.timesloaded) {
-        window.timesloaded = 1;
-      } else {
-        window.timesloaded++;
-      }
-      if (window.timesloaded > 1) {
-        window.top.location.href = "{$login_url}";
-      }
-    }
-  });
-
-  google.friendconnect.renderSignInButton({'id':'{$id}','text':'{$_auth_gfc_msg['btn_login']}','style':'long'});
-
-</script>
-</span>
-
-EOD;
+	$js_blocks[] = <<<JAVASCRIPT
+google.friendconnect.container.loadOpenSocialApi({
+	site: '{$obj->site}',
+	onload: function() {
+		if (!window.timesloaded) {
+			window.timesloaded = 1;
+		} else {
+			window.timesloaded++;
+		}
+		if (window.timesloaded > 1) {
+			window.top.location.href = "{$login_url}";
+		}
+	}
+});
+google.friendconnect.renderSignInButton({'id':'{$id}','text':'{$_auth_gfc_msg['btn_login']}','style':'long'});
+JAVASCRIPT;
+	return '<span id="${id}"></span>';
 }
 
 function plugin_auth_gfc_inline()
@@ -163,7 +151,7 @@ function plugin_auth_gfc_inline()
 
 function plugin_auth_gfc_action()
 {
-	global $vars,$auth_api,$_auth_gfc_msg;
+	global $vars,$auth_api,$_auth_gfc_msg,$js_blocks;
 
 	if (! $auth_api['auth_gfc']['use']) return '';
 	if (! function_exists('pkwk_session_start')) return '';
@@ -180,31 +168,23 @@ function plugin_auth_gfc_action()
 		$return_page = get_page_location_uri($page);
 
 		$retvars['msg'] = $_auth_gfc_msg['msg_logout'];
-		$retvars['body'] = <<<EOD
-<script type="text/javascript" src="http://www.google.com/jsapi"></script>
-<script type="text/javascript">
-  google.load('friendconnect', '0.8');
-</script>
-<script type="text/javascript">
-  google.friendconnect.container.setParentUrl('{$abs}');
-  google.friendconnect.container.loadOpenSocialApi({
-    site: '{$obj->site}',
-    onload: function(securityToken) {
-      if (!window.timesloaded) {
-        window.timesloaded = 1;
-        google.friendconnect.requestSignOut();
-      } else {
-        window.timesloaded++;
-      }
-      if (window.timesloaded > 1) {
-        window.top.location.href = "{$return_page}";
-      }
-    }
-  });
-</script>
-<div>{$_auth_gfc_msg['msg_wait']}</div>
-
-EOD;
+		$retvars['body'] = '<div>'.$_auth_gfc_msg['msg_wait'].'</div>';
+		$js_blocks[] = <<<JAVASCRIPT
+google.friendconnect.container.loadOpenSocialApi({
+	site: '{$obj->site}',
+	onload: function(securityToken) {
+		if (!window.timesloaded) {
+			window.timesloaded = 1;
+			google.friendconnect.requestSignOut();
+		} else {
+			window.timesloaded++;
+		}
+		if (window.timesloaded > 1) {
+			window.top.location.href = "{$return_page}";
+		}
+	}
+});
+JAVASCRIPT;
 		return $retvars;
 		//header('Location: '. get_page_location_uri($page));
 		//die();
@@ -227,22 +207,17 @@ EOD;
 
 function plugin_auth_gfc_jump_url()
 {
-	global $_auth_gfc_msg;
+	global $_auth_gfc_msg,$js_blocks;
 	$obj  = new auth_gfc();
 	$abs  = get_baseuri('abs');
-        return <<<EOD
-<script type="text/javascript" src="http://www.google.com/jsapi"></script>
-<script type="text/javascript">
-  google.load('friendconnect', '0.8');
-</script>
-<script type="text/javascript">
-  google.friendconnect.container.setParentUrl('{$abs}');
-  google.friendconnect.container.loadOpenSocialApi({
-    site: '{$obj->site}',
-    onload: function(securityToken) {}
-  });
-</script>
-<a href="#" onclick="google.friendconnect.requestSignIn();">{$_auth_gfc_msg['msg_gfc']}</a>
+	$js_blocks[] = <<<JAVASCRIPT
+google.friendconnect.container.loadOpenSocialApi({
+	site: '{$obj->site}',
+	onload: function(securityToken) {}
+});
+JAVASCRIPT;
+	return <<<EOD
+<a href="#" onclick="google.friendconnect.requestSignIn();" class="no-js">{$_auth_gfc_msg['msg_gfc']}</a>
 EOD;
 }
 

@@ -3,7 +3,7 @@
  * PukiWiki 自動相互リンク作成プラグイン
  *
  * @copyright   Copyright &copy; 2004-2007, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: linklist.inc.php,v 0.6 2007/06/13 19:12:00 upk Exp $
+ * @version     $Id: linklist.inc.php,v 0.6.1 2010/12/26 17:20:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 
@@ -15,10 +15,10 @@ function plugin_linklist_init()
 {
 	$msg = array(
 		'_linklist_msg' => array(
-			'h5_title'	=> _('Auto Mutual link'),
-			'title'		=> _('Auto Mutual link of %s'),
-			'not_effective'	=> _('The function of Referer is not effective.'),
-			'no_data'	=> _('no data.'),
+			'h5_title'		=> T_('Auto Mutual link'),
+			'title'			=> T_('Auto Mutual link of %s'),
+			'not_effective'	=> T_('The function of Referer is not effective.'),
+			'no_data'		=> T_('no data.'),
 		)
 	);
 	set_plugin_messages($msg);
@@ -194,12 +194,12 @@ function linklist_print($data,$max,$title)
 		$rc .= "</h5>\n";
 	}
 
-	$rc .= "<ul>\n";
+	$rc .= '<ul class="linklist">'."\n";
 	foreach ($data as $x)
 	{
 		$str = rawurldecode($x[0]);
 		$str = mb_convert_encoding($str,SOURCE_ENCODING,'auto');
-		$tmp = '<a href="'.$x[0].'">'.$str.'</a>('.$x[1].')';
+		$tmp = '<a href="'.$x[0].'" rel="nofollow noreferer">'.$str.'</a><span class="linklist_counter">('.$x[1].')</span>';
 		$rc .= '<li>'.$tmp."</li>\n";
 	}
 	$rc .= "</ul>\n";

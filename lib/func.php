@@ -1065,7 +1065,7 @@ function get_resolve_uri($cmd='', $page='', $path_reference='rel', $query='', $f
 
 	if (! empty($page)) {
 		$ret .= $flag.$page_pref.rawurlencode($page);
-			if (empty($cmd) && $static_url == 1 && $vars['cmd'] != 'search'){
+			if (empty($cmd) && $static_url == 1 && (isset($vars['cmd']) && $vars['cmd'] != 'search')){
 			// To static URL
 			$ret = str_replace('?', '', $ret);
 			$ret = str_replace('%2F', '/', $ret) . $url_suffix;

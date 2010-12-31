@@ -1,7 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: yetlist.inc.php,v 1.28.6 2008/02/24 18:51:00 upk Exp $
+// $Id: yetlist.inc.php,v 1.28.6 2010/12/26 21:02:00 Logue Exp $
 // Copyright (C)
+//   2010      PukiWiki Advance Developers Team
 //   2005-2006,2008 PukiWiki Plus! Team
 //   2001-2006 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
@@ -14,14 +15,14 @@ function plugin_yetlist_action()
 	global $_symbol_noexists, $non_list, $whatsdeleted;
 
 	$retval = array(
-		'msg' => _('List of pages which have not yet been created.'),
-		'body' => ''
+		'msg' => 'yetlist',
+		'body' => T_('List of pages which have not yet been created.')
 	);
 
 	// Diff
 	$pages = array_diff(auth::get_existpages(CACHE_DIR, '.ref'), auth::get_existpages());
 	if (empty($pages)) {
-		$retval['body'] = _('All pages have been created.');
+		$retval['body'] = T_('All pages have been created.');
 		return $retval;
 	}
 

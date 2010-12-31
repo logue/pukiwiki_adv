@@ -1,40 +1,46 @@
 <?php
-// $Id: template.inc.php,v 1.21.4 2006/09/06 01:36:00 upk Exp $
+// $Id: template.inc.php,v 1.21.5 2010/12/23 18:04:00 Logue Exp $
 //
 // Load template plugin
 
 define('MAX_LEN', 60);
 
+function plugin_template_init()
+{
+	$msg = array(
+		'_template_msg' => array(
+			'title_edit'				=> T_('Edit of  $1'),
+			'msg_template_start'		=> T_('Start:'),
+			'msg_template_end'			=> T_('End:'),
+			'msg_template_page'			=> T_('$1/copy'),
+			'msg_template_refer'		=> T_('Page:'),
+			'msg_template_force'		=> T_('Edit with a page name which already exists'),
+			'err_template_already'		=> T_(' $1 already exists.'),
+			'err_template_invalid'		=> T_(' $1 is not a valid page name.'),
+			'btn_template_create'		=> T_('Create'),
+			'title_template'			=> T_('create a new page, using  $1 as a template.'),
+			'title_page_notfound'		=> T_(' $1 was not found.'),
+			'msg_page_notfound'			=> T_('cannot display the page source.'),
+			'msg_template_prohibited'	=> T_('Prohibited')
+		)
+	);
+	set_plugin_messages($msg);
+}
+
 function plugin_template_action()
 {
 	global $script, $vars;
-//	global $_title_edit;
-//	global $_msg_template_start, $_msg_template_end, $_msg_template_page, $_msg_template_refer;
-//	global $_btn_template_create, $_title_template;
-//	global $_err_template_already, $_err_template_invalid, $_msg_template_force;
+	global $_template_msg;
 
-	$_title_edit           = _('Edit of  $1');
-	$_msg_template_start   = _('Start:<br />');
-	$_msg_template_end     = _('End:<br />');
-	$_msg_template_page    = _('$1/copy');
-	$_msg_template_refer   = _('Page:');
-	$_msg_template_force   = _('Edit with a page name which already exists');
-	$_err_template_already = _(' $1 already exists.');
-	$_err_template_invalid = _(' $1 is not a valid page name.');
-	$_btn_template_create  = _('Create');
-	$_title_template       = _('create a new page, using  $1 as a template.');
-
-	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	// if (auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
-	if (auth::check_role('safemode') || auth::check_role('readonly')) die_message(_('Prohibited'));
+	if (auth::check_role('safemode') || auth::check_role('readonly')) die_message($_template_msg['msg_template_prohibited']);
 	if (! isset($vars['refer']) || ! is_page($vars['refer']))
 		return FALSE;
 
-        if (! is_page($vars['refer']) || ! check_readable($vars['refer'], false, false))
-                return array(
-                        'msg' => _(' $1 was not found.'),
-                        'body' => _('cannot display the page source.')
-                );
+	if (! is_page($vars['refer']) || ! check_readable($vars['refer'], false, false))
+		return array(
+			'msg' => $_template_msg['title_page_notfound'],
+			'body' => $_template_msg['msg_page_notfound']
+		);
 
 	$lines = get_source($vars['refer']);
 	auth::is_role_page($lines);
@@ -56,7 +62,7 @@ function plugin_template_action()
 	// edit
 	if ($is_pagename = is_pagename($page) && (! $is_page || ! empty($vars['force']))) {
 		$postdata       = join('', array_splice($lines, $begin, $end - $begin + 1));
-		$retvar['msg']  = $_title_edit;
+		$retvar['msg']  = $_template_msg['title_edit'];
 		$retvar['body'] = edit_form($vars['page'], $postdata);
 		$vars['refer']  = $vars['page'];
 		return $retvar;
@@ -75,29 +81,34 @@ function plugin_template_action()
 	$_page = htmlspecialchars($page);
 	$msg = $tag = '';
 	if ($is_page) {
-		$msg = $_err_template_already;
-		$tag = '<input type="checkbox" name="force" value="1" />'.$_msg_template_force;
+		$msg = $_template_msg['err_template_already'];
+		$tag = '<input type="checkbox" name="force" value="1" id="_p_template_force" /><label for="_p_template_force">'.$_template_msg['msg_template_force'].'</label>';
 	} else if ($page != '' && ! $is_pagename) {
-		$msg = str_replace('$1', $_page, $_err_template_invalid);
+		$msg = str_replace('$1', $_page, $_template_msg['err_template_invalid']);
 	}
 
 	$s_refer = htmlspecialchars($vars['refer']);
-	$s_page  = ($page == '') ? str_replace('$1', $s_refer, $_msg_template_page) : $_page;
+	$s_page  = ($page == '') ? str_replace('$1', $s_refer, $_template_msg['msg_template_page']) : $_page;
 	$ret     = <<<EOD
 <form action="$script" method="post">
- <div>
-  <input type="hidden" name="plugin" value="template" />
-  <input type="hidden" name="refer"  value="$s_refer" />
-  $_msg_template_start <select name="begin" size="10">$begin_select</select><br /><br />
-  $_msg_template_end   <select name="end"   size="10">$end_select</select><br /><br />
-  <label for="_p_template_refer">$_msg_template_refer</label>
-  <input type="text" name="page" id="_p_template_refer" value="$s_page" />
-  <input type="submit" name="submit" value="$_btn_template_create" /> $tag
- </div>
+	<input type="hidden" name="plugin" value="template" />
+	<input type="hidden" name="refer"  value="$s_refer" />
+	<div class="template_form">
+		<dl>
+			<dt><label for="_p_template_begin">{$_template_msg['msg_template_start']}</label></dt>
+			<dd><select name="begin" size="10" id="_p_template_begin">$begin_select</select></dd>
+			<dt><labbel for="_p_template_end">{$_template_msg['msg_template_end']}</label></dt>
+			<dd><select name="end"   size="10" id="_p_template_end">$end_select</select></dd>
+		</dl>
+		<label for="_p_template_refer">{$_template_msg['msg_template_refer']}</label>
+		<input type="text" name="page" id="_p_template_refer" value="$s_page" />
+		<input type="submit" name="submit" value="{$_template_msg['btn_template_create']}" />
+		$tag
+	</div>
 </form>
 EOD;
 
-	$retvar['msg']  = ($msg == '') ? $_title_template : $msg;
+	$retvar['msg']  = ($msg == '') ? $_template_msg['title_template'] : $msg;
 	$retvar['body'] = $ret;
 
 	return $retvar;

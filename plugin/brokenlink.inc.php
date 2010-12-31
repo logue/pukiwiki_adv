@@ -1,9 +1,9 @@
 <?php
 /**
- * PukiWiki Plus! brokenlink Plugin
+ * PukiWiki Advance brokenlink Plugin
  *
  * @copyright   Copyright &copy; 2006,2009, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: brokenlink.inc.php,v 0.2 2009/03/01 04:34:00 upk Exp $
+ * @version     $Id: brokenlink.inc.php,v 0.2 2010/12/26 13:33:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  *
  */
@@ -12,11 +12,11 @@ function plugin_brokenlink_init()
 {
 	$messages = array(
 		'_brokenlink_msg' => array(
-			'msg_title'		=> _('Broken Link List'),
-			'msg_all_ok'		=> _('All links are effective.'),
-			'msg_param_error'	=> _('<p>The parameter is illegal.</p>'),
-			'msg_not_access'	=> _('<p>Not authorized to access.</p>'),
-			'msg_not_found_xbel'	=> _('<p>The xbel plugin is not found.</p>'),
+			'msg_title'				=> T_('Broken Link List'),
+			'msg_all_ok'			=> T_('All links are effective.'),
+			'msg_param_error'		=> T_('The parameter is illegal.'),
+			'msg_not_access'		=> T_('Not authorized to access.'),
+			'msg_not_found_xbel'	=> T_('The xbel plugin is not found.'),
 		)
 	);
 	set_plugin_messages($messages);

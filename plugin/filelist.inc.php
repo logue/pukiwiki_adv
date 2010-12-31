@@ -11,10 +11,10 @@ function plugin_filelist_init()
 
 	$messages = array(
 		'_filelist_msg' => array(
-			'msg_input_pass'	=> _('Please input the password for the Administrator.'),
-			'btn_exec'		=> _('Exec'),
-			'msg_no_pass'		=> _('The password is wrong.'),
-			'msg_H0_filelist'	=> _('Page list'),
+			'msg_input_pass'	=> T_('Please input the password for the Administrator.'),
+			'btn_exec'			=> T_('Exec'),
+			'msg_no_pass'		=> T_('The password is wrong.'),
+			'msg_H0_filelist'	=> T_('Page list'),
 		)
 	);
 	set_plugin_messages($messages);
@@ -51,15 +51,16 @@ function filelist_adm($pass)
 	}
 
 	$body .= <<<EOD
-<p>$msg_pass</p>
-<form action="$script" method="post">
- <div>
-  <input type="hidden" name="cmd" value="filelist" />
-  <input type="password" name="pass" size="12" />
-  <input type="submit" name="ok" value="$btn" />
- </div>
-</form>
-
+<fieldset>
+	<legend>$msg_pass</legend>
+	<form action="$script" method="post">
+		<input type="hidden" name="cmd" value="filelist" />
+		<div class="filelist_form">
+			<input type="password" name="pass" size="12" />
+			<input type="submit" name="ok" value="$btn" />
+		</div>
+	</form>
+</fieldset>
 EOD;
 	return array('msg' => $_filelist_msg['msg_H0_filelist'],'body' => $body);
 }

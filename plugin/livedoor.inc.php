@@ -4,7 +4,7 @@
  *
  * @copyright   Copyright &copy; 2007-2009, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
  * @author      Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: livedoor.inc.php,v 0.8 2009/12/13 15:36:00 upk Exp $
+ * @version     $Id: livedoor.inc.php,v 0.8.1 2010/12/26 17:24:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 require_once(LIB_DIR . 'hash.php');
@@ -117,22 +117,22 @@ class auth_livedoor extends auth_api
 function plugin_livedoor_init()
 {
 	$msg = array(
-	  '_livedoor_msg' => array(
-		'msg_logout'		=> _("logout"),
-		'msg_logined'		=> _("%s has been approved by livedoor."),
-		'msg_invalid'		=> _("The function of livedoor is invalid."),
-		'msg_not_found'		=> _("pkwk_session_start() doesn't exist."),
-		'msg_not_start'		=> _("The session is not start."),
-		'msg_livedoor'		=> _("livedoor"),
-		'btn_login'		=> _("LOGIN(livedoor)"),
-          )
-        );
-        set_plugin_messages($msg);
+		'_livedoor_msg' => array(
+			'msg_logout'		=> T_("logout"),
+			'msg_logined'		=> T_("%s has been approved by livedoor."),
+			'msg_invalid'		=> T_("The function of livedoor is invalid."),
+			'msg_not_found'		=> T_("pkwk_session_start() doesn't exist."),
+			'msg_not_start'		=> T_("The session is not start."),
+			'msg_livedoor'		=> T_("livedoor"),
+			'btn_login'			=> T_("LOGIN(livedoor)"),
+		)
+	);
+	set_plugin_messages($msg);
 }
 
 function plugin_livedoor_convert()
 {
-        global $script,$vars,$auth_api,$_livedoor_msg;
+	global $script,$vars,$auth_api,$_livedoor_msg;
 
 	if (! $auth_api['livedoor']['use']) return '<p>'.$_livedoor_msg['msg_invalid'].'</p>';
 

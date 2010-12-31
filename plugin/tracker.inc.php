@@ -956,12 +956,14 @@ function plugin_tracker_list_action()
 function plugin_tracker_list_render($base, $refer, $rel = '', $config = '', $order = '', $list = '', $limit = NULL)
 {
 //miko
+/*
 	static $tracker_count = 0;
 	if ($tracker_count == 0) {	// Adv. not use sortabletable.js
 		global $head_tags;
 		$head_tags[] = ' <script type="text/javascript" charset="utf-8" src="' . SKIN_URI . 'sortabletable.js"></script>';
 	}
 	$tracker_count++;
+*/
 //miko
 
 	$tracker_list = new Tracker_list();
@@ -982,18 +984,20 @@ function plugin_tracker_list_render($base, $refer, $rel = '', $config = '', $ord
 	unset($tracker_list);
 
 //miko
-	global $sortable_tracker;
+//	global $sortable_tracker;
 //	if ($sortable_tracker) {
-		$trackerid = 'trackerlist' . $count;
-		$trackerso = join(',', array_fill(0, $cols, '"String"'));
-		$html = convert_html($result);
-		$html = preg_replace('/<table class="style_table"/', '<table id="' . $trackerid . '" class="style_table"', $html);
+//		$trackerid = 'trackerlist' . $tracker_count;
+//		$trackerso = join(',', array_fill(0, $cols, '"String"'));
+//		$html = convert_html($result);
+//		$html = preg_replace('/<table class="style_table"/', '<table id="' . $trackerid . '" class="style_table"', $html);
+/*
 		return $html . <<<EOD
 <script type="text/javascript">
 //<![CDATA[
 var st = new SortableTable(document.getElementById('{$trackerid}'),[{$trackerso}]);
 //]]></script>
 EOD;
+*/
 //	}
 //miko
 
@@ -1081,7 +1085,7 @@ class Tracker_list
 		$len   = strlen($base);
 		$regex = '#^' . preg_quote($base, '#') . '#';
 
-		$this->page_line = count(plugin_tracker_get_source($this->config->page.'/page'));	// Plus! (?)
+		$this->page_line = count(plugin_tracker_get_source($this->form->config->page.'/page'));	// Plus! (?)
 
 		// foreach (preg_grep($regex, array_values(get_existpages())) as $pagename) {
 		foreach (preg_grep($regex, array_values(auth::get_existpages())) as $pagename) {	// Plus!
@@ -1552,7 +1556,6 @@ function plugin_tracker_get_source($page, $join = FALSE, $line=0)	// add $line=0
 {
 	$source = get_source($page, TRUE, $join);
 	if ($source === FALSE) return FALSE;
-	if ($line>0) $source = array_splice($source,0,$line);
 
 	return preg_replace(
 		 array(
@@ -1589,15 +1592,15 @@ function plugin_tracker_escape($string, $syntax_hint = '')
 function plugin_tracker_message($key)
 {
 	$_tracker_messages = array(
-		'btn_page'   => _('Page'),
-		'btn_name'   => _('Name'),
-		'btn_real'   => _('Realname'),
-		'btn_submit' => _('Add'),
-		'btn_date'   => _('Date'),
-		'btn_refer'  => _('Refer page'),
-		'btn_base'   => _('Base page'),
-		'btn_update' => _('Update'),
-		'btn_past'   => _('Past'),
+		'btn_page'   => T_('Page'),
+		'btn_name'   => T_('Name'),
+		'btn_real'   => T_('Realname'),
+		'btn_submit' => T_('Add'),
+		'btn_date'   => T_('Date'),
+		'btn_refer'  => T_('Refer page'),
+		'btn_base'   => T_('Base page'),
+		'btn_update' => T_('Update'),
+		'btn_past'   => T_('Past'),
 	);
 	return isset($_tracker_messages[$key]) ? $_tracker_messages[$key] : 'NOMESSAGE';
 }

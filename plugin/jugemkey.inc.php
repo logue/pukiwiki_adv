@@ -4,7 +4,7 @@
  *
  * @copyright   Copyright &copy; 2006-2009, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
  * @author      Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: jugemkey.inc.php,v 0.15 2009/12/13 15:33:00 upk Exp $
+ * @version     $Id: jugemkey.inc.php,v 0.15 2010/12/26 17:18:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 require_once(LIB_DIR . 'hash.php');
@@ -83,15 +83,15 @@ function plugin_jugemkey_init()
 {
 	$msg = array(
 	  '_jugemkey_msg' => array(
-		'msg_logout'		=> _("logout"),
-		'msg_logined'		=> _("%s has been approved by JugemKey."),
-		'msg_invalid'		=> _("The function of JugemKey is invalid."),
-		'msg_not_found'		=> _("pkwk_session_start() doesn't exist."),
-		'msg_not_start'         => _("The session is not start."),
-		'msg_jugemkey'		=> _("JugemKey"),
-		'btn_login'		=> _("LOGIN(JugemKey)"),
-		'msg_userinfo'		=> _("JugemKey user information"),
-		'msg_user_name'		=> _("User Name"),
+		'msg_logout'		=> T_("logout"),
+		'msg_logined'		=> T_("%s has been approved by JugemKey."),
+		'msg_invalid'		=> T_("The function of JugemKey is invalid."),
+		'msg_not_found'		=> T_("pkwk_session_start() doesn't exist."),
+		'msg_not_start'		=> T_("The session is not start."),
+		'msg_jugemkey'		=> T_("JugemKey"),
+		'btn_login'			=> T_("LOGIN(JugemKey)"),
+		'msg_userinfo'		=> T_("JugemKey user information"),
+		'msg_user_name'		=> T_("User Name"),
 	  )
 	);
         set_plugin_messages($msg);
@@ -117,7 +117,7 @@ function plugin_jugemkey_convert()
 
 		return <<<EOD
 <div>
-        <label>JugemKey</label>:
+	<label>JugemKey</label>:
 	{$name['title']}
 	(<a href="$logout_url">{$_jugemkey_msg['msg_logout']}</a>)
 </div>

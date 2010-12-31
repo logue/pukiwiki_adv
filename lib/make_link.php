@@ -874,9 +874,9 @@ function make_tooltips($term,$glossary_page='')
 		$passage = get_pg_passage($page,FALSE);
 		return '<a href="' . get_page_uri($page) . '" class="tooltip" title="' . $page . $s_glossary. $passage . '">' . $term . '</a>';
 	} elseif ($ajax) {
-		return '<span class="tooltip">' . $term . '</span>';
+		return '<dfn class="tooltip">' . $term . '</dfn>';
 	} else {
-		return '<span class="tooltip" title="' . $s_glossary . '">' . $term . '</span>';
+		return '<abbr class="tooltip" title="' . $s_glossary . '">' . $term . '</abbr>';
 	}
 }
 

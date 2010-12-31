@@ -3,7 +3,7 @@
  * PukiWiki Plus! 推定ユーザプラグイン
  *
  * @copyright	Copyright &copy; 2004-2005, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version	$Id: log_whois.php,v 0.2 2005/06/11 21:56:00 upk Exp $
+ * @version	$Id: log_whois.php,v 0.2.1 2010/12/26 17:26:00 Logue Exp $
  * @license	http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 
@@ -13,8 +13,8 @@
 function plugin_log_whois_init()
 {
 	$messages = array(
-	'_log_whois_msg' => array(
-		'msg_whois'	=> _('<div>Mr/Ms %s ?</div>'),
+		'_log_whois_msg' => array(
+			'msg_whois'	=> _('Mr/Ms %s ?'),
 		)
 	);
 	set_plugin_messages($messages);

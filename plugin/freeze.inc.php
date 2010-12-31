@@ -15,12 +15,12 @@ function plugin_freeze_action()
 {
 	global $script, $vars, $function_freeze;
 
-	$_title_isfreezed = _(' $1 has already been frozen');
-	$_title_freezed   = _(' $1 has been frozen.');
-	$_title_freeze    = _('Freeze  $1');
-	$_msg_invalidpass = _('Invalid password.');
-	$_msg_freezing    = _('Please input the password for freezing.');
-	$_btn_freeze      = _('Freeze');
+	$_title_isfreezed = T_(' $1 has already been frozen');
+	$_title_freezed   = T_(' $1 has been frozen.');
+	$_title_freeze    = T_('Freeze  $1');
+	$_msg_invalidpass = T_('Invalid password.');
+	$_msg_freezing    = T_('Please input the password for freezing.');
+	$_btn_freeze      = T_('Freeze');
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
 	if (! $function_freeze || is_cantedit($page) || ! is_page($page))
@@ -55,15 +55,17 @@ function plugin_freeze_action()
 		$s_page = htmlspecialchars($page);
 		$body   = ($pass === NULL) ? '' : "<p><strong>$_msg_invalidpass</strong></p>\n";
 		$body  .= <<<EOD
-<p>$_msg_freezing</p>
-<form action="$script" method="post">
- <div>
-  <input type="hidden"   name="cmd"  value="freeze" />
-  <input type="hidden"   name="page" value="$s_page" />
-  <input type="password" name="pass" size="12" />
-  <input type="submit"   name="ok"   value="$_btn_freeze" />
- </div>
-</form>
+<fieldset>
+	<legend>$_msg_freezing</legend>
+	<form action="$script" method="post">
+		<input type="hidden"   name="cmd"  value="freeze" />
+		<input type="hidden"   name="page" value="$s_page" />
+		<div class="freeze_form">
+			<input type="password" name="pass" size="12" />
+			<input type="submit"   name="ok"   value="$_btn_freeze" />
+		</div>
+	</form>
+</fieldset>
 EOD;
 	}
 

@@ -9,16 +9,16 @@
 // Vote box plugin
 
 // expired 3days
-define(PLUGIN_VOTE_COOKIE_EXPIRED,60*60*24*3);
+defined('PLUGIN_VOTE_COOKIE_EXPIRED') or define('PLUGIN_VOTE_COOKIE_EXPIRED',60*60*24*3);
 
 function plugin_vote_action()
 {
 	global $vars, $script, $cols, $rows;
 //	global $_title_collided, $_msg_collided, $_title_updated;
-	$s_votes  = _('Vote');
-$_title_collided   = _('On updating $1, a collision has occurred.');
-$_title_updated    = _('$1 was updated');
-$_msg_collided = _('It seems that someone has already updated this page while you were editing it.<br />
+	$s_votes  = T_('Vote');
+$_title_collided   = T_('On updating $1, a collision has occurred.');
+$_title_updated    = T_('$1 was updated');
+$_msg_collided = T_('It seems that someone has already updated this page while you were editing it.<br />
  + is placed at the beginning of a line that was newly added.<br />
  ! is placed at the beginning of a line that has possibly been updated.<br />
  Edit those lines, and submit again.');
@@ -81,12 +81,13 @@ $_msg_collided = _('It seems that someone has already updated this page while yo
 		$s_postdata_input = htmlspecialchars($postdata_input);
 		$body = <<<EOD
 $_msg_collided
-<form action="$script?cmd=preview" method="post">
- <div>
-  <input type="hidden" name="refer"  value="$s_refer" />
-  <input type="hidden" name="digest" value="$s_digest" />
-  <textarea name="msg" rows="$rows" cols="$cols" id="textarea">$s_postdata_input</textarea><br />
- </div>
+<form action="$script" method="post">
+	<input type="hidden" name="refer"  value="$s_refer" />
+	<input type="hidden" name="digest" value="$s_digest" />
+	<input type="hidden" name="cmd" value="preview" />
+	<div class="vote_form">
+		<textarea name="msg" rows="$rows" cols="$cols" id="textarea">$s_postdata_input</textarea>
+	</div>
 </form>
 
 EOD;
@@ -125,21 +126,20 @@ function plugin_vote_convert()
 	$args     = func_get_args();
 	$s_page   = htmlspecialchars($page);
 	$s_digest = htmlspecialchars($digest);
-	$s_choice = _('Selection');
-	$s_votes  = _('Vote');
+	$s_choice = T_('Selection');
+	$s_votes  = T_('Vote');
 
 	$body = <<<EOD
 <form action="$_script" method="post">
- <table cellspacing="0" cellpadding="2" class="style_table_vote" summary="vote">
-  <tr>
-   <td align="left" class="vote_label" style="padding-left:1em;padding-right:1em"><strong>$s_choice</strong>
-    <input type="hidden" name="plugin"  value="vote" />
-    <input type="hidden" name="refer"   value="$s_page" />
-    <input type="hidden" name="vote_no" value="$vote_no" />
-    <input type="hidden" name="digest"  value="$s_digest" />
-   </td>
-   <td align="center" class="vote_label"><strong>$s_votes</strong></td>
-  </tr>
+	<input type="hidden" name="cmd"  value="vote" />
+	<input type="hidden" name="refer"   value="$s_page" />
+	<input type="hidden" name="vote_no" value="$vote_no" />
+	<input type="hidden" name="digest"  value="$s_digest" />
+	<table cellspacing="0" cellpadding="2" class="style_table" summary="vote">
+		<tr>
+			<th align="left" class="style_th vote_label">$s_choice</th>
+			<th align="center" class="style_th vote_label">$s_votes</th>
+		</tr>
 
 EOD;
 
@@ -159,18 +159,18 @@ EOD;
 		$cls = ($tdcnt++ % 2)  ? 'vote_td1' : 'vote_td2';
 
 		$body .= <<<EOD
-  <tr>
-   <td align="left"  class="$cls" style="padding-left:1em;padding-right:1em;">$link</td>
-   <td align="right" class="$cls">$cnt&nbsp;&nbsp;
-    <input type="$_submit" name="vote_$e_arg" value="$s_votes" class="submit" />
-   </td>
-  </tr>
+		<tr>
+			<td class="style_td $cls" style="padding-left:1em;padding-right:1em;">$link</td>
+			<td class="style_td $cls">$cnt&nbsp;&nbsp;
+				<input type="$_submit" name="vote_$e_arg" value="$s_votes" class="submit" />
+			</td>
+		</tr>
 
 EOD;
 	}
 
 	$body .= <<<EOD
- </table>
+	</table>
 </form>
 
 EOD;

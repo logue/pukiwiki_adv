@@ -1,10 +1,10 @@
 <?php
 /**
- * PukiWiki Plus! OpenID 認証処理 (mixi)
+ * PukiWiki Advance Mixi 認証処理
  *
  * @copyright   Copyright &copy; 2009, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
  * @author      Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: openid.inc.php,v 0.3 2009/05/20 01:42:00 upk Exp $
+ * @version     $Id: auth_mixi.inc.php,v 0.3.1 2010/12/12 12:13:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  *
  * このプラグインを利用するためには、mixi が定めるガイドラインを遵守する必要があります。
@@ -34,8 +34,8 @@ function plugin_auth_mixi_init()
 	$msg = array(
 	  '_auth_mixi_msg' => array(
 					// このプラグインを利用するためには、mixi が定めるガイドラインに同意する必要があります。
-		'msg_agreement'		=> _("It is necessary to agree to the guideline that mixi provides to use this plugin."),
-		'msg_invalid'		=> _("The function of opeind is invalid."),
+		'msg_agreement'		=> T_("It is necessary to agree to the guideline that mixi provides to use this plugin."),
+		'msg_invalid'		=> T_("The function of opeind is invalid."),
 	  )
 	);
 	set_plugin_messages($msg);
@@ -67,7 +67,7 @@ function plugin_auth_mixi_inline()
 	list($idp,$icon_botton,$icon_mini) = auth_mixi_set_loginuri($parm['type'],$parm['icon'],$parm['id']);
 
 	// 認証済みの扱い
-	$icon = '<img src="'.IMAGE_URI.'plus/openid/mixi/icon.gif"'.
+	$icon = '<img src="'.IMAGE_URI.'social/mixi.png"'.
 		' width="16" height="16" alt="mixi" title="mixi" />';
 	$msg = plugin_openid_logoff_msg('auth_mixi',$icon);
 	if ($msg === false) return ''; // 他認証
@@ -102,7 +102,7 @@ function plugin_auth_mixi_action()
 function auth_mixi_set_parm($argv)
 {
 	$parm = array();
-        $parm['type'] = $parm['id'] = '';
+		$parm['type'] = $parm['id'] = '';
 	$parm['icon'] = 1;
 	foreach($argv as $arg) {
 		$val = split('=', $arg);
@@ -158,54 +158,54 @@ function auth_mixi_set_loginuri($type='',$icon=1,$id='')
 	}
 
 	$icon_idx = array($icon, 0);
-        $icon_img = array();
-        $i = 0;
-        foreach($icon_idx as $idx) {
+		$icon_img = array();
+		$i = 0;
+		foreach($icon_idx as $idx) {
 		$icon_file = & $icon_type[$idx];
-                $icon_img[$i] = '<img src="'.IMAGE_URI.'plus/openid/mixi/'.$icon_file[0].'"'.
-                ' width="'.$icon_file[1].'" height="'.$icon_file[2].'"'.
-                ' alt="mixi" title="mixi" />';
-                $i++;
-        }
+				$icon_img[$i] = '<img src="'.IMAGE_URI.'plus/openid/mixi/'.$icon_file[0].'"'.
+				' width="'.$icon_file[1].'" height="'.$icon_file[2].'"'.
+				' alt="mixi" title="mixi" />';
+				$i++;
+		}
 	return array($idp, $icon_img[0], $icon_img[1]);
 }
 
-// openid_identity      https://id.mixi.jp/[ログインしたユーザーのID]
-// openid_url           https://id.mixi.jp/[ユーザーID]/friends/[ログインしたユーザーのID]
-// openid_url           https://id.mixi.jp/community/[コミュニティーのID]/[ログインしたユーザーのID]
+// openid_identity  https://id.mixi.jp/[ログインしたユーザーのID]
+// openid_url       https://id.mixi.jp/[ユーザーID]/friends/[ログインしたユーザーのID]
+// openid_url       https://id.mixi.jp/community/[コミュニティーのID]/[ログインしたユーザーのID]
 function auth_mixi_get_info($openid)
 {
-        // is mixi
+		// is mixi
 	$chk_str = 'https://id.mixi.jp/';
-        $chk = strpos($openid, $chk_str);
-        if ($chk === false) return array(0,'','');
-        if ($chk > 0) return array(0,'','');
-        $openid = substr($openid,strlen($chk_str));
+		$chk = strpos($openid, $chk_str);
+		if ($chk === false) return array(0,'','');
+		if ($chk > 0) return array(0,'','');
+		$openid = substr($openid,strlen($chk_str));
 
-        // auth my mixi
-        $id  = explode('/',$openid);
-        $ctr = count($id);
-        switch (count($id)) {
-        case 3:
-                // auth mymixi
-                if ($id[1] === 'friends') {
-                        // 0 : auth friends (2)
-                        // 1 : myid
-                        // 2 : login id
-                        return array(2,$id[0],$id[2]);
-                } else
-                // auth community
-                if ($id[0] === 'community') {
-                        // 0 : auth community (3)
-                        // 1 : community id
-                        // 2 : user id
-                        return array(3,$id[1],$id[2]);
-                }
-                return array(0,'','');
-        case 1:
-                return array(1,$openid,$openid);
-        }
-        return array(0,'','');
+		// auth my mixi
+		$id  = explode('/',$openid);
+		$ctr = count($id);
+		switch (count($id)) {
+		case 3:
+				// auth mymixi
+				if ($id[1] === 'friends') {
+						// 0 : auth friends (2)
+						// 1 : myid
+						// 2 : login id
+						return array(2,$id[0],$id[2]);
+				} else
+				// auth community
+				if ($id[0] === 'community') {
+						// 0 : auth community (3)
+						// 1 : community id
+						// 2 : user id
+						return array(3,$id[1],$id[2]);
+				}
+				return array(0,'','');
+		case 1:
+				return array(1,$openid,$openid);
+		}
+		return array(0,'','');
 }
 
 function auth_mixi_get_user_name($msg,$prof,$key)
@@ -214,9 +214,9 @@ function auth_mixi_get_user_name($msg,$prof,$key)
 	$info = auth_mixi_get_info($msg['identity_url']);
 	/*
 	 * |field|friends |  community |rem           |h
-	 * |  0  |   2    |       3    |flag fields   |
+	 * |  0  |   2    |      3     |flag fields   |
 	 * |  1  |  myid  |community id|checked fields|
-	 * |  2  |login id|  user id   |user's id     |
+	 * |  2  |login id|  user id   |user's id	  |
 	*/
 	if ($info[0] < 2) return $rc;
 	$func_name  = 'auth_mixi_get_role_';

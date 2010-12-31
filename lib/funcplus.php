@@ -864,6 +864,14 @@ function print_backtrace($backtrace){
 	echo "</tbody></table>";
 }
 
+function error_msg($msg,$body){
+	return <<<HTML
+<div style="padding: 0pt 0.7em;" class="ui-state-error ui-corner-all">
+	<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span> <strong>$msg:</strong>$body</p>
+</div>
+HTML;
+}
+
 // Marge to update_entities.inc.php
 // Fixme
 function load_entities(){

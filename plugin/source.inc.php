@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: source.inc.php,v 1.14.4 2006/09/05 02:01:00 upk Exp $
+// $Id: source.inc.php,v 1.14.5 2010/12/26 19:12:00 Logue Exp $
 //
 // Source plugin
 
@@ -17,16 +17,16 @@ function plugin_source_action()
 
 	if (! is_page($page) || ! check_readable($page, false, false))
 		return array(
-			'msg' => _(' $1 was not found.'),
-			'body' => _('cannot display the page source.')
+			'msg'	=> T_(' $1 was not found.'),
+			'body'	=> T_('cannot display the page source.')
 		);
 
 	$source = join('', get_source($page));
 	auth::is_role_page($source);
 
 	return array(
-		'msg' => _('Source of  $1'),
-		'body' => '<pre id="source">' . htmlspecialchars($source) . '</pre>'
+		'msg'	=> T_('Source of  $1'),
+		'body'	=> '<pre id="source">' . htmlspecialchars($source) . '</pre>'
 	);
 }
 ?>

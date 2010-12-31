@@ -17,9 +17,9 @@ function plugin_login_init()
 {
 	$messages = array(
 	'_login_msg' => array(
-		'msg_username'		=> _('UserName'),
-		'msg_auth_guide'	=> _('Please attest it with %s to write the comment.'),
-		'btn_login'		=> _('Login'),
+		'msg_username'		=> T_('UserName'),
+		'msg_auth_guide'	=> T_('Please attest it with %s to write the comment.'),
+		'btn_login'			=> T_('Login'),
 		)
 	);
 	set_plugin_messages($messages);
@@ -84,11 +84,11 @@ EOD;
 	// ボタンを表示するだけ
 	$rc = <<<EOD
 <form action="$script" method="post">
-	<div>
-$select
-		<input type="hidden" name="plugin" value="login" />
-		<input type="hidden" name="type" value="$type" />
-		<input type="hidden" name="page" value="{$vars['page']}" />
+	<input type="hidden" name="plugin" value="login" />
+	<input type="hidden" name="type" value="$type" />
+	<input type="hidden" name="page" value="{$vars['page']}" />
+	<div class="login_form">
+		$select
 		<input type="submit" value="{$_login_msg['btn_login']}" />
 	</div>
 </form>

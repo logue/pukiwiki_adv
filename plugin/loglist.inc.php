@@ -3,7 +3,7 @@
  * PukiWiki Plus! ログリストプラグイン
  *
  * @copyright	Copyright &copy; 2004-2006, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version	$Id: loglist.php,v 0.5 2006/08/19 00:01:00 upk Exp $
+ * @version	$Id: loglist.php,v 0.5.1 2010/12/26 17:28:00 Logue Exp $
  * @license	http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 
@@ -13,12 +13,12 @@
 function plugin_loglist_init()
 {
 	$messages = array(
-	'_loglist_messages' => array(
-		'msg_not_found'	=> _('no data.'),
-		'fld_UTIME'	=> _('Date'),
-		'fld_PAGE'	=> _('Page Name'),
-		'fld_COUNT'	=> _('Count'),
-		'not_active'	=> _('Not Active.'),
+		'_loglist_messages' => array(
+			'msg_not_found'	=> T_('no data.'),
+			'fld_UTIME'		=> T_('Date'),
+			'fld_PAGE'		=> T_('Page Name'),
+			'fld_COUNT'		=> T_('Count'),
+			'not_active'	=> T_('Not Active.'),
 		)
 	);
 	set_plugin_messages($messages);

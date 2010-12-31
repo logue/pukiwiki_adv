@@ -7,8 +7,8 @@ function plugin_list_action()
 {
 	global $vars;
 //	global $_title_list,$_title_filelist;
-	$_title_list = _('List of pages');
-	$_title_filelist = _('List of page files');
+	$_title_list = T_('List of pages');
+	$_title_filelist = T_('List of page files');
 
 	// Redirected from filelist plugin?
 	$filelist = (isset($vars['cmd']) && $vars['cmd']=='filelist');

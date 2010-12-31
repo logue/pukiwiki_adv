@@ -50,7 +50,7 @@ function plugin_versionlist_convert()
 		$dir->close();
 	}
 	
-	ksort($comments);
+//	ksort($comments);
 
 	$retval = array();
 	$retval[] = <<<EOD

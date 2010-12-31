@@ -3,7 +3,7 @@
  * adm_auth_wkgrp Plugin.
  *
  * @copyright   Copyright &copy; 2009, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: adm_auth_wkgrp.inc.php,v 0.1 2009/06/23 22:11:00 upk Exp $
+ * @version     $Id: adm_auth_wkgrp.inc.php,v 0.1.1 2010/12/23 13:39:00 Logue Exp $
  *
  */
 
@@ -15,25 +15,25 @@ function plugin_adm_auth_wkgrp_init()
 {
 	$msg = array(
 		'_adm_auth_wkgrp_msg' => array(
-			'msg_title'		=> _('User registration management'),
-			'head_title'		=> _('User registration(auth_wkgrp)'),
-			'btn_gen'		=> _('Generation'),
-			'btn_auth_wkgrp'	=> _('User registration menu'),
-			'msg_head_page'		=> _('Page information'),
-			'msg_head_file'		=> _('Definition file information'),
-			'msg_head_update'	=> _('Updated DateTime'),
-			'msg_head_gen'		=> _('Generation DateTime'),
-			'msg_check'		=> _('Check'),
-			'msg_view'		=> _('View'),
-			'msg_import'		=> _('Import'),
-			'msg_ok'		=> _('The %s file was generated.'),
-			'msg_ok_import'		=> _('Data was taken into %s.'),
-			'msg_gen'		=> _('It is necessary to generate it.'),
-			'err_authority'		=> _('The manager authority is necessary.'),
-			'err_not_use'		=> _('The generation function is invalid.'),
-			'err_already'		=> _('Because the page already exists, processing is discontinued.'),
-			'msg_chk_1'		=> _("The following images are the one (reading auth_wkgrp, and conversion into page image).\n"),
-                )
+			'msg_title'			=> T_('User registration management'),
+			'head_title'		=> T_('User registration(auth_wkgrp)'),
+			'btn_gen'			=> T_('Generation'),
+			'btn_auth_wkgrp'	=> T_('User registration menu'),
+			'msg_head_page'		=> T_('Page information'),
+			'msg_head_file'		=> T_('Definition file information'),
+			'msg_head_update'	=> T_('Updated DateTime'),
+			'msg_head_gen'		=> T_('Generation DateTime'),
+			'msg_check'			=> T_('Check'),
+			'msg_view'			=> T_('View'),
+			'msg_import'		=> T_('Import'),
+			'msg_ok'			=> T_('The <code>%s</code> file was generated.'),
+			'msg_ok_import'		=> T_('Data was taken into <code>%s</code>.'),
+			'msg_gen'			=> T_('It is necessary to generate it.'),
+			'err_authority'		=> T_('The manager authority is necessary.'),
+			'err_not_use'		=> T_('The generation function is invalid.'),
+			'err_already'		=> T_('Because the page already exists, processing is discontinued.'),
+			'msg_chk_1'			=> T_('The following images are the one (reading auth_wkgrp, and conversion into page image).'),
+		)
 	);
 	set_plugin_messages($msg);
 }
@@ -68,67 +68,63 @@ function plugin_adm_auth_wkgrp_convert()
 
 EOD;
 		$link_file = <<<EOD
-      <form action="$script" method="post">
-       <div>
-        <input type="hidden" name="plugin" value="adm_auth_wkgrp" />
-        <input type="hidden" name="pcmd" value="gen" />
-        <input type="submit" value="{$_adm_auth_wkgrp_msg['btn_gen']}" />
-$guide_msg
-       </div>
-      </form>
+<form action="$script" method="post">
+	<div class="adm_auth_wkgrp_form">
+		<input type="hidden" name="plugin" value="adm_auth_wkgrp" />
+		<input type="hidden" name="pcmd" value="gen" />
+		<input type="submit" value="{$_adm_auth_wkgrp_msg['btn_gen']}" />
+		$guide_msg
+	</div>
+</form>
 
 EOD;
 
 	} else {
 		$date_config_page = 'N/A';
-		$link_page = <<<EOD
-      [<a href="$cmd_import">{$_adm_auth_wkgrp_msg['msg_import']}</a>]
-
-EOD;
+		$link_page = '[<a href="'.$cmd_import.'">'.$_adm_auth_wkgrp_msg['msg_import'].'</a>]';
 		$link_file = '';
 	}
 
 
 	$rc = <<<EOD
-<div>
- <fieldset>
-  <legend>{$_adm_auth_wkgrp_msg['head_title']}</legend>
-   <table class="style_table" border="0" cellspacing="1" style="width:100%;">
-   <thead>
-    <tr>
-     <td class="style_td" style="width:50%;">
-       {$_adm_auth_wkgrp_msg['msg_head_page']}
-       (<a href="$cmd_view">{$_adm_auth_wkgrp_msg['msg_view']}</a>)
-     </td>
-     <td class="style_td" style="width:50%;">
-       {$_adm_auth_wkgrp_msg['msg_head_file']}
-       (<a href="$cmd_check">{$_adm_auth_wkgrp_msg['msg_check']}</a>)
-     </td>
-    </tr>
-   </thead>
+<div class="adm_auth_wkgrp">
+	<fieldset>
+		<legend>{$_adm_auth_wkgrp_msg['head_title']}</legend>
+		<table class="style_table" border="0" cellspacing="1">
+			<thead>
+				<tr>
+					<th class="style_th">
+						{$_adm_auth_wkgrp_msg['msg_head_page']}
+						(<a href="$cmd_view">{$_adm_auth_wkgrp_msg['msg_view']}</a>)
+					</td>
+					<th class="style_th">
+						{$_adm_auth_wkgrp_msg['msg_head_file']}
+						(<a href="$cmd_check">{$_adm_auth_wkgrp_msg['msg_check']}</a>)
+					</td>
+				</tr>
+			</thead>
 
-   <tbody>
-    <tr>
-     <td class="style_td" style="width:50%;">
-      {$_adm_auth_wkgrp_msg['msg_head_update']}: $date_config_page
-     </td>
-     <td class="style_td" style="width:50%;">
-      {$_adm_auth_wkgrp_msg['msg_head_gen']}: $date_auth_wkgrp
-     </td>
-    </tr>
-    <tr>
-     <td class="style_td" style="width:50%;">
-$link_page
-     </td>
-     <td class="style_td" style="width:50%;">
-$link_file
-     </td>
-    </tr>
-   </tbody>
-   </table>
- </fieldset>
+			<tbody>
+				<tr>
+					<td class="style_td">
+						{$_adm_auth_wkgrp_msg['msg_head_update']}: $date_config_page
+					</td>
+					<td class="style_td">
+						{$_adm_auth_wkgrp_msg['msg_head_gen']}: $date_auth_wkgrp
+					</td>
+				</tr>
+				<tr>
+					<td class="style_td">
+						$link_page
+					</td>
+						<td class="style_td">
+						$link_file
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</fieldset>
 </div>
-
 EOD;
 
 	return $rc;
@@ -143,12 +139,12 @@ function plugin_adm_auth_wkgrp_action()
 
 	// 権限で稼動しないのか？ 機能が有効になっていないのか？を隠蔽するため、この順序で良い
 	if (auth::check_role('role_adm'))  {
-		$retval['body'] = '<div>'.$_adm_auth_wkgrp_msg['err_authority'].'</div>';
+		$retval['body'] = '<p>'.$_adm_auth_wkgrp_msg['err_authority'].'</p>';
 		return $retval;
 	}
 
 	if (! PLUGIN_ADM_AUTH_WKGRP_USE_WRITE_FUNC) {
-		$retval['body'] = '<div>'.$_adm_auth_wkgrp_msg['err_not_use'].'</div>';
+		$retval['body'] = '<p>'.$_adm_auth_wkgrp_msg['err_not_use'].'</p>';
 		return $retval;
 	}
 
@@ -158,7 +154,7 @@ function plugin_adm_auth_wkgrp_action()
 	case 'gen':
 		$wkgrp_user = adm_auth_wkgrp_get_page();
 		adm_auth_wkgrp_put_file($wkgrp_user);
-		$retval['body'] = '<div>'.sprintf($_adm_auth_wkgrp_msg['msg_ok'], PKWK_AUTH_WKGRP_FILE).'</div>';
+		$retval['body'] = '<p>'.sprintf($_adm_auth_wkgrp_msg['msg_ok'], PKWK_AUTH_WKGRP_FILE).'</p>';
 		break;
 	case 'check':
 		$retval['body'] = adm_auth_wkgrp_check();
@@ -296,13 +292,12 @@ function adm_auth_wkgrp_add_btn()
 	global $script, $_adm_auth_wkgrp_msg;
 
 	return <<<EOD
-      <div>&nbsp;</div>
-      <form action="$script" method="post">
-       <div style="text-align: right;">
-        <input type="hidden" name="plugin" value="adm_auth_wkgrp" />
-        <input type="submit" value="{$_adm_auth_wkgrp_msg['btn_auth_wkgrp']}" />
-       </div>
-      </form>
+<form action="$script" method="post">
+	<div class="adm_auth_wkgrp_add">
+		<input type="hidden" name="plugin" value="adm_auth_wkgrp" />
+		<input type="submit" value="{$_adm_auth_wkgrp_msg['btn_auth_wkgrp']}" />
+	</div>
+</form>
 
 EOD;
 }

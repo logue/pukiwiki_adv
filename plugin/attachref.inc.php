@@ -24,18 +24,18 @@ function plugin_attachref_init()
 	$messages = array(
 		'_attachref_messages' => array(
 			// copy of attach.inc.php
-			'msg_upload'   => _("Upload to $1"),
-			'msg_maxsize'  => _("Maximum file size is %s."),
-			'msg_adminpass'=> _("Administrator password"),
-			'msg_password' => _("password"),
-			'msg_file'     => _("Attach file"),
-			'btn_upload'   => _("Upload"),
+			'msg_upload'   => T_("Upload to $1"),
+			'msg_maxsize'  => T_("Maximum file size is %s."),
+			'msg_adminpass'=> T_("Administrator password"),
+			'msg_password' => T_("password"),
+			'msg_file'     => T_("Attach file"),
+			'btn_upload'   => T_("Upload"),
 
 			// original attachref.inc.php
-			'btn_submit'    => _("[Upload]"),
-			'msg_title'     => _("Attach and Ref to $1"),
-			'msg_title_collided' => _("On updating $1, a collision has occurred."),
-			'msg_collided'  => _("It seems that someone has already updated the page you were editing.<br />The attach file was added, alhough it may be inserted in the wrong position.<br />"),
+			'btn_submit'    => T_("[Upload]"),
+			'msg_title'     => T_("Attach and Ref to $1"),
+			'msg_title_collided' => T_("On updating $1, a collision has occurred."),
+			'msg_collided'  => T_("It seems that someone has already updated the page you were editing.<br />The attach file was added, alhough it may be inserted in the wrong position.<br />"),
 		),
 	);
 	set_plugin_messages($messages);
@@ -80,7 +80,7 @@ function plugin_attachref_options(&$extra_options, $args)
 function plugin_attachref_convert()
 {
 	global $script,$vars,$digest;
-	global $_attachref_messages;
+	global $_attachref_messages,$pkwk_dtd;
 
 	$extra_options = array();
 	$args = func_get_args();
@@ -121,7 +121,11 @@ EOD;
 				$style = 'text-align:' . $params['_align'];
 			}
 			// wrapped "div"
-			$ret = '<div class="img_margin" style="' . $style . '">' . $params['_body'] . "</div>\n";
+			if ($pkwk_dtd == PKWK_DTD_HTML_5){
+				$ret = '<figure class="img_margin" style="' . $style . '">' . $params['_body'] . "</figure>\n";
+			}else{
+				$ret = '<div class="img_margin" style="' . $style . '">' . $params['_body'] . "</div>\n";
+			}
 			// final --- copy of plugin_ref_convert()
 			$dispattach = 0;
 		}

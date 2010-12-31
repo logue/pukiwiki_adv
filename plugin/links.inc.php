@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: links.inc.php,v 1.24.2 2007/04/08 10:29:24 upk Exp $
+// $Id: links.inc.php,v 1.24.3 2010/12/26 17:22:00 Logue Exp $
 //
 // Update link cache plugin
 
@@ -9,20 +9,20 @@ function plugin_links_init()
 {
 	$messages = array(
 		'_links_messages'=>array(
-			'title_update'  => _("Cash update"),
-			'msg_adminpass' => _("Administrator password"),
-			'btn_submit'    => _("Exec"),
-			'msg_done'      => _("The update of cash was completed."),
+			'title_update'  => T_("Cash update"),
+			'msg_adminpass' => T_("Administrator password"),
+			'btn_submit'    => T_("Exec"),
+			'msg_done'      => T_("The update of cash was completed."),
 			'msg_usage1'	=> 
-_("* Content of processing\n") .
-_(":Cash update|\n") .
-_("All pages are scanned, whether on which page certain pages have been linked is investigated, and it records in the cache.\n\n") .
-_("* CAUTION\n") .
-_("It is likely to drive it for a few minutes in execution.") .
-_("Please wait for a while after pushing the execution button.\n\n"),
+T_("* Content of processing\n") .
+T_(":Cash update|\n") .
+T_("All pages are scanned, whether on which page certain pages have been linked is investigated, and it records in the cache.\n\n") .
+T_("* CAUTION\n") .
+T_("It is likely to drive it for a few minutes in execution.") .
+T_("Please wait for a while after pushing the execution button.\n\n"),
 			'msg_usage2'	=> 
-_("* EXEC\n") .
-_("Please input the Administrator password, and click the [Exec] button.\n")
+T_("* EXEC\n") .
+T_("Please input the Administrator password, and click the [Exec] button.\n")
 		),
 	);
 	set_plugin_messages($messages);
@@ -50,20 +50,20 @@ function plugin_links_action()
 	$body  = convert_html( sprintf($_links_messages['msg_usage1']) );
 	$body .= <<<EOD
 <form method="post" action="$script">
- <div>
-  <input type="hidden" name="plugin" value="links" />
-  <input type="hidden" name="menu" value="1" />
+	<input type="hidden" name="plugin" value="links" />
+	<input type="hidden" name="menu" value="1" />
+		<div class="links_form">
 EOD;
 	if (auth::check_role('role_adm_contents')) {
 		$body .= convert_html( sprintf($_links_messages['msg_usage2']) );
 		$body .= <<<EOD
-  <label for="_p_links_adminpass">{$_links_messages['msg_adminpass']}</label>
-  <input type="password" name="adminpass" id="_p_links_adminpass" size="20" value="" />
+		<label for="_p_links_adminpass">{$_links_messages['msg_adminpass']}</label>
+		<input type="password" name="adminpass" id="_p_links_adminpass" size="20" value="" />
 EOD;
 	}
 	$body .= <<<EOD
-  <input type="submit" value="{$_links_messages['btn_submit']}" />
- </div>
+		<input type="submit" value="{$_links_messages['btn_submit']}" />
+	</div>
 </form>
 EOD;
 

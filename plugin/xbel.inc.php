@@ -3,7 +3,7 @@
  * PukiWiki Plus! XBEL Plugin
  *
  * @copyright   Copyright &copy; 2006,2008, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: xbel.inc.php,v 0.5 2008/01/19 18:09:00 upk Exp $
+ * @version     $Id: xbel.inc.php,v 0.5.1 2010/12/26 20:57:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  *
  */
@@ -14,9 +14,9 @@ function plugin_xbel_init()
 {
 	$messages = array(
 		'_xbel_msg' => array(
-			'btn_exec'	=> _('Exec'),
-			'msg_text'	=> _('Please select the page that wants to output as a favorite.'),
-			'msg_zero'	=> _('There was no data.'),
+			'btn_exec'	=> T_('Exec'),
+			'msg_text'	=> T_('Please select the page that wants to output as a favorite.'),
+			'msg_zero'	=> T_('There was no data.'),
 		)
 	);
 	set_plugin_messages($messages);
@@ -80,8 +80,8 @@ function plugin_xbel_convert()
 	global $_xbel_msg;
 
 	// ユーザ認証されていない
-        $id = auth::check_auth();
-        if (empty($id)) return '';
+	$id = auth::check_auth();
+	if (empty($id)) return '';
 
 	$argv = func_get_args();
 	$argc = func_num_args();
@@ -99,12 +99,10 @@ function plugin_xbel_convert()
 
 	$rc = <<<EOD
 <form action="$script" method="post">
-<input type="hidden" name="plugin" value="xbel" />
-<input type="hidden" name="adm" value="list" />
-<div>
-{$_xbel_msg['msg_text']}
-</div>
-<table>
+	<input type="hidden" name="plugin" value="xbel" />
+	<input type="hidden" name="adm" value="list" />
+	<table summary="xebel" class="style_table">
+		<caption>{$_xbel_msg['msg_text']}</caption>
 EOD;
 
 	$i = 0;
@@ -113,10 +111,10 @@ EOD;
 
 		$url = get_page_uri($_page);
 		$rc .= <<<EOD
-<tr>
- <td><input type="checkbox" name="{$i}_c" /></td>
- <td><input type="hidden" name="{$i}_n" value="$_page" /><a href="$url">$_page</a></td>
-</tr>
+		<tr>
+			 <td class="style_td"><input type="checkbox" name="{$i}_c" /></td>
+			 <td class="style_td"><input type="hidden" name="{$i}_n" value="$_page" /><a href="$url">$_page</a></td>
+		</tr>
 
 EOD;
 	}
@@ -124,10 +122,10 @@ EOD;
 	if ($i == 0) return $_xbel_msg['msg_zero'];
 
 	$rc .= <<<EOD
-</table>
-<div>
-<input type="submit" value="{$_xbel_msg['btn_exec']}" />
-</div>
+	</table>
+	<div>
+		<input type="submit" value="{$_xbel_msg['btn_exec']}" />
+	</div>
 </form>
 
 EOD;
@@ -172,7 +170,7 @@ class xbel
 		}
 
 		// GreyBox 対応
-		preg_match_all("'GB_showFullScreen\(\'(.*?)\'\, \'(.*?)\'\);\"'si", $html, $tmp, PREG_PATTERN_ORDER);
+//		preg_match_all("'GB_showFullScreen\(\'(.*?)\'\, \'(.*?)\'\);\"'si", $html, $tmp, PREG_PATTERN_ORDER);
 		$ctr = count($tmp[1]);
 
 		for ($i=0;$i<$ctr;$i++){

@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: ls2.inc.php,v 1.29.7 2010/09/21 19:30:31 Logue Exp $
+// $Id: ls2.inc.php,v 1.29.7 2010/11/09 11:02:31 Logue Exp $
 // Copyright (C)
 //   2010       PukiWiki Advance Developers Team
 //   2005-2008  PukiWiki Plus! Team
@@ -10,6 +10,8 @@
 // License: GPL version 2
 //
 // List plugin 2
+
+// Adv. is not use $_ul_left_margin, $_ul_margin, $_list_pad_str params. USE STYLESHEET!
 
 /*
  * 配下のページや、その見出し(*,**,***)の一覧を表示する
@@ -48,7 +50,7 @@ function plugin_ls2_action()
 	$body = plugin_ls2_show_lists($prefix, $params);
 
 	return array('body'=>$body,
-		'msg'=>str_replace('$1', htmlspecialchars($prefix), _("List of pages which begin with ' $1'")));
+		'msg'=>str_replace('$1', htmlspecialchars($prefix), T_("List of pages which begin with ' $1'")));
 }
 
 function plugin_ls2_convert()
@@ -74,7 +76,7 @@ function plugin_ls2_convert()
 		plugin_ls2_check_arg($arg, $params);
 
 	$title = (! empty($params['_args'])) ? join(',', $params['_args']) :   // Manual
-		str_replace('$1', htmlspecialchars($prefix), _("List of pages which begin with ' $1'")); // Auto
+		str_replace('$1', htmlspecialchars($prefix), T_("List of pages which begin with ' $1'")); // Auto
 
 	if (! $params['link'])
 		return plugin_ls2_show_lists($prefix, $params);
@@ -170,7 +172,7 @@ function plugin_ls2_list_push(& $params, $level)
 	$result = & $params['result'];
 	$saved  = & $params['saved'];
 	$cont   = TRUE;
-	$open   = '<ul%s>';
+//	$open   = '<ul%s>';
 	$close  = '</li></ul>';
 
 	while (count($saved) > $level || (! empty($saved) && $saved[0] != $close))
@@ -185,6 +187,7 @@ function plugin_ls2_list_push(& $params, $level)
 		$cont = FALSE;
 		array_unshift($saved, $close);
 
+/*
 		$left = ($level == $margin) ? $_ul_left_margin : 0;
 		if ($params['compact']) {
 			$left  += $_ul_margin;   // マージンを固定
@@ -194,6 +197,8 @@ function plugin_ls2_list_push(& $params, $level)
 		}
 		$str = sprintf($_list_pad_str, $level, $left, $left);
 		array_push($result, sprintf($open, $str));
+*/
+		array_push($result,'<ul>');
 	}
 
 	if ($cont) array_push($result, '</li>');

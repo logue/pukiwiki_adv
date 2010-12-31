@@ -16,21 +16,21 @@ function plugin_replace_init()
 
 	$messages = array(
 		'_replace_msg' => array(
-			'msg_input_pass'         => _('Please input the retrieval character string, the substitution character string, and the password for the Administrator.'),
-			'msg_input_str'          => _('Please input the retrieval character string, the substitution character string.'),
-			'msg_input_search_word'  => _('Retrieval character string:'),
-			'msg_input_replace_word' => _('Substitution character string:'),
-			'btn_exec'               => _('Exec'),
-			'msg_warn_pass'          => _('SECURITY ERROR:') .
-						    _('It remains as the Administrator password distributes it.') .
-						    _('Please change the password.'),
-			'msg_no_pass'            => _('The password is wrong.'),
-			'msg_no_search'          => _('The retrieval character string to substitute it is empty.'),
-			'msg_H0_replace'         => _('All page character string substitution'),
-			'msg_no_replaced'        => _('There is no substituted character string.'),
-			'msg_replaced'           => _('The following pages were substituted.'),
-			'msg_H0_replaced'        => _('Replaced.'),
-			'msg_H0_no_data'         => _('No search data.'),
+			'msg_input_pass'			=> T_('Please input the retrieval character string, the substitution character string, and the password for the Administrator.'),
+			'msg_input_str'				=> T_('Please input the retrieval character string, the substitution character string.'),
+			'msg_input_search_word'		=> T_('Retrieval character string:'),
+			'msg_input_replace_word'	=> T_('Substitution character string:'),
+			'btn_exec'					=> T_('Exec'),
+			'msg_warn_pass'				=> T_('SECURITY ERROR:') .
+											T_('It remains as the Administrator password distributes it.') .
+											T_('Please change the password.'),
+			'msg_no_pass'				=> T_('The password is wrong.'),
+			'msg_no_search'				=> T_('The retrieval character string to substitute it is empty.'),
+			'msg_H0_replace'			=> T_('All page character string substitution'),
+			'msg_no_replaced'			=> T_('There is no substituted character string.'),
+			'msg_replaced'				=> T_('The following pages were substituted.'),
+			'msg_H0_replaced'			=> T_('Replaced.'),
+			'msg_H0_no_data'			=> T_('No search data.'),
 		)
 	);
 	set_plugin_messages($messages);
@@ -127,8 +127,8 @@ function replace_adm($pass,$search)
 	} else {
 		$msg = $_replace_msg['msg_input_pass'];
 		$body_pass = <<<EOD
-  Password<br />
-  <input type="password" name="pass" size="12" /> <br />
+<label for="pass">Password</label><br />
+  <input type="password" name="pass" size="12" id="pass" /> <br />
 
 EOD;
 		if ($pass == 'pass') {
@@ -145,16 +145,16 @@ EOD;
 	$body .= <<<EOD
 <p>$msg</p>
 <form action="$script" method="post">
- <div>
-  <input type="hidden" name="cmd" value="replace" />
-  $label1<br />
-  <input type="text" name="search" size="24" /> <br />
-  $label2<br />
-  <input type="text" name="replace" size="24" /> <br />
-$body_pass
-  <input type="checkbox" name="notimestamp" />$label3
-  <input type="submit" name="ok" value="$btn" />
- </div>
+	<input type="hidden" name="cmd" value="replace" />
+	<div class="replace">
+		$label1<br />
+		<input type="text" name="search" size="24" /> <br />
+		$label2<br />
+		<input type="text" name="replace" size="24" /> <br />
+		$body_pass
+		<input type="checkbox" name="notimestamp" />$label3
+		<input type="submit" name="ok" value="$btn" />
+	</div>
 </form>
 EOD;
 

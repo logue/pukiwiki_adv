@@ -17,30 +17,30 @@ function plugin_rename_init()
 {
 	$messages = array(
 		'_rename_messages' => array(
-			'err'            => _('<p>error:%s</p>'),
-			'err_nomatch'    => _('no matching page(s)'),
-			'err_notvalid'   => _('the new name is invalid.'),
-			'err_adminpass'  => _('Incorrect administrator password.'),
-			'err_notpage'    => _('%s is not a valid pagename.'),
-			'err_norename'   => _('cannot rename %s.'),
-			'err_already'    => _('already exists :%s.'),
-			'err_already_below' => _('The following files already exist.'),
-			'msg_title'      => _('Rename page'),
-			'msg_page'       => _('specify source page name'),
-			'msg_regex'      => _('rename with regular expressions.'),
-			'msg_related'    => _('related pages'),
-			'msg_do_related' => _('A related page is also renamed.'),
-			'msg_rename'     => _('rename %s'),
-			'msg_oldname'    => _('current page name'),
-			'msg_newname'    => _('new page name'),
-			'msg_adminpass'  => _('Administrator password'),
-			'msg_arrow'      => _('->'),
-			'msg_exist_none' => _('page is not processed when it already exists.'),
-			'msg_exist_overwrite' => _('page is overwritten when it already exists.'),
-			'msg_confirm'    => _('The following files will be renamed.'),
-			'msg_result'     => _('The following files have been overwritten.'),
-			'btn_submit'     => _('Submit'),
-			'btn_next'       => _('Next')
+			'err'				=> T_('Error:%s'),
+			'err_nomatch'		=> T_('no matching page(s)'),
+			'err_notvalid'		=> T_('the new name is invalid.'),
+			'err_adminpass'		=> T_('Incorrect administrator password.'),
+			'err_notpage'		=> T_('%s is not a valid pagename.'),
+			'err_norename'		=> T_('cannot rename %s.'),
+			'err_already'		=> T_('already exists :%s.'),
+			'err_already_below'	=> T_('The following files already exist.'),
+			'msg_title'			=> T_('Rename page'),
+			'msg_page'			=> T_('specify source page name'),
+			'msg_regex'			=> T_('rename with regular expressions.'),
+			'msg_related'		=> T_('related pages'),
+			'msg_do_related'	=> T_('A related page is also renamed.'),
+			'msg_rename'		=> T_('rename %s'),
+			'msg_oldname'		=> T_('current page name'),
+			'msg_newname'		=> T_('new page name'),
+			'msg_adminpass'		=> T_('Administrator password'),
+			'msg_arrow'			=> T_('->'),
+			'msg_exist_none'	=> T_('page is not processed when it already exists.'),
+			'msg_exist_overwrite' => T_('page is overwritten when it already exists.'),
+			'msg_confirm'		=> T_('The following files will be renamed.'),
+			'msg_result'		=> T_('The following files have been overwritten.'),
+			'btn_submit'		=> T_('Submit'),
+			'btn_next'			=> T_('Next')
 		),
 	);
 	set_plugin_messages($messages);
@@ -474,8 +474,8 @@ function plugin_rename_getselecttag($page)
 
 	return <<<EOD
 <select name="refer">
- <option value=""></option>
- $list
+	<option value="" disabled="disabled" selected="selected">--------------------</option>
+	$list
 </select>
 EOD;
 

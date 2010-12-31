@@ -1,5 +1,5 @@
 <?php
-// $Id: newpage_subdir.inc.php,v 1.2.6 2008/07/01 21:05:00 upk Exp $
+// $Id: newpage_subdir.inc.php,v 1.2.7 2010/12/26 17:52:00 Logue Exp $
 // @based_on newpage.inc.php
 // @based_on ls2.inc.php
 // @thanks to panda (auther of newpage.inc.php/ls2.inc.php)
@@ -32,8 +32,8 @@ function build_directory_list($roots, $option=array())
 		if(!$matched) {
 			$list['directory'][] = $root;
 			$warnings[] =
-				'<font color="red">' . sprintf( _("#%s doesn't have the corresponding page. "),$root) . '</font>' .
-				'(<a href="' . get_page_uri($root) . '">' . _('making') . "</a>)<br />\n";
+				'<p><span style="color]:red">' . sprintf( T_("#%s doesn't have the corresponding page. "),$root) . '</span>' .
+				'(<a href="' . get_page_uri($root) . '">' . T_('making') . "</a>)</p>\n";
 		}
 	}
 

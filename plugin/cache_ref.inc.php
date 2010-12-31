@@ -52,6 +52,7 @@ function plugin_cache_ref_action()
 	header('Content-Disposition: inline; filename="' . $filename . '"');
 	header('Content-Length: ' . $size);
 	header('Content-Type: '   . $type);
+	header('X-Sendfile: '.$filename);	// for reduce server load
 
 	// @readfile($ref);
 	plus_readfile($ref);

@@ -1,8 +1,8 @@
 <?php
-// $Id: tb.inc.php,v 1.19.35 2010/07/11 13:20:00 Logue Exp $
+// $Id: tb.inc.php,v 1.19.36 2010/12/31 22:05:00 Logue Exp $
 /*
  * PukiWiki/TrackBack: TrackBack Ping receiver and viewer
- * (C) 2010 PukiPlus Developers Team
+ * (C) 2010 PukiWiki Advance Developers Team
  * (C) 2007 PukiWiki Plus! Team
  * (C) 2003-2005 PukiWiki Developers Team
  * (C) 2003,2005-2008 Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
@@ -25,6 +25,32 @@ defined('PLUGIN_TB_HTTP_ERROR') or define('PLUGIN_TB_HTTP_ERROR', FALSE);
 
 define('PLUGIN_TB_OK',      0); 
 define('PLUGIN_TB_ERROR',   1); 
+
+function plugin_tb_init()
+{
+	$msg = array(
+		'_tb_msg' => array(
+			'title_tb'					=> T_('TrackBack'),
+			'title_tb_list'				=> T_('List of TrackBack'),
+			'msg_tb_list'				=> T_('TrackBack list to %s'),
+			'msg_tb_url'				=> T_('TrackBack URL'),
+			'msg_weblog'				=> T_('Blog:'),
+			'msg_tracked'				=> T_('Date:'),
+			'msg_date'					=> T_('F j, Y, g:i A'),
+			'msg_recent'				=> T_('RECENT TRACKBACK'),
+			'err_disabled'				=> T_('TrackBack feature disabled.'),
+			'err_notbs'					=> T_('No TrackBack entrys.'),
+			'err_noparam'				=> T_('URL parameter is not set.'),
+			'err_noping_id'				=> T_('TrackBack Ping ID is not set.'),
+			'err_directory'				=> sprintf(T_('TrackBack directory <var>%s</var> is not found.'),TRACKBACK_DIR),
+			'err_nowritable'			=> sprintf(T_('TrackBack directory <var>%s</var> is not writable.',TRACKBACK_DIR),
+			'err_invalid'				=> T_('TrackBack ID is invalid.'),
+			'err_invalid_url'			=> T_('The URL is fictitious.'),
+			'err_write_prohibited'		=> T_('Writing is prohibited.')
+		)
+	);
+	set_plugin_messages($msg);
+}
 
 function plugin_tb_convert()
 {
@@ -54,7 +80,7 @@ function plugin_tb_convert()
 
 function plugin_tb_action()
 {
-	global $vars, $trackback;
+	global $vars, $trackback,$_tb_msg;
 
 	if (isset($vars['url'])) {
 		// Receive and save a TrackBack Ping (both GET and POST)
@@ -75,10 +101,12 @@ function plugin_tb_action()
 		// Show List of pages that TrackBacks reached
 		$pages = auth::get_existpages(TRACKBACK_DIR, '.txt');
 		if (! empty($pages)) {
-			return array('msg'=>'Trackback list',
-				'body'=>page_list($pages, 'read', FALSE));
+			return array(
+				'msg'=>$_tb_msg['title_tb'],
+				'body'=>page_list($pages, 'read', FALSE)
+			);
 		} else {
-			return array('msg'=>'', 'body'=>'');
+			return array('msg'=>$_tb_msg['title_tb'], 'body'=>$_tb_msg['err_notbs']);
 		}
 	}
 }
@@ -106,27 +134,27 @@ function plugin_tb_inline()
 // Save or update TrackBack Ping data
 function plugin_tb_save($url, $tb_id)
 {
-	global $vars, $trackback, $use_spam_check;
+	global $vars, $trackback, $use_spam_check, $_tb_msg;
 	static $fields = array( /* UTIME, */ 'url', 'title', 'excerpt', 'blog_name');
 
 	$die = '';
-	if (! $trackback) $die .= 'TrackBack feature disabled. ';
-	if ($url   == '') $die .= 'URL parameter is not set. ';
-	if ($tb_id == '') $die .= 'TrackBack Ping ID is not set. ';
+	if (! $trackback) $die .= $_tb_msg['err_disabled'];
+	if ($url   == '') $die .= $_tb_msg['err_noparam'];
+	if ($tb_id == '') $die .= $_tb_msg['err_noping_id'];
 	if ($die != '') plugin_tb_return(PLUGIN_TB_ERROR, $die);
 
-	if (! file_exists(TRACKBACK_DIR)) plugin_tb_return(PLUGIN_TB_ERROR, 'No such directory: TRACKBACK_DIR');
-	if (! is_writable(TRACKBACK_DIR)) plugin_tb_return(PLUGIN_TB_ERROR, 'Permission denied: TRACKBACK_DIR');
+	if (! file_exists(TRACKBACK_DIR)) plugin_tb_return(PLUGIN_TB_ERROR, $_tb_msg['err_directory']);
+	if (! is_writable(TRACKBACK_DIR)) plugin_tb_return(PLUGIN_TB_ERROR, $_tb_msg['err_nowritable']);
 
 	$page = tb_id2page($tb_id);
-	if ($page === FALSE) plugin_tb_return(PLUGIN_TB_ERROR, 'TrackBack ID is invalid.');
+	if ($page === FALSE) plugin_tb_return(PLUGIN_TB_ERROR, $_tb_msg['err_invalid']);
 
 	// URL validation (maybe worse of processing time limit)
-	if (!is_url($url)) plugin_tb_return(PLUGIN_TB_ERROR, 'URL is fictitious.');
+	if (!is_url($url)) plugin_tb_return(PLUGIN_TB_ERROR, $_tb_msg['err_invalid_url']);
 
 	if (PLUGIN_TB_SITE_CHECK === TRUE) {
 		$result = http_request($url);
-		if ($result['rc'] !== 200) plugin_tb_return(PLUGIN_TB_ERROR, 'URL is fictitious.');
+		if ($result['rc'] !== 200) plugin_tb_return(PLUGIN_TB_ERROR, $_tb_msg['err_invalid_url']);
 		$urlbase = get_script_absuri();
 		$matches = array();
 		if (preg_match_all('#' . preg_quote($urlbase, '#') . '#i', $result['data'], $matches) == 0) {
@@ -135,11 +163,11 @@ function plugin_tb_save($url, $tb_id)
 				header('HTTP/1.0 403 Forbidden');
 				exit;
 			}
-			plugin_tb_return(PLUGIN_TB_ERROR, 'Writing is prohibited.');
+			plugin_tb_return(PLUGIN_TB_ERROR, $_tb_msg['err_write_prohibited']);
 		}
 	} else {
 		$result = http_request($url, 'HEAD');
-		if ($result['rc'] !== 200) plugin_tb_return(PLUGIN_TB_ERROR, 'URL is fictitious.');
+		if ($result['rc'] !== 200) plugin_tb_return(PLUGIN_TB_ERROR, $_tb_msg['err_invalid_url']);
 	}
 
 	// Update TrackBack Ping data
@@ -162,7 +190,7 @@ function plugin_tb_save($url, $tb_id)
 				header('HTTP/1.0 400 Bad Request');
 				exit;
 			}
-			plugin_tb_return(PLUGIN_TB_ERROR, 'Writing is prohibited.');
+			plugin_tb_return(PLUGIN_TB_ERROR, $_tb_msg['err_write_prohibited']);
 		}
 	}
 
@@ -174,12 +202,12 @@ function plugin_tb_save($url, $tb_id)
 				header('HTTP/1.0 400 Bad Request');
 				exit;
 			}
-			plugin_tb_return(PLUGIN_TB_ERROR, 'Writing is prohibited.');
+			plugin_tb_return(PLUGIN_TB_ERROR, $_tb_msg['err_write_prohibited']);
 		}
 	}
 
 	// Blocking SPAM
-	if ($use_spam_check['trackback'] && SpamCheck($items['url'])) plugin_tb_return(1, 'Writing is prohibited.');
+	if ($use_spam_check['trackback'] && SpamCheck($items['url'])) plugin_tb_return(1, $_tb_msg['err_write_prohibited']);
 
 	$data[rawurldecode($items['url'])] = $items;
 
@@ -273,35 +301,30 @@ EOD;
 // Show pings for the page via XHTML (?__mode=view)
 function plugin_tb_mode_view($tb_id)
 {
-	global $vars;
+	global $vars,$_tb_msg;
 
 	$page = tb_id2page($tb_id);
 	if ($page === FALSE) return FALSE;
 
 	$vars['page'] = $page; // topicpath
-	$retval = array();
 // TrackBack list to aaaaa
 // aaaa への TrackBack 一覧
 
-	// $retval['msg'] = sprintf( _('TrackBack list to %s'), $page);
-	$retval['msg'] = $page;
-	$retval['body'] = plugin_tb_mode_view_set($page);
-	return $retval;
+	return array(
+		'msg'=>sprintf($_tb_msg['msg_tb_list'], $page),
+		'body'=>plugin_tb_mode_view_set($page),
+	);
 }
 
 function plugin_tb_mode_view_set($page)
 {
-	global $vars;
+	global $vars, $_tb_msg;
 
 	$tb_id = tb_get_id($page);
 
-	$body = '<div><fieldset><legend>'._('TrackBack URL').'</legend>'.
+	$body = '<div><fieldset><legend>'.$_tb_msg['msg_tb_url'].'</legend>'.
 		'<p>'. get_script_absuri() . '?tb_id=' . $tb_id.'</p>'.
 		'</fieldset></div>'."\n";
-
-	$_tb_header_Weblog  = _('Blog:');
-	$_tb_header_Tracked = _('Date:');
-	$_tb_date   = _('F j, Y, g:i A');
 
 	$data = tb_get(tb_get_filename($page));
 
@@ -324,23 +347,24 @@ function plugin_tb_mode_view_set($page)
 			 '<p>' . $excerpt . "</p>\n".
 
 			 '<div style="text-align:right">' .
-			 '<strong>'.$_tb_header_Tracked.'</strong>'.$time.'&nbsp;&nbsp;'.
-			 '<strong>'.$_tb_header_Weblog.'</strong>'.$blog_name.
+			 '<strong>'.$_tb_msg['msg_tracked'].'</strong>'.$time.'&nbsp;&nbsp;'.
+			 '<strong>'.$_tb_msg['msg_weblog'].'</strong>'.$blog_name.
 			 '</div>'."\n".
 
 			 '</fieldset></div>'."\n";
 	}
 
-	$body .= '<div style="text-align:right">' .
-		 '<a href="' . get_cmd_uri('tb','','','__mode=view') . '" class="pkwk-icon_linktext cmd-trackback">' .
-		 'Trackback List' . 
-		 '</a>'. "</div>\n";
+	$body .= '<p style="text-align:right">' .
+		'<a href="' . get_cmd_uri('tb','','','__mode=view') . '" class="pkwk-icon_linktext cmd-trackback">' .
+		$_tb_msg['title_tb_list'] . 
+		'</a>'. "</p>\n";
 
 	return $body;
 }
 
 function plugin_tb_recent($page,$line)
 {
+	global $_tb_msg;
 	$body = '';
 
 	$tb_id = tb_get_id($page);
@@ -353,7 +377,7 @@ function plugin_tb_recent($page,$line)
 		usort($data, create_function('$a,$b', 'return $b[0] - $a[0];'));
 	}
 
-	$body .= '<h5>' . _("RECENT TRACKBACK") . "</h5>\n";
+	$body .= '<h5>' . $_tb_msg['msg_recent'] . "</h5>\n";
 	$body .= "<div>\n<ul class=\"recent_list\">\n";
 	$i = 0;
 	foreach ($data as $x) {

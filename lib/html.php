@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone
-// $Id: html.php,v 1.65.40 2010/10/21 19:21:00 Logue Exp $
+// $Id: html.php,v 1.65.41 2010/12/31 20:38:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team <http://pukiwiki.cafelounge.net/plus/>
@@ -499,11 +499,11 @@ $template
 $addtag
 		<textarea name="msg" id="msg" rows="$rows" cols="$cols">$s_postdata</textarea>
 		$add_assistant
-		<input type="submit" name="write" value="{$_button['update']}" accesskey="s" />
+		<input type="submit" id="btn_submit" name="write" value="{$_button['update']}" accesskey="s" />
 		$add_top
-		<input type="submit" name="preview" value="{$_button['preview']}" accesskey="p" />
+		<input type="submit" id="btn_preview" name="preview" value="{$_button['preview']}" accesskey="p" />
 		$add_notimestamp
-		<input type="submit" id="cancel" name="cancel" value="{$_button['cancel']}" accesskey="c" />
+		<input type="submit" id="btn_cancel" name="cancel" value="{$_button['cancel']}" accesskey="c" />
 	</div>
 	<textarea id="original" name="original" rows="1" cols="1" style="display:none">$s_original</textarea>
 </form>
@@ -566,7 +566,7 @@ function make_related($page, $tag = '')
 	}else if ($tag == 'dl') {
 		$retval =  "\n" .
 			'<dl>'."\n".
-			'<dt>'._('Related Pages: ').'</dt>' . "\n" .
+			'<dt>'._('Related pages : ').'</dt>' . "\n" .
 			'<dd>' . join("</dd>\n<dd>", $_links) . '</dd>' . "\n" .
 			'</dl>' . "\n";
 	} else if ($tag) {
@@ -681,12 +681,10 @@ function pkwk_headers_sent()
 	$file = $line = '';
 	if (version_compare(PHP_VERSION, '4.3.0', '>=')) {
 		if (headers_sent($file, $line))
-		    die_message('Headers already sent at ' .
-		    	htmlspecialchars($file) .
-			' line ' . $line . '.');
+		    die_message(sprintf(T_('Headers already sent at <code>%s</code>, line: <code>%s</code>.'),htmlspecialchars($file),$line));
 	} else {
 		if (headers_sent())
-			die_message('Headers already sent.');
+			die_message(_T('Headers already sent.'));
 	}
 }
 

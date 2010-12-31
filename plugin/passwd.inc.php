@@ -3,7 +3,7 @@
  * passwd plugin.
  *
  * @copyright   Copyright &copy; 2006-2007, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: passwd.inc.php,v 0.8 2007/09/23 04:42:00 upk Exp $
+ * @version     $Id: passwd.inc.php,v 0.8.1 2010/12/26 18:51:00 Logue Exp $
  *
  * $A1 = md5($data['username'] . ':' . $realm . ':' . $auth_users[$data['username']]);
  */
@@ -18,36 +18,36 @@ require_once(LIB_DIR . 'des.php');
 function plugin_passwd_init()
 {
 	$msg = array(
-	  '_passwd_msg' => array(
-		'UserName'	=> _("UserName"),
-		'Passwd'	=> _("Passwd"),
-		'Calculate'	=> _("Calculate"),
-		'AuthType'	=> _("Auth Type"),
-		'CALC'		=> _("CALC"),
-		'Update'	=> _("Update"),
-		'Result'	=> _("Result"),
-		'Crypt'		=> _("Encryption key"),
-		'msg_pass_admin' => _("Please input Administrator password."),
-		'msg_pass_old'   => _("Please input the password being used now."),
-		'msg_pass_new'   => _("Please input a new password."),
-		'msg_pass_none'  => _("Please input a suitable character string."),
-		'err_not_use'	=> _("The writing function is limited."),
-		'err_role'	=> _("The authority more than Webmaster for World Wide Web Site is necessary to update it."),
-		'err_key'	=> _("The encryption key is not corresponding."),
-		'msg_not_update'=> _("Because the password was the same, it did not update it."),
-		'msg_update'	=> _("The Authentication management file was updated."),
-		'msg_relogin'	=> _("<b>You must be login again.</b> Otherwise, the role is initialized."),
-		'msg_add'	=> _("One was added."),
-		'msg_err'	=> _("ERROR."),
-		// role.inc.php
-		'role'		=> _('Role'),
-		'role_0'	=> _('Guest'),
-		'role_2'	=> _('Webmaster'),
-		'role_3'	=> _('Contents manager'),
-		'role_4'	=> _('Authorized'),
-	  ),
+		'_passwd_msg'	 => array(
+			'UserName'			=> T_("UserName"),
+			'Passwd'			=> T_("Passwd"),
+			'Calculate'			=> T_("Calculate"),
+			'AuthType'			=> T_("Auth Type"),
+			'CALC'				=> T_("CALC"),
+			'Update'			=> T_("Update"),
+			'Result'			=> T_("Result"),
+			'Crypt'				=> T_("Encryption key"),
+			'msg_pass_admin'	=> T_("Please input Administrator password."),
+			'msg_pass_old'		=> T_("Please input the password being used now."),
+			'msg_pass_new'		=> T_("Please input a new password."),
+			'msg_pass_none'		=> T_("Please input a suitable character string."),
+			'err_not_use'		=> T_("The writing function is limited."),
+			'err_role'			=> T_("The authority more than Webmaster for World Wide Web Site is necessary to update it."),
+			'err_key'			=> T_("The encryption key is not corresponding."),
+			'msg_not_update'	=> T_("Because the password was the same, it did not update it."),
+			'msg_update'		=> T_("The Authentication management file was updated."),
+			'msg_relogin'		=> T_("<b>You must be login again.</b> Otherwise, the role is initialized."),
+			'msg_add'			=> T_("One was added."),
+			'msg_err'			=> T_("ERROR."),
+			// role.inc.php
+			'role'				=> T_('Role'),
+			'role_0'			=> T_('Guest'),
+			'role_2'			=> T_('Webmaster'),
+			'role_3'			=> T_('Contents manager'),
+			'role_4'			=> T_('Authorized'),
+		),
 	);
-        set_plugin_messages($msg);
+	set_plugin_messages($msg);
 }
 
 function plugin_passwd_action()

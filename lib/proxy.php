@@ -1,6 +1,7 @@
 <?php
-// $Id: proxy.php,v 2.1.11 2008/01/11 01:12:00 upk Exp $
+// $Id: proxy.php,v 2.1.12 2010/12/31 20:38:00 Logue Exp $
 // Copyright (C)
+//   2010      PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2006,2008 PukiWiki Plus! Team
 //   2003-2005 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
@@ -142,7 +143,7 @@ function http_request($url, $method = 'GET', $headers = array(), $post = array()
 	$fp = fsockopen(
 		$via_proxy ? $proxy_host : $arr['host'],
 		$via_proxy ? $proxy_port : $arr['port'],
-		$errno, $errstr, PKWK_HTTP_CONNECT_TIMEOUT);
+		$errno, $errstr, PKWK_HTTP_CONNECT_TIMEOUT) or die_message(sprintf(T_('unable to connect to %s.',$proxy_host)));
 	if ($fp === FALSE) {
 		return array(
 			'query'  => $query, // Query string

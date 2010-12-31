@@ -1,7 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: unfreeze.inc.php,v 1.13.5 2007/07/28 17:13:05 miko Exp $
+// $Id: unfreeze.inc.php,v 1.13.6 2010/12/26 20:01:00 Logue Exp $
 // Copyright (C)
+//   2010      PukiWiki Advance Developers Team
 //   2004-2007 PukiWiki Plus! Team
 //   2003-2004, 2007 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
@@ -15,12 +16,12 @@ function plugin_unfreeze_action()
 {
 	global $script, $vars, $function_freeze;
 
-	$_title_isunfreezed = _(' $1 is not frozen');
-	$_title_unfreezed   = _(' $1 has been unfrozen.');
-	$_title_unfreeze    = _('Unfreeze  $1');
-	$_msg_invalidpass   = _('Invalid password.');
-	$_msg_unfreezing    = _('Please input the password for unfreezing.');
-	$_btn_unfreeze      = _('Unfreeze');
+	$_title_isunfreezed = T_(' $1 is not frozen');
+	$_title_unfreezed   = T_(' $1 has been unfrozen.');
+	$_title_unfreeze    = T_('Unfreeze  $1');
+	$_msg_invalidpass   = T_('Invalid password.');
+	$_msg_unfreezing    = T_('Please input the password for unfreezing.');
+	$_btn_unfreeze      = T_('Unfreeze');
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
 	if (! $function_freeze || is_cantedit($page) || ! is_page($page))
@@ -67,15 +68,17 @@ function plugin_unfreeze_action()
 		$s_page = htmlspecialchars($page);
 		$body   = ($pass === NULL) ? '' : "<p><strong>$_msg_invalidpass</strong></p>\n";
 		$body  .= <<<EOD
-<p>$_msg_unfreezing</p>
-<form action="$script" method="post">
- <div>
-  <input type="hidden"   name="cmd"  value="unfreeze" />
-  <input type="hidden"   name="page" value="$s_page" />
-  <input type="password" name="pass" size="12" />
-  <input type="submit"   name="ok"   value="$_btn_unfreeze" />
- </div>
-</form>
+<fieldset>
+	<legend>$_msg_unfreezing</legend>
+	<form action="$script" method="post">
+		<input type="hidden"   name="cmd"  value="unfreeze" />
+		<input type="hidden"   name="page" value="$s_page" />
+		<div class="freeze_form">
+			<input type="password" name="pass" size="12" />
+			<input type="submit"   name="ok"   value="$_btn_unfreeze" />
+		</div>
+	</form>
+</fieldset>
 EOD;
 	}
 

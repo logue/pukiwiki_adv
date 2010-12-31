@@ -51,9 +51,9 @@ function plugin_comment_write()
 	global $_no_name;
 //	global $_msg_comment_collided, $_title_comment_collided, $_title_updated;
 	$_title_updated = _("$1 was updated");
-	$_title_comment_collided = _("On updating  $1, a collision has occurred.");
-	$_msg_comment_collided   = _("It seems that someone has already updated the page you were editing.<br />") .
-	                           _("The comment was added, alhough it may be inserted in the wrong position.<br />");
+	$_title_comment_collided = T_("On updating  $1, a collision has occurred.");
+	$_msg_comment_collided   = T_("It seems that someone has already updated the page you were editing.<br />") .
+	                           T_("The comment was added, alhough it may be inserted in the wrong position.<br />");
 
 	if (! isset($vars['msg'])) return array('msg'=>'', 'body'=>''); // Do nothing
 
@@ -205,15 +205,15 @@ function plugin_comment_convert()
 <br />
 $auth_guide
 <form action="$script" method="post">
-	<div class="commentform">
-		<input type="hidden" name="refpage" value="$refpage" />
-		<input type="hidden" name="plugin" value="comment" />
-		<input type="hidden" name="refer"  value="$s_page" />
-		<input type="hidden" name="comment_no" value="$comment_no" />
-		<input type="hidden" name="nodate" value="$nodate" />
-		<input type="hidden" name="above"  value="$above" />
-		<input type="hidden" name="digest" value="$digest" />
-		<input type="hidden" name="ticket" value="$ticket" />
+	<input type="hidden" name="refpage" value="$refpage" />
+	<input type="hidden" name="plugin" value="comment" />
+	<input type="hidden" name="refer"  value="$s_page" />
+	<input type="hidden" name="comment_no" value="$comment_no" />
+	<input type="hidden" name="nodate" value="$nodate" />
+	<input type="hidden" name="above"  value="$above" />
+	<input type="hidden" name="digest" value="$digest" />
+	<input type="hidden" name="ticket" value="$ticket" />
+	<div class="comment_form">
 		$nametags
 		<input type="text"   name="msg" id="p_comment_comment_{$comment_all_no}" size="$comment_cols" />
 		<input type="submit" name="comment" value="$_btn_comment" />

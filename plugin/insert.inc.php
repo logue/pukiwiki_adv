@@ -1,5 +1,5 @@
 <?php
-// $Id: insert.inc.php,v 1.15.4 2010/09/21 19:25:00 Logue Exp $
+// $Id: insert.inc.php,v 1.15.5 2010/12/26 17:17:00 Logue Exp $
 //
 // Text inserting box plugin
 
@@ -12,9 +12,9 @@ function plugin_insert_action()
 	global $vars, $cols, $rows;
 //	global $_title_collided, $_msg_collided, $_title_updated;
 
-$_title_collided   = _('On updating $1, a collision has occurred.');
-$_title_updated    = _('$1 was updated');
-$_msg_collided = _('It seems that someone has already updated this page while you were editing it.<br />
+$_title_collided   = T_('On updating $1, a collision has occurred.');
+$_title_updated    = T_('$1 was updated');
+$_msg_collided = T_('It seems that someone has already updated this page while you were editing it.<br />
  + is placed at the beginning of a line that was newly added.<br />
  ! is placed at the beginning of a line that has possibly been updated.<br />
  Edit those lines, and submit again.');

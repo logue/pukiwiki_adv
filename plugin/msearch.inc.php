@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
 //
-// $Id: msearch.inc.php,v 0.3.2 2007/04/18 21:01:00 upk Exp $
+// $Id: msearch.inc.php,v 0.3.2 2010/12/26 17:45:00 Logue Exp $
 // Original is sha
 /* 
 *プラグイン msearch
@@ -21,15 +21,15 @@ function plugin_msearch_init()
 {
 	$messages = array(
 		'_msearch_messages' => array(
-			'msg_access_error'  => _('It was not able to access any site. '),
-			'body_access_error' => '',
+			'msg_access_error'	=> T_('It was not able to access any site. '),
+			'body_access_error'	=> '',
 			'order' => array(
-				'past' => _('Elapsed Time Order'),
-				'-past' => _('Elapsed Time Reverse Order'),
-				'site' => _('Site Order'),
-				'-site' => _('Site Reverse Order'),
-				'page' => _('Page Name Order'),
-				'-page' => _('Page Name Reverse Order'),
+				'past'		=> T_('Elapsed Time Order'),
+				'-past'		=> T_('Elapsed Time Reverse Order'),
+				'site'		=> T_('Site Order'),
+				'-site'		=> T_('Site Reverse Order'),
+				'page'		=> T_('Page Name Order'),
+				'-page'		=> T_('Page Name Reverse Order'),
 			),
 		),
 	);
@@ -75,11 +75,11 @@ function plugin_msearch_form($opts,$ctall,$ctfound)
 {
 //	global $_btn_and, $_btn_or, $_btn_search;
 //	global $_msg_orresult, $_msg_andresult;
-	$_btn_search    = _('Search');
-	$_btn_and       = _('AND');
-	$_btn_or        = _('OR');
-	$_msg_andresult = _('In the page <strong> $2</strong>, <strong> $3</strong> pages that contain all the terms $1 were found.');
-	$_msg_orresult  = _('In the page <strong> $2</strong>, <strong> $3</strong> pages that contain at least one of the terms $1 were found.');
+	$_btn_search    = T_('Search');
+	$_btn_and       = T_('AND');
+	$_btn_or        = T_('OR');
+	$_msg_andresult = T_('In the page <strong> $2</strong>, <strong> $3</strong> pages that contain all the terms $1 were found.');
+	$_msg_orresult  = T_('In the page <strong> $2</strong>, <strong> $3</strong> pages that contain at least one of the terms $1 were found.');
 
 	$s_word = htmlspecialchars($opts['word']);
 	$s_site = htmlspecialchars($opts['site']);
@@ -235,10 +235,10 @@ EOD;
 		$p = "({$a['past']}){$a['str']}";
 //		$body .="-[[{$cnt[$s]}>$s]] [[$n>$u]] $p\n";
 		$body .=<<<EOD
-<LI><a href="$s">{$cnt[$s]}</a> <a href="$u">$n</a> $p</LI>\n
+<li><a href="$s">{$cnt[$s]}</a> <a href="$u">$n</a> $p</li>\n
 EOD;
 	}
-	$body .= "</UL>\n";
+	$body .= "</ul>\n";
 //	return array($head . $body . $debug, $total, $found);
 	return array($head . $body,          $total, $found);
 }
@@ -246,8 +246,8 @@ EOD;
 function plugin_msearch_parse_html($ary,$ct,$site,$html,$type)
 {
 //	global $_msg_orresult, $_msg_andresult;
-	$_msg_andresult   = _('In the page <strong> $2</strong>, <strong> $3</strong> pages that contain all the terms $1 were found.');
-	$_msg_orresult    = _('In the page <strong> $2</strong>, <strong> $3</strong> pages that contain at least one of the terms $1 were found.');
+	$_msg_andresult   = T_('In the page <strong> $2</strong>, <strong> $3</strong> pages that contain all the terms $1 were found.');
+	$_msg_orresult    = T_('In the page <strong> $2</strong>, <strong> $3</strong> pages that contain at least one of the terms $1 were found.');
 
 	static $reg = '';
 	static $mins = array(

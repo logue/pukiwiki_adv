@@ -20,8 +20,8 @@ function plugin_md5_action()
 {
 	global $get, $post;
 
-	// if (PKWK_SAFE_MODE || PKWK_READONLY) die_message(_('Prohibited'));
-	if (auth::check_role('safemode') || auth::check_role('readonly')) die_message(_('Prohibited'));
+	// if (PKWK_SAFE_MODE || PKWK_READONLY) die_message(T_('Prohibited'));
+	if (auth::check_role('safemode') || auth::check_role('readonly')) die_message(T_('Prohibited'));
 
 	// Wait POST
 	$phrase = isset($post['phrase']) ? $post['phrase'] : '';
@@ -33,7 +33,7 @@ function plugin_md5_action()
 		$value  = isset($get['md5']) ? $get['md5'] : '';
 
 		return array(
-			'msg' =>_('Compute userPassword'),
+			'msg' =>T_('Compute userPassword'),
 			'body'=>plugin_md5_show_form(isset($post['phrase']), $value));
 
 	} else {
@@ -62,10 +62,10 @@ function plugin_md5_show_form($nophrase = FALSE, $value = '')
 {
 	global $script;
 
-	// if (PKWK_SAFE_MODE || PKWK_READONLY) die_message(_('Prohibited'));
-	if (auth::check_role('safemode') || auth::check_role('readonly')) die_message(_('Prohibited'));
+	// if (PKWK_SAFE_MODE || PKWK_READONLY) die_message(T_('Prohibited'));
+	if (auth::check_role('safemode') || auth::check_role('readonly')) die_message(T_('Prohibited'));
 	if (strlen($value) > PKWK_PASSPHRASE_LIMIT_LENGTH)
-		die_message(_('Limit: malicious message length'));
+		die_message(T_('Limit: malicious message length'));
 
 	if ($value != '') $value = 'value="' . htmlspecialchars($value) . '" ';
 
@@ -78,10 +78,10 @@ function plugin_md5_show_form($nophrase = FALSE, $value = '')
 	}
 
 	$form = '<p><strong>'
-	      . _("NOTICE: Don't use this feature via untrustful or unsure network")
+	      . T_("NOTICE: Don't use this feature via untrustful or unsure network")
 	      . '</strong></p>' . "\n" . '<hr />' . "\n";
 
-	if ($nophrase) $form .= '<strong>' . _("NO PHRASE") . '</strong><br />';
+	if ($nophrase) $form .= '<strong>' . T_("NO PHRASE") . '</strong><br />';
 
 	$form .= <<<EOD
 <form action="$script" method="post">

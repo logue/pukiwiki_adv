@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
 //
-// $Id: vote2.inc.php,v 0.12.7 2008/09/14 23:47:00 upk Exp $
+// $Id: vote2.inc.php,v 0.12.8 2010/12/26 20:57:00 Logue Exp $
 // based on vote.inc.php v1.14
 //
 // v0.2はインラインのリンクにtitleを付けた。
@@ -23,28 +23,23 @@ function plugin_vote2_init()
 			'arg_nolabel'     => 'nolabel',
 			'arg_notitle'     => 'notitle',
 			'arg_barchart'    => 'barchart',
-			'title_error'   => _("Error in vote2"),
-			'no_page_error' => _("The page of $1 doesn't exist."),
-			'attack_error'  => _("It is not possible to vote continuously."),
-			'update_failed' => _("Vote failure: In $1, there was the address of the vote or the item was not corresponding."),
-			'body_error'    => _("An indispensable argument has not been passed or there is an error in the argument."),
-			'msg_collided'  => '<h3>' .
-					   _("Other people seem to have updated the content of the same page while you are voting.") .
-					   '<br />' .
-					   _("Therefore, there is a possibility of making a mistake in the position for which it votes.") .
-					   '<br /><br />' .
-					   _("Your update was invalidated. Start ..be previous page.. reload.") .
-					   '</h3>'
+			'title_error'   => T_("Error in vote2"),
+			'no_page_error' => T_("The page of $1 doesn't exist."),
+			'attack_error'  => T_("It is not possible to vote continuously."),
+			'update_failed' => T_("Vote failure: In $1, there was the address of the vote or the item was not corresponding."),
+			'body_error'    => T_("An indispensable argument has not been passed or there is an error in the argument."),
+			'msg_collided'  => T_("Other people seem to have updated the content of the same page while you are voting.") .'<br />' .
+				T_("Therefore, there is a possibility of making a mistake in the position for which it votes.") .'<br /><br />' .
+				T_("Your update was invalidated. Start ..be previous page.. reload.")
 		),
-		'_vote_plugin_choice' => _('Selection'),
-		'_vote_plugin_votes' => _('Vote'),
+		'_vote_plugin_choice' => T_('Selection'),
+		'_vote_plugin_votes' => T_('Vote'),
 	);
 	set_plugin_messages($messages);
 }
 function plugin_vote2_action()
 {
 	global $vars, $_vote2_messages;
-	$vote_no = 0;
 	$block_flag = 0;
 	
 	if ( ! is_page($vars['refer']) ){
@@ -55,19 +50,25 @@ function plugin_vote2_action()
 		);
 	}
 //added by miko
-	$votedkey = 'vote_'.$vars['refer'].'_'.$vars['vote_no'].'_'.$vars['vote_inno'];
+	$refer = $vars['refer'];
+	$vote_no = (isset($vars['vote_no'])) ? $vars['vote_no'] : 0;
+	$vote_inno = (isset($vars['vote_inno'])) ? $vars['vote_inno'] : '';
+
+	$votedkey = 'vote_'.$refer.'_'.$vote_no.'_'.$vote_inno;
 	if (isset($_COOKIE[$votedkey])) {
+		/*
 		return array(
 			'msg'  => $_vote2_messages['title_error'],
 			'body' => $_vote2_messages['attack_error'],
 		);
+		*/
+		error_msg( $_vote2_messages['title_error'], $_vote2_messages['attack_error']);
 	}
 	$_COOKIE[$votedkey] = 1;
 	preg_match('!(.*/)!', $_SERVER['REQUEST_URI'], $matches);
 	setcookie($votedkey,1,time()+VOTE2_COOKIE_EXPIRED,$matches[0]);
 //added by miko
 	if ( array_key_exists('vote_no', $vars) ) {
-		$vote_no = $vars['vote_no'];
 		$block_flag = 1;
 	}
 	else if ( array_key_exists('vote_inno', $vars) ){
@@ -91,10 +92,13 @@ function plugin_vote2_action()
 				break;
 		}
 	}
+	/*
 	return array(
 		'msg'  => $_vote2_messages['title_error'], 
 		'body' => $_vote2_messages['body_error'],
 	);
+	*/
+	error_msg( $_vote2_messages['title_error'], $_vote2_messages['body_error']);
 }
 function plugin_vote2_inline()
 {
@@ -165,19 +169,25 @@ function plugin_vote2_inline()
 //	if ( $arg == ''  ) return '';
 	$link = make_link($arg);
 	$e_arg = encode($arg);
+/*
 	$f_page = rawurlencode($page);
 	$f_digest = rawurlencode($ndigest);
 	$f_vote_plugin_votes = rawurlencode($_vote_plugin_votes);
+*/
 	$f_cnf = '';
 	if ( $nonumber == FALSE ) {
-		$title = $notitle ? '' : "title=\"$o_vote_inno\"";
+		$vote_title = $notitle ? '' : "title=\"$o_vote_inno\"";
 		$f_cnt = "<span $title>&nbsp;" . $cnt . "&nbsp;</span>";
 	}
 	if ( $nolabel == FALSE ) {
-		$title = $notitle ? '' : "title=\"$f_vote_inno\"";
+		$vote_title = $notitle ? '' : " title=\"$f_vote_inno\"";
+		$vote_uri = get_cmd_uri('vote2','','',array('refer'=>$page,'vote_inno'=>$vote_inno,'vote_'.$e_arg=>$_vote_plugin_votes,'digest'=>$ndigest));
+		return '<a href="'.$vote_uri.'"'.$vote_title.'>'.$link.'</a>'.$f_cnt;
+/*
 		return <<<EOD
 <a href="$script?plugin=vote2&amp;refer=$f_page&amp;vote_inno=$vote_inno&amp;vote_$e_arg=$f_vote_plugin_votes&amp;digest=$f_digest" $title>$link</a>$f_cnt
 EOD;
+*/
 	}
 	else {
 		return $f_cnt;
@@ -344,19 +354,19 @@ function plugin_vote2_convert()
 		$cls = ($tdcnt++ % 2)  ? 'vote_td1' : 'vote_td2';
 
 		$body2 .= <<<EOD
-  <tr>
-   <td align="left" class="$cls" style="padding-left:1em;padding-right:1em;">$link</td>
+	<tr>
+		<td align="left" class="style_td $cls" style="padding-left:1em;padding-right:1em;">$link</td>
 
 EOD;
 
 		$body2 .= <<<EOD
-   <td align="right" class="$cls">$f_cnt
+		<td align="right" class="style_td $cls">$f_cnt
 
 EOD;
 
 		if ( $nolabel == FALSE ) {
 			$body2 .= <<<EOD
-    <input type="submit" name="vote_$e_arg" value="$_vote_plugin_votes" class="submit" />
+		<input type="submit" name="vote_$e_arg" value="$_vote_plugin_votes" class="submit" />
 
 EOD;
 		}
@@ -365,12 +375,12 @@ EOD;
 
 		if ($barchart) {
 			$body2 .= <<<EOD
-  <td class="$cls" style="padding-left:1em;padding-right:1em;">$getBar</td>
+		<td class="style_td $cls" >$getBar</td>
 
 EOD;
 		}
 
-		$body2 .= "  </tr>\n";
+		$body2 .= "	</tr>\n";
 	}
 
 	$s_page    = htmlspecialchars($page);
@@ -378,28 +388,27 @@ EOD;
 	$title = $notitle ? '' : "title=\"$f_vote_no\"";
 	$body = <<<EOD
 <form action="$script" method="post">
- <table cellspacing="0" cellpadding="2" class="style_table" $barchart_style summary="vote" $title>
-  <tr>
-   <td align="left" class="vote_label" style="padding-left:1em;padding-right:1em"><strong>$_vote_plugin_choice</strong>
-    <input type="hidden" name="plugin" value="vote2" />
-    <input type="hidden" name="refer" value="$s_page" />
-    <input type="hidden" name="digest" value="$s_digest" />
-    <input type="hidden" name="vote_no" value="$vote_no" />
-   </td>
+	<input type="hidden" name="plugin" value="vote2" />
+	<input type="hidden" name="refer" value="$s_page" />
+	<input type="hidden" name="digest" value="$s_digest" />
+	<input type="hidden" name="vote_no" value="$vote_no" />
+	<table cellspacing="0" cellpadding="2" class="style_table" $barchart_style summary="vote" $title>
+		<tr>
+			<th class="style_th vote_label">$_vote_plugin_choice</th>
 
 EOD;
 	if ($barchart) {
 		$body .= <<<EOD
-   <td class="vote_label">&nbsp;</td>
+			<th class="style_th vote_label">&nbsp;</th>
 
 EOD;
 	}
 
 	$body .= <<<EOD
-   <td align="center" class="vote_label"><strong>$_vote_plugin_votes</strong></td>
-  </tr>
+			<th class="style_th vote_label">$_vote_plugin_votes</th>
+		</tr>
 $body2
- </table>
+	</table>
 </form>
 
 EOD;

@@ -3,7 +3,7 @@
  * htdigest plugin.
  *
  * @copyright   Copyright &copy; 2006-2007, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: htdigest.inc.php,v 0.9 2007/07/09 23:43:00 upk Exp $
+ * @version     $Id: htdigest.inc.php,v 0.9.1 2010/12/26 17:11:00 Logue Exp $
  *
  * $A1 = md5($data['username'] . ':' . $realm . ':' . $auth_users[$data['username']]);
  */
@@ -29,28 +29,28 @@ function plugin_htdigest_init()
 {
 	$msg = array(
 	  '_htdigest_msg' => array(
-		'realm'		=> _("realm"),
-		'UserName'	=> _("UserName"),
-		'Passwd'	=> _("Passwd"),
-		'Calculate'	=> _("Calculate"),
-		'CALC'		=> _("CALC"),
-		'Update'	=> _("Update"),
-		'Result'	=> _("Result"),
-		'Crypt'		=> _("Encryption key"),
-		'msg_pass_admin' => _("Please input Administrator password."),
-		'msg_pass_old'   => _("Please input the password being used now."),
-		'msg_pass_new'   => _("Please input a new password."),
-		'msg_iis'	=> _("It doesn't correspond to IIS of Microsoft Corporation."),
-		'err_not_use'	=> _("The writing function is limited."),
-		'err_role'	=> _("The authority more than Webmaster for World Wide Web Site is necessary to update it."),
-		'err_key'	=> _("The encryption key is not corresponding."),
-		'err_md5'	=> _("In this version, the Administrator password is supported only with {x-php-md5}."),
-		'msg_realm'	=> _("Realm is not corresponding."),
-		'msg_1st'	=> _("It newly made .htdigest."),
-		'msg_not_update'=> _("Because the password was the same, it did not update it."),
-		'msg_update'	=> _("It updated .htdigest."),
-		'msg_add'	=> _("One was added."),
-		'msg_err'	=> _("ERROR."),
+		'realm'				=> T_("realm"),
+		'UserName'			=> T_("UserName"),
+		'Passwd'			=> T_("Passwd"),
+		'Calculate'			=> T_("Calculate"),
+		'CALC'				=> T_("CALC"),
+		'Update'			=> T_("Update"),
+		'Result'			=> T_("Result"),
+		'Crypt'				=> T_("Encryption key"),
+		'msg_pass_admin'	=> T_("Please input Administrator password."),
+		'msg_pass_old'		=> T_("Please input the password being used now."),
+		'msg_pass_new'		=> T_("Please input a new password."),
+		'msg_iis'			=> T_("It doesn't correspond to IIS of Microsoft Corporation."),
+		'err_not_use'		=> T_("The writing function is limited."),
+		'err_role'			=> T_("The authority more than Webmaster for World Wide Web Site is necessary to update it."),
+		'err_key'			=> T_("The encryption key is not corresponding."),
+		'err_md5'			=> T_("In this version, the Administrator password is supported only with {x-php-md5}."),
+		'msg_realm'			=> T_("Realm is not corresponding."),
+		'msg_1st'			=> T_("It newly made .htdigest."),
+		'msg_not_update'	=> T_("Because the password was the same, it did not update it."),
+		'msg_update'		=> T_("It updated .htdigest."),
+		'msg_add'			=> T_("One was added."),
+		'msg_err'			=> T_("ERROR."),
 	  )
 	);
         set_plugin_messages($msg);
@@ -213,54 +213,51 @@ $x .= <<<EOD
 </script>
 
 <fieldset>
-<legend>htdigest</legend>
+	<legend>htdigest</legend>
+	<p>$msg</p>
+	<form name="htdigest" action="$script" method="post">
+		<input type="hidden" name="plugin" value="htdigest" />
+		<input type="hidden" name="func" value="$func" />
+		<input type="hidden" name="algorithm" />
+		<input type="hidden" name="hash" />
+		<table class="indented">
+			<tr>
+				<th>{$_htdigest_msg['realm']}</th>
+				<td><input type="text" name="realm" size="30" value="$realm" /></td>
+			</tr>
+			<tr>
+				<th>{$_htdigest_msg['UserName']}</th>
+				<td><input type="text" name="username" size="10" value="$user" $user_disabled /></td>
+			</tr>
+			<tr>
+				<th>{$_htdigest_msg['Passwd']}</th>
+				<td><input type="password" name="passwd" size="10" />&nbsp;{$_htdigest_msg['msg_pass_new']}</td>
+			</tr>
 
-<div>$msg</div>
+			<tr>
+				<th>{$_htdigest_msg['Crypt']}</th>
+				<td><input type="password" name="key" size="10" />&nbsp;{$msg_pass}</td>
+			</tr>
 
-<form name="htdigest" action="$script" method="post">
-  <input type="hidden" name="plugin" value="htdigest" />
-  <input type="hidden" name="func" value="$func" />
-  <input type="hidden" name="algorithm" />
-  <input type="hidden" name="hash" />
-  <table class="indented">
-    <tr>
-      <th>{$_htdigest_msg['realm']}</th>
-      <td><input type="text" name="realm" size="30" value="$realm" /></td>
-    </tr>
-    <tr>
-      <th>{$_htdigest_msg['UserName']}</th>
-      <td><input type="text" name="username" size="10" value="$user" $user_disabled /></td>
-    </tr>
-    <tr>
-      <th>{$_htdigest_msg['Passwd']}</th>
-      <td><input type="password" name="passwd" size="10" />&nbsp;{$_htdigest_msg['msg_pass_new']}</td>
-    </tr>
-
-    <tr>
-     <th>{$_htdigest_msg['Crypt']}</th>
-     <td><input type="password" name="key" size="10" />&nbsp;{$msg_pass}</td>
-    </tr>
-
-    <tr>
-      <th>{$_htdigest_msg['Calculate']}</th>
-      <td>
-        <input type="radio" name="scheme" value="MD5" checked="checked" /> <label>MD5</label>
-        <input type="radio" name="scheme" value="SHA-1" /> <label>SHA-1</label>
-        <input type="radio" name="scheme" value="MD4" /> <label>MD4</label>
-        &nbsp;
-        <input type="button" onclick="set_hash()" value="{$_htdigest_msg['CALC']}" />
-      </td>
-    </tr>
-    <tr>
-      <th>{$_htdigest_msg['Result']}</th>
-      <td><input type="text" name="hash_view" size="80" $disabled /></td>
-    </tr>
-    <tr>
-      <td><input type="submit" name="submit" value="{$_htdigest_msg['Update']}" disabled="disabled" /></td>
-    </tr>
-
-  </table>
-</form>
+			<tr>
+				<th>{$_htdigest_msg['Calculate']}</th>
+				<td>
+					<input type="radio" name="scheme" value="MD5" checked="checked" /> <label>MD5</label>
+					<input type="radio" name="scheme" value="SHA-1" /> <label>SHA-1</label>
+					<input type="radio" name="scheme" value="MD4" /> <label>MD4</label>
+					&nbsp;
+					<input type="button" onclick="set_hash()" value="{$_htdigest_msg['CALC']}" />
+				</td>
+			</tr>
+			<tr>
+				<th>{$_htdigest_msg['Result']}</th>
+				<td><input type="text" name="hash_view" size="80" $disabled /></td>
+			</tr>
+			<tr>
+				<td colspan="2"><input type="submit" name="submit" value="{$_htdigest_msg['Update']}" disabled="disabled" /></td>
+			</tr>
+		</table>
+	</form>
 </fieldset>
 EOD;
 

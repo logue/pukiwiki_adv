@@ -1,5 +1,5 @@
 <?php
-// $Id: csv2newpage.inc.php,v 0.14.3 2006/03/08 00:32:00 upk Exp $
+// $Id: csv2newpage.inc.php,v 0.14.4 2010/12/26 16:42:00 Logue Exp $
 
 /*
 *プラグイン csv2newpage
@@ -29,14 +29,14 @@ function plugin_csv2newpage_init()
 {
 	$messages = array(
 	  '_csv2newpage_messages' => array(
-		 'btn_submit'		=> _('Exec'),			// 実行
-		 'title_text'		=> _('New page generation:'),	// 新規ページ:
-		 'btn_upload'		=> _('Attache & Exec'),		// 添付＆実行
-		 'msg_file'		=> _('CSV File:'),		// CSVファイル:
+		 'btn_submit'		=> T_('Exec'),			// 実行
+		 'title_text'		=> T_('New page generation:'),	// 新規ページ:
+		 'btn_upload'		=> T_('Attache & Exec'),		// 添付＆実行
+		 'msg_file'			=> T_('CSV File:'),		// CSVファイル:
 		 // attach.inc.php
-		 'msg_maxsize'		=> _('Maximum file size is %s.'),
-		 'msg_password'		=> _('password'),
-		 'msg_adminpass'	=> _('Administrator password'),
+		 'msg_maxsize'		=> T_('Maximum file size is %s.'),
+		 'msg_password'		=> T_('password'),
+		 'msg_adminpass'	=> T_('Administrator password'),
       ),
 	);
 	set_plugin_messages($messages);
@@ -385,21 +385,17 @@ function plugin_csv2newpage_showform($retval)
 	}
 	return <<<EOD
 <form enctype="multipart/form-data" action="$script" method="post">
- <div>
-  <input type="hidden" name="pcmd" value="post" />
-  $retval
-  <input type="hidden" name="max_file_size" value="$maxsize" />
-  <span class="small">
-   $msg_maxsize
-  </span><br />
-  {$_csv2newpage_messages['msg_file']} <input type="file" name="attach_file" />
-  $pass
-  <input type="submit" value="{$_csv2newpage_messages['btn_upload']}" />
- </div>
+	<input type="hidden" name="max_file_size" value="$maxsize" />
+	<input type="hidden" name="pcmd" value="post" />
+	<div class="csv2newpage_form">
+		$retval
+		<span class="small">$msg_maxsize</span><br />
+		{$_csv2newpage_messages['msg_file']} <input type="file" name="attach_file" />
+		$pass
+		<input type="submit" value="{$_csv2newpage_messages['btn_upload']}" />
+	</div>
 </form>
-
 EOD;
-
 }
 
 ?>

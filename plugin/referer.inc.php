@@ -1,8 +1,8 @@
 <?php
 // PukiPlus.
-// $Id: referer.inc.php,v 1.10.12 2010/07/06 00:06:00 upk Exp $
+// $Id: referer.inc.php,v 1.10.13 2010/12/26 19:00:00 Logue Exp $
 // Copyright (C)
-//   2010           PukiPlus Team.
+//   2010           PukiWiki Advance Team.
 //   2007           PukiWiki Plus! Team
 //   2003,2005-2008 Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
 // License: GPL
@@ -16,17 +16,17 @@ function plugin_referer_init()
 {
 	$messages = array(
 		'_referer_msg' => array(
-			'msg_referer'			=> _('Referer'),
-			'msg_referer_list'		=> _('Referer List'),
-			'msg_no_data'			=> _('No data'),
-			'msg_H0_Refer'			=> _('Referer'),
-			'msg_Hed_LastUpdate'	=> _('LastUpdate'),
-			'msg_Hed_1stDate'		=> _('First Register'),
-			'msg_Hed_RefCounter'	=> _('RefCounter'),
-			'msg_Hed_Referer'		=> _('Referer'),
-			'msg_Fmt_Date'			=> _('F j, Y, g:i A'),
-			'msg_Chr_uarr'			=> _('&uArr;'),
-			'msg_Chr_darr'			=> _('&dArr;'),
+			'msg_referer'			=> T_('Referer'),
+			'msg_referer_list'		=> T_('Referer List'),
+			'msg_no_data'			=> T_('No data'),
+			'msg_H0_Refer'			=> T_('Referer'),
+			'msg_Hed_LastUpdate'	=> T_('LastUpdate'),
+			'msg_Hed_1stDate'		=> T_('First Register'),
+			'msg_Hed_RefCounter'	=> T_('RefCounter'),
+			'msg_Hed_Referer'		=> T_('Referer'),
+			'msg_Fmt_Date'			=> T_('F j, Y, g:i A'),
+			'msg_Chr_uarr'			=> T_('&uArr;'),
+			'msg_Chr_darr'			=> T_('&dArr;'),
 		),
 	);
 	set_plugin_messages($messages);

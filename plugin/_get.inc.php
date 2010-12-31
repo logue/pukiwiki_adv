@@ -1,7 +1,7 @@
 <?php
 /**
  * @copyright   Copyright &copy; 2006, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: _get.inc.php,v 0.2 2006/04/30 16:56:00 upk Exp $
+ * @version     $Id: _get.inc.php,v 0.2.1 2010/12/23 12:57:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 
@@ -30,27 +30,27 @@ function i18n_gettext($name,$msg)
 	if (! isset($checked[$name])) {
 		$checked[$name] = 1;
 		if (empty($plugin_lang_path[$name])) {
-			bindtextdomain($name, LANG_DIR);
+			T_bindtextdomain($name, LANG_DIR);
 		} else {
-			bindtextdomain($name, $plugin_lang_path[$name]);
+			T_bindtextdomain($name, $plugin_lang_path[$name]);
 		}
 		// bindtextdomain($name, LANG_DIR);
-		bind_textdomain_codeset($name, SOURCE_ENCODING);
+		T_bind_textdomain_codeset($name, SOURCE_ENCODING);
 	}
 
-	textdomain($name);
+	T_textdomain($name);
 	$text = _( rawurldecode($msg) );
-	textdomain(DOMAIN);
+	T_textdomain(DOMAIN);
 	return $text;
 }
 
 function i18n_setlocale($name,$lang,$msg)
 {
 	putenv('LC_ALL=' . $lang);
-	setlocale(LC_ALL, $lang);
+	T_setlocale(LC_ALL, $lang);
 	$text = i18n_gettext($name,$msg);
 	putenv('LC_ALL=' . PO_LANG);
-	setlocale(LC_ALL, PO_LANG);
+	T_setlocale(LC_ALL, PO_LANG);
 	return $text;
 }
 

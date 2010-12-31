@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: sh.inc.php,v 0.6.4 2010/09/04 08:51:00 Logue Exp $
+// $Id: sh.inc.php,v 0.6.4 2010/11/17 08:47:00 Logue Exp $
 // SyntaxHighlighter for PukiWiki
 //
 // Copyright (C)
@@ -109,41 +109,44 @@ HTML;
 		$ret = array();
 		//  @ 引数取り
 		for ($i = 0; $i <= count($args); $i++) {
-			$cond = htmlspecialchars($args[$i]);
-			switch($cond){
-				case 'number':
-					$ret[] = 'gutter: true;';
-					break;
-				case 'nonumber':
-					$ret[] = 'gutter: false;';
-					break;
-				case 'outline':
-					$ret[] = 'collapse:true;';
-					break;
-				case 'nooutline':
-					$ret[] = 'collapse:false;';
-					break;
-				case 'menu':
-					$ret[] = 'toolbar:true;';
-					break;
-				case 'nomenu':
-					$ret[] = 'toolbar:false;';
-					break;
-				case 'link':
-					$ret[] = 'auto-links:true;';
-					break;
-				case 'nolink':
-					$ret[] = 'auto-links:false;';
-					break;
-				default : 
-					if(preg_match('/class=\"?([^\"]*)\"?/',$cond,$match)){	// class属性のオーバーライド
-						$ret[] = $match[1];
-					}
-					break;
+			if (!empty($args[$i])){
+				$cond = htmlspecialchars($args[$i]);
+				switch($cond){
+					case 'number':
+						$ret[] = 'gutter: true;';
+						break;
+					case 'nonumber':
+						$ret[] = 'gutter: false;';
+						break;
+					case 'outline':
+						$ret[] = 'collapse:true;';
+						break;
+					case 'nooutline':
+						$ret[] = 'collapse:false;';
+						break;
+					case 'menu':
+						$ret[] = 'toolbar:true;';
+						break;
+					case 'nomenu':
+						$ret[] = 'toolbar:false;';
+						break;
+					case 'link':
+						$ret[] = 'auto-links:true;';
+						break;
+					case 'nolink':
+						$ret[] = 'auto-links:false;';
+						break;
+					default : 
+						if(preg_match('/class=\"?([^\"]*)\"?/',$cond,$match)){	// class属性のオーバーライド
+							$ret[] = $match[1];
+						}
+						break;
+				}
 			}
 			$option =  ' '.join(' ',$ret);
 		}
 	}
+	// 定義されている言語
 	switch($lang){
 		case 'actionscript':
 		case 'as':
