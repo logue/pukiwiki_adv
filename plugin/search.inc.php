@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: search.inc.php,v 1.13.3 2005/11/29 18:19:51 miko Exp $
+// $Id: search.inc.php,v 1.13.3 2011/01/16 23:30:00 Logue Exp $
 //
 // Search plugin
 
@@ -111,11 +111,12 @@ EOD;
 	}else{
 		$method = "post";
 	}
+	$maxlength = PLUGIN_SEARCH_MAX_LENGTH;
 	return <<<EOD
 <form action="$script" method="{$method}">
 	<input type="hidden" name="cmd" value="search" />
 	<div class="search_form">
-		<input type="text"  name="word" value="$s_word" size="20" />
+		<input type="text"  name="word" value="$s_word" size="20" maxlength="$maxlength" />
 		<input type="radio" name="type" id="_p_search_AND" value="AND" $and_check />
 		<label for="_p_search_AND">$_btn_and</label>
 		<input type="radio" name="type" id="_p_search_OR" value="OR"  $or_check />

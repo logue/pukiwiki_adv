@@ -1,5 +1,9 @@
 <?php
-// $Id: newpage_subdir.inc.php,v 1.2.7 2010/12/26 17:52:00 Logue Exp $
+// $Id: newpage_subdir.inc.php,v 1.2.8 2011/01/16 17:52:00 Logue Exp $
+// Copyright (C)
+//   2010-2011 PukiWiki Advance Developers Team
+//   2005,2008 PukiWiki Plus! Team
+//
 // @based_on newpage.inc.php
 // @based_on ls2.inc.php
 // @thanks to panda (auther of newpage.inc.php/ls2.inc.php)
@@ -51,8 +55,7 @@ function print_form_string( $list )
 	global $script,$vars;
 	
 	$form_string  = '<form action="'.$script.'" method="post">'."\n".
-			'<div>'."\n".
-			_('New page') . ': ';
+			'<fieldset>'."\n". '<legend>'.T_('Page name') . '</legend>';
 
 	if($list['directory']) {
 		$form_string .= '<select name="directory">'."\n";
@@ -65,8 +68,8 @@ function print_form_string( $list )
 	$form_string .= '<input type="hidden" name="plugin" value="newpage_subdir" />'."\n".
 			'<input type="hidden" name="refer" value="'.$vars['page'].'" />'."\n".
 			'<input type="text" name="page" size="30" value="" />'."\n".
-			'<input type="submit" value="' . _('Edit') . '" />'."\n".
-			'</div>'."\n".
+			'<input type="submit" value="' . T_('New') . '" />'."\n".
+			'</fieldset>'."\n".
 			'</form>'."\n";
 
 	if(isset($list['warning']) && $list['warning']) {
@@ -80,26 +83,28 @@ function print_form_string( $list )
 
 function print_help_message()
 {
-	return
-		"#newpage_subdir([directory]... ,[option]... )<br />\n" .
-		"<br />\n" .
-		_("DESCRIPTION<br />\n") .
-		_("	　The field that adds a new page below the directory specified for [directory] is made.<br />\n").
-		_("	　The order of the parameter is arbitrary.<br />") .
-		_("	　When an undefined option is specified, Help is displayed with the message.<br />") .
-		"<br />\n" .
-		_("OPTION<br />\n") .
-		_("　-d Directory Only.	It limits it only to the one with the child page. (The directory specified specifying it is an exception. )<br />\n") .
-		_("　-h Help.		This Description is displayed. <br />\n") .
-		_("　-q Quiet.		Warning is not displayed.<br />\n") .
-		"<br />\n" .
-		_("EXAMPLE<br />\n") .
-		"#newpage_subdir() -&gt; implies: #newpage_subdir(&lt;current dir&gt;)　<br />\n".
-		"#newpage_subdir(foo/var)<br />\n" .
-		"#newpage_subdir(foo/var, -n)<br />\n" .
-		"#newpage_subdir(-d,-q, foo/var, foo/vaz)<br />\n" .
-		"#newpage_subdir(-h)<br />\n" .
-		"#newpage_subdir(-XYZ) -&gt; implies : #newpage_subdir(-h)<br />\n";
+	return join("\n",array(
+		'#newpage_subdir([directory]... ,[option]... )<br />\n',
+		'<dl>',
+		'<dt>' . T_('DESCRIPTION') . '</dt>',
+		'<dd>' . T_('The field that adds a new page below the directory specified for [directory] is made.') . '</dd>',
+		'<dd>' . T_('The order of the parameter is arbitrary.') . '</dd>',
+		'<dd>' . T_('When an undefined option is specified, Help is displayed with the message.') . '</dd>',
+		'<dt>' . T_('OPTION') . '</dt>' . 
+		'<dd>' . T_('-d Directory Only.	It limits it only to the one with the child page. (The directory specified specifying it is an exception. )') . '</dd>',
+		'<dd>' . T_('-h Help.		This Description is displayed.') . '</dd>',
+		'<dd>' . T_('-q Quiet.		Warning is not displayed.') . '</dd>',
+		'<dt>' . T_('EXAMPLE') . '</dt>',
+		'<dd><pre><samp>',
+		'#newpage_subdir() -&gt; implies: #newpage_subdir(&lt;current dir&gt;)',
+		'#newpage_subdir(foo/var)',
+		'#newpage_subdir(foo/var, -n)',
+		'#newpage_subdir(-d,-q, foo/var, foo/vaz)',
+		'#newpage_subdir(-h)',
+		'#newpage_subdir(-XYZ) -&gt; implies : #newpage_subdir(-h)',
+		'</samp></pre></dd>',
+		'</dl>'
+	));
 }
 
 function plugin_newpage_subdir_convert()
@@ -153,8 +158,8 @@ function plugin_newpage_subdir_action()
 {
 	global $vars;
 
-        if (auth::check_role('readonly')) return '';
-        if (auth::is_check_role(PKWK_CREATE_PAGE)) return '';
+	if (auth::check_role('readonly')) return '';
+	if (auth::is_check_role(PKWK_CREATE_PAGE)) return '';
 
 	$roots = $retval = array();
 	$page = (empty($vars['page'])) ? '' : $vars['page'];
@@ -163,12 +168,11 @@ function plugin_newpage_subdir_action()
 	if (empty($page)) {
 		if (!empty($dir)) {
 			$roots[] = (substr($dir, -1) == '/') ? substr($dir, 0, -1) : $dir;
-			// $msg_prefix = $directory."..に";
-			$msg_prefix = _("To $dir.");
 		}
-		$retval['msg'] = htmlspecialchars($msg_prefix) . _('New page');
-		$retval['body'] = print_form_string(build_directory_list($roots));
-		return $retval;
+		return array(
+			'msg'	=> sprintf(T_('Create new page to %s directory'), $dir),
+			'body'	=> print_form_string(build_directory_list($roots))
+		);
 	}
 
 	header('Location: '.get_page_location_uri($dir.$page));

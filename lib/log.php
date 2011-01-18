@@ -361,7 +361,7 @@ function log_update($kind,$filename,$key,$mustkey,$data)
 
 	$put = false;
 	for($i=0;$i<$log_length;$i++) {
-				$fld = log::line2field($log_data[$i],$name);
+		$fld = log::line2field($log_data[$i],$name);
 
 		$sw_update = true;
 		foreach($_key as $idx) {
@@ -384,10 +384,11 @@ function log_update($kind,$filename,$key,$mustkey,$data)
 
 		if ($sw_update) {
 			$log_data[$i] = log::array2table($data);
-						$put = true;
+			$put = true;
 			break;
 		}
 	}
+	unset($i);
 
 	// Add
 	if (! $put) {
@@ -408,7 +409,9 @@ function log_update($kind,$filename,$key,$mustkey,$data)
 	if ($fp == false) return '';
 	@flock($fp, LOCK_SH);
 	foreach($log_data as $_log_data) {
+		if ($i == 1000) break;
 		fputs($fp, $_log_data);
+		$i++;
 	}
 	@flock($fp, LOCK_UN);
 	@fclose($fp);

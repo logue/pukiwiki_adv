@@ -1,7 +1,7 @@
 // PukiWiki - Yet another WikiWikiWeb clone.
 // Pukiwiki skin script for jQuery
-// Copyright (c)2010 PukiWiki Advance Developer Team
-//              2010 Logue <http://logue.be/> All rights reserved.
+// Copyright (c)2010-2011 PukiWiki Advance Developer Team
+//              2010      Logue <http://logue.be/> All rights reserved.
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ var pukiwiki_skin = {
 		'@prefix': '<http://purl.org/net/ns/doas#>',
 		'@about': '<skin.js>', a: ':JavaScript',
 		 title: 'Pukiwiki skin script for jQuery',
-		 created: '2008-11-25', release: {revision: '2.2.20', created: '2010-12-31'},
+		 created: '2008-11-25', release: {revision: '2.2.20', created: '2011-01-18'},
 		 author: {name: 'Logue', homepage: '<http://logue.be/>'},
 		 license: '<http://www.gnu.org/licenses/gpl-2.0.html>'
 	},
@@ -49,7 +49,7 @@ var pukiwiki_skin = {
 
 		// metaタグのGenereterから、Plusかそうでないかを判別
 		var generetor = $('meta[name=generator]')[0].content;
-		if (generetor.match(/PukiPlus/) || generetor.match(/Advance/)){
+		if (generetor.match(/[PukiPlus|Advance]/)){
 			this.plus = true;
 			this.image_dir = IMAGE_DIR+'ajax/';	// デフォルト
 		}else if (generetor.match(/plus/)){
@@ -1034,7 +1034,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			}
 		});
 		
-		$(prefix+'.edit_form textarea[name=msg]').keypress(function(){
+		$(prefix+'.edit_form textarea[name=msg]').keypress(function(elem){
 			// テキストエリアの内容をlocalStrageにページ名と共に保存
 			if (Modernizr.localstorage){
 				var d=new Date();
@@ -1043,6 +1043,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 					modified: d.getTime()
 				}));
 			}
+			
 		});
 		
 		// 送信イベント時の処理
@@ -1052,6 +1053,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			$('input, button, select, textarea').attr('disabled','disabled');	// フォームをロック
 			postdata.ajax = 'json';
 */
+			// ローカルストレージをフラッシュ
 			if (Modernizr.localstorage){
 				localStorage.removeItem(PAGE);
 			}
@@ -1662,7 +1664,10 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			var key = elem.which;	// 押されたキーのコードを取得
 			var key_label = String.fromCharCode(key);	// キーのラベル（ESCキーなどは取得できない）
 
-			if(elem.target.nodeName.match(/(input|textarea)/i)){ return true; }	// inputタグ、textareaタグ内ではキーバインド取得を無効化
+			if(elem.target.nodeName.match(/(input|textarea)/i)){
+				if (key == 27){return false;}
+				return true;	// inputタグ、textareaタグ内ではキーバインド取得を無効化（ただしESCキーは除外）
+			}
 		//	console.log(key,key_label);
 			
 			switch(key_label){
@@ -1767,7 +1772,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 					if(self.toc){
 						if (self.toc.style.display !== 'none'){
 							if(key == 27 || key == 47){
-								_hideToc(); //Esc, slash
+								pukiwiki_skin._hideToc(); //Esc, slash
 /*
 							}else if(key >= 48 && key <=57){ //0-9
 								key -= 48;
@@ -1780,14 +1785,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 							}
 						}else{
 							if(key == 47) {
-								
-								try{
-									self.toc.style.top = ((document.body.scrollTop + document.documentElement.scrollTop) || self.pageYOffset) + "px";
-								}catch(e){
-									self.toc.style.top = 0;
-								}
-								self.toc.style.left = 0;
-								$(self.toc).fadeIn("fast");	// /キー
+								$(self.toc).css('top',$(window).scrollTop() + 'px').css('left',$(window).scrollLeft() + 'px').fadeIn("fast");	// /キー
 							}
 						}
 					}
@@ -1846,17 +1844,20 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 	genTocDiv : function(lis){
 		this.toc = document.createElement("div");
 		this.toc.id = 'poptoc';
-		this.toc.style.top = 0;
-		this.toc.style.left = 0;
-
-		var tochtml = [
-			'<h2><a href="#">'+$('h1#title').text()+'</a><span class="c"> [TOC]</span></h2>',
-			lis.replace(/href/g,"tabindex='1' href"),
+		$(this.toc)
+			.addClass('ui-widget ui-widget-content ui-corner-all noprint')
+			.css('top',0)
+			.css('left',0)
+			.css('position','absolute')
+			.css('z-index',1)
+			.html([
+			'<h2><a href="#">'+$('h1.title').text()+'</a><span class="c"> [TOC]</span></h2>',
+			lis.replace(/href/g,'tabindex="1" href'),
 			'<hr />',
-			this.getNaviLink() + '</div>'
-		].join('');
+			this.getNaviLink()
+		].join(''));
+
 		document.body.appendChild(this.toc);
-		$(this.toc).html(tochtml);
 		$(document).click(this.popToc);
 		this.calcObj(this.toc,300);
 	},
@@ -1864,6 +1865,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 	calcObj : function(o, maxw){
 		var orgX = self.pageXOffset;
 		var orgY = self.pageYOffset;
+		
 		o.style.visibility = "hidden";
 		o.style.display = "block";
 		o.width = o.offsetWidth;
@@ -1920,13 +1922,11 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		}
 
 		if(ev.altKey){
-			_dispToc(ev,tg,0);
-		}else if(tg.className=='tocpic' || tg.className=='snum'){
-			_dispToc(ev,tg,2);
+			pukiwiki_skin._dispToc(ev,tg,0);
+		}else if(tg.className=='tocpic'){
+			pukiwiki_skin._dispToc(ev,tg,1);
 		}else{
-			_hideToc();
-//			var dv = document.defaultView;
-//			var x = tg, mp="";
+			pukiwiki_skin._hideToc(ev);
 		}
 	},
 	// popuptocでクリックした項目をハイライトさせる
@@ -1956,109 +1956,38 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		}
 		res = res.replace(/^\s*/,"");
 		return res.replace(/\s*$/,"");
-	}
-};
+	},
+	_dispToc : function(ev,tg,type){
+		var doc = {
+			x:ev.clientX + $(window).scrollLeft(),
+			y:ev.clientY + $(window).scrollTop()
+		};
+		var scr = {
+			x: ev.pageX,
+			y: ev.pageY,
+			w: $(window).width(),
+			h: $(window).height()
+		};
 
-// $().serializeArrayをJSONにする
-$.fn.serializeObject = function(){
-	var o = {};
-	var a = this.serializeArray();
-	$.each(a, function() {
-		if (o[this.name]) {
-			if (!o[this.name].push) {
-				o[this.name] = [o[this.name]];
-			}
-			o[this.name].push(this.value || '');
-		} else {
-			o[this.name] = this.value || '';
-		}
-	});
-	return o;
-};
+		var h = this.toc.height;
+		var w = this.toc.width;
+		var top;
 
-/**************************************************************************************************/
-// kanzaki.jsユーティリティ関数
-/** keyboard event handler */
-/**
- * Get event coordinates relative to current document
- * @access : public
- * @param	e : event
- * @return	the coordinates as Object
- */
-var _eventDocPos = function(e){
-	var p = {};
-	if(jQuery.browser.opera){
-		p.x = e.clientX + document.body.scrollLeft;
-		p.y = e.clientY + document.body.scrollTop;
-	}else if(jQuery.browser.msie){	// if(e.x){
-		if (jQuery.browser.msie.version < 8){
-			p.x = e.x + document.body.scrollLeft + document.documentElement.scrollLeft;
-			p.y = e.y + document.body.scrollTop + document.documentElement.scrollTop;
+		if(scr.h < h){
+			$(this.toc).css('height', scr.h + "px").css('overflow', 'auto');
+			top = (doc.y - scr.y);
 		}else{
-			p.x = e.x;
-			p.y = e.y;
+			top = ((scr.h - scr.y > h) ? doc.y : ((scr.y > h) ? (doc.y - h) :((scr.y < scr.h/2) ? (doc.y - scr.y) : (doc.y + scr.h - scr.y - h))));
 		}
-	}else{
-		p.x = e.pageX;
-		p.y = e.pageY;
+		$(this.toc).css('top', top + "px").css('left',((scr.x < scr.w - w) ? doc.x : (doc.x - w) )+ 'px');
+		if(type){ pukiwiki_skin.setCurPos(tg,type); }
+		$(this.toc).fadeIn("fast");
+	},
+	_hideToc : function(ev){
+		$(this.toc).fadeOut("fast");
 	}
-	return p;
 };
 
-/**
- * Get event coordinates relative to the screen
- * @access : public
- * @param	e : event
- * @return	the coordinates as Object
- */
-var _eventScrPos = function(e){
-	var p = {};
-	if($.browser.msie){//if(e.x){
-		p.x = e.x;
-		p.y = e.y;
-		p.w = document.body.clientWidth;
-		p.h = document.documentElement.clientHeight ? document.documentElement.clientHeight : document.body.clientHeight;
-	}else if($.browser.safari){
-		p.x = e.screenX;
-		p.y = self.innerHeight - self.screenY - e.screenY;
-		p.w = self.innerWidth;
-		p.h = self.innerHeight;
-	}else{
-		p.x = e.clientX;
-		p.y = e.clientY;
-		p.w = self.innerWidth;
-		p.h = self.innerHeight;
-	}
-	return p;
-};
-
-/** display on mouseclick */
-var _dispToc = function(ev,tg,type){
-	var doc = _eventDocPos(ev);
-	var scr = _eventScrPos(ev);
-	var h = pukiwiki_skin.toc.height;
-	var w = pukiwiki_skin.toc.width;
-	if(scr.h < pukiwiki_skin.toc.height){
-		pukiwiki_skin.toc.style.height = scr.h + "px";
-		pukiwiki_skin.toc.style.overflow = "auto";
-		pukiwiki_skin.toc.style.top = (doc.y - scr.y) + "px";
-	}else{
-//		if(!pukiwiki_skin.isSafari){ pukiwiki_skin.toc.style.height = h + "px"; }	//@@ Safari xhtml+xml
-		pukiwiki_skin.toc.style.top = ((scr.h - scr.y > h) ? doc.y + "px" :
-			((scr.y > h) ? (doc.y - h) + "px" :
-				((scr.y < scr.h/2) ? (doc.y - scr.y) + "px" :
-					(doc.y + scr.h - scr.y - h) + "px")));
-	}
-	pukiwiki_skin.toc.style.left = ((scr.x < scr.w - w) ? doc.x + "px" :
-		(doc.x - w) + "px");
-	if(type){ pukiwiki_skin.setCurPos(tg,type); }
-	$(pukiwiki_skin.toc).fadeIn("fast");
-};
-
-/** close TOC */
-function _hideToc(){
-	$(pukiwiki_skin.toc).fadeOut("fast");
-}
 /*************************************************************************************************/
 // default.jsのオーバーライド
 function pukiwiki_area_highlite(id,mode){
@@ -2082,6 +2011,30 @@ function open_uri(href, frame){
 	window.open(href, frame);
 	return false;
 }
+
+// $().serializeArrayをJSONにする
+$.fn.serializeObject = function(){
+	var o = {};
+	var a = this.serializeArray();
+	$.each(a, function() {
+		if (o[this.name]) {
+			if (!o[this.name].push) {
+				o[this.name] = [o[this.name]];
+			}
+			o[this.name].push(this.value || '');
+		} else {
+			o[this.name] = this.value || '';
+		}
+	});
+	return o;
+};
+
+function script_loader(script){
+	var element = document.createElement("script");
+	element.src = script;
+	document.body.appendChild(element);
+}
+
 /** PukiWiki Plus! Assistant Scripts **************************************************************/
 function pukiwiki_pos(){
 	if ($.browser.msie){
@@ -2106,51 +2059,42 @@ function pukiwiki_pos(){
 	}
 }
 
+/*************************************************************************************************/
 // ブラウザの設定
 var $buoop = {
-	vs:{
-		i:8,		// IE
-		f:3,		// FF
-		o:10.01,	// Opera
-		s:5,		// Safari
+	vs:{				// browser versions to notify
+		i:8,			// IE
+		f:3,			// FF
+		o:10.01,		// Opera
+		s:5,			// Safari
 		n:9
-	}
+	},
+	reminder: 0,		// atfer how many hours should the message reappear
+	onshow: function(){	// callback function after the bar has appeared
+						
+	},
+	l: LANG,			// set a language for the message, e.g. "en"
+	test: DEBUG,		// true = always show the bar (for testing)
+	newwindow: false	// open link in new window/tab
 };
+if (DEBUG){
+	$buoop.text = 'When the version of a browser is old, the text which presses for renewal of a browser here is displayed.';
+}
 
-(function(){
-	// JSON.stringify, JSON.parseのサポート
-	if (typeof JSON !== "object") {
-		$.ajax({
-			type: "GET",
-			global : false,
-			url: SKIN_DIR+'js/json2.js',
-			dataType: "script"
-		});
-	}
-	
-	// IEのCanvasサポート
-	if (!Modernizr.canvas) {
-		$.ajax({
-			type: "GET",
-			global : false,
-			url: SKIN_DIR+'js/excanvas.compiled.js',
-			dataType: "script"
-		});
-	}
-}());
-
-/*************************************************************************************************/
 // onLoad/onUnload
 $(document).ready(function(){
 	// フレームハイジャック対策
 	if( self !== top ){ top.location = self.location; }
-
-	$.ajax({
-		type: "GET",
-		global : false,
-		url: 'http://browser-update.org/update.js',
-		dataType: "script"
-	})
+	
+	// JSON.stringify, JSON.parseのサポート
+	if (typeof JSON !== "object") {
+		script_loader(SKIN_DIR+'js/json2.js');
+	}
+	// IEのCanvasサポート
+	if (!Modernizr.canvas) {
+		script_loader(SKIN_DIR+'js/excanvas.compiled.js');
+	}
+	script_loader('http://browser-update.org/update.js');
 	
 	if (typeof(pukiwiki_skin.custom) == 'object'){
 		if( typeof(pukiwiki_skin.custom.before_init) == 'function'){

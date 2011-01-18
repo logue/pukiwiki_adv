@@ -2,7 +2,7 @@
 // PukiPlus - Yet another WikiWikiWeb clone
 // $Id: comment.inc.php,v 1.40.23 2010/08/28 10:38:00 Logue Exp $
 // Copyright (C)
-//  2010      PukiWiki Advance Developers Team
+//  2010-2011 PukiWiki Advance Developers Team
 //  2005-2008 PukiWiki Plus! Team
 //  2002-2007 PukiWiki Developers Team
 //  2001-2002 Originally written by yu-ji
@@ -20,6 +20,24 @@ define('PLUGIN_COMMENT_FORMAT_MSG',  '$msg');
 define('PLUGIN_COMMENT_FORMAT_NAME', '[[$name]]');
 define('PLUGIN_COMMENT_FORMAT_NOW',  '&new{$now};');
 define('PLUGIN_COMMENT_FORMAT_STRING', "\x08MSG\x08 -- \x08NAME\x08 \x08NOW\x08");
+
+function plugin_comment_init(){
+	$messages = array(
+		'_comment_messages' => array(
+			'msg_comment_collided'		=> T_('It seems that someone has already updated the page you were editing.').'<br />'.
+										   T_('The comment was added, alhough it may be inserted in the wrong position.'),
+			'title_comment_collided'	=> T_('On updating  $1, a collision has occurred.'),
+			'title_updated'				=> T_('$1 was updated')
+		),
+		'_comment_formats' => array(
+			'msg'	=> PLUGIN_COMMENT_FORMAT_MSG,
+			'name'	=> PLUGIN_COMMENT_FORMAT_NAME,
+			'now'	=> PLUGIN_COMMENT_FORMAT_NOW,
+			'str'	=> PLUGIN_COMMENT_FORMAT_STRING
+		)
+	);
+	set_plugin_messages($messages);
+}
 
 function plugin_comment_action()
 {
@@ -156,9 +174,9 @@ function plugin_comment_convert()
 	static $all_numbers = 0;
 	static $comment_cols = PLUGIN_COMMENT_SIZE_MSG;
 
-	$_btn_name    = _("Name: ");
-	$_btn_comment = _("Post Comment");
-	$_msg_comment = _("Comment: ");
+	$_btn_name    = T_("Name: ");
+	$_btn_comment = T_("Post Comment");
+	$_msg_comment = T_("Comment: ");
 
 	$auth_guide = '';
 	if (PKWK_READONLY == ROLE_AUTH) {
@@ -217,7 +235,6 @@ $auth_guide
 		$nametags
 		<input type="text"   name="msg" id="p_comment_comment_{$comment_all_no}" size="$comment_cols" />
 		<input type="submit" name="comment" value="$_btn_comment" />
-		$helptags
 	</div>
 </form>
 EOD;

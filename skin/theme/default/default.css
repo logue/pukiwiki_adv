@@ -6,7 +6,7 @@
 // Original version written by miko and upk.
 // Adv version by Logue.
 // 
-// $Id: default.css,v 1.33.7 2010/10/22 17:40:00 Logue Exp $
+// $Id: default.css,v 1.33.7 2011/01/17 08:14:00 Logue Exp $
 //
 */
 
@@ -16,8 +16,8 @@ html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pr
 abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp,
 small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, figcaption, figure,  footer, header, hgroup, 
-menu, nav, section, summary, time, mark, audio, video {
+article, aside, canvas, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section, summary, time, mark, audio, video {
 	margin:0;
 	padding:0;
 	border:0;
@@ -55,15 +55,16 @@ a:hover, a:active { outline: none; }
 a, a:active, a:visited { color: #607890; }
 a:hover { color: #036; }
 
-ul, ol { margin-left: 1.8em; }
+ul, ol { margin-left: 2em; }
 ol { list-style-type: decimal; }
 
 nav ul, nav li { margin: 0; } 
 small { font-size: 85%; }
 strong, th { font-weight: bold; }
 /* td, td img { vertical-align: top; } */
-sub { vertical-align: sub; font-size: smaller; }
-sup { vertical-align: super; font-size: smaller; }
+sub, sup { font-size: 75%; line-height: 0; position: relative; }
+sup { top: -0.5em; }
+sub { bottom: -0.25em; }
 pre {  padding: 15px;  white-space: pre;  white-space: pre-wrap;  white-space: pre-line;  word-wrap: break-word; }
 textarea { overflow: auto; } 
 .ie6 legend, .ie7 legend { margin-left: -7px; } 
@@ -89,9 +90,18 @@ button {  width: auto; overflow: visible; }
 
 .ir { display: block; text-indent: -999em; overflow: hidden; background-repeat: no-repeat; text-align: left; direction: ltr; }
 .hidden { display: none; visibility: hidden; } 
-.visuallyhidden { position: absolute !important; clip: rect(1px 1px 1px 1px);  clip: rect(1px, 1px, 1px, 1px); }
+.visuallyhidden { 
+	border: 0 !important;
+	clip: rect(0 0 0 0);
+	height: 1px !important;
+	margin: -1px !important;
+	overflow: hidden !important;
+	padding: 0 !important;
+	position: absolute !important;
+	width: 1px !important;
+}
 .invisible { visibility: hidden; }
-.clearfix:before, .clearfix:after {  content: "\0020"; display: block; height: 0; visibility: hidden;	 } 
+.clearfix:before, .clearfix:after { content: "\0020"; display: block; height: 0; visibility: hidden; } 
 .clearfix:after { clear: both; }
 .clearfix { zoom: 1; }
 
@@ -105,7 +115,7 @@ pre, code, kbd, samp, textarea, select, option, input, var{
 
 /* Japanese */
 :lang(ja-JP)	{
-	font-family: 'メイリオ', 'ヒラギノ角ゴ Pro W3', Osaka, 'ＭＳＰ ゴシック' !important;
+	font-family: 'メイリオ', 'ヒラギノ角ゴ Pro W3', Osaka, 'ＭＳＰ ゴシック';
 }
 :lang(ja-JP) pre,
 :lang(ja-JP) code,
@@ -114,14 +124,14 @@ pre, code, kbd, samp, textarea, select, option, input, var{
 :lang(ja-JP) textarea,
 :lang(ja-JP) select,
 :lang(ja-JP) option,
-:lang(ja-JP) input
+:lang(ja-JP) input,
 :lang(ja-JP) var{
 	font-family:'Osaka−等幅', 'ＭＳ ゴシック' !important;
 }
 
 /* Korean */
 :lang(ko-KR)	{
-	font-family: '맑은 고딕', Gulim, Dotum, AppleGothic !important;
+	font-family: '맑은 고딕', Gulim, Dotum, AppleGothic;
 }
 :lang(ko-KR) pre,
 :lang(ko-KR) code,
@@ -130,14 +140,14 @@ pre, code, kbd, samp, textarea, select, option, input, var{
 :lang(ko-KR) textarea,
 :lang(ko-KR) select,
 :lang(ko-KR) option,
-:lang(ko-KR) input
+:lang(ko-KR) input,
 :lang(ko-KR) var{
 	font-family:GulimChe !important;
 }
 
 /* Traditional Chinese */
 :lang(zh-TW)	{
-	font-family: 'Heiti TC', '微軟正黑體', '華康超黑體', '華康新特黑體', '華康粗黑體' !important;
+	font-family: 'Heiti TC', '微軟正黑體', '華康超黑體', '華康新特黑體', '華康粗黑體';
 }
 :lang(zh-TW) pre,
 :lang(zh-TW) code,
@@ -146,9 +156,9 @@ pre, code, kbd, samp, textarea, select, option, input, var{
 :lang(zh-TW) textarea,
 :lang(zh-TW) select,
 :lang(zh-TW) option,
-:lang(zh-TW) input
+:lang(zh-TW) input,
 :lang(zh-TW) var{
-	font-family:'中易黑体' !important;
+	font-family: SimHei, '中易宋體', '中易黑體' !important;
 }
 
 /* Simplified Chinese */
@@ -162,9 +172,9 @@ pre, code, kbd, samp, textarea, select, option, input, var{
 :lang(zh-CN) textarea,
 :lang(zh-CN) select,
 :lang(zh-CN) option,
-:lang(zh-CN) input
+:lang(zh-CN) input,
 :lang(zh-CN) var{
-	font-family:'中易黑体','Kozuka Gothic Pro' !important;
+	font-family: 'SimHei','MS Song', '中易黑体','Kozuka Gothic Pro' !important;
 }
 
 .ui-widget{
@@ -295,6 +305,15 @@ fieldset {
 
 legend {
 	text-indent:0.5em;
+}
+
+figure {
+	margin: 0 auto;
+	text-align:center;
+}
+
+figcaption {
+	text-align:center;
 }
 
 .style_table{
@@ -723,11 +742,6 @@ rp {
 	font-size:93%;
 	min-width:18em;
 	max-width:25em;
-	/*width:22em;*/
-	margin-right:-10em;
-	z-index:1;
-	position:absolute;
-	display:none;
 }
 #poptoc h2{
 	font-size:small;

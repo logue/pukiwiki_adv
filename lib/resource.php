@@ -34,12 +34,12 @@ $_string = array(
 
 	// Error messages
 	'warning'			=> T_('WARNING'),
-	'readonly_msg'		=> T_('This Wiki is <code>PKWK_READONLY</code> mode now. Therefore, edit is prohibited.'),
+	'readonly_msg'		=> T_('This Wiki is <var>PKWK_READONLY</var> mode now. Therefore, edit is prohibited.'),
 	'error_msg'			=> T_('A runtime error has occurred.').'<br />'.T_('Please contact to site admin. If you want more information, please change <code>PKWK_WARNING</code> value.'),
 	'debugmode'			=> T_('This program is running in debug mode.'),
-	'changeadminpass'	=> sprintf(T_('<code>$adminpass</code> is not changed! Click <a href="%s">here</a> to generate crypted password and modify auth.ini.php!'),get_cmd_uri('md5')),
+	'changeadminpass'	=> sprintf(T_('<var>$adminpass</var> is not changed! Click <a href="%s">here</a> to generate crypted password and modify auth.ini.php!'),get_cmd_uri('md5')),
 	'not_writable'		=> T_('<code>%s</code> is not found or not writable.'),
-	'not_found'			=> T_('Page <code>%s</code> was not found.')
+	'not_found'			=> T_('Page <var>%s</var> was not found.')
 );
 
 $_button = array(

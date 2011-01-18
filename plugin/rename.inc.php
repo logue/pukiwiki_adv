@@ -142,26 +142,28 @@ function plugin_rename_phase1($err = '', $page = '')
 	$s_src = htmlspecialchars(plugin_rename_getvar('src'));
 	$s_dst = htmlspecialchars(plugin_rename_getvar('dst'));
 
-	$ret = array();
-	$ret['msg']  = $_rename_messages['msg_title'];
-	$ret['body'] = <<<EOD
-$msg
-<form action="$script" method="post">
-	<input type="hidden" name="cmd" value="rename" />
-	<div class="remane_form">
-		<input type="radio"  name="method" id="_p_rename_page" value="page"$radio_page />
-		<label for="_p_rename_page">{$_rename_messages['msg_page']}:</label>$select_refer<br />
-		<input type="radio"  name="method" id="_p_rename_regex" value="regex"$radio_regex />
-		<label for="_p_rename_regex">{$_rename_messages['msg_regex']}:</label><br />
-		<label for="_p_rename_from">From:</label><br />
-		<input type="text" name="src" id="_p_rename_from" size="60" value="$s_src" /><br />
-		<label for="_p_rename_to">To:</label><br />
-		<input type="text" name="dst" id="_p_rename_to"   size="60" value="$s_dst" /><br />
-		<input type="submit" value="{$_rename_messages['btn_next']}" />
-	</div>
-</form>
-EOD;
-	return $ret;
+	return array(
+		'msg'	=> $_rename_messages['msg_title'],
+		'body'	=> <<<EOD
+<fieldset>
+	<legend>{$_rename_messages['msg_title']}</legend>
+	<form action="$script" method="post">
+		<input type="hidden" name="cmd" value="rename" />
+		<div class="remane_form">
+			<input type="radio"  name="method" id="_p_rename_page" value="page"$radio_page />
+			<label for="_p_rename_page">{$_rename_messages['msg_page']}:</label>$select_refer<br />
+			<input type="radio"  name="method" id="_p_rename_regex" value="regex"$radio_regex />
+			<label for="_p_rename_regex">{$_rename_messages['msg_regex']}:</label><br />
+			<label for="_p_rename_from">From:</label><br />
+			<input type="text" name="src" id="_p_rename_from" size="40" value="$s_src" /><br />
+			<label for="_p_rename_to">To:</label><br />
+			<input type="text" name="dst" id="_p_rename_to"   size="40" value="$s_dst" /><br />
+			<input type="submit" value="{$_rename_messages['btn_next']}" />
+		</div>
+	</form>
+</fieldset>
+EOD
+	);
 }
 
 //第二段階:新しい名前の入力
@@ -177,8 +179,8 @@ function plugin_rename_phase2($err = '')
 	$msg_related = '';
 	$related = plugin_rename_getrelated($refer);
 	if (! empty($related))
-		$msg_related = '<label for="_p_rename_related">' . $_rename_messages['msg_do_related'] . '</label>' .
-		'<input type="checkbox" name="related" id="_p_rename_related" value="1" checked="checked" /><br />';
+		$msg_related = '<input type="checkbox" name="related" id="_p_rename_related" value="1" checked="checked" />' .
+		'<label for="_p_rename_related">' . $_rename_messages['msg_do_related'] . '</label><br />';
 
 	$msg_rename = sprintf($_rename_messages['msg_rename'], make_pagelink($refer));
 	$s_page  = htmlspecialchars($page);
@@ -188,17 +190,19 @@ function plugin_rename_phase2($err = '')
 	$ret['msg']  = $_rename_messages['msg_title'];
 	$ret['body'] = <<<EOD
 $msg
-<form action="$script" method="post">
-	<input type="hidden" name="plugin" value="rename" />
-	<input type="hidden" name="refer"  value="$s_refer" />
-	<div class="rename_form">
-		$msg_rename<br />
-		<label for="_p_rename_newname">{$_rename_messages['msg_newname']}:</label>
-		<input type="text" name="page" id="_p_rename_newname" size="80" value="$s_page" /><br />
-		$msg_related
-		<input type="submit" value="{$_rename_messages['btn_next']}" />
-	</div>
-</form>
+<fieldset>
+	<legend>$msg_rename</legend>
+	<form action="$script" method="post">
+		<input type="hidden" name="plugin" value="rename" />
+		<input type="hidden" name="refer"  value="$s_refer" />
+		<div class="rename_form">
+			<label for="_p_rename_newname">{$_rename_messages['msg_newname']}:</label>
+			<input type="text" name="page" id="_p_rename_newname" size="40" value="$s_page" /><br />
+			$msg_related
+			<input type="submit" value="{$_rename_messages['btn_next']}" />
+		</div>
+	</form>
+</fieldset>
 EOD;
 	if (! empty($related)) {
 		$ret['body'] .= '<hr /><p>' . $_rename_messages['msg_related'] . '</p><ul>';
@@ -320,18 +324,17 @@ EOD;
 	}
 	$ret['msg'] = $_rename_messages['msg_title'];
 	$ret['body'] = <<<EOD
-<p>$msg</p>
-<form action="$script" method="post">
-	<input type="hidden" name="plugin" value="rename" />
-	<input type="hidden" name="menu"   value="1" />
-	<div>
-
-	$input
-	$auth
-	<input type="submit" value="{$_rename_messages['btn_submit']}" />
-	</div>
-</form>
-<p>{$_rename_messages['msg_confirm']}</p>
+$msg
+	<form action="$script" method="post">
+		<input type="hidden" name="plugin" value="rename" />
+		<input type="hidden" name="menu"   value="1" />
+		<div class="rename_form">
+			$input
+			$auth
+			<input type="submit" value="{$_rename_messages['btn_submit']}" />
+		</div>
+	</form>
+	<p>{$_rename_messages['msg_confirm']}</p>
 EOD;
 
 	ksort($pages, SORT_STRING);

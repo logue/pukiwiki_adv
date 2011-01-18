@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiPlus.
 //
-// $Id: flash.inc.php,v 1.2.2 2010/09/03 22:11:00 Logue Exp $
+// $Id: flash.inc.php,v 1.2.3 2011/01/04 22:11:00 Logue Exp $
 //
 // flash plugin for pukiwiki
 // Author Nekyo.(http://nekyo.hp.infoseek.co.jp/)
@@ -20,7 +20,7 @@ function plugin_flash_inline()
 
 function plugin_flash_convert()
 {
-	global $flash_count, $script;
+	global $flash_count, $script, $js_blocks;
 	$argc = func_num_args();
 
 	if ($argc < 1) {
@@ -63,6 +63,7 @@ function plugin_flash_convert()
 	);
 	$width = '512';
 	$height = '384';
+	$align = "";
 
 	//  @ 引数取り
 	for ($i = 1; $i < $argc; $i++) {
@@ -73,8 +74,6 @@ function plugin_flash_convert()
 			
 			if ($prop == 'flashvars'){
 				$flashvars = $match[2];
-				// @ UTF-8に変換
-				$flashvars = mb_convert_encoding($flashvars,"UTF-8","EUC-JP");//
 				// @ varname =val の形に分解
 				$aryVars   = split('&',$flashvars);
 				for($i=0;$i < count($aryVars); $i++){
@@ -117,27 +116,24 @@ function plugin_flash_convert()
 	}
 		
 	$ret = <<<EOD
-<object id="flash_$flash_count" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" $width $height>
+<object id="flash_$flash_count" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="$width" height="$height">
 $param
 <!--[if !IE]>-->
-	<object type="application/x-shockwave-flash" data="$swf" $width $height>
+	<object type="application/x-shockwave-flash" data="$swf" width="$width" height="$height">
 <!--<![endif]-->
 		Error: Flash Player Cannot Installed.
 <!--[if !IE]>-->
 	</object>
 <!--<![endif]-->
 </object>
-<script type="text/javascript">
-//<![CDATA[
-swfobject.registerObject("flash_$flash_count", "9.0.0", "$script?plugin=flash&type=.swf");
-//]]></script>
 EOD;
+	$js_blocks[] = 'swfobject.registerObject("flash_'.$flash_count.'", "9.0.0", "'.get_cmd_uri('flash','','',array('type'=>'.swf')).'");';
 	$flash_count++;
 	if ($binline==1){
 		// インライン出力
 		return '<span class="flash">'.$ret.'</span>'."\n";
 	}else{
-		return '<div class="flash" style="text-align:$align;margin-left:auto; margin-right:auto;">'.$ret.'</div>'."\n";
+		return '<div class="flash" style="text-align:center;margin-left:auto; margin-right:auto;">'.$ret.'</div>'."\n";
 	}
 }
 

@@ -1,6 +1,7 @@
 <?php
-// $Id: article.inc.php,v 1.27.6 2010/09/01 22:58:00 Logue Exp $
+// $Id: article.inc.php,v 1.27.6 2011/01/02 20:43:00 Logue Exp $
 // Copyright (C)
+//   2010-2011 PukiWiki Advance Developers Team
 //   2005-2006,2008 PukiWiki Plus! Team
 //   2002-2005 PukiWiki Developers Team
 //   2002      Originally written by OKAWARA,Satoshi <kawara@dml.co.jp>
@@ -137,7 +138,7 @@ EOD;
 				$mailsubject .= '/' . $post['name'];
 			$mailsubject = mb_encode_mimeheader($mailsubject);
 
-			$mailbody = array():
+			$mailbody = array();
 			$mailbody[] = $post['msg'];
 			$mailbody[] = "\n" . '---';
 			$mailbody[] = $_article_msg['msg_article_mail_sender'] . $post['name'] . ' (' . $now . ')';
@@ -190,13 +191,13 @@ function plugin_article_convert()
 	<input type="hidden" name="digest" value="$s_digest" />
 	<input type="hidden" name="refer" value="$s_page" />
 	<div class="article_form">
-		<label for="_p_article_name_$article_no">$_article_msg['btn_name']</label>
+		<label for="_p_article_name_$article_no">{$_article_msg['btn_name']}</label>
 		<input type="text" name="name" id="_p_article_name_$article_no" size="$name_cols" /><br />
-		<label for="_p_article_subject_$article_no">$_article_msg['btn_subject']</label>
+		<label for="_p_article_subject_$article_no">{$_article_msg['btn_subject']}</label>
 		<input type="text" name="subject" id="_p_article_subject_$article_no" size="$subject_cols" /><br />
 		<textarea name="msg" class="msg" rows="$article_rows" cols="$article_cols">\n</textarea><br />
 		$helptags
-		<input type="submit" name="article" value="$_article_msg['btn_article']" />
+		<input type="submit" name="article" value="{$_article_msg['btn_article']}" />
 	</div>
 </form>
 EOD;

@@ -1,14 +1,13 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: tracker.inc.php,v 1.123.2 2010/10/25 19:24:00 Logue Exp $
+// $Id: tracker.inc.php,v 1.123.14 2011/10/25 22:40:00 Logue Exp $
 // Copyright (C) 
-//     2010      PukiWiki Advance Developers Team
+//     2010-2011 PukiWiki Advance Developers Team
 //     2004-2009 PukiWiki Plus! Team
 //     2003-2005, 2007 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
 //
 // Issue tracker plugin (See Also bugtrack plugin)
-
 
 // Tracker_list: Excluding pattern
 define('PLUGIN_TRACKER_LIST_EXCLUDE_PATTERN','#^SubMenu$|/#');	// 'SubMenu' and using '/'
@@ -22,6 +21,7 @@ define('PLUGIN_TRACKER_LIST_SORT_LIMIT', 3);
 
 // SPAM
 defined('PLUGIN_TRACKER_REJECT_SPAMCOUNT') or define('PLUGIN_TRACKER_REJECT_SPAMCOUNT', 1);
+
 // ----
 // Basic interface and strategy
 
@@ -137,10 +137,10 @@ function plugin_tracker_convert()
 	$form_enctype = is_mobile() ? '' : 'enctype="multipart/form-data"';
 	return <<<EOD
 <form $form_enctype action="$script" method="post">
-<div class="tracker_form">
-$template
 $hidden
-</div>
+	<div class="tracker_form">
+		$template
+	</div>
 </form>
 EOD;
 }
@@ -955,16 +955,17 @@ function plugin_tracker_list_action()
 
 function plugin_tracker_list_render($base, $refer, $rel = '', $config = '', $order = '', $list = '', $limit = NULL)
 {
+	// Adv. not use sortabletable.js
+	if (preg_match("/plus/i", S_VERSION)){
 //miko
-/*
-	static $tracker_count = 0;
-	if ($tracker_count == 0) {	// Adv. not use sortabletable.js
-		global $head_tags;
-		$head_tags[] = ' <script type="text/javascript" charset="utf-8" src="' . SKIN_URI . 'sortabletable.js"></script>';
+		static $tracker_count = 0;
+		if ($tracker_count == 0) {
+			global $head_tags;
+			$head_tags[] = ' <script type="text/javascript" charset="utf-8" src="' . SKIN_URI . 'sortabletable.js"></script>';
+		}
+		$tracker_count++;
+//miko
 	}
-	$tracker_count++;
-*/
-//miko
 
 	$tracker_list = new Tracker_list();
 
@@ -983,25 +984,25 @@ function plugin_tracker_list_render($base, $refer, $rel = '', $config = '', $ord
 	}
 	unset($tracker_list);
 
+	if (preg_match("/plus/i", S_VERSION)){
 //miko
-//	global $sortable_tracker;
-//	if ($sortable_tracker) {
-//		$trackerid = 'trackerlist' . $tracker_count;
-//		$trackerso = join(',', array_fill(0, $cols, '"String"'));
-//		$html = convert_html($result);
-//		$html = preg_replace('/<table class="style_table"/', '<table id="' . $trackerid . '" class="style_table"', $html);
-/*
-		return $html . <<<EOD
-<script type="text/javascript">
-//<![CDATA[
+		global $sortable_tracker;
+		if ($sortable_tracker) {
+			$trackerid = 'trackerlist' . $tracker_count;
+			$trackerso = join(',', array_fill(0, $cols, '"String"'));
+			$html = convert_html($result);
+			$html = preg_replace('/<table class="style_table"/', '<table id="' . $trackerid . '" class="style_table"', $html);
+
+			return $html . <<<EOD
+<script type="text/javascript">/* <![CDATA[ */
 var st = new SortableTable(document.getElementById('{$trackerid}'),[{$trackerso}]);
-//]]></script>
+/* ]]> */</script>
 EOD;
-*/
-//	}
+		}
+	}
 //miko
 
-//	return convert_html($result);
+	return convert_html($result);
 }
 
 // Listing class
@@ -1601,6 +1602,9 @@ function plugin_tracker_message($key)
 		'btn_base'   => T_('Base page'),
 		'btn_update' => T_('Update'),
 		'btn_past'   => T_('Past'),
+		'msg_limit'  => T_('top <var>$2</var> results out of <var>$1</var>.'),
+		'msg_list'   => T_('List items of <var>$1</var>'),
+		'msg_back'   => '<p>$1</p>',
 	);
 	return isset($_tracker_messages[$key]) ? $_tracker_messages[$key] : 'NOMESSAGE';
 }

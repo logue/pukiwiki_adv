@@ -69,7 +69,7 @@ function plugin_pcomment_action()
 	$refer = isset($vars['refer']) ? $vars['refer'] : '';
 
 	if (!is_page($refer) && auth::is_check_role(PKWK_CREATE_PAGE)) {
-		die_message( _('PKWK_CREATE_PAGE prohibits editing') );
+		die_message( T_('PKWK_CREATE_PAGE prohibits editing') );
 	}
 
 	$retval = plugin_pcomment_insert();
@@ -161,7 +161,6 @@ function plugin_pcomment_convert()
 
 		$form_start = '<form action="' . get_script_uri() . '" method="post">' . "\n";
 		$form = <<<EOD
-
 	<input type="hidden" name="digest" value="$digest" />
 	<input type="hidden" name="plugin" value="pcomment" />
 	<input type="hidden" name="refer"  value="$s_refer" />
@@ -355,7 +354,7 @@ function plugin_pcomment_get_comments($page, $count, $dir, $reply)
 //	global $_msg_pcomment_restrict;
 
 	if (! check_readable($page, false, false))
-		return array(str_replace('$1', $page, _('Due to the blocking, no comments could be read from  $1 at all.')));
+		return array(str_replace('$1', $page, T_('Due to the blocking, no comments could be read from  $1 at all.')));
 
 	// $reply = (! PKWK_READONLY && $reply); // Suprress radio-buttons
 	$reply = (! auth::check_role('readonly') && $reply); // Suprress radio-buttons

@@ -34,16 +34,18 @@ function plugin_addline_init()
 {
 	$messages = array(
 		'_addline_messages'	=> array(
-			'btn_submit' =>		T_('add'),
-			'title_collided' =>	T_('On updating  $1, a collision has occurred.'),
-			'msg_collided' =>	T_('It seems that someone has already updated the page you were editing.').'<br />'.
+			'btn_submit'		=> T_('add'),
+			'title_collided'	=> T_('On updating  $1, a collision has occurred.'),
+			'msg_collided' 		=> T_('It seems that someone has already updated the page you were editing.').'<br />'.
 								T_('The string was added, alhough it may be inserted in the wrong position.'),
-			'error' =>			T_('addline error'),
-			'config_notfound' =>T_('config file <code>%s</code> is not exist.')
-		),
+			'error'				=> T_('addline error'),
+			'config_notfound'	=> T_('config file <var>%s</var> is not exist.'),
+			'err_readonly'		=> T_('This Wiki is <var>PKWK_READONLY</var> mode now. Therefore, addline is prohibited.')
+		)
 	);
 	set_plugin_messages($messages);
 }
+
 function plugin_addline_convert()
 {
 	global $script,$vars,$digest;
@@ -60,42 +62,42 @@ function plugin_addline_convert()
 	
 	$above = ADDLINE_INS;
 	$configname = 'default';
-		$btn_text = $_addline_messages['btn_submit'];
-		$right_text = $left_text = '';
-		if ( func_num_args() ){
-			foreach ( func_get_args() as $opt ){
-			if ( $opt === 'above' || $opt === 'up' ){
-					$above = 1;
-				}
-				else if (preg_match("/btn:(.+)/i",$opt,$args)){
-					$btn_text = htmlspecialchars($args[1]);
-				}
-				else if (preg_match("/rtext:(.+)/i",$opt,$args)){
-					$right_text = htmlspecialchars($args[1]);
-				}
-				else if (preg_match("/ltext:(.+)/i",$opt,$args)){
-					$left_text = htmlspecialchars($args[1]);
-				}
-				else if ( $opt === 'below' || $opt === 'down' ){
-					$above = 0;
-				}
-	   			else if ( $opt === 'number' ){
-			$no_flag = 1;
+	$btn_text = $_addline_messages['btn_submit'];
+	$right_text = $left_text = '';
+	if ( func_num_args() ){
+		foreach ( func_get_args() as $opt ){
+		if ( $opt === 'above' || $opt === 'up' ){
+				$above = 1;
 			}
-	   			else if ( $opt === 'nonumber' ){
-			$no_flag = 0;
+			else if (preg_match("/btn:(.+)/i",$opt,$args)){
+				$btn_text = htmlspecialchars($args[1]);
 			}
-				else {
-					$configname = $opt;
-				}
+			else if (preg_match("/rtext:(.+)/i",$opt,$args)){
+				$right_text = htmlspecialchars($args[1]);
 			}
-			if ( $no_flag == 1 ) $btn_text .= "[$addline_no]";
+			else if (preg_match("/ltext:(.+)/i",$opt,$args)){
+				$left_text = htmlspecialchars($args[1]);
+			}
+			else if ( $opt === 'below' || $opt === 'down' ){
+				$above = 0;
+			}
+   			else if ( $opt === 'number' ){
+		$no_flag = 1;
 		}
-	
-		$f_page   = htmlspecialchars($vars['page']);
-		$f_config = htmlspecialchars($configname);
-	
-		$string = <<<EOD
+   			else if ( $opt === 'nonumber' ){
+		$no_flag = 0;
+		}
+			else {
+				$configname = $opt;
+			}
+		}
+		if ( $no_flag == 1 ) $btn_text .= "[$addline_no]";
+	}
+
+	$f_page   = htmlspecialchars($vars['page']);
+	$f_config = htmlspecialchars($configname);
+
+	return <<<EOD
 <form action="$script" method="post">
 	<div class="addline_form">
 		<input type="hidden" name="addline_no" value="$addline_no" />
@@ -110,8 +112,8 @@ function plugin_addline_convert()
 	</div>
 </form>
 EOD;
-	return $string;
 }
+
 function plugin_addline_inline()
 {
 	global $vars,$digest;
@@ -129,51 +131,58 @@ function plugin_addline_inline()
 	
 	$above = ADDLINE_INS;
 	$configname = 'default';
-		$btn_text = $_addline_messages['btn_submit'];
-		if ( func_num_args() ){
-			$args =func_get_args();
-			$opt = array_pop($args);
-			$btn_text = $opt ? htmlspecialchars($opt) : $btn_text;
-			foreach ( $args as $opt ){
-			if ( $opt === 'before' ){
-					$above = 3;
-				}
-				else if ( $opt === 'after' ){
-					$above = 2;
-				}
-			else if ( $opt === 'above' || $opt === 'up' ){
-					$above = 1;
-				}
-				else if ( $opt === 'below' || $opt === 'down' ){
-					$above = 0;
-				}
-	   			else if ( $opt === 'number' ){
-			$no_flag = 1;
+	$btn_text = $_addline_messages['btn_submit'];
+	if ( func_num_args() ){
+		$args =func_get_args();
+		$opt = array_pop($args);
+		$btn_text = $opt ? htmlspecialchars($opt) : $btn_text;
+		foreach ( $args as $opt ){
+		if ( $opt === 'before' ){
+				$above = 3;
 			}
-	   			else if ( $opt === 'nonumber' ){
-			$no_flag = 0;
+			else if ( $opt === 'after' ){
+				$above = 2;
 			}
-				else {
-					$configname = $opt;
-				}
+		else if ( $opt === 'above' || $opt === 'up' ){
+				$above = 1;
 			}
-			if ( $no_flag == 1 ) $btn_text .= "[$addline_no]";
+			else if ( $opt === 'below' || $opt === 'down' ){
+				$above = 0;
+			}
+   			else if ( $opt === 'number' ){
+		$no_flag = 1;
 		}
-	
-		$f_page   = rawurlencode($vars['page']);
-		$f_config = rawurlencode($configname);
-		$link_uri = get_cmd_uri('addline','','',array('addline_inno'=>$addline_no,'above'=>$above,'refer'=>$f_page,'configname'=>$f_config,'digest'=>$digest));
+   			else if ( $opt === 'nonumber' ){
+		$no_flag = 0;
+		}
+			else {
+				$configname = $opt;
+			}
+		}
+		if ( $no_flag == 1 ) $btn_text .= "[$addline_no]";
+	}
+
+	$f_page   = rawurlencode($vars['page']);
+	$f_config = rawurlencode($configname);
+	$link_uri = get_cmd_uri('addline','','',
+		array(
+			'addline_inno'	=> $addline_no,
+			'above'			=> $above,
+			'refer'			=> $f_page,
+			'configname'	=> $f_config,
+			'digest'		=> $digest
+		)
+	);
 	
 // <a href="$script?plugin=addline&amp;addline_inno=$addline_no&amp;above=$above&amp;refer=$f_page&amp;configname=$f_config&amp;digest=$digest"></a>
-	return '<a href="'.$link.'">'.$btn_text.'</a>;
+	return '<a href="'.$link_uri.'">'.$btn_text.'</a>;
 }
+
 function plugin_addline_action()
 {
-	global $_error,$vars,$post,$now;
-	global $_title_updated;
-	global $_addline_messages;
 
-	if( auth::check_role('readonly') ) die_message($_error['readonly_msg']);
+	
+	if( auth::check_role('readonly') ) die_message($_addline_messages['err_readonly']);
 
 	$refer			= $vars['refer'];
 	$postdata_old	= get_source($refer);

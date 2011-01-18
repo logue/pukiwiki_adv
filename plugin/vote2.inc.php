@@ -355,12 +355,12 @@ function plugin_vote2_convert()
 
 		$body2 .= <<<EOD
 	<tr>
-		<td align="left" class="style_td $cls" style="padding-left:1em;padding-right:1em;">$link</td>
+		<td class="style_td $cls" style="text-align:left;">$link</td>
 
 EOD;
 
 		$body2 .= <<<EOD
-		<td align="right" class="style_td $cls">$f_cnt
+		<td class="style_td $cls" style="text-align:right;">$f_cnt
 
 EOD;
 

@@ -26,7 +26,7 @@ function catbody($title, $page, $body)
 	global $nofollow;
 	global $_LANG, $_LINK, $_IMAGE;
 
-	global $pkwk_dtd, $x_ua_compatible;	// XHTML 1.1, XHTML1.0, HTML 4.01 Transitional...
+	global $pkwk_dtd, $x_ua_compatible;	// HTML5, XHTML 1.1, XHTML1.0...
 	global $page_title;		// Title of this site
 	global $do_backup;		// Do backup or not
 	global $modifier;		// Site administrator's  web page
@@ -169,7 +169,7 @@ function catbody($title, $page, $body)
 		if(!isset($default_google_loader)){
 			$default_google_loader = array(
 				'jquery'=>'1.4.4',
-				'jqueryui'=>'1.8.7',
+				'jqueryui'=>'1.8.8',
 				'swfobject'=>'2.2'
 			);
 			if ($x_ua_compatible == 'chrome=1'){ $default_google_loader['chrome-frame'] = '1.0.2'; }	// X-UA-CompatibleでChromeをレンダリングにするよう指定した場合
@@ -313,9 +313,10 @@ function catbody($title, $page, $body)
 		
 		// Last modification date (string) of the page
 		if ($is_read){
-			$lastmodified = ($pkwk_dtd == PKWK_DTD_HTML_5) ? 
-				'<time pubdate="pubdate" datetime="'.get_date('c',$filetime).'">'.get_date('D, d M Y H:i:s T', $filetime). ' ' . get_pg_passage($_page, FALSE).'</time>'
-				 : get_date('D, d M Y H:i:s T', $filetime). ' ' . get_pg_passage($_page, FALSE);
+			$lastmodified = get_date('D, d M Y H:i:s T', $filetime). ' ' . get_pg_passage($_page, FALSE);
+			if ($pkwk_dtd == PKWK_DTD_HTML_5) {
+				$lastmodified = '<time pubdate="pubdate" datetime="'.get_date('c',$filetime).'">'.$lastmodified.'</time>';
+			}
 		}
 
 		// List of attached files to the page
@@ -391,7 +392,7 @@ function catbody($title, $page, $body)
 		pkwk_common_headers();
 		header('Content-Type: text/html; charset=' . CONTENT_CHARSET);
 		header('X-UA-Compatible: '.$x_ua_compatible);	// とりあえずIE8対策
-		header('X-Frame-Options: deny');
+		header('X-Frame-Options: deny');	// クリックジャッキング対策
 		require(SKIN_FILE);
 	}
 
@@ -723,12 +724,16 @@ function pkwk_common_headers($compress = true){
 		header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
 		header('Pragma: no-cache');
 	}
+	header('X-Content-Type-Options: nosniff');	// IEの自動MIME type判別機能を無効化する
+
 	// 時刻よりEtagを生成
 	header('ETag: ' . md5(MUTIME));
 }
 
 //////////////////////////////////////////////////
 // DTD definitions
+// Adv. does not support HTML4.x
+
 define('PKWK_DTD_HTML_5',                 50); // HTML5(XHTML5)
 define('PKWK_DTD_XHTML_1_1',              17); // Strict only
 define('PKWK_DTD_XHTML_1_0',              16); // Strict
@@ -835,11 +840,12 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 	}else{
 		if (!isset($x_ua_compatible)) $x_ua_compatible = 'IE=edge';
 		$meta_tags = array(
-			array('http-equiv'	=> 'content-language',		'content'	=> 'text/html; charset='.CONTENT_CHARSET),
-			array('http-equiv'	=> 'content-style-type',	'content'	=> 'text/css'),
-			array('http-equiv'	=> 'content-script-type',	'content'	=> 'text/javascript'),
-			array('http-equiv'	=> 'X-UA-Compatible',		'content'	=> $x_ua_compatible),
-			array('http-equiv'	=> 'X-Frame-Options',		'content'	=> 'deny')
+			array('http-equiv'	=> 'content-type',				'content'	=> 'text/html; charset='.CONTENT_CHARSET),
+			array('http-equiv'	=> 'content-language',			'content'	=> $lang_code),
+			array('http-equiv'	=> 'content-style-type',		'content'	=> 'text/css'),
+			array('http-equiv'	=> 'content-script-type',		'content'	=> 'text/javascript'),
+			array('http-equiv'	=> 'X-UA-Compatible',			'content'	=> $x_ua_compatible),
+			array('http-equiv'	=> 'X-Frame-Options',			'content'	=> 'deny')
 		);
 	}
 	return tag_helper('meta',$meta_tags);
@@ -849,8 +855,11 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 function tag_helper($tagname,$tags){
 	foreach ($tags as $tag) {
 		// linkタグで、rel属性やtype属性がない場合スタイルシートとする。
-		if ($tagname == 'link' && (empty($tags['rel']) || empty($tags['type'])) ){
+		if ($tagname == 'link' && (empty($tags['rel'])) ){
 			$tags['rel'] = 'stylesheet';
+		}
+		
+		if (isset($tags['rel']) && $tags['rel'] == 'stylesheet'){
 			$tags['type'] = 'text/css';
 		}
 		

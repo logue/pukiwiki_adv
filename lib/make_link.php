@@ -1,8 +1,8 @@
 <?php
 // PukiPlus.
-// $Id: make_link.php,v 1.37.27 2010/08/28 09:50:00 Logue Exp $
+// $Id: make_link.php,v 1.37.28 2011/01/18 20:51:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiWiki Advance Developers Team
+//   2010-2011 PukiWiki Advance Developers Team
 //   2005-2008 PukiWiki Plus! Team
 //   2003-2007 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -56,20 +56,20 @@ class InlineConverter
 	{
 		if ($converters === NULL) {
 			$converters = array(
-				'plugin',        // Inline plugins
-				'note',          // Footnotes
-				'url',           // URLs
-				'url_interwiki', // URLs (interwiki definition)
-				'mailto',        // mailto: URL schemes
-				'interwikiname', // InterWikiName
-				'autoalias',     // AutoAlias(cjk,other)
-				'autolink',      // AutoLink(cjk,other)
-				'bracketname',   // BracketName
-				'glossary',	     // AutoGlossary(cjk,other)
-				'wikiname',      // WikiName
-				'autoalias_a',   // AutoAlias(alphabet)
-				'autolink_a',    // AutoLink(alphabet)
-				'glossary_a',	 // AutoGlossary(alphabet)
+				'plugin',			// Inline plugins
+				'note',				// Footnotes
+				'url',				// URLs
+				'url_interwiki',	// URLs (interwiki definition)
+				'mailto',			// mailto: URL schemes
+				'interwikiname',	// InterWikiName
+				'autoalias',		// AutoAlias(cjk,other)
+				'autolink',			// AutoLink(cjk,other)
+				'bracketname',		// BracketName
+				'glossary',			// AutoGlossary(cjk,other)
+				'wikiname',			// WikiName
+				'autoalias_a',		// AutoAlias(alphabet)
+				'autolink_a',		// AutoLink(alphabet)
+				'glossary_a',		// AutoGlossary(alphabet)
 			);
 		}
 
@@ -437,10 +437,10 @@ EOD;
 
 	function toString()
 	{
-		$rel = ( FALSE ? '': ' rel="nofollow"');
+		$rel = ( FALSE ? '': ' nofollow');
 //		return '<a href="' . $this->name . '" rel="nofollow">' . $this->alias . '</a>';
 		$target = (empty($this->redirect)) ? $this->name : $this->redirect.rawurlencode($this->name);
-		return open_uri_in_new_window('<a href="' . $target . '"' . $rel . '>' . $this->alias . '</a>', get_class($this));
+		return open_uri_in_new_window('<a href="' . $target . '" rel="external' . $rel . '">' . $this->alias . '</a>', get_class($this));
 	}
 }
 
