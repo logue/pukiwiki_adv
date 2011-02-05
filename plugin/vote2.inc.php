@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
 //
-// $Id: vote2.inc.php,v 0.12.8 2010/12/26 20:57:00 Logue Exp $
+// $Id: vote2.inc.php,v 0.12.9 2011/02/05 12:48:00 Logue Exp $
 // based on vote.inc.php v1.14
 //
 // v0.2はインラインのリンクにtitleを付けた。
@@ -236,7 +236,7 @@ function plugin_vote2_address($match, $vote_no, $page, $ndigest)
 			 break;
 		default:  $vote_no  = 'error'; break;
 	}
-	$f_vote_no = htmlspecialchars($npage . '=' . $vote_no);
+	$f_vote_no = htmlsc($npage . '=' . $vote_no);
 	return array($npage, $vote_no, $f_vote_no, $ndigest);
 }
 function plugin_vote2_convert()
@@ -383,8 +383,8 @@ EOD;
 		$body2 .= "	</tr>\n";
 	}
 
-	$s_page    = htmlspecialchars($page);
-	$s_digest  = htmlspecialchars($ndigest);
+	$s_page    = htmlsc($page);
+	$s_digest  = htmlsc($ndigest);
 	$title = $notitle ? '' : "title=\"$f_vote_no\"";
 	$body = <<<EOD
 <form action="$script" method="post">

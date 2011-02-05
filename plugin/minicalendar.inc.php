@@ -1,6 +1,6 @@
 <?php
 //
-// $Id: minicalendar.inc.php,v 1.20.4 2008/06/23 19:45:00 upk Exp $
+// $Id: minicalendar.inc.php,v 1.21.4 2011/02/05 11:06:00 Logue Exp $
 // *引数にoffと書くことで今日の日記を表示しないようにした。
 // *携帯電話用に拡張
 //
@@ -43,9 +43,9 @@ function plugin_minicalendar_convert()
 		$prefix = $base.'/';
 	}
 	$r_base = rawurlencode($base);
-	$s_base = htmlspecialchars($base);
+	$s_base = htmlsc($base);
 	$r_prefix = rawurlencode($prefix);
-	$s_prefix = htmlspecialchars($prefix);
+	$s_prefix = htmlsc($prefix);
 	
 	$yr = substr($date_str,0,4);
 	$mon = substr($date_str,4,2);
@@ -123,7 +123,7 @@ EOD;
 		$dt = sprintf('%4d-%02d-%02d', $year, $m_num, $day);
 		$page = $prefix.$dt;
 		$r_page = rawurlencode($page);
-		$s_page = htmlspecialchars($page);
+		$s_page = htmlsc($page);
 
 		$h_today = public_holiday($year,$m_num,$day);
 		$hday = $h_today['rc'];
@@ -224,7 +224,7 @@ EOD;
 		$dt = sprintf('%4d-%02d-%02d', $year, $m_num, $day);
 		$page = $prefix.$dt;
 		$r_page = rawurlencode($page);
-		$s_page = htmlspecialchars($page);
+		$s_page = htmlsc($page);
 
 		$h_today = public_holiday($year,$m_num,$day);
 		$hday = $h_today['rc'];
@@ -326,7 +326,7 @@ function plugin_minicalendar_action()
 	$yy = sprintf("%04d.%02d",substr($date,0,4),substr($date,4,2));
 	
 	$aryargs = array($vars['page'],$date,$mode);
-	$s_page = htmlspecialchars($vars['page']);
+	$s_page = htmlsc($vars['page']);
 	
 	$ret['msg'] = 'calendar '.$s_page.'/'.$yy;
 	$ret['body'] = call_user_func_array('plugin_minicalendar_convert',$aryargs);

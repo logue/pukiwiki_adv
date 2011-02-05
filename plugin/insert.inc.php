@@ -1,5 +1,5 @@
 <?php
-// $Id: insert.inc.php,v 1.15.5 2010/12/26 17:17:00 Logue Exp $
+// $Id: insert.inc.php,v 1.16.5 2011/02/05 10:58:00 Logue Exp $
 //
 // Text inserting box plugin
 
@@ -49,9 +49,9 @@ $_msg_collided = T_('It seems that someone has already updated this page while y
 		$body = $_msg_collided . "\n";
 
 		$script = get_script_uri();
-		$s_refer  = htmlspecialchars($vars['refer']);
-		$s_digest = htmlspecialchars($vars['digest']);
-		$s_postdata_input = htmlspecialchars($postdata_input);
+		$s_refer  = htmlsc($vars['refer']);
+		$s_digest = htmlsc($vars['digest']);
+		$s_postdata_input = htmlsc($postdata_input);
 
 		$body .= <<<EOD
 <form action="$script" method="post">
@@ -91,8 +91,8 @@ function plugin_insert_convert()
 	$insert_no = $numbers[$vars['page']]++;
 
 	$script = get_script_uri();
-	$s_page   = htmlspecialchars($vars['page']);
-	$s_digest = htmlspecialchars($digest);
+	$s_page   = htmlsc($vars['page']);
+	$s_digest = htmlsc($digest);
 	$s_cols = INSERT_COLS;
 	$s_rows = INSERT_ROWS;
 	$string = <<<EOD

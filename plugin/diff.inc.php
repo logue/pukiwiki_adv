@@ -1,10 +1,10 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: diff.inc.php,v 1.19.8 2010/12/26 16:51:00 Logue Exp $
+// $Id: diff.inc.php,v 1.20.9 2011/02/05 10:23:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiWiki Advance Developers Team
+//   2010-2011 PukiWiki Advance Developers Team
 //   2005-2006,2008 PukiWiki Plus! Team
-//   2002-2005,2007 PukiWiki Developers Team
+//   2002-2005,2007,2011 PukiWiki Developers Team
 //   2002      Originally written by yu-ji
 // License: GPL v2 or (at your option) any later version
 //
@@ -42,7 +42,7 @@ function plugin_diff_view($page)
 	$_title_diff_delete  = T_('Deleting diff of $1');
 
 	$r_page = rawurlencode($page);
-	$s_page = htmlspecialchars($page);
+	$s_page = htmlsc($page);
 
 	$menu = array(
 		'<li>' . $_msg_addline . '</li>',
@@ -66,11 +66,11 @@ function plugin_diff_view($page)
 		}
 		$source = join('', file($filename));
 		auth::is_role_page($source);
-		$msg = '<pre>' . diff_style_to_css(htmlspecialchars($source)) . '</pre>' . "\n";
+		$msg = '<pre>' . diff_style_to_css(htmlsc($source)) . '</pre>' . "\n";
 	} else if ($is_page) {
 		$source = join('', get_source($page));
 		auth::is_role_page($source);
-		$diffdata = trim(htmlspecialchars($source));
+		$diffdata = trim(htmlsc($source));
 		$msg = '<pre><span class="diff_added">' . $diffdata . '</span></pre>' . "\n";
 	} else {
 		return array('msg'=>$_title_diff, 'body'=>$_msg_notfound);
@@ -127,7 +127,7 @@ function plugin_diff_delete($page)
 		}
 	}
 
-	$s_page = htmlspecialchars($page);
+	$s_page = htmlsc($page);
 	$body .= <<<EOD
 <p>$_msg_diff_adminpass</p>
 <form action="$script" method="post">

@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
 //
-// $Id: tooltip.inc.php,v 0.6.4 2010/15/10 15:10:00 Logue Exp $
+// $Id: tooltip.inc.php,v 0.6.5 2011/02/05 12:45:00 Logue Exp $
 //
 /* 
 *プラグイン tooltip
@@ -78,7 +78,7 @@ function plugin_tooltip_inline()
 			if ( $glossary === FALSE ) $glossary = '';
 		}
 	}
-	$s_glossary = htmlspecialchars($glossary);
+	$s_glossary = htmlsc($glossary);
 
 	$page = strip_bracket($term);
 	if ( is_page($page) ) {

@@ -1,10 +1,10 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: map.inc.php,v 1.17.4 2010/12/26 17:36:00 Logue Exp $
+// $Id: map.inc.php,v 1.18.5 2011/02/05 10:28:00 Logue Exp $
 // Copyright (C)
-//   2010 PukiWiki Advance Developers Team
+//   2010      PukiWiki Advance Developers Team
 //   2008 PukiWiki Plus! Developers Team
-//   2002-2005, 2007 PukiWiki Developers Team
+//   2002-2005,2007,2011 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
 //
 // Relation map plugin
@@ -80,7 +80,7 @@ function plugin_map_action()
 		$body[] = '<ul>';
 		$body[] = $nodes[$refer]->toString($nodes) . '</ul>';
 		$body[] = '<hr />';
-		$body[] = sprintf(T_('<p>Not related from %s.</p>'),htmlspecialchars($refer));
+		$body[] = sprintf(T_('<p>Not related from %s.</p>'),htmlsc($refer));
 		$keys = array_keys($nodes);
 		sort($keys, SORT_STRING);
 		$body[] = '<ul>';

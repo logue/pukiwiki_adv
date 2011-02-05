@@ -1,5 +1,5 @@
 <?php
-// $Id: template.inc.php,v 1.21.5 2010/12/23 18:04:00 Logue Exp $
+// $Id: template.inc.php,v 1.22.6 2011/02/05 12:45:00 Logue Exp $
 //
 // Load template plugin
 
@@ -69,7 +69,7 @@ function plugin_template_action()
 	}
 	$begin_select = $end_select = '';
 	for ($i = 0; $i < count($lines); $i++) {
-		$line = htmlspecialchars(mb_strimwidth($lines[$i], 0, MAX_LEN, '...'));
+		$line = htmlsc(mb_strimwidth($lines[$i], 0, MAX_LEN, '...'));
 
 		$tag = ($i == $begin) ? ' selected="selected"' : '';
 		$begin_select .= "<option value=\"$i\"$tag>$line</option>\n";
@@ -78,7 +78,7 @@ function plugin_template_action()
 		$end_select .= "<option value=\"$i\"$tag>$line</option>\n";
 	}
 
-	$_page = htmlspecialchars($page);
+	$_page = htmlsc($page);
 	$msg = $tag = '';
 	if ($is_page) {
 		$msg = $_template_msg['err_template_already'];
@@ -87,7 +87,7 @@ function plugin_template_action()
 		$msg = str_replace('$1', $_page, $_template_msg['err_template_invalid']);
 	}
 
-	$s_refer = htmlspecialchars($vars['refer']);
+	$s_refer = htmlsc($vars['refer']);
 	$s_page  = ($page == '') ? str_replace('$1', $s_refer, $_template_msg['msg_template_page']) : $_page;
 	$ret     = <<<EOD
 <form action="$script" method="post">

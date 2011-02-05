@@ -3,7 +3,7 @@
  * Skype プラグイン
  *
  * @copyright   Copyright &copy; 2006, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: skype.inc.php,v 0.2 2010/12/26 19:11:00 Logue Exp $
+ * @version     $Id: skype.inc.php,v 0.3 2011/02/05 12:41:00 Logue Exp $
  *
  */
 
@@ -18,7 +18,7 @@ function plugin_skype_convert()
 
         $field = array('user','func','size');
 	for($i=0; $i<$argc; $i++) {
-		$$field[$i] = htmlspecialchars($argv[$i], ENT_QUOTES);
+		$$field[$i] = htmlsc($argv[$i], ENT_QUOTES);
 	}
 
 	if (empty($user)) return '';

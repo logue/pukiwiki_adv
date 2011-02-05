@@ -1,10 +1,10 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: plugin.php,v 1.19.20 2010/10/25 19:32:00 Logue Exp $
+// $Id: plugin.php,v 1.20.20 2011/02/05 09:22:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiWiki Advance Developers Team
+//   2010-2011 PukiWiki Advance Developers Team
 //   2005-2006,2008 PukiWiki Plus! Team
-//   2002-2005,2007 PukiWiki Developers Team
+//   2002-2005,2007,2011 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
 // License: GPL v2 or (at your option) any later version
 //
@@ -71,7 +71,7 @@ function limit_plugin($name)
 		$count[$name] = 1;
 	}
 	if (++$count[$name] > PKWK_PLUGIN_CALL_TIME_LIMIT) {
-		die_message('Alert: plugin "' . htmlspecialchars($name) .
+		die_message('Alert: plugin "' . htmlsc($name) .
 		'" was called over ' . PKWK_PLUGIN_CALL_TIME_LIMIT .
 		' times. SPAM or someting?<br />' . "\n" .
 		'<a href="' . get_cmd_uri('edit',$vars['page']) .
@@ -181,7 +181,7 @@ function do_plugin_action($name)
 	if (! exist_plugin_action($name)) return array();
 
 	if (do_plugin_init($name) === FALSE) {
-		die_message('Plugin init failed: ' . htmlspecialchars($name));
+		die_message('Plugin init failed: ' . htmlsc($name));
 	}
 
 	textdomain($name);
@@ -205,7 +205,7 @@ function do_plugin_convert($name, $args = '')
 	global $digest;
 
 	if (do_plugin_init($name) === FALSE) {
-		return '[Plugin init failed: ' . htmlspecialchars($name) . ']';
+		return '[Plugin init failed: ' . htmlsc($name) . ']';
 	}
 
 	if (! PKWKEXP_DISABLE_MULTILINE_PLUGIN_HACK) {
@@ -235,7 +235,7 @@ function do_plugin_convert($name, $args = '')
 	$digest  = $_digest; // Revert
 
 	if ($retvar === FALSE) {
-		return htmlspecialchars('#' . $name .
+		return htmlsc('#' . $name .
 			($args != '' ? '(' . $args . ')' : ''));
 	} else if (PKWK_ENCODING_HINT != '') {
 		// Insert a hidden field, supports idenrtifying text enconding
@@ -253,7 +253,7 @@ function do_plugin_inline($name, $args, & $body)
 	global $digest;
 
 	if (do_plugin_init($name) === FALSE) {
-		return '[Plugin init failed: ' . htmlspecialchars($name) . ']';
+		return '[Plugin init failed: ' . htmlsc($name) . ']';
 	}
 
 	if ($args === '') {
@@ -275,7 +275,7 @@ function do_plugin_inline($name, $args, & $body)
 
 	if($retvar === FALSE) {
 		// Do nothing
-		return htmlspecialchars('&' . $name . ($args ? '(' . $args . ')' : '') . ';');
+		return htmlsc('&' . $name . ($args ? '(' . $args . ')' : '') . ';');
 	} else {
 		return $retvar;
 	}

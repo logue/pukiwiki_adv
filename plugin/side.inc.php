@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
 //
-// $Id: side.inc.php,v 1.8.6 2005/05/17 14:37:37 miko Exp $
+// $Id: side.inc.php,v 1.8.7 2011/02/05 12:38:00 Logue Exp $
 //
 
 // サブメニューを使用する
@@ -27,10 +27,10 @@ function plugin_side_convert()
 	if ($num > 0) {
 		// Try to change default 'sideBar' page name (only)
 		if ($num > 1)       return '#side(): Zero or One argument needed';
-		if ($side !== NULL) return '#side(): Already set: ' . htmlspecialchars($side);
+		if ($side !== NULL) return '#side(): Already set: ' . htmlsc($side);
 		$args = func_get_args();
 		if (! is_page($args[0])) {
-			return '#side(): No such page: ' . htmlspecialchars($args[0]);
+			return '#side(): No such page: ' . htmlsc($args[0]);
 		} else {
 			$side = $args[0]; // Set
 			return '';
@@ -55,7 +55,7 @@ function plugin_side_convert()
 		if (! is_page($page)) {
 			return '';
 		} else if ($vars['page'] == $page) {
-			return '<!-- #side(): You already view ' . htmlspecialchars($page) . ' -->';
+			return '<!-- #side(): You already view ' . htmlsc($page) . ' -->';
 		} else {
 			// Cut fixed anchors
 			$sidetext = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/m','$1$2',get_source($page));

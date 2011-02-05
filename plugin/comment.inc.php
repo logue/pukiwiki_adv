@@ -1,6 +1,6 @@
 <?php
 // PukiPlus - Yet another WikiWikiWeb clone
-// $Id: comment.inc.php,v 1.40.23 2010/08/28 10:38:00 Logue Exp $
+// $Id: comment.inc.php,v 1.41.24 2011/02/05 10:48:00 Logue Exp $
 // Copyright (C)
 //  2010-2011 PukiWiki Advance Developers Team
 //  2005-2008 PukiWiki Plus! Team
@@ -16,10 +16,11 @@ defined('PLUGIN_COMMENT_SIZE_MSG') or define('PLUGIN_COMMENT_SIZE_MSG',  68);
 defined('PLUGIN_COMMENT_SIZE_NAME') or define('PLUGIN_COMMENT_SIZE_NAME', 15);
 
 // ----
-define('PLUGIN_COMMENT_FORMAT_MSG',  '$msg');
-define('PLUGIN_COMMENT_FORMAT_NAME', '[[$name]]');
-define('PLUGIN_COMMENT_FORMAT_NOW',  '&new{$now};');
-define('PLUGIN_COMMENT_FORMAT_STRING', "\x08MSG\x08 -- \x08NAME\x08 \x08NOW\x08");
+define('PLUGIN_COMMENT_FORMAT_MSG',		'$msg');
+define('PLUGIN_COMMENT_FORMAT_NAME',	'[[$name]]');
+// define('PLUGIN_COMMENT_FORMAT_NOW',	'&new{$now};');
+define('PLUGIN_COMMENT_FORMAT_NOW',		'&epoch{'.MUTIME.',new};');
+define('PLUGIN_COMMENT_FORMAT_STRING',	"\x08MSG\x08 -- \x08NAME\x08 \x08NOW\x08");
 
 function plugin_comment_init(){
 	$messages = array(
@@ -27,7 +28,8 @@ function plugin_comment_init(){
 			'msg_comment_collided'		=> T_('It seems that someone has already updated the page you were editing.').'<br />'.
 										   T_('The comment was added, alhough it may be inserted in the wrong position.'),
 			'title_comment_collided'	=> T_('On updating  $1, a collision has occurred.'),
-			'title_updated'				=> T_('$1 was updated')
+			'title_updated'				=> T_('$1 was updated'),
+			'err_prohibit'				=> T_('This Wiki is <var>%s</var> mode now. Therefore, comment function is prohibited.'),
 		),
 		'_comment_formats' => array(
 			'msg'	=> PLUGIN_COMMENT_FORMAT_MSG,
@@ -211,7 +213,7 @@ function plugin_comment_convert()
 		(in_array('below', $options) ? '0' : PLUGIN_COMMENT_DIRECTION_DEFAULT);
 	$refpage = '';
 
-	$s_page = htmlspecialchars($vars['page']);
+	$s_page = htmlsc($vars['page']);
 
 	$ticket = md5(MUTIME);
 	if (function_exists('pkwk_session_start') && pkwk_session_start() != 0) {

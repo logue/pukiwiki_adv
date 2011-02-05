@@ -1,10 +1,10 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: edit.inc.php,v 1.48.44 2010/12/26 16:55:00 Logue Exp $
+// $Id: edit.inc.php,v 1.49.45 2011/02/05 10:49:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiWiki Advance Developers Team
+//   2010-2011 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
-//   2001-2007 PukiWiki Developers Team
+//   2001-2007,2011 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
 //
 // Edit plugin (cmd=edit)
@@ -282,7 +282,7 @@ function plugin_edit_write()
 	if ($postdata == '') {
 		page_write($page, $postdata);
 		$retvars['msg'] = $_title_deleted;
-		$retvars['body'] = str_replace('$1', htmlspecialchars($page), $_title_deleted);
+		$retvars['body'] = str_replace('$1', htmlsc($page), $_title_deleted);
 		if ($trackback) tb_delete($page);
 		return $retvars;
 	}

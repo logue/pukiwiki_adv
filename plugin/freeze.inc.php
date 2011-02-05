@@ -1,9 +1,10 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: freeze.inc.php,v 1.11.2 2007/07/29 09:45:51 miko Exp $
+// $Id: freeze.inc.php,v 1.12.3 2011/02/05 10:53:00 Logue Exp $
 // Copyright (C)
+//   2011      PukiWiki Advance Developers Team
 //   2005-2007 PukiWiki Plus! Team
-//   2003-2004, 2007 PukiWiki Developers Team
+//   2003-2004, 2007,2011 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
 //
 // Freeze(Lock) plugin
@@ -31,7 +32,7 @@ function plugin_freeze_action()
 	if (is_freeze($page)) {
 		// Freezed already
 		$msg  = & $_title_isfreezed;
-		$body = str_replace('$1', htmlspecialchars(strip_bracket($page)),
+		$body = str_replace('$1', htmlsc(strip_bracket($page)),
 			$_title_isfreezed);
 
 	} else
@@ -52,7 +53,7 @@ function plugin_freeze_action()
 	} else {
 		// Show a freeze form
 		$msg    = & $_title_freeze;
-		$s_page = htmlspecialchars($page);
+		$s_page = htmlsc($page);
 		$body   = ($pass === NULL) ? '' : "<p><strong>$_msg_invalidpass</strong></p>\n";
 		$body  .= <<<EOD
 <fieldset>

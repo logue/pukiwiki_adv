@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: pcomment.inc.php,v 1.47.22 2010/10/26 18:52:00 Logue Exp $
+// $Id: pcomment.inc.php,v 1.48.22 2011/02/05 12:03:00 Logue Exp $
 //
 // pcomment plugin - Show/Insert comments into specified (another) page
 //
@@ -33,7 +33,8 @@ define('PLUGIN_PCOMMENT_TIMESTAMP', 0);
 // ----
 define('PLUGIN_PCOMMENT_FORMAT_NAME',	'[[$name]]');
 define('PLUGIN_PCOMMENT_FORMAT_MSG',	'$msg');
-define('PLUGIN_PCOMMENT_FORMAT_NOW',	'&new{$now};');
+// define('PLUGIN_PCOMMENT_FORMAT_NOW',	'&new{$now};');
+define('PLUGIN_PCOMMENT_FORMAT_NOW',	'&epoch{'.MUTIME.',new};');
 
 // "\x01", "\x02", "\x03", and "\x08" are used just as markers
 define('PLUGIN_PCOMMENT_FORMAT_STRING',
@@ -117,7 +118,7 @@ function plugin_pcomment_convert()
 
 	$_page = get_fullname(strip_bracket($page), $vars_page);
 	if (!is_pagename($_page))
-		return sprintf($_pcmt_messages['err_pagename'], htmlspecialchars($_page));
+		return sprintf($_pcmt_messages['err_pagename'], htmlsc($_page));
 
 	$dir = PLUGIN_PCOMMENT_DIRECTION_DEFAULT;
 	if ($params['below']) {
@@ -154,9 +155,9 @@ function plugin_pcomment_convert()
 			'<input type="radio" name="reply" value="0" tabindex="0" checked="checked" />' : '';
 		$comment = '<input type="text" name="msg" size="' . PLUGIN_PCOMMENT_SIZE_MSG . '" />';
 
-		$s_page   = htmlspecialchars($page);
-		$s_refer  = htmlspecialchars($vars_page);
-		$s_nodate = htmlspecialchars($params['nodate']);
+		$s_page   = htmlsc($page);
+		$s_refer  = htmlsc($vars_page);
+		$s_nodate = htmlsc($params['nodate']);
 		$helptags = edit_form_assistant();
 
 		$form_start = '<form action="' . get_script_uri() . '" method="post">' . "\n";
@@ -253,7 +254,7 @@ function plugin_pcomment_insert()
 	$msg = rtrim($msg);
 
 	if (! is_page($page)) {
-		$postdata = '[[' . htmlspecialchars(strip_bracket($refer)) . ']]' . "\n\n" .
+		$postdata = '[[' . htmlsc(strip_bracket($refer)) . ']]' . "\n\n" .
 			'-' . $msg . "\n";
 	} else {
 		$postdata = get_source($page);

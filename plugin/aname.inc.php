@@ -1,9 +1,10 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: aname.inc.php,v 1.27.7 2008/01/05 17:56:00 upk Exp $
+// $Id: aname.inc.php,v 1.28.7 2011/02/05 10:25:00 Logue Exp $
 // Copyright (C)
+//   2011      PukiWiki Advance Developers Team
 //   2005-2006,2008 PukiWiki Plus! Team
-//   2002-2005 PukiWiki Developers Team
+//   2002-2005,2011 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
 // License: GPL v2 or (at your option) any later version
 //
@@ -94,12 +95,12 @@ function plugin_aname_tag($args = array(), $convert = TRUE)
 			return plugin_aname_usage($convert, 'ID too long');
 		if (! preg_match(PLUGIN_ANAME_ID_REGEX, $id))
 			return plugin_aname_usage($convert, 'Invalid ID string: ' .
-				htmlspecialchars($id));
+				htmlsc($id));
 		$_id[$id] = TRUE; // Set
 	}
 
-	if ($convert) $body = htmlspecialchars($body);
-	$id = htmlspecialchars($id); // Insurance
+	if ($convert) $body = htmlsc($body);
+	$id = htmlsc($id); // Insurance
 	$class   = $f_super ? 'anchor_super' : 'anchor';
 //miko
 	// Mobile Phone is not xhtml. umm...

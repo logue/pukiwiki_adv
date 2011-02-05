@@ -1,10 +1,10 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: init.php,v 1.56.3 2010/11/25 16:10:00 Logue Exp $
+// $Id: init.php,v 1.57.3 2011/02/05 09:19:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiWiki Advance Developers Team
+//   2010-2011 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
-//   2002-2007,2009 PukiWiki Developers Team
+//   2002-2007,2009,2011 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
 // License: GPL v2 or (at your option) any later version
 //
@@ -15,10 +15,10 @@
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
 define('S_VERSION', 'v1.0 alpha');
-define('S_REVSION', '20101224');
+define('S_REVSION', '20110205');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
-	' Copyright &copy; 2010' .
+	' Copyright &copy; 2010-2011' .
 	' <a href="http://pukiwiki.logue.be/">PukiWiki Advance Developers Team</a>.' .
 	' Licensed under the <a href="http://www.gnu.org/licenses/gpl-2.0.html" rel="license">GPLv2</a>.<br />' .
 	' Based on <a href="http://pukiwiki.cafelounge.net/plus/">"PukiWiki Plus! i18n"</a>'
@@ -67,7 +67,7 @@ if (file_exists(USR_INI_FILE) && is_readable(USR_INI_FILE)) {
 define('INI_FILE',  add_homedir('pukiwiki.ini.php'));
 $die = '';
 if (! file_exists(INI_FILE) || ! is_readable(INI_FILE)) {
-	$die .= _('File is not found.').' (INI_FILE)' . "\n";
+	$die .= T_('File is not found.').' (INI_FILE)' . "\n";
 } else {
 	require(INI_FILE);
 }
@@ -376,6 +376,9 @@ require(add_homedir('rules.ini.php'));
 
 /////////////////////////////////////////////////
 // 初期設定(その他のグローバル変数)
+
+// 現在時刻
+$now = format_date(UTIME);
 
 // 日時置換ルールを$line_rulesに加える
 if ($usedatetime) $line_rules = array_merge($datetime_rules,$line_rules);

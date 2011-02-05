@@ -1,9 +1,10 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: versionlist.inc.php,v 1.16.4 2007/01/21 14:18:52 miko Exp $
+// $Id: versionlist.inc.php,v 1.17.4 2011/02/05 12:47:00 Logue Exp $
 // Copyright (C)
+//	 2011      PukiWiki Advance Developers Team
 //	 2005-2007 PukiWiki Plus! Team
-//	 2002-2006 PukiWiki Developers Team
+//	 2002-2006,2011 PukiWiki Developers Team
 //	 2002      S.YOSHIMURA GPL2 yosimura@excellence.ac.jp
 // License: GPL v2
 //
@@ -66,10 +67,10 @@ function plugin_versionlist_convert()
 	<tbody>
 EOD;
 	foreach (array_keys($row) as $path) {
-		$file = htmlspecialchars($path);
-		$rev  = isset($row[$path]['rev'])  ? htmlspecialchars($row[$path]['rev'])  : '';
-		$date = isset($row[$path]['date']) ? htmlspecialchars($row[$path]['date']) : '';
-		$author = isset($row[$path]['author']) ? htmlspecialchars($row[$path]['author']) : '?';
+		$file = htmlsc($path);
+		$rev  = isset($row[$path]['rev'])  ? htmlsc($row[$path]['rev'])  : '';
+		$date = isset($row[$path]['date']) ? htmlsc($row[$path]['date']) : '';
+		$author = isset($row[$path]['author']) ? htmlsc($row[$path]['author']) : '?';
 		switch($author){
 			case 'henoheno':
 				$color = 'blue';

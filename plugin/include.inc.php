@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: include.inc.php,v 1.22.5 2010/09/21 19:20:00 Logue Exp $
+// $Id: include.inc.php,v 1.23.6 2011/02/05 10:56:00 Logue Exp $
 //
 // Include-once plugin
 
@@ -79,7 +79,7 @@ function plugin_include_convert()
 		}
 	}
 
-	$s_page = htmlspecialchars($page);
+	$s_page = htmlsc($page);
 	$r_page = rawurlencode($page);
 	$link = '<a href="' . get_page_uri($page) . '">' . $s_page . '</a>'; // Read link
 

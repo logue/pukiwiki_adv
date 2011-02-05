@@ -1,7 +1,8 @@
 <?php
 // PukiWiki Plus! - Yet another wikiwikiweb clone.
-// $Id: siteimage.inc.php,v 1.8.1 2006/06/15 01:06:00 miko Exp $
+// $Id: siteimage.inc.php,v 1.8.2 2011/02/05 12:39:00 Logue Exp $
 // Copyright (C)
+//   2011      PukiWiki Advance Developers Team
 //   2006      PukiWiki Plus! Team
 //   2006      by nao-pon http://hypweb.net/
 // License: GPL v2 or (at your option) any later version
@@ -58,8 +59,8 @@ function plugin_siteimage_convert()
 
 function plugin_siteimage_make($url, $nolink, $target='')
 {
-	$url = htmlspecialchars($url);
-	$target = htmlspecialchars($target);
+	$url = htmlsc($url);
+	$target = htmlsc($target);
 	if (defined('UA_MOBILE') && UA_MOBILE != 0) {
 		if (defined('PLUGIN_SITEIMAGE_SHOW_IMAGE_TO_MOBILEPHONE') && PLUGIN_SITEIMAGE_SHOW_IMAGE_TO_MOBILEPHONE) {
 			$ret = '<img src="http://img.simpleapi.net/small/' . $url . '" width="128" height="128" alt="' . $url . '" title="keitai" />';

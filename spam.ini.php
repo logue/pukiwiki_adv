@@ -1,5 +1,5 @@
 <?php
-// $Id: spam.ini.php,v 1.93.1 2010/09/06 15:54:25 Logue Exp $
+// $Id: spam.ini.php,v 1.94.2 2011/01/25 21:42:00 Logue Exp $
 // Spam-related setting
 
 // NOTE FOR ADMINISTRATORS:
@@ -84,7 +84,7 @@ $blocklist['official/dev'] = array(
 
 $blocklist['A-1'] = array(
 
-	// A-1: General redirection services -- by HTML meta, HTML frame, JavaScript,
+	// A-1: General redirection or masking services -- by HTML meta, HTML frame, JavaScript,
 	// web-based proxy, DNS subdomains, etc
 	// http://en.wikipedia.org/wiki/URL_redirection
 	//
@@ -469,6 +469,9 @@ $blocklist['A-1'] = array(
 	'gzurl.com',
 	'url.grillsportverein.de',
 	'Harudake.net' => array('*.hyu.jp'),
+	'hatena.ne.jp related' => array(
+		'htn.to',	// 2010-09 59.106.108.106 (hatena.ne.jp is 59.106.108.106)
+	),
 	'Hattinger Linux User Group' => array('short.hatlug.de'),
 	'Hexten.net' => array('lyxus.net'),
 	'here.is',
@@ -865,7 +868,7 @@ $blocklist['A-1'] = array(
 		'.zor.org',
 		'.zx80.at',
 		'.zx81.at',
-		'.zxspectrum.at'
+		'.zxspectrum.at',
 	),
 	'kisaweb.com',
 	'krotki.pl',
@@ -1112,7 +1115,7 @@ $blocklist['A-1'] = array(
 	'trimurl.com',
 	//'ttu.cc',		// Seems closed
 	'turl.jp',
-	'Twitter' => array(
+	'Twitter.com' => array(
 		't.co',		// by (cofounders at cointernet.co)
 		'twt.tl',
 	),
@@ -1239,6 +1242,7 @@ $blocklist['A-1'] = array(
 	'useurl.us',		// by Edward Beauchamp (mail at ebvk.com)
 	'utun.jp',
 	'uxxy.com',
+	'uzo.in',			// 2010-09 redirects, and subdomain
 	'*.v27.net',
 	'V3.com by FortuneCity.com' => array(	// http://www.v3.com/sub-domain-list.shtml
 		'*.all.at',
@@ -7090,76 +7094,103 @@ $blocklist['C'] = array(
 	),
 	'.onlinecasinoinformation.com',	// 2010/08 66.96.147.105
 	'.onlinecasinoresources.com',	// 2010/08 74.220.215.62
+
+	'moshenhm at gmail.com' => array(	// by Nahum, Moshe (moshenhm at gmail.com)
+
+		// 2010/08 65.254.248.143
+		'.odinhosting.com',			// seems no link today
+		'.nycdivers.com',			// link to mainalpha.com
+		'.robertlhines.com',		// link to mainalpha.com, etc
+		'.shadowsonmyshift.com',	// link to mainalpha.com, etc
+
+		// 2010/08 69.89.31.187
+		'.bcsliding.com',			// 
+		'.msthirteen.com',			// link to mainalpha.com
+		// 2010/08 74.53.239.27
+		'.thetravelerscafe.com',	// cheap tickets
+
+		//  2010/08 74.81.92.55
+		'.sonicparthenon.com',		// link to mainalpha.com
+		'.staroftheevening.com',	// link to mainalpha.com
+		'.sanjosecosmeticdental.com',
+
+		// 2010/08 173.45.103.74
+		'.digitalexperts.com',
+
+		// 2010/08 173.236.48.82
+		'.sunshinetesting.com',			// link to mainalpha.com
+		'.sports-and-concert-tickets.com',	//  seems no link today
+
+		// 2010/08 174.120.82.124
+		'.blueysretreat.com',			// seems no link today
+		'.lamborghinidenveronline.com',	// seems no link today
+		'.buckandbb.net',				// link to kqzyfj.com
+
+		// 2010/08 174.132.149.98
+		'.2008-national-n-scale-convention.com',	// link to mainalpha.com
+		'.creativejuicecompetition.com',	// seems no link today
+
+		// 2010/08 216.119.132.2
+		'.kennybrown.net',
+
+		// 2010/08 no address today
+		'.bestblackdatingonline.com',
+	),
+	
+	'info at dvishnu.com' => array(	// by Vishnu Prasath (info at dvishnu.com)
+	
+		// 2010/08 69.89.31.187
+		'.dinuzzollc.com',			// link to mainalpha.com etc
+		'.laruesbackdoor.com',		// link to mainalpha.com etc
+		'.okrenters.com',			// link to mainalpha.co
+		'.pandaitaid.com',			// link to mainalpha.com, etc
+		'.vicariouscollection.com',	// by Vishnu Prasath (info at dvishnu.com)
+		'.middlefingerproductions.net',	// link to mainalpha.com
+
+		//  2010/08 74.81.92.55
+		'.ecoxfinancial.com',		// link to mainalpha.com etc
+		'.fightingspirit-comics.com',	// link to mainalpha.com etc
+		'.learntoplaythedobro.com',	// link to mainalpha.com etc
+		'.montcalm4hfair.com',		// link to mainalpha.com etc
+		'.oaads.com',				// link to mainalpha.com etc
+		'.pabloblum.com',			// link to mainalpha.com
+		'.renaissancequartet.com',	// link to mainalpha.com
+		'.sbi-limited.com',			// link to mainalpha.com
+		'.showeroffire.com',		// link to mainalpha.com
+		'.soccerfestcolumbus.com',	// link to mainalpha.com
+
+		// 2010/08 173.236.48.82
+		'.anniedguesthouse.com',		// link to mainalpha.com
+		'.finnfest2009.com',			// link to mainalpha.com
+		'.hietalasoldworldmeats.com',	// link to mainalpha.com etc
+		'.splendoreimport.com',			// link to mainalpha.com
+
+		// 2010/08 174.120.82.124
+		'.jenurbanandthebox.com',		// link to mainalpha.com
+
+		// 2010/08 174.132.149.98
+		'.segwaybykar.com',				// link to mainalpha.com
+	),
+	
 	'mainalpha.com related' => array(
 
 		// 2010/08 65.254.248.143
 		'.archivecdbooksus.com',	// by (offpista at gmail.com), "sports betting"
 		'.highrollersonlinecasinos.com',	// casios
 		'.onlinecasinocenter.com',			// casios
-		'.odinhosting.com',			// by Nahum, Moshe (moshenhm at gmail.com), seems no link today
-		'.nycdivers.com',			// by Nahum, Moshe (moshenhm at gmail.com), link to mainalpha.com
-		'.robertlhines.com',		// by Nahum, Moshe (moshenhm at gmail.com), link to mainalpha.com, etc
-		'.shadowsonmyshift.com',	// by Nahum, Moshe (moshenhm at gmail.com), link to mainalpha.com, etc
 
-		// 2010/08 69.89.31.187
-		'.bcsliding.com',			// by Nahum, Moshe (moshenhm at gmail.com)
-		'.dinuzzollc.com',			// by Vishnu Prasath (info at dvishnu.com), link to mainalpha.com etc
-		'.laruesbackdoor.com',		// by Vishnu Prasath (info at dvishnu.com), link to mainalpha.com etc
-		'.msthirteen.com',			// by Nahum, Moshe (moshenhm at gmail.com), link to mainalpha.com
-		'.okrenters.com',			// by Vishnu Prasath (info at dvishnu.com), link to mainalpha.co
-		'.pandaitaid.com',			// by Vishnu Prasath (info at dvishnu.com), link to mainalpha.com, etc
-		'.vicariouscollection.com',	// by Vishnu Prasath (info at dvishnu.com)
-		'.middlefingerproductions.net',	// by Vishnu Prasath (info at dvishnu.com), link to mainalpha.com
-		
-		// 2010/08 74.53.239.27
-		'.thetravelerscafe.com',	// by Nahum, Moshe (moshenhm at gmail.com), cheap tickets
 		
 		//  2010/08 74.81.92.55
 		'.2ndrose.com',				// by Victor Zrovanov (victor3239 at gmail.com), link to mainalpha.com
-		'.ecoxfinancial.com',		// by Vishnu Prasath (info at dvishnu.com), link to mainalpha.com etc
 		'.edgewatertowers.com',		// by Victor Frankl (victor3239 at gmail.com), link to mainalpha.com
-		'.fightingspirit-comics.com',	// by Vishnu Prasath (info at dvishnu.com), link to mainalpha.com etc
-		'.learntoplaythedobro.com',	// by Vishnu Prasath (info at dvishnu.com), link to mainalpha.com etc
-		'.montcalm4hfair.com',		// by Vishnu Prasath (info at dvishnu.com), link to mainalpha.com etc
-		'.oaads.com',				// by Vishnu Prasath (info at dvishnu.com), link to mainalpha.com etc
-		'.pabloblum.com',			// by Vishnu Prasath (info at dvishnu.com), link to mainalpha.com
-		'.renaissancequartet.com',	// by Vishnu Prasath (info at dvishnu.com), link to mainalpha.com
-		'.sbi-limited.com',			// by Vishnu Prasath (info at dvishnu.com), link to mainalpha.com
-		'.showeroffire.com',		// by Vishnu Prasath (info at dvishnu.com), link to mainalpha.com
-		'.soccerfestcolumbus.com',	// by Vishnu Prasath (info at dvishnu.com), link to mainalpha.com
-		'.sonicparthenon.com',		// by Nahum, Moshe (moshenhm at gmail.com), link to mainalpha.com
-		'.staroftheevening.com',	// by Nahum, Moshe (moshenhm at gmail.com), link to mainalpha.com
 
-		// 2010/08 173.45.103.74
-		'.digitalexperts.com',		// by Nahum, Moshe (moshenhm at gmail.com)
-		
 		// 2010/08 173.236.48.82
-		'.anniedguesthouse.com',		// by Vishnu Prasath (info dvishnu.com), link to mainalpha.com
 		'.ciprogram.com',				// link to mainalpha.com
-		'.finnfest2009.com',			// by Vishnu Prasath (info at dvishnu.com), link to mainalpha.com
-		'.hietalasoldworldmeats.com',	// by Vishnu Prasath (info at dvishnu.com), link to mainalpha.com etc
-		'.splendoreimport.com',			// by Vishnu Prasath (info at dvishnu.com), link to mainalpha.com
-		'.sunshinetesting.com',			// by Nahum, Moshe (moshenhm at gmail.com), link to mainalpha.com
-		'.sports-and-concert-tickets.com',	//  by Nahum, Moshe (moshenhm at gmail.com), seems no link today
-
-		// 2010/08 174.120.82.124
-		'.blueysretreat.com',			// by Nahum, Moshe (moshenhm at gmail.com), seems no link today
-		'.jenurbanandthebox.com',		// by Vishnu Prasath (info at dvishnu.com), link to mainalpha.com
-		'.lamborghinidenveronline.com',	// by Nahum, Moshe (moshenhm at gmail.com), seems no link today
-		'.buckandbb.net',				// by Nahum, Moshe (moshenhm at gmail.com), link to kqzyfj.com
 
 		// 2010/08 174.132.149.98
-		'.2008-national-n-scale-convention.com',	// by Moshe Nahum (moshenhm at gmail.com), link to mainalpha.com
 		'.msgulfcoastbnbs.com',		// by Michael John (cpajourney at yahoo.com), link to mainalpha.com etc
-		'.segwaybykar.com',			// by Vishnu Prasath (info at dvishnu.com), link to mainalpha.com
-		'.creativejuicecompetition.com',	// by Nahum, Moshe (moshenhm at gmail.com), seems no link today
-		
-		// 2010/08 216.119.132.2
-		'.kennybrown.net',			// by Moshe Nahum (moshenhm at gmail.com), 
-
-		// 2010/08 no address today
-		'.bestblackdatingonline.com',	// by Nahum, Moshe (moshenhm at gmail.com)
 	),
+
 	'kouvald at gmail.com' => array(	// by Vlad Kouvaldin (kouvald at gmail.com)
 
 		// 2010/08 91.205.156.73
@@ -7223,7 +7254,7 @@ $blocklist['C'] = array(
 		'.analsextube247.com',		// 2010/08 99.192.176.58
 		'.eroticandy.com',			// 2010/08 99.192.176.54
 	),
-	'nikiforov501@mail.ru' => array(
+	'nikiforov501 at mail.ru' => array(
 		// 2010/09 91.205.156.74
 		'.211park.com',
 		'.atlantajuniorthrashers.com',
@@ -7262,12 +7293,15 @@ $blocklist['D'] = array(
 
 $blocklist['E'] = array(
 	// E: Sample setting of
-	// Promoters
-	// (Affiliates, Hypes, Catalog retailers, Multi-level marketings, Resellers,
+	// Promotions
+	// (Phenomenons with Affiliates, Hypes, Catalog retailers, Multi-level marketings, Resellers,
 	//  Ads, Business promotions, SEO, etc)
 	//
-	// They often promotes near you using blog article, mail-magazines, tools(search engines, blogs, etc), etc.
+	// Promotions near you using blog article, mail-magazines, tools(search engines, blogs, etc), etc.
 	// Sometimes they may promote each other
+	//
+	// Please notify us about this list with reason:
+	// http://pukiwiki.sourceforge.jp/dev/?BugTrack2/342
 
 	'15-Mail.com related' => array(
 		'.15-mail.com',				// 202.218.109.45(*.netassist.jp) by yukiyo yamamoto (sunkusu5268 at m4.ktplan.ne.jp)
@@ -7449,81 +7483,155 @@ $blocklist['E'] = array(
 
 	// Referer Spam reported by http://210.155.219.234/SEO-Spam.htm
 	'ameblo.jp retaled'=>array(
-		'ameblo.jp/news977',
+		'ameblo.jp/1kanaeru',
+		'ameblo.jp/5296himawari',
+		'ameblo.jp/aqua111-1111',
+		'ameblo.jp/beetgo'
+		'ameblo.jp/cocolosmile',
+		'ameblo.jp/direct510',
+		'ameblo.jp/directinfo',
 		'ameblo.jp/fumiw',
 		'ameblo.jp/fumiw3',
-		'ameblo.jp/norino33',
+		'ameblo.jp/goodjobline',
+		'ameblo.jp/happyweb123',
+		'ameblo.jp/highball-kan',
+		'ameblo.jp/hk-dondon',
+		'ameblo.jp/homerarete99',
+		'ameblo.jp/hrfx',
+		'ameblo.jp/impqeptv',
+		'ameblo.jp/infomaster123',
+		'ameblo.jp/kabecyan',
 		'ameblo.jp/kurokino1',
-		'ameblo.jp/net-de-profit'
+		'ameblo.jp/mac080605',
+		'ameblo.jp/mail02000river',
+		'ameblo.jp/mariediet',
+		'ameblo.jp/net-de-profit',
+		'ameblo.jp/news977',
+		'ameblo.jp/norino33',
+		'ameblo.jp/o8u853pq',
+		'ameblo.jp/oisiy',
+		'ameblo.jp/qpzjo47c',
+		'ameblo.jp/rakuten01',
+		'ameblo.jp/rakuten02',
+		'ameblo.jp/smile123web',
+		'ameblo.jp/stock-7',
+		'ameblo.jp/ukhash4',
+		'ameblo.jp/vip-vip513',
+		'ameblo.jp/wo701glr',
 	),
 	'seesaa.net retaled'=>array(
-		'qwejp2010.seesaa.net',
-		'koreiku.seesaa.net',
-		'matinojouhouya.seesaa.net',
-		'seo-affili.seesaa.net',
-		'tolove.seesaa.net',
-		'news-red.seesaa.net',
 		'270609.seesaa.net',
+		'akaobi.seesaa.net',
+		'basiscopywriting.seesaa.net',
+		'cb3xz0xt.seesaa.net',
+		'deaikei-saito123.seesaa.net',
+		'fxritaia.seesaa.net',
+		'geinousaishinnews.seesaa.net',
+		'hikikomorinomaturo.seesaa.net',
+		'hukubrsy.seesaa.net',
+		'kaigainokoto.seesaa.net',
+		'kokoiti.seesaa.net',
+		'koreiku.seesaa.net',
+		'lady-5.seesaa.net',
+		'lovegolf100.seesaa.net',
+		'matinojouhouya.seesaa.net',
+		'namuba4-ke.seesaa.net',
+		'neirusaronde.seesaa.net',
+		'news-red.seesaa.net',
 		'nezumiman.seesaa.net',
-		'kaigainokoto.seesaa.net'
+		'osecithsy.seesaa.net',
+		'qwejp2010.seesaa.net',
+		'seo-affili.seesaa.net',
+		'shiritaikiji.seesaa.net',
+		'tolove.seesaa.net',
+		'tubebuilder.seesaa.net',
+		'white4618.seesaa.net',
+		'yasetta.seesaa.net'
 	),
 	'spam from FC2.COM'=>array(
+		'270en.web.fc2.com',
+		'7t4400611.blog45.fc2.com',
+		'blgid1974.blog13.fc2.com'
+		'childbicycle.web.fc2.com',
+		'dietpatch.web.fc2.com',
+		'diamondline002.web.fc2.com',
+		'f12479.blog61.fc2.com',
+		'firekeihouki.web.fc2.com',
+		'fukurou232960.web.fc2.com',
+		'golfclub0.web.fc2.com',
+		'knori0510.blog130.fc2.com',
 		'mats1.web.fc2.com',
 		'mats2.web.fc2.com',
-		'f12479.blog61.fc2.com',
 		'momoiropink777.blog97.fc2.com',
-		'payadultcomp.blog133.fc2.com',
-		'rebluejapan.blog2.fc2.com',
-		'childbicycle.web.fc2.com',
-		'firekeihouki.web.fc2.com',
-		'golfclub0.web.fc2.com',
-		'natuholiday.web.fc2.com',
-		'dietpatch.web.fc2.com',
 		'mykeita.blog59.fc2.com',
-		'petrick.blog123.fc2.com',
-		'7t4400611.blog45.fc2.com',
+		'natuholiday.web.fc2.com',
+		'nhvivid.web.fc2.com',
+		'payadultcomp.blog133.fc2.com',
 		'petrick.blog123.fc2.com',
 		'rankingup111.bbs.fc2.com',
-		'knori0510.blog130.fc2.com',
-		'blgid1974.blog13.fc2.com'
+		'rebluejapan.blog2.fc2.com',
+		'zaitakuwork01shop.web.fc2.com'
 	),
 	'spam from Lolipop'=>array(
 		'cart05.lolipop.jp/LA03771172'
 	),
 	'spam from Sakura.ne.jp'=>array(
-		'toplink.sakura.ne.jp',
+		'48s.sakura.ne.jp',
+		'abcsupport.sakura.ne.jp',
+		'aferi.sakura.ne.jp',
+		'aqua1111.sakura.ne.jp',
 		'goldking.sakura.ne.jp',
 		'mk8.sakura.ne.jp',
-		'abcsupport.sakura.ne.jp'
+		'office-ago.sakura.ne.jp',
+		'propatisuro.sakura.ne.jp',
+		'suncs.sakura.ne.jp',
+		'toplink.sakura.ne.jp',
+		'souzoku.mail-box.ne.jp'	// 124.25.247.10
 	),
-	'spam from Livedoor Blog'=>array(
+	'spam from Livedoor.biz Blog'=>array(
 		'nipponouen.livedoor.biz',
 		'okinawaserv.livedoor.biz',
-		'sucov.livedoor.biz',
-		'blog.livedoor.jp/alpaco001',
-		'blog.livedoor.jp/gfadhjsyw6',
-		'blog.livedoor.jp/hdgtwur658745',
+		'sucov.livedoor.biz'
 	),
-	'Aqua FX SPAM'=>array(
+	'spam from Livedoor.jp Blog'=>array(
+		'blog.livedoor.jp/alpaco001',
+		'blog.livedoor.jp/big_challenge',
+		'blog.livedoor.jp/ccr_cafe',
+		'blog.livedoor.jp/country_person',
+		'blog.livedoor.jp/country_person-infotop',
+		'blog.livedoor.jp/diamondline',
+		'blog.livedoor.jp/fod0306',
+		'blog.livedoor.jp/gfadhjsyw6',
+		'blog.livedoor.jp/golfclbl',
+		'blog.livedoor.jp/gsrtfrjogh87',
+		'blog.livedoor.jp/hdgtwur658745',
+		'blog.livedoor.jp/loan_relief',
+		'blog.livedoor.jp/milkteaash',
+		'blog.livedoor.jp/olzjp',
+		'blog.livedoor.jp/osecnkly',
+		'blog.livedoor.jp/support_club',
+		'blog.livedoor.jp/tamiya_masa32',
+		'blog.livedoor.jp/valen214k'
+	),
+	'spam from sonnet.ne.jp'=>array(
+		'dorop39yo.blog.so-net.ne.jp',	// 110.161.9.195
+		'mikihbsy.blog.so-net.ne.jp',	// 126.14.144.131(*)
+		'osechisy.blog.so-net.ne.jp',	// 126.14.144.131(*)
+		'kasitksy.blog.so-net.ne.jp'	// 180.15.55.13
+	),
+	'Aqua FX SPAM'=>array(				// 110.0.118.112, 119.150.30.244
 		'fxaqua.com',
 		'aqua1111.jp',
-		'aqua111.seesaa.net',
-		'ameblo.jp/aqua111-1111',
-		'aqua1111.sakura.ne.jp',
-		'aqua111.seesaa.net'
+		'kaigai104.com',
+		'aqua1111.jp',
+		'www-look.info'
 	),
 	'P-Kit'=>array(
 		'ranking-up.p-kit.com',
 		'top-ranker.p-kit.com',
 		'p-kit.com/hp/boy-meets-girl'
 	),
-	'dorop39yo.blog.so-net.ne.jp',
-	'www-look.info',
-	'fxautotool.com',
-	'kokabex.com',
-	'j.mp/db03oB', // redirect to dondon.in
-	'dondon.in',
-	'slhjzl.com',
+	
 	'freestage SPAM' => array(
 		'kanazawafreestage.blog14.fc2.com',
 		'freestage-japan.com',
@@ -7533,14 +7641,6 @@ $blocklist['E'] = array(
 		'ds.av-navi.co.jp/freestage',
 		'moshimo.com/top/440132/'
 	),
-	'arante.dotera.net',
-	'kabu-ka.info',
-	'tmaweb.biz/22797',	// redirect to dougaset.com
-	'dougaset.com',
-	'lien-kizuna.jp',
-	'tokeiyasan.com',
-	'tigre-conceria.com',
-	'csasp4.jp',	// supplyment shop spamer
 	'ehoh.net retaled' => array(
 		'adpartner.ehoh.net',
 		'akachan.ehoh.net',
@@ -7567,124 +7667,68 @@ $blocklist['E'] = array(
 		'short.ie/svydwq',
 		'twurl.nl/lof7ok'
 	),
-	'1mkg.com',
-	'kaigai104.com',
-	'344103.realcoms.co.jp',
 	'ryujis.jp retaled' => array(
 		'ryujis.jp',
 		'ryujis.com'
 	),
-	'okpit.com',
 	'infotop affiliator'=> array(
 		'infotop.jp/click.php?aid=16916&iid=35086',
 		'infotop.jp/click.php?aid=1739&iid=37469',
 		'infotop.jp/click.php?aid=8505&iid=37281',
 		'infotop.jp/click.php?aid=8505&iid=948',
 	),
-	'pub.ne.jp/threeslope/',
-	'infotop1.biz',
+	'happy.ap.teacup.com related'=>array(
+		'happy.ap.teacup.com/konme',	// 124.154.106.196, 210.165.74.182
+		'happy.ap.teacup.com/110skincare179'	// 221.189.223.248
+	),
+	'ark-west related'=>array(	// 218.124.47.12
+		'ark-west.com',
+		'ark-west.net'
+	),
+	// Known Terrible Spammer Host
 	'121.95.217.168 spammer'=>array(
 		'ameblo.jp/fumiw',
 		'ameblo.jp/fumiw3',
 		'fumiw.xsrv.jp'
 	),
-	'www.xn--18j9a9d884ojv0ate0a.com',
-	'www6.ocn.ne.jp/~tideji',
-	'miraihayarou.com',
-	'fineup.net',
-	'anag.ne.jp',
-	'happy.ap.teacup.com/konme',
-	'qee.jp',
-	'mail-box.ne.jp',
-	'apreninsz.com',
-	'12stepup.com',
 	'125.173.184.154 spammer'=>array(
 		'ago01.laff.jp',
 		'ameblo.jp/rakuten01',
 		'ameblo.jp/rakuten02',
 		'heartkqbin.com',
-		'moukaimakka.com'
+		'moukaimakka.com',
+		'studioerareviews.com'
 	),
-	'jazzcolor.com',
-	'life-best.com',
-	'mpisland.com',
-	'tjyuken.com',
 	'126.108.135.186 spammer'=>array(
 		'kotsa.net',
 		'free-rich.net',
-		'happy-cat.ne.jp'
+		'happy-cat.ne.jp',
+		'kokodesu.net'
 	),
-	'infomiracle.net',
-	'msblood01.com',
-	'mahp.jp',
-	'net-taisaku-a.com',
-	'just-kensaku.com',
-	'kanon-media.com',
-	'tmaweb.biz/22405',
-	'movie-program.net',
-	'ganbalkasan.com',
-	'worldrabo.com',
-	'happy.ap.teacup.com',
-	'hakushin-f.co.jp',
-	'orido1.com',
-	'ark-west.com',
-	'simple-fit.org',
-	'otonano-premier.net',
-	'kensaku-japan.net',	// maybe
-	'douga-douga.net',
-	'suzuko9039.jugem.jp',
-	'abctimes.net',
-	'jfgwgaisypf.com',
-	'kenkouonline.net',
-	'kaseguzo.info',
-	'slotshinan.ganriki.net',
-	'erotic-literature.net',
-	'jyouhou-queen.net',
 	'219.208.92.39 spammer'=>array(
-		'blog.livedoor.jp/golfclbl',
-		'enamelsf.blog107.fc2.com',
-		'golfjouf.blog6.fc2.com',
-		'coshhp.com',
 		'biganbi.com',
 		'bihhp.com',
+		'blog.livedoor.jp/golfclbl',
+		'coshhp.com',
+		'enamelsf.blog107.fc2.com',
+		'golfjouf.blog6.fc2.com',
 		'hokensagashi.net',
 		'hoshitsune.com',
 		'koshihhp.com',
 		'tarumix.com',
 		'xn--08jye212n8vbg6s.com'
 	),
-	'lavender121.com',
-	'rakuten-hikaku.com',
-	'kuruma888.net',
-	'porten.info',
-	'airframes.info',
-	'goceleb.info',
-	'andg.jp',
 	'220.25.244.8 spammer'=>array(
 		'270en.web.fc2.com',
 		'astore.amazon.co.jp/saiminn-22',
 		'roka.boy.jp',
 		'smman.dtiblog.com'
 	),
-	'xn--18jxcw59msenc58a.jp',
-	'kensaku-daisuki.net',
-	'houndo-k.com',
-	'www6.ocn.ne.jp/~tideji',
-	'rsljh.com',
-	'book.fem.jp',
-	'nkmrm.com',
-	'fujiyo-jp.com',
-	'kinsuikajyou.com',
-	'kamk.jp',
-	'kyu-sapo.biz',
-	'tma.selftaught.biz',
-	'fruitfuldiet.jp',
-	'everytime-movie.com',
 	'61.214.20.145 spammer'=>array(
 		'aferi.sakura.ne.jp',
 		'freesona.heteml.jp',
 		'freesona.net',
-		'freesona.sou-saku.net',
+		'sou-saku.net',
 		'mental-disorder.co.cc',
 		'net-japan.co.cc',
 		'xn--pc-og4avcyey338dgbf.jp',
@@ -7695,8 +7739,96 @@ $blocklist['E'] = array(
 		'villar-asociados.com',
 		'vminstitute.com'
 	),
-	'sitemeter.com',
-	'ultra-movie-new-trend.com',
+	'220.100.72.51 spammer'=>array(
+		'airframes.info',
+		'porten.info'
+	),
+	'210.148.234.172 spammer'=>array(
+		'ganbalkasan.com',
+		'worldrabo.com'
+	),
+	'218.221.205.117 spammer'=>array(
+		'kensaku-japan.net',		//  search engine affiliate spammer
+		'otonano-premier.net'
+	),
+	'219.120.71.58 spammer'=>array(
+		'jfgwgaisypf.com',
+		'kenkouonline.net'
+	),
+	'220.32.222.116 spammer'=>array(
+		'kensaku-daisuki.net',
+		'ultra-movie-wonderful.com'
+	),
+	'111.109.75.146 spammer'=>array(
+		'fxautotool.com',
+		'kokabex.com'
+	),
+	'12stepup.com',				// 125.0.186.173
+	'1mkg.com',					// 118.17.193.146
+	'344103.realcoms.co.jp',	// 119.175.40.188
+	'abctimes.net',				// 219.119.114.157
+	'anag.ne.jp',				// 124.101.101.185
+	'andg.jp',					// 220.15.154.221
+	'apreninsz.com',			// 125.0.134.107
+	'arante.dotera.net',		// 114.166.163.221
+	'book.fem.jp',				// 58.1.240.201
+	'csasp4.jp',				// 114.186.179.231 supplyment shop spamer
+	'dondon.in',				// 60.62.241.125, 61.214.239.231(*), 219.160.37.143, 219.162.247.115, 220.104.29.40(*), 222.150.20.173, 223.133.86.27
+	'douga-douga.net',			// 218.45.84.141
+	'erotic-literature.net',	// 219.203.100.2
+	'everytime-movie.com',		// 61.205.47.74
+	'fineup.net',				// 123.48.54.1
+	'fruitfuldiet.jp',			// 61.204.195.126
+	'fujiyo-jp.com',			// 58.188.67.216
+	'goceleb.info',				// 220.102.37.16
+	'hakushin-f.co.jp',			// 211.120.162.135
+	'houndo-k.com',				// 221.185.219.125(*), 61.214.239.231(*)
+	'infomiracle.net',			// 126.108.24.69(*)
+	'infotop1.biz',				// 121.84.235.149
+	'j.mp/db03oB', 				// 114.176.133.83 redirect to dondon.in
+	'jazzcolor.com',			// 125.174.156.33
+	'just-kensaku.com',			// 180.4.69.155
+	'jyouhou-queen.net',		// 219.203.100.2
+	'kabu-ka.info',				// 114.166.163.221
+	'kamk.jp',					// 59.143.162.165
+	'kanon-media.com',			// 180.10.158.202, 180.10.168.181, 202.155.88.121
+	'kaseguzo.info',			// 219.121.218.77(*)
+	'kinsuikajyou.com',			// 58.3.47.46
+	'kuruma888.net',			// 219.52.212.20
+	'kyu-sapo.biz',				// 60.236.82.241
+	'lalugo.dtiblog.com',		// 111.104.217.4 
+	'lavender121.com',			// 219.214.0.35
+	'lien-kizuna.jp',			// 114.166.24.34
+	'life-best.com',			// 218.227.23.101
+	'mahp.jp',					// 175.104.248.185
+	'miraihayarou.com',			// 123.222.230.23
+	'movie-program.net',		// 203.223.56.152
+	'mpisland.com',				// 125.3.116.182
+	'msblood01.com',			// 126.117.11.93
+	'net-taisaku-a.com',		// 180.2.159.102
+	'nkmrm.com',				// 58.138.45.5
+	'okpit.com',				// 119.245.101.179
+	'orido1.com',				// 219.114.240.25, 211.124.60.77
+	'pub.ne.jp/threeslope/',	// 121.117.4.237 
+	'qee.jp',					// 124.25.247.10
+	'rakuten-hikaku.com',		// 219.214.0.35
+	'rsljh.com',				// 221.188.171.15
+	'sawayaka-gift.jp'
+	'simple-fit.org',			// 218.219.97.33
+	'sitemeter.com',			// 61.23.10.149
+	'slhjzl.com',				// 114.152.12.197
+	'slotshinan.ganriki.net',	// 219.17.84.5
+	'suzuko9039.jugem.jp',		// 219.112.34.151(*)
+	'tigre-conceria.com',		// 114.185.13.125
+	'tjyuken.com',				// 125.3.123.11
+	'tma.selftaught.biz',		// 60.33.192.16
+	'tmaweb.biz/22405',			// 202.226.91.244
+	'tmaweb.biz/22797',			// 114.166.163.221 redirect to dougaset.com
+	'tokeiyasan.com',			// 114.182.102.134, 114.183.70.188, 114.183.64.30, 118.21.45.222
+	'ultra-movie-new-trend.com',// 61.45.30.213
+	'www.xn--18j9a9d884ojv0ate0a.com', // 122.30.11.234(*)
+	'www6.ocn.ne.jp/~tideji',	// 123.216.7.45, 124.84.187.28, 221.185.223.149, 221.185.179.126
+	'xn--18jxcw59msenc58a.jp'	// 220.28.162.221
 );
 
 // --------------------------------------------------
@@ -8251,6 +8383,7 @@ $blocklist['F'] = array(
 	'zmjjjyy.cn',
 	'zouhaobc.cn'
 );
+
 // --------------------------------------------------
 
 $blocklist['Z'] = array(

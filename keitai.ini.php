@@ -1,9 +1,10 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: keitai.ini.php,v 1.25.6 2009/04/07 01:09:00 upk Exp $
+// $Id: keitai.ini.php,v 1.26.7 2011/02/05 10:17:00 Logue Exp $
 // Copyright (C)
+//   2011      PukiWiki Advance Developers Team
 //   2005,2009 PukiWiki Plus! Team
-//   2002-2005 PukiWiki Developers Team
+//   2002-2006,2011 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
 // License: GPL v2 or (at your option) any later version
 //
@@ -29,16 +30,6 @@ $search_word_color = 0;
 /////////////////////////////////////////////////
 // 一覧ページに頭文字インデックスをつける
 $list_index = 0;
-
-/////////////////////////////////////////////////
-// リスト構造の左マージン
-$_ul_left_margin =  0;	// リストと画面左端との間隔(px)
-$_ul_margin      = 16;	// リストの階層間の間隔(px)
-$_ol_left_margin =  0;	// リストと画面左端との間隔(px)
-$_ol_margin      = 16;	// リストの階層間の間隔(px)
-$_dl_left_margin =  0;	// リストと画面左端との間隔(px)
-$_dl_margin      = 16;	// リストの階層間の間隔(px)
-$_list_pad_str   = '';
 
 /////////////////////////////////////////////////
 // 大・小見出しから目次へ戻るリンクの文字
@@ -189,8 +180,8 @@ $line_rules = array(
 	'SIZE\(([^\(\)]*)\):((?:(?!SIZE\([^\)]+\)\:).)*)'	=> '$2', // Disabled
 	'%%%(?!%)((?:(?!%%%).)*)%%%'	=> '<ins>$1</ins>',
 	'%%(?!%)((?:(?!%%).)*)%%'	=> '<del>$1</del>',
-	"'''(?!')((?:(?!''').)*)'''"	=> '<em>$1</em>',
-	"''(?!')((?:(?!'').)*)''"	=> '<strong>$1</strong>',
+	"&#039;&#039;&#039;(?!&#039;)((?:(?!&#039;&#039;&#039;).)*)&#039;&#039;&#039;" => '<em>$1</em>',
+	"&#039;&#039;(?!&#039;)((?:(?!&#039;&#039;).)*)&#039;&#039;" => '<strong>$1</strong>',
 );
 
 

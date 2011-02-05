@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone
-// $Id: pukiwiki.ini.php,v 1.149.48 2010/08/19 10:41:00 Logue Exp $
+// $Id: pukiwiki.ini.php,v 1.149.49 2010/11/12 22:30:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -108,7 +108,7 @@ $language_considering_setting_level = 2;
 // Please refer to lib/timezone.php for the defined character string.
 // en_US など、複数のタイムゾーンが存在する場合に定義して下さい。
 // 定義する文字列は、lib/timezone.php を参照して下さい。
-// defined('DEFAULT_TZ_NAME') or define('DEFAULT_TZ_NAME', 'Asia/Tokyo');
+defined('DEFAULT_TZ_NAME') or define('DEFAULT_TZ_NAME', 'Asia/Tokyo');
 
 // The view on public holiday applies to installation features.
 // 祝日の表示は、設置場所に準ずる (0:設置者視点, 1:閲覧者視点)
@@ -219,8 +219,13 @@ $google_api_key = '';
 $nofollow = 0; // 1 = Try hiding from search engines
 
 // Static URL
-// アドレスを.htmlのような静的なアドレスにします。（別途htaccessの変更が必要です）
+// アドレスに?を使わない静的なアドレスにします。
 $static_url = 1;
+
+// URL Suffix (such as extention)
+// 静的なアドレス使用時の拡張子を入れます。
+// 詳細は、http://pukiwiki.logue.be/Technical%20Note/ReWrite
+$url_suffix = '.html';
 
 // Google Webmasters Tools
 // http://www.google.com/webmasters/sitemaps/
@@ -232,7 +237,6 @@ $google_analytics = '';
 
 // Yahoo Site Explorer ID
 // http://siteexplorer.search.yahoo.com/
-// http://siteexplorer.search.yahoo.co.jp/
 $yahoo_site_explorer_id = '';
 
 // Bing Webmaster Tool
@@ -243,19 +247,18 @@ $bing_webmaster_tool = '';
 // Change default Document Type Definition
 
 // Some web browser's bug, and / or Java apprets may needs not-Strict DTD.
-// Some plugin (e.g. paint) set this PKWK_DTD_XHTML_1_0_TRANSITIONAL.
+// PukiWiki Adv. does not support HTML4.x.
+
 $pkwk_dtd = PKWK_DTD_HTML_5;	// Adv. Default
 //$pkwk_dtd = PKWK_DTD_XHTML_1_1;
 //$pkwk_dtd = PKWK_DTD_XHTML_1_0_STRICT;
 //$pkwk_dtd = PKWK_DTD_XHTML_1_0_TRANSITIONAL;
-//$pkwk_dtd = PKWK_DTD_HTML_4_01_STRICT;
-//$pkwk_dtd = PKWK_DTD_HTML_4_01_TRANSITIONAL;
 
 // Change IE rendering mode.
 // http://msdn.microsoft.com/en-us/library/cc288325(VS.85).aspx
 // Note: This setting ignore when edit page for fix IE8 scrolling bug.
 
-// $x_ua_compatible = "IE=edge";	// Render as latest IE (Default)
+$x_ua_compatible = "IE=edge";	// Render as latest IE (Default)
 // $x_ua_compatible = "IE=emulateIE7";	// Render as latest IE7
 // $x_ua_compatible = "chrome=1";	// Render as Chrome Frame
 // $x_ua_compatible = "IE=edge,chrome=1";	// Render as latest IE, if Chrome Frame installed, render as Chrome Frame.
@@ -278,8 +281,8 @@ $use_spam_check = array(
 	'page_remote_addr'	=> 0,	// 書き込み端末規制（IPBL）
 	'page_contents'		=> 0,	// 書き込み内容規制（DNSBL）
 	'page_write_proxy'	=> 0,	// Proxy経由での書き込み規制
-	'trackback'			=> 0,	// TrackBack。splogなど。（DNSBL）
-	'referer'			=> 0,	// Referer SPAM（DNSBL）
+	'trackback'			=> 1,	// TrackBack。splogなど。（DNSBL）
+	'referer'			=> 1,	// Referer SPAM（DNSBL）
 );
 
 /////////////////////////////////////////////////
@@ -327,6 +330,18 @@ if ($spam) {
 // SPAM check for Posted Countory(Based on Apache+mod_geoip+GeoIP)
 $allow_countory = array();
 $deny_countory = array();
+
+/////////////////////////////////////////////////
+// Anti-Spam service config
+
+// Akismet
+// https://akismet.com/signup/
+$akismet_api_key = '';
+
+// reCAPTICHA
+// http://www.google.com/recaptcha
+$recaptcha_public_key = '';
+$recaptcha_private_key = '';
 
 /////////////////////////////////////////////////
 // TrackBack feature
@@ -411,34 +426,24 @@ require_once(add_homedir('auth.ini.php'));
 
 // Enable page-reading feature by calling ChaSen or KAKASHI command
 // (1:Enable, 0:Disable)
-$pagereading_enable = 1;
+$pagereading_enable = 0;
 
-// Specify converter as ChaSen('chasen') or KAKASI('kakasi') or None('none')
-$pagereading_kanji2kana_converter = 'none';
+// Specify converter as ChaSen('chasen') or KAKASI('kakasi') or MeCab('mecab')
+$pagereading_api = 'mecab';
 
-// Specify Kanji encoding to pass data between PukiWiki and the converter
-$pagereading_kanji2kana_encoding = 'EUC'; // Default for Unix
-//$pagereading_kanji2kana_encoding = 'SJIS'; // Default for Windows
-
-// Absolute path of the converter (ChaSen)
-$pagereading_chasen_path = '/usr/local/bin/chasen';
-//$pagereading_chasen_path = 'c:\progra~1\chasen21\chasen.exe';
-
-// Absolute path of the converter (KAKASI)
-$pagereading_kakasi_path = '/usr/local/bin/kakasi';
-//$pagereading_kakasi_path = 'c:\kakasi\bin\kakasi.exe';
-
-// Absolute path of the converter (MeCab)
-$pagereading_mecab_path = '/usr/local/bin/mecab';
+// Absolute path of the converter (without last slash)
+$pagereading_path = '/usr/bin';
 
 // Page name contains pronounce data (written by the converter)
 $pagereading_config_page = ':config/PageReading';
 
 // Page name of default pronouncing dictionary, used when converter = 'none'
+// Japanese Only!
 $pagereading_config_dict = ':config/PageReading/dict';
 
 /////////////////////////////////////////////////
 // Exclude plugin for this site-policy.
+// Note: This function is ignole for admin.
 $exclude_plugin = array(
 	'server',
 	'cvscheck',
@@ -485,6 +490,7 @@ $time_format = 'H:i:s';
 /////////////////////////////////////////////////
 // Max number of RSS feed
 $rss_max = 15;
+
 // Description
 $rss_description = $page_title.' RecentChanges';
 

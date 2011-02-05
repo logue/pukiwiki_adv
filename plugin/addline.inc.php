@@ -175,13 +175,12 @@ function plugin_addline_inline()
 	);
 	
 // <a href="$script?plugin=addline&amp;addline_inno=$addline_no&amp;above=$above&amp;refer=$f_page&amp;configname=$f_config&amp;digest=$digest"></a>
-	return '<a href="'.$link_uri.'">'.$btn_text.'</a>;
+	return '<a href="'.$link_uri.'">'.$btn_text.'</a>';
 }
 
 function plugin_addline_action()
 {
-
-	
+	global $_addline_messages;
 	if( auth::check_role('readonly') ) die_message($_addline_messages['err_readonly']);
 
 	$refer			= $vars['refer'];
@@ -201,7 +200,10 @@ function plugin_addline_action()
 	$config = new Config('plugin/addline/'.$configname);
 	if (!$config->read())
 	{
-		return array( 'msg' => $_addline_messages['error'], 'body' => sprintf($_addline_messages['config_notfound'],htmlspecialchars($configname));
+		return array( 
+			'msg' => $_addline_messages['error'],
+			'body' => sprintf($_addline_messages['config_notfound'], htmlspecialchars($configname))
+		);
 	}
 	$config->config_name = $configname;
 	$addline = join('', addline_get_source($config->page));

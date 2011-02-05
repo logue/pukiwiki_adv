@@ -1,6 +1,7 @@
 <?php
-// $Id: miximixirecent.inc.php,v 1.14.2 2008/01/05 18:30:00 upk Exp $
+// $Id: miximixirecent.inc.php,v 1.14.3 2011/02/05 11:07:00 Logue Exp $
 // Copyright (C)
+//   2011      PukiWiki Advance Developers Team
 //   2005,2008 PukiWiki Plus! Team
 //   2002-2005 PukiWiki Developers Team
 //   2002      Y.MASUI http://masui.net/pukiwiki/ masui@masui.net
@@ -67,7 +68,7 @@ function plugin_mixirecent_convert()
 				'<ul class="mixirecent_list">' . "\n";
 		}
 
-		$s_page = htmlspecialchars($page);
+		$s_page = htmlsc($page);
 		$pg_passage = get_pg_passage($page, FALSE);
 		if (plugin_mixirecent_isValidDate(substr($page,-10)) && check_readable($page,false,false)) {
 			// for Calendar/MiniCalendar

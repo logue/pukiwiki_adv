@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: legent.inc.php,v 1.0.1 2009/02/16 23:33:00 upk Exp $
+// $Id: legent.inc.php,v 1.0.2 2011/02/05 11:00:00 Logue Exp $
 //
 // Legent plugin
 
@@ -36,7 +36,7 @@ function legend_set_parm($argv)
 
 	foreach($argv as $arg) {
 		$val = split('=', $arg);
-		$val[1] = (empty($val[1])) ? htmlspecialchars($val[0]) : htmlspecialchars($val[1]);
+		$val[1] = (empty($val[1])) ? htmlsc($val[0]) : htmlsc($val[1]);
 
 		switch($val[0]) {
 		case 'r':

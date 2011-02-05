@@ -1,7 +1,8 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: attachref.inc.php,v 0.14.12 2008/06/19 22:46:00 upk Exp $
+// $Id: attachref.inc.php,v 0.15.12 2011/02/05 10:42:00 Logue Exp $
 // Copyright (C)
+//   2011      PukiWiki Advance Developers Team
 //   2005-2006,2008 PukiWiki Plus! Team
 //   2002-2004 sha
 //
@@ -213,8 +214,8 @@ function plugin_attachref_inline()
 	    $s_args = trim(join(",", $args));
 	    if ($button) {
 			$s_args .= ',button';
-			$f_page = htmlspecialchars($vars['page']);
-			$f_args = htmlspecialchars($s_args);
+			$f_page = htmlsc($vars['page']);
+			$f_args = htmlsc($s_args);
 			$ret = <<<EOD
 <form action="$script" method="post">
 	<input type="hidden" name="encode_hint" value="ぷ" />
@@ -418,7 +419,7 @@ function attachref_form($page)
 
 	if (!(bool)ini_get('file_uploads')) return '';
 
-	$s_page = htmlspecialchars($page);
+	$s_page = htmlsc($page);
 
 	$f_digest = isset($vars['digest']) ? $vars['digest'] : '';
 	$f_no = (isset($vars['attachref_no']) && is_numeric($vars['attachref_no'])) ?

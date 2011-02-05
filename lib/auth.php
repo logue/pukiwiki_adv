@@ -1,9 +1,10 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: auth.php,v 1.21.22 2009/02/15 21:36:00 upk Exp $
+// $Id: auth.php,v 1.22.23 2011/02/05 09:01:00 Logue Exp $
 // Copyright (C)
+//   2011      PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
-//   2003-2007 PukiWiki Developers Team
+//   2003-2007,2011 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
 //
 // Authentication related functions
@@ -264,7 +265,7 @@ function basic_auth($page, $auth_flag, $exit_flag, $auth_pages, $title_cannot)
 		}
 		if ($exit_flag) {
 			$body = $title = str_replace('$1',
-				htmlspecialchars(strip_bracket($page)), $title_cannot);
+				htmlsc(strip_bracket($page)), $title_cannot);
 			$page = str_replace('$1', make_search($page), $title_cannot);
 			catbody($title, $page, $body);
 			exit;
@@ -299,7 +300,7 @@ function digest_auth($page, $auth_flag, $exit_flag, $auth_pages, $title_cannot)
 	}
 	if ($exit_flag) {
 		$body = $title = str_replace('$1',
-			htmlspecialchars(strip_bracket($page)), $title_cannot);
+			htmlsc(strip_bracket($page)), $title_cannot);
 		$page = str_replace('$1', make_search($page), $title_cannot);
 		catbody($title, $page, $body);
 		exit;

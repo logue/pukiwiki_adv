@@ -1,10 +1,10 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: popular.inc.php,v 1.19.8 2010/12/26 23:24:00 Logue Exp $
+// $Id: popular.inc.php,v 1.20.8 2011/02/05 12:05:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiWiki Advance Developers Team
+//   2010-2011 PukiWiki Advance Developers Team
 //   2005-2007 PukiWiki Plus! Team
-//   2003-2005, 2007 PukiWiki Developers Team
+//   2003-2005, 2007,2011 PukiWiki Developers Team
 //   2002 Kazunori Mizushima <kazunori@uc.netyou.jp>
 //
 // Popular pages plugin: Show an access ranking of this wiki
@@ -128,7 +128,7 @@ function plugin_popular_convert()
 		foreach ($counters as $page=>$count) {
 			$page = substr($page, 1);
 
-			$s_page = htmlspecialchars($page);
+			$s_page = htmlsc($page);
 			if ($page === $vars['page']) {
 				// No need to link itself, notifies where you just read
 				$pg_passage = get_pg_passage($page,FALSE);

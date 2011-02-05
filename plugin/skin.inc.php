@@ -3,7 +3,7 @@
  * skin plugin
  *
  * @copyright   Copyright &copy; 2009-2010, Katsumi Saito <jo1upk@users.sourceforge.net>
- * @version	 $Id: skin.inc.php,v 2.1 2010/01/03 14:42:00 upk Exp $
+ * @version	 $Id: skin.inc.php,v 2.2 2011/02/05 12:41:00 Logue Exp $
  *
  */
 defined('PLUGIN_SKIN_USE')	or define('PLUGIN_SKIN_USE', 1);		// 0:not use, 1:use
@@ -122,7 +122,7 @@ function skin_set_parm($argv)
 	$parm['cmd'] = '';
 	foreach($argv as $arg) {
 		$val = explode('=', $arg);
-		$val[1] = (empty($val[1])) ? htmlspecialchars($val[0]) : htmlspecialchars($val[1]);
+		$val[1] = (empty($val[1])) ? htmlsc($val[0]) : htmlsc($val[1]);
 		switch($val[0]) {
 		case 'temp':
 			$parm['temp'] = true;
@@ -235,7 +235,7 @@ EOD;
 				$selected = (!empty($theme) && $theme == $skin) ? ' selected="selected"' : '';
 				$name = (empty($val['name'])) ? $skin : $val['name'];
 				$style = (empty($val['color'])) ? '' : skin_set_color($val['color']);
-				$retval .= '	 <option value="'.$skin.'"'.$style.$selected.'>'.htmlspecialchars($name).'</option>'."\n";
+				$retval .= '	 <option value="'.$skin.'"'.$style.$selected.'>'.htmlsc($name).'</option>'."\n";
 			}
 		}
 		$retval .= '   </optgroup>'."\n";
@@ -250,7 +250,7 @@ EOD;
 			$selected = (!empty($theme) && $theme == $skin) ? ' selected="selected"' : '';
 			$name = (empty($val['name'])) ? $skin : $val['name'];
 			$style = (empty($val['color'])) ? '' : skin_set_color($val['color']);
-			$retval .= '	 <option value="tdiary.'.$skin.'"'.$style.$selected.'>'.htmlspecialchars($name).'</option>'."\n";
+			$retval .= '	 <option value="tdiary.'.$skin.'"'.$style.$selected.'>'.htmlsc($name).'</option>'."\n";
 			   	}
 		$retval .= '   </optgroup>'."\n";
 	}
@@ -454,7 +454,7 @@ function skin_set_color($text)
 	while (preg_match('/^(?:(BG)?COLOR\(([#\w]+)\)):(.*)$/',$text, $matches)) {
 		if ($matches[2]) {
 			$name = $matches[1] ? 'background-color' : 'color';
-			$style .= $name . ':' . htmlspecialchars($matches[2]) . ';';
+			$style .= $name . ':' . htmlsc($matches[2]) . ';';
 			$text = $matches[3];
 		}
 	}

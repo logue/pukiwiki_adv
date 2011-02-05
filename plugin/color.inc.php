@@ -1,10 +1,10 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: color.inc.php,v 1.24.3 2010/12/26 16:38:08 Logue Exp $
+// $Id: color.inc.php,v 1.25.4 2011/02/05 10:47:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiWiki Advance Developers Team
+//   2010-2011 PukiWiki Advance Developers Team
 //   2005      PukiWiki Plus! Team
-//   2003-2007 PukiWiki Developers Team
+//   2003-2007,2011 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
 //
 // Text color plugin
@@ -22,7 +22,7 @@ function plugin_color_inline()
 	global $pkwk_dtd;
 
 	$args    = func_get_args();
-	$text    = strip_autolink(array_pop($args)); // htmlspecialchars(text) already
+	$text    = strip_autolink(array_pop($args)); // htmlsc(text) already
 	$color   = isset($args[0]) ? trim($args[0]) : '';
 	$bgcolor = isset($args[1]) ? trim($args[1]) : '';
 
@@ -31,7 +31,7 @@ function plugin_color_inline()
 	}
 	if ($text == '' ) {
 		if ($color != '' && $bgcolor != '') {
-			$text    = htmlspecialchars($bgcolor);
+			$text    = htmlsc($bgcolor);
 			$bgcolor = '';
 		}else{
 			return PLUGIN_COLOR_USAGE;
@@ -39,7 +39,7 @@ function plugin_color_inline()
 	}
 	foreach(array($color, $bgcolor) as $_color){
 		if ($_color != '' && ! preg_match(PLUGIN_COLOR_REGEX, $_color)) {
-			return '&amp;color():Invalid color: ' . htmlspecialchars($_color) . ';';
+			return '&amp;color():Invalid color: ' . htmlsc($_color) . ';';
 		}
 	}
 

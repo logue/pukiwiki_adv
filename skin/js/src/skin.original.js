@@ -1094,6 +1094,72 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 
 		this.assistant(false);
 	},
+	show_diff: function(original,source){
+		// edit.js v 00 -- pukiwikiの編集を支援
+		// Copyright(c) 2010 mashiki
+		// License: GPL version 3
+		// http://mashiki-memo.blogspot.com/2010/12/blog-post.html
+
+		// show_diff(原文,現在の内容（通常$('msg').value）)
+		var content;
+		if (msg===org){
+			content = '変更箇所はありません';
+		} else {
+			var res = diff(
+				original.replace(/^\n+|\n+$/g,'').split("\n"),
+				source.replace(/^\n+|\n+$/g,'').split("\n")
+			);
+		}
+	},
+	diff : function (arr1, arr2, rev) {
+		var len1=arr1.length,
+			len2=arr2.length;
+		// len1 <= len2でなければひっくり返す
+		if (!rev && len1>len2)
+			return diff(arr2, arr1, true);
+		// 変数宣言及び配列初期化
+		var k, p,
+			offset=len1+1,
+			delta =len2-len1,
+			fp=[], ed=[];
+		for (p=0; p<len1+len2+3; ++p) {
+			fp[p] = -1;
+			ed[p] = [];
+		}
+		// メインの処理
+		for (p=0; fp[delta + offset] != len2; p++) {
+			for(k = -p       ; k <  delta; ++k) snake(k);
+			for(k = delta + p; k >= delta; --k) snake(k);
+		}
+		return ed[delta + offset];
+
+		// snake
+		function snake(k) {
+			var x, y, e0, o,
+				y1=fp[k-1+offset],
+				y2=fp[k+1+offset];
+			if (y1>=y2) { // 経路選択
+				y = y1+1;
+				x = y-k;
+				e0 = ed[k-1+offset];
+				o = {edit:rev?'-':'+',arr:arr2, line:y-1}
+			} else {
+				y = y2;
+				x = y-k;
+				e0 = ed[k+1+offset];
+				o = {edit:rev?'+':'-',arr:arr1, line:x-1}
+			}
+			// 選択した経路を保存
+			if (o.line>=0) ed[k+offset] = e0.concat(o);
+
+			var max = len1-x>len2-y?len1-x:len2-y;
+			for (var i=0; i<max && arr1[x+i]===arr2[y+i]; ++i) {
+				// 経路追加
+				ed[k+offset].push({edit:'=', arr:arr1, line:x+i});
+			}
+			fp[k + offset] = y+i;
+		}
+	},
 	realtime_preview : function(){
 		var oSource = document.getElementById('msg');
 		var source = document.getElementById('msg').value;
@@ -2029,12 +2095,6 @@ $.fn.serializeObject = function(){
 	return o;
 };
 
-function script_loader(script){
-	var element = document.createElement("script");
-	element.src = script;
-	document.body.appendChild(element);
-}
-
 /** PukiWiki Plus! Assistant Scripts **************************************************************/
 function pukiwiki_pos(){
 	if ($.browser.msie){
@@ -2069,7 +2129,7 @@ var $buoop = {
 		s:5,			// Safari
 		n:9
 	},
-	reminder: 0,		// atfer how many hours should the message reappear
+	reminder: 1,		// atfer how many hours should the message reappear
 	onshow: function(){	// callback function after the bar has appeared
 						
 	},
@@ -2081,21 +2141,23 @@ if (DEBUG){
 	$buoop.text = 'When the version of a browser is old, the text which presses for renewal of a browser here is displayed.';
 }
 
-// onLoad/onUnload
-$(document).ready(function(){
+(function(){
 	// フレームハイジャック対策
 	if( self !== top ){ top.location = self.location; }
-	
+
 	// JSON.stringify, JSON.parseのサポート
-	if (typeof JSON !== "object") {
-		script_loader(SKIN_DIR+'js/json2.js');
+	if (typeof(JSON) === 'undefined') {
+		$.getScript(SKIN_DIR+'js/json2.js');
 	}
+	
 	// IEのCanvasサポート
 	if (!Modernizr.canvas) {
-		script_loader(SKIN_DIR+'js/excanvas.compiled.js');
+		$.getScript(SKIN_DIR+'js/excanvas.compiled.js');
 	}
-	script_loader('http://browser-update.org/update.js');
-	
+	$.getScript('http://browser-update.org/update.js');
+});
+// onLoad/onUnload
+$(document).ready(function(){
 	if (typeof(pukiwiki_skin.custom) == 'object'){
 		if( typeof(pukiwiki_skin.custom.before_init) == 'function'){
 			pukiwiki_skin.custom.before_init();
@@ -2111,29 +2173,19 @@ $(document).ready(function(){
 	// Google Analyticsを実行
 	// http://www.google.com/support/analytics/bin/answer.py?answer=174090
 	if (typeof(_gaq) !== 'undefined'){
-		$.ajax({
-			type: "GET",
-			global : false,
-			url: ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js',
-			dataType: "script"
-		});
-		/*
-		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		var ga = document.createElement('script');
+		ga.type = 'text/javascript';
+		ga.async = true;
 		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-		*/
+		var s = document.getElementsByTagName('script')[0];
+		s.parentNode.insertBefore(ga, s);
 	}
 	
 	// FaceBookを実行
-	if (typeof(fb_appId) !== 'undefined' && $('#fb-root').length !== 0){
-		window.fbAsyncInit = function() {
+	if (typeof(fb_appId) !== 'undefined'){
+		$('<div id="fb-root"></div>').appendTo("body");
+		$.getScript(document.location.protocol + '//connect.facebook.net/'+LANG+'/all.js',function() {
 			FB.init({appId: fb_appId, status: true, cookie: true, xfbml: true});
-		};
-		$.ajax({
-			type: "GET",
-			dataType: 'script',
-			global : false,
-			url: document.location.protocol + '//connect.facebook.net/'+LANG+'/all.js'
 		});
 	}
 

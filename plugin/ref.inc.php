@@ -1,10 +1,10 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: ref.inc.php,v 1.50.11 2010/12/26 19:49:00 Logue Exp $
+// $Id: ref.inc.php,v 1.53.12 2011/02/05 12:19:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiWiki Advance Developers Team
+//   2010-2011 PukiWiki Advance Developers Team
 //   2005-2007,2009 PukiWiki Plus! Team
-//   2002-2006 PukiWiki Developers Team
+//   2002-2006, 2011 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
 // License: GPL v2 or (at your option) any later version
 //
@@ -50,7 +50,7 @@ defined('PLUGIN_REF_DOWNLOAD_OTHERWINDOW')||define('PLUGIN_REF_DOWNLOAD_OTHERWIN
 define('PLUGIN_REF_IMAGE', '/\.(gif|png|jpe?g)$/i');
 
 // Usage (a part of)
-define('PLUGIN_REF_USAGE', "([pagename/]attached-file-name[,parameters, ... ][,title])");
+define('PLUGIN_REF_USAGE', '([pagename/]attached-file-name[,parameters, ... ][,title])');
 
 function plugin_ref_inline()
 {
@@ -72,7 +72,7 @@ function plugin_ref_convert()
 {
 	global $pkwk_dtd;
 	if (! func_num_args())
-		return '<p>#ref(): Usage:' . PLUGIN_REF_USAGE . "</p>\n";
+		return '<p>#ref(): Usage:' . PLUGIN_REF_USAGE . '</p>' . "\n";
 
 	$params = plugin_ref_body(func_get_args());
 
@@ -83,7 +83,7 @@ function plugin_ref_convert()
 	if ($params['around']) {
 		$style = ($params['_align'] == 'right') ? 'float:right' : 'float:left';
 	} else {
-		$style = "text-align:{$params['_align']}";
+		$style = 'text-align:' . $params['_align'];
 	}
 
 	// divで包む
@@ -177,7 +177,7 @@ function plugin_ref_body($args)
 			$is_file_second = is_file($file);
 
 			// If the second argument is WikiName, or double-bracket-inserted pagename (compat)
-			$is_bracket_bracket = preg_match("/^($WikiName|\[\[$BracketName\]\])$/", $args[0]);
+			$is_bracket_bracket = preg_match('/^(' . $WikiName . '|\[\[' . $BracketName . '\]\])$/', $args[0]);
 
 			if ($is_file_second && $is_bracket_bracket) {
 				// Believe the second argument (compat)
@@ -191,7 +191,7 @@ function plugin_ref_body($args)
 				// Promote new design
 				if ($is_file_default && $is_file_second) {
 					// Because of race condition NOW
-					$params['_error'] = htmlspecialchars('The same file name "' .
+					$params['_error'] = $params['_error'] = htmlsc('The same file name "' .
 						$name . '" at both page: "' .  $page . '" and "' .  $_arg .
 						'". Try ref(pagename/filename) to specify one of them');
 				} else {
@@ -209,7 +209,7 @@ function plugin_ref_body($args)
 			$is_file = is_file($file);
 		}
 		if (! $is_file) {
-			$params['_error'] = htmlspecialchars('File not found: "' .
+			 $params['_error'] = htmlsc('File not found: "' .
 				$name . '" at page "' . $page . '"');
 			return $params;
 		}
@@ -239,13 +239,13 @@ function plugin_ref_body($args)
 		if (PKWK_DISABLE_INLINE_IMAGE_FROM_URI) {
 			//$params['_error'] = 'PKWK_DISABLE_INLINE_IMAGE_FROM_URI prohibits this';
 			//return $params;
-			$url = htmlspecialchars($name);
+			$url = htmlsc($name);
 			$params['_body'] = '<a href="' . $url . '">' . $url . '</a>';
 			return $params;
 		}
 
-		$url = $url2 = htmlspecialchars($name);
-		$title = htmlspecialchars(preg_match('/([^\/]+)$/', $name, $matches) ? $matches[1] : $url);
+		$url = $url2 = htmlsc($name);
+		$title = htmlsc(preg_match('/([^\/]+)$/', $name, $matches) ? $matches[1] : $url);
 
 		$is_image = (! $params['noimg'] && preg_match(PLUGIN_REF_IMAGE, $name));
 
@@ -260,7 +260,7 @@ function plugin_ref_body($args)
 
 	} else { // 添付ファイル
 
-		$title = htmlspecialchars($name);
+		$title = htmlsc($name);
 
 		$is_image = (! $params['noimg'] && preg_match(PLUGIN_REF_IMAGE, $name));
 
@@ -312,8 +312,10 @@ function plugin_ref_body($args)
 		}
 
 		if (! empty($_title)) {
-			$title = htmlspecialchars(join(',', $_title));
-			if ($is_image) $title = make_line_rules($title);
+			$title = htmlsc(join(',', $_title));
+			if ($is_image){
+				$title = make_line_rules($title);
+			}
 		}
 	}
 
@@ -341,7 +343,9 @@ function plugin_ref_body($args)
 			$width  = (int)($width  * $params['_%'] / 100);
 			$height = (int)($height * $params['_%'] / 100);
 		}
-		if ($width && $height) $info = 'width="' . $width . '" height="' . $height .'" ';
+		if ($width && $height) {
+			$info = 'width="' . $width . '" height="' . $height . '" ';
+		}
 	}
 
 	// Check alignment
@@ -419,7 +423,7 @@ function plugin_ref_action()
 			break;
 		}
 	}
-	$file = htmlspecialchars($filename);
+	$file = htmlsc($filename);
 	$size = filesize($ref);
 
 	// Output

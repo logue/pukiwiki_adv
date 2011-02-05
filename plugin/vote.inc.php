@@ -1,7 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: vote.inc.php,v 1.24.5 2007/01/21 14:15:30 miko Exp $
+// $Id: vote.inc.php,v 1.24.5 2011/02/05 12:48:00 Logue Exp $
 // Copyright (C)
+//   2011      PukiWiki Advance Developers Team
 //	 2004-2007 PukiWiki Plus! Team
 //   2002-2005 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
@@ -76,9 +77,9 @@ $_msg_collided = T_('It seems that someone has already updated this page while y
 	if (md5(@join('', get_source($vars['refer']))) != $vars['digest']) {
 		$title = $_title_collided;
 
-		$s_refer          = htmlspecialchars($vars['refer']);
-		$s_digest         = htmlspecialchars($vars['digest']);
-		$s_postdata_input = htmlspecialchars($postdata_input);
+		$s_refer          = htmlsc($vars['refer']);
+		$s_digest         = htmlsc($vars['digest']);
+		$s_postdata_input = htmlsc($postdata_input);
 		$body = <<<EOD
 $_msg_collided
 <form action="$script" method="post">
@@ -124,8 +125,8 @@ function plugin_vote_convert()
 	}
 
 	$args     = func_get_args();
-	$s_page   = htmlspecialchars($page);
-	$s_digest = htmlspecialchars($digest);
+	$s_page   = htmlsc($page);
+	$s_digest = htmlsc($digest);
 	$s_choice = T_('Selection');
 	$s_votes  = T_('Vote');
 

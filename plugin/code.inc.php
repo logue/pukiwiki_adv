@@ -9,7 +9,7 @@
  * Ver. 0.5.0.1
  */
 
-// $Id: code.inc.php,v 0.9.1 2010/08/14 23:55:00 Logue Exp $
+// $Id: code.inc.php,v 0.9.2 2011/02/05 10:47:00 Logue Exp $
 
 define('PLUGIN_CODE_LANGUAGE', 'pre');  // 標準言語 全て小文字で指定
 // 標準設定
@@ -110,7 +110,7 @@ function plugin_code_convert()
 
 	if ($num_of_arg != 1 && ! _plugin_code_check_argment($args[0], $option)) {
 		$is_setlang = true;
-		$lang = htmlspecialchars(strtolower($args[0])); // 言語名かオプションの判定
+		$lang = htmlsc(strtolower($args[0])); // 言語名かオプションの判定
 	} else {
 		$lang = PLUGIN_CODE_LANGUAGE; // default
 	}

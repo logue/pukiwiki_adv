@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: calendar.inc.php,v 2.1.5 2008/02/24 18:47:00 upk Exp $
+// $Id: calendar.inc.php,v 1.22.6 2011/02/05 10:32:00 Logue Exp $
 //
 // Calendar plugin - renewal
 
@@ -37,7 +37,7 @@ function plugin_calendar_convert()
 		} else if ($argv == 'left' || $argv == 'center' || $argv == 'right') {
 			$align = $argv;
 		} else {
-			$summary = htmlspecialchars($argv);
+			$summary = htmlsc($argv);
 		}
 	}
 
@@ -48,9 +48,9 @@ function plugin_calendar_convert()
 	}
 
 	$r_base = rawurlencode($base);
-	$s_base = htmlspecialchars($base);
+	$s_base = htmlsc($base);
 	$r_prefix = rawurlencode($prefix);
-	$s_prefix = htmlspecialchars($prefix);
+	$s_prefix = htmlsc($prefix);
 
 	$yy = substr($date_str,0,4);
 	$mm = substr($date_str,4,2);
@@ -110,7 +110,7 @@ function plugin_calendar_convert()
 	while (checkdate($m_num, $day, $y_num)) {
 		$dt = sprintf('%4d-%02d-%02d', $y_num, $m_num, $day);
 		$page = $prefix . $dt;
-		$s_page = htmlspecialchars($page);
+		$s_page = htmlsc($page);
 
 		$h_today = public_holiday($y_num, $m_num, $day);
 		$hday = $h_today['rc'];

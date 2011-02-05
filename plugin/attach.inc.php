@@ -1,10 +1,10 @@
 <?php
 // PukPukiPlus.
-// $Id: attach.inc.php,v 1.91.45 2010/12/23 18:24:00 Logue Exp $
+// $Id: attach.inc.php,v 1.92.46 2011/02/05 10:39:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
+//   2010-2011 PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team
-//   2003-2007,2009 PukiWiki Developers Team
+//   2003-2007,2009,2011 PukiWiki Developers Team
 //   2002-2003 PANDA <panda@arino.jp> http://home.arino.jp/
 //   2002      Y.MASUI <masui@hisec.co.jp> http://masui.net/pukiwiki/
 //   2001-2002 Originally written by yu-ji
@@ -679,7 +679,7 @@ function attach_form($page, $listview = FALSE)
 	$listall_uri = get_cmd_uri('attach','','',array('pcmd'=>'list'));
 
 	$r_page = rawurlencode($page);
-	$s_page = htmlspecialchars($page);
+	$s_page = htmlsc($page);
 	$navi = <<<EOD
 <p class="small">
 	[<a href="{$list_uri}">{$_attach_messages['msg_list']}</a>]
@@ -821,7 +821,7 @@ class AttachFile
 		$open = get_cmd_uri('attach','','',array('pcmd'=>'open','refer'=>$this->page,'file'=>$this->file,'age'=>$this->age));
 
 		$title = $this->time_str . ' ' . $this->size_str;
-		$label = htmlspecialchars($this->file);
+		$label = htmlsc($this->file);
 		if ($this->age) {
 			$label .= ' (backup No.' . $this->age . ')';
 		}
@@ -841,8 +841,8 @@ class AttachFile
 		global $script, $_attach_messages,$pkwk_dtd;
 
 		$r_page = rawurlencode($this->page);
-		$s_page = htmlspecialchars($this->page);
-		$s_file = htmlspecialchars($this->file);
+		$s_page = htmlsc($this->page);
+		$s_file = htmlsc($this->file);
 		$s_err = ($err == '') ? '' : '<p style="font-weight:bold">' . $_attach_messages[$err] . '</p>';
 		
 		$list_uri    = get_cmd_uri('attach','','',array('pcmd'=>'list','refer'=>$this->page));
@@ -910,7 +910,7 @@ class AttachFile
 EOD;
 		}
 
-		$retval = array('msg'=>sprintf($_attach_messages['msg_info'], htmlspecialchars($this->file)));
+		$retval = array('msg'=>sprintf($_attach_messages['msg_info'], htmlsc($this->file)));
 		$retval['body'] = <<< EOD
 <p class="small">
 	[<a href="$list_uri">{$_attach_messages['msg_list']}</a>]
@@ -1054,7 +1054,7 @@ EOD;
 				break;
 			}
 		}
-		$filename = htmlspecialchars($filename);
+		$filename = htmlsc($filename);
 
 		ini_set('default_charset', '');
 		mb_http_output('pass');
@@ -1117,7 +1117,7 @@ class AttachFiles
 				$_files[$age] = $this->files[$file][$age]->toString(FALSE, TRUE);
 			}
 			if (! isset($_files[0])) {
-				$_files[0] = htmlspecialchars($file);
+				$_files[0] = htmlsc($file);
 			}
 			ksort($_files, SORT_NUMERIC);
 			$_file = $_files[0];
@@ -1190,7 +1190,7 @@ class AttachFiles
 				$_files[$age] = $this->files[$file][$age]->toString(FALSE, TRUE);
 			}
 			if (! isset($_files[0])) {
-				$_files[0] = htmlspecialchars($file);
+				$_files[0] = htmlsc($file);
 			}
 			ksort($_files, SORT_NUMERIC);
 			$_file = $_files[0];

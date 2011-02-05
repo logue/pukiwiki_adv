@@ -18,7 +18,7 @@ function plugin_print_inline()
 	if (! print_display()) return '';
 
 	// <div class="print" style="text-align:right"></div>
-	return '<img src="'.IMAGE_URI.'plus/print.png" alt="Print Image" title="Print Image" class="ext" onclick="return open_uri(\''.
+	return '<img src="'.IMAGE_URI.'iconset/default/print.png" alt="Print Image" title="Print Image" class="ext" onclick="return open_uri(\''.
 		'?cmd=print&amp;page='.urlencode($vars['page']).'\', \'_blank\');" />';
 }
 

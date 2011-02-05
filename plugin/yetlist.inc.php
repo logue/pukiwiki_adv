@@ -1,8 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: yetlist.inc.php,v 1.28.6 2010/12/26 21:02:00 Logue Exp $
+// $Id: yetlist.inc.php,v 1.29.6 2011/02/05 12:49:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiWiki Advance Developers Team
+//   2010-2011 PukiWiki Advance Developers Team
 //   2005-2006,2008 PukiWiki Plus! Team
 //   2001-2006 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
@@ -49,12 +49,12 @@ function plugin_yetlist_action()
 			foreach ($refer as $_refer) {
 				$r_refer = rawurlencode($_refer);
 				$link_refs[] = '<a href="' . get_page_uri($_refer) . '">' .
-					htmlspecialchars($_refer) . '</a>';
+					htmlsc($_refer) . '</a>';
 			}
 			$link_ref = join(' ', $link_refs);
 			unset($link_refs);
 
-			$s_page = htmlspecialchars($page);
+			$s_page = htmlsc($page);
 //			if (PKWK_READONLY) {
 			if (auth::check_role('readonly')) {
 				$href = $s_page;

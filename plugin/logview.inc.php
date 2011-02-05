@@ -2,9 +2,9 @@
 /**
  * PukiWiki Advance ログ閲覧プラグイン
  *
- * @copyright	Copyright (c) 2010, PukiWiki Advance Developers Team.
+ * @copyright	Copyright (c) 2010-2011 PukiWiki Advance Developers Team.
  *                            2004-2009, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version	$Id: logview.php,v 0.24 2010/12/26 17:32:00 Logue Exp $
+ * @version	$Id: logview.php,v 0.25 2011/02/05 11:03:00 Logue Exp $
  * @license	http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 
@@ -188,7 +188,7 @@ EOD;
 				break;
 
 			case '@guess': // 推測
-				$body .= ' <td class="style_td">'.htmlspecialchars(logview_guess_user($data, $guess), ENT_QUOTES)."</td>\n";
+				$body .= ' <td class="style_td">'.htmlsc(logview_guess_user($data, $guess), ENT_QUOTES)."</td>\n";
 				break;
 
 			case 'ua': // ブラウザ情報 (USER-AGENT)
@@ -201,8 +201,8 @@ EOD;
 				$browser = $obj_ua->get_icon_broeswes($data['ua']);
 				if (!empty($browser)) {
 					$body .= '<img src="'.$path_browser.$browser.'.png"'.
-						' alt="'.htmlspecialchars($data['ua'], ENT_QUOTES).
-						'" title="'.htmlspecialchars($data['ua'], ENT_QUOTES).
+						' alt="'.htmlsc($data['ua'], ENT_QUOTES).
+						'" title="'.htmlsc($data['ua'], ENT_QUOTES).
 						'" />';
 				}
 				$body .= "</td>\n";
@@ -211,7 +211,7 @@ EOD;
 			case 'local_id':
 				if ($is_role_adm) continue;
 			default:
-				$body .= ' <td class="style_td">'.htmlspecialchars($data[$field], ENT_QUOTES)."</td>\n";
+				$body .= ' <td class="style_td">'.htmlsc($data[$field], ENT_QUOTES)."</td>\n";
 			}
 		}
 

@@ -1,9 +1,9 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: img.inc.php,v 1.17.1 2010/12/26 17:14:00 Logue Exp $
+// $Id: img.inc.php,v 1.18.2 2011/02/05 10:18:00 Logue Exp $
 // Copyright (C)
-//     2010 PukiWiki Advance Developers Team
-//     2002-2005, 2007 PukiWiki Developers Team
+//     2010-2011 PukiWiki Advance Developers Team
+//     2002-2005, 2007,2011 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
 //
 // Inline-image plugin (Output inline-image tag from a URI)
@@ -39,7 +39,7 @@ function plugin_img_convert()
 	if (! is_url($url) || ! preg_match('/\.(jpe?g|gif|png)$/i', $url)) {
 		return PLUGIN_IMG_USAGE;
 	} else {
-		$url = htmlspecialchars($url);
+		$url = htmlsc($url);
 	}
 
 	// The third

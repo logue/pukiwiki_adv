@@ -1,5 +1,5 @@
 <?php
-// $Id: stationary.inc.php,v 1.8.2 2006/04/29 17:50:00 upk Exp $
+// $Id: stationary.inc.php,v 1.9.3 2011/02/05 12:43:00 Logue Exp $
 //
 // Stationary plugin
 // License: The same as PukiWiki
@@ -43,7 +43,7 @@ function plugin_stationary_convert()
 		$result = join(',', $args);
 	}
 
-	return '#stationary(' . htmlspecialchars($result) . ')<br />';
+	return '#stationary(' . htmlsc($result) . ')<br />';
 }
 
 // In-line type plugin: &stationary; or &stationary(foo); , or &stationary(foo){bar};
@@ -60,7 +60,7 @@ function plugin_stationary_inline()
 		$args[$key] = trim($args[$key]);
 	$result = join(',', $args);
 
-	return '&amp;stationary(' . htmlspecialchars($result) . '){' . $body . '};';
+	return '&amp;stationary(' . htmlsc($result) . '){' . $body . '};';
 }
 
 // Action-type plugin: ?plugin=stationary&foo=bar
@@ -74,6 +74,6 @@ function plugin_stationary_action()
 	$msg  = 'Message';
 	$body = 'Message body';
 
-	return array('msg'=>htmlspecialchars($msg), 'body'=>htmlspecialchars($body));
+	return array('msg'=>htmlsc($msg), 'body'=>htmlsc($body));
 }
 ?>

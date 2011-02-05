@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
 //
-// $Id: headarea.inc.php,v 1.6.6 2004/12/15 14:37:37 miko Exp $
+// $Id: headarea.inc.php,v 1.7.6 2011/02/05 10:54:00 Logue Exp $
 //
 
 // サブメニューを使用する
@@ -46,7 +46,7 @@ function plugin_headarea_convert()
 	if (! is_page($page)) {
 		return '';
 //	} else if ($vars['page'] == $page) {
-//		return '<!-- #headarea(): You already view ' . htmlspecialchars($page) . ' -->';
+//		return '<!-- #headarea(): You already view ' . htmlsc($page) . ' -->';
 	}
 
 	$headtext = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/m','$1$2',get_source($page));

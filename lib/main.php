@@ -1,21 +1,17 @@
 <?php
 // PukiWiki Advance.
-// $Id: main.php,v 1.21.25 2010/10/22 17:23:00 upk Exp $
+// $Id: main.php,v 1.23.25 2011/02/05 09:24:00 Logue Exp $
 //
 // PukiWiki Advance
-//  Copyright (C) 2010 by PukiWiki Advance Team
+//  Copyright (C) 2010-2011 by PukiWiki Advance Team
 //  http://pukiwiki.logue.be/
-//
-// PukiPlus
-//  Copyright (C) 2010 by PukiPlus Team
-//  http://pukiplus.sf.net/
 //
 // PukiWiki Plus! 1.4.*
 //  Copyright (C) 2002-2009 by PukiWiki Plus! Team
 //  http://pukiwiki.cafelounge.net/plus/
 //
 // PukiWiki 1.4.*
-//  Copyright (C) 2002-2007 by PukiWiki Developers Team
+//  Copyright (C) 2002-2011 by PukiWiki Developers Team
 //  http://pukiwiki.sourceforge.jp/
 //
 // PukiWiki 1.3.*
@@ -145,7 +141,6 @@ if ($spam && $method != 'GET') {
 
 	if ($_spam) {
 		require(LIB_DIR . 'spam.php');
-		require(LIB_DIR . 'spam_pickup.php');
 
 		if (isset($spam['method'][$_plugin])) {
 			$_method = & $spam['method'][$_plugin];
@@ -222,7 +217,7 @@ if ($plugin != '') {
 		*/
 		$base = (!empty($page)) ? $page : $refer;
 	} else {
-		$msg = 'plugin=' . htmlspecialchars($plugin) . ' is not implemented.';
+		$msg = 'plugin=' . htmlsc($plugin) . ' is not implemented.';
 		$retvars = array('msg'=>$msg,'body'=>$msg);
 		$base    = & $defaultpage;
 	}
@@ -243,7 +238,7 @@ if (!empty($auth_key['home'])) {
 }
 
 // Page output
-$title = htmlspecialchars(strip_bracket($base));
+$title = htmlsc(strip_bracket($base));
 $page  = make_search($base);
 if (isset($retvars['msg']) && $retvars['msg'] != '') {
 	$title = str_replace('$1', $title, $retvars['msg']);
@@ -255,7 +250,7 @@ if (isset($retvars['body']) && $retvars['body'] != '') {
 } else {
 	if ($base == '' || ! is_page($base)) {
 		$base  = & $defaultpage;
-		$title = htmlspecialchars(strip_bracket($base));
+		$title = htmlsc(strip_bracket($base));
 		$page  = make_search($base);
 	}
 
@@ -297,13 +292,7 @@ if ($always_menu_displayed) {
 	if (exist_plugin_convert('side')) $body_side = do_plugin_convert('side');
 }
 
-global $adminpass;
-if (($adminpass == '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72' || $adminpass == '') && !isset($vars['ajax'])){
-	$body = '<div style="padding: 0pt 0.7em;" class="ui-state-error ui-corner-all">'.
-		'<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>'.
-		'<strong>'.$_string['warning'].'</strong> '.$_string['changeadminpass'].'</p></div>'."\n".
-		$body;
-}
+
 
 // Output
 catbody($title, $page, $body);

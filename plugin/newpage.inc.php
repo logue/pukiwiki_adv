@@ -1,5 +1,5 @@
 <?php
-// $Id: newpage.inc.php,v 1.15.7 2010/12/26 17:52:00 Logue Exp $
+// $Id: newpage.inc.php,v 1.16.7 2010/12/26 17:52:00 Logue Exp $
 // Copyright (C)
 //  2010 PukiWiki Advance Developers Team
 //  2007-2008 PukiWiki Plus! Team
@@ -21,8 +21,8 @@ function plugin_newpage_convert()
 	if (func_num_args()) list($newpage) = func_get_args();
 	if (! preg_match('/^' . $BracketName . '$/', $newpage)) $newpage = '';
 
-	$s_page    = htmlspecialchars(isset($vars['refer']) ? $vars['refer'] : $vars['page']);
-	$s_newpage = htmlspecialchars($newpage);
+	$s_page    = htmlsc(isset($vars['refer']) ? $vars['refer'] : $vars['page']);
+	$s_newpage = htmlsc($newpage);
 	++$id;
 
 	$ret = <<<EOD

@@ -1,10 +1,10 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone
-// $Id: link.php,v 1.19.7 2010/10/25 19:19:09 Logue Exp $
+// $Id: link.php,v 1.20.7 2011/02/05 09:20:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiWiki Advance Developers Team
+//   2010-2011 PukiWiki Advance Developers Team
 //   2005-2007 PukiWiki Plus! Team
-//   2003-2007 PukiWiki Developers Team
+//   2003-2007,2011 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
 //
 // Backlinks / AutoLinks related functions
@@ -98,7 +98,7 @@ function links_update($page)
 		if (! empty($rel_new)) {
 				pkwk_touch_file($rel_file);
 				$fp = fopen($rel_file, 'w')
-					or die_message('cannot write ' . htmlspecialchars($rel_file));
+					or die_message('cannot write ' . htmlsc($rel_file));
 			fputs($fp, join("\t", $rel_new));
 			fclose($fp);
 		}
@@ -178,7 +178,7 @@ function links_init()
 		$rel = array_unique($rel);
 		if (! empty($rel)) {
 			$fp = fopen(CACHE_DIR . encode($page) . '.rel', 'w')
-				or die_message('cannot write ' . htmlspecialchars(CACHE_DIR . encode($page) . '.rel'));
+				or die_message('cannot write ' . htmlsc(CACHE_DIR . encode($page) . '.rel'));
 			fputs($fp, join("\t", $rel));
 			fclose($fp);
 		}
@@ -188,7 +188,7 @@ function links_init()
 		$filename = CACHE_DIR . encode($page) . '.rel';
 		pkwk_touch_file($filename);
 		$fp = fopen($filename, 'w')
-			or die_message('cannot write ' . htmlspecialchars(CACHE_DIR . encode($page) . '.ref'));
+			or die_message('cannot write ' . htmlsc(CACHE_DIR . encode($page) . '.ref'));
 		foreach ($arr as $ref_page=>$ref_auto)
 			fputs($fp, $ref_page . "\t" . $ref_auto . "\n");
 		fclose($fp);
@@ -219,7 +219,7 @@ function links_add($page, $add, $rel_auto)
 		if ($is_page || ! $all_auto) {
 			pkwk_touch_file($ref_file);
 			$fp = fopen($ref_file, 'w')
-				 or die_message('cannot write ' . htmlspecialchars($ref_file));
+				 or die_message('cannot write ' . htmlsc($ref_file));
 			fputs($fp, $ref);
 			fclose($fp);
 		}
@@ -250,7 +250,7 @@ function links_delete($page, $del)
 		if (($is_page || ! $all_auto) && $ref != '') {
 			pkwk_touch_file($ref_file);
 			$fp = fopen($ref_file, 'w')
-				or die_message('cannot write ' . htmlspecialchars($ref_file));
+				or die_message('cannot write ' . htmlsc($ref_file));
 			fputs($fp, $ref);
 			fclose($fp);
 		}

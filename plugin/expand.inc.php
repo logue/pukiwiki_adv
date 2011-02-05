@@ -1,9 +1,9 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: expand.inc.php,v 0.1.4 2008/01/05 23:09:00 upk Exp $
+// $Id: expand.inc.php,v 0.1.5 2011/02/05 10:50:00 Logue Exp $
 //
 // Expand Plugin
-define('PLUGIN_EXPAND_ICON', IMAGE_URI . 'plus/expand.gif');
+define('PLUGIN_EXPAND_ICON', IMAGE_URI . 'iconset/default/expand.png');
 define('PLUGIN_EXPAND_DEFAULT_WIDTH', 380);
 define('PLUGIN_EXPAND_MIN_WIDTH',  PLUGIN_EXPAND_DEFAULT_WIDTH);
 define('PLUGIN_EXPAND_MIN_HEIGHT', 380);
@@ -47,7 +47,7 @@ function plugin_expand_convert()
 	$lines = preg_replace(array("'<p>'si","'</p>'si"), array("",""), convert_html($lines));
 	return '<div style="width:' . $width . 'px;overflow:hidden;">' . $lines . '</div>'
 		 . '<form method="post" action="' . $script . '"><textarea name="fullcontents" rows="1" cols="1" style="display:none;">'
-		 . htmlspecialchars($source) . '</textarea><input type="image" name="submit" src="' . PLUGIN_EXPAND_ICON
+		 . htmlsc($source) . '</textarea><input type="image" name="submit" src="' . PLUGIN_EXPAND_ICON
 		 . '" style="float:right;" alt="' . _('Click to all views') . '" />'
 		 . '<input type="hidden" name="cmd" value="expand" /></form>';
 }

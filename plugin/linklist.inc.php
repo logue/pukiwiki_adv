@@ -3,7 +3,7 @@
  * PukiWiki 自動相互リンク作成プラグイン
  *
  * @copyright   Copyright &copy; 2004-2007, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: linklist.inc.php,v 0.6.1 2010/12/26 17:20:00 Logue Exp $
+ * @version     $Id: linklist.inc.php,v 0.6.2 2011/02/05 11:01:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 
@@ -30,14 +30,14 @@ function plugin_linklist_action()
 	global $_linklist_msg;
 	global $referer;
 
-	$page = (empty($vars['page'])) ? '' : htmlspecialchars($vars['page'], ENT_QUOTES);
+	$page = (empty($vars['page'])) ? '' : htmlsc($vars['page'], ENT_QUOTES);
 	$retval['msg']  = sprintf($_linklist_msg['title'],$page);
 	if (! $referer) {
 		$retval['body'] = '<div>'.$_linklist_msg['not_effective']."</div>\n";
 		return $retval;
 	}
 
-	$max  = (empty($vars['max'])) ? -1 : htmlspecialchars($vars['max'], ENT_QUOTES);
+	$max  = (empty($vars['max'])) ? -1 : htmlsc($vars['max'], ENT_QUOTES);
 	$data = ref_get_data($page);
 
 	//  データ無し
@@ -68,7 +68,7 @@ function plugin_linklist_convert()
 
 	list($page,$max) = func_get_args();
 	if (empty($page)) $page = $vars['page'];
-	$max  = (empty($max)) ? -1 : htmlspecialchars($max, ENT_QUOTES);
+	$max  = (empty($max)) ? -1 : htmlsc($max, ENT_QUOTES);
 
 	$data = ref_get_data($page);
 	if (count($data) == 0) return; //  データ無し

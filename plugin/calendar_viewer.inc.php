@@ -1,7 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: calendar_viewer.inc.php,v 1.36.9 2008/02/24 18:48:00 upk Exp $
+// $Id: calendar_viewer.inc.php,v 1.37.10 2011/02/05 10:29:00 Logue Exp $
 // Copyright (C)
+//   2011      PukiWiki Advance Developers Team
 //   2005-2008 PukiWiki Plus! Team
 //   2002-2005, 2007 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
@@ -110,7 +111,7 @@ function plugin_calendar_viewer_convert()
 
 	// Avoid Loop etc.
 	if (isset($viewed[$pagename])) {
-		$s_page = htmlspecialchars($pagename);
+		$s_page = htmlsc($pagename);
 		return "#calendar_viewer(): You already view: $s_page<br />";
 	} else {
 		$viewed[$pagename] = TRUE; // Valid
@@ -183,17 +184,17 @@ function plugin_calendar_viewer_convert()
 		if (PLUGIN_CALENDAR_VIEWER_DATE_FORMAT !== FALSE) {
 			$time = strtotime(basepagename($page)); // $date_sep must be assumed '-' or ''!
 			if ($time == -1 || $time == FALSE) {
-				$s_page = htmlspecialchars($page); // Failed. Why?
+				$s_page = htmlsc($page); // Failed. Why?
 			} else {
 				$week   = $weeklabels[date('w', $time)];
-				$s_page = htmlspecialchars(str_replace(
+				$s_page = htmlsc(str_replace(
 						array('$w' ),
 						array($week),
 						date(PLUGIN_CALENDAR_VIEWER_DATE_FORMAT, $time)
 					));
 			}
 		} else {
-			$s_page = htmlspecialchars($page);
+			$s_page = htmlsc($page);
 		}
 
 		// if (PKWK_READONLY) {
@@ -267,7 +268,7 @@ function plugin_calendar_viewer_convert()
 
 	// ナビゲート用のリンクを末尾に追加
 	if ($left_YM != '' || $right_YM != '') {
-		$s_date_sep = htmlspecialchars($date_sep);
+		$s_date_sep = htmlsc($date_sep);
 		$left_link = $right_link = '';
 		$link = get_cmd_uri('calendar_viewer','','','mode='.$mode.'&file='.$enc_pagename.'&date_sep='.$s_date_sep);
 		if ($left_YM != '')
@@ -311,12 +312,12 @@ function plugin_calendar_viewer_action()
 	$return_vars_array['body'] = call_user_func_array('plugin_calendar_viewer_convert', $args_array);
 
 	//$return_vars_array['msg'] = 'calendar_viewer ' . $vars['page'] . '/' . $page_YM;
-	$return_vars_array['msg'] = 'calendar_viewer ' . htmlspecialchars($vars['page']);
+	$return_vars_array['msg'] = 'calendar_viewer ' . htmlsc($vars['page']);
 	if ($vars['page'] != '') $return_vars_array['msg'] .= '/';
 	if (preg_match('/\*/', $page_YM)) {
 		// うーん、n件表示の時はなんてページ名にしたらいい？
 	} else {
-		$return_vars_array['msg'] .= htmlspecialchars($page_YM);
+		$return_vars_array['msg'] .= htmlsc($page_YM);
 	}
 
 	$vars['page'] = $page;

@@ -1,8 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: backup.inc.php,v 1.28.22 2010/12/26 12:26:00 Logue Exp $
+// $Id: backup.inc.php,v 1.29.22 2011/02/05 10:43:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiWiki Advance Developers Team
+//   2010-2011 PukiWiki Advance Developers Team
 //   2005-2008 PukiWiki Plus! Team
 //   2002-2005,2007 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -45,7 +45,7 @@ $_title_backuplist     = T_('Backup list');
 	if ($page == '') return array('msg'=>$_title_backuplist, 'body'=>plugin_backup_get_list_all());
 
 	check_readable($page, true, true);
-	$s_page = htmlspecialchars($page);
+	$s_page = htmlsc($page);
 	$r_page = rawurlencode($page);
 
 	$action = isset($vars['action']) ? $vars['action'] : '';
@@ -53,7 +53,7 @@ $_title_backuplist     = T_('Backup list');
 
 	$s_action = $r_action = '';
 	if ($action != '') {
-		$s_action = htmlspecialchars($action);
+		$s_action = htmlsc($action);
 		$r_action = rawurlencode($action);
 	}
 
@@ -154,7 +154,7 @@ $_title_backuplist     = T_('Backup list');
 		if (auth::check_role('safemode')) die_message( T_('PKWK_SAFE_MODE prohibits this') );
 		$title = & $_title_backupsource;
 		auth::is_role_page($backups[$s_age]['data']);
-		$body .= '<pre>' . htmlspecialchars(join('', $backups[$s_age]['data'])) .
+		$body .= '<pre>' . htmlsc(join('', $backups[$s_age]['data'])) .
 			'</pre>' . "\n";
 	} else {
 		if (PLUGIN_BACKUP_DISABLE_BACKUP_RENDERING) {
@@ -210,7 +210,7 @@ $_msg_invalidpass = T_('Invalid password.');
 		}
 	}
 
-	$s_page = htmlspecialchars($page);
+	$s_page = htmlsc($page);
 	$body .= <<<EOD
 <p>$_msg_backup_adminpass</p>
 <form action="$script" method="post">
@@ -241,7 +241,7 @@ $hr
 </ul>
 EOD;
 
-	return $ul . '<pre>' . diff_style_to_css(htmlspecialchars($str)) . '</pre>' . "\n";
+	return $ul . '<pre>' . diff_style_to_css(htmlsc($str)) . '</pre>' . "\n";
 }
 
 function plugin_backup_get_list($page)
@@ -258,7 +258,7 @@ $_msg_source           = T_('source');
 $_title_backup_delete  = T_('Deleting backup of $1');
 
 	$r_page = rawurlencode($page);
-	$s_page = htmlspecialchars($page);
+	$s_page = htmlsc($page);
 	$retval = array();
 	$retval[0] = <<<EOD
 <ul>
@@ -368,16 +368,16 @@ $_title_backup_delete  = T_('Deleting backup of $1');
 	$args = func_get_args();
 	while (isset($args[0])) {
 		switch(array_shift($args)) {
-		case 'default'    : $diff_mode = 0; break;
-		case 'nowdiff'    : $diff_mode = 1; break;
-		case 'visualdiff' : $diff_mode = 2; break;
-		case 'label'      : $with_label = TRUE;  break;
-		case 'nolabel'    : $with_label = FALSE; break;
-                }
+			case 'default'    : $diff_mode = 0; break;
+			case 'nowdiff'    : $diff_mode = 1; break;
+			case 'visualdiff' : $diff_mode = 2; break;
+			case 'label'      : $with_label = TRUE;  break;
+			case 'nolabel'    : $with_label = FALSE; break;
+		}
 	}
 
 	$r_page = rawurlencode($page);
-	$s_page = htmlspecialchars($page);
+	$s_page = htmlsc($page);
 	$retval = array();
 	$date = get_date("m/d", get_filetime($page));
 	if ($with_label) {

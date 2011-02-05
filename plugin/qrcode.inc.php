@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
 //
-// $Id: qrcode.inc.php,v 0.8.5 2010/10/27 16:08:00 Logue Exp $
+// $Id: qrcode.inc.php,v 0.8.6 2011/02/05 12:08:00 Logue Exp $
 //
 /*
 *内容
@@ -76,7 +76,7 @@ function plugin_qrcode_inline()
 	if ( $v <= 0 && $v > QRCODE_MAX_VERSION ) { $v = 0; }
 	$n = isset($n) ? intval($n):0;
 	if ( $n <= 0 && $n > QRCODE_MAX_SPLIT ) { $n = 0; }
-	$e = htmlspecialchars(isset($e)?$e:'');
+	$e = htmlsc(isset($e)?$e:'');
 
 	// if no string, no display.
 	if (empty($d)) return FALSE;

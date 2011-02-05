@@ -1,9 +1,9 @@
 <?php
 // PukiPlus.
-// $Id: referer.inc.php,v 1.10.13 2010/12/26 19:00:00 Logue Exp $
+// $Id: referer.inc.php,v 1.10.14 2011/02/05 12:20:00 Logue Exp $
 // Copyright (C)
-//   2010           PukiWiki Advance Team.
-//   2007           PukiWiki Plus! Team
+//   2010-2011 PukiWiki Advance DevelopersTeam.
+//   2007      PukiWiki Plus! Team
 //   2003,2005-2008 Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
 // License: GPL
 //
@@ -133,8 +133,8 @@ function plugin_referer_body($page, $sort)
 		if ($sw_ignore && $referer > 1) continue;
 
 		// 非ASCIIキャラクタ(だけ)をURLエンコードしておく BugTrack/440
-		$e_url = htmlspecialchars(preg_replace('/([" \x80-\xff]+)/e', 'rawurlencode("$1")', $url));
-		$s_url = htmlspecialchars(mb_convert_encoding(rawurldecode($url), SOURCE_ENCODING, 'auto'));
+		$e_url = htmlsc(preg_replace('/([" \x80-\xff]+)/e', 'rawurlencode("$1")', $url));
+		$s_url = htmlsc(mb_convert_encoding(rawurldecode($url), SOURCE_ENCODING, 'auto'));
 		$s_url = mb_strimwidth($s_url,0,REFERE_TITLE_LENGTH,'...');
 
 		$lpass = get_passage($ltime, FALSE); // 最終更新日時からの経過時間
@@ -202,7 +202,7 @@ function plugin_referer_set_color()
 
 		$matches = array();
 		foreach ($pconfig_color as $x)
-			$color[$x[0]] = htmlspecialchars(
+			$color[$x[0]] = htmlsc(
 				preg_match('/BGCOLOR\(([^)]+)\)/si', $x[1], $matches) ?
 					$matches[1] : $x[1]);
 	}

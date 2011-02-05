@@ -1,5 +1,5 @@
 <?php
-// $Id: newpage_subdir.inc.php,v 1.2.8 2011/01/16 17:52:00 Logue Exp $
+// $Id: newpage_subdir.inc.php,v 1.3.8 2011/02/05 12:00:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2005,2008 PukiWiki Plus! Team
@@ -60,7 +60,7 @@ function print_form_string( $list )
 	if($list['directory']) {
 		$form_string .= '<select name="directory">'."\n";
 		foreach( $list['directory'] as $dir ) {
-			$form_string .= '<option>'.htmlspecialchars($dir).'/</option>'."\n";
+			$form_string .= '<option>'.htmlsc($dir).'/</option>'."\n";
 		}
 		$form_string .= "</select>\n";
 	}

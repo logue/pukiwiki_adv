@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: minicalendar_viewer.inc.php,v 1.34.28 2008/06/23 19:49:00 upk Exp $
+// $Id: minicalendar_viewer.inc.php,v 1.35.28 2011/02/05 11:07:00 Logue Exp $
 //
 // Calendar viewer plugin - List pages that calendar/calnedar2 plugin created
 // (Based on calendar and recent plugin)
@@ -114,7 +114,7 @@ function plugin_minicalendar_viewer_convert()
 	// Avoid Loop etc.
 	if (isset($viewed[$pagename])) {
 		if ($viewed[$pagename] > PLUGIN_MINICALENDAR_MAX_VIEWS) {
-			$s_page = htmlspecialchars($pagename);
+			$s_page = htmlsc($pagename);
 			return '#calendar_viewer(): You already view: '.$s_page.'<br />';
 		}
 		$viewed[$pagename]++; // Valid
@@ -198,14 +198,14 @@ function plugin_minicalendar_viewer_convert()
 		}
 
 		$r_page = rawurlencode($page);
-		$s_page = htmlspecialchars($page);
+		$s_page = htmlsc($page);
 		if (PLUGIN_MINICALENDAR_VIEWER_DATE_FORMAT !== FALSE) {
 			$time = strtotime(basepagename($page)); // $date_sep must be assumed '-' or ''!
 			if ($time == -1 || $time == FALSE) {
-				$s_page = htmlspecialchars($page); // Failed. Why?
+				$s_page = htmlsc($page); // Failed. Why?
 			} else {
 				$week   = $weeklabels[date('w', $time)];
-				$s_page = htmlspecialchars(str_replace(
+				$s_page = htmlsc(str_replace(
 						array('$w'),
 						array($week),
 						date(PLUGIN_CALENDAR_VIEWER_DATE_FORMAT, $time)
@@ -215,7 +215,7 @@ function plugin_minicalendar_viewer_convert()
 
 		$refpage = rawurlencode($tmppage);
 		$page_title = basepagename($page);
-		$s_page_title = htmlspecialchars($page_title);
+		$s_page_title = htmlsc($page_title);
 
 		// if (PKWK_READONLY) {
 		if (auth::check_role('readonly')) {
@@ -333,7 +333,7 @@ function plugin_minicalendar_viewer_convert()
 	}
 
 	// ナビゲート用のリンクを末尾に追加
-	$s_date_sep = htmlspecialchars($date_sep);
+	$s_date_sep = htmlsc($date_sep);
 	if ($left_YM != '') {
 		if ($left_YMX != '') {
 			$left_link = '<a href="'.$script.'?plugin=minicalendar&amp;file='.$enc_pagename.'&amp;date='.$left_YMX.'">'.$left_text.'</a>';
@@ -385,13 +385,13 @@ function plugin_minicalendar_viewer_action()
 	$return_vars_array['body'] = call_user_func_array('plugin_minicalendar_viewer_convert',$args_array);
 
 	//$return_vars_array["msg"] = "minicalendar_viewer ".$vars["page"]."/".$page_YM;
-	$return_vars_array['msg'] = 'minicalendar_viewer '.htmlspecialchars($vars["page"]);
+	$return_vars_array['msg'] = 'minicalendar_viewer '.htmlsc($vars["page"]);
 	if ($vars['page'] != '') $return_vars_array['msg'] .= '/';
 
 	if (preg_match("/\*/",$page_YM)) {
 		//うーん、n件表示の時はなんてページ名にしたらいい？
 	} else {
-		$return_vars_array['msg'] .= htmlspecialchars($page_YM);
+		$return_vars_array['msg'] .= htmlsc($page_YM);
 	}
 
 	// Patched By miko - 読み込みモードにする.

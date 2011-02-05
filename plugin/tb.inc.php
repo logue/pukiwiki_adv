@@ -1,8 +1,8 @@
 <?php
-// $Id: tb.inc.php,v 1.19.36 2010/12/31 22:05:00 Logue Exp $
+// $Id: tb.inc.php,v 1.19.37 2011/02/05 12:44:00 Logue Exp $
 /*
  * PukiWiki/TrackBack: TrackBack Ping receiver and viewer
- * (C) 2010 PukiWiki Advance Developers Team
+ * (C) 2010-2011 PukiWiki Advance Developers Team
  * (C) 2007 PukiWiki Plus! Team
  * (C) 2003-2005 PukiWiki Developers Team
  * (C) 2003,2005-2008 Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
@@ -63,7 +63,7 @@ function plugin_tb_convert()
 
 	$field = array('cmd','line');
 	for($i=0; $i<$argc; $i++) {
-		$$field[$i] = htmlspecialchars($argv[$i], ENT_QUOTES);
+		$$field[$i] = htmlsc($argv[$i], ENT_QUOTES);
 	}
 
 	if (empty($cmd)) $cmd = 'list';
@@ -122,7 +122,7 @@ function plugin_tb_inline()
 
 	$field = array('page');
 	for($i=0; $i<$argc; $i++) {
-		$$field[$i] = htmlspecialchars($argv[$i], ENT_QUOTES);
+		$$field[$i] = htmlsc($argv[$i], ENT_QUOTES);
 	}
 	if (empty($page)) $page = $vars['page'];
 
@@ -258,7 +258,7 @@ function plugin_tb_mode_rss($tb_id)
 		// _utime_, title, excerpt, _blog_name_
 		array_shift($arr); // Cut utime
 		list ($url, $title, $excerpt) = array_map(
-			create_function('$a', 'return htmlspecialchars($a);'), $arr);
+			create_function('$a', 'return htmlsc($a);'), $arr);
 		$items .= <<<EOD
 	<item>
 		<title>$title</title>
@@ -268,7 +268,7 @@ function plugin_tb_mode_rss($tb_id)
 EOD;
 	}
 
-	$title = htmlspecialchars($page);
+	$title = htmlsc($page);
 	$link  = get_page_absuri($page);
 	$vars['page'] = $page;
 	$excerpt = strip_htmltag(convert_html(get_source($page)));

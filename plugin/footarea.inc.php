@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
 //
-// $Id: footarea.inc.php,v 1.6.6 2004/12/15 14:37:37 miko Exp $
+// $Id: footarea.inc.php,v 1.6.7 2011/02/05 10:52:00 Logue Exp $
 //
 
 // サブメニューを使用する
@@ -46,7 +46,7 @@ function plugin_footarea_convert()
 	if (! is_page($page)) {
 		return '';
 //	} else if ($vars['page'] == $page) {
-//		return '<!-- #footarea(): You already view ' . htmlspecialchars($page) . ' -->';
+//		return '<!-- #footarea(): You already view ' . htmlsc($page) . ' -->';
 	}
 
 	$foottext = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/m','$1$2',get_source($page));

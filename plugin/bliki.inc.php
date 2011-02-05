@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: bliki.inc.php,v 1.0.1 2010/12/26 13:28:00 Logue Exp $
+ * $Id: bliki.inc.php,v 1.0.2 2011/02/05 10:44:00 Logue Exp $
  * 
  * License:  GNU General Public License
  *
@@ -249,7 +249,7 @@ function bliki_write_cache($cache_name, $entries)
 
 	if (BLIKI_CACHE_MODE) {
 		pkwk_touch($cache_file);
-		$fp = fopen($cache_file, 'w') or die_message( sprintf($_bliki_msg['msg_not_writable'],htmlspecialchars($cache_file));
+		$fp = fopen($cache_file, 'w') or die_message( sprintf($_bliki_msg['msg_not_writable'],htmlsc($cache_file));
 		@flock($fp,LOCK_EX);
 		fwrite($fp, serialize($entries));
 		@flock($fp,LOCK_UN);
@@ -278,7 +278,7 @@ function bliki_delete_caches($del_pattern)
 
 function bliki_get_page_title($page,$time)
 {
-	return '[[' . htmlspecialchars($page) . ']] &passage(' . $time . ',1);';
+	return '[[' . htmlsc($page) . ']] &passage(' . $time . ',1);';
 }
 
 /**
@@ -342,7 +342,7 @@ function bliki_get_more($page)
 	global $_bliki_msg;
 
 	return sprintf($_bliki_msg['msg_more'],
-		htmlspecialchars($page),
+		htmlsc($page),
 		get_page_uri($page,'','','more'));
 }
 

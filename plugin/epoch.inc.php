@@ -3,7 +3,7 @@
  * PukiWiki Plus! epoch plugin.
  *
  * @copyright   Copyright &copy; 2008, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: epoch.inc.php,v 0.1 2008/06/17 00:47:00 upk Exp $
+ * @version     $Id: epoch.inc.php,v 0.2 2011/02/05 10:49:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License
  *
  *  for BugTrack/83
@@ -16,8 +16,15 @@
 
 function plugin_epoch_inline()
 {
+	global $pkwk_dtd;
 	list($time) = func_get_args();
-	return htmlspecialchars(format_date($time));
+	$format = htmlsc(format_date($time));
+
+	if ($pkwk_dtd == PKWK_DTD_HTML_5) {
+		return '<time datetime="'.get_date('c',$time).'">'.$format.'</time>';
+	}else{
+		return $format;
+	}
 }
 
 ?>

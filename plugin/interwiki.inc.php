@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: interwiki.inc.php,v 1.10.2 2010/12/26 17:17:00 Logue Exp $
+// $Id: interwiki.inc.php,v 1.11.2 2011/02/05 17:17:00 Logue Exp $
 //
 // InterWiki redirection plugin (OBSOLETE)
 
@@ -28,7 +28,7 @@ function plugin_interwiki_invalid()
 	return array(
 		'msg'  => T_('This is not a valid InterWikiName'),
 		'body' => str_replace(array('$1', '$2'),
-			array(htmlspecialchars(''),
+			array(htmlsc(''),
 			make_pagelink('InterWikiName')),
 			T_(' $1 is not a valid $2.')));
 }

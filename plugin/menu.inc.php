@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
 //
-// $Id: menu.inc.php,v 1.9.8 2010/10/25 19:16:02 Logue Exp $
+// $Id: menu.inc.php,v 1.10.9 2011/02/05 11:06:00 Logue Exp $
 //
 
 // サブメニューを使用する
@@ -26,10 +26,10 @@ function plugin_menu_convert()
 	if ($num > 0) {
 		// Try to change default 'MenuBar' page name (only)
 		if ($num > 1)       return '#menu(): Zero or One argument needed';
-		if ($menu !== NULL) return '#menu(): Already set: ' . htmlspecialchars($menu);
+		if ($menu !== NULL) return '#menu(): Already set: ' . htmlsc($menu);
 		$args = func_get_args();
 		if (! is_page($args[0])) {
-			return '#menu(): No such page: ' . htmlspecialchars($args[0]);
+			return '#menu(): No such page: ' . htmlsc($args[0]);
 		} else {
 			$menu = $args[0]; // Set
 			return '';
@@ -54,7 +54,7 @@ function plugin_menu_convert()
 		if (! is_page($page)) {
 			return '';
 		} else if ($vars['page'] === $page) {
-			return '<!-- #menu(): You already view ' . htmlspecialchars($page) . ' -->';
+			return '<!-- #menu(): You already view ' . htmlsc($page) . ' -->';
 		} else {
 			// Cut fixed anchors
 			$menutext = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/m', '$1$2', get_source($page));

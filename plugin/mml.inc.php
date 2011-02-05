@@ -3,12 +3,12 @@
  :prefix <http://purl.org/net/ns/doas#> .
  :about "<mml.inc.php>", a: ":PHPScript",
  :shortdesc "JSMML Player for PukiWiki";
- :created "2008-07-28", release: {revision: "1.2.4", created: "2010-09-03"},
+ :created "2008-07-28", release: {revision: "1.2.5", created: "2011-02-05"},
  :author [:name "Logue"; :homepage <http://logue.be/> ];
  :license <http://www.gnu.org/licenses/gpl-3.0.html>;
 */
 // JSMML for PukiWiki.
-// Copyright (c)2008-2010 Logue <http://logue.be/> All rights reserved.
+// Copyright (c)2008-2011 Logue <http://logue.be/> All rights reserved.
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -62,10 +62,8 @@ function plugin_mml_convert(){
 	if (preg_match ('/^MML@/i', $data)){
 		$data = plugin_mml_mabimml2mml($inst,$data);
 	}
-
-	$encorded_data = htmlspecialchars($data, ENT_QUOTES, SOURCE_ENCODING);
 	
-	$ret = '<pre class="mml-source">'.$encorded_data.'</pre>';
+	$ret = '<pre class="mml-source">'.htmlsc($data).'</pre>';
 	if($title){
 		$html = <<<HTML
 <fieldset>

@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
 //
-// $Id: msearch.inc.php,v 0.3.2 2010/12/26 17:45:00 Logue Exp $
+// $Id: msearch.inc.php,v 0.3.3 2011/02/05 11:58:00 Logue Exp $
 // Original is sha
 /* 
 *プラグイン msearch
@@ -81,9 +81,9 @@ function plugin_msearch_form($opts,$ctall,$ctfound)
 	$_msg_andresult = T_('In the page <strong> $2</strong>, <strong> $3</strong> pages that contain all the terms $1 were found.');
 	$_msg_orresult  = T_('In the page <strong> $2</strong>, <strong> $3</strong> pages that contain at least one of the terms $1 were found.');
 
-	$s_word = htmlspecialchars($opts['word']);
-	$s_site = htmlspecialchars($opts['site']);
-	$s_order = htmlspecialchars($opts['order']);
+	$s_word = htmlsc($opts['word']);
+	$s_site = htmlsc($opts['site']);
+	$s_order = htmlsc($opts['order']);
 	$s_and_checked = $s_or_checked = '';
 	if ( $opts['type'] == 'OR' ){
 		$s_or_checked  = "checked=\"checked\"";

@@ -5,7 +5,7 @@
  * @author	 sonots
  * @license	http://www.gnu.org/licenses/gpl.html GPL v2
  * @link	   http://lsx.sourceforge.jp/?Plugin%2Fhtmlinsert.inc.php
- * @version	$Id: htmlinsert.inc.php,v 1.12.1 2010-09-24 18:11:00 Logue $
+ * @version	$Id: htmlinsert.inc.php,v 1.12.2 2011-02-05 10:55:00 Logue $
  * @package	plugin
  */
 
@@ -61,7 +61,7 @@ class PluginHtmlinsert
 		// no skin
 		pkwk_common_headers(); 
 		if ($this->action_options['content_type'] != '') {
-			header('Content-Type: ' . htmlspecialchars($this->action_options['content_type']));
+			header('Content-Type: ' . htmlsc($this->action_options['content_type']));
 		}
 		print $source;
 		exit;
@@ -78,7 +78,7 @@ class PluginHtmlinsert
 				$options[$key] = $val;
 				unset($vars[$key]);
 			} else {
-				$vars[$key] = htmlspecialchars($val);
+				$vars[$key] = htmlsc($val);
 			}
 		}
 		return array($page, $vars, $options);
@@ -95,7 +95,7 @@ class PluginHtmlinsert
 				$options[$key] = $val;
 				unset($args[$i]);
 			} else {
-				$vars[$key] = htmlspecialchars($val);
+				$vars[$key] = htmlsc($val);
 			}
 		}
 		return array($page, $vars, $options);

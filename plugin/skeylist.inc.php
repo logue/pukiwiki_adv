@@ -3,7 +3,7 @@
  * PukiWiki 人気検索キープラグイン
  *
  * @copyright   Copyright &copy; 2004-2009, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: skeylist.inc.php,v 0.13 2009/02/15 14:21:00 upk Exp $
+ * @version     $Id: skeylist.inc.php,v 0.14 2011/02/05 12:40:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  *
  */
@@ -35,7 +35,7 @@ function plugin_skeylist_action()
 	global $_skeylist_msg;
 	global $referer;
 
-	$page = (empty($vars['page'])) ? '' : htmlspecialchars($vars['page'], ENT_QUOTES);
+	$page = (empty($vars['page'])) ? '' : htmlsc($vars['page'], ENT_QUOTES);
 	check_readable($page, false);
 	$retval['msg']  = sprintf($_skeylist_msg['title'],$page);
 	if (! $referer) {
@@ -43,7 +43,7 @@ function plugin_skeylist_action()
 		return $retval;
 	}
 
-	$max  = (empty($vars['max']))  ? -1 : htmlspecialchars($vars['max'], ENT_QUOTES);
+	$max  = (empty($vars['max']))  ? -1 : htmlsc($vars['max'], ENT_QUOTES);
 	// $data = tb_get(tb_get_filename($page,'.ref'));
 	$data = ref_get_data($page);
 
@@ -74,9 +74,9 @@ function plugin_skeylist_convert()
 	if (! $referer) return '';
 
 	list($page,$max) = func_get_args();
-	if (empty($page)) $page = htmlspecialchars($vars['page'], ENT_QUOTES);
+	if (empty($page)) $page = htmlsc($vars['page'], ENT_QUOTES);
 	check_readable($page, false);
-	$max = (empty($max)) ? 10 : htmlspecialchars($max, ENT_QUOTES);
+	$max = (empty($max)) ? 10 : htmlsc($max, ENT_QUOTES);
 
 	// $data = tb_get(tb_get_filename($page,'.ref'));
 	$data = ref_get_data($page);

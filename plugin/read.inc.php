@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: read.inc.php,v 1.8.8 2010/12/26 18:58:00 Logue Exp $
+// $Id: read.inc.php,v 1.9.9 2011/02/05 12:09:00 Logue Exp $
 //
 // Read plugin: Show a page and InterWiki
 
@@ -57,7 +57,7 @@ function plugin_read_action()
 		// 無効なページ名
 		return array(
 			'msg'=>$_title_invalidwn,
-			'body'=>str_replace('$1', htmlspecialchars($page),
+			'body'=>str_replace('$1', htmlsc($page),
 				str_replace('$2', 'WikiName', $_msg_invalidiwn))
 		);
 	}

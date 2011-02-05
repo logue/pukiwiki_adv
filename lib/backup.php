@@ -11,11 +11,11 @@
  * @access  public
  * @author
  * @create
- * @version $Id: backup.php,v 1.12.5 2010/07/11 09:56:00 upk Exp $
+ * @version $Id: backup.php,v 1.13.1 2011/02/05 08:04:00 Logue Exp $
  * Copyright (C)
- *   2010      PukiPlus Developer Team
+ *   2010-2011 PukiWiki Advance Developer Team
  *   2005-2006 PukiWiki Plus! Team
- *   2002-2006 PukiWiki Developers Team
+ *   2002-2006,2011 PukiWiki Developers Team
  *   2001-2002 Originally written by yu-ji
  * License: GPL v2 or (at your option) any later version
  **/
@@ -75,7 +75,7 @@ function make_backup($page, $delete = FALSE)
 
 		pkwk_touch_file(_backup_get_filename($page));
 		$fp = _backup_fopen($page, 'wb')
-			or die_message('Cannot open ' . htmlspecialchars(_backup_get_filename($page)) .
+			or die_message('Cannot open ' . htmlsc(_backup_get_filename($page)) .
 			'<br />Maybe permission is not writable or filename is too long');
 		_backup_fputs($fp, $strout);
 		_backup_fputs($fp, $body);

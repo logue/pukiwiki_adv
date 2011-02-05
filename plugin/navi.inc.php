@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: navi.inc.php,v 1.23.6 2010/09/21 19:47:00 Logue Exp $
+// $Id: navi.inc.php,v 1.24.7 2011/02/05 11:59:00 Logue Exp $
 //
 // Navi plugin: Show DocBook-like navigation bar and contents
 
@@ -63,12 +63,12 @@ function plugin_navi_convert()
 		$is_home = ($home == $current);
 		if (! is_page($home)) {
 			return '#navi(contents-page-name): No such page: ' .
-				htmlspecialchars($home) . '<br />';
+				htmlsc($home) . '<br />';
 		} else if (! $is_home &&
 		    ! preg_match('/^' . preg_quote($home, '/') . '/', $current)) {
-			return '#navi(' . htmlspecialchars($home) .
+			return '#navi(' . htmlsc($home) .
 				'): Not a child page like: ' .
-				htmlspecialchars($home . '/' . basename($current)) .
+				htmlsc($home . '/' . basename($current)) .
 				'<br />';
 		}
 		$reverse = (strtolower($reverse) == 'reverse');
@@ -132,7 +132,7 @@ function plugin_navi_convert()
 			foreach (array('start'=>$home, 'next'=>$next,
 			    'prev'=>$prev, 'up'=>$up) as $rel=>$_page) {
 				if ($_page != '') {
-					$s_page = htmlspecialchars($_page);
+					$s_page = htmlsc($_page);
 					$link_tags[] = array('rel'=>$rel, 'href'=>get_page_uri($_page), 'title'=>$s_page);
 				/*
 					$head_tags[] = ' <link rel="' .
@@ -154,7 +154,7 @@ function plugin_navi_convert()
 			return '#navi(contents-page-name): You already view the result<br />';
 		} else if ($count == 1) {
 			// Sentinel only: Show usage and warning
-			$home = htmlspecialchars($home);
+			$home = htmlsc($home);
 			$ret .= '#navi(' . $home . '): No child page like: ' .
 				$home . '/Foo';
 		} else {

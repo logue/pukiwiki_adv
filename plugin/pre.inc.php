@@ -2,11 +2,11 @@
 /**
  * 整形済出力
  * @author sky
- * Time-stamp: <05/07/30 20:01:01 sasaki>
+ * Time-stamp: <11/02/05 12:06:00 Logue>
  * 
  * GPL
  *
- * Code.inc.php Ver. 0.5
+ * Code.inc.php Ver. 0.5.1
  */
 
 // 標準設定
@@ -76,7 +76,7 @@ function plugin_pre_convert()
 		// Invalid color
 		foreach(array($color, $bgcolor) as $col){
 			if ($col != '' && ! preg_match(PLUGIN_PRE_COLOR_REGEX, $col))
-				return '<p class="error">#pre():Invalid color: '.htmlspecialchars($col).';</p>';
+				return '<p class="error">#pre():Invalid color: '.htmlsc($col).';</p>';
 		}
 		if ($color != '' ) {
 			$style   = ' style="color:'.$color;
@@ -103,7 +103,7 @@ function plugin_pre_convert()
 		$end = substr_count($text, "\n") + $begin -1;
 
 	if (PLUGIN_PRE_VERVATIM  && ! $option['novervatim']  || $option['vervatim']) {
-		$text = htmlspecialchars($text);
+		$text = htmlsc($text);
 	} else {
 		$text = make_link($text);
 	}

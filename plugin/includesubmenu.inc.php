@@ -1,6 +1,8 @@
 <?php
-// $Id: includesubmenu.inc.php,v 1.6.1 2010/12/26 11:16:00 Logue Exp $
-// Copyright (C) 2002-2004, 2007 PukiWiki Developers Team
+// $Id: includesubmenu.inc.php,v 1.7.1 2011/02/05 10:56:00 Logue Exp $
+// Copyright (C)
+//     2011      PukiWiki Advance Developers Team
+//     2002-2004, 2007,2011 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
 //
 // Including submenu 
@@ -52,7 +54,7 @@ function plugin_includesubmenu_convert()
 
 	if ($ShowPageName) {
 		$r_page = rawurlencode($SubMenuPageName);
-		$s_page = htmlspecialchars($SubMenuPageName);
+		$s_page = htmlsc($SubMenuPageName);
 		$link = "<a href=\"$script?cmd=edit&amp;page=$r_page\">$s_page</a>";
 		$body = "<h1>$link</h1>\n$body";
 	}

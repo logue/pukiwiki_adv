@@ -3,7 +3,7 @@
  * bluff プラグイン
  *
  * @copyright   Copyright &copy; 2010, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version	 $Id: bluff.inc.php,v 0.3 2010/12/26 13:32:00 Logue Exp $
+ * @version	 $Id: bluff.inc.php,v 0.3.1 2011/02/05 10:44:00 Logue Exp $
  *
  */
 
@@ -106,7 +106,7 @@ function bluff_set_parm($argv)
 
 	foreach($argv as $arg) {
 		$val = split('=', $arg);
-		$val[1] = (empty($val[1])) ? htmlspecialchars($val[0]) : htmlspecialchars($val[1]);
+		$val[1] = (empty($val[1])) ? htmlsc($val[0]) : htmlsc($val[1]);
 
 		switch($val[0]) {
 		// boolean fields

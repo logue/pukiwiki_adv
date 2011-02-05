@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: memo.inc.php,v 1.16.4 2010/12/26 17:38:00 Logue Exp $
+// $Id: memo.inc.php,v 1.17.4 2011/02/05 11:05:00 Logue Exp $
 //
 // Memo box plugin
 
@@ -49,9 +49,9 @@ $_msg_collided = T_('It seems that someone has already updated this page while y
 		$title = $_title_collided;
 		$body  = $_msg_collided . "\n";
 
-		$s_refer  = htmlspecialchars($vars['refer']);
-		$s_digest = htmlspecialchars($vars['digest']);
-		$s_postdata_input = htmlspecialchars($postdata_input);
+		$s_refer  = htmlsc($vars['refer']);
+		$s_digest = htmlsc($vars['digest']);
+		$s_postdata_input = htmlsc($postdata_input);
 
 		$body .= <<<EOD
 <form action="$script?cmd=preview" method="post">
@@ -88,7 +88,7 @@ function plugin_memo_convert()
 	$data = implode(',', $data);	// Care all arguments
 	$data = str_replace('&#x2c;', ',', $data); // Unescape commas
 	$data = str_replace('&#x22;', '"', $data); // Unescape double quotes
-	$data = htmlspecialchars(str_replace('\n', "\n", $data));
+	$data = htmlsc(str_replace('\n', "\n", $data));
 
 	// if (PKWK_READONLY) {
 	if (auth::check_role('readonly')) {
@@ -99,8 +99,8 @@ function plugin_memo_convert()
 		$_submit = '<input type="submit" name="memo" value="' . T_('update') . '" />';
 	}
 
-	$s_page   = htmlspecialchars($vars['page']);
-	$s_digest = htmlspecialchars($digest);
+	$s_page   = htmlsc($vars['page']);
+	$s_digest = htmlsc($digest);
 	$s_cols   = MEMO_COLS;
 	$s_rows   = MEMO_ROWS;
 	$string   = <<<EOD

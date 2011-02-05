@@ -1,10 +1,10 @@
 <?php
 // PukiPlus.
-// $Id: make_link.php,v 1.37.28 2011/01/18 20:51:00 Logue Exp $
+// $Id: make_link.php,v 1.37.28 2011/02/05 09:21:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2005-2008 PukiWiki Plus! Team
-//   2003-2007 PukiWiki Developers Team
+//   2003-2007,2011 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
 // License: GPL v2 or (at your option) any later version
 //
@@ -101,7 +101,7 @@ class InlineConverter
 		$string = preg_replace_callback('/' . $this->pattern . '/x',
 			array(& $this, 'replace'), $string);
 
-		$arr = explode("\x08", make_line_rules(htmlspecialchars($string)));
+		$arr = explode("\x08", make_line_rules(htmlsc($string)));
 		$retval = '';
 		while (! empty($arr)) {
 			$retval .= array_shift($arr) . array_shift($this->result);
@@ -114,7 +114,7 @@ class InlineConverter
 		$obj = $this->get_converter($arr);
 
 		$this->result[] = ($obj !== NULL && $obj->set($arr, $this->page) !== FALSE) ?
-			$obj->toString() : make_line_rules(htmlspecialchars($arr[0]));
+			$obj->toString() : make_line_rules(htmlsc($arr[0]));
 
 		return "\x08"; // Add a mark into latest processed part
 	}
@@ -196,7 +196,7 @@ class Link
 		$this->type = $type;
 		if (! PKWK_DISABLE_INLINE_IMAGE_FROM_URI &&
 			is_url($alias) && preg_match('/\.(gif|png|jpe?g)$/i', $alias)) {
-			$alias = '<img src="' . htmlspecialchars($alias) . '" alt="' . $name . '" />';
+			$alias = '<img src="' . htmlsc($alias) . '" alt="' . $name . '" />';
 		} else if ($alias != '') {
 			if ($converter === NULL)
 				$converter = new InlineConverter(array('plugin'));
@@ -279,7 +279,7 @@ EOD;
 		} else {
 			// No such plugin, or Failed
 			$body = (($body == '') ? '' : '{' . $body . '}') . ';';
-			return make_line_rules(htmlspecialchars('&' . $this->plain) . $body);
+			return make_line_rules(htmlsc('&' . $this->plain) . $body);
 		}
 	}
 }
@@ -385,7 +385,7 @@ EOD;
 	function set($arr, $page)
 	{
 		list(, , $alias, $name) = $this->splice($arr);
-		return parent::setParam($page, htmlspecialchars($name),
+		return parent::setParam($page, htmlsc($name),
 			'', 'url', $alias == '' ? $name : $alias);
 	}
 
@@ -432,7 +432,7 @@ EOD;
 	function set($arr, $page)
 	{
 		list(, $name, $alias) = $this->splice($arr);
-		return parent::setParam($page, htmlspecialchars($name), '', 'url', $alias);
+		return parent::setParam($page, htmlsc($name), '', 'url', $alias);
 	}
 
 	function toString()
@@ -535,11 +535,11 @@ EOD;
 		$url = get_interwiki_url($name, $this->param);
 		$this->url = ($url === FALSE) ?
 			get_page_uri('[[' . $name . ':' . $this->param . ']]') :
-			htmlspecialchars($url);
+			htmlsc($url);
 
 		return parent::setParam(
 			$page,
-			htmlspecialchars($name . ':' . $this->param),
+			htmlsc($name . ':' . $this->param),
 			'',
 			'InterWikiName',
 			$alias == '' ? $name . ':' . $this->param : $alias
@@ -866,8 +866,8 @@ function make_tooltips($term,$glossary_page='')
 		$glossary = plugin_tooltip_get_page_title($term);
 		if ( $glossary === FALSE ) $glossary = '';
 	}
-	$s_term = str_replace("'", "\\'", htmlspecialchars($term));
-	$s_glossary = htmlspecialchars($glossary);
+	$s_term = str_replace("'", "\\'", htmlsc($term));
+	$s_glossary = htmlsc($glossary);
 
 	$page = strip_bracket($term);
 	if ( is_page($page) ) {
@@ -885,7 +885,7 @@ function make_pagelink($page, $alias = '', $anchor = '', $refer = '', $isautolin
 {
 	global $vars, $link_compact, $related, $_symbol_noexists;
 
-	$s_page = htmlspecialchars(strip_bracket($page));
+	$s_page = htmlsc(strip_bracket($page));
 	if (! is_page($page)) {
 		$realpages = get_autoaliases(strip_bracket($page));
 		foreach ($realpages as $realpage) {

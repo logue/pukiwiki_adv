@@ -1,28 +1,28 @@
 <?php
-/////////////////////////////////////////////////
-// PukiWiki - Yet another WikiWikiWeb clone.
+// PukiWiki - Yet another WikiWikiWeb clone
+// $Id: lastmod.inc.php,v 1.3 2005/01/31 13:03:41 henoheno Exp $
 //
-// $Id: lastmod.php,v 0.1.2 2006/02/16 01:31:00 upk Exp $
-//
+// Lastmod plugin - Show lastmodifled date of the page
+// Originally written by Reimy, 2003
 
 function plugin_lastmod_inline()
 {
-	global $vars;
-	global $WikiName, $BracketName;
+	global $vars, $WikiName, $BracketName;
 
 	$args = func_get_args();
-	if ($args[0]){
-		if (preg_match("/^($WikiName|\[\[$BracketName\]\])$/",$args[0]))
-		{
-			$_page = get_fullname(strip_bracket($args[0]),$vars["page"]);
+	$page = $args[0];
+
+	if ($page == ''){
+		$page = $vars['page']; // Default: page itself
+	} else {
+		if (preg_match("/^($WikiName|$BracketName)$/", strip_bracket($page))) {
+			$page = get_fullname(strip_bracket($page), $vars['page']);
 		} else {
 			return FALSE;
 		}
-	} else {
-		$_page = $vars["page"];
 	}
-	if (!is_page($_page))
-		return FALSE;
-	return format_date(get_filetime($_page));
+	if (! is_page($page)) return FALSE;
+
+	return format_date(get_filetime($page));
 }
 ?>

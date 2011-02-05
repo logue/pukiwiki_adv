@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: diff.php,v 1.9 2007/06/23 16:30:29 henoheno Exp $
+// $Id: diff.php,v 1.10 2011/01/25 15:01:01 henoheno Exp $
 // Copyright (C)
 //   2003-2005, 2007 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -43,7 +43,6 @@ function diff_style_to_css($str = '')
 // Merge helper (when it conflicts)
 function do_update_diff($pagestr, $poststr, $original)
 {
-	global $_strings;
 	$obj = new line_diff();
 
 	$obj->set_str('left', $original, $pagestr);
@@ -63,18 +62,18 @@ function do_update_diff($pagestr, $poststr, $original)
 <p>l : between backup data and stored page data.<br />
  r : between backup data and your post data.</p>
 <table class="style_table">
-	<tr>
-		<th class="style_th">l</th>
-		<th class="style_th">r</th>
-		<th class="style_th">text</th>
-	</tr>
+ <tr>
+  <th>l</th>
+  <th>r</th>
+  <th>text</th>
+ </tr>
 EOD;
 		$tags = array('th', 'th', 'td');
 		foreach ($arr as $_obj) {
 			$table[] = ' <tr>';
 			$params = array($_obj->get('left'), $_obj->get('right'), $_obj->text());
 			foreach ($params as $key => $text) {
-				$text = htmlspecialchars(rtrim($text));
+				$text = htmlsc(rtrim($text));
 				if (empty($text)) $text = '&nbsp;';
 				$table[] = 
 					'  <' . $tags[$key] . ' class="style_' . $tags[$key] . '">' .

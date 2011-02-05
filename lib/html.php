@@ -156,6 +156,14 @@ function catbody($title, $page, $body)
 	}else{
 		
 		/* Adv. ここから。（あまりいい実装ではない） */
+		global $adminpass;
+		if (($adminpass == '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72' || $adminpass == '') && !isset($vars['ajax'])){
+			$body = '<div style="padding: 0pt 0.7em;" class="ui-state-error ui-corner-all">'.
+				'<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>'.
+				'<strong>'.$_string['warning'].'</strong> '.$_string['changeadminpass'].'</p></div>'."\n".
+				$body;
+		}
+		
 		$meta_tags[] = array('name' => 'generator',	'content' => strip_tags(GENERATOR));
 		$meta_tags[] = array('name' => 'viewport',	'content' => (isset($viewport) ? $viewport : 'width=device-width; initial-scale=1.0; maximum-scale=1.0;'));
 		($modifier !== 'anonymous') ?			$meta_tags[] = array('name' => 'author',					'content' => $modifier) : '';
@@ -336,7 +344,7 @@ function catbody($title, $page, $body)
 		
 		// Search words
 		if ($search_word_color && isset($vars['word'])) {
-			$body = '<div class="small">' . $_string['word'] . htmlspecialchars($vars['word']) .
+			$body = '<div class="small">' . $_string['word'] . htmlsc($vars['word']) .
 				'</div>' . $hr . "\n" . $body;
 
 			// BugTrack2/106: Only variables can be passed by reference from PHP 5.0.5
@@ -350,7 +358,7 @@ function catbody($title, $page, $body)
 			$keys = get_search_words(array_keys($keys), TRUE);
 			$id = 0;
 			foreach ($keys as $key=>$pattern) {
-				$s_key    = htmlspecialchars($key);
+				$s_key    = htmlsc($key);
 				$pattern  = '/' .
 					'<textarea[^>]*>.*?<\/textarea>' .	// Ignore textareas
 					'|' . '<[^>]*>' .			// Ignore tags
@@ -435,7 +443,7 @@ function edit_form($page, $postdata, $digest = FALSE, $b_template = TRUE)
 		foreach(auth::get_existpages() as $_page) {
 			if (is_cantedit($_page) || check_non_list($_page))
 				continue;
-			$s_page = htmlspecialchars($_page);
+			$s_page = htmlsc($_page);
 			$pages[$_page] = '		<option value="' . $s_page . '">' .$s_page . '</option>'."\n";
 		}
 		ksort($pages, SORT_STRING);
@@ -457,11 +465,11 @@ EOD;
 	}
 
 	$r_page      = rawurlencode($page);
-	$s_page      = htmlspecialchars($page);
-	$s_digest    = htmlspecialchars($digest);
-	$s_postdata  = htmlspecialchars($refer . $postdata);
-	$s_original  = isset($vars['original']) ? htmlspecialchars($vars['original']) : $s_postdata;
-	$s_id        = isset($vars['id']) ? htmlspecialchars($vars['id']) : '';
+	$s_page      = htmlsc($page);
+	$s_digest    = htmlsc($digest);
+	$s_postdata  = htmlsc($refer . $postdata);
+	$s_original  = isset($vars['original']) ? htmlsc($vars['original']) : $s_postdata;
+	$s_id        = isset($vars['id']) ? htmlsc($vars['id']) : '';
 	$b_preview   = isset($vars['preview']); // TRUE when preview
 	$s_ticket    = md5(MUTIME);
 
@@ -485,7 +493,7 @@ EOD;
 		}
 		$add_notimestamp .= '&nbsp;';
 	}
-	$refpage = isset($vars['refpage']) ? htmlspecialchars($vars['refpage']) : '';
+	$refpage = isset($vars['refpage']) ? htmlsc($vars['refpage']) : '';
 	$add_assistant = edit_form_assistant();
 
 	$body = <<<EOD
@@ -542,7 +550,7 @@ function make_related($page, $tag = '')
 	foreach ($links as $page=>$lastmod) {
 		if (check_non_list($page)) continue;
 
-		$s_page   = htmlspecialchars($page);
+		$s_page   = htmlsc($page);
 		$passage  = get_passage($lastmod);
 /*
 		$_links[] = ($tag) ?
@@ -625,7 +633,7 @@ function strip_autolink($str)
 // Make a backlink. searching-link of the page name, by the page name, for the page name
 function make_search($page)
 {
-	return '<a href="' . get_cmd_uri('related',$page) . '">' . htmlspecialchars($page) . '</a> ';
+	return '<a href="' . get_cmd_uri('related',$page) . '">' . htmlsc($page) . '</a> ';
 }
 
 // Make heading string (remove heading-related decorations from Wiki text)
@@ -682,7 +690,7 @@ function pkwk_headers_sent()
 	$file = $line = '';
 	if (version_compare(PHP_VERSION, '4.3.0', '>=')) {
 		if (headers_sent($file, $line))
-		    die_message(sprintf(T_('Headers already sent at <code>%s</code>, line: <code>%s</code>.'),htmlspecialchars($file),$line));
+		    die_message(sprintf(T_('Headers already sent at <code>%s</code>, line: <code>%s</code>.'),htmlsc($file),$line));
 	} else {
 		if (headers_sent())
 			die_message(_T('Headers already sent.'));
@@ -789,7 +797,7 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 		break;
 	}
 
-	$charset = htmlspecialchars($charset);
+	$charset = htmlsc($charset);
 
 	// Output XML or not
 	if ($type == PKWK_DTD_TYPE_XHTML) {
@@ -816,15 +824,15 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 	$lang_code = str_replace('_','-',LANG); // RFC3066
 	
 	echo '<html';	
-	if ($type != PKWK_DTD_TYPE_XHTML) {
+	if ($type != PKWK_DTD_TYPE_XHTML || $pkwk_dtd == PKWK_DTD_HTML_5) {
 		echo ' lang="' . $lang_code . '"'; // HTML
 	} else {
 		echo ' xmlns="http://www.w3.org/1999/xhtml"'; // dir="ltr" /* LeftToRight */
-		if ($pkwk_dtd != PKWK_DTD_HTML_5){
-			echo ' xml:lang="' . $lang_code . '"';
-		}
-		if ($version == '1.0' || $pkwk_dtd == PKWK_DTD_HTML_5) echo ' lang="' . $lang_code . '"'; // Only XHTML 1.0
+		echo ' xml:lang="' . $lang_code . '"';
+		if ($version == '1.0') echo ' lang="' . $lang_code . '"'; // Only XHTML 1.0
 	}
+	
+	// Detect IE (not good method)
 	preg_match_all('/MSIE (\d\.\d+)/',$_SERVER['HTTP_USER_AGENT'],$matches);
 	if($matches[1]){
 		$class = 'ie'.substr($matches[1][0],0,1).' ';
@@ -873,11 +881,7 @@ function tag_helper($tagname,$tags){
 			$IE_flag = '';
 			if ($key == 'content' && ($tagname == 'script' || $tagname == 'style')){
 				// CDATA内はエンコードする必要が無い・・・ハズ
-				if ($tagname == 'script'){
-					$content = "\n".'//<![CDATA['."\n".$val."\n".'//]]>';
-				}else{
-					$content = "/".'*<![CDATA[*'."/\n".$val."\n/".'*]]>*'.'/';
-				}
+				$content = "/".'*<![CDATA[*'."/\n".$val."\n/".'*]]>*'.'/';
 			}else if($key == 'IE_flag'){
 				$IE_flag = $val;
 			}else{

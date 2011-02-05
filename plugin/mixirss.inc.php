@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: mixirss.inc.php,v 1.14.14 2008/01/16 00:41:00 upk Exp $
+// $Id: mixirss.inc.php,v 1.14.15 2011/02/05 11:08:00 Logue Exp $
 //
 // Publishing RSS feed of RecentChanges
 // Usage: mixirss.inc.php?ver=[0.91|1.0(default)|2.0]
@@ -13,8 +13,8 @@ define('MIXIRSS_LANG', 'ja_JP');
 // define('MIXIRSS_IGNORE_REGEX', 'Navigation|RecentDeleted|MenuBar|SideBar');
 
 // XSLT extra parameters
-//define('LOGO', 'http://pukiwiki.cafelounge.net/image/plus.gif');
-//define('FOAF', 'http://pukiwiki.cafelounge.net/elements/foaf.rdf');
+defied('LOGO')	or define('LOGO', IMAGE_URI.'pukiwiki_adv.logo.png');
+defied('FOAF')	or define('LOGO', IMAGE_URI.'social/foaf.png');
 
 function plugin_mixirss_action()
 {
@@ -55,7 +55,7 @@ function plugin_mixirss_action()
 
 	// Official Main routine ...
 	$page_title_utf8 = mb_convert_encoding($page_title, 'UTF-8', SOURCE_ENCODING);
-	$rss_description_utf8 = mb_convert_encoding(htmlspecialchars($rss_description), 'UTF-8', SOURCE_ENCODING);
+	$rss_description_utf8 = mb_convert_encoding(htmlsc($rss_description), 'UTF-8', SOURCE_ENCODING);
 
 	// Disable plugin
 	$exclude_plugin[] = 'include';

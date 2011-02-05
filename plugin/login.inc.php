@@ -3,7 +3,7 @@
  * PukiPlus ログインプラグイン
  *
  * @copyright   Copyright &copy; 2004-2010, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: login.php,v 0.22 2010/05/05 21:19:00 upk Exp $
+ * @version     $Id: login.php,v 0.23 2011/02/05 11:02:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 require_once(LIB_DIR . 'auth.cls.php');
@@ -33,7 +33,7 @@ function plugin_login_convert()
 	global $script, $vars, $auth_api, $_login_msg;
 
 	@list($type) = func_get_args();
-	$type = (isset($type)) ? htmlspecialchars($type, ENT_QUOTES) : '';
+	$type = (isset($type)) ? htmlsc($type, ENT_QUOTES) : '';
 
 	$auth_key = auth::get_user_info();
 

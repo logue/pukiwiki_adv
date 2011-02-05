@@ -1,11 +1,12 @@
 <?php
-// $Id: bugtrack.inc.php,v 1.26.4 2008/01/05 18:09:00 upk Exp $
+// $Id: bugtrack.inc.php,v 1.27.4 2011/02/05 10:24:00 Logue Exp $
 //
 // PukiWiki BugTrack plugin
 //
 // Copyright:
+// 2011      PukiWiki Advance Developers Team
 // 2005-2008 PukiWiki Plus! Developers Team
-// 2002-2005 PukiWiki Developers Team
+// 2002-2005,2011 PukiWiki Developers Team
 // 2002 Y.MASUI GPL2  http://masui.net/pukiwiki/ masui@masui.net
 
 // Numbering format
@@ -42,7 +43,7 @@ function plugin_bugtrack_init()
 		'version_comment'	=> T_('It is acceptable also in an empty column.'),
 		'version'			=> T_('Version'),
 		'submit'			=> T_('Submit'),
-		'err_prohibit'		=> T_('This Wiki is <code>%s</code> mode now. Therefore, bugtrack function is prohibited.'),
+		'err_prohibit'		=> T_('This Wiki is <var>%s</var> mode now. Therefore, bugtrack function is prohibited.'),
 	);
 }
 
@@ -78,14 +79,14 @@ function plugin_bugtrack_print_form($base, $category)
 	$selected = '';
 	for ($i = 0; $i < $count; ++$i) {
 		if ($i == ($count - 1)) $selected = ' selected="selected"'; // The last one
-		$priority_list = htmlspecialchars($_plugin_bugtrack['priority_list'][$i]);
+		$priority_list = htmlsc($_plugin_bugtrack['priority_list'][$i]);
 		$select_priority .= '    <option value="' . $priority_list . '"' .
 			$selected . '>' . $priority_list . '</option>' . "\n";
 	}
 
 	$select_state = "\n";
 	for ($i = 0; $i < count($_plugin_bugtrack['state_list']); ++$i) {
-		$state_list = htmlspecialchars($_plugin_bugtrack['state_list'][$i]);
+		$state_list = htmlsc($_plugin_bugtrack['state_list'][$i]);
 		$select_state .= '    <option value="' . $state_list . '">' .
 			$state_list . '</option>' . "\n";
 	}
@@ -96,7 +97,7 @@ function plugin_bugtrack_print_form($base, $category)
 	} else {
 		$encoded_category = '<select name="category" id="_p_bugtrack_category_' . $id . '">';
 		foreach ($category as $_category) {
-			$s_category = htmlspecialchars($_category);
+			$s_category = htmlsc($_category);
 			$encoded_category .= '<option value="' . $s_category . '">' .
 				$s_category . '</option>' . "\n";
 		}
@@ -109,18 +110,18 @@ function plugin_bugtrack_print_form($base, $category)
 		$_SESSION[$keyword] = md5(get_ticket() . $ticket);
 	}
 
-	$s_base     = htmlspecialchars($base);
-	$s_name     = htmlspecialchars($_plugin_bugtrack['name']);
-	$s_category = htmlspecialchars($_plugin_bugtrack['category']);
-	$s_priority = htmlspecialchars($_plugin_bugtrack['priority']);
-	$s_state    = htmlspecialchars($_plugin_bugtrack['state']);
-	$s_pname    = htmlspecialchars($_plugin_bugtrack['pagename']);
-	$s_pnamec   = htmlspecialchars($_plugin_bugtrack['pagename_comment']);
-	$s_version  = htmlspecialchars($_plugin_bugtrack['version']);
-	$s_versionc = htmlspecialchars($_plugin_bugtrack['version_comment']);
-	$s_summary  = htmlspecialchars($_plugin_bugtrack['summary']);
-	$s_body     = htmlspecialchars($_plugin_bugtrack['body']);
-	$s_submit   = htmlspecialchars($_plugin_bugtrack['submit']);
+	$s_base     = htmlsc($base);
+	$s_name     = htmlsc($_plugin_bugtrack['name']);
+	$s_category = htmlsc($_plugin_bugtrack['category']);
+	$s_priority = htmlsc($_plugin_bugtrack['priority']);
+	$s_state    = htmlsc($_plugin_bugtrack['state']);
+	$s_pname    = htmlsc($_plugin_bugtrack['pagename']);
+	$s_pnamec   = htmlsc($_plugin_bugtrack['pagename_comment']);
+	$s_version  = htmlsc($_plugin_bugtrack['version']);
+	$s_versionc = htmlsc($_plugin_bugtrack['version_comment']);
+	$s_summary  = htmlsc($_plugin_bugtrack['summary']);
+	$s_body     = htmlsc($_plugin_bugtrack['body']);
+	$s_submit   = htmlsc($_plugin_bugtrack['submit']);
 	$body = <<<EOD
 <form action="$script" method="post">
  <table border="0">
@@ -307,12 +308,12 @@ function plugin_bugtrack_list_convert()
 	foreach ($data as $line) {
 		list($page, $no, $summary, $name, $priority, $state, $category) = $line;
 		foreach (array('summary', 'name', 'priority', 'state', 'category') as $item)
-			$$item = htmlspecialchars($$item);
+			$$item = htmlsc($$item);
 		$page_link = make_pagelink($page);
 
 		$state_no = array_search($state, $_plugin_bugtrack['state_sort']);
 		if ($state_no === NULL || $state_no === FALSE) $state_no = $count_list;
-		$bgcolor = htmlspecialchars($_plugin_bugtrack['state_bgcolor'][$state_no]);
+		$bgcolor = htmlsc($_plugin_bugtrack['state_bgcolor'][$state_no]);
 
 		$row = <<<EOD
  <tr>
@@ -328,10 +329,10 @@ EOD;
 	}
 
 	$table_html = ' <tr>' . "\n";
-	$bgcolor = htmlspecialchars($_plugin_bugtrack['header_bgcolor']);
+	$bgcolor = htmlsc($_plugin_bugtrack['header_bgcolor']);
 	foreach (array('pagename', 'state', 'priority', 'category', 'name', 'summary') as $item)
 		$table_html .= '  <th style="background-color:' . $bgcolor . '">' .
-			htmlspecialchars($_plugin_bugtrack[$item]) . '</th>' . "\n";
+			htmlsc($_plugin_bugtrack[$item]) . '</th>' . "\n";
 	$table_html .= ' </tr>' . "\n";
 
 	for ($i = 0; $i <= $count_list; ++$i) {

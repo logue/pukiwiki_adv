@@ -3,7 +3,7 @@
  * PukiWiki Plus! img3 プラグイン
  *
  * @copyright   Copyright &copy; 2004-2005,2009, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version	$Id: img3.inc.php,v 0.7 2009/03/07 01:55:00 upk Exp $
+ * @version	$Id: img3.inc.php,v 0.8 2011/02/05 10:55:00 Logue Exp $
  * @license	http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 
@@ -49,11 +49,11 @@ function plugin_img3_inline()
 			return $_img3_msg['not_permitted'];
 	}
 
-	$src   = htmlspecialchars($src);
+	$src   = htmlsc($src);
 	$title = strip_htmltag($title);
-	$title = htmlspecialchars($title);
-	$ratio = htmlspecialchars($ratio);
-	$align = htmlspecialchars($align);
+	$title = htmlsc($title);
+	$ratio = htmlsc($ratio);
+	$align = htmlsc($align);
 
 	$size = img3_set_image_size($src,$ratio); // width, height の取得
 

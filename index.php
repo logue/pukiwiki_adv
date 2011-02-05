@@ -28,7 +28,7 @@ define('PKWK_WARNING', true);
 //define('TDIARY_THEME', 'digital_gadgets');
 // PukiWiki Adv. THEME (NOT compatible as Original and Plus! skin)
 // ex. bluebox, cloudwalk, classic, iridwire, iridorange, orangebox, pukiwiki, xxxlogue
-define('PLUS_THEME',	'default');
+define('PLUS_THEME',	'xxxlogue');
 
 // Directory definition
 // (Ended with a slash like '../path/to/pkwk/', or '')

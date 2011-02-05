@@ -1,5 +1,5 @@
 <?php
-// $Id: article.inc.php,v 1.27.6 2011/01/02 20:43:00 Logue Exp $
+// $Id: article.inc.php,v 1.28.6 2011/02/05 10:22:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2005-2006,2008 PukiWiki Plus! Team
@@ -113,9 +113,9 @@ function plugin_article_action()
 	if (md5(get_source($post['refer'], TRUE, TRUE)) !== $post['digest']) {
 		$title = $_article_msg['title_collided'];
 		$body = $_article_msg['msg_collided'] . "\n";
-		$s_refer    = htmlspecialchars($post['refer']);
-		$s_digest   = htmlspecialchars($post['digest']);
-		$s_postdata = htmlspecialchars($postdata_input);
+		$s_refer    = htmlsc($post['refer']);
+		$s_digest   = htmlsc($post['digest']);
+		$s_postdata = htmlsc($postdata_input);
 		$body .= <<<EOD
 <form action="$script" method="post">
 	<input type="hidden" name="refer" value="$s_refer" />
@@ -178,8 +178,8 @@ function plugin_article_convert()
 
 	$helptags = edit_form_assistant();
 
-	$s_page   = htmlspecialchars($vars['page']);
-	$s_digest = htmlspecialchars($digest);
+	$s_page   = htmlsc($vars['page']);
+	$s_digest = htmlsc($digest);
 	$name_cols = PLUGIN_ARTICLE_NAME_COLS;
 	$subject_cols = PLUGIN_ARTICLE_SUBJECT_COLS;
 	$article_rows = PLUGIN_ARTICLE_ROWS;

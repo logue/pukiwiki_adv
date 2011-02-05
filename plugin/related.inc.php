@@ -1,9 +1,10 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: related.inc.php,v 1.10.1 2008/01/05 18:49:00 upk  Exp $
+// $Id: related.inc.php,v 1.12.2 2011/02/05 12:21:00 Logue  Exp $
 // Copyright (C)
+//   2011      PukiWiki Advance Developers Team
 //   2007-2008 PukiWiki Plus! Developers Team
-//   2005, 2007 PukiWiki Developers Team
+//   2005,2007,2011 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
 //
 // Related plugin: Show Backlinks for the page
@@ -35,7 +36,7 @@ function plugin_related_action()
 	}
 
 	// Result
-	$s_word = htmlspecialchars($_page);
+	$s_word = htmlsc($_page);
 	$msg = 'Backlinks for: ' . $s_word;
 	$retval  = '<a href="' . get_page_uri($_page) . '">' .
 		'Return to ' . $s_word .'</a><br />'. "\n";
@@ -47,7 +48,7 @@ function plugin_related_action()
 		ksort($data, SORT_STRING);
 		$retval .= '<ul>' . "\n";
 		foreach ($data as $page=>$time) {
-			$s_page  = htmlspecialchars($page);
+			$s_page  = htmlsc($page);
 			$passage = get_passage($time);
 			$retval .= ' <li><a href="' . get_page_uri($page) . '">' . $s_page .
 				'</a> ' . $passage . '</li>' . "\n";

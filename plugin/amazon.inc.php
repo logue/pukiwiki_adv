@@ -6,7 +6,7 @@
  * Thanks: To reimy, t, Ynak, WikiRoom, upk, 水橋希 and PukiWiki Developers Team.
  *
  * @copyright   Copyright &copy; 2009, Katsumi Saito <jo1upk@users.sourceforge.net>
- * @version	 $Id: amazon.inc.php,v 3.0 2009/12/13 16:32:00 upk Exp $
+ * @version	 $Id: amazon.inc.php,v 3.0.1 2011/02/05 10:38:00 Logue Exp $
  * See Aloso	http://d.hatena.ne.jp/mokehehe/20090526/productadvertisingapi
  *
  */
@@ -74,7 +74,7 @@ function plugin_amazon_init()
 			'err_not_found'		=> T_("The ASIN code is fictitious. "),	// ASINコードは架空です。
 			'msg_myname'		=> T_("MY_NAME"),				// お名前
 			'msg_this_edit'		=> T_("THIS EDIT"),				// ここ編集のこと
-			'err_prohibit'		=> T_('This Wiki is <code>PKWK_READONLY</code> mode now. Therefore, amazon function is prohibited.'),
+			'err_prohibit'		=> T_('This Wiki is <var>PKWK_READONLY</var> mode now. Therefore, amazon function is prohibited.'),
 			'err_newpage'		=> T_('You have not permission to create new page.')
 	)
   );
@@ -228,7 +228,7 @@ function amazon_make_review_page()
 {
 	global $vars, $vars, $_amazon_msg;
 
-	$s_page = htmlspecialchars($vars['page']);
+	$s_page = htmlsc($vars['page']);
 	if (empty($s_page)) $s_page = $vars['refer'];
 
 	return <<<EOD
@@ -266,14 +266,14 @@ function plugin_amazon_action()
 		$retvars['body'] = amazon_make_review_page();
 		return $retvars;
 	} else {
-		$itemid = htmlspecialchars($vars['itemid']);
+		$itemid = htmlsc($vars['itemid']);
 	}
 
 	if ( auth::check_role('readonly') ) die_message( $_amazon_msg['err_prohibit'] );
 	if ( auth::is_check_role(PKWK_CREATE_PAGE)) die_message( $_amazon_msg['err_newpage'] );
 	if (empty($vars['refer']) || !check_readable($vars['refer'], false, false)) die();
 
-	$locale = (empty($vars['locale'])) ? 'jp' : htmlspecialchars($vars['locale']);
+	$locale = (empty($vars['locale'])) ? 'jp' : htmlsc($vars['locale']);
 
 	$obj = new amazon_ecs($itemid,$locale);
 		if (!$obj->is_itemid) {
@@ -390,7 +390,7 @@ function amazon_set_parm_inline($argv)
 	foreach($argv as $arg) {
 				// $val = split('=', $arg);
 		$val = explode('=', $arg);
-		$val[1] = (empty($val[1])) ? htmlspecialchars($val[0]) : htmlspecialchars($val[1]);
+		$val[1] = (empty($val[1])) ? htmlsc($val[0]) : htmlsc($val[1]);
 
 		switch($val[0]) {
 			case 'title':		// Title
@@ -529,7 +529,7 @@ function amazon_set_parm($argv)
 	foreach($argv as $arg) {
 		// $val = split('=', $arg);
 		$val = explode('=', $arg);
-		$val[1] = (empty($val[1])) ? htmlspecialchars($val[0]) : htmlspecialchars($val[1]);
+		$val[1] = (empty($val[1])) ? htmlsc($val[0]) : htmlsc($val[1]);
 
 		switch($val[0]) {
 		case 'r':
@@ -744,8 +744,8 @@ class amazon_ecs
 		}
 
 		return  '<a href="'.$this->shop_url().$this->asin.'/'.AMAZON_AID.'">'.
-			'<img src="'.$this->items['image'].'" alt="'.htmlspecialchars($this->items['title']).'"'.
-			' title="'.htmlspecialchars($this->items['title']).'" /></a>';
+			'<img src="'.$this->items['image'].'" alt="'.htmlsc($this->items['title']).'"'.
+			' title="'.htmlsc($this->items['title']).'" /></a>';
 	}
 
 	function file_write($filename, $data)
