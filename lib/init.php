@@ -51,7 +51,7 @@ $link_tags    = array();	// <link />Tags
 $js_tags      = array();	// <script></script>Tags
 $js_blocks    = array();	// Inline scripts(<script>//<![CDATA[ ... //]]></script>)
 $css_blocks   = array();	// Inline styleseets(<style>/*<![CDATA[*/ ... /*]]>*/</style>)
-
+$js_vars      = array();	// JavaScript initial value.
 $info         = array();	// For debug use.
 
 /////////////////////////////////////////////////

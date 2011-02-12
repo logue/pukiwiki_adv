@@ -27,6 +27,8 @@ function plugin_referer_init()
 			'msg_Fmt_Date'			=> T_('F j, Y, g:i A'),
 			'msg_Chr_uarr'			=> T_('&uArr;'),
 			'msg_Chr_darr'			=> T_('&dArr;'),
+			'msg_disabled'			=> T_('Referer function is disabled.'),
+			'msg_notfound'			=> T_('The page you requested was not found.'),
 		),
 	);
 	set_plugin_messages($messages);
@@ -38,7 +40,7 @@ function plugin_referer_action()
 	global $_referer_msg;
 
 	// Setting: Off
-	if (! $referer) return array('msg'=>'','body'=>'');
+	if (! $referer) return array('msg'=>$_referer_msg['msg_referer'],'body'=>$_referer_msg['msg_disabled']);
 
 	if (isset($vars['page']) && is_page($vars['page'])) {
 		check_readable($vars['page'], false);
@@ -50,7 +52,7 @@ function plugin_referer_action()
 	$pages = auth::get_existpages(REFERER_DIR, '.ref');
 
 	if (empty($pages)) {
-		return array('msg'=>'', 'body'=>'');
+		return array('msg'=>$_referer_msg['msg_referer'], 'body'=>$_referer_msg['msg_notfound']);
 	} else {
 		return array(
 			'msg'  => 'referer list',
@@ -224,6 +226,7 @@ function plugin_referer_ignore_check($url)
 	foreach ($ignore_url as $x)
 		if (strpos($url, $x) !== FALSE)
 			return 1;
+	
 	return 0;
 }
 ?>

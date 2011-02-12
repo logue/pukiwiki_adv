@@ -12,7 +12,7 @@ if (! defined('LIB_DIR'))   define('LIB_DIR', './');
 require(LIB_DIR . 'spam_pickup.php');
 require(LIB_DIR . 'spam_util.php');
 
-if (! defined('SPAM_INI_FILE'))   define('SPAM_INI_FILE',   'spam.ini.php');
+if (! defined('SPAM_INI_FILE'))   define('SPAM_INI_FILE', SITE_HOME.'spam.ini.php');
 
 
 // ---------------------

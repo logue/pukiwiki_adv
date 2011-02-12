@@ -15,26 +15,23 @@
 // Default settings
 
 // Horizontal alignment
-defined('PLUGIN_REF_DEFAULT_ALIGN')||define('PLUGIN_REF_DEFAULT_ALIGN', 'left'); // 'left', 'center', 'right'
+define('PLUGIN_REF_DEFAULT_ALIGN', 'left'); // 'left', 'center', 'right'
 
 // Text wrapping
-defined('PLUGIN_REF_WRAP_TABLE')||define('PLUGIN_REF_WRAP_TABLE', FALSE); // TRUE, FALSE
+define('PLUGIN_REF_WRAP_TABLE', FALSE); // TRUE, FALSE
 
-// URL指定時に画像サイズを取得するか
-defined('PLUGIN_REF_URL_GET_IMAGE_SIZE')||define('PLUGIN_REF_URL_GET_IMAGE_SIZE', FALSE); // FALSE, TRUE
+// NOT RECOMMENDED: getimagesize($uri) for proper width/height
+define('PLUGIN_REF_URL_GET_IMAGE_SIZE', FALSE); // FALSE, TRUE
+
+// DANGER, DO NOT USE THIS: Allow direct access to UPLOAD_DIR
+define('PLUGIN_REF_DIRECT_ACCESS', FALSE); // FALSE or TRUE
+// - This is NOT option for acceralation but old and compatible.
+// - Apache: UPLOAD_DIR/.htaccess will prohibit this usage.
+// - Browsers: This usage contains any proper mime-type, so
+//   some ones will not show proper result. And may cause XSS.
 
 // URL指定で除外するサイト(デフォルト:なし(FALSE))
 defined('PLUGIN_REF_URL_EXCLUSIVE')||define('PLUGIN_REF_URL_EXCLUSIVE', FALSE);
-
-// UPLOAD_DIR のデータ(画像ファイルのみ)に直接アクセスさせる
-defined('PLUGIN_REF_DIRECT_ACCESS')||define('PLUGIN_REF_DIRECT_ACCESS', FALSE); // FALSE or TRUE
-// - これは従来のインラインイメージ処理を互換のために残すもので
-//   あり、高速化のためのオプションではありません
-// - UPLOAD_DIR をWebサーバー上に露出させており、かつ直接アクセス
-//   できる(アクセス制限がない)状態である必要があります
-// - Apache などでは UPLOAD_DIR/.htaccess を削除する必要があります
-// - ブラウザによってはインラインイメージの表示や、「インライン
-//   イメージだけを表示」させた時などに不具合が出る場合があります
 
 // 携帯電話での小さい画像の表示
 defined('PLUGIN_REF_SHOW_IMAGE_TO_MOBILEPHONE')||define('PLUGIN_REF_SHOW_IMAGE_TO_MOBILEPHONE', FALSE); // FALSE, TRUE

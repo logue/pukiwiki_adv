@@ -35,20 +35,21 @@ function ref_save($page)
 {
 	global $referer, $use_spam_check;
 
+	$url = $_SERVER['HTTP_REFERER'];
+
 	// if (PKWK_READONLY || ! $referer || empty($_SERVER['HTTP_REFERER'])) return TRUE;
 	// if (auth::check_role('readonly') || ! $referer || empty($_SERVER['HTTP_REFERER'])) return TRUE;
-	if (! $referer || empty($_SERVER['HTTP_REFERER'])) return TRUE;
-
-	$url = $_SERVER['HTTP_REFERER'];
+	if (! $referer || empty($url)) return TRUE;
 
 	// Validate URI (Ignore own)
 	$parse_url = parse_url($url);
 	if ($parse_url === FALSE || !isset($parse_url['host']) || $parse_url['host'] == $_SERVER['HTTP_HOST'])
 		return TRUE;
-
+		
 	// Blocking SPAM
-	if ($use_spam_check['referer'] && SpamCheck($parse_url['host']))
-		return TRUE;
+
+	if ($use_spam_check['referer'] && SpamCheck($parse_url['host'])) return TRUE;
+	if (is_refspam($parse_url) === true) return TRUE;
 
 	if (! is_dir(REFERER_DIR))      die_message('No such directory: REFERER_DIR');
 	if (! is_writable(REFERER_DIR)) die_message('Permission denied to write: REFERER_DIR');
@@ -108,103 +109,112 @@ function ref_count($page)
 	return $i;
 }
 
+define('CONFIG_REFERER_BL', 'plugin/referer/BlackList');
+define('CONFIG_REFERER_WL', 'plugin/referer/WhiteList');
+
 // Referer元spamかのチェック
-function ref_checkspam($url){
+function is_refspam($url){
 	$is_refspam = false;
-	// リファラースパムリストを読み込み
-	// アドレスに,が含まれていた場合の処理がめんどうだからTSV形式
+	// URLをパース
+	$parse_url = parse_url($url);
+	$condition = $parse_url['host'].$url['path'];	// QueryStringは評価しない。
 
-	// というか、:config/referer/blacklistに自動更新したいが、ホストが保存されないのでこの実装
+	// ホワイトリストに入っている場合はチェックしない
+	$WhiteList = new Config(CONFIG_REFERER_WL);
+	$WhiteList->read();
+	$WhiteListLines = $WhiteList->get('WhiteList');
+	foreach ($WhiteListLines as $WhiteListLine){
+		if(strpos($WhiteListLine[0], $condition) ){
+			return false;
+		}
+	}
+	unset($WhiteList,$WhiteListLines,$WhiteListLine);
 
-	$file = REFERER_SPAM_LIST;
-	if (! file_exists($file)) return false;
+	// ブラックリストを確認
+	$BlackList = new Config(CONFIG_REFERER_BL);
+	$BlackList->read();
+	$BlackListLines = $BlackList->get('BlackList');
 
-	$fp = @fopen($file, 'r');
-	set_file_buffer($fp, 0);
-	@flock($fp, LOCK_EX);
-	rewind($fp);
-	
-	while (($data = fgetcsv($fp, 1000, "\t")) !== FALSE) {
-		if ($data[0] == $url){
-			$is_refspam = true;	// ここで処理を中断するのはまずいだろう・・・
+	$ret = array();
+	/* |~referer|~count|h */
+	foreach ($BlackListLines as $BlackListLine){
+		if(strpos($BlackListLine[0], $condition)){
+			// マッチした場合
+			$count = $BlackListLine[1]+1;
+			$BlackList->put('BlackList', array($BlackListLine[0],$count));
+			$is_refspam = true;
+			break;
+		}else if (is_valid_referer($url) === false){
+			// マッチしなかった場合
+			// リファラーにサイトへのアドレスが存在するかを確認
+			$BlackList->add('BlackList', array($condition,1));
+			$is_refspam = true;
 			break;
 		}
 	}
-	@flock($fp, LOCK_UN);
-	fclose ($fp);
-	unset($fp);
+	// ブラックリストを更新
+	$BlackList->write();
+	unset($BlackList,$BlackListLines,$BlackListLine,$ret,$count);
 
-	// リファラースパムログに記載されていない場合
-	if (!$is_refspam){
-		// リファラーにサイトへのアドレスが存在すかを確認
-		$is_refspam = is_valid_ref();
-		if ($is_refspam === true){
-			// 存在しない場合スパムログに記載
-			pkwk_touch_file($file);
-			$fp = fopen($file, 'w');
-			@flock($fp, LOCK_EX);
-			rewind($fp);
-			foreach ($data as $line) {
-				$str = trim(join(',', $line));
-				if ($str != '') fwrite($fp, $str . "\n");
-			}
-			@flock($fp, LOCK_UN);
-			fclose($fp);
-			unset($fp);
-		}
-	}
 	return $is_refspam;
 }
 
-// 実際、リンク元にアクセスしてじサイトへのアドレスが存在するかのチェック
-function is_valid_ref(){
+// リンク元にアクセスして自サイトへのアドレスが存在するかのチェック
+function is_valid_referer($url){
 	// 本来は正規化されたアドレスでチェックするべきだろうが、
 	// めんどうだからスクリプトのアドレスを含むかでチェック
 	// global $vars;
 	// $script = get_page_absuri(isset($vars['page']) ? $vars['page'] : '');
 
 	$script = get_script_uri();
+/*
 	$error_count = 0;
-
 	do{
-		$http = new HTTP_Request($url, array(
-				"timeout" => "300",	//HTTP_Requestタイムアウトの秒数指定
-			)
-		);
+		$http = new HTTP_Request($url);
 		$http->addHeader("User-Agent", 'Mozilla/5.0 (compatible; '.GENERATOR.')');
 //		$http->addHeader("Referer", $script);	// Refererは吐かない方がいいかな？
-//		$http->setBasicAuth($GLOBALS['id'], $GLOBALS['pass']);
+		$http->addheader('timeout',30);
 		$http->sendRequest();
-
-		// FIXME
-		switch ($http->getResponseCode()){
-			case 200 :
-				$ret = $http->getResponseBody();
-			break;
-			case 301 :	// Moved Permanently
-			case 302 :	// Moved Temporarily
-			case 307 :	// Moved Temporarily(HTTP1.1)
-			case 403 :	// Forbidden
-			case 404 :	// Not Found
-			case 401 :	// Unauthorized
-				return true;	// そもそもページじゃねぇ。spamとする
-			break;
-			default:
-				$error_count++;
-				sleep(10);	// 10秒間待機
-			break;
+		
+		if (PEAR::isError($http->sendRequest())) {
+			return true;
+		}else{
+			// FIXME
+			switch ($http->getResponseCode()){
+				case 200 :
+					$ret = $http->getResponseBody();
+				break;
+				case 301 :	// Moved Permanently
+				case 302 :	// Moved Temporarily
+				case 307 :	// Moved Temporarily(HTTP1.1)
+				case 403 :	// Forbidden
+				case 404 :	// Not Found
+				case 401 :	// Unauthorized
+					return true;	// そもそもページじゃねぇ。spamとする
+				break;
+				default:
+					$error_count++;
+					sleep(10);	// 10秒間待機
+				break;
+			}
 		}
 	}while($error_count < 2);
-	
-	unset($error_count);
-	
-	foreach($ret->find('a') as $element){	// aタグを走査
-		if (preg_match('/^'.$script.'/',$element->href)){	// aタグに自分のサイトのアドレスが含まれていた場合false
-			return false;
+
+	$html = str_get_html($ret);
+	unset($error_count,$ret);
+*/
+	// useragent setting
+	$header = "User-Agent: Mozilla/5.0 (Nintendo Famicom; U; Family Basic 2.0A; ja-JP) AppleWebKit/525.19 (KHTML, like Gecko) Version/3.1.2 Safari/525.21\r\n";
+	$header .= "Referer: ".$script;
+	$header_options = array("http"=> array("method" => "GET", "header" => $header));
+	$header_context = stream_context_create($header_options);
+	$html = file_get_html($url, FALSE, $header_context);;
+	foreach($html->find('a') as $element){	// aタグを走査
+		if (strpos($script,$element->href)){	// aタグに自分のサイトのアドレスが含まれていた場合false（ただし、http://から判定する）
+			return true;
 			break;
 		}
 	}
-	return true;
+	return false;
 }
-
 ?>

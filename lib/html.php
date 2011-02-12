@@ -1,8 +1,8 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone
-// $Id: html.php,v 1.65.41 2010/12/31 20:38:00 Logue Exp $
+// $Id: html.php,v 1.65.42 2011/02/06 13:42:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
+//   2010-2011 PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team <http://pukiwiki.cafelounge.net/plus/>
 //   2002-2007 PukiWiki Developers Team <http://pukiwiki.sourceforge.jp/>
 //   2001-2002 Originally written by yu-ji <http://www.hyuki.com/yukiwiki/>
@@ -37,10 +37,12 @@ function catbody($title, $page, $body)
 	
 	global $head_tags, $foot_tags;	// Obsolete
 	
-	global $meta_tags, $link_tags, $js_tags, $js_blocks, $css_blocks, $info;
-	global $google_analytics;
+	global $meta_tags, $link_tags, $js_tags, $js_blocks, $css_blocks, $info, $js_vars;
+	global $google_analytics, $header_ad_area, $footer_ad_area;
 	global $keywords, $description, $google_loader, $ui_theme;
-
+	
+	global $google_api_key, $google_site_verification, $google_analytics, $yahoo_site_explorer_id, $bing_webmaster_tool;
+	
 	if (! defined('SKIN_FILE') || ! file_exists(SKIN_FILE) || ! is_readable(SKIN_FILE)) {
 		if (! file_exists($skin_file) || ! is_readable($skin_file)) {
 			die_message(SKIN_FILE . '(skin file) is not found or not readable.');
@@ -167,17 +169,17 @@ function catbody($title, $page, $body)
 		$meta_tags[] = array('name' => 'generator',	'content' => strip_tags(GENERATOR));
 		$meta_tags[] = array('name' => 'viewport',	'content' => (isset($viewport) ? $viewport : 'width=device-width; initial-scale=1.0; maximum-scale=1.0;'));
 		($modifier !== 'anonymous') ?			$meta_tags[] = array('name' => 'author',					'content' => $modifier) : '';
-		(!empty($google_site_verification)) ?	$meta_tags[] = array('name' => 'google-site-verification',	'content' => $google_analytics) : '';
+		(!empty($google_site_verification)) ?	$meta_tags[] = array('name' => 'google-site-verification',	'content' => $google_site_verification) : '';
 		(!empty($yahoo_site_explorer_id)) ?		$meta_tags[] = array('name' => 'y_key',						'content' => $yahoo_site_explorer_id) : '';
-		(!empty($bing_siteid)) ?				$meta_tags[] = array('name' => 'msvalidate.01',				'content' => $bing_siteid) : '';
+		(!empty($bing_webmaster_tool)) ?		$meta_tags[] = array('name' => 'msvalidate.01',				'content' => $bing_webmaster_tool) : '';
 
 		// テーマで$default_google_loaderが指定されていない場合は、jQueryを読み込む。
 		// プラグイン以外で指定する場合は、default_のプリフィックスを付ける。
 		// スキン側でオーバーライド可能（jQuery以外を指定するケースを考慮するため）
 		if(!isset($default_google_loader)){
 			$default_google_loader = array(
-				'jquery'=>'1.4.4',
-				'jqueryui'=>'1.8.8',
+				'jquery'=>'1.5.0',
+				'jqueryui'=>'1.8.9',
 				'swfobject'=>'2.2'
 			);
 			if ($x_ua_compatible == 'chrome=1'){ $default_google_loader['chrome-frame'] = '1.0.2'; }	// X-UA-CompatibleでChromeをレンダリングにするよう指定した場合
@@ -232,9 +234,8 @@ function catbody($title, $page, $body)
 				}
 			}
 		}
-
 		// JavaScriptタグの組み立て
-		$js_var = array(
+		$js_vars += array(
 			'SCRIPT'=>get_script_absuri(),
 			'PAGE'=>rawurlencode($_page),
 			'MODIFIED'=>$filetime,
@@ -244,13 +245,17 @@ function catbody($title, $page, $body)
 			'IMAGE_DIR'=>constant('IMAGE_URI'),
 			'DEFAULT_LANG'=>constant('DEFAULT_LANG'),
 			'THEME_NAME'=>constant('PLUS_THEME'),
-//			'SESSION'=>$session
+//			'SESSION'=>$session,
+			'GOOGLE_ANALYTICS'=>$google_analytics
 		);
-		foreach( $js_var as $key=>$val){
-			$default_js[] = 'var '.$key.'="'.$val.'";';
+
+		foreach( $js_vars as $key=>$val){
+			if ($val !== ''){
+				$default_js[] = 'var '.$key.'="'.$val.'";';
+			}
 		}
-		
 		unset($js_var, $key, $val);
+		
 
 		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://www.google.com/jsapi'.((isset($google_api_key)) ? '?key='.$google_api_key : ''));
 		$pkwk_head_js[] = array('type'=>'text/javascript', 'content'=>join($default_js,"\n"));
@@ -266,6 +271,7 @@ function catbody($title, $page, $body)
 				/* Use plugins */ 
 				'jquery.cookie','jquery.lazyload', 'jquery.query','jquery.scrollTo','jquery.colorbox-min','jquery.a-tools.min','jquery.superfish',
 				'jquery.swfupload','jquery.tablesorter-min','jquery.textarearesizer','jquery.jplayer.min', 'jquery.textarea-min', 'jquery.tooltip.min',
+				'jquery.ajaxga.min.js',
 				
 				/* MUST BE LOAD LAST */
 				'skin.original'
@@ -282,13 +288,6 @@ function catbody($title, $page, $body)
 			unset($files);
 		} else {
 			$default_js_libs[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/skin.js');
-		}
-		
-		// Google Analytics
-		if ($google_analytics) {
-			$js_blocks[] = 'var _gaq = _gaq || [];';
-			$js_blocks[] = '_gaq.push(["_setAccount", "'.$google_analytics.'"]);';
-			$js_blocks[] = '_gaq.push(["_trackPageview"]);';
 		}
 
 		/* ヘッダー部のタグ */
@@ -700,7 +699,7 @@ function pkwk_headers_sent()
 // Output common HTTP headers
 function pkwk_common_headers($compress = true){
 	global $cache, $ob_flag;
-	$ob_flag = false;
+	$ob_flag = false;	
 	if (! PKWK_OPTIMISE) pkwk_headers_sent();
 
 	if(PKWK_ZLIB_LOADABLE_MODULE == true && $compress != false) {
@@ -757,7 +756,7 @@ define('PKWK_DTD_TYPE_HTML',         0);
 function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET)
 {
 	static $called;
-	global $x_ua_compatible, $suffix;
+	global $x_ua_compatible, $suffix, $browser;
 	$version = '';
 
 	if (isset($called)) die('pkwk_output_dtd() already called. Why?');
@@ -833,14 +832,21 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 	}
 	
 	// Detect IE (not good method)
-	preg_match_all('/MSIE (\d\.\d+)/',$_SERVER['HTTP_USER_AGENT'],$matches);
-	if($matches[1]){
-		$class = 'ie'.substr($matches[1][0],0,1).' ';
-	}else{
-		$class = '';
+	$user_agent = $_SERVER['HTTP_USER_AGENT'];
+/*
+	if (preg_match("Opera", $user_agent)){
+		$browser = "opera";
+	} elseif(preg_match("Gecko\/", $user_agent)){
+		$browser = "gecko";
+	} elseif(preg_match("MSIE", $user_agent)){
+		preg_match_all('/MSIE (\d\.\d+)/',$user_agent,$matches);
+		$browser = 'ie'.substr($matches[1][0],0,1);
+		unset($matches);
+	} elseif (preg_match("(KHTML|Konqueror|WebKit)", $user_agent)){
+		$browser = "webkit";
 	}
-	unset($matches);
-	echo ' class="'.$class.'no-js">' . "\n"; // <html>
+*/
+	echo ' class="no-js '.$browser.'">' . "\n"; // <html>
 	unset($lang_code);
 	
 	if ($pkwk_dtd == PKWK_DTD_HTML_5){

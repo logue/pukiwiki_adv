@@ -1,20 +1,20 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: mixirss.inc.php,v 1.14.15 2011/02/05 11:08:00 Logue Exp $
+// $Id: mixirss.inc.php,v 1.14.15 2011/02/07 22:31:00 Logue Exp $
 //
 // Publishing RSS feed of RecentChanges
 // Usage: mixirss.inc.php?ver=[0.91|1.0(default)|2.0]
 
 // View Description Letters
 define('MIXIRSS_DESCRIPTION_LENGTH', 256);
-define('MIXIRSS_LANG', 'ja_JP');
+define('MIXIRSS_LANG', LANG);
 
 // upk 2006-03-22
 // define('MIXIRSS_IGNORE_REGEX', 'Navigation|RecentDeleted|MenuBar|SideBar');
 
 // XSLT extra parameters
-defied('LOGO')	or define('LOGO', IMAGE_URI.'pukiwiki_adv.logo.png');
-defied('FOAF')	or define('LOGO', IMAGE_URI.'social/foaf.png');
+defined('LOGO')	or define('LOGO', IMAGE_URI.'pukiwiki_adv.logo.png');
+defined('FOAF')	or define('FOAF', IMAGE_URI.'social/foaf.png');
 
 function plugin_mixirss_action()
 {
@@ -265,12 +265,13 @@ EOD;
 	exit;
 }
 
-function plugin_mixirss_isValidDate($aStr, $aSepList="-/ .")
+function plugin_mixirss_isValidDate($aStr, $aSepList='-\/ \.')
 {
 	if ($aSepList == '') {
 		return checkdate(substr($aStr,4,2),substr($aStr,6,2),substr($aStr,0,4));
 	}
-	if ( ereg("^([0-9]{2,4})[$aSepList]([0-9]{1,2})[$aSepList]([0-9]{1,2})$", $aStr, $m) ) {
+	$pattern = '/^([0-9]{2,4})[' . $aSepList . ']([0-9]{1,2})[' . $aSepList . ']([0-9]{1,2})$/';
+	if ( preg_match($pattern, $aStr, $m) ) {
 		return checkdate($m[2], $m[3], $m[1]);
 	}
 	return false;

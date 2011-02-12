@@ -1,0 +1,5 @@
+*BlackList [#tf571d7e]
+This page is used by the processing which saves a part of address of the referer origin of access considered to be referer SPAM. A screen becomes pure white when there is access from the address indicated here.
+
+このページは、リファラースパムと思われるアクセスのリファラー元のアドレスの一部を保存する処理で使用します。ここに記載されているアドレスからのアクセスがあった際は、画面が真っ白になります。
+|~URL|~Count|

@@ -220,7 +220,7 @@ $nofollow = 0; // 1 = Try hiding from search engines
 
 // Static URL
 // アドレスに?を使わない静的なアドレスにします。
-$static_url = 1;
+$static_url = 0;
 
 // URL Suffix (such as extention)
 // 静的なアドレス使用時の拡張子を入れます。

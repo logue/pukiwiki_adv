@@ -7518,6 +7518,7 @@ $blocklist['E'] = array(
 		'ameblo.jp/ukhash4',
 		'ameblo.jp/vip-vip513',
 		'ameblo.jp/wo701glr',
+		'ameblo.jp/headlines'
 	),
 	'seesaa.net retaled'=>array(
 		'270609.seesaa.net',
@@ -7560,12 +7561,14 @@ $blocklist['E'] = array(
 		'fukurou232960.web.fc2.com',
 		'golfclub0.web.fc2.com',
 		'knori0510.blog130.fc2.com',
+		'kahunskf.blog123.fc2.com',
 		'mats1.web.fc2.com',
 		'mats2.web.fc2.com',
 		'momoiropink777.blog97.fc2.com',
 		'mykeita.blog59.fc2.com',
 		'natuholiday.web.fc2.com',
 		'nhvivid.web.fc2.com',
+		'nin3dsfy.blog87.fc2.com',
 		'payadultcomp.blog133.fc2.com',
 		'petrick.blog123.fc2.com',
 		'rankingup111.bbs.fc2.com',
@@ -7586,6 +7589,7 @@ $blocklist['E'] = array(
 		'propatisuro.sakura.ne.jp',
 		'suncs.sakura.ne.jp',
 		'toplink.sakura.ne.jp',
+		'tv1.sakura.ne.jp',
 		'souzoku.mail-box.ne.jp'	// 124.25.247.10
 	),
 	'spam from Livedoor.biz Blog'=>array(
@@ -7617,7 +7621,8 @@ $blocklist['E'] = array(
 		'dorop39yo.blog.so-net.ne.jp',	// 110.161.9.195
 		'mikihbsy.blog.so-net.ne.jp',	// 126.14.144.131(*)
 		'osechisy.blog.so-net.ne.jp',	// 126.14.144.131(*)
-		'kasitksy.blog.so-net.ne.jp'	// 180.15.55.13
+		'kasitksy.blog.so-net.ne.jp',	// 180.15.55.13(*)
+		'kakuyasude.blog.so-net.ne.jp'	// 219.161.103.132
 	),
 	'Aqua FX SPAM'=>array(				// 110.0.118.112, 119.150.30.244
 		'fxaqua.com',
@@ -7767,6 +7772,7 @@ $blocklist['E'] = array(
 	'1mkg.com',					// 118.17.193.146
 	'344103.realcoms.co.jp',	// 119.175.40.188
 	'abctimes.net',				// 219.119.114.157
+	'anisongu.co',				// 114.146.210.95(*)
 	'anag.ne.jp',				// 124.101.101.185
 	'andg.jp',					// 220.15.154.221
 	'apreninsz.com',			// 125.0.134.107
@@ -7781,8 +7787,10 @@ $blocklist['E'] = array(
 	'fruitfuldiet.jp',			// 61.204.195.126
 	'fujiyo-jp.com',			// 58.188.67.216
 	'goceleb.info',				// 220.102.37.16
+	'goo.gl/zJ947',				// 222.144.109.132
 	'hakushin-f.co.jp',			// 211.120.162.135
 	'houndo-k.com',				// 221.185.219.125(*), 61.214.239.231(*)
+	'hotless.net',
 	'infomiracle.net',			// 126.108.24.69(*)
 	'infotop1.biz',				// 121.84.235.149
 	'j.mp/db03oB', 				// 114.176.133.83 redirect to dondon.in
@@ -7792,19 +7800,24 @@ $blocklist['E'] = array(
 	'kabu-ka.info',				// 114.166.163.221
 	'kamk.jp',					// 59.143.162.165
 	'kanon-media.com',			// 180.10.158.202, 180.10.168.181, 202.155.88.121
-	'kaseguzo.info',			// 219.121.218.77(*)
+	'kaseguzo.info',			// 219.121.218.77(*), 202.55.116.104
 	'kinsuikajyou.com',			// 58.3.47.46
 	'kuruma888.net',			// 219.52.212.20
 	'kyu-sapo.biz',				// 60.236.82.241
-	'lalugo.dtiblog.com',		// 111.104.217.4 
+	'lalugo.dtiblog.com',		// 111.104.217.4
 	'lavender121.com',			// 219.214.0.35
 	'lien-kizuna.jp',			// 114.166.24.34
 	'life-best.com',			// 218.227.23.101
+	'a.mmaru.net',				// 223.218.70.209
 	'mahp.jp',					// 175.104.248.185
+	'meblog.biz',				// 180.15.55.13(*)
+	'mental-disorder.co.cc',	// 114.146.210.95(*)
+	'mehutaeh.dtiblog.com',		// 180.15.55.13 (*)
 	'miraihayarou.com',			// 123.222.230.23
 	'movie-program.net',		// 203.223.56.152
 	'mpisland.com',				// 125.3.116.182
 	'msblood01.com',			// 126.117.11.93
+	'myconcept.jp',				// 221.82.159.120
 	'net-taisaku-a.com',		// 180.2.159.102
 	'nkmrm.com',				// 58.138.45.5
 	'okpit.com',				// 119.245.101.179
@@ -7813,7 +7826,7 @@ $blocklist['E'] = array(
 	'qee.jp',					// 124.25.247.10
 	'rakuten-hikaku.com',		// 219.214.0.35
 	'rsljh.com',				// 221.188.171.15
-	'sawayaka-gift.jp'
+	'sawayaka-gift.jp',
 	'simple-fit.org',			// 218.219.97.33
 	'sitemeter.com',			// 61.23.10.149
 	'slhjzl.com',				// 114.152.12.197

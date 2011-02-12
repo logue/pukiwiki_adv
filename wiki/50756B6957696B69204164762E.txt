@@ -65,7 +65,6 @@ void main(int argc, char *argv[])
 編集フォームのサイズを変更できるようにしました。また、横幅もウィンドウもしくはCSSでデザインした幅に自動調整されます。
 :realeditの改良 COLOR(blue){SIZE(9){Adv.}}|
 Plus!で好評だったRealEditをSafariなどのWebKit系ブラウザでも使用できるようにしました。
-
 *認証関連 [#a440cf0e]
 :NetBIOSのサポート COLOR(red){SIZE(9){plus!i18n}}|
 NetBIOSのサポートにより、Windowsのログオン情報から認証済みユーザが特定できるようになりました。

@@ -81,6 +81,8 @@ $notify = $trackback = $referer = 0;
 // Load *.ini.php files and init PukiWiki
 require(LIB_DIR . 'init.php');
 
+require(LIB_DIR . 'bad-behavior-pukiwiki.php');
+
 // Load optional libraries
 if ($notify)	require(LIB_DIR . 'mail.php'); // Mail notification
 if ($trackback)	require(LIB_DIR . 'trackback.php'); // TrackBack
@@ -291,9 +293,6 @@ if ($always_menu_displayed) {
 	if (exist_plugin_convert('menu')) $body_menu = do_plugin_convert('menu');
 	if (exist_plugin_convert('side')) $body_side = do_plugin_convert('side');
 }
-
-
-
 // Output
 catbody($title, $page, $body);
 exit;

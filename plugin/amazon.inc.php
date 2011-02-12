@@ -135,7 +135,7 @@ EOD;
 		if ($pkwk_dtd == PKWK_DTD_HTML_5){
 			$retval = '<figure class="amazon_img" style="'.amazon_ecs::style_float($parm['align']).'">'.
 				$obj->get_imagelink().
-				'<figcaption><a href="' . $obj->shop_url() . $obj->asin.'/' . AMAZON_AID . '">' . $obj->items['title'] . '</a></figcaption>';
+				'<figcaption><a href="' . $obj->shop_url() . $obj->asin.'/' . AMAZON_AID . '">' . $obj->items['title'] . '</a></figcaption>'."\n".'</figure>';
 		}else{
 			$retval .= '<div class="amazon_img" style="'.amazon_ecs::style_float($parm['align']).'">'.
 				'<table class="amazon_tbl"'.$style.'><tr>'.

@@ -165,6 +165,8 @@ var pukiwiki_skin = {
 		/* Glossaly（ツールチップ） */
 		this.glossaly();
 		
+		this.bad_behavior();
+		
 		// フォームロックを解除
 		$('input, button, select, textarea').removeAttr('disabled');
 		
@@ -177,10 +179,16 @@ var pukiwiki_skin = {
 		}
 	},
 	// HTML5の各種機能をJavaScriptで有効化するための処理
-	enableHTML5 : function(){
+	enableHTML5 : function(prefix){
+		if (prefix){
+			prefix = prefix + ' ';
+		}else{
+			prefix = '';
+		}
+		
 		// Placeholder属性のサポート
 		if (!Modernizr.input.placeholder){
-			$('[placeholder]').each(function () {
+			$(prefix+'[placeholder]').each(function () {
 				var 
 				input = $(this),
 				placeholderText = input.attr('placeholder'),
@@ -212,19 +220,12 @@ var pukiwiki_skin = {
 
 		// rel="noreferer"のサポート
 		// WebKitのNightly版でサポートされているが、JavaScriptで実装されているのかを確認する方法がわからないため常に実行
-		$('a[rel*=noreferer]').click(function () {
-			// http://forum.logue.be/index.php/topic,353.0.html
-
-			// encodeURIComponent命令使うため変換し直し
-			var uri = $(this).attr('href');
-			if(navigator.userAgent.indexOf("MSIE")!==-1){
-				// IEの場合、location.replaeでリファラー消えるからいいや
-				location.href = uri;
-			}else{
-				uri = uri.replace(/&#37;/g,"%");
-				// IE以外の場合、dataスキーマーでリファラーを消すためのページを偽造
-				location.href = "data:text/html;charset=utf-8,%3Chtml%3E%0D%0A%3Cscript%20%3E%0D%0Alocation.replace(%22" + encodeURIComponent(uri) + "%22)%3B%0D%0A%3C%2Fscript%3E%0D%0A%3C%2Fhtml%3E%0D%0A";
-			}
+		$(prefix+'a[rel*=noreferer]').click(function () {
+			// http://qootas.org/archives/2004/11/referrer.html
+			var url = $(this).attr('href');
+			var w = window.open();
+			w.document.write('<meta http-equiv="refresh" content="0;url='+url+'">');
+			w.document.close();
 			return false;
 		});
 	},
@@ -388,6 +389,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 						$(this).click(function(){
 							self.ajax_dialog(params,prefix,function(){
 								if (params.cmd == 'attach' && (params.pcmd == 'upload' || params.pcmd == 'info') || params.cmd == 'attachref' || params.cmd=='read' || params.cmd=='backup' && params.age !== ''){
+									self.bad_behavior(prefix+'div.window');
 									self.set_uploader(prefix+'div.window');
 									self.setAnchor(prefix+'div.window');
 								}
@@ -776,8 +778,9 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			},
 			pager : {
 				minimum_lines : 10,
-				size:[10,20,30,40],
-				location_before:true
+				size:[10,25,50,75,100],
+				location_before:true,
+				positionFixed: false
 			}
 		};
 
@@ -785,7 +788,10 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			config = this.custom.tablesorter;
 		}
 
-		$(prefix+'.tablesorter').each(function(){
+		$(prefix+'.tablesorter').each(function(elem){
+			var table = this;
+			var backup = $(this).clone();
+			
 			if ( $('tr',this).length > config.pager.minimum_lines && $('thead',this).length !== 0){	// 10行以上の場合ページャーを表示
 				// テーブルのページングウィジット
 				var pager_id = 'table_pager_'+self.tablesorter.counter;
@@ -799,7 +805,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 					'		<li class="next ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthick-1-e"></span></li>',
 					'		<li class="last ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthickstop-1-e"></span></li>',
 					'		<li><select class="pagesize"></select></li>',
-					'		<li class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-reflesh"></span></li>',
+					'		<li class="reload ui-state-default ui-corner-all"><span class="ui-icon ui-icon-refresh"></span></li>',
 					'	</ul>',
 					'</div>'
 				].join("\n");
@@ -817,6 +823,28 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 					$('#'+pager_id+' .pagesize').append($('<option>').attr({ value: config.pager.size[i] }).text(config.pager.size[i]));
 					i++;
 				}
+				// リセットボタン
+				$('#'+pager_id+' .reload').click(function(){
+					backup.clone().insertAfter(table);
+					$(table).remove();
+					$('#'+pager_id).remove();
+					$(table).tablesorter(config.sorter);
+					if (config.pager.location_before === true){
+						$(table).before(pager_widget);
+					}else{
+						$(table).after(pager_widget);
+					}
+					$(table).tablesorterPager(config.pager);
+					
+					var i = 0;
+					while (i < config.pager.size.length){
+						$('#'+pager_id+' .pagesize').append($('<option>').attr({ value: config.pager.size[i] }).text(config.pager.size[i]));
+						i++;
+					}
+					
+					//Load Tool Tips for links inside the tab container
+					self.glossaly(table);
+				});
 
 				// ページャーを生成（ID重複しないようにグローバル変数のpukiwiki_skin.tablesorter.counterをカウンタとして使用
 				$(this).tablesorterPager({
@@ -825,12 +853,11 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 				});
 
 				$('#'+pager_id).show('clip');
-
 				self.tablesorter.counter++;
 			}else{
-				
 				$(this).tablesorter(config.sorter);
 			}
+			
 		});
 
 		//hover states on the static widgets
@@ -894,7 +921,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		}
 		
 		if ($.support.leadingWhitespace !== true){
-			$('div.tooltip').css({
+			$(prefix+'.tooltip').css({
 				'behavior': 'url('+SKIN_DIR+'js/ie-css3.htc)'
 			});
 		}
@@ -2051,6 +2078,18 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 	},
 	_hideToc : function(ev){
 		$(this.toc).fadeOut("fast");
+	},
+// Bad Behavior
+	bad_behavior: function(prefix){
+		if (prefix){
+			prefix = prefix + ' ';
+		}else{
+			prefix = '';
+		}
+
+		if (typeof(BH_NAME) !== 'undefined' && typeof(BH_VALUE) !== 'undefined'){
+			$(prefix+'form').append('<input type="hidden" name="'+BH_NAME+'" value="'+BH_VALUE+'" />');
+		}
 	}
 };
 
@@ -2155,9 +2194,34 @@ if (DEBUG){
 		$.getScript(SKIN_DIR+'js/excanvas.compiled.js');
 	}
 	$.getScript('http://browser-update.org/update.js');
+	
+	// Google Analyticsを実行
+	// http://www.google.com/support/analytics/bin/answer.py?answer=174090
+	if (GOOGLE_ANALYTICS){
+		var ga = document.createElement('script');
+		ga.type = 'text/javascript';
+		ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0];
+		s.parentNode.insertBefore(ga, s);
+	}
+	
+	// FaceBookを実行
+	if (FACEBOOK_APPID){
+		$.getScript(document.location.protocol + '//connect.facebook.net/'+LANG+'/all.js',function() {
+			$('body').prepend('<div id="fb-root"></div>');
+			FB.init({appId: FACEBOOK_APPID, status: true, cookie: true, xfbml: true});
+		});
+	}
 });
+
 // onLoad/onUnload
 $(document).ready(function(){
+	
+	if (typeof(GOOGLE_ANALYTICS) !== 'undefined'){
+		$.ajaxGA.init(GOOGLE_ANALYTICS, true);
+	}
+
 	if (typeof(pukiwiki_skin.custom) == 'object'){
 		if( typeof(pukiwiki_skin.custom.before_init) == 'function'){
 			pukiwiki_skin.custom.before_init();
@@ -2168,25 +2232,6 @@ $(document).ready(function(){
 		}
 	}else{
 		pukiwiki_skin.init();
-	}
-
-	// Google Analyticsを実行
-	// http://www.google.com/support/analytics/bin/answer.py?answer=174090
-	if (typeof(_gaq) !== 'undefined'){
-		var ga = document.createElement('script');
-		ga.type = 'text/javascript';
-		ga.async = true;
-		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-		var s = document.getElementsByTagName('script')[0];
-		s.parentNode.insertBefore(ga, s);
-	}
-	
-	// FaceBookを実行
-	if (typeof(fb_appId) !== 'undefined'){
-		$('<div id="fb-root"></div>').appendTo("body");
-		$.getScript(document.location.protocol + '//connect.facebook.net/'+LANG+'/all.js',function() {
-			FB.init({appId: fb_appId, status: true, cookie: true, xfbml: true});
-		});
 	}
 
 	tzCalculation_LocalTimeZone(location.host,false);

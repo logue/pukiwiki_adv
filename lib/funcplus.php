@@ -1,8 +1,8 @@
 <?php
 // PukiPlus.
-// $Id: funcplus.php,v 0.1.63 2010/10/22 09:55:00 Logue Exp $
+// $Id: funcplus.php,v 0.1.64 2011/02/09 00:35:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
+//   2010-2011 PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team
 // License: GPL v2 or (at your option) any later version
 //
@@ -301,9 +301,9 @@ function is_ignore_page($page)
 {
 	global $navigation,$whatsnew,$whatsdeleted,$interwiki,$menubar,$sidebar,$headarea,$footarea;
 
-	$ignore_regrex = '('.$navigation.'$)|('.$whatsnew.'$)|('.$whatsdeleted.'$)|('.
-		$interwiki.'$)|'.$menubar.'$)|('.$sidebar.'$)|('.$headarea.'$)|('.$footarea.'$)';
-	return (ereg($ignore_regrex, $page)) ? TRUE : FALSE;
+	$ignore_regrex = '/['.$navigation.'|'.$whatsnew.'|'.$whatsdeleted.'|'.
+		$interwiki.'|'.$menubar.'|'.$sidebar.'|'.$headarea.'|'.$footarea.']$/';
+	return (preg_match($ignore_regrex, $page)) ? TRUE : FALSE;
 }
 
 function is_localIP($ip)

@@ -7,7 +7,7 @@ http:// is unnecessary because it is linked when defining it here.
 // リンク元の表示をさせない URI を定義します。
 // ここで定義するとリンクされるため http:// は不要です。
 
-|localhost/|
+|localhost|
 
 *COLOR
 
@@ -21,5 +21,5 @@ The header color when the list display is done is specified.
 // - ''etc'' は、整列されていない行
 
 |FLAG|COLOR|h
-|cur|BGCOLOR(#ff7700):|
+|cur|BGCOLOR(#0077ff):|
 |etc|BGCOLOR(#cccccc):|

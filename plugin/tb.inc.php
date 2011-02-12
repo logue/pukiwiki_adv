@@ -1,5 +1,5 @@
 <?php
-// $Id: tb.inc.php,v 1.19.37 2011/02/05 12:44:00 Logue Exp $
+// $Id: tb.inc.php,v 1.19.38 2011/02/07 22:34:00 Logue Exp $
 /*
  * PukiWiki/TrackBack: TrackBack Ping receiver and viewer
  * (C) 2010-2011 PukiWiki Advance Developers Team
@@ -43,7 +43,7 @@ function plugin_tb_init()
 			'err_noparam'				=> T_('URL parameter is not set.'),
 			'err_noping_id'				=> T_('TrackBack Ping ID is not set.'),
 			'err_directory'				=> sprintf(T_('TrackBack directory <var>%s</var> is not found.'),TRACKBACK_DIR),
-			'err_nowritable'			=> sprintf(T_('TrackBack directory <var>%s</var> is not writable.',TRACKBACK_DIR),
+			'err_nowritable'			=> sprintf(T_('TrackBack directory <var>%s</var> is not writable.'),TRACKBACK_DIR),
 			'err_invalid'				=> T_('TrackBack ID is invalid.'),
 			'err_invalid_url'			=> T_('The URL is fictitious.'),
 			'err_write_prohibited'		=> T_('Writing is prohibited.')
