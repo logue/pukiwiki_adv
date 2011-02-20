@@ -21,25 +21,26 @@ $_string = array(
 	'other'		=> T_('Others'),
 
 	// Common core message(s)
-	'andresult'			=> T_('In the page <strong> $2</strong>, <strong> $3</strong> pages that contain all the terms $1 were found.'),
-	'orresult'			=> T_('In the page <strong> $2</strong>, <strong> $3</strong> pages that contain at least one of the terms $1 were found.'),
-	'notfoundresult'	=> T_('No page which contains $1 has been found.'),
+	'andresult'			=> T_('In the page <strong>$2</strong>, <strong>$3</strong> pages that contain all the terms <var>$1</var> were found.'),
+	'orresult'			=> T_('In the page <strong>$2</strong>, <strong>$3</strong> pages that contain at least one of the terms <var>$1</var> were found.'),
+	'notfoundresult'	=> T_('No page which contains <var>$1</var> has been found.'),
 	'word'				=> T_('These search terms have been highlighted:'),
 	'help'				=> T_('View Text Formatting Rules'),
 
 	// Common core error message(s)
 	'invalidpass'		=> T_('Invalid password.'),
-	'invalidiwn'		=> T_('$1 is not a valid $2.'),
-	'collided_comment'	=> T_('It seems that someone has already updated the page you were editing.<br />The string was added, alhough it may be inserted in the wrong position.<br />'),
+	'invalidiwn'		=> T_('<var>$1</var> is not a valid <var>$2</var>.'),
+	'collided_comment'	=> T_('It seems that someone has already updated the page you were editing.<br />The string was added, alhough it may be inserted in the wrong position.'),
 
 	// Error messages
 	'warning'			=> T_('WARNING'),
-	'readonly_msg'		=> T_('This Wiki is <var>PKWK_READONLY</var> mode now. Therefore, edit is prohibited.'),
+	'prohibit'			=> T_('This Wiki is <var>PKWK_READONLY</var> mode now. The action which you are trying to do is prohibited.'),
 	'error_msg'			=> T_('A runtime error has occurred.').'<br />'.T_('Please contact to site admin. If you want more information, please change <code>PKWK_WARNING</code> value.'),
 	'debugmode'			=> T_('This program is running in debug mode.'),
 	'changeadminpass'	=> sprintf(T_('<var>$adminpass</var> is not changed! Click <a href="%s">here</a> to generate crypted password and modify auth.ini.php!'),get_cmd_uri('md5')),
-	'not_writable'		=> T_('<code>%s</code> is not found or not writable.'),
-	'not_found'			=> T_('Page <var>%s</var> was not found.')
+	'not_writable'		=> T_('<var>%s</var> is not found or not writable.'),
+	'not_found'			=> T_('Page <var>%s</var> was not found.'),
+	
 );
 
 $_button = array(
@@ -55,6 +56,8 @@ $_button = array(
 	'guiedit'	=> T_('Edit(GUI)'),
 	'delete'	=> T_('Delete'),
 	'remove'	=> T_('Remove'),
+	'login'		=> T_('Login'),
+	'logout'	=> T_('Logout'),
 
 	// CheckBox labels
 	'notchangetimestamp'	=> T_('Do not change timestamp'),
@@ -101,10 +104,6 @@ $_LANG['skin'] = array(
 	'print'		=> T_('Image of print'),
 	'full'		=> T_('Full screen'),
 	'rss'		=> T_('RSS of recent changes'),
-	'rss10'		=> T_('RSS of recent changes'),
-	'rss20'		=> T_('RSS of recent changes'),
-	'rssplus'	=> T_('RSS of recent changes'),
-	'mixirss'	=> T_('RSS of recent changes'),
 	'search'	=> T_('Search'),
 	'source'	=> T_('Source'),
 	'template'	=> T_('Template'),

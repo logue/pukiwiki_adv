@@ -55,8 +55,8 @@ function plugin_referer_action()
 		return array('msg'=>$_referer_msg['msg_referer'], 'body'=>$_referer_msg['msg_notfound']);
 	} else {
 		return array(
-			'msg'  => 'referer list',
-			'body' => page_list($pages, $_referer_msg['msg_referer'], FALSE));
+			'msg'  => $_referer_msg['msg_referer_list'],
+			'body' => page_list($pages, 'referer', FALSE));
 	}
 }
 
@@ -167,7 +167,7 @@ function plugin_referer_body($page, $sort)
 
 	if ($ctr === 0) return '<p>no data.</p>';
 
-	$href = $script . '?plugin=referer&amp;page=' . rawurlencode($page);
+	$href = $script . '?cmd=referer&amp;page=' . rawurlencode($page);
 	return <<<EOD
 <table summary="Referer" class="style_table" cellspacing="1" border="0">
 	<tr>

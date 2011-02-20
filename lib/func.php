@@ -514,7 +514,7 @@ function die_message($msg){
 	global $skin_file, $page_title, $_string, $_title;
 	$title = $page = $_title['error'];
 	
-	if (PKWK_WARNING === false || auth::check_role('role_auth')){	// PKWK_WARNINGが有効でない場合は、詳細なエラーを隠す
+	if (PKWK_WARNING === false || (PKWK_WARNING === false && auth::check_role('role_auth'))){	// PKWK_WARNINGが有効でない場合は、詳細なエラーを隠す
 		$msg = $_string['error_msg'];
 	}
 	$body = <<<EOD

@@ -1,4 +1,4 @@
-*Settings [#kddfc986]
+*Settings
 This page is a setting page of [[Bad-Behavior>http://bad-behavior.ioerror.us/]]. The actually recorded SPAM log is saved [[./Log]].
 |~Setting|~Value|h
 |display_stats|false|

@@ -1,0 +1,19 @@
+#navi(../)
+*WhiteList
+A referer check is skipped when the character string contained in this list suits a referer.
+
+ここのリストに記載されているアドレスが含まれている場合はリファラースパムチェックをスキップします。
+|~referer|h
+|google.|
+|amikai.|
+|honyakuinfoseek.infoseek.co.jp|
+|search.|
+|srchnavi.|
+|www.shinobi.jp|
+|community.goo.ne.jp|
+|excite.co.jp|
+|.yahoo.co.jp|
+|ezweb.ne.jp|
+|docomo.ne.jp|
+|twitter.com|
+

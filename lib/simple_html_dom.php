@@ -38,6 +38,15 @@ function file_get_html() {
 	$args = func_get_args();
 	$dom->load(call_user_func_array('file_get_contents', $args), true);
 	return $dom;
+/*
+	$str = call_user_func_array('file_get_contents', $args);
+	if ($str === FALSE) {
+		throw new Exception('Failed to get html!');
+	}else {
+		$dom->load($str, true);
+		return $dom;
+	}
+*/
 }
 
 // get html dom form string
@@ -69,6 +78,15 @@ function file_get_dom() {
 	$args = func_get_args();
 	$dom->load(call_user_func_array('file_get_contents', $args), true);
 	return $dom;
+/*
+	$str = call_user_func_array('file_get_contents', $args);
+	if ($str === FALSE) {
+		throw new Exception('Failed to get html!');
+	}else {
+		$dom->load($str, true);
+		return $dom;
+	}
+*/
 }
 
 // get dom form string (deprecated)

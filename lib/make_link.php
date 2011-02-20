@@ -437,10 +437,19 @@ EOD;
 
 	function toString()
 	{
-		$rel = ( FALSE ? '': ' nofollow');
+		$rel = 'external '.( FALSE ? '': ' nofollow');
 //		return '<a href="' . $this->name . '" rel="nofollow">' . $this->alias . '</a>';
 		$target = (empty($this->redirect)) ? $this->name : $this->redirect.rawurlencode($this->name);
-		return open_uri_in_new_window('<a href="' . $target . '" rel="external' . $rel . '">' . $this->alias . '</a>', get_class($this));
+		
+		if (extension_loaded('intl')){
+			// Fix punycode URL
+			$purl = parse_url($target);
+			$url = preg_replace('/'.$purl['host'].'/', idn_to_ascii($purl['host']), $target);
+		}else{
+			$url = $target;
+		}
+
+		return open_uri_in_new_window('<a href="' . $url . '" rel="' . $rel . '">' . $this->alias . '</a>', get_class($this));
 	}
 }
 

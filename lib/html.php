@@ -255,13 +255,20 @@ function catbody($title, $page, $body)
 			}
 		}
 		unset($js_var, $key, $val);
-		
 
 		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://www.google.com/jsapi'.((isset($google_api_key)) ? '?key='.$google_api_key : ''));
 		$pkwk_head_js[] = array('type'=>'text/javascript', 'content'=>join($default_js,"\n"));
 		/* ヘッダー部分の処理ここまで */
 	
 		$default_js_libs[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/locale.js');
+		if(preg_match_all('/MSIE (\d\.\d+)/',$_SERVER['HTTP_USER_AGENT'],$matches)){
+			if (substr($matches[1][0],0,1) <= 8){
+				$default_js_libs[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/json2.js');
+				$default_js_libs[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/excanvas.compiled.js');
+			}
+			unset($matches);
+		}
+		
 		if (DEBUG === true) {
 			// 読み込むsrcディレクトリ内のJavaScript
 			$files = array(
@@ -833,19 +840,16 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 	
 	// Detect IE (not good method)
 	$user_agent = $_SERVER['HTTP_USER_AGENT'];
-/*
-	if (preg_match("Opera", $user_agent)){
+	if (preg_match("/Opera/", $user_agent)){
 		$browser = "opera";
-	} elseif(preg_match("Gecko\/", $user_agent)){
+	} else if(preg_match("/Gecko\//", $user_agent)){
 		$browser = "gecko";
-	} elseif(preg_match("MSIE", $user_agent)){
-		preg_match_all('/MSIE (\d\.\d+)/',$user_agent,$matches);
+	} else if(preg_match_all('/MSIE (\d\.\d+)/',$user_agent,$matches)){
 		$browser = 'ie'.substr($matches[1][0],0,1);
 		unset($matches);
-	} elseif (preg_match("(KHTML|Konqueror|WebKit)", $user_agent)){
+	} else if (preg_match("/(KHTML|Konqueror|WebKit)/", $user_agent)){
 		$browser = "webkit";
 	}
-*/
 	echo ' class="no-js '.$browser.'">' . "\n"; // <html>
 	unset($lang_code);
 	

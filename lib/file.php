@@ -130,7 +130,7 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	
 	// add client info (Adv.)
 	global $now;
-	$referer = htmlsc($_SERVER['HTTP_REFERER']);
+	$referer = (isset($_SERVER['HTTP_REFERER'])) ? htmlsc($_SERVER['HTTP_REFERER']) : 'None';
 	$user_agent = htmlsc($_SERVER['HTTP_USER_AGENT']);
 	$diffdata .= "IP:\"{$_SERVER['REMOTE_ADDR']}\" TIME:\"$now\" REFERER:\"$referer\" USER_AGENT:\"$user_agent\"\n";
 
@@ -289,7 +289,7 @@ function file_head($file, $count = 1, $lock = TRUE, $buffer = NULL)
 function file_write($dir, $page, $str, $notimestamp = FALSE)
 {
 	//global $_msg_invalidiwn, $notify, $notify_diff_only, $notify_subject;
-	global $notify, $notify_diff_only, $notify_subject;
+	global $notify, $notify_diff_only, $notify_subject, $_string;
 	global $whatsdeleted, $maxshow_deleted;
 
 	//if (PKWK_READONLY) return; // Do nothing
@@ -330,7 +330,7 @@ function file_write($dir, $page, $str, $notimestamp = FALSE)
 
 	if (! is_pagename($page))
 		die_message(str_replace('$1', htmlsc($page),
-		            str_replace('$2', 'WikiName', $_msg_invalidiwn)));
+		            str_replace('$2', 'WikiName', $_string['invalidiwn'])));
 
 	$str = rtrim(preg_replace('/' . "\r" . '/', '', $str)) . "\n";
 	$timestamp = ($file_exists && $notimestamp) ? filemtime($file) : FALSE;

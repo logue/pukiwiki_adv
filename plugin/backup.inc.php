@@ -207,6 +207,7 @@ $_msg_invalidpass = T_('Invalid password.');
 			);
 		} else {
 			$body = '<p><strong>' . $_msg_invalidpass . '</strong></p>' . "\n";
+			$invalied = 'invalid="invalid" ';
 		}
 	}
 
@@ -218,7 +219,7 @@ $_msg_invalidpass = T_('Invalid password.');
   <input type="hidden"   name="cmd"    value="backup" />
   <input type="hidden"   name="page"   value="$s_page" />
   <input type="hidden"   name="action" value="delete" />
-  <input type="password" name="pass"   size="12" />
+  <input type="password" name="pass"   size="12" required="true" $invalied/>
   <input type="submit"   name="ok"     value="$_btn_delete" />
  </div>
 </form>
@@ -294,7 +295,13 @@ EOD;
 			$_anchor_from = '<a href="' . $href . $age . '">';
 			$_anchor_to   = '</a>';
 		}
-		$time = (isset($data['real'])) ? $data['real'] : $data['time'];
+		if (isset($data['real'])) {
+			$time = $data['real'];
+		}else if(isset($data['time'])){
+			$time = $data['time'];
+		}else{
+			$time = '';
+		}
 		$date = format_date($time, TRUE);
 		$retval[1] .= <<<EOD
    <li>$_anchor_from$age $date$_anchor_to
@@ -412,7 +419,13 @@ EOD;
 	$retval[1] .= '<option value="' . get_page_uri($page) . '" selected="selected">' . T_('->') . " $date(No.$maxcnt)</option>\n";
 	$backups = array_reverse($backups, True);
 	foreach ($backups as $age=>$data) {
-		$time = (isset($data['real'])) ? $data['real'] : $data['time'];
+		if (isset($data['real'])) {
+			$time = $data['real'];
+		}else if(isset($data['time'])){
+			$time = $data['time'];
+		}else{
+			break;
+		}
 		$date = get_date('m/d', $time);
 		$href = $script . '?cmd=backup&amp;page=' . $r_page . '&amp;age=' . $age;
 
