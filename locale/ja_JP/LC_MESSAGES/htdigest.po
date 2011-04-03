@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.7-i18n\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-11-29 02:15+0900\n"
-"PO-Revision-Date: 2006-07-23 05:00+0900\n"
+"PO-Revision-Date: 2011-03-27 23:07+0900\n"
 "Last-Translator: Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -68,9 +68,7 @@ msgid "The writing function is limited."
 msgstr "書き込み機能は、制限されています。"
 
 #: ../../plugin/htdigest.inc.php:45
-msgid ""
-"The authority more than Webmaster for World Wide Web Site is necessary to "
-"update it."
+msgid "The authority more than Webmaster for World Wide Web Site is necessary to update it."
 msgstr "更新するためには、サイト管理者以上の権限が必要です。"
 
 #: ../../plugin/htdigest.inc.php:46
@@ -78,11 +76,8 @@ msgid "The encryption key is not corresponding."
 msgstr "暗号鍵が一致しません。"
 
 #: ../../plugin/htdigest.inc.php:47
-msgid ""
-"In this version, the Administrator password is supported only with {x-php-"
-"md5}."
-msgstr ""
-"このバージョンでは、管理者パスワードが {x-php-md5} のみサポートされます。"
+msgid "In this version, the Administrator password is supported only with {x-php-md5}."
+msgstr "このバージョンでは、管理者パスワードが {x-php-md5} のみサポートされます。"
 
 #: ../../plugin/htdigest.inc.php:48
 msgid "Realm is not corresponding."
@@ -107,3 +102,4 @@ msgstr "１件追加しました。"
 #: ../../plugin/htdigest.inc.php:53
 msgid "ERROR."
 msgstr "エラー。"
+

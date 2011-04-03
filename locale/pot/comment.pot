@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-04-16 18:10+0900\n"
+"POT-Creation-Date: 2011-04-02 03:12+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,33 +16,47 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/comment.inc.php:21
-msgid "$1 was updated"
+#: ../../plugin/comment.inc.php:28
+msgid "It seems that someone has already updated the page you were editing."
 msgstr ""
 
-#: ../../plugin/comment.inc.php:22
+#: ../../plugin/comment.inc.php:29
+msgid "The comment was added, alhough it may be inserted in the wrong position."
+msgstr ""
+
+#: ../../plugin/comment.inc.php:30 ../../plugin/comment.inc.php:74
 msgid "On updating  $1, a collision has occurred."
 msgstr ""
 
-#: ../../plugin/comment.inc.php:23
-msgid ""
-"It seems that someone has already updated the page you were editing.<br />"
+#: ../../plugin/comment.inc.php:31 ../../plugin/comment.inc.php:73
+msgid "$1 was updated"
 msgstr ""
 
-#: ../../plugin/comment.inc.php:24
-msgid ""
-"The comment was added, alhough it may be inserted in the wrong position.<br /"
-">"
+#: ../../plugin/comment.inc.php:32
+#, php-format
+msgid "This Wiki is <var>%s</var> mode now. Therefore, comment function is prohibited."
 msgstr ""
 
-#: ../../plugin/comment.inc.php:98
+#: ../../plugin/comment.inc.php:60
+msgid "PKWK_CREATE_PAGE prohibits editing"
+msgstr ""
+
+#: ../../plugin/comment.inc.php:75
+msgid "It seems that someone has already updated the page you were editing.<br />"
+msgstr ""
+
+#: ../../plugin/comment.inc.php:76
+msgid "The comment was added, alhough it may be inserted in the wrong position.<br />"
+msgstr ""
+
+#: ../../plugin/comment.inc.php:179
 msgid "Name: "
 msgstr ""
 
-#: ../../plugin/comment.inc.php:99
+#: ../../plugin/comment.inc.php:180
 msgid "Post Comment"
 msgstr ""
 
-#: ../../plugin/comment.inc.php:100
+#: ../../plugin/comment.inc.php:181
 msgid "Comment: "
 msgstr ""

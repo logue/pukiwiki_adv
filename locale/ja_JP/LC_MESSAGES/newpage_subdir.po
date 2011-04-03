@@ -2,13 +2,13 @@
 # Copyright (C) 2005 PukiWiki Plus! Developer Team
 # License is GPL2
 # Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>, 2005.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5-u2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-06-30 00:18+0900\n"
-"PO-Revision-Date: 2005-04-07 17:24+0900\n"
+"PO-Revision-Date: 2011-03-27 23:07+0900\n"
 "Last-Translator: Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -38,35 +38,24 @@ msgid "DESCRIPTION<br />\n"
 msgstr "DESCRIPTION<br />\n"
 
 #: ../../plugin/newpage_subdir.inc.php:82
-msgid ""
-"\t　The field that adds a new page below the directory specified for "
-"[directory] is made.<br />\n"
-msgstr ""
-"\t　directoryに指定されたディレクトリ以下に新しいページを追加するフィールドを"
-"作成する。<br>\n"
+msgid "\t　The field that adds a new page below the directory specified for [directory] is made.<br />\n"
+msgstr "\t　directoryに指定されたディレクトリ以下に新しいページを追加するフィールドを作成する。<br>\n"
 
 #: ../../plugin/newpage_subdir.inc.php:83
 msgid "\t　The order of the parameter is arbitrary.<br />"
 msgstr "\t　パラメータの順番は任意。<br>"
 
 #: ../../plugin/newpage_subdir.inc.php:84
-msgid ""
-"\t　When an undefined option is specified, Help is displayed with the "
-"message.<br />"
-msgstr ""
-"\t　未定義のオプションを指定した場合、メッセージとともにHelpを表示する。<br>"
+msgid "\t　When an undefined option is specified, Help is displayed with the message.<br />"
+msgstr "\t　未定義のオプションを指定した場合、メッセージとともにHelpを表示する。<br>"
 
 #: ../../plugin/newpage_subdir.inc.php:86
 msgid "OPTION<br />\n"
 msgstr "OPTION<br />\n"
 
 #: ../../plugin/newpage_subdir.inc.php:87
-msgid ""
-"　-d Directory Only.\tIt limits it only to the one with the child page. (The "
-"directory specified specifying it is an exception. )<br />\n"
-msgstr ""
-"　-d 子ページをもっているものだけに限定する（明示的に指定されたディレクトリは"
-"例外）<br>\n"
+msgid "　-d Directory Only.\tIt limits it only to the one with the child page. (The directory specified specifying it is an exception. )<br />\n"
+msgstr "　-d 子ページをもっているものだけに限定する（明示的に指定されたディレクトリは例外）<br>\n"
 
 #: ../../plugin/newpage_subdir.inc.php:88
 msgid "　-h Help.\t\tThis Description is displayed. <br />\n"
@@ -79,3 +68,4 @@ msgstr "　-q Quiet.\t\t警告を表示しない。<br>\n"
 #: ../../plugin/newpage_subdir.inc.php:91
 msgid "EXAMPLE<br />\n"
 msgstr "EXAMPLE<br />\n"
+

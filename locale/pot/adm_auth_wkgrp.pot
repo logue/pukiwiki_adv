@@ -1,20 +1,24 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2010-2011 PukiWiki Advance Developers Team
+# License: GPL v2 or (at your option) any later version
+# Logue <logue@hotmail.co.jp>, 2011.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-23 23:20+0900\n"
+"POT-Creation-Date: 2011-04-03 09:44+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: LANGUAGE\n"
+"X-Poedit-Country: COUNTRY\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: ../../pot\n"
 
 #: ../../plugin/adm_auth_wkgrp.inc.php:18
 msgid "User registration management"
@@ -62,12 +66,12 @@ msgstr ""
 
 #: ../../plugin/adm_auth_wkgrp.inc.php:29
 #, php-format
-msgid "The %s file was generated."
+msgid "The <var>%s</var> file was generated."
 msgstr ""
 
 #: ../../plugin/adm_auth_wkgrp.inc.php:30
 #, php-format
-msgid "Data was taken into %s."
+msgid "Data was taken into <var>%s</var>."
 msgstr ""
 
 #: ../../plugin/adm_auth_wkgrp.inc.php:31
@@ -87,7 +91,5 @@ msgid "Because the page already exists, processing is discontinued."
 msgstr ""
 
 #: ../../plugin/adm_auth_wkgrp.inc.php:35
-msgid ""
-"The following images are the one (reading auth_wkgrp, and conversion into "
-"page image).\n"
+msgid "The following images are the one (reading auth_wkgrp, and conversion into page image)."
 msgstr ""

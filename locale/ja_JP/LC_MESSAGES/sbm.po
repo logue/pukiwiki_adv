@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.7-u2-i18n\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-01-09 22:34+0900\n"
-"PO-Revision-Date: 2010-01-09 22:39+0900\n"
+"PO-Revision-Date: 2011-03-27 23:07+0900\n"
 "Last-Translator: Katsumi Saito <jo1upk@gmail.com>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -31,3 +31,4 @@ msgstr "このページは、Google Translateを通して翻訳されます。"
 #: ../../plugin/sbm.inc.php:19
 msgid "Hatena bookmark including this page."
 msgstr "このページを含むはてなブックマーク"
+

@@ -1,179 +1,282 @@
 <?php
-// PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: calendar.inc.php,v 1.22.6 2011/02/05 10:32:00 Logue Exp $
-//
-// Calendar plugin - renewal
+// $Id: calendar2.inc.php,v 1.24 2011/01/25 15:01:01 henoheno Exp $
+// Copyright (C) 2002-2005, 2007, 2011 PukiWiki Developers Team
 
-defined('PLUGIN_CALENDAR_ACTION') or define('PLUGIN_CALENDAR_ACTION', 'minicalendar');
+// Calendar plugin
+//
+// Usage:
+//	#calendar({[pagename|*],[yyyymm],[off]})
+//	off: Don't view today's
+
+// Notice: This plugin based on official calendar2.inc.php r1.24 and Plus!'s minicalendar.inc.php.
+//         Adv. is rejected to original calendar.inc.php.
+
+defined('PLUGIN_CALENDAR_PAGENAME_FORMAT') or define('PLUGIN_CALENDAR_PAGENAME_FORMAT', '%04d-%02d-%02d');	// YYYY-MM-DD
+
+function plugin_calendar_init(){
+	$messages = array(
+		'_calendar_msg' => array(
+			'_calendar_title_format'	=> T_('M, Y'),	// Apr, 2011
+			'_page_title'				=> T_('%1$s %2$s, %3$d Calendar'),	// FrontPage April, 2011 Calendar
+			'_edit'						=> T_('[edit]'),
+			'_empty'					=> T_('%s is empty.')
+		),
+		'_calendar_viewer_msg' => array(
+			'_title_format'	=> T_('%1s, %2s %3s %4s')	// Sat, 12 Mar 2011
+		)
+	);
+	set_plugin_messages($messages);
+}
 
 function plugin_calendar_convert()
 {
-	global $vars, $weeklabels;
+	global $script, $vars, $post, $get, $pkwk_dtd ,$_labels, $WikiName, $BracketName;
+	//global $_calendar_plugin_edit, $_calendar_plugin_empty;
+	global $_calendar_msg, $_calendar_viewer_msg;
 
-	$read_only = 0;
-	$around = 0;
-	$align = '';
-	$mode = 'viewex';
-	$summary = 'calendar body';
+	/* from Plus! */
+	$today_view = TRUE;
+	$today_args = 'view';
 
 	$date_str = get_date('Ym');
-	$base = strip_bracket($vars['page']);
+	$base     = strip_bracket($vars['page']);
 
-	// First Arguments are "PAGE"
-	$attr = func_get_args();
-	if (func_num_args()) {
-		$argv = array_shift($attr);
-		if ($argv) { $base = strip_bracket($argv); }
-	}
-
-	// Vaildate argument(s)
-	foreach($attr as $argv) {
-		if (is_numeric($argv) && strlen($argv) == 6) {
-			$date_str = $argv;
-		} else if ($argv == 'noedit') {
-			$read_only = 1;
-		} else if ($argv == 'around') {
-			$around = 1;
-		} else if ($argv == 'left' || $argv == 'center' || $argv == 'right') {
-			$align = $argv;
-		} else {
-			$summary = htmlsc($argv);
+	$today_view = TRUE;
+	if (func_num_args() > 0) {
+		$args = func_get_args();
+		foreach ($args as $arg) {
+			if (is_numeric($arg) && strlen($arg) == 6) {
+				$date_str = $arg;
+			} else if ($arg == 'off') {
+				$today_view = FALSE;
+			} else if ($arg == 'past' || $arg == 'pastex' || $arg == 'future' || $arg == 'futureex' || $arg == 'view' ||$arg == 'viewex') {
+				/* from Plus! */
+				$today_args = $arg;
+			} else {
+				$base = strip_bracket($arg);
+			}
 		}
 	}
-
 	if ($base == '*') {
-		$prefix = $base = '';
+		$base   = '';
+		$prefix = '';
 	} else {
 		$prefix = $base . '/';
 	}
-
-	$r_base = rawurlencode($base);
-	$s_base = htmlsc($base);
-	$r_prefix = rawurlencode($prefix);
+	$s_base   = htmlsc($base);
 	$s_prefix = htmlsc($prefix);
 
-	$yy = substr($date_str,0,4);
-	$mm = substr($date_str,4,2);
+	$yr  = substr($date_str, 0, 4);
+	$mon = substr($date_str, 4, 2);
 
-	if ($yy != get_date('Y') || $mm != get_date('m')) {
-		$other_month = 1;
+	if ($yr != get_date('Y') || $mon != get_date('m')) {
 		$now_day = 1;
+		$other_month = 1;
 	} else {
-		$other_month = 0;
 		$now_day = get_date('d');
+		$other_month = 0;
 	}
 
-	$today = getdate(mktime(0,0,0,$mm,$now_day,$yy));
+	$today = getdate(mktime(0,0,0,$mon,$now_day,$yr));
+
 	$m_num = $today['mon'];
 	$d_num = $today['mday'];
-	$y_num = $today['year'];
+	$year  = $today['year'];
 
-	$f_today = getdate(mktime(0,0,0,$m_num,1,$y_num));
+	$f_today = getdate(mktime(0,0,0,$m_num,1,$year));
 	$wday = $f_today['wday'];
-	$day = 1;
+	$day  = 1;
 
-	$m_name = $y_num . '/' . $m_num;
+	$m_name = format_date($today[0] ,false, $_calendar_msg['_calendar_title_format']);
 
-	$y = substr($date_str,0,4)+0;
-	$m = substr($date_str,4,2)+0;
-
-	$prev_date_str = ($m ==  1) ? sprintf('%04d%02d',$y - 1,12) : sprintf('%04d%02d',$y,$m - 1);
-	$next_date_str = ($m == 12) ? sprintf('%04d%02d',$y + 1, 1) : sprintf('%04d%02d',$y,$m + 1);
-	$this_date_str = sprintf('%04d%02d',$y,$m);
-
+	$y = substr($date_str, 0, 4) + 0;
+	$m = substr($date_str, 4, 2) + 0;
+	
+	$format = '%04d%02d';
+	$prev_link = get_cmd_uri('calendar','','',
+		array(
+			'file'=>$base,
+			'mode'=>$today_args,
+			'date'=>(($m == 1) ? sprintf($format, $y - 1, 12) : sprintf($format, $y, $m - 1))
+		)
+	);
+	$next_link = get_cmd_uri('calendar','','',
+		array(
+			'file'=>$base,
+			'mode'=>$today_args,
+			'date'=>(($m == 12) ? sprintf($format, $y + 1, 1) : sprintf($format, $y, $m + 1))
+		)
+	);
+	$this_date_str = sprintf($format,$y,$m);
 	$page_YM = sprintf('%04d-%02d',$y,$m);
 
-	$calendar_head = $calendar_week = $calendar_body = '';
-
-	// create header
-	$calendar_head .=
-		'   <a href="'.get_cmd_uri(PLUGIN_CALENDAR_ACTION,'','','file='.$r_base.'&date='.$prev_date_str.'&mode='.$mode).'">&lt;&lt;</a>' . "\n" .
-		'   <strong>'.$m_name.'</strong>' . "\n" .
-		'   <a href="'.get_cmd_uri(PLUGIN_CALENDAR_ACTION,'','','file='.$r_base.'&date='.$next_date_str.'&mode='.$mode).'">&gt;&gt;</a>';
-
-	if ($prefix) {
-		$calendar_head .= 
-			"\n" . '   <br />' . "\n" .
-			'[<a href="'.get_cmd_uri(PLUGIN_CALENDAR_ACTION,'','','file='.$r_base.'&date='.$this_date_str.'&mode='.$mode).'">'.$s_base.'</a>]';
+	$ret = '';
+	if ($today_view === TRUE) {
+		$ret .= '<div class="clearfix">'."\n".	// 外枠
+			'<div class="style_calendar_viewer">'."\n";	// カレンダーのdivタグ（$today_view有効時のみ出力）
 	}
+	
+	$ret .= <<<EOD
+<table class="style_table style_calendar" summary="calendar">
+	<thead>
+		<tr>
+			<td class="style_td style_calendar_top" colspan="7">
+				<nav>
+					<ul class="style_calendar_navi">
+						<li class="style_calendar_prev"><a href="$prev_link">&lt;&lt;</a></li>
+						<li class="style_calendar_title"><strong>$m_name</strong></li>
+						<li class="style_calendar_next"><a href="$next_link">&gt;&gt;</a></li>
+					</ul>
+				</nav>
+EOD;
 
-	// create week label
-	foreach($weeklabels as $label) {
-		$calendar_week .= '  <td class="calendar_td_week">'.$label.'</td>' . "\n";
+	if ($vars['cmd'] == 'calendar' || $vars['cmd'] == 'calendar_viewer') {
+		$base_link = get_page_uri($base);
+	}else{
+		$base_link = get_cmd_uri('calendar','','',array('file'=>$base,'mode'=>$today_args,'date'=>sprintf($format,$y,$m)));
 	}
+	
+	if ($prefix) $ret .= "\n" .
+		'				[<a href="' . $base_link . '">' . $s_base . '</a>]';
 
-	// Blank 
-	for ($i=0; $i<$wday; $i++) {
-		$calendar_body .= '  <td class="calendar_td_blank">&nbsp;</td>' . "\n";
+	$ret .= "\n" .
+		'			</td>' . "\n" .
+		'		</tr>'  . "\n" .
+		'	</thead>'."\n".
+		'	<tbody>'."\n".
+		'		<tr>'   . "\n";
+
+	for ($i = 0; $i < 7; $i++){
+		if ($i == 0){
+			$class = 'week_sun';
+		}else if($i == 6){
+			$class = 'week_sat';
+		}else{
+			$class = 'week_day';
+		}
+		$ret .= '			<th class="style_th style_calendar_week"><abbr title="'.$_labels['week'][$i][1].'" class="'.$class.'">' . $_labels['week'][$i][0] . '</abbr></th>' . "\n";
 	}
+	unset($i,$class);
 
-	while (checkdate($m_num, $day, $y_num)) {
-		$dt = sprintf('%4d-%02d-%02d', $y_num, $m_num, $day);
-		$page = $prefix . $dt;
+	$ret .= '		</tr>' . "\n" .
+		'		<tr>'  . "\n";
+	// Blank
+	for ($i = 0; $i < $wday; $i++)
+		$ret .= '			<td class="style_td_blank"></td>' . "\n";
+
+	while (checkdate($m_num, $day, $year)) {
+		$dt     = sprintf(PLUGIN_CALENDAR_PAGENAME_FORMAT, $year, $m_num, $day);
+		$page   = $prefix . $dt;
 		$s_page = htmlsc($page);
 
-		$h_today = public_holiday($y_num, $m_num, $day);
-		$hday = $h_today['rc'];
+		if ($wday == 0 && $day > 1)
+			$ret .=
+			'		</tr>' . "\n" .
+			'		<tr>' . "\n";
 		
-		if ($wday == 0 and $day > 1) {
-			$calendar_body .= " </tr>\n <tr>\n";
-		}
+		/* from Plus! */
+		$h_today = public_holiday($year, $m_num, $day);
+		$hday = $h_today['rc'];
 
-		$style = 'calendar_td_day'; // Weekday
-		if (!$other_month && ($day == $today['mday']) && ($m_num == $today['mon']) && ($y_num == $today['year'])) {
-			$style = 'calendar_td_today'; // Today
-		} else if ($hday != 0) {
-			$style = 'calendar_td_sun';   // Holiday
+		$style = 'style_calendar_day'; // Weekday
+		if (! $other_month && ($day == $today['mday']) && ($m_num == $today['mon']) && ($year == $today['year'])){
+			// Today
+			$style = 'style_calendar_today';
+		} else if ($hday !== 0) {
+			// Holiday
+			$style = 'style_calendar_holiday';
 		} else if ($wday == 0) {
-			$style = 'calendar_td_sun';   // Sunday 
+			// Sunday 
+			$style = 'style_calendar_sun';
 		} else if ($wday == 6) {
-			$style = 'calendar_td_sat';   // Saturday
+			// Saturday
+			$style = 'style_calendar_sat';
 		}
 
 		if (is_page($page)) {
-			$link = '<a href="'.get_page_uri($page).'" title="'.$s_page.'"><strong>'.$day.'</strong></a>';
-		} elseif ($read_only) {
-			$link = $day;
+			$link = '<a href="' . get_page_uri($page) . '" title="' . $s_page . '"><strong>' . $day . '</strong></a>';
 		} else {
-			$link = '<a href="'.get_cmd_uri('edit',$page,'','refer='.$base).'" title="'.$s_page.'">'.$day.'</a>';
+			if (PKWK_READONLY) {
+				$link = $day;
+			} else {
+				$link = '<a href="' . get_cmd_uri('edit',$page,'',array('refer'=>$base)) . '" title="' . $s_page . '" rel="nofollow">' . $day . '</a>';
+			}
 		}
-		$calendar_body .= '  <td class="'.$style.'">'.$link.'</td>' . "\n";
-		$day++;
+
+		$ret .= '			<td class="style_td ' . $style . '">' . $link .'</td>' . "\n";
+		++$day;
 		$wday = ++$wday % 7;
 	}
-	if ($wday > 0) {
-		while ($wday++ < 7) {
-			$calendar_body .= '  <td class="calendar_td_blank">&nbsp;</td>'. "\n";
+
+	if ($wday > 0)
+		while ($wday++ < 7) // Blank
+			$ret .= '			<td class="style_td_blank"></td>' . "\n";
+
+	$ret .= '		</tr>'   . "\n" .
+		'	</tbody>'."\n".
+		'</table>' . "\n";
+
+	if ($today_view) {
+		$ret .= '</div>'."\n";	// カレンダーのdivタグを閉じる
+		$ret .= (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section class="style_calendar_post">' : '<div class="style_calendar_post">')."\n";
+		if ($today_args == '') {
+			$str = (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<article id="'.$tpage.'" class="style_calendar_post">' : '<div id="'.$tpage.'" class="style_calendar_post">')."\n";
+			global $pkwk_dtd;
+			$tpage = $prefix . sprintf(PLUGIN_CALENDAR_PANENAME_FORMAT, $today['year'], $today['mon'], $today['mday']);
+			if (is_page($tpage)) {
+				$_page = $vars['page'];
+				$get['page'] = $post['page'] = $vars['page'] = $tpage;
+				$source = get_source($tpage);
+				preg_replace('/^#navi/','/\/\/#navi/',$source);
+				$str .= convert_html($source);
+				$str .= '<hr /><a href="' . get_cmd_uri('edit', $tpage).'">' . $_calendar_msg['_edit'] . '</a>';
+				$get['page'] = $post['page'] = $vars['page'] = $_page;
+			} else {
+				$str .= sprintf($_calendar_msg['_empty'],
+					make_pagelink($prefix . sprintf(PLUGIN_CALENDAR_PANENAME_FORMAT,$today['year'], $today['mon'], $today['mday'])));
+			}
+			$str .= (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</article>' : '</div>')."\n";
+		} else {
+			$aryargs = array(rawurldecode($base), $page_YM, $today_args);
+			if (exist_plugin('calendar_viewer')) {
+				T_bindtextdomain('calendar_viewer', LANG_DIR);
+				T_bind_textdomain_codeset('calendar_viewer', SOURCE_ENCODING);
+				T_textdomain('calendar_viewer');
+				$str = call_user_func_array('plugin_calendar_viewer_convert',$aryargs);
+				T_textdomain('calendar');
+			}
 		}
+		$ret .= $str . "\n";
+		$ret .= (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</section>' : '</div>')."\n";
+		$ret .= '</div>' . "\n";
 	}
 
-	$calstyle = '';
-	if ($align != '') {
-		if ($around && $align != 'center') { $calstyle = 'float:' . $align . ';'; }
-		$ex = $around ? '1ex':'auto';
-		if ($align == 'left')  { $calstyle .= "margin:auto $ex auto 0px;"; }
-		if ($align == 'right') { $calstyle .= "margin:auto 0px auto $ex;"; }
-	}
-	if ($calstyle != '') { $calstyle = ' style="' . $calstyle . '"'; }
+	return $ret;
+}
 
-	$output .= <<<EOD
-<div class="ie5">
-<table class="calendar"{$calstyle} border="0" cellspacing="1" summary="{$summary}">
- <tr>
-  <td class="calendar_td_caltop" colspan="7">
-{$calendar_head}
-  </td>
- </tr>
- <tr>
-{$calendar_week}
- </tr>
- <tr>
-{$calendar_body}
- </tr>
-</table>
-</div><!--/ie5/-->
-EOD;
+function plugin_calendar_action()
+{
+	global $vars;
+	global $_calendar_msg, $_labels;
 
-	return $output;
+	$page = strip_bracket($vars['page']);
+	$vars['page'] = ($vars['file']) ? $vars['file'] : '*';
+
+	$date = $vars['date'] ? $vars['date'] : get_date('Ym');
+	$mode = $vars['mode'] ? $vars['mode'] : 'view';
+
+	$year = substr($date, 0, 4);
+	$month = preg_replace('/^0/','',substr($date, 4, 2));
+
+	$aryargs = array($vars['page'], $date);
+	// $s_page  = '<a href="'.get_page_uri($vars['page']).'">'.htmlsc($vars['page']).'</a>';
+	$s_page  = htmlsc($vars['page']);
+
+	$vars['page'] = $page;
+
+	return array(
+		'msg'=>sprintf($_calendar_msg['_page_title'], $s_page, $_labels['month'][$month][1], $year),
+		'body'=>call_user_func_array('plugin_calendar_convert', $aryargs)
+	);
 }
 ?>

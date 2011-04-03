@@ -7,110 +7,122 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5-u2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-04-28 18:47+0900\n"
-"PO-Revision-Date: 2005-04-01 01:35+0900\n"
-"Last-Translator: Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>\n"
+"POT-Creation-Date: 2011-03-27 19:28+0900\n"
+"PO-Revision-Date: 2011-03-27 23:07+0900\n"
+"Last-Translator: Logue <logue@hotmail.co.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/bugtrack.inc.php:24
+#: ../../plugin/bugtrack.inc.php:26
 msgid "Emergency"
 msgstr "緊急"
 
-#: ../../plugin/bugtrack.inc.php:24
+#: ../../plugin/bugtrack.inc.php:26
 msgid "Importance"
 msgstr "重要"
 
-#: ../../plugin/bugtrack.inc.php:24
+#: ../../plugin/bugtrack.inc.php:26
 msgid "Normal"
 msgstr "普通"
 
-#: ../../plugin/bugtrack.inc.php:24
+#: ../../plugin/bugtrack.inc.php:26
 msgid "Low"
 msgstr "低"
 
-#: ../../plugin/bugtrack.inc.php:25 ../../plugin/bugtrack.inc.php:26
+#: ../../plugin/bugtrack.inc.php:27
+#: ../../plugin/bugtrack.inc.php:28
 msgid "Proposal"
 msgstr "提案"
 
-#: ../../plugin/bugtrack.inc.php:25 ../../plugin/bugtrack.inc.php:26
+#: ../../plugin/bugtrack.inc.php:27
+#: ../../plugin/bugtrack.inc.php:28
 msgid "Start"
 msgstr "着手"
 
-#: ../../plugin/bugtrack.inc.php:25 ../../plugin/bugtrack.inc.php:26
+#: ../../plugin/bugtrack.inc.php:27
+#: ../../plugin/bugtrack.inc.php:28
 msgid "CVS Waiting"
 msgstr "CVS待ち"
 
-#: ../../plugin/bugtrack.inc.php:25 ../../plugin/bugtrack.inc.php:26
+#: ../../plugin/bugtrack.inc.php:27
+#: ../../plugin/bugtrack.inc.php:28
 msgid "Completion"
 msgstr "完了"
 
-#: ../../plugin/bugtrack.inc.php:25 ../../plugin/bugtrack.inc.php:26
+#: ../../plugin/bugtrack.inc.php:27
+#: ../../plugin/bugtrack.inc.php:28
 msgid "Reservation"
 msgstr "保留"
 
-#: ../../plugin/bugtrack.inc.php:25 ../../plugin/bugtrack.inc.php:26
+#: ../../plugin/bugtrack.inc.php:27
+#: ../../plugin/bugtrack.inc.php:28
 msgid "Rejection"
 msgstr "却下"
 
-#: ../../plugin/bugtrack.inc.php:29
+#: ../../plugin/bugtrack.inc.php:31
 msgid "Page"
 msgstr "ページ"
 
-#: ../../plugin/bugtrack.inc.php:30
+#: ../../plugin/bugtrack.inc.php:32
 msgid "Summary"
 msgstr "サマリ"
 
-#: ../../plugin/bugtrack.inc.php:31
+#: ../../plugin/bugtrack.inc.php:33
 msgid "Fill in the summary here. "
-msgstr ""
+msgstr "説明文をここに入力してください。"
 
-#: ../../plugin/bugtrack.inc.php:32
+#: ../../plugin/bugtrack.inc.php:34
 msgid "Priority"
 msgstr "優先順位"
 
-#: ../../plugin/bugtrack.inc.php:33
+#: ../../plugin/bugtrack.inc.php:35
 msgid "State"
 msgstr "状態"
 
-#: ../../plugin/bugtrack.inc.php:34
+#: ../../plugin/bugtrack.inc.php:36
 msgid "Name"
 msgstr "投稿者"
 
-#: ../../plugin/bugtrack.inc.php:35
+#: ../../plugin/bugtrack.inc.php:37
 msgid "Anonymous"
-msgstr ""
+msgstr "名称未設定"
 
-#: ../../plugin/bugtrack.inc.php:36
+#: ../../plugin/bugtrack.inc.php:38
 msgid "Date"
 msgstr "投稿日"
 
-#: ../../plugin/bugtrack.inc.php:37
+#: ../../plugin/bugtrack.inc.php:39
 msgid "Message"
 msgstr "メッセージ"
 
-#: ../../plugin/bugtrack.inc.php:38
+#: ../../plugin/bugtrack.inc.php:40
 msgid "Category"
 msgstr "カテゴリ"
 
-#: ../../plugin/bugtrack.inc.php:39
+#: ../../plugin/bugtrack.inc.php:41
 msgid "Page Name"
 msgstr "ページ名"
 
-#: ../../plugin/bugtrack.inc.php:40
+#: ../../plugin/bugtrack.inc.php:42
 msgid "Page name is automatically given for an empty column."
 msgstr "空欄のままだと自動的にページ名が振られます。"
 
-#: ../../plugin/bugtrack.inc.php:41
+#: ../../plugin/bugtrack.inc.php:43
 msgid "It is acceptable also in an empty column."
 msgstr "空欄でも構いません"
 
-#: ../../plugin/bugtrack.inc.php:42
+#: ../../plugin/bugtrack.inc.php:44
 msgid "Version"
 msgstr "バージョン"
 
-#: ../../plugin/bugtrack.inc.php:43
+#: ../../plugin/bugtrack.inc.php:45
 msgid "Submit"
 msgstr "追加"
+
+#: ../../plugin/bugtrack.inc.php:46
+#, php-format
+msgid "This Wiki is <var>%s</var> mode now. Therefore, bugtrack function is prohibited."
+msgstr ""
+

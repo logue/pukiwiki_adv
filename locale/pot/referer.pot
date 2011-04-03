@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-03-10 16:39+0900\n"
+"POT-Creation-Date: 2011-03-27 19:32+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,30 +16,47 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../plugin/referer.inc.php:15 ../plugin/referer.inc.php:19
+#: ../../plugin/referer.inc.php:19 ../../plugin/referer.inc.php:22
+#: ../../plugin/referer.inc.php:26
 msgid "Referer"
 msgstr ""
 
-#: ../plugin/referer.inc.php:16
+#: ../../plugin/referer.inc.php:20
+msgid "Referer List"
+msgstr ""
+
+#: ../../plugin/referer.inc.php:21
+msgid "No data"
+msgstr ""
+
+#: ../../plugin/referer.inc.php:23
 msgid "LastUpdate"
 msgstr ""
 
-#: ../plugin/referer.inc.php:17
+#: ../../plugin/referer.inc.php:24
 msgid "First Register"
 msgstr ""
 
-#: ../plugin/referer.inc.php:18
+#: ../../plugin/referer.inc.php:25
 msgid "RefCounter"
 msgstr ""
 
-#: ../plugin/referer.inc.php:20
+#: ../../plugin/referer.inc.php:27
 msgid "F j, Y, g:i A"
 msgstr ""
 
-#: ../plugin/referer.inc.php:21
+#: ../../plugin/referer.inc.php:28
 msgid "&uArr;"
 msgstr ""
 
-#: ../plugin/referer.inc.php:22
+#: ../../plugin/referer.inc.php:29
 msgid "&dArr;"
+msgstr ""
+
+#: ../../plugin/referer.inc.php:30
+msgid "Referer function is disabled."
+msgstr ""
+
+#: ../../plugin/referer.inc.php:31
+msgid "The page you requested was not found."
 msgstr ""

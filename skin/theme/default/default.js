@@ -17,25 +17,33 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-var colorset = ['blue',		'green',		'orange', 'red'];
-var ui_theme = ['redmond',	'south-street',	'ui-lightness','blitzer'];
+var colorset = [
+	// [css file name, ui_theme name]
+	['blue',	'redmond'],
+	['green',	'south-street'],
+	['orange',	'ui-lightness'],
+	['red',		'blitzer']
+];
 // var symbol = '&#x25fc;';
 var symbol = '■';
 var default_set_num = 0;
-
 pukiwiki_skin.custom = {
 	// スキンスクリプトのinitが実行される前に実行される関数
 	before_init : function(){
 		// クッキーが定義されていないときは、blueとし、クッキーに保存
-		if (!$.cookie('pkwk-colorset')){ $.cookie('pkwk-colorset',default_set_num,{expires:30,path:'/'}); }
-		document.getElementById('coloring').href = SKIN_DIR+'theme/'+THEME_NAME+'/'+colorset[$.cookie('pkwk-colorset')]+'.css';
-		document.getElementById('ui-theme').href = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/themes/'+ui_theme[$.cookie('pkwk-colorset')]+'/jquery-ui.css';
+		if (!$.cookie('pkwk-colorset')){
+			$.cookie('pkwk-colorset', default_set_num,{expires:30,path:'/'});
+		}
+		var color = colorset[$.cookie('pkwk-colorset')];
+		document.getElementById('coloring').href = SKIN_DIR+'theme/'+THEME_NAME+'/'+color[0]+'.css';
+		document.getElementById('ui-theme').href = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/themes/'+color[1]+'/jquery-ui.css';
 
 		// カラーセットのリンクボタンを生成
 		var buffer = '';
-		$('#header').before('<p id="colorset" style="float:right; font-size:12px;"></p>');
+		$('#header').before('<p id="colorset" style="text-align:right; font-size:12px;" class="noprint"></p>');
 		for (var n=0; n<colorset.length; n++){
-			buffer += '<span style="color:'+colorset[n]+';cursor:pointer;" id="colorset-'+n+'">'+symbol+'</span>&nbsp;';
+			
+			buffer += '<span style="color:'+colorset[n][0]+';cursor:pointer;" id="colorset-'+n+'">'+symbol+'</span>&nbsp;';
 		}
 		$('#colorset').html('Color: '+buffer);
 	},
@@ -43,10 +51,10 @@ pukiwiki_skin.custom = {
 	init : function(){
 		// カラーセットのリンクボタンにイベント割り当て
 		$('#colorset span').click(function(){
-			var no = this.id.split('-')[1];
-			document.getElementById('coloring').href = SKIN_DIR+'theme/'+THEME_NAME+'/'+colorset[no]+'.css';
-			document.getElementById('ui-theme').href = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/themes/'+ui_theme[no]+'/jquery-ui.css';
-			$.cookie('pkwk-colorset',no,{expires:30,path:'/'});
+			var n = this.id.split('-')[1];
+			document.getElementById('coloring').href = SKIN_DIR+'theme/'+THEME_NAME+'/'+colorset[n][0]+'.css';
+			document.getElementById('ui-theme').href = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/themes/'+colorset[n][1]+'/jquery-ui.css';
+			$.cookie('pkwk-colorset',n,{expires:30,path:'/'});
 		});
 	},
 	// スキンスクリプトのunloadが実行される前に実行される関数

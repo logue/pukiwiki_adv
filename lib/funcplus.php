@@ -290,7 +290,9 @@ function add_skindir($skin_name)
 */
 	foreach($cond as $dir) {
 		if (file_exists($dir.$file) && is_readable($dir.$file)){
-			if (is_readable($dir.$conf)){ require $dir.$conf; }	// あまり良い実装ではない
+			if ( file_exists($dir.$conf) && is_readable($dir.$conf)){
+				require_once $dir.$conf;
+			}	// あまり良い実装ではない
 			return $dir.$file;
 		}
 	}

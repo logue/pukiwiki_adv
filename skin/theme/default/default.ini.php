@@ -5,9 +5,11 @@
 // PukiWiki Plus! skin for PukiWiki Advance.
 // Override to skin config.
 //
-// $Id: default.skin.php,v 1.0.1 2010/10/23 17:07:00 Logue Exp $
+// $Id: default.skin.php,v 1.0.1 2011/03/31 17:40:00 Logue Exp $
 //
-global $ui_theme, $showicon, $link_tags,$js_tags, $_SKIN;
+global $_SKIN, $link_tags, $js_tags;
+
+$_SKIN = array(
 /*
 UI Themes
 jQuery(jQuery UI): 
@@ -19,27 +21,39 @@ see also
 http://www.devcurry.com/2010/05/latest-jquery-and-jquery-ui-theme-links.html
 http://jqueryui.com/themeroller/
 */
-$ui_theme = 'redmond';
+	'ui_theme'		=> 'redmond',
 
-// $site_titleimage = $theme_path.'your.site.logo.png';
-$_SKIN = array(
-	'logo'=>IMAGE_URI.'pukiwiki_adv.logo.png',
-	'logo_alt'=>'[PukiWiki Adv.]',
-	'logo_w'=>'80',
-	'logo_h'=>'80'
+	// Navibar系プラグインでもアイコンを表示する
+	'showicon'		=> false,
+
+	// アドレスの代わりにパスを表示
+	'topicpath'		=> true,
+	
+	// ロゴ設定
+	'logo'=>array(
+		'src'		=> IMAGE_URI.'pukiwiki_adv.logo.png',
+		'alt'		=> '[PukiWiki Adv.]',
+		'width'		=> '80',
+		'height'	=> '80'
+	),
+
+	// 広告表示領域
+	'adarea'	=> array(
+		// ページの右上の広告表示領域
+		'header'	=> <<<EOD
+EOD
+,		// ページ下部の広告表示領域
+		'footer'	=> <<<EOD
+EOD
+	)
 );
 
-defined(PLUS_THEME) or define(PLUS_THEME,'default');
-
 // 読み込むスタイルシート
-$link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.'scripts.css.php', 'media'=>'screen');
+$link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.'scripts.css.php');
 $link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.'iconset/default_iconset.css.php', 'media'=>'screen');
-$link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/default.css', 'media'=>'screen');
+$link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/default.css');
 $link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/blue.css', 'media'=>'screen', 'id'=>'coloring');
-$link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/print.css', 'media'=>'print');
 
 // 読み込むスクリプト
 $js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/default.js');
-// Navibar系プラグインでもアイコンを表示する
-$showicon     = false;
 ?>

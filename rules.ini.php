@@ -44,11 +44,6 @@ $datetime_rules = array(
 //  行末指定は $ を後ろに。
 //
 $str_rules = array(
-	// Compat 1.3.x
-	//'now\?' 	=> format_date(UTIME),
-	//'date\?'	=> get_date($date_format),
-	//'time\?'	=> get_date($time_format),
-
 	'&now;' 	=> format_date(UTIME),
 	'&date;'	=> get_date($date_format),
 	'&time;'	=> get_date($time_format),

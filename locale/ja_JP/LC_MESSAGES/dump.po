@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5-u2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-01-16 00:55+0900\n"
-"PO-Revision-Date: 2005-04-02 21:48+0900\n"
+"PO-Revision-Date: 2011-03-27 23:07+0900\n"
 "Last-Translator: Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -47,7 +47,8 @@ msgstr "無効な命令です。"
 msgid "It failed in the generation of a temporary file."
 msgstr "テンポラリファイルの生成に失敗しました。"
 
-#: ../../plugin/dump.inc.php:123 ../../plugin/dump.inc.php:164
+#: ../../plugin/dump.inc.php:123
+#: ../../plugin/dump.inc.php:164
 msgid "The file was not found."
 msgstr "ファイルがみつかりませんでした。"
 
@@ -92,11 +93,8 @@ msgid "Options"
 msgstr "オプション"
 
 #: ../../plugin/dump.inc.php:224
-msgid ""
-"Virtual of page name encode is converted into the file name with the "
-"directory."
-msgstr ""
-" エンコードされているページ名をディレクトリ階層つきのファイルにデコード"
+msgid "Virtual of page name encode is converted into the file name with the directory."
+msgstr " エンコードされているページ名をディレクトリ階層つきのファイルにデコード"
 
 #: ../../plugin/dump.inc.php:225
 msgid "(The restoration that uses this data cannot be done."
@@ -115,8 +113,7 @@ msgid "[IMPORTANCE]"
 msgstr "[重要]"
 
 #: ../../plugin/dump.inc.php:230
-msgid ""
-"Attention: Please note that the data file of the same name is overwrited."
+msgid "Attention: Please note that the data file of the same name is overwrited."
 msgstr " 同じ名前のデータファイルは上書きされますので、十分ご注意ください。"
 
 #: ../../plugin/dump.inc.php:232
@@ -130,3 +127,4 @@ msgstr "ダウンロード実行"
 #: ../../plugin/dump.inc.php:234
 msgid "Upload execution"
 msgstr "アップロード実行"
+

@@ -3,7 +3,7 @@
  * adm_auth_wkgrp Plugin.
  *
  * @copyright   Copyright &copy; 2009, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: adm_auth_wkgrp.inc.php,v 0.1.1 2010/12/23 13:39:00 Logue Exp $
+ * @version     $Id: adm_auth_wkgrp.inc.php,v 0.1.2 2011/04/03 09:42:00 Logue Exp $
  *
  */
 
@@ -26,8 +26,8 @@ function plugin_adm_auth_wkgrp_init()
 			'msg_check'			=> T_('Check'),
 			'msg_view'			=> T_('View'),
 			'msg_import'		=> T_('Import'),
-			'msg_ok'			=> T_('The <code>%s</code> file was generated.'),
-			'msg_ok_import'		=> T_('Data was taken into <code>%s</code>.'),
+			'msg_ok'			=> T_('The <var>%s</var> file was generated.'),
+			'msg_ok_import'		=> T_('Data was taken into <var>%s</var>.'),
 			'msg_gen'			=> T_('It is necessary to generate it.'),
 			'err_authority'		=> T_('The manager authority is necessary.'),
 			'err_not_use'		=> T_('The generation function is invalid.'),
@@ -90,7 +90,7 @@ EOD;
 <div class="adm_auth_wkgrp">
 	<fieldset>
 		<legend>{$_adm_auth_wkgrp_msg['head_title']}</legend>
-		<table class="style_table" border="0" cellspacing="1">
+		<table class="style_table">
 			<thead>
 				<tr>
 					<th class="style_th">
@@ -106,20 +106,12 @@ EOD;
 
 			<tbody>
 				<tr>
-					<td class="style_td">
-						{$_adm_auth_wkgrp_msg['msg_head_update']}: $date_config_page
-					</td>
-					<td class="style_td">
-						{$_adm_auth_wkgrp_msg['msg_head_gen']}: $date_auth_wkgrp
-					</td>
+					<td class="style_td">{$_adm_auth_wkgrp_msg['msg_head_update']}: $date_config_page</td>
+					<td class="style_td">{$_adm_auth_wkgrp_msg['msg_head_gen']}: $date_auth_wkgrp</td>
 				</tr>
 				<tr>
-					<td class="style_td">
-						$link_page
-					</td>
-						<td class="style_td">
-						$link_file
-					</td>
+					<td class="style_td">$link_page</td>
+					<td class="style_td">$link_file</td>
 				</tr>
 			</tbody>
 		</table>

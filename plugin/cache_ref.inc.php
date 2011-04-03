@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
 //
-// $Id: cache_ref.inc.php,v 1.48.3.2 2011/02/05 10:45:00 Logue Exp $
+// $Id: cache_ref.inc.php,v 1.48.3.3 2011/03/24 22:38:00 Logue Exp $
 //
 // copy ref.inc.php
 
@@ -46,9 +46,10 @@ function plugin_cache_ref_action()
 	}
 	$file = htmlsc($filename);
 	$size = filesize($ref);
+	$date = filemtime($ref);
 
 	// Output
-	pkwk_common_headers();
+	pkwk_common_headers($date, null, false);
 	header('Content-Disposition: inline; filename="' . $filename . '"');
 	header('Content-Length: ' . $size);
 	header('Content-Type: '   . $type);

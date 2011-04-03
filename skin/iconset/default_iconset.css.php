@@ -69,6 +69,7 @@ flush();
 	background-position: center center;
 	width:8px;
 	height:8px;
+	vertical-align: baseline;
 }
 
 .pkwk-icon_linktext{

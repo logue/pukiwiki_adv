@@ -98,11 +98,9 @@ div.mml-player ul li{
 	list-style: none;
 	height:1.2em;
 }
-
 div.mml-player ul li.ui-state-default{
 	width:1.2em;
 }
-
 div.mml-player ul li.mml-progress{
 	width:15em;
 }

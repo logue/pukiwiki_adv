@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5-u2-i18n\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-06-12 00:22+0900\n"
-"PO-Revision-Date: 2005-06-11 23:38+0900\n"
+"PO-Revision-Date: 2011-03-27 23:07+0900\n"
 "Last-Translator: Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -26,3 +26,4 @@ msgstr "許可されていません。"
 #: ../../plugin/img3.inc.php:23
 msgid "not found or, image type is not supported."
 msgstr "ファイルが見つからないか、サポートされない画像タイプです。"
+

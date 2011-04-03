@@ -391,15 +391,12 @@ EOD;
 
 	function toString()
 	{
-		if (FALSE) {
-			$rel = '';
-		} else {
-			$rel = ' rel="nofollow"';
-		}
+		global $nofollow;
+		$rel = 'external'.( ($nofollow === TRUE) ? ' nofollow': '');
 
 //		return '<a href="' . $this->name . '">' . $this->alias . '</a>';
 		$target = (empty($this->redirect)) ? $this->name : $this->redirect.rawurlencode($this->name);
-		return open_uri_in_new_window('<a href="' . $target . '"' . $rel . '>' . $this->alias . '</a>', get_class($this));
+		return open_uri_in_new_window('<a href="' . $target . '" rel="' . $rel . '">' . $this->alias . '</a>', get_class($this));
 	}
 }
 
@@ -437,7 +434,8 @@ EOD;
 
 	function toString()
 	{
-		$rel = 'external '.( FALSE ? '': ' nofollow');
+		global $nofollow;
+		$rel = 'external'.( ($nofollow === TRUE) ? ' nofollow': '');
 //		return '<a href="' . $this->name . '" rel="nofollow">' . $this->alias . '</a>';
 		$target = (empty($this->redirect)) ? $this->name : $this->redirect.rawurlencode($this->name);
 		

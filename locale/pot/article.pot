@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-03-10 18:35+0900\n"
+"POT-Creation-Date: 2011-04-02 03:11+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,30 +26,28 @@ msgstr ""
 
 #: ../../plugin/article.inc.php:54
 msgid ""
-"It seems that someone has already updated this page while you were editing "
-"it.<br />\n"
+"It seems that someone has already updated this page while you were editing it.<br />\n"
 " + is placed at the beginning of a line that was newly added.<br />\n"
-" ! is placed at the beginning of a line that has possibly been updated.<br /"
-">\n"
+" ! is placed at the beginning of a line that has possibly been updated.<br />\n"
 " Edit those lines, and submit again."
 msgstr ""
 
-#: ../../plugin/article.inc.php:128
+#: ../../plugin/article.inc.php:58
 msgid "Author: "
 msgstr ""
 
-#: ../../plugin/article.inc.php:129
+#: ../../plugin/article.inc.php:59
 msgid "Page: "
 msgstr ""
 
-#: ../../plugin/article.inc.php:155
+#: ../../plugin/article.inc.php:60
 msgid "Name: "
 msgstr ""
 
-#: ../../plugin/article.inc.php:156
+#: ../../plugin/article.inc.php:61
 msgid "Submit"
 msgstr ""
 
-#: ../../plugin/article.inc.php:157
+#: ../../plugin/article.inc.php:62
 msgid "Subject: "
 msgstr ""

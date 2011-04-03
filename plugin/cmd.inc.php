@@ -4,114 +4,119 @@
 //
 // Command link plugin
 
-function plugin_cmd_inline(){
-	
+function plugin_cmd_init(){
+
 }
 
-
-function plugin_cmd_keyword($name,$page)
-{
-	global $_LINK;
+function plugin_cmd_inline(){
+	global $page;
+	
 	global $do_backup, $trackback, $referer;
 	global $function_freeze;
 	global $vars;
 	global $whatsnew,$whatsdeleted;
 
-	if ($_LINK['reload'] == '') return array();
-
-	if ($page){
-		$_page = $page;
-	}else{
-		$_page  = isset($vars['page']) ? $vars['page'] : '';
+	$num = func_num_args()-1;
+	$args = $num ? func_get_args() : array();
+	array_pop($args);
+	
+	$name = $args[0];
+	$pagename = false;
+	if ($num == 1){
+		$_page = strip_tags($page);
+	}else if ($num == 2){
+		$_page = $args[1];
+		$pagename = true;
 	}
 	
-	$is_read = (arg_check('read') && is_page($_page));
-	$is_freeze = is_freeze($_page);
-
+	// $is_read = (arg_check('read') && is_page($_page));
+	$is_read = is_page($_page);
+	$is_readonly = auth::check_role('readonly');
+	$is_safemode = auth::check_role('safemode');
+	$is_createpage = auth::is_check_role(PKWK_CREATE_PAGE);
+	$is_editable = is_editable($_page);
+	
 	switch ($name) {
-	case 'edit':
-	case 'guiedit':
-	case 'add':
-		if ($is_read && !$is_freeze) return plugin_cmd_link($name);
-		break;
-	case 'freeze':
-	case 'unfreeze':
-		if ($is_read && $function_freeze) {
-			$name = $is_freeze ? 'unfreeze' : 'freeze';
-			return plugin_cmd_link($name);
-		}
-		break;
-	case 'upload':
-		if ($is_read && (bool)ini_get('file_uploads') && !$is_freeze && !($_page == $whatsnew || $_page == $whatsdeleted)) return plugin_cmd_link($name);
-		break;
-	case 'filelist':
-		if (arg_check('list') && (bool)ini_get('file_uploads')) return plugin_cmd_link($name);
-		break;
-	case 'backup':
-		if ($do_backup) return plugin_cmd_link($name);
-		break;
-	case 'brokenlink':
-	case 'template':
-	case 'source':
-		if (!empty($_page)) return plugin_cmd_link($name);
-		break;
-	case 'trackback':
-		if ($trackback) {
-			$tbcount = tb_count($_page);
-			
-			if ($vars['cmd'] == 'list') {
-				return plugin_cmd_link($name, 'Trackback list');
-			}else{
-				return plugin_cmd_link($name, 'Trackback(' . $tbcount . ')');
+		case 'add':
+		case 'filelist':
+			if (arg_check('list')) {
+				return plugin_cmd_link($name, $_page, $pagename);
 			}
-		}
-		break;
-	case 'refer':
-	case 'skeylist':
-	case 'linklist':
-		if ($referer) {
-			if (!isset($refcount)) $refcount = tb_count($_page,'.ref');
-			if ($refcount > 0) return plugin_cmd_link($name);
-		}
-		break;
-	case 'log_login':
-		if (log_exist('login',$_page)) return  plugin_cmd_link($name);
-		break;
-	case 'log_check':
-		if (log_exist('check',$_page)) return plugin_cmd_link($name);
-		break;
-	case 'log_browse':
-		if (log_exist('browse',$_page)) return plugin_cmd_link($name);
-		break;
-	case 'log_update':
-		if (log_exist('update',$_page)) return plugin_cmd_link($name);
-		break;
-	case 'log_down':
-		if (log_exist('download',$_page)) return plugin_cmd_link($name);	
-		break;
-	// case 'new':
-	case 'newsub':
-	case 'edit':
-	case 'guiedit':
-	case 'diff':
-		if (!$is_read) break;
-	default:
-		return plugin_cmd_link($name);
-		break;
+			break;
+		case 'backup':
+			if ($do_backup) {
+				return plugin_cmd_link($name, $_page, $pagename);
+			}
+			break;
+		case 'trackback':
+			if ($trackback) {
+				$tbcount = tb_count($_page);
+				if ($tbcount > 0) {
+					$cmd = $name;
+				}
+			}
+			break;
+		case 'referer':
+			if ($referer) {
+				return plugin_cmd_link($name, $_page, $pagename);
+			}
+			break;
+		case 'rss':
+		case 'mixirss':
+			return plugin_cmd_link($name, $_page, $pagename);
+			break;
+		case 'freeze':
+			if ($is_readonly) break;
+			if (!$is_read) break;
+			if ($function_freeze) {
+				if (!is_freeze($_page)) {
+					$name = 'freeze';
+				} else {
+					$name = 'unfreeze';
+				}
+				return plugin_cmd_link($name, $_page, $pagename);
+			}
+			break;
+		case 'upload':
+			if ($is_readonly) break;
+			if (!$is_read) break;
+			if ($function_freeze && is_freeze($_page)) break;
+			if ((bool)ini_get('file_uploads')) {
+				return plugin_cmd_link($name, $_page, $pagename);
+			}
+			break;
+		case 'diff':
+			if (!$is_read) break;
+			if ($is_safemode) break;
+		case 'edit':
+		case 'guiedit':
+			if (!$is_read) break;
+			if ($is_readonly) break;
+			if ($function_freeze && is_freeze($_page)) break;
+			return plugin_cmd_link($name, $_page, $pagename);
+			break;
+		case 'new':
+		case 'newsub':
+			if ($is_createpage) break;
+		case 'rename':
+		case 'copy':
+			if ($is_readonly) break;
+		case 'reload':
+		case 'print':
+		case 'full':
+			if (!$is_read) break;
+		default:
+			return plugin_cmd_link($name, $_page, $pagename);
+			break;
 	}
-	return array();
+	return;
 }
 
-function plugin_cmd_link($key, $val = '', $x = 20, $y = 20)
+function plugin_cmd_link($key, $_page, $pagename)
 {
-	global $_LINK, $_LANG;
+	global $_LANG, $page;
+	$link = getLinkSet($_page);
+	$text = (($pagename == false) ? $_LANG['skin'][$key] : $_LANG['skin'][$key].':'.$_page);
 
-	$link = $_LINK;
-	$lang = $_LANG['skin'];
-
-	if (!isset($link[$key])) { return '<!--LINK NOT FOUND-->'; }
-	if (!isset($lang[$key])) { return '<!--LANG NOT FOUND-->'; }
-
-	$text = ($val === '') ? $lang[$key] : $val;
-	return '<a class="cmd-'.$key.'" href="' . $link[$key] . '" rel="nofollow">' . $text . '</a>';
+	return '<a class="pkwk-icon_linktext cmd-'.$key.'" href="' . $link[$key] . '" rel="nofollow">' . $text . '</a>';
 }

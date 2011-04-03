@@ -1,5 +1,5 @@
 <?php
-// $Id: bugtrack.inc.php,v 1.27.4 2011/02/05 10:24:00 Logue Exp $
+// $Id: bugtrack.inc.php,v 1.27.5 2011/03/24 22:35:00 Logue Exp $
 //
 // PukiWiki BugTrack plugin
 //
@@ -42,8 +42,7 @@ function plugin_bugtrack_init()
 		'pagename_comment'	=> T_('Page name is automatically given for an empty column.'),
 		'version_comment'	=> T_('It is acceptable also in an empty column.'),
 		'version'			=> T_('Version'),
-		'submit'			=> T_('Submit'),
-		'err_prohibit'		=> T_('This Wiki is <var>%s</var> mode now. Therefore, bugtrack function is prohibited.'),
+		'submit'			=> T_('Submit')
 	);
 }
 
@@ -124,51 +123,51 @@ function plugin_bugtrack_print_form($base, $category)
 	$s_submit   = htmlsc($_plugin_bugtrack['submit']);
 	$body = <<<EOD
 <form action="$script" method="post">
- <table border="0">
-  <tr>
-   <th><label for="_p_bugtrack_name_$id">$s_name</label></th>
-   <td><input  id="_p_bugtrack_name_$id" name="name" size="20" type="text" /></td>
-  </tr>
-  <tr>
-   <th><label for="_p_bugtrack_category_$id">$s_category</label></th>
-   <td>$encoded_category</td>
-  </tr>
-  <tr>
-   <th><label for="_p_bugtrack_priority_$id">$s_priority</label></th>
-   <td><select id="_p_bugtrack_priority_$id" name="priority">$select_priority   </select></td>
-  </tr>
-  <tr>
-   <th><label for="_p_bugtrack_state_$id">$s_state</label></th>
-   <td><select id="_p_bugtrack_state_$id" name="state">$select_state   </select></td>
-  </tr>
-  <tr>
-   <th><label for="_p_bugtrack_pagename_$id">$s_pname</label></th>
-   <td><input  id="_p_bugtrack_pagename_$id" name="pagename" size="20" type="text" />
-    <small>$s_pnamec</small></td>
-  </tr>
-  <tr>
-   <th><label for="_p_bugtrack_version_$id">$s_version</label></th>
-   <td><input  id="_p_bugtrack_version_$id" name="version" size="10" type="text" />
-    <small>$s_versionc</small></td>
-  </tr>
-  <tr>
-   <th><label for="_p_bugtrack_summary_$id">$s_summary</label></th>
-   <td><input  id="_p_bugtrack_summary_$id" name="summary" size="60" type="text" /></td>
-  </tr>
-  <tr>
-   <th><label   for="_p_bugtrack_body_$id">$s_body</label></th>
-   <td><textarea id="_p_bugtrack_body_$id" name="body" cols="60" rows="6"></textarea></td>
-  </tr>
-  <tr>
-   <td colspan="2" align="center">
-    <input type="submit" value="$s_submit" />
-    <input type="hidden" name="plugin" value="bugtrack" />
-    <input type="hidden" name="ticket" value="$ticket" />
-    <input type="hidden" name="mode"   value="submit" />
-    <input type="hidden" name="base"   value="$s_base" />
-   </td>
-  </tr>
- </table>
+	<table>
+		<tr>
+			<th><label for="_p_bugtrack_name_$id">$s_name</label></th>
+			<td><input  id="_p_bugtrack_name_$id" name="name" size="20" type="text" /></td>
+		</tr>
+		<tr>
+			<th><label for="_p_bugtrack_category_$id">$s_category</label></th>
+			<td>$encoded_category</td>
+		</tr>
+		<tr>
+			<th><label for="_p_bugtrack_priority_$id">$s_priority</label></th>
+			<td><select id="_p_bugtrack_priority_$id" name="priority">$select_priority   </select></td>
+		</tr>
+		<tr>
+			<th><label for="_p_bugtrack_state_$id">$s_state</label></th>
+			<td><select id="_p_bugtrack_state_$id" name="state">$select_state   </select></td>
+		</tr>
+		<tr>
+			<th><label for="_p_bugtrack_pagename_$id">$s_pname</label></th>
+			<td><input  id="_p_bugtrack_pagename_$id" name="pagename" size="20" type="text" />
+			<small>$s_pnamec</small></td>
+		</tr>
+		<tr>
+			<th><label for="_p_bugtrack_version_$id">$s_version</label></th>
+			<td><input  id="_p_bugtrack_version_$id" name="version" size="10" type="text" />
+			<small>$s_versionc</small></td>
+		</tr>
+		<tr>
+			<th><label for="_p_bugtrack_summary_$id">$s_summary</label></th>
+			<td><input  id="_p_bugtrack_summary_$id" name="summary" size="60" type="text" /></td>
+		</tr>
+		<tr>
+			<th><label   for="_p_bugtrack_body_$id">$s_body</label></th>
+			<td><textarea id="_p_bugtrack_body_$id" name="body" cols="60" rows="6"></textarea></td>
+		</tr>
+		<tr>
+			<td colspan="2" align="center">
+				<input type="submit" value="$s_submit" />
+				<input type="hidden" name="plugin" value="bugtrack" />
+				<input type="hidden" name="ticket" value="$ticket" />
+				<input type="hidden" name="mode"   value="submit" />
+				<input type="hidden" name="base"   value="$s_base" />
+			</td>
+		</tr>
+	</table>
 </form>
 EOD;
 
@@ -179,11 +178,11 @@ EOD;
 function plugin_bugtrack_action()
 {
 	global $post;
-	global $_plugin_bugtrack;
+	global $_plugin_bugtrack, $_string;
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	if (auth::check_role('readonly')) die_message(sprintf($_plugin_bugtrack['err_prohibit'],'PKWK_READONLY'));
-	if (auth::is_check_role(PKWK_CREATE_PAGE)) die_message(sprintf($_plugin_bugtrack['err_prohibit'],'PKWK_CREATE_PAGE'));
+	if (auth::check_role('readonly')) die_message($_string['prohibit']);
+	if (auth::is_check_role(PKWK_CREATE_PAGE)) die_message(str_replace('PKWK_CREATE_PAGE','PKWK_READONLY',$_string['prohibit']));
 	if ($post['mode'] != 'submit') return FALSE;
 
 	// Petit SPAM Check (Client(Browser)-Server Ticket Check)
@@ -195,8 +194,7 @@ function plugin_bugtrack_action()
 	}
 
 	// Vaildation foreign values(by miko)
-	if (!in_array($post['priority'], $_plugin_bugtrack['priority_list'])) $spam = TRUE;
-	if (!in_array($post['state'], $_plugin_bugtrack['state_list'])) $spam = TRUE;
+	$spam = ( (!in_array($post['priority'], $_plugin_bugtrack['priority_list'])) || (!in_array($post['state'], $_plugin_bugtrack['state_list'])) ) ? TRUE : FALSE;
 
 	if ($spam) {
 		honeypot_write();
@@ -208,7 +206,7 @@ function plugin_bugtrack_action()
 		$post['version'], $post['body']);
 
 	pkwk_headers_sent();
-        header('Location: ' . get_page_location_uri($page));
+	header('Location: ' . get_page_location_uri($page));
 	exit;
 }
 
@@ -317,30 +315,32 @@ function plugin_bugtrack_list_convert()
 
 		$row = <<<EOD
  <tr>
-  <td style="background-color:$bgcolor">$page_link</td>
-  <td style="background-color:$bgcolor">$state</td>
-  <td style="background-color:$bgcolor">$priority</td>
-  <td style="background-color:$bgcolor">$category</td>
-  <td style="background-color:$bgcolor">$name</td>
-  <td style="background-color:$bgcolor">$summary</td>
+  <td class="style_td" style="background-color:$bgcolor">$page_link</td>
+  <td class="style_td" style="background-color:$bgcolor">$state</td>
+  <td class="style_td" style="background-color:$bgcolor">$priority</td>
+  <td class="style_td" style="background-color:$bgcolor">$category</td>
+  <td class="style_td" style="background-color:$bgcolor">$name</td>
+  <td class="style_td" style="background-color:$bgcolor">$summary</td>
  </tr>
 EOD;
 		$table[$state_no][$no] = $row;
 	}
 
-	$table_html = ' <tr>' . "\n";
+	$table_html = ' <tr>' . "\n" . '<thead>'. "\n";
 	$bgcolor = htmlsc($_plugin_bugtrack['header_bgcolor']);
 	foreach (array('pagename', 'state', 'priority', 'category', 'name', 'summary') as $item)
-		$table_html .= '  <th style="background-color:' . $bgcolor . '">' .
+		$table_html .= '  <th class="style_th" style="background-color:' . $bgcolor . '">' .
 			htmlsc($_plugin_bugtrack[$item]) . '</th>' . "\n";
-	$table_html .= ' </tr>' . "\n";
+	$table_html .= ' </tr>' . "\n" . '<thead>' ."\n" . '<tbody>' . "\n";
 
 	for ($i = 0; $i <= $count_list; ++$i) {
 		ksort($table[$i], SORT_NUMERIC);
 		$table_html .= join("\n", $table[$i]);
 	}
+	
+	$table_html .= '</tbody>'."\n";
 
-	return '<table border="1" width="100%">' . "\n" .
+	return '<table class="style_table">' . "\n" .
 		$table_html . "\n" .
 		'</table>';
 }

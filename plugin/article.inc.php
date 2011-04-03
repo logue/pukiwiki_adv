@@ -1,5 +1,5 @@
 <?php
-// $Id: article.inc.php,v 1.28.6 2011/02/05 10:22:00 Logue Exp $
+// $Id: article.inc.php,v 1.28.7 2011/03/24 22:17:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2005-2006,2008 PukiWiki Plus! Team
@@ -69,10 +69,10 @@ function plugin_article_action()
 {
 	global $script, $post, $vars, $cols, $rows, $now;
 	global $_plugin_article_mailto, $_no_subject, $_no_name;
-	global $_article_msg;
+	global $_article_msg, $_string;
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	if (auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
+	if (auth::check_role('readonly')) die_message($_string['prohibit']);
 
 	if ($post['msg'] == '')
 		return array('msg'=>'','body'=>'');
@@ -176,8 +176,6 @@ function plugin_article_convert()
 
 	$article_no = $numbers[$vars['page']]++;
 
-	$helptags = edit_form_assistant();
-
 	$s_page   = htmlsc($vars['page']);
 	$s_digest = htmlsc($digest);
 	$name_cols = PLUGIN_ARTICLE_NAME_COLS;
@@ -190,13 +188,12 @@ function plugin_article_convert()
 	<input type="hidden" name="plugin" value="article" />
 	<input type="hidden" name="digest" value="$s_digest" />
 	<input type="hidden" name="refer" value="$s_page" />
-	<div class="article_form">
+	<div class="article_form post_form">
 		<label for="_p_article_name_$article_no">{$_article_msg['btn_name']}</label>
 		<input type="text" name="name" id="_p_article_name_$article_no" size="$name_cols" /><br />
 		<label for="_p_article_subject_$article_no">{$_article_msg['btn_subject']}</label>
 		<input type="text" name="subject" id="_p_article_subject_$article_no" size="$subject_cols" /><br />
-		<textarea name="msg" class="msg" rows="$article_rows" cols="$article_cols">\n</textarea><br />
-		$helptags
+		<textarea name="msg" class="msg" rows="$article_rows" cols="$article_cols"></textarea><br />
 		<input type="submit" name="article" value="{$_article_msg['btn_article']}" />
 	</div>
 </form>

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-03-10 16:42+0900\n"
+"POT-Creation-Date: 2011-04-02 03:12+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,26 +16,26 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../plugin/freeze.inc.php:14
+#: ../../plugin/freeze.inc.php:19
 msgid " $1 has already been frozen"
 msgstr ""
 
-#: ../plugin/freeze.inc.php:15
+#: ../../plugin/freeze.inc.php:20
 msgid " $1 has been frozen."
 msgstr ""
 
-#: ../plugin/freeze.inc.php:16
+#: ../../plugin/freeze.inc.php:21
 msgid "Freeze  $1"
 msgstr ""
 
-#: ../plugin/freeze.inc.php:17
+#: ../../plugin/freeze.inc.php:22
 msgid "Invalid password."
 msgstr ""
 
-#: ../plugin/freeze.inc.php:18
+#: ../../plugin/freeze.inc.php:23
 msgid "Please input the password for freezing."
 msgstr ""
 
-#: ../plugin/freeze.inc.php:19
+#: ../../plugin/freeze.inc.php:24
 msgid "Freeze"
 msgstr ""

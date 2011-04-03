@@ -3,7 +3,7 @@
  * PukiWiki 自動相互リンク作成プラグイン
  *
  * @copyright   Copyright &copy; 2004-2007, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: linklist.inc.php,v 0.6.2 2011/02/05 11:01:00 Logue Exp $
+ * @version     $Id: linklist.inc.php,v 0.6.3 2011/04/02 16:52:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 
@@ -137,27 +137,30 @@ function linklist_analysis($data)
 
 		$sw = 0;
 		// queryストリングの解析
-		$tok = strtok($url['query'],'&');
-		while($tok) {
-			list($key,$parm)= split ('=', $tok); // キーと値に分割
-			$tok = strtok('&'); // 次の処理の準備
+		
+		if (isset($url['query'])){
+			$tok = strtok($url['query'],'&');
+			while($tok) {
+				list($key,$parm)= split ('=', $tok); // キーと値に分割
+				$tok = strtok('&'); // 次の処理の準備
 
-			// 検索キーかの判定
-			$skey = '';
+				// 検索キーかの判定
+				$skey = '';
 
-			foreach ($config_linklist['key'] as $y)
-			{
-				if ( (strpos($key,$y) === 0 )) {
-					$skey = $y;
-					continue;
+				foreach ($config_linklist['key'] as $y)
+				{
+					if ( (strpos($key,$y) === 0 )) {
+						$skey = $y;
+						continue;
+					}
 				}
-			}
-			if ($skey !== $key) continue;
-			if (empty($parm)) continue; // 値が入っていない場合
+				if ($skey !== $key) continue;
+				if (empty($parm)) continue; // 値が入っていない場合
 
-			// 検索エンジンからきたもの
-			$sw = 1;
-			break;
+				// 検索エンジンからきたもの
+				$sw = 1;
+				break;
+			}
 		}
 
 		// 検索エンジン以外 かつ 架空ホスト以外 の場合は蓄積
@@ -169,6 +172,7 @@ function linklist_analysis($data)
 			$rc[$i][1] = $x[2];	// 参照カウンタ
 			$i++;
 		}
+		
 	}
 	return $rc;
 }

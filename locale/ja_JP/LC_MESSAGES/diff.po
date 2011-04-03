@@ -8,12 +8,12 @@ msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5-u2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-04-10 16:26+0900\n"
-"PO-Revision-Date: 2005-03-10 10:15+0900\n"
+"PO-Revision-Date: 2011-03-27 23:07+0900\n"
 "Last-Translator: Miko.Hoshina(E.Satoh) <miko@cafeterrace.com>\n"
-"Language-Team: Japanese \n"
+"Language-Team: Japanese\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8-bit\n"
+"Content-Transfer-Encoding: 8bit\n"
 
 #: ../../plugin/diff.inc.php:31
 msgid "The page was not found."
@@ -39,7 +39,8 @@ msgstr "$1 の差分を削除しました。"
 msgid "Diff of $1"
 msgstr "$1 の変更点"
 
-#: ../../plugin/diff.inc.php:37 ../../plugin/diff.inc.php:89
+#: ../../plugin/diff.inc.php:37
+#: ../../plugin/diff.inc.php:89
 msgid "Deleting diff of $1"
 msgstr "$1 の差分を削除"
 
@@ -58,3 +59,4 @@ msgstr "削除"
 #: ../../plugin/diff.inc.php:93
 msgid "Invalid password."
 msgstr ""
+

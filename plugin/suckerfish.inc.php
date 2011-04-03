@@ -82,10 +82,11 @@ function plugin_suckerfish_makehtml($page)
 		$head = $line{0};
 		$level = strspn($line, $head);
 		$line = substr($line, $level);
-
+/*
 		foreach (0 as $level) {
 			$output .= '	';
 		}
+*/
 		if ($head == '-') {
 			
 			$item = plugin_suckerfish_to_item($line);
@@ -114,10 +115,10 @@ function plugin_suckerfish_makehtml($page)
 	if ($level != 1){
 		$output .= "</li></ul>\n</li>\n";
 	}
-	$output = '<ul id="'.PLUGIN_SUKERFISH_DEFAULT_ID.'">'."\n".$output.'</ul>';
+	$output = '<ul class="sf-menu">'."\n".$output.'</ul>';
 	
 //	return '<div id="navigator2">'."\n".'<ul id="'.PLUGIN_SUKERFISH_DEFAULT_ID.'">'."\n".$output.'</ul></div>';
-	return (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<div><nav id="navigator2">'.$output.'</nav></div>'."\n" : '<div id="navigator2">'.$output.'</div>')."\n";
+	return (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<nav id="navigator2">'.$output.'</nav>'."\n" : '<div id="navigator2">'.$output.'</div>')."\n";
 }
 
 function plugin_suckerfish_to_item($line){
@@ -147,7 +148,7 @@ function plugin_suckerfish_to_item($line){
 	}
 	*/
 
-	return $str;
+//	return $str;
 }
 
 function plugin_suckerfish_convert_html($str){
@@ -272,7 +273,7 @@ function plugin_suckerfish_keyword($name){
 
 function _suckerfish($key, $val = '')
 {
-	global $_LINK, $_LANG, $showicon;
+	global $_LINK, $_LANG, $_SKIN, $showicon;
 
 	$lang  = $_LANG['skin'];
 	$link  = $_LINK;
@@ -283,7 +284,7 @@ function _suckerfish($key, $val = '')
 	if (!isset($lang[$key])) { return null; }
 	if (!isset($link[$key])) { return null; }
 
-	if ($showicon){
+	if ($_SKIN['showicon']){
 		return '<a href="' . $link[$key] . '" rel="nofollow" class="pkwk-icon_linktext cmd-'.$key.'">' . $lang[$key]. '</a>';
 	}else{
 		return '<a href="' . $link[$key] . '" rel="nofollow">' . $lang[$key]. '</a>';

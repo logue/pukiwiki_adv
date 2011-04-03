@@ -41,7 +41,7 @@ defined('PLUGIN_ATTACH_FILE_MODE')		or define('PLUGIN_ATTACH_FILE_MODE', 0644);
 define('PLUGIN_ATTACH_CONFIG_PAGE_MIME', 'plugin/attach/mime-type');
 
 defined('PLUGIN_ATTACH_UNKNOWN_COMPRESS')	or define('PLUGIN_ATTACH_UNKNOWN_COMPRESS', 0);			// 1(compress) or 0(raw)
-defined('PLUGIN_ATTACH_COMPRESS_TYPE')		or define('PLUGIN_ATTACH_COMPRESS_TYPE', 'TGZ');		// TGZ, GZ or ZIP
+defined('PLUGIN_ATTACH_COMPRESS_TYPE')		or define('PLUGIN_ATTACH_COMPRESS_TYPE', 'TGZ');		// TGZ, GZ, BZ2 or ZIP
 
 function plugin_attach_init()
 {
@@ -59,7 +59,7 @@ function plugin_attach_init()
 			'msg_listall'	=> T_('Attached file list of all pages'),
 			'msg_file'		=> T_('Attach file'),
 			'msg_maxsize'	=> T_('Maximum file size is %s.'),
-			'msg_count'		=> T_(' <span class="small">%s download</span>'),
+			'msg_count'		=> T_('%s download'),
 			'msg_password'	=> T_('password'),
 			'msg_adminpass'	=> T_('Administrator password'),
 			'msg_delete'	=> T_('Delete file.'),
@@ -97,7 +97,6 @@ function plugin_attach_init()
 			'btn_upload'	=> T_('Upload'),
 			'btn_info'		=> T_('Information'),
 			'btn_submit'	=> T_('Submit'),
-			'err_prohibit'	=> T_('This Wiki is <code>PKWK_READONLY</code> mode now. Therefore, attach function is prohibited.'),
 			'err_too_long'	=> T_('Query string (page name and/or file name) too long'),
 			'err_nopage'	=> T_('No such page'),
 			'err_tmp_fail'	=> T_('It failed in the generation of a temporary file.'),
@@ -139,7 +138,7 @@ function plugin_attach_convert()
 //-------- action
 function plugin_attach_action()
 {
-	global $vars, $_attach_messages;
+	global $vars, $_attach_messages, $_string;
 
 	// Backward compatible
 	if (isset($vars['openfile'])) {
@@ -174,7 +173,7 @@ function plugin_attach_action()
 		case 'freeze':
 		case 'unfreeze':
 			// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-			if (auth::check_role('readonly')) die_message( $_attach_messages['err_prohibit'] );
+			if (auth::check_role('readonly')) die_message( $_string['prohibit'] );
 		}
 		switch ($pcmd) {
 		case 'info'     : return attach_info();
@@ -217,20 +216,26 @@ function attach_filelist()
 // $pass = TRUE : アップロード許可
 function attach_upload($file, $page, $pass = NULL)
 {
-	global $_attach_messages;
+	global $_attach_messages, $_string;
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	if (auth::check_role('readonly')) die_message($_attach_messages['err_prohibit']);
+	if (auth::check_role('readonly')) die_message($_string['prohibit']);
 
 	// Check query-string
-	$query = 'plugin=attach&amp;pcmd=info&amp;refer=' . rawurlencode($page) .
-		'&amp;file=' . rawurlencode($file['name']);
+//	$query = 'plugin=attach&amp;pcmd=info&amp;refer=' . rawurlencode($page) .
+//		'&amp;file=' . rawurlencode($file['name']);
+	$query = get_cmd_uri('attach', '', '', array(
+		'file'=>$file['name'],
+		'refer'=>$page,
+		'pcmd'=>'info'
+	));
 
 	if ($file['error'] !== UPLOAD_ERR_OK) {
 		$err_msg = attach_set_error_message($file['error']);
 		return array(
 			'result'=>FALSE,
-			'msg'=>$err_msg);
+			'msg'=>$err_msg
+		);
 	}
 
 	if (PKWK_QUERY_STRING_MAX && strlen($query) > PKWK_QUERY_STRING_MAX) {
@@ -334,63 +339,91 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 	}
 
 	if ($must_compress && is_uploaded_file($file['tmp_name'])) {
-		if (PLUGIN_ATTACH_COMPRESS_TYPE == 'TGZ' && exist_plugin('dump')) {
-			$obj = new AttachFile($page, $file['name'] . '.tgz');
-			if ($obj->exist)
-				return array('result'=>FALSE,
-					'msg'=>$_attach_messages['err_exists']);
+		switch (PLUGIN_ATTACH_COMPRESS_TYPE){
+			case 'TGZ' :
+				if (exist_plugin('dump')) {
+					$obj = new AttachFile($page, $file['name'] . '.tgz');
+					if ($obj->exist)
+						return array('result'=>FALSE,
+							'msg'=>$_attach_messages['err_exists']);
 
-			$tar = new tarlib();
-			$tar->create(CACHE_DIR, 'tgz') or
-				die_message( $_attach_messages['err_tmp_fail'] );
-			$tar->add_file($file['tmp_name'], $file['name']);
-			$tar->close();
+					$tar = new tarlib();
+					$tar->create(CACHE_DIR, 'tgz') or
+						die_message( $_attach_messages['err_tmp_fail'] );
+					$tar->add_file($file['tmp_name'], $file['name']);
+					$tar->close();
 
-			@rename($tar->filename, $obj->filename);
-			chmod($obj->filename, PLUGIN_ATTACH_FILE_MODE);
-			@unlink($tar->filename);
-		} else
-		if (PLUGIN_ATTACH_COMPRESS_TYPE == 'GZ' && extension_loaded('zlib')) {
-			$obj = new AttachFile($page, $file['name'] . '.gz');
-			if ($obj->exist)
-				return array('result'=>FALSE,
-					'msg'=>$_attach_messages['err_exists']);
+					@rename($tar->filename, $obj->filename);
+					chmod($obj->filename, PLUGIN_ATTACH_FILE_MODE);
+					@unlink($tar->filename);
+				}
+			break;
+			case 'GZ' :
+				if (extension_loaded('zlib')) {
+					$obj = new AttachFile($page, $file['name'] . '.gz');
+					if ($obj->exist)
+						return array('result'=>FALSE,
+							'msg'=>$_attach_messages['err_exists']);
 
-			$tp = fopen($file['tmp_name'],'rb') or
-				die_message($_attach_messages['err_load_file']);
-			$zp = gzopen($obj->filename, 'wb') or
-				die_message($_attach_messages['err_write_tgz']);	
+					$tp = fopen($file['tmp_name'],'rb') or
+						die_message($_attach_messages['err_load_file']);
+					$zp = gzopen($obj->filename, 'wb') or
+						die_message($_attach_messages['err_write_tgz']);	
 
-			while (!feof($tp)) { gzwrite($zp,fread($tp, 8192)); }
-			gzclose($zp);
-			fclose($tp);
-			chmod($obj->filename, PLUGIN_ATTACH_FILE_MODE);
-			@unlink($file['tmp_name']);
-		} else
-		if (PLUGIN_ATTACH_COMPRESS_TYPE == 'ZIP' && class_exists('ZipArchive')) {
-			$obj = new AttachFile($page, $file['name'] . '.zip');
-			if ($obj->exist)
-				return array('result'=>FALSE,
-					'msg'=>$_attach_messages['err_exists']);
-			$zip = new ZipArchive();
+					while (!feof($tp)) { gzwrite($zp,fread($tp, 8192)); }
+					gzclose($zp);
+					fclose($tp);
+					chmod($obj->filename, PLUGIN_ATTACH_FILE_MODE);
+					@unlink($file['tmp_name']);
+				}
+			break;
+			case 'ZIP' :
+				if (class_exists('ZipArchive')) {
+					$obj = new AttachFile($page, $file['name'] . '.zip');
+					if ($obj->exist)
+						return array('result'=>FALSE,
+							'msg'=>$_attach_messages['err_exists']);
+					$zip = new ZipArchive();
 
-			$zip->addFile($file['tmp_name'],$file['name']);
-			// if ($zip->status !== ZIPARCHIVE::ER_OK)
-			if ($zip->status !== 0)
-				die_message( $_attach_messages['err_upload'].'('.$zip->status.').' );
-			$zip->close();
-			chmod($obj->filename, PLUGIN_ATTACH_FILE_MODE);
-			@unlink($file['tmp_name']);
-		}
-	} else {
+					$zip->addFile($file['tmp_name'],$file['name']);
+					// if ($zip->status !== ZIPARCHIVE::ER_OK)
+					if ($zip->status !== 0)
+						die_message( $_attach_messages['err_upload'].'('.$zip->status.').' );
+					$zip->close();
+					chmod($obj->filename, PLUGIN_ATTACH_FILE_MODE);
+					@unlink($file['tmp_name']);
+				}
+			break;
+			case 'BZ2' :
+				if (extension_loaded('bz2')){
+					$obj = new AttachFile($page, $file['name'] . '.bz2');
+					if ($obj->exist)
+						return array('result'=>FALSE,
+							'msg'=>$_attach_messages['err_exists']);
+					
+					$tp = fopen($file['tmp_name'],'rb') or
+						die_message($_attach_messages['err_load_file']);
+					$zp = bzopen($obj->filename, 'wb') or
+						die_message($_attach_messages['err_write_tgz']);	
+
+					while (!feof($tp)) { bzwrite($zp,fread($tp, 8192)); }
+					bzclose($zp);
+					fclose($tp);
+					chmod($obj->filename, PLUGIN_ATTACH_FILE_MODE);
+					@unlink($file['tmp_name']);
+				}
+			break;
+			default:
 //miko
-		$obj = new AttachFile($page, $file['name']);
-		if ($obj->exist)
-			return array('result'=>FALSE,
-				'msg'=>$_attach_messages['err_exists']);
+				$obj = new AttachFile($page, $file['name']);
+				if ($obj->exist)
+					return array('result'=>FALSE,
+						'msg'=>$_attach_messages['err_exists']);
 
-		if (move_uploaded_file($file['tmp_name'], $obj->filename))
-			chmod($obj->filename, PLUGIN_ATTACH_FILE_MODE);
+				if (move_uploaded_file($file['tmp_name'], $obj->filename))
+					chmod($obj->filename, PLUGIN_ATTACH_FILE_MODE);
+			break;
+		}
 	}
 
 	if (is_page($page))
@@ -462,29 +495,29 @@ function attach_is_compress($type,$compress=1)
 	// type
 	static $composite_type = array(
 		'application' => array(
-			'msword'		=> 0, // doc
+			'msword'			=> 0, // doc
 			'vnd.ms-excel'		=> 0, // xls
 			'vnd.ms-powerpoint'	=> 0, // ppt
-			'vnd.visio'		=> 0,
+			'vnd.visio'			=> 0,
 			'octet-stream'		=> 0, // bin dms lha lzh exe class so dll img iso
-			'x-bcpio'		=> 0, // bcpio
+			'x-bcpio'			=> 0, // bcpio
 			'x-bittorrent'		=> 0, // torrent
-			'x-bzip2'		=> 0, // bz2
+			'x-bzip2'			=> 0, // bz2
 			'x-compress'		=> 0,
-			'x-cpio'		=> 0, // cpio
-			'x-dvi'			=> 0, // dvi
-			'x-gtar'		=> 0, // gtar
-			'x-gzip'		=> 0, // gz tgz
-			'x-rpm'			=> 0, // rpm
+			'x-cpio'			=> 0, // cpio
+			'x-dvi'				=> 0, // dvi
+			'x-gtar'			=> 0, // gtar
+			'x-gzip'			=> 0, // gz tgz
+			'x-rpm'				=> 0, // rpm
 			'x-shockwave-flash'	=> 0, // swf
-			'zip'			=> 0, // zip
+			'zip'				=> 0, // zip
 			'x-7z-compressed'	=> 0, // 7zip
 			'x-lzh-compressed'	=> 0, // LZH
-			'x-rar-compressed'	=> 0, //RAR
+			'x-rar-compressed'	=> 0, // RAR
 			'x-java-archive'	=> 0, // jar
 			'x-javascript'		=> 1, // js
-			'ogg'			=> 0, // ogg
-			'pdf'			=> 0, // pdf
+			'ogg'				=> 0, // ogg
+			'pdf'				=> 0, // pdf
 		),
 	);
 	if (isset($composite_type[$discrete][$composite])) {
@@ -493,10 +526,10 @@ function attach_is_compress($type,$compress=1)
 
 	// discrete-type
 	static $discrete_type = array(
-		'text'                          => 1,
-		'image'                         => 0,
-		'audio'                         => 0,
-		'video'                         => 0,
+		'text'	=> 1,
+		'image'	=> 0,
+		'audio'	=> 0,
+		'video'	=> 0,
 	);
 	if (isset($discrete_type[$discrete])) {
 		return $discrete_type[$discrete];
@@ -597,9 +630,9 @@ function attach_open()
 // 一覧取得
 function attach_list()
 {
-	global $vars, $_attach_messages;
+	global $vars, $_attach_messages, $_string;
 
-	if (auth::check_role('safemode')) die_message( $_attach_messages['err_prohibit'] );
+	if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
 
 	$refer = isset($vars['refer']) ? $vars['refer'] : '';
 
@@ -616,9 +649,9 @@ function attach_list()
 // アップロードフォームを表示 (action時)
 function attach_showform()
 {
-	global $vars, $_attach_messages;
+	global $vars, $_attach_messages, $_string;
 
-	if (auth::check_role('safemode')) die_message( $_attach_messages['err_prohibit'] );
+	if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
 	check_editable($page, true, true);
@@ -828,9 +861,9 @@ class AttachFile
 		$info = $count = '';
 		if ($showinfo) {
 			$_title = str_replace('$1', rawurlencode($this->file), $_attach_messages['msg_info']);
-			$info = "\n<span class=\"small\">[<a href=\"$inf\" title=\"$_title\">{$_attach_messages['btn_info']}</a>]</span>\n";
+			$info = "\n<small>[<a href=\"$inf\" title=\"$_title\">{$_attach_messages['btn_info']}</a>]</small>\n";
 			$count = ($showicon && ! empty($this->status['count'][$this->age])) ?
-				sprintf($_attach_messages['msg_count'], $this->status['count'][$this->age]) : '';
+				'<small>'.sprintf($_attach_messages['msg_count'], $this->status['count'][$this->age]).'</small>' : '';
 		}
 		return "<a href=\"$open\" title=\"$title\" class=\"pkwk-icon_linktext attach-download\">$label</a>$count$info";
 	}
@@ -838,7 +871,7 @@ class AttachFile
 	// 情報表示
 	function info($err)
 	{
-		global $script, $_attach_messages,$pkwk_dtd;
+		global $script, $_attach_messages, $pkwk_dtd, $vars;
 
 		$r_page = rawurlencode($this->page);
 		$s_page = htmlsc($this->page);
@@ -893,9 +926,8 @@ class AttachFile
 		if ($size[2] > 0 && $size[2] < 3) {
 			if ($size[0] < 200) { $w = $size[0]; $h = $size[1]; }
 			else { $w = 200; $h = $size[1] * (200 / ($size[0]!=0?$size[0]:1) ); }
-			$_attach_setimage  = ($pkwk_dtd == PKWK_DTD_HTML_5) ? '<figure class="img_margin" style="float:right;">' : '<div class="img_margin" style="float:right;">';
+			$_attach_setimage  = ($pkwk_dtd == PKWK_DTD_HTML_5) ? '<figure class="img_margin attach_info_image">' : '<div class="img_margin attach_info_image">';
 			$_attach_setimage .= '<img src="'.get_cmd_uri('ref','','',array('page'=>$r_page,'src'=>$s_file));
-		//	$_attach_setimage .= "$script?plugin=ref&amp;src={$s_file}&amp;page={$r_page}";
 			$_attach_setimage .= '" width="' . $w .'" height="' . $h . '" />';
 			$_attach_setimage .= ($pkwk_dtd == PKWK_DTD_HTML_5) ? '</figure>' : '</div>';
 		} else {
@@ -903,47 +935,77 @@ class AttachFile
 		}
 
 		$msg_auth = '';
+		$info_auth = '';
 		if ($role_adm_contents) {
 			$msg_auth = <<<EOD
-  <label for="_p_attach_password">{$_attach_messages['msg_password']}:</label>
-  <input type="password" name="pass" id="_p_attach_password" size="8" />
+	<label for="_p_attach_password">{$_attach_messages['msg_password']}:</label>
+	<input type="password" name="pass" id="_p_attach_password" size="8" />
+EOD;
+			$info_auth = <<<EOD
+	<dt>{$_attach_messages['msg_filename']}</dt>
+	<dd><var>{$this->filename}</var></dd>
 EOD;
 		}
-
 		$retval = array('msg'=>sprintf($_attach_messages['msg_info'], htmlsc($this->file)));
-		$retval['body'] = <<< EOD
-<p class="small">
+		$file_info = <<<EOD
+$_attach_setimage
+<dl>
+	$info_auth
+	<dt>{$_attach_messages['msg_page']}:</dt>
+	<dd><var>$s_page</var></dd>
+	<dt>{$_attach_messages['msg_filesize']}:</dt>
+	<dd><var>{$this->size_str}</var> (<var>{$this->size}</var> bytes)</dd>
+	<dt>Content-type:</dt>
+	<dd><var>{$this->type}</var></dd>
+	<dt>{$_attach_messages['msg_date']}:</dt>
+	<dd><var>{$this->time_str}</var></dd>
+	<dt>{$_attach_messages['msg_dlcount']}:</dt>
+	<dd><var>{$this->status['count'][$this->age]}</var></dd>
+	<dt>{$_attach_messages['msg_md5hash']}:</dt>
+	<dd><var>{$hash}</var></dd>
+	$msg_freezed
+</dl>
+EOD;
+		$retval['body'] = '';
+		if (!isset($vars['ajax'])) {
+			$retval['body'] .= <<< EOD
+<p>
 	[<a href="$list_uri">{$_attach_messages['msg_list']}</a>]
 	[<a href="$listall_uri">{$_attach_messages['msg_listall']}</a>]
 </p>
-<dl>
-	<dt>$info (<a href="#" title="{$this->filename}">{$_attach_messages['msg_filename']}</a>)</dt>
-</dl>
-{$_attach_setimage}
-<dl>
-	<dd>{$_attach_messages['msg_page']}:$s_page</dd>
-	<dd>{$_attach_messages['msg_filesize']}:{$this->size_str} ({$this->size} bytes)</dd>
-	<dd>Content-type:{$this->type}</dd>
-	<dd>{$_attach_messages['msg_date']}:{$this->time_str}</dd>
-	<dd>{$_attach_messages['msg_dlcount']}:{$this->status['count'][$this->age]}</dd>
-	<dd>{$_attach_messages['msg_md5hash']}:{$hash}</dd>
-	$msg_freezed
-</dl>
-<hr style="clear:right" />
-$s_err
-<form action="$script" method="post">
-	<input type="hidden" name="plugin" value="attach" />
-	<input type="hidden" name="refer" value="$s_page" />
-	<input type="hidden" name="file" value="$s_file" />
-	<input type="hidden" name="age" value="{$this->age}" />
-	<div>
+EOD;
+		}
+		if ($pkwk_dtd === PKWK_DTD_HTML_5){
+			$retval['body'] .= <<< EOD
+<details class="attach_info">
+	<summary>$info</summary>
+{$file_info}
+</details>
+EOD;
+		}else{
+			$retval['body'] .= <<< EOD
+<fieldset class="attach_info">
+	<legend>$info</legend>
+{$file_info}
+</fieldset>
+EOD;
+		}
+		$retval['body'] .= <<< EOD
+<hr style="clear:both" />
+<div class="attach_form_edit">
+	$s_err
+	<form action="$script" method="post">
+		<input type="hidden" name="plugin" value="attach" />
+		<input type="hidden" name="refer" value="$s_page" />
+		<input type="hidden" name="file" value="$s_file" />
+		<input type="hidden" name="age" value="{$this->age}" />
 		$msg_delete
 		$msg_freeze
 		$msg_rename
 		$msg_auth
 		<input type="submit" value="{$_attach_messages['btn_submit']}" />
-	</div>
-</form>
+	</form>
+</div>
 EOD;
 		return $retval;
 	}
@@ -1037,6 +1099,8 @@ EOD;
 
 	function open()
 	{
+		global $cache;
+		$cache = true;
 		$this->getstatus();
 		$this->status['count'][$this->age]++;
 		$this->putstatus();
@@ -1054,21 +1118,21 @@ EOD;
 				break;
 			}
 		}
-		$filename = htmlsc($filename);
+		$s_filename = htmlsc($filename);
 
 		ini_set('default_charset', '');
 		mb_http_output('pass');
 
-		pkwk_common_headers(false);
+		pkwk_common_headers($this->time, false);
+		header('X-Sendfile: '.$s_filename);	// for reduce server load
 		if ($this->type == 'text/html' || $this->type == 'application/octet-stream') {
-			header('Content-Disposition: attachment; filename="' . $filename . '"');
-			header('Content-Type: application/octet-stream; name="' . $filename . '"');
-			header('Content-Length: ' . $this->size);
+			header('Content-Disposition: attachment; filename="' . $s_filename . '"');
+			header('Content-Type: application/octet-stream; name="' . $s_filename . '"');
 		} else {
-			header('Content-Disposition: inline; filename="' . $filename . '"');
+			header('Content-Disposition: inline; filename="' . $s_filename . '"');
 			header('Content-Type: '   . $this->type);
-			header('Content-Length: ' . $this->size);
 		}
+		header('Content-Length: ' . $this->size);
 
 		// For BugTrack2/102
 		// @readfile($this->filename);
@@ -1195,17 +1259,16 @@ class AttachFiles
 			ksort($_files, SORT_NUMERIC);
 			$_file = $_files[0];
 			unset($_files[0]);
-			$cssstyle = ($cssstyle == 'attach_td1') ? 'attach_td2':'attach_td1';
-			$ret .= '<tr><td class="' . $cssstyle . '">' . "$_file</td>"
-			     .  '<td class="' . $cssstyle . '">' . "{$this->files[$file][0]->size_str}</td>"
-			     .  '<td class="' . $cssstyle . '">' . "{$this->files[$file][0]->type}</td>"
-			     .  '<td class="' . $cssstyle . '">' . "{$this->files[$file][0]->time_str}</td></tr>\n";
+			$ret .= '<tr><td class="style_td">' . $_file . '</td>'
+			     .  '<td class="style_td">' . $this->files[$file][0]->size_str . '</td>'
+			     .  '<td class="style_td">' . $this->files[$file][0]->type . '</td>'
+			     .  '<td class="style_td">' . $this->files[$file][0]->time_str . '</td></tr>' ."\n";
 		}
-		return '<table width="100%" class="attach_table"><thead>' . "\n" .
-		       '<tr><th class="attach_th">' . $_attach_messages['msg_file'] . '</th>' .
-			   '<th class="attach_th">' . $_attach_messages['msg_filesize'] . '</th>' .
-		       '<th class="attach_th">' . $_attach_messages['msg_type'] . '</th>' .
-		       '<th class="attach_th">' . $_attach_messages['msg_date'] . '</th></tr></thead><tbody>' . "\n$ret</tbody></table>\n";
+		return '<table class="style_table attach_table"><thead>' . "\n" .
+		       '<tr><th class="style_th">' . $_attach_messages['msg_file'] . '</th>' .
+			   '<th class="style_th">' . $_attach_messages['msg_filesize'] . '</th>' .
+		       '<th class="style_th">' . $_attach_messages['msg_type'] . '</th>' .
+		       '<th class="style_th">' . $_attach_messages['msg_date'] . '</th></tr></thead><tbody>' . "\n$ret</tbody></table>\n";
 	}
 }
 

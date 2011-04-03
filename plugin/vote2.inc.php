@@ -177,7 +177,7 @@ function plugin_vote2_inline()
 	$f_cnf = '';
 	if ( $nonumber == FALSE ) {
 		$vote_title = $notitle ? '' : "title=\"$o_vote_inno\"";
-		$f_cnt = "<span $title>&nbsp;" . $cnt . "&nbsp;</span>";
+		$f_cnt = "<span $title>" . $cnt . "</span>";
 	}
 	if ( $nolabel == FALSE ) {
 		$vote_title = $notitle ? '' : " title=\"$f_vote_inno\"";
@@ -334,7 +334,7 @@ function plugin_vote2_convert()
 		$f_cnf = '';
 		if ( $nonumber == FALSE ) {
 			$title = $notitle ? '' : "title=\"$o_vote_no\"";
-			$f_cnt = "<span $title>&nbsp;" . $cnt . '&nbsp;</span>';
+			$f_cnt = "<span $title>" . $cnt . '</span>';
 		}
 		if ($barchart) {
 			$Percentage = (int)(($cnt / $total) * 100);
@@ -346,21 +346,16 @@ function plugin_vote2_convert()
 		}
 		$link = make_link($arg);
 		
-		switch ( $tdcnt++ % 3){
-			case 0: $cls = 'vote_td1'; break;
-			case 1: $cls = 'vote_td2'; break;
-			case 2: $cls = 'vote_td3'; break;
-		}
 		$cls = ($tdcnt++ % 2)  ? 'vote_td1' : 'vote_td2';
 
 		$body2 .= <<<EOD
 	<tr>
-		<td class="style_td $cls" style="text-align:left;">$link</td>
+		<td class="style_td style_vote_title">$link</td>
 
 EOD;
 
 		$body2 .= <<<EOD
-		<td class="style_td $cls" style="text-align:right;">$f_cnt
+		<td class="style_td style_vote_count">$f_cnt
 
 EOD;
 
@@ -385,29 +380,32 @@ EOD;
 
 	$s_page    = htmlsc($page);
 	$s_digest  = htmlsc($ndigest);
-	$title = $notitle ? '' : "title=\"$f_vote_no\"";
 	$body = <<<EOD
 <form action="$script" method="post">
 	<input type="hidden" name="plugin" value="vote2" />
 	<input type="hidden" name="refer" value="$s_page" />
 	<input type="hidden" name="digest" value="$s_digest" />
 	<input type="hidden" name="vote_no" value="$vote_no" />
-	<table cellspacing="0" cellpadding="2" class="style_table" $barchart_style summary="vote" $title>
-		<tr>
-			<th class="style_th vote_label">$_vote_plugin_choice</th>
+	<table class="style_table" $barchart_style summary="vote">
+		<thead>
+			<tr>
+				<th class="style_th vote_label">$_vote_plugin_choice</th>
 
 EOD;
 	if ($barchart) {
 		$body .= <<<EOD
-			<th class="style_th vote_label">&nbsp;</th>
+				<th class="style_th vote_label"></th>
 
 EOD;
 	}
 
 	$body .= <<<EOD
-			<th class="style_th vote_label">$_vote_plugin_votes</th>
-		</tr>
+				<th class="style_th vote_label">$_vote_plugin_votes</th>
+			</tr>
+		</thead>
+		<tbody>
 $body2
+		</tbody>
 	</table>
 </form>
 

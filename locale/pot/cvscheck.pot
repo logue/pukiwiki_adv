@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-04-02 18:49+0900\n"
+"POT-Creation-Date: 2011-04-02 03:12+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,50 +16,50 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/cvscheck.inc.php:40
+#: ../../plugin/cvscheck.inc.php:46
 msgid "file name"
 msgstr ""
 
-#: ../../plugin/cvscheck.inc.php:41
+#: ../../plugin/cvscheck.inc.php:47
 msgid "cvs versions"
 msgstr ""
 
-#: ../../plugin/cvscheck.inc.php:42
+#: ../../plugin/cvscheck.inc.php:48
 msgid "local versions"
 msgstr ""
 
-#: ../../plugin/cvscheck.inc.php:43
+#: ../../plugin/cvscheck.inc.php:49
 msgid "not found"
 msgstr ""
 
-#: ../../plugin/cvscheck.inc.php:44
+#: ../../plugin/cvscheck.inc.php:50
 msgid "diff in cvscheck"
 msgstr ""
 
-#: ../../plugin/cvscheck.inc.php:45
+#: ../../plugin/cvscheck.inc.php:51
 msgid "Difference of file version of this site and CVS"
 msgstr ""
 
-#: ../../plugin/cvscheck.inc.php:46
+#: ../../plugin/cvscheck.inc.php:52
 msgid "Version of file where only this site exists"
 msgstr ""
 
-#: ../../plugin/cvscheck.inc.php:47
+#: ../../plugin/cvscheck.inc.php:53
 msgid "It is not necessary to update it."
 msgstr ""
 
-#: ../../plugin/cvscheck.inc.php:48
+#: ../../plugin/cvscheck.inc.php:54
 msgid "File Load Error"
 msgstr ""
 
-#: ../../plugin/cvscheck.inc.php:49
+#: ../../plugin/cvscheck.inc.php:55
 msgid "The file was not able to be read."
 msgstr ""
 
-#: ../../plugin/cvscheck.inc.php:50
+#: ../../plugin/cvscheck.inc.php:56
 msgid "Access Error"
 msgstr ""
 
-#: ../../plugin/cvscheck.inc.php:51
+#: ../../plugin/cvscheck.inc.php:57
 msgid "It was not able to access the CVS site."
 msgstr ""

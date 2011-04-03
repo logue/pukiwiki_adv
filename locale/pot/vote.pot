@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-03-10 18:35+0900\n"
+"POT-Creation-Date: 2011-03-27 19:28+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,18 +16,34 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/vote.inc.php:14 ../../plugin/vote.inc.php:117
+#: ../../plugin/vote.inc.php:19 ../../plugin/vote.inc.php:131
 msgid "Vote"
 msgstr ""
 
-#: ../../plugin/vote.inc.php:28
+#: ../../plugin/vote.inc.php:20
+msgid "On updating $1, a collision has occurred."
+msgstr ""
+
+#: ../../plugin/vote.inc.php:21
+msgid "$1 was updated"
+msgstr ""
+
+#: ../../plugin/vote.inc.php:22
+msgid ""
+"It seems that someone has already updated this page while you were editing it.<br />\n"
+" + is placed at the beginning of a line that was newly added.<br />\n"
+" ! is placed at the beginning of a line that has possibly been updated.<br />\n"
+" Edit those lines, and submit again."
+msgstr ""
+
+#: ../../plugin/vote.inc.php:40
 msgid "Error in vote"
 msgstr ""
 
-#: ../../plugin/vote.inc.php:29
+#: ../../plugin/vote.inc.php:41
 msgid "Continuation vote cannot be performed."
 msgstr ""
 
-#: ../../plugin/vote.inc.php:116
+#: ../../plugin/vote.inc.php:130
 msgid "Selection"
 msgstr ""

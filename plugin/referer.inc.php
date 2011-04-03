@@ -126,6 +126,8 @@ function plugin_referer_body($page, $sort)
 	foreach ($data as $arr) {
 		// 0:最終更新日時, 1:初回登録日時, 2:参照カウンタ, 3:Referer ヘッダ, 4:利用可否フラグ(1は有効)
 		list($ltime, $stime, $count, $url, $enable) = $arr;
+		
+		if ($count < 0) continue;
 
 		// 項目不正の場合の対応
 		// カウンタが数値ではない場合は、表示を抑止

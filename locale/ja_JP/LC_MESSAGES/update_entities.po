@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5-u2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-05-22 01:02+0900\n"
-"PO-Revision-Date: 2005-05-22 00:58+0900\n"
+"PO-Revision-Date: 2011-03-27 23:07+0900\n"
 "Last-Translator: Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -40,9 +40,7 @@ msgstr ""
 "\n"
 
 #: ../../plugin/update_entities.inc.php:22
-msgid ""
-":The cache of the regular expression pattern that matches to the Character "
-"entity references is updated.|\n"
+msgid ":The cache of the regular expression pattern that matches to the Character entity references is updated.|\n"
 msgstr ":文字実体参照にマッチする正規表現パターンのキャッシュを更新|\n"
 
 #: ../../plugin/update_entities.inc.php:23
@@ -68,3 +66,4 @@ msgstr "* 実行\n"
 #: ../../plugin/update_entities.inc.php:28
 msgid "Please input the Administrator password, and click the [Exec] button.\n"
 msgstr "管理者パスワードを入力して、[実行]ボタンをクリックしてください。\n"
+

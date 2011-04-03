@@ -36,7 +36,7 @@ $loadFirst = '';
 $loadDir = '.';
 
 // No compress file
-$skip_file = 'modernizr-1.5.min.js';
+$skip_file = 'modernizr-1.7.min.js';
 
 ############################################
 ######[          WARNING!!!          ]######
@@ -60,7 +60,7 @@ echo "<pre><code>// JS-AIO-Packer \n// Pack all individual JS files in a folder 
 ";
 
 // Declare some needed global variables
-$script = '';
+$script = $skipped = array();
 $loaded = array();
 
 // Preload thses files!
@@ -83,15 +83,20 @@ foreach(explode(',', $skip_file) as $filePreLoad)
 
 // Look in the folder for javascript files
 while ($file = @readdir($temp)){
-	if (!in_array($file,$arr) and !is_dir('./' . $file) and (substr($file, -3, 3) == '.js')){
-		// Load Found File
-		if (!in_array($file,$arr2)){
-			$script[] = loadFiles($file);
-		}else{
-			$skipped[] = loadFiles($file);
+	if (!in_array($file,$arr) and !is_dir('./' . $file)){
+		if (substr($file, -6, 6) == 'min.js'){
+			if (!in_array($file,$arr2)){
+				$skipped[] = token_get_all(loadFiles($file));
+			}
+		} else if (substr($file, -3, 3) == '.js'){
+			// Load Found File
+			if (!in_array($file,$arr2)){
+				$script[] = loadFiles($file);
+			}
 		}
 	}
 }
+
 @closedir ($temp);
 
 // Check for GZip
@@ -119,7 +124,8 @@ if(function_exists('gzdeflate'))
 	readfile("'.$filePrefix.'.gz");';
 }
 
-$javascript = JSMin::minify(join('',$script))."\n".join('',$skipped);
+$javascript = join("\n",$skipped);
+$javascript .= JSMin::minify(join("\n",$script));
 
 // Output a minified version of the js file.
 file_put_contents('../'.$filePrefix.'.js', $javascript);

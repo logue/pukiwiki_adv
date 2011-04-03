@@ -90,10 +90,10 @@ function plugin_template_action()
 	$s_refer = htmlsc($vars['refer']);
 	$s_page  = ($page == '') ? str_replace('$1', $s_refer, $_template_msg['msg_template_page']) : $_page;
 	$ret     = <<<EOD
-<form action="$script" method="post">
+<form action="$script" method="post" class="template_form">
 	<input type="hidden" name="plugin" value="template" />
 	<input type="hidden" name="refer"  value="$s_refer" />
-	<div class="template_form">
+	<div>
 		<dl>
 			<dt><label for="_p_template_begin">{$_template_msg['msg_template_start']}</label></dt>
 			<dd><select name="begin" size="10" id="_p_template_begin">$begin_select</select></dd>

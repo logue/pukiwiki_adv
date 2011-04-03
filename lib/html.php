@@ -17,45 +17,277 @@ function catbody($title, $page, $body)
 {
 	global $script; // MUST BE SKIN.FILE. Do not delete line.
 	global $vars, $arg, $help_page, $hr, $JSON;
-	global $defaultpage, $whatsnew, $whatsdeleted, $interwiki, $aliaspage, $glossarypage;
-	global $menubar, $sidebar, $navigation, $headarea, $footarea, $protect;
+	
 	global $attach_link, $related_link, $function_freeze;
 	global $search_word_color, $foot_explain, $note_hr;
-	global $trackback, $referer;
+	
 	global $newtitle, $newbase, $language, $use_local_time, $session; // Plus! skin extension
 	global $nofollow;
-	global $_LANG, $_LINK, $_IMAGE;
+	global $_LANG, $_LINK, $_SKIN;
 
-	global $pkwk_dtd, $x_ua_compatible;	// HTML5, XHTML 1.1, XHTML1.0...
-	global $page_title;		// Title of this site
 	global $do_backup;		// Do backup or not
 	global $modifier;		// Site administrator's  web page
 	global $modifierlink;	// Site administrator's name
 
-	global $skin_file;
 	global $_string, $always_menu_displayed;
 	
-	global $head_tags, $foot_tags;	// Obsolete
-	
-	global $meta_tags, $link_tags, $js_tags, $js_blocks, $css_blocks, $info, $js_vars;
-	global $google_analytics, $header_ad_area, $footer_ad_area;
-	global $keywords, $description, $google_loader, $ui_theme;
-	
-	global $google_api_key, $google_site_verification, $google_analytics, $yahoo_site_explorer_id, $bing_webmaster_tool;
-	
-	if (! defined('SKIN_FILE') || ! file_exists(SKIN_FILE) || ! is_readable(SKIN_FILE)) {
-		if (! file_exists($skin_file) || ! is_readable($skin_file)) {
-			die_message(SKIN_FILE . '(skin file) is not found or not readable.');
-		} else {
-			define('SKIN_FILE', $skin_file);
-			
-		}
-	}
-
-	$_LINK = $_IMAGE = array();
+	global $is_page, $is_read, $is_freeze, $is_readonly, $is_safemode, $is_createpage;
 
 	$_page  = isset($vars['page']) ? $vars['page'] : '';
-	$r_page = rawurlencode($_page);
+	$filetime = ($_page !== '') ? get_filetime($_page) : 0; 
+	
+	// Init flags
+	$is_page = (is_pagename($_page) && ! arg_check('backup') && ! is_cantedit($_page));
+	$is_read = (arg_check('read') && is_page($_page));
+	$is_freeze = is_freeze($_page);
+	$is_readonly = auth::check_role('readonly');
+	$is_safemode = auth::check_role('safemode');
+	$is_createpage = auth::is_check_role(PKWK_CREATE_PAGE);
+	
+	$is_ajax = (isset($vars['ajax'])) ? $vars['ajax'] : false;
+
+	if ($is_ajax === 'json' || isset($JSON)){
+		// JSONで出力
+		if (!isset($JSON)){	// $JSON関数が定義されていない場合
+			$JSON = array(
+				'body'			=> $body,
+				'is_read'		=> $is_read,
+				'is_freeze'		=> $is_freeze,
+				'is_page'		=> $is_page,
+				'lastmodified'	=> $filetime,
+				'newtitle'		=> $newtitle,
+				'page'			=> $_page,
+				'taketime'		=> elapsedtime(),
+				'title'			=> $title
+			);
+		}
+		pkwk_common_headers($filetime);
+		header('Content-Type: application/json; charset=' . CONTENT_CHARSET);
+		echo json_encode($JSON);
+	}else if ($is_ajax === true){
+		// XMLで出力
+		pkwk_common_headers($filetime);
+		header('Content-Type: text/xml; charset=' . CONTENT_CHARSET);
+		echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+		echo $body;
+	}else{
+		// Set $_LINK for skin
+		$_LINK = getLinkSet($_page);
+
+		// スキン出力
+		global $pkwk_dtd, $x_ua_compatible;	// HTML5, XHTML 1.1, XHTML1.0...
+		global $page_title;		// Title of this site
+	
+		global $head_tags, $foot_tags;	// Obsolete
+		global $meta_tags, $link_tags, $js_tags, $js_blocks, $css_blocks, $info, $js_vars, $js_init, $modernizr;
+		global $keywords, $description, $pkwk_head_js, $google_loader, $ui_theme;
+		
+		global $google_analytics, $google_api_key, $google_site_verification, $google_analytics, $yahoo_site_explorer_id, $bing_webmaster_tool;
+
+		/* Adv. ここから。（あまりいい実装ではない） */
+		global $adminpass;
+		if ($adminpass == '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72' || $adminpass == ''){
+			$body = '<div class="message_box ui-state-error ui-corner-all">'.
+				'<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>'.
+				'<strong>'.$_string['warning'].'</strong> '.$_string['changeadminpass'].'</p></div>'."\n".
+				$body;
+		}
+		
+		$meta_tags[] = array('name' => 'generator',	'content' => strip_tags(GENERATOR));
+		$meta_tags[] = array('name' => 'viewport',	'content' => (isset($viewport) ? $viewport : 'width=device-width; initial-scale=1.0; maximum-scale=1.0;'));
+		($modifier !== 'anonymous') ?			$meta_tags[] = array('name' => 'author',					'content' => $modifier) : '';
+		(!empty($google_site_verification)) ?	$meta_tags[] = array('name' => 'google-site-verification',	'content' => $google_site_verification) : '';
+		(!empty($yahoo_site_explorer_id)) ?		$meta_tags[] = array('name' => 'y_key',						'content' => $yahoo_site_explorer_id) : '';
+		(!empty($bing_webmaster_tool)) ?		$meta_tags[] = array('name' => 'msvalidate.01',				'content' => $bing_webmaster_tool) : '';
+
+		if (!isset($shortcut_icon)){ $shortcut_icon = ROOT_URI.'favicon.ico'; }
+		
+		// Linkタグの生成。scriptタグと異なり、順番が変わっても処理への影響がない。
+		// http://www.w3schools.com/html5/tag_link.asp
+		$link_tags[] = array('rel'=>'alternate',		'href'=>$_LINK['mixirss'],	'type'=>'application/rss+xml',	'title'=>'RSS');
+		$link_tags[] = array('rel'=>'archive',			'href'=>$_LINK['backup'],	'type'=>'text/html',	'title'=>$_LANG['skin']['backup']);
+			// see http://www.seomoz.org/blog/canonical-url-tag-the-most-important-advancement-in-seo-practices-since-sitemaps
+		$link_tags[] = array('rel'=>'canonical',		'href'=>$_LINK['reload'],	'type'=>'text/html',	'title'=>$_page);
+		$link_tags[] = array('rel'=>'contents',			'href'=>$_LINK['menu'],		'type'=>'text/html',	'title'=>$_LANG['skin']['menu']);
+		$link_tags[] = array('rel'=>'sidebar',			'href'=>$_LINK['side'],		'type'=>'text/html',	'title'=>$_LANG['skin']['side']);
+		$link_tags[] = array('rel'=>'glossary',			'href'=>$_LINK['glossary'],	'type'=>'text/html',	'title'=>$_LANG['skin']['glossary']);
+		$link_tags[] = array('rel'=>'help',				'href'=>$_LINK['help'],		'type'=>'text/html',	'title'=>$_LANG['skin']['help']);
+		$link_tags[] = array('rel'=>'first',			'href'=>$_LINK['top'],		'type'=>'text/html',	'title'=>$_LANG['skin']['top']);
+		$link_tags[] = array('rel'=>'index',			'href'=>$_LINK['list'],		'type'=>'text/html',	'title'=>$_LANG['skin']['list']);
+		$link_tags[] = array('rel'=>'search',			'href'=>$_LINK['search'],	'type'=>'text/html',	'title'=>$_LANG['skin']['search']);
+		$link_tags[] = array('rel'=>'shortcut icon',	'href'=>$shortcut_icon,		'type'=>'image/vnd.microsoft.icon');
+
+		if ($nofollow || ! $is_read){
+			$meta_tags[] = array('name' => 'robots', 'content' => 'NOINDEX,NOFOLLOW');
+		}else{
+//			if (empty($description)){ $description = $title.' - '.$page_title; }
+			$meta_tags[] = array('name' => 'description', 'content' => $description);
+//			if (empty($keywords)) $keywords = 'PukiWiki, PHP, ajax, Advance, CMS, Wiki, Adv., PukiWiki Adv.,PukiWiki Advance';
+			$meta_tags[] = array('name' => 'keywords', 'content' => $keywords);
+		}
+		
+//		if ($notify_from !== 'from@example.com') $link_tags[] = array('rev'=>'made',	'href'=>'mailto:'.$notify_from,	'title'=>	'Contact to '.$modifier);
+
+		// JavaScriptタグの組み立て
+		$js_init['PAGE']= rawurlencode($_page);
+		$js_init['MODIFIED']= $filetime;
+		
+		// application/xhtml+xml を認識するブラウザではXHTMLとして出力
+		if (PKWK_STRICT_XHTML === TRUE && strstr($_SERVER['HTTP_ACCEPT'], 'application/xhtml+xml') !== false){
+			foreach ($google_loader as $name=>$version){
+				switch($name){
+					case 'jquery':
+						$filename = 'jquery.min.js';
+					break;
+					case 'jqueryui':
+						$filename = 'jquery-ui.min.js';
+					break;
+					default:
+						$filename = $name;
+					break;
+				}
+				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'https://ajax.googleapis.com/ajax/libs/'.$name.'/'.$version.'/'.$filename);
+			}
+			$http_header = 'application/xhtml+xml';
+		}else{
+			// google.loadはdocument.write命令を使うためXHTMLにならない。
+			foreach ($google_loader as $name=>$version){
+				$js_vars[] = 'google.load("'.$name.'","'.$version.'");';
+			}
+			$http_header = 'text/html';
+		}
+
+		// JSに渡す定義を展開
+		foreach( $js_init as $key=>$val){
+			if ($val !== ''){
+				$js_vars[] = 'var '.$key.' = "'.$val.'";';
+			}
+		}
+		array_unshift($pkwk_head_js,array('type'=>'text/javascript', 'content'=>join($js_vars,"\n")));
+		array_unshift($pkwk_head_js,array('type'=>'text/javascript', 'src'=>'http://www.google.com/jsapi'.((isset($google_api_key)) ? '?key='.$google_api_key : '')));
+		unset($js_var, $key, $val);
+		/* ヘッダー部分の処理ここまで */
+	
+		/* ヘッダー部のタグ */
+		$pkwk_head = tag_helper('meta',$meta_tags)."\t\t".tag_helper('link',$link_tags);
+		
+		if (!empty($css_blocks)){
+			$pkwk_head .= "\t\t".tag_helper('style',array(array('type'=>'text/css', 'content'=>join("\n",$css_blocks))));
+		}
+		// Modernizrは、ヘッダー内にないと正常に動作しない
+		$pkwk_head .= "\t\t".'<script type="text/javascript" src="'.SKIN_URI.'js/'.$modernizr.'"></script>'."\n";
+		
+		/* フッター部のタグ */
+		$pkwk_tags = tag_helper('script',$pkwk_head_js)."\t\t".tag_helper('script',$js_tags);
+		
+		$pkwk_tags .= (!empty($js_blocks)) ? "\t\t".tag_helper('script',array(array('type'=>'text/javascript', 'content'=>join("\n",$js_blocks)))) : '';
+
+		/* 非推奨要素の警告 */
+		if (! empty($head_tags)){
+			$pkwk_head .= join("\n", $head_tags) ."\n";
+			$info[] = '<var>$head_tags</var> is obsolate. Use $meta_tags, $link_tags, $js_tags, $js_blocks, $css_blocks.';
+		}
+		if (! empty($foot_tags)){
+			$pkwk_tags .= join("\n", $foot_tags) ."\n";
+			$info[] = '<var>$foot_tags</var> is obsolate. Use $meta_tags, $link_tags, $js_tags, $js_blocks, $css_blocks.';
+		}
+		
+		/* Adv.ここまで */
+		
+		// Last modification date (string) of the page
+		if ($is_read){
+			$lastmodified = get_date('D, d M Y H:i:s T', $filetime). ' ' . get_pg_passage($_page, FALSE);
+			if ($pkwk_dtd == PKWK_DTD_HTML_5) {
+				$lastmodified = '<time pubdate="pubdate" datetime="'.get_date('c',$filetime).'">'.$lastmodified.'</time>';
+			}
+
+			// List of attached files to the page
+			$attaches = ($attach_link && exist_plugin_action('attach') && (do_plugin_init('attach') !== FALSE)) ? attach_filelist() : '';
+
+			// List of related pages
+			$related  = ($related_link) ? make_related($_page,'dl') : '';
+			
+			// List of footnotes
+			ksort($foot_explain, SORT_NUMERIC);
+			$notes = ! empty($foot_explain) ? '<ul>'.join("\n", $foot_explain).'</ul>' : '';
+		}
+
+		// Search words
+		if ($search_word_color && isset($vars['word'])) {
+			$body = '<div class="small">' . $_string['word'] . htmlsc($vars['word']) .
+				'</div>' . $hr . "\n" . $body;
+
+			// BugTrack2/106: Only variables can be passed by reference from PHP 5.0.5
+			$words = preg_split('/\s+/', $vars['word'], -1, PREG_SPLIT_NO_EMPTY);
+			$words = array_splice($words, 0, 10); // Max: 10 words
+			$words = array_flip($words);
+
+			$keys = array();
+			foreach ($words as $word=>$id) $keys[$word] = strlen($word);
+			arsort($keys, SORT_NUMERIC);
+			$keys = get_search_words(array_keys($keys), TRUE);
+			$id = 0;
+			foreach ($keys as $key=>$pattern) {
+				$s_key    = htmlsc($key);
+				$pattern  = '/' .
+					'<textarea[^>]*>.*?<\/textarea>' .	// Ignore textareas
+					'|' . '<[^>]*>' .			// Ignore tags
+					'|' . '&[^;]+;' .			// Ignore entities
+					'|' . '(' . $pattern . ')' .		// $matches[1]: Regex for a search word
+					'/sS';
+					$decorate_Nth_word = create_function(
+						'$matches',
+						'return (isset($matches[1])) ? ' .
+							'\'<'.(($pkwk_dtd == PKWK_DTD_HTML_5) ? 'mark' : 'strong').' class="word' .
+								$id .
+							'">\' . $matches[1] . \'</'.(($pkwk_dtd == PKWK_DTD_HTML_5) ? 'mark' : 'strong').'>\' : ' .
+							'$matches[0];'
+					);
+				$body  = preg_replace_callback($pattern, $decorate_Nth_word, $body);
+				$notes = preg_replace_callback($pattern, $decorate_Nth_word, $notes);
+				++$id;
+			}
+		}
+		
+		if (DEBUG === true && ! empty($info)){
+			$body = '<div class="message_box ui-state-highlight ui-corner-all">'.
+					'<p><span class="ui-icon ui-icon-info"></span>'.$_string['debugmode'].'</p>'."\n".
+					'<ul>'."\n".
+					'<li>'.join("</li>\n<li>",$info).'</li>'."\n".
+					'</ul></div>'."\n\n".$body;
+		}
+
+/*
+		// global $always_menu_displayed;
+		$always_menu_displayed = (arg_check('read')) ? true : false;
+		$body_menu = $body_side = '';
+		if ($always_menu_displayed) {
+			if (exist_plugin_convert('menu')) $body_menu = do_plugin_convert('menu');
+			if (exist_plugin_convert('side')) $body_side = do_plugin_convert('side');
+		}
+*/
+		if (empty($x_ua_compatible)) $x_ua_compatible = 'IE=edge';
+
+		pkwk_common_headers($filetime);
+		header('Content-Type: '.$http_header.'; charset='. CONTENT_CHARSET);
+		header('X-UA-Compatible: '.$x_ua_compatible);	// とりあえずIE8対策
+
+		require(SKIN_FILE);
+	}
+
+	global $ob_flag;
+	if($ob_flag){
+		ob_end_flush();
+	}
+
+	exit;
+}
+
+function getLinkSet($_page){
+	global $defaultpage, $whatsnew, $whatsdeleted, $interwiki, $aliaspage, $glossarypage;
+	global $menubar, $sidebar, $navigation, $headarea, $footarea, $protect;
+	
+	global $trackback, $referer;
 
 	// Set $_LINK for skin
 	$_LINK = array(
@@ -120,302 +352,7 @@ function catbody($title, $page, $body)
 	if ($trackback){
 		$_LINK['trackback'] = get_cmd_uri('tb','','',array('__mode'=>'view','tb_id'=>tb_get_id($_page)));
 	}
-
-	// 1.4.x未満スキンの互換処理は削除
-
-	// Init flags
-	$is_page = (is_pagename($_page) && ! arg_check('backup') && ! is_cantedit($_page));
-	$is_read = (arg_check('read') && is_page($_page));
-	$is_freeze = is_freeze($_page);
-	$filetime = get_filetime($_page);
-	
-	if (!isset($vars['ajax'])){ $vars['ajax'] = false; }
-
-	if ($vars['ajax'] ==='json'){
-		// JSONで出力（仮）
-		if (!isset($JSON)){	// $JSON関数が定義されていない場合
-			$JSON = array(
-				'body'			=> $body,
-				'is_read'		=> $is_read,
-				'is_freeze'		=> $is_freeze,
-				'is_page'		=> $is_page,
-				'lastmodified'	=> $filetime,
-				'newtitle'		=> $newtitle,
-				'page'			=> $_page,
-				'taketime'		=> elapsedtime(),
-				'title'			=> $title
-			);
-		}
-		pkwk_common_headers();
-		header('Content-Type: application/json; charset=' . CONTENT_CHARSET);
-		echo json_encode($JSON);
-	}else if($vars['ajax'] == true){
-		// XMLで出力
-		pkwk_common_headers();
-		header('Content-Type: text/xml; charset=' . CONTENT_CHARSET);
-		echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-		echo $body;
-	}else{
-		
-		/* Adv. ここから。（あまりいい実装ではない） */
-		global $adminpass;
-		if (($adminpass == '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72' || $adminpass == '') && !isset($vars['ajax'])){
-			$body = '<div style="padding: 0pt 0.7em;" class="ui-state-error ui-corner-all">'.
-				'<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>'.
-				'<strong>'.$_string['warning'].'</strong> '.$_string['changeadminpass'].'</p></div>'."\n".
-				$body;
-		}
-		
-		$meta_tags[] = array('name' => 'generator',	'content' => strip_tags(GENERATOR));
-		$meta_tags[] = array('name' => 'viewport',	'content' => (isset($viewport) ? $viewport : 'width=device-width; initial-scale=1.0; maximum-scale=1.0;'));
-		($modifier !== 'anonymous') ?			$meta_tags[] = array('name' => 'author',					'content' => $modifier) : '';
-		(!empty($google_site_verification)) ?	$meta_tags[] = array('name' => 'google-site-verification',	'content' => $google_site_verification) : '';
-		(!empty($yahoo_site_explorer_id)) ?		$meta_tags[] = array('name' => 'y_key',						'content' => $yahoo_site_explorer_id) : '';
-		(!empty($bing_webmaster_tool)) ?		$meta_tags[] = array('name' => 'msvalidate.01',				'content' => $bing_webmaster_tool) : '';
-
-		// テーマで$default_google_loaderが指定されていない場合は、jQueryを読み込む。
-		// プラグイン以外で指定する場合は、default_のプリフィックスを付ける。
-		// スキン側でオーバーライド可能（jQuery以外を指定するケースを考慮するため）
-		if(!isset($default_google_loader)){
-			$default_google_loader = array(
-				'jquery'=>'1.5.0',
-				'jqueryui'=>'1.8.9',
-				'swfobject'=>'2.2'
-			);
-			if ($x_ua_compatible == 'chrome=1'){ $default_google_loader['chrome-frame'] = '1.0.2'; }	// X-UA-CompatibleでChromeをレンダリングにするよう指定した場合
-			if (!isset($ui_theme)) { $ui_theme = 'base'; }
-			
-			$default_link_tags[] = array(
-				'rel'=>'stylesheet',
-				'href'=>'http://ajax.googleapis.com/ajax/libs/jqueryui/'.$default_google_loader['jqueryui'].'/themes/'.$ui_theme.'/jquery-ui.css',
-				'type'=>'text/css',
-				'id'=>'ui-theme'
-			);
-		}
-
-		if (!isset($shortcut_icon)){ $shortcut_icon = ROOT_URI.'favicon.ico'; }
-		
-		// Linkタグの生成。scriptタグと異なり、順番が変わっても処理への影響がない。
-		// http://www.w3schools.com/html5/tag_link.asp
-		$default_link_tags = array_merge(array(
-			array('rel'=>'alternate',		'href'=>$_LINK['mixirss'],	'type'=>'application/rss+xml',	'title'=>'RSS'),
-			array('rel'=>'archive',			'href'=>$_LINK['backup'],	'type'=>'text/html',	'title'=>$_LANG['skin']['backup']),
-			// see http://www.seomoz.org/blog/canonical-url-tag-the-most-important-advancement-in-seo-practices-since-sitemaps
-			array('rel'=>'canonical',		'href'=>$_LINK['reload'],	'type'=>'text/html',	'title'=>$_page),
-			array('rel'=>'contents',		'href'=>$_LINK['menu'],		'type'=>'text/html',	'title'=>$_LANG['skin']['menu']),
-			array('rel'=>'sidebar',			'href'=>$_LINK['side'],		'type'=>'text/html',	'title'=>$_LANG['skin']['side']),
-			array('rel'=>'glossary',		'href'=>$_LINK['glossary'],	'type'=>'text/html',	'title'=>$_LANG['skin']['glossary']),
-			array('rel'=>'help',			'href'=>$_LINK['help'],		'type'=>'text/html',	'title'=>$_LANG['skin']['help']),
-			array('rel'=>'first',			'href'=>$_LINK['top'],		'type'=>'text/html',	'title'=>$_LANG['skin']['top']),
-			array('rel'=>'index',			'href'=>$_LINK['list'],		'type'=>'text/html',	'title'=>$_LANG['skin']['list']),
-			array('rel'=>'search',			'href'=>$_LINK['search'],	'type'=>'text/html',	'title'=>$_LANG['skin']['search']),
-			array('rel'=>'shortcut icon',	'href'=>$shortcut_icon,		'type'=>'image/vnd.microsoft.icon')
-		),$default_link_tags);
-
-		if ($nofollow || ! $is_read){
-			$meta_tags[] = array('name' => 'robots', 'content' => 'NOINDEX,NOFOLLOW');
-		}else{
-			if (empty($description)){ $description = $title.' - '.$page_title; }
-			$meta_tags[] = array('name' => 'description', 'content' => $description);
-			if (empty($keywords)) $keywords = 'PukiWiki, PHP, ajax, Advance, CMS, Wiki, Adv., PukiWiki Adv.,PukiWiki Advance';
-			$meta_tags[] = array('name' => 'keywords', 'content' => $keywords);
-		}
-		
-//		if ($notify_from !== 'from@example.com') $link_tags[] = array('rev'=>'made',	'href'=>'mailto:'.$notify_from,	'title'=>	'Contact to '.$modifier);
-
-		foreach ($default_google_loader as $name=>$version){
-			$default_js[] = 'google.load("'.$name.'","'.$version.'");';
-		}
-		
-		if (isset($google_loader)){
-			foreach ($google_loader as $google_load_script){
-				foreach ($google_load_script as $name=>$version){
-					$default_js[] = 'google.load("'.$name.'","'.$version.'");';
-				}
-			}
-		}
-		// JavaScriptタグの組み立て
-		$js_vars += array(
-			'SCRIPT'=>get_script_absuri(),
-			'PAGE'=>rawurlencode($_page),
-			'MODIFIED'=>$filetime,
-			'LANG'=>$language,
-			'DEBUG'=>constant('DEBUG'),
-			'SKIN_DIR'=>constant('SKIN_URI'),
-			'IMAGE_DIR'=>constant('IMAGE_URI'),
-			'DEFAULT_LANG'=>constant('DEFAULT_LANG'),
-			'THEME_NAME'=>constant('PLUS_THEME'),
-//			'SESSION'=>$session,
-			'GOOGLE_ANALYTICS'=>$google_analytics
-		);
-
-		foreach( $js_vars as $key=>$val){
-			if ($val !== ''){
-				$default_js[] = 'var '.$key.'="'.$val.'";';
-			}
-		}
-		unset($js_var, $key, $val);
-
-		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://www.google.com/jsapi'.((isset($google_api_key)) ? '?key='.$google_api_key : ''));
-		$pkwk_head_js[] = array('type'=>'text/javascript', 'content'=>join($default_js,"\n"));
-		/* ヘッダー部分の処理ここまで */
-	
-		$default_js_libs[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/locale.js');
-		if(preg_match_all('/MSIE (\d\.\d+)/',$_SERVER['HTTP_USER_AGENT'],$matches)){
-			if (substr($matches[1][0],0,1) <= 8){
-				$default_js_libs[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/json2.js');
-				$default_js_libs[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/excanvas.compiled.js');
-			}
-			unset($matches);
-		}
-		
-		if (DEBUG === true) {
-			// 読み込むsrcディレクトリ内のJavaScript
-			$files = array(
-				/* libraly */
-				'swfupload','tzCalculation_LocalTimeZone',
-				
-				/* Use plugins */ 
-				'jquery.cookie','jquery.lazyload', 'jquery.query','jquery.scrollTo','jquery.colorbox-min','jquery.a-tools.min','jquery.superfish',
-				'jquery.swfupload','jquery.tablesorter-min','jquery.textarearesizer','jquery.jplayer.min', 'jquery.textarea-min', 'jquery.tooltip.min',
-				'jquery.ajaxga.min.js',
-				
-				/* MUST BE LOAD LAST */
-				'skin.original'
-			);
-			
-			foreach($files as $script_file) $default_js_libs[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/src/'.$script_file.'.js');
-
-			// yui profiler and profileviewer
-/*
-			$link_tags[] = array('rel'=>'stylesheet','type'=>'text/css','href'=>SKIN_URI.'js/profiling/yahoo-profiling.css');
-			$default_js_libs[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/profiling/yahoo-profiling.min.js');
-			$default_js_libs[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/profiling/config.js');
-*/
-			unset($files);
-		} else {
-			$default_js_libs[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/skin.js');
-		}
-
-		/* ヘッダー部のタグ */
-		$pkwk_head = tag_helper('meta',$meta_tags)."\t\t".tag_helper('link',$default_link_tags)."\t\t".tag_helper('link',$link_tags);
-		
-		if (!empty($css_blocks)){
-			$pkwk_head .= "\t\t".tag_helper('style',array(array('type'=>'text/css', 'content'=>join("\n",$css_blocks))));
-		}
-		// HTML5対応化処理は、ヘッダー内にないと正常に動作しない
-		$pkwk_head .= "\t\t".'<script type="text/javascript" src="'.SKIN_URI.'js/modernizr-1.6.min.js"></script>'."\n";
-		
-		/* フッター部のタグ */
-		$pkwk_tags = tag_helper('script',$pkwk_head_js)."\t\t".tag_helper('script',array_merge($default_js_libs,$js_tags));
-
-		if (!empty($js_blocks)){
-			$pkwk_tags .= "\t\t".tag_helper('script',array(array('type'=>'text/javascript', 'content'=>join("\n",$js_blocks))));
-		}
-
-		/* 非推奨要素の警告 */
-		if (! empty($head_tags)){
-			$pkwk_head .= join("\n", $head_tags) ."\n";
-			$info[] = '<code>$head_tags</code> is obsolate. Use $meta_tags, $link_tags, $js_tags, $js_blocks, $css_blocks.';
-		}
-		if (! empty($foot_tags)){
-			$pkwk_tags .= join("\n", $foot_tags) ."\n";
-			$info[] = '<code>$foot_tags</code> is obsolate. Use $meta_tags, $link_tags, $js_tags, $js_blocks, $css_blocks.';
-		}
-		
-		/* Adv.ここまで */
-		
-		// Last modification date (string) of the page
-		if ($is_read){
-			$lastmodified = get_date('D, d M Y H:i:s T', $filetime). ' ' . get_pg_passage($_page, FALSE);
-			if ($pkwk_dtd == PKWK_DTD_HTML_5) {
-				$lastmodified = '<time pubdate="pubdate" datetime="'.get_date('c',$filetime).'">'.$lastmodified.'</time>';
-			}
-		}
-
-		// List of attached files to the page
-		$attaches = '';
-		if ($attach_link && $is_read && exist_plugin_action('attach')) {
-			if (do_plugin_init('attach') !== FALSE) {
-				$attaches = attach_filelist();
-			}
-		}
-		
-		// List of related pages
-		$related  = ($related_link && $is_read) ? make_related($_page,'dl') : '';
-
-		// List of footnotes
-		ksort($foot_explain, SORT_NUMERIC);
-		$notes = ! empty($foot_explain) ? $note_hr . '<ul>'.join("\n", $foot_explain).'</ul>' : '';
-		
-		// Search words
-		if ($search_word_color && isset($vars['word'])) {
-			$body = '<div class="small">' . $_string['word'] . htmlsc($vars['word']) .
-				'</div>' . $hr . "\n" . $body;
-
-			// BugTrack2/106: Only variables can be passed by reference from PHP 5.0.5
-			$words = preg_split('/\s+/', $vars['word'], -1, PREG_SPLIT_NO_EMPTY);
-			$words = array_splice($words, 0, 10); // Max: 10 words
-			$words = array_flip($words);
-
-			$keys = array();
-			foreach ($words as $word=>$id) $keys[$word] = strlen($word);
-			arsort($keys, SORT_NUMERIC);
-			$keys = get_search_words(array_keys($keys), TRUE);
-			$id = 0;
-			foreach ($keys as $key=>$pattern) {
-				$s_key    = htmlsc($key);
-				$pattern  = '/' .
-					'<textarea[^>]*>.*?<\/textarea>' .	// Ignore textareas
-					'|' . '<[^>]*>' .			// Ignore tags
-					'|' . '&[^;]+;' .			// Ignore entities
-					'|' . '(' . $pattern . ')' .		// $matches[1]: Regex for a search word
-					'/sS';
-				$decorate_Nth_word = create_function(
-					'$matches',
-					'return (isset($matches[1])) ? ' .
-						'\'<strong class="word' .
-							$id .
-						'">\' . $matches[1] . \'</strong>\' : ' .
-						'$matches[0];'
-				);
-				$body  = preg_replace_callback($pattern, $decorate_Nth_word, $body);
-				$notes = preg_replace_callback($pattern, $decorate_Nth_word, $notes);
-				++$id;
-			}
-		}
-		
-		if (DEBUG === true && ! empty($info)){
-			$body = '<div style="padding: 0pt 0.7em;" class="ui-state-highlight ui-corner-all">'.
-					'<p><span class="ui-icon ui-icon-info" style="float: left; margin-right: 0.3em;"></span>'.$_string['debugmode'].'</p>'."\n".
-					'<ul>'."\n".
-					'<li>'.join("</li>\n<li>",$info).'</li>'."\n".
-					'</ul></div>'."\n\n".$body;
-		}
-
-		// global $always_menu_displayed;
-		if (arg_check('read')) $always_menu_displayed = 1;
-		$body_menu = $body_side = '';
-		if ($always_menu_displayed) {
-			if (exist_plugin_convert('menu')) $body_menu = do_plugin_convert('menu');
-			if (exist_plugin_convert('side')) $body_side = do_plugin_convert('side');
-		}
-		
-		if (empty($x_ua_compatible)) $x_ua_compatible = 'IE=edge';
-
-		pkwk_common_headers();
-		header('Content-Type: text/html; charset=' . CONTENT_CHARSET);
-		header('X-UA-Compatible: '.$x_ua_compatible);	// とりあえずIE8対策
-		header('X-Frame-Options: deny');	// クリックジャッキング対策
-		require(SKIN_FILE);
-	}
-
-	global $ob_flag;
-	if($ob_flag){
-		ob_end_flush();
-	}
-
-	exit;
+	return $_LINK;
 }
 
 // Show 'edit' form
@@ -425,9 +362,8 @@ function edit_form($page, $postdata, $digest = FALSE, $b_template = TRUE)
 	global $load_template_func, $load_refer_related;
 	global $notimeupdate;
 	global $_button, $_string;
-	global $ctrl_unload;
 	
-	global $x_ua_compatible;
+//	global $x_ua_compatible;
 
 	// Newly generate $digest or not
 	if ($digest === FALSE) $digest = md5(get_source($page, TRUE, TRUE));
@@ -497,10 +433,8 @@ EOD;
 			// enable only administrator
 			$add_notimestamp .= '<input type="password" name="pass" size="12" />';
 		}
-		$add_notimestamp .= '&nbsp;';
 	}
 	$refpage = isset($vars['refpage']) ? htmlsc($vars['refpage']) : '';
-	$add_assistant = edit_form_assistant();
 
 	$body = <<<EOD
 <form action="$script" method="post" id="form">
@@ -509,18 +443,17 @@ EOD;
 	<input type="hidden" name="digest" value="$s_digest" />
 	<input type="hidden" name="ticket" value="$s_ticket" />
 	<input type="hidden" name="id"     value="$s_id" />
+	<textarea id="original" name="original" rows="1" cols="1" style="display:none">$s_original</textarea>
 	<div class="edit_form">
 $template
 $addtag
 		<textarea name="msg" id="msg" rows="$rows" cols="$cols">$s_postdata</textarea>
-		$add_assistant
 		<input type="submit" id="btn_submit" name="write" value="{$_button['update']}" accesskey="s" />
 		$add_top
 		<input type="submit" id="btn_preview" name="preview" value="{$_button['preview']}" accesskey="p" />
 		$add_notimestamp
 		<input type="submit" id="btn_cancel" name="cancel" value="{$_button['cancel']}" accesskey="c" />
 	</div>
-	<textarea id="original" name="original" rows="1" cols="1" style="display:none">$s_original</textarea>
 </form>
 
 EOD;
@@ -529,13 +462,8 @@ EOD;
 	} else {
 		$body .= '<ul><li><a href="'.get_cmd_uri('edit',$r_page,'','help=true').'">' . $_string['help'] . '</a></li></ul>';
 	}
-	$x_ua_compatible = 'IE=7';	// Fix IE8 scrollbar Bug
+//	$x_ua_compatible = 'IE=7';	// Fix IE8 scrollbar Bug
 	return $body;
-}
-// Input Assistant
-// Plus!とのプラグイン互換性のため
-function edit_form_assistant(){
-	return '<div class="assistant"></div>';
 }
 
 // Related pages
@@ -572,7 +500,7 @@ function make_related($page, $tag = '')
 	if (empty($_links)) return ''; // Nothing
 
 	if ($tag == 'p') { // From the line-head
-		$margin = $_ul_left_margin + $_ul_margin;
+//		$margin = $_ul_left_margin + $_ul_margin;
 //		$style  = sprintf($_list_pad_str, 1, $margin, $margin);
 		$retval =  "\n" .
 			'<ul' . $style . '>' . "\n" .
@@ -581,7 +509,7 @@ function make_related($page, $tag = '')
 	}else if ($tag == 'dl') {
 		$retval =  "\n" .
 			'<dl>'."\n".
-			'<dt>'._('Related pages : ').'</dt>' . "\n" .
+			'<dt>'._('Related pages: ').'</dt>' . "\n" .
 			'<dd>' . join("</dd>\n<dd>", $_links) . '</dd>' . "\n" .
 			'</dl>' . "\n";
 	} else if ($tag) {
@@ -694,33 +622,73 @@ function pkwk_headers_sent()
 	if (PKWK_OPTIMISE) return;
 
 	$file = $line = '';
-	if (version_compare(PHP_VERSION, '4.3.0', '>=')) {
-		if (headers_sent($file, $line))
-		    die_message(sprintf(T_('Headers already sent at <code>%s</code>, line: <code>%s</code>.'),htmlsc($file),$line));
-	} else {
-		if (headers_sent())
-			die_message(_T('Headers already sent.'));
+
+	if (headers_sent($file, $line)){
+		die_message(sprintf(T_('Headers already sent at %s, line: %s.'),'<var>'.htmlsc($file).'</var>','<var>'.$line.'</var>'));
 	}
 }
 
-// Output common HTTP headers
-function pkwk_common_headers($compress = true){
-	global $cache, $ob_flag;
-	$ob_flag = false;	
+/**
+	@brief Output common HTTP headers
+
+	@param modified 最終更新日時（秒）
+	@param expire 有効期限（秒）
+	@param compress 圧縮をするかしないか（refなどで二重圧縮されるのを防ぐ）
+	@return なし
+*/
+function pkwk_common_headers($modified = 0, $compress = true){
+	global $expire, $lastmod;
 	if (! PKWK_OPTIMISE) pkwk_headers_sent();
 
-	if(PKWK_ZLIB_LOADABLE_MODULE == true && $compress != false) {
+	if ($modified !== 0 && $lastmod){
+		// 最終更新日（秒で）が指定されていない場合動的なページとみなす。
+		// PHPで条件付きGETとかEtagとかでパフォーマンス向上
+		// http://firegoby.theta.ne.jp/archives/1730
+		$last_modified = gmdate('D, d M Y H:i:s T', $modified);
+		if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ) {
+			if ($_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified) {
+				header('HTTP/1.1 304 Not Modified');
+				exit;
+			}
+		}
+		if (isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
+			if (preg_match("/{$etag}/", $_SERVER['HTTP_IF_NONE_MATCH'])) {
+				header('HTTP/1.1 304 Not Modified');
+				exit;
+			}
+		}
+		header('ETag: "'.md5($last_modified).'"');
+		header('Last-Modified: ' . $last_modified );
+		header('Cache-control: must-revalidate');
+		if ($expire !== 0){
+			header('Expires: '.gmdate('D, d M Y H:i:s', time() + $expire).' GMT');
+		}
+	}else{
+		// PHPで動的に生成されるページはキャシュすべきではない
+		header('Cache-Control: no-cache, must-revalidate');
+		header('Pragma: no-cache');
+		header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
+	}
+
+	if(PKWK_ZLIB_LOADABLE_MODULE === true && $compress !== false) {
 		$matches = array();
+		// どうも、ob_gzhandler関連は動作が不安定だ・・・。
+/*
 		if(extension_loaded('zlib') && 
 			ob_get_length() === FALSE && 
 			!ini_get('zlib.output_compression') && 
 			ini_get('output_handler') !== 'ob_gzhandler' && 
 			ini_get('output_handler') !== 'mb_output_handler'){	// mb_output_handlerとかち合うらしいので、その場合は弾く。http://pukiwiki.sourceforge.jp/dev/?%BB%A8%C3%CC%2F11
 			
+			global $ob_flag;
+			$ob_flag = false;
+			
 			// http://jp.php.net/manual/ja/function.ob-gzhandler.php
 			ob_start('ob_gzhandler');
 			$ob_flag = true;
-		}else if(ini_get('zlib.output_compression') &&
+		}else
+*/
+		if(ini_get('zlib.output_compression') &&
 			preg_match('/\b(gzip|deflate)\b/i', $_SERVER['HTTP_ACCEPT_ENCODING'], $matches)) {
 			// Bug #29350 output_compression compresses everything _without header_ as loadable module
 			// http://bugs.php.net/bug.php?id=29350
@@ -728,20 +696,9 @@ function pkwk_common_headers($compress = true){
 		}
 	}
 	// RFC2616
-	$vary = get_language_header_vary();
-	if (! empty($vary)) $vary .= ',';
-	header('Vary: '.$vary.' Accept-Encoding');
-
-	// PHPで動的に生成されるページはキャシュすべきではない
-	if ($cache == false){
-		header('Cache-Control: no-cache, must-revalidate');
-		header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
-		header('Pragma: no-cache');
-	}
+	header('Vary: Accept-Encoding, '.get_language_header_vary() );
 	header('X-Content-Type-Options: nosniff');	// IEの自動MIME type判別機能を無効化する
-
-	// 時刻よりEtagを生成
-	header('ETag: ' . md5(MUTIME));
+	header('X-Frame-Options: SameDomain');	// クリックジャッキング対策
 }
 
 //////////////////////////////////////////////////
@@ -763,7 +720,7 @@ define('PKWK_DTD_TYPE_HTML',         0);
 function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET)
 {
 	static $called;
-	global $x_ua_compatible, $suffix, $browser;
+	global $x_ua_compatible, $suffix, $browser, $info;
 	$version = '';
 
 	if (isset($called)) die('pkwk_output_dtd() already called. Why?');
@@ -806,11 +763,8 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 	$charset = htmlsc($charset);
 
 	// Output XML or not
-	if ($type == PKWK_DTD_TYPE_XHTML) {
-		// for IEPatch: for W3C standard rendering
-//		if (!(CONTENT_CHARSET == 'UTF-8' && UA_NAME == 'MSIE')) {
-			echo '<?xml version="1.0" encoding="' . CONTENT_CHARSET . '" ?' . '>' . "\n";
-//		}
+	if ($type == PKWK_DTD_TYPE_XHTML && $pkwk_dtd !== PKWK_DTD_HTML_5 ){
+		echo '<?xml version="1.0" encoding="' . CONTENT_CHARSET . '" ?' . '>' . "\n";
 	}
 
 	if ($pkwk_dtd != PKWK_DTD_HTML_5){
@@ -827,29 +781,42 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 	}
 
 	// Output <html> start tag
-	$lang_code = str_replace('_','-',LANG); // RFC3066
+	$lang_code = substr(str_replace('_','-',LANG),0,2); // RFC3066
 	
 	echo '<html';	
 	if ($type != PKWK_DTD_TYPE_XHTML || $pkwk_dtd == PKWK_DTD_HTML_5) {
+		if($pkwk_dtd == PKWK_DTD_HTML_5){
+			echo ' xmlns="http://www.w3.org/1999/xhtml"';
+		}
 		echo ' lang="' . $lang_code . '"'; // HTML
 	} else {
 		echo ' xmlns="http://www.w3.org/1999/xhtml"'; // dir="ltr" /* LeftToRight */
 		echo ' xml:lang="' . $lang_code . '"';
 		if ($version == '1.0') echo ' lang="' . $lang_code . '"'; // Only XHTML 1.0
 	}
-	
-	// Detect IE (not good method)
+
 	$user_agent = $_SERVER['HTTP_USER_AGENT'];
-	if (preg_match("/Opera/", $user_agent)){
-		$browser = "opera";
-	} else if(preg_match("/Gecko\//", $user_agent)){
-		$browser = "gecko";
-	} else if(preg_match_all('/MSIE (\d\.\d+)/',$user_agent,$matches)){
-		$browser = 'ie'.substr($matches[1][0],0,1);
-		unset($matches);
-	} else if (preg_match("/(KHTML|Konqueror|WebKit)/", $user_agent)){
+	$info[] = $user_agent;
+	if(preg_match_all('/MSIE ([\.\d]+)/',$user_agent,$matches)){
+		// IE
+		$browser = 'ie ie'.substr($matches[1][0],0,1);
+		if (substr($matches[1][0],0,1) <= 9){
+			$x_ua_compatible = 'IE=edge'; // force to IE9
+		}
+	} else if (preg_match('/Gecko/', $user_agent) && preg_match("/(Firefox|Netscape?6)\/([\.\d]+)/", $user_agent,$matches)){
+		// Gecko (FireFox)
+		$browser = 'gecko '.strtolower($matches[1]).substr($matches[2][0],0,1);
+	} else if (preg_match("/(Presto)\/([\.\d]+)/", $user_agent, $matches)){
+		// Opera
+		$browser = strtolower($matches[1]).' '.strtolower($matches[1]).substr($matches[2],0,1);
+	} else if (preg_match("/(WebKit|KHTML|Konqueror)/", $user_agent)){
+		// Safari
 		$browser = "webkit";
+	} else if (preg_match("/(Nintendo|Sony|Dreamcast|NetFront)/", $user_agent)){
+		// ゲーム機はNetFront扱い
+		$browser = 'netfront';
 	}
+	unset($matches);
 	echo ' class="no-js '.$browser.'">' . "\n"; // <html>
 	unset($lang_code);
 	
@@ -871,6 +838,7 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 
 // タグヘルパー
 function tag_helper($tagname,$tags){
+	$out = array();
 	foreach ($tags as $tag) {
 		// linkタグで、rel属性やtype属性がない場合スタイルシートとする。
 		if ($tagname == 'link' && (empty($tags['rel'])) ){

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-03 16:24+0900\n"
+"POT-Creation-Date: 2011-04-02 03:11+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -68,7 +68,7 @@ msgstr ""
 
 #: ../../plugin/attach.inc.php:62
 #, php-format
-msgid " <span class=\"small\">%s download</span>"
+msgid "%s download"
 msgstr ""
 
 #: ../../plugin/attach.inc.php:63
@@ -219,34 +219,22 @@ msgstr ""
 msgid "Submit"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:171
-msgid "PKWK_READONLY prohibits editing"
-msgstr ""
-
-#: ../../plugin/attach.inc.php:233
+#: ../../plugin/attach.inc.php:100
 msgid "Query string (page name and/or file name) too long"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:236
+#: ../../plugin/attach.inc.php:101
 msgid "No such page"
 msgstr ""
 
-#: ../../plugin/attach.inc.php:340
+#: ../../plugin/attach.inc.php:102
 msgid "It failed in the generation of a temporary file."
 msgstr ""
 
-#: ../../plugin/attach.inc.php:355
+#: ../../plugin/attach.inc.php:103
 msgid "The uploaded file cannot be read."
 msgstr ""
 
-#: ../../plugin/attach.inc.php:357
+#: ../../plugin/attach.inc.php:104
 msgid "The compression file cannot be written."
-msgstr ""
-
-#: ../../plugin/attach.inc.php:375
-msgid "The error occurred"
-msgstr ""
-
-#: ../../plugin/attach.inc.php:596 ../../plugin/attach.inc.php:615
-msgid "PKWK_SAFE_MODE prohibits this"
 msgstr ""

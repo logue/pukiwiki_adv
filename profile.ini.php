@@ -65,14 +65,6 @@ $agents = array(
 	// Sample: "Mozilla/3.0(DDIPOCKET;KYOCERA/AH-K3001V/1.4.1.67.000000/0.1/C100) Opera 7.0" (Like CNF at 'mobile'-mode)
 	array('pattern'=>'#\b(?:DDIPOCKET|WILLCOM)\b.+\b(Opera) ([0-9\.]+)\b#', 'profile'=>'mobile'),
 
-	// Planetweb http://www.planetweb.com/
-	// Sample: "Mozilla/3.0 (Planetweb/v1.07 Build 141; SPS JP)" ("EGBROWSER", Web browser for PlayStation 2)
-	array('pattern'=>'#\b(Planetweb)/v([0-9\.]+)#', 'profile'=>'mobile'),
-
-	// DreamPassport, Web browser for SEGA DreamCast
-	// Sample: "Mozilla/3.0 (DreamPassport/3.0)"
-	array('pattern'=>'#\b(DreamPassport)/([0-9\.]+)#',	'profile'=>'mobile'),
-
 	// Palm "Web Pro" http://www.palmone.com/us/support/accessories/webpro/
 	// Sample: "Mozilla/4.76 [en] (PalmOS; U; WebPro)"
 	array('pattern'=>'#\b(WebPro)\b#',	'profile'=>'mobile'),
@@ -88,23 +80,46 @@ $agents = array(
 
 	// WebTV
 	array('pattern'=>'#^(WebTV)/([0-9\.]+)#',	'profile'=>'mobile'),
-
+	
+	// Game machine browsers
+	// PS2: Mozilla/4.0 (PS2; PlayStation BB Navigator 1.0) NetFront/3.0
+	array('pattern'=>'#\b(NetFront)/([0-9\.]+)\b#',		'csssname'=>'netfront',	'profile'=>'default'),
+	
+	// Planetweb http://www.planetweb.com/
+	// Sample: "Mozilla/3.0 (Planetweb/v1.07 Build 141; SPS JP)" ("EGBROWSER", Web browser for PlayStation 2)
+	array('pattern'=>'#\b(Planetweb)/v([0-9\.]+)#', 'profile'=>'mobile'),
+	
+	// DreamPassport, Web browser for SEGA DreamCast
+	// Sample: "Mozilla/3.0 (DreamPassport/3.0)"
+	array('pattern'=>'#\b(DreamPassport)/([0-9\.]+)#',	'profile'=>'mobile'),
+	
+	// Wii
+	// Sample: Opera/9.10 (Nintendo Wii; U; ; 1621; ja)
+	array('pattern'=>'#\b(Opera)/([0-9\.]+) \(Nintendo Wii\b#',		'css'=>'netfront',	'profile'=>'default'),
+	
+	array('pattern'=>'#\b(Opera)/([0-9\.]+)\b#',		'css'=>'netfront',	'profile'=>'default'),
     // Desktop-PC browsers
 
 	// Opera (for desktop PC, not embedded) -- See BugTrack/743 for detail
 	// NOTE: Keep this pattern above MSIE and Mozilla
-	// Sample: "Opera/7.0 (OS; U)" (not disguise)
-	// Sample: "Mozilla/4.0 (compatible; MSIE 5.0; OS) Opera 6.0" (disguise)
-	array('pattern'=>'#\b(Opera)[/ ]([0-9\.]+)\b#',	'profile'=>'default'),
+	// Sample: "Opera/9.80 (Windows NT 6.1; U; ja) Presto/2.7.62 Version/11.01"
+	array('pattern'=>'#\b(Presto)[/ ]([0-9\.]+)\b#',	'css'=>'presto2',	'profile'=>'default'),
+	array('pattern'=>'#\b(Opera)[/ ]([0-9\.]+)\b#',		'css'=>'presto',	'profile'=>'default'),	// legacy Opera
 
 	// MSIE: Microsoft Internet Explorer (or something disguised as MSIE)
 	// Sample: "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
-	array('pattern'=>'#\b(MSIE) ([0-9\.]+)\b#',	'profile'=>'default'),
+	array('pattern'=>'#\b(MSIE) ([0-9\.]+)\b#',			'css'=>'ie',		'profile'=>'default'),
 
 	// Mozilla Firefox
 	// NOTE: Keep this pattern above Mozilla
 	// Sample: "Mozilla/5.0 (Windows; U; Windows NT 5.0; ja-JP; rv:1.7) Gecko/20040803 Firefox/0.9.3"
-	array('pattern'=>'#\b(Firefox)/([0-9\.]+)\b#',	'profile'=>'default'),
+	array('pattern'=>'#\b(Firefox|Netscape)/([0-9\.]+)\b#',	'css'=>'gecko',		'profile'=>'default'),
+	
+	// Safari / Chrome (WebKit)
+	array('pattern'=>'#\b(AppleWebKit)/([0-9\.]+)\b#',	'css'=>'webkit',	'profile'=>'default'),
+	
+	
+	
 
 	// Loose default: Including something Mozilla
 	array('pattern'=>'#^([a-zA-z0-9 ]+)/([0-9\.]+)\b#',	'profile'=>'default'),

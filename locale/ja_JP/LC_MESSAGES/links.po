@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5-u2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-01-17 02:16+0900\n"
-"PO-Revision-Date: 2005-04-02 14:56+0900\n"
+"PO-Revision-Date: 2011-03-27 23:07+0900\n"
 "Last-Translator: Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -41,12 +41,10 @@ msgstr ":キャッシュを更新|\n"
 
 #: ../../plugin/links.inc.php:19
 msgid ""
-"All pages are scanned, whether on which page certain pages have been linked "
-"is investigated, and it records in the cache.\n"
+"All pages are scanned, whether on which page certain pages have been linked is investigated, and it records in the cache.\n"
 "\n"
 msgstr ""
-"全てのページをスキャンし、あるページがどのページからリンクされているかを調査"
-"して、キャッシュに記録します。\n"
+"全てのページをスキャンし、あるページがどのページからリンクされているかを調査して、キャッシュに記録します。\n"
 "\n"
 
 #: ../../plugin/links.inc.php:20
@@ -76,3 +74,4 @@ msgstr "管理者パスワードを入力して、[実行]ボタンをクリッ�
 #: ../../plugin/links.inc.php:37
 msgid "PKWK_READONLY prohibits this"
 msgstr "読み込み専用: この操作は禁止されています"
+

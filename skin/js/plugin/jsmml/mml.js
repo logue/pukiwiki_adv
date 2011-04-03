@@ -223,7 +223,7 @@ MMLPlayer.prototype = {
 };
 
 var mml_player_widget = [
-	'<div class="mml-player ui-helper-clearfix">',
+	'<div class="mml-player ui-helper-clearfix noprint">',
 	'	<ul class="ui-widget">',
 	'		<li class="mml-player-play ui-state-default ui-corner-all"><span class="ui-icon ui-icon-play">Play/Pause</span></li>',
 	'		<li class="mml-player-stop ui-state-default ui-corner-all"><span class="ui-icon ui-icon-stop">Stop</span></li>',

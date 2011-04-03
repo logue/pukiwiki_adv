@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-06-03 02:02+0900\n"
+"POT-Creation-Date: 2011-04-02 03:11+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,112 +16,107 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/backup.inc.php:25 ../../plugin/backup.inc.php:39
-#: ../../plugin/backup.inc.php:183
+#: ../../plugin/backup.inc.php:26 ../../plugin/backup.inc.php:40
+#: ../../plugin/backup.inc.php:186
 msgid "Backup list"
 msgstr ""
 
-#: ../../plugin/backup.inc.php:26 ../../plugin/backup.inc.php:256
-#: ../../plugin/backup.inc.php:351
+#: ../../plugin/backup.inc.php:27 ../../plugin/backup.inc.php:260
+#: ../../plugin/backup.inc.php:381
 msgid "diff"
 msgstr ""
 
-#: ../../plugin/backup.inc.php:27 ../../plugin/backup.inc.php:257
-#: ../../plugin/backup.inc.php:352
+#: ../../plugin/backup.inc.php:28 ../../plugin/backup.inc.php:261
+#: ../../plugin/backup.inc.php:382
 msgid "diff current"
 msgstr ""
 
-#: ../../plugin/backup.inc.php:28 ../../plugin/backup.inc.php:258
-#: ../../plugin/backup.inc.php:353
+#: ../../plugin/backup.inc.php:29 ../../plugin/backup.inc.php:262
+#: ../../plugin/backup.inc.php:383
 msgid "source"
 msgstr ""
 
-#: ../../plugin/backup.inc.php:29
+#: ../../plugin/backup.inc.php:30
 msgid "backup"
 msgstr ""
 
-#: ../../plugin/backup.inc.php:30
+#: ../../plugin/backup.inc.php:31
 msgid "diff for visual"
 msgstr ""
 
-#: ../../plugin/backup.inc.php:31
+#: ../../plugin/backup.inc.php:32
 msgid "View the $1."
 msgstr ""
 
-#: ../../plugin/backup.inc.php:32
+#: ../../plugin/backup.inc.php:33
 msgid "Go to $1."
 msgstr ""
 
-#: ../../plugin/backup.inc.php:33
+#: ../../plugin/backup.inc.php:34
 msgid " $1 has been deleted."
 msgstr ""
 
-#: ../../plugin/backup.inc.php:34
+#: ../../plugin/backup.inc.php:35
 msgid "Backup diff of $1(No. $2)"
 msgstr ""
 
-#: ../../plugin/backup.inc.php:35
+#: ../../plugin/backup.inc.php:36
 msgid "Backup diff of $1 vs current(No. $2)"
 msgstr ""
 
-#: ../../plugin/backup.inc.php:36
+#: ../../plugin/backup.inc.php:37
 msgid "Backup source of $1(No. $2)"
 msgstr ""
 
-#: ../../plugin/backup.inc.php:37
+#: ../../plugin/backup.inc.php:38
 msgid "Backup of $1(No. $2)"
 msgstr ""
 
-#: ../../plugin/backup.inc.php:38 ../../plugin/backup.inc.php:182
+#: ../../plugin/backup.inc.php:39 ../../plugin/backup.inc.php:185
 msgid "Backup list of $1"
 msgstr ""
 
-#: ../../plugin/backup.inc.php:124 ../../plugin/backup.inc.php:132
-#: ../../plugin/backup.inc.php:155 ../../plugin/backup.inc.php:319
-msgid "PKWK_SAFE_MODE prohibits this"
-msgstr ""
-
-#: ../../plugin/backup.inc.php:162
+#: ../../plugin/backup.inc.php:165
 msgid "This feature is prohibited"
 msgstr ""
 
-#: ../../plugin/backup.inc.php:181 ../../plugin/backup.inc.php:259
-#: ../../plugin/backup.inc.php:355
+#: ../../plugin/backup.inc.php:184 ../../plugin/backup.inc.php:263
+#: ../../plugin/backup.inc.php:385
 msgid "Deleting backup of $1"
 msgstr ""
 
-#: ../../plugin/backup.inc.php:184
+#: ../../plugin/backup.inc.php:187
 msgid "Backup of $1 has been deleted."
 msgstr ""
 
-#: ../../plugin/backup.inc.php:185
+#: ../../plugin/backup.inc.php:188
 msgid "Please input the password for deleting."
 msgstr ""
 
-#: ../../plugin/backup.inc.php:186
+#: ../../plugin/backup.inc.php:189
 msgid "Delete"
 msgstr ""
 
-#: ../../plugin/backup.inc.php:187
+#: ../../plugin/backup.inc.php:190
 msgid "Invalid password."
 msgstr ""
 
-#: ../../plugin/backup.inc.php:235
+#: ../../plugin/backup.inc.php:238
 msgid "The added line is <span class=\"diff_added\">THIS COLOR</span>."
 msgstr ""
 
-#: ../../plugin/backup.inc.php:236
+#: ../../plugin/backup.inc.php:239
 msgid "The deleted line is <span class=\"diff_removed\">THIS COLOR</span>."
 msgstr ""
 
-#: ../../plugin/backup.inc.php:254 ../../plugin/backup.inc.php:350
+#: ../../plugin/backup.inc.php:258 ../../plugin/backup.inc.php:380
 msgid "List of Backups"
 msgstr ""
 
-#: ../../plugin/backup.inc.php:255 ../../plugin/backup.inc.php:354
+#: ../../plugin/backup.inc.php:259 ../../plugin/backup.inc.php:384
 msgid "There are no backup(s) of $1."
 msgstr ""
 
-#: ../../plugin/backup.inc.php:402 ../../plugin/backup.inc.php:406
+#: ../../plugin/backup.inc.php:432 ../../plugin/backup.inc.php:436
 msgid "->"
 msgstr ""

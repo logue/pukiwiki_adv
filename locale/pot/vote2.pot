@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-04-02 17:25+0900\n"
+"POT-Creation-Date: 2011-03-27 19:28+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,79 +16,66 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/vote2.inc.php:21
+#: ../../plugin/vote2.inc.php:26
 msgid "Error in vote2"
 msgstr ""
 
-#: ../../plugin/vote2.inc.php:22
+#: ../../plugin/vote2.inc.php:27
 msgid "The page of $1 doesn't exist."
 msgstr ""
 
-#: ../../plugin/vote2.inc.php:23
+#: ../../plugin/vote2.inc.php:28
 msgid "It is not possible to vote continuously."
 msgstr ""
 
-#: ../../plugin/vote2.inc.php:24
-msgid ""
-"Vote failure: In $1, there was the address of the vote or the item was not "
-"corresponding."
-msgstr ""
-
-#: ../../plugin/vote2.inc.php:25
-msgid ""
-"An indispensable argument has not been passed or there is an error in the "
-"argument."
-msgstr ""
-
-#: ../../plugin/vote2.inc.php:27
-msgid ""
-"Other people seem to have updated the content of the same page while you are "
-"voting."
-msgstr ""
-
 #: ../../plugin/vote2.inc.php:29
-msgid ""
-"Therefore, there is a possibility of making a mistake in the position for "
-"which it votes."
+msgid "Vote failure: In $1, there was the address of the vote or the item was not corresponding."
+msgstr ""
+
+#: ../../plugin/vote2.inc.php:30
+msgid "An indispensable argument has not been passed or there is an error in the argument."
 msgstr ""
 
 #: ../../plugin/vote2.inc.php:31
+msgid "Other people seem to have updated the content of the same page while you are voting."
+msgstr ""
+
+#: ../../plugin/vote2.inc.php:32
+msgid "Therefore, there is a possibility of making a mistake in the position for which it votes."
+msgstr ""
+
+#: ../../plugin/vote2.inc.php:33
 msgid "Your update was invalidated. Start ..be previous page.. reload."
 msgstr ""
 
-#: ../../plugin/vote2.inc.php:98 ../../plugin/vote2.inc.php:347
-#: ../../plugin/vote2.inc.php:456
+#: ../../plugin/vote2.inc.php:35
 msgid "Selection"
 msgstr ""
 
-#: ../../plugin/vote2.inc.php:99 ../../plugin/vote2.inc.php:348
-#: ../../plugin/vote2.inc.php:457
+#: ../../plugin/vote2.inc.php:36
 msgid "Vote"
 msgstr ""
 
-#: ../../plugin/vote2.inc.php:341 ../../plugin/vote2.inc.php:450
+#: ../../plugin/vote2.inc.php:424 ../../plugin/vote2.inc.php:539
 msgid "On updating $1, a collision has occurred."
 msgstr ""
 
-#: ../../plugin/vote2.inc.php:342 ../../plugin/vote2.inc.php:451
+#: ../../plugin/vote2.inc.php:425 ../../plugin/vote2.inc.php:540
 msgid "$1 was updated"
 msgstr ""
 
-#: ../../plugin/vote2.inc.php:343 ../../plugin/vote2.inc.php:452
-msgid ""
-"It seems that someone has already updated this page while you were editing "
-"it.<br />"
+#: ../../plugin/vote2.inc.php:426 ../../plugin/vote2.inc.php:541
+msgid "It seems that someone has already updated this page while you were editing it.<br />"
 msgstr ""
 
-#: ../../plugin/vote2.inc.php:344 ../../plugin/vote2.inc.php:453
+#: ../../plugin/vote2.inc.php:427 ../../plugin/vote2.inc.php:542
 msgid " + is placed at the beginning of a line that was newly added.<br />"
 msgstr ""
 
-#: ../../plugin/vote2.inc.php:345 ../../plugin/vote2.inc.php:454
-msgid ""
-" ! is placed at the beginning of a line that has possibly been updated.<br />"
+#: ../../plugin/vote2.inc.php:428 ../../plugin/vote2.inc.php:543
+msgid " ! is placed at the beginning of a line that has possibly been updated.<br />"
 msgstr ""
 
-#: ../../plugin/vote2.inc.php:346 ../../plugin/vote2.inc.php:455
+#: ../../plugin/vote2.inc.php:429 ../../plugin/vote2.inc.php:544
 msgid " Edit those lines, and submit again."
 msgstr ""

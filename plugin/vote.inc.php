@@ -136,12 +136,14 @@ function plugin_vote_convert()
 	<input type="hidden" name="refer"   value="$s_page" />
 	<input type="hidden" name="vote_no" value="$vote_no" />
 	<input type="hidden" name="digest"  value="$s_digest" />
-	<table cellspacing="0" cellpadding="2" class="style_table" summary="vote">
-		<tr>
-			<th align="left" class="style_th vote_label">$s_choice</th>
-			<th align="center" class="style_th vote_label">$s_votes</th>
-		</tr>
-
+	<table class="style_table vote_table" summary="vote">
+		<thead>
+			<tr>
+				<th class="style_th vote_label">$s_choice</th>
+				<th class="style_th vote_label">$s_votes</th>
+			</tr>
+		</thead>
+		<tbody>
 EOD;
 
 	$tdcnt = 0;
@@ -157,20 +159,18 @@ EOD;
 
 		$link = make_link($arg);
 
-		$cls = ($tdcnt++ % 2)  ? 'vote_td1' : 'vote_td2';
-
 		$body .= <<<EOD
-		<tr>
-			<td class="style_td $cls" style="padding-left:1em;padding-right:1em;">$link</td>
-			<td class="style_td $cls">$cnt&nbsp;&nbsp;
-				<input type="$_submit" name="vote_$e_arg" value="$s_votes" class="submit" />
-			</td>
-		</tr>
-
+			<tr>
+				<td class="style_td style_vote_title">$link</td>
+				<td class="style_td style_vote_button">$cnt
+					<input type="$_submit" name="vote_$e_arg" value="$s_votes" class="submit" />
+				</td>
+			</tr>
 EOD;
 	}
 
 	$body .= <<<EOD
+		</tbody>
 	</table>
 </form>
 

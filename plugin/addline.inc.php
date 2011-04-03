@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
 //
-// $Id: addline.inc.php,v 0.13.3 2010/12/23 12:58:00 Logue Exp $
+// $Id: addline.inc.php,v 0.13.4 2010/12/23 22:45:00 Logue Exp $
 // Original is sha(0.13)
 /* 
 *プラグイン addline
@@ -40,7 +40,6 @@ function plugin_addline_init()
 								T_('The string was added, alhough it may be inserted in the wrong position.'),
 			'error'				=> T_('addline error'),
 			'config_notfound'	=> T_('config file <var>%s</var> is not exist.'),
-			'err_readonly'		=> T_('This Wiki is <var>PKWK_READONLY</var> mode now. Therefore, addline is prohibited.')
 		)
 	);
 	set_plugin_messages($messages);
@@ -180,8 +179,8 @@ function plugin_addline_inline()
 
 function plugin_addline_action()
 {
-	global $_addline_messages;
-	if( auth::check_role('readonly') ) die_message($_addline_messages['err_readonly']);
+	global $_addline_messages, $_string;
+	if( auth::check_role('readonly') ) die_message($_string['prohibit']);
 
 	$refer			= $vars['refer'];
 	$postdata_old	= get_source($refer);

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.7-u2-i18n\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-05-04 18:16+0900\n"
-"PO-Revision-Date: 2007-07-15 03:34+0900\n"
+"PO-Revision-Date: 2011-03-27 23:07+0900\n"
 "Last-Translator: Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -58,11 +58,8 @@ msgstr "OpenID ログイン画面"
 
 #: ../../plugin/openid.inc.php:64
 #, php-format
-msgid ""
-"Could not create the FileStore directory %s. Please check the effective "
-"permissions."
-msgstr ""
-"FileStore ディレクトリ(%s) の作成ができません。権限が有効か確認して下さい。"
+msgid "Could not create the FileStore directory %s. Please check the effective permissions."
+msgstr "FileStore ディレクトリ(%s) の作成ができません。権限が有効か確認して下さい。"
 
 #: ../../plugin/openid.inc.php:65
 msgid "Verification cancelled."
@@ -84,3 +81,4 @@ msgstr "認証エラー; 有効ではない OpenID です。"
 #, php-format
 msgid "Could not redirect to server: %s"
 msgstr "サーバにリダイレクトできませんでした: %s"
+

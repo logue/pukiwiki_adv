@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5-u2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-03 16:24+0900\n"
-"PO-Revision-Date: 2010-09-03 16:32+0900\n"
+"POT-Creation-Date: 2011-03-27 19:28+0900\n"
+"PO-Revision-Date: 2011-03-27 23:07+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
 "Language-Team: Japanese\n"
 "MIME-Version: 1.0\n"
@@ -67,8 +67,8 @@ msgstr "アップロード可能最大ファイルサイズは %s です。"
 
 #: ../../plugin/attach.inc.php:62
 #, php-format
-msgid " <span class=\"small\">%s download</span>"
-msgstr " <span class=\"small\">%s件</span>"
+msgid "%s download"
+msgstr "%s件"
 
 #: ../../plugin/attach.inc.php:63
 msgid "password"
@@ -218,36 +218,38 @@ msgstr "詳細"
 msgid "Submit"
 msgstr "実行"
 
-#: ../../plugin/attach.inc.php:171
-msgid "PKWK_READONLY prohibits editing"
-msgstr "PKWK_READONLY 編集禁止(アップロード抑止)"
+#: ../../plugin/attach.inc.php:100
+msgid "This Wiki is <var>PKWK_READONLY</var> mode now. Therefore, attach function is prohibited."
+msgstr ""
 
-#: ../../plugin/attach.inc.php:233
+#: ../../plugin/attach.inc.php:101
 msgid "Query string (page name and/or file name) too long"
 msgstr "Query string (ページ名 and/or ファイル名) が長すぎます"
 
-#: ../../plugin/attach.inc.php:236
+#: ../../plugin/attach.inc.php:102
 msgid "No such page"
 msgstr "ページが見つかりません"
 
-#: ../../plugin/attach.inc.php:340
+#: ../../plugin/attach.inc.php:103
 msgid "It failed in the generation of a temporary file."
 msgstr "一時ファイルの生成で失敗しました。"
 
-#: ../../plugin/attach.inc.php:355
+#: ../../plugin/attach.inc.php:104
 msgid "The uploaded file cannot be read."
 msgstr "アップロードされたファイルが読めません。"
 
-#: ../../plugin/attach.inc.php:357
+#: ../../plugin/attach.inc.php:105
 msgid "The compression file cannot be written."
 msgstr "圧縮ファイルを書き込めません。"
 
-#: ../../plugin/attach.inc.php:375
-msgid "The error occurred"
-msgstr "エラーが発生しました"
+#~ msgid " <span class=\"small\">%s download</span>"
+#~ msgstr " <span class=\"small\">%s件</span>"
 
-#: ../../plugin/attach.inc.php:596
-#: ../../plugin/attach.inc.php:615
-msgid "PKWK_SAFE_MODE prohibits this"
-msgstr "PKWK_SAFE_MODE 操作禁止"
+#~ msgid "PKWK_READONLY prohibits editing"
+#~ msgstr "PKWK_READONLY 編集禁止(アップロード抑止)"
 
+#~ msgid "The error occurred"
+#~ msgstr "エラーが発生しました"
+
+#~ msgid "PKWK_SAFE_MODE prohibits this"
+#~ msgstr "PKWK_SAFE_MODE 操作禁止"

@@ -1,16 +1,16 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: add.inc.php,v 1.7.4 2010/12/23 12:58:00 Logue Exp $
+// $Id: add.inc.php,v 1.7.4 2011/03/27 22:45:00 Logue Exp $
 //
 // Add plugin - Append new text below/above existing page
 // Usage: cmd=add&page=pagename
 
 function plugin_add_action()
 {
-	global $get, $post, $vars;
+	global $get, $post, $vars, $_string;
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	if (auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
+	if (auth::check_role('readonly')) die_message($_string['prohibit']);
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
 	check_editable($page);

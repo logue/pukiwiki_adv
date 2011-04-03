@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5_u2\n"
 "Report-Msgid-Bugs-To: Chung-Yen Chang <candyz@linux.org.tw>\n"
 "POT-Creation-Date: 2005-05-10 00:27+0900\n"
-"PO-Revision-Date: 2005-05-30 14:27+0800\n"
+"PO-Revision-Date: 2011-03-27 23:07+0900\n"
 "Last-Translator: Chung-Yen Chang <candyz@linux.org.tw>\n"
 "Language-Team: Traditional Chinese <zh@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -19,18 +19,15 @@ msgstr ""
 msgid "On updating $1, a collision has occurred."
 msgstr "在更新 $1 時,發生了衝突。"
 
-
 #: ../../plugin/article.inc.php:53
 msgid "$1 was updated"
 msgstr "$1 已經被更新"
 
 #: ../../plugin/article.inc.php:54
 msgid ""
-"It seems that someone has already updated this page while you were editing "
-"it.<br />\n"
+"It seems that someone has already updated this page while you were editing it.<br />\n"
 " + is placed at the beginning of a line that was newly added.<br />\n"
-" ! is placed at the beginning of a line that has possibly been updated.<br /"
-">\n"
+" ! is placed at the beginning of a line that has possibly been updated.<br />\n"
 " Edit those lines, and submit again."
 msgstr ""
 "當您正在編輯時，有人已經更新了您正在編輯的頁面。<br />\n"
@@ -57,3 +54,4 @@ msgstr "送出"
 #: ../../plugin/article.inc.php:157
 msgid "Subject: "
 msgstr "主題："
+

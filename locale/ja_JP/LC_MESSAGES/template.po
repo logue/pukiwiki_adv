@@ -8,12 +8,12 @@ msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5-u2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-03-10 10:15+0900\n"
-"PO-Revision-Date: 2005-03-10 10:15+0900\n"
+"PO-Revision-Date: 2011-03-27 23:07+0900\n"
 "Last-Translator: Miko.Hoshina(E.Satoh) <miko@cafeterrace.com>\n"
-"Language-Team: Japanese \n"
+"Language-Team: Japanese\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8-bit\n"
+"Content-Transfer-Encoding: 8bit\n"
 
 #: ../plugin/template.inc.php:16
 msgid "Edit of  $1"
@@ -54,3 +54,4 @@ msgstr "作成"
 #: ../plugin/template.inc.php:25
 msgid "create a new page, using  $1 as a template."
 msgstr "$1 をテンプレートにして作成"
+

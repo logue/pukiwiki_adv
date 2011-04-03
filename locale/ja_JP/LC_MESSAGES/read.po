@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.7-u2-i18n\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2007-05-30 19:25+0900\n"
-"PO-Revision-Date: 2007-05-30 19:27+0900\n"
+"PO-Revision-Date: 2011-03-27 23:07+0900\n"
 "Last-Translator: Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -22,3 +22,4 @@ msgstr "このページは別名です "
 #: ../../plugin/read.inc.php:36
 msgid "Redirect"
 msgstr "Redirect"
+

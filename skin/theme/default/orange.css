@@ -21,15 +21,9 @@
 	text-shadow: none;
 }
 
-body{
-	color:#333322;
-	background-color:white;
-}
-
 a:link{
 	color:#215dc6;
 	-webkit-tap-highlight-color: #FF995E;
-	background-color:inherit;
 }
 
 a:active{
@@ -39,7 +33,6 @@ a:active{
 
 a:visited{
 	color:#a63d21;
-	background-color:inherit;
 }
 
 a:hover{
@@ -47,26 +40,19 @@ a:hover{
 	background-color:#EEDDCC;
 }
 
-h1{
+h1.title{
 	color:#cc0000;
-	background-color:transparent;
 }
 
-h2{
-	color:#000000;
-	background-color:transparent;
+h1, h2{
 	border-color:#ffffff #ffffff #999999 #ff7711;
 }
 
 h3{
-	color:#000000;
-	background-color:transparent;
 	border-color:#ffffff #ffffff #999999 #ff9933;
 }
 
 h4, h5, h6{
-	color:#000000;
-	background-color:transparent;
 	border-color:#fff8f8 #fff8f8 #999999 #ffcc66;
 }
 
@@ -74,12 +60,11 @@ dt{
 	color: #663333;
 }
 
-pre, .syntaxhighlighter{
+pre{
 	border-top:#DDDDEE 1px solid;
 	border-bottom:#888899 1px solid;
 	border-left:#DDDDEE 1px solid;
 	border-right:#888899 1px solid;
-	color:black;
 	background-color:#F0F8FF;
 }
 
@@ -89,16 +74,6 @@ blockquote{
 
 hr{
 	border-color: #333333;
-}
-
-hr.full_hr{
-}
-
-hr.short_line{
-}
-
-hr.note_hr{
-	border-color:#FF8822;
 }
 
 thead td.style_td,
@@ -123,75 +98,24 @@ tfoot th.style_th{
 	color:inherit;
 	background-color:#EEF5FF;
 }
+.style_td_blank{
+	background-color:#E3EAF6;
+}
 
-span.noexists
-{
+.noexists{
 	color:inherit;
 	background-color:#FFFACC;
 }
 
-span.add_word
-{
-	background-color:#FFFF66;
-}
 
-span.remove_word
-{	
-	background-color:#A0FFFF;
-}
-
-.super_index
-{
+.super_index{
 	color:#DD3333;
 	background-color:inherit;
 }
 
-a.note_super
-{
+a.note_super{
 	color:#DD3333;
 	background-color:inherit;
-}
-
-/* html.php/catbody() */
-strong.word0{
-	background-color:#FFFF66;
-	color:black;
-}
-strong.word1{
-	background-color:#A0FFFF;
-	color:black;
-}
-strong.word2{
-	background-color:#99FF99;
-	color:black;
-}
-strong.word3{
-	background-color:#FF9999;
-	color:black;
-}
-strong.word4{
-	background-color:#FF66FF;
-	color:black;
-}
-strong.word5{
-	background-color:#880000;
-	color:white;
-}
-strong.word6{
-	background-color:#00AA00;
-	color:white;
-}
-strong.word7{
-	background-color:#886800;
-	color:white;
-}
-strong.word8{
-	background-color:#004699;
-	color:white;
-}
-strong.word9{
-	background-color:#990099;
-	color:white;
 }
 
 fieldset {
@@ -212,493 +136,73 @@ td.rtable{
 	background-color: #FFFCEE;
 }
 
-div#topicpath{
-	color:black;
-}
-
-/* popup toc */
-#poptoc{
-	border:gray thin outset; padding:0.5em;
-	background:#fff8ee;
-	margin-right:-10em;
-}
-#poptoc a:hover{
-	background:#ccddee;
-}
-
-#poptoc a{
-	color:blue;
-}
-
-#poptoc h2{
-	color:navy;
-	background:#ffeecc;
-	border:silver solid 1px;
-}
-#poptoc h2 a{
-	color:navy;
-}
-
-#poptoc a.here{
-	color: #333333;
-	background: #fff8f8;
-	border:1px dotted gray;
-}
-
-/** MenuBar ***************************************************************************************/
+/** MenuBar/SideBar *******************************************************************************/
 #menubar ul.menu li{
 	border-bottom: 1px dotted #FFFCEE;
 }
 
-#menubar h2, #menubar h3, #menubar h4{
-	border: 1px #FFCC99 solid;
-	background-color: #FFF0DD;
-}
-
-#menubar h5{
-	border: 1px #FFCC99 solid;
-	background-color: #FFF0DD;
-}
-
-/** SideBar ***************************************************************************************/
-#sidebar h2, #sidebar h3, #sidebar h4{
+#menubar h1, #menubar h2, #menubar h3, #menubar h4, #menubar h5, #menubar h6,
+#sidebar h1, #sidebar h2, #sidebar h3, #sidebar h4, #sidebar h5, #sidebar h6{
 	border: 1px #FFCC99 solid;
 	background-color: #FFF0DD;
 }
 
 /* Plugin *****************************************************************************************/
-/* attach.inc.php */
-table.attach_table{
-	color:inherit;
-	background-color: #CCCCCC;
-}
-
-th.attach_th{
-	color:inherit;
-	background-color: #FFEECC;
-}
-
-td.attach_td1{
-	background-color: #FFFFFF;
-}
-
-td.attach_td2{
-	background-color: #CCFFCC;
-}
-
 /* calendar.inc.php */
-.calendar {
-	background-color:#E0E0E0;
-}
-
-.calendar_td_caltop {
-	background-color:#FFF5EE;
-}
-
-.calendar_td_week {
-	background-color:#E0E0E0;
-}
-
-.calendar_td_blank {
-	background-color:#EEEEEE;
-}
-.calendar_td_today {
-	color:#ddb;
-	background-color:#FFFFDD;
-}
-.calendar_td_sun {
-	color:#dbb;
-	background-color:#fee;
-}
-.calendar_td_day {
-	color:#bbb;
-	background-color:#EEF5FF;
-}
-.calendar_td_sat {
-	color:#bbd;
-	background-color:#DDE5FF;
-}
-.calendar_td_today a,
-.calendar_td_sun a,
-.calendar_td_day a,
-.calendar_td_sat a {
-	color:#664;
-}
-.calendar_td_today a strong,
-.calendar_td_sun a strong,
-.calendar_td_day a strong,
-.calendar_td_sat a strong {
-	color:#332;
-}
-
-/* calendar2.inc.php */
-.style_calendar{
-	color:inherit;
+.style_calendar {
 	background-color:#CCD5DD;
 }
-
-.style_td_caltop{
-	color:inherit;
-	background-color:#EEF5FF;
+.style_calendar_top {
+	background-color:#EEF5FF !important;
 }
-
-.style_td_today{
-	color:inherit;
+.style_calendar_today {
 	background-color:#FFFFDD;
 }
-
-.style_td_sat
-{
-	padding:5px 3px;
-	margin:1px;
-	color:inherit;
+.style_calendar_sat {
 	background-color:#DDE5FF;
-	text-align:center;
 }
-
-.style_td_sun
-{
-	padding:5px 3px;
-	margin:1px;
-	color:inherit;
+.style_calendar_sun, .style_calendar_holiday {
 	background-color:#FFEEEE;
-	text-align:center;
 }
+.style_calendar_blank {
 
-.style_td_blank{
-	color:inherit;
-	background-color:#EEF5FF;
 }
-
-.style_td_day{
-	color:inherit;
-	background-color:#EEF5FF;
+.style_calendar_day {
+	
 }
-
-.style_td_week{
-	color:inherit;
+.style_calendar_week {
 	background-color:#DDE5EE;
 }
 
-/* minicalendar.inc.php */
-.ministyle_calendar{
-	color:inherit;
-	background-color:#E0E0E0;
-}
-
-.ministyle_td_caltop{
-	color:inherit;
-	background-color:#FFF5EE;
-}
-
-.ministyle_td_today{
-	color:inherit;
-	background-color:#FFFFDD;
-}
-
-.ministyle_td_sat{
-	color:inherit;
-	background-color:#DDE5FF;
-}
-
-.ministyle_td_sun{
-	color:inherit;
-	background-color:#FFEEEE;
-}
-
-.ministyle_td_blank{
-	color:inherit;
-	background-color:#EEEEEE;
-}
-
-.ministyle_td_day{
-	color:inherit;
-	background-color:#EEF5FF;
-}
-
-.ministyle_td_week{
-	color:inherit;
-	background-color:#E0E0E0; /*#DDE5EE;*/
-}
-
-/* minicalendar_viewer */
-h3.minicalendar
-{
-	border-color:#ffffff #ffffff #999999 #ff9933;
-	color:inherit;
-}
-
-h4.minicalendar
-{
-	border-color:#ffffff #ffffff #999999 #ffCC66;
-	color:inherit;
-}
-
-/* minicalendar+public_holiday view */
-.date_weekday {
-	border-bottom: 1px solid #666;
-}
-
-.date_weekend {
-	color: #14F;
-	border-bottom: 1px solid #666;
-}
-
-.date_holiday {
-	color: #f41;
-	border-bottom: 1px solid #666;
-}
-
-.date_weekday .day {
-	background-color: #333;
-	color: #fff;
-}
-.date_weekend .day {
-	background-color: #14F;
-	color: #fff;
-}
-.date_holiday .day {
-	background-color: #F41;
-	color: #fff;
-}
-
-
-/* diff.inc.php */
-span.diff_added{
-	color:blue;
-	background-color:inherit;
-}
-
-span.diff_removed{
-	color:red;
-	background-color:inherit;
-}
-
-/* new.inc.php */
-span.new1{
-	color:red;
-	background-color:transparent;
-}
-span.new5{
-	color:green;
-	background-color:transparent;
-}
-
-/* vote.inc.php */
-.style_table_vote{
-	color:inherit;
-	background-color:#ccd5dd;
-}
-td.vote_label
-{
-	color:inherit;
-	background-color:#FFCCCC;
-}
-td.vote_td1
-{
-	color:inherit;
-	background-color:#DDE5FF;
-}
-td.vote_td2
-{
-	color:inherit;
-	background-color:#EEF5FF;
-}
-
-/* navibar2.inc.php */
-#navigator2 {
-	background-color: #ff9933;
-}
-
-td.navimenu {
-	background-color: #ff9933;
-}
-td.navimenu a {
-	color: white;
-	font-weight: bold;
-}
-td.navimenu a:active {
-	border: 1px #ffffff solid;
-	color: white;
-	background-color:transparent;
-}
-td.navimenu a:visited {
-	color: white;
-}
-td.navimenu a:hover {
-	border: 1px #ffffff solid;
-	color: white;
-	background-color:transparent;
-}
-
-div.naviblock {
-	border-top: white 1px solid;
-	background-color: #ff9933;
-}
-
-div.naviblock a {
-	color: white;
-}
-div.naviblock a:active {
-	color: #000000;
-	background-color:transparent;
-}
-div.naviblock a:visited {
-	color: #ffffff;
-}
-div.naviblock a:hover {
-	color: #333333;
-	background-color:transparent;
+.style_calendar tbody .style_td:hover{
+	background-color: #DDFFFF;
 }
 
 /* suckerfish.inc.php */
-#nav {
+.sf-menu {
+	color: white !important;
 	background-color: DarkOrange;
 	border: 1px Chocolate solid;
 }
 
-#nav a {
-	color: white;
-}
-#nav a:visited  { /* visited pseudo selector so IE6 applies text colour*/
-	color: white;
-}
-
-#nav a:active  {
-	color: black;
-}
-
-#nav li {
+.sf-menu ul{
 	background-color: DarkOrange;
+	border: 1px Chocolate solid;
+}
+
+.sf-menu li {
 	border: 1px DarkOrange solid;
 }
 
-#nav li:hover, #nav li.sfHover{
-	color: white;
+.sf-menu li:hover, .sf-menu li.sfHover{
+	color: saddlebrown !important;
 	background-color: sandybrown;
 	border: 1px #ffffff solid;
 }
 
-#nav li ul li:hover, #nav li ul li.sfHover,
-#nav a:focus, #nav a:hover, #nav a:active {
-	color: black;
+.sf-menu li ul li:hover, .sf-menu li ul li.sfHover,
+.sf-menu a:focus, .sf-menu a:hover, .sf-menu a:active {
+	color: saddlebrown !important;
 	background-color: sandybrown;
-}
-
-/* code.inc.php */
-/* オペレータ */
-span.code_operator		{color: blue;}
-/* 識別子 */
-span.code_identifier	{color: darkblue;}
-
-/* 制御構文 */
-span.code_control		{color: navy;}
-/* 標準関数 */
-span.code_function		{color: blue;}
-/* 定数 */
-span.code_constant		{color: teal;}
-
-/* module, import, 将来対応する pragma */
-span.code_pragma		{color: #008080;}
-/* __stdcall などの処理系専用の奴とか */
-span.code_system		{color: #5f0000;}
-/* 環境変数  */
-span.code_environment	{color: #777777;}
-/* 文字列 */
-span.code_string		{color: green;}
-/* コメント */
-span.code_comment		{color: darkorange;}
-
-/* 個々のハイライト専用 */
-/* for TeX */
-span.code_formula		{color: teal;}
-/* for diff*/
-span.code_changed		{color: green;}
-span.code_added			{color: blue;}
-span.code_removed		{color: red;}
-/* for make*/
-span.code_execute		{color: teal;}
-span.code_target		{color: darkblue;}
-span.code_src			{color: darkgreen;}
-/* for PukiWiki */
-span.code_header		{color: blue;}
-span.code_table			{color: darkgreen;}
-span.code_list			{color: navy;}
-span.code_pre			{color: teal;}
-span.code_quote			{color: #777700;}
-
-/* ソースコード表示部分の設定 */
-/* 段組をしない場合の設定 */
-pre.code {
-	background:		#EEFFFF;
-	border-top:		#DDDDEE 1px solid;
-	border-right:	#888899 1px solid;
-	border-bottom:	#888899 1px solid;
-	border-left:	#DDDDEE 1px solid;
-}
-/* 段組をした場合の設定 */
-table.code_table pre.code,
-div.code_table pre.code
-{
-	background: #EEFFFF;
-}
-
-/* 行番号表示 */
-pre.code_number {
-	border-right: 1px solid #CCDDDD;
-}
-
-/* アウトライン表示 */
-pre.code_outline {
-	border-right: 1px solid #F5FFFF;
-	background: #E0F5F5;
-}
-
-/* 枠組 */
-div.code_table {
-	background-color:	#F0F8FF;
-	border-top:			#DDDDEE 1px solid;
-	border-right:		#888899 1px solid;
-	border-bottom:		#888899 1px solid;
-	border-left:		#DDDDEE 1px solid;
-}
-
-/**
- * アウトライン・メニューの設定
- */
-
-/* icon */ 
-div.code_menu {
-	background-color: #d4d0c8;
-}
-
-/* アウトラインの設定 */
-a.code_outline{
-	background-color: #FFFFFF;
-	color: black;
-	border: 1px solid #888888;
-}
-a.code_outline:link
-{
-	background-color: #FFFFFF;
-	color: black;
-	border: 1px solid #888888;
-}
-a.code_outline:visited
-{
-	background-color: #FFFFFF;
-	color: black;
-	border: 1px solid #888888;
-}
-a.code_outline:hover
-{
-	background-color: #FFFFFF;
-	color: black;
-	border: 1px solid #888888;
-}
-a.code_outline:active
-{
-	background-color: #FFFFFF;
-	color: black;
-	border: 1px solid #888888;
+	text-decoration: none;
 }

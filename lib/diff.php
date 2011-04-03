@@ -32,8 +32,8 @@ function diff_style_to_css($str = '')
 			'/^ (.*)$/m'
 		),
 		array(
-			'<span class="diff_removed">$1</span>',
-			'<span class="diff_added"  >$1</span>',
+			'<del class="diff_removed">$1</del>',
+			'<ins class="diff_added"  >$1</ins>',
 			'$1'
 		),
 		$str

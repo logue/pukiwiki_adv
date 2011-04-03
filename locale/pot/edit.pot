@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-04-02 19:46+0900\n"
+"POT-Creation-Date: 2011-04-02 03:12+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,59 +16,62 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/edit.inc.php:14
+#: ../../plugin/edit.inc.php:25 ../../plugin/edit.inc.php:28
 msgid "PKWK_READONLY prohibits editing"
 msgstr ""
 
-#: ../../plugin/edit.inc.php:41
+#: ../../plugin/edit.inc.php:39
+msgid "PKWK_CREATE_PAGE prohibits editing"
+msgstr ""
+
+#: ../../plugin/edit.inc.php:65
 msgid "Edit of  $1"
 msgstr ""
 
-#: ../../plugin/edit.inc.php:73
+#: ../../plugin/edit.inc.php:106
+msgid "Preview of $1"
+msgstr ""
+
+#: ../../plugin/edit.inc.php:107
 msgid "To confirm the changes, click the button at the bottom of the page"
 msgstr ""
 
-#: ../../plugin/edit.inc.php:76
+#: ../../plugin/edit.inc.php:108
 msgid "(The contents of the page are empty. Updating deletes this page.)"
 msgstr ""
 
-#: ../../plugin/edit.inc.php:88
-msgid "Preview of  $1"
+#: ../../plugin/edit.inc.php:199
+msgid " $1 was deleted"
 msgstr ""
 
-#: ../../plugin/edit.inc.php:161
-msgid "On updating  $1, a collision has occurred."
+#: ../../plugin/edit.inc.php:200
+msgid "Invalid password."
 msgstr ""
 
-#: ../../plugin/edit.inc.php:166 ../../plugin/edit.inc.php:171
-msgid ""
-"It seems that someone has already updated this page while you were editing "
-"it.<br />"
+#: ../../plugin/edit.inc.php:249 ../../plugin/edit.inc.php:254
+msgid "It seems that someone has already updated this page while you were editing it.<br />"
 msgstr ""
 
-#: ../../plugin/edit.inc.php:167
-msgid ""
-"The collision has been corrected automatically, but there may still be some "
-"problems with the page.<br />"
+#: ../../plugin/edit.inc.php:250
+msgid "The collision has been corrected automatically, but there may still be some problems with the page.<br />"
 msgstr ""
 
-#: ../../plugin/edit.inc.php:168
+#: ../../plugin/edit.inc.php:251
 msgid "To confirm the changes to the page, press [Update].<br />"
 msgstr ""
 
-#: ../../plugin/edit.inc.php:172
+#: ../../plugin/edit.inc.php:255
 msgid " + is placed at the beginning of a line that was newly added.<br />"
 msgstr ""
 
-#: ../../plugin/edit.inc.php:173
-msgid ""
-" ! is placed at the beginning of a line that has possibly been updated.<br />"
+#: ../../plugin/edit.inc.php:256
+msgid " ! is placed at the beginning of a line that has possibly been updated.<br />"
 msgstr ""
 
-#: ../../plugin/edit.inc.php:174
+#: ../../plugin/edit.inc.php:257
 msgid " Edit those lines, and submit again."
 msgstr ""
 
-#: ../../plugin/edit.inc.php:208
-msgid " $1 was deleted"
+#: ../../plugin/edit.inc.php:259
+msgid "On updating  $1, a collision has occurred."
 msgstr ""

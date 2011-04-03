@@ -17,7 +17,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* jslint evil: true */
-var pukiwiki_skin = {
+pukiwiki_skin = {
 	meta : {
 		'@prefix': '<http://purl.org/net/ns/doas#>',
 		'@about': '<skin.js>', a: ':JavaScript',
@@ -72,7 +72,7 @@ var pukiwiki_skin = {
 		this.blockUI();
 
 		/* Suckerfish（ポップアップメニュー） */
-		this.suckerfish('ul#nav');
+		this.suckerfish('.sf-menu');
 		
 		/* ポップアップ目次 */
 		this.linkattrs();
@@ -292,52 +292,53 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 				$(prefix+'#cboxPrevious').button();
 				$(prefix+'#cboxNext').button();
 				$(prefix+'#cboxClose').button();
-/*
-				function autoResizer() {
-					(function(doms) {
-						for(var i = 0; i < doms.length; i++) {
-							var dom_width = $(doms[i]).width();				// domの幅
-							var dom_height = $(doms[i]).height();			// domの高さ
-							var window_width = $(window).width();			// ウィンドウの幅
-							var window_height = $(window).height();			// ウィンドウの高さ
-							var rate_width = dom_width / window_width;		// domサイズと画像表示領域のサイズの比率 (幅)
-							var rate_height = dom_height / window_height;	// domサイズと画像表示領域のサイズの比率 (高さ)
-							
-							if (rate_width >= 1 && rate_height >= 1){
-								// width、height共に画面に収まらない場合
-								if (rate_width > rate_height){
-									// 高さを合わせる
-									$(doms[i]).css('width',window_width);
-									$(doms[i]).css('height',Math.floor(dom_height / rate_width));
-								} else {
-									// 幅を合わせる
-									$(doms[i]).css('width',Math.floor(dom_height / rate_height));
-									$(doms[i]).css('height',window_height);
-								}
-							} else if (rate_width >= 1 && rate_height < 1){
-								// 画像のwidthのみ画面に収まらない場合
-								$(doms[i]).css('width',window_width);
-								$(doms[i]).css('height',Math.floor(dom_height / rate_height));
-							} else if (rate_width < 1 && rate_height >= 1){
-								// 画像のheightのみ画面に収まらない場合
-								$(doms[i]).css('width',Math.floor(dom_width / rate_width));
-								$(doms[i]).css('height',window_height);
-							}
-						}
-						
-					})($(prefix+'div#colorbox #cboxLoadedContent'));
-				}
-				$(window).bind("resize", autoResizer);
-*/
 			}
 		};
-
+/*
+function autoResizer() {
+	(function(doms) {
+		for(var i = 0; i < doms.length; i++) {
+			var dom_width = $(doms[i]).width();				// domの幅
+			var dom_height = $(doms[i]).height();			// domの高さ
+			var window_width = $(window).width();			// ウィンドウの幅
+			var window_height = $(window).height();			// ウィンドウの高さ
+			var rate_width = dom_width / window_width;		// domサイズと画像表示領域のサイズの比率 (幅)
+			var rate_height = dom_height / window_height;	// domサイズと画像表示領域のサイズの比率 (高さ)
+			var resized_width = 
+			
+			if (rate_width >= 1 && rate_height >= 1){
+				// width、height共に画面に収まらない場合
+				if (rate_width > rate_height){
+					// 高さを合わせる
+					$(doms[i]).css('width',window_width);
+					$(doms[i]).css('height',Math.floor(dom_height / rate_width));
+				} else {
+					// 幅を合わせる
+					$(doms[i]).css('width',Math.floor(dom_height / rate_height));
+					$(doms[i]).css('height',window_height);
+				}
+			} else if (rate_width >= 1 && rate_height =< 1){
+				// 画像のwidthのみ画面に収まらない場合
+				$(doms[i]).css('width',window_width);
+				$(doms[i]).css('height',Math.floor(dom_height / rate_height));
+			} else if (rate_width =< 1 && rate_height >= 1){
+				// 画像のheightのみ画面に収まらない場合
+				$(doms[i]).css('width',Math.floor(dom_width / rate_width));
+				$(doms[i]).css('height',window_height);
+			}
+		}
+		
+	})($(prefix+'#colorbox #cboxLoadedContent'));
+}
+$(window).bind("resize", autoResizer);
+*/
 		// ここから、イベント割り当て
 		$(prefix+'a[href]').each(function(){
 			var href = $(this).attr('href');
 
 			if (href.match(/\.(jpg|jpeg|gif|png|txt)$/i)){	// 拡張子がcolorboxで読み込める形式の場合
 				$(this).colorbox(colorbox_config);
+				// $(this).rlightbox();
 			}else if (href.match(/\.(mp3|ogg|mp4)$/i)){	// 拡張子が音楽の場合
 				pukiwiki_skin.music_player(this);
 			}else if (href.match(/cmd|plugin/i)){	// cmdやpluginの場合
@@ -371,6 +372,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 						
 						if (filename.match(/\.(jpg|jpeg|gif|png|txt)$/i)){
 							$(this).colorbox(colorbox_config);
+						//	$(this).rlightbox();
 						}else if (filename.match(/\.(mp3|ogg|mp4)$/i)){
 							self.music_player(this);
 						}
@@ -378,6 +380,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 						// QRcodeの場合（たぶん使われない）
 						$(this).attr('href',href+'&type=.gif');
 						$(this).colorbox(colorbox_config);
+						//$(this).rlightbox();
 					}else if (params.cmd.match(/attach|search|backup|source|newpage|template|freeze|rename|logview|tb|diff/) && params.pcmd !== 'list' || params.help == 'true'){
 						// その他の主要なプラグインは、インラインウィンドウで表示
 						if (params.help == 'true'){
@@ -883,8 +886,13 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			track: true,
 			delay: 0,
 			showURL: false
-		});
-		
+		}).hover(
+			function(){
+				$('body').css('cursor','help');
+			},function(){
+				$('body').css('cursor','auto');
+			}
+		);
 		if (this.plus === true){
 			// Plusの場合、Glossaly機能をオーバーライド
 			$(prefix+'.tooltip').hover(
@@ -1938,15 +1946,14 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		this.toc = document.createElement("div");
 		this.toc.id = 'poptoc';
 		$(this.toc)
-			.addClass('ui-widget ui-widget-content ui-corner-all noprint')
+			.addClass('ui-widget ui-corner-all noprint')
 			.css('top',0)
 			.css('left',0)
 			.css('position','absolute')
 			.css('z-index',1)
 			.html([
-			'<h2><a href="#">'+$('h1.title').text()+'</a><span class="c"> [TOC]</span></h2>',
+			'<h1><a href="#">'+$('h1.title').text()+'</a><span class="c"> [TOC]</span></h1>',
 			lis.replace(/href/g,'tabindex="1" href'),
-			'<hr />',
 			this.getNaviLink()
 		].join(''));
 
@@ -2134,46 +2141,22 @@ $.fn.serializeObject = function(){
 	return o;
 };
 
-/** PukiWiki Plus! Assistant Scripts **************************************************************/
-function pukiwiki_pos(){
-	if ($.browser.msie){
-		var et = document.activeElement.type;
-		if (!(et == "text" || et == "textarea")){
-			return;
-		}
-		
-		var r=document.selection.createRange();
-		self.elem = document.activeElement;
-		if (et == "text"){
-			r.moveEnd("textedit");
-			pukiwiki_crl =r.text.length;
-		}else if (et == "textarea"){
-			pukiwiki_rngx=r.offsetLeft;
-			pukiwiki_rngy=r.offsetTop;
-			pukiwiki_scrx=document.body.scrollLeft;
-			pukiwiki_scry=document.body.scrollTop;
-		}
-	}else{
-		return;
-	}
-}
-
 /*************************************************************************************************/
 // ブラウザの設定
 var $buoop = {
 	vs:{				// browser versions to notify
 		i:8,			// IE
 		f:3,			// FF
-		o:10.01,		// Opera
+		o:11.00,		// Opera
 		s:5,			// Safari
 		n:9
 	},
 	reminder: 1,		// atfer how many hours should the message reappear
 	onshow: function(){	// callback function after the bar has appeared
-						
+					
 	},
 	l: LANG,			// set a language for the message, e.g. "en"
-	test: DEBUG,		// true = always show the bar (for testing)
+//	test: DEBUG,		// true = always show the bar (for testing)
 	newwindow: false	// open link in new window/tab
 };
 if (DEBUG){
@@ -2183,43 +2166,25 @@ if (DEBUG){
 (function(){
 	// フレームハイジャック対策
 	if( self !== top ){ top.location = self.location; }
-
-	// JSON.stringify, JSON.parseのサポート
-	if (typeof(JSON) === 'undefined') {
-		$.getScript(SKIN_DIR+'js/json2.js');
-	}
-	
-	// IEのCanvasサポート
-	if (!Modernizr.canvas) {
-		$.getScript(SKIN_DIR+'js/excanvas.compiled.js');
-	}
-	$.getScript('http://browser-update.org/update.js');
-	
-	// Google Analyticsを実行
-	// http://www.google.com/support/analytics/bin/answer.py?answer=174090
-	if (GOOGLE_ANALYTICS){
-		var ga = document.createElement('script');
-		ga.type = 'text/javascript';
-		ga.async = true;
-		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-		var s = document.getElementsByTagName('script')[0];
-		s.parentNode.insertBefore(ga, s);
-	}
 	
 	// FaceBookを実行
-	if (FACEBOOK_APPID){
-		$.getScript(document.location.protocol + '//connect.facebook.net/'+LANG+'/all.js',function() {
-			$('body').prepend('<div id="fb-root"></div>');
-			FB.init({appId: FACEBOOK_APPID, status: true, cookie: true, xfbml: true});
-		});
+	if (typeof(FACEBOOK_APPID) !== 'undefined'){
+		$('body').prepend('<div id="fb-root"></div>');
 	}
 });
 
 // onLoad/onUnload
 $(document).ready(function(){
+	$.getScript('http://browser-update.org/update.js');
 	
 	if (typeof(GOOGLE_ANALYTICS) !== 'undefined'){
 		$.ajaxGA.init(GOOGLE_ANALYTICS, true);
+	}
+	
+	if (typeof(FACEBOOK_APPID) !== 'undefined'){
+		$.getScript(document.location.protocol + '//connect.facebook.net/'+LANG+'/all.js',function() {
+			FB.init({appId: FACEBOOK_APPID, status: true, cookie: true, xfbml: true});
+		});
 	}
 
 	if (typeof(pukiwiki_skin.custom) == 'object'){
@@ -2250,6 +2215,26 @@ $(window).unload(function(){
 		pukiwiki_skin.unload();
 	}
 });
+
+$('head').ie9ify({   
+			applicationName: 'PukiWiki Advance',
+			favIcon: 'favicon.ico',
+			navColor: 'Blue',
+			startUrl: SCRIPT,
+			tooltip: 'mySite',
+			tasks: [
+				{
+					'name': 'Twitter',
+					'action': 'http://twitter.com/brandonsatrom',
+					'icon': ''
+				},
+				{
+					'name': 'User InExperience',
+					'action': 'http://www.userinexperience.com',
+					'icon': ''
+				}
+			]
+		});
 
 // usage: log('inside coolFunc',this,arguments);
 // paulirish.com/2009/log-a-lightweight-wrapper-for-consolelog/

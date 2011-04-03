@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-08-25 00:26+0900\n"
+"POT-Creation-Date: 2011-04-02 03:11+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,13 +25,13 @@ msgid "All links are effective."
 msgstr ""
 
 #: ../../plugin/brokenlink.inc.php:17
-msgid "<p>The parameter is illegal.</p>"
+msgid "The parameter is illegal."
 msgstr ""
 
 #: ../../plugin/brokenlink.inc.php:18
-msgid "<p>Not authorized to access.</p>"
+msgid "Not authorized to access."
 msgstr ""
 
 #: ../../plugin/brokenlink.inc.php:19
-msgid "<p>The xbel plugin is not found.</p>"
+msgid "The xbel plugin is not found."
 msgstr ""

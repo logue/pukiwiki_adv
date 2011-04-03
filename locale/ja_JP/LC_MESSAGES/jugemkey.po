@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.7-u2-i18n\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2007-07-24 23:13+0900\n"
-"PO-Revision-Date: 2006-11-25 02:13+0900\n"
+"PO-Revision-Date: 2011-03-27 23:07+0900\n"
 "Last-Translator: Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -51,3 +51,4 @@ msgstr "JugemKey ユーザ情報"
 #: ../../plugin/jugemkey.inc.php:24
 msgid "User Name"
 msgstr "ユーザ名"
+

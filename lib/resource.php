@@ -9,8 +9,30 @@
 $help_page = 'Help';
 $rule_page = 'FormatRule';
 
-$weeklabels = array(
-	T_('Sun'),T_('Mon'),T_('Tue'),T_('Wed'),T_('Thu'),T_('Fri'),T_('Sat'),
+$_labels = array(
+	'week' => array(
+		array(T_('Sun'), T_('Sunday')),
+		array(T_('Mon'), T_('Monday')),
+		array(T_('Tue'), T_('Tuesday')),
+		array(T_('Wed'), T_('Wednesday')),
+		array(T_('Thu'), T_('Thursday')),
+		array(T_('Fri'), T_('Friday')),
+		array(T_('Sat'), T_('Saturday'))
+	),
+	'month'=> array(
+		1	=>array(T_('_Jan'), T_('January')),
+		2	=>array(T_('_Feb'), T_('February')),
+		3	=>array(T_('_Mar'), T_('March')),
+		4	=>array(T_('_Apr'), T_('April')),
+		5	=>array(T_('_May'), T_('May')),
+		6	=>array(T_('_Jun'), T_('June')),
+		7	=>array(T_('_Jul'), T_('July')),
+		8	=>array(T_('_Aug'), T_('August')),
+		9	=>array(T_('_Sep'), T_('September')),
+		10	=>array(T_('_Oct'), T_('October')),
+		11	=>array(T_('_Nov'), T_('November')),
+		12	=>array(T_('_Dec'), T_('December'))
+	)
 );
 
 $_string = array(
@@ -35,12 +57,13 @@ $_string = array(
 	// Error messages
 	'warning'			=> T_('WARNING'),
 	'prohibit'			=> T_('This Wiki is <var>PKWK_READONLY</var> mode now. The action which you are trying to do is prohibited.'),
-	'error_msg'			=> T_('A runtime error has occurred.').'<br />'.T_('Please contact to site admin. If you want more information, please change <code>PKWK_WARNING</code> value.'),
+	'error_msg'			=> T_('A runtime error has occurred.').'<br />'.T_('Please contact to site admin. If you want more information, please change <var>PKWK_WARNING</var> value.'),
 	'debugmode'			=> T_('This program is running in debug mode.'),
 	'changeadminpass'	=> sprintf(T_('<var>$adminpass</var> is not changed! Click <a href="%s">here</a> to generate crypted password and modify auth.ini.php!'),get_cmd_uri('md5')),
 	'not_writable'		=> T_('<var>%s</var> is not found or not writable.'),
 	'not_found'			=> T_('Page <var>%s</var> was not found.'),
-	
+	'header_sent'		=> T_('Headers already sent at <var>%s</var>, line: <var>%s</var>.'),
+	'blacklisted'		=> T_('Writing was limited by <strong>IPBL</storng> (Blocking SPAM).')
 );
 
 $_button = array(
@@ -74,7 +97,7 @@ $_title = array(
 	'cannotread'	=> T_('$1 is not readable'),
 	'collided'		=> T_('On updating $1, a collision has occurred.'),
 	'updated'		=> T_('$1 was updated'),
-	'preview'		=> T_('Preview of  $1'),
+	'preview'		=> T_('Preview of $1'),
 	'error'			=> T_('Runtime Error'),
 );
 

@@ -394,7 +394,8 @@ function add_recent($page, $recentpage, $subject = '', $limit = 0)
 	if (isset($lines[$_page])) unset($lines[$_page]);
 
 	// Add
-	array_unshift($lines, '-' . format_date(UTIME) . ' - ' . $_page .
+//	array_unshift($lines, '-' . format_date(UTIME) . ' - ' . $_page .
+	array_unshift($lines, '- &epoch(' . UTIME . '); - ' . $_page .
 		htmlsc($subject) . "\n");
 
 	// Get latest $limit reports
@@ -572,9 +573,10 @@ function put_lastmodified()
 	rewind($fp);
 	foreach (array_keys($recent_pages) as $page) {
 		$time      = $recent_pages[$page];
-		$s_lastmod = htmlsc(format_date($time));
+//		$s_lastmod = htmlsc(format_date($time));
 		$s_page    = htmlsc($page);
-		fputs($fp, '-' . $s_lastmod . ' - [[' . $s_page . ']]' . "\n");
+//		fputs($fp, '-' . $s_lastmod . ' - [[' . $s_page . ']]' . "\n");
+		fputs($fp, '-&epoch(' . $time . '); - [[' . $s_page . ']]' . "\n");
 	}
 	fputs($fp, '#norelated' . "\n"); // :)
 	flock($fp, LOCK_UN);
@@ -717,7 +719,7 @@ function get_readings()
 			if ($pagereading_api != 'none'){
 				$pagereading_command = $pagereading_path.'/'.$pagereading_api;
 				if(! file_exists($pagereading_command))
-					die_message(sprintf(_('%s is not found or cannot execute: '),$pagereading_api).' '.$pagereading_command);
+					die_message(sprintf(_('%s is not found or cannot execute: '),$pagereading_api).' <var>'.$pagereading_command.'</var>');
 
 				$tmpfname = (CACHE_DIR . PKWK_PAGEREADING_CACHE);
 				pkwk_touch_file($tmpfname);
@@ -752,7 +754,7 @@ function get_readings()
 				$fp = popen($pagereading_command.' '.$exec_option.' '.$tmpfname, 'r');
 				
 				if($fp === FALSE) {
-					die_message(sprintf(_('%s execution failed:'),$pagereading_api.' '.$pagereading_command));
+					die_message(sprintf(_('%s execution failed:'),$pagereading_api.' <var>'.$pagereading_command.'</var>'));
 				}
 
 				foreach ($readings as $page => $reading) {

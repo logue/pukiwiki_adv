@@ -33,8 +33,7 @@ define('PLUGIN_PCOMMENT_TIMESTAMP', 0);
 // ----
 define('PLUGIN_PCOMMENT_FORMAT_NAME',	'[[$name]]');
 define('PLUGIN_PCOMMENT_FORMAT_MSG',	'$msg');
-// define('PLUGIN_PCOMMENT_FORMAT_NOW',	'&new{$now};');
-define('PLUGIN_PCOMMENT_FORMAT_NOW',	'&epoch{'.MUTIME.',new};');
+define('PLUGIN_PCOMMENT_FORMAT_NOW',	'&epoch{'.MUTIME.',comment_date};');
 
 // "\x01", "\x02", "\x03", and "\x08" are used just as markers
 define('PLUGIN_PCOMMENT_FORMAT_STRING',

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-03-10 11:40+0900\n"
+"POT-Creation-Date: 2011-03-27 19:32+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,62 +16,65 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../plugin/pcomment.inc.php:82
+#: ../../plugin/pcomment.inc.php:20
+#, php-format
+msgid "[[Comments/%s]]"
+msgstr ""
+
+#: ../../plugin/pcomment.inc.php:72
+msgid "PKWK_CREATE_PAGE prohibits editing"
+msgstr ""
+
+#: ../../plugin/pcomment.inc.php:91
 msgid "Name: "
 msgstr ""
 
-#: ../plugin/pcomment.inc.php:83
+#: ../../plugin/pcomment.inc.php:92
 msgid "Post Comment"
 msgstr ""
 
-#: ../plugin/pcomment.inc.php:84
+#: ../../plugin/pcomment.inc.php:93
 msgid "Comment: "
 msgstr ""
 
-#: ../plugin/pcomment.inc.php:85
+#: ../../plugin/pcomment.inc.php:94
 #, php-format
 msgid "Show recent %d comments."
 msgstr ""
 
-#: ../plugin/pcomment.inc.php:86
+#: ../../plugin/pcomment.inc.php:95
 msgid "Go to the comment page."
 msgstr ""
 
-#: ../plugin/pcomment.inc.php:87
+#: ../../plugin/pcomment.inc.php:96
 msgid "No comment."
 msgstr ""
 
-#: ../plugin/pcomment.inc.php:88
+#: ../../plugin/pcomment.inc.php:97
 #, php-format
 msgid "[[%s]] : not a valid page name."
 msgstr ""
 
-#: ../plugin/pcomment.inc.php:206
-msgid "invalid page name."
+#: ../../plugin/pcomment.inc.php:221
+msgid "Invalid page name"
 msgstr ""
 
-#: ../plugin/pcomment.inc.php:206
-msgid "cannot add comment."
+#: ../../plugin/pcomment.inc.php:222
+msgid "Cannot add comment"
 msgstr ""
 
-#: ../plugin/pcomment.inc.php:210
+#: ../../plugin/pcomment.inc.php:228
 msgid " $1 was updated"
 msgstr ""
 
-#: ../plugin/pcomment.inc.php:240
+#: ../../plugin/pcomment.inc.php:264
 msgid "On updating  $1, there was a collision."
 msgstr ""
 
-#: ../plugin/pcomment.inc.php:241
-msgid ""
-"It seems that someone has already updated this page while you were editing "
-"it.<br />"
+#: ../../plugin/pcomment.inc.php:265
+msgid "It seems that someone has already updated this page while you were editing it.<br />The comment was added to the page, but there may be a problem.<br />"
 msgstr ""
 
-#: ../plugin/pcomment.inc.php:242
-msgid "The comment was added to the page, but there may be a problem.<br />"
-msgstr ""
-
-#: ../plugin/pcomment.inc.php:355
+#: ../../plugin/pcomment.inc.php:357
 msgid "Due to the blocking, no comments could be read from  $1 at all."
 msgstr ""

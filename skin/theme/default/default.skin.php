@@ -8,7 +8,7 @@
 //
 // $Id: default.skin.php,v 1.4.14 2010/08/16 20:44:00 Logue Exp $
 //
-global $pkwk_dtd, $_SKIN;
+global $pkwk_dtd, $_SKIN, $is_page, $defaultpage, $sidebar, $headarea, $footarea;
 
 if (!defined('DATA_DIR')) { exit; }
 
@@ -18,6 +18,16 @@ if ($title != $defaultpage) {
 	$page_title = $newtitle.' - '.$page_title;
 }
 
+$title_style = '';
+
+if (is_page($headarea) && exist_plugin_convert('headarea')){
+	$header = do_plugin_convert('headarea');
+	$title_style = "display:none;";
+}
+
+if (is_page($footarea) && exist_plugin_convert('footarea')){
+	$footer = do_plugin_convert('footarea');
+}
 // Output HTML DTD, <html>, and receive content-type
 $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_output_dtd();
 ?>
@@ -28,61 +38,78 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 	</head>
 <?php flush(); ?>
 	<body>
-		<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<header id="header">'."\n" : '<div id="header">')."\n"; ?>
-<?php if (exist_plugin_convert('headarea') && do_plugin_convert('headarea') != '') { ?>
-			<h1 style="display:none;"><?php echo(($newtitle!='' && $is_read) ? $newtitle: $page) ?></h1>
-			<div style="display:none;"><a href="<?php echo $_LINK['reload'] ?>" id="parmalink"><?php echo $_LINK['reload'] ?></a></div>
-			<?php echo do_plugin_convert('headarea') ?>
-<?php } else { ?>
-			<a href="<?php echo $modifierlink ?>"><img id="logo" src="<?php echo $_SKIN['logo'] ?>" width="<?php echo $_SKIN['logo_w'] ?>" height="<?php echo $_SKIN['logo_h'] ?>" alt="<?php echo $_SKIN['logo_alt'] ?>" title="<?php echo $_SKIN['logo_alt'] ?>" /></a>
-			<h1 class="title"><?php echo(($newtitle!='' && $is_read)?$newtitle:$page) ?></h1>
-			<div class="small"><a href="<?php echo $_LINK['reload'] ?>" id="parmalink"><?php echo $_LINK['reload'] ?></a></div>
-<?php } ?>
+	<!-- *** Header *** -->
+		<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<header id="header" class="clearfix">'."\n" : '<div id="header" class="clearfix">')."\n"; ?>
+			<a href="<?php echo $modifierlink ?>"  style="<?php echo $title_style; ?>'"><img id="logo" src="<?php echo $_SKIN['logo']['src'] ?>" width="<?php echo $_SKIN['logo']['width'] ?>" height="<?php echo $_SKIN['logo']['height'] ?>" alt="<?php echo $_SKIN['logo']['alt'] ?>" /></a>
+			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<hgroup id="title" style="'.$title_style.'">'."\n" : '<div id="title" style="'.$title_style.'">')."\n"; ?>
+				<h1><?php echo(($newtitle!='' && $is_read) ? $newtitle: $page) ?></h1>
+				<h2><a href="<?php echo $_LINK['reload'] ?>" id="parmalink"><?php echo $_LINK['reload'] ?></a></h2>
+			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</hgroup>'."\n" : '</div>')."\n"; ?>
+<!-- * Ad space *-->
+			<?php if ($_SKIN['adarea']['header'] && !isset($header)) echo '<div id="ad" class="noprint">' . $_SKIN['adarea']['header'] . '</div>'; ?>
+<!-- * End Ad space * -->
+			<?php if (isset($header)) echo $header; ?>
+			<?php echo (!empty($lastmodified)) ? '<div id="lastmodified">Last-modified: '.$lastmodified.'</div>'."\n" : '' ?>
 		<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</header>' : '</div>')."\n"; ?>
-		<?php echo (!empty($lastmodified)) ? '<div id="lastmodified">Last-modified: '.$lastmodified.'</div>'."\n" : '' ?>
+<!-- *** End Header *** -->
+
 		<?php if (exist_plugin('suckerfish')) echo do_plugin_convert('suckerfish'); ?>
+
 		<table class="main">
 			<tr>
-<?php if (!empty($body_menu)) { ?>
+<?php if (arg_check('read') && exist_plugin_convert('menu')) { ?>
+<!-- ** MenuBar ** -->
 				<td class="ltable">
-					<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="menubar">'."\n" : '<div id="menubar">')."\n"; ?>
-					<?php echo $body_menu; ?>
-					<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</section>'."\n" : '</div>')."\n"; ?>
+					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="menubar">'."\n" : '<div id="menubar">'."\n"; ?>
+						<?php echo do_plugin_convert('menu') ?>
+					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
 				</td>
+<!-- ** End MenuBar ** -->
 <?php } ?>
 				<td class="ctable">
-					<?php echo ($is_page and exist_plugin_convert('topicpath')) ? do_plugin_convert('topicpath') : ''; ?>
+					<?php echo ($is_page && exist_plugin_convert('topicpath')) ? do_plugin_convert('topicpath') : ''; ?>
 					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="body">'."\n" : '<div id="body">'."\n"; ?>
 						<?php echo $body ?>
 					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</section>'."\n" : '</div>'."\n"; ?>
 				</td>
-<?php if (!empty($body_side)) { ?>
+<?php if (arg_check('read') && exist_plugin_convert('side') && is_page($sidebar))  { ?>
 				<td class="rtable">
-					<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="sidebar">' : '<div id="sidebar">')."\n"; ?>
-						<?php echo $body_side; ?>
-					<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</section>'."\n" : '</div>')."\n"; ?>
+					<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="sidebar">' : '<div id="sidebar">')."\n"; ?>
+						<?php echo do_plugin_convert('side') ?>
+					<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>')."\n"; ?>
 				</td>
 <?php } ?>
 			</tr>
 		</table>
+		<?php echo $hr ?>
+<?php if (!empty($attaches)) { ?>
+<!-- * Attach * -->
+		<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="attach" class="clearfix">'."\n" : '<div id="attach">'."\n"; ?>
+			<?php echo $attaches ?>
+		<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
+<!--  End Attach -->
+<?php } ?>
+
 <?php
-echo ($notes) ? '<div id="note">'.$notes.'</div>'."\n".$hr : '';	// note
-echo ($attaches) ? '<div id="attach">'.$attaches.'</div>'."\n".'<hr style="clear:both;" />'."\n" : '';	// attach
-echo (!$notes && !$attaches) ? $hr : '';
-$footarea = (exist_plugin_convert('footarea')) ? do_plugin_convert('footarea') : '';
-if (!empty($footarea)) {
-	echo $footarea."\n";
-	unset($footarea);
-} else {
-	echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','reload,|,new,newsub,edit,guiedit,freeze,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,|,help,|,mixirss').'<div class="pkwk-clear"></div>' : '';
-	echo ($related) ?'<div id="related">'.$related.'</div>'."\n" : '';
+echo (!isset($notes) && !isset($attaches)) ? $hr : '';
+echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','reload,|,new,newsub,edit,guiedit,freeze,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,|,help,|,mixirss').'<div class="pkwk-clear"></div>' : '';
 ?>
+<?php if (!empty($related)) { ?>
+<!-- * related * -->
+		<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="related" class="clearfix">'."\n" : '<div id="related">'."\n"; ?>
+			<?php echo $related ?>
+		<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
+<!--  End Related -->
+<?php } ?>
 		<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<footer id="footer">'."\n" : '<div id="footer">'."\n"; ?>
+<?php if (isset($footer)) {
+	echo $footer;
+}else{ ?>
 			<div id="qr_code">
-				<?php echo exist_plugin_inline('qrcode') ? plugin_qrcode_inline(1,get_script_absuri().'?'.str_replace('%', '%25', $r_page)) : ''; ?>
+				<?php echo exist_plugin_inline('qrcode') ? plugin_qrcode_inline(1,$_LINK['reload']) : ''; ?>
 			</div>
+			<address>Founded by <a href="<?php echo $modifierlink ?>"><?php echo $modifier ?></a></address>
 			<div id="sigunature">
-				<address>Founded by <a href="<?php echo $modifierlink ?>"><?php echo $modifier ?></a></address><br />
 				Powered by <?php echo GENERATOR ?>. HTML convert time: <?php echo showtaketime() ?> sec. <br />
 				Theme Design by <a href="http://pukiwiki.cafelounge.net/plus/">PukiWiki Plus!</a> Team.
 			</div>

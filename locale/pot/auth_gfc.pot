@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-05-03 03:54+0900\n"
+"POT-Creation-Date: 2011-04-02 03:11+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,43 +16,43 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/auth_gfc.inc.php:29
+#: ../../plugin/auth_gfc.inc.php:35
 msgid "logout"
 msgstr ""
 
-#: ../../plugin/auth_gfc.inc.php:30
+#: ../../plugin/auth_gfc.inc.php:36
 #, php-format
 msgid "%s has been approved by GFC."
 msgstr ""
 
-#: ../../plugin/auth_gfc.inc.php:31
+#: ../../plugin/auth_gfc.inc.php:37
 msgid "The function of GFC is invalid."
 msgstr ""
 
-#: ../../plugin/auth_gfc.inc.php:32
+#: ../../plugin/auth_gfc.inc.php:38
 msgid "pkwk_session_start() doesn't exist."
 msgstr ""
 
-#: ../../plugin/auth_gfc.inc.php:33
+#: ../../plugin/auth_gfc.inc.php:39
 msgid "The session is not start."
 msgstr ""
 
-#: ../../plugin/auth_gfc.inc.php:34
+#: ../../plugin/auth_gfc.inc.php:40
 msgid "GFC"
 msgstr ""
 
-#: ../../plugin/auth_gfc.inc.php:35
+#: ../../plugin/auth_gfc.inc.php:41
 msgid "Please wait for a while."
 msgstr ""
 
-#: ../../plugin/auth_gfc.inc.php:36
+#: ../../plugin/auth_gfc.inc.php:42
 msgid "Login"
 msgstr ""
 
-#: ../../plugin/auth_gfc.inc.php:37
+#: ../../plugin/auth_gfc.inc.php:43
 msgid "Settings"
 msgstr ""
 
-#: ../../plugin/auth_gfc.inc.php:38
+#: ../../plugin/auth_gfc.inc.php:44
 msgid "Invite"
 msgstr ""

@@ -518,8 +518,8 @@ function die_message($msg){
 		$msg = $_string['error_msg'];
 	}
 	$body = <<<EOD
-<div style="padding: 0pt 0.7em;" class="ui-state-error ui-corner-all">
-	<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span> 
+<div class="message_box ui-state-error ui-corner-all">
+	<p><span class="ui-icon ui-icon-alert"></span> 
 	<strong>$page:</strong> $msg</p>
 </div>
 EOD;
@@ -538,12 +538,13 @@ EOD;
 		define('SKIN_FILE', $skin_file);
 		catbody($title, $page, $body);
 	}else{	
+		global $google_loader, $_SKIN;
 		print <<<EOD
 <!doctype html>
 <html>
 	<head>
 		<meta charset="utf-8">
-		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/themes/base/jquery-ui.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/{$google_loader['jqueryui']}/themes/{$_SKIN['ui_theme']}/jquery-ui.css" type="text/css" media="all" />
 		<title>$title - $page_title</title>
 	</head>
 	<body>$body</body>
@@ -553,8 +554,6 @@ EOD;
 //	exit();
 	die();
 }
-
-function die_msg($msg) { die($msg); }
 
 // Have the time (as microtime)
 function getmicrotime()
@@ -613,15 +612,48 @@ function get_zonetime_offset($zonetime)
 }
 
 // Format date string
-function format_date($val, $paren = FALSE)
+function format_date($val, $paren = FALSE, $format = null)
 {
-	global $date_format, $time_format, $weeklabels;
+	global $date_format, $time_format, $_labels;
 
 	$val += ZONETIME;
+	$wday = date('w', $val);
 
-	$date = date($date_format, $val) .
-		' (' . $weeklabels[date('w', $val)] . ') ' .
-		date($time_format, $val);
+	$week   = $_labels['week'][$wday];
+
+	if ($wday == 0) {
+		// Sunday 
+		$style = 'week_sun';
+	} else if ($wday == 6) {
+		// Saturday
+		$style = 'week_sat';
+	}else{
+		$style = 'week_day';
+	}
+	if (!isset($format)){
+		$date = date($date_format, $val) .
+			'(<abbr class="' . $style . '" title="' . $week[1]. '">'. $week[0] . '</abbr>)' .
+			date($time_format, $val);
+	}else{
+		$month  = $_labels['month'][date('n', $val)];
+		$month_short = $month[0];
+		$month_long = $month[1];
+		
+		
+		$date = str_replace(
+			array(
+				date('M', $val),	// 月。3 文字形式。
+				date('l', $val),	// 曜日。フルスペル形式。
+				date('D', $val)		// 曜日。3文字のテキスト形式。
+			),
+			array(
+				'<abbr class="month" title="' . $month[1]. '">'. $month[0] . '</abbr>',
+				$week[1],
+				'(<abbr class="' . $style . '" title="' . $week[1]. '">'. $week[0] . '</abbr>)'
+			),
+			date($format, $val)
+		);
+	}
 	
 	return $paren ? '(' . $date . ')' : $date;
 }
@@ -1149,18 +1181,22 @@ function sanitize($param) {
 // Explode Comma-Separated Values to an array
 function csv_explode($separator, $string)
 {
-	$retval = $matches = array();
+	if (function_exists('explode')){
+		$retval = explode($separator, $string);
+	}else{
+		$retval = $matches = array();
 
-	$_separator = preg_quote($separator, '/');
-	if (! preg_match_all('/("[^"]*(?:""[^"]*)*"|[^' . $_separator . ']*)' .
-	    $_separator . '/', $string . $separator, $matches))
-		return array();
+		$_separator = preg_quote($separator, '/');
+		if (! preg_match_all('/("[^"]*(?:""[^"]*)*"|[^' . $_separator . ']*)' .
+		    $_separator . '/', $string . $separator, $matches))
+			return array();
 
-	foreach ($matches[1] as $str) {
-		$len = strlen($str);
-		if ($len > 1 && $str{0} == '"' && $str{$len - 1} == '"')
-			$str = str_replace('""', '"', substr($str, 1, -1));
-		$retval[] = $str;
+		foreach ($matches[1] as $str) {
+			$len = strlen($str);
+			if ($len > 1 && $str{0} == '"' && $str{$len - 1} == '"')
+				$str = str_replace('""', '"', substr($str, 1, -1));
+			$retval[] = $str;
+		}
 	}
 	return $retval;
 }
@@ -1168,14 +1204,18 @@ function csv_explode($separator, $string)
 // Implode an array with CSV data format (escape double quotes)
 function csv_implode($glue, $pieces)
 {
-	$_glue = ($glue != '') ? '\\' . $glue{0} : '';
-	$arr = array();
-	foreach ($pieces as $str) {
-		if (ereg('[' . $_glue . '"' . "\n\r" . ']', $str))
-			$str = '"' . str_replace('"', '""', $str) . '"';
-		$arr[] = $str;
+	if (function_exists('implode')){
+		return implode($glue, $pieces);
+	}else{
+		$_glue = ($glue != '') ? '\\' . $glue{0} : '';
+		$arr = array();
+		foreach ($pieces as $str) {
+			if (preg_match_all('/[' . $_glue . '"' . "\n\r" . ']/', $str))
+				$str = '"' . str_replace('"', '""', $str) . '"';
+			$arr[] = $str;
+		}
+		return join($glue, $arr);
 	}
-	return join($glue, $arr);
 }
 
 // Sugar with default settings

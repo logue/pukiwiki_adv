@@ -10,13 +10,6 @@
 // Image refernce plugin
 // Include an attached image-file as an inline-image
 
-// File icon image
-if (! defined('FILE_ICON')) {
-	define('FILE_ICON',
-	'<img src="' . IMAGE_DIR . 'file.png" width="20" height="20"' .
-	' alt="file" style="border-width:0px" />');
-}
-
 /////////////////////////////////////////////////
 // Default settings
 
@@ -293,9 +286,9 @@ function plugin_ref_body($args)
 			$s_info = htmlsc(get_date('Y/m/d H:i:s', filemtime($file) - LOCALZONE) .
 				' ' . sprintf('%01.1f', round(filesize($file) / 1024, 1)) . 'KB');
 		}
-		$icon = isset($params['noicon']) ? '' : FILE_ICON;
-		$params['_body'] = '<a href="' . $s_url . '" title="' . $s_info . '">' .
-			$icon . $s_title . '</a>';
+		$icon = isset($params['noicon']) ? '' : ' class="pkwk-icon_linktext attach-download"';
+		$params['_body'] = '<a href="' . $s_url . '" title="' . $s_info . '"'. $icon .'>' .
+			 $s_title . '</a>';
 	}
 
 	return $params;
@@ -431,14 +424,20 @@ function plugin_ref_action()
 			break;
 		}
 	}
+	
+	$s_filename = htmlsc($filename);
 
 	// Output
-	$size = filesize($ref);
-	pkwk_common_headers();
-	header('Content-Disposition: inline; filename="' . htmlsc($filename) . '"');
-	header('Content-Length: ' . htmlsc($size));
-	header('Content-Type: '   . htmlsc($type));
-	header('X-Sendfile: '.htmlsc($filename));	// for reduce server load
+	pkwk_common_headers(filemtime($ref), null, false);
+	header('X-Sendfile: '. $s_filename);	// for reduce server load
+	if ($type == 'text/html' || $type == 'application/octet-stream') {
+		header('Content-Disposition: attachment; filename="' . $s_filename . '"');
+		header('Content-Type: application/octet-stream; name="' . $s_filename . '"');
+	} else {
+		header('Content-Disposition: inline; filename="' . $s_filename . '"');
+		header('Content-Type: ' . htmlsc($type));
+	}
+	header('Content-Length: ' . filesize($ref));
 	@readfile($ref);
 	exit;
 }

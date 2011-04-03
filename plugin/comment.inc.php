@@ -19,7 +19,7 @@ defined('PLUGIN_COMMENT_SIZE_NAME') or define('PLUGIN_COMMENT_SIZE_NAME', 15);
 define('PLUGIN_COMMENT_FORMAT_MSG',		'$msg');
 define('PLUGIN_COMMENT_FORMAT_NAME',	'[[$name]]');
 // define('PLUGIN_COMMENT_FORMAT_NOW',	'&new{$now};');
-define('PLUGIN_COMMENT_FORMAT_NOW',		'&epoch{'.MUTIME.',new};');
+define('PLUGIN_COMMENT_FORMAT_NOW',		'&epoch{'.MUTIME.',comment_date};');
 define('PLUGIN_COMMENT_FORMAT_STRING',	"\x08MSG\x08 -- \x08NAME\x08 \x08NOW\x08");
 
 function plugin_comment_init(){
@@ -207,7 +207,6 @@ function plugin_comment_convert()
 			'" value="'.$user.'"'.$disabled.' />' . "\n";
 	}
 
-	$helptags = edit_form_assistant();
 	$nodate = in_array('nodate', $options) ? '1' : '0';
 	$above  = in_array('above',  $options) ? '1' :
 		(in_array('below', $options) ? '0' : PLUGIN_COMMENT_DIRECTION_DEFAULT);

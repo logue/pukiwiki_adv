@@ -466,7 +466,7 @@ class BQuote extends Element
 	{
 		// BugTrack/521, BugTrack/545
 		if (is_a($obj, 'inline'))
-			return parent::insert($obj->toPara(' class="quotation"'));
+			return parent::insert($obj->toPara(' class="style_blockquote"'));
 
 		if (is_a($obj, 'BQuote') && $obj->level == $this->level && count($obj->elements)) {
 			$obj = & $obj->elements[0];
@@ -505,8 +505,9 @@ class TableCell extends Element
 	{
 		parent::Element();
 		$this->style = $matches = array();
+		$this->is_blank = false;
 
-		while (preg_match('/^(?:(LEFT|CENTER|RIGHT)|(BG)?COLOR\(([#\w]+)\)|SIZE\((\d+)\)):(.*)$/',
+		while (preg_match('/^(?:(LEFT|CENTER|RIGHT)|(BG)?COLOR\(([#\w]+)\)|SIZE\((\d+)\)|LANG\((\w+2)\)):(.*)$/',
 		    $text, $matches)) {
 			if ($matches[1]) {
 				$this->style['align'] = 'text-align:' . strtolower($matches[1]) . ';';
@@ -518,12 +519,19 @@ class TableCell extends Element
 			} else if ($matches[4]) {
 				$this->style['size'] = 'font-size:' . htmlspecialchars($matches[4]) . 'px;';
 				$text = $matches[5];
+			} else if ($matches[5]){
+				$this->lang = $matches[6];
+				$text = $matches[5];
 			}
 		}
 		if ($is_template && is_numeric($text))
 			$this->style['width'] = 'width:' . $text . 'px;';
 
-		if ($text == '>') {
+		if ($text == '' || !preg_match("/\S+/", $text)){
+			// セルが空だったり、空白文字しか残らない場合は、空欄のセルとする。（HTMLではタブやスペースも削除）
+			$text = '';
+			$this->is_blank = true;
+		} else if ($text == '>') {
 			$this->colspan = 0;
 		} else if ($text == '~') {
 			$this->rowspan = 0;
@@ -532,7 +540,7 @@ class TableCell extends Element
 			$text      = substr($text, 1);
 		}
 
-		if ($text != '' && $text{0} == '#') {
+		if ($text !== '' && $text{0} == '#') {
 			// Try using Div class for this $text
 			$obj = & Factory_Div($this, $text);
 			if (is_a($obj, 'Paragraph'))
@@ -555,13 +563,20 @@ class TableCell extends Element
 	{
 		if ($this->rowspan == 0 || $this->colspan == 0) return '';
 
-		$param = ' class="style_' . $this->tag . '"';
+		if($this->is_blank == true && $this->tag == 'td'){
+			$param = ' class="style_td_blank"';
+		}else{
+			$param = ' class="style_' . $this->tag . '"';
+		}
 		if ($this->rowspan > 1)
 			$param .= ' rowspan="' . $this->rowspan . '"';
 		if ($this->colspan > 1) {
 			$param .= ' colspan="' . $this->colspan . '"';
 			unset($this->style['width']);
 		}
+		if (! empty($this->lang))
+			$param .= ' lang="' . $this->lang . '"';
+
 		if (! empty($this->style))
 			$param .= ' style="' . join(' ', $this->style) . '"';
 
@@ -718,10 +733,15 @@ class YTable extends Element
 			while (isset($_value[$i + $colspan]) && $_value[$i + $colspan] === FALSE) ++$colspan;
 			$colspan = ($colspan > 1) ? ' colspan="' . $colspan . '"' : '';
 			$align = $_align[$i] ? ' style="text-align:' . $_align[$i] . '"' : '';
-			$str[] = '<td class="style_td"' . $align . $colspan . '>';
-			$str[] = make_link($_value[$i]);
-			$str[] = '</td>';
-			unset($_value[$i], $_align[$i]);
+			$text = make_link($_value[$i]);
+			if ($text == '' || preg_match("/\s+/", $text)){
+				$class="style_td";
+				$text = '';
+			}else{
+				$class="style_td_blank";
+			}
+			$str[] = '<td class="'.$style.'"' . $align . $colspan . '>' . $text . '</td>';
+			unset($_value[$i], $_align[$i], $text);
 		}
 
 		$this->col        = $col;

@@ -96,11 +96,14 @@ function plugin_include_convert()
 
 	// One page, only one time, at a time
 	$included[$page] = TRUE;
+	
+	$source = get_source($page);
+	preg_replace('/^#navi/','/\/\/#navi/',$source);
 
 	// Include A page, that probably includes another pages
 	$get['page'] = $post['page'] = $vars['page'] = $page;
 	if (check_readable($page, false, false)) {
-		$body = convert_html(get_source($page));
+		$body = convert_html($source);
 	} else {
 		$body = str_replace('$1', $page, $_msg_include_restrict);
 	}

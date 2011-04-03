@@ -160,6 +160,7 @@ aaaa~
 - aaaa -- [[aa]] &new{};
 - de -- [[aa]] &new{2011-02-06 (日) 05:19:53};
 - あああ -- [[aa]] &new{2011-02-06 (日) 05:29:09,new};
-- ううう -- [[aaa]] &epoch{1296905523.0758,new};
+- ううう -- [[aaa]] &epoch{1296905523.0758,comment_date};
+- aaaa -- [[aaaa]] &epoch{1299237721,comment_date};
 
 #comment

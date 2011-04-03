@@ -1,24 +1,24 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: calendar_viewer.inc.php,v 1.37.10 2011/02/05 10:29:00 Logue Exp $
-// Copyright (C)
-//   2011      PukiWiki Advance Developers Team
-//   2005-2008 PukiWiki Plus! Team
-//   2002-2005, 2007 PukiWiki Developers Team
+// $Id: calendar_viewer.inc.php,v 1.37 2011/01/25 15:01:01 henoheno Exp $
+// Copyright (C) 2002-2005, 2007, 2011 PukiWiki Developers Team
+//           
 // License: GPL v2 or (at your option) any later version
-//
 // Calendar viewer plugin - List pages that calendar/calnedar2 plugin created
 // (Based on calendar and recent plugin)
+
+// Notice: This plugin based on minicalendar_viewer.inc.php from PukiWiki Plus!.
+//         Adv. is rejected to minicalendar.inc.php and minicalendar_viewer.inc.php.
 
 // Page title's date format
 //  * See PHP date() manual for detail
 //  * '$\w' = weeklabel defined in $_msg_week
 define('PLUGIN_CALENDAR_VIEWER_DATE_FORMAT',
-		FALSE         // 'pagename/2004-02-09' -- As is
+	//	FALSE         // 'pagename/2004-02-09' -- As is
 	//	'D, d M, Y'   // 'Mon, 09 Feb, 2004'
 	//	'F d, Y'      // 'February 09, 2004'
 	//	'[Y-m-d]'     // '[2004-02-09]'
-	//	'Y/n/j ($\w)' // '2004/2/9 (Mon)'
+		'Y/n/j ($\w)' // '2004/2/9 (Mon)'
 	);
 
 // ----
@@ -51,17 +51,34 @@ define('PLUGIN_CALENDAR_VIEWER_USAGE',
  *  Stop showing links 'next month' and 'previous month' with past/future mode for 'this month'
  *    #calendar_viewer(pagename,this,past)
  */
+// ºÇÂçÉ½¼¨·ï¿ô
+defined('PLUGIN_CALENDAR_MAX_VIEWS')			or define('PLUGIN_CALENDAR_MAX_VIEWS', 3);
+// µÙÆü¤òÈ¿±Ç¤µ¤»¤ë
+defined('PLUGIN_CALENDAR_VIEWER_HOLIDAYVIEW')	or define('PLUGIN_CALENDAR_VIEWER_HOLIDAYVIEW',	TRUE);
+// ¥³¥á¥ó¥ÈÍó¤òÉ½¼¨
+defined('PLUGIN_CALENDAR_VIEWER_COMMENT')		or define('PLUGIN_CALENDAR_VIEWER_COMMENT',		FALSE);
+// TrackBack¥ê¥ó¥¯¤òÉ½¼¨
+defined('PLUGIN_CALENDAR_VIEWER_TRACKBACK')		or define('PLUGIN_CALENDAR_VIEWER_TRACKBACK',	TRUE);
+
+function plugin_calendar_viewer_init(){
+	$messages = array(
+		'_calendar_viewer_msg' => array(
+			'_err_param2'	=> T_('Wrong second parameter.'),
+			'_msg_right'	=> T_('Next %d &gt;&gt;'),
+			'_msg_left'		=> T_('&lt;&lt; Prev %d'),
+			'_msg_restrict'	=> T_('Due to the blocking, the calendar_viewer cannot refer to $1.'),
+			'_title_format'	=> T_('%1s, %2s %3s %4s')	// Sat, 12 Mar 2011
+		)
+	);
+	set_plugin_messages($messages);
+}
 
 function plugin_calendar_viewer_convert()
 {
-	global $vars, $get, $post, $weeklabels;
+	global $vars, $get, $post, $script, $_labels;
 //	global $_msg_calendar_viewer_right, $_msg_calendar_viewer_left;
 //	global $_msg_calendar_viewer_restrict, $_err_calendar_viewer_param2;
-
-	$_err_calendar_viewer_param2   = _('Wrong second parameter.');
-	$_msg_calendar_viewer_right    = _('Next %d&gt;&gt;');
-	$_msg_calendar_viewer_left     = _('&lt;&lt; Prev %d');
-	$_msg_calendar_viewer_restrict = _('Due to the blocking, the calendar_viewer cannot refer to $1.');
+	global $_calendar_viewer_msg, $_symbol_paraedit, $trackback, $pkwk_dtd;
 
 	static $viewed = array();
 
@@ -71,39 +88,39 @@ function plugin_calendar_viewer_convert()
 	$func_args = func_get_args();
 
 	// Default values
-	$pagename    = $func_args[0];	// åŸºæº–ã¨ãªã‚‹ãƒšãƒ¼ã‚¸å
-	$page_YM     = '';	// ä¸€è¦§è¡¨ç¤ºã™ã‚‹å¹´æœˆ
-	$limit_base  = 0;	// å…ˆé ­ã‹ã‚‰æ•°ãˆã¦ä½•ãƒšãƒ¼ã‚¸ç›®ã‹ã‚‰è¡¨ç¤ºã™ã‚‹ã‹ (å…ˆé ­)
-	$limit_pitch = 0;	// ä½•ä»¶ã¥ã¤è¡¨ç¤ºã™ã‚‹ã‹
-	$limit_page  = 0;	// ã‚µãƒ¼ãƒã™ã‚‹ãƒšãƒ¼ã‚¸æ•°
-	$mode        = 'past';	// å‹•ä½œãƒ¢ãƒ¼ãƒ‰
-	$date_sep    = '-';	// æ—¥ä»˜ã®ã‚»ãƒ‘ãƒ¬ãƒ¼ã‚¿ calendar2ãªã‚‰ '-', calendarãªã‚‰ ''
+	$pagename    = $func_args[0];	// ´ğ½à¤È¤Ê¤ë¥Ú¡¼¥¸Ì¾
+	$page_YM     = '';	// °ìÍ÷É½¼¨¤¹¤ëÇ¯·î
+	$limit_base  = 0;	// ÀèÆ¬¤«¤é¿ô¤¨¤Æ²¿¥Ú¡¼¥¸ÌÜ¤«¤éÉ½¼¨¤¹¤ë¤« (ÀèÆ¬)
+	$limit_pitch = 0;	// ²¿·ï¤Å¤ÄÉ½¼¨¤¹¤ë¤«
+	$limit_page  = 0;	// ¥µ¡¼¥Á¤¹¤ë¥Ú¡¼¥¸¿ô
+	$mode        = 'past';	// Æ°ºî¥â¡¼¥É
+	$date_sep    = '-';	// ÆüÉÕ¤Î¥»¥Ñ¥ì¡¼¥¿ calendar2¤Ê¤é '-', calendar¤Ê¤é ''
 
 	// Check $func_args[1]
 	$matches = array();
 	if (preg_match('/[0-9]{4}' . $date_sep . '[0-9]{2}/', $func_args[1])) {
-		// æŒ‡å®šå¹´æœˆã®ä¸€è¦§è¡¨ç¤º
+		// »ØÄêÇ¯·î¤Î°ìÍ÷É½¼¨
 		$page_YM     = $func_args[1];
 		$limit_page  = 31;
 	} else if (preg_match('/this/si', $func_args[1])) {
-		// ä»Šæœˆã®ä¸€è¦§è¡¨ç¤º
+		// º£·î¤Î°ìÍ÷É½¼¨
 		$page_YM     = get_date('Y' . $date_sep . 'm');
 		$limit_page  = 31;
 	} else if (preg_match('/^[0-9]+$/', $func_args[1])) {
-		// næ—¥åˆ†è¡¨ç¤º
+		// nÆüÊ¬É½¼¨
 		$limit_pitch = $func_args[1];
 		$limit_page  = $func_args[1];
 	} else if (preg_match('/(-?[0-9]+)\*([0-9]+)/', $func_args[1], $matches)) {
-		// å…ˆé ­ã‚ˆã‚Šæ•°ãˆã¦ x ãƒšãƒ¼ã‚¸ç›®ã‹ã‚‰ã€yä»¶ã¥ã¤è¡¨ç¤º
+		// ÀèÆ¬¤è¤ê¿ô¤¨¤Æ x ¥Ú¡¼¥¸ÌÜ¤«¤é¡¢y·ï¤Å¤ÄÉ½¼¨
 		$limit_base  = $matches[1];
 		$limit_pitch = $matches[2];
-		$limit_page  = $matches[1] + $matches[2]; // èª­ã¿é£›ã°ã™ + è¡¨ç¤ºã™ã‚‹
+		$limit_page  = $matches[1] + $matches[2]; // ÆÉ¤ßÈô¤Ğ¤¹ + É½¼¨¤¹¤ë
 	} else {
-		return '#calendar_viewer(): ' . $_err_calendar_viewer_param2 . '<br />' . "\n";
+		return '#calendar_viewer(): ' . $_calendar_viewer_msg['_err_param2'] . '<br />' . "\n";
 	}
 
 	// $func_args[2]: Mode setting
-	if (isset($func_args[2]) && preg_match('/^(past|view|future)$/si', $func_args[2]))
+	if (isset($func_args[2]) && preg_match('/^(past|pastex|view|viewex|future|futureex)$/si', $func_args[2]))
 		$mode = $func_args[2];
 
 	// $func_args[3]: Change default delimiter
@@ -111,15 +128,18 @@ function plugin_calendar_viewer_convert()
 
 	// Avoid Loop etc.
 	if (isset($viewed[$pagename])) {
-		$s_page = htmlsc($pagename);
-		return "#calendar_viewer(): You already view: $s_page<br />";
+		if ($viewed[$pagename] > PLUGIN_CALENDAR_MAX_VIEWS) {
+			$s_page = htmlsc($pagename);
+			return '#calendar_viewer(): You already view: '.$s_page.'<br />';
+		}
+		$viewed[$pagename]++; // Valid
 	} else {
-		$viewed[$pagename] = TRUE; // Valid
+		$viewed[$pagename]=1; // Valid
 	}
 
-	// ä¸€è¦§è¡¨ç¤ºã™ã‚‹ãƒšãƒ¼ã‚¸åã¨ãƒ•ã‚¡ã‚¤ãƒ«åã®ãƒ‘ã‚¿ãƒ¼ãƒ³ã€€ãƒ•ã‚¡ã‚¤ãƒ«åã«ã¯å¹´æœˆã‚’å«ã‚€
+	// °ìÍ÷É½¼¨¤¹¤ë¥Ú¡¼¥¸Ì¾¤È¥Õ¥¡¥¤¥ëÌ¾¤Î¥Ñ¥¿¡¼¥ó¡¡¥Õ¥¡¥¤¥ëÌ¾¤Ë¤ÏÇ¯·î¤ò´Ş¤à
 	if ($pagename == '') {
-		// pagenameç„¡ã—ã®yyyy-mm-ddã«å¯¾å¿œã™ã‚‹ãŸã‚ã®å‡¦ç†
+		// pagenameÌµ¤·¤Îyyyy-mm-dd¤ËÂĞ±ş¤¹¤ë¤¿¤á¤Î½èÍı
 		$pagepattern     = '';
 		$pagepattern_len = 0;
 		$filepattern     = encode($page_YM);
@@ -131,7 +151,7 @@ function plugin_calendar_viewer_convert()
 		$filepattern_len = strlen($filepattern);
 	}
 
-	// ãƒšãƒ¼ã‚¸ãƒªã‚¹ãƒˆã®å–å¾—
+	// ¥Ú¡¼¥¸¥ê¥¹¥È¤Î¼èÆÀ
 	$pagelist = array();
 	if ($dir = @opendir(DATA_DIR)) {
 		$_date = get_date('Y' . $date_sep . 'm' . $date_sep . 'd');
@@ -148,7 +168,11 @@ function plugin_calendar_viewer_convert()
 			// Future-mode hates the past.
 			if ((plugin_calendar_viewer_isValidDate($page_date, $date_sep) == FALSE) || 
 				($page_date > $_date && ($mode == 'past')) ||
-				($page_date < $_date && ($mode == 'future')))
+				($page_date < $_date && ($mode == 'future')) ||
+				// from Plus!
+				($page_date >= $_date) && ($mode=='pastex') ||
+				($page_date <= $_date) && ($mode=='futureex')
+			)
 					continue;
 
 			$pagelist[] = $page;
@@ -156,7 +180,7 @@ function plugin_calendar_viewer_convert()
 	}
 	closedir($dir);
 
-	if ($mode == 'past') {
+	if ($mode == 'past' || $mode == 'pastex' || $mode =='viewex') {
 		rsort($pagelist, SORT_STRING);	// New => Old
 	} else {
 		sort($pagelist, SORT_STRING);	// Old => New
@@ -164,9 +188,10 @@ function plugin_calendar_viewer_convert()
 
 	// Include start
 	$tmppage     = $vars['page'];
+	
 	$return_body = '';
 
-	// $limit_page ã®ä»¶æ•°ã¾ã§ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰
+	// $limit_page ¤Î·ï¿ô¤Ş¤Ç¥¤¥ó¥¯¥ë¡¼¥É
 	$tmp = max($limit_base, 0); // Skip minus
 	while ($tmp < $limit_page) {
 		if (! isset($pagelist[$tmp])) break;
@@ -174,22 +199,27 @@ function plugin_calendar_viewer_convert()
 		$page = $pagelist[$tmp];
 		$get['page'] = $post['page'] = $vars['page'] = $page;
 
-		// ç¾çŠ¶ã§é–²è¦§è¨±å¯ãŒã‚ã‚‹å ´åˆã ã‘è¡¨ç¤ºã™ã‚‹
+		// ¸½¾õ¤Ç±ÜÍ÷µö²Ä¤¬¤¢¤ë¾ì¹ç¤À¤±É½¼¨¤¹¤ë
 		if (check_readable($page, FALSE, FALSE)) {
-			$body = convert_html(get_source($page));
+			if (function_exists('convert_filter')) {
+				$body = convert_html(convert_filter(get_source($page)));
+			} else {
+				$body = convert_html(get_source($page));
+			}
 		} else {
-			$body = str_replace('$1', $page, $_msg_calendar_viewer_restrict);
+			$body = str_replace('$1', $page, $_calendar_viewer_msg['_msg_restrict']);
 		}
 
 		if (PLUGIN_CALENDAR_VIEWER_DATE_FORMAT !== FALSE) {
-			$time = strtotime(basepagename($page)); // $date_sep must be assumed '-' or ''!
-			if ($time == -1 || $time == FALSE) {
+			$time = strtotime(basename($page)); // $date_sep must be assumed '-' or ''!
+			if ($time == -1) {
 				$s_page = htmlsc($page); // Failed. Why?
 			} else {
-				$week   = $weeklabels[date('w', $time)];
+				$week   = $_labels['week'][date('w', $time)][0];
+				$month  = $_labels['month'][preg_replace('/^0/','',date('m', $time))][0];
 				$s_page = htmlsc(str_replace(
-						array('$w' ),
-						array($week),
+						array('$w','$m' ),
+						array($week, $month),
 						date(PLUGIN_CALENDAR_VIEWER_DATE_FORMAT, $time)
 					));
 			}
@@ -199,29 +229,78 @@ function plugin_calendar_viewer_convert()
 
 		// if (PKWK_READONLY) {
 		if (auth::check_role('readonly')) {
-			$link   = get_page_uri($page);
+			$link = get_page_uri($page);
 		} else {
-			$link   = get_cmd_uri('edit',$page);
+			$link = get_cmd_uri('edit',$page,'',array('page'=>$page));
 		}
-		$link   = '<a href="' . $link . '">' . $s_page . '</a>';
+		$link = '<a class="anchor_super" href="' . $link . '">' . $_symbol_paraedit . '</a>';
 
-		$head   = '<h1>' . $link . '</h1>' . "\n";
+		$head   = '<h1>' . $s_page . $link .'</h1>' . "\n";
+		$page_title = basepagename($page);
+		$tail = '';
+		if (PLUGIN_CALENDAR_VIEWER_HOLIDAYVIEW === TRUE) {
+			$time = strtotime($page_title);
+			if ($time != -1) {
+				$yy = intval(date('Y', $time));
+				$mm = intval(date('n', $time));
+				$dd = intval(date('d', $time));
+
+				$h_today = public_holiday($yy, $mm, $dd); 
+				
+				
+				if ($h_today['rc'] != 0) {
+					$classname = 'date_holiday';
+					$weekclass = 'week_sun';
+				}else{
+					switch($h_today['w']){
+						case 0:
+							$classname = 'date_holiday';
+							$weekclass = 'week_sun';
+						break;
+						case 6:
+							$classname = 'date_weekend';
+							$weekclass = 'week_sat';
+						default:
+							$classname = 'date_weekday';
+							$weekclass = 'week_day';
+						break;
+					}
+				}
+			}
+		}
+		if (PLUGIN_CALENDAR_VIEWER_COMMENT === TRUE) {
+			if (is_page(':config/plugin/addline/comment') && exist_plugin_inline('addline')) {
+				$comm = convert_html(array('&addline(comment,above){comment};'));
+				$comm = preg_replace(array("'<p>'si","'</p>'si"), array("",""), $comm );
+				$tail .= str_replace('>comment','><img src="'.IMAGE_URI.'plus/comment.png" width="15" height="15" alt="Comment" title="Comment" />Comment',$comm);
+			}
+		}
+		if (PLUGIN_CALENDAR_VIEWER_TRACKBACK === TRUE) {
+			if ($trackback) {
+				$tb_id = tb_get_id($page);
+				$tail .= '<a class="pkwk-icon_linktext cmd-trackback" href="'.get_cmd_uri('tb','','',array('__mode'=>'view','tb_id'=>$tb_id)).'">'.'Trackback(' . tb_count($page) . ')'.'</a>'."\n";
+			}
+		}
+		$page_id= str_replace('/','_',$page);
+		$return_body .= (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<article id="'.$page_id.'">' : '<div id="'.$page_id.'">')."\n";
 		$return_body .= $head . $body;
+		$return_body .= (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</article>' : '</div>')."\n";
 
 		++$tmp;
 	}
 
-	// ã“ã“ã§ã€å‰å¾Œã®ãƒªãƒ³ã‚¯ã‚’è¡¨ç¤º
-	// ?plugin=calendar_viewer&file=ãƒšãƒ¼ã‚¸å&date=yyyy-mm
-	$enc_pagename = rawurlencode(substr($pagepattern, 0, $pagepattern_len - 1));
+	// ¤³¤³¤Ç¡¢Á°¸å¤Î¥ê¥ó¥¯¤òÉ½¼¨
+	// ?plugin=calendar_viewer&file=¥Ú¡¼¥¸Ì¾&date=yyyy-mm
+	$page = substr($pagepattern, 0, $pagepattern_len - 1);
+	$r_page = rawurlencode($page);
 
 	if ($page_YM != '') {
-		// å¹´æœˆè¡¨ç¤ºæ™‚
+		// Ç¯·îÉ½¼¨»ş
 		$date_sep_len = strlen($date_sep);
 		$this_year    = substr($page_YM, 0, 4);
 		$this_month   = substr($page_YM, 4 + $date_sep_len, 2);
 
-		// æ¬¡æœˆ
+		// ¼¡·î
 		$next_year  = $this_year;
 		$next_month = $this_month + 1;
 		if ($next_month > 12) {
@@ -230,7 +309,7 @@ function plugin_calendar_viewer_convert()
 		}
 		$next_YM = sprintf('%04d%s%02d', $next_year, $date_sep, $next_month);
 
-		// å‰æœˆ
+		// Á°·î
 		$prev_year  = $this_year;
 		$prev_month = $this_month - 1;
 		if ($prev_month < 1) {
@@ -250,49 +329,56 @@ function plugin_calendar_viewer_convert()
 			$right_text = $next_YM . '&gt;&gt;'; // >>
 		}
 	} else {
-		// nä»¶è¡¨ç¤ºæ™‚
+		// n·ïÉ½¼¨»ş
 		if ($limit_base <= 0) {
-			$left_YM = ''; // è¡¨ç¤ºã—ãªã„ (ãã‚Œã‚ˆã‚Šå‰ã®é …ç›®ã¯ãªã„)
+			$left_YM = ''; // É½¼¨¤·¤Ê¤¤ (¤½¤ì¤è¤êÁ°¤Î¹àÌÜ¤Ï¤Ê¤¤)
 		} else {
 			$left_YM   = $limit_base - $limit_pitch . '*' . $limit_pitch;
-			$left_text = sprintf($_msg_calendar_viewer_left, $limit_pitch);
+			$left_text = sprintf($_calendar_viewer_msg['_msg_left'], $limit_pitch);
 
 		}
 		if ($limit_base + $limit_pitch >= count($pagelist)) {
-			$right_YM = ''; // è¡¨ç¤ºã—ãªã„ (ãã‚Œã‚ˆã‚Šå¾Œã®é …ç›®ã¯ãªã„)
+			$right_YM = ''; // É½¼¨¤·¤Ê¤¤ (¤½¤ì¤è¤ê¸å¤Î¹àÌÜ¤Ï¤Ê¤¤)
 		} else {
 			$right_YM   = $limit_base + $limit_pitch . '*' . $limit_pitch;
-			$right_text = sprintf($_msg_calendar_viewer_right, $limit_pitch);
+			$right_text = sprintf($_calendar_viewer_msg['_msg_right'], $limit_pitch);
 		}
 	}
 
-	// ãƒŠãƒ“ã‚²ãƒ¼ãƒˆç”¨ã®ãƒªãƒ³ã‚¯ã‚’æœ«å°¾ã«è¿½åŠ 
+	// ¥Ê¥Ó¥²¡¼¥ÈÍÑ¤Î¥ê¥ó¥¯¤òËöÈø¤ËÄÉ²Ã
 	if ($left_YM != '' || $right_YM != '') {
 		$s_date_sep = htmlsc($date_sep);
 		$left_link = $right_link = '';
-		$link = get_cmd_uri('calendar_viewer','','','mode='.$mode.'&file='.$enc_pagename.'&date_sep='.$s_date_sep);
+		$link = $script . '?plugin=calendar_viewer&amp;mode=' . $mode .
+			'&amp;file=' . $r_page . '&amp;date_sep=' . $s_date_sep . '&amp;';
 		if ($left_YM != '')
-			$left_link = '<a href="' . $link .
-				'&amp;date=' . $left_YM . '">' . $left_text . '</a>';
+			$left_link = '<a href="'.get_cmd_uri('calendar_viewer', '', '', array('mode'=>$mode,'file'=>$page,'date_sep'=>$date_sep,'date'=>$left_YM)).'">'.$left_text.'</a>';
 		if ($right_YM != '')
-			$right_link = '<a href="' . $link .
-				'&amp;date=' . $right_YM . '">' . $right_text . '</a>';
-		// past modeã¯<<æ–° æ—§>> ä»–ã¯<<æ—§ æ–°>>
-		$return_body .=
-			'<div class="calendar_viewer">' .
-			'<span class="calendar_viewer_left">'  . $left_link  . '</span>' .
-			'<span class="calendar_viewer_right">' . $right_link . '</span>' .
-			'</div>';
+			$right_link = '<a href="'.get_cmd_uri('calendar_viewer', '', '', array('mode'=>$mode,'file'=>$page,'date_sep'=>$date_sep,'date'=>$right_YM)).'">'.$right_text.'</a>';
+		
+		$center_link = '<a href="'.get_page_uri($page).'">'.$page.'</a>';
+
+		// past mode¤Ï<<¿· µì>> Â¾¤Ï<<µì ¿·>>
+		$nav = (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<nav class="calendar_viewer_navi">' : '<div class="calendar_viewer_navi">')."\n";
+		$nav .=  <<<EOD
+<ul class="navi">
+	<li class="navi_left">{$left_link}</li>
+	<li class="navi_none">{$center_link}</li>
+	<li class="navi_right">{$right_link}</li>
+</ul>
+<hr />
+EOD;
+		$nav .= (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</nav>' : '</div>')."\n";
 	}
 
 	$get['page'] = $post['page'] = $vars['page'] = $tmppage;
 
-	return $return_body;
+	return $nav.$return_body;
 }
 
 function plugin_calendar_viewer_action()
 {
-	global $vars, $get, $post;
+	global $vars, $get, $post, $script;
 
 	$date_sep = '-';
 
@@ -315,7 +401,7 @@ function plugin_calendar_viewer_action()
 	$return_vars_array['msg'] = 'calendar_viewer ' . htmlsc($vars['page']);
 	if ($vars['page'] != '') $return_vars_array['msg'] .= '/';
 	if (preg_match('/\*/', $page_YM)) {
-		// ã†ãƒ¼ã‚“ã€nä»¶è¡¨ç¤ºã®æ™‚ã¯ãªã‚“ã¦ãƒšãƒ¼ã‚¸åã«ã—ãŸã‚‰ã„ã„ï¼Ÿ
+		// ¤¦¡¼¤ó¡¢n·ïÉ½¼¨¤Î»ş¤Ï¤Ê¤ó¤Æ¥Ú¡¼¥¸Ì¾¤Ë¤·¤¿¤é¤¤¤¤¡©
 	} else {
 		$return_vars_array['msg'] .= htmlsc($page_YM);
 	}
@@ -328,9 +414,9 @@ function plugin_calendar_viewer_isValidDate($aStr, $aSepList = '-/ .')
 {
 	$matches = array();
 	if ($aSepList == '') {
-		// yyymmddã¨ã—ã¦ãƒã‚§ãƒƒã‚¯ï¼ˆæ‰‹æŠœã(^^;ï¼‰
+		// yyymmdd¤È¤·¤Æ¥Á¥§¥Ã¥¯¡Ê¼êÈ´¤­(^^;¡Ë
 		return checkdate(substr($aStr, 4, 2), substr($aStr, 6, 2), substr($aStr, 0, 4));
-	} else if (ereg("^([0-9]{2,4})[$aSepList]([0-9]{1,2})[$aSepList]([0-9]{1,2})$", $aStr, $matches) ) {
+	} else if (preg_match("/^([0-9]{2,4})[$aSepList]([0-9]{1,2})[$aSepList]([0-9]{1,2})$/", $aStr, $matches) ) {
 		return checkdate($matches[2], $matches[3], $matches[1]);
 	} else {
 		return FALSE;

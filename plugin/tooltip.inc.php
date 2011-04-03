@@ -42,20 +42,8 @@ function plugin_tooltip_action()
 	$s_glossary = convert_html($glossary);
 	$glossary_lastmod = get_filetime($glossarypage);	// なんども通信するのを防ぐためlastmodを出力
 	
-	pkwk_common_headers();
-/*
-	// FIXME
-	$request_headers = apache_request_headers();
-	$etag = md5( $_SERVER["REQUEST_URI"], $glossary_lastmod);
-	if( $request_headers["If-Modified-Since"] ) {
-		header( "HTTP/1.1 304 Not Modified" );
-		header( "Etag: \"$etag\"" );
-		exit();
-	}
-*/
+	pkwk_common_headers($glossary_lastmod);
 	header('Content-type: text/xml');
-	header('Last-Modified: ' . gmdate( "D, d M Y H:i:s", $glossary_lastmod ) . ' GMT');
-	header('ETag: ' . $etag );
 	print '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 	print $s_glossary;
 	exit;

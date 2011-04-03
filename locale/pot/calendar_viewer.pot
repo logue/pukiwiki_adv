@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-03-10 10:15+0900\n"
+"POT-Creation-Date: 2011-04-02 03:11+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,20 +16,25 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../plugin/calendar_viewer.inc.php:43
+#: ../../plugin/calendar_viewer.inc.php:66
 msgid "Wrong second parameter."
 msgstr ""
 
-#: ../plugin/calendar_viewer.inc.php:44
+#: ../../plugin/calendar_viewer.inc.php:67
 #, php-format
-msgid "Next %d&gt;&gt;"
+msgid "Next %d &gt;&gt;"
 msgstr ""
 
-#: ../plugin/calendar_viewer.inc.php:45
+#: ../../plugin/calendar_viewer.inc.php:68
 #, php-format
 msgid "&lt;&lt; Prev %d"
 msgstr ""
 
-#: ../plugin/calendar_viewer.inc.php:46
+#: ../../plugin/calendar_viewer.inc.php:69
 msgid "Due to the blocking, the calendar_viewer cannot refer to $1."
+msgstr ""
+
+#: ../../plugin/calendar_viewer.inc.php:70
+#, php-format
+msgid "%1s, %2s %3s %4s"
 msgstr ""

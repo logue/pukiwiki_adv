@@ -18,7 +18,7 @@ define('S_VERSION', 'v1.0 alpha');
 define('S_REVSION', '20110205');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
-	' Copyright &copy; 2010-2011' .
+	' Copyright &#169; 2010-2011' .
 	' <a href="http://pukiwiki.logue.be/">PukiWiki Advance Developers Team</a>.' .
 	' Licensed under the <a href="http://www.gnu.org/licenses/gpl-2.0.html" rel="license">GPLv2</a>.<br />' .
 	' Based on <a href="http://pukiwiki.cafelounge.net/plus/">"PukiWiki Plus! i18n"</a>'
@@ -46,13 +46,18 @@ $related      = array();	// Related pages
 $head_tags    = array();	// XHTML tags in <head></head> (Obsolete in Adv.)
 $foot_tags    = array();	// XHTML tags before </body> (Obsolete in Adv.)
 
-$meta_tags    = array();	// <meta />Tags
-$link_tags    = array();	// <link />Tags
-$js_tags      = array();	// <script></script>Tags
-$js_blocks    = array();	// Inline scripts(<script>//<![CDATA[ ... //]]></script>)
-$css_blocks   = array();	// Inline styleseets(<style>/*<![CDATA[*/ ... /*]]>*/</style>)
-$js_vars      = array();	// JavaScript initial value.
 $info         = array();	// For debug use.
+
+if (empty($vars['ajax'])){
+	// Init grobal variables
+	$meta_tags    = array();	// <meta />Tags
+	$link_tags    = array();	// <link />Tags
+	$js_tags      = array();	// <script></script>Tags
+	$js_blocks    = array();	// Inline scripts(<script>//<![CDATA[ ... //]]></script>)
+	$css_blocks   = array();	// Inline styleseets(<style>/*<![CDATA[*/ ... /*]]>*/</style>)
+	$js_vars      = array();	// JavaScript initial value.
+	$_SKIN        = array();
+}
 
 /////////////////////////////////////////////////
 // Require INI_FILE
@@ -122,13 +127,13 @@ $user_agent = $matches = array();
 
 $user_agent['agent'] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
 // unset(${$ua}, $_SERVER[$ua], $HTTP_SERVER_VARS[$ua], $ua);	// safety
-
+if($user_agent['agent'] == '') die();	// UAが取得できない場合は処理を中断
 foreach ($agents as $agent) {
 	if (preg_match($agent['pattern'], $user_agent['agent'], $matches)) {
 		$user_agent = array(
 			'profile'	=> isset($agent['profile']) ? $agent['profile'] : '',
 			'name'		=> isset($matches[1]) ? $matches[1] : '',	// device or browser name
-			'vers'		=> isset($matches[2]) ? $matches[2] : ''	// 's version
+			'vers'		=> isset($matches[2]) ? $matches[2] : '',	// 's version
 		);
 		break;
 	}
@@ -147,7 +152,8 @@ if (! file_exists(UA_INI_FILE) || ! is_readable(UA_INI_FILE)) {
 
 define('UA_NAME', isset($user_agent['name']) ? $user_agent['name'] : '');
 define('UA_VERS', isset($user_agent['vers']) ? $user_agent['vers'] : '');
-unset($user_agent);	// Unset after reading UA_INI_FILE
+define('UA_CSS', isset($user_agent['css']) ? $user_agent['css'] : '');
+//unset($user_agent);	// Unset after reading UA_INI_FILE
 
 /////////////////////////////////////////////////
 // ディレクトリのチェック
@@ -239,7 +245,6 @@ if (isset($_GET['encode_hint']) && $_GET['encode_hint'] != '')
 	$encode = mb_detect_encoding($_GET['encode_hint']);
 	mb_convert_variables(SOURCE_ENCODING, $encode, $_GET);
 }
-
 
 /////////////////////////////////////////////////
 // QUERY_STRINGを取得
@@ -396,4 +401,87 @@ $line_rules = array_merge(array(
 	'&amp;(#[0-9]+|#x[0-9a-f]+|' . $entity_pattern . ');' => '&$1;',
 	"\r"          => '<br />' . "\n",	/* 行末にチルダは改行 */
 ), $line_rules);
+
+//////////////////////////////////////////////////
+// JavaScriptフレームワーク設定
+
+if (empty($vars['ajax'])){
+	// スキンデーター読み込み
+	global $skin_file;
+
+	if (! defined('SKIN_FILE') || ! file_exists(SKIN_FILE) || ! is_readable(SKIN_FILE)) {
+		if (! file_exists($skin_file) || ! is_readable($skin_file)) {
+			die_message(SKIN_FILE . '(skin file) is not found or not readable.');
+		} else {
+			define('SKIN_FILE', $skin_file);
+		}
+	}
+	
+	// IE非実装の処理を有効化
+	if($user_agent['name'] == 'MSIE'){
+		$default_js_libs[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/json2.js');
+		$default_js_libs[] = ($user_agent['vers'] >= 8) ? array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/excanvas.compiled.js') : '';
+	}
+	
+	// google ajax api
+	$google_loader = array(
+		'jquery'	=>'1.5.1',
+		'jqueryui'	=>'1.8.11',
+		'swfobject'	=>'2.2'
+	);
+	
+	// modernizrの設定
+	$modernizr = 'modernizr-1.7.min.js';
+	
+	if ($x_ua_compatible == 'chrome=1'){ $default_google_loader['chrome-frame'] = '1.0.2'; }	// X-UA-CompatibleでChromeをレンダリングにするよう指定した場合
+	if (!isset($_SKIN['ui_theme'])) { $_SKIN['ui_theme'] = 'base'; }
+
+	// jQueryUIのCSS
+	$link_tags[] = array(
+		'rel'=>'stylesheet',
+		'href'=>'http://ajax.googleapis.com/ajax/libs/jqueryui/'.$google_loader['jqueryui'].'/themes/'.$_SKIN['ui_theme'].'/jquery-ui.css',
+		'type'=>'text/css',
+		'id'=>'ui-theme'
+	);
+
+	// JS用初期設定
+	$js_init = array(
+		'SCRIPT'=>get_script_absuri(),
+		'LANG'=>$language,
+		'DEBUG'=>constant('DEBUG'),
+		'SKIN_DIR'=>constant('SKIN_URI'),
+		'IMAGE_DIR'=>constant('IMAGE_URI'),
+		'DEFAULT_LANG'=>constant('DEFAULT_LANG'),
+		'THEME_NAME'=>constant('PLUS_THEME'),
+	);
+
+	if (DEBUG === true) {
+		// 読み込むsrcディレクトリ内のJavaScript
+		$default_js = array(
+			/* libraly */
+			'swfupload','tzCalculation_LocalTimeZone',
+			
+			/* Use plugins */ 
+			'jquery.cookie','jquery.lazyload.min', 'jquery.query','jquery.scrollTo','jquery.colorbox-min','jquery.a-tools.min','jquery.superfish',
+			'jquery.swfupload','jquery.tablesorter-min','jquery.textarearesizer','jquery.jplayer.min', 'jquery.textarea-min', 'jquery.tooltip.min',
+			'jquery.ajaxga.min', 'jquery.ie9ify.min',
+			
+			/* MUST BE LOAD LAST */
+			'skin.original'
+		);
+		foreach($default_js as $script_file)
+			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/src/'.$script_file.'.js');
+
+		// yui profiler and profileviewer
+		/*
+			$link_tags[] = array('rel'=>'stylesheet','type'=>'text/css','href'=>SKIN_URI.'js/profiling/yahoo-profiling.css');
+			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/profiling/yahoo-profiling.min.js');
+			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/profiling/config.js');
+		*/
+
+	} else {
+		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/skin.js');
+	}
+	$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/locale.js');
+}
 ?>

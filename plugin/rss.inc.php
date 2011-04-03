@@ -87,7 +87,7 @@ EOD;
 	}
 
 	// Feeding start
-	pkwk_common_headers();
+	pkwk_common_headers($time);
 	header('Content-type: application/xml');
 	print '<?xml version="1.0" encoding="UTF-8"?>' . "\n\n";
 

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5-u2-i18n\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-02-01 01:48+0900\n"
-"PO-Revision-Date: 2009-02-01 01:52+0900\n"
+"PO-Revision-Date: 2011-03-27 23:07+0900\n"
 "Last-Translator: Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -22,3 +22,4 @@ msgstr "ジャンプに失敗しました。"
 #: ../../plugin/mypage.inc.php:16
 msgid "The page cannot be prepared."
 msgstr "ページの準備ができていません。"
+

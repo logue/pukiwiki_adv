@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-04-10 16:26+0900\n"
+"POT-Creation-Date: 2011-04-02 03:12+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,46 +16,46 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/diff.inc.php:31
+#: ../../plugin/diff.inc.php:36
 msgid "The page was not found."
 msgstr ""
 
-#: ../../plugin/diff.inc.php:32
+#: ../../plugin/diff.inc.php:37
 msgid "The added line is <span class=\"diff_added\">THIS COLOR</span>."
 msgstr ""
 
-#: ../../plugin/diff.inc.php:33
+#: ../../plugin/diff.inc.php:38
 msgid "The deleted line is <span class=\"diff_removed\">THIS COLOR</span>."
 msgstr ""
 
-#: ../../plugin/diff.inc.php:34
+#: ../../plugin/diff.inc.php:39
 msgid "Go to $1."
 msgstr ""
 
-#: ../../plugin/diff.inc.php:35
+#: ../../plugin/diff.inc.php:40
 msgid " $1 has been deleted."
 msgstr ""
 
-#: ../../plugin/diff.inc.php:36
+#: ../../plugin/diff.inc.php:41
 msgid "Diff of $1"
 msgstr ""
 
-#: ../../plugin/diff.inc.php:37 ../../plugin/diff.inc.php:89
+#: ../../plugin/diff.inc.php:42 ../../plugin/diff.inc.php:98
 msgid "Deleting diff of $1"
 msgstr ""
 
-#: ../../plugin/diff.inc.php:90
+#: ../../plugin/diff.inc.php:99
 msgid "Diff of  $1 has been deleted."
 msgstr ""
 
-#: ../../plugin/diff.inc.php:91
+#: ../../plugin/diff.inc.php:100
 msgid "Please input the password for deleting."
 msgstr ""
 
-#: ../../plugin/diff.inc.php:92
+#: ../../plugin/diff.inc.php:101
 msgid "Delete"
 msgstr ""
 
-#: ../../plugin/diff.inc.php:93
+#: ../../plugin/diff.inc.php:102
 msgid "Invalid password."
 msgstr ""

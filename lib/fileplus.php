@@ -367,4 +367,72 @@ function get_diff_lines($diffdata)
 	unset($_diff);
 	return array($plus, $minus);
 }
+
+/** Adv. Extended functions ***********************************************************************/
+function compress_file($in, $method, $chmod=644){
+	// ファイルの存在確認
+	if (!file_exists ($filename) || !is_readable ($filename)) return false;
+	// 出力ファイル名
+	$out = $file.$method;
+	if ((!file_exists ($out) && !is_writeable (dirname ($out)) || (file_exists($out) && !is_writable($out)) )) return false; 
+	// テンポラリファイル名
+	$tmp_name = $file.'.tmp';
+
+	switch ($method){
+		case 'gz' :
+			if (extension_loaded('zlib')) {
+				$in_file = fopen($in, "r");
+				$out_file = gzopen ($out, "w9");	// 最高圧縮
+				while (!feof ($in_file)) {
+					$buffer= fread($in_file, 2048);
+					gzwrite ($out_file, $buffer);
+				}
+				fclose ($in_file); 
+				gzclose ($out_file);
+				chmod($out_file, $chmod);
+				break;
+			}
+		case 'bz2' :
+			if (extension_loaded('bzip2')) {
+				$in_file = fopen ($in, "rb");
+				$out_file = bzopen ($out, "wb");
+				while (!feof ($in_file)) {
+					$buffer = fgets ($in_file, 4096);
+					bzwrite ($out_file, $buffer, 4096);
+				}
+				fclose ($in_file); 
+				bzclose ($out_file);
+				chmod($out_file, $chmod);
+				break;
+			}
+		case 'lzf' :
+			if (extension_loaded('lzf')) {
+				lzf_compress($filename);
+				chmod($filename, $chmod);
+			}
+		case 'zip' :
+			if (class_exists('ZipArchive')) {
+				$zip = new ZipArchive();
+
+				$zip->addFile($tmp_name,$filename);
+				// if ($zip->status !== ZIPARCHIVE::ER_OK)
+				if ($zip->status !== 0)die_message( $zip->status);
+				$zip->close();
+				chmod($filename, $chmod);
+				@unlink($tmp_name);
+				break;
+			}
+		case 'tar' :
+		default :
+			$tar = new tarlib();
+			$tar->create(CACHE_DIR, 'tar') or die_message( 'Temporaly file failure.' );
+			$tar->add_file($tmp_name, $filename);
+			$tar->close();
+
+			@rename($tar->filename, $filename);
+			chmod($filename, $chmod);
+			@unlink($tar->filename);
+		break;
+	}
+}
 ?>

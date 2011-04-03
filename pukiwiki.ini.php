@@ -63,6 +63,9 @@ define('PKWK_QUERY_STRING_MAX', 640); // Bytes, 0 = OFF
 // PKWK_ZLIB_LOADABLE_MODULE
 defined('PKWK_ZLIB_LOADABLE_MODULE') or define('PKWK_ZLIB_LOADABLE_MODULE', true);
 
+// PKWK_STRICT_XHTML
+//   
+defined('PKWK_STRICT_XHTML') or define('PKWK_STRICT_XHTML', false);
 /////////////////////////////////////////////////
 // Experimental features
 
@@ -216,7 +219,7 @@ $google_api_key = '';
 // for Access Analyze and SEO use
 
 // Always output "nofollow,noindex" attribute
-$nofollow = 0; // 1 = Try hiding from search engines
+$nofollow = false; // true = Try hiding from search engines
 
 // Static URL
 // アドレスに?を使わない静的なアドレスにします。
@@ -424,9 +427,9 @@ require_once(add_homedir('auth.ini.php'));
 // (Automatically creating pronounce datas, for Kanji-included page names,
 //  to show sorted page-list correctly)
 
-// Enable page-reading feature by calling ChaSen or KAKASHI command
+// Enable page-reading feature.
 // (1:Enable, 0:Disable)
-$pagereading_enable = 0;
+$pagereading_enable = 1;
 
 // Specify converter as ChaSen('chasen') or KAKASI('kakasi') or MeCab('mecab')
 $pagereading_api = 'mecab';
@@ -478,6 +481,7 @@ $cantedit = array( $whatsnew, $whatsdeleted );
 
 /////////////////////////////////////////////////
 // HTTP: Output Last-Modified header
+// 注意：カウンタが回らなくなります。
 $lastmod = 0;
 
 /////////////////////////////////////////////////
@@ -643,8 +647,8 @@ $use_open_uri_in_new_window  = 1;
 
 // 同一サーバーとしてみなすホストのURI
 $open_uri_in_new_window_servername = array(
-	'http://localhost/',
-	'http://localhost.localdomain/',
+	$script,
+//	'localhost'
 );
 // URIの種類によって開く動作を設定。
 // "_blank"で別窓へ表示、falseを指定すると無効

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-17 00:48+0900\n"
+"POT-Creation-Date: 2011-04-02 03:11+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,11 +16,20 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/bliki.inc.php:66
+#: ../../plugin/bliki.inc.php:73
 #, php-format
 msgid "&size(12){->[[The continuation of %s is read.:%s]]};"
 msgstr ""
 
-#: ../../plugin/bliki.inc.php:67
+#: ../../plugin/bliki.inc.php:74
 msgid "UPDATE"
+msgstr ""
+
+#: ../../plugin/bliki.inc.php:75
+msgid "bliki caches are cleared."
+msgstr ""
+
+#: ../../plugin/bliki.inc.php:76
+#, php-format
+msgid "%s is not found or not readable."
 msgstr ""

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.7-u2-i18n\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-03-09 20:57+0900\n"
-"PO-Revision-Date: 2008-03-09 20:58+0900\n"
+"PO-Revision-Date: 2011-03-27 23:07+0900\n"
 "Last-Translator: Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -41,3 +41,4 @@ msgstr "<p>%s からのリンクはありません。</p>"
 #, php-format
 msgid "<p>Total: %d page(s) on this site.</p>"
 msgstr "<p>合計: このサイトの %d ページからリンクがあります。</p>"
+

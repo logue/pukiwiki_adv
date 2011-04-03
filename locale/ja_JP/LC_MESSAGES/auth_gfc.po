@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PukiPlus\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-05-03 03:54+0900\n"
-"PO-Revision-Date: 2010-05-03 00:33+0900\n"
+"PO-Revision-Date: 2011-03-27 23:07+0900\n"
 "Last-Translator: Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -55,3 +55,4 @@ msgstr "設定"
 #: ../../plugin/auth_gfc.inc.php:38
 msgid "Invite"
 msgstr "招待"
+

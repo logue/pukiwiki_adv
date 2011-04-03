@@ -125,7 +125,10 @@ function skeylist_analysis($data)
 		// queryストリングの解析
 		$tok = strtok($url['query'],'&');
 		while($tok) {
-			list($key,$parm)= split('=', $tok); // キーと値に分割
+			$key_val = explode('=', $tok); // キーと値に分割
+			$key = (isset($key_val[0])) ? $key_val[0] : '';
+			$parm = (isset($key_val[1])) ? $key_val[1] : '';
+			
 			$tok = strtok('&'); // 次の処理の準備
 
 			// 検索キーかの判定

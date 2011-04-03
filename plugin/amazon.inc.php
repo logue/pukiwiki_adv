@@ -15,7 +15,7 @@
 /* * 設 定 必 須  * */
 /* **************** */
 // アソシエイト ID
-defined('AMAZON_AID')			or define('AMAZON_AID', '');
+defined('AMAZON_AID')				or define('AMAZON_AID', '');
 // アクセスキーID http://www.amazon.co.jp/gp/feature.html?docId=451209 から取得
 defined('AWS_ACCESS_KEY_ID')		or define('AWS_ACCESS_KEY_ID', '');
 // 秘密キー(Product Advertising API 署名認証に必要)
@@ -74,7 +74,6 @@ function plugin_amazon_init()
 			'err_not_found'		=> T_("The ASIN code is fictitious. "),	// ASINコードは架空です。
 			'msg_myname'		=> T_("MY_NAME"),				// お名前
 			'msg_this_edit'		=> T_("THIS EDIT"),				// ここ編集のこと
-			'err_prohibit'		=> T_('This Wiki is <var>PKWK_READONLY</var> mode now. Therefore, amazon function is prohibited.'),
 			'err_newpage'		=> T_('You have not permission to create new page.')
 	)
   );
@@ -83,11 +82,11 @@ function plugin_amazon_init()
 
 function plugin_amazon_convert()
 {
-	global $script, $vars;
+	global $script, $vars, $_string;
 	global $_amazon_msg, $pkwk_dtd;
 
 	if (func_num_args() == 0) {
-		if( auth::check_role('readonly') ) die_message( $_amazon_msg['err_prohibit'] );
+		if( auth::check_role('readonly') ) die_message( $_string['prohibit'] );
 		return amazon_make_review_page();
 	}
 
@@ -257,7 +256,7 @@ EOD;
 function plugin_amazon_action() 
 {
 	global $vars, $script;
-	global $_amazon_msg;
+	global $_amazon_msg, $_string;
 	global $_title;
 	// global $_no_name;
 
@@ -269,7 +268,7 @@ function plugin_amazon_action()
 		$itemid = htmlsc($vars['itemid']);
 	}
 
-	if ( auth::check_role('readonly') ) die_message( $_amazon_msg['err_prohibit'] );
+	if ( auth::check_role('readonly') ) die_message( $_string['prohibit'] );
 	if ( auth::is_check_role(PKWK_CREATE_PAGE)) die_message( $_amazon_msg['err_newpage'] );
 	if (empty($vars['refer']) || !check_readable($vars['refer'], false, false)) die();
 
