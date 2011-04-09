@@ -1,7 +1,7 @@
 <?php
-// $Id: proxy.php,v 2.1.12 2010/12/31 20:38:00 Logue Exp $
+// $Id: proxy.php,v 2.1.13 2011/04/05 00:21:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
+//   2010-2011 PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2006,2008 PukiWiki Plus! Team
 //   2003-2005 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
@@ -9,11 +9,11 @@
 // HTTP-Proxy related functions
 
 // Max number of 'track' redirection message with 301 or 302 response
-define('PKWK_HTTP_REQUEST_URL_REDIRECT_MAX', 2);
-define('PKWK_HTTP_REQUEST_TIMEOUT', 8);
+define('PKWK_pkwk_http_request_URL_REDIRECT_MAX', 2);
+define('PKWK_pkwk_http_request_TIMEOUT', 8);
 define('PKWK_HTTP_CONNECT_TIMEOUT', 2);
 define('PKWK_HTTP_VERSION', '1.1');
-define('PKWK_HTTP_CLIENT', 'PukiWiki/1.4');
+define('PKWK_HTTP_CLIENT', 'PukiWiki Adv./1.0');
 
 /*
  * is_requestable($uri)
@@ -37,7 +37,7 @@ function is_requestable($uri)
 }
 
 /*
- * http_request($url)
+ * pkwk_http_request($url)
  *     Get / Send data via HTTP request
  * $url     : URI started with http:// (http://user:pass@host:port/path?query)
  * $method  : HTTP method(GET/POST/HEAD/PUT/DELETE/OPTIONS/TRACE/CONNECT/PATCH/LINK/UNLINK)
@@ -47,8 +47,8 @@ function is_requestable($uri)
  * $redirect_max : Max number of HTTP redirect
  * $content_charset : Content charset. Use '' or CONTENT_CHARSET
 */
-function http_request($url, $method = 'GET', $headers = array(), $post = array(),
-	$redirect_max = PKWK_HTTP_REQUEST_URL_REDIRECT_MAX, $content_charset = '')
+function pkwk_http_request($url, $method = 'GET', $headers = array(), $post = array(),
+	$redirect_max = PKWK_pkwk_http_request_URL_REDIRECT_MAX, $content_charset = '')
 {
 	global $use_proxy, $no_proxy, $proxy_host, $proxy_port;
 	global $need_proxy_auth, $proxy_auth_user, $proxy_auth_pass;
@@ -152,7 +152,7 @@ function http_request($url, $method = 'GET', $headers = array(), $post = array()
 			'data'   => $errstr // Error message
 		);
 	}
-	socket_set_timeout($fp, PKWK_HTTP_REQUEST_TIMEOUT, 0);
+	socket_set_timeout($fp, PKWK_pkwk_http_request_TIMEOUT, 0);
 	fwrite($fp, $query);
 
 	// Get a Head
@@ -217,7 +217,7 @@ function http_request($url, $method = 'GET', $headers = array(), $post = array()
 				$url = $url_base . $url; // Add sheme, host
 			}
 			// Redirect
-			return http_request($url, $method, $headers, $post, $redirect_max);
+			return pkwk_http_request($url, $method, $headers, $post, $redirect_max);
 		}
 	}
 	return array(

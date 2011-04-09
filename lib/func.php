@@ -532,19 +532,20 @@ EOD;
 		header('HTTP', true, 500);	// サーバーエラーとする
 	}
 
-	if(defined('SKIN_FILE') && file_exists(SKIN_FILE) && is_readable(SKIN_FILE)) {
-		catbody($title, $page, $body);
-	} elseif ($skin_file != '' && file_exists($skin_file) && is_readable($skin_file)) {
-		define('SKIN_FILE', $skin_file);
-		catbody($title, $page, $body);
+	if(defined('SKIN_FILE')){
+		if (file_exists(SKIN_FILE) && is_readable(SKIN_FILE)) {
+			catbody($title, $page, $body);
+		} elseif ($skin_file != '' && file_exists($skin_file) && is_readable($skin_file)) {
+			define('SKIN_FILE', $skin_file);
+			catbody($title, $page, $body);
+		}
 	}else{	
-		global $google_loader, $_SKIN;
 		print <<<EOD
 <!doctype html>
 <html>
 	<head>
 		<meta charset="utf-8">
-		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/{$google_loader['jqueryui']}/themes/{$_SKIN['ui_theme']}/jquery-ui.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/themes/base/jquery-ui.css" type="text/css" media="all" />
 		<title>$title - $page_title</title>
 	</head>
 	<body>$body</body>

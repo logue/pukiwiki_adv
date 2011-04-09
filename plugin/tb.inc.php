@@ -153,7 +153,7 @@ function plugin_tb_save($url, $tb_id)
 	if (!is_url($url)) plugin_tb_return(PLUGIN_TB_ERROR, $_tb_msg['err_invalid_url']);
 
 	if (PLUGIN_TB_SITE_CHECK === TRUE) {
-		$result = http_request($url);
+		$result = pkwk_http_request($url);
 		if ($result['rc'] !== 200) plugin_tb_return(PLUGIN_TB_ERROR, $_tb_msg['err_invalid_url']);
 		$urlbase = get_script_absuri();
 		$matches = array();
@@ -166,7 +166,7 @@ function plugin_tb_save($url, $tb_id)
 			plugin_tb_return(PLUGIN_TB_ERROR, $_tb_msg['err_write_prohibited']);
 		}
 	} else {
-		$result = http_request($url, 'HEAD');
+		$result = pkwk_http_request($url, 'HEAD');
 		if ($result['rc'] !== 200) plugin_tb_return(PLUGIN_TB_ERROR, $_tb_msg['err_invalid_url']);
 	}
 
@@ -339,7 +339,7 @@ function plugin_tb_mode_view_set($page)
 
 		$time = get_date($_tb_date, $time);
 
-		$body .= '<div><fieldset>'.
+		$body .= '<div><fieldset class="trackback_info">'.
 			 '<legend><a class="ext" href="' . $url . '" rel="nofollow">' . $title . 
 			 '<img src="'.IMAGE_URI.'plus/ext.png" alt="" title="" class="ext" onclick="return open_uri(\'' .
 			 $url . '\', \'_blank\');" /></a></legend>' . "\n".

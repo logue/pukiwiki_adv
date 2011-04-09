@@ -6,7 +6,7 @@
 // Original version by miko and upk.
 // Modified by Logue
 //
-// $Id: default.skin.php,v 1.4.14 2010/08/16 20:44:00 Logue Exp $
+// $Id: default.skin.php,v 1.4.15 2011/04/09 17:52:00 Logue Exp $
 //
 global $pkwk_dtd, $_SKIN, $is_page, $defaultpage, $sidebar, $headarea, $footarea;
 
@@ -71,6 +71,14 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="body">'."\n" : '<div id="body">'."\n"; ?>
 						<?php echo $body ?>
 					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</section>'."\n" : '</div>'."\n"; ?>
+<?php if (!empty($notes)) { ?>
+						<?php echo $hr ?>
+<!-- * Note * -->
+						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="note">'."\n" : '<div id="note">'."\n"; ?>
+							<?php echo $notes ?>
+						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
+<!--  End Note -->
+<?php } ?>
 				</td>
 <?php if (arg_check('read') && exist_plugin_convert('side') && is_page($sidebar))  { ?>
 				<td class="rtable">
@@ -81,8 +89,9 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 <?php } ?>
 			</tr>
 		</table>
-		<?php echo $hr ?>
+		
 <?php if (!empty($attaches)) { ?>
+		<hr />
 <!-- * Attach * -->
 		<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="attach" class="clearfix">'."\n" : '<div id="attach">'."\n"; ?>
 			<?php echo $attaches ?>
@@ -90,17 +99,16 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 <!--  End Attach -->
 <?php } ?>
 
-<?php
-echo (!isset($notes) && !isset($attaches)) ? $hr : '';
-echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','reload,|,new,newsub,edit,guiedit,freeze,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,|,help,|,mixirss').'<div class="pkwk-clear"></div>' : '';
-?>
 <?php if (!empty($related)) { ?>
-<!-- * related * -->
+		<hr />
+<!-- * Related * -->
 		<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="related" class="clearfix">'."\n" : '<div id="related">'."\n"; ?>
 			<?php echo $related ?>
 		<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
 <!--  End Related -->
 <?php } ?>
+		<hr />
+		<?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','reload,|,new,newsub,edit,guiedit,freeze,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,|,help,|,mixirss').'<div class="pkwk-clear"></div>' : '';?>
 		<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<footer id="footer">'."\n" : '<div id="footer">'."\n"; ?>
 <?php if (isset($footer)) {
 	echo $footer;

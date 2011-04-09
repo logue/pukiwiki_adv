@@ -1,6 +1,6 @@
 <?php
 // PukPukiPlus.
-// $Id: attach.inc.php,v 1.92.46 2011/02/05 10:39:00 Logue Exp $
+// $Id: attach.inc.php,v 1.92.47 2011/04/03 22:40:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team
@@ -1123,7 +1123,7 @@ EOD;
 		ini_set('default_charset', '');
 		mb_http_output('pass');
 
-		pkwk_common_headers($this->time, false);
+		pkwk_common_headers($this->time, null, false);
 		header('X-Sendfile: '.$s_filename);	// for reduce server load
 		if ($this->type == 'text/html' || $this->type == 'application/octet-stream') {
 			header('Content-Disposition: attachment; filename="' . $s_filename . '"');

@@ -43,33 +43,27 @@ function catbody($title, $page, $body)
 	$is_readonly = auth::check_role('readonly');
 	$is_safemode = auth::check_role('safemode');
 	$is_createpage = auth::is_check_role(PKWK_CREATE_PAGE);
-	
-	$is_ajax = (isset($vars['ajax'])) ? $vars['ajax'] : false;
+	$is_ajax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH']  == 'XMLHttpRequest';
 
-	if ($is_ajax === 'json' || isset($JSON)){
+	if ($is_ajax || isset($JSON)){
 		// JSONで出力
 		if (!isset($JSON)){	// $JSON関数が定義されていない場合
 			$JSON = array(
+				'title'			=> $title,
 				'body'			=> $body,
+/*
 				'is_read'		=> $is_read,
 				'is_freeze'		=> $is_freeze,
 				'is_page'		=> $is_page,
 				'lastmodified'	=> $filetime,
-				'newtitle'		=> $newtitle,
 				'page'			=> $_page,
-				'taketime'		=> elapsedtime(),
-				'title'			=> $title
+				'taketime'		=> elapsedtime()
+*/
 			);
 		}
 		pkwk_common_headers($filetime);
 		header('Content-Type: application/json; charset=' . CONTENT_CHARSET);
 		echo json_encode($JSON);
-	}else if ($is_ajax === true){
-		// XMLで出力
-		pkwk_common_headers($filetime);
-		header('Content-Type: text/xml; charset=' . CONTENT_CHARSET);
-		echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-		echo $body;
 	}else{
 		// Set $_LINK for skin
 		$_LINK = getLinkSet($_page);
@@ -427,7 +421,6 @@ EOD;
 		$add_notimestamp = <<<EOD
 	<input type="checkbox" name="notimestamp" id="_edit_form_notimestamp" value="true"$checked_time />
 	<label for="_edit_form_notimestamp" class="small">{$_button['notchangetimestamp']}</label>
-
 EOD;
 		if ($notimeupdate == 2 && auth::check_role('role_adm_contents')) {
 			// enable only administrator
@@ -462,7 +455,6 @@ EOD;
 	} else {
 		$body .= '<ul><li><a href="'.get_cmd_uri('edit',$r_page,'','help=true').'">' . $_string['help'] . '</a></li></ul>';
 	}
-//	$x_ua_compatible = 'IE=7';	// Fix IE8 scrollbar Bug
 	return $body;
 }
 
@@ -697,6 +689,8 @@ function pkwk_common_headers($modified = 0, $compress = true){
 	}
 	// RFC2616
 	header('Vary: Accept-Encoding, '.get_language_header_vary() );
+	
+	header('X-XSS-Protection: '.((DEBUG) ? '0' :'1;mode=block') );	// XSS脆弱性対策（これでいいのか？）
 	header('X-Content-Type-Options: nosniff');	// IEの自動MIME type判別機能を無効化する
 	header('X-Frame-Options: SameDomain');	// クリックジャッキング対策
 }

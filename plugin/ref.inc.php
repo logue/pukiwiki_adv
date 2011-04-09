@@ -103,9 +103,9 @@ EOD;
 		$style = 'text-align:' . $params['_align'];
 	}
 	if ($pkwk_dtd === PKWK_DTD_HTML_5){
-		return '<figure class="'.$class.'" style="'.htmlsc($style).'">'.$params['_body'].'</figure>'."\n";
+		return '<figure style="'.htmlsc($style).'">'.$params['_body'].'</figure>'."\n";
 	}else{
-		return '<div class="'.$class.'" style="'.htmlsc($style).'">'.$params['_body'].'</div>'."\n";
+		return '<div style="'.htmlsc($style).'">'.$params['_body'].'</div>'."\n";
 	}
 }
 

@@ -65,9 +65,8 @@ function tb_get_filename($page, $ext = '.txt')
 function tb_count($page, $ext = '.txt')
 {
 	$filename = tb_get_filename($page, $ext);
-	if (!file_exists($filename)) return 0;
-	if (!is_readable($filename)) return 0;
-	if (!($fp = fopen($filename,"r"))) return 0;
+	if (!file_exists($filename) || !is_readable($filename) || !($fp = fopen($filename,"r")) ) return 0;
+
 	$i = 0;
 	while ($data = @fgets($fp, 4096)) $i++;
 	fclose($fp);
@@ -80,7 +79,7 @@ function tb_count($page, $ext = '.txt')
 // $minus = Removed lines may include URLs
 function tb_send($page, $links)
 {
-	global $trackback, $page_title;
+	global $trackback, $page_title, $log;
 
 	if (! $trackback) return;
 
@@ -106,7 +105,7 @@ function tb_send($page, $links)
 	// Sender's information
 	$putdata = array(
 		'title'     => $page, // Title = It's page name
-		'url'       => $url = get_page_absuri($page),
+		'url'       => get_page_absuri($page),
 		'excerpt'   => mb_strimwidth(preg_replace("/[\r\n]/", ' ', $excerpt), 0, 255, '...'),
 		'blog_name' => $page_title . ' (' . PLUGIN_TRACKBACK_VERSION . ')',
 		'charset'   => SOURCE_ENCODING // Ping text encoding (Not defined)
@@ -117,8 +116,9 @@ function tb_send($page, $links)
 		$tb_id = tb_get_url($link);  // Get Trackback ID from the URL
 		if (empty($tb_id)) continue; // Trackback is not supported
 
-		$result = http_request($tb_id, 'POST', '', $putdata, 2, CONTENT_CHARSET);
+		$result = pkwk_http_request($tb_id, 'POST', '', $putdata, 2, CONTENT_CHARSET);
 		// FIXME: Create warning notification space at pukiwiki.skin!
+		$log[] = $result;
 	}
 }
 
@@ -186,7 +186,7 @@ function tb_get_url($url)
 	   ($use_proxy && ! in_the_net($no_proxy, $parse_url['host'])))
 		return '';
 
-	$data = http_request($url);
+	$data = pkwk_http_request($url);	// Get trackback xml.
 	if ($data['rc'] !== 200) return '';
 
 	$matches = array();
@@ -199,6 +199,7 @@ function tb_get_url($url)
 		$tb_url = $obj->parse($body, $url);
 		if ($tb_url !== FALSE) return $tb_url;
 	}
+
 
 	return '';
 }

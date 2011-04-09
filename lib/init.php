@@ -38,6 +38,7 @@ foreach (array('SCRIPT_NAME', 'SERVER_ADMIN', 'SERVER_NAME',
 	unset(${$key}, $_SERVER[$key], $HTTP_SERVER_VARS[$key]);
 }
 
+//pr($_SERVER);
 /////////////////////////////////////////////////
 // Init grobal variables
 
@@ -425,7 +426,7 @@ if (empty($vars['ajax'])){
 	
 	// google ajax api
 	$google_loader = array(
-		'jquery'	=>'1.5.1',
+		'jquery'	=>'1.5.2',
 		'jqueryui'	=>'1.8.11',
 		'swfobject'	=>'2.2'
 	);

@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
 //
-// $Id: qrcode.inc.php,v 0.9.0 2011/03/24 22:08:00 Logue Exp $
+// $Id: qrcode.inc.php,v 0.9.1 2011/04/03 22:41:00 Logue Exp $
 //
 /*
 *内容
@@ -177,7 +177,7 @@ function plugin_qrcode_action()
 	$qr->count		= (empty($vars['n'])) ? 1	: $vars['n'];				// 
 	$qr->hint		= (empty($vars['h'])) ? QR_MODE_AN : $vars['h'];		// 文字コード
 	
-	pkwk_common_headers(0,false);
+	pkwk_common_headers(0,null, false);
 	print $qr->png(rawurldecode($vars['d']), false, (empty($vars['e'])) ? 'M' : $vars['e'], (empty($vars['s'])) ? 1 : $vars['s'], 2);
 	exit;
 }

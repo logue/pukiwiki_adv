@@ -5,11 +5,15 @@
 // Original version written by miko and upk.
 // Adv version by Logue.
 // 
-// $Id: default.css,v 1.33.8 2011/03/31 23:30:00 Logue Exp $
+// $Id: default.css,v 1.33.10 2011/04/09 17:52:00 Logue Exp $
 //
 */
 
 /** PukiWiki Plus! CSS set Start ******************************************************************/
+
+a{
+	color:#215dc6;
+}
 
 a:link, a:active, a:visited{
 	text-decoration:none;
@@ -17,6 +21,10 @@ a:link, a:active, a:visited{
 
 a:hover{
 	text-decoration:underline;
+}
+
+del{
+	color:grey;
 }
 
 h1, h2, h3, h4, h5, h6{
@@ -42,9 +50,8 @@ h6{
 	border-color:silver silver darkgray silver;
 }
 
-blockquote{
-	padding: 0.5em;
-	margin: 0.1em 0.1em 0.1em 0.5em;
+p, pre, dl, form{
+	margin:0.5em 1.5em;
 }
 
 dt{
@@ -52,7 +59,8 @@ dt{
 }
 
 dd{
-	margin-left:1em;
+	margin-left:1.5em;
+	margin-bottom:0.5em;
 }
 
 pre{
@@ -61,6 +69,47 @@ pre{
 	border-left:silver 1px solid;
 	border-right:grey 1px solid;
 	background-color:whitesmoke;
+}
+
+ul, ol{
+	margin:0.5em 2em;
+}
+
+blockquote{
+	padding: 0.5em;
+	margin: 0.1em 0.1em 0.1em 0.5em;
+}
+
+q{
+	border:1px dotted #999;
+}
+
+ul, ol, dl {
+	padding-left:1.5em;
+}
+
+ul, ol{
+	margin:0.5em 2em;
+}
+
+fieldset pre{
+	margin:0.2em;
+}
+
+/* Table Tags */
+.style_table{
+	background-color:silver;
+}
+
+.style_th{
+	background-color:lightgrey;
+}
+.style_td{
+	background-color:whitesmoke;
+}
+
+.style_td_blank{
+	background-color:gainsboro;
 }
 
 #header{
@@ -137,27 +186,26 @@ pre{
 }
 
 .ltable, .rtable{
-	padding:1px 0;
+	padding:0.1em 0;
 	width:160px;
 	vertical-align:top;
 }
 
 .ctable{
 	vertical-align:top;
-	padding-left:28px;
-	padding-right:28px;
+	padding:1em;
 }
 
 #body h2{
-	margin:.2em -10px .2em -21px;
+	margin:.2em 0 .2em 0;
 }
 
 #body h3{
-	margin:.2em -10px .5em -14px;
+	margin:.2em 0 .5em 0.4em;
 }
 
 #body h4, #body  h5, #body  h6{
-	margin:.2em -10px .5em -7px;
+	margin:.2em 0 .5em 0.8em;
 }
 
 #body{
@@ -284,7 +332,6 @@ pre{
 }
 
 .gecko #poptoc{
-	-moz-opacity:0.9;
 	background: -moz-linear-gradient(top, ivory, lemonchiffon);
 }
 
@@ -296,7 +343,7 @@ pre{
 }
 
 #poptoc a{
-	color:blue;
+	color:blue !important;
 	cursor:pointer; 
 }
 #poptoc a:hover{
@@ -397,7 +444,7 @@ td.rtable{
 }
 
 #menubar h4, #menubar h5, #menubar h6,
-#sidebar h4. #sidebar h5, #sidebar h6{
+#sidebar h4, #sidebar h5, #sidebar h6{
 	font-size:123.1%;
 }
 
@@ -504,10 +551,21 @@ td.rtable{
 	
 	clear:both;
 	white-space: nowrap;
+	
+	border: 1px dimgray solid;
+	color: white;
+	background-color: grey;
 }
 
 .sf-menu ul{
 	width: 171px; /* left offset of submenus need to match (see below) */
+	
+	background-color: grey;
+	border: 1px dimgray solid;
+}
+
+.sf-menu li {
+	border: 1px grey solid;
 }
 
 .sf-menu ul li {
@@ -552,6 +610,19 @@ td.rtable{
 
 .sf-menu .noexists {
 	background-color:transparent;
+}
+
+.sf-menu li:hover, .sf-menu li.sfHover{
+	color: black !important;
+	background-color: silver;
+	border: 1px white solid;
+}
+
+.sf-menu li ul li:hover, .sf-menu li ul li.sfHover,
+.sf-menu a:focus, .sf-menu a:hover, .sf-menu a:active {
+	color: black !important;
+	background-color: silver;
+	text-decoration: none;
 }
 
 /** Print Setting *********************************************************************************/

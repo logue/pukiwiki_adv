@@ -148,13 +148,11 @@ function plugin_referer_body($page, $sort)
 
 		$body .=
 			'		<tr>' . "\n" .
-			'			<td class="style_td">' . $ldate . '</td>' . "\n" .
-			'			<td class="style_td">' . $lpass . '</td>' . "\n";
+			'			<td class="style_td">' . $ldate . ' ('. $lpass .')</td>' . "\n";
 
 		$body .= ($count == 1) ?
-			'			<td colspan="2" class="style_td">N/A</td>' . "\n" :
-			'			<td class="style_td">' . $sdate . '</td>' . "\n" .
-			'			<td class="style_td">' . $spass . '</td>' . "\n";
+			'			<td class="style_td">N/A</td>' . "\n" :
+			'			<td class="style_td">' . $sdate .' ('. $spass .')</td>' . "\n";
 
 		$body .= '			<td class="style_td" style="text-align:right;">' . $count . '</td>' . "\n";
 
@@ -171,22 +169,26 @@ function plugin_referer_body($page, $sort)
 
 	$href = $script . '?cmd=referer&amp;page=' . rawurlencode($page);
 	return <<<EOD
-<table summary="Referer" class="style_table" cellspacing="1" border="0">
-	<tr>
-		<th style="background-color:$color_last" class="style_th" colspan="2">
-			 <a href="$href&amp;sort=$sort_last">{$_referer_msg['msg_Hed_LastUpdate']}$arrow_last</a>
-		</th>
-		<th class="style_th" style="background-color:$color_1st" colspan="2">
-			<a href="$href&amp;sort=$sort_1st">{$_referer_msg['msg_Hed_1stDate']}$arrow_1st</a>
-		</th>
-		<th class="style_th" style="background-color:$color_ctr;text-align:right">
-			<a href="$href&amp;sort=$sort_ctr">{$_referer_msg['msg_Hed_RefCounter']}$arrow_ctr</a>
-		</th>
-		<th class="style_th" style="background-color:$color_ref">
-			<a href="$href&amp;sort=3">{$_referer_msg['msg_Hed_Referer']}</a>
-		</th>
-	</tr>
-	$body
+<table summary="Referer" class="style_table">
+	<thead>
+		<tr>
+			<th class="style_th">
+				 <a href="$href&amp;sort=$sort_last">{$_referer_msg['msg_Hed_LastUpdate']}$arrow_last</a>
+			</th>
+			<th class="style_th">
+				<a href="$href&amp;sort=$sort_1st">{$_referer_msg['msg_Hed_1stDate']}$arrow_1st</a>
+			</th>
+			<th class="style_th" style="text-align:right">
+				<a href="$href&amp;sort=$sort_ctr">{$_referer_msg['msg_Hed_RefCounter']}$arrow_ctr</a>
+			</th>
+			<th class="style_th">
+				<a href="$href&amp;sort=3">{$_referer_msg['msg_Hed_Referer']}</a>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+$body
+	</tbody>
 </table>
 EOD;
 }
@@ -197,7 +199,7 @@ function plugin_referer_set_color()
 
 	if (! isset($color)) {
 		// Default color
-		$color = array('cur' => '#99CCFF', 'etc' => '#E0E8F0');
+		$color = array('cur' => '#99CCFF', 'etc' => 'transparent');
 
 		$config = new Config(CONFIG_REFERER);
 		$config->read();

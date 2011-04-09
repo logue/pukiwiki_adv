@@ -1,8 +1,7 @@
 <?php
-
 // PukiWiki Advance Standard CSS.
-// $Id: scripts.css.php,v 1.6.7 2010/09/09 19:44:00 Logue Exp $
-// Copyright (C) 2010 PukiWiki Advance Developer Team
+// $Id: scripts.css.php,v 1.6.8 2011/04/03 19:44:00 Logue Exp $
+// Copyright (C) 2010-2011 PukiWiki Advance Developer Team
 //
 // 基本スタイルシート
 
@@ -101,13 +100,15 @@ a:hover { color: #036; }
 /** PukiWiki Advance Standard CSS Set *************************************************************/
 
 /* Font set */
-body{
-	font-family: 'Segoe UI', 'Trebuchet MS', Verdana, Arial, Sans-Serif;
-}
-pre, code, kbd, samp, textarea, select, option, input, var{
-	font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace;
-}
 @media screen{
+	body{
+		font-family: 'Segoe UI', 'Trebuchet MS', Verdana, Arial, Sans-Serif;
+	}
+
+	pre, code, kbd, samp, textarea, select, option, input, var{
+		font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace;
+	}
+
 	/* Japanese */
 	:lang(ja), :lang(ja) .ui-widget{
 		font-family: Meiryo, 'メイリオ', 'ヒラギノ角ゴ Pro W3', 'Hiragino Mincho Pro W3', Osaka, 'ＭＳＰ ゴシック';
@@ -235,18 +236,24 @@ figcaption{
 	text-align:left;
 	border-collapse:separate;
 	border-spacing:1px;
+	background-color:silver;
 }
 
 .style_th{
+	background-color:lightgrey;
 	padding:5px;
 	margin:1px;
 	text-align:center;
 }
 .style_td{
+	background-color:whitesmoke;
 	padding:5px;
 	margin:1px;
 }
 
+.style_td_blank{
+	background-color:gainsboro;
+}
 /* Week and Month */
 .style_week, .style_month{
 	border:none !important;
@@ -339,6 +346,13 @@ a img {
 	background-color:transparent !important;
 }
 
+a img.pkwk-symbol{
+	vertical-align: baseline;
+}
+
+.full_hr{
+	clear:both;
+}
 /** Customize UI **********************************************************************************/
 .helper, .tocpic, map area, a{
 	cursor:pointer;
@@ -394,6 +408,7 @@ input[type='text']:hover, input[type='password']:hover, textarea:hover, select:h
 
 /* disabled */
 input[type='text'][disabled], input[type='password'][disabled], textarea[disabled], select[disabled]{
+	color:grey;
 	border:1px solid lightgrey;
 	background-color:whitesmoke;
 	cursor: not-allowed;
@@ -444,6 +459,11 @@ input[disabled]:hover, select[disabled]:hover, textarea[disabled]:hover, option[
 	padding: 0.7em;
 	margin:0.5em;
 }
+
+.message_box p, .message_box ul{
+	margin:0;
+}
+
 .message_box p .ui-icon{
 	float: left; margin-right: 0.3em;
 }
@@ -621,14 +641,17 @@ input[disabled]:hover, select[disabled]:hover, textarea[disabled]:hover, option[
 	text-align:center;
 	font-size:85%;
 }
-.style_calendar_navi {
+.style_calendar_navi{
 	display:block;
-	list-style-image: none;
-	list-style:none;
-	margin: 0;
-	padding:0;
 	text-align:center;
 }
+.style_calendar_navi ul{
+	list-style-image: none;
+	list-style:none;
+	margin: 0 !important;
+	padding:0 !important;
+}
+
 .style_calendar_title {
 	display:inline;
 	float:none;
@@ -662,7 +685,6 @@ input[disabled]:hover, select[disabled]:hover, textarea[disabled]:hover, option[
 .style_calendar_viewer{
 	float:left;
 	width:15em;
-	height:100%;
 }
 .style_calendar_post{
 	margin-left: 15em;
@@ -776,6 +798,12 @@ ul.sf-menu li li li:hover ul,
 ul.sf-menu li li li.sfHover ul {
 	top:			0;
 }
+
+/* tooltip.inc.php */
+.tooltip, .linktip {
+	border-bottom: 1px dotted;
+}
+
 
 /* vote.inc.php */
 .vote_table{

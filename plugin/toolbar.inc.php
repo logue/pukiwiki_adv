@@ -63,12 +63,12 @@ function plugin_toolbar_convert()
 		case 'trackback':
 			if ($trackback) {
 				if ($body != '') { $body .= "\n"; }
-				$tbcount = tb_count($vars['page']);
-				if ($tbcount > 0) {
+//				$tbcount = tb_count($vars['page']);
+//				if ($tbcount > 0) {
 					$body .= _toolbar($name);
-				} else if (!$is_read) {
-					$body .= _toolbar($name);
-				}
+//				} else if (!$is_read) {
+//					$body .= _toolbar($name);
+//				}
 			}
 			break;
 		case 'referer':

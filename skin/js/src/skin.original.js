@@ -386,7 +386,6 @@ $(window).bind("resize", autoResizer);
 						if (params.help == 'true'){
 							params = {cmd:'read', page:'FormatRule'};
 						}
-						params.ajax = 'json';
 
 						// ダイアログ描画処理
 						$(this).click(function(){
@@ -446,7 +445,7 @@ $(window).bind("resize", autoResizer);
 				$(this).remove();
 			}
 		};
-		if ($.browser.msie && $.browser.version > 6){ dialog_option.bgiframe = true; }	// for IE6
+		dialog_option.bgiframe = ($.browser.msie && $.browser.version > 6) ? true : false;	// for IE6
 
 		if (params.cmd.match(/logview|source|diff|edit|backup|read/i) || params.help == 'true'){
 			dialog_option.width = '90%';
@@ -1952,7 +1951,7 @@ $(window).bind("resize", autoResizer);
 			.css('position','absolute')
 			.css('z-index',1)
 			.html([
-			'<h1><a href="#">'+$('h1.title').text()+'</a><span class="c"> [TOC]</span></h1>',
+			'<h1><a href="#">'+$('#header h1').text()+'</a> <abbr title="Table of Contents">[TOC]</span></h1>',
 			lis.replace(/href/g,'tabindex="1" href'),
 			this.getNaviLink()
 		].join(''));

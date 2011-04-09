@@ -146,6 +146,7 @@ function skeylist_analysis($data)
 			if ( (strpos($parm,'cache:') === 0 )) continue; // google のキャッシュなどの場合
 
 			$parm = skeylist_convert_key($parm); // 検索キーを名寄せする
+			if (!isset($sum[$parm])){ $sum[$parm] = 0; }
 			$sum[$parm] += $x[2]; // 参照カウンタ
 			break;
 		}

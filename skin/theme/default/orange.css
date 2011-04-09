@@ -6,7 +6,7 @@
 // Original version written by miko and upk.
 // Adv version by Logue.
 // 
-// $Id: orange.css,v 1.0.0 2010/08/15 00:19:00 Logue Exp $
+// $Id: orange.css,v 1.0.2 2011/04/09 17:51:00 Logue Exp $
 //
 */
 
@@ -72,30 +72,21 @@ blockquote{
 	border: 1px solid #FFCC99;
 }
 
-hr{
-	border-color: #333333;
-}
-
 thead td.style_td,
 tfoot td.style_td{
-	color:inherit;
 	background-color:#D0D8E0;
 }
 thead th.style_th,
 tfoot th.style_th{
-	color:inherit;
 	background-color:#E0E8F0;
 }
 .style_table{
-	color:inherit;
 	background-color:#ccd5dd;
 }
 .style_th{
-	color:inherit;
 	background-color:#EEEEEE;
 }
 .style_td{
-	color:inherit;
 	background-color:#EEF5FF;
 }
 .style_td_blank{
@@ -180,29 +171,26 @@ td.rtable{
 
 /* suckerfish.inc.php */
 .sf-menu {
-	color: white !important;
 	background-color: DarkOrange;
-	border: 1px Chocolate solid;
+	border-color: Chocolate;
 }
 
 .sf-menu ul{
 	background-color: DarkOrange;
-	border: 1px Chocolate solid;
+	border-color: Chocolate;
 }
 
 .sf-menu li {
-	border: 1px DarkOrange solid;
+	border-color: DarkOrange;
 }
 
 .sf-menu li:hover, .sf-menu li.sfHover{
 	color: saddlebrown !important;
 	background-color: sandybrown;
-	border: 1px #ffffff solid;
 }
 
 .sf-menu li ul li:hover, .sf-menu li ul li.sfHover,
 .sf-menu a:focus, .sf-menu a:hover, .sf-menu a:active {
 	color: saddlebrown !important;
 	background-color: sandybrown;
-	text-decoration: none;
 }

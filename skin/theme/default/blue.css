@@ -5,7 +5,7 @@
 // Original version written by miko and upk.
 // Adv version by Logue.
 // 
-// $Id: blue.css,v 1.0.1 2011/04/03 13:08:00 Logue Exp $
+// $Id: blue.css,v 1.0.2 2011/04/09 17:52:00 Logue Exp $
 //
 */
 
@@ -172,30 +172,27 @@ td.rtable{
 
 /* suckerfish.inc.php */
 .sf-menu {
-	color: white !important;
-	border: 1px RoyalBlue solid;
 	background-color: CornflowerBlue;
+	border-color: RoyalBlue;
 }
 
 .sf-menu ul{
 	background-color: CornflowerBlue;
-	border: 1px RoyalBlue solid;
+	border-color: RoyalBlue;
 }
 
 .sf-menu li {
-	border: 1px CornflowerBlue solid;
+	border-color: CornflowerBlue;
 }
 
 .sf-menu li:hover, .sf-menu li.sfHover{
 	color: midnightblue !important;
 	background-color: lightsteelblue;
-	border: 1px white solid;
 }
 
 .sf-menu li ul li:hover, .sf-menu li ul li.sfHover,
 .sf-menu a:focus, .sf-menu a:hover, .sf-menu a:active {
 	color: midnightblue !important;
 	background-color: lightsteelblue;
-	text-decoration: none;
 }
 

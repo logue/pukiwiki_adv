@@ -6,7 +6,7 @@
 // Original version written by miko and upk.
 // Adv version by Logue.
 // 
-// $Id: green.css,v 1.0.1 2011/04/03 09:06:00 Logue Exp $
+// $Id: green.css,v 1.0.2 2011/04/09 17:51:00 Logue Exp $
 //
 */
 
@@ -51,15 +51,15 @@ h1.title{
 }
 
 h1, h2{
-	border-color:#ffffff #ffffff #999999 #11ff77;
+	border-color:#ffffff #ffffff #999999 mediumseagreen;
 }
 
 h3{
-	border-color:#ffffff #ffffff #999999 #33ff99;
+	border-color:#ffffff #ffffff #999999 mediumaquamarine;
 }
 
 h4, h5, h6{
-	border-color:#f8fff8 #f8fff8 #999999 #66ffcc;
+	border-color:#f8fff8 #f8fff8 #999999 lightgreen;
 }
 
 dt{
@@ -192,28 +192,27 @@ td.rtable{
 /* suckerfish.inc.php */
 .sf-menu {
 	color: white !important;
-	border: 1px Teal solid;
 	background-color: MediumSeaGreen;
+	border-color: Teal;
 }
 
 .sf-menu ul{
-	border: 1px Teal solid;
 	background-color: MediumSeaGreen;
+	border-color: Teal;
 }
 
 .sf-menu li {
-	border: 1px MediumSeaGreen solid;
+	border-color: MediumSeaGreen;
 }
 
 .sf-menu li:hover, .sf-menu li.sfHover{
 	color: DarkSlateGray !important;
 	background-color: mediumaquamarine;
-	border: 1px white solid;
+	border-color: white;
 }
 
 .sf-menu li ul li:hover, .sf-menu li ul li.sfHover,
 .sf-menu a:focus, .sf-menu a:hover, .sf-menu a:active {
 	color: DarkSlateGray !important;
 	background-color: mediumaquamarine;
-	text-decoration: none;
 }

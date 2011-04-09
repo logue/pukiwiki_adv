@@ -1,8 +1,8 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone
-// $Id: pukiwiki.ini.php,v 1.149.49 2010/11/12 22:30:00 Logue Exp $
+// $Id: pukiwiki.ini.php,v 1.149.50 2011/04/09 22:30:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiWiki Advance Developers Team
+//   2010-2011 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
 //   2002-2007 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -357,6 +357,11 @@ $recaptcha_private_key = '';
 // 2: on
 //    Function in the past. Automatic ping transmission.
 $trackback = 1;
+
+// Enable Trackback Auto-discovery
+// Append to TrackBack RDF to body.
+// Adv. does not enable this function by default for privend trackback spam.
+$tb_auto_discovery = false;
 
 /////////////////////////////////////////////////
 // Referer list feature

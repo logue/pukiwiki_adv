@@ -19,13 +19,12 @@ function plugin_rss_action()
 
 	$version = isset($vars['ver']) ? $vars['ver'] : '';
 	switch($version){
-	case '':  $version = '0.91'; break; // Default
-	case '1': $version = '1.0';  break; // Sugar
-	case '2': $version = '2.0';  break; // Sugar
-	case '0.91': /* FALLTHROUGH */
-	case '1.0' : /* FALLTHROUGH */
-	case '2.0' : break;
-	default: die('Invalid RSS version!!');
+		case '1': $version = '1.0';  break; // Sugar
+		case '2': $version = '2.0';  break; // Sugar
+		case '0.91': /* FALLTHROUGH */
+		case '1.0' : /* FALLTHROUGH */
+		case '2.0' :
+		default: break;
 	}
 
 	$recent = CACHE_DIR . PKWK_MAXSHOW_CACHE;

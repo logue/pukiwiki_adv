@@ -769,7 +769,7 @@ class amazon_ecs
  
 	function page_read_xml($url)
 	{
-		$rc = http_request($url);
+		$rc = pkwk_http_request($url);
 		// return ($rc['rc'] == 200) ? $rc['data'] : '';
 		$this->obj_xml = simplexml_load_string($rc['data']);
 		if ($rc['rc'] == 200 || !$this->obj_xml->Error) {
@@ -783,7 +783,7 @@ class amazon_ecs
 
 	function page_read_img($url)
 	{
-		$rc = http_request($url);
+		$rc = pkwk_http_request($url);
 		return ($rc['rc'] == 200) ? $rc['data'] : '';
 	}
 

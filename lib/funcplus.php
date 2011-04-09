@@ -1097,7 +1097,6 @@ if (! function_exists('is_admin')) {
 }
 
 /**************************************************************************************************/
-
 function MeCab($input){
 	global $mecab_path;
 	$pipes = array();
