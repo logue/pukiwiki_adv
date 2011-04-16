@@ -60,26 +60,21 @@ defined('PLUGIN_CALENDAR_VIEWER_COMMENT')		or define('PLUGIN_CALENDAR_VIEWER_COM
 // TrackBackリンクを表示
 defined('PLUGIN_CALENDAR_VIEWER_TRACKBACK')		or define('PLUGIN_CALENDAR_VIEWER_TRACKBACK',	TRUE);
 
-function plugin_calendar_viewer_init(){
-	$messages = array(
-		'_calendar_viewer_msg' => array(
-			'_err_param2'	=> T_('Wrong second parameter.'),
-			'_msg_right'	=> T_('Next %d &gt;&gt;'),
-			'_msg_left'		=> T_('&lt;&lt; Prev %d'),
-			'_msg_restrict'	=> T_('Due to the blocking, the calendar_viewer cannot refer to $1.'),
-			'_title_format'	=> T_('%1s, %2s %3s %4s')	// Sat, 12 Mar 2011
-		)
-	);
-	set_plugin_messages($messages);
-}
-
 function plugin_calendar_viewer_convert()
 {
 	global $vars, $get, $post, $script, $_labels;
 //	global $_msg_calendar_viewer_right, $_msg_calendar_viewer_left;
 //	global $_msg_calendar_viewer_restrict, $_err_calendar_viewer_param2;
-	global $_calendar_viewer_msg, $_symbol_paraedit, $trackback, $pkwk_dtd;
+	global $_symbol_paraedit, $trackback, $pkwk_dtd;
 
+	$_calendar_viewer_msg = array(
+		'_err_param2'	=> T_('Wrong second parameter.'),
+		'_msg_right'	=> T_('Next %d &gt;&gt;'),
+		'_msg_left'		=> T_('&lt;&lt; Prev %d'),
+		'_msg_restrict'	=> T_('Due to the blocking, the calendar_viewer cannot refer to $1.'),
+		'_title_format'	=> T_('%1s, %2s %3s %4s')	// Sat, 12 Mar 2011
+	);
+	
 	static $viewed = array();
 
 	if (func_num_args() < 2)
@@ -275,11 +270,12 @@ function plugin_calendar_viewer_convert()
 				$tail .= str_replace('>comment','><img src="'.IMAGE_URI.'plus/comment.png" width="15" height="15" alt="Comment" title="Comment" />Comment',$comm);
 			}
 		}
-		if (PLUGIN_CALENDAR_VIEWER_TRACKBACK === TRUE) {
-			if ($trackback) {
-				$tb_id = tb_get_id($page);
-				$tail .= '<a class="pkwk-icon_linktext cmd-trackback" href="'.get_cmd_uri('tb','','',array('__mode'=>'view','tb_id'=>$tb_id)).'">'.'Trackback(' . tb_count($page) . ')'.'</a>'."\n";
-			}
+		if (PLUGIN_CALENDAR_VIEWER_TRACKBACK === TRUE && $trackback) {
+			$tb_link = get_cmd_uri('tb','','',array(
+				'__mode'=>'view',
+				'tb_id'=>tb_get_id($page)
+			));
+			$tail .= '<a class="pkwk-icon_linktext cmd-trackback" href="'.$tb_link.'">'.'Trackback(' . tb_count($page) . ')'.'</a>'."\n";
 		}
 		$page_id= str_replace('/','_',$page);
 		$return_body .= (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<article id="'.$page_id.'">' : '<div id="'.$page_id.'">')."\n";

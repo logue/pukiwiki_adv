@@ -677,7 +677,7 @@ function get_readings()
 	global $pagereading_enable, $pagereading_kanji2kana_converter;
 //	global $pagereading_kanji2kana_encoding, $pagereading_chasen_path, $pagereading_mecab_path;
 	global $pagereading_kakasi_path, $pagereading_config_page;
-	global $pagereading_config_dict;
+	global $pagereading_config_dict, $info;
 	
 	global $pagereading_path, $pagereading_api;
 
@@ -715,12 +715,12 @@ function get_readings()
 		}
 
 		// Execute ChaSen/KAKASI, and get annotation
+		$pagereading_command = $pagereading_path.'/'.$pagereading_api;
+		if(! file_exists($pagereading_command) ){
+			$info[] = sprintf('<var>%s</var> is not found or cannot execute: ', $pagereading_api).' <var>'.$pagereading_command.'</var>';
+		}
 		if($unknownPage) {
-			if ($pagereading_api != 'none'){
-				$pagereading_command = $pagereading_path.'/'.$pagereading_api;
-				if(! file_exists($pagereading_command))
-					die_message(sprintf(_('%s is not found or cannot execute: '),$pagereading_api).' <var>'.$pagereading_command.'</var>');
-
+			if ($pagereading_api){
 				$tmpfname = (CACHE_DIR . PKWK_PAGEREADING_CACHE);
 				pkwk_touch_file($tmpfname);
 				$fp = fopen($tmpfname, 'w') or

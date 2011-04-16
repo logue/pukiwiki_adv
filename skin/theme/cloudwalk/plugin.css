@@ -1,0 +1,244 @@
+@charset "UTF-8";
+
+/* Paragraph Link
+----------------------------------------------------------------------------- */
+.anchor_super{
+	font-size:0.4em;
+	vertical-align:40%;
+}
+.super_index{
+	color:#f90;
+	font-size:0.4em;
+	vertical-align:40%;
+}
+.side_bar a.anchor_super{
+	display:none;
+}
+.jumpmenu{
+	font-size:0.6em;
+	text-align:right;
+	float:right;
+}
+.jumpmenu a{
+	text-decoration:none;
+}
+
+/* Note
+----------------------------------------------------------------------------- */
+.note_super{
+	font-size:0.6em;
+	vertical-align:30%;
+}
+/* Diff
+------------------------------------------------------------------------------*/
+.diff_added{
+	color:blue;
+}
+.diff_removed{
+	color:red;
+}
+
+/* Calender (calendar*.inc.php)
+----------------------------------------------------------------------------- */
+.style_calendar{
+	width:200px;
+	height:230px;
+	background-color:#ccc;
+	font-size:15px;
+}
+
+.bar .style_calendar{
+	height:auto;
+	min-width:99%;
+	margin:0px auto;
+}
+.bar .style_calendar a{
+	color:black;
+}
+
+/* Contents (contents.inc.php)
+----------------------------------------------------------------------------- */
+.contents{
+	border:solid 1px #999;
+	border-right:none;
+	border-bottom:solid 1px #fff;
+	width:60%;
+	margin:1em;
+}
+.contents:before{
+	content:"もくじ";
+	color:#fff;
+	background-color:#999;
+	font-size:12px;
+	font-weight:bold;
+	line-height:1em;
+	display:block;
+	width:3.5em;
+	padding:2px;
+}
+.contents ul{
+	margin:7px 0px 15px;
+}
+
+/* Counter (counter.inc.php)
+----------------------------------------------------------------------------- */
+.counter{
+	font-size:70%;
+}
+
+
+/* Image (ref.inc.php)
+----------------------------------------------------------------------------- */
+.img_margin{
+	margin-left:32px;
+	margin-right:32px;
+}
+
+/* Incluede (include.inc.php)
+----------------------------------------------------------------------------- */
+.side_label{
+	text-align:center;
+}
+
+/* New (new.inc.php)
+----------------------------------------------------------------------------- */
+.comment_date{
+	font-size:x-small;
+}
+.new1{
+	color:red;
+	font-size:x-small;
+}
+.new5{
+	color:green;
+	font-size:xx-small;
+}
+
+/* Popular (popular.inc.php)
+----------------------------------------------------------------------------- */
+.counter{
+	font-size:1em;
+}
+
+/* vote.inc.php
+----------------------------------------------------------------------------- */
+.vote_label{
+	background-color:#FFCCCC;
+}
+.vote_td1{
+	background-color:#DDE5FF;
+}
+.vote_td2{
+	background-color:#EEF5FF;
+}
+
+/*----------------------------------------------------------------------------- */
+
+/* week text color */
+.week_sat{
+	color:blue;
+}
+.week_day {
+/*	color:black;	*/
+}
+.week_sun, .week_holiday {
+	color:red;
+}
+
+
+/* 1.4.6u1 added */
+.linkwarn {
+	font-size:xx-small;
+	font-weight:bold;
+	color:#f00;
+	background-color:#ff6;
+}
+
+.linkwarn a {
+	color:#f00;
+	background-color:#ff6;
+}
+
+/* suckerfish.inc.php */
+.sf-menu {
+	/* These settings are recommended to specify an absolute value. */
+	font-size:13px !important;
+	line-height:18px !important;
+	height:22px;
+
+	text-shadow:none;
+	width: 100%;
+	
+	clear:both;
+	white-space: nowrap;
+
+	color: white;
+}
+
+.sf-menu ul{
+	width: 171px; /* left offset of submenus need to match (see below) */
+	
+	background-color: grey;
+	border: 1px dimgray solid;
+}
+
+.sf-menu li {
+	border: 1px grey solid;
+}
+
+.sf-menu ul li {
+	width: 12em;
+}
+
+.sf-menu li:hover ul,
+.sf-menu li.sfHover ul {
+	left:			-1px;
+	top:			23px; /* match top ul list item height */
+}
+
+.sf-menu li li:hover ul,
+.sf-menu li li.sfHover ul,
+.sf-menu li li li:hover ul,
+.sf-menu li li li.sfHover ul {
+	left:			12em; /* match ul width */
+}
+
+.sf-menu li {
+	padding: 2px 0.5em;
+}
+
+.sf-menu li ul li:hover, .sf-menu li ul li.sfHover,
+.sf-menu a:focus, .sf-menu a:hover, .sf-menu a:active {
+	text-decoration: none;
+}
+
+/* Link color */
+.sf-menu a, .sf-menu a:link {
+	color: white !important;
+	font-weight: bold;
+	text-decoration: none;
+}
+.sf-menu a:visited  { /* visited pseudo selector so IE6 applies text colour*/
+	text-decoration: none;
+}
+
+.sf-menu a:active  {
+	text-decoration: none;
+}
+
+.sf-menu .noexists {
+	background-color:transparent;
+}
+
+.sf-menu li:hover, .sf-menu li.sfHover{
+	color: black !important;
+	background-color: silver;
+	border: 1px white solid;
+}
+
+.sf-menu li ul li:hover, .sf-menu li ul li.sfHover,
+.sf-menu a:focus, .sf-menu a:hover, .sf-menu a:active {
+	color: black !important;
+	background-color: silver;
+	text-decoration: none;
+}

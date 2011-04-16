@@ -19,13 +19,13 @@ defined('PLUGIN_EDIT_PARTAREA') or define('PLUGIN_EDIT_PARTAREA', 'compat');
 function plugin_edit_action()
 {
 	// global $vars, $_title_edit, $load_template_func;
-	global $vars, $load_template_func;
+	global $vars, $load_template_func, $_string;
 
-	// if (PKWK_READONLY) die_message( T_('PKWK_READONLY prohibits editing') );
-	if (auth::check_role('readonly')) die_message( T_('PKWK_READONLY prohibits editing') );
+	// if (PKWK_READONLY) die_message(  $_string['prohibit'] );
+	if (auth::check_role('readonly')) die_message( $_string['prohibit'] );
 
 	if (PKWK_READONLY == ROLE_AUTH && auth::get_role_level() > ROLE_AUTH) {
-		die_message( T_('PKWK_READONLY prohibits editing') );
+		die_message( $_string['prohibit'] );
 	}
 
 	if (isset($vars['realview'])) {
@@ -36,7 +36,7 @@ function plugin_edit_action()
 	check_editable($page, true, true);
 
 	if (!is_page($page) && auth::is_check_role(PKWK_CREATE_PAGE)) {
-		die_message( T_('PKWK_CREATE_PAGE prohibits editing') );
+		die_message( $_string['prohibit'] );
 	}
 
 	if (isset($vars['preview']) || ($load_template_func && isset($vars['template']))) {
@@ -62,7 +62,7 @@ function plugin_edit_action()
 	}
 	if ($postdata == '') $postdata = auto_template($page);
 
-	return array('msg'=> T_('Edit of  $1'), 'body'=>edit_form($page, $postdata));
+	return array('msg'=> T_('Edit of $1'), 'body'=>edit_form($page, $postdata));
 }
 
 // Preview by Ajax

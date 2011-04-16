@@ -244,9 +244,9 @@ function amazon_make_review_page()
 			<option value="fr">fr</option>
 			<option value="de">de</option>
 		</select>
-		<input type="text" name="itemid" size="30" value="" />
+		<input type="text" name="itemid" size="30" value="" placeholder="{$_amazon_msg['msg_Code']}" />
 		<input type="submit" value="{$_amazon_msg['msg_ReviewEdit']}" />
-		{$_amazon_msg['msg_Code']}
+		
 	</div>
 </form>
 

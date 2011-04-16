@@ -167,8 +167,7 @@ foreach(array('DATA_DIR', 'DIFF_DIR', 'BACKUP_DIR', 'CACHE_DIR') as $dir){
 
 // 設定ファイルの変数チェック
 $temp = '';
-foreach(array('rss_max', 'page_title', 'note_hr', 'related_link', 'show_passage',
-	'rule_related_str', 'load_template_func') as $var){
+foreach(array('rss_max', 'page_title', 'note_hr', 'related_link', 'show_passage', 'load_template_func') as $var){
 	if (! isset(${$var})) $temp .= '<li>$' . $var . "</li>\n";
 }
 if ($temp) {
@@ -405,8 +404,9 @@ $line_rules = array_merge(array(
 
 //////////////////////////////////////////////////
 // JavaScriptフレームワーク設定
+define('IS_AJAX', isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
 
-if (empty($vars['ajax'])){
+if (!IS_AJAX){
 	// スキンデーター読み込み
 	global $skin_file;
 
@@ -465,7 +465,7 @@ if (empty($vars['ajax'])){
 			/* Use plugins */ 
 			'jquery.cookie','jquery.lazyload.min', 'jquery.query','jquery.scrollTo','jquery.colorbox-min','jquery.a-tools.min','jquery.superfish',
 			'jquery.swfupload','jquery.tablesorter-min','jquery.textarearesizer','jquery.jplayer.min', 'jquery.textarea-min', 'jquery.tooltip.min',
-			'jquery.ajaxga.min', 'jquery.ie9ify.min',
+			'jquery.ajaxga.min', 'jquery.ie9ify.min', 'jquery.jstree.js',
 			
 			/* MUST BE LOAD LAST */
 			'skin.original'

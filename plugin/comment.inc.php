@@ -234,7 +234,7 @@ $auth_guide
 	<input type="hidden" name="ticket" value="$ticket" />
 	<div class="comment_form">
 		$nametags
-		<input type="text"   name="msg" id="p_comment_comment_{$comment_all_no}" size="$comment_cols" />
+		<input type="text"   name="msg" id="p_comment_comment_{$comment_all_no}" size="$comment_cols" placeholder="{$_msg_comment}" />
 		<input type="submit" name="comment" value="$_btn_comment" />
 	</div>
 </form>

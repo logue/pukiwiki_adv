@@ -33,15 +33,15 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 <!-- *** Header *** -->
 			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<header id="header" class="clearfix">'."\n" : '<div id="header" class="clearfix">')."\n"; ?>
 <?php if (exist_plugin_convert('headarea') && do_plugin_convert('headarea') != '') { ?>
-				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<hgroup id="title" style="display:none;">'."\n" : '<div id="title" style="display:none;">')."\n"; ?>
-					<h1><?php echo(($newtitle!='' && $is_read) ? $newtitle: $page) ?></h1>
+				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<hgroup id="hgroup" style="display:none;">'."\n" : '<div id="hgroup" style="display:none;">')."\n"; ?>
+					<h1 id="title"><?php echo(($newtitle!='' && $is_read) ? $newtitle: $page) ?></h1>
 					<h2><a href="<?php echo $_LINK['reload'] ?>" id="parmalink"><?php echo $_LINK['reload'] ?></a></h2>
 				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</hgroup>'."\n" : '</div>')."\n"; ?>
 				<?php echo do_plugin_convert('headarea') ?>
 <?php } else { ?>
 				<a href="<?php echo $modifierlink ?>"><img id="logo" src="<?php echo $_SKIN['logo']['src'] ?>" width="<?php echo $_SKIN['logo']['width'] ?>" height="<?php echo $_SKIN['logo']['height'] ?>" alt="<?php echo $_SKIN['logo']['alt'] ?>" /></a>
-				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<hgroup id="title">'."\n" : '<div id="title">')."\n"; ?>
-					<h1><?php echo (($newtitle!='' && $is_read) ? $newtitle : $page) ?></h1>
+				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<hgroup id="hgroup">'."\n" : '<div id="hgroup">')."\n"; ?>
+					<h1 id="title"><?php echo (($newtitle!='' && $is_read) ? $newtitle : $page) ?></h1>
 					<?php
 if ($vars['page']) { 
 	require_once(PLUGIN_DIR . 'topicpath.inc.php');

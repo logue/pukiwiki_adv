@@ -192,7 +192,7 @@ pukiwiki_skin = {
 				var 
 				input = $(this),
 				placeholderText = input.attr('placeholder'),
-				placeholderColor = 'GrayText',
+				placeholderColor = 'Gray',
 				defaultColor = input.css('color');
 
 				input. 
@@ -381,7 +381,7 @@ $(window).bind("resize", autoResizer);
 						$(this).attr('href',href+'&type=.gif');
 						$(this).colorbox(colorbox_config);
 						//$(this).rlightbox();
-					}else if (params.cmd.match(/attach|search|backup|source|newpage|template|freeze|rename|logview|tb|diff/) && params.pcmd !== 'list' || params.help == 'true'){
+					}else if (params.cmd.match(/attach|search|backup|source|newpage|template|freeze|rename|logview|tb|diff|referer|linklist|skeylist/) && params.pcmd !== 'list' || params.help == 'true'){
 						// その他の主要なプラグインは、インラインウィンドウで表示
 						if (params.help == 'true'){
 							params = {cmd:'read', page:'FormatRule'};
@@ -426,6 +426,7 @@ $(window).bind("resize", autoResizer);
 			hide: 'fade',
 			width: '520px',
 			dialogClass: 'ajax_dialog',
+			bgiframe : ($.browser.msie && $.browser.version > 6) ? true : false,	// for IE6 
 			open: function(){
 				self.tablesorter(prefix+'div.window');
 				self.glossaly(prefix+'div.window');
@@ -445,7 +446,6 @@ $(window).bind("resize", autoResizer);
 				$(this).remove();
 			}
 		};
-		dialog_option.bgiframe = ($.browser.msie && $.browser.version > 6) ? true : false;	// for IE6
 
 		if (params.cmd.match(/logview|source|diff|edit|backup|read/i) || params.help == 'true'){
 			dialog_option.width = '90%';
@@ -618,6 +618,7 @@ $(window).bind("resize", autoResizer);
 				title: 'Music Player',
 				dialogClass: 'music_player',
 				width:'640px',
+				bgiframe : ($.browser.msie && $.browser.version > 6) ? true : false,	// for IE6 
 				open: function(){
 					var global_lp = 0;
 		
@@ -733,8 +734,6 @@ $(window).bind("resize", autoResizer);
 					$(this).remove();
 				}
 			};
-			
-			if ($.browser.msie && $.browser.version > 6){ dialog_option.bgiframe = true; }// for IE6 
 			
 			var jplayer_container = [
 				'<div id="jplayer"></div>',
@@ -1677,7 +1676,7 @@ $(window).bind("resize", autoResizer);
 		
 	},
 	CFCheck: function(){
-		if (typeof(CFInstall) == 'object' && $('meta[http-equiv=X-UA-Compatible]')[0].content.match(/chrome/)){
+		if (typeof(CFInstall) == 'object' || $('meta[http-equiv=X-UA-Compatible]')[0].content.match(/chrome/)){
 			CFInstall.check({
 				mode: 'overlay',
 				onmissing: function(){
@@ -1768,6 +1767,7 @@ $(window).bind("resize", autoResizer);
 				if (key == 27){return false;}
 				return true;	// inputタグ、textareaタグ内ではキーバインド取得を無効化（ただしESCキーは除外）
 			}
+
 		//	console.log(key,key_label);
 			
 			switch(key_label){
@@ -1951,7 +1951,7 @@ $(window).bind("resize", autoResizer);
 			.css('position','absolute')
 			.css('z-index',1)
 			.html([
-			'<h1><a href="#">'+$('#header h1').text()+'</a> <abbr title="Table of Contents">[TOC]</span></h1>',
+			'<h1><a href="#">'+$('h1#title').text()+'</a><abbr title="Table of Contents">[TOC]</span></h1>',
 			lis.replace(/href/g,'tabindex="1" href'),
 			this.getNaviLink()
 		].join(''));
@@ -2014,11 +2014,8 @@ $(window).bind("resize", autoResizer);
 	popToc : function(ev){
 		var tg;
 		if (!ev){ ev = event; }
-		if(window.event){
-			tg = ev.srcElement;
-		}else{
-			tg = ev.target;
-		}
+		tg = (window.event) ? ev.srcElement : ev.target;
+
 
 		if(ev.altKey){
 			pukiwiki_skin._dispToc(ev,tg,0);
@@ -2215,25 +2212,25 @@ $(window).unload(function(){
 	}
 });
 
-$('head').ie9ify({   
-			applicationName: 'PukiWiki Advance',
-			favIcon: 'favicon.ico',
-			navColor: 'Blue',
-			startUrl: SCRIPT,
-			tooltip: 'mySite',
-			tasks: [
-				{
-					'name': 'Twitter',
-					'action': 'http://twitter.com/brandonsatrom',
-					'icon': ''
-				},
-				{
-					'name': 'User InExperience',
-					'action': 'http://www.userinexperience.com',
-					'icon': ''
-				}
-			]
-		});
+$('head').ie9ify({
+	applicationName: 'PukiWiki Advance',
+	favIcon: 'favicon.ico',
+	navColor: 'Blue',
+	startUrl: SCRIPT,
+	tooltip: 'mySite',
+	tasks: [
+		{
+			'name': 'Twitter',
+			'action': 'http://twitter.com/brandonsatrom',
+			'icon': ''
+		},
+		{
+			'name': 'User InExperience',
+			'action': 'http://www.userinexperience.com',
+			'icon': ''
+		}
+	]
+});
 
 // usage: log('inside coolFunc',this,arguments);
 // paulirish.com/2009/log-a-lightweight-wrapper-for-consolelog/

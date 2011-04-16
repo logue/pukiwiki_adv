@@ -18,7 +18,7 @@ function catbody($title, $page, $body)
 	global $script; // MUST BE SKIN.FILE. Do not delete line.
 	global $vars, $arg, $help_page, $hr, $JSON;
 	
-	global $attach_link, $related_link, $function_freeze;
+	global $function_freeze;
 	global $search_word_color, $foot_explain, $note_hr;
 	
 	global $newtitle, $newbase, $language, $use_local_time, $session; // Plus! skin extension
@@ -31,7 +31,7 @@ function catbody($title, $page, $body)
 
 	global $_string, $always_menu_displayed;
 	
-	global $is_page, $is_read, $is_freeze, $is_readonly, $is_safemode, $is_createpage;
+	global $_page, $is_page, $is_read, $is_freeze, $is_readonly, $is_safemode, $is_createpage,$lastmod;
 
 	$_page  = isset($vars['page']) ? $vars['page'] : '';
 	$filetime = ($_page !== '') ? get_filetime($_page) : 0; 
@@ -43,9 +43,14 @@ function catbody($title, $page, $body)
 	$is_readonly = auth::check_role('readonly');
 	$is_safemode = auth::check_role('safemode');
 	$is_createpage = auth::is_check_role(PKWK_CREATE_PAGE);
-	$is_ajax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH']  == 'XMLHttpRequest';
 
-	if ($is_ajax || isset($JSON)){
+	if ($lastmod && $is_read){
+		pkwk_common_headers($filetime);
+	}else{
+		pkwk_common_headers();
+	}
+
+	if (IS_AJAX || isset($JSON)){
 		// JSONで出力
 		if (!isset($JSON)){	// $JSON関数が定義されていない場合
 			$JSON = array(
@@ -61,7 +66,6 @@ function catbody($title, $page, $body)
 */
 			);
 		}
-		pkwk_common_headers($filetime);
 		header('Content-Type: application/json; charset=' . CONTENT_CHARSET);
 		echo json_encode($JSON);
 	}else{
@@ -190,17 +194,18 @@ function catbody($title, $page, $body)
 		
 		// Last modification date (string) of the page
 		if ($is_read){
+			global $attach_link, $related_link;
+			
 			$lastmodified = get_date('D, d M Y H:i:s T', $filetime). ' ' . get_pg_passage($_page, FALSE);
 			if ($pkwk_dtd == PKWK_DTD_HTML_5) {
 				$lastmodified = '<time pubdate="pubdate" datetime="'.get_date('c',$filetime).'">'.$lastmodified.'</time>';
 			}
 
 			// List of attached files to the page
-			$attaches = ($attach_link && exist_plugin_action('attach') && (do_plugin_init('attach') !== FALSE)) ? attach_filelist() : '';
+			$attaches = ($attach_link && (exist_plugin('attach') && do_plugin_init('attach') !== FALSE)) ? attach_filelist() : '';
 
-			// List of related pages
-			$related  = ($related_link) ? make_related($_page,'dl') : '';
-			
+			$related = ($related_link && (exist_plugin('related') && do_plugin_init('related') !== FALSE)) ? make_related($_page,'dl') : '';
+
 			// List of footnotes
 			ksort($foot_explain, SORT_NUMERIC);
 			$notes = ! empty($foot_explain) ? '<ul>'.join("\n", $foot_explain).'</ul>' : '';
@@ -208,6 +213,7 @@ function catbody($title, $page, $body)
 
 		// Search words
 		if ($search_word_color && isset($vars['word'])) {
+			
 			$body = '<div class="small">' . $_string['word'] . htmlsc($vars['word']) .
 				'</div>' . $hr . "\n" . $body;
 
@@ -260,12 +266,8 @@ function catbody($title, $page, $body)
 			if (exist_plugin_convert('side')) $body_side = do_plugin_convert('side');
 		}
 */
-		if (empty($x_ua_compatible)) $x_ua_compatible = 'IE=edge';
-
-		pkwk_common_headers($filetime);
 		header('Content-Type: '.$http_header.'; charset='. CONTENT_CHARSET);
-		header('X-UA-Compatible: '.$x_ua_compatible);	// とりあえずIE8対策
-
+		header('X-UA-Compatible: '.(empty($x_ua_compatible)) ? 'IE=edge' : $x_ua_compatible);	// とりあえずIE8対策
 		require(SKIN_FILE);
 	}
 
@@ -458,60 +460,7 @@ EOD;
 	return $body;
 }
 
-// Related pages
-function make_related($page, $tag = '')
-{
-	global $vars, $rule_related_str, $related_str;
-	// global $_ul_left_margin, $_ul_margin, $_list_pad_str;	// Adv. does not use default.ini.php config.
-
-	$links = links_get_related($page);
-
-	if ($tag) {
-		ksort($links, SORT_STRING);	// Page name, alphabetical order
-	} else {
-		arsort($links, SORT_NUMERIC);	// Last modified date, newer
-	}
-
-	$_links = array();
-	foreach ($links as $page=>$lastmod) {
-		if (check_non_list($page)) continue;
-
-		$s_page   = htmlsc($page);
-		$passage  = get_passage($lastmod);
-/*
-		$_links[] = ($tag) ?
-			'<a href="' . get_page_uri($page) . '" title="' .
-			$s_page . ' ' . $passage . '">' . $s_page . '</a>' :
-			'<a href="' . get_page_uri($page) . '">' .
-			$s_page . '</a>' . $passage;
-*/
-		$_links[] = 
-			'<a href="' . get_page_uri($page) . '">' .
-			$s_page . '</a>' . $passage;
-	}
-	if (empty($_links)) return ''; // Nothing
-
-	if ($tag == 'p') { // From the line-head
-//		$margin = $_ul_left_margin + $_ul_margin;
-//		$style  = sprintf($_list_pad_str, 1, $margin, $margin);
-		$retval =  "\n" .
-			'<ul' . $style . '>' . "\n" .
-			'<li>' . join("</li>\n<li>", $_links) . '</li>' . "\n" .
-			'</ul>' . "\n";
-	}else if ($tag == 'dl') {
-		$retval =  "\n" .
-			'<dl>'."\n".
-			'<dt>'._('Related pages: ').'</dt>' . "\n" .
-			'<dd>' . join("</dd>\n<dd>", $_links) . '</dd>' . "\n" .
-			'</dl>' . "\n";
-	} else if ($tag) {
-		$retval = join("</li>\n<li>", $_links);
-	} else {
-		$retval = join("\n ", $_links);
-	}
-
-	return $retval;
-}
+// make related() moved to related.inc.php
 
 // User-defined rules (convert without replacing source)
 function make_line_rules($str){
@@ -628,15 +577,17 @@ function pkwk_headers_sent()
 	@param compress 圧縮をするかしないか（refなどで二重圧縮されるのを防ぐ）
 	@return なし
 */
-function pkwk_common_headers($modified = 0, $compress = true){
-	global $expire, $lastmod;
+function pkwk_common_headers($modified = 0, $expire = 0, $compress = true){
+	global $lastmod, $vars;
 	if (! PKWK_OPTIMISE) pkwk_headers_sent();
 
-	if ($modified !== 0 && $lastmod){
+	if ($modified !== 0){
 		// 最終更新日（秒で）が指定されていない場合動的なページとみなす。
 		// PHPで条件付きGETとかEtagとかでパフォーマンス向上
 		// http://firegoby.theta.ne.jp/archives/1730
 		$last_modified = gmdate('D, d M Y H:i:s T', $modified);
+		$etag = md5($last_modified);
+		
 		if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ) {
 			if ($_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified) {
 				header('HTTP/1.1 304 Not Modified');
@@ -649,19 +600,19 @@ function pkwk_common_headers($modified = 0, $compress = true){
 				exit;
 			}
 		}
-		header('ETag: "'.md5($last_modified).'"');
+		header('ETag: "'.$etag.'"');
 		header('Last-Modified: ' . $last_modified );
-		header('Cache-control: must-revalidate');
-		if ($expire !== 0){
-			header('Expires: '.gmdate('D, d M Y H:i:s', time() + $expire).' GMT');
-		}
+//		header('If-Modified-Since: ' . $last_modified );
+		header('Cache-control: must-revalidate; max-age=60');
+		header('Expires: '.gmdate('D, d M Y H:i:s', time() + $expire).' GMT');
 	}else{
 		// PHPで動的に生成されるページはキャシュすべきではない
-		header('Cache-Control: no-cache, must-revalidate');
+		header('Cache-Control: no-cache');
 		header('Pragma: no-cache');
 		header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
 	}
 
+	$vary = get_language_header_vary();
 	if(PKWK_ZLIB_LOADABLE_MODULE === true && $compress !== false) {
 		$matches = array();
 		// どうも、ob_gzhandler関連は動作が不安定だ・・・。
@@ -685,10 +636,12 @@ function pkwk_common_headers($modified = 0, $compress = true){
 			// Bug #29350 output_compression compresses everything _without header_ as loadable module
 			// http://bugs.php.net/bug.php?id=29350
 			header('Content-Encoding: ' . $matches[1]);
+			$vary .= ', Accept-Encoding';
 		}
 	}
+	
 	// RFC2616
-	header('Vary: Accept-Encoding, '.get_language_header_vary() );
+	header('Vary:, '.$vary);
 	
 	header('X-XSS-Protection: '.((DEBUG) ? '0' :'1;mode=block') );	// XSS脆弱性対策（これでいいのか？）
 	header('X-Content-Type-Options: nosniff');	// IEの自動MIME type判別機能を無効化する

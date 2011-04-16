@@ -59,6 +59,7 @@ function plugin_showrss_action()
 		pkwk_common_headers($time);
 		header('Content-Type: aplication/xml');
 		echo $buf;
+		exit();
 	}
 
 	$body = '';
@@ -143,15 +144,16 @@ class ShowRSS_html
 		}else if($xml->entry){
 			// <entry>が含まれる場合は、Atomと判断する。
 			$xml->registerXPathNamespace('feed', 'http://www.w3.org/2005/Atom');
+			$href = '';
 			foreach ($xml->link as $link) {
+				$href = (string) $link->attributes()->href;
 				if ($link->attributes()->type == 'text/html'){
-					$href = (string) $link->attributes()->href;
 					break;
 				}
 			}
 			$passage = get_passage( strtotime((string) $xml->updated) );
 			$this->title = '<a href="'.$href.'" title="'.(string) $xml->subtitle.' '.$passage.'" rel="external">'.(string) $xml->title.'</a>';
-			$this->logo = '<a href="'.$href.'><img src="'.(string) $xml->icon.'" /></a>';
+			$this->logo = (isset($xml->icon)) ? '<a href="'.$href.'><img src="'.(string) $xml->icon.'" /></a>' : '';
 			// atom podcastは未対応（複数指定可能ってどんだけー！？）
 			// contentタグには未対応
 			foreach ($xml->entry as $entry) {

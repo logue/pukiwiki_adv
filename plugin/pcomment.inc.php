@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: pcomment.inc.php,v 1.48.22 2011/02/05 12:03:00 Logue Exp $
+// $Id: pcomment.inc.php,v 1.48.23 2011/04/11 19:38:00 Logue Exp $
 //
 // pcomment plugin - Show/Insert comments into specified (another) page
 //
@@ -145,21 +145,20 @@ function plugin_pcomment_convert()
 			$name = '';
 		} else {
 			$title = $_pcmt_messages['btn_name'];
-			// $name = '<input type="text" name="name" size="' . PLUGIN_PCOMMENT_SIZE_NAME . '" />';
+			// $name = '<input type="text" name="name" size="' . PLUGIN_PCOMMENT_SIZE_NAME . '" placeholder="'.$_pcmt_messages['msg_name'].'" />';
 			list($nick,$link,$disabled) = plugin_pcomment_get_nick();
-			$name = '<input type="text" name="name" value="'.$nick.'" '.$disabled.' size="' . PLUGIN_PCOMMENT_SIZE_NAME . '" />';
+			$name = '<input type="text" name="name" value="'.$nick.'" '.$disabled.' size="' . PLUGIN_PCOMMENT_SIZE_NAME . '" placeholder="'.$_pcmt_messages['msg_name'].'" />';
 		}
 
 		$radio   = $params['reply'] ?
 			'<input type="radio" name="reply" value="0" tabindex="0" checked="checked" />' : '';
-		$comment = '<input type="text" name="msg" size="' . PLUGIN_PCOMMENT_SIZE_MSG . '" />';
+		$comment = '<input type="text" name="msg" size="' . PLUGIN_PCOMMENT_SIZE_MSG . '" placeholder="'.$_pcmt_messages['msg_name'].'" />';
 
 		$s_page   = htmlsc($page);
 		$s_refer  = htmlsc($vars_page);
 		$s_nodate = htmlsc($params['nodate']);
-		$helptags = edit_form_assistant();
 
-		$form_start = '<form action="' . get_script_uri() . '" method="post">' . "\n";
+		$form_start = '<form action="' . get_script_uri() . '" method="post" class="pcomment_form">' . "\n";
 		$form = <<<EOD
 	<input type="hidden" name="digest" value="$digest" />
 	<input type="hidden" name="plugin" value="pcomment" />
@@ -168,10 +167,9 @@ function plugin_pcomment_convert()
 	<input type="hidden" name="nodate" value="$s_nodate" />
 	<input type="hidden" name="dir"    value="$dir" />
 	<input type="hidden" name="count"  value="$count" />
-	<div class="pcomment_form">
+	<div>
 	$radio $title $name $comment
 		<input type="submit" value="{$_pcmt_messages['btn_comment']}" />
-	$helptags
 	</div>
 EOD;
 		$form_end = '</form>' . "\n";

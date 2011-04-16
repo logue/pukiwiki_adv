@@ -117,7 +117,6 @@ function plugin_suckerfish_makehtml($page)
 	}
 	$output = '<ul class="sf-menu">'."\n".$output.'</ul>';
 	
-//	return '<div id="navigator2">'."\n".'<ul id="'.PLUGIN_SUKERFISH_DEFAULT_ID.'">'."\n".$output.'</ul></div>';
 	return (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<nav id="navigator">'.$output.'</nav>'."\n" : '<div id="navigator">'.$output.'</div>')."\n";
 }
 

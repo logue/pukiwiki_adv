@@ -9,11 +9,69 @@
 //
 // Related plugin: Show Backlinks for the page
 
+function plugin_related_init(){
+	$messages['_related_messages'] = array(
+		'msg' => T_('Backlinks for: %s'),
+		'msg_nomatch' => T_('No related pages found.')
+	);
+	set_plugin_messages($messages);
+}
+
 function plugin_related_convert()
 {
 	global $vars;
+	
+	$args = func_get_args();
+	if ($args[0] == 'dl'){
+		return make_related($vars['page'], 'dl');
+	}else{
+		return make_related($vars['page'], 'p');
+	}
+}
 
-	return make_related($vars['page'], 'p');
+// Related pages
+function make_related($page, $tag = '')
+{
+	global $vars;
+
+	$links = links_get_related($page);
+
+	if ($tag) {
+		ksort($links, SORT_STRING);	// Page name, alphabetical order
+	} else {
+		arsort($links, SORT_NUMERIC);	// Last modified date, newer
+	}
+
+	$_links = array();
+	foreach ($links as $page=>$lastmod) {
+		if (check_non_list($page)) continue;
+
+		$s_page   = htmlsc($page);
+		$passage  = get_passage($lastmod);
+		$_links[] = 
+			'<a href="' . get_page_uri($page) . '">' .
+			$s_page . '</a>' . $passage;
+	}
+	if (empty($_links)) return ''; // Nothing
+
+	if ($tag == 'p') { // From the line-head
+		$retval =  "\n" .
+			'<ul>' . "\n" .
+			'<li>' . join("</li>\n<li>", $_links) . '</li>' . "\n" .
+			'</ul>' . "\n";
+	}else if ($tag == 'dl') {
+		$retval =  "\n" .
+			'<dl>'."\n".
+			'<dt>'._('Related pages: ').'</dt>' . "\n" .
+			'<dd>' . join("</dd>\n<dd>", $_links) . '</dd>' . "\n" .
+			'</dl>' . "\n";
+	} else if ($tag) {
+		$retval = join("</li>\n<li>", $_links);
+	} else {
+		$retval = join("\n ", $_links);
+	}
+
+	return $retval;
 }
 
 // Show Backlinks: via related caches for the page

@@ -1,5 +1,5 @@
 <?php
-// $Id: proxy.php,v 2.1.13 2011/04/05 00:21:00 Logue Exp $
+// $Id: proxy.php,v 2.1.14 2011/04/11 20:10:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2006,2008 PukiWiki Plus! Team
@@ -9,8 +9,8 @@
 // HTTP-Proxy related functions
 
 // Max number of 'track' redirection message with 301 or 302 response
-define('PKWK_pkwk_http_request_URL_REDIRECT_MAX', 2);
-define('PKWK_pkwk_http_request_TIMEOUT', 8);
+define('PKWK_HTTP_REQUEST_URL_REDIRECT_MAX', 2);
+define('PKWK_HTTP_REQUEST_TIMEOUT', 8);
 define('PKWK_HTTP_CONNECT_TIMEOUT', 2);
 define('PKWK_HTTP_VERSION', '1.1');
 define('PKWK_HTTP_CLIENT', 'PukiWiki Adv./1.0');
@@ -48,7 +48,7 @@ function is_requestable($uri)
  * $content_charset : Content charset. Use '' or CONTENT_CHARSET
 */
 function pkwk_http_request($url, $method = 'GET', $headers = array(), $post = array(),
-	$redirect_max = PKWK_pkwk_http_request_URL_REDIRECT_MAX, $content_charset = '')
+	$redirect_max = PKWK_HTTP_REQUEST_URL_REDIRECT_MAX, $content_charset = '')
 {
 	global $use_proxy, $no_proxy, $proxy_host, $proxy_port;
 	global $need_proxy_auth, $proxy_auth_user, $proxy_auth_pass;
@@ -140,10 +140,19 @@ function pkwk_http_request($url, $method = 'GET', $headers = array(), $post = ar
 
 	$errno  = 0;
 	$errstr = '';
-	$fp = fsockopen(
-		$via_proxy ? $proxy_host : $arr['host'],
-		$via_proxy ? $proxy_port : $arr['port'],
-		$errno, $errstr, PKWK_HTTP_CONNECT_TIMEOUT) or die_message(sprintf(T_('unable to connect to %s.',$proxy_host)));
+	try {
+		$fp = fsockopen(
+			$via_proxy ? $proxy_host : $arr['host'],
+			$via_proxy ? $proxy_port : $arr['port'],
+			$errno, 
+			$errstr, 
+			PKWK_HTTP_CONNECT_TIMEOUT
+		);
+	} catch (Exception $e) {
+		global $info;
+		$info[] = sprintf(T_('unable to connect to %s.'), $proxy_host);
+		return false;
+	}
 	if ($fp === FALSE) {
 		return array(
 			'query'  => $query, // Query string
@@ -152,7 +161,7 @@ function pkwk_http_request($url, $method = 'GET', $headers = array(), $post = ar
 			'data'   => $errstr // Error message
 		);
 	}
-	socket_set_timeout($fp, PKWK_pkwk_http_request_TIMEOUT, 0);
+	socket_set_timeout($fp, PKWK_HTTP_REQUEST_TIMEOUT, 0);
 	fwrite($fp, $query);
 
 	// Get a Head
@@ -201,7 +210,7 @@ function pkwk_http_request($url, $method = 'GET', $headers = array(), $post = ar
 //	$resp = explode("\r\n\r\n", $response, 2);
 //	$rccd = explode(' ', $resp[0], 3); // array('HTTP/1.1', '200', 'OK\r\n...')
 	$rccd = explode(' ', $head, 3); // array('HTTP/1.1', '200', 'OK\r\n...')
-	$rc   = (integer)$rccd[1];
+	$rc   = isset($rccd[1]) ? (integer)$rccd[1] : null;
 
 	switch ($rc) {
 	case 301: // Moved Permanently

@@ -39,7 +39,7 @@ blockquote, q { quotes: none; }
 blockquote:before, blockquote:after,
 q:before, q:after { content: ""; content: none; }
 ins { /* background-color: #ff9; color: #000; */ text-decoration: none; }
-mark { /* background-color: #ff9; color: #000; */font-style: italic; font-weight: bold; }
+mark { /* background-color: #ff9; color: #000; */ font-style: italic; font-weight: bold; }
 del { text-decoration: line-through; }
 abbr[title], dfn[title] { border-bottom: 1px dotted; cursor: help; }
 table { border-collapse: collapse; border-spacing: 0; }
@@ -125,6 +125,7 @@ a:hover { color: #036; }
 	:lang(ja) input,
 	:lang(ja) var{
 		font-family: 'Osaka−等幅', 'ＭＳ ゴシック', 'MS Gothic' !important;
+		line-height:123% !important;
 	}
 
 	/* Korean */
@@ -158,6 +159,7 @@ a:hover { color: #036; }
 	:lang(zh) input,
 	:lang(zh) var{
 		font-family: 'SimHei', '蒙納黑體', monospace;
+		line-height:123% !important;
 	}
 }
 
@@ -352,6 +354,14 @@ a img.pkwk-symbol{
 
 .full_hr{
 	clear:both;
+}
+
+.webkit ::-webkit-input-placeholder, .gecko input:-moz-placeholder{
+	color:grey;
+}
+
+.ie textarea{
+	overflow: auto;
 }
 /** Customize UI **********************************************************************************/
 .helper, .tocpic, map area, a{
@@ -589,27 +599,30 @@ input[disabled]:hover, select[disabled]:hover, textarea[disabled]:hover, option[
 
 /* attach.inc.php / related.inc.php */
 #attach, #related{
-	clear:both;
 	display:block;
+	float:none;
 }
 
 #attach dl, #related dl{
-	margin:0;
+	margin:0 1%;
+	display:block;
 }
 
 #attach dl dt, #related dl dt{
-	float:left;
+	display:inline;
 	font-weight:normal;
+	margin: .1em .25em;
 }
 
 #attach dl dd, #related dl dd{
-	display:block;
-	float:left;
+	display:inline;
+	margin: .1em .25em;
 }
 
 .img_margin{
 
 }
+
 .attach_info dl{
 	float:left;
 	display:block;
@@ -617,7 +630,9 @@ input[disabled]:hover, select[disabled]:hover, textarea[disabled]:hover, option[
 }
 
 .attach_info_image{
-	float:right;
+	right:1em;
+	position:absolute;
+	z-index:-1;
 }
 /* backup.inc.php */
 .add_block, .remove_block{
@@ -644,12 +659,10 @@ input[disabled]:hover, select[disabled]:hover, textarea[disabled]:hover, option[
 .style_calendar_navi{
 	display:block;
 	text-align:center;
-}
-.style_calendar_navi ul{
 	list-style-image: none;
 	list-style:none;
-	margin: 0 !important;
-	padding:0 !important;
+	margin: 0;
+	padding:0;
 }
 
 .style_calendar_title {
@@ -705,8 +718,8 @@ input[disabled]:hover, select[disabled]:hover, textarea[disabled]:hover, option[
 	display:block;
 	list-style-image: none;
 	list-style:none;
-	margin: 0;
-	padding:0;
+	margin: 0 !important;
+	padding:0 !important;
 	text-align:center;
 }
 .navi_none {
@@ -740,6 +753,11 @@ input[disabled]:hover, select[disabled]:hover, textarea[disabled]:hover, option[
 	font-size:xx-small;
 }
 
+/* note */
+#note ul{
+	list-style:none;
+	list-style-image: none;
+}
 /* ref.inc.php */
 .img_margin {
 	margin: 0 32px;
@@ -803,7 +821,6 @@ ul.sf-menu li li li.sfHover ul {
 .tooltip, .linktip {
 	border-bottom: 1px dotted;
 }
-
 
 /* vote.inc.php */
 .vote_table{

@@ -43,12 +43,17 @@ h1.title{
 	color:#0000cc;
 }
 
-h1, h2{
-	border-color:#ffffff #ffffff #999999 #1177ff;
+h1{
+	border-left-color:MidnightBlue;
 }
-
+h2{
+	border-left-color:Blue;
+}
+h2{
+	border-left-color:RoyalBlue;
+}
 h3{
-	border-color:#ffffff #ffffff #999999 CornflowerBlue;
+	border-left-color:CornflowerBlue;
 }
 
 h4, h5, h6{

@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: convert_html.php,v 1.21.25 2011/02/05 09:02:00 Logue Exp $
+// $Id: convert_html.php,v 1.21.26 2011/04/14 23:11:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2005-2008 PukiWiki Plus! Team
@@ -732,15 +732,10 @@ class YTable extends Element
 			$colspan = 1;
 			while (isset($_value[$i + $colspan]) && $_value[$i + $colspan] === FALSE) ++$colspan;
 			$colspan = ($colspan > 1) ? ' colspan="' . $colspan . '"' : '';
+			$text = preg_match("/\s+/", $_value[$i]) ? '' : make_link($_value[$i]);
+			$class = ($text == '') ? 'style_td_blank' : 'style_td';
 			$align = $_align[$i] ? ' style="text-align:' . $_align[$i] . '"' : '';
-			$text = make_link($_value[$i]);
-			if ($text == '' || preg_match("/\s+/", $text)){
-				$class="style_td";
-				$text = '';
-			}else{
-				$class="style_td_blank";
-			}
-			$str[] = '<td class="'.$style.'"' . $align . $colspan . '>' . $text . '</td>';
+			$str[] = '<td class="'.$class.'"' . $align . $colspan . '>' . $text . '</td>';
 			unset($_value[$i], $_align[$i], $text);
 		}
 

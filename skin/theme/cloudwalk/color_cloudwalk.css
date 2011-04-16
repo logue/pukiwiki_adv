@@ -1,0 +1,212 @@
+@charset "UTF-8";
+
+body{
+	background-color:#ffffff;
+}
+
+/* Link General
+----------------------------------------------------------------------------- */
+a:link{
+	color:#353573;
+}
+a:visited{
+	color:#733535;
+}
+a:hover{
+	color:darkorange;
+}
+
+/* header
+----------------------------------------------------------------------------- */
+#header{
+	background-color:#666e99;
+	background-image:url("cloudwalk.jpg");
+}
+#header a{
+	color:#fff;
+}
+
+/* Page Title */
+h1#title{
+	color:#666e99;
+}
+h1#title a{
+	color:#666e99;
+}
+
+/* Navigator
+----------------------------------------------------------------------------- */
+.sf-menuigator{
+	background-color:#aaa;
+}
+.sf-menuigator a{
+	color:#fff;
+}
+.sf-menuigator a:hover{
+	color:#fc0;
+}
+
+/* Contents
+----------------------------------------------------------------------------- */
+/* h1 (include.inc.php, calender_viwer.inc.php) */
+#body h1{
+	color:#666e99;
+	border-bottom:solid 2px #666e99;
+	border-left:solid 10px #666e99;
+}
+#body h1 a, #body h2 a, #body h3 a{
+	color:#666e99;
+}
+
+/* h2 */
+#body h2{
+	color:#666e99;
+	border-bottom:solid 2px #666e99;
+	border-left:solid 10px #666e99;
+}
+
+/* h3 */
+#body h3{
+	color:#666e99;
+	border-left:solid 10px #666e99;
+	border-bottom: solid 1px #666e99;
+}
+
+#sicebar h1,
+#sidebar h2,
+#sidebar h3,
+#sidebar h4,
+#sidebar h5{
+	color:#666eaa;
+}
+#search_form{
+	background-color:#ccc;
+	background-image:url("sky1.jpg");
+}
+#page_action{
+	background-color:#ccc;
+	background-image:url("sky2.jpg");
+}
+#menubar{
+	background-color:#a3bac2;
+	background-image:url("sky1.jpg");
+}
+
+ul{
+	margin-top:.5em;
+	margin-bottom:.5em;
+	line-height:130%;
+}
+
+.bar ul{
+	padding-left:10px;
+	margin:0px;
+}
+
+/* footer
+----------------------------------------------------------------------------- */
+#footer{
+	background-color:#666e99;
+	background-image:url("cloudwalk.jpg");
+}
+#footer a{
+	color:#666;
+}
+
+----------------------------------------------------------------------------- */
+/* calendar.inc.php */
+.style_calendar_top {
+	background-color:#fff !important;
+}
+.style_calendar_today {
+	background-color:#ff9;
+}
+.style_calendar_sat {
+	background-color:#ddd;
+}
+.style_calendar_sun, .style_calendar_holiday {
+	background-color:#fdd;
+}
+.style_calendar_blank {
+	background-color:#fff;
+}
+.style_calendar_day {
+	background-color:#eee;
+}
+.style_calendar_week {
+	color:#666;
+	background-color:#ccc;
+}
+
+.style_calendar tbody .style_td:hover{
+	background-color: #DDFFFF;
+}
+
+.style_calendar a{
+	color:black;
+}
+.style_calendar a strong{
+	color:#f60;
+	text-decoration:underline;
+}
+.style_calendar a:hover strong{
+	color:#666;
+}
+
+#navigator{
+	background-color: #ccccee;
+	border: 1px #666e99 solid;
+}
+
+/* suckerfish.inc.php */
+.sf-menu {
+	color:#999ecc;
+}
+
+.sf-menu a, .sf-menu a:link {
+	color: #666e99 !important;
+}
+
+.sf-menu li {
+	color:#999ecc;
+	background-color: #ccccee;
+}
+
+.sf-menu li:hover, .sf-menu li.sfHover{
+	background-color: #ffeecc;
+	border: 1px #ff9933 solid;
+}
+
+.sf-menu .noexists {
+	background-color:transparent;
+}
+
+/* suckerfish.inc.php */
+.sf-menu {
+	background-color: #ccccee;
+	border-color: #666e99;
+}
+
+.sf-menu ul{
+	background-color: #ccccee;
+	border-color: #666e99;
+}
+
+.sf-menu li {
+	border-color: #ccccee;
+}
+
+.sf-menu li:hover, .sf-menu li.sfHover{
+	color: #666e99 !important;
+	background-color: #ffeecc;
+}
+
+.sf-menu li ul li:hover, .sf-menu li ul li.sfHover,
+.sf-menu a:focus, .sf-menu a:hover, .sf-menu a:active {
+	color: #666e99 !important;
+	background-color: #ffeecc;
+}
+
+.edit_form textarea {
+	width:90%;
+}

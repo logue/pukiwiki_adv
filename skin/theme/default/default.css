@@ -23,15 +23,34 @@ a:hover{
 	text-decoration:underline;
 }
 
+p, pre, dl, fieldset, blockquote{
+	margin:.5em .5em .5em 1.5em;
+}
+
+blockquote{
+	padding: .3em;
+}
+
 del{
 	color:grey;
 }
 
+dt{
+	font-weight:bold;
+}
+
+dd{
+	margin-left:1.5em;
+	margin-bottom:.5em;
+}
+
 h1, h2, h3, h4, h5, h6{
-	padding:.3em .3em .15em .5em;
-	border:0px;
-	border-left:8px solid;
+	padding: .1em 0 .1em .3em;
+	border:0;
+	border-left:.4em solid;
 	border-bottom:1px solid;
+	vertical-align:bottom;
+	background-color:rgba(255, 255, 255, .9);
 }
 
 h1{
@@ -50,50 +69,23 @@ h6{
 	border-color:silver silver darkgray silver;
 }
 
-p, pre, dl, form{
-	margin:0.5em 1.5em;
-}
-
-dt{
-	font-weight:bold;
-}
-
-dd{
-	margin-left:1.5em;
-	margin-bottom:0.5em;
-}
-
 pre{
 	border-top:silver 1px solid;
 	border-bottom:grey 1px solid;
 	border-left:silver 1px solid;
 	border-right:grey 1px solid;
 	background-color:whitesmoke;
-}
-
-ul, ol{
-	margin:0.5em 2em;
-}
-
-blockquote{
-	padding: 0.5em;
-	margin: 0.1em 0.1em 0.1em 0.5em;
+	padding:.5em;
 }
 
 q{
 	border:1px dotted #999;
 }
 
-ul, ol, dl {
-	padding-left:1.5em;
-}
-
 ul, ol{
-	margin:0.5em 2em;
-}
-
-fieldset pre{
-	margin:0.2em;
+	margin:0.5em;
+	margin-left:1.5em;
+	padding-left:1.5em;
 }
 
 /* Table Tags */
@@ -139,14 +131,14 @@ fieldset pre{
 	margin-right:20px;
 }
 
-/* title */
-#title {
+/* hgroup */
+#hgroup {
 	padding: 12px 0px 0px 0px;
 	margin: 12px 0px 0px 0px;
 	float:left;
 }
 
-#title h1 {
+#hgroup h1 {
 	font-weight:bold;
 	background-color:transparent;
 	border: none;
@@ -154,7 +146,7 @@ fieldset pre{
 	padding: 0;
 }
 
-#title h2 {
+#hgroup h2 {
 	font-weight:normal;
 	font-size: 85%;
 	border: none;
@@ -176,8 +168,7 @@ fieldset pre{
 #navigator{
 	display:block;
 	clear:both;
-	padding:4px 0px 0px 0px;
-	margin:0px 1%;
+	margin:2px;
 	white-space: nowrap;
 }
 
@@ -193,7 +184,7 @@ fieldset pre{
 
 .ctable{
 	vertical-align:top;
-	padding:1em;
+	padding:0.1em 0.5em;
 }
 
 #body h2{
@@ -215,7 +206,7 @@ fieldset pre{
 }
 
 #topicpath{
-/*	font-size:80%;	*/
+	font-size:96%;
 }
 
 #qr_code{
@@ -252,10 +243,6 @@ fieldset pre{
 
 #toolbar .pkwk-icon, #toolbar .pkwk-icon_splitter{
 	float:left;
-}
-
-#attach{
-	margin:0px 1%;
 }
 
 #related{
@@ -392,7 +379,6 @@ td.rtable{
 	font-size:93%;
 	overflow:hidden;
 }
-
 #menubar ul{
 	padding: 0px 0.3em;
 	margin: 0px;
@@ -473,6 +459,12 @@ td.rtable{
 	width:150px;
 	padding:0px;
 	margin:2px;
+}
+
+#menubar .style_calendar td, #sidebar .style_calendar td,
+#menubar .style_calendar th, #sidebar .style_calendar th{
+	padding:1px;
+	margin:1px;
 }
 
 /** Plugin ****************************************************************************************/

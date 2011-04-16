@@ -171,7 +171,7 @@ function get_search_words($words, $do_escape = FALSE)
 			// http://www.din.or.jp/~ohzaki/perl.htm#JP_Match (Japanese)
 			$pre  = '(?<!\x8F)';
 			$post =	'(?=(?:[\xA1-\xFE][\xA1-\xFE])*' . // JIS X 0208
-				'(?:[\x00-\x7F\x8E\x8F]|\z))';     // ASCII, SS2, SS3, or the last
+				'(?:[\x00-\x7F\x8E\x8F]|\z))';	 // ASCII, SS2, SS3, or the last
 		} else {
 			$pre = $post = '';
 		}
@@ -388,14 +388,14 @@ function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', 
 	global $pagereading_enable, $list_index, $_string;
 
 	$_msg_symbol = $_string['symbol'];
-	$_msg_symbol = $_string['other'];
+	$_msg_other = $_string['other'];
 
 	// Sentinel: symbolic-chars < alphabetic-chars < another(multibyte)-chars
 	// = ' ' < '[a-zA-Z]' < 'zz'
-	$sentinel_symbol  = ' ';
+	$sentinel_symbol  = '*';
 	$sentinel_another = 'zz';
 
-	$href = get_script_uri() . '?' . ($cmd == 'read' ? '' : 'cmd=' . rawurlencode($cmd) . '&amp;page=');
+//	$href = get_script_uri() . '?' . ($cmd == 'read' ? '' : 'cmd=' . rawurlencode($cmd) . '&amp;page=');
 	$array = $matches = array();
 
 	if ($pagereading_enable) {
@@ -406,7 +406,7 @@ function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', 
 		// Get the initial letter of the page name
 		if ($pagereading_enable) {
 			// WARNING: Japanese code hard-wired
-			if(mb_ereg('^([A-Za-z])', mb_convert_kana($page, 'a'), $matches)) {
+			if(mb_ereg('^(\:|[A-Za-z])', mb_convert_kana($page, 'a'), $matches)) {
 				$initial = & $matches[1];
 			} elseif (isset($readings[$page]) && mb_ereg('^([ァ-ヶ])', $readings[$page], $matches)) { // here
 				$initial = & $matches[1];
@@ -416,7 +416,7 @@ function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', 
 				$initial = & $sentinel_another;
 			}
 		} else {
-			if (preg_match('/^([A-Za-z])/', $page, $matches)) {
+			if (preg_match('/^(\:|[A-Za-z])/', $page, $matches)) {
 				$initial = & $matches[1];
 			} elseif (preg_match('/^([ -~])/', $page)) {
 				$initial = & $sentinel_symbol;
@@ -425,14 +425,9 @@ function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', 
 			}
 		}
 		$str = '   <li>' .
-			'<a href="' . $href . rawurlencode($page) . '">' .
-			htmlsc($page, ENT_QUOTES) .
-			'</a>' .
-			get_pg_passage($page);
+			'<a href="' . get_page_uri($page) . '" >' . htmlsc($page, ENT_QUOTES) . '</a>' .get_pg_passage($page);
 		if ($withfilename) {
-			$str .= "\n" .
-				'    <ul><li>' . htmlsc($file) . '</li></ul>' . "\n" .
-				'   ';
+			$str .= '<br /><var>' . htmlsc($file) . '</var>';
 		}
 		$str .= '</li>';
 		$array[$initial][$page] = $str;
@@ -447,7 +442,7 @@ function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', 
 */
 	$cnt = 0;
 	$retval = $contents = array();
-	$retval[] = '<ul>';
+	$retval[] = '<ul class="page_list">';
 	foreach ($array as $_initial => $pages) {
 		ksort($pages, SORT_STRING);
 		if ($list_index) {
@@ -510,16 +505,17 @@ function catrule()
 }
 
 // Show (critical) error message
-function die_message($msg){
+function die_message($msg, $error_title){
 	global $skin_file, $page_title, $_string, $_title;
-	$title = $page = $_title['error'];
+	$title = isset($error_title) ? $error_title : $_title['error'];
+	$page = $_title['error'];
 	
-	if (PKWK_WARNING === false || (PKWK_WARNING === false && auth::check_role('role_auth'))){	// PKWK_WARNINGが有効でない場合は、詳細なエラーを隠す
+	if (DEBUG !== true || PKWK_WARNING !== true || !auth::check_role('role_auth') ){	// PKWK_WARNINGが有効でない場合は、詳細なエラーを隠す
 		$msg = $_string['error_msg'];
 	}
 	$body = <<<EOD
 <div class="message_box ui-state-error ui-corner-all">
-	<p><span class="ui-icon ui-icon-alert"></span> 
+	<p><span class="ui-icon ui-icon-alert" style="float:left;"></span> 
 	<strong>$page:</strong> $msg</p>
 </div>
 EOD;
@@ -555,6 +551,49 @@ EOD;
 //	exit();
 	die();
 }
+
+function pkwkErrorHandler($errno, $errstr, $errfile, $errline){
+	global $info;
+	if (!(error_reporting() & $errno)) {
+		// error_reporting 設定に含まれていないエラーコードです
+		return;
+	}
+
+	switch ($errno) {
+		case E_USER_ERROR:
+			die_message(
+				"[<code>$errno</code>] <samp>$errstr</samp><br />\n".
+				"  Fatal error on line <var>$errline</var> in file <var>$errfile</var>."
+			);
+			break;
+
+		case E_USER_WARNING:
+			$msg = '<span class="ui-icon ui-icon-alert" style="float:left;"></span><strong>WARNING</strong> [<code>'.$errno.'</code>] <samp>'.$errstr.'</samp>'."\n";
+			break;
+
+		case E_USER_NOTICE:
+			$msg ='<span class="ui-icon ui-icon-info" style="float:left;"></span><strong>NOTICE</strong> [<code>'.$errno.'</code>] <samp>'.$errstr.'</samp>'."\n";
+			break;
+
+		default:
+			$msg ='<span class="ui-icon ui-icon-info" style="float:left;"></span>Unknown error type: [<code>'.$errno.'</code>] <samp>'.$errstr.'</samp>'."\n";
+			break;
+	}
+	
+	if (headers_sent()){
+		$info[] = $msg;
+	}else{
+		echo <<<EOD
+<div class="message_box ui-state-error ui-corner-all">
+	<p>$msg</p>
+</div>
+EOD;
+	}
+
+	/* PHP の内部エラーハンドラを実行しません */
+	return true;
+}
+set_error_handler("pkwkErrorHandler");
 
 // Have the time (as microtime)
 function getmicrotime()
@@ -695,7 +734,7 @@ function get_glossary_pattern(& $pages, $min_len = -1)
 
 	$config = new Config('Glossary');
 	$config->read();
-	$ignorepages      = $config->get('IgnoreList');
+	$ignorepages	  = $config->get('IgnoreList');
 	$forceignorepages = $config->get('ForceIgnoreList');
 	unset($config);
 	$auto_pages = array_merge($ignorepages, $forceignorepages);
@@ -706,7 +745,7 @@ function get_glossary_pattern(& $pages, $min_len = -1)
 
 	foreach ($pages as $page)
 		if (preg_match('/^' . $WikiName . '$/', $page) ?
-		    $nowikiname : mb_strlen($page) >= $min_len)
+			$nowikiname : mb_strlen($page) >= $min_len)
 			$auto_pages[] = $page;
 
 	if (empty($auto_pages)) {
@@ -731,7 +770,7 @@ function get_autolink_pattern(& $pages, $min_len = -1)
 
 	$config = new Config('AutoLink');
 	$config->read();
-	$ignorepages      = $config->get('IgnoreList');
+	$ignorepages	  = $config->get('IgnoreList');
 	$forceignorepages = $config->get('ForceIgnoreList');
 	unset($config);
 	$auto_pages = array_merge($ignorepages, $forceignorepages);
@@ -742,7 +781,7 @@ function get_autolink_pattern(& $pages, $min_len = -1)
 
 	foreach ($pages as $page)
 		if (preg_match('/^' . $WikiName . '$/', $page) ?
-		    $nowikiname : strlen($page) >= $min_len)
+			$nowikiname : strlen($page) >= $min_len)
 			$auto_pages[] = $page;
 
 	if (empty($auto_pages)) {
@@ -763,7 +802,7 @@ function get_autolink_pattern(& $pages, $min_len = -1)
 // preg_quote(), and also escape PCRE_EXTENDED-related chars
 // REFERENCE: http://www.php.net/manual/en/reference.pcre.pattern.modifiers.php
 // NOTE: Some special whitespace characters may warned by PCRE_EXTRA,
-//       because of mismatch-possibility between PCRE_EXTENDED and '[:space:]#'.
+//	   because of mismatch-possibility between PCRE_EXTENDED and '[:space:]#'.
 function preg_quote_extended($string, $delimiter = NULL)
 {
 	// Escape some more chars
@@ -794,11 +833,11 @@ function preg_quote_extended($string, $delimiter = NULL)
 //
 // ARGUMENTS:
 //   $array  : A _sorted_string_ array
-//     * array_keys($array) MUST BE _continuous_integers_started_with_0_.
-//     * Type of all $array-values MUST BE string.
-//   $_offset : (int) internal use. $array[$_offset    ] is the first value to check
+//	 * array_keys($array) MUST BE _continuous_integers_started_with_0_.
+//	 * Type of all $array-values MUST BE string.
+//   $_offset : (int) internal use. $array[$_offset	] is the first value to check
 //   $_sentry : (int) internal use. $array[$_sentry - 1] is the last  value to check  
-//   $_pos    : (int) internal use. Position of the letter to start checking. (0 = the first letter)
+//   $_pos	: (int) internal use. Position of the letter to start checking. (0 = the first letter)
 //
 // REFERENCE: http://en.wikipedia.org/wiki/Trie
 //
@@ -898,10 +937,10 @@ function get_autoaliases_from_aliaspage()
 	if (! isset($pairs)) {
 		$pairs = array();
 		$pattern = <<<EOD
-\[\[                # open bracket
+\[\[				# open bracket
 ((?:(?!\]\]).)+)>   # (1) alias name
-((?:(?!\]\]).)+)    # (2) alias link
-\]\]                # close bracket
+((?:(?!\]\]).)+)	# (2) alias link
+\]\]				# close bracket
 EOD;
 		$postdata = get_source($aliaspage, TRUE, TRUE);
 		$matches = array();
@@ -1023,14 +1062,14 @@ function get_script_absuri()
 	}
 
 	// Set automatically
-	$msg     = 'get_script_absuri() failed: Please set [$script or $script_abs] at INI_FILE manually';
+	$msg	 = 'get_script_absuri() failed: Please set [$script or $script_abs] at INI_FILE manually';
 
 	$uri  = (SERVER_PORT == 443 ) ? 'https://' : 'http://'; // scheme
 	$uri .= SERVER_NAME; // host
 	$uri .= (SERVER_PORT == 80 || SERVER_PORT == 443) ? '' : ':' . SERVER_PORT;  // port
 
 	// SCRIPT_NAME が'/'で始まっていない場合(cgiなど) REQUEST_URIを使ってみる
-	$path    = SCRIPT_NAME;
+	$path	= SCRIPT_NAME;
 	if ($path{0} != '/') {
 		if (! isset($_SERVER['REQUEST_URI']) || $_SERVER['REQUEST_URI']{0} != '/') {
 			die_message($msg);
@@ -1163,7 +1202,7 @@ function input_filter($param)
 {
 	static $magic_quotes_gpc = NULL;
 	if ($magic_quotes_gpc === NULL)
-	    $magic_quotes_gpc = get_magic_quotes_gpc();
+		$magic_quotes_gpc = get_magic_quotes_gpc();
 
 	if (is_array($param)) {
 		return array_map('input_filter', $param);
@@ -1189,7 +1228,7 @@ function csv_explode($separator, $string)
 
 		$_separator = preg_quote($separator, '/');
 		if (! preg_match_all('/("[^"]*(?:""[^"]*)*"|[^' . $_separator . ']*)' .
-		    $_separator . '/', $string . $separator, $matches))
+			$_separator . '/', $string . $separator, $matches))
 			return array();
 
 		foreach ($matches[1] as $str) {
