@@ -60,56 +60,58 @@ if ($vars['page']) {
 
 <!-- ** Body ** -->
 <?php if (arg_check('read') && exist_plugin_convert('menu')) { ?>
-				<div class="clearfix">
-					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="body" class="body">'."\n" : '<div id="body" class="body">'."\n"; ?>
+			<div class="clearfix">
+				<div id="content" class="body">
 <?php }else{ ?>
-					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section class="body">'."\n" : '<div class="body">'."\n"; ?>
+				<div class="body">
 <?php } ?>
-<?php echo $body ?>
+				<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="body">'."\n" : '<div id="body">'."\n"; ?>
+					<?php echo $body ?>
+				<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</section>'."\n" : '</div>'."\n"; ?>
 
 <?php if (!empty($notes)) { ?>
-						<?php echo $hr ?>
+				<?php echo $hr ?>
 <!-- * Note * -->
-						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="note">'."\n" : '<div id="note">'."\n"; ?>
-							<?php echo $notes ?>
-						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
+				<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="note">'."\n" : '<div id="note">'."\n"; ?>
+						<?php echo $notes ?>
+				<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
 <!--  End Note -->
 <?php } ?>
 
 <?php if (!empty($attaches)) { ?>
-						<?php echo $hr ?>
+				<?php echo $hr ?>
 <!-- * Attach * -->
-						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="attach" class="clearfix">'."\n" : '<div id="attach">'."\n"; ?>
-							<?php echo $attaches ?>
-						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
+				<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="attach" class="clearfix">'."\n" : '<div id="attach">'."\n"; ?>
+					<?php echo $attaches ?>
+				<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
 <!--  End Attach -->
 <?php } ?>
 
 <?php if (!empty($related)) { ?>
-						<?php echo $hr ?>
+					<?php echo $hr ?>
 <!-- * Related * -->
-						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="related" class="clearfix">'."\n" : '<div id="related">'."\n"; ?>
-							<?php echo $related ?>
-						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
+					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="related" class="clearfix">'."\n" : '<div id="related">'."\n"; ?>
+						<?php echo $related ?>
+					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
 <!--  End Related -->
 <?php } ?>
 
 <!-- * Ad space * -->
-						<?php if (!empty($_SKIN['adarea']['footer'])) echo '<div id="footer_adspace" class="noprint" style="text-align:center;">' . $_SKIN['adarea']['footer'] . '</div>'; ?>
+					<?php if (!empty($_SKIN['adarea']['footer'])) echo '<div id="footer_adspace" class="noprint" style="text-align:center;">' . $_SKIN['adarea']['footer'] . '</div>'; ?>
 <!-- * End Ad space * -->
-					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</section>'."\n" : '</div>'."\n"; ?>
+				</div>
 <!-- ** End Body ** -->
 
 <?php if (arg_check('read') && exist_plugin_convert('menu')) { ?>
 <!-- ** MenuBar ** -->
-					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="menubar">'."\n" : '<div id="menubar">'."\n"; ?>
-						<?php echo do_plugin_convert('menu') ?>
-					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</section>'."\n" : '</div>'."\n"; ?>
+				<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="menubar">'."\n" : '<div id="menubar">'."\n"; ?>
+					<?php echo do_plugin_convert('menu') ?>
+				<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
 <!-- ** End MenuBar ** -->
 			</div>
 <?php } ?>
 
-			<hr class="clear" />
+			<?php echo $hr ?>
 
 			<?php if (exist_plugin('toolbar')) echo do_plugin_convert('toolbar','reload,|,new,newsub,edit,guiedit,freeze,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,trackback,|,help,|,mixirss'); ?>
 
@@ -136,5 +138,6 @@ if ($vars['page']) {
 			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</footer>'."\n" : '</div>'."\n"; ?>
 <!-- *** End Footer *** -->
 		</div>
-		<?php echo $pkwk_tags; ?>	</body>
+		<?php echo $pkwk_tags; ?>
+	</body>
 </html>

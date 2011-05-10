@@ -22,12 +22,14 @@ pukiwiki_skin = {
 		'@prefix': '<http://purl.org/net/ns/doas#>',
 		'@about': '<skin.js>', a: ':JavaScript',
 		 title: 'Pukiwiki skin script for jQuery',
-		 created: '2008-11-25', release: {revision: '2.2.20', created: '2011-01-18'},
+		 created: '2008-11-25', release: {revision: '2.2.21', created: '2011-05-10'},
 		 author: {name: 'Logue', homepage: '<http://logue.be/>'},
 		 license: '<http://www.gnu.org/licenses/gpl-2.0.html>'
 	},
 	init : function(){
 		var self = this;
+		this.body = this.custom.body ? this.custom. body : '#body';
+	
 		var protocol = (document.location.protocol == 'https:') ? 'https:' : 'http:';
 		$('input, button, select, textarea').attr('disabled','disabled');	// フォームをロック
 
@@ -76,7 +78,7 @@ pukiwiki_skin = {
 		
 		/* ポップアップ目次 */
 		this.linkattrs();
-		this.preptoc();
+		this.preptoc(this.body);
 
 		// インラインウィンドウ
 		this.setAnchor();
@@ -86,11 +88,13 @@ pukiwiki_skin = {
 			this.set_editform();
 		}
 		if ($('input[name=msg]').length !== 0){
+			$('.comment_form').append('<div id="assistant" class="ui-corner-all ui-widget-header ui-helper-clearfix"></div>');
 			this.assistant();
 		}
 		
 		/* Textarea Resizer */
 		if ($("textarea[name='msg']").length !== 0 && $.query.get('cmd') !== 'guiedit'){
+			
 			$("textarea[name='msg']").addClass("resizable");
 			$('textarea.resizable:not(.processed)').TextAreaResizer();
 		}
@@ -177,6 +181,18 @@ pukiwiki_skin = {
 		if (location.hash){
 			this.anchor_scroll(location.hash,true);
 		}
+		
+		//hover states on the static widgets
+		$('.pkwk_widget li.ui-state-default').hover(
+			function() { $(this).addClass('ui-state-hover'); },
+			function() { $(this).removeClass('ui-state-hover'); }
+		);
+		$('.pkwk_widget li.ui-state-default').mousedown(
+			function() { $(this).addClass('ui-state-active'); }
+		);
+		$('.pkwk_widget li.ui-state-default').mouseup(
+			function() { $(this).removeClass('ui-state-active'); }
+		);
 	},
 	// HTML5の各種機能をJavaScriptで有効化するための処理
 	enableHTML5 : function(prefix){
@@ -221,12 +237,35 @@ pukiwiki_skin = {
 		// rel="noreferer"のサポート
 		// WebKitのNightly版でサポートされているが、JavaScriptで実装されているのかを確認する方法がわからないため常に実行
 		$(prefix+'a[rel*=noreferer]').click(function () {
-			// http://qootas.org/archives/2004/11/referrer.html
+			// http://logic.moo.jp/memo.php/archive/569
 			var url = $(this).attr('href');
-			var w = window.open();
-			w.document.write('<meta http-equiv="refresh" content="0;url='+url+'">');
-			w.document.close();
-			return false;
+			// for IE
+			if (navigator.userAgent.indexOf('MSIE',0) != -1){
+				var target = $(this).attr('target');
+				var blank_flag = 0;
+				if (target=='_blank'){
+					subwin = window.open('','','location=yes, menubar=yes, toolbar=yes, status=yes, resizable=yes, scrollbars=yes,');
+					subwin.document.open();
+					subwin.document.write('<meta http-equiv="refresh" content="0;url='+url+'">');
+					subwin.document.close();
+				}
+				else{
+					document.open();
+					document.write('<meta http-equiv="refresh" content="0;url='+url+'">');
+					document.close();
+				}
+				return false;
+			}
+			// for Safari,Chrome,Firefox
+			else{
+				if ( url.match(/data:text\/html;charset=utf-8/) ){}
+				else{
+					var html = '<html><head><script type="text/javascript"><!--\n'
+							+ 'document.write(\'<meta http-equiv="refresh" content="0;url='+url+'" />\');'
+							+ '// --><'+'/script></head><body></body></html>';
+					$(this).attr('href', 'data:text/html;charset=utf-8,'+encodeURIComponent(html));
+				}
+			}
 		});
 	},
 	custom : {},	// 消さないこと。（スキン用カスタムネームスペース）
@@ -275,6 +314,8 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 		}else{
 			prefix = '';
 		}
+		
+		$(prefix+'.tabs').tabs();
 
 		// colorboxの設定
 		var colorbox_config = {
@@ -591,19 +632,21 @@ $(window).bind("resize", autoResizer);
 		if (href.split('#')[1] === ''){
 			$.scrollTo('#header');
 		}else if (href !== ''){
-			var target = '#'+href.split('#')[1];
-
-			$.scrollTo(
-				target,{
-					duration: 800,
-					axis:"y",
-					queue:true,
-					onAfter:function(){
-						// スクロール後ハイライト
-						if (highlight === true){ $(target).effect("highlight",{}, 2000); }
+			var target = href.split('#')[1];
+			
+			if (!target.match(/tab/)){
+				$.scrollTo(
+					'#'+target,{
+						duration: 800,
+						axis:"y",
+						queue:true,
+						onAfter:function(){
+							// スクロール後ハイライト
+							if (highlight === true){ $(target).effect("highlight",{}, 2000); }
+						}
 					}
-				}
-			);
+				);
+			}
 		}
 	},
 	// ミュージックプレイヤー（拡張子が.mp3や.oggなどといったFlashで再生できるものに限る）
@@ -799,7 +842,7 @@ $(window).bind("resize", autoResizer);
 				
 				var pager_widget = [
 					'<div class="table_pager_widget ui-helper-clearfix" id="'+pager_id+'">',
-					'	<ul class="ui-widget">',
+					'	<ul class="ui-widget pkwk_widget">',
 					'		<li class="first ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthickstop-1-w"></span></li>',
 					'		<li class="prev ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthick-1-w"></span></li>',
 					'		<li><input class="pagedisplay" type="text" disabled="disabled" /></li>',
@@ -861,11 +904,7 @@ $(window).bind("resize", autoResizer);
 			
 		});
 
-		//hover states on the static widgets
-		$(prefix+'.table_pager_widget li.ui-state-default').hover(
-			function() { $(this).addClass('ui-state-hover'); },
-			function() { $(this).removeClass('ui-state-hover'); }
-		);
+		
 	},
 	/* 独自のGlossaly処理 */
 	glossaly: function(prefix){
@@ -971,7 +1010,7 @@ $(window).bind("resize", autoResizer);
 		}else{
 			prefix = '';
 		}
-		
+		var localstorage = false;
 		// テキストエリアの内容をlocalStrageから取得
 		if (Modernizr.localstorage){
 			var msg = $(prefix+'.edit_form textarea[name=msg]').val();
@@ -987,9 +1026,12 @@ $(window).bind("resize", autoResizer);
 				// データーを復元
 				if (confirm(ask)){ $(prefix+'.edit_form textarea[name=msg]').val(data.msg); }
 			}
+			
+			localstorage = true;
 		}
 
 		$('.edit_form input','.edit_form button','.edit_form select','.edit_form textarea').attr('disabled','disabled');
+		
 		this.ajax_apx = false;
 		this.ajax_count = 0;
 		this.ajax_tim = 0;
@@ -998,6 +1040,11 @@ $(window).bind("resize", autoResizer);
 		// プレビューボタンを書き換え
 		$(prefix+'.edit_form input[name=write]').after('<input type="button" name="add_ajax" value="'+$('.edit_form input[name=preview]').attr('value')+'" accesskey="p" />');
 		$(prefix+'.edit_form input[name=preview]').remove();
+		if (typeof(FACEBOOK_APPID) !== 'undefined'){
+			$(prefix+'.edit_form input[name=add_ajax]').after('<input type="checkbox" name="fb_publish" id="fb_publish" /> <label for="fb_publish"><img src="'+IMAGE_DIR+'social/facebook.png" width="16" height="16" title="Publish to Facebook" alt="Facebook" /></label> ');
+		}
+		
+		$(prefix+'.edit_form').prepend('<div id="assistant" class="ui-corner-top ui-widget-header ui-helper-clearfix"></div>');
 		
 		// プレビューボタンが押された時の処理
 		$(prefix+'.edit_form input[name=add_ajax]').click(function(){
@@ -1009,38 +1056,34 @@ $(window).bind("resize", autoResizer);
 				self.ajax_apx = false;
 				// realview_outerを消したあと、フォームの高さを２倍にする
 				// 同時でない理由はFireFoxで表示がバグるため
-				$(prefix+".edit_form #indicator").animate({height:'0px'});
 				$(prefix+".edit_form #realview_outer").animate({
 					height:'toggle'
 				},function(){
 					$(prefix+".edit_form textarea[name='msg']").animate({height:msg_height*2});
-					$(prefix+'.edit_form #indicator').remove();
 					$(prefix+'.edit_form #realview').remove();
 					$(prefix+'.edit_form #realview_outer').remove();
 					$(prefix+'.edit_form #previous').remove();
 					$(prefix+'.edit_form textarea').removeAttr('disabled');
+					$(prefix+'.edit_form #indicator').hide().fadeOut();
 				});
 			} else {
 				if (!self.ajax_apx){
 					// Realedit用のDOMを生成
 					$(prefix+".edit_form textarea[name='msg']").before([
-						'<div id="indicator" style="text-align:right;"></div>',
 						'<div id="realview_outer">',
 						'	<div id="realview"></div>',
 						'</div>'
 					].join("\n")).after(
 						'<textarea id="previous" style="display:none;"></textarea>'
 					);
-					
+					$(prefix+'.edit_form #indicator').show().fadeIn();
 					$(prefix+'.edit_form #indicator').html('<img src="'+self.image_dir+'spinner.gif" alt="Loading..." />Now Loading...');
-					$(prefix+'.edit_form #indicator').animate({height:'20px'});
 					$(prefix+'.edit_form #previous').val($('textarea#msg').val());
 					
 					// 初回実行時、realview_outerの大きさを、フォームの大きさに揃える。
 					// なお、realview_outerの高さは、フォームの半分とする。
 					$(prefix+".edit_form #realview_outer").css("height",msg_height/2);
-					$(prefix+".edit_form #realview_outer").css("width", $(".edit_form textarea[name='msg']").width());
-					$(prefix+".edit_form #indicator").css("width", $(".edit_form textarea[name='msg']").width());
+					$(prefix+'.edit_form #indicator').html('');
 				}
 				self.ajax_apx = true;
 				
@@ -1076,7 +1119,6 @@ $(window).bind("resize", autoResizer);
 					modified: d.getTime()
 				}));
 			}
-			
 		});
 		
 		// 送信イベント時の処理
@@ -1089,6 +1131,28 @@ $(window).bind("resize", autoResizer);
 			// ローカルストレージをフラッシュ
 			if (Modernizr.localstorage){
 				localStorage.removeItem(PAGE);
+			}
+			
+			if ($('#_edit_form_notimestamp:checked') !== true && $('#fb_publish:checked') === true){
+				$.ajax({
+					url:'https://graph.facebook.com/bbeckford/feed',
+					type:'post',
+					data: {
+						method: 'stream.publish',
+						message: PAGE + "\n" + $('link[rel=canonical]')[0].href
+					},
+					cache: false,
+					dataType : 'json',
+					success : function(data){
+						// localStrageをフラッシュ（キャンセルボタンを押した場合も）
+						
+						console.log(data.body);
+					},
+					error : function(data){
+						$(prefix+'input, button, select, textarea').removeAttr('disabled');
+						alert('よきせぬエラーが発生しました。');
+					}
+				});
 			}
 /*
 			$.ajax({
@@ -1193,15 +1257,21 @@ $(window).bind("resize", autoResizer);
 			fp[k + offset] = y+i;
 		}
 	},
-	realtime_preview : function(){
+	realtime_preview : function(prefix){
+		if (prefix){
+			prefix = prefix + ' ';
+		}else{
+			prefix = '';
+		}
 		var oSource = document.getElementById('msg');
 		var source = document.getElementById('msg').value;
 		var self = this;
 		
 		if (this.ajax_apx) {
-			$('div#indicator').html('<img src="'+self.image_dir+'spinner.gif" alt="Loading..." />Now Loading...');
-			$('textarea#previous').val(source);
-			$('textarea').attr('disabled', 'disabled');
+//			$(prefix+'#indicator').show().fadeOut();
+			$(prefix+'#indicator').html('<img src="'+self.image_dir+'spinner.gif" alt="Loading..." />Now Loading...');
+			$(prefix+'textarea#previous').val(source);
+			$(prefix+'textarea').attr('disabled', 'disabled');
 			
 			if (++this.ajax_count !== 1){ return; }
 			
@@ -1251,13 +1321,13 @@ $(window).bind("resize", autoResizer);
 						self.ajax_count = 0;
 						self.realtime_preview();
 					}
-					$("div#indicator").html('Convert time :'+data.taketime);
+					$(prefix+'#indicator').html('<span class="ui-icon ui-icon-clock" style="float:left;"></span>'+data.taketime);
 					var ret = data.data.replace(/<script[^>]*>[^<]+/ig,'<span class="scripttag" title="Script tag">[SCRIPT]</span>');
-					$("div#realview").html(ret);
-					$('textarea').removeAttr('disabled');
+					$(prefix+'#realview').html(ret);
+					$(prefix+'textarea').removeAttr('disabled');
 				},
 				error : function(data,status,thrown){
-					$("div#realview").html([
+					$("#realview").html([
 						'<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">',
 						'	<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>'+status+'</p>',
 						'	<ul>',
@@ -1271,6 +1341,198 @@ $(window).bind("resize", autoResizer);
 				}
 			});
 		}
+	},
+	// 入力アシスタント（assistant.js）
+	assistant: function(full){
+		// 絵文字の定義
+		// https://github.com/take-yu/JSEmoji/blob/master/mt-static/plugins/JSEmoji/js/emoji.js
+		var emojiList = [
+			'sun', 'cloud', 'rain', 'snow', 'thunder', 'typhoon', 'mist', 'sprinkle', 'aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 
+			'libra', 'scorpius', 'sagittarius', 'capricornus', 'aquarius', 'pisces', 'sports', 'baseball', 'golf', 'tennis', 'soccer', 'ski', 'basketball', 'motorsports', 
+			'pocketbell', 'train', 'subway', 'bullettrain', 'car', 'rvcar', 'bus', 'ship', 'airplane', 'house', 'building', 'postoffice', 'hospital', 'bank', 
+			'atm', 'hotel', 'cvs', 'gasstation', 'parking', 'signaler', 'toilet', 'restaurant', 'cafe', 'bar', 'beer', 'fastfood', 'boutique', 'hairsalon', 
+			'karaoke', 'movie', 'upwardright', 'carouselpony', 'music', 'art', 'drama', 'event', 'ticket', 'smoking', 'nosmoking', 'camera', 'bag', 'book', 
+			'ribbon', 'present', 'birthday', 'telephone', 'mobilephone', 'memo', 'tv', 'game', 'cd', 'heart', 'spade', 'diamond', 'club', 'eye', 
+			'ear', 'rock', 'scissors', 'paper', 'downwardright', 'upwardleft', 'foot', 'shoe', 'eyeglass', 'wheelchair', 'newmoon', 'moon1', 'moon2', 'moon3', 
+			'fullmoon', 'dog', 'cat', 'yacht', 'xmas', 'downwardleft', 'phoneto', 'mailto', 'faxto', 'info01', 'info02', 'mail', 'by-d', 'd-point', 
+			'yen', 'free', 'id', 'key', 'enter', 'clear', 'search', 'new', 'flag', 'freedial', 'sharp', 'mobaq', 'one', 'two', 
+			'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'zero', 'ok', 'heart01', 'heart02', 'heart03', 'heart04', 'happy01', 
+			'angry', 'despair', 'sad', 'wobbly', 'up', 'note', 'spa', 'cute', 'kissmark', 'shine', 'flair', 'annoy', 'punch', 'bomb', 
+			'notes', 'down', 'sleepy', 'sign01', 'sign02', 'sign03', 'impact', 'sweat01', 'sweat02', 'dash', 'sign04', 'sign05', 'slate', 'pouch', 
+			'pen', 'shadow', 'chair', 'night', 'soon', 'on', 'end', 'clock', 'appli01', 'appli02', 't-shirt', 'moneybag', 'rouge', 'denim', 
+			'snowboard', 'bell', 'door', 'dollar', 'pc', 'loveletter', 'wrench', 'pencil', 'crown', 'ring', 'sandclock', 'bicycle', 'japanesetea', 'watch', 
+			'think', 'confident', 'coldsweats01', 'coldsweats02', 'pout', 'gawk', 'lovely', 'good', 'bleah', 'wink', 'happy02', 'bearing', 'catface', 'crying', 
+			'weep', 'ng', 'clip', 'copyright', 'tm', 'run', 'secret', 'recycle', 'r-mark', 'danger', 'ban', 'empty', 'pass', 'full', 
+			'leftright', 'updown', 'school', 'wave', 'fuji', 'clover', 'cherry', 'tulip', 'banana', 'apple', 'bud', 'maple', 'cherryblossom','riceball', 
+			'cake', 'bottle', 'noodle', 'bread', 'snail', 'chick', 'penguin', 'fish', 'delicious', 'smile', 'horse', 'pig', 'wine', 'shock'
+		];
+
+		var html = '<ul class="ui-widget pkwk_widget" id="emojis">';
+		for (var i=0; i<emojiList.length; i++) {
+			var name = emojiList[i];
+			html += '<li class="ui-state-default ui-corner-all" title="'+name+'" name="&('+name+');"><span class="emoji emoji-'+name+'"></span></li>';
+		}
+		html += '</ul>';
+		
+		$(document.body).append('<div id="emoji"></div>');
+		$('#emoji').dialog({
+			title:'Emoji',
+			id:'emoji',
+			autoOpen:false,
+			bgiframe: true,
+			minWidth:410,
+			height:410,
+			minHeight:410,
+			show: "scale",
+			hide: "scale"
+		}).html(html);
+		
+		$('#emoji ul li').click(function(){
+			var ret = '';
+			var str = $(self.elem).getSelection().text;
+			var v = $(this).attr('name');
+			if (str === ''){
+				$(self.elem).insertAtCaretPos(v);
+			}else{
+				$(self.elem).replaceSelection(v);
+			}
+			self.elem.focus();
+			$('#emoji').dialog('close');
+			return;
+		});
+		
+		$('#assistant').html([
+			'<ul class="ui-widget pkwk_widget">',
+			'	<li class="replace ui-state-default ui-corner-left" title="Bold" name="b"><strong>b</strong></li>',
+			'	<li class="replace ui-state-default" title="Italic" name="i" style="font-weight:normal;"><em>i</em></li>',
+			'	<li class="replace ui-state-default" title="Strike" name="s" style="font-weight:normal;"><strike>s</strike></li>',
+			'	<li class="replace ui-state-default" title="Underline" name="u" style="font-weight:normal;"><span class="underline">u</span></li>',
+			'	<li class="replace ui-state-default" title="Code" name="code" style="font-weight:normal;"><span class="ui-icon ui-icon-script"></span></li>',
+			'	<li class="replace ui-state-default ui-corner-right" title="Q" name="q" style="font-weight:normal;"><span class="ui-icon ui-icon-comment"></span></li>',
+			'	<li class="replace ui-state-default ui-corner-left" title="Link" name="url"><span class="ui-icon ui-icon-link"></span></li>',
+			'	<li class="replace ui-state-default" title="Size" name="size">size</li>',
+			'	<li class="replace ui-state-default ui-corner-right" title="Color" name="Color">color</li>',
+			'	<li class="insert ui-state-default ui-corner-left" title="Emoji" name="emoji">☺</li>',
+			'	<li class="insert ui-state-default ui-corner-right" title="br" name="br">⏎</li>',
+			'	<li class="replace ui-state-default ui-corner-all" title="ncr" name="ncr">&amp;#</li>',
+			'	<li class="insert ui-state-default ui-corner-all" title="Help" name="help"><span class="ui-icon ui-icon-help"></span></li>',
+			(typeof(localstorage) !== 'undefined') ? '	<li class="insert ui-state-default ui-corner-all" title="Flush Storage" name="flush"><span class="ui-icon ui-icon-trash"></span></li>': null,
+			'	<li class="ui-widget-content ui-corner-all" style="float:right; width:auto;display:none;font-weight:normal;" id="indicator"></li>',
+			'</ul>',
+		].join("\n"));
+		
+		
+		var self = this;
+		// アシスタント
+		
+		if (!self.elem){ self.elem = $('textarea[name=msg]')[0]; }
+		
+		$('input[type=text]').focus(function(e){
+			self.elem = this;
+		});
+		$('textarea').focus(function(e){
+			self.elem = this;
+		});
+		if (typeof init_ctrl_unload == 'function'){ init_ctrl_unload(); }
+
+		
+
+		$('.insert').click(function(){
+			var ret = '';
+			var str = $(self.elem).getSelection().text;
+			var v = $(this).attr('name');
+			switch (v){
+				case 'help' :
+					alert($.i18n('pukiwiki', 'hint_text1'));
+				break;
+				case 'br':
+					ret = '&br;'+"\n";
+				break;
+				case 'emoji' :
+					$('#emoji').dialog('open');
+				break;
+				case 'flush' :
+					var v = confirm('Flush local strage?');
+					if (Modernizr.localstorage && v === true){
+						localStorage.removeItem(PAGE);
+					}
+				break;
+				default:
+					ret = v;
+				break;
+			}
+			if (ret !== ''){
+				if (str === ''){
+					$(self.elem).insertAtCaretPos(ret);
+				}else{
+					$(self.elem).replaceSelection(ret);
+				}
+				self.elem.focus();
+			}
+			return;
+		});
+		$('.replace').click(function(){
+			var ret = '';
+			var str = $(self.elem).getSelection().text;
+			var v = $(this).attr('name');
+			
+			if (str === '' || !self.elem){
+				alert( $.i18n('pukiwiki', 'select'));
+				return;
+			}
+
+			switch (v){
+				case 'size' :
+					var default_size = "100%";
+					var v = prompt($.i18n('pukiwiki', 'fontsize'), default_size);
+					if (!v || !v.match(/\d+/)){
+						return;
+					}
+					ret = '&size(' + v + '){' + str + '};';
+				break;
+				case 'ncr':
+					for(var n = 0; n < str.length; n++){
+						ret += ("&#"+(str.charCodeAt(n))+";");
+					}
+				break;
+				case 'b':	//mikoadded
+					ret = "''" + str + "''";
+				break;
+				case 'i':
+					ret = "'''" + str + "'''";
+				break;
+				case 'u':
+					ret = '__' + str + '__';
+				break;
+				case 's':
+					ret = '%%' + str + '%%';
+				break;
+				case 'code' :
+					ret = '@@' + str + '@@';
+				break;
+				case 'q' :
+					ret = '@@@' + str + '@@@';
+				break;
+				
+				case 'url':
+				//	var regex = "^s?https?://[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#]+$";
+					var my_link = prompt( $.i18n('pukiwiki', 'url'), 'http://');
+					if (my_link !== null) {
+						ret = '[[' + str + '>' + my_link + ']]';
+					}
+				break;
+				default:
+					if (str.match(/^&color\([^\)]*\)\{.*\};$/)){
+						ret = str.replace(/^(&color\([^\)]*)(\)\{.*\};)$/,"$1," + v + "$2");
+					}else{
+						ret = '&color(' + v + '){' + str + '};';
+					}
+				break;
+			}
+			$(self.elem).replaceSelection(ret);
+			self.elem.focus();
+			return;
+		});
 	},
 	/* swfuploderのフォームに書き換え */
 	set_uploader: function(prefix){
@@ -1472,209 +1734,6 @@ $(window).bind("resize", autoResizer);
 			$(this).swfupload('startUpload');
 		});
 	},
-	helper_image: function(){
-		// 拡張ボタン
-		this.adv = {
-			'ncr':		$.i18n('pukiwiki', 'to_ncr'),
-			'br':		'&br;'
-		};
-		// フェイスマーク
-		this.face = {
-			'smile' :	'(^^)',
-			'bigsmile':	'(^-^',
-			'huh':		'(^Q^',
-			'oh':		'(..;',
-			'wink':		'(^_-',
-			'sad':		'(--;',
-			'worried':	'(^^;',
-			'tear':		'(T-T',
-			'heart':	'&heart;'
-		};
-
-		var command_palette = {
-			url		: '0,0,22,16',
-			b		: '24,0,40,16',
-			i		: '43,0,59,16',
-			u		: '62,0,79,16',
-			size	: '81,0,103,16'
-		};
-
-		var color_palette = {
-			Black	: '0,0,8,8',
-			Maroon	: '8,0,16,8',
-			Green	: '16,0,24,8',
-			Olive	: '24,0,32,8',
-			Navy	: '32,0,40,8',
-			Purple	: '40,0,48,8',
-			Teal	: '48,0,55,8',
-			Gray	: '56,0,64,8',
-			Silver	: '0,8,8,16',
-			Red		: '8,8,16,16',
-			Lime	: '16,8,24,16',
-			Yellow	: '24,8,32,16',
-			Blue	: '32,8,40,16',
-			Fuchsia	: '40,8,48,16',
-			Aqua	: '48,8,56,16',
-			White	: '56,8,64,16'
-		};
-
-		// ヘルパーの画像表示処理。class属性によるイベント割り当て
-		var setIcon = function(icons, classname){
-			var icon = '', helper_image_dir, ext;
-			if (classname == 'face'){
-				helper_image_dir = 'face/';
-				ext = 'png';
-			}else if (classname == 'adv'){
-				helper_image_dir = 'plus/';
-				ext = 'gif';
-			}
-			for (var i in icons) {
-				icon += '<img src="'+IMAGE_DIR+helper_image_dir+i+'.'+ext+'" title="'+icons[i]+'" alt="'+i+'" class="helper '+classname+'" /> ';
-			}
-			return icon + '&nbsp;';
-		};
-
-		var setMap = function(maps, name){
-			var ret = '<map id="'+name+'" name="'+name+'">'+"\n";
-			for (var map_name in maps) {
-				ret += '<area shape="rect" coords="'+maps[map_name]+'" title="'+map_name+'" alt="'+map_name+'" class="helper" />';
-			}
-			ret +='</map>';
-			return ret;
-		};
-
-		var str = '';
-		str += setMap(command_palette,'map_button') + setMap(color_palette,'map_color');
-		str += '<img src="'+IMAGE_DIR+'assistant/buttons.gif" width="103" height="16" usemap="#map_button" tabindex="-1" />&nbsp;';
-		if ($.cookie("pwplus") == "on"){ str += setIcon(this.adv,'adv'); }
-		str += '<img src="'+IMAGE_DIR+'assistant/colors.gif" width="64" height="16" usemap="#map_color" tabindex="-1" />&nbsp;';
-		str += setIcon(this.face,'face');
-		return str;
-	},
-	// 入力アシスタント（assistant.js）
-	assistant: function(full){
-		var self = this;
-		// アシスタント
-		// pukiwiki_elemは、pukiwiki_skin.elemになりました。
-		
-		if (!self.elem){ self.elem = $('textarea[name=msg]')[0]; }
-		
-		$('input[type=text]').focus(function(e){
-			self.elem = this;
-		});
-		$('textarea').focus(function(e){
-			self.elem = this;
-		});
-		if (typeof init_ctrl_unload == 'function'){ init_ctrl_unload(); }
-		
-		var str = this.helper_image();
-		if (full == 'true'){
-			str += '<img src="'+IMAGE_DIR+'iconset/default/hint.png" width="18" height="16" title="hint" alt="hint" class="helper showhint" />';	// ヒント
-			
-			if ($.cookie("pwplus") == "on"){
-				str += '<img src="'+IMAGE_DIR+'iconset/default/symbol/easy.png" width="8" height="8" title="easy" alt="easy" class="helper advswitch" />';	// 通常モードへ
-			}else{
-				str += '<img src="'+IMAGE_DIR+'iconset/default/symbol/adv.png" width="8" height="8" title="adv" alt="adv" class="helper advswitch" />';	// 拡張モードへ
-			}
-		}
-
-		$('div.assistant').html(str);	// 挿入
-
-		// イベント割り当て
-		// ヒント
-		if (full == 'true'){
-			$('.showhint').click(function(){
-				alert($.i18n('pukiwiki', 'hint_text1'));
-				if (self.elem !== null){ self.elem.focus(); }
-			});
-			// 拡張スイッチ
-			$('.advswitch').click(function(){
-				var pukiwiki_ans;
-				if ($.cookie('pwplus') == "on"){
-					$.cookie('pwplus','off',{expires:30,path:'/'});
-					pukiwiki_ans = confirm($.i18n('pukiwiki', 'to_easy'));
-				}else{
-					$.cookie('pwplus','on',{expires:30,path:'/'});
-					pukiwiki_ans = confirm($.i18n('pukiwiki', 'to_adv'));
-				}
-				if (pukiwiki_ans){ window.location.reload(); }
-			});
-		}
-		// スマイリー
-		$('.face').click(function(){
-			$(self.elem).insertAtCaretPos(self.face[this.alt]);
-		});
-
-		// 拡張アイコン
-		$('.adv').click(function(){
-			var str, ret;
-			if (this.alt == 'ncr'){
-				var str = $(self.elem).getSelection().text;
-				if (str === ''){
-					alert( $.i18n('pukiwiki', 'select'));
-					return;
-				}
-
-				for(var n = 0; n < str.length; n++){
-					ret += ("&#"+(str.charCodeAt(n))+";");
-				}
-
-				$(self.elem).replaceSelection(ret);
-			}else{
-				$(self.elem).insertAtCaretPos('&'+this.alt+';');
-			}
-			self.elem.focus();
-		});
-
-		$('map area.helper').click(function(){
-			var ret;
-			var str = $(self.elem).getSelection().text;
-			if (str === '' || !self.elem){
-				alert( $.i18n('pukiwiki', 'select'));
-				return;
-			}
-			var v = $(this).attr('alt');
-			switch (v){
-				case 'size' :
-					var default_size = "%";
-					var v = prompt($.i18n('pukiwiki', 'fontsize'), default_size);
-					if (!v || !v.match(/\d+/)){
-						return;
-					}
-					ret = '&size(' + v + '){' + str + '};';
-				break;
-				case 'b':	//mikoadded
-					ret = "''" + str + "''";
-				break;
-				case 'i':
-					ret = "'''" + str + "'''";
-				break;
-				case 'u':
-					ret = '%%%' + str + '%%%';
-				break;
-				case 's':
-					ret = '%%' + str + '%%';
-				brea;
-				case 'url':
-				//	var regex = "^s?https?://[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#]+$";
-					var my_link = prompt( $.i18n('pukiwiki', 'url'), 'http://');
-					if (my_link !== null) {
-						ret = '[[' + str + '>' + my_link + ']]';
-					}
-				break;
-				default:	//mikoadded + changed font -> color
-					if (str.match(/^&color\([^\)]*\)\{.*\};$/)){
-						ret = str.replace(/^(&color\([^\)]*)(\)\{.*\};)$/,"$1," + v + "$2");
-					}else{
-						ret = '&color(' + v + '){' + str + '};';
-					}
-				break;
-			}
-
-			$(self.elem).replaceSelection(ret);
-		});
-		
-	},
 	CFCheck: function(){
 		if (typeof(CFInstall) == 'object' || $('meta[http-equiv=X-UA-Compatible]')[0].content.match(/chrome/)){
 			CFInstall.check({
@@ -1755,8 +1814,8 @@ $(window).bind("resize", autoResizer);
 		}
 	},
 	/** preparation of popup TOC on init() */
-	preptoc : function(prefix){
-		var lis = this.prepHdngs('#body');
+	preptoc : function(dom){
+		var lis = this.prepHdngs(dom);
 		var self = this;
 		this.genTocDiv(lis);
 		$(document).keypress(function(elem){
@@ -2162,25 +2221,43 @@ if (DEBUG){
 (function(){
 	// フレームハイジャック対策
 	if( self !== top ){ top.location = self.location; }
-	
-	// FaceBookを実行
-	if (typeof(FACEBOOK_APPID) !== 'undefined'){
-		$('body').prepend('<div id="fb-root"></div>');
-	}
 });
 
 // onLoad/onUnload
 $(document).ready(function(){
 	$.getScript('http://browser-update.org/update.js');
-	
+
+	var href = $('link[rel=canonical]')[0].href;
 	if (typeof(GOOGLE_ANALYTICS) !== 'undefined'){
 		$.ajaxGA.init(GOOGLE_ANALYTICS, true);
 	}
-	
+/*
+	$.getScript('http://wd.sharethis.com/button/buttons.js',function() {
+		stLight.options({publisher:'YOUR PUBLISHER KEY'})
+		$('#body').prepend([
+			'<p style="float:right;">',
+			'<span class="st_facebook_vcount" st_title="" st_url="'+href+'" displayText="Share"></span>',
+			'<span class="st_twitter_vcount" st_title="" st_url="'+href+'" displayText="Tweet"></span>',
+			'<span class="st_gbuzz_vcount" st_title="" st_url="'+href+'" displayText="Buzz"></span>',
+//			'<span class="st_stumbleupon_vcount" st_title="" st_url="'+href+'" displayText="share"></span>',
+//			'<span class="st_sharethis_vcount" st_title="" st_url="'+href+'" displayText="share"></span>',
+			'</p>']
+		.join("\n"));
+	});
+*/
+	// FaceBookを実行
 	if (typeof(FACEBOOK_APPID) !== 'undefined'){
+		$('body').append('<div id="fb-root"></div>');
+		if ($.query.get('cmd') === '' || !PAGE.match(/^:|FormatRules|RecentChanges|RecentDeleted|InterWikiName|AutoAliasName|MenuBar|SideBar|Navigation|Glossary/i)){
+//			$('#body').append('<hr /><div><fb:like href="'+href+'" show_faces="true"></fb:like><fb:comments href="'+href+'"></fb:comments></div>');
+		}
 		$.getScript(document.location.protocol + '//connect.facebook.net/'+LANG+'/all.js',function() {
 			FB.init({appId: FACEBOOK_APPID, status: true, cookie: true, xfbml: true});
+			FB.Event.subscribe('auth.login', function() {
+				window.location.reload();
+			});
 		});
+		
 	}
 
 	if (typeof(pukiwiki_skin.custom) == 'object'){
@@ -2211,7 +2288,7 @@ $(window).unload(function(){
 		pukiwiki_skin.unload();
 	}
 });
-
+/*
 $('head').ie9ify({
 	applicationName: 'PukiWiki Advance',
 	favIcon: 'favicon.ico',
@@ -2231,7 +2308,7 @@ $('head').ie9ify({
 		}
 	]
 });
-
+*/
 // usage: log('inside coolFunc',this,arguments);
 // paulirish.com/2009/log-a-lightweight-wrapper-for-consolelog/
 window.log = function(){

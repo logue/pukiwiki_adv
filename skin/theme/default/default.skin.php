@@ -79,6 +79,9 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
 <!--  End Note -->
 <?php } ?>
+<!-- * Ad space * -->
+						<?php if (!empty($_SKIN['adarea']['footer'])) echo '<div id="footer_adspace" class="noprint" style="text-align:center;">' . $_SKIN['adarea']['footer'] . '</div>'; ?>
+<!-- * End Ad space * -->
 				</td>
 <?php if (arg_check('read') && exist_plugin_convert('side') && is_page($sidebar))  { ?>
 				<td class="rtable">
@@ -99,16 +102,16 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 <!--  End Attach -->
 <?php } ?>
 <?php if (!empty($related)) { ?>
-		<hr />
+		<hr class="clearfix"/>
 <!-- * Related * -->
 		<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="related">'."\n" : '<div id="related">'."\n"; ?>
 			<?php echo $related ?>
 		<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
 <!--  End Related -->
 <?php } ?>
-		<hr />
+		<hr class="clearfix" />
 		<?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','reload,|,new,newsub,edit,guiedit,freeze,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,|,help,|,mixirss').'<div class="pkwk-clear"></div>' : '';?>
-		<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<footer id="footer">'."\n" : '<div id="footer">'."\n"; ?>
+		<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<footer id="footer"  class="clearfix">'."\n" : '<div id="footer" class="clearfix">'."\n"; ?>
 <?php if (isset($footer)) {
 	echo $footer;
 }else{ ?>

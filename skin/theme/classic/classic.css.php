@@ -66,12 +66,8 @@ dt{
 }
 
 dd{
-	margin-left:1.5em;
-	margin-bottom:0.5em;
-}
-
-dd{
 	margin-left:1em;
+	margin-bottom:0.5em;
 }
 
 del{
@@ -121,11 +117,8 @@ q{
 	border:1px dotted #999;
 }
 
-ul, ol, dl {
+ul, ol {
 	padding-left:1.5em;
-}
-
-ul, ol{
 	margin:0.5em 2em;
 }
 
@@ -277,21 +270,21 @@ tfoot .style_th {
 }
 
 /** Skin Stylesheet *******************************************************************************/
-#title h1, #title h2{
+#hgroup h1, #hgroup h2{
 	background-color:transparent;
 	margin:0px;
 }
 
-#title h1, #title h1 a {
+#title, #title a {
 	font-family: "Lucida Bright", Century, "Times New Roman", serif;
 }
-:lang(ja) #title h1, :lang(ja) #title h1 a {
+:lang(ja) #title, :lang(ja) #title a {
 	font-family: 'ヒラギノ明朝 Pro W6', 'Hiragino Mincho Pro W6', 'HGP明朝E', '平成明朝', 'ＭＳ Ｐ明朝', 'MS PMincho' !important;
 }
-:lang(ko) #title h1, :lang(ko) #title h1 a {
+:lang(ko) #title, :lang(ko) #title a {
 	font-family: '바탕체', 'Batang' !important;
 }
-:lang(zh) #title h1, :lang(zh) #title h1 a {
+:lang(zh) #title, :lang(zh) #title a {
 	font-family: 'STSong', 'STFangsong', 'NSimSun', 'SimSun', 'FangSong', '細明體', '宋体' !important;
 }
 
@@ -329,26 +322,26 @@ tfoot .style_th {
 	margin-right:20px;
 }
 
-#title {
+#hgroup {
 	display:block;
 	float:left;
 	vertical-align: baseline;
-	margin:1.5% 0px 0px 0px;
+	margin:1.5% 0 0 0;
+	line-height:100%;
 }
 
-#title h1, #title h2 {
+#hgroup h1, #hgroup h2 {
 	background-color:transparent;
-	line-height:126%;
 	padding: 0px;
 	border: 0px;
 }
 /* title */
-#title h1 {
+#hgroup h1 {
 	font-size: 242.2%;
 	font-weight:bold;
 }
 
-#title h2 {
+#hgroup h2 {
 	font-weight:normal;
 	font-size: 85%;
 }
@@ -397,7 +390,7 @@ tfoot .style_th {
 
 #menubar h4 { font-size:114%; }
 
-#body {
+#content {
 	width:80%;
 <?php   if ($menubar == 'right') { ?>
 	float:left;
@@ -667,15 +660,16 @@ tfoot .style_th {
 
 /** Print Setting *********************************************************************************/
 @media print {
-	#title h2, #header img, #navigator, #menubar, #poptoc, #banner_box, #attach, #toolbar,
+	#hgroup h2, #header img, #navigator, #menubar, #poptoc, #banner_box, #attach, #toolbar,
 	#sigunature{
 		display:none !important;
 		visibility: hidden !important;
 	}
 
-	#title{
+	#hgroup{
 		float:none;
 		clear:both;
+		width:100%;
 	}
 
 	#lastmodified{
@@ -686,7 +680,7 @@ tfoot .style_th {
 		float:left;
 	}
 
-	#body{
+	#content{
 		clear:both;
 		display:block;
 		width:100%;

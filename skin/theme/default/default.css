@@ -457,8 +457,9 @@ td.rtable{
 /* Hack calendar */
 #menubar .style_calendar, #sidebar .style_calendar{
 	width:150px;
+	height:150px;
 	padding:0px;
-	margin:2px;
+	margin:1px;
 }
 
 #menubar .style_calendar td, #sidebar .style_calendar td,
