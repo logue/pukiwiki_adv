@@ -1,23 +1,37 @@
-// PukiWiki - Yet another WikiWikiWeb clone.
-// Pukiwiki skin script for jQuery
-// Copyright (c)2010-2011 PukiWiki Advance Developer Team
-//              2010      Logue <http://logue.be/> All rights reserved.
+/*!
+ * PukiWiki Advance - Yet another WikiWikiWeb clone.
+ * Pukiwiki skin script for jQuery
+ * Copyright (c)2010-2011 PukiWiki Advance Developer Team
+ *              2010      Logue <http://logue.be/> All rights reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 2 of the License, or
-// (at your option) any later version.
+/* jslint evil: false */
+/* Implied global: $, document, SCRIPT, LANG, DEBUG, SKIN_DIR, IMAGE_DIR, DEFAULT_LANG, THEME_NAME, PAGE, MODIFIED, GOOGLE_ANALYTICS, FB, FACEBOOK_APPID */
 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// Cache global function
+var _document = document;
+var _window = window;
+var _ua = navigator.userAgent;
 
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+if( self.location !== top.location ){ top.location = self.location; }
 
-/* jslint evil: true */
-pukiwiki_skin = {
+// オーバーライド用
+var pkwkInit = pkwkBeforeInit = pkwkUnload = pkwkBeforeUnload = new Array(0);
+
+var pukiwiki = {
 	meta : {
 		'@prefix': '<http://purl.org/net/ns/doas#>',
 		'@about': '<skin.js>', a: ':JavaScript',
@@ -26,75 +40,115 @@ pukiwiki_skin = {
 		 author: {name: 'Logue', homepage: '<http://logue.be/>'},
 		 license: '<http://www.gnu.org/licenses/gpl-2.0.html>'
 	},
+	skin : {
+	},	// 消さないこと。（スキン用カスタムネームスペース）
 	init : function(){
 		var self = this;
-		this.body = this.custom.body ? this.custom. body : '#body';
-	
-		var protocol = (document.location.protocol == 'https:') ? 'https:' : 'http:';
-		$('input, button, select, textarea').attr('disabled','disabled');	// フォームをロック
+		var href = $('link[rel=canonical]')[0].href;
+		var protocol = ((_document.location.protocol === 'https:') ? 'https:' : 'http:')+'//';
+		this.body = this.skin.body ? this.skin.body : '#body';
+		
+		$(':input').attr('disabled','disabled');	// フォームをロック
+/*
+		$(this.body).append('<div id="social"></div>');
+		'<iframe frameborder="0" scrolling="no" class="twitter-share-button twitter-count-none" tabindex="0" allowtransparency="true" src="http://platform0.twitter.com/widgets/tweet_button.html?_=1306413923607&amp;count=none&amp;lang=en&amp;text='+urlencode($('title').text())+'&amp;url='+href+'" style="width: 55px; height: 20px;" title="Twitter For Websites: Tweet Button"></iframe>
+		'<iframe height="20" frameborder="0" width="50" scrolling="no" class="hatena-bookmark-button-frame" title="このエントリーをはてなブックマークに追加" style="width: 50px; height: 20px;"></iframe>
+*/
 
-		// ブラウザ判定
-		// http://paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/
-		if(!jQuery.support.opacity){
-			if(!jQuery.support.style){
-				if (typeof document.documentElement.style.maxHeight != "undefined") {
-					$('body').addClass('ie7');
-				}else {
-					$('body').addClass('ie6');
-					// Fix Background flicker
-					try{ document.execCommand('BackgroundImageCache', false, true); }catch(e){}
+		// FaceBookを実行
+		if (typeof(FACEBOOK_APPID) !== 'undefined'){
+			$('body').append('<div id="fb-root"></div>');
+			
+			if (!$.query.get('cmd')){
+				if (!PAGE.match(/^:|FormatRules|RecentChanges|RecentDeleted|InterWikiName|AutoAliasName|MenuBar|SideBar|Navigation|Glossary/i)){
+					$(this.body).append('<hr /><div style="margin-left:2em;"><fb:like send="true" font="arial" show_faces="true" href="'+href+'"></fb:like><fb:comments href="'+href+'" publish_feed="true" width="650" numposts="10" migrated="1" ></fb:comments></div>');
 				}
-			}else{
-				$('body').addClass('ie8');
 			}
+			
+			$.getScript(protocol+'connect.facebook.net/'+LANG+'/all.js', function() {
+				FB.init({
+					appId: FACEBOOK_APPID,
+					status	: true, // check login status
+					cookie	: true, // enable cookies to allow the server to access the session
+					xfbml	: true  // parse XFBML
+				});
+				FB.Event.subscribe('auth.login', function() {
+					_window.location.reload();
+				});
+				if ($('form').length !== 0 && $.query.get('cmd') !== 'guiedit'){
+					$('form').each(function(){
+						var content = '<input type="checkbox" name="fb_publish" id="fb_publish" checked="checked" /> <label for="fb_publish"><img src="'+IMAGE_DIR+'social/facebook.png" width="16" height="16" title="Publish to Facebook" alt="Facebook" /></label>';
+						var $msg = $(this).find('*[name=msg]');
+						if ($msg.length !== 0){
+							$(this).find('input[type=submit]').before(content);
+							$(this).submit(function(){
+								// user_message, attachment, action_links, target_id, user_message_prompt, callback, auto_publish, actor_id
+								FB.streamPublish($msg.val(), null, null, 4, null, null, true, 'default');
+							});
+						}
+					});
+					self.fb = true;
+				}
+			});
+		}else{
+			this.fb = false;
+		}
+
+		if(_ua.indexOf("MSIE 6")>=0){
+			// Fix Background flicker
+			try{ _document.execCommand('BackgroundImageCache', false, true); }catch(e){}
 		}
 
 		// metaタグのGenereterから、Plusかそうでないかを判別
 		var generetor = $('meta[name=generator]')[0].content;
 		if (generetor.match(/[PukiPlus|Advance]/)){
-			this.plus = true;
 			this.image_dir = IMAGE_DIR+'ajax/';	// デフォルト
 		}else if (generetor.match(/plus/)){
 		//	console.info('Pukiwiki Plus! mode');
-			this.plus = true;
 			this.image_dir = SKIN_DIR+'theme/'+THEME_NAME+'/';
 		}else{
 		//	console.info('Pukiwiki Standard mode');
-			this.plus = false;
 			this.image_dir = SKIN_DIR+this.name+'/image/';	// PukiWiki用
 		}
 		
-		/* HTML5サポート */
+		// HTML5サポート\
 		this.enableHTML5();
 
-		/* 言語設定 */
+		// 言語設定
 		$.i18n(LANG);
 		
-		/* 非同期通信中はUIをブロック */
+		// 非同期通信中はUIをブロック
 		this.blockUI();
 
-		/* Suckerfish（ポップアップメニュー） */
+		// Suckerfish（ポップアップメニュー
 		this.suckerfish('.sf-menu');
 		
-		/* ポップアップ目次 */
+		// ポップアップ目次
 		this.linkattrs();
 		this.preptoc(this.body);
 
 		// インラインウィンドウ
 		this.setAnchor();
 
-		/* アシスタント */
+		// アシスタント
 		if ($("textarea[name='msg']").length !== 0 && $.query.get('cmd') !== 'guiedit'){
 			this.set_editform();
 		}
 		if ($('input[name=msg]').length !== 0){
-			$('.comment_form').append('<div id="assistant" class="ui-corner-all ui-widget-header ui-helper-clearfix"></div>');
+			$('.comment_form').append('<div class="assistant ui-corner-all ui-widget-header ui-helper-clearfix"></div>');
 			this.assistant();
 		}
-		
-		/* Textarea Resizer */
+
+/*
+		if ($.query.get('cmd') === 'list'){
+			$('#page_list').jstree({
+				plugins:['html_data', 'themeroller' ],
+			});
+		}
+*/
+
+		// Textarea Resizer
 		if ($("textarea[name='msg']").length !== 0 && $.query.get('cmd') !== 'guiedit'){
-			
 			$("textarea[name='msg']").addClass("resizable");
 			$('textarea.resizable:not(.processed)').TextAreaResizer();
 		}
@@ -114,18 +168,10 @@ pukiwiki_skin = {
 		}
 */
 
-		/* 上級者モード（Plus!専用） */
-		this.adv = $.cookie('pwplus');
-
+		// 添付フォームをswfuploadに
 		if ($('.attach_form').length !== 0){
 			this.set_uploader();
 		}
-		
-		$('form').submit(function(){
-			// フォーム送信時にフォームをロックする
-			$('input','button','select','textarea').attr('disabled','disabled');
-			$('body').css('cursor','wait');
-		});
 
 		// IE PNG Fix
 		if (!$.support.boxModel) {
@@ -140,19 +186,19 @@ pukiwiki_skin = {
 			});
 			
 			/* Lazyload（遅延画像ロード） */
-			$('#body img[src!=\.png]').lazyload({ 
+			$(this.body+"img[src!$=.png]").lazyload({ 
 				placeholder : this.image_dir+'grey.gif',
 				effect : "fadeIn"
 			});
 		}else{
 			/* Lazyload（遅延画像ロード） */
-			$('#body img').lazyload({ 
+			$(this.body+'img').lazyload({ 
 				placeholder : this.image_dir+'grey.gif',
 				effect : "fadeIn"
 			});
 		}
 		
-		/* バナーボックス */
+		// バナーボックス
 		$("#banner_box img").fadeTo(200,0.3);
 		$("#banner_box img").hover(
 			function(){
@@ -163,36 +209,76 @@ pukiwiki_skin = {
 			}
 		);
 		
-		/* SyntaxHighlighter */
+		// SyntaxHighlighter
 		this.sh();
 		
-		/* Glossaly（ツールチップ） */
+		// Glossaly（ツールチップ）
 		this.glossaly();
 		
 		this.bad_behavior();
-		
-		// フォームロックを解除
-		$('input, button, select, textarea').removeAttr('disabled');
-		
-		// ボタンをjQuery UIのものに
-		$("button, input[type=submit], input[type=reset], input[type=button]").button();
 		
 		// アンカーがURLに含まれていた場合（アニメーションする必要はあるのだろうか？）
 		if (location.hash){
 			this.anchor_scroll(location.hash,true);
 		}
+
+		// 二重送信防止
+//		$('form').disableOnSubmit();
+/*
+		if (typeof(this.custom.init) === 'object'){
+			var f2;
+			while(f2 === this.custom.init.shift() ){
+				f2();
+			}
+		}
+*/
+		// ボタンをjQuery UIのものに
+		$('button, input[type=submit], input[type=reset], input[type=button]').button();
 		
-		//hover states on the static widgets
-		$('.pkwk_widget li.ui-state-default').hover(
-			function() { $(this).addClass('ui-state-hover'); },
-			function() { $(this).removeClass('ui-state-hover'); }
-		);
-		$('.pkwk_widget li.ui-state-default').mousedown(
-			function() { $(this).addClass('ui-state-active'); }
-		);
-		$('.pkwk_widget li.ui-state-default').mouseup(
-			function() { $(this).removeClass('ui-state-active'); }
-		);
+		// hover states on the static widgets
+		$('.ui-state-default').hover(function() {
+			$(this).addClass('ui-state-hover');
+		},function() {
+			$(this).removeClass('ui-state-hover');
+		}).mousedown(function() {
+			$(this).addClass('ui-state-active');
+		}).mouseout(function() {
+			$(this).removeClass('ui-state-active');
+		});
+		
+		// フォームロックを解除
+		$(':input').removeAttr('disabled');
+		$('.ui-button').button('option', 'disabled', false);
+	},
+	// ページを閉じたとき
+	unload : function(prefix){
+//		this.loadingScreen.dialog('open');
+		if (prefix){
+			prefix = prefix + ' ';
+		}else{
+			prefix = '';
+		}
+		/*
+		if (typeof(this.custom.before_unload) === 'object'){
+			var f;
+			while(f === this.custom.before_unload.shift() ){
+				try{
+					f();
+				}catch(e){}
+			}
+		}
+		*/
+
+		// フォームが変更されている場合
+		if ($(prefix+'#msg').val() !== $(prefix+'#original').val() && confirm( $.i18n('pukiwiki', 'unload'))) {
+			this.appendChild(_document.createElement('input')).setAttribute('name', 'write');
+			$('<input name="write" />').appendTo(this);
+			$(prefix+'form').submit();
+			alert( $.i18n('pukiwiki', 'submit'));
+		}else{
+//			this.loadingScreen.dialog('close');
+		}
+		return false;
 	},
 	// HTML5の各種機能をJavaScriptで有効化するための処理
 	enableHTML5 : function(prefix){
@@ -205,8 +291,7 @@ pukiwiki_skin = {
 		// Placeholder属性のサポート
 		if (!Modernizr.input.placeholder){
 			$(prefix+'[placeholder]').each(function () {
-				var 
-				input = $(this),
+				var input = $(this),
 				placeholderText = input.attr('placeholder'),
 				placeholderColor = 'Gray',
 				defaultColor = input.css('color');
@@ -239,65 +324,59 @@ pukiwiki_skin = {
 		$(prefix+'a[rel*=noreferer]').click(function () {
 			// http://logic.moo.jp/memo.php/archive/569
 			var url = $(this).attr('href');
+			
 			// for IE
-			if (navigator.userAgent.indexOf('MSIE',0) != -1){
-				var target = $(this).attr('target');
+			if (_ua.indexOf('MSIE',0) !== -1){
 				var blank_flag = 0;
-				if (target=='_blank'){
-					subwin = window.open('','','location=yes, menubar=yes, toolbar=yes, status=yes, resizable=yes, scrollbars=yes,');
-					subwin.document.open();
-					subwin.document.write('<meta http-equiv="refresh" content="0;url='+url+'">');
-					subwin.document.close();
+				var d;
+				if ( $(this).attr('target') === '_blank'){
+					var subwin = _window.open('','','location=yes, menubar=yes, toolbar=yes, status=yes, resizable=yes, scrollbars=yes,');
+					d = subwin.document;
+				}else{
+					d = _document;
 				}
-				else{
-					document.open();
-					document.write('<meta http-equiv="refresh" content="0;url='+url+'">');
-					document.close();
-				}
+				d.open();
+				d.write('<meta http-equiv="refresh" content="0;url='+url+'">');
+				d.close();
 				return false;
 			}
 			// for Safari,Chrome,Firefox
 			else{
-				if ( url.match(/data:text\/html;charset=utf-8/) ){}
-				else{
-					var html = '<html><head><script type="text/javascript"><!--\n'
-							+ 'document.write(\'<meta http-equiv="refresh" content="0;url='+url+'" />\');'
-							+ '// --><'+'/script></head><body></body></html>';
-					$(this).attr('href', 'data:text/html;charset=utf-8,'+encodeURIComponent(html));
+				if ( url.match(/data:text\/html;charset=utf-8/) !== true ){
+					var html = [
+						'<html><head><script type="text/javascript"><!--',
+						'document.write(\'<meta http-equiv="refresh" content="0;url='+url+'" />\');',
+						'// --><'+'/script></head><body></body></html>'
+					];
+					$(this).attr('href', 'data:text/html;charset=utf-8,'+encodeURIComponent(html.join("\n")));
 				}
 			}
 		});
 	},
-	custom : {},	// 消さないこと。（スキン用カスタムネームスペース）
-	/* ページを閉じたとき */
-	unload : function(prefix){
-		if (prefix){
-			prefix = prefix + ' ';
-		}else{
-			prefix = '';
-		}
-
-		$('input, button, select, textarea').attr('disabled','disabled');
-		// フォームが変更されている場合
-		if ($(prefix+'#msg').val() !== $(prefix+'#original').val() && confirm( $.i18n('pukiwiki', 'unload'))) {
-			this.appendChild(document.createElement('input')).setAttribute('name', 'write');
-			$('<input name="write" />').appendTo(this);
-			$(prefix+'form').submit();
-			alert( $.i18n('pukiwiki', 'submit'));
-		}else{
-			$('input, button, select, textarea').removeAttr('disabled');
-			return false;
+	// オーバーライド関数
+	register:{
+		init:function(func){
+			pkwkInit.push( func );
+		},
+		before_init:function(func){
+			pkwkBeforeInit.push( func );
+		},
+		unload:function(func){
+			pkwkUnload.push( func );
+		},
+		before_unload:function(func){
+			pkwkBeforeUnload.push( func );
 		}
 	},
-	/* ポップアップメニュー */
+	// ポップアップメニュー
 	suckerfish : function(target){
 		var superfish_cond = {
 			autoArrows:		false,	// if true, arrow mark-up generated automatically = cleaner source code at expense of initialisation performance
 			dropShadows:	false
 		};
 		
-		if (typeof(pukiwiki_skin.custom.suckerfish) == 'object'){
-			superfish_cond = this.custom.suckerfish;
+		if (typeof(pukiwiki.skin.suckerfish) === 'object'){
+			superfish_cond = this.skin.suckerfish;
 		}
 		$(target).superfish(superfish_cond);
 	},
@@ -307,7 +386,7 @@ ajaxダイアログ
 prefixにはルートとなるDOMを入れる。（<span class="test"></span>の中なら、span.testとなり、そこ以外は処理しない）
 */
 	setAnchor : function(prefix){
-		var self = this;	// pukiwiki_skinへのエイリアス
+		var self = this;	// pukiwikiへのエイリアス
 
 		if (prefix){
 			prefix = prefix + ' ';
@@ -341,8 +420,8 @@ function autoResizer() {
 		for(var i = 0; i < doms.length; i++) {
 			var dom_width = $(doms[i]).width();				// domの幅
 			var dom_height = $(doms[i]).height();			// domの高さ
-			var window_width = $(window).width();			// ウィンドウの幅
-			var window_height = $(window).height();			// ウィンドウの高さ
+			var window_width = $(_window).width();			// ウィンドウの幅
+			var window_height = $(_window).height();			// ウィンドウの高さ
 			var rate_width = dom_width / window_width;		// domサイズと画像表示領域のサイズの比率 (幅)
 			var rate_height = dom_height / window_height;	// domサイズと画像表示領域のサイズの比率 (高さ)
 			var resized_width = 
@@ -371,17 +450,19 @@ function autoResizer() {
 		
 	})($(prefix+'#colorbox #cboxLoadedContent'));
 }
-$(window).bind("resize", autoResizer);
+$(_window).bind("resize", autoResizer);
 */
 		// ここから、イベント割り当て
+		// ここから、イベント割り当て
 		$(prefix+'a[href]').each(function(){
+			var $this = $(this);
 			var href = $(this).attr('href');
 
 			if (href.match(/\.(jpg|jpeg|gif|png|txt)$/i)){	// 拡張子がcolorboxで読み込める形式の場合
-				$(this).colorbox(colorbox_config);
-				// $(this).rlightbox();
+				$this.colorbox(colorbox_config);
+				// $this.rlightbox();
 			}else if (href.match(/\.(mp3|ogg|mp4)$/i)){	// 拡張子が音楽の場合
-				pukiwiki_skin.music_player(this);
+				self.music_player(this);
 			}else if (href.match(/cmd|plugin/i)){	// cmdやpluginの場合
 				// Query Stringをパース。paramsに割り当て
 				var params = {};
@@ -405,33 +486,33 @@ $(window).bind("resize", autoResizer);
 						var filename;
 						if (params.file){
 							filename = params.file;
-							$(this).attr('href',SCRIPT+'?cmd='+params.cmd+'&pcmd='+params.pcmd+'&refer='+params.refer+'&age='+params.age+'&file='+filename);
+							$this.attr('href',SCRIPT+'?cmd='+params.cmd+'&pcmd='+params.pcmd+'&refer='+params.refer+'&age='+params.age+'&file='+filename);
 						}else{
 							filename = params.openfile;
-							$(this).attr('href',SCRIPT+'?cmd='+params.cmd+'&refer='+params.refer+'&openfile='+filename);
+							$this.attr('href',SCRIPT+'?cmd='+params.cmd+'&refer='+params.refer+'&openfile='+filename);
 						}
 						
 						if (filename.match(/\.(jpg|jpeg|gif|png|txt)$/i)){
-							$(this).colorbox(colorbox_config);
-						//	$(this).rlightbox();
+							$this.colorbox(colorbox_config);
+						//	$this.rlightbox();
 						}else if (filename.match(/\.(mp3|ogg|mp4)$/i)){
 							self.music_player(this);
 						}
 					}else if (params.cmd == 'qrcode'){
 						// QRcodeの場合（たぶん使われない）
-						$(this).attr('href',href+'&type=.gif');
-						$(this).colorbox(colorbox_config);
+						$this.attr('href',href+'&type=.gif');
+						$this.colorbox(colorbox_config);
 						//$(this).rlightbox();
-					}else if (params.cmd.match(/attach|search|backup|source|newpage|template|freeze|rename|logview|tb|diff|referer|linklist|skeylist/) && params.pcmd !== 'list' || params.help == 'true'){
+					}else if (params.cmd.match(/attach|search|backup|source|newpage|template|freeze|rename|logview|tb|diff|referer|linklist|skeylist/i) && (params.pcmd !== 'list' || params.help === 'true')){
 						// その他の主要なプラグインは、インラインウィンドウで表示
 						if (params.help == 'true'){
 							params = {cmd:'read', page:'FormatRule'};
 						}
 
 						// ダイアログ描画処理
-						$(this).click(function(){
+						$this.click(function(){
 							self.ajax_dialog(params,prefix,function(){
-								if (params.cmd == 'attach' && (params.pcmd == 'upload' || params.pcmd == 'info') || params.cmd == 'attachref' || params.cmd=='read' || params.cmd=='backup' && params.age !== ''){
+								if ((params.cmd == 'attach' && params.pcmd.match(/upload|info/i)) || params.cmd.match(/attachref|read|backup/i) && params.age !== ''){
 									self.bad_behavior(prefix+'div.window');
 									self.set_uploader(prefix+'div.window');
 									self.setAnchor(prefix+'div.window');
@@ -458,7 +539,7 @@ $(window).bind("resize", autoResizer);
 	// callback		開いた時実行する関数。
 	// parse		JSONのパース関数
 	ajax_dialog : function(params,prefix,callback,parse){
-		var self = this;	// pukiwiki_skinへのエイリアス
+		var self = this;	// pukiwikiへのエイリアス
 		// ダイアログ設定
 		var dialog_option = {
 			modal: true,
@@ -469,28 +550,36 @@ $(window).bind("resize", autoResizer);
 			dialogClass: 'ajax_dialog',
 			bgiframe : ($.browser.msie && $.browser.version > 6) ? true : false,	// for IE6 
 			open: function(){
-				self.tablesorter(prefix+'div.window');
-				self.glossaly(prefix+'div.window');
+				$(prefix+':input').attr('disabled','disabled');
+				self.tablesorter(prefix+'.window');
+				self.glossaly(prefix+'.window');
 
-				if(typeof(callback) == 'function'){ callback(); }
+				if(typeof(callback) === 'function'){ callback(); }
 
 				$(prefix+'button, '+prefix+'input[type=submit], '+prefix+'input[type=reset], '+prefix+'input[type=button]').button();
 
+				$(prefix+'form').disableOnSubmit();	// 二重送信防止
 				// オーバーレイでウィンドウを閉じる
 				var parent = this;
 				$(prefix+'.ui-widget-overlay').click(function(){
 					$(parent).dialog('close');
 				});
+				$(prefix+':input').removeAttr('disabled');
+				$(prefix+'.ui-button').button('option', 'disabled', false);
 				return false;
 			},
 			close: function(){
 				$(this).remove();
 			}
 		};
-
-		if (params.cmd.match(/logview|source|diff|edit|backup|read/i) || params.help == 'true'){
+		
+		if (params.pcmd === 'upload'){
 			dialog_option.width = '90%';
-			dialog_option.height = $(window).height()*0.8|0;
+		}
+
+		if (params.cmd.match(/logview|source|diff|edit|backup|read|referer/i) || params.help === 'true'){
+			dialog_option.width = '90%';
+			dialog_option.height = $(_window).height()*0.8|0;
 		}
 
 		// 非同期転送
@@ -508,7 +597,7 @@ $(window).bind("resize", autoResizer);
 			timeout : 30000,//タイムアウト（30秒）
 			success : function(data){
 				var container = $('<div class="window"></div>');
-				if(typeof(parse) == 'function'){ data = parse(data); }
+				if(typeof(parse) === 'function'){ data = parse(data); }
 				// 通信成功時
 				dialog_option.title = data.title;
 				data.body=data.body.replace(/<script[^>]*>[^<]+/ig,'');
@@ -519,7 +608,7 @@ $(window).bind("resize", autoResizer);
 				var container = $('<div class="window"></div>');
 				var content = [
 					'<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">',
-					'	<p id="ajax_error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>'+status+'</p>',
+						'<p id="ajax_error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>'+status+'</p>',
 					'</div>'
 				].join("\n");
 				dialog_option.title = 'Error!';
@@ -543,7 +632,7 @@ $(window).bind("resize", autoResizer);
 		// jQueryUI BlockUI
 		// http://pure-essence.net/2010/01/29/jqueryui-dialog-as-loading-screen-replace-blockui/
 		$('<div id="loadingScreen" title="Loading..."></div>').appendTo('body');
-		this.loadingScreen = $("div#loadingScreen");
+		this.loadingScreen = $("#loadingScreen");
 		this.loadingScreen.dialog({
 			autoOpen: false,	// set this to false so we can manually open it
 			closeOnEscape: false,
@@ -559,15 +648,17 @@ $(window).bind("resize", autoResizer);
 				// scrollbar fix for IE
 				//	if ($.browser.msie){ $('body').css('overflow','hidden'); }
 				$('body').css('cursor','wait');
+				ScrollLock.lock();
 			},
 			close: function() {
 				// reset overflow
 				// $('body').css('overflow','auto');
 				$('body').css('cursor','auto');
+				ScrollLock.unlock();
 			}
 		}); // end of dialog
 		var self = this;
-		$(document)
+		$(_document)
 		.ajaxSend(function(e, xhr, settings) {
 			self.loadingScreen.dialog("option", "title", 'Loading...');
 		//	if(DEBUG && console){ console.info('load: ',settings.url); }
@@ -678,13 +769,13 @@ $(window).bind("resize", autoResizer);
 						}
 					})
 					.jPlayer('onProgressChange', function(lp,ppr,ppa,pt,tt) {
-				 		var lpInt = lp|0;
-				 		var ppaInt = ppa|0;
-				 		global_lp = lpInt;
+						var lpInt = lp|0;
+						var ppaInt = ppa|0;
+						global_lp = lpInt;
 
 						$('#jplayer_loaderBar').progressbar('option', 'value', lpInt);
-				 		$('#jplayer_sliderPlayback').slider('option', 'value', ppaInt);
-				 		$('#jplayer_PlayTime').text($.jPlayer.convertTime(pt)); // Default format of 'mm:ss'
+						$('#jplayer_sliderPlayback').slider('option', 'value', ppaInt);
+						$('#jplayer_PlayTime').text($.jPlayer.convertTime(pt)); // Default format of 'mm:ss'
 						$('#jplayer_TotalTime').text($.jPlayer.convertTime(tt)); // Default format of 'mm:ss'
 
 					})
@@ -781,20 +872,20 @@ $(window).bind("resize", autoResizer);
 			var jplayer_container = [
 				'<div id="jplayer"></div>',
 				'<div id="jplayer_container">',
-				'	<ul id="jplayer_icons" class="ui-widget ui-helper-clearfix">',
-				'		<li id="jplayer_play" class="ui-state-default ui-corner-all" title="'+$.i18n('player','play')+'"><span class="ui-icon ui-icon-play"></span></li>',
-				'		<li id="jplayer_pause" class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-pause" title="'+$.i18n('player','pause')+'"></span></li>',
-				'		<li id="jplayer_stop" class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-stop" title="'+$.i18n('player','stop')+'"></span></li>',
-				'		<li id="jplayer_volume-min" class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-volume-off" title="'+$.i18n('player','volume_max')+'"></span></li>',
-				'		<li id="jplayer_volume-max" class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-volume-on" title="'+$.i18n('player','volume_min')+'"></span></li>',
-				'	</ul>',
-				'	<div id="jplayer_sliderVolume" title="'+$.i18n('player','volume')+'"></div>',
-				'	<div id="jplayer_bars_holder" title="'+$.i18n('player','seek')+'">',
-				'		<div id="jplayer_sliderPlayback"></div>',
-				'		<div id="jplayer_loaderBar"></div>',
-				'	</div>',
+					'<ul id="jplayer_icons" class="ui-widget ui-helper-clearfix">',
+						'<li id="jplayer_play" class="ui-button ui-state-default ui-corner-all" title="'+$.i18n('player','play')+'"><span class="ui-icon ui-icon-play"></span></li>',
+						'<li id="jplayer_pause" class="ui-button ui-state-default ui-corner-all"><span class="ui-icon ui-icon-pause" title="'+$.i18n('player','pause')+'"></span></li>',
+						'<li id="jplayer_stop" class="ui-button ui-state-default ui-corner-all"><span class="ui-icon ui-icon-stop" title="'+$.i18n('player','stop')+'"></span></li>',
+						'<li id="jplayer_volume-min" class="ui-button ui-state-default ui-corner-all"><span class="ui-icon ui-icon-volume-off" title="'+$.i18n('player','volume_max')+'"></span></li>',
+						'<li id="jplayer_volume-max" class="ui-button ui-state-default ui-corner-all"><span class="ui-icon ui-icon-volume-on" title="'+$.i18n('player','volume_min')+'"></span></li>',
+					'</ul>',
+					'<div id="jplayer_sliderVolume" title="'+$.i18n('player','volume')+'"></div>',
+					'<div id="jplayer_bars_holder" title="'+$.i18n('player','seek')+'">',
+						'<div id="jplayer_sliderPlayback"></div>',
+						'<div id="jplayer_loaderBar"></div>',
+					'</div>',
 				'</div>',
-				'<p><span class="ui-icon ui-icon-clock" style="display:block;float:left;"></span><span id="jplayer_PlayTime">00:00</span>/<span id="jplayer_TotalTime">??:??</span></p>'
+				'<p><span class="ui-icon ui-icon-clock" style="display:block;float:left;">Cast:</span><span id="jplayer_PlayTime">00:00</span>/<span id="jplayer_TotalTime">??:??</span></p>'
 			].join("\n");
 			
 			$(this).click(function(){
@@ -828,8 +919,8 @@ $(window).bind("resize", autoResizer);
 			}
 		};
 
-		if (typeof(this.custom.tablesorter) == 'object'){
-			config = this.custom.tablesorter;
+		if (typeof(this.skin.tablesorter) === 'object'){
+			config = this.skin.tablesorter;
 		}
 
 		$(prefix+'.tablesorter').each(function(elem){
@@ -842,15 +933,15 @@ $(window).bind("resize", autoResizer);
 				
 				var pager_widget = [
 					'<div class="table_pager_widget ui-helper-clearfix" id="'+pager_id+'">',
-					'	<ul class="ui-widget pkwk_widget">',
-					'		<li class="first ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthickstop-1-w"></span></li>',
-					'		<li class="prev ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthick-1-w"></span></li>',
-					'		<li><input class="pagedisplay" type="text" disabled="disabled" /></li>',
-					'		<li class="next ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthick-1-e"></span></li>',
-					'		<li class="last ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthickstop-1-e"></span></li>',
-					'		<li><select class="pagesize"></select></li>',
-					'		<li class="reload ui-state-default ui-corner-all"><span class="ui-icon ui-icon-refresh"></span></li>',
-					'	</ul>',
+						'<ul class="ui-widget pkwk_widget">',
+							'<li class="first ui-button ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthickstop-1-w"></span></li>',
+							'<li class="prev ui-button ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthick-1-w"></span></li>',
+							'<li><input class="pagedisplay" type="text" disabled="disabled" /></li>',
+							'<li class="next ui-button ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthick-1-e"></span></li>',
+							'<li class="last ui-button ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthickstop-1-e"></span></li>',
+							'<li><select class="pagesize"></select></li>',
+							'<li class="reload ui-button ui-state-default ui-corner-all"><span class="ui-icon ui-icon-refresh"></span></li>',
+						'</ul>',
 					'</div>'
 				].join("\n");
 				
@@ -890,12 +981,23 @@ $(window).bind("resize", autoResizer);
 					self.glossaly(table);
 				});
 
-				// ページャーを生成（ID重複しないようにグローバル変数のpukiwiki_skin.tablesorter.counterをカウンタとして使用
+				// ページャーを生成（ID重複しないようにグローバル変数のpukiwiki.tablesorter.counterをカウンタとして使用
 				$(this).tablesorterPager({
 					container: $('#'+pager_id),
 					positionFixed: false
 				});
 
+				//hover states on the static widgets
+				$('#'+pager_id+'.pkwk_widget .ui-state-default').hover(function() {
+					$(this).addClass('ui-state-hover');
+				},function() {
+					$(this).removeClass('ui-state-hover');
+				}).mousedown(function() {
+					$(this).addClass('ui-state-active');
+				}).mouseout(function() {
+					$(this).removeClass('ui-state-active');
+				});
+				
 				$('#'+pager_id).show('clip');
 				self.tablesorter.counter++;
 			}else{
@@ -947,7 +1049,7 @@ $(window).bind("resize", autoResizer);
 			);
 
 			/* 検索画面 */
-			if ($.query.get('cmd') == 'search'){
+			if ($.query.get('cmd') === 'search'){
 				$(prefix+'.linktip').hover(
 					function(){
 						$('body').css('cursor','wait');
@@ -1000,7 +1102,7 @@ $(window).bind("resize", autoResizer);
 					track: true,
 					delay: 0,
 					showURL: false
-	    		});
+				});
 			}
 		});
 	},
@@ -1014,7 +1116,7 @@ $(window).bind("resize", autoResizer);
 		// テキストエリアの内容をlocalStrageから取得
 		if (Modernizr.localstorage){
 			var msg = $(prefix+'.edit_form textarea[name=msg]').val();
-			var storage = window.localStorage.getItem(PAGE);
+			var storage = _window.localStorage.getItem(PAGE);
 			var data = JSON.parse(storage);
 
 			if (data){
@@ -1040,11 +1142,8 @@ $(window).bind("resize", autoResizer);
 		// プレビューボタンを書き換え
 		$(prefix+'.edit_form input[name=write]').after('<input type="button" name="add_ajax" value="'+$('.edit_form input[name=preview]').attr('value')+'" accesskey="p" />');
 		$(prefix+'.edit_form input[name=preview]').remove();
-		if (typeof(FACEBOOK_APPID) !== 'undefined'){
-			$(prefix+'.edit_form input[name=add_ajax]').after('<input type="checkbox" name="fb_publish" id="fb_publish" /> <label for="fb_publish"><img src="'+IMAGE_DIR+'social/facebook.png" width="16" height="16" title="Publish to Facebook" alt="Facebook" /></label> ');
-		}
 		
-		$(prefix+'.edit_form').prepend('<div id="assistant" class="ui-corner-top ui-widget-header ui-helper-clearfix"></div>');
+		$(prefix+'.edit_form').prepend('<div class="assistant ui-corner-top ui-widget-header ui-helper-clearfix"></div>');
 		
 		// プレビューボタンが押された時の処理
 		$(prefix+'.edit_form input[name=add_ajax]').click(function(){
@@ -1071,7 +1170,7 @@ $(window).bind("resize", autoResizer);
 					// Realedit用のDOMを生成
 					$(prefix+".edit_form textarea[name='msg']").before([
 						'<div id="realview_outer">',
-						'	<div id="realview"></div>',
+							'<div id="realview"></div>',
 						'</div>'
 					].join("\n")).after(
 						'<textarea id="previous" style="display:none;"></textarea>'
@@ -1114,25 +1213,24 @@ $(window).bind("resize", autoResizer);
 			// テキストエリアの内容をlocalStrageにページ名と共に保存
 			if (Modernizr.localstorage){
 				var d=new Date();
-				window.localStorage.setItem(PAGE,JSON.stringify({
+				_window.localStorage.setItem(PAGE,JSON.stringify({
 					msg : $(this).val(),
 					modified: d.getTime()
 				}));
 			}
 		});
-		
 		// 送信イベント時の処理
 		$(prefix+'form').submit(function(e){
 /*
+			
 			var postdata = $(this).serializeObject();	// フォームの内容をサニタイズ
-			$('input, button, select, textarea').attr('disabled','disabled');	// フォームをロック
 			postdata.ajax = 'json';
 */
 			// ローカルストレージをフラッシュ
 			if (Modernizr.localstorage){
 				localStorage.removeItem(PAGE);
 			}
-			
+
 			if ($('#_edit_form_notimestamp:checked') !== true && $('#fb_publish:checked') === true){
 				$.ajax({
 					url:'https://graph.facebook.com/bbeckford/feed',
@@ -1144,7 +1242,7 @@ $(window).bind("resize", autoResizer);
 					cache: false,
 					dataType : 'json',
 					success : function(data){
-						// localStrageをフラッシュ（キャンセルボタンを押した場合も）
+						
 						
 						console.log(data.body);
 					},
@@ -1198,11 +1296,10 @@ $(window).bind("resize", autoResizer);
 		// http://mashiki-memo.blogspot.com/2010/12/blog-post.html
 
 		// show_diff(原文,現在の内容（通常$('msg').value）)
-		var content;
 		if (msg===org){
-			content = '変更箇所はありません';
+			return false;
 		} else {
-			var res = diff(
+			return diff(
 				original.replace(/^\n+|\n+$/g,'').split("\n"),
 				source.replace(/^\n+|\n+$/g,'').split("\n")
 			);
@@ -1212,50 +1309,51 @@ $(window).bind("resize", autoResizer);
 		var len1=arr1.length,
 			len2=arr2.length;
 		// len1 <= len2でなければひっくり返す
-		if (!rev && len1>len2)
+		if (!rev && len1>len2){
 			return diff(arr2, arr1, true);
+		}
 		// 変数宣言及び配列初期化
 		var k, p,
 			offset=len1+1,
 			delta =len2-len1,
 			fp=[], ed=[];
-		for (p=0; p<len1+len2+3; ++p) {
-			fp[p] = -1;
-			ed[p] = [];
-		}
-		// メインの処理
-		for (p=0; fp[delta + offset] != len2; p++) {
-			for(k = -p       ; k <  delta; ++k) snake(k);
-			for(k = delta + p; k >= delta; --k) snake(k);
-		}
-		return ed[delta + offset];
-
 		// snake
-		function snake(k) {
-			var x, y, e0, o,
+		var snake = function(k){
+			var x, y, e0, o, i,
 				y1=fp[k-1+offset],
 				y2=fp[k+1+offset];
 			if (y1>=y2) { // 経路選択
 				y = y1+1;
 				x = y-k;
 				e0 = ed[k-1+offset];
-				o = {edit:rev?'-':'+',arr:arr2, line:y-1}
+				o = {edit:rev?'-':'+',arr:arr2, line:y-1};
 			} else {
 				y = y2;
 				x = y-k;
 				e0 = ed[k+1+offset];
-				o = {edit:rev?'+':'-',arr:arr1, line:x-1}
+				o = {edit:rev?'+':'-',arr:arr1, line:x-1};
 			}
 			// 選択した経路を保存
-			if (o.line>=0) ed[k+offset] = e0.concat(o);
+			if (o.line>=0){ ed[k+offset] = e0.concat(o); }
 
 			var max = len1-x>len2-y?len1-x:len2-y;
-			for (var i=0; i<max && arr1[x+i]===arr2[y+i]; ++i) {
+			for (i=0; i<max && arr1[x+i]===arr2[y+i]; ++i) {
 				// 経路追加
 				ed[k+offset].push({edit:'=', arr:arr1, line:x+i});
 			}
 			fp[k + offset] = y+i;
+			return true;
+		};
+		for (p=0; p<len1+len2+3; ++p) {
+			fp[p] = -1;
+			ed[p] = [];
 		}
+		// メインの処理
+		for (p=0; fp[delta + offset] !== len2; p++) {
+			for(k = -p       ; k <  delta; ++k){ snake(k); }
+			for(k = delta + p; k >= delta; --k){ snake(k); }
+		}
+		return ed[delta + offset];
 	},
 	realtime_preview : function(prefix){
 		if (prefix){
@@ -1263,8 +1361,8 @@ $(window).bind("resize", autoResizer);
 		}else{
 			prefix = '';
 		}
-		var oSource = document.getElementById('msg');
-		var source = document.getElementById('msg').value;
+		var oSource = _document.getElementById('msg');
+		var source = _document.getElementById('msg').value;
 		var self = this;
 		
 		if (this.ajax_apx) {
@@ -1275,8 +1373,8 @@ $(window).bind("resize", autoResizer);
 			
 			if (++this.ajax_count !== 1){ return; }
 			
-			if (document.selection) {
-				var sel = document.selection.createRange();
+			if (_document.selection) {
+				var sel = _document.selection.createRange();
 				sellen = sel.text.length;
 				var end = oSource.createTextRange();
 				var all = end.text.length;
@@ -1310,12 +1408,12 @@ $(window).bind("resize", autoResizer);
 	//			timeout : 2000,//タイムアウト（２秒）
 				dataType : 'json',
 				success : function(data){
-					var innbox = document.getElementById('realview_outer');
-	 				var marker = document.getElementById('editmark');
+					var innbox = _document.getElementById('realview_outer');
+					var marker = _document.getElementById('editmark');
 
 					if (marker){ innbox.scrollTop = marker.offsetTop - 8; }
 					
-					if (self.ajax_count==1) {
+					if (self.ajax_count===1) {
 						self.ajax_count = 0;
 					} else {
 						self.ajax_count = 0;
@@ -1329,21 +1427,22 @@ $(window).bind("resize", autoResizer);
 				error : function(data,status,thrown){
 					$("#realview").html([
 						'<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">',
-						'	<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>'+status+'</p>',
-						'	<ul>',
-						'		<li>readyState:'+data.readyState+'</li>',
-	//					'		<li>responseText:'+data.responseText+'</li>',
-						'		<li>status:'+data.status+'</li>',
-						'		<li>statusText:'+data.statusText+'</li>',
-						'	</ul>',
+							'<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>'+status+'</p>',
+							'<ul>',
+								'<li>readyState:'+data.readyState+'</li>',
+	//							'<li>responseText:'+data.responseText+'</li>',
+								'<li>status:'+data.status+'</li>',
+								'<li>statusText:'+data.statusText+'</li>',
+							'</ul>',
 						'</div>'].join("\n")
 					);
 				}
 			});
 		}
 	},
-	// 入力アシスタント（assistant.js）
+	// 入力アシスタント
 	assistant: function(full){
+		var i, len;
 		// 絵文字の定義
 		// https://github.com/take-yu/JSEmoji/blob/master/mt-static/plugins/JSEmoji/js/emoji.js
 		var emojiList = [
@@ -1366,81 +1465,101 @@ $(window).bind("resize", autoResizer);
 			'leftright', 'updown', 'school', 'wave', 'fuji', 'clover', 'cherry', 'tulip', 'banana', 'apple', 'bud', 'maple', 'cherryblossom','riceball', 
 			'cake', 'bottle', 'noodle', 'bread', 'snail', 'chick', 'penguin', 'fish', 'delicious', 'smile', 'horse', 'pig', 'wine', 'shock'
 		];
-
-		var html = '<ul class="ui-widget pkwk_widget" id="emojis">';
-		for (var i=0; i<emojiList.length; i++) {
-			var name = emojiList[i];
-			html += '<li class="ui-state-default ui-corner-all" title="'+name+'" name="&('+name+');"><span class="emoji emoji-'+name+'"></span></li>';
-		}
-		html += '</ul>';
 		
-		$(document.body).append('<div id="emoji"></div>');
+		// パレット設定（横18,縦13で、Dreamweaver風パレット配列）
+		var colorList = [
+			'#000000','#003300','#006600','#009900','#00CC00','#00FF00','#330000','#333300','#336600','#339900','#33CC00','#33FF00','#660000','#663300','#666600','#669900','#66CC00','#66FF00',
+			'#000033','#003333','#006633','#009933','#00CC33','#00FF33','#330033','#333333','#336633','#339933','#33CC33','#33FF33','#660033','#663333','#666633','#669933','#66CC33','#66FF33',
+			'#000066','#003366','#006666','#009966','#00CC66','#00FF66','#330066','#333366','#336666','#339966','#33CC66','#33FF66','#660066','#663366','#666666','#669966','#66CC66','#66FF66',
+			'#000099','#003399','#006699','#009999','#00CC99','#00FF99','#330099','#333399','#336699','#339999','#33CC99','#33FF99','#660099','#663399','#666699','#669999','#66CC99','#66FF99',
+			'#0000CC','#0033CC','#0066CC','#0099CC','#00CCCC','#00FFCC','#3300CC','#3333CC','#3366CC','#3399CC','#33CCCC','#33FFCC','#6600CC','#6633CC','#6666CC','#6699CC','#66CCCC','#66FFCC',
+			'#0000FF','#0033FF','#0066FF','#0099FF','#00CCFF','#00FFFF','#3300FF','#3333FF','#3366FF','#3399FF','#33CCFF','#33FFFF','#6600FF','#6633FF','#6666FF','#6699FF','#66CCFF','#66FFFF',
+			'#990000','#993300','#996600','#999900','#99CC00','#99FF00','#CC0000','#CC3300','#CC6600','#CC9900','#CCCC00','#CCFF00','#FF0000','#FF3300','#FF6600','#FF9900','#FFCC00','#FFFF00',
+			'#990033','#993333','#996633','#999933','#99CC33','#99FF33','#CC0033','#CC3333','#CC6633','#CC9933','#CCCC33','#CCFF33','#FF0033','#FF3333','#FF6633','#FF9933','#FFCC33','#FFFF33',
+			'#990066','#993366','#996666','#999966','#99CC66','#99FF66','#CC0066','#CC3366','#CC6666','#CC9966','#CCCC66','#CCFF66','#FF0066','#FF3366','#FF6666','#FF9966','#FFCC66','#FFFF66',
+			'#990099','#993399','#996699','#999999','#99CC99','#99FF99','#CC0099','#CC3399','#CC6699','#CC9999','#CCCC99','#CCFF99','#FF0099','#FF3399','#FF6699','#FF9999','#FFCC99','#FFFF99',
+			'#9900CC','#9933CC','#9966CC','#9999CC','#99CCCC','#99FFCC','#CC00CC','#CC33CC','#CC66CC','#CC99CC','#CCCCCC','#CCFFCC','#FF00CC','#FF33CC','#FF66CC','#FF99CC','#FFCCCC','#FFFFCC',
+			'#9900FF','#9933FF','#9966FF','#9999FF','#99CCFF','#99FFFF','#CC00FF','#CC33FF','#CC66FF','#CC99FF','#CCCCFF','#CCFFFF','#FF00FF','#FF33FF','#FF66FF','#FF99FF','#FFCCFF','#FFFFFF',
+			'#111111','#222222','#333333','#444444','#555555','#666666','#777777','#888888','#999999','#A5A5A5','#AAAAAA','#BBBBBB','#C3C3C3','#CCCCCC','#D2D2D2','#DDDDDD','#EEEEEE','#FFFFFF'
+		];
+		
+		// アシスタントのウィジット
+		$('.assistant').html([
+			'<ul class="ui-widget pkwk_widget">',
+				'<li class="replace ui-button ui-state-default ui-corner-left" title="Bold" name="b"><strong>b</strong></li>',
+				'<li class="replace ui-button ui-state-default" title="Italic" name="i" style="font-weight:normal;"><em>i</em></li>',
+				'<li class="replace ui-button ui-state-default" title="Strike" name="s" style="font-weight:normal;"><strike>s</strike></li>',
+				'<li class="replace ui-button ui-state-default" title="Underline" name="u" style="font-weight:normal;"><span class="underline">u</span></li>',
+				'<li class="replace ui-button ui-state-default" title="Code" name="code" style="font-weight:normal;"><span class="ui-icon ui-icon-script"></span></li>',
+				'<li class="replace ui-button ui-state-default ui-corner-right" title="Q" name="q" style="font-weight:normal;"><span class="ui-icon ui-icon-comment"></span></li>',
+				'<li class="replace ui-button ui-state-default ui-corner-left" title="Link" name="url"><span class="ui-icon ui-icon-link"></span></li>',
+				'<li class="replace ui-button ui-state-default" title="Size" name="size">size</li>',
+				'<li class="insert ui-button ui-state-default ui-corner-right" title="Color" name="color">color</li>',
+				'<li class="insert ui-button ui-state-default ui-corner-left" title="Emoji" name="emoji">☺</li>',
+				'<li class="insert ui-button ui-state-default ui-corner-right" title="br" name="br">⏎</li>',
+				'<li class="replace ui-button ui-state-default ui-corner-all" title="ncr" name="ncr">&amp;#</li>',
+				'<li class="insert ui-button ui-state-default ui-corner-all" title="Help" name="help"><span class="ui-icon ui-icon-help"></span></li>',
+				(typeof(Modernizr.localstorage) !== 'undefined') ? '<li class="insert ui-state-default ui-corner-all" title="Flush Storage" name="flush"><span class="ui-icon ui-icon-trash"></span></li>': null,
+				'<li class="ui-widget-content ui-corner-all" style="float:right; width:auto;display:none;font-weight:normal;" id="indicator"></li>',
+			'</ul>'
+		].join("\n"));
+		
+		// 絵文字パレットのウィジット
+		var emoji_widget = '<ul class="ui-widget pkwk_widget ui-helper-clearfix">';
+		for(i = 0, len = emojiList.length; i < len ; i++ ){
+			var name = emojiList[i];
+			emoji_widget += '<li class="ui-button ui-state-default ui-corner-all" title="'+name+'" name="'+name+'"><span class="emoji emoji-'+name+'"></span></li>';
+		}
+		emoji_widget += '</ul>';
+		$(_document.body).append('<div id="emoji"></div>');
 		$('#emoji').dialog({
 			title:'Emoji',
-			id:'emoji',
 			autoOpen:false,
 			bgiframe: true,
 			minWidth:410,
 			height:410,
 			minHeight:410,
 			show: "scale",
-			hide: "scale"
-		}).html(html);
-		
-		$('#emoji ul li').click(function(){
-			var ret = '';
-			var str = $(self.elem).getSelection().text;
-			var v = $(this).attr('name');
-			if (str === ''){
-				$(self.elem).insertAtCaretPos(v);
-			}else{
-				$(self.elem).replaceSelection(v);
+			hide: "scale",
+			buttons:{
+				Close:function(){$(this).dialog('close');}
 			}
-			self.elem.focus();
-			$('#emoji').dialog('close');
-			return;
-		});
+		}).html(emoji_widget);
+
+		// カラーパレットのウィジット
+		var color_widget = '<ul class="ui-widget pkwk_widget ui-helper-clearfix" id="colors">', j=0;
+		for(i = 0, len = colorList.length; i < len ; i++ ){
+			var color = colorList[i];
+			color_widget += '<li class="ui-button ui-state-default" title="'+color+'" name="'+color+'"><span class="emoji" style="background-color:'+color+';"></span></li>';
+			j++;
+		}
+		color_widget += '</ul>';
+		$(_document.body).append('<div id="color_palette"></div>');
+		$('#color_palette').dialog({
+			title:'Palette',
+			autoOpen:false,
+			bgiframe: true,
+			width:470,
+			height:400,
+			show: "scale",
+			hide: "scale"
+		}).html(color_widget);
 		
-		$('#assistant').html([
-			'<ul class="ui-widget pkwk_widget">',
-			'	<li class="replace ui-state-default ui-corner-left" title="Bold" name="b"><strong>b</strong></li>',
-			'	<li class="replace ui-state-default" title="Italic" name="i" style="font-weight:normal;"><em>i</em></li>',
-			'	<li class="replace ui-state-default" title="Strike" name="s" style="font-weight:normal;"><strike>s</strike></li>',
-			'	<li class="replace ui-state-default" title="Underline" name="u" style="font-weight:normal;"><span class="underline">u</span></li>',
-			'	<li class="replace ui-state-default" title="Code" name="code" style="font-weight:normal;"><span class="ui-icon ui-icon-script"></span></li>',
-			'	<li class="replace ui-state-default ui-corner-right" title="Q" name="q" style="font-weight:normal;"><span class="ui-icon ui-icon-comment"></span></li>',
-			'	<li class="replace ui-state-default ui-corner-left" title="Link" name="url"><span class="ui-icon ui-icon-link"></span></li>',
-			'	<li class="replace ui-state-default" title="Size" name="size">size</li>',
-			'	<li class="replace ui-state-default ui-corner-right" title="Color" name="Color">color</li>',
-			'	<li class="insert ui-state-default ui-corner-left" title="Emoji" name="emoji">☺</li>',
-			'	<li class="insert ui-state-default ui-corner-right" title="br" name="br">⏎</li>',
-			'	<li class="replace ui-state-default ui-corner-all" title="ncr" name="ncr">&amp;#</li>',
-			'	<li class="insert ui-state-default ui-corner-all" title="Help" name="help"><span class="ui-icon ui-icon-help"></span></li>',
-			(typeof(localstorage) !== 'undefined') ? '	<li class="insert ui-state-default ui-corner-all" title="Flush Storage" name="flush"><span class="ui-icon ui-icon-trash"></span></li>': null,
-			'	<li class="ui-widget-content ui-corner-all" style="float:right; width:auto;display:none;font-weight:normal;" id="indicator"></li>',
-			'</ul>',
-		].join("\n"));
-		
-		
+		// ここから、イベント割り当て
+		if (!this.elem){ this.elem = $('*[name=msg]')[0]; }
 		var self = this;
 		// アシスタント
-		
-		if (!self.elem){ self.elem = $('textarea[name=msg]')[0]; }
-		
-		$('input[type=text]').focus(function(e){
-			self.elem = this;
-		});
-		$('textarea').focus(function(e){
-			self.elem = this;
-		});
-		if (typeof init_ctrl_unload == 'function'){ init_ctrl_unload(); }
 
-		
+		$('*[name=msg]').focus(function(e){
+			self.elem = this;
+		});
 
 		$('.insert').click(function(){
 			var ret = '';
-			var str = $(self.elem).getSelection().text;
+			var elem = $(self.elem);
+			var str = elem.getSelection().text;
 			var v = $(this).attr('name');
+
 			switch (v){
 				case 'help' :
 					alert($.i18n('pukiwiki', 'hint_text1'));
@@ -1451,32 +1570,35 @@ $(window).bind("resize", autoResizer);
 				case 'emoji' :
 					$('#emoji').dialog('open');
 				break;
+				case 'color' :
+					$('#color_palette').dialog('open');
+				break;
 				case 'flush' :
-					var v = confirm('Flush local strage?');
-					if (Modernizr.localstorage && v === true){
+					if (Modernizr.localstorage && confirm('Flush local strage?') === true){
 						localStorage.removeItem(PAGE);
 					}
 				break;
 				default:
-					ret = v;
+					ret = '&('+$(this).attr('name')+');';
 				break;
 			}
 			if (ret !== ''){
 				if (str === ''){
-					$(self.elem).insertAtCaretPos(ret);
+					elem.insertAtCaretPos(ret);
 				}else{
-					$(self.elem).replaceSelection(ret);
+					elem.replaceSelection(ret);
 				}
-				self.elem.focus();
+				elem.focus();
 			}
 			return;
 		});
 		$('.replace').click(function(){
 			var ret = '';
-			var str = $(self.elem).getSelection().text;
+			var elem = $(self.elem);
+			var str = elem.getSelection().text;
 			var v = $(this).attr('name');
 			
-			if (str === '' || !self.elem){
+			if (str === ''|| !elem){
 				alert( $.i18n('pukiwiki', 'select'));
 				return;
 			}
@@ -1484,15 +1606,16 @@ $(window).bind("resize", autoResizer);
 			switch (v){
 				case 'size' :
 					var default_size = "100%";
-					var v = prompt($.i18n('pukiwiki', 'fontsize'), default_size);
-					if (!v || !v.match(/\d+/)){
+					var val = prompt($.i18n('pukiwiki', 'fontsize'), default_size);
+					if (!val || !val.match(/\d+/)){
 						return;
 					}
-					ret = '&size(' + v + '){' + str + '};';
+					ret = '&size(' + val + '){' + str + '};';
 				break;
 				case 'ncr':
-					for(var n = 0; n < str.length; n++){
-						ret += ("&#"+(str.charCodeAt(n))+";");
+					var i, len;
+					for(i = 0, len = str.length; i < len ; i++ ){
+						ret += ("&#"+(str.charCodeAt(i))+";");
 					}
 				break;
 				case 'b':	//mikoadded
@@ -1521,16 +1644,55 @@ $(window).bind("resize", autoResizer);
 						ret = '[[' + str + '>' + my_link + ']]';
 					}
 				break;
-				default:
+/*				default:
 					if (str.match(/^&color\([^\)]*\)\{.*\};$/)){
 						ret = str.replace(/^(&color\([^\)]*)(\)\{.*\};)$/,"$1," + v + "$2");
 					}else{
 						ret = '&color(' + v + '){' + str + '};';
 					}
 				break;
+*/
 			}
-			$(self.elem).replaceSelection(ret);
+			elem.replaceSelection(ret);
+			elem.focus();
+			return;
+		});
+		
+		
+		
+		$('#emoji ul li').click(function(){
+			var elem = $(self.elem);
+			var str = elem.getSelection().text;
+			var v = '&('+$(this).attr('name')+');';;
+
+			if (str === ''){
+				elem.insertAtCaretPos(v);
+			}else{
+				elem.replaceSelection(v);
+			}
 			self.elem.focus();
+	//		$('#emoji').dialog('close');
+			return;
+		});
+		$('#color_palette ul li').click(function(){
+			var ret;
+			var elem = $(self.elem);
+			var str = elem.getSelection().text;
+			var v = $(this).attr('name');
+			
+			if (str === ''|| !elem){
+				alert( $.i18n('pukiwiki', 'select'));
+				return;
+			}
+			
+			if (str.match(/^&color\([^\)]*\)\{.*\};$/)){
+				elem.replaceSelection(str.replace(/^(&color\([^\)]*)(\)\{.*\};)$/,"$1," + v + "$2"));
+			}else{
+				elem.replaceSelection('&color(' + v + '){' + str + '};');
+			}
+			$('#color_palette').dialog('close');
+			self.elem.focus();
+			
 			return;
 		});
 	},
@@ -1550,22 +1712,21 @@ $(window).bind("resize", autoResizer);
 		// swfuploadがスクリプトに渡す値
 		
 		var params = {
-			encode_hint		: $(prefix+'input[name=encode_hint]').val(),	// エンコード判別用
 			max_file_size	: $(prefix+'input[name=max_file_size]').val(),// 上限容量
 			pcmd			: $(prefix+'input[name=pcmd]').val(),		// プラグインコマンド（通常post）
 			plugin			: $(prefix+'input[name=plugin]').val(),		// プラグイン（通常attach）
 			refer			: $(prefix+'input[name=refer]').val(),		// 添付先のページ
-			ajax:			'json'	// 送信完了時にページをjson化したデーターを読み込む。（スキンの処理を確認せよ）
+			ajax			: 'json' // 送信完了時にページをjson化したデーターを読み込む。（スキンの処理を確認せよ）
 		};
 		
-		if (params.plugin == 'attachref'){
+		if (params.plugin === 'attachref'){
 			params.attachref_no		= $(prefix+'input[name=attachref_no]').val();
 			params.attachref_opt	= $(prefix+'input[name=attachref_opt]').val();
 			params.digest			= $(prefix+'input[name=digest]').val();
 		}
 		
 		// デフォルト値
-		var config = {	
+		var config = (typeof(this.skin.swfupload) !== 'object') ? {	
 			// swfuploadの位置
 			flash_url : SKIN_DIR+'js/swfupload.swf',
 			// アップロード先のURL
@@ -1599,29 +1760,26 @@ $(window).bind("resize", autoResizer);
 			button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
 
 			moving_average_history_size: 40
-		};
-		
-		if (typeof(this.custom.swfupload) == 'object'){
-			config = this.custom.swfupload;
-		}
+		} : this.skin.swfupload;
 		
 		// attachrefの場合、１つのみファイルをアップ可能
-		if (params.plugin == 'attachref'){
+		if (params.plugin === 'attachref'){
 			config.file_upload_limit=1;
 			config.file_queue_limit=1;
 		}
-		
+
+		params.pass = ($("input[name=pass]").length !== 0) ? $("input[name=pass]").val(): '';	// パスワード
+		params.encode_hint = ($("input[name=encode_hint]").length !== 0) ? $(prefix+'input[name=encode_hint]').val() : '';	// エンコード判別用
+
 //		console.dir(params);
 
-//		if ($("input[name=pass]").length !== 0){ params.pass = $("input[name=pass]").val(); }	// パスワード
-		
 		// 添付画面のテンプレート
 		$(prefix+'.attach_form').html( [
 			'<div id="swfupload-control">',
-			'	<input type="button" id="swfupload_button" />',
-			'	<p id="swfupload-queuestatus" ></p>',
-			'	<ol id="swfupload-log" class="ui-widget"></ol>',
-			'	<button id="execute">Go</button>',
+				'<input type="button" id="swfupload_button" />',
+				'<p id="swfupload-queuestatus" ></p>',
+				'<ol id="swfupload-log" class="ui-widget"></ol>',
+				'<button id="execute">Go</button>',
 			'</div>'
 		].join("\n"));
 		
@@ -1639,10 +1797,10 @@ $(window).bind("resize", autoResizer);
 		.bind('fileQueued', function(event, file){
 			var listitem = [
 				'<li id="'+file.id+'" class="ui-widget-content ui-corner-all">',
-				'	File: <em>'+file.name+'</em> ('+Math.round(file.size/1024)+' KB) <span class="progressvalue" ></span>',
-				'	<div class="progressbar"></div>',
-				'	<p class="status"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>Pending</p>',
-				'	<button class="cancel">Close</button>',
+					'File: <em>'+file.name+'</em> ('+Math.round(file.size/1024)+' KB) <span class="progressvalue" ></span>',
+					'<div class="progressbar"></div>',
+					'<p class="status"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>Pending</p>',
+					'<button class="cancel">Close</button>',
 				'</li>'
 			].join("\n");
 	
@@ -1670,11 +1828,11 @@ $(window).bind("resize", autoResizer);
 		.bind('fileQueueError', function(event, file, errorCode, message){
 			var listitem = [
 				'<li id="error" class="ui-widget-content ui-state-error ui-corner-all"><em>Error</em>',
-				'	<p>',
-				'		<span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-alert"></span>',
-				'		You have attempted to queue too many files.',
-				'	</p>',
-				'	<button class="close" >Close</button>',
+					'<p>',
+						'<span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-alert"></span>',
+						'You have attempted to queue too many files.',
+					'</p>',
+					'<button class="close" >Close</button>',
 				'</li>'
 			].join("\n");
 
@@ -1704,23 +1862,23 @@ $(window).bind("resize", autoResizer);
 			$('#swfupload-log li#'+file.id).find('span.progressvalue').text(percentage+'%');
 		})
 		.bind('uploadSuccess', function(event, file, serverData){
-			if (params.plugin != 'attachref'){
+			if (params.plugin !== 'attachref'){
 				var ret = eval("(" + serverData + ")");
-				var item=$(prefix+'#swfupload-log  li#'+file.id);
+				var item=$(prefix+'#swfupload-log li#'+file.id);
 				$(prefix+'#swfupload-log li#'+file.id+' .progressbar').progressbar({ value: 100 });
-				item.find('span.progressvalue').text('100%');
+				item.find('.progressvalue').text('100%');
 				var pathtofile = '<a href="'+SCRIPT+'?plugin=attach&pcmd=open&refer='+PAGE+'&file='+file.name+'" id="view_'+file.id+'"><span style="float: right; margin-right: 0.3em;" class="ui-icon ui-icon-newwin"></span>view &raquo;</a>';
 				item.addClass('success').find('p.status').html(ret.title+' | '+pathtofile);
 				$(prefix+'#swfupload-log li#'+file.id+' a#view_'+file.id).click(function(){
 					var href = $(this).attr('href');
 /*
-					if (href.match(/\.(jpg|jpeg|gif|png)$/i)){
+					if (href.match(/\.(jpg|jpeg|gif|png)$/i) !== -1){
 						$(this).colorbox();
-					}else if (href.match(/\.(mp3|ogg|m4a)$/i)){
-						pukiwiki_skin.music_player(this);
+					}else if (href.match(/\.(mp3|ogg|m4a)$/i) !== -1){
+						pukiwiki.music_player(this);
 					}else{
 */
-						window.open(href);
+						_window.open(href);
 //					}
 					$(prefix).dialog('option', 'close', function(){ location.reload(); });
 					return false;
@@ -1735,7 +1893,7 @@ $(window).bind("resize", autoResizer);
 		});
 	},
 	CFCheck: function(){
-		if (typeof(CFInstall) == 'object' || $('meta[http-equiv=X-UA-Compatible]')[0].content.match(/chrome/)){
+		if (typeof(CFInstall) === 'object' || $('meta[http-equiv=X-UA-Compatible]')[0].content.match(/chrome/) !== -1){
 			CFInstall.check({
 				mode: 'overlay',
 				onmissing: function(){
@@ -1755,15 +1913,16 @@ $(window).bind("resize", autoResizer);
 		}else{
 			prefix = '';
 		}
-		if (typeof(SyntaxHighlighter) == 'object'){
+		if (typeof(SyntaxHighlighter) === 'object'){
 			SyntaxHighlighter.config.clipboardSwf = SKIN_DIR+'js/syntaxhighlighter/scripts/clipboard.swf';
 			SyntaxHighlighter.all();
 		}
 	},
 	/** Collects link types from head element. */
 	linkattrs : function(){
+		var i, len;
 		var links = $('link[rel]');
-		for(var i=0,n=links.length; i<n; i++){
+		for(i = 0, len = links.length; i < len ; i++ ){
 			var link = links[i];
 			switch(link.rel){
 				case 'canonical':
@@ -1787,7 +1946,7 @@ $(window).bind("resize", autoResizer);
 					this.index_title = link.title;
 					break;
 				case 'alternate':
-					if(link.hreflang == 'en'){ this.hasEversion = true; }
+					if(link.hreflang === 'en'){ this.hasEversion = true; }
 					break;
 				case 'transformation':
 					this.grddltrans = link.href;
@@ -1818,22 +1977,22 @@ $(window).bind("resize", autoResizer);
 		var lis = this.prepHdngs(dom);
 		var self = this;
 		this.genTocDiv(lis);
-		$(document).keypress(function(elem){
+		$(_document).keypress(function(elem){
 			var key = elem.which;	// 押されたキーのコードを取得
 			var key_label = String.fromCharCode(key);	// キーのラベル（ESCキーなどは取得できない）
 
-			if(elem.target.nodeName.match(/(input|textarea)/i)){
-				if (key == 27){return false;}
+			if(elem.target.nodeName.match(/(input|textarea)/i) !== -1){
+				if (key === 27){return false;}
 				return true;	// inputタグ、textareaタグ内ではキーバインド取得を無効化（ただしESCキーは除外）
 			}
 
-		//	console.log(key,key_label);
+			//	console.log(key,key_label);
 			
 			switch(key_label){
 				case '?':
 					// ?キーが押された場合ヘルプページへ移動
-					if(location.href.indexOf("Help") == -1 && confirm("Go to help/search page ?")){
-						location.href= pukiwiki_skin.help;
+					if(location.href.indexOf("Help") === -1 && confirm("Go to help/search page ?")){
+						location.href= pukiwiki.help;
 					}else{
 						alert("This key should bring you our help, i.e. this page :-)");
 					}
@@ -1930,8 +2089,8 @@ $(window).bind("resize", autoResizer);
 				default:
 					if(self.toc){
 						if (self.toc.style.display !== 'none'){
-							if(key == 27 || key == 47){
-								pukiwiki_skin._hideToc(); //Esc, slash
+							if(key === 27 || key === 47){
+								pukiwiki._hideToc(); //Esc, slash
 /*
 							}else if(key >= 48 && key <=57){ //0-9
 								key -= 48;
@@ -1943,8 +2102,8 @@ $(window).bind("resize", autoResizer);
 */
 							}
 						}else{
-							if(key == 47) {
-								$(self.toc).css('top',$(window).scrollTop() + 'px').css('left',$(window).scrollLeft() + 'px').fadeIn("fast");	// /キー
+							if(key === 47) {
+								$(self.toc).css('top',$(_window).scrollTop() + 'px').css('left',$(_window).scrollLeft() + 'px').fadeIn("fast");	// /キー
 							}
 						}
 					}
@@ -1962,10 +2121,10 @@ $(window).bind("resize", autoResizer);
 		var lis = '';
 		var hd = $(prefix+'h2');
 		var tocs = $(prefix+'.contents ul').removeAttr('class').removeAttr('style');
+		
 		var ptocImg = '<img src="'+this.image_dir+'toc.png" class="tocpic" title="Table of Contents of this page" alt="Toc" />';
 //		var ptocMsg = "Click heading, and Table of Contents will pop up";
 		var self = this;
-		
 		if(tocs.length !== 0){
 			// #contentsが呼び出されているときは、その内容をTocに入れる。
 			lis = '<ol>'+tocs.html()+'</ol>';
@@ -1985,13 +2144,14 @@ $(window).bind("resize", autoResizer);
 			// 通常時の動作。h2タグのみリスティング
 			var li = [];
 			hd.each(function(index){
-				var xid = $(this).attr('id');
-				if (!xid){ $(this).attr('id','_genid_'+index); }
-				$(this).html($(this).html()+ptocImg);
-				li[index] = '<li><a href="#'+xid+'">'+$(this).text()+'</a></li>';
+				var $this = $(this);
+				var xid = $this.attr('id');
+				if (!xid){ $this.attr('id','_genid_'+index); }
+				$this.html($this.html()+ptocImg);
+				li[index] = '<li><a href="#'+xid+'">'+$this.text()+'</a></li>';
 			});
 			lis = '<ol>'+li.join("\n")+'</ol>';
-		}else if($.query.get('cmd').match(/list|backup/)){
+		}else if($.query.get('cmd').match(/list|backup/) !== -1){
 			// おまけ。一覧ではトップのナビを入れる。
 			lis = '<div style="text-align:center;">'+$('#top').html()+'</div>';
 			$(prefix+'#top').html($(prefix+'#top').html()+ptocImg);
@@ -2001,7 +2161,7 @@ $(window).bind("resize", autoResizer);
 	},
 	/** generate the popup TOC division */
 	genTocDiv : function(lis){
-		this.toc = document.createElement("div");
+		this.toc = _document.createElement("div");
 		this.toc.id = 'poptoc';
 		$(this.toc)
 			.addClass('ui-widget ui-corner-all noprint')
@@ -2010,13 +2170,13 @@ $(window).bind("resize", autoResizer);
 			.css('position','absolute')
 			.css('z-index',1)
 			.html([
-			'<h1><a href="#">'+$('h1#title').text()+'</a><abbr title="Table of Contents">[TOC]</span></h1>',
+			'<h1><a href="#">'+$('h1#title').text()+'</a><abbr title="Table of Contents">[TOC]</abbr></h1>',
 			lis.replace(/href/g,'tabindex="1" href'),
 			this.getNaviLink()
 		].join(''));
 
-		document.body.appendChild(this.toc);
-		$(document).click(this.popToc);
+		_document.body.appendChild(this.toc);
+		$(_document).click(this.popToc);
 		this.calcObj(this.toc,300);
 	},
 /** determin the size of popup TOC */
@@ -2029,7 +2189,7 @@ $(window).bind("resize", autoResizer);
 		o.width = o.offsetWidth;
 		if(o.width > maxw){
 			o.width = maxw;
-			if(!jQuery.browser.safari){ o.style.width = maxw + "px"; }	// Safari xhtml+xml
+			if(!$.browser.safari){ o.style.width = maxw + "px"; }	// Safari xhtml+xml
 		}
 		o.height = o.offsetHeight;
 		o.style.display = "none";
@@ -2047,24 +2207,24 @@ $(window).bind("resize", autoResizer);
 		};
 
 		var navi = [
- 			'&lt;&lt;',
- 			genNavi('Prev page', this.prev, this.prev_title),
- 			' | ',
- 			genNavi('Up',this.up, this.up_title),
- 			' | ',
- 			genNavi('Next page', this.next, this.next_title),
- 			'&gt;&gt;',
- 			'<br />',
- 			'[ ',
- 			genNavi('Home', this.home, this.home_title),
- 			' | ',
- 			genNavi('Index', this.index, this.index_title),
- 			' | ',
- 			genNavi('Search', this.search, this.search_title),
- 			' | ',
- 			genNavi('Help', this.help, this.help_title),
- 			' ]'
- 		].join('');
+			'&lt;&lt;',
+			genNavi('Prev page', this.prev, this.prev_title),
+			' | ',
+			genNavi('Up',this.up, this.up_title),
+			' | ',
+			genNavi('Next page', this.next, this.next_title),
+			'&gt;&gt;',
+			'<br />',
+			'[ ',
+			genNavi('Home', this.home, this.home_title),
+			' | ',
+			genNavi('Index', this.index, this.index_title),
+			' | ',
+			genNavi('Search', this.search, this.search_title),
+			' | ',
+			genNavi('Help', this.help, this.help_title),
+			' ]'
+		].join("");
 
 		return (navi ?  "<p class='nav'>" + navi + "</p>" : "");
 	},
@@ -2073,22 +2233,21 @@ $(window).bind("resize", autoResizer);
 	popToc : function(ev){
 		var tg;
 		if (!ev){ ev = event; }
-		tg = (window.event) ? ev.srcElement : ev.target;
-
-
+		tg = (_window.event) ? ev.srcElement : ev.target;
 		if(ev.altKey){
-			pukiwiki_skin._dispToc(ev,tg,0);
-		}else if(tg.className=='tocpic'){
-			pukiwiki_skin._dispToc(ev,tg,1);
+			pukiwiki._dispToc(ev,tg,0);
+		}else if(tg.className === 'tocpic'){
+			pukiwiki._dispToc(ev,tg,1);
 		}else{
-			pukiwiki_skin._hideToc(ev);
+			pukiwiki._hideToc(ev);
 		}
 	},
 	// popuptocでクリックした項目をハイライトさせる
 	setCurPos : function(tg,type){
-		var tid = (type==1) ? tg.getAttribute("id") :
-			(tg.parentNode.getAttribute("id") ? tg.parentNode.getAttribute("id") :
-				(tg.parentNode.firstChild.getAttribute ? tg.parentNode.firstChild.getAttribute("id") :''));
+		var pn = tg.parentNode;
+		var tid = (type ===1) ? tg.getAttribute("id") :
+			(pn.getAttribute("id") ? pn.getAttribute("id") :
+				(pn.firstChild.getAttribute ? pn.firstChild.getAttribute("id") :''));
 		return tid;
 	},
 	nodeText : function(m){
@@ -2101,11 +2260,11 @@ $(window).bind("resize", autoResizer);
 		if(typeof(m) !== 'object'){
 			return m;
 		}
-		var res;
-		for(var i=0,n=m.childNodes;i<n.length;i++){
-			if(n.item(i).nodeType == 3){
+		var res, i, len, n = m.childNodes;
+		for(i = 0, len = n.length; i < len ; i++ ){
+			if(n.item(i).nodeType === 3){
 				res += n.item(i).data;
-			}else if(n.item(i).nodeType == 1){
+			}else if(n.item(i).nodeType === 1){
 				res += this.nodeText(n.item(i));
 			}
 		}
@@ -2114,14 +2273,14 @@ $(window).bind("resize", autoResizer);
 	},
 	_dispToc : function(ev,tg,type){
 		var doc = {
-			x:ev.clientX + $(window).scrollLeft(),
-			y:ev.clientY + $(window).scrollTop()
+			x:ev.clientX + $(_window).scrollLeft(),
+			y:ev.clientY + $(_window).scrollTop()
 		};
 		var scr = {
 			x: ev.pageX,
 			y: ev.pageY,
-			w: $(window).width(),
-			h: $(window).height()
+			w: $(_window).width(),
+			h: $(_window).height()
 		};
 
 		var h = this.toc.height;
@@ -2135,7 +2294,7 @@ $(window).bind("resize", autoResizer);
 			top = ((scr.h - scr.y > h) ? doc.y : ((scr.y > h) ? (doc.y - h) :((scr.y < scr.h/2) ? (doc.y - scr.y) : (doc.y + scr.h - scr.y - h))));
 		}
 		$(this.toc).css('top', top + "px").css('left',((scr.x < scr.w - w) ? doc.x : (doc.x - w) )+ 'px');
-		if(type){ pukiwiki_skin.setCurPos(tg,type); }
+		if(type){ pukiwiki.setCurPos(tg,type); }
 		$(this.toc).fadeIn("fast");
 	},
 	_hideToc : function(ev){
@@ -2155,27 +2314,12 @@ $(window).bind("resize", autoResizer);
 	}
 };
 
-/*************************************************************************************************/
-// default.jsのオーバーライド
-function pukiwiki_area_highlite(id,mode){
-	if (mode){
-		document.getElementById(id).className = "area_on";
-	}else{
-		document.getElementById(id).className = "area_off";
-	}
-}
-
-// Helper function.
-function pukiwiki_show_fontset_img(){
-	pukiwiki_skin.assistant();
-}
-
 // Common Plus function.
 function open_uri(href, frame){
 	if (!frame){
 		return false;
 	}
-	window.open(href, frame);
+	_window.open(href, frame);
 	return false;
 }
 
@@ -2196,11 +2340,70 @@ $.fn.serializeObject = function(){
 	return o;
 };
 
+/*
+ * jQuery Disable On Submit Plugin
+ * http://www.evanbot.com/article/jquery-disable-on-submit-plugin/13
+ *
+ * Copyright (c) 2009 Evan Byrne (http://www.evanbot.com)
+ * Modified by Logue
+ */
+$.fn.disableOnSubmit = function(disableList){
+	var $list = (disableList === null) ? 'input[type=submit],input[type=button],input[type=reset],button' : disableList;
+
+	// Makes sure button is enabled at start
+	$(this).find($list).removeAttr('disabled');
+
+	$(this).submit(function(){
+		$(this).find($list).attr('disabled','disabled');
+	});
+	return this;
+};
+
+/* jquery Scroll Lock
+ * http://tockri.blog78.fc2.com/blog-entry-117.html
+ */
+var ScrollLock = {
+	lock: function() {
+		var $win = $(_window);
+		var vp = {
+			width: $win.width(),
+			height: $win.height(),
+			top: _document.body.scrollTop  || _document.documentElement.scrollTop,
+			left: _document.body.scrollLeft || _document.documentElement.scrollLeft
+		};
+		ScrollLock.viewport = vp;
+		var rect = [
+			vp.top + "px",
+			vp.left + vp.width + "px",
+			vp.top + vp.height + "px",
+			vp.left + "px"
+		];
+		$("body").css({
+			clip: "rect(" + rect.join(",") + ")",
+			position:"absolute",
+			overflow:"hidden",
+			top:-vp.top,
+			left:0
+		});
+	},
+	unlock: function() {
+		$("body").css({
+			//clip: "",
+			position:"static",
+			overflow:"",
+			top:0,
+			left:0
+		});
+		var vp = ScrollLock.viewport;
+		_window.scrollTo(vp.left, vp.top);
+	}
+};
+
 /*************************************************************************************************/
 // ブラウザの設定
 var $buoop = {
 	vs:{				// browser versions to notify
-		i:8,			// IE
+		i:7,			// IE
 		f:3,			// FF
 		o:11.00,		// Opera
 		s:5,			// Safari
@@ -2216,114 +2419,77 @@ var $buoop = {
 };
 if (DEBUG){
 	$buoop.text = 'When the version of a browser is old, the text which presses for renewal of a browser here is displayed.';
+}else if ((_document.compatMode || "") !== "CSS1Compat"){
+	$buoop.text = 'Please set native rendering mode.';
 }
 
-(function(){
-	// フレームハイジャック対策
-	if( self !== top ){ top.location = self.location; }
-});
-
 // onLoad/onUnload
-$(document).ready(function(){
+$(_document).ready(function(){
 	$.getScript('http://browser-update.org/update.js');
-
-	var href = $('link[rel=canonical]')[0].href;
+	
+	// Google Analytics
 	if (typeof(GOOGLE_ANALYTICS) !== 'undefined'){
 		$.ajaxGA.init(GOOGLE_ANALYTICS, true);
 	}
-/*
-	$.getScript('http://wd.sharethis.com/button/buttons.js',function() {
-		stLight.options({publisher:'YOUR PUBLISHER KEY'})
-		$('#body').prepend([
-			'<p style="float:right;">',
-			'<span class="st_facebook_vcount" st_title="" st_url="'+href+'" displayText="Share"></span>',
-			'<span class="st_twitter_vcount" st_title="" st_url="'+href+'" displayText="Tweet"></span>',
-			'<span class="st_gbuzz_vcount" st_title="" st_url="'+href+'" displayText="Buzz"></span>',
-//			'<span class="st_stumbleupon_vcount" st_title="" st_url="'+href+'" displayText="share"></span>',
-//			'<span class="st_sharethis_vcount" st_title="" st_url="'+href+'" displayText="share"></span>',
-			'</p>']
-		.join("\n"));
-	});
-*/
-	// FaceBookを実行
-	if (typeof(FACEBOOK_APPID) !== 'undefined'){
-		$('body').append('<div id="fb-root"></div>');
-		if ($.query.get('cmd') === '' || !PAGE.match(/^:|FormatRules|RecentChanges|RecentDeleted|InterWikiName|AutoAliasName|MenuBar|SideBar|Navigation|Glossary/i)){
-//			$('#body').append('<hr /><div><fb:like href="'+href+'" show_faces="true"></fb:like><fb:comments href="'+href+'"></fb:comments></div>');
-		}
-		$.getScript(document.location.protocol + '//connect.facebook.net/'+LANG+'/all.js',function() {
-			FB.init({appId: FACEBOOK_APPID, status: true, cookie: true, xfbml: true});
-			FB.Event.subscribe('auth.login', function() {
-				window.location.reload();
-			});
-		});
-		
-	}
 
-	if (typeof(pukiwiki_skin.custom) == 'object'){
-		if( typeof(pukiwiki_skin.custom.before_init) == 'function'){
-			pukiwiki_skin.custom.before_init();
+	var f;
+	while( f = pkwkBeforeInit.shift() ){
+		if( f != null ){
+			f();
 		}
-		pukiwiki_skin.init();
-		if (typeof(pukiwiki_skin.custom.init) == 'function'){
-			pukiwiki_skin.custom.init();
-		}
-	}else{
-		pukiwiki_skin.init();
 	}
+	f = null;
+
+	pukiwiki.init();
 
 	tzCalculation_LocalTimeZone(location.host,false);
-});
-
-$(window).unload(function(){
-	if (typeof(pukiwiki_skin.custom) == 'object'){
-		if( typeof(pukiwiki_skin.custom.before_unload) == 'function'){
-			pukiwiki_skin.custom.before_unload();
+	while( f = pkwkInit.shift() ){
+		if( f != null ){
+			f();
 		}
-		pukiwiki_skin.unload();
-		if (typeof(pukiwiki_skin.custom.unload) == 'function'){
-			pukiwiki_skin.custom.unload();
-		}
-	}else{
-		pukiwiki_skin.unload();
 	}
 });
-/*
-$('head').ie9ify({
-	applicationName: 'PukiWiki Advance',
-	favIcon: 'favicon.ico',
-	navColor: 'Blue',
-	startUrl: SCRIPT,
-	tooltip: 'mySite',
-	tasks: [
-		{
-			'name': 'Twitter',
-			'action': 'http://twitter.com/brandonsatrom',
-			'icon': ''
-		},
-		{
-			'name': 'User InExperience',
-			'action': 'http://www.userinexperience.com',
-			'icon': ''
+
+$(_window).unload(function(){
+	var f;
+	while( f = pkwkBeforeUnload.shift() ){
+		if( f != null ){
+			f();
 		}
-	]
+	}
+	f = null;
+
+	pukiwiki.unload();
+	while( f = pkwkUnload.shift() ){
+		if( f != null ){
+			f();
+		}
+	}
 });
-*/
+
 // usage: log('inside coolFunc',this,arguments);
 // paulirish.com/2009/log-a-lightweight-wrapper-for-consolelog/
-window.log = function(){
+_window.log = function(){
 	log.history = log.history || [];	// store logs to an array for reference
 	log.history.push(arguments);
 	if(this.console){
 		console.log( Array.prototype.slice.call(arguments) );
 	}
 };
+(function (con) {
+	// the dummy function
+	function dummy() {};
 
-// catch all document.write() calls
+	for(var methods = ['error','info','log','warn'], func; func = methods.pop();) {
+		con[func] = con[func] || dummy;
+	}
+}(_window.console=_window.console = {}));
+
+// catch all _document.write() calls
 (function(doc){
 	var write = doc.write;
 	doc.write = function(q){
 		log('document.write(): ',arguments);
 		if (/docwriteregexwhitelist/.test(q)){ write.apply(doc,arguments); }
 	};
-})(document);
+})(_document);

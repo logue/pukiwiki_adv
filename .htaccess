@@ -72,12 +72,12 @@ AddDefaultCharset UTF-8
 # Force the latest IE version, in various cases when it may fall back to IE7 mode
 #  github.com/rails/rails/commit/123eb25#commitcomment-118920
 # Use ChromeFrame if it's installed for a better experience for the poor IE folk
-#<IfModule mod_setenvif.c>
-#	<IfModule mod_headers.c>
-#		BrowserMatch MSIE ie
-#		Header set X-UA-Compatible "IE=Edge,chrome=1" env=ie
-#	</IfModule>
-#</IfModule>
+<IfModule mod_setenvif.c>
+	<IfModule mod_headers.c>
+		BrowserMatch MSIE ie
+		Header set X-UA-Compatible "IE=Edge" env=ie
+	</IfModule>
+</IfModule>
 
 # hacks.mozilla.org/2009/07/cross-site-xmlhttprequest-with-cors/
 # Disabled. Uncomment to serve cross-domain ajax requests
@@ -186,3 +186,11 @@ FileETag None
 AddDefaultCharset utf-8
 # force utf-8 for a number of file formats
 AddCharset utf-8 .html .css .js .xml .json .rss
+
+# Enable X-Sendfile Header
+<IfModule mod_xsendfile.c>
+	<Files *.php>
+		XSendFile On
+		XSendFileAllowAbove On
+	</Files>
+</IfModule>

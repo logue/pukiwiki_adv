@@ -33,9 +33,8 @@ function plugin_list_getlist($withfilename = FALSE, $listcmd = 'read')
 	global $non_list, $whatsnew;
 
 	if (DEBUG === false){
-		$pages = array_diff(auth::get_existpages(),array($whatsnew));
-		if (!$withfilename)
-			$pages = array_diff($pages, preg_grep('/' . $non_list . '/S', $pages));
+		$pages = (!$withfilename) ?
+			array_diff($pages, preg_grep('/' . $non_list . '/S', $pages)) : array_diff(auth::get_existpages(),array($whatsnew));
 	}else{
 		$pages = array_diff(get_existpages(),array($whatsnew));
 	}

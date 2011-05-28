@@ -1,0 +1,12 @@
+TypePad 絵文字アイコン画像 by Six Apart Ltd is licensed under a Creative Commons 表示 2.1 日本 License.
+Permissions beyond the scope of this license may be available at http://start.typepad.jp/typecast/.
+
+また、絵文字画像データは、同時に公開されるTypePadの携帯向けコンテンツ表示モジュール（TypeCast）にも付属しています。これらの携帯向けモジュールは、GPLライセンスで公開されおり、付属する絵文字画像データにも同じくGPLライセンスが適用されます。
+
+従いまして、絵文字画像データはクリエイティブ・コモンズとGPLの、デュアルライセンスでの公開となります。利用しやすいライセンスを選択してご利用ください。
+
+クリエイティブ・コモンズについては以下のサイトを参照してください。
+http://creativecommons.jp/faq
+
+GPLについては以下のサイトを参照してください。
+http://www.gnu.org/licenses/gpl.html

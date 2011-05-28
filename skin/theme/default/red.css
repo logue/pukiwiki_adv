@@ -6,7 +6,7 @@
 // Original version written by miko and upk.
 // Adv version by Logue.
 // 
-// $Id: blue.css,v 1.0.2 2011/04/09 17:51:00 Logue Exp $
+// $Id: blue.css,v 1.0.3 2011/05/23 08:07:00 Logue Exp $
 //
 */
 
@@ -42,7 +42,7 @@ a:hover{
 	background-color:#EECCDD;
 }
 
-h1.title{
+#hgroup h1{
 	color:#cc0000;
 }
 
@@ -123,11 +123,7 @@ fieldset {
 }
 
 /* Layout */
-td.ltable{
-	background-color: #FFEEFC;
-}
-
-td.rtable{
+#main, #menubar, #sidebar{
 	background-color: #FFEEFC;
 }
 

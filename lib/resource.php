@@ -63,7 +63,9 @@ $_string = array(
 	'not_writable'		=> T_('<var>%s</var> is not found or not writable.'),
 	'not_found'			=> T_('Page <var>%s</var> was not found.'),
 	'header_sent'		=> T_('Headers already sent at <var>%s</var>, line: <var>%s</var>.'),
-	'blacklisted'		=> T_('Writing was limited by <strong>IPBL</storng> (Blocking SPAM).')
+	'blacklisted'		=> T_('Writing was limited by <strong>IPBL</storng> (Blocking SPAM).'),
+	'script_error'		=> T_('A fatal error has occured at line <var>%1s</var> in file <var>%2s</var>.'),
+	'script_abort'		=> T_('Script execution has been aborted.')
 );
 
 $_button = array(
@@ -88,7 +90,8 @@ $_button = array(
 	'template'				=> T_('Use page as template'),
 	'and'					=> T_('AND'),
 	'or'					=> T_('OR'),
-	'cookie'				=> T_('Save to cookie')
+	'cookie'				=> T_('Save to cookie'),
+	'connect'				=> T_('Connect to %s')
 );
 
 $_title = array(
@@ -143,10 +146,24 @@ $_LANG['skin'] = array(
 	'log_down'	=> T_('Download Log'),
 	'log'		=> T_('Log'),
 	'logo'		=> T_('Logo'),
+	'formatrule'=> T_('Text Formatting Rules'),
 
 	'menu'		=> T_('MenuBar'),
 	'side'		=> T_('SideBar'),
 	'glossary'	=> T_('Glossary')
 );
 
+$_error_type = array(
+	1 =>	T_('Error'),
+	2 =>	T_('Warning'),	// x
+	4 =>	T_('Parsing Error'),
+	8 =>	T_('Notice'),	// x
+	16 =>	T_('Core Error'),
+	32 =>	T_('Core Warning'),	// x
+	64 =>	T_('Compile Error'),
+	128 =>	T_('Compile Warning'),	// x
+	256 =>	T_('User Error'),
+	512 =>	T_('User Warning'),	// x
+	1024 =>	T_('User Notice')	// x
+);
 ?>

@@ -2,7 +2,7 @@
 // xxxloggue skin script.
 // Copyright (c)2010 PukiWiki Advance Developers Team
 
-// $Id: default.js,v 1.0.0 2010/08/23 14:35:00 Logue Exp$
+// $Id: default.js,v 1.0.2 2011/05/29 00:03:00 Logue Exp$
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -27,36 +27,39 @@ var colorset = [
 // var symbol = '&#x25fc;';
 var symbol = '■';
 var default_set_num = 0;
-pukiwiki_skin.custom = {
-	// スキンスクリプトのinitが実行される前に実行される関数
-	before_init : function(){
-		// クッキーが定義されていないときは、blueとし、クッキーに保存
-		if (!$.cookie('pkwk-colorset')){
-			$.cookie('pkwk-colorset', default_set_num,{expires:30,path:'/'});
-		}
-		var color = colorset[$.cookie('pkwk-colorset')];
-		document.getElementById('coloring').href = SKIN_DIR+'theme/'+THEME_NAME+'/'+color[0]+'.css';
-		document.getElementById('ui-theme').href = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/themes/'+color[1]+'/jquery-ui.css';
 
-		// カラーセットのリンクボタンを生成
-		var buffer = '';
-		$('#header').before('<p id="colorset" style="text-align:right; font-size:12px;" class="noprint"></p>');
-		for (var n=0; n<colorset.length; n++){
-			
-			buffer += '<span style="color:'+colorset[n][0]+';cursor:pointer;" id="colorset-'+n+'">'+symbol+'</span>&nbsp;';
-		}
-		$('#colorset').html('Color: '+buffer);
-	},
-	// スキンスクリプトのinitが実行された前に実行される関数
-	init : function(){
-		// カラーセットのリンクボタンにイベント割り当て
-		$('#colorset span').click(function(){
-			var n = this.id.split('-')[1];
-			document.getElementById('coloring').href = SKIN_DIR+'theme/'+THEME_NAME+'/'+colorset[n][0]+'.css';
-			document.getElementById('ui-theme').href = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/themes/'+colorset[n][1]+'/jquery-ui.css';
-			$.cookie('pkwk-colorset',n,{expires:30,path:'/'});
-		});
-	},
+// スキンスクリプトのinitが実行される前に実行される関数
+pukiwiki.register.before_init( function(){
+	// クッキーが定義されていないときは、blueとし、クッキーに保存
+	if (!$.cookie('pkwk-colorset')){
+		$.cookie('pkwk-colorset', default_set_num,{expires:30,path:'/'});
+	}
+	var color = colorset[$.cookie('pkwk-colorset')];
+	document.getElementById('coloring').href = SKIN_DIR+'theme/'+THEME_NAME+'/'+color[0]+'.css';
+	document.getElementById('ui-theme').href = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/themes/'+color[1]+'/jquery-ui.css';
+
+	// カラーセットのリンクボタンを生成
+	var buffer = '';
+	$('#header').before('<p id="colorset" style="text-align:right; font-size:12px;" class="noprint"></p>');
+	for (var n=0; n<colorset.length; n++){
+		
+		buffer += '<span style="color:'+colorset[n][0]+';cursor:pointer;" id="colorset-'+n+'">'+symbol+'</span>&nbsp;';
+	}
+	$('#colorset').html('Color: '+buffer);
+});
+
+// スキンスクリプトのinitが実行された前に実行される関数
+pukiwiki.register.init( function(){
+	// カラーセットのリンクボタンにイベント割り当て
+	$('#colorset span').click(function(){
+		var n = this.id.split('-')[1];
+		document.getElementById('coloring').href = SKIN_DIR+'theme/'+THEME_NAME+'/'+colorset[n][0]+'.css';
+		document.getElementById('ui-theme').href = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/themes/'+colorset[n][1]+'/jquery-ui.css';
+		$.cookie('pkwk-colorset',n,{expires:30,path:'/'});
+	});
+});
+
+pukiwiki.custom = {
 	// スキンスクリプトのunloadが実行される前に実行される関数
 	before_unload : function(){
 	},
@@ -66,4 +69,6 @@ pukiwiki_skin.custom = {
 	// Superfish設定
 	// http://users.tpg.com.au/j_birch/plugins/superfish/#options
 //	suckerfish : { }
-}
+};
+
+console.dir(pukiwiki.custom);

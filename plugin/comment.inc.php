@@ -197,14 +197,16 @@ function plugin_comment_convert()
 	list($user, $link, $disabled) = plugin_comment_get_nick();
 
 	if (in_array('noname', $options)) {
-		$nametags = '<label for="p_comment_comment_' . $comment_all_no . '">' .
-			$_msg_comment . '</label>';
+//		$nametags = '<label for="p_comment_comment_' . $comment_all_no . '">' .
+//			$_msg_comment . '</label>';
 	} else {
-		$nametags = '<label for="p_comment_name_' . $comment_all_no . '">' .
-			$_btn_name . '</label>' .
+//		$nametags = '<label for="p_comment_name_' . $comment_all_no . '">' .
+//			$_btn_name . '</label>' .
+
+		$nametags =
 			'<input type="text" name="name" id="p_comment_name_' .
 			$comment_all_no .  '" size="' . PLUGIN_COMMENT_SIZE_NAME .
-			'" value="'.$user.'"'.$disabled.' />' . "\n";
+			'" value="'.$user.'"'.$disabled.' placeholder="'.$_btn_name.'" />' . "\n";
 	}
 
 	$nodate = in_array('nodate', $options) ? '1' : '0';

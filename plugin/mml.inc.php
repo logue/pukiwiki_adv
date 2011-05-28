@@ -80,32 +80,6 @@ HTML;
 
 		$jsmml_path = JSMML_PATH;
 		$js_tags[] = array('type'=>'text/javascript', 'src'=>$jsmml_path.'/mml.js');
-		$css_blocks[] = <<< CSS
-div.mml-player ul{
-	margin:1%;
-	padding:0px;
-}
-
-div.mml-player ul li{
-	display:none;
-}
-
-div.mml-player ul li{
-	margin: 2px;
-	cursor: pointer;
-	display:block;
-	float: left;
-	list-style: none;
-	height:1.2em;
-}
-div.mml-player ul li.ui-state-default{
-	width:1.2em;
-}
-div.mml-player ul li.mml-progress{
-	width:15em;
-}
-
-CSS;
 	}
 	$mml_count++;
 	return $html;

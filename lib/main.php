@@ -36,6 +36,13 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+if (isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
+	if (preg_match("/{$etag}/", $_SERVER['HTTP_IF_NONE_MATCH'])) {
+		header('HTTP/1.1 304 Not Modified');
+		exit;
+	}
+}
+
 if (! defined('DATA_HOME')) define('DATA_HOME', '');
 
 /////////////////////////////////////////////////
@@ -71,8 +78,12 @@ require(LIB_DIR . 'simple_html_dom.php');
 
 ini_set("memory_limit", "128M");  
 
-if (! extension_loaded('mbstring')) die('PukiWiki Adv. needs mbstring extention.');
-if (! extension_loaded('json')) require(LIB_DIR . 'JSON.php');	// JSON対応 by Logue
+if (! extension_loaded('mbstring')){
+	throw new Exception('PukiWiki Adv. needs the mbstring extension.');
+}
+if (!function_exists('json_decode')) {
+	throw new Exception('PukiWiki Adv. needs the JSON PHP extension.');
+}
 require(LIB_DIR . 'gettext/gettext.inc');
 
 // Defaults

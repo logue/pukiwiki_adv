@@ -442,7 +442,7 @@ function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', 
 */
 	$cnt = 0;
 	$retval = $contents = array();
-	$retval[] = '<ul class="page_list">';
+	$retval[] = '<div id="page_list"><ul>';
 	foreach ($array as $_initial => $pages) {
 		ksort($pages, SORT_STRING);
 		if ($list_index) {
@@ -454,7 +454,7 @@ function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', 
 			}
 			$retval[] = ' <li><a id="head_' . $cnt .
 				'" href="#top_' . $cnt .
-				'"><strong>' . $_initial . '</strong></a>';
+				'" rel="initial">' . $_initial . '</a>';
 			$retval[] = '  <ul>';
 
 			$contents[] = '<a id="top_' . $cnt .
@@ -467,7 +467,7 @@ function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', 
 			$retval[] = ' </li>';
 		}
 	}
-	$retval[] = '</ul>';
+	$retval[] = '</ul></div>';
 	unset($array);
 
 	// Insert a table of contents
@@ -551,50 +551,60 @@ EOD;
 //	exit();
 	die();
 }
-
+/*
 function pkwkErrorHandler($errno, $errstr, $errfile, $errline){
-	global $info;
-	if (!(error_reporting() & $errno)) {
-		// error_reporting 設定に含まれていないエラーコードです
-		return;
-	}
-
-	switch ($errno) {
-		case E_USER_ERROR:
-			die_message(
-				"[<code>$errno</code>] <samp>$errstr</samp><br />\n".
-				"  Fatal error on line <var>$errline</var> in file <var>$errfile</var>."
-			);
-			break;
-
-		case E_USER_WARNING:
-			$msg = '<span class="ui-icon ui-icon-alert" style="float:left;"></span><strong>WARNING</strong> [<code>'.$errno.'</code>] <samp>'.$errstr.'</samp>'."\n";
-			break;
-
-		case E_USER_NOTICE:
-			$msg ='<span class="ui-icon ui-icon-info" style="float:left;"></span><strong>NOTICE</strong> [<code>'.$errno.'</code>] <samp>'.$errstr.'</samp>'."\n";
-			break;
-
-		default:
-			$msg ='<span class="ui-icon ui-icon-info" style="float:left;"></span>Unknown error type: [<code>'.$errno.'</code>] <samp>'.$errstr.'</samp>'."\n";
-			break;
-	}
+	global $info, $_string, $_error_type;
+	$die = false;
+	$msg = '';
 	
-	if (headers_sent()){
-		$info[] = $msg;
-	}else{
-		echo <<<EOD
+	if (DEBUG !== true || PKWK_WARNING !== true){	// デバッグモード時および、警報表示モード時以外はエラーを
+		if (!(error_reporting() & $_error_type)) {
+			// error_reporting 設定に含まれていないエラーコードです
+			return;
+		}
+
+		switch ($errno) {
+			case E_ERROR:
+			case E_CORE_ERROR:
+			case E_USER_ERROR:
+				$die = true;
+			case E_WARNING:
+			case E_CORE_WARNING:
+			case E_USER_WARNING:
+				$msg = '<span class="ui-icon ui-icon-alert" style="float:left;"></span>';
+				break;
+			default:
+				$msg ='<span class="ui-icon ui-icon-info" style="float:left;"></span>';
+				break;
+		}
+		$msg .= (!isset($_error_type[$errno])) ? '' : '<strong>'.$_error_type[$errno].'</strong>';
+		
+		$msg .= '<output>'.htmlsc($errstr).'</output><br />'."\n".
+			'Fatal error on line <var>'.$errline.'</var> in file <var>'.$errfile.'</var>.';
+		
+		if ($die === true){
+			$msg .= 'Script execution has been aborted.';
+		}
+		
+		$ret = <<<EOD
 <div class="message_box ui-state-error ui-corner-all">
 	<p>$msg</p>
 </div>
 EOD;
+		if ($die === true){
+			die($ret);
+		}else if (headers_sent()){
+			$info[] = $msg;
+		}else{
+			echo $ret;
+		}
 	}
 
-	/* PHP の内部エラーハンドラを実行しません */
+	// PHP の内部エラーハンドラを実行しません
 	return true;
 }
 set_error_handler("pkwkErrorHandler");
-
+*/
 // Have the time (as microtime)
 function getmicrotime()
 {

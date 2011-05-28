@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: init.php,v 1.57.3 2011/02/05 09:19:00 Logue Exp $
+// $Id: init.php,v 1.57.4 2011/05/11 07:54:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -15,7 +15,7 @@
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
 define('S_VERSION', 'v1.0 alpha');
-define('S_REVSION', '20110205');
+define('S_REVSION', '20110511');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &#169; 2010-2011' .
@@ -26,6 +26,11 @@ define('S_COPYRIGHT',
 
 define('GENERATOR', S_APPNAME.' '.S_VERSION);
 
+defined('DEBUG') or define('DEBUG', false);
+defined('PKWK_WARNING') or define('PKWK_WARNING', false);
+defined('ROOT_URI') or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');
+defined('WWW_HOME') or define('WWW_HOME', '');
+defined('PLUS_THEME') or define('PLUS_THEME',	'default');
 /////////////////////////////////////////////////
 // Init server variables
 
@@ -363,8 +368,9 @@ if (! isset($vars['cmd']) && ! isset($vars['plugin'])) {
 // $WikiName = '(?<![[:alnum:]])(?:[[:upper:]][[:lower:]]+){2,}(?![[:alnum:]])';
 // $WikiName = '(?<!\w)(?:[A-Z][a-z]+){2,}(?!\w)';
 
-// BugTrack/304暫定対処
-$WikiName = '(?:[A-Z][a-z]+){2,}(?!\w)';
+// BugTrack2/24対処（éなどの文字が使えないため）
+$WikiPart = '[A-Z](?:[a-z]|\\xc3[\\x9f-\\xbf])+'; // \c3\9f through \c3\bf correspond to \df through \ff in ISO8859-1
+$WikiName = "(?:$WikiPart(?:$WikiPart)+)(?!\w)";
 
 // $BracketName = ':?[^\s\]#&<>":]+:?';
 $BracketName = '(?!\s):?[^\r\n\t\f\[\]<>#&":]+:?(?<!\s)';
@@ -394,8 +400,11 @@ if ($usefacemark) $line_rules = array_merge($facemark_rules,$line_rules);
 unset($facemark_rules);
 
 // 実体参照パターンおよびシステムで使用するパターンを$line_rulesに加える
-//$entity_pattern = '[a-zA-Z0-9]{2,8}';
-$entity_pattern = load_entities();
+// XHTML5では&lt;、&gt;、&amp;、&quot;と、&apos;のみ使える。
+// http://www.w3.org/TR/html5/the-xhtml-syntax.html
+
+$entity_pattern = '(?=[a-zA-Z0-9]{2,8})(?:apos|amp|lt|gt|quot)';
+//$entity_pattern = load_entities();
 
 $line_rules = array_merge(array(
 	'&amp;(#[0-9]+|#x[0-9a-f]+|' . $entity_pattern . ');' => '&$1;',
@@ -403,12 +412,13 @@ $line_rules = array_merge(array(
 ), $line_rules);
 
 //////////////////////////////////////////////////
-// JavaScriptフレームワーク設定
-define('IS_AJAX', isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
+// HTTP_X_REQUESTED_WITHヘッダーで、ajaxによるリクエストかを判別
+define('IS_AJAX', (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' || !empty($vars['ajax'])));
 
+// ajaxではない場合
 if (!IS_AJAX){
 	// スキンデーター読み込み
-	global $skin_file;
+	global $skin_file, $facebook;
 
 	if (! defined('SKIN_FILE') || ! file_exists(SKIN_FILE) || ! is_readable(SKIN_FILE)) {
 		if (! file_exists($skin_file) || ! is_readable($skin_file)) {
@@ -416,31 +426,80 @@ if (!IS_AJAX){
 		} else {
 			define('SKIN_FILE', $skin_file);
 		}
+		$skin_conf = substr($skin_file,0, -8).'ini.php';
+		if ( file_exists($skin_conf) && is_readable($skin_conf)){
+			define('SKIN_CONF', $skin_conf);
+		}
 	}
-	
+
 	// IE非実装の処理を有効化
 	if($user_agent['name'] == 'MSIE'){
+		// JSON parseなど
+		// https://github.com/douglascrockford/JSON-js
 		$default_js_libs[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/json2.js');
+		// canvasをVMLで実装
+		// http://code.google.com/p/explorercanvas/
 		$default_js_libs[] = ($user_agent['vers'] >= 8) ? array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/excanvas.compiled.js') : '';
 	}
-	
+
+	// JavaScriptフレームワーク設定
 	// google ajax api
+	// http://code.google.com/intl/ja/apis/libraries/devguide.html#Libraries
 	$google_loader = array(
-		'jquery'	=>'1.5.2',
-		'jqueryui'	=>'1.8.11',
-		'swfobject'	=>'2.2'
+/*
+		'dojo' => array(
+			'file'	=> 'dojo.xd.js',
+			'ver'	=> '1.6.0'
+		),
+		'ext-core' => array(
+			'file'	=> 'ext-core.js',
+			'ver'	=> '3.1.0'
+		),
+*/
+		'jquery' => array(
+			'file'	=> 'jquery.min.js',
+			'ver'	=> '1.6.1'
+		),
+		'jqueryui'	=> array(
+			'file'	=> 'jquery-ui.min.js',
+			'ver'	=> '1.8.13'
+		),
+		'swfobject' => array(
+			'file'	=> 'swfobject.js',
+			'ver'	=> '2.2'
+		)
 	);
 	
+	if ($x_ua_compatible == 'chrome=1'){
+		// X-UA-CompatibleでChromeをレンダリングにするよう指定した場合
+		$google_loader['chrome-frame'] = array(
+			'file'	=> 'CFInstall.min.js',
+			'ver'	=>'1.0.2'
+		);
+	}	
+
+	// application/xhtml+xml を認識するブラウザではXHTMLとして出力
+	if (PKWK_STRICT_XHTML === TRUE && strstr($_SERVER['HTTP_ACCEPT'], 'application/xhtml+xml') !== false){
+		foreach ($google_loader as $name=>$fw){
+			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'https://ajax.googleapis.com/ajax/libs/'.$name.'/'.$fw['ver'].'/'.$fw['file']);
+		}
+	}else{
+		// google.loadはdocument.write命令を使うためXHTMLにならない。
+		foreach ($google_loader as $name=>$fw){
+			$js_vars[] = 'google.load("'.$name.'","'.$fw['ver'].'");';
+		}
+	}
+		
 	// modernizrの設定
 	$modernizr = 'modernizr-1.7.min.js';
 	
-	if ($x_ua_compatible == 'chrome=1'){ $default_google_loader['chrome-frame'] = '1.0.2'; }	// X-UA-CompatibleでChromeをレンダリングにするよう指定した場合
+	
 	if (!isset($_SKIN['ui_theme'])) { $_SKIN['ui_theme'] = 'base'; }
 
 	// jQueryUIのCSS
 	$link_tags[] = array(
 		'rel'=>'stylesheet',
-		'href'=>'http://ajax.googleapis.com/ajax/libs/jqueryui/'.$google_loader['jqueryui'].'/themes/'.$_SKIN['ui_theme'].'/jquery-ui.css',
+		'href'=>'http://ajax.googleapis.com/ajax/libs/jqueryui/'.$google_loader['jqueryui']['ver'].'/themes/'.$_SKIN['ui_theme'].'/jquery-ui.css',
 		'type'=>'text/css',
 		'id'=>'ui-theme'
 	);
@@ -453,8 +512,15 @@ if (!IS_AJAX){
 		'SKIN_DIR'=>constant('SKIN_URI'),
 		'IMAGE_DIR'=>constant('IMAGE_URI'),
 		'DEFAULT_LANG'=>constant('DEFAULT_LANG'),
-		'THEME_NAME'=>constant('PLUS_THEME'),
+		'THEME_NAME'=>constant('PLUS_THEME')
 	);
+	
+	if (isset($facebook)){
+		require(LIB_DIR.'facebook.php');
+		$fb = new FaceBook($facebook);
+		$js_init['FACEBOOK_APPID'] = $fb->getAppId();
+		
+	}
 
 	if (DEBUG === true) {
 		// 読み込むsrcディレクトリ内のJavaScript
@@ -463,9 +529,9 @@ if (!IS_AJAX){
 			'swfupload','tzCalculation_LocalTimeZone',
 			
 			/* Use plugins */ 
-			'jquery.cookie','jquery.lazyload.min', 'jquery.query','jquery.scrollTo','jquery.colorbox-min','jquery.a-tools.min','jquery.superfish',
+			'jquery.cookie','jquery.lazyload', 'jquery.query','jquery.scrollTo','jquery.colorbox-min','jquery.a-tools.min','jquery.superfish',
 			'jquery.swfupload','jquery.tablesorter-min','jquery.textarearesizer','jquery.jplayer.min', 'jquery.textarea-min', 'jquery.tooltip.min',
-			'jquery.ajaxga.min', 'jquery.ie9ify.min', 'jquery.jstree.js',
+			'jquery.ajaxga.min', 'jquery.jstree', 'jquery.i18n',
 			
 			/* MUST BE LOAD LAST */
 			'skin.original'

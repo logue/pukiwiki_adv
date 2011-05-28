@@ -33,14 +33,11 @@ a {
 
 a:active {
 	color:#215dc6 !important;
-	background-color:#CCDDEE;
 }
 
 a:visited {
 	/* color:#a63d21; */
 	color:#215dc6;
-	background-color:inherit;
-	text-decoration:none;
 }
 
 a:hover {
@@ -55,7 +52,7 @@ body{
 
 blockquote{
 	padding: 0.5em;
-	margin: 0.1em 0.1em 0.1em 0.5em;
+	margin: 0.1em 0.1em 0.1em 1.5em;
 	background-color: #F0F8FF;
 	border: #CCDDFF 1px solid;
 	border-left: #CCDDFF 5px solid;
@@ -66,7 +63,7 @@ dt{
 }
 
 dd{
-	margin-left:1em;
+	margin-left:1.5em;
 	margin-bottom:0.5em;
 }
 
@@ -118,8 +115,9 @@ q{
 }
 
 ul, ol {
-	padding-left:1.5em;
-	margin:0.5em 2em;
+	padding-left:2em;
+	margin-left:1.5em;
+	margin:0.5em;
 }
 
 fieldset pre{
@@ -609,9 +607,6 @@ tfoot .style_th {
 .sf-menu a {
 	color: white !important;
 	font-weight: bold;
-	text-decoration: none;
-}
-.sf-menu a:visited  { /* visited pseudo selector so IE6 applies text colour*/
 	text-decoration: none;
 }
 

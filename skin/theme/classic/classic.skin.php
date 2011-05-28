@@ -127,13 +127,11 @@ if ($vars['page']) {
 				</div>
 				<div id="banner_box">
 					<a href="http://pukiwiki.logue.be/"><img src="<?php echo IMAGE_URI; ?>pukiwiki_adv.banner.png" width="88" height="31" alt="PukiWiki Advance" title="PukiWiki Advance" /></a>
-<?php	if (!$pkwk_dtd == PKWK_DTD_XHTML_1_1) { ?>
-					<a href="http://validator.w3.org/check/referer"><img src="http://www.w3.org/Icons/valid-xhtml11-blue" width="88" height="31" alt="Valid XHTML 1.1" title="Valid XHTML 1.1" /></a>
-<?php	} else if ($pkwk_dtd >= PKWK_DTD_XHTML_1_0_FRAMESET) {  ?>
-					<a href="http://validator.w3.org/check/referer"><img src="http://www.w3.org/Icons/valid-xhtml10-blue" width="88" height="31" alt="Valid XHTML 1.0" title="Valid XHTML 1.0" /></a>
-<?php	} else if ($pkwk_dtd >= PKWK_DTD_HTML_4_01_FRAMESET) {  ?>
-					<a href="http://validator.w3.org/check/referer"><img src="http://www.w3.org/Icons/valid-html40-blue" width="88" height="31" alt="Valid HTML 4.0" title="Valid HTML 4.0" /></a>
-<?php	} ?>
+<?php if(! isset($pkwk_dtd) || $pkwk_dtd == PKWK_DTD_HTML_5){ ?>
+					<a href="http://validator.w3.org/check/referer"><img src="<?php echo IMAGE_URI ?>html5.png" width="88" height="31" alt="HTML5" title="HTML5" /></a>
+<?php }else if ( $pkwk_dtd == PKWK_DTD_XHTML_1_1) { ?>
+					<a href="http://validator.w3.org/check/referer"><img src="http://www.w3.org/Icons/valid-xhtml11-blue.png" width="88" height="31" alt="Valid XHTML 1.1" title="Valid XHTML 1.1" /></a>
+<?php } ?>
 				</div>
 			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</footer>'."\n" : '</div>'."\n"; ?>
 <!-- *** End Footer *** -->

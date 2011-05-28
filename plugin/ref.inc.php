@@ -429,7 +429,19 @@ function plugin_ref_action()
 
 	// Output
 	pkwk_common_headers(filemtime($ref), null, false);
-	header('X-Sendfile: '. $s_filename);	// for reduce server load
+
+	// for reduce server load
+	if (function_exists('apache_get_modules') && in_array( 'mod_xsendfile', apache_get_modules()) ){
+		// for Apache mod_xsendfile
+		header('X-Sendfile: '.$ref);
+	}else if (stristr(getenv('SERVER_SOFTWARE'), 'lighttpd') ){
+		// for lighttpd
+		header('X-Lighttpd-Sendfile: '.$ref);
+	}else if(stristr(getenv('SERVER_SOFTWARE'), 'nginx') || stristr(getenv('SERVER_SOFTWARE'), 'cherokee')){
+		// nginx
+		header('X-Accel-Redirect: '.$ref);
+	}
+
 	if ($type == 'text/html' || $type == 'application/octet-stream') {
 		header('Content-Disposition: attachment; filename="' . $s_filename . '"');
 		header('Content-Type: application/octet-stream; name="' . $s_filename . '"');

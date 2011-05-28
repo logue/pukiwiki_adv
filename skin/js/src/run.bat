@@ -1,6 +1,6 @@
 @echo.
 @echo off
 PATH=%PATH%;C:\xampp\php
-php -q "run2.php"
+php -q "yui.php"
 pause.
 echo.

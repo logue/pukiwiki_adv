@@ -92,88 +92,86 @@ h1, h2, h3, h4, h5, h6 { font-weight: bold; }
 /** PukiWiki Advance Standard CSS Set *************************************************************/
 
 /* Font set */
-@font-face {
-	font-family: Symbola;
-	src: url('<?php echo $image_dir ?>emoji/Symbola602.otf');
-}
-
 @media screen{
 	body{
 		font-family: 'Segoe UI', 'Trebuchet MS', Verdana, Arial, Sans-Serif;
 	}
-
-	pre, code, kbd, samp, textarea, select, option, input, var{
-		font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace;
-	}
-
 	/* Japanese */
 	:lang(ja), :lang(ja) .ui-widget{
 		font-family: Meiryo, 'メイリオ', 'ヒラギノ角ゴ Pro W3', 'Hiragino Mincho Pro W3', Osaka, 'ＭＳＰ ゴシック';
 		line-height:137%;
 	}
-
-	:lang(ja) pre,
-	:lang(ja) code,
-	:lang(ja) kbd,
-	:lang(ja) samp,
-	:lang(ja) textarea,
-	:lang(ja) select,
-	:lang(ja) option,
-	:lang(ja) input,
-	:lang(ja) var{
-		font-family: 'Osaka−等幅', 'ＭＳ ゴシック', 'MS Gothic' !important;
-		line-height:123% !important;
-	}
-
 	/* Korean */
 	:lang(ko), :lang(ko) .ui-widget{
 		font-family: 'AppleGothic', 'Malgun Gothic', '맑은 고딕', Gulim, Dotum, AppleGothic;
 	}
-	:lang(ko) pre,
-	:lang(ko) code,
-	:lang(ko) kbd,
-	:lang(ko) samp,
-	:lang(ko) textarea,
-	:lang(ko) select,
-	:lang(ko) option,
-	:lang(ko) input,
-	:lang(ko) var{
-		font-family: GulimChe !important;
-	}
-
 	/*  Chinese */
 	:lang(zh), :lang(zh) .ui-widget{
 		font-family: 'Hiragino Sans GB W3', 'STHeiti', 'Apple LiGothic Medium', 'Microsoft YaHei', 'Microsoft JhengHei';
 		line-height:137%;
 	}
-	:lang(zh) pre,
-	:lang(zh) code,
-	:lang(zh) kbd,
-	:lang(zh) samp,
-	:lang(zh) textarea,
-	:lang(zh) select,
-	:lang(zh) option,
-	:lang(zh) input,
-	:lang(zh) var{
-		font-family: 'SimHei', '蒙納黑體', monospace;
-		line-height:123% !important;
-	}
 }
-
 /* for Print font */
 @media print{
 	body {
 		font-family: "Lucida Bright", Century, "Times New Roman", serif;
 	}
-	:lang(ja) body {
+	:lang(ja) {
 		font-family: "ヒラギノ明朝 Pro W3", 'Hiragino Mincho Pro W3', "平成明朝", 'ＭＳ Ｐ明朝', 'MS PMincho', serif;
 	}
-	:lang(zh) body {
+	:lang(zh) {
 		font-family: 'Apple LiSung Light', 'STHeiti Light', 'PMingLiU', 'KaiTi', serif;
 	}
-	:lang(ko) body{
+	:lang(ko) {
 		font-family: '바탕체', Batang, serif;
 	}
+}
+
+pre, code, kbd, samp, textarea, select, option, input, var{
+	font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace;
+}
+
+:lang(ja) pre,
+:lang(ja) code,
+:lang(ja) kbd,
+:lang(ja) samp,
+:lang(ja) textarea,
+:lang(ja) select,
+:lang(ja) option,
+:lang(ja) input,
+:lang(ja) var{
+	font-family: 'Osaka−等幅', 'ＭＳ ゴシック', 'MS Gothic' !important;
+	line-height:123% !important;
+}
+
+:lang(ko) pre,
+:lang(ko) code,
+:lang(ko) kbd,
+:lang(ko) samp,
+:lang(ko) textarea,
+:lang(ko) select,
+:lang(ko) option,
+:lang(ko) input,
+:lang(ko) var{
+	font-family: GulimChe !important;
+}
+
+:lang(zh) pre,
+:lang(zh) code,
+:lang(zh) kbd,
+:lang(zh) samp,
+:lang(zh) textarea,
+:lang(zh) select,
+:lang(zh) option,
+:lang(zh) input,
+:lang(zh) var{
+	font-family: 'SimHei', '蒙納黑體', monospace;
+	line-height:123% !important;
+}
+/* for Emoji */
+@font-face {
+	font-family: Symbola;
+	src: url('<?php echo $image_dir ?>emoji/Symbola.php');
 }
 
 /** Browser Hack **********************************************************************************/
@@ -182,19 +180,19 @@ h1 {
 	font-size: 197%;
 }
 h2 {
-	font-size: 174%;
+	font-size: 167%;
 }
 
 h3 {
-	font-size: 153.9%;
+	font-size: 146.5%;
 }
 
 h4 {
-	font-size: 131%;
+	font-size: 123.1%;
 }
 
 h5 {
-	font-size: 116%;
+	font-size: 108%;
 }
 
 h6 {
@@ -440,8 +438,9 @@ input[disabled]:hover, select[disabled]:hover, textarea[disabled]:hover, option[
 	box-shadow: none;
 }
 
-/* Fix jQueryUI widgets font size */
-.ui-widget-content > *{
+/**************************************************************************************************/
+/* customize jquery ui widget */
+.window{
 	font: inherit !important;
 	font-size:93% !important;
 }
@@ -449,25 +448,16 @@ input[disabled]:hover, select[disabled]:hover, textarea[disabled]:hover, option[
 .ui-button{
 	text-shadow: 0 1px 1px rgba(0,0,0,.3);
 	box-shadow: 0 1px 2px rgba(0,0,0,.2);
-	margin:0.2em !important;
-	padding: 0.1em 0.5em !important;
+	padding:2px !important;
+	min-width:18px;
+	min-height:18px;
 }
-.ui-button-text-icon-primary .ui-button-icon-primary, .ui-button-text-icons .ui-button-icon-primary, .ui-button-icons-only .ui-button-icon-primary {
-    left: 0 !important;
+.ui-button-text, input.ui-button{
+	padding: 2px 0.5em !important;
+	margin:0 0.1em !important
 }
-.ui-button-text{
-	font-size:100%;
-	padding: 0 0.2em 0 1.2em !important;
-}
-
-.gecko .ui-button{
-	-moz-box-shadow:0 1px 2px rgba(0,0,0,.2);
-}
-.webkit .ui-button{
-	-webkit-box-shadow:0 1px 2px rgba(0,0,0,.2);
-}
-.presto .ui-button, .ie .ui-button{
-	padding: 0.2em 0.5em !important;
+.ui-icon{
+	display: inline-block;
 }
 
 /* Message Box (for Debug and Error message) */
@@ -483,6 +473,68 @@ input[disabled]:hover, select[disabled]:hover, textarea[disabled]:hover, option[
 .message_box p .ui-icon{
 	float: left; margin-right: 0.3em;
 }
+
+/* Table sorter */
+.table_pager_widget{
+	display:none;
+}
+
+.table_pager_widget input.pagedisplay{
+	width:50px;
+}
+
+.table_pager_widget select.pagesize{
+	width:80px;
+}
+
+/* PukiWiki Generic Widgets */
+
+.pkwk_widget{
+	padding:2px;
+	margin:0;
+	list-style: none;
+}
+.pkwk_widget .ui-progressbar{
+	height:20px;
+	padding:0 !important;
+}
+.pkwk_widget .ui-state-default, .pkwk_widget .ui-widget-content{
+	padding:2px;
+	min-width:18px;
+	min-height:18px;
+}
+
+.pkwk_widget li{
+	cursor: pointer;
+	float: left;
+	text-align:center;
+	margin:2px 0;
+	font-size:93%;
+}
+
+.pkwk_widget .ui-corner-left{
+	margin-left:2px;
+}
+.pkwk_widget .ui-corner-right{
+	margin-right:2px;
+}
+.pkwk_widget .ui-corner-all{
+	margin:2px;
+}
+
+.color{
+	display: inline-block;
+	width: 8px;
+	height: 8px;
+	line-height:100%;
+	color: transparent;
+}
+
+#colors.pkwk_widget li{
+	margin:0;
+}
+
+
 /** Misc ****************************************************************************************/
 .underline{
 	text-decoration: underline !important;
@@ -1030,13 +1082,9 @@ th.headerSortDown {
 	background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjpyZ2JhKDI1NSwyNTUsMjU1LDEpOyIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOnJnYmEoMjIwLDIyMCwyMjAsMSk7IiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IGZpbGw9InVybCgjZ3JhZGllbnQpIiBoZWlnaHQ9IjEwMCUiIHdpZHRoPSIxMDAlIiAvPjwvc3ZnPg==') !important;
 }
 
-#tooltip p{
+#tooltip > *{
 	margin:0px;
 	padding:0px;
-}
-
-.ie #tooltip p{
-	-ms-filter:"progid:DXImageTransform.Microsoft.DropShadow(color=gainsboro,offx=1,offy=1)";
 }
 
 /**************************************************************************************************/
@@ -1066,7 +1114,9 @@ th.headerSortDown {
 #poptoc .nav{
 	text-align:center;
 }
-
+#poptoc > ul, #poptoc > ol{
+	margin:0 0 0 1em;
+}
 /**************************************************************************************************/
 /*
 	ColorBox Core Style
@@ -1155,68 +1205,6 @@ ul#jplayer_icons #jplayer_volume-min {
 	height:.2em;
 	border:0;
 }
-/**************************************************************************************************/
-.table_pager_widget{
-	display:none;
-}
-
-.pkwk_widget{
-	padding:2px;
-	margin:0;
-	list-style: none;
-}
-
-.pkwk_widget .ui-state-default,.pkwk_widget .ui-widget-content{
-	height:1.2em;
-	min-width:1.2em;
-	padding:2px;
-}
-
-.pkwk_widget li{
-	cursor: pointer;
-	float: left;
-	text-align:center;
-	margin-top:2px;
-	margin-bottom:2px;
-}
-
-.pkwk_widget .ui-corner-left{
-	margin-left:2px;
-}
-.pkwk_widget .ui-corner-right{
-	margin-right:2px;
-}
-.pkwk_widget .ui-corner-all{
-	margin:2px;
-}
-
-.pkwk_widget button{
-	height:1.2em;
-	min-width:1.2em;
-	padding:2px;
-}
-.table_pager_widget input.pagedisplay{
-	width:50px;
-}
-
-.table_pager_widget select.pagesize{
-	width:80px;
-}
-
-#emojis.pkwk_widget .ui-state-default, #emojis.pkwk_widget .ui-widget-content{
-	height:1.6em;
-	min-width:1.6em;
-	padding:1px;
-}
-
-#emojis.pkwk_widget li{
-	margin-top:1px;
-	margin-bottom:1px;
-}
-
-#emojis.pkwk_widget .ui-corner-all{
-	margin:1px;
-}
 
 /**Swfupload **************************************************************************************/
 
@@ -1252,7 +1240,9 @@ ul#jplayer_icons #jplayer_volume-min {
 	line-height:100%;
 	background: transparent url('<?php echo $image_dir ?>emoji/emoji.png') -1000px -1000px no-repeat;
 	vertical-align: middle;
-	color:transparent;
+	text-align:center;
+	text-shadow:none;
+	color: transparent;
 }
 
 .emoji-sun{ background-position: 0px 0px;}
@@ -1508,12 +1498,6 @@ ul#jplayer_icons #jplayer_volume-min {
 .emoji-wine{background-position: -216px -306px;}
 .emoji-shock{background-position: -234px -306px;}
 
-small .emoji{
-	-webkit-background-size: 50% 50%;
-	-moz-background-size: 50% 50%;
-	-o-background-size: 50% 50%;
-	-ms-background-size: 50% 50%;
-}
 /** Print Setting *********************************************************************************/
 @media print {
 	* { background: transparent !important; color: black !important; text-shadow: none !important; filter:none !important;
@@ -1529,14 +1513,17 @@ small .emoji{
 	p, h2, h3 { orphans: 3; widows: 3; }
 	h2, h3{ page-break-after: avoid; }
 
-	.navigator, .toolbar, .navi, .message_box, .noprint, .tocpic, .sf-menu,
+	.navigator, .toolbar, .navi, .message_box, .noprint, .tocpic, .sf-menu,.pkwk_widget,
 	.style_calendar_prev, .style_calendar_next, .pkwk-symbol, #poptoc,  #toolbar, .ui-dialog, #topicpath{
 		display:none !important;
 		visibility: hidden !important;
 	}
 	
 	.emoji{
+		font-family:Symbola !important;
+		color:black;
 		display: inline;
+		text-indent:0px;
 	}
 
 	h1,h2,h3,h4,h5,h6{

@@ -14,7 +14,7 @@
 error_reporting(E_ALL); // Show all errors
 
 // Debug mode.
-define('DEBUG', false);
+define('DEBUG', true);
 // Show infomation message.
 define('PKWK_WARNING', true);
 
@@ -27,8 +27,8 @@ define('PKWK_WARNING', true);
 // tDiary THEME
 //define('TDIARY_THEME', 'digital_gadgets');
 // PukiWiki Adv. THEME (NOT compatible as Original and Plus! skin)
-// ex. bluebox, cloudwalk, classic, iridwire, iridorange, orangebox, pukiwiki, xxxlogue
-define('PLUS_THEME',	'classic');
+// ex.  cloudwalk, classic, xxxlogue
+define('PLUS_THEME',	'default');
 
 // Directory definition
 // (Ended with a slash like '../path/to/pkwk/', or '')
@@ -37,9 +37,8 @@ define('SITE_HOME',		'./');
 // define('DATA_HOME',	'../../wiki-data/contents/');
 define('DATA_HOME',		'./');
 
-define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');	// when skin directory and index.php is same directory.
 // define('ROOT_URI', '');
-define('WWW_HOME', '');
+// define('WWW_HOME', '');
 
 // to absolute path
 // Do not change following lines

@@ -53,7 +53,7 @@ function plugin_attach_init()
 			'msg_unfreezed'	=> T_('The file has been unfrozen'),
 			'msg_upload'	=> T_('Upload to $1'),
 			'msg_info'		=> T_('File information'),
-			'msg_confirm'	=> T_('<p>Delete %s.</p>'),
+			'msg_confirm'	=> T_('Delete %s.'),
 			'msg_list'		=> T_('List of attached file(s)'),
 			'msg_listpage'	=> T_('List of attached file(s) in $1'),
 			'msg_listall'	=> T_('Attached file list of all pages'),
@@ -77,6 +77,7 @@ function plugin_attach_init()
 			'msg_md5hash'	=> T_('MD5 hash'),
 			'msg_page'		=> T_('Page'),
 			'msg_filename'	=> T_('Stored filename'),
+			'msg_thispage'	=> T_('This page'),
 			'err_noparm'	=> T_('Cannot upload/delete file in $1'),
 			'err_exceed'	=> T_('File size too large to $1'),
 			'err_exists'	=> T_('File already exists in $1'),
@@ -424,6 +425,14 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 					chmod($obj->filename, PLUGIN_ATTACH_FILE_MODE);
 			break;
 		}
+	}else{
+		$obj = new AttachFile($page, $file['name']);
+			if ($obj->exist)
+				return array('result'=>FALSE,
+					'msg'=>$_attach_messages['err_exists']);
+
+			if (move_uploaded_file($file['tmp_name'], $obj->filename))
+				chmod($obj->filename, PLUGIN_ATTACH_FILE_MODE);
 	}
 
 	if (is_page($page))
@@ -526,10 +535,10 @@ function attach_is_compress($type,$compress=1)
 
 	// discrete-type
 	static $discrete_type = array(
-		'text'	=> 1,
-		'image'	=> 0,
-		'audio'	=> 0,
-		'video'	=> 0,
+		'text'			=> 1,
+		'image'			=> 0,
+		'audio'			=> 0,
+		'video'			=> 0,
 	);
 	if (isset($discrete_type[$discrete])) {
 		return $discrete_type[$discrete];
@@ -708,17 +717,10 @@ function attach_form($page, $listview = FALSE)
 
 	$refer = isset($vars['refer']) ? $vars['refer'] : '';
 	
-	$list_uri    = get_cmd_uri('attach','','',array('pcmd'=>'list','refer'=>$page));
-	$listall_uri = get_cmd_uri('attach','','',array('pcmd'=>'list'));
+	
 
 	$r_page = rawurlencode($page);
 	$s_page = htmlsc($page);
-	$navi = <<<EOD
-<p class="small">
-	[<a href="{$list_uri}">{$_attach_messages['msg_list']}</a>]
-	[<a href="{$listall_uri}">{$_attach_messages['msg_listall']}</a>]
-</p>
-EOD;
 
 	if (! ini_get('file_uploads')) return '#attach(): <code>file_uploads</code> disabled.<br />' . $navi;
 	if (! is_page($page))          return '#attach(): No such page<br />'          . $navi;
@@ -726,48 +728,67 @@ EOD;
 	$maxsize = PLUGIN_ATTACH_MAX_FILESIZE;
 	$msg_maxsize = sprintf($_attach_messages['msg_maxsize'], number_format($maxsize/1024) . 'KB');
 
-	$pass = '';
-	if (PLUGIN_ATTACH_PASSWORD_REQUIRE || PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY) {
-		if (auth::check_role('role_adm_contents')) {
-			$title = $_attach_messages[PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY ? 'msg_adminpass' : 'msg_password'];
-			$pass = '<br />' . $title . ': <input type="password" name="pass" size="8" />';
-		}
-	}
-	$html = '';
-	if ($listview) {
-		$html .= '<h3>' . str_replace('$1', $s_page, $_attach_messages['msg_upload']) . '</h3>';
-		
-		$navi = <<<EOD
-<p>
-	[<a href="{$list_uri}">{$_attach_messages['msg_list']}</a>]
-	[<a href="{$listall_uri}">{$_attach_messages['msg_listall']}</a>]
-</p>
-EOD;
-	}
-	$html .= <<<EOD
+	$pass = ( (PLUGIN_ATTACH_PASSWORD_REQUIRE || PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY) && auth::check_role('role_adm_contents')) ?
+		'<br />' . ($_attach_messages[PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY ? 'msg_adminpass' : 'msg_password']) .
+		 ': <input type="password" name="pass" size="8" />' : '';
+
+	$upload_form = <<<EOD
 <form enctype="multipart/form-data" action="$script" method="post">
 	<input type="hidden" name="plugin" value="attach" />
 	<input type="hidden" name="pcmd"   value="post" />
 	<input type="hidden" name="refer"  value="$s_page" />
 	<input type="hidden" name="max_file_size" value="$maxsize" />
-	<p>
-	$navi
-	<span class="small">$msg_maxsize</span>
-	</p>
 	<div class="attach_form">
 		<label for="_p_attach_file">{$_attach_messages['msg_file']}:</label>
 		<input type="file" name="attach_file" id="_p_attach_file" />
 		$pass
 		<input type="submit" value="{$_attach_messages['btn_upload']}" />
 	</div>
+	<p><small>$msg_maxsize</small></p>
 </form>
 EOD;
-	if ($listview) {
-		$obj = new AttachPages($page);
-		$body = ($refer == '' || isset($obj->pages[$page])) ?
-			$obj->toRender($page, FALSE) :
-			$_attach_messages['err_noexist'];
-		$html .= "<h3>" . str_replace('$1', $s_page, $_attach_messages['msg_listpage']) . "</h3>" . $body;
+	$obj = new AttachPages($page);
+	$list = ($refer == '' || isset($obj->pages[$page])) ?
+		$obj->toRender($page, FALSE) :
+		$_attach_messages['err_noexist'];
+
+	$html = '';
+	
+	$listall_uri = get_cmd_uri('attach','','',array('pcmd'=>'list'));
+	if (!IS_AJAX){
+		$title_upload = str_replace('$1', $s_page, $_attach_messages['msg_upload']);
+		$title_list = str_replace('$1', $s_page, $_attach_messages['msg_listpage']);
+		$list_uri    = get_cmd_uri('attach','','',array('pcmd'=>'list','refer'=>$page));
+
+		if ($listview) {
+			$html .= '<p><small>[<a href="'.$listall_uri.'">'.$_attach_messages['msg_listall'].'</a>]</small></p>';
+			$html .= '<h3>' . $title_upload . '</h3>'. "\n";
+			$html .= $upload_form;
+			$html .= '<h3>' . $title_list . '</h3>'. "\n";
+			$html .= $list;
+		}else{
+			
+			$html .= $upload_form;
+		}
+	}else{
+		$title_upload = str_replace('$1', $_attach_messages['msg_thispage'], $_attach_messages['msg_upload']);
+		$title_list = str_replace('$1', $_attach_messages['msg_thispage'], $_attach_messages['msg_listpage']);
+		$html = <<< EOD
+<div id="attach_tabs" class="tabs">
+	<ul>
+		<li><a href="#attach_upload_tab">{$title_upload}</a></li>
+		<li><a href="#attach_list_tab">{$title_list}</a></li>
+	</ul>
+	<div id="attach_upload_tab">
+		{$upload_form}
+		<hr />
+		<p style="text-align:right;"><small>[<a href="{$listall_uri}">{$_attach_messages['msg_listall']}</a>]</small></p>
+	</div>
+	<div id="attach_list_tab">
+		{$list}
+	</div>
+</div>
+EOD;
 	}
 	return $html;
 }
@@ -865,7 +886,7 @@ class AttachFile
 			$count = ($showicon && ! empty($this->status['count'][$this->age])) ?
 				'<small>'.sprintf($_attach_messages['msg_count'], $this->status['count'][$this->age]).'</small>' : '';
 		}
-		return "<a href=\"$open\" title=\"$title\" class=\"pkwk-icon_linktext attach-download\">$label</a>$count$info";
+		return "<a href=\"$open\" title=\"$title\" class=\"pkwk-icon_linktext attach-download\">$label</a> $count $info";
 	}
 
 	// 情報表示
@@ -967,7 +988,7 @@ $_attach_setimage
 </dl>
 EOD;
 		$retval['body'] = '';
-		if (!isset($vars['ajax'])) {
+		if (!IS_AJAX) {
 			$retval['body'] .= <<< EOD
 <p>
 	[<a href="$list_uri">{$_attach_messages['msg_list']}</a>]
@@ -1122,9 +1143,20 @@ EOD;
 
 		ini_set('default_charset', '');
 		mb_http_output('pass');
-
 		pkwk_common_headers($this->time, null, false);
-		header('X-Sendfile: '.$s_filename);	// for reduce server load
+
+		// for reduce server load
+		if (function_exists('apache_get_modules') && in_array( 'mod_xsendfile', apache_get_modules()) ){
+			// for Apache mod_xsendfile
+			header('X-Sendfile: '.$this->filename);
+		}else if (stristr(getenv('SERVER_SOFTWARE'), 'lighttpd') ){
+			// for lighttpd
+			header('X-Lighttpd-Sendfile: '.$this->filename);
+		}else if(stristr(getenv('SERVER_SOFTWARE'), 'nginx') || stristr(getenv('SERVER_SOFTWARE'), 'cherokee')){
+			// nginx
+			header('X-Accel-Redirect: '.$this->filename);
+		}
+
 		if ($this->type == 'text/html' || $this->type == 'application/octet-stream') {
 			header('Content-Disposition: attachment; filename="' . $s_filename . '"');
 			header('Content-Type: application/octet-stream; name="' . $s_filename . '"');
@@ -1133,7 +1165,6 @@ EOD;
 			header('Content-Type: '   . $this->type);
 		}
 		header('Content-Length: ' . $this->size);
-
 		// For BugTrack2/102
 		// @readfile($this->filename);
 		plus_readfile($this->filename);
@@ -1159,7 +1190,7 @@ class AttachFiles
 	}
 
 	// ファイル一覧を取得
-	function toString($flat,$tag)
+	function toString($flat = null,$tag = '')
 	{
 		global $_title;
 

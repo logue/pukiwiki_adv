@@ -115,7 +115,7 @@ function catbody($title, $page, $body)
 		$link_tags[] = array('rel'=>'search',			'href'=>$_LINK['search'],	'type'=>'text/html',	'title'=>$_LANG['skin']['search']);
 		$link_tags[] = array('rel'=>'shortcut icon',	'href'=>$shortcut_icon,		'type'=>'image/vnd.microsoft.icon');
 
-		if ($nofollow || ! $is_read){
+		if ($nofollow || ! $is_read || ! $is_page){
 			$meta_tags[] = array('name' => 'robots', 'content' => 'NOINDEX,NOFOLLOW');
 		}else{
 //			if (empty($description)){ $description = $title.' - '.$page_title; }
@@ -132,26 +132,8 @@ function catbody($title, $page, $body)
 		
 		// application/xhtml+xml を認識するブラウザではXHTMLとして出力
 		if (PKWK_STRICT_XHTML === TRUE && strstr($_SERVER['HTTP_ACCEPT'], 'application/xhtml+xml') !== false){
-			foreach ($google_loader as $name=>$version){
-				switch($name){
-					case 'jquery':
-						$filename = 'jquery.min.js';
-					break;
-					case 'jqueryui':
-						$filename = 'jquery-ui.min.js';
-					break;
-					default:
-						$filename = $name;
-					break;
-				}
-				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'https://ajax.googleapis.com/ajax/libs/'.$name.'/'.$version.'/'.$filename);
-			}
 			$http_header = 'application/xhtml+xml';
 		}else{
-			// google.loadはdocument.write命令を使うためXHTMLにならない。
-			foreach ($google_loader as $name=>$version){
-				$js_vars[] = 'google.load("'.$name.'","'.$version.'");';
-			}
 			$http_header = 'text/html';
 		}
 
@@ -177,7 +159,6 @@ function catbody($title, $page, $body)
 		
 		/* フッター部のタグ */
 		$pkwk_tags = tag_helper('script',$pkwk_head_js)."\t\t".tag_helper('script',$js_tags);
-		
 		$pkwk_tags .= (!empty($js_blocks)) ? "\t\t".tag_helper('script',array(array('type'=>'text/javascript', 'content'=>join("\n",$js_blocks)))) : '';
 
 		/* 非推奨要素の警告 */
@@ -244,7 +225,7 @@ function catbody($title, $page, $body)
 							'$matches[0];'
 					);
 				$body  = preg_replace_callback($pattern, $decorate_Nth_word, $body);
-				$notes = preg_replace_callback($pattern, $decorate_Nth_word, $notes);
+				$notes = isset($notes) ? preg_replace_callback($pattern, $decorate_Nth_word, $notes) : null;
 				++$id;
 			}
 		}
@@ -600,6 +581,7 @@ function pkwk_common_headers($modified = 0, $expire = 0, $compress = true){
 				exit;
 			}
 		}
+		
 		header('ETag: "'.$etag.'"');
 		header('Last-Modified: ' . $last_modified );
 //		header('If-Modified-Since: ' . $last_modified );
@@ -641,8 +623,8 @@ function pkwk_common_headers($modified = 0, $expire = 0, $compress = true){
 	}
 	
 	// RFC2616
-	header('Vary:, '.$vary);
-	
+	header('Vary: '.$vary);
+	header('Access-Control-Allow-Origin: '.get_script_uri());	// JSON脆弱性対策（Adv.では外部にAjax APIを提供することを考慮しない）
 	header('X-XSS-Protection: '.((DEBUG) ? '0' :'1;mode=block') );	// XSS脆弱性対策（これでいいのか？）
 	header('X-Content-Type-Options: nosniff');	// IEの自動MIME type判別機能を無効化する
 	header('X-Frame-Options: SameDomain');	// クリックジャッキング対策
@@ -764,6 +746,12 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 		$browser = 'netfront';
 	}
 	unset($matches);
+	
+	global $facebook;
+	if (isset($facebook)){
+		echo ' xmlns:fb="http://www.facebook.com/2008/fbml"';
+	}
+	
 	echo ' class="no-js '.$browser.'">' . "\n"; // <html>
 	unset($lang_code);
 	

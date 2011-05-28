@@ -32,7 +32,7 @@ function plugin_showrss_action()
 
 		// Get the cache not expired
 		$filename = CACHE_DIR . encode($target) . '.xml';
-		
+
 		// Remove expired cache
 		plugin_showrss_cache_expire($cachehour);
 
@@ -56,6 +56,18 @@ function plugin_showrss_action()
 				fclose($fp);
 			}
 		}
+		// for reduce server load
+		if (function_exists('apache_get_modules') && in_array( 'mod_xsendfile', apache_get_modules()) ){
+			// for Apache mod_xsendfile
+			header('X-Sendfile: '.$filename);
+		}else if (stristr(getenv('SERVER_SOFTWARE'), 'lighttpd') ){
+			// for lighttpd
+			header('X-Lighttpd-Sendfile: '.$filename);
+		}else if(stristr(getenv('SERVER_SOFTWARE'), 'nginx') || stristr(getenv('SERVER_SOFTWARE'), 'cherokee')){
+			// nginx
+			header('X-Accel-Redirect: '.$filename);
+		}
+		
 		pkwk_common_headers($time);
 		header('Content-Type: aplication/xml');
 		echo $buf;

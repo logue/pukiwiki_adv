@@ -216,6 +216,15 @@ $protect		= ':login';			// Protect mode
 $google_api_key = '';
 
 /////////////////////////////////////////////////
+// Facebook Integration
+/*
+$facebook = array(
+	'appId'		=> '129191427155205',
+	'secret'	=> '6b46af0696748a62557397c7739d37bf',
+	'cookie'	=> true,
+); 
+*/
+/////////////////////////////////////////////////
 // for Access Analyze and SEO use
 
 // Always output "nofollow,noindex" attribute
@@ -336,7 +345,7 @@ $deny_countory = array();
 
 /////////////////////////////////////////////////
 // Anti-Spam service config
-
+/*
 // Akismet
 // https://akismet.com/signup/
 $akismet_api_key = '';
@@ -345,7 +354,7 @@ $akismet_api_key = '';
 // http://www.google.com/recaptcha
 $recaptcha_public_key = '';
 $recaptcha_private_key = '';
-
+*/
 /////////////////////////////////////////////////
 // TrackBack feature
 

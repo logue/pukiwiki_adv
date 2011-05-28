@@ -60,7 +60,25 @@ function plugin_edit_action()
 			$postdata = $vars['original'];
 		}
 	}
-	if ($postdata == '') $postdata = auto_template($page);
+	
+	if ($postdata == ''){
+		// Check Page name length
+		// http://pukiwiki.sourceforge.jp/dev/?PukiWiki%2F1.4%2F%A4%C1%A4%E7%A4%C3%A4%C8%CA%D8%CD%F8%A4%CB%2F%C4%B9%A4%B9%A4%AE%A4%EB%A5%DA%A1%BC%A5%B8%CC%BE%A4%CE%A5%DA%A1%BC%A5%B8%A4%CE%BF%B7%B5%AC%BA%EE%C0%AE%A4%F2%CD%DE%BB%DF
+		$filename_max_length = 250;
+		$filename = encode($page) . '.txt';
+		$filename_length = strlen($filename); 
+		if ($filename_length > $filename_max_length){
+			$msg = "<b>Error: Filename too long.</b><br/>\n" .
+				"Page name: " . htmlsc($page) . "<br/>\n" .
+				"Filename: $filename<br>\n" .
+				"Filename length: $filename_length<br/>\n" .
+				"Filename limit: $filename_max_length<br/>\n";
+			// Filename too long
+			return array('msg'=>$_title_edit, 'body'=>$msg);
+		}else{
+			$postdata = auto_template($page);
+		}
+	}
 
 	return array('msg'=> T_('Edit of $1'), 'body'=>edit_form($page, $postdata));
 }

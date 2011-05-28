@@ -1,5 +1,5 @@
 <?php if (!defined('BB2_CWD')) die("I said no cheating!");
-define('BB2_VERSION', "2.1.10");
+define('BB2_VERSION', "2.1.13");
 
 // Bad Behavior entry point is bb2_start()
 // If you're reading this, you are probably lost.
@@ -62,7 +62,6 @@ function bb2_start($settings)
 	// Postprocess the headers to mixed-case
 	// TODO: get the world to stop using PHP as CGI
 	$headers_mixed = array();
-	$headers_mixed[$settings['reverse_proxy_header']] = null;	// by Logue
 	foreach ($headers as $h => $v) {
 		$headers_mixed[uc_all($h)] = $v;
 	}
@@ -142,18 +141,21 @@ function bb2_screen($settings, $package)
 				if ($r == 1) return false;	# whitelisted
 				return $r;
 			}
-		} elseif (stripos($ua, "Googlebot") !== FALSE || stripos($ua, "Mediapartners-Google") !== FALSE || stripos($ua, "Google Wireless") !== FALSE) {
+			return false;
+		} elseif (stripos($ua, "Googlebot") !== FALSE || stripos($ua, "Mediapartners-Google") !== FALSE) {
 			require_once(BB2_CORE . "/searchengine.inc.php");
 			if ($r = bb2_google($package)) {
 				if ($r == 1) return false;	# whitelisted
 				return $r;
 			}
+			return false;
 		} elseif (stripos($ua, "Yahoo! Slurp") !== FALSE || stripos($ua, "Yahoo! SearchMonkey") !== FALSE) {
 			require_once(BB2_CORE . "/searchengine.inc.php");
 			if ($r = bb2_yahoo($package)) {
 				if ($r == 1) return false;	# whitelisted
 				return $r;
 			}
+			return false;
 		}
 		// MSIE checks
 		if (stripos($ua, "; MSIE") !== FALSE) {
@@ -197,6 +199,7 @@ function bb2_screen($settings, $package)
 	}
 
 	// Last chance screening.
+	// require_once(BB2_CORE . "/screener.inc.php");
 	require_once(BB2_CORE . "/pkwk_screener.inc.php");
 	bb2_screener($settings, $package);
 

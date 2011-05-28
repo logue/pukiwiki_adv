@@ -5,12 +5,11 @@
 // Original version written by miko and upk.
 // Adv version by Logue.
 // 
-// $Id: default.css,v 1.33.10 2011/04/09 17:52:00 Logue Exp $
+// $Id: default.css,v 1.33.11 2011/05/23 08:08:00 Logue Exp $
 //
 */
 
-/** PukiWiki Plus! CSS set Start ******************************************************************/
-
+/** Generic Tags *********************************************************************************/
 a{
 	color:#215dc6;
 }
@@ -104,6 +103,78 @@ ul, ol{
 	background-color:gainsboro;
 }
 
+/** Layout ****************************************************************************************/
+#container {
+	width:100%;
+	margin: 0 auto;
+}
+
+#main{
+	background-color: whitesmoke;
+}
+
+#main > *{
+	background-color: white;
+	padding:5px;
+}
+
+#menubar, #sidebar{
+	display:none;
+}
+@media screen{
+	.two-colums #main {
+		width:100%;
+		float:right;
+		margin-left:-180px;
+	}
+
+	.two-colums #main > * {
+		margin:0 0 0 180px;
+	}
+
+	.two-colums #menubar {
+		display:block;
+		width:180px;
+		float:right;
+	}
+
+	.three-colums #wrapper {
+		width:100%;
+		float:left;
+		margin-right:-180px;
+	}
+
+	.three-colums #main {
+		width:100%;
+		float:right;
+		margin-left:-180px;
+	}
+
+	.three-colums #main > * {
+		margin:0 180px;
+		padding:5px;
+	}
+
+	.three-colums #menubar {
+		display:block;
+		width:180px;
+		float:right;
+	}
+
+	.three-colums #sidebar {
+		display:block;
+		width:180px;
+		float:left;
+		right:0;
+		position:absolute;
+	}
+
+	.three-colums #misc {
+		width:100%;
+		clear:left;
+	}
+}
+/** Header and Footer *****************************************************************************/
 #header{
 	margin:1% 1% 0 1%;
 }
@@ -133,13 +204,14 @@ ul, ol{
 
 /* hgroup */
 #hgroup {
-	padding: 12px 0px 0px 0px;
-	margin: 12px 0px 0px 0px;
+	padding: 12px 0 0 0;
+	margin: 12px 0 0 0;
 	float:left;
 }
 
 #hgroup h1 {
 	font-weight:bold;
+	font-size:197%;
 	background-color:transparent;
 	border: none;
 	margin: 0;
@@ -172,43 +244,6 @@ ul, ol{
 	white-space: nowrap;
 }
 
-.main{
-	width:100%;
-}
-
-.ltable, .rtable{
-	padding:0.1em 0;
-	width:160px;
-	vertical-align:top;
-}
-
-.ctable{
-	vertical-align:top;
-	padding:0.1em 0.5em;
-}
-
-#body h2{
-	margin:.2em 0 .2em 0;
-}
-
-#body h3{
-	margin:.2em 0 .5em 0.4em;
-}
-
-#body h4, #body  h5, #body  h6{
-	margin:.2em 0 .5em 0.8em;
-}
-
-#body{
-	display:block;
-	padding:0px;
-	margin:0px 0px 0px 0px;
-}
-
-#topicpath{
-	font-size:96%;
-}
-
 #qr_code{
 	display:block;
 	float:left;
@@ -226,9 +261,30 @@ ul, ol{
 	line-height: 122%;
 }
 
+/** Main Content area *****************************************************************************/
+#body h1{
+	margin: 0;
+}
+
+#body h2{
+	margin:.2em 0 .2em .2em;
+}
+
+#body h3{
+	margin:.2em 0 .5em .4em;
+}
+
+#body h4, #body  h5, #body  h6{
+	margin:.2em 0 .5em .8em;
+}
+
+#topicpath{
+	padding:.5em 1em;
+	font-size:96%;
+}
+
 #note{
-	clear:both;
-	padding:0px;
+	padding:0;
 	font-size: 86%;
 }
 
@@ -292,93 +348,13 @@ ul, ol{
 	color:white;
 }
 
-/* popup toc */
-#poptoc {
-	border:gray thin outset;
-	background-color:lightyellow;
-	max-width:25em;
-	min-width:18em;
-	opacity:0.9;
-	overflow:visible;
-	padding:0.5em;
-	position:absolute;
-	text-align:left;
-	text-shadow: white 1px 1px 0px;
-	width:22em;
-	z-index:1;
-}
-
-.ie6 #poptoc, .ie7 #poptoc, .ie8 #poptoc {
-	filter:
-		progid:DXImageTransform.Microsoft.Alpha(opacity=90)
-		progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=ivory,EndColorStr=lemonchiffon) !important;
-}
-
-.webkit #poptoc{
-	background: -webkit-gradient(linear, left top, left bottom, from(ivory), to(lemonchiffon));
-}
-
-.gecko #poptoc{
-	background: -moz-linear-gradient(top, ivory, lemonchiffon);
-}
-
-.presto #poptoc{
-	background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMCI%2BDQo8ZGVmcz4NCjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxMDAlIj4NCjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOml2b3J5OyIvPg0KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjpsaWdodHllbGxvdzsiLz4NCjwvbGluZWFyR3JhZGllbnQ%2BDQo8L2RlZnM%2BDQo8cmVjdCB4PSIwIiB5PSIwIiBmaWxsPSJ1cmwoI2dyYWRpZW50KSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgLz4NCjwvc3ZnPg0K');
-}
-.ie9 #poptoc {
-	-ms-filter: "progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=ivory,EndColorStr=lemonchiffon)" !important;
-}
-
-#poptoc a{
-	color:blue !important;
-	cursor:pointer; 
-}
-#poptoc a:hover{
-	text-shadow: none;
-	background-color:#ccc;
-}
-#poptoc h1{
-	color:navy;
-	background-color:honeydew;
-	font-size:small;
-	font-weight:normal;
-	padding:0.3em;
-	margin:0;
-	text-align:center;
-	border:silver solid 1px;
-	display:block;
-}
-#poptoc h1 a{color:navy; text-decoration:none;}
-#poptoc h1 img {margin-bottom:-3px; margin-right: 2px;}
-#poptoc .nav {text-indent:0em;border-top:1px gray solid; padding-top:0.2em;text-align:center; white-space: nowrap; }
-#poptoc a.here{color: black; background: #EEEEEE; text-decoration: none; border:1px dotted gray;}
-
-.tocpic {
-	display:inline;
-	cursor:pointer;
-}
-
-.hrefp, .topic {
-	vertical-align:text-bottom;
-}
 /** MenuBar/SideBar*********************************************************************************/
-/* Layout */
-td.ltable{
-	background-color: whitesmoke;
-}
-
-td.rtable{
-	background-color: whitesmoke;
-}
-
 #menubar, #sidebar{
-	width:160px;
-	padding:0px;
-	margin:0px 2px;
 	word-break:break-all;
 	font-size:93%;
 	overflow:hidden;
 }
+
 #menubar ul{
 	padding: 0px 0.3em;
 	margin: 0px;
@@ -419,7 +395,7 @@ td.rtable{
 #sidebar h1, #sidebar h2, #sidebar h3, #sidebar h4, #sidebar h5, #sidebar h6{
 	border: 1px gainsboro solid;
 	background-color: gainsboro;
-	margin:0;
+	margin:1px;
 	padding:0.2em;
 	text-align:center;
 }
@@ -618,28 +594,100 @@ td.rtable{
 	text-decoration: none;
 }
 
+/** Popup Toc *************************************************************************************/
+#poptoc {
+	border:gray thin outset;
+	background-color:lightyellow;
+	max-width:25em;
+	min-width:18em;
+	opacity:0.9;
+	overflow:visible;
+	padding:0.5em;
+	position:absolute;
+	text-align:left;
+	text-shadow: white 1px 1px 0px;
+	width:22em;
+	z-index:1;
+}
+
+.ie6 #poptoc, .ie7 #poptoc, .ie8 #poptoc {
+	filter:
+		progid:DXImageTransform.Microsoft.Alpha(opacity=90)
+		progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=ivory,EndColorStr=lemonchiffon) !important;
+}
+
+.webkit #poptoc{
+	background: -webkit-gradient(linear, left top, left bottom, from(ivory), to(lemonchiffon));
+}
+
+.gecko #poptoc{
+	background: -moz-linear-gradient(top, ivory, lemonchiffon);
+}
+
+.presto #poptoc{
+	background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMCI%2BDQo8ZGVmcz4NCjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxMDAlIj4NCjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOml2b3J5OyIvPg0KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjpsaWdodHllbGxvdzsiLz4NCjwvbGluZWFyR3JhZGllbnQ%2BDQo8L2RlZnM%2BDQo8cmVjdCB4PSIwIiB5PSIwIiBmaWxsPSJ1cmwoI2dyYWRpZW50KSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgLz4NCjwvc3ZnPg0K');
+}
+.ie9 #poptoc {
+	-ms-filter: "progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=ivory,EndColorStr=lemonchiffon)" !important;
+}
+
+#poptoc a{
+	color:blue !important;
+	cursor:pointer; 
+}
+#poptoc a:hover{
+	text-shadow: none;
+	background-color:#ccc;
+}
+#poptoc h1{
+	color:navy;
+	background-color:honeydew;
+	font-size:small;
+	font-weight:normal;
+	padding:0.3em;
+	margin:0;
+	text-align:center;
+	border:silver solid 1px;
+	display:block;
+}
+#poptoc h1 a{color:navy; text-decoration:none;}
+#poptoc h1 img {margin-bottom:-3px; margin-right: 2px;}
+#poptoc .nav {text-indent:0em;border-top:1px gray solid; padding-top:0.2em;text-align:center; white-space: nowrap; }
+#poptoc a.here{color: black; background: #EEEEEE; text-decoration: none; border:1px dotted gray;}
+
+.tocpic {
+	display:inline;
+	cursor:pointer;
+}
+
+.hrefp, .topic {
+	vertical-align:text-bottom;
+}
 /** Print Setting *********************************************************************************/
 @media print {
-	.ltable, .rtable{
-		display:none;
-	}
-	
-	#title h2, #header img, #navigator, #menubar, #poptoc, #banner_box, #attach, #toolbar,
+	#hgroup h2, #header img, #navigator, #menubar, #sidebar, #poptoc, #banner_box, #attach, #toolbar,
 	#sigunature{
 		display:none !important;
 		visibility: hidden !important;
 	}
 	
-	#title{
+	#hgroup{
+		margin:0;
+		padding:0;
 		float:none;
 		clear:both;
+	}
+	#hgroup h2{
+		display:none;
+	}
+	#hgroup h1{
+		width:100%;
 	}
 	
 	#lastmodified{
 		text-align:right;
 	}
-		
-	
+
 	address{
 		float:left;
 	}

@@ -1,0 +1,15 @@
+# Apache .htaccess for PukiWiki
+#
+# $Id: .htaccess,v 1.14.4 2010/07/16 17:27:00 Logue Exp $
+# Copyright (C)
+#   2010      PukiPlus! Developer Team
+#   2006      PukiWiki Plus! Developers Team
+#   2002-2005 PukiWiki Developers Team
+#   2001      Originally written by yu-ji
+# License: GPL v2 or (at your option) any later version
+#
+# NOTE: Correct permission of this file 644(or 604)
+
+<Files ~ "\.(ttf|eot|woff|otf)$">
+	header add Access-Control-Allow-Origin *
+</Files>

@@ -1,9 +1,9 @@
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: locale.js,v 0.0.2 2010/07/30 15:04:00 Logue Exp $
+// $Id: locale.js,v 0.0.3 2010/07/30 15:04:00 Logue Exp $
 
 // Pukiwiki skin script for jQuery
-// Copyright (c)2010 PukiPlus! Developer Team
-//              2010 Logue <http://logue.be/> All rights reserved.
+// Copyright (c)2010-2011 PukiWiki Advance Developer Team
+//			  2010	  Logue <http://logue.be/> All rights reserved.
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,12 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-/* 
-jQuery-Utils
-http://code.google.com/p/jquery-utils/
-i18n Plugin for jQuery
-*/
-(function(a){a._i18n={trans:{},"default":"en_US",language:"en_US"};a.i18n=function(){var f=function(h,i){var g=false;if(a._i18n.trans[a._i18n.language]&&a._i18n.trans[a._i18n.language][h]&&a._i18n.trans[a._i18n.language][h][i]){g=a._i18n.trans[a._i18n.language][h][i]}else{if(a._i18n.trans[a._i18n["default"]]&&a._i18n.trans[a._i18n["default"]][h]&&a._i18n.trans[a._i18n["default"]][h][i]){g=a._i18n.trans[a._i18n["default"]][h][i]}}return g||i};if(arguments.length<2){a._i18n.language=arguments[0];return a._i18n.language}else{if(typeof(arguments[1])=="string"){var c=f(arguments[0],arguments[1]);if(arguments[2]&&typeof(arguments[2])=="object"){return a.format(c,arguments[2])}else{return c}}else{var b=arguments[0].split(".");var e=b[0];var d=b[1]||"jQuery";if(!a._i18n.trans[e]){a._i18n.trans[e]={};a._i18n.trans[e][d]=arguments[1]}else{a.extend(a._i18n.trans[e][d],arguments[1])}}}}})(jQuery);
 /**************************************************************************************************/
 
 $.i18n('en_US.pukiwiki', {
@@ -31,23 +25,13 @@ $.i18n('en_US.pukiwiki', {
 	select		: 'Please select the range of the object.',
 	fontsize	: 'Size of character ( It specifies it with % or pt[omit]. ):',
 	to_ncr		: 'It converts it into the numeric character reference.',
-	hint_text1	: [
+	hint		: [
 		'The color selected first becomes the color specification and the character color and the color selected next become the background colors.',
 		'',
 		'After processing the range of the selection, the range remains selecting it.',
 		'Please input it after moving the cursor with [ → ] key when you continuously input the character.',
 		'',
-		'-- +α(Advance mode) --',
-		'',
 		'[ &# ] button converts the selection character string into the numeric character reference.'
-	].join('\n'),
-	hint_text2	: 'Please push the [ ESC ] key when the range of the display returns to the head, and the processed range disappears.',
-	to_easy		: 'It changed to an easy mode.',
-	to_adv		: 'It changed to the advance mode.',
-	reload		: [
-		'After reload, it becomes effective.',
-		'',
-		'Is it right now reload?'
 	].join('\n'),
 	inline1		: 'Please input the plugin name. [ & is omitted ]',
 	inline2 	: 'Please input the parameter. [ ( )Inside ]',
@@ -88,7 +72,9 @@ $.i18n('en_US.dialog',{
 	close	: 'Close',
 	yes		: 'Yes',
 	no		: 'No',
-	error	: 'Error'
+	next	: 'Next',
+	prev	: 'Previous',
+	error	: 'Error',
 });
 
 $.i18n('en_US.player',{
@@ -101,16 +87,6 @@ $.i18n('en_US.player',{
 	seek		: 'Seek',
 	fullscreen	: 'Full Screen'
 });
-
-$.i18n('en_US.colorbox',{
-	slideshowStart	: 'Start Slideshow',
-	slideshowStop	: 'Stop Slideshow',
-	current			: '{current} of {total}',
-	previous		: 'Previous',
-	next			: 'Next',
-	close			: 'Close'
-});
-
 /**************************************************************************************************/
 
 $.i18n('ja_JP.pukiwiki', {
