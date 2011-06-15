@@ -36,13 +36,6 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-if (isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
-	if (preg_match("/{$etag}/", $_SERVER['HTTP_IF_NONE_MATCH'])) {
-		header('HTTP/1.1 304 Not Modified');
-		exit;
-	}
-}
-
 if (! defined('DATA_HOME')) define('DATA_HOME', '');
 
 /////////////////////////////////////////////////
@@ -92,7 +85,7 @@ $notify = $trackback = $referer = 0;
 // Load *.ini.php files and init PukiWiki
 require(LIB_DIR . 'init.php');
 
-// require(LIB_DIR . 'bad-behavior-pukiwiki.php');
+//require(LIB_DIR . 'bad-behavior-pukiwiki.php');
 
 // Load optional libraries
 if ($notify)	require(LIB_DIR . 'mail.php'); // Mail notification

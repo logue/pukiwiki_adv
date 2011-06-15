@@ -43,15 +43,17 @@ function bb2_approved($settings, $package)
 // If this is reverse-proxied or load balanced, obtain the actual client IP
 function bb2_reverse_proxy($settings, $headers_mixed)
 {
-	$addrs = array_reverse(preg_split("/[\s,]+/", $headers_mixed[$settings['reverse_proxy_header']]));
-	if (!empty($settings['reverse_proxy_addresses'])) {
-		foreach ($addrs as $addr) {
-			if (!match_cidr($addr, $settings['reverse_proxy_addresses'])) {
-				return $addr;
+	if (isset($headers_mixed[$settings['reverse_proxy_header']])){
+		$addrs = array_reverse(preg_split("/[\s,]+/", $headers_mixed[$settings['reverse_proxy_header']]));
+		if (!empty($settings['reverse_proxy_addresses'])) {
+			foreach ($addrs as $addr) {
+				if (!match_cidr($addr, $settings['reverse_proxy_addresses'])) {
+					return $addr;
+				}
 			}
 		}
+		return $addrs[0];
 	}
-	return $addrs[0];
 }
 
 // Let God sort 'em out!

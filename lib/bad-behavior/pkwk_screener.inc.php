@@ -2,6 +2,7 @@
 
 // Bad Behavior browser screener
 // for PukiWiki Adv use Only!
+// $Id: pukiwiki_screener.php,v 0.2 2011/06/01 08:06:00 Logue Exp $
 
 function bb2_screener($settings, $package)
 {
@@ -20,6 +21,6 @@ function bb2_screener($settings, $package)
 
 	$cookie_value = implode(" ", $screener);
 	
-	$js_vars['BH_NAME'] = $cookie_name;
-	$js_vars['BH_VALUE'] = $cookie_value;
+	$js_vars[] = 'var BH_NAME = "'.$cookie_name.'";';
+	$js_vars[] = 'var BH_VALUE = "'.$cookie_value.'";';
 }

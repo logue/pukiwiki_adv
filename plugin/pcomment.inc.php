@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: pcomment.inc.php,v 1.48.23 2011/04/11 19:38:00 Logue Exp $
+// $Id: pcomment.inc.php,v 1.48.24 2011/06/16 08:02:00 Logue Exp $
 //
 // pcomment plugin - Show/Insert comments into specified (another) page
 //
@@ -17,11 +17,11 @@
 //   reply -- Show radio buttons allow to specify where to reply
 
 // Default recording page name (%s = $vars['page'] = original page name)
-define('PLUGIN_PCOMMENT_PAGE', _('[[Comments/%s]]'));
+define('PLUGIN_PCOMMENT_PAGE', T_('[[Comments/%s]]'));
 
 define('PLUGIN_PCOMMENT_NUM_COMMENTS',     10); // Default 'latest N posts'
 define('PLUGIN_PCOMMENT_DIRECTION_DEFAULT', 1); // 1: above 0: below
-define('PLUGIN_PCOMMENT_SIZE_MSG',  70);
+define('PLUGIN_PCOMMENT_SIZE_MSG',  68);
 define('PLUGIN_PCOMMENT_SIZE_NAME', 15);
 
 // Auto log rotation
@@ -88,7 +88,7 @@ function plugin_pcomment_convert()
 	global $vars;
 //	global $_pcmt_messages;
 	$_pcmt_messages = array(
-		'btn_name'       => T_('Name: '),
+		'msg_name'       => T_('Name: '),
 		'btn_comment'    => T_('Post Comment'),
 		'msg_comment'    => T_('Comment: '),
 		'msg_recent'     => T_('Show recent %d comments.'),
@@ -140,19 +140,19 @@ function plugin_pcomment_convert()
 	} else {
 		// Show a form
 
-		if ($params['noname']) {
-			$title = $_pcmt_messages['msg_comment'];
+//		if ($params['noname']) {
+//			$title = $_pcmt_messages['msg_comment'];
 			$name = '';
-		} else {
-			$title = $_pcmt_messages['btn_name'];
+//		} else {
+//			$title = $_pcmt_messages['msg_name'];
 			// $name = '<input type="text" name="name" size="' . PLUGIN_PCOMMENT_SIZE_NAME . '" placeholder="'.$_pcmt_messages['msg_name'].'" />';
 			list($nick,$link,$disabled) = plugin_pcomment_get_nick();
 			$name = '<input type="text" name="name" value="'.$nick.'" '.$disabled.' size="' . PLUGIN_PCOMMENT_SIZE_NAME . '" placeholder="'.$_pcmt_messages['msg_name'].'" />';
-		}
+//		}
 
 		$radio   = $params['reply'] ?
 			'<input type="radio" name="reply" value="0" tabindex="0" checked="checked" />' : '';
-		$comment = '<input type="text" name="msg" size="' . PLUGIN_PCOMMENT_SIZE_MSG . '" placeholder="'.$_pcmt_messages['msg_name'].'" />';
+		$comment = '<input type="text" name="msg" size="' . PLUGIN_PCOMMENT_SIZE_MSG . '" placeholder="'.$_pcmt_messages['msg_comment'].'" />';
 
 		$s_page   = htmlsc($page);
 		$s_refer  = htmlsc($vars_page);
@@ -167,8 +167,8 @@ function plugin_pcomment_convert()
 	<input type="hidden" name="nodate" value="$s_nodate" />
 	<input type="hidden" name="dir"    value="$dir" />
 	<input type="hidden" name="count"  value="$count" />
-	<div>
-	$radio $title $name $comment
+	<div class="comment_form">
+	$radio $name $comment
 		<input type="submit" value="{$_pcmt_messages['btn_comment']}" />
 	</div>
 EOD;
@@ -216,8 +216,8 @@ function plugin_pcomment_insert()
 
 	if (! is_pagename($page))
 		return array(
-			'msg' => _('Invalid page name'),
-			'body'=> _('Cannot add comment'),
+			'msg' => T_('Invalid page name'),
+			'body'=> T_('Cannot add comment'),
 			'collided'=>TRUE
 		);
 

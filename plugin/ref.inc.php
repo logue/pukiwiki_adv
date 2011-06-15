@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: ref.inc.php,v 1.56.1 2011/02/20 21:18:00 Logue Exp $
+// $Id: ref.inc.php,v 1.56.2 2011/05/29 19:53:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2002-2006, 2011 PukiWiki Developers Team
@@ -46,7 +46,7 @@ function plugin_ref_inline()
 
 	$params = plugin_ref_body(func_get_args());
 	if (isset($params['_error'])) {
-		return htmlsc('&ref(): ERROR: ' . $params['_error'] . ';');
+		return '<p class="ui-state-error">&amp;ref(): ERROR: ' . htmlsc($params['_error']) . '.</span>';
 	}
 	if (! isset($params['_body'])) {
 		return htmlsc('&ref(): ERROR: No _body;');
@@ -59,15 +59,15 @@ function plugin_ref_convert()
 {
 	global $pkwk_dtd;
 	if (! func_num_args()) {
-		return '<p>' . htmlsc('#ref(): Usage:' . PLUGIN_REF_USAGE) . '</p>' . "\n";
+		return '<p class="ui-state-info">' . htmlsc('#ref(): Usage:' . PLUGIN_REF_USAGE) . '</p>' . "\n";
 	}
 
 	$params = plugin_ref_body(func_get_args());
 	if (isset($params['_error'])) {
-		return '<p>' . htmlsc('#ref(): ERROR: ' . $params['_error']) . '</p>' . "\n";
+		return '<p class="ui-state-error">' . htmlsc('#ref(): ERROR: ' . $params['_error']) . '</p>' . "\n";
 	}
 	if (! isset($params['_body'])) {
-		return '<p>' . htmlsc('#ref(): ERROR: No _body') . '</p>' . "\n";
+		return '<p class="ui-state-error">' . htmlsc('#ref(): ERROR: No _body') . '</p>' . "\n";
 	}
 
 	// Wrap with a table
@@ -133,12 +133,12 @@ function plugin_ref_body($args)
 		// Flags and values
 		'_align' => PLUGIN_REF_DEFAULT_ALIGN,
 		'_size'  => FALSE, // Image size specified
-		'_w'     => 0,     // Width
-		'_h'     => 0,     // Height
-		'_%'     => 0,     // Percentage
-		//'_title' => '',  // Reserved
-		//'_body   => '',  // Reserved
-		//'_error' => ''   // Reserved
+		//'_w'     => 0,     // Width
+		//'_h'     => 0,     // Height
+		//'_%'     => 0,     // Percentage
+		//'_title' => null,  // Reserved
+		//'_body   => null,  // Reserved
+		'_error' => null   // Reserved
 	);
 
 	// [Page_name/maybe-separated-with/slashes/]AttachedFileName.sfx or URI
@@ -316,6 +316,7 @@ function ref_check_args($args, & $params)
 		}
 		if (! $hit) $_args[] = $arg;
 	}
+	
 
 	foreach ($_args as $arg) {
 		if (preg_match('/^([0-9]+)x([0-9]+)$/', $arg, $matches)) {
@@ -344,6 +345,7 @@ function ref_check_args($args, & $params)
 			break;
 		}
 	}
+	return $params;
 }
 
 function ref_check_size($width = 0, $height = 0, & $params)
@@ -439,7 +441,7 @@ function plugin_ref_action()
 		header('X-Lighttpd-Sendfile: '.$ref);
 	}else if(stristr(getenv('SERVER_SOFTWARE'), 'nginx') || stristr(getenv('SERVER_SOFTWARE'), 'cherokee')){
 		// nginx
-		header('X-Accel-Redirect: '.$ref);
+//		header('X-Accel-Redirect: '.$ref);
 	}
 
 	if ($type == 'text/html' || $type == 'application/octet-stream') {

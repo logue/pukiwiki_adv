@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: referer.php,v 1.8.5 2010/10/25 19:43:00 Logue Exp $
+// $Id: referer.php,v 1.8.6 2011/05/31 21:37:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team
 //   2006-2008 PukiWiki Plus! Team
@@ -23,7 +23,7 @@ function ref_get_data($page, $uniquekey=1)
 	@flock($fp, LOCK_EX);
 	rewind($fp);
 	while ($data = @fgets($fp, 8192)) {
-		$data = csv_explode("\t", $data);
+		$data = explode("\t", $data);
 		$result[rawurldecode($data[$uniquekey])] = $data;
 	}
 	@flock($fp, LOCK_UN);
@@ -42,7 +42,7 @@ function ref_save($page)
 
 	// if (PKWK_READONLY || ! $referer || empty($_SERVER['HTTP_REFERER'])) return TRUE;
 	// if (auth::check_role('readonly') || ! $referer || empty($_SERVER['HTTP_REFERER'])) return TRUE;
-	if (! $referer || empty($url)) return TRUE;
+	if (! $referer || $url === '') return TRUE;
 
 	// Validate URI (Ignore own)
 	$parse_url = parse_url($url);
@@ -50,9 +50,9 @@ function ref_save($page)
 		return TRUE;
 		
 	// Blocking SPAM
-	if ($use_spam_check['referer'] && SpamCheck($parse_url['host'])) return TRUE;
-	if (is_refspam($url) === true){
-		return TRUE;
+	if ($use_spam_check['referer']){
+		if (SpamCheck($parse_url['host'])) return TRUE;
+		if (is_refspam($url) === true) return TRUE;
 	}
 
 	if (! is_dir(REFERER_DIR))      die_message('No such directory: REFERER_DIR');
@@ -74,22 +74,8 @@ function ref_save($page)
 		);
 	}
 	$data[$d_url][0] = UTIME;
-/*
-	if ($data[$d_url][2] >= REFFRER_BAN_COUNT){	// 3回未満の場合は、リファラーチェックを行う。
-		if ($data[$d_url][2] >= gmp_neg(REFFRER_BAN_COUNT)){
-			$BAN = true;	// 3回以上アクセスがあった場合自動的にバン
-		}
-		if (is_not_valid_referer($url,$script) === TRUE && $BAN !== true){
-			$is_refspam = true;
-			$data[$d_url][2] = $data[$d_url][2] - 1;		// 減算
-			$data[$d_url][4] = 1;	// 表示しない
-		}
-	}else{
-*/
-		$data[$d_url][2]++;
-/*
-	}
-*/
+	$data[$d_url][2]++;
+
 	$filename = ref_get_filename($page);
 	pkwk_touch_file($filename);
 	$fp = fopen($filename, 'w');
@@ -105,26 +91,6 @@ function ref_save($page)
 	fclose($fp);
 	
 	unset($fp,$filename);
-/*
-	if ($is_refspam === true || $BAN === true){
-		// スパムだった場合、ログに環境を保存する。
-		$log = array(
-			UTIME,
-			$url,
-			$_SERVER['HTTP_USER_AGENT'],
-			$_SERVER['REMOTE_ADDR']
-		);
-		$filename = REFERER_SPAM_LOG;
-		pkwk_touch_file($filename);
-		$fp = fopen($filename, 'a');
-		@flock($fp, LOCK_EX);
-		fwrite($fp, join("\t",$log)."\n" );
-		@flock($fp, LOCK_UN);
-		fclose($fp);
-		if ($BAN === true) die();
-		return FALSE;
-	}
-*/
 	return TRUE;
 }
 
@@ -156,7 +122,7 @@ function is_not_valid_referer($ref,$rel){
 	// global $vars;
 	// $script = get_page_absuri(isset($vars['page']) ? $vars['page'] : '');
 
-	$script = parse_url($rel);
+	$script = isset($rel) ? parse_url($rel) : get_script_uri();
 	$condition = $script['host'].$script['path'];	// QueryStringは評価しない。
 
 	// useragent setting（なぜ　ファミコン版Chrome？
@@ -166,7 +132,7 @@ function is_not_valid_referer($ref,$rel){
 	$header_context = stream_context_create($header_options);
 	$html = file_get_html($ref, FALSE, $header_context);
 	foreach($html->find('a') as $element){	// hrefがhttpから始まるaタグを走査
-		if (strpos($element->href,$condition)){	// aタグに自分のサイトのアドレスが含まれていた場合true（ただし、http://から判定する）
+		if (preg_match('/'.$condition.'/', $element->href) !== 0){
 			return false;
 			break;
 		}
@@ -182,40 +148,44 @@ define('CONFIG_REFERER_WL',			'plugin/referer/WhiteList');
 function is_refspam($url){
 	global $open_uri_in_new_window_servername;
 
-	// URLをパース
-	$parse_url = parse_url($url);
 	// サイトのルートのアドレス
 	$script = get_script_uri();
-	$is_refspam = true;
+	// リファラーをパース
+	$parse_url = parse_url($url);
+	
+	// フラグ
+	$is_refspam = true;	// リファラースパムか？
+	$hit_bl = false;	// ブラックリストに入っているか？
+	$BAN = false;		// バンするか？
+	
+	$condition = $parse_url['host'].$parse_url['path'];
 
 	// ドメインは小文字にする。（ドメインの大文字小文字は区別しないのと、strposとstriposで速度に倍ぐらい違いがあるため）
 	// 独自ドメインでない場合を考慮してパス（/~hoge/）を評価する。
 	// QueryString（?aa=bb）は評価しない。
-	$condition = strtolower($parse_url['host']).$parse_url['path'];
 	
 	// ホワイトリストに入っている場合はチェックしない
 	$WhiteList = new Config(CONFIG_REFERER_WL);
 	$WhiteList->read();
 	$WhiteListLines = $WhiteList->get('WhiteList');
 	foreach (array_merge($open_uri_in_new_window_servername, $WhiteListLines) as $WhiteListLine){
-//		if( strpos($WhiteListLine[0], $condition) !== false ){
-		if( strpos($WhiteListLine[0], strtolower($parse_url['host'])) !== false ){
+		if (preg_match('/'.$WhiteListLine[0].'/i', $condition) !== 0){
 			$is_refspam = false;
 			break;
 		}
 	}
-	
+
 	if ($is_refspam !== false){
 		$NewBlackListLine = array();
-		$hit_bl = false;
-		$BAN = false;
 		// ブラックリストを確認
 		$BlackList = new Config(CONFIG_REFERER_BL);
 		$BlackList->read();
+
 		$BlackListLines = $BlackList->get('BlackList');
 		// |~referer|~count|~ban|h
+
 		foreach ($BlackListLines as $BlackListLine){
-			if( strpos($BlackListLine[0], $condition) !== false){
+			if (preg_match('/'.$BlackListLine[0].'/i', $condition) !== 0){
 				// 過去に同じリファラーからアクセスがあった場合
 				$BlackListLine[1]++;
 				if ($BlackListLine[2] == 1 || $BlackListLine[1] <= CONFIG_REFFRER_BAN_COUNT){
@@ -244,14 +214,15 @@ function is_refspam($url){
 //				$WhiteList->put('WhiteList',$WhiteListLines);
 //				$WhiteList->write();
 			}
-			// ブラックリストを更新
-			$BlackList->put('BlackList',$NewBlackListLine);
-			$BlackList->write();
 		}
+		// ブラックリストを更新
+		$BlackList->put('BlackList',$NewBlackListLine);
+		$BlackList->write();
+
 		unset($BlackList,$BlackListLines,$BlackListLine,$NewBlackListLine, $hit_bl);
 		unset($WhiteList,$WhiteListLines,$WhiteListLine);
 
-		if ($is_refspam === true){
+		if ($is_refspam === true || $BAN === true){
 			// スパムだった場合、ログに環境を保存する。
 			$log = array(
 				UTIME,

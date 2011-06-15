@@ -41,8 +41,32 @@ function is_pagename($str)
 
 function is_url($str, $only_http = FALSE)
 {
+	// URLでありえない文字はfalseを返す
+	if ( preg_match( "|[^-/?:#@&=+$,\w.!~*;'()%]|", $str ) ) {
+		return FALSE;
+	}
+	// 許可するスキーマー
 	$scheme = $only_http ? 'https?' : 'https?|ftp|news';
-	return preg_match('/^(' . $scheme . ')(:\/\/[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#]*)$/', $str);
+	
+	// URLマッチパターン
+	$pattern = (
+		"!^(?:".$scheme.")://"					// scheme
+		. "(?:\w+:\w+@)?"						// ( user:pass )?
+		. "("
+		. "(?:[-_0-9a-z]+\.)+(?:[a-z]+)\.?|"	// ( domain name |
+		. "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|"	//   IP Address  |
+		. "localhost"							//   localhost )
+		. ")"
+		. "(?::\d{1,5})?(?:/|$)!iD"				// ( :Port )?
+	);
+	// 正規処理
+	$ret = preg_match($pattern, $str);
+	// マッチしない場合は0が帰るのでFALSEにする
+	if ($ret === 0){
+		return FALSE;
+	}else{
+		return $ret;
+	}
 }
 
 // If the page exists
@@ -1272,62 +1296,5 @@ function csv_implode($glue, $pieces)
 function htmlsc($string = '', $flags = ENT_QUOTES, $charset = CONTENT_CHARSET)
 {
 	return htmlspecialchars($string, $flags, $charset);	// htmlsc()
-}
-//// Compat ////
-
-// is_a --  Returns TRUE if the object is of this class or has this class as one of its parents
-// (PHP 4 >= 4.2.0)
-if (! function_exists('is_a')) {
-
-	function is_a($class, $match)
-	{
-		if (empty($class)) return FALSE; 
-
-		$class = is_object($class) ? get_class($class) : $class;
-		if (strtolower($class) == strtolower($match)) {
-			return TRUE;
-		} else {
-			return is_a(get_parent_class($class), $match);	// Recurse
-		}
-	}
-}
-
-// array_fill -- Fill an array with values
-// (PHP 4 >= 4.2.0)
-if (! function_exists('array_fill')) {
-
-	function array_fill($start_index, $num, $value)
-	{
-		$ret = array();
-		while ($num-- > 0) $ret[$start_index++] = $value;
-		return $ret;
-	}
-}
-
-// md5_file -- Calculates the md5 hash of a given filename
-// (PHP 4 >= 4.2.0)
-if (! function_exists('md5_file')) {
-
-	function md5_file($filename)
-	{
-		if (! file_exists($filename)) return FALSE;
-
-		$fd = fopen($filename, 'rb');
-		if ($fd === FALSE ) return FALSE;
-		$data = fread($fd, filesize($filename));
-		fclose($fd);
-		return md5($data);
-	}
-}
-
-// sha1 -- Compute SHA-1 hash
-// (PHP 4 >= 4.3.0, PHP5)
-if (! function_exists('sha1')) {
-	if (extension_loaded('mhash')) {
-		function sha1($str)
-		{
-			return bin2hex(mhash(MHASH_SHA1, $str));
-		}
-	}
 }
 ?>

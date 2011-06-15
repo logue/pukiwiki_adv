@@ -77,10 +77,10 @@ function catbody($title, $page, $body)
 		global $page_title;		// Title of this site
 	
 		global $head_tags, $foot_tags;	// Obsolete
-		global $meta_tags, $link_tags, $js_tags, $js_blocks, $css_blocks, $info, $js_vars, $js_init, $modernizr;
+		global $meta_tags, $link_tags, $js_tags, $js_blocks, $css_blocks, $info, $js_init, $js_vars, $modernizr;
 		global $keywords, $description, $pkwk_head_js, $google_loader, $ui_theme;
 		
-		global $google_analytics, $google_api_key, $google_site_verification, $google_analytics, $yahoo_site_explorer_id, $bing_webmaster_tool;
+		global $google_analytics, $google_api_key, $google_site_verification, $yahoo_site_explorer_id, $bing_webmaster_tool;
 
 		/* Adv. ここから。（あまりいい実装ではない） */
 		global $adminpass;
@@ -129,6 +129,7 @@ function catbody($title, $page, $body)
 		// JavaScriptタグの組み立て
 		$js_init['PAGE']= rawurlencode($_page);
 		$js_init['MODIFIED']= $filetime;
+		if(isset($google_analytics)){ $js_init['GOOGLE_ANALYTICS'] = $google_analytics; }
 		
 		// application/xhtml+xml を認識するブラウザではXHTMLとして出力
 		if (PKWK_STRICT_XHTML === TRUE && strstr($_SERVER['HTTP_ACCEPT'], 'application/xhtml+xml') !== false){

@@ -317,7 +317,11 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 	global $notify, $notify_subject, $notify_exclude, $spam;
 
 	$type = get_mimeinfo($file['tmp_name']);
-	$must_compress = attach_is_compress($type,PLUGIN_ATTACH_UNKNOWN_COMPRESS);
+	if (PLUGIN_ATTACH_UNKNOWN_COMPRESS !== 0){
+		$must_compress = attach_is_compress($type,PLUGIN_ATTACH_UNKNOWN_COMPRESS);
+	}else{
+		$must_compress = false;
+	}
 
 	if ($must_compress) {
 		// if attach spam, filtering attach file.
@@ -1148,13 +1152,13 @@ EOD;
 		// for reduce server load
 		if (function_exists('apache_get_modules') && in_array( 'mod_xsendfile', apache_get_modules()) ){
 			// for Apache mod_xsendfile
-			header('X-Sendfile: '.$this->filename);
+			header('X-Sendfile: '.$s_filename);
 		}else if (stristr(getenv('SERVER_SOFTWARE'), 'lighttpd') ){
 			// for lighttpd
-			header('X-Lighttpd-Sendfile: '.$this->filename);
+			header('X-Lighttpd-Sendfile: '.$s_filename);
 		}else if(stristr(getenv('SERVER_SOFTWARE'), 'nginx') || stristr(getenv('SERVER_SOFTWARE'), 'cherokee')){
 			// nginx
-			header('X-Accel-Redirect: '.$this->filename);
+//			header('X-Accel-Redirect: '.$s_filename);
 		}
 
 		if ($this->type == 'text/html' || $this->type == 'application/octet-stream') {

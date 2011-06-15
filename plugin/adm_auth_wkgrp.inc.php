@@ -26,8 +26,8 @@ function plugin_adm_auth_wkgrp_init()
 			'msg_check'			=> T_('Check'),
 			'msg_view'			=> T_('View'),
 			'msg_import'		=> T_('Import'),
-			'msg_ok'			=> T_('The <var>%s</var> file was generated.'),
-			'msg_ok_import'		=> T_('Data was taken into <var>%s</var>.'),
+			'msg_ok'			=> T_('The %s file was generated.'),
+			'msg_ok_import'		=> T_('Data was taken into %s.'),
 			'msg_gen'			=> T_('It is necessary to generate it.'),
 			'err_authority'		=> T_('The manager authority is necessary.'),
 			'err_not_use'		=> T_('The generation function is invalid.'),
@@ -146,7 +146,7 @@ function plugin_adm_auth_wkgrp_action()
 	case 'gen':
 		$wkgrp_user = adm_auth_wkgrp_get_page();
 		adm_auth_wkgrp_put_file($wkgrp_user);
-		$retval['body'] = '<p>'.sprintf($_adm_auth_wkgrp_msg['msg_ok'], PKWK_AUTH_WKGRP_FILE).'</p>';
+		$retval['body'] = '<p>'.sprintf($_adm_auth_wkgrp_msg['msg_ok'], '<var>'.PKWK_AUTH_WKGRP_FILE.'</var>').'</p>';
 		break;
 	case 'check':
 		$retval['body'] = adm_auth_wkgrp_check();
@@ -276,7 +276,7 @@ function adm_auth_wkgrp_import()
 	page_write($config_page_name, $data);
 	// php ファイルのタイムスタンプとページを一致させる
 	adm_auth_wkgrp_touch_file2page();
-	return sprintf($_adm_auth_wkgrp_msg['msg_ok_import'], $config_page_name);
+	return sprintf($_adm_auth_wkgrp_msg['msg_ok_import'], '<var>'.$config_page_name.'</var>');
 }
 
 function adm_auth_wkgrp_add_btn()
@@ -284,8 +284,8 @@ function adm_auth_wkgrp_add_btn()
 	global $script, $_adm_auth_wkgrp_msg;
 
 	return <<<EOD
-<form action="$script" method="post">
-	<div class="adm_auth_wkgrp_add">
+<form action="$script" method="post" class="form_adm_auth_wkgrp_add">
+	<div>
 		<input type="hidden" name="plugin" value="adm_auth_wkgrp" />
 		<input type="submit" value="{$_adm_auth_wkgrp_msg['btn_auth_wkgrp']}" />
 	</div>

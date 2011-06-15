@@ -609,8 +609,8 @@ input[disabled]:hover, select[disabled]:hover, textarea[disabled]:hover, option[
 #realview_outer {
 	border:1px solid silver;
 	background-color:white;
-	padding:0.2em;
-	margin:0.1em;
+	padding:.2em;
+	margin-bottom:.1em;
 	height:200px;
 	display:none;
 	width:99%;
@@ -1498,6 +1498,9 @@ ul#jplayer_icons #jplayer_volume-min {
 .emoji-wine{background-position: -216px -306px;}
 .emoji-shock{background-position: -234px -306px;}
 
+.ie8 .emoji{
+	text-indent:-2em;
+}
 /** Print Setting *********************************************************************************/
 @media print {
 	* { background: transparent !important; color: black !important; text-shadow: none !important; filter:none !important;

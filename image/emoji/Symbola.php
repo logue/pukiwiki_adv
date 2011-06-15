@@ -75,11 +75,14 @@ if (function_exists('apache_get_modules') && in_array( 'mod_xsendfile', apache_g
 	header('X-Lighttpd-Sendfile: '.$filename);
 }else if(stristr(getenv('SERVER_SOFTWARE'), 'nginx') || stristr(getenv('SERVER_SOFTWARE'), 'cherokee')){
 	// nginx
-	header('X-Accel-Redirect: '.$filename);
+//	header('X-Accel-Redirect: '.$filename);
 }
 
 header('Content-Length: ' . filesize($filename));
 header('Last-Modified: '.gmdate('D, d M Y H:i:s', $modified).' GMT');
-readfile($filename);
-exit();
+//readfile($filename);
+$fp = fopen($filename, 'rb');
+fpassthru($fp);
+fclose($fp);
+flush();
 ?>

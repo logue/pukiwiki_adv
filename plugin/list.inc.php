@@ -32,12 +32,10 @@ function plugin_list_getlist($withfilename = FALSE, $listcmd = 'read')
 {
 	global $non_list, $whatsnew;
 
-	if (DEBUG === false){
-		$pages = (!$withfilename) ?
-			array_diff($pages, preg_grep('/' . $non_list . '/S', $pages)) : array_diff(auth::get_existpages(),array($whatsnew));
-	}else{
-		$pages = array_diff(get_existpages(),array($whatsnew));
-	}
+	$pages = array_diff(auth::get_existpages(),array($whatsnew));
+	if (!$withfilename || DEBUG)
+		$pages = array_diff($pages, preg_grep('/' . $non_list . '/S', $pages));
+
 	if (empty($pages)) return '';
 	$cmd = ($listcmd == 'read' || $listcmd == 'edit') ? $listcmd : 'read';
 	return page_list($pages,$cmd,$withfilename);

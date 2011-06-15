@@ -58,12 +58,7 @@ var pukiwiki = {
 		// FaceBookを実行
 		if (typeof(FACEBOOK_APPID) !== 'undefined'){
 			$('body').append('<div id="fb-root"></div>');
-			
-			if (!$.query.get('cmd')){
-				if (!PAGE.match(/^:|FormatRules|RecentChanges|RecentDeleted|InterWikiName|AutoAliasName|MenuBar|SideBar|Navigation|Glossary/i)){
-					$(this.body).append('<hr /><div style="margin-left:2em;"><fb:like send="true" font="arial" show_faces="true" href="'+href+'"></fb:like><fb:comments href="'+href+'" publish_feed="true" width="650" numposts="10" migrated="1" ></fb:comments></div>');
-				}
-			}
+			$(this.body).append('<fb:login-button>Login with Facebook</fb:login-button>');
 			
 			$.getScript(protocol+'connect.facebook.net/'+LANG+'/all.js', function() {
 				FB.init({
@@ -75,20 +70,7 @@ var pukiwiki = {
 				FB.Event.subscribe('auth.login', function() {
 					_window.location.reload();
 				});
-				if ($('form').length !== 0 && $.query.get('cmd') !== 'guiedit'){
-					$('form').each(function(){
-						var content = '<input type="checkbox" name="fb_publish" id="fb_publish" checked="checked" /> <label for="fb_publish"><img src="'+IMAGE_DIR+'social/facebook.png" width="16" height="16" title="Publish to Facebook" alt="Facebook" /></label>';
-						var $msg = $(this).find('*[name=msg]');
-						if ($msg.length !== 0){
-							$(this).find('input[type=submit]').before(content);
-							$(this).submit(function(){
-								// user_message, attachment, action_links, target_id, user_message_prompt, callback, auto_publish, actor_id
-								FB.streamPublish($msg.val(), null, null, 4, null, null, true, 'default');
-							});
-						}
-					});
-					self.fb = true;
-				}
+				self.fb = true;
 			});
 		}else{
 			this.fb = false;
@@ -139,13 +121,13 @@ var pukiwiki = {
 			this.assistant();
 		}
 
-/*
+
 		if ($.query.get('cmd') === 'list'){
 			$('#page_list').jstree({
 				plugins:['html_data', 'themeroller' ],
 			});
 		}
-*/
+
 
 		// Textarea Resizer
 		if ($("textarea[name='msg']").length !== 0 && $.query.get('cmd') !== 'guiedit'){
@@ -249,6 +231,10 @@ var pukiwiki = {
 		// フォームロックを解除
 		$(':input').removeAttr('disabled');
 		$('.ui-button').button('option', 'disabled', false);
+		
+		if (typeof(FACEBOOK_APPID) !== 'undefined' && !$.query.get('cmd') && !PAGE.match(/^:|FormatRules|RecentChanges|RecentDeleted|InterWikiName|AutoAliasName|MenuBar|SideBar|Navigation|Glossary/i)){
+			$(this.body).append('<hr /><div style="margin-left:2em;"><fb:like send="true" font="arial" show_faces="true" href="'+href+'"></fb:like><fb:comments href="'+href+'" publish_feed="true" width="650" numposts="10" migrated="1" ></fb:comments></div>');
+		}
 	},
 	// ページを閉じたとき
 	unload : function(prefix){

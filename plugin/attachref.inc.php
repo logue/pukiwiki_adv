@@ -176,7 +176,7 @@ function plugin_attachref_inline()
 	$btn_text .= $extra_options['text'];
 #	$button = 0;
 
-#	$args = func_get_args();
+	$args = func_get_args();
 #   $btn_text = array_pop($args);
 #   $btn_text = $btn_text ? $btn_text : $_attachref_messages['btn_submit'];
 
@@ -195,12 +195,12 @@ function plugin_attachref_inline()
 #	        array_push($options, $opt);
 #	    }
 #	}
-#   if ( $no_flag == 1 ) $btn_text .= "[$attachref_no]";
+#   $btn_text .= ( $no_flag == 1 ) ? "[$attachref_no]" : '';
 	$args = $options;
 	if (count($args) && $args[0] != '') {
 		require_once(PLUGIN_DIR . 'ref.inc.php');
 	    $params = plugin_ref_body($args, $vars['page']);
-	    if ($params['_error'] != '') {
+	    if (isset($params['_error'])) {
 			$ret = $params['_error'];
 			$dispattach = 1;
 	    } else {
@@ -232,7 +232,7 @@ function plugin_attachref_inline()
 EOD;
 	    } else {
 			$f_btn_text = preg_replace('/<[^<>]+>/','',$btn_text);
-			$btn_url = get_cmd_uri('attachref', $_page,	'',	array(
+			$btn_url = get_cmd_uri('attachref', $vars['page'],	'',	array(
 				'attachref_no'	=> $attachref_no,
 				'attachref_opt'	=> $s_args,
 				'refer'			=> $vars['page'],

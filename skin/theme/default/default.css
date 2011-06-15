@@ -262,6 +262,10 @@ ul, ol{
 }
 
 /** Main Content area *****************************************************************************/
+#body > *{
+	margin:0 1.5em;
+}
+
 #body h1{
 	margin: 0;
 }
@@ -276,6 +280,10 @@ ul, ol{
 
 #body h4, #body  h5, #body  h6{
 	margin:.2em 0 .5em .8em;
+}
+
+#body > hr{
+	margin: 1em;
 }
 
 #topicpath{
