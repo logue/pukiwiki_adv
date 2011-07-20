@@ -1,9 +1,8 @@
 <?php
 // PukiWiki Advance Standard CSS.
-// $Id: scripts.css.php,v 1.6.8 2011/04/03 19:44:00 Logue Exp $
+// $Id: scripts.css.php,v 1.6.8 2011/07/04 07:40:00 Logue Exp $
 // Copyright (C) 2010-2011 PukiWiki Advance Developer Team
 //
-// 基本スタイルシート
 
 // Send header
 header('Content-Type: text/css; charset: UTF-8');
@@ -30,62 +29,71 @@ time, mark, audio, video {
 	vertical-align: baseline;
 }
 
-article, aside, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section {
-	display: block;
-}
+audio[controls], canvas, video { display: inline-block; *display: inline; *zoom: 1; }
 
-blockquote, q { quotes: none; }
-blockquote:before, blockquote:after,
-q:before, q:after { content: ""; content: none; }
-ins { text-decoration: none; }
-mark { font-style: italic; font-weight: bold; }
-del { text-decoration: line-through; }
-abbr[title], dfn[title] { border-bottom: 1px dotted; cursor: help; }
-table { border-collapse: collapse; border-spacing: 0; }
-hr { display: block; height: 1px; border: 0; border-top: 1px solid #ccc; margin: 1em 0; padding: 0; }
-input, select { vertical-align: middle; }
-
+html { font-size: 100%; /* overflow-y: scroll; */ -webkit-tap-highlight-color: rgba(0,0,0,0); -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
 body{ font:13px/1.231 sans-serif; *font-size:small; }
-pre, code, kbd, samp { font-family: monospace, sans-serif; }
+body, button, input, select, textarea { font-family: sans-serif; color: #444; }
 
-/* html { overflow-y: scroll; } */
-a:hover, a:active { outline: none; }
-ul, ol { margin-left: 2em; }
-ol { list-style-type: decimal; }
-nav ul, nav li { margin: 0; list-style:none; list-style-image: none; }
-small { font-size: 85%; }
-strong, th { font-weight: bold; }
-/* td { vertical-align: top; } */
-sub, sup { font-size: 75%; line-height: 0; position: relative; }
-sup { top: -0.5em; }
-sub { bottom: -0.25em; }
-
-pre { white-space: pre; white-space: pre-wrap; word-wrap: break-word; padding: 15px; }
-textarea { overflow: auto; }
-.ie6 legend, .ie7 legend { margin-left: -7px; }
-button, input, select, textarea { width: auto; overflow: visible; margin: 0; font-size: 100%; vertical-align: baseline; }
-textarea { overflow: auto; vertical-align:text-top; }
-label, input[type="button"], input[type="submit"], input[type="image"], button { cursor: pointer; }
-input::-moz-focus-inner, button::-moz-focus-inner { border: 0; padding: 0; }
-input:valid, textarea:valid { }
-input:invalid, textarea:invalid { border-radius: 1px; -moz-box-shadow: 0px 0px 5px red; -webkit-box-shadow: 0px 0px 5px red; box-shadow: 0px 0px 5px red; }
-.no-boxshadow input:invalid, .no-boxshadow textarea:invalid { background-color: #f0dddd; }
-
-.ie7 img { -ms-interpolation-mode: bicubic; }
-body, select, input, textarea { color: #444; }
-h1, h2, h3, h4, h5, h6 { font-weight: bold; }
 ::-moz-selection{ background: #5E99FF; color:#fff; text-shadow: none; }
 ::selection { background:#5E99FF; color:#fff; text-shadow: none; }
 
+a { color: #00e; }
+a:visited { color: #551a8b; }
+a:focus { outline: thin dotted; }
+a:hover, a:active { outline: 0; }
+
+abbr[title] { border-bottom: 1px dotted; }
+b, strong, h1, h2, h3, h4, h5, h6 { font-weight: bold; }
+blockquote { margin: 1em 40px; }
+dfn { font-style: italic; }
+hr { display: block; height: 1px; border: 0; border-top: 1px solid #ccc; margin: 1em 0; padding: 0; }
+ins { text-decoration: none; }
+mark { font-style: italic; font-weight: bold; }
+pre, code, kbd, samp { font-family: monospace, monospace; font-family: monospace; font-size: 1em; }
+pre { white-space: pre; white-space: pre-wrap; word-wrap: break-word; }
+q { quotes: none; }
+q:before, q:after { content: ""; content: none; }
+small { font-size: 85%; }
+sub, sup { font-size: 75%; line-height: 0; position: relative; vertical-align: baseline; }
+sup { top: -0.5em; }
+sub { bottom: -0.25em; }
+del { text-decoration: line-through; }
+
+ul, ol { margin: 1em 0; padding: 0 0 0 40px; }
+dd { margin: 0 0 0 40px; }
+nav ul, nav ol { list-style: none; margin: 0; padding: 0; }
+
+img { border: 0; -ms-interpolation-mode: bicubic; vertical-align: middle; }
+svg:not(:root) { overflow: hidden; }
+
+hr { display: block; height: 1px; border: 0; border-top: 1px solid #ccc; margin: 1em 0; padding: 0; }
+input, select { vertical-align: middle; }
+
+form { margin: 0; }
+fieldset { border: 0; margin: 0; padding: 0; }
+legend { border: 0; *margin-left: -7px; padding: 0; }
+label { cursor: pointer; }
+button, input, select, textarea { font-size: 100%; margin: 0; vertical-align: baseline; *vertical-align: middle; }
+button, input { line-height: normal; *overflow: visible; }
+button, input[type="button"], input[type="reset"], input[type="submit"] { cursor: pointer; -webkit-appearance: button; }
+input[type="checkbox"], input[type="radio"] { box-sizing: border-box; }
+input[type="search"] { -moz-box-sizing: content-box; -webkit-box-sizing: content-box; box-sizing: content-box; }
+button::-moz-focus-inner, input::-moz-focus-inner { border: 0; padding: 0; }
+textarea { overflow: auto; vertical-align: top; }
+
+input:valid, textarea:valid { }
+input:invalid, textarea:invalid { background-color: #f0dddd; }
+
+table { border-collapse: collapse; border-spacing: 0; }
 
 .ir { display: block; text-indent: -999em; overflow: hidden; background-repeat: no-repeat; text-align: left; direction: ltr; }
+.ir br { display: none; }
 .hidden { display: none; visibility: hidden; }
 .visuallyhidden { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
-.visuallyhidden.focusable:active,
-.visuallyhidden.focusable:focus { clip: auto; height: auto; margin: 0; overflow: visible; position: static; width: auto; }
+.visuallyhidden.focusable:active, .visuallyhidden.focusable:focus { clip: auto; height: auto; margin: 0; overflow: visible; position: static; width: auto; }
 .invisible { visibility: hidden; }
-.clearfix:before, .clearfix:after { content: "\0020"; display: block; height: 0; overflow: hidden; }
+.clearfix:before, .clearfix:after { content: ""; display: table; }
 .clearfix:after { clear: both; }
 .clearfix { zoom: 1; }
 
@@ -1503,18 +1511,18 @@ ul#jplayer_icons #jplayer_volume-min {
 }
 /** Print Setting *********************************************************************************/
 @media print {
-	* { background: transparent !important; color: black !important; text-shadow: none !important; filter:none !important;
-	-ms-filter: none !important; }
-	a, a:link, a:visited { color: #444 !important; text-decoration: underline; }
-	a[rel=external]:after { content: " (" attr(href) ")"; color: #666 !important; }
+	* { background: transparent !important; color: black !important; text-shadow: none !important; filter:none !important; -ms-filter: none !important; }
+	a, a:visited { text-decoration: underline; }
+	a[href]:after { content: " (" attr(href) ")"; }
 	abbr[title]:after { content: " (" attr(title) ")"; }
 	.ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after { content: ""; }
 	pre, blockquote { border: 1px solid #999; page-break-inside: avoid; }
 	thead { display: table-header-group; }
 	tr, img { page-break-inside: avoid; }
+	img { max-width: 100% !important; }
 	@page { margin: 0.5cm; }
 	p, h2, h3 { orphans: 3; widows: 3; }
-	h2, h3{ page-break-after: avoid; }
+	h2, h3 { page-break-after: avoid; }
 
 	.navigator, .toolbar, .navi, .message_box, .noprint, .tocpic, .sf-menu,.pkwk_widget,
 	.style_calendar_prev, .style_calendar_next, .pkwk-symbol, #poptoc,  #toolbar, .ui-dialog, #topicpath{

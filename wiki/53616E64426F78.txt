@@ -162,5 +162,9 @@ aaaa~
 - あああ -- [[aa]] &new{2011-02-06 (日) 05:29:09,new};
 - ううう -- [[aaa]] &epoch{1296905523.0758,comment_date};
 - aaaa -- [[aaaa]] &epoch{1299237721,comment_date};
+--- 444 --  &epoch{1303809050.9724,comment_date};
+- aa -- [[aa]] &epoch{1306413671.6534,comment_date};
+- aaa&(downwardleft); -- [[aaa]] &epoch{1306413744.2665,comment_date};
+- aaaaa -- [[aaaa]] &epoch{1306413791.7892,comment_date};
 
 #comment

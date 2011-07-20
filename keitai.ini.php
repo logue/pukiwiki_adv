@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: keitai.ini.php,v 1.26.8 2011/05/10 23:44:00 Logue Exp $
+// $Id: keitai.ini.php,v 1.26.9 2011/06/20 21:14:00 Logue Exp $
 // Copyright (C)
 //   2011      PukiWiki Advance Developers Team
 //   2005,2009 PukiWiki Plus! Team
@@ -984,7 +984,6 @@ switch ($ua_name) {
 			'&amp;\(shock\);'			=> '&#xF0F5;'
 */
 		);
-	}
 	break;
 
 }

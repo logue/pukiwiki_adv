@@ -201,8 +201,7 @@ function bb2_screen($settings, $package)
 	}
 
 	// Last chance screening.
-	// require_once(BB2_CORE . "/screener.inc.php");
-	require_once(BB2_CORE . "/pkwk_screener.inc.php");
+	require_once(BB2_CORE . "/screener.inc.php");
 	bb2_screener($settings, $package);
 
 	// And that's about it.

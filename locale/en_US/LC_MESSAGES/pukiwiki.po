@@ -3,13 +3,12 @@
 # License: GPL v2 or (at your option) any later version
 # Logue <logue@hotmail.co.jp>, 2011.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Advance v1.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
 "POT-Creation-Date: 2011-04-02 02:53+0900\n"
-"PO-Revision-Date: 2011-04-02 08:06+0900\n"
+"PO-Revision-Date: 2011-06-01 15:05+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
 "Language-Team: Logue <logue@hotmail.co.jp>\n"
 "MIME-Version: 1.0\n"

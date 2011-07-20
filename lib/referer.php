@@ -123,7 +123,7 @@ function is_not_valid_referer($ref,$rel){
 	// $script = get_page_absuri(isset($vars['page']) ? $vars['page'] : '');
 
 	$script = isset($rel) ? parse_url($rel) : get_script_uri();
-	$condition = $script['host'].$script['path'];	// QueryStringは評価しない。
+	$condition = $parse_url['host'].$parse_url['path'];	// QueryStringは評価しない。
 
 	// useragent setting（なぜ　ファミコン版Chrome？
 	$header = "User-Agent: Mozilla/5.0 (Nintendo Family Computer; U; Family Basic 2.0A; ja-JP) AppleWebKit/525.19 (KHTML, like Gecko) Version/3.1.2 Safari/525.21\r\n";	// ファミコン版Safariって一体・・・(w
@@ -132,7 +132,7 @@ function is_not_valid_referer($ref,$rel){
 	$header_context = stream_context_create($header_options);
 	$html = file_get_html($ref, FALSE, $header_context);
 	foreach($html->find('a') as $element){	// hrefがhttpから始まるaタグを走査
-		if (preg_match('/'.$condition.'/', $element->href) !== 0){
+		if (preg_match('/'.$condition.'/i', $element->href) !== 0){
 			return false;
 			break;
 		}
@@ -169,7 +169,8 @@ function is_refspam($url){
 	$WhiteList->read();
 	$WhiteListLines = $WhiteList->get('WhiteList');
 	foreach (array_merge($open_uri_in_new_window_servername, $WhiteListLines) as $WhiteListLine){
-		if (preg_match('/'.$WhiteListLine[0].'/i', $condition) !== 0){
+//		if (preg_match('/'.$WhiteListLine[0].'/i', $condition) !== 0){
+		if (stripos($condition, $WhiteListLine[0]) !== false){
 			$is_refspam = false;
 			break;
 		}
@@ -185,7 +186,8 @@ function is_refspam($url){
 		// |~referer|~count|~ban|h
 
 		foreach ($BlackListLines as $BlackListLine){
-			if (preg_match('/'.$BlackListLine[0].'/i', $condition) !== 0){
+//			if (preg_match('/'.$BlackListLine[0].'/i', $condition) !== 0){
+			if (stripos($condition, $BlackListLine[0]) !== false){
 				// 過去に同じリファラーからアクセスがあった場合
 				$BlackListLine[1]++;
 				if ($BlackListLine[2] == 1 || $BlackListLine[1] <= CONFIG_REFFRER_BAN_COUNT){
@@ -203,7 +205,7 @@ function is_refspam($url){
 		// ブラックリストにヒットしなかった場合
 		if ($hit_bl === false){
 			// リファラーにサイトへのアドレスが存在するかを確認
-			$is_refspam = is_not_valid_referer($url, $script);
+			$is_refspam = is_not_valid_referer($url);
 			
 			if ($is_refspam === true){
 				// 存在しない場合はスパムリストに追加
@@ -237,7 +239,7 @@ function is_refspam($url){
 			fwrite($fp, join("\t",$log)."\n" );
 			@flock($fp, LOCK_UN);
 			fclose($fp);
-			if ($BAN === true) die();
+			die();
 		}
 	}
 	return $is_refspam;

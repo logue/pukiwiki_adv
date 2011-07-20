@@ -224,6 +224,11 @@ $facebook = array(
 	'cookie'	=> true,
 ); 
 */
+
+// Twitter Integration
+$twitter = array(
+	
+);
 /////////////////////////////////////////////////
 // for Access Analyze and SEO use
 

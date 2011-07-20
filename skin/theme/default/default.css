@@ -27,7 +27,11 @@ p, pre, dl, fieldset, blockquote{
 }
 
 blockquote{
-	padding: .3em;
+	padding: .5em;
+}
+
+p {
+	padding:.3em;
 }
 
 del{

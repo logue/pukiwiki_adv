@@ -3,6 +3,7 @@ set PATH=%PATH%;"C:\Program Files (x86)\Poedit\bin"
 IF "%1" == "" GOTO usage
 msgmerge %~n1.po ../../pot/%~n1.pot -o %~n1.po
 msgfmt -o %~n1.mo %~n1.po
+GOTO end
 
 :usage
 echo PukiWiki Advance po file updator

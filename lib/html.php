@@ -33,8 +33,10 @@ function catbody($title, $page, $body)
 	
 	global $_page, $is_page, $is_read, $is_freeze, $is_readonly, $is_safemode, $is_createpage,$lastmod;
 
-	$_page  = isset($vars['page']) ? $vars['page'] : '';
-	$filetime = ($_page !== '') ? get_filetime($_page) : 0; 
+	if (isset($vars['page']) && $vars['page'] !== ''){
+		$_page = $vars['page'];
+		$filetime = get_filetime($_page);
+	} 
 	
 	// Init flags
 	$is_page = (is_pagename($_page) && ! arg_check('backup') && ! is_cantedit($_page));
@@ -127,8 +129,10 @@ function catbody($title, $page, $body)
 //		if ($notify_from !== 'from@example.com') $link_tags[] = array('rev'=>'made',	'href'=>'mailto:'.$notify_from,	'title'=>	'Contact to '.$modifier);
 
 		// JavaScriptタグの組み立て
-		$js_init['PAGE']= rawurlencode($_page);
-		$js_init['MODIFIED']= $filetime;
+		if (isset($_page)){
+			$js_init['PAGE']= rawurlencode($_page);
+			$js_init['MODIFIED']= $filetime;
+		}
 		if(isset($google_analytics)){ $js_init['GOOGLE_ANALYTICS'] = $google_analytics; }
 		
 		// application/xhtml+xml を認識するブラウザではXHTMLとして出力
@@ -157,6 +161,23 @@ function catbody($title, $page, $body)
 		}
 		// Modernizrは、ヘッダー内にないと正常に動作しない
 		$pkwk_head .= "\t\t".'<script type="text/javascript" src="'.SKIN_URI.'js/'.$modernizr.'"></script>'."\n";
+
+		// IE非実装の処理を有効化
+		global $user_agent;
+		if($user_agent['name'] == 'MSIE'){
+			// JSON parseなど
+			// https://github.com/douglascrockford/JSON-js
+			$pkwk_head .= "\t\t".'<script type="text/javascript" src="'.SKIN_URI.'js/json2.js"></script>'."\n";
+			
+			if ($user_agent['vers'] >= 8){
+				// canvasをVMLで実装
+				// http://code.google.com/p/explorercanvas/
+				$pkwk_head .= "\t\t".'<script type="text/javascript" src="'.SKIN_URI.'js/excanvas.compiled.js"></script>'."\n";
+				// メディアクエリを実装
+				// https://github.com/scottjehl/Respond
+				$pkwk_head .= "\t\t".'<script type="text/javascript" src="'.SKIN_URI.'js/respond.min.js"></script>'."\n";
+			}
+		}
 		
 		/* フッター部のタグ */
 		$pkwk_tags = tag_helper('script',$pkwk_head_js)."\t\t".tag_helper('script',$js_tags);

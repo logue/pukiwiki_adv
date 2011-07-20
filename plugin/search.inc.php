@@ -90,7 +90,7 @@ function plugin_search_search_form($s_word = '', $type = '', $bases = array())
 			$label_id = '_p_search_base_id_' . $_num;
 			$s_base   = htmlsc($base);
 			$base_str = '<strong>' . $s_base . '</strong>';
-			$base_label = str_replace('$1', $base_str, $_search_pages);
+			$base_label = '<p>'.str_replace('$1', $base_str, $_search_pages).'</p>';
 			$base_msg  .=<<<EOD
 	<div>
 		<input type="radio" name="base" id="$label_id" value="$s_base" $check />
@@ -103,7 +103,7 @@ EOD;
 		<input type="radio" name="base" id="_p_search_base_id_all" value="" />
 		<label for="_p_search_base_id_all">$_search_all</label>
 EOD;
-		$base_option = '<div class="small">' . $base_msg . '</div>';
+		$base_option = '<p>' . $base_msg . '</p>';
 	}
 
 	if (! PLUGIN_SEARCH_DISABLE_GET_ACCESS) {

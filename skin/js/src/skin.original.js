@@ -99,6 +99,9 @@ var pukiwiki = {
 		// 言語設定
 		$.i18n(LANG);
 		
+		// SyntaxHighlighter
+		this.sh();
+		
 		// 非同期通信中はUIをブロック
 		this.blockUI();
 
@@ -124,7 +127,7 @@ var pukiwiki = {
 
 		if ($.query.get('cmd') === 'list'){
 			$('#page_list').jstree({
-				plugins:['html_data', 'themeroller' ],
+				plugins:['html_data', 'themeroller' ]
 			});
 		}
 
@@ -191,9 +194,6 @@ var pukiwiki = {
 			}
 		);
 		
-		// SyntaxHighlighter
-		this.sh();
-		
 		// Glossaly（ツールチップ）
 		this.glossaly();
 		
@@ -234,6 +234,11 @@ var pukiwiki = {
 		
 		if (typeof(FACEBOOK_APPID) !== 'undefined' && !$.query.get('cmd') && !PAGE.match(/^:|FormatRules|RecentChanges|RecentDeleted|InterWikiName|AutoAliasName|MenuBar|SideBar|Navigation|Glossary/i)){
 			$(this.body).append('<hr /><div style="margin-left:2em;"><fb:like send="true" font="arial" show_faces="true" href="'+href+'"></fb:like><fb:comments href="'+href+'" publish_feed="true" width="650" numposts="10" migrated="1" ></fb:comments></div>');
+		}
+		// Google +1
+		// http://code.google.com/intl/ja/apis/+1button/
+		if ($('.g-plusone').length !== 0){
+			$.getScript('https://apis.google.com/js/plusone.js');
 		}
 	},
 	// ページを閉じたとき
@@ -518,6 +523,53 @@ $(_window).bind("resize", autoResizer);
 			}
 		});
 	},
+	brushes : [],
+	// Syntax Hilighter
+	sh : function(prefix){
+		var self = this;
+		if (prefix){
+			prefix = prefix + ' ';
+		}else{
+			prefix = '';
+		}
+		// シンタックスハイライトするDOMを取得
+		var $sh = $(prefix+'pre.sh');
+		
+		if ($sh.length !== 0){
+			var brushes = new Array();
+			var sh_doms = new Array();
+
+			// DOMを走査し、使用するbrushのリストを作成
+			$sh.each(function(){
+				var $this = $(this);
+				// DOMをキャッシュ（ready時に使用）
+				sh_doms.push($this);
+				// 読み込むbrushを取得
+				var brush = $this.data().brush;
+
+				// 非同期通信で読み込んだshにも反映させるため、
+				// 重複してbrushを読み込まないようにする
+				if ($.inArray(brush, brushes) === -1){
+					brushes.push(brush);
+				}
+			});
+			
+			var config = {
+				autoLoad: true,
+				baseUrl:SKIN_DIR+'js/syntaxhighlighter/',
+				brushes: brushes,
+				ready: function() {
+					// SyntaxHilighterを反映させる
+					for (var i = 0; i <= sh_doms.length-1; i++){
+						var data = sh_doms[i].data();
+						sh_doms[i].beautifyCode(data.brush);
+					}
+				}
+			};
+			// SyntaxHilighterを実行
+			$.beautyOfCode.init(config);
+		}
+	},
 	// ajaxでダイアログ生成。JSON専用！
 	// JSONには必ず、bodyとtitleを入れること！（まぁ、parse関数でbodyとtitleが含まれるオブジェクトにすればいいけど）
 	// params		QueryStringをオブジェクトにしたもの
@@ -634,13 +686,13 @@ $(_window).bind("resize", autoResizer);
 				// scrollbar fix for IE
 				//	if ($.browser.msie){ $('body').css('overflow','hidden'); }
 				$('body').css('cursor','wait');
-				ScrollLock.lock();
+	//			ScrollLock.lock();
 			},
 			close: function() {
 				// reset overflow
 				// $('body').css('overflow','auto');
 				$('body').css('cursor','auto');
-				ScrollLock.unlock();
+	//			ScrollLock.unlock();
 			}
 		}); // end of dialog
 		var self = this;
@@ -1747,7 +1799,7 @@ $(_window).bind("resize", autoResizer);
 
 			moving_average_history_size: 40
 		} : this.skin.swfupload;
-		
+
 		// attachrefの場合、１つのみファイルをアップ可能
 		if (params.plugin === 'attachref'){
 			config.file_upload_limit=1;
@@ -1857,13 +1909,11 @@ $(_window).bind("resize", autoResizer);
 				item.addClass('success').find('p.status').html(ret.title+' | '+pathtofile);
 				$(prefix+'#swfupload-log li#'+file.id+' a#view_'+file.id).click(function(){
 					var href = $(this).attr('href');
-/*
-					if (href.match(/\.(jpg|jpeg|gif|png)$/i) !== -1){
-						$(this).colorbox();
-					}else if (href.match(/\.(mp3|ogg|m4a)$/i) !== -1){
-						pukiwiki.music_player(this);
-					}else{
-*/
+//					if (href.match(/\.(jpg|jpeg|gif|png)$/i) !== -1){
+//						$(this).colorbox();
+//					}else if (href.match(/\.(mp3|ogg|m4a)$/i) !== -1){
+//						pukiwiki.music_player(this);
+//					}else{
 						_window.open(href);
 //					}
 					$(prefix).dialog('option', 'close', function(){ location.reload(); });
@@ -1891,17 +1941,6 @@ $(_window).bind("resize", autoResizer);
 					});
 				}
 			});
-		}
-	},
-	sh : function(prefix){
-		if (prefix){
-			prefix = prefix + ' ';
-		}else{
-			prefix = '';
-		}
-		if (typeof(SyntaxHighlighter) === 'object'){
-			SyntaxHighlighter.config.clipboardSwf = SKIN_DIR+'js/syntaxhighlighter/scripts/clipboard.swf';
-			SyntaxHighlighter.all();
 		}
 	},
 	/** Collects link types from head element. */
@@ -2389,8 +2428,8 @@ var ScrollLock = {
 // ブラウザの設定
 var $buoop = {
 	vs:{				// browser versions to notify
-		i:7,			// IE
-		f:3,			// FF
+		i:8,			// IE
+		f:5,			// FF
 		o:11.00,		// Opera
 		s:5,			// Safari
 		n:9

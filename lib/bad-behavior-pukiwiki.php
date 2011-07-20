@@ -26,7 +26,7 @@ http://www.bad-behavior.ioerror.us/
 
 defined('CONFIG_BADBEHAVIOR_SETTING')	or define('CONFIG_BADBEHAVIOR_SETTING',		'BadBehavior');
 defined('CONFIG_BADBEHAVIOR_LOG')		or define('CONFIG_BADBEHAVIOR_LOG',			'BadBehavior/Log');
-defined('CONFIG_BADBEHAVIOR_WHITELIST')	or define('CONFIG_BADBEHAVIOR_WHITELIST',	'BadBehavior/WhiteList');
+
 
 define('WEEK_SECONDS', 604800);	// 1週間の秒数
 

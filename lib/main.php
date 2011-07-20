@@ -85,7 +85,7 @@ $notify = $trackback = $referer = 0;
 // Load *.ini.php files and init PukiWiki
 require(LIB_DIR . 'init.php');
 
-//require(LIB_DIR . 'bad-behavior-pukiwiki.php');
+require(LIB_DIR . 'bad-behavior-pukiwiki.php');
 
 // Load optional libraries
 if ($notify)	require(LIB_DIR . 'mail.php'); // Mail notification

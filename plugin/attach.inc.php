@@ -1,6 +1,6 @@
 <?php
 // PukPukiPlus.
-// $Id: attach.inc.php,v 1.92.47 2011/04/03 22:40:00 Logue Exp $
+// $Id: attach.inc.php,v 1.92.48 2011/06/20 20:46:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team
@@ -16,26 +16,31 @@
 //    This feature is disabled at newer version of PHP.
 //    Set this at php.ini if you want.
 // Max file size for upload on PHP (PHP default: 2MB)
-
 defined('PLUGIN_ATTACH_UPLOAD_MAX_FILESIZE')	or define('PLUGIN_ATTACH_UPLOAD_MAX_FILESIZE', '4M');		// default: 4MB
 ini_set('upload_max_filesize', PLUGIN_ATTACH_UPLOAD_MAX_FILESIZE);
 
 // Max file size for upload on script of PukiWikiX_FILESIZE
 defined('PLUGIN_ATTACH_MAX_FILESIZE')		or define('PLUGIN_ATTACH_MAX_FILESIZE', (2048 * 1024));		// default: 1MB
+
 // 管理者だけが添付ファイルをアップロードできるようにする
 defined('PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY')	or define('PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY', FALSE);		// FALSE or TRUE
+
 // 管理者だけが添付ファイルを削除できるようにする
 defined('PLUGIN_ATTACH_DELETE_ADMIN_ONLY')	or define('PLUGIN_ATTACH_DELETE_ADMIN_ONLY', FALSE);		// FALSE or TRUE
+
 // 管理者が添付ファイルを削除するときは、バックアップを作らない
 // PLUGIN_ATTACH_DELETE_ADMIN_ONLY=TRUEのとき有効
 defined('PLUGIN_ATTACH_DELETE_ADMIN_NOBACKUP')	or define('PLUGIN_ATTACH_DELETE_ADMIN_NOBACKUP', FALSE);	// FALSE or TRUE
+
 // アップロード/削除時にパスワードを要求する(ADMIN_ONLYが優先)
 defined('PLUGIN_ATTACH_PASSWORD_REQUIRE')	or define('PLUGIN_ATTACH_PASSWORD_REQUIRE', FALSE);		// FALSE or TRUE
+
 // 添付ファイル名を変更できるようにする
 defined('PLUGIN_ATTACH_RENAME_ENABLE')		or define('PLUGIN_ATTACH_RENAME_ENABLE', TRUE);			// FALSE or TRUE
+
 // ファイルのアクセス権
 defined('PLUGIN_ATTACH_FILE_MODE')		or define('PLUGIN_ATTACH_FILE_MODE', 0644);
-						// define('PLUGIN_ATTACH_FILE_MODE', 0604);			// for XREA.COM
+// define('PLUGIN_ATTACH_FILE_MODE', 0604);			// for XREA.COM
 
 // mime-typeを記述したページ
 define('PLUGIN_ATTACH_CONFIG_PAGE_MIME', 'plugin/attach/mime-type');
@@ -102,7 +107,8 @@ function plugin_attach_init()
 			'err_nopage'	=> T_('No such page'),
 			'err_tmp_fail'	=> T_('It failed in the generation of a temporary file.'),
 			'err_load_file'	=> T_('The uploaded file cannot be read.'),			// アップロードされたファイルが読めません。
-			'err_write_tgz'	=> T_('The compression file cannot be written.')	// 圧縮ファイルが書けません。
+			'err_write_tgz'	=> T_('The compression file cannot be written.'),	// 圧縮ファイルが書けません。
+			'err_filename'	=> T_('File name is too long. Please rename more short file name before upoload.')	// ファイル名が長すぎます。アップロードする前に短いファイル名にしてください。
 		),
 	);
 	set_plugin_messages($messages);
@@ -315,6 +321,15 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 {
 	global $_attach_messages;
 	global $notify, $notify_subject, $notify_exclude, $spam;
+	
+	// ファイル名の長さをチェック
+	$filename_length = strlen(encode($page).'_'.encode($file['name']));
+	if ( $filename_length  >= 255 || ($must_compress && $filename_length >= 251 )){
+		return array(
+			'result'=>FALSE,
+			'msg'=>$_attach_messages['err_filename']
+		);
+	}
 
 	$type = get_mimeinfo($file['tmp_name']);
 	if (PLUGIN_ATTACH_UNKNOWN_COMPRESS !== 0){
@@ -1100,10 +1115,41 @@ EOD;
 		if (file_exists($newbase)) {
 			return array('msg'=>$_attach_messages['err_exists']);
 		}
-		if (! PLUGIN_ATTACH_RENAME_ENABLE || ! rename($this->basename, $newbase)) {
+		if (! PLUGIN_ATTACH_RENAME_ENABLE) {
 			return array('msg'=>$_attach_messages['err_rename']);
+		} else {
+			// http://pukiwiki.sourceforge.jp/dev/?BugTrack2%2F345
+			if (! rename($this->basename, $newbase)) {
+				return array('msg'=>$_attach_messages['err_rename']);
+			}
+			// リネーム成功
+			// バックアップファイル・ログファイルもリネームする
+			// エラー処理は省略
+			$rename_targets = array();
+			if ($dir = opendir(UPLOAD_DIR)) {
+				$matches_leaf = array();
+				if (preg_match('/(((?:[0-9A-F]{2})+)_((?:[0-9A-F]{2})+))$/', $this->basename, $matches_leaf)) {
+					$attachfile_leafname = $matches_leaf[1];
+					$attachfile_leafname_pattern = preg_quote($attachfile_leafname, '/');
+					$pattern = "/^({$attachfile_leafname_pattern})(\.((\d+)|(log)))$/";
+					
+					$matches = array();
+					while ($file = readdir($dir)) {
+						if (! preg_match($pattern, $file, $matches))
+							continue;
+						$basename2 = $matches[0];
+						$newbase2 = $newbase . $matches[2];
+						$rename_targets[$basename2] = $newbase2;
+					}
+				}
+				closedir($dir);
+			}
+			foreach ($rename_targets as $basename2=>$newbase2) {
+				$basename2path = UPLOAD_DIR . $basename2;
+				echo "rename '$basename2path' to '$newbase2'<br>\n";
+				rename($basename2path, $newbase2);
+			}
 		}
-
 		return array('msg'=>$_attach_messages['msg_renamed']);
 	}
 

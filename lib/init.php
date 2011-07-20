@@ -432,16 +432,6 @@ if (!IS_AJAX){
 		}
 	}
 
-	// IE非実装の処理を有効化
-	if($user_agent['name'] == 'MSIE'){
-		// JSON parseなど
-		// https://github.com/douglascrockford/JSON-js
-		$default_js_libs[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/json2.js');
-		// canvasをVMLで実装
-		// http://code.google.com/p/explorercanvas/
-		$default_js_libs[] = ($user_agent['vers'] >= 8) ? array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/excanvas.compiled.js') : '';
-	}
-
 	// JavaScriptフレームワーク設定
 	// google ajax api
 	// http://code.google.com/intl/ja/apis/libraries/devguide.html#Libraries
@@ -458,11 +448,11 @@ if (!IS_AJAX){
 */
 		'jquery' => array(
 			'file'	=> 'jquery.min.js',
-			'ver'	=> '1.6.1'
+			'ver'	=> '1.6.2'
 		),
 		'jqueryui'	=> array(
 			'file'	=> 'jquery-ui.min.js',
-			'ver'	=> '1.8.13'
+			'ver'	=> '1.8.14'
 		),
 		'swfobject' => array(
 			'file'	=> 'swfobject.js',
@@ -489,17 +479,15 @@ if (!IS_AJAX){
 			$js_vars[] = 'google.load("'.$name.'","'.$fw['ver'].'");';
 		}
 	}
-		
+
 	// modernizrの設定
-	$modernizr = 'modernizr-1.7.min.js';
-	
-	
-	if (!isset($_SKIN['ui_theme'])) { $_SKIN['ui_theme'] = 'base'; }
+	$modernizr = 'modernizr.min.js';
+
 
 	// jQueryUIのCSS
 	$link_tags[] = array(
 		'rel'=>'stylesheet',
-		'href'=>'http://ajax.googleapis.com/ajax/libs/jqueryui/'.$google_loader['jqueryui']['ver'].'/themes/'.$_SKIN['ui_theme'].'/jquery-ui.css',
+		'href'=>'http://ajax.googleapis.com/ajax/libs/jqueryui/'.$google_loader['jqueryui']['ver'].'/themes/'.(!isset($_SKIN['ui_theme']) ? 'base' : $_SKIN['ui_theme']).'/jquery-ui.css',
 		'type'=>'text/css',
 		'id'=>'ui-theme'
 	);
@@ -519,7 +507,6 @@ if (!IS_AJAX){
 		require(LIB_DIR.'facebook.php');
 		$fb = new FaceBook($facebook);
 		$js_init['FACEBOOK_APPID'] = $fb->getAppId();
-		
 	}
 
 	if (DEBUG === true) {
@@ -531,7 +518,7 @@ if (!IS_AJAX){
 			/* Use plugins */ 
 			'jquery.cookie','jquery.lazyload', 'jquery.query','jquery.scrollTo','jquery.colorbox-min','jquery.a-tools.min','jquery.superfish',
 			'jquery.swfupload','jquery.tablesorter-min','jquery.textarearesizer','jquery.jplayer.min', 'jquery.textarea-min', 'jquery.tooltip.min',
-			'jquery.ajaxga.min', 'jquery.jstree', 'jquery.i18n',
+			'jquery.ajaxga.min', 'jquery.jstree', 'jquery.i18n', 'jquery.beautyOfCode', 
 			
 			/* MUST BE LOAD LAST */
 			'skin.original'

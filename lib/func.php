@@ -357,8 +357,8 @@ function do_search($word, $type = 'AND', $non_format = FALSE, $base = '')
 	}
 	$retval .= '</ul>' . "\n";
 
-	$retval .= str_replace('$1', $s_word, str_replace('$2', count($pages),
-		str_replace('$3', $count, $b_type ? $_string['andresult'] : $_string['orresult'])));
+	$retval .= '<p>'.str_replace('$1', $s_word, str_replace('$2', count($pages),
+		str_replace('$3', $count, $b_type ? $_string['andresult'] : $_string['orresult']))).'</p>';
 
 	return $retval;
 }

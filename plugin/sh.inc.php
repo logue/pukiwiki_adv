@@ -42,9 +42,9 @@ function plugin_sh_convert(){
 	global $js_tags, $link_tags, $sh_count, $langs;
 	
 	if(!$sh_count){
-		$js_tags[] = array('type'=>'text/javascript', 'src'=>PLUGIN_SH_PATH.'scripts/shCore.js');
-		$link_tags[] = array('type'=>'text/css', 'rel'=>'stylesheet', 'href'=>PLUGIN_SH_PATH.'styles/shCore.css');
-		$link_tags[] = array('type'=>'text/css', 'rel'=>'stylesheet', 'href'=>PLUGIN_SH_PATH.'styles/shTheme'.PLUGIN_SH_THEME.'.css', 'id'=>'shTheme');
+//		$js_tags[] = array('type'=>'text/javascript', 'src'=>PLUGIN_SH_PATH.'scripts/shCore.js');
+//		$link_tags[] = array('type'=>'text/css', 'rel'=>'stylesheet', 'href'=>PLUGIN_SH_PATH.'styles/shCore.css');
+//		$link_tags[] = array('type'=>'text/css', 'rel'=>'stylesheet', 'href'=>PLUGIN_SH_PATH.'styles/shTheme'.PLUGIN_SH_THEME.'.css', 'id'=>'shTheme');
 /*
 for Plus! use
 		global $head_tags, $foot_tags;
@@ -113,28 +113,28 @@ HTML;
 				$cond = htmlspecialchars($args[$i]);
 				switch($cond){
 					case 'number':
-						$ret[] = 'gutter: true;';
+						$ret[] = 'data-gutter="true"';
 						break;
 					case 'nonumber':
-						$ret[] = 'gutter: false;';
+						$ret[] = 'data-gutter="false"';
 						break;
 					case 'outline':
-						$ret[] = 'collapse:true;';
+						$ret[] = 'data-collapse="true"';
 						break;
 					case 'nooutline':
-						$ret[] = 'collapse:false;';
+						$ret[] = 'data-collapse="false"';
 						break;
 					case 'menu':
-						$ret[] = 'toolbar:true;';
+						$ret[] = 'data-toolbar="true"';
 						break;
 					case 'nomenu':
-						$ret[] = 'toolbar:false;';
+						$ret[] = 'data-toolbar="false"';
 						break;
 					case 'link':
-						$ret[] = 'auto-links:true;';
+						$ret[] = 'data-auto-links="true"';
 						break;
 					case 'nolink':
-						$ret[] = 'auto-links:false;';
+						$ret[] = 'data-auto-links="false"';
 						break;
 					default : 
 						if(preg_match('/class=\"?([^\"]*)\"?/',$cond,$match)){	// class属性のオーバーライド
@@ -232,12 +232,14 @@ HTML;
 			$lang = 'Plain';
 		break;
 	}
+// for Plus! use
 	if ($langs[$lang] == false){
 		$langs[$lang] = true;
-		$js_tags[] = array('type'=>'text/javascript', 'src'=>PLUGIN_SH_PATH.'scripts/shBrush'.$lang.'.js');
-		// $head_tags[] = '<script type="text/javascript" src="'.PLUGIN_SH_PATH.'scripts/sh'.$lang.'.js"></script>';	// for Plus! use
+//		$js_tags[] = array('type'=>'text/javascript', 'src'=>PLUGIN_SH_PATH.'scripts/shBrush'.$lang.'.js');
+		$head_tags[] = '<script type="text/javascript" src="'.PLUGIN_SH_PATH.'scripts/sh'.$lang.'.js"></script>';	// for Plus! use
 	}
 
-	return '<pre class="brush: '.strtolower($lang).$option .';">'."\n".$text."\n".'</pre>'."\n";
+//	return '<pre class="syntaxhighlighter brush: '.strtolower($lang).$option .';">'."\n".$text."\n".'</pre>'."\n";
+	return '<pre class="sh" data-brush="'.strtolower($lang).'" data-option="{'.$option.'}">'."\n".$text."\n".'</pre>'."\n";
 }
 ?>
