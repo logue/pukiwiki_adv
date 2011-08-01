@@ -1,6 +1,6 @@
 <?php
 // PukiPlus
-// $Id: index.php,v 1.9.6 2010/11/14 22:29:00 Logue Exp $
+// $Id: index.php,v 1.9.7 2011/08/11 21:12:00 Logue Exp $
 // Copyright (C)
 //   2010      PukiWiki Advance Developers Team
 //   2005-2007,2009 PukiWiki Plus! Team
@@ -32,10 +32,10 @@ define('PKWK_WARNING', true);
 
 // Directory definition
 // (Ended with a slash like '../path/to/pkwk/', or '')
-// define('SITE_HOME',	'../wiki-common/');
-define('SITE_HOME',		'./');
+define('SITE_HOME',	'../wiki-common/');
+
 // define('DATA_HOME',	'../../wiki-data/contents/');
-define('DATA_HOME',		'./');
+define('DATA_HOME',		'../wiki-data/');
 
 // define('ROOT_URI', '');
 // define('WWW_HOME', '');
