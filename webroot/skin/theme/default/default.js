@@ -70,5 +70,3 @@ pukiwiki.custom = {
 	// http://users.tpg.com.au/j_birch/plugins/superfish/#options
 //	suckerfish : { }
 };
-
-console.dir(pukiwiki.custom);

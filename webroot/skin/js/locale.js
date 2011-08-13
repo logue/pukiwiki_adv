@@ -44,37 +44,31 @@ $.i18n('en_US.pukiwiki', {
 	submit		: 'Your change was sent. Check please!'
 });
 
-$.i18n('en_US.markitup', {
-	Heading1		: 'Heading level 1',
-	Heading2		: 'Heading level 2',
-	Heading3		: 'Heading level 3',
-	List			: 'Bulleted list',
-	List_Numeric	: 'Numeric lists',
-	Definition		: 'Definitions',
-	Definition_word	: 'Word',
-	Definition_desc	: 'Description',
-	Quote			: 'Quote',
-	Horizontal_Line	: 'Horizontal Line',
-	Newline			: 'Newline',
-	Link			: 'Link',
-	File			: 'File',
-	Bold			: 'Bold',
-	Italic			: 'Italic',
-	Strike			: 'Stroke through',
-	Left			: 'Left',
-	Center			: 'Center',
-	Right			: 'Right'
+$.i18n('en_US.dialog',{
+	ok			: 'OK',
+	cancel		: 'Cancel',
+	close		: 'Close',
+	yes			: 'Yes',
+	no			: 'No',
+	first		: 'First',
+	next		: 'Next',
+	prev		: 'Previous',
+	last		: 'Last',
+	reload		: 'Reload',
+	print		: 'Print',
+	loading		: 'Now Loading...',
+	error		: 'Error'
 });
 
-$.i18n('en_US.dialog',{
-	ok		: 'OK',
-	cancel	: 'Cancel',
-	close	: 'Close',
-	yes		: 'Yes',
-	no		: 'No',
-	next	: 'Next',
-	prev	: 'Previous',
-	error	: 'Error',
+$.18n('en_US.sh',{
+	expandSource				: 'show source',
+	viewSource					: 'view source',
+	copyToClipboard 			: 'copy to clipboard',
+	copyToClipboardConfirmation : 'The code is in your clipboard now',
+	print						: 'print',
+	help						: '?',
+	noBrush						: 'Can\'t find brush for: ',
+	brushNotHtmlScript			: 'Brush wasn\'t configured for html-script option: '
 });
 
 $.i18n('en_US.player',{
@@ -87,6 +81,7 @@ $.i18n('en_US.player',{
 	seek		: 'Seek',
 	fullscreen	: 'Full Screen'
 });
+
 /**************************************************************************************************/
 
 $.i18n('ja_JP.pukiwiki', {
@@ -123,35 +118,32 @@ $.i18n('ja_JP.pukiwiki', {
 	submit		: '変更をサーバーに送信しました。確認してください。'
 });
 
-$.i18n('ja_JP.markitup', {
-	Heading1		: '大見出し',
-	Heading2		: '中見出し',
-	Heading3		: '小見出し',
-	List			: '番号なしリスト',
-	List_Numeric	: '番号付きリスト',
-	Definition		: '定義リスト',
-	Definition_word	: '定義語',
-	Definition_desc	: '説明',
-	Quote			: '引用',
-	Horizontal_Line	: '区切り線',
-	Newline			: '改行',
-	Link			: 'リンク',
-	File			: 'ファイル',
-	Bold			: '太字',
-	Italic			: '斜体',
-	Strike			: '打ち消し線',
-	Left			: '左寄せ',
-	Center			: '中央寄せ',
-	Right			: '右寄せ'
+$.i18n('ja_JP.dialog',{
+	ok			: 'OK',
+	cancel		: 'キャンセル',
+	close		: '閉じる',
+	yes			: 'はい',
+	no			: 'いいえ',
+	first		: '最初へ',
+	prev		: '前へ',
+	next		: '次へ',
+	last		: '最後へ',
+	reload		: 'リロード',
+	clipboard	: 'クリップボードへコピー',
+	print		: '印刷',
+	loading		: '読み込んでいます…。',
+	error		: 'エラー'
 });
 
-$.i18n('ja_JP.dialog',{
-	ok		: 'OK',
-	cancel	: 'キャンセル',
-	close	: '閉じる',
-	yes		: 'はい',
-	no		: 'いいえ',
-	error	: 'エラー'
+$.18n('en_US.sh',{
+	expandSource				: 'ソースを見る',
+	viewSource					: 'ソースを表示',
+	copyToClipboard 			: 'クリップボードへコピー',
+	copyToClipboardConfirmation : 'コードはクリップボードにコピーされました。',
+	print						: '印刷',
+	help						: 'ヘルプ',
+	noBrush						: '以下の言語のBrushスクリプトが見つかりませんでした：',
+	brushNotHtmlScript			: 'Brushの設定がありません：'
 });
 
 $.i18n('ja_JP.player',{
@@ -165,14 +157,6 @@ $.i18n('ja_JP.player',{
 	fullscreen	: '全画面'
 });
 
-$.i18n('ja_JP.colorbox',{
-	slideshowStart	: 'スライドショー開始',
-	slideshowStop	: 'スライドショー停止',
-	current			: '{current}枚目（全{total}枚）',
-	previous		: '←前の画像へ',
-	next			: '次の画像へ→',
-	close			: '閉じる'
-});
 /**************************************************************************************************/
 
 $.i18n('ko_KR.pukiwiki', {
@@ -207,6 +191,34 @@ $.i18n('ko_KR.pukiwiki', {
 	unload		: '변경을 서버에 반영합니까?', 
 	cancel		: '변경을 파기합니까?', 
 	submit		: '변경을 서버에 송신했습니다.확인해 주세요.' 
+});
+
+$.i18n('ko_KR.dialog',{
+	ok			: '확인',
+	cancel		: '취소',
+	close		: '닫기',
+	yes			: '예',
+	no			: '아니오',
+	first		: '처음에',
+	prev		: '이전',
+	next		: '다음',
+	last		: '마지막',
+	reload		: '새로고침',
+	clipboard	: '클립 보드에 복사',
+	print 		: '인쇄'
+	loading		: '지금 중…。',
+	error		: '오류'
+});
+
+$.i18n('ko_KR.player',{
+	play		: '재생',
+	pasue		: '일시 정지',
+	stop		: '정지',
+	volume		: '볼륨',
+	volume_max	: '최대 볼륨',
+	volume_min	: '음소거'
+	seek		: '검색',
+	fullscreen	: '전체 화면'
 });
 
 /**************************************************************************************************/
@@ -244,27 +256,32 @@ $.i18n('zh_TW.pukiwiki', {
 	submit		: '服務器發送了變更。請確認一下。' 
 });
 
+$.i18n('zh_TW.dialog',{
+	ok			: '確定',
+	cancel		: '取消',
+	close		: '關閉',
+	yes			: '是',
+	no			: '否',
+	first		: '首頁',
+	prev		: '前一頁',
+	next		: '下一頁',
+	last		: '末頁',
+	reload		: '刷新',
+	clipboard	: '複製到剪貼板',
+	print		: '打印',
+	loading		: '載入中…。',
+	error		: '錯誤'
+});
 
-$.i18n('zh_TW.markitup', {
-	Heading1		: '標題一',
-	Heading2		: '標題二',
-	Heading3		: '標題三',
-	List			: '條列',
-	List_Numeric	: '數字條列',
-	Definition		: '定義',
-	Definition_word	: '定義',
-	Definition_desc	: '描述',
-	Quote			: '引用文字',
-	Horizontal_Line	: '水平線',
-	Newline			: '換行',
-	Link			: '連結',
-	File			: '附件的名稱',
-	Bold			: '粗體字',
-	Italic			: '斜體字',
-	Strike			: '刪除線',
-	Left			: '靠左對齊',
-	Center			: '置中對齊',
-	Right			: '靠右對齊'
+$.i18n('zh_TW.player',{
+	play		: '播放',
+	pasue		: '暫停',
+	stop		: '停止',
+	volume		: '音量',
+	volume_max	: '最響亮',
+	volume_min	: '靜音',
+	seek		: '求',
+	fullscreen	: '全屏'
 });
 
 /**************************************************************************************************/
@@ -302,6 +319,34 @@ $.i18n('zh_CN.pukiwiki', {
 	submit		: '服务器发送了变更。请确认一下。' 
 });
 
+$.i18n('zh_CN.dialog',{
+	ok			: '确定',
+	cancel		: '取消',
+	close		: '关闭',
+	yes			: '是',
+	no			: '否',
+	first		: '首页',
+	prev		: '前一页',
+	next		: '下一页',
+	last		: '末页',
+	reload		: '重载',
+	clipboard	: '复制到剪贴板',
+	print		: '打印',
+	loading		: '载入中…。',
+	error		: '错误'
+});
+
+
+$.i18n('zh_CN.player',{
+	play		: '播放',
+	pasue		: '暂停',
+	stop		: '停止',
+	volume		: '音量',
+	volume_max	: '最响亮',
+	volume_min	: '静音',
+	seek		: '求',
+	fullscreen	: '全屏'
+});
 /**************************************************************************************************/
 // 言語設定
 $.i18n(LANG);

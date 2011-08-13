@@ -516,9 +516,9 @@ if (!IS_AJAX){
 			'swfupload','tzCalculation_LocalTimeZone',
 			
 			/* Use plugins */ 
-			'jquery.cookie','jquery.lazyload', 'jquery.query','jquery.scrollTo','jquery.colorbox-min','jquery.a-tools.min','jquery.superfish',
-			'jquery.swfupload','jquery.tablesorter-min','jquery.textarearesizer','jquery.jplayer.min', 'jquery.textarea-min', 'jquery.tooltip.min',
-			'jquery.ajaxga.min', 'jquery.jstree', 'jquery.i18n', 'jquery.beautyOfCode', 
+			'jquery.cookie','jquery.lazyload', 'jquery.query','jquery.scrollTo','jquery.colorbox','jquery.a-tools','jquery.superfish',
+			'jquery.swfupload','jquery.tablesorter','jquery.textarearesizer','jquery.jplayer', 'jquery.tabby', 'jquery.tooltip',
+			'jquery.ajaxga', 'jquery.jstree', 'jquery.i18n', 'jquery.beautyOfCode', 
 			
 			/* MUST BE LOAD LAST */
 			'skin.original'

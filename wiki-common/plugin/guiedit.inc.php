@@ -81,7 +81,7 @@ function plugin_guiedit_action()
 		if ($postdata == '') $postdata = auto_template($page);
 	}
 
-	return array('msg'=>$_title_edit, 'body'=>plugin_guiedit_edit_form($page, $postdata));
+	return array('msg'=>'GUI Edit', 'body'=>plugin_guiedit_edit_form($page, $postdata));
 }
 
 function plugin_guiedit_send_ajax($postdata){
@@ -275,6 +275,8 @@ function plugin_guiedit_edit_form($page, $postdata, $digest = FALSE, $b_template
 	global $notimeupdate;
 	global $js_tags,$link_tags,$js_blocks;
 	global $guiedit_use_fck;
+	
+	$script = get_script_uri();
 
 	// Newly generate $digest or not
 	if ($digest === FALSE) $digest = md5(get_source($page, TRUE, TRUE));
@@ -374,11 +376,9 @@ EOD;
 	</form>
 </div>
 EOD;
-
-	$root = get_baseuri('abs');
 	$js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/plugin/guiedit/ckeditor/ckeditor.js');
 	$js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/plugin/guiedit/ckeditor/adapters/jquery.js');
-	$js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/plugin/guiedit/guiedit.js');
+	$js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/plugin/guiedit/ckeditor4pukiwiki.js');
 	return $body;
 }
 

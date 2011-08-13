@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: ref.inc.php,v 1.56.2 2011/05/29 19:53:00 Logue Exp $
+// $Id: ref.inc.php,v 1.56.3 2011/07/30 20:13:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2002-2006, 2011 PukiWiki Developers Team
@@ -46,10 +46,10 @@ function plugin_ref_inline()
 
 	$params = plugin_ref_body(func_get_args());
 	if (isset($params['_error'])) {
-		return '<p class="ui-state-error">&amp;ref(): ERROR: ' . htmlsc($params['_error']) . '.</span>';
+		return '<span class="ui-state-error">' . htmlsc('#ref(): ERROR: ' . $params['_error']) . '</span>' . "\n";
 	}
 	if (! isset($params['_body'])) {
-		return htmlsc('&ref(): ERROR: No _body;');
+		return '<span class="ui-state-error">' . htmlsc('#ref(): ERROR: No _body') . '</span>' . "\n";
 	}
 
 	return $params['_body'];

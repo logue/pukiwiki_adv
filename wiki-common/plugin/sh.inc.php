@@ -1,11 +1,11 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: sh.inc.php,v 0.6.4 2010/11/17 08:47:00 Logue Exp $
+// $Id: sh.inc.php,v 0.6.5 2011/07/31 23:56:00 Logue Exp $
 // SyntaxHighlighter for PukiWiki
 //
 // Copyright (C)
-//    2010 PukiWiki Advance Developers Team
-//    2009 ortk. http://ortk.main.jp/blog/
+//    2010-2011 PukiWiki Advance Developers Team
+//    2009      ortk. http://ortk.main.jp/blog/
 
 /* ---------------------------------------------------------------------------
  settings
@@ -240,6 +240,6 @@ HTML;
 	}
 
 //	return '<pre class="syntaxhighlighter brush: '.strtolower($lang).$option .';">'."\n".$text."\n".'</pre>'."\n";
-	return '<pre class="sh" data-brush="'.strtolower($lang).'" data-option="{'.$option.'}">'."\n".$text."\n".'</pre>'."\n";
+	return '<pre class="sh" data-brush="'.strtolower($lang).'">'."\n".$text."\n".'</pre>'."\n";
 }
 ?>

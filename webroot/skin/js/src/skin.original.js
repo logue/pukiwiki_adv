@@ -55,27 +55,6 @@ var pukiwiki = {
 		'<iframe height="20" frameborder="0" width="50" scrolling="no" class="hatena-bookmark-button-frame" title="このエントリーをはてなブックマークに追加" style="width: 50px; height: 20px;"></iframe>
 */
 
-		// FaceBookを実行
-		if (typeof(FACEBOOK_APPID) !== 'undefined'){
-			$('body').append('<div id="fb-root"></div>');
-			$(this.body).append('<fb:login-button>Login with Facebook</fb:login-button>');
-			
-			$.getScript(protocol+'connect.facebook.net/'+LANG+'/all.js', function() {
-				FB.init({
-					appId: FACEBOOK_APPID,
-					status	: true, // check login status
-					cookie	: true, // enable cookies to allow the server to access the session
-					xfbml	: true  // parse XFBML
-				});
-				FB.Event.subscribe('auth.login', function() {
-					_window.location.reload();
-				});
-				self.fb = true;
-			});
-		}else{
-			this.fb = false;
-		}
-
 		if(_ua.indexOf("MSIE 6")>=0){
 			// Fix Background flicker
 			try{ _document.execCommand('BackgroundImageCache', false, true); }catch(e){}
@@ -124,13 +103,13 @@ var pukiwiki = {
 			this.assistant();
 		}
 
-
+/*
 		if ($.query.get('cmd') === 'list'){
 			$('#page_list').jstree({
 				plugins:['html_data', 'themeroller' ]
 			});
 		}
-
+*/
 
 		// Textarea Resizer
 		if ($("textarea[name='msg']").length !== 0 && $.query.get('cmd') !== 'guiedit'){
@@ -205,17 +184,22 @@ var pukiwiki = {
 		}
 
 		// 二重送信防止
-//		$('form').disableOnSubmit();
-/*
-		if (typeof(this.custom.init) === 'object'){
-			var f2;
-			while(f2 === this.custom.init.shift() ){
-				f2();
-			}
-		}
-*/
+		// $('form').disableOnSubmit();
+
 		// ボタンをjQuery UIのものに
-		$('button, input[type=submit], input[type=reset], input[type=button]').button();
+		$('button, input[type=submit], input[type=reset], input[type=button]').each(function(){
+			var $this = $(this);
+			var data = $this.data();
+			
+			$this.button({
+				text:data.text ? data.text : true,
+				label:data.label ? data.label : this.value,
+				icons:{
+					primary: data.iconsPrimary,
+					secondary: data.iconsSecondary
+				}
+			});
+		});
 		
 		// hover states on the static widgets
 		$('.ui-state-default').hover(function() {
@@ -232,13 +216,34 @@ var pukiwiki = {
 		$(':input').removeAttr('disabled');
 		$('.ui-button').button('option', 'disabled', false);
 		
-		if (typeof(FACEBOOK_APPID) !== 'undefined' && !$.query.get('cmd') && !PAGE.match(/^:|FormatRules|RecentChanges|RecentDeleted|InterWikiName|AutoAliasName|MenuBar|SideBar|Navigation|Glossary/i)){
-			$(this.body).append('<hr /><div style="margin-left:2em;"><fb:like send="true" font="arial" show_faces="true" href="'+href+'"></fb:like><fb:comments href="'+href+'" publish_feed="true" width="650" numposts="10" migrated="1" ></fb:comments></div>');
-		}
-		// Google +1
-		// http://code.google.com/intl/ja/apis/+1button/
-		if ($('.g-plusone').length !== 0){
-			$.getScript('https://apis.google.com/js/plusone.js');
+		if (!$.query.get('cmd') && !PAGE.match(/^:|FormatRules|RecentChanges|RecentDeleted|InterWikiName|AutoAliasName|MenuBar|SideBar|Navigation|Glossary/i)){
+			// FaceBookを実行
+			if (typeof(FACEBOOK_APPID) !== 'undefined'){
+				$('body').append('<div id="fb-root"></div>');
+				$(this.body).append('<fb:login-button>Login with Facebook</fb:login-button>');
+				$(this.body).append('<hr /><div style="margin-left:2em;"><fb:like send="true" font="arial" show_faces="true" href="'+href+'"></fb:like><fb:comments href="'+href+'" publish_feed="true" width="650" numposts="10" migrated="1" ></fb:comments></div>');
+				
+				$.getScript(protocol+'connect.facebook.net/'+LANG+'/all.js', function() {
+					FB.init({
+						appId: FACEBOOK_APPID,
+						status	: true, // check login status
+						cookie	: true, // enable cookies to allow the server to access the session
+						xfbml	: true  // parse XFBML
+					});
+					FB.Event.subscribe('auth.login', function() {
+						_window.location.reload();
+					});
+					self.fb = true;
+				});
+			}else{
+				this.fb = false;
+			}
+
+			// Google +1
+			// http://code.google.com/intl/ja/apis/+1button/
+			if ($('.g-plusone').length !== 0){
+				$.getScript('https://apis.google.com/js/plusone.js');
+			}
 		}
 	},
 	// ページを閉じたとき
@@ -249,16 +254,6 @@ var pukiwiki = {
 		}else{
 			prefix = '';
 		}
-		/*
-		if (typeof(this.custom.before_unload) === 'object'){
-			var f;
-			while(f === this.custom.before_unload.shift() ){
-				try{
-					f();
-				}catch(e){}
-			}
-		}
-		*/
 
 		// フォームが変更されている場合
 		if ($(prefix+'#msg').val() !== $(prefix+'#original').val() && confirm( $.i18n('pukiwiki', 'unload'))) {
@@ -392,10 +387,9 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			opacity			: '0.8',
 			slideshowStart	: '<span class="ui-icon ui-icon-play" style="margin:4px;"></span>',
 			slideshowStop	: '<span class="ui-icon ui-icon-stop" style="margin:4px;"></span>',
-			current			: $.i18n('colorbox','current'),
 			previous		: '<span class="ui-icon ui-icon-circle-arrow-e" style="margin:4px;"></span>',
 			next			: '<span class="ui-icon ui-icon-circle-arrow-w" style="margin:4px;"></span>',
-			close			: '<span class="ui-icon ui-icon-circle-close" style="margin:4px;"></span>',
+			close			: '<span class="ui-icon ui-icon-circle-close" style="margin:4px;" title="'+$.i18n('dialog','close')+'"></span>',
 			onOpen:function(){
 				// jQueryUI Fix
 				$(prefix+'#cboxOverlay').addClass('ui-widget-overlay');				// オーバーレイをjQueryUIのものに変更
@@ -443,7 +437,6 @@ function autoResizer() {
 }
 $(_window).bind("resize", autoResizer);
 */
-		// ここから、イベント割り当て
 		// ここから、イベント割り当て
 		$(prefix+'a[href]').each(function(){
 			var $this = $(this);
@@ -564,6 +557,9 @@ $(_window).bind("resize", autoResizer);
 						var data = sh_doms[i].data();
 						sh_doms[i].beautifyCode(data.brush);
 					}
+				},
+				strings:{
+				
 				}
 			};
 			// SyntaxHilighterを実行
@@ -941,13 +937,22 @@ $(_window).bind("resize", autoResizer);
 		}else{
 			prefix = '';
 		}
-		$(prefix+'.style_table, '+prefix+'.attach_table').addClass('tablesorter');
+		$(prefix+'.style_table').addClass('tablesorter');
 		
 		/* デフォルト値 */
 		var config = {
 			sorter: {
-				widthFixed: false
-//				debug:DEBUG
+//				debug:DEBUG,
+				useUI:true,
+				cssUI: {
+					widget: "",
+					header: "ui-widget-header",
+					hover: "ui-state-hover",
+					icon: "ui-icon ui-icon-triangle-2-n-s",
+					iconBoth: "ui-icon-triangle-2-n-s",
+					iconDesc: "ui-icon-triangle-1-n",
+					iconAsc: "ui-icon-triangle-1-s"
+				}
 			},
 			pager : {
 				minimum_lines : 10,
@@ -964,6 +969,7 @@ $(_window).bind("resize", autoResizer);
 		$(prefix+'.tablesorter').each(function(elem){
 			var table = this;
 			var backup = $(this).clone();
+			var data = $(this).data();
 			
 			if ( $('tr',this).length > config.pager.minimum_lines && $('thead',this).length !== 0){	// 10行以上の場合ページャーを表示
 				// テーブルのページングウィジット
@@ -982,6 +988,11 @@ $(_window).bind("resize", autoResizer);
 						'</ul>',
 					'</div>'
 				].join("\n");
+
+				// data-属性を使って動作をカスタマイズ
+				config.sorter.headers = data.headers;
+				config.sorter.sortList = data.sortList;
+				config.sorter.parsers = data.parsers;
 				
 				$(this).tablesorter(config.sorter);
 				
@@ -1022,7 +1033,12 @@ $(_window).bind("resize", autoResizer);
 				// ページャーを生成（ID重複しないようにグローバル変数のpukiwiki.tablesorter.counterをカウンタとして使用
 				$(this).tablesorterPager({
 					container: $('#'+pager_id),
-					positionFixed: false
+					positionFixed: false,
+					onthrough: function(e){
+						self.glossaly(e);
+	//					self.setAnchor(e);
+	//					console.log(e); 
+					}
 				});
 
 				//hover states on the static widgets
@@ -1955,12 +1971,12 @@ $(_window).bind("resize", autoResizer);
 				break;
 				case 'next':
 					this.next = link.href;
-					this.next_title = link.title;
+					this.next_title = link.title ? link.title : $.i18n('dialog', 'next');
 					break;
 				case 'prev':
 				case 'previous':
 					this.prev = link.href;
-					this.prev_title = link.title;
+					this.prev_title = link.title ? link.title : $.i18n('dialog', 'previous');
 					break;
 				case 'up':
 					this.up = link.href;
@@ -2384,59 +2400,19 @@ $.fn.disableOnSubmit = function(disableList){
 	return this;
 };
 
-/* jquery Scroll Lock
- * http://tockri.blog78.fc2.com/blog-entry-117.html
- */
-var ScrollLock = {
-	lock: function() {
-		var $win = $(_window);
-		var vp = {
-			width: $win.width(),
-			height: $win.height(),
-			top: _document.body.scrollTop  || _document.documentElement.scrollTop,
-			left: _document.body.scrollLeft || _document.documentElement.scrollLeft
-		};
-		ScrollLock.viewport = vp;
-		var rect = [
-			vp.top + "px",
-			vp.left + vp.width + "px",
-			vp.top + vp.height + "px",
-			vp.left + "px"
-		];
-		$("body").css({
-			clip: "rect(" + rect.join(",") + ")",
-			position:"absolute",
-			overflow:"hidden",
-			top:-vp.top,
-			left:0
-		});
-	},
-	unlock: function() {
-		$("body").css({
-			//clip: "",
-			position:"static",
-			overflow:"",
-			top:0,
-			left:0
-		});
-		var vp = ScrollLock.viewport;
-		_window.scrollTo(vp.left, vp.top);
-	}
-};
-
 /*************************************************************************************************/
 // ブラウザの設定
 var $buoop = {
 	vs:{				// browser versions to notify
 		i:8,			// IE
-		f:5,			// FF
+		f:4,			// FF
 		o:11.00,		// Opera
 		s:5,			// Safari
 		n:9
 	},
 	reminder: 1,		// atfer how many hours should the message reappear
 	onshow: function(){	// callback function after the bar has appeared
-					
+		// unused
 	},
 	l: LANG,			// set a language for the message, e.g. "en"
 //	test: DEBUG,		// true = always show the bar (for testing)

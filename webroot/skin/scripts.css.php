@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance Standard CSS.
-// $Id: scripts.css.php,v 1.6.8 2011/07/04 07:40:00 Logue Exp $
+// $Id: scripts.css.php,v 1.6.9 2011/08/01 21:29:00 Logue Exp $
 // Copyright (C) 2010-2011 PukiWiki Advance Developer Team
 //
 
@@ -29,14 +29,15 @@ time, mark, audio, video {
 	vertical-align: baseline;
 }
 
-audio[controls], canvas, video { display: inline-block; *display: inline; *zoom: 1; }
+audio, canvas, video { display: inline-block; *display: inline; *zoom: 1; }
+audio:not([controls]) { display: none; }
 
 html { font-size: 100%; /* overflow-y: scroll; */ -webkit-tap-highlight-color: rgba(0,0,0,0); -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-body{ font:13px/1.231 sans-serif; *font-size:small; }
-body, button, input, select, textarea { font-family: sans-serif; color: #444; }
+body { margin: 0; font-size: 13px; line-height: 1.231; }
+body, button, input, select, textarea { font-family: sans-serif; color: #222; }
 
-::-moz-selection{ background: #5E99FF; color:#fff; text-shadow: none; }
-::selection { background:#5E99FF; color:#fff; text-shadow: none; }
+::-moz-selection { background: #57a1fe; color: #fff; text-shadow: none; }
+::selection { background: #57a1fe; color: #fff; text-shadow: none; }
 
 a { color: #00e; }
 a:visited { color: #551a8b; }
@@ -72,13 +73,16 @@ input, select { vertical-align: middle; }
 
 form { margin: 0; }
 fieldset { border: 0; margin: 0; padding: 0; }
-legend { border: 0; *margin-left: -7px; padding: 0; }
 label { cursor: pointer; }
+legend { border: 0; *margin-left: -7px; padding: 0; }
+
 button, input, select, textarea { font-size: 100%; margin: 0; vertical-align: baseline; *vertical-align: middle; }
 button, input { line-height: normal; *overflow: visible; }
+table button, table input { *overflow: auto; }
 button, input[type="button"], input[type="reset"], input[type="submit"] { cursor: pointer; -webkit-appearance: button; }
 input[type="checkbox"], input[type="radio"] { box-sizing: border-box; }
-input[type="search"] { -moz-box-sizing: content-box; -webkit-box-sizing: content-box; box-sizing: content-box; }
+input[type="search"] { -webkit-appearance: textfield; -moz-box-sizing: content-box; -webkit-box-sizing: content-box; box-sizing: content-box; }
+input[type="search"]::-webkit-search-decoration { -webkit-appearance: none; }
 button::-moz-focus-inner, input::-moz-focus-inner { border: 0; padding: 0; }
 textarea { overflow: auto; vertical-align: top; }
 
@@ -87,8 +91,9 @@ input:invalid, textarea:invalid { background-color: #f0dddd; }
 
 table { border-collapse: collapse; border-spacing: 0; }
 
-.ir { display: block; text-indent: -999em; overflow: hidden; background-repeat: no-repeat; text-align: left; direction: ltr; }
+.ir { display: block; border: 0; text-indent: -999em; overflow: hidden; background-color: transparent; background-repeat: no-repeat; text-align: left; direction: ltr; }
 .ir br { display: none; }
+[hidden] { display: none; visibility: hidden; }
 .hidden { display: none; visibility: hidden; }
 .visuallyhidden { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
 .visuallyhidden.focusable:active, .visuallyhidden.focusable:focus { clip: auto; height: auto; margin: 0; overflow: visible; position: static; width: auto; }
@@ -996,23 +1001,15 @@ li.sfHover > a > .sf-sub-indicator {
 }
 
 /* Table Sorter */
-th.header {
-	background-image: url(<?php echo $image_dir ?>ajax/tablesorter/small.gif);
+th.ui-state-hover {
 	cursor: pointer;
-	background-repeat: no-repeat;
-	background-position: center left;
-	padding-left: 20px;
-	border-right: 1px solid #dad9c7;
-	margin-left: -1px;
 }
 
-th.headerSortUp {
-	background-image: url(<?php echo $image_dir ?>ajax/tablesorter/small_asc.gif);
+/* Fix jQueryUI Icon */
+th .ui-icon {
+	float:right;
 }
 
-th.headerSortDown {
-	background-image: url(<?php echo $image_dir ?>ajax/tablesorter/small_asc.gif);
-}
 
 /* jQueryUI BlockUI */
 #loadingScreen {
@@ -1506,7 +1503,7 @@ ul#jplayer_icons #jplayer_volume-min {
 .emoji-wine{background-position: -216px -306px;}
 .emoji-shock{background-position: -234px -306px;}
 
-.ie8 .emoji{
+.ie8 .emoji, .ie7 .emoji, .ie6 .emoji{
 	text-indent:-2em;
 }
 /** Print Setting *********************************************************************************/

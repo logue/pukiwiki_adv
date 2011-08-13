@@ -177,7 +177,10 @@ function bb2_install() {
 	$settings = bb2_read_settings();
 	if (defined('BB2_NO_CREATE')) return;
 	if (!$settings['logging']) return;
-	bb2_start($settings);
+	global $vars;
+	if ($vars['page'] !== ':config'.CONFIG_BADBEHAVIOR_LOG){
+		bb2_start($settings);
+	}
 }
 
 // Display stats? This is optional.
