@@ -10,48 +10,36 @@ $image_dir = '../image/';
 flush();
 ?>
 @charset "UTF-8";
-/*  HTML5 ✰ Boilerplate  */
+/* HTML5 ✰ Boilerplate
+ * ==|== normalize ==========================================================
+ */
 
-html, body, div, span, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp,
-small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section, summary,
-time, mark, audio, video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	font: inherit;
-	vertical-align: baseline;
-}
-
+article, aside, details, figcaption, figure, footer, header, hgroup, nav, section { display: block; }
 audio, canvas, video { display: inline-block; *display: inline; *zoom: 1; }
 audio:not([controls]) { display: none; }
+[hidden] { display: none; }
 
-html { font-size: 100%; /* overflow-y: scroll; */ -webkit-tap-highlight-color: rgba(0,0,0,0); -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
 body { margin: 0; font-size: 13px; line-height: 1.231; }
 body, button, input, select, textarea { font-family: sans-serif; color: #222; }
 
-::-moz-selection { background: #57a1fe; color: #fff; text-shadow: none; }
-::selection { background: #57a1fe; color: #fff; text-shadow: none; }
+::-moz-selection { background: #fe57a1; color: #fff; text-shadow: none; }
+::selection { background: #fe57a1; color: #fff; text-shadow: none; }
 
 a { color: #00e; }
 a:visited { color: #551a8b; }
+a:hover { color: #06e; }
 a:focus { outline: thin dotted; }
 a:hover, a:active { outline: 0; }
 
 abbr[title] { border-bottom: 1px dotted; }
-b, strong, h1, h2, h3, h4, h5, h6 { font-weight: bold; }
+b, strong { font-weight: bold; }
 blockquote { margin: 1em 40px; }
 dfn { font-style: italic; }
 hr { display: block; height: 1px; border: 0; border-top: 1px solid #ccc; margin: 1em 0; padding: 0; }
-ins { text-decoration: none; }
-mark { font-style: italic; font-weight: bold; }
-pre, code, kbd, samp { font-family: monospace, monospace; font-family: monospace; font-size: 1em; }
+ins { background: #ff9; color: #000; text-decoration: none; }
+mark { background: #ff0; color: #000; font-style: italic; font-weight: bold; }
+pre, code, kbd, samp { font-family: monospace; _font-family: 'courier new', monospace; font-size: 1em; }
 pre { white-space: pre; white-space: pre-wrap; word-wrap: break-word; }
 q { quotes: none; }
 q:before, q:after { content: ""; content: none; }
@@ -59,23 +47,17 @@ small { font-size: 85%; }
 sub, sup { font-size: 75%; line-height: 0; position: relative; vertical-align: baseline; }
 sup { top: -0.5em; }
 sub { bottom: -0.25em; }
-del { text-decoration: line-through; }
-
 ul, ol { margin: 1em 0; padding: 0 0 0 40px; }
 dd { margin: 0 0 0 40px; }
-nav ul, nav ol { list-style: none; margin: 0; padding: 0; }
-
+nav ul, nav ol { list-style: none; list-style-image: none; margin: 0; padding: 0; }
 img { border: 0; -ms-interpolation-mode: bicubic; vertical-align: middle; }
 svg:not(:root) { overflow: hidden; }
-
-hr { display: block; height: 1px; border: 0; border-top: 1px solid #ccc; margin: 1em 0; padding: 0; }
-input, select { vertical-align: middle; }
+figure { margin: 0; }
 
 form { margin: 0; }
 fieldset { border: 0; margin: 0; padding: 0; }
 label { cursor: pointer; }
 legend { border: 0; *margin-left: -7px; padding: 0; }
-
 button, input, select, textarea { font-size: 100%; margin: 0; vertical-align: baseline; *vertical-align: middle; }
 button, input { line-height: normal; *overflow: visible; }
 table button, table input { *overflow: auto; }
@@ -84,25 +66,14 @@ input[type="checkbox"], input[type="radio"] { box-sizing: border-box; }
 input[type="search"] { -webkit-appearance: textfield; -moz-box-sizing: content-box; -webkit-box-sizing: content-box; box-sizing: content-box; }
 input[type="search"]::-webkit-search-decoration { -webkit-appearance: none; }
 button::-moz-focus-inner, input::-moz-focus-inner { border: 0; padding: 0; }
-textarea { overflow: auto; vertical-align: top; }
-
-input:valid, textarea:valid { }
+textarea { overflow: auto; vertical-align: top; resize: vertical; }
+input:valid, textarea:valid {  }
 input:invalid, textarea:invalid { background-color: #f0dddd; }
 
 table { border-collapse: collapse; border-spacing: 0; }
+td { vertical-align: top; }
 
-.ir { display: block; border: 0; text-indent: -999em; overflow: hidden; background-color: transparent; background-repeat: no-repeat; text-align: left; direction: ltr; }
-.ir br { display: none; }
-[hidden] { display: none; visibility: hidden; }
-.hidden { display: none; visibility: hidden; }
-.visuallyhidden { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
-.visuallyhidden.focusable:active, .visuallyhidden.focusable:focus { clip: auto; height: auto; margin: 0; overflow: visible; position: static; width: auto; }
-.invisible { visibility: hidden; }
-.clearfix:before, .clearfix:after { content: ""; display: table; }
-.clearfix:after { clear: both; }
-.clearfix { zoom: 1; }
-
-/** PukiWiki Advance Standard CSS Set *************************************************************/
+/* ==|== PukiWiki Advance Standard Font Set ================================= */
 
 /* Font set */
 @media screen{
@@ -187,7 +158,6 @@ pre, code, kbd, samp, textarea, select, option, input, var{
 	src: url('<?php echo $image_dir ?>emoji/Symbola.php');
 }
 
-/** Browser Hack **********************************************************************************/
 /* head Tag */
 h1 {
 	font-size: 197%;
@@ -237,6 +207,35 @@ figcaption{
 	text-align:center;
 }
 
+/* List tags */
+ul.list1 { list-style-type:disc; }
+ul.list2 { list-style-type:circle; }
+ul.list3 { list-style-type:square; }
+ol.list1 { list-style-type:decimal; }
+ol.list2 { list-style-type:lower-roman; }
+ol.list3 { list-style-type:lower-alpha; }
+
+/* Fix font setting */
+a{
+	font-size: inherit;
+	font-family: inherit;
+	color: inherit;
+	background-color:inherit;
+}
+
+ins, del{
+	font: inherit !important;
+}
+
+a img {
+	vertical-align:bottom;
+	background-color:transparent !important;
+}
+
+a img.pkwk-symbol{
+	vertical-align: baseline;
+}
+
 /* Table Tags */
 .style_table{
 	border-spacing:2px;
@@ -269,30 +268,35 @@ figcaption{
 	border:none !important;
 }
 
-/* List tags */
-ul.list1 { list-style-type:disc; }
-ul.list2 { list-style-type:circle; }
-ul.list3 { list-style-type:square; }
-ol.list1 { list-style-type:decimal; }
-ol.list2 { list-style-type:lower-roman; }
-ol.list3 { list-style-type:lower-alpha; }
+.full_hr{
+	clear:both;
+}
 
+.webkit ::-webkit-input-placeholder, .gecko input:-moz-placeholder{
+	color:grey;
+}
+
+.ie textarea{
+	overflow: auto;
+}
+
+fieldset > *, blockquote > *, dd > *{
+	margin: auto 0 !important;
+}
+
+summary{
+	display:block;
+}
+
+.helper, .tocpic, map area, a{
+	cursor:pointer;
+}
+
+/* ==|== Tweek Tags ========================================================= */
 /* Fix italic font */
 i, em, cite, q{
 	font-style: normal;
 	transform: skewX(-15deg);
-}
-.gecko i, .gecko em, .gecko cite, .gecko q{
-	-moz-transform: skewX(-15deg);
-}
-.ie i, .ie em, .ie cite, .ie q{
-	-ms-transform: skewX(-15deg);
-}
-.presto i, .presto em, .presto cite, .presto q{
-	-o-transform: skewX(-15deg);
-}
-.webkit i, .webkit em, .webkit cite, .webkit q{
-	-webkit-transform: skewX(-15deg);
 }
 
 /* Italic font fix for legacy IE */
@@ -339,52 +343,7 @@ i, em, cite, q{
 	display:none !important;
 }
 
-/* Fix font setting */
-a{
-	font-size: inherit;
-	font-family: inherit;
-	color: inherit;
-	background-color:inherit;
-}
-
-ins, del{
-	font: inherit !important;
-}
-
-a img {
-	vertical-align:bottom;
-	background-color:transparent !important;
-}
-
-a img.pkwk-symbol{
-	vertical-align: baseline;
-}
-
-.full_hr{
-	clear:both;
-}
-
-.webkit ::-webkit-input-placeholder, .gecko input:-moz-placeholder{
-	color:grey;
-}
-
-.ie textarea{
-	overflow: auto;
-}
-
-fieldset > *, blockquote > *, dd > *{
-	margin: auto 0 !important;
-}
-
-summary{
-	display:block;
-}
-
-/** Customize UI **********************************************************************************/
-.helper, .tocpic, map area, a{
-	cursor:pointer;
-}
-
+/* ==|== Customize UI classes =============================================== */
 /* form */
 input[type='text'], input[type='password'], textarea, select{
 	border:1px solid silver;
@@ -451,8 +410,7 @@ input[disabled]:hover, select[disabled]:hover, textarea[disabled]:hover, option[
 	box-shadow: none;
 }
 
-/**************************************************************************************************/
-/* customize jquery ui widget */
+/* customize jQuery ui widget */
 .window{
 	font: inherit !important;
 	font-size:93% !important;
@@ -547,8 +505,7 @@ input[disabled]:hover, select[disabled]:hover, textarea[disabled]:hover, option[
 	margin:0;
 }
 
-
-/** Misc ****************************************************************************************/
+/* ==|== PukiWiki Adv. Misc classes ========================================= */
 .underline{
 	text-decoration: underline !important;
 }
@@ -618,38 +575,6 @@ input[disabled]:hover, select[disabled]:hover, textarea[disabled]:hover, option[
 	width:780px;
 }
 
-/* for realedit.js */
-#realview_outer {
-	border:1px solid silver;
-	background-color:white;
-	padding:.2em;
-	margin-bottom:.1em;
-	height:200px;
-	display:none;
-	width:99%;
-	resize: vertical;
-	overflow-y: scroll;
-}
-
-#realview{
-	padding:0.2em;
-}
-
-/* Textarea resizer */
-.grippie {
-	background:#EEEEEE url(<?php echo $image_dir ?>ajax/grippie.png) no-repeat scroll center 2px;
-	border-color:#DDDDDD;
-	border-style:solid;
-	border-width:0pt 1px 1px;
-	cursor:s-resize;
-	height:9px;
-	overflow:hidden;
-}
-.resizable-textarea textarea {
-	margin-bottom:0pt;
-	height: 20%;
-}
-
 /* Note */
 .super_index {
 	color:red;
@@ -666,7 +591,7 @@ input[disabled]:hover, select[disabled]:hover, textarea[disabled]:hover, option[
 	margin-right:0.5em;
 }
 
-/** Plugin Configure ******************************************************************************/
+/* ==|== PukiWiki Adv. Standard Plugin classes ============================== */
 /* aname.inc.php */
 .anchor_super {
 	height:8px;
@@ -995,9 +920,41 @@ li.sfHover > a > .sf-sub-indicator {
 	vertical-align: baseline;
 }
 
-/** JavaScript Stylesheet set *********************************************************************/
+/* ==|== JavaScript Stylesheet classes ====================================== */
 .no-js{
 	display:none;
+}
+
+/* for realedit.js */
+#realview_outer {
+	border:1px solid silver;
+	background-color:white;
+	padding:.2em;
+	margin-bottom:.1em;
+	height:200px;
+	display:none;
+	width:99%;
+	resize: vertical;
+	overflow-y: scroll;
+}
+
+#realview{
+	padding:0.2em;
+}
+
+/* Textarea resizer */
+.grippie {
+	background:#EEEEEE url(<?php echo $image_dir ?>ajax/grippie.png) no-repeat scroll center 2px;
+	border-color:#DDDDDD;
+	border-style:solid;
+	border-width:0pt 1px 1px;
+	cursor:s-resize;
+	height:9px;
+	overflow:hidden;
+}
+.resizable-textarea textarea {
+	margin-bottom:0pt;
+	height: 20%;
 }
 
 /* Table Sorter */
@@ -1036,7 +993,6 @@ th .ui-icon {
 	font-weight: bold;
 }
 
-/**************************************************************************************************/
 /* Tooltip */
 #tooltip{
 	color:black;
@@ -1092,7 +1048,6 @@ th .ui-icon {
 	padding:0px;
 }
 
-/**************************************************************************************************/
 /* popup toc */
 #poptoc{
 	font-size:93%;
@@ -1122,7 +1077,7 @@ th .ui-icon {
 #poptoc > ul, #poptoc > ol{
 	margin:0 0 0 1em;
 }
-/**************************************************************************************************/
+
 /*
 	ColorBox Core Style
 	The following rules are the styles that are consistant between themes.
@@ -1155,7 +1110,8 @@ th .ui-icon {
 #cboxClose{position:absolute; bottom:0; right:0;}
 #cboxLoadingOverlay{background:url(<?php echo $image_dir ?>ajax/colorbox/loading_background.png) center center no-repeat;}
 #cboxLoadingGraphic{background:url(<?php echo $image_dir ?>ajax/colorbox/loading.gif) center center no-repeat;}
-/**************************************************************************************************/
+
+/* jPlayer */
 #jplayer_container {
 	position:relative;
 	padding:20px 0px;
@@ -1211,7 +1167,7 @@ ul#jplayer_icons #jplayer_volume-min {
 	border:0;
 }
 
-/**Swfupload **************************************************************************************/
+/* Swfupload */
 
 #swfupload-control p{
 	margin:10px 5px;
@@ -1235,8 +1191,7 @@ ul#jplayer_icons #jplayer_volume-min {
 	border:1px solid #339933;
 	background:#ccf9b9;
 }
-
-/**Emotiocn ***************************************************************************************/
+/* ==|== emoji classes ====================================================== */
 .emoji{
 	font-family:Symbola;
 	display: inline-block;
@@ -1506,6 +1461,18 @@ ul#jplayer_icons #jplayer_volume-min {
 .ie8 .emoji, .ie7 .emoji, .ie6 .emoji{
 	text-indent:-2em;
 }
+
+/* ==|== non-semantic helper classes ======================================== */
+.ir { display: block; border: 0; text-indent: -999em; overflow: hidden; background-color: transparent; background-repeat: no-repeat; text-align: left; direction: ltr; }
+.ir br { display: none; }
+.hidden { display: none !important; visibility: hidden; }
+.visuallyhidden { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
+.visuallyhidden.focusable:active, .visuallyhidden.focusable:focus { clip: auto; height: auto; margin: 0; overflow: visible; position: static; width: auto; }
+.invisible { visibility: hidden; }
+.clearfix:before, .clearfix:after { content: ""; display: table; }
+.clearfix:after { clear: both; }
+.clearfix { zoom: 1; }
+
 /** Print Setting *********************************************************************************/
 @media print {
 	* { background: transparent !important; color: black !important; text-shadow: none !important; filter:none !important; -ms-filter: none !important; }

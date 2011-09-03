@@ -14,7 +14,7 @@
 error_reporting(E_ALL); // Show all errors
 
 // Debug mode.
-//define('DEBUG', true);
+define('DEBUG', true);
 // Show infomation message.
 define('PKWK_WARNING', true);
 

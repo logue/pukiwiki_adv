@@ -42,10 +42,19 @@ pukiwiki.register.before_init( function(){
 	var buffer = '';
 	$('#header').before('<p id="colorset" style="text-align:right; font-size:12px;" class="noprint"></p>');
 	for (var n=0; n<colorset.length; n++){
-		
 		buffer += '<span style="color:'+colorset[n][0]+';cursor:pointer;" id="colorset-'+n+'">'+symbol+'</span>&nbsp;';
 	}
 	$('#colorset').html('Color: '+buffer);
+	var href = $('link[rel=canonical]')[0].href;
+	$('#hgroup').after([
+		'<div style="float:right;">',
+		'<a class="twitter-share-button" data-count="vertical" data-lang="'+$('html').attr('lang')+'"></a>',
+		'<div class="g-plusone" data-size="tall" data-count="true"></div>',
+		(typeof(FACEBOOK_APPID) !== 'undefined') ? '<fb:like href="'+href+'" send="false" layout="box_count" width="50" show_faces="true" font=""></fb:like>' : '',
+		'</div>'].join("\n")
+	);
+	
+	if (typeof(FACEBOOK_APPID) !== 'undefined'){ $('#body').append('<hr /><div style="margin-left:2em;"><fb:comments href="'+href+'" publish_feed="true" width="650" numposts="10" migrated="1" ></fb:comments></div>'); }
 });
 
 // スキンスクリプトのinitが実行された前に実行される関数

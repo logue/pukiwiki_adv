@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone
-// $Id: html.php,v 1.65.42 2011/02/06 13:42:00 Logue Exp $
+// $Id: html.php,v 1.65.43 2011/08/30 22:21:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team <http://pukiwiki.cafelounge.net/plus/>
@@ -94,7 +94,7 @@ function catbody($title, $page, $body)
 		}
 		
 		$meta_tags[] = array('name' => 'generator',	'content' => strip_tags(GENERATOR));
-		$meta_tags[] = array('name' => 'viewport',	'content' => (isset($viewport) ? $viewport : 'width=device-width; initial-scale=1.0; maximum-scale=1.0;'));
+//		$meta_tags[] = array('name' => 'viewport',	'content' => (isset($viewport) ? $viewport : 'width=device-width; initial-scale=1.0; maximum-scale=1.0;'));
 		($modifier !== 'anonymous') ?			$meta_tags[] = array('name' => 'author',					'content' => $modifier) : '';
 		(!empty($google_site_verification)) ?	$meta_tags[] = array('name' => 'google-site-verification',	'content' => $google_site_verification) : '';
 		(!empty($yahoo_site_explorer_id)) ?		$meta_tags[] = array('name' => 'y_key',						'content' => $yahoo_site_explorer_id) : '';
@@ -160,24 +160,7 @@ function catbody($title, $page, $body)
 			$pkwk_head .= "\t\t".tag_helper('style',array(array('type'=>'text/css', 'content'=>join("\n",$css_blocks))));
 		}
 		// Modernizrは、ヘッダー内にないと正常に動作しない
-		$pkwk_head .= "\t\t".'<script type="text/javascript" src="'.SKIN_URI.'js/'.$modernizr.'"></script>'."\n";
-
-		// IE非実装の処理を有効化
-		global $user_agent;
-		if($user_agent['name'] == 'MSIE'){
-			// JSON parseなど
-			// https://github.com/douglascrockford/JSON-js
-			$pkwk_head .= "\t\t".'<script type="text/javascript" src="'.SKIN_URI.'js/json2.js"></script>'."\n";
-			
-			if ($user_agent['vers'] >= 8){
-				// canvasをVMLで実装
-				// http://code.google.com/p/explorercanvas/
-				$pkwk_head .= "\t\t".'<script type="text/javascript" src="'.SKIN_URI.'js/excanvas.compiled.js"></script>'."\n";
-				// メディアクエリを実装
-				// https://github.com/scottjehl/Respond
-				$pkwk_head .= "\t\t".'<script type="text/javascript" src="'.SKIN_URI.'js/respond.min.js"></script>'."\n";
-			}
-		}
+		$pkwk_head .= "\t\t".'<script type="text/javascript" src="'.JS_URI.$modernizr.'"></script>'."\n";
 		
 		/* フッター部のタグ */
 		$pkwk_tags = tag_helper('script',$pkwk_head_js)."\t\t".tag_helper('script',$js_tags);

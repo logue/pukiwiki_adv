@@ -12,9 +12,6 @@
 /** Generic Tags *********************************************************************************/
 a{
 	color:#215dc6;
-}
-
-a:link, a:active, a:visited{
 	text-decoration:none;
 }
 

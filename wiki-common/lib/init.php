@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: init.php,v 1.57.4 2011/05/11 07:54:00 Logue Exp $
+// $Id: init.php,v 1.57.4 2011/09/03 11:57:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -15,7 +15,7 @@
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
 define('S_VERSION', 'v1.0 alpha');
-define('S_REVSION', '20110511');
+define('S_REVSION', '20110903');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &#169; 2010-2011' .
@@ -452,7 +452,7 @@ if (!IS_AJAX){
 		),
 		'jqueryui'	=> array(
 			'file'	=> 'jquery-ui.min.js',
-			'ver'	=> '1.8.14'
+			'ver'	=> '1.8.16'
 		),
 		'swfobject' => array(
 			'file'	=> 'swfobject.js',
@@ -494,15 +494,16 @@ if (!IS_AJAX){
 
 	// JS用初期設定
 	$js_init = array(
-		'SCRIPT'=>get_script_absuri(),
-		'LANG'=>$language,
 		'DEBUG'=>constant('DEBUG'),
-		'SKIN_DIR'=>constant('SKIN_URI'),
-		'IMAGE_DIR'=>constant('IMAGE_URI'),
 		'DEFAULT_LANG'=>constant('DEFAULT_LANG'),
+		'IMAGE_DIR'=>constant('IMAGE_URI'),
+		'JS_DIR'=>constant('JS_URI'),
+		'LANG'=>$language,
+		'SCRIPT'=>get_script_absuri(),
+		'SKIN_DIR'=>constant('SKIN_URI'),
 		'THEME_NAME'=>constant('PLUS_THEME')
 	);
-	
+
 	if (isset($facebook)){
 		require(LIB_DIR.'facebook.php');
 		$fb = new FaceBook($facebook);
@@ -518,24 +519,24 @@ if (!IS_AJAX){
 			/* Use plugins */ 
 			'jquery.cookie','jquery.lazyload', 'jquery.query','jquery.scrollTo','jquery.colorbox','jquery.a-tools','jquery.superfish',
 			'jquery.swfupload','jquery.tablesorter','jquery.textarearesizer','jquery.jplayer', 'jquery.tabby', 'jquery.tooltip',
-			'jquery.ajaxga', 'jquery.jstree', 'jquery.i18n', 'jquery.beautyOfCode', 
+			'jquery.jstree', 'jquery.i18n', 'jquery.beautyOfCode', 
 			
 			/* MUST BE LOAD LAST */
 			'skin.original'
 		);
 		foreach($default_js as $script_file)
-			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/src/'.$script_file.'.js');
+			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'src/'.$script_file.'.js');
 
 		// yui profiler and profileviewer
 		/*
-			$link_tags[] = array('rel'=>'stylesheet','type'=>'text/css','href'=>SKIN_URI.'js/profiling/yahoo-profiling.css');
-			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/profiling/yahoo-profiling.min.js');
-			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/profiling/config.js');
+			$link_tags[] = array('rel'=>'stylesheet','type'=>'text/css','href'=>JS_URI.'profiling/yahoo-profiling.css');
+			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'profiling/yahoo-profiling.min.js');
+			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'profiling/config.js');
 		*/
 
 	} else {
-		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/skin.js');
+		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'skin.js');
 	}
-	$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/locale.js');
+	$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'locale.js');
 }
 ?>

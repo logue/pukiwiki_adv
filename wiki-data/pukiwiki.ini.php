@@ -152,11 +152,14 @@ defined('SKIN_DIR')		or define('SKIN_DIR',  WWW_HOME . 'skin/');		// Skin files 
 																		// ./DATAHOME/SKIN_DIR from index.php.
 defined('IMAGE_DIR')	or define('IMAGE_DIR', WWW_HOME . 'image/');	// Static image files
 
+defined('JS_DIR')		or define('JS_DIR', WWW_HOME . 'js/');			// Static JavaScript files
+
 // for Fancy URL
 defined('SKIN_URI')		or define('SKIN_URI',  ROOT_URI . 'skin/');		// CSSs(*.css) and JavaScripts(*.js) are needed at
 																		// ./SKIN_URI from index.php.
 defined('IMAGE_URI')	or define('IMAGE_URI', ROOT_URI . 'image/');	// Keep this directory shown via web browsers like
 																		// ./IMAGE_URI from index.php.
+defined('JS_URI')		or define('JS_URI',    ROOT_URI . 'js/');
 
 // THEME
 // *.skin.php => SKIN_DIR or SKIN_DIR + THEME_PLUS_NAME or EXT_SKIN_DIR + THEME_PLUS_NAME
