@@ -5,7 +5,7 @@
 // PukiWiki Plus! skin for PukiWiki Advance.
 // Override to skin config.
 //
-// $Id: default.skin.php,v 1.0.1 2011/03/31 17:40:00 Logue Exp $
+// $Id: default.skin.php,v 1.0.2 2011/09/11 22:55:00 Logue Exp $
 //
 global $_SKIN, $link_tags, $js_tags;
 
@@ -50,7 +50,6 @@ EOD
 
 // 読み込むスタイルシート
 $link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.'scripts.css.php');
-$link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.'iconset/default_iconset.css.php', 'media'=>'screen');
 $link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/default.css');
 $link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/blue.css', 'media'=>'screen', 'id'=>'coloring');
 

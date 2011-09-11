@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: xxxlogue.css.php,v 2.4.1 RC 2011/04/18 15:50:30 Logue Exp $
+// $Id: xxxlogue.css.php,v 2.4.2 RC 2011/09/11 22:58:30 Logue Exp $
 // Copyright (C) 2010-2011 PukiWiki Advance Developers Team
 //               2007-2010 Logue
 
@@ -513,7 +513,6 @@ ol.list3 { list-style-type:lower-alpha; }
 
 /* Shelf */
 #shelf {
-	float:left;
 	width:100%;
 }
 
@@ -524,7 +523,6 @@ ol.list3 { list-style-type:lower-alpha; }
 	list-style:none;
 	margin:0 auto !important;
 	overflow:hidden;
-	text-align:left;
 	text-shadow: none;
 }
 
@@ -533,25 +531,24 @@ ol.list3 { list-style-type:lower-alpha; }
 	font-weight:400;
 	margin:15px 2px 0;
 }
-#toggle ul {
+
+#toggle > ul {
 	list-style:none;
 	margin:10px 0;
 }
-#toggle li {
+
+#toggle > ul li {
 	float:left;
 	width:21%;
 	background:transparent;
 	margin-left:1.8% !important;
 	padding:0 4px 6px 4px;
 	display:inline;
-}
-
-#toggle ul li {
 	width:100%;
 	margin:2px 0;
 	padding:0 8px;
 }
-#toggle ul li a {
+#toggle > ul li a {
 	display:block;
 	background:transparent;
 	color:#fff;
@@ -562,14 +559,15 @@ ol.list3 { list-style-type:lower-alpha; }
 	text-decoration:none;
 }
 
-#toggle ul li a:link, #toggle ul li a:visited{
+#toggle > ul li a:link, #toggle ul li a:visited{
 	color:#fff;
 }
 
-#toggle ul li a:hover {
+#toggle > ul li a:hover {
 	border-top:1px solid #fc0;
 	border-bottom:1px solid #fc0;
 }
+
 #toggle li.tags {
 	width:45%;
 }
@@ -578,11 +576,18 @@ ol.list3 { list-style-type:lower-alpha; }
 	text-decoration:underline;
 }
 
-#toggle #toolbar {
+#toggle .toolbar{
+	height:20px;
+	margin-bottom:5px;
 	clear:both;
+	float:right;
 }
 
-#toggle #toolbar a:hover{
+#toggle #shelf_form{
+	float:left;
+}
+
+#toggle .toolbar a:hover{
 	background-color:grey;
 }
 
@@ -990,18 +995,6 @@ ie8 .sf-menu li:hover, ie8 .sf-menu li.sfHover{
 }
 
 /* toolbar.inc.php */
-#toolbar{
-	display:block;
-	clear:both;
-	padding:0px;
-	margin:0px 1%;
-	float:right;
-	white-space: nowrap;
-}
-
-#toolbar .pkwk-icon, #toolbar .pkwk-icon_splitter{
-	float:left;
-}
 
 /* attach.inc.php & related.inc.php */
 #attach{

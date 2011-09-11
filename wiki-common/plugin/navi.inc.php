@@ -130,7 +130,7 @@ function plugin_navi_convert()
 		// Not implemented: contents(toc) search first(begin) last(end)
 		if (PLUGIN_NAVI_LINK_TAGS) {
 			foreach (array('start'=>$home, 'next'=>$next,
-			    'prev'=>$prev, 'up'=>$up) as $rel=>$_page) {
+			    'prev'=>$prev) as $rel=>$_page) {
 				if ($_page != '') {
 					$s_page = htmlsc($_page);
 					$link_tags[] = array('rel'=>$rel, 'href'=>get_page_uri($_page), 'title'=>$s_page);

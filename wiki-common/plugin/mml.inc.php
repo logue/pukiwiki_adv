@@ -23,7 +23,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-define('JSMML_PATH', SKIN_URI . 'js/plugin/jsmml');
+define('JSMML_PATH', JS_URI . 'plugin/jsmml');
 
 function plugin_mml_convert(){
 	global $script, $mml_count;

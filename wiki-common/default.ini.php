@@ -1,6 +1,6 @@
 <?php
-// PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: default.ini.php,v 1.25.15 2011/05/10 20:02:00 Logue Exp $
+// PukiWiki Advance - Yet another WikiWikiWeb clone.
+// $Id: default.ini.php,v 1.25.16 2011/09/11 23:05:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developer Team
 //   2005-2006,2009 PukiWiki Plus! Team
@@ -46,11 +46,10 @@ $list_index = 1;
 
 /////////////////////////////////////////////////
 // 特殊シンボル
-$_symbol_paraedit		= '<img src="'.IMAGE_URI.'iconset/default/symbol/edit.png" width="8" height="8" alt="Edit" title="Edit" class="pkwk-symbol" />';
-$_symbol_paraguiedit	= '<img src="'.IMAGE_URI.'iconset/default/symbol/guiedit.png" width="8" height="8" alt="Edit(GUI)" title="Edit(GUI)" class="pkwk-symbol" />';
-$_symbol_extanchor		= '<img src="'.IMAGE_URI.'iconset/default/symbol/ext.png" alt="External Link" width="8" height="8" class="pkwk-symbol ext" onclick="return open_uri(\'$1\', \'$2\');" />';
-$_symbol_innanchor		= '<img src="'.IMAGE_URI.'iconset/default/symbol/inn.png" alt="Internal Link" width="8" height="8" class="pkwk-symbol inn" onclick="return open_uri(\'$1\', \'$2\');" />';
-$_symbol_attach			= '<img src="'.IMAGE_URI.'iconset/default/symbol/attach.png" width="8" height="8" class="pkwk-symbol" alt="Attach" title="Attach" />';
+$_symbol_paraedit		= '<span class="pkwk-symbol symbol-edit" title="Edit here"></span>';
+$_symbol_extanchor		= '<span class="pkwk-symbol symbol-external" onclick="return open_uri(\'$1\', \'$2\');" title="External Link"></span>';
+$_symbol_innanchor		= '<span class="pkwk-symbol symbol-internal" onclick="return open_uri(\'$1\', \'$2\');" title="Internal Link"></span>';
+$_symbol_attach			= '<span class="pkwk-symbol symbol-attach" title="Attach here"></span>';
 
 /////////////////////////////////////////////////
 // 先頭・最後へジャンプ

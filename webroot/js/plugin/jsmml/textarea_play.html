@@ -7,7 +7,7 @@
 		<meta http-equiv="Content-Style-Type" content="text/css" />
 		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.4/dijit/themes/soria/soria.css">
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/dojo/1.4/dojo/dojo.xd.js"></script>
-		<script type="text/javascript" src="./JSMML.min.js"></script>
+		<script type="text/javascript" src="./JSMML.js"></script>
 		<script type="text/javascript">
 //<![CDATA[
 dojo.require('dijit.form.Button');
@@ -16,11 +16,10 @@ dojo.require('dijit.form.Textarea');
 dojo.require('dijit.ProgressBar');
 dojo.require('dijit.form.HorizontalSlider');
 
-var mml;
+var mml = new JSMML();;
 JSMML.swfurl = './JSMML.swf';
 JSMML.onLoad = function() {
 	/* Initialize JSMML */
-	mml = new JSMML();
 	dojo.byId('counter').value = '00:00 / 00:00';
 	dijit.byId('volume').value = '100';
 	dijit.byId('play').setAttribute('disabled',false);

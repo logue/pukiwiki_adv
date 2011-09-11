@@ -6,7 +6,7 @@
 // Original version written by miko and upk.
 // Adv version by Logue.
 // 
-// $Id: blue.css,v 1.0.3 2011/05/23 08:07:00 Logue Exp $
+// $Id: blue.css,v 1.0.4 2011/09/03 22:20:00 Logue Exp $
 //
 */
 
@@ -22,23 +22,23 @@
 }
 
 a:link{
-	color:#215dc6;
+	color:#215dc6 !important;
 	-webkit-tap-highlight-color: #FF5E99;
 	background-color:inherit;
 }
 
 a:active{
-	color:#215dc6;
+	color:#215dc6 !important;
 	background-color:#CCDDEE;
 }
 
 a:visited{
-	color:#a63d21;
+	color:#a63d21 !important;
 	background-color:inherit;
 }
 
 a:hover{
-	color:#215dc6;
+	color:#215dc6 !important;
 	background-color:#EECCDD;
 }
 

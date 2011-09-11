@@ -1,6 +1,6 @@
 <?php
-// PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: func.php,v 1.104.44 2011/02/05 09:08:00 Logue Exp $
+// PukiWiki Advance - Yet another WikiWikiWeb clone.
+// $Id: func.php,v 1.104.45 2011/09/11 23:01:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -529,17 +529,17 @@ function catrule()
 }
 
 // Show (critical) error message
-function die_message($msg, $error_title){
-	global $skin_file, $page_title, $_string, $_title;
-	$title = isset($error_title) ? $error_title : $_title['error'];
+function die_message($msg, $error_title=''){
+	global $skin_file, $page_title, $_string, $_title, $google_loader;
+	$title = ($error_title !== '') ? $error_title : $_title['error'];
 	$page = $_title['error'];
 	
-	if (DEBUG !== true || PKWK_WARNING !== true || !auth::check_role('role_auth') ){	// PKWK_WARNINGが有効でない場合は、詳細なエラーを隠す
+	if (DEBUG !== true || PKWK_WARNING !== true || !auth::check_role('role_auth') || !$msg){	// PKWK_WARNINGが有効でない場合は、詳細なエラーを隠す
 		$msg = $_string['error_msg'];
 	}
 	$body = <<<EOD
 <div class="message_box ui-state-error ui-corner-all">
-	<p><span class="ui-icon ui-icon-alert" style="float:left;"></span> 
+	<p style="padding:0 .5em;"><span class="ui-icon ui-icon-alert" style="display:inline-block;"></span> 
 	<strong>$page:</strong> $msg</p>
 </div>
 EOD;
@@ -565,7 +565,8 @@ EOD;
 <html>
 	<head>
 		<meta charset="utf-8">
-		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/themes/base/jquery-ui.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/base/jquery-ui.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="skin/script.css.php" type="text/css" media="all" />
 		<title>$title - $page_title</title>
 	</head>
 	<body>$body</body>

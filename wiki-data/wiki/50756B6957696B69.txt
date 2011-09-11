@@ -21,7 +21,7 @@ PukiWikiは Wiki(WikiWikiWeb) と呼ばれているもののひとつで、基�
 -- ご質問や御意見は、こちらへどうぞ。 :)
 
 - Pukiwiki-dev - http://pukiwiki.sourceforge.jp/dev/
--- こちらはPukiWiki開発サイトです。PukiWiki開発サイトでは、次期バージョンの開発だけでなく、現行バージョンの1.4系や1.3系の修正、セキュリティfixが行なわれています。[[pukiwiki.dev:開発日記]]で日々の作業の内容が掲載されていますので、PukiWikiを運用されている方は目を通すようお願いします。
+-- こちらはPukiWiki開発サイトです。PukiWiki開発サイトでは、次期バージョンの開発だけでなく、現行バージョンの1.4系や1.3系の修正、セキュリティfixが行なわれています。[[dev:開発日記]]で日々の作業の内容が掲載されていますので、PukiWikiを運用されている方は目を通すようお願いします。
 
 - http://sourceforge.jp/projects/pukiwiki/
 -- Sourceforge のプロジェクトサマリです。PukiWikiのダウンロードはこちらからどうぞ。

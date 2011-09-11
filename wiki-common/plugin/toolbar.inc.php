@@ -83,7 +83,7 @@ function plugin_toolbar_convert()
 			$body .= _toolbar($name);
 			break;
 		case '|':
-			$body .= '<span class="pkwk-icon_splitter">&#xA0;</span>'."\n";
+			$body .= '<li class="spliter">&#xA0;</li>'."\n";
 			break;
 		case 'diff':
 			if (!$is_read) break;
@@ -116,9 +116,9 @@ function plugin_toolbar_convert()
 		}
 	}
 	if ($pkwk_dtd == PKWK_DTD_HTML_5){
-		return '<nav id="toolbar">'. $body . '</nav>';
+		return '<nav class="toolbar"><ul>'. $body . '</ul></nav>';
 	}else{
-		return '<div id="toolbar">'. $body . '</div>';
+		return '<div class="toolbar"><ul>'. $body . '</ul></div>';
 	}
 }
 
@@ -131,6 +131,6 @@ function _toolbar($key, $x = 20, $y = 20)
 	if (!isset($lang[$key])) { return '<!--LANG NOT FOUND-->'; }
 	if (!isset($link[$key])) { return '<!--LINK NOT FOUND-->'; }
 
-	return '<a href="' . $link[$key] . '" rel="nofollow" class="pkwk-icon cmd-'.$key.'" title="'.$lang[$key].'">' . $lang[$key]. '</a>';
+	return '<li><a href="' . $link[$key] . '" rel="nofollow" title="'.$lang[$key].'"><span class="pkwk-icon icon-'.$key.'">' . $lang[$key]. '</span></a></li>';
 }
 ?>

@@ -5,13 +5,13 @@
 // Original version written by miko and upk.
 // Adv version by Logue.
 // 
-// $Id: default.css,v 1.33.11 2011/05/23 08:08:00 Logue Exp $
+// $Id: default.css,v 1.33.11 2011/09/11 22:55:00 Logue Exp $
 //
 */
 
 /** Generic Tags *********************************************************************************/
 a{
-	color:#215dc6;
+	color:#215dc6 !important;
 	text-decoration:none;
 }
 
@@ -19,16 +19,16 @@ a:hover{
 	text-decoration:underline;
 }
 
-p, pre, dl, fieldset, blockquote{
-	margin:.5em .5em .5em 1.5em;
+p, pre, dl, blockquote{
+	margin:.5em 1.5em;
 }
 
 blockquote{
 	padding: .5em;
 }
 
-p {
-	padding:.3em;
+p{
+	padding: .25em;
 }
 
 del{
@@ -75,17 +75,18 @@ pre{
 	border-left:silver 1px solid;
 	border-right:grey 1px solid;
 	background-color:whitesmoke;
-	padding:.5em;
+	padding:0.5em 1em;
+	margin:.5em;
 }
 
 q{
 	border:1px dotted #999;
 }
 
-ul, ol{
-	margin:0.5em;
-	margin-left:1.5em;
-	padding-left:1.5em;
+
+ul, ol {
+	padding:.25em .5em .25em 1.5em;
+	margin:.5em 1.5em .5em .5em;
 }
 
 /* Table Tags */
@@ -206,7 +207,6 @@ ul, ol{
 /* hgroup */
 #hgroup {
 	padding: 12px 0 0 0;
-	margin: 12px 0 0 0;
 	float:left;
 }
 
@@ -297,23 +297,14 @@ ul, ol{
 	font-size: 86%;
 }
 
-#toolbar{
+.toolbar{
 	display:block;
-	clear:both;
+	clear:right;
 	padding:0px;
 	margin:0px 1%;
 	float:right;
 	white-space: nowrap;
 }
-
-#toolbar .pkwk-icon, #toolbar .pkwk-icon_splitter{
-	float:left;
-}
-
-#related{
-	font-size:93%;
-}
-
 /** Misc ******************************************************************************************/
 /* html.php/catbody() */
 .word0{
@@ -579,6 +570,7 @@ ul, ol{
 	text-decoration: none;
 }
 .sf-menu a:visited  { /* visited pseudo selector so IE6 applies text colour*/
+	color: white !important;
 	text-decoration: none;
 }
 

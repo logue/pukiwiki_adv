@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance Standard CSS.
-// $Id: scripts.css.php,v 1.6.9 2011/08/01 21:29:00 Logue Exp $
+// $Id: scripts.css.php,v 1.6.10 2011/09/11 22:54:00 Logue Exp $
 // Copyright (C) 2010-2011 PukiWiki Advance Developer Team
 //
 
@@ -23,8 +23,8 @@ html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-
 body { margin: 0; font-size: 13px; line-height: 1.231; }
 body, button, input, select, textarea { font-family: sans-serif; color: #222; }
 
-::-moz-selection { background: #fe57a1; color: #fff; text-shadow: none; }
-::selection { background: #fe57a1; color: #fff; text-shadow: none; }
+::-moz-selection { background: #57a1fe; color: #fff; text-shadow: none; }
+::selection { background: #57a1fe; color: #fff; text-shadow: none; }
 
 a { color: #00e; }
 a:visited { color: #551a8b; }
@@ -770,6 +770,26 @@ input[disabled]:hover, select[disabled]:hover, textarea[disabled]:hover, option[
 	text-align:right;
 }
 
+/* navibar.inc.php */
+.toolbar ul{
+	list-style:none;
+}
+
+.toolbar li{
+	float: left;
+	height:16px;
+	width:16px;
+	padding:0 2px;
+	margin: 0 2px;
+}
+
+.toolbar li.spliter{
+	width:4px;
+}
+
+.toolbar ul li a:hover{
+	text-decoration:none !important;
+}
 /* new.inc.php */
 .comment_date {
 	font-size:x-small;
@@ -1191,6 +1211,91 @@ ul#jplayer_icons #jplayer_volume-min {
 	border:1px solid #339933;
 	background:#ccf9b9;
 }
+
+/* ==|== ui icon classes ==================================================== */
+.pkwk-icon{
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	line-height:100%;
+	background: transparent url('<?php echo $image_dir ?>iconset/default.png') -1000px -1000px no-repeat;
+	vertical-align: middle;
+	margin:0 2px;
+	text-align:center;
+	text-shadow:none;
+	color: transparent;
+}
+
+.icon-new			{ background-position: 0px 0px; }
+.icon-page			{ background-position: -18px 0px; }
+.icon-add			{ background-position: -36px 0px; }
+.icon-copy			{ background-position: -54px 0px; }
+.icon-newsub		{ background-position: -72px 0px; }
+.icon-edit			{ background-position: -90px 0px; }
+.icon-diff			{ background-position: -108px 0px; }
+
+.icon-source		{ background-position: 0px -18px; }
+.icon-rename		{ background-position: -18px -18px; }
+.icon-upload		{ background-position: -36px -18px; }
+.icon-backup		{ background-position: -54px -18px; }
+.icon-reload		{ background-position: -72px -18px; }
+.icon-freeze		{ background-position: -90px -18px; }
+.icon-unfreeze		{ background-position: -108px -18px; }
+
+.icon-pdf			{ background-position: 0px -36px; }
+.icon-list			{ background-position: -18px -36px; }
+.icon-filelist		{ background-position: -36px -36px; }
+.icon-skeylist		{ background-position: -54px -36px; }
+.icon-broken		{ background-position: -72px -36px; }
+.icon-referer		{ background-position: -90px -36px; }
+.icon-linklist		{ background-position: -108px -36px; }
+
+.icon-download		{ background-position: 0px -54px; }
+.icon-search		{ background-position: -18px -54px; }
+.icon-log_browse	{ background-position: -36px -54px; }
+.icon-log_check		{ background-position: -54px -54px; }
+.icon-log_down		{ background-position: -72px -54px; }
+.icon-log_login		{ background-position: -90px -54px; }
+.icon-log_update	{ background-position: -108px -54px; }
+
+.icon-top			{ background-position: 0px -72px; }
+.icon-home			{ background-position: -18px -72px; }
+.icon-recent		{ background-position: -36px -72px; }
+.icon-help			{ background-position: -54px -72px; }
+.icon-alias			{ background-position: -72px -72px; }
+.icon-glossary		{ background-position: -90px -72px; }
+.icon-deleted		{ background-position: -108px -72px; }
+
+.icon-rss			{ background-position: 0px -90px; }
+.icon-opml			{ background-position: -18px -90px; }
+.icon-share			{ background-position: -36px -90px; }
+.icon-canonical		{ background-position: -54px -90px; }
+.icon-trackback		{ background-position: -72px -90px; }
+.icon-tags			{ background-position: -90px -90px; }
+.icon-toc			{ background-position: -108px -90px; }
+
+.icon-interwiki		{ background-position: 0px -108px; }
+.icon-mail			{ background-position: -18px -108px; }
+
+.pkwk-symbol{
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	margin:0 2px;
+	padding:1px;
+	line-height:100%;
+	background: transparent url('<?php echo $image_dir ?>iconset/default.png') -1000px -1000px no-repeat;
+	vertical-align: middle;
+	text-align:center;
+	text-shadow:none;
+	color: transparent;
+}
+
+.symbol-edit		{ background-position: -54px -114px; }
+.symbol-attach		{ background-position: -72px -114px; }
+.symbol-external	{ background-position: -90px -114px; }
+.symbol-internal	{ background-position: -108px -114px; }
+
 /* ==|== emoji classes ====================================================== */
 .emoji{
 	font-family:Symbola;
@@ -1473,7 +1578,7 @@ ul#jplayer_icons #jplayer_volume-min {
 .clearfix:after { clear: both; }
 .clearfix { zoom: 1; }
 
-/** Print Setting *********************************************************************************/
+/* ==|== print styles ======================================================= */
 @media print {
 	* { background: transparent !important; color: black !important; text-shadow: none !important; filter:none !important; -ms-filter: none !important; }
 	a, a:visited { text-decoration: underline; }

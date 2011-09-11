@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiPlus - Yet another WikiWikiWeb clone.
 //
-// $Id: cloudwalk.skin.php,v 1.2.1 2011/04/09 18:24:00 Logue Exp$
+// $Id: cloudwalk.skin.php,v 1.2.2 2011/09/11 22:57:00 Logue Exp$
 // Original is ari-
 // PukiWiki Advance edition by Logue
 
@@ -59,10 +59,10 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 						<div id="trackback">
 <!-- ■BEGIN id:trackback -->
 <?php if ($trackback) { ?>
-							<a href="<?php echo $_LINK['trackback'] ?>"  class="pkwk-icon_linktext cmd-trackback"><?php echo $_LANG['skin']['trackback'].'('.tb_count($_page).')' ?></a> |
+							<a href="<?php echo $_LINK['trackback'] ?>"><span class="pkwk-icon icon-trackback"></span><?php echo $_LANG['skin']['trackback'].'('.tb_count($_page).')' ?></a> |
 <?php } ?>
 <?php if ($referer) { ?>
-							<a href="<?php echo $_LINK['referer'] ?>" class="pkwk-icon_linktext cmd-referer"><?php echo $_LANG['skin']['referer'] ?></a>
+							<a href="<?php echo $_LINK['referer'] ?>"><span class="pkwk-icon icon-referer"></span><?php echo $_LANG['skin']['referer'] ?></a>
 <?php } ?>
 
 						</div>
@@ -94,31 +94,31 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 						<h2><?php echo $_LANG['skin']['edit'] ?></h2>
 						<ul>
 <?php if ($is_page) { ?>
-							<li><a href="<?php echo $_LINK['reload'] ?>" class="pkwk-icon_linktext cmd-reload"><?php echo $_LANG['skin']['reload'] ?></a></li>
-							<li><a href="<?php echo $_LINK['new'] ?>" class="pkwk-icon_linktext cmd-new"><?php echo $_LANG['skin']['new'] ?></a></li>
-							<li><a href="<?php echo $_LINK['edit'] ?>" class="pkwk-icon_linktext cmd-edit"><?php echo $_LANG['skin']['edit'] ?></a></li>
+							<li><a href="<?php echo $_LINK['reload'] ?>"><span class="pkwk-icon icon-reload"></span><?php echo $_LANG['skin']['reload'] ?></a></li>
+							<li><a href="<?php echo $_LINK['new'] ?>"><span class="pkwk-icon icon-new"></span><?php echo $_LANG['skin']['new'] ?></a></li>
+							<li><a href="<?php echo $_LINK['edit'] ?>"><span class="pkwk-icon icon-edit"></span><?php echo $_LANG['skin']['edit'] ?></a></li>
 <?php   if ($is_read and $function_freeze) { ?>
 <?php     if ($is_freeze) { ?>
-							<li><a href="<?php echo $_LINK['unfreeze'] ?>" class="pkwk-icon_linktext cmd-unfreeze"><?php echo $_LANG['skin']['unfreeze'] ?></a></li>
+							<li><a href="<?php echo $_LINK['unfreeze'] ?>"><span class="pkwk-icon icon-unfreeze"></span><?php echo $_LANG['skin']['unfreeze'] ?></a></li>
 <?php     } else { ?>
-							<li><a href="<?php echo $_LINK['freeze'] ?>" class="pkwk-icon_linktext cmd-freeze"><?php echo $_LANG['skin']['freeze'] ?></a></li>
+							<li><a href="<?php echo $_LINK['freeze'] ?>"><span class="pkwk-icon icon-freeze"></span><?php echo $_LANG['skin']['freeze'] ?></a></li>
 <?php     } ?>
 <?php   } ?>
 <?php   if ((bool)ini_get('file_uploads')) { ?>
-							<li><a href="<?php echo $_LINK['upload'] ?>" class="pkwk-icon_linktext cmd-upload"><?php echo $_LANG['skin']['upload'] ?></a></li>
+							<li><a href="<?php echo $_LINK['upload'] ?>"><span class="pkwk-icon icon-upload"></span><?php echo $_LANG['skin']['upload'] ?></a></li>
 <?php   } ?>
-							<li><a href="<?php echo $_LINK['diff'] ?>" class="pkwk-icon_linktext cmd-diff"><?php echo $_LANG['skin']['diff'] ?></a></li>
+							<li><a href="<?php echo $_LINK['diff'] ?>"><span class="pkwk-icon icon-diff"></span><?php echo $_LANG['skin']['diff'] ?></a></li>
 <?php } ?>
-							<li><a href="<?php echo $_LINK['list'] ?>" class="pkwk-icon_linktext cmd-list"><?php echo $_LANG['skin']['list'] ?></a></li>
+							<li><a href="<?php echo $_LINK['list'] ?>"><span class="pkwk-icon icon-list"></span><?php echo $_LANG['skin']['list'] ?></a></li>
 <?php if (arg_check('list')) { ?>
-							<li><a href="<?php echo $_LINK['filelist'] ?>" class="pkwk-icon_linktext cmd-filelist"><?php echo $_LANG['skin']['filelist'] ?></a></li>
+							<li><a href="<?php echo $_LINK['filelist'] ?>"><span class="pkwk-icon icon-filelist"></span><?php echo $_LANG['skin']['filelist'] ?></a></li>
 <?php } ?>
-							<li><a href="<?php echo $_LINK['search'] ?>" class="pkwk-icon_linktext cmd-search"><?php echo $_LANG['skin']['search'] ?></a></li>
-							<li><a href="<?php echo $_LINK['whatsnew'] ?>" class="pkwk-icon_linktext cmd-recent"><?php echo $_LANG['skin']['recent'] ?></a></li>
+							<li><a href="<?php echo $_LINK['search'] ?>"><span class="pkwk-icon icon-search"></span><?php echo $_LANG['skin']['search'] ?></a></li>
+							<li><a href="<?php echo $_LINK['recent'] ?>"><span class="pkwk-icon icon-recent"></span><?php echo $_LANG['skin']['recent'] ?></a></li>
 <?php if ($do_backup) { ?>
-							<li><a href="<?php echo $_LINK['backup'] ?>" class="pkwk-icon_linktext cmd-backup"><?php echo $_LANG['skin']['backup'] ?></a></li>
+							<li><a href="<?php echo $_LINK['backup'] ?>"><span class="pkwk-icon icon-backup"></span><?php echo $_LANG['skin']['backup'] ?></a></li>
 <?php } ?>
-							<li><a href="<?php echo $_LINK['help'] ?>" class="pkwk-icon_linktext cmd-help"><?php echo $_LANG['skin']['help'] ?></a></li>
+							<li><a href="<?php echo $_LINK['help'] ?>"><span class="pkwk-icon icon-help"></span><?php echo $_LANG['skin']['help'] ?></a></li>
 						</ul>
 					</div><!-- □END id:page_action -->
 <?php global $body_menu; ?>

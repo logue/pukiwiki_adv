@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance.
-// $Id: main.php,v 1.23.25 2011/02/05 09:24:00 Logue Exp $
+// $Id: main.php,v 1.23.26 2011/09/11 23:04:00 Logue Exp $
 //
 // PukiWiki Advance
 //  Copyright (C) 2010-2011 by PukiWiki Advance Team
@@ -233,7 +233,7 @@ if ($plugin != '') {
 // 上のアクションプラグインの実行後に処理を実施
 if ($is_protect) {
  	if (exist_plugin_convert('protect')) do_plugin_convert('protect');
-	die('PLUS_PROTECT_MODE is set.');
+	die('<var>PLUS_PROTECT_MODE</var> is set.');
 }
 
 // Set Home

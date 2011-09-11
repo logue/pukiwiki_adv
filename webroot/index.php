@@ -28,7 +28,7 @@ define('PKWK_WARNING', true);
 //define('TDIARY_THEME', 'digital_gadgets');
 // PukiWiki Adv. THEME (NOT compatible as Original and Plus! skin)
 // ex.  cloudwalk, classic, xxxlogue
-// define('PLUS_THEME',	'classic');
+//define('PLUS_THEME',	'classic');
 
 // Directory definition
 // (Ended with a slash like '../path/to/pkwk/', or '')
@@ -37,8 +37,8 @@ define('SITE_HOME',	'../wiki-common/');
 // define('DATA_HOME',	'../../wiki-data/contents/');
 define('DATA_HOME',		'../wiki-data/');
 
-// define('ROOT_URI', '');
-// define('WWW_HOME', '');
+//define('ROOT_URI', '');
+//define('WWW_HOME', '');
 
 // to absolute path
 // Do not change following lines

@@ -26,7 +26,7 @@ var _document = document;
 var _window = window;
 var _ua = navigator.userAgent;
 
-// IEのバージョン取得
+// Detect IE
 var ie = (function(){
 	var undef, v = 3, div = _document.createElement('div');
 	while (
@@ -35,6 +35,22 @@ var ie = (function(){
 	){};
 	return v> 4 ? v : undef;
 }());
+
+// usage: log('inside coolFunc', this, arguments);
+// paulirish.com/2009/log-a-lightweight-wrapper-for-consolelog/
+_window.log = function(){
+	log.history = log.history || [];   // store logs to an array for reference
+	log.history.push(arguments);
+	if(this.console) {
+		arguments.callee = arguments.callee.caller;
+		var newarr = [].slice.call(arguments);
+		(typeof console.log === 'object' ? log.apply.call(console.log, console, newarr) : console.log.apply(console, newarr));
+	}
+};
+
+// make it safe to use console.log always
+(function(b){function c(){}for(var d="assert,clear,count,debug,dir,dirxml,error,exception,firebug,group,groupCollapsed,groupEnd,info,log,memoryProfile,memoryProfileEnd,profile,profileEnd,table,time,timeEnd,timeStamp,trace,warn".split(","),a;a=d.pop();){b[a]=b[a]||c}})((function(){try
+{/* console.log(); */return _window.console;}catch(err){return _window.console={};}})());
 
 if( self.location !== top.location ){ top.location = self.location; }
 
@@ -46,7 +62,7 @@ var pukiwiki = {
 		'@prefix': '<http://purl.org/net/ns/doas#>',
 		'@about': '<skin.js>', a: ':JavaScript',
 		 title: 'Pukiwiki skin script for jQuery',
-		 created: '2008-11-25', release: {revision: '2.2.22', created: '2011-09-02'},
+		 created: '2008-11-25', release: {revision: '2.2.23', created: '2011-09-10'},
 		 author: {name: 'Logue', homepage: '<http://logue.be/>'},
 		 license: '<http://www.gnu.org/licenses/gpl-2.0.html>'
 	},
@@ -73,11 +89,10 @@ var pukiwiki = {
 				}
 			});
 		});
-/*
 		// metaタグのGenereterから、Plusかそうでないかを判別
 		var generetor = $('meta[name=generator]')[0].content;
 		if (generetor.match(/[PukiPlus|Advance]/)){
-			this.image_dir = IMAGE_DIR+'ajax/';	// デフォルト
+			this.image_dir = IMAGE_URI+'ajax/';	// デフォルト
 		}else if (generetor.match(/plus/)){
 		//	console.info('Pukiwiki Plus! mode');
 			this.image_dir = SKIN_DIR+'theme/'+THEME_NAME+'/';
@@ -85,34 +100,33 @@ var pukiwiki = {
 		//	console.info('Pukiwiki Standard mode');
 			this.image_dir = SKIN_DIR+this.name+'/image/';	// PukiWiki用
 		}
-*/
+
 
 		// IE互換処理
-		if(ie){
-			// json実装
-			$.getScript(JS_DIR+'json2.js');
-
-			if(ie < 8){
-				// Canvas実装
-				$.getScript(JS_DIR+'excanvas.compiled.js');
-			}
-			
-			// IE6未満
-			if(ie < 6){
-				// Fix Background flicker
-				try{ _document.execCommand('BackgroundImageCache', false, true); }catch(e){}
-				// IE PNG Fix
-				$.ajax({
-					type: "GET",
-					global : false,
-					url: JS_DIR+'iepngfix/iepngfix_tilebg.js',
-					dataType: "script"
-				});
-				$('img[src$=png], .pkwk-icon, .pkwk-symbol, .pkwk-icon_linktext').css({
-					'behavior': 'url('+JS_DIR+'iepngfix/iepngfix.htc)'
-				});
-			}
+		if(ie < 6){
+			// Fix Background flicker
+			try{ _document.execCommand('BackgroundImageCache', false, true); }catch(e){}
+			// IE PNG Fix
+			$.ajax({
+				type: "GET",
+				global : false,
+				url: JS_URI+'iepngfix/iepngfix_tilebg.js',
+				dataType: "script"
+			});
+			$('img[src$=png], .pkwk-icon, .pkwk-symbol, .pkwk-icon_linktext').css({
+				'behavior': 'url('+JS_URI+'iepngfix/iepngfix.htc)'
+			});
 		}
+		if(ie <= 7){
+			// json実装
+			Modernizr.load({load:JS_URI+'json2.js'});
+		}
+
+		if(ie <= 8){
+			// Canvas実装
+			Modernizr.load({load:JS_URI+'excanvas.compiled.js'});
+		}
+		
 		// Lazyload（遅延画像ロード）
 		// IE6では、pngの場合アルファチャンネルが効かなくなるため、拡張子がpngのときは処理しない
 		$(this.body + ((ie < 6) ? 'img[src!$=.png]' : 'img')).lazyload({ 
@@ -537,8 +551,8 @@ $(_window).bind("resize", autoResizer);
 		var $sh = $(prefix+'pre.sh');
 		
 		if ($sh.length !== 0){
-			var brushes = new Array();
 			var sh_doms = new Array();
+			var brushes = new Array();
 
 			// DOMを走査し、使用するbrushのリストを作成
 			$sh.each(function(){
@@ -550,14 +564,14 @@ $(_window).bind("resize", autoResizer);
 
 				// 非同期通信で読み込んだshにも反映させるため、
 				// 重複してbrushを読み込まないようにする
-				if ($.inArray(brush, brushes) === -1){
+				if ($.inArray(brush, self.brushes) === -1){
 					brushes.push(brush);
 				}
 			});
 			
-			var config = {
+			var settings = {
 				autoLoad: true,
-				baseUrl:JS_DIR+'syntaxhighlighter/',
+				baseUrl:JS_URI+'syntaxhighlighter/',
 				brushes: brushes,
 				ready: function() {
 					// SyntaxHilighterを反映させる
@@ -566,18 +580,22 @@ $(_window).bind("resize", autoResizer);
 						sh_doms[i].beautifyCode(data.brush);
 					}
 				},
-				strings:{
-					expandSource				: $.i18n('sh','expandSource'),
-					viewSource					: $.i18n('sh','viewSource'),
-					copyToClipboard				: $.i18n('sh','copyToClipboard'),
-					copyToClipboardConfirmation : $.i18n('sh','copyToClipboardConfirmation'),
-					print						: $.i18n('sh','print'),
-					noBrush						: $.i18n('sh','noBrush'),
-					brushNotHtmlScript			: $.i18n('sh','brushNotHtmlScript')
+				config: {
+					useScriptTags : false,
+					debug:DEBUG,
+					strings:{
+						expandSource				: $.i18n('sh','expandSource'),
+						viewSource					: $.i18n('sh','viewSource'),
+						copyToClipboard				: $.i18n('sh','copyToClipboard'),
+						copyToClipboardConfirmation : $.i18n('sh','copyToClipboardConfirmation'),
+						print						: $.i18n('sh','print'),
+						noBrush						: $.i18n('sh','noBrush'),
+						brushNotHtmlScript			: $.i18n('sh','brushNotHtmlScript')
+					}
 				}
 			};
 			// SyntaxHilighterを実行
-			$.beautyOfCode.init(config);
+			$.beautyOfCode.init(settings);
 		}
 	},
 	// ajaxでダイアログ生成。JSON専用！
@@ -601,6 +619,7 @@ $(_window).bind("resize", autoResizer);
 				$(prefix+':input').attr('disabled','disabled');
 				self.tablesorter(prefix+'.window');
 				self.glossaly(prefix+'.window');
+				self.sh(prefix+'.window');
 
 				if(typeof(callback) === 'function'){ callback(); }
 
@@ -797,14 +816,14 @@ $(_window).bind("resize", autoResizer);
 				hide: 'fade',
 				title: 'Music Player',
 				dialogClass: 'music_player',
-				width:'640px',
+				width:'680px',
 				bgiframe : ($.browser.msie && $.browser.version > 6) ? true : false,	// for IE6 
 				open: function(){
 					var global_lp = 0;
 		
 					var self = this;
 					$('#jplayer').jPlayer({
-						swfPath: SKIN_DIR+'js',
+						swfPath: SKIN_DIR,
 						nativeSupport: true,
 						customCssIds: true,
 						ready: function (){
@@ -918,12 +937,12 @@ $(_window).bind("resize", autoResizer);
 			var jplayer_container = [
 				'<div id="jplayer"></div>',
 				'<div id="jplayer_container">',
-					'<ul id="jplayer_icons" class="ui-widget ui-helper-clearfix">',
+					'<ul id="jplayer_icons" class="ui-widget pkwk_widget">',
 						'<li id="jplayer_play" class="ui-button ui-state-default ui-corner-all" title="'+$.i18n('player','play')+'"><span class="ui-icon ui-icon-play"></span></li>',
-						'<li id="jplayer_pause" class="ui-button ui-state-default ui-corner-all"><span class="ui-icon ui-icon-pause" title="'+$.i18n('player','pause')+'"></span></li>',
-						'<li id="jplayer_stop" class="ui-button ui-state-default ui-corner-all"><span class="ui-icon ui-icon-stop" title="'+$.i18n('player','stop')+'"></span></li>',
-						'<li id="jplayer_volume-min" class="ui-button ui-state-default ui-corner-all"><span class="ui-icon ui-icon-volume-off" title="'+$.i18n('player','volume_max')+'"></span></li>',
-						'<li id="jplayer_volume-max" class="ui-button ui-state-default ui-corner-all"><span class="ui-icon ui-icon-volume-on" title="'+$.i18n('player','volume_min')+'"></span></li>',
+						'<li id="jplayer_pause" class="ui-button ui-state-default ui-corner-all" title="'+$.i18n('player','pause')+'"><span class="ui-icon ui-icon-pause"></span></li>',
+						'<li id="jplayer_stop" class="ui-button ui-state-default ui-corner-all" title="'+$.i18n('player','stop')+'"><span class="ui-icon ui-icon-stop"></span></li>',
+						'<li id="jplayer_volume-min" class="ui-button ui-state-default ui-corner-all" title="'+$.i18n('player','volume_min')+'"><span class="ui-icon ui-icon-volume-off"></span></li>',
+						'<li id="jplayer_volume-max" class="ui-button ui-state-default ui-corner-all" title="'+$.i18n('player','volume_max')+'"><span class="ui-icon ui-icon-volume-on"></span></li>',
 					'</ul>',
 					'<div id="jplayer_sliderVolume" title="'+$.i18n('player','volume')+'"></div>',
 					'<div id="jplayer_bars_holder" title="'+$.i18n('player','seek')+'">',
@@ -1135,7 +1154,7 @@ $(_window).bind("resize", autoResizer);
 		
 		if ($.support.leadingWhitespace !== true){
 			$(prefix+'.tooltip').css({
-				'behavior': 'url('+JS_DIR+'ie-css3.htc)'
+				'behavior': 'url('+JS_URI+'ie-css3.htc)'
 			});
 		}
 		
@@ -1211,7 +1230,7 @@ $(_window).bind("resize", autoResizer);
 		$(prefix+'.edit_form').prepend('<div class="assistant ui-corner-top ui-widget-header ui-helper-clearfix"></div>');
 		
 		// プレビューボタンが押された時の処理
-		$(prefix+'.edit_form input[name=add_ajax]').click(function(){
+		$(prefix+'.edit_form input[name=add_ajax]').button({icons:{primary:'ui-icon-gear'}}).click(function(){
 			$('textarea').attr('disabled', 'disabled');
 			// フォームの高さを取得
 			// Textarea Resizerで高さが可変になっているため。
@@ -1241,7 +1260,7 @@ $(_window).bind("resize", autoResizer);
 						'<textarea id="previous" style="display:none;"></textarea>'
 					);
 					$(prefix+'.edit_form #indicator').show().fadeIn();
-					$(prefix+'.edit_form #indicator').html('<img src="'+self.image_dir+'spinner.gif" alt="Loading..." />'+$.i18n('dialog','loading'));
+					$(prefix+'.edit_form #indicator').html('<img src="'+self.image_dir+'spinner.gif" alt="'+$.i18n('dialog','loading')+'" />');
 					$(prefix+'.edit_form #previous').val($('textarea#msg').val());
 					
 					// 初回実行時、realview_outerの大きさを、フォームの大きさに揃える。
@@ -1432,7 +1451,7 @@ $(_window).bind("resize", autoResizer);
 		
 		if (this.ajax_apx) {
 //			$(prefix+'#indicator').show().fadeOut();
-			$(prefix+'#indicator').html('<img src="'+self.image_dir+'spinner.gif" alt="Loading..." />Now Loading...');
+			$(prefix+'#indicator').html('<img src="'+self.image_dir+'spinner.gif" alt="'+$.i18n('dialog','loading')+'" />');
 			$(prefix+'textarea#previous').val(source);
 			$(prefix+'textarea').attr('disabled', 'disabled');
 			
@@ -1551,20 +1570,20 @@ $(_window).bind("resize", autoResizer);
 		// アシスタントのウィジット
 		$('.assistant').html([
 			'<ul class="ui-widget pkwk_widget">',
-				'<li class="replace ui-button ui-state-default ui-corner-left" title="'+$.i18n('editor','bold')+'" name="b"><strong>b</strong></li>',
-				'<li class="replace ui-button ui-state-default" title="'+$.i18n('editor','italic')+'" name="i" style="font-weight:normal;"><em>i</em></li>',
-				'<li class="replace ui-button ui-state-default" title="'+$.i18n('editor','strike')+'" name="s" style="font-weight:normal;"><strike>s</strike></li>',
-				'<li class="replace ui-button ui-state-default" title="'+$.i18n('editor','underline')+'" name="u" style="font-weight:normal;"><span class="underline">u</span></li>',
-				'<li class="replace ui-button ui-state-default" title="'+$.i18n('editor','code')+'" name="code" style="font-weight:normal;"><span class="ui-icon ui-icon-script"></span></li>',
-				'<li class="replace ui-button ui-state-default ui-corner-right" title="'+$.i18n('editor','quote')+'" name="q" style="font-weight:normal;"><span class="ui-icon ui-icon-comment"></span></li>',
-				'<li class="replace ui-button ui-state-default ui-corner-left" title="'+$.i18n('editor','link')+'" name="url"><span class="ui-icon ui-icon-link"></span></li>',
-				'<li class="replace ui-button ui-state-default" title="'+$.i18n('editor','size')+'" name="size">size</li>',
-				'<li class="insert ui-button ui-state-default ui-corner-right" title="'+$.i18n('editor','color')+'" name="color">color</li>',
-				'<li class="insert ui-button ui-state-default ui-corner-left" title="'+$.i18n('editor','emoji')+'" name="emoji">☺</li>',
-				'<li class="insert ui-button ui-state-default ui-corner-right" title="'+$.i18n('editor','breakline')+'" name="br">⏎</li>',
-				'<li class="replace ui-button ui-state-default ui-corner-all" title="'+$.i18n('editor','ncr')+'" name="ncr">&amp;#</li>',
-				'<li class="insert ui-button ui-state-default ui-corner-all" title="'+$.i18n('editor','hint')+'" name="help"><span class="ui-icon ui-icon-help"></span></li>',
-				(typeof(Modernizr.localstorage) !== 'undefined') ? '<li class="insert ui-state-default ui-corner-all" title="'+$.i18n('editor','flush')+'" name="flush"><span class="ui-icon ui-icon-trash"></span></li>': null,
+				'<li class="replace ui-button ui-state-default ui-corner-left" title="'+$.i18n('editor','bold')+'" name="b" role="button"><strong>b</strong></li>',
+				'<li class="replace ui-button ui-state-default" title="'+$.i18n('editor','italic')+'" name="i" style="font-weight:normal;" role="button"><em>i</em></li>',
+				'<li class="replace ui-button ui-state-default" title="'+$.i18n('editor','strike')+'" name="s" style="font-weight:normal;" role="button"><strike>s</strike></li>',
+				'<li class="replace ui-button ui-state-default" title="'+$.i18n('editor','underline')+'" name="u" style="font-weight:normal;" role="button"><span class="underline">u</span></li>',
+				'<li class="replace ui-button ui-state-default" title="'+$.i18n('editor','code')+'" name="code" style="font-weight:normal;" role="button"><span class="ui-icon ui-icon-script"></span></li>',
+				'<li class="replace ui-button ui-state-default ui-corner-right" title="'+$.i18n('editor','quote')+'" name="q" style="font-weight:normal;" role="button"><span class="ui-icon ui-icon-comment"></span></li>',
+				'<li class="replace ui-button ui-state-default ui-corner-left" title="'+$.i18n('editor','link')+'" name="url"><span class="ui-icon ui-icon-link" role="button"></span></li>',
+				'<li class="replace ui-button ui-state-default" title="'+$.i18n('editor','size')+'" name="size" role="button">size</li>',
+				'<li class="insert ui-button ui-state-default ui-corner-right" title="'+$.i18n('editor','color')+'" name="color" role="button">color</li>',
+				'<li class="insert ui-button ui-state-default ui-corner-left" title="'+$.i18n('editor','emoji')+'" name="emoji" role="button">☺</li>',
+				'<li class="insert ui-button ui-state-default ui-corner-right" title="'+$.i18n('editor','breakline')+'" name="br" role="button">⏎</li>',
+				'<li class="replace ui-button ui-state-default ui-corner-all" title="'+$.i18n('editor','ncr')+'" name="ncr" role="button">&amp;#</li>',
+				'<li class="insert ui-button ui-state-default ui-corner-all" title="'+$.i18n('editor','hint')+'" name="help" role="button"><span class="ui-icon ui-icon ui-icon-lightbulb"></span></li>',
+				(typeof(Modernizr.localstorage) !== 'undefined') ? '<li class="insert ui-state-default ui-corner-all" title="'+$.i18n('editor','flush')+'" name="flush" role="button"><span class="ui-icon ui-icon-trash"></span></li>': null,
 				'<li class="ui-widget-content ui-corner-all" style="float:right; width:auto;display:none;font-weight:normal;" id="indicator"></li>',
 			'</ul>'
 		].join("\n"));
@@ -1787,8 +1806,13 @@ $(_window).bind("resize", autoResizer);
 
 		var pass_form;
 		if ($(prefix+'input[name=pass]').length !== 0){
-			pass_form = '<label for="pass">Password:</label><input type="password" name="pass" id="pass" size="8" value="" /><br />';
+			pass_form = '<label for="pass">'+$.i18n('uploader','password')+'</label><input type="password" name="pass" id="pass" size="8" value="" /><br />';
 		}
+		
+		$(prefix+' .attach_info li').before([
+			'<li>'+$.i18n('uploader','selected')+'<var id="attach_selected">0</var></li>',
+			'<li>'+$.i18n('uploader','queued')+'<var id="attach_queued">0</var></li>'
+		].join("\n"));
 
 		// swfuploadがスクリプトに渡す値
 		
@@ -1815,6 +1839,7 @@ $(_window).bind("resize", autoResizer);
 			// POST時に送られるファイルのフォーム名（重要）
 			// attachプラグインでは、attach_fileにアップロードするファイル名が格納される。
 			// Flashの仕様上、本来は変更せずにFiledataとすることが望ましい。
+			// PukiWikiでは、attach_fileにファイルが格納される。
 			file_post_name :'attach_file',
 			// POST時に送るパラメータ
 			post_params: params,
@@ -1823,7 +1848,7 @@ $(_window).bind("resize", autoResizer);
 			// ファイルタイプ
 			file_types : "*.*",
 			// ファイルタイプの説明
-			file_types_description : "All Files",
+			file_types_description : $.i18n('uploader','file_type_desc'),
 			// 一度にアップロードできるファイルの上限（ファイル選択画面でShiftキーで選択できるファイル数）
 			file_upload_limit : 10,	// 変更しないこと
 			// キューに入れられる上限
@@ -1833,7 +1858,7 @@ $(_window).bind("resize", autoResizer);
 			debug: DEBUG,
 
 			// 添付ボタン設定
-			button_image_url: IMAGE_DIR+'ajax/swfupload/wdp_buttons_upload_114x29.png',
+			button_image_url: this.image_dir+'swfupload/wdp_buttons_upload_114x29.png',
 			button_width : 114,
 			button_height : 29,
 			// 書き換える場所のID
@@ -1858,14 +1883,14 @@ $(_window).bind("resize", autoResizer);
 		$(prefix+'.attach_form').html( [
 			'<div id="swfupload-control">',
 				'<input type="button" id="swfupload_button" />',
-				'<p id="swfupload-queuestatus" ></p>',
+				'<p id="swfupload-queuestatus"></p>',
 				'<ol id="swfupload-log" class="ui-widget"></ol>',
-				'<button id="execute">Go</button>',
+				'<span id="execute">'+$.i18n('uploader','execute')+'</span>',
 			'</div>'
 		].join("\n"));
 		
 		$(prefix+'#execute').button({
-			icons : { primary: 'ui-icon-check' },
+			label : '<span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-gear"></span>Go',
 			disabled:true
 		}).click(function(){
 			$('#swfupload-control').swfupload('startUpload');
@@ -1878,19 +1903,21 @@ $(_window).bind("resize", autoResizer);
 		.bind('fileQueued', function(event, file){
 			var listitem = [
 				'<li id="'+file.id+'" class="ui-widget-content ui-corner-all">',
-					'File: <em>'+file.name+'</em> ('+Math.round(file.size/1024)+' KB) <span class="progressvalue" ></span>',
-					'<div class="progressbar"></div>',
-					'<p class="status"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>Pending</p>',
-					'<button class="cancel">Close</button>',
+					'<span>'+$.i18n('uploader','file')+'<code>'+file.name+'</code> (<var>'+Math.round(file.size/1024)+' KB</var>)</span>',
+					'<span class="cancell_btn" style="display:block; float:right"></span>',
+					'<span class="progressvalue"></span>',
+					'<div style="display:block; clear:both;" class="progressbar"></div>',
+					'<p class="status"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>'+$.i18n('uploader','pending')+'</p>',
 				'</li>'
 			].join("\n");
 	
 			$(prefix+'#swfupload-log').append(listitem);
 			
-			$(prefix+'li#'+file.id+' button:first').button({
+			$(prefix+'li#'+file.id+' .cancell_btn').button({
 				icons: {
-					primary: 'ui-icon-close'
-				}
+					primary: "ui-icon-close"
+				},
+				text:false
 			}).click(function(){
 				var swfu = $.swfupload.getInstance('#swfupload-control');
 				swfu.cancelUpload(file.id);
@@ -1908,12 +1935,12 @@ $(_window).bind("resize", autoResizer);
 		})
 		.bind('fileQueueError', function(event, file, errorCode, message){
 			var listitem = [
-				'<li id="error" class="ui-widget-content ui-state-error ui-corner-all"><em>Error</em>',
+				'<li id="error" class="ui-widget-content ui-state-error ui-corner-all"><em>'+$.i18n('dialog','error')+'</em>',
 					'<p>',
 						'<span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-alert"></span>',
-						'You have attempted to queue too many files.',
+						$.i18n('uploader','many_files'),
 					'</p>',
-					'<button class="close" >Close</button>',
+					'<button class="close">'+$.i18n('dialog','close')+'</button>',
 				'</li>'
 			].join("\n");
 
@@ -1922,17 +1949,19 @@ $(_window).bind("resize", autoResizer);
 			$(prefix+'li#error button').button({
 				icons: {
 					primary: 'ui-icon-close'
-				}
+				},
+				text:false
 			}).click(function(){
 				$('#swfupload-log li#error').slideUp('fast');
 				return false;
 			});
 		})
 		.bind('fileDialogComplete', function(event, numFilesSelected, numFilesQueued){
-			$('#swfupload-queuestatus').text('Files Selected: '+numFilesSelected+' / Queued Files: '+numFilesQueued);
+			$('#atttach_selected').text(numFilesSelected);
+			$('#atttach_queued').text(numFilesQueued);
 		})
 		.bind('uploadStart', function(event, file){
-			$('#swfupload-log li#'+file.id).find('p.status').text('Uploading...');
+			$('#swfupload-log li#'+file.id).find('p.status').text($.i18n('uploader','uploading'));
 			$('#swfupload-log li#'+file.id).find('span.progressvalue').text('0%');
 			$('#swfupload-log li#'+file.id).find('span.cancel').hide();
 		})
@@ -1948,7 +1977,12 @@ $(_window).bind("resize", autoResizer);
 				var item=$(prefix+'#swfupload-log li#'+file.id);
 				$(prefix+'#swfupload-log li#'+file.id+' .progressbar').progressbar({ value: 100 });
 				item.find('.progressvalue').text('100%');
-				var pathtofile = '<a href="'+SCRIPT+'?plugin=attach&pcmd=open&refer='+PAGE+'&file='+file.name+'" id="view_'+file.id+'"><span style="float: right; margin-right: 0.3em;" class="ui-icon ui-icon-newwin"></span>view &raquo;</a>';
+				var pathtofile = [
+					'<a href="'+SCRIPT+'?plugin=attach&pcmd=open&refer='+PAGE+'&file='+file.name+'" id="view_'+file.id+'">',
+					'<span style="float: right; margin-right: 0.3em;" class="ui-icon ui-icon-newwin"></span>',
+					$.i18n('uploader','view')+' &raquo;',
+					'</a>'
+				].join('');
 				item.addClass('success').find('p.status').html(ret.title+' | '+pathtofile);
 				$(prefix+'#swfupload-log li#'+file.id+' a#view_'+file.id).click(function(){
 					var href = $(this).attr('href');
@@ -1959,7 +1993,7 @@ $(_window).bind("resize", autoResizer);
 //					}else{
 						_window.open(href);
 //					}
-					$(prefix).dialog('option', 'close', function(){ location.reload(); });
+//					$(prefix).dialog('option', 'close', function(){ location.reload(); });
 					return false;
 				});
 			}else{
@@ -2054,7 +2088,7 @@ $(_window).bind("resize", autoResizer);
 				return true;	// inputタグ、textareaタグ内ではキーバインド取得を無効化（ただしESCキーは除外）
 			}
 
-			//	console.log(key,key_label);
+				console.log(key,key_label);
 			
 			switch(key_label){
 				case '?':
@@ -2067,9 +2101,6 @@ $(_window).bind("resize", autoResizer);
 				break;
 				case '<':
 					if (self.prev){ location.href = self.prev; }
-				break;
-				case 'U':
-					if (self.up){ location.href = self.up; }
 				break;
 				case '>':
 					if (self.next){ location.href = self.next; }
@@ -2158,7 +2189,7 @@ $(_window).bind("resize", autoResizer);
 					if(self.toc){
 						if (self.toc.style.display !== 'none'){
 							if(key === 27 || key === 47){
-								pukiwiki._hideToc(); //Esc, slash
+								self._hideToc(); //Esc, slash
 /*
 							}else if(key >= 48 && key <=57){ //0-9
 								key -= 48;
@@ -2171,12 +2202,17 @@ $(_window).bind("resize", autoResizer);
 							}
 						}else{
 							if(key === 47) {
-								$(self.toc).css('top',$(_window).scrollTop() + 'px').css('left',$(_window).scrollLeft() + 'px').fadeIn("fast");	// /キー
+								$(self.toc)
+									.css('top',$(_window).scrollTop() + 'px')
+									.css('left',$(_window).scrollLeft() + 'px')
+									.fadeIn("fast");	// /キー
+								
 							}
 						}
 					}
 				break;
 			}
+			console.log(key);
 			return false;
 		});
 	},
@@ -2190,8 +2226,9 @@ $(_window).bind("resize", autoResizer);
 		var hd = $(prefix+'h2');
 		var tocs = $(prefix+'.contents ul').removeAttr('class').removeAttr('style');
 		
-		var ptocImg = '<img src="'+this.image_dir+'toc.png" class="tocpic" title="Table of Contents of this page" alt="Toc" />';
+//		var ptocImg = '<img src="'+this.image_dir+'toc.png" class="tocpic" title="Table of Contents of this page" alt="Toc" />';
 //		var ptocMsg = "Click heading, and Table of Contents will pop up";
+		var ptocImg = '<div class="pkwk-icon icon-toc" title="Table of Contents of this page" style="display:none; cursor:pointer;">Toc</div>';
 		var self = this;
 		if(tocs.length !== 0){
 			// #contentsが呼び出されているときは、その内容をTocに入れる。
@@ -2229,6 +2266,7 @@ $(_window).bind("resize", autoResizer);
 	},
 	/** generate the popup TOC division */
 	genTocDiv : function(lis){
+		var self = this;
 		this.toc = _document.createElement("div");
 		this.toc.id = 'poptoc';
 		$(this.toc)
@@ -2236,16 +2274,45 @@ $(_window).bind("resize", autoResizer);
 			.css('top',0)
 			.css('left',0)
 			.css('position','absolute')
-			.css('z-index',1)
+			.css('z-index',100)
+			.css('display','none')
 			.html([
 			'<h1><a href="#">'+$('h1#title').text()+'</a><abbr title="Table of Contents">[TOC]</abbr></h1>',
 			lis.replace(/href/g,'tabindex="1" href'),
 			this.getNaviLink()
-		].join(''));
+		].join(''))
+			.click(function(){
+				self._hideToc();
+			}
+		);
+		$('body').append(this.toc);
+		
+		var toc_bg = _document.createElement("div");
+		toc_bg.id="toc_bg"
+		$(toc_bg)
+			.addClass('ui-widget-shadow')
+			.css('top',0)
+			.css('left',0)
+			.css('width','100%')
+			.css('height','100%')
+			.css('position','fixed')
+			.css('z-index',99)
+			.css('display','none')
+			.click(function(){
+				self._hideToc();
+			}
+		);
+		$('body').append(toc_bg);
 
-		_document.body.appendChild(this.toc);
-		$(_document).click(this.popToc);
 		this.calcObj(this.toc,300);
+		
+		$('.icon-toc').click(function(elem){
+			self._dispToc(elem,this,false);
+		}).css('display','inline-block');
+		
+		$('#poptoc *').click(function(){
+			self._hideToc();
+		});
 	},
 /** determin the size of popup TOC */
 	calcObj : function(o, maxw){
@@ -2270,15 +2337,13 @@ $(_window).bind("resize", autoResizer);
 			if (href){
 				return '<a href="' + href + '" title="' + title + '">'+name+'</a>';
 			}else{
-				return '<span style="color:gray;">'+name+'</span>';
+				return '<span style="color:gray; cursor: not-allowed;">'+name+'</span>';
 			}
 		};
 
 		var navi = [
 			'&lt;&lt;',
 			genNavi('Prev page', this.prev, this.prev_title),
-			' | ',
-			genNavi('Up',this.up, this.up_title),
 			' | ',
 			genNavi('Next page', this.next, this.next_title),
 			'&gt;&gt;',
@@ -2295,20 +2360,6 @@ $(_window).bind("resize", autoResizer);
 		].join("");
 
 		return (navi ?  "<p class='nav'>" + navi + "</p>" : "");
-	},
-//-- click event handlers ----
-/** Show/hide TOC on click event according to its location */
-	popToc : function(ev){
-		var tg;
-		if (!ev){ ev = event; }
-		tg = (_window.event) ? ev.srcElement : ev.target;
-		if(ev.altKey){
-			pukiwiki._dispToc(ev,tg,0);
-		}else if(tg.className === 'tocpic'){
-			pukiwiki._dispToc(ev,tg,1);
-		}else{
-			pukiwiki._hideToc(ev);
-		}
 	},
 	// popuptocでクリックした項目をハイライトさせる
 	setCurPos : function(tg,type){
@@ -2339,7 +2390,29 @@ $(_window).bind("resize", autoResizer);
 		res = res.replace(/^\s*/,"");
 		return res.replace(/\s*$/,"");
 	},
-	_dispToc : function(ev,tg,type){
+	//-- click event handlers ----
+/** Show/hide TOC on click event according to its location */
+	popToc : function(ev){
+		var tg;
+		if (!ev){ ev = event; }
+/*
+		tg = (_window.event) ? ev.srcElement : ev.target;
+		if(ev.altKey){
+			pukiwiki._dispToc(ev,tg,0);
+		}else{
+			pukiwiki._hideToc(ev);
+		}
+*/
+		$('.icon-toc').click(function(){
+			pukiwiki._dispToc(ev,this,0);
+		});
+		
+		$('#poptoc' , '#poptoc' + ' a', '#toc_bg').click(function(){
+			pukiwiki._hideToc();
+		});
+	},
+	_dispToc : function(ev,tg,isKey){
+		
 		var doc = {
 			x:ev.clientX + $(_window).scrollLeft(),
 			y:ev.clientY + $(_window).scrollTop()
@@ -2356,16 +2429,29 @@ $(_window).bind("resize", autoResizer);
 		var top;
 
 		if(scr.h < h){
-			$(this.toc).css('height', scr.h + "px").css('overflow', 'auto');
+			$(this.toc)
+				.css('height', scr.h + "px")
+				.css('overflow', 'auto');
 			top = (doc.y - scr.y);
 		}else{
 			top = ((scr.h - scr.y > h) ? doc.y : ((scr.y > h) ? (doc.y - h) :((scr.y < scr.h/2) ? (doc.y - scr.y) : (doc.y + scr.h - scr.y - h))));
 		}
-		$(this.toc).css('top', top + "px").css('left',((scr.x < scr.w - w) ? doc.x : (doc.x - w) )+ 'px');
-		if(type){ pukiwiki.setCurPos(tg,type); }
-		$(this.toc).fadeIn("fast");
+		
+		$(this.toc)
+			.css('top', scr.y + 'px')
+			.css('left',((scr.x < scr.w - w) ? scr.x : (scr.x - w)) + 'px');
+		
+		if(isKey){
+			$(this.toc).fadeIn("fast");
+			this.setCurPos(tg,type);
+		}else{
+			$(this.toc).show('slow');
+		}
+		$('#toc_bg').fadeIn("fast");
+		
 	},
 	_hideToc : function(ev){
+		$('#toc_bg').fadeOut("fast");
 		$(this.toc).fadeOut("fast");
 	},
 // Bad Behavior
@@ -2448,7 +2534,7 @@ $(_document).ready(function(){
 		var D1 = new Date();
 		console.info('PukiWiki Advance Debug mode. \nUsing jQuery: ',$.fn.jquery,' / jQuery UI: ',$.ui.version);
 	}
-	$.getScript('http://browser-update.org/update.js');
+	Modernizr.load({load: 'http://browser-update.org/update.js'});
 
 	var f;
 	while( f = pkwkBeforeInit.shift() ){
@@ -2495,19 +2581,3 @@ if (typeof(GOOGLE_ANALYTICS) !== 'undefined'){
 		load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js'
 	});
 }
-
-// usage: log('inside coolFunc', this, arguments);
-// paulirish.com/2009/log-a-lightweight-wrapper-for-consolelog/
-window.log = function(){
-	log.history = log.history || [];   // store logs to an array for reference
-	log.history.push(arguments);
-	if(this.console) {
-		arguments.callee = arguments.callee.caller;
-		var newarr = [].slice.call(arguments);
-		(typeof console.log === 'object' ? log.apply.call(console.log, console, newarr) : console.log.apply(console, newarr));
-	}
-};
-
-// make it safe to use console.log always
-(function(b){function c(){}for(var d="assert,count,debug,dir,dirxml,error,exception,group,groupCollapsed,groupEnd,info,log,timeStamp,profile,profileEnd,time,timeEnd,trace,warn".split(","),a;a=d.pop();){b[a]=b[a]||c}})((function(){try
-{console.log();return window.console;}catch(err){return window.console={};}})());

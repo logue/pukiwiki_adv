@@ -2,7 +2,7 @@
  * Bluff - beautiful graphs in JavaScript
  * ======================================
  * 
- * Documentation available at http://bluff.jcoglan.com
+ * Get the latest version and docs at http://bluff.jcoglan.com
  * Based on Gruff by Geoffrey Grosenbach: http://github.com/topfunky/gruff
  * 
  * Copyright (C) 2008-2010 James Coglan
@@ -237,6 +237,8 @@ Bluff.Base = new JS.Class({
     
     this._reset_themes();
     this.theme_keynote();
+    
+    this._listeners = {};
   },
   
   // Set instance variables for this object.
@@ -358,6 +360,15 @@ Bluff.Base = new JS.Class({
     this.font_color = this._theme_options.font_color || this.marker_color;
     this._additional_line_colors = this._theme_options.additional_line_colors;
     
+    this._render_background();
+  },
+  
+  // Set just the background colors
+  set_background: function(options) {
+    if (options.colors)
+      this._theme_options.background_colors = options.colors;
+    if (options.image)
+      this._theme_options.background_image = options.image;
     this._render_background();
   },
   
@@ -542,6 +553,19 @@ Bluff.Base = new JS.Class({
   
   clear: function() {
     this._render_background();
+  },
+  
+  on: function(eventType, callback, context) {
+    var list = this._listeners[eventType] = this._listeners[eventType] || [];
+    list.push([callback, context]);
+  },
+  
+  trigger: function(eventType, data) {
+    var list = this._listeners[eventType];
+    if (!list) return;
+    Bluff.each(list, function(listener) {
+      listener[0].call(listener[1], data);
+    });
   },
   
   // Calculates size of drawable area and draws the decorations.
@@ -880,9 +904,19 @@ Bluff.Base = new JS.Class({
   },
   
   // Creates a mouse hover target rectangle for tooltip displays
-  _draw_tooltip: function(left, top, width, height, name, color, data) {
+  _draw_tooltip: function(left, top, width, height, name, color, data, index) {
     if (!this.tooltips) return;
-    this._d.tooltip(left, top, width, height, name, color, data);
+    var node = this._d.tooltip(left, top, width, height, name, color, data);
+    
+    Bluff.Event.observe(node, 'click', function() {
+      var point = {
+        series: name,
+        label:  this.labels[index],
+        value:  data,
+        color:  color
+      };
+      this.trigger('click:datapoint', point);
+    }, this);
   },
   
   // Shows an error message because you have no data.
@@ -1122,51 +1156,51 @@ Bluff.Area = new JS.Class(Bluff.Base, {
 });
 
 
-//	This class perfoms the y coordinats conversion for the bar class.
+//  This class perfoms the y coordinats conversion for the bar class.
 //
-//	There are three cases: 
+//  There are three cases: 
 //
 //    1. Bars all go from zero in positive direction
-//		2. Bars all go from zero to negative direction	
-//		3. Bars either go from zero to positive or from zero to negative
+//    2. Bars all go from zero to negative direction  
+//    3. Bars either go from zero to positive or from zero to negative
 //
 Bluff.BarConversion = new JS.Class({
-	mode:           null,
-	zero:           null,
-	graph_top:      null,
-	graph_height:   null,
-	minimum_value:  null,
-	spread:         null,
-	
-	getLeftYRightYscaled: function(data_point, result) {
-	  var val;
-		switch (this.mode) {
-		  case 1: // Case one
-			  // minimum value >= 0 ( only positiv values )
+  mode:           null,
+  zero:           null,
+  graph_top:      null,
+  graph_height:   null,
+  minimum_value:  null,
+  spread:         null,
+  
+  getLeftYRightYscaled: function(data_point, result) {
+    var val;
+    switch (this.mode) {
+      case 1: // Case one
+        // minimum value >= 0 ( only positiv values )
         result[0] = this.graph_top + this.graph_height*(1 - data_point) + 1;
-    		result[1] = this.graph_top + this.graph_height - 1;
-    		break;
-		  case 2:  // Case two
-			  // only negativ values
-     		result[0] = this.graph_top + 1;
-    		result[1] = this.graph_top + this.graph_height*(1 - data_point) - 1;
-    		break;
-		  case 3: // Case three
-			  // positiv and negativ values
-      	val = data_point-this.minimum_value/this.spread;
-      	if ( data_point >= this.zero ) {
-      		result[0] = this.graph_top + this.graph_height*(1 - (val-this.zero)) + 1;
-	      	result[1] = this.graph_top + this.graph_height*(1 - this.zero) - 1;
-      	} else {
-				  result[0] = this.graph_top + this.graph_height*(1 - (val-this.zero)) + 1;
-	      	result[1] = this.graph_top + this.graph_height*(1 - this.zero) - 1;
-      	}
-      	break;
-		  default:
-			  result[0] = 0.0;
-			  result[1] = 0.0;
-		}				
-	}	
+        result[1] = this.graph_top + this.graph_height - 1;
+        break;
+      case 2:  // Case two
+        // only negativ values
+         result[0] = this.graph_top + 1;
+        result[1] = this.graph_top + this.graph_height*(1 - data_point) - 1;
+        break;
+      case 3: // Case three
+        // positiv and negativ values
+        val = data_point-this.minimum_value/this.spread;
+        if ( data_point >= this.zero ) {
+          result[0] = this.graph_top + this.graph_height*(1 - (val-this.zero)) + 1;
+          result[1] = this.graph_top + this.graph_height*(1 - this.zero) - 1;
+        } else {
+          result[0] = this.graph_top + this.graph_height*(1 - (val-this.zero)) + 1;
+          result[1] = this.graph_top + this.graph_height*(1 - this.zero) - 1;
+        }
+        break;
+      default:
+        result[0] = 0.0;
+        result[1] = 0.0;
+    }        
+  }  
   
 });
 
@@ -1238,7 +1272,7 @@ Bluff.Bar = new JS.Class(Bluff.Base, {
                            right_x - left_x, conv[1] - conv[0],
                            data_row[this.klass.DATA_LABEL_INDEX],
                            data_row[this.klass.DATA_COLOR_INDEX],
-                           raw_data[point_index]);
+                           raw_data[point_index], point_index);
         
         // Calculate center based on bar_width and current row
         var label_center = this._graph_left + 
@@ -1269,7 +1303,7 @@ Bluff.Bar = new JS.Class(Bluff.Base, {
 Bluff.Line = new JS.Class(Bluff.Base, {
   // Draw a dashed line at the given value
   baseline_value: null,
-	
+  
   // Color of the baseline
   baseline_color: null,
   
@@ -1360,7 +1394,7 @@ Bluff.Line = new JS.Class(Bluff.Base, {
                            2 * circle_radius, 2 *circle_radius,
                            data_row[this.klass.DATA_LABEL_INDEX],
                            data_row[this.klass.DATA_COLOR_INDEX],
-                           raw_data[index]);
+                           raw_data[index], index);
         
         prev_x = new_x;
         prev_y = new_y;
@@ -1677,7 +1711,8 @@ Bluff.Pie = new JS.Class(Bluff.Base, {
           label_string = this._label(data_row[this.klass.DATA_VALUES_INDEX][0]);
           this._draw_label(center_x, center_y, half_angle,
                             radius + (radius * this.klass.TEXT_OFFSET_PERCENTAGE),
-                            label_string);
+                            label_string,
+                            data_row, i);
         }
         
         prev_degrees += current_degrees;
@@ -1689,7 +1724,7 @@ Bluff.Pie = new JS.Class(Bluff.Base, {
   
   // Labels are drawn around a slightly wider ellipse to give room for 
   // labels on the left and right.
-  _draw_label: function(center_x, center_y, angle, radius, amount) {
+  _draw_label: function(center_x, center_y, angle, radius, amount, data_row, i) {
     // TODO Don't use so many hard-coded numbers
     var r_offset = 20.0,      // The distance out from the center of the pie to get point
         x_offset = center_x,  // + 15.0 # The label points need to be tweaked slightly
@@ -1706,6 +1741,11 @@ Bluff.Pie = new JS.Class(Bluff.Base, {
     this._d.font_weight = 'bold';
     this._d.gravity = 'center';
     this._d.annotate_scaled(0,0, x,y, amount, this._scale);
+    
+    this._draw_tooltip(x - 20, y - 20, 40, 40,
+                       data_row[this.klass.DATA_LABEL_INDEX],
+                       data_row[this.klass.DATA_COLOR_INDEX],
+                       amount, i);
   },
   
   _sums_for_pie: function() {
@@ -1730,13 +1770,16 @@ Bluff.SideBar = new JS.Class(Bluff.Base, {
     this.callSuper();
     
     if (!this._has_data) return;
-    
+    this._draw_bars();
+  },
+  
+  _draw_bars: function() {
     this._bars_width       = this._graph_height / this._column_count;
-    this._bar_width        = this._bars_width * this.bar_spacing / this._norm_data.length;
+    this._bar_width        = this._bars_width / this._norm_data.length;
     this._d.stroke_opacity = 0.0;
     var height = Bluff.array_new(this._column_count, 0),
         length = Bluff.array_new(this._column_count, this._graph_left),
-        padding = (this._bars_width * (1 - this.bar_spacing)) / 2;
+        padding = (this._bar_width * (1 - this.bar_spacing)) / 2;
     
     Bluff.each(this._norm_data, function(data_row, row_index) {
       var raw_data = this._data[row_index][this.klass.DATA_VALUES_INDEX];
@@ -1752,7 +1795,7 @@ Bluff.SideBar = new JS.Class(Bluff.Base, {
             left_x     = length[point_index] - 1,
             left_y     = this._graph_top + (this._bars_width * point_index) + (this._bar_width * row_index) + padding,
             right_x    = left_x + difference,
-            right_y    = left_y + this._bar_width;
+            right_y    = left_y + this._bar_width * this.bar_spacing;
         
         height[point_index] += (data_point * this._graph_width);
         
@@ -1764,7 +1807,7 @@ Bluff.SideBar = new JS.Class(Bluff.Base, {
                            right_x - left_x, right_y - left_y,
                            data_row[this.klass.DATA_LABEL_INDEX],
                            data_row[this.klass.DATA_COLOR_INDEX],
-                           raw_data[point_index]);
+                           raw_data[point_index], point_index);
         
         // Calculate center based on bar_width and current row
         var label_center = this._graph_top + (this._bars_width * point_index + this._bars_width / 2);
@@ -1786,14 +1829,14 @@ Bluff.SideBar = new JS.Class(Bluff.Base, {
     var number_of_lines = 5;
     
     // TODO Round maximum marker value to a round number like 100, 0.1, 0.5, etc.
-    var increment = this._significant(this.maximum_value / number_of_lines),
+    var increment = this._significant(this._spread / number_of_lines),
         line_diff, x, diff, marker_label;
     for (var index = 0; index <= number_of_lines; index++) {
       
       line_diff    = (this._graph_right - this._graph_left) / number_of_lines;
       x            = this._graph_right - (line_diff * index) - 1;
       diff         = index - number_of_lines;
-      marker_label = Math.abs(diff) * increment;
+      marker_label = Math.abs(diff) * increment + this.minimum_value;
       
       this._d.stroke = this.marker_color;
       this._d.line(x, this._graph_bottom, x, this._graph_top);
@@ -2074,7 +2117,7 @@ Bluff.StackedBar = new JS.Class(Bluff.Base, {
                            right_x - left_x, right_y - left_y,
                            data_row[this.klass.DATA_LABEL_INDEX],
                            data_row[this.klass.DATA_COLOR_INDEX],
-                           raw_data[point_index]);
+                           raw_data[point_index], point_index);
       }, this);
     }, this);
   }
@@ -2125,33 +2168,34 @@ Bluff.SideStackedBar = new JS.Class(Bluff.SideBar, {
     this.has_left_labels = true;
     this._get_maximum_by_stack();
     this.callSuper();
-    
-    if (!this._has_data) return;
-    
+  },
+  
+  _draw_bars: function() {
     this._bar_width = this._graph_height / this._column_count;
     var height = Bluff.array_new(this._column_count, 0),
         length = Bluff.array_new(this._column_count, this._graph_left),
         padding = (this._bar_width * (1 - this.bar_spacing)) / 2;
 
     Bluff.each(this._norm_data, function(data_row, row_index) {
-      this._d.fill = data_row[this.klass.DATA_COLOR_INDEX];
       var raw_data = this._data[row_index][this.klass.DATA_VALUES_INDEX];
       
       Bluff.each(data_row[this.klass.DATA_VALUES_INDEX], function(data_point, point_index) {
         
-    	  // using the original calcs from the stacked bar chart to get the difference between
-    	  // part of the bart chart we wish to stack.
-    	  var temp1 = this._graph_left + (this._graph_width -
+        // using the original calcs from the stacked bar chart to get the difference between
+        // part of the bart chart we wish to stack.
+        var temp1 = this._graph_left + (this._graph_width -
                                             data_point * this._graph_width - 
                                             height[point_index]) + 1;
-    	  var temp2 = this._graph_left + this._graph_width - height[point_index] - 1;
-    	  var difference = temp2 - temp1;
+        var temp2 = this._graph_left + this._graph_width - height[point_index] - 1;
+        var difference = temp2 - temp1;
         
-    	  var left_x = length[point_index], //+ 1
+        this._d.fill = data_row[this.klass.DATA_COLOR_INDEX];
+        
+        var left_x = length[point_index], //+ 1
             left_y = this._graph_top + (this._bar_width * point_index) + padding,
-    	      right_x = left_x + difference,
+            right_x = left_x + difference,
             right_y = left_y + this._bar_width * this.bar_spacing;
-    	  length[point_index] += difference;
+        length[point_index] += difference;
         height[point_index] += (data_point * this._graph_width - 2);
         
         this._d.rectangle(left_x, left_y, right_x, right_y);
@@ -2160,7 +2204,7 @@ Bluff.SideStackedBar = new JS.Class(Bluff.SideBar, {
                            right_x - left_x, right_y - left_y,
                            data_row[this.klass.DATA_LABEL_INDEX],
                            data_row[this.klass.DATA_COLOR_INDEX],
-                           raw_data[point_index]);
+                           raw_data[point_index], point_index);
         
         // Calculate center based on bar_width and current row
         var label_center = this._graph_top + (this._bar_width * point_index) + (this._bar_width * this.bar_spacing / 2.0);
@@ -2424,8 +2468,10 @@ Bluff.Renderer = new JS.Class({
     wrapper.style.width = width + 'px';
     wrapper.style.height = height + 'px';
     while (i--) {
-      if (children[i].tagName.toLowerCase() !== 'canvas')
+      if (children[i].tagName.toLowerCase() !== 'canvas') {
+        Bluff.Event.stopObserving(children[i]);
         this._remove_node(children[i]);
+      }
     }
   },
   
@@ -2457,6 +2503,7 @@ Bluff.Renderer = new JS.Class({
     var scaled_height = (height * scale) >= 1 ? (height * scale) : 1;
     var text = this._sized_text(this.pointsize, text);
     text.style.color = this.fill;
+    text.style.cursor = 'default';
     text.style.fontWeight = this.font_weight;
     text.style.textAlign = 'center';
     text.style.left = (this._sx * x + this._left_adjustment(text, scaled_width)) + 'px';
@@ -2470,6 +2517,7 @@ Bluff.Renderer = new JS.Class({
     var wrapper = this._canvas.parentNode,
         target = document.createElement('div');
     target.className = this.klass.TARGET_CLASS;
+    target.style.cursor = 'default';
     target.style.position = 'absolute';
     target.style.left = (this._sx * left - 3) + 'px';
     target.style.top = (this._sy * top - 3) + 'px';
@@ -2486,6 +2534,7 @@ Bluff.Renderer = new JS.Class({
     });
     
     wrapper.appendChild(target);
+    return target;
   },
   
   circle: function(origin_x, origin_y, perim_x, perim_y, arc_start, arc_end) {
@@ -2735,11 +2784,13 @@ Bluff.TableReader = new JS.Class({
   
   NUMBER_FORMAT: /\-?(0|[1-9]\d*)(\.\d+)?(e[\+\-]?\d+)?/i,
   
-  initialize: function(table, transpose) {
+  initialize: function(table, options) {
+    this._options = options || {};
+    this._orientation = this._options.orientation || 'auto';
+    
     this._table = (typeof table === 'string')
         ? document.getElementById(table)
         : table;
-    this._swap = !!transpose;
   },
   
   // Get array of data series from the table
@@ -2773,15 +2824,12 @@ Bluff.TableReader = new JS.Class({
     this._labels = {};
     this._row_headings = [];
     this._col_headings = [];
+    this._skip_rows = [];
+    this._skip_cols = [];
     
     this._walk(this._table);
-    
-    if ((this._row_headings.length > 1 && this._col_headings.length === 1) ||
-        this._row_headings.length < this._col_headings.length) {
-      if (!this._swap) this._transpose();
-    } else {
-      if (this._swap) this._transpose();
-    }
+    this._cleanup();
+    this._orient();
     
     Bluff.each(this._col_headings, function(heading, i) {
       this.get_series(i - this._col_offset).name = heading;
@@ -2827,6 +2875,10 @@ Bluff.TableReader = new JS.Class({
       
       case 'TH':
         this._col += 1;
+        if (this._ignore(node)) {
+          this._skip_cols.push(this._col);
+          this._skip_rows.push(this._row);
+        }
         if (this._col === 1 && this._row === 1)
           this._row_headings[0] = this._col_headings[0] = content;
         else if (node.scope === "row" || this._col === 1)
@@ -2837,6 +2889,58 @@ Bluff.TableReader = new JS.Class({
       
       case 'CAPTION':
         this._title = content;
+        break;
+    }
+  },
+  
+  _ignore: function(node) {
+    if (!this._options.except) return false;
+    
+    var content = this._strip_tags(node.innerHTML),
+        classes = (node.className || '').split(/\s+/),
+        list = [].concat(this._options.except);
+    
+    if (Bluff.index(list, content) >= 0) return true;
+    var i = classes.length;
+    while (i--) {
+      if (Bluff.index(list, classes[i]) >= 0) return true;
+    }
+    return false;
+  },
+  
+  _cleanup: function() {
+    var i = this._skip_cols.length, index;
+    while (i--) {
+      index = this._skip_cols[i];
+      if (index <= this._col_offset) continue;
+      this._col_headings.splice(index - 1, 1);
+      if (index >= this._col_offset)
+        this._data.splice(index - 1 - this._col_offset, 1);
+    }
+    
+    var i = this._skip_rows.length, index;
+    while (i--) {
+      index = this._skip_rows[i];
+      if (index <= this._row_offset) continue;
+      this._row_headings.splice(index - 1, 1);
+      Bluff.each(this._data, function(series) {
+        if (index >= this._row_offset)
+          series.points.splice(index - 1 - this._row_offset, 1);
+      }, this);
+    }
+  },
+  
+  _orient: function() {
+    switch (this._orientation) {
+      case 'auto':
+        if ((this._row_headings.length > 1 && this._col_headings.length === 1) ||
+            this._row_headings.length < this._col_headings.length) {
+          this._transpose();
+        }
+        break;
+        
+      case 'rows':
+        this._transpose();
         break;
     }
   },
@@ -2868,8 +2972,8 @@ Bluff.TableReader = new JS.Class({
   
   extend: {
     Mixin: new JS.Module({
-      data_from_table: function(table, transpose) {
-        var reader    = new Bluff.TableReader(table, transpose),
+      data_from_table: function(table, options) {
+        var reader    = new Bluff.TableReader(table, options),
             data_rows = reader.get_data();
         
         Bluff.each(data_rows, function(row) {

@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: classic.ini.php,v 2.2.6 2010/10/30 11:30:30 Logue Exp $
+// $Id: classic.ini.php,v 2.2.7 2011/09/11 22:58:30 Logue Exp $
 // 
 // PukiWiki Classic Skin
 // Copyright (C)
@@ -50,10 +50,9 @@ EOD
 );
 
 // 読み込むスタイルシート
-$link_tags[] = array('rel'=>'stylesheet',	'href'=>SKIN_URI.'scripts.css.php',											'type'=>'text/css');
-$link_tags[] = array('rel'=>'stylesheet',	'href'=>SKIN_URI.'iconset/default_iconset.css.php',							'type'=>'text/css', 'media'=>'screen');
-$link_tags[] = array('rel'=>'stylesheet',	'href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/classic.css.php',				'type'=>'text/css');
+$link_tags[] = array('rel'=>'stylesheet',	'type'=>'text/css',	'href'=>SKIN_URI.'scripts.css.php');
+$link_tags[] = array('rel'=>'stylesheet',	'type'=>'text/css',	'href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/classic.css.php');
 
 // 読み込むスクリプト
-// $js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/default.js');
+$js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/classic.js');
 ?>

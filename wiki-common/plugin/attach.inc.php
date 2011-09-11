@@ -745,7 +745,7 @@ function attach_form($page, $listview = FALSE)
 	if (! is_page($page))          return '#attach(): No such page<br />'          . $navi;
 
 	$maxsize = PLUGIN_ATTACH_MAX_FILESIZE;
-	$msg_maxsize = sprintf($_attach_messages['msg_maxsize'], number_format($maxsize/1024) . 'KB');
+	$msg_maxsize = sprintf($_attach_messages['msg_maxsize'], '<var>'.number_format($maxsize/1024) . 'KB</var>');
 
 	$pass = ( (PLUGIN_ATTACH_PASSWORD_REQUIRE || PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY) && auth::check_role('role_adm_contents')) ?
 		'<br />' . ($_attach_messages[PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY ? 'msg_adminpass' : 'msg_password']) .
@@ -763,7 +763,7 @@ function attach_form($page, $listview = FALSE)
 		$pass
 		<input type="submit" value="{$_attach_messages['btn_upload']}" />
 	</div>
-	<p><small>$msg_maxsize</small></p>
+	<ul class="attach_info"><li>$msg_maxsize</li></ul>
 </form>
 EOD;
 	$obj = new AttachPages($page);
@@ -794,16 +794,16 @@ EOD;
 		$title_list = str_replace('$1', $_attach_messages['msg_thispage'], $_attach_messages['msg_listpage']);
 		$html = <<< EOD
 <div id="attach_tabs" class="tabs">
-	<ul>
-		<li><a href="#attach_upload_tab">{$title_upload}</a></li>
-		<li><a href="#attach_list_tab">{$title_list}</a></li>
+	<ul role="tablist">
+		<li role="tab" id="tab1" aria-controls="attach_upload_tab"><a href="#attach_upload_tab">{$title_upload}</a></li>
+		<li role="tab" id="tab2" aria-controls="attach_list_tab"><a href="#attach_list_tab">{$title_list}</a></li>
 	</ul>
-	<div id="attach_upload_tab">
+	<div id="attach_upload_tab" role="tabpanel" aria-labeledby="tab1">
 		{$upload_form}
 		<hr />
 		<p style="text-align:right;"><small>[<a href="{$listall_uri}">{$_attach_messages['msg_listall']}</a>]</small></p>
 	</div>
-	<div id="attach_list_tab">
+	<div id="attach_list_tab" role="tabpanel" aria-labeledby="tab2">
 		{$list}
 	</div>
 </div>
@@ -903,9 +903,9 @@ class AttachFile
 			$_title = str_replace('$1', rawurlencode($this->file), $_attach_messages['msg_info']);
 			$info = "\n<small>[<a href=\"$inf\" title=\"$_title\">{$_attach_messages['btn_info']}</a>]</small>\n";
 			$count = ($showicon && ! empty($this->status['count'][$this->age])) ?
-				'<small>'.sprintf($_attach_messages['msg_count'], $this->status['count'][$this->age]).'</small>' : '';
+				'<small>'.sprintf($_attach_messages['msg_count'], '<var>'.$this->status['count'][$this->age].'</var>').'</small>' : '';
 		}
-		return "<a href=\"$open\" title=\"$title\" class=\"pkwk-icon_linktext attach-download\">$label</a> $count $info";
+		return '<a href="$open" title="$title"><span class="pkwk-icon icon-download"></span>'.$label.'</a> '.$count.' '.$info;
 	}
 
 	// 情報表示

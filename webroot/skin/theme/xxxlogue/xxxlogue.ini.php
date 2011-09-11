@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: xxxlogue.ini.php,v2.3.1 2010/07/17 23:42:30 Logue Exp $
+// $Id: xxxlogue.ini.php,v2.3.1 2010/09/11 22:59:30 Logue Exp $
 // Copyright (C) 2010-2011 PukiWiki Advance Developers Team
 //               2007-2010 Logue
 // PukiWiki Advance xxxLogue skin
@@ -51,7 +51,6 @@ EOD
 
 // 読み込むスタイルシート
 $link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.'scripts.css.php');
-$link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.'iconset/default_iconset.css.php', 'media'=>'screen');
 $link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/xxxlogue.css.php');
 
 // 読み込むスクリプト

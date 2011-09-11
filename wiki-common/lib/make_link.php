@@ -1,6 +1,6 @@
 <?php
 // PukiPlus.
-// $Id: make_link.php,v 1.37.28 2011/02/05 09:21:00 Logue Exp $
+// $Id: make_link.php,v 1.37.29 2011/09/11 23:05:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2005-2008 PukiWiki Plus! Team
@@ -487,7 +487,7 @@ EOD;
 	
 	function toString()
 	{
-		return '<a href="mailto:' . $this->name . '" rel="nofollow" class="pkwk-icon_linktext link-mail">' . $this->alias . '</a>';
+		return '<a href="mailto:' . $this->name . '" rel="nofollow"><span class="pkwk-icon icon-mail">mailto:</span>' . $this->alias . '</a>';
 	}
 }
 
@@ -560,7 +560,7 @@ EOD;
 //			$this->name . '" rel="nofollow">' . $this->alias . '</a>';
 		$target = (empty($this->redirect)) ? $this->url : $this->redirect.rawurlencode($this->url);
 		return open_uri_in_new_window('<a href="' . $target . $this->anchor .
-			'" title="' . $this->name . '"' . $rel . '>' . $this->alias . '</a>', get_class($this));
+			'" title="' . $this->name . '"' . $rel . '><span class="pkwk-icon icon-interwiki"></span>' . $this->alias . '</a>', get_class($this));
 	}
 }
 
@@ -859,7 +859,7 @@ class Link_glossary_a extends Link_glossary
 // Plus! tooltips function(w/ajax)
 function make_tooltips($term,$glossary_page='')
 {
-	global $script, $ajax;
+	global $script;
 	static $tooltip_initialized = FALSE;
 
 	if (!exist_plugin('tooltip')) { return FALSE; }
@@ -880,7 +880,7 @@ function make_tooltips($term,$glossary_page='')
 	if ( is_page($page) ) {
 		$passage = get_pg_passage($page,FALSE);
 		return '<a href="' . get_page_uri($page) . '" class="tooltip" title="' . $page . $s_glossary. $passage . '">' . $term . '</a>';
-	} elseif ($ajax) {
+	} elseif (IS_AJAX) {
 		return '<dfn class="tooltip">' . $term . '</dfn>';
 	} else {
 		return '<abbr class="tooltip" title="' . $s_glossary . '">' . $term . '</abbr>';

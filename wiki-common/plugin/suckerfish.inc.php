@@ -272,21 +272,10 @@ function plugin_suckerfish_keyword($name){
 
 function _suckerfish($key, $val = '')
 {
-	global $_LINK, $_LANG, $_SKIN, $showicon;
+	global $_LINK, $_LANG, $_SKIN;
+	if (!isset($_LANG['skin'][$key])) { return null; }
+	if (!isset($_LINK[$key])) { return null; }
 
-	$lang  = $_LANG['skin'];
-	$link  = $_LINK;
-
-//	if (!isset($lang[$key])) { return '<!--LANG NOT FOUND-->'; }
-//	if (!isset($link[$key])) { return '<!--LINK NOT FOUND-->'; }
-	
-	if (!isset($lang[$key])) { return null; }
-	if (!isset($link[$key])) { return null; }
-
-	if ($_SKIN['showicon']){
-		return '<a href="' . $link[$key] . '" rel="nofollow" class="pkwk-icon_linktext cmd-'.$key.'">' . $lang[$key]. '</a>';
-	}else{
-		return '<a href="' . $link[$key] . '" rel="nofollow">' . $lang[$key]. '</a>';
-	}
+	return '<a href="' . $_LINK[$key] . '" rel="nofollow" >'. ($_SKIN['showicon'] ? '<span class="pkwk-icon icon-'.$key.'"></span>' : '') . $_LANG['skin'][$key]. '</a>';
 }
 ?>

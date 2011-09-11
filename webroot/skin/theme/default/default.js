@@ -48,8 +48,14 @@ pukiwiki.register.before_init( function(){
 	var href = $('link[rel=canonical]')[0].href;
 	$('#hgroup').after([
 		'<div style="float:right;">',
+		// Tweet Button
+		// http://twitter.com/about/resources/tweetbutton
 		'<a class="twitter-share-button" data-count="vertical" data-lang="'+$('html').attr('lang')+'"></a>',
+		// Google +1 button
+		// http://www.google.com/webmasters/+1/button/index.html
 		'<div class="g-plusone" data-size="tall" data-count="true"></div>',
+		// Facebook Like button
+		// http://developers.facebook.com/docs/reference/plugins/like/
 		(typeof(FACEBOOK_APPID) !== 'undefined') ? '<fb:like href="'+href+'" send="false" layout="box_count" width="50" show_faces="true" font=""></fb:like>' : '',
 		'</div>'].join("\n")
 	);

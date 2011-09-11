@@ -1,6 +1,6 @@
 <?php
 // PukiPlus.
-// $Id: funcplus.php,v 0.1.64 2011/02/09 00:35:00 Logue Exp $
+// $Id: funcplus.php,v 0.1.65 2011/09/11 23:01:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team
@@ -167,9 +167,9 @@ function open_uri_in_new_window($anchor, $which)
 	if (!$use_open_uri_in_new_window || !$which || !$_symbol_extanchor || !$_symbol_innanchor) {
 		return $anchor;
 	}
+	
 
 	// 外部形式のリンクをどうするか
-	$frame = '';
 	// 質問箱/115 対応
 	/*
 	if ($which == 'link_interwikiname') {
@@ -186,32 +186,33 @@ function open_uri_in_new_window($anchor, $which)
 		$aclass = (is_inside_uri($anchor) ? 'inn':'ext');
 	}
 	*/
+	
 	switch (strtolower($which)) {
 	case 'link_interwikiname':
 	case 'link_url_interwiki':
 		$frame  = (is_inside_uri($anchor) ? $open_uri_in_new_window_opisi : $open_uri_in_new_window_oposi);
 		$symbol = (is_inside_uri($anchor) ? $_symbol_innanchor : $_symbol_extanchor);
-		$class = 'pkwk-icon_linktext link-interwiki '.(is_inside_uri($anchor) ? 'inn':'ext');
 		break;
 	case 'link_url':
 		$frame  = (is_inside_uri($anchor) ? $open_uri_in_new_window_opis : $open_uri_in_new_window_opos);
 		$symbol = (is_inside_uri($anchor) ? $_symbol_innanchor : $_symbol_extanchor);
-		$class = (is_inside_uri($anchor) ? 'inn':'ext');
+		break;
+	default:
+		$symbol = $frame = '';
+		break;
 	}
-	$aclass = 'class="'.$class.'" ';
 
 	if ($frame == '')
 		return $anchor;
 
 	// 引数 $anchor は a タグの中にクラスはない
 	$aclasspos = mb_strpos($anchor, '<a ', 0, mb_detect_encoding($anchor)) + 3; // 3 is strlen('<a ')
-	// $insertpos = mb_strpos($anchor, '</a>', mb_detect_encoding($anchor));
 	$insertpos = mb_strpos($anchor, '</a>', $aclasspos, mb_detect_encoding($anchor));
 	preg_match('#href="([^"]+)"#', $anchor, $href);
 
-	return (mb_substr($anchor, 0, $aclasspos) . $aclass .
-		mb_substr($anchor, $aclasspos, $insertpos-$aclasspos)
-	        . str_replace('$1', $href[1], str_replace('$2', $frame, $symbol)) . mb_substr($anchor, $insertpos));
+	return (mb_substr($anchor, 0, $aclasspos) .
+		mb_substr($anchor, $aclasspos , $insertpos-$aclasspos)
+			. str_replace('$1', $href[1], str_replace('$2', $frame, $symbol)) . mb_substr($anchor, $insertpos));
 }
 
 function is_inside_uri($anchor)
@@ -264,39 +265,26 @@ function add_homedir($file)
 
 function add_skindir($skin_name)
 {
+	$cond = array(
+		SKIN_DIR.THEME_PLUS_NAME.$skin_name.'/',
+		EXT_SKIN_DIR.THEME_PLUS_NAME.$skin_name.'/'
+	);
+	
 	$file = basepagename($skin_name).'.skin.php';
 	$conf = basepagename($skin_name).'.ini.php';
 	
-	
-//	if(defined(THEME_PLUS_NAME)){
-		$cond = array(
-			EXT_SKIN_DIR,
-			EXT_SKIN_DIR.THEME_PLUS_NAME, 
-			EXT_SKIN_DIR.THEME_PLUS_NAME.$skin_name.'/',
-			SKIN_DIR,
-			SKIN_URI,
-			DATA_HOME.SKIN_DIR,
-			SKIN_DIR.THEME_PLUS_NAME,
-			SKIN_DIR.THEME_PLUS_NAME.$skin_name.'/'
-		);
-/*	}else{
-		$cond = array(
-			EXT_SKIN_DIR,
-			SKIN_DIR,
-			SKIN_URI,
-			DATA_HOME.SKIN_DIR
-		);
-	}
-*/
-	foreach($cond as $dir) {
+	foreach($cond as $dir){
 		if (file_exists($dir.$file) && is_readable($dir.$file)){
+			// スキンが見つかった場合
 			if ( file_exists($dir.$conf) && is_readable($dir.$conf)){
+				// スキンのオーバーライド設定ファイルが存在する場合、それを読み取る。
 				require_once $dir.$conf;
-			}	// あまり良い実装ではない
+			}
 			return $dir.$file;
 		}
 	}
-	return $file;
+	
+	die_message('Skin File:<var>'.$skin_name.'</var> is not found or not readable. Please check <var>SKIN_DIR</var> value.');
 }
 
 function is_ignore_page($page)

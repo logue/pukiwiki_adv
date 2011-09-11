@@ -6,7 +6,7 @@
 // Original version by miko and upk.
 // Modified by Logue
 //
-// $Id: default.skin.php,v 1.4.15 2011/05/21 16:15:00 Logue Exp $
+// $Id: default.skin.php,v 1.4.16 2011/09/11 22:55:00 Logue Exp $
 //
 global $pkwk_dtd, $_SKIN, $is_page, $defaultpage, $sidebar, $headarea, $footarea;
 
@@ -49,9 +49,9 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 	</head>
 <?php flush(); ?>
 	<body>
-		<div id="container" class="<?php echo $layout_class ?>">
+		<div id="container" class="<?php echo $layout_class ?>" role="document">
 <!-- *** Header *** -->
-			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<header id="header">'."\n" : '<div id="header">')."\n"; ?>
+			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<header id="header" role="banner">'."\n" : '<div id="header">')."\n"; ?>
 				<a href="<?php echo $modifierlink ?>"  style="<?php echo $title_style; ?>'"><img id="logo" src="<?php echo $_SKIN['logo']['src'] ?>" width="<?php echo $_SKIN['logo']['width'] ?>" height="<?php echo $_SKIN['logo']['height'] ?>" alt="<?php echo $_SKIN['logo']['alt'] ?>" /></a>
 				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<hgroup id="hgroup" style="'.$title_style.'">'."\n" : '<div id="hgroup" style="'.$title_style.'">')."\n"; ?>
 					<h1 id="title"><?php echo(($newtitle!='' && $is_read) ? $newtitle: $page) ?></h1>
@@ -66,7 +66,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 
 			<div id="wrapper" class="clearfix">
 <!-- Center -->
-				<div id="main">
+				<div id="main" role="main">
 					<?php echo ($is_page && exist_plugin_convert('topicpath')) ? do_plugin_convert('topicpath') : ''; ?>
 					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="body">'."\n" : '<div id="body">'."\n"; ?>
 						<?php echo $body."\n" ?>
@@ -114,7 +114,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 				<!--  End Related -->
 <?php } ?>
 				<hr />
-				<?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','reload,|,new,newsub,edit,guiedit,freeze,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,|,help,|,mixirss').'<div class="pkwk-clear"></div>' : '';?>
+				<?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','reload,|,new,newsub,edit,freeze,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,|,help,|,mixirss').'<div class="pkwk-clear"></div>' : '';?>
 			</div>
 
 			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<footer id="footer"  class="clearfix">'."\n" : '<div id="footer" class="clearfix">'."\n"; ?>

@@ -160,18 +160,11 @@ function plugin_navibar_convert()
 
 function _navigator($key, $val = '')
 {
-	global $_LINK, $_LANG, $showicon;
+	global $_LINK, $_LANG, $_SKIN;
 
-	$lang  = $_LANG['skin'];
-	$link  = $_LINK;
+	if (!isset($_LANG['skin'][$key])) { return '<!--LANG NOT FOUND-->'; }
+	if (!isset($_LINK[$key])) { return '<!--LINK NOT FOUND-->'; }
 
-	if (!isset($lang[$key])) { return '<!--LANG NOT FOUND-->'; }
-	if (!isset($link[$key])) { return '<!--LINK NOT FOUND-->'; }
-
-	if ($showicon){
-		return '<a href="' . $link[$key] . '" rel="nofollow" class="pkwk-icon_linktext cmd-'.$key.'">' . $lang[$key]. '</a>';
-	}else{
-		return '<a href="' . $link[$key] . '" rel="nofollow">' . $lang[$key]. '</a>';
-	}
+	return '<a href="' . $_LINK[$key] . '" rel="nofollow" >'. ($_SKIN['showicon'] ? '<span class="pkwk-icon icon-'.$key.'"></span>' : '') . $_LANG['skin'][$key]. '</a>';
 }
 ?>

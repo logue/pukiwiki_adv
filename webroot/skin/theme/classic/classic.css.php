@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: classic.css.php,v 2.6.0 beta 2011/02/21 00:23:30 Logue Exp $
+// $Id: classic.css.php,v 2.6.1 2011/09/11 22:57:30 Logue Exp $
 
 // PukiWiki Classic Skin
 // Copyright (C)
@@ -99,7 +99,7 @@ h5, h6 {
 }
 
 p, pre, dl{
-	margin:0.5em 1.5em;
+	margin:.5em 1.5em;
 }
 
 pre {
@@ -361,7 +361,6 @@ tfoot .style_th {
 	padding:5px;
 }
 
-
 #ad {
 	float:right;
 	margin:8px;
@@ -620,17 +619,13 @@ tfoot .style_th {
 }
 
 /* toolbar.inc.php */
-#toolbar{
+.toolbar{
 	display:block;
-	clear:both;
+	clear:right;
 	padding:0px;
 	margin:0px 1%;
 	float:right;
 	white-space: nowrap;
-}
-
-#toolbar .pkwk-icon, #toolbar .pkwk-icon_splitter{
-	float:left;
 }
 
 /* tooltip.inc.php */

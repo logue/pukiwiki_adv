@@ -40,8 +40,11 @@
 	$("#textArea").setSelection(10,15);
 
  */
+
+// Modified by Logue
+
 var caretPositionAmp = new Array();
-function init() {
+$(document).ready(function(){
 	if(navigator.appName == "Microsoft Internet Explorer") {
 		obj = document.getElementsByTagName('TEXTAREA');
 		var input;
@@ -81,9 +84,7 @@ function init() {
 			}
 		}
 	}
-}
-
-window.onload = init;
+});
 
 jQuery.fn.extend({
 	getSelection: function() {  // function for getting selection, and position of the selected text
@@ -108,8 +109,7 @@ jQuery.fn.extend({
 			var re;
 			var rc;
 			var obj = document.getElementsByTagName('TEXTAREA');
-			var pos = 0;
-			for (pos; pos < obj.length; pos++) {
+			for (var pos = 0; pos < obj.length; pos++) {
 				if (obj[pos] == input) {
 					break;
 				}
@@ -221,8 +221,8 @@ jQuery.fn.extend({
 		var minus = 0;
 		var mozScrollFix = ( input.scrollTop == undefined ) ? 0 : input.scrollTop;
 		var obj = document.getElementsByTagName('TEXTAREA');
-		var pos = 0;
-		for (pos; pos < obj.length; pos++) {
+		
+		for (var pos = 0; pos < obj.length; pos++) {
 			if (obj[pos] == input) {
 				break;
 			}
@@ -377,8 +377,8 @@ jQuery.fn.extend({
 		var number = 0;
 		var mozScrollFix = ( input.scrollTop == undefined ) ? 0 : input.scrollTop; 
 		var obj = document.getElementsByTagName('TEXTAREA');
-		var pos = 0;
-		for (pos; pos < obj.length; pos++) {
+		
+		for (var pos = 0; pos < obj.length; pos++) {
 			if (obj[pos] == input) {
 				break;
 			}
@@ -514,8 +514,8 @@ jQuery.fn.extend({
 		var minus = 0;
 		var w;
 		var obj = document.getElementsByTagName('TEXTAREA');
-		var pos = 0;
-		for (pos; pos < obj.length; pos++) {
+		
+		for (var pos = 0; pos < obj.length; pos++) {
 			if (obj[pos] == input) {
 				break;
 			}

@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: xxxlogue.skin.php,v 2.4.0 RC 2011/05/29 00:05:00 Logue Exp $
+// $Id: xxxlogue.skin.php,v 2.4.1 2011/09/11 22:59:00 Logue Exp $
 // Copyright (C) 2010-2011 PukiWiki Advance Developers Team
 //               2007-2010 Logue
 //
@@ -64,28 +64,30 @@ if ($is_page) {
 					<div id="toggle">
 						<div id="inner_toggle">
 <?php if ($is_page) { ?>
-						<p><a href="<?php echo $_LINK['reload'] ?>" id="parmalink" class="small"><?php echo $_LINK['reload'] ?></a></p>
-						<?php if (exist_plugin('search')) echo do_plugin_convert('search'); ?>
+							<div id="shelf_form">
+								<p><a href="<?php echo $_LINK['reload'] ?>" id="parmalink" class="small"><?php echo $_LINK['reload'] ?></a></p>
+								<?php if (exist_plugin('search')) echo do_plugin_convert('search'); ?>
+							</div>
 <?php } ?>
 <?php if (!empty($attaches)) { ?>
-						<?php echo $hr ?>
+							<?php echo $hr ?>
 <!-- * Attach * -->
-						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="attach" class="clearfix">'."\n" : '<div id="attach">'."\n"; ?>
-							<?php echo $attaches ?>
-						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
+							<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="attach" class="clearfix">'."\n" : '<div id="attach">'."\n"; ?>
+								<?php echo $attaches ?>
+							<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
 <!--  End Attach -->
 <?php } ?>
 
 <?php if (!empty($related)) { ?>
-						<?php echo $hr ?>
+							<?php echo $hr ?>
 <!-- * Related * -->
-						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="related" class="clearfix">'."\n" : '<div id="related">'."\n"; ?>
-							<?php echo $related ?>
-						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
+							<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="related" class="clearfix">'."\n" : '<div id="related">'."\n"; ?>
+								<?php echo $related ?>
+							<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
 <!--  End Related -->
 <?php } ?>
 <?php if (exist_plugin('toolbar'))
-echo do_plugin_convert('toolbar','reload,|,new,newsub,edit,guiedit,freeze,diff,upload,copy,rename,|,top,list,recent,backup,refer,|,help,|,mixirss');
+echo do_plugin_convert('toolbar','reload,|,new,newsub,edit,freeze,diff,upload,copy,rename,|,top,list,recent,backup,refer,|,help,|,mixirss');
 ?>
 						</div>
 					</div>

@@ -2,7 +2,7 @@
 // xxxloggue skin script.
 // Copyright (c)2010 PukiWiki Advance Developers Team
 
-// $Id: xxxlogue.js,v 2.3.0 2010/09/11 22:59:00 Logue Exp$
+// $Id: default.js,v 1.0.2 2011/05/29 00:03:00 Logue Exp$
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,25 +17,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pukiwiki.skin = {
-	// Superfish設定
-	// http://users.tpg.com.au/j_birch/plugins/superfish/#options
-	suckerfish : {
-		autoArrows:		false,	// if true, arrow mark-up generated automatically = cleaner source code at expense of initialisation performance
-		dropShadows:	false,
-		speed:			'fast',
-		animation:		{height:'show'}
-	}
-}
-pukiwiki.register.init(function(){
-	// shelf
-	$('#content-top').html('<a id="shelf_link" class="noprint" style="cursor:pointer;">Open/Close</a>');
-	$('a#shelf_link').click(function(){
-		$('#toggle').animate({height: 'toggle'});
-	});
-	
+// スキンスクリプトのinitが実行される前に実行される関数
+pukiwiki.register.before_init( function(){
 	var href = $('link[rel=canonical]')[0].href;
-	$('#shelf_form').after([
+	$('#hgroup').after([
 		'<div style="float:right;">',
 		// Tweet Button
 		// http://twitter.com/about/resources/tweetbutton
@@ -52,3 +37,25 @@ pukiwiki.register.init(function(){
 	if (typeof(FACEBOOK_APPID) !== 'undefined'){ $('#body').append('<hr /><div style="margin-left:2em;"><fb:comments href="'+href+'" publish_feed="true" width="650" numposts="10" migrated="1" ></fb:comments></div>'); }
 });
 
+// スキンスクリプトのinitが実行された前に実行される関数
+pukiwiki.register.init( function(){
+	// カラーセットのリンクボタンにイベント割り当て
+	$('#colorset span').click(function(){
+		var n = this.id.split('-')[1];
+		document.getElementById('coloring').href = SKIN_DIR+'theme/'+THEME_NAME+'/'+colorset[n][0]+'.css';
+		document.getElementById('ui-theme').href = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/themes/'+colorset[n][1]+'/jquery-ui.css';
+		$.cookie('pkwk-colorset',n,{expires:30,path:'/'});
+	});
+});
+
+pukiwiki.custom = {
+	// スキンスクリプトのunloadが実行される前に実行される関数
+	before_unload : function(){
+	},
+	// スキンスクリプトのinitが実行された後に実行される関数
+	unload: function(){
+	}
+	// Superfish設定
+	// http://users.tpg.com.au/j_birch/plugins/superfish/#options
+//	suckerfish : { }
+};

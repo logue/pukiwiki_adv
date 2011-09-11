@@ -250,5 +250,5 @@ pukiwiki.register.init(function(){
 	};
 });
 
-JSMML.swfurl = SKIN_DIR+'js/plugin/jsmml/JSMML.swf';
+JSMML.swfurl = JS_URI+'plugin/jsmml/JSMML.swf';
 JSMML.init();

@@ -1,6 +1,6 @@
 <?php
-// PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: init.php,v 1.57.4 2011/09/03 11:57:00 Logue Exp $
+// PukiWiki Advance - Yet another WikiWikiWeb clone.
+// $Id: init.php,v 1.57.5 2011/09/11 23:02:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -14,8 +14,8 @@
 
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
-define('S_VERSION', 'v1.0 alpha');
-define('S_REVSION', '20110903');
+define('S_VERSION', 'v1.0 alpha2');
+define('S_REVSION', '20110911');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &#169; 2010-2011' .
@@ -26,11 +26,16 @@ define('S_COPYRIGHT',
 
 define('GENERATOR', S_APPNAME.' '.S_VERSION);
 
-defined('DEBUG') or define('DEBUG', false);
-defined('PKWK_WARNING') or define('PKWK_WARNING', false);
-defined('ROOT_URI') or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');
-defined('WWW_HOME') or define('WWW_HOME', '');
-defined('PLUS_THEME') or define('PLUS_THEME',	'default');
+/////////////////////////////////////////////////
+// Init PukiWiki Advance Enviroment variables
+
+defined('DEBUG')		or define('DEBUG', false);
+defined('PKWK_WARNING')	or define('PKWK_WARNING', false);
+defined('ROOT_URI')		or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');
+defined('COMMON_URI')	or define('ROOT_URI', '');
+defined('WWW_HOME')		or define('WWW_HOME', '');
+defined('PLUS_THEME')	or define('PLUS_THEME',	'default');
+
 /////////////////////////////////////////////////
 // Init server variables
 
@@ -38,12 +43,11 @@ defined('PLUS_THEME') or define('PLUS_THEME',	'default');
 if (!isset($HTTP_SERVER_VARS)) $HTTP_SERVER_VARS = array();
 
 foreach (array('SCRIPT_NAME', 'SERVER_ADMIN', 'SERVER_NAME',
-	'SERVER_PORT', 'SERVER_SOFTWARE') as $key) {
+	'SERVER_PORT', 'SERVER_SOFTWARE', 'HTTPS') as $key) {
 	define($key, isset($_SERVER[$key]) ? $_SERVER[$key] : '');
 	unset(${$key}, $_SERVER[$key], $HTTP_SERVER_VARS[$key]);
 }
 
-//pr($_SERVER);
 /////////////////////////////////////////////////
 // Init grobal variables
 
@@ -402,9 +406,7 @@ unset($facemark_rules);
 // 実体参照パターンおよびシステムで使用するパターンを$line_rulesに加える
 // XHTML5では&lt;、&gt;、&amp;、&quot;と、&apos;のみ使える。
 // http://www.w3.org/TR/html5/the-xhtml-syntax.html
-
 $entity_pattern = '(?=[a-zA-Z0-9]{2,8})(?:apos|amp|lt|gt|quot)';
-//$entity_pattern = load_entities();
 
 $line_rules = array_merge(array(
 	'&amp;(#[0-9]+|#x[0-9a-f]+|' . $entity_pattern . ');' => '&$1;',
@@ -418,19 +420,9 @@ define('IS_AJAX', (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERV
 // ajaxではない場合
 if (!IS_AJAX){
 	// スキンデーター読み込み
-	global $skin_file, $facebook;
+	define('SKIN_FILE', add_skindir(PLUS_THEME));
 
-	if (! defined('SKIN_FILE') || ! file_exists(SKIN_FILE) || ! is_readable(SKIN_FILE)) {
-		if (! file_exists($skin_file) || ! is_readable($skin_file)) {
-			die_message(SKIN_FILE . '(skin file) is not found or not readable.');
-		} else {
-			define('SKIN_FILE', $skin_file);
-		}
-		$skin_conf = substr($skin_file,0, -8).'ini.php';
-		if ( file_exists($skin_conf) && is_readable($skin_conf)){
-			define('SKIN_CONF', $skin_conf);
-		}
-	}
+	global  $facebook, $google_loader;
 
 	// JavaScriptフレームワーク設定
 	// google ajax api
@@ -448,7 +440,7 @@ if (!IS_AJAX){
 */
 		'jquery' => array(
 			'file'	=> 'jquery.min.js',
-			'ver'	=> '1.6.2'
+			'ver'	=> '1.6.3'
 		),
 		'jqueryui'	=> array(
 			'file'	=> 'jquery-ui.min.js',
@@ -464,7 +456,7 @@ if (!IS_AJAX){
 		// X-UA-CompatibleでChromeをレンダリングにするよう指定した場合
 		$google_loader['chrome-frame'] = array(
 			'file'	=> 'CFInstall.min.js',
-			'ver'	=>'1.0.2'
+			'ver'	=>'1'
 		);
 	}	
 
@@ -496,8 +488,8 @@ if (!IS_AJAX){
 	$js_init = array(
 		'DEBUG'=>constant('DEBUG'),
 		'DEFAULT_LANG'=>constant('DEFAULT_LANG'),
-		'IMAGE_DIR'=>constant('IMAGE_URI'),
-		'JS_DIR'=>constant('JS_URI'),
+		'IMAGE_URI'=>constant('IMAGE_URI'),
+		'JS_URI'=>constant('JS_URI'),
 		'LANG'=>$language,
 		'SCRIPT'=>get_script_absuri(),
 		'SKIN_DIR'=>constant('SKIN_URI'),

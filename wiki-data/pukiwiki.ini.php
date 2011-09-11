@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone
-// $Id: pukiwiki.ini.php,v 1.149.50 2011/04/09 22:30:00 Logue Exp $
+// $Id: pukiwiki.ini.php,v 1.149.51 2011/09/11 23:06:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -148,18 +148,21 @@ defined('EXT_SKIN_DIR')		or define('EXT_SKIN_DIR',	EXTEND_DIR. 'skin/'     );	//
 
 // Skins / Stylesheets
 
-defined('SKIN_DIR')		or define('SKIN_DIR',  WWW_HOME . 'skin/');		// Skin files (SKIN_DIR/*.skin.php) are needed at
-																		// ./DATAHOME/SKIN_DIR from index.php.
-defined('IMAGE_DIR')	or define('IMAGE_DIR', WWW_HOME . 'image/');	// Static image files
+// Skin files (SKIN_DIR/*.skin.php) are needed at
+// ./DATAHOME/SKIN_DIR from index.php.
+defined('SKIN_DIR')		or define('SKIN_DIR',  WWW_HOME . 'skin/');
 
-defined('JS_DIR')		or define('JS_DIR', WWW_HOME . 'js/');			// Static JavaScript files
+// Static image files
+defined('IMAGE_DIR')	or define('IMAGE_DIR', WWW_HOME . 'image/');
 
-// for Fancy URL
-defined('SKIN_URI')		or define('SKIN_URI',  ROOT_URI . 'skin/');		// CSSs(*.css) and JavaScripts(*.js) are needed at
-																		// ./SKIN_URI from index.php.
-defined('IMAGE_URI')	or define('IMAGE_URI', ROOT_URI . 'image/');	// Keep this directory shown via web browsers like
-																		// ./IMAGE_URI from index.php.
-defined('JS_URI')		or define('JS_URI',    ROOT_URI . 'js/');
+// Image and JavaScript URI
+// When building a WikiFirm, if you want to common the images and scripts, put the URI here.
+// such as http://common.example.com/
+defined('COMMON_URI')	or define('COMMON_URI',	ROOT_URI);
+
+defined('SKIN_URI')		or define('SKIN_URI',	ROOT_URI . 'skin/');
+defined('IMAGE_URI')	or define('IMAGE_URI',	COMMON_URI . 'image/');
+defined('JS_URI')		or define('JS_URI', 	COMMON_URI . 'js/');
 
 // THEME
 // *.skin.php => SKIN_DIR or SKIN_DIR + THEME_PLUS_NAME or EXT_SKIN_DIR + THEME_PLUS_NAME

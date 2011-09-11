@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone
-// $Id: html.php,v 1.65.43 2011/08/30 22:21:00 Logue Exp $
+// $Id: html.php,v 1.65.44 2011/09/11 23:01:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team <http://pukiwiki.cafelounge.net/plus/>
@@ -105,17 +105,21 @@ function catbody($title, $page, $body)
 		// Linkタグの生成。scriptタグと異なり、順番が変わっても処理への影響がない。
 		// http://www.w3schools.com/html5/tag_link.asp
 		$link_tags[] = array('rel'=>'alternate',		'href'=>$_LINK['mixirss'],	'type'=>'application/rss+xml',	'title'=>'RSS');
-		$link_tags[] = array('rel'=>'archive',			'href'=>$_LINK['backup'],	'type'=>'text/html',	'title'=>$_LANG['skin']['backup']);
 			// see http://www.seomoz.org/blog/canonical-url-tag-the-most-important-advancement-in-seo-practices-since-sitemaps
 		$link_tags[] = array('rel'=>'canonical',		'href'=>$_LINK['reload'],	'type'=>'text/html',	'title'=>$_page);
 		$link_tags[] = array('rel'=>'contents',			'href'=>$_LINK['menu'],		'type'=>'text/html',	'title'=>$_LANG['skin']['menu']);
 		$link_tags[] = array('rel'=>'sidebar',			'href'=>$_LINK['side'],		'type'=>'text/html',	'title'=>$_LANG['skin']['side']);
 		$link_tags[] = array('rel'=>'glossary',			'href'=>$_LINK['glossary'],	'type'=>'text/html',	'title'=>$_LANG['skin']['glossary']);
 		$link_tags[] = array('rel'=>'help',				'href'=>$_LINK['help'],		'type'=>'text/html',	'title'=>$_LANG['skin']['help']);
-		$link_tags[] = array('rel'=>'first',			'href'=>$_LINK['top'],		'type'=>'text/html',	'title'=>$_LANG['skin']['top']);
+		$link_tags[] = array('rel'=>'home',				'href'=>$_LINK['top'],		'type'=>'text/html',	'title'=>$_LANG['skin']['top']);
 		$link_tags[] = array('rel'=>'index',			'href'=>$_LINK['list'],		'type'=>'text/html',	'title'=>$_LANG['skin']['list']);
 		$link_tags[] = array('rel'=>'search',			'href'=>$_LINK['search'],	'type'=>'text/html',	'title'=>$_LANG['skin']['search']);
 		$link_tags[] = array('rel'=>'shortcut icon',	'href'=>$shortcut_icon,		'type'=>'image/vnd.microsoft.icon');
+		
+		// DNS prefetching
+		// http://html5boilerplate.com/docs/DNS-Prefetching/
+		$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>'//ajax.googleapis.com');
+		if (COMMON_URI !== ROOT_URI){ $link_tags[] = array('rel'=>'dns-prefetch',		'href'=>COMMON_URI); }
 
 		if ($nofollow || ! $is_read || ! $is_page){
 			$meta_tags[] = array('name' => 'robots', 'content' => 'NOINDEX,NOFOLLOW');
@@ -751,12 +755,12 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 		$browser = 'netfront';
 	}
 	unset($matches);
-	
+/*
 	global $facebook;
 	if (isset($facebook)){
 		echo ' xmlns:fb="http://www.facebook.com/2008/fbml"';
 	}
-	
+*/
 	echo ' class="no-js '.$browser.'">' . "\n"; // <html>
 	unset($lang_code);
 	

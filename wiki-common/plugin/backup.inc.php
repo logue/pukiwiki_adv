@@ -235,8 +235,8 @@ function plugin_backup_diff($str)
 {
 //	global $_msg_addline, $_msg_delline;
 	global $hr;
-	$_msg_addline = T_('The added line is <span class="diff_added">THIS COLOR</span>.');
-	$_msg_delline = T_('The deleted line is <span class="diff_removed">THIS COLOR</span>.');
+	$_msg_addline = T_('The added line is <ins class="diff_added">THIS COLOR</ins>.');
+	$_msg_delline = T_('The deleted line is <del class="diff_removed">THIS COLOR</del>.');
 
 	$ul = <<<EOD
 $hr
@@ -246,7 +246,7 @@ $hr
 </ul>
 EOD;
 
-	return $ul . '<pre class="brush: diff">' . diff_style_to_css(htmlsc($str)) . '</pre>' . "\n";
+	return $ul . '<pre class="sh" data-brush="diff">' . diff_style_to_css(htmlsc($str)) . '</pre>' . "\n";
 }
 
 function plugin_backup_get_list($page)

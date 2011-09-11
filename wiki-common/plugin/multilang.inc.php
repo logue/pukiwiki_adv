@@ -84,7 +84,7 @@ function plugin_multilang_inline_link($option, $args)
 			}
 		}
 
-		array_push($body, '<a href="'.$url.$lang.'" rel="alternate" hreflang="'.$lang.'">'.$title.'</a>');
+		array_push($body, '<a href="'.$url.$lang.'" rel="alternate" hreflang="'.substr($lang,-2).'">'.$title.'</a>');
 	}
 	
 	if($option == 'delim') { // default: nodelim

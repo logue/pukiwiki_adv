@@ -7,6 +7,6 @@ msgfmt -o %~n1.mo %~n1.po
 :usage
 echo PukiWiki Advance po file updator
 echo USAGE : po_update [plugin_name]
-
+pause.
 :end
 echo finish.

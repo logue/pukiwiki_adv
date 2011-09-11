@@ -49,7 +49,7 @@ $.i18n('en_US.pukiwiki', {
 
 	info_restore1	: 'A page is newer than the data that have been saved.\nDo you want to restore?',
 	info_restore2	: 'Do you want to restore the data that is stored in the browser?',
-	flush_restore	: 'Do you want to flush your edits in the past?',
+	flush_restore	: 'Do you want to flush your edits in the past?'
 });
 
 $.i18n('en_US.editor',{
@@ -112,6 +112,18 @@ $.i18n('en_US.player',{
 	fullscreen	: 'Full Screen'
 });
 
+$.i18n('en_US.uploader',{
+	file			: 'File: ',
+	password		: 'Password: ',
+	selected		: 'Files Selected: ',
+	queued			: 'Queued Files: ',
+	file_type_desc	: 'All Files',
+	pending			: 'Pending',
+	uploading		: 'Uploading...',
+	many_files		: 'You have attempted to queue too many files.',
+	view			: 'View',
+	execute			: 'Go!'
+});
 /**************************************************************************************************/
 
 $.i18n('ja_JP.pukiwiki', {
@@ -144,7 +156,7 @@ $.i18n('ja_JP.pukiwiki', {
 	
 	info_restore1	: 'ページは、保存されているデーターよりも新しいようです。\n復元してもよろしいですか？',
 	info_restore2	: '過去に編集したデーターがあるようです。復元しますか？',
-	flush_restore	: '編集内容をフラッシュしてもよろしいですか？',
+	flush_restore	: '編集内容をフラッシュしてもよろしいですか？'
 });
 
 $.i18n('ja_JP.editor',{
@@ -208,6 +220,18 @@ $.i18n('ja_JP.player',{
 	fullscreen	: '全画面'
 });
 
+$.i18n('ja_JP.uploader',{
+	file			: 'ファイル：',
+	password		: 'パスワード：',
+	selected		: '選択されたファイルの数：',
+	queued			: 'アップロード待ちのファイルの数：',
+	file_type_desc	: 'すべてのファイル',
+	pending			: 'アップロード待ち',
+	uploading		: 'アップロードしています…',
+	many_files		: 'アップロード待ちのファイルが多すぎます。',
+	view			: '確認',
+	execute			: '実行！'
+});
 /**************************************************************************************************/
 
 $.i18n('ko_KR.pukiwiki', {
@@ -247,7 +271,7 @@ $.i18n('ko_KR.pukiwiki', {
 	
 	info_restore1	: '페이지는 저장되는 데이터보다 새로운 것 같습니다.\n복원 하시겠습니까?',
 	info_restore2	: '과거에 편집한 데이터가있는 것 같습니다. 복원 하시겠습니까?',
-	flush_restore	: '편집 내용을 플러시하고시겠습니까?',
+	flush_restore	: '편집 내용을 플러시하고시겠습니까?'
 });
 
 $.i18n('ko_KR.editor',{

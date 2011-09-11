@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: convert_html.php,v 1.21.26 2011/04/14 23:11:00 Logue Exp $
+// $Id: convert_html.php,v 1.21.27 2011/09/11 23:00:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2005-2008 PukiWiki Plus! Team
@@ -680,7 +680,7 @@ class Table extends Element
 			}
 			$string .= $this->wrap($part_string, $part);
 		}
-		$string = $this->wrap($string, 'table', ' class="style_table" cellspacing="1" border="0"');
+		$string = $this->wrap($string, 'table', ' class="style_table" ');
 
 		return $this->wrap($string, 'div', ' class="ie5"');
 	}

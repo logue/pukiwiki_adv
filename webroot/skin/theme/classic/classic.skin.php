@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: classic.skin.php,v 1.6.3 2010/07/31 22:07:00 Logue Exp $
+// $Id: classic.skin.php,v 1.6.4 2011/09/11 22:58:00 Logue Exp $
 
 // PukiWiki Classic Skin for PukiPlus
 // Copyright (C)
@@ -113,7 +113,7 @@ if ($vars['page']) {
 
 			<?php echo $hr ?>
 
-			<?php if (exist_plugin('toolbar')) echo do_plugin_convert('toolbar','reload,|,new,newsub,edit,guiedit,freeze,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,trackback,|,help,|,mixirss'); ?>
+			<?php if (exist_plugin('toolbar')) echo do_plugin_convert('toolbar','reload,|,new,newsub,edit,freeze,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,trackback,|,help,|,mixirss'); ?>
 
 <!-- *** Footer *** -->
 			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<footer id="footer">'."\n" : '<div id="footer">'."\n"; ?>

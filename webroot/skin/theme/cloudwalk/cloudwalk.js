@@ -2,7 +2,7 @@
 // clowdwalk skin border-radius fix for IE less than 9
 // Copyright (c)2010-2011 PukiWiki Advance Developer Team
 
-// $Id: cloudwalk.js,v 1.0.2 2011/05/29 00:02:00 Logue Exp$
+// $Id: cloudwalk.js,v 1.0.3 2011/09/11 22:57:00 Logue Exp$
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ pukiwiki.register.init( function(){
 		
 		// border-radiusをIEでも有効にする（ie-css3.htcを読み込ませる）
 		$('.bar,#navigator,#nav,#header,#footer').css({
-			'behavior': 'url('+SKIN_DIR+'js/ie-css3.htc)'
+			'behavior': 'url('+JS_URI+'ie-css3.htc)'
 		});
 	}
 });

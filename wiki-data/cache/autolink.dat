@@ -1,3 +1,3 @@
 (?:\:config\/(?:BadBehavior(?:\/Log)?|PageReading(?:\/dict)?|auth\/openid\/mixi|i18n\/text\/ja_JP|plugin\/(?:attach\/mime\-type|chart\/default|linklist\/config|re(?:ferer\/(?:BlackList|WhiteList|config)|moteip)|skin\/t(?:diary\-theme(?:\/ja_JP)?|heme(?:\/ja_JP)?)|tracker\/(?:amazon(?:\/(?:list|page))?|default(?:\/(?:form|list|page))?))|spam\/(?:B(?:ANList|l(?:ackList|ockList))|WhiteList\/(?:praivate_network|skip_domain)))|PukiWiki\ Adv\.)
-(?:F(?:ormatRule|rontPage)|Glossary|InterWiki(?:Name)?|PukiWiki|RecentChanges|SandBox)
+(?:F(?:ormatRule|rontPage)|Glossary|InterWiki(?:Name)?|Navigation|PukiWiki|RecentChanges|SandBox)
 

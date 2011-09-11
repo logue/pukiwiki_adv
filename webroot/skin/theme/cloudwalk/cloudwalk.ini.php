@@ -1,8 +1,7 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: cloudwalk.ini.php,v1.2.0 2010/11/09 15:26:30 Logue Exp $
-// Copyright (C) 2010      PukiWiki Advance Developers Team
-//               2007-2010 Logue
+// $Id: cloudwalk.ini.php,v1.2.1 2011/09/11 22:56:30 Logue Exp $
+// Copyright (C) 2010-2011 PukiWiki Advance Developers Team
 // PukiWiki Advance Clowdwalk skin
 //
 // Based on
@@ -40,7 +39,6 @@ http://jqueryui.com/themeroller/
 
 // 読み込むスタイルシート
 $link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.'scripts.css.php');
-$link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.'iconset/default_iconset.css.php', 'media'=>'screen');
 $link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/'.PLUS_THEME.'.css');
 // 読み込むスクリプト
 $js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/'.PLUS_THEME.'.js');
