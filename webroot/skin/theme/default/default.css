@@ -5,18 +5,22 @@
 // Original version written by miko and upk.
 // Adv version by Logue.
 // 
-// $Id: default.css,v 1.33.11 2011/09/11 22:55:00 Logue Exp $
+// $Id: default.css,v 1.33.12 2011/09/12 21:58:00 Logue Exp $
 //
 */
 
 /** Generic Tags *********************************************************************************/
 a{
-	color:#215dc6 !important;
+	color:#215dc6;
 	text-decoration:none;
 }
 
 a:hover{
 	text-decoration:underline;
+}
+
+.ui-widget a{
+	color:#215dc6 !important;
 }
 
 p, pre, dl, blockquote{

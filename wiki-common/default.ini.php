@@ -47,8 +47,8 @@ $list_index = 1;
 /////////////////////////////////////////////////
 // 特殊シンボル
 $_symbol_paraedit		= '<span class="pkwk-symbol symbol-edit" title="Edit here"></span>';
-$_symbol_extanchor		= '<span class="pkwk-symbol symbol-external" onclick="return open_uri(\'$1\', \'$2\');" title="External Link"></span>';
-$_symbol_innanchor		= '<span class="pkwk-symbol symbol-internal" onclick="return open_uri(\'$1\', \'$2\');" title="Internal Link"></span>';
+$_symbol_extanchor		= '<span class="pkwk-symbol link_symbol symbol-external" data-uri="$1" title="External Link"></span>';
+$_symbol_innanchor		= '<span class="pkwk-symbol link_symbol symbol-internal" data-uri="$1" title="Internal Link"></span>';
 $_symbol_attach			= '<span class="pkwk-symbol symbol-attach" title="Attach here"></span>';
 
 /////////////////////////////////////////////////

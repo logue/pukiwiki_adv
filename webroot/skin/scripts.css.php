@@ -1581,7 +1581,7 @@ ul#jplayer_icons #jplayer_volume-min {
 /* ==|== print styles ======================================================= */
 @media print {
 	* { background: transparent !important; color: black !important; text-shadow: none !important; filter:none !important; -ms-filter: none !important; }
-	a, a:visited { text-decoration: underline; }
+	a, a:visited { text-decoration: underline !important; }
 	a[href]:after { content: " (" attr(href) ")"; }
 	abbr[title]:after { content: " (" attr(title) ")"; }
 	.ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after { content: ""; }
@@ -1597,6 +1597,10 @@ ul#jplayer_icons #jplayer_volume-min {
 	.style_calendar_prev, .style_calendar_next, .pkwk-symbol, #poptoc,  #toolbar, .ui-dialog, #topicpath{
 		display:none !important;
 		visibility: hidden !important;
+	}
+	
+	.note_super {
+		color:grey !important;
 	}
 	
 	.emoji{

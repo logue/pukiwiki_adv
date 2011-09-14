@@ -29,10 +29,12 @@ $.beautyOfCode = {
 		theme: 'Default',
 		// the brushes that should be loaded - case sensitive!
 		// http://alexgorbatchev.com/wiki/SyntaxHighlighter:Brushes
-		brushes: [],
+		brushes: ['Plain'],
 		// overrides for configurations and defaults
 		// http://alexgorbatchev.com/wiki/SyntaxHighlighter:Configuration
-		config: {},
+		config: {
+			debug : false
+		},
 		defaults: {},
 		// function to be called, when all scripts are loaded
 		ready: function() {
@@ -59,7 +61,7 @@ $.beautyOfCode = {
 				scripts.push(settings.baseUrl + settings.scripts + 'shCore.js');
 				$.each(settings.brushes,
 				function(i, item) {
-					scripts.push(settings.baseUrl + settings.scripts + 'shBrush' + item + ".js");
+					scripts.push(settings.baseUrl + settings.scripts + 'shBrush' + $.beautyOfCode.utils.getBrush(item) + ".js");
 				});
 
 				$.beautyOfCode.utils.loadAllScripts(

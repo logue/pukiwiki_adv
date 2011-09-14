@@ -62,7 +62,7 @@ var pukiwiki = {
 		'@prefix': '<http://purl.org/net/ns/doas#>',
 		'@about': '<skin.js>', a: ':JavaScript',
 		 title: 'Pukiwiki skin script for jQuery',
-		 created: '2008-11-25', release: {revision: '2.2.23', created: '2011-09-10'},
+		 created: '2008-11-25', release: {revision: '2.2.24', created: '2011-09-12'},
 		 author: {name: 'Logue', homepage: '<http://logue.be/>'},
 		 license: '<http://www.gnu.org/licenses/gpl-2.0.html>'
 	},
@@ -70,37 +70,38 @@ var pukiwiki = {
 	isPage : (typeof(PAGE) !== 'undefined' && !$.query.get('cmd') && !PAGE.match(/^:|FormatRules|RecentChanges|RecentDeleted|InterWikiName|AutoAliasName|MenuBar|SideBar|Navigation|Glossary/i)) ? true : false,
 	href : $('link[rel=canonical]')[0].href,
 	init : function(){
+		// metaタグのGenereterから、Plusかそうでないかを判別
+		var generetor = $('meta[name=generator]')[0].content;
+		if (generetor.match(/[PukiPlus|Advance]/)){
+			if (DEBUG){ console.info('PukiWiki Advance Debug mode. \nUsing jQuery: ',$.fn.jquery,' / jQuery UI: ',$.ui.version); }
+			this.image_dir = IMAGE_URI+'ajax/';	// デフォルト
+		}else if (generetor.match(/plus/)){
+			if (DEBUG){ console.info('PukiWiki Plus! Debug mode. \nUsing jQuery: ',$.fn.jquery,' / jQuery UI: ',$.ui.version); }
+			this.image_dir = SKIN_DIR+'theme/'+THEME_NAME+'/';
+		}else{
+			if (DEBUG){ console.info('PukiWiki Standard Debug mode. \nUsing jQuery: ',$.fn.jquery,' / jQuery UI: ',$.ui.version); }
+			this.image_dir = SKIN_DIR+this.name+'/image/';	// PukiWiki用
+		}
+
 		var self = this;
 		var protocol = ((_document.location.protocol === 'https:') ? 'https:' : 'http:')+'//';
 		this.body = this.skin.body ? this.skin.body : '#body';
 		
-		$(':input').attr('disabled','disabled');	// フォームをロック
+		$(':input, button').attr('disabled','disabled');	// フォームをロック
 		// ボタンをjQuery UIのものに
 		$('button, input[type=submit], input[type=reset], input[type=button]').each(function(){
 			var $this = $(this);
 			var data = $this.data();
 			
 			$this.button({
-				text:data.text ? data.text : true,
-				label:data.label ? data.label : this.value,
-				icons:{
-					primary: data.iconsPrimary,
+				text: data.text ? data.text : true,
+				label: data.label ? data.label : this.value,
+				icons: {
+					primary : data.iconsPrimary,
 					secondary: data.iconsSecondary
 				}
 			});
 		});
-		// metaタグのGenereterから、Plusかそうでないかを判別
-		var generetor = $('meta[name=generator]')[0].content;
-		if (generetor.match(/[PukiPlus|Advance]/)){
-			this.image_dir = IMAGE_URI+'ajax/';	// デフォルト
-		}else if (generetor.match(/plus/)){
-		//	console.info('Pukiwiki Plus! mode');
-			this.image_dir = SKIN_DIR+'theme/'+THEME_NAME+'/';
-		}else{
-		//	console.info('Pukiwiki Standard mode');
-			this.image_dir = SKIN_DIR+this.name+'/image/';	// PukiWiki用
-		}
-
 
 		// IE互換処理
 		if(ie < 6){
@@ -235,7 +236,7 @@ var pukiwiki = {
 		});
 
 		// フォームロックを解除
-		$(':input').removeAttr('disabled');
+		$(':input, button').removeAttr('disabled');
 		$('.ui-button').button('option', 'disabled', false);
 		
 		if (this.isPage){
@@ -253,7 +254,6 @@ var pukiwiki = {
 						_window.location.reload();
 					});
 				});
-			}else{
 			}
 			// Google +1 を実行
 			// http://code.google.com/intl/ja/apis/+1button/
@@ -266,6 +266,14 @@ var pukiwiki = {
 				$.getScript('http://platform.twitter.com/widgets.js');
 			}
 		}
+		
+		$('.link_symbol').each(function(){
+			var $this = $(this);
+			$this.click(function(){
+				_window.open($this.data().uri);
+				return false;
+			});
+		});
 	},
 	// ページを閉じたとき
 	unload : function(prefix){
@@ -401,7 +409,7 @@ prefixにはルートとなるDOMを入れる。（<span class="test"></span>の
 			prefix = '';
 		}
 		
-		$(prefix+'.tabs').tabs();
+		$(prefix+' .tabs').tabs();
 
 		// colorboxの設定
 		var colorbox_config = {
@@ -480,6 +488,8 @@ $(_window).bind("resize", autoResizer);
 					}catch(e){}
 				}
 
+				
+				
 				// pluginをcmdに統一する
 				if (params.plugin){
 					params.cmd = params.plugin;
@@ -487,6 +497,7 @@ $(_window).bind("resize", autoResizer);
 				}
 
 				if (params.cmd){
+					
 					if (typeof(params.file) !== 'undefined' && params.pcmd == 'open' || typeof(params.openfile) !== 'undefined'){
 						// 添付ファイルを開く（refによる呼び出しの場合とattachによる呼び出しの場合とでQueryStringが異なるのがやっかいだ）
 						var filename;
@@ -500,7 +511,6 @@ $(_window).bind("resize", autoResizer);
 						
 						if (filename.match(/\.(jpg|jpeg|gif|png|txt)$/i)){
 							$this.colorbox(colorbox_config);
-						//	$this.rlightbox();
 						}else if (filename.match(/\.(mp3|ogg|mp4)$/i)){
 							self.music_player(this);
 						}
@@ -509,8 +519,9 @@ $(_window).bind("resize", autoResizer);
 						$this.attr('href',href+'&type=.gif');
 						$this.colorbox(colorbox_config);
 						//$(this).rlightbox();
-					}else if (params.cmd.match(/attach|search|backup|source|newpage|template|freeze|rename|logview|tb|diff|referer|linklist|skeylist/i) && (params.pcmd !== 'list' || params.help === 'true')){
+					}else if ((params.cmd.match(/attach|search|backup|source|newpage|template|freeze|rename|logview|tb|diff|referer|linklist|skeylist/i) && params.pcmd !== 'list') || params.help === 'true'){
 						// その他の主要なプラグインは、インラインウィンドウで表示
+						
 						if (params.help == 'true'){
 							params = {cmd:'read', page:'FormatRule'};
 						}
@@ -568,6 +579,7 @@ $(_window).bind("resize", autoResizer);
 					brushes.push(brush);
 				}
 			});
+			console.log(brushes);
 			
 			var settings = {
 				autoLoad: true,
@@ -1216,7 +1228,7 @@ $(_window).bind("resize", autoResizer);
 			localstorage = true;
 		}
 
-		$('.edit_form input','.edit_form button','.edit_form select','.edit_form textarea').attr('disabled','disabled');
+//		$('.edit_form input','.edit_form button','.edit_form select','.edit_form textarea').attr('disabled','disabled');
 		
 		this.ajax_apx = false;
 		this.ajax_count = 0;
@@ -1652,6 +1664,7 @@ $(_window).bind("resize", autoResizer);
 
 		$('*[name=msg]').focus(function(e){
 			self.elem = this;
+			self.selection = $(this).getSelection().text;
 		});
 
 		$('.insert').click(function(){
@@ -1690,17 +1703,19 @@ $(_window).bind("resize", autoResizer);
 				}
 				elem.focus();
 			}
-			return;
+			return false;
 		});
+
 		$('.replace').click(function(){
 			var ret = '';
 			var elem = $(self.elem);
 			var str = elem.getSelection().text;
 			var v = $(this).attr('name');
-			
+
+			/*
 			if (str === ''|| !elem){
 				alert( $.i18n('pukiwiki', 'select'));
-				return;
+				return false;
 			}
 
 			switch (v){
@@ -1744,18 +1759,11 @@ $(_window).bind("resize", autoResizer);
 						ret = '[[' + str + '>' + my_link + ']]';
 					}
 				break;
-/*				default:
-					if (str.match(/^&color\([^\)]*\)\{.*\};$/)){
-						ret = str.replace(/^(&color\([^\)]*)(\)\{.*\};)$/,"$1," + v + "$2");
-					}else{
-						ret = '&color(' + v + '){' + str + '};';
-					}
-				break;
-*/
 			}
-			elem.replaceSelection(ret);
-			elem.focus();
-			return;
+*/
+//			elem.replaceSelection(ret);
+			console.log(str);
+			return false;
 		});
 		
 		
@@ -1791,7 +1799,7 @@ $(_window).bind("resize", autoResizer);
 				elem.replaceSelection('&color(' + v + '){' + str + '};');
 			}
 			$('#color_palette').dialog('close');
-			self.elem.focus();
+			elem.focus();
 			
 			return;
 		});
@@ -2228,7 +2236,7 @@ $(_window).bind("resize", autoResizer);
 		
 //		var ptocImg = '<img src="'+this.image_dir+'toc.png" class="tocpic" title="Table of Contents of this page" alt="Toc" />';
 //		var ptocMsg = "Click heading, and Table of Contents will pop up";
-		var ptocImg = '<div class="pkwk-icon icon-toc" title="Table of Contents of this page" style="display:none; cursor:pointer;">Toc</div>';
+		var ptocImg = '<span class="pkwk-icon icon-toc" title="Table of Contents of this page" style="display:none; cursor:pointer;"></span>';
 		var self = this;
 		if(tocs.length !== 0){
 			// #contentsが呼び出されているときは、その内容をTocに入れる。
@@ -2532,7 +2540,6 @@ if (DEBUG){
 $(_document).ready(function(){
 	if(DEBUG){
 		var D1 = new Date();
-		console.info('PukiWiki Advance Debug mode. \nUsing jQuery: ',$.fn.jquery,' / jQuery UI: ',$.ui.version);
 	}
 	Modernizr.load({load: 'http://browser-update.org/update.js'});
 

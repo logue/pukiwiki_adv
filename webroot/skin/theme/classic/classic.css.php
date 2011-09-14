@@ -26,7 +26,7 @@ header('Content-Type: text/css; charset: UTF-8');
 /**************************************************************************************************/
 /* anchor tag */
 a {
-	color:#215dc6 !important;
+	color:#215dc6;
 	background-color:inherit;
 	text-decoration:none;
 }
@@ -36,14 +36,18 @@ a:active {
 }
 
 a:visited {
-	/* color:#a63d21; */
-	color:#215dc6;
+	color:#a63d21;
+	/* color:#215dc6; */
 }
 
 a:hover {
 	color:#215dc6;
 	background-color:#CCDDEE;
 	text-decoration:underline;
+}
+
+.ui-widget a{
+	color:#215dc6 !important;
 }
 
 body{

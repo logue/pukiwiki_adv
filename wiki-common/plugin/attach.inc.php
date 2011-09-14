@@ -735,14 +735,12 @@ function attach_form($page, $listview = FALSE)
 	global $script, $vars, $_attach_messages;
 
 	$refer = isset($vars['refer']) ? $vars['refer'] : '';
-	
-	
 
 	$r_page = rawurlencode($page);
 	$s_page = htmlsc($page);
 
-	if (! ini_get('file_uploads')) return '#attach(): <code>file_uploads</code> disabled.<br />' . $navi;
-	if (! is_page($page))          return '#attach(): No such page<br />'          . $navi;
+	if (! ini_get('file_uploads'))	return '#attach(): <code>file_uploads</code> disabled.<br />' . $navi;
+	if (! is_page($page))			return '#attach(): No such page<br />'. $navi;
 
 	$maxsize = PLUGIN_ATTACH_MAX_FILESIZE;
 	$msg_maxsize = sprintf($_attach_messages['msg_maxsize'], '<var>'.number_format($maxsize/1024) . 'KB</var>');
@@ -905,13 +903,13 @@ class AttachFile
 			$count = ($showicon && ! empty($this->status['count'][$this->age])) ?
 				'<small>'.sprintf($_attach_messages['msg_count'], '<var>'.$this->status['count'][$this->age].'</var>').'</small>' : '';
 		}
-		return '<a href="$open" title="$title"><span class="pkwk-icon icon-download"></span>'.$label.'</a> '.$count.' '.$info;
+		return '<a href="'.$open.'" title="'.$title.'"><span class="pkwk-icon icon-download"></span>'.$label.'</a> '.$count.' '.$info;
 	}
 
 	// 情報表示
 	function info($err)
 	{
-		global $script, $_attach_messages, $pkwk_dtd, $vars;
+		global $script, $_attach_messages, $pkwk_dtd, $vars, $_LANG;
 
 		$r_page = rawurlencode($this->page);
 		$s_page = htmlsc($this->page);
@@ -986,9 +984,28 @@ EOD;
 	<dd><var>{$this->filename}</var></dd>
 EOD;
 		}
-		$retval = array('msg'=>sprintf($_attach_messages['msg_info'], htmlsc($this->file)));
-		$file_info = <<<EOD
-$_attach_setimage
+		
+		
+		$retval['body'] = $_attach_setimage;
+		if (!IS_AJAX) {
+			$retval = array('msg'=>sprintf($_attach_messages['msg_info'], htmlsc($this->file)));
+			$retval['body'] = <<< EOD
+<p>
+	[<a href="$list_uri">{$_attach_messages['msg_list']}</a>]
+	[<a href="$listall_uri">{$_attach_messages['msg_listall']}</a>]
+</p>
+EOD;
+		}else{
+			$retval = array('msg'=>sprintf($_attach_messages['btn_info'], htmlsc($this->file)));
+			$retval['body'] = <<< EOD
+<ul role="tablist">
+	<li role="tab" id="tab1" aria-controls="attach_info"><a href="#attach_info">{$_attach_messages['msg_info']}</a></li>
+	<li role="tab" id="tab2" aria-controls="attach_form_edit"><a href="#attach_form_edit">{$_LANG['skin']['edit']}</a></li>
+</ul>
+EOD;
+ 		}
+ 		
+ 		$file_info = <<<EOD
 <dl>
 	$info_auth
 	<dt>{$_attach_messages['msg_page']}:</dt>
@@ -1006,33 +1023,13 @@ $_attach_setimage
 	$msg_freezed
 </dl>
 EOD;
-		$retval['body'] = '';
-		if (!IS_AJAX) {
-			$retval['body'] .= <<< EOD
-<p>
-	[<a href="$list_uri">{$_attach_messages['msg_list']}</a>]
-	[<a href="$listall_uri">{$_attach_messages['msg_listall']}</a>]
-</p>
-EOD;
-		}
-		if ($pkwk_dtd === PKWK_DTD_HTML_5){
-			$retval['body'] .= <<< EOD
-<details class="attach_info">
-	<summary>$info</summary>
-{$file_info}
-</details>
-EOD;
-		}else{
-			$retval['body'] .= <<< EOD
-<fieldset class="attach_info">
-	<legend>$info</legend>
-{$file_info}
-</fieldset>
-EOD;
-		}
+		$retval['body'] .= '<div id="attach_info" role="tabpanel" aria-labeledby="tab1">'."\n".( ($pkwk_dtd === PKWK_DTD_HTML_5) ? 
+			'<details>'."\n".'<summary>'.$info.'</summary>'."\n".$file_info."\n".'</details>' :
+			'<fieldset>'."\n".'<legend>'.$info.'</legend>'."\n".$file_info."\n".'</fieldset>').'</div>'."\n";
+
+		if (!IS_AJAX){ $retval['body'] .= '<hr style="clear:both" />'; }
 		$retval['body'] .= <<< EOD
-<hr style="clear:both" />
-<div class="attach_form_edit">
+<div id="attach_form_edit" role="tabpanel" aria-labeledby="tab2">
 	$s_err
 	<form action="$script" method="post">
 		<input type="hidden" name="plugin" value="attach" />
@@ -1047,6 +1044,7 @@ EOD;
 	</form>
 </div>
 EOD;
+		if (IS_AJAX){ $retval['body'] = '<div id="attach_info_tabs" class="tabs">' .$retval['body'].'</div>'; }
 		return $retval;
 	}
 

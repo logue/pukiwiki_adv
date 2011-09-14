@@ -445,7 +445,7 @@ EOD;
 	if (isset($vars['help'])) {
 		$body .= $hr . catrule();
 	} else {
-		$body .= '<ul><li><a href="'.get_cmd_uri('edit',$r_page,'','help=true').'">' . $_string['help'] . '</a></li></ul>';
+		$body .= '<ul><li><a href="'.get_cmd_uri('edit',$r_page,'','help=true').'" id="FormatRule">' . $_string['help'] . '</a></li></ul>';
 	}
 	return $body;
 }

@@ -32,7 +32,7 @@ define('GENERATOR', S_APPNAME.' '.S_VERSION);
 defined('DEBUG')		or define('DEBUG', false);
 defined('PKWK_WARNING')	or define('PKWK_WARNING', false);
 defined('ROOT_URI')		or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');
-defined('COMMON_URI')	or define('ROOT_URI', '');
+defined('COMMON_URI')	or define('COMMON_URI', '');
 defined('WWW_HOME')		or define('WWW_HOME', '');
 defined('PLUS_THEME')	or define('PLUS_THEME',	'default');
 
@@ -506,12 +506,26 @@ if (!IS_AJAX){
 		// 読み込むsrcディレクトリ内のJavaScript
 		$default_js = array(
 			/* libraly */
-			'swfupload','tzCalculation_LocalTimeZone',
+			'swfupload',
+			'tzCalculation_LocalTimeZone',
 			
 			/* Use plugins */ 
-			'jquery.cookie','jquery.lazyload', 'jquery.query','jquery.scrollTo','jquery.colorbox','jquery.a-tools','jquery.superfish',
-			'jquery.swfupload','jquery.tablesorter','jquery.textarearesizer','jquery.jplayer', 'jquery.tabby', 'jquery.tooltip',
-			'jquery.jstree', 'jquery.i18n', 'jquery.beautyOfCode', 
+			'jquery.a-tools',
+			'jquery.beautyOfCode',
+			'jquery.colorbox',
+			'jquery.cookie',
+			'jquery.i18n',
+			'jquery.jplayer',
+			'jquery.jstree',
+			'jquery.lazyload',
+			'jquery.query',
+			'jquery.scrollTo',
+			'jquery.superfish',
+			'jquery.swfupload',
+			'jquery.tabby',
+			'jquery.tablesorter',
+			'jquery.textarearesizer',
+			'jquery.tooltip',
 			
 			/* MUST BE LOAD LAST */
 			'skin.original'

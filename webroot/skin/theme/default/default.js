@@ -1,12 +1,12 @@
 // PukiWiki - Yet another WikiWikiWeb clone.
 // xxxloggue skin script.
-// Copyright (c)2010 PukiWiki Advance Developers Team
+// Copyright (c)2010-2011 PukiWiki Advance Developers Team
 
-// $Id: default.js,v 1.0.2 2011/05/29 00:03:00 Logue Exp$
+// $Id: default.js,v 1.0.4 2011/09/12 00:22:08 Logue Exp$
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
+// the Free Software Foundation, either version 2 of the License, or
 // (at your option) any later version.
 
 // This program is distributed in the hope that it will be useful,
@@ -47,7 +47,7 @@ pukiwiki.register.before_init( function(){
 	$('#colorset').html('Color: '+buffer);
 	var href = $('link[rel=canonical]')[0].href;
 	$('#hgroup').after([
-		'<div style="float:right;">',
+		'<div style="float:right;" class="noprint">',
 		// Tweet Button
 		// http://twitter.com/about/resources/tweetbutton
 		'<a class="twitter-share-button" data-count="vertical" data-lang="'+$('html').attr('lang')+'"></a>',
@@ -60,7 +60,7 @@ pukiwiki.register.before_init( function(){
 		'</div>'].join("\n")
 	);
 	
-	if (typeof(FACEBOOK_APPID) !== 'undefined'){ $('#body').append('<hr /><div style="margin-left:2em;"><fb:comments href="'+href+'" publish_feed="true" width="650" numposts="10" migrated="1" ></fb:comments></div>'); }
+	if (typeof(FACEBOOK_APPID) !== 'undefined'){ $('#body').append('<hr /><div style="margin-left:2em;" class="noprint"><fb:comments href="'+href+'" publish_feed="true" width="650" numposts="10" migrated="1" ></fb:comments></div>'); }
 });
 
 // スキンスクリプトのinitが実行された前に実行される関数
@@ -74,14 +74,11 @@ pukiwiki.register.init( function(){
 	});
 });
 
+/*
+// PukiWiki Advance オーバーライド設定
 pukiwiki.custom = {
-	// スキンスクリプトのunloadが実行される前に実行される関数
-	before_unload : function(){
-	},
-	// スキンスクリプトのinitが実行された後に実行される関数
-	unload: function(){
-	}
 	// Superfish設定
 	// http://users.tpg.com.au/j_birch/plugins/superfish/#options
-//	suckerfish : { }
+	suckerfish : { }
 };
+*/
