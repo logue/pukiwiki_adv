@@ -32,7 +32,7 @@ define('GENERATOR', S_APPNAME.' '.S_VERSION);
 defined('DEBUG')		or define('DEBUG', false);
 defined('PKWK_WARNING')	or define('PKWK_WARNING', false);
 defined('ROOT_URI')		or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');
-defined('COMMON_URI')	or define('COMMON_URI', '');
+//defined('COMMON_URI')	or define('COMMON_URI', '');
 defined('WWW_HOME')		or define('WWW_HOME', '');
 defined('PLUS_THEME')	or define('PLUS_THEME',	'default');
 
@@ -440,7 +440,7 @@ if (!IS_AJAX){
 */
 		'jquery' => array(
 			'file'	=> 'jquery.min.js',
-			'ver'	=> '1.6.3'
+			'ver'	=> '1.6.4'
 		),
 		'jqueryui'	=> array(
 			'file'	=> 'jquery-ui.min.js',

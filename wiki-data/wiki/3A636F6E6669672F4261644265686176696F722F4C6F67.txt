@@ -1,4 +1,4 @@
 [[:config/BadBehavior]]
-*Log [#ha4f6459]
+*Log [#s83a682a]
 This is the doubtful access list hit by BadBehavior.
 |~key|~IP|~Time|~request_method|~request_uri|~server_protocol|~user_agent|h

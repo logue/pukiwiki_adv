@@ -63,9 +63,6 @@ define('PKWK_QUERY_STRING_MAX', 640); // Bytes, 0 = OFF
 // PKWK_ZLIB_LOADABLE_MODULE
 defined('PKWK_ZLIB_LOADABLE_MODULE') or define('PKWK_ZLIB_LOADABLE_MODULE', true);
 
-// PKWK_STRICT_XHTML
-//   
-defined('PKWK_STRICT_XHTML') or define('PKWK_STRICT_XHTML', false);
 /////////////////////////////////////////////////
 // Experimental features
 
@@ -223,13 +220,13 @@ $google_api_key = '';
 
 /////////////////////////////////////////////////
 // Facebook Integration
-/*
+
 $facebook = array(
 	'appId'		=> '129191427155205',
 	'secret'	=> '6b46af0696748a62557397c7739d37bf',
 	'cookie'	=> true,
 ); 
-*/
+
 
 // Twitter Integration
 $twitter = array(
@@ -276,6 +273,10 @@ $pkwk_dtd = PKWK_DTD_HTML_5;	// Adv. Default
 //$pkwk_dtd = PKWK_DTD_XHTML_1_1;
 //$pkwk_dtd = PKWK_DTD_XHTML_1_0_STRICT;
 //$pkwk_dtd = PKWK_DTD_XHTML_1_0_TRANSITIONAL;
+
+// PKWK_STRICT_XHTML
+// XHTMLとして処理する場合。（一部のブログパーツやプラグインで不具合が発生する可能性があります）
+defined('PKWK_STRICT_XHTML') or define('PKWK_STRICT_XHTML', true);
 
 // Change IE rendering mode.
 // http://msdn.microsoft.com/en-us/library/cc288325(VS.85).aspx

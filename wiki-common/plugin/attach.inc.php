@@ -949,7 +949,7 @@ class AttachFile
 				if (PLUGIN_ATTACH_RENAME_ENABLE) {
 					$msg_rename  = '<input type="radio" name="pcmd" id="_p_attach_rename" value="rename" />' .
 						'<label for="_p_attach_rename">' .  $_attach_messages['msg_rename'] .
-						$msg_require . '</label><br />&nbsp;&nbsp;&nbsp;&nbsp;' .
+						$msg_require . '</label><br />' .
 						'<label for="_p_attach_newname">' . $_attach_messages['msg_newname'] .
 						':</label> ' .
 						'<input type="text" name="newname" id="_p_attach_newname" size="40" value="' .

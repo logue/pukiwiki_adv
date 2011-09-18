@@ -352,6 +352,15 @@ ul, ol {
 	color:white;
 }
 
+.social{
+	list-style:none;
+}
+
+.social li{
+	display:block;
+	padding: 0 0.1em;
+	float:left;
+}
 /** MenuBar/SideBar*********************************************************************************/
 #menubar, #sidebar{
 	word-break:break-all;

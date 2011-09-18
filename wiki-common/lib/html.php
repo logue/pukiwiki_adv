@@ -31,7 +31,9 @@ function catbody($title, $page, $body)
 
 	global $_string, $always_menu_displayed;
 	
-	global $_page, $is_page, $is_read, $is_freeze, $is_readonly, $is_safemode, $is_createpage,$lastmod;
+	global $_page, $is_page, $is_read, $is_freeze, $is_readonly, $is_safemode, $is_createpage, $lastmod;
+	
+	
 
 	if (isset($vars['page']) && $vars['page'] !== ''){
 		$_page = $vars['page'];
@@ -99,9 +101,21 @@ function catbody($title, $page, $body)
 		(!empty($google_site_verification)) ?	$meta_tags[] = array('name' => 'google-site-verification',	'content' => $google_site_verification) : '';
 		(!empty($yahoo_site_explorer_id)) ?		$meta_tags[] = array('name' => 'y_key',						'content' => $yahoo_site_explorer_id) : '';
 		(!empty($bing_webmaster_tool)) ?		$meta_tags[] = array('name' => 'msvalidate.01',				'content' => $bing_webmaster_tool) : '';
+		
+		$meta_tags[] = array('property' => 'og:title',			'content' => $_page);
+		$meta_tags[] = array('property' => 'og:type',			'content' => 'website');
+		$meta_tags[] = array('property' => 'og:url',			'content' => $_LINK['reload']);
+//		$meta_tags[] = array('property' => 'og:image',			'content' => $shortcut_icon);
+		$meta_tags[] = array('property' => 'og:site_name',		'content' => $page_title);
+//		$meta_tags[] = array('property' => 'og:description',	'content' => $page_title);
+		
+		global $facebook;
+		if (isset($facebook)){
+			$meta_tags[] = array('property' => 'fb:app_id',		'content' => $facebook['appId']);
+		}
 
 		if (!isset($shortcut_icon)){ $shortcut_icon = ROOT_URI.'favicon.ico'; }
-		
+
 		// Linkタグの生成。scriptタグと異なり、順番が変わっても処理への影響がない。
 		// http://www.w3schools.com/html5/tag_link.asp
 		$link_tags[] = array('rel'=>'alternate',		'href'=>$_LINK['mixirss'],	'type'=>'application/rss+xml',	'title'=>'RSS');
@@ -755,13 +769,13 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 		$browser = 'netfront';
 	}
 	unset($matches);
-/*
+
 	global $facebook;
 	if (isset($facebook)){
 		echo ' xmlns:fb="http://www.facebook.com/2008/fbml"';
 	}
-*/
-	echo ' class="no-js '.$browser.'">' . "\n"; // <html>
+
+	echo ' xmlns:og="http://ogp.me/ns#" class="no-js '.$browser.'">' . "\n"; // <html>
 	unset($lang_code);
 	
 	if ($pkwk_dtd == PKWK_DTD_HTML_5){

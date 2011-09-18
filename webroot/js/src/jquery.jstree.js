@@ -15,7 +15,7 @@
 /*jslint browser: true, onevar: true, undef: true, bitwise: true, strict: true */
 /*global window : false, clearInterval: false, clearTimeout: false, document: false, setInterval: false, setTimeout: false, jQuery: false, navigator: false, XSLTProcessor: false, DOMParser: false, XMLSerializer: false*/
 
-//"use strict";
+"use strict";
 
 // top wrapper to prevent multiple inclusion (is this OK?)
 (function () { if(jQuery && jQuery.jstree) { return; }
@@ -2698,7 +2698,7 @@
 			'}' + 
 			'';
 		$.vakata.css.add_sheet({ str : css_string, title : "jstree" });
-		m = $("<div />").attr({ id : "jstree-marker" }).hide().html("&raquo;")
+		m = $("<div />").attr({ id : "jstree-marker" }).hide().html("&#187;")
 			.bind("mouseleave mouseenter", function (e) { 
 				m.hide();
 				ml.hide();
@@ -3584,7 +3584,7 @@
 				if(val.icon && val.icon.indexOf("/") !== -1) { str += " style='background:url(" + val.icon + ") center center no-repeat;' "; }
 				str += ">&#160;</ins><a href='#' rel='" + i + "'>";
 				if(val.submenu) {
-					str += "<span style='float:" + ($.vakata.context.rtl ? "left" : "right") + ";'>&raquo;</span>";
+					str += "<span style='float:" + ($.vakata.context.rtl ? "left" : "right") + ";'>&#187;</span>";
 				}
 				str += val.label + "</a>";
 				if(val.submenu) {
