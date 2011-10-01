@@ -115,7 +115,7 @@ var pukiwiki;
 				// ファイルタイプ
 				file_types : "*.*",
 				// ファイルタイプの説明
-				file_types_description : $.i18n('uploader','file_type_desc'),
+//				file_types_description : $.i18n('uploader','file_type_desc'),
 				// 一度にアップロードできるファイルの上限（ファイル選択画面でShiftキーで選択できるファイル数）
 				file_upload_limit : 10,	// 変更しないこと
 				// キューに入れられる上限
@@ -125,7 +125,7 @@ var pukiwiki;
 				debug: DEBUG,
 
 				// 添付ボタン設定
-				button_image_url: IMAGE_URI+'swfupload/wdp_buttons_upload_114x29.png',
+				button_image_url: IMAGE_URI+'ajax/wdp_buttons_upload_114x29.png',
 				button_width : 114,
 				button_height : 29,
 				// 書き換える場所のID
@@ -638,7 +638,7 @@ var pukiwiki;
 			var self = this;
 			
 			// シンタックスハイライトするDOMを取得
-			var dom = (prefix) ? prefix + ' .sh' : '.sh';
+			var sh = (prefix) ? prefix + ' .sh' : '.sh';
 
 			if ($(sh).length !== 0){
 				// ロケール設定
@@ -1814,6 +1814,9 @@ var pukiwiki;
 			
 			// 設定を読み込み
 			var config = this.config.swfupload;
+			config.flash_url = SKIN_DIR+'swfupload.swf';
+			config.file_types_description = $.i18n('uploader','file_type_desc');
+			config.button_placeholder_id = "swfupload_button";
 
 			// attachrefの場合、１つのみファイルをアップ可能
 			if (params.plugin === 'attachref'){
