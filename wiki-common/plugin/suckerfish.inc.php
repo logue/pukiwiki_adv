@@ -33,12 +33,12 @@ define('PLUGIN_SUKERFISH_DEFAULT_ID', 'nav');
 
 function plugin_suckerfish_convert(){
 	global $vars, $hr, $suckerfish_count, $js_tags;
-	
+/*
 	if(!$suckerfish_count){
 		$js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_DIR.'js/plugin/jquery.superfish.js');
 		$suckerfish_count++;
 	}
-	
+*/
 	$page = strip_bracket($vars['page']);
 
 	$navi_page = plugin_suckerfish_search_navipage($page);

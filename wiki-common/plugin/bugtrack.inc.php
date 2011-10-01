@@ -1,5 +1,5 @@
 <?php
-// $Id: bugtrack.inc.php,v 1.27.5 2011/03/24 22:35:00 Logue Exp $
+// $Id: bugtrack.inc.php,v 1.27.6 2011/09/24 22:35:00 Logue Exp $
 //
 // PukiWiki BugTrack plugin
 //
@@ -71,6 +71,19 @@ function plugin_bugtrack_print_form($base, $category)
 	global $_plugin_bugtrack, $script;
 	static $id = 0;
 
+	$s_base     = htmlsc($base);
+	$s_name     = htmlsc($_plugin_bugtrack['name']);
+	$s_category = htmlsc($_plugin_bugtrack['category']);
+	$s_priority = htmlsc($_plugin_bugtrack['priority']);
+	$s_state    = htmlsc($_plugin_bugtrack['state']);
+	$s_pname    = htmlsc($_plugin_bugtrack['pagename']);
+	$s_pnamec   = htmlsc($_plugin_bugtrack['pagename_comment']);
+	$s_version  = htmlsc($_plugin_bugtrack['version']);
+	$s_versionc = htmlsc($_plugin_bugtrack['version_comment']);
+	$s_summary  = htmlsc($_plugin_bugtrack['summary']);
+	$s_body     = htmlsc($_plugin_bugtrack['body']);
+	$s_submit   = htmlsc($_plugin_bugtrack['submit']);
+
 	++$id;
 
 	$select_priority = "\n";
@@ -86,13 +99,13 @@ function plugin_bugtrack_print_form($base, $category)
 	$select_state = "\n";
 	for ($i = 0; $i < count($_plugin_bugtrack['state_list']); ++$i) {
 		$state_list = htmlsc($_plugin_bugtrack['state_list'][$i]);
-		$select_state .= '    <option value="' . $state_list . '">' .
+		$select_state .= '    <option value="' . $state_list . '" style="background-color:'.$_plugin_bugtrack['state_bgcolor'][$i].'">' .
 			$state_list . '</option>' . "\n";
 	}
 
 	if (empty($category)) {
 		$encoded_category = '<input name="category" id="_p_bugtrack_category_' . $id .
-			'" type="text" />';
+			'" type="text" placeholder="'.$s_category.'" />';
 	} else {
 		$encoded_category = '<select name="category" id="_p_bugtrack_category_' . $id . '">';
 		foreach ($category as $_category) {
@@ -109,24 +122,12 @@ function plugin_bugtrack_print_form($base, $category)
 		$_SESSION[$keyword] = md5(get_ticket() . $ticket);
 	}
 
-	$s_base     = htmlsc($base);
-	$s_name     = htmlsc($_plugin_bugtrack['name']);
-	$s_category = htmlsc($_plugin_bugtrack['category']);
-	$s_priority = htmlsc($_plugin_bugtrack['priority']);
-	$s_state    = htmlsc($_plugin_bugtrack['state']);
-	$s_pname    = htmlsc($_plugin_bugtrack['pagename']);
-	$s_pnamec   = htmlsc($_plugin_bugtrack['pagename_comment']);
-	$s_version  = htmlsc($_plugin_bugtrack['version']);
-	$s_versionc = htmlsc($_plugin_bugtrack['version_comment']);
-	$s_summary  = htmlsc($_plugin_bugtrack['summary']);
-	$s_body     = htmlsc($_plugin_bugtrack['body']);
-	$s_submit   = htmlsc($_plugin_bugtrack['submit']);
 	$body = <<<EOD
-<form action="$script" method="post">
+<form action="$script" method="post" class="bugtrack_form">
 	<table>
 		<tr>
 			<th><label for="_p_bugtrack_name_$id">$s_name</label></th>
-			<td><input  id="_p_bugtrack_name_$id" name="name" size="20" type="text" /></td>
+			<td><input  id="_p_bugtrack_name_$id" name="name" size="20" type="text" placeholder="$s_name" /></td>
 		</tr>
 		<tr>
 			<th><label for="_p_bugtrack_category_$id">$s_category</label></th>
@@ -134,32 +135,32 @@ function plugin_bugtrack_print_form($base, $category)
 		</tr>
 		<tr>
 			<th><label for="_p_bugtrack_priority_$id">$s_priority</label></th>
-			<td><select id="_p_bugtrack_priority_$id" name="priority">$select_priority   </select></td>
+			<td><select id="_p_bugtrack_priority_$id" name="priority">$select_priority</select></td>
 		</tr>
 		<tr>
 			<th><label for="_p_bugtrack_state_$id">$s_state</label></th>
-			<td><select id="_p_bugtrack_state_$id" name="state">$select_state   </select></td>
+			<td><select id="_p_bugtrack_state_$id" name="state">$select_state</select></td>
 		</tr>
 		<tr>
 			<th><label for="_p_bugtrack_pagename_$id">$s_pname</label></th>
-			<td><input  id="_p_bugtrack_pagename_$id" name="pagename" size="20" type="text" />
+			<td><input  id="_p_bugtrack_pagename_$id" name="pagename" size="20" type="text" placeholder="$s_pname" />
 			<small>$s_pnamec</small></td>
 		</tr>
 		<tr>
 			<th><label for="_p_bugtrack_version_$id">$s_version</label></th>
-			<td><input  id="_p_bugtrack_version_$id" name="version" size="10" type="text" />
+			<td><input  id="_p_bugtrack_version_$id" name="version" size="10" type="text" placeholder="$s_version" />
 			<small>$s_versionc</small></td>
 		</tr>
 		<tr>
 			<th><label for="_p_bugtrack_summary_$id">$s_summary</label></th>
-			<td><input  id="_p_bugtrack_summary_$id" name="summary" size="60" type="text" /></td>
+			<td><input  id="_p_bugtrack_summary_$id" name="summary" size="60" type="text" placeholder="$s_summary" /></td>
 		</tr>
 		<tr>
 			<th><label   for="_p_bugtrack_body_$id">$s_body</label></th>
-			<td><textarea id="_p_bugtrack_body_$id" name="body" cols="60" rows="6"></textarea></td>
+			<td><textarea id="_p_bugtrack_body_$id" name="body" cols="60" rows="6"  placeholder="$s_body"></textarea></td>
 		</tr>
 		<tr>
-			<td colspan="2" align="center">
+			<td colspan="2">
 				<input type="submit" value="$s_submit" />
 				<input type="hidden" name="plugin" value="bugtrack" />
 				<input type="hidden" name="ticket" value="$ticket" />
@@ -314,24 +315,24 @@ function plugin_bugtrack_list_convert()
 		$bgcolor = htmlsc($_plugin_bugtrack['state_bgcolor'][$state_no]);
 
 		$row = <<<EOD
- <tr>
-  <td class="style_td" style="background-color:$bgcolor">$page_link</td>
-  <td class="style_td" style="background-color:$bgcolor">$state</td>
-  <td class="style_td" style="background-color:$bgcolor">$priority</td>
-  <td class="style_td" style="background-color:$bgcolor">$category</td>
-  <td class="style_td" style="background-color:$bgcolor">$name</td>
-  <td class="style_td" style="background-color:$bgcolor">$summary</td>
- </tr>
+	<tr>
+		<td class="style_td" style="background-color:$bgcolor">$page_link</td>
+		<td class="style_td" style="background-color:$bgcolor">$state</td>
+		<td class="style_td" style="background-color:$bgcolor">$priority</td>
+		<td class="style_td" style="background-color:$bgcolor">$category</td>
+		<td class="style_td" style="background-color:$bgcolor">$name</td>
+		<td class="style_td" style="background-color:$bgcolor">$summary</td>
+	</tr>
 EOD;
 		$table[$state_no][$no] = $row;
 	}
 
-	$table_html = ' <tr>' . "\n" . '<thead>'. "\n";
+	$table_html = '<thead>' . "\n" . '	<tr>'. "\n";
 	$bgcolor = htmlsc($_plugin_bugtrack['header_bgcolor']);
 	foreach (array('pagename', 'state', 'priority', 'category', 'name', 'summary') as $item)
 		$table_html .= '  <th class="style_th" style="background-color:' . $bgcolor . '">' .
 			htmlsc($_plugin_bugtrack[$item]) . '</th>' . "\n";
-	$table_html .= ' </tr>' . "\n" . '<thead>' ."\n" . '<tbody>' . "\n";
+	$table_html .= '	</tr>' . "\n" . '</thead>' ."\n" . '<tbody>' . "\n";
 
 	for ($i = 0; $i <= $count_list; ++$i) {
 		ksort($table[$i], SORT_NUMERIC);

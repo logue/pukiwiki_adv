@@ -1,5 +1,5 @@
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: locale.js,v 0.0.4 2010/09/18 9:54:00 Logue Exp $
+// $Id: locale.js,v 0.0.5 2010/09/25 15:58:00 Logue Exp $
 
 // Pukiwiki skin script for jQuery
 // Copyright (c)2010-2011 PukiWiki Advance Developer Team
@@ -19,7 +19,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /**************************************************************************************************/
-(function($, window, document, undefined){
+(function($){
 	$.i18n('en_US.pukiwiki', {
 		copyed		: 'It copied it onto the clipboard.',
 		select		: 'Please select the range of the object.',
@@ -503,4 +503,4 @@
 /**************************************************************************************************/
 	// 言語設定
 	$.i18n(LANG);
-} )(jQuery, this, this.document );
+} )(jQuery);

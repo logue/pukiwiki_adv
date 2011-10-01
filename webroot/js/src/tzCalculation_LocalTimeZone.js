@@ -10,4 +10,88 @@
 //
 // to implement this solution to this world-wide problem.
 //
-function tzCalculation_LocalTimeZone(i,d){var j;var b;var f;var c;var h;var a;var e;var g;j=new Date();b=Date.UTC(j.getUTCFullYear(),j.getUTCMonth(),j.getUTCDate(),j.getUTCHours(),j.getUTCMinutes(),j.getUTCSeconds());f=Date.UTC(j.getFullYear(),j.getMonth(),j.getDate(),j.getHours(),j.getMinutes(),j.getSeconds());c=f-b;h=(c/1000)/60;if(0>h){a="-"}else{a="+"}e=h%60;if(e!=0){h-=e;if(0>e){e=Math.abs(e)}}if(0>h){h=Math.abs(h)}g=h/60;if(10>g){a=a+"0"}a=a+g;if(10>e){a=a+"0"}a=a+e;if(d){document.writeln(a)}document.cookie="timezone="+a+"; domain="+i;return a};
+
+var tzCalculation_LocalTimeZone = function(theDomainForTheCookie, printTheTimeZone){	// Beginning of tzCalculation_LocalTimeZone
+    var rightNow;
+    var rightNow_UTC_MillisecondsSinceTimBegan;
+    var rightNow_Local_MillisecondsSinceTimBegan;
+    var rightNow_MillisecondsDifference;
+    var rightNow_MinutesDifference;
+    var rightNow_timeZoneString;
+    var rightNow_MinutesPart;
+    var rightNow_HoursDifference;
+
+	rightNow = new Date();
+
+	rightNow_UTC_MillisecondsSinceTimBegan = Date.UTC (
+		rightNow.getUTCFullYear (),
+		rightNow.getUTCMonth (),
+		rightNow.getUTCDate (),
+		rightNow.getUTCHours (),
+		rightNow.getUTCMinutes (),
+		rightNow.getUTCSeconds ()
+		);
+	rightNow_Local_MillisecondsSinceTimBegan = Date.UTC (
+		rightNow.getFullYear (),
+		rightNow.getMonth (),
+		rightNow.getDate (),
+		rightNow.getHours (),
+		rightNow.getMinutes (),
+		rightNow.getSeconds ()
+		);
+
+	rightNow_MillisecondsDifference = rightNow_Local_MillisecondsSinceTimBegan - rightNow_UTC_MillisecondsSinceTimBegan;
+
+	rightNow_MinutesDifference = (rightNow_MillisecondsDifference / 1000) / 60;
+
+	if (0 > rightNow_MinutesDifference)
+	{
+		rightNow_timeZoneString = "-";
+	}
+	else
+	{
+		rightNow_timeZoneString = "+";
+	}
+
+	rightNow_MinutesPart = rightNow_MinutesDifference % 60;
+
+	if (rightNow_MinutesPart != 0)
+	{
+		rightNow_MinutesDifference -= rightNow_MinutesPart;
+
+		if (0 > rightNow_MinutesPart)
+		{
+			rightNow_MinutesPart = Math.abs (rightNow_MinutesPart);
+		}
+	}
+
+	if (0 > rightNow_MinutesDifference)
+	{
+		rightNow_MinutesDifference = Math.abs (rightNow_MinutesDifference);
+	}
+
+	rightNow_HoursDifference = rightNow_MinutesDifference / 60;
+
+	if (10 > rightNow_HoursDifference)
+	{
+		rightNow_timeZoneString = rightNow_timeZoneString + '0';
+	}
+
+	rightNow_timeZoneString = rightNow_timeZoneString + rightNow_HoursDifference;
+
+	if (10 > rightNow_MinutesPart)
+	{
+		rightNow_timeZoneString = rightNow_timeZoneString + '0';
+	}
+
+	rightNow_timeZoneString = rightNow_timeZoneString + rightNow_MinutesPart;
+
+	if (printTheTimeZone)
+	{
+		document.writeln (rightNow_timeZoneString);
+	}
+
+	document.cookie = 'timezone=' + rightNow_timeZoneString + '; domain=' + theDomainForTheCookie;
+
+	return rightNow_timeZoneString;
+};	// End of tzCalculation_LocalTimeZone

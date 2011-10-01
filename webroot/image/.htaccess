@@ -12,6 +12,7 @@
 
 # Disable ETags
 <Files ~ "\.(gif|jpe?g|png|flv|mp4|ico)$">
+	Header set Cache-Control "public"
 	FileETag None
 </Files>
 

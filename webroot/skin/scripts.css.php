@@ -10,6 +10,8 @@ $image_dir = '../image/';
 flush();
 ?>
 @charset "UTF-8";
+@namespace url(http://www.w3.org/1999/xhtml);
+
 /* HTML5 ✰ Boilerplate
  * ==|== normalize ==========================================================
  */
@@ -292,6 +294,14 @@ summary{
 	cursor:pointer;
 }
 
+iframe, object{
+	background-color: transparent
+	border: none;
+	margin:0;
+	padding:0;
+	overflow:visible;
+}
+
 /* ==|== Tweek Tags ========================================================= */
 /* Fix italic font */
 i, em, cite, q{
@@ -343,6 +353,11 @@ i, em, cite, q{
 	display:none !important;
 }
 
+/* Fix Modernizr cheking dom */
+#modernizr {
+	position:absolute;
+	z-index:-999;
+}
 /* ==|== Customize UI classes =============================================== */
 /* form */
 input[type='text'], input[type='password'], textarea, select{
@@ -409,6 +424,12 @@ input[type='text'][disabled]:hover, input[type='password'][disabled]:hover, text
 input[disabled]:hover, select[disabled]:hover, textarea[disabled]:hover, option[disabled]:hover{
 	box-shadow: none;
 }
+
+::-webkit-input-placeholder	{ color:grey; }
+input:-moz-placeholder, textarea:-moz-placeholder { color:grey; }
+input:-ms-placeholder, textarea:-ms-placeholder { color:grey; }
+::-ms-input-placeholder	{ color:grey; }
+:-ms-input-placeholder	{ color:grey; }
 
 /* customize jQuery ui widget */
 .window{
@@ -1563,8 +1584,10 @@ ul#jplayer_icons #jplayer_volume-min {
 .emoji-wine{background-position: -216px -306px;}
 .emoji-shock{background-position: -234px -306px;}
 
-.ie8 .emoji, .ie7 .emoji, .ie6 .emoji{
-	text-indent:-2em;
+.ie8 .emoji, .ie7 .emoji, .ie6 .emoji,
+.ie8 .pkwk-icon, .ie7 .pkwk-icon, .ie6 .pkwk-icon {
+	text-indent:-9999px;
+	overflow:hidden;
 }
 
 /* ==|== non-semantic helper classes ======================================== */

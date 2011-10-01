@@ -66,7 +66,9 @@ function plugin_diff_view($page)
 		}
 		$source = join('', file($filename));
 		auth::is_role_page($source);
-		$msg = '<pre>' . diff_style_to_css(htmlsc($source)) . '</pre>' . "\n";
+		//$msg = '<pre>' . diff_style_to_css(htmlsc($source)) . '</pre>' . "\n";
+		
+		$msg = '<pre class="sh" data-brush="diff">' . htmlsc($source) . '</pre>' . "\n";
 	} else if ($is_page) {
 		$source = join('', get_source($page));
 		auth::is_role_page($source);

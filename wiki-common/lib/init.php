@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: init.php,v 1.57.5 2011/09/11 23:02:00 Logue Exp $
+// $Id: init.php,v 1.57.6 2011/09/20 21:06:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -15,7 +15,7 @@
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
 define('S_VERSION', 'v1.0 alpha2');
-define('S_REVSION', '20110911');
+define('S_REVSION', '20110924');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &#169; 2010-2011' .
@@ -29,12 +29,14 @@ define('GENERATOR', S_APPNAME.' '.S_VERSION);
 /////////////////////////////////////////////////
 // Init PukiWiki Advance Enviroment variables
 
-defined('DEBUG')		or define('DEBUG', false);
-defined('PKWK_WARNING')	or define('PKWK_WARNING', false);
-defined('ROOT_URI')		or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');
-//defined('COMMON_URI')	or define('COMMON_URI', '');
-defined('WWW_HOME')		or define('WWW_HOME', '');
-defined('PLUS_THEME')	or define('PLUS_THEME',	'default');
+defined('DEBUG')				or define('DEBUG', false);
+defined('PKWK_WARNING')			or define('PKWK_WARNING', false);
+defined('ROOT_URI')				or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');
+defined('WWW_HOME')				or define('WWW_HOME', '');
+defined('PLUS_THEME')			or define('PLUS_THEME',	'default');
+
+// HTTP_X_REQUESTED_WITHヘッダーで、ajaxによるリクエストかを判別
+define('IS_AJAX', (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' || !empty($vars['ajax'])));
 
 /////////////////////////////////////////////////
 // Init server variables
@@ -58,7 +60,7 @@ $foot_tags    = array();	// XHTML tags before </body> (Obsolete in Adv.)
 
 $info         = array();	// For debug use.
 
-if (empty($vars['ajax'])){
+if (!IS_AJAX){
 	// Init grobal variables
 	$meta_tags    = array();	// <meta />Tags
 	$link_tags    = array();	// <link />Tags
@@ -132,10 +134,11 @@ if (isset($script)) {
 /////////////////////////////////////////////////
 // INI_FILE: $agents:  UserAgentの識別
 
-$ua = 'HTTP_USER_AGENT';
+
 $user_agent = $matches = array();
 
 $user_agent['agent'] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+$ua = 'HTTP_USER_AGENT';
 // unset(${$ua}, $_SERVER[$ua], $HTTP_SERVER_VARS[$ua], $ua);	// safety
 if($user_agent['agent'] == '') die();	// UAが取得できない場合は処理を中断
 foreach ($agents as $agent) {
@@ -414,15 +417,12 @@ $line_rules = array_merge(array(
 ), $line_rules);
 
 //////////////////////////////////////////////////
-// HTTP_X_REQUESTED_WITHヘッダーで、ajaxによるリクエストかを判別
-define('IS_AJAX', (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' || !empty($vars['ajax'])));
-
 // ajaxではない場合
 if (!IS_AJAX){
 	// スキンデーター読み込み
 	define('SKIN_FILE', add_skindir(PLUS_THEME));
 
-	global  $facebook, $google_loader;
+	global $facebook, $google_loader;
 
 	// JavaScriptフレームワーク設定
 	// google ajax api
@@ -458,7 +458,7 @@ if (!IS_AJAX){
 			'file'	=> 'CFInstall.min.js',
 			'ver'	=>'1'
 		);
-	}	
+	}
 
 	// application/xhtml+xml を認識するブラウザではXHTMLとして出力
 	if (PKWK_STRICT_XHTML === TRUE && strstr($_SERVER['HTTP_ACCEPT'], 'application/xhtml+xml') !== false){
@@ -474,7 +474,6 @@ if (!IS_AJAX){
 
 	// modernizrの設定
 	$modernizr = 'modernizr.min.js';
-
 
 	// jQueryUIのCSS
 	$link_tags[] = array(
@@ -495,12 +494,6 @@ if (!IS_AJAX){
 		'SKIN_DIR'=>constant('SKIN_URI'),
 		'THEME_NAME'=>constant('PLUS_THEME')
 	);
-
-	if (isset($facebook)){
-		require(LIB_DIR.'facebook.php');
-		$fb = new FaceBook($facebook);
-		$js_init['FACEBOOK_APPID'] = $fb->getAppId();
-	}
 
 	if (DEBUG === true) {
 		// 読み込むsrcディレクトリ内のJavaScript
@@ -544,5 +537,30 @@ if (!IS_AJAX){
 		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'skin.js');
 	}
 	$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'locale.js');
+	
+	if (isset($facebook)){
+		require(LIB_DIR.'facebook.php');
+		$fb = new FaceBook($facebook);
+		// FaceBook Integration
+		$fb_user = $fb->getUser();
+		
+		if ($fb_user === 0) {
+			// 認証されていない場合
+			$url = $fb->getLoginUrl(array(
+				'canvas' => 1,
+				'fbconnect' => 0,
+				'req_perms' => 'status_update,publish_stream' // ステータス更新とフィードへの書き込み許可
+			));
+			$info[] = sprintf(T_('Facebook is not authenticated or url is mismathed. Please click <a href="%s">here</a> and authenticate the application.'), str_replace('&','&amp;',$url));
+		}else{
+			try {
+				// Proceed knowing you have a logged in user who's authenticated.
+				$info[] = sprintf(T_('Facebook is authenticated. Welcome, %s.'), '<var>'.$fb->api('/me').'</var>');
+			} catch (FacebookApiException $e) {
+				$info[] = 'Facebook Error: <samp>'.$e.'</samp>';
+			}
+		}
+		$js_init['FACEBOOK_APPID'] = $fb->getAppId();
+	}
 }
 ?>

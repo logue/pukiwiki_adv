@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone
-// $Id: html.php,v 1.65.44 2011/09/11 23:01:00 Logue Exp $
+// $Id: html.php,v 1.65.45 2011/09/20 21:06:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team <http://pukiwiki.cafelounge.net/plus/>
@@ -30,10 +30,7 @@ function catbody($title, $page, $body)
 	global $modifierlink;	// Site administrator's name
 
 	global $_string, $always_menu_displayed;
-	
 	global $_page, $is_page, $is_read, $is_freeze, $is_readonly, $is_safemode, $is_createpage, $lastmod;
-	
-	
 
 	if (isset($vars['page']) && $vars['page'] !== ''){
 		$_page = $vars['page'];
@@ -95,24 +92,15 @@ function catbody($title, $page, $body)
 				$body;
 		}
 		
+		// application/xhtml+xml を認識するブラウザではXHTMLとして出力
+		$http_header = (PKWK_STRICT_XHTML === TRUE && strstr($_SERVER['HTTP_ACCEPT'], 'application/xhtml+xml') !== false) ? 'application/xhtml+xml' : 'text/html';
+		
 		$meta_tags[] = array('name' => 'generator',	'content' => strip_tags(GENERATOR));
 //		$meta_tags[] = array('name' => 'viewport',	'content' => (isset($viewport) ? $viewport : 'width=device-width; initial-scale=1.0; maximum-scale=1.0;'));
 		($modifier !== 'anonymous') ?			$meta_tags[] = array('name' => 'author',					'content' => $modifier) : '';
 		(!empty($google_site_verification)) ?	$meta_tags[] = array('name' => 'google-site-verification',	'content' => $google_site_verification) : '';
 		(!empty($yahoo_site_explorer_id)) ?		$meta_tags[] = array('name' => 'y_key',						'content' => $yahoo_site_explorer_id) : '';
 		(!empty($bing_webmaster_tool)) ?		$meta_tags[] = array('name' => 'msvalidate.01',				'content' => $bing_webmaster_tool) : '';
-		
-		$meta_tags[] = array('property' => 'og:title',			'content' => $_page);
-		$meta_tags[] = array('property' => 'og:type',			'content' => 'website');
-		$meta_tags[] = array('property' => 'og:url',			'content' => $_LINK['reload']);
-//		$meta_tags[] = array('property' => 'og:image',			'content' => $shortcut_icon);
-		$meta_tags[] = array('property' => 'og:site_name',		'content' => $page_title);
-//		$meta_tags[] = array('property' => 'og:description',	'content' => $page_title);
-		
-		global $facebook;
-		if (isset($facebook)){
-			$meta_tags[] = array('property' => 'fb:app_id',		'content' => $facebook['appId']);
-		}
 
 		if (!isset($shortcut_icon)){ $shortcut_icon = ROOT_URI.'favicon.ico'; }
 
@@ -120,28 +108,43 @@ function catbody($title, $page, $body)
 		// http://www.w3schools.com/html5/tag_link.asp
 		$link_tags[] = array('rel'=>'alternate',		'href'=>$_LINK['mixirss'],	'type'=>'application/rss+xml',	'title'=>'RSS');
 			// see http://www.seomoz.org/blog/canonical-url-tag-the-most-important-advancement-in-seo-practices-since-sitemaps
-		$link_tags[] = array('rel'=>'canonical',		'href'=>$_LINK['reload'],	'type'=>'text/html',	'title'=>$_page);
-		$link_tags[] = array('rel'=>'contents',			'href'=>$_LINK['menu'],		'type'=>'text/html',	'title'=>$_LANG['skin']['menu']);
-		$link_tags[] = array('rel'=>'sidebar',			'href'=>$_LINK['side'],		'type'=>'text/html',	'title'=>$_LANG['skin']['side']);
-		$link_tags[] = array('rel'=>'glossary',			'href'=>$_LINK['glossary'],	'type'=>'text/html',	'title'=>$_LANG['skin']['glossary']);
-		$link_tags[] = array('rel'=>'help',				'href'=>$_LINK['help'],		'type'=>'text/html',	'title'=>$_LANG['skin']['help']);
-		$link_tags[] = array('rel'=>'home',				'href'=>$_LINK['top'],		'type'=>'text/html',	'title'=>$_LANG['skin']['top']);
-		$link_tags[] = array('rel'=>'index',			'href'=>$_LINK['list'],		'type'=>'text/html',	'title'=>$_LANG['skin']['list']);
-		$link_tags[] = array('rel'=>'search',			'href'=>$_LINK['search'],	'type'=>'text/html',	'title'=>$_LANG['skin']['search']);
+		$link_tags[] = array('rel'=>'canonical',		'href'=>$_LINK['reload'],	'type'=>$http_header,	'title'=>$_page);
+		$link_tags[] = array('rel'=>'contents',			'href'=>$_LINK['menu'],		'type'=>$http_header,	'title'=>$_LANG['skin']['menu']);
+		$link_tags[] = array('rel'=>'sidebar',			'href'=>$_LINK['side'],		'type'=>$http_header,	'title'=>$_LANG['skin']['side']);
+		$link_tags[] = array('rel'=>'glossary',			'href'=>$_LINK['glossary'],	'type'=>$http_header,	'title'=>$_LANG['skin']['glossary']);
+		$link_tags[] = array('rel'=>'help',				'href'=>$_LINK['help'],		'type'=>$http_header,	'title'=>$_LANG['skin']['help']);
+		$link_tags[] = array('rel'=>'home',				'href'=>$_LINK['top'],		'type'=>$http_header,	'title'=>$_LANG['skin']['top']);
+		$link_tags[] = array('rel'=>'index',			'href'=>$_LINK['list'],		'type'=>$http_header,	'title'=>$_LANG['skin']['list']);
+		$link_tags[] = array('rel'=>'search',			'href'=>$_LINK['search'],	'type'=>$http_header,	'title'=>$_LANG['skin']['search']);
 		$link_tags[] = array('rel'=>'shortcut icon',	'href'=>$shortcut_icon,		'type'=>'image/vnd.microsoft.icon');
 		
 		// DNS prefetching
 		// http://html5boilerplate.com/docs/DNS-Prefetching/
 		$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>'//ajax.googleapis.com');
 		if (COMMON_URI !== ROOT_URI){ $link_tags[] = array('rel'=>'dns-prefetch',		'href'=>COMMON_URI); }
-
+	
 		if ($nofollow || ! $is_read || ! $is_page){
 			$meta_tags[] = array('name' => 'robots', 'content' => 'NOINDEX,NOFOLLOW');
 		}else{
-//			if (empty($description)){ $description = $title.' - '.$page_title; }
-			$meta_tags[] = array('name' => 'description', 'content' => $description);
-//			if (empty($keywords)) $keywords = 'PukiWiki, PHP, ajax, Advance, CMS, Wiki, Adv., PukiWiki Adv.,PukiWiki Advance';
-			$meta_tags[] = array('name' => 'keywords', 'content' => $keywords);
+			// The Open Graph Protocol
+			// http://ogp.me/
+			$desc = (!empty($description)) ? $description : mb_strimwidth(preg_replace("/[\r\n]/" ,' ' ,strip_htmltag($body)) ,0 ,256 ,'...');
+			$logo = (!empty($_SKIN['logo']['src'])) ? $_SKIN['logo']['src'] : IMAGE_URI.'pukiwiki_adv.logo.png';
+			if (!empty($description)){ $meta_tags[] =  array('name' => 'description', 'content' => $description); }
+			if (!empty($keywords)){ $meta_tags[] =  array('name' => 'keywords', 'content' => $keywords); }
+			$meta_tags[] = array('property' => 'og:title',			'content' => $_page);
+			$meta_tags[] = array('property' => 'og:locale ',		'content' => LANG);
+			$meta_tags[] = array('property' => 'og:type',			'content' => 'website');
+			$meta_tags[] = array('property' => 'og:url',			'content' => $_LINK['reload']);
+			$meta_tags[] = array('property' => 'og:image',			'content' => $logo);
+			$meta_tags[] = array('property' => 'og:site_name',		'content' => $page_title);
+			$meta_tags[] = array('property' => 'og:description',	'content' => $desc);
+			$meta_tags[] = array('property' => 'og:updated_time',	'content' => $filetime);
+			
+			global $fb;
+			if (isset($fb)){
+				$meta_tags[] = array('property' => 'fb:app_id', 'content' => $fb->getAppId());
+			}
 		}
 		
 //		if ($notify_from !== 'from@example.com') $link_tags[] = array('rev'=>'made',	'href'=>'mailto:'.$notify_from,	'title'=>	'Contact to '.$modifier);
@@ -152,13 +155,6 @@ function catbody($title, $page, $body)
 			$js_init['MODIFIED']= $filetime;
 		}
 		if(isset($google_analytics)){ $js_init['GOOGLE_ANALYTICS'] = $google_analytics; }
-		
-		// application/xhtml+xml を認識するブラウザではXHTMLとして出力
-		if (PKWK_STRICT_XHTML === TRUE && strstr($_SERVER['HTTP_ACCEPT'], 'application/xhtml+xml') !== false){
-			$http_header = 'application/xhtml+xml';
-		}else{
-			$http_header = 'text/html';
-		}
 
 		// JSに渡す定義を展開
 		foreach( $js_init as $key=>$val){
@@ -715,11 +711,11 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 	$charset = htmlsc($charset);
 
 	// Output XML or not
-	if ($type == PKWK_DTD_TYPE_XHTML && $pkwk_dtd !== PKWK_DTD_HTML_5 ){
+	if ($type === PKWK_DTD_TYPE_XHTML || PKWK_STRICT_XHTML === true ){
 		echo '<?xml version="1.0" encoding="' . CONTENT_CHARSET . '" ?' . '>' . "\n";
 	}
 
-	if ($pkwk_dtd != PKWK_DTD_HTML_5){
+	if ($pkwk_dtd !== PKWK_DTD_HTML_5){
 		// Output doctype
 		echo '<!DOCTYPE html PUBLIC "-//W3C//DTD ' .
 			($type == PKWK_DTD_TYPE_XHTML ? 'XHTML' : 'HTML') . ' ' .
@@ -735,7 +731,9 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 	// Output <html> start tag
 	$lang_code = substr(str_replace('_','-',LANG),0,2); // RFC3066
 	
-	echo '<html';	
+	// HTML+RDFa 1.1 Support for RDFa in HTML4 and HTML5
+	// http://www.w3.org/TR/2010/WD-rdfa-in-html-20100624/
+	echo '<html version="HTML+RDFa 1.1"';	
 	if ($type != PKWK_DTD_TYPE_XHTML || $pkwk_dtd == PKWK_DTD_HTML_5) {
 		if($pkwk_dtd == PKWK_DTD_HTML_5){
 			echo ' xmlns="http://www.w3.org/1999/xhtml"';

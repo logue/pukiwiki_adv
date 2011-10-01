@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: classic.css.php,v 2.6.1 2011/09/11 22:57:30 Logue Exp $
+// $Id: classic.css.php,v 2.6.2 2011/09/25 17:48:30 Logue Exp $
 
 // PukiWiki Classic Skin
 // Copyright (C)
@@ -271,6 +271,15 @@ tfoot .style_th {
 	vertical-align:text-bottom;
 }
 
+.social{
+	list-style:none;
+}
+
+.social li{
+	display:block;
+	padding: 0 0.1em;
+	float:left;
+}
 /** Skin Stylesheet *******************************************************************************/
 #hgroup h1, #hgroup h2{
 	background-color:transparent;

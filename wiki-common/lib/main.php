@@ -72,10 +72,10 @@ require(LIB_DIR . 'simple_html_dom.php');
 ini_set("memory_limit", "128M");  
 
 if (! extension_loaded('mbstring')){
-	throw new Exception('PukiWiki Adv. needs the mbstring extension.');
+	throw new Exception('PukiWiki Adv. needs the <a href="http://www.php.net/manual/book.mbstring.php">mbstring extension</a>.');
 }
-if (!function_exists('json_decode')) {
-	throw new Exception('PukiWiki Adv. needs the JSON PHP extension.');
+if (! extension_loaded('json')) {
+	throw new Exception('PukiWiki Adv. needs the <a href="http://www.php.net/manual/book.json.php">JSON extension.</a>');
 }
 require(LIB_DIR . 'gettext/gettext.inc');
 
@@ -85,13 +85,12 @@ $notify = $trackback = $referer = 0;
 // Load *.ini.php files and init PukiWiki
 require(LIB_DIR . 'init.php');
 
-require(LIB_DIR . 'bad-behavior-pukiwiki.php');
-
 // Load optional libraries
-if ($notify)	require(LIB_DIR . 'mail.php'); // Mail notification
-if ($trackback)	require(LIB_DIR . 'trackback.php'); // TrackBack
-if ($referer)	require(LIB_DIR . 'referer.php');
 
+if (isset($badbehavior)){ require(LIB_DIR . 'bad-behavior-pukiwiki.php'); }
+if (isset($notify)){ require(LIB_DIR . 'mail.php'); }	// Mail notification
+if (isset($trackback)){ require(LIB_DIR . 'trackback.php'); }	// TrackBack
+if (isset($referer)){ require(LIB_DIR . 'referer.php'); }
 /////////////////////////////////////////////////
 // Main
 

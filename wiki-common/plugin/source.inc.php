@@ -26,7 +26,7 @@ function plugin_source_action()
 
 	return array(
 		'msg'	=> T_('Source of  $1'),
-		'body'	=> '<pre id="source">' . htmlspecialchars($source) . '</pre>'
+		'body'	=> '<pre class="sh">' . htmlspecialchars($source) . '</pre>'
 	);
 }
 ?>

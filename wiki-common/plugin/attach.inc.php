@@ -1,6 +1,6 @@
 <?php
 // PukPukiPlus.
-// $Id: attach.inc.php,v 1.92.48 2011/06/20 20:46:00 Logue Exp $
+// $Id: attach.inc.php,v 1.92.49 2011/09/25 15:33:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team
@@ -1144,7 +1144,7 @@ EOD;
 			}
 			foreach ($rename_targets as $basename2=>$newbase2) {
 				$basename2path = UPLOAD_DIR . $basename2;
-				echo "rename '$basename2path' to '$newbase2'<br>\n";
+				// echo "rename '$basename2path' to '$newbase2'<br />\n";
 				rename($basename2path, $newbase2);
 			}
 		}
@@ -1326,7 +1326,6 @@ class AttachFiles
 		$files = array_keys($this->files);
 		sort($files, SORT_STRING);
 
-		$cssstyle = '';
 		foreach ($files as $file) {
 			$_files = array();
 			foreach (array_keys($this->files[$file]) as $age) {
@@ -1335,19 +1334,26 @@ class AttachFiles
 			if (! isset($_files[0])) {
 				$_files[0] = htmlsc($file);
 			}
+			//pr($this->files[$file]);
 			ksort($_files, SORT_NUMERIC);
 			$_file = $_files[0];
 			unset($_files[0]);
-			$ret .= '<tr><td class="style_td">' . $_file . '</td>'
-			     .  '<td class="style_td">' . $this->files[$file][0]->size_str . '</td>'
-			     .  '<td class="style_td">' . $this->files[$file][0]->type . '</td>'
-			     .  '<td class="style_td">' . $this->files[$file][0]->time_str . '</td></tr>' ."\n";
+			$fileinfo = $this->files[$file];
+			if (isset( $fileinfo[0])){
+				$ret .= join('',array(
+					'<tr><td class="style_td">' . $_file . '</td>',
+					'<td class="style_td">' . $fileinfo[0]->size_str . '</td>',
+					'<td class="style_td">' . $fileinfo[0]->type . '</td>',
+					'<td class="style_td">' . $fileinfo[0]->time_str . '</td></tr>'
+				))."\n";
+			}
+			// else{ ... } // delated FIX me!
 		}
 		return '<table class="style_table attach_table"><thead>' . "\n" .
 		       '<tr><th class="style_th">' . $_attach_messages['msg_file'] . '</th>' .
 			   '<th class="style_th">' . $_attach_messages['msg_filesize'] . '</th>' .
 		       '<th class="style_th">' . $_attach_messages['msg_type'] . '</th>' .
-		       '<th class="style_th">' . $_attach_messages['msg_date'] . '</th></tr></thead><tbody>' . "\n$ret</tbody></table>\n";
+		       '<th class="style_th">' . $_attach_messages['msg_date'] . '</th></tr></thead>'."\n".'<tbody>' . "\n$ret</tbody></table>\n";
 	}
 }
 

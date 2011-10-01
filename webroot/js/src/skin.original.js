@@ -22,9 +22,8 @@
 /* Implied global: $, document, SCRIPT, LANG, DEBUG, SKIN_DIR, IMAGE_DIR, DEFAULT_LANG, THEME_NAME, PAGE, MODIFIED, GOOGLE_ANALYTICS, FB, FACEBOOK_APPID */
 
 var pukiwiki;
-var FACEBOOK_APPID = "129191427155205";
 // Bigscope
-(function($, window, document, undefined){
+(function($, Modernizr, window, document, undef){
 	if(!jQuery) { throw "pukiwiki: jQuery not included."; }
 
 	if(DEBUG){
@@ -67,11 +66,123 @@ var FACEBOOK_APPID = "129191427155205";
 			'@prefix': '<http://purl.org/net/ns/doas#>',
 			'@about': '<skin.js>', a: ':JavaScript',
 			 title: 'Pukiwiki skin script for jQuery',
-			 created: '2008-11-25', release: {revision: '2.2.24', created: '2011-09-12'},
+			 created: '2008-11-25', release: {revision: '2.2.24', created: '2011-10-01'},
 			 author: {name: 'Logue', homepage: '<http://logue.be/>'},
 			 license: '<http://www.gnu.org/licenses/gpl-2.0.html>'
 		},
-		skin : {},	// 消さないこと。（スキン用カスタムネームスペース）
+		// 初期設定
+		config:{
+			sukerfish:{
+				autoArrows:		false,	// if true, arrow mark-up generated automatically = cleaner source code at expense of initialisation performance
+				dropShadows:	false
+			},
+			tablesorter: {
+				counter: 0,
+				sorter: {
+//					debug:DEBUG,
+					useUI:true,
+					cssUI: {
+						widget: "",
+						header: "ui-widget-header",
+						hover: "ui-state-hover",
+						icon: "ui-icon ui-icon-triangle-2-n-s",
+						iconBoth: "ui-icon-triangle-2-n-s",
+						iconDesc: "ui-icon-triangle-1-n",
+						iconAsc: "ui-icon-triangle-1-s"
+					}
+				},
+				pager : {
+					minimum_lines : 5,
+					size:[10,25,50,75,100],
+					location_before:true,
+					positionFixed: false
+				}
+			},
+			swfupload : {
+				// swfuploadの位置
+//				flash_url : SKIN_DIR+'swfupload.swf',	// 値の流用ができないのでコメントアウト
+				// アップロード先のURL
+				upload_url: SCRIPT,
+				// POST時に送られるファイルのフォーム名（重要）
+				// attachプラグインでは、attach_fileにアップロードするファイル名が格納される。
+				// Flashの仕様上、本来は変更せずにFiledataとすることが望ましい。
+				// PukiWikiでは、attach_fileにファイルが格納される。
+				file_post_name :'attach_file',
+				// POST時に送るパラメータ
+//				post_params: params,
+				// 上限容量
+//				file_size_limit : params.max_file_size,
+				// ファイルタイプ
+				file_types : "*.*",
+				// ファイルタイプの説明
+				file_types_description : $.i18n('uploader','file_type_desc'),
+				// 一度にアップロードできるファイルの上限（ファイル選択画面でShiftキーで選択できるファイル数）
+				file_upload_limit : 10,	// 変更しないこと
+				// キューに入れられる上限
+				file_queue_limit : 10,
+				
+				// デバッグ
+				debug: DEBUG,
+
+				// 添付ボタン設定
+				button_image_url: IMAGE_URI+'swfupload/wdp_buttons_upload_114x29.png',
+				button_width : 114,
+				button_height : 29,
+				// 書き換える場所のID
+//				button_placeholder_id: "swfupload_button",
+				buttonwindow_mode: "transparent",
+
+				moving_average_history_size: 40
+			},
+			assistant : {
+				// 絵文字の定義
+				// https://github.com/take-yu/JSEmoji/blob/master/mt-static/plugins/JSEmoji/js/emoji.js
+				emoji : [
+					'sun', 'cloud', 'rain', 'snow', 'thunder', 'typhoon', 'mist', 'sprinkle', 'aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 
+					'libra', 'scorpius', 'sagittarius', 'capricornus', 'aquarius', 'pisces', 'sports', 'baseball', 'golf', 'tennis', 'soccer', 'ski', 'basketball', 'motorsports', 
+					'pocketbell', 'train', 'subway', 'bullettrain', 'car', 'rvcar', 'bus', 'ship', 'airplane', 'house', 'building', 'postoffice', 'hospital', 'bank', 
+					'atm', 'hotel', 'cvs', 'gasstation', 'parking', 'signaler', 'toilet', 'restaurant', 'cafe', 'bar', 'beer', 'fastfood', 'boutique', 'hairsalon', 
+					'karaoke', 'movie', 'upwardright', 'carouselpony', 'music', 'art', 'drama', 'event', 'ticket', 'smoking', 'nosmoking', 'camera', 'bag', 'book', 
+					'ribbon', 'present', 'birthday', 'telephone', 'mobilephone', 'memo', 'tv', 'game', 'cd', 'heart', 'spade', 'diamond', 'club', 'eye', 
+					'ear', 'rock', 'scissors', 'paper', 'downwardright', 'upwardleft', 'foot', 'shoe', 'eyeglass', 'wheelchair', 'newmoon', 'moon1', 'moon2', 'moon3', 
+					'fullmoon', 'dog', 'cat', 'yacht', 'xmas', 'downwardleft', 'phoneto', 'mailto', 'faxto', 'info01', 'info02', 'mail', 'by-d', 'd-point', 
+					'yen', 'free', 'id', 'key', 'enter', 'clear', 'search', 'new', 'flag', 'freedial', 'sharp', 'mobaq', 'one', 'two', 
+					'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'zero', 'ok', 'heart01', 'heart02', 'heart03', 'heart04', 'happy01', 
+					'angry', 'despair', 'sad', 'wobbly', 'up', 'note', 'spa', 'cute', 'kissmark', 'shine', 'flair', 'annoy', 'punch', 'bomb', 
+					'notes', 'down', 'sleepy', 'sign01', 'sign02', 'sign03', 'impact', 'sweat01', 'sweat02', 'dash', 'sign04', 'sign05', 'slate', 'pouch', 
+					'pen', 'shadow', 'chair', 'night', 'soon', 'on', 'end', 'clock', 'appli01', 'appli02', 't-shirt', 'moneybag', 'rouge', 'denim', 
+					'snowboard', 'bell', 'door', 'dollar', 'pc', 'loveletter', 'wrench', 'pencil', 'crown', 'ring', 'sandclock', 'bicycle', 'japanesetea', 'watch', 
+					'think', 'confident', 'coldsweats01', 'coldsweats02', 'pout', 'gawk', 'lovely', 'good', 'bleah', 'wink', 'happy02', 'bearing', 'catface', 'crying', 
+					'weep', 'ng', 'clip', 'copyright', 'tm', 'run', 'secret', 'recycle', 'r-mark', 'danger', 'ban', 'empty', 'pass', 'full', 
+					'leftright', 'updown', 'school', 'wave', 'fuji', 'clover', 'cherry', 'tulip', 'banana', 'apple', 'bud', 'maple', 'cherryblossom','riceball', 
+					'cake', 'bottle', 'noodle', 'bread', 'snail', 'chick', 'penguin', 'fish', 'delicious', 'smile', 'horse', 'pig', 'wine', 'shock'
+				],
+				// パレット設定（横18,縦13で、Dreamweaver風パレット配列）
+				color : [
+					'#000000','#003300','#006600','#009900','#00CC00','#00FF00','#330000','#333300','#336600','#339900','#33CC00','#33FF00','#660000','#663300','#666600','#669900','#66CC00','#66FF00',
+					'#000033','#003333','#006633','#009933','#00CC33','#00FF33','#330033','#333333','#336633','#339933','#33CC33','#33FF33','#660033','#663333','#666633','#669933','#66CC33','#66FF33',
+					'#000066','#003366','#006666','#009966','#00CC66','#00FF66','#330066','#333366','#336666','#339966','#33CC66','#33FF66','#660066','#663366','#666666','#669966','#66CC66','#66FF66',
+					'#000099','#003399','#006699','#009999','#00CC99','#00FF99','#330099','#333399','#336699','#339999','#33CC99','#33FF99','#660099','#663399','#666699','#669999','#66CC99','#66FF99',
+					'#0000CC','#0033CC','#0066CC','#0099CC','#00CCCC','#00FFCC','#3300CC','#3333CC','#3366CC','#3399CC','#33CCCC','#33FFCC','#6600CC','#6633CC','#6666CC','#6699CC','#66CCCC','#66FFCC',
+					'#0000FF','#0033FF','#0066FF','#0099FF','#00CCFF','#00FFFF','#3300FF','#3333FF','#3366FF','#3399FF','#33CCFF','#33FFFF','#6600FF','#6633FF','#6666FF','#6699FF','#66CCFF','#66FFFF',
+					'#990000','#993300','#996600','#999900','#99CC00','#99FF00','#CC0000','#CC3300','#CC6600','#CC9900','#CCCC00','#CCFF00','#FF0000','#FF3300','#FF6600','#FF9900','#FFCC00','#FFFF00',
+					'#990033','#993333','#996633','#999933','#99CC33','#99FF33','#CC0033','#CC3333','#CC6633','#CC9933','#CCCC33','#CCFF33','#FF0033','#FF3333','#FF6633','#FF9933','#FFCC33','#FFFF33',
+					'#990066','#993366','#996666','#999966','#99CC66','#99FF66','#CC0066','#CC3366','#CC6666','#CC9966','#CCCC66','#CCFF66','#FF0066','#FF3366','#FF6666','#FF9966','#FFCC66','#FFFF66',
+					'#990099','#993399','#996699','#999999','#99CC99','#99FF99','#CC0099','#CC3399','#CC6699','#CC9999','#CCCC99','#CCFF99','#FF0099','#FF3399','#FF6699','#FF9999','#FFCC99','#FFFF99',
+					'#9900CC','#9933CC','#9966CC','#9999CC','#99CCCC','#99FFCC','#CC00CC','#CC33CC','#CC66CC','#CC99CC','#CCCCCC','#CCFFCC','#FF00CC','#FF33CC','#FF66CC','#FF99CC','#FFCCCC','#FFFFCC',
+					'#9900FF','#9933FF','#9966FF','#9999FF','#99CCFF','#99FFFF','#CC00FF','#CC33FF','#CC66FF','#CC99FF','#CCCCFF','#CCFFFF','#FF00FF','#FF33FF','#FF66FF','#FF99FF','#FFCCFF','#FFFFFF',
+					'#111111','#222222','#333333','#444444','#555555','#666666','#777777','#888888','#999999','#A5A5A5','#AAAAAA','#BBBBBB','#C3C3C3','#CCCCCC','#D2D2D2','#DDDDDD','#EEEEEE','#FFFFFF'
+				]
+			},
+			syntaxhighlighter: {
+				theme: 'Default',
+				brushes: ['Plain', 'Diff'],
+				config: {
+					useScriptTags : false
+				}
+			}
+		},
+		custom : {},	// 消さないこと。（スキン用カスタムネームスペース）
 		isPage : (typeof(PAGE) !== 'undefined' && !$.query.get('cmd') && !PAGE.match(/^:|FormatRules|RecentChanges|RecentDeleted|InterWikiName|AutoAliasName|MenuBar|SideBar|Navigation|Glossary/i)) ? true : false,
 		href : $('link[rel=canonical]')[0].href,
 		init : function(){
@@ -90,7 +201,13 @@ var FACEBOOK_APPID = "129191427155205";
 
 			var self = this;
 			var protocol = ((document.location.protocol === 'https:') ? 'https:' : 'http:')+'//';
-			this.body = this.skin.body ? this.skin.body : '#body';
+			this.body = this.custom.body ? this.custom.body : '#body';
+			
+			// スキン設定をオーバーライド
+			$.extend(this.config.sukerfish, this.custom.suckerfish);
+			$.extend(this.config.colorbox, this.custom.colorbox);
+			$.extend(this.config.tablesorter, this.custom.tablesorter);
+			$.extend(this.config.syntaxhighlighter, this.custom.syntaxhighlighter);
 			
 			$(':input, button').attr('disabled','disabled');	// フォームをロック
 			// ボタンをjQuery UIのものに
@@ -150,7 +267,7 @@ var FACEBOOK_APPID = "129191427155205";
 			this.blockUI();
 
 			// Suckerfish（ポップアップメニュー
-			this.suckerfish('.sf-menu');
+			$('.sf-menu').superfish(this.config.sukerfish);
 			
 			// ポップアップ目次
 			this.linkattrs();
@@ -186,7 +303,6 @@ var FACEBOOK_APPID = "129191427155205";
 			$("textarea").tabby();
 
 			/* Table Sorter（テーブル自動ソート） */
-			this.tablesorter.counter = 0;	// ページングのDOMのIDで使う。非同期通信した結果でもtablesorterを使うのでグローバル関数に・・・
 			this.tablesorter();
 
 	/*
@@ -271,11 +387,7 @@ var FACEBOOK_APPID = "129191427155205";
 		// ページを閉じたとき
 		unload : function(prefix){
 	//		this.loadingScreen.dialog('open');
-			if (prefix){
-				prefix = prefix + ' ';
-			}else{
-				prefix = '';
-			}
+			prefix = (prefix) ? prefix + ' ': '';
 
 			// フォームが変更されている場合
 			if ($(prefix+'#msg').val() !== $(prefix+'#original').val() && confirm( $.i18n('pukiwiki', 'unload'))) {
@@ -290,11 +402,7 @@ var FACEBOOK_APPID = "129191427155205";
 		},
 		// HTML5の各種機能をJavaScriptで有効化するための処理
 		enableHTML5 : function(prefix){
-			if (prefix){
-				prefix = prefix + ' ';
-			}else{
-				prefix = '';
-			}
+			prefix = (prefix) ? prefix + ' ': '';
 			
 			// Placeholder属性のサポート
 			if (!Modernizr.input.placeholder){
@@ -376,18 +484,6 @@ var FACEBOOK_APPID = "129191427155205";
 				pkwkBeforeUnload.push( func );
 			}
 		},
-		// ポップアップメニュー
-		suckerfish : function(target){
-			var superfish_cond = {
-				autoArrows:		false,	// if true, arrow mark-up generated automatically = cleaner source code at expense of initialisation performance
-				dropShadows:	false
-			};
-			
-			if (typeof(pukiwiki.skin.suckerfish) === 'object'){
-				superfish_cond = this.skin.suckerfish;
-			}
-			$(target).superfish(superfish_cond);
-		},
 	/*
 	ajaxダイアログ
 	リンクをパースしてダイアログを生成
@@ -395,22 +491,17 @@ var FACEBOOK_APPID = "129191427155205";
 	*/
 		setAnchor : function(prefix){
 			var self = this;	// pukiwikiへのエイリアス
+			prefix = (prefix) ? prefix + ' ': '';
 
-			if (prefix){
-				prefix = prefix + ' ';
-			}else{
-				prefix = '';
-			}
-			
 			$(prefix+' .tabs').tabs();
 
 			// colorboxの設定
 			var colorbox_config = {
 				opacity			: '0.8',
-				slideshowStart	: '<span class="ui-icon ui-icon-play" style="margin:4px;"></span>',
-				slideshowStop	: '<span class="ui-icon ui-icon-stop" style="margin:4px;"></span>',
-				previous		: '<span class="ui-icon ui-icon-circle-arrow-e" style="margin:4px;"></span>',
-				next			: '<span class="ui-icon ui-icon-circle-arrow-w" style="margin:4px;"></span>',
+				slideshowStart	: '<span class="ui-icon ui-icon-play" style="margin:4px;" title="'+$.i18n('player','play')+'"></span>',
+				slideshowStop	: '<span class="ui-icon ui-icon-stop" style="margin:4px;" title="'+$.i18n('player','stop')+'"></span>',
+				previous		: '<span class="ui-icon ui-icon-circle-arrow-e" style="margin:4px;" title="'+$.i18n('player','prev')+'"></span>',
+				next			: '<span class="ui-icon ui-icon-circle-arrow-w" style="margin:4px;" title="'+$.i18n('player','next')+'"></span>',
 				close			: '<span class="ui-icon ui-icon-circle-close" style="margin:4px;" title="'+$.i18n('dialog','close')+'"></span>',
 				onOpen:function(){
 					// jQueryUI Fix
@@ -542,52 +633,20 @@ var FACEBOOK_APPID = "129191427155205";
 				}
 			});
 		},
-		brushes : [],
 		// Syntax Hilighter
 		sh : function(prefix){
 			var self = this;
-			if (prefix){
-				prefix = prefix + ' ';
-			}else{
-				prefix = '';
-			}
-			// シンタックスハイライトするDOMを取得
-			var $sh = $(prefix+'pre.sh');
 			
-			if ($sh.length !== 0){
-				var sh_doms = new Array();
-				var brushes = new Array();
+			// シンタックスハイライトするDOMを取得
+			var dom = (prefix) ? prefix + ' .sh' : '.sh';
 
-				// DOMを走査し、使用するbrushのリストを作成
-				$sh.each(function(){
-					var $this = $(this);
-					// DOMをキャッシュ（ready時に使用）
-					sh_doms.push($this);
-					// 読み込むbrushを取得
-					var brush = $this.data().brush;
-
-					// 非同期通信で読み込んだshにも反映させるため、
-					// 重複してbrushを読み込まないようにする
-					if ($.inArray(brush, self.brushes) === -1){
-						brushes.push(brush);
-					}
-				});
-
-				var settings = {
-					autoLoad: true,
+			if ($(sh).length !== 0){
+				// ロケール設定
+				this.config.syntaxhighlighter = {
 					baseUrl:JS_URI+'syntaxhighlighter/',
-					brushes: brushes,
-					ready: function() {
-						// SyntaxHilighterを反映させる
-						for (var i = 0; i <= sh_doms.length-1; i++){
-							var data = sh_doms[i].data();
-							sh_doms[i].beautifyCode(data.brush);
-						}
-					},
-					config: {
-						useScriptTags : false,
-						debug:DEBUG,
-						strings:{
+					target: sh,
+					config:{
+						strings : {
 							expandSource				: $.i18n('sh','expandSource'),
 							viewSource					: $.i18n('sh','viewSource'),
 							copyToClipboard				: $.i18n('sh','copyToClipboard'),
@@ -599,7 +658,7 @@ var FACEBOOK_APPID = "129191427155205";
 					}
 				};
 				// SyntaxHilighterを実行
-				$.beautyOfCode.init(settings);
+				$.beautyOfCode.beautifyAll(this.config.syntaxhighlighter);
 			}
 		},
 		// ajaxでダイアログ生成。JSON専用！
@@ -967,74 +1026,49 @@ var FACEBOOK_APPID = "129191427155205";
 		// テーブル自動ソート
 		tablesorter:function(prefix){
 			var self = this;
-			if (prefix){
-				prefix = prefix + ' ';
-			}else{
-				prefix = '';
-			}
+			prefix = (prefix) ? prefix + ' ': '';
 			$(prefix+'.style_table').addClass('tablesorter');
 			
 			/* デフォルト値 */
-			var config = {
-				sorter: {
-	//				debug:DEBUG,
-					useUI:true,
-					cssUI: {
-						widget: "",
-						header: "ui-widget-header",
-						hover: "ui-state-hover",
-						icon: "ui-icon ui-icon-triangle-2-n-s",
-						iconBoth: "ui-icon-triangle-2-n-s",
-						iconDesc: "ui-icon-triangle-1-n",
-						iconAsc: "ui-icon-triangle-1-s"
-					}
-				},
-				pager : {
-					minimum_lines : 10,
-					size:[10,25,50,75,100],
-					location_before:true,
-					positionFixed: false
-				}
-			};
-
-			if (typeof(this.skin.tablesorter) === 'object'){
-				config = this.skin.tablesorter;
+			var config = this.config.tablesorter;
+			var tablesorter_widget = function(id){
+				return [
+					'<div class="table_pager_widget ui-helper-clearfix" id="'+id+'">',
+						'<ul class="ui-widget pkwk_widget">',
+							'<li class="first ui-button ui-state-default ui-corner-all" title="'+$.i18n('dialog','first')+'"><span class="ui-icon ui-icon-arrowthickstop-1-w"></span></li>',
+							'<li class="prev ui-button ui-state-default ui-corner-all" title="'+$.i18n('dialog','prev')+'"><span class="ui-icon ui-icon-arrowthick-1-w"></span></li>',
+							'<li><input class="pagedisplay" type="text" disabled="disabled" /></li>',
+							'<li class="next ui-button ui-state-default ui-corner-all" title="'+$.i18n('dialog','next')+'"><span class="ui-icon ui-icon-arrowthick-1-e"></span></li>',
+							'<li class="last ui-button ui-state-default ui-corner-all" title="'+$.i18n('dialog','last')+'"><span class="ui-icon ui-icon-arrowthickstop-1-e"></span></li>',
+							'<li><select class="pagesize"></select></li>',
+//							'<li class="reload ui-button ui-state-default ui-corner-all" title="'+$.i18n('dialog','reload')+'"><span class="ui-icon ui-icon-refresh"></span></li>',
+						'</ul>',
+					'</div>'
+				].join("\n");
 			}
 
 			$(prefix+'.tablesorter').each(function(elem){
 				var table = this;
 				var backup = $(this).clone();
 				var data = $(this).data();
+				var config = self.config.tablesorter;
 				
 				if ( $('tr',this).length > config.pager.minimum_lines && $('thead',this).length !== 0){	// 10行以上の場合ページャーを表示
 					// テーブルのページングウィジット
-					var pager_id = 'table_pager_'+self.tablesorter.counter;
-					
-					var pager_widget = [
-						'<div class="table_pager_widget ui-helper-clearfix" id="'+pager_id+'">',
-							'<ul class="ui-widget pkwk_widget">',
-								'<li class="first ui-button ui-state-default ui-corner-all" title="'+$.i18n('dialog','first')+'"><span class="ui-icon ui-icon-arrowthickstop-1-w"></span></li>',
-								'<li class="prev ui-button ui-state-default ui-corner-all" title="'+$.i18n('dialog','prev')+'"><span class="ui-icon ui-icon-arrowthick-1-w"></span></li>',
-								'<li><input class="pagedisplay" type="text" disabled="disabled" /></li>',
-								'<li class="next ui-button ui-state-default ui-corner-all" title="'+$.i18n('dialog','next')+'"><span class="ui-icon ui-icon-arrowthick-1-e"></span></li>',
-								'<li class="last ui-button ui-state-default ui-corner-all" title="'+$.i18n('dialog','last')+'"><span class="ui-icon ui-icon-arrowthickstop-1-e"></span></li>',
-								'<li><select class="pagesize"></select></li>',
-								'<li class="reload ui-button ui-state-default ui-corner-all" title="'+$.i18n('dialog','reload')+'"><span class="ui-icon ui-icon-refresh"></span></li>',
-							'</ul>',
-						'</div>'
-					].join("\n");
+					var pager_id = 'table_pager_'+config.counter;
 
 					// data-属性を使って動作をカスタマイズ
 					config.sorter.headers = data.headers;
 					config.sorter.sortList = data.sortList;
 					config.sorter.parsers = data.parsers;
+
 					
 					$(this).tablesorter(config.sorter);
 					
 					if (config.pager.location_before === true){
-						$(this).before(pager_widget);
+						$(this).before(tablesorter_widget(pager_id));
 					}else{
-						$(this).after(pager_widget);
+						$(this).after(tablesorter_widget(pager_id));
 					}
 
 					var i = 0;
@@ -1049,9 +1083,9 @@ var FACEBOOK_APPID = "129191427155205";
 						$('#'+pager_id).remove();
 						$(table).tablesorter(config.sorter);
 						if (config.pager.location_before === true){
-							$(table).before(pager_widget);
+							$(table).before(tablesorter_widget(pager_id));
 						}else{
-							$(table).after(pager_widget);
+							$(table).after(tablesorter_widget(pager_id));
 						}
 						$(table).tablesorterPager(config.pager);
 						
@@ -1088,23 +1122,17 @@ var FACEBOOK_APPID = "129191427155205";
 					});
 					
 					$('#'+pager_id).show('clip');
-					self.tablesorter.counter++;
+					config.counter++;
 				}else{
 					$(this).tablesorter(config.sorter);
 				}
 				
 			});
-
-			
 		},
 		/* 独自のGlossaly処理 */
 		glossaly: function(prefix){
 			var self = this;
-			if (prefix){
-				prefix = prefix + ' ';
-			}else{
-				prefix = '';
-			}
+			prefix = (prefix) ? prefix + ' ': '';
 
 			/* タイトル属性がある場合 */
 			$(prefix+'*[title]').tooltip({
@@ -1196,11 +1224,7 @@ var FACEBOOK_APPID = "129191427155205";
 			});
 		},
 		set_editform: function(prefix){
-			if (prefix){
-				prefix = prefix + ' ';
-			}else{
-				prefix = '';
-			}
+			prefix = (prefix) ? prefix + ' ': '';
 			var self = this;
 			var isEnableLocalStorage = false;
 			
@@ -1451,11 +1475,7 @@ var FACEBOOK_APPID = "129191427155205";
 			return ed[delta + offset];
 		},
 		realtime_preview : function(prefix){
-			if (prefix){
-				prefix = prefix + ' ';
-			}else{
-				prefix = '';
-			}
+			prefix = (prefix) ? prefix + ' ': '';
 			var oSource = document.getElementById('msg');
 			var source = document.getElementById('msg').value;
 			var self = this;
@@ -1538,45 +1558,6 @@ var FACEBOOK_APPID = "129191427155205";
 		// 入力アシスタント
 		assistant: function(full){
 			var i, len;
-			// 絵文字の定義
-			// https://github.com/take-yu/JSEmoji/blob/master/mt-static/plugins/JSEmoji/js/emoji.js
-			var emojiList = [
-				'sun', 'cloud', 'rain', 'snow', 'thunder', 'typhoon', 'mist', 'sprinkle', 'aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 
-				'libra', 'scorpius', 'sagittarius', 'capricornus', 'aquarius', 'pisces', 'sports', 'baseball', 'golf', 'tennis', 'soccer', 'ski', 'basketball', 'motorsports', 
-				'pocketbell', 'train', 'subway', 'bullettrain', 'car', 'rvcar', 'bus', 'ship', 'airplane', 'house', 'building', 'postoffice', 'hospital', 'bank', 
-				'atm', 'hotel', 'cvs', 'gasstation', 'parking', 'signaler', 'toilet', 'restaurant', 'cafe', 'bar', 'beer', 'fastfood', 'boutique', 'hairsalon', 
-				'karaoke', 'movie', 'upwardright', 'carouselpony', 'music', 'art', 'drama', 'event', 'ticket', 'smoking', 'nosmoking', 'camera', 'bag', 'book', 
-				'ribbon', 'present', 'birthday', 'telephone', 'mobilephone', 'memo', 'tv', 'game', 'cd', 'heart', 'spade', 'diamond', 'club', 'eye', 
-				'ear', 'rock', 'scissors', 'paper', 'downwardright', 'upwardleft', 'foot', 'shoe', 'eyeglass', 'wheelchair', 'newmoon', 'moon1', 'moon2', 'moon3', 
-				'fullmoon', 'dog', 'cat', 'yacht', 'xmas', 'downwardleft', 'phoneto', 'mailto', 'faxto', 'info01', 'info02', 'mail', 'by-d', 'd-point', 
-				'yen', 'free', 'id', 'key', 'enter', 'clear', 'search', 'new', 'flag', 'freedial', 'sharp', 'mobaq', 'one', 'two', 
-				'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'zero', 'ok', 'heart01', 'heart02', 'heart03', 'heart04', 'happy01', 
-				'angry', 'despair', 'sad', 'wobbly', 'up', 'note', 'spa', 'cute', 'kissmark', 'shine', 'flair', 'annoy', 'punch', 'bomb', 
-				'notes', 'down', 'sleepy', 'sign01', 'sign02', 'sign03', 'impact', 'sweat01', 'sweat02', 'dash', 'sign04', 'sign05', 'slate', 'pouch', 
-				'pen', 'shadow', 'chair', 'night', 'soon', 'on', 'end', 'clock', 'appli01', 'appli02', 't-shirt', 'moneybag', 'rouge', 'denim', 
-				'snowboard', 'bell', 'door', 'dollar', 'pc', 'loveletter', 'wrench', 'pencil', 'crown', 'ring', 'sandclock', 'bicycle', 'japanesetea', 'watch', 
-				'think', 'confident', 'coldsweats01', 'coldsweats02', 'pout', 'gawk', 'lovely', 'good', 'bleah', 'wink', 'happy02', 'bearing', 'catface', 'crying', 
-				'weep', 'ng', 'clip', 'copyright', 'tm', 'run', 'secret', 'recycle', 'r-mark', 'danger', 'ban', 'empty', 'pass', 'full', 
-				'leftright', 'updown', 'school', 'wave', 'fuji', 'clover', 'cherry', 'tulip', 'banana', 'apple', 'bud', 'maple', 'cherryblossom','riceball', 
-				'cake', 'bottle', 'noodle', 'bread', 'snail', 'chick', 'penguin', 'fish', 'delicious', 'smile', 'horse', 'pig', 'wine', 'shock'
-			];
-			
-			// パレット設定（横18,縦13で、Dreamweaver風パレット配列）
-			var colorList = [
-				'#000000','#003300','#006600','#009900','#00CC00','#00FF00','#330000','#333300','#336600','#339900','#33CC00','#33FF00','#660000','#663300','#666600','#669900','#66CC00','#66FF00',
-				'#000033','#003333','#006633','#009933','#00CC33','#00FF33','#330033','#333333','#336633','#339933','#33CC33','#33FF33','#660033','#663333','#666633','#669933','#66CC33','#66FF33',
-				'#000066','#003366','#006666','#009966','#00CC66','#00FF66','#330066','#333366','#336666','#339966','#33CC66','#33FF66','#660066','#663366','#666666','#669966','#66CC66','#66FF66',
-				'#000099','#003399','#006699','#009999','#00CC99','#00FF99','#330099','#333399','#336699','#339999','#33CC99','#33FF99','#660099','#663399','#666699','#669999','#66CC99','#66FF99',
-				'#0000CC','#0033CC','#0066CC','#0099CC','#00CCCC','#00FFCC','#3300CC','#3333CC','#3366CC','#3399CC','#33CCCC','#33FFCC','#6600CC','#6633CC','#6666CC','#6699CC','#66CCCC','#66FFCC',
-				'#0000FF','#0033FF','#0066FF','#0099FF','#00CCFF','#00FFFF','#3300FF','#3333FF','#3366FF','#3399FF','#33CCFF','#33FFFF','#6600FF','#6633FF','#6666FF','#6699FF','#66CCFF','#66FFFF',
-				'#990000','#993300','#996600','#999900','#99CC00','#99FF00','#CC0000','#CC3300','#CC6600','#CC9900','#CCCC00','#CCFF00','#FF0000','#FF3300','#FF6600','#FF9900','#FFCC00','#FFFF00',
-				'#990033','#993333','#996633','#999933','#99CC33','#99FF33','#CC0033','#CC3333','#CC6633','#CC9933','#CCCC33','#CCFF33','#FF0033','#FF3333','#FF6633','#FF9933','#FFCC33','#FFFF33',
-				'#990066','#993366','#996666','#999966','#99CC66','#99FF66','#CC0066','#CC3366','#CC6666','#CC9966','#CCCC66','#CCFF66','#FF0066','#FF3366','#FF6666','#FF9966','#FFCC66','#FFFF66',
-				'#990099','#993399','#996699','#999999','#99CC99','#99FF99','#CC0099','#CC3399','#CC6699','#CC9999','#CCCC99','#CCFF99','#FF0099','#FF3399','#FF6699','#FF9999','#FFCC99','#FFFF99',
-				'#9900CC','#9933CC','#9966CC','#9999CC','#99CCCC','#99FFCC','#CC00CC','#CC33CC','#CC66CC','#CC99CC','#CCCCCC','#CCFFCC','#FF00CC','#FF33CC','#FF66CC','#FF99CC','#FFCCCC','#FFFFCC',
-				'#9900FF','#9933FF','#9966FF','#9999FF','#99CCFF','#99FFFF','#CC00FF','#CC33FF','#CC66FF','#CC99FF','#CCCCFF','#CCFFFF','#FF00FF','#FF33FF','#FF66FF','#FF99FF','#FFCCFF','#FFFFFF',
-				'#111111','#222222','#333333','#444444','#555555','#666666','#777777','#888888','#999999','#A5A5A5','#AAAAAA','#BBBBBB','#C3C3C3','#CCCCCC','#D2D2D2','#DDDDDD','#EEEEEE','#FFFFFF'
-			];
 			
 			// アシスタントのウィジット
 			$('.assistant').html([
@@ -1601,8 +1582,8 @@ var FACEBOOK_APPID = "129191427155205";
 			
 			// 絵文字パレットのウィジット
 			var emoji_widget = '<ul class="ui-widget pkwk_widget ui-helper-clearfix">';
-			for(i = 0, len = emojiList.length; i < len ; i++ ){
-				var name = emojiList[i];
+			for(i = 0, len = this.config.assistant.emoji.length; i < len ; i++ ){
+				var name =  this.config.assistant.emoji[i];
 				emoji_widget += '<li class="ui-button ui-state-default ui-corner-all" title="'+name+'" name="'+name+'"><span class="emoji emoji-'+name+'"></span></li>';
 			}
 			emoji_widget += '</ul>';
@@ -1620,8 +1601,8 @@ var FACEBOOK_APPID = "129191427155205";
 
 			// カラーパレットのウィジット
 			var color_widget = '<ul class="ui-widget pkwk_widget ui-helper-clearfix" id="colors">', j=0;
-			for(i = 0, len = colorList.length; i < len ; i++ ){
-				var color = colorList[i];
+			for(i = 0, len =  this.config.assistant.color.length; i < len ; i++ ){
+				var color = this.config.assistant.color[i];
 				color_widget += '<li class="ui-button ui-state-default" title="'+color+'" name="'+color+'"><span class="emoji" style="background-color:'+color+';"></span></li>';
 				j++;
 			}
@@ -1664,6 +1645,7 @@ var FACEBOOK_APPID = "129191427155205";
 			$('*[name=msg]').focus(function(e){
 				self.elem = this;
 				self.selection = $(this).getSelection().text;
+				return;
 			});
 
 			$('.insert').click(function(){
@@ -1707,15 +1689,16 @@ var FACEBOOK_APPID = "129191427155205";
 
 			$('.replace').click(function(){
 				var ret = '';
-				var elem = $(self.elem);
-				var str = elem.getSelection().text;
+				var $elem = $(self.elem);
+				var str = $elem.getSelection().text;
 				var v = $(this).attr('name');
 
-				/*
-				if (str === ''|| !elem){
+				if (str === ''|| !$elem){
 					alert( $.i18n('pukiwiki', 'select'));
 					return false;
 				}
+				
+				$elem.focus();
 
 				switch (v){
 					case 'size' :
@@ -1759,57 +1742,50 @@ var FACEBOOK_APPID = "129191427155205";
 						}
 					break;
 				}
-	*/
-	//			elem.replaceSelection(ret);
+				$elem.replaceSelection(ret);
 				console.log(str);
 				return false;
 			});
-			
-			
-			
+
 			$('#emoji ul li').click(function(){
-				var elem = $(self.elem);
-				var str = elem.getSelection().text;
+				var $elem = $(self.elem);
+				var str = $elem.getSelection().text;
 				var v = '&('+$(this).attr('name')+');';;
 
 				if (str === ''){
-					elem.insertAtCaretPos(v);
+					$elem.insertAtCaretPos(v);
 				}else{
-					elem.replaceSelection(v);
+					$elem.replaceSelection(v);
 				}
-				self.elem.focus();
+				$elem.focus();
 		//		$('#emoji').dialog('close');
 				return;
 			});
 			$('#color_palette ul li').click(function(){
 				var ret;
-				var elem = $(self.elem);
-				var str = elem.getSelection().text;
+				var $elem = $(self.elem);
+				var str = $elem.getSelection().text;
 				var v = $(this).attr('name');
 				
-				if (str === ''|| !elem){
+				if (str === ''|| !$elem){
 					alert( $.i18n('pukiwiki', 'select'));
 					return;
 				}
 				
 				if (str.match(/^&color\([^\)]*\)\{.*\};$/)){
-					elem.replaceSelection(str.replace(/^(&color\([^\)]*)(\)\{.*\};)$/,"$1," + v + "$2"));
+					$elem.replaceSelection(str.replace(/^(&color\([^\)]*)(\)\{.*\};)$/,"$1," + v + "$2"));
 				}else{
-					elem.replaceSelection('&color(' + v + '){' + str + '};');
+					$elem.replaceSelection('&color(' + v + '){' + str + '};');
 				}
 				$('#color_palette').dialog('close');
-				elem.focus();
+				$elem.focus();
 				
 				return;
 			});
 		},
 		/* swfuploderのフォームに書き換え */
 		set_uploader: function(prefix){
-			if (prefix){
-				prefix = prefix + ' ';
-			}else{
-				prefix = '';
-			}
+			prefix = (prefix) ? prefix + ' ': '';
 
 			var pass_form;
 			if ($(prefix+'input[name=pass]').length !== 0){
@@ -1822,7 +1798,6 @@ var FACEBOOK_APPID = "129191427155205";
 			].join("\n"));
 
 			// swfuploadがスクリプトに渡す値
-			
 			var params = {
 				max_file_size	: $(prefix+'input[name=max_file_size]').val(),// 上限容量
 				pcmd			: $(prefix+'input[name=pcmd]').val(),		// プラグインコマンド（通常post）
@@ -1837,43 +1812,8 @@ var FACEBOOK_APPID = "129191427155205";
 				params.digest			= $(prefix+'input[name=digest]').val();
 			}
 			
-			// デフォルト値
-			var config = (typeof(this.skin.swfupload) !== 'object') ? {	
-				// swfuploadの位置
-				flash_url : SKIN_DIR+'swfupload.swf',
-				// アップロード先のURL
-				upload_url: SCRIPT,
-				// POST時に送られるファイルのフォーム名（重要）
-				// attachプラグインでは、attach_fileにアップロードするファイル名が格納される。
-				// Flashの仕様上、本来は変更せずにFiledataとすることが望ましい。
-				// PukiWikiでは、attach_fileにファイルが格納される。
-				file_post_name :'attach_file',
-				// POST時に送るパラメータ
-				post_params: params,
-				// 上限容量
-				file_size_limit : params.max_file_size,
-				// ファイルタイプ
-				file_types : "*.*",
-				// ファイルタイプの説明
-				file_types_description : $.i18n('uploader','file_type_desc'),
-				// 一度にアップロードできるファイルの上限（ファイル選択画面でShiftキーで選択できるファイル数）
-				file_upload_limit : 10,	// 変更しないこと
-				// キューに入れられる上限
-				file_queue_limit : 10,
-				
-				// デバッグ
-				debug: DEBUG,
-
-				// 添付ボタン設定
-				button_image_url: this.image_dir+'swfupload/wdp_buttons_upload_114x29.png',
-				button_width : 114,
-				button_height : 29,
-				// 書き換える場所のID
-				button_placeholder_id: "swfupload_button",
-				buttonwindow_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
-
-				moving_average_history_size: 40
-			} : this.skin.swfupload;
+			// 設定を読み込み
+			var config = this.config.swfupload;
 
 			// attachrefの場合、１つのみファイルをアップ可能
 			if (params.plugin === 'attachref'){
@@ -2224,11 +2164,7 @@ var FACEBOOK_APPID = "129191427155205";
 			});
 		},
 		prepHdngs : function(prefix){
-			if (prefix){
-				prefix = prefix + ' ';
-			}else{
-				prefix = '';
-			}
+			prefix = (prefix) ? prefix + ' ': '';
 			var lis = '';
 			var hd = $(prefix+'h2');
 			var tocs = $(prefix+'.contents ul').removeAttr('class').removeAttr('style');
@@ -2463,11 +2399,7 @@ var FACEBOOK_APPID = "129191427155205";
 		},
 	// Bad Behavior
 		bad_behavior: function(prefix){
-			if (prefix){
-				prefix = prefix + ' ';
-			}else{
-				prefix = '';
-			}
+			prefix = (prefix) ? prefix + ' ': '';
 
 			if (typeof(BH_NAME) !== 'undefined' && typeof(BH_VALUE) !== 'undefined'){
 				$(prefix+'form').append('<input type="hidden" name="'+BH_NAME+'" value="'+BH_VALUE+'" />');
@@ -2584,4 +2516,4 @@ var FACEBOOK_APPID = "129191427155205";
 			load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js'
 		});
 	}
-} )(jQuery, this, this.document );
+} )(jQuery, Modernizr, this, this.document );

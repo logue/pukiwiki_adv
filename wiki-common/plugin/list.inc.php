@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: list.inc.php,v 1.6.10 2011/02/17 21:43:00 Logue Exp $
+// $Id: list.inc.php,v 1.6.11 2011/09/25 15:54:00 Logue Exp $
 //
 // IndexPages plugin: Show a list of page names
 function plugin_list_action()
@@ -22,13 +22,19 @@ function plugin_list_action()
 
 	$listcmd = (isset($vars['listcmd'])) ? $vars['listcmd'] : 'read';
 
+	if (IS_AJAX){
+		header("Content-Type: application/json; charset=".CONTENT_CHARSET);
+		echo json_encode(plugin_list_getlist($filelist,$listcmd, TRUE)); 
+		exit();
+	}
+	
 	return array(
 		'msg'=>$filelist ? $_title_filelist : $_title_list,
 		'body'=>plugin_list_getlist($filelist,$listcmd));
 }
 
 // Get a list
-function plugin_list_getlist($withfilename = FALSE, $listcmd = 'read')
+function plugin_list_getlist($withfilename = FALSE, $listcmd = 'read', $only_page_name = FALSE)
 {
 	global $non_list, $whatsnew;
 
@@ -37,7 +43,16 @@ function plugin_list_getlist($withfilename = FALSE, $listcmd = 'read')
 		$pages = array_diff($pages, preg_grep('/' . $non_list . '/S', $pages));
 
 	if (empty($pages)) return '';
-	$cmd = ($listcmd == 'read' || $listcmd == 'edit') ? $listcmd : 'read';
-	return page_list($pages,$cmd,$withfilename);
+	
+	if ($only_page_name){
+		$ret = array();
+		foreach ($pages as $pagename){
+			$ret[] = $pagename;
+		}
+		return $ret;
+	}else{
+		$cmd = ($listcmd == 'read' || $listcmd == 'edit') ? $listcmd : 'read';
+		return page_list($pages,$cmd,$withfilename);
+	}
 }
 ?>

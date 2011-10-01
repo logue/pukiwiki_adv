@@ -137,9 +137,11 @@ function plugin_referer_body($page, $sort)
 		if ($sw_ignore && $referer > 1) continue;
 
 		// 非ASCIIキャラクタ(だけ)をURLエンコードしておく BugTrack/440
+		
 		$e_url = htmlsc(preg_replace('/([" \x80-\xff]+)/e', 'rawurlencode("$1")', $url));
-		$s_url = htmlsc(mb_convert_encoding(rawurldecode($url), SOURCE_ENCODING, 'auto'));
-		$s_url = mb_strimwidth($s_url,0,REFERE_TITLE_LENGTH,'...');
+		$s_url = mb_convert_encoding(rawurldecode($url), SOURCE_ENCODING, 'auto');
+		$s_url = htmlsc(mb_strimwidth($s_url,0,REFERE_TITLE_LENGTH,'...'));
+		
 
 		$lpass = get_passage($ltime, FALSE); // 最終更新日時からの経過時間
 		$spass = get_passage($stime, FALSE); // 初回登録日時からの経過時間
@@ -198,7 +200,7 @@ EOD;
 			<th class="style_th">{$_referer_msg['msg_Hed_LastUpdate']}</th>
 			<th class="style_th">{$_referer_msg['msg_Hed_1stDate']}$arrow_1st</th>
 			<th class="style_th" style="text-align:right">{$_referer_msg['msg_Hed_RefCounter']}$arrow_ctr</th>
-			<th class="style_th">{$_referer_msg['msg_Hed_Referer']}</a></th>
+			<th class="style_th">{$_referer_msg['msg_Hed_Referer']}</th>
 		</tr>
 	</thead>
 	<tbody>

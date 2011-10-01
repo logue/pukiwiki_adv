@@ -316,20 +316,43 @@ function plugin_edit_write()
 	}
 
 	page_write($page, $postdata, $notimeupdate != 0 && $notimestamp);
-	pkwk_headers_sent();
+
 	if (isset($vars['refpage']) && $vars['refpage'] != '') {
-		if ($partid) {
-			header('Location: ' . get_page_location_uri($vars['refpage'],'',rawurlencode($partid)));
-		} else {
-			header('Location: ' . get_page_location_uri($vars['refpage']));
-		}
+		$url = ($partid) ? get_page_location_uri($vars['refpage'],'',rawurlencode($partid)) : get_page_location_uri($vars['refpage']);
 	} else {
-		if ($partid) {
-			header('Location: ' . get_page_location_uri($page,'',rawurlencode($partid)));
-		} else {
-			header('Location: ' . get_page_location_uri($page));
+		$url = ($partid) ? get_page_location_uri($page,'',rawurlencode($partid)) : get_page_location_uri($page);
+	}
+	
+	global $facebook;
+	$fb = new FaceBook($facebook);
+	// FaceBook Integration
+	$fb_user = $fb->getUser();
+	
+	if ($fb_user === 0) {
+		try {
+			$response = $fb->api(
+				array(
+					'method' => 'stream.publish',
+					'message' => sprintf(T_('%s is updated.'), '<a href="'.$url.'">'.$page.'</a>'),
+					'action_links' => array(
+						array(
+							'text' => $page_title,
+							'href' => get_script_uri()
+						),
+						array(
+							'text' => $page,
+							'href' => $url
+						)
+					)
+				)
+			);
+		} catch (FacebookApiException $e) {
+
 		}
 	}
+	pkwk_headers_sent();
+	header('Location: ' . $url);
+
 	exit;
 }
 

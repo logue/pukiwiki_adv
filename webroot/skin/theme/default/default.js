@@ -18,6 +18,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (function($, pukiwiki, window, document, undef){
+	if(!jQuery) { alert("pukiwiki: jQuery not included."); }
+	if(!pukiwiki) { alert("pukiwiki: pukiwiki common script is not included. please check skin.js exsists."); }
+
 	var colorset = [
 		// [css file name, ui_theme name]
 		['blue',	'redmond'],
@@ -56,29 +59,32 @@
 				// Hatena
 				'<li><a href="http://b.hatena.ne.jp/entry/" class="hatena-bookmark-button" data-hatena-bookmark-layout="standard"></a></li>',
 				// Mixi
-				'<li><a href="http://mixi.jp/share.pl" class="mixi-check-button" data-url="'+href+'">mixi check</a></li>',
+				'<li><a href="http://mixi.jp/share.pl" class="mixi-check-button" data-url="'+href+'"></a></li>',
 				// Gree
 				'<li><iframe src="http://share.gree.jp/share?url='+encodeURIComponent(href)+'&amp;type=1&amp;height=20" scrolling="no" frameborder="0" marginwidth="0" marginheight="0" style="border:none; overflow:hidden; width:100px; height:20px;" allowTransparency="true"></iframe></li>',
 				// Tweet Button
 				// http://twitter.com/about/resources/tweetbutton
-				'<li><iframe allowtransparency="true" frameborder="0" scrolling="no" src="//platform.twitter.com/widgets/tweet_button.html?lang='+lang+'" style="width:130px; height:20px;"></iframe></li>',
-			//	'<a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="logue256" data-lang="ja">ツイート</a>',
-				// Google +1 button
-				// http://www.google.com/intl/ja/webmasters/+1/button/index.html
-				'<li><iframe width="100%" scrolling="no" frameborder="0" title="+1" vspace="0" tabindex="-1" style="position: static; left: 0pt; top: 0pt; width: 90px; margin: 0px; border-style: none; height: 20px; visibility: visible;" src="https://plusone.google.com/u/0/_/+1/fastbutton?url='+encodeURIComponent(href)+'&amp;size=medium&amp;count=true&amp;annotation=&amp;hl='+lang+'&amp;jsh=r%3Bgc%2F23803279-4555db52#id=I2_1316315799965&amp;parent='+encodeURIComponent(home)+'&amp;rpctoken=478620406&amp;_methods=onPlusOne%2C_ready%2C_close%2C_open%2C_resizeMe" name="I2_1316315799965" marginwidth="0" marginheight="0" id="I2_1316315799965" hspace="0" allowtransparency="true"></iframe></li>',
+				'<li><iframe src="http://platform.twitter.com/widgets/tweet_button.html?lang='+lang+'" allowtransparency="true" frameborder="0" scrolling="no" style="width:200px; height:20px;"></iframe></li>',
 				// Tumblr
 				// http://www.tumblr.com/docs/ja/share_button
-				'<li><a href="http://www.tumblr.com/share" title="Share on Tumblr" style="display:inline-block; text-indent:-9999px; overflow:hidden; width:81px; height:20px; background:url(\'http://platform.tumblr.com/v1/share_1.png\') top left no-repeat transparent;">Share on Tumblr</a></li>',
+				'<li><a href="http://www.tumblr.com/share" title="Share on Tumblr" style="display:inline-block; text-indent:-9999px; overflow:hidden; width:81px; height:20px; background:url(\'http://platform.tumblr.com/v1/share_1.png\') top left no-repeat transparent;"></a></li>',
+				// Google +1 button
+				// http://www.google.com/intl/ja/webmasters/+1/button/index.html
+//				'<li><div id="plusone"></div></li>',
 				// Facebook Like button
 				// http://developers.facebook.com/docs/reference/plugins/like/
 				(typeof(FACEBOOK_APPID) !== 'undefined') ? '<li><div class="fb-like" data-href="'+href+'" data-layout="button_count"  data-send="true" data-width="400" data-show-faces="true"></div></li>' : '',
-			'</ul>'].join("\n"));
-			
-			//'<hr /><div class="noprint" style="margin-left:2em;"><div class="fb-comments" href="'+href+'" publish_feed="true" width="650" numposts="10" migrated="1"></div></div>'
+			'</ul>',
+			(typeof(FACEBOOK_APPID) !== 'undefined') ? '<hr /><div class="noprint" style="margin-left:2em;"><div class="fb-comments" href="'+href+'" publish_feed="true" width="650" numposts="10" migrated="1"></div></div>' : ''
+			].join("\n"));
+
 			$.getScript('http://b.st-hatena.com/js/bookmark_button_wo_al.js');
 			$.getScript('http://platform.twitter.com/widgets.js');
 			$.getScript('http://static.mixi.jp/js/share.js');
 
+			$.getScript('http://apis.google.com/js/plusone.js',function(){
+				gapi.plusone.render( document.getElementById('plusone'),{ lang: lang, parsetags:'explicit', size:'medium', 'count':'true' });
+			});
 		}
 	});
 
@@ -88,7 +94,7 @@
 		$('#colorset span').click(function(){
 			var n = this.id.split('-')[1];
 			document.getElementById('coloring').href = SKIN_DIR+'theme/'+THEME_NAME+'/'+colorset[n][0]+'.css';
-			document.getElementById('ui-theme').href = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/themes/'+colorset[n][1]+'/jquery-ui.css';
+			document.getElementById('ui-theme').href = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/'+colorset[n][1]+'/jquery-ui.css';
 			$.cookie('pkwk-colorset',n,{expires:30,path:'/'});
 		});
 	});
