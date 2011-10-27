@@ -6,7 +6,8 @@
  * Thanks: To reimy, t, Ynak, WikiRoom, upk, 水橋希 and PukiWiki Developers Team.
  *
  * @copyright   Copyright &copy; 2009, Katsumi Saito <jo1upk@users.sourceforge.net>
- * @version	 $Id: amazon.inc.php,v 3.0.1 2011/02/05 10:38:00 Logue Exp $
+ *              Copyright &copy; 2010-2011, PukiWiki Advance Developers Team
+ * @version	 $Id: amazon.inc.php,v 3.0.2 2011/10/27 23:34:00 Logue Exp $
  * See Aloso	http://d.hatena.ne.jp/mokehehe/20090526/productadvertisingapi
  *
  */
@@ -29,12 +30,14 @@ defined('AMAZON_ALLOW_CONT')	or define('AMAZON_ALLOW_CONT', true);	// true に�
 defined('USE_CARGO')			or define('USE_CARGO', true);			// true にすると買物かごを使用可能
 defined('AMAZON_NO_IMAGE')		or define('AMAZON_NO_IMAGE', 'http://images.amazon.com/images/G/09/x-locale/detail/thumb-no-image');		// 写影なしの画像
 defined('AMAZON_CARGO')			or define('AMAZON_CARGO',	'http://images.amazon.com/images/G/09/extranet/associates/buttons/remote-buy-jp1.gif');	// 買物かごのアイコン
+
 // 画像サイズ SwatchImage, SmallImage, ThumbnailImage, TinyImage, MediumImage, LargeImage
 defined('PLUGIN_AMAZON_IMAGE_SIZE') or define('PLUGIN_AMAZON_IMAGE_SIZE', 'MediumImage');
 defined('PLUGIN_AMAZON_CACHE_SUBDIR') or define('PLUGIN_AMAZON_CACHE_SUBDIR', 'amazon/');	// ex. 'amazon/' -> CACHE_DIR.PLUGIN_AMAZON_CACHE_SUBDIR
 // Tracker プラグイン利用用
 defined('PLUGIN_AMAZON_TRACKER_PAGE_NAME') or define('PLUGIN_AMAZON_TRACKER_PAGE_NAME', ':config/plugin/tracker/amazon/page');
-
+// スキーマのバージョン
+defined('PLUGIN_AMAZON_SCHEMA_VERSION') or define('PLUGIN_AMAZON_SCHEMA_VERSION', '2011-08-01');
 if (!function_exists('hash_hmac')) {
 	require_once(LIB_DIR . 'hash.php');
 }
@@ -1020,16 +1023,18 @@ class amazon_ecs
 
 		$query = array(
 			'AWSAccessKeyId'	=> AWS_ACCESS_KEY_ID,
+			'AssociateTag'		=> AMAZON_AID,
+			'IdType'			=> $this->idtype,
 			'ItemId'			=> $this->itemid,
 			'Operation'			=> 'ItemLookup',
 			'ResponseGroup'		=> 'ItemAttributes,Images,Offers',
+//			'SearchIndex'		=> '',
 			'Service'			=> 'AWSECommerceService',
 			'Timestamp'			=>  gmdate('Y-m-d\TH:i:s\Z'),
-			'Version'			=> '2009-03-31',
+			'Version'			=> PLUGIN_AMAZON_SCHEMA_VERSION
 		);
 
 		if ($this->idtype === 'ISBN') {
-			$query['IdType']	  = $this->idtype;
 			$query['SearchIndex'] = 'Books';
 			ksort($query);	// パラメータは、整列されている必要がある
 		}

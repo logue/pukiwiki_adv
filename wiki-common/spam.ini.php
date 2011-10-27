@@ -7486,7 +7486,7 @@ $blocklist['E'] = array(
 		'ameblo.jp/1kanaeru',
 		'ameblo.jp/5296himawari',
 		'ameblo.jp/aqua111-1111',
-		'ameblo.jp/beetgo'
+		'ameblo.jp/beetgo',
 		'ameblo.jp/cocolosmile',
 		'ameblo.jp/direct510',
 		'ameblo.jp/directinfo',

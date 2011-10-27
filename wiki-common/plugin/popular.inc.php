@@ -30,20 +30,30 @@
 
 define('PLUGIN_POPULAR_DEFAULT', 10);
 
+function plugin_popular_init()
+{
+	$msg = array(
+		'_popular_msg'=>array(
+			'popular'	=> T_('popular(%d)'),
+			'today'		=> T_('today\'s(%d)'),
+			'yesterday'	=> T_('yesterday\'s(%d)'),
+			'recent'	=> T_('recent\'s(%d)')
+		)
+	);
+	set_plugin_messages($msg);
+}
+
 function plugin_popular_convert()
 {
 	global $vars;
+	global $_popular_msg;
 //	global $_popular_plugin_frame, $_popular_plugin_today_frame;
 	static $localtime;
 
-	$_popular_plugin_frame_s       = T_('popular(%d)');
-	$_popular_plugin_today_frame_s = T_('today\'s(%d)');
-	$_popular_plugin_yesterday_frame_s = T_('yesterday\'s(%d)');
-	$_popular_plugin_recent_frame_s    = T_('recent\'s(%d)');
-	$_popular_plugin_frame         = sprintf('<h5>%s</h5><div>%%s</div>', $_popular_plugin_frame_s);
-	$_popular_plugin_today_frame   = sprintf('<h5>%s</h5><div>%%s</div>', $_popular_plugin_today_frame_s);
-	$_popular_plugin_yesterday_frame = sprintf('<h5>%s</h5><div>%%s</div>', $_popular_plugin_yesterday_frame_s);
-	$_popular_plugin_recent_frame    = sprintf('<h5>%s</h5><div>%%s</div>', $_popular_plugin_recent_frame_s);
+	$_popular_plugin_frame				= sprintf('<h5>%s</h5><div>%%s</div>', $_popular_msg['popular']);
+	$_popular_plugin_today_frame		= sprintf('<h5>%s</h5><div>%%s</div>', $_popular_msg['today']);
+	$_popular_plugin_yesterday_frame	= sprintf('<h5>%s</h5><div>%%s</div>', $_popular_msg['yesterday']);
+	$_popular_plugin_recent_frame		= sprintf('<h5>%s</h5><div>%%s</div>', $_popular_msg['recent']);
 	$view   = 'total';
 	$max    = PLUGIN_POPULAR_DEFAULT;
 	$except = '';
@@ -55,7 +65,7 @@ function plugin_popular_convert()
 
 	$today = gmdate('Y/m/d', $localtime);
 	// $yesterday = gmdate('Y/m/d', strtotime('yesterday', $localtime));
-        $yesterday = gmdate('Y/m/d',gmmktime(0,0,0, gmdate('m',$localtime), gmdate('d',$localtime)-1, gmdate('Y',$localtime)));
+	$yesterday = gmdate('Y/m/d',gmmktime(0,0,0, gmdate('m',$localtime), gmdate('d',$localtime)-1, gmdate('Y',$localtime)));
 
 	$array = func_get_args();
 	switch (func_num_args()) {
@@ -81,45 +91,7 @@ function plugin_popular_convert()
 	case 1: $max    = $array[0];
 	}
 
-	$counters = array();
-	foreach (auth::get_existpages(COUNTER_DIR, '.count') as $file=>$page) {
-		if (($except != '' && preg_match("/".$except."/", $page)) ||
-		    is_cantedit($page) || check_non_list($page) ||
-		    ! is_page($page))
-			continue;
-
-		$array = file(COUNTER_DIR . $file);
-		$count = rtrim($array[0]);
-		$date  = rtrim($array[1]);
-		$today_count = rtrim($array[2]);
-		$yesterday_count = rtrim($array[3]);
-
-		$counters['_' . $page] = 0;
-		if ($view == 'today' or $view == 'recent') {
-			// $pageが数値に見える(たとえばencode('BBS')=424253)とき、
-			// array_splice()によってキー値が変更されてしまうのを防ぐ
-			// ため、キーに '_' を連結する
-			if ($today == $date) $counters['_' . $page] = $today_count;
-		} 
-		if ($view == 'yesterday' or $view == 'recent') {
-			if ($today == $date) {
-				$counters['_' . $page] += $yesterday_count;
-			} elseif ($yesterday == $date) {
-				$counters['_' . $page] += $today_count;
-			}
-		}
-		if ($view == 'total') {
-			$counters['_' . $page] = $count;
-		}
-		if ($counters['_' . $page] == 0) {
-			unset($counters['_' . $page]);
-		}
-	}
-	asort($counters, SORT_NUMERIC);
-
-	// BugTrack2/106: Only variables can be passed by reference from PHP 5.0.5
-	$counters = array_reverse($counters, TRUE); // with array_splice()
-	if ($max && $max!= 0) { $counters = array_splice($counters, '0', $max); }
+	$counters = plugin_popular_getlist($view,$max);
 
 	$items = '';
 	if (! empty($counters)) {
@@ -160,5 +132,53 @@ function plugin_popular_convert()
 			break;
 	}
 	return sprintf($frame, count($counters), $items);
+}
+
+function plugin_popular_action(){
+	
+}
+
+function plugin_popular_getlist($view, $max = PLUGIN_POPULAR_DEFAULT){
+	$counters = array();
+	foreach (auth::get_existpages(COUNTER_DIR, '.count') as $file=>$page) {
+		if (($except != '' && preg_match("/".$except."/", $page)) ||
+		    is_cantedit($page) || check_non_list($page) ||
+		    ! is_page($page))
+			continue;
+
+		$array = file(COUNTER_DIR . $file);
+		$count = rtrim($array[0]);
+		$date  = rtrim($array[1]);
+		$today_count = rtrim($array[2]);
+		$yesterday_count = rtrim($array[3]);
+
+		$counters['_' . $page] = 0;
+		if ($view == 'today' or $view == 'recent') {
+			// $pageが数値に見える(たとえばencode('BBS')=424253)とき、
+			// array_splice()によってキー値が変更されてしまうのを防ぐ
+			// ため、キーに '_' を連結する
+			if ($today == $date) $counters['_' . $page] = $today_count;
+		} 
+		if ($view == 'yesterday' or $view == 'recent') {
+			if ($today == $date) {
+				$counters['_' . $page] += $yesterday_count;
+			} elseif ($yesterday == $date) {
+				$counters['_' . $page] += $today_count;
+			}
+		}
+		if ($view == 'total') {
+			$counters['_' . $page] = $count;
+		}
+		if ($counters['_' . $page] == 0) {
+			unset($counters['_' . $page]);
+		}
+	}
+	asort($counters, SORT_NUMERIC);
+
+	// BugTrack2/106: Only variables can be passed by reference from PHP 5.0.5
+	$counters = array_reverse($counters, TRUE); // with array_splice()
+	if ($max && $max!= 0) { $counters = array_splice($counters, '0', $max); }
+
+	return $counters;
 }
 ?>

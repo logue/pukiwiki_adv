@@ -422,7 +422,7 @@ if (!IS_AJAX){
 	// スキンデーター読み込み
 	define('SKIN_FILE', add_skindir(PLUS_THEME));
 
-	global $facebook, $google_loader;
+	global $facebook, $fb, $google_loader;
 
 	// JavaScriptフレームワーク設定
 	// google ajax api
@@ -553,9 +553,10 @@ if (!IS_AJAX){
 			));
 			$info[] = sprintf(T_('Facebook is not authenticated or url is mismathed. Please click <a href="%s">here</a> and authenticate the application.'), str_replace('&','&amp;',$url));
 		}else{
+			$me = $fb->api('/me');
 			try {
 				// Proceed knowing you have a logged in user who's authenticated.
-				$info[] = sprintf(T_('Facebook is authenticated. Welcome, %s.'), '<var>'.$fb->api('/me').'</var>');
+				$info[] = sprintf(T_('Facebook is authenticated. Welcome, %s.'), '<var>'.$me['username'].'</var>');
 			} catch (FacebookApiException $e) {
 				$info[] = 'Facebook Error: <samp>'.$e.'</samp>';
 			}

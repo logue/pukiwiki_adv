@@ -323,31 +323,31 @@ function plugin_edit_write()
 		$url = ($partid) ? get_page_location_uri($page,'',rawurlencode($partid)) : get_page_location_uri($page);
 	}
 	
-	global $facebook;
-	$fb = new FaceBook($facebook);
 	// FaceBook Integration
-	$fb_user = $fb->getUser();
-	
-	if ($fb_user === 0) {
-		try {
-			$response = $fb->api(
-				array(
-					'method' => 'stream.publish',
-					'message' => sprintf(T_('%s is updated.'), '<a href="'.$url.'">'.$page.'</a>'),
-					'action_links' => array(
-						array(
-							'text' => $page_title,
-							'href' => get_script_uri()
-						),
-						array(
-							'text' => $page,
-							'href' => $url
+	global $fb;
+	if (isset($fb)){
+		$fb_user = $fb->getUser();
+		if ($fb_user === 0) {
+			try {
+				$response = $fb->api(
+					array(
+						'method' => 'stream.publish',
+						'message' => sprintf(T_('%s is updated.'), '<a href="'.$url.'">'.$page.'</a>'),
+						'action_links' => array(
+							array(
+								'text' => $page_title,
+								'href' => get_script_uri()
+							),
+							array(
+								'text' => $page,
+								'href' => $url
+							)
 						)
 					)
-				)
-			);
-		} catch (FacebookApiException $e) {
+				);
+			} catch (FacebookApiException $e) {
 
+			}
 		}
 	}
 	pkwk_headers_sent();
