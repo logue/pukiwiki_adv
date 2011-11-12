@@ -114,7 +114,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 				<!--  End Related -->
 <?php } ?>
 				<hr />
-				<?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','reload,|,new,newsub,edit,freeze,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,|,help,|,mixirss').'<div class="pkwk-clear"></div>' : '';?>
+				<?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','reload,|,new,newsub,edit,freeze,source,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,log_browse,|,help,|,mixirss').'<div class="pkwk-clear"></div>' : '';?>
 			</div>
 
 			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<footer id="footer"  class="clearfix">'."\n" : '<div id="footer" class="clearfix">'."\n"; ?>

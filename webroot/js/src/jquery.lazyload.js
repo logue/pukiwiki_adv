@@ -11,7 +11,7 @@
  * Project home:
  *   http://www.appelsiini.net/projects/lazyload
  *
- * Version:  1.5.1.1
+ * Version:  1.5.1.2
  *
  */
  
@@ -20,7 +20,7 @@
  * - Cache $(e) query.
  * - skip invisible image
  */
-(function ($,window) {
+(function ($, window, document) {
 
 	$.fn.lazyload = function(options) {
 		// $.offset.top() reports wrong position after scroll
@@ -147,4 +147,4 @@
 
 		return this;
 	};
-})(jQuery,window);
+})(jQuery, window, document);

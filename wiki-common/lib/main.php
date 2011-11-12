@@ -43,6 +43,7 @@ if (! defined('DATA_HOME')) define('DATA_HOME', '');
 
 if (! defined('LIB_DIR')) define('LIB_DIR', '');
 
+// Load *.ini.php files and init PukiWiki
 require(LIB_DIR . 'func.php');
 require(LIB_DIR . 'file.php');
 require(LIB_DIR . 'funcplus.php');
@@ -82,11 +83,8 @@ require(LIB_DIR . 'gettext/gettext.inc');
 // Defaults
 $notify = $trackback = $referer = 0;
 
-// Load *.ini.php files and init PukiWiki
 require(LIB_DIR . 'init.php');
-
 // Load optional libraries
-
 if (isset($badbehavior)){ require(LIB_DIR . 'bad-behavior-pukiwiki.php'); }
 if (isset($notify)){ require(LIB_DIR . 'mail.php'); }	// Mail notification
 if (isset($trackback)){ require(LIB_DIR . 'trackback.php'); }	// TrackBack

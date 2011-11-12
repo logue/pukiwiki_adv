@@ -337,7 +337,7 @@ tfoot .style_th {
 	display:block;
 	float:left;
 	vertical-align: baseline;
-	margin:1.5% 0 0 0;
+	margin:1.8% 0 0 0;
 	line-height:100%;
 }
 
@@ -348,13 +348,13 @@ tfoot .style_th {
 }
 /* title */
 #hgroup h1 {
-	font-size: 242.2%;
+	font-size: 246.2%;
 	font-weight:bold;
 }
 
 #hgroup h2 {
 	font-weight:normal;
-	font-size: 85%;
+	font-size: 93%;
 }
 
 #lastmodified {

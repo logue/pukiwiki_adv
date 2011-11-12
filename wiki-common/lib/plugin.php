@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: plugin.php,v 1.20.20 2011/02/05 09:22:00 Logue Exp $
+// $Id: plugin.php,v 1.20.21 2011/11/12 10:39:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2005-2006,2008 PukiWiki Plus! Team
@@ -178,10 +178,15 @@ function do_plugin_init($name)
 // Call API 'action' of the plugin
 function do_plugin_action($name)
 {
+	global $vars;
 	if (! exist_plugin_action($name)) return array();
 
 	if (do_plugin_init($name) === FALSE) {
 		die_message('Plugin init failed: ' . htmlsc($name));
+	}
+
+	if (isset($vars['postid']) && !check_postid($vars['postid'])) {
+		die_message('Plugin Runtime Error.');
 	}
 
 	textdomain($name);
@@ -190,11 +195,8 @@ function do_plugin_action($name)
 	textdomain(DOMAIN);
 	T_textdomain(DOMAIN);
 
-	// Insert a hidden field, supports idenrtifying text enconding
-	if (PKWK_ENCODING_HINT != '')
-		$retvar =  preg_replace('/(<form[^>]*>)(?!\n<div><input type="hidden" name="encode_hint")/', '$1' . "\n" .
-			'<div><input type="hidden" name="encode_hint" value="' .
-			PKWK_ENCODING_HINT . '" /></div>', $retvar);
+	
+	$retvar['body'] = add_hidden_field($retvar['body'], $name);
 
 	return $retvar;
 }
@@ -237,13 +239,8 @@ function do_plugin_convert($name, $args = '')
 	if ($retvar === FALSE) {
 		return htmlsc('#' . $name .
 			($args != '' ? '(' . $args . ')' : ''));
-	} else if (PKWK_ENCODING_HINT != '') {
-		// Insert a hidden field, supports idenrtifying text enconding
-		return preg_replace('/(<form[^>]*>)(?!\n<div><input type="hidden" name="encode_hint")/', '$1' . "\n" .
-			'<div><input type="hidden" name="encode_hint" value="' .
-			PKWK_ENCODING_HINT . '" /></div>', $retvar);
 	} else {
-		return $retvar;
+		return add_hidden_field($retvar, $name);
 	}
 }
 
@@ -277,7 +274,7 @@ function do_plugin_inline($name, $args, & $body)
 		// Do nothing
 		return htmlsc('&' . $name . ($args ? '(' . $args . ')' : '') . ';');
 	} else {
-		return $retvar;
+		return add_hidden_field($retvar, $name);
 	}
 }
 
@@ -301,5 +298,17 @@ function use_plugin($plugin, $lines)
 		}
 	}
 	return FALSE;
+}
+
+function add_hidden_field($retvar, $name){
+	if (PKWK_ENCODING_HINT !== ''){
+		// Insert a hidden field, supports idenrtifying text enconding
+		$retvar = preg_replace('/<form[^>]*>/', '$0'."\n".'<input type="hidden" name="encode_hint" value="' . PKWK_ENCODING_HINT . '" />', $retvar);
+	}
+	
+	// from PukioWikio
+	$retvar = preg_replace('/<form.+?(method="post")[^>]*>/', '$0'."\n".'<input type="hidden" name="postid" value="'.generate_postid($name).'" />', $retvar);
+
+	return $retvar;
 }
 ?>

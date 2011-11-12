@@ -148,27 +148,27 @@ EOD;
 // Add new page
 function plugin_tracker_action()
 {
-	global $post, $vars, $now, $config_name;
+	global $post, $vars, $now, $config_name, $_string;
 
 //	if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
 	// Plus! code start
-	if (auth::check_role('readonly')) die_message(_('PKWK_READONLY prohibits editing'));
+	if (auth::check_role('readonly')) die_message($_string['prohibit']);
 	if (auth::is_check_role(PKWK_CREATE_PAGE)) die_message(_('PKWK_CREATE_PAGE prohibits editing'));
 
 	// Petit SPAM Check (Client(Browser)-Server Ticket Check)
-	$spam = FALSE;
-	if (function_exists('pkwk_session_start') && pkwk_session_start() != 0) {
-		$s_tracker = md5(get_ticket() . $config_name);
-		if ($_SESSION['tracker'] != $s_tracker) {
-			$spam = TRUE;
-		}
+	$config = $tracker_form->config_name; // Rescan
+	$md5 = md5(get_ticket() . $config);
+	$_SESSION['tracker'] = (pkwk_session_start() !== 0) ? $md5 : '';
+
+	if (pkwk_session_start() !== 0) {
+		$spam = ($_SESSION['tracker'] !== $md5) ? TRUE : FALSE;
 	} else {
 		if (isset($post['encode_hint']) && $post['encode_hint'] != '') {
-			if (PKWK_ENCODING_HINT != $post['encode_hint']) $spam = TRUE;
+			$spam = (PKWK_ENCODING_HINT !== $post['encode_hint']) ? TRUE : FALSE;
 		} else {
-			if (PKWK_ENCODING_HINT != '') $spam = TRUE;
+			$spam = (PKWK_ENCODING_HINT !== '') ? TRUE : FALSE;
 		}
-		if (is_spampost(array('body'), PLUGIN_TRACKER_REJECT_SPAMCOUNT)) $spam = TRUE;
+		$spam = (is_spampost(array('body'), PLUGIN_TRACKER_REJECT_SPAMCOUNT)) ? TRUE : FALSE;
 	}
 	if ($spam) {
 		honeypot_write();

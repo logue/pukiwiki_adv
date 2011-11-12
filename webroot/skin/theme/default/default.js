@@ -44,7 +44,7 @@
 
 		// カラーセットのリンクボタンを生成
 		var buffer = '';
-		$('#header').before('<p id="colorset" style="text-align:right; font-size:12px;" class="noprint"></p>');
+		$('#header').before('<p id="colorset" style="float:right; font-size:12px;" class="noprint"></p>');
 		for (var n=0; n<colorset.length; n++){
 			buffer += '<span style="color:'+colorset[n][0]+';cursor:pointer;" id="colorset-'+n+'">'+symbol+'</span>&#xa0;';
 		}

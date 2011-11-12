@@ -8,6 +8,9 @@
 //
 // File related functions - extra functions
 
+// Marged from PukioWikio's post.php
+defined('POSTID_DIR')		or define('POSTID_DIR', 'PostId/');
+
 // Get Ticket
 function get_ticket($newticket = FALSE)
 {
@@ -99,7 +102,7 @@ function cache_timestamp_get_name($func='wiki') {
 }
 
 function cache_timestamp_touch($func='wiki') {
-	touch (cache_timestamp_get_name($func));
+	pkwk_touch_file (cache_timestamp_get_name($func));
 }
 
 function cache_timestamp_compare_date($func,$file)
@@ -124,7 +127,7 @@ function cache_timestamp_set_date($func,$file)
 	$org = cache_timestamp_get_name($func);
 	if (!file_exists($org) || !file_exists($file)) return false;
 	$ts_org = filemtime($org);
-	return touch($file, $ts_org);
+	return pkwk_touch_file($file, $ts_org);
 }
 
 function get_existpages_cache($dir = DATA_DIR, $ext = '.txt', $compat = true)
@@ -139,8 +142,9 @@ function get_existpages_cache($dir = DATA_DIR, $ext = '.txt', $compat = true)
 
 	cache_timestamp_touch();
 
-	$pages = get_existpages($dir,$ext);
+	$pages = get_existpages($dir ,$ext);
 	$new_pages = get_existpages_cache_write($pages, $cache_name, $compat);
+
 	cache_timestamp_set_date('wiki',$cache_name);
 	return ($compat) ? $pages : $new_pages;
 }
@@ -433,6 +437,73 @@ function compress_file($in, $method, $chmod=644){
 			chmod($filename, $chmod);
 			@unlink($tar->filename);
 		break;
+	}
+}
+
+/**
+ * POST data check function $Id$
+ *
+ * PukioWikio - A WikiWikiWeb clone.
+ *  A custom version of PukiWiki.
+ *
+ * @copyright  &copy; 2008 PukioWikio Developers Team
+ * @license GPL v2 or (at your option) any later version
+ */
+
+/**
+ * generate id from $cmd and random number
+ */
+function generate_postid($cmd = '')
+{
+	$idstring_raw = $cmd . mt_rand();		//mt_srand() is necessary if PHP version is lower than 4.2.0
+	$idstring = md5($idstring_raw);
+
+	if (!file_exists(CACHE_DIR . POSTID_DIR)){
+		mkdir(CACHE_DIR . POSTID_DIR);
+	}
+
+	$filename = CACHE_DIR . POSTID_DIR . $idstring .'.dat';
+	pkwk_touch_file($filename);
+/*
+	$fp = fopen($filename,'w');
+	if ($fp == FALSE) return false;
+	@flock($fp, LOCK_EX);
+	
+	@flock($fp, LOCK_UN);
+	@fclose($fp);
+*/
+	return $idstring;
+}
+
+function check_postid($idstring)
+{
+	$checkfile = CACHE_DIR. POSTID_DIR . $idstring . '.dat';
+	if(! file_exists($checkfile)) {
+		$ret =  FALSE;
+	} else {
+		unlink($checkfile);
+		$ret = TRUE;
+	}
+
+	cleanup_postid(60*60);
+	return $ret;
+}
+
+/* default ... 1 day */
+function cleanup_postid($existtime_sec = 86400)
+{
+	$directory_list = scandir(CACHE_DIR.POSTID_DIR);
+
+	$now = time();
+	foreach($directory_list as $filename) {
+		$file = CACHE_DIR. POSTID_DIR . $filename;
+		//POST IDファイルかどうかチェック。
+		//md5でファイル名を生成しているので、拡張子が33文字目にあるはず。
+		if(strpos($filename, '.dat') === 32) {
+			if($now - filectime($file) > $existtime_sec) {
+				unlink($file);
+			}
+		}
 	}
 }
 ?>

@@ -39,6 +39,10 @@ function plugin_edit_action()
 		die_message( $_string['prohibit'] );
 	}
 
+	if (preg_match(PKWK_ILLEGAL_CHARS_PATTERN, $page)){
+		die_message($_string['illegal_chars']);
+	}
+
 	if (isset($vars['preview']) || ($load_template_func && isset($vars['template']))) {
 		return plugin_edit_preview();
 	} else if (isset($vars['write'])) {

@@ -127,7 +127,7 @@ function plugin_bugtrack_print_form($base, $category)
 	<table>
 		<tr>
 			<th><label for="_p_bugtrack_name_$id">$s_name</label></th>
-			<td><input  id="_p_bugtrack_name_$id" name="name" size="20" type="text" placeholder="$s_name" /></td>
+			<td><input  id="_p_bugtrack_name_$id" name="name" size="20" type="text" placeholder="$s_name" required="true" /></td>
 		</tr>
 		<tr>
 			<th><label for="_p_bugtrack_category_$id">$s_category</label></th>
@@ -153,11 +153,11 @@ function plugin_bugtrack_print_form($base, $category)
 		</tr>
 		<tr>
 			<th><label for="_p_bugtrack_summary_$id">$s_summary</label></th>
-			<td><input  id="_p_bugtrack_summary_$id" name="summary" size="60" type="text" placeholder="$s_summary" /></td>
+			<td><input  id="_p_bugtrack_summary_$id" name="summary" size="60" type="text" placeholder="$s_summary" required="true" /></td>
 		</tr>
 		<tr>
 			<th><label   for="_p_bugtrack_body_$id">$s_body</label></th>
-			<td><textarea id="_p_bugtrack_body_$id" name="body" cols="60" rows="6"  placeholder="$s_body"></textarea></td>
+			<td><textarea id="_p_bugtrack_body_$id" name="body" cols="60" rows="6"  placeholder="$s_body" required="true"></textarea></td>
 		</tr>
 		<tr>
 			<td colspan="2">

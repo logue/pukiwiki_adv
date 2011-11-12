@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone
-// $Id: pukiwiki.ini.php,v 1.149.51 2011/09/11 23:06:00 Logue Exp $
+// $Id: pukiwiki.ini.php,v 1.149.52 2011/09/24 20:05:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -152,10 +152,7 @@ defined('SKIN_DIR')		or define('SKIN_DIR',  WWW_HOME . 'skin/');
 // Static image files
 defined('IMAGE_DIR')	or define('IMAGE_DIR', WWW_HOME . 'image/');
 
-// Image and JavaScript URI
-// When building a WikiFirm, if you want to common the images and scripts, put the URI here.
-// such as http://common.example.com/
-defined('COMMON_URI')	or define('COMMON_URI',	ROOT_URI);
+defined('COMMON_URI')	or define('COMMON_URI', ROOT_URI);
 
 defined('SKIN_URI')		or define('SKIN_URI',	ROOT_URI . 'skin/');
 defined('IMAGE_URI')	or define('IMAGE_URI',	COMMON_URI . 'image/');
@@ -173,6 +170,9 @@ $page_title = 'PukiWiki Advance';
 
 // Specify PukiWiki Advance URL (default: auto)
 //$script = './';
+
+// Site Logo
+$logo = IMAGE_DIR.'pukiwiki_adv.logo.png';
 
 // Shorten $script: Cut its file name (default: not cut)
 $script_directory_index = 'index.php';
@@ -276,7 +276,7 @@ $pkwk_dtd = PKWK_DTD_HTML_5;	// Adv. Default
 
 // PKWK_STRICT_XHTML
 // XHTMLとして処理する場合。（一部のブログパーツやプラグインで不具合が発生する可能性があります）
-defined('PKWK_STRICT_XHTML') or define('PKWK_STRICT_XHTML', true);
+defined('PKWK_STRICT_XHTML')	or define('PKWK_STRICT_XHTML', false);
 
 // Change IE rendering mode.
 // http://msdn.microsoft.com/en-us/library/cc288325(VS.85).aspx

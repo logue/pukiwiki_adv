@@ -65,7 +65,10 @@ $_string = array(
 	'header_sent'		=> T_('Headers already sent at <var>%s</var>, line: <var>%s</var>.'),
 	'blacklisted'		=> T_('Writing was limited by <strong>IPBL</storng> (Blocking SPAM).'),
 	'script_error'		=> T_('A fatal error has occured at line <var>%1s</var> in file <var>%2s</var>.'),
-	'script_abort'		=> T_('Script execution has been aborted.')
+	'script_abort'		=> T_('Script execution has been aborted.'),
+	'illegal_chars'		=> T_('Illegal characters contained.'),
+	'header_sent'		=> T_('Headers already sent at %s, line: %s.'),
+	'plugin_error'		=> T_('Alert: plugin %1s was called over %2s times. SPAM or someting?')
 );
 
 $_button = array(

@@ -22,9 +22,20 @@ function plugin_list_action()
 
 	$listcmd = (isset($vars['listcmd'])) ? $vars['listcmd'] : 'read';
 
-	if (IS_AJAX){
+	if (IS_AJAX || (isset($vars['type']) && $vars['type'] == 'json')){
+		$pages = plugin_list_getlist($filelist,$listcmd, TRUE);
+		if (isset($vars['term'])){
+			// 酷い実装だ・・・。
+			foreach($pages as $line){
+				if (preg_match('/^'.$vars['term'].'/', $line)){
+					$ret[] = $line;
+				}
+			}
+		}else{
+			$ret = $pages;
+		}
 		header("Content-Type: application/json; charset=".CONTENT_CHARSET);
-		echo json_encode(plugin_list_getlist($filelist,$listcmd, TRUE)); 
+		echo json_encode($ret); 
 		exit();
 	}
 	

@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: file.php,v 1.95.4 2010/12/05 16:25:00 Logue Exp $
+// $Id: file.php,v 1.95.4 2011/11/02 22:49:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -96,7 +96,7 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 //	global $autoalias, $aliaspage;
 	global $trackback, $autoalias, $aliaspage;
 	global $autoglossary, $glossarypage;
-	global $use_spam_check;
+	global $use_spam_check, $_strings;
 
 //	if (PKWK_READONLY) return; // Do nothing
 	/* Plus!ここから */
@@ -107,7 +107,7 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	// Blocking SPAM
 	if ($role_adm_contents) {
 		if ($use_spam_check['page_remote_addr'] && SpamCheck($_SERVER['REMOTE_ADDR'],'ip')) {
-			die_message('Writing was limited by IPBL (Blocking SPAM).');
+			die_message($_strings['blacklisted']);
 		}
 		if ($use_spam_check['page_contents'] && SpamCheck($links)) {
 			die_message('Writing was limited by DNSBL (Blocking SPAM).');
@@ -115,6 +115,11 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 		if ($use_spam_check['page_write_proxy'] && is_proxy()) {
 			die_message('Writing was limited by PROXY (Blocking SPAM).');
 		}
+	}
+	
+	// Check Illigal Chars
+	if (preg_match(PKWK_ILLEGAL_CHARS_PATTERN, $page)){
+		die_message($_strings['illegal_chars']);
 	}
 
 	if (function_exists('senna_update')) {

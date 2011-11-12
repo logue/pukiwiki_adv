@@ -7552,7 +7552,7 @@ $blocklist['E'] = array(
 	'spam from FC2.COM'=>array(
 		'270en.web.fc2.com',
 		'7t4400611.blog45.fc2.com',
-		'blgid1974.blog13.fc2.com'
+		'blgid1974.blog13.fc2.com',
 		'childbicycle.web.fc2.com',
 		'dietpatch.web.fc2.com',
 		'diamondline002.web.fc2.com',

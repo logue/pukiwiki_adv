@@ -13,7 +13,7 @@
  *   http://www.gnu.org/licenses/gpl.html
  */
  
-;(function($) {
+;(function($, window, document) {
 	
 		// the tooltip element
 	var helper = {},
@@ -291,4 +291,4 @@
 			helper.parent.unfixPNG();
 	}
 	
-})(jQuery);
+})(jQuery, this, this.document);

@@ -78,25 +78,24 @@ td { vertical-align: top; }
 /* ==|== PukiWiki Advance Standard Font Set ================================= */
 
 /* Font set */
-@media screen{
-	body{
-		font-family: 'Segoe UI', 'Trebuchet MS', Verdana, Arial, Sans-Serif;
-	}
-	/* Japanese */
-	:lang(ja), :lang(ja) .ui-widget{
-		font-family: Meiryo, 'メイリオ', 'ヒラギノ角ゴ Pro W3', 'Hiragino Mincho Pro W3', Osaka, 'ＭＳＰ ゴシック';
-		line-height:137%;
-	}
-	/* Korean */
-	:lang(ko), :lang(ko) .ui-widget{
-		font-family: 'AppleGothic', 'Malgun Gothic', '맑은 고딕', Gulim, Dotum, AppleGothic;
-	}
-	/*  Chinese */
-	:lang(zh), :lang(zh) .ui-widget{
-		font-family: 'Hiragino Sans GB W3', 'STHeiti', 'Apple LiGothic Medium', 'Microsoft YaHei', 'Microsoft JhengHei';
-		line-height:137%;
-	}
+body{
+	font-family: 'Segoe UI', 'Trebuchet MS', Verdana, Arial, Sans-Serif;
 }
+/* Japanese */
+:lang(ja), :lang(ja) .ui-widget{
+	font-family: Meiryo, 'メイリオ', 'ヒラギノ角ゴ Pro W3', 'Hiragino Mincho Pro W3', Osaka, 'ＭＳＰ ゴシック';
+	line-height:137%;
+}
+/* Korean */
+:lang(ko), :lang(ko) .ui-widget{
+	font-family: 'AppleGothic', 'Malgun Gothic', '맑은 고딕', Gulim, Dotum, AppleGothic;
+}
+/*  Chinese */
+:lang(zh), :lang(zh) .ui-widget{
+	font-family: 'Hiragino Sans GB W3', 'STHeiti', 'Apple LiGothic Medium', 'Microsoft YaHei', 'Microsoft JhengHei';
+	line-height:137%;
+}
+
 /* for Print font */
 @media print{
 	body {
@@ -360,55 +359,48 @@ i, em, cite, q{
 }
 /* ==|== Customize UI classes =============================================== */
 /* form */
-input[type='text'], input[type='password'], textarea, select{
+input[type='text'], input[type='password'], input[type='file'],
+input[type='tel'], input[type='url'], input[type='email'], 
+input[type='datetime'], input[type='date'], input[type='month'], 
+input[type='week'], input[type='time'], input[type='datetime-local'], 
+input[type='number'], input[type='range'], input[type='color'], 
+input[type='search'], textarea, select {
 	border:1px solid silver;
 	background-color:white;
 	padding:0.2em;
-	margin:0.1em;
+	margin:0.2em;
 	line-height:100%;
-}
-
-/* gradient */
-.gecko input[type='text'], .gecko input[type='password'], .gecko textarea, .gecko select{
-	background: -moz-linear-gradient(top,  whitesmoke, white);
-}
-
-.webkit input[type='text'], .webkit input[type='password'], .webkit textarea, select{
-	background: -webkit-gradient(linear, left top, left bottom, from(whitesmoke), to(white));
-}
-
-.presto input[type='text'], .presto input[type='password'], .presto textarea, .presto select{
 	background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMCI%2BDQo8ZGVmcz4NCjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxMDAlIj4NCjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOndoaXRlc21va2U7Ii8%2BDQo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOndoaXRlOyIvPg0KPC9saW5lYXJHcmFkaWVudD4NCjwvZGVmcz4NCjxyZWN0IHg9IjAiIHk9IjAiIGZpbGw9InVybCgjZ3JhZGllbnQpIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiAvPg0KPC9zdmc%2B");
 }
 
-.ie input[type='text'], .ie input[type='password'], .ie textarea, .ie select{
-	-ms-filter:"progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=whitesmoke,EndColorStr=white)";
-	padding:0.25em 0.2em;
-}
-
 /* focus */
-input[type='text']:focus, input[type='password']:focus, textarea:focus, select:focus {
+input[type='text']:focus, input[type='password']:focus, input[type='file']:focus,
+input[type='tel']:focus, input[type='url']:focus, input[type='email']:focus,
+input[type='datetime']:focus, input[type='date']:focus, input[type='month']:focus, 
+input[type='week']:focus, input[type='time']:focus, input[type='datetime-local']:focus, 
+input[type='number']:focus, input[type='range']:focus, input[type='color']:focus, 
+input[type='search']:focus, textarea:focus, select:focus {
 	box-shadow: 0px 0px 3px dodgerblue;
 	border:1px solid cornflowerblue;
 }
-.ie9 input[type='text']:focus, .ie9 input[type='password']:focus, .ie9 textarea:focus, .ie9 select:focus {
-	box-shadow: 0px 0px 5px dodgerblue;
-}
-.webkit input[type='text']:focus, .webkit input[type='password']:focus, .webkit textarea:focus, .webkit select:focus {
-	-webkit-box-shadow:0px 0px 3px dodgerblue;
-}
-
-.gecko input[type='text']:focus, .gecko input[type='password']:focus, .gecko textarea:focus, .gecko select:focus {
-	-moz-box-shadow:0px 0px 3px dodgerblue;
-}
 
 /* hover */
-input[type='text']:hover, input[type='password']:hover, textarea:hover, select:hover {
+input[type='text']:hover, input[type='password']:hover, input[type='file']:hover,
+input[type='tel']:hover, input[type='url']:hover, input[type='email']:hover, 
+input[type='datetime']:hover, input[type='date']:hover, input[type='month']:hover, 
+input[type='week']:hover, input[type='time']:hover, input[type='datetime-local']:hover, 
+input[type='number']:hover, input[type='range']:hover, input[type='color']:hover, 
+input[type='search']:hover, textarea:hover, select:hover {
 	border:1px solid cornflowerblue;
 }
 
 /* disabled */
-input[type='text'][disabled], input[type='password'][disabled], textarea[disabled], select[disabled]{
+input[type='text'][disabled], input[type='password'][disabled], input[type='file'][disabled],
+input[type='tel'][disabled], input[type='url'][disabled], input[type='email'][disabled], 
+input[type='datetime'][disabled], input[type='date'][disabled], input[type='month'][disabled], 
+input[type='week'][disabled], input[type='time'][disabled], input[type='datetime-local'][disabled], 
+input[type='number'][disabled], input[type='range'][disabled], input[type='color'][disabled], 
+input[type='search'][disabled], textarea[disabled], select[disabled] {
 	color:grey;
 	border:1px solid lightgrey;
 	background-color:whitesmoke;
@@ -416,7 +408,12 @@ input[type='text'][disabled], input[type='password'][disabled], textarea[disable
 	box-shadow: none;
 }
 
-input[type='text'][disabled]:hover, input[type='password'][disabled]:hover, textarea[disabled]:hover, select[disabled]:hover{
+input[type='text'][disabled]:hover, input[type='password'][disabled]:hover, input[type='file'][disabled]:hover,
+input[type='tel'][disabled]:hover, input[type='url'][disabled]:hover, input[type='email'][disabled]:hover, 
+input[type='datetime'][disabled]:hover, input[type='date'][disabled]:hover, input[type='month'][disabled]:hover, 
+input[type='week'][disabled]:hover, input[type='time'][disabled]:hover, input[type='datetime-local'][disabled]:hover, 
+input[type='number'][disabled]:hover, input[type='range'][disabled]:hover, input[type='color'][disabled]:hover, 
+input[type='search'][disabled]:hover, textarea[disabled]:hover, select[disabled]:hover {
 	border:1px solid lightgrey;
 	background-color:whitesmoke;
 }
@@ -1616,6 +1613,7 @@ ul#jplayer_icons #jplayer_volume-min {
 	p, h2, h3 { orphans: 3; widows: 3; }
 	h2, h3 { page-break-after: avoid; }
 
+	.pkwk-icon, .pkwk-symbol,
 	.navigator, .toolbar, .navi, .message_box, .noprint, .tocpic, .sf-menu,.pkwk_widget,
 	.style_calendar_prev, .style_calendar_next, .pkwk-symbol, #poptoc,  #toolbar, .ui-dialog, #topicpath{
 		display:none !important;

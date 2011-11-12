@@ -319,8 +319,13 @@ function attach_gettext($path, $lock=FALSE)
 
 function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, $notouch=FALSE)
 {
-	global $_attach_messages;
+	global $_attach_messages, $_strings;
 	global $notify, $notify_subject, $notify_exclude, $spam;
+	
+	// Check Illigal Chars
+	if (preg_match(PKWK_ILLEGAL_CHARS_PATTERN, $page) || preg_match(PKWK_ILLEGAL_CHARS_PATTERN, $file['name'])){
+		die_message($_strings['illegal_chars']);
+	}
 	
 	// ファイル名の長さをチェック
 	$filename_length = strlen(encode($page).'_'.encode($file['name']));

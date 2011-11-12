@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: init.php,v 1.57.6 2011/09/20 21:06:00 Logue Exp $
+// $Id: init.php,v 1.57.6 2011/11/02 23:16:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -36,8 +36,10 @@ defined('WWW_HOME')				or define('WWW_HOME', '');
 defined('PLUS_THEME')			or define('PLUS_THEME',	'default');
 
 // HTTP_X_REQUESTED_WITHヘッダーで、ajaxによるリクエストかを判別
-define('IS_AJAX', (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' || !empty($vars['ajax'])));
+define('IS_AJAX', isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' || isset($vars['ajax']));
 
+// ページ名やファイル名として使用できない文字（エンコード前の文字）
+defined('PKWK_ILLEGAL_CHARS_PATTERN') or define('PKWK_ILLEGAL_CHARS_PATTERN', '/[%|=|&|?|~|#|\s|\0|\@|;|\$|+|\\|\[|\]|\||^|{|}|\']/');
 /////////////////////////////////////////////////
 // Init server variables
 
@@ -440,7 +442,7 @@ if (!IS_AJAX){
 */
 		'jquery' => array(
 			'file'	=> 'jquery.min.js',
-			'ver'	=> '1.6.4'
+			'ver'	=> '1.7'
 		),
 		'jqueryui'	=> array(
 			'file'	=> 'jquery-ui.min.js',

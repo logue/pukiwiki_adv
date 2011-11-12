@@ -48,8 +48,9 @@ function plugin_rename_init()
 
 function plugin_rename_action()
 {
+	global $_string;
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits this');
-	if (auth::check_role('readonly')) die_message('PKWK_READONLY prohibits this');
+	if (auth::check_role('readonly')) die_message($_string['prohibit']);
 	$method = plugin_rename_getvar('method');
 	if ($method == 'regex') {
 		$src = plugin_rename_getvar('src');
@@ -65,6 +66,8 @@ function plugin_rename_action()
 		foreach ($arr1 as $page){
 			if (! is_pagename($page)){
 				return plugin_rename_phase1('notvalid');
+			}else if (preg_match(PKWK_ILLEGAL_CHARS_PATTERN, $page)){
+				die_message($_strings['illegal_chars']);
 			}
 		}
 
@@ -75,6 +78,11 @@ function plugin_rename_action()
 		// $method == 'page'
 		$page  = plugin_rename_getvar('page');
 		$refer = plugin_rename_getvar('refer');
+		
+		// Check Illigal Chars
+		if (preg_match(PKWK_ILLEGAL_CHARS_PATTERN, $page)){
+			die_message($_strings['illegal_chars']);
+		}
 
 		if ($refer == '') {
 			return plugin_rename_phase1();

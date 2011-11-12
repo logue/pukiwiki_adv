@@ -8,11 +8,11 @@
 //
 // Plus! extension function(s)
 
-defined('FUNC_POSTLOG')   or define('FUNC_POSTLOG', FALSE);
-defined('FUNC_SPAMLOG')   or define('FUNC_SPAMLOG', TRUE);
-defined('FUNC_BLACKLIST') or define('FUNC_BLACKLIST', TRUE);
-defined('FUNC_SPAMREGEX') or define('FUNC_SPAMREGEX', '#(?:cialis|hydrocodone|viagra|levitra|tramadol|xanax|\[/link\]|\[/url\])#i');
-defined('FUNC_SPAMCOUNT') or define('FUNC_SPAMCOUNT', 2);
+defined('FUNC_POSTLOG')		or define('FUNC_POSTLOG', FALSE);
+defined('FUNC_SPAMLOG')		or define('FUNC_SPAMLOG', TRUE);
+defined('FUNC_BLACKLIST')	or define('FUNC_BLACKLIST', TRUE);
+defined('FUNC_SPAMREGEX')	or define('FUNC_SPAMREGEX', '#(?:cialis|hydrocodone|viagra|levitra|tramadol|xanax|\[/link\]|\[/url\])#i');
+defined('FUNC_SPAMCOUNT')	or define('FUNC_SPAMCOUNT', 2);
 
 function showtaketime(){
 	// http://pukiwiki.sourceforge.jp/dev/?BugTrack2%2F251
@@ -833,7 +833,7 @@ function is_webdav()
 // xDebug有効時はそのままvar_dump
 function pr($value){
 	if (!extension_loaded('xdebug')){
-		echo '<pre class="blush: php"><xmp>';
+		echo '<pre class="sh" data-brush="php"><xmp>';
 		var_dump($value);
 		echo '</xmp></pre>';
 	}else{
@@ -1138,5 +1138,4 @@ function MeCab($input){
 	}
 	return $analisys;
 }
-
 ?>

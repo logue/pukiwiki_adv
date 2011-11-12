@@ -368,6 +368,7 @@ function edit_form($page, $postdata, $digest = FALSE, $b_template = TRUE)
 
 	$checked_top  = isset($vars['add_top'])     ? ' checked="checked"' : '';
 	$checked_time = isset($vars['notimestamp']) ? ' checked="checked"' : '';
+	$pages = DEBUG ? get_existpages() : auth::get_existpages();
 
 	if(isset($vars['add'])) {
 		$addtag  = '<input type="hidden" name="add" value="true" />';
@@ -378,7 +379,7 @@ function edit_form($page, $postdata, $digest = FALSE, $b_template = TRUE)
 
 	if($load_template_func && $b_template) {
 		$pages  = array();
-		foreach(auth::get_existpages() as $_page) {
+		foreach($pages as $_page) {
 			if (is_cantedit($_page) || check_non_list($_page))
 				continue;
 			$s_page = htmlsc($_page);
@@ -560,12 +561,13 @@ function anchor_explode($page, $strict_editable = FALSE)
 // there're blank lines or something out of php blocks
 function pkwk_headers_sent()
 {
+	global $_string;
 	if (PKWK_OPTIMISE) return;
 
 	$file = $line = '';
 
 	if (headers_sent($file, $line)){
-		die_message(sprintf(T_('Headers already sent at %s, line: %s.'),'<var>'.htmlsc($file).'</var>','<var>'.$line.'</var>'));
+		die_message(sprintf($_string['header_sent'],'<var>'.htmlsc($file).'</var>','<var>'.$line.'</var>'));
 	}
 }
 

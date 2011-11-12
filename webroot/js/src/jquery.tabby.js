@@ -25,7 +25,7 @@
  
 // create closure
 
-(function($) {
+(function($, window, document) {
  
 	// plugin definition
 
@@ -264,4 +264,4 @@
 	}
 
 // end of closure
-})(jQuery);
+})(jQuery, this, this.document);

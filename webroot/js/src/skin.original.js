@@ -21,7 +21,8 @@
 /* jslint evil: false */
 /* Implied global: $, document, SCRIPT, LANG, DEBUG, SKIN_DIR, IMAGE_DIR, DEFAULT_LANG, THEME_NAME, PAGE, MODIFIED, GOOGLE_ANALYTICS, FB, FACEBOOK_APPID */
 
-var pukiwiki;
+var pukiwiki;pukiwiki||(pukiwiki={});
+
 // Bigscope
 (function($, Modernizr, window, document, undef){
 	if(!jQuery) { throw "pukiwiki: jQuery not included."; }
@@ -189,14 +190,14 @@ var pukiwiki;
 			// metaタグのGenereterから、Plusかそうでないかを判別
 			var generetor = $('meta[name=generator]')[0].content;
 			if (generetor.match(/[PukiPlus|Advance]/)){
-				if (DEBUG){ console.info('PukiWiki Advance Debug mode. \nUsing jQuery: ',$.fn.jquery,' / jQuery UI: ',$.ui.version); }
 				this.image_dir = IMAGE_URI+'ajax/';	// デフォルト
 			}else if (generetor.match(/plus/)){
-				if (DEBUG){ console.info('PukiWiki Plus! Debug mode. \nUsing jQuery: ',$.fn.jquery,' / jQuery UI: ',$.ui.version); }
 				this.image_dir = SKIN_DIR+'theme/'+THEME_NAME+'/';
 			}else{
-				if (DEBUG){ console.info('PukiWiki Standard Debug mode. \nUsing jQuery: ',$.fn.jquery,' / jQuery UI: ',$.ui.version); }
 				this.image_dir = SKIN_DIR+this.name+'/image/';	// PukiWiki用
+			}
+			if (DEBUG){
+				console.info('PukiWiki Advance Debug mode. \nUsing Modernizr: ',Modernizr._version,' / jQuery: ',$.fn.jquery,' / jQuery UI: ',$.ui.version);
 			}
 
 			var self = this;
@@ -312,10 +313,32 @@ var pukiwiki;
 				});
 			}
 	*/
-
+/*
 			// 添付フォームをswfuploadに
 			if ($('.attach_form').length !== 0){
 				this.set_uploader();
+			}
+*/
+			// 検索フォーム（ページ名を提案）
+			if ($('#search_word').length !== 0){
+				var cache = {},lastXhr;
+				$('#search_word').autocomplete({
+					minLength: 2,
+					source: function( request, response ) {
+						var term = request.term;
+						if ( term in cache ) {
+							response( cache[ term ] );
+							return;
+						}
+						
+						lastXhr = $.getJSON( SCRIPT+'?cmd=list', request, function( data, status, xhr ) {
+							cache[ term ] = data;
+							if ( xhr === lastXhr ) {
+								response( data );
+							}
+						});
+					}
+				});
 			}
 
 			// バナーボックス
@@ -338,9 +361,6 @@ var pukiwiki;
 			if (location.hash){
 				this.anchor_scroll(location.hash,true);
 			}
-
-			// 二重送信防止
-			// $('form').disableOnSubmit();
 
 			// hover states on the static widgets
 			$('.ui-state-default').hover(function() {
@@ -403,7 +423,7 @@ var pukiwiki;
 		// HTML5の各種機能をJavaScriptで有効化するための処理
 		enableHTML5 : function(prefix){
 			prefix = (prefix) ? prefix + ' ': '';
-			
+
 			// Placeholder属性のサポート
 			if (!Modernizr.input.placeholder){
 				$(prefix+'[placeholder]').each(function () {
@@ -432,6 +452,20 @@ var pukiwiki;
 								input.val('');
 							}
 						});
+				});
+			}
+			
+			// require属性のサポート
+			if (!Modernizr.input.required){
+				$(prefix+'[required]').each(function () {
+					var input = $(this),
+					required = input.attr('required');
+
+					input.parents('form').submit(function () {
+						if (input.val() === '') {
+							return false;
+						}
+					});
 				});
 			}
 
@@ -1346,7 +1380,7 @@ var pukiwiki;
 				postdata.ajax = 'json';
 	*/
 				// ローカルストレージをフラッシュ
-				if (self.isEnableLocalStorage){
+				if (isEnableLocalStorage){
 					localStorage.removeItem(PAGE);
 				}
 
@@ -1799,6 +1833,8 @@ var pukiwiki;
 
 			// swfuploadがスクリプトに渡す値
 			var params = {
+				encode_hint		: $(prefix+'input[name=encode_hint]').val(),
+				postid			: $(prefix+'input[name=postid]').val(),
 				max_file_size	: $(prefix+'input[name=max_file_size]').val(),// 上限容量
 				pcmd			: $(prefix+'input[name=pcmd]').val(),		// プラグインコマンド（通常post）
 				plugin			: $(prefix+'input[name=plugin]').val(),		// プラグイン（通常attach）
@@ -1923,9 +1959,12 @@ var pukiwiki;
 			})
 			.bind('uploadSuccess', function(event, file, serverData){
 				if (params.plugin !== 'attachref'){
+					var su_log = prefix+'#swfupload-log #'+file.id;
+					var item = $(su_log);
+					console.log(serverData);
 					var ret = eval("(" + serverData + ")");
-					var item=$(prefix+'#swfupload-log li#'+file.id);
-					$(prefix+'#swfupload-log li#'+file.id+' .progressbar').progressbar({ value: 100 });
+
+					$(su_log+' .progressbar').progressbar({ value: 100 });
 					item.find('.progressvalue').text('100%');
 					var pathtofile = [
 						'<a href="'+SCRIPT+'?plugin=attach&pcmd=open&refer='+PAGE+'&file='+file.name+'" id="view_'+file.id+'">',
@@ -1934,7 +1973,7 @@ var pukiwiki;
 						'</a>'
 					].join('');
 					item.addClass('success').find('p.status').html(ret.title+' | '+pathtofile);
-					$(prefix+'#swfupload-log li#'+file.id+' a#view_'+file.id).click(function(){
+					$(su_log+' a#view_'+file.id).click(function(){
 						var href = $(this).attr('href');
 	//					if (href.match(/\.(jpg|jpeg|gif|png)$/i) !== -1){
 	//						$(this).colorbox();
@@ -2427,25 +2466,6 @@ var pukiwiki;
 		return o;
 	};
 
-	/*
-	 * jQuery Disable On Submit Plugin
-	 * http://www.evanbot.com/article/jquery-disable-on-submit-plugin/13
-	 *
-	 * Copyright (c) 2009 Evan Byrne (http://www.evanbot.com)
-	 * Modified by Logue
-	 */
-	$.fn.disableOnSubmit = function(disableList){
-		var $list = (disableList === null) ? 'input[type=submit],input[type=button],input[type=reset],button' : disableList;
-
-		// Makes sure button is enabled at start
-		$(this).find($list).removeAttr('disabled');
-
-		$(this).submit(function(){
-			$(this).find($list).attr('disabled','disabled');
-		});
-		return this;
-	};
-
 	/*************************************************************************************************/
 	// ブラウザの設定
 	var $buoop = {
@@ -2465,8 +2485,10 @@ var pukiwiki;
 		newwindow: false	// open link in new window/tab
 	};
 	if (DEBUG){
+		$buoop.test = true;
 		$buoop.text = 'When the version of a browser is old, the text which presses for renewal of a browser here is displayed.';
 	}else if ((document.compatMode || "") !== "CSS1Compat"){
+		$buoop.test = true;
 		$buoop.text = 'Please set native rendering mode.';
 	}
 
