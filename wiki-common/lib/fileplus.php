@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: fileplus.php,v 1.2.6 2011/10/24 16:29:00 Logue Exp $
+// $Id: fileplus.php,v 1.2.7 2011/11/21 13:51:00 Logue Exp $
 // Copyright (C)
 //   2010 PukiWiki Advance Team
 //   2005-2006,2009 PukiWiki Plus! Team
@@ -65,66 +65,70 @@ function plus_readfile($filename)
 function cache_read($filename)
 {
 	global $memcache;
-	
-	if (isset($memcache)){
-		$ret = $memcache->get($filename);
+	if ($memcache !== null){
+		$data = $memcache->get($filename);
 	}else{
 		$fp = fopen($filename, 'rb');
 		if ($fp === false) return array();
 		@flock($fp, LOCK_SH);
-		$data = fread($fp, filesize($filename));
-		$ret = unserialize($data);
+		$data = unserialize( fread($fp, filesize($filename)) );
 		@flock($fp, LOCK_UN);
 		if(! fclose($fp)) return array();
 	}
-	return $ret;
+	return $data;
 }
 
 // キャッシュ書き出し＋クリーンアップ
 function cache_write($data, $filename, $expire = null)
 {
 	global $memcache;
-	if (isset($memcache)){
-		$bytes = $memcache->set($filemane, $data, MEMCACHE_COMPRESSED ,$expire);
+	if ($memcache !== null){
+		$ret = $memcache->set($filename, $data, MEMCACHE_COMPRESSED ,$expire);
 	}else{
 		pkwk_touch_file($filename);
 		$fp = fopen($filename, 'wb');
 		if ($fp === false) return false;
 		@flock($fp, LOCK_EX);
 		rewind($fp);
-		$bytes = fwrite($fp, serialize($data));
+		$ret = fwrite($fp, serialize($data));
 		fflush($fp);
 		ftruncate($fp, ftell($fp));
 		@flock($fp, LOCK_UN);
 		fclose($fp);
-		// クリーンアップ処理
-		if ($expire){
-			// 保存先のディレクトリ名を取得
-			$dir = dirname($filename);
-			// 拡張子を取得（二重拡張子は不可）
-			$ext = substr($filename, strrpos($filename, '.') + 1);
-			
-			// 同一階層上のファイルを捜査
-			foreach(scandir($dir) as $file) {
-				// 同一拡張子のファイルをクリーンアップ
-				if (mb_strpos($file, $ext)){
-					$f = $dir.'/'.$file;	// ファイルのフルパス
-					$filetime = exec ('stat -c %Y '. escapeshellarg ($f));	// filectime()は環境によっては動作しないため。
-					// 有効期限を過ぎたファイルは削除
-					if(UTIME - $filetime > $expire) {
-						cache_delete($f);
-					}
+		cache_cleanup($filename, $exepire);
+	}
+	return $ret;
+}
+
+// クリーンアップ処理（memcache無効時は、処理を行わない）
+function cache_cleanup($filename, $exepire){
+	global $memcache;
+	if ($memcache == null){
+		// 保存先のディレクトリ名を取得
+		$dir = dirname($filename);
+		// 拡張子を取得（二重拡張子は不可）
+		$ext = substr($filename, strrpos($filename, '.') + 1);
+		
+		// 同一階層上のファイルを捜査
+		foreach(scandir($dir) as $file) {
+			// 同一拡張子のファイルをクリーンアップ
+			if (mb_strpos($file, $ext)){
+				$f = $dir.'/'.$file;	// ファイルのフルパス
+				//$filetime = exec ('stat -c %Y '. escapeshellarg ($f));	// filectime()は環境によっては動作しないため。
+				$filetime = filectime($f);
+				// 有効期限を過ぎたファイルは削除
+				if(UTIME - $filetime > $expire) {
+					cache_delete($f);
 				}
 			}
 		}
 	}
-	return $bytes;
 }
 
 // キャッシュ削除
 function cache_delete($filename){
 	global $memcache;
-	if (isset($memcache)){
+	if ($memcache !== null){
 		$ret = $memcache->delete($filename);
 	}else{
 		$ret = unlink($filename);
@@ -504,10 +508,6 @@ function generate_postid($cmd = '')
 	$idstring_raw = $cmd . mt_rand();		//mt_srand() is necessary if PHP version is lower than 4.2.0
 	$idstring = md5($idstring_raw);
 
-	if (!file_exists(CACHE_DIR . POSTID_DIR)){
-		mkdir(CACHE_DIR . POSTID_DIR);
-	}
-
 	$filename = CACHE_DIR . POSTID_DIR . $idstring .'.dat';
 	$data = array(
 		'time'=>UTIME,
@@ -520,9 +520,10 @@ function generate_postid($cmd = '')
 
 function check_postid($idstring)
 {
+	global $memcache;
 	$filename = CACHE_DIR. POSTID_DIR . $idstring . '.dat';
 	$ret = TRUE;
-	if ( file_exists($filename)){
+	if ( file_exists($filename) || $memcache !== 'null'){
 		$data = cache_read($filename);
 		cache_delete($filename);
 		if ($data['ip'] !== $_SERVER['REMOTE_ADDR']){
@@ -532,30 +533,7 @@ function check_postid($idstring)
 	}else{
 		$ret = FALSE;
 	}
-	if (!isset($memcache)){
-		cleanup_postid(POSTID_EXPIRE);
-	}
+	cache_cleanup($filename, POSTID_EXPIRE);
 	return $ret;
 }
-
-/* default ... 1 day */
-function cleanup_postid()
-{
-	$directory_list = scandir(CACHE_DIR.POSTID_DIR);
-
-	foreach($directory_list as $file) {
-		//POST IDファイルかどうかチェック。
-		//md5でファイル名を生成しているので、拡張子が33文字目にあるはず。
-		if (strpos($file, '.dat') === 32) {
-			$filename = CACHE_DIR.POSTID_DIR.$file;
-			$filetime = exec ('stat -c %Y '. escapeshellarg ($filename));	// filectime()は環境によっては動作しないため。
-			
-			// 有効期限を過ぎたファイルは削除
-			if(UTIME - $filetime > POSTID_EXPIRE) {
-				unlink($filename);
-			}
-		}
-	}
-}
-
 ?>
