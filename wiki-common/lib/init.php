@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: init.php,v 1.57.6 2011/11/02 23:16:00 Logue Exp $
+// $Id: init.php,v 1.57.7 2011/11/21 23:16:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -15,7 +15,7 @@
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
 define('S_VERSION', 'v1.0 alpha2');
-define('S_REVSION', '20110924');
+define('S_REVSION', '20111121');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &#169; 2010-2011' .
@@ -39,7 +39,7 @@ defined('PLUS_THEME')			or define('PLUS_THEME',	'default');
 define('IS_AJAX', isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' || isset($vars['ajax']));
 
 // ページ名やファイル名として使用できない文字（エンコード前の文字）
-defined('PKWK_ILLEGAL_CHARS_PATTERN') or define('PKWK_ILLEGAL_CHARS_PATTERN', '/[%|=|&|?|~|#|\s|\0|\@|;|\$|+|\\|\[|\]|\||^|{|}|\']/');
+defined('PKWK_ILLEGAL_CHARS_PATTERN') or define('PKWK_ILLEGAL_CHARS_PATTERN', '/[%|=|&|?|~|#|\r|\n|\0|\@|;|\$|+|\\|\[|\]|\||^|{|}|\']/');
 /////////////////////////////////////////////////
 // Init server variables
 
@@ -261,6 +261,40 @@ if (isset($_GET['encode_hint']) && $_GET['encode_hint'] != '')
 }
 
 /////////////////////////////////////////////////
+// Memcache利用可能時
+//
+// キー属性にファイル名とパスが格納されるため、
+// WikiFirmを組んでいても上書きされる心配はないよ。たぶん。
+
+defined('MEMCACHE_HOST') or define('MEMCACHE_HOST', 'localhost');
+defined('MEMCACHE_PORT') or define('MEMCACHE_PORT', '11211');
+
+if (class_exists('Memcache')){
+	$memcache = new Memcache;
+	if (!@$memcache->pconnect(MEMCACHE_HOST, MEMCACHE_PORT)) {
+		$info[] = sprintf('Couldn\t to connect Memcached %s:%s%s', MEMCACHE_HOST, MEMCACHE_PORT, PHP_EOL);
+		$memcache = null;
+	}else{
+		$info[] = 'Memcache is enabled! <var>'.$memcache->getVersion().'</var>';
+	}
+}else{
+	$info[] = 'Memcache is disabled.';
+	$memcache = null;
+}
+/*
+/////////////////////////////////////////////////
+// TokyoTyrant利用可能時（未実装）
+// 仕様は同上。
+
+defined('TOKYOTYRANT_HOST') or define('TOKYOTYRANT_HOST', 'localhost');
+defined('TOKYOTYRANT_PORT') or define('TOKYOTYRANT_PORT', TokyoTyrant::RDBDEF_PORT);
+if (class_exists('TokyoTyrant')){
+	// Wikiデーターの保存に使用すれば異次元の速度になるだろうなぁ。
+	$tokyotyrant = new TokyoTyrant(TOKYOTYRANT_HOST, TOKYOTYRANT_PORT);
+	$info[] = 'TokyoTyrant is enabled.';
+}
+*/
+/////////////////////////////////////////////////
 // QUERY_STRINGを取得
 
 $arg = '';
@@ -343,12 +377,6 @@ if (isset($vars['page'])) {
 // 整形: msg, 改行を取り除く
 if (isset($vars['msg'])) {
 	$get['msg'] = $post['msg'] = $vars['msg'] = str_replace("\r", '', $vars['msg']);
-}
-
-// 後方互換性 (?md5=...)
-if (isset($get['md5']) && $get['md5'] != '' &&
-    ! isset($vars['cmd']) && ! isset($vars['plugin'])) {
-	$get['cmd'] = $post['cmd'] = $vars['cmd'] = 'md5';
 }
 
 // TrackBack Ping
@@ -501,7 +529,7 @@ if (!IS_AJAX){
 		// 読み込むsrcディレクトリ内のJavaScript
 		$default_js = array(
 			/* libraly */
-			'swfupload',
+//			'swfupload',
 			'tzCalculation_LocalTimeZone',
 			
 			/* Use plugins */ 
@@ -509,6 +537,8 @@ if (!IS_AJAX){
 			'jquery.beautyOfCode',
 			'jquery.colorbox',
 			'jquery.cookie',
+			'jquery.fileupload',
+			'jquery.fileupload-ui',
 			'jquery.i18n',
 			'jquery.jplayer',
 			'jquery.jstree',

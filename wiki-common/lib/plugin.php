@@ -195,7 +195,6 @@ function do_plugin_action($name)
 	textdomain(DOMAIN);
 	T_textdomain(DOMAIN);
 
-	
 	$retvar['body'] = add_hidden_field($retvar['body'], $name);
 
 	return $retvar;
@@ -301,14 +300,17 @@ function use_plugin($plugin, $lines)
 }
 
 function add_hidden_field($retvar, $name){
-	if (PKWK_ENCODING_HINT !== ''){
-		// Insert a hidden field, supports idenrtifying text enconding
-		$retvar = preg_replace('/<form[^>]*>/', '$0'."\n".'<input type="hidden" name="encode_hint" value="' . PKWK_ENCODING_HINT . '" />', $retvar);
+	if (preg_match('/<form.+method="?(get|post)"[^>]*>/i', $retvar, $matches) !== 0){
+		if (PKWK_ENCODING_HINT !== ''){
+			// Insert a hidden field, supports idenrtifying text enconding
+			$hidden_field[] = '<input type="hidden" name="encode_hint" value="' . PKWK_ENCODING_HINT . '" />';
+		}
+		if (preg_match('/menu|side|header|footer|full|read|include|calendar/',$name) !== 1 && $matches[1] !== 'get'){
+			// from PukioWikio
+			$hidden_field[] = '<input type="hidden" name="postid" value="'.generate_postid($name).'" />';
+		}
+		$retvar = preg_replace('/<form[^>]*>/', '$0'. "\n".join("\n",$hidden_field), $retvar);
 	}
-	
-	// from PukioWikio
-	$retvar = preg_replace('/<form.+?(method="post")[^>]*>/', '$0'."\n".'<input type="hidden" name="postid" value="'.generate_postid($name).'" />', $retvar);
-
 	return $retvar;
 }
 ?>
