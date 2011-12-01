@@ -21,28 +21,49 @@ function plugin_mixirss_action()
 	global $vars, $get, $post, $rss_max, $rss_description, $page_title, $whatsnew, $trackback;
 	global $modifier;
 	global $exclude_plugin;
+	global $memcache;
 
 	$version = isset($vars['ver']) ? $vars['ver'] : '';
 	switch($version){
-	case '':  $version = '1.0';  break; // mixi Default
-	case '1': $version = '1.0';  break;
-	case '2': $version = '2.0';  break;
-	case '0.91': /* FALLTHROUGH */
-	case '1.0' : /* FALLTHROUGH */
-	case '2.0' : break;
-	default: die('Invalid RSS version!!');
+		case '':  $version = '1.0';  break; // mixi Default
+		case '1': $version = '1.0';  break;
+		case '2': $version = '2.0';  break;
+		case '0.91': /* FALLTHROUGH */
+		case '1.0' : /* FALLTHROUGH */
+		case '2.0' : break;
+		default: die('Invalid RSS version!!');
 	}
 
-	$recent = CACHE_DIR . 'recent.dat';
-	if (! file_exists($recent)) die('recent.dat is not found');
-	$time_recent = filemtime($recent);
+	$data = array();
 
-	$rsscache = CACHE_DIR . 'rsscache' . $version . '.dat';
-	if (file_exists($rsscache)) {
-		$time_rsscache = filemtime($rsscache);
-	} else {
-		$time_rsscache = 0;
+	if ($memcache === null){
+		$recent = CACHE_DIR . PKWK_MAXSHOW_CACHE;
+		if (! file_exists($recent)) die('PKWK_MAXSHOW_CACHE is not found');
+
+		foreach (file_head($recent, $rss_max) as $line) {
+			list($time, $page) = explode("\t", rtrim($line));
+			$data[$page] = $time;
+		}
+		$time_recent = filemtime($recent);
+	}else{
+		$cache_name = substr(PKWK_MAXSHOW_CACHE,0,strrpos(PKWK_MAXSHOW_CACHE, '.'));
+		$lines = $memcache->get(MEMCACHE_PREFIX.$cache_name);
+		if ($lines === FALSE){
+			die('PKWK_MAXSHOW_CACHE does not found in memcache. please reload.');
+		}else{
+			$count = (count($lines) < $rss_max) ? count($lines) : $rss_max;
+			$i = 0;
+			foreach($lines as $page => $time){
+				if ($i > $count) break;
+				$data[$page] = $time;
+				$i++;
+			}
+		}
+		$time_recent = $memcache->get(MEMCACHE_PREFIX.'timestamp-'$cache_name);
 	}
+
+	$rsscache = CACHE_DIR . 'rsscache' . $version . '.xml';
+	$time_rsscache = (file_exists($rsscache)) ? filemtime($rsscache) : 0;
 
 	// if caching rss file, return cache.
 	if ($time_recent <= $time_rsscache) {
@@ -55,7 +76,7 @@ function plugin_mixirss_action()
 
 	// Official Main routine ...
 	$page_title_utf8 = mb_convert_encoding($page_title, 'UTF-8', SOURCE_ENCODING);
-	$rss_description_utf8 = mb_convert_encoding(htmlsc($rss_description), 'UTF-8', SOURCE_ENCODING);
+	$rss_description_utf8 = mb_convert_encoding(htmlspecialchars($rss_description), 'UTF-8', SOURCE_ENCODING);
 
 	// Disable plugin
 	$exclude_plugin[] = 'include';
@@ -65,9 +86,7 @@ function plugin_mixirss_action()
 
 	// Creating <item>
 	$items = $rdf_li = '';
-	$source = file($recent);
-	foreach (array_splice($source, 0, $rss_max) as $line) {
-		list($time, $page) = explode("\t", rtrim($line));
+	foreach ($data as $page => $time) {
 		$r_page = rawurlencode($page);
 		$url    = get_page_uri($page);
 		$title  = mb_convert_encoding($page, 'UTF-8', SOURCE_ENCODING);
@@ -85,7 +104,6 @@ function plugin_mixirss_action()
  <link>$url</link>
 $date
 </item>
-
 EOD;
 			break;
 

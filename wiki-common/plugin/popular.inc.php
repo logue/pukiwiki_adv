@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: popular.inc.php,v 1.20.8 2011/02/05 12:05:00 Logue Exp $
+// $Id: popular.inc.php,v 1.20.9 2011/11/29 20:01:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2005-2007 PukiWiki Plus! Team
@@ -45,10 +45,8 @@ function plugin_popular_init()
 
 function plugin_popular_convert()
 {
-	global $vars;
-	global $_popular_msg;
+	global $vars, $_popular_msg;
 //	global $_popular_plugin_frame, $_popular_plugin_today_frame;
-	static $localtime;
 
 	$_popular_plugin_frame				= sprintf('<h5>%s</h5><div>%%s</div>', $_popular_msg['popular']);
 	$_popular_plugin_today_frame		= sprintf('<h5>%s</h5><div>%%s</div>', $_popular_msg['today']);
@@ -57,15 +55,6 @@ function plugin_popular_convert()
 	$view   = 'total';
 	$max    = PLUGIN_POPULAR_DEFAULT;
 	$except = '';
-
-	if (! isset($localtime)) {
-		list($zone, $zonetime) = set_timezone(DEFAULT_LANG);
-		$localtime = UTIME + $zonetime;
-	}
-
-	$today = gmdate('Y/m/d', $localtime);
-	// $yesterday = gmdate('Y/m/d', strtotime('yesterday', $localtime));
-	$yesterday = gmdate('Y/m/d',gmmktime(0,0,0, gmdate('m',$localtime), gmdate('d',$localtime)-1, gmdate('Y',$localtime)));
 
 	$array = func_get_args();
 	switch (func_num_args()) {
@@ -91,7 +80,7 @@ function plugin_popular_convert()
 	case 1: $max    = $array[0];
 	}
 
-	$counters = plugin_popular_getlist($view,$max);
+	$counters = plugin_popular_getlist($view,$max,$except);
 
 	$items = '';
 	if (! empty($counters)) {
@@ -135,42 +124,85 @@ function plugin_popular_convert()
 }
 
 function plugin_popular_action(){
+	global $vars, $_popular_msg;
+
+	$view	= isset($vars['view'])		? $vars['view'] : 'total';
+	$except	= isset($vars['except'])	? $vars['except'] : '';
+	$max	= isset($vars['max'])		? $vars['max'] : PLUGIN_POPULAR_DEFAULT;
 	
+	switch ($view) {
+		case 'today':
+			$frame = $_popular_plugin_today_frame;
+			break;
+		case 'yesterday':
+			$frame = $_popular_plugin_yesterday_frame;
+			break;
+		case 'recent':
+			$frame = $_popular_plugin_recent_frame;
+			break;
+		case 'total':
+		default:
+			$frame = $_popular_plugin_frame;
+			break;
+	}
+
+	pkwk_common_headers();
+	$obj = array(
+		'title'		=> sprintf($frame, count($counters), $items),
+		'counters'	=> plugin_popular_getlist($view, $max, $except)
+	);
+	header("Content-Type: application/json; charset=".CONTENT_CHARSET);
+	echo json_encode($obj);
+	exit;
 }
 
-function plugin_popular_getlist($view, $max = PLUGIN_POPULAR_DEFAULT){
+function plugin_popular_getlist($view, $max = PLUGIN_POPULAR_DEFAULT, $except){
+	static $localtime;
+	if (! isset($localtime)) {
+		list($zone, $zonetime) = set_timezone(DEFAULT_LANG);
+		$localtime = UTIME + $zonetime;
+	}
+
+	$today = gmdate('Y/m/d', $localtime);
+	// $yesterday = gmdate('Y/m/d', strtotime('yesterday', $localtime));
+	$yesterday = gmdate('Y/m/d',gmmktime(0,0,0, gmdate('m',$localtime), gmdate('d',$localtime)-1, gmdate('Y',$localtime)));
+	
 	$counters = array();
 	foreach (auth::get_existpages(COUNTER_DIR, '.count') as $file=>$page) {
 		if (($except != '' && preg_match("/".$except."/", $page)) ||
-		    is_cantedit($page) || check_non_list($page) ||
-		    ! is_page($page))
+			is_cantedit($page) || check_non_list($page) ||
+			! is_page($page))
 			continue;
 
-		$array = file(COUNTER_DIR . $file);
-		$count = rtrim($array[0]);
-		$date  = rtrim($array[1]);
-		$today_count = rtrim($array[2]);
-		$yesterday_count = rtrim($array[3]);
-
-		$counters['_' . $page] = 0;
-		if ($view == 'today' or $view == 'recent') {
-			// $pageが数値に見える(たとえばencode('BBS')=424253)とき、
-			// array_splice()によってキー値が変更されてしまうのを防ぐ
-			// ため、キーに '_' を連結する
-			if ($today == $date) $counters['_' . $page] = $today_count;
-		} 
-		if ($view == 'yesterday' or $view == 'recent') {
-			if ($today == $date) {
-				$counters['_' . $page] += $yesterday_count;
-			} elseif ($yesterday == $date) {
-				$counters['_' . $page] += $today_count;
+		$count_file = COUNTER_DIR . str_replace('.txt','.count', $file);
+		
+		if (file_exists($count_file)){
+			$array = file($count_file);
+			$count = rtrim($array[0]);
+			$date  = rtrim($array[1]);
+			$today_count = rtrim($array[2]);
+			$yesterday_count = rtrim($array[3]);
+	
+			$counters['_' . $page] = 0;
+			if ($view == 'today' or $view == 'recent') {
+				// $pageが数値に見える(たとえばencode('BBS')=424253)とき、
+				// array_splice()によってキー値が変更されてしまうのを防ぐ
+				// ため、キーに '_' を連結する
+				if ($today == $date) $counters['_' . $page] = $today_count;
+			} 
+			if ($view == 'yesterday' or $view == 'recent') {
+				if ($today == $date) {
+					$counters['_' . $page] += $yesterday_count;
+				} elseif ($yesterday == $date) {
+					$counters['_' . $page] += $today_count;
+				}
 			}
-		}
-		if ($view == 'total') {
-			$counters['_' . $page] = $count;
-		}
-		if ($counters['_' . $page] == 0) {
-			unset($counters['_' . $page]);
+			if ($view == 'total') {
+				$counters['_' . $page] = $count;
+			}
+			if ($counters['_' . $page] == 0) {
+				unset($counters['_' . $page]);
+			}
 		}
 	}
 	asort($counters, SORT_NUMERIC);

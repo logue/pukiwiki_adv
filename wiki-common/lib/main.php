@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance.
-// $Id: main.php,v 1.23.26 2011/09/11 23:04:00 Logue Exp $
+// $Id: main.php,v 1.23.27 2011/11/28 21:40:00 Logue Exp $
 //
 // PukiWiki Advance
 //  Copyright (C) 2010-2011 by PukiWiki Advance Team
@@ -293,6 +293,11 @@ if ($always_menu_displayed) {
 	if (exist_plugin_convert('menu')) $body_menu = do_plugin_convert('menu');
 	if (exist_plugin_convert('side')) $body_side = do_plugin_convert('side');
 }
+
+if ($memcache !== null){
+	$memcache->close();
+}
+
 // Output
 catbody($title, $page, $body);
 exit;

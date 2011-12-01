@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: init.php,v 1.57.7 2011/11/21 23:16:00 Logue Exp $
+// $Id: init.php,v 1.57.8 2011/11/28 21:35:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -15,11 +15,11 @@
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
 define('S_VERSION', 'v1.0 alpha2');
-define('S_REVSION', '20111121');
+define('S_REVSION', '20111128');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &#169; 2010-2011' .
-	' <a href="http://pukiwiki.logue.be/">PukiWiki Advance Developers Team</a>.' .
+	' <a href="http://pukiwiki.logue.be/" rel="product">PukiWiki Advance Developers Team</a>.' .
 	' Licensed under the <a href="http://www.gnu.org/licenses/gpl-2.0.html" rel="license">GPLv2</a>.<br />' .
 	' Based on <a href="http://pukiwiki.cafelounge.net/plus/">"PukiWiki Plus! i18n"</a>'
 );
@@ -262,31 +262,43 @@ if (isset($_GET['encode_hint']) && $_GET['encode_hint'] != '')
 
 /////////////////////////////////////////////////
 // Memcache利用可能時
-//
-// キー属性にファイル名とパスが格納されるため、
-// WikiFirmを組んでいても上書きされる心配はないよ。たぶん。
+// Cacheディレクトリ内のキャッシュをMemcacheに保存します。
 
-defined('MEMCACHE_HOST') or define('MEMCACHE_HOST', 'localhost');
-defined('MEMCACHE_PORT') or define('MEMCACHE_PORT', '11211');
+// Memcacheのホスト。ソケット接続の場合は、unix://var/run/memcache.socketのようにすること。（ラウンドロビン非対応）
+defined('MEMCACHE_HOST')	or define('MEMCACHE_HOST', '127.0.0.1');
+// Memcacheのポート。ソケット接続の場合は、0にすること。
+defined('MEMCACHE_PORT')	or define('MEMCACHE_PORT', 11211);
+// memcacheのプリフィックス（デフォルトはキャッシュディレクトリのパスの\や/を_にしたもの。）
+defined('MEMCACHE_PREFIX')	or define('MEMCACHE_PREFIX', str_replace(array('/','\\'), '_',realpath(CACHE_DIR)).'_');
+// memcache変数を圧縮（ページリストのキャッシュなどの一部の機能では無効化されます。）
+defined('MEMCACHE_FLAG')	or define('MEMCACHE_FLAG', MEMCACHE_COMPRESSED);
+// memcacheの有効期限（デフォルトは無制限）
+defined('MEMCACHE_EXPIRE')	or define('MEMCACHE_EXPIRE', 0);
 
 if (class_exists('Memcache')){
 	$memcache = new Memcache;
-	if (!@$memcache->pconnect(MEMCACHE_HOST, MEMCACHE_PORT)) {
-		$info[] = sprintf('Couldn\t to connect Memcached %s:%s%s', MEMCACHE_HOST, MEMCACHE_PORT, PHP_EOL);
-		$memcache = null;
+	if (!$memcache->connect(MEMCACHE_HOST, MEMCACHE_PORT)) {
+		// Memcacheが使用できない場合
+		$info[] = sprintf('Couldnot to connect Memcached: <var>%s:%s%s</var>. Please check Memcached is running.', MEMCACHE_HOST, MEMCACHE_PORT, PHP_EOL);
+		unset($memcache);
 	}else{
-		$info[] = 'Memcache is enabled! <var>'.$memcache->getVersion().'</var>';
+		// Memcacheが使用できる場合。
+//		$memcache->setCompressThreshold(20000, 0.2);
+		$info[] = 'Memcache is enabled! Ver.<var>'.$memcache->getVersion().'</var> / ';
+		// セッション管理もMemcacheで行う
+		ini_set('session.save_handler', 'memcache');
+		ini_set('session.save_path', (strpos(MEMCACHE_HOST, 'unix://') !== FALSE) ? MEMCACHE_HOST : 'tcp://'.MEMCACHE_HOST.':'.MEMCACHE_PORT);
 	}
 }else{
 	$info[] = 'Memcache is disabled.';
-	$memcache = null;
+	unset($memcache);
 }
-/*
+
 /////////////////////////////////////////////////
 // TokyoTyrant利用可能時（未実装）
 // 仕様は同上。
-
-defined('TOKYOTYRANT_HOST') or define('TOKYOTYRANT_HOST', 'localhost');
+/*
+defined('TOKYOTYRANT_HOST') or define('TOKYOTYRANT_HOST', '127.0.0.1');
 defined('TOKYOTYRANT_PORT') or define('TOKYOTYRANT_PORT', TokyoTyrant::RDBDEF_PORT);
 if (class_exists('TokyoTyrant')){
 	// Wikiデーターの保存に使用すれば異次元の速度になるだろうなぁ。
@@ -470,7 +482,7 @@ if (!IS_AJAX){
 */
 		'jquery' => array(
 			'file'	=> 'jquery.min.js',
-			'ver'	=> '1.7'
+			'ver'	=> '1.7.0'
 		),
 		'jqueryui'	=> array(
 			'file'	=> 'jquery-ui.min.js',

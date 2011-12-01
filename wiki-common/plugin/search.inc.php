@@ -116,7 +116,7 @@ EOD;
 <form action="$script" method="{$method}">
 	<input type="hidden" name="cmd" value="search" />
 	<div class="search_form">
-		<input type="text"  name="word" value="$s_word" size="20" maxlength="$maxlength" />
+		<input type="text"  name="word" value="$s_word" size="20" maxlength="$maxlength" id="search_word" />
 		<input type="radio" name="type" id="_p_search_AND" value="AND" $and_check />
 		<label for="_p_search_AND">$_btn_and</label>
 		<input type="radio" name="type" id="_p_search_OR" value="OR"  $or_check />

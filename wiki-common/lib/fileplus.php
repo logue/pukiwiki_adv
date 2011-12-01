@@ -1,8 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: fileplus.php,v 1.2.7 2011/11/21 13:51:00 Logue Exp $
+// $Id: fileplus.php,v 1.2.8 2011/11/28 21:28:00 Logue Exp $
 // Copyright (C)
-//   2010 PukiWiki Advance Team
+//   2010-2011 PukiWiki Advance Team
 //   2005-2006,2009 PukiWiki Plus! Team
 // License: GPL v2 or (at your option) any later version
 //
@@ -15,25 +15,36 @@ defined('POSTID_EXPIRE')	or define('POSTID_EXPIRE', 86400);	// 60*60*24 = 1day
 // Get Ticket
 function get_ticket($newticket = FALSE)
 {
-	$file = CACHE_DIR . 'ticket.dat';
+	global $memcache;
+	
+	if ($memcache !== null){
+		$cache_name = MEMCACHE_PREFIX.'ticket';
+		$ticket = $memcache->get($cache_name);
+		if ($ticket === false){
+			$ticket = md5(mt_rand());
+			$memcache->set($cache_name, $ticket, MEMCACHE_FLAG, MEMCACHE_EXPIRE);
+		}
+	}else{
+		$file = CACHE_DIR . 'ticket.dat';
 
-	if (file_exists($file) && $newticket !== TRUE) {
-		$fp = fopen($file, 'r') or die_message('Cannot open ' . 'CACHE_DIR/' . 'ticket.dat');
-		$ticket = trim(fread($fp, filesize($file)));
-		fclose($fp);
-	} else {
-		$ticket = md5(mt_rand());
-		pkwk_touch_file($file);
-		$fp = fopen($file, 'r+') or die_message('Cannot open ' . 'CACHE_DIR/' . 'ticket.dat');
-		set_file_buffer($fp, 0);
-		@flock($fp, LOCK_EX);
-		$last = ignore_user_abort(1);
-		ftruncate($fp, 0);
-		rewind($fp);
-		fputs($fp, $ticket . "\n");
-		ignore_user_abort($last);
-		@flock($fp, LOCK_UN);
-		fclose($fp);
+		if (file_exists($file) && $newticket !== TRUE) {
+			$fp = fopen($file, 'r') or die_message('Cannot open ' . 'CACHE_DIR/' . 'ticket.dat');
+			$ticket = trim(fread($fp, filesize($file)));
+			fclose($fp);
+		} else {
+			$ticket = md5(mt_rand());
+			pkwk_touch_file($file);
+			$fp = fopen($file, 'r+') or die_message('Cannot open ' . 'CACHE_DIR/' . 'ticket.dat');
+			set_file_buffer($fp, 0);
+			@flock($fp, LOCK_EX);
+			$last = ignore_user_abort(1);
+			ftruncate($fp, 0);
+			rewind($fp);
+			fputs($fp, $ticket . "\n");
+			ignore_user_abort($last);
+			@flock($fp, LOCK_UN);
+			fclose($fp);
+		}
 	}
 	return $ticket;
 }
@@ -61,32 +72,52 @@ function plus_readfile($filename)
 
 // structure
 
-// ƒLƒƒƒbƒVƒ…“Ç‚Ýž‚Ý
+
+// ã‚­ãƒ£ãƒƒã‚·ãƒ¥å­˜åœ¨ç¢ºèª
+function cache_check($filename)
+{
+	global $memcache;
+	$data = array();
+	if ($memcache !== null){
+		$data = $memcache->get(MEMCACHE_PREFIX.substr($filename,0,strrpos($filename, '.')));
+		$ret = ($data !== false) ? true : false;
+	}else{
+		$ret = (file_exists(CACHE_DIR.$filename) !== FALSE) ? true : false;
+	}
+	return $ret;
+}
+
+// ã‚­ãƒ£ãƒƒã‚·ãƒ¥èª­ã¿è¾¼ã¿
 function cache_read($filename)
 {
 	global $memcache;
+	$data = array();
 	if ($memcache !== null){
-		$data = $memcache->get($filename);
-	}else{
-		$fp = fopen($filename, 'rb');
+		$data = $memcache->get(MEMCACHE_PREFIX.substr($filename,0,strrpos($filename, '.')));
+	}else if (file_exists(CACHE_DIR.$filename) !== FALSE){
+		$fp = fopen(CACHE_DIR.$filename, 'rb');
 		if ($fp === false) return array();
 		@flock($fp, LOCK_SH);
-		$data = unserialize( fread($fp, filesize($filename)) );
+		$data = unserialize( fread($fp, filesize(CACHE_DIR.$filename)) );
 		@flock($fp, LOCK_UN);
 		if(! fclose($fp)) return array();
 	}
 	return $data;
 }
 
-// ƒLƒƒƒbƒVƒ…‘‚«o‚µ{ƒNƒŠ[ƒ“ƒAƒbƒv
-function cache_write($data, $filename, $expire = null)
+// ã‚­ãƒ£ãƒƒã‚·ãƒ¥æ›¸ãå‡ºã—
+function cache_write($data, $filename, $expire = MEMCACHE_EXPIRE, $compress=MEMCACHE_FLAG)
 {
 	global $memcache;
 	if ($memcache !== null){
-		$ret = $memcache->set($filename, $data, MEMCACHE_COMPRESSED ,$expire);
+		$cache_name = MEMCACHE_PREFIX.substr($filename,0,strrpos($filename, '.'));
+		$ret = $memcache->replace($cache_name, $data, $compress ,$expire);
+		if( $ret === false ){
+			$ret = $memcache->set($cache_name, $data, $compress ,$expire);
+		}
 	}else{
-		pkwk_touch_file($filename);
-		$fp = fopen($filename, 'wb');
+		pkwk_touch_file(CACHE_DIR.$filename);
+		$fp = fopen(CACHE_DIR.$filename, 'wb');
 		if ($fp === false) return false;
 		@flock($fp, LOCK_EX);
 		rewind($fp);
@@ -95,28 +126,28 @@ function cache_write($data, $filename, $expire = null)
 		ftruncate($fp, ftell($fp));
 		@flock($fp, LOCK_UN);
 		fclose($fp);
-		cache_cleanup($filename, $exepire);
+		cache_cleanup($filename, $expire);
 	}
 	return $ret;
 }
 
-// ƒNƒŠ[ƒ“ƒAƒbƒvˆ—imemcache–³ŒøŽž‚ÍAˆ—‚ðs‚í‚È‚¢j
-function cache_cleanup($filename, $exepire){
+// ã‚¯ãƒªãƒ¼ãƒ³ã‚¢ãƒƒãƒ—å‡¦ç†ï¼ˆmemcacheç„¡åŠ¹æ™‚ã¯ã€å‡¦ç†ã‚’è¡Œã‚ãªã„ï¼‰
+function cache_cleanup($filename, $expire){
 	global $memcache;
 	if ($memcache == null){
-		// •Û‘¶æ‚ÌƒfƒBƒŒƒNƒgƒŠ–¼‚ðŽæ“¾
-		$dir = dirname($filename);
-		// Šg’£Žq‚ðŽæ“¾i“ñdŠg’£Žq‚Í•s‰Âj
-		$ext = substr($filename, strrpos($filename, '.') + 1);
+		// ä¿å­˜å…ˆã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªåã‚’å–å¾—
+		$dir = dirname(CACHE_DIR.$filename);
+		// æ‹¡å¼µå­ã‚’å–å¾—ï¼ˆäºŒé‡æ‹¡å¼µå­ã¯ä¸å¯ï¼‰
+		$ext = substr(CACHE_DIR.$filename, strrpos(CACHE_DIR.$filename, '.') + 1);
 		
-		// “¯ˆêŠK‘wã‚Ìƒtƒ@ƒCƒ‹‚ð‘{¸
+		// åŒä¸€éšŽå±¤ä¸Šã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æœæŸ»
 		foreach(scandir($dir) as $file) {
-			// “¯ˆêŠg’£Žq‚Ìƒtƒ@ƒCƒ‹‚ðƒNƒŠ[ƒ“ƒAƒbƒv
+			// åŒä¸€æ‹¡å¼µå­ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚¯ãƒªãƒ¼ãƒ³ã‚¢ãƒƒãƒ—
 			if (mb_strpos($file, $ext)){
-				$f = $dir.'/'.$file;	// ƒtƒ@ƒCƒ‹‚Ìƒtƒ‹ƒpƒX
-				//$filetime = exec ('stat -c %Y '. escapeshellarg ($f));	// filectime()‚ÍŠÂ‹«‚É‚æ‚Á‚Ä‚Í“®ì‚µ‚È‚¢‚½‚ßB
+				$f = $dir.'/'.$file;	// ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ãƒ«ãƒ‘ã‚¹
+				//$filetime = exec ('stat -c %Y '. escapeshellarg ($f));	// filectime()ã¯ç’°å¢ƒã«ã‚ˆã£ã¦ã¯å‹•ä½œã—ãªã„ãŸã‚ã€‚
 				$filetime = filectime($f);
-				// —LŒøŠúŒÀ‚ð‰ß‚¬‚½ƒtƒ@ƒCƒ‹‚Ííœ
+				// æœ‰åŠ¹æœŸé™ã‚’éŽãŽãŸãƒ•ã‚¡ã‚¤ãƒ«ã¯å‰Šé™¤
 				if(UTIME - $filetime > $expire) {
 					cache_delete($f);
 				}
@@ -125,17 +156,123 @@ function cache_cleanup($filename, $exepire){
 	}
 }
 
-// ƒLƒƒƒbƒVƒ…íœ
+// ã‚­ãƒ£ãƒƒã‚·ãƒ¥å‰Šé™¤
 function cache_delete($filename){
 	global $memcache;
+	$ret = false;
 	if ($memcache !== null){
-		$ret = $memcache->delete($filename);
-	}else{
-		$ret = unlink($filename);
+		$ret = $memcache->delete(MEMCACHE_PREFIX.substr($filename,0,strrpos($filename, '.')));
+ 	}else if (file_exists(CACHE_DIR.$filename) !== FALSE){
+		unlink(CACHE_DIR.$filename);
+		$ret = true;
 	}
 	return $ret;
 }
 
+// ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚¯ãƒªã‚¢
+function cache_clear($pattern = 'dat'){
+	global $memcache;
+	if ($memcache !== null){
+		foreach (getMemcacheList() as $key){
+			if (preg_match('/^'.$pattern.'/', $key) !== FALSE){
+				$memcache->delete($key);
+			}
+		}
+	}else{
+		$dir = dirname(CACHE_DIR);
+		foreach(scandir($dir) as $file) {
+			$ext = substr($file, strrpos($file, '.') + 1);
+			if (preg_match('/'.$pattern.'$/', $file) !== FALSE){
+				$file_path = $dir.'/'.$file;
+				if (file_exsists($file_path)){
+					@unlink($file_path);
+				}
+			}
+		}
+	}
+}
+
+// memcacheå†…ã®ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã®ã‚­ãƒ¼ã‚’å–å¾—
+function getMemcacheKeyList(){
+	global $memcache;
+	$list = array();
+	$allSlabs = $memcache->getExtendedStats('slabs');
+	$items = $memcache->getExtendedStats('items');
+	foreach($allSlabs as $server => $slabs) {
+		foreach($slabs AS $slabId => $slabMeta) {
+			$cdump = $memcache->getExtendedStats('cachedump',(int)$slabId);
+			foreach($cdump AS $keys => $arrVal) {
+				if (is_array($arrVal)){
+					foreach($arrVal AS $k=>$v) {
+						$ret[] = $k;
+					}
+				}else{
+					$ret[] = $arrVal;
+				}
+			}
+		}
+	}
+	return $ret;
+}
+
+// update autolink data
+function autolink_pattern_write($filename, $autolink_pattern)
+{
+	global $memcache;
+
+	if ($memcache !== null){
+		$cache_name = MEMCACHE_PREFIX.substr($filename,0,strrpos($filename, '.'));
+		$ret = $memcache->replace($cache_name, $autolink_pattern, MEMCACHE_FLAG, MEMCACHE_EXPIRE);
+		if( $ret === false ){
+			$memcache->set($cache_name, $autolink_pattern, MEMCACHE_FLAG, MEMCACHE_EXPIRE);
+		}
+	}else{
+		list($pattern, $pattern_a, $forceignorelist) = $autolink_pattern;
+		pkwk_touch_file(CACHE_DIR.$filename);
+		$fp = fopen(CACHE_DIR.$filename, 'w') or
+				die_message('Cannot open ' . $filename);
+		set_file_buffer($fp, 0);
+		flock($fp, LOCK_EX);
+		rewind($fp);
+		fputs($fp, $pattern   . "\n");
+		fputs($fp, $pattern_a . "\n");
+		fputs($fp, join("\t", $forceignorelist) . "\n");
+		flock($fp, LOCK_UN);
+		fclose($fp);
+	}
+}
+
+// Delete Autolink data
+function autolink_pattern_delete($filename){
+	global $memcache;
+	if ($memcache !== null){
+		$memcache->delete(MEMCACHE_PREFIX.substr($filename,0,strrpos($filename, '.')));
+	}else{
+		@unlink(CACHE_DIR . $filename);
+	}
+}
+
+// Read autolink data
+function autolink_pattern_read($filename){
+	global $memcache;
+	if ($memcache !== null){
+		$cache = $memcache->get(MEMCACHE_PREFIX.substr($filename,0,strrpos($filename, '.')));
+		if ($cache === FALSE){
+			return;
+		}
+		@list($auto, $auto_a, $forceignorepages) = $cache;
+	}else{
+		$file = CACHE_DIR . $filename;
+		if (! file_exists($file)){
+			return;
+		}
+		@list($auto, $auto_a, $forceignorepages_tsv) = file($file);
+		$forceignorepages = explode("\t", trim($forceignorepages_tsv));
+	}
+	return array($auto, $auto_a, $forceignorepages);
+}
+
+// ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã®ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—é–¢é€£
 function cache_timestamp_get_name($func='wiki') {
 	$filename = CACHE_DIR.'timestamp_';
 	switch ($func) {
@@ -182,20 +319,46 @@ function cache_timestamp_set_date($func,$file)
 
 function get_existpages_cache($dir = DATA_DIR, $ext = '.txt', $compat = true)
 {
-	$cache_name = CACHE_DIR.encode($dir.$ext).'.txt';
-	if (file_exists($cache_name)) {
-		if (cache_timestamp_compare_date('wiki',$cache_name)) {
-			$pages = get_existpages_cache_read($cache_name,$compat);
-			if (!empty($pages)) return $pages;
+	global $memcache;
+	
+	switch($dir){
+		case DATA_DIR: $func = 'wiki'; break;
+		case UPLOAD_DIR: $func = 'attach'; break;
+		default: $func = encode($dir.$ext);
+	}
+	
+	if ($memcache !== null){
+		$cache_name = MEMCACHE_PREFIX.'existpages-'.$func;
+		$pages = $memcache->get($cache_name);
+		if ($pages !== FALSE){
+			if (cache_timestamp_compare_date('wiki',$cache_name)) {
+				$pages = get_existpages_cache_read($cache_name,$compat);
+				if (!empty($pages)) return $pages;
+			}
+		}
+	}else{
+		$cache_name = CACHE_DIR.'existpages-'.$func.'.txt';
+		if (file_exists($cache_name)) {
+			if (cache_timestamp_compare_date('wiki',$cache_name)) {
+				$pages = get_existpages_cache_read($cache_name,$compat);
+				if (!empty($pages)) return $pages;
+			}
 		}
 	}
 
-	cache_timestamp_touch();
+	cache_timestamp_touch($func);
 
 	$pages = get_existpages($dir ,$ext);
-	$new_pages = get_existpages_cache_write($pages, $cache_name, $compat);
+	if ($memcache !== null){
+		$new_pages = $memcache->replace($cache_name, $pages, null, MEMCACHE_EXPIRE);
+		if( $new_pages === false ){
+			$memcache->set($cache_name, $pages, null, MEMCACHE_EXPIRE);
+		}
+	}else{
+		$new_pages = get_existpages_cache_write($pages, $cache_name, $compat);
+	}
 
-	cache_timestamp_set_date('wiki',$cache_name);
+	cache_timestamp_set_date($func,$cache_name);
 	return ($compat) ? $pages : $new_pages;
 }
 
@@ -242,13 +405,25 @@ function get_existpages_cache_write(& $pages, $filename, $compat=true)
 
 function get_attachfiles_cache($page='')
 {
-	$cache_name = CACHE_DIR.'attach_files.txt';
-	if (file_exists($cache_name)) {
-		if (cache_timestamp_compare_date('attach',$cache_name)) {
-			return get_attachfiles_cache_read($cache_name,$page);
+	global $memcache;
+	
+	if ($memcache !== null){
+		$cache_name = 'attachfiles';
+		$cache_data = cache_read($cache_name);
+		if (cache_timestamp_compare_date('attach',$cache_name) && $cache_data !== FALSE) {
+			return $cache_data;
+		}else{
+			cache_timestamp_touch('attach');
 		}
-	} else {
-		cache_timestamp_touch('attach');
+	}else{
+		$cache_name = CACHE_DIR.'attach_files.txt';
+		if (file_exists($cache_name)) {
+			if (cache_timestamp_compare_date('attach',$cache_name)) {
+				return get_attachfiles_cache_read($cache_name,$page);
+			}
+		} else {
+			cache_timestamp_touch('attach');
+		}
 	}
 
 	$retval = get_attachfiles_cache_write($cache_name,$page);
@@ -258,6 +433,8 @@ function get_attachfiles_cache($page='')
 
 function get_attachfiles_cache_write($filename,$page)
 {
+	global $memcache;
+
 	$dir = opendir(UPLOAD_DIR) or
 		die('directory ' . UPLOAD_DIR . ' is not exist or not readable.');
 	$retval = array();
@@ -268,10 +445,14 @@ function get_attachfiles_cache_write($filename,$page)
 		$scan_pattern = "/^({$page_pattern})_((?:[0-9A-F]{2})+)$/";
 	}
 
-	pkwk_touch_file($filename);
-	$fp = fopen($filename,'w');
-	if ($fp == FALSE) return array();
-	@flock($fp, LOCK_EX);
+	if ($memcache === null){
+		pkwk_touch_file($filename);
+		$fp = fopen($filename,'w');
+		if ($fp == FALSE) return array();
+		@flock($fp, LOCK_EX);
+	}else{
+		$data = array();
+	}
 
 	$matches = array();
 	while ($file = readdir($dir)) {
@@ -280,13 +461,22 @@ function get_attachfiles_cache_write($filename,$page)
 		$_file = decode($matches[2]);
 		$time = filemtime(UPLOAD_DIR.$file);
 		$size = filesize(UPLOAD_DIR.$file);
-		fwrite($fp, $time."\t".$size."\t".$file."\t".$_page."\t".$_file."\n");
+		
+		if ($memcache === null){
+			fwrite($fp, $time."\t".$size."\t".$file."\t".$_page."\t".$_file."\n");
+		}else{
+			$data[] = array($time,$size,$file,$_page,$_file);
+		}
 		if (! empty($page) && ! preg_match($scan_pattern, $file, $matches)) continue;
 		// [page][file] = array(time,size);
 		$retval[$_page][$_file] = array('time'=>$time,'size'=>$size);
 	}
-	@flock($fp, LOCK_UN);
-	@fclose($fp);
+	if ($memcache === null){
+		@flock($fp, LOCK_UN);
+		@fclose($fp);
+	}else{
+		cache_write($filename, $data);
+	}
 	closedir($dir);
 
 	return $retval;
@@ -294,27 +484,38 @@ function get_attachfiles_cache_write($filename,$page)
 
 function get_attachfiles_cache_read($filename,$page)
 {
+	global $memcache;
+	
 	$retval = array();
-	$fp = @fopen($filename, 'r');
-	if ($fp == FALSE) return $retval;
-	@flock($fp, LOCK_SH);
-
 	$page_pattern = ($page == '') ? '(?:[0-9A-F]{2})+' : preg_quote(encode($page), '/');
 	$pattern = "/^({$page_pattern})_((?:[0-9A-F]{2})+)$/";
 
-	$matches = array();
-	while (! feof($fp)) {
-		$line = fgets($fp, 2048);
-		if ($line === FALSE) continue;
-		$field = explode("\t", $line);
-		$_file = trim($field[4]);
-		// [page][file] = array(time,size);
-		if (! empty($page) && ! preg_match($pattern, $field[2], $matches)) continue;
-		$retval[$field[3]][$_file] = array('time'=>$field[0],'size'=>$field[1]);
-	}
+	if ($memcache === null){
+		$fp = @fopen($filename, 'r');
+		if ($fp == FALSE) return $retval;
+		@flock($fp, LOCK_SH);
+		
+		$matches = array();
+		while (! feof($fp)) {
+			$line = fgets($fp, 2048);
+			if ($line === FALSE) continue;
+			$field = explode("\t", $line);
+			$_file = trim($field[4]);
+			// [page][file] = array(time,size);
+			if (! empty($page) && ! preg_match($pattern, $field[2], $matches)) continue;
+			$retval[$field[3]][$_file] = array('time'=>$field[0],'size'=>$field[1]);
+		}
 
-	@flock($fp, LOCK_UN);
-	if(! fclose($fp)) return array();
+		@flock($fp, LOCK_UN);
+		if(! fclose($fp)) return array();
+	}else{
+		$data = $memcache->get($filename);
+		foreach($data as $field){
+			$_file = trim($field[4]);
+			$retval[$field[3]][$_file] = array('time'=>$field[0],'size'=>$field[1]);
+		}
+	}
+	
 	return $retval;
 }
 
@@ -333,16 +534,7 @@ function autobasealias_write($filename, &$pages)
 			$pairs[$base][] = $page;
 		}
 	}
-	$data = serialize($pairs);
-
-	$fp = fopen($filename, 'w') or
-			die_message('Cannot open ' . $filename . '<br />Maybe permission is not writable');
-	set_file_buffer($fp, 0);
-	@flock($fp, LOCK_EX);
-	rewind($fp);
-	fputs($fp, $data);
-	@flock($fp, LOCK_UN);
-	@fclose($fp);
+	cache_write($pairs, $filename);
 }
 
 function get_this_time_links($post,$diff)
@@ -424,19 +616,19 @@ function get_diff_lines($diffdata)
 
 /** Adv. Extended functions ***********************************************************************/
 function compress_file($in, $method, $chmod=644){
-	// ƒtƒ@ƒCƒ‹‚Ì‘¶ÝŠm”F
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã®å­˜åœ¨ç¢ºèª
 	if (!file_exists ($filename) || !is_readable ($filename)) return false;
-	// o—Íƒtƒ@ƒCƒ‹–¼
+	// å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«å
 	$out = $file.$method;
 	if ((!file_exists ($out) && !is_writeable (dirname ($out)) || (file_exists($out) && !is_writable($out)) )) return false; 
-	// ƒeƒ“ƒ|ƒ‰ƒŠƒtƒ@ƒCƒ‹–¼
+	// ãƒ†ãƒ³ãƒãƒ©ãƒªãƒ•ã‚¡ã‚¤ãƒ«å
 	$tmp_name = $file.'.tmp';
 
 	switch ($method){
 		case 'gz' :
 			if (extension_loaded('zlib')) {
 				$in_file = fopen($in, "r");
-				$out_file = gzopen ($out, "w9");	// Å‚ˆ³k
+				$out_file = gzopen ($out, "w9");	// æœ€é«˜åœ§ç¸®
 				while (!feof ($in_file)) {
 					$buffer= fread($in_file, 2048);
 					gzwrite ($out_file, $buffer);
@@ -508,31 +700,28 @@ function generate_postid($cmd = '')
 	$idstring_raw = $cmd . mt_rand();		//mt_srand() is necessary if PHP version is lower than 4.2.0
 	$idstring = md5($idstring_raw);
 
-	$filename = CACHE_DIR . POSTID_DIR . $idstring .'.dat';
-	$data = array(
-		'time'=>UTIME,
-		'cmd'=>$cmd,
-		'ip'=>$_SERVER['REMOTE_ADDR']
-	);
-	cache_write($data, $filename, POSTID_EXPIRE);
+	$filename = POSTID_DIR . $idstring .'.dat';
+	cache_write($_SERVER['REMOTE_ADDR'], $filename, POSTID_EXPIRE);
 	return $idstring;
 }
 
 function check_postid($idstring)
 {
 	global $memcache;
-	$filename = CACHE_DIR. POSTID_DIR . $idstring . '.dat';
+	$filename = POSTID_DIR . $idstring . '.dat';
 	$ret = TRUE;
-	if ( file_exists($filename) || $memcache !== 'null'){
-		$data = cache_read($filename);
-		cache_delete($filename);
-		if ($data['ip'] !== $_SERVER['REMOTE_ADDR']){
-			$ret = FALSE;
+	$data = cache_read($filename);
+	if ($data !== false){
+		/*
+		if ($data !== $_SERVER['REMOTE_ADDR']){
+			$ret = false;
 		}
+		*/
 		unset($data);
 	}else{
 		$ret = FALSE;
 	}
+	cache_delete($filename);
 	cache_cleanup($filename, POSTID_EXPIRE);
 	return $ret;
 }

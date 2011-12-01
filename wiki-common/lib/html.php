@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone
-// $Id: html.php,v 1.65.45 2011/09/20 21:06:00 Logue Exp $
+// $Id: html.php,v 1.65.46 2011/11/28 21:40:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team <http://pukiwiki.cafelounge.net/plus/>
@@ -270,12 +270,10 @@ function catbody($title, $page, $body)
 		header('X-UA-Compatible: '.(empty($x_ua_compatible)) ? 'IE=edge' : $x_ua_compatible);	// とりあえずIE8対策
 		require(SKIN_FILE);
 	}
-
 	global $ob_flag;
 	if($ob_flag){
 		ob_end_flush();
 	}
-
 	exit;
 }
 
@@ -562,7 +560,7 @@ function anchor_explode($page, $strict_editable = FALSE)
 function pkwk_headers_sent()
 {
 	global $_string;
-	if (PKWK_OPTIMISE) return;
+	if (defined('PKWK_OPTIMISE')) return;
 
 	$file = $line = '';
 
@@ -581,7 +579,7 @@ function pkwk_headers_sent()
 */
 function pkwk_common_headers($modified = 0, $expire = 0, $compress = true){
 	global $lastmod, $vars;
-	if (! PKWK_OPTIMISE) pkwk_headers_sent();
+	if (! defined('PKWK_OPTIMISE')) pkwk_headers_sent();
 
 	if ($modified !== 0){
 		// 最終更新日（秒で）が指定されていない場合動的なページとみなす。
@@ -616,7 +614,7 @@ function pkwk_common_headers($modified = 0, $expire = 0, $compress = true){
 	}
 
 	$vary = get_language_header_vary();
-	if(PKWK_ZLIB_LOADABLE_MODULE === true && $compress !== false) {
+	if(defined('PKWK_ZLIB_LOADABLE_MODULE') && $compress !== false) {
 		$matches = array();
 		// どうも、ob_gzhandler関連は動作が不安定だ・・・。
 /*
@@ -734,7 +732,7 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 	$lang_code = substr(str_replace('_','-',LANG),0,2); // RFC3066
 	
 	// HTML+RDFa 1.1 Support for RDFa in HTML4 and HTML5
-	// http://www.w3.org/TR/2010/WD-rdfa-in-html-20100624/
+	// http://www.w3.org/TR/rdfa-in-html/
 	echo '<html version="HTML+RDFa 1.1"';	
 	if ($type != PKWK_DTD_TYPE_XHTML || $pkwk_dtd == PKWK_DTD_HTML_5) {
 		if($pkwk_dtd == PKWK_DTD_HTML_5){

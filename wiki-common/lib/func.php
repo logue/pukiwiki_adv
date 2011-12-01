@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: func.php,v 1.104.45 2011/09/11 23:01:00 Logue Exp $
+// $Id: func.php,v 1.104.46 2011/11/28 21:29:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -19,10 +19,11 @@ function is_pagename($str)
 {
 	global $BracketName;
 
+	if (empty($str)) return;
 	$is_pagename = (! is_interwiki($str) &&
 		  preg_match('/^(?!\/)' . $BracketName . '$(?<!\/$)/', $str) &&
 		! preg_match('#(^|/)\.{1,2}(/|$)#', $str));
-
+/*
 	if (defined('SOURCE_ENCODING')) {
 		switch(SOURCE_ENCODING){
 		case 'UTF-8': $pattern =
@@ -35,8 +36,9 @@ function is_pagename($str)
 		if (isset($pattern) && $pattern != '')
 			$is_pagename = ($is_pagename && preg_match($pattern, $str));
 	}
-
 	return $is_pagename;
+*/
+	return ($is_pagename && preg_match('/^(?:[\x00-\x7F]|(?:[\xC0-\xDF][\x80-\xBF])|(?:[\xE0-\xEF][\x80-\xBF][\x80-\xBF]))+$/', $str));
 }
 
 function is_url($str, $only_http = FALSE)
@@ -190,6 +192,7 @@ function get_search_words($words, $do_escape = FALSE)
 			$mb_convert_kana = create_function('$str, $option',
 				'return $str;');
 		}
+/*
 		if (SOURCE_ENCODING == 'EUC-JP') {
 			// Perl memo - Correct pattern-matching with EUC-JP
 			// http://www.din.or.jp/~ohzaki/perl.htm#JP_Match (Japanese)
@@ -199,6 +202,8 @@ function get_search_words($words, $do_escape = FALSE)
 		} else {
 			$pre = $post = '';
 		}
+*/
+		$pre = $post = '';
 		$init = TRUE;
 	}
 
@@ -284,8 +289,8 @@ function do_search($word, $type = 'AND', $non_format = FALSE, $base = '')
 	$process = '';
 	if(file_exists($pagereading_mecab_path)) {
 		$descriptorspec = array(
-			0 => array("pipe", "r"),	// stdin は、子プロセスが読み込むパイプです。
-			1 => array("pipe", "w")		// stdout は、子プロセスが書き込むパイプです。
+			0 => array("pipe", "r"),
+			1 => array("pipe", "w")
 		);
 		$process = proc_open($pagereading_mecab_path, $descriptorspec, $pipes);
 	}
@@ -318,11 +323,10 @@ function do_search($word, $type = 'AND', $non_format = FALSE, $base = '')
 
 		// Search for page contents
 		foreach ($keys as $key) {
-			
-
 			if (!is_resource($process)) {
 				$b_match = preg_match($key, get_source($page, TRUE, TRUE));
 			}else{
+				// MeCabによる解析
 				fwrite($pipes[0], get_source($page, TRUE, TRUE));
 				fclose($pipes[0]);
 				$b_match = stream_get_contents($pipes[1]);
@@ -531,17 +535,24 @@ function catrule()
 // Show (critical) error message
 function die_message($msg, $error_title=''){
 	global $skin_file, $page_title, $_string, $_title, $google_loader;
+	global $memcache, $ob_flag;
 	$title = ($error_title !== '') ? $error_title : $_title['error'];
 	$page = $_title['error'];
-	
-	if (DEBUG !== true || PKWK_WARNING !== true || !auth::check_role('role_auth') || !$msg){	// PKWK_WARNINGが有効でない場合は、詳細なエラーを隠す
+
+	if (PKWK_WARNING !== true){	// PKWK_WARNINGが有効でない場合は、詳細なエラーを隠す
 		$msg = $_string['error_msg'];
 	}
+	
+	if ($memcache !== null){
+		$memcache->close();
+	}
+
 	$body = <<<EOD
 <div class="message_box ui-state-error ui-corner-all">
 	<p style="padding:0 .5em;"><span class="ui-icon ui-icon-alert" style="display:inline-block;"></span> 
-	<strong>$page:</strong> $msg</p>
+	<strong>{$_title['error']}</strong> $msg</p>
 </div>
+
 EOD;
 
 	global $trackback;
@@ -566,12 +577,12 @@ EOD;
 	<head>
 		<meta charset="utf-8">
 		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/base/jquery-ui.css" type="text/css" media="all" />
-		<link rel="stylesheet" href="skin/script.css.php" type="text/css" media="all" />
 		<title>$title - $page_title</title>
 	</head>
 	<body>$body</body>
 </html>
 EOD;
+		ob_end_flush();
 	}
 //	exit();
 	die();
@@ -955,9 +966,12 @@ function get_autoaliases_from_autobasealias()
 	static $paris;
 	$cachefile = CACHE_DIR . PKWK_AUTOBASEALIAS_CACHE;
 	if (! isset($pairs)) {
+		$pairs = cache_read($cache_file);
+/*
 		if(!file_exists($cachefile)) touch($cachefile);	// ファイル作成
 		$data = file_get_contents($cachefile);
 		$pairs = unserialize($data);
+*/
 	}
 	if (!is_array($pairs)) $pairs = array();	// safeモードでよくArgument #2 is not an arrayというエラーになるため
 	return $pairs;

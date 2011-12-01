@@ -1,7 +1,7 @@
 <?php
-// $Id: recent.inc.php,v 1.26.6 2010/12/26 23:25:00 Logue Exp $
+// $Id: recent.inc.php,v 1.26.7 2011/12/01 20:32:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiWiki Advance Developers Team
+//   2010-2011 PukiWiki Advance Developers Team
 //   2005-2008 PukiWiki Plus! Team
 //   2002-2007 PukiWiki Developers Team
 //   2002      Y.MASUI http://masui.net/pukiwiki/ masui@masui.net
@@ -21,13 +21,14 @@ define('PLUGIN_RECENT_EXEC_LIMIT', 3); // N times per one output
 
 define('PLUGIN_RECENT_USAGE', '#recent(number-to-show)');
 
-// Place of the cache of 'RecentChanges'
-define('PLUGIN_RECENT_CACHE', CACHE_DIR . PKWK_MAXSHOW_CACHE);
+// Recent html cache
+//define('PLUGIN_RECENT_CACHE', CACHE_DIR . 'plugin-recent.txt');
 
 function plugin_recent_convert()
 {
 	global $vars, $date_format, $show_passage, $page_title; // , $_recent_plugin_frame;
 	static $exec_count = 1;
+	global $memcache;
 
 	$recent_lines = PLUGIN_RECENT_DEFAULT_LINES;
 	$args = func_get_args();
@@ -40,56 +41,120 @@ function plugin_recent_convert()
 
 	if ($exec_count++ > PLUGIN_RECENT_EXEC_LIMIT) {
 		return '#recent(): You called me too much' . '<br />';
-	} else if (! file_exists(PLUGIN_RECENT_CACHE)) {
-		return '#recent(): Cache file of RecentChanges not found' . '<br />';
 	}
 
-	$lines = file_head(PLUGIN_RECENT_CACHE, $recent_lines);
-	if ($lines == FALSE) {
-		return '#recent(): File can not open' . '<br />';
+	$auth_key = auth::get_user_info();
+	$date = '';
+	$items = array();
+
+	if ($memcache === null){
+		if (! file_exists(CACHE_DIR.PKWK_MAXSHOW_CACHE)) {
+			put_lastmodified();
+			return '#recent(): Cache file of RecentChanges not found' . '<br />';
+		}
+/*
+		if (file_exists(PLUGIN_RECENT_CACHE)) {
+			$time_recent = filemtime(CACHE_DIR.PKWK_MAXSHOW_CACHE);
+			$time_recent_cache = filemtime(PLUGIN_RECENT_CACHE);
+			if ($time_recent <= $time_recent_cache) {
+				return get_file_contents(PLUGIN_RECENT_CACHE);
+			}
+		}
+*/
+		$lines = file_head(CACHE_DIR.PKWK_MAXSHOW_CACHE, $recent_lines);
+		if ($lines == FALSE) {
+			return '#recent(): File can not open' . '<br />';
+		}
+
+		foreach ($lines as $line) {
+			list($time, $page) = explode("\t", rtrim($line));
+
+			if (! auth::is_page_readable($page,$auth_key['key'],$auth_key['group'])) continue;
+
+			$_date = get_date($date_format, $time);
+			if ($date != $_date) {
+				// End of the day
+				if ($date != '') $items[] = '</ul>';
+
+				// New day
+				$date = $_date;
+				$items[] = '<strong>' . $date . '</strong>';
+				$items[] = '<ul class="recent_list">';
+			}
+
+			$s_page = htmlsc($page);
+
+			if($page === $vars['page']) {
+				// No need to link to the page you just read, or notify where you just read
+				$items[] = ' <li>' . $s_page . '</li>';
+			} else {
+				$passage = $show_passage ? ' ' . get_passage($time) : '';
+				$items[] = ' <li><a href="' . get_page_uri($page) . '"' . 
+					' title="' . $s_page . $passage . '">' . $s_page . '</a></li>';
+			}
+		}
+		$count = count($lines);
+	}else{
+		$recent_cache_name = substr(PKWK_MAXSHOW_CACHE,0,strrpos(PKWK_MAXSHOW_CACHE, '.'));
+/*
+		if (file_exists(PLUGIN_RECENT_CACHE)) {
+			$time_recent = $memcache->get(MEMCACHE_PREFIX.'timestamp-'.$recent_cache_name);
+			$time_recent_cache = filemtime(PLUGIN_RECENT_CACHE);
+			if ($time_recent <= $time_recent_cache) {
+				return get_file_contents(PLUGIN_RECENT_CACHE);
+			}
+		}
+*/
+		$lines = $memcache->get(MEMCACHE_PREFIX.$recent_cache_name);
+		if ($lines !== FALSE){
+			
+			$count = (count($lines) < $recent_lines) ? count($lines) : $recent_lines;
+			$i = 0;
+			foreach($lines as $page => $time){
+				if (! auth::is_page_readable($page,$auth_key['key'],$auth_key['group'])) continue;
+				if ($i > $count) break;
+
+				$_date = get_date($date_format, $time);
+				if ($date != $_date) {
+					// End of the day
+					if ($date != '') $items[] = '</ul>';
+
+					// New day
+					$date = $_date;
+					$items[] = '<strong>' . $date . '</strong>';
+					$items[] = '<ul class="recent_list">';
+				}
+
+				$s_page = htmlsc($page);
+
+				if($page === $vars['page']) {
+					// No need to link to the page you just read, or notify where you just read
+					$items[] = ' <li>' . $s_page . '</li>';
+				} else {
+					$passage = $show_passage ? ' ' . get_passage($time) : '';
+					$items[] = ' <li><a href="' . get_page_uri($page) . '"' . 
+						' title="' . $s_page . $passage . '">' . $s_page . '</a></li>';
+				}
+				$i++;
+			}
+			unset($lines,$i);
+		}else{
+			put_lastmodified();
+		}
 	}
 
-	$_recent_title = sprintf(T_('recent(%d)'),count($lines));
+	$_recent_title = sprintf(T_('recent(%d)'),$count);
 	$_recent_plugin_frame = '<h5>'.$_recent_title.'</h5>'.
 				'<div class="hslice" id="webslice">'.
 				'<span class="entry-title" style="display:none;">'.$page_title.'</span>'.
 				'<div class="entry-content">';
 
-	$auth_key = auth::get_user_info();
-	$date = '';
-	$items = array();
-	foreach ($lines as $line) {
-		list($time, $page) = explode("\t", rtrim($line));
-		if (! auth::is_page_readable($page,$auth_key['key'],$auth_key['group'])) continue;
-
-		$_date = get_date($date_format, $time);
-		if ($date != $_date) {
-			// End of the day
-			if ($date != '') $items[] = '</ul>';
-
-			// New day
-			$date = $_date;
-			$items[] = '<strong>' . $date . '</strong>';
-			$items[] = '<ul class="recent_list">';
-		}
-
-		$s_page = htmlspecialchars($page);
-
-		if($page === $vars['page']) {
-			// No need to link to the page you just read, or notify where you just read
-			$items[] = ' <li>' . $s_page . '</li>';
-		} else {
-			$passage = $show_passage ? ' ' . get_passage($time) : '';
-			$items[] = ' <li><a href="' . get_page_uri($page) . '"' . 
-				' title="' . $s_page . $passage . '">' . $s_page . '</a></li>';
-		}
-	}
 	// End of the day
 	if ($date != '') $items[] = '</ul>';
 	
 	// Last "\n"
 	$items[] = '';
-
-	return $_recent_plugin_frame.implode("\n",$items).'</div></div>';
+	
+	return $_recent_plugin_frame . join("\n",$items) . '</div></div>';
 }
 ?>

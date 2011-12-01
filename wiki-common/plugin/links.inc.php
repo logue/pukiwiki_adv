@@ -9,13 +9,14 @@ function plugin_links_init()
 {
 	$messages = array(
 		'_links_messages'=>array(
-			'title_update'  => T_("Cash update"),
+			'title_update'  => T_("Cache update"),
 			'msg_adminpass' => T_("Administrator password"),
 			'btn_submit'    => T_("Exec"),
-			'msg_done'      => T_("The update of cash was completed."),
+			'msg_done'      => T_("The update of cashe was completed."),
+			'msg_error'		=> T_("The update of cashe was failure. Please check password."),
 			'msg_usage1'	=> 
 T_("* Content of processing\n") .
-T_(":Cash update|\n") .
+T_(":Cache update|\n") .
 T_("All pages are scanned, whether on which page certain pages have been linked is investigated, and it records in the cache.\n\n") .
 T_("* CAUTION\n") .
 T_("It is likely to drive it for a few minutes in execution.") .
@@ -39,11 +40,14 @@ function plugin_links_action()
 	$admin_pass = (empty($post['adminpass'])) ? '' : $post['adminpass'];
 	if ( isset($vars['menu']) && (! auth::check_role('role_adm_contents') || pkwk_login($admin_pass) )) {
 		set_time_limit(0);
-		links_init();
-		$foot_explain = array(); // Exhaust footnotes
 		$msg  = & $_links_messages['title_update'];
-		$body = & $_links_messages['msg_done'    ];
-		return array('msg'=>$msg, 'body'=>$body);
+		if (links_init() !== false){
+			$foot_explain = array(); // Exhaust footnotes
+			$body = & $_links_messages['msg_done'    ];
+			return array('msg'=>$msg, 'body'=>$body);
+		}else{
+			return array('msg'=>$msg, 'body'=>$_links_messages['msg_failure'    ]);
+		}
 	}
 
 	$msg   = & $_links_messages['title_update'];

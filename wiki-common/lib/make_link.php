@@ -1,6 +1,6 @@
 <?php
 // PukiPlus.
-// $Id: make_link.php,v 1.37.29 2011/09/11 23:05:00 Logue Exp $
+// $Id: make_link.php,v 1.37.30 2011/11/28 21:41:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2005-2008 PukiWiki Plus! Team
@@ -677,14 +677,15 @@ class Link_autolink extends Link
 		global $autolink;
 
 		parent::Link($start);
-
-		if (! $autolink || ! file_exists(CACHE_DIR . PKWK_AUTOLINK_REGEX_CACHE))
+		
+		if (! $autolink){
 			return;
-
-		@list($auto, $auto_a, $forceignorepages) = file(CACHE_DIR . PKWK_AUTOLINK_REGEX_CACHE);
-		$this->auto   = $auto;
-		$this->auto_a = $auto_a;
-		$this->forceignorepages = explode("\t", trim($forceignorepages));
+		}else{
+			list($auto, $auto_a, $forceignorepages) = autolink_pattern_read(PKWK_AUTOLINK_REGEX_CACHE);
+			$this->auto   = $auto;
+			$this->auto_a = $auto_a;
+			$this->forceignorepages = $forceignorepages;
+		}
 	}
 
 	function get_pattern()
@@ -745,14 +746,14 @@ class Link_autoalias extends Link
 
 		if (! $autoalias || $this->page == $aliaspage){
 			return;
+		}else{
+			list($auto, $auto_a, $forceignorepages) = autolink_pattern_read(PKWK_AUTOALIAS_REGEX_CACHE);
+
+			$this->auto = $auto;
+			$this->auto_a = $auto_a;
+			$this->forceignorepages = $forceignorepages;
+			$this->aliases = array();
 		}
-		$autoaliasfile = CACHE_DIR . PKWK_AUTOALIAS_REGEX_CACHE;
-		pkwk_touch_file($autoaliasfile);	// ファイル作成
-		@list($auto, $auto_a, $forceignorepages) = file($autoaliasfile);
-		$this->auto = $auto;
-		$this->auto_a = $auto_a;
-		$this->forceignorepages = explode("\t", trim($forceignorepages));
-		$this->aliases = array();
 	}
 	function get_pattern()
 	{
@@ -810,13 +811,10 @@ class Link_glossary extends Link
 		if (! $autoglossary){
 			return;
 		}else{
-			
-			$glossaryfile = CACHE_DIR.PKWK_GLOSSARY_REGEX_CACHE;
-			pkwk_touch_file($glossaryfile);	// ファイル作成
-			@list($auto, $auto_a, $forceignorepages) = file($glossaryfile);
+			list($auto, $auto_a, $forceignorepages) = autolink_pattern_read(PKWK_GLOSSARY_REGEX_CACHE);
 			$this->auto = $auto;
 			$this->auto_a = $auto_a;
-			$this->forceignorepages = explode("\t", trim($forceignorepages));
+			$this->forceignorepages = $forceignorepages;
 		}
 	}
 	function get_pattern()

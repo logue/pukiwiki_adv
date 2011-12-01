@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: file.php,v 1.95.4 2011/11/02 22:49:00 Logue Exp $
+// $Id: file.php,v 1.95.5 2011/11/28 21:28:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -11,26 +11,23 @@
 // File related functions
 
 // RecentChanges
-define('PKWK_MAXSHOW_ALLOWANCE', 10);
-define('PKWK_MAXSHOW_CACHE', 'recent.dat');
-
-// XHTML entities
-define('PKWK_ENTITIES_REGEX_CACHE', 'entities.dat');
+defined('PKWK_MAXSHOW_ALLOWANCE')		or define('PKWK_MAXSHOW_ALLOWANCE', 10);
+defined('PKWK_MAXSHOW_CACHE')			or define('PKWK_MAXSHOW_CACHE', 'recent.dat');
 
 // AutoLink
-define('PKWK_AUTOLINK_REGEX_CACHE', 'autolink.dat');
+defined('PKWK_AUTOLINK_REGEX_CACHE')	or define('PKWK_AUTOLINK_REGEX_CACHE', 'autolink.dat');
 
 // AutoAlias
-define('PKWK_AUTOALIAS_REGEX_CACHE', 'autoalias.dat');
+defined('PKWK_AUTOALIAS_REGEX_CACHE')	or define('PKWK_AUTOALIAS_REGEX_CACHE', 'autoalias.dat');
 
 // Auto Glossary (Plus!)
-define('PKWK_GLOSSARY_REGEX_CACHE',  'glossary.dat');
+defined('PKWK_GLOSSARY_REGEX_CACHE')	or define('PKWK_GLOSSARY_REGEX_CACHE',  'glossary.dat');
 
 // AutoAlias AutoBase cache (Plus!)
-define('PKWK_AUTOBASEALIAS_CACHE', 'autobasealias.dat');
+defined('PKWK_AUTOBASEALIAS_CACHE')		or define('PKWK_AUTOBASEALIAS_CACHE', 'autobasealias.dat');
 
 // PageReading cache (Adv.)
-define('PKWK_PAGEREADING_CACHE', 'PageReading.dat');
+defined('PKWK_PAGEREADING_CACHE')		or define('PKWK_PAGEREADING_CACHE', 'PageReading.dat');
 
 // Get source(wiki text) data of the page
 // Returns FALSE if error occurerd
@@ -163,10 +160,10 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 		$aliases = get_autoaliases();
 		if (empty($aliases)) {
 			// Remove
-			@unlink(CACHE_DIR . PKWK_AUTOALIAS_REGEX_CACHE);
+			autolink_pattern_delete(PKWK_AUTOALIAS_REGEX_CACHE);
 		} else {
 			// Create or Update
-			autolink_pattern_write(CACHE_DIR . PKWK_AUTOALIAS_REGEX_CACHE,
+			autolink_pattern_write(PKWK_AUTOALIAS_REGEX_CACHE,
 				get_autolink_pattern(array_keys($aliases), $autoalias));
 		}
 	}
@@ -176,10 +173,10 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 		$words = get_autoglossaries();
 		if (empty($words)) {
 			// Remove
-			@unlink(CACHE_DIR . PKWK_GLOSSARY_REGEX_CACHE);
+			autolink_pattern_delete(PKWK_GLOSSARY_REGEX_CACHE);
 		} else {
 			// Create or Update
-			autolink_pattern_write(CACHE_DIR . PKWK_GLOSSARY_REGEX_CACHE,
+			autolink_pattern_write(PKWK_GLOSSARY_REGEX_CACHE,
 				get_glossary_pattern(array_keys($words), $autoglossary));
 		}
 	}
@@ -365,12 +362,13 @@ function file_write($dir, $page, $str, $notimestamp = FALSE)
 
 	} else if ($dir == DIFF_DIR && $notify) {
 		if ($notify_diff_only) $str = preg_replace('/^[^-+].*\n/m', '', $str);
-		$summary = array();
-		$summary['ACTION'] = 'Page update';
-		$summary['PAGE']   = & $page;
-		$summary['URI']    = get_script_uri() . '?' . rawurlencode($page);
-		$summary['USER_AGENT']  = TRUE;
-		$summary['REMOTE_ADDR'] = TRUE;
+		$summary = array(
+			'ACTION'		=> 'Page update',
+			'PAGE'			=> & $page,
+			'URI'			=> get_script_uri() . '?' . rawurlencode($page),
+			'USER_AGENT'	=> TRUE,
+			'REMOTE_ADDR'	=> TRUE
+		);
 		pkwk_mail_notify($notify_subject, $str, $summary) or
 			die_message('pkwk_mail_notify(): Failed');
 	}
@@ -426,6 +424,7 @@ function lastmodified_add($update = '', $remove = '')
 {
 	// global $maxshow, $whatsnew, $autolink;
 	global $maxshow, $whatsnew, $autolink, $autobasealias;
+	global $memcache;
 
 	// AutoLink implimentation needs everything, for now
 	//if ($autolink) {
@@ -437,24 +436,33 @@ function lastmodified_add($update = '', $remove = '')
 	if (($update == '' || check_non_list($update)) && $remove == '')
 		return; // No need
 
-	$file = CACHE_DIR . PKWK_MAXSHOW_CACHE;
-	if (! file_exists($file)) {
-		put_lastmodified(); // Try to (re)create ALL
-		return;
-	}
+	if ($memcache === null){
+		$file = CACHE_DIR . PKWK_MAXSHOW_CACHE;
+		if (! file_exists($file)) {
+			put_lastmodified(); // Try to (re)create ALL
+			return;
+		}
 
-	// Open
-	pkwk_touch_file($file);
-	$fp = fopen($file, 'r+') or
-		die_message('Cannot open ' . 'CACHE_DIR/' . PKWK_MAXSHOW_CACHE);
-	set_file_buffer($fp, 0);
-	flock($fp, LOCK_EX);
+		// Open
+		pkwk_touch_file($file);
+		$fp = fopen($file, 'r+') or
+			die_message('Cannot open ' . 'CACHE_DIR/' . PKWK_MAXSHOW_CACHE);
+		set_file_buffer($fp, 0);
+		flock($fp, LOCK_EX);
 
-	// Read (keep the order of the lines)
-	$recent_pages = $matches = array();
-	foreach(file_head($file, $maxshow + PKWK_MAXSHOW_ALLOWANCE, FALSE) as $line) {
-		if (preg_match('/^([0-9]+)\t(.+)/', $line, $matches)) {
-			$recent_pages[$matches[2]] = $matches[1];
+		// Read (keep the order of the lines)
+		$recent_pages = $matches = array();
+		foreach(file_head($file, $maxshow + PKWK_MAXSHOW_ALLOWANCE, FALSE) as $line) {
+			if (preg_match('/^([0-9]+)\t(.+)/', $line, $matches)) {
+				$recent_pages[$matches[2]] = $matches[1];
+			}
+		}
+	}else{
+		$cache_name = substr(PKWK_MAXSHOW_CACHE,0,strrpos(PKWK_MAXSHOW_CACHE, '.'));
+		$recent_pages = $memcache->get(MEMCACHE_PREFIX, $cache_name);
+		if ($data === FALSE){
+			put_lastmodified(); // Try to (re)create ALL
+			return;
 		}
 	}
 
@@ -470,16 +478,21 @@ function lastmodified_add($update = '', $remove = '')
 	// Check
 	$abort = count($recent_pages) < $maxshow;
 
-	if (! $abort) {
-		// Write
-		ftruncate($fp, 0);
-		rewind($fp);
-		foreach ($recent_pages as $_page=>$time)
-			fputs($fp, $time . "\t" . $_page . "\n");
-	}
+	if ($memcache === null){
+		if (! $abort) {
+			// Write
+			ftruncate($fp, 0);
+			rewind($fp);
+			foreach ($recent_pages as $_page=>$time)
+				fputs($fp, $time . "\t" . $_page . "\n");
+		}
 
-	flock($fp, LOCK_UN);
-	fclose($fp);
+		flock($fp, LOCK_UN);
+		fclose($fp);
+	}else{
+		$memcache->replace(MEMCACHE_PREFIX.$cache_name, $recent_pages, MEMCACHE_FLAG, MEMCACHE_EXPIRE);
+		$memcache->set(MEMCACHE_PREFIX.'timestamp-'.$cache_name, UTIME, MEMCACHE_FLAG, MEMCACHE_EXPIRE);
+	}
 
 	if ($abort) {
 		put_lastmodified(); // Try to (re)create ALL
@@ -524,6 +537,8 @@ function put_lastmodified()
 {
 	// global $maxshow, $whatsnew, $autolink;
 	global $maxshow, $whatsnew, $autolink, $autobasealias;
+	
+	global $memcache;
 
 	// if (PKWK_READONLY) return; // Do nothing
 	if (auth::check_role('readonly')) return; // Do nothing
@@ -552,20 +567,26 @@ function put_lastmodified()
 	$recent_pages = & $_recent;
 
 	// Re-create PKWK_MAXSHOW_CACHE
-	$file = CACHE_DIR . PKWK_MAXSHOW_CACHE;
-	pkwk_touch_file($file);
-	$fp = fopen($file, 'r+') or
-		die_message('Cannot open' . 'CACHE_DIR/' . PKWK_MAXSHOW_CACHE);
-	set_file_buffer($fp, 0);
-	flock($fp, LOCK_EX);
-	$last = ignore_user_abort(1);	// Plus!
-	ftruncate($fp, 0);
-	rewind($fp);
-	foreach ($recent_pages as $page=>$time)
-		fputs($fp, $time . "\t" . $page . "\n");
-	ignore_user_abort($last);	// Plus!
-	flock($fp, LOCK_UN);
-	fclose($fp);
+	if ($memcache === null){
+		$file = CACHE_DIR . PKWK_MAXSHOW_CACHE;
+		pkwk_touch_file($file);
+		$fp = fopen($file, 'r+') or
+			die_message('Cannot open' . 'CACHE_DIR/' . PKWK_MAXSHOW_CACHE);
+		set_file_buffer($fp, 0);
+		flock($fp, LOCK_EX);
+		$last = ignore_user_abort(1);	// Plus!
+		ftruncate($fp, 0);
+		rewind($fp);
+		foreach ($recent_pages as $page=>$time)
+			fputs($fp, $time . "\t" . $page . "\n");
+		ignore_user_abort($last);	// Plus!
+		flock($fp, LOCK_UN);
+		fclose($fp);
+	}else{
+		$cache_name = substr(PKWK_MAXSHOW_CACHE,0,strrpos(PKWK_MAXSHOW_CACHE, '.'));
+		$memcache->set(MEMCACHE_PREFIX.$cache_name, $recent_pages, null, MEMCACHE_EXPIRE);
+		$memcache->set(MEMCACHE_PREFIX.'timestamp-'.$cache_name, UTIME, MEMCACHE_FLAG, MEMCACHE_EXPIRE);	// Wikiの更新日時を保存
+	}
 
 	// Create RecentChanges
 	$file = get_filename($whatsnew);
@@ -589,32 +610,14 @@ function put_lastmodified()
 
 	// For AutoLink
 	if ($autolink){
-		autolink_pattern_write(CACHE_DIR . PKWK_AUTOLINK_REGEX_CACHE,
+		autolink_pattern_write(PKWK_AUTOLINK_REGEX_CACHE,
 			get_autolink_pattern($pages, $autolink));
 	}
 	
 	// AutoBaseAlias (Plus!)
 	if ($autobasealias) {
-		autobasealias_write(CACHE_DIR . PKWK_AUTOBASEALIAS_CACHE, $pages);
+		autobasealias_write(PKWK_AUTOBASEALIAS_CACHE, $pages);
 	}
-}
-
-// update autolink data
-function autolink_pattern_write($filename, $autolink_pattern)
-{
-	list($pattern, $pattern_a, $forceignorelist) = $autolink_pattern;
-
-	pkwk_touch_file($filename);
-	$fp = fopen($filename, 'w') or
-			die_message('Cannot open ' . $filename);
-	set_file_buffer($fp, 0);
-	flock($fp, LOCK_EX);
-	rewind($fp);
-	fputs($fp, $pattern   . "\n");
-	fputs($fp, $pattern_a . "\n");
-	fputs($fp, join("\t", $forceignorelist) . "\n");
-	flock($fp, LOCK_UN);
-	fclose($fp);
 }
 
 // Get elapsed date of the page
