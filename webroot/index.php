@@ -2,7 +2,7 @@
 // PukiPlus
 // $Id: index.php,v 1.9.8 2011/09/12 21:41:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiWiki Advance Developers Team
+//   2010-2011 PukiWiki Advance Developers Team
 //   2005-2007,2009 PukiWiki Plus! Team
 //   2001-2006 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
@@ -40,6 +40,13 @@ define('DATA_HOME',		'../wiki-data/');
 //define('ROOT_URI', '');
 //define('WWW_HOME', '');
 //define('COMMON_URI', '');
+
+// Memcacheのホスト。ソケット接続の場合は、unix://var/run/memcache.socketのようにすること。（ラウンドロビン非対応）
+define('MEMCACHE_HOST', '127.0.0.1');
+// Memcacheのポート。ソケット接続の場合は、0にすること。
+define('MEMCACHE_PORT', 11211);
+// memcacheのプリフィックス（デフォルトはキャッシュディレクトリのパスの\や/を_にしたもの。）
+define('MEMCACHE_PREFIX', str_replace(array('/','\\'), '_',realpath(CACHE_DIR)).'_');
 
 // to absolute path
 // Do not change following lines

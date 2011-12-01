@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: mixirss.inc.php,v 1.14.15 2011/02/07 22:31:00 Logue Exp $
+// $Id: mixirss.inc.php,v 1.14.16 2011/12/01 21:18:00 Logue Exp $
 //
 // Publishing RSS feed of RecentChanges
 // Usage: mixirss.inc.php?ver=[0.91|1.0(default)|2.0]
@@ -59,7 +59,7 @@ function plugin_mixirss_action()
 				$i++;
 			}
 		}
-		$time_recent = $memcache->get(MEMCACHE_PREFIX.'timestamp-'$cache_name);
+		$time_recent = $memcache->get(MEMCACHE_PREFIX.'timestamp-'.$cache_name);
 	}
 
 	$rsscache = CACHE_DIR . 'rsscache' . $version . '.xml';
