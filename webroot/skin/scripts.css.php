@@ -22,7 +22,7 @@ audio:not([controls]) { display: none; }
 [hidden] { display: none; }
 
 html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-body { margin: 0; font-size: 13px; line-height: 1.231; }
+body { margin: 0; font-size: 13px; line-height: 1.4; }
 body, button, input, select, textarea { font-family: sans-serif; color: #222; }
 
 ::-moz-selection { background: #57a1fe; color: #fff; text-shadow: none; }
@@ -61,9 +61,8 @@ fieldset { border: 0; margin: 0; padding: 0; }
 label { cursor: pointer; }
 legend { border: 0; *margin-left: -7px; padding: 0; }
 button, input, select, textarea { font-size: 100%; margin: 0; vertical-align: baseline; *vertical-align: middle; }
-button, input { line-height: normal; *overflow: visible; }
-table button, table input { *overflow: auto; }
-button, input[type="button"], input[type="reset"], input[type="submit"] { cursor: pointer; -webkit-appearance: button; }
+button, input { line-height: normal; }
+button, input[type="button"], input[type="reset"], input[type="submit"] { cursor: pointer; -webkit-appearance: button; *overflow: visible; }
 input[type="checkbox"], input[type="radio"] { box-sizing: border-box; }
 input[type="search"] { -webkit-appearance: textfield; -moz-box-sizing: content-box; -webkit-box-sizing: content-box; box-sizing: content-box; }
 input[type="search"]::-webkit-search-decoration { -webkit-appearance: none; }
@@ -82,9 +81,8 @@ body{
 	font-family: 'Segoe UI', 'Trebuchet MS', Verdana, Arial, Sans-Serif;
 }
 /* Japanese */
-:lang(ja), :lang(ja) .ui-widget{
+:lang(ja){
 	font-family: Meiryo, 'メイリオ', 'ヒラギノ角ゴ Pro W3', 'Hiragino Mincho Pro W3', Osaka, 'ＭＳＰ ゴシック';
-	line-height:137%;
 }
 /* Korean */
 :lang(ko), :lang(ko) .ui-widget{
@@ -93,7 +91,6 @@ body{
 /*  Chinese */
 :lang(zh), :lang(zh) .ui-widget{
 	font-family: 'Hiragino Sans GB W3', 'STHeiti', 'Apple LiGothic Medium', 'Microsoft YaHei', 'Microsoft JhengHei';
-	line-height:137%;
 }
 
 /* for Print font */
@@ -126,7 +123,6 @@ pre, code, kbd, samp, textarea, select, option, input, var{
 :lang(ja) input,
 :lang(ja) var{
 	font-family: 'Osaka−等幅', 'ＭＳ ゴシック', 'MS Gothic' !important;
-	line-height:123% !important;
 }
 
 :lang(ko) pre,
@@ -151,7 +147,6 @@ pre, code, kbd, samp, textarea, select, option, input, var{
 :lang(zh) input,
 :lang(zh) var{
 	font-family: 'SimHei', '蒙納黑體', monospace;
-	line-height:123% !important;
 }
 /* for Emoji */
 @font-face {
@@ -359,6 +354,17 @@ i, em, cite, q{
 }
 /* ==|== Customize UI classes =============================================== */
 /* form */
+input, textarea, select, button{
+	padding:.2em;
+	margin:.1em .2em;
+	vertical-align:middle;
+}
+
+/* Remove outline color from Safari and Chrome. */
+input:focus, textarea:focus, select:focus, button:focus{
+	outline: medium none !important;
+}
+
 input[type='text'], input[type='password'], input[type='file'],
 input[type='tel'], input[type='url'], input[type='email'], 
 input[type='datetime'], input[type='date'], input[type='month'], 
@@ -367,9 +373,7 @@ input[type='number'], input[type='range'], input[type='color'],
 input[type='search'], textarea, select {
 	border:1px solid silver;
 	background-color:white;
-	padding:0.2em;
-	margin:0.2em;
-	line-height:100%;
+	box-shadow:none !important;
 	background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMCI%2BDQo8ZGVmcz4NCjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxMDAlIj4NCjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOndoaXRlc21va2U7Ii8%2BDQo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOndoaXRlOyIvPg0KPC9saW5lYXJHcmFkaWVudD4NCjwvZGVmcz4NCjxyZWN0IHg9IjAiIHk9IjAiIGZpbGw9InVybCgjZ3JhZGllbnQpIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiAvPg0KPC9zdmc%2B");
 }
 
@@ -380,7 +384,7 @@ input[type='datetime']:focus, input[type='date']:focus, input[type='month']:focu
 input[type='week']:focus, input[type='time']:focus, input[type='datetime-local']:focus, 
 input[type='number']:focus, input[type='range']:focus, input[type='color']:focus, 
 input[type='search']:focus, textarea:focus, select:focus {
-	box-shadow: 0px 0px 3px dodgerblue;
+	box-shadow: 0 0 .3em dodgerblue !important;
 	border:1px solid cornflowerblue;
 }
 
@@ -428,23 +432,35 @@ input:-ms-placeholder, textarea:-ms-placeholder { color:grey; }
 ::-ms-input-placeholder	{ color:grey; }
 :-ms-input-placeholder	{ color:grey; }
 
+/* Require */
+input[type='text'][required], input[type='password'][required], input[type='file'][required],
+input[type='tel'][required], input[type='url'][required], input[type='email'][required], 
+input[type='datetime'][required], input[type='date'][required], input[type='month'][required], 
+input[type='week'][required], input[type='time'][required], input[type='datetime-local'][required], 
+input[type='number'][required], input[type='range'][required], input[type='color'][required], 
+input[type='search'][required], textarea[required], select[required] {
+	border:1px solid lightpink;
+	background-color:lavenderblush;
+}
+
 /* customize jQuery ui widget */
-.window{
-	font: inherit !important;
-	font-size:93% !important;
+.ui-widget{
+	font-size:100% !important;
+}
+
+.ui-widget .ui-widget{
+	font-size:85%;
 }
 
 .ui-button{
 	text-shadow: 0 1px 1px rgba(0,0,0,.3);
 	box-shadow: 0 1px 2px rgba(0,0,0,.2);
-	padding:2px !important;
-	min-width:18px;
-	min-height:18px;
 }
-.ui-button-text, input.ui-button{
-	padding: 2px 0.5em !important;
-	margin:0 0.1em !important
+
+input.ui-button{
+	padding:.2em .7em !important;
 }
+
 .ui-icon{
 	display: inline-block;
 }
@@ -1588,7 +1604,7 @@ ul#jplayer_icons #jplayer_volume-min {
 }
 
 /* ==|== non-semantic helper classes ======================================== */
-.ir { display: block; border: 0; text-indent: -999em; overflow: hidden; background-color: transparent; background-repeat: no-repeat; text-align: left; direction: ltr; }
+.ir { display: block; border: 0; text-indent: -999em; overflow: hidden; background-color: transparent; background-repeat: no-repeat; text-align: left; direction: ltr; *line-height: 0; }
 .ir br { display: none; }
 .hidden { display: none !important; visibility: hidden; }
 .visuallyhidden { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
@@ -1600,7 +1616,7 @@ ul#jplayer_icons #jplayer_volume-min {
 
 /* ==|== print styles ======================================================= */
 @media print {
-	* { background: transparent !important; color: black !important; text-shadow: none !important; filter:none !important; -ms-filter: none !important; }
+	* { background: transparent !important; color: black !important; box-shadow:none !important; text-shadow: none !important; filter:none !important; -ms-filter: none !important; } /* Black prints faster: h5bp.com/s */
 	a, a:visited { text-decoration: underline !important; }
 	a[href]:after { content: " (" attr(href) ")"; }
 	abbr[title]:after { content: " (" attr(title) ")"; }

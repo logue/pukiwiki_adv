@@ -50,7 +50,7 @@ function plugin_recent_convert()
 	if ($memcache === null){
 		if (! file_exists(CACHE_DIR.PKWK_MAXSHOW_CACHE)) {
 			put_lastmodified();
-			return '#recent(): Cache file of RecentChanges not found' . '<br />';
+			return '#recent(): Now generating recent data. Please reload.' . '<br />';
 		}
 /*
 		if (file_exists(PLUGIN_RECENT_CACHE)) {
@@ -139,7 +139,9 @@ function plugin_recent_convert()
 			}
 			unset($lines,$i);
 		}else{
+			$count = 0;
 			put_lastmodified();
+			return '#recent(): Now generating recent data. Please reload.' . '<br />';
 		}
 	}
 

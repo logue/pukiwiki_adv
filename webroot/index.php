@@ -27,7 +27,7 @@ define('PKWK_WARNING', true);
 // tDiary THEME
 //define('TDIARY_THEME', 'digital_gadgets');
 // PukiWiki Adv. THEME (NOT compatible as Original and Plus! skin)
-// ex.  cloudwalk, classic, xxxlogue
+// ex.  cloudwalk, classic, xxxlogue, mobile
 define('PLUS_THEME',	'default');
 
 // Directory definition
@@ -46,7 +46,7 @@ define('MEMCACHE_HOST', '127.0.0.1');
 // Memcacheのポート。ソケット接続の場合は、0にすること。
 define('MEMCACHE_PORT', 11211);
 // memcacheのプリフィックス（デフォルトはキャッシュディレクトリのパスの\や/を_にしたもの。）
-define('MEMCACHE_PREFIX', str_replace(array('/','\\'), '_',realpath(CACHE_DIR)).'_');
+//define('MEMCACHE_PREFIX', 'pukiwiki_adv');
 
 // to absolute path
 // Do not change following lines

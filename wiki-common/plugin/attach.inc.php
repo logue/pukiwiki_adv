@@ -327,6 +327,9 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 		die_message($_strings['illegal_chars']);
 	}
 	
+	$type = get_mimeinfo($file['tmp_name']);
+	$must_compress = (PLUGIN_ATTACH_UNKNOWN_COMPRESS !== 0) ? attach_is_compress($type,PLUGIN_ATTACH_UNKNOWN_COMPRESS) : false;
+	
 	// ファイル名の長さをチェック
 	$filename_length = strlen(encode($page).'_'.encode($file['name']));
 	if ( $filename_length  >= 255 || ($must_compress && $filename_length >= 251 )){
@@ -334,13 +337,6 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 			'result'=>FALSE,
 			'msg'=>$_attach_messages['err_filename']
 		);
-	}
-
-	$type = get_mimeinfo($file['tmp_name']);
-	if (PLUGIN_ATTACH_UNKNOWN_COMPRESS !== 0){
-		$must_compress = attach_is_compress($type,PLUGIN_ATTACH_UNKNOWN_COMPRESS);
-	}else{
-		$must_compress = false;
 	}
 
 	if ($must_compress) {

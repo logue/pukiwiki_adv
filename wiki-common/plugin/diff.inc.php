@@ -73,7 +73,7 @@ function plugin_diff_view($page)
 		$source = join('', get_source($page));
 		auth::is_role_page($source);
 		$diffdata = trim(htmlsc($source));
-		$msg = '<pre><ins class="diff_added">' . $diffdata . '</ins></pre>' . "\n";
+		$msg = '<pre class="sh" data-brush="diff"><ins class="diff_added">' . $diffdata . '</ins></pre>' . "\n";
 	} else {
 		return array('msg'=>$_title_diff, 'body'=>$_msg_notfound);
 	}
