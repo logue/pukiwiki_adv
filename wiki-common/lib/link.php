@@ -264,15 +264,27 @@ function links_init()
 	// Initialize autoalias.dat (AutoAliasName)
 	if ($autoalias) {
 		$aliases = get_autoaliases();
-		autolink_pattern_write(PKWK_AUTOALIAS_REGEX_CACHE,
-			get_autolink_pattern(array_keys($aliases), $autoalias));
+		if (empty($aliases)) {
+			// Remove
+			autolink_pattern_delete(PKWK_AUTOALIAS_REGEX_CACHE);
+		} else {
+			// Create or Update
+			autolink_pattern_write(PKWK_AUTOALIAS_REGEX_CACHE,
+				get_autolink_pattern(array_keys($aliases), $autoalias));
+		}
 	}
 
 	// Initialize glossary.dat (AutoGlossary)
 	if ($autoglossary) {
 		$words = get_autoglossaries();
-		autolink_pattern_write(PKWK_GLOSSARY_REGEX_CACHE,
-			get_glossary_pattern(array_keys($words), $autoglossary));
+		if (empty($words)) {
+			// Remove
+			autolink_pattern_delete(PKWK_GLOSSARY_REGEX_CACHE);
+		} else {
+			// Create or Update
+			autolink_pattern_write(PKWK_GLOSSARY_REGEX_CACHE,
+				get_glossary_pattern(array_keys($words), $autoglossary));
+		}
 	}
 }
 

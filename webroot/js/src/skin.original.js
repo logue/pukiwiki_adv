@@ -497,8 +497,6 @@ var pukiwiki; pukiwiki || (pukiwiki = {});
 			if(typeof(callback) === 'function'){ callback(); }
 
 			$(prefix+'button, '+prefix+'input[type=submit], '+prefix+'input[type=reset], '+prefix+'input[type=button]').button();
-
-			//$(prefix+'form').disableOnSubmit();	// 二重送信防止
 			
 			$(prefix+':input').removeAttr('disabled');
 			$(prefix+'.ui-button').button('option', 'disabled', false);
@@ -754,7 +752,6 @@ var pukiwiki; pukiwiki || (pukiwiki = {});
 
 					$(prefix+'button, '+prefix+'input[type=submit], '+prefix+'input[type=reset], '+prefix+'input[type=button]').button();
 
-					//$(prefix+'form').disableOnSubmit();	// 二重送信防止
 					// オーバーレイでウィンドウを閉じる
 					var parent = this;
 					$(prefix+'.ui-widget-overlay').click(function(){

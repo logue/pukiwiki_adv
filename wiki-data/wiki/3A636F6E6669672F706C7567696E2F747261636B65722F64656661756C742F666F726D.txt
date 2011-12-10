@@ -1,11 +1,11 @@
 #freeze
-|RIGHT:|LEFT:|c
-|~投稿者|[name]|
-|~カテゴリー|[category]|
-|~優先順位|[priority]|
-|~状態|[state]|
-|~ページ名|[_name] &size(12){空欄のままだと自動的にページ名が振られます。};|
-|~バージョン|[version] &size(12){空白でも構いません};|
-|~サマリ|[summary]|
-|~メッセージ|[body]|
+|RIGHT:					|LEFT:|c
+|~&_(ja){投稿者};		|[name]|
+|~&_(ja){カテゴリー};	|[category]|
+|~&_(ja){優先順位};		|[priority]|
+|~&_(ja){状態};			|[state]|
+|~&_(ja){ページ名};		|[_name] &size(12){空欄のままだと自動的にページ名が振られます。};|
+|~&_(ja){バージョン};	|[version] &size(12){空白でも構いません};|
+|~&_(ja){サマリ};		|[summary]|
+|~&_(ja){メッセージ};	|[body]|
 |>|CENTER:[_submit]|

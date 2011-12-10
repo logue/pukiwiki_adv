@@ -97,18 +97,16 @@ function plugin_addline_convert()
 	$f_config = htmlspecialchars($configname);
 
 	return <<<EOD
-<form action="$script" method="post">
-	<div class="addline_form">
-		<input type="hidden" name="addline_no" value="$addline_no" />
-		<input type="hidden" name="refer" value="$f_page" />
-		<input type="hidden" name="plugin" value="addline" />
-		<input type="hidden" name="above" value="$above" />
-		<input type="hidden" name="digest" value="$digest" />
-		<input type="hidden" name="configname"  value="$f_config" />
-		$left_text
-		<input type="submit" name="addline" value="$btn_text" />
-		$right_text
-	</div>
+<form action="$script" method="post" class="addline_form">
+	<input type="hidden" name="above" value="$above" />
+	<input type="hidden" name="addline_no" value="$addline_no" />
+	<input type="hidden" name="configname"  value="$f_config" />
+	<input type="hidden" name="digest" value="$digest" />
+	<input type="hidden" name="plugin" value="addline" />
+	<input type="hidden" name="refer" value="$f_page" />
+	$left_text
+	<input type="submit" name="addline" value="$btn_text" />
+	$right_text
 </form>
 EOD;
 }
@@ -179,7 +177,7 @@ function plugin_addline_inline()
 
 function plugin_addline_action()
 {
-	global $_addline_messages, $_string;
+	global $_addline_messages, $_string, $vars;
 	if( auth::check_role('readonly') ) die_message($_string['prohibit']);
 
 	$refer			= $vars['refer'];

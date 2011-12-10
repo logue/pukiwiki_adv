@@ -964,9 +964,9 @@ function get_autoaliases($word = '')
 function get_autoaliases_from_autobasealias()
 {
 	static $paris;
-	$cachefile = CACHE_DIR . PKWK_AUTOBASEALIAS_CACHE;
+//	$cachefile = CACHE_DIR . PKWK_AUTOBASEALIAS_CACHE;
 	if (! isset($pairs)) {
-		$pairs = cache_read($cache_file);
+		$pairs = cache_read(PKWK_AUTOBASEALIAS_CACHE);
 /*
 		if(!file_exists($cachefile)) touch($cachefile);	// ファイル作成
 		$data = file_get_contents($cachefile);

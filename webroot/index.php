@@ -27,8 +27,8 @@ define('PKWK_WARNING', true);
 // tDiary THEME
 //define('TDIARY_THEME', 'digital_gadgets');
 // PukiWiki Adv. THEME (NOT compatible as Original and Plus! skin)
-// ex.  cloudwalk, classic, xxxlogue, mobile
-define('PLUS_THEME',	'default');
+// ex.  cloudwalk, classic, xxxlogue, whiteflow
+define('PLUS_THEME',	'gs2');
 
 // Directory definition
 // (Ended with a slash like '../path/to/pkwk/', or '')

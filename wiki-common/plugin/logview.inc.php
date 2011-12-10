@@ -61,6 +61,8 @@ function plugin_logview_action()
 	$kind = (isset($vars['kind'])) ? $vars['kind'] : 'update';
 	$title = sprintf($_logview_msg['msg_title'],$kind); // タイトルを設定
 	$page = (isset($vars['page'])) ? $vars['page'] : '';
+	
+	$isAjax = (isset($vars['ajax'])) ? true : false;
 
 	// ゲスト表示ができない場合は、認証を要求する
 	if ($log[$kind]['guest'] == '') {

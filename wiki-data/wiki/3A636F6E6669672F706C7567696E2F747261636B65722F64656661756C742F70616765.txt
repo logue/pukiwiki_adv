@@ -1,15 +1,35 @@
 #freeze
-* [summary] [#e79324e9]
--ページ: [_refer]
--投稿者: [name]
--優先順位: [priority]
--状態: [state]
--カテゴリー: [category]
--投稿日: [_date]
--バージョン: [version]
 
-** &_(ja){メッセージ}; [#ueb36da1]
+#navi(../)
+&_set(page,en){Page};
+&_set(page,ja){ページ};
+&_set(name,en){Author};
+&_set(name,ja){投稿者};
+&_set(priority,en){Priority};
+&_set(priority,ja){優先順位};
+&_set(state,en){Status};
+&_set(state,ja){状態};
+&_set(category,en){Category};
+&_set(category,ja){カテゴリ};
+&_set(date,en){Date};
+&_set(date,ja){投稿日};
+&_set(version,en){Version};
+&_set(version,ja){バージョン};
+&_set(message,en){Message};
+&_set(message,ja){メッセージ};
+&_set(comment,en){Comment};
+&_set(comment,ja){コメント};
+* [summary] [#summary]
+-&_(ja){ページ};	: [_refer]
+-&_(ja){投稿者};	: [name]
+-&_(ja){優先順位};	: [priority]
+-&_(ja){状態};		: [state]
+-&_(ja){カテゴリ};	: [category]
+-&_(ja){投稿日};	: [_date]
+-&_(ja){バージョン};: [version]
+
+* &_(ja){メッセージ}; [#message]
 [body]
-----
 
-#comment
+* &_(ja){コメント}; [#comment]
+#pcomment

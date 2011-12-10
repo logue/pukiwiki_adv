@@ -4,36 +4,36 @@ trackerプラグインで項目設定を指定しなかった場合、この設�
 #ls(./)
 
 * fields
-|項目名|見出し|形式|オプション|デフォルト値|h
-|name|投稿者|page|20|anonymous|
-|category|カテゴリー|select|||
-|priority|優先度|select||低|
-|state|状態|select||提案|
-|version|バージョン|text|10||
-|summary|サマリ|title|60||
-|body|メッセージ|textarea|60,6||
+|項目名		|見出し					|形式		|オプション	|デフォルト値|h
+|name		|&_(ja){投稿者};		|page		|20			|anonymous|
+|category	|&_(ja){カテゴリー};	|select		|			||
+|priority	|&_(ja){優先度};		|select		|			|&_(ja){低};|
+|state		|&_(ja){状態};			|select		|			|&_(ja){提案};|
+|version	|&_(ja){バージョン};	|text		|10			||
+|summary	|&_(ja){サマリ};		|title		|60			||
+|body		|&_(ja){メッセージ};	|textarea	|60,6		||
 
 * priority
-|見出し|セルの書式|h
-|緊急|BGCOLOR(#ff8080):%s|
-|重要|BGCOLOR(#ffcccc):%s|
-|普通|BGCOLOR(#cccccc):%s|
-|低|BGCOLOR(#ffffff):%s|
+|見出し			|セルの書式|h
+|&_(ja){緊急};	|BGCOLOR(#ff8080):%s|
+|&_(ja){重要};	|BGCOLOR(#ffcccc):%s|
+|&_(ja){普通};	|BGCOLOR(#cccccc):%s|
+|&_(ja){低};	|BGCOLOR(#ffffff):%s|
 
 * state
-|見出し|セルの書式|h
-|提案|BGCOLOR(#ffccff):%s|
-|着手|BGCOLOR(#ccccff):%s|
-|CVS待ち|BGCOLOR(#ffccff):%s|
-|完了|BGCOLOR(#ccffcc):%s|
-|保留|BGCOLOR(#ccddcc):%s|
-|却下|BGCOLOR(#cccccc):%s|
+|見出し					|セルの書式|h
+|&_(ja){提案};			|BGCOLOR(#ffccff):%s|
+|&_(ja){着手};			|BGCOLOR(#ccccff):%s|
+|&_(ja){コミット待ち};	|BGCOLOR(#ffccff):%s|
+|&_(ja){完了};			|BGCOLOR(#ccffcc):%s|
+|&_(ja){保留};			|BGCOLOR(#ccddcc):%s|
+|&_(ja){却下};			|BGCOLOR(#cccccc):%s|
 
 * category
-|見出し|セルの書式|h
-|本体バグ|BGCOLOR(#ffccff):%s|
-|本体新機能|BGCOLOR(#ccccff):%s|
-|プラグイン|BGCOLOR(#ccffcc):%s|
-|欲しいプラグイン|BGCOLOR(#ccffcc):%s|
-|サイト|BGCOLOR(#ccddcc):%s|
-|その他|BGCOLOR(#cccccc):%s|
+|見出し						|セルの書式|h
+|&_(ja){本体バグ};			|BGCOLOR(#ffccff):%s|
+|&_(ja){本体新機能};		|BGCOLOR(#ccccff):%s|
+|&_(ja){プラグイン};		|BGCOLOR(#ccffcc):%s|
+|&_(ja){欲しいプラグイン};	|BGCOLOR(#ccffcc):%s|
+|&_(ja){サイト};			|BGCOLOR(#ccddcc):%s|
+|&_(ja){その他};			|BGCOLOR(#cccccc):%s|
