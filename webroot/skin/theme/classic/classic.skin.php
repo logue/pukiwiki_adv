@@ -17,6 +17,8 @@ if ($title != $defaultpage) {
 } elseif ($newtitle != '' && $is_read) {
 	$page_title = $newtitle.' - '.$page_title;
 }
+// navibar
+$navibar = exist_plugin('suckerfish') ? do_plugin_convert('suckerfish') : null;
 
 // Output HTML DTD, <html>, and receive content-type
 $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_output_dtd();
@@ -42,12 +44,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 				<a href="<?php echo $modifierlink ?>"><img id="logo" src="<?php echo $_SKIN['logo']['src'] ?>" width="<?php echo $_SKIN['logo']['width'] ?>" height="<?php echo $_SKIN['logo']['height'] ?>" alt="<?php echo $_SKIN['logo']['alt'] ?>" /></a>
 				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<hgroup id="hgroup">'."\n" : '<div id="hgroup">')."\n"; ?>
 					<h1 id="title"><?php echo (($newtitle!='' && $is_read) ? $newtitle : $page) ?></h1>
-					<?php
-if ($vars['page']) { 
-	require_once(PLUGIN_DIR . 'topicpath.inc.php');
-	$topicpath = plugin_topicpath_inline();
-	if ($topicpath !== '') echo '<h2 id="topicpath">'. $topicpath.'</h2>';
-} ?>
+					<?php echo ($is_page) ? '<h2 id="topicpath">'. (exist_plugin('topicpath') ? do_plugin_inline('topicpath') : ''.'</h2>') : ''; ?>
 				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</hgroup>'."\n" : '</div>')."\n"; ?>
 <!-- * Ad space *-->
 				<?php if ($_SKIN['adarea']['header']) echo '<div id="ad" class="noprint">' . $_SKIN['adarea']['header'] . '</div>'; ?>
@@ -56,7 +53,7 @@ if ($vars['page']) {
 <?php } ?>
 			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</header>' : '</div>')."\n"; ?>
 <!-- *** End Header *** -->
-			<?php if (exist_plugin('suckerfish')) echo do_plugin_convert('suckerfish'); ?>
+			<?php echo ($navibar === null) ? (exist_plugin('navibar') ? do_plugin_convert('navibar','top,|,edit,freeze,diff,backup,upload,reload,|,new,list,search,recent,help,|,trackback').'<hr />' :'') : $navibar; ?>
 
 <!-- ** Body ** -->
 <?php if (arg_check('read') && exist_plugin_convert('menu')) { ?>
@@ -113,7 +110,7 @@ if ($vars['page']) {
 
 			<?php echo $hr ?>
 
-			<?php if (exist_plugin('toolbar')) echo do_plugin_convert('toolbar','reload,|,new,newsub,edit,freeze,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,trackback,|,help,|,mixirss'); ?>
+			<?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','reload,|,new,newsub,edit,freeze,source,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,log_browse,|,help,|,rss') : '';?>
 
 <!-- *** Footer *** -->
 			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<footer id="footer">'."\n" : '<div id="footer">'."\n"; ?>

@@ -352,6 +352,10 @@ i, em, cite, q{
 	position:absolute;
 	z-index:-999;
 }
+.xdebug-error{
+	color:black !important;
+	font-family:monospace !important;
+}
 /* ==|== Customize UI classes =============================================== */
 /* form */
 input, textarea, select, button{
@@ -497,6 +501,7 @@ input.ui-button{
 .pkwk_widget{
 	padding:2px;
 	margin:0;
+	line-height:100%;
 	list-style: none;
 }
 .pkwk_widget .ui-progressbar{
@@ -686,24 +691,23 @@ input.ui-button{
 	margin: .1em .25em;
 }
 
-.img_margin{
-
-}
-
 .attach_info dl{
 	float:left;
 	display:block;
 	overflow:visible;
 }
-
 .attach_info_image{
 	right:1em;
 	position:absolute;
 	z-index:-1;
 }
+
 /* backup.inc.php */
 .add_block, .remove_block{
 	display:block;
+}
+.backup_form{
+	text-align:center;
 }
 
 /* calendar.inc.php */
@@ -804,26 +808,39 @@ input.ui-button{
 	text-align:right;
 }
 
-/* navibar.inc.php */
-.toolbar ul{
+/* navibar.inc.php / toolbar.inc.php / topicpath.inc.php */
+.navibar ul, .toolbar ul, .topicpath ul{
 	list-style:none;
+	display:inline;
 }
-
+.navibar ul:before{
+	content:'[ ';
+}
+.navibar ul:after{
+	content:' ]';
+}
+.navibar li, .toolbar li, .topicpath li{
+	display: inline;
+}
+.navibar li:after{
+	content:' | ';
+}
+.topicpath li:after{
+	content : ' > '
+}
+.navibar li:last-child:after, .topicpath li:last-child:after {
+	content:'';
+}
+.toolbar ul{
+	margin:0 .2em;
+}
 .toolbar li{
-	float: left;
-	height:16px;
-	width:16px;
-	padding:0 2px;
-	margin: 0 2px;
+	margin: 1px;
 }
-
-.toolbar li.spliter{
-	width:4px;
-}
-
-.toolbar ul li a:hover{
+.toolbar li a:hover{
 	text-decoration:none !important;
 }
+
 /* new.inc.php */
 .comment_date {
 	font-size:x-small;
@@ -843,8 +860,8 @@ input.ui-button{
 /* note */
 #note ul{
 	list-style:none;
-	list-style-image: none;
 }
+
 /* ref.inc.php */
 .img_margin {
 	margin: 0 32px;
@@ -1629,8 +1646,8 @@ ul#jplayer_icons #jplayer_volume-min {
 	p, h2, h3 { orphans: 3; widows: 3; }
 	h2, h3 { page-break-after: avoid; }
 
-	.pkwk-icon, .pkwk-symbol,
-	.navigator, .toolbar, .navi, .message_box, .noprint, .tocpic, .sf-menu,.pkwk_widget,
+	form, nav, .pkwk-icon, .pkwk-symbol,
+	.navibar, .toolbar, .navi, .message_box, .noprint, .tocpic, .sf-menu,.pkwk_widget,
 	.style_calendar_prev, .style_calendar_next, .pkwk-symbol, #poptoc,  #toolbar, .ui-dialog, #topicpath{
 		display:none !important;
 		visibility: hidden !important;

@@ -115,10 +115,6 @@ function replace_adm($pass,$search)
 	global $script;
 	global $_button;
 
-	$label1 = $_replace_msg['msg_input_search_word'];
-	$label2 = $_replace_msg['msg_input_replace_word'];
-	$btn = $_replace_msg['btn_exec'];
-	$label3 = $_button['notchangetimestamp'];
 	$body = '';
 
 	if (! auth::check_role('role_adm_contents')) {
@@ -144,17 +140,16 @@ EOD;
 
 	$body .= <<<EOD
 <p>$msg</p>
-<form action="$script" method="post">
+<form action="$script" method="post" class="replace_form">
 	<input type="hidden" name="cmd" value="replace" />
-	<div class="replace">
-		$label1<br />
-		<input type="text" name="search" size="24" /> <br />
-		$label2<br />
-		<input type="text" name="replace" size="24" /> <br />
+	<label for="replace_search">{$_replace_msg['msg_input_search_word']}</label>
+	<input type="text" name="search" id="replace_search" size="24" /><br />
+	<label for="replace_replace">{$_replace_msg['msg_input_replace_word']}</label>
+	<input type="text" name="replace" size="24" /><br />
 		$body_pass
-		<input type="checkbox" name="notimestamp" />$label3
-		<input type="submit" name="ok" value="$btn" />
-	</div>
+	<input type="checkbox" name="notimestamp" id="replace_notimestamp" />
+	<label for="replace_notimestamp">{$_button['notchangetimestamp']}</label>
+	<input type="submit" name="ok" value="{$_replace_msg['btn_exec']}" />
 </form>
 EOD;
 

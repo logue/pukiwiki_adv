@@ -3,15 +3,15 @@
  :prefix <http://purl.org/net/ns/doas#> .
  :about "<sukerfish.inc.php>", a: ":PHPScript",
  :shortdesc "Suckerfish Popup Menu for PukiWiki";
- :created "2007-05-25", release: {revision: "1.0.2", created: "2010-06-24"},
+ :created "2007-05-25", release: {revision: "1.0.7", created: "2011-12-12"},
  :author [:name "Logue"; :homepage <http://logue.be/> ];
  :license <http://www.gnu.org/licenses/gpl-3.0.html>;
 */
 
-// $Id: sukerfish.inc.php,v 1.0.5 2010/08/12 01:55:00 upk Exp $
+// $Id: sukerfish.inc.php,v 1.0.7 2011/12/12 22:26:00 Logue Exp $
 
 // Sukerfish Popup Menu Plugin for PukiWiki.
-// Copyright (c)2007-2010 Logue <http://logue.be/> All rights reserved.
+// Copyright (c)2007-2011 Logue <http://logue.be/> All rights reserved.
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 define('PLUGIN_SUKERFISH_DEFAULT_ID', 'nav');
 
 function plugin_suckerfish_convert(){
-	global $vars, $hr, $suckerfish_count, $js_tags;
+	global $vars, $suckerfish_count, $js_tags;
 /*
 	if(!$suckerfish_count){
 		$js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_DIR.'js/plugin/jquery.superfish.js');
@@ -45,8 +45,7 @@ function plugin_suckerfish_convert(){
 	if (! empty($navi_page)){
 		return plugin_suckerfish_makehtml($navi_page);
 	}else{
-		exist_plugin('navibar');
-		return do_plugin_convert('navibar','top,|,edit,freeze,diff,backup,upload,reload,|,new,list,search,recent,help,|,trackback') . $hr;
+		return null;
 	}
 }
 
@@ -164,15 +163,11 @@ function plugin_suckerfish_convert_html($str){
 	
 	if ( preg_match('#<a href="(.*?)"[^>]*>(.*?)</a>#si', $conv, $regs) )
 		return array( TRUE, $regs[1], $regs[2], str_replace($regs[0], '__sukerfish__', $conv) );
-
-	// 内部リンクアイコンを削除
-	if ( preg_match('#<a class="inn" href="(.*?)" .*?>(.*?)<img src="' . IMAGE_URI . 'iconset/default/symbol/inn.png".*?</a>#si', $conv, $regs) )
+/*
+	// シンボルアイコンを削除
+	if ( preg_match('#<span class="pkwk-symbol (.*?)" .*?></span>#si', $conv, $regs) )
 		return array( TRUE, $regs[1], $regs[2], str_replace($regs[0], '__sukerfish__', $conv) );
-	
-	// リンクアイコンを削除
-	if ( preg_match('#<a class="ext" href="(.*?)" .*?>(.*?)<img src="' . IMAGE_URI . 'iconset/default/symbol/ext.png".*?</a>#si', $conv, $regs) )
-		return array( TRUE, $regs[1], $regs[2], str_replace($regs[0], '__sukerfish__', $conv) );
-
+*/
 	// rc, $interurl, $intername, $conv
 	return array( FALSE, '', '', $conv );
 }
@@ -275,7 +270,8 @@ function _suckerfish($key, $val = '')
 	global $_LINK, $_LANG, $_SKIN;
 	if (!isset($_LANG['skin'][$key])) { return null; }
 	if (!isset($_LINK[$key])) { return null; }
+	$showicon = (isset($_SKIN['showicon'])) ? $_SKIN['showicon'] : false;
 
-	return '<a href="' . $_LINK[$key] . '" rel="nofollow" >'. ($_SKIN['showicon'] ? '<span class="pkwk-icon icon-'.$key.'"></span>' : '') . $_LANG['skin'][$key]. '</a>';
+	return '<a href="' . $_LINK[$key] . '" rel="nofollow" >'. ($showicon ? '<span class="pkwk-icon icon-'.$key.'"></span>' : '') . $_LANG['skin'][$key]. '</a>';
 }
 ?>

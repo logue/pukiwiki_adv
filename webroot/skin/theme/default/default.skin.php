@@ -26,16 +26,17 @@ if (arg_check('read') && exist_plugin_convert('menu')) {
 	$layout_class = '';
 }
 
+// Header and Footer
 $title_style = '';
-
+$header = '';
 if (is_page($headarea) && exist_plugin_convert('headarea')){
 	$header = do_plugin_convert('headarea');
 	$title_style = "display:none;";
 }
+$footer = (is_page($footarea) && exist_plugin_convert('footarea')) ? do_plugin_convert('footarea') : '';
 
-if (is_page($footarea) && exist_plugin_convert('footarea')){
-	$footer = do_plugin_convert('footarea');
-}
+// navibar
+$navibar = exist_plugin('suckerfish') ? do_plugin_convert('suckerfish') : null;
 
 // start
 
@@ -58,12 +59,11 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 					<h2><a href="<?php echo $_LINK['reload'] ?>" id="parmalink"><?php echo $_LINK['reload'] ?></a></h2>
 				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</hgroup>'."\n" : '</div>')."\n"; ?>
 				<?php if ($_SKIN['adarea']['header'] && !isset($header)) echo '<div id="ad" class="noprint">' . $_SKIN['adarea']['header'] . '</div>'; ?>
-				<?php if (isset($header)) echo $header; ?>
+				<?php if ($header) echo $header; ?>
 				<?php echo (!empty($lastmodified)) ? '<div id="lastmodified">Last-modified: '.$lastmodified.'</div>'."\n" : '' ?>
 			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</header>' : '</div>')."\n"; ?>
 <!-- *** End Header *** -->
-			<?php if (exist_plugin('suckerfish')) echo do_plugin_convert('suckerfish'); ?>
-
+			<?php echo ($navibar === null) ? (exist_plugin('navibar') ? do_plugin_convert('navibar','top,|,edit,freeze,diff,backup,upload,reload,|,new,list,search,recent,help,|,trackback').'<hr />' :'') : $navibar; ?>
 			<div id="wrapper" class="clearfix">
 <!-- Center -->
 				<div id="main" role="main">
@@ -114,11 +114,11 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 				<!--  End Related -->
 <?php } ?>
 				<hr />
-				<?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','reload,|,new,newsub,edit,freeze,source,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,log_browse,|,help,|,mixirss').'<div class="pkwk-clear"></div>' : '';?>
+				<?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','reload,|,new,newsub,edit,freeze,source,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,log_browse,|,help,|,rss') : '';?>
 			</div>
 
 			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<footer id="footer"  class="clearfix">'."\n" : '<div id="footer" class="clearfix">'."\n"; ?>
-<?php if (isset($footer)) {
+<?php if ($footer) {
 echo $footer;
 }else{ ?>
 				<div id="qr_code">

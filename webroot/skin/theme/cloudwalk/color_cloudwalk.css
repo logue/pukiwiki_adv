@@ -36,13 +36,13 @@ h1#title a{
 
 /* Navigator
 ----------------------------------------------------------------------------- */
-.sf-menuigator{
+.sf-menu{
 	background-color:#aaa;
 }
-.sf-menuigator a{
+.sf-menu a{
 	color:#fff;
 }
-.sf-menuigator a:hover{
+.sf-menu a:hover{
 	color:#fc0;
 }
 
@@ -153,7 +153,7 @@ ul{
 	color:#666;
 }
 
-#navigator{
+#header + .navibar{
 	background-color: #ccccee;
 	border: 1px #666e99 solid;
 }

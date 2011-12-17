@@ -577,7 +577,6 @@ ol.list3 { list-style-type:lower-alpha; }
 }
 
 #toggle .toolbar{
-	height:20px;
 	margin-bottom:5px;
 	clear:both;
 	float:right;
@@ -878,8 +877,8 @@ ol.list3 { list-style-type:lower-alpha; }
 	background-color:transparent;
 }
 
-/* suckerfish.inc.php */
-.sf-menu {
+/* suckerfish.inc.php / navivar.inc.php */
+.sf-menu, #container > .navibar {
 	width:			960px;
 	background:		url(<?php echo $_SKIN['image_dir'] ?>bg_nav.png) repeat-x left top transparent;
 	height:			32px;
@@ -893,7 +892,15 @@ ol.list3 { list-style-type:lower-alpha; }
 	padding:0;
 	color:#CCC;
 }
-
+#container > .navibar + hr{
+	display:none;
+}
+#container > .navibar ul:after, #container > .navibar ul:before, #container > .navibar li:after{
+	content: ''
+}
+#container > .navibar ul, #container > .navibar li {
+	padding:0 .5em;
+}
 .sf-menu  * {
 	margin:			0px;
 	padding:		0px;
@@ -927,16 +934,17 @@ ol.list3 { list-style-type:lower-alpha; }
 	left:			192px; /* match ul width */
 }
 
-.sf-menu li {
+.sf-menu li, #container > .navibar li{
 	line-height:32px;
+}
+.sf-menu li{
 	padding:0 10px;
 }
-
 .sf-menu li li, #nav li li li{
 	line-height:22px;
 }
 
-.sf-menu li:hover, .sf-menu li.sfHover{
+.sf-menu li:hover, .sf-menu li.sfHover, #container > .navibar li:hover{
 	background-color:rgba(16, 16, 16, .6);
 }
 
@@ -952,19 +960,19 @@ ie8 .sf-menu li:hover, ie8 .sf-menu li.sfHover{
 }
 
 /* Link color */
-.sf-menu a {
+.sf-menu a, #container > .navibar a {
 	color: white !important;
 	text-decoration: none;
 }
-.sf-menu a:visited  { /* visited pseudo selector so IE6 applies text colour*/
+.sf-menu a:visited, #container > .navibar a:visited { /* visited pseudo selector so IE6 applies text colour*/
 	text-decoration: none;
 }
 
-.sf-menu a:active  {
+.sf-menu a:active, #container > .navibar a:active {
 	text-decoration: none;
 }
 
-.sf-menu a:hover {
+.sf-menu a:hover, #container > .navibar a:hover {
 	background-color:transparent;
 }
 .sf-menu .noexists {
@@ -1041,7 +1049,7 @@ ie8 .sf-menu li:hover, ie8 .sf-menu li.sfHover{
 		padding:0;
 	}
 
-	#hgroup h2, #navigator, #menubar, #poptoc, #attach, #toolbar, .sf-menu,
+	#hgroup h2, .navibar, #menubar, #poptoc, #attach, .toolbar, .sf-menu,
 	#shelf, #toggle, #sidebar, #content-top, #content-bottom{
 		display:none !important;
 		visibility: hidden !important;

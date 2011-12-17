@@ -209,15 +209,15 @@ pre{
 /*	text-align         : right;	*/
 }
 
-#topicpath {
+.topicpath {
 	float:left;
 }
 
-#topicpath a {
+.topicpath a {
 	color              : #555;
 	text-decoration    : none;
 }
-#topicpath a:hover {
+.topicpath a:hover {
 	font-weight        : bold;
 }
 
@@ -888,7 +888,7 @@ text-decoration:	none;}
 	padding:			0;
 	margin:				0;}
 
-	#hgroup h2, #header img, #navigator, #menubar, #sidebar, #poptoc, #footer, #misc, #toolbar, #logo
+	#hgroup h2, #header img, .navibar, #menubar, #sidebar, #poptoc, #footer, #misc, #toolbar, #logo
 	#sigunature{
 		display:none !important;
 		visibility: hidden !important;

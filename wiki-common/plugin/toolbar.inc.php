@@ -1,125 +1,137 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: toolbar.php,v 0.2.14 2009/04/20 21:57:00 upk Exp $
-// Copyright (C) 2005,2007-2009 PukiWiki Plus! Team
+// $Id: toolbar.php,v 0.2.15 2011/12/12 21:12:00 Logue Exp $
+// Copyright (C)
+//    2011      PukiWiki Advance Developers Team
+//    2005,2007-2009 PukiWiki Plus! Team
 // License: GPL v2
 //
 
 function plugin_toolbar_convert()
 {
+	global $_LINK, $pkwk_dtd;
 	global $do_backup, $trackback, $referer;
 	global $function_freeze;
 	global $vars;
-	
-	global $pkwk_dtd;
+	global $whatsnew,$whatsdeleted;
 
-	// $is_read = (arg_check('read') && is_page($vars['page']));
-	$is_read = is_page($vars['page']);
-	$is_readonly = auth::check_role('readonly');
-	$is_safemode = auth::check_role('safemode');
-	$is_createpage = auth::is_check_role(PKWK_CREATE_PAGE);
+	if ($_LINK['reload'] == '') {
+		return '#navibar: plugin called from wikipage. skipped.';
+	}
+
+	$_page  = isset($vars['page']) ? $vars['page'] : '';
+	$is_read = (arg_check('read') && is_page($_page));
+	$is_freeze = is_freeze($_page);
 
 	$num = func_num_args();
 	$args = $num ? func_get_args() : array();
-	$body = '';
 
 	while(!empty($args)) {
 		$name = array_shift($args);
 		switch ($name) {
 		case 'freeze':
-			if ($is_readonly) break;
-			if (!$is_read) break;
-			if ($function_freeze) {
-				if (!is_freeze($vars['page'])) {
-					$name = 'freeze';
-				} else {
+		case 'unfreeze':
+			if ($is_read && $function_freeze) {
+				if ($is_freeze) {
 					$name = 'unfreeze';
+				}else{
+					$name = 'freeze';
 				}
-				if ($body != '') { $body .= "\n"; }
-				$body .= _toolbar($name);
+				$ret[] = _toolbar($name);
 			}
 			break;
 		case 'upload':
-			if ($is_readonly) break;
-			if (!$is_read) break;
-			if ($function_freeze && is_freeze($vars['page'])) break;
-			if ((bool)ini_get('file_uploads')) {
-				if ($body != '') { $body .= "\n"; }
-				$body .= _toolbar($name);
+			if ($is_read && (bool)ini_get('file_uploads') && !$is_freeze && !($_page == $whatsnew || $_page == $whatsdeleted)) {
+				$ret[] = _toolbar($name);
 			}
 			break;
 		case 'filelist':
-			if (arg_check('list')) {
-				if ($body != '') { $body .= "\n"; }
-				$body .= _toolbar($name);
+			if ($vars['cmd'] == 'list' && (bool)ini_get('file_uploads')) {
+				$ret[] = _toolbar($name);
 			}
 			break;
 		case 'backup':
 			if ($do_backup) {
-				if ($body != '') { $body .= "\n"; }
-				$body .= _toolbar($name);
+				$ret[] = _toolbar($name);
+			}
+			
+			break;
+		case 'brokenlink':
+		case 'template':
+		case 'source':
+			if (!empty($_page)) {
+				$ret[] = _toolbar($name);
 			}
 			break;
 		case 'trackback':
-			if ($trackback) {
-				if ($body != '') { $body .= "\n"; }
-//				$tbcount = tb_count($vars['page']);
-//				if ($tbcount > 0) {
-					$body .= _toolbar($name);
-//				} else if (!$is_read) {
-//					$body .= _toolbar($name);
-//				}
+			if ($trackback && !($_page == $whatsnew || $_page == $whatsdeleted)) {
+				$tbcount = tb_count($_page);
+				if (isset($vars['cmd']) && $vars['cmd'] == 'list') {
+					$ret[] = _toolbar($name, 'Trackback list');
+				}else{
+					$ret[] = _toolbar($name, 'Trackback(' . $tbcount . ')');
+				}
 			}
 			break;
 		case 'referer':
+		case 'skeylist':
+		case 'linklist':
 			if ($referer) {
-				if ($body != '') { $body .= "\n"; }
-				$body .= _toolbar($name);
+				$ret[] = _toolbar($name);
 			}
 			break;
-		case 'rss':
-		case 'mixirss':
-			if ($body != '') { $body .= "\n"; }
-			$body .= _toolbar($name);
+
+		case 'log_login':
+			if (log_exist('login',$vars['page'])) {
+				$ret[] = _toolbar($name);
+			}
+			break;
+		case 'log_check':
+			if (log_exist('check',$vars['page'])) {
+				$ret[] = _toolbar($name);
+			}
+			break;
+		case 'log_browse':
+			$ret[] = _toolbar($name);
+//			if (log_exist('browse',$vars['page'])) {
+//				return _toolbar($name);
+//			}
+			break;
+		case 'log_update':
+			if (log_exist('update',$vars['page'])) {
+				$ret[] = _toolbar($name);
+			}
+			break;
+		case 'log_down':
+			if (log_exist('download',$vars['page'])) {
+				$ret[] = _toolbar($name);
+			}
 			break;
 		case '|':
-			$body .= '<li class="spliter">&#xA0;</li>'."\n";
+			$ret[] = '</ul>'."\n".'<ul>';
 			break;
-		case 'diff':
-			if (!$is_read) break;
-			if ($is_safemode) break;
-			if ($body != '') { $body .= "\n"; }
-			$body .= _toolbar($name);
-			break;
+		// case 'new':
+		case 'newsub':
 		case 'edit':
 		case 'guiedit':
-			if (!$is_read) break;
-			if ($is_readonly) break;
-			if ($function_freeze && is_freeze($vars['page'])) break;
-			if ($body != '') { $body .= "\n"; }
-			$body .= _toolbar($name);
-			break;
-		case 'new':
-		case 'newsub':
-			if ($is_createpage) break;
-		case 'rename':
-		case 'copy':
-			if ($is_readonly) break;
+			if ($is_read && $function_freeze && !$is_freeze && !($_page == $whatsnew || $_page == $whatsdeleted)) {
+				$ret[] = _toolbar($name);
+			}
+		break;
+		case 'diff':
 		case 'reload':
-		case 'print':
-		case 'full':
-			if (!$is_read) break;
+			if (!$is_read)
+				break;
 		default:
-			if ($body != '') { $body .= "\n"; }
-			$body .= _toolbar($name);
+			$ret[] = _toolbar($name);
 			break;
 		}
 	}
-	if ($pkwk_dtd == PKWK_DTD_HTML_5){
-		return '<nav class="toolbar"><ul>'. $body . '</ul></nav>';
-	}else{
-		return '<div class="toolbar"><ul>'. $body . '</ul></div>';
-	}
+	$ret[] = '</ul>';
+	
+	$body = "\n".'<ul>'.join('',$ret).'</ul>'."\n";
+
+	return (($pkwk_dtd == PKWK_DTD_HTML_5) ? '<nav class="toolbar">'.$body.'</nav>' : '<div class="toolbar">'.$body.'</div>')."\n";
 }
 
 function _toolbar($key, $x = 20, $y = 20)

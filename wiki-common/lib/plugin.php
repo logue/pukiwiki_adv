@@ -244,7 +244,7 @@ function do_plugin_convert($name, $args = '')
 }
 
 // Call API 'inline' of the plugin
-function do_plugin_inline($name, $args, & $body)
+function do_plugin_inline($name, $args='', $body='')
 {
 	global $digest;
 

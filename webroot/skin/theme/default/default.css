@@ -242,11 +242,9 @@ ul, ol {
 	float:right;
 }
 
-#navigator{
-	display:block;
+.navibar{
 	clear:both;
-	margin:2px;
-	white-space: nowrap;
+	padding:2px;
 }
 
 #qr_code{
@@ -301,14 +299,6 @@ ul, ol {
 	font-size: 86%;
 }
 
-.toolbar{
-	display:block;
-	clear:right;
-	padding:0px;
-	margin:0px 1%;
-	float:right;
-	white-space: nowrap;
-}
 /** Misc ******************************************************************************************/
 /* html.php/catbody() */
 .word0{
@@ -519,6 +509,14 @@ ul, ol {
 
 .tooltip:hover, .linktip:hover{
 	background-color: #e1ffe4;
+}
+
+/* toolbar.inc.php */
+.toolbar{
+	display:block;
+	clear:both;
+	float:right;
+	padding:0 1%;
 }
 
 /* suckerfish.inc.php */

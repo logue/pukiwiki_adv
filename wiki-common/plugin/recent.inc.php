@@ -30,6 +30,7 @@ function plugin_recent_convert()
 	static $exec_count = 1;
 	global $memcache;
 
+	if ($vars['page'] === '') return null;
 	$recent_lines = PLUGIN_RECENT_DEFAULT_LINES;
 	$args = func_get_args();
 	if (! empty($args)) {

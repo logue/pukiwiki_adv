@@ -82,6 +82,10 @@ function plugin_logview_action()
 	unset($obj);
 
 	check_readable($page, false);
+	
+	foreach($log as $line){
+		if ($line['use'] !=== 0) {
+			
 
 	// 保存データの項目名を取得
 	$name = log::get_log_field($kind);
@@ -89,7 +93,7 @@ function plugin_logview_action()
 
 	$count++;
 	$body = <<<EOD
-<table class="style_table logview" cellspacing="1" border="0">
+<table class="style_table logview">
 <thead>
 <tr>
 

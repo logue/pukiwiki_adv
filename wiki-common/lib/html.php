@@ -313,7 +313,7 @@ function getLinkSet($_page){
 		'unfreeze'		=> get_cmd_uri('unfreeze',		$_page),
 		'upload'		=> get_cmd_uri('attach',		$_page,	'',	array('pcmd'=>'upload')), // link rel="alternate" にも利用するため absuri にしておく
 		
-		'rss'			=> get_cmd_absuri('rss'),
+		'rss'			=> get_cmd_absuri('mixirss'),
 		'rdf'			=> get_cmd_absuri('rss',		'',		'ver=1.0'),
 		'rss10'			=> get_cmd_absuri('rss',		'',		'ver=1.0'), // Same as 'rdf'
 		'rss20'			=> get_cmd_absuri('rss',		'',		'ver=2.0'),

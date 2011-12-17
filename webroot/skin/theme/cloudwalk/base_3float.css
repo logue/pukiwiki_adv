@@ -1,99 +1,13 @@
 @charset "UTF-8";
 
-#wrapper{
-	width:98%;
-	margin:9px auto;
-}
-
 /* ■■ design ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■*/
 
 /* General
 ----------------------------------------------------------------------------- */
-#header{
-
-}
-
-#sidebar{
-	float:left;
-	word-break:break-all;
-	font-size:93%;
-	overflow:hidden;
-	width:19%;
-}
-
-#content{
-	float:right;
-	width:80%;
-}
-
-#footer{
-	clear:both;
-}
-
-/* CenterBar
------------------------------------------------------------------------------ */
-#title a{
-	text-decoration:none;
-}
-#lastmodified{
-	font-size:small;
-	font-weight:normal;
-	color:#777;
-	text-align:left;
-}
-#body{
-	width:100%;
-	word-break:break-all;
-	overflow:hidden;
-}
-#body h1,
-#body h2,
-#body h3
-#body h4
-#body input{
-	line-height:1em;
-}
-#body h1{
-	margin:30px 0px 5px 0px;
-	padding-left:10px;
-}
-#body h1 a{
-	text-decoration:none;
-}
-#body h2{
-	margin:30px 0px 5px 0px;
-	padding-left:10px;
-}
-#body h2 a{
-	text-decoration:none;
-}
-#body h3{
-	margin:2em 0px 5px 0px;
-	padding-left:8px;
-}
-#body h3 a{
-	text-decoration:none;
-}
-#body h4{
-	margin:2em 0px 5px 0em;
-	padding-left:4px;
-}
-#body h4 a{
-	text-decoration:none;
-}
-
-#body p{
-	margin:1em;
-}
-
 dd{
 	margin:2px 0px 5px 20px;
 }
-#body table{
-	word-break:break-all;
-	word-wrap:break-word;
-	max-width:100%;
-}
+
 pre{
 	background-color:#fff;
 	border-top:#666 1px solid;
@@ -162,14 +76,90 @@ tfoot th.style_th{
 }
 
 
-#body textarea{
-	max-width:100%;
-}
+
 .style_calendar_navi ul{
 	list-style-image: none;
 	list-style:none;
 	margin: 0 !important;
 	padding:0 !important;
+}
+
+#wrapper{
+	width:98%;
+	margin:9px auto;
+}
+
+#content{
+	float:right;
+	width:80%;
+}
+
+#title a{
+	text-decoration:none;
+}
+#lastmodified{
+	font-size:small;
+	font-weight:normal;
+	color:#777;
+	text-align:left;
+}
+
+/* CenterBar
+----------------------------------------------------------------------------- */
+
+#body{
+	width:100%;
+	word-break:break-all;
+	overflow:hidden;
+}
+#body h1,
+#body h2,
+#body h3
+#body h4
+#body input{
+	line-height:1em;
+}
+#body h1{
+	margin:30px 0px 5px 0px;
+	padding-left:10px;
+}
+#body h1 a{
+	text-decoration:none;
+}
+#body h2{
+	margin:30px 0px 5px 0px;
+	padding-left:10px;
+}
+#body h2 a{
+	text-decoration:none;
+}
+#body h3{
+	margin:2em 0px 5px 0px;
+	padding-left:8px;
+}
+#body h3 a{
+	text-decoration:none;
+}
+#body h4{
+	margin:2em 0px 5px 0em;
+	padding-left:4px;
+}
+#body h4 a{
+	text-decoration:none;
+}
+
+#body p{
+	margin:1em;
+}
+
+#body table{
+	word-break:break-all;
+	word-wrap:break-word;
+	max-width:100%;
+}
+
+#body textarea{
+	max-width:100%;
 }
 /* Summary
 ----------------------------------------------------------------------------- */
@@ -188,35 +178,31 @@ tfoot th.style_th{
 ----------------------------------------------------------------------------- */
 #header{
 	font-family:Arial,Sans Serif,generic font family;
+	margin-bottom:.5em;
 }
 #header a{
 	text-decoration:none;
 }
 #logo{
-	padding:20px 0px 10px 20px;
+	padding:10px 0 5px 10px;
 	font-size:40px;
-}
-
-/* Navigator
------------------------------------------------------------------------------ */
-#navigator{
-	height:24px;
-	margin:.4em 0;
-	padding:0 1em;
-	line-height:24px;
 }
 
 /* Side_Bar
 ----------------------------------------------------------------------------- */
 #sidebar{
+	float:left;
+	word-break:break-all;
+	font-size:93%;
 	overflow:hidden;
+	width:19%;
 }
 .bar{
 	word-break:break-all;
 	padding:7px 15px 15px 15px;
 }
 
-.bar,#header,#footer, #navigator {
+.bar,#header,#footer, #header + .navibar {
 	border-radius: .7em;			/* CSS3草案 */
 	-webkit-border-radius: .7em;	/* Safari,Google Chrome用 */
 	-moz-border-radius: .7em;		/* Firefox用 */
@@ -265,6 +251,9 @@ tfoot th.style_th{
 }
 /* Footer
 ----------------------------------------------------------------------------- */
+#footer{
+	clear:both;
+}
 #footer a{
 	text-decoration:none;
 }

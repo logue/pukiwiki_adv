@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiPlus - Yet another WikiWikiWeb clone.
 //
-// $Id: cloudwalk.skin.php,v 1.2.2 2011/09/11 22:57:00 Logue Exp$
+// $Id: cloudwalk.skin.php,v 1.2.3 2011/12/26 20:48:00 Logue Exp$
 // Original is ari-
 // PukiWiki Advance edition by Logue
 
@@ -10,6 +10,8 @@
 if (!defined('DATA_DIR')) { exit; }
 
 global $pkwk_dtd, $_SKIN, $is_page, $defaultpage, $trackback, $referer;
+
+$head_title = $page_title;
 
 if ($title != $defaultpage) {
 	$page_title = $title.' - '.$page_title;
@@ -30,7 +32,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 		<div id="wrapper"><!-- ■BEGIN id:wrapper -->
 <!-- ◆ Header ◆ ========================================================== -->
 			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<header id="header" class="clearfix">'."\n" : '<div id="header" class="clearfix">')."\n"; ?>
-				<h1 id="logo"><a href="<?php echo $_LINK['top'] ?>"><?php echo $page_title ?></a></h1>
+				<h1 id="logo"><a href="<?php echo $_LINK['top'] ?>"><?php echo $head_title ?></a></h1>
 			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</header>' : '</div>')."\n"; ?>
 <!-- ◆ Navigator ◆ ======================================================= -->
 			<?php if (exist_plugin('suckerfish')) echo do_plugin_convert('suckerfish'); ?>
@@ -39,7 +41,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="content" class="clearfix">'."\n" : '<div id="content" class="clearfix">')."\n"; ?><!-- ■BEGIN id:content -->
 					<hgroup class="hgroup">
 						<h1 id="title"><?php echo(($newtitle!='' && $is_read) ? $newtitle : $page) ?></h1>
-<?php if ($lastmodified != '') { ?>
+<?php if (isset($lastmodified)) { ?>
 <!-- ■BEGIN id:lastmodified -->
 						<h2 id="lastmodified">Last-modified: <?php echo $lastmodified ?></h2>
 <?php } ?><!-- □END id:lastmodified -->
@@ -92,34 +94,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 					</div><!-- END id:search_form -->
 					<div id="page_action" class="bar"><!-- ■BEGIN id:page_action -->
 						<h2><?php echo $_LANG['skin']['edit'] ?></h2>
-						<ul>
-<?php if ($is_page) { ?>
-							<li><a href="<?php echo $_LINK['reload'] ?>"><span class="pkwk-icon icon-reload"></span><?php echo $_LANG['skin']['reload'] ?></a></li>
-							<li><a href="<?php echo $_LINK['new'] ?>"><span class="pkwk-icon icon-new"></span><?php echo $_LANG['skin']['new'] ?></a></li>
-							<li><a href="<?php echo $_LINK['edit'] ?>"><span class="pkwk-icon icon-edit"></span><?php echo $_LANG['skin']['edit'] ?></a></li>
-<?php   if ($is_read and $function_freeze) { ?>
-<?php     if ($is_freeze) { ?>
-							<li><a href="<?php echo $_LINK['unfreeze'] ?>"><span class="pkwk-icon icon-unfreeze"></span><?php echo $_LANG['skin']['unfreeze'] ?></a></li>
-<?php     } else { ?>
-							<li><a href="<?php echo $_LINK['freeze'] ?>"><span class="pkwk-icon icon-freeze"></span><?php echo $_LANG['skin']['freeze'] ?></a></li>
-<?php     } ?>
-<?php   } ?>
-<?php   if ((bool)ini_get('file_uploads')) { ?>
-							<li><a href="<?php echo $_LINK['upload'] ?>"><span class="pkwk-icon icon-upload"></span><?php echo $_LANG['skin']['upload'] ?></a></li>
-<?php   } ?>
-							<li><a href="<?php echo $_LINK['diff'] ?>"><span class="pkwk-icon icon-diff"></span><?php echo $_LANG['skin']['diff'] ?></a></li>
-<?php } ?>
-							<li><a href="<?php echo $_LINK['list'] ?>"><span class="pkwk-icon icon-list"></span><?php echo $_LANG['skin']['list'] ?></a></li>
-<?php if (arg_check('list')) { ?>
-							<li><a href="<?php echo $_LINK['filelist'] ?>"><span class="pkwk-icon icon-filelist"></span><?php echo $_LANG['skin']['filelist'] ?></a></li>
-<?php } ?>
-							<li><a href="<?php echo $_LINK['search'] ?>"><span class="pkwk-icon icon-search"></span><?php echo $_LANG['skin']['search'] ?></a></li>
-							<li><a href="<?php echo $_LINK['recent'] ?>"><span class="pkwk-icon icon-recent"></span><?php echo $_LANG['skin']['recent'] ?></a></li>
-<?php if ($do_backup) { ?>
-							<li><a href="<?php echo $_LINK['backup'] ?>"><span class="pkwk-icon icon-backup"></span><?php echo $_LANG['skin']['backup'] ?></a></li>
-<?php } ?>
-							<li><a href="<?php echo $_LINK['help'] ?>"><span class="pkwk-icon icon-help"></span><?php echo $_LANG['skin']['help'] ?></a></li>
-						</ul>
+						<?php if (exist_plugin('navibar')) echo do_plugin_convert('navibar','top,reload,new,edit,freeze,upload,diff,list,search,recent,backup,help'); ?>
 					</div><!-- □END id:page_action -->
 <?php global $body_menu; ?>
 <?php if (!empty($body_menu)) { ?>

@@ -159,6 +159,26 @@
 	background-color:#ff6;
 }
 
+/* Navigator
+----------------------------------------------------------------------------- */
+#header + .navibar{
+	margin:.4em 0;
+	padding:.2em 1em;
+}
+#header + .navibar + hr {
+	display:none;
+}
+.navibar ul:after, .navibar ul:before, .navibar li:after{
+	content: ''
+}
+#header + .navibar ul,#header +  .navibar li {
+	padding:0 .25em;
+}
+
+#sidebar .navibar ul, #sidebar .navibar li{
+	display:block;
+}
+
 /* suckerfish.inc.php */
 .sf-menu {
 	/* These settings are recommended to specify an absolute value. */

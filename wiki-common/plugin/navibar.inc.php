@@ -1,12 +1,12 @@
 <?php
 /////////////////////////////////////////////////
-// PukiPlus.
+// PukiWiki - Yet another WikiWikiWeb clone.
 // Copyright (C)
-//   2010      PukiWiki Advance Developers Team
+//   2010-2011 PukiWiki Advance Developers Team
 //   2009      PukiWiki Plus! Team
 
 // License: GPL v2 or (at your option) any later version
-// $Id: navibar.php,v 0.1.17 2010/07/06 00:06:00 Logue Exp $
+// $Id: navibar.php,v 0.1.18 2011/12/12 21:13:00 Logue Exp $
 //
 function plugin_navibar_convert()
 {
@@ -26,8 +26,6 @@ function plugin_navibar_convert()
 
 	$num = func_num_args();
 	$args = $num ? func_get_args() : array();
-	$body = '';
-	$line = '';
 
 	while(!empty($args)) {
 		$name = array_shift($args);
@@ -40,26 +38,24 @@ function plugin_navibar_convert()
 				}else{
 					$name = 'freeze';
 				}
-				if ($body != '' && $oldname != '|') { $body .= ' | '; }
-				$body .= _navigator($name);
+				$ret[] = _navibar($name);
 			}
 			break;
 		case 'upload':
 			if ($is_read && (bool)ini_get('file_uploads') && !$is_freeze && !($_page == $whatsnew || $_page == $whatsdeleted)) {
-				if ($body != '' && $oldname != '|') { $body .= ' | '; }
-				$body .= _navigator($name);
+				$ret[] = _navibar($name);
 			}
 			break;
-		case 'filelist':
-			if (arg_check('list') && (bool)ini_get('file_uploads')) {
-				if ($body != '' && $oldname != '|') { $body .= ' | '; }
-				$body .= _navigator($name);
+		case 'list':
+			if ($vars['cmd'] !== 'list'){
+				$ret[] = _navibar($name);
+			}else{
+				$ret[] = _navibar('filelist');
 			}
 			break;
 		case 'backup':
 			if ($do_backup) {
-				if ($body != '' && $oldname != '|') { $body .= ' | '; }
-				$body .= _navigator($name);
+				$ret[] = _navibar($name);
 			}
 			
 			break;
@@ -67,104 +63,89 @@ function plugin_navibar_convert()
 		case 'template':
 		case 'source':
 			if (!empty($_page)) {
-				if ($body != '' && $oldname != '|') { $body .= ' | '; }
-				$body .= _navigator($name);
+				$ret[] = _navibar($name);
 			}
 			break;
 		case 'trackback':
 			if ($trackback && !($_page == $whatsnew || $_page == $whatsdeleted)) {
-				if ($body != '' && $oldname != '|') { $body .= ' | '; }
 				$tbcount = tb_count($_page);
-				if ($tbcount > 0) {
-					$body .= _navigator($name, 'Trackback(' . $tbcount . ')');
-				} else if ($is_read) {
-					$body .= 'no Trackback';
-				} else if (isset($vars['cmd']) && $vars['cmd'] == 'list') {
-					$body .= _navigator($name, 'Trackback list');
+				if (isset($vars['cmd']) && $vars['cmd'] == 'list') {
+					$ret[] = _navibar($name, 'Trackback list');
+				}else{
+					$ret[] = _navibar($name, 'Trackback(' . $tbcount . ')');
 				}
 			}
 			break;
 		case 'referer':
 		case 'skeylist':
 		case 'linklist':
-			if ($referer) {
-				if ($body != '' && $oldname != '|') { $body .= ' | '; }
-				$body .= _navigator($name);
+			if ($referer && $_page) {
+				$ret[] = _navibar($name);
 			}
 			break;
 
 		case 'log_login':
 			if (log_exist('login',$vars['page'])) {
-				if ($body != '' && $oldname != '|') { $body .= ' | '; }
-				$body .= _navigator($name);
+				$ret[] = _navibar($name);
 			}
 			break;
 		case 'log_check':
 			if (log_exist('check',$vars['page'])) {
-				if ($body != '' && $oldname != '|') { $body .= ' | '; }
-				$body .= _navigator($name);
+				$ret[] = _navibar($name);
 			}
 			break;
 		case 'log_browse':
-			if ($body != '' && $oldname != '|') { $body .= ' | '; }
-			$body .= _navigator($name);
+			$ret[] = _navibar($name);
 //			if (log_exist('browse',$vars['page'])) {
-//				return _navigator($name);
+//				return _navibar($name);
 //			}
 			break;
 		case 'log_update':
 			if (log_exist('update',$vars['page'])) {
-				if ($body != '' && $oldname != '|') { $body .= ' | '; }
-				$body .= _navigator($name);
+				$ret[] = _navibar($name);
 			}
 			break;
 		case 'log_down':
 			if (log_exist('download',$vars['page'])) {
-				if ($body != '' && $oldname != '|') { $body .= ' | '; }
-				$body .= _navigator($name);
+				$ret[] = _navibar($name);
 			}
 			break;
 		case '|':
-			if ( trim($body) != '' ) {
-				$line .= '[ ' . $body . ' ]' . "\n\n";
-				$body = '';
-			}
+			$ret[] = '</ul>'."\n".'<ul>';
 			break;
 		// case 'new':
 		case 'newsub':
 		case 'edit':
 		case 'guiedit':
 			if ($is_read && $function_freeze && !$is_freeze && !($_page == $whatsnew || $_page == $whatsdeleted)) {
-				if ($body != '' && $oldname != '|') { $body .= ' | '; }
-				$body .= _navigator($name);
+				$ret[] = _navibar($name);
 			}
 		break;
 		case 'diff':
+		case 'reload':
+		case 'copy':
 			if (!$is_read)
 				break;
 		default:
-			if ($body != '' && $oldname != '|') { $body .= ' | '; }
-			$body .= _navigator($name);
+			$ret[] = _navibar($name);
 			break;
 		}
-		$oldname = $name;
-		$body .= ' ';
 	}
+	$ret[] = '</ul>';
+	
+	$body = "\n".'<ul>'.join('',$ret).'</ul>'."\n";
 
-	if ( trim($body) != '' ) {
-		$line .= '[ ' . $body . ' ]' . "\n\n";
-		$body = '';
-	}
-	return (($pkwk_dtd == PKWK_DTD_HTML_5) ? '<nav id="navigator">'.$line.'</nav>' : '<div id="navigator">'.$line.'</div>')."\n";
+	return (($pkwk_dtd == PKWK_DTD_HTML_5) ? '<nav class="navibar">'.$body.'</nav>' : '<div class="navibar">'.$body.'</div>')."\n";
 }
 
-function _navigator($key, $val = '')
+function _navibar($key)
 {
 	global $_LINK, $_LANG, $_SKIN;
 
 	if (!isset($_LANG['skin'][$key])) { return '<!--LANG NOT FOUND-->'; }
 	if (!isset($_LINK[$key])) { return '<!--LINK NOT FOUND-->'; }
+	$showicon = isset($_SKIN['showicon']) ? $_SKIN['showicon'] : false;
 
-	return '<a href="' . $_LINK[$key] . '" rel="nofollow" >'. ($_SKIN['showicon'] ? '<span class="pkwk-icon icon-'.$key.'"></span>' : '') . $_LANG['skin'][$key]. '</a>';
+	return '<li><a href="' . $_LINK[$key] . '" rel="nofollow" >'. ($showicon ? '<span class="pkwk-icon icon-'.$key.'"></span>' : '') . $_LANG['skin'][$key]. '</a></li>';
 }
 ?>

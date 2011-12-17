@@ -363,7 +363,7 @@ tfoot .style_th {
 	float:right;
 }
 
-#navigator {
+.navibar {
 	display:block;
 	clear:both;
 	padding:4px 0px 0px 0px;
@@ -663,7 +663,7 @@ tfoot .style_th {
 
 /** Print Setting *********************************************************************************/
 @media print {
-	#hgroup h2, #header img, #navigator, #menubar, #poptoc, #banner_box, #attach, #toolbar,
+	#hgroup h2, #header img, #navibar, #menubar, #poptoc, #banner_box, #attach, #toolbar,
 	#sigunature{
 		display:none !important;
 		visibility: hidden !important;

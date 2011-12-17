@@ -19,8 +19,8 @@ define('S_REVSION', '20111204');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &#169; 2010-2011' .
-	' <a href="http://pukiwiki.logue.be/" rel="product">PukiWiki Advance Developers Team</a>.' .
-	' Licensed under the <a href="http://www.gnu.org/licenses/gpl-2.0.html" rel="license">GPLv2</a>.<br />' .
+	' <a href="http://pukiwiki.logue.be/" rel="product">PukiWiki Advance Developers Team</a>.<br />' .
+	' Licensed under the <a href="http://www.gnu.org/licenses/gpl-2.0.html" rel="license">GPLv2</a>.' .
 	' Based on <a href="http://pukiwiki.cafelounge.net/plus/">"PukiWiki Plus! i18n"</a>'
 );
 

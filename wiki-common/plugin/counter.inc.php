@@ -18,6 +18,7 @@ function plugin_counter_inline()
 {
 	global $vars;
 
+	if ($vars['page'] === '') return null;
 	// BugTrack2/106: Only variables can be passed by reference from PHP 5.0.5
 	$args = func_get_args(); // with array_shift()
 	$arg = strtolower(array_shift($args));
@@ -40,13 +41,14 @@ function plugin_counter_inline()
 function plugin_counter_convert()
 {
 	global $vars;
-
+	
+	if ($vars['page'] === '') return null;
 	$counter = plugin_counter_get_count($vars['page']);
 	return <<<EOD
 <div class="counter">
-Counter:   {$counter['total']},
-today:     {$counter['today']},
-yesterday: {$counter['yesterday']}
+Counter:	<var>{$counter['total']}</var>,
+Today:		<var>{$counter['today']}</var>,
+Yesterday:	<var>{$counter['yesterday']}</var>
 </div>
 EOD;
 }

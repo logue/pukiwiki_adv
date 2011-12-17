@@ -37,8 +37,8 @@ http://jqueryui.com/themeroller/
 	'logo'=>array(
 		'src'		=> IMAGE_URI.'pukiwiki_adv.logo.png',
 		'alt'		=> '[PukiWiki Adv.]',
-		'width'		=> '96',
-		'height'	=> '96'
+		'width'		=> '80',
+		'height'	=> '80'
 	),
 
 	// L•\Ž¦—Ìˆæ

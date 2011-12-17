@@ -35,7 +35,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 		<div id="container">
 
 <!-- ** Navigator ** -->
-<?php if (exist_plugin('suckerfish')) echo do_plugin_convert('suckerfish'); ?>
+			<?php if (exist_plugin('suckerfish')) echo do_plugin_convert('suckerfish'); ?>
 <!--  End Navigator -->
 
 <!-- Header -->
@@ -86,9 +86,7 @@ if ($is_page) {
 							<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
 <!--  End Related -->
 <?php } ?>
-<?php if (exist_plugin('toolbar'))
-echo do_plugin_convert('toolbar','reload,|,new,newsub,edit,freeze,diff,upload,copy,rename,|,top,list,recent,backup,refer,|,help,|,mixirss');
-?>
+							<?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','reload,|,new,newsub,edit,freeze,source,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,log_browse,|,help,|,rss') : '';?>
 						</div>
 					</div>
 				</div>

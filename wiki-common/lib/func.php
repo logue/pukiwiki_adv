@@ -500,23 +500,18 @@ function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', 
 
 	// Insert a table of contents
 	if ($list_index && $cnt) {
-
-		// Breaks in every N characters
-		$N = 16;
-		$tmp = array();
 		while (! empty($contents)) {
-			$tmp[] = join(' | ' . "\n", array_splice($contents, 0, $N));
+			$tmp[] = join('</li><li>', array_splice($contents, 0));
 		}
 		$contents = & $tmp;
-
 		array_unshift(
 			$retval,
-			'<div id="top" style="text-align:center">',
+			'<nav id="list_index"><ul><li>',
 			join("\n" . '<br />' . "\n", $contents),
-			'</div>');
+			'</li></ul></nav>');
 	}
 
-	return implode("\n", $retval) . "\n";
+	return '<div id="pages">'."\n".join("\n", $retval) . "\n".'</div>';
 }
 
 // Show text formatting rules
