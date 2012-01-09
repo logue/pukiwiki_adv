@@ -195,8 +195,9 @@ if (DEBUG) {
 	$exclude_plugin = array();
 }
 
+$base = '';
 // Plugin execution
-if ($plugin != '') {
+if (!empty($plugin)) {
 	if ($is_protect) {
 		$plugin_arg = '';
 		if (auth::is_protect_plugin_action($plugin)) {
@@ -251,7 +252,7 @@ if (isset($retvars['msg']) && $retvars['msg'] != '') {
 if (isset($retvars['body']) && $retvars['body'] != '') {
 	$body = & $retvars['body'];
 } else {
-	if ($base == '' || ! is_page($base)) {
+	if (empty($base) || ! is_page($base)) {
 		$base  = & $defaultpage;
 		$title = htmlsc(strip_bracket($base));
 		$page  = make_search($base);
@@ -294,6 +295,7 @@ if ($always_menu_displayed) {
 	if (exist_plugin_convert('side')) $body_side = do_plugin_convert('side');
 }
 
+global $memcache;
 if ($memcache !== null){
 	$memcache->close();
 }

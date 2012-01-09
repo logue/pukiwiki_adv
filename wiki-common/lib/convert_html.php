@@ -527,7 +527,7 @@ class TableCell extends Element
 		if ($is_template && is_numeric($text))
 			$this->style['width'] = 'width:' . $text . 'px;';
 
-		if ($text == '' || !preg_match("/\S+/", $text)){
+		if (empty($text) || !preg_match("/\S+/", $text)){
 			// セルが空だったり、空白文字しか残らない場合は、空欄のセルとする。（HTMLではタブやスペースも削除）
 			$text = '';
 			$this->is_blank = true;
@@ -682,7 +682,7 @@ class Table extends Element
 		}
 		$string = $this->wrap($string, 'table', ' class="style_table" ');
 
-		return $this->wrap($string, 'div', ' class="ie5"');
+		return $this->wrap($string, 'div', ' class="table_wrapper"');
 	}
 }
 
@@ -733,7 +733,7 @@ class YTable extends Element
 			while (isset($_value[$i + $colspan]) && $_value[$i + $colspan] === FALSE) ++$colspan;
 			$colspan = ($colspan > 1) ? ' colspan="' . $colspan . '"' : '';
 			$text = preg_match("/\s+/", $_value[$i]) ? '' : make_link($_value[$i]);
-			$class = ($text == '') ? 'style_td_blank' : 'style_td';
+			$class = ((empty($text) || !preg_match("/\S+/", $text))) ? 'style_td_blank' : 'style_td';
 			$align = $_align[$i] ? ' style="text-align:' . $_align[$i] . '"' : '';
 			$str[] = '<td class="'.$class.'"' . $align . $colspan . '>' . $text . '</td>';
 			unset($_value[$i], $_align[$i], $text);
@@ -760,8 +760,8 @@ class YTable extends Element
 		foreach ($this->elements as $str) {
 			$rows .= "\n" . '<tr class="style_tr">' . $str . '</tr>' . "\n";
 		}
-		$rows = $this->wrap($rows, 'table', ' class="style_table" cellspacing="1" border="0"');
-		return $this->wrap($rows, 'div', ' class="ie5"');
+		$rows = $this->wrap($rows, 'table', ' class="style_table"');
+		return $this->wrap($rows, 'div', ' class="table_wrapper"');
 	}
 }
 

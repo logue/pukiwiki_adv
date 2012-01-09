@@ -77,7 +77,7 @@ del{
 
 h1,h2,h3,h4,h5,h6{
 	padding:.2em .5em;
-	margin:0px 0px .2em 0px;
+	margin: 0 0 .2em 0;
 }
 
 h1, h2 {
@@ -159,127 +159,6 @@ tfoot .style_th {
 	background-color:#E3EAF6;
 }
 
-/* html.php/catbody() */
-.word0 {
-	background-color:#FFFF66;
-	color:black;
-}
-.word1 {
-	background-color:#A0FFFF;
-	color:black;
-}
-.word2 {
-	background-color:#99FF99;
-	color:black;
-}
-.word3 {
-	background-color:#FF9999;
-	color:black;
-}
-.word4 {
-	background-color:#FF66FF;
-	color:black;
-}
-.word5 {
-	background-color:#880000;
-	color:white;
-}
-.word6 {
-	background-color:#00AA00;
-	color:white;
-}
-.word7 {
-	background-color:#886800;
-	color:white;
-}
-.word8 {
-	background-color:#004699;
-	color:white;
-}
-.word9 {
-	background-color:#990099;
-	color:white;
-}
-
-#poptoc {
-	border:gray thin outset;
-	background-color:lightyellow;
-	max-width:25em;
-	min-width:18em;
-	opacity:0.9;
-	overflow:visible;
-	padding:0.5em;
-	position:absolute;
-	text-align:left;
-	text-shadow: white 1px 1px 0px;
-	width:22em;
-	z-index:1;
-}
-
-.ie6 #poptoc, .ie7 #poptoc, .ie8 #poptoc {
-	filter:
-		progid:DXImageTransform.Microsoft.Alpha(opacity=90)
-		progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=ivory,EndColorStr=lemonchiffon) !important;
-}
-
-.webkit #poptoc{
-	background: -webkit-gradient(linear, left top, left bottom, from(ivory), to(lemonchiffon));
-}
-
-.gecko #poptoc{
-	-moz-opacity:0.9;
-	background: -moz-linear-gradient(top, ivory, lemonchiffon);
-}
-
-.presto #poptoc{
-	background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMCI%2BDQo8ZGVmcz4NCjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxMDAlIj4NCjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOml2b3J5OyIvPg0KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjpsaWdodHllbGxvdzsiLz4NCjwvbGluZWFyR3JhZGllbnQ%2BDQo8L2RlZnM%2BDQo8cmVjdCB4PSIwIiB5PSIwIiBmaWxsPSJ1cmwoI2dyYWRpZW50KSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgLz4NCjwvc3ZnPg0K');
-}
-.ie9 #poptoc {
-	-ms-filter: "progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=ivory,EndColorStr=lemonchiffon)" !important;
-}
-
-#poptoc a{
-	color:blue !important;
-	cursor:pointer; 
-}
-#poptoc a:hover{
-	text-shadow: none;
-	background-color:#ccc;
-}
-#poptoc h1{
-	color:navy;
-	background-color:honeydew;
-	font-size:small;
-	font-weight:normal;
-	padding:0.3em;
-	margin:0;
-	text-align:center;
-	border:silver solid 1px;
-	display:block;
-}
-#poptoc h1 a{color:navy; text-decoration:none;}
-#poptoc h1 img {margin-bottom:-3px; margin-right: 2px;}
-#poptoc .nav {text-indent:0em;border-top:1px gray solid; padding-top:0.2em;text-align:center; white-space: nowrap; }
-#poptoc a.here{color: black; background: #EEEEEE; text-decoration: none; border:1px dotted gray;}
-
-.tocpic {
-	display:inline;
-	cursor:pointer;
-}
-
-.hrefp, .topic {
-	vertical-align:text-bottom;
-}
-
-.social{
-	list-style:none;
-}
-
-.social li{
-	display:block;
-	padding: 0 0.1em;
-	float:left;
-}
 /** Skin Stylesheet *******************************************************************************/
 #hgroup h1, #hgroup h2{
 	background-color:transparent;
@@ -316,15 +195,15 @@ tfoot .style_th {
 
 #header .style_table .style_th
 {
-	margin: 0px;
-	padding: 0px;
+	margin: 0;
+	padding: 0;
 	background-color: transparent;
 }
 
 #header .style_table .style_td
 {
-	margin: 0px;
-	padding: 0px;
+	margin: 0;
+	padding: 0;
 	background-color: transparent;
 }
 
@@ -333,28 +212,23 @@ tfoot .style_th {
 	margin-right:20px;
 }
 
+/* title */
 #hgroup {
 	display:block;
 	float:left;
-	vertical-align: baseline;
-	margin:1.8% 0 0 0;
-	line-height:100%;
+	margin:1.5% 0 0 0;
 }
 
-#hgroup h1, #hgroup h2 {
-	background-color:transparent;
-	padding: 0px;
-	border: 0px;
-}
-/* title */
 #hgroup h1 {
 	font-size: 246.2%;
 	font-weight:bold;
+	padding:0;
 }
 
-#hgroup h2 {
+#hgroup h2, #hgroup .topicpath {
 	font-weight:normal;
 	font-size: 93%;
+	display:block;
 }
 
 #lastmodified {
@@ -366,7 +240,7 @@ tfoot .style_th {
 .navibar {
 	display:block;
 	clear:both;
-	padding:4px 0px 0px 0px;
+	padding:4px 0 0 0;
 	margin:0px;
 }
 
@@ -392,8 +266,8 @@ tfoot .style_th {
 }
 
 #menubar ul {
-	margin:0px 0px 0px .5em;
-	padding:0px 0px 0px .5em;
+	margin: 0 0 0 .5em;
+	padding: 0 0 0 .5em;
 }
 
 #menubar ul li { line-height:110%; }
@@ -425,15 +299,15 @@ tfoot .style_th {
 
 #footer .style_table .style_th
 {
-	margin: 0px;
-	padding: 0px;
+	margin: 0;
+	padding: 0;
 	background-color: transparent;
 }
 
 #footer .style_table .style_td
 {
-	margin: 0px;
-	padding: 0px;
+	margin: 0;
+	padding: 0;
 	background-color: transparent;
 }
 

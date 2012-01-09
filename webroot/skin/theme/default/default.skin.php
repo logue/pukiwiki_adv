@@ -6,7 +6,7 @@
 // Original version by miko and upk.
 // Modified by Logue
 //
-// $Id: default.skin.php,v 1.4.16 2011/09/11 22:55:00 Logue Exp $
+// $Id: default.skin.php,v 1.4.17 2012/01/09 14:59:00 Logue Exp $
 //
 global $pkwk_dtd, $_SKIN, $is_page, $defaultpage, $sidebar, $headarea, $footarea;
 
@@ -66,32 +66,34 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 			<?php echo ($navibar === null) ? (exist_plugin('navibar') ? do_plugin_convert('navibar','top,|,edit,freeze,diff,backup,upload,reload,|,new,list,search,recent,help,|,trackback').'<hr />' :'') : $navibar; ?>
 			<div id="wrapper" class="clearfix">
 <!-- Center -->
-				<div id="main" role="main">
-					<?php echo ($is_page && exist_plugin_convert('topicpath')) ? do_plugin_convert('topicpath') : ''; ?>
-					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="body">'."\n" : '<div id="body">'."\n"; ?>
-						<?php echo $body."\n" ?>
-					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</section>'."\n" : '</div>'."\n"; ?>
+				<div id="main_wrapper">
+					<div id="main" role="main">
+						<?php echo ($is_page && exist_plugin_convert('topicpath')) ? do_plugin_convert('topicpath') : ''; ?>
+						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="body">'."\n" : '<div id="body">'."\n"; ?>
+							<?php echo $body."\n" ?>
+						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</section>'."\n" : '</div>'."\n"; ?>
 <?php if (!empty($notes)) { ?>
-					<hr />
-					<!-- * Note * -->
-					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="note">'."\n" : '<div id="note">'."\n"; ?>
-						<?php echo $notes."\n" ?>
-					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
-					<!--  End Note -->
+						<hr />
+						<!-- * Note * -->
+						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="note" role="note">'."\n" : '<div id="note" role="note">'."\n"; ?>
+							<?php echo $notes."\n" ?>
+						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
+						<!--  End Note -->
 <?php } ?>
-					<?php if (!empty($_SKIN['adarea']['footer'])) echo '<div id="footer_adspace" class="noprint" style="text-align:center;">' . $_SKIN['adarea']['footer'] . '</div>'; ?>
+						<?php if (!empty($_SKIN['adarea']['footer'])) echo '<div id="footer_adspace" class="noprint" style="text-align:center;">' . $_SKIN['adarea']['footer'] . '</div>'; ?>
+					</div>
 				</div>
 
 <?php if ($layout_class == 'three-colums' || $layout_class == 'two-colums')  { ?>
 <!-- Left -->
-				<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="menubar">'."\n" : '<div id="menubar">'."\n"; ?>
+				<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="menubar" role="navigation">'."\n" : '<div id="menubar" role="navigation">'."\n"; ?>
 					<?php echo do_plugin_convert('menu')."\n" ?>
 				<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
 <?php } ?>
 
 <?php if ($layout_class == 'three-colums')  { ?>
 <!-- Right -->
-				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="sidebar">' : '<div id="sidebar">')."\n"; ?>
+				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="sidebar" role="navigation">' : '<div id="sidebar" role="navigation">')."\n"; ?>
 					<?php echo do_plugin_convert('side')."\n" ?>
 				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>')."\n"; ?>
 <?php } ?>
@@ -108,16 +110,16 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 <?php if (!empty($related)) { ?>
 				<!-- * Related * -->
 				<hr />
-				<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="related">'."\n" : '<div id="related">'."\n"; ?>
+				<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="related" role="navigation">'."\n" : '<div id="related" role="navigation">'."\n"; ?>
 					<?php echo $related ?>
 				<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
 				<!--  End Related -->
 <?php } ?>
 				<hr />
-				<?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','reload,|,new,newsub,edit,freeze,source,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,log_browse,|,help,|,rss') : '';?>
+				<?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','reload,|,new,newsub,edit,freeze,source,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,log,|,help,|,rss') : '';?>
 			</div>
 
-			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<footer id="footer"  class="clearfix">'."\n" : '<div id="footer" class="clearfix">'."\n"; ?>
+			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<footer id="footer" class="clearfix" role="contentinfo">'."\n" : '<div id="footer" class="clearfix">'."\n"; ?>
 <?php if ($footer) {
 echo $footer;
 }else{ ?>

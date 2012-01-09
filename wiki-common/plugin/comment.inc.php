@@ -1,6 +1,6 @@
 <?php
 // PukiPlus - Yet another WikiWikiWeb clone
-// $Id: comment.inc.php,v 1.41.24 2011/02/05 10:48:00 Logue Exp $
+// $Id: comment.inc.php,v 1.41.25 2011/02/05 21:04:00 Logue Exp $
 // Copyright (C)
 //  2010-2011 PukiWiki Advance Developers Team
 //  2005-2008 PukiWiki Plus! Team
@@ -25,11 +25,14 @@ define('PLUGIN_COMMENT_FORMAT_STRING',	"\x08MSG\x08 -- \x08NAME\x08 \x08NOW\x08"
 function plugin_comment_init(){
 	$messages = array(
 		'_comment_messages' => array(
-			'msg_comment_collided'		=> T_('It seems that someone has already updated the page you were editing.').'<br />'.
-										   T_('The comment was added, alhough it may be inserted in the wrong position.'),
-			'title_comment_collided'	=> T_('On updating  $1, a collision has occurred.'),
-			'title_updated'				=> T_('$1 was updated'),
-			'err_prohibit'				=> T_('This Wiki is <var>%s</var> mode now. Therefore, comment function is prohibited.'),
+			'msg_collided'		=> T_('It seems that someone has already updated the page you were editing.').'<br />'.
+								   T_('The comment was added, alhough it may be inserted in the wrong position.'),
+			'title_collided'	=> T_('On updating  $1, a collision has occurred.'),
+			'title_updated'		=> T_('$1 was updated'),
+			'err_prohibit'		=> T_('This Wiki is <var>%s</var> mode now. Therefore, comment function is prohibited.'),
+			'label_name'		=> T_('Name: '),
+			'label_post'		=> T_('Post Comment'),
+			'label_comment'		=> T_('Comment: ')
 		),
 		'_comment_formats' => array(
 			'msg'	=> PLUGIN_COMMENT_FORMAT_MSG,
@@ -43,21 +46,21 @@ function plugin_comment_init(){
 
 function plugin_comment_action()
 {
-	global $vars, $post;
+	global $vars, $post, $_comment_messages;
 
 	// Petit SPAM Check (Client(Browser)-Server Ticket Check)
 	$spam = FALSE;
 	if (isset($post['encode_hint']) && $post['encode_hint'] != '') {
-		if (PKWK_ENCODING_HINT != $post['encode_hint']) $spam = TRUE;
+		if (PKWK_ENCODING_HINT !== $post['encode_hint']) $spam = TRUE;
 	} else {
-		if (PKWK_ENCODING_HINT != '') $spam = TRUE;
+		if (PKWK_ENCODING_HINT !== '') $spam = TRUE;
 	}
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	if (auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
+	if (auth::check_role('readonly')) die_message(sprintf($_comment_messages['err_prohibit'],'PKWK_READONLY'));
 
 	if (!is_page($vars['refer']) && auth::is_check_role(PKWK_CREATE_PAGE)) {
-		die_message( _('PKWK_CREATE_PAGE prohibits editing') );
+		die_message(sprintf($_comment_messages['err_prohibit'],'PKWK_CREATE_PAGE'));
 	}
 
 	// If SPAM, goto jail.
@@ -68,12 +71,7 @@ function plugin_comment_action()
 function plugin_comment_write()
 {
 	global $vars, $now;
-	global $_no_name;
-//	global $_msg_comment_collided, $_title_comment_collided, $_title_updated;
-	$_title_updated = _("$1 was updated");
-	$_title_comment_collided = T_("On updating  $1, a collision has occurred.");
-	$_msg_comment_collided   = T_("It seems that someone has already updated the page you were editing.<br />") .
-	                           T_("The comment was added, alhough it may be inserted in the wrong position.<br />");
+	global $_no_name, $_comment_messages, $_comment_formats;
 
 	if (! isset($vars['msg'])) return array('msg'=>'', 'body'=>''); // Do nothing
 
@@ -90,16 +88,16 @@ function plugin_comment_write()
 	}
 	if ($vars['msg'] == '') return array('msg'=>'', 'body'=>''); // Do nothing
 
-	$comment  = str_replace('$msg', $vars['msg'], PLUGIN_COMMENT_FORMAT_MSG);
+	$comment  = str_replace('$msg', $vars['msg'], $_comment_formats['msg']);
 
 	list($nick, $vars['name'], $disabled) = plugin_comment_get_nick();
 
-	if(isset($vars['name']) || ($vars['nodate'] != '1')) {
+	if(isset($vars['name']) || ($vars['nodate'] !== '1')) {
 		$_name = (! isset($vars['name']) || $vars['name'] == '') ? $_no_name : $vars['name'];
-		$_name = ($_name == '') ? '' : str_replace('$name', $_name, PLUGIN_COMMENT_FORMAT_NAME);
+		$_name = ($_name == '') ? '' : str_replace('$name', $_name, $_comment_formats['name']);
 		$_now  = ($vars['nodate'] == '1') ? '' :
 			str_replace('$now', $now, PLUGIN_COMMENT_FORMAT_NOW);
-		$comment = str_replace("\x08MSG\x08",  $comment, PLUGIN_COMMENT_FORMAT_STRING);
+		$comment = str_replace("\x08MSG\x08",  $comment, $_comment_formats['str']);
 		$comment = str_replace("\x08NAME\x08", $_name, $comment);
 		$comment = str_replace("\x08NOW\x08",  $_now,  $comment);
 	}
@@ -123,17 +121,14 @@ function plugin_comment_write()
 		if ($above) $postdata .= $line;
 	}
 
-	$title = $_title_updated;
+	$title = $_comment_messages['title_updated'];
 	$body = '';
-	if (md5(get_source($vars['refer'], TRUE, TRUE)) !== $vars['digest']) {
-		$title = $_title_comment_collided;
-		$body  = $_msg_comment_collided . make_pagelink($vars['refer']);
+	if (md5(@join('', get_source($vars['refer']))) !== $vars['digest']) {
+		$title = $_comment_messages['title_collided'];
+		$body  = $_comment_messages['msg_collided'] . make_pagelink($vars['refer']);
 	}
 
 	page_write($vars['refer'], $postdata);
-
-	$retvars['msg']  = $title;
-	$retvars['body'] = $body;
 
 	if ($vars['refpage']) {
 		header('Location: ' . get_page_location_uri($vars['refpage']));
@@ -142,7 +137,7 @@ function plugin_comment_write()
 
 	$vars['page'] = $vars['refer'];
 
-	return $retvars;
+	return array('msg'=>$title, 'body'=>$body);
 }
 
 function plugin_comment_get_nick()
@@ -171,14 +166,10 @@ function plugin_comment_honeypot()
 
 function plugin_comment_convert()
 {
-	global $vars, $digest, $script;	//, $_btn_comment, $_btn_name, $_msg_comment;
+	global $vars, $digest, $script, $_comment_messages;	//, $_btn_comment, $_btn_name, $_msg_comment;
 	static $numbers = array();
 	static $all_numbers = 0;
 	static $comment_cols = PLUGIN_COMMENT_SIZE_MSG;
-
-	$_btn_name    = T_("Name: ");
-	$_btn_comment = T_("Post Comment");
-	$_msg_comment = T_("Comment: ");
 
 	$auth_guide = '';
 	if (PKWK_READONLY == ROLE_AUTH) {
@@ -196,18 +187,18 @@ function plugin_comment_convert()
 
 	list($user, $link, $disabled) = plugin_comment_get_nick();
 
-	if (in_array('noname', $options)) {
+//	if (in_array('noname', $options)) {
 //		$nametags = '<label for="p_comment_comment_' . $comment_all_no . '">' .
-//			$_msg_comment . '</label>';
-	} else {
+//			$_comment_messages['label_comment'] . '</label>';
+//	} else {
 //		$nametags = '<label for="p_comment_name_' . $comment_all_no . '">' .
-//			$_btn_name . '</label>' .
+//			$_comment_messages['label_name'] . '</label>' .
 
 		$nametags =
 			'<input type="text" name="name" id="p_comment_name_' .
 			$comment_all_no .  '" size="' . PLUGIN_COMMENT_SIZE_NAME .
-			'" value="'.$user.'"'.$disabled.' placeholder="'.$_btn_name.'" />' . "\n";
-	}
+			'" value="'.$user.'"'.$disabled.' placeholder="'.$_comment_messages['label_name'].'" />' . "\n";
+//	}
 
 	$nodate = in_array('nodate', $options) ? '1' : '0';
 	$above  = in_array('above',  $options) ? '1' :
@@ -217,7 +208,7 @@ function plugin_comment_convert()
 	$s_page = htmlsc($vars['page']);
 
 	$ticket = md5(MUTIME);
-	if (function_exists('pkwk_session_start') && pkwk_session_start() != 0) {
+	if (function_exists('pkwk_session_start') && pkwk_session_start() !== 0) {
 		$keyword = $ticket;
 		$_SESSION[$keyword] = md5(get_ticket() . $digest);
 	}
@@ -225,7 +216,7 @@ function plugin_comment_convert()
 	$string = <<<EOD
 <br />
 $auth_guide
-<form action="$script" method="post">
+<form action="$script" method="post" class="comment_form">
 	<input type="hidden" name="refpage" value="$refpage" />
 	<input type="hidden" name="plugin" value="comment" />
 	<input type="hidden" name="refer"  value="$s_page" />
@@ -234,14 +225,11 @@ $auth_guide
 	<input type="hidden" name="above"  value="$above" />
 	<input type="hidden" name="digest" value="$digest" />
 	<input type="hidden" name="ticket" value="$ticket" />
-	<div class="comment_form">
-		$nametags
-		<input type="text"   name="msg" id="p_comment_comment_{$comment_all_no}" size="$comment_cols" placeholder="{$_msg_comment}" />
-		<input type="submit" name="comment" value="$_btn_comment" />
-	</div>
+	$nametags
+	<input type="text"   name="msg" id="p_comment_comment_{$comment_all_no}" size="$comment_cols" placeholder="{$_comment_messages['label_comment']}" />
+	<input type="submit" name="comment" value="{$_comment_messages['label_post']}" />
 </form>
 EOD;
-
 	return $string;
 }
 ?>

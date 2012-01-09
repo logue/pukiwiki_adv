@@ -213,7 +213,7 @@ function plugin_edit_inline()
 // Write, add, or insert new comment
 function plugin_edit_write()
 {
-	global $post, $vars, $trackback;
+	global $vars, $trackback;
 	global $notimeupdate, $do_update_diff_table;
 	global $use_trans_sid_address;
 //	global $_title_collided, $_msg_collided_auto, $_msg_collided, $_title_deleted;
@@ -221,11 +221,11 @@ function plugin_edit_write()
 	$_title_deleted = T_(' $1 was deleted');
 	$_msg_invalidpass = T_('Invalid password.');
 
-	$page   = isset($vars['page']) ? $vars['page']     : '';
-	$add    = isset($vars['add'])    ? $vars['add']    : '';
-	$digest = isset($vars['digest']) ? $vars['digest'] : '';
-	$partid = isset($vars['id'])     ? $vars['id']     : '';
-	$notimestamp = isset($vars['notimestamp']) && $vars['notimestamp'] != '';
+	$page   = isset($vars['page'])   ? $vars['page']   : null;
+	$add    = isset($vars['add'])    ? $vars['add']    : null;
+	$digest = isset($vars['digest']) ? $vars['digest'] : null;
+	$partid = isset($vars['id'])     ? $vars['id']     : null;
+	$notimestamp = isset($vars['notimestamp']) && $vars['notimestamp'] !== null;
 
 	// Check Validate and Ticket
 	if ($notimestamp && !is_page($page)) {
@@ -233,9 +233,9 @@ function plugin_edit_write()
 	}
 
 	// SPAM Check (Client(Browser)-Server Ticket Check)
-	if (isset($post['encode_hint']) && $post['encode_hint'] != PKWK_ENCODING_HINT)
+	if ( isset($vars['encode_hint']) && $vars['encode_hint'] !== PKWK_ENCODING_HINT )
 		return plugin_edit_honeypot();
-	if (!isset($post['encode_hint']) && PKWK_ENCODING_HINT != '')
+	if ( !isset($vars['encode_hint']) && !defined(PKWK_ENCODING_HINT) )
 		return plugin_edit_honeypot();
 
 	// Validate
@@ -245,11 +245,9 @@ function plugin_edit_write()
 	// Paragraph edit mode
 	if ($partid) {
 		$source = preg_split('/([^\n]*\n)/', $vars['original'], -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
-		if (plugin_edit_parts($partid, $source, $vars['msg']) !== FALSE) {
-			$vars['msg'] = join('', $source);
-		} else {
-			$vars['msg'] = rtrim($vars['original']) . "\n\n" . $vars['msg'];
-		}
+		$vars['msg'] = (plugin_edit_parts($partid, $source, $vars['msg']) !== FALSE)
+			? join('', $source)
+			: rtrim($vars['original']) . "\n\n" . $vars['msg'];
 	}
 
 	// Delete "#freeze" command for form edit.
@@ -264,7 +262,7 @@ function plugin_edit_write()
 
 	if ($digest != $oldpagemd5) {
 		$vars['digest'] = $oldpagemd5; // Reset
-		$original = isset($vars['original']) ? $vars['original'] : '';
+		$original = isset($vars['original']) ? $vars['original'] : null;
 		list($postdata_input, $auto) = do_update_diff($oldpagesrc, $msg, $original);
 
 		$_msg_collided_auto =
@@ -290,18 +288,16 @@ function plugin_edit_write()
 	// Action?
 	if ($add) {
 		// Compat: add plugin and adding contents
-		if (isset($post['add_top']) && $post['add_top']) {
-			$postdata  = $msg . "\n\n" . get_source($page, TRUE, TRUE);
-		} else {
-			$postdata  = get_source($page, TRUE, TRUE) . "\n\n" . $msg;
-		}
+		$postdata = (isset($post['add_top']) && $post['add_top'])
+			? $msg . "\n\n" . get_source($page, TRUE, TRUE)
+			: get_source($page, TRUE, TRUE) . "\n\n" . $msg;
 	} else {
 		// Edit or Remove
 		$postdata = & $msg;
 	}
 
 	// NULL POSTING, OR removing existing page
-	if ($postdata == '') {
+	if (empty($postdata)) {
 		page_write($page, $postdata);
 		$retvars['msg'] = $_title_deleted;
 		$retvars['body'] = str_replace('$1', htmlsc($page), $_title_deleted);

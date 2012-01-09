@@ -31,7 +31,7 @@ http://jqueryui.com/themeroller/
 	'showicon'		=> false,
 
 	// アドレスの代わりにパスを表示
-	'topicpath'		=> true,
+	'topicpath'		=> false,
 	
 	// ロゴ設定
 	'logo'=>array(

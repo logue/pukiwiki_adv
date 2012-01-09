@@ -3,18 +3,21 @@ See also http://www.dnsbl.info/ and http://whatismyipaddress.com/blacklist-check
 
 *IPBL [#d89b2c31]
 |~Zone								|~Use|~Listing								|~WebSite|h
-|zen.spamhaus.org					|	0|zen.spamhaus.org						|http://www.spamhaus.org/|
-|bl.spamcop.net						|	0|SpamCop								|http://www.spamcop.net/|
-|opm.blitzed.org					|	0|Blitzed Open Proxy Monitor			|http://opm.blitzed.org/|
-|bsb.empty.us						|	0|Blog Spam Blocklist					|http://bsb.empty.us/|
-|niku.2ch.net						|	1|BBQ あらしお断りシステム				|http://bbq.uso800.net/code.html|
-|dnsbl.spam-champuru.livedoor.com	|	1|スパムちゃんぷるーDNSBL				|http://spam-champuru.livedoor.com/dnsbl/|
-|cdl.anti-spam.org.cn				|	1|中国反垃圾邮件联盟					|http://anti-spam.org.cn/|
-|korea.services.net					|	1|The South Korean Network Blocking List|http://korea.services.net/|
-|dul.ru								|	1|Russian Dial-up User List(DUL)		|http://dul.ru/|
 |all.rbl.jp							|	1|Realtime Blackhole List Japan			|http://www.rbl.jp/|
+|b.barracudacentral.org				|	1|b.barracudacentral.org				|http://www.barracudacentral.org|
+|bl.nszones.com						|	1|nsZones								|http://nszones.com/|
+|bl.spamcop.net						|	0|SpamCop								|http://www.spamcop.net/|
+|bsb.empty.us						|	0|Blog Spam Blocklist					|http://bsb.empty.us/|
+|cdl.anti-spam.org.cn				|	1|中国反垃圾邮件联盟					|http://anti-spam.org.cn/|
 |dnsbl.sorbs.net					|	0|Spam and Open Relay Blocking System	|http://www.au.sorbs.net/|
+|dnsbl.spam-champuru.livedoor.com	|	1|スパムちゃんぷるーDNSBL				|http://spam-champuru.livedoor.com/dnsbl/|
+|dul.ru								|	1|Russian Dial-up User List(DUL)		|http://dul.ru/|
+|korea.services.net					|	1|The South Korean Network Blocking List|http://korea.services.net/|
+|niku.2ch.net						|	1|BBQ あらしお断りシステム				|http://bbq.uso800.net/code.html|
+|opm.blitzed.org					|	0|Blitzed Open Proxy Monitor			|http://opm.blitzed.org/|
+|opm.tornevall.org					|	1|TornevallNET Proxy and Abuse-filtering Project|http://dnsbl.tornevall.org/|
 |torserver.tor.dnsbl.sectoor.de		|	1|Blacklist for Tor servers				|http://www.sectoor.de/tor.php|
+|zen.spamhaus.org					|	1|zen.spamhaus.org						|http://www.spamhaus.org/|
 
 *HOST [#p8f43e19]
 |~Zone								|~Use|~Listing								|~WebSite|h

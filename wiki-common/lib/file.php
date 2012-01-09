@@ -10,24 +10,32 @@
 //
 // File related functions
 
+// Other cache data extention
+defined('PKWK_TSV_EXTENTION')			or define('PKWK_TSV_EXTENTION', '.tsv');	// For tsv data
+defined('PKWK_DAT_EXTENTION')			or define('PKWK_DAT_EXTENTION', '.dat');	// For serialized data
+defined('PKWK_TXT_EXTENTION')			or define('PKWK_TXT_EXTENTION', '.txt');	// For raw text data
+
 // RecentChanges
 defined('PKWK_MAXSHOW_ALLOWANCE')		or define('PKWK_MAXSHOW_ALLOWANCE', 10);
-defined('PKWK_MAXSHOW_CACHE')			or define('PKWK_MAXSHOW_CACHE', 'recent.dat');
+defined('PKWK_MAXSHOW_CACHE')			or define('PKWK_MAXSHOW_CACHE', 'recent'.PKWK_TSV_EXTENTION);
 
 // AutoLink
-defined('PKWK_AUTOLINK_REGEX_CACHE')	or define('PKWK_AUTOLINK_REGEX_CACHE', 'autolink.dat');
+defined('PKWK_AUTOLINK_REGEX_CACHE')	or define('PKWK_AUTOLINK_REGEX_CACHE', 'autolink'.PKWK_DAT_EXTENTION);
 
 // AutoAlias
-defined('PKWK_AUTOALIAS_REGEX_CACHE')	or define('PKWK_AUTOALIAS_REGEX_CACHE', 'autoalias.dat');
+defined('PKWK_AUTOALIAS_REGEX_CACHE')	or define('PKWK_AUTOALIAS_REGEX_CACHE', 'autoalias'.PKWK_DAT_EXTENTION);
 
 // Auto Glossary (Plus!)
-defined('PKWK_GLOSSARY_REGEX_CACHE')	or define('PKWK_GLOSSARY_REGEX_CACHE',  'glossary.dat');
+defined('PKWK_GLOSSARY_REGEX_CACHE')	or define('PKWK_GLOSSARY_REGEX_CACHE',  'glossary'.PKWK_DAT_EXTENTION);
 
 // AutoAlias AutoBase cache (Plus!)
-defined('PKWK_AUTOBASEALIAS_CACHE')		or define('PKWK_AUTOBASEALIAS_CACHE', 'autobasealias.dat');
+defined('PKWK_AUTOBASEALIAS_CACHE')		or define('PKWK_AUTOBASEALIAS_CACHE', 'autobasealias'.PKWK_DAT_EXTENTION);
 
 // PageReading cache (Adv.)
-defined('PKWK_PAGEREADING_CACHE')		or define('PKWK_PAGEREADING_CACHE', 'PageReading.dat');
+defined('PKWK_PAGEREADING_CACHE')		or define('PKWK_PAGEREADING_CACHE', 'PageReading.tmp');
+
+// Timestamp prefix
+defined('PKWK_TIMESTAMP_PREFIX')		or define('PKWK_TIMESTAMP_PREFIX', 'timestamp-');
 
 // Get source(wiki text) data of the page
 // Returns FALSE if error occurerd
@@ -53,7 +61,7 @@ function get_source($page = NULL, $lock = TRUE, $join = FALSE)
 			if ($size === FALSE) {
 				$result = FALSE;
 			} else if ($size == 0) {
-				$result = '';
+				$result = null;
 			} else {
 				$result = fread($fp, $size);	// Returns a value
 			}
@@ -458,8 +466,7 @@ function lastmodified_add($update = '', $remove = '')
 			}
 		}
 	}else{
-		$cache_name = substr(PKWK_MAXSHOW_CACHE,0,strrpos(PKWK_MAXSHOW_CACHE, '.'));
-		$recent_pages = $memcache->get(MEMCACHE_PREFIX, $cache_name);
+		$recent_pages = $memcache->get(MEMCACHE_PREFIX.PKWK_MAXSHOW_CACHE);
 		if ($data === FALSE){
 			put_lastmodified(); // Try to (re)create ALL
 			return;
@@ -490,8 +497,8 @@ function lastmodified_add($update = '', $remove = '')
 		flock($fp, LOCK_UN);
 		fclose($fp);
 	}else{
-		$memcache->replace(MEMCACHE_PREFIX.$cache_name, $recent_pages, MEMCACHE_FLAG, MEMCACHE_EXPIRE);
-		$memcache->set(MEMCACHE_PREFIX.'timestamp-'.$cache_name, UTIME, MEMCACHE_FLAG, MEMCACHE_EXPIRE);
+		memcache_update(MEMCACHE_PREFIX.PKWK_MAXSHOW_CACHE, $recent_pages);
+		memcache_update(MEMCACHE_PREFIX.PKWK_TIMESTAMP_PREFIX.PKWK_MAXSHOW_CACHE, UTIME);
 	}
 
 	if ($abort) {
@@ -583,9 +590,8 @@ function put_lastmodified()
 		flock($fp, LOCK_UN);
 		fclose($fp);
 	}else{
-		$cache_name = substr(PKWK_MAXSHOW_CACHE,0,strrpos(PKWK_MAXSHOW_CACHE, '.'));
-		$memcache->set(MEMCACHE_PREFIX.$cache_name, $recent_pages, null, MEMCACHE_EXPIRE);
-		$memcache->set(MEMCACHE_PREFIX.'timestamp-'.$cache_name, UTIME, MEMCACHE_FLAG, MEMCACHE_EXPIRE);	// Wikiの更新日時を保存
+		memcache_update(MEMCACHE_PREFIX.PKWK_MAXSHOW_CACHE, $recent_pages, null);
+//		memcache_update(MEMCACHE_PREFIX.PKWK_TIMESTAMP_PREFIX.PKWK_MAXSHOW_CACHE, UTIME);	// Wikiの更新日時を保存
 	}
 
 	// Create RecentChanges
@@ -713,10 +719,10 @@ function get_readings()
 	// If enabled ChaSen/KAKASI execution
 	if($pagereading_enable) {
 
-		// Check there's non-clear-pronouncing page
+		// Check there's non-clear-pronouncing page '
 		$unknownPage = FALSE;
 		foreach ($readings as $page => $reading) {
-			if($reading == '') {
+			if(empty($reading)) {
 				$unknownPage = TRUE;
 				break;
 			}
@@ -832,7 +838,7 @@ function links_get_related($page)
 // NOTE: Not works for Windows
 function pkwk_chown($filename, $preserve_time = TRUE)
 {
-	static $php_uid; // PHP's UID
+	static $php_uid; // PHP's UID '
 
 	if (! isset($php_uid)) {
 		if (extension_loaded('posix')) {

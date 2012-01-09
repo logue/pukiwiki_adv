@@ -80,7 +80,7 @@ function plugin_multilang_inline_link($option, $args)
 
 			if (! empty($country)) {
 				$country = strtolower($country);
-				$title = '<img src="' . IMAGE_URI . 'plugin/logview/flags/' . $country . '.png" width="16" height="11" alt="' . $title . '" title="'. $title . '" />';
+				$title = '<span class="flag flag-'. $country .'" title="'. $title . '" ></span>';
 			}
 		}
 
@@ -120,7 +120,7 @@ function plugin_multilang_convert()
 	if (plugin_multilang_accept($lang)) {
 		$lines = preg_replace(array("[\\r|\\n]","[\\r]"), array("\n","\n"), $lines);
 		// return preg_replace(array("'<p>'si","'</p>'si"), array("",""), convert_html($lines) );
-		return convert_html($lines);
+		return '<div lang="'.$lang.'">'.convert_html($lines).'</div>';
 	}
 
 	return '';

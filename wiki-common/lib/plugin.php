@@ -218,11 +218,8 @@ function do_plugin_convert($name, $args = '')
 		}
 	}
 
-	if ($args === '') {
-		$aryargs = array();                 // #plugin()
-	} else {
-		$aryargs = csv_explode(',', $args); // #plugin(A,B,C,D)
-	}
+	$aryargs = empty($args) ? array() : csv_explode(',', $args);
+
 	if (! PKWKEXP_DISABLE_MULTILINE_PLUGIN_HACK) {
 		if (isset($body)) $aryargs[] = & $body;     // #plugin(){{body}}
 	}
@@ -235,12 +232,8 @@ function do_plugin_convert($name, $args = '')
 	T_textdomain(DOMAIN);
 	$digest  = $_digest; // Revert
 
-	if ($retvar === FALSE) {
-		return htmlsc('#' . $name .
-			($args != '' ? '(' . $args . ')' : ''));
-	} else {
-		return add_hidden_field($retvar, $name);
-	}
+	return ($retvar === FALSE) ?
+		htmlsc('#' . $name . ($args != '' ? '(' . $args . ')' : '')) : add_hidden_field($retvar, $name);
 }
 
 // Call API 'inline' of the plugin
@@ -252,11 +245,7 @@ function do_plugin_inline($name, $args='', $body='')
 		return '[Plugin init failed: ' . htmlsc($name) . ']';
 	}
 
-	if ($args === '') {
-		$aryargs = array();
-	} else {
-		$aryargs = csv_explode(',', $args);
-	}
+	$aryargs = empty($args) ? array() : csv_explode(',', $args);
 
 	// NOTE: A reference of $body is always the last argument
 	$aryargs[] = & $body; // func_num_args() != 0

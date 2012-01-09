@@ -11,9 +11,9 @@
  * @access  public
  * @author
  * @create
- * @version $Id: backup.php,v 1.13.1 2011/02/05 08:04:00 Logue Exp $
+ * @version $Id: backup.php,v 1.13.2 2012/01/08 17:16:00 Logue Exp $
  * Copyright (C)
- *   2010-2011 PukiWiki Advance Developer Team
+ *   2010-20121 PukiWiki Advance Developer Team
  *   2005-2006 PukiWiki Plus! Team
  *   2002-2006,2011 PukiWiki Developers Team
  *   2001-2002 Originally written by yu-ji
@@ -110,8 +110,8 @@ function get_backup($page, $age = 0)
 		// BugTrack/685 by UPK
 		// if (preg_match($regex_splitter, $line, $match)) {
 		if (preg_match($regex_splitter, $line, $match) ||
-		    preg_match($regex_splitter_new, $line, $match)) {
-	    	// A splitter, tells new data of backup will come
+			preg_match($regex_splitter_new, $line, $match)) {
+			// A splitter, tells new data of backup will come
 			++$_age;
 			if ($age > 0 && $_age > $age)
 				return $retvars[$age];
@@ -181,12 +181,32 @@ function _backup_get_filetime($page)
  *
  * @access    private
  * @param     String    $page        ページ名
+ * @param     Array     $age         削除する世代。空なら全部。
  *
  * @return    Boolean   FALSE:失敗
  */
-function _backup_delete($page)
+function _backup_delete($page, $ages = array())
 {
-	return unlink(_backup_get_filename($page));
+	if($ages === array()) {
+		return unlink(_backup_get_filename($page));
+	} else {
+		$backups = get_backup($page);
+		foreach($ages as $age) {
+			unset($backups[$age]);
+		}
+		$strout = '';
+		foreach($backups as $age=>$data) {
+			$strout .= PKWK_SPLITTER . ' ' . $data['time'] . "\n"; // Splitter format
+			$strout .= join('', $data['data']);
+			unset($backups[$age]);
+		}
+		$strout = preg_replace("/([^\n])\n*$/", "$1\n", $strout);
+		$fp = _backup_fopen($page, 'wb')
+			or die_message('Cannot open ' . htmlspecialchars(_backup_get_filename($page)) .
+		'<br />Maybe permission is not writable or filename is too long');
+		_backup_fputs($fp, $strout);
+		_backup_fclose($fp);
+	}
 }
 
 /////////////////////////////////////////////////

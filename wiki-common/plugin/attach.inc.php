@@ -162,7 +162,7 @@ function plugin_attach_action()
 	$pass  = isset($vars['pass'])  ? $vars['pass']  : NULL;
 	$page  = isset($vars['page'])  ? $vars['page']  : '';
 
-	if ($refer != '' && is_pagename($refer)) {
+	if (!empty($refer) && is_pagename($refer)) {
 		if(in_array($pcmd, array('info', 'open', 'list'))) {
 			check_readable($refer);
 		} else {
@@ -183,20 +183,16 @@ function plugin_attach_action()
 			if (auth::check_role('readonly')) die_message( $_string['prohibit'] );
 		}
 		switch ($pcmd) {
-		case 'info'     : return attach_info();
-		case 'delete'   : return attach_delete();
-		case 'open'     : return attach_open();
-		case 'list'     : return attach_list();
-		case 'freeze'   : return attach_freeze(TRUE);
-		case 'unfreeze' : return attach_freeze(FALSE);
-		case 'rename'   : return attach_rename();
-		case 'upload'   : return attach_showform();
+			case 'info'     : return attach_info();
+			case 'delete'   : return attach_delete();
+			case 'open'     : return attach_open();
+			case 'list'     : return attach_list();
+			case 'freeze'   : return attach_freeze(TRUE);
+			case 'unfreeze' : return attach_freeze(FALSE);
+			case 'rename'   : return attach_rename();
+			case 'upload'   : return attach_showform();
 		}
-		if ($page == '' || ! is_page($page)) {
-			return attach_list();
-		} else {
-			return attach_showform();
-		}
+		return ($page == '' || ! is_page($page)) ? attach_list() : attach_showform();
 	}
 }
 
@@ -206,15 +202,10 @@ function attach_filelist()
 	global $vars, $_attach_messages;
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
-
 	$obj = new AttachPages($page, 0);
 
-	if (! isset($obj->pages[$page])) {
-		return '';
-	} else {
-		return '<dl class="attach_filelist">'."\n".'<dt>'.$_attach_messages['msg_file'].' :</dt>'."\n".
-		$obj->toString($page, TRUE, 'dl') . "</dl>\n";
-	}
+	return isset($obj->pages[$page]) ? ('<dl class="attach_filelist">'."\n".'<dt>'.$_attach_messages['msg_file'].' :</dt>'."\n".
+	$obj->toString($page, TRUE, 'dl') . "</dl>\n") : '';
 }
 
 //-------- 実体
@@ -280,20 +271,20 @@ function attach_set_error_message($err_no)
 	global $_attach_messages;
 
 	switch($err_no) {
-	case UPLOAD_ERR_INI_SIZE:
-		return $_attach_messages['err_ini_size'];
-	case UPLOAD_ERR_FORM_SIZE:
-		return $_attach_messages['err_form_size'];
-	case UPLOAD_ERR_PARTIAL:
-		return $_attach_messages['err_partial'];
-	case UPLOAD_ERR_NO_FILE:
-		return $_attach_messages['err_no_file'];
-	case UPLOAD_ERR_NO_TMP_DIR:
-		return $_attach_messages['err_no_tmp_dir'];
-	case UPLOAD_ERR_CANT_WRITE:
-		return $_attach_messages['err_cant_write'];
-	case UPLOAD_ERR_EXTENSION:
-		return $_attach_messages['err_extension'];
+		case UPLOAD_ERR_INI_SIZE:
+			return $_attach_messages['err_ini_size'];
+		case UPLOAD_ERR_FORM_SIZE:
+			return $_attach_messages['err_form_size'];
+		case UPLOAD_ERR_PARTIAL:
+			return $_attach_messages['err_partial'];
+		case UPLOAD_ERR_NO_FILE:
+			return $_attach_messages['err_no_file'];
+		case UPLOAD_ERR_NO_TMP_DIR:
+			return $_attach_messages['err_no_tmp_dir'];
+		case UPLOAD_ERR_CANT_WRITE:
+			return $_attach_messages['err_cant_write'];
+		case UPLOAD_ERR_EXTENSION:
+			return $_attach_messages['err_extension'];
 	}
 	return $_attach_messages['err_upload'];
 }
@@ -560,11 +551,7 @@ function attach_is_compress($type,$compress=1)
 		'audio'			=> 0,
 		'video'			=> 0,
 	);
-	if (isset($discrete_type[$discrete])) {
-		return $discrete_type[$discrete];
-	}
-
-	return $compress;
+	return isset($discrete_type[$discrete]) ? $discrete_type[$discrete] : $compress;
 }
 
 // 詳細フォームを表示
@@ -975,7 +962,7 @@ class AttachFile
 
 		$msg_auth = '';
 		$info_auth = '';
-		if ($role_adm_contents) {
+		if ($role_adm_contents !== FALSE) {
 			$msg_auth = <<<EOD
 	<label for="_p_attach_password">{$_attach_messages['msg_password']}:</label>
 	<input type="password" name="pass" id="_p_attach_password" size="8" />
@@ -991,10 +978,12 @@ EOD;
 		if (!IS_AJAX) {
 			$retval = array('msg'=>sprintf($_attach_messages['msg_info'], htmlsc($this->file)));
 			$retval['body'] = <<< EOD
-<p>
-	[<a href="$list_uri">{$_attach_messages['msg_list']}</a>]
-	[<a href="$listall_uri">{$_attach_messages['msg_listall']}</a>]
-</p>
+<nav>
+	<ul class="attach_navibar">
+		<li><a href="$list_uri">{$_attach_messages['msg_list']}</a></li>
+		<li><a href="$listall_uri">{$_attach_messages['msg_listall']}</a></li>
+	</ul>
+</nav>
 EOD;
 		}else{
 			$retval = array('msg'=>sprintf($_attach_messages['btn_info'], htmlsc($this->file)));

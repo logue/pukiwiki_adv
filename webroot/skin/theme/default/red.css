@@ -1,14 +1,11 @@
 @charset "UTF-8";
-/* this @charset is for mozilla's bug */
-/*
 /////////////////////////////////////////////////
 // PukiWiki Plus! skin for PukiWiki Advance
 // Original version written by miko and upk.
 // Adv version by Logue.
 // 
-// $Id: blue.css,v 1.0.4 2011/09/03 22:20:00 Logue Exp $
+// $Id: blue.css,v 1.0.5 2012/01/04 21:48:00 Logue Exp $
 //
-*/
 
 ::-moz-selection{
 	background: FireBrick;
@@ -123,7 +120,7 @@ fieldset {
 }
 
 /* Layout */
-#main, #menubar, #sidebar{
+#main_wrapper, #menubar, #sidebar{
 	background-color: #FFEEFC;
 }
 

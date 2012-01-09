@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: func.php,v 1.104.46 2011/11/28 21:29:00 Logue Exp $
+// $Id: func.php,v 1.104.47 2011/12/25 20:58:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -64,11 +64,7 @@ function is_url($str, $only_http = FALSE)
 	// 正規処理
 	$ret = preg_match($pattern, $str);
 	// マッチしない場合は0が帰るのでFALSEにする
-	if ($ret === 0){
-		return FALSE;
-	}else{
-		return $ret;
-	}
+	return ($ret === 0) ? FALSE : $ret;
 }
 
 // If the page exists
@@ -424,7 +420,7 @@ function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', 
 	$sentinel_another = 'zz';
 
 //	$href = get_script_uri() . '?' . ($cmd == 'read' ? '' : 'cmd=' . rawurlencode($cmd) . '&amp;page=');
-	$array = $matches = array();
+	$array = $matches = $counts = array();
 
 	if ($pagereading_enable) {
 		mb_regex_encoding(SOURCE_ENCODING);
@@ -452,66 +448,66 @@ function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', 
 				$initial = & $sentinel_another;
 			}
 		}
-		$str = '   <li>' .
-			'<a href="' . get_page_uri($page) . '" >' . htmlsc($page, ENT_QUOTES) . '</a>' .get_pg_passage($page);
-		if ($withfilename) {
-			$str .= '<br /><var>' . htmlsc($file) . '</var>';
+		
+		$str = '			<li>';
+		if ($cmd !== 'read'){
+			$str .= '<a href="' . get_cmd_uri($cmd, $page) . '" >' . htmlsc($page, ENT_QUOTES) . '</a>';
+		}else{
+			$str .= '<a href="' . get_page_uri($page) . '" >' . htmlsc($page, ENT_QUOTES) . '</a>' .get_pg_passage($page);
+			if ($withfilename) {
+				$str .= '<br /><var>' . htmlsc($file) . '</var>';
+			}
 		}
-		$str .= '</li>';
+			$str .= '</li>';
 		$array[$initial][$page] = $str;
+		$counts[$initial] = count($array[$initial]);
 	}
 	unset($pages);
 	ksort($array, SORT_STRING);
-/*
-	if ($list_index) {
-		$s_msg_symbol  = htmlsc($_msg_symbol);
-		$s_msg_another = htmlsc($_msg_other);
-	}
-*/
+
 	$cnt = 0;
 	$retval = $contents = array();
-	$retval[] = '<div id="page_list"><ul>';
+	$retval[] = '<div class="list_pages">';
 	foreach ($array as $_initial => $pages) {
 		ksort($pages, SORT_STRING);
 		if ($list_index) {
 			++$cnt;
+			$page_count = $counts[$_initial];
 			if ($_initial == $sentinel_symbol) {
-				$_initial = & $s_msg_symbol;
+				$_initial = htmlsc($_msg_symbol);
 			} else if ($_initial == $sentinel_another) {
-				$_initial = & $s_msg_another;
+				$_initial = htmlsc($_msg_other);
 			}
-			$retval[] = ' <li><a id="head_' . $cnt .
-				'" href="#top_' . $cnt .
-				'" rel="initial">' . $_initial . '</a>';
-			$retval[] = '  <ul>';
+			$retval[] = '	<fieldset id="head_' . $cnt .'" role="tabpanel" aria-labeledby="top_' . $cnt .'">';
+			$retval[] = '		<legend><a href="#top_' . $cnt . '">' . $_initial . '</a></legend>';
+			$retval[] = '		<ul class="list1">';
 
-			$contents[] = '<a id="top_' . $cnt .
-				'" href="#head_' . $cnt . '"><strong>' .
-				$_initial . '</strong></a>';
+			$contents[] = '<li id="top_' . $cnt .'" aria-controls="head_'.$cnt.'" role="tab">'.
+							'<a href="#head_' . $cnt . '" title="'.$page_count.'">' .$_initial . '</a></li>';
 		}
 		$retval[] = join("\n", $pages);
 		if ($list_index) {
-			$retval[] = '  </ul>';
-			$retval[] = ' </li>';
+			$retval[] = '		</ul>';
+			$retval[] = '	</fieldset>';
 		}
 	}
-	$retval[] = '</ul></div>';
+	$retval[] = '</div>';
 	unset($array);
 
 	// Insert a table of contents
 	if ($list_index && $cnt) {
 		while (! empty($contents)) {
-			$tmp[] = join('</li><li>', array_splice($contents, 0));
+			$tmp[] = join('', array_splice($contents, 0));
 		}
 		$contents = & $tmp;
 		array_unshift(
 			$retval,
-			'<nav id="list_index"><ul><li>',
+			'<ul role="tablist">',
 			join("\n" . '<br />' . "\n", $contents),
-			'</li></ul></nav>');
+			'</ul>');
 	}
 
-	return '<div id="pages">'."\n".join("\n", $retval) . "\n".'</div>';
+	return '<div class="tabs" role="application">'."\n".join("\n", $retval) . "\n".'</div>';
 }
 
 // Show text formatting rules
@@ -1307,4 +1303,5 @@ function htmlsc($string = '', $flags = ENT_QUOTES, $charset = CONTENT_CHARSET)
 {
 	return htmlspecialchars($string, $flags, $charset);	// htmlsc()
 }
+
 ?>

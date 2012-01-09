@@ -40,6 +40,7 @@ define('IS_AJAX', isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVE
 
 // ページ名やファイル名として使用できない文字（エンコード前の文字）
 defined('PKWK_ILLEGAL_CHARS_PATTERN') or define('PKWK_ILLEGAL_CHARS_PATTERN', '/[%|=|&|?|~|#|\r|\n|\0|\@|;|\$|+|\\|\[|\]|\||^|{|}|\']/');
+
 /////////////////////////////////////////////////
 // Init server variables
 
@@ -148,7 +149,7 @@ foreach ($agents as $agent) {
 		$user_agent = array(
 			'profile'	=> isset($agent['profile']) ? $agent['profile'] : '',
 			'name'		=> isset($matches[1]) ? $matches[1] : '',	// device or browser name
-			'vers'		=> isset($matches[2]) ? $matches[2] : '',	// 's version
+			'vers'		=> isset($matches[2]) ? $matches[2] : '',	// version
 		);
 		break;
 	}
@@ -249,9 +250,9 @@ if (isset($_POST['encode_hint']) && $_POST['encode_hint'] != '') {
 }
 
 // 文字コード変換 ($_GET)
-// GET method は form からの場合と、<a href="http://script/?key=value> の場合がある
+// GET method は form からの場合と、<a href="http://script/?key=value"> の場合がある
 // <a href...> の場合は、サーバーが rawurlencode しているので、コード変換は不要
-if (isset($_GET['encode_hint']) && $_GET['encode_hint'] != '')
+if (isset($_GET['encode_hint']) && empty($_GET['encode_hint']))
 {
 	// form 経由の場合は、ブラウザがエンコードしているので、コード検出・変換が必要。
 	// encode_hint が含まれているはずなので、それを見て、コード検出した後、変換する。
@@ -265,15 +266,15 @@ if (isset($_GET['encode_hint']) && $_GET['encode_hint'] != '')
 // Cacheディレクトリ内のキャッシュをMemcacheに保存します。
 
 // Memcacheのホスト。ソケット接続の場合は、unix://var/run/memcache.socketのようにすること。（ラウンドロビン非対応）
-defined('MEMCACHE_HOST')	or define('MEMCACHE_HOST', '127.0.0.1');
+defined('MEMCACHE_HOST')		or define('MEMCACHE_HOST', '127.0.0.1');
 // Memcacheのポート。ソケット接続の場合は、0にすること。
-defined('MEMCACHE_PORT')	or define('MEMCACHE_PORT', 11211);
+defined('MEMCACHE_PORT')		or define('MEMCACHE_PORT', 11211);
 // memcacheのプリフィックス（デフォルトはキャッシュディレクトリのパスの\や/を_にしたもの。）
-defined('MEMCACHE_PREFIX')	or define('MEMCACHE_PREFIX', str_replace(array('/','\\'), '_',realpath(CACHE_DIR)).'_');
+defined('MEMCACHE_PREFIX')		or define('MEMCACHE_PREFIX', str_replace(array('/','\\'), '_',realpath(CACHE_DIR)).'_');
 // memcache変数を圧縮（ページリストのキャッシュなどの一部の機能では無効化されます。）
-defined('MEMCACHE_FLAG')	or define('MEMCACHE_FLAG', MEMCACHE_COMPRESSED);
+defined('MEMCACHE_COMPRESSED')	or define('MEMCACHE_COMPRESSED', false);
 // memcacheの有効期限（デフォルトは無制限）
-defined('MEMCACHE_EXPIRE')	or define('MEMCACHE_EXPIRE', 0);
+defined('MEMCACHE_EXPIRE')		or define('MEMCACHE_EXPIRE', 0);
 
 if (class_exists('Memcache')){
 	$memcache = new Memcache;
@@ -282,12 +283,17 @@ if (class_exists('Memcache')){
 		$info[] = sprintf('Couldnot to connect Memcached: <var>%s:%s%s</var>. Please check Memcached is running.', MEMCACHE_HOST, MEMCACHE_PORT, PHP_EOL);
 		unset($memcache);
 	}else{
-		// Memcacheが使用できる場合。
+		// Memcacheが使用できる場合
+		define('PKWK_DAT_EXTENTION', '');
 //		$memcache->setCompressThreshold(20000, 0.2);
 		$info[] = 'Memcache is enabled! Ver.<var>'.$memcache->getVersion().'</var> / ';
 		// セッション管理もMemcacheで行う
 		ini_set('session.save_handler', 'memcache');
 		ini_set('session.save_path', (strpos(MEMCACHE_HOST, 'unix://') !== FALSE) ? MEMCACHE_HOST : 'tcp://'.MEMCACHE_HOST.':'.MEMCACHE_PORT);
+
+		define('PKWK_DAT_EXTENTION', '');
+		define('PKWK_REL_EXTENTION', 'rel-');
+		define('PKWK_REF_EXTENTION', 'ref-');
 	}
 }else{
 	$info[] = 'Memcache is disabled.';
@@ -310,7 +316,7 @@ if (class_exists('TokyoTyrant')){
 // QUERY_STRINGを取得
 
 $arg = '';
-if (isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != '') {
+if (isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING'])) {
 	$arg = & $_SERVER['QUERY_STRING'];
 } else if (isset($_SERVER['argv']) && ! empty($_SERVER['argv'])) {
 	$arg = & $_SERVER['argv'][0];
@@ -460,10 +466,11 @@ $line_rules = array_merge(array(
 
 //////////////////////////////////////////////////
 // ajaxではない場合
-if (!IS_AJAX){
-	// スキンデーター読み込み
-	define('SKIN_FILE', add_skindir(PLUS_THEME));
 
+// スキンデーター読み込み
+define('SKIN_FILE', add_skindir(PLUS_THEME));
+defined('IS_MOBILE') or define('IS_MOBILE', false);
+if (!IS_AJAX || IS_MOBILE){
 	global $facebook, $fb, $google_loader;
 
 	// JavaScriptフレームワーク設定
@@ -488,10 +495,12 @@ if (!IS_AJAX){
 			'file'	=> 'jquery-ui.min.js',
 			'ver'	=> '1.8.16'
 		),
+/*
 		'swfobject' => array(
 			'file'	=> 'swfobject.js',
 			'ver'	=> '2.2'
 		)
+*/
 	);
 	
 	if ($x_ua_compatible == 'chrome=1'){
@@ -553,7 +562,7 @@ if (!IS_AJAX){
 //			'jquery.fileupload-ui',
 			'jquery.i18n',
 			'jquery.jplayer',
-			'jquery.jstree',
+//			'jquery.jstree',
 			'jquery.lazyload',
 			'jquery.query',
 			'jquery.scrollTo',

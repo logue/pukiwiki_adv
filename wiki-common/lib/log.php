@@ -3,9 +3,9 @@
  * PukiWiki Plus! 更新ログ処理
  *
  * @copyright	
- *	 Copyright &copy; 2010 PukiPlus Developers Team
+ *	 Copyright &copy; 2010-2011 PukiWiki Advance Developers Team
  *					  2004-2006,2008-2009, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version	$Id: log.php,v 0.13 2010/10/25 19:46:00 Logue Exp $
+ * @version	$Id: log.php,v 0.14 2011/12/25 20:59:00 Logue Exp $
  * @license	http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 
@@ -223,10 +223,10 @@ function log_common_check($kind,$page,$parm)
 		case 'auth_api': // 認証API名
 			//$obj = new auth_api();
 			//$msg = $obj->auth_session_get();
-			$rc[$key] = (empty($msg['api']) && ! empty($username)) ? 'plus' : $msg['api'];
+			$rc[$key] = (isset($msg['api']) && ! empty($username)) ? 'plus' : '';
 			break;
 		case 'local_id':
-			$rc[$key] = (empty($msg['local_id'])) ? '' : $msg['local_id'];
+			$rc[$key] = (isset($msg['local_id'])) ? '' : $msg['local_id'];
 			break;
 
 		case 'user': // ユーザ名(認証済)
@@ -408,6 +408,7 @@ function log_update($kind,$filename,$key,$mustkey,$data)
 	$fp = @fopen($filename, 'wb');
 	if ($fp == false) return '';
 	@flock($fp, LOCK_SH);
+	$i = 0;
 	foreach($log_data as $_log_data) {
 		if ($i == 1000) break;
 		fputs($fp, $_log_data);
@@ -526,24 +527,28 @@ class log
 
 		$kind_view = (empty($user)) ? 'guest' : 'view';
 
-		if ($log[$kind][$kind_view] == 'all') return $rc;
-
-		$tmp = explode(':', $log[$kind][$kind_view]);
-
-		// 妥当性チェック
 		$chk = array();
-		foreach($tmp as $_tmp) {
-			$sw = 0;
-			foreach($rc as $_name) {
-				if ($_name == $_tmp) {
-					$sw = 1;
-					break;
+		if (isset($log[$kind][$kind_view])){
+			if ($log[$kind][$kind_view] == 'all'){
+				return $rc;
+			}else{
+				$tmp = explode(':', $log[$kind][$kind_view]);
+			
+				// 妥当性チェック
+				foreach($tmp as $_tmp) {
+					$sw = 0;
+					foreach($rc as $_name) {
+						if ($_name == $_tmp) {
+							$sw = 1;
+							break;
+						}
+					}
+					if (!$sw) continue;
+					$chk[] = $_tmp;
 				}
+				unset($tmp, $sw);
 			}
-			if (!$sw) continue;
-			$chk[] = $_tmp;
 		}
-		unset($tmp, $sw);
 		return $chk;
 	}
 
@@ -633,7 +638,7 @@ class log
 		foreach($name as $_name) {
 			if (substr($_name,0,1) == '@') continue;
 
-			$rc[$_name] = $_fld[$i];
+			$rc[$_name] = isset($_fld[$i]) ? $_fld[$i] : '';
 			$i++;
 		}
 		return $rc;

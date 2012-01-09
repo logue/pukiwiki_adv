@@ -1,8 +1,8 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone
-// $Id: html.php,v 1.65.46 2011/11/28 21:40:00 Logue Exp $
+// $Id: html.php,v 1.65.48 2012/01/08 08:31:00 Logue Exp $
 // Copyright (C)
-//   2010-2011 PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
+//   2010-2012 PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team <http://pukiwiki.cafelounge.net/plus/>
 //   2002-2007 PukiWiki Developers Team <http://pukiwiki.sourceforge.jp/>
 //   2001-2002 Originally written by yu-ji <http://www.hyuki.com/yukiwiki/>
@@ -45,30 +45,43 @@ function catbody($title, $page, $body)
 	$is_safemode = auth::check_role('safemode');
 	$is_createpage = auth::is_check_role(PKWK_CREATE_PAGE);
 
-	if ($lastmod && $is_read){
-		pkwk_common_headers($filetime);
-	}else{
-		pkwk_common_headers();
-	}
+	pkwk_common_headers(($lastmod && $is_read) ? $filetime : null);
 
-	if (IS_AJAX || isset($JSON)){
-		// JSONで出力
-		if (!isset($JSON)){	// $JSON関数が定義されていない場合
-			$JSON = array(
-				'title'			=> $title,
-				'body'			=> $body,
-/*
-				'is_read'		=> $is_read,
-				'is_freeze'		=> $is_freeze,
-				'is_page'		=> $is_page,
-				'lastmodified'	=> $filetime,
-				'page'			=> $_page,
-				'taketime'		=> elapsedtime()
-*/
-			);
+	if (IS_AJAX && !IS_MOBILE){
+		$ajax = isset($vars['ajax']) ? $vars['ajax'] : 'raw';
+		switch ($ajax) {
+			case 'json':
+	 			// JSONで出力
+	 			if (!isset($JSON)){
+					// $JSON関数が定義されていない場合
+					$JSON = array(
+						'title'			=> $title,
+						'body'			=> $body,
+	/*
+						'is_read'		=> $is_read,
+						'is_freeze'		=> $is_freeze,
+						'is_page'		=> $is_page,
+						'lastmodified'	=> $filetime,
+						'page'			=> $_page,
+						'taketime'		=> elapsedtime()
+	*/
+					);
+				}
+				header('Content-Type: application/json; charset=' . CONTENT_CHARSET);
+				echo json_encode($JSON);
+			break;
+			case 'xml':
+				header('Content-Type: application/xml; charset=' . CONTENT_CHARSET);
+				echo '<?xml version="1.0" encoding="'.CONTENT_CHARSET.'" ?>'."\n";
+				echo $body;
+			break;
+			default:
+			case 'raw':
+				header('Content-Type: text/plain; charset=' . CONTENT_CHARSET);
+				echo $body;
+			break;
+ 			
 		}
-		header('Content-Type: application/json; charset=' . CONTENT_CHARSET);
-		echo json_encode($JSON);
 	}else{
 		// Set $_LINK for skin
 		$_LINK = getLinkSet($_page);
@@ -96,58 +109,61 @@ function catbody($title, $page, $body)
 		$http_header = (PKWK_STRICT_XHTML === TRUE && strstr($_SERVER['HTTP_ACCEPT'], 'application/xhtml+xml') !== false) ? 'application/xhtml+xml' : 'text/html';
 		
 		$meta_tags[] = array('name' => 'generator',	'content' => strip_tags(GENERATOR));
-//		$meta_tags[] = array('name' => 'viewport',	'content' => (isset($viewport) ? $viewport : 'width=device-width; initial-scale=1.0; maximum-scale=1.0;'));
-		($modifier !== 'anonymous') ?			$meta_tags[] = array('name' => 'author',					'content' => $modifier) : '';
-		(!empty($google_site_verification)) ?	$meta_tags[] = array('name' => 'google-site-verification',	'content' => $google_site_verification) : '';
-		(!empty($yahoo_site_explorer_id)) ?		$meta_tags[] = array('name' => 'y_key',						'content' => $yahoo_site_explorer_id) : '';
-		(!empty($bing_webmaster_tool)) ?		$meta_tags[] = array('name' => 'msvalidate.01',				'content' => $bing_webmaster_tool) : '';
-
-		if (!isset($shortcut_icon)){ $shortcut_icon = ROOT_URI.'favicon.ico'; }
-
-		// Linkタグの生成。scriptタグと異なり、順番が変わっても処理への影響がない。
-		// http://www.w3schools.com/html5/tag_link.asp
-		$link_tags[] = array('rel'=>'alternate',		'href'=>$_LINK['mixirss'],	'type'=>'application/rss+xml',	'title'=>'RSS');
-			// see http://www.seomoz.org/blog/canonical-url-tag-the-most-important-advancement-in-seo-practices-since-sitemaps
-		$link_tags[] = array('rel'=>'canonical',		'href'=>$_LINK['reload'],	'type'=>$http_header,	'title'=>$_page);
-		$link_tags[] = array('rel'=>'contents',			'href'=>$_LINK['menu'],		'type'=>$http_header,	'title'=>$_LANG['skin']['menu']);
-		$link_tags[] = array('rel'=>'sidebar',			'href'=>$_LINK['side'],		'type'=>$http_header,	'title'=>$_LANG['skin']['side']);
-		$link_tags[] = array('rel'=>'glossary',			'href'=>$_LINK['glossary'],	'type'=>$http_header,	'title'=>$_LANG['skin']['glossary']);
-		$link_tags[] = array('rel'=>'help',				'href'=>$_LINK['help'],		'type'=>$http_header,	'title'=>$_LANG['skin']['help']);
-		$link_tags[] = array('rel'=>'home',				'href'=>$_LINK['top'],		'type'=>$http_header,	'title'=>$_LANG['skin']['top']);
-		$link_tags[] = array('rel'=>'index',			'href'=>$_LINK['list'],		'type'=>$http_header,	'title'=>$_LANG['skin']['list']);
-		$link_tags[] = array('rel'=>'search',			'href'=>$_LINK['search'],	'type'=>$http_header,	'title'=>$_LANG['skin']['search']);
-		$link_tags[] = array('rel'=>'shortcut icon',	'href'=>$shortcut_icon,		'type'=>'image/vnd.microsoft.icon');
-		
-		// DNS prefetching
-		// http://html5boilerplate.com/docs/DNS-Prefetching/
-		$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>'//ajax.googleapis.com');
-		if (COMMON_URI !== ROOT_URI){ $link_tags[] = array('rel'=>'dns-prefetch',		'href'=>COMMON_URI); }
-	
-		if ($nofollow || ! $is_read || ! $is_page){
-			$meta_tags[] = array('name' => 'robots', 'content' => 'NOINDEX,NOFOLLOW');
+		if (IS_MOBILE){
+			$meta_tags[] = array('name' => 'viewport',	'content' => 'width=device-width, initial-scale=1');
 		}else{
-			// The Open Graph Protocol
-			// http://ogp.me/
-			$desc = (!empty($description)) ? $description : mb_strimwidth(preg_replace("/[\r\n]/" ,' ' ,strip_htmltag($body)) ,0 ,256 ,'...');
-			$logo = (!empty($_SKIN['logo']['src'])) ? $_SKIN['logo']['src'] : IMAGE_URI.'pukiwiki_adv.logo.png';
-			if (!empty($description)){ $meta_tags[] =  array('name' => 'description', 'content' => $description); }
-			if (!empty($keywords)){ $meta_tags[] =  array('name' => 'keywords', 'content' => $keywords); }
-			$meta_tags[] = array('property' => 'og:title',			'content' => $_page);
-			$meta_tags[] = array('property' => 'og:locale ',		'content' => LANG);
-			$meta_tags[] = array('property' => 'og:type',			'content' => 'website');
-			$meta_tags[] = array('property' => 'og:url',			'content' => $_LINK['reload']);
-			$meta_tags[] = array('property' => 'og:image',			'content' => $logo);
-			$meta_tags[] = array('property' => 'og:site_name',		'content' => $page_title);
-			$meta_tags[] = array('property' => 'og:description',	'content' => $desc);
-			$meta_tags[] = array('property' => 'og:updated_time',	'content' => $filetime);
+			($modifier !== 'anonymous') ?			$meta_tags[] = array('name' => 'author',					'content' => $modifier) : '';
+			(!empty($google_site_verification)) ?	$meta_tags[] = array('name' => 'google-site-verification',	'content' => $google_site_verification) : '';
+			(!empty($yahoo_site_explorer_id)) ?		$meta_tags[] = array('name' => 'y_key',						'content' => $yahoo_site_explorer_id) : '';
+			(!empty($bing_webmaster_tool)) ?		$meta_tags[] = array('name' => 'msvalidate.01',				'content' => $bing_webmaster_tool) : '';
+
+			if (!isset($shortcut_icon)){ $shortcut_icon = ROOT_URI.'favicon.ico'; }
+
+			// Linkタグの生成。scriptタグと異なり、順番が変わっても処理への影響がない。
+			// http://www.w3schools.com/html5/tag_link.asp
+			$link_tags[] = array('rel'=>'alternate',		'href'=>$_LINK['mixirss'],	'type'=>'application/rss+xml',	'title'=>'RSS');
+				// see http://www.seomoz.org/blog/canonical-url-tag-the-most-important-advancement-in-seo-practices-since-sitemaps
+			$link_tags[] = array('rel'=>'canonical',		'href'=>$_LINK['reload'],	'type'=>$http_header,	'title'=>$_page);
+			$link_tags[] = array('rel'=>'contents',			'href'=>$_LINK['menu'],		'type'=>$http_header,	'title'=>$_LANG['skin']['menu']);
+			$link_tags[] = array('rel'=>'sidebar',			'href'=>$_LINK['side'],		'type'=>$http_header,	'title'=>$_LANG['skin']['side']);
+			$link_tags[] = array('rel'=>'glossary',			'href'=>$_LINK['glossary'],	'type'=>$http_header,	'title'=>$_LANG['skin']['glossary']);
+			$link_tags[] = array('rel'=>'help',				'href'=>$_LINK['help'],		'type'=>$http_header,	'title'=>$_LANG['skin']['help']);
+			$link_tags[] = array('rel'=>'home',				'href'=>$_LINK['top'],		'type'=>$http_header,	'title'=>$_LANG['skin']['top']);
+			$link_tags[] = array('rel'=>'index',			'href'=>$_LINK['list'],		'type'=>$http_header,	'title'=>$_LANG['skin']['list']);
+			$link_tags[] = array('rel'=>'search',			'href'=>$_LINK['search'],	'type'=>$http_header,	'title'=>$_LANG['skin']['search']);
+			$link_tags[] = array('rel'=>'shortcut icon',	'href'=>$shortcut_icon,		'type'=>'image/vnd.microsoft.icon');
 			
-			global $fb;
-			if (isset($fb)){
-				$meta_tags[] = array('property' => 'fb:app_id', 'content' => $fb->getAppId());
-			}
-		}
+			// DNS prefetching
+			// http://html5boilerplate.com/docs/DNS-Prefetching/
+			$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>'//ajax.googleapis.com');
+			if (COMMON_URI !== ROOT_URI){ $link_tags[] = array('rel'=>'dns-prefetch',		'href'=>COMMON_URI); }
 		
-//		if ($notify_from !== 'from@example.com') $link_tags[] = array('rev'=>'made',	'href'=>'mailto:'.$notify_from,	'title'=>	'Contact to '.$modifier);
+			if ($nofollow || ! $is_read || ! $is_page){
+				$meta_tags[] = array('name' => 'robots', 'content' => 'NOINDEX,NOFOLLOW');
+			}else{
+				// The Open Graph Protocol
+				// http://ogp.me/
+				$desc = (!empty($description)) ? $description : mb_strimwidth(preg_replace("/[\r\n]/" ,' ' ,strip_htmltag($body)) ,0 ,256 ,'...');
+				$logo = (!empty($_SKIN['logo']['src'])) ? $_SKIN['logo']['src'] : IMAGE_URI.'pukiwiki_adv.logo.png';
+				if (!empty($description)){ $meta_tags[] =  array('name' => 'description', 'content' => $description); }
+				if (!empty($keywords)){ $meta_tags[] =  array('name' => 'keywords', 'content' => $keywords); }
+				$meta_tags[] = array('property' => 'og:title',			'content' => $_page);
+				$meta_tags[] = array('property' => 'og:locale ',		'content' => LANG);
+				$meta_tags[] = array('property' => 'og:type',			'content' => 'website');
+				$meta_tags[] = array('property' => 'og:url',			'content' => $_LINK['reload']);
+				$meta_tags[] = array('property' => 'og:image',			'content' => $logo);
+				$meta_tags[] = array('property' => 'og:site_name',		'content' => $page_title);
+				$meta_tags[] = array('property' => 'og:description',	'content' => $desc);
+				$meta_tags[] = array('property' => 'og:updated_time',	'content' => $filetime);
+				
+				global $fb;
+				if (isset($fb)){
+					$meta_tags[] = array('property' => 'fb:app_id', 'content' => $fb->getAppId());
+				}
+			}
+			
+	//		if ($notify_from !== 'from@example.com') $link_tags[] = array('rev'=>'made',	'href'=>'mailto:'.$notify_from,	'title'=>	'Contact to '.$modifier);
+		}
 
 		// JavaScriptタグの組み立て
 		if (isset($_page)){
@@ -162,8 +178,10 @@ function catbody($title, $page, $body)
 				$js_vars[] = 'var '.$key.' = "'.$val.'";';
 			}
 		}
-		array_unshift($pkwk_head_js,array('type'=>'text/javascript', 'content'=>join($js_vars,"\n")));
-		array_unshift($pkwk_head_js,array('type'=>'text/javascript', 'src'=>'http://www.google.com/jsapi'.((isset($google_api_key)) ? '?key='.$google_api_key : '')));
+		if (is_array($pkwk_head_js)){
+			array_unshift($pkwk_head_js,array('type'=>'text/javascript', 'content'=>join($js_vars,"\n")));
+			array_unshift($pkwk_head_js,array('type'=>'text/javascript', 'src'=>'http://www.google.com/jsapi'.((isset($google_api_key)) ? '?key='.$google_api_key : '')));
+		}
 		unset($js_var, $key, $val);
 		/* ヘッダー部分の処理ここまで */
 	
@@ -285,45 +303,22 @@ function getLinkSet($_page){
 
 	// Set $_LINK for skin
 	$_LINK = array(
-		'add'			=> get_cmd_uri('add',			$_page),
-		'backup'		=> get_cmd_uri('backup',		$_page),
-		'brokenlink'	=> get_cmd_uri('brokenlink',	$_page),
-		'copy'			=> get_cmd_uri('template',		'',		'',	array('refer'=>$_page)),
-		'diff'			=> get_cmd_uri('diff',			$_page),
-		'edit'			=> get_cmd_uri('edit',			$_page),
-		'filelist'		=> get_cmd_uri('filelist'),
-		'freeze'		=> get_cmd_uri('freeze',		$_page),
-		'full'			=> get_cmd_uri('print',			$_page).'&amp;nohead&amp;nofoot',
-		'guiedit'		=> get_cmd_uri('guiedit',		$_page),
-		'help'			=> get_cmd_uri('help'),
-		
-		'list'			=> get_cmd_uri('list'),
-		'log_browse'	=> get_cmd_uri('logview',		$_page,	'',	array('kind'=>'browse')),
-		'log_check'		=> get_cmd_uri('logview',		$_page,	'',	array('kind'=>'check')),
-		'log_down'		=> get_cmd_uri('logview',		$_page,	'',	array('kind'=>'download')),
-		'log_login'		=> get_cmd_uri('logview',		'',		'',	array('kind'=>'login')),
-		'log_update'	=> get_cmd_uri('logview',		$_page),
-		'new'			=> get_cmd_uri('newpage',		'',		'',	array('refer'=>$_page)),
-		'newsub'		=> get_cmd_uri('newpage_subdir','',		'',	array('directory'=>$_page)),
-		'print'			=> get_cmd_uri('print',			$_page),
-		'rename'		=> get_cmd_uri('rename',		'',		'',	array('refer'=>$_page)),
 		'search'		=> get_cmd_uri('search'),
-		'source'		=> get_cmd_uri('source',		$_page),
-		'template'		=> get_cmd_uri('template',		'',		'',	array('refer'=>$_page)),
-		'unfreeze'		=> get_cmd_uri('unfreeze',		$_page),
-		'upload'		=> get_cmd_uri('attach',		$_page,	'',	array('pcmd'=>'upload')), // link rel="alternate" にも利用するため absuri にしておく
+		'list'			=> get_cmd_uri('list'),
+		'filelist'		=> get_cmd_uri('filelist'),
 		
 		'rss'			=> get_cmd_absuri('mixirss'),
-		'rdf'			=> get_cmd_absuri('rss',		'',		'ver=1.0'),
-		'rss10'			=> get_cmd_absuri('rss',		'',		'ver=1.0'), // Same as 'rdf'
-		'rss20'			=> get_cmd_absuri('rss',		'',		'ver=2.0'),
-		'mixirss'		=> get_cmd_absuri('mixirss'), // Same as 'rdf' for mixi
+		'rdf'			=> get_cmd_absuri('rss',	null,	'ver=1.0'),
+		'rss10'			=> get_cmd_absuri('rss',	null,	'ver=1.0'), // Same as 'rdf'
+		'rss20'			=> get_cmd_absuri('rss',	null,	'ver=2.0'),
+		'mixirss'		=> get_cmd_absuri('mixirss'), 		// Same as 'rdf' for mixi
 		
 		'read'			=> get_page_uri($_page),
 		'reload'		=> get_page_absuri($_page), // 本当は、get_script_uri でいいけど、絶対パスでないと、スキンに影響が出る
 		'reload_rel'	=> get_page_uri($_page),
 
 		/* Special Page */
+		'help'			=> get_cmd_uri('help'),
 		'top'			=> get_page_uri($defaultpage),
 		'recent'		=> get_page_uri($whatsnew),
 		'deleted'		=> get_page_uri($whatsdeleted),
@@ -338,13 +333,71 @@ function getLinkSet($_page){
 		'protect'		=> get_page_uri($protect)
 	);
 	
+	if (empty($_page)) {
+		$_LINK = array_merge($_LINK,array(
+			'add'			=> get_cmd_uri('add'),
+			'backup'		=> get_cmd_uri('backup'),
+			'copy'			=> get_cmd_uri('template'),
+			'log'			=> get_cmd_uri('logview'),
+			'log_browse'	=> get_cmd_uri('logview',	null,	null,	array('kind'=>'browse')),
+			'log_check'		=> get_cmd_uri('logview',	null,	null,	array('kind'=>'check')),
+			'log_down'		=> get_cmd_uri('logview',	null,	null,	array('kind'=>'download')),
+			'log_login'		=> get_cmd_uri('logview',	null,	null,	array('kind'=>'login')),
+			'log_update'	=> get_cmd_uri('logview'),
+			'new'			=> get_cmd_uri('newpage'),
+			'newsub'		=> get_cmd_uri('newpage_subdir'),
+			'rename'		=> get_cmd_uri('rename'),
+			'upload_list'	=> get_cmd_uri('attach',	null,	null,	array('pcmd'=>'list'))
+		));
+	}else{
+		$_LINK = array_merge($_LINK,array(
+			'add'			=> get_cmd_uri('add',			$_page),
+			'backup'		=> get_cmd_uri('backup',		$_page),
+			'brokenlink'	=> get_cmd_uri('brokenlink',	$_page),
+			'copy'			=> get_cmd_uri('template',		null,		null,	array('refer'=>$_page)),
+			'diff'			=> get_cmd_uri('diff',			$_page),
+			'edit'			=> get_cmd_uri('edit',			$_page),
+			'freeze'		=> get_cmd_uri('freeze',		$_page),
+			'full'			=> get_cmd_uri('print',			$_page).'&amp;nohead&amp;nofoot',
+			'guiedit'		=> get_cmd_uri('guiedit',		$_page),
+
+			'log'			=> get_cmd_uri('logview',		$_page),
+			'log_browse'	=> get_cmd_uri('logview',		$_page,	null,	array('kind'=>'browse')),
+			'log_check'		=> get_cmd_uri('logview',		$_page,	null,	array('kind'=>'check')),
+			'log_down'		=> get_cmd_uri('logview',		$_page,	null,	array('kind'=>'download')),
+			'log_login'		=> get_cmd_uri('logview',		null,	null,	array('kind'=>'login')),
+			'log_update'	=> get_cmd_uri('logview',		$_page),
+			'new'			=> get_cmd_uri('newpage',		null,	null,	array('refer'=>$_page)),
+			'newsub'		=> get_cmd_uri('newpage_subdir',null,	null,	array('directory'=>$_page)),
+			'print'			=> get_cmd_uri('print',			$_page),
+			'rename'		=> get_cmd_uri('rename',		null,	null,	array('refer'=>$_page)),
+			
+			'source'		=> get_cmd_uri('source',		$_page),
+			
+			'unfreeze'		=> get_cmd_uri('unfreeze',		$_page),
+			'upload'		=> get_cmd_uri('attach',		$_page,	null,	array('pcmd'=>'upload')), // link rel="alternate" にも利用するため absuri にしておく
+			
+			'template'		=> get_cmd_uri('template',		null,	null,	array('refer'=>$_page))
+		));
+	}
+	
+	
+	
 	if ($referer){
-		$_LINK['referer']	= get_cmd_uri('referer',		$_page);
-		$_LINK['linklist']	= get_cmd_uri('linklist',		$_page);
-		$_LINK['skeylist']	= get_cmd_uri('skeylist',		$_page);
+		if (!empty($_page)) {
+			$_LINK['referer']	= get_cmd_uri('referer',		$_page);
+			$_LINK['linklist']	= get_cmd_uri('linklist',		$_page);
+			$_LINK['skeylist']	= get_cmd_uri('skeylist',		$_page);
+		}else{
+			$_LINK['referer']	= get_cmd_uri('referer');
+			$_LINK['linklist']	= get_cmd_uri('linklist');
+			$_LINK['skeylist']	= get_cmd_uri('skeylist');
+		}
 	}
 	if ($trackback){
-		$_LINK['trackback'] = get_cmd_uri('tb','','',array('__mode'=>'view','tb_id'=>tb_get_id($_page)));
+		$_LINK['trackback'] = (!empty($_page)) ? 
+			get_cmd_uri('tb',null,null,array('__mode'=>'view','tb_id'=>tb_get_id($_page))) :
+			get_cmd_uri('tb',null,null,array('__mode'=>'view'));
 	}
 	return $_LINK;
 }
@@ -362,7 +415,7 @@ function edit_form($page, $postdata, $digest = FALSE, $b_template = TRUE)
 	// Newly generate $digest or not
 	if ($digest === FALSE) $digest = md5(get_source($page, TRUE, TRUE));
 
-	$refer = $template = $addtag = $add_top = $add_ajax = '';
+	$refer = $template = $addtag = $add_top = $add_ajax = null;
 
 	$checked_top  = isset($vars['add_top'])     ? ' checked="checked"' : '';
 	$checked_time = isset($vars['notimestamp']) ? ' checked="checked"' : '';
@@ -556,7 +609,7 @@ function anchor_explode($page, $strict_editable = FALSE)
 }
 
 // Check HTTP header()s were sent already, or
-// there're blank lines or something out of php blocks
+// there're blank lines or something out of php blocks '
 function pkwk_headers_sent()
 {
 	global $_string;
@@ -745,51 +798,56 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 		if ($version == '1.0') echo ' lang="' . $lang_code . '"'; // Only XHTML 1.0
 	}
 
-	$user_agent = $_SERVER['HTTP_USER_AGENT'];
-	$info[] = $user_agent;
-	if(preg_match_all('/MSIE ([\.\d]+)/',$user_agent,$matches)){
-		// IE
-		$browser = 'ie ie'.substr($matches[1][0],0,1);
-		if (substr($matches[1][0],0,1) <= 9){
-			$x_ua_compatible = 'IE=edge'; // force to IE9
+	if (!IS_MOBILE){
+		
+		$user_agent = $_SERVER['HTTP_USER_AGENT'];
+		$info[] = $user_agent;
+		if(preg_match_all('/MSIE ([\.\d]+)/',$user_agent,$matches)){
+			// IE
+			$browser = 'ie ie'.substr($matches[1][0],0,1);
+			if (substr($matches[1][0],0,1) <= 9){
+				$x_ua_compatible = 'IE=edge'; // force to IE9
+			}
+		} else if (preg_match('/Gecko/', $user_agent) && preg_match("/(Firefox|Netscape?6)\/([\.\d]+)/", $user_agent,$matches)){
+			// Gecko (FireFox)
+			$browser = 'gecko '.strtolower($matches[1]).substr($matches[2][0],0,1);
+		} else if (preg_match("/(Presto)\/([\.\d]+)/", $user_agent, $matches)){
+			// Opera
+			$browser = strtolower($matches[1]).' '.strtolower($matches[1]).substr($matches[2],0,1);
+		} else if (preg_match("/(WebKit|KHTML|Konqueror)/", $user_agent)){
+			// Safari
+			$browser = "webkit";
+		} else if (preg_match("/(Nintendo|Sony|Dreamcast|NetFront)/", $user_agent)){
+			// ゲーム機はNetFront扱い
+			$browser = 'netfront';
 		}
-	} else if (preg_match('/Gecko/', $user_agent) && preg_match("/(Firefox|Netscape?6)\/([\.\d]+)/", $user_agent,$matches)){
-		// Gecko (FireFox)
-		$browser = 'gecko '.strtolower($matches[1]).substr($matches[2][0],0,1);
-	} else if (preg_match("/(Presto)\/([\.\d]+)/", $user_agent, $matches)){
-		// Opera
-		$browser = strtolower($matches[1]).' '.strtolower($matches[1]).substr($matches[2],0,1);
-	} else if (preg_match("/(WebKit|KHTML|Konqueror)/", $user_agent)){
-		// Safari
-		$browser = "webkit";
-	} else if (preg_match("/(Nintendo|Sony|Dreamcast|NetFront)/", $user_agent)){
-		// ゲーム機はNetFront扱い
-		$browser = 'netfront';
-	}
-	unset($matches);
+		unset($matches);
 
-	global $facebook;
-	if (isset($facebook)){
-		echo ' xmlns:fb="http://www.facebook.com/2008/fbml"';
-	}
+		global $facebook;
+		if (isset($facebook)){
+			echo ' xmlns:fb="http://www.facebook.com/2008/fbml"';
+		}
 
-	echo ' xmlns:og="http://ogp.me/ns#" class="no-js '.$browser.'">' . "\n"; // <html>
-	unset($lang_code);
-	
-	if ($pkwk_dtd == PKWK_DTD_HTML_5){
-		$meta_tags[] = array('charset'	=> CONTENT_CHARSET);
+		echo ' xmlns:og="http://ogp.me/ns#" class="no-js '.$browser.'">' . "\n"; // <html>
+		unset($lang_code);
+		
+		if ($pkwk_dtd == PKWK_DTD_HTML_5){
+			$meta_tags[] = array('charset'	=> CONTENT_CHARSET);
+		}else{
+			if (!isset($x_ua_compatible)) $x_ua_compatible = 'IE=edge';
+			$meta_tags = array(
+				array('http-equiv'	=> 'content-type',				'content'	=> 'text/html; charset='.CONTENT_CHARSET),
+				array('http-equiv'	=> 'content-language',			'content'	=> $lang_code),
+				array('http-equiv'	=> 'content-style-type',		'content'	=> 'text/css'),
+				array('http-equiv'	=> 'content-script-type',		'content'	=> 'text/javascript'),
+				array('http-equiv'	=> 'X-UA-Compatible',			'content'	=> $x_ua_compatible),
+				array('http-equiv'	=> 'X-Frame-Options',			'content'	=> 'deny')
+			);
+		}
+		return tag_helper('meta',$meta_tags);
 	}else{
-		if (!isset($x_ua_compatible)) $x_ua_compatible = 'IE=edge';
-		$meta_tags = array(
-			array('http-equiv'	=> 'content-type',				'content'	=> 'text/html; charset='.CONTENT_CHARSET),
-			array('http-equiv'	=> 'content-language',			'content'	=> $lang_code),
-			array('http-equiv'	=> 'content-style-type',		'content'	=> 'text/css'),
-			array('http-equiv'	=> 'content-script-type',		'content'	=> 'text/javascript'),
-			array('http-equiv'	=> 'X-UA-Compatible',			'content'	=> $x_ua_compatible),
-			array('http-equiv'	=> 'X-Frame-Options',			'content'	=> 'deny')
-		);
+		echo '>'."\n";
 	}
-	return tag_helper('meta',$meta_tags);
 }
 
 // タグヘルパー

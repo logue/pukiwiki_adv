@@ -10,14 +10,14 @@
  *
  */
 
-defined('CONFIG_SPAM_BANLIST')		or define('CONFIG_SPAM_BANLIST',		'spam/BANList');
-defined('CONFIG_SPAM_BLOCKLIST')	  or define('CONFIG_SPAM_BLOCKLIST',	  'spam/BlockList');
-defined('CONFIG_SPAM_BL')			 or define('CONFIG_SPAM_BL',			 'spam/BlackList');
-defined('CONFIG_SPAM_WL_PRIVATE_NET') or define('CONFIG_SPAM_WL_PRIVATE_NET', 'spam/WhiteList/praivate_network');
-defined('CONFIG_SPAM_WL_SKIP_DOMAIN') or define('CONFIG_SPAM_WL_SKIP_DOMAIN', 'spam/WhiteList/skip_domain');
+defined('CONFIG_SPAM_BANLIST')			or define('CONFIG_SPAM_BANLIST',		'spam/BANList');
+defined('CONFIG_SPAM_BLOCKLIST')		or define('CONFIG_SPAM_BLOCKLIST',	 	'spam/BlockList');
+defined('CONFIG_SPAM_BL')				or define('CONFIG_SPAM_BL',				'spam/BlackList');
+defined('CONFIG_SPAM_WL_PRIVATE_NET')	or define('CONFIG_SPAM_WL_PRIVATE_NET',	'spam/WhiteList/praivate_network');
+defined('CONFIG_SPAM_WL_SKIP_DOMAIN')	or define('CONFIG_SPAM_WL_SKIP_DOMAIN',	'spam/WhiteList/skip_domain');
 
 // Zero is Unlimited
-defined('SPAM_MAX_COUNTER')		   or define('SPAM_MAX_COUNTER', 2); 
+defined('SPAM_MAX_COUNTER')				or define('SPAM_MAX_COUNTER', 2); 
 
 function SpamCheck($link,$mode='dns')
 {

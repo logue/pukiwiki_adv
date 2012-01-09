@@ -8,43 +8,26 @@
 //
 // File related functions - extra functions
 
-// Marged from PukioWikio's post.php
+// Marged from PukioWikio post.php
 defined('POSTID_DIR')		or define('POSTID_DIR', 'PostId/');
 defined('POSTID_EXPIRE')	or define('POSTID_EXPIRE', 86400);	// 60*60*24 = 1day
+
+// Ticket file
+defined('PKWK_TICKET_CACHE')	or define('PKWK_TICKET_CACHE', 'ticket'.PKWK_DAT_EXTENTION);
+
+defined('PKWK_EXSISTS_DATA_CACHE')		or define('PKWK_EXSISTS_DATA_CACHE', 'exsists-wiki'.PKWK_TSV_EXTENTION);
+defined('PKWK_EXSISTS_ATTACH_CACHE')	or define('PKWK_EXSISTS_ATTACH_CACHE', 'exsists-attach'.PKWK_TSV_EXTENTION);
+defined('PKWK_TIMESTAMP_DATA_CACHE')	or define('PKWK_TIMESTAMP_DATA_CACHE', 'timestamp-wiki'.PKWK_DAT_EXTENTION);
+defined('PKWK_TIMESTAMP_ATTACH_CACHE')	or define('PKWK_TIMESTAMP_ATTACH_CACHE', 'timestamp-attach'.PKWK_DAT_EXTENTION);
 
 // Get Ticket
 function get_ticket($newticket = FALSE)
 {
-	global $memcache;
-	
-	if ($memcache !== null){
-		$cache_name = MEMCACHE_PREFIX.'ticket';
-		$ticket = $memcache->get($cache_name);
-		if ($ticket === false){
-			$ticket = md5(mt_rand());
-			$memcache->set($cache_name, $ticket, MEMCACHE_FLAG, MEMCACHE_EXPIRE);
-		}
+	if (cache_check(PKWK_TICKET_CACHE) && $newticket !== TRUE) {
+		$ticket = cache_read_raw(PKWK_TICKET_CACHE);
 	}else{
-		$file = CACHE_DIR . 'ticket.dat';
-
-		if (file_exists($file) && $newticket !== TRUE) {
-			$fp = fopen($file, 'r') or die_message('Cannot open ' . 'CACHE_DIR/' . 'ticket.dat');
-			$ticket = trim(fread($fp, filesize($file)));
-			fclose($fp);
-		} else {
-			$ticket = md5(mt_rand());
-			pkwk_touch_file($file);
-			$fp = fopen($file, 'r+') or die_message('Cannot open ' . 'CACHE_DIR/' . 'ticket.dat');
-			set_file_buffer($fp, 0);
-			@flock($fp, LOCK_EX);
-			$last = ignore_user_abort(1);
-			ftruncate($fp, 0);
-			rewind($fp);
-			fputs($fp, $ticket . "\n");
-			ignore_user_abort($last);
-			@flock($fp, LOCK_UN);
-			fclose($fp);
-		}
+		$ticket = md5(mt_rand());
+		cache_write_raw($ticket,PKWK_TICKET_CACHE);
 	}
 	return $ticket;
 }
@@ -72,52 +55,65 @@ function plus_readfile($filename)
 
 // structure
 
-
+/** 汎用キャッシュ処理 ****************************************************************************/
 // キャッシュ存在確認
-function cache_check($filename)
+function cache_check($cache_key)
 {
 	global $memcache;
 	$data = array();
 	if ($memcache !== null){
-		$data = $memcache->get(MEMCACHE_PREFIX.substr($filename,0,strrpos($filename, '.')));
+		$data = $memcache->get(MEMCACHE_PREFIX.$cache_key);
 		$ret = ($data !== false) ? true : false;
 	}else{
-		$ret = (file_exists(CACHE_DIR.$filename) !== FALSE) ? true : false;
+		$ret = (file_exists(CACHE_DIR.$cache_key) !== FALSE) ? true : false;
 	}
 	return $ret;
 }
 
 // キャッシュ読み込み
-function cache_read($filename)
+function cache_read($cache_key)
 {
 	global $memcache;
 	$data = array();
 	if ($memcache !== null){
-		$data = $memcache->get(MEMCACHE_PREFIX.substr($filename,0,strrpos($filename, '.')));
-	}else if (file_exists(CACHE_DIR.$filename) !== FALSE){
-		$fp = fopen(CACHE_DIR.$filename, 'rb');
+		$data = $memcache->get(MEMCACHE_PREFIX.$cache_key);
+	}else if (file_exists(CACHE_DIR.$cache_key) !== FALSE){
+		$fp = fopen(CACHE_DIR.$cache_key, 'rb');
 		if ($fp === false) return array();
 		@flock($fp, LOCK_SH);
-		$data = unserialize( fread($fp, filesize(CACHE_DIR.$filename)) );
+		$data = unserialize( fread($fp, filesize(CACHE_DIR.$cache_key)) );
 		@flock($fp, LOCK_UN);
 		if(! fclose($fp)) return array();
 	}
 	return $data;
 }
 
+function cache_read_raw($cache_key)
+{
+	global $memcache;
+	$data = array();
+	if ($memcache !== null){
+		$raw_data = $memcache->get(MEMCACHE_PREFIX.$cache_key);
+	}else if (file_exists(CACHE_DIR.$cache_key) !== FALSE){
+		$fp = fopen(CACHE_DIR.$cache_key, 'rb');
+		if ($fp === false) return array();
+		@flock($fp, LOCK_SH);
+		$raw_data = fread($fp, filesize(CACHE_DIR.$cache_key));
+		@flock($fp, LOCK_UN);
+		if(! fclose($fp)) return array();
+	}
+	return $raw_data;
+}
+
 // キャッシュ書き出し
-function cache_write($data, $filename, $expire = MEMCACHE_EXPIRE, $compress=MEMCACHE_FLAG)
+function cache_write($data, $cache_key, $expire = MEMCACHE_EXPIRE, $compress = MEMCACHE_COMPRESSED)
 {
 	global $memcache;
 	if ($memcache !== null){
-		$cache_name = MEMCACHE_PREFIX.substr($filename,0,strrpos($filename, '.'));
-		$ret = $memcache->replace($cache_name, $data, $compress ,$expire);
-		if( $ret === false ){
-			$ret = $memcache->set($cache_name, $data, $compress ,$expire);
-		}
+		$ret = update_memcache(MEMCACHE_PREFIX.$cache_key, $data, $compress ,$expire);
 	}else{
-		pkwk_touch_file(CACHE_DIR.$filename);
-		$fp = fopen(CACHE_DIR.$filename, 'wb');
+		pkwk_touch_file(CACHE_DIR.$cache_key);
+		$fp = fopen(CACHE_DIR.$cache_key, 'wb');
 		if ($fp === false) return false;
 		@flock($fp, LOCK_EX);
 		rewind($fp);
@@ -126,9 +122,66 @@ function cache_write($data, $filename, $expire = MEMCACHE_EXPIRE, $compress=MEMC
 		ftruncate($fp, ftell($fp));
 		@flock($fp, LOCK_UN);
 		fclose($fp);
-		cache_cleanup($filename, $expire);
+		cache_cleanup($cache_key, $expire);
 	}
 	return $ret;
+}
+
+function cache_write_raw($raw_data, $cache_key, $expire = MEMCACHE_EXPIRE, $compress = MEMCACHE_COMPRESSED)
+{
+	global $memcache;
+	if ($memcache !== null){
+		$ret = update_memcache(MEMCACHE_PREFIX.$cache_key, $raw_data, $compress ,$expire);
+	}else{
+		pkwk_touch_file(CACHE_DIR.$cache_key);
+		$fp = fopen(CACHE_DIR.$cache_key, 'wb');
+		if ($fp === false) return false;
+		@flock($fp, LOCK_EX);
+		rewind($fp);
+		$ret = fwrite($fp, $raw_data);
+		fflush($fp);
+		ftruncate($fp, ftell($fp));
+		@flock($fp, LOCK_UN);
+		fclose($fp);
+		cache_cleanup($cache_key, $expire);
+	}
+	return $ret;
+}
+
+// キャッシュ削除
+function cache_delete($cache_key){
+	global $memcache;
+	$ret = false;
+	if ($memcache !== null){
+		$ret = $memcache->delete(MEMCACHE_PREFIX.$cache_key);
+ 	}else if (file_exists(CACHE_DIR.$cache_key) !== FALSE){
+		unlink(CACHE_DIR.$cache_key);
+		$ret = true;
+	}
+	return $ret;
+}
+
+// キャッシュクリア
+function cache_clear($pattern = PKWK_DAT_EXTENTION){
+	global $memcache;
+	if ($memcache !== null){
+		foreach (getMemcacheList() as $key){
+			if (preg_match('/^'.$pattern.'/', $key) !== FALSE){
+				$memcache->delete($key);
+			}
+		}
+	}else{
+		$dir = dirname(CACHE_DIR);
+		foreach(scandir($dir) as $file) {
+			$ext = substr($file, strrpos($file, '.') + 1);
+			if (preg_match('/'.$pattern.'$/', $file) !== FALSE){
+				$file_path = $dir.'/'.$file;
+				if (file_exsists($file_path)){
+					@unlink($file_path);
+				}
+			}
+		}
+	}
 }
 
 // クリーンアップ処理（memcache無効時は、処理を行わない）
@@ -150,42 +203,6 @@ function cache_cleanup($filename, $expire){
 				// 有効期限を過ぎたファイルは削除
 				if(UTIME - $filetime > $expire) {
 					cache_delete($f);
-				}
-			}
-		}
-	}
-}
-
-// キャッシュ削除
-function cache_delete($filename){
-	global $memcache;
-	$ret = false;
-	if ($memcache !== null){
-		$ret = $memcache->delete(MEMCACHE_PREFIX.substr($filename,0,strrpos($filename, '.')));
- 	}else if (file_exists(CACHE_DIR.$filename) !== FALSE){
-		unlink(CACHE_DIR.$filename);
-		$ret = true;
-	}
-	return $ret;
-}
-
-// キャッシュクリア
-function cache_clear($pattern = 'dat'){
-	global $memcache;
-	if ($memcache !== null){
-		foreach (getMemcacheList() as $key){
-			if (preg_match('/^'.$pattern.'/', $key) !== FALSE){
-				$memcache->delete($key);
-			}
-		}
-	}else{
-		$dir = dirname(CACHE_DIR);
-		foreach(scandir($dir) as $file) {
-			$ext = substr($file, strrpos($file, '.') + 1);
-			if (preg_match('/'.$pattern.'$/', $file) !== FALSE){
-				$file_path = $dir.'/'.$file;
-				if (file_exsists($file_path)){
-					@unlink($file_path);
 				}
 			}
 		}
@@ -215,6 +232,21 @@ function getMemcacheKeyList(){
 	return $ret;
 }
 
+// memcacheの値を更新
+// memcache無効時はnullを返す。
+function update_memcache($key, $value, $compress = MEMCACHE_COMPRESSED ,$expire = MEMCACHE_EXPIRE){
+	global $memcache;
+	if ($memcache !== null){
+		$ret = $memcache->replace($key, $value, $compress ,$expire);
+		if( $ret === false ){
+			$ret = $memcache->set($key, $value, $compress ,$expire);
+		}
+	}else{
+		$ret = null;
+	}
+	return $ret;
+}
+
 // update autolink data
 function autolink_pattern_write($filename, $autolink_pattern)
 {
@@ -222,10 +254,7 @@ function autolink_pattern_write($filename, $autolink_pattern)
 
 	if ($memcache !== null){
 		$cache_name = MEMCACHE_PREFIX.substr($filename,0,strrpos($filename, '.'));
-		$ret = $memcache->replace($cache_name, $autolink_pattern, MEMCACHE_FLAG, MEMCACHE_EXPIRE);
-		if( $ret === false ){
-			$memcache->set($cache_name, $autolink_pattern, MEMCACHE_FLAG, MEMCACHE_EXPIRE);
-		}
+		update_memcache($cache_name, $autolink_pattern);
 	}else{
 		list($pattern, $pattern_a, $forceignorelist) = $autolink_pattern;
 		pkwk_touch_file(CACHE_DIR.$filename);
@@ -324,11 +353,13 @@ function get_existpages_cache($dir = DATA_DIR, $ext = '.txt', $compat = true)
 	switch($dir){
 		case DATA_DIR: $func = 'wiki'; break;
 		case UPLOAD_DIR: $func = 'attach'; break;
+		case COUNTER_DIR: $func = 'counter'; break;
+		case BACKUP_DIR: $func = 'backup'; break;
 		default: $func = encode($dir.$ext);
 	}
 	
 	if ($memcache !== null){
-		$cache_name = MEMCACHE_PREFIX.'existpages-'.$func;
+		$cache_name = MEMCACHE_PREFIX.'exists-'.$func;
 		$pages = $memcache->get($cache_name);
 		if ($pages !== FALSE){
 			if (cache_timestamp_compare_date('wiki',$cache_name)) {
@@ -337,7 +368,7 @@ function get_existpages_cache($dir = DATA_DIR, $ext = '.txt', $compat = true)
 			}
 		}
 	}else{
-		$cache_name = CACHE_DIR.'existpages-'.$func.'.txt';
+		$cache_name = CACHE_DIR.'exists-'.$func.'.txt';
 		if (file_exists($cache_name)) {
 			if (cache_timestamp_compare_date('wiki',$cache_name)) {
 				$pages = get_existpages_cache_read($cache_name,$compat);
@@ -700,7 +731,7 @@ function generate_postid($cmd = '')
 	$idstring_raw = $cmd . mt_rand();		//mt_srand() is necessary if PHP version is lower than 4.2.0
 	$idstring = md5($idstring_raw);
 
-	$filename = POSTID_DIR . $idstring .'.dat';
+	$filename = POSTID_DIR . $idstring . PKWK_DAT_EXTENTION;
 	cache_write($_SERVER['REMOTE_ADDR'], $filename, POSTID_EXPIRE);
 	return $idstring;
 }
@@ -708,7 +739,7 @@ function generate_postid($cmd = '')
 function check_postid($idstring)
 {
 	global $memcache;
-	$filename = POSTID_DIR . $idstring . '.dat';
+	$filename = POSTID_DIR . $idstring . PKWK_DAT_EXTENTION;
 	$ret = TRUE;
 	$data = cache_read($filename);
 	if ($data !== false){

@@ -45,6 +45,7 @@ function plugin_backup_init()
 			'msg_nobackup'			=> T_('There are no backup(s) of $1.'),
 			'msg_nowdiff'			=> T_('diff current'),
 			'msg_source'			=> T_('source'),
+			'msg_rollback'			=> T_('roleback'),
 			'msg_version'			=> T_('Versions:'),
 			'msg_view'				=> T_('View the $1.'),
 			'msg_visualdiff'		=> T_('diff for visual'),
@@ -61,8 +62,7 @@ function plugin_backup_init()
 			'btn_rollback'				=> T_('Rollback'),
 			'btn_selectdelete'			=> T_('Delete selected backup(s).'),
 			'msg_backup_rollbacked'		=> T_('Rollbackd to $1.'),
-			'msg_rollback'				=> T_('Rollback this backup(No. $1)'),
-			'title_backup_rollback'		=> '$1 のバックアップを書き戻す',
+			'title_backup_rollback'		=> T_('Rollback this backup(No. %s)'),
 			'title_backup_rollbacked'	=> '$1 をバックアップに書き戻しました'
 		)
 	);
@@ -88,43 +88,38 @@ function plugin_backup_action()
 	$r_page = rawurlencode($page);
 
 	$action = isset($vars['action']) ? $vars['action'] : '';
+	
+	/**
+	 * 指定された世代を確認。指定されていなければ、一覧のみ表示
+	 */
+	$s_age  = (isset($vars['age']) && is_numeric($vars['age'])) ? $vars['age'] : 0;
+	
 	if($action == 'delete') {
-		/* checkboxが選択されずにselectdeleteを実行された場合は、削除処理をしない */
-		if(! isset($vars['selectages']) &&		/* checkboxが選択されていない */
-			isset($vars['selectdelete'])) {		/* 選択削除ボタンが押された */
-												/* 何もしない */
+		// checkboxが選択されずにselectdeleteを実行された場合は、削除処理をしない
+		if(! isset($vars['selectages']) &&		// checkboxが選択されていない
+			isset($vars['selectdelete'])) {		// 選択削除ボタンが押された
+												// 何もしない
 		} else {
-			if(! isset($vars['selectages'])) {	/* 世代引数がない場合は全削除 */
+			if(! isset($vars['selectages'])) {	// 世代引数がない場合は全削除
 				return plugin_backup_delete($page);
 			}
 			return plugin_backup_delete($page, $vars['selectages']);
 		}
 	}
+	
+	if($action == 'rollback') {
+		return plugin_backup_rollback($page, $s_age);
+	}
 
-	/**
-	 * 指定された世代を確認。指定されていなければ、一覧のみ表示
-	 */
-	$s_age  = (isset($vars['age']) && is_numeric($vars['age'])) ? $vars['age'] : 0;
 	if ($s_age <= 0) return array( 'msg'=>$_backup_messages['title_pagebackuplist'], 'body'=>plugin_backup_get_list($page));
 
 	$body  = '<ul>' . "\n";
-	//$body .= ' <li><a href="' . get_cmd_uri('backup') . ">' . $_backup_messages['msg_backuplist'] . '</a></li>' ."\n";
-	$s_action = ($action != '') ? htmlsc($action) : '';
+	//$body .= ' <li><a href="' . get_cmd_uri('backup') . '">' . $_backup_messages['msg_backuplist'] . '</a></li>' ."\n";
 	
 	$is_page = is_page($page);
-	
-	if (PLUGIN_BACKUP_USE_ROLLBACK) {
-		if($action == 'rollback') {
-			return plugin_backup_rollback($page, $s_age);
-		}
-		$href_rollback = '<li><a href="' . 
-			get_cmd_uri('backup', $page, null, array('action' => 'rollback', 'age' => $s_age, 'postid' => generate_postid('backup'))) . '">' . 
-			str_replace('$1', $s_age, $_backup_messages['msg_rollback']) . '</a></li>';
-	} else {
-		$href_rollback = '';
-	}
-	$body = plugin_backup_get_list($page, $href_rollback);
 
+	$body = plugin_backup_get_list($page);
+/*
 	if ($is_page){
 		if ($action != 'diff')
 			$body .= ' <li>' . str_replace('$1', '<a href="' . get_cmd_uri('backup',$page, null, array('action'=>'diff', 'age'=>$s_age)) . '">' .
@@ -154,11 +149,11 @@ function plugin_backup_action()
 	} else {
 		$body .= ' <li>' . str_replace('$1', '<var>'.$s_page.'</var>', $_backup_messages['msg_deleted']) . "\n";
 	}
-
+*/
 	$backups = get_backup($page);
 	$backups_count = count($backups);
 	if ($s_age > $backups_count) $s_age = $backups_count;
-
+/*
 	if ($backups_count > 0 && $action != 'visualdiff') {
 		$body .= '  <ul>' . "\n";
 		foreach($backups as $age => $val) {
@@ -172,57 +167,62 @@ function plugin_backup_action()
 	}
 	$body .= ' </li>' . "\n";
 	$body .= '</ul>'  . "\n";
-
-	if ($action == 'diff') {
-		if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
-		$title = & $_backup_messages['title_backupdiff'];
-		$old = ($s_age > 1) ? join('', $backups[$s_age - 1]['data']) : '';
-		$cur = join('', $backups[$s_age]['data']);
-		auth::is_role_page($old);
-		auth::is_role_page($cur);
-		$body .= plugin_backup_diff(do_diff($old, $cur));
-	} else if ($s_action == 'nowdiff') {
-		if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
-		$title = & $_backup_messages['title_backupnowdiff'];
-		$old = join('', $backups[$s_age]['data']);
-		$cur = get_source($page, TRUE, TRUE);
-		auth::is_role_page($old);
-                auth::is_role_page($cur);
-		$body .= plugin_backup_diff(do_diff($old, $cur));
-	} else if ($s_action == 'visualdiff') {
-		$old = join('', $backups[$s_age]['data']);
-		$cur = get_source($page, TRUE, TRUE);
-		auth::is_role_page($old);
+*/
+	switch ($action){
+		case 'diff':
+			if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
+			$title = & $_backup_messages['title_backupdiff'];
+			$old = ($s_age > 1) ? join('', $backups[$s_age - 1]['data']) : '';
+			$cur = join('', $backups[$s_age]['data']);
+			auth::is_role_page($old);
 			auth::is_role_page($cur);
-		// <ins> <del>タグを使う形式に変更。
-		$source = do_diff($old,$cur);
-		$source = plugin_backup_visualdiff($source);
-		$body .= "$hr\n" . drop_submit(convert_html($source));
-		$body = preg_replace('#<p>\#del(.*?)(</p>)#si', '<del class="remove_block">$1', $body);
-		$body = preg_replace('#<p>\#ins(.*?)(</p>)#si', '<ins class="add_block">$1', $body);
-		$body = preg_replace('#<p>\#delend(.*?)(</p>)#si', '$1</del>', $body);
-		$body = preg_replace('#<p>\#insend(.*?)(</p>)#si', '$1</ins>', $body);
-		// ブロック型プラグインの処理が無いよ～！
-		$body = preg_replace('#&amp;del;#i', '<del class="remove_word">', $body);
-		$body = preg_replace('#&amp;ins;#i', '<ins class="add_word">', $body);
-		$body = preg_replace('#&amp;delend;#i', '</del>', $body);
-		$body = preg_replace('#&amp;insend;#i', '</ins>', $body);
-		$title = & $_backup_messages['title_backupnowdiff'];
-	} else if ($s_action == 'source') {
-		if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
-		$title = & $_backup_messages['title_backupsource'];
-		auth::is_role_page($backups[$s_age]['data']);
-		$body .= '<pre class="sh">' . htmlsc(join('', $backups[$s_age]['data'])) .
-			'</pre>' . "\n";
-	} else {
-		if (PLUGIN_BACKUP_DISABLE_BACKUP_RENDERING) {
-			die_message( T_('This feature is prohibited') );
-		} else {
-			$title = & $_backup_messages['title_backup'];
+			$body .= plugin_backup_diff(do_diff($old, $cur));
+		break;
+		case 'nowdiff':
+			if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
+			$title = & $_backup_messages['title_backupnowdiff'];
+			$old = join('', $backups[$s_age]['data']);
+			$cur = get_source($page, TRUE, TRUE);
+			auth::is_role_page($old);
+			auth::is_role_page($cur);
+			$body .= plugin_backup_diff(do_diff($old, $cur));
+		break;
+		case 'visualdiff':
+			$old = join('', $backups[$s_age]['data']);
+			$cur = get_source($page, TRUE, TRUE);
+			auth::is_role_page($old);
+				auth::is_role_page($cur);
+			// <ins> <del>タグを使う形式に変更。
+			$source = do_diff($old,$cur);
+			$source = plugin_backup_visualdiff($source);
+			$body .= "$hr\n" . drop_submit(convert_html($source));
+			$body = preg_replace('#<p>\#del(.*?)(</p>)#si', '<del class="remove_block">$1', $body);
+			$body = preg_replace('#<p>\#ins(.*?)(</p>)#si', '<ins class="add_block">$1', $body);
+			$body = preg_replace('#<p>\#delend(.*?)(</p>)#si', '$1</del>', $body);
+			$body = preg_replace('#<p>\#insend(.*?)(</p>)#si', '$1</ins>', $body);
+			// ブロック型プラグインの処理が無いよ～！
+			$body = preg_replace('#&amp;del;#i', '<del class="remove_word">', $body);
+			$body = preg_replace('#&amp;ins;#i', '<ins class="add_word">', $body);
+			$body = preg_replace('#&amp;delend;#i', '</del>', $body);
+			$body = preg_replace('#&amp;insend;#i', '</ins>', $body);
+			$title = & $_backup_messages['title_backupnowdiff'];
+		break;
+		case 'source':
+			if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
+			$title = & $_backup_messages['title_backupsource'];
 			auth::is_role_page($backups[$s_age]['data']);
-			$body .= $hr . "\n" .
-				drop_submit(convert_html($backups[$s_age]['data']));
-		}
+			$body .= '<pre class="sh" data-blush="diff">' . htmlsc(join('', $backups[$s_age]['data'])) .
+				'</pre>' . "\n";
+		break;
+		default:
+			if (PLUGIN_BACKUP_DISABLE_BACKUP_RENDERING) {
+				die_message( T_('This feature is prohibited') );
+			} else {
+				$title = & $_backup_messages['title_backup'];
+				auth::is_role_page($backups[$s_age]['data']);
+				$body .= drop_submit(convert_html($backups[$s_age]['data']));
+			}
+		break;
 	}
 
 	return array('msg'=>str_replace('$2', $s_age, $title), 'body'=>$body);
@@ -242,8 +242,6 @@ function plugin_backup_delete($page, $ages = array())
 	if (! _backup_file_exists($page))
 		return array('msg'=>$_backup_messages['title_pagebackuplist'], 'body'=>plugin_backup_get_list($page)); // Say "is not found"
 
-	$body = '';
-
 	if (! auth::check_role('role_adm_contents')) {
 		_backup_delete($page);
 		return array(
@@ -252,16 +250,18 @@ function plugin_backup_delete($page, $ages = array())
 		);
 	}
 
+	$body = '';
+	$invalied = '';
+
 	if (isset($vars['pass'])) {
 		if (pkwk_login($vars['pass'])) {
-			_backup_delete($page);
+			//_backup_delete($page, $ages);
 			return array(
 				'msg'  => $_backup_messages['title_backup_delete'],
 				'body' => str_replace('$1', make_pagelink($page), $_backup_messages['msg_backup_deleted'])
 			);
 		} else {
 			$body = '<p><strong>' . $_backup_messages['msg_invalidpass'] . '</strong></p>' . "\n";
-			$invalied = 'invalid="invalid" ';
 		}
 	}
 
@@ -273,12 +273,12 @@ function plugin_backup_delete($page, $ages = array())
 	$body .= <<<EOD
 <fieldset>
 	<legend>{$_backup_messages['msg_backup_adminpass']}</legend>
-	<form action="$script" method="post" class="backup_form">
+	<form action="$script" method="post" class="backup_delete_form">
 		<input type="hidden" name="cmd" value="backup" />
 		<input type="hidden" name="page" value="$s_page" />
 		<input type="hidden" name="action" value="delete" />
 $href_ages
-		<input type="password" name="pass" size="12" required="true" $invalied/>
+		<input type="password" name="pass" size="12" required="true" />
 		<input type="submit" name="ok" value="{$_backup_messages['btn_delete']}" />
 	</form>
 </fieldset>
@@ -303,34 +303,35 @@ EOD;
 function plugin_backup_get_list($page)
 {
 	global $_backup_messages;
-	$backuplist_uri = get_cmd_uri('backup');
 	$r_page = rawurlencode($page);
 	$s_page = htmlsc($page);
+	$script = get_script_uri();
 	$retval = array();
-	$retval[0] = <<<EOD
-<ul>
- <li><a href="$backuplist_uri">{$_backup_messages['msg_backuplist']}</a>
-  <ul>
+	$retval[0] = '<p><a href="'.get_cmd_uri('backup').'">'.$_backup_messages['msg_backuplist'].'</a></p>';
+	$retval[0] .= <<<EOD
+<form action="$script" method="post" class="backup_select_form">
+	<input type="hidden" name="cmd" value="backup" />
+	<input type="hidden" name="page" value="$s_page" />
+	<input type="hidden" name="action" value="delete" />
+	<input type="hidden" name="selectdelete" value="true" />
 EOD;
-	$retval[1] = "\n";
+	
+	$retval[1] = "\n	<ol>\n";
 	$retval[2] = <<<EOD
-  </ul>
- </li>
-</ul>
+	</ol>
+	<input type="submit" name="delete" value="{$_backup_messages['btn_selectdelete']}" />
 EOD;
-
+// if (! PKWK_READONLY) {
+	if (! auth::check_role('readonly')) {
+		$retval[2] .= '<a class="button" href="' . get_cmd_uri('backup', $page, null, array('action'=>'delete')) . '">';
+		$retval[2] .= str_replace('$1', $s_page, $_backup_messages['title_backup_delete']);
+		$retval[2] .= '</a>';
+	}
+	$retval[2] .= '</form>';
 	$backups = _backup_file_exists($page) ? get_backup($page) : array();
 	if (empty($backups)) {
-		$msg = str_replace('$1', make_pagelink($page), $_backup_messages['msg_nobackup']);
-		$retval[1] .= '   <li>' . $msg . '</li>' . "\n";
+		$retval[1] .= '   <li>' . str_replace('$1', make_pagelink($page), $_backup_messages['msg_nobackup']) . '</li>' . "\n";
 		return join('', $retval);
-	}
-
-	// if (! PKWK_READONLY) {
-	if (! auth::check_role('readonly')) {
-		$retval[1] .= '   <li><a href="' . get_cmd_uri('backup', $page, null, array('action'=>'delete')) . '">';
-		$retval[1] .= str_replace('$1', $s_page, $_backup_messages['title_backup_delete']);
-		$retval[1] .= '</a></li>' . "\n";
 	}
 
 	$_anchor_from = $_anchor_to   = '';
@@ -347,20 +348,25 @@ EOD;
 		}else{
 			$time = '';
 		}
-		$date = format_date($time, TRUE);
-		$retval[1] .= <<<EOD
-   <li>$_anchor_from$age $date$_anchor_to
-EOD;
+		$retval[1] .= '<li>';
+		if (! $safemode) {
+			$retval[1] .= '<input type="checkbox" name="selectages[]" value="'.$age.'" />';
+		}
+		$retval[1] .= $_anchor_from . format_date($time, TRUE) . $_anchor_to;
 
 		if (! $safemode) {
-			$retval[1] .= ' [ <a href="'. get_cmd_uri('backup', $page, null, array('action'=>'diff', 'age'=>$age)). '">' . $_backup_messages['msg_diff'] . '</a> '."\n";
-			$retval[1] .= '| <a href="'. get_cmd_uri('backup', $page, null, array('action'=>'nowdiff', 'age'=>$age)). '">' . $_backup_messages['msg_nowdiff'] . '</a> '."\n";
-			$retval[1] .= '| <a href="'. get_cmd_uri('backup', $page, null, array('action'=>'source', 'age'=>$age)). '">' . $_backup_messages['msg_source'] . '</a> '."\n]";
+			$retval[1] .= ' <nav class="navibar" style="display:inline;"><ul>';
+			$retval[1] .= '<li><a href="'. get_cmd_uri('backup', $page, null, array('action'=>'diff', 'age'=>$age)). '">' . $_backup_messages['msg_diff'] . '</a></li>';
+			$retval[1] .= '<li><a href="'. get_cmd_uri('backup', $page, null, array('action'=>'nowdiff', 'age'=>$age)). '">' . $_backup_messages['msg_nowdiff'] . '</a></li>';
+			$retval[1] .= '<li><a href="'. get_cmd_uri('backup', $page, null, array('action'=>'visualdiff', 'age'=>$age)). '">' . $_backup_messages['msg_visualdiff'] . '</a></li>';
+			$retval[1] .= '<li><a href="'. get_cmd_uri('backup', $page, null, array('action'=>'source', 'age'=>$age)). '">' . $_backup_messages['msg_source'] . '</a></li>';
+			if (PLUGIN_BACKUP_USE_ROLLBACK) {
+				$retval[1] .= '<li><a href="'. get_cmd_uri('backup', $page, null, array('action'=>'rollback', 'age'=>$age)). '">' . $_backup_messages['msg_rollback'] . '</a></li>';
+			}
+			$retval[1] .= '</ul></nav>';
 		}
 
-		$retval[1] .= <<<EOD
-   </li>
-EOD;
+		$retval[1] .= '</li>'."\n";
 	}
 
 	return join('', $retval);
@@ -514,21 +520,19 @@ function plugin_backup_rollback($page, $age)
 
 	$script = get_script_uri();
 	$s_page = htmlspecialchars($page);
-	$postid = generate_postid('backup');
 	$body .= <<<EOD
 <fieldset>
 	<legend>{$_backup_messages['msg_backup_adminpass']}</legend>
 	<form action="$script" method="post" class="backup_rollback_form">
 		<input type="hidden" name="cmd" value="backup" />
-		<input type="hidden" name="page" value="$s_page" />
 		<input type="hidden" name="action" value="rollback" />
 		<input type="hidden" name="age" value="$age" />
+		<input type="hidden" name="page" value="$s_page" />
 		<input type="password" name="pass" size="12" />
 		<input type="submit" name="ok" value="{$_backup_messages['btn_rollback']}" />
-		<input type="hidden" name="postid" value="$postid" />
 	</form>
 </legend>
 EOD;
-	return	array('msg'=>$_title_backup_rollback, 'body'=>$body);
+	return	array('msg'=>sprintf($_backup_messages['title_backup_rollback'], $age), 'body'=>$body);
 }
 ?>

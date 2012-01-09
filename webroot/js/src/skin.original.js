@@ -23,18 +23,28 @@
 
 var pukiwiki; pukiwiki || (pukiwiki = {});
 // Bigscope
-(function ($, Modernizr, window, document, undef) {
+(function ($, Modernizr, window, document, undefined) {
 	'use strict';
 
 	if (DEBUG) { var D1 = new Date(); }
 	
-	// Version without `with` in case that's how you roll (112 chars):
-	for(var ie=-1,b=document.createElement("b");b.innerHTML="<!--[if gt IE "+ ++ie+"]>1<![endif]-->",+b.innerHTML;);
+	// Detect IE
+	var ie = (function(document, undefined){
+		var v = 3,
+		div = document.createElement('div'),
+		all = div.getElementsByTagName('i');
+		while (
+			div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
+			all[0]
+		);
+		
+		return v > 4 ? v : undefined;
+	}(window.document));
 	
 	// usage: log('inside coolFunc', this, arguments);
 	// paulirish.com/2009/log-a-lightweight-wrapper-for-consolelog/
 	window.log = function() {
-		log.history = log.history || [];   // store logs to an array for reference
+		log.history = log.history || [];	// store logs to an array for reference
 		log.history.push(arguments);
 		if(this.console) {
 			arguments.callee = arguments.callee.caller;
@@ -76,26 +86,43 @@ var pukiwiki; pukiwiki || (pukiwiki = {});
 				autoArrows:		false,	// if true, arrow mark-up generated automatically = cleaner source code at expense of initialisation performance
 				dropShadows:	false
 			},
+			// colorboxの設定
+			colorbox:{
+				opacity : '0.8',
+				slideshowStart	: '<span class="ui-icon ui-icon-play" style="margin:4px;" title="'+$.i18n('player','play')+'"></span>',
+				slideshowStop	: '<span class="ui-icon ui-icon-stop" style="margin:4px;" title="'+$.i18n('player','stop')+'"></span>',
+				previous		: '<span class="ui-icon ui-icon-circle-arrow-e" style="margin:4px;" title="'+$.i18n('player','prev')+'"></span>',
+				next			: '<span class="ui-icon ui-icon-circle-arrow-w" style="margin:4px;" title="'+$.i18n('player','next')+'"></span>',
+				close			: '<span class="ui-icon ui-icon-circle-close" style="margin:4px;" title="'+$.i18n('dialog','close')+'"></span>',
+				onOpen:function(){
+					// jQueryUI Fix
+					$('#cboxOverlay').addClass('ui-widget-overlay');				// オーバーレイをjQueryUIのものに変更
+					$('#colorbox').addClass('ui-widget-content ui-corner-all');		// colorboxのウィンドウをjQueryUIのモノに変更
+					$('#cboxPrevious').button();
+					$('#cboxNext').button();
+					$('#cboxClose').button();
+				}
+			},
 			tablesorter: {
 				counter: 0,
 				sorter: {
-//					debug:DEBUG,
-					useUI:true,
-					cssUI: {
-						widget: "",
-						header: "ui-widget-header",
-						hover: "ui-state-hover",
-						icon: "ui-icon ui-icon-triangle-2-n-s",
-						iconBoth: "ui-icon-triangle-2-n-s",
-						iconDesc: "ui-icon-triangle-1-n",
-						iconAsc: "ui-icon-triangle-1-s"
+//					debug	: DEBUG,
+					useUI	: true,
+					cssUI	: {
+						widget		: '',
+						header		: 'ui-widget-header',
+						hover		: 'ui-state-hover',
+						icon		: 'ui-icon ui-icon-triangle-2-n-s',
+						iconBoth	: 'ui-icon-triangle-2-n-s',
+						iconDesc	: 'ui-icon-triangle-1-n',
+						iconAsc		: 'ui-icon-triangle-1-s'
 					}
 				},
 				pager : {
-					minimum_lines : 5,
-					size:[10,25,50,75,100],
-					location_before:true,
-					positionFixed: false
+					minimum_lines	: 5,
+					size			: [10,25,50,75,100],
+					location_before	: true,
+					positionFixed	: false
 				}
 			},
 			swfupload : {
@@ -113,7 +140,7 @@ var pukiwiki; pukiwiki || (pukiwiki = {});
 				// 上限容量
 //				file_size_limit : params.max_file_size,
 				// ファイルタイプ
-				file_types : "*.*",
+				file_types : '*.*',
 				// ファイルタイプの説明
 //				file_types_description : $.i18n('uploader','file_type_desc'),
 				// 一度にアップロードできるファイルの上限（ファイル選択画面でShiftキーで選択できるファイル数）
@@ -129,8 +156,8 @@ var pukiwiki; pukiwiki || (pukiwiki = {});
 				button_width : 114,
 				button_height : 29,
 				// 書き換える場所のID
-//				button_placeholder_id: "swfupload_button",
-				buttonwindow_mode: "transparent",
+//				button_placeholder_id: 'swfupload_button',
+				buttonwindow_mode: 'transparent',
 
 				moving_average_history_size: 40
 			},
@@ -205,66 +232,25 @@ var pukiwiki; pukiwiki || (pukiwiki = {});
 			var self = this;
 			var protocol = ((document.location.protocol === 'https:') ? 'https:' : 'http:')+'//';
 			this.body = this.custom.body ? this.custom.body : '#body';
+
+			// 言語設定
+			$.i18n(LANG);
 			
 			// スキン設定をオーバーライド
 			$.extend(this.config.sukerfish, this.custom.suckerfish);
 			$.extend(this.config.colorbox, this.custom.colorbox);
 			$.extend(this.config.tablesorter, this.custom.tablesorter);
 			$.extend(this.config.syntaxhighlighter, this.custom.syntaxhighlighter);
-			
-			$(':input, button').attr('disabled','disabled');	// フォームをロック
-			// ボタンをjQuery UIのものに
-			$('button, input[type=submit], input[type=reset], input[type=button]').each(function(){
-				var $this = $(this);
-				var data = $this.data();
-				
-				$this.button({
-					text: data.text ? data.text : true,
-					label: data.label ? data.label : this.value,
-					icons: {
-						primary : data.iconsPrimary,
-						secondary: data.iconsSecondary
-					}
-				});
-			});
 
-			// IE互換処理
-			if(ie < 6){
-				// Fix Background flicker
-				try{ document.execCommand('BackgroundImageCache', false, true); }catch(e){}
-				// IE PNG Fix
-				$.ajax({
-					type: "GET",
-					global : false,
-					url: JS_URI+'iepngfix/iepngfix_tilebg.js',
-					dataType: "script"
-				});
-				$('img[src$=png], .pkwk-icon, .pkwk-symbol, .pkwk-icon_linktext').css({
-					'behavior': 'url('+JS_URI+'iepngfix/iepngfix.htc)'
-				});
-			}
-
-			// Canvas実装
-			Modernizr.load({
-				test:Modernizr.canvas,
-				nope:JS_URI+'excanvas.compiled.js'
-			});
+			// HTML5サポート\
+			this.enableHTML5();
 			
 			// Lazyload（遅延画像ロード）
 			// IE6では、pngの場合アルファチャンネルが効かなくなるため、拡張子がpngのときは処理しない
-			$(this.body + ((ie < 6) ? 'img[src!$=.png]' : 'img')).lazyload({ 
+			$('*[role=main]' + ((ie < 6) ? 'img[src!$=.png]' : 'img')).lazyload({ 
 				placeholder : this.image_dir+'grey.gif',
 				effect : "fadeIn"
 			});
-			
-			// HTML5サポート\
-			this.enableHTML5();
-
-			// 言語設定
-			$.i18n(LANG);
-			
-			// SyntaxHighlighter
-			this.sh();
 
 			// Suckerfish（ポップアップメニュー
 			$('.sf-menu').superfish(this.config.sukerfish);
@@ -273,37 +259,17 @@ var pukiwiki; pukiwiki || (pukiwiki = {});
 			this.linkattrs();
 			this.preptoc(this.body);
 
-			// インラインウィンドウ
-			this.setAnchor();
+			// フォームを初期化
+			this.init_dom();
 
 			// アシスタント
-			if ($("textarea[name='msg']").length !== 0 && $.query.get('cmd') !== 'guiedit'){
+			if ($('textarea[name="msg"]').length !== 0 && $.query.get('cmd') !== 'guiedit'){
 				this.set_editform();
 			}
 			if ($('input[name=msg]').length !== 0){
 				$('.comment_form').append('<div class="assistant ui-corner-all ui-widget-header ui-helper-clearfix"></div>');
 				this.assistant();
 			}
-
-	/*
-			if ($.query.get('cmd') === 'list'){
-				$('#page_list').jstree({
-					plugins:['html_data', 'themeroller' ]
-				});
-			}
-	*/
-
-			// Textarea Resizer
-			if ($("textarea[name='msg']").length !== 0 && $.query.get('cmd') !== 'guiedit'){
-				$("textarea[name='msg']").addClass("resizable");
-				$('textarea.resizable:not(.processed)').TextAreaResizer();
-			}
-			
-			// テキストエリアでタブ入力できるように
-			$("textarea").tabby();
-
-			/* Table Sorter（テーブル自動ソート） */
-			this.tablesorter();
 
 	/*
 			if ($('#cancel').length !== 0){
@@ -313,17 +279,9 @@ var pukiwiki; pukiwiki || (pukiwiki = {});
 			}
 	*/
 
-			// 添付フォームをswfuploadに
-			if ($('.attach_form').length !== 0){
-				this.set_uploader();
-			}
-
-			// 検索フォーム（ページ名を提案）
-			this.search_form();
-
 			// バナーボックス
-			$("#banner_box img").fadeTo(200,0.3);
-			$("#banner_box img").hover(
+			$('#banner_box img').fadeTo(200,0.3);
+			$('#banner_box img').hover(
 				function(){
 					$(this).fadeTo(200,1);
 				},
@@ -331,36 +289,17 @@ var pukiwiki; pukiwiki || (pukiwiki = {});
 					$(this).fadeTo(200,0.3);
 				}
 			);
-			
-			// Glossaly（ツールチップ）
-			this.glossaly();
-			
-			this.bad_behavior();
+
 			
 			// アンカーがURLに含まれていた場合（アニメーションする必要はあるのだろうか？）
 			if (location.hash){
 				this.anchor_scroll(location.hash,true);
 			}
 
-			// hover states on the static widgets
-			$('.ui-state-default').hover(function() {
-				$(this).addClass('ui-state-hover');
-			},function() {
-				$(this).removeClass('ui-state-hover');
-			}).mousedown(function() {
-				$(this).addClass('ui-state-active');
-			}).mouseout(function() {
-				$(this).removeClass('ui-state-active');
-			});
-
-			// フォームロックを解除
-			$(':input, button').removeAttr('disabled');
-			$('.ui-button').button('option', 'disabled', false);
-			
 			if (this.isPage){
 				// FaceBookを実行
 				if (typeof(FACEBOOK_APPID) !== 'undefined'){
-					$("html").attr("xmlns:fb","http://www.facebook.com/2008/fbml#");
+					$('html').attr('xmlns:fb','http://www.facebook.com/2008/fbml#');
 					$('body').append('<div id="fb-root"></div>');
 					$.getScript(protocol+'connect.facebook.net/'+LANG+'/all.js', function() {
 						FB.init({
@@ -389,17 +328,19 @@ var pukiwiki; pukiwiki || (pukiwiki = {});
 		},
 		// ページを閉じたとき
 		unload : function(prefix){
-	//		this.loadingScreen.dialog('open');
+//			this.loadingScreen.dialog('open');
 			prefix = (prefix) ? prefix + ' ': '';
 
 			// フォームが変更されている場合
-			if ($(prefix+'#msg').val() !== $(prefix+'#original').val() && confirm( $.i18n('pukiwiki', 'unload'))) {
-				this.appendChild(document.createElement('input')).setAttribute('name', 'write');
-				$('<input name="write" />').appendTo(this);
-				$(prefix+'form').submit();
-				alert( $.i18n('pukiwiki', 'submit'));
-			}else{
-	//			this.loadingScreen.dialog('close');
+			if ( $(prefix+'#msg').val() !== $(prefix+'#original' ).val()) {
+				if ( confirm( $.i18n('pukiwiki', 'unload')) ) {
+					this.appendChild(document.createElement('input')).setAttribute('name', 'write');
+					$('<input name="write" />').appendTo(this);
+					$(prefix+'form').submit();
+					alert( $.i18n('pukiwiki', 'submit'));
+				}else{
+//					this.loadingScreen.dialog('close');
+				}
 			}
 			return false;
 		},
@@ -407,6 +348,28 @@ var pukiwiki; pukiwiki || (pukiwiki = {});
 		enableHTML5 : function(prefix){
 			prefix = (prefix) ? prefix + ' ': '';
 
+			// IE互換処理
+			if(ie < 6){
+				// Fix Background flicker
+				try{ document.execCommand('BackgroundImageCache', false, true); }catch(e){}
+				// IE PNG Fix
+				$.ajax({
+					type: 'GET',
+					global : false,
+					url: JS_URI+'iepngfix/iepngfix_tilebg.js',
+					dataType: 'script'
+				});
+				$('img[src$=png], .pkwk-icon, .pkwk-symbol, .pkwk-icon_linktext').css({
+					'behavior': 'url('+JS_URI+'iepngfix/iepngfix.htc)'
+				});
+			}
+
+			// Canvas実装
+			Modernizr.load({
+				test:Modernizr.canvas,
+				nope:JS_URI+'excanvas.compiled.js'
+			});
+			
 			// Placeholder属性のサポート
 			if (!Modernizr.input.placeholder){
 				$(prefix+'[placeholder]').each(function () {
@@ -454,7 +417,7 @@ var pukiwiki; pukiwiki || (pukiwiki = {});
 
 			// rel="noreferer"のサポート
 			// WebKitのNightly版でサポートされているが、JavaScriptで実装されているのかを確認する方法がわからないため常に実行
-			$(prefix+'a[rel*=noreferer]').click(function () {
+			$(prefix+'a[rel*="noreferer"]').click(function () {
 				// http://logic.moo.jp/memo.php/archive/569
 				var url = $(this).attr('href');
 				
@@ -486,21 +449,6 @@ var pukiwiki; pukiwiki || (pukiwiki = {});
 				}
 			});
 		},
-		// DOMの初期化
-		init_dom : function(prefix, callback){
-			$(prefix+':input').attr('disabled','disabled');
-			this.tablesorter(prefix);
-			this.glossaly(prefix);
-			this.sh(prefix);
-			this.search_form(prefix);
-
-			if(typeof(callback) === 'function'){ callback(); }
-
-			$(prefix+'button, '+prefix+'input[type=submit], '+prefix+'input[type=reset], '+prefix+'input[type=button]').button();
-			
-			$(prefix+':input').removeAttr('disabled');
-			$(prefix+'.ui-button').button('option', 'disabled', false);
-		},
 		// オーバーライド関数
 		register:{
 			init:function(func){
@@ -516,213 +464,192 @@ var pukiwiki; pukiwiki || (pukiwiki = {});
 				pkwkBeforeUnload.push( func );
 			}
 		},
+		// DOMの初期化
+		init_dom : function(prefix, callback){
+			var self = this;
+			prefix = (prefix) ? prefix+' ' : '';
+			
+			$(':input').attr('disabled','disabled');
+
+			// タブ処理
+			// タブでリンクが貼られている場合は、ajaxは直接出力しなければならない。
+			$(prefix+'.tabs li[role=tab] a').each(function(){
+				var $this = $(this);
+				var href = $this.attr('href');
+				
+				if (href.match('#')){
+					$this.data('disableScrolling',true);
+				}else{
+					$this.attr('href',href+'&ajax=raw');
+				}
+			});
+			$(prefix+'.tabs').tabs({
+				ajaxOptions: {global:false},
+				spinner: $.i18n('dialog', 'loading'),
+				load:function(event, ui) {
+					self.init_dom('#' + ui.panel.id);
+				}
+			}).removeClass(prefix+'tabs');
+			
+
+			// ダイアログ
+			this.setAnchor(prefix);
+			// 検索フォーム（ページ名を提案）
+			this.search_form(prefix);
+			// 用語集
+			this.glossaly(prefix);
+			// シンタックスハイライト
+			this.sh(prefix);
+			// サジェスト
+			this.search_form(prefix);
+			// Bad Behavior
+			this.bad_behavior(prefix);
+			// Table Sorter（テーブル自動ソート）
+			this.tablesorter(prefix);
+			
+			// 添付フォームをswfuploadに
+			if ($(prefix+'.attach_form').length !== 0){
+				this.set_uploader(prefix);
+			}
+
+			// Textarea Resizer
+			if ($(prefix+'textarea[name="msg"]').length !== 0 && $.query.get('cmd') !== 'guiedit'){
+				$(prefix+'textarea[name="msg"]').addClass('resizable');
+				$(prefix+'textarea.resizable:not(.processed)').TextAreaResizer();
+			}
+			
+			// テキストエリアでタブ入力できるように
+			$(prefix+'textarea').tabby();
+
+			// ボタンをjQuery UIのものに
+			$(prefix+'input[type=submit], '+prefix+'input[type=reset], '+prefix+'input[type=button]').button();
+			// buttonタグは、data要素で処理をカスタマイズ
+			$(prefix+'button').each(function(){
+				var $this = $(this);
+				var data = $this.data();
+				
+				$this.button({
+					text: data.text ? data.text : true,
+					label: data.label ? data.label : this.value,
+					icons: {
+						primary : data.iconsPrimary,
+						secondary: data.iconsSecondary
+					}
+				});
+			});
+			$(prefix+'.button').each(function(){
+				var $this = $(this);
+				var data = $this.data();
+				
+				$this.button({
+					text: data.text ? data.text : true,
+					label: data.label ? data.label : $this.innerText,
+					icons: {
+						primary : data.iconsPrimary,
+						secondary: data.iconsSecondary
+					}
+				});
+			}).removeClass(prefix+'button');
+/*
+			// hover states on the static widgets
+			$(prefix+'.ui-state-default').hover(function() {
+				$(this).addClass('ui-state-hover');
+			},function() {
+				$(this).removeClass('ui-state-hover');
+			}).mousedown(function() {
+				$(this).addClass('ui-state-active');
+			}).mouseout(function() {
+				$(this).removeClass('ui-state-active');
+			});
+*/
+			// フォームロックを解除
+			$(':input').removeAttr('disabled');
+			$('.ui-button').button('option', 'disabled', false);
+
+			if(typeof(callback) === 'function'){
+				callback();
+			}
+		},
 		// ajaxダイアログ
 		// リンクをパースしてダイアログを生成
 		// prefixにはルートとなるDOMを入れる。（<span class="test"></span>の中なら、span.testとなり、そこ以外は処理しない）
 		setAnchor : function(prefix){
 			var self = this;	// pukiwikiへのエイリアス
-			prefix = (prefix) ? prefix + ' ': '';
-
-			$(prefix+' .tabs').tabs();
-
-			// colorboxの設定
-			var colorbox_config = {
-				opacity			: '0.8',
-				slideshowStart	: '<span class="ui-icon ui-icon-play" style="margin:4px;" title="'+$.i18n('player','play')+'"></span>',
-				slideshowStop	: '<span class="ui-icon ui-icon-stop" style="margin:4px;" title="'+$.i18n('player','stop')+'"></span>',
-				previous		: '<span class="ui-icon ui-icon-circle-arrow-e" style="margin:4px;" title="'+$.i18n('player','prev')+'"></span>',
-				next			: '<span class="ui-icon ui-icon-circle-arrow-w" style="margin:4px;" title="'+$.i18n('player','next')+'"></span>',
-				close			: '<span class="ui-icon ui-icon-circle-close" style="margin:4px;" title="'+$.i18n('dialog','close')+'"></span>',
-				onOpen:function(){
-					// jQueryUI Fix
-					$(prefix+'#cboxOverlay').addClass('ui-widget-overlay');				// オーバーレイをjQueryUIのものに変更
-					$(prefix+'#colorbox').addClass('ui-widget-content ui-corner-all');		// colorboxのウィンドウをjQueryUIのモノに変更
-					$(prefix+'#cboxPrevious').button();
-					$(prefix+'#cboxNext').button();
-					$(prefix+'#cboxClose').button();
-				}
-			};
-	/*
-	function autoResizer() {
-		(function(doms) {
-			for(var i = 0; i < doms.length; i++) {
-				var dom_width = $(doms[i]).width();				// domの幅
-				var dom_height = $(doms[i]).height();			// domの高さ
-				var window_width = $(window).width();			// ウィンドウの幅
-				var window_height = $(window).height();			// ウィンドウの高さ
-				var rate_width = dom_width / window_width;		// domサイズと画像表示領域のサイズの比率 (幅)
-				var rate_height = dom_height / window_height;	// domサイズと画像表示領域のサイズの比率 (高さ)
-				var resized_width = 
-				
-				if (rate_width >= 1 && rate_height >= 1){
-					// width、height共に画面に収まらない場合
-					if (rate_width > rate_height){
-						// 高さを合わせる
-						$(doms[i]).css('width',window_width);
-						$(doms[i]).css('height',Math.floor(dom_height / rate_width));
-					} else {
-						// 幅を合わせる
-						$(doms[i]).css('width',Math.floor(dom_height / rate_height));
-						$(doms[i]).css('height',window_height);
-					}
-				} else if (rate_width >= 1 && rate_height =< 1){
-					// 画像のwidthのみ画面に収まらない場合
-					$(doms[i]).css('width',window_width);
-					$(doms[i]).css('height',Math.floor(dom_height / rate_height));
-				} else if (rate_width =< 1 && rate_height >= 1){
-					// 画像のheightのみ画面に収まらない場合
-					$(doms[i]).css('width',Math.floor(dom_width / rate_width));
-					$(doms[i]).css('height',window_height);
-				}
-			}
-			
-		})($(prefix+'#colorbox #cboxLoadedContent'));
-	}
-	$(window).bind("resize", autoResizer);
-	*/
-			// ここから、イベント割り当て
-			$(prefix+'a[href]').each(function(){
+			$(prefix+'a').each(function(){
 				var $this = $(this);
-				var href = $(this).attr('href');
+				var href = $this.attr('href');
+				var ajax = $this.data('ajax') ? $this.data('ajax') : 'json';
 
-				if (href.match(/\.(jpg|jpeg|gif|png|txt)$/i)){	// 拡張子がcolorboxで読み込める形式の場合
-					$this.colorbox(colorbox_config);
-					// $this.rlightbox();
+				// Query Stringをパース。paramsに割り当て
+				var params = {};
+				var hashes = href.slice(href.indexOf('?') + 1).split('&');
+				for(var i = 0; i < hashes.length; i++) { 
+					var hash = hashes[i].split('='); 
+					try{
+						// スペースが+になってしまう問題を修正
+						params[hash[0]] = decodeURIComponent(hash[1]).replace(/\+/g, ' ').replace(/%2F/g, '/');
+					}catch(e){}
+				}
+
+				if (href.match('#') && $this.data('disableScrolling') !== true){
+					// アンカースクロール＆ハイライト
+					$this.click(function(){
+						self.anchor_scroll(href,true);
+						return false;
+					});
+				}else if (href.match(/\.(jpg|jpeg|gif|png|txt)$/i)){	// 拡張子がcolorboxで読み込める形式の場合
+					$this.colorbox(self.config.colorbox);
 				}else if (href.match(/\.(mp3|ogg|mp4)$/i)){	// 拡張子が音楽の場合
 					self.music_player(this);
-				}else if (href.match(/cmd|plugin/i)){	// cmdやpluginの場合
-					// Query Stringをパース。paramsに割り当て
-					var params = {};
-					var hashes = href.slice(href.indexOf('?') + 1).split('&');
-					for(var i = 0; i < hashes.length; i++) { 
-						var hash = hashes[i].split('='); 
-						try{
-							// スペースが+になってしまう問題を修正
-							params[hash[0]] = decodeURIComponent(hash[1]).replace(/\+/g, ' ').replace(/%2F/g, '/');
-						}catch(e){}
-					}
-
-					
-					
-					// pluginをcmdに統一する
-					if (params.plugin){
-						params.cmd = params.plugin;
-						params.plugin = undefined;
-					}
-
-					if (params.cmd){
+				}else if (params.cmd){
+					if (typeof(params.file) !== 'undefined' && params.pcmd == 'open' || typeof(params.openfile) !== 'undefined'){
+						// 添付ファイルを開く（refによる呼び出しの場合とattachによる呼び出しの場合とでQueryStringが異なるのがやっかいだ）
+						var filename;
+						if (params.file){
+							filename = params.file;
+							$this.attr('href',SCRIPT+'?cmd='+params.cmd+'&pcmd='+params.pcmd+'&refer='+params.refer+'&age='+params.age+'&file='+filename);
+						}else{
+							filename = params.openfile;
+							$this.attr('href',SCRIPT+'?cmd='+params.cmd+'&refer='+params.refer+'&openfile='+filename);
+						}
 						
-						if (typeof(params.file) !== 'undefined' && params.pcmd == 'open' || typeof(params.openfile) !== 'undefined'){
-							// 添付ファイルを開く（refによる呼び出しの場合とattachによる呼び出しの場合とでQueryStringが異なるのがやっかいだ）
-							var filename;
-							if (params.file){
-								filename = params.file;
-								$this.attr('href',SCRIPT+'?cmd='+params.cmd+'&pcmd='+params.pcmd+'&refer='+params.refer+'&age='+params.age+'&file='+filename);
-							}else{
-								filename = params.openfile;
-								$this.attr('href',SCRIPT+'?cmd='+params.cmd+'&refer='+params.refer+'&openfile='+filename);
-							}
-							
-							if (filename.match(/\.(jpg|jpeg|gif|png|txt)$/i)){
-								$this.colorbox(colorbox_config);
-							}else if (filename.match(/\.(mp3|ogg|mp4)$/i)){
-								self.music_player(this);
-							}
-						}else if (params.cmd == 'qrcode'){
-							// QRcodeの場合（たぶん使われない）
-							$this.attr('href',href+'&type=.gif');
-							$this.colorbox(colorbox_config);
-							//$(this).rlightbox();
-						}else if ((params.cmd.match(/attach|search|backup|source|newpage|template|freeze|rename|logview|tb|diff|referer|linklist|skeylist/i) && params.pcmd !== 'list') || params.help === 'true'){
-							// その他の主要なプラグインは、インラインウィンドウで表示
-							
-							if (params.help == 'true'){
-								params = {cmd:'read', page:'FormatRule'};
-							}
-
-							// ダイアログ描画処理
-							$this.click(function(){
-								self.ajax_dialog(params,prefix,function(){
-									if ((params.cmd == 'attach' && params.pcmd.match(/upload|info/i)) || params.cmd.match(/attachref|read|backup/i) && params.age !== ''){
-										self.bad_behavior(prefix+'div.window');
-										self.set_uploader(prefix+'div.window');
-										self.setAnchor(prefix+'div.window');
-									}
-								});
-								return false;
-							});
+						if (filename.match(/\.(jpg|jpeg|gif|png|txt)$/i)){
+							$this.colorbox(self.config.colorbox);
+						}else if (filename.match(/\.(mp3|ogg|mp4)$/i)){
+							self.music_player(this);
 						}
-					}
-				}
-				
-				if (href.match('#')){
-					// アンカースクロール＆ハイライト
-					$(this).click(function(){
-						self.anchor_scroll(href,true);
-					});
-				}
-			});
-		},
-		// Syntax Hilighter
-		sh : function(prefix){
-			var self = this;
-			
-			// シンタックスハイライトするDOMを取得
-			var sh = (prefix) ? prefix + ' .sh' : '.sh';
+					}else if (params.cmd == 'qrcode'){
+						// QRcodeの場合
+						$this.attr('href',href+'&type=.gif');
+						$this.colorbox(self.config.colorbox);
+					}else if (
+						(params.cmd.match(/search|newpage|template|rename/i)) || 
+						params.help === 'true' ||
+						(params.cmd === 'attach' &&  params.pcmd !== 'list') ||
+						(params.cmd === 'tb' && params.tb_id !== undefined) ||
+						(params.cmd.match(/attach|backup|source|template|freeze|rename|diff|referer|linklist|skeylist|logview/i) && params.page !== undefined)
+					){
+						// jquery mobile互換のため
+						//$this.attr('href',href+'&ajax='+ajax );
 
-			if ($(sh).length !== 0){
-				// ロケール設定
-				this.config.syntaxhighlighter = {
-					baseUrl:JS_URI+'syntaxhighlighter/',
-					target: sh,
-					config:{
-						strings : {
-							expandSource				: $.i18n('sh','expandSource'),
-							viewSource					: $.i18n('sh','viewSource'),
-							copyToClipboard				: $.i18n('sh','copyToClipboard'),
-							copyToClipboardConfirmation : $.i18n('sh','copyToClipboardConfirmation'),
-							print						: $.i18n('sh','print'),
-							noBrush						: $.i18n('sh','noBrush'),
-							brushNotHtmlScript			: $.i18n('sh','brushNotHtmlScript')
+						// その他の主要なプラグインは、インラインウィンドウで表示
+						if (params.help == 'true'){
+							params = {cmd:'read', page:'FormatRule'};
 						}
-					}
-				};
-				// SyntaxHilighterを実行
-				$.beautyOfCode.beautifyAll(this.config.syntaxhighlighter);
-			}
-		},
-		// 検索フォームでサジェスト機能
-		search_form: function(){
-			if ($('#search_word').length !== 0){
-				var cache = {},lastXhr;
-				
-				$('#search_word')
-					.autocomplete({
-						minLength: 2,
-						source: function( request, response ) {
-							var term = request.term;
-							if ( term in cache ) {
-								response( cache[ term ] );
-								return;
-							}
-							
-							lastXhr = $.ajax({
-								url: SCRIPT,
-								params: {cmd: 'list',term: term},
-								type: 'get',
-								method: 'json',
-								global: false,
-								success : function( data, status, xhr ) {
-									cache[ term ] = data;
-									if ( xhr === lastXhr ) {
-										response( data );
-									}
+
+						// ダイアログ描画処理
+						$this.click(function(){
+							params.ajax = 'json';
+							self.ajax_dialog(params,prefix,function(){
+								if ((params.cmd == 'attach' && params.pcmd.match(/upload|info/i)) || params.cmd.match(/attachref|read|backup/i) && params.age !== ''){
+									self.init_dom(prefix+' .window');
 								}
 							});
-						}
+							return false;
+						});
 					}
-				);
-			}
+				}
+			});
 		},
 		// ajaxでダイアログ生成。JSON専用！
 		// JSONには必ず、bodyとtitleを入れること！（まぁ、parse関数でbodyとtitleが含まれるオブジェクトにすればいいけど）
@@ -731,6 +658,7 @@ var pukiwiki; pukiwiki || (pukiwiki = {});
 		// callback		開いた時実行する関数。
 		// parse		JSONのパース関数
 		ajax_dialog : function(params,prefix,callback,parse){
+			prefix = (prefix) ? prefix+' .window' : '.window';
 			var self = this;	// pukiwikiへのエイリアス
 			// ダイアログ設定
 			var dialog_option = {
@@ -742,23 +670,13 @@ var pukiwiki; pukiwiki || (pukiwiki = {});
 				dialogClass: 'ajax_dialog',
 				bgiframe : (ie >= 6) ? true : false,	// for IE6 
 				open: function(){
-					$(prefix+':input').attr('disabled','disabled');
-					self.tablesorter(prefix+'.window');
-					self.glossaly(prefix+'.window');
-					self.sh(prefix+'.window');
-					self.search_form();
-
 					if(typeof(callback) === 'function'){ callback(); }
-
-					$(prefix+'button, '+prefix+'input[type=submit], '+prefix+'input[type=reset], '+prefix+'input[type=button]').button();
-
 					// オーバーレイでウィンドウを閉じる
 					var parent = this;
 					$(prefix+'.ui-widget-overlay').click(function(){
 						$(parent).dialog('close');
 					});
-					$(prefix+':input').removeAttr('disabled');
-					$(prefix+'.ui-button').button('option', 'disabled', false);
+					self.init_dom(prefix);
 					return false;
 				},
 				close: function(){
@@ -873,6 +791,67 @@ var pukiwiki; pukiwiki || (pukiwiki = {});
 				}
 			);
 		},
+		// Syntax Hilighter
+		sh : function(prefix){
+			var self = this;
+			
+			// シンタックスハイライトするDOMを取得
+			var sh = (prefix) ? prefix + ' .sh' : '.sh';
+
+			if ($(sh).length !== 0){
+				// ロケール設定
+				this.config.syntaxhighlighter = {
+					baseUrl:JS_URI+'syntaxhighlighter/',
+					target: sh,
+					config:{
+						strings : {
+							expandSource				: $.i18n('sh','expandSource'),
+							viewSource					: $.i18n('sh','viewSource'),
+							copyToClipboard				: $.i18n('sh','copyToClipboard'),
+							copyToClipboardConfirmation : $.i18n('sh','copyToClipboardConfirmation'),
+							print						: $.i18n('sh','print'),
+							noBrush						: $.i18n('sh','noBrush'),
+							brushNotHtmlScript			: $.i18n('sh','brushNotHtmlScript')
+						}
+					}
+				};
+				// SyntaxHilighterを実行
+				$.beautyOfCode.beautifyAll(this.config.syntaxhighlighter);
+			}
+		},
+		// 検索フォームでサジェスト機能
+		search_form: function(){
+			if ($('#search_word').length !== 0){
+				var cache = {},lastXhr;
+				
+				$('#search_word')
+					.autocomplete({
+						minLength: 2,
+						source: function( request, response ) {
+							var term = request.term;
+							if ( term in cache ) {
+								response( cache[ term ] );
+								return;
+							}
+							
+							lastXhr = $.ajax({
+								url: SCRIPT,
+								params: {cmd: 'list',term: term},
+								type: 'get',
+								method: 'json',
+								global: false,
+								success : function( data, status, xhr ) {
+									cache[ term ] = data;
+									if ( xhr === lastXhr ) {
+										response( data );
+									}
+								}
+							});
+						}
+					}
+				);
+			}
+		},
 /*
 		// インラインフレームウィンドウ（未使用）
 		iframeWin : function(params){
@@ -914,28 +893,43 @@ var pukiwiki; pukiwiki || (pukiwiki = {});
 */
 		// アンカースクロール＆ハイライト
 		anchor_scroll: function(href,highlight){
-			if (href.split('#')[1] === ''){
+			if (href === '#'){
 				$.scrollTo('#header');
 			}else if (href !== ''){
 				var target = href.split('#')[1];
-				
-				if (!target.match(/tab/)){
-					$.scrollTo(
-						'#'+target,{
-							duration: 800,
-							axis:"y",
-							queue:true,
-							onAfter:function(){
-								// スクロール後ハイライト
-								if (highlight === true){ $(target).effect("highlight",{}, 2000); }
-							}
+				$.scrollTo(
+					'#'+target,{
+						duration: 800,
+						axis:"y",
+						queue:true,
+						onAfter:function(){
+							// スクロール後ハイライト
+							//if (highlight === true){ $('#'+target).effect("highlight",{}, 2000); }
 						}
-					);
-				}
+					}
+				);
 			}
 		},
 		// ミュージックプレイヤー（拡張子が.mp3や.oggなどといったFlashで再生できるものに限る）
 		music_player: function(target){
+			var jplayer_container = [
+				'<div id="jplayer"></div>',
+				'<div id="jplayer_container">',
+					'<ul id="jplayer_icons" class="ui-widget pkwk_widget">',
+						'<li id="jplayer_play" class="ui-button ui-state-default ui-corner-all" title="'+$.i18n('player','play')+'"><span class="ui-icon ui-icon-play"></span></li>',
+						'<li id="jplayer_pause" class="ui-button ui-state-default ui-corner-all" title="'+$.i18n('player','pause')+'"><span class="ui-icon ui-icon-pause"></span></li>',
+						'<li id="jplayer_stop" class="ui-button ui-state-default ui-corner-all" title="'+$.i18n('player','stop')+'"><span class="ui-icon ui-icon-stop"></span></li>',
+						'<li id="jplayer_volume-min" class="ui-button ui-state-default ui-corner-all" title="'+$.i18n('player','volume_min')+'"><span class="ui-icon ui-icon-volume-off"></span></li>',
+						'<li id="jplayer_volume-max" class="ui-button ui-state-default ui-corner-all" title="'+$.i18n('player','volume_max')+'"><span class="ui-icon ui-icon-volume-on"></span></li>',
+					'</ul>',
+					'<div id="jplayer_sliderVolume" title="'+$.i18n('player','volume')+'"></div>',
+					'<div id="jplayer_bars_holder" title="'+$.i18n('player','seek')+'">',
+						'<div id="jplayer_sliderPlayback"></div>',
+						'<div id="jplayer_loaderBar"></div>',
+					'</div>',
+				'</div>',
+				'<p><span class="ui-icon ui-icon-clock" style="display:block;float:left;">Cast:</span><span id="jplayer_PlayTime">00:00</span>/<span id="jplayer_TotalTime">??:??</span></p>'
+			].join("\n");
 			$(target).each(function(){
 				var file = $(this).attr('href');
 				var dialog_option = {
@@ -1062,26 +1056,7 @@ var pukiwiki; pukiwiki || (pukiwiki = {});
 						$(this).remove();
 					}
 				};
-				
-				var jplayer_container = [
-					'<div id="jplayer"></div>',
-					'<div id="jplayer_container">',
-						'<ul id="jplayer_icons" class="ui-widget pkwk_widget">',
-							'<li id="jplayer_play" class="ui-button ui-state-default ui-corner-all" title="'+$.i18n('player','play')+'"><span class="ui-icon ui-icon-play"></span></li>',
-							'<li id="jplayer_pause" class="ui-button ui-state-default ui-corner-all" title="'+$.i18n('player','pause')+'"><span class="ui-icon ui-icon-pause"></span></li>',
-							'<li id="jplayer_stop" class="ui-button ui-state-default ui-corner-all" title="'+$.i18n('player','stop')+'"><span class="ui-icon ui-icon-stop"></span></li>',
-							'<li id="jplayer_volume-min" class="ui-button ui-state-default ui-corner-all" title="'+$.i18n('player','volume_min')+'"><span class="ui-icon ui-icon-volume-off"></span></li>',
-							'<li id="jplayer_volume-max" class="ui-button ui-state-default ui-corner-all" title="'+$.i18n('player','volume_max')+'"><span class="ui-icon ui-icon-volume-on"></span></li>',
-						'</ul>',
-						'<div id="jplayer_sliderVolume" title="'+$.i18n('player','volume')+'"></div>',
-						'<div id="jplayer_bars_holder" title="'+$.i18n('player','seek')+'">',
-							'<div id="jplayer_sliderPlayback"></div>',
-							'<div id="jplayer_loaderBar"></div>',
-						'</div>',
-					'</div>',
-					'<p><span class="ui-icon ui-icon-clock" style="display:block;float:left;">Cast:</span><span id="jplayer_PlayTime">00:00</span>/<span id="jplayer_TotalTime">??:??</span></p>'
-				].join("\n");
-				
+
 				$(this).click(function(){
 					var container = $('<div id="music_player"></div>');
 					container.html(jplayer_container).dialog(dialog_option);
@@ -1171,8 +1146,6 @@ var pukiwiki; pukiwiki || (pukiwiki = {});
 						positionFixed: false,
 						onthrough: function(e){
 							self.glossaly(e);
-		//					self.setAnchor(e);
-		//					console.log(e); 
 						}
 					});
 
@@ -1200,7 +1173,7 @@ var pukiwiki; pukiwiki || (pukiwiki = {});
 			var self = this;
 			prefix = (prefix) ? prefix + ' ': '';
 
-			/* タイトル属性がある場合 */
+			// タイトル属性がある場合
 			$(prefix+'*[title]').tooltip({
 				bodyHandler: function() { 
 					return $(this).context.tooltipText; 
@@ -1374,15 +1347,15 @@ var pukiwiki; pukiwiki || (pukiwiki = {});
 				$('textarea').attr('disabled', 'disabled');
 				// フォームの高さを取得
 				// Textarea Resizerで高さが可変になっているため。
-				var msg_height = $(".edit_form textarea[name='msg']").height();
+				var msg_height = $('.edit_form textarea[name="msg"]').height();
 				if (self.ajax_apx) {
 					self.ajax_apx = false;
 					// realview_outerを消したあと、フォームの高さを２倍にする
 					// 同時でない理由はFireFoxで表示がバグるため
-					$(prefix+".edit_form #realview_outer").animate({
+					$(prefix+'.edit_form #realview_outer').animate({
 						height:'toggle'
 					},function(){
-						$(prefix+".edit_form textarea[name='msg']").animate({height:msg_height*2});
+						$(prefix+'.edit_form textarea[name="msg"]').animate({height:msg_height*2});
 						$(prefix+'.edit_form #realview').remove();
 						$(prefix+'.edit_form #realview_outer').remove();
 						$(prefix+'.edit_form #previous').remove();
@@ -1648,7 +1621,7 @@ var pukiwiki; pukiwiki || (pukiwiki = {});
 			
 			// アシスタントのウィジット
 			$('.assistant').html([
-				'<ul class="ui-widget pkwk_widget">',
+				'<ul class="ui-widget pkwk_widget" role="widget">',
 					'<li class="replace ui-button ui-state-default ui-corner-left" title="'+$.i18n('editor','bold')+'" name="b" role="button"><strong>b</strong></li>',
 					'<li class="replace ui-button ui-state-default" title="'+$.i18n('editor','italic')+'" name="i" style="font-weight:normal;" role="button"><em>i</em></li>',
 					'<li class="replace ui-button ui-state-default" title="'+$.i18n('editor','strike')+'" name="s" style="font-weight:normal;" role="button"><strike>s</strike></li>',

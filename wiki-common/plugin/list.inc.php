@@ -20,9 +20,10 @@ function plugin_list_action()
 			$filelist = FALSE;
 	}
 
-	$listcmd = (isset($vars['listcmd'])) ? $vars['listcmd'] : 'read';
+	$listcmd = isset($vars['listcmd']) ? $vars['listcmd'] : 'read';
+	$type = isset($vars['type']) ? $vars['type'] : null;
 
-	if (IS_AJAX || (isset($vars['type']) && $vars['type'] == 'json')){
+	if (IS_AJAX || $type === 'json'){
 		$pages = plugin_list_getlist($filelist,$listcmd, TRUE);
 		if (isset($vars['term'])){
 			// 酷い実装だ・・・。

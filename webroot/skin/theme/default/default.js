@@ -33,7 +33,7 @@
 	var default_set_num = 0;
 
 	// スキンスクリプトのinitが実行される前に実行される関数
-	pukiwiki.register.before_init( function(){
+	var before_init = function(){
 		// クッキーが定義されていないときは、blueとし、クッキーに保存
 		if (!$.cookie('pkwk-colorset')){
 			$.cookie('pkwk-colorset', default_set_num,{expires:30,path:'/'});
@@ -85,11 +85,11 @@
 			$.getScript('http://apis.google.com/js/plusone.js',function(){
 				gapi.plusone.render( document.getElementById('plusone'),{ lang: lang, parsetags:'explicit', size:'medium', 'count':'true' });
 			});
-		}
-	});
+		};
+	};
 
 	// スキンスクリプトのinitが実行された前に実行される関数
-	pukiwiki.register.init( function(){
+	var init = function(){
 		// カラーセットのリンクボタンにイベント割り当て
 		$('#colorset span').click(function(){
 			var n = this.id.split('-')[1];
@@ -97,7 +97,10 @@
 			document.getElementById('ui-theme').href = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/'+colorset[n][1]+'/jquery-ui.css';
 			$.cookie('pkwk-colorset',n,{expires:30,path:'/'});
 		});
-	});
+	};
+
+	pukiwiki.register.before_init(before_init);
+	pukiwiki.register.init(init);
 
 /*
 	// PukiWiki Advance オーバーライド設定

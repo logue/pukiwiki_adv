@@ -31,29 +31,27 @@ if (! defined('PKWK_OPTIMISE'))
 // 5 - 認証者(未設定時のデフォルト)以上は除く
 
 // 認証せずには閲覧できない
-defined('PLUS_PROTECT_MODE') or define('PLUS_PROTECT_MODE', 0); // 0,2,3,4,5
+defined('PLUS_PROTECT_MODE')	or define('PLUS_PROTECT_MODE',	0); // 0,2,3,4,5
 
 // PKWK_READONLY - Prohibits editing and maintain via WWW
 //   NOTE: Counter-related functions will work now (counter, attach count, etc)
-if (! defined('PKWK_READONLY'))
-	define('PKWK_READONLY', 0);		// 0,1,2,3,4,5
+defined('PKWK_READONLY')		or define('PKWK_READONLY',		0);		// 0,1,2,3,4,5
 
 // PKWK_SAFE_MODE - Prohibits some unsafe(but compatible) functions 
-if (! defined('PKWK_SAFE_MODE'))
-	define('PKWK_SAFE_MODE', 0);	// 0,1,2,3,4,5
+defined('PKWK_SAFE_MODE')		or define('PKWK_SAFE_MODE',		0);	// 0,1,2,3,4,5
 
 // PKWK_CREATE_PAGE - New page making is prohibited.
-defined('PKWK_CREATE_PAGE') or define('PKWK_CREATE_PAGE', 0); // 0,1,2,3,4,5
+defined('PKWK_CREATE_PAGE')		or define('PKWK_CREATE_PAGE',	0); // 0,1,2,3,4,5
 
 // PKWK_USE_REDIRECT - When linking outside, Referer is removed.
-defined('PKWK_USE_REDIRECT') or define('PKWK_USE_REDIRECT', 0); // 0,1
+defined('PKWK_USE_REDIRECT')	or define('PKWK_USE_REDIRECT',	0); // 0,1
 
 // PKWK_DISABLE_INLINE_IMAGE_FROM_URI - Disallow using inline-image-tag for URIs
 //   Inline-image-tag for URIs may allow leakage of Wiki readers' information
 //   (in short, 'Web bug') or external malicious CGI (looks like an image's URL)
 //   attack to Wiki readers, but easy way to show images.
-if (! defined('PKWK_DISABLE_INLINE_IMAGE_FROM_URI'))
-	define('PKWK_DISABLE_INLINE_IMAGE_FROM_URI', 0);
+defined('PKWK_DISABLE_INLINE_IMAGE_FROM_URI')
+								or define('PKWK_DISABLE_INLINE_IMAGE_FROM_URI', 0);
 
 // PKWK_QUERY_STRING_MAX
 //   Max length of GET method, prohibits some worm attack ASAP
@@ -220,14 +218,13 @@ $google_api_key = '';
 
 /////////////////////////////////////////////////
 // Facebook Integration
-
+/*
 $facebook = array(
 	'appId'		=> '129191427155205',
 	'secret'	=> '6b46af0696748a62557397c7739d37bf',
 	'cookie'	=> true,
 ); 
-
-
+*/
 // Twitter Integration
 $twitter = array(
 	
@@ -457,11 +454,11 @@ require_once(add_homedir('auth.ini.php'));
 // (1:Enable, 0:Disable)
 $pagereading_enable = 1;
 
-// Specify converter as ChaSen('chasen') or KAKASI('kakasi') or MeCab('mecab')
+// Specify converter as ChaSen('chasen') or KAKASI('kakasi') or MeCab('mecab') or CaboCha('cabocha')
 $pagereading_api = 'mecab';
 
 // Absolute path of the converter (without last slash)
-$pagereading_path = '/usr/bin';
+$pagereading_path = '/usr/local/bin';
 
 // Page name contains pronounce data (written by the converter)
 $pagereading_config_page = ':config/PageReading';
@@ -549,13 +546,15 @@ define('PKWK_SPLITTER', '>>>>>>>>>>');
 define('PKWK_UPDATE_EXEC', '');
 
 // Sample: Namazu (Search engine)
-//$target     = '/var/www/wiki/';
-//$mknmz      = '/usr/bin/mknmz';
-//$output_dir = '/var/lib/namazu/index/';
-//define('PKWK_UPDATE_EXEC',
-//	$mknmz . ' --media-type=text/pukiwiki' .
-//	' -O ' . $output_dir . ' -L ja -c -K ' . $target);
-
+// see http://pukiwiki.sourceforge.jp/?PukiWiki%2FNamazu
+/*
+$mknmz      = '/usr/local/bin/mknmz';			// Namazuへのパス
+$index_dir = '/usr/local/var/namazu/index';	// インデックスファイルの保存先
+// $index_dir = '/virtual/[ユーザ名]/namazu';	// インデックスファイルの保存先（xrea, coreserverの場合）
+define('PKWK_UPDATE_EXEC',
+	$mknmz . ' --media-type=text/pukiwiki' .
+	' -O ' . $indext_dir . ' -L ja -c -K ' . realpath(DATA_DIR) );
+*/
 /////////////////////////////////////////////////
 // HTTP proxy setting (for TrackBack etc)
 

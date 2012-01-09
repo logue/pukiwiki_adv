@@ -29,9 +29,9 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 	</head>
 <?php flush(); ?>
 	<body>
-		<div id="wrapper"><!-- ■BEGIN id:wrapper -->
+		<div id="wrapper" role="document"><!-- ■BEGIN id:wrapper -->
 <!-- ◆ Header ◆ ========================================================== -->
-			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<header id="header" class="clearfix">'."\n" : '<div id="header" class="clearfix">')."\n"; ?>
+			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<header id="header" class="clearfix" role="banner">'."\n" : '<div id="header" class="clearfix" role="banner">')."\n"; ?>
 				<h1 id="logo"><a href="<?php echo $_LINK['top'] ?>"><?php echo $head_title ?></a></h1>
 			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</header>' : '</div>')."\n"; ?>
 <!-- ◆ Navigator ◆ ======================================================= -->
@@ -46,14 +46,14 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 						<h2 id="lastmodified">Last-modified: <?php echo $lastmodified ?></h2>
 <?php } ?><!-- □END id:lastmodified -->
 					</hgroup>
-					<div id="body"><!-- ■BEGIN id:body -->
+					<div id="body" role="main"><!-- ■BEGIN id:body -->
 <?php echo $body ?>
 					</div><!-- □END id:body -->
 					<div id="summary"><!-- ■BEGIN id:summary -->
 <?php if (!empty($notes)) { ?>
 <!-- ■BEGIN id:note -->
 					<?php echo $hr ?>
-					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="note">'."\n" : '<div id="note">'."\n"; ?>
+					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="note" role="note">'."\n" : '<div id="note" role="note">'."\n"; ?>
 						<?php echo $notes ?>
 					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
 <!-- □END id:note -->

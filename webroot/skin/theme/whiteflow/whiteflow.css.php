@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: whiteflow.css.php,v 1.0.0 2011/12/10 11:30:30 Logue Exp $
+// $Id: whiteflow.css.php,v 1.0.1 201201/09 11:30:30 Logue Exp $
 
 // White Flow Adv. skin CSS
 // ver 1.0 (2011/12/10)
@@ -349,6 +349,10 @@ pre{
 	background       : #5796e9 url(<?php echo $_SKIN['image_dir'] ?>arrow3.png) 98% 50% no-repeat;
 }
 
+#sidebar ul li .noexists a{
+	display:inline;
+	background-color:transparent;
+}
 /** 5, parts.edit-area.css ***********************************************************************/
 /* #content > #edit-area - main contents */
 
@@ -486,8 +490,8 @@ border:		1px solid #aaa;}
 	padding-left:0;
 }
 #sidebar #menubar ul, #sidebar #menubar ol{
-	margin:0 1em;
-	padding:0 1em;
+	margin:0 0 0 .5em;
+	padding: 0 0 0 1em;
 }
 
 #sidebar #menubar ul li .noexists, #menubar ul li a {

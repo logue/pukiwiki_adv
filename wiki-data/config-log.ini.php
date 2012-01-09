@@ -85,63 +85,65 @@ updtkey が指定されている場合で、更新キーが入力されている
 */
 
 $log = array(
+	'browse' => array(
+		// ts:host:@guess:user:ntlm:proxy:ua:page
+		'use'		=> 1,
+		'view'		=> 'ts:host:@guess:ua:host:proxy',
+		'guest'		=> 'ts:ua',
+		'nolog_ip'	=> $log_common['nolog_ip']
+		),
 	'update' => array(
 		// ts:@diff:@guess_diff:ip:host:@guess:user:ntlm:proxy:ua:file:page
-		'use'      => 0,
-		'view'     => 'ts:@diff:host:user:sig:ua:proxy:del',
-		'guest'    => 'ts:ua',
-		'nolog_ip' => $log_common['nolog_ip']
+		'use'		=> 1,
+		'view'		=> 'ts:@diff:host:user:sig:ua:proxy:del',
+		'guest'		=> 'ts:ua',
+		'nolog_ip'	=> $log_common['nolog_ip']
 		),
 	'download' => array(
 		// ts:ip:host:@guess:user:ntlm:proxy:ua:file:page
-		'use'      => 0,
-		'view'     => 'ts:host:@guess:ua:file:proxy',
-		'guest'    => 'ts:ua:file',
-		'nolog_ip' => $log_common['nolog_ip']
+		'use'		=> 0,
+		'view'		=> 'ts:host:@guess:ua:file:proxy',
+		'guest'		=> 'ts:ua:file',
+		'nolog_ip'	=> $log_common['nolog_ip']
 		),
-	'browse' => array(
-		// ts:host:@guess:user:ntlm:proxy:ua:page
-		'use'      => 0,
-		'view'     => 'ts:host:@guess:ua:proxy',
-		'guest'    => 'ts:ua',
-		'nolog_ip' => $log_common['nolog_ip']
-		),
-	'login' => array(
-		// ts:ip:host:auth_api:user:ua
-		'use'      => 0,
-		'updtkey'  => 'auth_api:user:local_id',
-		'view'	   => 'ts:user:auth_api:local_id',
-		'guest'	   => 'ts:user',
-		'file'     => ':log/login',
-	),
 	'check' => array(
 		// ts:@guess_diff:ip:host:auth_api:user:ua
-		'use'      => 0,
-		'mustkey'  => 1,
-		'updtkey'  => 'auth_api:user',
-		'view'     => 'ts:@guess_diff:user:auth_api',
-		'guest'    => 'ts:@guess_diff:user',
+		'use'		=> 0,
+		'mustkey'	=> 1,
+		'updtkey'	=> 'auth_api:user',
+		'view'		=> 'ts:@guess_diff:user:auth_api',
+		'guest'		=> 'ts:@guess_diff:user',
 	),
 	// cmd - rss, rdf, opml, lirs などの情報コマンドの実行状況
 	'cmd' => array(
 		// ts:ip:host:user:ntlm:proxy:ua:cmd
-		'use'      => 0,
-		'view'     => 'ts:host:cmd:ua:proxy',
-		'guest'    => 'ts:cmd:ua',
-		'nolog_ip' => $log_common['nolog_ip'],
-		'file'     => ':log/cmd/data'
+		'use'		=> 1,
+		'view'		=> 'ts:host:cmd:ua:proxy',
+		'guest'		=> 'ts:cmd:ua',
+		'nolog_ip'	=> $log_common['nolog_ip'],
+		'file'		=> ':log/cmd/data'
 		),
-	// NetBIOS認証の利用可否
-	'auth_netbios' => array(
-		'use'      => 0,
-		'scope'    => $log_common['private']
-		),
-	'auth_nolog'	   => 0,
+	'login' => array(
+		// ts:ip:host:auth_api:user:ua
+		'use'		=> 0,
+		'updtkey'	=> 'auth_api:user:local_id',
+		'view'		=> 'ts:user:auth_api:local_id',
+		'guest'		=> 'ts:user',
+		'file'		=> ':log/login',
+	),
 	// 見做しユーザ一覧情報
 	'guess_user' => array(
-		'use'      => 0,
-		'file'     => ':log/signature'
-		),
+		'use'		=> 0,
+		'file'		=> ':log/signature'
+	),
+	// NetBIOS認証の利用可否
+	'auth_netbios'	=> array(
+		'use'		=> 0,
+		'scope'		=> $log_common['private']
+	),
+	'auth_nolog'	=> array(
+		'use'		=> 0
+	),
 
 );
 

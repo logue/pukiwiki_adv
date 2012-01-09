@@ -5,7 +5,7 @@
 // Original version written by miko and upk.
 // Adv version by Logue.
 // 
-// $Id: default.css,v 1.33.12 2011/09/12 21:58:00 Logue Exp $
+// $Id: default.css,v 1.33.12 2012/01/09 14:59:00 Logue Exp $
 //
 */
 
@@ -89,8 +89,8 @@ q{
 
 
 ul, ol {
-	padding:.25em .5em .25em 1.5em;
-	margin:.5em 1.5em .5em .5em;
+	margin: 0 .5em 0 2em;
+	padding: .1em 0 .1em 1.5em;
 }
 
 /* Table Tags */
@@ -119,22 +119,23 @@ ul, ol {
 	background-color: whitesmoke;
 }
 
-#main > *{
+#main_wrapper #main{
 	background-color: white;
 	padding:5px;
+	margin:0 1.5em;
 }
 
 #menubar, #sidebar{
 	display:none;
 }
 @media screen{
-	.two-colums #main {
+	.two-colums #main_wrapper {
 		width:100%;
 		float:right;
 		margin-left:-180px;
 	}
 
-	.two-colums #main > * {
+	.two-colums #main_wrapper #main {
 		margin:0 0 0 180px;
 	}
 
@@ -150,13 +151,13 @@ ul, ol {
 		margin-right:-180px;
 	}
 
-	.three-colums #main {
+	.three-colums #main_wrapper {
 		width:100%;
 		float:right;
 		margin-left:-180px;
 	}
 
-	.three-colums #main > * {
+	.three-colums #main_wrapper #main {
 		margin:0 180px;
 		padding:5px;
 	}
@@ -265,10 +266,6 @@ ul, ol {
 }
 
 /** Main Content area *****************************************************************************/
-#body > *{
-	margin:0 1.5em;
-}
-
 #body h1{
 	margin: 0;
 }
@@ -283,10 +280,6 @@ ul, ol {
 
 #body h4, #body  h5, #body  h6{
 	margin:.2em 0 .5em .8em;
-}
-
-#body > hr{
-	margin: 1em;
 }
 
 #topicpath{
@@ -369,7 +362,7 @@ ul, ol {
 }
 
 #menubar ul li .noexists, #menubar ul li a,
-#sidebar ul li .noexists, #menubar ul li a {
+#sidebar ul li .noexists, #sidebar ul li a {
 	display:block;
 	padding:0 0.3em;
 	margin:0 -0.3em;
@@ -604,76 +597,6 @@ ul, ol {
 	color: black !important;
 	background-color: silver;
 	text-decoration: none;
-}
-
-/** Popup Toc *************************************************************************************/
-#poptoc {
-	border:gray thin outset;
-	background-color:lightyellow;
-	max-width:25em;
-	min-width:18em;
-	opacity:0.9;
-	overflow:visible;
-	padding:0.5em;
-	position:absolute;
-	text-align:left;
-	text-shadow: white 1px 1px 0px;
-	width:22em;
-	z-index:1;
-}
-
-.ie6 #poptoc, .ie7 #poptoc, .ie8 #poptoc {
-	filter:
-		progid:DXImageTransform.Microsoft.Alpha(opacity=90)
-		progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=ivory,EndColorStr=lemonchiffon) !important;
-}
-
-.webkit #poptoc{
-	background: -webkit-gradient(linear, left top, left bottom, from(ivory), to(lemonchiffon));
-}
-
-.gecko #poptoc{
-	background: -moz-linear-gradient(top, ivory, lemonchiffon);
-}
-
-.presto #poptoc{
-	background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMCI%2BDQo8ZGVmcz4NCjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxMDAlIj4NCjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOml2b3J5OyIvPg0KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjpsaWdodHllbGxvdzsiLz4NCjwvbGluZWFyR3JhZGllbnQ%2BDQo8L2RlZnM%2BDQo8cmVjdCB4PSIwIiB5PSIwIiBmaWxsPSJ1cmwoI2dyYWRpZW50KSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgLz4NCjwvc3ZnPg0K');
-}
-.ie9 #poptoc {
-	-ms-filter: "progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=ivory,EndColorStr=lemonchiffon)" !important;
-}
-
-#poptoc a{
-	color:blue !important;
-	cursor:pointer; 
-}
-#poptoc a:hover{
-	text-shadow: none;
-	background-color:#ccc;
-}
-#poptoc h1{
-	color:navy;
-	background-color:honeydew;
-	font-size:small;
-	font-weight:normal;
-	padding:0.3em;
-	margin:0;
-	text-align:center;
-	border:silver solid 1px;
-	display:block;
-}
-#poptoc h1 a{color:navy; text-decoration:none;}
-#poptoc h1 img {margin-bottom:-3px; margin-right: 2px;}
-#poptoc .nav {text-indent:0em;border-top:1px gray solid; padding-top:0.2em;text-align:center; white-space: nowrap; }
-#poptoc a.here{color: black; background: #EEEEEE; text-decoration: none; border:1px dotted gray;}
-
-.tocpic {
-	display:inline;
-	cursor:pointer;
-}
-
-.hrefp, .topic {
-	vertical-align:text-bottom;
 }
 /** Print Setting *********************************************************************************/
 @media print {
