@@ -2,7 +2,9 @@
 // GS2 skin color settings
 // SKY
 
-if (! defined('SKIN_CSS_BGCOLOR')){
+if (isset($_SKIN)){
+	$_SKIN['ui_theme'] = 'cupertino';			// jQuery UI Theme
+}else{
 	define('SKIN_CSS_CTS_BGCOLOR', 	'#CBD5E6');	// contents box bg
 	define('SKIN_CSS_CTS_BDCOLOR', 	'#CBD5E6');	// contents box border
 	

@@ -2,7 +2,9 @@
 // GS2 skin color settings
 // GREEN
 
-if (! defined('SKIN_CSS_BGCOLOR')){
+if (isset($_SKIN)){
+	$_SKIN['ui_theme'] = 'hot-sneaks';			// jQuery UI Theme
+}else{
 	define('SKIN_CSS_CTS_BGCOLOR', 	'#F0FFF0');	// contents box bg
 	define('SKIN_CSS_CTS_BDCOLOR', 	'#909F90');	// contents box border
 	

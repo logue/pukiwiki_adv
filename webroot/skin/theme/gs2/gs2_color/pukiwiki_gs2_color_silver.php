@@ -2,7 +2,9 @@
 // GS2 skin color settings
 // SILVER
 
-if (! defined('SKIN_CSS_BGCOLOR')){
+if (isset($_SKIN)){
+	$_SKIN['ui_theme'] = 'flick';			// jQuery UI Theme
+}else{
 	define('SKIN_CSS_CTS_BGCOLOR', 	'#F0F0F0');	// contents box bg
 	define('SKIN_CSS_CTS_BDCOLOR', 	'#909090');	// contents box border
 	

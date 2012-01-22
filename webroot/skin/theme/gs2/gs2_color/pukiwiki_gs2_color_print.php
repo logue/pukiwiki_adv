@@ -2,7 +2,9 @@
 // GS2 skin color settings
 // PRINT
 
-if (! defined('SKIN_CSS_BGCOLOR')){
+if (isset($_SKIN)){
+	$_SKIN['ui_theme'] = 'smoothness';			// jQuery UI Theme
+}else{
 	define('SKIN_CSS_CTS_BGCOLOR', 	'#FFFFFF');	// contents box bg
 	define('SKIN_CSS_CTS_BDCOLOR', 	'#999999');	// contents box border
 	

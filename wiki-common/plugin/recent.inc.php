@@ -21,9 +21,6 @@ define('PLUGIN_RECENT_EXEC_LIMIT', 3); // N times per one output
 
 define('PLUGIN_RECENT_USAGE', '#recent(number-to-show)');
 
-// Recent html cache
-//define('PLUGIN_RECENT_CACHE', CACHE_DIR . 'plugin-recent.txt');
-
 function plugin_recent_convert()
 {
 	global $vars, $date_format, $show_passage, $page_title; // , $_recent_plugin_frame;
@@ -96,7 +93,6 @@ function plugin_recent_convert()
 		}
 		$count = count($lines);
 	}else{
-		$recent_cache_name = substr(PKWK_MAXSHOW_CACHE,0,strrpos(PKWK_MAXSHOW_CACHE, '.'));
 /*
 		if (file_exists(PLUGIN_RECENT_CACHE)) {
 			$time_recent = $memcache->get(MEMCACHE_PREFIX.'timestamp-'.$recent_cache_name);
@@ -106,7 +102,7 @@ function plugin_recent_convert()
 			}
 		}
 */
-		$lines = $memcache->get(MEMCACHE_PREFIX.$recent_cache_name);
+		$lines = $memcache->get(MEMCACHE_PREFIX.PKWK_MAXSHOW_CACHE);
 		if ($lines !== FALSE){
 			
 			$count = (count($lines) < $recent_lines) ? count($lines) : $recent_lines;

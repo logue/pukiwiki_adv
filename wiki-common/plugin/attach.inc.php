@@ -205,7 +205,7 @@ function attach_filelist()
 	$obj = new AttachPages($page, 0);
 
 	return isset($obj->pages[$page]) ? ('<dl class="attach_filelist">'."\n".'<dt>'.$_attach_messages['msg_file'].' :</dt>'."\n".
-	$obj->toString($page, TRUE, 'dl') . "</dl>\n") : '';
+	$obj->toString($page, TRUE, 'dl') . '</dl>'."\n") : '';
 }
 
 //-------- 実体

@@ -88,22 +88,22 @@ $log = array(
 	'browse' => array(
 		// ts:host:@guess:user:ntlm:proxy:ua:page
 		'use'		=> 1,
-		'view'		=> 'ts:host:@guess:ua:host:proxy',
-		'guest'		=> 'ts:ua',
+		'view'		=> 'ts:host:@guess:user:ntlm:proxy:ua:page',
+		'guest'		=> 'ts:host:ua:proxy',
 		'nolog_ip'	=> $log_common['nolog_ip']
 		),
 	'update' => array(
 		// ts:@diff:@guess_diff:ip:host:@guess:user:ntlm:proxy:ua:file:page
 		'use'		=> 1,
 		'view'		=> 'ts:@diff:host:user:sig:ua:proxy:del',
-		'guest'		=> 'ts:ua',
+		'guest'		=> 'ts:host:ua:proxy',
 		'nolog_ip'	=> $log_common['nolog_ip']
 		),
 	'download' => array(
 		// ts:ip:host:@guess:user:ntlm:proxy:ua:file:page
 		'use'		=> 0,
 		'view'		=> 'ts:host:@guess:ua:file:proxy',
-		'guest'		=> 'ts:ua:file',
+		'guest'		=> 'ts:host:ua:proxy:file',
 		'nolog_ip'	=> $log_common['nolog_ip']
 		),
 	'check' => array(

@@ -2,7 +2,9 @@
 // GS2 skin color settings
 // NEONGREEN
 
-if (! defined('SKIN_CSS_BGCOLOR')){
+if (isset($_SKIN)){
+	$_SKIN['ui_theme'] = 'le-frog';			// jQuery UI Theme
+}else{
 	define('SKIN_CSS_CTS_BGCOLOR', 	'#000000');	// contents box bg
 	define('SKIN_CSS_CTS_BDCOLOR', 	'#00AA00');	// contents box border
 	

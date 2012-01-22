@@ -2,7 +2,9 @@
 // GS2 skin color settings
 // BLUE
 
-if (! defined('SKIN_CSS_BGCOLOR')){
+if (isset($_SKIN)){
+	$_SKIN['ui_theme'] = 'redmond';		// jQuery UI Theme
+}else{
 	define('SKIN_CSS_CTS_BGCOLOR', 	'#F5FAFF');	// contents box bg
 	define('SKIN_CSS_CTS_BDCOLOR', 	'#0064C8');	// contents box border
 	

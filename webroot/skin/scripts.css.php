@@ -82,7 +82,7 @@ body{
 }
 /* Japanese */
 :lang(ja){
-	font-family: Meiryo, 'メイリオ', 'ヒラギノ角ゴ Pro W3', 'Hiragino Mincho Pro W3', Osaka, 'ＭＳＰ ゴシック';
+	font-family: Meiryo, 'メイリオ', 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', Osaka, 'ＭＳＰ ゴシック';
 }
 /* Korean */
 :lang(ko), :lang(ko) .ui-widget{
@@ -99,7 +99,7 @@ body{
 		font-family: "Lucida Bright", Century, "Times New Roman", serif;
 	}
 	:lang(ja) {
-		font-family: "ヒラギノ明朝 Pro W3", 'Hiragino Mincho Pro W3', "平成明朝", 'ＭＳ Ｐ明朝', 'MS PMincho', serif;
+		font-family: "ヒラギノ明朝 Pro W3", 'Hiragino Mincho Pro', "平成明朝", 'ＭＳ Ｐ明朝', 'MS PMincho', serif;
 	}
 	:lang(zh) {
 		font-family: 'Apple LiSung Light', 'STHeiti Light', 'PMingLiU', 'KaiTi', serif;
@@ -290,11 +290,6 @@ summary{
 	display:block;
 }
 
-.tocpic{
-	display:inline;
-	cursor:pointer;
-}
-
 iframe, object{
 	background-color: transparent
 	border: none;
@@ -480,107 +475,6 @@ input.ui-button{
 	float: left; margin-right: .3em;
 }
 
-/* Table sorter */
-.table_pager_widget{
-	display:none;
-}
-.table_pager_widget input.pagedisplay{
-	width:50px;
-}
-.table_pager_widget select.pagesize{
-	width:80px;
-}
-
-/* PukiWiki Generic Widgets */
-.pkwk_widget{
-	padding:2px;
-	margin:0;
-	line-height:100%;
-	list-style: none;
-}
-.pkwk_widget .ui-progressbar{
-	height:20px;
-	padding:0 !important;
-}
-.pkwk_widget .ui-state-default, .pkwk_widget .ui-widget-content{
-	padding:2px;
-	min-width:18px;
-	min-height:18px;
-}
-.pkwk_widget li{
-	cursor: pointer;
-	float: left;
-	text-align:center;
-	margin:2px 0;
-	font-size:93%;
-}
-.pkwk_widget .ui-corner-left{
-	margin-left:2px;
-}
-.pkwk_widget .ui-corner-right{
-	margin-right:2px;
-}
-.pkwk_widget .ui-corner-all{
-	margin:2px;
-}
-
-/* palette */
-.color{
-	display: inline-block;
-	width: 8px;
-	height: 8px;
-	line-height:100%;
-	color: transparent;
-}
-#colors.pkwk_widget li{
-	margin:0;
-}
-
-/* Fix Modernizr cheking dom */
-#modernizr {
-	position:absolute;
-	z-index:-999;
-}
-/* xdebug */
-.xdebug-error{
-	color:black !important;
-	font-family:monospace !important;
-}
-
-/* WAI-ARIA */
-ul[role=tablist]{
-	margin:0 auto;
-	text-align:center;
-	padding: 0;
-	list-style:none;
-}
-li[role=tab]{
-	display:inline;
-	padding:0 .25em;
-}
-.no-js ul[role=tablist]{
-	width:75%;
-}
-.no-js li[role=tab]{
-	font-weight: bold;
-}
-.no-js li[role=tab]:after{
-	content:'|';
-	font-weight: normal;
-}
-.no-js li[role=tab]:last-child:after{
-	content:'';
-}
-
-.js fieldset[role=tabpanel]  {
-	border: 0;
-	margin: 0;
-	padding: 1em 1.4em;
-}
-.js [role=tabpanel] legend{
-	display:none;
-}
-
 /* ==|== PukiWiki Adv. Misc classes ========================================= */
 .underline{
 	text-decoration: underline !important;
@@ -700,6 +594,12 @@ li[role=tab]{
 	font-weight:bold;
 	vertical-align:super;
 	margin-right:.5em;
+}
+
+/* xdebug */
+.xdebug-error{
+	color:black !important;
+	font-family:monospace !important;
 }
 
 /* ==|== PukiWiki Adv. Standard Plugin classes ============================== */
@@ -937,9 +837,6 @@ li[role=tab]{
 	-o-column-count: 2;
 	-ms-column-count: 2;
 }
-.list_pages li{
-	display:block;
-}
 @media only screen and (min-width : 765px) {
 	.list_pages{
 		column-count: 3;
@@ -1039,8 +936,9 @@ ul.sf-menu li li li.sfHover ul {
 }
 
 /* tooltip.inc.php */
-.tooltip, .linktip {
+*[aria-describedby='tooltip'] {
 	border-bottom: 1px dotted;
+	cursor:help;
 }
 
 /* vote.inc.php */
@@ -1058,6 +956,11 @@ ul.sf-menu li li li.sfHover ul {
 }
 
 /* ==|== JavaScript Stylesheet classes ====================================== */
+.tocpic{
+	display:inline;
+	cursor:pointer;
+}
+
 /* for realedit.js */
 #realview_outer {
 	border:1px solid silver;
@@ -1101,16 +1004,18 @@ th .ui-icon {
 }
 
 /* jQueryUI BlockUI */
-#loadingScreen {
+#loading {
+	display:none;
 	cursor:progress;
-	background-position: center center;
-	background-repeat: no-repeat;
-	background-image: url(<?php echo $image_dir ?>ajax/loading.gif);
 }
 
-/* hide the close x on the loading screen */
-.loadingScreenWindow .ui-dialog-titlebar-close {
-	display: none;
+#loading_activity{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width:90px;
+	height:90px;
+	padding:5px;
 }
 
 /* Table Sorter */
@@ -1282,8 +1187,7 @@ th .ui-icon {
 #cboxPrevious{position:absolute; bottom:0; left:0px;}
 #cboxNext{position:absolute; bottom:0; left:27px;}
 #cboxClose{position:absolute; bottom:0; right:0;}
-#cboxLoadingOverlay{background:url(<?php echo $image_dir ?>ajax/colorbox/loading_background.png) center center no-repeat;}
-#cboxLoadingGraphic{background:url(<?php echo $image_dir ?>ajax/colorbox/loading.gif) center center no-repeat;}
+#cboxLoadingGraphic {position:fixed; top:50%; left:50%; width:42px; height:42px;}
 
 /* jPlayer */
 #jplayer_container {
@@ -1364,6 +1268,102 @@ ul#jplayer_icons #jplayer_volume-min {
 #swfupload-log li.success{
 	border:1px solid #339933;
 	background:#ccf9b9;
+}
+
+/* Fix Modernizr cheking dom */
+#modernizr {
+	position:absolute;
+	z-index:-999;
+}
+
+/* Table sorter */
+.table_pager_widget{
+	display:none;
+}
+.table_pager_widget input.pagedisplay{
+	width:50px;
+}
+.table_pager_widget select.pagesize{
+	width:80px;
+}
+
+/* PukiWiki Generic Widgets */
+.pkwk_widget{
+	padding:2px;
+	margin:0;
+	line-height:100%;
+	list-style: none;
+}
+.pkwk_widget .ui-progressbar{
+	height:20px;
+	padding:0 !important;
+}
+.pkwk_widget .ui-state-default, .pkwk_widget .ui-widget-content{
+	padding:2px;
+	min-width:18px;
+	min-height:18px;
+}
+.pkwk_widget li{
+	cursor: pointer;
+	float: left;
+	text-align:center;
+	margin:2px 0;
+	font-size:93%;
+}
+.pkwk_widget .ui-corner-left{
+	margin-left:2px;
+}
+.pkwk_widget .ui-corner-right{
+	margin-right:2px;
+}
+.pkwk_widget .ui-corner-all{
+	margin:2px;
+}
+
+/* palette */
+.color{
+	display: inline-block;
+	width: 8px;
+	height: 8px;
+	line-height:100%;
+	color: transparent;
+}
+#colors.pkwk_widget li{
+	margin:0;
+}
+
+/* WAI-ARIA */
+ul[role=tablist]{
+	margin:0 auto;
+	text-align:center;
+	padding: 0;
+	list-style:none;
+}
+li[role=tab]{
+	display:inline;
+	padding:0 .25em;
+}
+.no-js ul[role=tablist]{
+	width:75%;
+}
+.no-js li[role=tab]{
+	font-weight: bold;
+}
+.no-js li[role=tab]:after{
+	content:'|';
+	font-weight: normal;
+}
+.no-js li[role=tab]:last-child:after{
+	content:'';
+}
+
+.js fieldset[role=tabpanel]  {
+	border: 0;
+	margin: 0;
+	padding: 1em 1.4em;
+}
+.js [role=tabpanel] legend{
+	display:none;
 }
 
 /* ==|== ui icon classes ==================================================== */
@@ -1728,7 +1728,7 @@ ul#jplayer_icons #jplayer_volume-min {
 .flag{
 	display: inline-block;
 	width: 16px;
-	height: 16px;
+	height: 12px;
 	background: transparent url('<?php echo $image_dir ?>plugin/flag.png') -1000px -1000px no-repeat;
 	text-shadow:none;
 	color: transparent;
@@ -1985,7 +1985,7 @@ ul#jplayer_icons #jplayer_volume-min {
 .os{
 	display: inline-block;
 	width: 16px;
-	height: 11px;
+	height: 16px;
 	background: transparent url('<?php echo $image_dir ?>plugin/os.png') -1000px -1000px no-repeat;
 	text-shadow:none;
 	color: transparent;

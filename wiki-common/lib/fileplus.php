@@ -303,7 +303,7 @@ function autolink_pattern_read($filename){
 
 // キャッシュのタイムスタンプ関連
 function cache_timestamp_get_name($func='wiki') {
-	$filename = CACHE_DIR.'timestamp_';
+	$filename = CACHE_DIR.PKWK_TIMESTAMP_PREFIX;
 	switch ($func) {
 	case 'attach':
 		$filename .= $func;
@@ -313,7 +313,7 @@ function cache_timestamp_get_name($func='wiki') {
 		$filename .= 'page';
 		break;
 	}
-	$filename .= '.txt';
+	$filename .= PKWK_TXT_EXTENTION;
 	return $filename;
 }
 
@@ -346,7 +346,7 @@ function cache_timestamp_set_date($func,$file)
 	return pkwk_touch_file($file, $ts_org);
 }
 
-function get_existpages_cache($dir = DATA_DIR, $ext = '.txt', $compat = true)
+function get_existpages_cache($dir = DATA_DIR, $ext = PKWK_TXT_EXTENTION, $compat = true)
 {
 	global $memcache;
 	
@@ -359,7 +359,7 @@ function get_existpages_cache($dir = DATA_DIR, $ext = '.txt', $compat = true)
 	}
 	
 	if ($memcache !== null){
-		$cache_name = MEMCACHE_PREFIX.'exists-'.$func;
+		$cache_name = MEMCACHE_PREFIX.PKWK_EXISTS_PREFIX.$func;
 		$pages = $memcache->get($cache_name);
 		if ($pages !== FALSE){
 			if (cache_timestamp_compare_date('wiki',$cache_name)) {
@@ -368,7 +368,7 @@ function get_existpages_cache($dir = DATA_DIR, $ext = '.txt', $compat = true)
 			}
 		}
 	}else{
-		$cache_name = CACHE_DIR.'exists-'.$func.'.txt';
+		$cache_name = CACHE_DIR.PKWK_EXISTS_PREFIX.$func.'.txt';
 		if (file_exists($cache_name)) {
 			if (cache_timestamp_compare_date('wiki',$cache_name)) {
 				$pages = get_existpages_cache_read($cache_name,$compat);
@@ -743,17 +743,18 @@ function check_postid($idstring)
 	$ret = TRUE;
 	$data = cache_read($filename);
 	if ($data !== false){
-		/*
 		if ($data !== $_SERVER['REMOTE_ADDR']){
 			$ret = false;
 		}
-		*/
 		unset($data);
 	}else{
 		$ret = FALSE;
 	}
 	cache_delete($filename);
 	cache_cleanup($filename, POSTID_EXPIRE);
+	if ($ret === FALSE){
+		honeypot_write();
+	}
 	return $ret;
 }
 ?>

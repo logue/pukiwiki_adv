@@ -2,7 +2,9 @@
 // GS2 skin color settings
 // NEONORANGE
 
-if (! defined('SKIN_CSS_BGCOLOR')){
+if (isset($_SKIN)){
+	$_SKIN['ui_theme'] = 'ui-darkness';			// jQuery UI Theme
+}else{
 	define('SKIN_CSS_CTS_BGCOLOR', 	'#000000');	// contents box bg
 	define('SKIN_CSS_CTS_BDCOLOR', 	'#AA7000');	// contents box border
 	

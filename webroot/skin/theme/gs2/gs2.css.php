@@ -1,8 +1,12 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-//
-// PukiWiki original skin "GS2" 1.5.3
-//     by yiza < http://www.yiza.net/ >
+// $Id: classic.skin.php,v 1.5.4 2012/01/22 12:27:00 Logue Exp $
+
+// PukiWiki GS2 Skin for PukiWiki Adv.
+// Copyright (C)
+//   2011-2012 PukiWiki Advance Developers Team
+// based on "GS2" v1.5.3
+//   by yiza < http://www.yiza.net/ >
 
 // Send header
 header('Content-Type: text/css');
@@ -19,7 +23,7 @@ require ('./gs2_color/pukiwiki_gs2_color_'.$gs2_color.'.php');
 blockquote { margin-left:32px; }
 
 body {
-	margin:0%;
+	margin:0;
 	padding:1%;
 	letter-spacing:1px;
 }
@@ -29,40 +33,40 @@ td, th {
 }
 
 h1, h2 {
-	font-size:150%;
+	font-size:153.8%;
 	padding:3px;
 	border-style:solid;
 	border-width:3px 3px 6px 20px;
-	margin:0px 0px 5px 0px;
+	margin:0 0 5px 0;
 }
 h3 {
-	font-size:140%;
+	font-size:138.5%;
 	padding:3px;
 	border-style: solid;
 	border-width: 1px 1px 5px 12px;
-	margin:0px 0px 5px 0px;
+	margin:0 0 5px 0;
 }
 h4 {
-	font-size:130%;
+	font-size:131%;
 	padding:3px;
 	border-style: solid;
-	border-width: 0px 6px 1px 7px;
-	margin:0px 0px 5px 0px;
+	border-width: 0 6px 1px 7px;
+	margin:0 0 5px 0;
 }
 h5 {
-	font-size:120%;
+	font-size:123.1%;
 	padding:3px;
 	border-style: solid;
-	border-width: 0px 0px 1px 6px;
-	margin:0px 0px 5px 0px;
+	border-width: 0 0 1px 6px;
+	margin:0 0 5px 0;
 }
 
 h6 {
 	font-size:110%;
 	padding:3px;
 	border-style: solid;
-	border-width: 0px 5px 1px 0px;
-	margin:0px 0px 5px 0px;
+	border-width: 0 5px 1px 0;
+	margin:0 0 5px 0;
 }
 
 
@@ -87,42 +91,37 @@ img {
 }
 
 ul {
-	margin:0px 0px 0px 6px;
-	padding:0px 0px 0px 10px;
-	line-height:160%;
+	line-height:161.6%;
 }
-
-li {
-	margin: 3px 0px;
-}
-/** Layout ****************************************************************************************/
+/** Framework *************************************************************************************/
 #container {
 	width:100%;
 	margin: 0 auto;
 }
 
-#main > *{
+#main_wrapper #main{
 	padding:5px;
+	margin:0 1.5em;
 }
 
 #menubar, #sidebar{
 	display:none;
 }
 @media screen{
-	.two-colums #main {
+	.two-colums #main_wrapper {
 		width:100%;
 		float:right;
 		margin-left:-180px;
 	}
 
-	.two-colums #main > * {
-		margin:0 0 0 190px;
+	.two-colums #main_wrapper #main {
+		margin:0 0 0 180px;
 	}
 
 	.two-colums #menubar {
 		display:block;
 		width:180px;
-		float:left;
+		float:right;
 	}
 
 	.three-colums #wrapper {
@@ -131,15 +130,15 @@ li {
 		margin-right:-180px;
 	}
 
-	.three-colums #main {
+	.three-colums #main_wrapper {
 		width:100%;
 		float:right;
 		margin-left:-180px;
 	}
 
-	.three-colums #main > * {
-		margin:0 190px;
-		padding:5px;
+	.three-colums #main_wrapper #main {
+		margin:0 180px;
+		padding:0 5px;
 	}
 
 	.three-colums #menubar {
@@ -162,67 +161,67 @@ li {
 	}
 }
 
+/** Layout ****************************************************************************************/
 #header {
 	padding:5px;
-	margin:0px 0px 10px 0px;
+	margin:0 0 10px 0;
 }
 
-	#logo {
-		float:left;
-		margin-right:20px;
-	}
-
 	#hgroup {
+		display:block;
 		font-weight: bold;
 		letter-spacing: 3px;
 		border-style: solid;
 		border-width: 2px 4px 4px 2px;
-		margin: 5px 5px 5px 90px;
-/*
-<?php //  if (PKWK_SKIN_SHOW_LOGO == 1) { ?>
-		margin: 5px 5px 5px <?php echo( PKWK_SKIN_LOGO_WIDTH + 10 ); ?>px;
-<?php  // } else { ?>
-		margin: 5px 5px 5px 5px;
-<?php //  } ?>
-*/
+		margin: 5px;
+	}
+	
+	#logo {
+		float:left;
+		margin-right: 20px;
+	}
+	
+	
+	#logo + #hgroup{
+		margin-left: 90px;
 	}
 	
 	#hgroup h1, #hgroup h2{
-		border:none;
-		background-color:transparent;
+		border: none;
+		background-color: transparent;
 	}
 
 	#hgroup h1{
-		font-size: 220%;
+		font-size: 197%;
 	}
-	#hgroup h2{
-		font-size:93%;
+	#hgroup h2, #hgroup .topicpath{
+		font-size: 93%;
 	}
 
 	.search_form
 	{
 		font-size: 85%;
 		padding:2px 8px;
-		margin:0px;
+		margin:0;
 		float:right;
 	}
 
 	.navibar {
-		font-size: 93%;
+		font-size: 85%;
 		padding:2px;
-		margin:0px;
+		margin:0;
 	}
 
 	#pageinfo
 	{
-		font-size: 90%;
+		font-size: 77%;
 		padding:2px;
-		margin:0px;
+		margin:0;
 		clear:left;
 	}
 
-#contents {
-	padding:12px;
+#content {
+	padding: 12px;
 }
 
 	.footbox
@@ -230,8 +229,8 @@ li {
 		clear:both;
 		padding:3px;
 		margin:6px 1px 1px 1px;
-		font-size:90%;
-		line-height:180%;
+		font-size:93%;
+		line-height:182%;
 	}
 
 
@@ -243,24 +242,25 @@ li {
 
 #footer {
 	clear: both;
-	font-size:80%;
-	padding:0px;
-	margin:16px 0px 0px 0px;
+	font-size:85%;
+	padding:0;
+	margin:16px 0 0 0;
 }
 
 #qrcode {
 	float:left;
-	margin:0px 10px 0px 10px;
+	margin:0 10px;
 }
 
 	.sidebox {
+		font-size:93%;
 		word-break:break-all;
 		overflow:hidden;
-		letter-spacing: 0.5px;
+		letter-spacing: .5px;
 	}
 
 	.sidebox ul li {
-		line-height:160%;
+		line-height:161.6%;
 	}
 	
 	.sidebox h1 ,
@@ -268,9 +268,14 @@ li {
 	.sidebox h3 ,
 	.sidebox h4 ,
 	.sidebox h5 {
-		font-size: 120%;
+		font-size: 116%;
 		background-image: none;
 		margin-top:10px;
+	}
+	
+	.sidebox ul{
+		margin:0;
+		padding:0 0.5em;
 	}
 	
 	.sidebox .anchor_super,
@@ -279,7 +284,7 @@ li {
 	}
 	
 	.sidebox td {
-		padding:0px;
+		padding:0;
 	}
 
 #footer{
@@ -294,7 +299,7 @@ li {
 	background-color:#FFFACC;
 }
 
-.small { font-size:85%; }
+.small { font-size:77%; }
 
 .super_index {
 	color:#DD3333;
@@ -308,17 +313,17 @@ a.note_super {
 	color:#DD3333;
 	background-color:inherit;
 	font-weight:bold;
-	font-size:70%;
+	font-size:77%;
 }
 
 .jumpmenu {
-	font-size:70%;
+	font-size:77%;
 	text-align:right;
 }
 
 hr.full_hr {
 	border-style:ridge;
-	border-width:1px 0px;
+	border-width:1px 0;
 }
 
 #hgroup + .navibar{
@@ -339,8 +344,6 @@ hr.full_hr {
 	color:inherit;
 	background-color:<?php echo SKIN_CSS_CTS_BGCOLOR; ?>;
 }
-
-
 
 .style_td_today {
 	background-color:#CCFFDD;
@@ -462,9 +465,9 @@ input[type='datetime'], input[type='date'], input[type='month'],
 input[type='week'], input[type='time'], input[type='datetime-local'], 
 input[type='number'], input[type='range'], input[type='color'], 
 input[type='search'], textarea, select {
-	color:<?php echo SKIN_CSS_FGCOLOR; ?>;
-	background-color:<?php echo SKIN_CSS_BGCOLOR; ?>;
+	color: <?php echo SKIN_CSS_FGCOLOR; ?>;
 	background-image:none;
+	background-color: <?php echo SKIN_CSS_BGCOLOR; ?>;
 	border: 1px solid <?php echo SKIN_CSS_BOX_BDCOLOR; ?>;
 }
 
@@ -501,7 +504,7 @@ tfoot th.style_th {
 	border-color: <?php echo SKIN_CSS_H1_BDCOLOR; ?>;
 }
 
-#contents{
+#content{
 	background-color:<?php echo SKIN_CSS_CTS_BGCOLOR; ?>;
 	border:3px solid <?php echo SKIN_CSS_CTS_BDCOLOR; ?>;
 }
@@ -521,7 +524,6 @@ tfoot th.style_th {
 }
 
 
-
 /* calendar*.inc.php */
 .style_calendar {
 	background-color:<?php echo SKIN_CSS_BOX_BDCOLOR; ?>;
@@ -536,13 +538,13 @@ tfoot th.style_th {
 		width:100%;
 	}
 	
-	#header, #contents{
+	#header, #content{
 		border:none;
 		margin:0;
 		padding:0;
 	}
 	
-	#contents{
+	#content{
 		clear:both;
 	}
 	

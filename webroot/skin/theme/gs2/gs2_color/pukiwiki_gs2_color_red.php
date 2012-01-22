@@ -2,7 +2,9 @@
 // GS2 skin color settings
 // RED
 
-if (! defined('SKIN_CSS_BGCOLOR')){
+if (isset($_SKIN)){
+	$_SKIN['ui_theme'] = 'blitzer';			// jQuery UI Theme
+}else{
 	define('SKIN_CSS_CTS_BGCOLOR', 	'#FFF0F0');	// contents box bg
 	define('SKIN_CSS_CTS_BDCOLOR', 	'#9F9090');	// contents box border
 	

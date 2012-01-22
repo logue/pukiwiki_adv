@@ -54,19 +54,19 @@ $_SKIN = array(
 	'search_form'	=> true,
 	
 	// QRコードを表示
-	'qrcode'=>true,
+	'qrcode'		=> true,
 
 	// Navibar系プラグインでもアイコンを表示する
 	'showicon'     => false,
 
 	// ロゴ設定
-	'logo'=>array(
+	'logo' => array(
 		'src'		=> IMAGE_URI.'pukiwiki_adv.logo.png',
 		'alt'		=> '[PukiWiki Adv.]',
 		'width'		=> '80',
 		'height'	=> '80'
 	),
-	
+
 	// 広告表示領域
 	'adarea'	=> array(
 		// ページの右上の広告表示領域
@@ -75,23 +75,12 @@ EOD
 ,		// ページ下部の広告表示領域
 		'footer'	=> <<<EOD
 EOD
-	),
-	
-/*
-UI Themes
-jQuery(jQuery UI): 
-	base, black-tie, blitzer, cupertino, dark-hive, dot-luv, eggplant, excite-bike, flick, hot-sneaks
-	humanity, le-frog, mint-choc, overcast, pepper-grinder, redmond, smoothness, south-street,
-	start, sunny, swanky-purse, trontastic, ui-darkness, ui-lightness, vader
-
-see also
-http://www.devcurry.com/2010/05/latest-jquery-and-jquery-ui-theme-links.html
-http://jqueryui.com/themeroller/
-*/
-	'ui_theme' => 'excite-bike'
+	)
 );
+// gsスキンのカラーを取得
+require ('gs2_color/pukiwiki_gs2_color_'.$_SKIN['color'].'.php');
 // 読み込むスタイルシート
-$link_tags[] = array('rel'=>'stylesheet',	'href'=>SKIN_URI.'scripts.css.php',											'type'=>'text/css', 'media'=>'screen');
-$link_tags[] = array('rel'=>'stylesheet',	'href'=>SKIN_URI.'iconset/default_iconset.css.php',							'type'=>'text/css', 'media'=>'screen');
-$link_tags[] = array('rel'=>'stylesheet',	'href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/gs2.css.php?gs2color='.$_SKIN['color'],					'type'=>'text/css', 'media'=>'screen');
+$link_tags[] = array('rel'=>'stylesheet',	'href'=>SKIN_URI.'scripts.css.php',	'type'=>'text/css', 'media'=>'screen');
+$link_tags[] = array('rel'=>'stylesheet',	'href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/gs2.css.php?gs2color='.$_SKIN['color'],'type'=>'text/css', 'media'=>'screen');
+
 ?>

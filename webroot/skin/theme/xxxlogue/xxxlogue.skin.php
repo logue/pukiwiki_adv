@@ -7,7 +7,7 @@
 // PukiWiki Advance xxxLogue skin
 //
 // Based on
-//   Xu Yiyang's (http://xuyiyang.com/) Unnamed (http://xuyiyang.com/wordpress-themes/unnamed/)
+//   Xu Yiyang's (http://xuyiyang.com/) Unnamed (http://xuyiyang.com/wordpress-themes/unnamed/)'
 //
 // License: GPL v3 or (at your option) any later version
 // http://www.opensource.org/licenses/gpl-3.0.html
@@ -22,6 +22,9 @@ if ($title !== $defaultpage) {
 	$page_title = $newtitle.' - '.$page_title;
 }
 
+// navibar
+$navibar = exist_plugin('suckerfish') ? do_plugin_convert('suckerfish') : null;
+
 // Output HTML DTD, <html>, and receive content-type
 $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_output_dtd();
 ?>
@@ -32,35 +35,29 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 	</head>
 <?php flush(); ?>
 	<body>
-		<div id="container">
+		<div id="container" role="document">
 
 <!-- ** Navigator ** -->
-			<?php if (exist_plugin('suckerfish')) echo do_plugin_convert('suckerfish'); ?>
+			<?php echo ($navibar === null) ? (exist_plugin('navibar') ? do_plugin_convert('navibar','top,|,edit,freeze,diff,backup,upload,reload,|,new,list,search,recent,help,|,trackback').'<hr />' :'') : $navibar; ?>
 <!--  End Navigator -->
 
 <!-- Header -->
-			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<header id="header" class="clearfix">'."\n" : '<div id="header" class="clearfix">')."\n"; ?>
+			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<header id="header" class="clearfix" role="banner">'."\n" : '<div id="header" class="clearfix" role="banner">')."\n"; ?>
 <!-- * Title * -->
-				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<hgroup id="hgroup">'."\n" : '<div id="hgroup">')."\n"; ?>
+				<div id="hgroup">
 					<h1 id="title"><?php echo(($newtitle!='' && $is_read)?$newtitle:$page) ?></h1>
-<?php
-if ($is_page) { 
-	require_once(PLUGIN_DIR . 'topicpath.inc.php');
-	$topicpath = plugin_topicpath_inline();
-	if ($topicpath != '') echo '<h2 id="topicpath">'. $topicpath.'</h2>';
-} ?>
-				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</hgroup>'."\n" : '</div>')."\n"; ?>
+					<?php echo ($is_page && exist_plugin_convert('topicpath')) ? do_plugin_convert('topicpath') : ''; ?>
+				</div>
 <!-- * End Title * -->
 
 <!-- * Ad space *-->
-				<?php if ($_SKIN['adarea']['header']) echo '<div id="header_ad" class="noprint">' . $_SKIN['adarea']['header'] . '</div>'; ?>
+				<?php echo ($_SKIN['adarea']['header']) ? '<div id="header_ad" class="noprint">' . $_SKIN['adarea']['header'] . '</div>' : ''; ?>
 <!-- * End Ad space * -->
-
 				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</header>' : '</div>')."\n"; ?>
 <!-- End Header -->
 
 <?php if (arg_check('read')){ ?><!-- * Shelf * -->
-				<div id="shelf">
+				<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="shelf">'."\n" : '<div id="shelf">'."\n"; ?>
 					<div id="toggle">
 						<div id="inner_toggle">
 <?php if ($is_page) { ?>
@@ -86,21 +83,20 @@ if ($is_page) {
 							<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
 <!--  End Related -->
 <?php } ?>
-							<?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','reload,|,new,newsub,edit,freeze,source,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,log_browse,|,help,|,rss') : '';?>
+							<?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','reload,|,new,newsub,edit,freeze,source,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,log,|,help,|,rss') : '';?>
 						</div>
 					</div>
-				</div>
+				<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
 <!-- * End Shelf * --><?php } ?>
 
 <!-- Content -->
 				<div id="content">
 					<div id="content-top" class="noprint"></div>
-					<div id="<?php echo (arg_check('read') && exist_plugin_convert('menu')) ? 'primary-content' : 'single-content'; ?>">
+					<div id="<?php echo (arg_check('read') && exist_plugin_convert('menu')) ? 'primary-content' : 'single-content'; ?>" role="main">
 <!-- * Main Content * -->
 						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="body" class="body">'."\n" : '<div id="body" class="body">'."\n"; ?>
 							<?php echo $body ?>
 						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</section>'."\n" : '</div>'."\n"; ?>
-
 <?php if (!empty($notes)) { ?>
 						<hr />
 <!-- * Note * -->
@@ -109,11 +105,7 @@ if ($is_page) {
 						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
 <!--  End Note -->
 <?php } ?>
-
-<!-- * Ad space * -->
-						<?php if ($_SKIN['adarea']['footer']) echo '<hr /><div id="footer_ad" class="noprint">' . $_SKIN['adarea']['footer'] . '</div>'; ?>
-<!-- * End Ad space * -->
-
+						<?php echo ($_SKIN['adarea']['footer']) ? '<hr /><div id="footer_ad" class="noprint">' . $_SKIN['adarea']['footer'] . '</div>' : ''; ?>
 <!-- * end Main Content * -->
 					</div>
 
@@ -123,10 +115,9 @@ if ($is_page) {
 						<?php echo do_plugin_convert('menu') ?>
 					<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>')."\n"; ?>
 <!-- * End MenuBar * -->
-
 					<?php echo (!empty($lastmodified)) ? '<div id="lastmodified">Last-modified: '.$lastmodified.'</div>'."\n" : '' ?>
 <?php }else{ echo $hr; } ?>
-					<address>Founded by <a href="<?php echo $modifierlink ?>"><?php echo $modifier ?></a></address>
+					<address role="contactinfo">Founded by <a href="<?php echo $modifierlink ?>"><?php echo $modifier ?></a></address>
 					<div id="content-bottom" class="noprint"><a href="#header">&#x021EA;Top</a></div>
 				</div>
 <!-- End Content -->
@@ -135,9 +126,9 @@ if ($is_page) {
 <!-- Footer -->
 				<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<footer id="footer" class="noprint">'."\n" : '<div id="footer" class="noprint">'."\n"; ?>
 					<p>
-						<?php echo S_COPYRIGHT ?>. HTML convert time: <?php echo showtaketime() ?> sec. / 
-						<strong>x<sup>x</sup><sub>x</sub>Logue skin v2.4.0 RC</strong> by <a href="http://logue.be/">Logue</a>
-						based on <a href="http://xuyiyang.com/">Xuyi Yang</a>'s <a href="http://xuyiyang.com/wordpress-themes/unnamed/">Unnamed v1.23</a>.
+						<?php echo S_COPYRIGHT ?>. HTML convert time: <?php echo showtaketime() ?> sec.<br />
+						<strong>x<sup>x</sup><sub>x</sub>Logue skin v2.4.0 RC</strong> by <a href="http://logue.be/" rel="external">Logue</a> / 
+						based on <a href="http://xuyiyang.com/" rel="external">Xuyi Yang</a>'s <a href="http://xuyiyang.com/wordpress-themes/unnamed/" rel="external">Unnamed v1.23</a>.
 					</p>
 				<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</footer>'."\n" : '</div>'."\n"; ?>
 <!-- End Footer -->

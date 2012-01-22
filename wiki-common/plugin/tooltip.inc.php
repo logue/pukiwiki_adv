@@ -73,12 +73,12 @@ function plugin_tooltip_inline()
 		$url = get_page_uri($page);
 		$passage = get_pg_passage($page,FALSE);
 		return <<<EOD
-<a href="$url"><abbr class="linktip" title="$s_glossary$passage">$term</abbr></a>
+<a href="$url"><abbr aria-describedby="tooltip" title="$s_glossary$passage">$term</abbr></a>
 EOD;
 	}
 	else {
 	return <<<EOD
-<dfn class="tooltip" title="$s_glossary">$term</dfn>
+<dfn aria-describedby="tooltip" title="$s_glossary">$term</dfn>
 EOD;
 	}
 }

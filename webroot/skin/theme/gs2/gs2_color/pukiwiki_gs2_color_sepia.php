@@ -2,7 +2,9 @@
 // GS2 skin color settings
 // SEPIA
 
-if (! defined('SKIN_CSS_BGCOLOR')){
+if (isset($_SKIN)){
+	$_SKIN['ui_theme'] = 'humanity';			// jQuery UI Theme
+}else{
 	define('SKIN_CSS_CTS_BGCOLOR', 	'#E6E2CB');	// contents box bg
 	define('SKIN_CSS_CTS_BDCOLOR', 	'#E6E2CB');	// contents box border
 	

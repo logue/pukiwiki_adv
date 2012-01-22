@@ -67,7 +67,7 @@ function plugin_logview_action()
 	$is_role_adm = auth::check_role('role_adm');
 
 	// ゲスト表示ができない場合は、認証を要求する
-	if (empty($log[$kind]['guest']) || $kind === null) {
+	if ($kind !== null && empty($log[$kind]['guest'])) {
 		$obj = new auth();
 		$user = $obj->check_auth();
 		if (empty($user)) {
@@ -197,7 +197,7 @@ EOD;
 						' rel="nofollow">'.$age.'</a>';
 					break;
 				}
-				$body .= "</td>\n";
+				$body .= '</td>'."\n";
 				break;
 
 			case 'host': // ホスト名 (FQDN)
@@ -217,9 +217,9 @@ EOD;
 					}
 				}
 				if ($data['ip'] !== '::1'){
-					$body .= '<a href="http://robtex.com/ip/'.$data['ip'].'.html" target="_blank">'.$data['host'].'</a></td>'."\n";
+					$body .= '<a href="http://robtex.com/ip/'.$data['ip'].'.html" rel="external nofollow">'.$data['host'].'</a></td>'."\n";
 				}else{
-					$body .= $data['host']."</td>\n";
+					$body .= $data['host'].'</td>'."\n";
 				}
 				break;
 
@@ -254,7 +254,7 @@ EOD;
 			}
 		}
 
-		$body .= "</tr>\n";
+		$body .= '</tr>'."\n";
 		$ctr++;
 	}
 

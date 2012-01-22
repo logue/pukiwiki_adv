@@ -37,6 +37,9 @@ defined('PKWK_PAGEREADING_CACHE')		or define('PKWK_PAGEREADING_CACHE', 'PageRead
 // Timestamp prefix
 defined('PKWK_TIMESTAMP_PREFIX')		or define('PKWK_TIMESTAMP_PREFIX', 'timestamp-');
 
+// Exsists prefix
+defined('PKWK_EXISTS_PREFIX')			or define('PKWK_EXISTS_PREFIX', 'exists-');
+
 // Get source(wiki text) data of the page
 // Returns FALSE if error occurerd
 function get_source($page = NULL, $lock = TRUE, $join = FALSE)
@@ -497,8 +500,8 @@ function lastmodified_add($update = '', $remove = '')
 		flock($fp, LOCK_UN);
 		fclose($fp);
 	}else{
-		memcache_update(MEMCACHE_PREFIX.PKWK_MAXSHOW_CACHE, $recent_pages);
-		memcache_update(MEMCACHE_PREFIX.PKWK_TIMESTAMP_PREFIX.PKWK_MAXSHOW_CACHE, UTIME);
+		update_memcache(MEMCACHE_PREFIX.PKWK_MAXSHOW_CACHE, $recent_pages);
+		update_memcache(MEMCACHE_PREFIX.PKWK_TIMESTAMP_PREFIX.PKWK_MAXSHOW_CACHE, UTIME);
 	}
 
 	if ($abort) {
@@ -590,8 +593,8 @@ function put_lastmodified()
 		flock($fp, LOCK_UN);
 		fclose($fp);
 	}else{
-		memcache_update(MEMCACHE_PREFIX.PKWK_MAXSHOW_CACHE, $recent_pages, null);
-//		memcache_update(MEMCACHE_PREFIX.PKWK_TIMESTAMP_PREFIX.PKWK_MAXSHOW_CACHE, UTIME);	// Wikiの更新日時を保存
+		update_memcache(MEMCACHE_PREFIX.PKWK_MAXSHOW_CACHE, $recent_pages, null);
+//		update_memcache(MEMCACHE_PREFIX.PKWK_TIMESTAMP_PREFIX.PKWK_MAXSHOW_CACHE, UTIME);	// Wikiの更新日時を保存
 	}
 
 	// Create RecentChanges

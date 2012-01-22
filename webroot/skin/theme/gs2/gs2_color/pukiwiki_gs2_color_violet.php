@@ -2,7 +2,9 @@
 // GS2 skin color settings
 // VIOLET
 
-if (! defined('SKIN_CSS_BGCOLOR')){
+if (isset($_SKIN)){
+	$_SKIN['ui_theme'] = 'eggplant';			// jQuery UI Theme
+}else{
 	define('SKIN_CSS_CTS_BGCOLOR', 	'#F0F0FF');	// contents box bg
 	define('SKIN_CSS_CTS_BDCOLOR', 	'#90909F');	// contents box border
 	

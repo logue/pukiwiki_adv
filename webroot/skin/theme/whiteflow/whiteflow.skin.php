@@ -1,7 +1,7 @@
 <?php
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: whiteflow.css.php,v 1.0.0 2011/12/10 11:38:30 Logue Exp $
+// $Id: whiteflow.css.php,v 1.0.1 2012/01/09 14:58:30 Logue Exp $
 
 // White flow Adv. skin.
 // ver 1.0 (2011/12/10) 
@@ -35,13 +35,13 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 
 	<body>
 <!-- START #containar-->
-		<div id="wide-container">
+		<div id="wide-container" role="document">
 <!-- * Ad space *-->
 			<?php if ($_SKIN['adarea']['header']) echo '<div id="header_ad" class="noprint">' . $_SKIN['adarea']['header'] . '</div>'; ?>
 <!-- * End Ad space * -->
 			<?php echo '<div id="container" class="'. $layout_class .'">'; ?>
 <!-- START #header -->
-			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<header id="header">'."\n" : '<div id="header">')."\n"; ?>
+			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<header id="header" role="banner">'."\n" : '<div id="header" role="banner">')."\n"; ?>
 <?php if (exist_plugin_convert('headarea') && do_plugin_convert('headarea') != '') { ?>
 				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<hgroup id="hgroup" style="display:none;">'."\n" : '<div id="hgroup" style="display:none;">')."\n"; ?>
 					<h1 id="title"><?php echo(($newtitle!='' && $is_read) ? $newtitle: $page) ?></h1>
@@ -71,7 +71,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 <!-- START #content -->
 			<div id="content" class="clearfix">
 <!-- START #content > #edit-area -->
-				<div id="edit-area" class="<? echo $layout_class; ?>">
+				<div id="edit-area" class="<? echo $layout_class; ?>" role="main">
 					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="body">'."\n" : '<div id="body">'."\n"; ?>
 						<?php echo $body."\n" ?>
 					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</section>'."\n" : '</div>'."\n"; ?>
@@ -80,7 +80,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 <?php if (!empty($notes)) { ?>
 						<hr />
 <!-- * Note * -->
-						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="note">'."\n" : '<div id="note">'."\n"; ?>
+						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="note" role="note">'."\n" : '<div id="note" role="note">'."\n"; ?>
 							<?php echo $notes ?>
 						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
 <!--  End Note -->
@@ -108,7 +108,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 
 <?php if (arg_check('read')){ ?>
 <!-- START #content > #menu -->
-				<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="sidebar" class="clearfix">'."\n" : '<div id="sidebar" class="clearfix">'."\n"; ?>
+				<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="sidebar" class="clearfix" role="navigation">'."\n" : '<div id="sidebar" class="clearfix">'."\n"; ?>
 					<div id="page-menu" class="clearfix">
 <!-- ■BEGIN id:page_action -->
 						<h3><?php echo $_LANG['skin']['edit'] ?></h3>
@@ -151,6 +151,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 									<li><a href="<?php echo $_LINK['referer'] ?>"><span class="pkwk-icon icon-referer"></span><?php echo $_LANG['skin']['referer'] ?></a></li>
 									<li><a href="<?php echo $_LINK['skeylist'] ?>"><span class="pkwk-icon icon-skeylist"></span><?php echo $_LANG['skin']['skeylist'] ?></a></li>
 									<li><a href="<?php echo $_LINK['linklist'] ?>"><span class="pkwk-icon icon-linklist"></span><?php echo $_LANG['skin']['linklist'] ?></a></li>
+									<li><a href="<?php echo $_LINK['log'] ?>"><span class="pkwk-icon icon-log"></span><?php echo $_LANG['skin']['log'] ?></a></li>
 								</ul>
 							</li>
 						</ul>
@@ -169,7 +170,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 <?php } ?>
 
 <!-- START #footer -->
-			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<footer id="footer">'."\n" : '<div id="footer">'."\n"; ?>
+			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<footer id="footer" role="contentinfo">'."\n" : '<div id="footer" role="contentinfo">'."\n"; ?>
 				<?php if (exist_plugin_convert('footarea') && do_plugin_convert('footarea') != ''){
 					echo do_plugin_convert('footarea');
 				}else { // or In this skin?>

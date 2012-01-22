@@ -1,8 +1,8 @@
 <?php
 // PukiPlus.
-// $Id: make_link.php,v 1.37.30 2011/11/28 21:41:00 Logue Exp $
+// $Id: make_link.php,v 1.37.31 2012/01/22 16:24:00 Logue Exp $
 // Copyright (C)
-//   2010-2011 PukiWiki Advance Developers Team
+//   2010-2012 PukiWiki Advance Developers Team
 //   2005-2008 PukiWiki Plus! Team
 //   2003-2007,2011 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -195,7 +195,7 @@ class Link
 		$this->body = $body;
 		$this->type = $type;
 		if (! PKWK_DISABLE_INLINE_IMAGE_FROM_URI &&
-			is_url($alias) && preg_match('/\.(gif|png|jpe?g)$/i', $alias)) {
+			is_url($alias) && preg_match('/\.(gif|png|jpe?g|svg)$/i', $alias)) {
 			$alias = '<img src="' . htmlsc($alias) . '" alt="' . $name . '" />';
 		} else if ($alias != '') {
 			if ($converter === NULL)
@@ -877,11 +877,11 @@ function make_tooltips($term,$glossary_page='')
 	$page = strip_bracket($term);
 	if ( is_page($page) ) {
 		$passage = get_pg_passage($page,FALSE);
-		return '<a href="' . get_page_uri($page) . '" class="tooltip" title="' . $page . $s_glossary. $passage . '">' . $term . '</a>';
+		return '<a href="' . get_page_uri($page) . '" title="' . $page . $s_glossary. $passage . '" aria-describedby="tooltip">' . $term . '</a>';
 	} elseif (IS_AJAX) {
-		return '<dfn class="tooltip">' . $term . '</dfn>';
+		return '<dfn aria-describedby="tooltip">' . $term . '</dfn>';
 	} else {
-		return '<abbr class="tooltip" title="' . $s_glossary . '">' . $term . '</abbr>';
+		return '<abbr aria-describedby="tooltip" title="' . $s_glossary . '">' . $term . '</abbr>';
 	}
 }
 

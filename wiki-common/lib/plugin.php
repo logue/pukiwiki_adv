@@ -1,8 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: plugin.php,v 1.20.21 2011/11/12 10:39:00 Logue Exp $
+// $Id: plugin.php,v 1.20.22 2012/01/22 16:23:00 Logue Exp $
 // Copyright (C)
-//   2010-2011 PukiWiki Advance Developers Team
+//   2010-2012 PukiWiki Advance Developers Team
 //   2005-2006,2008 PukiWiki Plus! Team
 //   2002-2005,2007,2011 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -195,7 +195,7 @@ function do_plugin_action($name)
 	textdomain(DOMAIN);
 	T_textdomain(DOMAIN);
 
-	$retvar['body'] = add_hidden_field($retvar['body'], $name);
+	$retvar['body'] = isset($retvar['body']) ? add_hidden_field($retvar['body'], $name) : '';
 
 	return $retvar;
 }

@@ -57,14 +57,14 @@ function catbody($title, $page, $body)
 					$JSON = array(
 						'title'			=> $title,
 						'body'			=> $body,
-	/*
+/*
 						'is_read'		=> $is_read,
 						'is_freeze'		=> $is_freeze,
 						'is_page'		=> $is_page,
 						'lastmodified'	=> $filetime,
 						'page'			=> $_page,
 						'taketime'		=> elapsedtime()
-	*/
+*/
 					);
 				}
 				header('Content-Type: application/json; charset=' . CONTENT_CHARSET);
@@ -77,10 +77,9 @@ function catbody($title, $page, $body)
 			break;
 			default:
 			case 'raw':
-				header('Content-Type: text/plain; charset=' . CONTENT_CHARSET);
+				header('Content-Type: text/html; charset=' . CONTENT_CHARSET);
 				echo $body;
 			break;
- 			
 		}
 	}else{
 		// Set $_LINK for skin
@@ -96,7 +95,7 @@ function catbody($title, $page, $body)
 		
 		global $google_analytics, $google_api_key, $google_site_verification, $yahoo_site_explorer_id, $bing_webmaster_tool;
 
-		/* Adv. ここから。（あまりいい実装ではない） */
+		// Adv. ここから。（あまりいい実装ではない）
 		global $adminpass;
 		if ($adminpass == '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72' || $adminpass == ''){
 			$body = '<div class="message_box ui-state-error ui-corner-all">'.
@@ -695,11 +694,24 @@ function pkwk_common_headers($modified = 0, $expire = 0, $compress = true){
 	}
 	
 	// RFC2616
+	// http://sonic64.com/2004-02-06.html
 	header('Vary: '.$vary);
-	header('Access-Control-Allow-Origin: '.get_script_uri());	// JSON脆弱性対策（Adv.では外部にAjax APIを提供することを考慮しない）
-	header('X-XSS-Protection: '.((DEBUG) ? '0' :'1;mode=block') );	// XSS脆弱性対策（これでいいのか？）
-	header('X-Content-Type-Options: nosniff');	// IEの自動MIME type判別機能を無効化する
-	header('X-Frame-Options: SameDomain');	// クリックジャッキング対策
+	// HTTP access control
+	// JSON脆弱性対策（Adv.では外部にAjax APIを提供することを考慮しない）
+	// https://developer.mozilla.org/ja/HTTP_Access_Control
+	header('Access-Control-Allow-Origin: '.get_script_uri());
+	// Content Security Policy
+	// https://developer.mozilla.org/ja/Security/CSP/Using_Content_Security_Policy
+	// header('X-Content-Security-Policy: allow "self" "inline-script";  img-src *; media-src *;');
+	// IEの自動MIME type判別機能を無効化する
+	// http://msdn.microsoft.com/ja-jp/ie/dd218497.aspx
+	header('X-Content-Type-Options: nosniff');
+	// クリックジャッキング対策
+	// https://developer.mozilla.org/ja/The_X-FRAME-OPTIONS_response_header
+	header('X-Frame-Options: SameDomain');
+	// XSS脆弱性対策（これでいいのか？）
+	// http://msdn.microsoft.com/ja-jp/ie/dd218482
+	header('X-XSS-Protection: '.((DEBUG) ? '0' :'1;mode=block') );
 }
 
 //////////////////////////////////////////////////
@@ -808,16 +820,16 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 			if (substr($matches[1][0],0,1) <= 9){
 				$x_ua_compatible = 'IE=edge'; // force to IE9
 			}
-		} else if (preg_match('/Gecko/', $user_agent) && preg_match("/(Firefox|Netscape?6)\/([\.\d]+)/", $user_agent,$matches)){
+		} else if (preg_match('/Gecko/', $user_agent) && preg_match('/(Firefox|Netscape?6)\/([\.\d]+)/', $user_agent,$matches)){
 			// Gecko (FireFox)
 			$browser = 'gecko '.strtolower($matches[1]).substr($matches[2][0],0,1);
-		} else if (preg_match("/(Presto)\/([\.\d]+)/", $user_agent, $matches)){
+		} else if (preg_match('/(Presto)\/([\.\d]+)/', $user_agent, $matches)){
 			// Opera
 			$browser = strtolower($matches[1]).' '.strtolower($matches[1]).substr($matches[2],0,1);
-		} else if (preg_match("/(WebKit|KHTML|Konqueror)/", $user_agent)){
+		} else if (preg_match('/(WebKit|KHTML|Konqueror)/', $user_agent)){
 			// Safari
-			$browser = "webkit";
-		} else if (preg_match("/(Nintendo|Sony|Dreamcast|NetFront)/", $user_agent)){
+			$browser = 'webkit';
+		} else if (preg_match('/(Nintendo|Sony|Dreamcast|NetFront)/', $user_agent)){
 			// ゲーム機はNetFront扱い
 			$browser = 'netfront';
 		}

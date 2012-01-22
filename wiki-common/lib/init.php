@@ -18,7 +18,7 @@ define('S_VERSION', 'v1.0 alpha2');
 define('S_REVSION', '20111204');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
-	' Copyright &#169; 2010-2011' .
+	' Copyright &#169; 2010-2012' .
 	' <a href="http://pukiwiki.logue.be/" rel="product">PukiWiki Advance Developers Team</a>.<br />' .
 	' Licensed under the <a href="http://www.gnu.org/licenses/gpl-2.0.html" rel="license">GPLv2</a>.' .
 	' Based on <a href="http://pukiwiki.cafelounge.net/plus/">"PukiWiki Plus! i18n"</a>'
@@ -292,6 +292,8 @@ if (class_exists('Memcache')){
 		ini_set('session.save_path', (strpos(MEMCACHE_HOST, 'unix://') !== FALSE) ? MEMCACHE_HOST : 'tcp://'.MEMCACHE_HOST.':'.MEMCACHE_PORT);
 
 		define('PKWK_DAT_EXTENTION', '');
+		define('PKWK_TSV_EXTENTION', '');
+		define('PKWK_TXT_EXTENTION', '');
 		define('PKWK_REL_EXTENTION', 'rel-');
 		define('PKWK_REF_EXTENTION', 'ref-');
 	}
@@ -493,14 +495,12 @@ if (!IS_AJAX || IS_MOBILE){
 		),
 		'jqueryui'	=> array(
 			'file'	=> 'jquery-ui.min.js',
-			'ver'	=> '1.8.16'
+			'ver'	=> '1.8.17'
 		),
-/*
 		'swfobject' => array(
 			'file'	=> 'swfobject.js',
 			'ver'	=> '2.2'
 		)
-*/
 	);
 	
 	if ($x_ua_compatible == 'chrome=1'){
@@ -553,16 +553,14 @@ if (!IS_AJAX || IS_MOBILE){
 			'swfupload',
 			'tzCalculation_LocalTimeZone',
 			
-			/* Use plugins */ 
+			/* Use plugins */
+			'activity-indicator',
 			'jquery.a-tools',
 			'jquery.beautyOfCode',
-			'jquery.colorbox',
 			'jquery.cookie',
-//			'jquery.fileupload',
-//			'jquery.fileupload-ui',
+			'jquery.colorbox',
 			'jquery.i18n',
 			'jquery.jplayer',
-//			'jquery.jstree',
 			'jquery.lazyload',
 			'jquery.query',
 			'jquery.scrollTo',
