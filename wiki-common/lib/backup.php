@@ -13,7 +13,7 @@
  * @create
  * @version $Id: backup.php,v 1.13.2 2012/01/08 17:16:00 Logue Exp $
  * Copyright (C)
- *   2010-20121 PukiWiki Advance Developer Team
+ *   2010-2012 PukiWiki Advance Developer Team
  *   2005-2006 PukiWiki Plus! Team
  *   2002-2006,2011 PukiWiki Developers Team
  *   2001-2002 Originally written by yu-ji

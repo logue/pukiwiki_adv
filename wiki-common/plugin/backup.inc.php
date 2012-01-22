@@ -1,8 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: backup.inc.php,v 1.29.22 2011/02/05 10:43:00 Logue Exp $
+// $Id: backup.inc.php,v 1.29.23 2012/01/22 10:43:00 Logue Exp $
 // Copyright (C)
-//   2010-2011 PukiWiki Advance Developers Team
+//   2010-2012 PukiWiki Advance Developers Team
 //   2008 PukioWikio Developers Team
 //   2005-2008 PukiWiki Plus! Team
 //   2002-2005,2007 PukiWiki Developers Team
@@ -15,10 +15,10 @@
 // define('PLUGIN_BACKUP_DISABLE_BACKUP_RENDERING', PKWK_SAFE_MODE || PKWK_OPTIMISE);
 define('PLUGIN_BACKUP_DISABLE_BACKUP_RENDERING', auth::check_role('safemode') || PKWK_OPTIMISE);
 
-// ƒ[ƒ‹ƒoƒbƒN‹@”\‚ğ—LŒø‚É‚·‚é
+// ãƒ­ãƒ¼ãƒ«ãƒãƒƒã‚¯æ©Ÿèƒ½ã‚’æœ‰åŠ¹ã«ã™ã‚‹
 defined('PLUGIN_BACKUP_USE_ROLLBACK') or define('PLUGIN_BACKUP_USE_ROLLBACK', TRUE);
 
-// ŠÇ—l‚Ì‚İƒ[ƒ‹ƒoƒbƒN‹@”\‚ğg‚¦‚é
+// ç®¡ç†äººã®ã¿ãƒ­ãƒ¼ãƒ«ãƒãƒƒã‚¯æ©Ÿèƒ½ã‚’ä½¿ãˆã‚‹
 defined('PLUGIN_BACKUP_ROLLBACK_ADMINONLY') or define('PLUGIN_BACKUP_ROLLBACK_ADMINONLY', TRUE);
 
 /**
@@ -63,7 +63,7 @@ function plugin_backup_init()
 			'btn_selectdelete'			=> T_('Delete selected backup(s).'),
 			'msg_backup_rollbacked'		=> T_('Rollbackd to $1.'),
 			'title_backup_rollback'		=> T_('Rollback this backup(No. %s)'),
-			'title_backup_rollbacked'	=> '$1 ‚ğƒoƒbƒNƒAƒbƒv‚É‘‚«–ß‚µ‚Ü‚µ‚½'
+			'title_backup_rollbacked'	=> '$1 ã‚’ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ã«æ›¸ãæˆ»ã—ã¾ã—ãŸ'
 		)
 	);
 	set_plugin_messages($messages);
@@ -90,17 +90,17 @@ function plugin_backup_action()
 	$action = isset($vars['action']) ? $vars['action'] : '';
 	
 	/**
-	 * w’è‚³‚ê‚½¢‘ã‚ğŠm”FBw’è‚³‚ê‚Ä‚¢‚È‚¯‚ê‚ÎAˆê——‚Ì‚İ•\¦
+	 * æŒ‡å®šã•ã‚ŒãŸä¸–ä»£ã‚’ç¢ºèªã€‚æŒ‡å®šã•ã‚Œã¦ã„ãªã‘ã‚Œã°ã€ä¸€è¦§ã®ã¿è¡¨ç¤º
 	 */
 	$s_age  = (isset($vars['age']) && is_numeric($vars['age'])) ? $vars['age'] : 0;
 	
 	if($action == 'delete') {
-		// checkbox‚ª‘I‘ğ‚³‚ê‚¸‚Éselectdelete‚ğÀs‚³‚ê‚½ê‡‚ÍAíœˆ—‚ğ‚µ‚È‚¢
-		if(! isset($vars['selectages']) &&		// checkbox‚ª‘I‘ğ‚³‚ê‚Ä‚¢‚È‚¢
-			isset($vars['selectdelete'])) {		// ‘I‘ğíœƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½
-												// ‰½‚à‚µ‚È‚¢
+		// checkboxãŒé¸æŠã•ã‚Œãšã«selectdeleteã‚’å®Ÿè¡Œã•ã‚ŒãŸå ´åˆã¯ã€å‰Šé™¤å‡¦ç†ã‚’ã—ãªã„
+		if(! isset($vars['selectages']) &&		// checkboxãŒé¸æŠã•ã‚Œã¦ã„ãªã„
+			isset($vars['selectdelete'])) {		// é¸æŠå‰Šé™¤ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸ
+												// ä½•ã‚‚ã—ãªã„
 		} else {
-			if(! isset($vars['selectages'])) {	// ¢‘ãˆø”‚ª‚È‚¢ê‡‚Í‘Síœ
+			if(! isset($vars['selectages'])) {	// ä¸–ä»£å¼•æ•°ãŒãªã„å ´åˆã¯å…¨å‰Šé™¤
 				return plugin_backup_delete($page);
 			}
 			return plugin_backup_delete($page, $vars['selectages']);
@@ -192,7 +192,7 @@ function plugin_backup_action()
 			$cur = get_source($page, TRUE, TRUE);
 			auth::is_role_page($old);
 				auth::is_role_page($cur);
-			// <ins> <del>ƒ^ƒO‚ğg‚¤Œ`®‚É•ÏXB
+			// <ins> <del>ã‚¿ã‚°ã‚’ä½¿ã†å½¢å¼ã«å¤‰æ›´ã€‚
 			$source = do_diff($old,$cur);
 			$source = plugin_backup_visualdiff($source);
 			$body .= "$hr\n" . drop_submit(convert_html($source));
@@ -200,7 +200,7 @@ function plugin_backup_action()
 			$body = preg_replace('#<p>\#ins(.*?)(</p>)#si', '<ins class="add_block">$1', $body);
 			$body = preg_replace('#<p>\#delend(.*?)(</p>)#si', '$1</del>', $body);
 			$body = preg_replace('#<p>\#insend(.*?)(</p>)#si', '$1</ins>', $body);
-			// ƒuƒƒbƒNŒ^ƒvƒ‰ƒOƒCƒ“‚Ìˆ—‚ª–³‚¢‚æ`I
+			// ãƒ–ãƒ­ãƒƒã‚¯å‹ãƒ—ãƒ©ã‚°ã‚¤ãƒ³ã®å‡¦ç†ãŒç„¡ã„ã‚ˆï½ï¼
 			$body = preg_replace('#&amp;del;#i', '<del class="remove_word">', $body);
 			$body = preg_replace('#&amp;ins;#i', '<ins class="add_word">', $body);
 			$body = preg_replace('#&amp;delend;#i', '</del>', $body);
@@ -505,7 +505,7 @@ function plugin_backup_rollback($page, $age)
 		$body = '<p><strong>' . $_backup_messages['msg_invalidpass'] . '</strong></p>' . "\n";
 	} else {
 		$backups = _backup_file_exists($page) ? get_backup($page) : array();
-		if(empty($backups) || empty($backups[$age]) || !check_postid($vars['postid']))
+		if(empty($backups) || empty($backups[$age]))
 		{
 			die();	// Do nothing
 		}
@@ -515,7 +515,7 @@ function plugin_backup_rollback($page, $age)
 		return array(
 			'msg'  => $_backup_messages['title_backup_rollbacked'],
 			'body' => str_replace('$1', make_pagelink($page) . '(No. ' . $age . ')', $_backup_messages['msg_backup_rollbacked'])
-			);
+		);
 	}
 
 	$script = get_script_uri();
