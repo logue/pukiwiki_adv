@@ -812,14 +812,11 @@ input.ui-button{
 .navibar li, .toolbar li, .topicpath li, .multilang li{
 	display: inline;
 }
-.navibar li:after{
+.navibar li:not(:last-child):after{
 	content:' | ';
 }
-.topicpath li:after{
+.topicpath li::not(:last-child):after{
 	content : ' > '
-}
-.navibar li:last-child:after, .topicpath li:last-child:after{
-	content:'';
 }
 .toolbar ul{
 	margin:0 .2em;

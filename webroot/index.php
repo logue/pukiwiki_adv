@@ -25,7 +25,7 @@ define('PKWK_WARNING', true);
 
 // PukiWiki Adv. THEME (NOT compatible as Original and Plus! skin)
 // ex.  cloudwalk, classic, xxxlogue, whiteflow
-define('PLUS_THEME',	'xxxlogue');
+define('PLUS_THEME',	'default');
 
 // Directory definition
 // (Ended with a slash like '../path/to/pkwk/', or '')

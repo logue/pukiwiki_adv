@@ -27,11 +27,6 @@ var pukiwiki = {};
 (function ($, Modernizr, window, document) {
 	'use strict';
 
-	if (DEBUG) {
-		window.console.debugMode = true;
-		var D1 = new Date();
-	}
-
 	if (typeof window.console !== 'object') {
 		// IEでデバッガが出てない時にconsoleが未定義となり、エラーになる問題を修正
 		window.console = {};
@@ -47,10 +42,14 @@ var pukiwiki = {};
 				(typeof console.log === 'object' ? log.apply.call(console.log, console, newarr) : console.log.apply(console, newarr));
 			}
 		};
-		
-		// make it safe to use console.log always
-		(function(b) {function c(){} for(var d="assert,clear,count,debug,dir,dirxml,error,exception,firebug,group,groupCollapsed,groupEnd,info,log,memoryProfile,memoryProfileEnd,profile,profileEnd,table,time,timeEnd,timeStamp,trace,warn".split(","),a;a=d.pop();){b[a]=b[a]||c}})((function(){try
-		{return window.console;}catch(err){return window.console={};}})());
+	}
+	// make it safe to use console.log always
+	(function(b) {function c(){} for(var d="assert,clear,count,debug,dir,dirxml,error,exception,firebug,group,groupCollapsed,groupEnd,info,log,memoryProfile,memoryProfileEnd,profile,profileEnd,table,time,timeEnd,timeStamp,trace,warn".split(","),a;a=d.pop();){b[a]=b[a]||c}})((function(){try
+	{return window.console;}catch(err){return window.console={};}})());
+	
+	if (DEBUG) {
+		window.console.debugMode = true;
+		var D1 = new Date();
 	}
 
 	// Detect IE
@@ -336,7 +335,7 @@ var pukiwiki = {};
 			prefix = (prefix) ? prefix + ' ': '';
 
 			// IE互換処理
-			if(ie < 6){
+			if (ie <= 6) {
 				// Fix Background flicker
 				try{ document.execCommand('BackgroundImageCache', false, true); }catch(e){}
 				// IE PNG Fix
@@ -349,6 +348,14 @@ var pukiwiki = {};
 				$('img[src$=png], .pkwk-icon, .pkwk-symbol, .pkwk-icon_linktext').css({
 					'behavior': 'url('+JS_URI+'iepngfix/iepngfix.htc)'
 				});
+			}
+			
+			if (ie <= 7) {
+				$('.navibar ul').before('[ ').after(' ] ');
+			}
+			if (ie <= 8){
+				$('.navibar li:not(:last-child)').after(' | ');
+				$('.topicpath li:not(:last-child)').after(' > ');
 			}
 
 			// Canvas実装
@@ -2545,7 +2552,7 @@ var pukiwiki = {};
 				f();
 			}
 		}
-		if (DEBUG && window.console){
+		if (DEBUG){
 			var D2 = new Date();
 			console.info('Finish. (Process Time :',D2 - D1,'ms)');
 		}
