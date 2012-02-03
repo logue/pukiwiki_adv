@@ -50,7 +50,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 <!-- Header/Search -->
 			<?php if ($_SKIN['search_form'] == true && exist_plugin('search')) echo do_plugin_convert('search'); ?>
 			<?php echo (exist_plugin('navibar') ? do_plugin_convert('navibar','top,reload,new,list,search,recent,help') :'') ?>
-			<?php echo isset($_SKIN['logo']) ? '<a id="logo" href="' . $modifierlink . '"><img src="' . $_SKIN['logo']['src'] . '" width="' . $_SKIN['logo']['width'] . '" height="' . $_SKIN['logo']['height'] . '" alt="' . $_SKIN['logo']['alt'] . '" /></a>' : ''; ?>
+			<?php echo isset($_SKIN['logo']) ? '<a id="logo" href="' . $_LINK['reload'] . '"><img src="' . $_SKIN['logo']['src'] . '" width="' . $_SKIN['logo']['width'] . '" height="' . $_SKIN['logo']['height'] . '" alt="' . $_SKIN['logo']['alt'] . '" /></a>' : ''; ?>
 			<div id="hgroup">
 				<?php echo ($is_page && exist_plugin_convert('topicpath')) ? do_plugin_convert('topicpath') : ''; ?>
 				<h1><?php echo (($newtitle!='' && $is_read) ? $newtitle : $page) ?></h1>

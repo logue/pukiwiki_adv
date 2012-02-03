@@ -96,10 +96,10 @@ body{
 /* for Print font */
 @media print{
 	body {
-		font-family: "Lucida Bright", Century, "Times New Roman", serif;
+		font-family: 'Lucida Bright', Century, 'Times New Roman', serif;
 	}
 	:lang(ja) {
-		font-family: "ヒラギノ明朝 Pro W3", 'Hiragino Mincho Pro', "平成明朝", 'ＭＳ Ｐ明朝', 'MS PMincho', serif;
+		font-family: 'ヒラギノ明朝 Pro W3', 'Hiragino Mincho Pro', '平成明朝', 'ＭＳ Ｐ明朝', 'MS PMincho', serif;
 	}
 	:lang(zh) {
 		font-family: 'Apple LiSung Light', 'STHeiti Light', 'PMingLiU', 'KaiTi', serif;
@@ -371,7 +371,7 @@ input[type='search'], textarea, select {
 	border:1px solid silver;
 	background-color:white;
 	box-shadow:none !important;
-	background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMCI%2BDQo8ZGVmcz4NCjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxMDAlIj4NCjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOndoaXRlc21va2U7Ii8%2BDQo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOndoaXRlOyIvPg0KPC9saW5lYXJHcmFkaWVudD4NCjwvZGVmcz4NCjxyZWN0IHg9IjAiIHk9IjAiIGZpbGw9InVybCgjZ3JhZGllbnQpIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiAvPg0KPC9zdmc%2B");
+	background-image:url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8%2BPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMCI%2BPGRlZnM%2BPGxpbmVhckdyYWRpZW50IHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxMDAlIiBpZD0iZ3JhZGllbnQiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IndoaXRlc21va2UiIC8%2BPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSJ3aGl0ZSIgLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCBmaWxsPSJ1cmwoI2dyYWRpZW50KSIgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIvPjwvc3ZnPg%3D%3D');
 }
 
 /* focus */
@@ -437,8 +437,10 @@ input[type='datetime'][required], input[type='date'][required], input[type='mont
 input[type='week'][required], input[type='time'][required], input[type='datetime-local'][required], 
 input[type='number'][required], input[type='range'][required], input[type='color'][required], 
 input[type='search'][required], textarea[required], select[required] {
+	color: maroon;
 	border:1px solid lightpink;
 	background-color:lavenderblush;
+	background-image:url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8%2BPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMCI%2BPGRlZnM%2BPGxpbmVhckdyYWRpZW50IHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxMDAlIiBpZD0iZ3JhZGllbnQiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9ImxhdmVuZGVyYmx1c2giIC8%2BPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSJ3aGl0ZSIgLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCBmaWxsPSJ1cmwoI2dyYWRpZW50KSIgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIvPjwvc3ZnPg%3D%3D');
 }
 
 /* customize jQuery ui widget */
@@ -570,12 +572,10 @@ input.ui-button{
 .edit_form { clear:both; }
 
 .edit_form textarea{
-	width:95%;
-	min-width:99%;
-	resize: vertical;
+	min-width:95%;
+	width:99%;
 	margin:0;
 }
-
 .ie8 .edit_form textarea{
 	width:780px;
 }
@@ -812,10 +812,10 @@ input.ui-button{
 .navibar li, .toolbar li, .topicpath li, .multilang li{
 	display: inline;
 }
-.navibar li:not(:last-child):after{
+.navibar li:not(:last-of-type):after{
 	content:' | ';
 }
-.topicpath li::not(:last-child):after{
+.topicpath li:not(:last-of-type):after{
 	content : ' > '
 }
 .toolbar ul{
@@ -827,15 +827,15 @@ input.ui-button{
 .toolbar li a:hover{
 	text-decoration:none !important;
 }
-.list_pages{
+.no-js .list_pages, .js .list_pages ul{
 	column-count: 2;
 	-moz-column-count: 2;
 	-webkit-column-count: 2;
 	-o-column-count: 2;
 	-ms-column-count: 2;
 }
-@media only screen and (min-width : 765px) {
-	.list_pages{
+@media only screen and (min-width : 800px) {
+	.no-js .list_pages, .js .list_pages ul{
 		column-count: 3;
 		-moz-column-count: 3;
 		-webkit-column-count: 3;
@@ -843,8 +843,8 @@ input.ui-button{
 		-ms-column-count: 3;
 	}
 }
-@media only screen and (min-width : 1024px) {
-	.list_pages{
+@media only screen and (min-width : 1440px) {
+	.no-js .list_pages, .js .list_pages ul{
 		column-count: 4;
 		-moz-column-count: 4;
 		-webkit-column-count: 4;
@@ -1005,16 +1005,6 @@ th .ui-icon {
 	display:none;
 	cursor:progress;
 }
-
-#loading_activity{
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	width:90px;
-	height:90px;
-	padding:5px;
-}
-
 /* Table Sorter */
 .even {
 	background-color: #3D3D3D;
@@ -2282,5 +2272,3 @@ li[role=tab]{
 		border: 1px dotted #333333;
 	}
 }
-
-<?php if(extension_loaded('zlib')){ob_end_flush();}?>

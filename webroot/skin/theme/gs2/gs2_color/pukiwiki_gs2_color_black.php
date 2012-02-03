@@ -8,10 +8,10 @@ if (isset($_SKIN)){
 	define('SKIN_CSS_CTS_BGCOLOR', 	'#303030');	// contents box bg
 	define('SKIN_CSS_CTS_BDCOLOR', 	'#999999');	// contents box border
 	
-	define('SKIN_CSS_BGCOLOR', 		'#101010');	// background
+	define('SKIN_CSS_BGCOLOR', 		'#202020');	// background
 	define('SKIN_CSS_FGCOLOR', 		'#F0F0F0');	// foreground
 	
-	define('SKIN_CSS_BOX_BGCOLOR', 	'#202020');	// normal box bg
+	define('SKIN_CSS_BOX_BGCOLOR', 	'#101010');	// normal box bg
 	define('SKIN_CSS_BOX_BDCOLOR', 	'#666666');	// normal box border
 	
 	define('SKIN_CSS_PRE_BGCOLOR', 	'#404040');	// pre bg

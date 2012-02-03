@@ -2,17 +2,18 @@
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
 //
-// PukiWiki Plus! skin for PukiWiki Advance.
-// Original version by miko and upk.
-// Modified by Logue
+// WIKIWIKI Adv. Theme.
+// by Logue
+// Inspired from wikiwiki.jp default skin.
 //
-// $Id: default.skin.php,v 1.4.17 2012/01/09 14:59:00 Logue Exp $
+// $Id: wikiwikiadv.skin.php,v 1.0 2012/01/28 16:55:00 Logue Exp $
 //
 global $pkwk_dtd, $_SKIN, $is_page, $defaultpage, $sidebar, $headarea, $footarea;
 
 // Initialize
 if (!defined('DATA_DIR')) { exit; }
 
+$site_name = $page_title;
 if ($title != $defaultpage) {
 	$page_title = $title.' - '.$page_title;
 } elseif ($newtitle != '' && $is_read) {
@@ -52,23 +53,33 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 	<body>
 		<div id="container" class="<?php echo $layout_class ?>" role="document">
 <!-- *** Header *** -->
-			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<header id="header" role="banner">'."\n" : '<div id="header">')."\n"; ?>
-				<a href="<?php echo $_LINK['reload'] ?>"  style="<?php echo $title_style; ?>'"><img id="logo" src="<?php echo $_SKIN['logo']['src'] ?>" width="<?php echo $_SKIN['logo']['width'] ?>" height="<?php echo $_SKIN['logo']['height'] ?>" alt="<?php echo $_SKIN['logo']['alt'] ?>" /></a>
+			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<header id="header" role="banner">'."\n" : '<div id="header" role="banner">')."\n"; ?>
+				<a href="<?php echo $_LINK['top'] ?>"  style="<?php echo $title_style; ?>'"><img id="logo" src="<?php echo $_SKIN['logo']['src'] ?>" width="<?php echo $_SKIN['logo']['width'] ?>" height="<?php echo $_SKIN['logo']['height'] ?>" alt="<?php echo $_SKIN['logo']['alt'] ?>" /></a>
 				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<hgroup id="hgroup" style="'.$title_style.'">'."\n" : '<div id="hgroup" style="'.$title_style.'">')."\n"; ?>
-					<h1 id="title"><?php echo(($newtitle!='' && $is_read) ? $newtitle: $page) ?></h1>
-					<h2><a href="<?php echo $_LINK['reload'] ?>" id="parmalink"><?php echo $_LINK['reload'] ?></a></h2>
+				<h1><?php echo $site_name; ?></h1>
+				<h2 id="description">PukiWiki - Yet another WikiWikiWeb clone.</h2>
 				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</hgroup>'."\n" : '</div>')."\n"; ?>
 				<?php if ($_SKIN['adarea']['header'] && !isset($header)) echo '<div id="ad" class="noprint">' . $_SKIN['adarea']['header'] . '</div>'; ?>
 				<?php if ($header) echo $header; ?>
-				<?php echo (!empty($lastmodified)) ? '<div id="lastmodified">Last-modified: '.$lastmodified.'</div>'."\n" : '' ?>
+				
 			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</header>' : '</div>')."\n"; ?>
 <!-- *** End Header *** -->
-			<?php echo ($navibar === null) ? (exist_plugin('navibar') ? do_plugin_convert('navibar','top,|,edit,freeze,diff,backup,upload,reload,|,new,list,search,recent,help,|,trackback').'<hr />' :'') : $navibar; ?>
+			<div id="naviframe" class="clearfix">
+				<?php echo exist_plugin('navibar') ? do_plugin_convert('navibar','top,new,edit,upload') : ''; ?>
+				<?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','list,recent,diff,source,backup,freeze,rename,help') : '';?>
+				<?php if (exist_plugin('search')) echo do_plugin_convert('search'); ?>
+			</div>
+			<?php echo ($is_page && exist_plugin_convert('topicpath')) ? do_plugin_convert('topicpath') : ''; ?>
+			<hr />
 			<div id="wrapper" class="clearfix">
 <!-- Center -->
 				<div id="main_wrapper">
 					<div id="main" role="main">
-						<?php echo ($is_page && exist_plugin_convert('topicpath')) ? do_plugin_convert('topicpath') : ''; ?>
+						<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<hgroup id="title" style="'.$title_style.'">'."\n" : '<div id="title" style="'.$title_style.'">')."\n"; ?>
+							<h1><?php echo (($newtitle!='' && $is_read) ? $newtitle: $title) ?></h1>
+							<?php echo (!empty($lastmodified)) ? '<h2 id="lastmodified">Last-modified: '.$lastmodified.'</h2>'."\n" : '' ?>
+						<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</hgroup>'."\n" : '</div>')."\n"; ?>
+						
 						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="body">'."\n" : '<div id="body">'."\n"; ?>
 							<?php echo $body."\n" ?>
 						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</section>'."\n" : '</div>'."\n"; ?>
@@ -115,27 +126,17 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 				<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
 				<!--  End Related -->
 <?php } ?>
+				<?php if ($footer) echo '<hr />'."\n".$footer; ?>
 				<hr />
-				<?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','reload,|,new,newsub,edit,freeze,source,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,log,|,help,|,rss') : '';?>
+				<?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','new,edit,upload,list,search,recent,diff,backup,freeze,copy,rename,|,log,referer,trackback') : '';?>
 			</div>
 
 			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<footer id="footer" class="clearfix" role="contentinfo">'."\n" : '<div id="footer" class="clearfix">'."\n"; ?>
-<?php if ($footer) {
-echo $footer;
-}else{ ?>
-				<div id="qr_code">
-					<?php echo exist_plugin_inline('qrcode') ? plugin_qrcode_inline(1,$_LINK['reload']) : ''; ?>
-				</div>
-				<address>Founded by <a href="<?php echo $modifierlink ?>"><?php echo $modifier ?></a></address>
-				<div id="sigunature">
-					Powered by <a href="http://pukiwiki.logue.be/" rel="product"><?php echo GENERATOR ?></a>. HTML convert time: <?php echo showtaketime() ?> sec. <br />
-					Original Theme Design by <a href="http://pukiwiki.cafelounge.net/plus/">PukiWiki Plus!</a> Team.
-				</div>
-				<div id="banner_box">
-					<a href="http://pukiwiki.logue.be/"><img src="<?php echo IMAGE_URI; ?>pukiwiki_adv.banner.png" width="88" height="31" alt="PukiWiki Advance" title="PukiWiki Advance" /></a>
-					<a href="http://validator.w3.org/check/referer"><img src="<?php echo IMAGE_URI ?>html5.png" width="88" height="31" alt="HTML 5" title="HTML5" /></a>
-				</div>
-<?php } ?>
+				<ul>
+					<li><address>Founded by <a href="<?php echo $modifierlink ?>"><?php echo $modifier ?></a></address></li>
+					<li>Powered by <a href="http://pukiwiki.logue.be/" rel="product"><?php echo GENERATOR ?></a>.</li>
+				<ul>
+				<?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','rss') : '';?>
 			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</footer>'."\n" : '</div>'."\n"; ?>
 		</div>
 		<?php echo $pkwk_tags; ?>

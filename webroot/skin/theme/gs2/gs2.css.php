@@ -466,7 +466,7 @@ input[type='week'], input[type='time'], input[type='datetime-local'],
 input[type='number'], input[type='range'], input[type='color'], 
 input[type='search'], textarea, select {
 	color: <?php echo SKIN_CSS_FGCOLOR; ?>;
-	background-image:none;
+	background-image: url('data:image/svg+xml;base64,<?php echo base64_encode('<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" version="1.0"><defs><linearGradient x1="0" y1="0" x2="0" y2="100%" id="gradient"><stop offset="0%" stop-color="'.SKIN_CSS_BOX_BGCOLOR.'" /><stop offset="100%" stop-color="'.SKIN_CSS_BGCOLOR.'" /></linearGradient></defs><rect fill="url(#gradient)" x="0" y="0" width="100%" height="100%"/></svg>'); ?>');
 	background-color: <?php echo SKIN_CSS_BGCOLOR; ?>;
 	border: 1px solid <?php echo SKIN_CSS_BOX_BDCOLOR; ?>;
 }
