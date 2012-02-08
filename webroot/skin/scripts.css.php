@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance Standard CSS.
-// $Id: scripts.css.php,v 1.6.12 2012/01/09 14:20:00 Logue Exp $
+// $Id: scripts.css.php,v 1.6.13 2012/02/09 00:23:00 Logue Exp $
 // Copyright (C) 2010-2012 PukiWiki Advance Developer Team
 //
 
@@ -59,13 +59,14 @@ figure { margin: 0; }
 form { margin: 0; }
 fieldset { border: 0; margin: 0; padding: 0; }
 label { cursor: pointer; }
-legend { border: 0; *margin-left: -7px; padding: 0; }
+legend { border: 0; *margin-left: -7px; padding: 0; white-space: normal; }
 button, input, select, textarea { font-size: 100%; margin: 0; vertical-align: baseline; *vertical-align: middle; }
 button, input { line-height: normal; }
 button, input[type="button"], input[type="reset"], input[type="submit"] { cursor: pointer; -webkit-appearance: button; *overflow: visible; }
-input[type="checkbox"], input[type="radio"] { box-sizing: border-box; }
+button[disabled], input[disabled], select[disabled], textarea[disabled] { cursor: default; }
+input[type="checkbox"], input[type="radio"] { box-sizing: border-box; padding: 0; *width: 13px; *height: 13px; }
 input[type="search"] { -webkit-appearance: textfield; -moz-box-sizing: content-box; -webkit-box-sizing: content-box; box-sizing: content-box; }
-input[type="search"]::-webkit-search-decoration { -webkit-appearance: none; }
+input[type="search"]::-webkit-search-decoration, input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; }
 button::-moz-focus-inner, input::-moz-focus-inner { border: 0; padding: 0; }
 textarea { overflow: auto; vertical-align: top; resize: vertical; }
 input:valid, textarea:valid {  }
@@ -74,6 +75,7 @@ input:invalid, textarea:invalid { background-color: #f0dddd; }
 table { border-collapse: collapse; border-spacing: 0; }
 td { vertical-align: top; }
 
+.chromeframe { margin: 0.2em 0; background: #ccc; color: black; padding: 0.2em 0; }
 /* ==|== PukiWiki Advance Standard Font Set ================================= */
 
 /* Font set */
@@ -2186,13 +2188,13 @@ li[role=tab]{
 .invisible { visibility: hidden; }
 .clearfix:before, .clearfix:after { content: ""; display: table; }
 .clearfix:after { clear: both; }
-.clearfix { zoom: 1; }
+.clearfix { *zoom: 1; }
 
 /* ==|== print styles ======================================================= */
 @media print {
 	* { background: transparent !important; color: black !important; box-shadow:none !important; text-shadow: none !important; filter:none !important; -ms-filter: none !important; }/* Black prints faster: h5bp.com/s */
 	a, a:visited { text-decoration: underline !important; }
-	a[href]:after { content: " (" attr(href) ")"; }
+	a[rel=external][href]:after { content: " (" attr(href) ")"; }
 	abbr[title]:after { content: " (" attr(title) ")"; }
 	.ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after { content: ""; }
 	pre, blockquote { border: 1px solid #999; page-break-inside: avoid; }
