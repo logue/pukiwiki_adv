@@ -88,63 +88,9 @@ td { vertical-align: top; }
 
 /* ==|== PukiWiki Advance Standard Font Set ================================= */
 
-/* Font set */
-body{
-	font-family: 'Segoe UI', 'Trebuchet MS', Verdana, Arial, Sans-Serif;
-}
-/* Japanese */
-:lang(ja){
-	font-family: Meiryo, 'メイリオ', 'ヒラギノ角ゴ Pro W3', 'Hiragino Mincho Pro W3', Osaka, 'ＭＳＰ ゴシック';
-}
-/* Korean */
-:lang(ko), :lang(ko) .ui-widget{
-	font-family: 'AppleGothic', 'Malgun Gothic', '맑은 고딕', Gulim, Dotum, AppleGothic;
-}
-/*  Chinese */
-:lang(zh), :lang(zh) .ui-widget{
-	font-family: 'Hiragino Sans GB W3', 'STHeiti', 'Apple LiGothic Medium', 'Microsoft YaHei', 'Microsoft JhengHei';
-}
-
 pre, code, kbd, samp, textarea, select, option, input, var{
-	font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace;
+	font-family: monospace !important;
 }
-
-:lang(ja) pre,
-:lang(ja) code,
-:lang(ja) kbd,
-:lang(ja) samp,
-:lang(ja) textarea,
-:lang(ja) select,
-:lang(ja) option,
-:lang(ja) input,
-:lang(ja) var{
-	font-family: 'Osaka−等幅', 'ＭＳ ゴシック', 'MS Gothic' !important;
-}
-
-:lang(ko) pre,
-:lang(ko) code,
-:lang(ko) kbd,
-:lang(ko) samp,
-:lang(ko) textarea,
-:lang(ko) select,
-:lang(ko) option,
-:lang(ko) input,
-:lang(ko) var{
-	font-family: GulimChe !important;
-}
-
-:lang(zh) pre,
-:lang(zh) code,
-:lang(zh) kbd,
-:lang(zh) samp,
-:lang(zh) textarea,
-:lang(zh) select,
-:lang(zh) option,
-:lang(zh) input,
-:lang(zh) var{
-	font-family: 'SimHei', '蒙納黑體', monospace;
-}
-
 dt{
 	font-weight:bold;
 }
@@ -167,6 +113,7 @@ pre{
 	background-color:whitesmoke;
 	padding:0.5em 1em;
 	margin:.5em;
+	text-shadow: 1px 1px 3px rgba(0,0,0,.3);
 }
 
 q{
@@ -183,6 +130,8 @@ q{
 	border-collapse:separate;
 	border-spacing:1px;
 	background-color:silver;
+	text-shadow:none;
+	text-shadow: none;
 }
 
 .style_th{
@@ -571,4 +520,55 @@ q{
 }
 .vote_td2 {
 	background-color:#EEF5FF;
+}
+
+/* ==|== jQuery Mobile Override classes ============================== */
+.content-secondary .ui-listview {
+	margin : 0 -15px !important;
+}
+@media all and (min-width: 650px){
+	.two-colums{
+		margin:0;
+		padding:0 !important;
+	}
+	
+	.two-colums .content-secondary {
+		border-right:1px #CCC solid;
+		text-align: left;
+		float: left;
+		width: 30%;
+		background: none;
+	}
+	.two-colums .content-primary {
+		width: 69%;
+		float: right;
+		margin:-10px;
+	}
+	/* fix up the collapsibles - expanded on desktop */
+	.two-colums .content-secondary .ui-collapsible {
+		margin: 0;
+		padding: 0;
+	}
+	.two-colums .content-secondary .ui-collapsible-heading {
+		display: none;
+	}
+	.two-colums .content-secondary .ui-collapsible-contain {
+		margin:0;
+	}
+	.two-colums .content-secondary .ui-collapsible-content {
+		display: block;
+		margin: 0;
+		padding: 0;
+	}
+	.two-colums .type-interior .content-secondary .ui-li-divider {
+		padding-top: 1em;
+		padding-bottom: 1em;
+	}
+	.two-colums .type-interior .content-secondary {
+		margin: 0;
+		padding: 0;
+	}
+	.two-colums .content-secondary .ui-listview {
+		margin : 0 !important;
+	}
 }

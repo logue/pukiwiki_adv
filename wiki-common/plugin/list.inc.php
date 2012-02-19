@@ -23,7 +23,8 @@ function plugin_list_action()
 	$listcmd = isset($vars['listcmd']) ? $vars['listcmd'] : 'read';
 	$type = isset($vars['type']) ? $vars['type'] : null;
 
-	if (IS_AJAX || $type === 'json'){
+	if ($type === 'json'){
+		$ret = array();
 		$pages = plugin_list_getlist($filelist,$listcmd, TRUE);
 		if (isset($vars['term'])){
 			// 酷い実装だ・・・。

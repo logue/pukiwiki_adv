@@ -218,6 +218,7 @@ function plugin_edit_write()
 	global $use_trans_sid_address;
 //	global $_title_collided, $_msg_collided_auto, $_msg_collided, $_title_deleted;
 //	global $_msg_invalidpass;
+
 	$_title_deleted = T_(' $1 was deleted');
 	$_msg_invalidpass = T_('Invalid password.');
 
@@ -227,17 +228,17 @@ function plugin_edit_write()
 	$partid = isset($vars['id'])     ? $vars['id']     : null;
 	$notimestamp = isset($vars['notimestamp']) && $vars['notimestamp'] !== null;
 
-	// Check Validate and Ticket
-	if ($notimestamp && !is_page($page)) {
-		return plugin_edit_honeypot();
-	}
-
 	// SPAM Check (Client(Browser)-Server Ticket Check)
 	if ( isset($vars['encode_hint']) && $vars['encode_hint'] !== PKWK_ENCODING_HINT )
 		return plugin_edit_honeypot();
 	if ( !isset($vars['encode_hint']) && !defined(PKWK_ENCODING_HINT) )
 		return plugin_edit_honeypot();
 
+	// Check Validate and Ticket
+	if ($notimestamp && !is_page($page)) {
+		return plugin_edit_honeypot();
+	}
+	
 	// Validate
 	if (is_spampost(array('msg')))
 		return plugin_edit_honeypot();
@@ -317,7 +318,7 @@ function plugin_edit_write()
 
 	page_write($page, $postdata, $notimeupdate != 0 && $notimestamp);
 
-	if (isset($vars['refpage']) && $vars['refpage'] != '') {
+	if (isset($vars['refpage']) && $vars['refpage'] !== '') {
 		$url = ($partid) ? get_page_location_uri($vars['refpage'],'',rawurlencode($partid)) : get_page_location_uri($vars['refpage']);
 	} else {
 		$url = ($partid) ? get_page_location_uri($page,'',rawurlencode($partid)) : get_page_location_uri($page);
@@ -420,4 +421,40 @@ function plugin_edit_parts($id, &$source, $postdata='')
 	return FALSE;
 }
 
+function plugin_edit_captcha(){
+	global $recaptcha_public_key, $recaptcha_private_key, $vars;
+	require_once(LIB_DIR.'recaptchalib.php');
+	if ($vars['recaptcha_response_field']) {
+		if (!$vars['recaptcha_challenge_field']) return false;
+		$response = recaptcha_check_answer(
+			$recaptcha_private_key,
+			$_SERVER['REMOTE_ADDR'],
+			$vars['recaptcha_challenge_field'],
+			$vars['recaptcha_response_field']
+		);
+		unset($vars['recaptcha_challenge_field'], $vars['recaptcha_response_field']);
+		if ($response->is_valid) {
+			return true;
+		} else {
+			return false;
+		}
+	}else{
+		foreach ($vars as $key=>$value){
+			$form[] = '<input type="hidden" name="' . $key . '" value="' . $value . '" />';
+		}
+		$stored_form = join("\n", $form);
+		$recaptcha_form = recaptcha_get_html($recaptcha_public_key);
+		$script = get_script_uri();
+		$body = <<<HTML
+<form method="post" action="{$script}" method="post">
+	<input type="hidden" name="cmd" value="edit" />
+	<input type="hidden" name="mode" value="captcha" />
+	{$stored_form}
+	{$recaptcha_form}
+	<input type="submit" />
+</form>
+HTML;
+	}
+	return array('msg'=>'CAPTCHA','body'=>$body);
+}
 ?>

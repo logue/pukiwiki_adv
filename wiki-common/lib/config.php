@@ -1,9 +1,9 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: config.php,v 1.7.1 2010/10/25 17:34:00 Logue Exp $
+// $Id: config.php,v 1.7.2 2012/02/01 19:39:00 Logue Exp $
 // Copyright (C) 
-//               2010      PukiWiki Advance Developers Team
-//               2003-2005 PukiWiki Developers Team
+//               2010-2012 PukiWiki Advance Developers Team
+//               2003-2007 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
 //
 // Parse a PukiWiki page as a configuration page
@@ -20,7 +20,7 @@
  * $obj->write();
  */
 
-// Fixed prefix of configuration-page's name
+// Fixed prefix of configuration-page's name		'
 define('PKWK_CONFIG_PREFIX', ':config/');
 
 // Configuration-page manager
@@ -33,55 +33,63 @@ class Config
 	{
 		$this->name = $name;
 		$this->page = PKWK_CONFIG_PREFIX . $name;
+//		$this->modified = get_filetime(PKWK_CONFIG_PREFIX . $name);
+//		$this->cache_prefix = 'conf-'.encode($this->name);
 	}
 
 	// Load the configuration-page
 	function read()
 	{
+		global $memcache;
 		if (! is_page($this->page)) return FALSE;
 
 		$this->objs = array();
 		$obj        = new ConfigTable('');
 		$matches = array();
 
-		foreach (get_source($this->page) as $line) {
-			if ($line == '') continue;
+//		if ($this->cacheCheck('') === false){
+			foreach (get_source($this->page) as $line) {
+				if ($line == '') continue;
 
-			$head  = $line{0};	// The first letter
-			$level = strspn($line, $head);
+				$head  = $line{0};	// The first letter
+				$level = strspn($line, $head);
 
-			if ($level > 3) {
-				$obj->add_line($line);
+				if ($level > 3) {
+					$obj->add_line($line);
 
-			} else if ($head == '*') {
-				// Cut fixed-heading anchors
-				$line = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/', '$1$2', $line);
+				} else if ($head == '*') {
+					// Cut fixed-heading anchors
+					$line = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/', '$1$2', $line);
 
-				if ($level == 1) {
-					$this->objs[$obj->title] = $obj;
-					$obj = new ConfigTable($line);
-				} else {
+					if ($level == 1) {
+						$this->objs[$obj->title] = $obj;
+						$obj = new ConfigTable($line);
+					} else {
+						if (! is_a($obj, 'ConfigTable_Direct'))
+							$obj = new ConfigTable_Direct('', $obj);
+						$obj->set_key($line);
+					}
+					
+				} else if ($head == '-' && $level > 1) {
 					if (! is_a($obj, 'ConfigTable_Direct'))
 						$obj = new ConfigTable_Direct('', $obj);
-					$obj->set_key($line);
-				}
-				
-			} else if ($head == '-' && $level > 1) {
-				if (! is_a($obj, 'ConfigTable_Direct'))
-					$obj = new ConfigTable_Direct('', $obj);
-				$obj->add_value($line);
+					$obj->add_value($line);
 
-			} else if ($head == '|' && preg_match('/^\|(.+)\|\s*$/', $line, $matches)) {
-				// Table row
-				if (! is_a($obj, 'ConfigTable_Sequential'))
-					$obj = new ConfigTable_Sequential('', $obj);
-				// Trim() each table cell
-				$obj->add_value(array_map('trim', explode('|', $matches[1])));
-			} else {
-				$obj->add_line($line);
+				} else if ($head == '|' && preg_match('/^\|(.+)\|\s*$/', $line, $matches)) {
+					// Table row
+					if (! is_a($obj, 'ConfigTable_Sequential'))
+						$obj = new ConfigTable_Sequential('', $obj);
+					// Trim() each table cell
+					$obj->add_value(array_map('trim', explode('|', $matches[1])));
+				} else {
+					$obj->add_line($line);
+				}
 			}
-		}
-		$this->objs[$obj->title] = $obj;
+			$this->objs[$obj->title] = $obj;
+//			$this->cacheWrite($obj->title, $obj);
+//		}else{
+//			$this->objs[$obj->title] = $this->cacheRead($obj->title);
+//		}
 
 		return TRUE;
 	}
@@ -110,8 +118,14 @@ class Config
 	// Get an object (or create it)
 	function & get_object($title)
 	{
-		if (! isset($this->objs[$title]))
-			$this->objs[$title] = new ConfigTable('*' . trim($title) . "\n");
+		if (! isset($this->objs[$title])){
+//			if ($this->cacheCheck($title) === false){
+				$this->objs[$title] = new ConfigTable('*' . trim($title) . "\n");
+//				$this->cacheWrite($title, $this->objs[$title]);
+//			}else{
+//				$this->objs[$title] = $this->cacheRead($title);
+//			}
+		}
 		return $this->objs[$title];
 	}
 
@@ -127,6 +141,74 @@ class Config
 			$retval .= $obj->toString();
 		return $retval;
 	}
+/*
+	function cacheCheck($title){
+		global $memcache;
+		if ($title === ''){
+			$cache_file = CACHE_DIR.$this->cache.PKWK_DAT_EXTENTION;
+		}else{
+			$this->cache_name[$title] = $this->cache.'-'.encode($title).PKWK_DAT_EXTENTION;
+			$cache_file = CACHE_DIR.$this->cache_name[$title];
+		}
+
+		if (file_exists($cache_file) && !($this->modified > getlastmod($cache_file) )) {
+			return true;
+		}else{
+			return false;
+		}
+	}
+	function cacheWrite($title, $obj){
+		global $memcache;
+		
+		if ($title === ''){
+			$cache_file = $this->cache.PKWK_DAT_EXTENTION;
+		}else{
+			if ( !isset($this->cache_name[$title]) ) {
+				$this->cache_name[$title] = $this->cache.'-'.encode($title).PKWK_DAT_EXTENTION;
+			}
+			$cache_file = $this->cache_name[$title];
+		}
+		
+		pkwk_touch_file(CACHE_DIR.$cache_file);
+		$fp = fopen(CACHE_DIR.$cache_file, 'wb');
+		if ($fp === false) return false;
+		@flock($fp, LOCK_EX);
+		rewind($fp);
+		$ret = fwrite($fp, serialize($obj));
+		fflush($fp);
+		ftruncate($fp, ftell($fp));
+		@flock($fp, LOCK_UN);
+		fclose($fp);
+		if ($memcache !== null){
+			$ret = update_memcache(MEMCACHE_PREFIX.$cache_file, $obj);
+		}
+		return $ret;
+	}
+
+	function cacheRead($title){
+		global $memcache;
+		
+		if ( !isset($this->cache_name[$title]) ) {
+			$this->cache_name[$title] = $this->cache.'-'.encode($title).PKWK_DAT_EXTENTION;
+		}
+
+		$cache_file = ($title === '') ? $this->cache.PKWK_DAT_EXTENTION : $this->cache_name[$title];
+
+		$ret = ($memcache !== null) ? 
+			$memcache->get(MEMCACHE_PREFIX.$cache_file) : false;
+
+		if ($ret === false){
+			// キャッシュ読み込み
+			$fp = fopen(CACHE_DIR.$cache_file, 'rb');
+			if ($fp === false) return array();
+			@flock($fp, LOCK_SH);
+			$ret = unserialize( fread($fp, filesize(CACHE_DIR.$cache_file)) );
+			@flock($fp, LOCK_UN);
+			if(! fclose($fp)) return array();
+		}
+		return $ret;
+	}
+*/
 }
 
 // Class holds array values

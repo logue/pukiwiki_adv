@@ -230,6 +230,6 @@ $auth_guide
 	<input type="submit" name="comment" value="{$_comment_messages['label_post']}" />
 </form>
 EOD;
-	return $string;
+	return (IS_MOBILE) ? '<div data-role="collapsible" data-theme="c" data-content-theme="c"><h4>'.$_comment_messages['label_comment'].'</h4>'.$string.'</div>' : $string;
 }
 ?>

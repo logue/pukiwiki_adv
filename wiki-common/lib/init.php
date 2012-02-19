@@ -35,9 +35,6 @@ defined('ROOT_URI')				or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');
 defined('WWW_HOME')				or define('WWW_HOME', '');
 defined('PLUS_THEME')			or define('PLUS_THEME',	'default');
 
-// HTTP_X_REQUESTED_WITHヘッダーで、ajaxによるリクエストかを判別
-define('IS_AJAX', isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' || isset($vars['ajax']));
-
 // ページ名やファイル名として使用できない文字（エンコード前の文字）
 defined('PKWK_ILLEGAL_CHARS_PATTERN') or define('PKWK_ILLEGAL_CHARS_PATTERN', '/[%|=|&|?|~|#|\r|\n|\0|\@|;|\$|+|\\|\[|\]|\||^|{|}|\']/');
 
@@ -63,16 +60,13 @@ $foot_tags    = array();	// XHTML tags before </body> (Obsolete in Adv.)
 
 $info         = array();	// For debug use.
 
-if (!IS_AJAX){
-	// Init grobal variables
-	$meta_tags    = array();	// <meta />Tags
-	$link_tags    = array();	// <link />Tags
-	$js_tags      = array();	// <script></script>Tags
-	$js_blocks    = array();	// Inline scripts(<script>//<![CDATA[ ... //]]></script>)
-	$css_blocks   = array();	// Inline styleseets(<style>/*<![CDATA[*/ ... /*]]>*/</style>)
-	$js_vars      = array();	// JavaScript initial value.
-	$_SKIN        = array();
-}
+$meta_tags    = array();	// <meta />Tags
+$link_tags    = array();	// <link />Tags
+$js_tags      = array();	// <script></script>Tags
+$js_blocks    = array();	// Inline scripts(<script>//<![CDATA[ ... //]]></script>)
+$css_blocks   = array();	// Inline styleseets(<style>/*<![CDATA[*/ ... /*]]>*/</style>)
+$js_vars      = array();	// JavaScript initial value.
+$_SKIN        = array();
 
 /////////////////////////////////////////////////
 // Require INI_FILE
@@ -136,8 +130,6 @@ if (isset($script)) {
 
 /////////////////////////////////////////////////
 // INI_FILE: $agents:  UserAgentの識別
-
-
 $user_agent = $matches = array();
 
 $user_agent['agent'] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
@@ -260,7 +252,6 @@ if (isset($_GET['encode_hint']) && empty($_GET['encode_hint']))
 	$encode = mb_detect_encoding($_GET['encode_hint']);
 	mb_convert_variables(SOURCE_ENCODING, $encode, $_GET);
 }
-
 /////////////////////////////////////////////////
 // Memcache利用可能時
 // Cacheディレクトリ内のキャッシュをMemcacheに保存します。
@@ -278,30 +269,23 @@ defined('MEMCACHE_EXPIRE')		or define('MEMCACHE_EXPIRE', 0);
 
 if (class_exists('Memcache')){
 	$memcache = new Memcache;
-	if (!$memcache->connect(MEMCACHE_HOST, MEMCACHE_PORT)) {
+	if (!@$memcache->connect(MEMCACHE_HOST, MEMCACHE_PORT)) {
 		// Memcacheが使用できない場合
-		$info[] = sprintf('Couldnot to connect Memcached: <var>%s:%s%s</var>. Please check Memcached is running.', MEMCACHE_HOST, MEMCACHE_PORT, PHP_EOL);
+		$info[] = sprintf('Could not to connect to Memcached: <var>%s:%s%s</var>. Please check Memcached is running.', MEMCACHE_HOST, MEMCACHE_PORT, PHP_EOL);
 		unset($memcache);
 	}else{
 		// Memcacheが使用できる場合
-		define('PKWK_DAT_EXTENTION', '');
 //		$memcache->setCompressThreshold(20000, 0.2);
 		$info[] = 'Memcache is enabled! Ver.<var>'.$memcache->getVersion().'</var> / ';
 		// セッション管理もMemcacheで行う
 		ini_set('session.save_handler', 'memcache');
 		ini_set('session.save_path', (strpos(MEMCACHE_HOST, 'unix://') !== FALSE) ? MEMCACHE_HOST : 'tcp://'.MEMCACHE_HOST.':'.MEMCACHE_PORT);
 
-		define('PKWK_DAT_EXTENTION', '');
-		define('PKWK_TSV_EXTENTION', '');
-		define('PKWK_TXT_EXTENTION', '');
-		define('PKWK_REL_EXTENTION', 'rel-');
-		define('PKWK_REF_EXTENTION', 'ref-');
 	}
 }else{
 	$info[] = 'Memcache is disabled.';
 	unset($memcache);
 }
-
 /////////////////////////////////////////////////
 // TokyoTyrant利用可能時（未実装）
 // 仕様は同上。
@@ -418,6 +402,9 @@ if (! isset($vars['cmd']) && ! isset($vars['plugin'])) {
 	$get['page'] = $post['page'] = $vars['page'] = $arg;
 }
 
+// HTTP_X_REQUESTED_WITHヘッダーで、ajaxによるリクエストかを判別
+define('IS_AJAX', isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' || isset($vars['ajax']));
+
 /////////////////////////////////////////////////
 // 初期設定($WikiName,$BracketNameなど)
 // $WikiName = '[A-Z][a-z]+(?:[A-Z][a-z]+)+';
@@ -468,7 +455,6 @@ $line_rules = array_merge(array(
 
 //////////////////////////////////////////////////
 // ajaxではない場合
-
 // スキンデーター読み込み
 define('SKIN_FILE', add_skindir(PLUS_THEME));
 defined('IS_MOBILE') or define('IS_MOBILE', false);
@@ -523,16 +509,25 @@ if (!IS_AJAX || IS_MOBILE){
 		}
 	}
 
-	// modernizrの設定
-	$modernizr = 'modernizr.min.js';
+	if (!IS_MOBILE){
+		// modernizrの設定
+		$modernizr = 'modernizr.js';
 
-	// jQueryUIのCSS
-	$link_tags[] = array(
-		'rel'=>'stylesheet',
-		'href'=>'http://ajax.googleapis.com/ajax/libs/jqueryui/'.$google_loader['jqueryui']['ver'].'/themes/'.(!isset($_SKIN['ui_theme']) ? 'base' : $_SKIN['ui_theme']).'/jquery-ui.css',
-		'type'=>'text/css',
-		'id'=>'ui-theme'
-	);
+		// jQueryUIのCSS
+		$link_tags[] = array(
+			'rel'=>'stylesheet',
+			'href'=>'http://ajax.googleapis.com/ajax/libs/jqueryui/'.$google_loader['jqueryui']['ver'].'/themes/'.(!isset($_SKIN['ui_theme']) ? 'base' : $_SKIN['ui_theme']).'/jquery-ui.css',
+			'type'=>'text/css',
+			'id'=>'ui-theme'
+		);
+	}else{
+		$modernizr = '';
+		$link_tags[] = array(
+			'rel'=>'stylesheet',
+			'href'=>'http://code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.css',
+			'type'=>'text/css',
+		);
+	}
 
 	// JS用初期設定
 	$js_init = array(

@@ -8,6 +8,9 @@
 //   2001-2002 Originally written by yu-ji
 // License: GPL v2 or (at your option) any later version
 
+// Load Hangul Libraly
+require(LIB_DIR . 'hangul.php');
+
 // Adv. merged official cvs 
 function is_interwiki($str)
 {
@@ -430,12 +433,20 @@ function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', 
 		// Get the initial letter of the page name
 		if ($pagereading_enable) {
 			// WARNING: Japanese code hard-wired
-			if(mb_ereg('^(\:|[A-Za-z])', mb_convert_kana($page, 'a'), $matches)) {
+			if(mb_ereg('^(\:|[A-Za-z])', mb_convert_kana($page, 'a'), $matches) !== FALSE) {
 				$initial = & $matches[1];
-			} elseif (isset($readings[$page]) && mb_ereg('^([ァ-ヶ])', $readings[$page], $matches)) { // here
+			} elseif (isset($readings[$page]) && mb_ereg('^([ァ-ヶ])', $readings[$page], $matches) !== FALSE) { // here
 				$initial = & $matches[1];
 			} elseif (mb_ereg('^[ -~]|[^ぁ-ん亜-熙]', $page)) { // and here
 				$initial = & $sentinel_symbol;
+			} elseif (preg_match('/^([가-힣])/', $page) !== FALSE){
+				// for Korean
+				// http://pukiwiki.sourceforge.jp/dev/?BugTrack2%2F13
+				$initial = hangul_chosung($page);
+/*
+			} elseif (mb_ereg('/^([一-龥])/',$page) !== FALSE){
+				// for Simplified Chinese
+*/
 			} else {
 				$initial = & $sentinel_another;
 			}
@@ -453,9 +464,13 @@ function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', 
 		if ($cmd !== 'read'){
 			$str .= '<a href="' . get_cmd_uri($cmd, $page) . '" >' . htmlsc($page, ENT_QUOTES) . '</a>';
 		}else{
-			$str .= '<a href="' . get_page_uri($page) . '" >' . htmlsc($page, ENT_QUOTES) . '</a>' .get_pg_passage($page);
-			if ($withfilename) {
-				$str .= '<br /><var>' . htmlsc($file) . '</var>';
+			if (!IS_MOBILE) {
+				$str .= '<a href="' . get_page_uri($page) . '" >' . htmlsc($page, ENT_QUOTES) . '</a>' .get_pg_passage($page);
+				if ($withfilename) {
+					$str .= '<br /><var>' . htmlsc($file) . '</var>';
+				}
+			}else{
+				$str .= '<a href="' . get_page_uri($page) . '" >' . htmlsc($page, ENT_QUOTES) . '</a>' . '<span class="ui-li-count">'.get_pg_passage($page, false).'</span>';
 			}
 		}
 			$str .= '</li>';
@@ -467,47 +482,74 @@ function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', 
 
 	$cnt = 0;
 	$retval = $contents = array();
-	$retval[] = '<div class="list_pages">';
-	foreach ($array as $_initial => $pages) {
-		ksort($pages, SORT_STRING);
-		if ($list_index) {
-			++$cnt;
-			$page_count = $counts[$_initial];
-			if ($_initial == $sentinel_symbol) {
-				$_initial = htmlsc($_msg_symbol);
-			} else if ($_initial == $sentinel_another) {
-				$_initial = htmlsc($_msg_other);
-			}
-			$retval[] = '	<fieldset id="head_' . $cnt .'" role="tabpanel" aria-labeledby="top_' . $cnt .'">';
-			$retval[] = '		<legend><a href="#top_' . $cnt . '">' . $_initial . '</a></legend>';
-			$retval[] = '		<ul class="list1">';
+	if (!IS_MOBILE) {
+		$retval[] = '<div class="list_pages">';
+		foreach ($array as $_initial => $pages) {
+			ksort($pages, SORT_STRING);
+			if ($list_index) {
+				++$cnt;
+				$page_count = $counts[$_initial];
+				if ($_initial == $sentinel_symbol) {
+					$_initial = htmlsc($_msg_symbol);
+				} else if ($_initial == $sentinel_another) {
+					$_initial = htmlsc($_msg_other);
+				}
+				$retval[] = '	<fieldset id="head_' . $cnt .'" role="tabpanel" aria-labeledby="top_' . $cnt .'">';
+				$retval[] = '		<legend><a href="#top_' . $cnt . '">' . $_initial . '</a></legend>';
+				$retval[] = '		<ul class="list1">';
 
-			$contents[] = '<li id="top_' . $cnt .'" aria-controls="head_'.$cnt.'" role="tab">'.
-							'<a href="#head_' . $cnt . '" title="'.$page_count.'">' .$_initial . '</a></li>';
+				$contents[] = '<li id="top_' . $cnt .'" aria-controls="head_'.$cnt.'" role="tab">'.
+								'<a href="#head_' . $cnt . '" title="'.$page_count.'">' .$_initial . '</a></li>';
+			}
+			$retval[] = join("\n", $pages);
+			if ($list_index) {
+				$retval[] = '		</ul>';
+				$retval[] = '	</fieldset>';
+			}
 		}
-		$retval[] = join("\n", $pages);
-		if ($list_index) {
-			$retval[] = '		</ul>';
-			$retval[] = '	</fieldset>';
+		$retval[] = '</div>';
+	}else{
+		foreach ($array as $_initial => $pages) {
+			ksort($pages, SORT_STRING);
+			if ($list_index) {
+				++$cnt;
+				$page_count = $counts[$_initial];
+				if ($_initial == $sentinel_symbol) {
+					$_initial = htmlsc($_msg_symbol);
+				} else if ($_initial == $sentinel_another) {
+					$_initial = htmlsc($_msg_other);
+				}
+				$contents[] = '<li data-role="list-divider">' . $_initial . '</li>';
+				
+				foreach($array[$_initial] as $page){
+					$contents[] = $page;
+				}
+				//$contents[] = $array[$_initial][$pages];
+			}
 		}
 	}
-	$retval[] = '</div>';
 	unset($array);
 
 	// Insert a table of contents
+	$ret = '';
 	if ($list_index && $cnt) {
 		while (! empty($contents)) {
 			$tmp[] = join('', array_splice($contents, 0));
 		}
 		$contents = & $tmp;
-		array_unshift(
-			$retval,
-			'<ul role="tablist">',
-			join("\n" . '<br />' . "\n", $contents),
-			'</ul>');
+		if (!IS_MOBILE) {
+			array_unshift(
+				$retval,
+				'<ul role="tablist">',
+				join("\n" . '<br />' . "\n", $contents),
+				'</ul>');
+			$ret = '<div class="tabs" role="application">'."\n".join("\n", $retval) . "\n".'</div>';
+		}else{
+			$ret = '<ul data-role="listview">'.join("\n", $contents).'</ul>';
+		}
 	}
 
-	return '<div class="tabs" role="application">'."\n".join("\n", $retval) . "\n".'</div>';
+	return $ret;
 }
 
 // Show text formatting rules

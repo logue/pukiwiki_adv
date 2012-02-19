@@ -129,9 +129,9 @@ class PluginHtmlinsert
 			array_pop($args); // always get empty element at the end
 		}
 		list($page, $variables, $this->options) = $this->parse_args($args, $this->default_options);
-		if (! isset($page) || $page == '') { return '<p>htmlinsert(): No file or page was specified. </p>'; }
+		if (! isset($page) || $page == '') { return '<p class="message_box ui-state-error ui-corner-all">htmlinsert(): No file or page was specified. </p>'; }
 		$source  = $this->htmlinsert($page, $variables);
-		if ($this->error != "") { return "<p>htmlinsert(): $this->error</p>"; }
+		if ($this->error != "") { return '<p class="message_box ui-state-error ui-corner-all">htmlinsert(): '.$this->error.'</p>'."\n"; }
 		if ($this->options['transitional']) {
 			$this->html_transitional();
 		}
@@ -177,26 +177,26 @@ class PluginHtmlinsert
 		$localnames[] = $this->conf['SCRIPT_DIR'] . "/" . $filename;
 		foreach ($localnames as $localname) {
 			if (! file_exists($localname)) {
-				$this->error .=  "Localfile, $localname, does not exist. ";
+				$this->error .=  "Localfile, <var>$localname</var>, does not exist. ";
 			} else {
 				if(! is_readable($localname)) {
-					$this->error .=  "Localfile, $localname, exists but is not readable. ";
+					$this->error .=  "Localfile, <var>$localname</var>, exists but is not readable. ";
 				} else {
 					$this->error = "";
 					break;
 				}
 			}
 		}
-		return file_get_contents($localname);
+		return @file_get_contents($localname);
 	}
   
 	function get_wikipage($page)
 	{
 		if (! is_page($page)) {
-			$this->error .=  "Wiki page, $page, does not exist. ";
+			$this->error .=  "Wiki page, <var>$page</var>, does not exist. ";
 			return;
 		} elseif (! (PKWK_READONLY > 0 or $this->is_edit_auth($page) or is_freeze($page))) {
-			$this->error .=  "Wiki page, $page, must be edit_authed or frozen or whole system must be PKWK_READONLY.";
+			$this->error .=  "Wiki page, <var>$page</var>, must be edit_authed or frozen or whole system must be <var>PKWK_READONLY</var>.";
 			return;
 		}
 
@@ -223,7 +223,7 @@ class PluginHtmlinsert
 			if (($idx = array_search($key, $keys)) !== FALSE) {
 				$values[$idx] = $val;
 			} else {
-				$this->error = "No such a htmlinsert variable, $key, in the specified page. ";
+				$this->error = "No such a htmlinsert variable, <var>$key</var>, in the specified page. ";
 				return;
 			}
 		}

@@ -304,6 +304,10 @@ iframe, object{
 /* Fix italic font */
 i, em, cite, q{
 	font-style: normal;
+	-webkit-transform: skewX(-15deg);
+	-moz-transform: skewX(-15deg);
+	-ms-transform: skewX(-15deg);
+	-o-transform: skewX(-15deg);
 	transform: skewX(-15deg);
 }
 
@@ -1088,6 +1092,7 @@ th .ui-icon {
 	position:absolute;
 	text-shadow: white 1px 1px 0;
 	z-index:1;
+	color:black;
 }
 #poptoc h1{
 	font-size:small;

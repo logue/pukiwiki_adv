@@ -185,9 +185,12 @@ function do_plugin_action($name)
 		die_message('Plugin init failed: ' . htmlsc($name));
 	}
 
-	if (isset($vars['postid']) && !check_postid($vars['postid'])) {
+	// check postid
+	if ( isset($vars['postid']) && !check_postid($vars['postid']) )
 		die_message('Plugin Runtime Error.');
-	}
+	
+	if ( isset($vars['encode_hint']) && $vars['encode_hint'] !== PKWK_ENCODING_HINT )
+		die_message('Plugin Encode Error.');
 
 	textdomain($name);
 	T_textdomain($name);
@@ -290,7 +293,7 @@ function use_plugin($plugin, $lines)
 
 function add_hidden_field($retvar, $name){
 	if (preg_match('/<form.+method="?(get|post)"[^>]*>/i', $retvar, $matches) !== 0){
-		if (PKWK_ENCODING_HINT !== ''){
+		if ( PKWK_ENCODING_HINT ) {
 			// Insert a hidden field, supports idenrtifying text enconding
 			$hidden_field[] = '<input type="hidden" name="encode_hint" value="' . PKWK_ENCODING_HINT . '" />';
 		}

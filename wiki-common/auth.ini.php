@@ -1,8 +1,8 @@
 <?php
 // PukiPlus - Yet another WikiWikiWeb clone
-// $Id: auth.ini.php,v 0.0.16 2010/01/17 02:47:00 upk Exp $
+// $Id: auth.ini.php,v 0.0.17 2012/01/30 19:35:00 Logue Exp $
 // Copyright (C)
-//   2010 PukiPlus Team
+//   2010-2012 PukiWiki Advance Developers Team
 //   2005-2008 PukiWiki Plus! Team
 // License: GPL v2 or (at your option) any later version
 //
@@ -61,11 +61,11 @@ $read_auth_pages = array(
 
 /////////////////////////////////////////////////
 // Edit auth (0:Disable, 1:Enable)
-$edit_auth = 0;
+$edit_auth = 1;
 
 $edit_auth_pages = array(
 	// Regex                   Username or array('user'=>Username,'group'=>Groupname,'role'=>Role),
-	'#(FrontPage|MenuBar|SideBar|Navigation|InterWikiName|Glossary|AutoAliasName|#'		=> 'bar',
+	'#(FrontPage|MenuBar|SideBar|Navigation|InterWikiName|Glossary|AutoAliasName|#'		=> 'admin',
 	'#FooBar#'			=> 'hoge',
 	'#(Foo|Bar)#'		=> 'foo,bar,hoge',
 );

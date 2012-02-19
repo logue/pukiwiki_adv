@@ -135,7 +135,7 @@ function plugin_navibar_convert()
 		case 'diff':
 		case 'reload':
 		case 'copy':
-			if (!$is_read || !empty($_page))
+			if (!$is_read || empty($_page))
 				break;
 		default:
 			$ret[] = _navibar($name);
@@ -150,7 +150,11 @@ function plugin_navibar_convert()
 	}
 	$body = "\n".join('',$ret)."\n";
 
-	return (($pkwk_dtd == PKWK_DTD_HTML_5) ? '<nav class="navibar">'.$body.'</nav>' : '<div class="navibar">'.$body.'</div>')."\n";
+	if (IS_MOBILE){
+		return '<nav data-role="navbar" data-theme="a">'.$body.'</nav>';
+	}else{
+		return (($pkwk_dtd == PKWK_DTD_HTML_5) ? '<nav class="navibar">'.$body.'</nav>' : '<div class="navibar">'.$body.'</div>')."\n";
+	}
 }
 
 function _navibar($key, $alt=null)

@@ -48,10 +48,17 @@ function plugin_popular_convert()
 	global $vars, $_popular_msg;
 //	global $_popular_plugin_frame, $_popular_plugin_today_frame;
 
-	$_popular_plugin_frame				= sprintf('<h5>%s</h5><div>%%s</div>', $_popular_msg['popular']);
-	$_popular_plugin_today_frame		= sprintf('<h5>%s</h5><div>%%s</div>', $_popular_msg['today']);
-	$_popular_plugin_yesterday_frame	= sprintf('<h5>%s</h5><div>%%s</div>', $_popular_msg['yesterday']);
-	$_popular_plugin_recent_frame		= sprintf('<h5>%s</h5><div>%%s</div>', $_popular_msg['recent']);
+	if (!IS_MOBILE){
+		$_popular_plugin_frame				= sprintf('<h5>%s</h5><div>%%s</div>', $_popular_msg['popular']);
+		$_popular_plugin_today_frame		= sprintf('<h5>%s</h5><div>%%s</div>', $_popular_msg['today']);
+		$_popular_plugin_yesterday_frame	= sprintf('<h5>%s</h5><div>%%s</div>', $_popular_msg['yesterday']);
+		$_popular_plugin_recent_frame		= sprintf('<h5>%s</h5><div>%%s</div>', $_popular_msg['recent']);
+	}else{
+		$_popular_plugin_frame				= sprintf('<ul data-role="listview"><li data-theme="a">%s</li>'."\n".'%%s</ul>', $_popular_msg['popular']);
+		$_popular_plugin_today_frame		= sprintf('<ul data-role="listview"><li data-theme="a">%s</li>'."\n".'%%s</ul>', $_popular_msg['today']);
+		$_popular_plugin_yesterday_frame	= sprintf('<ul data-role="listview"><li data-theme="a">%s</li>'."\n".'%%s</ul>', $_popular_msg['yesterday']);
+		$_popular_plugin_recent_frame		= sprintf('<ul data-role="listview"><li data-theme="a">%s</li>'."\n".'%%s</ul>', $_popular_msg['recent']);
+	}
 	$view   = 'total';
 	$max    = PLUGIN_POPULAR_DEFAULT;
 	$except = '';
@@ -84,25 +91,25 @@ function plugin_popular_convert()
 
 	$items = '';
 	if (! empty($counters)) {
-		$items = '<ul class="popular_list">' . "\n";
+		$items = (!IS_MOBILE) ? '<ul class="popular_list">' . "\n" : '';
 
 		foreach ($counters as $page=>$count) {
 			$page = substr($page, 1);
+			$counter = (!IS_MOBILE) ? 
+				'<span class="counter">(' . $count .')</span>' :
+				'<span class="ui-li-count">' . $count .'</span>';
 
 			$s_page = htmlsc($page);
+			
 			if ($page === $vars['page']) {
 				// No need to link itself, notifies where you just read
 				$pg_passage = get_pg_passage($page,FALSE);
-				$items .= ' <li><span title="' . $s_page . ' ' . $pg_passage . '">' .
-					$s_page . '<span class="counter">(' . $count .
-					')</span></span></li>' . "\n";
+				$items .= ' <li data-theme="e"><span title="' . $s_page . ' ' . $pg_passage . '">' . $s_page . $counter . '</span></li>' . "\n";
 			} else {
-				$items .= ' <li>' . make_pagelink($page,
-					$s_page . '<span class="counter">(' . $count . ')</span>') .
-					'</li>' . "\n";
+				$items .= ' <li>' . make_pagelink($page, $s_page . $counter) .'</li>' . "\n";
 			}
 		}
-		$items .= '</ul>' . "\n";
+		$items .= (!IS_MOBILE) ? '</ul>' . "\n" : '';
 	}
 
 	switch ($view) {

@@ -129,7 +129,7 @@ function plugin_toolbar_convert()
 		case 'diff':
 		case 'reload':
 		case 'copy':
-			if (!$is_read || !empty($_page))
+			if (!$is_read || empty($_page))
 				break;
 		default:
 			$ret[] = _toolbar($name);

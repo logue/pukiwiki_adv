@@ -105,12 +105,17 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	global $trackback, $autoalias, $aliaspage;
 	global $autoglossary, $glossarypage;
 	global $use_spam_check, $_strings;
+	global $vars;
 
 //	if (PKWK_READONLY) return; // Do nothing
 	/* Plus!ここから */
 	if (auth::check_role('readonly')) return; // Do nothing
 	
 	$role_adm_contents = auth::check_role('role_adm_contents');
+	
+	// SPAM Check (Client(Browser)-Server Ticket Check)
+	//if ( !isset($vars['encode_hint']) && !defined(PKWK_ENCODING_HINT) )
+	//	die_message('Plugin Encode Error.');
 
 	// Blocking SPAM
 	if ($role_adm_contents) {
@@ -636,7 +641,7 @@ function get_pg_passage($page, $sw = TRUE)
 	if (! $show_passage) return '';
 
 	$time = get_filetime($page);
-	$pg_passage = ($time != 0) ? get_passage($time) : '';
+	$pg_passage = ($time != 0) ? get_passage($time, $sw) : '';
 
 	return $sw ? '<small class="passage">' . $pg_passage . '</small>' : ' ' . $pg_passage;
 }

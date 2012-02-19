@@ -12,7 +12,7 @@ function plugin_keywords_convert()
 	$num = func_num_args();
 	if ($num == 0) { return 'Usage: #keywords(keyword,...)'; }
 	$args = func_get_args();
-	$contents = array_map(htmlspecialchars,$args);
+	$contents = array_map('htmlsc',$args);
 
 	$keywords = join(',', $contents);
 	return '';

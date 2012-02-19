@@ -947,17 +947,18 @@ class AttachFile
 		}
 		$info = $this->toString(TRUE, FALSE);
 		$hash = $this->gethash();
-
-		$size = @getimagesize($this->filename);
-		if ($size[2] > 0 && $size[2] < 3) {
-			if ($size[0] < 200) { $w = $size[0]; $h = $size[1]; }
-			else { $w = 200; $h = $size[1] * (200 / ($size[0]!=0?$size[0]:1) ); }
-			$_attach_setimage  = ($pkwk_dtd == PKWK_DTD_HTML_5) ? '<figure class="img_margin attach_info_image">' : '<div class="img_margin attach_info_image">';
-			$_attach_setimage .= '<img src="'.get_cmd_uri('ref','','',array('page'=>$r_page,'src'=>$s_file));
-			$_attach_setimage .= '" width="' . $w .'" height="' . $h . '" />';
-			$_attach_setimage .= ($pkwk_dtd == PKWK_DTD_HTML_5) ? '</figure>' : '</div>';
-		} else {
-			$_attach_setimage = '';
+		$exif = @exif_read_data($this->filename);
+		$_attach_setimage = '';
+		$size = @getimagesize($this->filename);	// 画像でない場合はfalseを返す
+		if ($size !== false){
+			if ($size[2] > 0 && $size[2] < 3) {
+				if ($size[0] < 200) { $w = $size[0]; $h = $size[1]; }
+				else { $w = 200; $h = $size[1] * (200 / ($size[0]!=0?$size[0]:1) ); }
+				$_attach_setimage  = ($pkwk_dtd == PKWK_DTD_HTML_5) ? '<figure class="img_margin attach_info_image">' : '<div class="img_margin attach_info_image">';
+				$_attach_setimage .= '<img src="'.get_cmd_uri('ref','','',array('page'=>$r_page,'src'=>$s_file));
+				$_attach_setimage .= '" width="' . $w .'" height="' . $h . '" />';
+				$_attach_setimage .= ($pkwk_dtd == PKWK_DTD_HTML_5) ? '</figure>' : '</div>';
+			}
 		}
 
 		$msg_auth = '';

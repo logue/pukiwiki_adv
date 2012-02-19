@@ -33,19 +33,21 @@ var pukiwiki = {};
 	}else{
 		// usage: log('inside coolFunc', this, arguments);
 		// paulirish.com/2009/log-a-lightweight-wrapper-for-consolelog/
-		window.log = function(){
+		window.log = function f(){
 			log.history = log.history || [];	// store logs to an array for reference
 			log.history.push(arguments);
 			if(this.console) {
-				arguments.callee = arguments.callee.caller;
-				var newarr = [].slice.call(arguments);
-				(typeof console.log === 'object' ? log.apply.call(console.log, console, newarr) : console.log.apply(console, newarr));
+				var args = arguments, newarr;
+				args.callee = args.callee.caller;
+				newarr = [].slice.call(args);
+				if (typeof console.log === 'object') log.apply.call(console.log, console, newarr);
+				else console.log.apply(console, newarr);
 			}
 		};
 	}
 	// make it safe to use console.log always
-	(function(b) {function c(){} for(var d="assert,clear,count,debug,dir,dirxml,error,exception,firebug,group,groupCollapsed,groupEnd,info,log,memoryProfile,memoryProfileEnd,profile,profileEnd,table,time,timeEnd,timeStamp,trace,warn".split(","),a;a=d.pop();){b[a]=b[a]||c}})((function(){try
-	{return window.console;}catch(err){return window.console={};}})());
+	(function(a){function b(){}for(var c="assert,count,debug,dir,dirxml,error,exception,group,groupCollapsed,groupEnd,info,log,markTimeline,profile,profileEnd,time,timeEnd,trace,warn".split(","),d;!!(d=c.pop());){a[d]=a[d]||b;}})
+	(function(){try{console.log();return window.console;}catch(a){return (window.console={});}}());
 	
 	if (DEBUG) {
 		window.console.debugMode = true;
@@ -63,6 +65,8 @@ var pukiwiki = {};
 		);
 		return v > 4 ? v : undefined;
 	}());
+	
+	var isMobile = navigator.userAgent.match(/iphone|ipod|ipad|android/i) ? true : false;
 
 	if (window.self.location !== window.top.location) {
 		window.top.location = window.self.location;
@@ -78,7 +82,7 @@ var pukiwiki = {};
 			'@prefix' : '<http://purl.org/net/ns/doas#>',
 			'@about' : '<skin.js>', 'a': ':JavaScript',
 			'title' : 'Pukiwiki skin script for jQuery',
-			'created' : '2008-11-25', 'release': {'revision': '2.2.26', 'created': '2012-01-22'},
+			'created' : '2008-11-25', 'release': {'revision': '2.2.28', 'created': '2012-02-19'},
 			'author' : {'name': 'Logue', 'homepage': '<http://logue.be/>'},
 			'license' : '<http://www.gnu.org/licenses/gpl-2.0.html>'
 		},
@@ -473,16 +477,18 @@ var pukiwiki = {};
 			}
 
 			// Textarea Resizer
-			if ($(prefix + 'textarea[name="msg"]').length !== 0 && $.query.get('cmd') !== 'guiedit'){
-				$(prefix + 'textarea[name="msg"]').addClass('resizable');
-				$(prefix + 'textarea.resizable:not(.processed)').TextAreaResizer();
+			var $msg = $(prefix + 'textarea[name="msg"]');
+			if ($msg.length !== 0 && !$msg.data('resizer') && $.query.get('cmd') !== 'guiedit'){
+				$msg.data('resizer',true);
+				$msg.TextAreaResizer();
 			}
-			
+
 			// テキストエリアでタブ入力できるように
 			$(prefix + 'textarea').tabby();
 
 			// ボタンをjQuery UIのものに
 			$(prefix + 'input[type=submit], '+prefix + 'input[type=reset], '+prefix + 'input[type=button]').button();
+
 			// buttonタグは、data要素で処理をカスタマイズ
 			$(prefix + 'button').each(function(){
 				var $this = $(this);
@@ -543,12 +549,12 @@ var pukiwiki = {};
 			});
 
 			$(prefix + 'a').each(function(){
-				var $this = $(this);
+				var $this = $(this);	// DOMをキャッシュ
 				var href = $this.attr('href');
 				var rel = $this.attr('rel') ? $this.attr('rel') : null;
 				var ajax = $this.data('ajax') ? $this.data('ajax') : 'json';
 
-				if (rel && rel.match(/noreferrer|external|license|product/)){
+				if (rel && rel.match(/noreferrer|license|product/)){
 					$this.click(function(){
 						if (rel.match(/noreferrer/)){
 							// for IE
@@ -594,12 +600,17 @@ var pukiwiki = {};
 						param.cmd = param.plugin;
 					}
 
-					if (href.match('#') && $this.data('disableScrolling') === true){
-						// アンカースクロール＆ハイライト
-						$this.click(function(){
-							self.anchor_scroll(href,true);
-							return false;
-						});
+					if (href.match('#')){
+						// アンカースクロールを無効化
+						var disable_scrolling = ($this.data('disableScrolling') || $this.parent().attr('role')) ? true : false;
+						
+						if (disable_scrolling === false){
+							// アンカースクロール＆ハイライト
+							$this.click(function(){
+								self.anchor_scroll(href,true);
+								return false;
+							});
+						}
 					}else if (href.match(/\.(jpg|jpeg|gif|png|txt)$/i)){
 						// 拡張子がcolorboxで読み込める形式の場合
 						$this.colorbox(self.config.colorbox);
@@ -635,7 +646,7 @@ var pukiwiki = {};
 							params.help === 'true' ||
 							(params.cmd === 'attach' &&  params.pcmd !== 'list') ||
 							(params.cmd === 'tb' && params.tb_id !== undefined) ||
-							(params.cmd.match(/attach|backup|source|template|freeze|rename|diff|referer|linklist|skeylist|logview/i) && params.page !== undefined)
+							(params.cmd.match(/attach|source|template|freeze|rename|diff|referer|linklist|skeylist|logview/i) && params.page !== undefined)
 						){
 							// その他の主要なプラグインは、インラインウィンドウで表示
 							if (params.help == 'true'){
@@ -694,7 +705,7 @@ var pukiwiki = {};
 				dialog_option.width = '90%';
 			}
 
-			if (params.cmd.match(/logview|source|diff|edit|backup|read|referer/i) || params.help === 'true'){
+			if (params.cmd.match(/logview|source|diff|edit|read|referer/i) || params.help === 'true'){
 				dialog_option.width = '90%';
 				dialog_option.height = $(window).height()*0.8|0;
 			}
@@ -753,11 +764,19 @@ var pukiwiki = {};
 				'</div>'
 			].join('');
 
-			$(loading_widget).appendTo('body');
-			$('#loading_activity').activity({segments: 12, width: 5.5, space: 6, length: 20, color: 'black', speed: 1});
 			
+			$(loading_widget).appendTo('body');
+			$('#loading_activity').activity({segments: 12, width: 24, space: 8, length:64, color: 'black', speed: 1, zIndex: 9999});
+			var $loading = $('#loading_activity');
+
 			$(dom)
 				.ajaxSend(function(e, xhr, settings) {
+					// 画面中央にローディング画像を移動させる
+					$loading.css({
+						position : 'absolute',
+						left : ($(window).width() / 2) + $(window).scrollLeft() - $loading.width() / 2,
+						top : ($(window).height() / 2) + $(window).scrollTop() - $loading.height() / 2
+					});
 					$('#loading').fadeIn();
 				})
 				.ajaxStop(function(){
@@ -846,23 +865,26 @@ var pukiwiki = {};
 		// 検索フォームでサジェスト機能
 		search_form: function(){
 			if ($('#search_word').length !== 0){
-				var cache = {},lastXhr;
-				
+				var cache = {},lastXhr, xhr;
 				$('#search_word')
 					.autocomplete({
-						minLength: 2,
+						minLength: 4,
 						source: function( request, response ) {
 							var term = request.term;
+							
 							if ( term in cache ) {
 								response( cache[ term ] );
 								return;
 							}
-							
 							lastXhr = $.ajax({
 								url: SCRIPT,
-								params: {cmd: 'list',term: term},
-								type: 'get',
-								method: 'json',
+								data: {
+									cmd: 'list',
+									term: term,
+									type:'json'
+								},
+								method: 'get',
+								dataType: 'json',
 								global: false,
 								success : function( data, status, xhr ) {
 									cache[ term ] = data;
@@ -1092,7 +1114,6 @@ var pukiwiki = {};
 		tablesorter:function(prefix){
 			var self = this;
 			prefix = (prefix) ? prefix + ' ': '';
-			$(prefix + '.style_table').addClass('tablesorter');
 			
 			/* デフォルト値 */
 			var config = this.config.tablesorter;
@@ -1112,84 +1133,87 @@ var pukiwiki = {};
 				].join("\n");
 			}
 
-			$(prefix + '.tablesorter').each(function(elem){
+			$('.style_table').each(function(elem){
 				var table = this;
 				var backup = $(this).clone();
 				var data = $(this).data();
 				var config = self.config.tablesorter;
 				
-				if ( $('tr',this).length > config.pager.minimum_lines && $('thead',this).length !== 0){	// 10行以上の場合ページャーを表示
-					// テーブルのページングウィジット
-					var pager_id = 'table_pager_'+config.counter;
+				if ($(this).data('enabled') !== true){
+					if ($('tr',this).length > config.pager.minimum_lines && $('thead',this).length !== 0){	// 10行以上の場合ページャーを表示
+						// テーブルのページングウィジット
+						var pager_id = 'table_pager_'+config.counter;
 
-					// data-属性を使って動作をカスタマイズ
-					config.sorter.headers = data.headers;
-					config.sorter.sortList = data.sortList;
-					config.sorter.parsers = data.parsers;
+						// data-属性を使って動作をカスタマイズ
+						config.sorter.headers = data.headers;
+						config.sorter.sortList = data.sortList;
+						config.sorter.parsers = data.parsers;
 
-					
-					$(this).tablesorter(config.sorter);
-					
-					if (config.pager.location_before === true){
-						$(this).before(tablesorter_widget(pager_id));
-					}else{
-						$(this).after(tablesorter_widget(pager_id));
-					}
-
-					var i = 0;
-					while (i < config.pager.size.length){
-						$('#'+pager_id+' .pagesize').append($('<option>').attr({ value: config.pager.size[i] }).text(config.pager.size[i]));
-						i++;
-					}
-					// リセットボタン
-					$('#'+pager_id+' .reload').click(function(){
-						backup.clone().insertAfter(table);
-						$(table).remove();
-						$('#'+pager_id).remove();
-						$(table).tablesorter(config.sorter);
-						if (config.pager.location_before === true){
-							$(table).before(tablesorter_widget(pager_id));
-						}else{
-							$(table).after(tablesorter_widget(pager_id));
-						}
-						$(table).tablesorterPager(config.pager);
 						
+						$(this).tablesorter(config.sorter);
+						
+						if (config.pager.location_before === true){
+							$(this).before(tablesorter_widget(pager_id));
+						}else{
+							$(this).after(tablesorter_widget(pager_id));
+						}
+
 						var i = 0;
 						while (i < config.pager.size.length){
 							$('#'+pager_id+' .pagesize').append($('<option>').attr({ value: config.pager.size[i] }).text(config.pager.size[i]));
 							i++;
 						}
+						// リセットボタン
+						$('#'+pager_id+' .reload').click(function(){
+							backup.clone().insertAfter(table);
+							$(table).remove();
+							$('#'+pager_id).remove();
+							$(table).tablesorter(config.sorter);
+							if (config.pager.location_before === true){
+								$(table).before(tablesorter_widget(pager_id));
+							}else{
+								$(table).after(tablesorter_widget(pager_id));
+							}
+							$(table).tablesorterPager(config.pager);
+							
+							var i = 0;
+							while (i < config.pager.size.length){
+								$('#'+pager_id+' .pagesize').append($('<option>').attr({ value: config.pager.size[i] }).text(config.pager.size[i]));
+								i++;
+							}
+							
+							//Load Tool Tips for links inside the tab container
+							self.glossaly(table);
+						});
+
+						// ページャーを生成（ID重複しないようにグローバル変数のpukiwiki.tablesorter.counterをカウンタとして使用
+						$(this).tablesorterPager({
+							container: $('#'+pager_id),
+							positionFixed: false,
+							onthrough: function(e){
+								self.glossaly(e);
+							}
+						});
+
+						//hover states on the static widgets
+						$('#'+pager_id+'.pkwk_widget .ui-state-default').hover(function() {
+							$(this).addClass('ui-state-hover');
+						},function() {
+							$(this).removeClass('ui-state-hover');
+						}).mousedown(function() {
+							$(this).addClass('ui-state-active');
+						}).mouseout(function() {
+							$(this).removeClass('ui-state-active');
+						});
 						
-						//Load Tool Tips for links inside the tab container
-						self.glossaly(table);
-					});
-
-					// ページャーを生成（ID重複しないようにグローバル変数のpukiwiki.tablesorter.counterをカウンタとして使用
-					$(this).tablesorterPager({
-						container: $('#'+pager_id),
-						positionFixed: false,
-						onthrough: function(e){
-							self.glossaly(e);
-						}
-					});
-
-					//hover states on the static widgets
-					$('#'+pager_id+'.pkwk_widget .ui-state-default').hover(function() {
-						$(this).addClass('ui-state-hover');
-					},function() {
-						$(this).removeClass('ui-state-hover');
-					}).mousedown(function() {
-						$(this).addClass('ui-state-active');
-					}).mouseout(function() {
-						$(this).removeClass('ui-state-active');
-					});
-					
-					$('#'+pager_id).show('clip');
-					config.counter++;
-				}else{
-					$(this).tablesorter(config.sorter);
+						$('#'+pager_id).show('clip');
+						config.counter++;
+					}else{
+						$(this).tablesorter(config.sorter);
+					}
+					// ２重に実行されるのを抑止
+					$(this).data('enabled', true)
 				}
-				
 			});
 		},
 		// 独自のGlossaly処理
@@ -1197,21 +1221,23 @@ var pukiwiki = {};
 			var self = this;
 			prefix = (prefix) ? prefix + ' ': '';
 
-			// タイトル属性がある場合
-			$(prefix + '*[title]').tooltip({
-				bodyHandler: function() { 
-					return $(this).context.tooltipText; 
-				},
-				track: true,
-				delay: 0,
-				showURL: false
-			}).hover(
-				function(){
-					$('body').css('cursor','help');
-				},function(){
-					$('body').css('cursor','auto');
-				}
-			);
+			if (!isMobile){
+				// タイトル属性がある場合
+				$(prefix + '*[title]').tooltip({
+					bodyHandler: function() { 
+						return $(this).context.tooltipText; 
+					},
+					track: true,
+					delay: 0,
+					showURL: false
+				}).hover(
+					function(){
+						$('body').css('cursor','help');
+					},function(){
+						$('body').css('cursor','auto');
+					}
+				);
+			}
 			if (this.plus === true){
 				// Plusの場合、Glossaly機能をオーバーライド
 				$(prefix + '*[aria-describedby="tooltip"]').hover(
@@ -1257,6 +1283,7 @@ var pukiwiki = {};
 		// jquery.tooltip.jsのajax化
 		getGlossary: function(target,params,tooltip_opts){
 			var text;
+			var $target = $(target);
 			$.ajax({
 				url:SCRIPT,
 				type:'GET',
@@ -1274,13 +1301,13 @@ var pukiwiki = {};
 				},
 				complete : function(XMLHttpRequest, textStatus){
 					$('body').css('cursor','help');
-					$(target).tooltip({
+					$target.tooltip({
 						bodyHandler: function() { 
 							return text.replace(/<script[^>]*>[^<]+/ig,'');	// <script>タグを無効化
 						}, 
 						track: true,
 						delay: 0,
-						showURL: false
+						showURL: ($target.attr('rel') === 'external')
 					});
 				}
 			});

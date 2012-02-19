@@ -496,6 +496,7 @@ tfoot th.style_th {
 #header{
 	background-color: <?php echo SKIN_CSS_BOX_BGCOLOR; ?>;
 	border: 2px solid <?php echo SKIN_CSS_BOX_BDCOLOR; ?>;
+	text-shadow: 0 1px 0 <?php echo SKIN_CSS_SHADOW_COLOR; ?>;
 }
 
 #hgroup{

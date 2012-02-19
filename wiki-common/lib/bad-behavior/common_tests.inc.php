@@ -43,7 +43,7 @@ function bb2_misc_headers($settings, $package)
 	// Worse yet, some Javascript client-side apps do the same in
 	// blatant violation of the protocol and good sense.
 	// if (strpos($package['request_uri'], "#") !== FALSE || strpos($package['headers_mixed']['Referer'], "#") !== FALSE) {
-	if (strpos($package['request_uri'], "#") !== FALSE) {
+	if ($settings['strict'] && strpos($package['request_uri'], "#") !== FALSE) {
 		return "dfd9b1ad";
 	}
 	// A pretty nasty SQL injection attack on IIS servers

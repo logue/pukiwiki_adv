@@ -354,16 +354,16 @@ $deny_countory = array();
 
 /////////////////////////////////////////////////
 // Anti-Spam service config
-/*
+
 // Akismet
 // https://akismet.com/signup/
 $akismet_api_key = '';
 
 // reCAPTICHA
 // http://www.google.com/recaptcha
-$recaptcha_public_key = '';
+$recaptcha_public_key = '6LdBh74SAAAAAPN1_61XL-54m5HajruFB3KJ5gXF';
 $recaptcha_private_key = '';
-*/
+
 /////////////////////////////////////////////////
 // TrackBack feature
 

@@ -45,7 +45,7 @@ function catbody($title, $page, $body)
 	$is_safemode = auth::check_role('safemode');
 	$is_createpage = auth::is_check_role(PKWK_CREATE_PAGE);
 
-	pkwk_common_headers(($lastmod && $is_read) ? $filetime : null);
+	pkwk_common_headers(($lastmod && $is_read) ? $filetime : 0);
 
 	if (IS_AJAX && !IS_MOBILE){
 		$ajax = isset($vars['ajax']) ? $vars['ajax'] : 'raw';
@@ -96,13 +96,6 @@ function catbody($title, $page, $body)
 		global $google_analytics, $google_api_key, $google_site_verification, $yahoo_site_explorer_id, $bing_webmaster_tool;
 
 		// Adv. ここから。（あまりいい実装ではない）
-		global $adminpass;
-		if ($adminpass == '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72' || $adminpass == ''){
-			$body = '<div class="message_box ui-state-error ui-corner-all">'.
-				'<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>'.
-				'<strong>'.$_string['warning'].'</strong> '.$_string['changeadminpass'].'</p></div>'."\n".
-				$body;
-		}
 		
 		// application/xhtml+xml を認識するブラウザではXHTMLとして出力
 		$http_header = (PKWK_STRICT_XHTML === TRUE && strstr($_SERVER['HTTP_ACCEPT'], 'application/xhtml+xml') !== false) ? 'application/xhtml+xml' : 'text/html';
@@ -162,6 +155,14 @@ function catbody($title, $page, $body)
 			}
 			
 	//		if ($notify_from !== 'from@example.com') $link_tags[] = array('rev'=>'made',	'href'=>'mailto:'.$notify_from,	'title'=>	'Contact to '.$modifier);
+		
+			global $adminpass;
+			if ($adminpass == '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72' || $adminpass == '' ){
+				$body = '<div class="message_box ui-state-error ui-corner-all">'.
+					'<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>'.
+					'<strong>'.$_string['warning'].'</strong> '.$_string['changeadminpass'].'</p></div>'."\n".
+					$body;
+			}
 		}
 
 		// JavaScriptタグの組み立て
@@ -184,27 +185,29 @@ function catbody($title, $page, $body)
 		unset($js_var, $key, $val);
 		/* ヘッダー部分の処理ここまで */
 	
-		/* ヘッダー部のタグ */
-		$pkwk_head = tag_helper('meta',$meta_tags)."\t\t".tag_helper('link',$link_tags);
-		
-		if (!empty($css_blocks)){
-			$pkwk_head .= "\t\t".tag_helper('style',array(array('type'=>'text/css', 'content'=>join("\n",$css_blocks))));
-		}
-		// Modernizrは、ヘッダー内にないと正常に動作しない
-		$pkwk_head .= "\t\t".'<script type="text/javascript" src="'.JS_URI.$modernizr.'"></script>'."\n";
-		
 		/* フッター部のタグ */
 		$pkwk_tags = tag_helper('script',$pkwk_head_js)."\t\t".tag_helper('script',$js_tags);
 		$pkwk_tags .= (!empty($js_blocks)) ? "\t\t".tag_helper('script',array(array('type'=>'text/javascript', 'content'=>join("\n",$js_blocks)))) : '';
-
-		/* 非推奨要素の警告 */
-		if (! empty($head_tags)){
-			$pkwk_head .= join("\n", $head_tags) ."\n";
-			$info[] = '<var>$head_tags</var> is obsolate. Use $meta_tags, $link_tags, $js_tags, $js_blocks, $css_blocks.';
+		
+		/* ヘッダー部のタグ */
+		$pkwk_head = tag_helper('meta',$meta_tags)."\t\t".tag_helper('link',$link_tags);
+		if (!empty($css_blocks)){
+			$pkwk_head .= "\t\t".tag_helper('style',array(array('type'=>'text/css', 'content'=>join("\n",$css_blocks))));
 		}
-		if (! empty($foot_tags)){
-			$pkwk_tags .= join("\n", $foot_tags) ."\n";
-			$info[] = '<var>$foot_tags</var> is obsolate. Use $meta_tags, $link_tags, $js_tags, $js_blocks, $css_blocks.';
+
+		if (!IS_MOBILE) {
+			// Modernizrは、ヘッダー内にないと正常に動作しない
+			$pkwk_head .= "\t\t".'<script type="text/javascript" src="'.JS_URI.$modernizr.'"></script>'."\n";
+			
+			/* 非推奨要素の警告 */
+			if (! empty($head_tags)){
+				$pkwk_head .= join("\n", $head_tags) ."\n";
+				$info[] = '<var>$head_tags</var> is obsolate. Use $meta_tags, $link_tags, $js_tags, $js_blocks, $css_blocks.';
+			}
+			if (! empty($foot_tags)){
+				$pkwk_tags .= join("\n", $foot_tags) ."\n";
+				$info[] = '<var>$foot_tags</var> is obsolate. Use $meta_tags, $link_tags, $js_tags, $js_blocks, $css_blocks.';
+			}
 		}
 		
 		/* Adv.ここまで */
@@ -266,7 +269,7 @@ function catbody($title, $page, $body)
 			}
 		}
 		
-		if (DEBUG === true && ! empty($info)){
+		if (DEBUG === true && ! empty($info) && !IS_MOBILE){
 			$body = '<div class="message_box ui-state-highlight ui-corner-all">'.
 					'<p><span class="ui-icon ui-icon-info"></span>'.$_string['debugmode'].'</p>'."\n".
 					'<ul>'."\n".
@@ -379,8 +382,6 @@ function getLinkSet($_page){
 			'template'		=> get_cmd_uri('template',		null,	null,	array('refer'=>$_page))
 		));
 	}
-	
-	
 	
 	if ($referer){
 		if (!empty($_page)) {
@@ -639,7 +640,7 @@ function pkwk_common_headers($modified = 0, $expire = 0, $compress = true){
 		// http://firegoby.theta.ne.jp/archives/1730
 		$last_modified = gmdate('D, d M Y H:i:s T', $modified);
 		$etag = md5($last_modified);
-		
+
 		if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ) {
 			if ($_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified) {
 				header('HTTP/1.1 304 Not Modified');

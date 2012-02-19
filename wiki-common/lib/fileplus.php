@@ -10,7 +10,7 @@
 
 // Marged from PukioWikio post.php
 defined('POSTID_DIR')		or define('POSTID_DIR', 'PostId/');
-defined('POSTID_EXPIRE')	or define('POSTID_EXPIRE', 86400);	// 60*60*24 = 1day
+defined('POSTID_EXPIRE')	or define('POSTID_EXPIRE', 3600);	// 60*60 = 1hour
 
 // Ticket file
 defined('PKWK_TICKET_CACHE')	or define('PKWK_TICKET_CACHE', 'ticket'.PKWK_DAT_EXTENTION);

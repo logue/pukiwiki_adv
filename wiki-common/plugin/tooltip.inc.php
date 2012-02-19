@@ -132,7 +132,8 @@ function plugin_tooltip_get_glossary($term,$g_page,$plain)
 			}
 		}
 	}
-	$out = $aglossary[trim($term)];
+	$t = trim($term);
+	$out = isset($aglossary[$t]) ? $aglossary[$t]: '';
 	if (!$plain) {
 		$out = preg_replace('/&br;/', "\n", $out);
 		$out = preg_replace('/&t;/', "\t", $out);

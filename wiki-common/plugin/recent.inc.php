@@ -1,7 +1,7 @@
 <?php
-// $Id: recent.inc.php,v 1.26.7 2011/12/01 20:32:00 Logue Exp $
+// $Id: recent.inc.php,v 1.26.8 2012/02/19 11:55:00 Logue Exp $
 // Copyright (C)
-//   2010-2011 PukiWiki Advance Developers Team
+//   2010-2012 PukiWiki Advance Developers Team
 //   2005-2008 PukiWiki Plus! Team
 //   2002-2007 PukiWiki Developers Team
 //   2002      Y.MASUI http://masui.net/pukiwiki/ masui@masui.net
@@ -38,7 +38,7 @@ function plugin_recent_convert()
 	}
 
 	if ($exec_count++ > PLUGIN_RECENT_EXEC_LIMIT) {
-		return '#recent(): You called me too much' . '<br />';
+		return '<div class="message_box ui-state-error ui-corner-all">#recent(): You called me too much.</div>' . "\n";
 	}
 
 	$auth_key = auth::get_user_info();
@@ -48,81 +48,37 @@ function plugin_recent_convert()
 	if ($memcache === null){
 		if (! file_exists(CACHE_DIR.PKWK_MAXSHOW_CACHE)) {
 			put_lastmodified();
-			return '#recent(): Now generating recent data. Please reload.' . '<br />';
+			return '<div class="message_box ui-state-highlight ui-corner-all">#recent(): Now generating recent data. Please reload.</div>' . "\n";
 		}
-/*
-		if (file_exists(PLUGIN_RECENT_CACHE)) {
-			$time_recent = filemtime(CACHE_DIR.PKWK_MAXSHOW_CACHE);
-			$time_recent_cache = filemtime(PLUGIN_RECENT_CACHE);
-			if ($time_recent <= $time_recent_cache) {
-				return get_file_contents(PLUGIN_RECENT_CACHE);
+
+		$lines = file(CACHE_DIR.PKWK_MAXSHOW_CACHE, $recent_lines);
+	}else{
+		$lines = $memcache->get(MEMCACHE_PREFIX.PKWK_MAXSHOW_CACHE);
+	}
+
+	if ($lines !== FALSE){
+		$count = (count($lines) < $recent_lines) ? count($lines) : $recent_lines;
+		$i = 0;
+		foreach ($lines as $page => $time) {
+			if ($memcache == null){
+				list($time, $page) = explode("\t", rtrim($time));
 			}
-		}
-*/
-		$lines = file_head(CACHE_DIR.PKWK_MAXSHOW_CACHE, $recent_lines);
-		if ($lines == FALSE) {
-			return '#recent(): File can not open' . '<br />';
-		}
-
-		foreach ($lines as $line) {
-			list($time, $page) = explode("\t", rtrim($line));
-
 			if (! auth::is_page_readable($page,$auth_key['key'],$auth_key['group'])) continue;
-
-			$_date = get_date($date_format, $time);
-			if ($date != $_date) {
-				// End of the day
-				if ($date != '') $items[] = '</ul>';
-
-				// New day
-				$date = $_date;
-				$items[] = '<strong>' . $date . '</strong>';
-				$items[] = '<ul class="recent_list">';
-			}
+			if ($i > $count) break;
 
 			$s_page = htmlsc($page);
+			$_date = get_date($date_format, $time);
 
-			if($page === $vars['page']) {
-				// No need to link to the page you just read, or notify where you just read
-				$items[] = ' <li>' . $s_page . '</li>';
-			} else {
-				$passage = $show_passage ? ' ' . get_passage($time) : '';
-				$items[] = ' <li><a href="' . get_page_uri($page) . '"' . 
-					' title="' . $s_page . $passage . '">' . $s_page . '</a></li>';
-			}
-		}
-		$count = count($lines);
-	}else{
-/*
-		if (file_exists(PLUGIN_RECENT_CACHE)) {
-			$time_recent = $memcache->get(MEMCACHE_PREFIX.'timestamp-'.$recent_cache_name);
-			$time_recent_cache = filemtime(PLUGIN_RECENT_CACHE);
-			if ($time_recent <= $time_recent_cache) {
-				return get_file_contents(PLUGIN_RECENT_CACHE);
-			}
-		}
-*/
-		$lines = $memcache->get(MEMCACHE_PREFIX.PKWK_MAXSHOW_CACHE);
-		if ($lines !== FALSE){
-			
-			$count = (count($lines) < $recent_lines) ? count($lines) : $recent_lines;
-			$i = 0;
-			foreach($lines as $page => $time){
-				if (! auth::is_page_readable($page,$auth_key['key'],$auth_key['group'])) continue;
-				if ($i > $count) break;
-
-				$_date = get_date($date_format, $time);
-				if ($date != $_date) {
+			if (!IS_MOBILE){
+				if ($date !== $_date) {
 					// End of the day
-					if ($date != '') $items[] = '</ul>';
+					if (!empty($date)) $items[] = '</ul>';
 
 					// New day
 					$date = $_date;
 					$items[] = '<strong>' . $date . '</strong>';
 					$items[] = '<ul class="recent_list">';
 				}
-
-				$s_page = htmlsc($page);
 
 				if($page === $vars['page']) {
 					// No need to link to the page you just read, or notify where you just read
@@ -132,28 +88,45 @@ function plugin_recent_convert()
 					$items[] = ' <li><a href="' . get_page_uri($page) . '"' . 
 						' title="' . $s_page . $passage . '">' . $s_page . '</a></li>';
 				}
-				$i++;
+			}else{
+				if ($date !== $_date) {
+					// New day
+					$date = $_date;
+					$items[] = '<li data-role="list-divider">' . $date . '</li>';
+				}
+				if($page === $vars['page']) {
+					// No need to link to the page you just read, or notify where you just read
+					$items[] = ' <li data-theme="e">' . $s_page . '</li>';
+				} else {
+					$passage = $show_passage ? ' ' . '<span class="ui-li-count">'.get_passage($time, false).'</span>' : '';
+					$items[] = ' <li><a href="' . get_page_uri($page) . '">' . $s_page . $passage.'</a></li>';
+				}
 			}
-			unset($lines,$i);
-		}else{
-			$count = 0;
+			$i++;
+		}
+		unset($lines,$i);
+	}else{
+		$count = 0;
+		if ($memcache !== null){
 			put_lastmodified();
-			return '#recent(): Now generating recent data. Please reload.' . '<br />';
+			return '<div class="message_box ui-state-highlight ui-corner-all">#recent(): Now generating recent data. Please reload.</div>' . "\n";
+		}else{
+			return '<div class="message_box ui-state-error ui-corner-all">#recent(): File can not open.</div>' . "\n";
 		}
 	}
+	if ($date !== '') $items[] = '</ul>';
+	// End of the day
 
 	$_recent_title = sprintf(T_('recent(%d)'),$count);
-	$_recent_plugin_frame = '<h5>'.$_recent_title.'</h5>'.
+	if (!IS_MOBILE) {
+		return '<h5>'.$_recent_title.'</h5>'.
 				'<div class="hslice" id="webslice">'.
 				'<span class="entry-title" style="display:none;">'.$page_title.'</span>'.
-				'<div class="entry-content">';
-
-	// End of the day
-	if ($date != '') $items[] = '</ul>';
-	
-	// Last "\n"
-	$items[] = '';
-	
-	return $_recent_plugin_frame . join("\n",$items) . '</div></div>';
+				'<div class="entry-content">' . join("\n",$items).'</div></div>';
+	}else{
+		return '<ul data-role="listview" data-dividertheme="b">'."\n".
+			'<li data-theme="a">'.$_recent_title.'</li>'."\n".
+			join("\n",$items)."\n";
+	}
 }
 ?>

@@ -1,9 +1,9 @@
 <?php
 // PukiWiki Advance.
-// $Id: main.php,v 1.23.27 2011/11/28 21:40:00 Logue Exp $
+// $Id: main.php,v 1.23.28 2012/01/29 23:15:00 Logue Exp $
 //
 // PukiWiki Advance
-//  Copyright (C) 2010-2011 by PukiWiki Advance Team
+//  Copyright (C) 2010-2012 by PukiWiki Advance Team
 //  http://pukiwiki.logue.be/
 //
 // PukiWiki Plus! 1.4.*
@@ -82,8 +82,8 @@ require(LIB_DIR . 'gettext/gettext.inc');
 
 // Defaults
 $notify = $trackback = $referer = 0;
-
 require(LIB_DIR . 'init.php');
+
 // Load optional libraries
 if (isset($badbehavior)){ require(LIB_DIR . 'bad-behavior-pukiwiki.php'); }
 if (isset($notify)){ require(LIB_DIR . 'mail.php'); }	// Mail notification
@@ -91,6 +91,8 @@ if (isset($trackback)){ require(LIB_DIR . 'trackback.php'); }	// TrackBack
 if (isset($referer)){ require(LIB_DIR . 'referer.php'); }
 /////////////////////////////////////////////////
 // Main
+$info[] = '<var>PHP '.PHP_VERSION.'</var> as <var>'.php_sapi_name().'</var> mode.';
+$info[] = 'Powerd by <var>'.getenv('SERVER_SOFTWARE').'</var>.';
 
 $retvars = array();
 $page  = isset($vars['page'])  ? $vars['page']  : '';
@@ -107,21 +109,34 @@ if (isset($vars['cmd'])) {
 // SPAM
 if (SpamCheckBAN($_SERVER['REMOTE_ADDR'])) die();
 
+// Block SPAM countory
+$geoip = array();
+if (function_exists('geoip_db_avail') && geoip_db_avail(GEOIP_COUNTRY_EDITION)) {
+	$geoip = geoip_region_by_name($_SERVER['REMOTE_ADDR']);
+	$info[] = 'GeoIP is usable. Your country code from IP is inferred <var>'.$geoip['country_code'].'</var>.';
+}
+if ( isset($_SERVER['GEOIP_COUNTRY_CODE']) ) {
+	$geoip['country_code'] = $_SERVER['GEOIP_COUNTRY_CODE'];
+	$info[] = 'GeoIP is usable. Your country code from IP is inferred <var>'.$geoip['country_code'].'</var>.';
+} else {
+	$info[] = 'GeoIP is NOT usable. <var>$deny_countory</var> value and <var>$allow_countory</var> value is ignoled.';
+}
+
 // Spam filtering
-if ($spam && $method != 'GET') {
-	// Block SPAM countory
-	if (isset($_SERVER['GEOIP_COUNTRY_CODE'])) {
+if ($spam && $method !== 'GET') {
+	if (isset($geoip['country_code']) && $geoip['country_code'] !== false){
 		if (isset($deny_countory) && !empty($deny_countory)) {
-			if (in_array($_SERVER['GEOIP_COUNTRY_CODE'], $deny_countory)) {
+			if (in_array($geoip['country_code'], $deny_countory)) {
 				die('Sorry');
 			}
 		}
 		if (isset($allow_countory) && !empty($allow_countory)) {
-			if (!in_array($_SERVER['GEOIP_COUNTRY_CODE'], $allow_countory)) {
+			if (!in_array($geoip['country_code'], $allow_countory)) {
 				die('Sorry');
 			}
 		}
 	}
+
 	// Adjustment
 	$_spam   = ! empty($spam);
 	$_plugin = strtolower($plugin);
@@ -187,9 +202,6 @@ if (is_webdav() && exist_plugin('dav')) {
 }
 
 $is_protect = auth::is_protect();
-
-$info[] = '<var>PHP '.PHP_VERSION.'</var> as <var>'.php_sapi_name().'</var> mode.';
-$info[] = 'Powerd by <var>'.getenv('SERVER_SOFTWARE').'</var>.';
 
 if (DEBUG) {
 	$exclude_plugin = array();

@@ -1,5 +1,5 @@
 <?php if (!defined('BB2_CWD')) die("I said no cheating!");
-define('BB2_VERSION', "2.1.13");
+define('BB2_VERSION', "2.2.1");
 
 // Bad Behavior entry point is bb2_start()
 // If you're reading this, you are probably lost.
@@ -43,17 +43,17 @@ function bb2_approved($settings, $package)
 // If this is reverse-proxied or load balanced, obtain the actual client IP
 function bb2_reverse_proxy($settings, $headers_mixed)
 {
-	if (isset($headers_mixed[$settings['reverse_proxy_header']])){
-		$addrs = array_reverse(preg_split("/[\s,]+/", $headers_mixed[$settings['reverse_proxy_header']]));
-		if (!empty($settings['reverse_proxy_addresses'])) {
-			foreach ($addrs as $addr) {
-				if (!match_cidr($addr, $settings['reverse_proxy_addresses'])) {
-					return $addr;
-				}
+	$addrs = @array_reverse(preg_split("/[\s,]+/", $headers_mixed[$settings['reverse_proxy_header']]));
+	if (empty($addrs)) {
+		return $_SERVER['REMOTE_ADDR'];
+	} else if (!empty($settings['reverse_proxy_addresses'])) {
+		foreach ($addrs as $addr) {
+			if (!match_cidr($addr, $settings['reverse_proxy_addresses'])) {
+				return $addr;
 			}
 		}
-		return $addrs[0];
 	}
+	return $addrs[0];
 }
 
 // Let God sort 'em out!
@@ -144,7 +144,7 @@ function bb2_screen($settings, $package)
 				return $r;
 			}
 			return false;
-		} elseif (stripos($ua, "Googlebot") !== FALSE || stripos($ua, "Mediapartners-Google") !== FALSE) {
+		} elseif (stripos($ua, "Googlebot") !== FALSE || stripos($ua, "Mediapartners-Google") !== FALSE || stripos($ua, "Google Web Preview") !== FALSE) {
 			require_once(BB2_CORE . "/searchengine.inc.php");
 			if ($r = bb2_google($package)) {
 				if ($r == 1) return false;	# whitelisted

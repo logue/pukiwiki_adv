@@ -6,7 +6,7 @@ require_once(BB2_CORE . "/roundtripdns.inc.php");
 
 function bb2_google($package)
 {
-	if (match_cidr($package['ip'], array("66.249.64.0/19", "64.233.160.0/19", "72.14.192.0/18", "203.208.32.0/19", "74.125.0.0/16", "216.239.32.0/19")) === FALSE) {
+	if (match_cidr($package['ip'], array("66.249.64.0/19", "64.233.160.0/19", "72.14.192.0/18", "203.208.32.0/19", "74.125.0.0/16", "216.239.32.0/19", "209.85.128.0/17")) === FALSE) {
 		return "f1182195";
 	}
 #	Disabled due to http://bugs.php.net/bug.php?id=53092
@@ -34,7 +34,7 @@ function bb2_msnbot($package)
 
 function bb2_yahoo($package)
 {
-	if (match_cidr($package['ip'], array("202.160.176.0/20", "67.195.0.0/16", "203.209.252.0/24", "72.30.0.0/16", "98.136.0.0/14")) === FALSE) {
+	if (match_cidr($package['ip'], array("202.160.176.0/20", "67.195.0.0/16", "203.209.252.0/24", "72.30.0.0/16", "98.136.0.0/14", "74.6.0.0/16")) === FALSE) {
 		return '71436a15';
 	}
 #	Disabled due to http://bugs.php.net/bug.php?id=53092
