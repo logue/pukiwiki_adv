@@ -1,9 +1,9 @@
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: locale.js,v 0.0.5 2010/09/25 15:58:00 Logue Exp $
+// $Id: locale.js,v 0.0.6 2012/03/02 21:35:00 Logue Exp $
 
 // Pukiwiki skin script for jQuery
-// Copyright (c)2010-2011 PukiWiki Advance Developer Team
-//			  2010	  Logue <http://logue.be/> All rights reserved.
+// Copyright (c)2010-2012 PukiWiki Advance Developer Team
+//              2010      Logue <http://logue.be/> All rights reserved.
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -81,13 +81,17 @@
 		last		: 'Last',
 		reload		: 'Reload',
 		print		: 'Print',
+		back		: 'Back',
+		
+		filter		: 'Filter data...',
 		
 		loading		: 'Now Loading...',
 		start		: 'Start',
 		success		: 'Success',
 		complete	: 'Complete',
 		ready		: 'Ready',
-		error		: 'Error'
+		error		: 'Error',
+		error_page	: 'An error occurred when loading the page.'
 	});
 
 	$.i18n('en_US.sh',{
@@ -189,13 +193,17 @@
 		reload		: 'リロード',
 		clipboard	: 'クリップボードへコピー',
 		print		: '印刷',
+		back		: '戻る',
 		
-		loading		: '読み込み中…。',
+		filter		: 'フィルタ文字列',
+		
+		loading		: '読み込んでいます…。',
 		start		: '開始',
 		success		: '成功',
 		complete	: '完了',
 		ready		: '準備完了',
-		error		: 'エラー'
+		error		: 'エラー',
+		error_page	: 'ページ読み込み時にエラーが発生しました。'
 	});
 
 	$.i18n('ja_JP.sh',{
@@ -304,13 +312,17 @@
 		reload		: '새로고침',
 		clipboard	: '클립 보드에 복사',
 		print 		: '인쇄',
+		back		: '돌아가기',
+		
+		filter		: '필터 문자열',
 		
 		loading		: '지금 중…。',
 		start		: '시작',
 		success		: '성공',
 		complete	: '완료',
 		ready		: '준비',
-		error		: '오류'
+		error		: '오류',
+		error_page	: '페이지로드시 오류가 발생했습니다.'
 	});
 
 	$.i18n('ko_KR.sh',{
@@ -387,13 +399,17 @@
 		reload		: '刷新',
 		clipboard	: '複製到剪貼板',
 		print		: '打印',
+		back		: '回去',
+		
+		filter		: '過濾字符串',
 		
 		loading		: '載入中…。',
 		start		: '開始',
 		success		: '成功',
 		complete	: '完成',
 		ready		: '準備好',
-		error		: '錯誤'
+		error		: '錯誤',
+		error_page	: '加載頁面時發生錯誤。'
 	});
 
 	$.i18n('zh_TW.sh',{
@@ -470,13 +486,17 @@
 		reload		: '重载',
 		clipboard	: '复制到剪贴板',
 		print		: '打印',
+		back		: '回去',
+		
+		filter		: '过滤字符串',
 		
 		loading		: '载入中…。',
 		start		: '开始',
 		success		: '成功',
 		complete	: '完成',
 		ready		: '准备好',
-		error		: '错误'
+		error		: '错误',
+		error_page	: '加载页面时发生错误。'
 	});
 
 	$.i18n('zh_CN.sh',{
@@ -501,6 +521,4 @@
 		fullscreen	: '全屏'
 	});
 /**************************************************************************************************/
-	// 言語設定
-	$.i18n(LANG);
 } )(jQuery);

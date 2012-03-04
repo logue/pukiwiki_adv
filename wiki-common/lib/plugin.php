@@ -293,10 +293,9 @@ function use_plugin($plugin, $lines)
 
 function add_hidden_field($retvar, $name){
 	if (preg_match('/<form.+method="?(get|post)"[^>]*>/i', $retvar, $matches) !== 0){
-		if ( PKWK_ENCODING_HINT ) {
-			// Insert a hidden field, supports idenrtifying text enconding
-			$hidden_field[] = '<input type="hidden" name="encode_hint" value="' . PKWK_ENCODING_HINT . '" />';
-		}
+		// Insert a hidden field, supports idenrtifying text enconding
+		$hidden_field[] = ( PKWK_ENCODING_HINT ) ? '<input type="hidden" name="encode_hint" value="' . PKWK_ENCODING_HINT . '" />' : '';
+		
 		if (preg_match('/menu|side|header|footer|full|read|include|calendar/',$name) !== 1 && $matches[1] !== 'get'){
 			// from PukioWikio
 			$hidden_field[] = '<input type="hidden" name="postid" value="'.generate_postid($name).'" />';

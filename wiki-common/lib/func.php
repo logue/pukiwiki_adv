@@ -1118,7 +1118,7 @@ function get_script_uri($path='')
 {
 	global $absolute_uri, $script_directory_index;
 
-	if ($absolute_uri) return get_script_absuri();
+	if ($absolute_uri === 1) return get_script_absuri();
 	$uri = get_baseuri($path);
 	if (! isset($script_directory_index)) $uri .= init_script_filename();
 	return $uri;

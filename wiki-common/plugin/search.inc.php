@@ -125,7 +125,24 @@ EOD;
 		$method = "post";
 	}
 	$maxlength = PLUGIN_SEARCH_MAX_LENGTH;
-	return <<<EOD
+	
+	if (IS_MOBILE){
+		return <<<EOD
+<form action="$script" method="{$method}" class="search_form">
+	<input type="hidden" name="cmd" value="search" />
+	<input type="search"  name="word" value="$s_word" size="20" maxlength="$maxlength" id="search_word" results="5" autosave="tangerine" placeholder="{$_search_msg['search_words']}"/>
+	<fieldset data-role="controlgroup"  data-mini="true">
+		<input type="radio" name="type" id="_p_search_AND" value="AND" $and_check />
+		<label for="_p_search_AND">{$_search_msg['btn_and']}</label>
+		<input type="radio" name="type" id="_p_search_OR" value="OR"  $or_check />
+		<label for="_p_search_OR">{$_search_msg['btn_or']}</label>
+	</fieldset>
+	<input type="submit" value="{$_search_msg['btn_search']}" />
+$base_option
+</form>
+EOD;
+	}else{
+		return <<<EOD
 <form action="$script" method="{$method}" class="search_form">
 	<input type="hidden" name="cmd" value="search" />
 	<input type="search"  name="word" value="$s_word" size="20" maxlength="$maxlength" id="search_word" results="5" autosave="tangerine" placeholder="{$_search_msg['search_words']}"/>
@@ -137,5 +154,6 @@ EOD;
 $base_option
 </form>
 EOD;
+	}
 }
 ?>

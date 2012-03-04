@@ -59,11 +59,11 @@ function plugin_backup_init()
 			'title_backupsource'	=> T_('Backup source of $1(No. $2)'),
 			'title_pagebackuplist'	=> T_('Backup list of $1'),
 			
-			'btn_rollback'				=> T_('Rollback'),
+			'btn_rollback'				=> T_('Roll back'),
 			'btn_selectdelete'			=> T_('Delete selected backup(s).'),
-			'msg_backup_rollbacked'		=> T_('Rollbackd to $1.'),
-			'title_backup_rollback'		=> T_('Rollback this backup(No. %s)'),
-			'title_backup_rollbacked'	=> '$1 をバックアップに書き戻しました'
+			'msg_backup_rollbacked'		=> T_('Rolled back to $1.'),
+			'title_backup_rollback'		=> T_('Roll back from a backup(No. %s), this page.'),
+			'title_backup_rollbacked'	=> T_('This page has been rolled back from a backup(No. %s).')
 		)
 	);
 	set_plugin_messages($messages);
@@ -118,7 +118,7 @@ function plugin_backup_action()
 	
 	$is_page = is_page($page);
 
-	$body = plugin_backup_get_list($page);
+	$body = '<div class="ui-widget ui-widget-content ui-corner-all">'.plugin_backup_get_list($page);
 /*
 	if ($is_page){
 		if ($action != 'diff')
@@ -211,8 +211,7 @@ function plugin_backup_action()
 			if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
 			$title = & $_backup_messages['title_backupsource'];
 			auth::is_role_page($backups[$s_age]['data']);
-			$body .= '<pre class="sh" data-blush="diff">' . htmlsc(join('', $backups[$s_age]['data'])) .
-				'</pre>' . "\n";
+			$body .= '<pre class="sh" data-blush="plain">' . htmlsc(join('', $backups[$s_age]['data'])) . '</pre>' . "\n";
 		break;
 		default:
 			if (PLUGIN_BACKUP_DISABLE_BACKUP_RENDERING) {
@@ -224,6 +223,7 @@ function plugin_backup_action()
 			}
 		break;
 	}
+	$body .='</div>';
 
 	return array('msg'=>str_replace('$2', $s_age, $title), 'body'=>$body);
 }
@@ -297,43 +297,70 @@ function plugin_backup_diff($str)
 </ul>
 EOD;
 
-	return $ul . '<pre class="sh" data-brush="diff">' . diff_style_to_css(htmlsc($str)) . '</pre>' . "\n";
+	return $ul . '<pre class="sh>' . diff_style_to_css(htmlsc($str)) . '</pre>' . "\n";
 }
 
 function plugin_backup_get_list($page)
 {
-	global $_backup_messages;
+	global $_backup_messages, $vars;
 	$r_page = rawurlencode($page);
 	$s_page = htmlsc($page);
 	$script = get_script_uri();
 	$retval = array();
-	$retval[0] = '<p><a href="'.get_cmd_uri('backup').'">'.$_backup_messages['msg_backuplist'].'</a></p>';
-	$retval[0] .= <<<EOD
-<form action="$script" method="post" class="backup_select_form">
-	<input type="hidden" name="cmd" value="backup" />
-	<input type="hidden" name="page" value="$s_page" />
-	<input type="hidden" name="action" value="delete" />
-	<input type="hidden" name="selectdelete" value="true" />
-EOD;
-	
-	$retval[1] = "\n	<ol>\n";
-	$retval[2] = <<<EOD
-	</ol>
-	<input type="submit" name="delete" value="{$_backup_messages['btn_selectdelete']}" />
-EOD;
-// if (! PKWK_READONLY) {
-	if (! auth::check_role('readonly')) {
-		$retval[2] .= '<a class="button" href="' . get_cmd_uri('backup', $page, null, array('action'=>'delete')) . '">';
-		$retval[2] .= str_replace('$1', $s_page, $_backup_messages['title_backup_delete']);
-		$retval[2] .= '</a>';
-	}
-	$retval[2] .= '</form>';
+	$retval[] = '<form action="'.$script.'" method="get" class="backup_select_form">';
+	$retval[] = '<input type="hidden" name="cmd" value="backup" />';
+	$retval[] = '<input type="hidden" name="page" value="'.$s_page.'" />';
+	$retval[] = '<div class="ui-widget-header">';
 	$backups = _backup_file_exists($page) ? get_backup($page) : array();
 	if (empty($backups)) {
-		$retval[1] .= '   <li>' . str_replace('$1', make_pagelink($page), $_backup_messages['msg_nobackup']) . '</li>' . "\n";
+		$retval[1] .= '<p>' . str_replace('$1', make_pagelink($page), $_backup_messages['msg_nobackup']) . '</p>' . "\n";
+		return join('', $retval);
+	}else{
+		$age = isset($vars['age']) ? (int)$vars['age'] : null;
+		$action = isset($vars['action']) ? $vars['action'] : null;
+		$actions = array(
+			'nowdiff'=>$_backup_messages['msg_nowdiff'],
+			'diff'=>$_backup_messages['msg_diff'],
+			'visaldiff'=>$_backup_messages['msg_visualdiff'],
+			'source'=>$_backup_messages['msg_source']
+//			'delete'=>$_backup_messages['btn_selectdelete'],
+//			'rollback'=>$_backup_messages['msg_rollback']
+		);
+
+		$retval[] = '<select name="age">';
+		foreach ($backups as $backup_age=>$data) {
+			if (isset($data['real'])) {
+				$time = $data['real'];
+			}else if(isset($data['time'])){
+				$time = $data['time'];
+			}else{
+				$time = '';
+			}
+			$retval[] = '<option value="'.$backup_age.'"'.( $backup_age === $age ? ' selected="selected"' : '' ).'>'.format_date($time, false).'</option>';
+		}
+		$retval[] = '</select>';
+		$retval[] = '<span class="buttonset" id="form_action" data-role="controlgroup" data-type="horizontal">';
+		foreach ($actions as $val=>$act_name){
+			$retval[] = '<input type="radio" name="action" value="'.$val.'"'.(($val === $action) ? 'checked="checked"' : '').' id="r_'.$val.'"/><label for="r_'.$val.'">'.$act_name.'</label>';
+		}
+		$retval[] = '</span>';
+		$retval[] = '<input type="submit" value="'.$_backup_messages['btn_jump'].'" data-inline="true" />';
+		$retval[] = '</div>';
+	}
+	$retval[] = '</form>';
+	
+//<input type="password" name="pass" size="12" />
+// if (! PKWK_READONLY) {
+	if (! auth::check_role('readonly')) {
+		$retval[] = '<a class="button" href="' . get_cmd_uri('backup', $page, null, array('action'=>'delete')) . '">' . 
+			str_replace('$1', $s_page, $_backup_messages['title_backup_delete']) . '</a>';
+	}
+/*
+	$backups = _backup_file_exists($page) ? get_backup($page) : array();
+	if (empty($backups)) {
+		$retval[1] .= '   <li>' . str_replace('$1', make_pagelink($page), $_backup_messages['msg_nobackup']) . '</li>';
 		return join('', $retval);
 	}
-
 	$_anchor_from = $_anchor_to   = '';
 	$safemode = auth::check_role('safemode');
 	foreach ($backups as $age=>$data) {
@@ -368,8 +395,9 @@ EOD;
 
 		$retval[1] .= '</li>'."\n";
 	}
+*/
 
-	return join('', $retval);
+	return join("\n", $retval);
 }
 
 // List for all pages
@@ -453,12 +481,12 @@ EOD;
 	<input type="hidden" name="action" value="$mode" />
 	<input type="hidden" name="page" value="$r_page" />
 	$label
-	<select id="age" name="age">\n
+	<select id="age" name="age" >\n
 EOD;
 		$retval[1] = "\n";
 		$retval[2] = <<<EOD
 	</select>
-<span class="no-js"><input type="submit" value="{$_backup_messages['btn_jump']}" /></span>
+<input type="submit" value="{$_backup_messages['btn_jump']}" />
 </form>\n
 EOD;
 

@@ -49,6 +49,7 @@ function catbody($title, $page, $body)
 
 	if (IS_AJAX && !IS_MOBILE){
 		$ajax = isset($vars['ajax']) ? $vars['ajax'] : 'raw';
+		
 		switch ($ajax) {
 			case 'json':
 	 			// JSONで出力
@@ -288,11 +289,15 @@ function catbody($title, $page, $body)
 */
 		header('Content-Type: '.$http_header.'; charset='. CONTENT_CHARSET);
 		header('X-UA-Compatible: '.(empty($x_ua_compatible)) ? 'IE=edge' : $x_ua_compatible);	// とりあえずIE8対策
+/*
+		if (substr_count($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip')){
+			ob_start("ob_gzhandler");
+		}else{
+			ob_start();
+		}
+*/
 		require(SKIN_FILE);
-	}
-	global $ob_flag;
-	if($ob_flag){
-		ob_end_flush();
+//		ob_end_flush();
 	}
 	exit;
 }
@@ -421,13 +426,6 @@ function edit_form($page, $postdata, $digest = FALSE, $b_template = TRUE)
 	$checked_time = isset($vars['notimestamp']) ? ' checked="checked"' : '';
 	$pages = DEBUG ? get_existpages() : auth::get_existpages();
 
-	if(isset($vars['add'])) {
-		$addtag  = '<input type="hidden" name="add" value="true" />';
-		$add_top = '<input type="checkbox" name="add_top" value="true"' .
-			$checked_top . ' /><span class="small">' .
-			$_button['addtop'] . '</span>';
-	}
-
 	if($load_template_func && $b_template) {
 		$pages  = array();
 		foreach($pages as $_page) {
@@ -462,6 +460,7 @@ EOD;
 	$s_id        = isset($vars['id']) ? htmlsc($vars['id']) : '';
 	$b_preview   = isset($vars['preview']); // TRUE when preview
 	$s_ticket    = md5(MUTIME);
+	$addtag      = isset($vars['add']) ? '<input type="hidden" name="add" value="true" />' : '';
 
 	if (function_exists('pkwk_session_start') && pkwk_session_start() != 0) {
 		// BugTrack/95 fix Problem: browser RSS request with session
@@ -474,12 +473,37 @@ EOD;
 		// enable 'do not change timestamp'
 		$add_notimestamp = <<<EOD
 	<input type="checkbox" name="notimestamp" id="_edit_form_notimestamp" value="true"$checked_time />
-	<label for="_edit_form_notimestamp" class="small">{$_button['notchangetimestamp']}</label>
+	<label for="_edit_form_notimestamp" data-inline="true">{$_button['notchangetimestamp']}</label>
 EOD;
 		if ($notimeupdate == 2 && auth::check_role('role_adm_contents')) {
 			// enable only administrator
 			$add_notimestamp .= '<input type="password" name="pass" size="12" />';
 		}
+	}
+	if (IS_MOBILE){
+		$form = join("\n",array(
+			'<input type="submit" id="btn_submit" name="write" value="'.$_button['update'].'" data-icon="check" data-inline="true" data-theme="b" />',
+			'<input type="submit" id="btn_preview" name="preview" value="'.$_button['preview'].'" accesskey="p" data-icon="gear" data-inline="true" data-theme="e" />',
+			'<input type="submit" id="btn_cancel" name="cancel" value="'.$_button['cancel'].'" accesskey="c" data-icon="delete" data-inline="true" />',
+			($notimeupdate == 2 && auth::check_role('role_adm_contents')) ? '<div data-role="fieldcontain">' : '',
+			($notimeupdate != 0 && is_page($page)) ? '<input type="checkbox" name="notimestamp" id="_edit_form_notimestamp" value="true" $checked_time />'.
+				'<label for="_edit_form_notimestamp" data-inline="true">'.$_button['notchangetimestamp'].'</label>' : null,
+			($notimeupdate == 2 && auth::check_role('role_adm_contents')) ? '<input type="password" name="pass" size="12"  data-inline="true" /></div>' : '',
+			isset($vars['add']) ? "\t\t".'<input type="checkbox" name="add_top" value="true"' .$checked_top . ' /><label for="add_top">' . $_button['addtop'] . '</label>' : null
+		));
+		
+EOD;
+	}else{
+		$form[] = "\t\t".'<input type="submit" id="btn_submit" name="write" value="'.$_button['update'].'" accesskey="s" />';
+		$form[] = isset($vars['add']) ? "\t\t".'<input type="checkbox" name="add_top" value="true"' .$checked_top . ' /><label for="add_top">' . $_button['addtop'] . '</label>' : '';
+		
+		$form = <<<EOD
+		<input type="submit" id="btn_submit" name="write" value="{$_button['update']}" accesskey="s" data-icon="check" data-inline="true" data-theme="b" />
+		$add_top
+		<input type="submit" id="btn_preview" name="preview" value="{$_button['preview']}" accesskey="p" data-icon="gear" data-inline="true" data-theme="e" />
+		$add_notimestamp
+		<input type="submit" id="btn_cancel" name="cancel" value="{$_button['cancel']}" accesskey="c" data-icon="delete" data-inline="true" />
+EOD;
 	}
 	$refpage = isset($vars['refpage']) ? htmlsc($vars['refpage']) : '';
 
@@ -495,11 +519,7 @@ EOD;
 $template
 $addtag
 		<textarea name="msg" id="msg" rows="$rows" cols="$cols">$s_postdata</textarea>
-		<input type="submit" id="btn_submit" name="write" value="{$_button['update']}" accesskey="s" />
-		$add_top
-		<input type="submit" id="btn_preview" name="preview" value="{$_button['preview']}" accesskey="p" />
-		$add_notimestamp
-		<input type="submit" id="btn_cancel" name="cancel" value="{$_button['cancel']}" accesskey="c" />
+		$form
 	</div>
 </form>
 
@@ -634,6 +654,8 @@ function pkwk_common_headers($modified = 0, $expire = 0, $compress = true){
 	global $lastmod, $vars;
 	if (! defined('PKWK_OPTIMISE')) pkwk_headers_sent();
 
+	$vary = get_language_header_vary();
+
 	if ($modified !== 0){
 		// 最終更新日（秒で）が指定されていない場合動的なページとみなす。
 		// PHPで条件付きGETとかEtagとかでパフォーマンス向上
@@ -665,38 +687,11 @@ function pkwk_common_headers($modified = 0, $expire = 0, $compress = true){
 		header('Pragma: no-cache');
 		header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
 	}
-
-	$vary = get_language_header_vary();
-	if(defined('PKWK_ZLIB_LOADABLE_MODULE') && $compress !== false) {
-		$matches = array();
-		// どうも、ob_gzhandler関連は動作が不安定だ・・・。
-/*
-		if(extension_loaded('zlib') && 
-			ob_get_length() === FALSE && 
-			!ini_get('zlib.output_compression') && 
-			ini_get('output_handler') !== 'ob_gzhandler' && 
-			ini_get('output_handler') !== 'mb_output_handler'){	// mb_output_handlerとかち合うらしいので、その場合は弾く。http://pukiwiki.sourceforge.jp/dev/?%BB%A8%C3%CC%2F11
-			
-			global $ob_flag;
-			$ob_flag = false;
-			
-			// http://jp.php.net/manual/ja/function.ob-gzhandler.php
-			ob_start('ob_gzhandler');
-			$ob_flag = true;
-		}else
-*/
-		if(ini_get('zlib.output_compression') &&
-			preg_match('/\b(gzip|deflate)\b/i', $_SERVER['HTTP_ACCEPT_ENCODING'], $matches)) {
-			// Bug #29350 output_compression compresses everything _without header_ as loadable module
-			// http://bugs.php.net/bug.php?id=29350
-			header('Content-Encoding: ' . $matches[1]);
-			$vary .= ', Accept-Encoding';
-		}
-	}
 	
 	// RFC2616
 	// http://sonic64.com/2004-02-06.html
 	header('Vary: '.$vary);
+
 	// HTTP access control
 	// JSON脆弱性対策（Adv.では外部にAjax APIを提供することを考慮しない）
 	// https://developer.mozilla.org/ja/HTTP_Access_Control

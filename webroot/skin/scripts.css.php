@@ -23,7 +23,7 @@ audio:not([controls]) { display: none; }
 
 html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
 body { margin: 0; font-size: 13px; line-height: 1.4; }
-body, button, input, select, textarea { font-family: sans-serif; color: #222; }
+body, button, input, select, textarea { color: #222; }
 
 ::-moz-selection { background: #57a1fe; color: #fff; text-shadow: none; }
 ::selection { background: #57a1fe; color: #fff; text-shadow: none; }
@@ -41,7 +41,7 @@ dfn { font-style: italic; }
 hr { display: block; height: 1px; border: 0; border-top: 1px solid #ccc; margin: 1em 0; padding: 0; }
 ins { background: #ff9; color: #000; text-decoration: none; }
 mark { background: #ff0; color: #000; font-style: italic; font-weight: bold; }
-pre, code, kbd, samp { font-family: monospace; _font-family: 'courier new', monospace; font-size: 1em; }
+pre, code, kbd, samp { font-family: monospace; font-size: 1em; }
 pre { white-space: pre; white-space: pre-wrap; word-wrap: break-word; }
 q { quotes: none; }
 q:before, q:after { content: ""; content: none; }
@@ -79,19 +79,19 @@ td { vertical-align: top; }
 /* ==|== PukiWiki Advance Standard Font Set ================================= */
 
 /* Font set */
-body{
+body, .ui-widget{
 	font-family: 'Segoe UI', 'Trebuchet MS', Verdana, Arial, Sans-Serif;
 }
 /* Japanese */
-:lang(ja){
+body:lang(ja), body:lang(ja) .ui-widget{
 	font-family: Meiryo, 'メイリオ', 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', Osaka, 'ＭＳＰ ゴシック';
 }
 /* Korean */
-:lang(ko), :lang(ko) .ui-widget{
+body:lang(ko), body:lang(ko) .ui-widget{
 	font-family: 'AppleGothic', 'Malgun Gothic', '맑은 고딕', Gulim, Dotum, AppleGothic;
 }
 /*  Chinese */
-:lang(zh), :lang(zh) .ui-widget{
+body:lang(zh), body:lang(zh) .ui-widget{
 	font-family: 'Hiragino Sans GB W3', 'STHeiti', 'Apple LiGothic Medium', 'Microsoft YaHei', 'Microsoft JhengHei';
 }
 
@@ -111,45 +111,10 @@ body{
 	}
 }
 
-pre, code, kbd, samp, textarea, select, option, input, var{
-	font-family: 'Consolas', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace;
+textarea, select, option, input, var, pre, code{
+	font-family: monospace !important;
 }
 
-:lang(ja) pre,
-:lang(ja) code,
-:lang(ja) kbd,
-:lang(ja) samp,
-:lang(ja) textarea,
-:lang(ja) select,
-:lang(ja) option,
-:lang(ja) input,
-:lang(ja) var{
-	font-family: 'Osaka−等幅', 'ＭＳ ゴシック', 'MS Gothic' !important;
-}
-
-:lang(ko) pre,
-:lang(ko) code,
-:lang(ko) kbd,
-:lang(ko) samp,
-:lang(ko) textarea,
-:lang(ko) select,
-:lang(ko) option,
-:lang(ko) input,
-:lang(ko) var{
-	font-family: GulimChe !important;
-}
-
-:lang(zh) pre,
-:lang(zh) code,
-:lang(zh) kbd,
-:lang(zh) samp,
-:lang(zh) textarea,
-:lang(zh) select,
-:lang(zh) option,
-:lang(zh) input,
-:lang(zh) var{
-	font-family: 'SimHei', '蒙納黑體', monospace;
-}
 /* for Emoji */
 @font-face {
 	font-family: Symbola;
@@ -378,6 +343,7 @@ input[type='search'], textarea, select {
 	background-color:white;
 	box-shadow:none !important;
 	background-image:url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8%2BPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMCI%2BPGRlZnM%2BPGxpbmVhckdyYWRpZW50IHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxMDAlIiBpZD0iZ3JhZGllbnQiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IndoaXRlc21va2UiIC8%2BPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSJ3aGl0ZSIgLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCBmaWxsPSJ1cmwoI2dyYWRpZW50KSIgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIvPjwvc3ZnPg%3D%3D');
+	background-size: 100% 100%;
 }
 
 /* focus */
@@ -430,11 +396,12 @@ input[disabled]:hover, select[disabled]:hover, textarea[disabled]:hover, option[
 	box-shadow: none;
 }
 
-::-webkit-input-placeholder	{ color:grey; }
+/* placeholder text color */
+::-webkit-input-placeholder { color:grey; }
 input:-moz-placeholder, textarea:-moz-placeholder { color:grey; }
 input:-ms-placeholder, textarea:-ms-placeholder { color:grey; }
-::-ms-input-placeholder	{ color:grey; }
-:-ms-input-placeholder	{ color:grey; }
+::-ms-input-placeholder { color:grey; }
+:-ms-input-placeholder { color:grey; }
 
 /* Require */
 input[type='text'][required], input[type='password'][required], input[type='file'][required],
@@ -447,6 +414,7 @@ input[type='search'][required], textarea[required], select[required] {
 	border:1px solid lightpink;
 	background-color:lavenderblush;
 	background-image:url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8%2BPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMCI%2BPGRlZnM%2BPGxpbmVhckdyYWRpZW50IHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxMDAlIiBpZD0iZ3JhZGllbnQiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9ImxhdmVuZGVyYmx1c2giIC8%2BPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSJ3aGl0ZSIgLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCBmaWxsPSJ1cmwoI2dyYWRpZW50KSIgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIvPjwvc3ZnPg%3D%3D');
+	background-size: 100% 100%;
 }
 
 /* customize jQuery ui widget */
@@ -465,12 +433,7 @@ input[type='search'][required], textarea[required], select[required] {
 	text-shadow: 0 1px 1px rgba(0,0,0,.3);
 	box-shadow: 0 1px 2px rgba(0,0,0,.2);
 }
-input.ui-button{
-	padding:.2em .7em !important;
-}
-.ui-button-text{
-	padding:1px .7em !important;
-}
+
 /* Message Box (for Debug and Error message) */
 .message_box{
 	padding: .7em;
@@ -481,6 +444,10 @@ input.ui-button{
 }
 .message_box p .ui-icon{
 	float: left; margin-right: .3em;
+}
+
+.js .no-js{
+	display:none;
 }
 
 /* ==|== PukiWiki Adv. Misc classes ========================================= */
@@ -1269,6 +1236,15 @@ ul#jplayer_icons #jplayer_volume-min {
 	position:absolute;
 	z-index:-999;
 }
+
+/* google search */
+#goog-fixurl ul { list-style: none; padding: 0; margin: 0; }
+#goog-fixurl form { margin: 0; }
+#goog-wm-qt, #goog-wm-sb { border: 1px solid #bbb; font-size: 16px; line-height: normal; vertical-align: top; color: #444; border-radius: 2px; }
+#goog-wm-qt { width: 220px; height: 20px; padding: 5px; margin: 5px 10px 0 0; box-shadow: inset 0 1px 1px #ccc; }
+#goog-wm-sb { display: inline-block; height: 32px; padding: 0 10px; margin: 5px 0 0; white-space: nowrap; cursor: pointer; background-color: #f5f5f5; background-image: -webkit-linear-gradient(rgba(255,255,255,0), #f1f1f1); background-image: -moz-linear-gradient(rgba(255,255,255,0), #f1f1f1); background-image: -ms-linear-gradient(rgba(255,255,255,0), #f1f1f1); background-image: -o-linear-gradient(rgba(255,255,255,0), #f1f1f1); -webkit-appearance: none; -moz-appearance: none; appearance: none; *overflow: visible; *display: inline; *zoom: 1; }
+#goog-wm-sb:hover, #goog-wm-sb:focus { border-color: #aaa; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1); background-color: #f8f8f8; }
+#goog-wm-qt:focus, #goog-wm-sb:focus { border-color: #105cb6; outline: 0; color: #222; }
 
 /* Table sorter */
 .table_pager_widget{

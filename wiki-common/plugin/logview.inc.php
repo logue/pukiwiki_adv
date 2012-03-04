@@ -85,27 +85,48 @@ function plugin_logview_action()
 
 	check_readable($page, false);
 	if ($kind === null){
-		$body = '<div class="tabs" role="application">'."\n";
-		$body .= '<ul role="tablist">';
-		$cnt = 0;
-		foreach($log as $key=>$val){
-			$link_text = isset($_LANG['skin']['log_'.$key]) ? $_LANG['skin']['log_'.$key] : $key;
-			if ($val['use'] === 1){
-				$body .= '<li role="tab"><a href="'.get_cmd_uri('logview',$page,null,array('kind'=>$key)).'">'.$link_text.'</a></li>';
-			}
+		if (!IS_MOBILE) {
+			$body = '<div class="tabs" role="application">'."\n";
+			$body .= '<ul role="tablist">';
+			$cnt = 0;
+			foreach($log as $key=>$val){
+				$link_text = isset($_LANG['skin']['log_'.$key]) ? $_LANG['skin']['log_'.$key] : $key;
+				if ($val['use'] === 1){
+					$body .= '<li role="tab"><a href="'.get_cmd_uri('logview',$page,null,array('kind'=>$key)).'">'.$link_text.'</a></li>';
+				}
 /*
-			else
-			{
-				$body .= '<li><a href="'.get_cmd_uri('logview',$page,null,array('kind'=>$key)).'" data-ajax="raw" data-disabled="true">'.$link_text.'</a></li>';
-			}
+				else
+				{
+					$body .= '<li><a href="'.get_cmd_uri('logview',$page,null,array('kind'=>$key)).'" data-ajax="raw" data-disabled="true">'.$link_text.'</a></li>';
+				}
 */
+			}
+			$body .= '</ul>'."\n";
+			
+			if ($kind === null) return array('msg'  => $title,'body' => $body);
+			
+			$body .= '<div class="no-js" role="tabpanel">';
+			$nodata = $body.'<p>'.$_logview_msg['msg_nodata'].'</p></div></div>';
+		}else{
+			$body = '<div data-role="controlgroup" data-type="horizontal">'."\n";
+			$cnt = 0;
+			foreach($log as $key=>$val){
+				$link_text = isset($_LANG['skin']['log_'.$key]) ? $_LANG['skin']['log_'.$key] : $key;
+				if ($val['use'] === 1){
+					$body .= '<a href="'.get_cmd_uri('logview',$page,null,array('kind'=>$key)).'" data-role="button">'.$link_text.'</a>';
+				}
+/*
+				else
+				{
+					$body .= '<a href="'.get_cmd_uri('logview',$page,null,array('kind'=>$key)).'" data-ajax="raw" data-disabled="true">'.$link_text.'</a>';
+				}
+*/
+			}
+			$body .= '</div>'."\n". '<div class="ui-body ui-body-c"></div>';
+			
+			if ($kind === null) return array('msg'  => $title,'body' => $body);
+		
 		}
-		$body .= '</ul>'."\n";
-		
-		if ($kind === null) return array('msg'  => $title,'body' => $body);
-		
-		$body .= '<div class="no-js" role="tabpanel">';
-		$nodata = $body.'<p>'.$_logview_msg['msg_nodata'].'</p></div></div>';
 	}else{
 		$body = '';
 		$nodata = '<p>'.$_logview_msg['msg_nodata'].'</p>';

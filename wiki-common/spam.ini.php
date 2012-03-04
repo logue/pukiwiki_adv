@@ -7841,7 +7841,131 @@ $blocklist['E'] = array(
 	'ultra-movie-new-trend.com',// 61.45.30.213
 	'www.xn--18j9a9d884ojv0ate0a.com', // 122.30.11.234(*)
 	'www6.ocn.ne.jp/~tideji',	// 123.216.7.45, 124.84.187.28, 221.185.223.149, 221.185.179.126
-	'xn--18jxcw59msenc58a.jp'	// 220.28.162.221
+	'xn--18jxcw59msenc58a.jp',	// 220.28.162.221
+
+	// sanwango.com affiliate spammer
+	'090web.net',
+	'1gr.jp',
+	'2pg.in',
+	'509.jp',
+	'858,jp',
+	'9th.jp',
+	'aboy.jp',
+	'ado.jp',
+	'ad1cn.com',
+	'afboy.jp',
+	'av090.com',
+	'brbmotorsport.com',
+	'btblog.jp',
+	'cchk.net',
+	'creative-pc.net',
+	'comic-plaza.com',
+	'deauyo.net',
+	'dki8v8i.info',
+	'dreamport.ws',
+	'emica96.info',
+	'e-degi.net'
+	'e-mitumori.jp',
+	'e-off.net',
+	'furou.biz',
+	'fx123.jp',
+	'gjg.mobi',
+	'ha-yama.com',
+	'happy49.net',
+	'hibunya.com',
+	'info-up.jp',
+	'inforkg.jp',
+	'iikayua.info',
+	'iketenai.com',
+	'japanet-shop.info',
+	'jiw.jp',
+	'jou.jp',
+	'kamk.jp',
+	'kanaloa-yume.net',
+	'kimika-f.com',
+	'm-nishihama.com',
+	'masaru21.com',
+	'mbmake.jp',
+	'm-ru.jp',
+	'mobaspotriver.info',
+	'moem.biz',
+	'moneywalker.mobi',
+	'myojurushube.net',
+	'netbait.jp',
+	'nuryuryodaba.net',
+	'onayami-kaishow.com',
+	'panachedor.net',
+	'peelingface.net',
+	'rennka.com',
+	'rovobo.com',
+	'rkg.cc',
+	'rkg.jp',
+	'rkgs.jp',
+	'sp-sh.jp',
+//	'sanwango.com',
+	'shoma.biz',
+	'sunahama.jp',
+	'shininglady.jp',
+	'systemplus-labo.com',
+	'tenransan.net',
+	'top10.jp',
+	'tougin.mobi',
+	'vokg.org',
+	'vipxana.com',
+	'work119.com',
+	'xgr.jp',
+	'xgun.tv',
+
+	// Report from http://akusiturifara.seesaa.net/
+	'40cw.info',
+	'akakao.com',
+	'bihhp.com',
+	'com2net.biz',				// 210.138.169.106 
+	'dondon.in',
+	'hadakh1.com',
+	'hoken100.com',
+	'itsaeki.jp',
+	'kabupeace.com',
+	'kaitaihito.com',
+	'kansoyh2.com',
+	'kensaku-daisuki.net',
+	'ladylove.biz',
+	'liberta2010.com',
+	'life-best.com',
+	'lilac-inc.com',
+	'mahp.jp',
+	'meblog.biz',
+	'mf1.jp',
+	'ooban-koban.com',			// 210.166.36.253
+	'papa-dachi.com',
+	'rakuten-01.com',
+	'rakutenshop.jp',
+	'seo-waza.com',
+	'takara-bune.net',			// 210.166.36.253
+	'x0.com',
+	'xn--ipw186bxys.com',
+	'xn--k9ja5eb7684d3owc.com',
+	'yntwakao.org',
+	'yousense.net',
+	'doorblog.jp',				// 121.84.160.206
+	'info-investment.jp'		// 219.126.31.82
+	
+	'ameblo.jp/aibranding',		// 59.146.83.145
+	'ameblo.jp/jyouhoutosyokan',// 180.233.142.129
+	'ameblo.jp/mariediet',
+	'ameblo.jp/sesyushikyu',
+	'ameblo.jp/vip-vip513',
+	'blog.livedoor.jp/huku11sy',
+	'blog.livedoor.jp/otouwaki',
+	'bluecoke.blog12.fc2.com',	// 208.71.105.150:80
+	'gassat-infoserch.jp',		// 219.126.27.233
+	'himihana.x.fc2.com',		// 122.17.185.93
+	'jyouhounavi.x.fc2.com',
+	'ocn.ne.jp/~roy21',			// 180.3.45.150
+	'p.tl/9uT9',				// 180.233.142.129
+	'shokokai.or.jp/05',		// 122.208.28.213
+	'takcom.pv.land.to',
+	'hukubrsy.seesaa.net',
 );
 
 // --------------------------------------------------

@@ -36,7 +36,7 @@ defined('WWW_HOME')				or define('WWW_HOME', '');
 defined('PLUS_THEME')			or define('PLUS_THEME',	'default');
 
 // ページ名やファイル名として使用できない文字（エンコード前の文字）
-defined('PKWK_ILLEGAL_CHARS_PATTERN') or define('PKWK_ILLEGAL_CHARS_PATTERN', '/[%|=|&|?|~|#|\r|\n|\0|\@|;|\$|+|\\|\[|\]|\||^|{|}|\']/');
+defined('PKWK_ILLEGAL_CHARS_PATTERN') or define('PKWK_ILLEGAL_CHARS_PATTERN', '/[%|=|&|?|#|\r|\n|\0|\@|;|\$|+|\\|\[|\]|\||^|{|}|\']/');
 
 /////////////////////////////////////////////////
 // Init server variables
@@ -481,7 +481,7 @@ if (!IS_AJAX || IS_MOBILE){
 		),
 		'jqueryui'	=> array(
 			'file'	=> 'jquery-ui.min.js',
-			'ver'	=> '1.8.17'
+			'ver'	=> '1.8.18'
 		),
 		'swfobject' => array(
 			'file'	=> 'swfobject.js',
@@ -489,29 +489,70 @@ if (!IS_AJAX || IS_MOBILE){
 		)
 	);
 	
-	if ($x_ua_compatible == 'chrome=1'){
-		// X-UA-CompatibleでChromeをレンダリングにするよう指定した場合
-		$google_loader['chrome-frame'] = array(
-			'file'	=> 'CFInstall.min.js',
-			'ver'	=>'1'
-		);
-	}
-
-	// application/xhtml+xml を認識するブラウザではXHTMLとして出力
-	if (PKWK_STRICT_XHTML === TRUE && strstr($_SERVER['HTTP_ACCEPT'], 'application/xhtml+xml') !== false){
-		foreach ($google_loader as $name=>$fw){
-			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'https://ajax.googleapis.com/ajax/libs/'.$name.'/'.$fw['ver'].'/'.$fw['file']);
-		}
-	}else{
-		// google.loadはdocument.write命令を使うためXHTMLにならない。
-		foreach ($google_loader as $name=>$fw){
-			$js_vars[] = 'google.load("'.$name.'","'.$fw['ver'].'");';
-		}
-	}
-
 	if (!IS_MOBILE){
+		if ($x_ua_compatible == 'chrome=1'){
+			// X-UA-CompatibleでChromeをレンダリングにするよう指定した場合
+			$google_loader['chrome-frame'] = array(
+				'file'	=> 'CFInstall.min.js',
+				'ver'	=>'1'
+			);
+		}
+
+		// application/xhtml+xml を認識するブラウザではXHTMLとして出力
+		if (PKWK_STRICT_XHTML === TRUE && strstr($_SERVER['HTTP_ACCEPT'], 'application/xhtml+xml') !== false){
+			foreach ($google_loader as $name=>$fw){
+				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'https://ajax.googleapis.com/ajax/libs/'.$name.'/'.$fw['ver'].'/'.$fw['file']);
+			}
+		}else{
+			// google.loadはdocument.write命令を使うためXHTMLにならない。
+			foreach ($google_loader as $name=>$fw){
+				$js_vars[] = 'google.load("'.$name.'","'.$fw['ver'].'");';
+			}
+		}
+
 		// modernizrの設定
 		$modernizr = 'modernizr.js';
+		
+		if (DEBUG === true) {
+			// 読み込むsrcディレクトリ内のJavaScript
+			$default_js = array(
+				/* libraly */
+				'swfupload',
+				'tzCalculation_LocalTimeZone',
+				
+				/* Use plugins */
+				'activity-indicator',
+				'jquery.a-tools',
+				'jquery.beautyOfCode',
+				'jquery.cookie',
+				'jquery.colorbox',
+				'jquery.i18n',
+				'jquery.jplayer',
+				'jquery.lazyload',
+				'jquery.query',
+				'jquery.scrollTo',
+				'jquery.superfish',
+				'jquery.swfupload',
+				'jquery.tabby',
+				'jquery.tablesorter',
+				'jquery.textarearesizer',
+				'jquery.tooltip',
+				
+				/* MUST BE LOAD LAST */
+				'skin.original'
+			);
+			foreach($default_js as $script_file)
+				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'src/'.$script_file.'.js');
+
+			// yui profiler and profileviewer
+			/*
+				$link_tags[] = array('rel'=>'stylesheet','type'=>'text/css','href'=>JS_URI.'profiling/yahoo-profiling.css');
+				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'profiling/yahoo-profiling.min.js');
+				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'profiling/config.js');
+			*/
+		} else {
+			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'skin.js');
+		}
 
 		// jQueryUIのCSS
 		$link_tags[] = array(
@@ -522,11 +563,24 @@ if (!IS_AJAX || IS_MOBILE){
 		);
 	}else{
 		$modernizr = '';
-		$link_tags[] = array(
-			'rel'=>'stylesheet',
-			'href'=>'http://code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.css',
-			'type'=>'text/css',
-		);
+		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'https://ajax.googleapis.com/ajax/libs/jquery/'.$google_loader['jquery']['ver'].'/'.$google_loader['jquery']['file']);
+		if (DEBUG === true) {
+			// 読み込むsrcディレクトリ内のJavaScript
+			$default_js = array(
+				/* Use plugins */
+				'jquery.beautyOfCode',
+				'jquery.i18n',
+				'jquery.lazyload',
+				'jquery.tablesorter',
+				
+				/* MUST BE LOAD LAST */
+				'mobile.original'
+			);
+			foreach($default_js as $script_file)
+				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'mobile/'.$script_file.'.js');
+		} else {
+			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'mobile.js');
+		}
 	}
 
 	// JS用初期設定
@@ -541,47 +595,6 @@ if (!IS_AJAX || IS_MOBILE){
 		'THEME_NAME'=>constant('PLUS_THEME')
 	);
 
-	if (DEBUG === true) {
-		// 読み込むsrcディレクトリ内のJavaScript
-		$default_js = array(
-			/* libraly */
-			'swfupload',
-			'tzCalculation_LocalTimeZone',
-			
-			/* Use plugins */
-			'activity-indicator',
-			'jquery.a-tools',
-			'jquery.beautyOfCode',
-			'jquery.cookie',
-			'jquery.colorbox',
-			'jquery.i18n',
-			'jquery.jplayer',
-			'jquery.lazyload',
-			'jquery.query',
-			'jquery.scrollTo',
-			'jquery.superfish',
-			'jquery.swfupload',
-			'jquery.tabby',
-			'jquery.tablesorter',
-			'jquery.textarearesizer',
-			'jquery.tooltip',
-			
-			/* MUST BE LOAD LAST */
-			'skin.original'
-		);
-		foreach($default_js as $script_file)
-			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'src/'.$script_file.'.js');
-
-		// yui profiler and profileviewer
-		/*
-			$link_tags[] = array('rel'=>'stylesheet','type'=>'text/css','href'=>JS_URI.'profiling/yahoo-profiling.css');
-			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'profiling/yahoo-profiling.min.js');
-			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'profiling/config.js');
-		*/
-
-	} else {
-		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'skin.js');
-	}
 	$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'locale.js');
 	
 	if (isset($facebook)){

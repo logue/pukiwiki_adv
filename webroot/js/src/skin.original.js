@@ -453,8 +453,7 @@ var pukiwiki = {};
 				load:function(event, ui) {
 					self.init_dom('#' + ui.panel.id);
 				}
-			}).removeClass(prefix + 'tabs');
-			
+			}).removeClass('tabs');
 
 			// ダイアログ
 			this.setAnchor(prefix);
@@ -531,6 +530,7 @@ var pukiwiki = {};
 			// フォームロックを解除
 			$(':input').removeAttr('disabled');
 			$('.ui-button').button('option', 'disabled', false);
+			$(prefix + '.buttonset').buttonset().removeClass('buttonset');
 
 			if(typeof(callback) === 'function'){
 				callback();
@@ -1135,8 +1135,9 @@ var pukiwiki = {};
 
 			$('.style_table').each(function(elem){
 				var table = this;
-				var backup = $(this).clone();
-				var data = $(this).data();
+				var $this = $(this);
+				var backup = $this.clone();
+				var data = $this.data();
 				var config = self.config.tablesorter;
 				
 				if ($(this).data('enabled') !== true){
@@ -1150,12 +1151,12 @@ var pukiwiki = {};
 						config.sorter.parsers = data.parsers;
 
 						
-						$(this).tablesorter(config.sorter);
+						$this.tablesorter(config.sorter);
 						
 						if (config.pager.location_before === true){
-							$(this).before(tablesorter_widget(pager_id));
+							$this.before(tablesorter_widget(pager_id));
 						}else{
-							$(this).after(tablesorter_widget(pager_id));
+							$this.after(tablesorter_widget(pager_id));
 						}
 
 						var i = 0;
@@ -1187,7 +1188,7 @@ var pukiwiki = {};
 						});
 
 						// ページャーを生成（ID重複しないようにグローバル変数のpukiwiki.tablesorter.counterをカウンタとして使用
-						$(this).tablesorterPager({
+						$this.tablesorterPager({
 							container: $('#'+pager_id),
 							positionFixed: false,
 							onthrough: function(e){
@@ -1209,10 +1210,10 @@ var pukiwiki = {};
 						$('#'+pager_id).show('clip');
 						config.counter++;
 					}else{
-						$(this).tablesorter(config.sorter);
+						$this.tablesorter(config.sorter);
 					}
 					// ２重に実行されるのを抑止
-					$(this).data('enabled', true)
+					$this.data('enabled', true)
 				}
 			});
 		},

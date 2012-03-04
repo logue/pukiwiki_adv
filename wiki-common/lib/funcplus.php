@@ -83,7 +83,7 @@ function postdata_write()
 		error_log("\n\n----" . date('Y-m-d H:i:s', time()) . "\n", 3, CACHE_DIR . 'postdata.log');
 		error_log("[ADDR]" . get_remoteip() . "\t" . $_SERVER['HTTP_USER_AGENT'] . "\n", 3, CACHE_DIR . 'postdata.log');
 		error_log("[SESS]\n" . var_export($cookie, TRUE) . "\n", 3, CACHE_DIR . 'postdata.log');
-		error_log("[GET]\n"  . var_export($get,    TRUE) . "\n", 3, CACHE_DIR . 'postdata.log');
+		error_log("[GET]\n"  . var_export($get,	TRUE) . "\n", 3, CACHE_DIR . 'postdata.log');
 		error_log("[POST]\n" . var_export($post,   TRUE) . "\n", 3, CACHE_DIR . 'postdata.log');
 		error_log("[VARS]\n" . var_export($vars,   TRUE) . "\n", 3, CACHE_DIR . 'postdata.log');
 	}
@@ -106,7 +106,7 @@ function honeypot_write()
 		error_log("----" . date('Y-m-d H:i:s', time()) . "\n", 3, CACHE_DIR . 'honeypot.log');
 		error_log("[ADDR]" . get_remoteip() . "\t" . $_SERVER['HTTP_USER_AGENT'] . "\n", 3, CACHE_DIR . 'honeypot.log');
 		error_log("[SESS]\n" . var_export($cookie, TRUE) . "\n", 3, CACHE_DIR . 'honeypot.log');
-		error_log("[GET]\n"  . var_export($get,    TRUE) . "\n", 3, CACHE_DIR . 'honeypot.log');
+		error_log("[GET]\n"  . var_export($get,	TRUE) . "\n", 3, CACHE_DIR . 'honeypot.log');
 		error_log("[POST]\n" . var_export($post,   TRUE) . "\n", 3, CACHE_DIR . 'honeypot.log');
 		error_log("[VARS]\n" . var_export($vars,   TRUE) . "\n", 3, CACHE_DIR . 'honeypot.log');
 	}
@@ -133,7 +133,7 @@ function get_fancy_uri()
 	$script .= (SERVER_PORT == 80 || SERVER_PORT == 443) ? '' : ':' . SERVER_PORT;  // port
 
 	// SCRIPT_NAME が'/'で始まっていない場合(cgiなど) REQUEST_URIを使ってみる
-	$path    = SCRIPT_NAME;
+	$path	= SCRIPT_NAME;
 	$script .= $path; // path
 
 	return $script;
@@ -157,10 +157,10 @@ function mb_ereg_quote($str)
 function open_uri_in_new_window($anchor, $which)
 {
 	global $use_open_uri_in_new_window,		// この関数を使うか否か
-	       $open_uri_in_new_window_opis,		// 同一サーバー(Farm?)
-	       $open_uri_in_new_window_opisi,		// 同一サーバー(Farm?)のInterWiki
-	       $open_uri_in_new_window_opos,		// 外部サーバー
-	       $open_uri_in_new_window_oposi;		// 外部サーバーのInterWiki
+		   $open_uri_in_new_window_opis,		// 同一サーバー(Farm?)
+		   $open_uri_in_new_window_opisi,		// 同一サーバー(Farm?)のInterWiki
+		   $open_uri_in_new_window_opos,		// 外部サーバー
+		   $open_uri_in_new_window_oposi;		// 外部サーバーのInterWiki
 	global $_symbol_extanchor, $_symbol_innanchor;	// 新規ウィンドウを開くアイコン
 	
 	// この関数を使わない OR 呼び出し元が不正な場合はスルーする
@@ -220,10 +220,10 @@ function is_inside_uri($anchor)
 	global $open_uri_in_new_window_servername;
 	static $set_baseuri = true;
 
-        if ($set_baseuri) {
+		if ($set_baseuri) {
 		$set_baseuri = false;
 		$open_uri_in_new_window_servername[] = get_baseuri();
-        }
+		}
 
 	foreach ($open_uri_in_new_window_servername as $servername) {
 		if (stristr($anchor, $servername)) {
@@ -329,10 +329,10 @@ function ip_scope_check($ip,$networks)
 function ip_range_check($ip,$from,$to)
 {
 	if (empty($to)) return ip_scope_check($ip,array($from));
-        $l_ip = ip2long($ip);
-        $l_from = ip2long( ip2arrangement($from) );
-        $l_to = ip2long( ip2arrangement($to) );
-        return ($l_from <= $l_ip && $l_ip <= $l_to);
+		$l_ip = ip2long($ip);
+		$l_from = ip2long( ip2arrangement($from) );
+		$l_to = ip2long( ip2arrangement($to) );
+		return ($l_from <= $l_ip && $l_ip <= $l_to);
 }
 
 // ex. 10 -> 10.0.0.0, 192.168 -> 192.168.0.0
@@ -529,9 +529,9 @@ function get_mimeinfo($filename)
 	}
 
 	// PHP >= 4.3.0
-	$size = @getimagesize($filename);
-	if (is_array($size) && preg_match('/^(image\/)/i', $size['mime'])) {
-		$type = $size['mime'];
+	$filesize = @getimagesize($filename);
+	if (is_array($filesize) && preg_match('/^(image\/)/i', $filesize['mime'])) {
+		$type = $filesize['mime'];
 	}
 	return $type;
 }
@@ -602,11 +602,11 @@ function get_baseuri($path='')
 	global $script;
 
 	// RFC2396,RFC3986 : relativeURI = ( net_path | abs_path | rel_path ) [ "?" query ]
-	//                   absoluteURI = scheme ":" ( hier_part | opaque_part )
+	//				   absoluteURI = scheme ":" ( hier_part | opaque_part )
 	$ret = '';
 
 	switch($path) {
-	case 'net': // net_path      = "//" authority [ abs_path ]
+	case 'net': // net_path	  = "//" authority [ abs_path ]
 		$parsed_url = parse_url(get_script_absuri());
 		$pref = '//';
 		if (isset($parsed_url['user'])) {
@@ -620,7 +620,7 @@ function get_baseuri($path='')
 			$pref = '';
 		}
 		$ret .= (isset($parsed_url['port'])) ? ':'.$parsed_url['port'] : '';
-	case 'abs': // abs_path      = "/"  path_segments
+	case 'abs': // abs_path	  = "/"  path_segments
 		if ($path === 'abs') $parsed_url = parse_url(get_script_absuri());
 		if (isset($parsed_url['path']) && ($pos = strrpos($parsed_url['path'], '/')) !== false) {
 			$ret .= substr($parsed_url['path'], 0, $pos + 1);
@@ -628,7 +628,7 @@ function get_baseuri($path='')
 			$ret .= '/';
 		}
 		break;
-	case 'rel': // rel_path      = rel_segment [ abs_path ]
+	case 'rel': // rel_path	  = rel_segment [ abs_path ]
 		if (is_url($script, true)) {
 			$ret = './';
 		} else {
@@ -703,7 +703,7 @@ function init_script_filename()
 function get_script_filename()
 {
 	$default_idx = 'index.php';
-	$path    = SCRIPT_NAME; // ex. /path/index.php
+	$path	= SCRIPT_NAME; // ex. /path/index.php
 	if ($path{0} != '/') {
 		if (! isset($_SERVER['REQUEST_URI']) || $_SERVER['REQUEST_URI']{0} != '/') {
 			return $default_idx;
@@ -825,6 +825,60 @@ function is_webdav()
 	return false;
 }
 
+// code from https://gist.github.com/854168
+function download_file ($file, $filetime = MUTIME, $mimetype = 'application/octet-stream') {
+	$realpath = realpath($file);
+	if (file_exists($realpath)) {
+		// Fetching File
+		$filename = (strstr($_SERVER["HTTP_USER_AGENT"], 'MSIE') !== false) ? urlencode(basename($file)) : basename($file);
+		$filedate = date('r', $filetime);
+		$filesize = intval(sprintf("%u", filesize($realpath)));
+		header('Content-Type: '.$mime);
+		header('Content-Disposition: attachment; filename="' . $filename . '"; modification-date="' . $filedate . '";');
+		
+		if (( function_exists('apache_get_modules') && in_array( 'mod_xsendfile', apache_get_modules()) !== false) || stristr(getenv('SERVER_SOFTWARE'), 'lighttpd')){
+			// Sending file via mod_xsendfile
+			header('X-Sendfile: ' . $realpath);
+		}else if(stristr(getenv('SERVER_SOFTWARE'), 'nginx') || stristr(getenv('SERVER_SOFTWARE'), 'cherokee')){
+			header('X-Accel-Redirect: '.$realpath);
+		} else {
+			// Sending file directly via script
+			if (intval($filesize + 1) > return_bytes(ini_get('memory_limit')) && intval($filesize * 1.5) <= 1073741824) { //Not higher than 1GB
+				// Setting memory limit
+				ini_set('memory_limit', intval($filesize * 1.5));
+			}
+			@apache_setenv('no-gzip', 1);
+			@ini_set('zlib.output_compression', 0);
+			header('Content-Length: ' . $filesize);
+			// Set the time limit based on an average D/L speed of 50kb/sec
+			set_time_limit(min(7200, // No more than 120 minutes (this is really bad, but...)
+				($filesize > 0) ? intval($filesize / 51200) + 60 // 1 minute more than what it should take to D/L at 50kb/sec
+				: 1 // Minimum of 1 second in case size is found to be 0
+			));
+			$chunksize = 1 * (1024 * 1024); // how many megabytes to read at a time
+
+			if ($filesize > $chunksize) {
+				// Chunking file for download
+				$handle = fopen($realpath, 'rb');
+				$buffer = '';
+				while (!feof($handle)) {
+					$buffer = fread($handle, $chunksize);
+					echo $buffer;
+					ob_flush();
+					flush();
+				}
+				fclose($handle);
+			} else {
+				// Streaming whole file for download
+				readfile($realpath);
+			}
+		}
+		return true;
+	} else {
+		// File not found! Throw error here...
+	}
+	return false;
+}
 /* PukiWiki Adv. Extend codes *********************************************************************/
 
 // for debug use

@@ -36,12 +36,20 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-if (! defined('DATA_HOME')) define('DATA_HOME', '');
+defined('DATA_HOME') or define('DATA_HOME', '');
 
+ini_set('memory_limit', '128M');
+ini_set('zlib.output_compression', 'Off');
+if (! extension_loaded('mbstring')){
+	throw new Exception('PukiWiki Adv. needs the <a href="http://www.php.net/manual/book.mbstring.php">mbstring extension</a>.');
+}
+if (! extension_loaded('json')) {
+	throw new Exception('PukiWiki Adv. needs the <a href="http://www.php.net/manual/book.json.php">JSON extension.</a>');
+}
 /////////////////////////////////////////////////
 // Include subroutines
 
-if (! defined('LIB_DIR')) define('LIB_DIR', '');
+defined('LIB_DIR') or define('LIB_DIR', realpath('./'));
 
 // Load *.ini.php files and init PukiWiki
 require(LIB_DIR . 'func.php');
@@ -69,15 +77,6 @@ require(LIB_DIR . 'netbios.cls.php');
 require(LIB_DIR . 'ua/user_agent.cls.php');
 
 require(LIB_DIR . 'simple_html_dom.php');
-
-ini_set("memory_limit", "128M");  
-
-if (! extension_loaded('mbstring')){
-	throw new Exception('PukiWiki Adv. needs the <a href="http://www.php.net/manual/book.mbstring.php">mbstring extension</a>.');
-}
-if (! extension_loaded('json')) {
-	throw new Exception('PukiWiki Adv. needs the <a href="http://www.php.net/manual/book.json.php">JSON extension.</a>');
-}
 require(LIB_DIR . 'gettext/gettext.inc');
 
 // Defaults
