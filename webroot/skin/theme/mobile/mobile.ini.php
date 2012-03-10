@@ -10,10 +10,11 @@
 // Settings (define before here, if you want)
 global $_SKIN, $link_tags, $js_tags;
 
-define('IS_MOBILE',true);
+//define('IS_MOBILE',true);
 
 // 読み込むスタイルシート
-$link_tags[] = array('rel'=>'stylesheet',	'type'=>'text/css',	'href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/mobile.css.php');
+//$link_tags[] = array('rel'=>'stylesheet',	'type'=>'text/css',	'href'=>'http://code.jquery.com/mobile/1.1.0-rc.1/jquery.mobile-1.1.0-rc.1.min.css');
+$link_tags[] = array('rel'=>'stylesheet',	'type'=>'text/css',	'href'=>SKIN_URI.THEME_PLUS_NAME.'mobile/mobile.css.php');
 
 // 読み込むスクリプト
 //$js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/classic.js');

@@ -46,7 +46,6 @@ dfn { font-style: italic; }
 hr { display: block; height: 1px; border: 0; border-top: 1px solid #ccc; margin: 1em 0; padding: 0; }
 ins { background: #ff9; color: #000; text-decoration: none; }
 mark { background: #ff0; color: #000; font-style: italic; font-weight: bold; }
-pre, code, kbd, samp { font-family: monospace; _font-family: 'courier new', monospace; font-size: 1em; }
 pre { white-space: pre; white-space: pre-wrap; word-wrap: break-word; }
 q { quotes: none; }
 q:before, q:after { content: ""; content: none; }
@@ -88,6 +87,7 @@ html{
 pre, code, kbd, samp, textarea, select, option, input, var{
 	font-family: monospace !important;
 }
+
 dt{
 	font-weight:bold;
 }
@@ -168,6 +168,7 @@ figcaption{
 	cursor:help;
 	border-bottom: 1px dotted;
 }
+
 /* ==|== PukiWiki Adv. Misc classes ========================================= */
 .underline{
 	text-decoration: underline !important;
@@ -534,57 +535,6 @@ figcaption{
 }
 .vote_td2 {
 	background-color:#EEF5FF;
-}
-
-/* ==|== jQuery Mobile Override classes ============================== */
-.content-secondary .ui-listview {
-	margin : 0 -15px !important;
-}
-@media all and (min-width: 650px){
-	.two-colums{
-		margin:0;
-		padding:0 !important;
-	}
-	
-	.two-colums .content-secondary {
-		border-right:1px #CCC solid;
-		text-align: left;
-		float: left;
-		width: 28%;
-		background: none;
-	}
-	.two-colums .content-primary {
-		padding: 0 5px;
-		width: 70%;
-		float: right;
-	}
-	/* fix up the collapsibles - expanded on desktop */
-	.two-colums .content-secondary .ui-collapsible {
-		margin: 0;
-		padding: 0;
-	}
-	.two-colums .content-secondary .ui-collapsible-heading {
-		display: none;
-	}
-	.two-colums .content-secondary .ui-collapsible-contain {
-		margin:0;
-	}
-	.two-colums .content-secondary .ui-collapsible-content {
-		display: block;
-		margin: 0;
-		padding: 0;
-	}
-	.two-colums .type-interior .content-secondary .ui-li-divider {
-		padding-top: 1em;
-		padding-bottom: 1em;
-	}
-	.two-colums .type-interior .content-secondary {
-		margin: 0;
-		padding: 0;
-	}
-	.two-colums .content-secondary .ui-listview {
-		margin : 0 !important;
-	}
 }
 
 /* ==|== ui icon classes ==================================================== */
@@ -1357,3 +1307,53 @@ figcaption{
 .clearfix:after { clear: both; }
 .clearfix { *zoom: 1; }
 
+/* ==|== jQuery Mobile Override classes ============================== */
+.content-secondary .ui-listview {
+	margin : 0 -15px !important;
+}
+@media all and (min-width: 650px){
+	.two-colums{
+		margin:0;
+		padding:0 !important;
+	}
+	
+	.two-colums .content-secondary {
+		border-right:1px #CCC solid;
+		text-align: left;
+		float: left;
+		width: 28%;
+		background: none;
+	}
+	.two-colums .content-primary {
+		padding: 0 5px;
+		width: 70%;
+		float: right;
+	}
+	/* fix up the collapsibles - expanded on desktop */
+	.two-colums .content-secondary .ui-collapsible {
+		margin: 0;
+		padding: 0;
+	}
+	.two-colums .content-secondary .ui-collapsible-heading {
+		display: none;
+	}
+	.two-colums .content-secondary .ui-collapsible-contain {
+		margin:0;
+	}
+	.two-colums .content-secondary .ui-collapsible-content {
+		display: block;
+		margin: 0;
+		padding: 0;
+	}
+	.two-colums .type-interior .content-secondary .ui-li-divider {
+		padding-top: 1em;
+		padding-bottom: 1em;
+	}
+	.two-colums .type-interior .content-secondary {
+		margin: 0;
+		padding: 0;
+	}
+	.two-colums .content-secondary .ui-listview {
+		margin : 0 !important;
+	}
+}

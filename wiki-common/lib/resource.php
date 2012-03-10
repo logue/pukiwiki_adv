@@ -86,6 +86,8 @@ $_button = array(
 	'remove'	=> T_('Remove'),
 	'login'		=> T_('Login'),
 	'logout'	=> T_('Logout'),
+	
+	'back'		=> T_('Back'),
 
 	// CheckBox labels
 	'notchangetimestamp'	=> T_('Do not change timestamp'),

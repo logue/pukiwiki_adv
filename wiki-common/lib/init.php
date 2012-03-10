@@ -33,7 +33,6 @@ defined('DEBUG')				or define('DEBUG', false);
 defined('PKWK_WARNING')			or define('PKWK_WARNING', false);
 defined('ROOT_URI')				or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');
 defined('WWW_HOME')				or define('WWW_HOME', '');
-defined('PLUS_THEME')			or define('PLUS_THEME',	'default');
 
 // ページ名やファイル名として使用できない文字（エンコード前の文字）
 defined('PKWK_ILLEGAL_CHARS_PATTERN') or define('PKWK_ILLEGAL_CHARS_PATTERN', '/[%|=|&|?|#|\r|\n|\0|\@|;|\$|+|\\|\[|\]|\||^|{|}|\']/');
@@ -384,7 +383,7 @@ if (isset($vars['msg'])) {
 }
 
 // TrackBack Ping
-if (isset($vars['tb_id']) && $vars['tb_id'] != '') {
+if (isset($vars['tb_id']) && $vars['tb_id'] !== '') {
 	$get['cmd'] = $post['cmd'] = $vars['cmd'] = 'tb';
 }
 
@@ -456,8 +455,14 @@ $line_rules = array_merge(array(
 //////////////////////////////////////////////////
 // ajaxではない場合
 // スキンデーター読み込み
-define('SKIN_FILE', add_skindir(PLUS_THEME));
 defined('IS_MOBILE') or define('IS_MOBILE', false);
+if (IS_MOBILE === true) {
+	defined('PLUS_THEME') or define('PLUS_THEME', 'mobile');
+	define('SKIN_FILE', add_skindir('mobile'));
+}else{
+	define('SKIN_FILE', add_skindir(PLUS_THEME));
+}
+
 if (!IS_AJAX || IS_MOBILE){
 	global $facebook, $fb, $google_loader;
 
@@ -481,7 +486,7 @@ if (!IS_AJAX || IS_MOBILE){
 		),
 		'jqueryui'	=> array(
 			'file'	=> 'jquery-ui.min.js',
-			'ver'	=> '1.8.18'
+			'ver'	=> '1.8.17'
 		),
 		'swfobject' => array(
 			'file'	=> 'swfobject.js',

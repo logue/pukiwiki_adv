@@ -15,7 +15,6 @@ flush();
 /* HTML5 ✰ Boilerplate
  * ==|== normalize ==========================================================
  */
-
 article, aside, details, figcaption, figure, footer, header, hgroup, nav, section { display: block; }
 audio, canvas, video { display: inline-block; *display: inline; *zoom: 1; }
 audio:not([controls]) { display: none; }
@@ -111,7 +110,7 @@ body:lang(zh), body:lang(zh) .ui-widget{
 	}
 }
 
-textarea, select, option, input, var, pre, code{
+textarea, select, option, input, var, pre, code, .ui-button-text{
 	font-family: monospace !important;
 }
 

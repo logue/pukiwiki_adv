@@ -60,7 +60,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 					<?php echo $body ?>
 				</section>
 				<aside class="content-secondary">
-					<div class="ui-collapsible ui-collapsible-collapsed" data-theme="b" data-collapsed="true" data-role="collapsible">
+					<div data-role="collapsible" data-collapsed="true" data-theme="b" data-content-theme="d">
 						<h2>メニュー</h2>
 						<?php echo do_plugin_convert('menu') ?>
 					</div>
