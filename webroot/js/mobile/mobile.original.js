@@ -315,7 +315,7 @@ var JQUERY_MOBILE_VER = '1.1.0-rc.1';
 			before_unload:function(func){
 				pkwkBeforeUnload.push( func );
 			}
-		},
+		}
 	};
 	$(document).ready(function(){
 		// 言語設定
@@ -364,6 +364,10 @@ var JQUERY_MOBILE_VER = '1.1.0-rc.1';
 	
 	if (typeof(GOOGLE_ANALYTICS) !== 'undefined'){
 		window._gaq = [['_setAccount',GOOGLE_ANALYTICS],['_trackPageview'],['_trackPageLoadTime']];
+		$('[data-role="page"]').live('pageshow', function () {
+			var u = location.hash.replace('#', '');
+			u ? _gaq.push(['_trackPageview', u]) : _gaq.push(['_trackPageview']);
+		});
 		$.getScript(('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js');
 	}
 } )(jQuery, this, this.document );

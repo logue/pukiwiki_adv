@@ -486,13 +486,20 @@ if (!IS_AJAX || IS_MOBILE){
 		),
 		'jqueryui'	=> array(
 			'file'	=> 'jquery-ui.min.js',
-			'ver'	=> '1.8.17'
+			'ver'	=> '1.8.18'
 		),
 		'swfobject' => array(
 			'file'	=> 'swfobject.js',
 			'ver'	=> '2.2'
 		)
 	);
+	
+	// DNS prefetching
+	// http://html5boilerplate.com/docs/DNS-Prefetching/
+	$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>'//ajax.googleapis.com');
+	if (COMMON_URI !== ROOT_URI){
+		$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>COMMON_URI);
+	}
 	
 	if (!IS_MOBILE){
 		if ($x_ua_compatible == 'chrome=1'){
@@ -516,8 +523,9 @@ if (!IS_AJAX || IS_MOBILE){
 		}
 
 		// modernizrの設定
-		$modernizr = 'modernizr.js';
-		
+		// $modernizr = 'modernizr.min.js';
+		$modernizr = 'js.php?file=modernizr.min';
+
 		if (DEBUG === true) {
 			// 読み込むsrcディレクトリ内のJavaScript
 			$default_js = array(
@@ -548,6 +556,7 @@ if (!IS_AJAX || IS_MOBILE){
 			);
 			foreach($default_js as $script_file)
 				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'src/'.$script_file.'.js');
+				//$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'js.php?file=src%2F'.$script_file);
 
 			// yui profiler and profileviewer
 			/*
@@ -556,7 +565,8 @@ if (!IS_AJAX || IS_MOBILE){
 				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'profiling/config.js');
 			*/
 		} else {
-			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'skin.js');
+			//$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'skin.js');
+			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'js.php?file=skin');
 		}
 
 		// jQueryUIのCSS
@@ -584,7 +594,8 @@ if (!IS_AJAX || IS_MOBILE){
 			foreach($default_js as $script_file)
 				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'mobile/'.$script_file.'.js');
 		} else {
-			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'mobile.js');
+			//$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'mobile.js');
+			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'js.php?file=mobile');
 		}
 	}
 
@@ -600,7 +611,7 @@ if (!IS_AJAX || IS_MOBILE){
 		'THEME_NAME'=>constant('PLUS_THEME')
 	);
 
-	$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'locale.js');
+	$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.( (DEBUG) ? 'locale.js' : 'js.php?file=locale') );
 	
 	if (isset($facebook)){
 		require(LIB_DIR.'facebook.php');

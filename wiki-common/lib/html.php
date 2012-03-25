@@ -46,10 +46,10 @@ function catbody($title, $page, $body)
 	$is_createpage = auth::is_check_role(PKWK_CREATE_PAGE);
 
 	pkwk_common_headers(($lastmod && $is_read) ? $filetime : 0);
+	if (DEBUG === false) { ob_start('ob_gzhandler'); }
 
 	if (IS_AJAX && !IS_MOBILE){
 		$ajax = isset($vars['ajax']) ? $vars['ajax'] : 'raw';
-		
 		switch ($ajax) {
 			case 'json':
 	 			// JSONで出力
@@ -93,8 +93,6 @@ function catbody($title, $page, $body)
 		global $head_tags, $foot_tags;	// Obsolete
 		global $meta_tags, $link_tags, $js_tags, $js_blocks, $css_blocks, $info, $js_init, $js_vars, $modernizr;
 		global $keywords, $description, $pkwk_head_js, $google_loader, $ui_theme;
-		
-		global $google_analytics, $google_api_key, $google_site_verification, $yahoo_site_explorer_id, $bing_webmaster_tool;
 
 		// Adv. ここから。（あまりいい実装ではない）
 		
@@ -105,6 +103,7 @@ function catbody($title, $page, $body)
 		if (IS_MOBILE){
 			$meta_tags[] = array('name' => 'viewport',	'content' => 'width=device-width, initial-scale=1');
 		}else{
+			global $google_analytics, $google_api_key, $google_site_verification, $yahoo_site_explorer_id, $bing_webmaster_tool, $shortcut_icon;
 			($modifier !== 'anonymous') ?			$meta_tags[] = array('name' => 'author',					'content' => $modifier) : '';
 			(!empty($google_site_verification)) ?	$meta_tags[] = array('name' => 'google-site-verification',	'content' => $google_site_verification) : '';
 			(!empty($yahoo_site_explorer_id)) ?		$meta_tags[] = array('name' => 'y_key',						'content' => $yahoo_site_explorer_id) : '';
@@ -125,13 +124,8 @@ function catbody($title, $page, $body)
 			$link_tags[] = array('rel'=>'index',			'href'=>$_LINK['list'],		'type'=>$http_header,	'title'=>$_LANG['skin']['list']);
 			$link_tags[] = array('rel'=>'search',			'href'=>$_LINK['search'],	'type'=>$http_header,	'title'=>$_LANG['skin']['search']);
 			$link_tags[] = array('rel'=>'shortcut icon',	'href'=>$shortcut_icon,		'type'=>'image/vnd.microsoft.icon');
-			
-			// DNS prefetching
-			// http://html5boilerplate.com/docs/DNS-Prefetching/
-			$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>'//ajax.googleapis.com');
-			if (COMMON_URI !== ROOT_URI){ $link_tags[] = array('rel'=>'dns-prefetch',		'href'=>COMMON_URI); }
 		
-			if ($nofollow || ! $is_read || ! $is_page){
+			if ($nofollow || ! $is_read || ! $is_page || check_non_list($_page) ){
 				$meta_tags[] = array('name' => 'robots', 'content' => 'NOINDEX,NOFOLLOW');
 			}else{
 				// The Open Graph Protocol
@@ -289,16 +283,9 @@ function catbody($title, $page, $body)
 */
 		header('Content-Type: '.$http_header.'; charset='. CONTENT_CHARSET);
 		header('X-UA-Compatible: '.(empty($x_ua_compatible)) ? 'IE=edge' : $x_ua_compatible);	// とりあえずIE8対策
-/*
-		if (substr_count($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip')){
-			ob_start("ob_gzhandler");
-		}else{
-			ob_start();
-		}
-*/
 		require(SKIN_FILE);
-//		ob_end_flush();
 	}
+	if (DEBUG === false) { ob_end_flush(); }
 	exit;
 }
 
@@ -323,6 +310,9 @@ function getLinkSet($_page){
 		'read'			=> get_page_uri($_page),
 		'reload'		=> get_page_absuri($_page), // 本当は、get_script_uri でいいけど、絶対パスでないと、スキンに影響が出る
 		'reload_rel'	=> get_page_uri($_page),
+		
+		'login'			=> get_cmd_uri('login'),
+		'logout'		=> get_cmd_uri('login', null, null, array('action'=>'logout') ),
 
 		/* Special Page */
 		'help'			=> get_cmd_uri('help'),
@@ -655,6 +645,10 @@ function pkwk_common_headers($modified = 0, $expire = 0, $compress = true){
 	if (! defined('PKWK_OPTIMISE')) pkwk_headers_sent();
 
 	$vary = get_language_header_vary();
+	
+	if (preg_match('/\b(gzip|deflate|compress)\b/i', $_SERVER['HTTP_ACCEPT_ENCODING'], $matches)) {
+		$vary .= ',Accept-Encoding';
+	}
 
 	if ($modified !== 0){
 		// 最終更新日（秒で）が指定されていない場合動的なページとみなす。

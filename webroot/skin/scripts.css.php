@@ -4,10 +4,14 @@
 // Copyright (C) 2010-2012 PukiWiki Advance Developer Team
 //
 
+$image_dir = isset($_GET['base'])   ? $_GET['base']	: '../image/';
+$expire = isset($_GET['expire'])   ? (int)$_GET['expire'] * 86400	: '604800';	// Default is 7 days.
 // Send header
 header('Content-Type: text/css; charset: UTF-8');
-$image_dir = '../image/';
-flush();
+header('Cache-Control: private');
+header('Expires: ' .gmdate('D, d M Y H:i:s',time() + $expire) . ' GMT');
+header('Last-Modified: '.gmdate('D, d M Y H:i:s', getlastmod() ) . ' GMT');
+ob_start('ob_gzhandler');
 ?>
 @charset "UTF-8";
 @namespace url(http://www.w3.org/1999/xhtml);
@@ -574,6 +578,13 @@ input[type='search'][required], textarea[required], select[required] {
 	font-family:monospace !important;
 }
 
+.autosubmit{
+	text-align:center;
+}
+
+.js .autosubmit input[type="submit"]{
+	display:none;
+}
 /* ==|== PukiWiki Adv. Standard Plugin classes ============================== */
 /* aname.inc.php */
 .anchor_super {
@@ -1150,63 +1161,41 @@ th .ui-icon {
 #cboxLoadingGraphic {position:fixed; top:50%; left:50%; width:42px; height:42px;}
 
 /* jPlayer */
-#jplayer_container {
+#jp-container {
 	position:relative;
 	padding:20px 0;
 }
 
-#jplayer_icons {
-	margin: 0;
-	padding: 0
-}
-#jplayer_icons li {
-	margin: 2px;
-	position: relative;
-	padding: 4px 0;
-	cursor: pointer;
-	float: left;
-	list-style: none;
-}
-#jplayer_icons .ui-icon {
-	float: left;
-	margin: 0 4px;
+#jp-container .jp-volume {
+	position:relative;
+	left:520px;
+	width:100px;
+	top:-.75em;
 }
 
-ul#jplayer_icons #jplayer_volume-min {
-	margin:2px 140px 2px 350px;
+#jp-container .jp-bars {
+	position:relative;
+	left:170px;
+	top:.25em;
+	width:280px;
 }
-
-#jplayer_sliderVolume {
-	position:absolute;
-	top:30px;
-	left:450px;
-	width:110px;
-	height:.4em;
-}
-
-#jplayer_sliderVolume .ui-slider-handle {
-	height:.8em;
-	width:.8em;
-}
-
-#jplayer_bars_holder {
-	position:absolute;
-	top:27px;
-	left:80px;
-	width:300px;
-}
-
-#jplayer_sliderPlayback .ui-slider-handle {
+#jp-container .ui-slider-handle{
 	height:1.6em;
 }
-
-#jplayer_loaderBar.ui-progressbar {
+#jp-container .pkwk_widget {
+	display:block;
+}
+/*
+#jp-container .jp-loader {
 	height:.2em;
 	border:0;
 }
+*/
+#jp-container .jp-bars .jp-playback {
+	height:12px;
+}
 
 /* Swfupload */
-
 #swfupload-control p{
 	margin:10px 5px;
 }
@@ -2254,3 +2243,5 @@ li[role=tab]{
 		border: 1px dotted #333333;
 	}
 }
+<?php 
+ob_end_flush();

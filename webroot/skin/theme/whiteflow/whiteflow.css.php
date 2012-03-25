@@ -12,19 +12,19 @@
 
 // License: X11/MIT License
 // http://www.opensource.org/licenses/mit-license.php
-
+//error_reporting(0); // Nothing
+error_reporting(E_ERROR | E_PARSE); // Avoid E_WARNING, E_NOTICE, etc
 // Error reporting
-error_reporting(0); // Nothing
-//error_reporting(E_ERROR | E_PARSE); // Avoid E_WARNING, E_NOTICE, etc
-//error_reporting(E_ALL); // Show all errors
-
+$expire = isset($_GET['expire'])   ? (int)$_GET['expire'] * 86400	: '604800';	// Default is 7 days.
+$menu   = isset($_GET['menu'])   ? $_GET['menu']	: '';
 // Read config
 require_once('whiteflow.ini.php');
-
-// Style
-$menu   = isset($_GET['menu'])   ? $_GET['menu']	: '';
-
-header("Content-type: text/css");
+// Send header
+header('Content-Type: text/css; charset: UTF-8');
+header('Cache-Control: private');
+header('Expires: ' .gmdate('D, d M Y H:i:s',time() + $expire) . ' GMT');
+header('Last-Modified: '.gmdate('D, d M Y H:i:s', getlastmod() ) . ' GMT');
+ob_start('ob_gzhandler');
 ?>
 @charset "UTF-8";
 /** 1, general.css ********************************************************************************/
@@ -425,7 +425,9 @@ pre{
 	list-style-image  : url(<?php echo $_SKIN['image_dir'] ?>arrow.hover.png);
 }
 
-
+#signature li, #signature li:hover{
+	list-style-image  : none !important;
+}
 
 /* comment.inc.php, pcomment.inc.php */
 
@@ -962,3 +964,5 @@ text-decoration:	none;}
 		padding:0;
 	}
 }
+<?php 
+ob_end_flush();

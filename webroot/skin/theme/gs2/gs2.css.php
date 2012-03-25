@@ -8,11 +8,14 @@
 // based on "GS2" v1.5.3
 //   by yiza < http://www.yiza.net/ >
 
+$image_dir = isset($_GET['base'])   ? $_GET['base']	: '../image/';
+$expire = isset($_GET['expire'])   ? (int)$_GET['expire'] * 86400	: '604800';	// Default is 7 days.
 // Send header
-header('Content-Type: text/css');
-// Load settiings
-
-
+header('Content-Type: text/css; charset: UTF-8');
+header('Cache-Control: private');
+header('Expires: ' .gmdate('D, d M Y H:i:s',time() + $expire) . ' GMT');
+header('Last-Modified: '.gmdate('D, d M Y H:i:s', getlastmod() ) . ' GMT');
+ob_start('ob_gzhandler');
 // Color settings
 $gs2_color = isset($_GET['gs2color']) ? $_GET['gs2color'] : 'blue';
 require ('./gs2_color/pukiwiki_gs2_color_'.$gs2_color.'.php');
@@ -529,6 +532,10 @@ tfoot th.style_th {
 .style_calendar {
 	background-color:<?php echo SKIN_CSS_BOX_BDCOLOR; ?>;
 }
+
+.social li{
+	display:inline;
+}
 @media print{
 	#logo, #navigator, #topbox, #leftbox, #leftbox2, #rightbox, #footer,
 	#toolbar, #attach, #related, a.note_super, .jumpmenu, .anchor_super,
@@ -538,7 +545,9 @@ tfoot th.style_th {
 	#centerbox, #centerbox_noright, #centerbox_noright2{
 		width:100%;
 	}
-	
+	#logo + #hgroup{
+		margin-left: 0px;
+	}
 	#header, #content{
 		border:none;
 		margin:0;
@@ -555,4 +564,5 @@ tfoot th.style_th {
 		padding:0;
 	}
 }
-
+<?php 
+ob_end_flush();

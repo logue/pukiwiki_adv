@@ -137,9 +137,8 @@ function plugin_referer_body($page, $sort)
 		if ($sw_ignore && $referer > 1) continue;
 
 		// 非ASCIIキャラクタ(だけ)をURLエンコードしておく BugTrack/440
-		
 		$e_url = htmlsc(preg_replace('/([" \x80-\xff]+)/e', 'rawurlencode("$1")', $url));
-		$s_url = mb_convert_encoding(rawurldecode($url), SOURCE_ENCODING, 'auto');
+		$s_url = @mb_convert_encoding(rawurldecode($url), SOURCE_ENCODING);
 		$s_url = htmlsc(mb_strimwidth($s_url,0,REFERE_TITLE_LENGTH,'...'));
 		
 

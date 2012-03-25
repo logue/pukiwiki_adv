@@ -17,12 +17,14 @@ function plugin_navibar_convert()
 	global $whatsnew,$whatsdeleted;
 
 	if ($_LINK['reload'] == '') {
-		return '#navibar: plugin called from wikipage. skipped.';
+		return '<p class="message_box ui-state-error ui-corner-all">#navibar: plugin called from wikipage. skipped.</p>';
 	}
 
-	$_page  = isset($vars['page']) ? $vars['page'] : '';
+	$_page  = isset($vars['page']) ? $vars['page'] : null;
 	$is_read = (arg_check('read') && is_page($_page));
 	$is_freeze = is_freeze($_page);
+	$is_readonly = (auth::check_role('readonly') || (PKWK_READONLY == ROLE_AUTH && auth::get_role_level() > ROLE_AUTH) ) ? true : false;
+	$cmd = isset($vars['cmd']) ? $vars['cmd'] : null;
 
 	$num = func_num_args();
 	$args = $num ? func_get_args() : array();
@@ -33,7 +35,7 @@ function plugin_navibar_convert()
 		switch ($name) {
 		case 'freeze':
 		case 'unfreeze':
-			if ($is_read && $function_freeze) {
+			if ($is_read && $function_freeze && !($_page == $whatsnew || $_page == $whatsdeleted)) {
 				if ($is_freeze) {
 					$name = 'unfreeze';
 				}else{
@@ -42,13 +44,8 @@ function plugin_navibar_convert()
 				$ret[] = _navibar($name);
 			}
 			break;
-		case 'upload':
-			if ($is_read && (bool)ini_get('file_uploads') && !$is_freeze && !($_page == $whatsnew || $_page == $whatsdeleted)) {
-				$ret[] = _navibar($name);
-			}
-			break;
 		case 'list':
-			if ($vars['cmd'] !== 'list'){
+			if ($cmd !== 'list'){
 				$ret[] = _navibar($name);
 			}else{
 				$ret[] = _navibar('filelist');
@@ -63,7 +60,10 @@ function plugin_navibar_convert()
 		case 'brokenlink':
 		case 'template':
 		case 'source':
-			if (!empty($_page)) {
+		case 'diff':
+		case 'reload':
+		case 'copy':
+			if ($is_read || !empty($_page) && !($_page == $whatsnew || $_page == $whatsdeleted)) {
 				$ret[] = _navibar($name);
 			}
 			break;
@@ -124,19 +124,26 @@ function plugin_navibar_convert()
 				$ret[] = '<ul>';
 			}
 			break;
-		// case 'new':
+		case 'attach':
+		case 'upload':
+			if ($is_read && (bool)ini_get('file_uploads') && !$is_freeze && !($_page == $whatsnew || $_page == $whatsdeleted) && !$is_readonly) {
+				$ret[] = _navibar($name);
+			}
+			break;
+		case 'new':
 		case 'newsub':
 		case 'edit':
 		case 'guiedit':
-			if (!empty($_page) && $is_read && $function_freeze && !$is_freeze && !($_page == $whatsnew || $_page == $whatsdeleted)) {
+			if (!empty($_page) && $is_read && $function_freeze && !$is_freeze && !($_page == $whatsnew || $_page == $whatsdeleted)  && !$is_readonly) {
 				$ret[] = _navibar($name);
 			}
 		break;
-		case 'diff':
-		case 'reload':
-		case 'copy':
-			if (!$is_read || empty($_page))
-				break;
+		case 'login':
+			$auth_key = auth::get_user_info();
+			if (empty($auth_key['key'])) {
+				$ret[] = _navibar($name);
+			}
+		break;
 		default:
 			$ret[] = _navibar($name);
 			break;

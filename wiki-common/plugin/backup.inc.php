@@ -241,7 +241,6 @@ function plugin_backup_delete($page, $ages = array())
 		<input type="hidden" name="cmd" value="backup" />
 		<input type="hidden" name="page" value="$s_page" />
 		<input type="hidden" name="action" value="delete" />
-		<input type="hidden" name="age" value="$age" />
 $href_ages
 		<input type="password" name="pass" size="12" required="true" />
 		<input type="submit" name="ok" value="{$_backup_messages['btn_delete']}" />
@@ -320,7 +319,9 @@ function plugin_backup_get_list($page)
 					isset($data['time']) ? $data['time'] : '';
 
 				$retval[] = '<li><input type="radio" name="age" value="' . $backup_age . '" id="r_' . $backup_age  . '"' .
-					( $backup_age === $age ? ' checked="checked"' : '' ).'><label for="r_' . $backup_age . '">' . format_date($time, false) . '</li>';
+					( $backup_age === $age ? ' checked="checked"' : '' ).'><label for="r_' . $backup_age . '">' . format_date($time, false) . '</label>' .
+					( (! auth::check_role('safemode')) ? '<input type="checkbox" name="selectages[]" value="'.$age.'" />' : '')
+					 . '</li>';
 			}
 			$retval[] = '</ol>';
 		}
@@ -411,15 +412,6 @@ function plugin_backup_convert()
 
 	$page   = isset($vars['page']) ? $vars['page']   : '';
 	check_readable($page, false);
-	
-	if (!$plugin_backup_count){
-		$js_blocks[] = <<< EOD
-\$('.backup_form').change(function(){
-	this.submit();
-});
-EOD;
-		$plugin_backup_count++;
-	}
 
 	// Get arguments
 	$with_label = TRUE;
@@ -447,44 +439,37 @@ EOD;
 	$s_page = htmlsc($page);
 	$retval = array();
 	$date = get_date("m/d", get_filetime($page));
-	$label = ($with_label) ? '<label for="age">'.$_backup_messages['msg_version'].'</label>' : '';
-		$retval[0] = <<<EOD
-<form action="$script" method="get" class="backup_form">
-	<input type="hidden" name="cmd" value="backup" />
-	<input type="hidden" name="action" value="$mode" />
-	<input type="hidden" name="page" value="$r_page" />
-	$label
-	<select id="age" name="age" >\n
-EOD;
-		$retval[1] = "\n";
-		$retval[2] = <<<EOD
-	</select>
-<input type="submit" value="{$_backup_messages['btn_jump']}" />
-</form>\n
-EOD;
-
 	$backups = _backup_file_exists($page) ? get_backup($page) : array();
+
+	$retval[] = '<form action="' . get_cmd_uri() . '" method="get" class="autosubmit">';
+	$retval[] = '<input type="hidden" name="cmd" value="backup" />';
+	$retval[] = '<input type="hidden" name="action" value="' . $mode . '" />';
+	$retval[] = '<input type="hidden" name="page" value="' . $r_page . '" />';
+	$retval[] = (($with_label) ? '<label for="age">'.$_backup_messages['msg_version'].'</label>' : '') . '<select id="age" name="age" >';
+//	$retval[] = '<option value="" selected="selected" data-placeholder="true" disabled="disabled">'.$_backup_messages['msg_backup'].'</option>';
 	if (count($backups) == 0)
 	{
-		$retval[1] .= '<option value="" selected="selected">' .$_backup_messages['msg_arrow'] . " $date(No.1)</option>\n";
-		return join('',$retval);
-	}
-	$maxcnt = count($backups) + 1;
-	$retval[1] .= '<option value="" selected="selected">' . $_backup_messages['msg_arrow'] . " $date(No.$maxcnt)</option>\n";
-	$backups = array_reverse($backups, True);
-	foreach ($backups as $age=>$data) {
-		if (isset($data['real'])) {
-			$time = $data['real'];
-		}else if(isset($data['time'])){
-			$time = $data['time'];
-		}else{
-			break;
+		$retval[] = '<option value="" selected="selected" disabled="disabled">' .$_backup_messages['msg_arrow'] . ' ' . $date . '(No.1)</option>';
+	}else{
+		$maxcnt = count($backups) + 1;
+		$retval[] = '<option value="" selected="selected">' . $_backup_messages['msg_arrow'] . ' ' . $date . '(No.' . $maxcnt . ')</option>';
+		$backups = array_reverse($backups, True);
+		foreach ($backups as $age=>$data) {
+			if (isset($data['real'])) {
+				$time = $data['real'];
+			}else if(isset($data['time'])){
+				$time = $data['time'];
+			}else{
+				break;
+			}
+			$date = get_date('m/d', $time);
+			$retval[] = '<option value="' . $age . '">' . $date . ' (No.' . $age . ')</option>';
 		}
-		$date = get_date('m/d', $time);
-		$retval[1] .= '<option value="' . $age . '">' . $date . ' (No.' . $age . ')</option>'."\n";
-
+		$retval[] = '</select>';
 	}
-	return join('',$retval);
+	$retval[] = '<input type="submit" value="' . $_backup_messages['btn_jump'] . '" />';
+	$retval[] = '</form>';
+	return join("\n",$retval);
 }
 
 /**

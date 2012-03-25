@@ -26,7 +26,6 @@ if (arg_check('read') && exist_plugin_convert('menu')) {
 }else{
 	$layout_class = '';
 }
-
 // Header and Footer
 $title_style = '';
 $header = '';
@@ -49,7 +48,6 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 		<?php echo $pkwk_head; ?>
 		<title><?php echo $page_title; ?></title>
 	</head>
-<?php flush(); ?>
 	<body>
 		<div id="container" class="<?php echo $layout_class ?>" role="document">
 <!-- *** Header *** -->
@@ -80,7 +78,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 							<?php echo (!empty($lastmodified)) ? '<h2 id="lastmodified">Last-modified: '.$lastmodified.'</h2>'."\n" : '' ?>
 						<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</hgroup>'."\n" : '</div>')."\n"; ?>
 						
-						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="body">'."\n" : '<div id="body">'."\n"; ?>
+						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="body" role="main">'."\n" : '<div id="body" role="main">'."\n"; ?>
 							<?php echo $body."\n" ?>
 						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</section>'."\n" : '</div>'."\n"; ?>
 <?php if (!empty($notes)) { ?>
@@ -135,8 +133,9 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 				<ul>
 					<li><address>Founded by <a href="<?php echo $modifierlink ?>"><?php echo $modifier ?></a></address></li>
 					<li>Powered by <a href="http://pukiwiki.logue.be/" rel="product"><?php echo GENERATOR ?></a>.</li>
+					<li>HTML convert time: <?php echo showtaketime() ?> sec. </li>
+					<li class="f_right"><a href="<?php echo $_LINK['rss'] ?>"><span class="pkwk-icon icon-rss"><?php echo $_LANG['skin']['rss'] ?></span></a></li>
 				<ul>
-				<?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','rss') : '';?>
 			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</footer>'."\n" : '</div>'."\n"; ?>
 		</div>
 		<?php echo $pkwk_tags; ?>

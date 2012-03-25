@@ -332,6 +332,8 @@ var pukiwiki = {};
 //					this.loadingScreen.dialog('close');
 				}
 			}
+			
+			$('#jplayer').jPlayer('destroy');	// jPlayerを開放
 			return false;
 		},
 		// HTML5の各種機能をJavaScriptで有効化するための処理
@@ -434,6 +436,11 @@ var pukiwiki = {};
 			prefix = (prefix) ? prefix + ' ' : '';
 			
 			$(':input').attr('disabled','disabled');
+			
+			// 自動サブミット型の設定。
+			$('form.autosubmit').change(function(){
+				this.submit();
+			});
 
 			// タブ処理
 			// タブでリンクが貼られている場合は、ajaxは直接出力しなければならない。
@@ -594,11 +601,7 @@ var pukiwiki = {};
 							params[hash[0]] = decodeURIComponent(hash[1]).replace(/\+/g, ' ').replace(/%2F/g, '/');
 						}catch(e){}
 					}
-					
-					// pluginクエリはcmdクエリとする
-					if (this.adv === false && param.plugin){
-						param.cmd = param.plugin;
-					}
+					var ext = href.match(/\.(\w+)$/i);
 
 					if (href.match('#')){
 						// アンカースクロールを無効化
@@ -611,12 +614,17 @@ var pukiwiki = {};
 								return false;
 							});
 						}
-					}else if (href.match(/\.(jpg|jpeg|gif|png|txt)$/i)){
-						// 拡張子がcolorboxで読み込める形式の場合
-						$this.colorbox(self.config.colorbox);
-					}else if (href.match(/\.(mp3|ogg|mp4)$/i)){
-						// 拡張子が音楽の場合
-						self.music_player(this);
+					}else if (ext){
+						switch (ext[1]) {
+							case 'jpg': case 'jpeg': case 'gif': case'png':
+								$this.colorbox(self.config.colorbox);
+							break;
+							case 'mp3':  case 'm4a': case 'm4v':
+							case 'webma': case 'webmv': case 'wav':
+							case 'oga': case 'ogv' : case 'fla': case 'flv':
+								self.media_player(this, ext[1]);
+							break;
+						}
 					}else if (params.cmd){
 						// PukiWiki Adv.のプラグイン関連の処理
 						if (typeof(params.file) !== 'undefined' && params.pcmd == 'open' || typeof(params.openfile) !== 'undefined'){
@@ -626,16 +634,23 @@ var pukiwiki = {};
 							// アドレスの最後がファイル名になるようにする
 							if (params.file){
 								filename = params.file;
-								$this.attr('href',SCRIPT+'?cmd='+params.cmd+'&pcmd='+params.pcmd+'&refer='+params.refer+'&age='+params.age+'&file='+filename);
+								//$this.attr('href',SCRIPT+'?cmd='+params.cmd+'&pcmd='+params.pcmd+'&refer='+params.refer+'&age='+params.age+'&file='+filename);
 							}else{
 								filename = params.openfile;
-								$this.attr('href',SCRIPT+'?cmd='+params.cmd+'&refer='+params.refer+'&openfile='+filename);
+								//$this.attr('href',SCRIPT+'?cmd='+params.cmd+'&refer='+params.refer+'&openfile='+filename);
 							}
-							
-							if (filename.match(/\.(jpg|jpeg|gif|png|txt)$/i)){
-								$this.colorbox(self.config.colorbox);
-							}else if (filename.match(/\.(mp3|ogg|mp4)$/i)){
-								self.music_player(this);
+							ext = filename.match(/\.(\w+)$/i);
+							if (ext){
+								switch (ext[1]) {
+									case 'jpg': case 'jpeg': case 'gif': case'png':
+										$this.colorbox(self.config.colorbox);
+									break;
+									case 'mp3':  case 'm4a': case 'm4v':
+									case 'webma': case 'webmv': case 'wav':
+									case 'oga': case 'ogv' : case 'fla': case 'flv':
+										self.media_player(this, ext[1]);
+									break;
+								}
 							}
 						}else if (params.cmd == 'qrcode'){
 							// QRcodeの場合
@@ -725,32 +740,51 @@ var pukiwiki = {};
 				success : function(data){
 					// 通信成功時
 					var container = $('<div class="window"></div>');
+					var content = '';
 					if (typeof(parse) === 'function') { data = parse(data); }
-					// スクリプトタグを無効化
-					data.body = data.body.replace(/<script[^>]*>[^<]+/ig,'');
-					dialog_option.title = data.title;
-					container.html(data.body).dialog(dialog_option);
+						// スクリプトタグを無効化
+						if (data !== null){
+						content = data.body.replace(/<script[^>]*>[^<]+/ig,'');
+						dialog_option.title = data.title;
+					}else{
+						content = [
+							'<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">',
+								'<p id="ajax_error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>Data is Null!</p>',
+							'</div>'
+						].join("\n");
+						dialog_option.title = $.i18n('dialog','error');
+					}
+					container.html(content).dialog(dialog_option);
 				},
 				error : function(data,status,thrown){
 					// エラー発生
 					var container = $('<div class="window"></div>');
+					if (data.status === 401){
+						status = $.i18n('dialog','error_auth');
+					}else if (status === 'error'){
+						status = $.i18n('dialog','error_page');
+					}
+						
 					var content = [
-						'<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">',
+						'<div class="ui-state-error ui-corner-all">',
 							'<p id="ajax_error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>'+status+'</p>',
 						'</div>'
 					].join("\n");
 					dialog_option.title = $.i18n('dialog','error');
+					dialog_option.width = 400;
 					container.html(content).dialog(dialog_option);
-					try{
-						$('p#ajax_error').after([
-							'<ul>',
-							'<li>readyState:'+data.readyState+'</li>',
-	//						'<li>responseText:'+data.responseText+'</li>',
-							'<li>status:'+data.status+'</li>',
-							'<li>statusText:'+data.statusText+'</li>',
-							'</ul>'
-						].join("\n"));
-					}catch(e){}
+					if (data.status === 500){
+						try{
+							$('#ajax_error').after([
+								'<ul>',
+								'<li>readyState:'+data.readyState+'</li>',
+		//						'<li>responseText:'+data.responseText+'</li>',
+								'<li>status:'+data.status+'</li>',
+								'<li>statusText:'+data.statusText+'</li>',
+								'</ul>'
+							].join("\n"));
+						}catch(e){}
+					}
 				}
 			});
 		},
@@ -957,27 +991,37 @@ var pukiwiki = {};
 			}
 		},
 		// ミュージックプレイヤー（拡張子が.mp3や.oggなどといったFlashで再生できるものに限る）
-		music_player: function(target){
+		media_player: function(target, ext){
 			var jplayer_container = [
 				'<div id="jplayer"></div>',
-				'<div id="jplayer_container">',
-					'<ul id="jplayer_icons" class="ui-widget pkwk_widget">',
-						'<li id="jplayer_play" class="ui-button ui-state-default ui-corner-all" title="' + $.i18n('player','play') + '"><span class="ui-icon ui-icon-play"></span></li>',
-						'<li id="jplayer_pause" class="ui-button ui-state-default ui-corner-all" title="' + $.i18n('player','pause') + '"><span class="ui-icon ui-icon-pause"></span></li>',
-						'<li id="jplayer_stop" class="ui-button ui-state-default ui-corner-all" title="' + $.i18n('player','stop') + '"><span class="ui-icon ui-icon-stop"></span></li>',
-						'<li id="jplayer_volume-min" class="ui-button ui-state-default ui-corner-all" title="' + $.i18n('player','volume_min') + '"><span class="ui-icon ui-icon-volume-off"></span></li>',
-						'<li id="jplayer_volume-max" class="ui-button ui-state-default ui-corner-all" title="' + $.i18n('player','volume_max') + '"><span class="ui-icon ui-icon-volume-on"></span></li>',
+				'<div id="jp-container">',
+					'<ul class="ui-widget pkwk_widget">',
+						'<li class="jp-play ui-button ui-state-default ui-corner-all" title="' + $.i18n('player','play') + '"><span class="ui-icon ui-icon-play"></span></li>',
+						'<li class="jp-video-play ui-button ui-state-default ui-corner-all" title="' + $.i18n('player','play') + '"><span class="ui-icon ui-icon-video"></span></li>',
+						'<li class="jp-pause ui-button ui-state-default ui-corner-all" title="' + $.i18n('player','pause') + '"><span class="ui-icon ui-icon-pause"></span></li>',
+						'<li class="jp-stop ui-button ui-state-default ui-corner-all" title="' + $.i18n('player','stop') + '"><span class="ui-icon ui-icon-stop"></span></li>',
+						'<li>',
+							'<span class="ui-icon ui-icon-clock" style="display:inline-block">Cast:</span>',
+							'<span class="jp-current-time">00:00</span>/<span class="jp-duration">??:??</span>',
+						'</li>',
+						'<li style="width:300px;"></li>',
+						'<li class="jp-full-screen ui-button ui-state-default ui-corner-all" title="Full screen"><span class="ui-icon ui-icon-arrow-4-diag"></span></li>',
+						'<li class="jp-mute ui-button ui-state-default ui-corner-all" title="' + $.i18n('player','volume_min') + '"><span class="ui-icon ui-icon-volume-off"></span></li>',
+						'<li class="jp-unmute ui-button ui-state-default ui-corner-all" title="' + $.i18n('player','volume_max') + '"><span class="ui-icon ui-icon-volume-on"></span></li>',
+						'<li style="width:200px;"></li>',
 					'</ul>',
-					'<div id="jplayer_sliderVolume" title="' + $.i18n('player','volume') + '"></div>',
-					'<div id="jplayer_bars_holder" title="' + $.i18n('player','seek') + '">',
-						'<div id="jplayer_sliderPlayback"></div>',
-						'<div id="jplayer_loaderBar"></div>',
+					'<div class="jp-bars" title="' + $.i18n('player','seek') + '">',
+						'<div class="jp-playback"></div>',
+					//	'<div class="jp-loader"></div>',
 					'</div>',
-				'</div>',
-				'<p><span class="ui-icon ui-icon-clock" style="display:block;float:left;">Cast:</span><span id="jplayer_PlayTime">00:00</span>/<span id="jplayer_TotalTime">??:??</span></p>'
+					'<div title="' + $.i18n('player','volume') + '" class="jp-volume"></div>',
+				'</div>'
 			].join("\n");
+
 			$(target).each(function(){
 				var file = $(this).attr('href');
+				var media = {};
+				media[ext] = file;
 				var dialog_option = {
 					modal: true,
 					resizable: false,
@@ -988,115 +1032,90 @@ var pukiwiki = {};
 					width:'680px',
 					bgiframe : ($.browser.msie && $.browser.version > 6) ? true : false,	// for IE6 
 					open: function(){
-						var global_lp = 0;
-			
 						var self = this;
-						$('#jplayer').jPlayer({
+						// Local copy of jQuery selectors, for performance.
+						var	$jPlayer = $('#jplayer'),
+							$playback = $('#jp-container .jp-playback'),
+							$loader = $('#jp-container .jp-loader'),
+							$play = $('#jp-container .jp-play'),
+							$pause = $('#jp-container .jp-pause')
+						;
+	
+						// Instance jPlayer
+						$jPlayer.jPlayer({
 							swfPath: SKIN_DIR,
-							nativeSupport: true,
-							customCssIds: true,
-							ready: function (){
-								this.element.jPlayer("setFile", file);
-								showPlayBtn();
-								$(self).dialog('option','title', $('#jplayer').jPlayer('getData','diag').src);
-								this.element.jPlayer("play");
-							}
-						})
-						.jPlayer('onProgressChange', function(lp,ppr,ppa,pt,tt) {
-							var lpInt = lp|0;
-							var ppaInt = ppa|0;
-							global_lp = lpInt;
-
-							$('#jplayer_loaderBar').progressbar('option', 'value', lpInt);
-							$('#jplayer_sliderPlayback').slider('option', 'value', ppaInt);
-							$('#jplayer_PlayTime').text($.jPlayer.convertTime(pt)); // Default format of 'mm:ss'
-							$('#jplayer_TotalTime').text($.jPlayer.convertTime(tt)); // Default format of 'mm:ss'
-
-						})
-						.jPlayer('onSoundComplete', function() {
-							this.element.jPlayer("play");
-							showPauseBtn();
-						});
-
-						function showPauseBtn(){
-							$('#jplayer_play').fadeOut(function(){
-								$('#jplayer_pause').fadeIn();
-							});
-						}
-
-						function showPlayBtn(){
-							$('#jplayer_pause').fadeOut(function(){
-								$('#jplayer_play').fadeIn();
-							});
-						}
-
-						$('#jplayer_play').click(function() {
-							$('#jplayer').jPlayer('play');
-							showPauseBtn();
-							return false;
-						});
-
-						$('#jplayer_pause').click(function() {
-							$('#jplayer').jPlayer('pause');
-							showPlayBtn();
-							return false;
-						});
-
-						$('#jplayer_stop').click(function() {
-							$('#jplayer').jPlayer('stop');
-							showPlayBtn();
-							return false;
-						});
-
-
-						$('#jplayer_volume-min').click( function() {
-							$('#jplayer').jPlayer('volume', 0);
-							$('#jplayer_sliderVolume').slider('option', 'value', 0);
-							return false;
-						});
-
-						$('#jplayer_volume-max').click( function() {
-							$('#jplayer').jPlayer('volume', 100);
-							$('#jplayer_sliderVolume').slider('option', 'value', 100);
-							return false;
-						});
-
-						// Slider
-						$('#jplayer_sliderPlayback').slider({
-							max: 100,
-							range: 'min',
-							animate: true,
-
-							slide: function(event, ui) {
-								$('#jplayer').jPlayer('playHead', ui.value*(100.0/global_lp));
+							cssSelectorAncestor: '#jp-container',
+							supplied: ext,
+							wmode: 'window',
+							ready: function (event) {
+								$(this).jPlayer('setMedia',media);
+								$(self).dialog('option','title', file);
+								// Slider
+								$playback.slider({
+									range: 'min',
+									animate: true,
+									max: parseInt(event.jPlayer.status.duration),
+									value: parseInt(event.jPlayer.status.currentTime),
+									slide: function(event, ui) {
+										$jPlayer.jPlayer('play', ui.value);
+									}
+								});
+								$('#jp-container .jp-volume').slider({
+									value : ($.cookie('volume')) ? $.cookie('volume') : 50,
+									min: 0,
+									max: 100,
+									range: 'min',
+									animate: true,
+									slide: function(event, ui) {
+										$jPlayer.jPlayer('volume', ui.value * 0.01);
+										$.cookie('volume', ui.value, {expires:30, path:'/'});
+									}
+								});
+								$jPlayer.jPlayer('volume', $.cookie('volume') * 0.01 );
+								$play.click();
+							},
+							load: function(event){
+								$play.click(function() {
+									$jPlayer.jPlayer('play');
+									return false;
+								});
+								$pause.click(function() {
+									$jPlayer.jPlayer('pause');
+									return false;
+								});
+								$('#jp-container .jp-stop').click(function() {
+									$jPlayer.jPlayer('stop');
+									return false;
+								});
+								
+							},
+							timeupdate: function(event) {
+								$playback.slider('option', 'value', parseInt(event.jPlayer.status.currentTime));
+								$playback.slider('option', 'max',  parseInt(event.jPlayer.status.duration));
+							},
+							play: function(event) {
+								$play.fadeOut(function(){
+									$pause.fadeIn();
+								});
+								$playback.slider('option', 'max',  parseInt(event.jPlayer.status.duration));
+							},
+							pause: function(event) {
+								$pause.fadeOut(function(){
+									$play.fadeIn();
+								});
+							},
+							ended: function(event) {
+								$pause.fadeOut(function(){
+									$play.fadeIn();
+								});
 							}
 						});
-
-						var volume;
-						if ($.cookie('volume')){ 
-							volume = $.cookie('volume');
-						}else{
-							volume = 50;
-						}
-						$('#jplayer_sliderVolume').slider({
-							value : volume,
-							max: 100,
-							range: 'min',
-							animate: true,
-
-							slide: function(event, ui) {
-								$('#jplayer').jPlayer('volume', ui.value);
-								$.cookie('volume', ui.value, {expires:30, path:'/'});
-							}
-						});
-
-						$('#jplayer_loaderBar').progressbar();
-
 						//hover states on the static widgets
-						$('ul#jplayer_icons li').hover(
+						$('#jp-content ul li').hover(
 							function() { $(this).addClass('ui-state-hover'); },
 							function() { $(this).removeClass('ui-state-hover'); }
 						);
+						return false;
 					},
 					close: function(){
 						$(this).remove();
@@ -1198,13 +1217,13 @@ var pukiwiki = {};
 
 						//hover states on the static widgets
 						$('#'+pager_id+'.pkwk_widget .ui-state-default').hover(function() {
-							$(this).addClass('ui-state-hover');
+							$this.addClass('ui-state-hover');
 						},function() {
-							$(this).removeClass('ui-state-hover');
+							$this.removeClass('ui-state-hover');
 						}).mousedown(function() {
-							$(this).addClass('ui-state-active');
+							$this.addClass('ui-state-active');
 						}).mouseout(function() {
-							$(this).removeClass('ui-state-active');
+							$this.removeClass('ui-state-active');
 						});
 						
 						$('#'+pager_id).show('clip');
@@ -1222,31 +1241,29 @@ var pukiwiki = {};
 			var self = this;
 			prefix = (prefix) ? prefix + ' ': '';
 
-			if (!isMobile){
-				// タイトル属性がある場合
-				$(prefix + '*[title]').tooltip({
-					bodyHandler: function() { 
-						return $(this).context.tooltipText; 
-					},
-					track: true,
-					delay: 0,
-					showURL: false
-				}).hover(
-					function(){
-						$('body').css('cursor','help');
-					},function(){
-						$('body').css('cursor','auto');
-					}
-				);
-			}
-			if (this.plus === true){
-				// Plusの場合、Glossaly機能をオーバーライド
-				$(prefix + '*[aria-describedby="tooltip"]').hover(
+			$(prefix + '*[aria-describedby="tooltip"]').hover(
+				function(){
+					$('body').css('cursor','wait');
+					self.getGlossary(this,{
+						cmd:'tooltip',
+						q:$(this).text(),
+						cache:true
+					});
+				},
+				function(){
+					$('body').css('cursor','auto');
+				}
+			);
+
+			// 検索画面
+			if ($.query.get('cmd') === 'search'){
+				$(prefix + '*[aria-describedby="linktip"]').hover(
 					function(){
 						$('body').css('cursor','wait');
 						self.getGlossary(this,{
-							cmd:'tooltip',
-							q:$(this).text(),
+							cmd:'preview',
+							page:$(this).text(),
+							word: $.query.get('word'),
 							cache:true
 						});
 					},
@@ -1254,24 +1271,6 @@ var pukiwiki = {};
 						$('body').css('cursor','auto');
 					}
 				);
-
-				// 検索画面
-				if ($.query.get('cmd') === 'search'){
-					$(prefix + '.linktip').hover(
-						function(){
-							$('body').css('cursor','wait');
-							self.getGlossary(this,{
-								cmd:'preview',
-								page:$(this).text(),
-								word: $.query.get('word'),
-								cache:true
-							});
-						},
-						function(){
-							$('body').css('cursor','auto');
-						}
-					);
-				}
 			}
 			
 			if ($.support.leadingWhitespace !== true){
@@ -1285,33 +1284,50 @@ var pukiwiki = {};
 		getGlossary: function(target,params,tooltip_opts){
 			var text;
 			var $target = $(target);
-			$.ajax({
-				url:SCRIPT,
-				type:'GET',
-				cache: true,
-				timeout:2000,
-				dataType : 'html',
-				global:false,
-				data : params,
-				async:false,
-				beforeSend: function(){
-					$('body').css('cursor','wait');
-				},
-				success: function(data){
-					text = data;
-				},
-				complete : function(XMLHttpRequest, textStatus){
-					$('body').css('cursor','help');
-					$target.tooltip({
-						bodyHandler: function() { 
-							return text.replace(/<script[^>]*>[^<]+/ig,'');	// <script>タグを無効化
-						}, 
-						track: true,
-						delay: 0,
-						showURL: ($target.attr('rel') === 'external')
-					});
-				}
-			});
+			var msgtext = $target.attr('title') ? $target.attr('title') : 
+				($target.data('msgtext') ? $target.data('msgtext') : null);
+			$target.removeAttr('title');
+			
+			if (msgtext === null){
+				var tip;
+				$.ajax({
+					url:SCRIPT,
+					type:'GET',
+					cache: true,
+					timeout:2000,
+					dataType : 'xml',
+					global:false,
+					data : params,
+					async:false,
+					beforeSend: function(){
+						$('body').css('cursor','wait');
+					},
+					success: function(data){
+						tip = data.documentElement.textContent;
+					},
+					complete : function(XMLHttpRequest, textStatus){
+						$target.data('msgtext', tip);
+						$target.tooltip({
+							bodyHandler: function() { 
+								$('body').css('cursor','help');
+								return tip;	// <script>タグを無効化
+							}, 
+							track: true,
+							delay: 0,
+							showURL: ($target.attr('rel') === 'external')
+						});
+					}
+				});
+			}else{
+				$target.tooltip({
+					bodyHandler: function() { 
+						return msgtext;	// <script>タグを無効化
+					}, 
+					track: true,
+					delay: 0,
+					showURL: ($target.attr('rel') === 'external')
+				});
+			}
 		},
 		// 編集画面のフォームを拡張
 		set_editform: function(prefix){

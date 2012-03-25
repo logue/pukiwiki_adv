@@ -7864,7 +7864,7 @@ $blocklist['E'] = array(
 	'dki8v8i.info',
 	'dreamport.ws',
 	'emica96.info',
-	'e-degi.net'
+	'e-degi.net',
 	'e-mitumori.jp',
 	'e-off.net',
 	'furou.biz',
@@ -7948,7 +7948,7 @@ $blocklist['E'] = array(
 	'yntwakao.org',
 	'yousense.net',
 	'doorblog.jp',				// 121.84.160.206
-	'info-investment.jp'		// 219.126.31.82
+	'info-investment.jp',		// 219.126.31.82
 	
 	'ameblo.jp/aibranding',		// 59.146.83.145
 	'ameblo.jp/jyouhoutosyokan',// 180.233.142.129
@@ -7965,7 +7965,7 @@ $blocklist['E'] = array(
 	'p.tl/9uT9',				// 180.233.142.129
 	'shokokai.or.jp/05',		// 122.208.28.213
 	'takcom.pv.land.to',
-	'hukubrsy.seesaa.net',
+	'hukubrsy.seesaa.net'
 );
 
 // --------------------------------------------------

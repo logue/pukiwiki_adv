@@ -61,99 +61,88 @@ function plugin_search_action()
 
 	$type = isset($vars['type']) ? $vars['type'] : '';
 	$base = isset($vars['base']) ? $vars['base'] : '';
+	$format = isset($vars['format']) ? $vars['format'] : 'html';
 
-	if ($s_word !== '') {
-		// Search
-		$msg  = str_replace('$1', $s_word, $_search_msg['title_result']);
-		$body = do_search($vars['word'], $type, FALSE, $base);
-	} else {
-		// Init
-		unset($vars['word']); // Stop using $_msg_word at lib/html.php
-		$msg  = $_search_msg['title_search'];
-		$body = '<p>'.$_search_msg['msg_searching'].'</p>' . "\n";
+	switch ($format) {
+		case 'xml' :
+			if ($s_word !== '') {
+				global $page_title, $notify_from;
+				$ret = array(
+					'<?xml version="1.0" encoding="UTF-8"?>',
+					'<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">',
+					'<ShortName>' . $_search_msg['title_search'] . '</ShortName>',
+					'<Contact>' . $notify_from . '</Contact>',
+					'<Url type="text/html" method="GET" template="' . get_cmd_uri('search', null, null, array('term'=>'')) . '{searchTerm}"/>',
+					'<InputEncoding>UTF-8</InputEncoding>',
+					'<Description>' . $_search_msg['title_search'] . ' - ' . $page_title . '</Description>',
+					'<moz:SearchForm xmlns:moz="http://www.mozilla.org/2006/browser/search/">' . get_cmd_uri('search', null, null, array('term'=>'')) . '</moz:SearchForm>',
+					'</OpenSearchDescription>'
+				);
+				header('Content-Type:text/xml');
+				echo join("\n", $ret);
+				exit;
+			}
+		break;
+	
+		default : 
+			if ($s_word !== '') {
+				// Search
+				$msg  = str_replace('$1', $s_word, $_search_msg['title_result']);
+				$body = do_search($vars['word'], $type, FALSE, $base);
+			} else {
+				// Init
+				unset($vars['word']); // Stop using $_msg_word at lib/html.php
+				$msg  = $_search_msg['title_search'];
+				$body = '<p>'.$_search_msg['msg_searching'].'</p>' . "\n";
+			}
+
+			// Show search form
+			$bases = ($base == '') ? array() : array($base);
+			$body .= plugin_search_search_form($s_word, $type, $bases);
+
+			return array('msg'=>$msg, 'body'=>$body);
+		break;
 	}
-
-	// Show search form
-	$bases = ($base == '') ? array() : array($base);
-	$body .= plugin_search_search_form($s_word, $type, $bases);
-
-	return array('msg'=>$msg, 'body'=>$body);
 }
 
 function plugin_search_search_form($s_word = '', $type = '', $bases = array())
 {
-	global $script;
 	global $_search_msg;
 
 	$and_check = $or_check = '';
-	if ($type == 'OR') {
-		$or_check  = ' checked="checked"';
-	} else {
-		$and_check = ' checked="checked"';
-	}
-
 	$base_option = '';
+
+	$ret[] = '<form action="'. get_script_uri() .'" method="' . ( (! PLUGIN_SEARCH_DISABLE_GET_ACCESS) ? 'get' : 'post' ) .'" class="search_form" role="search">';
+	$ret[] = '<input type="hidden" name="cmd" value="search" />';
+	$ret[] = '<input type="search"  name="word" value="' . $s_word . '" size="20" maxlength="' . PLUGIN_SEARCH_MAX_LENGTH . '" id="search_word" results="5" autosave="tangerine" placeholder="' . $_search_msg['search_words'] . '" />';
+	$ret[] = ( IS_MOBILE ) ? '<fieldset data-role="controlgroup" data-type="horizontal" >' : null;
+	$ret[] = '<input type="radio" name="type" id="_p_search_AND" value="AND" ' . ( ($type === 'OR') ? '' : 'checked="checked" ' ) . '/>';
+	$ret[] = '<label for="_p_search_AND">' . $_search_msg['btn_and'] . '</label>';
+	$ret[] = '<input type="radio" name="type" id="_p_search_OR" value="OR" ' . ( ($type === 'OR') ? 'checked="checked" ' : '' ) . '/>';
+	$ret[] = '<label for="_p_search_OR">' . $_search_msg['btn_or'] . '</label>';
+	$ret[] = ( IS_MOBILE ) ? '</fieldset>' : null;
+
+	
 	if (!empty($bases)) {
-		$base_msg = '';
+		$ret[] = ( IS_MOBILE ) ? null : '<br />';
+		
 		$_num = 0;
 		$check = ' checked="checked"';
+		$ret[] = (IS_MOBILE) ? '<fieldset data-role="controlgroup" data-mini="true">' : null;
 		foreach($bases as $base) {
 			++$_num;
 			if (PLUGIN_SEARCH_MAX_BASE < $_num) break;
-			$label_id = '_p_search_base_id_' . $_num;
-			$s_base   = htmlsc($base);
-			$base_str = '<strong>' . $s_base . '</strong>';
-			$base_label = '<p>'.str_replace('$1', $base_str, $_search_msg['search_pages']).'</p>';
-			$base_msg  .=<<<EOD
-	<div>
-		<input type="radio" name="base" id="$label_id" value="$s_base" $check />
-		<label for="$label_id">$base_label</label>
-	</div>
-EOD;
-			$check = '';
+			$s_base = htmlsc($base);
+			$ret[] = '<input type="radio" name="base" id="_p_search_base_id_' . $_num . '" value="' . $s_base . '" />';
+			$ret[] = '<label for="_p_search_base_id_' . $_num . '">' . str_replace('$1', '<strong>' . $s_base . '</strong>', $_search_msg['search_pages']) . '</label>';
 		}
-		$base_msg .=<<<EOD
-		<input type="radio" name="base" id="_p_search_base_id_all" value="" />
-		<label for="_p_search_base_id_all">{$_search_msg['search_all']}</label>
-EOD;
-		$base_option = '<p>' . $base_msg . '</p>';
+		$ret[] = '<input type="radio" name="base" id="_p_search_base_id_all" value="" checked="checked" />';
+		$ret[] = '<label for="_p_search_base_id_all">' . $_search_msg['search_all'] . '</label>';
+		$ret[] = (IS_MOBILE) ? '</fieldset>' : null;
 	}
-
-	if (! PLUGIN_SEARCH_DISABLE_GET_ACCESS) {
-		$method = "get";
-	}else{
-		$method = "post";
-	}
-	$maxlength = PLUGIN_SEARCH_MAX_LENGTH;
+	$ret[] = '<input type="submit" value="' . $_search_msg['btn_search'] . '" />';
+	$ret[] = '</form>';
 	
-	if (IS_MOBILE){
-		return <<<EOD
-<form action="$script" method="{$method}" class="search_form">
-	<input type="hidden" name="cmd" value="search" />
-	<input type="search"  name="word" value="$s_word" size="20" maxlength="$maxlength" id="search_word" results="5" autosave="tangerine" placeholder="{$_search_msg['search_words']}"/>
-	<fieldset data-role="controlgroup"  data-mini="true">
-		<input type="radio" name="type" id="_p_search_AND" value="AND" $and_check />
-		<label for="_p_search_AND">{$_search_msg['btn_and']}</label>
-		<input type="radio" name="type" id="_p_search_OR" value="OR"  $or_check />
-		<label for="_p_search_OR">{$_search_msg['btn_or']}</label>
-	</fieldset>
-	<input type="submit" value="{$_search_msg['btn_search']}" />
-$base_option
-</form>
-EOD;
-	}else{
-		return <<<EOD
-<form action="$script" method="{$method}" class="search_form">
-	<input type="hidden" name="cmd" value="search" />
-	<input type="search"  name="word" value="$s_word" size="20" maxlength="$maxlength" id="search_word" results="5" autosave="tangerine" placeholder="{$_search_msg['search_words']}"/>
-	<input type="radio" name="type" id="_p_search_AND" value="AND" $and_check />
-	<label for="_p_search_AND">{$_search_msg['btn_and']}</label>
-	<input type="radio" name="type" id="_p_search_OR" value="OR"  $or_check />
-	<label for="_p_search_OR">{$_search_msg['btn_or']}</label>
-	<input type="submit" value="{$_search_msg['btn_search']}" />
-$base_option
-</form>
-EOD;
-	}
+	return join("\n", $ret);
 }
 ?>

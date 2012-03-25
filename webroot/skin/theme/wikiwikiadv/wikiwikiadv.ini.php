@@ -48,7 +48,7 @@ EOD
 );
 
 // 読み込むスタイルシート
-$link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.'scripts.css.php');
+$link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.'scripts.css.php?base=' . urlencode(IMAGE_URI) );
 $link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/'.PLUS_THEME.'.css');
 
 // 読み込むスクリプト

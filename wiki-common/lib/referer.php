@@ -1,8 +1,8 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: referer.php,v 1.8.6 2011/05/31 21:37:00 Logue Exp $
+// $Id: referer.php,v 1.8.8 2011/03/17 19:46:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiWiki Advance Developers Team
+//   2010-2012 PukiWiki Advance Developers Team
 //   2006-2008 PukiWiki Plus! Team
 //   2003      Originally written by upk
 // License: GPL v2 or (at your option) any later version
@@ -15,6 +15,7 @@ define('REFFRER_BAN_COUNT',	3);	// バン対象にするリファラーの回数
 function ref_get_data($page, $uniquekey=1)
 {
 	$file = ref_get_filename($page);
+	
 	if (! file_exists($file)) return array();
 
 	$result = array();
@@ -48,11 +49,17 @@ function ref_save($page)
 	$parse_url = parse_url($url);
 	if ($parse_url === FALSE || !isset($parse_url['host']) || $parse_url['host'] == $_SERVER['HTTP_HOST'])
 		return TRUE;
-		
-	// Blocking SPAM
-	if ($use_spam_check['referer']){
-		if (SpamCheck($parse_url['host'])) return TRUE;
-		if (is_refspam($url) === true) return TRUE;
+
+	if ( stristr($parse_url['host'], 'google') !== FALSE && ($parse_url['path'] === '/url' && $parse_url['path'] === '/search') ){
+		// Googleのリファラーがログ容量を浪費するため。
+		parse_str($parse_url['query'], $q);
+		$url = $parse_url['scheme'] . '://'. $parse_url['host'] . ( ($q['q'] !== '') ? '/search?q='.$q['q'] : '');
+	}else{
+		// Blocking SPAM
+		if ($use_spam_check['referer']){
+			if (SpamCheck($parse_url['host'])) return TRUE;
+			if (is_refspam($url) === true) return TRUE;
+		}
 	}
 
 	if (! is_dir(REFERER_DIR))      die_message('No such directory: REFERER_DIR');
@@ -176,6 +183,7 @@ function is_refspam($url){
 		}
 	}
 
+	
 	if ($is_refspam !== false){
 		$NewBlackListLine = array();
 		// ブラックリストを確認

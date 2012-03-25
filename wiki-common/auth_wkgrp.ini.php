@@ -7,7 +7,7 @@
 
 $auth_wkgrp_user = array(
 	// For Administer 
-	'admin'		=> array(
+	$adminname		=> array(
 		'role'			=> ROLE_ADM,
 		'displayname'	=> $modifier,
 		'group'			=> 'Administrator',

@@ -2,7 +2,7 @@
 // classic skin script.
 // Copyright (c)2010-2012 PukiWiki Advance Developers Team
 
-// $Id: classic.js,v 1.0.6 2012/03/19 17:48:08 Logue Exp$
+// $Id: default.js,v 1.0.6 2012/03/19 17:48:08 Logue Exp$
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -60,18 +60,18 @@
 			$.getScript('https://apis.google.com/js/plusone.js');
 		}
 	});
-
+/*
 	// スキンスクリプトのinitが実行された前に実行される関数
 	pukiwiki.register.init( function(){
 	});
-
+*/
 /*
 // PukiWiki Advance オーバーライド設定
-pukiwiki.custom = {
-	// Superfish設定
-	// http://users.tpg.com.au/j_birch/plugins/superfish/#options
-	suckerfish : { }
-};
+	pukiwiki.custom = {
+		// Superfish設定
+		// http://users.tpg.com.au/j_birch/plugins/superfish/#options
+		suckerfish : { }
+	};
 */
 
 } )(jQuery, pukiwiki, this, this.document );

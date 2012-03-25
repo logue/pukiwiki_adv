@@ -178,7 +178,9 @@
 #sidebar .navibar ul, #sidebar .navibar li{
 	display:block;
 }
-
+#sidebar .navibar ul li:after{
+	content:'';
+}
 /* suckerfish.inc.php */
 .sf-menu {
 	/* These settings are recommended to specify an absolute value. */

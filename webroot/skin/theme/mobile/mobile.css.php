@@ -28,7 +28,7 @@ audio:not([controls]) { display: none; }
 
 html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
 body { margin: 0; font-size: 13px; line-height: 1.4; }
-body, button, input, select, textarea { font-family: sans-serif; color: #222; }
+body, button, input, select, textarea { color: #222; }
 
 ::-moz-selection { background: #57a1fe; color: #fff; text-shadow: none; }
 ::selection { background: #57a1fe; color: #fff; text-shadow: none; }
@@ -290,6 +290,13 @@ figcaption{
 	margin-right:.5em;
 }
 
+
+textarea, select, option, input, var, pre, code{
+	font-family: monospace !important;
+}
+.ui-controlgroup label{
+	font-size:100% !important;
+}
 /* ==|== PukiWiki Adv. Standard Plugin classes ============================== */
 /* aname.inc.php */
 .anchor_super {

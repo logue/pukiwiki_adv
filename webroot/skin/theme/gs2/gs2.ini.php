@@ -26,12 +26,9 @@ $_SKIN = array(
 	// GS2スキンの色テーマ設定
 	// 
 	// 色テーマとしては以下のものが用意されています
-	// - black       黒を基調とした暗い感じ
+	
 	// - blue        青を基調とした明るい感じ
 	// - green       緑を基調としたかなり明るい感じ
-	// - neongreen   黒背景に鮮やかな緑が光る
-	// - neonorange  黒背景に鮮やかな橙色が光る
-	// - print       印刷用モノクロ
 	// - red         淡い赤を基調とした落ち着いた感じ
 	// - sepia       淡い色を基調としたセピアな感じ
 	// - silver      灰色を基調とした落ち着いた感じ
@@ -40,10 +37,14 @@ $_SKIN = array(
 	// - white       silverよりさらに白色系に近づいた
 	// - winter      雪が降っているような淡い色遣い
 	// - yellow      淡い黄色を基調とした落ち着いた感じ
+	// - black       黒を基調とした暗い感じ
+	// - neongreen   黒背景に鮮やかな緑が光る
+	// - neonorange  黒背景に鮮やかな橙色が光る
+	// - print       印刷用モノクロ
 	// テーマは以上から選択するか、自作したテーマを
 	// 指定することもできます
 	// 画面表示時のテーマ色を設定します [blue]
-	'color'			=> 'black',
+	'color'			=> 'neongreen',
 	
 	/////////////////////////////////////////////////
 	// GS2スキンの各種動作設定
@@ -80,7 +81,10 @@ EOD
 // gsスキンのカラーを取得
 require ('gs2_color/pukiwiki_gs2_color_'.$_SKIN['color'].'.php');
 // 読み込むスタイルシート
-$link_tags[] = array('rel'=>'stylesheet',	'href'=>SKIN_URI.'scripts.css.php',	'type'=>'text/css', 'media'=>'screen');
-$link_tags[] = array('rel'=>'stylesheet',	'href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/gs2.css.php?gs2color='.$_SKIN['color'],'type'=>'text/css', 'media'=>'screen');
+$link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.'scripts.css.php?base=' . urlencode(IMAGE_URI) );
+$link_tags[] = array('rel'=>'stylesheet',	'href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/gs2.css.php?gs2color='.$_SKIN['color'],'type'=>'text/css');
+
+// 読み込むスクリプト
+$js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/gs2.js');
 
 ?>

@@ -1,27 +1,25 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: classic.css.php,v 2.6.2 2011/09/25 17:48:30 Logue Exp $
+// $Id: classic.css.php,v 2.6.3 2012/03/11 22:26:30 Logue Exp $
 
 // PukiWiki Classic Skin
 // Copyright (C)
-//   2010-2011 PukiWiki Advance Developer Team
+//   2010-2012 PukiWiki Advance Developer Team
 //   2005-2010 Logue
 //   2002-2006 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
 
 //error_reporting(0); // Nothing
 error_reporting(E_ERROR | E_PARSE); // Avoid E_WARNING, E_NOTICE, etc
-
-// Media
-$media   = isset($_GET['media'])   ? $_GET['media']	: '';
-if ($media != 'print') $media = 'screen';
-$debug = false;
-
 // Style
 $menubar   = isset($_GET['menubar'])   ? $_GET['menubar']	: '';
-
+$expire = isset($_GET['expire'])   ? (int)$_GET['expire'] * 86400	: '604800';	// Default is 7 days.
 // Send header
 header('Content-Type: text/css; charset: UTF-8');
+header('Cache-Control: private');
+header('Expires: ' .gmdate('D, d M Y H:i:s',time() + $expire) . ' GMT');
+header('Last-Modified: '.gmdate('D, d M Y H:i:s', getlastmod() ) . ' GMT');
+ob_start('ob_gzhandler');
 ?>
 /**************************************************************************************************/
 /* anchor tag */
@@ -535,6 +533,10 @@ tfoot .style_th {
 	background-color:#EEF5FF;
 }
 
+.social li{
+	display:inline;
+}
+
 /** Print Setting *********************************************************************************/
 @media print {
 	#hgroup h2, #header img, #navibar, #menubar, #poptoc, #banner_box, #attach, #toolbar,
@@ -567,3 +569,5 @@ tfoot .style_th {
 		clear:both;
 	}
 }
+<?php 
+ob_end_flush();

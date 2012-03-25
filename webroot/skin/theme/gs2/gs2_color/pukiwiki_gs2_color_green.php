@@ -36,8 +36,8 @@ if (isset($_SKIN)){
 	define('SKIN_CSS_H5_BDCOLOR', 	'#99A899');	// heading5 border
 	define('SKIN_CSS_H6_BDCOLOR', 	'#99A899');	// heading6 border
 
-	define('SKIN_CSS_A_LINK',	 	'#2FB35B');	// a link
-	define('SKIN_CSS_A_VISITED', 	'#33C96A');	// a visited
+	define('SKIN_CSS_A_LINK',	 	'#2f4f4f');	// a link
+	define('SKIN_CSS_A_VISITED', 	'#008080');	// a visited
 	define('SKIN_CSS_A_HOVER',	 	'#8D2B3E');	// a hover
 	define('SKIN_CSS_A_ACTIVE',	 	'#325E86');	// a active
 }

@@ -32,7 +32,6 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 		<?php echo $pkwk_head; ?>
 		<title><?php echo $page_title; ?></title>
 	</head>
-
 	<body>
 <!-- START #containar-->
 		<div id="wide-container" role="document">
@@ -158,6 +157,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 									<li><a href="<?php echo $_LINK['log'] ?>"><span class="pkwk-icon icon-log"></span><?php echo $_LANG['skin']['log'] ?></a></li>
 								</ul>
 							</li>
+							<li><a href="<?php echo $_LINK['login'] ?>"><span class="pkwk-icon icon-login"></span><?php echo $_LANG['skin']['login'] ?></a></li>
 						</ul>
 					</div>
 

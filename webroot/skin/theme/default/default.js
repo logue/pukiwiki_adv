@@ -39,7 +39,7 @@
 			$.cookie('pkwk-colorset', default_set_num,{expires:30,path:'/'});
 		}
 		var color = colorset[$.cookie('pkwk-colorset')];
-		document.getElementById('coloring').href = SKIN_DIR+'theme/'+THEME_NAME+'/'+color[0]+'.css';
+		document.getElementById('coloring').href = SKIN_DIR+'theme/'+THEME_NAME+'/default.css.php?color='+color[0];
 		document.getElementById('ui-theme').href = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/themes/'+color[1]+'/jquery-ui.css';
 
 		// カラーセットのリンクボタンを生成
@@ -57,35 +57,35 @@
 			$('#body').append([
 				'<hr class="noprint" /><ul class="social noprint clearfix">',
 				// Hatena
-				'<li><a href="http://b.hatena.ne.jp/entry/" class="hatena-bookmark-button" data-hatena-bookmark-layout="standard"></a></li>',
+				// http://b.hatena.ne.jp/guide/bbutton
+				'<li><a href="http://b.hatena.ne.jp/entry/" class="hatena-bookmark-button" data-hatena-bookmark-layout="standard">Twee</a></li>',
 				// Mixi
-				'<li><a href="http://mixi.jp/share.pl" class="mixi-check-button" data-url="'+href+'"></a></li>',
+				// http://developer.mixi.co.jp/connect/mixi_plugin/mixi_check/spec_mixi_check/
+				'<li><a href="http://mixi.jp/share.pl" class="mixi-check-button" data-url="'+href+'" data-button="button-1"></a></li>',
 				// Gree
-				'<li><iframe src="http://share.gree.jp/share?url='+encodeURIComponent(href)+'&amp;type=1&amp;height=20" scrolling="no" frameborder="0" marginwidth="0" marginheight="0" style="border:none; overflow:hidden; width:100px; height:20px;" allowTransparency="true"></iframe></li>',
-				// Tweet Button
-				// http://twitter.com/about/resources/tweetbutton
-				'<li><iframe src="http://platform.twitter.com/widgets/tweet_button.html?lang='+lang+'" allowtransparency="true" frameborder="0" scrolling="no" style="width:200px; height:20px;"></iframe></li>',
-				// Tumblr
-				// http://www.tumblr.com/docs/ja/share_button
-				'<li><a href="http://www.tumblr.com/share" title="Share on Tumblr" style="display:inline-block; text-indent:-9999px; overflow:hidden; width:81px; height:20px; background:url(\'http://platform.tumblr.com/v1/share_1.png\') top left no-repeat transparent;"></a></li>',
+				// https://developer.gree.net/connect/plugins/sf
+				// '<li><iframe src="http://share.gree.jp/share?url='+encodeURIComponent(href)+'&amp;type=1&amp;height=20" scrolling="no" frameborder="0" marginwidth="0" marginheight="0" style="border:none; overflow:hidden; width:100px; height:20px;" allowTransparency="true"></iframe></li>',
 				// Google +1 button
 				// http://www.google.com/intl/ja/webmasters/+1/button/index.html
-//				'<li><div id="plusone"></div></li>',
+				'<li><div class="g-plusone" data-size="medium"></div></li>',
+				// Tweet Button
+				// https://twitter.com/about/resources/buttons
+				'<li><a href="https://twitter.com/share" class="twitter-share-button" data-lang="' + lang+'">Tweet</a></li>',
+				// Tumblr
+				// http://www.tumblr.com/docs/ja/share_button
+				// '<li><a href="http://www.tumblr.com/share" title="Share on Tumblr" style="display:inline-block; text-indent:-9999px; overflow:hidden; width:81px; height:20px; background:url(\'http://platform.tumblr.com/v1/share_1.png\') top left no-repeat transparent;"></a></li>',
 				// Facebook Like button
 				// http://developers.facebook.com/docs/reference/plugins/like/
-				(typeof(FACEBOOK_APPID) !== 'undefined') ? '<li><div class="fb-like" data-href="'+href+'" data-layout="button_count"  data-send="true" data-width="400" data-show-faces="true"></div></li>' : '',
+				(typeof(FACEBOOK_APPID) !== 'undefined') ? '<li><div class="fb-like" data-href="'+href+'" data-layout="button_count" data-send="true" data-width="450" data-show-faces="true"></div></li>' : '',
 			'</ul>',
-			(typeof(FACEBOOK_APPID) !== 'undefined') ? '<hr /><div class="noprint" style="margin-left:2em;"><div class="fb-comments" href="'+href+'" publish_feed="true" width="650" numposts="10" migrated="1"></div></div>' : ''
+			(typeof(FACEBOOK_APPID) !== 'undefined') ? '<hr class="noprint" /><div class="noprint" style="margin-left:2em;"><div class="fb-comments" href="'+href+'" publish_feed="true" width="650" numposts="10" migrated="1"></div></div>' : ''
 			].join("\n"));
 
-			$.getScript('http://b.st-hatena.com/js/bookmark_button_wo_al.js');
+			$.getScript('http://b.st-hatena.com/js/bookmark_button.js');
 			$.getScript('http://platform.twitter.com/widgets.js');
 			$.getScript('http://static.mixi.jp/js/share.js');
-
-			$.getScript('http://apis.google.com/js/plusone.js',function(){
-				gapi.plusone.render( document.getElementById('plusone'),{ lang: lang, parsetags:'explicit', size:'medium', 'count':'true' });
-			});
-		};
+			$.getScript('https://apis.google.com/js/plusone.js');
+		}
 	};
 
 	// スキンスクリプトのinitが実行された前に実行される関数

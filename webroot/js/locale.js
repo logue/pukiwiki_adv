@@ -1,5 +1,5 @@
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: locale.js,v 0.0.6 2012/03/02 21:35:00 Logue Exp $
+// $Id: locale.js,v 0.0.7 2012/03/25 03:25:00 Logue Exp $
 
 // Pukiwiki skin script for jQuery
 // Copyright (c)2010-2012 PukiWiki Advance Developer Team
@@ -91,7 +91,8 @@
 		complete	: 'Complete',
 		ready		: 'Ready',
 		error		: 'Error',
-		error_page	: 'An error occurred when loading the page.'
+		error_page	: 'An error occurred when loading the page.',
+		error_auth	: 'Access requires login.'
 	});
 
 	$.i18n('en_US.sh',{
@@ -203,7 +204,8 @@
 		complete	: '完了',
 		ready		: '準備完了',
 		error		: 'エラー',
-		error_page	: 'ページ読み込み時にエラーが発生しました。'
+		error_page	: 'ページ読み込み時にエラーが発生しました。',
+		error_auth	: 'アクセスにはログインが必要です。'
 	});
 
 	$.i18n('ja_JP.sh',{
@@ -322,7 +324,8 @@
 		complete	: '완료',
 		ready		: '준비',
 		error		: '오류',
-		error_page	: '페이지로드시 오류가 발생했습니다.'
+		error_page	: '페이지로드시 오류가 발생했습니다.',
+		error_auth	: '액세스에는 로그인이 필요합니다. '
 	});
 
 	$.i18n('ko_KR.sh',{
@@ -409,7 +412,8 @@
 		complete	: '完成',
 		ready		: '準備好',
 		error		: '錯誤',
-		error_page	: '加載頁面時發生錯誤。'
+		error_page	: '加載頁面時發生錯誤。',
+		error_auth	: '為訪問需要登錄。'
 	});
 
 	$.i18n('zh_TW.sh',{
@@ -496,7 +500,8 @@
 		complete	: '完成',
 		ready		: '准备好',
 		error		: '错误',
-		error_page	: '加载页面时发生错误。'
+		error_page	: '加载页面时发生错误。',
+		error_auth	: '为访问需要登录。'
 	});
 
 	$.i18n('zh_CN.sh',{

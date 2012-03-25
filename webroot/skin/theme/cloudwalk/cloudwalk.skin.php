@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiPlus - Yet another WikiWikiWeb clone.
 //
-// $Id: cloudwalk.skin.php,v 1.2.3 2011/12/26 20:48:00 Logue Exp$
+// $Id: cloudwalk.skin.php,v 1.2.4 2012/03/25 09:23:00 Logue Exp$
 // Original is ari-
 // PukiWiki Advance edition by Logue
 
@@ -27,7 +27,6 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 		<?php echo $pkwk_head; ?>
 		<title><?php echo $page_title; ?></title>
 	</head>
-<?php flush(); ?>
 	<body>
 		<div id="wrapper" role="document"><!-- ■BEGIN id:wrapper -->
 <!-- ◆ Header ◆ ========================================================== -->
@@ -52,21 +51,15 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 					<div id="summary"><!-- ■BEGIN id:summary -->
 <?php if (!empty($notes)) { ?>
 <!-- ■BEGIN id:note -->
-					<?php echo $hr ?>
-					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="note" role="note">'."\n" : '<div id="note" role="note">'."\n"; ?>
-						<?php echo $notes ?>
-					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
+						<?php echo $hr ?>
+						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="note" role="note">'."\n" : '<div id="note" role="note">'."\n"; ?>
+							<?php echo $notes ?>
+						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
 <!-- □END id:note -->
 <?php } ?>
-						<div id="trackback">
 <!-- ■BEGIN id:trackback -->
-<?php if ($trackback) { ?>
-							<a href="<?php echo $_LINK['trackback'] ?>"><span class="pkwk-icon icon-trackback"></span><?php echo $_LANG['skin']['trackback'].'('.tb_count($_page).')' ?></a> |
-<?php } ?>
-<?php if ($referer) { ?>
-							<a href="<?php echo $_LINK['referer'] ?>"><span class="pkwk-icon icon-referer"></span><?php echo $_LANG['skin']['referer'] ?></a>
-<?php } ?>
-
+						<div id="trackback">
+							<?php if (exist_plugin('navibar')) echo do_plugin_convert('navibar','trackback,referer'); ?>
 						</div>
 <!-- □ END id:trackback -->
 <?php if (!empty($related)) { ?>
@@ -94,7 +87,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 					</div><!-- END id:search_form -->
 					<div id="page_action" class="bar"><!-- ■BEGIN id:page_action -->
 						<h2><?php echo $_LANG['skin']['edit'] ?></h2>
-						<?php if (exist_plugin('navibar')) echo do_plugin_convert('navibar','top,reload,new,edit,freeze,upload,diff,list,search,recent,backup,help'); ?>
+						<?php if (exist_plugin('navibar')) echo do_plugin_convert('navibar','top,reload,new,edit,freeze,upload,diff,list,search,recent,backup,help,login'); ?>
 					</div><!-- □END id:page_action -->
 <?php global $body_menu; ?>
 <?php if (!empty($body_menu)) { ?>
@@ -106,7 +99,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>' : '</div>')."\n"; ?><!-- □END id:sidebar -->
 			</div><!-- □END id:main -->
 <!-- ◆ Footer ◆ ========================================================== -->
-			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="footer">'."\n" : '<div id="footer">'."\n"; ?><!-- ■BEGIN id:footer -->
+			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="footer" role="contentinfo">'."\n" : '<div id="footer" role="contentinfo">'."\n"; ?><!-- ■BEGIN id:footer -->
 				<div id="copyright"><!-- ■BEGIN id:copyright -->
 					<address>Founded by <a href="<?php echo $modifierlink ?>"><?php echo $modifier ?></a></address>
 					<?php echo S_COPYRIGHT ?><br />

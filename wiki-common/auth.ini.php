@@ -17,13 +17,12 @@ $auth_type = 1;
 $realm = 'PukiWiki Adv. Auth';
 
 /////////////////////////////////////////////////
-// Admin password for this Wikisite
+// Admin name and password for this Wikisite
+
+$adminname = 'admin';
 
 // CHANGE THIS
-$adminpass = '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72'; // md5('pass')
-//$adminpass = '{CRYPT}$1$AR.Gk94x$uCe8fUUGMfxAPH83psCZG/'; // CRYPT 'pass'
-//$adminpass = '{MD5}Gh3JHJBzJcaScd3wyUS8cg==';             // MD5   'pass'
-//$adminpass = '{SMD5}o7lTdtHFJDqxFOVX09C8QnlmYmZnd2Qx';    // SMD5  'pass'
+$adminpass = '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72'; // MD5('pass')
 
 /////////////////////////////////////////////////
 // User definition
@@ -41,7 +40,6 @@ require_once(PKWK_AUTH_WKGRP_FILE);
 // Auth API
 define('PKWK_AUTH_API_FILE', add_homedir('auth_api.ini.php'));
 require_once(PKWK_AUTH_API_FILE);
-
 /////////////////////////////////////////////////
 // Authentication method
 
@@ -54,7 +52,7 @@ $read_auth = 0;
 
 $read_auth_pages = array(
 	// Regex                   Username or array('user'=>Username,'group'=>Groupname,'role'=>Role),
-	'/:log/'		=> 'hoge',
+	'/:log/'		=> $adminname,
 	'#FooBar#'		=> 'hoge',
 	'#(Foo|Bar)#'		=> 'foo,bar,hoge',
 );
@@ -65,7 +63,7 @@ $edit_auth = 1;
 
 $edit_auth_pages = array(
 	// Regex                   Username or array('user'=>Username,'group'=>Groupname,'role'=>Role),
-	'#(FrontPage|MenuBar|SideBar|Navigation|InterWikiName|Glossary|AutoAliasName|#'		=> 'admin',
+	'#(FrontPage|MenuBar|SideBar|Navigation|InterWikiName|Glossary|AutoAliasName|^\:)#'		=> $adminname,
 	'#FooBar#'			=> 'hoge',
 	'#(Foo|Bar)#'		=> 'foo,bar,hoge',
 );

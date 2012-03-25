@@ -7,7 +7,7 @@
 */
 
 $auth_users = array(
-	'admin'	=> array($adminpass,2),	// Do not change
+	$adminname	=> array($adminpass,2),	// Do not change
 	// Username => array(password, role, group, home, mypage),
 	'bar'	=> array('{x-php-md5}f53ae779077e987718cc285b14dfbe86'), // md5('bar_passwd')
 	'hoge'	=> array('{SMD5}OzJo/boHwM4q5R+g7LCOx2xGMkFKRVEx'), // SMD5 'hoge_passwd'

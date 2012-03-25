@@ -55,13 +55,12 @@ function plugin_skeylist_action()
 	}
 
 	$data = skeylist_analysis($data);
+	//pr($data);
 	// 0:検索キー 1:参照カウンタ
 	usort($data,create_function('$a,$b','return $b[1] - $a[1];'));
 	$data = skeylist_print($data,$max);
 
-	$retval['body']  = '<p>';
-	$retval['body'] .= (empty($data)) ? $_skeylist_msg['no_data'] : $data;
-	$retval['body'] .= "</p>\n";
+	$retval['body'] = (empty($data)) ? $_skeylist_msg['no_data'] : $data;
 	return $retval;
 }
 
@@ -110,6 +109,7 @@ function skeylist_analysis($data)
 		'qry',		// www.mirago.co.uk
 		'w',		// seznam.cz
 		'name',		// JWord
+		'wd'		// Baidu
 	);
 
 	$sum = array();
@@ -117,7 +117,7 @@ function skeylist_analysis($data)
 	// 0:最終更新日時 1:初回登録日時 2:参照カウンタ 3:Referer ヘッダ 4:利用可否フラグ(1は有効)
 	foreach ($data as $x)
 	{
-		if ($x[4] != 1) continue;
+		if ($x[4] === 1) continue;
 		// 'scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment'
 		$url = parse_url($x[3]);
 		if (empty($url['query'])) continue; // queryストリングが空の場合は対象外
@@ -145,7 +145,7 @@ function skeylist_analysis($data)
 			if (empty($parm)) continue; // 値が入っていない場合
 			if ( (strpos($parm,'cache:') === 0 )) continue; // google のキャッシュなどの場合
 
-			$parm = skeylist_convert_key($parm); // 検索キーを名寄せする
+			$parm = skeylist_convert_key($parm, $url['host']); // 検索キーを名寄せする
 			if (!isset($sum[$parm])){ $sum[$parm] = 0; }
 			$sum[$parm] += $x[2]; // 参照カウンタ
 			break;
@@ -164,13 +164,17 @@ function skeylist_analysis($data)
 }
 
 // 検索キーを整形する
-function skeylist_convert_key($x)
+function skeylist_convert_key($x, $host)
 {
 	$rc = '';
 
 	// テーブルに存在する検索エンジンで、指定キーが存在している場合
 	$x = rawurldecode($x);
-	$x = mb_convert_encoding($x,SOURCE_ENCODING,'auto');
+	if ($host === 'www.baidu.com'){
+		$x = mb_convert_encoding($x,SOURCE_ENCODING ,'GB2312');	// Baiduは、GB2312で処理しているため
+	}else{
+		$x = mb_convert_encoding($x,SOURCE_ENCODING,'auto');
+	}
 
 	// "K" : 「半角片仮名」を「全角片仮名」に変換
 	// "V" :  濁点付きの文字を一文字に変換
@@ -179,16 +183,12 @@ function skeylist_convert_key($x)
 	$x = mb_convert_kana($x, 'KVas');
 
 	// Yahooなど他のエンジン対応
-	$x = str_replace('+', ' ', $x);		// Yahoo: OR
-	$x = str_replace('#', ' ', $x);		// Yahoo: 否定
-	$x = str_replace('*', ' ', $x);		// Yahoo: AND
-
-	$x = str_replace(' and ', ' ', $x);
-	$x = str_replace(' AND ', ' ', $x);
-	$x = str_replace('"', '', $x);  // "  は除去
-
-	$x = str_replace('|', ' ', $x);
-	$x = str_replace('?', ' ', $x);
+	$x = str_replace(
+		array('+', '#', '*', ' and ', ' AND ', '|', '?'),
+		' ',
+		$x
+	);
+	$x = str_replace('"', '', $x);  // 	"は除去		"
 
 	// 文字の途中に入っている連続するスペースを１つにする
 	$tok = strtok($x,' ');
@@ -206,13 +206,13 @@ function skeylist_convert_key($x)
 function skeylist_print($data,$max)
 {
 	global $_skeylist_msg;
-	$rc = '';
+	$rc = array();
 
 	if ($max > 0) {
-		$rc .= '<h5>'.sprintf($_skeylist_msg['h5_title'],$max)."</h5>\n";
-		$rc .= "<ul>\n";
+		$rc[] = '<h5>'.sprintf($_skeylist_msg['h5_title'],$max).'</h5>';
 		$data = array_splice($data,0,$max);
 	}
+	$rc[] = '<ul>';
 
 	foreach ($data as $x)
 	{
@@ -222,17 +222,10 @@ function skeylist_print($data,$max)
 		} else {
 			$key = mb_convert_encoding($x[0],'utf-8',SOURCE_ENCODING);
 		}
-		$key = rawurlencode($key);
-		$tmp = '<a href="'.SKEYLIST_SEARCH_URL.$key.'" rel="nofollow noreferer">'.$x[0].'</a>('.$x[1].')';
-		if ($max > 0) {
-			$rc .= '<li>'.$tmp."</li>\n";
-		} else {
-			$rc .= $tmp."\n";
-		}
+		$rc[] = '<li><a href="' . SKEYLIST_SEARCH_URL.rawurlencode($key).'" rel="nofollow noreferer">'.$x[0].'</a> <var>('.$x[1].')</var></li>';
 	}
 
-	if ($max > 0) $rc .= "</ul>\n";
-	return $rc;
+	$rc[] = '</ul>';
+	return join("\n",$rc);
 }
-
 ?>

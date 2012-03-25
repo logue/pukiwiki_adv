@@ -3,7 +3,7 @@
  * Browser
  *
  * @copyright   Copyright &copy; 2004-2006, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version	 $Id: ua_browsers.cls.php,v 0.7 2010/08/16 09:15:00 Logue Exp $
+ * @version	 $Id: ua_browsers.cls.php,v 0.7.1 2012/03/21 15:15:00 Logue Exp $
  * @license	 http://opensource.org/licenses/gpl-license.php GNU Public License
  *
  * o 参考にしたコード(AWStats)
@@ -449,7 +449,7 @@ class ua_browsers
 	var $regvernetscape	= "'netscape.?\/([\d\.]*)'si";
 	var $regvermozilla	= "'mozilla(\/|)([\d\.]*)'si";
 	var $regnotnetscape	= "'gecko|compatible|opera|galeon'si";
-	var $regwebkit		= "'webkit'si";
+	var $regwebkit		= "'safari|chrome'si";
 	var $id;
 
 	// ブラウザを識別
@@ -513,7 +513,7 @@ class ua_browsers
 		
 		# WebKit... ?
 		if (preg_match($this->regwebkit,$ua,$regs)){
-			return $this->browsers_icon['safari'];
+			return $this->browsers_icon[strtolower($regs[0])];
 		}
 
 		// ブラウザ識別のアイコンがある場合は、それを設定

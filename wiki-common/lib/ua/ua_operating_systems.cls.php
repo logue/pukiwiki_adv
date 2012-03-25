@@ -38,13 +38,15 @@ class ua_operating_systems
 		array('windows[_+ ]3',			'win16'),	
 		array('win(.*)ce',			'wince'),	// wince.png
 		# Macintosh OS family
-		array('mac[_+ ]os[_+ ]x',		'macosx'),	// macosx.png
+		array('iphone[_+ ]os',		'iphone'),	// iPhone OS must set before MacOS.
+		array('ios',				'ios'),
+		array('mac[_+ ]os[_+ ]x',	'macosx'),	// macosx.png
 		array('mac[_+ ]?p',			'macintosh'),	// macintosh.png
 		array('mac[_+ ]68',			'macintosh'),	
 		array('macweb',				'macintosh'),	
 		array('macintosh',			'macintosh'),
 		# Linux family
-		array('linux(.*)android',		'linuxandroid'),
+		array('linux(.*)android',		'linuxandroid'),	// Android
 		array('linux(.*)asplinux',		'linixasplinux'),
 		array('linux(.*)centos',		'linuxcentos'),
 		array('linux(.*)debian',		'linuxdebian'),
@@ -96,8 +98,6 @@ class ua_operating_systems
 		array('cp/m',				'cpm'),		// cpm.png
 		array('crayos',				'crayos'),	
 		array('dreamcast',			'dreamcast'),	// dreamcast.png
-		array('iphone[_+ ]os',		'iphone'),
-		array('ios',				'ios'),
 		array('risc[_+ ]?os',		'riscos'),	// riscos.png
 		array('symbian',			'symbian'),	// symbian.png
 		array('webtv',				'webtv'),	// webtv.png

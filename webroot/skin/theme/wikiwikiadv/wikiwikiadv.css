@@ -5,7 +5,7 @@
 // by Logue
 // Theme inspired from Wikiwiki.jp default skin.
 // 
-// $Id: wikiwikiadv.css,v 1.0 2012/01/28 16:18:00 Logue Exp $
+// $Id: wikiwikiadv.css,v 1.0.1 2012/03/19 22:09:00 Logue Exp $
 //
 */
 
@@ -257,7 +257,7 @@ tfoot .style_th
 		display:block;
 		width:180px;
 		float:left;
-		right:0;
+		right:90px;
 		position:absolute;
 	}
 
@@ -435,6 +435,10 @@ tfoot .style_th
 	color: white;
 }
 
+#footer li.f_right{
+	float:right;
+}
+
 .toolbar a{
 	border: none;
 }
@@ -580,10 +584,10 @@ tfoot .style_th
 	text-align:center;
 }
 
-#menubar h3{
+#menubar h3, #sidebar h3{
 	background-color: #CCCCCC;
 }
-#menubar h4{
+#menubar h4, #sidebar h4{
 	background-color: #ebebeb;
 }
 
@@ -591,15 +595,7 @@ tfoot .style_th
 	margin:0 0 4px 0;
 	padding:4px;
 	border: 1px black solid;
-	background-color: white;
 	text-align:center;
-}
- 
-#sidebar h3{
-	background-color: #CCCCCC;
-}
-#sidebar h4{
-	background-color: #ebebeb;
 }
 
 #menubar ul.menu, #sidebar ul.menu{

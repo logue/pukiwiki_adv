@@ -158,6 +158,9 @@ $_LANG['skin'] = array(
 	'logo'		=> T_('Logo'),
 	'formatrule'=> T_('Text Formatting Rules'),
 	
+	'login'		=> T_('Login'),
+	'logout'	=> T_('Logout'),
+	
 	/* Special Page */
 	'top'		=> T_('Front page'),
 	'recent'	=> T_('Recent changes'),

@@ -38,14 +38,16 @@
 
 defined('DATA_HOME') or define('DATA_HOME', '');
 
-ini_set('memory_limit', '128M');
-ini_set('zlib.output_compression', 'Off');
 if (! extension_loaded('mbstring')){
 	throw new Exception('PukiWiki Adv. needs the <a href="http://www.php.net/manual/book.mbstring.php">mbstring extension</a>.');
 }
 if (! extension_loaded('json')) {
 	throw new Exception('PukiWiki Adv. needs the <a href="http://www.php.net/manual/book.json.php">JSON extension.</a>');
 }
+
+ini_set('memory_limit', '128M');
+ini_set('zlib.output_compression', 'Off');
+ini_set('zlib.output_handler','mb_output_handler');
 /////////////////////////////////////////////////
 // Include subroutines
 
@@ -111,8 +113,10 @@ if (SpamCheckBAN($_SERVER['REMOTE_ADDR'])) die();
 // Block SPAM countory
 $geoip = array();
 if (function_exists('geoip_db_avail') && geoip_db_avail(GEOIP_COUNTRY_EDITION)) {
-	$geoip = geoip_region_by_name($_SERVER['REMOTE_ADDR']);
-	$info[] = 'GeoIP is usable. Your country code from IP is inferred <var>'.$geoip['country_code'].'</var>.';
+	$geoip = @geoip_region_by_name($_SERVER['REMOTE_ADDR']);
+	$info[] = ($geoip !== FALSE) ?
+		'GeoIP is usable. Your country code from IP is inferred <var>'.$geoip['country_code'].'</var>.' :
+		'GeoIP is NOT usable. Maybe database is not installed. Please check <a href="http://www.maxmind.com/app/installation?city=1" rel="external">GeoIP Database Installation Instructions</a>';
 }
 if ( isset($_SERVER['GEOIP_COUNTRY_CODE']) ) {
 	$geoip['country_code'] = $_SERVER['GEOIP_COUNTRY_CODE'];

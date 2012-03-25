@@ -8,11 +8,12 @@
 //
 // Plus! extension function(s)
 
-defined('FUNC_POSTLOG')		or define('FUNC_POSTLOG', FALSE);
-defined('FUNC_SPAMLOG')		or define('FUNC_SPAMLOG', TRUE);
-defined('FUNC_BLACKLIST')	or define('FUNC_BLACKLIST', TRUE);
-defined('FUNC_SPAMREGEX')	or define('FUNC_SPAMREGEX', '#(?:cialis|hydrocodone|viagra|levitra|tramadol|xanax|\[/link\]|\[/url\])#i');
-defined('FUNC_SPAMCOUNT')	or define('FUNC_SPAMCOUNT', 2);
+defined('FUNC_POSTLOG')			or define('FUNC_POSTLOG', FALSE);
+defined('FUNC_SPAMLOG')			or define('FUNC_SPAMLOG', TRUE);
+defined('FUNC_BLACKLIST')		or define('FUNC_BLACKLIST', TRUE);
+defined('FUNC_SPAMREGEX')		or define('FUNC_SPAMREGEX', '#(?:cialis|hydrocodone|viagra|levitra|tramadol|xanax|\[/link\]|\[/url\])#i');
+defined('FUNC_SPAMCOUNT')		or define('FUNC_SPAMCOUNT', 2);
+defined('FUNC_SESSION_NAME')	or define('FUNC_SESSION_NAME', 'pukiwiki');
 
 function showtaketime(){
 	// http://pukiwiki.sourceforge.jp/dev/?BugTrack2%2F251
@@ -30,20 +31,45 @@ function pkwk_session_start()
 		$use_session = intval(PLUS_ALLOW_SESSION);
 		if ($use_session > 0) {
 			if (!is_array($use_trans_sid_address)) $use_trans_sid_address = array();
+
 			if (in_the_net($use_trans_sid_address, get_remoteip())) {
 				ini_set('session.use_cookies', 0);
 			} else {
 				ini_set('session.use_cookies', 1);
 				ini_set('session.use_only_cookies', 1);
 			}
-			session_name('pukiwiki');
-			@session_start();
-			if (ini_get('session.use_cookies') == 0 && ini_get('session.use_trans_sid') == 0) {
+			session_name(FUNC_SESSION_NAME);
+			session_start();
+			if (ini_get('session.use_cookies') === 0 && ini_get('session.use_trans_sid') === 0) {
 				output_add_rewrite_var(session_name(), session_id());
 			}
 		}
 	}
 	return $use_session;
+}
+
+// Session destroy
+function pkwk_session_destroy(){
+	static $use_session;
+
+	if (isset($use_session) && $use_session > 0 ) {
+		session_name(FUNC_SESSION_NAME);
+		session_start();
+
+		// セッション変数を全て解除する
+		$_SESSION = array();
+
+		// セッションを切断するにはセッションクッキーも削除する。
+		// Note: セッション情報だけでなくセッションを破壊する。
+		if (ini_get('session.use_cookies') === 1) {
+			$params = session_get_cookie_params();
+			setcookie(session_name(), '', time() - 42000,
+				$params['path'], $params['domain'],
+				$params['secure'], $params['httponly']
+			);
+		}
+		session_destroy();
+	}
 }
 
 // same as 'basename' for page

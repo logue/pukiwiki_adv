@@ -137,10 +137,7 @@ function check_non_list($page = '')
 {
 	global $non_list;
 	static $regex;
-
-	if (! isset($regex)) $regex = '/' . $non_list . '/';
-
-	return preg_match($regex, $page);
+	return preg_match( (isset($regex) ? $regex : '/' . $non_list . '/') , $page);
 }
 
 // Auto template
@@ -249,7 +246,7 @@ function get_search_words($words, $do_escape = FALSE)
 }
 
 // 'Search' main function
-function do_search($word, $type = 'AND', $non_format = FALSE, $base = '')
+function do_search($word, $type = 'and', $non_format = FALSE, $base = '')
 {
 	global $script, $whatsnew, $non_list, $search_non_list;
  	global $search_auth, $show_passage, $search_word_color, $ajax;
@@ -262,7 +259,7 @@ function do_search($word, $type = 'AND', $non_format = FALSE, $base = '')
 
 	$retval = array();
 
-	$b_type = ($type == 'AND'); // AND:TRUE OR:FALSE
+	$b_type = ($type == 'and'); // AND:TRUE OR:FALSE
 	$keys = get_search_words(preg_split('/\s+/', $word, -1, PREG_SPLIT_NO_EMPTY));
 	foreach ($keys as $key=>$value)
 		$keys[$key] = '/' . $value . '/S';

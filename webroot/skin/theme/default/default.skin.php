@@ -48,7 +48,6 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 		<?php echo $pkwk_head; ?>
 		<title><?php echo $page_title; ?></title>
 	</head>
-<?php flush(); ?>
 	<body>
 		<div id="container" class="<?php echo $layout_class ?>" role="document">
 <!-- *** Header *** -->
@@ -63,7 +62,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 				<?php echo (!empty($lastmodified)) ? '<div id="lastmodified">Last-modified: '.$lastmodified.'</div>'."\n" : '' ?>
 			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</header>' : '</div>')."\n"; ?>
 <!-- *** End Header *** -->
-			<?php echo ($navibar === null) ? (exist_plugin('navibar') ? do_plugin_convert('navibar','top,|,edit,freeze,diff,backup,upload,reload,|,new,list,search,recent,help,|,trackback').'<hr />' :'') : $navibar; ?>
+			<?php echo ($navibar === null) ? (exist_plugin('navibar') ? do_plugin_convert('navibar','top,|,edit,freeze,diff,backup,upload,reload,|,new,list,search,recent,help,|,login').'<hr />' :'') : $navibar; ?>
 			<div id="wrapper" class="clearfix">
 <!-- Center -->
 				<div id="main_wrapper">
@@ -119,7 +118,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 				<?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','reload,|,new,newsub,edit,freeze,source,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,log,|,help,|,rss') : '';?>
 			</div>
 
-			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<footer id="footer" class="clearfix" role="contentinfo">'."\n" : '<div id="footer" class="clearfix">'."\n"; ?>
+			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<footer id="footer" class="clearfix" role="contentinfo">'."\n" : '<div id="footer" class="clearfix" role="contentinfo">'."\n"; ?>
 <?php if ($footer) {
 echo $footer;
 }else{ ?>

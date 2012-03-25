@@ -9,20 +9,13 @@ global $pkwk_dtd, $_SKIN, $is_page, $defaultpage, $sidebar, $headarea, $footarea
 // Code start
 
 // Prohibit direct access
-if (! defined('UI_LANG')) die('UI_LANG is not set');
-if (! isset($_LANG)) die('$_LANG is not set');
-if (! defined('PKWK_READONLY')) die('PKWK_READONLY is not set');
-
 $lang  = & $_LANG['skin'];
 $link  = & $_LINK;
 $image = & $_IMAGE['skin'];
 $rw    = ! PKWK_READONLY;
-
 // ------------------------------------------------------------
 // Output
-
 if (!defined('DATA_DIR')) { exit; }
-
 if ($title != $defaultpage) {
 	$page_title = $title.' - '.$page_title;
 } elseif ($newtitle != '' && $is_read) {
@@ -33,7 +26,6 @@ if (arg_check('read') && exist_plugin_convert('menu')) {
 }else{
 	$layout_class = '';
 }
-
 // Output HTML DTD, <html>, and receive content-type
 $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_output_dtd();
 ?>
@@ -42,35 +34,33 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 		<?php echo $pkwk_head; ?>
 		<title><?php echo $page_title; ?></title>
 	</head>
-<?php flush(); ?>
 	<body>
 		<div id="container" class="<?php echo $layout_class ?>" role="document">
 <!--Header-->
-		<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<header id="header" class="clearfix">'."\n" : '<div id="header" class="clearfix">')."\n"; ?>
+		<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<header id="header" class="clearfix" role="banner">'."\n" : '<div id="header" class="clearfix" role="banner">')."\n"; ?>
 <!-- Header/Search -->
 			<?php if ($_SKIN['search_form'] == true && exist_plugin('search')) echo do_plugin_convert('search'); ?>
-			<?php echo (exist_plugin('navibar') ? do_plugin_convert('navibar','top,reload,new,list,search,recent,help') :'') ?>
-			<?php echo isset($_SKIN['logo']) ? '<a id="logo" href="' . $_LINK['reload'] . '"><img src="' . $_SKIN['logo']['src'] . '" width="' . $_SKIN['logo']['width'] . '" height="' . $_SKIN['logo']['height'] . '" alt="' . $_SKIN['logo']['alt'] . '" /></a>' : ''; ?>
+			<?php echo (exist_plugin('navibar') ? do_plugin_convert('navibar','top,reload,new,list,search,recent,help,login') :'') ?>
+			<?php echo isset($_SKIN['logo']) ? '<a id="logo" href="' . $_LINK['top'] . '"><img src="' . $_SKIN['logo']['src'] . '" width="' . $_SKIN['logo']['width'] . '" height="' . $_SKIN['logo']['height'] . '" alt="' . $_SKIN['logo']['alt'] . '" /></a>' : ''; ?>
 			<div id="hgroup">
 				<?php echo ($is_page && exist_plugin_convert('topicpath')) ? do_plugin_convert('topicpath') : ''; ?>
 				<h1><?php echo (($newtitle!='' && $is_read) ? $newtitle : $page) ?></h1>
 			</div>
-			<?php echo ($_SKIN['show_navibar'] === true && $is_page) ? do_plugin_convert('navibar','edit,freeze,copy,diff,backup,attach,trackback,referer') :'' ?>
+			<?php echo ($_SKIN['show_navibar'] === true && $is_page) ? do_plugin_convert('navibar','edit,freeze,copy,diff,backup,upload,trackback,referer') :'' ?>
 <?php if ( isset($lastmodified) ) { ?>
 			<div id="pageinfo">Last update on <?php echo $lastmodified ?></div>
 <?php } ?>
 		<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</header>' : '</div>')."\n"; ?>
-
 		<div id="wrapper" class="clearfix">
 			<div id="main_wrapper">
 				<div id="main" role="main">
 					<div id="content">
-						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="body">'."\n" : '<div id="body">'."\n"; ?>
+						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="body" role="main">'."\n" : '<div id="body" role="main">'."\n"; ?>
 							<?php echo $body."\n" ?>
 						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</section>'."\n" : '</div>'."\n"; ?>
 <?php if (!empty($notes)) { ?>
 <!-- * Note * -->
-						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="note" class="footbox">'."\n" : '<div id="note" class="footbox">'."\n"; ?>
+						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="note" class="footbox" role="note">'."\n" : '<div id="note" class="footbox" role="note">'."\n"; ?>
 							<?php echo $notes."\n" ?>
 						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
 <!--  End Note -->
@@ -97,33 +87,31 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 
 <?php if ($layout_class == 'three-colums' || $layout_class == 'two-colums')  { ?>
 <!-- Left -->
-			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="menubar" class="sidebox">'."\n" : '<div id="menubar" class="sidebox">'."\n"; ?>
+			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="menubar" class="sidebox"  role="navigation">'."\n" : '<div id="menubar" class="sidebox"  role="navigation">'."\n"; ?>
 				<?php echo do_plugin_convert('menu')."\n" ?>
 				<?php echo ($_SKIN['counter'] === true && exist_plugin('counter')) ? '<p>Total:' . plugin_counter_inline('total') . ' / Today:' . plugin_counter_inline('today').'</p>'."\n" : ''; ?>
 			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
 <?php } ?>
-
 <?php if ($layout_class == 'three-colums')  { ?>
 <!-- Right -->
-			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="sidebar" class="sidebox">' : '<div id="sidebar" class="sidebox">')."\n"; ?>
+			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="sidebar" class="sidebox" role="navigation">' : '<div id="sidebar" class="sidebox" role="navigation">')."\n"; ?>
 				<?php echo do_plugin_convert('side')."\n" ?>
 			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>')."\n"; ?>
 <?php } ?>
 		</div>
-
-		<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<footer id="footer">'."\n" : '<div id="footer">'."\n"; ?>
+		<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<footer id="footer" role="contentinfo">'."\n" : '<div id="footer" role="contentinfo">'."\n"; ?>
 <?php if ($_SKIN['qrcode']) { ?>
 			<div id="qrcode">
 				<?php echo ($_SKIN['qrcode'] === true && exist_plugin_inline('qrcode')) ? plugin_qrcode_inline(1,$_LINK['reload']) : ''; ?>
 			</div>
 <?php } ?>
 			<div id="signature">
+				<address>Site admin: <a href="<?php echo $modifierlink ?>"><?php echo $modifier ?></a></address>
 				<?php echo S_COPYRIGHT ?>.<br />
 				<strong>GS2 Skin</strong> designed by <a href="http://www.yiza.net/" rel="external">yiza</a> / Adv. version by <a href="http://logue.be/" rel="external">Logue</a>.<br />
 				HTML convert time: <?php echo showtaketime() ?> sec.
 			</div>
 <?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</footer>'."\n" : '</div>'."\n"; ?>
-
 		<?php echo $pkwk_tags; ?>
 	</body>
 </html>
