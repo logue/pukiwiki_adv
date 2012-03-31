@@ -293,25 +293,7 @@ var pukiwiki = {};
 					$(this).fadeTo(200,0.3);
 				}
 			);
-
-			if (this.isPage){
-				// FaceBookを実行
-				if (typeof(FACEBOOK_APPID) !== 'undefined'){
-					$('html').attr('xmlns:fb', 'http://www.facebook.com/2008/fbml#');
-					$('body').append('<div id="fb-root"></div>');
-					$.getScript(protocol + 'connect.facebook.net/' + LANG + '/all.js', function() {
-						FB.init({
-							appId: FACEBOOK_APPID,
-							status	: true, // check login status
-							cookie	: true, // enable cookies to allow the server to access the session
-							xfbml	: true  // parse XFBML
-						});
-						FB.Event.subscribe('auth.login', function() {
-							window.location.reload();
-						});
-					});
-				}
-			}
+			this.social();
 
 			// 非同期通信中はUIをブロック
 			this.blockUI(document);
@@ -634,15 +616,15 @@ var pukiwiki = {};
 							// アドレスの最後がファイル名になるようにする
 							if (params.file){
 								filename = params.file;
-								//$this.attr('href',SCRIPT+'?cmd='+params.cmd+'&pcmd='+params.pcmd+'&refer='+params.refer+'&age='+params.age+'&file='+filename);
+								$this.attr('href',SCRIPT+'?cmd='+params.cmd+'&pcmd='+params.pcmd+'&refer='+params.refer+'&age='+params.age+'&file='+filename);
 							}else{
 								filename = params.openfile;
-								//$this.attr('href',SCRIPT+'?cmd='+params.cmd+'&refer='+params.refer+'&openfile='+filename);
+								$this.attr('href',SCRIPT+'?cmd='+params.cmd+'&refer='+params.refer+'&openfile='+filename);
 							}
 							ext = filename.match(/\.(\w+)$/i);
 							if (ext){
 								switch (ext[1]) {
-									case 'jpg': case 'jpeg': case 'gif': case'png':
+									case 'jpg': case 'jpeg': case 'gif': case'png': // case'svg' : case 'svgz' :
 										$this.colorbox(self.config.colorbox);
 									break;
 									case 'mp3':  case 'm4a': case 'm4v':
@@ -1134,7 +1116,7 @@ var pukiwiki = {};
 			var self = this;
 			prefix = (prefix) ? prefix + ' ': '';
 			
-			/* デフォルト値 */
+			// デフォルト値
 			var config = this.config.tablesorter;
 			var tablesorter_widget = function(id){
 				return [
@@ -1159,8 +1141,8 @@ var pukiwiki = {};
 				var data = $this.data();
 				var config = self.config.tablesorter;
 				
-				if ($(this).data('enabled') !== true){
-					if ($('tr',this).length > config.pager.minimum_lines && $('thead',this).length !== 0){	// 10行以上の場合ページャーを表示
+				if ($this.data('enabled') !== true){
+					if ($('tr',this).length > config.pager.size[0] && $('thead',this).length !== 0){	// 10行以上の場合ページャーを表示
 						// テーブルのページングウィジット
 						var pager_id = 'table_pager_'+config.counter;
 
@@ -1169,7 +1151,6 @@ var pukiwiki = {};
 						config.sorter.sortList = data.sortList;
 						config.sorter.parsers = data.parsers;
 
-						
 						$this.tablesorter(config.sorter);
 						
 						if (config.pager.location_before === true){
@@ -1183,6 +1164,7 @@ var pukiwiki = {};
 							$('#'+pager_id+' .pagesize').append($('<option>').attr({ value: config.pager.size[i] }).text(config.pager.size[i]));
 							i++;
 						}
+						/*
 						// リセットボタン
 						$('#'+pager_id+' .reload').click(function(){
 							backup.clone().insertAfter(table);
@@ -1205,6 +1187,7 @@ var pukiwiki = {};
 							//Load Tool Tips for links inside the tab container
 							self.glossaly(table);
 						});
+						*/
 
 						// ページャーを生成（ID重複しないようにグローバル変数のpukiwiki.tablesorter.counterをカウンタとして使用
 						$this.tablesorterPager({
@@ -2530,6 +2513,90 @@ var pukiwiki = {};
 			if (typeof(BH_NAME) !== 'undefined' && typeof(BH_VALUE) !== 'undefined'){
 				$(prefix + 'form').append('<input type="hidden" name="'+BH_NAME+'" value="'+BH_VALUE+'" />');
 			}
+		},
+		social : function(use){
+			if (pukiwiki.isPage){
+				var href = $('link[rel=canonical]')[0].href;
+				var lang = $('html').attr('lang');
+				
+				var social = {
+					// Hatena
+					// http://b.hatena.ne.jp/guide/bbutton
+					'hatena' : {
+						use : true,
+						dom : '<a href="http://b.hatena.ne.jp/entry/" class="hatena-bookmark-button" data-hatena-bookmark-layout="standard">Hatena</a>',
+						script : 'http://b.st-hatena.com/js/bookmark_button.js'
+					},
+					// Mixi
+					// http://developer.mixi.co.jp/connect/mixi_plugin/mixi_check/spec_mixi_check/
+					'mixi' : {
+						use : false,
+						dom : '<a href="http://mixi.jp/share.pl" class="mixi-check-button" data-url="'+href+'" data-button="button-1">Mixi</a>',
+						script : 'http://static.mixi.jp/js/share.js'
+					},
+					// Google +1 button
+					// http://www.google.com/intl/ja/webmasters/+1/button/index.html
+					'google+1' : {
+						use : true,
+						dom : '<div class="g-plusone" data-size="medium">Google+1</div>',
+						script: 'https://apis.google.com/js/plusone.js'
+					},
+					// Tweet Button
+					// https://twitter.com/about/resources/buttons
+					'twitter' : {
+						use : true,
+						dom : '<a href="https://twitter.com/share" class="twitter-share-button" data-lang="' + lang+'">Tweet</a>',
+						script : 'http://platform.twitter.com/widgets.js'
+					},
+					// Gree
+					// https://developer.gree.net/connect/plugins/sf
+					'gree' : {
+						use : false,
+						dom : '<iframe src="http://share.gree.jp/share?url='+encodeURIComponent(href)+'&amp;type=1&amp;height=20" scrolling="no" frameborder="0" marginwidth="0" marginheight="0" style="border:none; overflow:hidden; width:100px; height:20px;" allowTransparency="true"></iframe>'
+					},
+					// Tumblr
+					// http://www.tumblr.com/docs/ja/share_button
+					'tumblr' : {
+						use : false,
+						dom : '<a href="http://www.tumblr.com/share" title="Share on Tumblr" style="display:inline-block; text-indent:-9999px; overflow:hidden; width:81px; height:20px; background:url(\'http://platform.tumblr.com/v1/share_1.png\') top left no-repeat transparent;"></a>'
+					}
+				}
+				var html = [], scripts = [];
+
+				html.push('<hr class="noprint" /><ul class="social noprint clearfix">');
+				for (var key in social) {
+					if (social[key]['use']){
+						html.push('<li>'+social[key]['dom']+'</li>');
+						if (social[key]['script']) { scripts.push(social[key]['script']); }
+					}
+				}
+				// FaceBookを実行
+				if (typeof(FACEBOOK_APPID) !== 'undefined'){
+					$('html').attr('xmlns:fb', 'http://www.facebook.com/2008/fbml#');
+					$('body').append('<div id="fb-root"></div>');
+					html.push('<li><div class="fb-like" data-href="'+href+'" data-layout="button_count" data-send="true" data-width="450" data-show-faces="true"></div></li>');
+				}
+				html.push('</ul>');
+				$('#body').append(html.join("\n"));
+				
+				for (var i = 0; i < scripts.length; i ++) {
+					$.getScript(scripts[i]);
+				}
+				if (typeof(FACEBOOK_APPID) !== 'undefined'){
+					$.getScript('http://'+ 'connect.facebook.net/' + LANG + '/all.js', function() {
+						FB.init({
+							appId: FACEBOOK_APPID,
+							status	: true, // check login status
+							cookie	: true, // enable cookies to allow the server to access the session
+							xfbml	: true  // parse XFBML
+						});
+						FB.Event.subscribe('auth.login', function() {
+							window.location.reload();
+						});
+					});
+					$('#body').append('<hr class="noprint" /><div class="fb-comments" href="'+href+'" publish_feed="true" numposts="10" migrated="1"></div>')
+				}
+			}
 		}
 	};
 
@@ -2551,35 +2618,8 @@ var pukiwiki = {};
 	};
 	
 /*************************************************************************************************/
-	// ブラウザの設定
-	var $buoop = {
-		vs:{				// browser versions to notify
-			i:8,			// IE
-			f:4,			// FF
-			o:11.00,		// Opera
-			s:5,			// Safari
-			n:9
-		},
-		reminder: 1,		// atfer how many hours should the message reappear
-		onshow: function(){	// callback function after the bar has appeared
-			// unused
-		},
-		l: LANG,			// set a language for the message, e.g. "en"
-	//	test: DEBUG,		// true = always show the bar (for testing)
-		newwindow: false	// open link in new window/tab
-	};
-	if (DEBUG){
-		$buoop.test = true;
-		$buoop.text = 'When the version of a browser is old, the text which presses for renewal of a browser here is displayed.';
-	}else if ((document.compatMode || "") !== "CSS1Compat"){
-		$buoop.test = true;
-		$buoop.text = 'Please set native rendering mode.';
-	}
-
 	// onLoad/onUnload
 	$(document).ready(function(){
-		Modernizr.load({load: 'http://browser-update.org/update.js'});
-
 		var f;
 		while( f = pkwkBeforeInit.shift() ){
 			if( f !== null ){

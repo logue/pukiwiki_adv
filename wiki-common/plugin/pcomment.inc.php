@@ -199,7 +199,7 @@ EOD;
 			'<p>' . $recent . ' ' . $link . '</p>' . "\n" .
 			$auth_guide . "\n";
 	}
-	return (IS_MOBILE) ? '<div data-role="collapsible" data-theme="c" data-content-theme="c"><h4>'.$_pcmt_messages['msg_comment'].'</h4>'.$string.'</div>' : '<div class="pcomment">' . $string . '</div>;
+	return (IS_MOBILE) ? '<div data-role="collapsible" data-theme="c" data-content-theme="c"><h4>'.$_pcmt_messages['msg_comment'].'</h4>'.$string.'</div>' : '<div class="pcomment">' . $string . '</div>';
 }
 
 function plugin_pcomment_insert()

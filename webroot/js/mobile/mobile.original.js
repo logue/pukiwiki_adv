@@ -132,12 +132,17 @@ var JQUERY_MOBILE_VER = '1.1.0-rc.1';
 		},
 		init_dom : function(prefix, callback){
 			var self = this;
-			prefix = (prefix) ? prefix + ' ' : '[data-role="page"]';
+			prefix = (prefix) ? prefix + ' ' : '*[role="main"] ';
 			
-			$(prefix + 'img').lazyload({ 
-				placeholder : this.image_dir+'grey.gif',
-				effect : 'fadeIn'
-			});
+			$(prefix + 'img')
+			//	.lazyload({ 
+			//		placeholder : this.image_dir+'grey.gif',
+			//		effect : 'fadeIn'
+			//	})
+				.bind('taphold',function(){
+					window.open($(this).attr('src'));
+				})
+			;
 			
 			$(prefix +'#contents ul').listview();
 
@@ -149,22 +154,51 @@ var JQUERY_MOBILE_VER = '1.1.0-rc.1';
 			this.bad_behavior(prefix);
 			// Table Sorter（テーブル自動ソート）
 			this.tablesorter(prefix);
-
+			
 			// アンカースクロール
-			$(prefix + ' a').each(function(){
+			$(prefix+'a').each(function(){
 				var $this = $(this);	// DOMをキャッシュ
 				var href = $this.attr('href');
-				var rel = $this.attr('rel') ? $this.attr('rel') : null;
 				var ajax = $this.data('ajax') ? $this.data('ajax') : 'true';
 				
-				if (href.match('#') && $this.data('ajax') === false){
-					$this.click(function(){
-						self.anchor_scroll(href,true);
+				if ( href.match(/^#\w+?/) ){
+					// jQuery Mobileで使われるハッシュは、#と、#&で始まる文字列である。
+					// 一方、PukiWikiで使われるアンカー用ハッシュは常に英数字である。
+					// このため、ローカルリンクの判別は、先頭の文字を\w（A-Za-z0-9_）から判断すればいいと思われる。
+					$this.data('ajax', false);
+					$this.live('tap', function(){
+						pukiwiki.anchor_scroll(href,true);
 						return false;
 					});
 				}
 			});
-			
+			/*
+			var header_navi = [
+				'<div class="header_navi">',
+					'<div class="to_header ui-icon ui-icon-arrow-u"></div> ',
+					'<div class="to_footer ui-icon ui-icon-arrow-d"></div>',
+				'</div>'
+			].join("\n");
+			$(prefix+'h2, '+prefix+'h3 ,'+prefix+'h4').before(header_navi);
+			$('.to_header').live('tap', function(){
+				$.scrollTo(
+					'#header',{
+						duration: 800,
+						axis:"y",
+						queue:true
+					}
+				);
+			});
+			$('.to_footer').live('tap', function(){
+				$.scrollTo(
+					'#footer',{
+						duration: 800,
+						axis:"y",
+						queue:true
+					}
+				);
+			});
+			*/
 		},
 		// テーブル自動ソート
 		tablesorter:function(prefix){
@@ -248,7 +282,7 @@ var JQUERY_MOBILE_VER = '1.1.0-rc.1';
 					$this.attr('title') ? $this.attr('title') : '';
 				$this.removeAttr('title');
 
-				$this.click(function(){
+				$this.bind('tap',function(){
 					$.mobile.showPageLoadingMsg();
 					if (msgtext === ''){
 						var tip;
@@ -320,9 +354,7 @@ var JQUERY_MOBILE_VER = '1.1.0-rc.1';
 		},
 		// アンカースクロール＆ハイライト
 		anchor_scroll: function(href,highlight){
-			if (href === '#'){
-				$.scrollTo('#header');
-			}else if (href !== ''){
+			if ( href.match(/^#\w+?/) ){
 				var target = href.split('#')[1];
 				$.scrollTo(
 					'#'+target,{

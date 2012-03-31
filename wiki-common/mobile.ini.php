@@ -42,10 +42,7 @@ $_symbol_attach			= '';
 
 /////////////////////////////////////////////////
 // 大・小見出しから目次へ戻るリンクの文字
-$top = '<div data-role="controlgroup" data-type="horizontal" style="float:right;">' .
-	'<a href="#header" data-role="button" data-icon="arrow-u" data-iconpos="notext" data-ajax="false">Header</a>' .
-	'<a href="#footer" data-role="button" data-icon="arrow-d" data-iconpos="notext" data-ajax="false">Footer</a>'.
-	'</div>';
+$top = '';
 
 /////////////////////////////////////////////////
 // 添付ファイルの一覧を常に表示する (負担がかかります)
