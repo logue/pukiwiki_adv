@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: read.inc.php,v 1.9.10 2012/02/25 00:15:00 Logue Exp $
+// $Id: read.inc.php,v 1.9.10 2012/03/31 00:15:00 Logue Exp $
 //
 // Read plugin: Show a page and InterWiki
 
@@ -10,8 +10,8 @@ function plugin_read_init(){
 			'title_invalidwn'	=> T_('Redirect'),
 			'msg_invalidiwn'	=> T_('This pagename is an alias to %s.'),
 			'title_notfound'	=> T_('Not found'),
-			'msg_notfound1'		=> T_('Sorry, but the page you were trying to view does not exist.'),
-			'msg_notfound2'		=> T_('If you want to create a page, please click <a href="%s">here</a>.')
+			'msg_notfound1'		=> T_('Sorry, but the page you were trying to view does not exist or deleted.'),
+			'msg_notfound2'		=> T_('Please check <a href="%1s" rel="nofollow">backups</a> or <a href="%2s" rel="nofollow">create page</a>.')
 		)
 	);
 	set_plugin_messages($msg);
@@ -81,14 +81,13 @@ function plugin_read_notfound($page){
 	$script = get_script_uri();
 	header('HTTP/1.0 404 Not Found');
 	
-	$msg_edit = sprintf($_read_msg['msg_notfound2'], get_cmd_uri('edit',$page));
+	$msg_edit = sprintf($_read_msg['msg_notfound2'], get_cmd_uri('backup',$page), get_cmd_uri('edit',$page));
 	$body = <<<HTML
 <p>{$_read_msg['msg_notfound1']}</p>
 <p>$msg_edit</p>
-<script type="text/javascript">
-// <![CDATA[
+<script type="text/javascript">/* <![CDATA */
 var GOOG_FIXURL_LANG = (navigator.language || '').slice(0,2),GOOG_FIXURL_SITE = location.host;
-// ]]></script>
+/* ]]> */</script>
 <script type="text/javascript" src="http://linkhelp.clients.google.com/tbproxy/lh/wm/fixurl.js"></script>
 HTML;
 	return array(

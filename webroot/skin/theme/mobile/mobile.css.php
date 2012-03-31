@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: classic.css.php,v 0.0.1 2012/01/08 10:06:30 Logue Exp $
+// $Id: classic.css.php,v 0.0.2 2012/03/31 16:49:30 Logue Exp $
 // 
 // PukiWiki Adv. Mobile Theme
 // Copyright (C)
@@ -9,14 +9,17 @@
 //error_reporting(0); // Nothing
 error_reporting(E_ERROR | E_PARSE); // Avoid E_WARNING, E_NOTICE, etc
 
+$image_dir = isset($_GET['base'])   ? $_GET['base']	: '../image/';
+$expire = isset($_GET['expire'])   ? (int)$_GET['expire'] * 86400	: '604800';	// Default is 7 days.
 // Send header
 header('Content-Type: text/css; charset: UTF-8');
-$image_dir = '../../../image/';
+header('Cache-Control: private');
+header('Expires: ' .gmdate('D, d M Y H:i:s',time() + $expire) . ' GMT');
+header('Last-Modified: '.gmdate('D, d M Y H:i:s', getlastmod() ) . ' GMT');
+ob_start('ob_gzhandler');
 ?>
-/**************************************************************************************************/
 @charset "UTF-8";
 @namespace url(http://www.w3.org/1999/xhtml);
-
 /* HTML5 ✰ Boilerplate
  * ==|== normalize ==========================================================
  */
@@ -296,6 +299,19 @@ textarea, select, option, input, var, pre, code{
 }
 .ui-controlgroup label{
 	font-size:100% !important;
+}
+
+#adarea {
+	text-align:center;
+	width:100%;
+}
+
+#adarea *{
+	margin: 0 auto;
+}
+
+#adarea_content{
+	display:none;
 }
 /* ==|== PukiWiki Adv. Standard Plugin classes ============================== */
 /* aname.inc.php */
@@ -1364,3 +1380,5 @@ textarea, select, option, input, var, pre, code{
 		margin : 0 !important;
 	}
 }
+<?php 
+ob_end_flush();

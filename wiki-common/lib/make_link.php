@@ -195,7 +195,7 @@ class Link
 		$this->body = $body;
 		$this->type = $type;
 		if (! PKWK_DISABLE_INLINE_IMAGE_FROM_URI &&
-			is_url($alias) && preg_match('/\.(gif|png|jpe?g|svg)$/i', $alias)) {
+			is_url($alias) && preg_match('/\.(gif|png|bmp|jpe?g|svg?z)$/i', $alias)) {
 			$alias = '<img src="' . htmlsc($alias) . '" alt="' . $name . '" />';
 		} else if ($alias != '') {
 			if ($converter === NULL)
@@ -331,19 +331,24 @@ EOD;
 			$script . '#notetext_' . $id . '" class="note_super">*' .
 			$id . '</a>' . $note . '</li>';
 
-		// A hyperlink, content-body to footnote
-		if (! is_numeric(PKWK_FOOTNOTE_TITLE_MAX) || PKWK_FOOTNOTE_TITLE_MAX <= 0) {
-			$title = '';
-		} else {
-			$title = strip_tags($note);
-			$count = mb_strlen($title, SOURCE_ENCODING);
-			$title = mb_substr($title, 0, PKWK_FOOTNOTE_TITLE_MAX, SOURCE_ENCODING);
-			$abbr  = (mb_strlen($title) < $count) ? '...' : '';
-			$title = ' title="' . $title . $abbr . '"';
+		if (!IS_MOBILE){
+			// A hyperlink, content-body to footnote
+			if (! is_numeric(PKWK_FOOTNOTE_TITLE_MAX) || PKWK_FOOTNOTE_TITLE_MAX <= 0) {
+				$title = '';
+			} else {
+				$title = strip_tags($note);
+				$count = mb_strlen($title, SOURCE_ENCODING);
+				$title = mb_substr($title, 0, PKWK_FOOTNOTE_TITLE_MAX, SOURCE_ENCODING);
+				$abbr  = (mb_strlen($title) < $count) ? '...' : '';
+				$title = ' title="' . $title . $abbr . '"';
+			}
+			$name = '<a id="notetext_' . $id . '" href="' . $script .
+				'#notefoot_' . $id . '" class="note_super"' . $title .
+				'>*' . $id . '</a>';
+		}else{
+			// モバイルは、ツールチップで代用
+			$name = '<span class="note_super" aria-describedby="tooltip" data-msgtext="' . strip_tags($note). '">*' . $id . '</span>';
 		}
-		$name = '<a id="notetext_' . $id . '" href="' . $script .
-			'#notefoot_' . $id . '" class="note_super"' . $title .
-			'>*' . $id . '</a>';
 
 		return parent::setParam($page, $name, $body);
 	}
@@ -937,7 +942,7 @@ function make_pagelink($page, $alias = '', $anchor = '', $refer = '', $isautolin
 		if (auth::check_role('readonly')) return $s_alias; // No dacorations
 
 		$retval = $s_alias . '<a href="' .
-			get_cmd_uri('edit',$page) . $r_refer . '">' .
+			get_cmd_uri('edit',$page) . $r_refer . '" rel="nofollow">' .
 			$_symbol_noexists . '</a>';
 
 		if ($link_compact) {

@@ -1,8 +1,8 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: default.ini.php,v 1.25.16 2011/09/11 23:05:00 Logue Exp $
+// $Id: default.ini.php,v 1.25.17 2012/03/31 16:49:00 Logue Exp $
 // Copyright (C)
-//   2010-2011 PukiWiki Advance Developer Team
+//   2010-2012 PukiWiki Advance Developer Team
 //   2005-2006,2009 PukiWiki Plus! Team
 //   2003-2005 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -39,6 +39,13 @@ $_symbol_paraedit		= '<span class="pkwk-symbol symbol-edit" title="Edit here"></
 $_symbol_extanchor		= '<span class="pkwk-symbol link_symbol symbol-external" data-uri="$1" title="External Link"></span>';
 $_symbol_innanchor		= '<span class="pkwk-symbol link_symbol symbol-internal" data-uri="$1" title="Internal Link"></span>';
 $_symbol_attach			= '';
+
+/////////////////////////////////////////////////
+// 大・小見出しから目次へ戻るリンクの文字
+$top = '<div data-role="controlgroup" data-type="horizontal" style="float:right;">' .
+	'<a href="#header" data-role="button" data-icon="arrow-u" data-iconpos="notext" data-ajax="false">Header</a>' .
+	'<a href="#footer" data-role="button" data-icon="arrow-d" data-iconpos="notext" data-ajax="false">Footer</a>'.
+	'</div>';
 
 /////////////////////////////////////////////////
 // 添付ファイルの一覧を常に表示する (負担がかかります)

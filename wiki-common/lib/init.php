@@ -486,7 +486,7 @@ if (!IS_AJAX || IS_MOBILE){
 		),
 		'jqueryui'	=> array(
 			'file'	=> 'jquery-ui.min.js',
-			'ver'	=> '1.8.18'
+			'ver'	=> '1.8.17'
 		),
 		'swfobject' => array(
 			'file'	=> 'swfobject.js',
@@ -587,6 +587,7 @@ if (!IS_AJAX || IS_MOBILE){
 				'jquery.i18n',
 				'jquery.lazyload',
 				'jquery.tablesorter',
+				'jquery.scrollTo',
 				
 				/* MUST BE LOAD LAST */
 				'mobile.original'

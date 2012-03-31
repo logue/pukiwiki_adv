@@ -891,7 +891,11 @@ class AttachFile
 			$count = ($showicon && ! empty($this->status['count'][$this->age])) ?
 				'<small>'.sprintf($_attach_messages['msg_count'], '<var>'.$this->status['count'][$this->age].'</var>').'</small>' : '';
 		}
-		return '<a href="'.$open.'" title="'.$title.'"><span class="pkwk-icon icon-download"></span>'.$label.'</a> '.$count.' '.$info;
+		if (IS_MOBILE) {
+			return '<a href="'.$open.'" data-role="button" data-inline="true" data-mini="true" data-icon="gear" data-ajax="false">'.$label.'</a>';
+		}else{
+			return '<a href="'.$open.'" title="'.$title.'"><span class="pkwk-icon icon-download"></span>'.$label.'</a> '.$count.' '.$info;
+		}
 	}
 
 	// 情報表示

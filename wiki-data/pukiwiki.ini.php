@@ -218,13 +218,13 @@ $google_api_key = '';
 
 /////////////////////////////////////////////////
 // Facebook Integration
-/*
+
 $facebook = array(
 	'appId'		=> '129191427155205',
 	'secret'	=> '6b46af0696748a62557397c7739d37bf',
 	'cookie'	=> true,
 ); 
-*/
+
 // Twitter Integration
 $twitter = array(
 	

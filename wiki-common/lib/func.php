@@ -467,7 +467,7 @@ function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', 
 					$str .= '<br /><var>' . htmlsc($file) . '</var>';
 				}
 			}else{
-				$str .= '<a href="' . get_page_uri($page) . '" >' . htmlsc($page, ENT_QUOTES) . '</a>' . '<span class="ui-li-count">'.get_pg_passage($page, false).'</span>';
+				$str .= '<a href="' . get_page_uri($page) . '" data-transition="slide">' . htmlsc($page, ENT_QUOTES) . '</a>' . '<span class="ui-li-count">'.get_pg_passage($page, false).'</span>';
 			}
 		}
 			$str .= '</li>';

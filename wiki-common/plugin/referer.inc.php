@@ -172,20 +172,22 @@ function plugin_referer_body($page, $sort)
 		$href = get_cmd_uri('referer',$page);
 		return <<<EOD
 <table summary="Referer" class="style_table">
-	<tr>
-		<th class="style_th">
-			 <a href="$href&amp;sort=$sort_last">{$_referer_msg['msg_Hed_LastUpdate']}$arrow_last</a>
-		</th>
-		<th class="style_th">
-			<a href="$href&amp;sort=$sort_1st">{$_referer_msg['msg_Hed_1stDate']}$arrow_1st</a>
-		</th>
-		<th class="style_th" style="text-align:right">
-			<a href="$href&amp;sort=$sort_ctr">{$_referer_msg['msg_Hed_RefCounter']}$arrow_ctr</a>
-		</th>
-		<th class="style_th">
-			<a href="$href&amp;sort=3">{$_referer_msg['msg_Hed_Referer']}</a>
-		</th>
-	</tr>
+	<thead>
+		<tr>
+			<th class="style_th">
+				 <a href="$href&amp;sort=$sort_last">{$_referer_msg['msg_Hed_LastUpdate']}$arrow_last</a>
+			</th>
+			<th class="style_th">
+				<a href="$href&amp;sort=$sort_1st">{$_referer_msg['msg_Hed_1stDate']}$arrow_1st</a>
+			</th>
+			<th class="style_th" style="text-align:right">
+				<a href="$href&amp;sort=$sort_ctr">{$_referer_msg['msg_Hed_RefCounter']}$arrow_ctr</a>
+			</th>
+			<th class="style_th">
+				<a href="$href&amp;sort=3">{$_referer_msg['msg_Hed_Referer']}</a>
+			</th>
+		</tr>
+	</thead>
 	<tbody>
 $body
 	</tbody>

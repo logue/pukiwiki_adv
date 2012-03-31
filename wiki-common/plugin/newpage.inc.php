@@ -1,7 +1,7 @@
 <?php
-// $Id: newpage.inc.php,v 1.16.7 2010/12/26 17:52:00 Logue Exp $
+// $Id: newpage.inc.php,v 1.16.8 2012/03/31 17:52:00 Logue Exp $
 // Copyright (C)
-//  2010 PukiWiki Advance Developers Team
+//  2010-2012 PukiWiki Advance Developers Team
 //  2007-2008 PukiWiki Plus! Team
 //
 // Newpage plugin
@@ -27,7 +27,7 @@ function plugin_newpage_convert()
 
 	$ret = <<<EOD
 <form action="$script" method="post">
-	<input type="hidden" name="plugin" value="newpage" />
+	<input type="hidden" name="plugin" value="edit" />
 	<input type="hidden" name="refer"  value="$s_page" />
 	<div class="newpage_form">
 		<label for="p_newpage_$id">$_msg_newpage:</label>

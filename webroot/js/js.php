@@ -8,6 +8,9 @@
 
 $file   = (isset($_GET['file']) ? $_GET['file']	: 'skin') . '.js';
 $expire = isset($_GET['expire']) ? (int)$_GET['expire'] * 86400	: '604800';	// Default is 7 days.
+error_reporting(0); // Nothing
+ini_set('zlib.output_compression', 'Off');
+ini_set('zlib.output_handler','mb_output_handler');
 
 header('Content-type: text/javascript; charset: UTF-8');
 header('Cache-Control: private');

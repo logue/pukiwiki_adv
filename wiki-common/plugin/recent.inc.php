@@ -1,5 +1,5 @@
 <?php
-// $Id: recent.inc.php,v 1.26.8 2012/02/19 11:55:00 Logue Exp $
+// $Id: recent.inc.php,v 1.26.9 2012/03/31 18:22:00 Logue Exp $
 // Copyright (C)
 //   2010-2012 PukiWiki Advance Developers Team
 //   2005-2008 PukiWiki Plus! Team
@@ -99,7 +99,7 @@ function plugin_recent_convert()
 					$items[] = ' <li data-theme="e">' . $s_page . '</li>';
 				} else {
 					$passage = $show_passage ? ' ' . '<span class="ui-li-count">'.get_passage($time, false).'</span>' : '';
-					$items[] = ' <li><a href="' . get_page_uri($page) . '">' . $s_page . $passage.'</a></li>';
+					$items[] = ' <li><a href="' . get_page_uri($page) . '" data-transition="slide">' . $s_page . $passage.'</a></li>';
 				}
 			}
 			$i++;

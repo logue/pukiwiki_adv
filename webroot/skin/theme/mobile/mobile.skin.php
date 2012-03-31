@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: classic.ini.php,v 0.0.1 2012/03/04 12:32:30 Logue Exp $
+// $Id: classic.ini.php,v 0.0.2 2012/03/31 16:49:30 Logue Exp $
 // 
 // PukiWiki Adv. Mobile Theme
 // Copyright (C)
@@ -27,29 +27,26 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 <?php flush(); ?>
 	<body>
 		<article data-role="page">
-			<header data-role="header" role="banner">
+			<header data-role="header" role="banner" id="header">
 				<h1><?php echo $title ?></h1>
 <?php if (!$is_dialog) { ?>
 				<a href="<?php echo $_LINK['search'] ?>" data-icon="search" data-rel="dialog" class="ui-btn-right"><?php echo $_LANG['skin']['search'] ?></a>
 <?php	if ($is_page) { ?>
-				<nav data-role="navbar" data-iconpos="left">
+				<nav data-role="navbar">
 					<ul>
-<?php	if ($title != $defaultpage) { ?>
-						<li><a href="<?php echo $_LINK['top'] ?>" data-transition="fade" data-icon="home"><?php echo $_LANG['skin']['top'] ?></a></li>
-<?php	} ?>
-						
+						<li><a href="<?php echo $_LINK['new'] ?>" data-rel="dialog"><?php echo $_LANG['skin']['new'] ?></a></li>
 <?php		if ($is_freeze) { ?>
 						<li><a href="<?php echo $_LINK['unfreeze'] ?>" data-rel="dialog"><?php echo $_LANG['skin']['unfreeze'] ?></a></li>
 <?php		} else { ?>
 <?php			if ($vars['cmd'] !== 'edit') { ?>
-						<li><a href="<?php echo $_LINK['edit'] ?>" data-transition="flip" data-rel="page" data-icon="gear"><?php echo $_LANG['skin']['edit'] ?></a></li>
+						<li><a href="<?php echo $_LINK['edit'] ?>" data-transition="flip" data-rel="page"><?php echo $_LANG['skin']['edit'] ?></a></li>
 <?php			} ?>
 						<li><a href="<?php echo $_LINK['freeze'] ?>" data-rel="dialog"><?php echo $_LANG['skin']['freeze'] ?></a></li>
 <?php		} ?>
 						<li><a href="<?php echo $_LINK['diff'] ?>" data-transition="flip"><?php echo $_LANG['skin']['diff'] ?></a></li>
-						<li><a href="<?php echo $_LINK['list'] ?>" data-transition="flip" data-icon="star"><?php echo $_LANG['skin']['list'] ?></a></li>
 					</ul>
 				</nav>
+				<?php if (!empty($_SKIN['adarea'])) echo '<div id="adarea"></div>'; ?>
 <?php	} ?>
 <?php } ?>
 			</header>
@@ -72,19 +69,20 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 			</section>
 <?php } ?>
 
-			<footer data-role="footer" class="footer-docs" role="contentinfo">
+			<footer data-role="footer" role="contentinfo" id="footer">
 <?php if (!$is_dialog) { ?>
-				<nav data-role="navbar" data-iconpos="left">
+				<nav data-role="navbar">
 					<ul>
-						<li><a href="<?php echo $_LINK['new'] ?>" data-rel="dialog" data-icon="plus"><?php echo $_LANG['skin']['new'] ?></a></li>
+<?php	if ($title != $defaultpage) { ?>
+						<li><a href="<?php echo $_LINK['top'] ?>" data-transition="fade"><?php echo $_LANG['skin']['top'] ?></a></li>
+<?php	} ?>
+						<li><a href="<?php echo $_LINK['list'] ?>" data-transition="flip"><?php echo $_LANG['skin']['list'] ?></a></li>
 <?php	if ($is_page && (bool)ini_get('file_uploads')) { ?>
-						<li><a href="<?php echo $_LINK['upload'] ?>" data-rel="dialog" data-icon="gear"><?php echo $_LANG['skin']['upload'] ?></a></li>
+						<li><a href="<?php echo $_LINK['upload'] ?>" data-rel="dialog"><?php echo $_LANG['skin']['upload'] ?></a></li>
 <?php	} ?>
 <?php if ($do_backup){ ?>
-						<li><a href="<?php echo $_LINK['backup'] ?>" data-transition="flip" data-icon="back"><?php echo $_LANG['skin']['backup'] ?></a></li>
+						<li><a href="<?php echo $_LINK['backup'] ?>" data-transition="flip"><?php echo $_LANG['skin']['backup'] ?></a></li>
 <?php	} ?>
-						<li><a href="<?php echo $_LINK['recent'] ?>" data-transition="flip"><?php echo $_LANG['skin']['recent'] ?></a></li>
-						<!--li><a href="<?php echo $_LINK['log'] ?>" data-rel="dialog" data-icon="grid"><?php echo $_LANG['skin']['log'] ?></a></li-->
 					</ul>
 				</nav>
 				<h4>Founded by <a href="<?php echo $modifierlink ?>"><?php echo $modifier ?></a></h4>
@@ -93,6 +91,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 			</footer><!-- /footer -->
 		</article><!-- /page -->
 
+		<?php if (!empty($_SKIN['adarea'])) echo '<div id="adarea_content">' . $_SKIN['adarea'] . '</div>'; ?>
 		<?php echo $pkwk_tags; ?>
 	</body>
 </html>

@@ -132,12 +132,14 @@ var JQUERY_MOBILE_VER = '1.1.0-rc.1';
 		},
 		init_dom : function(prefix, callback){
 			var self = this;
-			prefix = (prefix) ? prefix + ' ' : '[role="main"]';
+			prefix = (prefix) ? prefix + ' ' : '[data-role="page"]';
 			
 			$(prefix + 'img').lazyload({ 
 				placeholder : this.image_dir+'grey.gif',
-				effect : "fadeIn"
+				effect : 'fadeIn'
 			});
+			
+			$(prefix +'#contents ul').listview();
 
 			// 用語集
 			this.glossaly(prefix);
@@ -147,6 +149,22 @@ var JQUERY_MOBILE_VER = '1.1.0-rc.1';
 			this.bad_behavior(prefix);
 			// Table Sorter（テーブル自動ソート）
 			this.tablesorter(prefix);
+
+			// アンカースクロール
+			$(prefix + ' a').each(function(){
+				var $this = $(this);	// DOMをキャッシュ
+				var href = $this.attr('href');
+				var rel = $this.attr('rel') ? $this.attr('rel') : null;
+				var ajax = $this.data('ajax') ? $this.data('ajax') : 'true';
+				
+				if (href.match('#') && $this.data('ajax') === false){
+					$this.click(function(){
+						self.anchor_scroll(href,true);
+						return false;
+					});
+				}
+			});
+			
 		},
 		// テーブル自動ソート
 		tablesorter:function(prefix){
@@ -231,6 +249,7 @@ var JQUERY_MOBILE_VER = '1.1.0-rc.1';
 				$this.removeAttr('title');
 
 				$this.click(function(){
+					$.mobile.showPageLoadingMsg();
 					if (msgtext === ''){
 						var tip;
 						$.ajax({
@@ -245,23 +264,21 @@ var JQUERY_MOBILE_VER = '1.1.0-rc.1';
 								cache:true
 							},
 							async:false,
-							success: function(data){
-								//tip = data.replace(/<script[^>]*>[^<]+/ig,'');
+							success : function(data){
 								tip = data.documentElement.textContent;
+								$.mobile.hidePageLoadingMsg();
 							},
-							complete : function(XMLHttpRequest, textStatus){
-								// data属性に、テキストを保存。
-								$this.data('msgtext', tip);
+							complete: function(XMLHttpRequest, textStatus){
 								msgtext = tip;
+								$this.data('msgtext', tip);	// data属性に、テキストを保存。
+								$.mobile.showPageLoadingMsg($.mobile.page.prototype.options.headerTheme, tip, true);
+								setTimeout(function () { $.mobile.hidePageLoadingMsg(); }, 3000);
 							}
 						});
-					}
-					if (msgtext !== ''){
-						$.mobile.showPageLoadingMsg($.mobile.page.prototype.options.headerTheme, msgtext, true);
 					}else{
-						$.mobile.showPageLoadingMsg($.mobile.pageLoadErrorMessageTheme , $.i18n('dialog','first'), true);
+						$.mobile.showPageLoadingMsg($.mobile.page.prototype.options.headerTheme, msgtext, true);
+						setTimeout(function () { $.mobile.hidePageLoadingMsg(); }, 3000);
 					}
-					setTimeout(function () { $.mobile.hidePageLoadingMsg(); }, 2500);
 				});
 			});
 		},
@@ -301,6 +318,25 @@ var JQUERY_MOBILE_VER = '1.1.0-rc.1';
 				$(prefix + 'form').append('<input type="hidden" name="'+BH_NAME+'" value="'+BH_VALUE+'" />');
 			}
 		},
+		// アンカースクロール＆ハイライト
+		anchor_scroll: function(href,highlight){
+			if (href === '#'){
+				$.scrollTo('#header');
+			}else if (href !== ''){
+				var target = href.split('#')[1];
+				$.scrollTo(
+					'#'+target,{
+						duration: 800,
+						axis:"y",
+						queue:true,
+						onAfter:function(){
+							// スクロール後ハイライト
+							//if (highlight === true){ $('#'+target).effect("highlight",{}, 2000); }
+						}
+					}
+				);
+			}
+		},
 		// オーバーライド関数
 		register:{
 			init:function(func){
@@ -324,50 +360,66 @@ var JQUERY_MOBILE_VER = '1.1.0-rc.1';
 			$('html').fadeIn('fast');	// スクリプトとCSSが読み込まれた段階で、ページを表示。
 			$('html').css('display','block');	// Firefox対策
 		});
-		
 	});
-	
-	// ページが読み込まれた時のイベント
-	$('article')
-		.live('pageload',function(event, ui){
-			var f;
-			while( f = pkwkBeforeInit.shift() ){
-				if( f !== null ){
-					f();
-				}
-			}
-			f = null;
-		})
-		.live('pageshow',function(event, ui){
-			pukiwiki.init_dom();
-			var f;
-			while( f = pkwkInit.shift() ){
-				if( f !== null ){
-					f();
-				}
-			}
-			f = null;
-		});
-	
-	$(document).bind("mobileinit", function(){
+
+	$(document).bind('mobileinit', function(){
+		var $page = $('[data-role="page"]');
 		if (DEBUG){
 			var D2 = new Date();
 			console.info('jQuery mobile loaded. (Process Time :',D2 - D1,'ms)');
 		}
-		
 		pukiwiki.init();
+		// ページが読み込まれた時のイベント
+		$page
+			.live('pageload',function(event, ui){
+				var f;
+				while( f = pkwkBeforeInit.shift() ){
+					if( f !== null ){
+						f();
+					}
+				}
+				f = null;
+			})
+			.live('pageshow',function(event, ui){
+				pukiwiki.init_dom();
+				var f;
+				while( f = pkwkInit.shift() ){
+					if( f !== null ){
+						f();
+					}
+				}
+				f = null;
+				
+			})
+		;
+		
+		// for Adspace
+		var $adarea_content = $('#adarea_content');	// 広告領域を取得
+		if ($adarea_content.length !== 0){	// 広告領域が存在する場合
+			// $('[data-role="header"]').append('<div id="adarea"></div>');	// あえて、スクリプトで広告表示領域を置かない
+			//var $ads_top = $('#google_ads_frame');
+			var ads_top = $('#adarea_content').find('iframe');	// 広告の部分のソースをキャッシュする
+			$(ads_top).appendTo('#adarea');	// 初回読み込み時に広告領域を広告表示領域に代入
+			$adarea_content.remove();	// 元々の広告領域を削除（GoogleのTOSに複数設置できない規定があるため。）
+
+			$page.live('pagehide', function(event, ui) {
+				// ページが読み込まれるたびに、広告表示領域に広告を代入
+				$(ads_top).appendTo('#adarea');
+			});
+		}
+		
+		// Google Analytics
+		if (typeof(GOOGLE_ANALYTICS) !== 'undefined'){
+			window._gaq = [['_setAccount',GOOGLE_ANALYTICS],['_trackPageview'],['_trackPageLoadTime']];
+			$$page.live('pageshow', function (event, ui) {
+				_gaq.push(['_trackPageview', (location.hash) ? location.hash : location.href ]);
+			});
+			$.getScript(('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js');
+		}
+		
 		if (DEBUG){
 			var D3 = new Date();
 			console.info('Finish. (Process Time :',D3 - D2,'ms / Total :',D3 - D1,'ms)');
 		}
 	});
-	
-	if (typeof(GOOGLE_ANALYTICS) !== 'undefined'){
-		window._gaq = [['_setAccount',GOOGLE_ANALYTICS],['_trackPageview'],['_trackPageLoadTime']];
-		$('[data-role="page"]').live('pageshow', function () {
-			var u = location.hash.replace('#', '');
-			u ? _gaq.push(['_trackPageview', u]) : _gaq.push(['_trackPageview']);
-		});
-		$.getScript(('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js');
-	}
 } )(jQuery, this, this.document );

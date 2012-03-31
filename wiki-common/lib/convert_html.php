@@ -1031,7 +1031,8 @@ class Body extends Element
 	function replace_contents($arr)
 	{
 		$contents  = '<div class="contents" id="contents_' . $this->id . '">' . "\n" .
-				$this->contents->toString() . "\n" .
+			//	(IS_MOBILE) ? preg_replace('/^<ul/', '<ul data-role="listview" data-inset="true" data-split-icon="arrow-d"', $this->contents->toString()) : $this->contents->toString() . "\n" .
+			$this->contents->toString() .
 				'</div>' . "\n";
 		return $contents;
 	}
@@ -1044,7 +1045,7 @@ class Contents_UList extends ListContainer
 		// Reformatting $text
 		// A line started with "\n" means "preformatted" ... X(
 		make_heading($text);
-		$text = "\n" . '<a href="#' . $id . '">' . $text . '</a>' . "\n";
+		$text = "\n" . '<a href="#' . $id . '"'. ((IS_MOBILE) ? ' data-ajax="false"' : '') . '>' . $text . '</a>' . "\n";
 		parent::ListContainer('ul', 'li', '-', str_repeat('-', $level));
 		$this->insert(Factory_Inline($text));
 	}

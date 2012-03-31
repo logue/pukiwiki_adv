@@ -185,24 +185,21 @@ EOD;
 	}
 
 	if ($dir) {
-		return '<div>' .
-			$auth_guide .
+		$string = $auth_guide .
 			'<p>' . $recent . ' ' . $link . '</p>' . "\n" .
 			$form_start .
 				$comments . "\n" .
 				$form .
-			$form_end .
-			'</div>' . "\n";
+			$form_end . "\n";
 	} else {
-		return '<div>' .
-			$form_start .
+		$string = $form_start .
 				$form .
 				$comments. "\n" .
 			$form_end .
 			'<p>' . $recent . ' ' . $link . '</p>' . "\n" .
-			$auth_guide .
-			'</div>' . "\n";
+			$auth_guide . "\n";
 	}
+	return (IS_MOBILE) ? '<div data-role="collapsible" data-theme="c" data-content-theme="c"><h4>'.$_pcmt_messages['msg_comment'].'</h4>'.$string.'</div>' : '<div class="pcomment">' . $string . '</div>;
 }
 
 function plugin_pcomment_insert()
@@ -398,7 +395,7 @@ function plugin_pcomment_get_comments($page, $count, $dir, $reply)
 	// Add radio buttons
 	if ($reply)
 		$comments = preg_replace('/<li>' . "\x01" . '(\d+)' . "\x02" . '(.*)' . "\x03" . '/',
-			'<li class="pcmt"><input class="pcmt" type="radio" name="reply" value="$2" tabindex="$1" />',
+			'<li class="pcomment_comment"><input class="pcmt" type="radio" name="reply" value="$2" tabindex="$1" />',
 			$comments);
 
 	return array($comments, $digest);

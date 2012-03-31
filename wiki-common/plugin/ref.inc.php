@@ -1,8 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: ref.inc.php,v 1.56.3 2011/07/30 20:13:00 Logue Exp $
+// $Id: ref.inc.php,v 1.56.4 2012/03/31 17:57:00 Logue Exp $
 // Copyright (C)
-//   2010-2011 PukiWiki Advance Developers Team
+//   2010-2012 PukiWiki Advance Developers Team
 //   2002-2006, 2011 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
 // License: GPL v2 or (at your option) any later version
@@ -32,7 +32,7 @@ define('PLUGIN_REF_DIRECT_ACCESS', FALSE); // FALSE or TRUE
 /////////////////////////////////////////////////
 
 // Image suffixes allowed
-define('PLUGIN_REF_IMAGE', '/\.(gif|png|jpe?g)$/i');
+define('PLUGIN_REF_IMAGE', '/\.(gif|png|jpe?g|svg?z)$/i');
 
 // Usage (a part of)
 define('PLUGIN_REF_USAGE', '([pagename/]attached-file-name[,parameters, ... ][,title])');
@@ -222,7 +222,7 @@ function plugin_ref_body($args)
 			//$params['_error'] = 'PKWK_DISABLE_INLINE_IMAGE_FROM_URI prohibits this';
 			//return $params;
 			$s_url = htmlsc($url);
-			$params['_body'] = '<a href="' . $s_url . '">' . $s_url . '</a>';
+			$params['_body'] = '<a href="' . $s_url . '" rel="external">' . $s_url . '</a>';
 			return $params;
 		}
 		$matches = array();
@@ -276,7 +276,7 @@ function plugin_ref_body($args)
 			$s_info . '/>';
 		if (! isset($params['nolink']) && $url2) {
 			$params['_body'] =
-				'<a href="' . htmlsc($url2) . '" title="' . $s_title . '">' . "\n" .
+				'<a href="' . htmlsc($url2) . '" title="' . $s_title . '"'. ((IS_MOBILE) ? ' data-ajax="false"' : '') . '>' . "\n" .
 				$body . "\n" . '</a>';
 		} else {
 			$params['_body'] = $body;
@@ -286,9 +286,8 @@ function plugin_ref_body($args)
 			$s_info = htmlsc(get_date('Y/m/d H:i:s', filemtime($file) - LOCALZONE) .
 				' ' . sprintf('%01.1f', round(filesize($file) / 1024, 1)) . 'KB');
 		}
-		$icon = isset($params['noicon']) ? '' : ' class="pkwk-icon_linktext attach-download"';
-		$params['_body'] = '<a href="' . $s_url . '" title="' . $s_info . '"'. $icon .'>' .
-			 $s_title . '</a>';
+		$params['_body'] = '<a href="' . $s_url . '" title="' . $s_info . '"'. ((IS_MOBILE) ? ' data-ajax="false"' : '') . '>' .
+			(isset($params['noicon']) ? '' : '<span class="pkwk-icon icon-downaload"></span>') . $s_title . '</a>';
 	}
 
 	return $params;

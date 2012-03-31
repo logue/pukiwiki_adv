@@ -39,7 +39,7 @@ function pkwk_session_start()
 				ini_set('session.use_only_cookies', 1);
 			}
 			session_name(FUNC_SESSION_NAME);
-			session_start();
+			@session_start();
 			if (ini_get('session.use_cookies') === 0 && ini_get('session.use_trans_sid') === 0) {
 				output_add_rewrite_var(session_name(), session_id());
 			}
@@ -52,9 +52,9 @@ function pkwk_session_start()
 function pkwk_session_destroy(){
 	static $use_session;
 
-	if (isset($use_session) && $use_session > 0 ) {
+	if (isset($use_session) && $use_session > 0) {
 		session_name(FUNC_SESSION_NAME);
-		session_start();
+		@session_start();
 
 		// セッション変数を全て解除する
 		$_SESSION = array();

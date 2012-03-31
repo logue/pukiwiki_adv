@@ -3,7 +3,7 @@
 // $Id: showrss.inc.php,v 1.22.8 2011/02/05 10:27:00 Logue Exp $
 //  Id:showrss.inc.php,v 1.40 2003/03/18 11:52:58 hiro Exp
 // Copyright (C):
-//     2011      PukiWiki Advance Developers Team
+//     2011-2012 PukiWiki Advance Developers Team
 //     2005-2007 PukiWiki Plus! Team
 //     2002-2006,2011 PukiWiki Developers Team
 //     2002      PANDA <panda@arino.jp>
@@ -107,17 +107,17 @@ function plugin_showrss_convert()
 
 	$class = ($template == '' || $template == 'default') ? 'ShowRSS_html' : 'ShowRSS_html_' . $template;
 	if (! is_numeric($cachehour))
-		return '#showrss: Cache-lifetime seems not numeric: ' . htmlsc($cachehour) . '<br />' . "\n";
+		return '<p class="message_box ui-state-error ui-corner-all>#showrss: Cache-lifetime seems not numeric: <var>' . htmlsc($cachehour) . '</var></p>' . "\n";
 	if (! class_exists($class))
-		return '#showrss: Template not found: ' . htmlsc($template) . '<br />' . "\n";
+		return '<p class="message_box ui-state-error ui-corner-all>#showrss: Template not found: <var>' . htmlsc($template) . '</var></p>' . "\n";
 	if (! is_url($uri))
-		return '#showrss: Seems not URI: ' . htmlsc($uri) . '<br />' . "\n";
+		return '<p class="message_box ui-state-error ui-corner-all>#showrss: Seems not URI: <var>' . htmlsc($uri) . '</var></p>' . "\n";
 
 	if (! is_requestable($uri))
-		return '#showrss: Prohibit fetching RSS from my server<br />' . "\n";
+		return '<p class="message_box ui-state-error ui-corner-all>#showrss: Prohibit fetching RSS from my server.</p>' . "\n";
 
 	list($rss, $time) = plugin_showrss_get_rss($uri, $cachehour);
-	if ($rss === FALSE) return '#showrss: Failed fetching RSS from the server<br />' . "\n";
+	if ($rss === FALSE) return '<p class="message_box ui-state-error ui-corner-all>#showrss: Failed fetching RSS from the server.</p>' . "\n";
 
 	if ($timestamp > 0) {
 		$time = '<p style="font-size:small; font-weight:bold; text-align:right;">Last-Modified:' .
@@ -140,16 +140,18 @@ class ShowRSS_html
 		if ((string) $xml->attributes()->version == '2.0'){
 			// RSS2.0の場合（チャンネルが複数あった場合どーするんだ？これ？）
 			foreach ($xml->channel as $channels){
-				$this->title = '<a href="' . (string) $channels->link . '" title="' . $channels->description . '" rel="external">' . (string) $channels->title . '</a>';
-				$this->logo = isset($channels->image) ? '<a href="'.(string) $channels->image->link.'" title="'.(string) $channels->image->title.'"><img src="'.(string) $channels->image->url.'" /></a>' : null;
+				$this->title =  (string) $channels->title;
+				$this->subtitle = (string) $channels->description;
+				$this->url = (string) $channels->link;
+				$this->logo = isset($channels->image) ? '<a href="'.(string) $channels->image->link.'" title="'.(string) $channels->image->title.'" rel="external"><img src="'.(string) $channels->image->url.'" /></a>' : null;
+				$this->passage =  get_passage( strtotime((string) isset($channels->lastBuildDate) ? $channels->lastBuildDate : $channels->pubDate) );
 				foreach ($channels->item as $item) {
-					$date = strtotime((string) $item->pubDate);
 					$this->items[] = array(
 						'entry'	=> (string) $item->title,
 						'link'	=> (string) $item->link,
-						'date'	=> $date,
+						'date'	=> strtotime((string) $item->pubDate),
 						'media'	=> isset($item->enclosure) ? (string) $item->enclosure->attributes()->url : null,
-						'desc'	=> htmlspecialchars_decode((string) $item->description)
+						'desc'	=> (string) htmlsc($item->description)
 					);
 				}
 			}
@@ -163,41 +165,39 @@ class ShowRSS_html
 					break;
 				}
 			}
-			$passage = get_passage( strtotime((string) $xml->updated) );
-			$this->title = '<a href="'.$href.'" title="'.(string) $xml->subtitle.' '.$passage.'" rel="external">'.(string) $xml->title.'</a>';
-			$this->logo = (isset($xml->icon)) ? '<a href="'.$href.'><img src="'.(string) $xml->icon.'" /></a>' : '';
+			$this->title = (string) $xml->title;
+			$this->subtitle = (string) $xml->subtitle;
+			$this->passage =  get_passage( strtotime((string) $xml->updated) );
+			$this->url = $href;
+			$this->logo = (isset($xml->icon)) ? '<a href="'.$href.' rel="external"><img src="'.(string) $xml->icon.'" /></a>' : null;
+			
 			// atom podcastは未対応（複数指定可能ってどんだけー！？）
 			// contentタグには未対応
 			foreach ($xml->entry as $entry) {
-				$date = strtotime((string) $entry->published);
-				if ($entry->summary){
-					$desc = (string) $entry->summary;
-				}else{
-					$desc = null;
-				}
-				
 				$this->items[] = array(
 					'entry'	=> (string) $entry->title,
 					'link'	=> (string) $entry->link->attributes()->href,
-					'date'	=> $date,
-					'desc'	=> $desc
+					'date'	=> strtotime((string) $entry->published),
+					'desc'	=> (string) htmlsc($entry->summary)
 				);
 			}
 		}else{
 //			$rdf = $xml->channel->items->children('http://www.w3.org/1999/02/22-rdf-syntax-ns#');	// RDF（未使用）
-//			$dc = $xml->channel->children('http://purl.org/dc/elements/1.1/');	// ダブリンコア
+			$dc = $xml->channel->children('http://purl.org/dc/elements/1.1/');	// ダブリンコア
 			// RSS1.xの場合
-			$this->title = '<a href="' . $xml->channel->link . '" title="' .   $xml->channel->description . '" rel="external">' . $xml->channel->title . '</a>';
-			$this->logo = (isset($xml->channels->image)) ? '<a href="'.$xml->channels->image->link.'" title="'.$xml->channels->image->title.'"><img src="'.$xml->channels->image->url.'" /></a>' : null;
+			$this->title = $xml->channel->title;
+			$this->subtitle = (string) $xml->channel->description;
+			$this->passage =  get_passage( strtotime((string) $dc->date) );
+			$this->url = $xml->channel->link;
+			$this->logo = (isset($xml->channels->image)) ? '<a href="'.$xml->channels->image->link.'" title="'.$xml->channels->image->title.'" rel="external"><img src="'.$xml->channels->image->url.'" /></a>' : null;
 
 			foreach ($xml->item as $item) {
 				$item_dc = $item->children('http://purl.org/dc/elements/1.1/');
-				$date = strtotime((string) $item_dc->date);
 				$this->items[] = array(
 					'entry'	=> (string) $item->title,
 					'link'	=> (string) $item->link,
-					'date'	=> $date,
-					'desc'	=> htmlspecialchars_decode((string) $item->description)
+					'date'	=> strtotime((string) $item_dc->date),
+					'desc'	=> (string) htmlsc($item->description)
 				);
 			}
 		}
@@ -206,13 +206,32 @@ class ShowRSS_html
 
 	// エントリの内容
 	function format_line($line){
-		$desc = mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['desc'])), 0, 255, '...');
-		return '<a href="'. $line['link'] .'" title="'.$desc.' '.get_passage($line['date']).'">'.$line['entry'].'</a><br />';
+		$desc = mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['desc'])), 0, 127, '...');
+		if (IS_MOBILE){
+			return '<a href="'. $line['link'] .'">'.$line['entry'].'<span class="ui-li-count">'.get_passage($line['date'],false).'</span></a>';
+		}else{
+			return open_uri_in_new_window('<a href="'. $line['link'] .'" title="'.$desc.' '.get_passage($line['date']).'">'.$line['entry'].'</a>', 'link_url');
+		}
 	}
 
 	// エントリの外側
-	function format_body($body, $date, $tite, $logo){
-		return $body."\n";
+	function format_body($body){
+		$retval = array();
+		if (IS_MOBILE){
+			$retval[] = '<div data-role="collapsible" data-collapsed="true" data-theme="c" data-content-theme="c"><h4>'.$this->title.'</h4>';
+			
+			$retval[] = '<ul data-role="listview" data-inset="true">';
+			$retval[] = $body;
+			$retval[] = '</ul>' . isset($this->title) ? '</div>' : '';
+		}else{
+			$title = ($this->url) ? open_uri_in_new_window('<a href="' . $this->url . '" title="' . $this->passage . '" rel="external">' . $this->title . '</a>', 'link_url') : $this->title;
+			$retval[] = '<legend>'.$title.'</legend>';
+			$retval[] = isset($this->logo) ? '<figure>'.$this->logo.'</figure>' : null;
+			$retval[] = '<ul>';
+			$retval[] =  $body; 
+			$retval[] = '</ul>';
+		}
+		return join("\n",$retval);
 	}
 
 	function toString($timestamp){
@@ -222,23 +241,60 @@ class ShowRSS_html
 		
 		// エントリの内部を展開
 		foreach ($this->items as $item){
-			$rss_body[] = $this->format_line($item);
+			$rss_body[] = '<li>'.$this->format_line($item).'</li>';
 		}
 
-		return '<div class="'.$this->class.'">'.$this->format_body(join("\n",$rss_body), $timestamp, $this->title, $this->logo).'</div>'."\n";
-
+		$body = $this->format_body(join("\n",$rss_body));
+		if (!IS_MOBILE){
+			return '<fieldset class="'.$this->class.'">' . "\n" . $body . '</fieldset>' . "\n";
+		}else{
+			return '<div class="'.$this->class.'">' . "\n" . $body . '</div>' . "\n";
+		}
 	}
 }
 
+/*
+class ShowRSS_html_desc extends ShowRSS_html
+{
+	function format_line($line){
+		$desc = mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['desc'])), 0, 255, '...');
+		if (IS_MOBILE){
+			return '<li><a href="'. $line['link'] .'">'.
+				'<h3>' . $line['entry'].'</h3>'.
+				'<p>' . $desc . '</p>'.
+				'<p class="ui-li-aside">'.get_passage($line['date']).'</p>'.
+				'</a></li>';
+		}else{
+			return '<li><a href="'. $line['link'] .'" title="'.$desc.' '.get_passage($line['date']).'">'.$line['entry'].'</a></li>';
+		}
+	}
+
+	function format_body($body, $date, $tite, $logo){
+		if (IS_MOBILE){
+			return '<ul data-role="listview">' . "\n" . $body . '</ul>' . "\n";
+		}else{
+			return '<ul>' . "\n" . $body . '</ul>' . "\n";
+		}
+	}
+}
+*/
 class ShowRSS_html_menubar extends ShowRSS_html
 {
 	function format_line($line){
 		$desc = mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['desc'])), 0, 255, '...');
-		return '<li><a href="'. $line['link'] .'" title="'.$desc.' '.get_passage($line['date']).'">'.$line['entry'].'</a></li>';
+		if (IS_MOBILE){
+			return '<li><a href="'. $line['link'] .'">'.$line['entry'].'</a><span class="ui-count">'.get_passage($line['date']).'</span></li>';
+		}else{
+			return '<li><a href="'. $line['link'] .'" title="'.$desc.' '.get_passage($line['date']).'">'.$line['entry'].'</a></li>';
+		}
 	}
 
 	function format_body($body, $date, $tite, $logo){
-		return '<ul>' . "\n" . $body . '</ul>' . "\n";
+		if (IS_MOBILE){
+			return '<ul data-role="listview">' . "\n" . $body . '</ul>' . "\n";
+		}else{
+			return '<ul>' . "\n" . $body . '</ul>' . "\n";
+		}
 	}
 }
 
@@ -246,12 +302,21 @@ class ShowRSS_html_recent extends ShowRSS_html
 {
 	function format_line($line){
 		$desc = mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['desc'])), 0, 255, '...');
-		return '<li><a href="'. $line['link'] .'" title="'.$desc.' '.get_passage($line['date']).'">'.$line['entry'].'</a></li>';
+		if (IS_MOBILE){
+			return '<li><a href="'. $line['link'] .'">'.$line['entry'].'</a><span class="ui-count">'.get_passage($line['date']).'</span></li>';
+		}else{
+			return '<li><a href="'. $line['link'] .'" title="'.$desc.' '.get_passage($line['date']).'">'.$line['entry'].'</a></li>';
+		}
 	}
 
 	function format_body($body, $date, $tite, $logo){
-		return '<strong>' . $date . '</strong>' . "\n" .
-			'<ul class="recent_list">' . "\n" . $str . '</ul>' . "\n";
+		if (IS_MOBILE){
+			return '<ul data-role="listview">'. 
+				'<li data-role="list-divider">' . $date . '</li>' . "\n" . $body . '</ul>' . "\n";
+		}else{
+			return '<strong>' . $date . '</strong>' . "\n" .
+				'<ul class="recent_list">' . "\n" . $body . '</ul>' . "\n";
+		}
 	}
 }
 
