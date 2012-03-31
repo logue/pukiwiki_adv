@@ -46,7 +46,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 						<li><a href="<?php echo $_LINK['diff'] ?>" data-transition="flip"><?php echo $_LANG['skin']['diff'] ?></a></li>
 					</ul>
 				</nav>
-				<?php if (!empty($_SKIN['adarea'])) echo '<div id="adarea"></div>'; ?>
+				<?php if (!empty($_SKIN['adarea'])) echo '<div class="adarea"></div>'; ?>
 <?php	} ?>
 <?php } ?>
 			</header>

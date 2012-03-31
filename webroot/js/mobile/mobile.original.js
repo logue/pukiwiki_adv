@@ -431,12 +431,12 @@ var JQUERY_MOBILE_VER = '1.1.0-rc.1';
 			// $('[data-role="header"]').append('<div id="adarea"></div>');	// あえて、スクリプトで広告表示領域を置かない
 			//var $ads_top = $('#google_ads_frame');
 			var ads_top = $('#adarea_content').find('iframe');	// 広告の部分のソースをキャッシュする
-			$(ads_top).appendTo('#adarea');	// 初回読み込み時に広告領域を広告表示領域に代入
+			$(ads_top).appendTo('.adarea');	// 初回読み込み時に広告領域を広告表示領域に代入
 			$adarea_content.remove();	// 元々の広告領域を削除（GoogleのTOSに複数設置できない規定があるため。）
 
 			$page.live('pagehide', function(event, ui) {
 				// ページが読み込まれるたびに、広告表示領域に広告を代入
-				$(ads_top).appendTo('#adarea');
+				$(ads_top).appendTo('.adarea');
 			});
 		}
 		
