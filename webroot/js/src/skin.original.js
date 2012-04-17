@@ -1256,6 +1256,20 @@ var pukiwiki = {};
 				);
 			}
 			
+			$(prefix+'*[title]').each(function(){
+				var $this = $(this);
+				var tip = $this.attr('title');
+				$this.removeAttr('title');
+				$this.tooltip({
+					bodyHandler: function() {
+						return tip;
+					}, 
+					track: true,
+					delay: 0,
+					showURL: ($this.attr('rel') === 'external')
+				});
+			});
+			
 			if ($.support.leadingWhitespace !== true){
 				$(prefix + '.tooltip').css({
 					'behavior': 'url('+JS_URI+'ie-css3.htc)'
@@ -1281,7 +1295,7 @@ var pukiwiki = {};
 					dataType : 'xml',
 					global:false,
 					data : params,
-					async:false,
+					async:true,
 					beforeSend: function(){
 						$('body').css('cursor','wait');
 					},
