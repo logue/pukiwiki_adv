@@ -52,7 +52,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 		<div id="container" class="<?php echo $layout_class ?>" role="document">
 <!-- *** Header *** -->
 			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<header id="header" role="banner">'."\n" : '<div id="header">')."\n"; ?>
-				<a href="<?php echo $_LINK['reload'] ?>"  style="<?php echo $title_style; ?>'"><img id="logo" src="<?php echo $_SKIN['logo']['src'] ?>" width="<?php echo $_SKIN['logo']['width'] ?>" height="<?php echo $_SKIN['logo']['height'] ?>" alt="<?php echo $_SKIN['logo']['alt'] ?>" /></a>
+				<a href="<?php echo $_LINK['top'] ?>"  style="<?php echo $title_style; ?>'"><img id="logo" src="<?php echo $_SKIN['logo']['src'] ?>" width="<?php echo $_SKIN['logo']['width'] ?>" height="<?php echo $_SKIN['logo']['height'] ?>" alt="<?php echo $_SKIN['logo']['alt'] ?>" /></a>
 				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<hgroup id="hgroup" style="'.$title_style.'">'."\n" : '<div id="hgroup" style="'.$title_style.'">')."\n"; ?>
 					<h1 id="title"><?php echo(($newtitle!='' && $is_read) ? $newtitle: $page) ?></h1>
 					<h2><a href="<?php echo $_LINK['reload'] ?>" id="parmalink"><?php echo $_LINK['reload'] ?></a></h2>

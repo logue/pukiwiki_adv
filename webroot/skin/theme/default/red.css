@@ -19,23 +19,23 @@
 }
 
 a:link{
-	color:#215dc6 !important;
+	color:#215dc6;
 	-webkit-tap-highlight-color: #FF5E99;
 	background-color:inherit;
 }
 
 a:active{
-	color:#215dc6 !important;
+	color:#215dc6;
 	background-color:#CCDDEE;
 }
 
 a:visited{
-	color:#a63d21 !important;
+	color:#a63d21;
 	background-color:inherit;
 }
 
 a:hover{
-	color:#215dc6 !important;
+	color:#215dc6;
 	background-color:#EECCDD;
 }
 

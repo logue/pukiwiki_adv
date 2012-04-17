@@ -3,7 +3,7 @@
  * PukiPlus ログインプラグイン
  *
  * @copyright   Copyright &copy; 2004-2010, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: login.php,v 0.23 2011/02/05 11:02:00 Logue Exp $
+ * @version     $Id: login.php,v 0.23 2012/04/10 18:02:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 require_once(LIB_DIR . 'auth.cls.php');
@@ -183,5 +183,15 @@ function plugin_login_action()
 	}
 	header('HTTP/1.1 401 Unauthorized');
 	return array('msg'=>$_login_msg['err_auth'], 'body'=>'<p class="message_box ui-state-error ui-corner-all"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-alert"></span>'.$_login_msg['err_auth_guide'].'</p>');
+}
+
+function login_return_page()
+{
+	global $vars;
+
+	$page = (empty($vars['page'])) ? '' : $vars['page'];
+	log_write('login','');
+	header( 'Location: ' . get_page_location_uri($page));
+	die();
 }
 ?>

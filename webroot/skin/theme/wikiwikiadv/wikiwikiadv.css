@@ -584,13 +584,6 @@ tfoot .style_th
 	text-align:center;
 }
 
-#menubar h3, #sidebar h3{
-	background-color: #CCCCCC;
-}
-#menubar h4, #sidebar h4{
-	background-color: #ebebeb;
-}
-
 #sidebar h1, #sidebar h2, #sidebar h3, #sidebar h4, #sidebar h5, #sidebar h6{
 	margin:0 0 4px 0;
 	padding:4px;

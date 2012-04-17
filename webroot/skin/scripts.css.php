@@ -165,12 +165,6 @@ legend {
 
 figure{
 	margin: 0 auto;
-	text-align:center;
-}
-
-figcaption{
-	font-size:93%;
-	text-align:center;
 }
 
 /* List tags */
@@ -435,6 +429,11 @@ input[type='search'][required], textarea[required], select[required] {
 .ui-button{
 	text-shadow: 0 1px 1px rgba(0,0,0,.3);
 	box-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+
+.ui-widget-header a:link{
+	background-color:transparent;
+	text-shadow:none;
 }
 
 /* Message Box (for Debug and Error message) */
@@ -1324,6 +1323,21 @@ li[role=tab]{
 	display:none;
 }
 
+/* social */
+.social{
+	list-style:none;
+}
+
+.social li{
+	display:block;
+	padding: 0 0.1em;
+	float:left;
+}
+
+.fb-comments{
+	width:650px;
+	padding-left: 3em;
+}
 /* ==|== ui icon classes ==================================================== */
 .pkwk-icon{
 	display: inline-block;

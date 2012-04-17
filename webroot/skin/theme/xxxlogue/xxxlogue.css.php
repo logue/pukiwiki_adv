@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: xxxlogue.css.php,v 2.4.3 RC 2012/01/22 12:18:30 Logue Exp $
+// $Id: xxxlogue.css.php,v 2.4.4 RC 2012/03/25 23:26:30 Logue Exp $
 // Copyright (C) 2010-2012 PukiWiki Advance Developers Team
 //               2007-2010 Logue
 
@@ -20,10 +20,16 @@ error_reporting(E_ERROR | E_PARSE); // Avoid E_WARNING, E_NOTICE, etc
 require_once('xxxlogue.ini.php');
 global $_SKIN;	// Skin name space
 
-
+error_reporting(E_ERROR | E_PARSE); // Avoid E_WARNING, E_NOTICE, etc
+// Style
+$menubar   = isset($_GET['menubar'])   ? $_GET['menubar']	: '';
+$expire = isset($_GET['expire'])   ? (int)$_GET['expire'] * 86400	: '604800';	// Default is 7 days.
+// Send header
 header('Content-Type: text/css; charset: UTF-8');
-
-flush();
+header('Cache-Control: private');
+header('Expires: ' .gmdate('D, d M Y H:i:s',time() + $expire) . ' GMT');
+header('Last-Modified: '.gmdate('D, d M Y H:i:s', getlastmod() ) . ' GMT');
+ob_start('ob_gzhandler');
 ?>
 @charset "UTF-8";
 /** Generic Tags ***********************************************************************************/
@@ -1073,3 +1079,5 @@ ie8 .sf-menu li:hover, ie8 .sf-menu li.sfHover{
 		float: left;
 	}
 }
+<?php 
+ob_end_flush();

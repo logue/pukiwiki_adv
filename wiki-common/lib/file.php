@@ -105,17 +105,18 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	global $trackback, $autoalias, $aliaspage;
 	global $autoglossary, $glossarypage;
 	global $use_spam_check, $_strings;
-	global $vars;
+	global $vars, $now;
 
-//	if (PKWK_READONLY) return; // Do nothing
-	/* Plus!ここから */
+	// roleのチェック
 	if (auth::check_role('readonly')) return; // Do nothing
+	if (auth::is_check_role(PKWK_CREATE_PAGE))
+		die_message($_strings['prohibit']);
 	
 	$role_adm_contents = auth::check_role('role_adm_contents');
 	
 	// SPAM Check (Client(Browser)-Server Ticket Check)
-	//if ( !isset($vars['encode_hint']) && !defined(PKWK_ENCODING_HINT) )
-	//	die_message('Plugin Encode Error.');
+//	if ( !isset($vars['encode_hint']) && !defined(PKWK_ENCODING_HINT) )
+//		die_message('Plugin Encode Error.');
 
 	// Blocking SPAM
 	if ($role_adm_contents) {
@@ -129,45 +130,24 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 			die_message('Writing was limited by PROXY (Blocking SPAM).');
 		}
 	}
-	
+
 	// Check Illigal Chars
 	if (preg_match(PKWK_ILLEGAL_CHARS_PATTERN, $page)){
 		die_message($_strings['illegal_chars']);
 	}
 
-	if (function_exists('senna_update')) {
-		senna_update($page, $oldpostdata, $postdata);
-	}
-
-	$postdata = make_str_rules($postdata);
-	/* Plus!ここまで */
-
 	// Create and write diff
+	$postdata = make_str_rules($postdata);
 	$oldpostdata = is_page($page) ? get_source($page, TRUE, TRUE) : '';
 	$diffdata    = do_diff($oldpostdata, $postdata);
 	
-	// add client info (Adv.)
-	global $now;
+	// add client info to diff
 	$referer = (isset($_SERVER['HTTP_REFERER'])) ? htmlsc($_SERVER['HTTP_REFERER']) : 'None';
 	$user_agent = htmlsc($_SERVER['HTTP_USER_AGENT']);
-	$diffdata .= "IP:\"{$_SERVER['REMOTE_ADDR']}\" TIME:\"$now\" REFERER:\"$referer\" USER_AGENT:\"$user_agent\"\n";
+	$diffdata .= "// IP:\"{$_SERVER['REMOTE_ADDR']}\" TIME:\"$now\" REFERER:\"$referer\" USER_AGENT:\"$user_agent\"\n";
 
-	file_write(DIFF_DIR, $page, $diffdata);
-	unset($oldpostdata, $diffdata);
-
-	// Create backup
-	make_backup($page, $postdata == ''); // Is $postdata null?
-
-	// Create wiki text
-	file_write(DATA_DIR, $page, $postdata, $notimestamp);
-
-	links_update($page);
-
-	// Logging postdata (Plus!)
-	postdata_write();
-	
 	$links = array();
-	if ( ($trackback > 1) || ( $role_adm_contents && $use_spam_check['page_contents']) ) {
+	if ( $trackback !== 0 || ( $role_adm_contents && $use_spam_check['page_contents']) ) {
 		tb_send($page, get_this_time_links($postdata, $diffdata));
 	}
 
@@ -197,7 +177,27 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 		}
 	}
 
+	// Create wiki text
+	file_write(DATA_DIR, $page, $postdata, $notimestamp);
+	
+	// Update data
+	file_write(DIFF_DIR, $page, $diffdata);
+	unset($oldpostdata, $diffdata);
+
+	// Create backup
+	make_backup($page, $postdata == ''); // Is $postdata null?
+
+	// Update *.rel *.ref data.
+	links_update($page);
+
+	// Logging postdata (Plus!)
+	postdata_write();
+
 	log_write('update',$page);
+	
+	if (function_exists('senna_update')) {
+		senna_update($page, $oldpostdata, $postdata);
+	}
 }
 
 // Modify original text with user-defined / system-defined rules
@@ -310,9 +310,8 @@ function file_write($dir, $page, $str, $notimestamp = FALSE)
 	global $notify, $notify_diff_only, $notify_subject, $_string;
 	global $whatsdeleted, $maxshow_deleted;
 
-	//if (PKWK_READONLY) return; // Do nothing
 	if (auth::check_role('readonly')) return; // Do nothing
-	if ($dir != DATA_DIR && $dir != DIFF_DIR) die('file_write(): Invalid directory');
+	if ($dir !== DATA_DIR && $dir !== DIFF_DIR) die('file_write(): Invalid directory');
 
 	$page = strip_bracket($page);
 	$file = $dir . encode($page) . '.txt';

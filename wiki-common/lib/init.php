@@ -464,7 +464,7 @@ if (IS_MOBILE === true) {
 }
 
 if (!IS_AJAX || IS_MOBILE){
-	global $facebook, $fb, $google_loader;
+	global $auth_api, $fb, $google_loader;
 
 	// JavaScriptフレームワーク設定
 	// google ajax api
@@ -614,9 +614,9 @@ if (!IS_AJAX || IS_MOBILE){
 
 	$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.( (DEBUG) ? 'locale.js' : 'js.php?file=locale') );
 	
-	if (isset($facebook)){
+	if ( isset($auth_api['facebook']) ){
 		require(LIB_DIR.'facebook.php');
-		$fb = new FaceBook($facebook);
+		$fb = new FaceBook($auth_api['facebook']);
 		// FaceBook Integration
 		$fb_user = $fb->getUser();
 		

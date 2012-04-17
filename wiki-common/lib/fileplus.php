@@ -185,23 +185,24 @@ function cache_clear($pattern = PKWK_DAT_EXTENTION){
 }
 
 // クリーンアップ処理（memcache無効時は、処理を行わない）
-function cache_cleanup($filename, $expire){
+function cache_cleanup($file, $expire){
 	global $memcache;
 	if ($memcache == null){
+		$filename = CACHE_DIR.$file;
 		// 保存先のディレクトリ名を取得
-		$dir = dirname(CACHE_DIR.$filename);
+		$dir = dirname($filename);
 		// 拡張子を取得（二重拡張子は不可）
-		$ext = substr(CACHE_DIR.$filename, strrpos(CACHE_DIR.$filename, '.') + 1);
+		$ext = substr($filename, strrpos($filename, '.') + 1);
 		
 		// 同一階層上のファイルを捜査
-		foreach(scandir($dir) as $file) {
+		foreach (scandir($dir) as $d_file) {
 			// 同一拡張子のファイルをクリーンアップ
-			if (mb_strpos($file, $ext)){
-				$f = $dir.'/'.$file;	// ファイルのフルパス
-				//$filetime = exec ('stat -c %Y '. escapeshellarg ($f));	// filectime()は環境によっては動作しないため。
+			if (mb_strpos($d_file, $ext)){
+				$f = $dir.'/'.$d_file;	// ファイルのフルパス
+				//$filetime = exec ('stat -c %Y '. escapeshellarg ($f));
 				$filetime = filectime($f);
 				// 有効期限を過ぎたファイルは削除
-				if(UTIME - $filetime > $expire) {
+				if ( (UTIME - $filetime) > $expire) {
 					cache_delete($f);
 				}
 			}
@@ -733,6 +734,7 @@ function generate_postid($cmd = '')
 
 	$filename = POSTID_DIR . $idstring . PKWK_DAT_EXTENTION;
 	cache_write($_SERVER['REMOTE_ADDR'], $filename, POSTID_EXPIRE);
+	cache_cleanup($filename, POSTID_EXPIRE);
 	return $idstring;
 }
 

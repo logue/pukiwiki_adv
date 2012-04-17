@@ -4,11 +4,8 @@
 // Copyright (C) 2010-2011 PukiWiki Advance Developers Team
 // PukiWiki Advance Clowdwalk skin
 //
-// Based on
-//   Xu Yiyang's (http://xuyiyang.com/) Unnamed (http://xuyiyang.com/wordpress-themes/unnamed/)
-//
-// License: GPL v3 or (at your option) any later version
-// http://www.opensource.org/licenses/gpl-3.0.html
+// License: GPL v2 or (at your option) any later version
+// http://www.opensource.org/licenses/gpl-2.0.html
 //
 // ------------------------------------------------------------
 // Settings (define before here, if you want)

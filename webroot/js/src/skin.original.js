@@ -2514,12 +2514,13 @@ var pukiwiki = {};
 				$(prefix + 'form').append('<input type="hidden" name="'+BH_NAME+'" value="'+BH_VALUE+'" />');
 			}
 		},
-		social : function(use){
+		social : function(settings){
 			if (pukiwiki.isPage){
 				var href = $('link[rel=canonical]')[0].href;
 				var lang = $('html').attr('lang');
+				var html = [], scripts = [];
 				
-				var social = {
+				var social = $.extend({},{
 					// Hatena
 					// http://b.hatena.ne.jp/guide/bbutton
 					'hatena' : {
@@ -2560,8 +2561,7 @@ var pukiwiki = {};
 						use : false,
 						dom : '<a href="http://www.tumblr.com/share" title="Share on Tumblr" style="display:inline-block; text-indent:-9999px; overflow:hidden; width:81px; height:20px; background:url(\'http://platform.tumblr.com/v1/share_1.png\') top left no-repeat transparent;"></a>'
 					}
-				}
-				var html = [], scripts = [];
+				}, settings);
 
 				html.push('<hr class="noprint" /><ul class="social noprint clearfix">');
 				for (var key in social) {
@@ -2570,6 +2570,7 @@ var pukiwiki = {};
 						if (social[key]['script']) { scripts.push(social[key]['script']); }
 					}
 				}
+
 				// FaceBookを実行
 				if (typeof(FACEBOOK_APPID) !== 'undefined'){
 					$('html').attr('xmlns:fb', 'http://www.facebook.com/2008/fbml#');
@@ -2588,7 +2589,8 @@ var pukiwiki = {};
 							appId: FACEBOOK_APPID,
 							status	: true, // check login status
 							cookie	: true, // enable cookies to allow the server to access the session
-							xfbml	: true  // parse XFBML
+							xfbml	: true, // parse XFBML
+							oauth	: true
 						});
 						FB.Event.subscribe('auth.login', function() {
 							window.location.reload();

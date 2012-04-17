@@ -33,13 +33,13 @@
 	var default_set_num = 0;
 
 	// スキンスクリプトのinitが実行される前に実行される関数
-	var before_init = function(){
+	pukiwiki.register.before_init(function(){
 		// クッキーが定義されていないときは、blueとし、クッキーに保存
 		if (!$.cookie('pkwk-colorset')){
 			$.cookie('pkwk-colorset', default_set_num,{expires:30,path:'/'});
 		}
 		var color = colorset[$.cookie('pkwk-colorset')];
-		document.getElementById('coloring').href = SKIN_DIR+'theme/'+THEME_NAME+'/default.css.php?color='+color[0];
+		document.getElementById('coloring').href = SKIN_DIR+'theme/default/'+color[0]+'.css';
 		document.getElementById('ui-theme').href = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/themes/'+color[1]+'/jquery-ui.css';
 
 		// カラーセットのリンクボタンを生成
@@ -49,47 +49,10 @@
 			buffer += '<span style="color:'+colorset[n][0]+';cursor:pointer;" id="colorset-'+n+'">'+symbol+'</span>&#xa0;';
 		}
 		$('#colorset').html('Color: '+buffer);
-		var home = $('link[rel=home]')[0].href;
-		var href = $('link[rel=canonical]')[0].href;
-		var lang = $('html').attr('lang');
-
-		if (pukiwiki.isPage){
-			$('#body').append([
-				'<hr class="noprint" /><ul class="social noprint clearfix">',
-				// Hatena
-				// http://b.hatena.ne.jp/guide/bbutton
-				'<li><a href="http://b.hatena.ne.jp/entry/" class="hatena-bookmark-button" data-hatena-bookmark-layout="standard">Twee</a></li>',
-				// Mixi
-				// http://developer.mixi.co.jp/connect/mixi_plugin/mixi_check/spec_mixi_check/
-				'<li><a href="http://mixi.jp/share.pl" class="mixi-check-button" data-url="'+href+'" data-button="button-1"></a></li>',
-				// Gree
-				// https://developer.gree.net/connect/plugins/sf
-				// '<li><iframe src="http://share.gree.jp/share?url='+encodeURIComponent(href)+'&amp;type=1&amp;height=20" scrolling="no" frameborder="0" marginwidth="0" marginheight="0" style="border:none; overflow:hidden; width:100px; height:20px;" allowTransparency="true"></iframe></li>',
-				// Google +1 button
-				// http://www.google.com/intl/ja/webmasters/+1/button/index.html
-				'<li><div class="g-plusone" data-size="medium"></div></li>',
-				// Tweet Button
-				// https://twitter.com/about/resources/buttons
-				'<li><a href="https://twitter.com/share" class="twitter-share-button" data-lang="' + lang+'">Tweet</a></li>',
-				// Tumblr
-				// http://www.tumblr.com/docs/ja/share_button
-				// '<li><a href="http://www.tumblr.com/share" title="Share on Tumblr" style="display:inline-block; text-indent:-9999px; overflow:hidden; width:81px; height:20px; background:url(\'http://platform.tumblr.com/v1/share_1.png\') top left no-repeat transparent;"></a></li>',
-				// Facebook Like button
-				// http://developers.facebook.com/docs/reference/plugins/like/
-				(typeof(FACEBOOK_APPID) !== 'undefined') ? '<li><div class="fb-like" data-href="'+href+'" data-layout="button_count" data-send="true" data-width="450" data-show-faces="true"></div></li>' : '',
-			'</ul>',
-			(typeof(FACEBOOK_APPID) !== 'undefined') ? '<hr class="noprint" /><div class="noprint" style="margin-left:2em;"><div class="fb-comments" href="'+href+'" publish_feed="true" width="650" numposts="10" migrated="1"></div></div>' : ''
-			].join("\n"));
-
-			$.getScript('http://b.st-hatena.com/js/bookmark_button.js');
-			$.getScript('http://platform.twitter.com/widgets.js');
-			$.getScript('http://static.mixi.jp/js/share.js');
-			$.getScript('https://apis.google.com/js/plusone.js');
-		}
-	};
+	});
 
 	// スキンスクリプトのinitが実行された前に実行される関数
-	var init = function(){
+	pukiwiki.register.init(function(){
 		// カラーセットのリンクボタンにイベント割り当て
 		$('#colorset span').click(function(){
 			var n = this.id.split('-')[1];
@@ -97,17 +60,6 @@
 			document.getElementById('ui-theme').href = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/'+colorset[n][1]+'/jquery-ui.css';
 			$.cookie('pkwk-colorset',n,{expires:30,path:'/'});
 		});
-	};
+	});
 
-	pukiwiki.register.before_init(before_init);
-	pukiwiki.register.init(init);
-
-/*
-	// PukiWiki Advance オーバーライド設定
-	pukiwiki.custom = {
-		// Superfish設定
-		// http://users.tpg.com.au/j_birch/plugins/superfish/#options
-		suckerfish : { }
-	};
-*/
 } )(jQuery, pukiwiki, this, this.document );

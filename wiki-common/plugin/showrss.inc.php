@@ -280,21 +280,37 @@ class ShowRSS_html_desc extends ShowRSS_html
 */
 class ShowRSS_html_menubar extends ShowRSS_html
 {
-	function format_line($line){
-		$desc = mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['desc'])), 0, 255, '...');
+	// エントリの外側
+	function format_body($body){
+		$retval = array();
 		if (IS_MOBILE){
-			return '<li><a href="'. $line['link'] .'">'.$line['entry'].'</a><span class="ui-count">'.get_passage($line['date']).'</span></li>';
+			$retval[] = '<div data-role="collapsible" data-collapsed="true" data-theme="c" data-content-theme="c"><h4>'.$this->title.'</h4>';
+			
+			$retval[] = '<ul data-role="listview" data-inset="true">';
+			$retval[] = $body;
+			$retval[] = '</ul>' . isset($this->title) ? '</div>' : '';
 		}else{
-			return '<li><a href="'. $line['link'] .'" title="'.$desc.' '.get_passage($line['date']).'">'.$line['entry'].'</a></li>';
+			$title = ($this->url) ? open_uri_in_new_window('<a href="' . $this->url . '" title="' . $this->passage . '" rel="external">' . $this->title . '</a>', 'link_url') : $this->title;
+			$retval[] = '<h4>'.$title.'</h4>';
+			$retval[] = '<ul>';
+			$retval[] =  $body; 
+			$retval[] = '</ul>';
 		}
+		return join("\n",$retval);
 	}
+	
+	function toString($timestamp){
 
-	function format_body($body, $date, $tite, $logo){
-		if (IS_MOBILE){
-			return '<ul data-role="listview">' . "\n" . $body . '</ul>' . "\n";
-		}else{
-			return '<ul>' . "\n" . $body . '</ul>' . "\n";
+		$retval = '';
+		$rss_body = array();
+		
+		// エントリの内部を展開
+		foreach ($this->items as $item){
+			$rss_body[] = '<li>'.$this->format_line($item).'</li>';
 		}
+
+		$body = $this->format_body(join("\n",$rss_body));
+		return '<div class="'.$this->class.'">' . "\n" . $body . '</div>' . "\n";
 	}
 }
 

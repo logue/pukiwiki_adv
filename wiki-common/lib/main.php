@@ -98,14 +98,7 @@ $info[] = 'Powerd by <var>'.getenv('SERVER_SOFTWARE').'</var>.';
 $retvars = array();
 $page  = isset($vars['page'])  ? $vars['page']  : '';
 $refer = isset($vars['refer']) ? $vars['refer'] : '';
-
-if (isset($vars['cmd'])) {
-	$plugin = & $vars['cmd'];
-} else if (isset($vars['plugin'])) {
-	$plugin = & $vars['plugin'];
-} else {
-	$plugin = '';
-}
+$plugin = isset($vars['cmd']) ? $vars['cmd'] : '';
 
 // SPAM
 if (SpamCheckBAN($_SERVER['REMOTE_ADDR'])) die();
@@ -226,17 +219,9 @@ if (!empty($plugin)) {
 	if (exist_plugin_action($plugin)) {
 		$retvars = do_plugin_action($plugin);
 		if ($retvars === FALSE) exit; // Done
-		// Rescan $vars (Some plugins rewrite it)
-		/*
-		if (isset($vars['cmd'])) {
-			$base = isset($vars['page'])  ? $vars['page']  : '';
-		} else {
-			$base = isset($vars['refer']) ? $vars['refer'] : '';
-		}
-		*/
 		$base = (!empty($page)) ? $page : $refer;
 	} else {
-		$msg = 'plugin=' . htmlsc($plugin) . ' is not implemented.';
+		$msg = '<p class="message_box ui-state-error ui-corner-all">plugin=' . htmlsc($plugin) . ' is not implemented.</p>';
 		$retvars = array('msg'=>$msg,'body'=>$msg);
 		$base    = & $defaultpage;
 	}

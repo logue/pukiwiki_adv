@@ -17,17 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-DEBUG = true;
 var pukiwiki = {};
-var JQUERY_MOBILE_VER = '1.1.0-rc.1';
+var JQUERY_MOBILE_VER = '1.1.0';
 (function ($, window, document) {
 	'use strict';
-	
-	if (window.self.location !== window.top.location) {
-		window.top.location = window.self.location;
-	}
-
-	// オーバーライド用
 	var pkwkInit = [], pkwkBeforeInit = [], pkwkUnload = [], pkwkBeforeUnload = [];
 	
 	if (!$) { throw "pukiwiki: jQuery not included."; }
@@ -211,11 +204,11 @@ var JQUERY_MOBILE_VER = '1.1.0-rc.1';
 				return [
 					'<div class="table_pager_widget ui-helper-clearfix" id="'+id+'">',
 						'<div class="ui-corner-all ui-controlgroup ui-controlgroup-horizontal">',
-							'<a href="#" class="first">' + $.i18n('dialog','first') + '</a>',
-							'<a href="#" class="prev">' + $.i18n('dialog','prev') + '</a>',
+				//			'<a href="#" class="first">' + $.i18n('dialog','first') + '</a>',
+							'<a href="#" class="prev" data-role="button" data-icon="arrow-l" data-iconpos="notext">' + $.i18n('dialog','prev') + '</a>',
 							'<input class="pagedisplay" type="text" disabled="disabled" size="8" />',
-							'<a href="#" class="next">' + $.i18n('dialog','next') + '</a>',
-							'<a href="#" class="last">' + $.i18n('dialog','last') + '</a>',
+							'<a href="#" class="next" data-role="button" data-icon="arrow-r" data-iconpos="notext">' + $.i18n('dialog','next') + '</a>',
+				//			'<a href="#" class="last">' + $.i18n('dialog','last') + '</a>',
 							'<select class="pagesize"></select>',
 						'</div>',
 					'</div>'
@@ -386,12 +379,19 @@ var JQUERY_MOBILE_VER = '1.1.0-rc.1';
 		}
 	};
 	$(document).ready(function(){
-		// 言語設定
-		$("head").append('<link rel="stylesheet" href="http://code.jquery.com/mobile/'+JQUERY_MOBILE_VER+'/jquery.mobile-'+JQUERY_MOBILE_VER+'.min.css" />');
-		$.getScript('http://code.jquery.com/mobile/'+JQUERY_MOBILE_VER+'/jquery.mobile-'+JQUERY_MOBILE_VER+'.min.js',function(){
-			$('html').fadeIn('fast');	// スクリプトとCSSが読み込まれた段階で、ページを表示。
-			$('html').css('display','block');	// Firefox対策
-		});
+		if (JQUERY_MOBILE_VER !== 'latest'){
+			$("head").append('<link rel="stylesheet" href="http://code.jquery.com/mobile/'+JQUERY_MOBILE_VER+'/jquery.mobile-'+JQUERY_MOBILE_VER+'.min.css" />');
+			$.getScript('http://code.jquery.com/mobile/'+JQUERY_MOBILE_VER+'/jquery.mobile-'+JQUERY_MOBILE_VER+'.min.js', function(){
+				$('html').fadeIn('fast');	// スクリプトとCSSが読み込まれた段階で、ページを表示。
+				$('html').css('display','block');	// Firefox対策
+			});
+		}else{
+			$("head").append('<link rel="stylesheet" href="http://code.jquery.com/mobile/latest/jquery.mobile.min.css" />');
+			$.getScript('http://code.jquery.com/mobile/latest/jquery.mobile.min.js', function(){
+				$('html').fadeIn('fast');	// スクリプトとCSSが読み込まれた段階で、ページを表示。
+				$('html').css('display','block');	// Firefox対策
+			});
+		}
 	});
 
 	$(document).bind('mobileinit', function(){

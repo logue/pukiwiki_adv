@@ -46,7 +46,6 @@ function catbody($title, $page, $body)
 	$is_createpage = auth::is_check_role(PKWK_CREATE_PAGE);
 
 	pkwk_common_headers(($lastmod && $is_read) ? $filetime : 0);
-	if (DEBUG === false) { ob_start('ob_gzhandler'); }
 
 	if (IS_AJAX && !IS_MOBILE){
 		$ajax = isset($vars['ajax']) ? $vars['ajax'] : 'raw';
@@ -282,7 +281,7 @@ function catbody($title, $page, $body)
 		}
 */
 		header('Content-Type: '.$http_header.'; charset='. CONTENT_CHARSET);
-		header('X-UA-Compatible: '.(empty($x_ua_compatible)) ? 'IE=edge' : $x_ua_compatible);	// とりあえずIE8対策
+		@header('X-UA-Compatible: '.(empty($x_ua_compatible)) ? 'IE=edge' : $x_ua_compatible);	// とりあえずIE8対策
 		require(SKIN_FILE);
 	}
 	if (DEBUG === false) { ob_end_flush(); }
@@ -702,6 +701,10 @@ function pkwk_common_headers($modified = 0, $expire = 0, $compress = true){
 	// XSS脆弱性対策（これでいいのか？）
 	// http://msdn.microsoft.com/ja-jp/ie/dd218482
 	header('X-XSS-Protection: '.((DEBUG) ? '0' :'1;mode=block') );
+	
+	if (DEBUG === false || (bool) ini_get('zlib.output_compression') === false && $compress == true) {
+		ob_start('ob_gzhandler');
+	}
 }
 
 //////////////////////////////////////////////////
@@ -801,7 +804,6 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 	}
 
 	if (!IS_MOBILE){
-		
 		$user_agent = $_SERVER['HTTP_USER_AGENT'];
 		$info[] = $user_agent;
 		if(preg_match_all('/MSIE ([\.\d]+)/',$user_agent,$matches)){

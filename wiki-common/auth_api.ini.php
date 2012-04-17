@@ -2,12 +2,12 @@
 $auth_api = array(
 	// Basic or Digest
 	'plus' => array(
-		'use'			=> 1,
+		'use'			=> true,
 		'displayname'	=> 'Normal',
 	),
 	// OpenID
 	'openid' => array(
-		'use'		=> 0,
+		'use'		=> false,
 		'mixi' => array(
 			'my_id'			=> array(''),	// 'userid1','userid2', ...
 			'community_id'	=> array(''),	// 'community1', 'community2', ...
@@ -15,43 +15,58 @@ $auth_api = array(
 	),
 	// GFC
 	'auth_gfc' => array(
-		'use'			=> 0,
+		'use'			=> false,
 		'site'			=> '',
-		'hidden_login'  => 1,
+		'hidden_login'  => true,
 	),
 	// RemoteIP
 	'remoteip' => array(
-		'use'			=> 0,
-		'hidden'		=> 1,
+		'use'			=> false,
+		'hidden'		=> true,
 	),
 	// Hatena
 	'hatena' => array(
-		'use'			=> 0,
+		'use'			=> false,
 		'api_key'		=> '',
 		'sec_key'		=> '',
 	),
 	// livedoor Auth
 	'livedoor'  => array(
-		'use'			=> 0,
+		'use'			=> false,
 		'app_key'		=> '',
 		'sec_key'		=> '',
 	),
 	// TypeKey
 	'typekey' => array(
-		'use'			=> 0,
+		'use'			=> false,
 		'site_token'	=> '',
-		'need_email'	=> 0,
+		'need_email'	=> false,
 	),
 	// JugemKey
 	'jugemkey'  => array(
-		'use'			=> 0,
+		'use'			=> false,
 		'api_key'		=> '',
 		'sec_key'		=> '',
 	),
 	// QueryStringAuth
 	'querystringauth'	=> array(
-		'use'		=> 0,
-		'hidden'	=> 1,
+		'use'		=> false,
+		'hidden'	=> true,
 	),
+	// Facebook
+	
+	'facebook'	=> array(
+		'use'		=> true,
+		'appId'		=> '1291914271552false5',
+		'secret'	=> '6b46affalse696748a62557397c7739d37bf',
+		'cookie'	=> true,
+		'scope'		=> '',
+		'display'	=> false
+	),
+	'twitter'	=> array(
+		'use'		=> false,
+		'key'		=> '',
+		'secret'	=> ''
+	)
 );
 ?>

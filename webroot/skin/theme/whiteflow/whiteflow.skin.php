@@ -1,7 +1,7 @@
 <?php
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: whiteflow.css.php,v 1.0.1 2012/01/09 14:58:30 Logue Exp $
+// $Id: whiteflow.css.php,v 1.0.2 2012/04/10 18:06:30 Logue Exp $
 
 // White flow Adv. skin.
 // ver 1.0 (2011/12/10) 
@@ -47,7 +47,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</hgroup>'."\n" : '</div>')."\n"; ?>
 				<?php echo do_plugin_convert('headarea') ?>
 <?php } else { ?>
-				<a href="<?php echo $_LINK['reload'] ?>" id="logo"><img src="<?php echo $_SKIN['logo']['src'] ?>" width="<?php echo $_SKIN['logo']['width'] ?>" height="<?php echo $_SKIN['logo']['height'] ?>" alt="<?php echo $_SKIN['logo']['alt'] ?>" /></a>
+				<a href="<?php echo $_LINK['top'] ?>" id="logo"><img src="<?php echo $_SKIN['logo']['src'] ?>" width="<?php echo $_SKIN['logo']['width'] ?>" height="<?php echo $_SKIN['logo']['height'] ?>" alt="<?php echo $_SKIN['logo']['alt'] ?>" /></a>
 				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<hgroup id="hgroup">'."\n" : '<div id="hgroup">')."\n"; ?>
 					<h1 id="title"><?php echo (($newtitle!='' && $is_read) ? $newtitle : $page) ?></h1>
 					<h2 id="description">PukiWiki - Yet another WikiWikiWeb clone.</h2>
@@ -122,6 +122,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 							<li><a href="<?php echo $_LINK['new'] ?>"><span class="pkwk-icon icon-new"></span><?php echo $_LANG['skin']['new'] ?></a>
 								<ul>
 									<li><a href="<?php echo $_LINK['newsub'] ?>"><span class="pkwk-icon icon-newsub"></span><?php echo $_LANG['skin']['newsub'] ?></a></li>
+									<li><a href="<?php echo $_LINK['rename'] ?>"><span class="pkwk-icon icon-rename"></span><?php echo $_LANG['skin']['rename'] ?></a></li>
 								</ul>
 							</li>
 							<li><a href="<?php echo $_LINK['edit'] ?>"><span class="pkwk-icon icon-edit"></span><?php echo $_LANG['skin']['edit'] ?></a>

@@ -1,8 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: rename.inc.php,v 1.38.9 2011/02/05 12:23:00 Logue Exp $
+// $Id: rename.inc.php,v 1.38.10 2012/04/10 18:00:00 Logue Exp $
 // Copyright (C)
-//   2010-2011 PukiWiki Advance DevelopersTeam
+//   2010-2012 PukiWiki Advance DevelopersTeam
 //   2005-2007 PukiWiki Plus! Team
 //   2002-2005, 2007,2011 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
@@ -279,7 +279,7 @@ function plugin_rename_phase3($pages)
 				$exists[$_page][$old] = $new;
 
 	if ( isset($vars['menu']) && ! auth::check_role('role_adm_contents') ) {
-		return plugin_rename_proceed($pages, $files, $exists);
+		return plugin_rename_phase4($pages, $files, $exists);
 	}
 
 	$pass = plugin_rename_getvar('pass');
