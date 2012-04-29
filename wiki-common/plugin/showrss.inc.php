@@ -208,7 +208,7 @@ class ShowRSS_html
 	function format_line($line){
 		$desc = mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['desc'])), 0, 127, '...');
 		if (IS_MOBILE){
-			return '<a href="'. $line['link'] .'">'.$line['entry'].'<span class="ui-li-count">'.get_passage($line['date'],false).'</span></a>';
+			return '<a href="'. preg_replace("/\s/",'', $line['link']) .'">'.$line['entry'].'<span class="ui-li-count">'.get_passage($line['date'],false).'</span></a>';
 		}else{
 			return open_uri_in_new_window('<a href="'. $line['link'] .'" title="'.$desc.' '.get_passage($line['date']).'">'.$line['entry'].'</a>', 'link_url');
 		}
@@ -218,7 +218,7 @@ class ShowRSS_html
 	function format_body($body){
 		$retval = array();
 		if (IS_MOBILE){
-			$retval[] = '<div data-role="collapsible" data-collapsed="true" data-theme="c" data-content-theme="c"><h4>'.$this->title.'</h4>';
+			$retval[] = '<div data-role="collapsible" data-collapsed="true" data-theme="b" data-content-theme="d"><h4>'.$this->title.'</h4>';
 			
 			$retval[] = '<ul data-role="listview" data-inset="true">';
 			$retval[] = $body;

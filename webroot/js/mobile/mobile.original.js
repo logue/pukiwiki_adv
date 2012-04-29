@@ -380,8 +380,8 @@ var JQUERY_MOBILE_VER = '1.1.0';
 	};
 	$(document).ready(function(){
 		if (JQUERY_MOBILE_VER !== 'latest'){
-			$("head").append('<link rel="stylesheet" href="http://code.jquery.com/mobile/'+JQUERY_MOBILE_VER+'/jquery.mobile-'+JQUERY_MOBILE_VER+'.min.css" />');
-			$.getScript('http://code.jquery.com/mobile/'+JQUERY_MOBILE_VER+'/jquery.mobile-'+JQUERY_MOBILE_VER+'.min.js', function(){
+			$("head").append('<link rel="stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.mobile/'+JQUERY_MOBILE_VER+'/jquery.mobile-'+JQUERY_MOBILE_VER+'.min.css" />');
+			$.getScript('http://ajax.aspnetcdn.com/ajax/jquery.mobile/'+JQUERY_MOBILE_VER+'/jquery.mobile-'+JQUERY_MOBILE_VER+'.min.js', function(){
 				$('html').fadeIn('fast');	// スクリプトとCSSが読み込まれた段階で、ページを表示。
 				$('html').css('display','block');	// Firefox対策
 			});

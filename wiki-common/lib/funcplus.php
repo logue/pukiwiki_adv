@@ -852,38 +852,38 @@ function is_webdav()
 }
 
 // code from https://gist.github.com/854168
-function download_file ($file, $filetime = MUTIME, $mimetype = 'application/octet-stream') {
+function download_file ($file, $mtime = MUTIME, $mimetype = 'application/octet-stream') {
 	$realpath = realpath($file);
 	if (file_exists($realpath)) {
 		// Fetching File
-		$filename = (strstr($_SERVER["HTTP_USER_AGENT"], 'MSIE') !== false) ? urlencode(basename($file)) : basename($file);
-		$filedate = date('r', $filetime);
-		$filesize = intval(sprintf("%u", filesize($realpath)));
-		header('Content-Type: '.$mime);
-		header('Content-Disposition: attachment; filename="' . $filename . '"; modification-date="' . $filedate . '";');
-		
-		if (( function_exists('apache_get_modules') && in_array( 'mod_xsendfile', apache_get_modules()) !== false) || stristr(getenv('SERVER_SOFTWARE'), 'lighttpd')){
+		$mtime = ($mtime = filemtime($realpath)) ? $mtime : gmtime();
+		$size = intval(sprintf("%u", filesize($realpath)));
+		header('Content-type: application/force-download');
+		header('Content-Type: '.$mimetype);
+		if (strstr($_SERVER["HTTP_USER_AGENT"], 'MSIE') !== false) {
+			header('Content-Disposition: attachment; filename=' . urlencode(basename($file_path)) . '; modification-date="' . date('r', $mtime) . '";');
+		} else {
+			header('Content-Disposition: attachment; filename="' . basename($file_path) . '"; modification-date="' . date('r', $mtime) . '";');
+		}
+		if (can_haz_xsendfile()) {
 			// Sending file via mod_xsendfile
-			header('X-Sendfile: ' . $realpath);
-		}else if(stristr(getenv('SERVER_SOFTWARE'), 'nginx') || stristr(getenv('SERVER_SOFTWARE'), 'cherokee')){
-			header('X-Accel-Redirect: '.$realpath);
+			header('X-Sendfile: ' . join_paths($base_path, $file_path));
 		} else {
 			// Sending file directly via script
-			if (intval($filesize + 1) > return_bytes(ini_get('memory_limit')) && intval($filesize * 1.5) <= 1073741824) { //Not higher than 1GB
+			if (intval($size + 1) > return_bytes(ini_get('memory_limit')) && intval($size * 1.5) <= 1073741824) {	//Not higher than 1GB
 				// Setting memory limit
-				ini_set('memory_limit', intval($filesize * 1.5));
+				ini_set('memory_limit', intval($size * 1.5));
 			}
 			@apache_setenv('no-gzip', 1);
 			@ini_set('zlib.output_compression', 0);
-			header('Content-Length: ' . $filesize);
+			header('Content-Length: ' . $size);
 			// Set the time limit based on an average D/L speed of 50kb/sec
-			set_time_limit(min(7200, // No more than 120 minutes (this is really bad, but...)
-				($filesize > 0) ? intval($filesize / 51200) + 60 // 1 minute more than what it should take to D/L at 50kb/sec
-				: 1 // Minimum of 1 second in case size is found to be 0
+			set_time_limit(min(7200,	// No more than 120 minutes (this is really bad, but...)
+				($size > 0) ? intval($size / 51200) + 60	// 1 minute more than what it should take to D/L at 50kb/sec
+				: 1	// Minimum of 1 second in case size is found to be 0
 			));
 			$chunksize = 1 * (1024 * 1024); // how many megabytes to read at a time
-
-			if ($filesize > $chunksize) {
+			if ($size > $chunksize) {
 				// Chunking file for download
 				$handle = fopen($realpath, 'rb');
 				$buffer = '';

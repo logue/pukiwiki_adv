@@ -14,8 +14,8 @@
 
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
-define('S_VERSION', 'v1.0 alpha2');
-define('S_REVSION', '20111204');
+define('S_VERSION', 'v1.0 beta1');
+define('S_REVSION', '20120429');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &#169; 2010-2012' .
@@ -467,64 +467,24 @@ if (!IS_AJAX || IS_MOBILE){
 	global $auth_api, $fb, $google_loader;
 
 	// JavaScriptフレームワーク設定
-	// google ajax api
-	// http://code.google.com/intl/ja/apis/libraries/devguide.html#Libraries
-	$google_loader = array(
-/*
-		'dojo' => array(
-			'file'	=> 'dojo.xd.js',
-			'ver'	=> '1.6.0'
-		),
-		'ext-core' => array(
-			'file'	=> 'ext-core.js',
-			'ver'	=> '3.1.0'
-		),
-*/
-		'jquery' => array(
-			'file'	=> 'jquery.min.js',
-			'ver'	=> '1.7.1'
-		),
-		'jqueryui'	=> array(
-			'file'	=> 'jquery-ui.min.js',
-			'ver'	=> '1.8.17'
-		),
-		'swfobject' => array(
-			'file'	=> 'swfobject.js',
-			'ver'	=> '2.2'
-		)
-	);
-	
-	// DNS prefetching
-	// http://html5boilerplate.com/docs/DNS-Prefetching/
-	$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>'//ajax.googleapis.com');
-	if (COMMON_URI !== ROOT_URI){
-		$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>COMMON_URI);
-	}
-	
+	// Microsoft CDN
+	// http://www.asp.net/ajaxlibrary/cdn.ashx
+	$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js');
+
 	if (!IS_MOBILE){
-		if ($x_ua_compatible == 'chrome=1'){
-			// X-UA-CompatibleでChromeをレンダリングにするよう指定した場合
-			$google_loader['chrome-frame'] = array(
-				'file'	=> 'CFInstall.min.js',
-				'ver'	=>'1'
-			);
-		}
-
-		// application/xhtml+xml を認識するブラウザではXHTMLとして出力
-		if (PKWK_STRICT_XHTML === TRUE && strstr($_SERVER['HTTP_ACCEPT'], 'application/xhtml+xml') !== false){
-			foreach ($google_loader as $name=>$fw){
-				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'https://ajax.googleapis.com/ajax/libs/'.$name.'/'.$fw['ver'].'/'.$fw['file']);
-			}
-		}else{
-			// google.loadはdocument.write命令を使うためXHTMLにならない。
-			foreach ($google_loader as $name=>$fw){
-				$js_vars[] = 'google.load("'.$name.'","'.$fw['ver'].'");';
-			}
-		}
-
 		// modernizrの設定
 		// $modernizr = 'modernizr.min.js';
 		$modernizr = 'js.php?file=modernizr.min';
+		
+		// jQuery UI
+		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.19/jquery-ui.min.js');
+		// jQuery UIのCSS
+		$link_tags[] = array(
+			'rel'=>'stylesheet',
+			'href'=>'http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.19/themes/'.(!isset($_SKIN['ui_theme']) ? 'base' : $_SKIN['ui_theme']).'/jquery-ui.css',
+			'type'=>'text/css',
+			'id'=>'ui-theme'
+		);
 
 		if (DEBUG === true) {
 			// 読み込むsrcディレクトリ内のJavaScript
@@ -558,27 +518,13 @@ if (!IS_AJAX || IS_MOBILE){
 				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'src/'.$script_file.'.js');
 				//$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'js.php?file=src%2F'.$script_file);
 
-			// yui profiler and profileviewer
-			/*
-				$link_tags[] = array('rel'=>'stylesheet','type'=>'text/css','href'=>JS_URI.'profiling/yahoo-profiling.css');
-				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'profiling/yahoo-profiling.min.js');
-				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'profiling/config.js');
-			*/
 		} else {
 			//$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'skin.js');
 			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'js.php?file=skin');
 		}
-
-		// jQueryUIのCSS
-		$link_tags[] = array(
-			'rel'=>'stylesheet',
-			'href'=>'http://ajax.googleapis.com/ajax/libs/jqueryui/'.$google_loader['jqueryui']['ver'].'/themes/'.(!isset($_SKIN['ui_theme']) ? 'base' : $_SKIN['ui_theme']).'/jquery-ui.css',
-			'type'=>'text/css',
-			'id'=>'ui-theme'
-		);
 	}else{
+		// jquery mobileは、mobile.jsで非同期読み込み。
 		$modernizr = '';
-		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'https://ajax.googleapis.com/ajax/libs/jquery/'.$google_loader['jquery']['ver'].'/'.$google_loader['jquery']['file']);
 		if (DEBUG === true) {
 			// 読み込むsrcディレクトリ内のJavaScript
 			$default_js = array(
@@ -598,6 +544,13 @@ if (!IS_AJAX || IS_MOBILE){
 			//$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'mobile.js');
 			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'js.php?file=mobile');
 		}
+	}
+
+	// DNS prefetching
+	// http://html5boilerplate.com/docs/DNS-Prefetching/
+	$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>'//ajax.aspnetcdn.com');
+	if (COMMON_URI !== ROOT_URI){
+		$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>COMMON_URI);
 	}
 
 	// JS用初期設定

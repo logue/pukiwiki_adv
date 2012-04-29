@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: mobile.ini.php,v 0.0.2 2012/02/19 21:45:30 Logue Exp $
+// $Id: mobile.ini.php,v 0.0.3 2012/04/29 13:46:30 Logue Exp $
 // 
 // PukiWiki Adv. Mobile Theme
 // Copyright (C)
@@ -13,15 +13,6 @@ global $_SKIN, $link_tags, $js_tags;
 $_SKIN = array(
 	// L•\Ž¦—Ìˆæ
 	'adarea'	=> <<<EOD
-<script type="text/javascript">/*<![CDATA[*/
-window.googleAfmcRequest = {
-	client: 'ca-mb-pub-3377384624413528',
-	format: '320x50_mb',
-	output: 'HTML',
-	slotname: '1144150456',
-};
-/*]]>*/</script>
-<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_afmc_ads.js"></script>
 EOD
 );
 

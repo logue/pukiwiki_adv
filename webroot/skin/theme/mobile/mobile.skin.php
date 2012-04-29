@@ -52,7 +52,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 			</header>
 
 <?php if (arg_check('read') && exist_plugin_convert('menu')) { ?>
-			<div data-role="content" class="two-colums">
+			<div data-role="content" class="two-colums" data-theme="c">
 				<section class="content-primary" role="main">
 					<?php echo $body ?>
 				</section>
@@ -64,7 +64,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 				</aside>
 			</div>
 <?php }else{ ?>
-			<section data-role="content" role="main">
+			<section data-role="content" role="main" data-theme="c">
 				<?php echo $body ?>
 			</section>
 <?php } ?>

@@ -310,8 +310,8 @@ function getLinkSet($_page){
 		'reload'		=> get_page_absuri($_page), // 本当は、get_script_uri でいいけど、絶対パスでないと、スキンに影響が出る
 		'reload_rel'	=> get_page_uri($_page),
 		
-		'login'			=> get_cmd_uri('login'),
-		'logout'		=> get_cmd_uri('login', null, null, array('action'=>'logout') ),
+		'login'			=> get_cmd_uri('login', $_page),
+		'logout'		=> get_cmd_uri('login', $_page, null, array('action'=>'logout') ),
 
 		/* Special Page */
 		'help'			=> get_cmd_uri('help'),

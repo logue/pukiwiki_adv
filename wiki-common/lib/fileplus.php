@@ -1,8 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: fileplus.php,v 1.2.8 2011/11/28 21:28:00 Logue Exp $
+// $Id: fileplus.php,v 1.2.9 2012/04/29 10:08:00 Logue Exp $
 // Copyright (C)
-//   2010-2011 PukiWiki Advance Team
+//   2010-2012 PukiWiki Advance Team
 //   2005-2006,2009 PukiWiki Plus! Team
 // License: GPL v2 or (at your option) any later version
 //
@@ -87,7 +87,6 @@ function cache_read($cache_key)
 	}
 	return $data;
 }
-
 function cache_read_raw($cache_key)
 {
 	global $memcache;
@@ -126,7 +125,6 @@ function cache_write($data, $cache_key, $expire = MEMCACHE_EXPIRE, $compress = M
 	}
 	return $ret;
 }
-
 function cache_write_raw($raw_data, $cache_key, $expire = MEMCACHE_EXPIRE, $compress = MEMCACHE_COMPRESSED)
 {
 	global $memcache;
@@ -203,7 +201,7 @@ function cache_cleanup($file, $expire){
 				$filetime = filectime($f);
 				// 有効期限を過ぎたファイルは削除
 				if ( (UTIME - $filetime) > $expire) {
-					cache_delete($f);
+					unlink($f);
 				}
 			}
 		}
@@ -489,15 +487,12 @@ function get_attachfiles_cache_write($filename,$page)
 	$matches = array();
 	while ($file = readdir($dir)) {
 		if (! preg_match($pattern, $file, $matches)) continue; // all page
-		$_page = decode($matches[1]);
-		$_file = decode($matches[2]);
-		$time = filemtime(UPLOAD_DIR.$file);
-		$size = filesize(UPLOAD_DIR.$file);
+		$line = array(filemtime(UPLOAD_DIR.$file), filesize(UPLOAD_DIR.$file), $file,  decode($matches[1]),  decode($matches[2]));
 		
 		if ($memcache === null){
-			fwrite($fp, $time."\t".$size."\t".$file."\t".$_page."\t".$_file."\n");
+			fwrite($fp, join("\n",$line) );
 		}else{
-			$data[] = array($time,$size,$file,$_page,$_file);
+			$data[] = $line;
 		}
 		if (! empty($page) && ! preg_match($scan_pattern, $file, $matches)) continue;
 		// [page][file] = array(time,size);
@@ -617,7 +612,7 @@ function get_link_list($diffdata)
 	$links = array_unique($links[1]);
 
 	// Reject from minus list
-	if ($minus != '') {
+	if ($minus !== '') {
 		$links_m = array();
 		$minus = convert_html($minus); // WARNING: heavy and may cause side-effect
 		preg_match_all('#href="(https?://[^"]+)"#', $minus, $links_m, PREG_PATTERN_ORDER);

@@ -1,8 +1,8 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone
-// $Id: pukiwiki.ini.php,v 1.149.52 2011/09/24 20:05:00 Logue Exp $
+// $Id: pukiwiki.ini.php,v 1.149.53 2012/04/29 15:22:00 Logue Exp $
 // Copyright (C)
-//   2010-2011 PukiWiki Advance Developers Team
+//   2010-2012 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
 //   2002-2007 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -159,7 +159,6 @@ defined('JS_URI')		or define('JS_URI', 	COMMON_URI . 'js/');
 // THEME
 // *.skin.php => SKIN_DIR or SKIN_DIR + THEME_PLUS_NAME or EXT_SKIN_DIR + THEME_PLUS_NAME
 defined('THEME_PLUS_NAME')   or define('THEME_PLUS_NAME',  'theme/');			// SKIN_URI + THEME_PLUS_NAME
-defined('THEME_TDIARY_NAME') or define('THEME_TDIARY_NAME','tdiary-theme/');	// SKIN_URI + THEME_TDIARY_NAME
 
 /////////////////////////////////////////////////
 // Title of your Wikisite (Name this)
@@ -217,19 +216,6 @@ $protect		= ':login';			// Protect mode
 $google_api_key = '';
 
 /////////////////////////////////////////////////
-// Facebook Integration
-
-$facebook = array(
-	'appId'		=> '129191427155205',
-	'secret'	=> '6b46af0696748a62557397c7739d37bf',
-	'cookie'	=> true,
-); 
-
-// Twitter Integration
-$twitter = array(
-	
-);
-/////////////////////////////////////////////////
 // for Access Analyze and SEO use
 
 // Always output "nofollow,noindex" attribute
@@ -237,12 +223,14 @@ $nofollow = false; // true = Try hiding from search engines
 
 // Static URL
 // アドレスに?を使わない静的なアドレスにします。
-$static_url = 0;
+$static_url = 1;
 
 // URL Suffix (such as extention)
 // 静的なアドレス使用時の拡張子を入れます。
+// 拡張子を加えるときはhtaccessも書き換えてください。
 // 詳細は、http://pukiwiki.logue.be/Technical%20Note/ReWrite
-$url_suffix = '.html';
+//$url_suffix = '.html';
+$url_suffix = '';
 
 // Google Webmasters Tools
 // http://www.google.com/webmasters/sitemaps/
@@ -438,36 +426,6 @@ $autoglossary_max_words = 50; // pairs
 $function_freeze = 1;
 
 /////////////////////////////////////////////////
-// Allow to use 'Do not change timestamp' checkbox
-// (0:Disable, 1:For everyone,  2:Only for the administrator)
-$notimeupdate = 2;
-
-// Authentication
-require_once(add_homedir('auth.ini.php'));
-
-/////////////////////////////////////////////////
-// Page-reading feature settings
-// (Automatically creating pronounce datas, for Kanji-included page names,
-//  to show sorted page-list correctly)
-
-// Enable page-reading feature.
-// (1:Enable, 0:Disable)
-$pagereading_enable = 1;
-
-// Specify converter as ChaSen('chasen') or KAKASI('kakasi') or MeCab('mecab') or CaboCha('cabocha')
-$pagereading_api = 'mecab';
-
-// Absolute path of the converter (without last slash)
-$pagereading_path = '/usr/local/bin';
-
-// Page name contains pronounce data (written by the converter)
-$pagereading_config_page = ':config/PageReading';
-
-// Page name of default pronouncing dictionary, used when converter = 'none'
-// Japanese Only!
-$pagereading_config_dict = ':config/PageReading/dict';
-
-/////////////////////////////////////////////////
 // Exclude plugin for this site-policy.
 // Note: This function is ignole for admin.
 $exclude_plugin = array(
@@ -540,110 +498,6 @@ $maxage = 120; // Stock latest N backups
 // Splitter of backup data (NOTE: Too dangerous to change)
 define('PKWK_SPLITTER', '>>>>>>>>>>');
 
-/////////////////////////////////////////////////
-// Command execution per update
-
-define('PKWK_UPDATE_EXEC', '');
-
-// Sample: Namazu (Search engine)
-// see http://pukiwiki.sourceforge.jp/?PukiWiki%2FNamazu
-/*
-$mknmz      = '/usr/local/bin/mknmz';			// Namazuへのパス
-$index_dir = '/usr/local/var/namazu/index';	// インデックスファイルの保存先
-// $index_dir = '/virtual/[ユーザ名]/namazu';	// インデックスファイルの保存先（xrea, coreserverの場合）
-define('PKWK_UPDATE_EXEC',
-	$mknmz . ' --media-type=text/pukiwiki' .
-	' -O ' . $indext_dir . ' -L ja -c -K ' . realpath(DATA_DIR) );
-*/
-/////////////////////////////////////////////////
-// HTTP proxy setting (for TrackBack etc)
-
-// Use HTTP proxy server to get remote data
-$use_proxy = 0;
-
-$proxy_host = 'proxy.example.com';
-$proxy_port = 8080;
-
-// Do Basic authentication
-$need_proxy_auth = 0;
-$proxy_auth_user = 'username';
-$proxy_auth_pass = 'password';
-
-// Hosts that proxy server will not be needed
-$no_proxy = array(
-	'localhost',	// localhost
-	'127.0.0.0/8',	// loopback
-//	'10.0.0.0/8'	// private class A
-//	'172.16.0.0/12'	// private class B
-//	'192.168.0.0/16'	// private class C
-//	'no-proxy.com',
-);
-
-////////////////////////////////////////////////
-// Mail related settings
-
-// Send mail per update of pages
-$notify = 0;
-
-// Send diff only
-$notify_diff_only = 1;
-
-// SMTP server (Windows only. Usually specified at php.ini)
-$smtp_server = 'localhost';
-
-// Mail recipient (To:) and sender (From:)
-$notify_to   = 'to@example.com';	// To:
-$notify_from = 'from@example.com';	// From:
-
-// Subject: ($page = Page name wll be replaced)
-$notify_subject = '[PukiWiki Adv.] $page';
-
-// Mail header
-// NOTE: Multiple items must be divided by "\r\n", not "\n".
-$notify_header = '';
-
-// No Mail for Remote Host.
-$notify_exclude = array(
-//	'192.168.0.',
-);
-
-/////////////////////////////////////////////////
-// Mail: POP / APOP Before SMTP
-
-// Do POP/APOP authentication before send mail
-$smtp_auth = 0;
-
-$pop_server = 'localhost';
-$pop_port   = 110;
-$pop_userid = '';
-$pop_passwd = '';
-
-// Use APOP instead of POP (If server uses)
-//   Default = Auto (Use APOP if possible)
-//   1       = Always use APOP
-//   0       = Always use POP
-// $pop_auth_use_apop = 1;
-
-/////////////////////////////////////////////////
-// Ignore list
-
-// Regex of ignore pages
-$non_list = '^\:';
-
-// Search ignored pages
-$search_non_list = 1;
-
-/////////////////////////////////////////////////
-// Template setting
-
-$auto_template_func = 1;
-$auto_template_rules = array(
-	'((.+)\/([^\/]+))' => '\2/template'
-);
-
-/////////////////////////////////////////////////
-// Automatically add fixed heading anchor
-$fixed_heading_anchor = 1;
 
 /////////////////////////////////////////////////
 // Remove the first spaces from Preformatted text
@@ -656,7 +510,30 @@ $line_break = 0;
 /////////////////////////////////////////////////
 // Use date-time rules (See rules.ini.php)
 $usedatetime = 1;
+/////////////////////////////////////////////////
+// Template setting
+$auto_template_func = 1;
+$auto_template_rules = array(
+	'((.+)\/([^\/]+))' => '\2/template'
+);
+/////////////////////////////////////////////////
+// Allow to use 'Do not change timestamp' checkbox
+// (0:Disable, 1:For everyone,  2:Only for the administrator)
+$notimeupdate = 2;
 
+// Authentication
+require_once(add_homedir('auth.ini.php'));
+/////////////////////////////////////////////////
+// Ignore list
+// Regex of ignore pages
+$non_list = '^\:';
+
+// Search ignored pages
+$search_non_list = 1;
+
+/////////////////////////////////////////////////
+// Automatically add fixed heading anchor
+$fixed_heading_anchor = 1;
 /////////////////////////////////////////////////
 // 見出しごとの編集を可能にする 
 //
@@ -673,6 +550,7 @@ $use_open_uri_in_new_window  = 1;
 // 同一サーバーとしてみなすホストのURI
 $open_uri_in_new_window_servername = array(
 	$script,
+//	$_SERVER['HTTP_HOST'],
 //	'localhost'
 );
 // URIの種類によって開く動作を設定。
@@ -685,4 +563,8 @@ $open_uri_in_new_window_oposi = '_blank';     // pukiwikiの外で外部サー�
 
 // User-Agent settings
 require_once(add_homedir('profile.ini.php'));
+
+// Server settings
+require_once(add_homedir('server.ini.php'));
+
 ?>

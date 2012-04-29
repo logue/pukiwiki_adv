@@ -2,7 +2,7 @@
 // PukiPlus
 // $Id: index.php,v 1.9.8 2011/09/12 21:41:00 Logue Exp $
 // Copyright (C)
-//   2010-2011 PukiWiki Advance Developers Team
+//   2010-2012 PukiWiki Advance Developers Team
 //   2005-2007,2009 PukiWiki Plus! Team
 //   2001-2006 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
@@ -14,7 +14,7 @@
 error_reporting(E_ALL); // Show all errors
 
 // Debug mode.
-//define('DEBUG', true);
+define('DEBUG', true);
 // Show infomation message.
 define('PKWK_WARNING', true);
 
@@ -25,7 +25,7 @@ define('PKWK_WARNING', true);
 
 // PukiWiki Adv. THEME (NOT compatible as Original and Plus! skin)
 // ex.  cloudwalk, classic, xxxlogue, whiteflow, gs2, wikiwikiadv
-define('PLUS_THEME',	'gs2');
+//define('PLUS_THEME',	'classic');
 
 // Directory definition
 // (Ended with a slash like '../path/to/pkwk/', or '')
@@ -37,13 +37,6 @@ define('DATA_HOME',		'../wiki-data/');
 //define('ROOT_URI', '');
 //define('WWW_HOME', '');
 //define('COMMON_URI', '');
-
-// Memcacheのホスト。ソケット接続の場合は、unix://var/run/memcache.socketのようにすること。（ラウンドロビン非対応）
-define('MEMCACHE_HOST', '127.0.0.1');
-// Memcacheのポート。ソケット接続の場合は、0にすること。
-define('MEMCACHE_PORT', 11211);
-// memcacheのプリフィックス（デフォルトはキャッシュディレクトリのパスの\や/を_にしたもの。）
-//define('MEMCACHE_PREFIX', 'pukiwiki_adv');
 
 // to absolute path
 // Do not change following lines

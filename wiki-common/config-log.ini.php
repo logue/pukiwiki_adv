@@ -114,7 +114,7 @@ $log = array(
 		'view'		=> 'ts:@guess_diff:user:auth_api',
 		'guest'		=> 'ts:@guess_diff:user',
 	),
-	// cmd - rss, rdf, opml, lirs などの情報コマンドの実行状況
+	// cmd - rss, rdfなどの情報コマンドの実行状況
 	'cmd' => array(
 		// ts:ip:host:user:ntlm:proxy:ua:cmd
 		'use'		=> 1,

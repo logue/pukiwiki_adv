@@ -56,9 +56,9 @@ $auth_api = array(
 	// Facebook
 	
 	'facebook'	=> array(
-		'use'		=> true,
-		'appId'		=> '1291914271552false5',
-		'secret'	=> '6b46affalse696748a62557397c7739d37bf',
+		'use'		=> false,
+		'appId'		=> '',
+		'secret'	=> '',
 		'cookie'	=> true,
 		'scope'		=> '',
 		'display'	=> false

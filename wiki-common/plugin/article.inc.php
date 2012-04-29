@@ -198,6 +198,12 @@ function plugin_article_convert()
 	</div>
 </form>
 EOD;
-	return $string;
+	if (IS_MOBILE) {
+		return '<div data-role="collapsible" data-collapsed="true" data-theme="b" data-content-theme="d">' . "\n"
+			. '<h4>'. $_article_msg['btn_article'] . '</h4>'. "\n"
+			. $string . "\n" .'</div>';
+	}else{
+		return $string;
+	}
 }
 ?>

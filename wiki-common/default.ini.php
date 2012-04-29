@@ -1,8 +1,8 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: default.ini.php,v 1.25.16 2011/09/11 23:05:00 Logue Exp $
+// $Id: default.ini.php,v 1.25.16 2012/04/29 13:22:00 Logue Exp $
 // Copyright (C)
-//   2010-2011 PukiWiki Advance Developer Team
+//   2010-2012 PukiWiki Advance Developer Team
 //   2005-2006,2009 PukiWiki Plus! Team
 //   2003-2005 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -12,16 +12,10 @@
 @include(add_homedir('default.usr.ini.php'));
 /////////////////////////////////////////////////
 // Skin file
-if (isset($_COOKIE['tdiary_theme'])) {
-	defined('TDIARY_THEME') or define('TDIARY_THEME', $_COOKIE['tdiary_theme']);
-}
 
-if (defined('TDIARY_THEME')) {
-	defined('SKIN_FILE_DEFAULT') or define('SKIN_FILE_DEFAULT', add_skindir('tdiary'));
-} else {
-	(!defined('PLUS_THEME')) ? define('PLUS_THEME','default') : '';
-	defined('SKIN_FILE_DEFAULT') or define('SKIN_FILE_DEFAULT', add_skindir(PLUS_THEME));
-}
+defined('PLUS_THEME') or define('PLUS_THEME','default');
+defined('SKIN_FILE_DEFAULT') or define('SKIN_FILE_DEFAULT', add_skindir(PLUS_THEME));
+
 $skin_file = (isset($_COOKIE['skin_file'])) ? $_COOKIE['skin_file'] : SKIN_FILE_DEFAULT;
 
 /////////////////////////////////////////////////
@@ -55,14 +49,6 @@ $_symbol_attach			= '<span class="pkwk-symbol symbol-attach" title="Attach here"
 // 先頭・最後へジャンプ
 $_msg_content_back_to_top = '';
 //$_msg_content_back_to_top = '<div class="jumpmenu"><a href="#header">▲</a>&nbsp;<a href="#footer">▼</a></div>';
-
-/////////////////////////////////////////////////
-// テキストエリアのカラム数
-$cols = 80;
-
-/////////////////////////////////////////////////
-// テキストエリアの行数
-$rows = 20;
 
 /////////////////////////////////////////////////
 // 大・小見出しから目次へ戻るリンクの文字
