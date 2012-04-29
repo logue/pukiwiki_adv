@@ -554,6 +554,7 @@ input[type='search'][required], textarea[required], select[required] {
 .edit_form textarea{
 	min-width: 95%;
 	width: 99%;
+	height:260px;
 	margin: 0;
 }
 .ie8 .edit_form textarea{

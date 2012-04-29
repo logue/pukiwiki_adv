@@ -1,5 +1,5 @@
-Welcome to PukiPlus.
+Welcome to PukiWiki Advance.
 
 Please refer to the ./doc/ directory.
 
-PukiPlus Team
+PukiWiki Advance Developers Team
