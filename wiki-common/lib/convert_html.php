@@ -1,8 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: convert_html.php,v 1.21.27 2011/09/11 23:00:00 Logue Exp $
+// $Id: convert_html.php,v 1.21.29 2012/05/03 21:31:00 Logue Exp $
 // Copyright (C)
-//   2010-2011 PukiWiki Advance Developers Team
+//   2010-2012 PukiWiki Advance Developers Team
 //   2005-2008 PukiWiki Plus! Team
 //   2002-2005, 2007,2011 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -507,29 +507,30 @@ class TableCell extends Element
 		$this->style = $matches = array();
 		$this->is_blank = false;
 
-		while (preg_match('/^(?:(LEFT|CENTER|RIGHT)|(BG)?COLOR\(([#\w]+)\)|SIZE\((\d+)\)|LANG\((\w+2)\)):(.*)$/',
-		    $text, $matches)) {
+		// 必ず$matchesの末尾の配列にテキストの内容が入るのでarray_popの返り値を使用する方法に変更。
+		// もうすこし、マシな実装方法ないかな・・・。12/05/03
+		while (preg_match('/^(?:(LEFT|CENTER|RIGHT)|(BG)?COLOR\(([#\w]+)\)|SIZE\((\d+)\)|LANG\((\w+2)\)):(.*)$/', $text, $matches)) {
 			if ($matches[1]) {
 				$this->style['align'] = 'text-align:' . strtolower($matches[1]) . ';';
-				$text = $matches[5];
+				$text = array_pop($matches);
 			} else if ($matches[3]) {
 				$name = $matches[2] ? 'background-color' : 'color';
-				$this->style[$name] = $name . ':' . htmlspecialchars($matches[3]) . ';';
-				$text = $matches[5];
+				$this->style[$name] = $name . ':' . htmlsc($matches[3]) . ';';
+				$text = array_pop($matches);
 			} else if ($matches[4]) {
-				$this->style['size'] = 'font-size:' . htmlspecialchars($matches[4]) . 'px;';
-				$text = $matches[5];
+				$this->style['size'] = 'font-size:' . htmlsc($matches[4]) . 'px;';
+				$text = array_pop($matches);
 			} else if ($matches[5]){
 				$this->lang = $matches[6];
-				$text = $matches[5];
+				$text = array_pop($matches);
 			}
 		}
+
 		if ($is_template && is_numeric($text))
 			$this->style['width'] = 'width:' . $text . 'px;';
 
-		if (empty($text) || !preg_match("/\S+/", $text)){
+		if (preg_match("/\S+/", $text) == false){
 			// セルが空だったり、空白文字しか残らない場合は、空欄のセルとする。（HTMLではタブやスペースも削除）
-			$text = '';
 			$this->is_blank = true;
 		} else if ($text == '>') {
 			$this->colspan = 0;
@@ -774,7 +775,7 @@ class Pre extends Element
 	{
 		global $preformat_ltrim;
 		parent::Element();
-		$this->elements[] = htmlspecialchars(
+		$this->elements[] = htmlsc(
 			(! $preformat_ltrim || $text == '' || $text{0} != ' ') ? $text : substr($text, 1));
 	}
 
@@ -889,8 +890,8 @@ class Body extends Element
 					//$newbase = trim($newbase);
 					$newtitle = trim($newbase);
 					// For BugTrack/132.
-					// $newtitle = htmlspecialchars($newbase);
-					//$newtitle = str_replace('&amp;','&',htmlspecialchars($newbase));
+					// $newtitle = htmlsc($newbase);
+					//$newtitle = str_replace('&amp;','&',htmlsc($newbase));
 				}
 				continue;
 			}

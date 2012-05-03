@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone
-// $Id: html.php,v 1.65.49 2012/04/29 20:03:00 Logue Exp $
+// $Id: html.php,v 1.65.48 2012/01/08 08:31:00 Logue Exp $
 // Copyright (C)
 //   2010-2012 PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team <http://pukiwiki.cafelounge.net/plus/>
@@ -399,7 +399,7 @@ function getLinkSet($_page){
 // Show 'edit' form
 function edit_form($page, $postdata, $digest = FALSE, $b_template = TRUE)
 {
-	global $script, $vars, $rows, $cols, $hr, $function_freeze;
+	global $script, $vars, $hr, $function_freeze;
 	global $load_template_func, $load_refer_related;
 	global $notimeupdate;
 	global $_button, $_string;
@@ -507,7 +507,7 @@ EOD;
 	<div class="edit_form">
 $template
 $addtag
-		<textarea name="msg" id="msg">$s_postdata</textarea>
+		<textarea name="msg" id="msg" rows="20" rows="80">$s_postdata</textarea>
 		$form
 	</div>
 </form>
