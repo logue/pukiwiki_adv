@@ -6,7 +6,7 @@
 // Original version by miko and upk.
 // Modified by Logue
 //
-// $Id: default.skin.php,v 1.4.17 2012/01/09 14:59:00 Logue Exp $
+// $Id: default.skin.php,v 1.4.18 2012/05/03 21:35:00 Logue Exp $
 //
 global $pkwk_dtd, $_SKIN, $is_page, $defaultpage, $sidebar, $headarea, $footarea;
 
@@ -59,9 +59,13 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</hgroup>'."\n" : '</div>')."\n"; ?>
 				<?php if ($_SKIN['adarea']['header'] && !isset($header)) echo '<div id="ad" class="noprint">' . $_SKIN['adarea']['header'] . '</div>'; ?>
 				<?php if ($header) echo $header; ?>
+<!-- * Ad space *-->
+				<?php if ($_SKIN['adarea']['header']) echo '<div id="ad" class="noprint">' . $_SKIN['adarea']['header'] . '</div>'; ?>
+<!-- * End Ad space * -->
 				<?php echo (!empty($lastmodified)) ? '<div id="lastmodified">Last-modified: '.$lastmodified.'</div>'."\n" : '' ?>
 			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</header>' : '</div>')."\n"; ?>
 <!-- *** End Header *** -->
+
 			<?php echo ($navibar === null) ? (exist_plugin('navibar') ? do_plugin_convert('navibar','top,|,edit,freeze,diff,backup,upload,reload,|,new,list,search,recent,help,|,login').'<hr />' :'') : $navibar; ?>
 			<div id="wrapper" class="clearfix">
 <!-- Center -->
