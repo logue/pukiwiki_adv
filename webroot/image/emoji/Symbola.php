@@ -50,22 +50,10 @@ switch($type){
 
 $filename = $fontname.$type;
 $modified = filemtime($filename);
-$etag = md5($modified);
-if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ) {
-	if ($_SERVER['HTTP_IF_MODIFIED_SINCE'] == $modified) {
-		header('HTTP/1.1 304 Not Modified');
-		exit;
-	}
-}
-if (isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
-	if (preg_match("/{$etag}/", $_SERVER['HTTP_IF_NONE_MATCH'])) {
-		header('HTTP/1.1 304 Not Modified');
-		exit;
-	}
-}
 
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: '.$mime);
+/*
 // for reduce server load
 if (function_exists('apache_get_modules') && in_array( 'mod_xsendfile', apache_get_modules()) ){
 	// for Apache mod_xsendfile
@@ -77,12 +65,11 @@ if (function_exists('apache_get_modules') && in_array( 'mod_xsendfile', apache_g
 	// nginx
 //	header('X-Accel-Redirect: '.$filename);
 }
+*/
 
 header('Content-Length: ' . filesize($filename));
 header('Last-Modified: '.gmdate('D, d M Y H:i:s', $modified).' GMT');
-//readfile($filename);
-$fp = fopen($filename, 'rb');
-fpassthru($fp);
-fclose($fp);
-flush();
+ob_start('ob_gzhandler');
+readfile($filename);
+ob_end_flush();
 ?>
