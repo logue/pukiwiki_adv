@@ -1,8 +1,8 @@
 <?php
 // PukPukiPlus.
-// $Id: attach.inc.php,v 1.92.49 2011/09/25 15:33:00 Logue Exp $
+// $Id: attach.inc.php,v 1.92.50 2012/05/11 18:06:00 Logue Exp $
 // Copyright (C)
-//   2010-2011 PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
+//   2010-2012 PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team
 //   2003-2007,2009,2011 PukiWiki Developers Team
 //   2002-2003 PANDA <panda@arino.jp> http://home.arino.jp/
@@ -739,7 +739,7 @@ function attach_form($page, $listview = FALSE)
 
 	$upload_form = <<<EOD
 <form enctype="multipart/form-data" action="$script" method="post">
-	<input type="hidden" name="plugin" value="attach" />
+	<input type="hidden" name="cmd" value="attach" />
 	<input type="hidden" name="pcmd"   value="post" />
 	<input type="hidden" name="refer"  value="$s_page" />
 	<input type="hidden" name="max_file_size" value="$maxsize" />
@@ -1027,7 +1027,7 @@ EOD;
 <div id="attach_form_edit" role="tabpanel" aria-labeledby="tab2">
 	$s_err
 	<form action="$script" method="post">
-		<input type="hidden" name="plugin" value="attach" />
+		<input type="hidden" name="cmd" value="attach" />
 		<input type="hidden" name="refer" value="$s_page" />
 		<input type="hidden" name="file" value="$s_file" />
 		<input type="hidden" name="age" value="{$this->age}" />

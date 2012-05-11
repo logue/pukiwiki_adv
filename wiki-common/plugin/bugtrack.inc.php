@@ -1,10 +1,10 @@
 <?php
-// $Id: bugtrack.inc.php,v 1.27.6 2011/09/24 22:35:00 Logue Exp $
+// $Id: bugtrack.inc.php,v 1.27.7 2012/05/11 18:08:00 Logue Exp $
 //
 // PukiWiki BugTrack plugin
 //
 // Copyright:
-// 2011      PukiWiki Advance Developers Team
+// 2011-2012 PukiWiki Advance Developers Team
 // 2005-2008 PukiWiki Plus! Developers Team
 // 2002-2005,2011 PukiWiki Developers Team
 // 2002 Y.MASUI GPL2  http://masui.net/pukiwiki/ masui@masui.net
@@ -162,7 +162,7 @@ function plugin_bugtrack_print_form($base, $category)
 		<tr>
 			<td colspan="2">
 				<input type="submit" value="$s_submit" />
-				<input type="hidden" name="plugin" value="bugtrack" />
+				<input type="hidden" name="cmd" value="bugtrack" />
 				<input type="hidden" name="ticket" value="$ticket" />
 				<input type="hidden" name="mode"   value="submit" />
 				<input type="hidden" name="base"   value="$s_base" />

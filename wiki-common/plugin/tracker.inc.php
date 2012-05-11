@@ -1,8 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: tracker.inc.php,v 1.124.14 2011/02/05 12:46:00 Logue Exp $
+// $Id: tracker.inc.php,v 1.124.15 2012/05/11 18:13:00 Logue Exp $
 // Copyright (C) 
-//     2010-2011 PukiWiki Advance Developers Team
+//     2010-2012 PukiWiki Advance Developers Team
 //     2004-2009 PukiWiki Plus! Team
 //     2003-2005, 2007 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
@@ -860,7 +860,7 @@ class Tracker_field_submit extends Tracker_field
 
 		return <<<EOD
 <input type="submit" value="$s_title" />
-<input type="hidden" name="plugin"  value="tracker" />
+<input type="hidden" name="cmd"  value="tracker" />
 <input type="hidden" name="_refer"  value="$s_refer" />
 <input type="hidden" name="_base"   value="$s_base" />
 <input type="hidden" name="_config" value="$s_config" />

@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: rename.inc.php,v 1.38.10 2012/04/10 18:00:00 Logue Exp $
+// $Id: rename.inc.php,v 1.38.11 2012/05/11 18:20:00 Logue Exp $
 // Copyright (C)
 //   2010-2012 PukiWiki Advance DevelopersTeam
 //   2005-2007 PukiWiki Plus! Team
@@ -203,7 +203,7 @@ $msg
 <fieldset>
 	<legend>$msg_rename</legend>
 	<form action="$script" method="post">
-		<input type="hidden" name="plugin" value="rename" />
+		<input type="hidden" name="cmd" value="rename" />
 		<input type="hidden" name="refer"  value="$s_refer" />
 		<div class="rename_form">
 			<label for="_p_rename_newname">{$_rename_messages['msg_newname']}:</label>
@@ -343,7 +343,7 @@ EOD;
 	$ret['body'] = <<<EOD
 $msg
 	<form action="$script" method="post">
-		<input type="hidden" name="plugin" value="rename" />
+		<input type="hidden" name="cmd" value="rename" />
 		<input type="hidden" name="menu"   value="1" />
 		<div class="rename_form">
 			$input

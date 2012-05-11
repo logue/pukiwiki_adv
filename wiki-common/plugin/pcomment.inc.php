@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: pcomment.inc.php,v 1.48.24 2011/06/16 08:02:00 Logue Exp $
+// $Id: pcomment.inc.php,v 1.48.26 2012/05/11 18:26:00 Logue Exp $
 //
 // pcomment plugin - Show/Insert comments into specified (another) page
 //
@@ -161,7 +161,7 @@ function plugin_pcomment_convert()
 		$form_start = '<form action="' . get_script_uri() . '" method="post" class="pcomment_form">' . "\n";
 		$form = <<<EOD
 	<input type="hidden" name="digest" value="$digest" />
-	<input type="hidden" name="plugin" value="pcomment" />
+	<input type="hidden" name="cmd" value="pcomment" />
 	<input type="hidden" name="refer"  value="$s_refer" />
 	<input type="hidden" name="page"   value="$s_page" />
 	<input type="hidden" name="nodate" value="$s_nodate" />

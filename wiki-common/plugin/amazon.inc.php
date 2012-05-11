@@ -6,8 +6,8 @@
  * Thanks: To reimy, t, Ynak, WikiRoom, upk, 水橋希 and PukiWiki Developers Team.
  *
  * @copyright   Copyright &copy; 2009, Katsumi Saito <jo1upk@users.sourceforge.net>
- *              Copyright &copy; 2010-2011, PukiWiki Advance Developers Team
- * @version	 $Id: amazon.inc.php,v 3.0.2 2011/10/27 23:34:00 Logue Exp $
+ *              Copyright &copy; 2010-2012, PukiWiki Advance Developers Team
+ * @version	 $Id: amazon.inc.php,v 3.0.3 2012/05/11 18:05:00 Logue Exp $
  * See Aloso	http://d.hatena.ne.jp/mokehehe/20090526/productadvertisingapi
  *
  */
@@ -236,7 +236,7 @@ function amazon_make_review_page()
 	return <<<EOD
 <form action="$script" method="post">
 	<div class="amazon_form">
-		<input type="hidden" name="plugin" value="amazon" />
+		<input type="hidden" name="cmd" value="amazon" />
 		<input type="hidden" name="refer" value="$s_page" />
 		amazon.
 		<select name="locale" class="textbox"> 

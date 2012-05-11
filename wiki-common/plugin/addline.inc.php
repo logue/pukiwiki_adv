@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
 //
-// $Id: addline.inc.php,v 0.13.4 2010/12/23 22:45:00 Logue Exp $
+// $Id: addline.inc.php,v 0.13.5 2012/05/11 18:04:00 Logue Exp $
 // Original is sha(0.13)
 /* 
 *プラグイン addline
@@ -102,7 +102,7 @@ function plugin_addline_convert()
 	<input type="hidden" name="addline_no" value="$addline_no" />
 	<input type="hidden" name="configname"  value="$f_config" />
 	<input type="hidden" name="digest" value="$digest" />
-	<input type="hidden" name="plugin" value="addline" />
+	<input type="hidden" name="cmd" value="addline" />
 	<input type="hidden" name="refer" value="$f_page" />
 	$left_text
 	<input type="submit" name="addline" value="$btn_text" />

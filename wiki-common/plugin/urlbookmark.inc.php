@@ -179,7 +179,7 @@ function plugin_urlbookmark_convert()
  <div>
   <input type="hidden" name="urlbookmark_no" value="$urlbookmark_no" />
   <input type="hidden" name="refer" value="$s_page" />
-  <input type="hidden" name="plugin" value="urlbookmark" />
+  <input type="hidden" name="cmd" value="urlbookmark" />
   <input type="hidden" name="nodate" value="$nodate" />
   <input type="hidden" name="above" value="$above" />
   <input type="hidden" name="digest" value="$digest" />

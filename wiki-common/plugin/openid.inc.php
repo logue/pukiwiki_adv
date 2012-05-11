@@ -4,7 +4,7 @@
  *
  * @copyright   Copyright &copy; 2007-2009, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
  * @author      Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: openid.inc.php,v 0.15.1 2010/12/26 17:58:00 Logue Exp $
+ * @version     $Id: openid.inc.php,v 0.15.2 2012/05/11 18:27:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 require_once(LIB_DIR . 'auth_api.cls.php');
@@ -235,7 +235,7 @@ function plugin_openid_login_form()
 
 	$rc = <<<EOD
 <form method="get" action="$script">
-	<input type="hidden" name="plugin" value="openid" />
+	<input type="hidden" name="cmd" value="openid" />
 	<input type="hidden" name="action" value="verify" />
 	<input type="hidden" name="page" value="$r_page" />
 	<div class="openid_form">

@@ -1,8 +1,8 @@
 <?php
 // PukiPlus - Yet another WikiWikiWeb clone
-// $Id: comment.inc.php,v 1.41.25 2011/02/05 21:04:00 Logue Exp $
+// $Id: comment.inc.php,v 1.41.26 2012/05/11 18:10:00 Logue Exp $
 // Copyright (C)
-//  2010-2011 PukiWiki Advance Developers Team
+//  2010-2012 PukiWiki Advance Developers Team
 //  2005-2008 PukiWiki Plus! Team
 //  2002-2007 PukiWiki Developers Team
 //  2001-2002 Originally written by yu-ji
@@ -218,7 +218,7 @@ function plugin_comment_convert()
 $auth_guide
 <form action="$script" method="post" class="comment_form">
 	<input type="hidden" name="refpage" value="$refpage" />
-	<input type="hidden" name="plugin" value="comment" />
+	<input type="hidden" name="cmd" value="comment" />
 	<input type="hidden" name="refer"  value="$s_page" />
 	<input type="hidden" name="comment_no" value="$comment_no" />
 	<input type="hidden" name="nodate" value="$nodate" />

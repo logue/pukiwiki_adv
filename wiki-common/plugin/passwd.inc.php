@@ -3,7 +3,7 @@
  * passwd plugin.
  *
  * @copyright   Copyright &copy; 2006-2007, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: passwd.inc.php,v 0.8.1 2010/12/26 18:51:00 Logue Exp $
+ * @version     $Id: passwd.inc.php,v 0.8.2 2012/05/11 18:26:00 Logue Exp $
  *
  * $A1 = md5($data['username'] . ':' . $realm . ':' . $auth_users[$data['username']]);
  */
@@ -364,7 +364,7 @@ function set_hash()
 <div>$msg</div>
 
 <form name="passwd" action="$script" method="post">
-  <input type="hidden" name="plugin" value="passwd" />
+  <input type="hidden" name="cmd" value="passwd" />
   <input type="hidden" name="func" value="$func" />
   <input type="hidden" name="algorithm" />
   <input type="hidden" name="old_algorithm" value="$old_algorithm"/>

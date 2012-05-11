@@ -1,8 +1,8 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: attachref.inc.php,v 0.15.12 2011/02/05 10:42:00 Logue Exp $
+// $Id: attachref.inc.php,v 0.15.13 2012/05/11 18:07:00 Logue Exp $
 // Copyright (C)
-//   2011      PukiWiki Advance Developers Team
+//   2011-2012 PukiWiki Advance Developers Team
 //   2005-2006,2008 PukiWiki Plus! Team
 //   2002-2004 sha
 //
@@ -222,7 +222,7 @@ function plugin_attachref_inline()
 	<input type="hidden" name="attachref_no" value="$attachref_no" />
 	<input type="hidden" name="attachref_opt" value="$f_args" />
 	<input type="hidden" name="digest" value="$digest" />
-	<input type="hidden" name="plugin" value="attachref" />
+	<input type="hidden" name="cmd" value="attachref" />
 	<input type="hidden" name="refer" value="$f_page" />
 	<div>
 		$ret
@@ -440,7 +440,7 @@ function attachref_form($page)
 	<input type="hidden" name="digest" value="$f_digest" />
 	<input type="hidden" name="max_file_size" value="$maxsize" />
 	<input type="hidden" name="pcmd" value="post" />
-	<input type="hidden" name="plugin" value="attachref" />
+	<input type="hidden" name="cmd" value="attachref" />
 	<input type="hidden" name="refer" value="$s_page" />
 	<p class="small">$msg_maxsize</p>
 	<div class="attach_form">

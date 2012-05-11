@@ -3,7 +3,7 @@
  * PukiWiki Plus! XBEL Plugin
  *
  * @copyright   Copyright &copy; 2006,2008, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: xbel.inc.php,v 0.5.1 2010/12/26 20:57:00 Logue Exp $
+ * @version     $Id: xbel.inc.php,v 0.5.1 2012/05/11 18:11:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  *
  */
@@ -99,7 +99,7 @@ function plugin_xbel_convert()
 
 	$rc = <<<EOD
 <form action="$script" method="post">
-	<input type="hidden" name="plugin" value="xbel" />
+	<input type="hidden" name="cmd" value="xbel" />
 	<input type="hidden" name="adm" value="list" />
 	<table summary="xebel" class="style_table">
 		<caption>{$_xbel_msg['msg_text']}</caption>

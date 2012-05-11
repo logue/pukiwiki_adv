@@ -85,15 +85,14 @@ function plugin_md5_show_form($nophrase = FALSE, $value = '')
 
 	$form .= <<<EOD
 <form action="$script" method="post">
- <div>
-  <input type="hidden" name="plugin" value="md5" />
-  <label for="_p_md5_phrase">Phrase:</label>
-  <input type="text" name="phrase"  id="_p_md5_phrase" size="60" $value/><br />
+	<input type="hidden" name="cmd" value="md5" />
+	<label for="_p_md5_phrase">Phrase:</label>
+	<input type="text" name="phrase"  id="_p_md5_phrase" size="60" $value/><br />
 EOD;
 
 	if ($sha1_enabled) $form .= <<<EOD
-  <input type="radio" name="scheme" id="_p_md5_sha1" value="x-php-sha1" />
-  <label for="_p_md5_sha1">PHP sha1()</label><br />
+	<input type="radio" name="scheme" id="_p_md5_sha1" value="x-php-sha1" />
+	<label for="_p_md5_sha1">PHP sha1()</label><br />
 EOD;
 
 	$form .= <<<EOD
@@ -104,32 +103,26 @@ EOD;
 EOD;
 
 	if ($sha1_enabled) $form .= <<<EOD
-  <input type="radio" name="scheme" id="_p_md5_lssha" value="SSHA" $sha1_checked/>
-  <label for="_p_md5_lssha">LDAP SSHA (sha-1 with a seed) *</label><br />
-  <input type="radio" name="scheme" id="_p_md5_lsha" value="SHA" />
-  <label for="_p_md5_lsha">LDAP SHA (sha-1)</label><br />
+	<input type="radio" name="scheme" id="_p_md5_lssha" value="SSHA" $sha1_checked/>
+	<label for="_p_md5_lssha">LDAP SSHA (sha-1 with a seed) *</label><br />
+	<input type="radio" name="scheme" id="_p_md5_lsha" value="SHA" />
+	<label for="_p_md5_lsha">LDAP SHA (sha-1)</label><br />
 EOD;
 
 	$form .= <<<EOD
-  <input type="radio" name="scheme" id="_p_md5_lsmd5" value="SMD5" $md5_checked/>
-  <label for="_p_md5_lsmd5">LDAP SMD5 (md5 with a seed) *</label><br />
-  <input type="radio" name="scheme" id="_p_md5_lmd5" value="MD5" />
-  <label for="_p_md5_lmd5">LDAP MD5</label><br />
-
-  <input type="radio" name="scheme" id="_p_md5_lcrpt" value="CRYPT" />
-  <label for="_p_md5_lcrpt">LDAP CRYPT *</label><br />
-
-  <input type="checkbox" name="prefix" id="_p_md5_prefix" checked="checked" />
-  <label for="_p_md5_prefix">Add scheme prefix (RFC2307, Using LDAP as NIS)</label><br />
-
-  <label for="_p_md5_salt">Salt, '{scheme}', '{scheme}salt', or userPassword itself to specify:</label><br />
-  <input type="text" name="salt" id="_p_md5_salt" size="60" /><br />
-
-  <input type="submit" value="Compute" /><br />
-
-  <hr>
-  <p>* = Salt enabled<p/>
- </div>
+	<input type="radio" name="scheme" id="_p_md5_lsmd5" value="SMD5" $md5_checked/>
+	<label for="_p_md5_lsmd5">LDAP SMD5 (md5 with a seed) *</label><br />
+	<input type="radio" name="scheme" id="_p_md5_lmd5" value="MD5" />
+	<label for="_p_md5_lmd5">LDAP MD5</label><br />
+	<input type="radio" name="scheme" id="_p_md5_lcrpt" value="CRYPT" />
+	<label for="_p_md5_lcrpt">LDAP CRYPT *</label><br />
+	<input type="checkbox" name="prefix" id="_p_md5_prefix" checked="checked" />
+	<label for="_p_md5_prefix">Add scheme prefix (RFC2307, Using LDAP as NIS)</label><br />
+	<label for="_p_md5_salt">Salt, '{scheme}', '{scheme}salt', or userPassword itself to specify:</label><br />
+	<input type="text" name="salt" id="_p_md5_salt" size="60" /><br />
+	<input type="submit" value="Compute" />
+	<hr />
+	<p>* = Salt enabled</p>
 </form>
 EOD;
 

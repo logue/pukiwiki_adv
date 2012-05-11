@@ -1,7 +1,7 @@
 <?php
-// $Id: article.inc.php,v 1.28.7 2011/03/24 22:17:00 Logue Exp $
+// $Id: article.inc.php,v 1.28.8 2012/05/11 18:06:00 Logue Exp $
 // Copyright (C)
-//   2010-2011 PukiWiki Advance Developers Team
+//   2010-2012 PukiWiki Advance Developers Team
 //   2005-2006,2008 PukiWiki Plus! Team
 //   2002-2005 PukiWiki Developers Team
 //   2002      Originally written by OKAWARA,Satoshi <kawara@dml.co.jp>
@@ -185,7 +185,7 @@ function plugin_article_convert()
 	$string = <<<EOD
 <form action="$script" method="post">
 	<input type="hidden" name="article_no" value="$article_no" />
-	<input type="hidden" name="plugin" value="article" />
+	<input type="hidden" name="cmd" value="article" />
 	<input type="hidden" name="digest" value="$s_digest" />
 	<input type="hidden" name="refer" value="$s_page" />
 	<div class="article_form post_form">

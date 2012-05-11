@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
 //
-// $Id: vote2.inc.php,v 0.12.9 2011/02/05 12:48:00 Logue Exp $
+// $Id: vote2.inc.php,v 0.12.10 2012/05/11 18:12:00 Logue Exp $
 // based on vote.inc.php v1.14
 //
 // v0.2はインラインのリンクにtitleを付けた。
@@ -382,7 +382,7 @@ EOD;
 	$s_digest  = htmlsc($ndigest);
 	$body = <<<EOD
 <form action="$script" method="post">
-	<input type="hidden" name="plugin" value="vote2" />
+	<input type="hidden" name="cmd" value="vote2" />
 	<input type="hidden" name="refer" value="$s_page" />
 	<input type="hidden" name="digest" value="$s_digest" />
 	<input type="hidden" name="vote_no" value="$vote_no" />

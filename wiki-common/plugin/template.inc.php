@@ -1,5 +1,5 @@
 <?php
-// $Id: template.inc.php,v 1.22.6 2011/02/05 12:45:00 Logue Exp $
+// $Id: template.inc.php,v 1.22.7 2012/05/11 18:14:00 Logue Exp $
 //
 // Load template plugin
 
@@ -91,7 +91,7 @@ function plugin_template_action()
 	$s_page  = ($page == '') ? str_replace('$1', $s_refer, $_template_msg['msg_template_page']) : $_page;
 	$ret     = <<<EOD
 <form action="$script" method="post" class="template_form">
-	<input type="hidden" name="plugin" value="template" />
+	<input type="hidden" name="cmd" value="template" />
 	<input type="hidden" name="refer"  value="$s_refer" />
 	<div>
 		<dl>
