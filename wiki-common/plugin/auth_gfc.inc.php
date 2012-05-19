@@ -4,7 +4,7 @@
  *
  * @copyright   Copyright &copy; 2010, Katsumi Saito <jo1upk@users.sourceforge.net>
  * @author      Katsumi Saito <jo1upk@users.sourceforge.net>
- * @version     $Id: auth_gfc.inc.php,v 0.2.1 2010/12/25 10:55:00 Logue Exp $
+ * @version     $Id: auth_gfc.inc.php,v 0.2.2 2012/05/15 19:46:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 require_once(LIB_DIR . 'auth_api.cls.php');
@@ -54,7 +54,7 @@ function plugin_auth_gfc_init()
 
 function plugin_auth_gfc_convert()
 {
-	global $script,$vars,$auth_api,$_auth_gfc_msg, $js_blocks;
+	global $vars,$auth_api,$_auth_gfc_msg, $js_blocks;
 
 	if (! $auth_api['auth_gfc']['use']) return '<p>'.$_auth_gfc_msg['msg_invalid'].'</p>';
 
@@ -119,7 +119,7 @@ JAVASCRIPT;
 
 function plugin_auth_gfc_inline()
 {
-	global $script,$vars,$auth_api,$_auth_gfc_msg;
+	global $vars,$auth_api,$_auth_gfc_msg;
 
 	if (! $auth_api['auth_gfc']['use']) return $_auth_gfc_msg['msg_invalid'];
 
@@ -131,11 +131,15 @@ function plugin_auth_gfc_inline()
 	if (!empty($name['api']) && $obj->auth_name !== $name['api']) return;
 
 	if (isset($name['name'])) {
+		/*
 		$logout_url = $script.'?plugin=auth_gfc';
 		if (! empty($vars['page'])) {
 			$logout_url .= '&amp;page='.rawurlencode($vars['page']);
 		}
 		$logout_url .= '&amp;logout';
+		*/
+		$logout_url = get_cmd_uri('auth_gfc',$vars['page']).'&amp;logout';
+		
 		$nick = '<span title="'.$name['id'].'">'.$name['name'].'</span>';
 		return sprintf($_auth_gfc_msg['msg_logined'],$nick) .
 			'(<a href="'.$logout_url.'">'.$_auth_gfc_msg['msg_logout'].'</a>)';

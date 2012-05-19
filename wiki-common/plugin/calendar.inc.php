@@ -30,7 +30,7 @@ function plugin_calendar_init(){
 
 function plugin_calendar_convert()
 {
-	global $script, $vars, $post, $get, $pkwk_dtd ,$_labels, $WikiName, $BracketName;
+	global $vars, $post, $get, $pkwk_dtd ,$_labels, $WikiName, $BracketName;
 	//global $_calendar_plugin_edit, $_calendar_plugin_empty;
 	global $_calendar_msg, $_calendar_viewer_msg;
 
@@ -112,8 +112,8 @@ function plugin_calendar_convert()
 
 	$ret = '';
 	if ($today_view === TRUE) {
-		$ret .= '<div class="clearfix">'."\n".	// ŠO˜g
-			'<div class="style_calendar_viewer">'."\n";	// ƒJƒŒƒ“ƒ_[‚Ìdivƒ^ƒOi$today_view—LŒø‚Ì‚İo—Íj
+		$ret .= '<div class="clearfix">'."\n".	// å¤–æ 
+			'<div class="style_calendar_viewer">'."\n";	// ã‚«ãƒ¬ãƒ³ãƒ€ãƒ¼ã®divã‚¿ã‚°ï¼ˆ$today_viewæœ‰åŠ¹æ™‚ã®ã¿å‡ºåŠ›ï¼‰
 	}
 	
 	$ret .= <<<EOD
@@ -217,7 +217,7 @@ EOD;
 		'</table>' . "\n";
 
 	if ($today_view) {
-		$ret .= '</div>'."\n";	// ƒJƒŒƒ“ƒ_[‚Ìdivƒ^ƒO‚ğ•Â‚¶‚é
+		$ret .= '</div>'."\n";	// ã‚«ãƒ¬ãƒ³ãƒ€ãƒ¼ã®divã‚¿ã‚°ã‚’é–‰ã˜ã‚‹
 		$ret .= (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section class="style_calendar_post">' : '<div class="style_calendar_post">')."\n";
 		if ($today_args == '') {
 			$str = (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<article id="'.$tpage.'" class="style_calendar_post">' : '<div id="'.$tpage.'" class="style_calendar_post">')."\n";

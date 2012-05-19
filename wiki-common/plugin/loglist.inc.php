@@ -3,7 +3,7 @@
  * PukiWiki Plus! ログリストプラグイン
  *
  * @copyright	Copyright &copy; 2004-2006, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version	$Id: loglist.php,v 0.5.2 2011/02/05 11:02:00 Logue Exp $
+ * @version	$Id: loglist.php,v 0.5.2 2012/05/15 19:56:00 Logue Exp $
  * @license	http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 
@@ -60,7 +60,8 @@ function plugin_loglist_convert()
 	usort($data,create_function('$a,$b','return $b[0] - $a[0];')); // D
 	// usort($data,create_function('$a,$b','return $a[0] - $b[0];')); // A
 
-	$str_view = $script.'?plugin=logview&kind='.$kind.'&page=';
+	//$str_view = $script.'?plugin=logview&kind='.$kind.'&page=';
+	$str_view = get_cmd_uri('logview', $_page, null, array('kind'=>$kind));
 	$rc = '';
 
 	$rc .=  '|'.$_loglist_messages['fld_UTIME'].

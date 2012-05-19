@@ -9,7 +9,7 @@ define('MEMO_ROWS',  5); // Rows of textarea
 
 function plugin_memo_action()
 {
-	global $script, $vars, $cols, $rows;
+	global $vars, $cols, $rows;
 //	global $_title_collided, $_msg_collided, $_title_updated;
 
 $_title_collided   = T_('On updating $1, a collision has occurred.');
@@ -53,6 +53,7 @@ $_msg_collided = T_('It seems that someone has already updated this page while y
 		$s_digest = htmlsc($vars['digest']);
 		$s_postdata_input = htmlsc($postdata_input);
 
+		$script = get_script_uri();
 		$body .= <<<EOD
 <form action="$script?cmd=preview" method="post">
 	<input type="hidden" name="cmd" value="preview" />
@@ -78,7 +79,7 @@ EOD;
 
 function plugin_memo_convert()
 {
-	global $script, $vars, $digest;
+	global $vars, $digest;
 	static $numbers = array();
 
 	if (! isset($numbers[$vars['page']])) $numbers[$vars['page']] = 0;
@@ -95,7 +96,7 @@ function plugin_memo_convert()
 		$_script = '';
 		$_submit = '';	
 	} else {
-		$_script = & $script;
+		$_script = get_script_uri();;
 		$_submit = '<input type="submit" name="memo" value="' . T_('update') . '" />';
 	}
 

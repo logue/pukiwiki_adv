@@ -228,11 +228,12 @@ function plugin_openid_action()
 
 function plugin_openid_login_form()
 {
-	global $script,$vars,$_openid_msg;
+	global $vars,$_openid_msg;
 
 	$r_page = (empty($vars['page'])) ? '' : rawurlencode($vars['page']);
 	$size = PLUGIN_OPENID_SIZE_LOGIN;
 
+	$script = get_script_uri();
 	$rc = <<<EOD
 <form method="get" action="$script">
 	<input type="hidden" name="cmd" value="openid" />

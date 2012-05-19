@@ -20,7 +20,7 @@ function plugin_flash_inline()
 
 function plugin_flash_convert()
 {
-	global $flash_count, $script, $js_blocks;
+	global $flash_count, $js_blocks;
 	$argc = func_num_args();
 
 	if ($argc < 1) {

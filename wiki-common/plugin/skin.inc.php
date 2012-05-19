@@ -191,8 +191,9 @@ function skin_get_plus_theme()
 
 function skin_make_filelist($list='')
 {
-	global $vars, $script, $_skin_msg;
+	global $vars, $_skin_msg;
 
+	$script = get_script_uri();
 	$retval = <<<EOD
 <form action="$script" method="post">
  <div>

@@ -112,7 +112,7 @@ EOD;
 // Common function
 function plugin_ref_body($args)
 {
-	global $script, $vars;
+	global $vars;
 	global $WikiName, $BracketName;
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
@@ -237,8 +237,7 @@ function plugin_ref_body($args)
 		}
 	} else {
 		// Count downloads with attach plugin
-		$url  = $script . '?plugin=attach' . '&refer=' . rawurlencode($page) .
-			'&openfile=' . rawurlencode($name); // Show its filename at the last
+		$url = get_cmd_uri('attach', null, null, array('refer'=>$page, 'openfile'=>$name));
 		$url2 = '';
 		$params['_title'] = $name;
 
@@ -249,8 +248,7 @@ function plugin_ref_body($args)
 				$url = $file; // Try direct-access, if possible
 			} else {
 				// With ref plugin (faster than attach)
-				$url = $script . '?plugin=ref' . '&page=' . rawurlencode($page) .
-					'&src=' . rawurlencode($name); // Show its filename at the last
+				$url = get_cmd_uri('ref',$page,null,array('src'=>$name));
 			}
 			$size = @getimagesize($file);
 			if (is_array($size)) {
@@ -260,7 +258,7 @@ function plugin_ref_body($args)
 		}
 	}
 
-	$s_url   = htmlsc($url);
+	$s_url   = $url;
 	$s_title = isset($params['_title']) ? htmlsc($params['_title']) : '';
 	$s_info  = '';
 	if ($seems_image) {
@@ -390,7 +388,7 @@ function plugin_ref_action()
 {
 	global $vars;
 
-	$usage = 'Usage: plugin=ref&amp;page=page_name&amp;src=attached_image_name';
+	$usage = 'Usage: cmd=ref&amp;page=page_name&amp;src=attached_image_name';
 
 	if (! isset($vars['page']) || ! isset($vars['src']))
 		return array('msg' => 'Invalid argument', 'body' => $usage);
@@ -429,8 +427,10 @@ function plugin_ref_action()
 	$s_filename = htmlsc($filename);
 
 	// Output
-	pkwk_common_headers(filemtime($ref), null, false);
-
+	ini_set('default_charset', '');
+	mb_http_output('pass');
+/*
+	pkwk_common_headers(filemtime($ref), 604800, false);
 	// for reduce server load
 	if (function_exists('apache_get_modules') && in_array( 'mod_xsendfile', apache_get_modules()) ){
 		// for Apache mod_xsendfile
@@ -442,7 +442,7 @@ function plugin_ref_action()
 		// nginx
 //		header('X-Accel-Redirect: '.$ref);
 	}
-
+*/
 	if ($type == 'text/html' || $type == 'application/octet-stream') {
 		header('Content-Disposition: attachment; filename="' . $s_filename . '"');
 		header('Content-Type: application/octet-stream; name="' . $s_filename . '"');
@@ -451,7 +451,7 @@ function plugin_ref_action()
 		header('Content-Type: ' . htmlsc($type));
 	}
 	header('Content-Length: ' . filesize($ref));
-	@readfile($ref);
+	plus_readfile($ref);
 	exit;
 }
 ?>

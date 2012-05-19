@@ -34,7 +34,7 @@ function plugin_login_init()
  */
 function plugin_login_convert()
 {
-	global $script, $vars, $auth_api, $_login_msg;
+	global $vars, $auth_api, $_login_msg;
 
 	@list($type) = func_get_args();
 

@@ -72,7 +72,7 @@ function plugin_backup_init()
 
 function plugin_backup_action()
 {
-	global $vars, $do_backup, $script, $_string;
+	global $vars, $do_backup, $_string;
 	global $_backup_messages;
 	if (! $do_backup) return;
 
@@ -200,7 +200,7 @@ function plugin_backup_action()
  */
 function plugin_backup_delete($page, $ages = array())
 {
-	global $vars,$script;
+	global $vars;
 	global $_backup_messages;
 
 	if (! _backup_file_exists($page))
@@ -234,6 +234,7 @@ function plugin_backup_delete($page, $ages = array())
 	foreach ($ages as $age) {
 		$href_ages .= "\t\t".'<input type="hidden" name="selectages[]" value="' . $age . '" />' . "\n";
 	}
+	$script = get_script_uri();
 	$body .= <<<EOD
 <fieldset>
 	<legend>{$_backup_messages['msg_backup_adminpass']}</legend>
@@ -268,9 +269,8 @@ function plugin_backup_get_list($page)
 	global $_backup_messages, $vars;
 	$r_page = rawurlencode($page);
 	$s_page = htmlsc($page);
-	$script = get_script_uri();
 	$retval = array();
-	$retval[] = '<form action="'.$script.'" method="get" class="backup_select_form">';
+	$retval[] = '<form action="'.get_script_uri().'" method="get" class="backup_select_form">';
 	$retval[] = '<input type="hidden" name="cmd" value="backup" />';
 	$retval[] = '<input type="hidden" name="page" value="'.$s_page.'" />';
 	$backups = _backup_file_exists($page) ? get_backup($page) : array();
@@ -406,7 +406,7 @@ function plugin_backup_visualdiff($str)
 // Plus! Extend - Create Combobox for Backup
 function plugin_backup_convert()
 {
-	global $vars, $script;
+	global $vars;
 	global $_backup_messages;
 	global $js_blocks, $plugin_backup_count;
 
@@ -441,7 +441,7 @@ function plugin_backup_convert()
 	$date = get_date("m/d", get_filetime($page));
 	$backups = _backup_file_exists($page) ? get_backup($page) : array();
 
-	$retval[] = '<form action="' . get_cmd_uri() . '" method="get" class="autosubmit">';
+	$retval[] = '<form action="' . get_script_uri() . '" method="get" class="autosubmit">';
 	$retval[] = '<input type="hidden" name="cmd" value="backup" />';
 	$retval[] = '<input type="hidden" name="action" value="' . $mode . '" />';
 	$retval[] = '<input type="hidden" name="page" value="' . $r_page . '" />';

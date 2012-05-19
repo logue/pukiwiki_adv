@@ -40,14 +40,15 @@ function plugin_adm_auth_wkgrp_init()
 
 function plugin_adm_auth_wkgrp_convert()
 {
-	global $script, $_adm_auth_wkgrp_msg, $_LANG;
+	global $_adm_auth_wkgrp_msg, $_LANG;
 
 	if (auth::check_role('role_adm'))  return '';
 	if (! PLUGIN_ADM_AUTH_WKGRP_USE_WRITE_FUNC) return '';
 
 	$config_page_name = ':config/'.CONFIG_AUTH_WKGRP;
 	$msg = '';
-
+	
+	$script      = get_script_uri();
 	$cmd_view    = get_page_uri($config_page_name);
 	$cmd_edit    = get_cmd_uri('edit',$config_page_name);
 	$cmd_guiedit = get_cmd_uri('guiedit',$config_page_name);

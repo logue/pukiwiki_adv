@@ -44,7 +44,7 @@ function plugin_csv2newpage_init()
 
 function plugin_csv2newpage_convert()
 {
-	global $script, $vars, $_csv2newpage_messages;
+	global $vars, $_csv2newpage_messages;
 	static $numbers = array();
 
 	$page = $vars['page'];
@@ -105,6 +105,7 @@ $retval .=<<<EOD
 EOD;
 		return plugin_csv2newpage_showform($retval);
 	} else {
+		$script = get_script_uri();
 		return <<<EOD
 <form enctype="multipart/form-data" action="$script" method="post">
 <div>
@@ -366,7 +367,7 @@ function plugin_csv2newpage_write($ary,$base,$postdata,$config)
 //アップロードフォームを表示
 function plugin_csv2newpage_showform($retval)
 {
-	global $script, $_csv2newpage_messages;
+	global $_csv2newpage_messages;
 
 	if (! exist_plugin('attach'))
 		return array('msg'=>'plugin not found', 'body'=> 'The attach plugin is not found.');
@@ -383,6 +384,7 @@ function plugin_csv2newpage_showform($retval)
 			$pass = '<br />'.$title.': <input type="password" name="pass" size="8" />';
 		}
 	}
+	$script = get_script_uri();
 	return <<<EOD
 <form enctype="multipart/form-data" action="$script" method="post">
 	<input type="hidden" name="max_file_size" value="$maxsize" />

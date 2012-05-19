@@ -68,7 +68,7 @@ function plugin_bugtrack_convert()
 
 function plugin_bugtrack_print_form($base, $category)
 {
-	global $_plugin_bugtrack, $script;
+	global $_plugin_bugtrack;
 	static $id = 0;
 
 	$s_base     = htmlsc($base);
@@ -121,7 +121,7 @@ function plugin_bugtrack_print_form($base, $category)
 		$keyword = 'B_' . $ticket;
 		$_SESSION[$keyword] = md5(get_ticket() . $ticket);
 	}
-
+	$script = get_script_uri();
 	$body = <<<EOD
 <form action="$script" method="post" class="bugtrack_form">
 	<table>

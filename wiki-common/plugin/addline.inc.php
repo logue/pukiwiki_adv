@@ -47,7 +47,7 @@ function plugin_addline_init()
 
 function plugin_addline_convert()
 {
-	global $script,$vars,$digest;
+	global $vars,$digest;
 	global $_addline_messages;
 	static $numbers = array();
 	static $no_flag = 0;
@@ -93,8 +93,9 @@ function plugin_addline_convert()
 		if ( $no_flag == 1 ) $btn_text .= "[$addline_no]";
 	}
 
-	$f_page   = htmlspecialchars($vars['page']);
-	$f_config = htmlspecialchars($configname);
+	$f_page   = htmlsc($vars['page']);
+	$f_config = htmlsc($configname);
+	$script = get_script_uri();
 
 	return <<<EOD
 <form action="$script" method="post" class="addline_form">

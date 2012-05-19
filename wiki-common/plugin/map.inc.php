@@ -1,8 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: map.inc.php,v 1.18.5 2011/02/05 10:28:00 Logue Exp $
+// $Id: map.inc.php,v 1.18.5 2012/05/15 20:19:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiWiki Advance Developers Team
+//   2010,2012 PukiWiki Advance Developers Team
 //   2008 PukiWiki Plus! Developers Team
 //   2002-2005,2007,2011 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
@@ -10,8 +10,8 @@
 // Relation map plugin
 //
 // Usage :
-//   ?plugin=map&refer=pagename
-//   ?plugin=map&refer=pagename&reverse=true
+//   ?cmd=map&refer=pagename
+//   ?cmd=map&refer=pagename&reverse=true
 
 
 // Show $non_list files
@@ -129,9 +129,10 @@ class MapNode
 
 		$this->rels = $reverse ? $this->ref() : $this->rel();
 		$mark       = $reverse ? '' : '<sup>+</sup>';
-		$this->mark = '<a id="rel_' . $this->id . '" href="' . $script .
-			'?plugin=map&amp;refer=' . rawurlencode($this->page) . '">' .
-			$mark . '</a>';
+		//$this->mark = '<a id="rel_' . $this->id . '" href="' . $script .
+		//	'?plugin=map&amp;refer=' . rawurlencode($this->page) . '">' .
+		//	$mark . '</a>';
+		$this->mark = '<a id="rel_' . $this->id . '" href="' . get_cmd_uri('map',null,null,array('refer'=>$this->page)) . '">'.$mark.'</a>';
 	}
 
 	function hide(& $pages)

@@ -112,7 +112,6 @@ function replace_do($search,$replace,$notimestamp)
 function replace_adm($pass,$search)
 {
 	global $_replace_msg;
-	global $script;
 	global $_button;
 
 	$body = '';
@@ -137,7 +136,7 @@ EOD;
 	if ($search === '') {
 		$body .= '<p><strong>'.$_replace_msg['msg_no_search']."</strong></p>\n";
 	}
-
+	$script = get_script_uri();
 	$body .= <<<EOD
 <p>$msg</p>
 <form action="$script" method="post" class="replace_form">

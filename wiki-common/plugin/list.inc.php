@@ -20,7 +20,7 @@ function plugin_list_action()
 	switch($type) {
 		case 'json' :
 			if (isset($vars['term'])){
-				// “‚¢À‘•‚¾EEEB
+				// é…·ã„å®Ÿè£…ã ãƒ»ãƒ»ãƒ»ã€‚
 				foreach($pages as $page){
 					if (preg_match('/^'.$vars['term'].'/', $page)){
 						$buffer[] = $page;

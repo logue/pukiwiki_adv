@@ -63,7 +63,7 @@ function plugin_referer_action()
 // Referer 明細行編集
 function plugin_referer_body($page, $sort)
 {
-	global $script, $_referer_msg;
+	global $_referer_msg;
 	global $referer;
 
 	$data = ref_get_data($page);

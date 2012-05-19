@@ -174,7 +174,7 @@ function plugin_edit_inline()
 {
 	static $usage = '&edit(pagename,anchor);';
 
-	global $script, $vars, $fixed_heading_edited;
+	global $vars, $fixed_heading_edited;
 	global $_symbol_paraedit, $_symbol_paraguiedit;
 
 	if (!$fixed_heading_edited || is_freeze($vars['page']) || auth::check_role('readonly')) {

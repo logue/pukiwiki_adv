@@ -29,7 +29,7 @@ function plugin_template_init()
 
 function plugin_template_action()
 {
-	global $script, $vars;
+	global $vars;
 	global $_template_msg;
 
 	if (auth::check_role('safemode') || auth::check_role('readonly')) die_message($_template_msg['msg_template_prohibited']);
@@ -89,22 +89,21 @@ function plugin_template_action()
 
 	$s_refer = htmlsc($vars['refer']);
 	$s_page  = ($page == '') ? str_replace('$1', $s_refer, $_template_msg['msg_template_page']) : $_page;
+	$script = get_script_uri();
 	$ret     = <<<EOD
 <form action="$script" method="post" class="template_form">
 	<input type="hidden" name="cmd" value="template" />
-	<input type="hidden" name="refer"  value="$s_refer" />
-	<div>
-		<dl>
-			<dt><label for="_p_template_begin">{$_template_msg['msg_template_start']}</label></dt>
-			<dd><select name="begin" size="10" id="_p_template_begin">$begin_select</select></dd>
-			<dt><labbel for="_p_template_end">{$_template_msg['msg_template_end']}</label></dt>
-			<dd><select name="end"   size="10" id="_p_template_end">$end_select</select></dd>
-		</dl>
-		<label for="_p_template_refer">{$_template_msg['msg_template_refer']}</label>
-		<input type="text" name="page" id="_p_template_refer" value="$s_page" />
-		<input type="submit" name="submit" value="{$_template_msg['btn_template_create']}" />
-		$tag
-	</div>
+	<input type="hidden" name="refer" value="$s_refer" />
+	<dl>
+		<dt><label for="_p_template_begin">{$_template_msg['msg_template_start']}</label></dt>
+		<dd><select name="begin" size="10" id="_p_template_begin">$begin_select</select></dd>
+		<dt><labbel for="_p_template_end">{$_template_msg['msg_template_end']}</label></dt>
+		<dd><select name="end"   size="10" id="_p_template_end">$end_select</select></dd>
+	</dl>
+	<label for="_p_template_refer">{$_template_msg['msg_template_refer']}</label>
+	<input type="text" name="page" id="_p_template_refer" value="$s_page" />
+	<input type="submit" name="submit" value="{$_template_msg['btn_template_create']}" />
+	$tag
 </form>
 EOD;
 

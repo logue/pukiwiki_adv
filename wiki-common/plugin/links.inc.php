@@ -31,7 +31,7 @@ T_("Please input the Administrator password, and click the [Exec] button.\n")
 
 function plugin_links_action()
 {
-	global $script, $post, $vars, $foot_explain;
+	global $post, $vars, $foot_explain;
 	global $_links_messages;
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits this');
@@ -52,6 +52,7 @@ function plugin_links_action()
 
 	$msg   = & $_links_messages['title_update'];
 	$body  = convert_html( sprintf($_links_messages['msg_usage1']) );
+	$script = get_script_uri();
 	$body .= <<<EOD
 <form method="post" action="$script">
 	<input type="hidden" name="plugin" value="links" />

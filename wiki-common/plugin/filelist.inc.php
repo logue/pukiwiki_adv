@@ -39,7 +39,7 @@ function plugin_filelist_action()
 function filelist_adm($pass)
 {
 	global $_filelist_msg;
-	global $script, $vars;
+	global $vars;
 
 	$msg_pass = $_filelist_msg['msg_input_pass'];
 	$btn      = $_filelist_msg['btn_exec'];
@@ -50,6 +50,7 @@ function filelist_adm($pass)
 		$body .= "<p><strong>".$_filelist_msg['msg_no_pass']."</strong></p>";
 	}
 
+	$script = get_script_uri();
 	$body .= <<<EOD
 <fieldset>
 	<legend>$msg_pass</legend>

@@ -14,7 +14,7 @@ define('PLUGIN_LOOKUP_USAGE', '#lookup(interwikiname[,button_name[,default]])');
 
 function plugin_lookup_convert()
 {
-	global $vars, $script;
+	global $vars;
 	static $id = 0;
 
 	$num = func_num_args();
@@ -27,10 +27,11 @@ function plugin_lookup_convert()
 	$default   = ($num > 2) ? htmlsc(trim($args[2])) : '';
 	$s_page    = htmlsc($vars['page']);
 	++$id;
+	$script = get_script_uri();
 
 	$ret = <<<EOD
 <form action="$script" method="post">
-	<input type="hidden" name="plugin" value="lookup" />
+	<input type="hidden" name="cmd" value="lookup" />
 	<input type="hidden" name="refer"  value="$s_page" />
 	<input type="hidden" name="inter"  value="$interwiki" />
 	<div class="lookup_form">

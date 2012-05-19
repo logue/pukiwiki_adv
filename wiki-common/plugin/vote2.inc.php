@@ -102,7 +102,7 @@ function plugin_vote2_action()
 }
 function plugin_vote2_inline()
 {
-	global $script, $vars, $digest;
+	global $vars, $digest;
 	global $_vote2_messages;
 	global $_vote_plugin_choice, $_vote_plugin_votes;
 	static $numbers = array();
@@ -241,7 +241,7 @@ function plugin_vote2_address($match, $vote_no, $page, $ndigest)
 }
 function plugin_vote2_convert()
 {
-	global $script,$vars,$digest, $_vote2_messages;
+	global $vars,$digest, $_vote2_messages;
 	global $_vote_plugin_choice, $_vote_plugin_votes;
 	global $digests;
 	static $numbers = array();
@@ -377,7 +377,7 @@ EOD;
 
 		$body2 .= "	</tr>\n";
 	}
-
+	$script = get_script_uri();
 	$s_page    = htmlsc($page);
 	$s_digest  = htmlsc($ndigest);
 	$body = <<<EOD
@@ -416,7 +416,7 @@ EOD;
 
 function plugin_vote2_action_inline($vote_no)
 {
-	global $get,$vars,$script,$cols,$rows, $_vote2_messages;
+	global $get,$vars,$cols,$rows, $_vote2_messages;
 //	global $_title_collided,$_msg_collided,$_title_updated;
 	global $_vote_plugin_choice, $_vote_plugin_votes;
 $_title_collided   = _("On updating $1, a collision has occurred.");
@@ -531,7 +531,7 @@ $_msg_collided = _("It seems that someone has already updated this page while yo
 }
 function plugin_vote2_action_block($vote_no)
 {
-	global $post,$vars,$script,$cols,$rows, $_vote2_messages;
+	global $post,$vars,$cols,$rows, $_vote2_messages;
 //	global $_title_collided,$_msg_collided,$_title_updated;
 	global $_vote_plugin_choice, $_vote_plugin_votes;
 $_title_collided   = _("On updating $1, a collision has occurred.");

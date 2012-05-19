@@ -27,7 +27,7 @@ function plugin_diff_action()
 
 function plugin_diff_view($page)
 {
-	global $script, $hr;
+	global $hr;
 //	global $_msg_notfound, $_msg_goto, $_msg_deleted, $_msg_addline, $_msg_delline;
 //	global $_title_diff, $_title_diff_delete;
 
@@ -61,8 +61,7 @@ function plugin_diff_view($page)
 	if (file_exists($filename)) {
 		// if (! PKWK_READONLY) {
 		if (! auth::check_role('readonly')) {
-			$menu[] = '<li><a href="' . $script . '?cmd=diff&amp;action=delete&amp;page=' .
-				$r_page . '">' . str_replace('$1', $s_page, $_title_diff_delete) . '</a></li>';
+			$menu[] = '<li><a href="' . get_cmd_uri('diff', $page, null, array('action'=>'delete')) . '">' . str_replace('$1', $s_page, $_title_diff_delete) . '</a></li>';
 		}
 		$source = join('', file($filename));
 		auth::is_role_page($source);
@@ -91,7 +90,7 @@ EOD;
 
 function plugin_diff_delete($page)
 {
-	global $script, $vars;
+	global $vars;
 //	global $_title_diff_delete, $_msg_diff_deleted;
 //	global $_msg_diff_adminpass, $_btn_delete, $_msg_invalidpass;
 
@@ -130,6 +129,7 @@ function plugin_diff_delete($page)
 	}
 
 	$s_page = htmlsc($page);
+	$script = get_script_uri();
 	$body .= <<<EOD
 <p>$_msg_diff_adminpass</p>
 <form action="$script" method="post">

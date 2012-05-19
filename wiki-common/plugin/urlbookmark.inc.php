@@ -48,7 +48,7 @@ defined('URLBOOKMARK_INS') or define('URLBOOKMARK_INS',1);
 
 function plugin_urlbookmark_action()
 {
-	global $script,$vars,$post,$now;
+	global $vars,$post,$now;
 
 	if( auth::check_role('readonly') ) die_message('PKWK_READONLY prohibits editing');
 
@@ -142,7 +142,7 @@ function plugin_urlbookmark_action()
 
 function plugin_urlbookmark_convert()
 {
-	global $script,$vars,$digest;
+	global $vars,$digest;
 	static $numbers = array();
 
 	if( auth::check_role('readonly') ) return '';
@@ -159,7 +159,7 @@ function plugin_urlbookmark_convert()
 		$titletags = '';
 	}
 	else {
-		$titletags = _("Title: ") . "<input type='text' name='title' size='".URLBOOKMARK_TITLE_COLS."' /><br/>\n";
+		$titletags = '	<input type="text" name="title" size="'.URLBOOKMARK_TITLE_COLS.'" placeholder="'.T_("Title: ").'" /><br />'."\n";
 	}
 		
 	$nodate = in_array('nodate',$options) ? '1' : '0';
@@ -169,29 +169,26 @@ function plugin_urlbookmark_convert()
 	$urlbookmark_cols = URLBOOKMARK_COMMENT_COLS;
 	$url_cols = URLBOOKMARK_URL_COLS;
 
-	$_msg_urlbookmark = _("Comment: ");
-	$_btn_urlbookmark = _("Add URL");
-	$_btn_url         = _("URL: ");
+	$_msg_urlbookmark = T_("Comment: ");
+	$_btn_urlbookmark = T_("Add URL");
+	$_btn_url         = T_("URL: ");
+	$script = get_script_uri();
 
-	$string = <<<EOD
+	return <<<EOD
 <br />
-<form action="$script" method="post">
- <div>
-  <input type="hidden" name="urlbookmark_no" value="$urlbookmark_no" />
-  <input type="hidden" name="refer" value="$s_page" />
-  <input type="hidden" name="cmd" value="urlbookmark" />
-  <input type="hidden" name="nodate" value="$nodate" />
-  <input type="hidden" name="above" value="$above" />
-  <input type="hidden" name="digest" value="$digest" />
-  $_btn_url <input type="text" name="url" size="$url_cols" /><br/>
-  $titletags
-  $_msg_urlbookmark <input type="text" name="msg" size="$urlbookmark_cols" /><br/>
-  <input type="submit" name="urlbookmark" value="$_btn_urlbookmark" />
- </div>
+<form action="$script" method="post" class="urlbookmark_form">
+	<input type="hidden" name="urlbookmark_no" value="$urlbookmark_no" />
+	<input type="hidden" name="refer" value="$s_page" />
+	<input type="hidden" name="cmd" value="urlbookmark" />
+	<input type="hidden" name="nodate" value="$nodate" />
+	<input type="hidden" name="above" value="$above" />
+	<input type="hidden" name="digest" value="$digest" />
+	<input type="text" name="url" size="$url_cols" placeholder="$_btn_url" /><br />
+$titletags
+	<input type="text" name="msg" size="$urlbookmark_cols" placeholder="$_msg_urlbookmark" /><br />
+	<input type="submit" name="urlbookmark" value="$_btn_urlbookmark" />
 </form>
 EOD;
-	
-	return $string;
 }
 
 function plugin_urlbookmark_get_title($url) {

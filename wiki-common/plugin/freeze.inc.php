@@ -14,7 +14,7 @@ function plugin_freeze_convert() { return ''; }
 
 function plugin_freeze_action()
 {
-	global $script, $vars, $function_freeze;
+	global $vars, $function_freeze;
 
 	$_title_isfreezed = T_(' $1 has already been frozen');
 	$_title_freezed   = T_(' $1 has been frozen.');
@@ -55,6 +55,7 @@ function plugin_freeze_action()
 		$msg    = & $_title_freeze;
 		$s_page = htmlsc($page);
 		$body   = ($pass === NULL) ? '' : "<p><strong>$_msg_invalidpass</strong></p>\n";
+		$script = get_script_uri();
 		$body  .= <<<EOD
 <fieldset>
 	<legend>$_msg_freezing</legend>

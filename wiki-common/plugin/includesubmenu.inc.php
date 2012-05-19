@@ -9,7 +9,7 @@
 
 function plugin_includesubmenu_convert()
 {
-	global $script,$vars;
+	global $vars;
 
 	$ShowPageName = FALSE;
 
@@ -53,9 +53,8 @@ function plugin_includesubmenu_convert()
 	$body = convert_html(get_source($SubMenuPageName));
 
 	if ($ShowPageName) {
-		$r_page = rawurlencode($SubMenuPageName);
 		$s_page = htmlsc($SubMenuPageName);
-		$link = "<a href=\"$script?cmd=edit&amp;page=$r_page\">$s_page</a>";
+		$link = '<a href="' . get_cmd_uri('edit',$SubMenuPageName) . '">$s_page</a>';
 		$body = "<h1>$link</h1>\n$body";
 	}
 	return $body;

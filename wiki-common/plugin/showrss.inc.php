@@ -136,9 +136,9 @@ class ShowRSS_html
 
 	function ShowRSS_html($xml)
 	{
-		// ®Œ`
+		// æ•´å½¢
 		if ((string) $xml->attributes()->version == '2.0'){
-			// RSS2.0‚Ìê‡iƒ`ƒƒƒ“ƒlƒ‹‚ª•¡”‚ ‚Á‚½ê‡‚Ç[‚·‚é‚ñ‚¾H‚±‚êHj
+			// RSS2.0ã®å ´åˆï¼ˆãƒãƒ£ãƒ³ãƒãƒ«ãŒè¤‡æ•°ã‚ã£ãŸå ´åˆã©ãƒ¼ã™ã‚‹ã‚“ã ï¼Ÿã“ã‚Œï¼Ÿï¼‰
 			foreach ($xml->channel as $channels){
 				$this->title =  (string) $channels->title;
 				$this->subtitle = (string) $channels->description;
@@ -156,7 +156,7 @@ class ShowRSS_html
 				}
 			}
 		}else if($xml->entry){
-			// <entry>‚ªŠÜ‚Ü‚ê‚éê‡‚ÍAAtom‚Æ”»’f‚·‚éB
+			// <entry>ãŒå«ã¾ã‚Œã‚‹å ´åˆã¯ã€Atomã¨åˆ¤æ–­ã™ã‚‹ã€‚
 			$xml->registerXPathNamespace('feed', 'http://www.w3.org/2005/Atom');
 			$href = '';
 			foreach ($xml->link as $link) {
@@ -171,8 +171,8 @@ class ShowRSS_html
 			$this->url = $href;
 			$this->logo = (isset($xml->icon)) ? '<a href="'.$href.' rel="external"><img src="'.(string) $xml->icon.'" /></a>' : null;
 			
-			// atom podcast‚Í–¢‘Î‰i•¡”w’è‰Â”\‚Á‚Ä‚Ç‚ñ‚¾‚¯[IHj
-			// contentƒ^ƒO‚É‚Í–¢‘Î‰
+			// atom podcastã¯æœªå¯¾å¿œï¼ˆè¤‡æ•°æŒ‡å®šå¯èƒ½ã£ã¦ã©ã‚“ã ã‘ãƒ¼ï¼ï¼Ÿï¼‰
+			// contentã‚¿ã‚°ã«ã¯æœªå¯¾å¿œ
 			foreach ($xml->entry as $entry) {
 				$this->items[] = array(
 					'entry'	=> (string) $entry->title,
@@ -182,9 +182,9 @@ class ShowRSS_html
 				);
 			}
 		}else{
-//			$rdf = $xml->channel->items->children('http://www.w3.org/1999/02/22-rdf-syntax-ns#');	// RDFi–¢g—pj
-			$dc = $xml->channel->children('http://purl.org/dc/elements/1.1/');	// ƒ_ƒuƒŠƒ“ƒRƒA
-			// RSS1.x‚Ìê‡
+//			$rdf = $xml->channel->items->children('http://www.w3.org/1999/02/22-rdf-syntax-ns#');	// RDFï¼ˆæœªä½¿ç”¨ï¼‰
+			$dc = $xml->channel->children('http://purl.org/dc/elements/1.1/');	// ãƒ€ãƒ–ãƒªãƒ³ã‚³ã‚¢
+			// RSS1.xã®å ´åˆ
 			$this->title = $xml->channel->title;
 			$this->subtitle = (string) $xml->channel->description;
 			$this->passage =  get_passage( strtotime((string) $dc->date) );
@@ -204,7 +204,7 @@ class ShowRSS_html
 	}
 
 
-	// ƒGƒ“ƒgƒŠ‚Ì“à—e
+	// ã‚¨ãƒ³ãƒˆãƒªã®å†…å®¹
 	function format_line($line){
 		$desc = mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['desc'])), 0, 127, '...');
 		if (IS_MOBILE){
@@ -214,7 +214,7 @@ class ShowRSS_html
 		}
 	}
 
-	// ƒGƒ“ƒgƒŠ‚ÌŠO‘¤
+	// ã‚¨ãƒ³ãƒˆãƒªã®å¤–å´
 	function format_body($body){
 		$retval = array();
 		if (IS_MOBILE){
@@ -239,7 +239,7 @@ class ShowRSS_html
 		$retval = '';
 		$rss_body = array();
 		
-		// ƒGƒ“ƒgƒŠ‚Ì“à•”‚ğ“WŠJ
+		// ã‚¨ãƒ³ãƒˆãƒªã®å†…éƒ¨ã‚’å±•é–‹
 		foreach ($this->items as $item){
 			$rss_body[] = '<li>'.$this->format_line($item).'</li>';
 		}
@@ -280,7 +280,7 @@ class ShowRSS_html_desc extends ShowRSS_html
 */
 class ShowRSS_html_menubar extends ShowRSS_html
 {
-	// ƒGƒ“ƒgƒŠ‚ÌŠO‘¤
+	// ã‚¨ãƒ³ãƒˆãƒªã®å¤–å´
 	function format_body($body){
 		$retval = array();
 		if (IS_MOBILE){
@@ -304,7 +304,7 @@ class ShowRSS_html_menubar extends ShowRSS_html
 		$retval = '';
 		$rss_body = array();
 		
-		// ƒGƒ“ƒgƒŠ‚Ì“à•”‚ğ“WŠJ
+		// ã‚¨ãƒ³ãƒˆãƒªã®å†…éƒ¨ã‚’å±•é–‹
 		foreach ($this->items as $item){
 			$rss_body[] = '<li>'.$this->format_line($item).'</li>';
 		}

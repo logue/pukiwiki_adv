@@ -6,8 +6,8 @@
 // page list to clean them up
 //
 // Usage:
-//   index.php?plugin=deleted[&file=on]
-//   index.php?plugin=deleted&dir=diff[&file=on]
+//   index.php?cmd=deleted[&file=on]
+//   index.php?cmd=deleted&dir=diff[&file=on]
 
 function plugin_deleted_init()
 {

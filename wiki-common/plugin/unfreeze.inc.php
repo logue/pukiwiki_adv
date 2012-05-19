@@ -14,7 +14,7 @@ defined('PLUGIN_UNFREEZE_EDIT') or define('PLUGIN_UNFREEZE_EDIT', TRUE);
 
 function plugin_unfreeze_action()
 {
-	global $script, $vars, $function_freeze;
+	global $vars, $function_freeze;
 
 	$_title_isunfreezed = T_(' $1 is not frozen');
 	$_title_unfreezed   = T_(' $1 has been unfrozen.');
@@ -66,13 +66,14 @@ function plugin_unfreeze_action()
 		// Show unfreeze form
 		$msg    = $_title_unfreeze;
 		$s_page = htmlsc($page);
-		$body   = ($pass === NULL) ? '' : "<p><strong>$_msg_invalidpass</strong></p>\n";
+		$body   = ($pass === NULL) ? '' : '<p class="message_box ui-state-error"><strong>'.$_msg_invalidpass.'</strong></p>'."\n";
+		$script = get_script_uri();
 		$body  .= <<<EOD
 <fieldset>
 	<legend>$_msg_unfreezing</legend>
 	<form action="$script" method="post">
-		<input type="hidden"   name="cmd"  value="unfreeze" />
-		<input type="hidden"   name="page" value="$s_page" />
+		<input type="hidden" name="cmd"  value="unfreeze" />
+		<input type="hidden" name="page" value="$s_page" />
 		<div class="freeze_form">
 			<input type="password" name="pass" size="12" />
 			<input type="submit"   name="ok"   value="$_btn_unfreeze" />

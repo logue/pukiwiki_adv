@@ -8,7 +8,7 @@
 
 function plugin_newpage_convert()
 {
-	global $script, $vars, $BracketName;
+	global $vars, $BracketName;
 	static $id = 0;
 	$_btn_edit = T_('Edit');
 	$_msg_newpage = T_('New page');
@@ -24,6 +24,7 @@ function plugin_newpage_convert()
 	$s_page    = htmlsc(isset($vars['refer']) ? $vars['refer'] : $vars['page']);
 	$s_newpage = htmlsc($newpage);
 	++$id;
+	$script = get_script_uri();
 
 	$ret = <<<EOD
 <form action="$script" method="post" class="newpage_form">

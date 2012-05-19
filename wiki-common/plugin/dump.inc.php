@@ -228,7 +228,7 @@ function download_tarfile($tempnam, $arc_kind)
 // 入力フォームを表示
 function plugin_dump_disp_form()
 {
-	global $script, $defaultpage;
+	global $defaultpage;
 
 	$act_down = PLUGIN_DUMP_DUMP;
 	$act_up   = PLUGIN_DUMP_RESTORE;
@@ -250,6 +250,7 @@ function plugin_dump_disp_form()
 	$_dump_file = T_("File");
 	$_dump_btn_down = T_("Download execution");
 	$_dump_btn_up = T_("Upload execution");
+	$script = get_script_uri();
 
 	$data = <<<EOD
 <h2 id="dump">$_dump_h3_data</h2>

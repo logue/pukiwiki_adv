@@ -132,7 +132,7 @@ function plugin_livedoor_init()
 
 function plugin_livedoor_convert()
 {
-	global $script,$vars,$auth_api,$_livedoor_msg;
+	global $vars,$auth_api,$_livedoor_msg;
 
 	if (! $auth_api['livedoor']['use']) return '<p>'.$_livedoor_msg['msg_invalid'].'</p>';
 
@@ -142,10 +142,14 @@ function plugin_livedoor_convert()
 	$obj = new auth_livedoor();
 	$name = $obj->auth_session_get();
 	if (isset($name['livedoor_id'])) {
+		/*
 		$logout_url = $script.'?plugin=livedoor';
 		if (! empty($vars['page'])) {
 			$logout_url .= '&amp;page='.rawurlencode($vars['page']).'&amp;logout';
 		}
+		*/
+		
+		$logout_url = get_cmd_uri('livedoor',$vars['page']).'&amp;logout';
 
 		return <<<EOD
 <div>
@@ -162,11 +166,14 @@ EOD;
 	if (! empty($auth_key['nick'])) return '';
 
 	// ボタンを表示するだけ
+	/*
 	$login_url = $script.'?plugin=livedoor';
 	if (! empty($vars['page'])) {
 		$login_url .= '&amp;page='.rawurlencode($vars['page']);
 	}
 	$login_url .= '&amp;login';
+	*/
+	$login_url = get_cmd_uri('livedoor',$vars['page']).'&amp;login';
 
 	return <<<EOD
 <form action="$login_url" method="post">
@@ -181,7 +188,7 @@ EOD;
 
 function plugin_livedoor_inline()
 {
-	global $script,$vars,$auth_api,$_livedoor_msg;
+	global $vars,$auth_api,$_livedoor_msg;
 
 	if (! $auth_api['livedoor']['use']) return $_livedoor_msg['msg_invalid'];
 
@@ -194,10 +201,13 @@ function plugin_livedoor_inline()
 	if (!empty($name['api']) && $obj->auth_name !== $name['api']) return;
 
 	if (isset($name['livedoor_id'])) {
+		/*
 		$logout_url = $script.'?plugin=livedoor';
 		if (! empty($vars['page'])) {
 			$logout_url .= '&amp;page='.rawurlencode($vars['page']).'&amp;logout';
 		}
+		*/
+		$logout_url = get_cmd_uri('livedoor',$vars['page']).'&amp;logout';
 		return sprintf($_livedoor_msg['msg_logined'],$name['livedoor_id']) .
 			'(<a href="'.$logout_url.'">'.$_livedoor_msg['msg_logout'].'</a>)';
 	}

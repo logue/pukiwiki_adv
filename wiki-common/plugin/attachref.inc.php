@@ -80,7 +80,7 @@ function plugin_attachref_options(&$extra_options, $args)
 
 function plugin_attachref_convert()
 {
-	global $script,$vars,$digest;
+	global $vars,$digest;
 	global $_attachref_messages,$pkwk_dtd;
 
 	$extra_options = array();
@@ -152,7 +152,7 @@ EOD;
 
 function plugin_attachref_inline()
 {
-	global $script, $vars, $digest;
+	global $vars, $digest;
 	global $_attachref_messages;
 #	static $numbers = array();
 #	static $no_flag = 0;
@@ -213,6 +213,7 @@ function plugin_attachref_inline()
 	    // Escape foreign value
 	    $s_args = trim(join(",", $args));
 	    if ($button) {
+	    	$script = get_script_uri();
 			$s_args .= ',button';
 			$f_page = htmlsc($vars['page']);
 			$f_args = htmlsc($s_args);
@@ -246,7 +247,7 @@ EOD;
 
 function plugin_attachref_action()
 {
-	global $script,$vars;
+	global $vars;
 	global $_attachref_messages;
 	global $pkwk_dtd;
 
@@ -310,7 +311,7 @@ function attachref_get_attach_filename(&$file)
 
 function attachref_insert_ref($filename)
 {
-	global $script, $vars, $now, $do_backup;
+	global $vars, $now, $do_backup;
 	global $_attachref_messages;
 
 	$ret['msg'] = $_attachref_messages['msg_title'];
@@ -414,7 +415,7 @@ function attachref_showform()
 // Create html of upload form
 function attachref_form($page)
 {
-	global $script, $vars;
+	global $vars;
 	global $_attachref_messages;
 
 	if (!(bool)ini_get('file_uploads')) return '';
@@ -433,6 +434,7 @@ function attachref_form($page)
 		$title = $_attachref_messages[ATTACHREF_UPLOAD_ADMIN_ONLY ? 'msg_adminpass' : 'msg_password'];
 		$pass = '<br />' . $title . ': <input type="password" name="pass" size="8" />';
 	}
+	$script = get_script_uri();
 	return <<<EOD
 <form enctype="multipart/form-data" action="$script" method="post">
 	<input type="hidden" name="attachref_no" value="$f_no" />

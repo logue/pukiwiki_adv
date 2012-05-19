@@ -3,7 +3,7 @@
  * PukiWiki 自動相互リンク作成プラグイン
  *
  * @copyright   Copyright &copy; 2004-2007, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: linklist.inc.php,v 0.6.3 2011/04/02 16:52:00 Logue Exp $
+ * @version     $Id: linklist.inc.php,v 0.6.4 2012/05/18 22:05:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 
@@ -100,7 +100,6 @@ function linklist_config_load()
 // データを解析
 function linklist_analysis($data)
 {
-	global $script;
 	global $config_linklist;
 
 	// 構成定義ファイル読込
@@ -111,7 +110,7 @@ function linklist_analysis($data)
 	$i = 0;
 
 	// 自サイトの特定
-	$my = parse_url($script);
+	$my = parse_url(get_script_uri());
 	$my = $my['host'];
 
 	// 0:最終更新日時 1:初回登録日時 2:参照カウンタ 3:Referer ヘッダ 4:利用可否フラグ(1は有効)

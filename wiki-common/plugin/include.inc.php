@@ -52,7 +52,7 @@ define('PLUGIN_INCLUDE_USAGE', '#include(): Usage: (a-page-name-you-want-to-incl
 
 function plugin_include_convert()
 {
-	global $script, $vars, $get, $post, $menubar, $sidebar;
+	global $vars, $get, $post, $menubar, $sidebar;
 	static $included = array();
 	static $count = 1;
 
@@ -111,8 +111,7 @@ function plugin_include_convert()
 
 	// Put a title-with-edit-link, before including document
 	if ($with_title) {
-		$link = '<a href="' . $script . '?cmd=edit&amp;page=' . $r_page .
-			'">' . $s_page . '</a>';
+		$link = '<a href="' . get_cmd_uri('edit',$page) . '">' . $s_page . '</a>';
 		if ($page == $menubar || $page == $sidebar) {
 			$body = '<span align="center"><h5 class="side_label">' .
 				$link . '</h5></span><small>' . $body . '</small>';

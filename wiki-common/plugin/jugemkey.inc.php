@@ -110,10 +110,13 @@ function plugin_jugemkey_convert()
 	$name = $obj->auth_session_get();
 	if (isset($name['title'])) {
 		// $name = array('title','ts','token');
+		/*
 		$logout_url = $script.'?plugin=jugemkey';
 		if (! empty($vars['page'])) {
 			$logout_url .= '&amp;page='.rawurlencode($vars['page']).'&amp;logout';
 		}
+		*/
+		$logout_url = get_cmd_uri('jugemkey',$vars['page']).'&amp;logout';
 
 		return <<<EOD
 <div>

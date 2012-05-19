@@ -149,13 +149,15 @@ function plugin_passwd_action()
 
 function passwd_menu($msg='&nbsp;')
 {
-	global $script, $head_tags, $_passwd_msg, $auth_type, $realm, $vars;
+	global $js_tags, $_passwd_msg, $auth_type, $realm, $vars;
 
-	$head_tags[] = ' <script type="text/javascript" src="'.SKIN_URI.'crypt/md5.js"></script>';
-	$head_tags[] = ' <script type="text/javascript" src="'.SKIN_URI.'crypt/sha1.js"></script>';
-	$head_tags[] = ' <script type="text/javascript" src="'.SKIN_URI.'crypt/des.js"></script>';
-	$head_tags[] = ' <script type="text/javascript" src="'.SKIN_URI.'crypt/base64.js"></script>';
+	$js_tags[] = array('type'=>'text/javascript', 'src'=>JS_URI.'plugin/crypt/md5.js');
+	$js_tags[] = array('type'=>'text/javascript', 'src'=>JS_URI.'plugin/crypt/sha1.js');
+	$js_tags[] = array('type'=>'text/javascript', 'src'=>JS_URI.'plugin/crypt/des.js');
+	$js_tags[] = array('type'=>'text/javascript', 'src'=>JS_URI.'plugin/crypt/base64.js');
 
+	$script = get_script_uri();
+	
 	$func = 'save';
 	$role_level = auth::get_role_level();
 	$old_algorithm = '';

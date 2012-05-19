@@ -166,7 +166,7 @@ function plugin_comment_honeypot()
 
 function plugin_comment_convert()
 {
-	global $vars, $digest, $script, $_comment_messages;	//, $_btn_comment, $_btn_name, $_msg_comment;
+	global $vars, $digest, $_comment_messages;	//, $_btn_comment, $_btn_name, $_msg_comment;
 	static $numbers = array();
 	static $all_numbers = 0;
 	static $comment_cols = PLUGIN_COMMENT_SIZE_MSG;
@@ -213,6 +213,7 @@ function plugin_comment_convert()
 		$_SESSION[$keyword] = md5(get_ticket() . $digest);
 	}
 
+	$script = get_script_uri();
 	$string = <<<EOD
 <br />
 $auth_guide

@@ -60,8 +60,6 @@ function plugin_md5_action()
 // $value    = Default passphrase value
 function plugin_md5_show_form($nophrase = FALSE, $value = '')
 {
-	global $script;
-
 	// if (PKWK_SAFE_MODE || PKWK_READONLY) die_message(T_('Prohibited'));
 	if (auth::check_role('safemode') || auth::check_role('readonly')) die_message(T_('Prohibited'));
 	if (strlen($value) > PKWK_PASSPHRASE_LIMIT_LENGTH)
@@ -82,7 +80,7 @@ function plugin_md5_show_form($nophrase = FALSE, $value = '')
 	      . '</strong></p>' . "\n" . '<hr />' . "\n";
 
 	if ($nophrase) $form .= '<strong>' . T_("NO PHRASE") . '</strong><br />';
-
+	$script = get_script_uri();
 	$form .= <<<EOD
 <form action="$script" method="post">
 	<input type="hidden" name="cmd" value="md5" />

@@ -24,8 +24,6 @@ function plugin_expand_action()
 
 function plugin_expand_convert()
 {
-	global $script;
-
 	$numargs = func_num_args();
 	if ($numargs == 3) {
 		list($width,$height,$source) = func_get_args();
@@ -46,7 +44,7 @@ function plugin_expand_convert()
 	$lines = preg_replace(array("[\\r|\\n]","[\\r]"), array("\n","\n"), $source);
 	$lines = preg_replace(array("'<p>'si","'</p>'si"), array("",""), convert_html($lines));
 	return '<div style="width:' . $width . 'px;overflow:hidden;">' . $lines . '</div>'
-		 . '<form method="post" action="' . $script . '"><textarea name="fullcontents" rows="1" cols="1" style="display:none;">'
+		 . '<form method="post" action="' . get_script_uri() . '"><textarea name="fullcontents" rows="1" cols="1" style="display:none;">'
 		 . htmlsc($source) . '</textarea><input type="image" name="submit" src="' . PLUGIN_EXPAND_ICON
 		 . '" style="float:right;" alt="' . _('Click to all views') . '" />'
 		 . '<input type="hidden" name="cmd" value="expand" /></form>';

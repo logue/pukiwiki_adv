@@ -10,7 +10,7 @@ function plugin_cache_ref_action()
 {
 	global $vars;
 
-	$usage = 'Usage: plugin=cache_ref&amp;src=filename';
+	$usage = 'Usage: cmd=cache_ref&amp;src=filename';
 
 	if (! isset($vars['src']))
 		return array('msg'=>'Invalid argument', 'body'=>$usage);

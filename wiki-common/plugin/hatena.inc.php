@@ -105,11 +105,14 @@ function plugin_hatena_convert()
 	$name = $obj->auth_session_get();
 	if (isset($name['name'])) {
 		// $name = array('name','ts','image_url','thumbnail_url');
+		/*
 		$logout_url = $script.'?plugin=hatena';
 		if (! empty($vars['page'])) {
 			$logout_url .= '&amp;page='.rawurlencode($vars['page']);
 		}
 		$logout_url .= '&amp;logout';
+		*/
+		$logout_url = get_cmd_uri('hatena',$vars['page']).'&amp;logout';
 
 		return <<<EOD
 <div>

@@ -85,7 +85,7 @@ function plugin_amazon_init()
 
 function plugin_amazon_convert()
 {
-	global $script, $vars, $_string;
+	global $vars, $_string;
 	global $_amazon_msg, $pkwk_dtd;
 
 	if (func_num_args() == 0) {
@@ -231,6 +231,7 @@ function amazon_make_review_page()
 	global $vars, $vars, $_amazon_msg;
 
 	$s_page = htmlsc($vars['page']);
+	$script = get_script_uri();
 	if (empty($s_page)) $s_page = $vars['refer'];
 
 	return <<<EOD
@@ -258,7 +259,7 @@ EOD;
 
 function plugin_amazon_action() 
 {
-	global $vars, $script;
+	global $vars;
 	global $_amazon_msg, $_string;
 	global $_title;
 	// global $_no_name;
@@ -307,7 +308,7 @@ function plugin_amazon_action()
 		}
 
 	if (empty($obj->items['title']) or preg_match('/^\//', $s_page)) {
-		header('Location: '.$script.'?'.encode($s_page));
+		header('Location: '.get_page_uri($_page).'?'.encode($s_page));
 	}
 
 	// レビューページ編集

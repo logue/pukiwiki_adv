@@ -14,7 +14,7 @@ defined('PLUGIN_VOTE_COOKIE_EXPIRED') or define('PLUGIN_VOTE_COOKIE_EXPIRED',60*
 
 function plugin_vote_action()
 {
-	global $vars, $script, $cols, $rows;
+	global $vars, $cols, $rows;
 //	global $_title_collided, $_msg_collided, $_title_updated;
 	$s_votes  = T_('Vote');
 $_title_collided   = T_('On updating $1, a collision has occurred.');
@@ -80,6 +80,7 @@ $_msg_collided = T_('It seems that someone has already updated this page while y
 		$s_refer          = htmlsc($vars['refer']);
 		$s_digest         = htmlsc($vars['digest']);
 		$s_postdata_input = htmlsc($postdata_input);
+		$script = get_script_uri();
 		$body = <<<EOD
 $_msg_collided
 <form action="$script" method="post">
@@ -104,7 +105,7 @@ EOD;
 
 function plugin_vote_convert()
 {
-	global $script, $vars, $digest;
+	global $vars, $digest;
 	static $number = array();
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
@@ -120,7 +121,7 @@ function plugin_vote_convert()
 		$_script = '';
 		$_submit = 'hidden';
 	} else {
-		$_script = $script;
+		$_script = get_script_uri();
 		$_submit = 'submit';
 	}
 

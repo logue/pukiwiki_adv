@@ -71,7 +71,6 @@ define('QR_PNG_MAXIMUM_SIZE',  1024);
 // インラインはアクション用のアドレスを作成するのみ
 function plugin_qrcode_inline()
 {
-	global $script;
 	include QR_BASEDIR."qrspec.php";
 
 	if (func_num_args() == 5) {
@@ -132,8 +131,6 @@ function plugin_qrcode_inline()
 		for ($j=1;$j<=$n;$j++) {
 			$splitdata = substr($d,$i,ceil($l/$n));
 			$i += ceil($l/$n);
-			// $splitdata = rawurlencode($splitdata);
-			// $script?plugin=qrcode&amp;p=$p&amp;m=$j&amp;n=$n&amp;d=$splitdata$addsize$addparam;
 			$src = get_cmd_uri('qrcode', '', '', array(
 				'd' => $splitdata,
 				's' => $s,

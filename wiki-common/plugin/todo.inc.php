@@ -62,7 +62,7 @@ function plugin_todo_action()
  */
 function plugin_todo_convert()
 {
-	global $vars, $script;
+	global $vars;
 
 	// default is to traverse all subtopics under own topic
 	$page = strip_bracket($vars['page']);

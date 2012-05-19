@@ -20,7 +20,7 @@
 
 function plugin_random_convert()
 {
-	global $script, $vars;
+	global $vars;
 
 	$title = '[Random Link]'; // default
 	if (func_num_args()) {

@@ -26,11 +26,12 @@ function plugin_doc_ini_init()
 
 function plugin_doc_ini_convert()
 {
-	global $script,$vars,$_doc_ini_msg;
+	global $vars,$_doc_ini_msg;
 
 	if (auth::check_role('role_adm_contents')) return '';
 	if (empty($vars['page'])) return '';
 	if (! doc_ini_file_exist($vars['page'])) return '';
+	$script = get_script_uri();
 
 	// ボタンを表示するだけ
 	$rc = <<<EOD
@@ -49,7 +50,7 @@ EOD;
 
 function plugin_doc_ini_action()
 {
-	global $script,$vars,$_doc_ini_msg;
+	global $vars,$_doc_ini_msg;
 
 	if (auth::check_role('role_adm_contents')) die_message('NOT AUTHORIZED.');
 	if (empty($vars['page'])) return;
@@ -64,6 +65,7 @@ function plugin_doc_ini_action()
 		return plugin_doc_ini_exec($vars['page']);
 	}
 
+	$script = get_script_uri();
 	$retval['body'] = <<<EOD
 <form action="$script" method="post">
 	<input type="hidden" name="plugin" value="doc_ini" />

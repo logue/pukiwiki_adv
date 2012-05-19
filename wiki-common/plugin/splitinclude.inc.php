@@ -12,7 +12,7 @@
 
 function plugin_splitinclude_convert()
 {
-	global $script,$vars,$get,$post;
+	global $vars,$get,$post;
 	global $_msg_splitinclude_restrict;
 	static $splitinclude_list = array(); //処理済ページ名の配列
 

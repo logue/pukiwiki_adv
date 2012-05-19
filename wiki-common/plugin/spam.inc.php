@@ -1,8 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: spam.inc.php,v 1.10.2 2011/02/05 12:42:00 Logue Exp $
+// $Id: spam.inc.php,v 1.10.3 2012/05/18 22:52:00 Logue Exp $
 // Copyright (C) 
-//    2010-2011 PukiWiki Advance Developers Team
+//    2010-2012 PukiWiki Advance Developers Team
 //    2003-2005, 2007 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
 //
@@ -44,7 +44,6 @@ function plugin_spam_action()
 	// Check text
 	// Check attach
 
-	$script = get_script_uri() . '?cmd=spam';
 	$body   = 'Choose one: ' . "\n" .
 		'<a href="'. get_cmd_uri('spam','','',array('mode'=>'pages')) . '">'.$_spam_messages['title_pages'].'</a>' . "\n"
 		;
@@ -60,7 +59,7 @@ function plugin_spam_pages()
 	global $vars, $post, $_msg_invalidpass, $_spam_messages;
 
 	$ob      = ob_get_level();
-	$script  = get_script_uri() . '?plugin=spam&mode=pages';
+	$script  = get_script_uri();
 
 	$start   = isset($post['start']) ? $post['start'] : NULL;
 	$s_start = ($start === NULL) ? '' : htmlsc($start);
@@ -70,17 +69,21 @@ function plugin_spam_pages()
 	$per     = 100;
 
 	$form    = <<<EOD
-<fieldset>
-	<legend>{$_spam_messages['msg_pages']}</legend>
-	<form action="$script" method="post">
-		<div class="spam_form">
-			<label for="start">{$_spam_messages['label_start']}</label><input type="text" name="start" id="start" size="40" value="$s_start" /><br/>
-			<input type="checkbox" name="sort" value="on" id="sort" $s_sort /><label for="sort">{$_spam_messages['label_sort']}</label><br />
-			<label for="pass">{$_spam_messages['label_pass']}</label><input type="password" name="pass" id="pass" size="12" /><br />
-			<input type="submit" name="check" value="{$_spam_messages['check']}" />
-		</div>
-	</form>
-</fieldset>
+<form action="$script" method="post" class="spam_form">
+	<input type="hidden" name="cmd" value="spam" />
+	<input type="hidden" name="mode" value="pages" />
+	<fieldset>
+		<legend>{$_spam_messages['msg_pages']}</legend>
+		<label for="start">{$_spam_messages['label_start']}</label>
+		<input type="text" name="start" id="start" size="40" value="$s_start" /><br />
+		<input type="checkbox" name="sort" value="on" id="sort" $s_sort />
+		<label for="sort">{$_spam_messages['label_sort']}</label><br />
+		<label for="pass">{$_spam_messages['label_pass']}</label>
+		<input type="password" name="pass" id="pass" size="12" /><br />
+		<input type="submit" name="check" value="{$_spam_messages['check']}" />
+	</fieldset>
+</form>
+
 EOD;
 
 	if ($pass !== NULL && pkwk_login($pass)) {

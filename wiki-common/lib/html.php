@@ -122,6 +122,7 @@ function catbody($title, $page, $body)
 			$link_tags[] = array('rel'=>'home',				'href'=>$_LINK['top'],		'type'=>$http_header,	'title'=>$_LANG['skin']['top']);
 			$link_tags[] = array('rel'=>'index',			'href'=>$_LINK['list'],		'type'=>$http_header,	'title'=>$_LANG['skin']['list']);
 			$link_tags[] = array('rel'=>'search',			'href'=>$_LINK['search'],	'type'=>$http_header,	'title'=>$_LANG['skin']['search']);
+			$link_tags[] = array('rel'=>'search',			'href'=>$_LINK['search'].'&format=xml',	'type'=>'application/opensearchdescription+xml',	'title'=>$_LANG['skin']['search']);
 			$link_tags[] = array('rel'=>'shortcut icon',	'href'=>$shortcut_icon,		'type'=>'image/vnd.microsoft.icon');
 		
 			if ($nofollow || ! $is_read || ! $is_page || check_non_list($_page) ){
@@ -639,7 +640,7 @@ function pkwk_headers_sent()
 	@param compress 圧縮をするかしないか（refなどで二重圧縮されるのを防ぐ）
 	@return なし
 */
-function pkwk_common_headers($modified = 0, $expire = 0, $compress = true){
+function pkwk_common_headers($modified = 0, $expire = 604800, $compress = true){
 	global $lastmod, $vars;
 	if (! defined('PKWK_OPTIMISE')) pkwk_headers_sent();
 
@@ -653,8 +654,13 @@ function pkwk_common_headers($modified = 0, $expire = 0, $compress = true){
 		// 最終更新日（秒で）が指定されていない場合動的なページとみなす。
 		// PHPで条件付きGETとかEtagとかでパフォーマンス向上
 		// http://firegoby.theta.ne.jp/archives/1730
-		$last_modified = gmdate('D, d M Y H:i:s T', $modified);
+		$last_modified = gmdate('D, d M Y H:i:s', $modified);
 		$etag = md5($last_modified);
+
+		header('Cache-Control: private');
+		header('Expires: ' .gmdate('D, d M Y H:i:s',time() + $expire) . ' GMT');
+		header('Last-Modified: ' . $last_modified );
+		header('ETag: "'.$etag.'"');
 
 		if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ) {
 			if ($_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified) {
@@ -669,11 +675,8 @@ function pkwk_common_headers($modified = 0, $expire = 0, $compress = true){
 			}
 		}
 		
-		header('ETag: "'.$etag.'"');
-		header('Last-Modified: ' . $last_modified );
 //		header('If-Modified-Since: ' . $last_modified );
-		header('Cache-control: must-revalidate; max-age=60');
-		header('Expires: '.gmdate('D, d M Y H:i:s', time() + $expire).' GMT');
+		
 	}else{
 		// PHPで動的に生成されるページはキャシュすべきではない
 		header('Cache-Control: no-cache');

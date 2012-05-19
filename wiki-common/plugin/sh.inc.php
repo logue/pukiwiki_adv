@@ -107,7 +107,7 @@ HTML;
 	}else{
 		$lang = htmlspecialchars(strtolower(array_shift($args)), ENT_QUOTES, SOURCE_ENCODING);
 		$ret = array();
-		//  @ ˆø”æ‚è
+		//  @ å¼•æ•°å–ã‚Š
 		for ($i = 0; $i <= count($args); $i++) {
 			if (!empty($args[$i])){
 				$cond = htmlspecialchars($args[$i]);
@@ -137,7 +137,7 @@ HTML;
 						$ret[] = 'data-auto-links="false"';
 						break;
 					default : 
-						if(preg_match('/class=\"?([^\"]*)\"?/',$cond,$match)){	// class‘®«‚ÌƒI[ƒo[ƒ‰ƒCƒh
+						if(preg_match('/class=\"?([^\"]*)\"?/',$cond,$match)){	// classå±æ€§ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 							$ret[] = $match[1];
 						}
 						break;
@@ -146,7 +146,7 @@ HTML;
 			$option =  ' '.join(' ',$ret);
 		}
 	}
-	// ’è‹`‚³‚ê‚Ä‚¢‚éŒ¾Œê
+	// å®šç¾©ã•ã‚Œã¦ã„ã‚‹è¨€èª
 	switch($lang){
 		case 'actionscript':
 		case 'as':

@@ -65,23 +65,24 @@ function plugin_search_action()
 
 	switch ($format) {
 		case 'xml' :
-			if ($s_word !== '') {
-				global $page_title, $notify_from;
-				$ret = array(
-					'<?xml version="1.0" encoding="UTF-8"?>',
-					'<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">',
-					'<ShortName>' . $_search_msg['title_search'] . '</ShortName>',
-					'<Contact>' . $notify_from . '</Contact>',
-					'<Url type="text/html" method="GET" template="' . get_cmd_uri('search', null, null, array('term'=>'')) . '{searchTerm}"/>',
-					'<InputEncoding>UTF-8</InputEncoding>',
-					'<Description>' . $_search_msg['title_search'] . ' - ' . $page_title . '</Description>',
-					'<moz:SearchForm xmlns:moz="http://www.mozilla.org/2006/browser/search/">' . get_cmd_uri('search', null, null, array('term'=>'')) . '</moz:SearchForm>',
-					'</OpenSearchDescription>'
-				);
-				header('Content-Type:text/xml');
-				echo join("\n", $ret);
-				exit;
-			}
+			global $page_title, $notify_from, $shortcut_icon;
+			$ret = array(
+				'<?xml version="1.0" encoding="UTF-8"?>',
+				'<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">',
+				'	<ShortName>' . $_search_msg['title_search'] . '</ShortName>',
+				'	<Contact>' . $notify_from . '</Contact>',
+				isset($shortcut_icon) ? '	<Image height="16" width="16" type="image/x-icon">'.ROOT_URI.'favicon.ico</Image>' : null,
+				'	<Url type="text/html" method="GET" template="' . get_cmd_uri('search', null, null, array('term'=>'')) . '{searchTerm}"/>',
+				'	<InputEncoding>UTF-8</InputEncoding>',
+				'	<Description>' . $_search_msg['title_search'] . ' - ' . $page_title . '</Description>',
+				'	<moz:SearchForm xmlns:moz="http://www.mozilla.org/2006/browser/search/">' . get_cmd_uri('search', null, null, array('term'=>'')) . '</moz:SearchForm>',
+				'	<OutputEncoding>UTF-8</OutputEncoding>',
+				'	<InputEncoding>UTF-8</InputEncoding>',
+				'</OpenSearchDescription>'
+			);
+			header('Content-Type:text/xml');
+			echo join("\n", $ret);
+			exit;
 		break;
 	
 		default : 
@@ -99,10 +100,9 @@ function plugin_search_action()
 			// Show search form
 			$bases = ($base == '') ? array() : array($base);
 			$body .= plugin_search_search_form($s_word, $type, $bases);
-
-			return array('msg'=>$msg, 'body'=>$body);
 		break;
 	}
+	return array('msg'=>$msg, 'body'=>$body);
 }
 
 function plugin_search_search_form($s_word = '', $type = '', $bases = array())

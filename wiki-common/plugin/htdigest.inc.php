@@ -121,7 +121,7 @@ function htdigest_is_iis()
 
 function htdigest_menu($msg='&nbsp;')
 {
-	global $script, $realm, $head_tags, $_htdigest_msg;
+	global $realm, $head_tags, $_htdigest_msg;
 
 	$head_tags[] = ' <script type="text/javascript" src="'.SKIN_URI.'js/plugin/crypt/md4.js"></script>';
 	$head_tags[] = ' <script type="text/javascript" src="'.SKIN_URI.'js/plugin/crypt/md5.js"></script>';
@@ -144,7 +144,7 @@ function htdigest_menu($msg='&nbsp;')
 		$user_disabled = $user = '';
 		$msg_pass = ($role_level == 2) ? $_htdigest_msg['msg_pass_admin'] : '';
 	}
-
+	$script = get_script_uri();
 $x = <<<EOD
 <script type="text/javascript">
 //<![CDATA[

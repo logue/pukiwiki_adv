@@ -26,23 +26,23 @@
 define('JSMML_PATH', JS_URI . 'plugin/jsmml');
 
 function plugin_mml_convert(){
-	global $script, $mml_count;
+	global $mml_count;
 	$lang = null;
 
 	if ($mml_count == '') $mml_count = 0;
 
-	// ˆö”“Ç‚İ‚İ
-	$value = func_get_args();	#’†g
-	$args = func_num_args();	#ˆö”‚Ì”
+	// å› æ•°èª­ã¿è¾¼ã¿
+	$value = func_get_args();	#ä¸­èº«
+	$args = func_num_args();	#å› æ•°ã®æ•°
 
 	if ($args == 0){
 		return '#mml() USAGE:#mml(title){mmldata}';
-	// mabimml‚Æ‚ÌŒİŠ·ˆ—Bi‚Á‚Ä‚¢‚é‚Ì‚©Hj
+	// mabimmlã¨ã®äº’æ›å‡¦ç†ã€‚ï¼ˆã£ã¦ã„ã‚‹ã®ã‹ï¼Ÿï¼‰
 	}else if ($args == 1){
 		// #mml(mml)
 		$data = $value[0];
 	}else if ($args == 2){
-		// #mml(–¼‘O){MML}
+		// #mml(åå‰){MML}
 		$title = $value[0];
 		if ($title == "reverse"){
 			$data = plugin_mml_octave_reverse($data);
@@ -50,15 +50,15 @@ function plugin_mml_convert(){
 		}
 		$data = $value[1];
 	}else{
-		// #mml(–¼‘O,ŠyŠí){MML}	//MabinogiŒİŠ·ˆ—i‚à‚µ‚­‚ÍƒIƒNƒ^[ƒu‚ª‹t“]j
+		// #mml(åå‰,æ¥½å™¨){MML}	//Mabinogiäº’æ›å‡¦ç†ï¼ˆã‚‚ã—ãã¯ã‚ªã‚¯ã‚¿ãƒ¼ãƒ–ãŒé€†è»¢ï¼‰
 		$title = $value[0];
 		$inst = $value[1];
 		$data = $value[$args-1];
-		//ƒIƒNƒ^[ƒu”½“]
+		//ã‚ªã‚¯ã‚¿ãƒ¼ãƒ–åè»¢
 		$data = plugin_mml_mabimml2mml($data);
 	}
 
-	// Mabinogi—p‚ÌMML‚ª“ü—Í‚³‚ê‚Ä‚¢‚½ê‡imabimml.inc.php‚Æ‚ÌŒİŠ·ˆ—j
+	// Mabinogiç”¨ã®MMLãŒå…¥åŠ›ã•ã‚Œã¦ã„ãŸå ´åˆï¼ˆmabimml.inc.phpã¨ã®äº’æ›å‡¦ç†ï¼‰
 	if (preg_match ('/^MML@/i', $data)){
 		$data = plugin_mml_mabimml2mml($inst,$data);
 	}

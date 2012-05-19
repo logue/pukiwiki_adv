@@ -135,7 +135,7 @@ function plugin_rename_err($err, $page = '')
 // Phase one: Specifying page name or regex
 function plugin_rename_phase1($err = '', $page = '')
 {
-	global $script, $_rename_messages;
+	global $_rename_messages;
 
 	$msg    = plugin_rename_err($err, $page);
 	$refer  = plugin_rename_getvar('refer');
@@ -151,6 +151,7 @@ function plugin_rename_phase1($err = '', $page = '')
 
 	$s_src = htmlsc(plugin_rename_getvar('src'));
 	$s_dst = htmlsc(plugin_rename_getvar('dst'));
+	$script = get_script_uri();
 
 	return array(
 		'msg'	=> $_rename_messages['msg_title'],
@@ -179,7 +180,7 @@ EOD
 // Phase two: Specify new page name
 function plugin_rename_phase2($err = '')
 {
-	global $script, $_rename_messages;
+	global $_rename_messages;
 
 	$msg   = plugin_rename_err($err);
 	$page  = plugin_rename_getvar('page');
@@ -198,6 +199,7 @@ function plugin_rename_phase2($err = '')
 
 	$ret = array();
 	$ret['msg']  = $_rename_messages['msg_title'];
+	$script = get_script_uri();
 	$ret['body'] = <<<EOD
 $msg
 <fieldset>
@@ -267,7 +269,7 @@ function plugin_rename_regex($arr_from, $arr_to)
 // Phase three: Confirmation
 function plugin_rename_phase3($pages)
 {
-	global $script, $_rename_messages, $vars;
+	global $_rename_messages, $vars;
 
 	$msg = $input = '';
 	$files = plugin_rename_get_files($pages);
@@ -340,6 +342,7 @@ function plugin_rename_phase3($pages)
 EOD;
 	}
 	$ret['msg'] = $_rename_messages['msg_title'];
+	$script = get_script_uri();
 	$ret['body'] = <<<EOD
 $msg
 	<form action="$script" method="post">

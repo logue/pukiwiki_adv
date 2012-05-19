@@ -9,7 +9,7 @@ function plugin_read_init(){
 		'_read_msg' => array(
 			'title_invalidwn'	=> T_('Redirect'),
 			'msg_invalidiwn'	=> T_('This pagename is an alias to %s.'),
-			'title_notfound'	=> T_('Not found'),
+			'title_notfound'	=> T_('Page not found'),
 			'msg_notfound1'		=> T_('Sorry, but the page you were trying to view does not exist or deleted.'),
 			'msg_notfound2'		=> T_('Please check <a href="%1s" rel="nofollow">backups</a> or <a href="%2s" rel="nofollow">create page</a>.')
 		)
@@ -83,8 +83,10 @@ function plugin_read_notfound($page){
 	
 	$msg_edit = sprintf($_read_msg['msg_notfound2'], get_cmd_uri('backup',$page), get_cmd_uri('edit',$page));
 	$body = <<<HTML
-<p>{$_read_msg['msg_notfound1']}</p>
+<div class="message_box ui-state-error ui-corner-all">
+<p><span class="ui-icon ui-icon-alert" style="float: left;"></span>{$_read_msg['msg_notfound1']}</p>
 <p>$msg_edit</p>
+</div>
 <script type="text/javascript">/* <![CDATA */
 var GOOG_FIXURL_LANG = (navigator.language || '').slice(0,2),GOOG_FIXURL_SITE = location.host;
 /* ]]> */</script>

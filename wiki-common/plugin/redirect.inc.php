@@ -3,7 +3,7 @@
  * リダイレクトプラグイン
  *
  * @copyright   Copyright &copy; 2006,2008, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: redirect.inc.php,v 0.3 2008/01/06 05:35:00 upk Exp $
+ * @version     $Id: redirect.inc.php,v 0.3.1 2012/05/15 20:29:00 upk Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License
  *
  */
@@ -64,12 +64,9 @@ function plugin_redirect_convert()
 	if (! empty($img)) {
 		$caption = '<img src="'.$img.'" alt="'.$caption.'" title="'.$caption.'" />';
 	}
+	$anchor = '<a href="' . get_cmd_uri('redirect', null, null, array('u'=>$url)) . '" rel="nofollow">' . $caption . '</a>';
 
-	$redirect = $script.'?plugin=redirect&amp;u='.rawurlencode($url);
-
-	return '<a class="ext" href="'.$redirect.'" rel="nofollow">'.
-		$caption.'<img src="'.IMAGE_URI.'plus/ext.png" alt="" title="" class="ext" onclick="return open_uri(\''.
-		$redirect.'\', \'_blank\');" /></a>';
+	return open_uri_in_new_window($anchor);
 }
 
 ?>

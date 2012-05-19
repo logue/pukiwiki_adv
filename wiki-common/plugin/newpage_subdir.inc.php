@@ -52,9 +52,9 @@ function build_directory_list($roots, $option=array())
 
 function print_form_string( $list )
 {
-	global $script,$vars;
+	global $vars;
 	
-	$form_string  = '<form action="'.$script.'" method="post">'."\n".
+	$form_string  = '<form action="'. get_script_uri() .'" method="post">'."\n".
 			'<fieldset>'."\n". '<legend>'.T_('Page name') . '</legend>';
 
 	if($list['directory']) {

@@ -220,8 +220,6 @@ function attach_upload($file, $page, $pass = NULL)
 	if (auth::check_role('readonly')) die_message($_string['prohibit']);
 
 	// Check query-string
-//	$query = 'plugin=attach&amp;pcmd=info&amp;refer=' . rawurlencode($page) .
-//		'&amp;file=' . rawurlencode($file['name']);
 	$query = get_cmd_uri('attach', '', '', array(
 		'file'=>$file['name'],
 		'refer'=>$page,
@@ -232,7 +230,7 @@ function attach_upload($file, $page, $pass = NULL)
 		$err_msg = attach_set_error_message($file['error']);
 		return array(
 			'result'=>FALSE,
-			'msg'=>$err_msg
+			'msg'=>'<p class="message_box ui-state-error">'.$err_msg.'</p>'
 		);
 	}
 
@@ -720,8 +718,9 @@ function attach_mime_content_type($filename)
 // アップロードフォームの出力
 function attach_form($page, $listview = FALSE)
 {
-	global $script, $vars, $_attach_messages;
+	global $vars, $_attach_messages;
 
+	$script = get_script_uri();
 	$refer = isset($vars['refer']) ? $vars['refer'] : '';
 
 	$r_page = rawurlencode($page);
@@ -738,17 +737,15 @@ function attach_form($page, $listview = FALSE)
 		 ': <input type="password" name="pass" size="8" />' : '';
 
 	$upload_form = <<<EOD
-<form enctype="multipart/form-data" action="$script" method="post">
+<form enctype="multipart/form-data" action="$script" method="post" class="attach_form">
 	<input type="hidden" name="cmd" value="attach" />
 	<input type="hidden" name="pcmd"   value="post" />
 	<input type="hidden" name="refer"  value="$s_page" />
 	<input type="hidden" name="max_file_size" value="$maxsize" />
-	<div class="attach_form">
-		<label for="_p_attach_file">{$_attach_messages['msg_file']}:</label>
-		<input type="file" name="attach_file" id="_p_attach_file" />
-		$pass
-		<input type="submit" value="{$_attach_messages['btn_upload']}" />
-	</div>
+	<label for="_p_attach_file">{$_attach_messages['msg_file']}:</label>
+	<input type="file" name="attach_file" id="_p_attach_file" />
+	$pass
+	<input type="submit" value="{$_attach_messages['btn_upload']}" />
 	<ul class="attach_info"><li>$msg_maxsize</li></ul>
 </form>
 EOD;
@@ -872,7 +869,7 @@ class AttachFile
 
 	function toString($showicon, $showinfo)
 	{
-		global $script, $_attach_messages;
+		global $_attach_messages;
 
 		$this->getstatus();
 
@@ -901,8 +898,9 @@ class AttachFile
 	// 情報表示
 	function info($err)
 	{
-		global $script, $_attach_messages, $pkwk_dtd, $vars, $_LANG;
+		global $_attach_messages, $pkwk_dtd, $vars, $_LANG;
 
+		$script = get_script_uri();
 		$r_page = rawurlencode($this->page);
 		$s_page = htmlsc($this->page);
 		$s_file = htmlsc($this->file);
@@ -1186,7 +1184,7 @@ EOD;
 
 		ini_set('default_charset', '');
 		mb_http_output('pass');
-		pkwk_common_headers($this->time, null, false);
+		pkwk_common_headers();
 
 		// for reduce server load
 		if (function_exists('apache_get_modules') && in_array( 'mod_xsendfile', apache_get_modules()) ){
