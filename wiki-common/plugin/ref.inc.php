@@ -429,8 +429,8 @@ function plugin_ref_action()
 	// Output
 	ini_set('default_charset', '');
 	mb_http_output('pass');
-/*
-	pkwk_common_headers(filemtime($ref), 604800, false);
+	pkwk_common_headers();
+
 	// for reduce server load
 	if (function_exists('apache_get_modules') && in_array( 'mod_xsendfile', apache_get_modules()) ){
 		// for Apache mod_xsendfile
@@ -442,7 +442,7 @@ function plugin_ref_action()
 		// nginx
 //		header('X-Accel-Redirect: '.$ref);
 	}
-*/
+
 	if ($type == 'text/html' || $type == 'application/octet-stream') {
 		header('Content-Disposition: attachment; filename="' . $s_filename . '"');
 		header('Content-Type: application/octet-stream; name="' . $s_filename . '"');

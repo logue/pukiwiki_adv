@@ -43,7 +43,6 @@ function get_exif_data($file)
 
 function plus_readfile($filename)
 {
-	while (@ob_end_flush());
 	if (($fp = fopen($filename,'rb')) === FALSE) return FALSE;
 	while (!feof($fp))
 	{
@@ -51,6 +50,7 @@ function plus_readfile($filename)
 		flush();
 	}
 	fclose($fp);
+	while (@ob_end_flush());
 }
 
 // structure
