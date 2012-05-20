@@ -3,7 +3,7 @@
  * Language judgment (言語判定)
  *
  * @copyright   Copyright &copy; 2005-2006,2008, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: lang.php,v 0.27.2 2010/12/19 11:25:00 Logue Exp $
+ * @version     $Id: lang.php,v 0.27.3 2012/05/20 09:29:00 Logue Exp $
  *
  */
 
@@ -393,7 +393,7 @@ class accept_language
 	 * @static
 	 * @return	array
 	 */
-	function get_cookie_lang()
+	public static function get_cookie_lang()
 	{
 		if (isset($HTTP_COOKIE_VARS['lang'])) {
 			$cookie['lang'] = $HTTP_COOKIE_VARS['lang'];
@@ -402,8 +402,8 @@ class accept_language
 		} else {
 			return '';
 		}
-
-                if ($cookie['lang'] == 'none') return '';
+		
+		if ($cookie['lang'] == 'none') return '';
 		$l = accept_language::split_locale_str($cookie['lang']);
 		return array(array($l[0],1));
 	}
@@ -415,17 +415,14 @@ class accept_language
 	 * @static
 	 * @return	array
 	 */
-	function get_accept_language()
+	public static function get_accept_language()
 	{
 		if ( !isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ) return '';
 		$accept_language = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
 		// TEST:
 		//$accept_language = 'ko,en,ja,fr;q=0.7,DE;q=0.3';
-		if (extension_loaded('intl')){
-			return locale_accept_from_http($accept_language);
-		}else{
-			return accept_language::split_str($accept_language);
-		}
+		return extension_loaded('intl') ?
+			locale_accept_from_http($accept_language) : accept_language::split_str($accept_language);
 	}
 
 	/*
@@ -435,7 +432,7 @@ class accept_language
 	 * @static
 	 * @return	array
 	 */
-	function get_user_agent_mozilla()
+	public static  function get_user_agent_mozilla()
 	{
 		if ( !isset($_SERVER['HTTP_USER_AGENT']) ) return '';
 		$user_agent = $_SERVER['HTTP_USER_AGENT'];
@@ -463,7 +460,7 @@ class accept_language
 	 * 文字コードから言語を見做し判定する
 	 * @return	array
 	 */
-	function get_accept_charset()
+	public static function get_accept_charset()
 	{
 		if ( !isset($_SERVER['HTTP_ACCEPT_CHARSET']) ) return '';
 		$accept_charset = $_SERVER['HTTP_ACCEPT_CHARSET'];
@@ -486,15 +483,14 @@ class accept_language
 	 * IPアドレスから国を特定し、見做し言語を判定する
 	 * @return	array
 	 */
-	function get_remote_addr()
+	public static  function get_remote_addr()
 	{
 		if ( !isset($_SERVER['REMOTE_ADDR']) ) return '';
 		$ip = $_SERVER['REMOTE_ADDR'];
 		$host = gethostbyaddr($ip);
 		if ($ip == $host) return '';
-		$x = substr($host,strrpos($host, '.')+1);
-                $x = strtolower($x);
-                if (isset($this->flag[$x]))
+		$x = strtolower( substr( $host,strrpos($host, '.') + 1 ) );
+		if (isset($this->flag[$x]))
 			return accept_language::split_str($this->flag[$x], FALSE, FALSE);
                 return '';
 	}
@@ -508,7 +504,7 @@ class accept_language
 	 * $rc[0] = (x1,1),(x2,0.6),(x3,0.4) が入る。
 	 * 値順に整列して戻す。
 	 */
-	function split_str($env, $conv=TRUE, $sort=TRUE)
+	public static  function split_str($env, $conv=TRUE, $sort=TRUE)
 	{
 		$rc = array();
 		foreach( explode(',',$env) as $x ) {
@@ -538,7 +534,7 @@ class accept_language
 	 * @static
 	 * @return string
 	 */
-	function split_locale_str($str)
+	public static function split_locale_str($str)
 	{
 		$x = preg_split('/[-_]/', $str);
 		$lang    = strtolower( $x[0] );
@@ -581,7 +577,7 @@ class lang2country
 	 * 言語から国を推測する
 	 * @return string
 	 */
-	function get_lang2country($x)
+	public function get_lang2country($x)
 	{
 		if (isset($this->lang[$x])) return $this->lang[$x];
 		return '';

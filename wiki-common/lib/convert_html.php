@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: convert_html.php,v 1.21.29 2012/05/03 21:31:00 Logue Exp $
+// $Id: convert_html.php,v 1.21.30 2012/05/20 10:03:00 Logue Exp $
 // Copyright (C)
 //   2010-2012 PukiWiki Advance Developers Team
 //   2005-2008 PukiWiki Plus! Team
@@ -45,7 +45,7 @@ class Element
 		$this->parent = & $parent;
 	}
 
-	function & add(& $obj)
+	function add(& $obj)
 	{
 		if ($this->canContain($obj)) {
 			return $this->insert($obj);
@@ -54,7 +54,7 @@ class Element
 		}
 	}
 
-	function & insert(& $obj)
+	function insert(& $obj)
 	{
 		global $info;
 		if (gettype($obj) == 'object'){
@@ -66,7 +66,7 @@ class Element
 		return $this->last;
 	}
 
-	function canContain($obj)
+	function canContain(& $obj)
 	{
 		return TRUE;
 	}
@@ -190,7 +190,7 @@ class Inline extends Element
 		return $this;
 	}
 
-	function canContain($obj)
+	function canContain(& $obj)
 	{
 		return is_a($obj, 'Inline');
 	}
@@ -226,7 +226,7 @@ class Paragraph extends Element
 		$this->insert(Factory_Inline($text));
 	}
 
-	function canContain($obj)
+	function canContain(& $obj)
 	{
 		return is_a($obj, 'Inline');
 	}
@@ -327,8 +327,8 @@ class ListContainer extends Element
 		$text = ltrim(substr($text, $this->level));
 
 		parent::insert(new ListElement($this->level, $tag2));
-		if ($text != '')
-			$this->last = & $this->last->insert(Factory_Inline($text));
+		if ($text !== '')
+			$this->last = $this->last->insert(Factory_Inline($text));
 	}
 
 	function canContain(& $obj)
@@ -354,10 +354,10 @@ class ListContainer extends Element
 		$this->style = sprintf($_list_pad_str, $this->level, $margin, $margin);
 	}
 
-	function & insert(& $obj)
+	function insert(& $obj)
 	{
 		if (! is_a($obj, get_class($this)))
-			return $this->last = & $this->last->insert($obj);
+			return $this->last = $this->last->insert($obj);
 
 		// Break if no elements found (BugTrack/524)
 		if (count($obj->elements) == 1 && empty($obj->elements[0]->elements))
@@ -426,9 +426,9 @@ class DList extends ListContainer
 	function DList($out)
 	{
 		parent::ListContainer('dl', 'dt', ':', $out[0]);
-		$this->last = & Element::insert(new ListElement($this->level, 'dd'));
-		if ($out[1] != '')
-			$this->last = & $this->last->insert(Factory_Inline($out[1]));
+		$this->last = Element::insert(new ListElement($this->level, 'dd'));
+		if ($out[1] !== '')
+			$this->last = $this->last->insert(Factory_Inline($out[1]));
 	}
 }
 
@@ -462,7 +462,7 @@ class BQuote extends Element
 		return (! is_a($obj, get_class($this)) || $obj->level >= $this->level);
 	}
 
-	function & insert(& $obj)
+	function insert(& $obj)
 	{
 		// BugTrack/521, BugTrack/545
 		if (is_a($obj, 'inline'))
@@ -481,14 +481,14 @@ class BQuote extends Element
 		return $this->wrap(parent::toString(), 'blockquote');
 	}
 
-	function & end(& $root, $level)
+	function end(& $root, $level)
 	{
 		$parent = & $root->last;
 
 		while (is_object($parent)) {
 			if (is_a($parent, 'BQuote') && $parent->level == $level)
 				return $parent->parent;
-			$parent = & $parent->parent;
+			$parent = $parent->parent;
 		}
 		return $this;
 	}
@@ -898,7 +898,7 @@ class Body extends Element
 
 			if (preg_match('/^(LEFT|CENTER|RIGHT):(.*)$/', $line, $matches)) {
 				// <div style="text-align:...">
-				$this->last = & $this->last->add(new Align(strtolower($matches[1])));
+				$this->last = $this->last->add(new Align(strtolower($matches[1])));
 				if ($matches[2] == '') continue;
 				$line = $matches[2];
 			}
@@ -906,7 +906,7 @@ class Body extends Element
 			$line = rtrim($line, "\r\n");
 
 			// Empty
-			if ($line == '') {
+			if ($line === '') {
 				$this->last = & $this;
 				continue;
 			}
@@ -937,45 +937,45 @@ class Body extends Element
 			$head = $line{0};
 
 			// Heading
-			if ($head == '*') {
+			if ($head === '*') {
 				$this->insert(new Heading($this, $line));
 				continue;
 			}
 
 			// Pre
-			if ($head == ' ' || $head == "\t") {
-				$this->last = & $this->last->add(new Pre($this, $line));
+			if ($head === ' ' || $head === "\t") {
+				$this->last = $this->last->add(new Pre($this, $line));
 				continue;
 			}
 			
 			// CPre (Plus!)
-			if (substr($line,0,2) == '# ' or substr($line,0,2) == "#\t") {
+			if (substr($line,0,2) === '# ' or substr($line,0,2) == "#\t") {
 				$this->last = &$this->last->add(new CPre($this,$line));
 				continue;
 			}
 
 			// Line Break
-			if (substr($line, -1) == '~')
+			if (substr($line, -1) === '~')
 				$line = substr($line, 0, -1) . "\r";
 			
 			// Other Character
-			if (isset($this->classes[$head]) && gettype($this->last) == 'object') {
+			if (isset($this->classes[$head]) && gettype($this->last) === 'object') {
 				$classname  = $this->classes[$head];
-				$this->last = & $this->last->add(new $classname($this, $line));
+				$this->last = $this->last->add(new $classname($this, $line));
 				continue;
 			}
 
 			// Other Character
-			if (isset($this->factories[$head]) && gettype($this->last) == 'object') {
+			if (isset($this->factories[$head]) && gettype($this->last) === 'object') {
 				$factoryname = 'Factory_' . $this->factories[$head];
 				
-				$this->last  = & $this->last->add($factoryname($this, $line));
+				$this->last  = $this->last->add($factoryname($this, $line));
 				continue;
 			}
 
 			// Default
-			if (gettype($this->last) == 'object'){
-				$this->last = & $this->last->add(Factory_Inline($line));
+			if (gettype($this->last) === 'object'){
+				$this->last = $this->last->add(Factory_Inline($line));
 			}
 		}
 	}
@@ -1004,13 +1004,13 @@ class Body extends Element
 		$text = ' ' . $text;
 
 		// Add 'page contents' link to its heading
-		$this->contents_last = & $this->contents_last->add(new Contents_UList($text, $level, $id));
+		$this->contents_last = $this->contents_last->add(new Contents_UList($text, $level, $id));
 
 		// Add heding
 		return array($text . $anchor, $this->count > 1 ? "\n" . $top : '', $autoid);
 	}
 
-	function & insert(& $obj)
+	function insert(& $obj)
 	{
 		if (is_a($obj, 'Inline')) $obj = & $obj->toPara();
 		return parent::insert($obj);
@@ -1084,7 +1084,7 @@ class CPre extends Element
 	{
 		return is_a($obj, 'CPre');
 	}
-	function &insert(&$obj)
+	function insert(&$obj)
 	{
 		$this->elements[] = $obj->elements[0];
 		return $this;

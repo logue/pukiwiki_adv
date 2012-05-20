@@ -15,15 +15,14 @@ class auth_api
 	// responce_xml_parser - response
 	var $auth_name, $field_name, $response;
 
-        function auth_session_get()
-        {
-		$val = auth::des_session_get($this->message_md5());
+	function auth_session_get(){
+		//$val = auth::des_session_get($this->message_md5());
+		$val = md5('plus_auth_msg_'.get_script_absuri().session_id());
 		if (empty($val)) {
 			return array();
-		
 		}
 		return $this->parse_message($val);
-        }
+	}
 
 	function auth_session_put()
 	{
@@ -60,9 +59,13 @@ class auth_api
 	{
 		$rc = array();
 		$tmp = explode('::',trim($message));
-		for($i=0;$i<count($tmp);$i++) {
-			$tmp2 = explode('$$',$tmp[$i]);
-                        $rc[$tmp2[0]] = decode($tmp2[1]);
+		for($i=0; $i<count($tmp); $i++) {
+			if ($tmp[$i]) {
+				$tmp2 = explode('$$',$tmp[$i]);
+				if ( isset($tmp2[1]) ) {
+					$rc[$tmp2[0]] = decode($tmp2[1]);
+				}
+			}
 		}
 		return $rc;
 	}
@@ -80,7 +83,7 @@ class auth_api
 		}
 	}
 
-	function message_md5()
+	static function message_md5()
 	{
 		// return md5($this->auth_name.'_message_'.get_script_absuri().session_id());
 		return md5('plus_auth_msg_'.get_script_absuri().session_id());

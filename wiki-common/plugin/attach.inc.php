@@ -863,7 +863,7 @@ class AttachFile
 	}
 
 	// 日付の比較関数
-	function datecomp($a, $b) {
+	static function datecomp($a, $b) {
 		return ($a->time == $b->time) ? 0 : (($a->time > $b->time) ? -1 : 1);
 	}
 

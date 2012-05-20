@@ -436,7 +436,7 @@ class log
 	 * ページのファイル名を得る
 	 * @static
 	 */
-	function get_filename($subdir,$page,$ext='.txt')
+	static function get_filename($subdir,$page,$ext='.txt')
 	{
 		return LOG_DIR . $subdir . encode($page) . $ext;
 	}
@@ -445,7 +445,7 @@ class log
 	 * ログファイル名を設定
 	 * @static
 	 */
-	function set_filename($kind,$page)
+	static function set_filename($kind,$page)
 	{
 		global $log;
 
@@ -465,7 +465,7 @@ class log
 	 * 設定項目名を設定
 	 * @static
 	 */
-	function set_fieldname($kind)
+	static function set_fieldname($kind)
 	{
 		global $log;
 
@@ -516,7 +516,7 @@ class log
 	 * ログの表示指示項目の設定
 	 * @static
 	 */
-	function get_view_field($kind)
+	static function get_view_field($kind)
 	{
 		global $log;
 
@@ -556,7 +556,7 @@ class log
 	 * ログに書き出している項目のみ抽出する
 	 * @static
 	 */
-	function get_log_field($kind)
+	static function get_log_field($kind)
 	{
 		// 全項目名を取得
 		$all = log::set_fieldname($kind);
@@ -572,7 +572,7 @@ class log
 	 * IPアドレスから逆引きする
 	 * @static
 	 */
-	function ip2host($ip)
+	static function ip2host($ip)
 	{
 		if ($ip == NULL) $ip = log::getip();
 		$longisp = @gethostbyaddr($ip);
@@ -583,18 +583,18 @@ class log
 	 * IPアドレスの取得
 	 * @static
 	 */
-	function getip()	{ return $_SERVER['REMOTE_ADDR']; }
+	static function getip()	{ return $_SERVER['REMOTE_ADDR']; }
 	/**
 	 * ホスト名からIPアドレス得る
 	 * @static
 	 */
-	function host2ip($host) { return gethostbyname($host); }
+	static function host2ip($host) { return gethostbyname($host); }
 
 	/**
 	 * 配列データを PukiWiki 表形式データに変換
 	 * @static
 	 */
-	function array2table($data)
+	static function array2table($data)
 	{
 		$rc = '';
 		foreach ($data as $x1) {
@@ -608,7 +608,7 @@ class log
 	 * PukiWiki 表形式データかの判定
 	 * @static
 	 */
-	function is_table($line)
+	static function is_table($line)
 	{
 		$x = trim($line);
 		if (substr($x,0,1) != '|') return FALSE;
@@ -620,7 +620,7 @@ class log
 	 * PukiWiki 表形式データを配列データに変換
 	 * @static
 	 */
-	function table2array($x)
+	static function table2array($x)
 	{
 		if (!log::is_table($x)) return array();
 		return explode('|', substr($x,1,-1));
@@ -630,7 +630,7 @@ class log
 	 * ログの１行を配列に変換した後、項目名を付与する
 	 * @static
 	 */
-	function line2field($line,$name)
+	static function line2field($line,$name)
 	{
 		$_fld = log::table2array($line);
 		$i = 0;
@@ -648,7 +648,7 @@ class log
 	 * 更新日時のバックアップデータの世代を確定する
 	 * @static
 	 */
-	function get_backup_age($page,$update_time,$update=true)
+	static function get_backup_age($page,$update_time,$update=true)
 	{
 		static $_page, $backup_page;
 
@@ -687,7 +687,7 @@ class log
 	 * 差分ファイル名
 	 * @static
 	 */
-	function diff_filename($page)
+	static function diff_filename($page)
 	{
 		return DIFF_DIR . encode($page) . '.txt'; // 差分ファイル名
 	}
@@ -696,7 +696,7 @@ class log
 	 * 差分ファイルの存在確認
 	 * @static
 	 */
-	function diff_exist($page)
+	static function diff_exist($page)
 	{
 		return file_exists( log::diff_filename($page) );
 	}
@@ -705,7 +705,7 @@ class log
 	 * ログ種別毎によるファイルの集約
 	 * @static
 	 */
-	function log_summary($kind)
+	static function log_summary($kind)
 	{
 		global $log;
 		if (!$log[$kind]['use']) return array();
@@ -731,7 +731,7 @@ class log
 	 * $rc[ USER-AGENT ][ ホスト名 ][ ユーザ名 ] の配列を戻す
 	 * @static
 	 */
-	function summary_signature()
+	static function summary_signature()
 	{
 		global $log;
 		if (!$log['update']['use']) return '';
@@ -758,7 +758,7 @@ class log
 	 * $rc[ USER-AGENT ][ ホスト名 ][ ユーザ名 ] の配列を戻す
 	 * @static
 	 */
-	function read_guess()
+	static function read_guess()
 	{
 		global $log;
 		if (!$log['guess_user']['use']) return '';
@@ -780,7 +780,7 @@ class log
 	 * ユーザを推測する
 	 * @static
 	 */
-	function guess_user($user,$ntlm,$sig)
+	static function guess_user($user,$ntlm,$sig)
 	{
 		if (!empty($user)) return $user; // 署名ユーザ
 		if (!empty($ntlm)) return $ntlm; // NTLM認証ユーザ
@@ -793,7 +793,7 @@ class log
 	 * $level で指定された階層までで比較する
 	 * @static
 	 */
-	function check_host($a,$b,$level)
+	static function check_host($a,$b,$level)
 	{
 		$tbl_a = array_reverse( explode('.',$a) );
 		$ctr_a = count($tbl_a);
