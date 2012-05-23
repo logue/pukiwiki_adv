@@ -208,7 +208,7 @@ class ShowRSS_html
 	function format_line($line){
 		$desc = mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['desc'])), 0, 127, '...');
 		if (IS_MOBILE){
-			return '<a href="'. preg_replace("/\s/",'', $line['link']) .'">'.$line['entry'].'<span class="ui-li-count">'.get_passage($line['date'],false).'</span></a>';
+			return '<a href="'. preg_replace("/\s/",'', $line['link']) .'" rel="external">'.$line['entry'].'<span class="ui-li-count">'.get_passage($line['date'],false).'</span></a>';
 		}else{
 			return open_uri_in_new_window('<a href="'. $line['link'] .'" title="'.$desc.' '.get_passage($line['date']).'">'.$line['entry'].'</a>', 'link_url');
 		}
@@ -222,7 +222,7 @@ class ShowRSS_html
 			
 			$retval[] = '<ul data-role="listview" data-inset="true">';
 			$retval[] = $body;
-			$retval[] = '</ul>' . isset($this->title) ? '</div>' : '';
+			$retval[] = '</ul>' . "\n".  '</div>';
 		}else{
 			$title = ($this->url) ? open_uri_in_new_window('<a href="' . $this->url . '" title="' . $this->passage . '" rel="external">' . $this->title . '</a>', 'link_url') : $this->title;
 			$retval[] = '<legend>'.$title.'</legend>';
@@ -235,7 +235,6 @@ class ShowRSS_html
 	}
 
 	function toString($timestamp){
-
 		$retval = '';
 		$rss_body = array();
 		
@@ -269,7 +268,7 @@ class ShowRSS_html_desc extends ShowRSS_html
 		}
 	}
 
-	function format_body($body, $date, $tite, $logo){
+	function format_body($body){
 		if (IS_MOBILE){
 			return '<ul data-role="listview">' . "\n" . $body . '</ul>' . "\n";
 		}else{
@@ -281,7 +280,7 @@ class ShowRSS_html_desc extends ShowRSS_html
 class ShowRSS_html_menubar extends ShowRSS_html
 {
 	// エントリの外側
-	function format_body($body){
+	 function format_body($body){
 		$retval = array();
 		if (IS_MOBILE){
 			$retval[] = '<div data-role="collapsible" data-collapsed="true" data-theme="c" data-content-theme="c"><h4>'.$this->title.'</h4>';
@@ -300,7 +299,6 @@ class ShowRSS_html_menubar extends ShowRSS_html
 	}
 	
 	function toString($timestamp){
-
 		$retval = '';
 		$rss_body = array();
 		
@@ -325,7 +323,7 @@ class ShowRSS_html_recent extends ShowRSS_html
 		}
 	}
 
-	function format_body($body, $date, $tite, $logo){
+	function format_body($body){
 		if (IS_MOBILE){
 			return '<ul data-role="listview">'. 
 				'<li data-role="list-divider">' . $date . '</li>' . "\n" . $body . '</ul>' . "\n";
