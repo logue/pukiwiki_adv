@@ -65,7 +65,7 @@ var pukiwiki = {};
 	}
 
 	// オーバーライド用
-	var pkwkInit = [], pkwkBeforeInit = [], pkwkUnload = [], pkwkBeforeUnload = [];
+	var pkwkInit = [], pkwkBeforeInit = [], pkwkUnload = [], pkwkBeforeUnload = [], pkwkAjaxLoad = [];
 	
 	if (!$) { throw "pukiwiki: jQuery not included."; }
 
@@ -402,6 +402,9 @@ var pukiwiki = {};
 			},
 			before_unload:function(func){
 				pkwkBeforeUnload.push( func );
+			},
+			ajax_load:function(func){
+				pkwkAjaxLoad.push( func );
 			}
 		},
 		// DOMの初期化
@@ -563,11 +566,11 @@ var pukiwiki = {};
 						}
 						return false;
 					});
-				}else{
+				}else if (href){
 					// 外部へのリンクは、rel=externalが付いているものとする。
 					// Query Stringをパース。paramsに割り当て
 					var params = {};
-					var hashes = href.slice(href.indexOf('?') + 1).split('&');
+					var hashes = href.slice(href.indexOf("?") + 1).split('&');
 					for(var i = 0; i < hashes.length; i++) { 
 						var hash = hashes[i].split('='); 
 						try{
@@ -577,7 +580,7 @@ var pukiwiki = {};
 					}
 					var ext = href.match(/\.(\w+)$/i);
 
-					if (href.match('#')){
+					if (href.match('#') && href != '#'){
 						// アンカースクロールを無効化
 						var disable_scrolling = ($this.data('disableScrolling') || $this.parent().attr('role')) ? true : false;
 						
@@ -676,7 +679,16 @@ var pukiwiki = {};
 				dialogClass: 'ajax_dialog',
 				bgiframe : (ie >= 6) ? true : false,	// for IE6 
 				open: function(){
+					var f;
+					while( f = pkwkAjaxLoad.shift() ){
+						if( f !== null ){
+							f();
+						}
+					}
+					f = null;
 					if(typeof(callback) === 'function'){ callback(); }
+					
+					
 					// オーバーレイでウィンドウを閉じる
 					var parent = this;
 					$(prefix + '.ui-widget-overlay').click(function(){
@@ -2651,8 +2663,8 @@ var pukiwiki = {};
 	});
 
 	$(window).unload(function(){
-		var f;
 /*
+		var f;
 		while( f = pkwkBeforeUnload.shift() ){
 			if( f !== null ){
 				f();

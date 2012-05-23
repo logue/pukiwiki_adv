@@ -15,5 +15,8 @@ readfile('js/bootstrap.min.js');
 $('.contents').scrollspy();
 $('*[aria-describedby="tooltip"]').tooltip();
 $('*[title]').tooltip();
+
+
+$('.style_table').addClass('table table-bordered');
 <?php
 ob_end_flush();

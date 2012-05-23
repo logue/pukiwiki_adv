@@ -139,7 +139,11 @@
 			 */
 			animate = function(el, steps, duration) {
 				if (!animations[steps]) {
+					var cssAnimation = document.createElement('style');
+					cssAnimation.type = 'text/css';
+
 					var name = 'spin' + steps;
+
 					var rule = '@-webkit-keyframes '+ name +' {';
 					for (var i=0; i < steps; i++) {
 						var p1 = Math.round(100000 / steps * i) / 1000;
@@ -148,7 +152,9 @@
 						rule += p1 + value + p2 + value; 
 					}
 					rule += '100% { -webkit-transform:rotate(100deg); }\n}';
-					document.styleSheets[0].insertRule(rule);
+					//document.styleSheets[0].insertRule(rule);
+					cssAnimation.appendChild(document.createTextNode(rule));
+					document.getElementsByTagName("head")[0].appendChild(cssAnimation);
 					animations[steps] = name;
 				}
 				el.css('-webkit-animation', animations[steps] + ' ' + duration +'s linear infinite');
