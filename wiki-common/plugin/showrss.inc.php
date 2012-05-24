@@ -177,7 +177,7 @@ class ShowRSS_html
 				$this->items[] = array(
 					'entry'	=> (string) $entry->title,
 					'link'	=> (string) $entry->link->attributes()->href,
-					'date'	=> strtotime((string) $entry->published),
+					'date'	=> strtotime((string) $entry->updated),
 					'desc'	=> (string) htmlsc($entry->summary)
 				);
 			}
@@ -202,7 +202,6 @@ class ShowRSS_html
 			}
 		}
 	}
-
 
 	// エントリの内容
 	function format_line($line){
@@ -252,31 +251,6 @@ class ShowRSS_html
 	}
 }
 
-/*
-class ShowRSS_html_desc extends ShowRSS_html
-{
-	function format_line($line){
-		$desc = mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['desc'])), 0, 255, '...');
-		if (IS_MOBILE){
-			return '<li><a href="'. $line['link'] .'">'.
-				'<h3>' . $line['entry'].'</h3>'.
-				'<p>' . $desc . '</p>'.
-				'<p class="ui-li-aside">'.get_passage($line['date']).'</p>'.
-				'</a></li>';
-		}else{
-			return '<li><a href="'. $line['link'] .'" title="'.$desc.' '.get_passage($line['date']).'">'.$line['entry'].'</a></li>';
-		}
-	}
-
-	function format_body($body){
-		if (IS_MOBILE){
-			return '<ul data-role="listview">' . "\n" . $body . '</ul>' . "\n";
-		}else{
-			return '<ul>' . "\n" . $body . '</ul>' . "\n";
-		}
-	}
-}
-*/
 class ShowRSS_html_menubar extends ShowRSS_html
 {
 	// エントリの外側
@@ -284,12 +258,14 @@ class ShowRSS_html_menubar extends ShowRSS_html
 		$retval = array();
 		if (IS_MOBILE){
 			$retval[] = '<div data-role="collapsible" data-collapsed="true" data-theme="c" data-content-theme="c"><h4>'.$this->title.'</h4>';
-			
 			$retval[] = '<ul data-role="listview" data-inset="true">';
 			$retval[] = $body;
 			$retval[] = '</ul>' . isset($this->title) ? '</div>' : '';
 		}else{
-			$title = ($this->url) ? open_uri_in_new_window('<a href="' . $this->url . '" title="' . $this->passage . '" rel="external">' . $this->title . '</a>', 'link_url') : $this->title;
+			$desc = $line['desc'] ? mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['desc'])), 0, 255, '...').get_passage($line['date']) : get_passage($line['date']);
+			$title = ($this->url) ? 
+				open_uri_in_new_window('<a href="' . $this->url . '" title="' .$desc . '" rel="external">' . $this->title . '</a>', 'link_url') :
+				'<span title="'.$desc.'">' . $this->title . '</span>';
 			$retval[] = '<h4>'.$title.'</h4>';
 			$retval[] = '<ul>';
 			$retval[] =  $body; 
