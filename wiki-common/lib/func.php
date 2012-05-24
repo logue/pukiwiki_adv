@@ -616,7 +616,7 @@ EOD;
 	<body>$body</body>
 </html>
 EOD;
-		ob_end_flush();
+		pkwk_common_sufixes();
 	}
 //	exit();
 	die();

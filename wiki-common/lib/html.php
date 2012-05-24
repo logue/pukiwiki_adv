@@ -17,10 +17,10 @@ function catbody($title, $page, $body)
 {
 	global $script; // MUST BE SKIN.FILE. Do not delete line.
 	global $vars, $arg, $help_page, $hr, $JSON;
-	
+
 	global $function_freeze;
 	global $search_word_color, $foot_explain, $note_hr;
-	
+
 	global $newtitle, $newbase, $language, $use_local_time, $session; // Plus! skin extension
 	global $nofollow;
 	global $_LANG, $_LINK, $_SKIN;
@@ -35,8 +35,8 @@ function catbody($title, $page, $body)
 	if (isset($vars['page']) && $vars['page'] !== ''){
 		$_page = $vars['page'];
 		$filetime = get_filetime($_page);
-	} 
-	
+	}
+
 	// Init flags
 	$is_page = (is_pagename($_page) && ! arg_check('backup') && ! is_cantedit($_page));
 	$is_read = (arg_check('read') && is_page($_page));
@@ -88,16 +88,16 @@ function catbody($title, $page, $body)
 		// スキン出力
 		global $pkwk_dtd, $x_ua_compatible;	// HTML5, XHTML 1.1, XHTML1.0...
 		global $page_title;		// Title of this site
-	
+
 		global $head_tags, $foot_tags;	// Obsolete
 		global $meta_tags, $link_tags, $js_tags, $js_blocks, $css_blocks, $info, $js_init, $js_vars, $modernizr;
 		global $keywords, $description, $pkwk_head_js, $google_loader, $ui_theme;
 
 		// Adv. ここから。（あまりいい実装ではない）
-		
+
 		// application/xhtml+xml を認識するブラウザではXHTMLとして出力
 		$http_header = (PKWK_STRICT_XHTML === TRUE && strstr($_SERVER['HTTP_ACCEPT'], 'application/xhtml+xml') !== false) ? 'application/xhtml+xml' : 'text/html';
-		
+
 		$meta_tags[] = array('name' => 'generator',	'content' => strip_tags(GENERATOR));
 		if (IS_MOBILE){
 			$meta_tags[] = array('name' => 'viewport',	'content' => 'width=device-width, initial-scale=1');
@@ -124,7 +124,7 @@ function catbody($title, $page, $body)
 			$link_tags[] = array('rel'=>'search',			'href'=>$_LINK['search'],	'type'=>$http_header,	'title'=>$_LANG['skin']['search']);
 			$link_tags[] = array('rel'=>'search',			'href'=>$_LINK['search'].'&format=xml',	'type'=>'application/opensearchdescription+xml',	'title'=>$_LANG['skin']['search']);
 			$link_tags[] = array('rel'=>'shortcut icon',	'href'=>$shortcut_icon,		'type'=>'image/vnd.microsoft.icon');
-		
+
 			if ($nofollow || ! $is_read || ! $is_page || check_non_list($_page) ){
 				$meta_tags[] = array('name' => 'robots', 'content' => 'NOINDEX,NOFOLLOW');
 			}else{
@@ -142,15 +142,15 @@ function catbody($title, $page, $body)
 				$meta_tags[] = array('property' => 'og:site_name',		'content' => $page_title);
 				$meta_tags[] = array('property' => 'og:description',	'content' => $desc);
 				$meta_tags[] = array('property' => 'og:updated_time',	'content' => $filetime);
-				
+
 				global $fb;
 				if (isset($fb)){
 					$meta_tags[] = array('property' => 'fb:app_id', 'content' => $fb->getAppId());
 				}
 			}
-			
+
 	//		if ($notify_from !== 'from@example.com') $link_tags[] = array('rev'=>'made',	'href'=>'mailto:'.$notify_from,	'title'=>	'Contact to '.$modifier);
-		
+
 			global $adminpass;
 			if ($adminpass == '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72' || $adminpass == '' ){
 				$body = '<div class="message_box ui-state-error ui-corner-all">'.
@@ -175,15 +175,14 @@ function catbody($title, $page, $body)
 		}
 		if (is_array($pkwk_head_js)){
 			array_unshift($pkwk_head_js,array('type'=>'text/javascript', 'content'=>join($js_vars,"\n")));
-			array_unshift($pkwk_head_js,array('type'=>'text/javascript', 'src'=>'http://www.google.com/jsapi'.((isset($google_api_key)) ? '?key='.$google_api_key : '')));
 		}
 		unset($js_var, $key, $val);
 		/* ヘッダー部分の処理ここまで */
-	
+
 		/* フッター部のタグ */
 		$pkwk_tags = tag_helper('script',$pkwk_head_js)."\t\t".tag_helper('script',$js_tags);
 		$pkwk_tags .= (!empty($js_blocks)) ? "\t\t".tag_helper('script',array(array('type'=>'text/javascript', 'content'=>join("\n",$js_blocks)))) : '';
-		
+
 		/* ヘッダー部のタグ */
 		$pkwk_head = tag_helper('meta',$meta_tags)."\t\t".tag_helper('link',$link_tags);
 		if (!empty($css_blocks)){
@@ -193,7 +192,7 @@ function catbody($title, $page, $body)
 		if (!IS_MOBILE) {
 			// Modernizrは、ヘッダー内にないと正常に動作しない
 			$pkwk_head .= "\t\t".'<script type="text/javascript" src="'.JS_URI.$modernizr.'"></script>'."\n";
-			
+
 			/* 非推奨要素の警告 */
 			if (! empty($head_tags)){
 				$pkwk_head .= join("\n", $head_tags) ."\n";
@@ -204,13 +203,13 @@ function catbody($title, $page, $body)
 				$info[] = '<var>$foot_tags</var> is obsolate. Use $meta_tags, $link_tags, $js_tags, $js_blocks, $css_blocks.';
 			}
 		}
-		
+
 		/* Adv.ここまで */
-		
+
 		// Last modification date (string) of the page
 		if ($is_read){
 			global $attach_link, $related_link;
-			
+
 			$lastmodified = get_date('D, d M Y H:i:s T', $filetime). ' ' . get_pg_passage($_page, FALSE);
 			if ($pkwk_dtd == PKWK_DTD_HTML_5) {
 				$lastmodified = '<time pubdate="pubdate" datetime="'.get_date('c',$filetime).'">'.$lastmodified.'</time>';
@@ -228,7 +227,7 @@ function catbody($title, $page, $body)
 
 		// Search words
 		if ($search_word_color && isset($vars['word'])) {
-			
+
 			$body = '<div class="small">' . $_string['word'] . htmlsc($vars['word']) .
 				'</div>' . $hr . "\n" . $body;
 
@@ -263,7 +262,7 @@ function catbody($title, $page, $body)
 				++$id;
 			}
 		}
-		
+
 		if (DEBUG === true && ! empty($info) && !IS_MOBILE){
 			$body = '<div class="message_box ui-state-highlight ui-corner-all">'.
 					'<p><span class="ui-icon ui-icon-info"></span>'.$_string['debugmode'].'</p>'."\n".
@@ -285,14 +284,14 @@ function catbody($title, $page, $body)
 		@header('X-UA-Compatible: '.(empty($x_ua_compatible)) ? 'IE=edge' : $x_ua_compatible);	// とりあえずIE8対策
 		require(SKIN_FILE);
 	}
-	if (DEBUG === false) { ob_end_flush(); }
+	pkwk_common_suffixes();
 	exit;
 }
 
 function getLinkSet($_page){
 	global $defaultpage, $whatsnew, $whatsdeleted, $interwiki, $aliaspage, $glossarypage;
 	global $menubar, $sidebar, $navigation, $headarea, $footarea, $protect;
-	
+
 	global $trackback, $referer;
 
 	// Set $_LINK for skin
@@ -300,17 +299,17 @@ function getLinkSet($_page){
 		'search'		=> get_cmd_uri('search'),
 		'list'			=> get_cmd_uri('list'),
 		'filelist'		=> get_cmd_uri('filelist'),
-		
+
 		'rss'			=> get_cmd_absuri('mixirss'),
 		'rdf'			=> get_cmd_absuri('rss',	null,	'ver=1.0'),
 		'rss10'			=> get_cmd_absuri('rss',	null,	'ver=1.0'), // Same as 'rdf'
 		'rss20'			=> get_cmd_absuri('rss',	null,	'ver=2.0'),
 		'mixirss'		=> get_cmd_absuri('mixirss'), 		// Same as 'rdf' for mixi
-		
+
 		'read'			=> get_page_uri($_page),
 		'reload'		=> get_page_absuri($_page), // 本当は、get_script_uri でいいけど、絶対パスでないと、スキンに影響が出る
 		'reload_rel'	=> get_page_uri($_page),
-		
+
 		'login'			=> get_cmd_uri('login', $_page),
 		'logout'		=> get_cmd_uri('login', $_page, null, array('action'=>'logout') ),
 
@@ -329,7 +328,7 @@ function getLinkSet($_page){
 		'foot'			=> get_page_uri($footarea),
 		'protect'		=> get_page_uri($protect)
 	);
-	
+
 	if (empty($_page)) {
 		$_LINK = array_merge($_LINK,array(
 			'add'			=> get_cmd_uri('add'),
@@ -368,16 +367,16 @@ function getLinkSet($_page){
 			'newsub'		=> get_cmd_uri('newpage_subdir',null,	null,	array('directory'=>$_page)),
 			'print'			=> get_cmd_uri('print',			$_page),
 			'rename'		=> get_cmd_uri('rename',		null,	null,	array('refer'=>$_page)),
-			
+
 			'source'		=> get_cmd_uri('source',		$_page),
-			
+
 			'unfreeze'		=> get_cmd_uri('unfreeze',		$_page),
 			'upload'		=> get_cmd_uri('attach',		$_page,	null,	array('pcmd'=>'upload')), // link rel="alternate" にも利用するため absuri にしておく
-			
+
 			'template'		=> get_cmd_uri('template',		null,	null,	array('refer'=>$_page))
 		));
 	}
-	
+
 	if ($referer){
 		if (!empty($_page)) {
 			$_LINK['referer']	= get_cmd_uri('referer',		$_page);
@@ -390,7 +389,7 @@ function getLinkSet($_page){
 		}
 	}
 	if ($trackback){
-		$_LINK['trackback'] = (!empty($_page)) ? 
+		$_LINK['trackback'] = (!empty($_page)) ?
 			get_cmd_uri('tb',null,null,array('__mode'=>'view','tb_id'=>tb_get_id($_page))) :
 			get_cmd_uri('tb',null,null,array('__mode'=>'view'));
 	}
@@ -404,7 +403,7 @@ function edit_form($page, $postdata, $digest = FALSE, $b_template = TRUE)
 	global $load_template_func, $load_refer_related;
 	global $notimeupdate;
 	global $_button, $_string;
-	
+
 //	global $x_ua_compatible;
 
 	// Newly generate $digest or not
@@ -481,12 +480,12 @@ EOD;
 			($notimeupdate == 2 && auth::check_role('role_adm_contents')) ? '<input type="password" name="pass" size="12"  data-inline="true" /></div>' : '',
 			isset($vars['add']) ? "\t\t".'<input type="checkbox" name="add_top" value="true"' .$checked_top . ' /><label for="add_top">' . $_button['addtop'] . '</label>' : null
 		));
-		
+
 EOD;
 	}else{
 		$form[] = "\t\t".'<input type="submit" id="btn_submit" name="write" value="'.$_button['update'].'" accesskey="s" />';
 		$form[] = isset($vars['add']) ? "\t\t".'<input type="checkbox" name="add_top" value="true"' .$checked_top . ' /><label for="add_top">' . $_button['addtop'] . '</label>' : '';
-		
+
 		$form = <<<EOD
 		<input type="submit" id="btn_submit" name="write" value="{$_button['update']}" accesskey="s" data-icon="check" data-inline="true" data-theme="b" />
 		$add_top
@@ -645,7 +644,7 @@ function pkwk_common_headers($modified = 0, $expire = 604800, $compress = true){
 	if (! defined('PKWK_OPTIMISE')) pkwk_headers_sent();
 
 	$vary = get_language_header_vary();
-	
+
 	if (preg_match('/\b(gzip|deflate|compress)\b/i', $_SERVER['HTTP_ACCEPT_ENCODING'], $matches)) {
 		$vary .= ',Accept-Encoding';
 	}
@@ -674,16 +673,16 @@ function pkwk_common_headers($modified = 0, $expire = 604800, $compress = true){
 				exit;
 			}
 		}
-		
+
 //		header('If-Modified-Since: ' . $last_modified );
-		
+
 	}else{
 		// PHPで動的に生成されるページはキャシュすべきではない
 		header('Cache-Control: no-cache');
 		header('Pragma: no-cache');
 		header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
 	}
-	
+
 	// RFC2616
 	// http://sonic64.com/2004-02-06.html
 	header('Vary: '.$vary);
@@ -704,12 +703,23 @@ function pkwk_common_headers($modified = 0, $expire = 604800, $compress = true){
 	// XSS脆弱性対策（これでいいのか？）
 	// http://msdn.microsoft.com/ja-jp/ie/dd218482
 	header('X-XSS-Protection: '.((DEBUG) ? '0' :'1;mode=block') );
-	
-	if (DEBUG === false || (bool) ini_get('zlib.output_compression') === false && $compress == true) {
-		ob_start('ob_gzhandler');
-	}
+
+	// buffer all upcoming output - make sure we care about compression: 
+	if(!ob_start("ob_gzhandler")) ob_start();
 }
 
+function pkwk_common_suffixes($length = ''){
+	// get the size of the output
+	// send headers to tell the browser to close the connection
+	header('Content-Length: '. ($length !== '') ? $length : ob_get_length() );
+	header('Connection: close');
+	// flush all output
+	ob_end_flush();
+	ob_flush();
+	flush();
+	// close current session
+	if (session_id()) session_write_close();
+}
 //////////////////////////////////////////////////
 // DTD definitions
 // Adv. does not support HTML4.x
@@ -791,10 +801,10 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 
 	// Output <html> start tag
 	$lang_code = substr(str_replace('_','-',LANG),0,2); // RFC3066
-	
+
 	// HTML+RDFa 1.1 Support for RDFa in HTML4 and HTML5
 	// http://www.w3.org/TR/rdfa-in-html/
-	echo '<html version="HTML+RDFa 1.1"';	
+	echo '<html version="HTML+RDFa 1.1"';
 	if ($type != PKWK_DTD_TYPE_XHTML || $pkwk_dtd == PKWK_DTD_HTML_5) {
 		if($pkwk_dtd == PKWK_DTD_HTML_5){
 			echo ' xmlns="http://www.w3.org/1999/xhtml"';
@@ -837,7 +847,7 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 
 		echo ' xmlns:og="http://ogp.me/ns#" class="no-js '.$browser.'">' . "\n"; // <html>
 		unset($lang_code);
-		
+
 		if ($pkwk_dtd == PKWK_DTD_HTML_5){
 			$meta_tags[] = array('charset'	=> CONTENT_CHARSET);
 		}else{
@@ -865,11 +875,11 @@ function tag_helper($tagname,$tags){
 		if ($tagname == 'link' && (empty($tags['rel'])) ){
 			$tags['rel'] = 'stylesheet';
 		}
-		
+
 		if (isset($tags['rel']) && $tags['rel'] == 'stylesheet'){
 			$tags['type'] = 'text/css';
 		}
-		
+
 		// scriptタグでtypeが省略されていた場合JavaScriptとする。
 		if ($tagname == 'script' && empty($tags['type'])){
 			$tags['type'] = 'text/javascript';
@@ -899,15 +909,15 @@ function tag_helper($tagname,$tags){
 		}else{
 			$ret = '<'.$tagname.' '.$tag_content.' />';
 		}
-		
-		if ($IE_flag){ 
-			$out[] = '<!--[if lte IE '.$IE_flag.']>'.$ret.'<![endif]-->'; 
+
+		if ($IE_flag){
+			$out[] = '<!--[if lte IE '.$IE_flag.']>'.$ret.'<![endif]-->';
 		}else{
 			$out[] = $ret;
 		}
 		unset($tag_contents,$tag_content,$key,$val,$content,$IE_flag,$ret);
 	}
-	
+
 	return join("\n\t\t",$out)."\n";
 }
 ?>

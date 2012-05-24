@@ -679,13 +679,6 @@ var pukiwiki = {};
 				dialogClass: 'ajax_dialog',
 				bgiframe : (ie >= 6) ? true : false,	// for IE6 
 				open: function(){
-					var f;
-					while( f = pkwkAjaxLoad.shift() ){
-						if( f !== null ){
-							f();
-						}
-					}
-					f = null;
 					if(typeof(callback) === 'function'){ callback(); }
 					
 					
@@ -801,6 +794,12 @@ var pukiwiki = {};
 				})
 				.ajaxStop(function(){
 					$('#loading').fadeOut();
+					var f;
+					while( f = pkwkAjaxLoad.shift() ){
+						if( f !== null ){
+							f();
+						}
+					}
 				}
 			);
 /*

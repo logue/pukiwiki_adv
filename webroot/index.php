@@ -1,5 +1,5 @@
 <?php
-// PukiPlus
+// PukiWiki Advance
 // $Id: index.php,v 1.9.8 2011/09/12 21:41:00 Logue Exp $
 // Copyright (C)
 //   2010-2012 PukiWiki Advance Developers Team
@@ -24,8 +24,8 @@ define('PKWK_WARNING', true);
 //define('PKWK_OPTIMISE',  1); 
 
 // PukiWiki Adv. THEME (NOT compatible as Original and Plus! skin)
-// ex.  cloudwalk, classic, xxxlogue, whiteflow, gs2, wikiwikiadv
-//define('PLUS_THEME',	'classic');
+// ex.  cloudwalk, classic, xxxlogue, whiteflow, gs2, wikiwikiadv, squawker, 180wiki
+define('PLUS_THEME',	'squawker');
 
 // Directory definition
 // (Ended with a slash like '../path/to/pkwk/', or '')

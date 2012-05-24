@@ -1205,10 +1205,11 @@ EOD;
 			header('Content-Disposition: inline; filename="' . $s_filename . '"');
 			header('Content-Type: '   . $this->type);
 		}
-		header('Content-Length: ' . $this->size);
 		// For BugTrack2/102
 		// @readfile($this->filename);
 		plus_readfile($this->filename);
+		
+		pkwk_common_suffixes($this->size);
 		log_put_download($this->page,$this->file);
 		exit;
 	}

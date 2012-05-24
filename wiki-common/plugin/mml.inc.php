@@ -25,6 +25,11 @@
 
 define('JSMML_PATH', JS_URI . 'plugin/jsmml');
 
+function plugin_mml_init(){
+	global $js_tags;
+	$js_tags[] = array('type'=>'text/javascript', 'src'=>'https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js');
+}
+
 function plugin_mml_convert(){
 	global $mml_count;
 	$lang = null;

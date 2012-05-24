@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
 // http://www.tobyto.pe.kr/view.php?seq=19&t=1107501543

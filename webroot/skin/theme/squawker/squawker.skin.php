@@ -48,15 +48,17 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 		<?php echo $meta_content_type; ?>
 		<?php echo $pkwk_head; ?>
 		<title><?php echo $page_title; ?></title>
-<style type="text/css">
-      body {
-        padding-top: 60px;
-        padding-bottom: 40px;
-      }
-      .sidebar-nav {
-        padding: 9px 0;
-      }
-    </style>
+<style type="text/css">/* <[CDATA[ */
+@media (min-width: 980px) {
+body {
+	padding-top: 60px;
+	padding-bottom: 40px;
+}
+.sidebar-nav {
+	padding: 9px 0;
+}
+}
+/* ]]> */</style>
 	</head>
 	<body>
 		<header class="navbar navbar-fixed-top" role="banner">
@@ -181,9 +183,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 			<?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','reload,|,new,newsub,edit,freeze,source,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,log,|,help,|,rss') : '';?>
 
 			<footer id="footer" class="clearfix" role="contentinfo">
-				<div id="qr_code">
-					<?php echo exist_plugin_inline('qrcode') ? plugin_qrcode_inline(1,$_LINK['reload']) : ''; ?>
-				</div>
+				<div id="qr_code"><?php echo exist_plugin_inline('qrcode') ? plugin_qrcode_inline(1,$_LINK['reload']) : ''; ?></div>
 				<address>Founded by <a href="<?php echo $modifierlink ?>"><?php echo $modifier ?></a></address>
 				<div id="sigunature">
 					Powered by <a href="http://pukiwiki.logue.be/" rel="product"><?php echo GENERATOR ?></a>. HTML convert time: <?php echo showtaketime() ?> sec. <br />

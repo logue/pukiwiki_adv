@@ -10,6 +10,11 @@
 // arrange jack (http://f29.aaa.livedoor.jp/~morg/wiki/)
 // arrange Logue (http://logue.be/)
 
+function plugin_flash_init(){
+	global $js_tags;
+	$js_tags[] = array('type'=>'text/javascript', 'src'=>'https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js');
+}
+
 function plugin_flash_inline()
 {
 	$args = func_get_args();
@@ -108,13 +113,6 @@ function plugin_flash_convert()
 
 	$param = join("\n",$param_tags);
 
-	if ($flash_count == ''){
-// PukiPlus では標準でswfobjectが読み込まれる。
-//		global $head_tags;
-//		$head_tags[] = '<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>'."\n";
-		$flash_count = 0;
-	}
-		
 	$ret = <<<EOD
 <object id="flash_$flash_count" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="$width" height="$height">
 $param

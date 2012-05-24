@@ -1,0 +1,476 @@
+@charset "Shift_JIS";
+
+/*
+180wiki skin black(width1000) 0.1 2008/4/11 hrmz
+http://180.style.coocan.jp/wiki/
+
+Modified by Logue
+*/
+
+/* wrap
+----------------------------------------------------------------------------- */
+body {text-align: center; }
+
+#wrapper {
+	width: 1000px;
+	text-align: left;
+}
+
+#wrap_content{
+	float:left;
+	width: 770px;
+}
+
+#wrap_sidebar{
+	float:right;
+	width: 230px;
+}
+#footer{
+	clear:both;
+}
+
+/* ■■ design ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■*/
+
+/* General
+----------------------------------------------------------------------------- */
+img{
+	border:none;
+	vertical-align:middle;
+}
+
+#wrapper {
+	margin: 5px auto;
+	border-radius: 20px;
+	box-shadow:0 0 10px #555;
+	-moz-box-shadow:0 0 10px #555;
+	-webkit-box-shadow:0 0 10px #555;
+}
+
+/* ----- link ----- */
+a:link {
+	color: #003366;
+	text-decoration: none;
+}
+a:visited {
+	color: #003366;
+	text-decoration: none;
+}
+a:active {
+	color: #999999;
+	text-decoration: underline;
+}
+a:hover {
+	color: #FF33CC;
+	text-decoration: underline;
+}
+/* Header
+----------------------------------------------------------------------------- */
+#header{
+	width: 980px;
+	height: 130px;
+	text-align: left;
+	background-color: #333;
+	background: -moz-linear-gradient(bottom, #111, #AAA);
+	background: -webkit-linear-gradient(bottom, #111, #AAA);
+	border-radius: 20px;
+	box-shadow:0 5px 10px #222;
+	-moz-box-shadow:0 5px 10px #222;
+	-webkit-box-shadow:0 5px 10px #222;
+	font-size: 30px;
+	font-weight: bold;
+	color: #FFFFFF;
+	position: relative; 
+	top:10px;
+	left:10px;
+	margin:0 0 20px;
+}
+
+#header a,
+#header a:link,
+#header a:visited,
+#header a:active,
+#header a:hover {
+	font-size: 30px;
+	font-weight: bold;
+	color: #FFFFFF;
+	text-decoration: none;
+}
+
+#logo{
+	padding: 50px 35px 0px 65px;
+}
+
+
+/* Content
+----------------------------------------------------------------------------- */
+#toolbar {
+	margin-left: 15px;
+}
+
+#content {
+	margin-left: 15px;
+}
+
+#content h1.title{
+	margin:  0;
+	padding: 0;
+	background-image: none;
+}
+#content h1.title a{
+	font-size:25px;
+	color: #333333;
+	text-decoration:none;
+}
+
+#lastmodified{
+	color:#666666;
+	font-size:12px;
+}
+
+#body{
+	margin-top:10px;
+}
+
+h1, h2 {
+	font-size:16px;
+	font-weight: bold;
+	padding:4px 0 4px 32px;
+	color: #333333;
+	background-image: url(180mt-black-w1000-title.gif);
+	background-position: left center;
+	background-repeat: no-repeat;
+}
+h3 {
+	font-size:14px;
+	border-bottom:  3px solid #CCCCCC;
+	border-top:     1px solid #CCCCCC;
+	border-left:   10px solid #CCCCCC;
+	border-right:   3px solid #CCCCCC;
+	margin:0 20px 0 15px;
+	padding:2px 0 2px 10px;
+}
+h4 {
+	font-size:13px;
+	border-left:   8px solid #CCCCCC;
+	margin:0 20px 0 15px;
+	padding:1px 0 1px 10px;
+}
+h5, h6 {
+	padding-left:10px;
+}
+
+p{
+	margin:5px 20px;
+}
+
+.style_table {
+	padding:0;
+	border:0;
+	margin:0 20px;
+	text-align:left;
+	color:inherit;
+	background-color:#DDDDDD;
+}
+.style_th {
+	padding:5px;
+	margin:1px;
+	text-align:center;
+	color:inherit;
+	background-color:#EEEEEE;
+}
+
+.style_td {
+	padding:5px;
+	margin:1px;
+	color:inherit;
+	background-color:#EEEEEE
+}
+
+thead td.style_td,
+tfoot td.style_td {
+	color:inherit;
+	background-color:#D0D8E0;
+}
+thead th.style_th,
+tfoot th.style_th {
+	color:inherit;
+	background-color:#E0E8F0;
+}
+
+pre{
+	border-top:    1px solid #DDDDDD;
+	border-right:  2px solid #DDDDDD;
+	border-bottom: 2px solid #DDDDDD;
+	border-left:   1px solid #DDDDDD;
+	margin:5px 20px;
+	padding:.5em;
+	word-wrap:break-word;
+	overflow:auto;
+}
+
+blockquote {
+	margin:5px 20px;
+	padding:5px;
+	background-color:#EEEEEE;
+	border:1px solid #DDDDDD;
+}
+
+ul {
+	margin-top:5px;
+	margin-bottom:5px;
+}
+
+ul.list1 { list-style-type:disc; }
+ul.list2 { list-style-type:circle; }
+ul.list3 { list-style-type:square; }
+ol.list1 { list-style-type:decimal; }
+ol.list2 { list-style-type:lower-roman; }
+ol.list3 { list-style-type:lower-alpha; }
+
+dt {
+	font-weight:bold;
+	margin-top:5px;
+	margin-bottom:5px;
+}
+dd {
+	margin: 5px 20px 5px 25px;
+}
+
+hr.full_hr {
+	border-style:ridge;
+	border-color:#999999;
+	border-width:1px 0;
+}
+hr.note_hr {
+	width:90%;
+	border-style:ridge;
+	border-color:#999999;
+	border-width:1px 0;
+}
+
+/* SideBar
+----------------------------------------------------------------------------- */
+#menubar {
+	margin:15px 15px 15px 5px;
+	padding:0;
+	font-size: 12px;
+	word-break:break-all;
+	overflow:hidden;
+}
+
+#menubar h2{
+	padding:5px 10px 8px 15px;
+	font-size: 12px;
+	font-weight: bold;
+	color: #FFFFFF;
+	background-image: url(180mt-black-SideBgTop.gif);
+	background-repeat: no-repeat;
+	background-position: left center;
+	background: -moz-linear-gradient(bottom, #111, #777);
+	background: -webkit-linear-gradient(bottom, #111, #777);
+	border-radius: 8px;
+	-moz-box-shadow:0 1px 3px #444;
+}
+#menubar h3,
+#menubar h4,
+#menubar h5,
+#menubar h6 {
+	font-weight: bold;
+	padding:0;
+}
+
+#menubar ul {
+	padding-left: 15px;
+	margin-left: 5px;
+	list-style-image: url(180mt-arrow.gif);
+}
+
+/* Footer
+----------------------------------------------------------------------------- */
+#footer{
+	font-size:13px;
+	text-align:center;
+	color: #666666;
+	padding-bottom: 10px;
+}
+/* -------------------------------------------------------------------------- */
+
+/* html.php/edit_form() */
+.edit_form { clear:both; }
+
+/* pukiwiki.skin.php */
+#navigator {
+	clear:both;
+	padding:4px 0 0 0;
+	margin:0;
+}
+
+
+#note {
+	clear:both;
+	padding:0;
+	margin:0;
+}
+
+#attach {
+	clear:both;
+	padding:0px;
+	margin:0px;
+}
+
+#related {
+	font-size:80%;
+	padding:0;
+	margin:16px 0 0 0;
+}
+
+#banner {
+	float:right;
+	margin-top:24px;
+}
+
+#preview {
+	color:inherit;
+	background-color:#F5F8FF;
+}
+
+/* aname.inc.php */
+.anchor {}
+.anchor_super {
+	font-size:xx-small;
+	vertical-align:super;
+}
+
+/* br.inc.php */
+br.spacer {}
+
+/* calendar*.inc.php */
+.style_calendar {
+	padding:0;
+	border:0;
+	margin:3px;
+	color:inherit;
+	background-color:#CCD5DD;
+	text-align:center;
+}
+.style_td_caltop {
+	padding:5px;
+	margin:1px;
+	color:inherit;
+	background-color:#EEF5FF;
+	font-size:80%;
+	text-align:center;
+}
+.style_td_today {
+	padding:5px;
+	margin:1px;
+	color:inherit;
+	background-color:#FFFFDD;
+	text-align:center;
+}
+.style_td_sat {
+	padding:5px;
+	margin:1px;
+	color:inherit;
+	background-color:#DDE5FF;
+	text-align:center;
+}
+.style_td_sun {
+	padding:5px;
+	margin:1px;
+	color:inherit;
+	background-color:#FFEEEE;
+	text-align:center;
+}
+.style_td_blank {
+	padding:5px;
+	margin:1px;
+	color:inherit;
+	background-color:#EEF5FF;
+	text-align:center;
+}
+.style_td_day {
+	padding:5px;
+	margin:1px;
+	color:inherit;
+	background-color:#EEF5FF;
+	text-align:center;
+}
+.style_td_week {
+	padding:5px;
+	margin:1px;
+	color:inherit;
+	background-color:#DDE5EE;
+	font-size:80%;
+	font-weight:bold;
+	text-align:center;
+}
+
+/* calendar_viewer.inc.php */
+div.calendar_viewer {
+	color:inherit;
+	background-color:inherit;
+	margin-top:20px;
+	margin-bottom:10px;
+	padding-bottom:10px;
+}
+span.calendar_viewer_left {
+	color:inherit;
+	background-color:inherit;
+	float:left;
+}
+span.calendar_viewer_right {
+	color:inherit;
+	background-color:inherit;
+	float:right;
+}
+
+/* counter.inc.php */
+div.counter { font-size:70%; }
+
+/* diff.inc.php */
+span.diff_added {
+	color:blue;
+	background-color:inherit;
+}
+
+span.diff_removed {
+	color:red;
+	background-color:inherit;
+}
+
+/* hr.inc.php */
+hr.short_line {
+	text-align:center;
+	width:80%;
+	border-style:solid;
+	border-color:#333333;
+	border-width:1px 0;
+}
+
+/* new.inc.php */
+span.comment_date { font-size:x-small; }
+span.new1 {
+	color:red;
+	background-color:transparent;
+	font-size:x-small;
+}
+span.new5 {
+	color:green;
+	background-color:transparent;
+	font-size:xx-small;
+}
+
+/* popular.inc.php */
+span.counter { font-size:70%; }
+
+/* ref.inc.php */
+div.img_margin {
+	margin-left:32px;
+	margin-right:32px;
+}
+
+/* search.inc.php id付必要 */
+.search_form {
+	margin:0 15px;
+}

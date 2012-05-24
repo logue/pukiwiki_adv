@@ -36,6 +36,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+set_time_limit(0);
+ignore_user_abort(true);
 defined('DATA_HOME') or define('DATA_HOME', '');
 
 if (! extension_loaded('mbstring')){
