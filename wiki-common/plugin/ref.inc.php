@@ -432,15 +432,16 @@ function plugin_ref_action()
 	pkwk_common_headers();
 
 	// for reduce server load
+	$sendfile = realpath($sendfile);
 	if (function_exists('apache_get_modules') && in_array( 'mod_xsendfile', apache_get_modules()) ){
 		// for Apache mod_xsendfile
-		header('X-Sendfile: '.$ref);
+		header('X-Sendfile: '.$sendfile);
 	}else if (stristr(getenv('SERVER_SOFTWARE'), 'lighttpd') ){
 		// for lighttpd
-		header('X-Lighttpd-Sendfile: '.$ref);
+		header('X-Lighttpd-Sendfile: '.$sendfile);
 	}else if(stristr(getenv('SERVER_SOFTWARE'), 'nginx') || stristr(getenv('SERVER_SOFTWARE'), 'cherokee')){
 		// nginx
-//		header('X-Accel-Redirect: '.$ref);
+		header('X-Accel-Redirect: '.$sendfile);
 	}
 
 	if ($type == 'text/html' || $type == 'application/octet-stream') {

@@ -1180,24 +1180,26 @@ EOD;
 				break;
 			}
 		}
-		$s_filename = htmlsc($filename);
-
+		
+		
 		ini_set('default_charset', '');
 		mb_http_output('pass');
 		pkwk_common_headers();
 
 		// for reduce server load
+		$sendfile = realpath($this->filename);
 		if (function_exists('apache_get_modules') && in_array( 'mod_xsendfile', apache_get_modules()) ){
 			// for Apache mod_xsendfile
-			header('X-Sendfile: '.$s_filename);
+			header('X-Sendfile: '.$sendfile);
 		}else if (stristr(getenv('SERVER_SOFTWARE'), 'lighttpd') ){
 			// for lighttpd
-			header('X-Lighttpd-Sendfile: '.$s_filename);
+			header('X-Lighttpd-Sendfile: '.$sendfile);
 		}else if(stristr(getenv('SERVER_SOFTWARE'), 'nginx') || stristr(getenv('SERVER_SOFTWARE'), 'cherokee')){
 			// nginx
-//			header('X-Accel-Redirect: '.$s_filename);
+			header('X-Accel-Redirect: '.$sendfile);
 		}
 
+		$s_filename = htmlsc($filename);
 		if ($this->type == 'text/html' || $this->type == 'application/octet-stream') {
 			header('Content-Disposition: attachment; filename="' . $s_filename . '"');
 			header('Content-Type: application/octet-stream; name="' . $s_filename . '"');
