@@ -30,10 +30,10 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 			<div id="main"><!-- ■BEGIN id:main -->
 				<div id="wrap_content"><!-- ■BEGIN id:wrap_content -->
 <!-- ◆ anchor ◆ -->
-					<div id="navigator"></div>
+					<div id="navigator"><?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','reload,|,new,newsub,edit,freeze,source,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,log,|,help,|,rss') : '';?>
+</div>
 <!-- ◆ Toolbar ◆ -->
-					<?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','reload,|,new,newsub,edit,freeze,source,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,log,|,help,|,rss') : '';?>
-
+					
 					<div id="content" role="main"><!-- ■BEGIN id:content -->
 						<h1 class="title"><?php echo(($newtitle!='' && $is_read)?$newtitle:$page) ?></h1>
 <?php if (isset($lastmodified)) { ?><!-- ■BEGIN id:lastmodified -->

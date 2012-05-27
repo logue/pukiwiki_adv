@@ -9,8 +9,6 @@ Modified by Logue
 
 /* wrap
 ----------------------------------------------------------------------------- */
-body {text-align: center; }
-
 #wrapper {
 	width: 1000px;
 	text-align: left;
@@ -33,11 +31,6 @@ body {text-align: center; }
 
 /* General
 ----------------------------------------------------------------------------- */
-img{
-	border:none;
-	vertical-align:middle;
-}
-
 #wrapper {
 	margin: 5px auto;
 	border-radius: 20px;
@@ -66,23 +59,23 @@ a:hover {
 /* Header
 ----------------------------------------------------------------------------- */
 #header{
-	width: 980px;
-	height: 130px;
-	text-align: left;
 	background-color: #333;
-	background: -moz-linear-gradient(bottom, #111, #AAA);
-	background: -webkit-linear-gradient(bottom, #111, #AAA);
+	background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMCI%2BDQo8ZGVmcz4NCjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxMDAlIj4NCjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNBQUE7Ii8%2BDQo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMxMTE7Ii8%2BDQo8L2xpbmVhckdyYWRpZW50Pg0KPC9kZWZzPg0KPHJlY3QgeD0iMCIgeT0iMCIgZmlsbD0idXJsKCNncmFkaWVudCkiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIC8%2BDQo8L3N2Zz4%3D');
 	border-radius: 20px;
 	box-shadow:0 5px 10px #222;
 	-moz-box-shadow:0 5px 10px #222;
 	-webkit-box-shadow:0 5px 10px #222;
+	color: #FFFFFF;
 	font-size: 30px;
 	font-weight: bold;
-	color: #FFFFFF;
-	position: relative; 
-	top:10px;
+	height: 130px;
 	left:10px;
 	margin:0 0 20px;
+	position: relative; 
+	text-align: left;
+	text-shadow: gray 1px 2px 1px;
+	top:10px;
+	width: 980px;
 }
 
 #header a,
@@ -97,7 +90,7 @@ a:hover {
 }
 
 #logo{
-	padding: 50px 35px 0px 65px;
+	padding: 50px 35px 0 65px;
 }
 
 
@@ -116,7 +109,7 @@ a:hover {
 	padding: 0;
 	background-image: none;
 }
-#content h1.title a{
+#content .title a{
 	font-size:25px;
 	color: #333333;
 	text-decoration:none;
@@ -124,7 +117,6 @@ a:hover {
 
 #lastmodified{
 	color:#666666;
-	font-size:12px;
 }
 
 #body{
@@ -136,6 +128,7 @@ h1, h2 {
 	font-weight: bold;
 	padding:4px 0 4px 32px;
 	color: #333333;
+	text-shadow: gainsboro 1px 2px 1px;
 	background-image: url(180mt-black-w1000-title.gif);
 	background-position: left center;
 	background-repeat: no-repeat;
@@ -164,35 +157,26 @@ p{
 }
 
 .style_table {
-	padding:0;
-	border:0;
-	margin:0 20px;
-	text-align:left;
 	color:inherit;
 	background-color:#DDDDDD;
 }
 .style_th {
-	padding:5px;
-	margin:1px;
-	text-align:center;
 	color:inherit;
 	background-color:#EEEEEE;
 }
 
 .style_td {
-	padding:5px;
-	margin:1px;
 	color:inherit;
 	background-color:#EEEEEE
 }
 
-thead td.style_td,
-tfoot td.style_td {
+thead .style_td,
+tfoot .style_td {
 	color:inherit;
 	background-color:#D0D8E0;
 }
-thead th.style_th,
-tfoot th.style_th {
+thead .style_th,
+tfoot .style_th {
 	color:inherit;
 	background-color:#E0E8F0;
 }
@@ -236,12 +220,12 @@ dd {
 	margin: 5px 20px 5px 25px;
 }
 
-hr.full_hr {
+.full_hr {
 	border-style:ridge;
 	border-color:#999999;
 	border-width:1px 0;
 }
-hr.note_hr {
+.note_hr {
 	width:90%;
 	border-style:ridge;
 	border-color:#999999;
@@ -263,11 +247,8 @@ hr.note_hr {
 	font-size: 12px;
 	font-weight: bold;
 	color: #FFFFFF;
-	background-image: url(180mt-black-SideBgTop.gif);
-	background-repeat: no-repeat;
-	background-position: left center;
-	background: -moz-linear-gradient(bottom, #111, #777);
-	background: -webkit-linear-gradient(bottom, #111, #777);
+	text-shadow: gray 1px 2px 1px;
+	background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMCI%2BDQo8ZGVmcz4NCjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxMDAlIj4NCjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM3Nzc7Ii8%2BDQo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMxMTE7Ii8%2BDQo8L2xpbmVhckdyYWRpZW50Pg0KPC9kZWZzPg0KPHJlY3QgeD0iMCIgeT0iMCIgZmlsbD0idXJsKCNncmFkaWVudCkiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIC8%2BDQo8L3N2Zz4%3D);
 	border-radius: 8px;
 	-moz-box-shadow:0 1px 3px #444;
 }
@@ -295,16 +276,12 @@ hr.note_hr {
 }
 /* -------------------------------------------------------------------------- */
 
-/* html.php/edit_form() */
-.edit_form { clear:both; }
-
 /* pukiwiki.skin.php */
 #navigator {
 	clear:both;
 	padding:4px 0 0 0;
 	margin:0;
 }
-
 
 #note {
 	clear:both;
@@ -334,138 +311,11 @@ hr.note_hr {
 	background-color:#F5F8FF;
 }
 
-/* aname.inc.php */
-.anchor {}
-.anchor_super {
-	font-size:xx-small;
-	vertical-align:super;
-}
-
-/* br.inc.php */
-br.spacer {}
-
-/* calendar*.inc.php */
-.style_calendar {
-	padding:0;
-	border:0;
-	margin:3px;
-	color:inherit;
-	background-color:#CCD5DD;
-	text-align:center;
-}
-.style_td_caltop {
-	padding:5px;
-	margin:1px;
-	color:inherit;
-	background-color:#EEF5FF;
-	font-size:80%;
-	text-align:center;
-}
-.style_td_today {
-	padding:5px;
-	margin:1px;
-	color:inherit;
-	background-color:#FFFFDD;
-	text-align:center;
-}
-.style_td_sat {
-	padding:5px;
-	margin:1px;
-	color:inherit;
-	background-color:#DDE5FF;
-	text-align:center;
-}
-.style_td_sun {
-	padding:5px;
-	margin:1px;
-	color:inherit;
-	background-color:#FFEEEE;
-	text-align:center;
-}
-.style_td_blank {
-	padding:5px;
-	margin:1px;
-	color:inherit;
-	background-color:#EEF5FF;
-	text-align:center;
-}
-.style_td_day {
-	padding:5px;
-	margin:1px;
-	color:inherit;
-	background-color:#EEF5FF;
-	text-align:center;
-}
-.style_td_week {
-	padding:5px;
-	margin:1px;
-	color:inherit;
-	background-color:#DDE5EE;
-	font-size:80%;
-	font-weight:bold;
-	text-align:center;
-}
-
-/* calendar_viewer.inc.php */
-div.calendar_viewer {
-	color:inherit;
-	background-color:inherit;
-	margin-top:20px;
-	margin-bottom:10px;
-	padding-bottom:10px;
-}
-span.calendar_viewer_left {
-	color:inherit;
-	background-color:inherit;
-	float:left;
-}
-span.calendar_viewer_right {
-	color:inherit;
-	background-color:inherit;
-	float:right;
-}
-
-/* counter.inc.php */
-div.counter { font-size:70%; }
-
-/* diff.inc.php */
-span.diff_added {
-	color:blue;
-	background-color:inherit;
-}
-
-span.diff_removed {
-	color:red;
-	background-color:inherit;
-}
-
-/* hr.inc.php */
-hr.short_line {
-	text-align:center;
-	width:80%;
-	border-style:solid;
-	border-color:#333333;
-	border-width:1px 0;
-}
-
-/* new.inc.php */
-span.comment_date { font-size:x-small; }
-span.new1 {
-	color:red;
-	background-color:transparent;
-	font-size:x-small;
-}
-span.new5 {
-	color:green;
-	background-color:transparent;
-	font-size:xx-small;
-}
-
 /* popular.inc.php */
-span.counter { font-size:70%; }
+.counter { font-size:70%; }
 
 /* ref.inc.php */
-div.img_margin {
+.img_margin {
 	margin-left:32px;
 	margin-right:32px;
 }
