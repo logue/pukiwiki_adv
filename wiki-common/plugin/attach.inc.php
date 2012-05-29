@@ -221,9 +221,9 @@ function attach_upload($file, $page, $pass = NULL)
 
 	// Check query-string
 	$query = get_cmd_uri('attach', '', '', array(
-		'file'=>$file['name'],
 		'refer'=>$page,
-		'pcmd'=>'info'
+		'pcmd'=>'info',
+		'file'=>$file['name']
 	));
 
 	if ($file['error'] !== UPLOAD_ERR_OK) {
@@ -484,7 +484,7 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 				'&file='  . rawurlencode($file['name']) .
 				'&pcmd=info';
 */
-		$footer['URI'] = get_cmd_uri('attach','',array('refer'=>$page,'file'=>$file['name'],'pcmd'=>'info'));
+		$footer['URI'] = get_cmd_uri('attach','',array('refer'=>$page,'pcmd'=>'info','file'=>$file['name']));
 		$footer['USER_AGENT']  = TRUE;
 		$footer['REMOTE_ADDR'] = TRUE;
 
@@ -873,8 +873,8 @@ class AttachFile
 
 		$this->getstatus();
 
-		$inf = get_cmd_uri('attach','','',array('pcmd'=>'info','refer'=>$this->page,'file'=>$this->file,'age'=>$this->age));
-		$open = get_cmd_uri('attach','','',array('pcmd'=>'open','refer'=>$this->page,'file'=>$this->file,'age'=>$this->age));
+		$inf = get_cmd_uri('attach','','',array('pcmd'=>'info','refer'=>$this->page,'age'=>$this->age,'file'=>$this->file));
+		$open = get_cmd_uri('attach','','',array('pcmd'=>'open','refer'=>$this->page,'age'=>$this->age,'file'=>$this->file));
 
 		$title = $this->time_str . ' ' . $this->size_str;
 		$label = htmlsc($this->file);
@@ -957,7 +957,7 @@ class AttachFile
 				if ($size[0] < 200) { $w = $size[0]; $h = $size[1]; }
 				else { $w = 200; $h = $size[1] * (200 / ($size[0]!=0?$size[0]:1) ); }
 				$_attach_setimage  = ($pkwk_dtd == PKWK_DTD_HTML_5) ? '<figure class="img_margin attach_info_image">' : '<div class="img_margin attach_info_image">';
-				$_attach_setimage .= '<img src="'.get_cmd_uri('ref','','',array('page'=>$r_page,'src'=>$s_file));
+				$_attach_setimage .= '<img src="'.get_cmd_uri('ref','','',array('page'=>$this->page,'src'=>$this->file));
 				$_attach_setimage .= '" width="' . $w .'" height="' . $h . '" />';
 				$_attach_setimage .= ($pkwk_dtd == PKWK_DTD_HTML_5) ? '</figure>' : '</div>';
 			}
@@ -1210,9 +1210,8 @@ EOD;
 		// For BugTrack2/102
 		// @readfile($this->filename);
 		plus_readfile($this->filename);
-		
-		pkwk_common_suffixes($this->size);
 		log_put_download($this->page,$this->file);
+		pkwk_common_suffixes($this->size);
 		exit;
 	}
 }

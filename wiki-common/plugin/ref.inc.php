@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: ref.inc.php,v 1.56.4 2012/03/31 17:57:00 Logue Exp $
+// $Id: ref.inc.php,v 1.56.5 2012/05/29 19:11:00 Logue Exp $
 // Copyright (C)
 //   2010-2012 PukiWiki Advance Developers Team
 //   2002-2006, 2011 PukiWiki Developers Team
@@ -59,15 +59,15 @@ function plugin_ref_convert()
 {
 	global $pkwk_dtd;
 	if (! func_num_args()) {
-		return '<p class="ui-state-info">' . htmlsc('#ref(): Usage:' . PLUGIN_REF_USAGE) . '</p>' . "\n";
+		return '<p class="message-box ui-state-info">' . htmlsc('#ref(): Usage:' . PLUGIN_REF_USAGE) . '</p>' . "\n";
 	}
 
 	$params = plugin_ref_body(func_get_args());
 	if (isset($params['_error'])) {
-		return '<p class="ui-state-error">' . htmlsc('#ref(): ERROR: ' . $params['_error']) . '</p>' . "\n";
+		return '<p class="message-box ui-state-error">' . htmlsc('#ref(): ERROR: ' . $params['_error']) . '</p>' . "\n";
 	}
 	if (! isset($params['_body'])) {
-		return '<p class="ui-state-error">' . htmlsc('#ref(): ERROR: No _body') . '</p>' . "\n";
+		return '<p class="message-box ui-state-error">' . htmlsc('#ref(): ERROR: No _body') . '</p>' . "\n";
 	}
 
 	// Wrap with a table
@@ -221,8 +221,7 @@ function plugin_ref_body($args)
 		if (PKWK_DISABLE_INLINE_IMAGE_FROM_URI) {
 			//$params['_error'] = 'PKWK_DISABLE_INLINE_IMAGE_FROM_URI prohibits this';
 			//return $params;
-			$s_url = htmlsc($url);
-			$params['_body'] = '<a href="' . $s_url . '" rel="external">' . $s_url . '</a>';
+			$params['_body'] = '<a href="' . $url . '" rel="external">' . $s_url . '</a>';
 			return $params;
 		}
 		$matches = array();
@@ -248,7 +247,7 @@ function plugin_ref_body($args)
 				$url = $file; // Try direct-access, if possible
 			} else {
 				// With ref plugin (faster than attach)
-				$url = get_cmd_uri('ref',$page,null,array('src'=>$name));
+				$url = get_cmd_uri('ref', $page, null, array('src'=>$name));
 			}
 			$size = @getimagesize($file);
 			if (is_array($size)) {
@@ -258,7 +257,6 @@ function plugin_ref_body($args)
 		}
 	}
 
-	$s_url   = $url;
 	$s_title = isset($params['_title']) ? htmlsc($params['_title']) : '';
 	$s_info  = '';
 	if ($seems_image) {
@@ -268,13 +266,13 @@ function plugin_ref_body($args)
 			$s_info = 'width="'  . htmlsc($params['_w']) .
 			        '" height="' . htmlsc($params['_h']) . '" ';
 		}
-		$body = '<img src="' . $s_url   . '" ' .
+		$body = '<img src="' . $url   . '" ' .
 			'alt="'      . $s_title . '" ' .
 			'title="'    . $s_title . '" ' .
 			$s_info . '/>';
 		if (! isset($params['nolink']) && $url2) {
 			$params['_body'] =
-				'<a href="' . htmlsc($url2) . '" title="' . $s_title . '"'. ((IS_MOBILE) ? ' data-ajax="false"' : '') . '>' . "\n" .
+				'<a href="' . $url2 . '" title="' . $s_title . '"'. ((IS_MOBILE) ? ' data-ajax="false"' : '') . '>' . "\n" .
 				$body . "\n" . '</a>';
 		} else {
 			$params['_body'] = $body;
@@ -284,7 +282,7 @@ function plugin_ref_body($args)
 			$s_info = htmlsc(get_date('Y/m/d H:i:s', filemtime($file) - LOCALZONE) .
 				' ' . sprintf('%01.1f', round(filesize($file) / 1024, 1)) . 'KB');
 		}
-		$params['_body'] = '<a href="' . $s_url . '" title="' . $s_info . '"'. ((IS_MOBILE) ? ' data-ajax="false"' : '') . '>' .
+		$params['_body'] = '<a href="' . $url . '" title="' . $s_info . '"'. ((IS_MOBILE) ? ' data-ajax="false"' : '') . '>' .
 			(isset($params['noicon']) ? '' : '<span class="pkwk-icon icon-downaload"></span>') . $s_title . '</a>';
 	}
 
@@ -432,7 +430,7 @@ function plugin_ref_action()
 	pkwk_common_headers();
 
 	// for reduce server load
-	$sendfile = realpath($sendfile);
+	$sendfile = realpath($ref);
 	if (function_exists('apache_get_modules') && in_array( 'mod_xsendfile', apache_get_modules()) ){
 		// for Apache mod_xsendfile
 		header('X-Sendfile: '.$sendfile);
@@ -451,8 +449,8 @@ function plugin_ref_action()
 		header('Content-Disposition: inline; filename="' . $s_filename . '"');
 		header('Content-Type: ' . htmlsc($type));
 	}
-	header('Content-Length: ' . filesize($ref));
 	plus_readfile($ref);
+	pkwk_common_suffixes(filesize($ref));
 	exit;
 }
 ?>
