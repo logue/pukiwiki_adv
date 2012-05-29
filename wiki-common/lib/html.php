@@ -636,10 +636,9 @@ function pkwk_headers_sent()
 
 	@param modified 最終更新日時（秒）
 	@param expire 有効期限（秒）
-	@param compress 圧縮をするかしないか（refなどで二重圧縮されるのを防ぐ）
 	@return なし
 */
-function pkwk_common_headers($modified = 0, $expire = 604800, $compress = true){
+function pkwk_common_headers($modified = 0, $expire = 604800){
 	global $lastmod, $vars;
 	if (! defined('PKWK_OPTIMISE')) pkwk_headers_sent();
 
@@ -703,19 +702,27 @@ function pkwk_common_headers($modified = 0, $expire = 604800, $compress = true){
 	// XSS脆弱性対策（これでいいのか？）
 	// http://msdn.microsoft.com/ja-jp/ie/dd218482
 	header('X-XSS-Protection: '.((DEBUG) ? '0' :'1;mode=block') );
+	
+	header('Connection: close');
 
 	// buffer all upcoming output - make sure we care about compression: 
-	if(!ob_start("ob_gzhandler")) ob_start();
+	if(!DEBUG){
+		if (!ob_start("ob_gzhandler")){
+			ob_start();
+		}
+	}
 }
 
 function pkwk_common_suffixes($length = ''){
-	// get the size of the output
-	// send headers to tell the browser to close the connection
-	header('Content-Length: '. ($length !== '') ? $length : ob_get_length() );
-	header('Connection: close');
 	// flush all output
-	ob_end_flush();
-	ob_flush();
+	if(!DEBUG){
+		// get the size of the output
+		// send headers to tell the browser to close the connection
+		header('Content-Length: '. ($length !== '') ? $length : ob_get_length() );
+		ob_end_flush();
+		ob_flush();
+	}
+	
 	flush();
 	// close current session
 	if (session_id()) session_write_close();

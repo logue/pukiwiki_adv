@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: convert_html.php,v 1.21.30 2012/05/20 10:03:00 Logue Exp $
+// $Id: convert_html.php,v 1.21.31 2012/05/29 17:32:00 Logue Exp $
 // Copyright (C)
 //   2010-2012 PukiWiki Advance Developers Team
 //   2005-2008 PukiWiki Plus! Team
@@ -73,7 +73,7 @@ class Element
 
 	function wrap($string, $tag, $param = '', $canomit = TRUE)
 	{
-		return ($canomit && $string == '') ? '' :
+		return ($canomit && empty($string)) ? '<' . $tag . $param . ' />' :
 			'<' . $tag . $param . '>' . $string . '</' . $tag . '>';
 	}
 
@@ -184,7 +184,7 @@ class Inline extends Element
 			$text : make_link($text));
 	}
 
-	function & insert(& $obj)
+	function insert(& $obj)
 	{
 		$this->elements[] = $obj->elements[0];
 		return $this;
@@ -201,7 +201,7 @@ class Inline extends Element
 		return join(($line_break ? '<br />' . "\n" : "\n"), $this->elements);
 	}
 
-	function & toPara($class = '')
+	function toPara($class = '')
 	{
 		$obj = new Paragraph('', $class);
 		$obj->insert($this);
@@ -258,7 +258,7 @@ class Heading extends Element
 		$this->level++; // h2,h3,h4
 	}
 
-	function & insert(& $obj)
+	function insert(& $obj)
 	{
 		parent::insert($obj);
 		return $this->last = & $this;
@@ -483,7 +483,7 @@ class BQuote extends Element
 
 	function end(& $root, $level)
 	{
-		$parent = & $root->last;
+		$parent = $root->last;
 
 		while (is_object($parent)) {
 			if (is_a($parent, 'BQuote') && $parent->level == $level)
@@ -541,19 +541,19 @@ class TableCell extends Element
 			$text      = substr($text, 1);
 		}
 
-		if ($text !== '' && $text{0} == '#') {
+		if (!empty($text) && $text{0} == '#') {
 			// Try using Div class for this $text
-			$obj = & Factory_Div($this, $text);
+			$obj = Factory_Div($this, $text);
 			if (is_a($obj, 'Paragraph'))
-				$obj = & $obj->elements[0];
+				$obj = $obj->elements[0];
 		} else {
-			$obj = & Factory_Inline($text);
+			$obj =  Factory_Inline($text);
 		}
 
 		$this->insert($obj);
 	}
 
-	function setStyle(& $style)
+	function setStyle($style)
 	{
 		foreach ($style as $key=>$value)
 			if (! isset($this->style[$key]))
@@ -614,7 +614,7 @@ class Table extends Element
 		return is_a($obj, 'Table') && ($obj->col == $this->col);
 	}
 
-	function & insert(& $obj)
+	function insert(& $obj)
 	{
 		$this->elements[] = $obj->elements[0];
 		$this->types[]    = $obj->type;
@@ -629,7 +629,7 @@ class Table extends Element
 		for ($ncol = 0; $ncol < $this->col; $ncol++) {
 			$rowspan = 1;
 			foreach (array_reverse(array_keys($this->elements)) as $nrow) {
-				$row = & $this->elements[$nrow];
+				$row = $this->elements[$nrow];
 				if ($row[$ncol]->rowspan == 0) {
 					++$rowspan;
 					continue;
@@ -645,9 +645,9 @@ class Table extends Element
 		// Set colspan and style
 		$stylerow = NULL;
 		foreach (array_keys($this->elements) as $nrow) {
-			$row = & $this->elements[$nrow];
+			$row = $this->elements[$nrow];
 			if ($this->types[$nrow] == 'c')
-				$stylerow = & $row;
+				$stylerow = $row;
 			$colspan = 1;
 			foreach (array_keys($row) as $ncol) {
 				if ($row[$ncol]->colspan == 0) {
@@ -655,7 +655,7 @@ class Table extends Element
 					continue;
 				}
 				$row[$ncol]->colspan = $colspan;
-				if ($stylerow !== NULL) {
+				if (!empty($stylerow)) {
 					$row[$ncol]->setStyle($stylerow[$ncol]->style);
 					// Inherits column style
 					while (--$colspan)
@@ -673,7 +673,7 @@ class Table extends Element
 			foreach (array_keys($this->elements) as $nrow) {
 				if ($this->types[$nrow] != $type)
 					continue;
-				$row        = & $this->elements[$nrow];
+				$row        = $this->elements[$nrow];
 				$row_string = '';
 				foreach (array_keys($row) as $ncol)
 					$row_string .= $row[$ncol]->toString();
@@ -749,7 +749,7 @@ class YTable extends Element
 		return is_a($obj, 'YTable') && ($obj->col == $this->col);
 	}
 
-	function & insert(& $obj)
+	function insert(& $obj)
 	{
 		$this->elements[] = $obj->elements[0];
 		return $this;
@@ -771,7 +771,7 @@ class YTable extends Element
 // ' 'Space-beginning sentence
 class Pre extends Element
 {
-	function Pre(& $root, $text)
+	function Pre( $root, $text)
 	{
 		global $preformat_ltrim;
 		parent::Element();
@@ -784,7 +784,7 @@ class Pre extends Element
 		return is_a($obj, 'Pre');
 	}
 
-	function & insert(& $obj)
+	function insert(& $obj)
 	{
 		$this->elements[] = $obj->elements[0];
 		return $this;
@@ -864,13 +864,13 @@ class Body extends Element
 	{
 		$this->id            = $id;
 		$this->contents      = new Element();
-		$this->contents_last = & $this->contents;
+		$this->contents_last = $this->contents;
 		parent::Element();
 	}
 
-	function parse(& $lines)
+	function parse($lines)
 	{
-		$this->last = & $this;
+		$this->last = $this;
 		$matches = array();
 
 		while (! empty($lines)) {
@@ -883,7 +883,7 @@ class Body extends Element
 			if (preg_match('/^(TITLE):(.*)$/',$line,$matches))
 			{
 				global $newtitle, $newbase;
-				if ($newbase == '') {
+				if (empty($newbase)) {
 					// $newbase = trim($matches[2]);
 					$newbase = convert_html($matches[2]);
 					$newbase = strip_htmltag($newbase);
@@ -899,15 +899,15 @@ class Body extends Element
 			if (preg_match('/^(LEFT|CENTER|RIGHT):(.*)$/', $line, $matches)) {
 				// <div style="text-align:...">
 				$this->last = $this->last->add(new Align(strtolower($matches[1])));
-				if ($matches[2] == '') continue;
+				if (empty($matches[2])) continue;
 				$line = $matches[2];
 			}
 
 			$line = rtrim($line, "\r\n");
 
 			// Empty
-			if ($line === '') {
-				$this->last = & $this;
+			if (empty($line) ) {
+				$this->last = $this;
 				continue;
 			}
 
@@ -991,9 +991,9 @@ class Body extends Element
 
 		// Heading id (specified by users)
 		$id = make_heading($text, FALSE); // Cut fixed-anchor from $text
-		if ($id == '') {
+		if (empty($id)) {
 			// Not specified
-			$id     = & $autoid;
+			$id     = $autoid;
 			$anchor = '';
 		} else {
 			//$anchor = ' &aname(' . $id . ',super,full){' . $_symbol_anchor . '};';
@@ -1012,7 +1012,7 @@ class Body extends Element
 
 	function insert(& $obj)
 	{
-		if (is_a($obj, 'Inline')) $obj = & $obj->toPara();
+		if (is_a($obj, 'Inline')) $obj = $obj->toPara();
 		return parent::insert($obj);
 	}
 
@@ -1024,7 +1024,7 @@ class Body extends Element
 
 		// #contents
 		$text = preg_replace_callback('/<#_contents_>/',
-			array(& $this, 'replace_contents'), $text);
+			array( $this, 'replace_contents'), $text);
 
 		return $text . "\n";
 	}
@@ -1046,7 +1046,7 @@ class Contents_UList extends ListContainer
 		// Reformatting $text
 		// A line started with "\n" means "preformatted" ... X(
 		make_heading($text);
-		$text = "\n" . '<a href="#' . $id . '"'. ((IS_MOBILE) ? ' data-ajax="false"' : '') . '>' . $text . '</a>' . "\n";
+		$text = "\n" . '<a href="#' . $id . '"'. ((IS_MOBILE) ? ' data-ajax="false"  data-anchor="'.$id.'"' : '') . '>' . $text . '</a>' . "\n";
 		parent::ListContainer('ul', 'li', '-', str_repeat('-', $level));
 		$this->insert(Factory_Inline($text));
 	}
@@ -1072,7 +1072,7 @@ class Contents_UList extends ListContainer
 // ' 'Space-beginning sentence with color
 class CPre extends Element
 {
-	function CPre(&$root,$text)
+	function CPre(& $root,$text)
 	{
 		global $preformat_ltrim;
 
@@ -1080,11 +1080,11 @@ class CPre extends Element
 		if (substr($text, 0, 2) === '# ') $text=substr($text,1);
 		$this->elements[] = (!$preformat_ltrim or $text == '' or substr($text, 0, 1) !== ' ') ? $text : substr($text,1);
 	}
-	function canContain(&$obj)
+	function canContain(& $obj)
 	{
 		return is_a($obj, 'CPre');
 	}
-	function insert(&$obj)
+	function insert(& $obj)
 	{
 		$this->elements[] = $obj->elements[0];
 		return $this;
