@@ -73,4 +73,5 @@ EOD;
 
 	return array('msg'=>$msg, 'body'=>$body);
 }
-?>
+/* End of file freeze.inc.php */
+/* Location: ./wiki-common/plugin/freeze.inc.php */

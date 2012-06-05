@@ -90,4 +90,5 @@ function plugin_loglist_convert()
 	return convert_html($rc);
 }
 
-?>
+/* End of file loglist.inc.php */
+/* Location: ./wiki-common/plugin/loglist.inc.php */

@@ -10,7 +10,7 @@ define(PARTEDIT_FREEZE_OFF,TRUE);
 
 function plugin_partedit_inline()
 {
-        return plugin_partedit_convert();
+	return plugin_partedit_convert();
 }
 
 function plugin_partedit_convert()
@@ -37,4 +37,5 @@ function plugin_partedit_convert()
 	}
 	return '';
 }
-?>
+/* End of file partedit.inc.php */
+/* Location: ./wiki-common/plugin/partedit.inc.php */

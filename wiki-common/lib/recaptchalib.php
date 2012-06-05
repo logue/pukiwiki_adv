@@ -170,13 +170,13 @@ function recaptcha_check_answer ($privkey, $remoteip, $challenge, $response, $ex
 	}
 
 	$response = _recaptcha_http_post (RECAPTCHA_VERIFY_SERVER, "/recaptcha/api/verify",
-					array (
-						'privatekey' => $privkey,
-						'remoteip' => $remoteip,
-						'challenge' => $challenge,
-						'response' => $response
-						) + $extra_params
-					);
+					  array (
+						 'privatekey' => $privkey,
+						 'remoteip' => $remoteip,
+						 'challenge' => $challenge,
+						 'response' => $response
+						 ) + $extra_params
+					  );
 
 	$answers = explode ("\n", $response [1]);
 	$recaptcha_response = new ReCaptchaResponse();
@@ -273,5 +273,5 @@ function recaptcha_mailhide_html($pubkey, $privkey, $email) {
 
 }
 
-
-?>
+/* End of file recaptchalib.php */
+/* Location: ./wiki-common/lib/recaptchalib.php */

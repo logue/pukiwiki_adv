@@ -19,4 +19,5 @@ function plugin_logsw_convert()
 	$log['browse']['use'] = 1;
 }
 
-?>
+/* End of file logsw.inc.php */
+/* Location: ./wiki-common/plugin/logsw.inc.php */

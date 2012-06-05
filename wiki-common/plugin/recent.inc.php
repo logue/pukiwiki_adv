@@ -129,4 +129,5 @@ function plugin_recent_convert()
 			join("\n",$items)."\n";
 	}
 }
-?>
+/* End of file recent.inc.php */
+/* Location: ./wiki-common/plugin/recent.inc.php */

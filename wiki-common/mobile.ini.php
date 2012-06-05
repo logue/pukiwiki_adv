@@ -390,4 +390,6 @@ $use_trans_sid_address = array(
 );
 
 /////////////////////////////////////////////////
-?>
+
+/* End of file mobile.ini.php */
+/* Location: ./wiki-common/mobile.ini.php */

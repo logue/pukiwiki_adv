@@ -72,4 +72,5 @@ function plugin_topicpath_inline()
 
 	return '<ul><li>'.join('</li><li>', array_reverse($topic_path)).'</li></ul>';
 }
-?>
+/* End of file topicpath.inc.php */
+/* Location: ./wiki-common/plugin/topicpath.inc.php */

@@ -68,4 +68,5 @@ function plugin_brokenlink_action()
 	return $retval;
 }
 
-?>
+/* End of file brokenlink.inc.php */
+/* Location: ./wiki-common/plugin/brokenlink.inc.php */

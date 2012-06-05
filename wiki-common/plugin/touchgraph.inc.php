@@ -70,4 +70,5 @@ function plugin_touchgraph_ref()
 		}
 	}
 }
-?>
+/* End of file touchgraph.inc.php */
+/* Location: ./wiki-common/plugin/touchgraph.inc.php */

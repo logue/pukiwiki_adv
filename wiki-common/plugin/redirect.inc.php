@@ -21,16 +21,16 @@ function plugin_redirect_action()
 		//die();
 		$time = 0;
 		echo <<<EOD
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html>
 <html>
-  <head>
-  <meta http-equiv="Refresh" content="$time;URL={$vars['u']}" />
-  <title>Auto Redirect</title>
-  </head>
-  <body>
-  <div><a href="{$vars['u']}">Please click here.</a></div>
-  </body>
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="Refresh" content="$time;URL={$vars['u']}" />
+		<title>Auto Redirect</title>
+	</head>
+	<body>
+		<article><a href="{$vars['u']}">Please click here.</a></article>
+	</body>
 </html>
 EOD;
 		die();
@@ -69,4 +69,5 @@ function plugin_redirect_convert()
 	return open_uri_in_new_window($anchor);
 }
 
-?>
+/* End of file redirect.inc.php */
+/* Location: ./wiki-common/plugin/redirect.inc.php */

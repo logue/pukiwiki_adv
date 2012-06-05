@@ -29,4 +29,5 @@ function i18n_set_param($argc, $argv)
 	return $rc;
 }
 
-?>
+/* End of file _set.inc.php */
+/* Location: ./wiki-common/plugin/_set.inc.php */

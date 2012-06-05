@@ -14,4 +14,5 @@ function plugin_navititle_inline()
 
 	return '<h1 class="title">' . (($newtitle!='' && $is_read)?$newtitle:$page) . '</h1>';
 }
-?>
+/* End of file navitite.inc.php */
+/* Location: ./wiki-common/plugin/navititle.inc.php */

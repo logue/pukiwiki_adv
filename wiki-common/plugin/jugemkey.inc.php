@@ -259,4 +259,5 @@ function plugin_jugemkey_get_user_name()
 	return array('role'=>ROLE_GUEST,'nick'=>'');
 }
 
-?>
+/* End of file jugemkey.inc.php */
+/* Location: ./wiki-common/plugin/jugemkey.inc.php */

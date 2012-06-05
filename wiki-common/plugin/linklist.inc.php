@@ -246,4 +246,5 @@ function linklist_testipaddress ($host)
 	return 1; // IP アドレス変換できた
 }
 
-?>
+/* End of file linklist.inc.php */
+/* Location: ./wiki-common/plugin/linklist.inc.php */

@@ -150,5 +150,5 @@ $log = array(
 // ログの上限容量
 $log_max_size = 1024;
 
-
-?>
+/* End of file config-log.ini.php */
+/* Location: ./wiki-common/config-log.ini.php */

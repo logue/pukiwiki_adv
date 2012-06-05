@@ -503,4 +503,5 @@ function plugin_rename_getselecttag($page)
 EOD;
 
 }
-?>
+/* End of file remote.inc.php */
+/* Location: ./wiki-common/plugin/remote.inc.php */

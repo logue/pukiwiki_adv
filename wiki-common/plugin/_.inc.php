@@ -112,5 +112,5 @@ function i18n_ConfMsgGet($lang, $msg, $no = 0)
 
 	return $msg;
 }
-
-?>
+/* End of file _.inc.php */
+/* Location: ./wiki-common/plugin/_.inc.php */

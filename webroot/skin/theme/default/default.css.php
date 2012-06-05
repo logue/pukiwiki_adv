@@ -11,3 +11,6 @@ header('Last-Modified: '.gmdate('D, d M Y H:i:s', filemtime($color)) . ' GMT');
 ob_start('ob_gzhandler');
 readfile('default.css');
 ob_end_flush();
+
+/* End of file default.css.php */
+/* Location: ./webroot/skin/theme/default/default.css.php */

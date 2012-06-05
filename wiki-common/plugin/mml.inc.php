@@ -89,4 +89,5 @@ HTML;
 	$mml_count++;
 	return $html;
 }
-?>
+/* End of file mml.inc.php */
+/* Location: ./wiki-common/plugin/mml.inc.php */

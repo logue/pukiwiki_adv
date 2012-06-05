@@ -37,4 +37,5 @@ $login_api = array(
 	strval(ROLE_AUTH_GFC)		  => 'auth_gfc',
 );
 
-?>
+/* End of file auth.def.php */
+/* Location: ./wiki-common/lib/auth.def.php */

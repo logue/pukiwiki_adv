@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: convert_html.php,v 1.21.31 2012/05/29 17:32:00 Logue Exp $
+// $Id: convert_html.php,v 1.21.32 2012/06/08 17:40:00 Logue Exp $
 // Copyright (C)
 //   2010-2012 PukiWiki Advance Developers Team
 //   2005-2008 PukiWiki Plus! Team
@@ -464,9 +464,12 @@ class BQuote extends Element
 
 	function insert(& $obj)
 	{
+		if (!is_object($obj)) return;
+		
+		// Only variables should be passed by reference in PHP5.4
 		// BugTrack/521, BugTrack/545
-		if (is_a($obj, 'inline'))
-			return parent::insert($obj->toPara(' class="style_blockquote"'));
+		//if (is_a($obj, 'inline'))
+		//	return parent::insert($obj->toPara(' class="style_blockquote"'));
 
 		if (is_a($obj, 'BQuote') && $obj->level == $this->level && count($obj->elements)) {
 			$obj = & $obj->elements[0];
@@ -1104,4 +1107,5 @@ class CPre extends Element
 	}
 }
 
-?>
+/* End of file convert_html.php */
+/* Location: ./wiki-common/lib/convert_html.php */

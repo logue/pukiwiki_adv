@@ -222,4 +222,5 @@ class MapNode
 		return implode("\n", $retval);
 	}
 }
-?>
+/* End of file map.inc.php */
+/* Location: ./wiki-common/plugin/map.inc.php */

@@ -122,4 +122,5 @@ function plugin_include_convert()
 
 	return $body;
 }
-?>
+/* End of file include.inc.php */
+/* Location: ./wiki-common/plugin/include.inc.php */

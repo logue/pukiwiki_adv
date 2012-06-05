@@ -117,13 +117,11 @@ function plugin_article_action()
 		$s_digest   = htmlsc($post['digest']);
 		$s_postdata = htmlsc($postdata_input);
 		$body .= <<<EOD
-<form action="$script" method="post">
+<form action="$script" method="post" class="article_form">
 	<input type="hidden" name="refer" value="$s_refer" />
 	<input type="hidden" name="digest" value="$s_digest" />
 	<input type="hidden" name="cmd" value="preview" />
-	<div class="article_form">
-		<textarea name="msg" rows="$rows" cols="$cols" id="textarea">$s_postdata</textarea>
-	</div>
+	<textarea name="msg" rows="$rows" cols="$cols" id="textarea">$s_postdata</textarea>
 </form>
 EOD;
 
@@ -183,19 +181,17 @@ function plugin_article_convert()
 	$article_rows = PLUGIN_ARTICLE_ROWS;
 	$article_cols = PLUGIN_ARTICLE_COLS;
 	$string = <<<EOD
-<form action="$script" method="post">
+<form action="$script" method="post" class="article_form post_form">
 	<input type="hidden" name="article_no" value="$article_no" />
 	<input type="hidden" name="cmd" value="article" />
 	<input type="hidden" name="digest" value="$s_digest" />
 	<input type="hidden" name="refer" value="$s_page" />
-	<div class="article_form post_form">
-		<label for="_p_article_name_$article_no">{$_article_msg['btn_name']}</label>
-		<input type="text" name="name" id="_p_article_name_$article_no" size="$name_cols" /><br />
-		<label for="_p_article_subject_$article_no">{$_article_msg['btn_subject']}</label>
-		<input type="text" name="subject" id="_p_article_subject_$article_no" size="$subject_cols" /><br />
-		<textarea name="msg" class="msg" rows="$article_rows" cols="$article_cols"></textarea><br />
-		<input type="submit" name="article" value="{$_article_msg['btn_article']}" />
-	</div>
+	<label for="_p_article_name_$article_no">{$_article_msg['btn_name']}</label>
+	<input type="text" name="name" id="_p_article_name_$article_no" size="$name_cols" /><br />
+	<label for="_p_article_subject_$article_no">{$_article_msg['btn_subject']}</label>
+	<input type="text" name="subject" id="_p_article_subject_$article_no" size="$subject_cols" /><br />
+	<textarea name="msg" class="msg" rows="$article_rows" cols="$article_cols"></textarea><br />
+	<input type="submit" name="article" value="{$_article_msg['btn_article']}" />
 </form>
 EOD;
 	if (IS_MOBILE) {
@@ -206,4 +202,5 @@ EOD;
 		return $string;
 	}
 }
-?>
+/* End of file amazon.inc.php */
+/* Location: ./wiki-common/plugin/article.inc.php */

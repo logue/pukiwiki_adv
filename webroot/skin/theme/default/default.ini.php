@@ -55,4 +55,6 @@ $link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_T
 
 // 読み込むスクリプト
 $js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/default.js');
-?>
+
+/* End of file default.ini.php */
+/* Location: ./webroot/skin/theme/default/default.ini.php */

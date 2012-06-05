@@ -138,9 +138,7 @@ EOD;
 
 	return <<<EOD
 <form action="$login_url" method="post">
-	<div>
-		<input type="submit" value="{$_hatena_msg['btn_login']}" />
-	</div>
+	<input type="submit" value="{$_hatena_msg['btn_login']}" />
 </form>
 
 EOD;
@@ -239,5 +237,5 @@ function plugin_hatena_get_user_name()
 	if (! empty($msg['name'])) return array('role'=>ROLE_AUTH_HATENA,'nick'=>$msg['name'],'profile'=>HATENA_URL_PROFILE.$msg['name'],'key'=>$msg['name']);
 	return array('role'=>ROLE_GUEST,'nick'=>'');
 }
-
-?>
+/* End of file hatena.inc.php */
+/* Location: ./wiki-common/plugin/hatena.inc.php */

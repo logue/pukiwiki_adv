@@ -109,7 +109,7 @@ function plugin_ls2_show_lists($prefix, & $params)
 	foreach ($pages as $page) $params['page_ ' . $page] = 0;
 
 	if (empty($pages)) {
-		return str_replace('$1', htmlsc($prefix), '<p>' . _("There is no child page in ' $1'") . '</p>');
+		return str_replace('$1', htmlsc($prefix), '<p>' . T_("There is no child page in ' $1'") . '</p>');
 	} else {
 		$params['result'] = $params['saved'] = array();
 		foreach ($pages as $page)
@@ -205,7 +205,7 @@ function plugin_ls2_list_push(& $params, $level)
 }
 
 // オプションを解析する
-function plugin_ls2_check_arg($value, &$params)
+function plugin_ls2_check_arg($value, $params)
 {
 	if ($value == '') {
 		$params['_done'] = TRUE;
@@ -225,4 +225,5 @@ function plugin_ls2_check_arg($value, &$params)
 
 	$params['_args'][] = htmlsc($value); // Link title
 }
-?>
+/* End of file ls2.inc.php */
+/* Location: ./wiki-common/plugin/ls2.inc.php */

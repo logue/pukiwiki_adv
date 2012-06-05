@@ -11,4 +11,5 @@ function plugin_nosidebar_convert()
 	$sidebar = '';
 	return '';
 }
-?>
+/* End of file nosidebar.inc.php */
+/* Location: ./wiki-common/plugin/nosidebar.inc.php */

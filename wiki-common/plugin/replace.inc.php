@@ -154,4 +154,5 @@ EOD;
 
 	return array('msg'=>$_replace_msg['msg_H0_replace'],'body'=>$body);
 }
-?>
+/* End of file replace.inc.php */
+/* Location: ./wiki-common/plugin/replace.inc.php */

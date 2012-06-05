@@ -74,4 +74,5 @@ function plugin_num_inline()
 	return $ret;
 }
 
-?>
+/* End of file num.inc.php */
+/* Location: ./wiki-common/plugin/num.inc.php */

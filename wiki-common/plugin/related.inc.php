@@ -115,4 +115,5 @@ function plugin_related_action()
 	}
 	return array('msg'=>$msg, 'body'=>$retval);
 }
-?>
+/* End of file related.inc.php */
+/* Location: ./wiki-common/plugin/related.inc.php */

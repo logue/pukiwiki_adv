@@ -175,4 +175,5 @@ function _navibar($key, $alt=null)
 
 	return '<li><a href="' . $_LINK[$key] . '" rel="nofollow" >'. ($showicon ? '<span class="pkwk-icon icon-'.$key.'"></span>' : '') . $lang. '</a></li>';
 }
-?>
+/* End of file navibar.inc.php */
+/* Location: ./wiki-common/plugin/navibar.inc.php */

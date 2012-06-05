@@ -131,4 +131,5 @@ function plugin_counter_get_count($page)
 
 	return $counters[$page];
 }
-?>
+/* End of file counter.inc.php */
+/* Location: ./wiki-common/plugin/counter.inc.php */

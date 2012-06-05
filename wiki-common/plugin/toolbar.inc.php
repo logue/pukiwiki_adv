@@ -159,4 +159,5 @@ function _toolbar($key, $alt=null)
 
 	return '<li><a href="' . $link[$key] . '" rel="nofollow" title="'.$lang[$key].'"><span class="pkwk-icon icon-'.$key.'">' . $lang[$key]. '</span></a></li>';
 }
-?>
+/* End of file toolbar.inc.php */
+/* Location: ./wiki-common/plugin/toolbar.inc.php */

@@ -416,4 +416,5 @@ function plugin_calendar_viewer_isValidDate($aStr, $aSepList = '-/ .')
 		return FALSE;
 	}
 }
-?>
+/* End of file calendar_viewer.inc.php */
+/* Location: ./wiki-common/plugin/calendar_viewer.inc.php */

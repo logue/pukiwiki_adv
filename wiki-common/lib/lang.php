@@ -584,4 +584,5 @@ class lang2country
 	}
 
 }
-?>
+/* End of file lang.php */
+/* Location: ./wiki-common/lib/lang.php */

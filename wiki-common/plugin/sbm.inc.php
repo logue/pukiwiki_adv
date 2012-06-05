@@ -192,4 +192,5 @@ EOD;
 	return $retval;
 }
 
-?>
+/* End of file sbm.inc.php */
+/* Location: ./wiki-common/plugin/sbm.inc.php */

@@ -1,5 +1,5 @@
 <?php
-// $Id: bugtrack.inc.php,v 1.27.7 2012/05/11 18:08:00 Logue Exp $
+// $Id: bugtrack.inc.php,v 1.27.8 2012/06/08 17:46:00 Logue Exp $
 //
 // PukiWiki BugTrack plugin
 //
@@ -257,19 +257,21 @@ function plugin_bugtrack_template($base, $summary, $name, $priority, $state, $ca
 
 	if ($name    == '') $name    = $_plugin_bugtrack['noname'];
 	if ($summary == '') $summary = $_plugin_bugtrack['nosummary'];
+	$utime = UTIME;
 
 	 return <<<EOD
-* $summary
+#navi(../)
+*$summary
 
 - ${_plugin_bugtrack['base'    ]}: $base
 - ${_plugin_bugtrack['name'    ]}: $name
 - ${_plugin_bugtrack['priority']}: $priority
 - ${_plugin_bugtrack['state'   ]}: $state
 - ${_plugin_bugtrack['category']}: $category
-- ${_plugin_bugtrack['date'    ]}: &now;
+- ${_plugin_bugtrack['date'    ]}: &epoch($utime);
 - ${_plugin_bugtrack['version' ]}: $version
 
-** ${_plugin_bugtrack['body']}
+*${_plugin_bugtrack['body']}
 $body
 --------
 
@@ -383,4 +385,5 @@ function plugin_bugtrack_list_pageinfo($page, $no = NULL, $recurse = TRUE)
 
 	return array($page, $no, $summary, $name, $priority, $state, $category);
 }
-?>
+/* End of file bugtrack.inc.php */
+/* Location: ./wiki-common/plugin/bugtrack.inc.php */

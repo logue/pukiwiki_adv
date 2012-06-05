@@ -59,4 +59,5 @@ function plugin_splitinclude_convert()
 
 	return $incbody;
 }
-?>
+/* End of file splitinclude.inc.php */
+/* Location: ./wiki-common/plugin/splitinclude.inc.php */

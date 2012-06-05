@@ -453,4 +453,5 @@ function plugin_ref_action()
 	pkwk_common_suffixes(filesize($ref));
 	exit;
 }
-?>
+/* End of file ref.inc.php */
+/* Location: ./wiki-common/plugin/ref.inc.php */

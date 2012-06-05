@@ -55,5 +55,5 @@ function count_files($no=0, $pref='')
 	}
 	return $i;
 }
-
-?>
+/* End of file count.inc.php */
+/* Location: ./wiki-common/plugin/count.inc.php */

@@ -242,4 +242,5 @@ HTML;
 //	return '<pre class="syntaxhighlighter brush: '.strtolower($lang).$option .';">'."\n".$text."\n".'</pre>'."\n";
 	return '<pre class="sh" data-brush="'.strtolower($lang).'">'."\n".$text."\n".'</pre>'."\n";
 }
-?>
+/* End of file sh.inc.php */
+/* Location: ./wiki-common/plugin/sh.inc.php */

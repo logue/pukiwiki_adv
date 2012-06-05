@@ -60,4 +60,5 @@ function plugin_headarea_convert()
         $headhtml = str_replace("\n",'',$headhtml);
 	return preg_replace('/<ul class="list[^>]*>/','<ul class="head">',$headhtml);
 }
-?>
+/* End of file headearea.inc.php */
+/* Location: ./wiki-common/plugin/headearea.inc.php */

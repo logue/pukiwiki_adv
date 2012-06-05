@@ -137,4 +137,5 @@ function MyNetCheck($ip)
 	return false;
 }
 
-?>
+/* End of file proxy.cls.php */
+/* Location: ./wiki-common/lib/proxy.cls.php */

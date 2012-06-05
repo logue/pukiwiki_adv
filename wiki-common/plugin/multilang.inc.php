@@ -126,4 +126,5 @@ function plugin_multilang_convert()
 	return '';
 }
 
-?>
+/* End of file multilang.inc.php */
+/* Location: ./wiki-common/plugin/multilang.inc.php */

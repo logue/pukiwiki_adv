@@ -2265,3 +2265,6 @@ li[role=tab]{
 }
 <?php 
 ob_end_flush();
+
+/* End of file scripts.css.php */
+/* Location: ./webroot/skin/scripts.css.php */

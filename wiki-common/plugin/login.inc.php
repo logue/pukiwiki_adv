@@ -194,4 +194,5 @@ function login_return_page()
 	header( 'Location: ' . get_page_location_uri($page));
 	die();
 }
-?>
+/* End of file login.inc.php */
+/* Location: ./wiki-common/plugin/login.inc.php */

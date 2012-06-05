@@ -24,4 +24,5 @@ function plugin_version_inline()
 {
 	return plugin_version_value();
 }
-?>
+/* End of file version.inc.php */
+/* Location: ./wiki-common/plugin/version.inc.php */

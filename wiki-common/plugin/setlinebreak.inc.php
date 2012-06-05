@@ -46,4 +46,5 @@ function plugin_setlinebreak_convert()
 	}
 	return '';
 }
-?>
+/* End of file setlinebreak.inc.php */
+/* Location: ./wiki-common/plugin/setlinebreak.inc.php */

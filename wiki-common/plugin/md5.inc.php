@@ -126,4 +126,5 @@ EOD;
 
 	return $form;
 }
-?>
+/* End of file md5.inc.php */
+/* Location: ./wiki-common/plugin/md5.inc.php */

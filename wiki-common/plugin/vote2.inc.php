@@ -632,4 +632,5 @@ $_msg_collided = _("It seems that someone has already updated this page while yo
 	unset($postdata_old,$postdata);
 	return $retvars;
 }
-?>
+/* End of file vote2.inc.php */
+/* Location: ./wiki-common/plugin/vote2.inc.php */

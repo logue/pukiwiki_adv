@@ -41,4 +41,6 @@ $link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_T
 
 // 読み込むスクリプト
 $js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/squawker.js.php');
-?>
+
+/* End of file squawker.ini.php */
+/* Location: ./webroot/skin/theme/squawker/squawker.ini.php */

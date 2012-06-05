@@ -71,13 +71,11 @@ function plugin_unfreeze_action()
 		$body  .= <<<EOD
 <fieldset>
 	<legend>$_msg_unfreezing</legend>
-	<form action="$script" method="post">
+	<form action="$script" method="post" class="unfreeze_form">
 		<input type="hidden" name="cmd"  value="unfreeze" />
 		<input type="hidden" name="page" value="$s_page" />
-		<div class="freeze_form">
-			<input type="password" name="pass" size="12" />
-			<input type="submit"   name="ok"   value="$_btn_unfreeze" />
-		</div>
+		<input type="password" name="pass" size="12" />
+		<input type="submit"   name="ok"   value="$_btn_unfreeze" />
 	</form>
 </fieldset>
 EOD;
@@ -85,4 +83,5 @@ EOD;
 
 	return array('msg'=>$msg, 'body'=>$body);
 }
-?>
+/* End of file unfreeze.inc.php */
+/* Location: ./wiki-common/plugin/unfreeze.inc.php */

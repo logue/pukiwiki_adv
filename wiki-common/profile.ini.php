@@ -127,4 +127,6 @@ $agents = array(
 
 	array('pattern'=>'#^#',	'profile'=>'default'),	// Sentinel
 );
-?>
+
+/* End of file profile.ini.php */
+/* Location: ./wiki-common/profile.ini.php */

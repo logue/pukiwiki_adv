@@ -1052,4 +1052,5 @@ function get_interwiki_url($name, $param)
 
 	return $url;
 }
-?>
+/* End of file makel_link.php */
+/* Location: ./wiki-common/lib/make_link.php */

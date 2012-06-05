@@ -54,4 +54,5 @@ function i18n_setlocale($name,$lang,$msg)
 	return $text;
 }
 
-?>
+/* End of file _get.inc.php */
+/* Location: ./wiki-common/plugin/_get.inc.php */

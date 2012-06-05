@@ -239,4 +239,5 @@ function generateToken ($token_dir = null) {
 	return array($token_id, $token);
 }
 
-?>
+/* End of file des.php */
+/* Location: ./wiki-common/lib/des.php */

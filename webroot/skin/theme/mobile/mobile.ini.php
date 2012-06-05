@@ -18,4 +18,6 @@ EOD
 
 // 読み込むスタイルシート
 $link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.THEME_PLUS_NAME.'mobile/mobile.css.php?base=' . urlencode(IMAGE_URI) );
-?>
+
+/* End of file mobile.ini.php */
+/* Location: ./webroot/skin/theme/mobile/mobile.ini.php */

@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: links.inc.php,v 1.24.3 2010/12/26 17:22:00 Logue Exp $
+// $Id: links.inc.php,v 1.24.4 2011/06/08 20:05:00 Logue Exp $
 //
 // Update link cache plugin
 
@@ -54,24 +54,23 @@ function plugin_links_action()
 	$body  = convert_html( sprintf($_links_messages['msg_usage1']) );
 	$script = get_script_uri();
 	$body .= <<<EOD
-<form method="post" action="$script">
+<form method="post" action="$script" class="links_form">
 	<input type="hidden" name="plugin" value="links" />
 	<input type="hidden" name="menu" value="1" />
-		<div class="links_form">
 EOD;
 	if (auth::check_role('role_adm_contents')) {
 		$body .= convert_html( sprintf($_links_messages['msg_usage2']) );
 		$body .= <<<EOD
-		<label for="_p_links_adminpass">{$_links_messages['msg_adminpass']}</label>
-		<input type="password" name="adminpass" id="_p_links_adminpass" size="20" value="" />
+	<label for="_p_links_adminpass">{$_links_messages['msg_adminpass']}</label>
+	<input type="password" name="adminpass" id="_p_links_adminpass" size="20" value="" />
 EOD;
 	}
 	$body .= <<<EOD
-		<input type="submit" value="{$_links_messages['btn_submit']}" />
-	</div>
+	<input type="submit" value="{$_links_messages['btn_submit']}" />
 </form>
 EOD;
 
 	return array('msg'=>$msg, 'body'=>$body);
 }
-?>
+/* End of file links.inc.php */
+/* Location: ./wiki-common/plugin/links.inc.php */

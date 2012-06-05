@@ -229,3 +229,5 @@ function skeylist_print($data,$max)
 	return join("\n",$rc);
 }
 ?>
+/* End of file skeylist.inc.php */
+/* Location: ./wiki-common/plugin/skeylist.inc.php */

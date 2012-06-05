@@ -48,4 +48,5 @@ function plugin_random_action()
 
 	return array('body'=>'','msg'=>'');
 }
-?>
+/* End of file random.inc.php */
+/* Location: ./wiki-common/plugin/random.inc.php */

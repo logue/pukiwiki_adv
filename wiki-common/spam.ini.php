@@ -8531,4 +8531,5 @@ $blocklist['Z'] = array(
 	//'',
 );
 
-?>
+/* End of file spam.ini.php */
+/* Location: ./wiki-common/spam.ini.php */

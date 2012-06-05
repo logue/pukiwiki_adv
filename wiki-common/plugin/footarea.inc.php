@@ -60,4 +60,5 @@ function plugin_footarea_convert()
 	$foothtml = str_replace("\n",'',$foothtml);
 	return preg_replace('/<ul class="list[^>]*>/','<ul class="foot">',$foothtml);
 }
-?>
+/* End of file footarea.inc.php */
+/* Location: ./wiki-common/plugin/footarea.inc.php */

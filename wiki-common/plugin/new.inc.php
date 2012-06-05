@@ -94,4 +94,5 @@ function plugin_new_inline()
 		return $retval;
 	}
 }
-?>
+/* End of file new.inc.php */
+/* Location: ./wiki-common/plugin/new.inc.php */

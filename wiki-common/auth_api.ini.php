@@ -54,7 +54,6 @@ $auth_api = array(
 		'hidden'	=> true,
 	),
 	// Facebook
-	
 	'facebook'	=> array(
 		'use'		=> false,
 		'appId'		=> '',
@@ -69,4 +68,6 @@ $auth_api = array(
 		'secret'	=> ''
 	)
 );
-?>
+
+/* End of file auth_api.ini.php */
+/* Location: ./wiki-common/auth_api.ini.php */

@@ -401,4 +401,5 @@ function plugin_tb_recent($page,$line)
 	return $body;
 }
 
-?>
+/* End of file tb.inc.php */
+/* Location: ./wiki-common/plugin/tb.inc.php */

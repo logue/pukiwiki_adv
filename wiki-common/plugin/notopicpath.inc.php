@@ -12,4 +12,5 @@ function plugin_notopicpath_convert()
 	global $topicpath;
 	$topicpath = false;
 }
-?>
+/* End of file notopicpath.inc.php */
+/* Location: ./wiki-common/plugin/notopicpath.inc.php */

@@ -12,4 +12,5 @@ function plugin_nolink_convert()
 	$data = $argv[ --$argc ];
 	return strip_a(convert_html(line2array($data)));
 }
-?>
+/* End of file nolink.inc.php */
+/* Location: ./wiki-common/plugin/nolink.inc.php */

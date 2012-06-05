@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
 //
-// $Id: cache_ref.inc.php,v 1.48.3.3 2011/03/24 22:38:00 Logue Exp $
+// $Id: cache_ref.inc.php,v 1.48.3.4 2012/06/08 22:38:00 Logue Exp $
 //
 // copy ref.inc.php
 
@@ -53,10 +53,24 @@ function plugin_cache_ref_action()
 	header('Content-Disposition: inline; filename="' . $filename . '"');
 	header('Content-Length: ' . $size);
 	header('Content-Type: '   . $type);
-	header('X-Sendfile: '.$filename);	// for reduce server load
+
+	// for reduce server load
+	$sendfile = realpath($ref);
+	if (function_exists('apache_get_modules') && in_array( 'mod_xsendfile', apache_get_modules()) ){
+		// for Apache mod_xsendfile
+		header('X-Sendfile: '.$sendfile);
+	}else if (stristr(getenv('SERVER_SOFTWARE'), 'lighttpd') ){
+		// for lighttpd
+		header('X-Lighttpd-Sendfile: '.$sendfile);
+	}else if(stristr(getenv('SERVER_SOFTWARE'), 'nginx') || stristr(getenv('SERVER_SOFTWARE'), 'cherokee')){
+		// nginx
+		header('X-Accel-Redirect: '.$sendfile);
+	}
 
 	// @readfile($ref);
 	plus_readfile($ref);
 	exit;
 }
-?>
+
+/* End of file bugtrack_list.inc.php */
+/* Location: ./wiki-common/plugin/bugtrack_list.inc.php */

@@ -92,4 +92,5 @@ function plugin_list_action()
 		'body'=>$ret
 	);
 }
-?>
+/* End of file list.inc.php */
+/* Location: ./wiki-common/plugin/list.inc.php */

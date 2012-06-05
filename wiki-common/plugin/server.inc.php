@@ -18,4 +18,5 @@ function plugin_server_convert()
 			SERVER_ADMIN . '</a></dd>' . "\n" .
 		'</dl>' . "\n";
 }
-?>
+/* End of file server.inc.php */
+/* Location: ./wiki-common/plugin/server.inc.php */

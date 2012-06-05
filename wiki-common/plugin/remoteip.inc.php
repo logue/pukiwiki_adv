@@ -81,4 +81,5 @@ class auth_remoteip extends auth_api
 	}
 }
 
-?>
+/* End of file remoteip.inc.php */
+/* Location: ./wiki-common/plugin/remoteip.inc.php */

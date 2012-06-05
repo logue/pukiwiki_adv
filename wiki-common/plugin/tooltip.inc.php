@@ -142,4 +142,5 @@ function plugin_tooltip_get_glossary($term,$g_page,$plain)
 	if ( $out == '' ) return FALSE;
 	return $out;
 }
-?>
+/* End of file tooltip.inc.php */
+/* Location: ./wiki-common/plugin/tooltip.inc.php */

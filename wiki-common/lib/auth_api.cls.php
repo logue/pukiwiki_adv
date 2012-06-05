@@ -91,4 +91,5 @@ class auth_api
 
 }
 
-?>
+/* End of file auth_api.cls.php */
+/* Location: ./wiki-common/lib/auth_api.cls.php */

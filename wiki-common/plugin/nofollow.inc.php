@@ -19,4 +19,5 @@ function plugin_nofollow_convert()
 		return '#nofollow: Page not freezed';
 	}
 }
-?>
+/* End of file nofollow.inc.php */
+/* Location: ./wiki-common/plugin/nofollow.inc.php */

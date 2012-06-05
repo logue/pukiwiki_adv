@@ -77,4 +77,5 @@ function plugin_siteimage_make($url, $nolink, $target='')
 	}
 	return $ret;
 }
-?>
+/* End of file siteimage.inc.php */
+/* Location: ./wiki-common/plugin/siteimage.inc.php */

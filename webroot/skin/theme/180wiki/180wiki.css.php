@@ -11,3 +11,6 @@ header('Last-Modified: '.gmdate('D, d M Y H:i:s', filemtime($color)) . ' GMT');
 ob_start('ob_gzhandler');
 readfile('180wiki.css');
 ob_end_flush();
+
+/* End of file 180wiki.css.php */
+/* Location: ./webroot/skin/theme/180wiki/180wiki.css.php */

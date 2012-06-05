@@ -89,4 +89,6 @@ function do_search_fuzzy($word, $type = 'AND', $non_format = FALSE, $non_fuzzy =
 
 	return $retval;
 }
-?>
+
+/* End of file fizzy.php */
+/* Location: ./wiki-common/lib/fizzy.php */

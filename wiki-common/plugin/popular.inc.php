@@ -220,4 +220,5 @@ function plugin_popular_getlist($view, $max = PLUGIN_POPULAR_DEFAULT, $except){
 
 	return $counters;
 }
-?>
+/* End of file popular.inc.php */
+/* Location: ./wiki-common/plugin/popular.inc.php */

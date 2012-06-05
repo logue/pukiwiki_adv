@@ -52,4 +52,5 @@ $str_rules = array(
 	'&t;'   	=> "\t",
 );
 
-?>
+/* End of file rules.ini.php */
+/* Location: ./wiki-common/rules.ini.php */

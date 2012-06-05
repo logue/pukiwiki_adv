@@ -1005,4 +1005,5 @@ class timezone
 
 }
 
-?>
+/* End of file timezone.php */
+/* Location: ./wiki-common/lib/timezone.php */

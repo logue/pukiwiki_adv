@@ -42,4 +42,6 @@ define('DATA_HOME',		'../wiki-data/');
 // Do not change following lines
 define('LIB_DIR',	realpath(SITE_HOME) . '/lib/');
 require(LIB_DIR .	'main.php');
-?>
+
+/* End of file index.php */
+/* Location: ./webroot/skin/index.php */

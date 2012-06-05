@@ -274,4 +274,5 @@ function _suckerfish($key, $val = '')
 
 	return '<a href="' . $_LINK[$key] . '" rel="nofollow" >'. ($showicon ? '<span class="pkwk-icon icon-'.$key.'"></span>' : '') . $_LANG['skin'][$key]. '</a>';
 }
-?>
+/* End of file suckerfish.inc.php */
+/* Location: ./wiki-common/plugin/suckerfish.inc.php */

@@ -17,4 +17,5 @@ function plugin_passage_inline()
 	return get_passage($time, $paren);
 }
 
-?>
+/* End of file passage.inc.php */
+/* Location: ./wiki-common/plugin/passage.inc.php */

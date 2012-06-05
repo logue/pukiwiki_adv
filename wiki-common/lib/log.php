@@ -136,11 +136,11 @@ function log_put_guess($data)
 
 	foreach($src as $_src) {
 		$x = trim($_src);
-		$field = log::table2array($x);		// PukiWiki 表形式データを配列データに変換
+		$field = log::table2array($x);	// PukiWiki 表形式データを配列データに変換
 		if (count($field) == 0) continue;
 		if ($field[0] != $data['ua']  ) continue;
 		if ($field[1] != $data['host']) continue;
-		if ($field[2] != $user		) continue;
+		if ($field[2] != $user        ) continue;
 		$sw = TRUE;
 		break;
 	}
@@ -819,4 +819,5 @@ class log
 		return ($i >= $level) ? array(TRUE,$i) : array(FALSE,$i);
 	}
 }
-?>
+/* End of file log.php */
+/* Location: ./wiki-common/lib/log.php */

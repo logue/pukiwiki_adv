@@ -304,4 +304,6 @@ function add_hidden_field($retvar, $name){
 	}
 	return $retvar;
 }
-?>
+
+/* End of file plugin.php */
+/* Location: ./wiki-common/lib/plugin.php */

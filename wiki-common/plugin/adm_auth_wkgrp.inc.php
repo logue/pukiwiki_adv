@@ -64,18 +64,16 @@ function plugin_adm_auth_wkgrp_convert()
 		$guide_msg = ($filetime_config_page > $filetime_auth_wkgrp) ? '<strong>'.$_adm_auth_wkgrp_msg['msg_gen'].'</strong>' : '';
 
 		$link_page = <<<EOD
-      [<a href="$cmd_edit">{$_LANG['skin']['edit']}</a>]
-      [<a href="$cmd_guiedit">{$_LANG['skin']['guiedit']}</a>]
+[<a href="$cmd_edit">{$_LANG['skin']['edit']}</a>]
+[<a href="$cmd_guiedit">{$_LANG['skin']['guiedit']}</a>]
 
 EOD;
 		$link_file = <<<EOD
-<form action="$script" method="post">
-	<div class="adm_auth_wkgrp_form">
-		<input type="hidden" name="cmd" value="adm_auth_wkgrp" />
-		<input type="hidden" name="pcmd" value="gen" />
-		<input type="submit" value="{$_adm_auth_wkgrp_msg['btn_gen']}" />
-		$guide_msg
-	</div>
+<form action="$script" method="post" class="adm_auth_wkgrp_form">
+	<input type="hidden" name="cmd" value="adm_auth_wkgrp" />
+	<input type="hidden" name="pcmd" value="gen" />
+	<input type="submit" value="{$_adm_auth_wkgrp_msg['btn_gen']}" />
+	$guide_msg
 </form>
 
 EOD;
@@ -104,7 +102,6 @@ EOD;
 					</td>
 				</tr>
 			</thead>
-
 			<tbody>
 				<tr>
 					<td class="style_td">{$_adm_auth_wkgrp_msg['msg_head_update']}: $date_config_page</td>
@@ -286,10 +283,8 @@ function adm_auth_wkgrp_add_btn()
 
 	return <<<EOD
 <form action="$script" method="post" class="form_adm_auth_wkgrp_add">
-	<div>
-		<input type="hidden" name="cmd" value="adm_auth_wkgrp" />
-		<input type="submit" value="{$_adm_auth_wkgrp_msg['btn_auth_wkgrp']}" />
-	</div>
+	<input type="hidden" name="cmd" value="adm_auth_wkgrp" />
+	<input type="submit" value="{$_adm_auth_wkgrp_msg['btn_auth_wkgrp']}" />
 </form>
 
 EOD;
@@ -308,4 +303,5 @@ function adm_auth_wkgrp_role2define($role)
 	return (isset($array_role[$role])) ? $array_role[$role] : $role;
 }
 
-?>
+/* End of file adm_auth_wkgrp.inc.php */
+/* Location: ./wiki-common/plugin/adm_auth_wkgrp.inc.php */

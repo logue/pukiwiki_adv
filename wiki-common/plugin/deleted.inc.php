@@ -52,4 +52,5 @@ function plugin_deleted_action()
 
 	return $retval;
 }
-?>
+/* End of file deleted.inc.php */
+/* Location: ./wiki-common/plugin/deleted.inc.php */

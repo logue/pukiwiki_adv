@@ -17,4 +17,5 @@ function plugin_pg_passage_inline()
 	return get_pg_passage($page, $paren);
 }
 
-?>
+/* End of file pg_passage.inc.php */
+/* Location: ./wiki-common/plugin/pg_passage.inc.php */

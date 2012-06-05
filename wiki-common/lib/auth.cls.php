@@ -761,4 +761,6 @@ class auth
 		return $rc;
 	}
 }
-?>
+
+/* End of file auth.cls.php */
+/* Location: ./wiki-common/lib/auth.cls.php */

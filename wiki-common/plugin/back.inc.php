@@ -71,4 +71,5 @@ function plugin_back_convert()
 			'">?</a></span> ]</div>' . "\n";
 	}
 }
-?>
+/* End of file back.inc.php */
+/* Location: ./wiki-common/plugin/back.inc.php */

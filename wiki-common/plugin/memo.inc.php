@@ -55,13 +55,11 @@ $_msg_collided = T_('It seems that someone has already updated this page while y
 
 		$script = get_script_uri();
 		$body .= <<<EOD
-<form action="$script?cmd=preview" method="post">
+<form action="$script" method="post" class="memo_form">
 	<input type="hidden" name="cmd" value="preview" />
 	<input type="hidden" name="refer"  value="$s_refer" />
 	<input type="hidden" name="digest" value="$s_digest" />
-	<div class="memo_form">
-		<textarea name="msg" rows="$rows" cols="$cols" id="textarea">$s_postdata_input</textarea>
-	</div>
+	<textarea name="msg" rows="$rows" cols="$cols" id="textarea">$s_postdata_input</textarea>
 </form>
 EOD;
 	} else {
@@ -105,18 +103,17 @@ function plugin_memo_convert()
 	$s_cols   = MEMO_COLS;
 	$s_rows   = MEMO_ROWS;
 	$string   = <<<EOD
-<form action="$_script" method="post" class="memo">
+<form action="$_script" method="post" class="memo_form">
 	<input type="hidden" name="memo_no" value="$memo_no" />
 	<input type="hidden" name="refer"   value="$s_page" />
 	<input type="hidden" name="plugin"  value="memo" />
 	<input type="hidden" name="digest"  value="$s_digest" />
-	<div class="memo_form">
-		<textarea name="msg" rows="$s_rows" cols="$s_cols">$data</textarea><br />
-		$_submit
-	</div>
+	<textarea name="msg" rows="$s_rows" cols="$s_cols">$data</textarea><br />
+	$_submit
 </form>
 EOD;
 
 	return $string;
 }
-?>
+/* End of file memo.inc.php */
+/* Location: ./wiki-common/plugin/memo.inc.php */

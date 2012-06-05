@@ -282,5 +282,5 @@ function toc_convert_index($idx,$lvl)
 	}
 	return $rc;
 }
-
-?>
+/* End of file toc.inc.php */
+/* Location: ./wiki-common/plugin/toc.inc.php */

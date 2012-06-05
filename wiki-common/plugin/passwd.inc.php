@@ -498,4 +498,5 @@ function passwd_get_auth_file()
 	return $auth_users;
 }
 
-?>
+/* End of file passwd.inc.php */
+/* Location: ./wiki-common/plugin/passwd.inc.php */

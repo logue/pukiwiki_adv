@@ -59,9 +59,10 @@ function plugin_size_inline()
 		return PLUGIN_SIZE_USAGE;
 	}
 
-	return '<span style="font-size:' . $size . ';' .
+	return '<span class="wikitext" style="font-size:' . $size . ';' .
 		'display:inline-block;line-height:130%;text-indent:0px">' .
 			$body .
 		'</span>';
 }
-?>
+/* End of file size.inc.php */
+/* Location: ./wiki-common/plugin/size.inc.php */

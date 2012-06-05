@@ -514,4 +514,5 @@ EOD;
 		return	array('msg'=>sprintf($_backup_messages['title_backup_rollback'], $age), 'body'=>$body);
 	}
 }
-?>
+/* End of file backup.inc.php */
+/* Location: ./wiki-common/plugin/backup.inc.php */

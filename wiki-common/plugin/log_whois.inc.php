@@ -53,4 +53,5 @@ function plugin_log_whois_convert()
 
 }
 
-?>
+/* End of file log_whois.inc.php */
+/* Location: ./wiki-common/plugin/log_whois.inc.php */

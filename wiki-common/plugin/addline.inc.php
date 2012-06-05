@@ -298,4 +298,6 @@ function addline_get_source($page) // tracker.inc.phpのtracker_listから
 	// #freezeを削除
 	return preg_replace('/^#freeze\s*$/m','',$source);
 }
-?>
+
+/* End of file addline.inc.php */
+/* Location: ./wiki-common/plugin/addline.inc.php */

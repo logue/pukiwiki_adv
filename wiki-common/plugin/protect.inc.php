@@ -168,4 +168,5 @@ function protect_body($plugin)
 	return $body;
 }
 
-?>
+/* End of file protect.inc.php */
+/* Location: ./wiki-common/plugin/protect.inc.php */

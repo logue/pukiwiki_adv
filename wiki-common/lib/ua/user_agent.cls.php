@@ -54,4 +54,5 @@ class user_agent
 	}
 }
 
-?>
+/* End of file user_agent.cls.php */
+/* Location: ./wiki-common/lib/ua/user_agent.cls.php */

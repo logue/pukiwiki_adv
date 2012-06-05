@@ -18,9 +18,12 @@ function plugin_add_action()
 	$get['add'] = $post['add'] = $vars['add'] = TRUE;
 	return array(
 		'msg'  => _("Add to $1"),
-		'body' => '<ul>' . "\n" .
-		          ' <li>' . T_('Two and the contents of an input are added for a new-line to the contents of a page of present addition.') . '</li>' . "\n" .
-		          '</ul>' . "\n" . edit_form($page, '')
+		'body' => 
+			'<ul>' . "\n" .
+			'	<li>' . T_('Two and the contents of an input are added for a new-line to the contents of a page of present addition.') . '</li>' . "\n" .
+			'</ul>' . "\n" .
+			edit_form($page, '')
 	);
 }
-?>
+/* End of file add.inc.php */
+/* Location: ./wiki-common/plugin/add.inc.php */

@@ -147,4 +147,5 @@ function plugin_online_sweep_records($host = '')
 
 	return $count; // Number of lines == Number of users online
 }
-?>
+/* End of file online.inc.php */
+/* Location: ./wiki-common/plugin/online.inc.php */

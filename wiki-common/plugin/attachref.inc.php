@@ -110,9 +110,9 @@ function plugin_attachref_convert()
 				$margin_align = ($params['_align'] == 'center') ? '' : ';margin-' . $params['_align'] . ':0px';
 				$params['_body'] = <<<EOD
 <table class="style_table" style="margin:$margin$margin_align">
- <tr>
-  <td class="style_td">{$params['_body']}</td>
- </tr>
+	<tr>
+		<td class="style_td">{$params['_body']}</td>
+	</tr>
 </table>
 EOD;
 			}
@@ -218,17 +218,15 @@ function plugin_attachref_inline()
 			$f_page = htmlsc($vars['page']);
 			$f_args = htmlsc($s_args);
 			$ret = <<<EOD
-<form action="$script" method="post">
+<form action="$script" method="post" class="attachref_form">
 	<input type="hidden" name="encode_hint" value="ぷ" />
 	<input type="hidden" name="attachref_no" value="$attachref_no" />
 	<input type="hidden" name="attachref_opt" value="$f_args" />
 	<input type="hidden" name="digest" value="$digest" />
 	<input type="hidden" name="cmd" value="attachref" />
 	<input type="hidden" name="refer" value="$f_page" />
-	<div>
-		$ret
-		<input type="submit" value="$btn_text" />
-	</div>
+	$ret
+	<input type="submit" value="$btn_text" />
 </form>
 EOD;
 	    } else {
@@ -436,7 +434,7 @@ function attachref_form($page)
 	}
 	$script = get_script_uri();
 	return <<<EOD
-<form enctype="multipart/form-data" action="$script" method="post">
+<form enctype="multipart/form-data" action="$script" method="post" class="attach_form">
 	<input type="hidden" name="attachref_no" value="$f_no" />
 	<input type="hidden" name="attachref_opt" value="{$vars['attachref_opt']}" />
 	<input type="hidden" name="digest" value="$f_digest" />
@@ -445,12 +443,11 @@ function attachref_form($page)
 	<input type="hidden" name="cmd" value="attachref" />
 	<input type="hidden" name="refer" value="$s_page" />
 	<p class="small">$msg_maxsize</p>
-	<div class="attach_form">
-		{$_attachref_messages['msg_file']}: <input type="file" name="attach_file" />
-		$pass
-		<input type="submit" value="{$_attachref_messages['btn_upload']}" />
-	</div>
+	{$_attachref_messages['msg_file']}: <input type="file" name="attach_file" />
+	$pass
+	<input type="submit" value="{$_attachref_messages['btn_upload']}" />
 </form>
 EOD;
 }
-?>
+/* End of file attachref.inc.php */
+/* Location: ./wiki-common/plugin/attachref.inc.php */

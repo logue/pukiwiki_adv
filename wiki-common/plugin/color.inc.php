@@ -14,7 +14,7 @@
 // http://www.w3.org/TR/CSS21/syndata.html#value-def-color
 
 // ----
-define('PLUGIN_COLOR_USAGE', '&amp;color(foreground[,background]){text};');
+define('PLUGIN_COLOR_USAGE', '<span style="ui-error">&amp;color(foreground[,background]){text};</span>');
 define('PLUGIN_COLOR_REGEX', '/^(?:#[0-9a-f]{3}|#[0-9a-f]{6}|[a-z-]+)$/i');
 
 function plugin_color_inline()
@@ -49,4 +49,5 @@ function plugin_color_inline()
 	return '<span class="wikicolor" style="' . $color . $delimiter . $bgcolor . '">' .
 		$text . '</span>';
 }
-?>
+/* End of file color.inc.php */
+/* Location: ./wiki-common/plugin/color.inc.php */

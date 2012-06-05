@@ -927,4 +927,6 @@ function tag_helper($tagname,$tags){
 
 	return join("\n\t\t",$out)."\n";
 }
-?>
+
+/* End of file html.php */
+/* Location: ./wiki-common/lib/html.php */

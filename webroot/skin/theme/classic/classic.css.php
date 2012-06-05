@@ -571,3 +571,5 @@ tfoot .style_th {
 }
 <?php 
 ob_end_flush();
+/* End of file classic.css.php */
+/* Location: ./webroot/skin/theme/classic/classic.css.php */

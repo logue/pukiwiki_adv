@@ -276,6 +276,79 @@ i, em, cite, q{
 	color: white;
 }
 
+.table-condensed th,
+.table-condensed td {
+  padding: 4px 5px;
+}
+
+.style_table {
+  border: 1px solid #dddddd;
+  border-collapse: separate;
+  *border-collapse: collapsed;
+  border-left: 0;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+}
+
+.style_table th,
+.style_table td {
+  border-left: 1px solid #dddddd;
+}
+
+.style_table caption + thead tr:first-child th,
+.style_table caption + tbody tr:first-child th,
+.style_table caption + tbody tr:first-child td,
+.style_table colgroup + thead tr:first-child th,
+.style_table colgroup + tbody tr:first-child th,
+.style_table colgroup + tbody tr:first-child td,
+.style_table thead:first-child tr:first-child th,
+.style_table tbody:first-child tr:first-child th,
+.style_table tbody:first-child tr:first-child td {
+  border-top: 0;
+}
+
+.style_table thead:first-child tr:first-child th:first-child,
+.style_table tbody:first-child tr:first-child td:first-child {
+  -webkit-border-top-left-radius: 4px;
+          border-top-left-radius: 4px;
+  -moz-border-radius-topleft: 4px;
+}
+
+.style_table thead:first-child tr:first-child th:last-child,
+.style_table tbody:first-child tr:first-child td:last-child {
+  -webkit-border-top-right-radius: 4px;
+          border-top-right-radius: 4px;
+  -moz-border-radius-topright: 4px;
+}
+
+.style_table thead:last-child tr:last-child th:first-child,
+.style_table tbody:last-child tr:last-child td:first-child {
+  -webkit-border-radius: 0 0 0 4px;
+     -moz-border-radius: 0 0 0 4px;
+          border-radius: 0 0 0 4px;
+  -webkit-border-bottom-left-radius: 4px;
+          border-bottom-left-radius: 4px;
+  -moz-border-radius-bottomleft: 4px;
+}
+
+.style_table thead:last-child tr:last-child th:last-child,
+.style_table tbody:last-child tr:last-child td:last-child {
+  -webkit-border-bottom-right-radius: 4px;
+          border-bottom-right-radius: 4px;
+  -moz-border-radius-bottomright: 4px;
+}
+
+.table-striped tbody tr:nth-child(odd) td,
+.table-striped tbody tr:nth-child(odd) th {
+  background-color: #f9f9f9;
+}
+
+.table tbody tr:hover td,
+.table tbody tr:hover th {
+  background-color: #f5f5f5;
+}
+
 /* html.php/edit_form() */
 .edit_form { clear: both; }
 
@@ -1895,3 +1968,6 @@ li[role=tab]{
 .browser-wizz{ background-position: -1764px 0; width: 16px; height: 16px; }
 
 <?php ob_end_flush();
+
+/* End of file squawker.css.php */
+/* Location: ./webroot/skin/theme/squawker/css/squawker.css.php */

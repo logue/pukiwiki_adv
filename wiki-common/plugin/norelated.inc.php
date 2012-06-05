@@ -11,4 +11,5 @@ function plugin_norelated_convert()
 	$related_link = 0;
 	return '';
 }
-?>
+/* End of file noretaled.inc.php */
+/* Location: ./wiki-common/plugin/noretaled.inc.php */

@@ -144,4 +144,5 @@ function todo_search($vars, $page, $mark)
 	return $link;
 }
 
-?>
+/* End of file todo.inc.php */
+/* Location: ./wiki-common/plugin/todo.inc.php */

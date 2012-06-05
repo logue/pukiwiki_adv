@@ -305,4 +305,6 @@ class ConfigTable_Direct extends ConfigTable
 		return $retval;
 	}
 }
-?>
+
+/* End of file config.php */
+/* Location: ./wiki-common/lib/config.php */

@@ -610,7 +610,7 @@ EOD;
 <html>
 	<head>
 		<meta charset="utf-8">
-		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/base/jquery-ui.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.20/themes/base/jquery-ui.css" type="text/css" media="all" />
 		<title>$title - $page_title</title>
 	</head>
 	<body>$body</body>
@@ -1347,4 +1347,5 @@ function htmlsc($string = '', $flags = ENT_QUOTES, $charset = CONTENT_CHARSET)
 	return htmlspecialchars($string, $flags, $charset);	// htmlsc()
 }
 
-?>
+/* End of file func.php */
+/* Location: ./wiki-common/lib/func.php */

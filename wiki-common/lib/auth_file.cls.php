@@ -95,4 +95,5 @@ class auth_file
 	}
 }
 
-?>
+/* End of file auth_file.cls.php */
+/* Location: ./wiki-common/lib/auth_file.cls.php */

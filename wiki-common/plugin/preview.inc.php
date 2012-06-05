@@ -23,4 +23,5 @@ function plugin_preview_action()
 	}
 	exit;
 }
-?>
+/* End of file preview.inc.php */
+/* Location: ./wiki-common/plugin/preview.inc.php */

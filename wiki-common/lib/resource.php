@@ -189,4 +189,5 @@ $_error_type = array(
 	512 =>	T_('User Warning'),	// x
 	1024 =>	T_('User Notice')	// x
 );
-?>
+/* End of file resource.php */
+/* Location: ./wiki-common/lib/resource.php */

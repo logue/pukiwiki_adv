@@ -253,4 +253,5 @@ function is_refspam($url){
 	return $is_refspam;
 }
 
-?>
+/* End of file referer.php */
+/* Location: ./wiki-common/lib/referer.php */

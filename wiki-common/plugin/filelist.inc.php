@@ -54,15 +54,14 @@ function filelist_adm($pass)
 	$body .= <<<EOD
 <fieldset>
 	<legend>$msg_pass</legend>
-	<form action="$script" method="post">
+	<form action="$script" method="post" class="filelist_form">
 		<input type="hidden" name="cmd" value="filelist" />
-		<div class="filelist_form">
-			<input type="password" name="pass" size="12" />
-			<input type="submit" name="ok" value="$btn" />
-		</div>
+		<input type="password" name="pass" size="12" />
+		<input type="submit" name="ok" value="$btn" />
 	</form>
 </fieldset>
 EOD;
 	return array('msg' => $_filelist_msg['msg_H0_filelist'],'body' => $body);
 }
-?>
+/* End of file fileist.inc.php */
+/* Location: ./wiki-common/plugin/filelist.inc.php */

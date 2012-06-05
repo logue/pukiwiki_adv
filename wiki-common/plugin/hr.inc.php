@@ -8,4 +8,5 @@ function plugin_hr_convert()
 {
 	return '<hr class="short_line" />';
 }
-?>
+/* End of file hr.inc.php */
+/* Location: ./wiki-common/plugin/hr.inc.php */

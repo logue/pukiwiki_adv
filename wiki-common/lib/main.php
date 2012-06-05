@@ -46,7 +46,9 @@ if (! extension_loaded('mbstring')){
 if (! extension_loaded('json')) {
 	throw new Exception('PukiWiki Adv. needs the <a href="http://www.php.net/manual/book.json.php">JSON extension.</a>');
 }
-
+if (! extension_loaded('openssl')) {
+	throw new Exception('PukiWiki Adv. needs the <a href="http://www.php.net/manual/book.openssl.php">OpenSSL extension.</a>');
+}
 ini_set('memory_limit', '128M');
 ini_set('zlib.output_compression', 'Off');
 ini_set('zlib.output_handler','mb_output_handler');
@@ -305,4 +307,6 @@ if ($memcache !== null){
 // Output
 catbody($title, $page, $body);
 exit;
-?>
+
+/* End of file main.php */
+/* Location: ./wiki-common/lib/main.php */

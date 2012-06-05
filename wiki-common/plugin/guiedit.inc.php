@@ -397,4 +397,5 @@ function plugin_guiedit_parts($id, & $source, $postdata = '')
 	}
 	return FALSE;
 }
-?>
+/* End of file guiedit.inc.php */
+/* Location: ./wiki-common/plugin/guiedit.inc.php */

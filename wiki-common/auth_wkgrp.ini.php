@@ -46,4 +46,6 @@ $auth_wkgrp_user = array(
 		// 'user_name2'	=> array('role'=>ROLE_ADM_CONTENTS),
 	),
 );
-?>
+
+/* End of file auth_wkgrp.ini.php */
+/* Location: ./wiki-common/auth_wkgrp.ini.php */

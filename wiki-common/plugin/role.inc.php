@@ -65,4 +65,5 @@ EOD;
 
 }
 
-?>
+/* End of file role.inc.php */
+/* Location: ./wiki-common/plugin/role.inc.php */

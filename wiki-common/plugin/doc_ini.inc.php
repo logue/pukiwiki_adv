@@ -35,13 +35,11 @@ function plugin_doc_ini_convert()
 
 	// ボタンを表示するだけ
 	$rc = <<<EOD
-<form action="$script" method="post">
+<form action="$script" method="post" class="doc_ini_form">
 	<input type="hidden" name="plugin" value="doc_ini" />
-		<input type="hidden" name="action" value="delete" />
-		<input type="hidden" name="page" value="{$vars['page']}" />
-	<div class="doc_ini_form">
-		<input type="submit" value="{$_doc_ini_msg['btn_init']}" />
-	</div>
+	<input type="hidden" name="action" value="delete" />
+	<input type="hidden" name="page" value="{$vars['page']}" />
+	<input type="submit" value="{$_doc_ini_msg['btn_init']}" />
 </form>
 
 EOD;
@@ -67,14 +65,12 @@ function plugin_doc_ini_action()
 
 	$script = get_script_uri();
 	$retval['body'] = <<<EOD
-<form action="$script" method="post">
+<form action="$script" method="post" class="doc_ini_form">
 	<input type="hidden" name="plugin" value="doc_ini" />
 	<input type="hidden" name="action" value="exec" />
 	<input type="hidden" name="page" value="{$vars['page']}" />
-	<div class="doc_ini_form">
-		$msg_title
-		<input type="submit" value="{$_doc_ini_msg['btn_exec']}" />
-	</div>
+	$msg_title
+	<input type="submit" value="{$_doc_ini_msg['btn_exec']}" />
 </form>
 
 EOD;
@@ -113,4 +109,5 @@ function doc_ini_file_exist($page)
 	return ($backup || $diff);
 }
 
-?>
+/* End of file doc_ini.inc.php */
+/* Location: ./wiki-common/plugin/doc_ini.inc.php */

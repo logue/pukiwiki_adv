@@ -78,4 +78,5 @@ function plugin_yetlist_action()
 
 	return $retval;
 }
-?>
+/* End of file yetlist.inc.php */
+/* Location: ./wiki-common/plugin/yetlist.inc.php */

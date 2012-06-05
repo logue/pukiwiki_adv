@@ -59,4 +59,5 @@ function plugin_includesubmenu_convert()
 	}
 	return $body;
 }
-?>
+/* End of file includesubmenu.inc.php */
+/* Location: ./wiki-common/plugin/includesubmenu.inc.php */

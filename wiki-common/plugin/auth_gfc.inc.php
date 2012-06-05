@@ -251,4 +251,5 @@ function plugin_auth_gfc_oauth($fcauth)
 	return $batch->execute();
 }
 
-?>
+/* End of file auth_gfc.inc.php */
+/* Location: ./wiki-common/plugin/auth_gfc.inc.php */

@@ -431,4 +431,5 @@ function logview_user_list(& $fld, $page,$kind)
 	return $ret;
 }
 
-?>
+/* End of file logview.inc.php */
+/* Location: ./wiki-common/plugin/logview.inc.php */

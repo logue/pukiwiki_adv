@@ -25,7 +25,7 @@ function plugin_legend_convert()
 	// FIXME:
 	// class, style で指定可能であったとしても、ブラウザで正しく処理できるのは、align しかなさそう
 	$align = (empty($parm['align'])) ? '' : ' align="'.$parm['align'].'"';
-	return "<div>\n<fieldset>\n<legend$align>" . $parm['title'] . "</legend>\n" . convert_html(line2array($data)) . "</fieldset>\n</div>";
+	return "<fieldset>\n<legend$align>" . $parm['title'] . "</legend>\n" . convert_html(line2array($data)) . "</fieldset>\n";
 
 }
 
@@ -68,4 +68,5 @@ function legend_set_parm($argv)
 	}
 	return $parm;
 }
-?>
+/* End of file legend.inc.php */
+/* Location: ./wiki-common/plugin/legend.inc.php */

@@ -313,4 +313,5 @@ function array_unique_recursive($array = array())
 	return $array;
 }
 
-?>
+/* End of file spam_util.php */
+/* Location: ./wiki-common/lib/spam_uitl.php */

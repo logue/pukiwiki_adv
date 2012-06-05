@@ -9,4 +9,5 @@ function plugin_clear_convert()
 	//return '<div class="clear"></div>';
 	return '<div class="clearfix"></div>';
 }
-?>
+/* End of file clear.inc.php */
+/* Location: ./wiki-common/plugin/clear.inc.php */

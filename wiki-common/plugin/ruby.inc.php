@@ -31,4 +31,5 @@ function plugin_ruby_inline()
 			'<rp>)</rp>' .
 		'</ruby>';
 }
-?>
+/* End of file ruby.inc.php */
+/* Location: ./wiki-common/plugin/ruby.inc.php */

@@ -1380,5 +1380,8 @@ textarea, select, option, input, var, pre, code{
 		margin : 0 !important;
 	}
 }
-<?php 
+<?php
 ob_end_flush();
+
+/* End of file mobile.ini.php */
+/* Location: ./webroot/skin/theme/mobile/mobile.ini.php */

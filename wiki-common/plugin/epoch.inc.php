@@ -51,4 +51,5 @@ function plugin_epoch_inline()
 	return $ret;
 }
 
-?>
+/* End of file epoch.inc.php */
+/* Location: ./wiki-common/plugin/epoch.inc.php */

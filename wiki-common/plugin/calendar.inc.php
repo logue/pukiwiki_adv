@@ -279,4 +279,5 @@ function plugin_calendar_action()
 		'body'=>call_user_func_array('plugin_calendar_convert', $aryargs)
 	);
 }
-?>
+/* End of file calendar.inc.php */
+/* Location: ./wiki-common/plugin/calendar.inc.php */

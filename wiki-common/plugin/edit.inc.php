@@ -457,4 +457,5 @@ HTML;
 	}
 	return array('msg'=>'CAPTCHA','body'=>$body);
 }
-?>
+/* End of file edit.inc.php */
+/* Location: ./wiki-common/plugin/edit.inc.php */

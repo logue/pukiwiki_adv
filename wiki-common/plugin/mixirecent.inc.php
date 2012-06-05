@@ -18,9 +18,6 @@ define('PLUGIN_MIXIRECENT_DEFAULT_LINES', 10);
 
 define('PLUGIN_MIXIRECENT_USAGE', '#mixirecent(number-to-show)');
 
-// Place of the cache of 'RecentChanges'
-define('PLUGIN_MIXIRECENT_CACHE', CACHE_DIR . 'recent.dat');
-
 // Hide title, if Pickup Headings
 define('PLUGIN_MIXIRECENT_NOTITLE', TRUE);
 
@@ -46,11 +43,15 @@ function plugin_mixirecent_convert()
 	if (isset($done)) return '<!-- #mixirecent(): You already view changes -->';
 
 	// Get latest N changes
-	if (file_exists(PLUGIN_MIXIRECENT_CACHE)) {
-		$source = file(PLUGIN_MIXIRECENT_CACHE);
-		$lines = array_splice($source, 0, $mixirecent_lines);
-	} else {
-		return '#mixirecent(): Cache file of RecentChanges not found' . '<br />';
+	if ($memcache === null){
+		if (file_exists(PKWK_MAXSHOW_CACHE)) {
+			$source = file(PKWK_MAXSHOW_CACHE);
+			$lines = array_splice($source, 0, $mixirecent_lines);
+		} else {
+			return '#mixirecent(): Cache file of RecentChanges not found' . '<br />';
+		}
+	}else{
+		$lines = $memcache->get(MEMCACHE_PREFIX.PKWK_MAXSHOW_CACHE);
 	}
 
 	$date = $items = '';
@@ -125,4 +126,5 @@ function plugin_mixirecent_isValidDate($aStr, $aSepList="-/ .")
 	}
 	return false;
 }
-?>
+/* End of file mixirecent.inc.php */
+/* Location: ./wiki-common/plugin/mixirecent.inc.php */

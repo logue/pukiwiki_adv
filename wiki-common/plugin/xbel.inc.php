@@ -266,4 +266,5 @@ EOD;
 
 }
 
-?>
+/* End of file xbel.inc.php */
+/* Location: ./wiki-common/plugin/xbel.inc.php */

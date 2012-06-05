@@ -51,7 +51,7 @@ function plugin_ls_convert()
 						),
 						array(
 							'$1$2',
-							'',
+							null,
 						),
 						current($array)
 					);
@@ -62,4 +62,5 @@ function plugin_ls_convert()
 
 	return convert_html($ls);
 }
-?>
+/* End of file ls.inc.php */
+/* Location: ./wiki-common/plugin/ls.inc.php */

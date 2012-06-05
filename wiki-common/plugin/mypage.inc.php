@@ -45,4 +45,5 @@ function plugin_mypage_convert()
 	die_message($_mypage_msg['err_jump']);
 }
 
-?>
+/* End of file mypage.inc.php */
+/* Location: ./wiki-common/plugin/mypage.inc.php */

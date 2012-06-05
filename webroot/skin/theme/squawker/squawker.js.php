@@ -16,10 +16,8 @@ $('.contents').scrollspy();
 $('*[aria-describedby="tooltip"]').tooltip();
 $('*[title]').tooltip();
 
-
-$('.style_table').addClass('table table-bordered');
-pukiwiki.register.ajax_load(function(){
-	$('.style_table').addClass('table table-bordered');
-});
 <?php
 ob_end_flush();
+
+/* End of file squawker.js.php */
+/* Location: ./webroot/skin/theme/squawker/squawker.js.php */

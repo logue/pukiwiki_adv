@@ -38,9 +38,6 @@ defined('PLUGIN_AMAZON_CACHE_SUBDIR') or define('PLUGIN_AMAZON_CACHE_SUBDIR', 'a
 defined('PLUGIN_AMAZON_TRACKER_PAGE_NAME') or define('PLUGIN_AMAZON_TRACKER_PAGE_NAME', ':config/plugin/tracker/amazon/page');
 // スキーマのバージョン
 defined('PLUGIN_AMAZON_SCHEMA_VERSION') or define('PLUGIN_AMAZON_SCHEMA_VERSION', '2011-08-01');
-if (!function_exists('hash_hmac')) {
-	require_once(LIB_DIR . 'hash.php');
-}
 
 if (!function_exists('simplexml_load_string')) {
 	require_once(LIB_DIR.'Unserializer.php');
@@ -1092,4 +1089,5 @@ class amazon_ecs
 	}
 }
 
-?>
+/* End of file amazon.inc.php */
+/* Location: ./wiki-common/plugin/amazon.inc.php */

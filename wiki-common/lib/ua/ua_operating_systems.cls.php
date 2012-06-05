@@ -130,4 +130,5 @@ class ua_operating_systems
 	}
 }
 
-?>
+/* End of file ua_operating_systems.cls.php */
+/* Location: ./wiki-common/lib/ua/ua_operating_systems.cls.php */

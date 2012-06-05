@@ -914,4 +914,5 @@ function whois_responsibility($fqdn = 'foo.bar.example.com', $parent = FALSE, $i
 	return $result ? implode('.', array_reverse($result)) : '';
 }
 
-?>
+/* End of file spam_pickup.php */
+/* Location: ./wiki-common/lib/spam_pickup.php */

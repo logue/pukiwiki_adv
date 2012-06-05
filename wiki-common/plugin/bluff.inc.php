@@ -443,4 +443,5 @@ function bluff_make_data(& $title, & $fields, & $parm)
 	return $retval;
 }
 
-?>
+/* End of file bluff.inc.php */
+/* Location: ./wiki-common/plugin/bluff.inc.php */

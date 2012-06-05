@@ -155,4 +155,5 @@ EOD;
 	return array('msg'=>$_spam_messages['title'].$_spam_messages['title_pages'], 'body'=>$body);
 }
 
-?>
+/* End of file spam.inc.php */
+/* Location: ./wiki-common/plugin/spam.inc.php */

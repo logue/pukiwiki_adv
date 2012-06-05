@@ -30,4 +30,5 @@ function plugin_worldtime_inline()
 	return $x;
 }
 
-?>
+/* End of file worldtime.inc.php */
+/* Location: ./wiki-common/plugin/worldtime.inc.php */

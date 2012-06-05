@@ -840,4 +840,5 @@ if (!function_exists('apache_request_headers')) {
 		return $headers;
 	}
 }
-?>
+/* End of file dav.inc.php */
+/* Location: ./wiki-common/plugin/dav.inc.php */

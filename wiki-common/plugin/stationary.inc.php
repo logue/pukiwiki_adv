@@ -76,4 +76,5 @@ function plugin_stationary_action()
 
 	return array('msg'=>htmlsc($msg), 'body'=>htmlsc($body));
 }
-?>
+/* End of file stationary.inc.php */
+/* Location: ./wiki-common/plugin/stationary.inc.php */

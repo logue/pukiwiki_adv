@@ -1081,3 +1081,6 @@ ie8 .sf-menu li:hover, ie8 .sf-menu li.sfHover{
 }
 <?php 
 ob_end_flush();
+
+/* End of file xxxlogue.ini.php */
+/* Location: ./webroot/skin/theme/xxxlogue/xxxlogue.css.php */

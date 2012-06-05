@@ -163,4 +163,5 @@ BASE64;
 		die_message('flash.inc.php : Unknown Method');
 	}
 }
-?>
+/* End of file flash.inc.php */
+/* Location: ./wiki-common/plugin/flash.inc.php */

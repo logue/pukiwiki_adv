@@ -522,4 +522,5 @@ class ua_browsers
 		return 'unknown';
 	}
 }
-?>
+/* End of file ua_browsers.cls.php */
+/* Location: ./wiki-common/lib/ua/ua_browsers.cls.php */

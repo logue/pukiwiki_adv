@@ -179,4 +179,5 @@ EOD;
 
 	return $body;
 }
-?>
+/* End of file vote.inc.php */
+/* Location: ./wiki-common/plugin/vote.inc.php */

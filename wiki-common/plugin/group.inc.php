@@ -42,4 +42,5 @@ EOD;
 	return '';
 }
 
-?>
+/* End of file group.inc.php */
+/* Location: ./wiki-common/plugin/group.inc.php */

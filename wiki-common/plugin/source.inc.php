@@ -29,4 +29,5 @@ function plugin_source_action()
 		'body'	=> '<pre class="sh">' . htmlspecialchars($source) . '</pre>'
 	);
 }
-?>
+/* End of file source.inc.php */
+/* Location: ./wiki-common/plugin/source.inc.php */

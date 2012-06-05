@@ -462,4 +462,5 @@ function skin_set_color($text)
 	return (empty($style)) ? '' : ' style="'.$style.'"';
 }
 
-?>
+/* End of file skin.inc.php */
+/* Location: ./wiki-common/plugin/skin.inc.php */

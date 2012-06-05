@@ -49,4 +49,5 @@ function plugin_expand_convert()
 		 . '" style="float:right;" alt="' . _('Click to all views') . '" />'
 		 . '<input type="hidden" name="cmd" value="expand" /></form>';
 }
-?>
+/* End of file expand.inc.php */
+/* Location: ./wiki-common/plugin/expand.inc.php */

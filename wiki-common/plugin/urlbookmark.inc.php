@@ -208,4 +208,5 @@ function plugin_urlbookmark_get_title($url) {
 
 	return trim($tmpary[2]);
 }
-?>
+/* End of file urlbookmark.inc.php */
+/* Location: ./wiki-common/plugin/urlbookmark.inc.php */

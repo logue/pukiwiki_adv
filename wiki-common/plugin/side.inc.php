@@ -77,4 +77,5 @@ function plugin_side_convert()
 		}
 	}
 }
-?>
+/* End of file side.inc.php */
+/* Location: ./wiki-common/plugin/side.inc.php */

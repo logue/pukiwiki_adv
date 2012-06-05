@@ -10,3 +10,6 @@ readfile('base_3float.css');
 readfile('plugin.css');
 readfile('color_cloudwalk.css');
 ob_end_flush();
+
+/* End of file cloudwalk.css.php */
+/* Location: ./webroot/skin/theme/cloudwalk/cloudwalk.css.php */

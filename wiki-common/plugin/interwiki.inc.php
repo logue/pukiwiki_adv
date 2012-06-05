@@ -32,4 +32,5 @@ function plugin_interwiki_invalid()
 			make_pagelink('InterWikiName')),
 			T_(' $1 is not a valid $2.')));
 }
-?>
+/* End of file interwiki.inc.php */
+/* Location: ./wiki-common/plugin/interwiki.inc.php */

@@ -78,4 +78,5 @@ $search_auth = 0;
 // Check Role
 $check_role = 1;
 
-?>
+/* End of file auth.ini.php */
+/* Location: ./wiki-common/auth.ini.php */

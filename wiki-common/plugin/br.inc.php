@@ -16,7 +16,7 @@ define('PLUGIN_BR_TAG', '<br class="spacer" />');
 
 function plugin_br_convert()
 {
-	$br = PLUGIN_BR_ESCAPE_BLOCKQUOTE ? '<div class="spacer">&nbsp;</div>' : PLUGIN_BR_TAG;
+	$br = PLUGIN_BR_ESCAPE_BLOCKQUOTE ? '<div class="spacer"></div>' : PLUGIN_BR_TAG;
 	if (func_num_args() == 1) {
 		list($j) = func_get_args();
 	} else {
@@ -31,4 +31,5 @@ function plugin_br_inline()
 {
 	return PLUGIN_BR_TAG;
 }
-?>
+/* End of file br.inc.php */
+/* Location: ./wiki-common/plugin/br.inc.php */

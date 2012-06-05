@@ -14,4 +14,5 @@ function plugin_editmark_inline()
 {
 	return PLUGIN_EDITMARK_TAG;
 }
-?>
+/* End of file editmark.inc.php */
+/* Location: ./wiki-common/plugin/editmark.inc.php */

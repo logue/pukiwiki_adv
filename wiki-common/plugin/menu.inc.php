@@ -76,4 +76,5 @@ function plugin_menu_convert()
 		}
 	}
 }
-?>
+/* End of file menu.inc.php */
+/* Location: ./wiki-common/plugin/menu.inc.php */

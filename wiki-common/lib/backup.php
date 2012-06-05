@@ -342,4 +342,6 @@ else
 			array();
 	}
 }
-?>
+
+/* End of file backup.php */
+/* Location: ./wiki-common/lib/backup.php */

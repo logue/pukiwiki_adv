@@ -17,4 +17,5 @@ function plugin_keywords_convert()
 	$keywords = join(',', $contents);
 	return '';
 }
-?>
+/* End of file keywords.inc.php */
+/* Location: ./wiki-common/plugin/keywords.inc.php */

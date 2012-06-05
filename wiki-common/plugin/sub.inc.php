@@ -21,4 +21,5 @@ function plugin_sub_inline()
 
 	return '<span style="font-size:60%;vertical-align:sub;">'.$body.'</span>';
 }
-?>
+/* End of file sub.inc.php */
+/* Location: ./wiki-common/plugin/sub.inc.php */

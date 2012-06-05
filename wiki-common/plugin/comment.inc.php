@@ -233,4 +233,5 @@ $auth_guide
 EOD;
 	return (IS_MOBILE) ? '<div data-role="collapsible" data-collapsed="true" data-theme="b" data-content-theme="d"><h4>'.$_comment_messages['label_comment'].'</h4>'.$string.'</div>' : $string;
 }
-?>
+/* End of file comment.inc.php */
+/* Location: ./wiki-common/plugin/comment.inc.php */

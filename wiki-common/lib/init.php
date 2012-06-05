@@ -595,4 +595,5 @@ if (!IS_AJAX || IS_MOBILE){
 		$js_init['FACEBOOK_APPID'] = $fb->getAppId();
 	}
 }
-?>
+/* End of file init.php */
+/* Location: ./wiki-common/lib/init.php */

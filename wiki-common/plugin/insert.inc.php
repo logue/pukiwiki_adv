@@ -54,13 +54,11 @@ $_msg_collided = T_('It seems that someone has already updated this page while y
 		$s_postdata_input = htmlsc($postdata_input);
 
 		$body .= <<<EOD
-<form action="$script" method="post">
+<form action="$script" method="post" class="insert_form">
 	<input type="hidden" name="cmd" value="preview" />
 	<input type="hidden" name="refer" value="$s_refer" />
 	<input type="hidden" name="digest" value="$s_digest" />
-	<div class="insert_form">
-		<textarea name="msg" rows="$rows" cols="$cols" id="msg">$s_postdata_input</textarea>
-	</div>
+	<textarea name="msg" rows="$rows" cols="$cols" id="msg">$s_postdata_input</textarea>
 </form>
 EOD;
 	} else {
@@ -96,18 +94,17 @@ function plugin_insert_convert()
 	$s_cols = INSERT_COLS;
 	$s_rows = INSERT_ROWS;
 	$string = <<<EOD
-<form action="$script" method="post">
+<form action="$script" method="post" class="insert_form">
 	<input type="hidden" name="insert_no" value="$insert_no" />
 	<input type="hidden" name="refer"  value="$s_page" />
 	<input type="hidden" name="plugin" value="insert" />
 	<input type="hidden" name="digest" value="$s_digest" />
-	<div class="insert_form">
-		<textarea name="msg" rows="$s_rows" cols="$s_cols"></textarea><br />
-		<input type="submit" name="insert" value="$_btn_insert" />
-	</div>
+	<textarea name="msg" rows="$s_rows" cols="$s_cols"></textarea><br />
+	<input type="submit" name="insert" value="$_btn_insert" />
 </form>
 EOD;
 
 	return $string;
 }
-?>
+/* End of file insert.inc.php */
+/* Location: ./wiki-common/plugin/insert.inc.php */

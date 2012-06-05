@@ -10,4 +10,5 @@ function plugin_help_action()
 	header('Location: '. get_page_location_uri($help_page));
 	die();
 }
-?>
+/* End of file help.inc.php */
+/* Location: ./wiki-common/plugin/help.inc.php */

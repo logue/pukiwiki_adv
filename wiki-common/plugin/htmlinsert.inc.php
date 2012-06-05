@@ -334,4 +334,5 @@ function plugin_htmlinsert_convert()
 	return call_user_func_array(array(&$plugin_htmlinsert, 'convert'), $args);
 }
 
-?>
+/* End of file htmlinsert.inc.php */
+/* Location: ./wiki-common/plugin/htmlinsert.inc.php */

@@ -304,4 +304,5 @@ function in_the_net($networks = array(), $host = '')
 
 	return FALSE; // Not found
 }
-?>
+/* End of file proxy.php */
+/* Location: ./wiki-common/lib/proxy.php */

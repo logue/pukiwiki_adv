@@ -566,3 +566,5 @@ tfoot th.style_th {
 }
 <?php 
 ob_end_flush();
+/* End of file gs2.css.php */
+/* Location: ./webroot/skin/theme/gs2/gs2.css.php */

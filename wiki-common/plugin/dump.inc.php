@@ -255,46 +255,44 @@ function plugin_dump_disp_form()
 	$data = <<<EOD
 <h2 id="dump">$_dump_h3_data</h2>
 <form action="$script" method="post">
-	<div>
-		<input type="hidden" name="cmd"  value="dump" />
-		<input type="hidden" name="page" value="$defaultpage" />
-		<input type="hidden" name="act"  value="$act_down" />
-		<input type="hidden" name="menu" value="1" />
-		<dl>
-			<dt>$_dump_arc</dt>
-			<dd>
-				<input type="radio" name="pcmd" id="_p_dump_tgz" value="tgz" checked="checked" />
-				<label for="_p_dump_tgz"> .tar.gz $_dump_form</label>&nbsp;
-				<input type="radio" name="pcmd" id="_p_dump_tar" value="tar" />
-				<label for="_p_dump_tar"> .tar $_dump_form</label>
-			</dd>
-			<dt>$_dump_backdir</dt>
-			<dd>
-				<input type="checkbox" name="bk_attach" id="_p_dump_d_attach" checked="checked" />
-				<label for="_p_dump_d_attach">attach</label><br />
-				<input type="checkbox" name="bk_backup" id="_p_dump_d_backup" checked="checked" />
-				<label for="_p_dump_d_backup">backup</label><br />
-				<input type="checkbox" name="bk_cache" id="_p_dump_d_cache" />
-				<label for="_p_dump_d_cache">cache</label><br />
-				<input type="checkbox" name="bk_counter" id="_p_dump_d_counter" />
-				<label for="_p_dump_d_counter">counter</label><br />
-				<input type="checkbox" name="bk_diff" id="_p_dump_d_diff" />
-				<label for="_p_dump_d_diff">diff</label><br />
-				<input type="checkbox" name="bk_log" id="_p_dump_d_log" />
-				<label for="_p_dump_d_diff">log</label><br />
-				<input type="checkbox" name="bk_trackback" id="_p_dump_d_trackback" />
-				<label for="_p_dump_d_trackback">trackback</label><br />
-				<input type="checkbox" name="bk_wiki" id="_p_dump_d_wiki" checked="checked" />
-				<label for="_p_dump_d_wiki">wiki</label>
-			</dd>
-			<dt>$_dump_option</dt>
-			<dd>
-				<input type="checkbox" name="namedecode" id="_p_dump_namedecode" />
-				<label for="_p_dump_namedecode">$_dump_namedecode</label>
-			</dd>
-		</dl>
-		<p><input type="submit" name="ok" value="$_dump_btn_down" id="download" /></p>
-	</div>
+	<input type="hidden" name="cmd"  value="dump" />
+	<input type="hidden" name="page" value="$defaultpage" />
+	<input type="hidden" name="act"  value="$act_down" />
+	<input type="hidden" name="menu" value="1" />
+	<dl>
+		<dt>$_dump_arc</dt>
+		<dd>
+			<input type="radio" name="pcmd" id="_p_dump_tgz" value="tgz" checked="checked" />
+			<label for="_p_dump_tgz"> .tar.gz $_dump_form</label>&nbsp;
+			<input type="radio" name="pcmd" id="_p_dump_tar" value="tar" />
+			<label for="_p_dump_tar"> .tar $_dump_form</label>
+		</dd>
+		<dt>$_dump_backdir</dt>
+		<dd>
+			<input type="checkbox" name="bk_attach" id="_p_dump_d_attach" checked="checked" />
+			<label for="_p_dump_d_attach">attach</label><br />
+			<input type="checkbox" name="bk_backup" id="_p_dump_d_backup" checked="checked" />
+			<label for="_p_dump_d_backup">backup</label><br />
+			<input type="checkbox" name="bk_cache" id="_p_dump_d_cache" />
+			<label for="_p_dump_d_cache">cache</label><br />
+			<input type="checkbox" name="bk_counter" id="_p_dump_d_counter" />
+			<label for="_p_dump_d_counter">counter</label><br />
+			<input type="checkbox" name="bk_diff" id="_p_dump_d_diff" />
+			<label for="_p_dump_d_diff">diff</label><br />
+			<input type="checkbox" name="bk_log" id="_p_dump_d_log" />
+			<label for="_p_dump_d_diff">log</label><br />
+			<input type="checkbox" name="bk_trackback" id="_p_dump_d_trackback" />
+			<label for="_p_dump_d_trackback">trackback</label><br />
+			<input type="checkbox" name="bk_wiki" id="_p_dump_d_wiki" checked="checked" />
+			<label for="_p_dump_d_wiki">wiki</label>
+		</dd>
+		<dt>$_dump_option</dt>
+		<dd>
+			<input type="checkbox" name="namedecode" id="_p_dump_namedecode" />
+			<label for="_p_dump_namedecode">$_dump_namedecode</label>
+		</dd>
+	</dl>
+	<p><input type="submit" name="ok" value="$_dump_btn_down" id="download" /></p>
 </form>
 EOD;
 
@@ -825,4 +823,5 @@ class tarlib
 	}
 
 }
-?>
+/* End of file dump.inc.php */
+/* Location: ./wiki-common/plugin/dump.inc.php */

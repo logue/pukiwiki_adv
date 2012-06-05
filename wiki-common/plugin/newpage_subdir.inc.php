@@ -178,4 +178,5 @@ function plugin_newpage_subdir_action()
 	header('Location: '.get_page_location_uri($dir.$page));
 	die();
 }
-?>
+/* End of file newpage_subdir.inc.php */
+/* Location: ./wiki-common/plugin/newpage_subdir.inc.php */

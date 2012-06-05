@@ -21,4 +21,5 @@ function plugin_sup_inline()
 
 	return "<span style=\"font-size:60%;vertical-align:super;\">$body</span>";
 }
-?>
+/* End of file sup.inc.php */
+/* Location: ./wiki-common/plugin/sup.inc.php */

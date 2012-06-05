@@ -62,4 +62,5 @@ function plugin_img_convert()
 			'</div>' . $clear;
 	}
 }
-?>
+/* End of file img.inc.php */
+/* Location: ./wiki-common/plugin/img.inc.php */

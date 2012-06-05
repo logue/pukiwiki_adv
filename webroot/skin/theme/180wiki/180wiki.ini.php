@@ -31,4 +31,5 @@ http://jqueryui.com/themeroller/
 $link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.'scripts.css.php?base=' . urlencode(IMAGE_URI) );
 $link_tags[] = array('rel'=>'stylesheet',	'type'=>'text/css',	'href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/180wiki.css.php');
 
-?>
+/* End of file 180wiki.ini.php */
+/* Location: ./webroot/skin/theme/180wiki/180wiki.ini.php */

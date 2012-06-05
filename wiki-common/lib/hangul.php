@@ -160,4 +160,5 @@ function hangul_josa($str, $tail)
 	return (($unicode[0] - 16) % 28 != 0) ? $str.$tail1 : $str.$tail2;
 }
 
-?>
+/* End of file hangul.php */
+/* Location: ./wiki-common/lib/hangul.php */

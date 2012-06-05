@@ -69,4 +69,5 @@ class skype
 	}
 }
 
-?>
+/* End of file skype.inc.php */
+/* Location: ./wiki-common/plugin/skype.inc.php */

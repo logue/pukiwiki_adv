@@ -815,8 +815,8 @@ class AttachFile
 		$this->basename = UPLOAD_DIR . encode($page) . '_' . encode($this->file);
 		$this->filename = $this->basename . ($age ? '.' . $age : '');
 		$this->logname  = $this->basename . '.log';
-		$this->exist    = file_exists($this->filename);
-		$this->time     = $this->exist ? filemtime($this->filename) : 0;
+		$this->exists   = file_exists($this->filename);
+		$this->time     = $this->exists ? filemtime($this->filename) : 0;
 	}
 
 	function gethash()
@@ -827,7 +827,7 @@ class AttachFile
 	// ファイル情報取得
 	function getstatus()
 	{
-		if (! $this->exist) return FALSE;
+		if (! $this->exists) return FALSE;
 
 		// ログファイル取得
 		if (file_exists($this->logname)) {
@@ -1024,7 +1024,7 @@ EOD;
 		$retval['body'] .= <<< EOD
 <div id="attach_form_edit" role="tabpanel" aria-labeledby="tab2">
 	$s_err
-	<form action="$script" method="post">
+	<form action="$script" method="post" class="attach_edit_form">
 		<input type="hidden" name="cmd" value="attach" />
 		<input type="hidden" name="refer" value="$s_page" />
 		<input type="hidden" name="file" value="$s_file" />
@@ -1427,4 +1427,5 @@ class AttachPages
 		return "\n" . '<table>' . "\n" . $ret . '</table>' . "\n";
 	}
 }
-?>
+/* End of file attach.inc.php */
+/* Location: ./wiki-common/plugin/attach.inc.php */

@@ -16,4 +16,5 @@ function plugin_description_convert()
 	$description = htmlspecialchars($args[0]);
 	return '';
 }
-?>
+/* End of file description.inc.php */
+/* Location: ./wiki-common/plugin/description.inc.php */

@@ -401,4 +401,6 @@ $use_trans_sid_address = array(
 
 /////////////////////////////////////////////////
 @include(add_homedir('default.usr.ini.php'));
-?>
+
+/* End of file default.ini.php */
+/* Location: ./wiki-common/default.ini.php */

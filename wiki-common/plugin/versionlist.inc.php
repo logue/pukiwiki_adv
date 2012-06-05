@@ -104,4 +104,5 @@ EOD;
 
 	return implode("\n", $retval);
 }
-?>
+/* End of file versionlist.inc.php */
+/* Location: ./wiki-common/plugin/versionlist.inc.php */

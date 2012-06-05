@@ -1609,4 +1609,5 @@ function plugin_tracker_message($key)
 	return isset($_tracker_messages[$key]) ? $_tracker_messages[$key] : 'NOMESSAGE';
 }
 
-?>
+/* End of file tracker.inc.php */
+/* Location: ./wiki-common/plugin/tracker.inc.php */

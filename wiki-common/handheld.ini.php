@@ -1141,4 +1141,5 @@ $use_trans_sid_address = array(
 
 unset($matches, $ua_name, $ua_vers, $ua_agent, $special_rules);
 
-?>
+/* End of file handheld.ini.php */
+/* Location: ./wiki-common/handheld.ini.php */

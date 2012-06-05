@@ -189,4 +189,5 @@ EOD;
 	}
 	return (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<nav class="navi">'.$ret.'</nav>'."\n" : '<div class="navi">'.$ret.'</div>')."\n";
 }
-?>
+/* End of file navi.inc.php */
+/* Location: ./wiki-common/plugin/navi.inc.php */

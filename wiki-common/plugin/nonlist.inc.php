@@ -66,4 +66,5 @@ function plugin_nonlist_getlist($cmd=0)
 	if (empty($pages)) return '';
 	return page_list($pages,'read',false);
 }
-?>
+/* End of file nolist.inc.php */
+/* Location: ./wiki-common/plugin/nolist.inc.php */

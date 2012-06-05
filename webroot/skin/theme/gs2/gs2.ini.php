@@ -87,4 +87,5 @@ $link_tags[] = array('rel'=>'stylesheet',	'href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_
 // 読み込むスクリプト
 $js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/gs2.js');
 
-?>
+/* End of file gs2.ini.php */
+/* Location: ./webroot/skin/theme/gs2/gs2.ini.php */

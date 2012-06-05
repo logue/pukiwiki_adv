@@ -21,4 +21,5 @@ function plugin_calendar_edit_convert()
 	$args = func_num_args() ? func_get_args() : array();
 	return call_user_func_array('plugin_calendar_convert', $args);
 }
-?>
+/* End of file calendar_edit.inc.php */
+/* Location: ./wiki-common/plugin/calendar_edit.inc.php */

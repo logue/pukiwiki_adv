@@ -145,4 +145,5 @@ function plugin_search_search_form($s_word = '', $type = '', $bases = array())
 	
 	return join("\n", $ret);
 }
-?>
+/* End of file search.inc.php */
+/* Location: ./wiki-common/plugin/search.inc.php */

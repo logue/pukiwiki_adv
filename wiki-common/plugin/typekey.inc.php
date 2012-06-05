@@ -9,14 +9,14 @@
  */
 require_once(LIB_DIR . 'auth_api.cls.php');
 
-defined('TYPEKEY_URL_LOGIN')	or define('TYPEKEY_URL_LOGIN',	 'https://www.typekey.com/t/typekey/login');
-//defined('TYPEKEY_URL_LOGOUT')	or define('TYPEKEY_URL_LOGOUT',	 'https://www.typekey.com/t/typekey/logout');
-//defined('TYPEKEY_URL_PROFILE')	or define('TYPEKEY_URL_PROFILE', 'http://profile.typekey.com/');
-defined('TYPEKEY_URL_LOGOUT')   or define('TYPEKEY_URL_LOGOUT',  'http://www.typepad.com/connect/services/signout');
-defined('TYPEKEY_URL_PROFILE')  or define('TYPEKEY_URL_PROFILE', 'http://profile.typepad.com/');
-defined('TYPEKEY_REGKEYS')	or define('TYPEKEY_REGKEYS',	 'http://www.typekey.com/extras/regkeys.txt');
-defined('TYPEKEY_VERSION')	or define('TYPEKEY_VERSION',	 '1.1');
-defined('TYPEKEY_CACHE_TIME')	or define('TYPEKEY_CACHE_TIME',	 60*60*24*2); // 2 day
+defined('TYPEKEY_URL_LOGIN')		or define('TYPEKEY_URL_LOGIN',		'https://www.typekey.com/t/typekey/login');
+//defined('TYPEKEY_URL_LOGOUT')		or define('TYPEKEY_URL_LOGOUT',		'https://www.typekey.com/t/typekey/logout');
+//defined('TYPEKEY_URL_PROFILE')	or define('TYPEKEY_URL_PROFILE',	'http://profile.typekey.com/');
+defined('TYPEKEY_URL_LOGOUT')		or define('TYPEKEY_URL_LOGOUT',		'http://www.typepad.com/connect/services/signout');
+defined('TYPEKEY_URL_PROFILE')		or define('TYPEKEY_URL_PROFILE',	'http://profile.typepad.com/');
+defined('TYPEKEY_REGKEYS')			or define('TYPEKEY_REGKEYS',		'http://www.typekey.com/extras/regkeys.txt');
+defined('TYPEKEY_VERSION')			or define('TYPEKEY_VERSION',		'1.1');
+defined('TYPEKEY_CACHE_TIME')		or define('TYPEKEY_CACHE_TIME',		60*60*24*2); // 2 day
 
 class auth_typekey extends auth_api
 {
@@ -216,10 +216,8 @@ EOD;
 	// ボタンを表示するだけ
 	$login_url = plugin_typekey_jump_url();
 	return <<<EOD
-<form action="$login_url" method="post">
-	<div class="typekey_form">
-		<input type="submit" value="{$_typekey_msg['btn_login']}" />
-	</div>
+<form action="$login_url" method="post" class="typekey_form">
+	<input type="submit" value="{$_typekey_msg['btn_login']}" />
 </form>
 
 EOD;
@@ -313,4 +311,5 @@ function plugin_typekey_get_user_name()
 	return array('role'=>ROLE_GUEST,'nick'=>'');
 }
 
-?>
+/* End of file typekey.inc.php */
+/* Location: ./wiki-common/plugin/typekey.inc.php */

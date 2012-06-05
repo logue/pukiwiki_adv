@@ -60,4 +60,5 @@ function plugin_log_guess_user_convert()
 
 }
 
-?>
+/* End of file log_guess_user.inc.php */
+/* Location: ./wiki-common/plugin/log_guess_user.inc.php */

@@ -112,4 +112,5 @@ EOD;
 
 	return $retvar;
 }
-?>
+/* End of file template.inc.php */
+/* Location: ./wiki-common/plugin/template.inc.php */

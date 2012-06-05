@@ -25,4 +25,5 @@ function plugin_lastmod_inline()
 
 	return format_date(get_filetime($page));
 }
-?>
+/* End of file lastmod.inc.php */
+/* Location: ./wiki-common/plugin/lastmod.inc.php */

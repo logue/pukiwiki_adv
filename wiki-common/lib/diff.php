@@ -1,7 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: diff.php,v 1.10 2011/01/25 15:01:01 henoheno Exp $
+// $Id: diff.php,v 1.10.1 2011/06/05 18:24:01 Logue Exp $
 // Copyright (C)
+//   2012      PukiWiki Advance Developers Team
 //   2003-2005, 2007 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
 // License: GPL v2 or (at your option) any later version
@@ -59,30 +60,36 @@ function do_update_diff($pagestr, $poststr, $original)
 		global $do_update_diff_table;
 		$table = array();
 		$table[] = <<<EOD
-<p>l : between backup data and stored page data.<br />
- r : between backup data and your post data.</p>
 <table class="style_table">
- <tr>
-  <th>l</th>
-  <th>r</th>
-  <th>text</th>
- </tr>
+	<caption>
+		l : between backup data and stored page data.<br />
+		r : between backup data and your post data.
+	</caption>
+	<thead>
+		<tr>
+			<th class="style_th">l</th>
+			<th class="style_th">r</th>
+			<th class="style_th">text</th>
+		</tr>
+	</thead>
+	<tbody>
 EOD;
 		$tags = array('th', 'th', 'td');
 		foreach ($arr as $_obj) {
-			$table[] = ' <tr>';
+			$table[] = "\t\t".'<tr>';
 			$params = array($_obj->get('left'), $_obj->get('right'), $_obj->text());
 			foreach ($params as $key => $text) {
 				$text = htmlsc(rtrim($text));
 				if (empty($text)) $text = '&nbsp;';
 				$table[] = 
-					'  <' . $tags[$key] . ' class="style_' . $tags[$key] . '">' .
+					"\t\t\t".'<' . $tags[$key] . ' class="style_' . $tags[$key] . '">' .
 					$text .
 					'</' . $tags[$key] . '>';
 			}
-			$table[] = ' </tr>';
+			$table[] = "\t\t".'</tr>';
 		}
-		$table[] =  '</table>';
+		$table[] = "\t".'</tbody>';
+		$table[] = '</table>';
 
 		$do_update_diff_table = implode("\n", $table) . "\n";
 		unset($table);
@@ -295,4 +302,6 @@ class DiffLine
 		return $this->text;
 	}
 }
-?>
+
+/* End of file diff.php */
+/* Location: ./wiki-common/lib/diff.php */

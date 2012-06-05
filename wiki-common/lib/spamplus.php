@@ -317,4 +317,5 @@ class IPBL extends DNSBL
 	}
 }
 
-?>
+/* End of file spamplus.php */
+/* Location: ./wiki-common/lib/spamplus.php */

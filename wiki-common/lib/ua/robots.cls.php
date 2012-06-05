@@ -856,4 +856,5 @@ class robots
 
 }
 
-?>
+/* End of file robots.php */
+/* Location: ./wiki-common/lib/robots.php */

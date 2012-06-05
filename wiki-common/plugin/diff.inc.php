@@ -133,16 +133,15 @@ function plugin_diff_delete($page)
 	$body .= <<<EOD
 <p>$_msg_diff_adminpass</p>
 <form action="$script" method="post">
- <div>
-  <input type="hidden"   name="cmd"    value="diff" />
-  <input type="hidden"   name="page"   value="$s_page" />
-  <input type="hidden"   name="action" value="delete" />
-  <input type="password" name="pass"   size="12" />
-  <input type="submit"   name="ok"     value="$_btn_delete" />
- </div>
+	<input type="hidden"   name="cmd"    value="diff" />
+	<input type="hidden"   name="page"   value="$s_page" />
+	<input type="hidden"   name="action" value="delete" />
+	<input type="password" name="pass"   size="12" />
+	<input type="submit"   name="ok"     value="$_btn_delete" />
 </form>
 EOD;
 
 	return array('msg'=>$_title_diff_delete, 'body'=>$body);
 }
-?>
+/* End of file diff.inc.php */
+/* Location: ./wiki-common/plugin/diff.inc.php */

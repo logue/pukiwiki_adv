@@ -123,4 +123,6 @@ class BARCHART {
 		return $output;
 	}
 }
-?>
+
+/* End of file barchart.cls.php */
+/* Location: ./wiki-common/lib/barchart.cls.php */

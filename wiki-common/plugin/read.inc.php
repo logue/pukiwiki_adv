@@ -97,4 +97,5 @@ HTML;
 		'body'=> $body
 	);
 }
-?>
+/* End of file read.inc.php */
+/* Location: ./wiki-common/plugin/read.inc.php */

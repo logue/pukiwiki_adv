@@ -252,4 +252,5 @@ function plugin_referer_ignore_check($url)
 	
 	return 0;
 }
-?>
+/* End of file referer.inc.php */
+/* Location: ./wiki-common/plugin/referer.inc.php */

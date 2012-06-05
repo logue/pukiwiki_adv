@@ -107,17 +107,17 @@ function plugin_showrss_convert()
 
 	$class = ($template == '' || $template == 'default') ? 'ShowRSS_html' : 'ShowRSS_html_' . $template;
 	if (! is_numeric($cachehour))
-		return '<p class="message_box ui-state-error ui-corner-all>#showrss: Cache-lifetime seems not numeric: <var>' . htmlsc($cachehour) . '</var></p>' . "\n";
+		return '<p class="message_box ui-state-error ui-corner-all">#showrss: Cache-lifetime seems not numeric: <var>' . htmlsc($cachehour) . '</var></p>' . "\n";
 	if (! class_exists($class))
-		return '<p class="message_box ui-state-error ui-corner-all>#showrss: Template not found: <var>' . htmlsc($template) . '</var></p>' . "\n";
+		return '<p class="message_box ui-state-error ui-corner-all">#showrss: Template not found: <var>' . htmlsc($template) . '</var></p>' . "\n";
 	if (! is_url($uri))
-		return '<p class="message_box ui-state-error ui-corner-all>#showrss: Seems not URI: <var>' . htmlsc($uri) . '</var></p>' . "\n";
+		return '<p class="message_box ui-state-error ui-corner-all">#showrss: Seems not URI: <var>' . htmlsc($uri) . '</var></p>' . "\n";
 
 	if (! is_requestable($uri))
-		return '<p class="message_box ui-state-error ui-corner-all>#showrss: Prohibit fetching RSS from my server.</p>' . "\n";
+		return '<p class="message_box ui-state-error ui-corner-all">#showrss: Prohibit fetching RSS from my server.</p>' . "\n";
 
 	list($rss, $time) = plugin_showrss_get_rss($uri, $cachehour);
-	if ($rss === FALSE) return '<p class="message_box ui-state-error ui-corner-all>#showrss: Failed fetching RSS from the server.</p>' . "\n";
+	if ($rss === FALSE) return '<p class="message_box ui-state-error ui-corner-all">#showrss: Failed fetching RSS from the server.</p>' . "\n";
 
 	if ($timestamp > 0) {
 		$time = '<p style="font-size:small; font-weight:bold; text-align:right;">Last-Modified:' .
@@ -378,4 +378,5 @@ function plugin_showrss_get_timestamp($str)
 	$time = strtotime($str);
 	return ($time == -1 || $time === FALSE) ? UTIME : $time;
 }
-?>
+/* End of file showrss.inc.php */
+/* Location: ./wiki-common/plugin/showrss.css.php */

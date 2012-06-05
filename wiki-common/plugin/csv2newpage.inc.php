@@ -1,5 +1,5 @@
 <?php
-// $Id: csv2newpage.inc.php,v 0.14.4 2010/12/26 16:42:00 Logue Exp $
+// $Id: csv2newpage.inc.php,v 0.14.5 2012/06/08 17:57:00 Logue Exp $
 
 /*
 *プラグイン csv2newpage
@@ -14,13 +14,10 @@
 */
 
 // 管理者だけが添付ファイルをアップロードできるようにする
-if (!defined('CSV2NEWPAGE_UPLOAD_ADMIN_ONLY')) {
-	define('CSV2NEWPAGE_UPLOAD_ADMIN_ONLY',FALSE); // FALSE or TRUE
-}
+defined('CSV2NEWPAGE_UPLOAD_ADMIN_ONLY') or define('CSV2NEWPAGE_UPLOAD_ADMIN_ONLY',FALSE); // FALSE or TRUE
+
 // アップロード/削除時にパスワードを要求する(ADMIN_ONLYが優先)
-if (!defined('CSV2NEWPAGE_PASSWORD_REQUIRE')) {
-	define('CSV2NEWPAGE_PASSWORD_REQUIRE',FALSE); // FALSE or TRUE
-}
+defined('CSV2NEWPAGE_PASSWORD_REQUIRE') or define('CSV2NEWPAGE_PASSWORD_REQUIRE',FALSE); // FALSE or TRUE
 
 // define('TRACKER_LIB', PLUGIN_DIR.'tracker.inc.php');
 // define('ATTACH_LIB',  PLUGIN_DIR.'attach.inc.php');
@@ -69,7 +66,7 @@ function plugin_csv2newpage_convert()
 
 	$config = new Config('plugin/tracker/'.$config_name);
 	if (!$config->read()) {
-		return "<p>config file '".htmlspecialchars($config_name)."' not found.</p>";
+		return "<p>config file '".htmlsc($config_name)."' not found.</p>";
 	}
 	$config->config_name = $config_name;
 
@@ -83,14 +80,14 @@ function plugin_csv2newpage_convert()
 	$ct = 0;
 	foreach ( $args as $name ) {
 		$ct ++;
-		$s_name = htmlspecialchars($name);
+		$s_name = htmlsc($name);
 		$retval .= '<input type="hidden" name="csv_field' . $ct . '" value="' . $s_name . '" />'."\n";
 	}
 
-	$s_title  = htmlspecialchars($_csv2newpage_messages['btn_submit']);
-	$s_page   = htmlspecialchars($page);
-	$s_config = htmlspecialchars($config->config_name);
-	$s_text   = htmlspecialchars($_csv2newpage_messages['title_text']);
+	$s_title  = htmlsc($_csv2newpage_messages['btn_submit']);
+	$s_page   = htmlsc($page);
+	$s_config = htmlsc($config->config_name);
+	$s_text   = htmlsc($_csv2newpage_messages['title_text']);
 
 	$retval .=<<<EOD
 <input type="hidden" name="plugin" value="csv2newpage" />
@@ -107,13 +104,11 @@ EOD;
 	} else {
 		$script = get_script_uri();
 		return <<<EOD
-<form enctype="multipart/form-data" action="$script" method="post">
-<div>
-$s_text
-<input type="submit" value="$s_title" />
-<input type="hidden" name="_csv2newpage_no" value="$csv2newpage_no" />
-$retval
-</div>
+<form enctype="multipart/form-data" action="$script" method="post" class="csv2newpage_form">
+	$s_text
+	<input type="submit" value="$s_title" />
+	<input type="hidden" name="_csv2newpage_no" value="$csv2newpage_no" />
+	$retval
 </form>
 EOD;
 	}
@@ -126,7 +121,7 @@ function plugin_csv2newpage_action()
 	$config_name = (empty($vars['_config'])) ? '' : $vars['_config'];
 	$config = new Config('plugin/tracker/'.$config_name);
 	if (!$config->read()) {
-		return '<p>config file (' . htmlspecialchars($config_name) .') not found.</p>';
+		return '<p>config file (' . htmlsc($config_name) .') not found.</p>';
 	}
 	$config->config_name = $config_name;
 	$source = $config->page.'/page';
@@ -135,13 +130,13 @@ function plugin_csv2newpage_action()
 	if (!is_pagename($refer)) {
 		return array(
 			'msg'  => 'cannot write',
-			'body' => 'page name ('.htmlspecialchars($refer).') is not valid.'
+			'body' => 'page name ('.htmlsc($refer).') is not valid.'
 		);
 	}
 	if (!is_page($source)) {
 		return array(
 			'msg'  => 'cannot write',
-			'body' => 'page template ('.htmlspecialchars($source).') is not exist.'
+			'body' => 'page template ('.htmlsc($source).') is not exist.'
 		);
 	}
 
@@ -386,18 +381,17 @@ function plugin_csv2newpage_showform($retval)
 	}
 	$script = get_script_uri();
 	return <<<EOD
-<form enctype="multipart/form-data" action="$script" method="post">
+<form enctype="multipart/form-data" action="$script" method="post" class="csv2newpage_form">
 	<input type="hidden" name="max_file_size" value="$maxsize" />
 	<input type="hidden" name="pcmd" value="post" />
-	<div class="csv2newpage_form">
-		$retval
-		<span class="small">$msg_maxsize</span><br />
-		{$_csv2newpage_messages['msg_file']} <input type="file" name="attach_file" />
-		$pass
-		<input type="submit" value="{$_csv2newpage_messages['btn_upload']}" />
-	</div>
+	$retval
+	<span class="small">$msg_maxsize</span><br />
+	{$_csv2newpage_messages['msg_file']} <input type="file" name="attach_file" />
+	$pass
+	<input type="submit" value="{$_csv2newpage_messages['btn_upload']}" />
 </form>
 EOD;
 }
 
-?>
+/* End of file cvs2newpage.inc.php */
+/* Location: ./wiki-common/plugin/cvs2newpage.inc.php */

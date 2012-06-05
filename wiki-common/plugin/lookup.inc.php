@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: lookup.inc.php,v 1.23.3 2011/02/05 11:04:00 Logue Exp $
+// $Id: lookup.inc.php,v 1.23.3 2011/06/08 20:11:00 Logue Exp $
 // Copyright (C)
 //   2010-2011 PukiWiki Advance Developers Team
 //   2008      PukiWiki Plus! Developers Team
@@ -30,15 +30,13 @@ function plugin_lookup_convert()
 	$script = get_script_uri();
 
 	$ret = <<<EOD
-<form action="$script" method="post">
+<form action="$script" method="post" class="lookup_form">
 	<input type="hidden" name="cmd" value="lookup" />
 	<input type="hidden" name="refer"  value="$s_page" />
 	<input type="hidden" name="inter"  value="$interwiki" />
-	<div class="lookup_form">
-		<label for="_p_lookup_$id">$interwiki:</label>
-		<input type="text" name="page" id="_p_lookup_$id" size="30" value="$default" />
-		<input type="submit" value="$button" />
-	</div>
+	<label for="_p_lookup_$id">$interwiki:</label>
+	<input type="text" name="page" id="_p_lookup_$id" size="30" value="$default" />
+	<input type="submit" value="$button" />
 </form>
 EOD;
 	return $ret;
@@ -64,4 +62,5 @@ function plugin_lookup_action()
 	header('Location: ' . $url); // Publish as GET method
 	exit;
 }
-?>
+/* End of file lookup.inc.php */
+/* Location: ./wiki-common/plugin/lookup.inc.php */

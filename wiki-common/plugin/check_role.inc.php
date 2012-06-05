@@ -43,4 +43,5 @@ function check_role_die($msg)
 	die($msg);
 }
 
-?>
+/* End of file check_role.inc.php */
+/* Location: ./wiki-common/plugin/check_role.inc.php */

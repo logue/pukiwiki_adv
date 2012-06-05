@@ -236,7 +236,7 @@ class netbios
 			return array($code,$val);
 		}
 	}
-
 }
 
-?>
+/* End of file netbios.cls.php */
+/* Location: ./wiki-common/lib/netbios.cls.php */

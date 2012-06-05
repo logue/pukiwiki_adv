@@ -235,15 +235,13 @@ function plugin_openid_login_form()
 
 	$script = get_script_uri();
 	$rc = <<<EOD
-<form method="get" action="$script">
+<form method="get" action="$script" class="openid_form">
 	<input type="hidden" name="cmd" value="openid" />
 	<input type="hidden" name="action" value="verify" />
 	<input type="hidden" name="page" value="$r_page" />
-	<div class="openid_form">
-		{$_openid_msg['msg_openid_url']}
-		<input type="text" name="openid_url" size="$size" style="background: url(http://www.openid.net/login-bg.gif) no-repeat; padding-left:18px;" value="" />
-		<input type="submit" value="{$_openid_msg['btn_login']}" />
-	</div>
+	{$_openid_msg['msg_openid_url']}
+	<input type="text" name="openid_url" size="$size" style="background: url(http://www.openid.net/login-bg.gif) no-repeat; padding-left:18px;" value="" />
+	<input type="submit" value="{$_openid_msg['btn_login']}" />
 </form>
 
 EOD;
@@ -417,4 +415,5 @@ function plugin_openid_get_call_func($openid)
 	return '';
 }
 
-?>
+/* End of file openid.inc.php */
+/* Location: ./wiki-common/plugin/openid.inc.php */

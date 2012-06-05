@@ -68,4 +68,5 @@ function plugin_newpage_action()
 		exit;
 	}
 }
-?>
+/* End of file newpage.inc.php */
+/* Location: ./wiki-common/plugin/newpage.inc.php */

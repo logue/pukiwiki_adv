@@ -918,4 +918,6 @@ function pkwk_touch_file($filename, $time = FALSE, $atime = FALSE)
 			htmlsc(basename($filename)));
 	}
 }
-?>
+
+/* End of file file.php */
+/* Location: ./wiki-common/lib/file.php */

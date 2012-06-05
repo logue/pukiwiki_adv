@@ -943,4 +943,5 @@ $domain['za'] = array(
 	),
 );
 
-?>
+/* End of file domain.ini.php */
+/* Location: ./wiki-common/domain.ini.php */

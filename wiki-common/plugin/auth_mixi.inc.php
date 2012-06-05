@@ -277,5 +277,5 @@ function auth_mixi_get_role_auth_api($type,$id)
 	}
 	return ROLE_AUTH_OPENID;
 }
-
-?>
+/* End of file auth_mixi.inc.php */
+/* Location: ./wiki-common/plugin/auth_mixi.inc.php */

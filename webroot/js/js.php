@@ -19,3 +19,6 @@ header('Last-Modified: '.gmdate('D, d M Y H:i:s', filemtime($file)).' GMT');
 ob_start('ob_gzhandler');
 readfile($file);
 ob_end_flush();
+
+/* End of file scripts.css.php */
+/* Location: ./webroot/js/js.php */

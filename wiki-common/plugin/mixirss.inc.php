@@ -36,18 +36,8 @@ function plugin_mixirss_action()
 
 	$data = array();
 
-	if ($memcache === null){
-		$recent = CACHE_DIR . PKWK_MAXSHOW_CACHE;
-		if (! file_exists($recent)) die('PKWK_MAXSHOW_CACHE is not found');
-
-		foreach (file_head($recent, $rss_max) as $line) {
-			list($time, $page) = explode("\t", rtrim($line));
-			$data[$page] = $time;
-		}
-		$time_recent = filemtime($recent);
-	}else{
-		$cache_name = substr(PKWK_MAXSHOW_CACHE,0,strrpos(PKWK_MAXSHOW_CACHE, '.'));
-		$lines = $memcache->get(MEMCACHE_PREFIX.$cache_name);
+	if ($memcache !== null){
+		$lines = $memcache->get(MEMCACHE_PREFIX.PKWK_MAXSHOW_CACHE);
 		if ($lines === FALSE){
 			die('PKWK_MAXSHOW_CACHE does not found in memcache. please reload.');
 		}else{
@@ -60,20 +50,34 @@ function plugin_mixirss_action()
 			}
 		}
 		$time_recent = $memcache->get(MEMCACHE_PREFIX.'timestamp-'.$cache_name);
+	}else{
+		$recent = CACHE_DIR . PKWK_MAXSHOW_CACHE;
+		if (! file_exists($recent)) die('PKWK_MAXSHOW_CACHE is not found');
+
+		foreach (file_head($recent, $rss_max) as $line) {
+			list($time, $page) = explode("\t", rtrim($line));
+			$data[$page] = $time;
+		}
+		$time_recent = filemtime($recent);
 	}
-
-	$rsscache = CACHE_DIR . 'rsscache' . $version . '.xml';
-	$time_rsscache = (file_exists($rsscache)) ? filemtime($rsscache) : 0;
-
-	// if caching rss file, return cache.
-	if ($time_recent <= $time_rsscache) {
-		pkwk_common_headers();
-		header('Content-type: application/xml');
-		print '<?xml version="1.0" encoding="UTF-8"?>' . "\n\n";
-		print implode('', file($rsscache));
-		exit;
+/*
+	$rsscache = CACHE_DIR . 'rsscache' . $version . '.dat';
+	$time_rsscache =  ? filemtime($rsscache) : 0;
+	
+	if (file_exists($rsscache)) {
+		// if caching rss file, return cache.
+		if ($time_recent <= $time_rsscache) {
+			pkwk_common_headers();
+			header('Content-type: application/xml');
+			print '<?xml version="1.0" encoding="UTF-8"?>' . "\n\n";
+			print implode('', file($rsscache));
+			exit;
+		}
+	}else{
+		
+	
 	}
-
+*/
 	// Official Main routine ...
 	$page_title_utf8 = mb_convert_encoding($page_title, 'UTF-8', SOURCE_ENCODING);
 	$rss_description_utf8 = mb_convert_encoding(htmlspecialchars($rss_description), 'UTF-8', SOURCE_ENCODING);
@@ -294,4 +298,5 @@ function plugin_mixirss_isValidDate($aStr, $aSepList='-\/ \.')
 	}
 	return false;
 }
-?>
+/* End of file mixirss.inc.php */
+/* Location: ./wiki-common/plugin/mixirss.inc.php */

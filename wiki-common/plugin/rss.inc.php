@@ -150,4 +150,5 @@ EOD;
 	}
 	return $ret;
 }
-?>
+/* End of file rss.inc.php */
+/* Location: ./wiki-common/plugin/rss.inc.php */
