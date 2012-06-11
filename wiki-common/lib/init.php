@@ -14,8 +14,8 @@
 
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
-define('S_VERSION', 'v1.0 beta1');
-define('S_REVSION', '20120429');
+define('S_VERSION', 'v1.0 beta2');
+define('S_REVSION', '20120611');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &#169; 2010-2012' .
@@ -492,7 +492,6 @@ if (!IS_AJAX || IS_MOBILE){
 			// 読み込むsrcディレクトリ内のJavaScript
 			$default_js = array(
 				/* libraly */
-				'swfupload',
 				'tzCalculation_LocalTimeZone',
 				
 				/* Use plugins */
@@ -507,11 +506,9 @@ if (!IS_AJAX || IS_MOBILE){
 				'jquery.query',
 				'jquery.scrollTo',
 				'jquery.superfish',
-				'jquery.swfupload',
 				'jquery.tabby',
 				'jquery.tablesorter',
 				'jquery.textarearesizer',
-				'jquery.tooltip',
 				
 				/* MUST BE LOAD LAST */
 				'skin.original'

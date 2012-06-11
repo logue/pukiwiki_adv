@@ -124,42 +124,6 @@ var pukiwiki = {};
 					positionFixed	: false
 				}
 			},
-			swfupload : {
-				// swfuploadの位置
-//				flash_url : SKIN_DIR + 'swfupload.swf',	// 値の流用ができないのでコメントアウト
-				// アップロード先のURL
-				upload_url: SCRIPT,
-				// POST時に送られるファイルのフォーム名（重要）
-				// attachプラグインでは、attach_fileにアップロードするファイル名が格納される。
-				// Flashの仕様上、本来は変更せずにFiledataとすることが望ましい。
-				// PukiWikiでは、attach_fileにファイルが格納される。
-				file_post_name : 'attach_file',
-				// POST時に送るパラメータ
-//				post_params: params,
-				// 上限容量
-//				file_size_limit : params.max_file_size,
-				// ファイルタイプ
-				file_types : '*.*',
-				// ファイルタイプの説明
-//				file_types_description : $.i18n('uploader', 'file_type_desc'),
-				// 一度にアップロードできるファイルの上限（ファイル選択画面でShiftキーで選択できるファイル数）
-				file_upload_limit : 10,	// 変更しないこと
-				// キューに入れられる上限
-				file_queue_limit : 10,
-				
-				// デバッグ
-				debug: DEBUG,
-
-				// 添付ボタン設定
-				button_image_url: IMAGE_URI + 'ajax/wdp_buttons_upload_114x29.png',
-				button_width : 114,
-				button_height : 29,
-				// 書き換える場所のID
-//				button_placeholder_id: 'swfupload_button',
-				buttonwindow_mode: 'transparent',
-
-				moving_average_history_size: 40
-			},
 			assistant : {
 				// 絵文字の定義
 				// https://github.com/take-yu/JSEmoji/blob/master/mt-static/plugins/JSEmoji/js/emoji.js
@@ -453,11 +417,6 @@ var pukiwiki = {};
 			this.bad_behavior(prefix);
 			// Table Sorter（テーブル自動ソート）
 			this.tablesorter(prefix);
-			
-			// 添付フォームをswfuploadに
-			if ($(prefix + '.attach_form').length !== 0){
-				this.set_uploader(prefix);
-			}
 
 			// Textarea Resizer
 			var $msg = $(prefix + 'textarea[name="msg"]');
@@ -1224,110 +1183,114 @@ var pukiwiki = {};
 		},
 		// 独自のGlossaly処理
 		glossaly: function(prefix){
+			var $tooltip = $('#tooltip');
+			if ($tooltip.length == 0){
+				// ツールチップ用のDOM生成
+				$("body").append('<div id="tooltip" role="tooltip"></div>');
+			}
 			var self = this;
 			prefix = (prefix) ? prefix + ' ': '';
-
-			$(prefix + '*[aria-describedby="tooltip"]').hover(
-				function(){
-					$('body').css('cursor','wait');
-					self.getGlossary(this,{
-						cmd:'tooltip',
-						q:$(this).text(),
-						cache:true
-					});
-				},
-				function(){
-					$('body').css('cursor','auto');
-				}
-			);
-
-			// 検索画面
-			if ($.query.get('cmd') === 'search'){
-				$(prefix + '*[aria-describedby="linktip"]').hover(
-					function(){
-						$('body').css('cursor','wait');
-						self.getGlossary(this,{
-							cmd:'preview',
-							page:$(this).text(),
-							word: $.query.get('word'),
-							cache:true
-						});
-					},
-					function(){
-						$('body').css('cursor','auto');
-					}
-				);
-			}
 			
-			$(prefix+'*[title]').each(function(){
+			$(prefix + '*[aria-describedby],'+prefix+'*[title]').each(function(elem){
+				// DOMをキャッシュ
 				var $this = $(this);
-				var tip = $this.attr('title');
+				// ツールチップに表示したいテキストをmsgtextに持ってくる
+				var msgtext = $this.attr('title') ? $this.attr('title') : 
+					($this.data('msgtext') ? $this.data('msgtext') : null);
+				// ブラウザのツールチップを表示されないようにする。
 				$this.removeAttr('title');
-				$this.tooltip({
-					bodyHandler: function() {
-						return tip;
-					}, 
-					track: true,
-					delay: 0,
-					showURL: ($this.attr('rel') === 'external')
-				});
+
+				if (msgtext === null){
+					$('body').css('cursor','wait');
+					var params = ($this.attr('aria-describedby') == 'linktip')
+					 ? {
+						// リンク先の要約文
+						cmd : 'preview',
+						page : $(this).text(),
+						word : $.query.get('word'),
+						cache : true
+					} : {
+						// 用語集
+						cmd: 'tooltip',
+						q : $(this).text(),	// テキストノード
+						cache : true
+					};
+					var tip;
+					$.ajax({
+						url:SCRIPT,
+						type:'GET',
+						cache: true,
+						timeout:2000,
+						dataType : 'xml',
+						global:false,
+						data : params,
+						async:true,
+						beforeSend: function(){
+							$('body').css('cursor','wait');
+						},
+						success: function(data){
+							tip = data.documentElement.textContent;
+						},
+						complete : function(XMLHttpRequest, textStatus){
+							$this.data('msgtext', tip);	// ツールチップの中身をmsgtextに保存
+							self.tooltip($this,tip);
+						}
+					});
+				}else{
+					$this.data('msgtext', msgtext);
+					self.tooltip($this,msgtext);
+				}
 			});
-			
+
 			if ($.support.leadingWhitespace !== true){
-				$(prefix + '.tooltip').css({
+				$(prefix + '*[aria-describedby]').css({
 					'behavior': 'url('+JS_URI+'ie-css3.htc)'
 				});
 			}
 			
 		},
-		// jquery.tooltip.jsのajax化
-		getGlossary: function(target,params,tooltip_opts){
-			var text;
-			var $target = $(target);
-			var msgtext = $target.attr('title') ? $target.attr('title') : 
-				($target.data('msgtext') ? $target.data('msgtext') : null);
-			$target.removeAttr('title');
-			
-			if (msgtext === null){
-				var tip;
-				$.ajax({
-					url:SCRIPT,
-					type:'GET',
-					cache: true,
-					timeout:2000,
-					dataType : 'xml',
-					global:false,
-					data : params,
-					async:true,
-					beforeSend: function(){
-						$('body').css('cursor','wait');
-					},
-					success: function(data){
-						tip = data.documentElement.textContent;
-					},
-					complete : function(XMLHttpRequest, textStatus){
-						$target.data('msgtext', tip);
-						$target.tooltip({
-							bodyHandler: function() { 
-								$('body').css('cursor','help');
-								return tip;	// <script>タグを無効化
-							}, 
-							track: true,
-							delay: 0,
-							showURL: ($target.attr('rel') === 'external')
-						});
+		tooltip : function(elem, text){
+		var $tooltip = $('#tooltip');
+			// ツールチップ
+			elem
+				.mouseover(function(e){
+					$tooltip.text(text).show();
+					$('body').css('cursor','help');
+				})
+				.mouseout(function(){
+					$tooltip.hide();
+					$('body').css('cursor','auto');
+				})
+				.mousemove(function(e){	
+					var $w = $(window);
+					var v = {
+						// ツールチップのサイズ
+						s : {
+							w : $tooltip.width(),
+							h : $tooltip.height()
+						},
+						// ウィンドウのサイズ
+						w: {
+							w : $w.width(),
+							h : $w.height()
+						},
+						// マウスの位置
+						x : e.clientX,
+						y : e.clientY
+					};
+					if (v.s.w + v.x + 10 >= v.w.w || v.s.h + v.y + 10 >= v.w.h){
+						// 画面の端に来た時にはみ出ないように折り返す
+						$tooltip
+							.css('top',(e.pageY - 10 - v.s.w) + 'px')
+							.css('left',(e.pageX - 10 - v.s.h) + 'px');
+					}else{
+						// マウスを追っかける
+						$tooltip
+							.css('top',(e.pageY + 20) + 'px')
+							.css('left',(e.pageX + 20) + 'px');
 					}
-				});
-			}else{
-				$target.tooltip({
-					bodyHandler: function() { 
-						return msgtext;	// <script>タグを無効化
-					}, 
-					track: true,
-					delay: 0,
-					showURL: ($target.attr('rel') === 'external')
-				});
-			}
+				}
+			);
 		},
 		// 編集画面のフォームを拡張
 		set_editform: function(prefix){
@@ -1910,178 +1873,6 @@ var pukiwiki = {};
 				
 				return;
 			});
-		},
-		/* swfuploderのフォームに書き換え */
-		set_uploader: function(prefix){
-/*
-			prefix = (prefix) ? prefix + ' ': '';
-			// パラメーター
-			var params = {
-				encode_hint		: $(prefix + 'input[name=encode_hint]').val(),
-				postid			: $(prefix + 'input[name=postid]').val(),
-				plugin			: $(prefix + 'input[name=plugin]').val(),		// プラグイン（通常attach）
-				pcmd			: $(prefix + 'input[name=pcmd]').val(),		// プラグインコマンド（通常post）
-				refer			: $(prefix + 'input[name=refer]').val(),		// 添付先のページ
-				max_file_size	: $(prefix + 'input[name=max_file_size]').val()// 上限容量
-			};
-
-			var pass_form = ($(prefix + 'input[name=pass]').length !== 0) ?
-				'<label for="pass">'+$.i18n('uploader','password')+'</label><input type="password" name="pass" id="pass" size="8" value="" /><br />' : '';
-			
-			$(prefix + ' .attach_info li').before([
-				'<li>'+$.i18n('uploader','selected')+'<var id="attach_selected">0</var></li>',
-				'<li>'+$.i18n('uploader','queued')+'<var id="attach_queued">0</var></li>'
-			].join("\n"));
-
-			if (params.plugin === 'attachref'){
-				params.attachref_no		= $(prefix + 'input[name=attachref_no]').val();
-				params.attachref_opt	= $(prefix + 'input[name=attachref_opt]').val();
-				params.digest			= $(prefix + 'input[name=digest]').val();
-			}
-			
-			// 設定を読み込み
-			var config = this.config.swfupload;
-			config.flash_url = SKIN_DIR + 'swfupload.swf';
-			config.file_types_description = $.i18n('uploader','file_type_desc');
-			config.button_placeholder_id = 'swfupload_button';
-
-			// attachrefの場合、１つのみファイルをアップ可能
-			if (params.plugin === 'attachref'){
-				config.file_upload_limit=1;
-				config.file_queue_limit=1;
-			}
-
-			params.pass = ($('input[name=pass]').length !== 0) ? $('input[name=pass]').val(): '';	// パスワード
-
-			// 添付画面のテンプレート
-			$(prefix + '.attach_form').html( [
-				'<div id="swfupload-control">',
-					'<input type="button" id="swfupload_button" />',
-					'<p id="swfupload-queuestatus"></p>',
-					'<ol id="swfupload-log" class="ui-widget"></ol>',
-					'<span id="execute">'+$.i18n('uploader','execute')+'</span>',
-				'</div>'
-			].join("\n"));
-			
-			$(prefix + '#execute').button({
-				label : '<span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-gear"></span>Go',
-				disabled:true
-			}).click(function(){
-				$('#swfupload-control').swfupload('startUpload');
-				return false;
-			}).css({
-				display:'none'
-			});
-
-			$(prefix + '#swfupload-control').swfupload(config)	// ファイル添付のフォームをswfupload.swfに置き換え
-			.bind('fileQueued', function(event, file){
-				var listitem = [
-					'<li id="'+file.id+'" class="ui-widget-content ui-corner-all">',
-						'<span>'+$.i18n('uploader','file')+'<code>'+file.name+'</code> (<var>'+Math.round(file.size/1024)+' KB</var>)</span>',
-						'<span class="cancell_btn" style="display:block; float:right"></span>',
-						'<span class="progressvalue"></span>',
-						'<div style="display:block; clear:both;" class="progressbar"></div>',
-						'<p class="status"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>'+$.i18n('uploader','pending')+'</p>',
-					'</li>'
-				].join("\n");
-		
-				$(prefix + '#swfupload-log').append(listitem);
-				
-				$(prefix + 'li#'+file.id+' .cancell_btn').button({
-					icons: {
-						primary: 'ui-icon-close'
-					},
-					text:false
-				}).click(function(){
-					var swfu = $.swfupload.getInstance('#swfupload-control');
-					swfu.cancelUpload(file.id);
-					$('#swfupload-log li#'+file.id).slideUp('fast');
-					return false;
-				});
-				
-				$(prefix + '#swfupload-log li#'+file.id+' .progressbar').progressbar();
-				
-				$(prefix + '#execute').button({
-					disabled:false
-				}).css({
-					display:''
-				});
-			})
-			.bind('fileQueueError', function(event, file, errorCode, message){
-				var listitem = [
-					'<li id="error" class="ui-widget-content ui-state-error ui-corner-all"><em>'+$.i18n('dialog','error')+'</em>',
-						'<p>',
-							'<span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-alert"></span>',
-							$.i18n('uploader','many_files'),
-						'</p>',
-						'<button class="close">'+$.i18n('dialog','close')+'</button>',
-					'</li>'
-				].join("\n");
-
-				$(prefix + '#swfupload-log').append(listitem);
-				
-				$(prefix + 'li#error button').button({
-					icons: {
-						primary: 'ui-icon-close'
-					},
-					text:false
-				}).click(function(){
-					$('#swfupload-log li#error').slideUp('fast');
-					return false;
-				});
-			})
-			.bind('fileDialogComplete', function(event, numFilesSelected, numFilesQueued){
-				$('#atttach_selected').text(numFilesSelected);
-				$('#atttach_queued').text(numFilesQueued);
-			})
-			.bind('uploadStart', function(event, file){
-				$('#swfupload-log li#'+file.id).find('p.status').text($.i18n('uploader','uploading'));
-				$('#swfupload-log li#'+file.id).find('span.progressvalue').text('0%');
-				$('#swfupload-log li#'+file.id).find('span.cancel').hide();
-			})
-			.bind('uploadProgress', function(event, file, bytesLoaded){
-				//Show Progress
-				var percentage=Math.round((bytesLoaded/file.size)*100);
-				$('#swfupload-log li#'+file.id+' .progressbar').progressbar({ value: percentage });
-				$('#swfupload-log li#'+file.id).find('span.progressvalue').text(percentage+'%');
-			})
-			.bind('uploadSuccess', function(event, file, serverData){
-				if (params.plugin !== 'attachref'){
-					var su_log = prefix + '#swfupload-log #'+file.id;
-					var item = $(su_log);
-					console.log(serverData);
-					var ret = eval("(" + serverData + ")");
-
-					$(su_log+' .progressbar').progressbar({ value: 100 });
-					item.find('.progressvalue').text('100%');
-					var pathtofile = [
-						'<a href="'+SCRIPT+'?plugin=attach&pcmd=open&refer='+PAGE+'&file='+file.name+'" id="view_'+file.id+'">',
-						'<span style="float: right; margin-right: 0.3em;" class="ui-icon ui-icon-newwin"></span>',
-						$.i18n('uploader','view')+' &raquo;',
-						'</a>'
-					].join('');
-					item.addClass('success').find('p.status').html(ret.title+' | '+pathtofile);
-					$(su_log+' a#view_'+file.id).click(function(){
-						var href = $(this).attr('href');
-	//					if (href.match(/\.(jpg|jpeg|gif|png)$/i) !== -1){
-	//						$(this).colorbox();
-	//					}else if (href.match(/\.(mp3|ogg|m4a)$/i) !== -1){
-	//						pukiwiki.music_player(this);
-	//					}else{
-							window.open(href);
-	//					}
-	//					$(prefix).dialog('option', 'close', function(){ location.reload(); });
-						return false;
-					});
-				}else{
-					location.reload();
-				}
-			})
-			.bind('uploadComplete', function(event, file){
-				// upload has completed, try the next one in the queue
-				$(this).swfupload('startUpload');
-			});
-*/
 		},
 		CFCheck: function(){
 			if (typeof(CFInstall) === 'object' || $('meta[http-equiv=X-UA-Compatible]')[0].content.match(/chrome/) !== -1){
