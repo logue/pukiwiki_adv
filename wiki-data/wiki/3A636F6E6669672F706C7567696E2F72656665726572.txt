@@ -1,0 +1,48 @@
+#freeze
+
+*SPAM [#p70cfde9]
+>REFERER SPAM TABLE.
+The definition was availably divided excluding this plug-in. 
+
+*MISC [#bc8c696a]
+>Peculiar definition to plug-in.
+
+|google.|
+|amikai.|
+|honyakuinfoseek.infoseek.co.jp|
+|search.|
+|srchnavi.|
+|www.shinobi.jp|
+|srd.yahoo.co.jp|
+|community.goo.ne.jp|
+|excite.co.jp|
+|mail.yahoo.co.jp|
+|e.my.yahoo.co.jp|
+|localhost|
+|translate.googleusercontent.com|
+
+*KEY [#o323c097]
+>Key that SEARCH ENGINE uses as KEY WORD.
+
+|q		|google, bing, earthlink|
+|p		|yahoo|
+|MT		|goo|
+|kw		|fresheye|
+|query		|aol|
+|search		|excite|
+|qt		|infoseek, looksmart|
+|Text		|nifty|
+|text		|Yandex|
+|QueryString	|looksmart.co.jp|
+|key		|findarticles|
+|qkw		|nbci|
+|su		|web.de|
+|qry		|mirago.co.uk|
+|w		|seznam.cz|
+|query_contain	||
+|hm___action	||
+|name		|JWord|
+|wd		|Baidu|
+|word		|Baidu|
+|text		|Yandex|
+|keyword	|starthome.jp|

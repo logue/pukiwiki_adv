@@ -378,15 +378,7 @@ function getLinkSet($_page){
 	}
 
 	if ($referer){
-		if (!empty($_page)) {
-			$_LINK['referer']	= get_cmd_uri('referer',		$_page);
-			$_LINK['linklist']	= get_cmd_uri('linklist',		$_page);
-			$_LINK['skeylist']	= get_cmd_uri('skeylist',		$_page);
-		}else{
-			$_LINK['referer']	= get_cmd_uri('referer');
-			$_LINK['linklist']	= get_cmd_uri('linklist');
-			$_LINK['skeylist']	= get_cmd_uri('skeylist');
-		}
+		$_LINK['referer']	= !empty($_page) ? get_cmd_uri('referer',	$_page) : get_cmd_uri('referer');
 	}
 	if ($trackback){
 		$_LINK['trackback'] = (!empty($_page)) ?

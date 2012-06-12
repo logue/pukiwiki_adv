@@ -15,7 +15,7 @@ defined('SKEYLIST_SEARCH_URL') or define('SKEYLIST_SEARCH_URL', 'http://www.goog
 // defined('SKEYLIST_SEARCH_URL') or define('SKEYLIST_SEARCH_URL', 'http://search.yahoo.com/search?ei=UTF-8&p=');
 
 defined('SKEYLIST_MIN_COUNTER') or define('SKEYLIST_MIN_COUNTER', 0);
-
+/*
 function plugin_skeylist_init()
 {
 	$msg = array(
@@ -39,7 +39,7 @@ function plugin_skeylist_action()
 	check_readable($page, false);
 	$retval['msg']  = sprintf($_skeylist_msg['title'],$page);
 	if (! $referer) {
-		$retval['body'] = '<p>'.$_skeylist_msg['not_effective']."</p>\n";
+		$retval['body'] = '<p>'.$_skeylist_msg['not_effective'].'</p>'."\n";
 		return $retval;
 	}
 
@@ -228,6 +228,6 @@ function skeylist_print($data,$max)
 	$rc[] = '</ul>';
 	return join("\n",$rc);
 }
-?>
+*/
 /* End of file skeylist.inc.php */
 /* Location: ./wiki-common/plugin/skeylist.inc.php */

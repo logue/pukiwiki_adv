@@ -32,7 +32,7 @@ function plugin_list_action()
 			header("Content-Type: application/json; charset=".CONTENT_CHARSET);
 			echo json_encode($buffer);
 			exit();
-		case 'sitemaps' :
+		case 'sitemap' :
 			$exists = file_exists(CACHE_DIR.PKWK_SITEMAPS_XML);
 
 			if (!$exists || @filemtime(CACHE_DIR.PKWK_SITEMAPS_XML) < filemtime(CACHE_DIR.PKWK_MAXSHOW_CACHE)){
