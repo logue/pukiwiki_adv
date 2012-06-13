@@ -1,8 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: convert_html.php,v 1.21.32 2012/06/08 17:40:00 Logue Exp $
+// $Id: convert_html.php,v 1.21.27 2011/09/11 23:00:00 Logue Exp $
 // Copyright (C)
-//   2010-2012 PukiWiki Advance Developers Team
+//   2010-2011 PukiWiki Advance Developers Team
 //   2005-2008 PukiWiki Plus! Team
 //   2002-2005, 2007,2011 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -57,7 +57,7 @@ class Element
 	function insert(& $obj)
 	{
 		global $info;
-		if (gettype($obj) == 'object'){
+		if (gettype($obj) === 'object'){
 			$obj->setParent($this);
 			$this->elements[] = & $obj;
 
@@ -73,7 +73,7 @@ class Element
 
 	function wrap($string, $tag, $param = '', $canomit = TRUE)
 	{
-		return ($canomit && empty($string)) ? '<' . $tag . $param . ' />' :
+		return ($canomit && empty($string)) ? '' :
 			'<' . $tag . $param . '>' . $string . '</' . $tag . '>';
 	}
 
@@ -201,7 +201,7 @@ class Inline extends Element
 		return join(($line_break ? '<br />' . "\n" : "\n"), $this->elements);
 	}
 
-	function toPara($class = '')
+	function & toPara($class = '')
 	{
 		$obj = new Paragraph('', $class);
 		$obj->insert($this);
@@ -258,7 +258,7 @@ class Heading extends Element
 		$this->level++; // h2,h3,h4
 	}
 
-	function insert(& $obj)
+	function & insert(& $obj)
 	{
 		parent::insert($obj);
 		return $this->last = & $this;
@@ -327,7 +327,7 @@ class ListContainer extends Element
 		$text = ltrim(substr($text, $this->level));
 
 		parent::insert(new ListElement($this->level, $tag2));
-		if ($text !== '')
+		if ( !empty($text) )
 			$this->last = $this->last->insert(Factory_Inline($text));
 	}
 
@@ -427,7 +427,7 @@ class DList extends ListContainer
 	{
 		parent::ListContainer('dl', 'dt', ':', $out[0]);
 		$this->last = Element::insert(new ListElement($this->level, 'dd'));
-		if ($out[1] !== '')
+		if ( !empty($out[1]) )
 			$this->last = $this->last->insert(Factory_Inline($out[1]));
 	}
 }
@@ -464,9 +464,6 @@ class BQuote extends Element
 
 	function insert(& $obj)
 	{
-		if (!is_object($obj)) return;
-		
-		// Only variables should be passed by reference in PHP5.4
 		// BugTrack/521, BugTrack/545
 		//if (is_a($obj, 'inline'))
 		//	return parent::insert($obj->toPara(' class="style_blockquote"'));
@@ -484,14 +481,14 @@ class BQuote extends Element
 		return $this->wrap(parent::toString(), 'blockquote');
 	}
 
-	function end(& $root, $level)
+	function & end(& $root, $level)
 	{
-		$parent = $root->last;
+		$parent = & $root->last;
 
 		while (is_object($parent)) {
 			if (is_a($parent, 'BQuote') && $parent->level == $level)
 				return $parent->parent;
-			$parent = $parent->parent;
+			$parent = & $parent->parent;
 		}
 		return $this;
 	}
@@ -528,12 +525,12 @@ class TableCell extends Element
 				$text = array_pop($matches);
 			}
 		}
-
 		if ($is_template && is_numeric($text))
 			$this->style['width'] = 'width:' . $text . 'px;';
 
 		if (preg_match("/\S+/", $text) == false){
 			// セルが空だったり、空白文字しか残らない場合は、空欄のセルとする。（HTMLではタブやスペースも削除）
+			$text = '';
 			$this->is_blank = true;
 		} else if ($text == '>') {
 			$this->colspan = 0;
@@ -544,19 +541,19 @@ class TableCell extends Element
 			$text      = substr($text, 1);
 		}
 
-		if (!empty($text) && $text{0} == '#') {
+		if (!empty($text) && $text{0} === '#') {
 			// Try using Div class for this $text
-			$obj = Factory_Div($this, $text);
+			$obj = & Factory_Div($this, $text);
 			if (is_a($obj, 'Paragraph'))
-				$obj = $obj->elements[0];
+				$obj = & $obj->elements[0];
 		} else {
-			$obj =  Factory_Inline($text);
+			$obj = & Factory_Inline($text);
 		}
 
 		$this->insert($obj);
 	}
 
-	function setStyle($style)
+	function setStyle(& $style)
 	{
 		foreach ($style as $key=>$value)
 			if (! isset($this->style[$key]))
@@ -617,7 +614,7 @@ class Table extends Element
 		return is_a($obj, 'Table') && ($obj->col == $this->col);
 	}
 
-	function insert(& $obj)
+	function & insert(& $obj)
 	{
 		$this->elements[] = $obj->elements[0];
 		$this->types[]    = $obj->type;
@@ -632,7 +629,7 @@ class Table extends Element
 		for ($ncol = 0; $ncol < $this->col; $ncol++) {
 			$rowspan = 1;
 			foreach (array_reverse(array_keys($this->elements)) as $nrow) {
-				$row = $this->elements[$nrow];
+				$row = & $this->elements[$nrow];
 				if ($row[$ncol]->rowspan == 0) {
 					++$rowspan;
 					continue;
@@ -648,9 +645,9 @@ class Table extends Element
 		// Set colspan and style
 		$stylerow = NULL;
 		foreach (array_keys($this->elements) as $nrow) {
-			$row = $this->elements[$nrow];
+			$row = & $this->elements[$nrow];
 			if ($this->types[$nrow] == 'c')
-				$stylerow = $row;
+				$stylerow = & $row;
 			$colspan = 1;
 			foreach (array_keys($row) as $ncol) {
 				if ($row[$ncol]->colspan == 0) {
@@ -658,7 +655,7 @@ class Table extends Element
 					continue;
 				}
 				$row[$ncol]->colspan = $colspan;
-				if (!empty($stylerow)) {
+				if ($stylerow !== NULL) {
 					$row[$ncol]->setStyle($stylerow[$ncol]->style);
 					// Inherits column style
 					while (--$colspan)
@@ -676,7 +673,7 @@ class Table extends Element
 			foreach (array_keys($this->elements) as $nrow) {
 				if ($this->types[$nrow] != $type)
 					continue;
-				$row        = $this->elements[$nrow];
+				$row        = & $this->elements[$nrow];
 				$row_string = '';
 				foreach (array_keys($row) as $ncol)
 					$row_string .= $row[$ncol]->toString();
@@ -752,7 +749,7 @@ class YTable extends Element
 		return is_a($obj, 'YTable') && ($obj->col == $this->col);
 	}
 
-	function insert(& $obj)
+	function & insert(& $obj)
 	{
 		$this->elements[] = $obj->elements[0];
 		return $this;
@@ -774,7 +771,7 @@ class YTable extends Element
 // ' 'Space-beginning sentence
 class Pre extends Element
 {
-	function Pre( $root, $text)
+	function Pre(& $root, $text)
 	{
 		global $preformat_ltrim;
 		parent::Element();
@@ -787,7 +784,7 @@ class Pre extends Element
 		return is_a($obj, 'Pre');
 	}
 
-	function insert(& $obj)
+	function & insert(& $obj)
 	{
 		$this->elements[] = $obj->elements[0];
 		return $this;
@@ -867,13 +864,13 @@ class Body extends Element
 	{
 		$this->id            = $id;
 		$this->contents      = new Element();
-		$this->contents_last = $this->contents;
+		$this->contents_last = & $this->contents;
 		parent::Element();
 	}
 
-	function parse($lines)
+	function parse(& $lines)
 	{
-		$this->last = $this;
+		$this->last = & $this;
 		$matches = array();
 
 		while (! empty($lines)) {
@@ -886,7 +883,7 @@ class Body extends Element
 			if (preg_match('/^(TITLE):(.*)$/',$line,$matches))
 			{
 				global $newtitle, $newbase;
-				if (empty($newbase)) {
+				if ($newbase == '') {
 					// $newbase = trim($matches[2]);
 					$newbase = convert_html($matches[2]);
 					$newbase = strip_htmltag($newbase);
@@ -909,8 +906,8 @@ class Body extends Element
 			$line = rtrim($line, "\r\n");
 
 			// Empty
-			if (empty($line) ) {
-				$this->last = $this;
+			if ( empty($line) ) {
+				$this->last = & $this;
 				continue;
 			}
 
@@ -996,7 +993,7 @@ class Body extends Element
 		$id = make_heading($text, FALSE); // Cut fixed-anchor from $text
 		if (empty($id)) {
 			// Not specified
-			$id     = $autoid;
+			$id     = & $autoid;
 			$anchor = '';
 		} else {
 			//$anchor = ' &aname(' . $id . ',super,full){' . $_symbol_anchor . '};';
@@ -1015,7 +1012,7 @@ class Body extends Element
 
 	function insert(& $obj)
 	{
-		if (is_a($obj, 'Inline')) $obj = $obj->toPara();
+		if (is_a($obj, 'Inline')) $obj = & $obj->toPara();
 		return parent::insert($obj);
 	}
 
@@ -1027,7 +1024,7 @@ class Body extends Element
 
 		// #contents
 		$text = preg_replace_callback('/<#_contents_>/',
-			array( $this, 'replace_contents'), $text);
+			array(& $this, 'replace_contents'), $text);
 
 		return $text . "\n";
 	}
@@ -1049,7 +1046,7 @@ class Contents_UList extends ListContainer
 		// Reformatting $text
 		// A line started with "\n" means "preformatted" ... X(
 		make_heading($text);
-		$text = "\n" . '<a href="#' . $id . '"'. ((IS_MOBILE) ? ' data-ajax="false"  data-anchor="'.$id.'"' : '') . '>' . $text . '</a>' . "\n";
+		$text = "\n" . '<a href="#' . $id . '"'. ((IS_MOBILE) ? ' data-ajax="false" data-anchor="' . $id . '"' : '') . '>' . $text . '</a>' . "\n";
 		parent::ListContainer('ul', 'li', '-', str_repeat('-', $level));
 		$this->insert(Factory_Inline($text));
 	}
@@ -1087,7 +1084,7 @@ class CPre extends Element
 	{
 		return is_a($obj, 'CPre');
 	}
-	function insert(& $obj)
+	function &insert(&$obj)
 	{
 		$this->elements[] = $obj->elements[0];
 		return $this;
@@ -1107,5 +1104,4 @@ class CPre extends Element
 	}
 }
 
-/* End of file convert_html.php */
-/* Location: ./wiki-common/lib/convert_html.php */
+?>

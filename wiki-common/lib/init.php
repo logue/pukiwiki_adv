@@ -508,6 +508,8 @@ if (!IS_AJAX || IS_MOBILE){
 				'jquery.superfish',
 				'jquery.tabby',
 				'jquery.tablesorter',
+				'jquery.tablesorter.pager',
+				'jquery.tablesorter.widgets',
 				'jquery.textarearesizer',
 				
 				/* MUST BE LOAD LAST */
@@ -532,6 +534,8 @@ if (!IS_AJAX || IS_MOBILE){
 				'jquery.i18n',
 				'jquery.lazyload',
 				'jquery.tablesorter',
+				'jquery.tablesorter.pager',
+				'jquery.tablesorter.widgets',
 				'jquery.scrollTo',
 				
 				/* MUST BE LOAD LAST */
