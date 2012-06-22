@@ -48,7 +48,7 @@ function plugin_freeze_action()
 		is_freeze($page, TRUE);
 		$vars['cmd'] = 'read';
 		$msg  = & $_title_freezed;
-		$body = '';
+		$body = (!IS_AJAX) ? '' : $_title_freezed;
 
 	} else {
 		// Show a freeze form

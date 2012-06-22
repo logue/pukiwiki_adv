@@ -68,9 +68,9 @@ function plugin_read_action()
 	} else {
 		// 無効なページ名
 		return array(
-			'msg'=>$_title_invalidwn,
+			'msg'=>$_read_msg['title_invalidwn'],
 			'body'=>str_replace('$1', htmlsc($page),
-				str_replace('$2', 'WikiName', $_msg_invalidiwn))
+				str_replace('$2', 'WikiName', $_read_msg['msg_invalidiwn']))
 		);
 	}
 	exit;

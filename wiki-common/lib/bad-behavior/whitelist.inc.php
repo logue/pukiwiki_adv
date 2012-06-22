@@ -1,8 +1,13 @@
 <?php if (!defined('BB2_CORE')) die('I said no cheating!');
 
-function bb2_whitelist($package)
+function bb2_run_whitelist($package)
 {
-	$whitelists = @parse_ini_file(dirname(BB2_CORE) . "/whitelist.ini");
+	# FIXME: Transitional, until port maintainters implement bb2_read_whitelist
+	if (function_exists('bb2_read_whitelist')) {
+		$whitelists = bb2_read_whitelist();
+	} else {
+		$whitelists = @parse_ini_file(dirname(BB2_CORE) . "/whitelist.ini");
+	}
 
 	if (@!empty($whitelists['ip'])) {
 		foreach ($whitelists['ip'] as $range) {

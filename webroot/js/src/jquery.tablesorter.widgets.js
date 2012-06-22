@@ -88,7 +88,7 @@ $.tablesorter.addWidget({
 		}
 		if (!$table.hasClass('ui-theme')) {
 			//$table.addClass('ui-widget ui-widget-content ui-theme');
-			$table.addClass('ui-theme');
+			$table.addClass('ui-widget ui-theme');
 			$.each(c.headerList, function(){
 				$(this)
 				// using "ui-theme" class in case the user adds their own ui-icon using onRenderHeader

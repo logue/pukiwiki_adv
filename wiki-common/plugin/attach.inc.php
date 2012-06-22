@@ -821,7 +821,7 @@ class AttachFile
 
 	function gethash()
 	{
-		return $this->exist ? md5_file($this->filename) : '';
+		return $this->exists ? md5_file($this->filename) : '';
 	}
 
 	// ファイル情報取得

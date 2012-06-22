@@ -38,7 +38,9 @@
 
 set_time_limit(0);
 ignore_user_abort(true);
-defined('DATA_HOME') or define('DATA_HOME', '');
+ini_set('memory_limit', '128M');
+ini_set('zlib.output_compression', 'Off');
+ini_set('zlib.output_handler','mb_output_handler');
 
 if (! extension_loaded('mbstring')){
 	throw new Exception('PukiWiki Adv. needs the <a href="http://www.php.net/manual/book.mbstring.php">mbstring extension</a>.');
@@ -49,9 +51,7 @@ if (! extension_loaded('json')) {
 if (! extension_loaded('openssl')) {
 	throw new Exception('PukiWiki Adv. needs the <a href="http://www.php.net/manual/book.openssl.php">OpenSSL extension.</a>');
 }
-ini_set('memory_limit', '128M');
-ini_set('zlib.output_compression', 'Off');
-ini_set('zlib.output_handler','mb_output_handler');
+
 /////////////////////////////////////////////////
 // Include subroutines
 

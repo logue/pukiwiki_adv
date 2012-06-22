@@ -303,6 +303,8 @@ if (class_exists('TokyoTyrant')){
 $arg = '';
 if (isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING'])) {
 	$arg = & $_SERVER['QUERY_STRING'];
+//} else if (array_key_exists('PATH_INFO',$_SERVER) and !empty($_SERVER['PATH_INFO']) ) {
+//	$arg = preg_replace("/^\/*(.+)\/*$/","$1",$_SERVER['PATH_INFO']);
 } else if (isset($_SERVER['argv']) && ! empty($_SERVER['argv'])) {
 	$arg = & $_SERVER['argv'][0];
 }
@@ -499,7 +501,6 @@ if (!IS_AJAX || IS_MOBILE){
 				'jquery.a-tools',
 				'jquery.beautyOfCode',
 				'jquery.cookie',
-				'jquery.colorbox',
 				'jquery.i18n',
 				'jquery.jplayer',
 				'jquery.lazyload',
@@ -511,6 +512,7 @@ if (!IS_AJAX || IS_MOBILE){
 				'jquery.tablesorter.pager',
 				'jquery.tablesorter.widgets',
 				'jquery.textarearesizer',
+				'jquery.ui.rlightbox',
 				
 				/* MUST BE LOAD LAST */
 				'skin.original'

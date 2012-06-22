@@ -1,5 +1,5 @@
 <?php if (!defined('BB2_CWD')) die("I said no cheating!");
-define('BB2_VERSION', "2.2.1");
+define('BB2_VERSION', "2.2.7");
 
 // Bad Behavior entry point is bb2_start()
 // If you're reading this, you are probably lost.
@@ -40,20 +40,32 @@ function bb2_approved($settings, $package)
 	}
 }
 
-// If this is reverse-proxied or load balanced, obtain the actual client IP
+# If this is reverse-proxied or load balanced, obtain the actual client IP
 function bb2_reverse_proxy($settings, $headers_mixed)
 {
-	$addrs = @array_reverse(preg_split("/[\s,]+/", $headers_mixed[$settings['reverse_proxy_header']]));
-	if (empty($addrs)) {
-		return $_SERVER['REMOTE_ADDR'];
-	} else if (!empty($settings['reverse_proxy_addresses'])) {
+	# Detect if option is on when it should be off
+	$header = uc_all($settings['reverse_proxy_header']);
+	if (!array_key_exists($header, $headers_mixed)) {
+		return false;
+	}
+	
+	$addrs = @array_reverse(preg_split("/[\s,]+/", $headers_mixed[$header]));
+	# Skip our known reverse proxies and private addresses
+	if (!empty($settings['reverse_proxy_addresses'])) {
 		foreach ($addrs as $addr) {
-			if (!match_cidr($addr, $settings['reverse_proxy_addresses'])) {
+			if (!match_cidr($addr, $settings['reverse_proxy_addresses']) && !is_rfc1918($addr)) {
+				return $addr;
+			}
+		}
+	} else {
+		foreach ($addrs as $addr) {
+			if (!is_rfc1918($addr)) {
 				return $addr;
 			}
 		}
 	}
-	return $addrs[0];
+	# If we got here, someone is playing a trick on us.
+	return false;
 }
 
 // Let God sort 'em out!
@@ -82,10 +94,9 @@ function bb2_start($settings)
 	$request_uri = $_SERVER["REQUEST_URI"];
 	if (!$request_uri) $request_uri = $_SERVER['SCRIPT_NAME'];	# IIS
 
-	if ($settings['reverse_proxy']) {
+	if ($settings['reverse_proxy'] && $ip = bb2_reverse_proxy($settings, $headers_mixed)) {
 		$headers['X-Bad-Behavior-Remote-Address'] = $_SERVER['REMOTE_ADDR'];
 		$headers_mixed['X-Bad-Behavior-Remote-Address'] = $_SERVER['REMOTE_ADDR'];
-		$ip = bb2_reverse_proxy($settings, $headers_mixed);
 	} else {
 		$ip = $_SERVER['REMOTE_ADDR'];
 	}
@@ -102,21 +113,17 @@ function bb2_screen($settings, $package)
 	// Please proceed to the security checkpoint, have your identification
 	// and boarding pass ready, and prepare to be nakedized or fondled.
 
-	// Check for CloudFlare CDN since IP to be screened may be different
+	// CloudFlare-specific checks not handled by reverse proxy code
 	// Thanks to butchs at Simple Machines
 	if (array_key_exists('Cf-Connecting-Ip', $package['headers_mixed'])) {
 		require_once(BB2_CORE . "/cloudflare.inc.php");
 		$r = bb2_cloudflare($package);
 		if ($r !== false && $r != $package['ip']) return $r;
-		# FIXME: For Cloudflare we are bypassing all checks for now
-		# See cloudflare.inc.php for more detail
-		bb2_approved($settings, $package);
-		return false;
 	}
 
 	// First check the whitelist
 	require_once(BB2_CORE . "/whitelist.inc.php");
-	if (!bb2_whitelist($package)) {
+	if (!bb2_run_whitelist($package)) {
 		// Now check the blacklist
 		require_once(BB2_CORE . "/blacklist.inc.php");
 		if ($r = bb2_blacklist($package)) return $r;

@@ -74,7 +74,7 @@ var pukiwiki = {};
 			'@prefix' : '<http://purl.org/net/ns/doas#>',
 			'@about' : '<skin.js>', 'a': ':JavaScript',
 			'title' : 'Pukiwiki skin script for jQuery',
-			'created' : '2008-11-25', 'release': {'revision': '2.2.28', 'created': '2012-06-13'},
+			'created' : '2008-11-25', 'release': {'revision': '2.2.28', 'created': '2012-02-19'},
 			'author' : {'name': 'Logue', 'homepage': '<http://logue.be/>'},
 			'license' : '<http://www.gnu.org/licenses/gpl-2.0.html>'
 		},
@@ -105,16 +105,16 @@ var pukiwiki = {};
 			tablesorter: {
 				counter: 0,
 				sorter: {
-					widthFixed: true,
-					//widget code now contained in the jquery.tablesorter.widgets.js file 
-					widgets : ['uitheme'], 
- 
-					widgetOptions : { 
- 
-						// change default uitheme icons - find the full list of icons here: http://jqueryui.com/themeroller/ (hover over them for their name) 
-						// default icons: ["ui-icon-arrowthick-2-n-s", "ui-icon-arrowthick-1-s", "ui-icon-arrowthick-1-n"] 
-						// ["up/down arrow (cssHeaders/unsorted)", "down arrow (cssDesc/descending)", "up arrow (cssAsc/ascending)" ] 
-						uitheme : ["ui-icon-carat-2-n-s", "ui-icon-carat-1-s", "ui-icon-carat-1-n"]
+//					debug	: DEBUG,
+					useUI	: true,
+					cssUI	: {
+						widget		: '',
+						header		: 'ui-widget-header',
+						hover		: 'ui-state-hover',
+						icon		: 'ui-icon ui-icon-triangle-2-n-s',
+						iconBoth	: 'ui-icon-triangle-2-n-s',
+						iconDesc	: 'ui-icon-triangle-1-n',
+						iconAsc		: 'ui-icon-triangle-1-s'
 					}
 				},
 				pager : {
@@ -494,11 +494,10 @@ var pukiwiki = {};
 			$(prefix + 'a').each(function(){
 				var $this = $(this);	// DOMをキャッシュ
 				var href = $this.attr('href');
-				var ext = href.match(/\.(\w+)$/i);
 				var rel = $this.attr('rel') ? $this.attr('rel') : null;
 				var ajax = $this.data('ajax') ? $this.data('ajax') : 'json';
 
-				if (rel && rel.match(/noreferrer|license|product|external/)){
+				if (rel && rel.match(/noreferrer|license|product/)){
 					$this.click(function(){
 						if (rel.match(/noreferrer/)){
 							// for IE
@@ -521,24 +520,8 @@ var pukiwiki = {};
 									$(this).attr('href', 'data:text/html;charset=utf-8,'+encodeURIComponent(html.join("\n")));
 								}
 							}
-						}else {
-							if (ext[1]){
-								switch (ext[1]) {
-									case 'jpg': case 'jpeg': case 'gif': case'png':
-										$this.colorbox(self.config.colorbox);
-									break;
-									case 'mp3':  case 'm4a': case 'm4v':
-									case 'webma': case 'webmv': case 'wav':
-									case 'oga': case 'ogv' : case 'fla': case 'flv':
-										self.media_player(this, ext[1]);
-									break;
-									default :
-										window.open(href);
-									break;
-								}
-							}else{
-								window.open(href);
-							}
+						}else{
+							window.open(href);
 						}
 						return false;
 					});
@@ -554,6 +537,8 @@ var pukiwiki = {};
 							params[hash[0]] = decodeURIComponent(hash[1]).replace(/\+/g, ' ').replace(/%2F/g, '/');
 						}catch(e){}
 					}
+					var ext = href.match(/\.(\w+)$/i);
+
 					if (href.match('#') && href != '#'){
 						// アンカースクロールを無効化
 						var disable_scrolling = ($this.data('disableScrolling') || $this.parent().attr('role')) ? true : false;
@@ -565,9 +550,20 @@ var pukiwiki = {};
 								return false;
 							});
 						}
+					}else if (ext){
+						switch (ext[1]) {
+							case 'jpg': case 'jpeg': case 'gif': case'png':
+								$this.colorbox(self.config.colorbox);
+							break;
+							case 'mp3':  case 'm4a': case 'm4v':
+							case 'webma': case 'webmv': case 'wav':
+							case 'oga': case 'ogv' : case 'fla': case 'flv':
+								self.media_player(this, ext[1]);
+							break;
+						}
 					}else if (params.cmd){
 						// PukiWiki Adv.のプラグイン関連の処理
-						if (params.pcmd == 'open' || params.openfile !== undefined){
+						if (typeof(params.file) !== 'undefined' && params.pcmd == 'open' || typeof(params.openfile) !== 'undefined'){
 							// 添付ファイルを開く（refによる呼び出しの場合とattachによる呼び出しの場合とでQueryStringが異なるのがやっかいだ）
 							var filename;
 							
@@ -1078,7 +1074,7 @@ var pukiwiki = {};
 			});
 		},
 		// テーブル自動ソート
-		tablesorter: function(prefix){
+		tablesorter:function(prefix){
 			var self = this;
 			prefix = (prefix) ? prefix + ' ': '';
 			
@@ -1090,10 +1086,10 @@ var pukiwiki = {};
 						'<ul class="ui-widget pkwk_widget">',
 							'<li class="first ui-button ui-state-default ui-corner-all" title="' + $.i18n('dialog','first') + '"><span class="ui-icon ui-icon-arrowthickstop-1-w"></span></li>',
 							'<li class="prev ui-button ui-state-default ui-corner-all" title="' + $.i18n('dialog','prev') + '"><span class="ui-icon ui-icon-arrowthick-1-w"></span></li>',
-							'<li><select class="pagesize"></select></li>',
+							'<li><input class="pagedisplay" type="text" disabled="disabled" /></li>',
 							'<li class="next ui-button ui-state-default ui-corner-all" title="' + $.i18n('dialog','next') + '"><span class="ui-icon ui-icon-arrowthick-1-e"></span></li>',
 							'<li class="last ui-button ui-state-default ui-corner-all" title="' + $.i18n('dialog','last') + '"><span class="ui-icon ui-icon-arrowthickstop-1-e"></span></li>',
-							'<li class="pagedisplay"></li>',
+							'<li><select class="pagesize"></select></li>',
 //							'<li class="reload ui-button ui-state-default ui-corner-all" title="' + $.i18n('dialog','reload') + '"><span class="ui-icon ui-icon-refresh"></span></li>',
 						'</ul>',
 					'</div>'
@@ -1103,7 +1099,7 @@ var pukiwiki = {};
 			$('.style_table').each(function(elem){
 				var table = this;
 				var $this = $(this);
-				//var backup = $this.clone();
+				var backup = $this.clone();
 				var data = $this.data();
 				var config = self.config.tablesorter;
 				

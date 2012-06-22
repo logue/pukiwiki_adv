@@ -23,12 +23,12 @@ function bb2_blacklist($package) {
 		"HttpProxy",		// misc comment/email spam
 		"Internet Explorer",	// XMLRPC exploits seen
 		"ISC Systems iRc",	// spam harvester
-		"Jakarta Commons",	// custommised spambots
-		"Java 1.",		// definitely a spammer
-		"Java/1.",		// definitely a spammer
-		"libwww-perl",		// spambot scripts
-		"LWP",			// spambot scripts
-		"Microsoft URL",	// spam harvester
+		"Jakarta Commons",	// customised spambots
+		"Java 1.",		// unidentified robots
+		"Java/1.",		// unidentified robots
+		"libwww-perl",		// unidentified robots
+		"LWP",			// unidentified robots
+		"Microsoft URL",	// unidentified robots
 		"Missigua",		// spam harvester
 		"MJ12bot/v1.0.8",	// malicious botnet
 		"Movable Type",		// customised spambots
@@ -40,6 +40,7 @@ function bb2_blacklist($package) {
 		"NutchCVS",		// unidentified robots
 		"Nutscrape/",		// misc comment spam
 		"OmniExplorer",		// spam harvester
+		"Opera/9.64(",		// comment spam bot
 		"psycheclone",		// spam harvester
 		"PussyCat ",		// misc comment spam
 		"PycURL",		// misc comment spam
@@ -76,6 +77,7 @@ function bb2_blacklist($package) {
 		".NET CLR 1)",		// free poker, etc.
 		"POE-Component-Client",	// free poker, etc.
 		"Turing Machine",	// www.anonymizer.com abuse
+		"Ubuntu/9.25",		// comment spam bot
 		"unspecified.mail",	// stealth harvesters
 		"User-agent: ",		// spam harvester/splogger
 		"WebaltBot",		// spam harvester

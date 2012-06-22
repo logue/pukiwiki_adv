@@ -24,24 +24,29 @@
 #Require       valid-user
 
 #AuthType Digest
-#AuthName "PukiWikiAuth"
+#AuthName "PukiWiki Adv. Auth"
 #AuthDigestProvider file
 #AuthUserFile /path/to/.htdigest
 #Require valid-user
 #BrowserMatch "MSIE" AuthDigestEnableQueryStringHack=On
 
 # ----------------------------------------------------------------------
-# To static URL
+# Start rewrite engine
 # ----------------------------------------------------------------------
-#AllowEncodedSlashes On
+
+# Turning on the rewrite engine is necessary for the following rules and features.
+# FollowSymLinks must be enabled for this to work.
+
 <IfModule mod_rewrite.c>
-	RewriteEngine on
+	# AllowEncodedSlashes On
+	Options +FollowSymlinks
+	RewriteEngine On
 	RewriteCond %{REQUEST_FILENAME} -f [OR]
 	RewriteCond %{REQUEST_FILENAME} -d
 	RewriteRule ^.* - [L]
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteRule ^(.+)$ index.php?$1 [L]
+	RewriteRule ^(.+?)$ index.php?$1 [QSA,L]
 </IfModule>
 
 # ----------------------------------------------------------------------
@@ -342,17 +347,7 @@ FileETag None
 
 
 
-# ----------------------------------------------------------------------
-# Start rewrite engine
-# ----------------------------------------------------------------------
 
-# Turning on the rewrite engine is necessary for the following rules and features.
-# FollowSymLinks must be enabled for this to work.
-
-<IfModule mod_rewrite.c>
-  Options +FollowSymlinks
-  RewriteEngine On
-</IfModule>
 
 # ----------------------------------------------------------------------
 # Prevent SSL cert warnings
@@ -388,7 +383,6 @@ AddDefaultCharset utf-8
 
 # Force UTF-8 for a number of file formats
 AddCharset utf-8 .css .js .xml .json .rss .atom
-
 
 
 # ----------------------------------------------------------------------

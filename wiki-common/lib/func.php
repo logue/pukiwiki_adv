@@ -1,8 +1,8 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: func.php,v 1.104.47 2011/12/25 20:58:00 Logue Exp $
+// $Id: func.php,v 1.104.48 2012/06/23 06:59:00 Logue Exp $
 // Copyright (C)
-//   2010-2011 PukiWiki Advance Developers Team
+//   2010-2012 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
 //   2002-2007,2009-2011 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -36,7 +36,7 @@ function is_pagename($str)
 			'/^(?:[\x00-\x7F]|(?:[\x8E\xA1-\xFE][\xA1-\xFE])|(?:\x8F[\xA1-\xFE][\xA1-\xFE]))+$/';
 			break;
 		}
-		if (isset($pattern) && $pattern != '')
+		if (isset($pattern) && !empty($pattern) )
 			$is_pagename = ($is_pagename && preg_match($pattern, $str));
 	}
 	return $is_pagename;
@@ -209,7 +209,7 @@ function get_search_words($words, $do_escape = FALSE)
 	$regex = array();
 	foreach ($words as $word) {
 		$word = trim($word);
-		if ($word == '') continue;
+		if (empty($word)) continue;
 
 		// Normalize: ASCII letters = to single-byte. Others = to Zenkaku and Katakana
 		$word_nm = $mb_convert_kana($word, 'aKCV');
@@ -270,7 +270,7 @@ function do_search($word, $type = 'and', $non_format = FALSE, $base = '')
 	$role_adm_contents = (auth::check_role('safemode')) ? auth::check_role('role_adm_contents') : FALSE;
 
 	// Avoid
-	if ($base != '') {
+	if ( !empty($base) ) {
 		$pages = preg_grep('/^' . preg_quote($base, '/') . '/S', $pages);
 	}
 	if (! $search_non_list) {
@@ -374,7 +374,7 @@ function arg_check($str)
 function encode($str)
 {
 	$str = strval($str);
-	return ($str == '') ? '' : strtoupper(bin2hex($str));
+	return empty($str) ? '' : strtoupper(bin2hex($str));
 	// Equal to strtoupper(join('', unpack('H*0', $str)));
 	// But PHP 4.3.10 says 'Warning: unpack(): Type H: outside of string in ...'
 }
@@ -570,7 +570,7 @@ function catrule()
 function die_message($msg, $error_title=''){
 	global $skin_file, $page_title, $_string, $_title, $google_loader;
 	global $memcache, $ob_flag;
-	$title = ($error_title !== '') ? $error_title : $_title['error'];
+	$title = !empty($error_title) ? $error_title : $_title['error'];
 	$page = $_title['error'];
 
 	if (PKWK_WARNING !== true){	// PKWK_WARNINGが有効でない場合は、詳細なエラーを隠す
@@ -600,7 +600,7 @@ EOD;
 	if(defined('SKIN_FILE')){
 		if (file_exists(SKIN_FILE) && is_readable(SKIN_FILE)) {
 			catbody($title, $page, $body);
-		} elseif ($skin_file != '' && file_exists($skin_file) && is_readable($skin_file)) {
+		} elseif ( !empty($skin_file) && file_exists($skin_file) && is_readable($skin_file)) {
 			define('SKIN_FILE', $skin_file);
 			catbody($title, $page, $body);
 		}
@@ -616,8 +616,18 @@ EOD;
 	<body>$body</body>
 </html>
 EOD;
-		pkwk_common_sufixes();
 	}
+	if(!DEBUG){
+		// get the size of the output
+		// send headers to tell the browser to close the connection
+		header('Content-Length: '. !empty($length) ? $length : ob_get_length() );
+		ob_end_flush();
+		ob_flush();
+	}
+	
+	flush();
+	// close current session
+	if (session_id()) session_write_close();
 //	exit();
 	die();
 }
@@ -988,7 +998,7 @@ function get_autoaliases($word = '')
 	}
 
 	// An array: All pairs
-	if ($word === '') return $pairs;
+	if ( empty($word) ) return $pairs;
 
 	// A string: Seek the pair
 	return isset($pairs[$word]) ? $pairs[$word] : array();
@@ -1074,7 +1084,7 @@ function get_autoglossaries($word = '')
 	}
 
 	// An array: All pairs
-	if ($word === '') return $pairs;
+	if ( empty($word) ) return $pairs;
 
 	// A string: Seek the pair
 	return isset($pairs[$word]) ? $pairs[$word]:'';
@@ -1086,7 +1096,7 @@ function init_script_uri($init_uri = '',$get_init_value=0)
 	global $script_directory_index, $absolute_uri;
 	static $script;
 
-	if ($init_uri == '') {
+	if ( empty($init_uri) ) {
 		// Get
 		if (isset($script)) {
 			if ($get_init_value) return $script;
@@ -1220,7 +1230,8 @@ function get_resolve_uri($cmd='', $page='', $path_reference='rel', $query='', $f
 
 	if (! empty($page)) {
 		$ret .= $flag.$page_pref.rawurlencode($page);
-			if (empty($cmd) && $static_url == 1 && (isset($vars['cmd']) && $vars['cmd'] != 'search')){
+		if (empty($cmd) && $static_url === 1 && (isset($vars['cmd']) && $vars['cmd'] !== 'search') && 
+			( stristr(getenv('SERVER_SOFTWARE'), 'Apache') && stristr(':', $ret) ) ){
 			// To static URL
 			$ret = str_replace('?', '', $ret);
 			$ret = str_replace('%2F', '/', $ret) . $url_suffix;

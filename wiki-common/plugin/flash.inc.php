@@ -99,10 +99,8 @@ function plugin_flash_convert()
 		/* 幅x高さ  数字であり1ケタ以上４桁以下 */
 		} else if (preg_match('/([0-9]{1,4})x([0-9]{1,4})/i', $argv[$i], $match)) {
 			
-			$numWidth  = $match[1];
-			$numHeight = $match[2];
-			$width     = "width=\"". $numWidth . "\"";
-			$height    = "height=\"".$numHeight . "\"";
+			$width  = $match[1];
+			$height = $match[2];
 		}//if
 	}
 	

@@ -54,8 +54,13 @@ function bb2_post($settings, $package)
 	}
 
 	// If Referer exists, it should refer to a page on our site
-	if (!$settings['offsite_forms'] && array_key_exists('Referer', $package['headers_mixed']) && stripos($package['headers_mixed']['Referer'], $package['headers_mixed']['Host']) === FALSE) {
-		return "cd361abb";
+	if (!$settings['offsite_forms'] && array_key_exists('Referer', $package['headers_mixed'])) {
+		$url = parse_url($package['headers_mixed']['Referer']);
+		$url['host'] = preg_replace('|^www\.|', '', $url['host']);
+		$host = preg_replace('|^www\.|', '', $package['headers_mixed']['Host']);
+		if (strcasecmp($host, $url['host'])) {
+			return "cd361abb";
+		}
 	}
 
 	// Screen by cookie/JavaScript form add

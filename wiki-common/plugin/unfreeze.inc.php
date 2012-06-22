@@ -55,7 +55,7 @@ function plugin_unfreeze_action()
 //			$vars['cmd'] = 'read'; // To show 'Freeze' link
 			$vars['cmd'] = 'edit';
 			$msg  = $_title_unfreezed;
-			$body = edit_form($page, $postdata);
+			$body = (!IS_AJAX) ? edit_form($page, $postdata) : $_title_unfreezed;
 		} else {
 			$vars['cmd'] = 'read';
 			$msg  = $_title_unfreezed;

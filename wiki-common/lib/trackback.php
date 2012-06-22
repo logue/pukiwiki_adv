@@ -1,7 +1,7 @@
 <?php
-// $Id: trackback.php,v 1.21.11 2010/07/11 13:09:00 Logue Exp $
+// $Id: trackback.php,v 1.21.11 2012/06/14 21:44:00 Logue Exp $
 // Copyright (C)
-//   2010      PukiWiki Advance Developer Team
+//   2010-2012 PukiWiki Advance Developer Team
 //   2005-2007 PukiWiki Plus! Team
 //   2003-2005 PukiWiki Developers Team
 //   2003      Originally written by Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
@@ -80,6 +80,7 @@ function tb_count($page, $ext = '.txt')
 function tb_send($page, $links)
 {
 	global $trackback, $page_title, $log;
+	$script = get_script_uri();
 
 	if (! $trackback) return;
 

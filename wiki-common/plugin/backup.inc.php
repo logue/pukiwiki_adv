@@ -261,7 +261,7 @@ function plugin_backup_diff($str)
 </ul>
 EOD;
 
-	return $ul . '<pre class="sh>' . diff_style_to_css(htmlsc($str)) . '</pre>' . "\n";
+	return $ul . '<pre class="sh">' . diff_style_to_css(htmlsc($str)) . '</pre>' . "\n";
 }
 
 function plugin_backup_get_list($page)
