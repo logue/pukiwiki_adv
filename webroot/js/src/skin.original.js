@@ -74,7 +74,7 @@ var pukiwiki = {};
 			'@prefix' : '<http://purl.org/net/ns/doas#>',
 			'@about' : '<skin.js>', 'a': ':JavaScript',
 			'title' : 'Pukiwiki skin script for jQuery',
-			'created' : '2008-11-25', 'release': {'revision': '2.2.28', 'created': '2012-02-19'},
+			'created' : '2008-11-25', 'release': {'revision': '2.2.28', 'created': '2012-06-13'},
 			'author' : {'name': 'Logue', 'homepage': '<http://logue.be/>'},
 			'license' : '<http://www.gnu.org/licenses/gpl-2.0.html>'
 		},
@@ -84,38 +84,83 @@ var pukiwiki = {};
 				autoArrows:		false,	// if true, arrow mark-up generated automatically = cleaner source code at expense of initialisation performance
 				dropShadows:	false
 			},
-			// colorboxの設定
-			colorbox: {
-				opacity : '0.8',
-				slideshowStart	: '<span class="ui-icon ui-icon-play" style="margin:4px;" title="' + $.i18n('player', 'play') + '"></span>',
-				slideshowStop	: '<span class="ui-icon ui-icon-stop" style="margin:4px;" title="' + $.i18n('player', 'stop') + '"></span>',
-				previous		: '<span class="ui-icon ui-icon-circle-arrow-e" style="margin:4px;" title="' + $.i18n('player', 'prev') + '"></span>',
-				next			: '<span class="ui-icon ui-icon-circle-arrow-w" style="margin:4px;" title="' + $.i18n('player', 'next') + '"></span>',
-				close			: '<span class="ui-icon ui-icon-circle-close" style="margin:4px;" title="' + $.i18n('dialog', 'close') + '"></span>',
-				onOpen			: function () {
-					// jQueryUI Fix
-					$('#cboxOverlay').addClass('ui-widget-overlay');				// オーバーレイをjQueryUIのものに変更
-					$('#colorbox').addClass('ui-widget-content ui-corner-all');		// colorboxのウィンドウをjQueryUIのモノに変更
-					$('#cboxPrevious').button();
-					$('#cboxNext').button();
-					$('#cboxClose').button();
-					$('#cboxLoadingGraphic').activity({color:'orange'});
-				}
+			// rlightboxの設定
+			rlightbox: {
+				animationSpeed: "fast",
+				setPrefix: "lb",
+				showMap: true,
+				counterDelimiter: " / ",
+				videoWidth: 640,
+				videoHeight: 385,
+				errorMessage: "Oh dear! Something went wrong! If the problem still appears let the page’s admin know. Would you like to try again or reject the content?",
+				againButtonLabel: "Try again",
+				rejectButtonLabel: "Reject this content",
+				overwriteTitle: false,
+				keys: {
+					next: [78, 39],
+					previous: [80, 37],
+					close: [67, 27],
+					panorama: [90, null]
+				},
+				loop: false
 			},
 			tablesorter: {
 				counter: 0,
 				sorter: {
-//					debug	: DEBUG,
-					useUI	: true,
-					cssUI	: {
-						widget		: '',
-						header		: 'ui-widget-header',
-						hover		: 'ui-state-hover',
-						icon		: 'ui-icon ui-icon-triangle-2-n-s',
-						iconBoth	: 'ui-icon-triangle-2-n-s',
-						iconDesc	: 'ui-icon-triangle-1-n',
-						iconAsc		: 'ui-icon-triangle-1-s'
-					}
+					widthFixed       : true,      // adds colgroup to fix widths of columns
+
+					// functionality
+					cancelSelection  : true,       // prevent text selection in the header
+					dateFormat       : "yyyymmdd", // other options: "ddmmyyy" or "yyyymmdd"
+					sortMultiSortKey : "shiftKey", // key used to select additional columns
+					usNumberFormat   : true,       // false for German "1.234.567,89" or French "1 234 567,89"
+					delayInit        : false,      // if false, the parsed table contents will not update until the first sort.
+
+					// sort options
+					headers          : {},         // set sorter, string, empty, locked order, sortInitialOrder, filter, etc.
+					ignoreCase       : true,       // ignore case while sorting
+					sortForce        : null,       // column(s) first sorted; always applied
+					sortList         : [],         // Initial sort order; applied initially; updated when manually sorted
+					sortAppend       : null,       // column(s) sorted last; always applied
+
+					sortInitialOrder : "asc",      // sort direction on first click
+					sortLocaleCompare: false,      // replace equivalent character (accented characters)
+					sortReset        : false,      // third click on the header will reset column to default - unsorted
+					sortRestart      : false,      // restart sort to "sortInitialOrder" when clicking on previously unsorted columns
+
+					emptyTo          : "bottom",   // sort empty cell to bottom, top, none, zero
+					stringTo         : "max",      // sort strings in numerical column as max, min, top, bottom, zero
+					textExtraction   : "simple",   // text extraction method/function - function(node, table, cellIndex){}
+					textSorter       : null,       // use custom text sorter - function(a,b){ return a.sort(b); } // basic sort
+					
+					//widget code now contained in the jquery.tablesorter.widgets.js file 
+					widgets : ['uitheme'], 
+ 					
+					widgetOptions : { 
+ 
+						// change default uitheme icons - find the full list of icons here: http://jqueryui.com/themeroller/ (hover over them for their name) 
+						// default icons: ["ui-icon-arrowthick-2-n-s", "ui-icon-arrowthick-1-s", "ui-icon-arrowthick-1-n"] 
+						// ["up/down arrow (cssHeaders/unsorted)", "down arrow (cssDesc/descending)", "up arrow (cssAsc/ascending)" ] 
+						uitheme : ["ui-icon-carat-2-n-s", "ui-icon-carat-1-s", "ui-icon-carat-1-n"]
+					},
+					initWidgets      : true,       // apply widgets on tablesorter initialization
+
+					// callbacks
+					initialized      : function(table){
+						pukiwiki.setAnchor('.tablesorter');
+					},       // function(table){},
+					onRenderHeader   : null,       // function(index){},
+
+					// css class names
+					tableClass       : 'tablesorter',
+					cssAsc           : "tablesorter-headerSortUp",
+					cssChildRow      : "expand-child",
+					cssDesc          : "tablesorter-headerSortDown",
+					cssHeader        : "tablesorter-header",
+					cssInfoBlock     : "tablesorter-infoOnly", // don't sort tbody with this class name
+
+					// advanced
+					debug            : false
 				},
 				pager : {
 					minimum_lines	: 5,
@@ -206,7 +251,7 @@ var pukiwiki = {};
 			
 			// スキン設定をオーバーライド
 			$.extend(this.config.sukerfish, this.custom.suckerfish);
-			$.extend(this.config.colorbox, this.custom.colorbox);
+			$.extend(this.config.rlightbox, this.custom.rlightbox);
 			$.extend(this.config.tablesorter, this.custom.tablesorter);
 			$.extend(this.config.syntaxhighlighter, this.custom.syntaxhighlighter);
 
@@ -458,9 +503,22 @@ var pukiwiki = {};
 					}
 				});
 			}).removeClass(prefix + 'button');
-/*
-			// hover states on the static widgets
-			$(prefix + '.ui-state-default').hover(function() {
+
+			// フォームロックを解除
+			$(':input').removeAttr('disabled');
+			$('.ui-button').button('option', 'disabled', false);
+			$(prefix + '.buttonset').buttonset().removeClass('buttonset');
+			
+			this.set_widget_btn(prefix);
+
+			if(typeof(callback) === 'function'){
+				callback();
+			}
+		},
+		set_widget_btn : function(prefix){
+			prefix = (prefix) ? prefix + ' ' : '';
+			// hover states on the static widgets//hover states on the static widgets
+			$(prefix + '.pkwk_widget .ui-state-default').hover(function() {
 				$(this).addClass('ui-state-hover');
 			},function() {
 				$(this).removeClass('ui-state-hover');
@@ -469,15 +527,6 @@ var pukiwiki = {};
 			}).mouseout(function() {
 				$(this).removeClass('ui-state-active');
 			});
-*/
-			// フォームロックを解除
-			$(':input').removeAttr('disabled');
-			$('.ui-button').button('option', 'disabled', false);
-			$(prefix + '.buttonset').buttonset().removeClass('buttonset');
-
-			if(typeof(callback) === 'function'){
-				callback();
-			}
 		},
 		// アンカータグの処理
 		setAnchor : function(prefix){
@@ -494,12 +543,15 @@ var pukiwiki = {};
 			$(prefix + 'a').each(function(){
 				var $this = $(this);	// DOMをキャッシュ
 				var href = $this.attr('href');
+				var ext = href.match(/\.(\w+)$/i);
 				var rel = $this.attr('rel') ? $this.attr('rel') : null;
 				var ajax = $this.data('ajax') ? $this.data('ajax') : 'json';
 
-				if (rel && rel.match(/noreferrer|license|product/)){
-					$this.click(function(){
-						if (rel.match(/noreferrer/)){
+				if (rel && rel.match(/noreferer|license|product|external/)){
+					
+					if (rel.match(/noreferer/)){
+						console.log(href);
+						$this.click(function(){
 							// for IE
 							if (ie){
 								var subwin = window.open('','','location=yes, menubar=yes, toolbar=yes, status=yes, resizable=yes, scrollbars=yes,');
@@ -507,7 +559,6 @@ var pukiwiki = {};
 								d.open();
 								d.write('<meta http-equiv="refresh" content="0;url='+href+'" />');
 								d.close();
-								return false;
 							}
 							// for Safari,Chrome,Firefox
 							else{
@@ -517,14 +568,33 @@ var pukiwiki = {};
 										'document.write(\'<meta http-equiv="refresh" content="0;url='+url+'" />\');',
 										'// --><'+'/script></head><body></body></html>'
 									];
-									$(this).attr('href', 'data:text/html;charset=utf-8,'+encodeURIComponent(html.join("\n")));
+									$this.attr('href', 'data:text/html;charset=utf-8,'+encodeURIComponent(html.join("\n")));
 								}
 							}
-						}else{
-							window.open(href);
-						}
-						return false;
-					});
+							return false;
+						});
+					}else {
+						$this.click(function(){
+							if (ext[1]){
+								switch (ext[1]) {
+									case 'jpg': case 'jpeg': case 'gif': case'png':
+										$this.rlightbox(self.config.rlightbox);
+									break;
+									case 'mp3':  case 'm4a': case 'm4v':
+									case 'webma': case 'webmv': case 'wav':
+									case 'oga': case 'ogv' : case 'fla': case 'flv':
+										self.media_player(this, ext[1]);
+									break;
+									default :
+										window.open(href);
+									break;
+								}
+							}else{
+								window.open(href);
+							}
+							return false;
+						});
+					}
 				}else if (href){
 					// 外部へのリンクは、rel=externalが付いているものとする。
 					// Query Stringをパース。paramsに割り当て
@@ -537,8 +607,6 @@ var pukiwiki = {};
 							params[hash[0]] = decodeURIComponent(hash[1]).replace(/\+/g, ' ').replace(/%2F/g, '/');
 						}catch(e){}
 					}
-					var ext = href.match(/\.(\w+)$/i);
-
 					if (href.match('#') && href != '#'){
 						// アンカースクロールを無効化
 						var disable_scrolling = ($this.data('disableScrolling') || $this.parent().attr('role')) ? true : false;
@@ -550,20 +618,9 @@ var pukiwiki = {};
 								return false;
 							});
 						}
-					}else if (ext){
-						switch (ext[1]) {
-							case 'jpg': case 'jpeg': case 'gif': case'png':
-								$this.colorbox(self.config.colorbox);
-							break;
-							case 'mp3':  case 'm4a': case 'm4v':
-							case 'webma': case 'webmv': case 'wav':
-							case 'oga': case 'ogv' : case 'fla': case 'flv':
-								self.media_player(this, ext[1]);
-							break;
-						}
 					}else if (params.cmd){
 						// PukiWiki Adv.のプラグイン関連の処理
-						if (typeof(params.file) !== 'undefined' && params.pcmd == 'open' || typeof(params.openfile) !== 'undefined'){
+						if (params.pcmd == 'open' || params.openfile !== undefined){
 							// 添付ファイルを開く（refによる呼び出しの場合とattachによる呼び出しの場合とでQueryStringが異なるのがやっかいだ）
 							var filename;
 							
@@ -579,7 +636,7 @@ var pukiwiki = {};
 							if (ext){
 								switch (ext[1]) {
 									case 'jpg': case 'jpeg': case 'gif': case'png': // case'svg' : case 'svgz' :
-										$this.colorbox(self.config.colorbox);
+										$this.rlightbox(self.config.rlightbox);
 									break;
 									case 'mp3':  case 'm4a': case 'm4v':
 									case 'webma': case 'webmv': case 'wav':
@@ -591,7 +648,7 @@ var pukiwiki = {};
 						}else if (params.cmd == 'qrcode'){
 							// QRcodeの場合
 							$this.attr('href',href+'&type=.gif');
-							$this.colorbox(self.config.colorbox);
+							$this.rlightbox(self.config.rlightbox);
 						}else if (
 							(params.cmd.match(/search|newpage|template|rename/i)) || 
 							params.help === 'true' ||
@@ -639,8 +696,7 @@ var pukiwiki = {};
 				bgiframe : (ie >= 6) ? true : false,	// for IE6 
 				open: function(){
 					if(typeof(callback) === 'function'){ callback(); }
-					
-					
+
 					// オーバーレイでウィンドウを閉じる
 					var parent = this;
 					$(prefix + '.ui-widget-overlay').click(function(){
@@ -761,56 +817,6 @@ var pukiwiki = {};
 					}
 				}
 			);
-/*
-			this.loadingScreen = $("#loadingScreen");
-			this.loadingScreen.dialog({
-				autoOpen: false,	// set this to false so we can manually open it
-				closeOnEscape: false,
-				draggable: false,
-				width: 150,
-				height: 150,
-				modal: true,
-				show:'scale',
-				hide: 'explode',
-				resizable: false,
-				dialogClass: 'blockUI',
-				open: function() {
-					// scrollbar fix for IE
-					//	if ($.browser.msie){ $('body').css('overflow','hidden'); }
-					$('body').css('cursor','wait');
-				},
-				close: function() {
-					// reset overflow
-					// $('body').css('overflow','auto');
-					$('body').css('cursor','auto');
-				}
-			}); // end of dialog
-			this.loadingScreen.activity({segments: 12, width: 5.5, space: 6, length: 13, color: 'black', speed: 1});
-			var self = this;
-			$(dom)
-				.ajaxSend(function(e, xhr, settings) {
-					self.loadingScreen.dialog('option', 'title', $.i18n('dialog','loading'));
-				//	if(DEBUG && console){ console.info('load: ',settings.url); }
-					self.loadingScreen.dialog('open');
-				})
-				.ajaxStart(function(){
-					self.loadingScreen.dialog('option', 'title', $.i18n('dialog', 'start'));
-				})
-				.ajaxSuccess(function(){
-					self.loadingScreen.dialog('option', 'title', $.i18n('dialog', 'success'));
-				})
-				.ajaxComplete(function() {
-					self.loadingScreen.dialog('option', 'title', $.i18n('dialog', 'complete'));
-				})
-				.ajaxError(function(){
-					self.loadingScreen.dialog('option', 'title', $.i18n('dialog', 'error'));
-				})
-				.ajaxStop(function(){
-					self.loadingScreen.dialog('option', 'title', $.i18n('dialog', 'ready'));
-					self.loadingScreen.dialog('close');
-				}
-			);
-*/
 		},
 		// Syntax Hilighter
 		sh : function(prefix){
@@ -1074,7 +1080,7 @@ var pukiwiki = {};
 			});
 		},
 		// テーブル自動ソート
-		tablesorter:function(prefix){
+		tablesorter: function(prefix){
 			var self = this;
 			prefix = (prefix) ? prefix + ' ': '';
 			
@@ -1086,12 +1092,12 @@ var pukiwiki = {};
 						'<ul class="ui-widget pkwk_widget">',
 							'<li class="first ui-button ui-state-default ui-corner-all" title="' + $.i18n('dialog','first') + '"><span class="ui-icon ui-icon-arrowthickstop-1-w"></span></li>',
 							'<li class="prev ui-button ui-state-default ui-corner-all" title="' + $.i18n('dialog','prev') + '"><span class="ui-icon ui-icon-arrowthick-1-w"></span></li>',
-							'<li><input class="pagedisplay" type="text" disabled="disabled" /></li>',
+							'<li><select class="pagesize"></select></li>',
 							'<li class="next ui-button ui-state-default ui-corner-all" title="' + $.i18n('dialog','next') + '"><span class="ui-icon ui-icon-arrowthick-1-e"></span></li>',
 							'<li class="last ui-button ui-state-default ui-corner-all" title="' + $.i18n('dialog','last') + '"><span class="ui-icon ui-icon-arrowthickstop-1-e"></span></li>',
-							'<li><select class="pagesize"></select></li>',
 //							'<li class="reload ui-button ui-state-default ui-corner-all" title="' + $.i18n('dialog','reload') + '"><span class="ui-icon ui-icon-refresh"></span></li>',
 						'</ul>',
+						'<p  class="pagedisplay"></p>',
 					'</div>'
 				].join("\n");
 			}
@@ -1099,7 +1105,7 @@ var pukiwiki = {};
 			$('.style_table').each(function(elem){
 				var table = this;
 				var $this = $(this);
-				var backup = $this.clone();
+				//var backup = $this.clone();
 				var data = $this.data();
 				var config = self.config.tablesorter;
 				
@@ -1160,17 +1166,6 @@ var pukiwiki = {};
 							}
 						});
 
-						//hover states on the static widgets
-						$('#'+pager_id+'.pkwk_widget .ui-state-default').hover(function() {
-							$this.addClass('ui-state-hover');
-						},function() {
-							$this.removeClass('ui-state-hover');
-						}).mousedown(function() {
-							$this.addClass('ui-state-active');
-						}).mouseout(function() {
-							$this.removeClass('ui-state-active');
-						});
-						
 						$('#'+pager_id).show('clip');
 						config.counter++;
 					}else{
@@ -2200,7 +2195,6 @@ var pukiwiki = {};
 					return '<span style="color:gray; cursor: not-allowed;">'+name+'</span>';
 				}
 			};
-
 			var navi = [
 				'&lt;&lt;',
 				genNavi('Prev page', this.prev, this.prev_title),
@@ -2446,6 +2440,8 @@ var pukiwiki = {};
 				f();
 			}
 		}
+		pukiwiki.set_widget_btn();
+
 		if (DEBUG){
 			var D2 = new Date();
 			console.info('Finish. (Process Time :',D2 - D1,'ms)');
