@@ -36,20 +36,20 @@ function ref_get_data($page, $uniquekey=1)
 function ref_save($page)
 {
 	global $referer, $use_spam_check;
-	
-	$script = get_script_uri();
 
-	$url = (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : '';
-
+	if (! is_dir(REFERER_DIR))      die_message('No such directory: REFERER_DIR');
+	if (! is_writable(REFERER_DIR)) die_message('Permission denied to write: REFERER_DIR');
 	// if (PKWK_READONLY || ! $referer || empty($_SERVER['HTTP_REFERER'])) return TRUE;
 	// if (auth::check_role('readonly') || ! $referer || empty($_SERVER['HTTP_REFERER'])) return TRUE;
-	if (! $referer || $url === '') return TRUE;
+
+	$url = (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null;
+	if (! $referer || empty($url) ) return TRUE;
 
 	// Validate URI (Ignore own)
 	$parse_url = parse_url($url);
 	if ($parse_url === FALSE || !isset($parse_url['host']) || $parse_url['host'] == $_SERVER['HTTP_HOST'])
 		return TRUE;
-
+/*
 	if ( stristr($parse_url['host'], 'google') !== FALSE && ($parse_url['path'] === '/url' && $parse_url['path'] === '/search') ){
 		// Googleのリファラーがログ容量を浪費するため。
 		parse_str($parse_url['query'], $q);
@@ -61,10 +61,7 @@ function ref_save($page)
 			if (is_refspam($url) === true) return TRUE;
 		}
 	}
-
-	if (! is_dir(REFERER_DIR))      die_message('No such directory: REFERER_DIR');
-	if (! is_writable(REFERER_DIR)) die_message('Permission denied to write: REFERER_DIR');
-
+*/
 	// Update referer data
 	if (preg_match("[,\"\n\r]", $url))
 		$url = '"' . str_replace('"', '""', $url) . '"';
