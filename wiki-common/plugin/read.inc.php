@@ -19,7 +19,7 @@ function plugin_read_init(){
 
 function plugin_read_action()
 {
-	global $vars, $_read_msg;
+	global $vars, $_read_msg, $referer;
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
 
@@ -31,28 +31,32 @@ function plugin_read_action()
 
 	// } else if (! PKWK_SAFE_MODE && is_interwiki($page)) {
 	} else if (! auth::check_role('safemode') && is_interwiki($page)) {
+		$referer = 0;
 		return do_plugin_action('interwiki'); // InterWikiNameを処理
-
 	} else if (is_pagename($page)) {
 		$realpages = get_autoaliases($page);
 		if (count($realpages) == 1) {
 			$realpage = $realpages[0];
 			if (is_page($realpage)) {
+				$referer = 0;
 				header('HTTP/1.0 301 Moved Permanently');
 				header('Location: ' . get_page_location_uri($realpage));
 				return;
 			} elseif (is_url($realpage)) {
+				$referer = 0;
 				header('HTTP/1.0 301 Moved Permanently');
 				header('Location: ' . $realpage);
 				return;
 			} elseif (is_interwiki($realpage)) {
+				$referer = 0;
 				header('HTTP/1.0 301 Moved Permanently');
 				$vars['page'] = $realpage;
 				return do_plugin_action('interwiki'); // header('Location');
 			} else { 
 				return plugin_read_notfound($page);
 			}
-		} elseif (count($realpages) >= 2) {
+		} else if (count($realpages) >= 2) {
+			$referer = 0;
 			$body = '<p>';
 			$body .= $_read_msg['msg_invalidwn'] . '<br />';
 			$link = '';
@@ -63,15 +67,11 @@ function plugin_read_action()
 			$body .= '</p>';
 			return array('msg'=>$_read_msg['title_invalidwn'], 'body'=>$body);
 		}
-		$vars['cmd'] = 'edit';
-		return plugin_read_notfound($page); // 存在しないので、編集フォームを表示
+		return plugin_read_notfound($page);
 	} else {
+		$referer = 0;
 		// 無効なページ名
-		return array(
-			'msg'=>$_read_msg['title_invalidwn'],
-			'body'=>str_replace('$1', htmlsc($page),
-				str_replace('$2', 'WikiName', $_read_msg['msg_invalidiwn']))
-		);
+		return plugin_read_notfound($page);
 	}
 	exit;
 }

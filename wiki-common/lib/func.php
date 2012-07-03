@@ -1232,7 +1232,7 @@ function get_resolve_uri($cmd='', $page='', $path_reference='rel', $query='', $f
 		$ret .= $flag.$page_pref.rawurlencode($page);
 
 		if (empty($cmd) && $static_url === 1 && (isset($vars['cmd']) && $vars['cmd'] !== 'search') && 
-			!( stristr(getenv('SERVER_SOFTWARE'), 'apache') !== FALSE && strstr($page,':' ) !== FALSE) ){	// Apacheは、:が含まれるアドレスを正確に処理できない
+			!( stristr(getenv('SERVER_SOFTWARE'), 'apache') !== FALSE && (strstr($page,':' ) !== FALSE || strstr($page,' ' ) !== FALSE) ) ){	// Apacheは、:が含まれるアドレスを正確に処理できない
 			// To static URL
 			$ret = str_replace('?', '', $ret);
 			$ret = str_replace('%2F', '/', $ret) . $url_suffix;

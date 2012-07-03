@@ -136,11 +136,9 @@ function plugin_tracker_convert()
 	// For QA/196, BugTrack/113
 	$form_enctype = is_mobile() ? '' : 'enctype="multipart/form-data"';
 	return <<<EOD
-<form $form_enctype action="$script" method="post">
-$hidden
-	<div class="tracker_form">
-		$template
-	</div>
+<form $form_enctype action="$script" method="post" class="tracker_form">
+	$hidden
+	$template
 </form>
 EOD;
 }

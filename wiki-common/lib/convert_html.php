@@ -1,8 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: convert_html.php,v 1.21.27 2011/09/11 23:00:00 Logue Exp $
+// $Id: convert_html.php,v 1.21.29 2012/07/03 23:18:00 Logue Exp $
 // Copyright (C)
-//   2010-2011 PukiWiki Advance Developers Team
+//   2010-2012 PukiWiki Advance Developers Team
 //   2005-2008 PukiWiki Plus! Team
 //   2002-2005, 2007,2011 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -464,9 +464,11 @@ class BQuote extends Element
 
 	function insert(& $obj)
 	{
+		if (!is_object($obj)) return;
+		
 		// BugTrack/521, BugTrack/545
-		//if (is_a($obj, 'inline'))
-		//	return parent::insert($obj->toPara(' class="style_blockquote"'));
+		if (is_a($obj, 'inline'))
+			return parent::insert($obj->toPara(' class="style_blockquote"'));
 
 		if (is_a($obj, 'BQuote') && $obj->level == $this->level && count($obj->elements)) {
 			$obj = & $obj->elements[0];
@@ -655,7 +657,7 @@ class Table extends Element
 					continue;
 				}
 				$row[$ncol]->colspan = $colspan;
-				if ($stylerow !== NULL) {
+				if (!is_null($stylerow)) {
 					$row[$ncol]->setStyle($stylerow[$ncol]->style);
 					// Inherits column style
 					while (--$colspan)
@@ -776,7 +778,7 @@ class Pre extends Element
 		global $preformat_ltrim;
 		parent::Element();
 		$this->elements[] = htmlsc(
-			(! $preformat_ltrim || $text == '' || $text{0} != ' ') ? $text : substr($text, 1));
+			(! $preformat_ltrim || $text === '' || $text{0} != ' ') ? $text : substr($text, 1));
 	}
 
 	function canContain(& $obj)
@@ -784,7 +786,7 @@ class Pre extends Element
 		return is_a($obj, 'Pre');
 	}
 
-	function & insert(& $obj)
+	function insert(& $obj)
 	{
 		$this->elements[] = $obj->elements[0];
 		return $this;
@@ -864,7 +866,7 @@ class Body extends Element
 	{
 		$this->id            = $id;
 		$this->contents      = new Element();
-		$this->contents_last = & $this->contents;
+		$this->contents_last = $this->contents;
 		parent::Element();
 	}
 
@@ -883,7 +885,7 @@ class Body extends Element
 			if (preg_match('/^(TITLE):(.*)$/',$line,$matches))
 			{
 				global $newtitle, $newbase;
-				if ($newbase == '') {
+				if ($newbase === '') {
 					// $newbase = trim($matches[2]);
 					$newbase = convert_html($matches[2]);
 					$newbase = strip_htmltag($newbase);
