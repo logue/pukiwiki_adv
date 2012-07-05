@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Advance v1.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2011-04-02 03:04+0900\n"
+"POT-Creation-Date: 2012-07-05 20:39+0900\n"
 "PO-Revision-Date: 2011-06-01 15:05+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
 "Language-Team: Japanese <logue@hotmail.co.jp>\n"
@@ -23,7 +23,7 @@ msgstr ""
 msgid "Add to $1"
 msgstr "$1 への追加"
 
-#: ../../plugin/add.inc.php:22
+#: ../../plugin/add.inc.php:23
 msgid ""
 "Two and the contents of an input are added for a new-line to the contents of "
 "a page of present addition."

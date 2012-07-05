@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-27 19:32+0900\n"
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 22:08+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,47 +16,65 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/referer.inc.php:19 ../../plugin/referer.inc.php:22
-#: ../../plugin/referer.inc.php:26
+#: ../../plugin/referer.inc.php:27 ../../plugin/referer.inc.php:30
+#: ../../plugin/referer.inc.php:34
 msgid "Referer"
 msgstr ""
 
-#: ../../plugin/referer.inc.php:20
+#: ../../plugin/referer.inc.php:28
 msgid "Referer List"
 msgstr ""
 
-#: ../../plugin/referer.inc.php:21
+#: ../../plugin/referer.inc.php:29
 msgid "No data"
 msgstr ""
 
-#: ../../plugin/referer.inc.php:23
+#: ../../plugin/referer.inc.php:31
 msgid "LastUpdate"
 msgstr ""
 
-#: ../../plugin/referer.inc.php:24
+#: ../../plugin/referer.inc.php:32
 msgid "First Register"
 msgstr ""
 
-#: ../../plugin/referer.inc.php:25
+#: ../../plugin/referer.inc.php:33
 msgid "RefCounter"
 msgstr ""
 
-#: ../../plugin/referer.inc.php:27
+#: ../../plugin/referer.inc.php:35
 msgid "F j, Y, g:i A"
 msgstr ""
 
-#: ../../plugin/referer.inc.php:28
+#: ../../plugin/referer.inc.php:36
 msgid "&uArr;"
 msgstr ""
 
-#: ../../plugin/referer.inc.php:29
+#: ../../plugin/referer.inc.php:37
 msgid "&dArr;"
 msgstr ""
 
-#: ../../plugin/referer.inc.php:30
+#: ../../plugin/referer.inc.php:38
 msgid "Referer function is disabled."
 msgstr ""
 
-#: ../../plugin/referer.inc.php:31
+#: ../../plugin/referer.inc.php:39
 msgid "The page you requested was not found."
+msgstr ""
+
+#: ../../plugin/referer.inc.php:40
+msgid "Search keys"
+msgstr ""
+
+#: ../../plugin/referer.inc.php:41
+#, php-format
+msgid "All the Search Key of %s"
+msgstr ""
+
+#: ../../plugin/referer.inc.php:42
+msgid "Mutual links"
+msgstr ""
+
+#: ../../plugin/referer.inc.php:43
+#, php-format
+msgid "Auto Mutual link of %s"
 msgstr ""

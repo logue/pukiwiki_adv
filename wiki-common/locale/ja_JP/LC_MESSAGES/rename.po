@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5-u2\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-03-10 10:15+0900\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 20:39+0900\n"
 "PO-Revision-Date: 2011-06-01 15:05+0900\n"
 "Last-Translator: Miko.Hoshina(E.Satoh) <miko@cafeterrace.com>\n"
 "Language-Team: Japanese\n"
@@ -15,104 +15,103 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../plugin/rename.inc.php:15
-#, php-format
-msgid "<p>error:%s</p>"
+#: ../../plugin/rename.inc.php:20
+#, fuzzy, php-format
+msgid "Error:%s"
 msgstr "<p>エラー:%s</p>"
 
-#: ../plugin/rename.inc.php:16
+#: ../../plugin/rename.inc.php:21
 msgid "no matching page(s)"
 msgstr "マッチするページがありません。"
 
-#: ../plugin/rename.inc.php:17
+#: ../../plugin/rename.inc.php:22
 msgid "the new name is invalid."
 msgstr "リネーム後のページ名が正しくありません。"
 
-#: ../plugin/rename.inc.php:18
+#: ../../plugin/rename.inc.php:23
 msgid "Incorrect administrator password."
 msgstr "管理者パスワードが正しくありません。"
 
-#: ../plugin/rename.inc.php:19
+#: ../../plugin/rename.inc.php:24
 #, php-format
 msgid "%s is not a valid pagename."
 msgstr "%sはページ名ではありません。"
 
-#: ../plugin/rename.inc.php:20
+#: ../../plugin/rename.inc.php:25
 #, php-format
 msgid "cannot rename %s."
 msgstr "%sをリネームすることはできません。"
 
-#: ../plugin/rename.inc.php:21
+#: ../../plugin/rename.inc.php:26
 #, php-format
 msgid "already exists :%s."
 msgstr "ページがすでに存在します。:%s"
 
-#: ../plugin/rename.inc.php:22
+#: ../../plugin/rename.inc.php:27
 msgid "The following files already exist."
 msgstr "以下のファイルがすでに存在します。"
 
-#: ../plugin/rename.inc.php:23
+#: ../../plugin/rename.inc.php:28
 msgid "Rename page"
 msgstr "ページ名の変更"
 
-#: ../plugin/rename.inc.php:24
+#: ../../plugin/rename.inc.php:29
 msgid "specify source page name"
 msgstr "変更元ページを指定"
 
-#: ../plugin/rename.inc.php:25
+#: ../../plugin/rename.inc.php:30
 msgid "rename with regular expressions."
 msgstr "正規表現で置換"
 
-#: ../plugin/rename.inc.php:26
+#: ../../plugin/rename.inc.php:31
 msgid "related pages"
 msgstr "関連ページ"
 
-#: ../plugin/rename.inc.php:27
+#: ../../plugin/rename.inc.php:32
 msgid "A related page is also renamed."
 msgstr "関連ページもリネームする"
 
-#: ../plugin/rename.inc.php:28
+#: ../../plugin/rename.inc.php:33
 #, php-format
 msgid "rename %s"
 msgstr "%sの名前を変更します。"
 
-#: ../plugin/rename.inc.php:29
+#: ../../plugin/rename.inc.php:34
 msgid "current page name"
 msgstr "現在の名前"
 
-#: ../plugin/rename.inc.php:30
+#: ../../plugin/rename.inc.php:35
 msgid "new page name"
 msgstr "新しい名前"
 
-#: ../plugin/rename.inc.php:31
+#: ../../plugin/rename.inc.php:36
 msgid "Administrator password"
 msgstr "管理者パスワード"
 
-#: ../plugin/rename.inc.php:32
+#: ../../plugin/rename.inc.php:37
 msgid "->"
 msgstr "→"
 
-#: ../plugin/rename.inc.php:33
+#: ../../plugin/rename.inc.php:38
 msgid "page is not processed when it already exists."
 msgstr "そのページを処理しない"
 
-#: ../plugin/rename.inc.php:34
+#: ../../plugin/rename.inc.php:39
 msgid "page is overwritten when it already exists."
 msgstr "そのファイルを上書きする"
 
-#: ../plugin/rename.inc.php:35
+#: ../../plugin/rename.inc.php:40
 msgid "The following files will be renamed."
 msgstr "以下のファイルをリネームします。"
 
-#: ../plugin/rename.inc.php:36
+#: ../../plugin/rename.inc.php:41
 msgid "The following files have been overwritten."
 msgstr "以下のファイルを上書きしました。"
 
-#: ../plugin/rename.inc.php:37
+#: ../../plugin/rename.inc.php:42
 msgid "Submit"
 msgstr "実行"
 
-#: ../plugin/rename.inc.php:38
+#: ../../plugin/rename.inc.php:43
 msgid "Next"
 msgstr "次へ"
-

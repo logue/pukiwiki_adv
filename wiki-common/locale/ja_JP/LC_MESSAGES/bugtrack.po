@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5-u2\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-27 19:28+0900\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 20:39+0900\n"
 "PO-Revision-Date: 2011-06-01 15:05+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
@@ -31,33 +31,27 @@ msgstr "普通"
 msgid "Low"
 msgstr "低"
 
-#: ../../plugin/bugtrack.inc.php:27
-#: ../../plugin/bugtrack.inc.php:28
+#: ../../plugin/bugtrack.inc.php:27 ../../plugin/bugtrack.inc.php:28
 msgid "Proposal"
 msgstr "提案"
 
-#: ../../plugin/bugtrack.inc.php:27
-#: ../../plugin/bugtrack.inc.php:28
+#: ../../plugin/bugtrack.inc.php:27 ../../plugin/bugtrack.inc.php:28
 msgid "Start"
 msgstr "着手"
 
-#: ../../plugin/bugtrack.inc.php:27
-#: ../../plugin/bugtrack.inc.php:28
+#: ../../plugin/bugtrack.inc.php:27 ../../plugin/bugtrack.inc.php:28
 msgid "CVS Waiting"
 msgstr "CVS待ち"
 
-#: ../../plugin/bugtrack.inc.php:27
-#: ../../plugin/bugtrack.inc.php:28
+#: ../../plugin/bugtrack.inc.php:27 ../../plugin/bugtrack.inc.php:28
 msgid "Completion"
 msgstr "完了"
 
-#: ../../plugin/bugtrack.inc.php:27
-#: ../../plugin/bugtrack.inc.php:28
+#: ../../plugin/bugtrack.inc.php:27 ../../plugin/bugtrack.inc.php:28
 msgid "Reservation"
 msgstr "保留"
 
-#: ../../plugin/bugtrack.inc.php:27
-#: ../../plugin/bugtrack.inc.php:28
+#: ../../plugin/bugtrack.inc.php:27 ../../plugin/bugtrack.inc.php:28
 msgid "Rejection"
 msgstr "却下"
 
@@ -120,9 +114,3 @@ msgstr "バージョン"
 #: ../../plugin/bugtrack.inc.php:45
 msgid "Submit"
 msgstr "追加"
-
-#: ../../plugin/bugtrack.inc.php:46
-#, php-format
-msgid "This Wiki is <var>%s</var> mode now. Therefore, bugtrack function is prohibited."
-msgstr ""
-

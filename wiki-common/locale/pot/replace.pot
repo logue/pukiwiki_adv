@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-01-23 02:04+0900\n"
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 22:08+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,15 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../plugin/replace.inc.php:19
-msgid ""
-"Please input the retrieval character string, the substitution character "
-"string, and the password for the Administrator."
+msgid "Please input the retrieval character string, the substitution character string, and the password for the Administrator."
 msgstr ""
 
 #: ../../plugin/replace.inc.php:20
-msgid ""
-"Please input the retrieval character string, the substitution character "
-"string."
+msgid "Please input the retrieval character string, the substitution character string."
 msgstr ""
 
 #: ../../plugin/replace.inc.php:21

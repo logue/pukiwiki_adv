@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-03-10 16:46+0900\n"
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 22:08+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,10 +16,14 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../plugin/interwiki.inc.php:28
+#: ../../plugin/interwiki.inc.php:12
+msgid "InterWiki plugin is not allowed"
+msgstr ""
+
+#: ../../plugin/interwiki.inc.php:29
 msgid "This is not a valid InterWikiName"
 msgstr ""
 
-#: ../plugin/interwiki.inc.php:32
+#: ../../plugin/interwiki.inc.php:33
 msgid " $1 is not a valid $2."
 msgstr ""

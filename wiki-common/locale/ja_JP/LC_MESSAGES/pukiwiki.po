@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Advance v1.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2011-04-02 02:13+0900\n"
-"PO-Revision-Date: 2011-06-01 15:05+0900\n"
+"POT-Creation-Date: 2012-07-05 20:43+0900\n"
+"PO-Revision-Date: 2012-07-05 21:39+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
 "Language-Team: Japanese <logue@hotmail.co.jp>\n"
 "MIME-Version: 1.0\n"
@@ -19,43 +19,43 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: ../../pot\n"
 
-#: ../../lib/file.php:722
-#, php-format
-msgid "%s is not found or cannot execute: "
-msgstr "%sは、見つからないか、実行可能になっていません。"
-
-#: ../../lib/file.php:757
+#: ../../lib/file.php:778
 #, php-format
 msgid "%s execution failed:"
 msgstr "%sで、以下の例外が発生しました："
 
-#: ../../lib/html.php:512
-msgid "Related pages: "
-msgstr "関連ページ："
-
-#: ../../lib/html.php:627
-#, php-format
-msgid "Headers already sent at %s, line: %s."
-msgstr "ヘッダーは、%s（行%s）で、すでに出力されています。"
-
-#: ../../lib/init.php:75
+#: ../../lib/init.php:83
 msgid "File is not found."
 msgstr "ファイルがみつかりません。"
 
-#: ../../lib/init.php:200
+#: ../../lib/init.php:206
 #, php-format
 msgid "Sorry, %s is already reserved."
 msgstr "%sは、すでに定義されています。"
 
-#: ../../lib/init.php:260
+#: ../../lib/init.php:313
 msgid "Query string is too long."
 msgstr "Query Stringが長すぎます。"
 
-#: ../../lib/init.php:314
+#: ../../lib/init.php:367
 msgid "Using both cmd= and plugin= is not allowed."
 msgstr "cmd=とplugin=の両方を使用することはできません。"
 
-#: ../../lib/proxy.php:146
+#: ../../lib/init.php:588
+#, php-format
+msgid ""
+"Facebook is not authenticated or url is mismathed. Please click <a href=\"%s"
+"\">here</a> and authenticate the application."
+msgstr ""
+"Facebookの認証ができなかったか、URLが間違っています。<a href=\"%s\">ここ</a>"
+"をクリックして、アプリケーションの認証を行なってください。"
+
+#: ../../lib/init.php:593
+#, php-format
+msgid "Facebook is authenticated. Welcome, %s."
+msgstr "Facebook認証に成功しました。ようこそ%sさん。"
+
+#: ../../lib/proxy.php:153
 #, php-format
 msgid "unable to connect to %s."
 msgstr "%sに接続することができません。"
@@ -212,13 +212,11 @@ msgstr "12"
 msgid "December"
 msgstr "12月（師走）"
 
-#: ../../lib/resource.php:40
-#: ../../lib/resource.php:117
+#: ../../lib/resource.php:40 ../../lib/resource.php:126
 msgid "Freeze"
 msgstr "凍結"
 
-#: ../../lib/resource.php:41
-#: ../../lib/resource.php:135
+#: ../../lib/resource.php:41 ../../lib/resource.php:127
 msgid "Unfreeze"
 msgstr "凍結解除"
 
@@ -231,12 +229,20 @@ msgid "Others"
 msgstr "その他"
 
 #: ../../lib/resource.php:46
-msgid "In the page <strong>$2</strong>, <strong>$3</strong> pages that contain all the terms <var>$1</var> were found."
-msgstr "<var>$1</var>のすべてを含むページは <strong>$3</strong> ページ中、 <strong>$2</strong> ページ見つかりました。"
+msgid ""
+"In the page <strong>$2</strong>, <strong>$3</strong> pages that contain all "
+"the terms <var>$1</var> were found."
+msgstr ""
+"<var>$1</var>のすべてを含むページは <strong>$3</strong> ページ中、 <strong>"
+"$2</strong> ページ見つかりました。"
 
 #: ../../lib/resource.php:47
-msgid "In the page <strong>$2</strong>, <strong>$3</strong> pages that contain at least one of the terms <var>$1</var> were found."
-msgstr "<var>$1</var>のいずれかを含むページは <strong>$3</strong> ページ中、 <strong>$2</strong> ページ見つかりました。"
+msgid ""
+"In the page <strong>$2</strong>, <strong>$3</strong> pages that contain at "
+"least one of the terms <var>$1</var> were found."
+msgstr ""
+"<var>$1</var>のいずれかを含むページは <strong>$3</strong> ページ中、 <strong>"
+"$2</strong> ページ見つかりました。"
 
 #: ../../lib/resource.php:48
 msgid "No page which contains <var>$1</var> has been found."
@@ -259,24 +265,37 @@ msgid "<var>$1</var> is not a valid <var>$2</var>."
 msgstr "<var>$1</var>は有効な<var>$2</var>ではありません。"
 
 #: ../../lib/resource.php:55
-msgid "It seems that someone has already updated the page you were editing.<br />The string was added, alhough it may be inserted in the wrong position."
-msgstr "あなたがこのページを編集している間に、他の人が同じページを更新してしまったようです。<br />コメントを追加しましたが、違う位置に挿入されているかもしれません。"
+msgid ""
+"It seems that someone has already updated the page you were editing.<br /"
+">The string was added, alhough it may be inserted in the wrong position."
+msgstr ""
+"あなたがこのページを編集している間に、他の人が同じページを更新してしまったよ"
+"うです。<br />コメントを追加しましたが、違う位置に挿入されているかもしれませ"
+"ん。"
 
 #: ../../lib/resource.php:58
 msgid "WARNING"
 msgstr "警告"
 
 #: ../../lib/resource.php:59
-msgid "This Wiki is <var>PKWK_READONLY</var> mode now. The action which you are trying to do is prohibited."
-msgstr "現在このWikiは、<var>PKWK_READONLY</var>モードになっています。実行しようとしていた作業は、禁止されています。"
+msgid ""
+"This Wiki is <var>PKWK_READONLY</var> mode now. The action which you are "
+"trying to do is prohibited."
+msgstr ""
+"現在このWikiは、<var>PKWK_READONLY</var>モードになっています。実行しようとし"
+"ていた作業は、禁止されています。"
 
 #: ../../lib/resource.php:60
 msgid "A runtime error has occurred."
 msgstr "ランタイムエラーが発生しました。"
 
 #: ../../lib/resource.php:60
-msgid "Please contact to site admin. If you want more information, please change <var>PKWK_WARNING</var> value."
-msgstr "管理人に問い合わせてください。より詳細な情報を表示したい場合は、<var>PKWK_WARNING</var>の値を変更してください。"
+msgid ""
+"Please contact to site admin. If you want more information, please change "
+"<var>PKWK_WARNING</var> value."
+msgstr ""
+"管理人に問い合わせてください。より詳細な情報を表示したい場合は、"
+"<var>PKWK_WARNING</var>の値を変更してください。"
 
 #: ../../lib/resource.php:61
 msgid "This program is running in debug mode."
@@ -284,8 +303,12 @@ msgstr "このプログラムは、デバッグモードで走っています。
 
 #: ../../lib/resource.php:62
 #, php-format
-msgid "<var>$adminpass</var> is not changed! Click <a href=\"%s\">here</a> to generate crypted password and modify auth.ini.php!"
-msgstr "<var>$adminpass</var>が変更されていません！<a href=\"%s\">ここ</a>をクリックしてパスワードを生成し、auth.ini.phpを変更してください。"
+msgid ""
+"<var>$adminpass</var> is not changed! Click <a href=\"%s\">here</a> to "
+"generate crypted password and modify auth.ini.php!"
+msgstr ""
+"<var>$adminpass</var>が変更されていません！<a href=\"%s\">ここ</a>をクリック"
+"してパスワードを生成し、auth.ini.phpを変更してください。"
 
 #: ../../lib/resource.php:63
 #, php-format
@@ -297,264 +320,391 @@ msgstr "<var>%s</var>は見つからないか、書き込み可になってい�
 msgid "Page <var>%s</var> was not found."
 msgstr "ページ<var>%s</var>は見つかりませんでした。"
 
-#: ../../lib/resource.php:65
+#: ../../lib/resource.php:65 ../../lib/resource.php:70
 #, php-format
 msgid "Headers already sent at <var>%s</var>, line: <var>%s</var>."
 msgstr "ヘッダーは <var>%s</var>の<var>%s</var>行目で、すでに送られています。"
 
 #: ../../lib/resource.php:66
 msgid "Writing was limited by <strong>IPBL</storng> (Blocking SPAM)."
-msgstr "<strong>IPBL</strong>により、書き込みは制限されています。（スパムブロック）"
+msgstr ""
+"<strong>IPBL</strong>により、書き込みは制限されています。（スパムブロック）"
+
+#: ../../lib/resource.php:67
+#, fuzzy, php-format
+msgid ""
+"A fatal error has occured at line <var>%1s</var> in file <var>%2s</var>."
+msgstr "ヘッダーは <var>%s</var>の<var>%s</var>行目で、すでに送られています。"
+
+#: ../../lib/resource.php:68
+msgid "Script execution has been aborted."
+msgstr "スクリプトの実行は中断されました。"
+
+#: ../../lib/resource.php:69
+msgid "Illegal characters contained."
+msgstr "無効な文字が含まれています。"
 
 #: ../../lib/resource.php:71
+#, php-format
+msgid ""
+"Alert: plugin <var>%1s</var> was called over <var>%2s</var> times. SPAM or "
+"someting?"
+msgstr ""
+"警告：プラグイン<var>%1s</var>は、短時間の間に、<var>%2s</var>回も呼び出され"
+"ています。スパムの可能性あり？"
+
+#: ../../lib/resource.php:72
+msgid "Plugin Error: PostId mismatch."
+msgstr "プラグインエラー：PostIdが一致していません。"
+
+#: ../../lib/resource.php:73
+msgid "Plugin Error: Incorrect encode."
+msgstr "プラグインエラー：不正なエンコードです。"
+
+#: ../../lib/resource.php:78
 msgid "Preview"
 msgstr "プレビュー"
 
-#: ../../lib/resource.php:72
+#: ../../lib/resource.php:79
 msgid "Preview again"
 msgstr "再度プレビュー"
 
-#: ../../lib/resource.php:73
+#: ../../lib/resource.php:80
 msgid "Update"
 msgstr "ページの更新"
 
-#: ../../lib/resource.php:74
+#: ../../lib/resource.php:81
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: ../../lib/resource.php:75
-#: ../../lib/resource.php:109
+#: ../../lib/resource.php:82 ../../lib/resource.php:119
 msgid "Add"
 msgstr "追加"
 
-#: ../../lib/resource.php:76
-#: ../../lib/resource.php:130
+#: ../../lib/resource.php:83 ../../lib/resource.php:139
 msgid "Search"
 msgstr "検索"
 
-#: ../../lib/resource.php:77
+#: ../../lib/resource.php:84
 msgid "Load"
 msgstr "読込"
 
-#: ../../lib/resource.php:78
-#: ../../lib/resource.php:114
+#: ../../lib/resource.php:85 ../../lib/resource.php:124
 msgid "Edit"
 msgstr "編集"
 
-#: ../../lib/resource.php:79
-#: ../../lib/resource.php:115
+#: ../../lib/resource.php:86 ../../lib/resource.php:129
 msgid "Edit(GUI)"
 msgstr "編集(GUI)"
 
-#: ../../lib/resource.php:80
+#: ../../lib/resource.php:87
 msgid "Delete"
 msgstr "削除"
 
-#: ../../lib/resource.php:81
+#: ../../lib/resource.php:88
 msgid "Remove"
 msgstr "削除"
 
-#: ../../lib/resource.php:82
+#: ../../lib/resource.php:89 ../../lib/resource.php:156
 msgid "Login"
 msgstr "ログイン"
 
-#: ../../lib/resource.php:83
+#: ../../lib/resource.php:90 ../../lib/resource.php:157
 msgid "Logout"
 msgstr "ログアウト"
 
-#: ../../lib/resource.php:86
+#: ../../lib/resource.php:92
+#, fuzzy
+msgid "Back"
+msgstr "バックアップ"
+
+#: ../../lib/resource.php:95
 msgid "Do not change timestamp"
 msgstr "タイムスタンプを変更しない"
 
-#: ../../lib/resource.php:87
+#: ../../lib/resource.php:96
 msgid "Add to top of page"
 msgstr "ページの上に追加"
 
-#: ../../lib/resource.php:88
+#: ../../lib/resource.php:97
 msgid "Use page as template"
 msgstr "雛形とするページ"
 
-#: ../../lib/resource.php:89
+#: ../../lib/resource.php:98
 msgid "AND"
 msgstr "AND検索"
 
-#: ../../lib/resource.php:90
+#: ../../lib/resource.php:99
 msgid "OR"
 msgstr "OR検索"
 
-#: ../../lib/resource.php:91
+#: ../../lib/resource.php:100
 msgid "Save to cookie"
 msgstr "クッキーに保存"
 
-#: ../../lib/resource.php:96
+#: ../../lib/resource.php:101
+#, fuzzy, php-format
+msgid "Connect to %s"
+msgstr "%sに接続することができません。"
+
+#: ../../lib/resource.php:106
 msgid "$1 is not editable"
 msgstr "$1 は編集できません"
 
-#: ../../lib/resource.php:97
+#: ../../lib/resource.php:107
 msgid "$1 is not readable"
 msgstr "$1 は閲覧できません"
 
-#: ../../lib/resource.php:98
+#: ../../lib/resource.php:108
 msgid "On updating $1, a collision has occurred."
 msgstr "$1 で【更新の衝突】が起きました"
 
-#: ../../lib/resource.php:99
+#: ../../lib/resource.php:109
 msgid "$1 was updated"
 msgstr "$1 を更新しました"
 
-#: ../../lib/resource.php:100
+#: ../../lib/resource.php:110
 msgid "Preview of $1"
 msgstr "$1のプレビュー"
 
-#: ../../lib/resource.php:101
+#: ../../lib/resource.php:111
 msgid "Runtime Error"
 msgstr "ランタイムエラー"
 
-#: ../../lib/resource.php:106
+#: ../../lib/resource.php:116
 msgid "encode_hint"
 msgstr "ぷ"
 
-#: ../../lib/resource.php:110
+#: ../../lib/resource.php:120
 msgid "Backup"
 msgstr "バックアップ"
 
-#: ../../lib/resource.php:111
+#: ../../lib/resource.php:121
 msgid "Broken Link List"
 msgstr "リンク切れ一覧"
 
-#: ../../lib/resource.php:112
+#: ../../lib/resource.php:122
 msgid "Copy"
 msgstr "コピー"
 
-#: ../../lib/resource.php:113
+#: ../../lib/resource.php:123
 msgid "Diff"
 msgstr "差分"
 
-#: ../../lib/resource.php:116
+#: ../../lib/resource.php:125
 msgid "List of page files"
 msgstr "ファイル名一覧"
-
-#: ../../lib/resource.php:118
-msgid "Help"
-msgstr "ヘルプ"
-
-#: ../../lib/resource.php:119
-msgid "List of pages"
-msgstr "一覧"
-
-#: ../../lib/resource.php:120
-msgid "New"
-msgstr "新規"
-
-#: ../../lib/resource.php:121
-msgid "Lower page making"
-msgstr "下位ページ作成"
-
-#: ../../lib/resource.php:122
-msgid "RDF of recent changes"
-msgstr "最終更新のRDF"
-
-#: ../../lib/resource.php:123
-msgid "Recent changes"
-msgstr "最終更新"
-
-#: ../../lib/resource.php:124
-msgid "Referer"
-msgstr "リンク元"
-
-#: ../../lib/resource.php:125
-msgid "Reload"
-msgstr "リロード"
-
-#: ../../lib/resource.php:126
-msgid "Rename"
-msgstr "名前変更"
-
-#: ../../lib/resource.php:127
-msgid "Image of print"
-msgstr "印刷イメージ"
 
 #: ../../lib/resource.php:128
 msgid "Full screen"
 msgstr "全画面"
 
-#: ../../lib/resource.php:129
-msgid "RSS of recent changes"
-msgstr "最終更新のRSS"
-
-#: ../../lib/resource.php:131
-msgid "Source"
-msgstr "ソース"
+#: ../../lib/resource.php:130
+msgid "Export as PDF"
+msgstr "PDFとして出力"
 
 #: ../../lib/resource.php:132
-msgid "Template"
-msgstr "テンプレート"
+msgid "Help"
+msgstr "ヘルプ"
 
 #: ../../lib/resource.php:133
-msgid "Front page"
-msgstr "ホーム"
+msgid "List of pages"
+msgstr "一覧"
 
 #: ../../lib/resource.php:134
-msgid "Trackback"
-msgstr "Trackback"
-
-#: ../../lib/resource.php:136
-msgid "Upload"
-msgstr "添付"
-
-#: ../../lib/resource.php:137
-msgid "Search Key List"
-msgstr "検索キー一覧"
-
-#: ../../lib/resource.php:138
-msgid "Link List"
-msgstr "自動相互リンク表"
-
-#: ../../lib/resource.php:139
-msgid "Roll Book"
-msgstr "出席簿"
-
-#: ../../lib/resource.php:140
-msgid "Confirmation list"
-msgstr "確認簿"
-
-#: ../../lib/resource.php:141
-msgid "Browse Log"
-msgstr "閲覧ログ"
-
-#: ../../lib/resource.php:142
-msgid "Update Log"
-msgstr "更新ログ"
-
-#: ../../lib/resource.php:143
-msgid "Download Log"
-msgstr "ダウンロードログ"
-
-#: ../../lib/resource.php:144
 msgid "Log"
 msgstr "ログ"
 
-#: ../../lib/resource.php:145
+#: ../../lib/resource.php:135
+msgid "New"
+msgstr "新規"
+
+#: ../../lib/resource.php:136
+msgid "Lower page making"
+msgstr "下位ページ作成"
+
+#: ../../lib/resource.php:137
+msgid "Image of print"
+msgstr "印刷イメージ"
+
+#: ../../lib/resource.php:138
+msgid "Rename"
+msgstr "名前変更"
+
+#: ../../lib/resource.php:140
+msgid "Template"
+msgstr "テンプレート"
+
+#: ../../lib/resource.php:141
+msgid "Upload"
+msgstr "添付"
+
+#: ../../lib/resource.php:143
+msgid "Trackback"
+msgstr "Trackback"
+
+#: ../../lib/resource.php:144
+msgid "Referer"
+msgstr "リンク元"
+
+#: ../../lib/resource.php:146
+msgid "Reload"
+msgstr "リロード"
+
+#: ../../lib/resource.php:147
+msgid "Source"
+msgstr "ソース"
+
+#: ../../lib/resource.php:149
+msgid "RSS of recent changes"
+msgstr "最終更新のRSS"
+
+#: ../../lib/resource.php:150
+msgid "RDF of recent changes"
+msgstr "最終更新のRDF"
+
+#: ../../lib/resource.php:151
+#, fuzzy
+msgid "ATOM of recent changes"
+msgstr "最終更新のRDF"
+
+#: ../../lib/resource.php:153
 msgid "Logo"
 msgstr "ロゴ"
 
-#: ../../lib/resource.php:147
-msgid "MenuBar"
-msgstr "メニューバー"
+#: ../../lib/resource.php:154
+#, fuzzy
+msgid "Text Formatting Rules"
+msgstr "テキスト整形のルールを表示する"
 
-#: ../../lib/resource.php:148
-msgid "SideBar"
-msgstr "サイドバー"
+#: ../../lib/resource.php:160
+msgid "Front page"
+msgstr "ホーム"
 
-#: ../../lib/resource.php:149
+#: ../../lib/resource.php:161
+msgid "Recent changes"
+msgstr "最終更新"
+
+#: ../../lib/resource.php:162
+msgid "Recent deleted"
+msgstr ""
+
+#: ../../lib/resource.php:163
+msgid "Interwiki name"
+msgstr ""
+
+#: ../../lib/resource.php:164
+msgid "Auto alias name"
+msgstr ""
+
+#: ../../lib/resource.php:165
 msgid "Glossary"
 msgstr "用語集"
 
+#: ../../lib/resource.php:166
+msgid "MenuBar"
+msgstr "メニューバー"
+
+#: ../../lib/resource.php:167
+msgid "SideBar"
+msgstr "サイドバー"
+
+#: ../../lib/resource.php:168
+msgid "Navigation"
+msgstr ""
+
+#: ../../lib/resource.php:169
+msgid "Header area"
+msgstr ""
+
+#: ../../lib/resource.php:170
+msgid "Footer area"
+msgstr ""
+
+#: ../../lib/resource.php:171
+msgid "Protected"
+msgstr ""
+
+#: ../../lib/resource.php:175
+msgid "Error"
+msgstr "エラー"
+
+#: ../../lib/resource.php:176
+msgid "Warning"
+msgstr "警告"
+
+#: ../../lib/resource.php:177
+#, fuzzy
+msgid "Parsing Error"
+msgstr "プラグインエラー"
+
+#: ../../lib/resource.php:178
+msgid "Notice"
+msgstr "通知"
+
+#: ../../lib/resource.php:179
+#, fuzzy
+msgid "Core Error"
+msgstr "ランタイムエラー"
+
+#: ../../lib/resource.php:180
+msgid "Core Warning"
+msgstr "コア警告"
+
+#: ../../lib/resource.php:181
+#, fuzzy
+msgid "Compile Error"
+msgstr "ランタイムエラー"
+
+#: ../../lib/resource.php:182
+msgid "Compile Warning"
+msgstr "コンパイル警告"
+
+#: ../../lib/resource.php:183
+#, fuzzy
+msgid "User Error"
+msgstr "ランタイムエラー"
+
+#: ../../lib/resource.php:184
+msgid "User Warning"
+msgstr "ユーザ警告"
+
+#: ../../lib/resource.php:185
+msgid "User Notice"
+msgstr "ユーザ通知"
+
+#~ msgid "%s is not found or cannot execute: "
+#~ msgstr "%sは、見つからないか、実行可能になっていません。"
+
+#~ msgid "Related pages: "
+#~ msgstr "関連ページ："
+
+#~ msgid "Headers already sent at %s, line: %s."
+#~ msgstr "ヘッダーは、%s（行%s）で、すでに出力されています。"
+
+#~ msgid "Search Key List"
+#~ msgstr "検索キー一覧"
+
+#~ msgid "Link List"
+#~ msgstr "自動相互リンク表"
+
+#~ msgid "Roll Book"
+#~ msgstr "出席簿"
+
+#~ msgid "Confirmation list"
+#~ msgstr "確認簿"
+
+#~ msgid "Browse Log"
+#~ msgstr "閲覧ログ"
+
+#~ msgid "Update Log"
+#~ msgstr "更新ログ"
+
+#~ msgid "Download Log"
+#~ msgstr "ダウンロードログ"
+
 #~ msgid "May "
 #~ msgstr "5月（皐月）"
-
-#~ msgid "Plugin Error"
-#~ msgstr "プラグインエラー"
 
 #~ msgid "plugin=%s is not implemented."
 #~ msgstr "plugin=%sは、実装されていません。"

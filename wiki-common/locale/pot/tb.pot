@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-11 22:59+0900\n"
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 22:08+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,22 +16,73 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/tb.inc.php:255
+#: ../../plugin/tb.inc.php:33
+msgid "TrackBack"
+msgstr ""
+
+#: ../../plugin/tb.inc.php:34
+msgid "List of TrackBack"
+msgstr ""
+
+#: ../../plugin/tb.inc.php:35
+#, php-format
+msgid "TrackBack list to %s"
+msgstr ""
+
+#: ../../plugin/tb.inc.php:36
 msgid "TrackBack URL"
 msgstr ""
 
-#: ../../plugin/tb.inc.php:259
+#: ../../plugin/tb.inc.php:37
 msgid "Blog:"
 msgstr ""
 
-#: ../../plugin/tb.inc.php:260
+#: ../../plugin/tb.inc.php:38
 msgid "Date:"
 msgstr ""
 
-#: ../../plugin/tb.inc.php:261
+#: ../../plugin/tb.inc.php:39
 msgid "F j, Y, g:i A"
 msgstr ""
 
-#: ../../plugin/tb.inc.php:314
+#: ../../plugin/tb.inc.php:40
 msgid "RECENT TRACKBACK"
+msgstr ""
+
+#: ../../plugin/tb.inc.php:41
+msgid "TrackBack feature disabled."
+msgstr ""
+
+#: ../../plugin/tb.inc.php:42
+msgid "No TrackBack entrys."
+msgstr ""
+
+#: ../../plugin/tb.inc.php:43
+msgid "URL parameter is not set."
+msgstr ""
+
+#: ../../plugin/tb.inc.php:44
+msgid "TrackBack Ping ID is not set."
+msgstr ""
+
+#: ../../plugin/tb.inc.php:45
+#, php-format
+msgid "TrackBack directory <var>%s</var> is not found."
+msgstr ""
+
+#: ../../plugin/tb.inc.php:46
+#, php-format
+msgid "TrackBack directory <var>%s</var> is not writable."
+msgstr ""
+
+#: ../../plugin/tb.inc.php:47
+msgid "TrackBack ID is invalid."
+msgstr ""
+
+#: ../../plugin/tb.inc.php:48
+msgid "The URL is fictitious."
+msgstr ""
+
+#: ../../plugin/tb.inc.php:49
+msgid "Writing is prohibited."
 msgstr ""

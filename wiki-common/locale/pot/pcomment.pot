@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-27 19:32+0900\n"
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 22:08+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,26 +55,26 @@ msgstr ""
 msgid "[[%s]] : not a valid page name."
 msgstr ""
 
-#: ../../plugin/pcomment.inc.php:221
+#: ../../plugin/pcomment.inc.php:216
 msgid "Invalid page name"
 msgstr ""
 
-#: ../../plugin/pcomment.inc.php:222
+#: ../../plugin/pcomment.inc.php:217
 msgid "Cannot add comment"
 msgstr ""
 
-#: ../../plugin/pcomment.inc.php:228
+#: ../../plugin/pcomment.inc.php:223
 msgid " $1 was updated"
 msgstr ""
 
-#: ../../plugin/pcomment.inc.php:264
+#: ../../plugin/pcomment.inc.php:259
 msgid "On updating  $1, there was a collision."
 msgstr ""
 
-#: ../../plugin/pcomment.inc.php:265
+#: ../../plugin/pcomment.inc.php:260
 msgid "It seems that someone has already updated this page while you were editing it.<br />The comment was added to the page, but there may be a problem.<br />"
 msgstr ""
 
-#: ../../plugin/pcomment.inc.php:357
+#: ../../plugin/pcomment.inc.php:352
 msgid "Due to the blocking, no comments could be read from  $1 at all."
 msgstr ""

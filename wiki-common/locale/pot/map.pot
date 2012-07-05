@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-03-09 20:57+0900\n"
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 22:08+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,29 +16,29 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/map.inc.php:29
+#: ../../plugin/map.inc.php:30
 msgid "Relation map (link from)"
 msgstr ""
 
-#: ../../plugin/map.inc.php:29
+#: ../../plugin/map.inc.php:30
 #, php-format
 msgid "Relation map, from %s"
 msgstr ""
 
-#: ../../plugin/map.inc.php:37
+#: ../../plugin/map.inc.php:38
 msgid "No pages."
 msgstr ""
 
-#: ../../plugin/map.inc.php:70
+#: ../../plugin/map.inc.php:71
 msgid "<p>No link from anywhere in this site.</p>"
 msgstr ""
 
-#: ../../plugin/map.inc.php:82
+#: ../../plugin/map.inc.php:83
 #, php-format
 msgid "<p>Not related from %s.</p>"
 msgstr ""
 
-#: ../../plugin/map.inc.php:96
+#: ../../plugin/map.inc.php:97
 #, php-format
 msgid "<p>Total: %d page(s) on this site.</p>"
 msgstr ""

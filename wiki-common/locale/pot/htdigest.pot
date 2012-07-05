@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-11-29 02:15+0900\n"
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 22:08+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -69,9 +69,7 @@ msgid "The writing function is limited."
 msgstr ""
 
 #: ../../plugin/htdigest.inc.php:45
-msgid ""
-"The authority more than Webmaster for World Wide Web Site is necessary to "
-"update it."
+msgid "The authority more than Webmaster for World Wide Web Site is necessary to update it."
 msgstr ""
 
 #: ../../plugin/htdigest.inc.php:46
@@ -79,9 +77,7 @@ msgid "The encryption key is not corresponding."
 msgstr ""
 
 #: ../../plugin/htdigest.inc.php:47
-msgid ""
-"In this version, the Administrator password is supported only with {x-php-"
-"md5}."
+msgid "In this version, the Administrator password is supported only with {x-php-md5}."
 msgstr ""
 
 #: ../../plugin/htdigest.inc.php:48

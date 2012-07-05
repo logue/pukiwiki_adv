@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-25 00:14+0900\n"
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 22:08+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,95 +16,99 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/logview.inc.php:23
+#: ../../plugin/logview.inc.php:24
 #, php-format
 msgid "LogView (%s)"
 msgstr ""
 
-#: ../../plugin/logview.inc.php:24
+#: ../../plugin/logview.inc.php:25
 msgid "Login is required in order to refer to."
 msgstr ""
 
-#: ../../plugin/logview.inc.php:25
+#: ../../plugin/logview.inc.php:26
 msgid "Date"
 msgstr ""
 
-#: ../../plugin/logview.inc.php:26
+#: ../../plugin/logview.inc.php:27
 msgid "IP Address"
 msgstr ""
 
-#: ../../plugin/logview.inc.php:27
+#: ../../plugin/logview.inc.php:28
 msgid "Host Name"
 msgstr ""
 
-#: ../../plugin/logview.inc.php:28
+#: ../../plugin/logview.inc.php:29
 msgid "Authentication API Name"
 msgstr ""
 
-#: ../../plugin/logview.inc.php:29
+#: ../../plugin/logview.inc.php:30
 msgid "User Name"
 msgstr ""
 
-#: ../../plugin/logview.inc.php:30
+#: ../../plugin/logview.inc.php:31
 msgid "NTLM Auth Name"
 msgstr ""
 
-#: ../../plugin/logview.inc.php:31
+#: ../../plugin/logview.inc.php:32
 msgid "Proxy Infomation"
 msgstr ""
 
-#: ../../plugin/logview.inc.php:32
+#: ../../plugin/logview.inc.php:33
 msgid "Browse Infomation"
 msgstr ""
 
-#: ../../plugin/logview.inc.php:33
+#: ../../plugin/logview.inc.php:34
 msgid "Delete"
 msgstr ""
 
-#: ../../plugin/logview.inc.php:34
+#: ../../plugin/logview.inc.php:35
 msgid "Signature"
 msgstr ""
 
-#: ../../plugin/logview.inc.php:35
+#: ../../plugin/logview.inc.php:36
 msgid "Faile Name"
 msgstr ""
 
-#: ../../plugin/logview.inc.php:36
+#: ../../plugin/logview.inc.php:37
 msgid "Page"
 msgstr ""
 
-#: ../../plugin/logview.inc.php:37
+#: ../../plugin/logview.inc.php:38
 msgid "CMD"
 msgstr ""
 
-#: ../../plugin/logview.inc.php:38
+#: ../../plugin/logview.inc.php:39
 msgid "local_id"
 msgstr ""
 
-#: ../../plugin/logview.inc.php:39
+#: ../../plugin/logview.inc.php:40
 msgid "Contents"
 msgstr ""
 
-#: ../../plugin/logview.inc.php:40
+#: ../../plugin/logview.inc.php:41
 msgid "Provisional User Name"
 msgstr ""
 
-#: ../../plugin/logview.inc.php:41
+#: ../../plugin/logview.inc.php:42
 msgid "Provisional Browse Contents"
 msgstr ""
 
-#: ../../plugin/logview.inc.php:42
+#: ../../plugin/logview.inc.php:43
 msgid "Unused user list"
 msgstr ""
 
-#: ../../plugin/logview.inc.php:43
+#: ../../plugin/logview.inc.php:44
 msgid "Number of enrollees"
 msgstr ""
 
-#: ../../plugin/logview.inc.php:44
+#: ../../plugin/logview.inc.php:45
 msgid "Number of Unused"
 msgstr ""
 
-#: ../../plugin/logview.inc.php:45
+#: ../../plugin/logview.inc.php:46
 msgid "Availability"
+msgstr ""
+
+#: ../../plugin/logview.inc.php:47
+msgid "No entry."
 msgstr ""

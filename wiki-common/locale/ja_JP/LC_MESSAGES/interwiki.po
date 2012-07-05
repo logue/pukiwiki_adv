@@ -3,20 +3,24 @@
 #
 msgid ""
 msgstr ""
-"Last-Translator: Miko.Hoshina(E.Satoh) <miko@cafeterrace.com>\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 20:39+0900\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Logue <logue@hotmail.co.jp>\n"
 "Language-Team: Japanese\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Project-Id-Version: \n"
-"POT-Creation-Date: \n"
-"PO-Revision-Date: \n"
 
-#: ../plugin/interwiki.inc.php:28
+#: ../../plugin/interwiki.inc.php:12
+msgid "InterWiki plugin is not allowed"
+msgstr "InterWikiプラグインは許可されていません。"
+
+#: ../../plugin/interwiki.inc.php:29
 msgid "This is not a valid InterWikiName"
 msgstr "有効なInterWikiNameではありません"
 
-#: ../plugin/interwiki.inc.php:32
+#: ../../plugin/interwiki.inc.php:33
 msgid " $1 is not a valid $2."
 msgstr "$1 は有効な $2 ではありません。"
-

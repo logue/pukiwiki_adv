@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-03-10 16:46+0900\n"
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 22:08+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,26 +16,38 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../plugin/search.inc.php:31
+#: ../../plugin/search.inc.php:18
 msgid "Search for word(s)"
 msgstr ""
 
-#: ../plugin/search.inc.php:32
+#: ../../plugin/search.inc.php:19
 msgid "Search result of  $1"
 msgstr ""
 
-#: ../plugin/search.inc.php:33
+#: ../../plugin/search.inc.php:20
 msgid "Key words are case-insenstive, and are searched for in all pages."
 msgstr ""
 
-#: ../plugin/search.inc.php:67
+#: ../../plugin/search.inc.php:21
 msgid "Search"
 msgstr ""
 
-#: ../plugin/search.inc.php:68
+#: ../../plugin/search.inc.php:22
 msgid "AND"
 msgstr ""
 
-#: ../plugin/search.inc.php:69
+#: ../../plugin/search.inc.php:23
 msgid "OR"
+msgstr ""
+
+#: ../../plugin/search.inc.php:24
+msgid "Search for page starts from $1"
+msgstr ""
+
+#: ../../plugin/search.inc.php:25
+msgid "Search for all pages"
+msgstr ""
+
+#: ../../plugin/search.inc.php:26
+msgid "Search words"
 msgstr ""

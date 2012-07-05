@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5-u2\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-01-23 02:04+0900\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 20:39+0900\n"
 "PO-Revision-Date: 2011-06-01 15:05+0900\n"
 "Last-Translator: Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
@@ -16,11 +16,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../plugin/replace.inc.php:19
-msgid "Please input the retrieval character string, the substitution character string, and the password for the Administrator."
+msgid ""
+"Please input the retrieval character string, the substitution character "
+"string, and the password for the Administrator."
 msgstr "検索文字列、置換文字列および管理者用のパスワードを入力してください。"
 
 #: ../../plugin/replace.inc.php:20
-msgid "Please input the retrieval character string, the substitution character string."
+msgid ""
+"Please input the retrieval character string, the substitution character "
+"string."
 msgstr "検索文字列、置換文字列を入力してください。"
 
 #: ../../plugin/replace.inc.php:21
@@ -74,4 +78,3 @@ msgstr "置換しました。"
 #: ../../plugin/replace.inc.php:33
 msgid "No search data."
 msgstr "対象データがありません。"
-

@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-11-25 02:09+0900\n"
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 22:08+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,31 +16,31 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/hatena.inc.php:16
+#: ../../plugin/hatena.inc.php:83
 msgid "logout"
 msgstr ""
 
-#: ../../plugin/hatena.inc.php:17
+#: ../../plugin/hatena.inc.php:84
 #, php-format
 msgid "%s has been approved by Hatena."
 msgstr ""
 
-#: ../../plugin/hatena.inc.php:18
+#: ../../plugin/hatena.inc.php:85
 msgid "The function of Hatena is invalid."
 msgstr ""
 
-#: ../../plugin/hatena.inc.php:19
+#: ../../plugin/hatena.inc.php:86
 msgid "pkwk_session_start() doesn't exist."
 msgstr ""
 
-#: ../../plugin/hatena.inc.php:20
+#: ../../plugin/hatena.inc.php:87
 msgid "The session is not start."
 msgstr ""
 
-#: ../../plugin/hatena.inc.php:21
+#: ../../plugin/hatena.inc.php:88
 msgid "Hatena"
 msgstr ""
 
-#: ../../plugin/hatena.inc.php:22
+#: ../../plugin/hatena.inc.php:89
 msgid "LOGIN(Hatena)"
 msgstr ""

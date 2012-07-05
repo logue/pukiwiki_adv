@@ -1,0 +1,30 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 20:39+0900\n"
+"PO-Revision-Date: 2012-07-05 22:06+0900\n"
+"Last-Translator: Logue <logue@hotmail.co.jp>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../plugin/related.inc.php:14
+#, php-format
+msgid "Backlinks for: %s"
+msgstr "%sの関連リンク"
+
+#: ../../plugin/related.inc.php:15
+msgid "No related pages found."
+msgstr "関連ページはありませんでした。"
+
+#: ../../plugin/related.inc.php:65
+msgid "Related pages: "
+msgstr "関連ページ："
+

@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-03 16:33+0900\n"
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 22:08+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,18 +16,22 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/md5.inc.php:23 ../../plugin/md5.inc.php:65
+#: ../../plugin/md5.inc.php:24 ../../plugin/md5.inc.php:64
 msgid "Prohibited"
 msgstr ""
 
-#: ../../plugin/md5.inc.php:67
+#: ../../plugin/md5.inc.php:36
+msgid "Compute userPassword"
+msgstr ""
+
+#: ../../plugin/md5.inc.php:66
 msgid "Limit: malicious message length"
 msgstr ""
 
-#: ../../plugin/md5.inc.php:80
+#: ../../plugin/md5.inc.php:79
 msgid "NOTICE: Don't use this feature via untrustful or unsure network"
 msgstr ""
 
-#: ../../plugin/md5.inc.php:83
+#: ../../plugin/md5.inc.php:82
 msgid "NO PHRASE"
 msgstr ""

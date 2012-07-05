@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-05-30 19:25+0900\n"
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 22:08+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,10 +16,24 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/read.inc.php:31
-msgid "This pagename is an alias to"
+#: ../../plugin/read.inc.php:10
+msgid "Redirect"
 msgstr ""
 
-#: ../../plugin/read.inc.php:36
-msgid "Redirect"
+#: ../../plugin/read.inc.php:11
+#, php-format
+msgid "This pagename is an alias to %s."
+msgstr ""
+
+#: ../../plugin/read.inc.php:12
+msgid "Page not found"
+msgstr ""
+
+#: ../../plugin/read.inc.php:13
+msgid "Sorry, but the page you were trying to view does not exist or deleted."
+msgstr ""
+
+#: ../../plugin/read.inc.php:14
+#, php-format
+msgid "Please check <a href=\"%1s\" rel=\"nofollow\">backups</a> or <a href=\"%2s\" rel=\"nofollow\">create page</a>."
 msgstr ""

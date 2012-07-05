@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-03-10 16:46+0900\n"
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 22:08+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,26 +16,26 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../plugin/unfreeze.inc.php:14
+#: ../../plugin/unfreeze.inc.php:19
 msgid " $1 is not frozen"
 msgstr ""
 
-#: ../plugin/unfreeze.inc.php:15
+#: ../../plugin/unfreeze.inc.php:20
 msgid " $1 has been unfrozen."
 msgstr ""
 
-#: ../plugin/unfreeze.inc.php:16
+#: ../../plugin/unfreeze.inc.php:21
 msgid "Unfreeze  $1"
 msgstr ""
 
-#: ../plugin/unfreeze.inc.php:17
+#: ../../plugin/unfreeze.inc.php:22
 msgid "Invalid password."
 msgstr ""
 
-#: ../plugin/unfreeze.inc.php:18
+#: ../../plugin/unfreeze.inc.php:23
 msgid "Please input the password for unfreezing."
 msgstr ""
 
-#: ../plugin/unfreeze.inc.php:19
+#: ../../plugin/unfreeze.inc.php:24
 msgid "Unfreeze"
 msgstr ""

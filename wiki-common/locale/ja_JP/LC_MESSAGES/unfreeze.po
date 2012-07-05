@@ -1,35 +1,35 @@
 msgid ""
 msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 20:39+0900\n"
+"PO-Revision-Date: \n"
 "Last-Translator: Miko.Hoshina(E.Satoh) <miko@cafeterrace.com>\n"
 "Language-Team: Japanese\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Project-Id-Version: \n"
-"POT-Creation-Date: \n"
-"PO-Revision-Date: \n"
 
-#: unfreeze.inc.php:14
+#: ../../plugin/unfreeze.inc.php:19
 msgid " $1 is not frozen"
 msgstr "$1 は凍結されていません"
 
-#: unfreeze.inc.php:15
+#: ../../plugin/unfreeze.inc.php:20
 msgid " $1 has been unfrozen."
 msgstr "$1 の凍結を解除しました"
 
-#: unfreeze.inc.php:16
+#: ../../plugin/unfreeze.inc.php:21
 msgid "Unfreeze  $1"
 msgstr "$1 の凍結解除"
 
-#: unfreeze.inc.php:17
+#: ../../plugin/unfreeze.inc.php:22
 msgid "Invalid password."
 msgstr "パスワードが間違っています。"
 
-#: unfreeze.inc.php:18
+#: ../../plugin/unfreeze.inc.php:23
 msgid "Please input the password for unfreezing."
 msgstr "凍結解除用のパスワードを入力してください。"
 
-#: unfreeze.inc.php:19
+#: ../../plugin/unfreeze.inc.php:24
 msgid "Unfreeze"
 msgstr "凍結解除"
-

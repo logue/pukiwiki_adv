@@ -6,10 +6,10 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.7-u2-i18n\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-08-25 00:26+0900\n"
-"PO-Revision-Date: 2011-06-01 15:05+0900\n"
-"Last-Translator: Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 20:39+0900\n"
+"PO-Revision-Date: 2012-07-05 20:56+0900\n"
+"Last-Translator: Logue <logue@hotmail.co.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,14 +24,13 @@ msgid "All links are effective."
 msgstr "全てのリンクは有効です。"
 
 #: ../../plugin/brokenlink.inc.php:17
-msgid "<p>The parameter is illegal.</p>"
-msgstr "<p>パラメータが不正です。</p>"
+msgid "The parameter is illegal."
+msgstr "パラメータが不正です。"
 
 #: ../../plugin/brokenlink.inc.php:18
-msgid "<p>Not authorized to access.</p>"
-msgstr "<p>認証者のみアクセスできます。</p>"
+msgid "Not authorized to access."
+msgstr "認証者のみアクセスできます。"
 
 #: ../../plugin/brokenlink.inc.php:19
-msgid "<p>The xbel plugin is not found.</p>"
-msgstr "<p>xbel プラグインが見つかりません。</p>"
-
+msgid "The xbel plugin is not found."
+msgstr "xbel プラグインが見つかりません。"

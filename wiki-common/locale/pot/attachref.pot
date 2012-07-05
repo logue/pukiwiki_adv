@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-02 03:11+0900\n"
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 22:08+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgstr ""
 
 #: ../../plugin/attachref.inc.php:29
 #, php-format
-msgid "Maximum file size is %s."
+msgid "Maximum file size is <var>%s</var>."
 msgstr ""
 
 #: ../../plugin/attachref.inc.php:30
@@ -54,9 +54,9 @@ msgid "On updating $1, a collision has occurred."
 msgstr ""
 
 #: ../../plugin/attachref.inc.php:39
-msgid "It seems that someone has already updated the page you were editing.<br />The attach file was added, alhough it may be inserted in the wrong position.<br />"
+msgid "It seems that someone has already updated the page you were editing."
 msgstr ""
 
-#: ../../plugin/attachref.inc.php:409
+#: ../../plugin/attachref.inc.php:412
 msgid "file_uploads disabled."
 msgstr ""

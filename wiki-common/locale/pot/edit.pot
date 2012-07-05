@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-02 03:12+0900\n"
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 22:08+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,62 +16,59 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/edit.inc.php:25 ../../plugin/edit.inc.php:28
-msgid "PKWK_READONLY prohibits editing"
+#: ../../plugin/edit.inc.php:87
+msgid "Edit of $1"
 msgstr ""
 
-#: ../../plugin/edit.inc.php:39
-msgid "PKWK_CREATE_PAGE prohibits editing"
-msgstr ""
-
-#: ../../plugin/edit.inc.php:65
-msgid "Edit of  $1"
-msgstr ""
-
-#: ../../plugin/edit.inc.php:106
+#: ../../plugin/edit.inc.php:128
 msgid "Preview of $1"
 msgstr ""
 
-#: ../../plugin/edit.inc.php:107
+#: ../../plugin/edit.inc.php:129
 msgid "To confirm the changes, click the button at the bottom of the page"
 msgstr ""
 
-#: ../../plugin/edit.inc.php:108
+#: ../../plugin/edit.inc.php:130
 msgid "(The contents of the page are empty. Updating deletes this page.)"
 msgstr ""
 
-#: ../../plugin/edit.inc.php:199
+#: ../../plugin/edit.inc.php:222
 msgid " $1 was deleted"
 msgstr ""
 
-#: ../../plugin/edit.inc.php:200
+#: ../../plugin/edit.inc.php:223
 msgid "Invalid password."
 msgstr ""
 
-#: ../../plugin/edit.inc.php:249 ../../plugin/edit.inc.php:254
+#: ../../plugin/edit.inc.php:270 ../../plugin/edit.inc.php:275
 msgid "It seems that someone has already updated this page while you were editing it.<br />"
 msgstr ""
 
-#: ../../plugin/edit.inc.php:250
+#: ../../plugin/edit.inc.php:271
 msgid "The collision has been corrected automatically, but there may still be some problems with the page.<br />"
 msgstr ""
 
-#: ../../plugin/edit.inc.php:251
+#: ../../plugin/edit.inc.php:272
 msgid "To confirm the changes to the page, press [Update].<br />"
 msgstr ""
 
-#: ../../plugin/edit.inc.php:255
+#: ../../plugin/edit.inc.php:276
 msgid " + is placed at the beginning of a line that was newly added.<br />"
 msgstr ""
 
-#: ../../plugin/edit.inc.php:256
+#: ../../plugin/edit.inc.php:277
 msgid " ! is placed at the beginning of a line that has possibly been updated.<br />"
 msgstr ""
 
-#: ../../plugin/edit.inc.php:257
+#: ../../plugin/edit.inc.php:278
 msgid " Edit those lines, and submit again."
 msgstr ""
 
-#: ../../plugin/edit.inc.php:259
+#: ../../plugin/edit.inc.php:280
 msgid "On updating  $1, a collision has occurred."
+msgstr ""
+
+#: ../../plugin/edit.inc.php:336
+#, php-format
+msgid "%s is updated."
 msgstr ""

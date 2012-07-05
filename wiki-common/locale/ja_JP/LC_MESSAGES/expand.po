@@ -1,0 +1,36 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 20:39+0900\n"
+"PO-Revision-Date: 2012-07-05 21:50+0900\n"
+"Last-Translator: Logue <logue@hotmail.co.jp>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../plugin/expand.inc.php:20
+msgid "View all contents"
+msgstr "すべてのコンテンツを見る"
+
+#: ../../plugin/expand.inc.php:39
+msgid "#expand: invalid arguments"
+msgstr "#expand:無効な引数です"
+
+#: ../../plugin/expand.inc.php:41
+msgid "#expand: too few width. "
+msgstr "#expand:幅が小さすぎます。"
+
+#: ../../plugin/expand.inc.php:42
+msgid "#expand: too few height. "
+msgstr "#expand:高さが小さすぎます。"
+
+#: ../../plugin/expand.inc.php:49
+msgid "Click to all views"
+msgstr "すべてを見る"

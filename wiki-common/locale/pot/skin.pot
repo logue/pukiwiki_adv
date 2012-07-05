@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-01-06 00:43+0900\n"
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 22:08+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,66 +16,66 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/skin.inc.php:16
+#: ../../plugin/skin.inc.php:17
 msgid "Change Theme"
 msgstr ""
 
-#: ../../plugin/skin.inc.php:17
+#: ../../plugin/skin.inc.php:18
 msgid "Update of config page"
 msgstr ""
 
-#: ../../plugin/skin.inc.php:18
+#: ../../plugin/skin.inc.php:19
 msgid "Theme list"
 msgstr ""
 
-#: ../../plugin/skin.inc.php:19
+#: ../../plugin/skin.inc.php:20
 msgid "The update work ended."
 msgstr ""
 
-#: ../../plugin/skin.inc.php:20
+#: ../../plugin/skin.inc.php:21
 msgid "Management of skin theme"
 msgstr ""
 
-#: ../../plugin/skin.inc.php:21
+#: ../../plugin/skin.inc.php:22
 msgid "Management ledger"
 msgstr ""
 
-#: ../../plugin/skin.inc.php:22
+#: ../../plugin/skin.inc.php:23
 msgid "Update of management ledger"
 msgstr ""
 
-#: ../../plugin/skin.inc.php:23
+#: ../../plugin/skin.inc.php:24
 msgid "Present theme"
 msgstr ""
 
-#: ../../plugin/skin.inc.php:24
+#: ../../plugin/skin.inc.php:25
 msgid "Management operation"
 msgstr ""
 
-#: ../../plugin/skin.inc.php:25
+#: ../../plugin/skin.inc.php:26
 msgid "Theme Name"
 msgstr ""
 
-#: ../../plugin/skin.inc.php:26
+#: ../../plugin/skin.inc.php:27
 msgid "Use"
 msgstr ""
 
-#: ../../plugin/skin.inc.php:27
+#: ../../plugin/skin.inc.php:28
 msgid "Display Name"
 msgstr ""
 
-#: ../../plugin/skin.inc.php:28
+#: ../../plugin/skin.inc.php:29
 msgid "Color"
 msgstr ""
 
-#: ../../plugin/skin.inc.php:29
+#: ../../plugin/skin.inc.php:30
 msgid "Memo"
 msgstr ""
 
-#: ../../plugin/skin.inc.php:30
+#: ../../plugin/skin.inc.php:31
 msgid "This plugin function cannot be used."
 msgstr ""
 
-#: ../../plugin/skin.inc.php:31
+#: ../../plugin/skin.inc.php:33
 msgid "Only Webmaster for World Wide Web Site can do the update work."
 msgstr ""

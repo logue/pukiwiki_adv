@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-02 03:12+0900\n"
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 22:08+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,11 +24,11 @@ msgstr ""
 msgid "The comment was added, alhough it may be inserted in the wrong position."
 msgstr ""
 
-#: ../../plugin/comment.inc.php:30 ../../plugin/comment.inc.php:74
+#: ../../plugin/comment.inc.php:30
 msgid "On updating  $1, a collision has occurred."
 msgstr ""
 
-#: ../../plugin/comment.inc.php:31 ../../plugin/comment.inc.php:73
+#: ../../plugin/comment.inc.php:31
 msgid "$1 was updated"
 msgstr ""
 
@@ -37,26 +37,14 @@ msgstr ""
 msgid "This Wiki is <var>%s</var> mode now. Therefore, comment function is prohibited."
 msgstr ""
 
-#: ../../plugin/comment.inc.php:60
-msgid "PKWK_CREATE_PAGE prohibits editing"
-msgstr ""
-
-#: ../../plugin/comment.inc.php:75
-msgid "It seems that someone has already updated the page you were editing.<br />"
-msgstr ""
-
-#: ../../plugin/comment.inc.php:76
-msgid "The comment was added, alhough it may be inserted in the wrong position.<br />"
-msgstr ""
-
-#: ../../plugin/comment.inc.php:179
+#: ../../plugin/comment.inc.php:33
 msgid "Name: "
 msgstr ""
 
-#: ../../plugin/comment.inc.php:180
+#: ../../plugin/comment.inc.php:34
 msgid "Post Comment"
 msgstr ""
 
-#: ../../plugin/comment.inc.php:181
+#: ../../plugin/comment.inc.php:35
 msgid "Comment: "
 msgstr ""

@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.7-u2-i18n\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-11-25 02:09+0900\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 20:39+0900\n"
 "PO-Revision-Date: 2011-06-01 15:05+0900\n"
 "Last-Translator: Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
@@ -15,36 +15,35 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/typekey.inc.php:16
+#: ../../plugin/typekey.inc.php:171
 msgid "TypeKey"
 msgstr "TypeKey"
 
-#: ../../plugin/typekey.inc.php:17
+#: ../../plugin/typekey.inc.php:172
 msgid "logout"
 msgstr "logout"
 
-#: ../../plugin/typekey.inc.php:18
+#: ../../plugin/typekey.inc.php:173
 #, php-format
 msgid "%s has been approved by TypeKey."
 msgstr "%s さんは、TypeKey により認証されています。"
 
-#: ../../plugin/typekey.inc.php:19
+#: ../../plugin/typekey.inc.php:174
 msgid "site_token must be set."
 msgstr "site_token を設定しなくてはいけません。"
 
-#: ../../plugin/typekey.inc.php:20
+#: ../../plugin/typekey.inc.php:175
 msgid "The function of TypeKey is invalid."
 msgstr "TypeKey の機能は無効です。"
 
-#: ../../plugin/typekey.inc.php:21
+#: ../../plugin/typekey.inc.php:176
 msgid "pkwk_session_start() doesn't exist."
 msgstr "pkwk_session_start() が見つかりません。"
 
-#: ../../plugin/typekey.inc.php:22
+#: ../../plugin/typekey.inc.php:177
 msgid "The session is not start."
 msgstr "セッションが開始されていません。"
 
-#: ../../plugin/typekey.inc.php:23
+#: ../../plugin/typekey.inc.php:178
 msgid "LOGIN(TypeKey)"
 msgstr "ログイン(TypeKey)"
-

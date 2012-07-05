@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.7-u2-i18n\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-08-19 22:11+0900\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 20:39+0900\n"
 "PO-Revision-Date: 2011-06-01 15:05+0900\n"
 "Last-Translator: Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
@@ -15,15 +15,14 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/xbel.inc.php:19
+#: ../../plugin/xbel.inc.php:17
 msgid "Exec"
 msgstr "実行"
 
-#: ../../plugin/xbel.inc.php:20
+#: ../../plugin/xbel.inc.php:18
 msgid "Please select the page that wants to output as a favorite."
 msgstr "お気に入りとして、出力したいページを選択して下さい。"
 
-#: ../../plugin/xbel.inc.php:21
+#: ../../plugin/xbel.inc.php:19
 msgid "There was no data."
 msgstr "データがありません。"
-

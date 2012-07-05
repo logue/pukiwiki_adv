@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-03-10 16:46+0900\n"
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 22:08+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,46 +16,50 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../plugin/tracker.inc.php:215
+#: ../../plugin/tracker.inc.php:154
+msgid "PKWK_CREATE_PAGE prohibits editing"
+msgstr ""
+
+#: ../../plugin/tracker.inc.php:1594
 msgid "Page"
 msgstr ""
 
-#: ../plugin/tracker.inc.php:216
+#: ../../plugin/tracker.inc.php:1595
 msgid "Name"
 msgstr ""
 
-#: ../plugin/tracker.inc.php:217
+#: ../../plugin/tracker.inc.php:1596
 msgid "Realname"
 msgstr ""
 
-#: ../plugin/tracker.inc.php:218
+#: ../../plugin/tracker.inc.php:1597
 msgid "Add"
 msgstr ""
 
-#: ../plugin/tracker.inc.php:219
+#: ../../plugin/tracker.inc.php:1598
 msgid "Date"
 msgstr ""
 
-#: ../plugin/tracker.inc.php:220
+#: ../../plugin/tracker.inc.php:1599
 msgid "Refer page"
 msgstr ""
 
-#: ../plugin/tracker.inc.php:221
+#: ../../plugin/tracker.inc.php:1600
 msgid "Base page"
 msgstr ""
 
-#: ../plugin/tracker.inc.php:222
+#: ../../plugin/tracker.inc.php:1601
 msgid "Update"
 msgstr ""
 
-#: ../plugin/tracker.inc.php:223
+#: ../../plugin/tracker.inc.php:1602
 msgid "Past"
 msgstr ""
 
-#: ../plugin/tracker.inc.php:629
-msgid "List items of  $1"
+#: ../../plugin/tracker.inc.php:1603
+msgid "top <var>$2</var> results out of <var>$1</var>."
 msgstr ""
 
-#: ../plugin/tracker.inc.php:880
-msgid "top  $2 results out of  $1."
+#: ../../plugin/tracker.inc.php:1604
+msgid "List items of <var>$1</var>"
 msgstr ""

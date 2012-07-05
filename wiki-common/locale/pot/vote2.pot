@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-27 19:28+0900\n"
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 22:08+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,26 +56,26 @@ msgstr ""
 msgid "Vote"
 msgstr ""
 
-#: ../../plugin/vote2.inc.php:424 ../../plugin/vote2.inc.php:539
+#: ../../plugin/vote2.inc.php:422 ../../plugin/vote2.inc.php:537
 msgid "On updating $1, a collision has occurred."
 msgstr ""
 
-#: ../../plugin/vote2.inc.php:425 ../../plugin/vote2.inc.php:540
+#: ../../plugin/vote2.inc.php:423 ../../plugin/vote2.inc.php:538
 msgid "$1 was updated"
 msgstr ""
 
-#: ../../plugin/vote2.inc.php:426 ../../plugin/vote2.inc.php:541
+#: ../../plugin/vote2.inc.php:424 ../../plugin/vote2.inc.php:539
 msgid "It seems that someone has already updated this page while you were editing it.<br />"
 msgstr ""
 
-#: ../../plugin/vote2.inc.php:427 ../../plugin/vote2.inc.php:542
+#: ../../plugin/vote2.inc.php:425 ../../plugin/vote2.inc.php:540
 msgid " + is placed at the beginning of a line that was newly added.<br />"
 msgstr ""
 
-#: ../../plugin/vote2.inc.php:428 ../../plugin/vote2.inc.php:543
+#: ../../plugin/vote2.inc.php:426 ../../plugin/vote2.inc.php:541
 msgid " ! is placed at the beginning of a line that has possibly been updated.<br />"
 msgstr ""
 
-#: ../../plugin/vote2.inc.php:429 ../../plugin/vote2.inc.php:544
+#: ../../plugin/vote2.inc.php:427 ../../plugin/vote2.inc.php:542
 msgid " Edit those lines, and submit again."
 msgstr ""

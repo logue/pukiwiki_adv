@@ -3,20 +3,20 @@
 #
 msgid ""
 msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 20:39+0900\n"
+"PO-Revision-Date: \n"
 "Last-Translator: Miko.Hoshina(E.Satoh) <miko@cafeterrace.com>\n"
 "Language-Team: Japanese\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Project-Id-Version: \n"
-"POT-Creation-Date: \n"
-"PO-Revision-Date: \n"
 
-#: yetlist.inc.php:12
+#: ../../plugin/yetlist.inc.php:19
 msgid "List of pages which have not yet been created."
 msgstr "未作成のページ一覧"
 
-#: yetlist.inc.php:30
+#: ../../plugin/yetlist.inc.php:25
 msgid "All pages have been created."
 msgstr "未作成のページはありません。"
-

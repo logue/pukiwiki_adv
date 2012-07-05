@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-04-08 17:27+0900\n"
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 22:08+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,38 +16,34 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/urlbookmark.inc.php:121
+#: ../../plugin/urlbookmark.inc.php:123
 msgid " $1 was updated"
 msgstr ""
 
-#: ../../plugin/urlbookmark.inc.php:125
+#: ../../plugin/urlbookmark.inc.php:127
 msgid "On updating  $1, a collision has occurred."
 msgstr ""
 
-#: ../../plugin/urlbookmark.inc.php:126
-msgid ""
-"It seems that someone has already updated this page while you were editing "
-"it.<br />"
+#: ../../plugin/urlbookmark.inc.php:128
+msgid "It seems that someone has already updated this page while you were editing it.<br />"
 msgstr ""
 
-#: ../../plugin/urlbookmark.inc.php:127
-msgid ""
-"It is likely to be inserted in a different position though it bookmarked."
-"<br />"
+#: ../../plugin/urlbookmark.inc.php:129
+msgid "It is likely to be inserted in a different position though it bookmarked.<br />"
 msgstr ""
 
-#: ../../plugin/urlbookmark.inc.php:158
+#: ../../plugin/urlbookmark.inc.php:162
 msgid "Title: "
 msgstr ""
 
-#: ../../plugin/urlbookmark.inc.php:168
+#: ../../plugin/urlbookmark.inc.php:172
 msgid "Comment: "
 msgstr ""
 
-#: ../../plugin/urlbookmark.inc.php:169
+#: ../../plugin/urlbookmark.inc.php:173
 msgid "Add URL"
 msgstr ""
 
-#: ../../plugin/urlbookmark.inc.php:170
+#: ../../plugin/urlbookmark.inc.php:174
 msgid "URL: "
 msgstr ""

@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5-u2\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-03-10 10:15+0900\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 20:39+0900\n"
 "PO-Revision-Date: 2011-06-01 15:05+0900\n"
 "Last-Translator: Miko.Hoshina(E.Satoh) <miko@cafeterrace.com>\n"
 "Language-Team: Japanese\n"
@@ -15,27 +15,26 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../plugin/freeze.inc.php:14
+#: ../../plugin/freeze.inc.php:19
 msgid " $1 has already been frozen"
 msgstr "$1 はすでに凍結されています"
 
-#: ../plugin/freeze.inc.php:15
+#: ../../plugin/freeze.inc.php:20
 msgid " $1 has been frozen."
 msgstr "$1 を凍結しました"
 
-#: ../plugin/freeze.inc.php:16
+#: ../../plugin/freeze.inc.php:21
 msgid "Freeze  $1"
 msgstr "$1 の凍結"
 
-#: ../plugin/freeze.inc.php:17
+#: ../../plugin/freeze.inc.php:22
 msgid "Invalid password."
 msgstr "パスワードが間違っています。"
 
-#: ../plugin/freeze.inc.php:18
+#: ../../plugin/freeze.inc.php:23
 msgid "Please input the password for freezing."
 msgstr "凍結用のパスワードを入力してください。"
 
-#: ../plugin/freeze.inc.php:19
+#: ../../plugin/freeze.inc.php:24
 msgid "Freeze"
 msgstr "凍結"
-

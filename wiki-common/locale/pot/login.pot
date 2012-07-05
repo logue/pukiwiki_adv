@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-11-27 21:48+0900\n"
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 22:08+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,15 +16,31 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/login.inc.php:19
+#: ../../plugin/login.inc.php:20
 msgid "UserName"
 msgstr ""
 
-#: ../../plugin/login.inc.php:20
+#: ../../plugin/login.inc.php:21
 #, php-format
 msgid "Please attest it with %s to write the comment."
 msgstr ""
 
-#: ../../plugin/login.inc.php:21
+#: ../../plugin/login.inc.php:22
 msgid "Login"
+msgstr ""
+
+#: ../../plugin/login.inc.php:23
+msgid "Logout"
+msgstr ""
+
+#: ../../plugin/login.inc.php:24
+msgid "#login() : Could not use auth function. Please check <var>auth_api.ini.php</var> setting."
+msgstr ""
+
+#: ../../plugin/login.inc.php:25
+msgid "Authorization Required"
+msgstr ""
+
+#: ../../plugin/login.inc.php:26
+msgid "This server could not verify that you are authorized to access the document requested. Either you supplied the wrong credentials (e.g., bad password), or your browser doesn't understand how to supply the credentials required."
 msgstr ""

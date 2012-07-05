@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-05 01:39+0900\n"
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 22:08+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -69,9 +69,7 @@ msgid "The writing function is limited."
 msgstr ""
 
 #: ../../plugin/passwd.inc.php:35
-msgid ""
-"The authority more than Webmaster for World Wide Web Site is necessary to "
-"update it."
+msgid "The authority more than Webmaster for World Wide Web Site is necessary to update it."
 msgstr ""
 
 #: ../../plugin/passwd.inc.php:36

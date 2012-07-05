@@ -6,72 +6,70 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-06-30 00:18+0900\n"
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 22:08+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/newpage_subdir.inc.php:33
+#: ../../plugin/newpage_subdir.inc.php:39
 #, php-format
 msgid "#%s doesn't have the corresponding page. "
 msgstr ""
 
-#: ../../plugin/newpage_subdir.inc.php:34
+#: ../../plugin/newpage_subdir.inc.php:40
 msgid "making"
 msgstr ""
 
-#: ../../plugin/newpage_subdir.inc.php:51
-#: ../../plugin/newpage_subdir.inc.php:164
-msgid "New page"
+#: ../../plugin/newpage_subdir.inc.php:58
+msgid "Page name"
 msgstr ""
 
-#: ../../plugin/newpage_subdir.inc.php:64
-msgid "Edit"
-msgstr ""
-
-#: ../../plugin/newpage_subdir.inc.php:81
-msgid "DESCRIPTION<br />\n"
-msgstr ""
-
-#: ../../plugin/newpage_subdir.inc.php:82
-msgid ""
-"\t　The field that adds a new page below the directory specified for "
-"[directory] is made.<br />\n"
-msgstr ""
-
-#: ../../plugin/newpage_subdir.inc.php:83
-msgid "\t　The order of the parameter is arbitrary.<br />"
-msgstr ""
-
-#: ../../plugin/newpage_subdir.inc.php:84
-msgid ""
-"\t　When an undefined option is specified, Help is displayed with the "
-"message.<br />"
-msgstr ""
-
-#: ../../plugin/newpage_subdir.inc.php:86
-msgid "OPTION<br />\n"
-msgstr ""
-
-#: ../../plugin/newpage_subdir.inc.php:87
-msgid ""
-"　-d Directory Only.\tIt limits it only to the one with the child page. (The "
-"directory specified specifying it is an exception. )<br />\n"
-msgstr ""
-
-#: ../../plugin/newpage_subdir.inc.php:88
-msgid "　-h Help.\t\tThis Description is displayed. <br />\n"
+#: ../../plugin/newpage_subdir.inc.php:71
+msgid "New"
 msgstr ""
 
 #: ../../plugin/newpage_subdir.inc.php:89
-msgid "　-q Quiet.\t\tWarning is not displayed.<br />\n"
+msgid "DESCRIPTION"
+msgstr ""
+
+#: ../../plugin/newpage_subdir.inc.php:90
+msgid "The field that adds a new page below the directory specified for [directory] is made."
 msgstr ""
 
 #: ../../plugin/newpage_subdir.inc.php:91
-msgid "EXAMPLE<br />\n"
+msgid "The order of the parameter is arbitrary."
+msgstr ""
+
+#: ../../plugin/newpage_subdir.inc.php:92
+msgid "When an undefined option is specified, Help is displayed with the message."
+msgstr ""
+
+#: ../../plugin/newpage_subdir.inc.php:93
+msgid "OPTION"
+msgstr ""
+
+#: ../../plugin/newpage_subdir.inc.php:94
+msgid "-d Directory Only.\tIt limits it only to the one with the child page. (The directory specified specifying it is an exception. )"
+msgstr ""
+
+#: ../../plugin/newpage_subdir.inc.php:95
+msgid "-h Help.\t\tThis Description is displayed."
+msgstr ""
+
+#: ../../plugin/newpage_subdir.inc.php:96
+msgid "-q Quiet.\t\tWarning is not displayed."
+msgstr ""
+
+#: ../../plugin/newpage_subdir.inc.php:97
+msgid "EXAMPLE"
+msgstr ""
+
+#: ../../plugin/newpage_subdir.inc.php:173
+#, php-format
+msgid "Create new page to %s directory"
 msgstr ""

@@ -6,20 +6,37 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.7-u2-i18n\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-05-30 19:25+0900\n"
-"PO-Revision-Date: 2011-06-01 15:05+0900\n"
-"Last-Translator: Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 20:39+0900\n"
+"PO-Revision-Date: 2012-07-05 21:47+0900\n"
+"Last-Translator: Logue <logue@hotmail.co.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/read.inc.php:31
-msgid "This pagename is an alias to"
-msgstr "このページは別名です "
-
-#: ../../plugin/read.inc.php:36
+#: ../../plugin/read.inc.php:10
 msgid "Redirect"
-msgstr "Redirect"
+msgstr "リダイレクト"
 
+#: ../../plugin/read.inc.php:11
+#, php-format
+msgid "This pagename is an alias to %s."
+msgstr "このページは%sのエイリアスです。"
+
+#: ../../plugin/read.inc.php:12
+msgid "Page not found"
+msgstr "ページがみつかりません。"
+
+#: ../../plugin/read.inc.php:13
+msgid "Sorry, but the page you were trying to view does not exist or deleted."
+msgstr "あなたが、閲覧しようとしたページは見つからないか削除されています。"
+
+#: ../../plugin/read.inc.php:14
+#, php-format
+msgid ""
+"Please check <a href=\"%1s\" rel=\"nofollow\">backups</a> or <a href=\"%2s\" "
+"rel=\"nofollow\">create page</a>."
+msgstr ""
+"<a href=\"%1s\" rel=\"nofollow\">バックアップ</a>を確認するか、<a href=\"%2s"
+"\" rel=\"nofollow\">ページを作成</a>してください。"

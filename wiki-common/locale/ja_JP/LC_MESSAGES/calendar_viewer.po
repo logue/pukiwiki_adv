@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5-u2\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-02 03:11+0900\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 20:39+0900\n"
 "PO-Revision-Date: 2011-06-01 15:05+0900\n"
 "Last-Translator: Miko.Hoshina(E.Satoh) <miko@cafeterrace.com>\n"
 "Language-Team: Japanese\n"
@@ -15,26 +15,25 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/calendar_viewer.inc.php:66
+#: ../../plugin/calendar_viewer.inc.php:71
 msgid "Wrong second parameter."
 msgstr "第2引数が不正です。"
 
-#: ../../plugin/calendar_viewer.inc.php:67
+#: ../../plugin/calendar_viewer.inc.php:72
 #, fuzzy, php-format
 msgid "Next %d &gt;&gt;"
 msgstr "次の%d件&gt;&gt;"
 
-#: ../../plugin/calendar_viewer.inc.php:68
+#: ../../plugin/calendar_viewer.inc.php:73
 #, php-format
 msgid "&lt;&lt; Prev %d"
 msgstr "&lt;&lt;前の%d件"
 
-#: ../../plugin/calendar_viewer.inc.php:69
+#: ../../plugin/calendar_viewer.inc.php:74
 msgid "Due to the blocking, the calendar_viewer cannot refer to $1."
 msgstr "$1 は閲覧制限がかかっているためcalendar_viewerによる参照はできません"
 
-#: ../../plugin/calendar_viewer.inc.php:70
+#: ../../plugin/calendar_viewer.inc.php:75
 #, php-format
 msgid "%1s, %2s %3s %4s"
 msgstr ""
-

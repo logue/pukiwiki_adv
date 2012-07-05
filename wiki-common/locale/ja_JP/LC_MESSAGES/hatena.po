@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.7-u2-i18n\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-11-25 02:09+0900\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-05 20:39+0900\n"
 "PO-Revision-Date: 2011-06-01 15:05+0900\n"
 "Last-Translator: Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
@@ -15,32 +15,31 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/hatena.inc.php:16
+#: ../../plugin/hatena.inc.php:83
 msgid "logout"
 msgstr "logout"
 
-#: ../../plugin/hatena.inc.php:17
+#: ../../plugin/hatena.inc.php:84
 #, php-format
 msgid "%s has been approved by Hatena."
 msgstr "%s さんは、Hatena  により認証されています。"
 
-#: ../../plugin/hatena.inc.php:18
+#: ../../plugin/hatena.inc.php:85
 msgid "The function of Hatena is invalid."
 msgstr "はてな認証API の機能は無効です。"
 
-#: ../../plugin/hatena.inc.php:19
+#: ../../plugin/hatena.inc.php:86
 msgid "pkwk_session_start() doesn't exist."
 msgstr "pkwk_session_start() が見つかりません。"
 
-#: ../../plugin/hatena.inc.php:20
+#: ../../plugin/hatena.inc.php:87
 msgid "The session is not start."
 msgstr "セッションが開始されていません。"
 
-#: ../../plugin/hatena.inc.php:21
+#: ../../plugin/hatena.inc.php:88
 msgid "Hatena"
 msgstr "Hatena"
 
-#: ../../plugin/hatena.inc.php:22
+#: ../../plugin/hatena.inc.php:89
 msgid "LOGIN(Hatena)"
 msgstr "ログイン(はてな)"
-
