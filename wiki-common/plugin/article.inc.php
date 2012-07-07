@@ -47,14 +47,12 @@ $_plugin_article_mailto = array (
 
 function plugin_article_init()
 {
+	global $_string;
 	$msg = array(
 		'_article_msg' => array(
-			'title_collided'			=> T_('On updating $1, a collision has occurred.'),
-			'title_updated'				=> T_('$1 was updated'),
-			'msg_collided'				=> T_('It seems that someone has already updated this page while you were editing it.<br />
- + is placed at the beginning of a line that was newly added.<br />
- ! is placed at the beginning of a line that has possibly been updated.<br />
- Edit those lines, and submit again.'),
+			'title_updated'				=> $_string['updated'],
+			'title_collided'			=> $_string['title_collided'],
+			'msg_collided'				=> $_string['msg_collided'],
 			'msg_article_mail_sender'	=> T_('Author: '),
 			'msg_article_mail_page'		=> T_('Page: '),
 			'btn_name'					=> T_('Name: '),

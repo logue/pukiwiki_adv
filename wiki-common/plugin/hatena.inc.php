@@ -161,7 +161,7 @@ function plugin_hatena_inline()
 	if (isset($name['name'])) {
 		// $name = array('name','ts','image_url','thumbnail_url');
 		$link = $name['name'].'<img src="'.$name['thumbnail_url'].'" alt="id:'.$name['name'].'" />';
-		$logout_url = $script.'?plugin=hatena';
+		$logout_url = $script.'?cmd=hatena';
 		if (! empty($vars['page'])) {
 			$logout_url .= '&amp;page='.rawurlencode($vars['page']);
 		}

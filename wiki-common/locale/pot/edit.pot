@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Copyright (C) YEAR PukiWiki Advance Developers Team
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Advance 1.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-07-05 22:08+0900\n"
+"POT-Creation-Date: 2012-07-07 17:14+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,41 +34,4 @@ msgstr ""
 
 #: ../../plugin/edit.inc.php:222
 msgid " $1 was deleted"
-msgstr ""
-
-#: ../../plugin/edit.inc.php:223
-msgid "Invalid password."
-msgstr ""
-
-#: ../../plugin/edit.inc.php:270 ../../plugin/edit.inc.php:275
-msgid "It seems that someone has already updated this page while you were editing it.<br />"
-msgstr ""
-
-#: ../../plugin/edit.inc.php:271
-msgid "The collision has been corrected automatically, but there may still be some problems with the page.<br />"
-msgstr ""
-
-#: ../../plugin/edit.inc.php:272
-msgid "To confirm the changes to the page, press [Update].<br />"
-msgstr ""
-
-#: ../../plugin/edit.inc.php:276
-msgid " + is placed at the beginning of a line that was newly added.<br />"
-msgstr ""
-
-#: ../../plugin/edit.inc.php:277
-msgid " ! is placed at the beginning of a line that has possibly been updated.<br />"
-msgstr ""
-
-#: ../../plugin/edit.inc.php:278
-msgid " Edit those lines, and submit again."
-msgstr ""
-
-#: ../../plugin/edit.inc.php:280
-msgid "On updating  $1, a collision has occurred."
-msgstr ""
-
-#: ../../plugin/edit.inc.php:336
-#, php-format
-msgid "%s is updated."
 msgstr ""

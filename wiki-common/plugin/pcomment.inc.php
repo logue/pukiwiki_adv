@@ -41,10 +41,10 @@ define('PLUGIN_PCOMMENT_FORMAT_STRING',
 
 function plugin_pcomment_action()
 {
-	global $vars;
+	global $vars, $_string;
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	if (auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
+	if (auth::check_role('readonly')) die_message(sprintf($_string['error_prohibit'], 'PKWK_READONLY'));
 
 	// Petit SPAM Check (Client(Browser)-Server Ticket Check)
 	$b = FALSE;
@@ -69,7 +69,7 @@ function plugin_pcomment_action()
 	$refer = isset($vars['refer']) ? $vars['refer'] : '';
 
 	if (!is_page($refer) && auth::is_check_role(PKWK_CREATE_PAGE)) {
-		die_message( T_('PKWK_CREATE_PAGE prohibits editing') );
+		die_message( sprintf($_string['error_prohibit'], 'PKWK_CREATE_PAGE') );
 	}
 
 	$retval = plugin_pcomment_insert();
@@ -205,7 +205,7 @@ EOD;
 function plugin_pcomment_insert()
 {
 	global $vars, $now, $_no_name;
-//	global $vars, $now, $_title_updated, $_no_name, $_pcmt_messages;
+//	global $vars, $now, $_title_updated, $_no_name, $_pcmt_messages, $_string;
 
 	$refer = isset($vars['refer']) ? $vars['refer'] : '';
 	$page  = isset($vars['page'])  ? $vars['page']  : '';
@@ -220,7 +220,7 @@ function plugin_pcomment_insert()
 
 	check_editable($page, true, true);
 
-	$ret = array('msg' => _(' $1 was updated'), 'collided' => FALSE);
+	$ret = array('msg' => $_string['update'], 'collided' => FALSE);
 
 	$msg = str_replace('$msg', rtrim($vars['msg']), PLUGIN_PCOMMENT_FORMAT_MSG);
 	$name = (! isset($vars['name']) || $vars['name'] == '') ? $_no_name : $vars['name'];
@@ -256,9 +256,8 @@ function plugin_pcomment_insert()
 
 		$digest = isset($vars['digest']) ? $vars['digest'] : '';
 		if (md5(join('', $postdata)) != $digest) {
-			$ret['msg']  = T_('On updating  $1, there was a collision.');
-			$ret['body'] = T_('It seems that someone has already updated this page while you were editing it.<br />' .
-			                 'The comment was added to the page, but there may be a problem.<br />');
+			$ret['msg']  = $_string['title_collided'];
+			$ret['body'] = $_string['comment_collided'];
 		}
 
 		$start_position = 0;
@@ -308,7 +307,7 @@ function plugin_pcomment_insert()
 	page_write($page, $postdata, PLUGIN_PCOMMENT_TIMESTAMP);
 
 	if (PLUGIN_PCOMMENT_TIMESTAMP) {
-		if ($refer != '') pkwk_touch_file(get_filename($refer));
+		if ($refer !== '') pkwk_touch_file(get_filename($refer));
 		put_lastmodified();
 	}
 

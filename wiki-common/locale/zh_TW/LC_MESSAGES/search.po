@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5_u2\n"
-"Report-Msgid-Bugs-To: Chung-Yen Chang <candyz@linux.org.tw>\n"
-"POT-Creation-Date: 2005-05-10 00:27+0900\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-07 17:14+0900\n"
 "PO-Revision-Date: 2011-06-01 15:05+0900\n"
 "Last-Translator: Chung-Yen Chang <candyz@linux.org.tw>\n"
 "Language-Team: Traditional Chinese <zh@li.org>\n"
@@ -15,27 +15,41 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../plugin/search.inc.php:31
+#: ../../plugin/search.inc.php:18
 msgid "Search for word(s)"
 msgstr "搜尋字串"
 
-#: ../plugin/search.inc.php:32
+#: ../../plugin/search.inc.php:19
 msgid "Search result of  $1"
 msgstr "$1 的搜尋結果"
 
-#: ../plugin/search.inc.php:33
+#: ../../plugin/search.inc.php:20
 msgid "Key words are case-insenstive, and are searched for in all pages."
 msgstr "關鍵字是有分大小寫的，且會從所有的頁面中去搜尋。"
 
-#: ../plugin/search.inc.php:67
+#: ../../plugin/search.inc.php:21
 msgid "Search"
 msgstr "搜尋"
 
-#: ../plugin/search.inc.php:68
+#: ../../plugin/search.inc.php:22
 msgid "AND"
 msgstr "且"
 
-#: ../plugin/search.inc.php:69
+#: ../../plugin/search.inc.php:23
 msgid "OR"
 msgstr "或"
 
+#: ../../plugin/search.inc.php:24
+#, fuzzy
+msgid "Search for page starts from $1"
+msgstr "$1 的搜尋結果"
+
+#: ../../plugin/search.inc.php:25
+#, fuzzy
+msgid "Search for all pages"
+msgstr "搜尋字串"
+
+#: ../../plugin/search.inc.php:26
+#, fuzzy
+msgid "Search words"
+msgstr "搜尋字串"

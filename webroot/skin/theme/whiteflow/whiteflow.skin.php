@@ -1,7 +1,7 @@
 <?php
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: whiteflow.css.php,v 1.0.2 2012/04/10 18:06:30 Logue Exp $
+// $Id: whiteflow.css.php,v 1.0.3 2012/08/05 18:06:30 Logue Exp $
 
 // White flow Adv. skin.
 // ver 1.0 (2011/12/10) 
@@ -153,8 +153,6 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 <?php } ?>
 									<li><a href="<?php echo $_LINK['recent'] ?>"><span class="pkwk-icon icon-recent"></span><?php echo $_LANG['skin']['recent'] ?></a></li>
 									<li><a href="<?php echo $_LINK['referer'] ?>"><span class="pkwk-icon icon-referer"></span><?php echo $_LANG['skin']['referer'] ?></a></li>
-									<li><a href="<?php echo $_LINK['skeylist'] ?>"><span class="pkwk-icon icon-skeylist"></span><?php echo $_LANG['skin']['skeylist'] ?></a></li>
-									<li><a href="<?php echo $_LINK['linklist'] ?>"><span class="pkwk-icon icon-linklist"></span><?php echo $_LANG['skin']['linklist'] ?></a></li>
 									<li><a href="<?php echo $_LINK['log'] ?>"><span class="pkwk-icon icon-log"></span><?php echo $_LANG['skin']['log'] ?></a></li>
 								</ul>
 							</li>

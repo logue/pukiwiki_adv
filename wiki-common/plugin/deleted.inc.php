@@ -11,10 +11,11 @@
 
 function plugin_deleted_init()
 {
+	global $_string;
 	$msg = array(
 		'_deleted_msg' => array(
 			'title_collision'		=> T_('On updating $1, a collision has occurred.'),
-			'title_withfilename'	=> T_('$1 was updated'),
+			'title_withfilename'	=> $_string['updated'],
 			'no_such_setting'		=> T_('No such setting: Choose backup or diff')
 		)
 	);

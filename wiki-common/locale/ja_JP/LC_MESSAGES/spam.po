@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Advance 1.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-07-05 20:39+0900\n"
+"POT-Creation-Date: 2012-07-07 17:14+0900\n"
 "PO-Revision-Date: 2012-07-05 22:07+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -60,4 +60,3 @@ msgstr "ページ%1s件ヒット／%2s件チェック／全%3s件"
 #: ../../plugin/spam.inc.php:24
 msgid "Pages"
 msgstr "ページ"
-

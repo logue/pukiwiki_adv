@@ -13,7 +13,7 @@ function plugin_description_convert()
 	if ($num == 0) { return 'Usage: #description(description)'; }
 	$args = func_get_args();
 
-	$description = htmlspecialchars($args[0]);
+	$description = htmlsc($args[0]);
 	return '';
 }
 /* End of file description.inc.php */

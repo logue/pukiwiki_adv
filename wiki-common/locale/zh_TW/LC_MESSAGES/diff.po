@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5_u2\n"
-"Report-Msgid-Bugs-To: Chung-Yen Chang <candyz@linux.org.tw>\n"
-"POT-Creation-Date: 2005-05-10 00:27+0900\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-07 17:14+0900\n"
 "PO-Revision-Date: 2011-06-01 15:05+0900\n"
 "Last-Translator: Chung-Yen Chang <candyz@linux.org.tw>\n"
 "Language-Team: Traditional Chinese <zh@li.org>\n"
@@ -15,48 +15,46 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/diff.inc.php:31
+#: ../../plugin/diff.inc.php:36
 msgid "The page was not found."
 msgstr "找不到這個頁面。"
 
-#: ../../plugin/diff.inc.php:32
+#: ../../plugin/diff.inc.php:37
 msgid "The added line is <span class=\"diff_added\">THIS COLOR</span>."
 msgstr "新增的行是 <span class=\"diff_added\">這個顏色</span>。"
 
-#: ../../plugin/diff.inc.php:33
+#: ../../plugin/diff.inc.php:38
 msgid "The deleted line is <span class=\"diff_removed\">THIS COLOR</span>."
 msgstr "刪除的行是 <span class=\"diff_removed\">這個顏色</span>。"
 
-#: ../../plugin/diff.inc.php:34
+#: ../../plugin/diff.inc.php:39
 msgid "Go to $1."
 msgstr "前往 $1。"
 
-#: ../../plugin/diff.inc.php:35
+#: ../../plugin/diff.inc.php:40
 msgid " $1 has been deleted."
 msgstr "$1 已經被刪除。"
 
-#: ../../plugin/diff.inc.php:36
+#: ../../plugin/diff.inc.php:41
 msgid "Diff of $1"
 msgstr "$1 的差異"
 
-#: ../../plugin/diff.inc.php:37
-#: ../../plugin/diff.inc.php:89
+#: ../../plugin/diff.inc.php:42 ../../plugin/diff.inc.php:99
 msgid "Deleting diff of $1"
 msgstr "刪除 $1 的差異"
 
-#: ../../plugin/diff.inc.php:90
+#: ../../plugin/diff.inc.php:100
 msgid "Diff of  $1 has been deleted."
 msgstr "$1 的差異已經被刪除。"
 
-#: ../../plugin/diff.inc.php:91
+#: ../../plugin/diff.inc.php:101
 msgid "Please input the password for deleting."
 msgstr "請輸入密碼來刪除。"
 
-#: ../../plugin/diff.inc.php:92
+#: ../../plugin/diff.inc.php:102
 msgid "Delete"
 msgstr "刪除"
 
-#: ../../plugin/diff.inc.php:93
+#: ../../plugin/diff.inc.php:103
 msgid "Invalid password."
 msgstr "無效的密碼。"
-

@@ -45,6 +45,14 @@ function plugin_logview_init()
 			'number_unused'	=> T_('Number of Unused'),
 			'availability'	=> T_('Availability'),
 			'msg_nodata'	=> T_('No entry.')
+		),
+		'_logview_logname' => array(
+			'update'		=> T_('Update Log'),
+			'download'		=> T_('Download Log'),
+			'browse'		=> T_('Browse Log'),
+			'cmd'			=> T_('Command Log'),
+			'login'			=> T_('Login Log'),
+			'check'			=> T_('Checking Log')
 		)
 	);
 	set_plugin_messages($messages);
@@ -55,7 +63,7 @@ function plugin_logview_init()
  */
 function plugin_logview_action()
 {
-	global $vars, $_logview_msg;
+	global $vars, $_logview_msg, $_logview_logname;
 	global $log, $sortable_tracker,$_LANG, $vars;
 	static $count = 0;
 
@@ -90,7 +98,7 @@ function plugin_logview_action()
 			$body .= '<ul role="tablist">';
 			$cnt = 0;
 			foreach($log as $key=>$val){
-				$link_text = isset($_LANG['skin']['log_'.$key]) ? $_LANG['skin']['log_'.$key] : $key;
+				$link_text = isset($_logview_logname[$key]) ? $_logview_logname[$key] : $key;
 				if ($val['use'] === 1){
 					$body .= '<li role="tab"><a href="'.get_cmd_uri('logview',$page,null,array('kind'=>$key)).'">'.$link_text.'</a></li>';
 				}

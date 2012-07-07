@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5-u2\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-07-05 20:39+0900\n"
-"PO-Revision-Date: 2012-07-05 21:29+0900\n"
+"POT-Creation-Date: 2012-07-07 17:14+0900\n"
+"PO-Revision-Date: 2012-07-07 08:26+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -16,7 +16,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../plugin/links.inc.php:12
-#, fuzzy
 msgid "Cache update"
 msgstr "キャッシュ更新"
 
@@ -29,12 +28,10 @@ msgid "Exec"
 msgstr "実行"
 
 #: ../../plugin/links.inc.php:15
-#, fuzzy
 msgid "The update of cashe was completed."
 msgstr "キャッシュの更新が完了しました。"
 
 #: ../../plugin/links.inc.php:16
-#, fuzzy
 msgid "The update of cashe was failure. Please check password."
 msgstr "キャッシュの更新が完了しました。"
 
@@ -43,7 +40,6 @@ msgid "* Content of processing\n"
 msgstr "* 処理内容\n"
 
 #: ../../plugin/links.inc.php:19
-#, fuzzy
 msgid ":Cache update|\n"
 msgstr ":キャッシュを更新|\n"
 

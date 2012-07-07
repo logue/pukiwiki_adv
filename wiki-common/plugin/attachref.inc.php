@@ -22,21 +22,22 @@ defined('PLUGIN_ATTACHREF_WRAP_TABLE')   or define('PLUGIN_ATTACHREF_WRAP_TABLE'
 
 function plugin_attachref_init()
 {
+	global $_string;
 	$messages = array(
 		'_attachref_messages' => array(
 			// copy of attach.inc.php
-			'msg_upload'   => T_("Upload to $1"),
-			'msg_maxsize'  => T_("Maximum file size is %s."),
-			'msg_adminpass'=> T_("Administrator password"),
-			'msg_password' => T_("password"),
-			'msg_file'     => T_("Attach file"),
-			'btn_upload'   => T_("Upload"),
+			'msg_upload'	=> T_("Upload to $1"),
+			'msg_maxsize'	=> T_("Maximum file size is <var>%s</var>."),
+			'msg_adminpass'	=> T_("Administrator password"),
+			'msg_password'	=> T_("password"),
+			'msg_file'		=> T_("Attach file"),
+			'btn_upload'	=> T_("Upload"),
 
 			// original attachref.inc.php
-			'btn_submit'    => T_("[Upload]"),
-			'msg_title'     => T_("Attach and Ref to $1"),
-			'msg_title_collided' => T_("On updating $1, a collision has occurred."),
-			'msg_collided'  => T_("It seems that someone has already updated the page you were editing.<br />The attach file was added, alhough it may be inserted in the wrong position.<br />"),
+			'btn_submit'			=> T_("[Upload]"),
+			'msg_title'				=> T_("Attach and Ref to $1"),
+			'msg_title_collided'	=> $_string['title_collided'],
+			'msg_collided'			=> $_string['msg_collided']
 		),
 	);
 	set_plugin_messages($messages);
@@ -299,6 +300,9 @@ function attachref_get_attach_filename(&$file)
 		} else
 		if (PLUGIN_ATTACH_COMPRESS_TYPE == 'GZ' && extension_loaded('zlib')) {
 			return $file['name'] . '.gz';
+		} else
+		if (PLUGIN_ATTACH_COMPRESS_TYPE == 'BZ2' && extension_loaded('bz2')) {
+			return $file['name'] . '.bz2';
 		} else
 		if (PLUGIN_ATTACH_COMPRESS_TYPE == 'ZIP' && class_exists('ZipArchive')) {
 			return $file['name'] . '.zip';

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Advance v1.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-07-05 20:39+0900\n"
+"POT-Creation-Date: 2012-07-07 17:14+0900\n"
 "PO-Revision-Date: 2011-06-01 15:05+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
 "Language-Team: Japanese <logue@hotmail.co.jp>\n"
@@ -19,23 +19,9 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: ../../pot\n"
 
-#: ../../plugin/addline.inc.php:37
+#: ../../plugin/addline.inc.php:38
 msgid "add"
 msgstr "追加"
-
-#: ../../plugin/addline.inc.php:38
-msgid "On updating  $1, a collision has occurred."
-msgstr "$1 で【更新の衝突】が起きました"
-
-#: ../../plugin/addline.inc.php:39
-msgid "It seems that someone has already updated the page you were editing."
-msgstr ""
-"あなたが文字列を追加している間に、他の人が同じページを更新してしまったようで"
-"す。"
-
-#: ../../plugin/addline.inc.php:40
-msgid "The string was added, alhough it may be inserted in the wrong position."
-msgstr "文字列が違う位置に挿入されているかもしれません。"
 
 #: ../../plugin/addline.inc.php:41
 msgid "addline error"
@@ -45,6 +31,18 @@ msgstr "エラー"
 #, php-format
 msgid "config file <var>%s</var> is not exist."
 msgstr "設定ファイル<var>%s</var>が見つかりませんでした。"
+
+#~ msgid "On updating  $1, a collision has occurred."
+#~ msgstr "$1 で【更新の衝突】が起きました"
+
+#~ msgid "It seems that someone has already updated the page you were editing."
+#~ msgstr ""
+#~ "あなたが文字列を追加している間に、他の人が同じページを更新してしまったよう"
+#~ "です。"
+
+#~ msgid ""
+#~ "The string was added, alhough it may be inserted in the wrong position."
+#~ msgstr "文字列が違う位置に挿入されているかもしれません。"
 
 #~ msgid ""
 #~ "This Wiki is <var>PKWK_READONLY</var> mode now. Therefore, addline is "

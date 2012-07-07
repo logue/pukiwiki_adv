@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Copyright (C) YEAR PukiWiki Advance Developers Team
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Advance 1.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-07-05 22:08+0900\n"
+"POT-Creation-Date: 2012-07-07 17:14+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,30 +20,18 @@ msgstr ""
 msgid " $1 was updated"
 msgstr ""
 
-#: ../../plugin/urlbookmark.inc.php:127
-msgid "On updating  $1, a collision has occurred."
-msgstr ""
-
-#: ../../plugin/urlbookmark.inc.php:128
-msgid "It seems that someone has already updated this page while you were editing it.<br />"
-msgstr ""
-
-#: ../../plugin/urlbookmark.inc.php:129
-msgid "It is likely to be inserted in a different position though it bookmarked.<br />"
-msgstr ""
-
-#: ../../plugin/urlbookmark.inc.php:162
+#: ../../plugin/urlbookmark.inc.php:161
 msgid "Title: "
 msgstr ""
 
-#: ../../plugin/urlbookmark.inc.php:172
+#: ../../plugin/urlbookmark.inc.php:171
 msgid "Comment: "
 msgstr ""
 
-#: ../../plugin/urlbookmark.inc.php:173
+#: ../../plugin/urlbookmark.inc.php:172
 msgid "Add URL"
 msgstr ""
 
-#: ../../plugin/urlbookmark.inc.php:174
+#: ../../plugin/urlbookmark.inc.php:173
 msgid "URL: "
 msgstr ""

@@ -141,11 +141,10 @@ function plugin_csv2newpage_action()
 	}
 
 	$upload =  (empty($vars['_upload'])) ? 0 : $vars['_upload'];
-	if ( $upload ) {
-		$csvlines = plugin_csv2newpage_upload($refer);
-	} else {
-		$csvlines = plugin_csv2newpage_from_page($refer);
-	}
+	$csvlines = ( $upload ) ?
+		plugin_csv2newpage_upload($refer)
+		: plugin_csv2newpage_from_page($refer);
+
 	$csv_fields = plugin_csv2newpage_extract_fields($csvlines);
 
 	// ページデータを生成

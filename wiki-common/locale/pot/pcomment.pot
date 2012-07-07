@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Copyright (C) YEAR PukiWiki Advance Developers Team
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Advance 1.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-07-05 22:08+0900\n"
+"POT-Creation-Date: 2012-07-07 17:14+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,10 +19,6 @@ msgstr ""
 #: ../../plugin/pcomment.inc.php:20
 #, php-format
 msgid "[[Comments/%s]]"
-msgstr ""
-
-#: ../../plugin/pcomment.inc.php:72
-msgid "PKWK_CREATE_PAGE prohibits editing"
 msgstr ""
 
 #: ../../plugin/pcomment.inc.php:91
@@ -63,18 +59,6 @@ msgstr ""
 msgid "Cannot add comment"
 msgstr ""
 
-#: ../../plugin/pcomment.inc.php:223
-msgid " $1 was updated"
-msgstr ""
-
-#: ../../plugin/pcomment.inc.php:259
-msgid "On updating  $1, there was a collision."
-msgstr ""
-
-#: ../../plugin/pcomment.inc.php:260
-msgid "It seems that someone has already updated this page while you were editing it.<br />The comment was added to the page, but there may be a problem.<br />"
-msgstr ""
-
-#: ../../plugin/pcomment.inc.php:352
+#: ../../plugin/pcomment.inc.php:351
 msgid "Due to the blocking, no comments could be read from  $1 at all."
 msgstr ""

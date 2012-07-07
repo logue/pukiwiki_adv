@@ -5,9 +5,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-07-05 20:39+0900\n"
+"POT-Creation-Date: 2012-07-07 17:14+0900\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Miko.Hoshina(E.Satoh) <miko@cafeterrace.com>\n"
+"Last-Translator: Logue <logue@hotmail.co.jp>\n"
 "Language-Team: Japanese\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -54,11 +54,9 @@ msgid "Past"
 msgstr "経過"
 
 #: ../../plugin/tracker.inc.php:1603
-#, fuzzy
 msgid "top <var>$2</var> results out of <var>$1</var>."
 msgstr "全$1件中、上位$2件を表示しています。"
 
 #: ../../plugin/tracker.inc.php:1604
-#, fuzzy
 msgid "List items of <var>$1</var>"
 msgstr "$1 の項目一覧"

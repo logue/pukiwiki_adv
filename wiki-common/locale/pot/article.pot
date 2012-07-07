@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Copyright (C) YEAR PukiWiki Advance Developers Team
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Advance 1.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-07-05 22:08+0900\n"
+"POT-Creation-Date: 2012-07-07 17:14+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,38 +16,22 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/article.inc.php:52
-msgid "On updating $1, a collision has occurred."
-msgstr ""
-
-#: ../../plugin/article.inc.php:53
-msgid "$1 was updated"
-msgstr ""
-
-#: ../../plugin/article.inc.php:54
-msgid ""
-"It seems that someone has already updated this page while you were editing it.<br />\n"
-" + is placed at the beginning of a line that was newly added.<br />\n"
-" ! is placed at the beginning of a line that has possibly been updated.<br />\n"
-" Edit those lines, and submit again."
-msgstr ""
-
-#: ../../plugin/article.inc.php:58
+#: ../../plugin/article.inc.php:56
 msgid "Author: "
 msgstr ""
 
-#: ../../plugin/article.inc.php:59
+#: ../../plugin/article.inc.php:57
 msgid "Page: "
 msgstr ""
 
-#: ../../plugin/article.inc.php:60
+#: ../../plugin/article.inc.php:58
 msgid "Name: "
 msgstr ""
 
-#: ../../plugin/article.inc.php:61
+#: ../../plugin/article.inc.php:59
 msgid "Submit"
 msgstr ""
 
-#: ../../plugin/article.inc.php:62
+#: ../../plugin/article.inc.php:60
 msgid "Subject: "
 msgstr ""

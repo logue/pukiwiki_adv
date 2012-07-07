@@ -21,11 +21,11 @@ function plugin_edit_action()
 	// global $vars, $_title_edit, $load_template_func;
 	global $vars, $load_template_func, $_string;
 
-	// if (PKWK_READONLY) die_message(  $_string['prohibit'] );
+	// if (PKWK_READONLY) die_message(  sprintf($_string['error_prohibit'], 'PKWK_READONLY') );
 	if (auth::check_role('readonly')) die_message( $_string['prohibit'] );
 
 	if (PKWK_READONLY == ROLE_AUTH && auth::get_role_level() > ROLE_AUTH) {
-		die_message( $_string['prohibit'] );
+		die_message( sprintf($_string['error_prohibit'], 'PKWK_READONLY') );
 	}
 
 	if (isset($vars['realview'])) {
@@ -36,7 +36,7 @@ function plugin_edit_action()
 	check_editable($page, true, true);
 
 	if (!is_page($page) && auth::is_check_role(PKWK_CREATE_PAGE)) {
-		die_message( $_string['prohibit'] );
+		die_message( sprintf($_string['error_prohibit'], 'PKWK_CREATE_PAGE') );
 	}
 
 	if (preg_match(PKWK_ILLEGAL_CHARS_PATTERN, $page)){
@@ -72,11 +72,11 @@ function plugin_edit_action()
 		$filename = encode($page) . '.txt';
 		$filename_length = strlen($filename); 
 		if ($filename_length > $filename_max_length){
-			$msg = "<b>Error: Filename too long.</b><br/>\n" .
-				"Page name: " . htmlsc($page) . "<br/>\n" .
+			$msg = "<b>Error: Filename too long.</b><br />\n" .
+				"Page name: " . htmlsc($page) . "<br />\n" .
 				"Filename: $filename<br>\n" .
-				"Filename length: $filename_length<br/>\n" .
-				"Filename limit: $filename_max_length<br/>\n";
+				"Filename length: $filename_length<br />\n" .
+				"Filename limit: $filename_max_length<br />\n";
 			// Filename too long
 			return array('msg'=>$_title_edit, 'body'=>$msg);
 		}else{
@@ -213,14 +213,14 @@ function plugin_edit_inline()
 // Write, add, or insert new comment
 function plugin_edit_write()
 {
-	global $vars, $trackback;
+	global $vars, $trackback, $_string;
 	global $notimeupdate, $do_update_diff_table;
 	global $use_trans_sid_address;
 //	global $_title_collided, $_msg_collided_auto, $_msg_collided, $_title_deleted;
 //	global $_msg_invalidpass;
 
 	$_title_deleted = T_(' $1 was deleted');
-	$_msg_invalidpass = T_('Invalid password.');
+	$_msg_invalidpass = $_string['invalidpass'];
 
 	$page   = isset($vars['page'])   ? $vars['page']   : null;
 	$add    = isset($vars['add'])    ? $vars['add']    : null;
@@ -266,18 +266,10 @@ function plugin_edit_write()
 		$original = isset($vars['original']) ? $vars['original'] : null;
 		list($postdata_input, $auto) = do_update_diff($oldpagesrc, $msg, $original);
 
-		$_msg_collided_auto =
-		T_('It seems that someone has already updated this page while you were editing it.<br />') .
-		T_('The collision has been corrected automatically, but there may still be some problems with the page.<br />') .
-		T_('To confirm the changes to the page, press [Update].<br />');
+		$_msg_collided_auto = $_string['msg_collided_auto'];
+		$_msg_collided = $_string['msg_collided'];
+		$retvars['msg'] = $_string['title_collided'];
 
-		$_msg_collided =
-		T_('It seems that someone has already updated this page while you were editing it.<br />') .
-		T_(' + is placed at the beginning of a line that was newly added.<br />') .
-		T_(' ! is placed at the beginning of a line that has possibly been updated.<br />') .
-		T_(' Edit those lines, and submit again.');
-
-		$retvars['msg'] = T_('On updating  $1, a collision has occurred.');
 		$retvars['body'] = ($auto ? $_msg_collided_auto : $_msg_collided)."\n";
 		$retvars['body'] .= $do_update_diff_table;
 
@@ -333,7 +325,7 @@ function plugin_edit_write()
 				$response = $fb->api(
 					array(
 						'method' => 'stream.publish',
-						'message' => sprintf(T_('%s is updated.'), '<a href="'.$url.'">'.$page.'</a>'),
+						'message' => sprintf($_string['update'], '<a href="'.$url.'">'.$page.'</a>'),
 						'action_links' => array(
 							array(
 								'text' => $page_title,

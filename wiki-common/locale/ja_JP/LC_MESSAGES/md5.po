@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Advance 1.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-07-05 20:39+0900\n"
+"POT-Creation-Date: 2012-07-07 17:14+0900\n"
 "PO-Revision-Date: 2012-07-05 22:04+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,8 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/md5.inc.php:24
-#: ../../plugin/md5.inc.php:64
+#: ../../plugin/md5.inc.php:24 ../../plugin/md5.inc.php:64
 msgid "Prohibited"
 msgstr "禁止"
 
@@ -35,4 +34,3 @@ msgstr "通知：この機能は信頼出来ないネットワークでは使用
 #: ../../plugin/md5.inc.php:82
 msgid "NO PHRASE"
 msgstr "プレーズが入力されていません。"
-

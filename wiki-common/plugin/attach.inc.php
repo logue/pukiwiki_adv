@@ -50,6 +50,7 @@ defined('PLUGIN_ATTACH_COMPRESS_TYPE')		or define('PLUGIN_ATTACH_COMPRESS_TYPE',
 
 function plugin_attach_init()
 {
+	global $_string;
 	$messages = array(
 		'_attach_messages' => array(
 			'msg_uploaded'	=> T_('Uploaded the file to $1'),
@@ -90,7 +91,7 @@ function plugin_attach_init()
 			'err_noexist'	=> T_('File does not exist.'),
 			'err_delete'	=> T_('Cannot delete file in  $1'),
 			'err_rename'	=> T_('Cannot rename this file'),
-			'err_password'	=> T_('Wrong password.'),
+			'err_password'	=> $_string['invalidpass'],
 			'err_upload'	=> T_('It failed in uploading.'),
 			'err_adminpass'	=> T_('Wrong administrator password'),
 			'err_ini_size'	=> T_('The value of the upload_max_filesize directive of php.ini is exceeded.'),

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-07-05 20:39+0900\n"
+"POT-Creation-Date: 2012-07-07 17:14+0900\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Miko.Hoshina(E.Satoh) <miko@cafeterrace.com>\n"
 "Language-Team: Japanese\n"
@@ -22,10 +22,6 @@ msgstr "$1 の凍結を解除しました"
 msgid "Unfreeze  $1"
 msgstr "$1 の凍結解除"
 
-#: ../../plugin/unfreeze.inc.php:22
-msgid "Invalid password."
-msgstr "パスワードが間違っています。"
-
 #: ../../plugin/unfreeze.inc.php:23
 msgid "Please input the password for unfreezing."
 msgstr "凍結解除用のパスワードを入力してください。"
@@ -33,3 +29,6 @@ msgstr "凍結解除用のパスワードを入力してください。"
 #: ../../plugin/unfreeze.inc.php:24
 msgid "Unfreeze"
 msgstr "凍結解除"
+
+#~ msgid "Invalid password."
+#~ msgstr "パスワードが間違っています。"

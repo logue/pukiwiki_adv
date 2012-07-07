@@ -71,11 +71,8 @@ function limit_plugin($name)
 		$count[$name] = 1;
 	}
 	if (++$count[$name] > PKWK_PLUGIN_CALL_TIME_LIMIT) {
-		die_message('Alert: plugin "' . htmlsc($name) .
-		'" was called over ' . PKWK_PLUGIN_CALL_TIME_LIMIT .
-		' times. SPAM or someting?<br />' . "\n" .
-		'<a href="' . get_cmd_uri('edit',$vars['page']) .
-		'">Try to edit this page</a><br />' . "\n" .
+		die_message( sprintf($_string['plugin_error'],  htmlsc($name), PKWK_PLUGIN_CALL_TIME_LIMIT). '<br />' . "\n" .
+		'<a href="' . get_cmd_uri('edit',$vars['page']) .'">Try to edit this page</a><br />' . "\n" .
 		'<a href="' . get_cmd_uri() . '">Return to frontpage</a>');
 	}
 	return TRUE;
@@ -178,7 +175,7 @@ function do_plugin_init($name)
 // Call API 'action' of the plugin
 function do_plugin_action($name)
 {
-	global $vars;
+	global $vars, $_string;
 	if (! exist_plugin_action($name)) return array();
 
 	if (do_plugin_init($name) === FALSE) {
@@ -187,10 +184,10 @@ function do_plugin_action($name)
 
 	// check postid
 	if ( isset($vars['postid']) && !check_postid($vars['postid']) )
-		die_message('Plugin Runtime Error. PostID mismatch.');
+		die_message($_string['postid_error']);
 	
 	if ( isset($vars['encode_hint']) && $vars['encode_hint'] !== PKWK_ENCODING_HINT )
-		die_message('Plugin Encode Error.');
+		die_message($_string['encode_error']);
 
 	textdomain($name);
 	T_textdomain($name);

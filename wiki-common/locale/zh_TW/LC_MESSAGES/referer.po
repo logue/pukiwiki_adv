@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5_u2\n"
-"Report-Msgid-Bugs-To: Chung-Yen Chang <candyz@linux.org.tw>\n"
-"POT-Creation-Date: 2005-05-10 00:27+0900\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-07 17:14+0900\n"
 "PO-Revision-Date: 2011-06-01 15:05+0900\n"
 "Last-Translator: Chung-Yen Chang <candyz@linux.org.tw>\n"
 "Language-Team: Traditional Chinese <zh@li.org>\n"
@@ -15,32 +15,66 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../plugin/referer.inc.php:15
-#: ../plugin/referer.inc.php:19
+#: ../../plugin/referer.inc.php:27 ../../plugin/referer.inc.php:30
+#: ../../plugin/referer.inc.php:34
 msgid "Referer"
 msgstr "逆向連結"
 
-#: ../plugin/referer.inc.php:16
+#: ../../plugin/referer.inc.php:28
+#, fuzzy
+msgid "Referer List"
+msgstr "逆向連結"
+
+#: ../../plugin/referer.inc.php:29
+msgid "No data"
+msgstr ""
+
+#: ../../plugin/referer.inc.php:31
 msgid "LastUpdate"
 msgstr "最後更新"
 
-#: ../plugin/referer.inc.php:17
+#: ../../plugin/referer.inc.php:32
 msgid "First Register"
 msgstr "首次來訪"
 
-#: ../plugin/referer.inc.php:18
+#: ../../plugin/referer.inc.php:33
 msgid "RefCounter"
 msgstr "次數"
 
-#: ../plugin/referer.inc.php:20
+#: ../../plugin/referer.inc.php:35
 msgid "F j, Y, g:i A"
 msgstr "F j, Y, g:i A"
 
-#: ../plugin/referer.inc.php:21
+#: ../../plugin/referer.inc.php:36
 msgid "&uArr;"
 msgstr "&uArr;"
 
-#: ../plugin/referer.inc.php:22
+#: ../../plugin/referer.inc.php:37
 msgid "&dArr;"
 msgstr "&dArr;"
 
+#: ../../plugin/referer.inc.php:38
+msgid "Referer function is disabled."
+msgstr ""
+
+#: ../../plugin/referer.inc.php:39
+msgid "The page you requested was not found."
+msgstr ""
+
+#: ../../plugin/referer.inc.php:40
+msgid "Search keys"
+msgstr ""
+
+#: ../../plugin/referer.inc.php:41
+#, php-format
+msgid "All the Search Key of %s"
+msgstr ""
+
+#: ../../plugin/referer.inc.php:42
+msgid "Mutual links"
+msgstr ""
+
+#: ../../plugin/referer.inc.php:43
+#, php-format
+msgid "Auto Mutual link of %s"
+msgstr ""

@@ -13,8 +13,8 @@ function plugin_bluff_init()
 {
 		$msg = array(
 			'_bluff_msg' => array(
-				'msg_no_data'			=> _('No Data'),
-				'msg_no_attach_file'	=> _('attach file not found.'),
+				'msg_no_data'			=> T_('No Data'),
+				'msg_no_attach_file'	=> T_('attach file not found.'),
 			)
 		);
 		set_plugin_messages($msg);

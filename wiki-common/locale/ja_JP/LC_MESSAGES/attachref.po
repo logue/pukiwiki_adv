@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5-u2\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-07-05 20:39+0900\n"
+"POT-Creation-Date: 2012-07-07 17:14+0900\n"
 "PO-Revision-Date: 2012-07-05 20:53+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
@@ -15,49 +15,47 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/attachref.inc.php:28
+#: ../../plugin/attachref.inc.php:29
 msgid "Upload to $1"
 msgstr "$1 への添付"
 
-#: ../../plugin/attachref.inc.php:29
+#: ../../plugin/attachref.inc.php:30
 #, php-format
 msgid "Maximum file size is <var>%s</var>."
 msgstr "アップロード可能最大ファイルサイズは<var>%s</var>です。"
 
-#: ../../plugin/attachref.inc.php:30
+#: ../../plugin/attachref.inc.php:31
 msgid "Administrator password"
 msgstr "管理者パスワード"
 
-#: ../../plugin/attachref.inc.php:31
+#: ../../plugin/attachref.inc.php:32
 msgid "password"
 msgstr "パスワード"
 
-#: ../../plugin/attachref.inc.php:32
+#: ../../plugin/attachref.inc.php:33
 msgid "Attach file"
 msgstr "添付ファイル"
 
-#: ../../plugin/attachref.inc.php:33
+#: ../../plugin/attachref.inc.php:34
 msgid "Upload"
 msgstr "アップロード"
 
-#: ../../plugin/attachref.inc.php:36
+#: ../../plugin/attachref.inc.php:37
 msgid "[Upload]"
 msgstr "[添付]"
 
-#: ../../plugin/attachref.inc.php:37
+#: ../../plugin/attachref.inc.php:38
 msgid "Attach and Ref to $1"
 msgstr "$1 にアップロードしました"
-
-#: ../../plugin/attachref.inc.php:38
-msgid "On updating $1, a collision has occurred."
-msgstr "$1 で【更新の衝突】が起きました。"
-
-#: ../../plugin/attachref.inc.php:39
-msgid "It seems that someone has already updated the page you were editing."
-msgstr ""
-"あなたがファイルを添付している間に、他の人が同じページを更新してしまったよう"
-"です。<br />ファイルが違う位置に挿入されているかもしれません。"
 
 #: ../../plugin/attachref.inc.php:412
 msgid "file_uploads disabled."
 msgstr "ファイルアップロードは無効化されています。"
+
+#~ msgid "On updating $1, a collision has occurred."
+#~ msgstr "$1 で【更新の衝突】が起きました。"
+
+#~ msgid "It seems that someone has already updated the page you were editing."
+#~ msgstr ""
+#~ "あなたがファイルを添付している間に、他の人が同じページを更新してしまったよ"
+#~ "うです。<br />ファイルが違う位置に挿入されているかもしれません。"

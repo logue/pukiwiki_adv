@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5-u2-i18n\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-07-05 20:39+0900\n"
-"PO-Revision-Date: 2011-06-01 15:05+0900\n"
+"POT-Creation-Date: 2012-07-07 17:14+0900\n"
+"PO-Revision-Date: 2012-07-07 16:35+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -60,12 +60,12 @@ msgid "Import"
 msgstr "インポート"
 
 #: ../../plugin/adm_auth_wkgrp.inc.php:29
-#, fuzzy, php-format
+#, php-format
 msgid "The %s file was generated."
 msgstr "%s ファイルを生成しました。"
 
 #: ../../plugin/adm_auth_wkgrp.inc.php:30
-#, fuzzy, php-format
+#, php-format
 msgid "Data was taken into %s."
 msgstr "%s にデータを取り込みました。"
 
@@ -86,9 +86,8 @@ msgid "Because the page already exists, processing is discontinued."
 msgstr "ページが既に存在しますので、処理を中止します。"
 
 #: ../../plugin/adm_auth_wkgrp.inc.php:35
-#, fuzzy
 msgid ""
 "The following images are the one (reading auth_wkgrp, and conversion into "
 "page image)."
 msgstr ""
-"以下のイメージは、auth_wkgrp を読み込み、ページイメージに変換したものです。\n"
+"以下のイメージは、auth_wkgrp を読み込み、ページイメージに変換したものです。"

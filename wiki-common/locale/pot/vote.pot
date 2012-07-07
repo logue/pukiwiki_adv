@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Copyright (C) YEAR PukiWiki Advance Developers Team
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Advance 1.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-07-05 22:08+0900\n"
+"POT-Creation-Date: 2012-07-07 17:14+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,34 +16,18 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/vote.inc.php:19 ../../plugin/vote.inc.php:132
+#: ../../plugin/vote.inc.php:19 ../../plugin/vote.inc.php:129
 msgid "Vote"
 msgstr ""
 
-#: ../../plugin/vote.inc.php:20
-msgid "On updating $1, a collision has occurred."
-msgstr ""
-
-#: ../../plugin/vote.inc.php:21
-msgid "$1 was updated"
-msgstr ""
-
-#: ../../plugin/vote.inc.php:22
-msgid ""
-"It seems that someone has already updated this page while you were editing it.<br />\n"
-" + is placed at the beginning of a line that was newly added.<br />\n"
-" ! is placed at the beginning of a line that has possibly been updated.<br />\n"
-" Edit those lines, and submit again."
-msgstr ""
-
-#: ../../plugin/vote.inc.php:40
+#: ../../plugin/vote.inc.php:37
 msgid "Error in vote"
 msgstr ""
 
-#: ../../plugin/vote.inc.php:41
+#: ../../plugin/vote.inc.php:38
 msgid "Continuation vote cannot be performed."
 msgstr ""
 
-#: ../../plugin/vote.inc.php:131
+#: ../../plugin/vote.inc.php:128
 msgid "Selection"
 msgstr ""

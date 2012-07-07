@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5_u2\n"
-"Report-Msgid-Bugs-To: Chung-Yen Chang <candyz@linux.org.tw>\n"
-"POT-Creation-Date: 2005-05-10 00:27+0900\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-07 17:14+0900\n"
 "PO-Revision-Date: 2011-06-01 15:05+0900\n"
 "Last-Translator: Chung-Yen Chang <candyz@linux.org.tw>\n"
 "Language-Team: Traditional Chinese <zh@li.org>\n"
@@ -15,101 +15,137 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../plugin/backup.inc.php:16
-#: ../plugin/backup.inc.php:30
-#: ../plugin/backup.inc.php:139
-msgid "Backup list"
-msgstr "備份列表"
-
-#: ../plugin/backup.inc.php:17
-#: ../plugin/backup.inc.php:221
-msgid "diff"
-msgstr "差異"
-
-#: ../plugin/backup.inc.php:18
-#: ../plugin/backup.inc.php:222
-msgid "diff current"
-msgstr "和目前版本的差異"
-
-#: ../plugin/backup.inc.php:19
-#: ../plugin/backup.inc.php:223
-msgid "source"
-msgstr "原始碼"
-
-#: ../plugin/backup.inc.php:20
-msgid "backup"
-msgstr "備份"
-
-#: ../plugin/backup.inc.php:21
-msgid "diff for visual"
-msgstr "和目前顯示上的差異"
-
-#: ../plugin/backup.inc.php:22
-msgid "View the $1."
-msgstr "檢視 $1。"
-
-#: ../plugin/backup.inc.php:23
-msgid "Go to $1."
-msgstr "前往 $1。"
-
-#: ../plugin/backup.inc.php:24
-msgid " $1 has been deleted."
-msgstr "$1 已經被刪除了。"
-
-#: ../plugin/backup.inc.php:25
-msgid "Backup diff of $1(No. $2)"
-msgstr "$1 的備份差異(編號: $2)"
-
-#: ../plugin/backup.inc.php:26
-msgid "Backup diff of $1 vs current(No. $2)"
-msgstr "$1 的備份跟目前版本的差異(編號: $2)"
-
-#: ../plugin/backup.inc.php:27
-msgid "Backup source of $1(No. $2)"
-msgstr "$1 的備份原始碼(編號: $2)"
-
-#: ../plugin/backup.inc.php:28
-msgid "Backup of $1(No. $2)"
-msgstr "$1 的備份(編號: $2)"
-
-#: ../plugin/backup.inc.php:29
-msgid "Backup list of $1"
-msgstr "$1 的備份列表"
-
-#: ../plugin/backup.inc.php:138
-#: ../plugin/backup.inc.php:224
-msgid "Deleting backup of $1"
-msgstr "正在刪除 $1 的備份"
-
-#: ../plugin/backup.inc.php:140
-msgid "Backup of $1 has been deleted."
-msgstr "$1 的備份已經被刪除了。"
-
-#: ../plugin/backup.inc.php:141
-msgid "Please input the password for deleting."
-msgstr "請輸入密碼來刪除。"
-
-#: ../plugin/backup.inc.php:142
+#: ../../plugin/backup.inc.php:34 ../../plugin/backup.inc.php:54
 msgid "Delete"
 msgstr "刪除"
 
-#: ../plugin/backup.inc.php:143
-msgid "Invalid password."
-msgstr "無效的密碼。"
+#: ../../plugin/backup.inc.php:35
+msgid "Jump"
+msgstr ""
 
-#: ../plugin/backup.inc.php:193
-msgid "The added line is <span class=\"diff_added\">THIS COLOR</span>."
-msgstr "新增的行是 <span class=\"diff_added\">這個顏色</span>。"
+#: ../../plugin/backup.inc.php:36
+msgid "backup"
+msgstr "備份"
 
-#: ../plugin/backup.inc.php:194
-msgid "The deleted line is <span class=\"diff_removed\">THIS COLOR</span>."
-msgstr "刪除的行是 <span class=\"diff_removed\">這個顏色</span>。"
+#: ../../plugin/backup.inc.php:37
+msgid "Please input the password for deleting."
+msgstr "請輸入密碼來刪除。"
 
-#: ../plugin/backup.inc.php:219
-msgid "List of Backups"
+#: ../../plugin/backup.inc.php:38
+msgid "Backup of $1 has been deleted."
+msgstr "$1 的備份已經被刪除了。"
+
+#: ../../plugin/backup.inc.php:39 ../../plugin/backup.inc.php:59
+msgid "Backup list"
 msgstr "備份列表"
 
-#: ../plugin/backup.inc.php:220
+#: ../../plugin/backup.inc.php:40
+msgid " $1 has been deleted."
+msgstr "$1 已經被刪除了。"
+
+#: ../../plugin/backup.inc.php:41
+msgid "diff"
+msgstr "差異"
+
+#: ../../plugin/backup.inc.php:42
+#, fuzzy
+msgid "The added line is <ins class=\"diff_added\">THIS COLOR</ins>."
+msgstr "新增的行是 <span class=\"diff_added\">這個顏色</span>。"
+
+#: ../../plugin/backup.inc.php:43
+#, fuzzy
+msgid "The deleted line is <del class=\"diff_removed\">THIS COLOR</del>."
+msgstr "刪除的行是 <span class=\"diff_removed\">這個顏色</span>。"
+
+#: ../../plugin/backup.inc.php:44
+msgid "Go to $1."
+msgstr "前往 $1。"
+
+#: ../../plugin/backup.inc.php:46
 msgid "There are no backup(s) of $1."
 msgstr "沒有 $1 的備份。"
 
+#: ../../plugin/backup.inc.php:47
+msgid "diff current"
+msgstr "和目前版本的差異"
+
+#: ../../plugin/backup.inc.php:48
+msgid "source"
+msgstr "原始碼"
+
+#: ../../plugin/backup.inc.php:49 ../../plugin/backup.inc.php:64
+msgid "Roll back"
+msgstr ""
+
+#: ../../plugin/backup.inc.php:50
+msgid "Versions:"
+msgstr ""
+
+#: ../../plugin/backup.inc.php:51
+msgid "View the $1."
+msgstr "檢視 $1。"
+
+#: ../../plugin/backup.inc.php:52
+msgid "diff for visual"
+msgstr "和目前顯示上的差異"
+
+#: ../../plugin/backup.inc.php:53
+msgid "-&gt;"
+msgstr ""
+
+#: ../../plugin/backup.inc.php:56
+msgid "Backup of $1(No. $2)"
+msgstr "$1 的備份(編號: $2)"
+
+#: ../../plugin/backup.inc.php:57
+msgid "Deleting backup of $1"
+msgstr "正在刪除 $1 的備份"
+
+#: ../../plugin/backup.inc.php:58
+msgid "Backup diff of $1(No. $2)"
+msgstr "$1 的備份差異(編號: $2)"
+
+#: ../../plugin/backup.inc.php:60
+msgid "Backup diff of $1 vs current(No. $2)"
+msgstr "$1 的備份跟目前版本的差異(編號: $2)"
+
+#: ../../plugin/backup.inc.php:61
+msgid "Backup source of $1(No. $2)"
+msgstr "$1 的備份原始碼(編號: $2)"
+
+#: ../../plugin/backup.inc.php:62
+msgid "Backup list of $1"
+msgstr "$1 的備份列表"
+
+#: ../../plugin/backup.inc.php:65
+msgid "Delete selected backup(s)."
+msgstr ""
+
+#: ../../plugin/backup.inc.php:66
+#, fuzzy
+msgid "Rolled back to $1."
+msgstr "正在刪除 $1 的備份"
+
+#: ../../plugin/backup.inc.php:67
+#, php-format
+msgid "Roll back from a backup(No. %s), this page."
+msgstr ""
+
+#: ../../plugin/backup.inc.php:68
+#, php-format
+msgid "This page has been rolled back from a backup(No. %s)."
+msgstr ""
+
+#: ../../plugin/backup.inc.php:177
+msgid "This feature is prohibited"
+msgstr ""
+
+#~ msgid "Invalid password."
+#~ msgstr "無效的密碼。"
+
+#, fuzzy
+#~ msgid "delete"
+#~ msgstr "刪除"
+
+#~ msgid "List of Backups"
+#~ msgstr "備份列表"

@@ -41,13 +41,13 @@ EOD;
 
 function plugin_newpage_action()
 {
-	global $vars;
+	global $vars, $_string;
 	$_btn_edit = T_('Edit');
 	$_msg_newpage = T_('New page');
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	if (auth::check_role('readonly')) die_message( T_('PKWK_READONLY prohibits editing') );
-	if (auth::is_check_role(PKWK_CREATE_PAGE)) die_message( T_('PKWK_CREATE_PAGE prohibits editing') );
+	if (auth::check_role('readonly')) die_message( sprintf($_string['error_prohibit'], 'PKWK_READONLY') );
+	if (auth::is_check_role(PKWK_CREATE_PAGE)) die_message( sprintf($_string['error_prohibit'], 'PKWK_CREATE_PAGE') );
 
 	if ($vars['page'] == '') {
 		$retvars['msg']  = $_msg_newpage;

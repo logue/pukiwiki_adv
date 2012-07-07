@@ -1,4 +1,3 @@
-#freeze
 * chart_setting
 |ImageWidthSize|300|
 |ImageHeightSize|200|

@@ -619,7 +619,7 @@ function pkwk_headers_sent()
 	$file = $line = '';
 
 	if (headers_sent($file, $line)){
-		die_message(sprintf($_string['header_sent'],'<var>'.htmlsc($file).'</var>','<var>'.$line.'</var>'));
+		die_message(sprintf($_string['header_sent'],htmlsc($file),$line));
 	}
 }
 

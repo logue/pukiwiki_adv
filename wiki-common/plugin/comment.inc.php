@@ -23,13 +23,13 @@ define('PLUGIN_COMMENT_FORMAT_NOW',		'&epoch{'.MUTIME.',comment_date};');
 define('PLUGIN_COMMENT_FORMAT_STRING',	"\x08MSG\x08 -- \x08NAME\x08 \x08NOW\x08");
 
 function plugin_comment_init(){
+	global $_string;
 	$messages = array(
 		'_comment_messages' => array(
-			'msg_collided'		=> T_('It seems that someone has already updated the page you were editing.').'<br />'.
-								   T_('The comment was added, alhough it may be inserted in the wrong position.'),
-			'title_collided'	=> T_('On updating  $1, a collision has occurred.'),
-			'title_updated'		=> T_('$1 was updated'),
-			'err_prohibit'		=> T_('This Wiki is <var>%s</var> mode now. Therefore, comment function is prohibited.'),
+			'msg_collided'		=> $_string['comment_collided'],
+			'title_collided'	=> $_string['title_collided'],
+			'title_updated'		=> $_string['updated'],
+			'err_prohibit'		=> $_string['error_prohibit'],
 			'label_name'		=> T_('Name: '),
 			'label_post'		=> T_('Post Comment'),
 			'label_comment'		=> T_('Comment: ')

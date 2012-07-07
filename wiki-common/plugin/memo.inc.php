@@ -9,15 +9,12 @@ define('MEMO_ROWS',  5); // Rows of textarea
 
 function plugin_memo_action()
 {
-	global $vars, $cols, $rows;
+	global $vars, $cols, $rows, $_string;
 //	global $_title_collided, $_msg_collided, $_title_updated;
 
-$_title_collided   = T_('On updating $1, a collision has occurred.');
-$_title_updated    = T_('$1 was updated');
-$_msg_collided = T_('It seems that someone has already updated this page while you were editing it.<br />
- + is placed at the beginning of a line that was newly added.<br />
- ! is placed at the beginning of a line that has possibly been updated.<br />
- Edit those lines, and submit again.');
+$_title_collided   = $_string['title_collided'];
+$_title_updated    = $_string['update'];
+$_msg_collided =  $_string['msg_collided'];
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
 	if (auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');

@@ -110,7 +110,7 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	// roleのチェック
 	if (auth::check_role('readonly')) return; // Do nothing
 	if (auth::is_check_role(PKWK_CREATE_PAGE))
-		die_message($_strings['prohibit']);
+		die_message( sprintf($_strings['error_prohibit'], 'PKWK_READONLY') );
 	
 	$role_adm_contents = auth::check_role('role_adm_contents');
 	

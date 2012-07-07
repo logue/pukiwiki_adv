@@ -32,12 +32,12 @@ defined('ADDLINE_INS') or define('ADDLINE_INS', '1');
 
 function plugin_addline_init()
 {
+	global $_string;
 	$messages = array(
 		'_addline_messages'	=> array(
 			'btn_submit'		=> T_('add'),
-			'title_collided'	=> T_('On updating  $1, a collision has occurred.'),
-			'msg_collided' 		=> T_('It seems that someone has already updated the page you were editing.').'<br />'.
-								T_('The string was added, alhough it may be inserted in the wrong position.'),
+			'title_collided'	=> $_string['title_collided'],
+			'msg_collided' 		=> $_string['msg_collided'],
 			'error'				=> T_('addline error'),
 			'config_notfound'	=> T_('config file <var>%s</var> is not exist.'),
 		)

@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: resource.php,v 0.8.2 2010/12/22 15:38:00 Logue Exp $
+// $Id: resource.php,v 0.8.3 2012/07/07 08:29:00 Logue Exp $
 //
 // Resource of String
 // Warning: This file is PukiWiki "core" resource strings.
@@ -37,10 +37,10 @@ $_labels = array(
 
 $_string = array(
 	// Common core string(s)
-	'freeze'	=> T_('Freeze'),
-	'unfreeze'	=> T_('Unfreeze'),
-	'symbol'	=> T_('Symbols'),
-	'other'		=> T_('Others'),
+	'freeze'			=> T_('Freeze'),
+	'unfreeze'			=> T_('Unfreeze'),
+	'symbol'			=> T_('Symbols'),
+	'other'				=> T_('Others'),
 
 	// Common core message(s)
 	'andresult'			=> T_('In the page <strong>$2</strong>, <strong>$3</strong> pages that contain all the terms <var>$1</var> were found.'),
@@ -48,15 +48,27 @@ $_string = array(
 	'notfoundresult'	=> T_('No page which contains <var>$1</var> has been found.'),
 	'word'				=> T_('These search terms have been highlighted:'),
 	'help'				=> T_('View Text Formatting Rules'),
+	'update'			=> T_('$1 was updated'),
 
 	// Common core error message(s)
 	'invalidpass'		=> T_('Invalid password.'),
 	'invalidiwn'		=> T_('<var>$1</var> is not a valid <var>$2</var>.'),
-	'collided_comment'	=> T_('It seems that someone has already updated the page you were editing.<br />The string was added, alhough it may be inserted in the wrong position.'),
+	
+	// Collision messages
+	'title_collided'	=> T_('On updating $1, a collision has occurred.'),
+	'msg_collided'		=> T_('It seems that someone has already updated this page while you were editing it.') . '<br />'."\n".
+						   T_('+ is placed at the beginning of a line that was newly added.') . '<br />'."\n".
+						   T_('! is placed at the beginning of a line that has possibly been updated.') . '<br />'."\n".
+						   T_('Edit those lines, and submit again.'),
+	'msg_collided_auto'	=> T_('It seems that someone has already updated this page while you were editing it.').'<br />'."\n" .
+						   T_('The collision has been corrected automatically, but there may still be some problems with the page.').'<br />'."\n" .
+						   T_('To confirm the changes to the page, press [Update].'),
+	'comment_collided'	=> T_('It seems that someone has already updated this page while you were editing it.').'<br />'."\n".
+						   T_('The string was added, alhough it may be inserted in the wrong position.'),
 
 	// Error messages
 	'warning'			=> T_('WARNING'),
-	'prohibit'			=> T_('This Wiki is <var>PKWK_READONLY</var> mode now. The action which you are trying to do is prohibited.'),
+	'error_prohibit'	=> T_('This Wiki is <var>%s</var> mode now. The action which you are trying to do is prohibited.'),
 	'error_msg'			=> T_('A runtime error has occurred.').'<br />'.T_('Please contact to site admin. If you want more information, please change <var>PKWK_WARNING</var> value.'),
 	'debugmode'			=> T_('This program is running in debug mode.'),
 	'changeadminpass'	=> sprintf(T_('<var>$adminpass</var> is not changed! Click <a href="%s">here</a> to generate crypted password and modify auth.ini.php!'),get_cmd_uri('md5')),
@@ -64,11 +76,14 @@ $_string = array(
 	'not_found'			=> T_('Page <var>%s</var> was not found.'),
 	'header_sent'		=> T_('Headers already sent at <var>%s</var>, line: <var>%s</var>.'),
 	'blacklisted'		=> T_('Writing was limited by <strong>IPBL</storng> (Blocking SPAM).'),
+	'illegal_chars'		=> T_('Illegal characters contained.'),
+
 	'script_error'		=> T_('A fatal error has occured at line <var>%1s</var> in file <var>%2s</var>.'),
 	'script_abort'		=> T_('Script execution has been aborted.'),
-	'illegal_chars'		=> T_('Illegal characters contained.'),
-	'header_sent'		=> T_('Headers already sent at %s, line: %s.'),
-	'plugin_error'		=> T_('Alert: plugin %1s was called over %2s times. SPAM or someting?')
+	
+	'plugin_error'		=> T_('Plugin Error: <var>%1s</var> was called over <var>%2s</var> times. SPAM or someting?'),
+	'postid_error'		=> T_('Plugin Error: PostId mismatch.'),
+	'encode_error'		=> T_('Plugin Error: Incorrect encode.'),
 );
 
 $_button = array(
@@ -130,11 +145,6 @@ $_LANG['skin'] = array(
 	'help'		=> T_('Help'),
 	'list'		=> T_('List of pages'),
 	'log'		=> T_('Log'),
-	'log_browse'=> T_('Browse Log'),
-	'log_check'	=> T_('Confirmation list'),
-	'log_down'	=> T_('Download Log'),
-	'log_login'	=> T_('Roll Book'),
-	'log_update'=> T_('Update Log'),
 	'new'		=> T_('New'),
 	'newsub'	=> T_('Lower page making'),
 	'print'		=> T_('Image of print'),
@@ -145,8 +155,6 @@ $_LANG['skin'] = array(
 
 	'trackback'	=> T_('Trackback'),
 	'referer'	=> T_('Referer'),
-	'skeylist'	=> T_('Search Key List'),
-	'linklist'	=> T_('Link List'),
 
 	'reload'	=> T_('Reload'),
 	'source'	=> T_('Source'),

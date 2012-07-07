@@ -27,7 +27,7 @@ function plugin_diff_action()
 
 function plugin_diff_view($page)
 {
-	global $hr;
+	global $hr, $_string;
 //	global $_msg_notfound, $_msg_goto, $_msg_deleted, $_msg_addline, $_msg_delline;
 //	global $_title_diff, $_title_diff_delete;
 

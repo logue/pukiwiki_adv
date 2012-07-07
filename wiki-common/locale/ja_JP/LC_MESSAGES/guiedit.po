@@ -7,21 +7,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.7-u2-i18n\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-07-05 20:39+0900\n"
+"POT-Creation-Date: 2012-07-07 17:14+0900\n"
 "PO-Revision-Date: 2011-06-01 15:05+0900\n"
 "Last-Translator: Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-#: ../../plugin/guiedit.inc.php:30 ../../plugin/guiedit.inc.php:33
-msgid "PKWK_READONLY prohibits editing"
-msgstr "PKWK_READONLY 編集禁止"
-
-#: ../../plugin/guiedit.inc.php:41
-msgid "PKWK_CREATE_PAGE prohibits editing"
-msgstr "PKWK_CREATE_PAGE 編集禁止"
 
 #: ../../plugin/guiedit.inc.php:172
 msgid "To confirm the changes, click the button at the bottom of the page"
@@ -31,3 +23,9 @@ msgstr ""
 #: ../../plugin/guiedit.inc.php:173
 msgid "(The contents of the page are empty. Updating deletes this page.)"
 msgstr "（ページの内容は空です。更新するとこのページは削除されます。）"
+
+#~ msgid "PKWK_READONLY prohibits editing"
+#~ msgstr "PKWK_READONLY 編集禁止"
+
+#~ msgid "PKWK_CREATE_PAGE prohibits editing"
+#~ msgstr "PKWK_CREATE_PAGE 編集禁止"

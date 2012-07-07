@@ -698,7 +698,7 @@ function _preg_replace_callback_domain_exposure($matches = array())
 		$result = 
 			$matches[1] . '://' .	// scheme
 			$matches[4] .			// nasty.example.com
-			'/?refer=' . strtolower($matches[2]) .	// victim.example.org
+			'/?referer=' . strtolower($matches[2]) .	// victim.example.org
 			' ' . $result;
 	}
 

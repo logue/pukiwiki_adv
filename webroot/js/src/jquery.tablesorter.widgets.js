@@ -1,4 +1,4 @@
-/*! tableSorter 2.3 widgets - updated 6/5/2012
+/*! tableSorter 2.3 widgets - updated 6/21/2012
  *
  * jQuery UI Theme
  * Column Styles
@@ -87,11 +87,12 @@ $.tablesorter.addWidget({
 			time = new Date();
 		}
 		if (!$table.hasClass('ui-theme')) {
-			//$table.addClass('ui-widget ui-widget-content ui-theme');
+		//	$table.addClass('ui-widget ui-widget-content ui-corner-all ui-theme');
 			$table.addClass('ui-widget ui-theme');
 			$.each(c.headerList, function(){
 				$(this)
 				// using "ui-theme" class in case the user adds their own ui-icon using onRenderHeader
+				//.addClass('ui-widget-header ui-corner-all ui-state-default')
 				.addClass('ui-widget-header ui-state-default')
 				.append('<span class="ui-icon"/>')
 				.wrapInner('<div class="tablesorter-inner"/>')
@@ -179,10 +180,11 @@ $.tablesorter.addWidget({
 $.tablesorter.addWidget({
 	id: "filter",
 	format: function(table) {
-		if (!$(table).hasClass('hasFilters')) {
+		if (table.config.parsers && !$(table).hasClass('hasFilters')) {
 			var i, j, k, l, cv, v, val, r, ff, t, x, xi, cr,
-			sel, $tb, $tr, $td, reg2,
+			sel, $tb, $th, $tr, $td, reg2,
 			c = table.config,
+			$ths = $(c.headerList),
 			wo = c.widgetOptions,
 			css = wo.filter_cssFilter || 'tablesorter-filter',
 			$t = $(table).addClass('hasFilters'),
@@ -204,11 +206,11 @@ $.tablesorter.addWidget({
 					l = $tr.length;
 					// loop through the rows
 					for (j = 0; j < l; j++) {
-						// skip child rows
-						if (reg1.test($tr[j].className)) { continue; }
 						if (cv === '') {
 							$tr[j].style.display = '';
 						} else {
+							// skip child rows
+							if (reg1.test($tr[j].className)) { continue; }
 							r = true;
 							cr = $tr.eq(j).nextUntil('tr:not(.' + c.cssChildRow + ')');
 							// so, if "table.config.widgetOptions.filter_childRows" is true and there is
@@ -216,6 +218,7 @@ $.tablesorter.addWidget({
 							// checked here so the option can be changed dynamically
 							t = (cr.length && (wo && wo.hasOwnProperty('filter_childRows') &&
 								typeof wo.filter_childRows !== 'undefined' ? wo.filter_childRows : true)) ? cr.text() : '';
+							t = wo.filter_ignoreCase ? t.toLocaleLowerCase() : t;
 							$td = $tr.eq(j).children('td');
 							for (i = 0; i < cols; i++) {
 								x = $.trim($td.eq(i).text());
@@ -246,18 +249,14 @@ $.tablesorter.addWidget({
 										}
 									// Look for quotes to get an exact match
 									} else if (/[\"|\']$/.test(val) && xi === val.replace(/(\"|\')/g,'')) {
-										r = (r) ? true : false;
+										ff = true;
 									// Look for wild card: ? = single, or * = multiple
 									} else if (/[\?|\*]/.test(val)) {
 										ff = new RegExp( val.replace(/\?/g, '\\S{1}').replace(/\*/g, '\\S*') ).test(xi);
 									// Look for match, and add child row data for matching
 									} else {
 										x = (xi + t).indexOf(val);
-										if ( (!wo.filter_startsWith && x >= 0) || (wo.filter_startsWith && x === 0) ) {
-											r = (r) ? true : false;
-										} else {
-											r = false;
-										}
+										ff  = ( (!wo.filter_startsWith && x >= 0) || (wo.filter_startsWith && x === 0) );
 									}
 									r = (ff) ? (r ? true : false) : false;
 								}
@@ -273,17 +272,19 @@ $.tablesorter.addWidget({
 				}
 				$t.trigger('applyWidgets'); // make sure zebra widget is applied
 			},
-			buildSelect = function(i){
+			buildSelect = function(i, updating){
 				var o, arry = [];
 				i = parseInt(i, 10);
-				o = '<option value="">' + ($(c.headerList[i]).attr('data-placeholder') || '') + '</option>';
+				o = '<option value="">' + ($ths.filter('[data-column="' + i + '"]:last').attr('data-placeholder') || '') + '</option>';
 				for (k = 0; k < b.length; k++ ) {
 					l = c.cache[k].row.length;
 					// loop through the rows
 					for (j = 0; j < l; j++) {
 						// get non-normalized cell content
 						t = c.cache[k].row[j][0].cells[i];
-						arry.push( c.supportsTextContent ? t.textContent : $(t).text() );
+						if (t) {
+							arry.push( c.supportsTextContent ? t.textContent : $(t).text() );
+						}
 					}
 				}
 				// get unique elements and sort the list
@@ -292,31 +293,44 @@ $.tablesorter.addWidget({
 				for (k = 0; k < arry.length; k++) {
 					o += '<option value="' + arry[k] + '">' + arry[k] + '</option>';
 				}
-				$t.find('thead').find('select.' + css + '[data-col="' + i + '"]').append(o);
+				$t.find('thead').find('select.' + css + '[data-column="' + i + '"]')[ updating ? 'html' : 'append' ](o);
+			},
+			buildDefault = function(updating){
+				// build default select dropdown
+				for (i = 0; i < cols; i++) {
+					t = $ths.filter('[data-column="' + i + '"]:last');
+					// look for the filter-select class, but don't build it twice.
+					if (t.hasClass('filter-select') && !t.hasClass('filter-false') && !(wo.filter_functions && wo.filter_functions[i] === true)){
+						buildSelect(i, updating);
+					}
+				}
 			};
 			if (c.debug) {
 				time = new Date();
 			}
+			wo.filter_ignoreCase = wo.filter_ignoreCase !== false; // set default filter_ignoreCase to true
 			for (i=0; i < cols; i++){
-				sel = (wo.filter_functions && wo.filter_functions[i] && typeof wo.filter_functions[i] !== 'function') || $(c.headerList[i]).hasClass('filter-select');
+				$th = $ths.filter('[data-column="' + i + '"]:last'); // assuming last cell of a column is the main column
+				sel = (wo.filter_functions && wo.filter_functions[i] && typeof wo.filter_functions[i] !== 'function') || $th.hasClass('filter-select');
 				fr += '<td>';
 				if (sel){
-					fr += '<select data-col="' + i + '" class="' + css;
+					fr += '<select data-column="' + i + '" class="' + css;
 				} else {
-					fr += '<input type="search" placeholder="' + ($(c.headerList[i]).attr('data-placeholder') || "") + '" data-col="' + i + '" class="' + css;
+					fr += '<input type="search" placeholder="' + ($th.attr('data-placeholder') || "") + '" data-column="' + i + '" class="' + css;
 				}
 				// use header option - headers: { 1: { filter: false } } OR add class="filter-false"
 				if ($.tablesorter.getData) {
 					// get data from jQuery data, metadata, headers option or header class name
-					fr += $.tablesorter.getData(c.headerList[i], c.headers[i], 'filter') === 'false' ? ' disabled" disabled' : '"';
+					fr += $.tablesorter.getData($th[0], c.headers[i], 'filter') === 'false' ? ' disabled" disabled' : '"';
 				} else {
 					// only class names and header options - keep this for compatibility with tablesorter v2.0.5
-					fr += ((c.headers[i] && c.headers[i].hasOwnProperty('filter') && c.headers[i].filter === false) || $(c.headerList[i]).hasClass('filter-false') ) ? ' disabled" disabled' : '"';
+					fr += ((c.headers[i] && c.headers[i].hasOwnProperty('filter') && c.headers[i].filter === false) || $th.hasClass('filter-false') ) ? ' disabled" disabled' : '"';
 				}
 				fr += (sel ? '></select>' : '>') + '</td>';
 			}
 			$t
 			.bind('addRows updateCell update appendCache', function(){
+				buildDefault(true);
 				findRows();
 			})
 			.find('thead').eq(0).append(fr += '</tr>')
@@ -337,7 +351,7 @@ $.tablesorter.addWidget({
 			if (wo.filter_functions) {
 				// i = column # (string)
 				for (i in wo.filter_functions) {
-					t = $(c.headerList[i]);
+					t = $ths.filter('[data-column="' + i + '"]:last');
 					fr = '';
 					if (typeof i === 'string' && wo.filter_functions[i] === true && !t.hasClass('filter-false')) {
 						buildSelect(i);
@@ -349,18 +363,11 @@ $.tablesorter.addWidget({
 								fr += '<option>' + j + '</option>';
 							}
 						}
-						$t.find('thead').find('select.' + css + '[data-col="' + i + '"]').append(fr);
+						$t.find('thead').find('select.' + css + '[data-column="' + i + '"]').append(fr);
 					}
 				}
 			}
-			// build default select dropdown
-			for (i = 0; i < c.headerList.length; i++) {
-				t = $(c.headerList[i]);
-				// look for the filter-select class, but don't build it twice.
-				if (t.hasClass('filter-select') && !t.hasClass('filter-false') && !(wo.filter_functions && wo.filter_functions[i] === true)){
-					buildSelect(i);
-				}
-			}
+			buildDefault();
 
 			$t.find('select.' + css).bind('change', function(){
 				findRows();

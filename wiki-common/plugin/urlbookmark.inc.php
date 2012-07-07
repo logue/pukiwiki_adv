@@ -48,9 +48,9 @@ defined('URLBOOKMARK_INS') or define('URLBOOKMARK_INS',1);
 
 function plugin_urlbookmark_action()
 {
-	global $vars,$post,$now;
+	global $vars,$post,$now,$_string;
 
-	if( auth::check_role('readonly') ) die_message('PKWK_READONLY prohibits editing');
+	if( auth::check_role('readonly') ) die_message(sprintf($_string['error_prohibit'], 'PKWK_READONLY'));
 
 	$post['msg'] = preg_replace("/\n/",'',$post['msg']);
 
@@ -124,9 +124,8 @@ function plugin_urlbookmark_action()
 	$body = '';
 	if (md5(@join('',get_source($post['refer']))) != $post['digest'])
 	{
-		$title = _("On updating  $1, a collision has occurred.");
-		$body  = _("It seems that someone has already updated this page while you were editing it.<br />") .
-			 _("It is likely to be inserted in a different position though it bookmarked.<br />") .
+		$title = $_string['title_collided'];
+		$body  = $_string['msg_collided'] .
 			 make_pagelink($post['refer']);
 	}
 	

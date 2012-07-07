@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Advance 1.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-07-05 20:39+0900\n"
+"POT-Creation-Date: 2012-07-07 17:14+0900\n"
 "PO-Revision-Date: 2012-07-05 21:49+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
 "Language-Team: \n"
@@ -22,4 +22,3 @@ msgstr "データーがありません。"
 #: ../../plugin/bluff.inc.php:17
 msgid "attach file not found."
 msgstr "添付ファイルがありません。"
-

@@ -479,12 +479,12 @@ if (!IS_AJAX || IS_MOBILE){
 		$modernizr = 'js.php?file=modernizr.min';
 		
 		// jQuery UI
-		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.20/jquery-ui.min.js');
+		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.21/jquery-ui.min.js');
 		// jQuery UIのCSS
 		if (isset($_SKIN['ui_theme'])){
 			$link_tags[] = array(
 				'rel'=>'stylesheet',
-				'href'=>'http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.20/themes/'. $_SKIN['ui_theme'].'/jquery-ui.css',
+				'href'=>'http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.21/themes/'. $_SKIN['ui_theme'].'/jquery-ui.css',
 				'type'=>'text/css',
 				'id'=>'ui-theme'
 			);

@@ -132,7 +132,7 @@ function plugin_dav_action()
 			$type = get_mimeinfo($tmpfilename);
 			$must_compress = attach_is_compress($type,PLUGIN_ATTACH_UNKNOWN_COMPRESS);
 		} else {
-			 $must_compress = false;
+			$must_compress = false;
 		}
 
 		$obj = & dav_getfileobj($path_info, false, $must_compress);

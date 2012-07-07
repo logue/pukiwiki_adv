@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5_u2\n"
-"Report-Msgid-Bugs-To: Chung-Yen Chang <candyz@linux.org.tw>\n"
-"POT-Creation-Date: 2005-05-10 00:27+0900\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-07 17:14+0900\n"
 "PO-Revision-Date: 2011-06-01 15:05+0900\n"
 "Last-Translator: Chung-Yen Chang <candyz@linux.org.tw>\n"
 "Language-Team: Traditional Chinese <zh@li.org>\n"
@@ -15,20 +15,18 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/vote.inc.php:14
-#: ../../plugin/vote.inc.php:117
+#: ../../plugin/vote.inc.php:19 ../../plugin/vote.inc.php:129
 msgid "Vote"
 msgstr "投票"
 
-#: ../../plugin/vote.inc.php:28
+#: ../../plugin/vote.inc.php:37
 msgid "Error in vote"
 msgstr "投票錯誤"
 
-#: ../../plugin/vote.inc.php:29
+#: ../../plugin/vote.inc.php:38
 msgid "Continuation vote cannot be performed."
 msgstr "不能夠連續投票。"
 
-#: ../../plugin/vote.inc.php:116
+#: ../../plugin/vote.inc.php:128
 msgid "Selection"
 msgstr "選擇"
-

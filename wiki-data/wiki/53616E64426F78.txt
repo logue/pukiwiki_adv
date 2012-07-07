@@ -119,7 +119,7 @@ RIGHT:右寄せ
 
 *メディア [#a0b6ed69]
 :MP3ファイル|
-http://www.muzie.co.jp/download/271869/songs424/soutanka_2008-04-23_14-55-18.mp3
+http://www.muzie.ne.jp/download/271869/songs424/soutanka_2008-04-23_14-55-18.mp3
 :MML|
 #mml(Air on the G String){{
 /** Flute **/

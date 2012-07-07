@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-07-05 20:39+0900\n"
+"POT-Creation-Date: 2012-07-07 17:14+0900\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Miko.Hoshina(E.Satoh) <miko@cafeterrace.com>\n"
 "Language-Team: Japanese\n"
@@ -13,36 +13,18 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/vote.inc.php:19 ../../plugin/vote.inc.php:132
+#: ../../plugin/vote.inc.php:19 ../../plugin/vote.inc.php:129
 msgid "Vote"
 msgstr "投票"
 
-#: ../../plugin/vote.inc.php:20
-msgid "On updating $1, a collision has occurred."
-msgstr ""
-
-#: ../../plugin/vote.inc.php:21
-msgid "$1 was updated"
-msgstr ""
-
-#: ../../plugin/vote.inc.php:22
-msgid ""
-"It seems that someone has already updated this page while you were editing "
-"it.<br />\n"
-" + is placed at the beginning of a line that was newly added.<br />\n"
-" ! is placed at the beginning of a line that has possibly been updated.<br /"
-">\n"
-" Edit those lines, and submit again."
-msgstr ""
-
-#: ../../plugin/vote.inc.php:40
+#: ../../plugin/vote.inc.php:37
 msgid "Error in vote"
 msgstr ""
 
-#: ../../plugin/vote.inc.php:41
+#: ../../plugin/vote.inc.php:38
 msgid "Continuation vote cannot be performed."
 msgstr "連続投票はできません"
 
-#: ../../plugin/vote.inc.php:131
+#: ../../plugin/vote.inc.php:128
 msgid "Selection"
 msgstr "選択肢"

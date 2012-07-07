@@ -14,12 +14,12 @@ defined('PLUGIN_UNFREEZE_EDIT') or define('PLUGIN_UNFREEZE_EDIT', TRUE);
 
 function plugin_unfreeze_action()
 {
-	global $vars, $function_freeze;
+	global $vars, $function_freeze, $_string;
 
 	$_title_isunfreezed = T_(' $1 is not frozen');
 	$_title_unfreezed   = T_(' $1 has been unfrozen.');
 	$_title_unfreeze    = T_('Unfreeze  $1');
-	$_msg_invalidpass   = T_('Invalid password.');
+	$_msg_invalidpass   = $_string['invalidpass'];
 	$_msg_unfreezing    = T_('Please input the password for unfreezing.');
 	$_btn_unfreeze      = T_('Unfreeze');
 

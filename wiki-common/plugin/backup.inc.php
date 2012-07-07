@@ -28,6 +28,7 @@ defined('PLUGIN_BACKUP_ROLLBACK_ADMINONLY') or define('PLUGIN_BACKUP_ROLLBACK_AD
  */
 function plugin_backup_init()
 {
+	global $_string;
 	$messages = array(
 		'_backup_messages' => array(
 			'btn_delete'			=> T_('Delete'),
@@ -41,16 +42,16 @@ function plugin_backup_init()
 			'msg_diff_add'			=> T_('The added line is <ins class="diff_added">THIS COLOR</ins>.'),
 			'msg_diff_del'			=> T_('The deleted line is <del class="diff_removed">THIS COLOR</del>.'),
 			'msg_goto'				=> T_('Go to $1.'),
-			'msg_invalidpass'		=> T_('Invalid password.'),
+			'msg_invalidpass'		=> $_string['invalidpass']
 			'msg_nobackup'			=> T_('There are no backup(s) of $1.'),
 			'msg_nowdiff'			=> T_('diff current'),
 			'msg_source'			=> T_('source'),
-			'msg_rollback'			=> T_('roll back'),
+			'msg_rollback'			=> T_('Roll back'),
 			'msg_version'			=> T_('Versions:'),
 			'msg_view'				=> T_('View the $1.'),
 			'msg_visualdiff'		=> T_('diff for visual'),
 			'msg_arrow'				=> T_('-&gt;'),
-			'msg_delete'			=> T_('delete'),
+			'msg_delete'			=> T_('Delete'),
 			
 			'title_backup'			=> T_('Backup of $1(No. $2)'),
 			'title_backup_delete'	=> T_('Deleting backup of $1'),

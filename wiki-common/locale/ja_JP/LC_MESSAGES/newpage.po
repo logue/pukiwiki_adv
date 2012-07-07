@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5-u2\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-07-05 20:39+0900\n"
+"POT-Creation-Date: 2012-07-07 17:14+0900\n"
 "PO-Revision-Date: 2011-06-01 15:05+0900\n"
 "Last-Translator: Miko.Hoshina(E.Satoh) <miko@cafeterrace.com>\n"
 "Language-Team: Japanese\n"
@@ -22,11 +22,3 @@ msgstr "編集"
 #: ../../plugin/newpage.inc.php:14 ../../plugin/newpage.inc.php:46
 msgid "New page"
 msgstr "ページ新規作成"
-
-#: ../../plugin/newpage.inc.php:49
-msgid "PKWK_READONLY prohibits editing"
-msgstr ""
-
-#: ../../plugin/newpage.inc.php:50
-msgid "PKWK_CREATE_PAGE prohibits editing"
-msgstr ""

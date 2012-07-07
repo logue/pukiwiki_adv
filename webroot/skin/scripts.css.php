@@ -3,7 +3,7 @@
 // $Id: scripts.css.php,v 1.6.13 2012/02/09 00:23:00 Logue Exp $
 // Copyright (C) 2010-2012 PukiWiki Advance Developer Team
 //
-
+ini_set('zlib.output_compression', 'Off');
 $image_dir = isset($_GET['base'])   ? $_GET['base']	: '../image/';
 $expire = isset($_GET['expire'])   ? (int)$_GET['expire'] * 86400	: '604800';	// Default is 7 days.
 // Send header

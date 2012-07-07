@@ -9,7 +9,4 @@ for /F %%A in ('dir /b ..\..\pot\*.pot') do (
 	)
 	msgfmt -o %%~nA.mo %%~nA.po
 )
-GOTO end
-
-:end
-echo finish.
+pause.

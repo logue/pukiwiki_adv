@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Copyright (C) YEAR PukiWiki Advance Developers Team
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Advance 1.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-07-05 22:08+0900\n"
+"POT-Creation-Date: 2012-07-07 17:14+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,136 +16,124 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/backup.inc.php:33
+#: ../../plugin/backup.inc.php:34 ../../plugin/backup.inc.php:54
 msgid "Delete"
 msgstr ""
 
-#: ../../plugin/backup.inc.php:34
+#: ../../plugin/backup.inc.php:35
 msgid "Jump"
 msgstr ""
 
-#: ../../plugin/backup.inc.php:35
+#: ../../plugin/backup.inc.php:36
 msgid "backup"
 msgstr ""
 
-#: ../../plugin/backup.inc.php:36
+#: ../../plugin/backup.inc.php:37
 msgid "Please input the password for deleting."
 msgstr ""
 
-#: ../../plugin/backup.inc.php:37
+#: ../../plugin/backup.inc.php:38
 msgid "Backup of $1 has been deleted."
 msgstr ""
 
-#: ../../plugin/backup.inc.php:38 ../../plugin/backup.inc.php:58
+#: ../../plugin/backup.inc.php:39 ../../plugin/backup.inc.php:59
 msgid "Backup list"
 msgstr ""
 
-#: ../../plugin/backup.inc.php:39
+#: ../../plugin/backup.inc.php:40
 msgid " $1 has been deleted."
 msgstr ""
 
-#: ../../plugin/backup.inc.php:40
+#: ../../plugin/backup.inc.php:41
 msgid "diff"
 msgstr ""
 
-#: ../../plugin/backup.inc.php:41
+#: ../../plugin/backup.inc.php:42
 msgid "The added line is <ins class=\"diff_added\">THIS COLOR</ins>."
 msgstr ""
 
-#: ../../plugin/backup.inc.php:42
+#: ../../plugin/backup.inc.php:43
 msgid "The deleted line is <del class=\"diff_removed\">THIS COLOR</del>."
 msgstr ""
 
-#: ../../plugin/backup.inc.php:43
+#: ../../plugin/backup.inc.php:44
 msgid "Go to $1."
 msgstr ""
 
-#: ../../plugin/backup.inc.php:44
-msgid "Invalid password."
-msgstr ""
-
-#: ../../plugin/backup.inc.php:45
+#: ../../plugin/backup.inc.php:46
 msgid "There are no backup(s) of $1."
 msgstr ""
 
-#: ../../plugin/backup.inc.php:46
+#: ../../plugin/backup.inc.php:47
 msgid "diff current"
 msgstr ""
 
-#: ../../plugin/backup.inc.php:47
+#: ../../plugin/backup.inc.php:48
 msgid "source"
 msgstr ""
 
-#: ../../plugin/backup.inc.php:48
-msgid "roll back"
-msgstr ""
-
-#: ../../plugin/backup.inc.php:49
-msgid "Versions:"
-msgstr ""
-
-#: ../../plugin/backup.inc.php:50
-msgid "View the $1."
-msgstr ""
-
-#: ../../plugin/backup.inc.php:51
-msgid "diff for visual"
-msgstr ""
-
-#: ../../plugin/backup.inc.php:52
-msgid "-&gt;"
-msgstr ""
-
-#: ../../plugin/backup.inc.php:53
-msgid "delete"
-msgstr ""
-
-#: ../../plugin/backup.inc.php:55
-msgid "Backup of $1(No. $2)"
-msgstr ""
-
-#: ../../plugin/backup.inc.php:56
-msgid "Deleting backup of $1"
-msgstr ""
-
-#: ../../plugin/backup.inc.php:57
-msgid "Backup diff of $1(No. $2)"
-msgstr ""
-
-#: ../../plugin/backup.inc.php:59
-msgid "Backup diff of $1 vs current(No. $2)"
-msgstr ""
-
-#: ../../plugin/backup.inc.php:60
-msgid "Backup source of $1(No. $2)"
-msgstr ""
-
-#: ../../plugin/backup.inc.php:61
-msgid "Backup list of $1"
-msgstr ""
-
-#: ../../plugin/backup.inc.php:63
+#: ../../plugin/backup.inc.php:49 ../../plugin/backup.inc.php:64
 msgid "Roll back"
 msgstr ""
 
-#: ../../plugin/backup.inc.php:64
-msgid "Delete selected backup(s)."
+#: ../../plugin/backup.inc.php:50
+msgid "Versions:"
+msgstr ""
+
+#: ../../plugin/backup.inc.php:51
+msgid "View the $1."
+msgstr ""
+
+#: ../../plugin/backup.inc.php:52
+msgid "diff for visual"
+msgstr ""
+
+#: ../../plugin/backup.inc.php:53
+msgid "-&gt;"
+msgstr ""
+
+#: ../../plugin/backup.inc.php:56
+msgid "Backup of $1(No. $2)"
+msgstr ""
+
+#: ../../plugin/backup.inc.php:57
+msgid "Deleting backup of $1"
+msgstr ""
+
+#: ../../plugin/backup.inc.php:58
+msgid "Backup diff of $1(No. $2)"
+msgstr ""
+
+#: ../../plugin/backup.inc.php:60
+msgid "Backup diff of $1 vs current(No. $2)"
+msgstr ""
+
+#: ../../plugin/backup.inc.php:61
+msgid "Backup source of $1(No. $2)"
+msgstr ""
+
+#: ../../plugin/backup.inc.php:62
+msgid "Backup list of $1"
 msgstr ""
 
 #: ../../plugin/backup.inc.php:65
-msgid "Rolled back to $1."
+msgid "Delete selected backup(s)."
 msgstr ""
 
 #: ../../plugin/backup.inc.php:66
-#, php-format
-msgid "Roll back from a backup(No. %s), this page."
+msgid "Rolled back to $1."
 msgstr ""
 
 #: ../../plugin/backup.inc.php:67
 #, php-format
+msgid "Roll back from a backup(No. %s), this page."
+msgstr ""
+
+#: ../../plugin/backup.inc.php:68
+#, php-format
 msgid "This page has been rolled back from a backup(No. %s)."
 msgstr ""
 
-#: ../../plugin/backup.inc.php:176
+#: ../../plugin/backup.inc.php:177
 msgid "This feature is prohibited"
 msgstr ""

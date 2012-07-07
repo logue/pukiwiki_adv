@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5_u2\n"
-"Report-Msgid-Bugs-To: Chung-Yen Chang <candyz@linux.org.tw>\n"
-"POT-Creation-Date: 2005-05-10 00:27+0900\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-07-07 17:14+0900\n"
 "PO-Revision-Date: 2011-06-01 15:05+0900\n"
 "Last-Translator: Chung-Yen Chang <candyz@linux.org.tw>\n"
 "Language-Team: Traditional Chinese <zh@li.org>\n"
@@ -15,13 +15,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/newpage.inc.php:9
-#: ../../plugin/newpage.inc.php:38
+#: ../../plugin/newpage.inc.php:13 ../../plugin/newpage.inc.php:45
 msgid "Edit"
 msgstr "編輯"
 
-#: ../../plugin/newpage.inc.php:19
-#: ../../plugin/newpage.inc.php:43
+#: ../../plugin/newpage.inc.php:14 ../../plugin/newpage.inc.php:46
 msgid "New page"
 msgstr "新增頁面"
-

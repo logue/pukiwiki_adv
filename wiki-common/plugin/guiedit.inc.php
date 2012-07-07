@@ -26,11 +26,11 @@ function plugin_guiedit_action()
 	global $vars, $load_template_func;
 	global $menubar, $sidebar, $topicpath;
 
-	// if (PKWK_READONLY) die_message( _('PKWK_READONLY prohibits editing') );
-	if (auth::check_role('readonly')) die_message( _('PKWK_READONLY prohibits editing') );
+	// if (PKWK_READONLY) die_message( sprintf($_string['error_prohibit'],'PKWK_READONLY') );
+	if (auth::check_role('readonly')) die_message(  sprintf($_string['error_prohibit'],'PKWK_READONLY') );
 
 	if (PKWK_READONLY == ROLE_AUTH && auth::get_role_level() > ROLE_AUTH) {
-		die_message( _('PKWK_READONLY prohibits editing') );
+		die_message(  sprintf($_string['error_prohibit'],'PKWK_READONLY') );
 	}
 
         $page = isset($vars['page']) ? $vars['page'] : '';
@@ -38,7 +38,7 @@ function plugin_guiedit_action()
 	check_editable($page, true, true);
 
 	if (!is_page($page) && auth::is_check_role(PKWK_CREATE_PAGE)) {
-		die_message( _('PKWK_CREATE_PAGE prohibits editing') );
+		die_message( sprintf($_string['error_prohibit'],'PKWK_CREATE_PAGE') );
 	}
 
 	global $guiedit_use_fck;
