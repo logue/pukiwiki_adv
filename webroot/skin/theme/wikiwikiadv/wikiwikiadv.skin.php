@@ -6,7 +6,7 @@
 // by Logue
 // Inspired from wikiwiki.jp default skin.
 //
-// $Id: wikiwikiadv.skin.php,v 1.0 2012/01/28 16:55:00 Logue Exp $
+// $Id: wikiwikiadv.skin.php,v 1.0.1 2012/07/09 07:55:00 Logue Exp $
 //
 global $pkwk_dtd, $_SKIN, $is_page, $defaultpage, $sidebar, $headarea, $footarea;
 
@@ -63,7 +63,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</header>' : '</div>')."\n"; ?>
 <!-- *** End Header *** -->
 			<div id="naviframe" class="clearfix">
-				<?php echo exist_plugin('navibar') ? do_plugin_convert('navibar','top,new,edit,upload') : ''; ?>
+				<?php echo exist_plugin('navibar') ? do_plugin_convert('navibar','top,new,edit,upload,login') : ''; ?>
 				<?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','list,recent,diff,source,backup,freeze,rename,help') : '';?>
 				<?php if (exist_plugin('search')) echo do_plugin_convert('search'); ?>
 			</div>

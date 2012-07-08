@@ -1,7 +1,7 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: xxxlogue.skin.php,v 2.4.1 2011/09/11 22:59:00 Logue Exp $
-// Copyright (C) 2010-2011 PukiWiki Advance Developers Team
+// $Id: xxxlogue.skin.php,v 2.4.2 2012/07/09 07:55:00 Logue Exp $
+// Copyright (C) 2010-2012 PukiWiki Advance Developers Team
 //               2007-2010 Logue
 //
 // PukiWiki Advance xxxLogue skin
@@ -36,7 +36,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 	<body>
 		<div id="container" role="document">
 <!-- ** Navigator ** -->
-			<?php echo ($navibar === null) ? (exist_plugin('navibar') ? do_plugin_convert('navibar','top,|,edit,freeze,diff,backup,upload,reload,|,new,list,search,recent,help,|,trackback').'<hr />' :'') : $navibar; ?>
+			<?php echo ($navibar === null) ? (exist_plugin('navibar') ? do_plugin_convert('navibar','top,|,edit,freeze,diff,backup,upload,reload,|,new,list,search,recent,help,|,trackback,|,login').'<hr />' :'') : $navibar; ?>
 <!--  End Navigator -->
 <!-- Header -->
 			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<header id="header" class="clearfix" role="banner">'."\n" : '<div id="header" class="clearfix" role="banner">')."\n"; ?>
@@ -122,7 +122,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 		<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<footer id="footer" class="noprint" role="contactinfo">'."\n" : '<div id="footer" class="noprint">'."\n"; ?>
 			<p>
 				<?php echo S_COPYRIGHT ?>. HTML convert time: <?php echo showtaketime() ?> sec.<br />
-				<strong>x<sup>x</sup><sub>x</sub>Logue skin v2.4.0 RC</strong> by <a href="http://logue.be/" rel="external">Logue</a> / 
+				<strong>x<sup>x</sup><sub>x</sub>Logue skin v2.4.0</strong> by <a href="http://logue.be/" rel="external">Logue</a> / 
 				based on <a href="http://xuyiyang.com/" rel="external">Xuyi Yang</a>'s <a href="http://xuyiyang.com/wordpress-themes/unnamed/" rel="external">Unnamed v1.23</a>.
 			</p>
 		<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</footer>'."\n" : '</div>'."\n"; ?>

@@ -14,7 +14,7 @@
 * @author Christian Bach/christian.bach@polyester.se
 * @contributor Rob Garrison/https://github.com/Mottie/tablesorter
 */
-!(function($) {
+(function($) {
 	$.extend({
 		tablesorter: new function() {
 
