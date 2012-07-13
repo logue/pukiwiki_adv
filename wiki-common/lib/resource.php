@@ -49,6 +49,7 @@ $_string = array(
 	'word'				=> T_('These search terms have been highlighted:'),
 	'help'				=> T_('View Text Formatting Rules'),
 	'update'			=> T_('$1 was updated'),
+	'back'				=> T_('Back to %s'),
 
 	// Common core error message(s)
 	'invalidpass'		=> T_('Invalid password.'),

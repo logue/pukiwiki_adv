@@ -567,8 +567,8 @@ function catrule()
 }
 
 // Show (critical) error message
-function die_message($msg, $error_title=''){
-	global $skin_file, $page_title, $_string, $_title, $google_loader;
+function die_message($msg, $error_title='', $http_code = 500){
+	global $skin_file, $page_title, $_string, $_title, $_button;
 	global $memcache, $ob_flag;
 	$title = !empty($error_title) ? $error_title : $_title['error'];
 	$page = $_title['error'];
@@ -576,25 +576,18 @@ function die_message($msg, $error_title=''){
 	if (PKWK_WARNING !== true){	// PKWK_WARNINGが有効でない場合は、詳細なエラーを隠す
 		$msg = $_string['error_msg'];
 	}
-	
-	if ($memcache !== null){
-		$memcache->close();
-	}
-
 	$body = <<<EOD
 <div class="message_box ui-state-error ui-corner-all">
 	<p style="padding:0 .5em;"><span class="ui-icon ui-icon-alert" style="display:inline-block;"></span> 
 	<strong>{$_title['error']}</strong> $msg</p>
 </div>
-
 EOD;
-
+	$body .= isset($vars['page']) ? '<hr /><p>[ <a href="'.get_page_location_uri($vars['page']).'">'.$_button['back'].'</a> ]</p>' : '';
 	global $trackback;
 	$trackback = 0;
 
 	if (!headers_sent()){
-		pkwk_common_headers();
-		header('HTTP', true, 500);	// サーバーエラーとする
+		pkwk_common_headers(0,0, $http_code);
 	}
 
 	if(defined('SKIN_FILE')){
@@ -610,25 +603,14 @@ EOD;
 <html>
 	<head>
 		<meta charset="utf-8">
-		<link rel="stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.20/themes/base/jquery-ui.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.21/themes/base/jquery-ui.css" type="text/css" />
 		<title>$title - $page_title</title>
 	</head>
 	<body>$body</body>
 </html>
 EOD;
 	}
-	if(!DEBUG){
-		// get the size of the output
-		// send headers to tell the browser to close the connection
-		header('Content-Length: '. !empty($length) ? $length : ob_get_length() );
-		ob_end_flush();
-		ob_flush();
-	}
-	
-	flush();
-	// close current session
-	if (session_id()) session_write_close();
-//	exit();
+	pkwk_common_suffixes();
 	die();
 }
 /*

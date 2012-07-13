@@ -42,7 +42,7 @@ function plugin_backup_init()
 			'msg_diff_add'			=> T_('The added line is <ins class="diff_added">THIS COLOR</ins>.'),
 			'msg_diff_del'			=> T_('The deleted line is <del class="diff_removed">THIS COLOR</del>.'),
 			'msg_goto'				=> T_('Go to $1.'),
-			'msg_invalidpass'		=> $_string['invalidpass']
+			'msg_invalidpass'		=> $_string['invalidpass'],
 			'msg_nobackup'			=> T_('There are no backup(s) of $1.'),
 			'msg_nowdiff'			=> T_('diff current'),
 			'msg_source'			=> T_('source'),
@@ -73,7 +73,7 @@ function plugin_backup_init()
 
 function plugin_backup_action()
 {
-	global $vars, $do_backup, $_string;
+	global $vars, $do_backup, $_string, $_button;
 	global $_backup_messages;
 	if (! $do_backup) return;
 
@@ -89,6 +89,7 @@ function plugin_backup_action()
 	$backups_count = count($backups);
 	$msg = $_backup_messages['msg_backup'];
 	if ($s_age > $backups_count) $s_age = $backups_count;
+	$body = '';
 
 	/**
 	 * if page is not set, show list of backup files
@@ -104,8 +105,7 @@ function plugin_backup_action()
 			'body'=>plugin_backup_get_list($page)
 		);
 	}
-
-	$body = '<div class="ui-widget ui-widget-content ui-corner-all">';
+	$body .= '<div class="ui-widget ui-widget-content ui-corner-all">';
 	$body .= plugin_backup_get_list($page);
 	$body .= '</div>'."\n";
 
@@ -267,10 +267,11 @@ EOD;
 
 function plugin_backup_get_list($page)
 {
-	global $_backup_messages, $vars;
+	global $_backup_messages, $vars, $_button;
 	$r_page = rawurlencode($page);
 	$s_page = htmlsc($page);
 	$retval = array();
+	$retval[] = '<p>[ <a href="'.get_page_uri($page).'">'.$_button['back'].'</a> ]</p>'."\n".'<hr />'."\n";
 	$retval[] = '<form action="'.get_script_uri().'" method="get" class="backup_select_form">';
 	$retval[] = '<input type="hidden" name="cmd" value="backup" />';
 	$retval[] = '<input type="hidden" name="page" value="'.$s_page.'" />';

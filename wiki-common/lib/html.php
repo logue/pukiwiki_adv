@@ -630,7 +630,7 @@ function pkwk_headers_sent()
 	@param expire 有効期限（秒）
 	@return なし
 */
-function pkwk_common_headers($modified = 0, $expire = 604800){
+function pkwk_common_headers($modified = 0, $expire = 604800, $http_code = 200){
 	global $lastmod, $vars;
 	if (! defined('PKWK_OPTIMISE')) pkwk_headers_sent();
 
@@ -653,13 +653,13 @@ function pkwk_common_headers($modified = 0, $expire = 604800){
 		header('ETag: "'.$etag.'"');
 
 		if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ) {
-			if ($_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified) {
+			if ($_SERVER['HTTP_IF_MODIFIED_SINCE'] === $last_modified) {
 				header('HTTP/1.1 304 Not Modified');
 				exit;
 			}
 		}
 		if (isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
-			if (preg_match("/{$etag}/", $_SERVER['HTTP_IF_NONE_MATCH'])) {
+			if (preg_match('/'.$etag.'/', $_SERVER['HTTP_IF_NONE_MATCH'])) {
 				header('HTTP/1.1 304 Not Modified');
 				exit;
 			}
@@ -672,6 +672,28 @@ function pkwk_common_headers($modified = 0, $expire = 604800){
 		header('Cache-Control: no-cache');
 		header('Pragma: no-cache');
 		header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
+		switch($http_code){
+			default:
+				header('HTTP/1.1 200 Ok');
+				break;
+			case 401:
+				header('HTTP/1.1 401 Unauthorized');
+				break;
+			case 403:
+				header('HTTP/1.1 403 Forbidden');
+				break;
+			case 404:
+				// ページが見つかりませんでした
+				header('HTTP/1.1 404 Not Found');
+				break;
+			case 500:
+				if (!DEBUG){
+					header('HTTP/1.1 500 Internal Server Error');
+				}else{
+					header('HTTP/1.1 200 Ok');
+				}
+				break;
+		}
 	}
 
 	// RFC2616
@@ -706,6 +728,11 @@ function pkwk_common_headers($modified = 0, $expire = 604800){
 }
 
 function pkwk_common_suffixes($length = ''){
+	// close Memcache
+	global $memcache;
+	if ($memcache !== null){
+		$memcache->close();
+	}
 	// flush all output
 	if(!DEBUG){
 		// get the size of the output

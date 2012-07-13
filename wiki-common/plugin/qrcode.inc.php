@@ -49,7 +49,7 @@ GPL
 そろっていたほうがいいとおもったためです。
 */
 
-define('QR_BASEDIR', LIB_DIR.'phpqrcode/');
+define('QR_BASEDIR', LIB_DIR.'phpqrcode'.DIRECTORY_SEPARATOR);
 
 define('QRCODE_MAX_SPLIT', 16);
 
@@ -69,27 +69,32 @@ define('QR_DEFAULT_MASK', 2);
 define('QR_PNG_MAXIMUM_SIZE',  1024);
 
 // インラインはアクション用のアドレスを作成するのみ
+
+function plugin_qrcode_init(){
+	require_once QR_BASEDIR."qrspec.php";
+}
+
 function plugin_qrcode_inline()
 {
-	include QR_BASEDIR."qrspec.php";
-
-	if (func_num_args() == 5) {
-		list($s,$e,$v,$n,$d) = func_get_args();
-	}
-	else if (func_num_args() == 4) {
-		list($s,$e,$v,$d) = func_get_args();
-	}
-	else if (func_num_args() == 3) {
-		list($s,$e,$d) = func_get_args();
-	}
-	else if (func_num_args() == 2) {
-		list($s,$d) = func_get_args();
-	}
-	else if (func_num_args() == 1) {
-		list($d) = func_get_args();
-	}
-	else {
-		return FALSE;
+	switch(func_num_args()){
+		case 5:
+			list($s,$e,$v,$n,$d) = func_get_args();
+			break;
+		case 4:
+			list($s,$e,$v,$d) = func_get_args();
+			break;
+		case 3:
+			list($s,$e,$d) = func_get_args();
+			break;
+		case 2:
+			list($s,$d) = func_get_args();
+			break;
+		case 1:
+			list($d) = func_get_args();
+			break;
+		default:
+			return FALSE;
+			break;
 	}
 
 	// thx, nanashi and customized
@@ -151,16 +156,15 @@ function plugin_qrcode_inline()
 // アクションでは、実際の画像を作成
 function plugin_qrcode_action()
 {
-	include QR_BASEDIR."qrconst.php";
-	include QR_BASEDIR."qrtools.php";
-	include QR_BASEDIR."qrspec.php";
-	include QR_BASEDIR."qrimage.php";
-	include QR_BASEDIR."qrinput.php";
-	include QR_BASEDIR."qrbitstream.php";
-	include QR_BASEDIR."qrsplit.php";
-	include QR_BASEDIR."qrrscode.php";
-	include QR_BASEDIR."qrmask.php";
-	include QR_BASEDIR."qrencode.php";
+	require_once QR_BASEDIR."qrconst.php";
+	require_once QR_BASEDIR."qrtools.php";
+	require_once QR_BASEDIR."qrimage.php";
+	require_once QR_BASEDIR."qrinput.php";
+	require_once QR_BASEDIR."qrbitstream.php";
+	require_once QR_BASEDIR."qrsplit.php";
+	require_once QR_BASEDIR."qrrscode.php";
+	require_once QR_BASEDIR."qrmask.php";
+	require_once QR_BASEDIR."qrencode.php";
 	
 	global $vars;
 	if (empty($vars['d'])) {
@@ -176,7 +180,7 @@ function plugin_qrcode_action()
 	
 	pkwk_common_headers(0,null, false);
 	print $qr->png(rawurldecode($vars['d']), false, (empty($vars['e'])) ? 'M' : $vars['e'], (empty($vars['s'])) ? 1 : $vars['s'], 2);
-	exit;
+	pkwk_common_suffixes();
 }
 /* End of file qrcode.inc.php */
 /* Location: ./wiki-common/plugin/qrcode.inc.php */

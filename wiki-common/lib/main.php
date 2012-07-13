@@ -41,15 +41,14 @@ ignore_user_abort(true);
 ini_set('memory_limit', '128M');
 ini_set('zlib.output_compression', 'Off');
 ini_set('zlib.output_handler','mb_output_handler');
-
-if (! extension_loaded('mbstring')){
-	throw new Exception('PukiWiki Adv. needs the <a href="http://www.php.net/manual/book.mbstring.php">mbstring extension</a>.');
+$info = array();
+foreach (array('mbstring','json','openssl','curl') as $ext){
+	if (! extension_loaded($ext)){
+		$info[] = 'PukiWiki Adv. needs the <a href="http://www.php.net/manual/book.'.$ext.'.php">'.$ext.' extension</a>.';
+	}
 }
-if (! extension_loaded('json')) {
-	throw new Exception('PukiWiki Adv. needs the <a href="http://www.php.net/manual/book.json.php">JSON extension.</a>');
-}
-if (! extension_loaded('openssl')) {
-	throw new Exception('PukiWiki Adv. needs the <a href="http://www.php.net/manual/book.openssl.php">OpenSSL extension.</a>');
+if (count($info) !== 0){
+	throw new Exception(join("<br />\n",$info));
 }
 
 /////////////////////////////////////////////////
@@ -109,17 +108,20 @@ if (SpamCheckBAN($_SERVER['REMOTE_ADDR'])) die();
 
 // Block SPAM countory
 $geoip = array();
-if (function_exists('geoip_db_avail') && geoip_db_avail(GEOIP_COUNTRY_EDITION)) {
-	$geoip = @geoip_region_by_name($_SERVER['REMOTE_ADDR']);
-	$info[] = ($geoip !== FALSE) ?
+if (isset($_SERVER['GEOIP_COUNTRY_CODE'])){
+	$geoip['country_code'] = $_SERVER['GEOIP_COUNTRY_CODE'];
+}else if (function_exists('geoip_db_avail') && geoip_db_avail(GEOIP_COUNTRY_EDITION) && function_exists('geoip_region_by_name')) {
+	$geoip = geoip_region_by_name($_SERVER['REMOTE_ADDR']);
+	$info[] = (!empty($geoip['country_code']) ) ?
 		'GeoIP is usable. Your country code from IP is inferred <var>'.$geoip['country_code'].'</var>.' :
 		'GeoIP is NOT usable. Maybe database is not installed. Please check <a href="http://www.maxmind.com/app/installation?city=1" rel="external">GeoIP Database Installation Instructions</a>';
+}else{
+	$geoip['country_code'] = apache_note('GEOIP_COUNTRY_CODE');
 }
-if ( isset($_SERVER['GEOIP_COUNTRY_CODE']) ) {
-	$geoip['country_code'] = $_SERVER['GEOIP_COUNTRY_CODE'];
-	$info[] = 'GeoIP is usable. Your country code from IP is inferred <var>'.$geoip['country_code'].'</var>.';
+if ( isset($geoip['country_code']) && !empty($geoip['country_code'])) {
+	$info[] = 'Your country code from IP is inferred <var>'.$geoip['country_code'].'</var>.';
 } else {
-	$info[] = 'GeoIP is NOT usable. <var>$deny_countory</var> value and <var>$allow_countory</var> value is ignoled.';
+	$info[] = '<var>$deny_countory</var> value and <var>$allow_countory</var> value is ignoled.';
 }
 
 // Spam filtering
@@ -297,11 +299,6 @@ $body_menu = $body_side = '';
 if ($always_menu_displayed) {
 	if (exist_plugin_convert('menu')) $body_menu = do_plugin_convert('menu');
 	if (exist_plugin_convert('side')) $body_side = do_plugin_convert('side');
-}
-
-global $memcache;
-if ($memcache !== null){
-	$memcache->close();
 }
 
 // Output
