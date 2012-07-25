@@ -48,7 +48,7 @@ $_string = array(
 	'notfoundresult'	=> T_('No page which contains <var>$1</var> has been found.'),
 	'word'				=> T_('These search terms have been highlighted:'),
 	'help'				=> T_('View Text Formatting Rules'),
-	'update'			=> T_('$1 was updated'),
+	'updated'			=> T_('$1 was updated'),
 	'back'				=> T_('Back to %s'),
 
 	// Common core error message(s)

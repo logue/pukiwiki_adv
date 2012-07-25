@@ -35,7 +35,7 @@ defined('ROOT_URI')				or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');
 defined('WWW_HOME')				or define('WWW_HOME', '');
 
 // ページ名やファイル名として使用できない文字（エンコード前の文字）
-defined('PKWK_ILLEGAL_CHARS_PATTERN') or define('PKWK_ILLEGAL_CHARS_PATTERN', '/[%|=|&|?|#|\r|\n|\0|\@|;|\$|+|\\|\[|\]|\||^|{|}|\']/');
+defined('PKWK_ILLEGAL_CHARS_PATTERN') or define('PKWK_ILLEGAL_CHARS_PATTERN', '/[%|=|&|?|#|\r|\n|\0|\@|;|\$|+|\\|\[|\]|\||^|{|}]/');
 
 /////////////////////////////////////////////////
 // Init server variables

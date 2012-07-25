@@ -105,7 +105,12 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	global $trackback, $autoalias, $aliaspage;
 	global $autoglossary, $glossarypage;
 	global $use_spam_check, $_strings;
-	global $vars, $now;
+	global $vars, $now, $akismet_api_key;
+
+	// Check Illigal Chars
+	if (preg_match(PKWK_ILLEGAL_CHARS_PATTERN, $page)){
+		die_message($_strings['illegal_chars']);
+	}
 
 	// roleのチェック
 	if (auth::check_role('readonly')) return; // Do nothing
@@ -118,23 +123,45 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 //	if ( !isset($vars['encode_hint']) && !defined(PKWK_ENCODING_HINT) )
 //		die_message('Plugin Encode Error.');
 
+	$links = array();
+	if ( ($trackback > 1) || ( $role_adm_contents && $use_spam_check['page_contents']) ) {
+		$links = get_this_time_links($postdata, $diffdata);
+	}
+
 	// Blocking SPAM
-	if ($role_adm_contents) {
+	if ($role_adm_contents) {	// 管理人権限の時はチェックしない
 		if ($use_spam_check['page_remote_addr'] && SpamCheck($_SERVER['REMOTE_ADDR'],'ip')) {
-			die_message($_strings['blacklisted']);
+			die_message($_strings['blacklisted'], 'SPAM Error', 400);
 		}
 		if ($use_spam_check['page_contents'] && SpamCheck($links)) {
-			die_message('Writing was limited by DNSBL (Blocking SPAM).');
+			die_message('Writing was limited by DNSBL (Blocking SPAM).', 'SPAM Error', 400);
 		}
 		if ($use_spam_check['page_write_proxy'] && is_proxy()) {
-			die_message('Writing was limited by PROXY (Blocking SPAM).');
+			die_message('Writing was limited by PROXY (Blocking SPAM).', 'SPAM Error', 400);
+		}
+
+		if ($akismet_api_key !== ''){
+			require(LIB_DIR.'Akismet.class.php');
+			$akismet = new Akismet(get_script_absuri() ,$akismet_api_key);
+			if($akismet->isKeyValid()) {
+
+				if (isset($vars['name'])){
+					$akismet->setCommentAuthor($vars['name']);
+				}
+				if (isset($vars['page'])){
+					$akismet->setPermalink(get_page_uri($vars['page']));
+				}
+				$akismet->setCommentContent($postdata);
+
+				if($akismet->isCommentSpam()){
+					die_message('Writing was limited by Akismet (Blocking SPAM).', 'SPAM Error', 400);
+				}
+			}else{
+				die_message('Akismet API key does not valied.', 500);
+			}
 		}
 	}
 
-	// Check Illigal Chars
-	if (preg_match(PKWK_ILLEGAL_CHARS_PATTERN, $page)){
-		die_message($_strings['illegal_chars']);
-	}
 
 	// Create and write diff
 	$postdata = make_str_rules($postdata);
@@ -145,11 +172,6 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	$referer = (isset($_SERVER['HTTP_REFERER'])) ? htmlsc($_SERVER['HTTP_REFERER']) : 'None';
 	$user_agent = htmlsc($_SERVER['HTTP_USER_AGENT']);
 	$diffdata .= "// IP:\"{$_SERVER['REMOTE_ADDR']}\" TIME:\"$now\" REFERER:\"$referer\" USER_AGENT:\"$user_agent\"\n";
-
-	$links = array();
-	if ( $trackback !== 0 || ( $role_adm_contents && $use_spam_check['page_contents']) ) {
-		tb_send($page, get_this_time_links($postdata, $diffdata));
-	}
 
 	// Update autoalias.dat (AutoAliasName)
 	if ($autoalias && $page === $aliaspage) {
@@ -179,7 +201,12 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 
 	// Create wiki text
 	file_write(DATA_DIR, $page, $postdata, $notimestamp);
-	
+
+	if ($trackback > 1) {
+		// TrackBack Ping
+		tb_send($page, $links);
+	}
+
 	// Update data
 	file_write(DIFF_DIR, $page, $diffdata);
 	unset($oldpostdata, $diffdata);
@@ -194,7 +221,7 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	postdata_write();
 
 	log_write('update',$page);
-	
+
 	if (function_exists('senna_update')) {
 		senna_update($page, $oldpostdata, $postdata);
 	}

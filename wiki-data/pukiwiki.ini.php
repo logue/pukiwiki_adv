@@ -277,9 +277,6 @@ $x_ua_compatible = "IE=edge";	// Render as latest IE (Default)
 // PLUS_ALLOW_SESSION - Allow / Prohibit using Session
 defined('PLUS_ALLOW_SESSION') or define('PLUS_ALLOW_SESSION', 1);
 
-// Control of form unloading which you do not intend 
-$ctrl_unload = 1;
-
 // LOG
 require_once(add_homedir('config-log.ini.php'));
 
@@ -292,6 +289,8 @@ $use_spam_check = array(
 	'page_write_proxy'	=> 0,	// Proxy経由での書き込み規制
 	'trackback'			=> 1,	// TrackBack。splogなど。（DNSBL）
 	'referer'			=> 1,	// Referer SPAM（DNSBL）
+	'akismet'			=> 0,	// Aksmet によるアンチスパム
+	'bad-behavior'		=> 0	// Bad Behaviorによるアンチスパム（仮実装）
 );
 
 /////////////////////////////////////////////////
@@ -345,11 +344,11 @@ $deny_countory = array();
 
 // Akismet
 // https://akismet.com/signup/
-$akismet_api_key = '';
+$akismet_api_key = '2ecb3f99dc35';
 
 // reCAPTICHA
 // http://www.google.com/recaptcha
-$recaptcha_public_key = '6LdBh74SAAAAAPN1_61XL-54m5HajruFB3KJ5gXF';
+$recaptcha_public_key = '';
 $recaptcha_private_key = '';
 
 /////////////////////////////////////////////////

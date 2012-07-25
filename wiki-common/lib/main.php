@@ -89,7 +89,7 @@ $notify = $trackback = $referer = 0;
 require(LIB_DIR . 'init.php');
 
 // Load optional libraries
-if (isset($badbehavior)){ require(LIB_DIR . 'bad-behavior-pukiwiki.php'); }
+if ($use_spam_check['bad-behavior']){ require(LIB_DIR . 'bad-behavior-pukiwiki.php'); }
 if (isset($notify)){ require(LIB_DIR . 'mail.php'); }	// Mail notification
 if (isset($trackback)){ require(LIB_DIR . 'trackback.php'); }	// TrackBack
 if (isset($referer)){ require(LIB_DIR . 'referer.php'); }
@@ -250,12 +250,12 @@ if (!empty($auth_key['home'])) {
 // Page output
 $title = htmlsc(strip_bracket($base));
 $page  = make_search($base);
-if (isset($retvars['msg']) && $retvars['msg'] != '') {
+if (isset($retvars['msg']) && !empty($retvars['msg']) ) {
 	$title = str_replace('$1', $title, $retvars['msg']);
 	$page  = str_replace('$1', $page,  $retvars['msg']);
 }
 
-if (isset($retvars['body']) && $retvars['body'] != '') {
+if (isset($retvars['body']) && !empty($retvars['body'])) {
 	$body = & $retvars['body'];
 } else {
 	if (empty($base) || ! is_page($base)) {
