@@ -141,7 +141,7 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 		}
 
 		if ($akismet_api_key !== ''){
-			require(LIB_DIR.'Akismet.class.php');
+			require_once(LIB_DIR.'Akismet.class.php');
 			$akismet = new Akismet(get_script_absuri() ,$akismet_api_key);
 			if($akismet->isKeyValid()) {
 

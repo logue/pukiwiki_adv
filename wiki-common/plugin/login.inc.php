@@ -21,9 +21,15 @@ function plugin_login_init()
 		'msg_auth_guide'	=> T_('Please attest it with %s to write the comment.'),
 		'btn_login'			=> T_('Login'),
 		'btn_logout'		=> T_('Logout'),
-		'err_notusable'		=> T_('#login() : Could not use auth function. Please check <var>auth_api.ini.php</var> setting.'),
+		'err_notusable'		=>
+			'<p class="message_box ui-state-error ui-corner-all">' .
+			T_('#login() : Could not use auth function. Please check <var>auth_api.ini.php</var> setting.').
+			'</p>',
 		'err_auth'			=> T_('Authorization Required'),
-		'err_auth_guide'	=> T_('This server could not verify that you are authorized to access the document requested. Either you supplied the wrong credentials (e.g., bad password), or your browser doesn\'t understand how to supply the credentials required.')
+		'err_auth_guide'	=>
+			'<p class="message_box ui-state-error ui-corner-all"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-alert"></span>' .
+			T_('This server could not verify that you are authorized to access the document requested. Either you supplied the wrong credentials (e.g., bad password), or your browser doesn\'t understand how to supply the credentials required.') .
+			'</p>'
 		)
 	);
 	set_plugin_messages($messages);
@@ -43,7 +49,7 @@ function plugin_login_convert()
 	// LOGIN
 	if (!empty($auth_key['key'])) {
 		if (isset($auth_api[$auth_key['api']]['hidden_login']) && $auth_api[$auth_key['api']]['hidden_login']) {
-			return '<p class="message_box ui-state-error ui-corner-all">' . $_login_msg['err_notusable'] . '</p>';
+			return  $_login_msg['err_notusable'] ;
 		}
 		
 		if ($auth_key['api'] == 'plus') {
@@ -58,7 +64,7 @@ EOD;
 		if (exist_plugin($auth_key['api'])) {
 			return do_plugin_convert($auth_key['api']);
 		}
-		return '<p class="message_box ui-state-error ui-corner-all">' . $_login_msg['err_notusable'] . '</p>';
+		return $_login_msg['err_notusable'];
 	}
 
 	$ret = array();
@@ -82,7 +88,7 @@ EOD;
 		$select .= '<option value="'.$api.'">'.$displayname.'</option>'."\n";
 	}
 
-	if (empty($select)) return '<p class="message_box ui-state-error ui-corner-all">' . $_login_msg['err_notusable'] . '</p>'; // 認証機能が使えない
+	if (empty($select)) return $_login_msg['err_notusable']; // 認証機能が使えない
 
 	if ($sw_ext_auth) {
 		// 外部認証がある
@@ -182,7 +188,11 @@ function plugin_login_action()
 		break;
 	}
 	header('HTTP/1.1 401 Unauthorized');
-	return array('msg'=>$_login_msg['err_auth'], 'body'=>'<p class="message_box ui-state-error ui-corner-all"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-alert"></span>'.$_login_msg['err_auth_guide'].'</p>');
+	return array(
+		'msg'=>$_login_msg['err_auth'],
+		'body'=>$_login_msg['err_auth_guide'],
+		'http_code'=>401
+	);
 }
 
 function login_return_page()

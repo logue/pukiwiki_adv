@@ -119,5 +119,12 @@ define('PKWK_UPDATE_EXEC',
 	' -O ' . $indext_dir . ' -L ja -c -K ' . realpath(DATA_DIR) );
 */
 
+/////////////////////////////////////////////////
+// Anti-Spam service config
+
+// Akismet
+// https://akismet.com/signup/
+// $akismet_api_key = '';
+
 /* End of file server.ini.php */
 /* Location: ./wiki-common/server.ini.php */

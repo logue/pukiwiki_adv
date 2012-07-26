@@ -289,7 +289,6 @@ $use_spam_check = array(
 	'page_write_proxy'	=> 0,	// Proxy経由での書き込み規制
 	'trackback'			=> 1,	// TrackBack。splogなど。（DNSBL）
 	'referer'			=> 1,	// Referer SPAM（DNSBL）
-	'akismet'			=> 0,	// Aksmet によるアンチスパム
 	'bad-behavior'		=> 0	// Bad Behaviorによるアンチスパム（仮実装）
 );
 
@@ -344,7 +343,8 @@ $deny_countory = array();
 
 // Akismet
 // https://akismet.com/signup/
-$akismet_api_key = '2ecb3f99dc35';
+// server.ini.phpの設定が優先されます。
+$akismet_api_key = '';
 
 // reCAPTICHA
 // http://www.google.com/recaptcha
