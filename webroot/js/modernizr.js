@@ -1,5 +1,5 @@
 /*!
- * Modernizr v2.6pre
+ * Modernizr v2.6.1
  * www.modernizr.com
  *
  * Copyright (c) Faruk Ates, Paul Irish, Alex Sexton
@@ -24,7 +24,7 @@
 
 window.Modernizr = (function( window, document, undefined ) {
 
-    var version = '2.5.3',
+    var version = '2.6.1',
 
     Modernizr = {},
 
@@ -315,10 +315,18 @@ window.Modernizr = (function( window, document, undefined ) {
     // on our modernizr element, but instead just testing undefined vs
     // empty string.
 
+    // Because the testing of the CSS property names (with "-", as
+    // opposed to the camelCase DOM properties) is non-portable and
+    // non-standard but works in WebKit and IE (but not Gecko or Opera),
+    // we explicitly reject properties with dashes so that authors
+    // developing in WebKit or IE first don't end up with
+    // browser-specific content by accident.
+
     function testProps( props, prefixed ) {
         for ( var i in props ) {
-            if ( mStyle[ props[i] ] !== undefined ) {
-                return prefixed == 'pfx' ? props[i] : true;
+            var prop = props[i];
+            if ( !contains(prop, "-") && mStyle[prop] !== undefined ) {
+                return prefixed == 'pfx' ? prop : true;
             }
         }
         return false;
@@ -360,7 +368,7 @@ window.Modernizr = (function( window, document, undefined ) {
      */
     function testPropsAll( prop, prefixed, elem ) {
 
-        var ucProp  = prop.charAt(0).toUpperCase() + prop.substr(1),
+        var ucProp  = prop.charAt(0).toUpperCase() + prop.slice(1),
             props   = (prop + ' ' + cssomPrefixes.join(ucProp + ' ') + ucProp).split(' ');
 
         // did they call .prefixed('boxSizing') or are we just testing a prop?
@@ -941,7 +949,6 @@ window.Modernizr = (function( window, document, undefined ) {
     /*>>webforms*/
 
 
-    /*>>addtest*/
     /**
      * addTest allows the user to define their own feature tests
      * the result will be added onto the Modernizr object,
@@ -981,7 +988,6 @@ window.Modernizr = (function( window, document, undefined ) {
 
        return Modernizr; // allow chaining.
      };
-     /*>>addtest*/
 
 
     // Reset modElem.cssText to nothing to reduce memory footprint.
@@ -989,14 +995,14 @@ window.Modernizr = (function( window, document, undefined ) {
     modElem = inputElem = null;
 
     /*>>shiv*/
-    /*! HTML5 Shiv v3.5 | @afarkas @jdalton @jon_neal @rem | MIT/GPL2 Licensed */
+    /*! HTML5 Shiv v3.6 | @afarkas @jdalton @jon_neal @rem | MIT/GPL2 Licensed */
     ;(function(window, document) {
-
+    /*jshint evil:true */
       /** Preset options */
       var options = window.html5 || {};
 
       /** Used to skip problem elements */
-      var reSkip = /^<|^(?:button|form|map|select|textarea|object|iframe|option|optgroup)$/i;
+      var reSkip = /^<|^(?:button|map|select|textarea|object|iframe|option|optgroup)$/i;
 
       /** Not all elements can be cloned in IE (this list can be shortend) **/
       var saveClones = /^<|^(?:a|b|button|code|div|fieldset|form|h1|h2|h3|h4|h5|h6|i|iframe|img|input|label|li|link|ol|option|p|param|q|script|select|span|strong|style|table|tbody|td|textarea|tfoot|th|thead|tr|ul)$/i;
@@ -1004,40 +1010,39 @@ window.Modernizr = (function( window, document, undefined ) {
       /** Detect whether the browser supports default html5 styles */
       var supportsHtml5Styles;
 
+      /** Name of the expando, to work with multiple documents or to re-shiv one document */
+      var expando = '_html5shiv';
+
+      /** The id for the the documents expando */
+      var expanID = 0;
+
+      /** Cached data for each document */
+      var expandoData = {};
+
       /** Detect whether the browser supports unknown elements */
       var supportsUnknownElements;
 
       (function() {
-        var a = document.createElement('a');
+        try {
+            var a = document.createElement('a');
+            a.innerHTML = '<xyz></xyz>';
+            //if the hidden property is implemented we can assume, that the browser supports basic HTML5 Styles
+            supportsHtml5Styles = ('hidden' in a);
 
-        a.innerHTML = '<xyz></xyz>';
-
-        //if the hidden property is implemented we can assume, that the browser supports HTML5 Styles | this fails in Chrome 8
-        supportsHtml5Styles = ('hidden' in a);
-        //if we are part of Modernizr, we do an additional test to solve the Chrome 8 fail
-        if(supportsHtml5Styles && typeof injectElementWithStyles == 'function'){
-            injectElementWithStyles('#modernizr{}', function(node){
-                node.hidden = true;
-                supportsHtml5Styles = (window.getComputedStyle ?
-                      getComputedStyle(node, null) :
-                      node.currentStyle).display == 'none';
-            });
+            supportsUnknownElements = a.childNodes.length == 1 || (function() {
+              // assign a false positive if unable to shiv
+              (document.createElement)('a');
+              var frag = document.createDocumentFragment();
+              return (
+                typeof frag.cloneNode == 'undefined' ||
+                typeof frag.createDocumentFragment == 'undefined' ||
+                typeof frag.createElement == 'undefined'
+              );
+            }());
+        } catch(e) {
+          supportsHtml5Styles = true;
+          supportsUnknownElements = true;
         }
-
-        supportsUnknownElements = a.childNodes.length == 1 || (function() {
-          // assign a false positive if unable to shiv
-          try {
-            (document.createElement)('a');
-          } catch(e) {
-            return true;
-          }
-          var frag = document.createDocumentFragment();
-          return (
-            typeof frag.cloneNode == 'undefined' ||
-            typeof frag.createDocumentFragment == 'undefined' ||
-            typeof frag.createElement == 'undefined'
-          );
-        }());
 
       }());
 
@@ -1068,41 +1073,105 @@ window.Modernizr = (function( window, document, undefined ) {
         return typeof elements == 'string' ? elements.split(' ') : elements;
       }
 
+        /**
+       * Returns the data associated to the given document
+       * @private
+       * @param {Document} ownerDocument The document.
+       * @returns {Object} An object of data.
+       */
+      function getExpandoData(ownerDocument) {
+        var data = expandoData[ownerDocument[expando]];
+        if (!data) {
+            data = {};
+            expanID++;
+            ownerDocument[expando] = expanID;
+            expandoData[expanID] = data;
+        }
+        return data;
+      }
+
+      /**
+       * returns a shived element for the given nodeName and document
+       * @memberOf html5
+       * @param {String} nodeName name of the element
+       * @param {Document} ownerDocument The context document.
+       * @returns {Object} The shived element.
+       */
+      function createElement(nodeName, ownerDocument, data){
+        if (!ownerDocument) {
+            ownerDocument = document;
+        }
+        if(supportsUnknownElements){
+            return ownerDocument.createElement(nodeName);
+        }
+        if (!data) {
+            data = getExpandoData(ownerDocument);
+        }
+        var node;
+
+        if (data.cache[nodeName]) {
+            node = data.cache[nodeName].cloneNode();
+        } else if (saveClones.test(nodeName)) {
+            node = (data.cache[nodeName] = data.createElem(nodeName)).cloneNode();
+        } else {
+            node = data.createElem(nodeName);
+        }
+
+        // Avoid adding some elements to fragments in IE < 9 because
+        // * Attributes like `name` or `type` cannot be set/changed once an element
+        //   is inserted into a document/fragment
+        // * Link elements with `src` attributes that are inaccessible, as with
+        //   a 403 response, will cause the tab/window to crash
+        // * Script elements appended to fragments will execute when their `src`
+        //   or `text` property is set
+        return node.canHaveChildren && !reSkip.test(nodeName) ? data.frag.appendChild(node) : node;
+      }
+
+      /**
+       * returns a shived DocumentFragment for the given document
+       * @memberOf html5
+       * @param {Document} ownerDocument The context document.
+       * @returns {Object} The shived DocumentFragment.
+       */
+      function createDocumentFragment(ownerDocument, data){
+        if (!ownerDocument) {
+            ownerDocument = document;
+        }
+        if(supportsUnknownElements){
+            return ownerDocument.createDocumentFragment();
+        }
+        data = data || getExpandoData(ownerDocument);
+        var clone = data.frag.cloneNode(),
+            i = 0,
+            elems = getElements(),
+            l = elems.length;
+        for(;i<l;i++){
+            clone.createElement(elems[i]);
+        }
+        return clone;
+      }
+
       /**
        * Shivs the `createElement` and `createDocumentFragment` methods of the document.
        * @private
        * @param {Document|DocumentFragment} ownerDocument The document.
+       * @param {Object} data of the document.
        */
-      function shivMethods(ownerDocument) {
-        var cache = {},
-            docCreateElement = ownerDocument.createElement,
-            docCreateFragment = ownerDocument.createDocumentFragment,
-            frag = docCreateFragment();
+      function shivMethods(ownerDocument, data) {
+        if (!data.cache) {
+            data.cache = {};
+            data.createElem = ownerDocument.createElement;
+            data.createFrag = ownerDocument.createDocumentFragment;
+            data.frag = data.createFrag();
+        }
+
 
         ownerDocument.createElement = function(nodeName) {
           //abort shiv
-          if(!html5.shivMethods){
-              return docCreateElement(nodeName);
+          if (!html5.shivMethods) {
+              return data.createElem(nodeName);
           }
-
-          var node;
-
-          if(cache[nodeName]){
-              node = cache[nodeName].cloneNode();
-          } else if(saveClones.test(nodeName)){
-               node = (cache[nodeName] = docCreateElement(nodeName)).cloneNode();
-          } else {
-              node = docCreateElement(nodeName);
-          }
-
-          // Avoid adding some elements to fragments in IE < 9 because
-          // * Attributes like `name` or `type` cannot be set/changed once an element
-          //   is inserted into a document/fragment
-          // * Link elements with `src` attributes that are inaccessible, as with
-          //   a 403 response, will cause the tab/window to crash
-          // * Script elements appended to fragments will execute when their `src`
-          //   or `text` property is set
-          return node.canHaveChildren && !reSkip.test(nodeName) ? frag.appendChild(node) : node;
+          return createElement(nodeName, ownerDocument, data);
         };
 
         ownerDocument.createDocumentFragment = Function('h,f', 'return function(){' +
@@ -1110,12 +1179,12 @@ window.Modernizr = (function( window, document, undefined ) {
           'h.shivMethods&&(' +
             // unroll the `createElement` calls
             getElements().join().replace(/\w+/g, function(nodeName) {
-              docCreateElement(nodeName);
-              frag.createElement(nodeName);
+              data.createElem(nodeName);
+              data.frag.createElement(nodeName);
               return 'c("' + nodeName + '")';
             }) +
           ');return n}'
-        )(html5, frag);
+        )(html5, data.frag);
       }
 
       /*--------------------------------------------------------------------------*/
@@ -1127,29 +1196,21 @@ window.Modernizr = (function( window, document, undefined ) {
        * @returns {Document} The shived document.
        */
       function shivDocument(ownerDocument) {
-        var shived;
-        if (ownerDocument.documentShived) {
-          return ownerDocument;
+        if (!ownerDocument) {
+            ownerDocument = document;
         }
-        if (html5.shivCSS && !supportsHtml5Styles) {
-          shived = !!addStyleSheet(ownerDocument,
+        var data = getExpandoData(ownerDocument);
+
+        if (html5.shivCSS && !supportsHtml5Styles && !data.hasCSS) {
+          data.hasCSS = !!addStyleSheet(ownerDocument,
             // corrects block display not defined in IE6/7/8/9
-            'article,aside,details,figcaption,figure,footer,header,hgroup,nav,section{display:block}' +
-            // corrects audio display not defined in IE6/7/8/9
-            'audio{display:none}' +
-            // corrects canvas and video display not defined in IE6/7/8/9
-            'canvas,video{display:inline-block;*display:inline;*zoom:1}' +
-            // corrects 'hidden' attribute and audio[controls] display not present in IE7/8/9
-            '[hidden]{display:none}audio[controls]{display:inline-block;*display:inline;*zoom:1}' +
+            'article,aside,figcaption,figure,footer,header,hgroup,nav,section{display:block}' +
             // adds styling not present in IE6/7/8/9
             'mark{background:#FF0;color:#000}'
           );
         }
         if (!supportsUnknownElements) {
-          shived = !shivMethods(ownerDocument);
-        }
-        if (shived) {
-          ownerDocument.documentShived = shived;
+          shivMethods(ownerDocument, data);
         }
         return ownerDocument;
       }
@@ -1179,7 +1240,14 @@ window.Modernizr = (function( window, document, undefined ) {
          * @memberOf html5
          * @type Boolean
          */
-        'shivCSS': !(options.shivCSS === false),
+        'shivCSS': (options.shivCSS !== false),
+
+        /**
+         * Is equal to true if a browser supports creating unknown/HTML5 elements
+         * @memberOf html5
+         * @type boolean
+         */
+        'supportsUnknownElements': supportsUnknownElements,
 
         /**
          * A flag to indicate that the document's `createElement` and `createDocumentFragment`
@@ -1187,7 +1255,7 @@ window.Modernizr = (function( window, document, undefined ) {
          * @memberOf html5
          * @type Boolean
          */
-        'shivMethods': !(options.shivMethods === false),
+        'shivMethods': (options.shivMethods !== false),
 
         /**
          * A string to describe the type of `html5` object ("default" or "default print").
@@ -1197,7 +1265,13 @@ window.Modernizr = (function( window, document, undefined ) {
         'type': 'default',
 
         // shivs the document according to the specified `html5` object options
-        'shivDocument': shivDocument
+        'shivDocument': shivDocument,
+
+        //creates a shived element
+        createElement: createElement,
+
+        //creates a shived documentFragment
+        createDocumentFragment: createDocumentFragment
       };
 
       /*--------------------------------------------------------------------------*/
@@ -1313,29 +1387,29 @@ window.Modernizr = (function( window, document, undefined ) {
 /*! matchMedia() polyfill - Test a CSS media type/query in JS. Authors & copyright (c) 2012: Scott Jehl, Paul Irish, Nicholas Zakas. Dual MIT/BSD license */
 /*! NOTE: If you're already including a window.matchMedia polyfill via Modernizr or otherwise, you don't need this part */
 window.matchMedia = window.matchMedia || (function(doc, undefined){
-  
+
   var bool,
       docElem  = doc.documentElement,
       refNode  = docElem.firstElementChild || docElem.firstChild,
       // fakeBody required for <FF4 when executed in <head>
       fakeBody = doc.createElement('body'),
       div      = doc.createElement('div');
-  
+
   div.id = 'mq-test-1';
   div.style.cssText = "position:absolute;top:-100em";
   fakeBody.appendChild(div);
-  
+
   return function(q){
-    
+
     div.innerHTML = '&shy;<style media="'+q+'"> #mq-test-1 { width: 42px; }</style>';
-    
+
     docElem.insertBefore(fakeBody, refNode);
-    bool = div.offsetWidth == 42;  
+    bool = div.offsetWidth == 42;
     docElem.removeChild(fakeBody);
-    
+
     return { matches: bool, media: q };
   };
-  
+
 })(document);
 
 
@@ -1345,16 +1419,16 @@ window.matchMedia = window.matchMedia || (function(doc, undefined){
 (function( win ){
 	//exposed namespace
 	win.respond		= {};
-	
+
 	//define update even in native-mq-supporting browsers, to avoid errors
 	respond.update	= function(){};
-	
+
 	//expose media query support flag for external use
 	respond.mediaQueriesSupported	= win.matchMedia && win.matchMedia( "only all" ).matches;
-	
+
 	//if media queries are supported, exit here
 	if( respond.mediaQueriesSupported ){ return; }
-	
+
 	//define vars
 	var doc 			= win.document,
 		docElem 		= doc.documentElement,
@@ -1367,7 +1441,7 @@ window.matchMedia = window.matchMedia || (function(doc, undefined){
 		base			= doc.getElementsByTagName( "base" )[0],
 		links			= head.getElementsByTagName( "link" ),
 		requestQueue	= [],
-		
+
 		//loop stylesheets, send text content to translate
 		ripCSS			= function(){
 			var sheets 	= links,
@@ -1401,12 +1475,12 @@ window.matchMedia = window.matchMedia || (function(doc, undefined){
 			}
 			makeRequests();
 		},
-		
+
 		//recurse through request queue, get css text
 		makeRequests	= function(){
 			if( requestQueue.length ){
 				var thisRequest = requestQueue.shift();
-				
+
 				ajax( thisRequest.href, function( styles ){
 					translate( styles, thisRequest.href, thisRequest.media );
 					parsedSheets[ thisRequest.href ] = true;
@@ -1414,7 +1488,7 @@ window.matchMedia = window.matchMedia || (function(doc, undefined){
 				} );
 			}
 		},
-		
+
 		//find media blocks in css text, convert to style blocks
 		translate			= function( styles, href, media ){
 			var qs			= styles.match(  /@media[^\{]+\{([^\{\}]*\{[^\}\{]*\})+/gi ),
@@ -1430,20 +1504,20 @@ window.matchMedia = window.matchMedia || (function(doc, undefined){
 				j, fullq, thisq, eachq, eql;
 
 			//if path exists, tack on trailing slash
-			if( href.length ){ href += "/"; }	
-				
-			//if no internal queries exist, but media attr does, use that	
+			if( href.length ){ href += "/"; }
+
+			//if no internal queries exist, but media attr does, use that
 			//note: this currently lacks support for situations where a media attr is specified on a link AND
 				//its associated stylesheet has internal CSS media queries.
 				//In those cases, the media attribute will currently be ignored.
 			if( useMedia ){
 				ql = 1;
 			}
-			
+
 
 			for( ; i < ql; i++ ){
 				j	= 0;
-				
+
 				//media attr
 				if( useMedia ){
 					fullq = media;
@@ -1454,64 +1528,64 @@ window.matchMedia = window.matchMedia || (function(doc, undefined){
 					fullq	= qs[ i ].match( /@media *([^\{]+)\{([\S\s]+?)$/ ) && RegExp.$1;
 					rules.push( RegExp.$2 && repUrls( RegExp.$2 ) );
 				}
-				
+
 				eachq	= fullq.split( "," );
 				eql		= eachq.length;
-					
+
 				for( ; j < eql; j++ ){
 					thisq	= eachq[ j ];
-					mediastyles.push( { 
+					mediastyles.push( {
 						media	: thisq.split( "(" )[ 0 ].match( /(only\s+)?([a-zA-Z]+)\s?/ ) && RegExp.$2 || "all",
 						rules	: rules.length - 1,
 						hasquery: thisq.indexOf("(") > -1,
-						minw	: thisq.match( /\(min\-width:[\s]*([\s]*[0-9\.]+)(px|em)[\s]*\)/ ) && parseFloat( RegExp.$1 ) + ( RegExp.$2 || "" ), 
+						minw	: thisq.match( /\(min\-width:[\s]*([\s]*[0-9\.]+)(px|em)[\s]*\)/ ) && parseFloat( RegExp.$1 ) + ( RegExp.$2 || "" ),
 						maxw	: thisq.match( /\(max\-width:[\s]*([\s]*[0-9\.]+)(px|em)[\s]*\)/ ) && parseFloat( RegExp.$1 ) + ( RegExp.$2 || "" )
 					} );
-				}	
+				}
 			}
 
 			applyMedia();
 		},
-        	
+
 		lastCall,
-		
+
 		resizeDefer,
-		
+
 		// returns the value of 1em in pixels
 		getEmValue		= function() {
 			var ret,
 				div = doc.createElement('div'),
 				body = doc.body,
 				fakeUsed = false;
-									
+
 			div.style.cssText = "position:absolute;font-size:1em;width:1em";
-					
+
 			if( !body ){
 				body = fakeUsed = doc.createElement( "body" );
 			}
-					
+
 			body.appendChild( div );
-								
+
 			docElem.insertBefore( body, docElem.firstChild );
-								
+
 			ret = div.offsetWidth;
-								
+
 			if( fakeUsed ){
 				docElem.removeChild( body );
 			}
 			else {
 				body.removeChild( div );
 			}
-			
+
 			//also update eminpx before returning
 			ret = eminpx = parseFloat(ret);
-								
+
 			return ret;
 		},
-		
-		//cached container for 1em value, populated the first time it's needed 
+
+		//cached container for 1em value, populated the first time it's needed
 		eminpx,
-		
+
 		//enable/disable styles
 		applyMedia			= function( fromResize ){
 			var name		= "clientWidth",
@@ -1521,7 +1595,7 @@ window.matchMedia = window.matchMedia || (function(doc, undefined){
 				lastLink	= links[ links.length-1 ],
 				now 		= (new Date()).getTime();
 
-			//throttle resize calls	
+			//throttle resize calls
 			if( fromResize && lastCall && now - lastCall < resizeThrottle ){
 				clearTimeout( resizeDefer );
 				resizeDefer = setTimeout( applyMedia, resizeThrottle );
@@ -1530,7 +1604,7 @@ window.matchMedia = window.matchMedia || (function(doc, undefined){
 			else {
 				lastCall	= now;
 			}
-										
+
 			for( var i in mediastyles ){
 				var thisstyle = mediastyles[ i ],
 					min = thisstyle.minw,
@@ -1538,14 +1612,14 @@ window.matchMedia = window.matchMedia || (function(doc, undefined){
 					minnull = min === null,
 					maxnull = max === null,
 					em = "em";
-				
+
 				if( !!min ){
 					min = parseFloat( min ) * ( min.indexOf( em ) > -1 ? ( eminpx || getEmValue() ) : 1 );
 				}
 				if( !!max ){
 					max = parseFloat( max ) * ( max.indexOf( em ) > -1 ? ( eminpx || getEmValue() ) : 1 );
 				}
-				
+
 				// if there's no media query at all (the () part), or min or max is not null, and if either is present, they're true
 				if( !thisstyle.hasquery || ( !minnull || !maxnull ) && ( minnull || currWidth >= min ) && ( maxnull || currWidth <= max ) ){
 						if( !styleBlocks[ thisstyle.media ] ){
@@ -1554,33 +1628,33 @@ window.matchMedia = window.matchMedia || (function(doc, undefined){
 						styleBlocks[ thisstyle.media ].push( rules[ thisstyle.rules ] );
 				}
 			}
-			
+
 			//remove any existing respond style element(s)
 			for( var i in appendedEls ){
 				if( appendedEls[ i ] && appendedEls[ i ].parentNode === head ){
 					head.removeChild( appendedEls[ i ] );
 				}
 			}
-			
+
 			//inject active styles, grouped by media type
 			for( var i in styleBlocks ){
 				var ss		= doc.createElement( "style" ),
 					css		= styleBlocks[ i ].join( "\n" );
-				
-				ss.type = "text/css";	
+
+				ss.type = "text/css";
 				ss.media	= i;
-				
+
 				//originally, ss was appended to a documentFragment and sheets were appended in bulk.
 				//this caused crashes in IE in a number of circumstances, such as when the HTML element had a bg image set, so appending beforehand seems best. Thanks to @dvelyk for the initial research on this one!
 				head.insertBefore( ss, lastLink.nextSibling );
-				
-				if ( ss.styleSheet ){ 
+
+				if ( ss.styleSheet ){
 		        	ss.styleSheet.cssText = css;
-		        } 
+		        }
 		        else {
 					ss.appendChild( doc.createTextNode( css ) );
 		        }
-		        
+
 				//push to appendedEls to track for later removal
 				appendedEls.push( ss );
 			}
@@ -1590,7 +1664,7 @@ window.matchMedia = window.matchMedia || (function(doc, undefined){
 			var req = xmlHttp();
 			if (!req){
 				return;
-			}	
+			}
 			req.open( "GET", url, true );
 			req.onreadystatechange = function () {
 				if ( req.readyState != 4 || req.status != 200 && req.status != 304 ){
@@ -1603,9 +1677,9 @@ window.matchMedia = window.matchMedia || (function(doc, undefined){
 			}
 			req.send( null );
 		},
-		//define ajax obj 
+		//define ajax obj
 		xmlHttp = (function() {
-			var xmlhttpmethod = false;	
+			var xmlhttpmethod = false;
 			try {
 				xmlhttpmethod = new XMLHttpRequest();
 			}
@@ -1616,13 +1690,13 @@ window.matchMedia = window.matchMedia || (function(doc, undefined){
 				return xmlhttpmethod;
 			};
 		})();
-	
+
 	//translate CSS
 	ripCSS();
-	
+
 	//expose update for re-running respond later on
 	respond.update = ripCSS;
-	
+
 	//adjust on resize
 	function callMedia(){
 		applyMedia( true );
@@ -1855,10 +1929,6 @@ var docElement            = doc.documentElement,
     // Setting url to data for objects or src for img/scripts
     if ( elem == "object" ) {
       preloadElem.data = url;
-	  
-      // Setting the type attribute to stop Firefox complaining about the mimetype when running locally.
-      // The type doesn't matter as long as it's real, thus text/css instead of text/javascript.
-      preloadElem.setAttribute("type", "text/css");
     } else {
       preloadElem.src = url;
 
@@ -1971,11 +2041,8 @@ var docElement            = doc.documentElement,
       return res;
     }
 
-     function getExtension ( url ) {
-      //The extension is always the last characters before the ? and after a period.
-      //The previous method was not accounting for the possibility of a period in the query string.
-      var b = url.split('?')[0];
-      return b.substr(b.lastIndexOf('.')+1);
+    function getExtension ( url ) {
+        return url.split(".").pop().split("?").shift();
     }
 
     function loadScriptOrStyle ( input, callback, chain, index, testResult ) {
@@ -2041,7 +2108,7 @@ var docElement            = doc.documentElement,
             complete   = testObject['complete'] || noop,
             needGroupSize,
             callbackKey;
-            
+
         // Reusable function for dealing with the different input types
         // NOTE:: relies on closures to keep 'chain' up to date, a bit confusing, but
         // much smaller than the functional equivalent in this case.
@@ -2204,6 +2271,7 @@ var docElement            = doc.documentElement,
   window['yepnope']['injectCss'] = injectCss;
 
 })( this, document );
+
 
 Modernizr.load = function(){
 	yepnope.apply(window,[].slice.call(arguments,0));

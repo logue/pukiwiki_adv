@@ -18,7 +18,7 @@
  */
 
 var pukiwiki = {};
-var JQUERY_MOBILE_VER = '1.1.0';
+var JQUERY_MOBILE_VER = '1.1.1';
 (function ($, window, document) {
 	'use strict';
 	var pkwkInit = [], pkwkBeforeInit = [], pkwkUnload = [], pkwkBeforeUnload = [];
@@ -443,15 +443,20 @@ var JQUERY_MOBILE_VER = '1.1.0';
 		// Google Analytics
 		if (typeof(GOOGLE_ANALYTICS) !== 'undefined'){
 			window._gaq = [['_setAccount',GOOGLE_ANALYTICS],['_trackPageview'],['_trackPageLoadTime']];
-			$$page.live('pageshow', function (event, ui) {
-				_gaq.push(['_trackPageview', (location.hash) ? location.hash : location.href ]);
-			});
 			$.getScript(('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js');
 		}
 		
 		if (DEBUG){
 			var D3 = new Date();
 			console.info('Finish. (Process Time :',D3 - D2,'ms / Total :',D3 - D1,'ms)');
+		}
+	});
+	
+	$(document).bind('mobileinit', function(){
+		if (window._gaq){
+			$(':jqmData(role="page")').live('pageshow', function (event, ui) {
+				_gaq.push(['_trackPageview', $.mobile.activePage.jqmData('url')]);
+			});
 		}
 	});
 } )(jQuery, this, this.document );
