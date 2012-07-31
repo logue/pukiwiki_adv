@@ -124,23 +124,28 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 //		die_message('Plugin Encode Error.');
 
 	$links = array();
+	// ページ内のリンクを取得（TrackBackと、スパムチェックで使用）
 	if ( ($trackback > 1) || ( $role_adm_contents && $use_spam_check['page_contents']) ) {
 		$links = get_this_time_links($postdata, $diffdata);
 	}
 
 	// Blocking SPAM
-	if ($role_adm_contents) {	// 管理人権限の時はチェックしない
+	if ($role_adm_contents /*|| isset($vars['pass'])*/) {	// 管理人権限の時はチェックしない。
+		// リモートIPによるチェック
 		if ($use_spam_check['page_remote_addr'] && SpamCheck($_SERVER['REMOTE_ADDR'],'ip')) {
 			die_message($_strings['blacklisted'], 'SPAM Error', 400);
 		}
+		// ページのリンクよるチェック
 		if ($use_spam_check['page_contents'] && SpamCheck($links)) {
 			die_message('Writing was limited by DNSBL (Blocking SPAM).', 'SPAM Error', 400);
 		}
+		// 匿名プロクシ
 		if ($use_spam_check['page_write_proxy'] && is_proxy()) {
 			die_message('Writing was limited by PROXY (Blocking SPAM).', 'SPAM Error', 400);
 		}
 
-		if ($akismet_api_key !== ''){
+		// Akismet
+		if ($akismet_api_key !== '' && ( $vars['cmd'] !== 'read' && !empty($vars['page']) ) ){
 			require_once(LIB_DIR.'Akismet.class.php');
 			$akismet = new Akismet(get_script_absuri() ,$akismet_api_key);
 			if($akismet->isKeyValid()) {
@@ -152,8 +157,8 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 					$akismet->setPermalink(get_page_uri($vars['page']));
 				}
 				$akismet->setCommentContent($postdata);
-
 				if($akismet->isCommentSpam()){
+					honeypot_write();
 					die_message('Writing was limited by Akismet (Blocking SPAM).', 'SPAM Error', 400);
 				}
 			}else{
