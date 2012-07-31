@@ -1,4 +1,5 @@
 <?php
+ini_set('zlib.output_compression', 'Off');
 $expire = isset($_GET['expire']) ? (int)$_GET['expire'] * 86400	: '604800';	// Default is 7 days.
 // Send header
 header('Content-Type: text/css; charset: UTF-8');

@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: whiteflow.css.php,v 1.0.1 201201/09 11:30:30 Logue Exp $
+// $Id: whiteflow.css.php,v 1.0.2 2012/08/01 07:57:30 Logue Exp $
 
 // White Flow Adv. skin CSS
 // ver 1.0 (2011/12/10)
@@ -12,13 +12,17 @@
 
 // License: X11/MIT License
 // http://www.opensource.org/licenses/mit-license.php
+
 //error_reporting(0); // Nothing
 error_reporting(E_ERROR | E_PARSE); // Avoid E_WARNING, E_NOTICE, etc
-// Error reporting
+ini_set('zlib.output_compression', 'Off');
+
 $expire = isset($_GET['expire'])   ? (int)$_GET['expire'] * 86400	: '604800';	// Default is 7 days.
 $menu   = isset($_GET['menu'])   ? $_GET['menu']	: '';
+
 // Read config
 require_once('whiteflow.ini.php');
+
 // Send header
 header('Content-Type: text/css; charset: UTF-8');
 header('Cache-Control: private');

@@ -17,10 +17,11 @@
 error_reporting(E_ERROR | E_PARSE); // Avoid E_WARNING, E_NOTICE, etc
 //error_reporting(E_ALL); // Show all errors
 
+ini_set('zlib.output_compression', 'Off');
+
 require_once('xxxlogue.ini.php');
 global $_SKIN;	// Skin name space
 
-error_reporting(E_ERROR | E_PARSE); // Avoid E_WARNING, E_NOTICE, etc
 // Style
 $menubar   = isset($_GET['menubar'])   ? $_GET['menubar']	: '';
 $expire = isset($_GET['expire'])   ? (int)$_GET['expire'] * 86400	: '604800';	// Default is 7 days.

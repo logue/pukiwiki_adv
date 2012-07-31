@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance Standard CSS.
-// $Id: scripts.css.php,v 1.6.13 2012/02/09 00:23:00 Logue Exp $
+// $Id: scripts.css.php,v 1.6.14 2012/08/01 07:46:00 Logue Exp $
 // Copyright (C) 2010-2012 PukiWiki Advance Developer Team
 //
 ini_set('zlib.output_compression', 'Off');
@@ -215,23 +215,27 @@ a img.pkwk-symbol{
 	text-align: left;
 	border-collapse: separate;
 	border-spacing: 1px;
-	background-color: silver;
+	background-color: darkgray;
 }
 
 .style_th{
-	background-color: lightgrey;
+	background-color: silver;
 	padding: 5px;
 	margin: 1px;
 	text-align: center;
 }
 .style_td{
-	background-color :whitesmoke;
+	background-color :gainsboro;
 	padding: 5px;
 	margin: 1px;
 }
 
 .style_td_blank{
-	background-color: gainsboro;
+	background-color: lightgrey;
+}
+
+.style_table tr:nth-child(even) .style_td{
+	 background-color:whitesmoke;
 }
 
 /* Week and Month */

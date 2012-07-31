@@ -95,18 +95,20 @@ ul, ol {
 
 /* Table Tags */
 .style_table{
-	background-color:silver;
+	background-color:darkgray;
 }
 
 .style_th{
-	background-color:lightgrey;
+	background-color:silver;
 }
 .style_td{
-	background-color:whitesmoke;
+	background-color:lightgrey;
 }
-
+.style_table tr:nth-child(even) .style_td{
+	 background-color:whitesmoke;
+}
 .style_td_blank{
-	background-color:gainsboro;
+	background-color:lightgrey;
 }
 
 /** Layout ****************************************************************************************/

@@ -189,9 +189,6 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</footer>'."\n" : '</div>'."\n"; ?>
 <!-- #END #container -->
 		</div>
-<!-- * Ad space * -->
-		<?php if ($_SKIN['adarea']['footer']) echo '<div id="footer_ad" class="noprint">' . $_SKIN['adarea']['footer'] . '</div>'; ?>
-<!-- * End Ad space * -->
 		<?php echo $pkwk_tags; ?>
 	</body>
 </html>
