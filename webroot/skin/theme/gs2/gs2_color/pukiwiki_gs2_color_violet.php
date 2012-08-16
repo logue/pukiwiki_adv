@@ -6,6 +6,7 @@ if (isset($_SKIN)){
 	$_SKIN['ui_theme'] = 'eggplant';			// jQuery UI Theme
 }else{
 	define('SKIN_CSS_CTS_BGCOLOR', 	'#F0F0FF');	// contents box bg
+	define('SKIN_CSS_CTS_BGCOLOR2', '#e5e5ff');	// contents box bg2
 	define('SKIN_CSS_CTS_BDCOLOR', 	'#90909F');	// contents box border
 	
 	define('SKIN_CSS_BGCOLOR', 		'#E0E0EF');	// background

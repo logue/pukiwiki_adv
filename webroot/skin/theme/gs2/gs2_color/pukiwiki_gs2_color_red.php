@@ -6,6 +6,7 @@ if (isset($_SKIN)){
 	$_SKIN['ui_theme'] = 'blitzer';			// jQuery UI Theme
 }else{
 	define('SKIN_CSS_CTS_BGCOLOR', 	'#FFF0F0');	// contents box bg
+	define('SKIN_CSS_CTS_BGCOLOR2',	'#ffe5e5');	// contents box bg2
 	define('SKIN_CSS_CTS_BDCOLOR', 	'#9F9090');	// contents box border
 	
 	define('SKIN_CSS_BGCOLOR', 		'#EFE0E0');	// background

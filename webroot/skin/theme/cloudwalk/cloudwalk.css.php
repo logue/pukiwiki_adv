@@ -6,11 +6,11 @@ header('Content-Type: text/css; charset: UTF-8');
 header('Cache-Control: private');
 header('Expires: ' .gmdate('D, d M Y H:i:s',time() + $expire) . ' GMT');
 header('Last-Modified: '.gmdate('D, d M Y H:i:s', filemtime('color_cloudwalk.css')) . ' GMT');
-ob_start('ob_gzhandler');
+@ob_start('ob_gzhandler');
 readfile('base_3float.css');
 readfile('plugin.css');
 readfile('color_cloudwalk.css');
-ob_end_flush();
+@ob_end_flush();
 
 /* End of file cloudwalk.css.php */
 /* Location: ./webroot/skin/theme/cloudwalk/cloudwalk.css.php */

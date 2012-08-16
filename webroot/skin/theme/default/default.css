@@ -4,7 +4,7 @@
 // PukiWiki Plus! skin for PukiWiki Advance
 // Original version written by miko and upk.
 // Adv version by Logue.
-// 
+//
 // $Id: default.css,v 1.33.12 2012/01/09 14:59:00 Logue Exp $
 //
 */
@@ -111,6 +111,23 @@ ul, ol {
 	background-color:lightgrey;
 }
 
+::-webkit-scrollbar {
+	background: gainsboro;
+	width: 10px;
+	height: 10px;
+}
+
+::-webkit-scrollbar-track {
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	border-radius: 10px;
+}
+
+
+::-webkit-scrollbar-thumb {
+	background:whitesmoke;
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	border-radius: 10px;
+}
 /** Layout ****************************************************************************************/
 #container {
 	width:100%;
@@ -389,7 +406,7 @@ ul, ol {
 	text-align:center;
 }
 
-#menubar h1, #menubar h2, #menubar h3, 
+#menubar h1, #menubar h2, #menubar h3,
 #sidebar h1, #sidebar h2, #sidebar h3 {
 	font-size:138.5%;
 }
@@ -511,13 +528,13 @@ ul, ol {
 	font-size:13px !important;
 	line-height:16px !important;
 	height:23px;
-	
+
 	text-shadow:none;
 	width: 100%;
-	
+
 	clear:both;
 	white-space: nowrap;
-	
+
 	border: 1px dimgray solid;
 	color: white;
 	background-color: grey;
@@ -525,7 +542,7 @@ ul, ol {
 
 .sf-menu ul{
 	width: 171px; /* left offset of submenus need to match (see below) */
-	
+
 	background-color: grey;
 	border: 1px dimgray solid;
 }
@@ -598,7 +615,7 @@ ul, ol {
 		display:none !important;
 		visibility: hidden !important;
 	}
-	
+
 	#hgroup{
 		margin:0;
 		padding:0;
@@ -611,7 +628,7 @@ ul, ol {
 	#hgroup h1{
 		width:100%;
 	}
-	
+
 	#lastmodified{
 		text-align:right;
 	}
@@ -619,7 +636,7 @@ ul, ol {
 	address{
 		float:left;
 	}
-	
+
 	#body{
 		float:clear;
 		display:block;

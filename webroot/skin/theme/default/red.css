@@ -3,7 +3,7 @@
 // PukiWiki Plus! skin for PukiWiki Advance
 // Original version written by miko and upk.
 // Adv version by Logue.
-// 
+//
 // $Id: blue.css,v 1.0.5 2012/01/04 21:48:00 Logue Exp $
 //
 
@@ -119,6 +119,24 @@ fieldset {
 	background-color:#F5F8FF;
 }
 
+::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+}
+
+::-webkit-scrollbar-track {
+	background: whitesmoke;
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	border-radius: 10px;
+}
+
+
+::-webkit-scrollbar-thumb {
+	background: #FFDDF0;
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	border-radius: 10px;
+}
+
 /* Layout */
 #main_wrapper, #menubar, #sidebar{
 	background-color: #FFEEFC;
@@ -156,7 +174,7 @@ fieldset {
 
 }
 .style_calendar_day {
-	
+
 }
 .style_calendar_week {
 	background-color:#EEE5DD;

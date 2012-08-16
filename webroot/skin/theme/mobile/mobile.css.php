@@ -1,7 +1,7 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
 // $Id: classic.css.php,v 0.0.2 2012/03/31 16:49:30 Logue Exp $
-// 
+//
 // PukiWiki Adv. Mobile Theme
 // Copyright (C)
 //   2012 PukiWiki Advance Developer Team
@@ -17,7 +17,7 @@ header('Content-Type: text/css; charset: UTF-8');
 header('Cache-Control: private');
 header('Expires: ' .gmdate('D, d M Y H:i:s',time() + $expire) . ' GMT');
 header('Last-Modified: '.gmdate('D, d M Y H:i:s', getlastmod() ) . ' GMT');
-ob_start('ob_gzhandler');
+@ob_start('ob_gzhandler');
 ?>
 @charset "UTF-8";
 @namespace url(http://www.w3.org/1999/xhtml);
@@ -404,7 +404,7 @@ textarea, select, option, input, var, pre, code{
 .style_calendar a strong{
 	text-decoration:underline;
 }
-.style_calendar td, .style_calendar th{ 
+.style_calendar td, .style_calendar th{
 	text-align:center;
 	font-size:85%;
 }
@@ -580,279 +580,6 @@ textarea, select, option, input, var, pre, code{
 .symbol-attach		{ background-position: -72px -114px; }
 .symbol-external	{ background-position: -90px -114px; }
 .symbol-internal	{ background-position: -108px -114px; }
-
-/* ==|== emoji classes ====================================================== */
-.emoji{
-	font-family:Symbola;
-	display: inline-block;
-	width: 16px;
-	height: 16px;
-	line-height:100%;
-	background: transparent url('<?php echo $image_dir ?>emoji/emoji.png') -1000px -1000px no-repeat;
-	vertical-align: middle;
-	text-align:center;
-	text-shadow:none;
-	color: transparent;
-}
-
-.emoji-sun{ background-position: 0 0;}
-.emoji-cloud{ background-position: -18px 0;}
-.emoji-rain{ background-position: -36px 0;}
-.emoji-snow{ background-position: -54px 0;}
-.emoji-thunder{ background-position: -72px 0;}
-.emoji-typhoon{background-position: -90px 0;}
-.emoji-mist{background-position: -108px 0;}
-.emoji-sprinkle{background-position: -126px 0;}
-.emoji-aries{background-position: -144px 0;}
-.emoji-taurus{background-position: -162px 0;}
-.emoji-gemini{background-position: -180px 0;}
-.emoji-cancer{background-position: -198px 0;}
-.emoji-leo{background-position: -216px 0;}
-.emoji-virgo{background-position: -234px 0;}
-.emoji-libra{background-position: 0 -18px;}
-.emoji-scorpius{background-position: -18px -18px;}
-.emoji-sagittarius{background-position: -36px -18px;}
-.emoji-capricornus{background-position: -54px -18px;}
-.emoji-aquarius{background-position: -72px -18px;}
-.emoji-pisces{background-position: -90px -18px;}
-.emoji-sports{background-position: -108px -18px;}
-.emoji-baseball{background-position: -126px -18px;}
-.emoji-golf{background-position: -144px -18px;}
-.emoji-tennis{background-position: -162px -18px;}
-.emoji-soccer{background-position: -180px -18px;}
-.emoji-ski{background-position: -198px -18px;}
-.emoji-basketball{background-position: -216px -18px;}
-.emoji-motorsports{background-position: -234px -18px;}
-.emoji-pocketbell{background-position: 0 -36px;}
-.emoji-train{background-position: -18px -36px;}
-.emoji-subway{background-position: -36px -36px;}
-.emoji-bullettrain{background-position: -54px -36px;}
-.emoji-car{background-position: -72px -36px;}
-.emoji-rvcar{background-position: -90px -36px;}
-.emoji-bus{background-position: -108px -36px;}
-.emoji-ship{background-position: -126px -36px;}
-.emoji-airplane{background-position: -144px -36px;}
-.emoji-house{background-position: -162px -36px;}
-.emoji-building{background-position: -180px -36px;}
-.emoji-postoffice{background-position: -198px -36px;}
-.emoji-hospital{background-position: -216px -36px;}
-.emoji-bank{background-position: -234px -36px;}
-.emoji-atm{background-position: 0 -54px;}
-.emoji-hotel{background-position: -18px -54px;}
-.emoji-cvs{background-position: -36px -54px;}
-.emoji-gasstation{background-position: -54px -54px;}
-.emoji-parking{background-position: -72px -54px;}
-.emoji-signaler{background-position: -90px -54px;}
-.emoji-toilet{background-position: -108px -54px;}
-.emoji-restaurant{background-position: -126px -54px;}
-.emoji-cafe{background-position: -144px -54px;}
-.emoji-bar{background-position: -162px -54px;}
-.emoji-beer{background-position: -180px -54px;}
-.emoji-fastfood{background-position: -198px -54px;}
-.emoji-boutique{background-position: -216px -54px;}
-.emoji-hairsalon{background-position: -234px -54px;}
-.emoji-karaoke{background-position: 0 -72px;}
-.emoji-movie{background-position: -18px -72px;}
-.emoji-upwardright{background-position: -36px -72px;}
-.emoji-carouselpony{background-position: -54px -72px;}
-.emoji-music{background-position: -72px -72px;}
-.emoji-art{background-position: -90px -72px;}
-.emoji-drama{background-position: -108px -72px;}
-.emoji-event{background-position: -126px -72px;}
-.emoji-ticket{background-position: -144px -72px;}
-.emoji-smoking{background-position: -162px -72px;}
-.emoji-nosmoking{background-position: -180px -72px;}
-.emoji-camera{background-position: -198px -72px;}
-.emoji-bag{background-position: -216px -72px;}
-.emoji-book{background-position: -234px -72px;}
-.emoji-ribbon{background-position: 0 -90px;}
-.emoji-present{background-position: -18px -90px;}
-.emoji-birthday{background-position: -36px -90px;}
-.emoji-telephone{background-position: -54px -90px;}
-.emoji-mobilephone{background-position: -72px -90px;}
-.emoji-memo{background-position: -90px -90px;}
-.emoji-tv{background-position: -108px -90px;}
-.emoji-game{background-position: -126px -90px;}
-.emoji-cd{background-position: -144px -90px;}
-.emoji-heart{background-position: -162px -90px;}
-.emoji-spade{background-position: -180px -90px;}
-.emoji-diamond{background-position: -198px -90px;}
-.emoji-club{background-position: -216px -90px;}
-.emoji-eye{background-position: -234px -90px;}
-.emoji-ear{background-position: 0 -108px;}
-.emoji-rock{background-position: -18px -108px;}
-.emoji-scissors{background-position: -36px -108px;}
-.emoji-paper{background-position: -54px -108px;}
-.emoji-downwardright{background-position: -72px -108px;}
-.emoji-upwardleft{background-position: -90px -108px;}
-.emoji-foot{background-position: -108px -108px;}
-.emoji-shoe{background-position: -126px -108px;}
-.emoji-eyeglass{background-position: -144px -108px;}
-.emoji-wheelchair{background-position: -162px -108px;}
-.emoji-newmoon{background-position: -180px -108px;}
-.emoji-moon1{background-position: -198px -108px;}
-.emoji-moon2{background-position: -216px -108px;}
-.emoji-moon3{background-position: -234px -108px;}
-.emoji-fullmoon{background-position: 0 -126px;}
-.emoji-dog{background-position: -18px -126px;}
-.emoji-cat{background-position: -36px -126px;}
-.emoji-yacht{background-position: -54px -126px;}
-.emoji-xmas{background-position: -72px -126px;}
-.emoji-downwardleft{background-position: -90px -126px;}
-.emoji-phoneto{background-position: -108px -126px;}
-.emoji-mailto{background-position: -126px -126px;}
-.emoji-faxto{background-position: -144px -126px;}
-.emoji-info01{background-position: -162px -126px;}
-.emoji-info02{background-position: -180px -126px;}
-.emoji-mail{background-position: -198px -126px;}
-.emoji-by-d{background-position: -216px -126px;}
-.emoji-d-point{background-position: -234px -126px;}
-.emoji-yen{background-position: 0 -144px;}
-.emoji-free{background-position: -18px -144px;}
-.emoji-id{background-position: -36px -144px;}
-.emoji-key{background-position: -54px -144px;}
-.emoji-enter{background-position: -72px -144px;}
-.emoji-clear{background-position: -90px -144px;}
-.emoji-search{background-position: -108px -144px;}
-.emoji-new{background-position: -126px -144px;}
-.emoji-flag{background-position: -144px -144px;}
-.emoji-freedial{background-position: -162px -144px;}
-.emoji-sharp{background-position: -180px -144px;}
-.emoji-mobaq{background-position: -198px -144px;}
-.emoji-one{background-position: -216px -144px;}
-.emoji-two{background-position: -234px -144px;}
-.emoji-three{background-position: 0 -162px;}
-.emoji-four{background-position: -18px -162px;}
-.emoji-five{background-position: -36px -162px;}
-.emoji-six{background-position: -54px -162px;}
-.emoji-seven{background-position: -72px -162px;}
-.emoji-eight{background-position: -90px -162px;}
-.emoji-nine{background-position: -108px -162px;}
-.emoji-zero{background-position: -126px -162px;}
-.emoji-ok{background-position: -144px -162px;}
-.emoji-heart01{background-position: -162px -162px;}
-.emoji-heart02{background-position: -180px -162px;}
-.emoji-heart03{background-position: -198px -162px;}
-.emoji-heart04{background-position: -216px -162px;}
-.emoji-happy01{background-position: -234px -162px;}
-.emoji-angry{background-position: 0 -180px;}
-.emoji-despair{background-position: -18px -180px;}
-.emoji-sad{background-position: -36px -180px;}
-.emoji-wobbly{background-position: -54px -180px;}
-.emoji-up{background-position: -72px -180px;}
-.emoji-note{background-position: -90px -180px;}
-.emoji-spa{background-position: -108px -180px;}
-.emoji-cute{background-position: -126px -180px;}
-.emoji-kissmark{background-position: -144px -180px;}
-.emoji-shine{background-position: -162px -180px;}
-.emoji-flair{background-position: -180px -180px;}
-.emoji-annoy{background-position: -198px -180px;}
-.emoji-punch{background-position: -216px -180px;}
-.emoji-bomb{background-position: -234px -180px;}
-.emoji-notes{background-position: 0 -198px;}
-.emoji-down{background-position: -18px -198px;}
-.emoji-sleepy{background-position: -36px -198px;}
-.emoji-sign01{background-position: -54px -198px;}
-.emoji-sign02{background-position: -72px -198px;}
-.emoji-sign03{background-position: -90px -198px;}
-.emoji-impact{background-position: -108px -198px;}
-.emoji-sweat01{background-position: -126px -198px;}
-.emoji-sweat02{background-position: -144px -198px;}
-.emoji-dash{background-position: -162px -198px;}
-.emoji-sign04{background-position: -180px -198px;}
-.emoji-sign05{background-position: -198px -198px;}
-.emoji-slate{background-position: -216px -198px;}
-.emoji-pouch{background-position: -234px -198px;}
-.emoji-pen{background-position: 0 -216px;}
-.emoji-shadow{background-position: -18px -216px;}
-.emoji-chair{background-position: -36px -216px;}
-.emoji-night{background-position: -54px -216px;}
-.emoji-soon{background-position: -72px -216px;}
-.emoji-on{background-position: -90px -216px;}
-.emoji-end{background-position: -108px -216px;}
-.emoji-clock{background-position: -126px -216px;}
-.emoji-appli01{background-position: -144px -216px;}
-.emoji-appli02{background-position: -162px -216px;}
-.emoji-t-shirt{background-position: -180px -216px;}
-.emoji-moneybag{background-position: -198px -216px;}
-.emoji-rouge{background-position: -216px -216px;}
-.emoji-denim{background-position: -234px -216px;}
-.emoji-snowboard{background-position: 0 -234px;}
-.emoji-bell{background-position: -18px -234px;}
-.emoji-door{background-position: -36px -234px;}
-.emoji-dollar{background-position: -54px -234px;}
-.emoji-pc{background-position: -72px -234px;}
-.emoji-loveletter{background-position: -90px -234px;}
-.emoji-wrench{background-position: -108px -234px;}
-.emoji-pencil{background-position: -126px -234px;}
-.emoji-crown{background-position: -144px -234px;}
-.emoji-ring{background-position: -162px -234px;}
-.emoji-sandclock{background-position: -180px -234px;}
-.emoji-bicycle{background-position: -198px -234px;}
-.emoji-japanesetea{background-position: -216px -234px;}
-.emoji-watch{background-position: -234px -234px;}
-.emoji-think{background-position: 0 -252px;}
-.emoji-confident{background-position: -18px -252px;}
-.emoji-coldsweats01{background-position: -36px -252px;}
-.emoji-coldsweats02{background-position: -54px -252px;}
-.emoji-pout{background-position: -72px -252px;}
-.emoji-gawk{background-position: -90px -252px;}
-.emoji-lovely{background-position: -108px -252px;}
-.emoji-good{background-position: -126px -252px;}
-.emoji-bleah{background-position: -144px -252px;}
-.emoji-wink{background-position: -162px -252px;}
-.emoji-happy02{background-position: -180px -252px;}
-.emoji-bearing{background-position: -198px -252px;}
-.emoji-catface{background-position: -216px -252px;}
-.emoji-crying{background-position: -234px -252px;}
-.emoji-weep{background-position: 0 -270px;}
-.emoji-ng{background-position: -18px -270px;}
-.emoji-clip{background-position: -36px -270px;}
-.emoji-copyright{background-position: -54px -270px;}
-.emoji-tm{background-position: -72px -270px;}
-.emoji-run{background-position: -90px -270px;}
-.emoji-secret{background-position: -108px -270px;}
-.emoji-recycle{background-position: -126px -270px;}
-.emoji-r-mark{background-position: -144px -270px;}
-.emoji-danger{background-position: -162px -270px;}
-.emoji-ban{background-position: -180px -270px;}
-.emoji-empty{background-position: -198px -270px;}
-.emoji-pass{background-position: -216px -270px;}
-.emoji-full{background-position: -234px -270px;}
-.emoji-leftright{background-position: 0 -288px;}
-.emoji-updown{background-position: -18px -288px;}
-.emoji-school{background-position: -36px -288px;}
-.emoji-wave{background-position: -54px -288px;}
-.emoji-fuji{background-position: -72px -288px;}
-.emoji-clover{background-position: -90px -288px;}
-.emoji-cherry{background-position: -108px -288px;}
-.emoji-tulip{background-position: -126px -288px;}
-.emoji-banana{background-position: -144px -288px;}
-.emoji-apple{background-position: -162px -288px;}
-.emoji-bud{background-position: -180px -288px;}
-.emoji-maple{background-position: -198px -288px;}
-.emoji-cherryblossom{background-position: -216px -288px;}
-.emoji-riceball{background-position: -234px -288px;}
-.emoji-cake{background-position: 0 -306px;}
-.emoji-bottle{background-position: -18px -306px;}
-.emoji-noodle{background-position: -36px -306px;}
-.emoji-bread{background-position: -54px -306px;}
-.emoji-snail{background-position: -72px -306px;}
-.emoji-chick{background-position: -90px -306px;}
-.emoji-penguin{background-position: -108px -306px;}
-.emoji-fish{background-position: -126px -306px;}
-.emoji-delicious{background-position: -144px -306px;}
-.emoji-smile{background-position: -162px -306px;}
-.emoji-horse{background-position: -180px -306px;}
-.emoji-pig{background-position: -198px -306px;}
-.emoji-wine{background-position: -216px -306px;}
-.emoji-shock{background-position: -234px -306px;}
-
-.ie8 .emoji, .ie7 .emoji, .ie6 .emoji,
-.ie8 .pkwk-icon, .ie7 .pkwk-icon, .ie6 .pkwk-icon {
-	text-indent:-9999px;
-	overflow:hidden;
-}
 
 /* ==|== flag classes ====================================================== */
 .flag{
@@ -1340,7 +1067,7 @@ textarea, select, option, input, var, pre, code{
 		margin:0;
 		padding:0 !important;
 	}
-	
+
 	.two-colums .content-secondary {
 		border-right:1px #CCC solid;
 		text-align: left;
@@ -1382,7 +1109,7 @@ textarea, select, option, input, var, pre, code{
 	}
 }
 <?php
-ob_end_flush();
+@ob_end_flush();
 
 /* End of file mobile.ini.php */
 /* Location: ./webroot/skin/theme/mobile/mobile.ini.php */

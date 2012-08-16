@@ -6,6 +6,7 @@ if (isset($_SKIN)){
 	$_SKIN['ui_theme'] = 'ui-lightness';			// jQuery UI Theme
 }else{
 	define('SKIN_CSS_CTS_BGCOLOR', 	'#FFFFEA');	// contents box bg
+	define('SKIN_CSS_CTS_BGCOLOR2', '#ffffe5');	// contents box bg2
 	define('SKIN_CSS_CTS_BDCOLOR', 	'#9F9F90');	// contents box border
 	
 	define('SKIN_CSS_BGCOLOR', 		'#EFEFDD');	// background

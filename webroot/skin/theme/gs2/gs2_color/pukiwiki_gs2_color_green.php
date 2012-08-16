@@ -6,6 +6,7 @@ if (isset($_SKIN)){
 	$_SKIN['ui_theme'] = 'hot-sneaks';			// jQuery UI Theme
 }else{
 	define('SKIN_CSS_CTS_BGCOLOR', 	'#F0FFF0');	// contents box bg
+	define('SKIN_CSS_CTS_BGCOLOR2',	'#e5ffe5');	// contents box bg2
 	define('SKIN_CSS_CTS_BDCOLOR', 	'#909F90');	// contents box border
 	
 	define('SKIN_CSS_BGCOLOR', 		'#E0EFE0');	// background

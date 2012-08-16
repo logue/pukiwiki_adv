@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: xxxlogue.css.php,v 2.4.4 RC 2012/03/25 23:26:30 Logue Exp $
+// $Id: xxxlogue.css.php,v 2.4.5 2012/08/17 07:27:30 Logue Exp $
 // Copyright (C) 2010-2012 PukiWiki Advance Developers Team
 //               2007-2010 Logue
 
@@ -30,7 +30,7 @@ header('Content-Type: text/css; charset: UTF-8');
 header('Cache-Control: private');
 header('Expires: ' .gmdate('D, d M Y H:i:s',time() + $expire) . ' GMT');
 header('Last-Modified: '.gmdate('D, d M Y H:i:s', getlastmod() ) . ' GMT');
-ob_start('ob_gzhandler');
+@ob_start('ob_gzhandler');
 ?>
 @charset "UTF-8";
 /** Generic Tags ***********************************************************************************/
@@ -178,9 +178,9 @@ input, input, textarea, select{
 
 input[type='text']:focus, input[type='password']:focus, input[type='file']:focus,
 input[type='tel']:focus, input[type='url']:focus, input[type='email']:focus,
-input[type='datetime']:focus, input[type='date']:focus, input[type='month']:focus, 
-input[type='week']:focus, input[type='time']:focus, input[type='datetime-local']:focus, 
-input[type='number']:focus, input[type='range']:focus, input[type='color']:focus, 
+input[type='datetime']:focus, input[type='date']:focus, input[type='month']:focus,
+input[type='week']:focus, input[type='time']:focus, input[type='datetime-local']:focus,
+input[type='number']:focus, input[type='range']:focus, input[type='color']:focus,
 input[type='search']:focus, textarea:focus, select:focus {
 	box-shadow: 0 0 3px #fc0;
 	-moz-box-shadow:0 0 3px #fc0;
@@ -189,10 +189,10 @@ input[type='search']:focus, textarea:focus, select:focus {
 }
 
 input[type='text']:hover, input[type='password']:hover, input[type='file']:hover,
-input[type='tel']:hover, input[type='url']:hover, input[type='email']:hover, 
-input[type='datetime']:hover, input[type='date']:hover, input[type='month']:hover, 
-input[type='week']:hover, input[type='time']:hover, input[type='datetime-local']:hover, 
-input[type='number']:hover, input[type='range']:hover, input[type='color']:hover, 
+input[type='tel']:hover, input[type='url']:hover, input[type='email']:hover,
+input[type='datetime']:hover, input[type='date']:hover, input[type='month']:hover,
+input[type='week']:hover, input[type='time']:hover, input[type='datetime-local']:hover,
+input[type='number']:hover, input[type='range']:hover, input[type='color']:hover,
 input[type='search']:hover, textarea:hover, select:hover {
 	border:1px solid #fc0;
 	box-shadow: none;
@@ -320,7 +320,7 @@ ol.list3 { list-style-type:lower-alpha; }
 }
 
 /* html.php/edit_form() */
-.edit_form 
+.edit_form
 {
 	/* clear:both; */
 	width:95%;
@@ -367,7 +367,7 @@ ol.list3 { list-style-type:lower-alpha; }
 
 #poptoc a{
 	color:blue !important;
-	cursor:pointer; 
+	cursor:pointer;
 }
 #poptoc a:hover{
 	text-shadow: none;
@@ -836,10 +836,10 @@ ol.list3 { list-style-type:lower-alpha; }
 	background-color: #FFEEEE;
 }
 .style_calendar_blank {
-	
+
 }
 .style_calendar_day {
-	
+
 }
 .style_calendar_week {
 	background-color: #DDE5EE;
@@ -1080,8 +1080,8 @@ ie8 .sf-menu li:hover, ie8 .sf-menu li.sfHover{
 		float: left;
 	}
 }
-<?php 
-ob_end_flush();
+<?php
+@ob_end_flush();
 
 /* End of file xxxlogue.ini.php */
 /* Location: ./webroot/skin/theme/xxxlogue/xxxlogue.css.php */

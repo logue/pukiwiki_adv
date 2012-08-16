@@ -6,6 +6,7 @@ if (isset($_SKIN)){
 	$_SKIN['ui_theme'] = 'overcast';			// jQuery UI Theme
 }else{
 	define('SKIN_CSS_CTS_BGCOLOR', 	'#FFFFFF');	// contents box bg
+	define('SKIN_CSS_CTS_BGCOLOR2', '#e6e6e6');	// contents box bg2
 	define('SKIN_CSS_CTS_BDCOLOR', 	'#A0A0A0');	// contents box border
 	
 	define('SKIN_CSS_BGCOLOR', 		'#FAFAFA');	// background

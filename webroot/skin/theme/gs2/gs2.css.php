@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: classic.skin.php,v 1.5.4 2012/01/22 12:27:00 Logue Exp $
+// $Id: classic.skin.php,v 1.5.5 2012/08/10 14:32:00 Logue Exp $
 
 // PukiWiki GS2 Skin for PukiWiki Adv.
 // Copyright (C)
@@ -18,7 +18,7 @@ header('Content-Type: text/css; charset: UTF-8');
 header('Cache-Control: private');
 header('Expires: ' .gmdate('D, d M Y H:i:s',time() + $expire) . ' GMT');
 header('Last-Modified: '.gmdate('D, d M Y H:i:s', getlastmod() ) . ' GMT');
-ob_start('ob_gzhandler');
+@ob_start('ob_gzhandler');
 
 // Color settings
 require ('./gs2_color/pukiwiki_gs2_color_'.$gs2_color.'.php');
@@ -499,6 +499,10 @@ tfoot th.style_th {
 	background-color:<?php echo SKIN_CSS_CTS_BGCOLOR; ?>;
 }
 
+.style_table tr:nth-child(even) .style_td{
+	 background-color:<?php echo SKIN_CSS_CTS_BGCOLOR2; ?>;
+}
+
 #header{
 	background-color: <?php echo SKIN_CSS_BOX_BGCOLOR; ?>;
 	border: 2px solid <?php echo SKIN_CSS_BOX_BDCOLOR; ?>;
@@ -568,6 +572,6 @@ tfoot th.style_th {
 	}
 }
 <?php 
-ob_end_flush();
+@();
 /* End of file gs2.css.php */
 /* Location: ./webroot/skin/theme/gs2/gs2.css.php */

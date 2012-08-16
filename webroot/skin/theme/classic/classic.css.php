@@ -20,7 +20,7 @@ header('Content-Type: text/css; charset: UTF-8');
 header('Cache-Control: private');
 header('Expires: ' .gmdate('D, d M Y H:i:s',time() + $expire) . ' GMT');
 header('Last-Modified: '.gmdate('D, d M Y H:i:s', getlastmod() ) . ' GMT');
-ob_start('ob_gzhandler');
+@ob_start('ob_gzhandler');
 ?>
 /**************************************************************************************************/
 /* anchor tag */
@@ -373,10 +373,10 @@ tfoot .style_th {
 	background-color:#FFEEEE;
 }
 .style_calendar_blank {
-	
+
 }
 .style_calendar_day {
-	
+
 }
 .style_calendar_week {
 	background-color:#DDE5EE;
@@ -440,12 +440,12 @@ tfoot .style_th {
 	line-height:16px !important;
 	height:24px;
 	margin: .5em 0em;
-	
+
 	color: white !important;
-	
+
 	text-shadow:none;
 	width: 100%;
-	
+
 	clear:both;
 	white-space: nowrap;
 	border: 1px RoyalBlue solid;
@@ -569,12 +569,12 @@ tfoot .style_th {
 		display:block;
 		width:100%;
 	}
-	
+
 	#footer{
 		clear:both;
 	}
 }
-<?php 
-ob_end_flush();
+<?php
+@ob_end_flush();
 /* End of file classic.css.php */
 /* Location: ./webroot/skin/theme/classic/classic.css.php */

@@ -6,6 +6,7 @@ if (isset($_SKIN)){
 	$_SKIN['ui_theme'] = 'le-frog';			// jQuery UI Theme
 }else{
 	define('SKIN_CSS_CTS_BGCOLOR', 	'#000000');	// contents box bg
+	define('SKIN_CSS_CTS_BGCOLOR2',	'#003300');	// contents box bg2
 	define('SKIN_CSS_CTS_BDCOLOR', 	'#00AA00');	// contents box border
 	
 	define('SKIN_CSS_BGCOLOR', 		'#101010');	// background

@@ -6,6 +6,7 @@ if (isset($_SKIN)){
 	$_SKIN['ui_theme'] = 'cupertino';			// jQuery UI Theme
 }else{
 	define('SKIN_CSS_CTS_BGCOLOR', 	'#CBD5E6');	// contents box bg
+	define('SKIN_CSS_CTS_BGCOLOR2',	'#CBD5E6');	// contents box bg2
 	define('SKIN_CSS_CTS_BDCOLOR', 	'#CBD5E6');	// contents box border
 	
 	define('SKIN_CSS_BGCOLOR', 		'#D0DBEB');	// background

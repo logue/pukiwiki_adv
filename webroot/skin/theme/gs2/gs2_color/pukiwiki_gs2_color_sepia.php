@@ -6,6 +6,7 @@ if (isset($_SKIN)){
 	$_SKIN['ui_theme'] = 'humanity';			// jQuery UI Theme
 }else{
 	define('SKIN_CSS_CTS_BGCOLOR', 	'#E6E2CB');	// contents box bg
+	define('SKIN_CSS_CTS_BGCOLOR2',	'#E6E2CB');	// contents box bg2
 	define('SKIN_CSS_CTS_BDCOLOR', 	'#E6E2CB');	// contents box border
 	
 	define('SKIN_CSS_BGCOLOR', 		'#EBE7D0');	// background

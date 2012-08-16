@@ -6,6 +6,7 @@ if (isset($_SKIN)){
 	$_SKIN['ui_theme'] = 'flick';			// jQuery UI Theme
 }else{
 	define('SKIN_CSS_CTS_BGCOLOR', 	'#F0F0F0');	// contents box bg
+	define('SKIN_CSS_CTS_BGCOLOR2',	'#e6e6e6');	// contents box bg2
 	define('SKIN_CSS_CTS_BDCOLOR', 	'#909090');	// contents box border
 	
 	define('SKIN_CSS_BGCOLOR', 		'#E0E0E0');	// background

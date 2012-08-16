@@ -6,6 +6,7 @@ if (isset($_SKIN)){
 	$_SKIN['ui_theme'] = 'redmond';		// jQuery UI Theme
 }else{
 	define('SKIN_CSS_CTS_BGCOLOR', 	'#F5FAFF');	// contents box bg
+	define('SKIN_CSS_CTS_BGCOLOR2',	'#e5f2ff');	// contents box bg2
 	define('SKIN_CSS_CTS_BDCOLOR', 	'#0064C8');	// contents box border
 	
 	define('SKIN_CSS_BGCOLOR', 		'#D6E1EC');	// background

@@ -28,7 +28,7 @@ header('Content-Type: text/css; charset: UTF-8');
 header('Cache-Control: private');
 header('Expires: ' .gmdate('D, d M Y H:i:s',time() + $expire) . ' GMT');
 header('Last-Modified: '.gmdate('D, d M Y H:i:s', getlastmod() ) . ' GMT');
-ob_start('ob_gzhandler');
+@ob_start('ob_gzhandler');
 ?>
 @charset "UTF-8";
 /** 1, general.css ********************************************************************************/
@@ -637,7 +637,7 @@ border:		1px solid #aaa;}
 
 #poptoc a{
 	color:blue !important;
-	cursor:pointer; 
+	cursor:pointer;
 }
 #poptoc a:hover{
 	text-shadow: none;
@@ -777,7 +777,7 @@ ul.sf-menu li li li.sfHover ul {
 	float:			left;
 	margin:0;
 	padding:0;
-	
+
 }
 .sf-menu a {
 	text-decoration:none;
@@ -817,7 +817,7 @@ ul.sf-menu li li li.sfHover ul {
 .sf-vertical li.sfHover ul {
 	left:	-200px; /* match ul width */
 	top:	-11px;	/* padding-top + border-width */
-	
+
 	padding: 10px 0;
 	border: 1px solid #afafaf;
 	background-color: white;
@@ -903,7 +903,7 @@ text-decoration:	none;}
 		display:none !important;
 		visibility: hidden !important;
 	}
-	
+
 	#header{
 		border:none;
 		margin:0;
@@ -924,7 +924,7 @@ text-decoration:	none;}
 		width:100%;
 		display:block;
 	}
-	
+
 	#additional, #body h2, #body h3, #body h4, #body h5, #body h6{
 		height:auto;
 		margin:0;
@@ -940,36 +940,36 @@ text-decoration:	none;}
 		margin: 0;
 		padding:0;
 	}
-	
+
 	#body h2:before, #logo:after{
 		display:none;
 	}
-	
+/*
 	{
 		padding: 0;
 		margin: 0;
 		height:auto;
 	}
-	
+*/
 	#content{
 		clear:both;
 		width:100%;
 	}
-	
+
 	#edit-area{
 		clear:both;
 		margin:0;
 		padding:0;
 		float:none;
 	}
-	
+
 	#edit-area.work > div ,#edit-area.work > section{
 		margin:0;
 		padding:0;
 	}
 }
-<?php 
-ob_end_flush();
+<?php
+@ob_end_flush();
 
 /* End of file whiteflow.css.php */
 /* Location: ./webroot/skin/theme/whiteflow/whiteflow.css.php */
