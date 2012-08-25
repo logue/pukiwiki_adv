@@ -121,18 +121,14 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 //	if ( !isset($vars['encode_hint']) && !defined(PKWK_ENCODING_HINT) )
 //		die_message('Plugin Encode Error.');
 
+	$links = array();
+	// ページ内のリンクを取得（TrackBackと、スパムチェックで使用）
+	if ( ($trackback > 1) || ( $use_spam_check['page_contents']) ) {
+		$links = get_this_time_links($postdata, $diffdata);
+	}
+
 	// スパムチェック（自動更新されるページはチェックしない）
 	if (isset($vars['page']) && $vars['page'] === $page && auth::check_role('role_adm_contents')){
-		$links = array();
-		// ページ内のリンクを取得（TrackBackと、スパムチェックで使用）
-		if ( ($trackback > 1) || ( $use_spam_check['page_contents']) ) {
-			$links = get_this_time_links($postdata, $diffdata);
-		}
-		if ($trackback > 1) {
-			// TrackBack Ping
-			tb_send($page, $links);
-		}
-
 		// Blocking SPAM
 		if ($use_spam_check['bad-behavior']){
 			require_once(LIB_DIR . 'bad-behavior-pukiwiki.php');
@@ -178,7 +174,7 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 			}
 		}
 	}
-	
+
 	// Create and write diff
 	$postdata = make_str_rules($postdata);
 	$oldpostdata = is_page($page) ? get_source($page, TRUE, TRUE) : '';
@@ -230,6 +226,11 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 
 	// Logging postdata (Plus!)
 	postdata_write();
+
+	if ($trackback > 1) {
+		// TrackBack Ping
+		tb_send($page, $links);
+	}
 
 	log_write('update',$page);
 }
