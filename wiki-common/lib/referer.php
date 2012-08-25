@@ -45,6 +45,10 @@ function ref_save($page)
 	$url = (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null;
 	if (! $referer || empty($url) ) return TRUE;
 
+	if ($use_spam_check['bad-behavior']){
+		require(LIB_DIR . 'bad-behavior-pukiwiki.php');
+	}
+
 	// Validate URI (Ignore own)
 	$parse_url = parse_url($url);
 	if ($parse_url === FALSE || !isset($parse_url['host']) || $parse_url['host'] == $_SERVER['HTTP_HOST'])

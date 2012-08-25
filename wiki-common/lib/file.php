@@ -116,21 +116,27 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	if (auth::check_role('readonly')) return; // Do nothing
 	if (auth::is_check_role(PKWK_CREATE_PAGE))
 		die_message( sprintf($_strings['error_prohibit'], 'PKWK_READONLY') );
-	
-	$role_adm_contents = auth::check_role('role_adm_contents');
-	
+
 	// SPAM Check (Client(Browser)-Server Ticket Check)
 //	if ( !isset($vars['encode_hint']) && !defined(PKWK_ENCODING_HINT) )
 //		die_message('Plugin Encode Error.');
 
-	$links = array();
-	// ページ内のリンクを取得（TrackBackと、スパムチェックで使用）
-	if ( ($trackback > 1) || ( $role_adm_contents && $use_spam_check['page_contents']) ) {
-		$links = get_this_time_links($postdata, $diffdata);
-	}
+	// スパムチェック（自動更新されるページはチェックしない）
+	if (isset($vars['page']) && $vars['page'] === $page && auth::check_role('role_adm_contents')){
+		$links = array();
+		// ページ内のリンクを取得（TrackBackと、スパムチェックで使用）
+		if ( ($trackback > 1) || ( $use_spam_check['page_contents']) ) {
+			$links = get_this_time_links($postdata, $diffdata);
+		}
+		if ($trackback > 1) {
+			// TrackBack Ping
+			tb_send($page, $links);
+		}
 
-	// Blocking SPAM
-	if ($role_adm_contents /*|| isset($vars['pass'])*/) {	// 管理人権限の時はチェックしない。
+		// Blocking SPAM
+		if ($use_spam_check['bad-behavior']){
+			require_once(LIB_DIR . 'bad-behavior-pukiwiki.php');
+		}
 		// リモートIPによるチェック
 		if ($use_spam_check['page_remote_addr'] && SpamCheck($_SERVER['REMOTE_ADDR'],'ip')) {
 			die_message($_strings['blacklisted'], 'SPAM Error', 400);
@@ -145,18 +151,24 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 		}
 
 		// Akismet
-		if ($akismet_api_key !== '' && ( $vars['cmd'] !== 'read' && !empty($vars['page']) ) ){
+		if ($akismet_api_key !== ''){
 			require_once(LIB_DIR.'Akismet.class.php');
+
 			$akismet = new Akismet(get_script_absuri() ,$akismet_api_key);
 			if($akismet->isKeyValid()) {
-
 				if (isset($vars['name'])){
 					$akismet->setCommentAuthor($vars['name']);
 				}
 				if (isset($vars['page'])){
-					$akismet->setPermalink(get_page_uri($vars['page']));
+					$akismet->setPermalink(get_page_uri($page));
 				}
-				$akismet->setCommentContent($postdata);
+				
+				// 差分のみをAkismetに渡す
+				$new = explode("\n",$postdata);
+				$old = explode("\n",$oldpostdata);
+				$diff = implode("\n",array_diff($new, $old));
+				$akismet->setCommentContent($diff);
+				
 				if($akismet->isCommentSpam()){
 					honeypot_write();
 					die_message('Writing was limited by Akismet (Blocking SPAM).', 'SPAM Error', 400);
@@ -166,13 +178,12 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 			}
 		}
 	}
-
-
+	
 	// Create and write diff
 	$postdata = make_str_rules($postdata);
 	$oldpostdata = is_page($page) ? get_source($page, TRUE, TRUE) : '';
 	$diffdata    = do_diff($oldpostdata, $postdata);
-	
+
 	// add client info to diff
 	$referer = (isset($_SERVER['HTTP_REFERER'])) ? htmlsc($_SERVER['HTTP_REFERER']) : 'None';
 	$user_agent = htmlsc($_SERVER['HTTP_USER_AGENT']);
@@ -207,11 +218,6 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	// Create wiki text
 	file_write(DATA_DIR, $page, $postdata, $notimestamp);
 
-	if ($trackback > 1) {
-		// TrackBack Ping
-		tb_send($page, $links);
-	}
-
 	// Update data
 	file_write(DIFF_DIR, $page, $diffdata);
 	unset($oldpostdata, $diffdata);
@@ -226,10 +232,6 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	postdata_write();
 
 	log_write('update',$page);
-
-	if (function_exists('senna_update')) {
-		senna_update($page, $oldpostdata, $postdata);
-	}
 }
 
 // Modify original text with user-defined / system-defined rules

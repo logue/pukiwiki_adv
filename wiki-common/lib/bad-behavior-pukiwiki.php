@@ -1,7 +1,7 @@
 <?php
 /*
 Bad Behavior - detects and blocks unwanted Web accesses
-Copyright (C) 2005,2006,2007,2008,2009,2010,2011 Michael Hampton
+Copyright (C) 2005,2006,2007,2008,2009,2010,2011,2012 Michael Hampton
 
 Bad Behavior is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free
@@ -19,7 +19,7 @@ Please report any problems to bad . bots AT ioerror DOT us
 http://www.bad-behavior.ioerror.us/
 */
 
-// $Id: bad-behavior-pukiwiki.php,v 0.1 2011/02/11 23:15:00 Logue Exp $
+// $Id: bad-behavior-pukiwiki.php,v 0.2 2012/08/10 15:34:00 Logue Exp $
 
 ###############################################################################
 ###############################################################################
@@ -30,7 +30,7 @@ defined('CONFIG_BADBEHAVIOR_LOG')		or define('CONFIG_BADBEHAVIOR_LOG',			'BadBeh
 
 define('WEEK_SECONDS', 604800);	// 1週間の秒数
 
-define('BB2_CWD', LIB_DIR);
+define('BB2_CWD', dirname(__FILE__));
 
 // Settings you can adjust for Bad Behavior.
 // Most of these are unused in non-database mode.
@@ -46,6 +46,10 @@ $bb2_settings_defaults = array(
 	'httpbl_threat' => '25',
 	'httpbl_maxage' => '30',
 	'offsite_forms' => false,
+	'eu_cookie' => false,
+	'reverse_proxy' => false,
+	'reverse_proxy_header' => 'X-Forwarded-For',
+	'reverse_proxy_addresses' => array(),
 );
 
 // Bad Behavior callback functions.
@@ -115,7 +119,7 @@ function bb2_insert($settings, $package, $key)
 {
 	$obj = new Config(CONFIG_BADBEHAVIOR_LOG);
 	$obj->read();
-	$array = & $obj->get('Log');	// 今までのデーター
+	$array = $obj->get('Log');	// 今までのデーター
 	$array[] = array(
 		$key,							// 0
 		$package['ip'],					// 1
@@ -132,6 +136,7 @@ function bb2_insert($settings, $package, $key)
 
 // Return emergency contact email address.
 function bb2_email() {
+	global $notify_from;
 	return $notify_from;
 }
 
@@ -212,3 +217,5 @@ function bb2_relative_path() {
 // Calls inward to Bad Behavor itself.
 require_once(BB2_CWD . "/bad-behavior/core.inc.php");
 bb2_install();	// FIXME: see above
+
+bb2_start(bb2_read_settings());

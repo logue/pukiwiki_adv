@@ -175,7 +175,7 @@ function do_plugin_init($name)
 // Call API 'action' of the plugin
 function do_plugin_action($name)
 {
-	global $vars, $_string;
+	global $vars, $_string, $use_spam_check;
 	if (! exist_plugin_action($name)) return array();
 
 	if (do_plugin_init($name) === FALSE) {
@@ -183,7 +183,7 @@ function do_plugin_action($name)
 	}
 
 	// check postid
-	if ( isset($vars['postid']) && !check_postid($vars['postid']) )
+	if ($use_spam_check['multiple_post'] && isset($vars['postid']) && !check_postid($vars['postid']) )
 		die_message($_string['postid_error']);
 	
 	if ( isset($vars['encode_hint']) && $vars['encode_hint'] !== PKWK_ENCODING_HINT )
@@ -289,11 +289,12 @@ function use_plugin($plugin, $lines)
 }
 
 function add_hidden_field($retvar, $name){
+	global $use_spam_check;
 	if (preg_match('/<form.+method="?(get|post)"[^>]*>/i', $retvar, $matches) !== 0){
 		// Insert a hidden field, supports idenrtifying text enconding
 		$hidden_field[] = ( PKWK_ENCODING_HINT ) ? '<input type="hidden" name="encode_hint" value="' . PKWK_ENCODING_HINT . '" />' : '';
 		
-		if (preg_match('/menu|side|header|footer|full|read|include|calendar|login/',$name) !== 1 && $matches[1] !== 'get'){
+		if ($use_spam_check['multiple_post'] && preg_match('/menu|side|header|footer|full|read|include|calendar|login/',$name) !== 1 && $matches[1] !== 'get'){
 			// from PukioWikio
 			$hidden_field[] = '<input type="hidden" name="postid" value="'.generate_postid($name).'" />';
 		}

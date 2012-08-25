@@ -103,6 +103,7 @@ function catbody($title, $page, $body)
 			$meta_tags[] = array('name' => 'viewport',	'content' => 'width=device-width, initial-scale=1');
 		}else{
 			global $google_analytics, $google_api_key, $google_site_verification, $yahoo_site_explorer_id, $bing_webmaster_tool, $shortcut_icon;
+			$meta_tags[] = array('http-equiv'	=> 'X-UA-Compatible',			'content'	=> $x_ua_compatible);
 			($modifier !== 'anonymous') ?			$meta_tags[] = array('name' => 'author',					'content' => $modifier) : '';
 			(!empty($google_site_verification)) ?	$meta_tags[] = array('name' => 'google-site-verification',	'content' => $google_site_verification) : '';
 			(!empty($yahoo_site_explorer_id)) ?		$meta_tags[] = array('name' => 'y_key',						'content' => $yahoo_site_explorer_id) : '';
@@ -475,10 +476,10 @@ EOD;
 
 EOD;
 	}else{
-		$form[] = "\t\t".'<input type="submit" id="btn_submit" name="write" value="'.$_button['update'].'" accesskey="s" />';
-		$form[] = isset($vars['add']) ? "\t\t".'<input type="checkbox" name="add_top" value="true"' .$checked_top . ' /><label for="add_top">' . $_button['addtop'] . '</label>' : '';
+		$form = "\t\t".'<input type="submit" id="btn_submit" name="write" value="'.$_button['update'].'" accesskey="s" />';
+		$form .= isset($vars['add']) ? "\t\t".'<input type="checkbox" name="add_top" value="true"' .$checked_top . ' /><label for="add_top">' . $_button['addtop'] . '</label>' : '';
 
-		$form = <<<EOD
+		$form .= <<<EOD
 		<input type="submit" id="btn_submit" name="write" value="{$_button['update']}" accesskey="s" data-icon="check" data-inline="true" data-theme="b" />
 		$add_top
 		<input type="submit" id="btn_preview" name="preview" value="{$_button['preview']}" accesskey="p" data-icon="gear" data-inline="true" data-theme="e" />
@@ -707,6 +708,10 @@ function pkwk_common_headers($modified = 0, $expire = 604800){
 
 function pkwk_common_suffixes($length = ''){
 	global $memcache;
+
+	// close current session
+	if (session_id()) session_write_close();
+
 	if ($memcache !== null){
 		$memcache->close();
 	}
@@ -720,8 +725,7 @@ function pkwk_common_suffixes($length = ''){
 	}
 	
 	flush();
-	// close current session
-	if (session_id()) session_write_close();
+	
 }
 //////////////////////////////////////////////////
 // DTD definitions
@@ -742,39 +746,43 @@ define('PKWK_DTD_TYPE_HTML',         0);
 function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET)
 {
 	static $called;
-	global $x_ua_compatible, $suffix, $browser, $info;
+	global $suffix, $browser, $info;
 	$version = '';
 
 	if (isset($called)) die('pkwk_output_dtd() already called. Why?');
 	$called = TRUE;
 
-	$type = PKWK_DTD_TYPE_XHTML;
 	$option = '';
 	switch($pkwk_dtd){
 	case PKWK_DTD_HTML_5:
+		$type    = false;
 		break;
 
 	case PKWK_DTD_XHTML_1_1:
 		$version = '1.1' ;
 		$dtd     = 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd';
+		$type    = PKWK_DTD_TYPE_XHTML;
 		break;
 
 	case PKWK_DTD_XHTML_1_0_STRICT:
 		$version = '1.0' ;
 		$option  = 'Strict';
 		$dtd     = 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd';
+		$type    = PKWK_DTD_TYPE_XHTML;
 		break;
 
 	case PKWK_DTD_XHTML_1_0_TRANSITIONAL:
 		$version = '1.0' ;
 		$option  = 'Transitional';
 		$dtd     = 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd';
+		$type    = PKWK_DTD_TYPE_XHTML;
 		break;
 
 	case PKWK_DTD_XHTML_BASIC_1_0:
 		$version = '1.0' ;
 		$option  = 'Basic';
 		$dtd     = 'http://www.w3.org/TR/xhtml-basic/xhtml-basic10.dtd';
+		$type    = PKWK_DTD_TYPE_XHTML;
 		break;
 
 	default:
@@ -785,7 +793,7 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 	$charset = htmlsc($charset);
 
 	// Output XML or not
-	if ($type === PKWK_DTD_TYPE_XHTML || PKWK_STRICT_XHTML === true ){
+	if ($type === PKWK_DTD_TYPE_XHTML || PKWK_STRICT_XHTML === true){
 		echo '<?xml version="1.0" encoding="' . CONTENT_CHARSET . '" ?' . '>' . "\n";
 	}
 
@@ -825,9 +833,6 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 		if(preg_match_all('/MSIE ([\.\d]+)/',$user_agent,$matches)){
 			// IE
 			$browser = 'ie ie'.substr($matches[1][0],0,1);
-			if (substr($matches[1][0],0,1) <= 9){
-				$x_ua_compatible = 'IE=edge'; // force to IE9
-			}
 		} else if (preg_match('/Gecko/', $user_agent) && preg_match('/(Firefox|Netscape?6)\/([\.\d]+)/', $user_agent,$matches)){
 			// Gecko (FireFox)
 			$browser = 'gecko '.strtolower($matches[1]).substr($matches[2][0],0,1);
@@ -860,7 +865,6 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 				array('http-equiv'	=> 'content-language',			'content'	=> $lang_code),
 				array('http-equiv'	=> 'content-style-type',		'content'	=> 'text/css'),
 				array('http-equiv'	=> 'content-script-type',		'content'	=> 'text/javascript'),
-				array('http-equiv'	=> 'X-UA-Compatible',			'content'	=> $x_ua_compatible),
 				array('http-equiv'	=> 'X-Frame-Options',			'content'	=> 'deny')
 			);
 		}

@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone
-// $Id: pukiwiki.ini.php,v 1.149.53 2012/04/29 15:22:00 Logue Exp $
+// $Id: pukiwiki.ini.php,v 1.149.54 2012/08/24 17:07:00 Logue Exp $
 // Copyright (C)
 //   2010-2012 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -37,7 +37,7 @@ defined('PLUS_PROTECT_MODE')	or define('PLUS_PROTECT_MODE',	0); // 0,2,3,4,5
 //   NOTE: Counter-related functions will work now (counter, attach count, etc)
 defined('PKWK_READONLY')		or define('PKWK_READONLY',		0);		// 0,1,2,3,4,5
 
-// PKWK_SAFE_MODE - Prohibits some unsafe(but compatible) functions 
+// PKWK_SAFE_MODE - Prohibits some unsafe(but compatible) functions
 defined('PKWK_SAFE_MODE')		or define('PKWK_SAFE_MODE',		0);	// 0,1,2,3,4,5
 
 // PKWK_CREATE_PAGE - New page making is prohibited.
@@ -57,9 +57,6 @@ defined('PKWK_DISABLE_INLINE_IMAGE_FROM_URI')
 //   Max length of GET method, prohibits some worm attack ASAP
 //   NOTE: Keep (page-name + attach-file-name) <= PKWK_QUERY_STRING_MAX
 define('PKWK_QUERY_STRING_MAX', 640); // Bytes, 0 = OFF
-
-// PKWK_ZLIB_LOADABLE_MODULE
-defined('PKWK_ZLIB_LOADABLE_MODULE') or define('PKWK_ZLIB_LOADABLE_MODULE', true);
 
 /////////////////////////////////////////////////
 // Experimental features
@@ -267,10 +264,10 @@ defined('PKWK_STRICT_XHTML')	or define('PKWK_STRICT_XHTML', false);
 // http://msdn.microsoft.com/en-us/library/cc288325(VS.85).aspx
 // Note: This setting ignore when edit page for fix IE8 scrolling bug.
 
-$x_ua_compatible = "IE=edge";	// Render as latest IE (Default)
-// $x_ua_compatible = "IE=emulateIE7";	// Render as latest IE7
+$x_ua_compatible = "IE=edge,chrome=1";	// Render as latest IE, if Chrome Frame installed, render as Chrome Frame.　(Default)
+// $x_ua_compatible = "IE=emulateIE7";
 // $x_ua_compatible = "chrome=1";	// Render as Chrome Frame
-// $x_ua_compatible = "IE=edge,chrome=1";	// Render as latest IE, if Chrome Frame installed, render as Chrome Frame.
+// $x_ua_compatible = "IE=edge";	// Render as latest IE
 
 /////////////////////////////////////////////////
 
@@ -289,6 +286,7 @@ $use_spam_check = array(
 	'page_write_proxy'	=> 0,	// Proxy経由での書き込み規制
 	'trackback'			=> 1,	// TrackBack。splogなど。（DNSBL）
 	'referer'			=> 1,	// Referer SPAM（DNSBL）
+	'multiple_post'		=> 0,	// 多重投稿チェック（ここを有効にすると戻るボタンによる更新ができなくなります）
 	'bad-behavior'		=> 0	// Bad Behaviorによるアンチスパム（仮実装）
 );
 
@@ -461,7 +459,7 @@ $cantedit = array( $whatsnew, $whatsdeleted );
 
 /////////////////////////////////////////////////
 // HTTP: Output Last-Modified header
-// 注意：カウンタが回らなくなります。
+// 注意：動作が軽くなりますがカウンタが回らなくなります。
 $lastmod = 0;
 
 /////////////////////////////////////////////////
@@ -509,6 +507,7 @@ $line_break = 0;
 /////////////////////////////////////////////////
 // Use date-time rules (See rules.ini.php)
 $usedatetime = 1;
+
 /////////////////////////////////////////////////
 // Template setting
 $auto_template_func = 1;
@@ -522,6 +521,7 @@ $notimeupdate = 2;
 
 // Authentication
 require_once(add_homedir('auth.ini.php'));
+
 /////////////////////////////////////////////////
 // Ignore list
 // Regex of ignore pages
@@ -533,8 +533,9 @@ $search_non_list = 1;
 /////////////////////////////////////////////////
 // Automatically add fixed heading anchor
 $fixed_heading_anchor = 1;
+
 /////////////////////////////////////////////////
-// 見出しごとの編集を可能にする 
+// 見出しごとの編集を可能にする
 //
 // 見出し行の固有のアンカ自動挿入されているとき
 // のみ有効です

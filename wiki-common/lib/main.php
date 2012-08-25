@@ -89,7 +89,6 @@ $notify = $trackback = $referer = 0;
 require(LIB_DIR . 'init.php');
 
 // Load optional libraries
-if ($use_spam_check['bad-behavior']){ require(LIB_DIR . 'bad-behavior-pukiwiki.php'); }
 if (isset($notify)){ require(LIB_DIR . 'mail.php'); }	// Mail notification
 if (isset($trackback)){ require(LIB_DIR . 'trackback.php'); }	// TrackBack
 if (isset($referer)){ require(LIB_DIR . 'referer.php'); }
