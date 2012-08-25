@@ -29,13 +29,16 @@ define('GENERATOR', S_APPNAME.' '.S_VERSION);
 /////////////////////////////////////////////////
 // Init PukiWiki Advance Enviroment variables
 
-defined('DEBUG')				or define('DEBUG', false);
-defined('PKWK_WARNING')			or define('PKWK_WARNING', false);
-defined('ROOT_URI')				or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');
-defined('WWW_HOME')				or define('WWW_HOME', '');
+defined('DEBUG')		or define('DEBUG', false);
+defined('PKWK_WARNING')	or define('PKWK_WARNING', false);
+defined('ROOT_URI')		or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');
+defined('WWW_HOME')		or define('WWW_HOME', '');
 
+define('JQUERY_VER',	'1.8.0');
+define('JQUERY_UI_VER',	'1.8.23');
+define('JQUERY_DATATABLE_VER',	'1.9.1');
 // ページ名やファイル名として使用できない文字（エンコード前の文字）
-defined('PKWK_ILLEGAL_CHARS_PATTERN') or define('PKWK_ILLEGAL_CHARS_PATTERN', '/[%|=|&|?|#|\r|\n|\0|\@|;|\$|+|\\|\[|\]|\||^|{|}]/');
+defined('PKWK_ILLEGAL_CHARS_PATTERN') or define('PKWK_ILLEGAL_CHARS_PATTERN', '/[%|=|&|?|#|\r|\n|\0|\@|\t|;|\$|+|\\|\[|\]|\||^|{|}]/');
 
 /////////////////////////////////////////////////
 // Init server variables
@@ -279,7 +282,6 @@ if (class_exists('Memcache')){
 		// セッション管理もMemcacheで行う
 		ini_set('session.save_handler', 'memcache');
 		ini_set('session.save_path', (strpos(MEMCACHE_HOST, 'unix://') !== FALSE) ? MEMCACHE_HOST : 'tcp://'.MEMCACHE_HOST.':'.MEMCACHE_PORT);
-
 	}
 }else{
 	$info[] = 'Memcache is disabled.';
@@ -471,7 +473,7 @@ if (!IS_AJAX || IS_MOBILE){
 	// JavaScriptフレームワーク設定
 	// Microsoft CDN
 	// http://www.asp.net/ajaxlibrary/cdn.ashx
-	$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js');
+	$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://ajax.aspnetcdn.com/ajax/jQuery/jquery-'.JQUERY_VER.'.min.js');
 
 	if (!IS_MOBILE){
 		// modernizrの設定
@@ -479,16 +481,23 @@ if (!IS_AJAX || IS_MOBILE){
 		$modernizr = 'js.php?file=modernizr.min';
 		
 		// jQuery UI
-		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.21/jquery-ui.min.js');
+		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://ajax.aspnetcdn.com/ajax/jquery.ui/'.JQUERY_UI_VER.'/jquery-ui.min.js');
 		// jQuery UIのCSS
 		if (isset($_SKIN['ui_theme'])){
 			$link_tags[] = array(
 				'rel'=>'stylesheet',
-				'href'=>'http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.21/themes/'. $_SKIN['ui_theme'].'/jquery-ui.css',
+				'href'=>'http://ajax.aspnetcdn.com/ajax/jquery.ui/'.JQUERY_UI_VER.'/themes/'. $_SKIN['ui_theme'].'/jquery-ui.css',
 				'type'=>'text/css',
 				'id'=>'ui-theme'
 			);
 		}
+		
+		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://ajax.aspnetcdn.com/ajax/jquery.dataTables/'.JQUERY_DATATABLE_VER.'/jquery.dataTables.min.js');
+		$link_tags[] = array(
+				'rel'=>'stylesheet',
+				'href'=>'http://ajax.aspnetcdn.com/ajax/jquery.dataTables/'.JQUERY_DATATABLE_VER.'/css/jquery.dataTables.css',
+				'type'=>'text/css',
+		);
 
 		if (DEBUG === true) {
 			// 読み込むsrcディレクトリ内のJavaScript
@@ -508,10 +517,6 @@ if (!IS_AJAX || IS_MOBILE){
 				'jquery.scrollTo',
 				'jquery.superfish',
 				'jquery.tabby',
-				'jquery.tablesorter',
-				'jquery.tablesorter.pager',
-				'jquery.tablesorter.widgets',
-				'jquery.textarearesizer',
 				'jquery.ui.rlightbox',
 				
 				/* MUST BE LOAD LAST */

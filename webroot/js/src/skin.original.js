@@ -70,12 +70,25 @@ var pukiwiki = {};
 			'@prefix' : '<http://purl.org/net/ns/doas#>',
 			'@about' : '<skin.js>', 'a': ':JavaScript',
 			'title' : 'Pukiwiki skin script for jQuery',
-			'created' : '2008-11-25', 'release': {'revision': '2.2.28', 'created': '2012-06-13'},
+			'created' : '2008-11-25', 'release': {'revision': '2.2.29', 'created': '2012-08-25'},
 			'author' : {'name': 'Logue', 'homepage': '<http://logue.be/>'},
 			'license' : '<http://www.gnu.org/licenses/gpl-2.0.html>'
 		},
 		// 初期設定
 		config: {
+			dataTable:{
+				oLanguage : {
+					oPaginate : {
+						sFirst : '<span class="ui-icon ui-icon-arrowthickstop-1-w"></span>',
+						sPrevious : '<span class="ui-icon ui-icon-arrowthick-1-w"></span>',
+						sNext : '<span class="ui-icon ui-icon-arrowthick-1-e"></span>',
+						sLast : '<span class="ui-icon ui-icon-arrowthickstop-1-e"></span>'
+					}
+				},
+				bJQueryUI: true,
+				sPaginationType: 'full_numbers',
+				sDom: '<"fg-toolbar ui-toolbar ui-widget-header ui-corner-tl ui-corner-tr ui-helper-clearfix"lp>tr<"fg-toolbar ui-toolbar ui-widget-header ui-corner-bl ui-corner-br ui-helper-clearfix"if>'
+			},
 			sukerfish: {
 				autoArrows:		false,	// if true, arrow mark-up generated automatically = cleaner source code at expense of initialisation performance
 				dropShadows:	false
@@ -99,71 +112,6 @@ var pukiwiki = {};
 					panorama: [90, null]
 				},
 				loop: false
-			},
-			tablesorter: {
-				counter: 0,
-				sorter: {
-					widthFixed       : true,      // adds colgroup to fix widths of columns
-
-					// functionality
-					cancelSelection  : true,       // prevent text selection in the header
-					dateFormat       : "yyyymmdd", // other options: "ddmmyyy" or "yyyymmdd"
-					sortMultiSortKey : "shiftKey", // key used to select additional columns
-					usNumberFormat   : true,       // false for German "1.234.567,89" or French "1 234 567,89"
-					delayInit        : true,      // if false, the parsed table contents will not update until the first sort.
-
-					// sort options
-					headers          : {},         // set sorter, string, empty, locked order, sortInitialOrder, filter, etc.
-					ignoreCase       : true,       // ignore case while sorting
-					sortForce        : null,       // column(s) first sorted; always applied
-					sortList         : [],         // Initial sort order; applied initially; updated when manually sorted
-					sortAppend       : null,       // column(s) sorted last; always applied
-
-					sortInitialOrder : "asc",      // sort direction on first click
-					sortLocaleCompare: false,      // replace equivalent character (accented characters)
-					sortReset        : true,      // third click on the header will reset column to default - unsorted
-					sortRestart      : false,      // restart sort to "sortInitialOrder" when clicking on previously unsorted columns
-
-					emptyTo          : "bottom",   // sort empty cell to bottom, top, none, zero
-					stringTo         : "max",      // sort strings in numerical column as max, min, top, bottom, zero
-					textExtraction   : "simple",   // text extraction method/function - function(node, table, cellIndex){}
-					textSorter       : null,       // use custom text sorter - function(a,b){ return a.sort(b); } // basic sort
-
-					//widget code now contained in the jquery.tablesorter.widgets.js file
-					widgets : ['uitheme'],
-
-					widgetOptions : {
-
-						// change default uitheme icons - find the full list of icons here: http://jqueryui.com/themeroller/ (hover over them for their name)
-						// default icons: ["ui-icon-arrowthick-2-n-s", "ui-icon-arrowthick-1-s", "ui-icon-arrowthick-1-n"]
-						// ["up/down arrow (cssHeaders/unsorted)", "down arrow (cssDesc/descending)", "up arrow (cssAsc/ascending)" ]
-						uitheme : ["ui-icon-carat-2-n-s", "ui-icon-carat-1-s", "ui-icon-carat-1-n"]
-					},
-					initWidgets      : true,       // apply widgets on tablesorter initialization
-
-					// callbacks
-					initialized      : function(table){
-						pukiwiki.setAnchor('.tablesorter');
-					},       // function(table){},
-					onRenderHeader   : null,       // function(index){},
-
-					// css class names
-					tableClass       : 'tablesorter',
-					cssAsc           : "tablesorter-headerSortUp",
-					cssChildRow      : "expand-child",
-					cssDesc          : "tablesorter-headerSortDown",
-					cssHeader        : "tablesorter-header",
-					cssInfoBlock     : "tablesorter-infoOnly", // don't sort tbody with this class name
-
-					// advanced
-					debug            : false
-				},
-				pager : {
-					minimum_lines	: 5,
-					size			: [10, 25, 50, 75, 100],
-					location_before	: true,
-					positionFixed	: false
-				}
 			},
 			assistant : {
 				// 絵文字の定義
@@ -248,7 +196,6 @@ var pukiwiki = {};
 			// スキン設定をオーバーライド
 			$.extend(this.config.sukerfish, this.custom.suckerfish);
 			$.extend(this.config.rlightbox, this.custom.rlightbox);
-			$.extend(this.config.tablesorter, this.custom.tablesorter);
 			$.extend(this.config.syntaxhighlighter, this.custom.syntaxhighlighter);
 
 			// HTML5サポート\
@@ -456,15 +403,8 @@ var pukiwiki = {};
 			this.search_form(prefix);
 			// Bad Behavior
 			this.bad_behavior(prefix);
-			// Table Sorter（テーブル自動ソート）
-			this.tablesorter(prefix);
-
-			// Textarea Resizer
-			var $msg = $(prefix + 'textarea[name="msg"]');
-			if ($msg.length !== 0 && !$msg.data('resizer') && $.query.get('cmd') !== 'guiedit'){
-				$msg.data('resizer',true);
-				$msg.TextAreaResizer();
-			}
+			// テーブルソーと
+			this.dataTable(prefix);
 
 			// テキストエリアでタブ入力できるように
 			$(prefix + 'textarea').tabby();
@@ -546,7 +486,6 @@ var pukiwiki = {};
 				if (rel && rel.match(/noreferer|license|product|external/)){
 
 					if (rel.match(/noreferer/)){
-						console.log(href);
 						$this.click(function(){
 							// for IE
 							if (ie){
@@ -842,6 +781,16 @@ var pukiwiki = {};
 				$.beautyOfCode.beautifyAll(this.config.syntaxhighlighter);
 			}
 		},
+		dataTable : function(prefix){
+			var self = this;
+			var table = (prefix) ? prefix + ' .style_table' : '.style_table';
+			$(table).each(function(){
+				var $this = $(this);
+				if ($this.find('thead').length !== 0 ){
+					$this.dataTable(self.config.dataTable);
+				}
+			});
+		},
 		// 検索フォームでサジェスト機能
 		search_form: function(){
 			if ($('#search_word').length !== 0){
@@ -1073,101 +1022,6 @@ var pukiwiki = {};
 					container.html(jplayer_container).dialog(dialog_option);
 					return false;
 				});
-			});
-		},
-		// テーブル自動ソート
-		tablesorter: function(prefix){
-			var self = this;
-			prefix = (prefix) ? prefix + ' ': '';
-
-			// デフォルト値
-			var config = this.config.tablesorter;
-			var tablesorter_widget = function(id){
-				return [
-					'<div class="table_pager_widget ui-helper-clearfix" id="'+id+'">',
-						'<ul class="ui-widget pkwk_widget">',
-							'<li class="first ui-button ui-state-default ui-corner-all" title="' + $.i18n('dialog','first') + '"><span class="ui-icon ui-icon-arrowthickstop-1-w"></span></li>',
-							'<li class="prev ui-button ui-state-default ui-corner-all" title="' + $.i18n('dialog','prev') + '"><span class="ui-icon ui-icon-arrowthick-1-w"></span></li>',
-							'<li><select class="pagesize"></select></li>',
-							'<li class="next ui-button ui-state-default ui-corner-all" title="' + $.i18n('dialog','next') + '"><span class="ui-icon ui-icon-arrowthick-1-e"></span></li>',
-							'<li class="last ui-button ui-state-default ui-corner-all" title="' + $.i18n('dialog','last') + '"><span class="ui-icon ui-icon-arrowthickstop-1-e"></span></li>',
-//							'<li class="reload ui-button ui-state-default ui-corner-all" title="' + $.i18n('dialog','reload') + '"><span class="ui-icon ui-icon-refresh"></span></li>',
-						'</ul>',
-						'<p  class="pagedisplay"></p>',
-					'</div>'
-				].join("\n");
-			}
-
-			$('.style_table').each(function(elem){
-				var table = this;
-				var $this = $(this);
-				//var backup = $this.clone();
-				var data = $this.data();
-				var config = self.config.tablesorter;
-
-				if ($this.data('enabled') !== true){
-					if ($('tr',this).length > config.pager.size[0] && $('thead',this).length !== 0){	// 10行以上の場合ページャーを表示
-						// テーブルのページングウィジット
-						var pager_id = 'table_pager_'+config.counter;
-
-						// data-属性を使って動作をカスタマイズ
-						config.sorter.headers = data.headers;
-						config.sorter.sortList = data.sortList;
-						config.sorter.parsers = data.parsers;
-
-						$this.tablesorter(config.sorter);
-
-						if (config.pager.location_before === true){
-							$this.before(tablesorter_widget(pager_id));
-						}else{
-							$this.after(tablesorter_widget(pager_id));
-						}
-
-						var i = 0;
-						while (i < config.pager.size.length){
-							$('#'+pager_id+' .pagesize').append($('<option>').attr({ value: config.pager.size[i] }).text(config.pager.size[i]));
-							i++;
-						}
-						/*
-						// リセットボタン
-						$('#'+pager_id+' .reload').click(function(){
-							backup.clone().insertAfter(table);
-							$(table).remove();
-							$('#'+pager_id).remove();
-							$(table).tablesorter(config.sorter);
-							if (config.pager.location_before === true){
-								$(table).before(tablesorter_widget(pager_id));
-							}else{
-								$(table).after(tablesorter_widget(pager_id));
-							}
-							$(table).tablesorterPager(config.pager);
-
-							var i = 0;
-							while (i < config.pager.size.length){
-								$('#'+pager_id+' .pagesize').append($('<option>').attr({ value: config.pager.size[i] }).text(config.pager.size[i]));
-								i++;
-							}
-
-							//Load Tool Tips for links inside the tab container
-							
-						});
-						*/
-
-						// ページャーを生成（ID重複しないようにグローバル変数のpukiwiki.tablesorter.counterをカウンタとして使用
-						$this.tablesorterPager({
-							container: $('#'+pager_id),
-							positionFixed: false
-						});
-
-						$('#'+pager_id).show('clip');
-						config.counter++;
-					}else{
-						$this.tablesorter(config.sorter);
-					}
-					// ２重に実行されるのを抑止
-					$this.data('enabled', true);
-					
-				}
 			});
 		},
 		// 独自のGlossaly処理
