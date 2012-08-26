@@ -147,7 +147,7 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 		}
 
 		// Akismet
-		if ($akismet_api_key !== ''){
+		if ($use_spam_check['akismet'] && $akismet_api_key !== ''){
 			require_once(LIB_DIR.'Akismet.class.php');
 
 			$akismet = new Akismet(get_script_absuri() ,$akismet_api_key);
@@ -159,11 +159,15 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 					$akismet->setPermalink(get_page_uri($page));
 				}
 				
-				// 差分のみをAkismetに渡す
-				$new = explode("\n",$postdata);
-				$old = explode("\n",$oldpostdata);
-				$diff = implode("\n",array_diff($new, $old));
-				$akismet->setCommentContent($diff);
+				if ($use_spam_check['akismet'] === 2){
+					$akismet->setCommentContent($postdata);
+				}else{
+					// 差分のみをAkismetに渡す
+					$new = explode("\n",$postdata);
+					$old = explode("\n",$oldpostdata);
+					$diff = implode("\n",array_diff($new, $old));
+					$akismet->setCommentContent($diff);
+				}
 				
 				if($akismet->isCommentSpam()){
 					honeypot_write();

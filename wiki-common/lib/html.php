@@ -476,10 +476,7 @@ EOD;
 
 EOD;
 	}else{
-		$form = "\t\t".'<input type="submit" id="btn_submit" name="write" value="'.$_button['update'].'" accesskey="s" />';
-		$form .= isset($vars['add']) ? "\t\t".'<input type="checkbox" name="add_top" value="true"' .$checked_top . ' /><label for="add_top">' . $_button['addtop'] . '</label>' : '';
-
-		$form .= <<<EOD
+		$form = <<<EOD
 		<input type="submit" id="btn_submit" name="write" value="{$_button['update']}" accesskey="s" data-icon="check" data-inline="true" data-theme="b" />
 		$add_top
 		<input type="submit" id="btn_preview" name="preview" value="{$_button['preview']}" accesskey="p" data-icon="gear" data-inline="true" data-theme="e" />
@@ -621,6 +618,13 @@ function pkwk_headers_sent()
 
 	if (headers_sent($file, $line)){
 		die_message(sprintf($_string['header_sent'],htmlsc($file),$line));
+	}else{
+		// buffer all upcoming output - make sure we care about compression: 
+		if(!DEBUG){
+			if (! @ob_start("ob_gzhandler")){
+				@ob_start();
+			}
+		}
 	}
 }
 
@@ -697,13 +701,6 @@ function pkwk_common_headers($modified = 0, $expire = 604800){
 	header('X-XSS-Protection: '.((DEBUG) ? '0' :'1;mode=block') );
 	
 	header('Connection: close');
-
-	// buffer all upcoming output - make sure we care about compression: 
-	if(!DEBUG){
-		if (!ob_start("ob_gzhandler")){
-			ob_start();
-		}
-	}
 }
 
 function pkwk_common_suffixes($length = ''){

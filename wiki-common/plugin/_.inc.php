@@ -101,7 +101,7 @@ function i18n_ConfMsgGet($lang, $msg, $no = 0)
 
 	$obj = new Config($ConfName);
 	$obj->read();
-	$i18n_msg = & $obj->get('TEXT');
+	$i18n_msg = $obj->get('TEXT');
 	unset($obj);
 
 	$ret_no = ($no == 0) ? 1 : 0;
