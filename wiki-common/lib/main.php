@@ -104,24 +104,34 @@ $plugin = isset($vars['cmd']) ? $vars['cmd'] : '';
 
 // SPAM
 $remote_addr = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
-if (SpamCheckBAN($remote_addr)) die();
+if (SpamCheckBAN($remote_addr)) die('Sorry, your access is prohibited.');
 
 // Block SPAM countory
 $geoip = array();
-if (isset($_SERVER['GEOIP_COUNTRY_CODE'])){
+if (isset($_SERVER['HTTP_CF_IPCOUNTRY'])){
+	// CloudFlareを使用している場合、そちらのGeolocationを読み込む
+	// https://www.cloudflare.com/wiki/IP_Geolocation
+	$geoip['country_code'] = $_SERVER['HTTP_CF_IPCOUNTRY'];
+}else if (isset($_SERVER['GEOIP_COUNTRY_CODE'])){
+	// サーバーが$_SERVER['GEOIP_COUNTRY_CODE']を出力している場合
 	$geoip['country_code'] = $_SERVER['GEOIP_COUNTRY_CODE'];
 }else if (function_exists('geoip_db_avail') && geoip_db_avail(GEOIP_COUNTRY_EDITION) && function_exists('geoip_region_by_name')) {
+	// それでもダメな場合は、phpのgeoip_region_by_name()からGeolocationを取得
 	$geoip = @geoip_region_by_name($remote_addr);
 	$info[] = (!empty($geoip['country_code']) ) ?
 		'GeoIP is usable. Your country code from IP is inferred <var>'.$geoip['country_code'].'</var>.' :
 		'GeoIP is NOT usable. Maybe database is not installed. Please check <a href="http://www.maxmind.com/app/installation?city=1" rel="external">GeoIP Database Installation Instructions</a>';
 }else{
-	$geoip['country_code'] = apache_note('GEOIP_COUNTRY_CODE');
+	// Apacheの場合
+	$geoip['country_code'] = @apache_note('GEOIP_COUNTRY_CODE');
 }
+
+// 使用可能かをチェック
 if ( isset($geoip['country_code']) && !empty($geoip['country_code'])) {
 	$info[] = 'Your country code from IP is inferred <var>'.$geoip['country_code'].'</var>.';
 } else {
 	$info[] = '<var>$deny_countory</var> value and <var>$allow_countory</var> value is ignoled.';
+	$geoip['country_code'] = false;
 }
 
 // Spam filtering
@@ -129,12 +139,12 @@ if ($spam && $method !== 'GET') {
 	if (isset($geoip['country_code']) && $geoip['country_code'] !== false){
 		if (isset($deny_countory) && !empty($deny_countory)) {
 			if (in_array($geoip['country_code'], $deny_countory)) {
-				die('Sorry');
+				die('Sorry, access from your country is prohibited.');
 			}
 		}
 		if (isset($allow_countory) && !empty($allow_countory)) {
 			if (!in_array($geoip['country_code'], $allow_countory)) {
-				die('Sorry');
+				die('Sorry, access from your country is prohibited.');
 			}
 		}
 	}
@@ -227,7 +237,7 @@ if (!empty($plugin)) {
 		if ($retvars === FALSE) exit; // Done
 		$base = (!empty($page)) ? $page : $refer;
 	} else {
-		$msg = '<p class="message_box ui-state-error ui-corner-all">plugin=' . htmlsc($plugin) . ' is not implemented.</p>';
+		$msg = '<p class="message_box ui-state-error ui-corner-all">cmd=' . htmlsc($plugin) . ' is not implemented.</p>';
 		$retvars = array('msg'=>$msg,'body'=>$msg);
 		$base    = & $defaultpage;
 	}
