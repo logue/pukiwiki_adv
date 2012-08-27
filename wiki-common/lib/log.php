@@ -2,10 +2,10 @@
 /**
  * PukiWiki Plus! 更新ログ処理
  *
- * @copyright	
- *	 Copyright &copy; 2010-2011 PukiWiki Advance Developers Team
- *					  2004-2006,2008-2009, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version	$Id: log.php,v 0.14 2011/12/25 20:59:00 Logue Exp $
+ * @copyright
+ *   Copyright &copy; 2010-2012 PukiWiki Advance Developers Team
+ *                    2004-2006,2008-2009, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
+ * @version	$Id: log.php,v 0.15 2012/08/27 10:02:00 Logue Exp $
  * @license	http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 
@@ -583,7 +583,9 @@ class log
 	 * IPアドレスの取得
 	 * @static
 	 */
-	static function getip()	{ return $_SERVER['REMOTE_ADDR']; }
+	static function getip() {
+		return isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
+	}
 	/**
 	 * ホスト名からIPアドレス得る
 	 * @static

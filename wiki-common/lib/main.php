@@ -103,14 +103,15 @@ $refer = isset($vars['refer']) ? $vars['refer'] : '';
 $plugin = isset($vars['cmd']) ? $vars['cmd'] : '';
 
 // SPAM
-if (SpamCheckBAN($_SERVER['REMOTE_ADDR'])) die();
+$remote_addr = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
+if (SpamCheckBAN($remote_addr)) die();
 
 // Block SPAM countory
 $geoip = array();
 if (isset($_SERVER['GEOIP_COUNTRY_CODE'])){
 	$geoip['country_code'] = $_SERVER['GEOIP_COUNTRY_CODE'];
 }else if (function_exists('geoip_db_avail') && geoip_db_avail(GEOIP_COUNTRY_EDITION) && function_exists('geoip_region_by_name')) {
-	$geoip = @geoip_region_by_name($_SERVER['REMOTE_ADDR']);
+	$geoip = @geoip_region_by_name($remote_addr);
 	$info[] = (!empty($geoip['country_code']) ) ?
 		'GeoIP is usable. Your country code from IP is inferred <var>'.$geoip['country_code'].'</var>.' :
 		'GeoIP is NOT usable. Maybe database is not installed. Please check <a href="http://www.maxmind.com/app/installation?city=1" rel="external">GeoIP Database Installation Instructions</a>';

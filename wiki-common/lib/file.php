@@ -1,8 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: file.php,v 1.95.5 2011/11/28 21:28:00 Logue Exp $
+// $Id: file.php,v 1.95.6 2012/08/27 10:03:00 Logue Exp $
 // Copyright (C)
-//   2010-2011 PukiWiki Advance Developers Team
+//   2010-2012 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
 //   2002-2009,2011 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -107,6 +107,8 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	global $use_spam_check, $_strings;
 	global $vars, $now, $akismet_api_key;
 
+	$remote_addr = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
+
 	// Check Illigal Chars
 	if (preg_match(PKWK_ILLEGAL_CHARS_PATTERN, $page)){
 		die_message($_strings['illegal_chars']);
@@ -134,7 +136,7 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 			require_once(LIB_DIR . 'bad-behavior-pukiwiki.php');
 		}
 		// リモートIPによるチェック
-		if ($use_spam_check['page_remote_addr'] && SpamCheck($_SERVER['REMOTE_ADDR'],'ip')) {
+		if ($use_spam_check['page_remote_addr'] && SpamCheck($remote_addr,'ip')) {
 			die_message($_strings['blacklisted'], 'SPAM Error', 400);
 		}
 		// ページのリンクよるチェック
@@ -187,7 +189,7 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	// add client info to diff
 	$referer = (isset($_SERVER['HTTP_REFERER'])) ? htmlsc($_SERVER['HTTP_REFERER']) : 'None';
 	$user_agent = htmlsc($_SERVER['HTTP_USER_AGENT']);
-	$diffdata .= "// IP:\"{$_SERVER['REMOTE_ADDR']}\" TIME:\"$now\" REFERER:\"$referer\" USER_AGENT:\"$user_agent\"\n";
+	$diffdata .= '// IP:"'. $remote_addr . '" TIME:"' . $now . '" REFERER:"' . $referer . '" USER_AGENT:"' . $user_agent. "\n";
 
 	// Update autoalias.dat (AutoAliasName)
 	if ($autoalias && $page === $aliaspage) {

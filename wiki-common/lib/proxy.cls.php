@@ -2,8 +2,10 @@
 /**
  * PukiWiki Plus! Proxy判定クラス
  *
- * @copyright	Copyright &copy; 2004-2007, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version	$Id: proxy.cls.php,v 0.8 2007/12/20 04:34:00 upk Exp $
+ * @copyright
+ *   Copyright &copy; 2012 PukiWiki Advance Developers Team
+ *                    2004-2007, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
+ * @version	$Id: proxy.cls.php,v 0.8.1 2012/08/27 09:57:00 Logue Exp $
  * @license	http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 
@@ -19,25 +21,26 @@ class check_proxy
 		// 取得値は、上から下へ上書きする。下ほど有用。
 		// 0:KEY, 1:Prox判定利用, 2:IP取得利用
 		// ***** IP アドレス取得 *****
-		array('HTTP_X_FORWARDED_FOR',   1,1), // プロキシサーバ経由の生IP
-		array('HTTP_SP_HOST',		1,1), // ホスト情報
-		array('HTTP_CLIENT_IP',		1,1),
-		array('HTTP_FORWARDED',		1,1), // プロキシサーバの情報や生IP
+		array('HTTP_X_FORWARDED_FOR',	1,1), // プロキシサーバ経由の生IP
+		array('HTTP_SP_HOST',			1,1), // ホスト情報
+		array('HTTP_CLIENT_IP',			1,1),
+		array('HTTP_FORWARDED',			1,1), // プロキシサーバの情報や生IP
 		array('HTTP_PC_REMOTE_ADDR',	1,1),
 		array('REMOTE_ADDR',            0,1),
+		array('HTTP_CF_CONNECTING_IP',	0,1), // CloudFlare経由のアクセスの場合のIPアドレス
 		// ***** PROXY 判定専用 *****
-		array('HTTP_CACHE_INFO',	1,0), // プロキシサーバのキャッシュ情報
-		array('HTTP_IF_MODIFIED_SINCE', 1,0), // プロキシサーバに接続した時間の情報
+		array('HTTP_CACHE_INFO',		1,0), // プロキシサーバのキャッシュ情報
+		array('HTTP_IF_MODIFIED_SINCE',	1,0), // プロキシサーバに接続した時間の情報
 		array('HTTP_PROXY_CONNECTION',	1,0), // プロキシ関係の情報
-		array('HTTP_VIA',		1,0), // プロキシの種類・バージョン等
-		array('HTTP_XONNECTION',	1,0),
+		array('HTTP_VIA',				1,0), // プロキシの種類・バージョン等
+		array('HTTP_XONNECTION',		1,0),
 		array('HTTP_XROXY_CONNECTION',	1,0),
-		array('HTTP_X_LOCKING',		1,0), // IPアドレス・REFERERなどの情報
-		array('HTTP_X_TE',		1,0),
-		// array('HTTP_HOST',		1,0), // ホスト情報 (仮に追加 09/28)
+		array('HTTP_X_LOCKING',			1,0), // IPアドレス・REFERERなどの情報
+		array('HTTP_X_TE',				1,0),
+		// array('HTTP_HOST',			1,0), // ホスト情報 (仮に追加 09/28)
 		// ***** 未使用 *****
 		//array('HTTP_CACHE_CONTROL',	0,0), // プロキシサーバへのコントロール情報
-		//array('HTTP_PRAGMA',		0,0),
+		//array('HTTP_PRAGMA',			0,0),
 	);
 
 	/**
@@ -58,6 +61,7 @@ class check_proxy
 	 */
 	function get_realip()
 	{
+		if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) return $_SERVER['HTTP_CF_CONNECTING_IP'];
 		foreach ($this->proxy as $x) {
 			if (!$x[2]) continue; // IP取得利用
 			$rc = '';
@@ -77,6 +81,7 @@ class check_proxy
 	function get_proxy_info()
 	{
 		$rc = '';
+		if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) return '(CloudFlare)';
 		foreach ($this->proxy as $x) {
 			if (!$x[1]) continue; // Proxy判定利用
 			if (isset($_SERVER[$x[0]])) {
