@@ -54,7 +54,7 @@ $link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.'scripts.css.php?base=
 $link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/xxxlogue.css.php');
 
 // 読み込むスクリプト
-$js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/xxxlogue.js');
+$js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/xxxlogue.js', 'defer'=>'defer');
 
 /* End of file xxxlogue.ini.php */
 /* Location: ./webroot/skin/theme/whiteflow/xxxlogue.ini.php */

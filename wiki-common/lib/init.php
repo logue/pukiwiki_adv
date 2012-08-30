@@ -36,7 +36,7 @@ defined('WWW_HOME')		or define('WWW_HOME', '');
 
 define('JQUERY_VER',	'1.8.0');
 define('JQUERY_UI_VER',	'1.8.23');
-define('JQUERY_DATATABLE_VER',	'1.9.1');
+
 // ページ名やファイル名として使用できない文字（エンコード前の文字）
 defined('PKWK_ILLEGAL_CHARS_PATTERN') or define('PKWK_ILLEGAL_CHARS_PATTERN', '/[%|=|&|?|#|\r|\n|\0|\@|\t|;|\$|+|\\|\[|\]|\||^|{|}]/');
 
@@ -481,7 +481,7 @@ if (!IS_AJAX || IS_MOBILE){
 		$modernizr = 'js.php?file=modernizr.min';
 		
 		// jQuery UI
-		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://ajax.aspnetcdn.com/ajax/jquery.ui/'.JQUERY_UI_VER.'/jquery-ui.min.js');
+		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://ajax.aspnetcdn.com/ajax/jquery.ui/'.JQUERY_UI_VER.'/jquery-ui.min.js', 'defer'=>'defer');
 		// jQuery UIのCSS
 		if (isset($_SKIN['ui_theme'])){
 			$link_tags[] = array(
@@ -491,13 +491,6 @@ if (!IS_AJAX || IS_MOBILE){
 				'id'=>'ui-theme'
 			);
 		}
-		
-		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://ajax.aspnetcdn.com/ajax/jquery.dataTables/'.JQUERY_DATATABLE_VER.'/jquery.dataTables.min.js');
-		$link_tags[] = array(
-				'rel'=>'stylesheet',
-				'href'=>'http://ajax.aspnetcdn.com/ajax/jquery.dataTables/'.JQUERY_DATATABLE_VER.'/css/jquery.dataTables.css',
-				'type'=>'text/css',
-		);
 
 		if (DEBUG === true) {
 			// 読み込むsrcディレクトリ内のJavaScript
@@ -510,6 +503,7 @@ if (!IS_AJAX || IS_MOBILE){
 				'jquery.a-tools',
 				'jquery.beautyOfCode',
 				'jquery.cookie',
+				'jquery.dataTables',
 				'jquery.i18n',
 				'jquery.jplayer',
 				'jquery.lazyload',
@@ -523,12 +517,12 @@ if (!IS_AJAX || IS_MOBILE){
 				'skin.original'
 			);
 			foreach($default_js as $script_file)
-				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'src/'.$script_file.'.js');
+				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'src/'.$script_file.'.js', 'defer'=>'defer');
 				//$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'js.php?file=src%2F'.$script_file);
 
 		} else {
 			//$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'skin.js');
-			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'js.php?file=skin');
+			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'js.php?file=skin', 'defer'=>'defer');
 		}
 	}else{
 		// jquery mobileは、mobile.jsで非同期読み込み。
@@ -549,10 +543,10 @@ if (!IS_AJAX || IS_MOBILE){
 				'mobile.original'
 			);
 			foreach($default_js as $script_file)
-				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'mobile/'.$script_file.'.js');
+				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'mobile/'.$script_file.'.js', 'defer'=>'defer');
 		} else {
-			//$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'mobile.js');
-			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'js.php?file=mobile');
+			//$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'mobile.js', 'defer'=>'defer');
+			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'js.php?file=mobile', 'defer'=>'defer');
 		}
 	}
 
@@ -575,7 +569,7 @@ if (!IS_AJAX || IS_MOBILE){
 		'THEME_NAME'=>constant('PLUS_THEME')
 	);
 
-	$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.( (DEBUG) ? 'locale.js' : 'js.php?file=locale') );
+	$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.( (DEBUG) ? 'locale.js' : 'js.php?file=locale'), 'defer'=>'defer' );
 	
 	if ( isset($auth_api['facebook']) ){
 		require(LIB_DIR.'facebook.php');

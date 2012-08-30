@@ -40,7 +40,7 @@ EOD
 $link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/css/squawker.css.php?base=' . urlencode(IMAGE_URI));
 
 // 読み込むスクリプト
-$js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/squawker.js.php');
+$js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/squawker.js.php', 'defer'=>'defer');
 
 /* End of file squawker.ini.php */
 /* Location: ./webroot/skin/theme/squawker/squawker.ini.php */

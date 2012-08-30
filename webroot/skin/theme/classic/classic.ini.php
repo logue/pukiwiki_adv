@@ -54,7 +54,7 @@ $link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.'scripts.css.php?base=
 $link_tags[] = array('rel'=>'stylesheet',	'type'=>'text/css',	'href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/classic.css.php');
 
 // 読み込むスクリプト
-$js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/classic.js');
+$js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/classic.js', 'defer'=>'defer');
 
 /* End of file classic.ini.php */
 /* Location: ./webroot/skin/theme/classic/classic.ini.php */

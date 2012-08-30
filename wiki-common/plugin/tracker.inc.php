@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: tracker.inc.php,v 1.124.15 2012/05/11 18:13:00 Logue Exp $
+// $Id: tracker.inc.php,v 1.124.16 2012/08/28 20:01:00 Logue Exp $
 // Copyright (C) 
 //     2010-2012 PukiWiki Advance Developers Team
 //     2004-2009 PukiWiki Plus! Team
@@ -155,10 +155,11 @@ function plugin_tracker_action()
 
 	// Petit SPAM Check (Client(Browser)-Server Ticket Check)
 	$config = $tracker_form->config_name; // Rescan
-	$md5 = md5(get_ticket() . $config);
+	
+	$md5 = md5(get_ticket() . $config_name);
 	$_SESSION['tracker'] = (pkwk_session_start() !== 0) ? $md5 : '';
 
-	if (pkwk_session_start() !== 0) {
+	if (function_exists('pkwk_session_start') && pkwk_session_start() !== 0) {
 		$spam = ($_SESSION['tracker'] !== $md5) ? TRUE : FALSE;
 	} else {
 		if (isset($post['encode_hint']) && $post['encode_hint'] != '') {

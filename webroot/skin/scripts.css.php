@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance Standard CSS.
-// $Id: scripts.css.php,v 1.6.14 2012/08/01 07:46:00 Logue Exp $
+// $Id: scripts.css.php,v 1.6.15 2012/08/30 07:46:00 Logue Exp $
 // Copyright (C) 2010-2012 PukiWiki Advance Developer Team
 //
 ini_set('zlib.output_compression', 'Off');
@@ -120,12 +120,6 @@ body:lang(zh), body:lang(zh) .ui-widget{
 
 textarea, select, option, input, var, pre, code, .ui-button-text{
 	font-family: monospace !important;
-}
-
-/* for Emoji */
-@font-face {
-	font-family: Symbola;
-	src: url('<?php echo $image_dir ?>emoji/Symbola.php');
 }
 
 /* head Tag */
@@ -823,7 +817,7 @@ input[type='search'][required], textarea[required], select[required] {
 .toolbar li a:hover{
 	text-decoration: none !important;
 }
-.no-js .list_pages, .js .list_pages ul{
+.no-js .list_pages, .js .list_pages ul, , .referer_searchkey_list{
 	column-count: 2;
 	-moz-column-count: 2;
 	-webkit-column-count: 2;
@@ -831,7 +825,7 @@ input[type='search'][required], textarea[required], select[required] {
 	-ms-column-count: 2;
 }
 @media only screen and (min-width : 800px) {
-	.no-js .list_pages, .js .list_pages ul{
+	.no-js .list_pages, .js .list_pages ul, .referer_searchkey_list{
 		column-count: 3;
 		-moz-column-count: 3;
 		-webkit-column-count: 3;
@@ -840,7 +834,7 @@ input[type='search'][required], textarea[required], select[required] {
 	}
 }
 @media only screen and (min-width : 1440px) {
-	.no-js .list_pages, .js .list_pages ul{
+	.no-js .list_pages, .js .list_pages ul, .referer_searchkey_list{
 		column-count: 4;
 		-moz-column-count: 4;
 		-webkit-column-count: 4;
@@ -1372,30 +1366,153 @@ th .ui-icon {
 	height: 12px;
 }
 
-/* Swfupload */
-#swfupload-control p{
-	margin: 10px 5px;
-}
-#swfupload-log{
-	margin: 0; padding: 0; width: 500px;
-}
-#swfupload-log li{
-	list-style-position: inside;
-	margin: 2px;
-	padding: 10px;
-	position: relative;
-}
-#swfupload-log li .progressbar{
-	height: 5px;
-}
-#swfupload-log li p{
-	margin: 0;
-}
-#swfupload-log li.success{
-	border:1px solid #339933;
-	background: #ccf9b9;
+
+/*
+ * Table
+ */
+table.dataTable {
+	margin: 0 auto;
+	clear: both;
+	width: 100%;
 }
 
+table.dataTable thead th {
+	padding: 3px 18px 3px 10px;
+	border-bottom: 1px solid black;
+	font-weight: bold;
+	cursor: pointer;
+	*cursor: hand;
+}
+
+table.dataTable tfoot th {
+	padding: 3px 18px 3px 10px;
+	border-top: 1px solid black;
+	font-weight: bold;
+}
+
+table.dataTable td {
+	padding: 3px 10px;
+}
+
+table.dataTable td.center,
+table.dataTable td.dataTables_empty {
+	text-align: center;
+}
+
+table.dataTable tr.odd { background-color: #E2E4FF; }
+table.dataTable tr.even { background-color: white;}
+
+table.dataTable tr.odd td.sorting_1 { background-color: #D3D6FF; }
+table.dataTable tr.odd td.sorting_2 { background-color: #DADCFF; }
+table.dataTable tr.odd td.sorting_3 { background-color: #E0E2FF; }
+table.dataTable tr.even td.sorting_1 { background-color: #EAEBFF; }
+table.dataTable tr.even td.sorting_2 { background-color: #F2F3FF; }
+table.dataTable tr.even td.sorting_3 { background-color: #F9F9FF; }
+
+
+/*
+ * Table wrapper
+ */
+.dataTables_wrapper {
+	position: relative;
+	clear: both;
+	*zoom: 1;
+}
+
+
+/*
+ * Page length menu
+ */
+.dataTables_length {
+	float: left;
+}
+
+
+/*
+ * Filter
+ */
+.dataTables_filter {
+	float: right;
+	text-align: right;
+}
+
+
+/*
+ * Table information
+ */
+.dataTables_info {
+	float: left;
+	white-space: nowrap;
+}
+
+/*
+ * Pagination
+ */
+.dataTables_paginate {
+	float: right;
+	text-align: right;
+}
+
+.dataTables_paginate {
+    width: 400px;
+}
+/* Two button pagination - previous / next */
+.paginate_disabled_previous, .paginate_enabled_previous, .paginate_disabled_next, .paginate_enabled_next {
+	height: 22px;
+	width: 19px;
+	margin-left: 3px;
+	float: left;
+}
+
+/* Full number pagination */
+.paging_full_numbers {
+	height: 22px;
+}
+
+.paging_full_numbers span.paginate_button, .paging_full_numbers span.paginate_active {
+	border: 1px solid #aaa;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	padding: 2px 5px;
+	margin: 0 3px;
+	cursor: pointer;
+	*cursor: hand;
+}
+
+/*
+ * Processing indicator
+ */
+.dataTables_processing {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 250px;
+	height: 30px;
+	margin-left: -125px;
+	margin-top: -15px;
+	padding: 14px 0 2px 0;
+	border: 1px solid #ddd;
+	text-align: center;
+	color: #999;
+	font-size: 14px;
+	background-color: white;
+}
+
+/*
+ * Scrolling
+ */
+.dataTables_scroll {
+	clear: both;
+}
+
+/* Fix dataTables Pagenate */
+.dataTables_paginate a{
+	padding:2px;
+}
+.fg-toolbar{
+	padding:2px;
+}
 /* Fix Modernizr cheking dom */
 #modernizr {
 	position: absolute;
@@ -1410,17 +1527,6 @@ th .ui-icon {
 #goog-wm-sb { display: inline-block; height: 32px; padding: 0 10px; margin: 5px 0 0; white-space: nowrap; cursor: pointer; background-color: #f5f5f5; background-image: -webkit-linear-gradient(rgba(255,255,255,0), #f1f1f1); background-image: -moz-linear-gradient(rgba(255,255,255,0), #f1f1f1); background-image: -ms-linear-gradient(rgba(255,255,255,0), #f1f1f1); background-image: -o-linear-gradient(rgba(255,255,255,0), #f1f1f1); -webkit-appearance: none; -moz-appearance: none; appearance: none; *overflow: visible; *display: inline; *zoom: 1; }
 #goog-wm-sb:hover, #goog-wm-sb:focus { border-color: #aaa; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1); background-color: #f8f8f8; }
 #goog-wm-qt:focus, #goog-wm-sb:focus { border-color: #105cb6; outline: 0; color: #222; }
-
-/* Table sorter */
-.table_pager_widget{
-	display: none;
-}
-.table_pager_widget input.pagedisplay{
-	width: 50px;
-}
-.table_pager_widget select.pagesize{
-	width: 80px;
-}
 
 /* PukiWiki Generic Widgets */
 .pkwk_widget{
@@ -1603,7 +1709,6 @@ li[role=tab]{
 
 /* ==|== emoji classes ====================================================== */
 .emoji{
-	font-family:Symbola;
 	display: inline-block;
 	width: 16px;
 	height: 16px;

@@ -32,7 +32,7 @@ function plugin_referer_init()
 			'msg_Hed_1stDate'		=> T_('First Register'),
 			'msg_Hed_RefCounter'	=> T_('RefCounter'),
 			'msg_Hed_Referer'		=> T_('Referer'),
-			'msg_Fmt_Date'			=> T_('F j, Y, g:i A'),
+			'msg_Fmt_Date'			=> 'Y-m-d H:i:s',
 			'msg_Chr_uarr'			=> T_('&uArr;'),
 			'msg_Chr_darr'			=> T_('&dArr;'),
 			'msg_disabled'			=> T_('Referer function is disabled.'),
@@ -271,14 +271,13 @@ function parse_query($query) {
 
 /** searchkeylist **************************************************************************************/
 function plugin_referer_searchkeylist($data, $max){
-	global $_referer_msg;
 	$data = searchkeylist_analysis($data);
 
 	// 0:検索キー 1:参照カウンタ
 	usort($data,create_function('$a,$b','return $b[1] - $a[1];'));
 	$data = searchkeylist_print($data,$max);
 
-	return (empty($data)) ? $_referer_msg['msg_no_data'] : $data;
+	return (empty($data)) ? '<p>'.$_referer_msg['msg_no_data'].'</p>' : $data;
 }
 
 
@@ -370,14 +369,14 @@ function searchkeylist_convert_key($x)
 // データを加工
 function searchkeylist_print($data,$max)
 {
+	global $_referer_msg;
 	$rc = array();
 
 	if ($max > 0) {
 		$rc[] = '<h2>'.sprintf($_searchkeylist_msg['h5_title'],$max).'</h2>';
 		$data = array_splice($data,0,$max);
 	}
-	$rc[] = '<ul class="referer_searchkey_list">';
-
+	$ctr = 0;
 	foreach ($data as $x)
 	{
 		if (SKEYLIST_MIN_COUNTER > $x[1]) continue;
@@ -387,10 +386,11 @@ function searchkeylist_print($data,$max)
 			$key = mb_convert_encoding($x[0],'utf-8',SOURCE_ENCODING);
 		}
 		$rc[] = '<li><a href="' . SKEYLIST_SEARCH_URL.rawurlencode($key).'" rel="nofollow noreferer">'.$x[0].'</a> <var>('.$x[1].')</var></li>';
+		$ctr++;
 	}
+	if ($ctr === 0) return '<p>'.$_referer_msg['msg_no_data'].'</p>';
 
-	$rc[] = '</ul>';
-	return join("\n",$rc);
+	return '<ul class="referer_searchkey_list">'.join("\n",$rc).'</ul>';
 }
 
 /** linklist.inc.php ******************************************************************************/
@@ -502,16 +502,16 @@ function linklist_print($data,$max,$title)
 		$rc .= "</h2>\n";
 	}
 
-	$rc .= '<ul class="linklist">'."\n";
+	$ctr = 0;
 	foreach ($data as $x)
 	{
 		$str = rawurldecode($x[0]);
 		$str = mb_convert_encoding($str,SOURCE_ENCODING,'auto');
-		$tmp = '<a href="'.$x[0].'" rel="nofollow noreferer">'.$str.'</a><span class="linklist_counter">('.$x[1].')</span>';
-		$rc .= '<li>'.$tmp."</li>\n";
+		$ret[] = '<li><a href="'.$x[0].'" rel="nofollow noreferer">'.$str.'</a><span class="linklist_counter">('.$x[1].')</span></li>';
+		$ctr++;
 	}
-	$rc .= "</ul>\n";
-	return $rc;
+	if ($ctr === 0) return '<p>'.$_referer_msg['msg_no_data'].'</p>';
+	return '<ul class="linklist">'.join("\n",$ret).'</ul>';
 }
 
 

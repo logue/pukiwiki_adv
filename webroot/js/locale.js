@@ -1,5 +1,5 @@
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: locale.js,v 0.0.7 2012/03/25 03:25:00 Logue Exp $
+// $Id: locale.js,v 0.0.8 2012/08/30 11:30:00 Logue Exp $
 
 // Pukiwiki skin script for jQuery
 // Copyright (c)2010-2012 PukiWiki Advance Developer Team
@@ -66,7 +66,8 @@
 		breakline	: 'br',
 		ncr			: 'to Numeric character reference',
 		hint		: 'Hint',
-		flush		: 'Flush local storage'
+		flush		: 'Flush local storage',
+		diff		: 'Diff'
 	});
 
 	$.i18n('en_US.dialog',{
@@ -89,6 +90,7 @@
 		start		: 'Start',
 		success		: 'Success',
 		complete	: 'Complete',
+		
 		ready		: 'Ready',
 		error		: 'Error',
 		error_page	: 'An error occurred when loading the page.',
@@ -128,6 +130,20 @@
 		many_files		: 'You have attempted to queue too many files.',
 		view			: 'View',
 		execute			: 'Go!'
+	});
+	
+	$.i18n('en_US.dataTable',{
+		sEmptyTable		: 'No data available in table',
+		sInfo			: 'Showing _START_ to _END_ of _TOTAL_ entries',
+		sInfoEmpty		: 'Showing 0 to 0 of 0 entries',
+		sInfoFiltered	: '(filtered from _MAX_ total entries)',
+		sInfoThousands	: ',',
+		sLengthMenu		: 'Show _MENU_ entries',
+		sProcessing		: 'Processing...',
+		sSearch			: 'Search :',
+		sZeroRecords	: 'No matching records found',
+		sSortAscending	: ': activate to sort column ascending',
+		sSortDescending	: ': activate to sort column descending'
 	});
 /**************************************************************************************************/
 
@@ -178,7 +194,8 @@
 		breakline	: '改行',
 		ncr			: '数値参照文字に変換',
 		hint		: 'ヒント',
-		flush		: 'Local Storageをフラッシュ'
+		flush		: 'Local Storageをフラッシュ',
+		diff		: '差分'
 	});
 
 	$.i18n('ja_JP.dialog',{
@@ -242,6 +259,20 @@
 		view			: '確認',
 		execute			: '実行！'
 	});
+	
+	$.i18n('ja_JP.dataTable',{
+		sEmptyTable		: 'テーブルにはデーターがありません。',
+		sInfo			: '_START_件～_END_件を表示（全_TOTAL_件）',
+		sInfoEmpty		: '0 件中 0 から 0 まで表示',
+		sInfoFiltered	: '（全 _MAX_ 件より抽出）',
+		sInfoThousands	: ',',
+		sLengthMenu		: '_MENU_件表示',
+		sProcessing		: '処理中…',
+		sSearch			: '検索',
+		sZeroRecords	: 'データはありません。',
+		sSortAscending	: ': このカラムを昇順ソート',
+		sSortDescending	: ': このカラムを降順ソート'
+	});
 /**************************************************************************************************/
 
 	$.i18n('ko_KR.pukiwiki', {
@@ -298,7 +329,8 @@
 		breakline	: '줄',
 		ncr			: '수치 참조 문자 변환',
 		help		: '팁',
-		flush		: 'Local Storage를 플래시'
+		flush		: 'Local Storage를 플래시',
+		diff		: '차이'
 	});
 
 	$.i18n('ko_KR.dialog',{
@@ -349,6 +381,20 @@
 		seek		: '검색',
 		fullscreen	: '전체 화면'
 	});
+	
+	$.i18n('ko_KR.dataTable',{
+		sEmptyTable		: 'No data available in table',
+		sInfo			: 'Showing _START_ to _END_ of _TOTAL_ entries',
+		sInfoEmpty		: 'Showing 0 to 0 of 0 entries',
+		sInfoFiltered	: '(filtered from _MAX_ total entries)',
+		sInfoThousands	: ',',
+		sLengthMenu		: 'Show _MENU_ entries',
+		sProcessing		: 'Processing...',
+		sSearch			: 'Search :',
+		sZeroRecords	: 'No matching records found',
+		sSortAscending	: ': activate to sort column ascending',
+		sSortDescending	: ': activate to sort column descending'
+	});
 
 /**************************************************************************************************/
 	$.i18n('zh_TW.pukiwiki', {
@@ -387,6 +433,24 @@
 		info_restore1	: '一個新的頁面比數據已保存\n是否要恢復？',
 		info_restore2	: '你要恢復的數據存儲在瀏覽器？',
 		flush_restore	: '你要刷新你的編輯在過去？'
+	});
+	
+	$.i18n('zh_TW.editor',{
+		bold		: '膽大',
+		italic		: '斜體',
+		strike		: '線橡皮擦',
+		underline	: '底線',
+		code		: '碼',
+		quote		: '引用',
+		link		: '鏈接',
+		size		: '字符大小',
+		color		: '顏色',
+		emoji		: '形符',
+		breakline	: '新線',
+		ncr			: '轉換為數字字符參考',
+		hint		: '暗示',
+		flush		: '紅暈 local storage',
+		diff		: '不同的'
 	});
 
 	$.i18n('zh_TW.dialog',{
@@ -437,6 +501,20 @@
 		seek		: '求',
 		fullscreen	: '全屏'
 	});
+	
+	$.i18n('zh_TW.dataTable',{
+		sEmptyTable		: 'No data available in table',
+		sInfo			: '顯示第 _START_ 至 _END_ 項結果，共 _TOTAL_ 項',
+		sInfoEmpty		: '顯示第 0 至 0 項結果，共 0 項',
+		sInfoFiltered	: '(從 _MAX_ 項結果過濾)',
+		sInfoThousands	: ',',
+		sLengthMenu		: '顯示 _MENU_ 項結果',
+		sProcessing		: '處理中...',
+		sSearch			: '搜索:',
+		sZeroRecords	: '沒有匹配結果',
+		sSortAscending	: ': activate to sort column ascending',
+		sSortDescending	: ': activate to sort column descending'
+	});
 
 /**************************************************************************************************/
 	$.i18n('zh_CN.pukiwiki', {
@@ -475,6 +553,24 @@
 		info_restore1	: '一个页面比已保存的数据更新。\n您要恢复？',
 		info_restore2	: '你要恢复的数据存储在浏览器中中的吗？',
 		flush_restore	: '你要刷新在过去，您的编辑？'
+	});
+	
+	$.i18n('zh_CN.editor',{
+		bold		: '膽大',
+		italic		: '斜體',
+		strike		: '線橡皮擦',
+		underline	: '底線',
+		code		: '碼',
+		quote		: '引用',
+		link		: '鏈接',
+		size		: '字符大小',
+		color		: '顏色',
+		emoji		: '形符',
+		breakline	: '新線',
+		ncr			: '轉換為數字字符參考',
+		hint		: '暗示',
+		flush		: '紅暈 local storage',
+		diff		: '不同的'
 	});
 
 	$.i18n('zh_CN.dialog',{
@@ -524,6 +620,20 @@
 		volume_min	: '静音',
 		seek		: '求',
 		fullscreen	: '全屏'
+	});
+	
+	$.i18n('zh_CN.dataTable',{
+		sEmptyTable		: 'No data available in table',
+		sInfo			: '显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项',
+		sInfoEmpty		: '显示第 0 至 0 项结果，共 0 项',
+		sInfoFiltered	: '(由 _MAX_ 项结果过滤)',
+		sInfoThousands	: ',',
+		sLengthMenu		: '显示 _MENU_ 项结果',
+		sProcessing		: '处理中...',
+		sSearch			: '搜索:',
+		sZeroRecords	: '没有匹配结果',
+		sSortAscending	: ': activate to sort column ascending',
+		sSortDescending	: ': activate to sort column descending'
 	});
 /**************************************************************************************************/
 } )(jQuery);

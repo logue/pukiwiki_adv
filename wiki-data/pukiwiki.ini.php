@@ -287,8 +287,17 @@ $use_spam_check = array(
 	'trackback'			=> 1,	// TrackBack。splogなど。（DNSBL）
 	'referer'			=> 1,	// Referer SPAM（DNSBL）
 	'multiple_post'		=> 0,	// 多重投稿チェック（ここを有効にすると戻るボタンによる更新ができなくなります）
-	'bad-behavior'		=> 0	// Bad Behaviorによるアンチスパム（仮実装）
+	'bad-behavior'		=> 0,	// Bad Behaviorによるアンチスパム（仮実装）
+	'akismet'			=> 0	// Aksmetによるアンチスパムを有効化する（別途$akismet_api_keyを指定する必要があります。）1は差分のみ、2は全て
 );
+
+/////////////////////////////////////////////////
+// Anti-Spam service config
+
+// Akismet
+// https://akismet.com/signup/
+// server.ini.phpの設定が優先されます。
+$akismet_api_key = '';
 
 /////////////////////////////////////////////////
 // Spam URI insertion filtering
@@ -335,19 +344,6 @@ if ($spam) {
 // SPAM check for Posted Countory(Based on Apache+mod_geoip+GeoIP)
 $allow_countory = array();
 $deny_countory = array();
-
-/////////////////////////////////////////////////
-// Anti-Spam service config
-
-// Akismet
-// https://akismet.com/signup/
-// server.ini.phpの設定が優先されます。
-$akismet_api_key = '';
-
-// reCAPTICHA
-// http://www.google.com/recaptcha
-$recaptcha_public_key = '';
-$recaptcha_private_key = '';
 
 /////////////////////////////////////////////////
 // TrackBack feature

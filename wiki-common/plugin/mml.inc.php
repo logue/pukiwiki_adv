@@ -26,8 +26,13 @@
 define('JSMML_PATH', JS_URI . 'plugin/jsmml');
 
 function plugin_mml_init(){
-	global $js_tags;
-	$js_tags[] = array('type'=>'text/javascript', 'src'=>'https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js');
+	global $mml_count;
+	if ($mml_count == 0){
+		global $js_tags;
+		$js_tags[] = array('type'=>'text/javascript', 'src'=>'https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js', 'defer'=>'defer');
+		$js_tags[] = array('type'=>'text/javascript', 'src'=>JSMML_PATH.'/mml.js', 'defer'=>'defer');
+	}
+	$mml_count++;
 }
 
 function plugin_mml_convert(){
@@ -79,14 +84,6 @@ HTML;
 	}else{
 		$html = $ret;
 	}
-	
-	if ($mml_count == 0){
-		global $js_tags, $css_blocks;
-
-		$jsmml_path = JSMML_PATH;
-		$js_tags[] = array('type'=>'text/javascript', 'src'=>$jsmml_path.'/mml.js');
-	}
-	$mml_count++;
 	return $html;
 }
 /* End of file mml.inc.php */
