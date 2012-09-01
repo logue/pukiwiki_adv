@@ -508,7 +508,6 @@ if (!IS_AJAX || IS_MOBILE){
 				'jquery.jplayer',
 				'jquery.lazyload',
 				'jquery.query',
-				'jquery.scrollTo',
 				'jquery.superfish',
 				'jquery.tabby',
 				'jquery.ui.rlightbox',
@@ -535,18 +534,15 @@ if (!IS_AJAX || IS_MOBILE){
 				'jquery.i18n',
 				'jquery.lazyload',
 				'jquery.tablesorter',
-				'jquery.tablesorter.pager',
-				'jquery.tablesorter.widgets',
-				'jquery.scrollTo',
 				
 				/* MUST BE LOAD LAST */
 				'mobile.original'
 			);
 			foreach($default_js as $script_file)
-				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'mobile/'.$script_file.'.js', 'defer'=>'defer');
+				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'mobile/'.$script_file.'.js');
 		} else {
 			//$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'mobile.js', 'defer'=>'defer');
-			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'js.php?file=mobile', 'defer'=>'defer');
+			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'js.php?file=mobile');
 		}
 	}
 

@@ -294,7 +294,7 @@ function add_hidden_field($retvar, $name){
 		// Insert a hidden field, supports idenrtifying text enconding
 		$hidden_field[] = ( PKWK_ENCODING_HINT ) ? '<input type="hidden" name="encode_hint" value="' . PKWK_ENCODING_HINT . '" />' : '';
 		
-		if (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] !== 1 && preg_match('/menu|side|header|footer|full|read|include|calendar|login/',$name) !== 1 && $matches[1] !== 'get'){
+		if ( (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] !== 1) && preg_match('/menu|side|header|footer|full|read|include|calendar|login/',$name) !== 1 && $matches[1] !== 'get'){
 			// from PukioWikio
 			$hidden_field[] = '<input type="hidden" name="postid" value="'.generate_postid($name).'" />';
 		}

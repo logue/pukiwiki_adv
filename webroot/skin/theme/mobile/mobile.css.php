@@ -581,6 +581,9 @@ textarea, select, option, input, var, pre, code{
 .symbol-external	{ background-position: -90px -114px; }
 .symbol-internal	{ background-position: -108px -114px; }
 
+.content_navi{
+	float:right;
+}
 /* ==|== flag classes ====================================================== */
 .flag{
 	display: inline-block;

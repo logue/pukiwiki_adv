@@ -569,14 +569,30 @@ var pukiwiki = {};
 							params[hash[0]] = decodeURIComponent(hash[1]).replace(/\+/g, ' ').replace(/%2F/g, '/');
 						}catch(e){}
 					}
-					if (href.match('#') && href != '#'){
-						// アンカースクロールを無効化
+					if (href.match('#') && href !== '#'){
+						// アンカースクロールを無効化判定
 						var disable_scrolling = ($this.data('disableScrolling') || $this.parent().attr('role')) ? true : false;
 
 						if (disable_scrolling === false){
-							// アンカースクロール＆ハイライト
+							// アンカースクロール
 							$this.click(function(){
-								self.anchor_scroll(href,true);
+								var $body;
+								if ($(window).scrollTop() === 0) {
+									// スクロールが0の時エラーになる問題をごまかす
+									$(window).scrollTop(1);
+								}
+								if ( $('html').scrollTop() > 0 ) {
+									$body = $('html');
+								} else if ( $('body').scrollTop() > 0 ) {
+									$body = $('body');
+								}else{
+									return;
+								}
+								$body.stop().animate({
+									scrollTop: $(href).offset().top
+								},{
+									duration : 800
+								});
 								return false;
 							});
 						}
@@ -616,7 +632,7 @@ var pukiwiki = {};
 							params.help === 'true' ||
 							(params.cmd === 'attach' &&  params.pcmd !== 'list') ||
 							(params.cmd === 'tb' && params.tb_id !== undefined) ||
-							(params.cmd.match(/attach|source|template|freeze|rename|diff|referer|linklist|skeylist|logview/i) && params.page !== undefined)
+							(params.cmd.match(/attach|source|template|freeze|rename|diff|referer|linklist|skeylist|logview/i) && typeof(params.page) !== 'undefined')
 						){
 							// その他の主要なプラグインは、インラインウィンドウで表示
 							if (params.help == 'true'){
@@ -837,25 +853,6 @@ var pukiwiki = {};
 				);
 			}
 		},
-		// アンカースクロール＆ハイライト
-		anchor_scroll: function(href,highlight){
-			if (href === '#'){
-				$.scrollTo('#header');
-			}else if (href !== ''){
-				var target = href.split('#')[1];
-				$.scrollTo(
-					'#'+target,{
-						duration: 800,
-						axis:"y",
-						queue:true,
-						onAfter:function(){
-							// スクロール後ハイライト
-							//if (highlight === true){ $('#'+target).effect("highlight",{}, 2000); }
-						}
-					}
-				);
-			}
-		},
 		// ミュージックプレイヤー（拡張子が.mp3や.oggなどといったFlashで再生できるものに限る）
 		media_player: function(target, ext){
 			var jplayer_container = [
@@ -896,7 +893,7 @@ var pukiwiki = {};
 					title: 'Music Player',
 					dialogClass: 'music_player',
 					width:'680px',
-					bgiframe : ($.browser.msie && $.browser.version > 6) ? true : false,	// for IE6
+					bgiframe : (ie > 6) ? true : false,	// for IE6
 					open: function(){
 						var self = this;
 						// Local copy of jQuery selectors, for performance.
@@ -1337,6 +1334,17 @@ var pukiwiki = {};
 		},
 		// 編集画面のフォームを拡張
 		set_editform: function(prefix){
+			var htmlsc = function(ch) {
+				if (typeof(ch) === 'string'){
+					ch = ch.replace(/&/g,"&amp;");
+					ch = ch.replace(/\"/g,"&quot;");
+					ch = ch.replace(/\'/g,"&#039;");
+					ch = ch.replace(/</g,"&lt;");
+					ch = ch.replace(/>/g,"&gt;");
+				}
+				return ch;
+			};
+			
 			prefix = (prefix) ? prefix + ' ': '';
 			var self = this;
 			var isEnableLocalStorage = false;
@@ -1383,14 +1391,6 @@ var pukiwiki = {};
 			this.ajax_apx = false;
 			this.ajax_count = 0;
 			this.ajax_tim = 0;
-			function htmlsc(ch) {
-				ch = ch.replace(/&/g,"&amp;");
-				ch = ch.replace(/\"/g,"&quot;");
-				ch = ch.replace(/\'/g,"&#039;");
-				ch = ch.replace(/</g,"&lt;");
-				ch = ch.replace(/>/g,"&gt;");
-				return ch
-			}
 
 			// プレビューボタンを書き換え
 			$(prefix + '.edit_form input[name=write]')
@@ -1491,7 +1491,6 @@ var pukiwiki = {};
 						original_text.replace(/^\n+|\n+$/g,'').split("\n"),
 						$(this).val().replace(/^\n+|\n+$/g,'').split("\n")
 					);
-					
 					var d = [],ret = [];
 					for (var i=0; d=diff[i]; ++i) {
 						var line = htmlsc(d.arr[d.line]);
@@ -2008,7 +2007,7 @@ var pukiwiki = {};
 			o.width = o.offsetWidth;
 			if(o.width > maxw){
 				o.width = maxw;
-				if(!$.browser.safari){ o.style.width = maxw + 'px'; }	// Safari xhtml+xml
+				// if(!$.browser.safari){ o.style.width = maxw + 'px'; }	// Safari xhtml+xml
 			}
 			o.height = o.offsetHeight;
 			o.style.display = 'none';

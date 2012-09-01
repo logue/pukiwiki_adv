@@ -54,7 +54,7 @@ if (count($info) !== 0){
 /////////////////////////////////////////////////
 // Include subroutines
 
-defined('LIB_DIR') or define('LIB_DIR', realpath('./'));
+defined('LIB_DIR') or define('LIB_DIR', realpath('./').'/');
 
 // Load *.ini.php files and init PukiWiki
 require(LIB_DIR . 'func.php');

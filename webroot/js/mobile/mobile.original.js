@@ -142,7 +142,7 @@ var JQUERY_MOBILE_VER = '1.1.1';
 			// 用語集
 			this.glossaly(prefix);
 			// シンタックスハイライト
-			this.sh(prefix);
+			//this.sh(prefix);
 			// Bad Behavior
 			this.bad_behavior(prefix);
 			// Table Sorter（テーブル自動ソート）
@@ -160,38 +160,37 @@ var JQUERY_MOBILE_VER = '1.1.1';
 					// このため、ローカルリンクの判別は、先頭の文字を\w（A-Za-z0-9_）から判断すればいいと思われる。
 					$this.data('ajax', false);
 					$this.live('tap', function(){
-						pukiwiki.anchor_scroll(href,true);
+						self.scrollTo(href);
 						return false;
 					});
 				}
 			});
-			/*
-			var header_navi = [
-				'<div class="header_navi">',
-					'<div class="to_header ui-icon ui-icon-arrow-u"></div> ',
-					'<div class="to_footer ui-icon ui-icon-arrow-d"></div>',
-				'</div>'
-			].join("\n");
-			$(prefix+'h2, '+prefix+'h3 ,'+prefix+'h4').before(header_navi);
+			
 			$('.to_header').live('tap', function(){
-				$.scrollTo(
-					'#header',{
-						duration: 800,
-						axis:"y",
-						queue:true
-					}
-				);
+				self.scrollTo('.ui-page-active header');
 			});
 			$('.to_footer').live('tap', function(){
-				$.scrollTo(
-					'#footer',{
-						duration: 800,
-						axis:"y",
-						queue:true
-					}
-				);
+				self.scrollTo('.ui-page-active footer');
 			});
-			*/
+		},
+		scrollTo: function(target){
+			var $body;
+			if ($(window).scrollTop() === 0) {
+				// スクロールが0の時エラーになる問題をごまかす
+				$(window).scrollTop(1);
+			}
+			if ( $('html').scrollTop() > 0 ) {
+				$body = $('html');
+			} else if ( $('body').scrollTop() > 0 ) {
+				$body = $('body');
+			}else{
+				return;
+			}
+			$body.stop().animate({
+				scrollTop: $(target).offset().top
+			},{
+				duration : 800
+			});
 		},
 		// テーブル自動ソート
 		tablesorter:function(prefix){
@@ -445,7 +444,7 @@ var JQUERY_MOBILE_VER = '1.1.1';
 			window._gaq = [['_setAccount',GOOGLE_ANALYTICS],['_trackPageview'],['_trackPageLoadTime']];
 			$.getScript(('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js');
 		}
-		
+
 		if (DEBUG){
 			var D3 = new Date();
 			console.info('Finish. (Process Time :',D3 - D2,'ms / Total :',D3 - D1,'ms)');

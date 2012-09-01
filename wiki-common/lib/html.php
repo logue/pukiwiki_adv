@@ -716,9 +716,9 @@ function pkwk_common_suffixes($length = ''){
 	if(!DEBUG){
 		// get the size of the output
 		// send headers to tell the browser to close the connection
-		header('Content-Length: '. ($length !== '') ? $length : ob_get_length() );
+		//header('Content-Length: '. ($length !== '') ? $length : ob_get_length() );
 		ob_end_flush();
-		ob_flush();
+		//ob_flush();
 	}
 	
 	flush();
