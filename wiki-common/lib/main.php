@@ -42,7 +42,7 @@ ini_set('memory_limit', '128M');
 ini_set('zlib.output_compression', 'Off');
 ini_set('zlib.output_handler','mb_output_handler');
 $info = array();
-foreach (array('mbstring','json','openssl','curl') as $ext){
+foreach (array('mbstring','json','openssl','curl','gd') as $ext){
 	if (! extension_loaded($ext)){
 		$info[] = 'PukiWiki Adv. needs the <a href="http://www.php.net/manual/book.'.$ext.'.php">'.$ext.' extension</a>.';
 	}
@@ -237,9 +237,11 @@ if (!empty($plugin)) {
 		if ($retvars === FALSE) exit; // Done
 		$base = (!empty($page)) ? $page : $refer;
 	} else {
-		$msg = '<p class="message_box ui-state-error ui-corner-all">cmd=' . htmlsc($plugin) . ' is not implemented.</p>';
-		$retvars = array('msg'=>$msg,'body'=>$msg);
-		$base    = & $defaultpage;
+		$retvars = array(
+			'msg'=>'Plugin Error',
+			'body'=>'<p class="message_box ui-state-error ui-corner-all">cmd=' . htmlsc($plugin) . ' is not implemented.</p>'
+		);
+		$base    = $defaultpage;
 	}
 }
 
@@ -266,16 +268,16 @@ if (isset($retvars['msg']) && !empty($retvars['msg']) ) {
 }
 
 if (isset($retvars['body']) && !empty($retvars['body'])) {
-	$body = & $retvars['body'];
+	$body = $retvars['body'];
 } else {
 	if (empty($base) || ! is_page($base)) {
-		$base  = & $defaultpage;
+		$base  = $defaultpage;
 		$title = htmlsc(strip_bracket($base));
 		$page  = make_search($base);
 	}
 
 	$vars['cmd']  = 'read';
-	$vars['page'] = & $base;
+	$vars['page'] = $base;
 
 	global $fixed_heading_edited;
 	$source = get_source($base);

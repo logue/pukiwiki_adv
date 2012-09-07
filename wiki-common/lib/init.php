@@ -34,12 +34,15 @@ defined('PKWK_WARNING')	or define('PKWK_WARNING', false);
 defined('ROOT_URI')		or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');
 defined('WWW_HOME')		or define('WWW_HOME', '');
 
+// フレームワークのバージョン（jQuery Mobileはmobile.jsで定義）
 define('JQUERY_VER',	'1.8.0');
 define('JQUERY_UI_VER',	'1.8.23');
 
 // ページ名やファイル名として使用できない文字（エンコード前の文字）
 defined('PKWK_ILLEGAL_CHARS_PATTERN') or define('PKWK_ILLEGAL_CHARS_PATTERN', '/[%|=|&|?|#|\r|\n|\0|\@|\t|;|\$|+|\\|\[|\]|\||^|{|}]/');
 
+// アップロード進捗状況のセッション名（PHP5.4以降のみ有効）
+defined('PKWK_PROGRESS_SESSION_NAME') or define('PKWK_PROGRESS_SESSION_NAME', 'pukiwiki_progress');
 /////////////////////////////////////////////////
 // Init server variables
 

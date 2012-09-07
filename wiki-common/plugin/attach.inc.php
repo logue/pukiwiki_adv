@@ -48,6 +48,8 @@ define('PLUGIN_ATTACH_CONFIG_PAGE_MIME', 'plugin/attach/mime-type');
 defined('PLUGIN_ATTACH_UNKNOWN_COMPRESS')	or define('PLUGIN_ATTACH_UNKNOWN_COMPRESS', 0);			// 1(compress) or 0(raw)
 defined('PLUGIN_ATTACH_COMPRESS_TYPE')		or define('PLUGIN_ATTACH_COMPRESS_TYPE', 'TGZ');		// TGZ, GZ, BZ2 or ZIP
 
+// 進捗状況のセッション名
+defined('PLUGIN_ATTACH_PROGRESS_SESSION_NAME') or define('PLUGIN_ATTACH_PROGRESS_SESSION_NAME', 'pukiwiki_attach');
 function plugin_attach_init()
 {
 	global $_string;
@@ -158,10 +160,10 @@ function plugin_attach_action()
 		$vars['pcmd'] = 'delete';
 	}
 
-	$pcmd  = isset($vars['pcmd'])  ? $vars['pcmd']  : '';
-	$refer = isset($vars['refer']) ? $vars['refer'] : '';
+	$pcmd  = isset($vars['pcmd'])  ? $vars['pcmd']  : NULL;
+	$refer = isset($vars['refer']) ? $vars['refer'] : NULL;
 	$pass  = isset($vars['pass'])  ? $vars['pass']  : NULL;
-	$page  = isset($vars['page'])  ? $vars['page']  : '';
+	$page  = isset($vars['page'])  ? $vars['page']  : $refer;
 
 	if (!empty($refer) && is_pagename($refer)) {
 		if(in_array($pcmd, array('info', 'open', 'list'))) {
@@ -187,11 +189,13 @@ function plugin_attach_action()
 			case 'info'     : return attach_info();
 			case 'delete'   : return attach_delete();
 			case 'open'     : return attach_open();
-			case 'list'     : return attach_list();
+			case 'list'     : return attach_list($page);
 			case 'freeze'   : return attach_freeze(TRUE);
 			case 'unfreeze' : return attach_freeze(FALSE);
 			case 'rename'   : return attach_rename();
 			case 'upload'   : return attach_showform();
+			case 'form'     : return array('msg'  =>str_replace('$1', $refer, $_attach_messages['msg_upload']), 'body'=>attach_form($refer));
+			case 'progress' : return attach_progress();
 		}
 		return ($page == '' || ! is_page($page)) ? attach_list() : attach_showform();
 	}
@@ -205,8 +209,7 @@ function attach_filelist()
 	$page = isset($vars['page']) ? $vars['page'] : '';
 	$obj = new AttachPages($page, 0);
 
-	return isset($obj->pages[$page]) ? ('<dl class="attach_filelist">'."\n".'<dt>'.$_attach_messages['msg_file'].' :</dt>'."\n".
-	$obj->toString($page, TRUE, 'dl') . '</dl>'."\n") : '';
+	return isset($obj->pages[$page]) ? ('<dl class="attach_filelist">'."\n".'<dt>'.$_attach_messages['msg_file'].' :</dt>'."\n".$obj->toString($page, TRUE, 'dl') . '</dl>'."\n") : '';
 }
 
 //-------- 実体
@@ -228,10 +231,9 @@ function attach_upload($file, $page, $pass = NULL)
 	));
 
 	if ($file['error'] !== UPLOAD_ERR_OK) {
-		$err_msg = attach_set_error_message($file['error']);
 		return array(
 			'result'=>FALSE,
-			'msg'=>'<p class="message_box ui-state-error">'.$err_msg.'</p>'
+			'msg'=>'<p class="message_box ui-state-error">'.attach_set_error_message($file['error']).'</p>'
 		);
 	}
 
@@ -471,20 +473,9 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 
 	if ($notify_exec !== FALSE) {
 		$footer['ACTION']   = 'File attached';
-		$footer['FILENAME'] = & $file['name'];
-		$footer['FILESIZE'] = & $file['size'];
-		$footer['PAGE']     = & $page;
-
-/*
-		$footer['URI']      = get_script_absuri() .
-			//'?' . rawurlencode($page);
-
-			// MD5 may heavy
-			'?plugin=attach' .
-				'&refer=' . rawurlencode($page) .
-				'&file='  . rawurlencode($file['name']) .
-				'&pcmd=info';
-*/
+		$footer['FILENAME'] = $file['name'];
+		$footer['FILESIZE'] = $file['size'];
+		$footer['PAGE']     = $page;
 		$footer['URI'] = get_cmd_uri('attach','',array('refer'=>$page,'pcmd'=>'info','file'=>$file['name']));
 		$footer['USER_AGENT']  = TRUE;
 		$footer['REMOTE_ADDR'] = TRUE;
@@ -560,8 +551,6 @@ function attach_info($err = '')
 
 	foreach (array('refer', 'file', 'age') as $var)
 		${$var} = isset($vars[$var]) ? $vars[$var] : '';
-
-	check_editable($refer, true, true);
 
 	$obj = new AttachFile($refer, $file, $age);
 	return $obj->getstatus() ?
@@ -650,13 +639,19 @@ function attach_list()
 	if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
 
 	$refer = isset($vars['refer']) ? $vars['refer'] : '';
-
 	$obj = new AttachPages($refer);
 
-	$msg = $_attach_messages[($refer == '') ? 'msg_listall' : 'msg_listpage'];
-	$body = ($refer == '' || isset($obj->pages[$refer])) ?
-		$obj->toString($refer, FALSE) :
-		$_attach_messages['err_noexist'];
+	if ($refer == ''){
+		$msg = $_attach_messages['msg_listall'];
+		$body = (isset($obj->pages)) ?
+			$obj->toString($refer, FALSE) :
+			$_attach_messages['err_noexist'];
+	}else{
+		$msg = str_replace('$1', htmlsc($refer), $_attach_messages['msg_listpage']);
+		$body = (isset($obj->pages[$refer])) ?
+			$obj->toRender($refer, FALSE) :
+			$_attach_messages['err_noexist'];
+	}
 
 	return array('msg'=>$msg, 'body'=>$body);
 }
@@ -669,11 +664,34 @@ function attach_showform()
 	if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
-	check_editable($page, true, true);
-	$vars['refer'] = $page;
-	$body = attach_form($page, TRUE);
+	$isEditable = check_editable($page, true, false);
 
-	return array('msg'=>$_attach_messages['msg_upload'], 'body'=>$body);
+	$vars['refer'] = $page;
+
+	$html = array();
+	if (!IS_AJAX){
+		$html[] = '<p><small>[<a href="' . get_cmd_uri('attach', null, null, array('pcmd'=>'list')) . '">'.$_attach_messages['msg_listall'].'</a>]</small></p>';
+		if ($isEditable){
+			$html[] = '<h3>' . str_replace('$1', $page, $_attach_messages['msg_upload']) . '</h3>'. "\n";
+			$html[] = attach_form($page);
+		}
+		$html[] = '<h3>' . str_replace('$1', $page, $_attach_messages['msg_listpage']) . '</h3>'. "\n";
+		$html[] = attach_list($page)['body'];
+	}else{
+		$html[] = '<div class="tabs" role="application">';
+		$html[] = '<ul role="tablist">';
+		if ($isEditable){
+			$html[] = '<li role="tab"><a href="' .get_cmd_uri('attach', null, null, array('pcmd'=>'form', 'refer'=>$page)) . '">' . str_replace('$1', $_attach_messages['msg_thispage'], $_attach_messages['msg_upload']) . '</a></li>';
+		}
+		$html[] = '<li role="tab"><a href="' .get_cmd_uri('attach', null, null, array('pcmd'=>'list', 'refer'=>$page)) . '">' . str_replace('$1', $_attach_messages['msg_thispage'], $_attach_messages['msg_listpage']) . '</a></li>';
+		$html[] = '</ul>';
+		$html[] = '</div>';
+	}
+
+	return array(
+		'msg'=>$_attach_messages['msg_upload'],
+		'body'=>join("\n",$html)
+	);
 }
 
 //-------- サービス
@@ -717,83 +735,37 @@ function attach_mime_content_type($filename)
 }
 
 // アップロードフォームの出力
-function attach_form($page, $listview = FALSE)
+function attach_form($page)
 {
-	global $vars, $_attach_messages;
+	global $_attach_messages;
 
-	$script = get_script_uri();
-	$refer = isset($vars['refer']) ? $vars['refer'] : '';
+	if (! ini_get('file_uploads'))	return '#attach(): <code>file_uploads</code> disabled.<br />';
+	if (! is_page($page))			return '#attach(): No such page<br />';
 
-	$r_page = rawurlencode($page);
-	$s_page = htmlsc($page);
+	$attach_form[] = '<form enctype="multipart/form-data" action="' . get_script_uri() . '" method="post" class="attach_form">';
+	$attach_form[] = '<input type="hidden" name="cmd" value="attach" />';
+	$attach_form[] = '<input type="hidden" name="pcmd" value="post" />';
+	$attach_form[] = '<input type="hidden" name="refer" value="'. htmlsc($page) .'" />';
+	$attach_form[] = '<input type="hidden" name="max_file_size" value="' . PLUGIN_ATTACH_MAX_FILESIZE . '" />';
+	$attach_form[] = '<label for="_p_attach_file">' . $_attach_messages['msg_file'] . ':</label>';
+	$attach_form[] = '<input type="file" name="attach_file" id="_p_attach_file" />';
+	$attach_form[] = ( (PLUGIN_ATTACH_PASSWORD_REQUIRE || PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY) && auth::check_role('role_adm_contents')) ?
+						'<br />' . ($_attach_messages[PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY ? 'msg_adminpass' : 'msg_password']) .
+		 					': <input type="password" name="pass" size="8" />' : '';
+	$attach_form[] = '<input type="submit" value="' . $_attach_messages['btn_upload'] . '" />';
+	$attach_form[] = '<ul class="attach_info"><li>' . sprintf($_attach_messages['msg_maxsize'], '<var>' . number_format(PLUGIN_ATTACH_MAX_FILESIZE / 1024) . '</var>KB') . '</li></ul>';
+	$attach_form[] = '</form>';
 
-	if (! ini_get('file_uploads'))	return '#attach(): <code>file_uploads</code> disabled.<br />' . $navi;
-	if (! is_page($page))			return '#attach(): No such page<br />'. $navi;
+	return join("\n",$attach_form);
+}
 
-	$maxsize = PLUGIN_ATTACH_MAX_FILESIZE;
-	$msg_maxsize = sprintf($_attach_messages['msg_maxsize'], '<var>'.number_format($maxsize/1024) . 'KB</var>');
-
-	$pass = ( (PLUGIN_ATTACH_PASSWORD_REQUIRE || PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY) && auth::check_role('role_adm_contents')) ?
-		'<br />' . ($_attach_messages[PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY ? 'msg_adminpass' : 'msg_password']) .
-		 ': <input type="password" name="pass" size="8" />' : '';
-
-	$upload_form = <<<EOD
-<form enctype="multipart/form-data" action="$script" method="post" class="attach_form">
-	<input type="hidden" name="cmd" value="attach" />
-	<input type="hidden" name="pcmd"   value="post" />
-	<input type="hidden" name="refer"  value="$s_page" />
-	<input type="hidden" name="max_file_size" value="$maxsize" />
-	<label for="_p_attach_file">{$_attach_messages['msg_file']}:</label>
-	<input type="file" name="attach_file" id="_p_attach_file" />
-	$pass
-	<input type="submit" value="{$_attach_messages['btn_upload']}" />
-	<ul class="attach_info"><li>$msg_maxsize</li></ul>
-</form>
-EOD;
-	$obj = new AttachPages($page);
-	$list = ($refer == '' || isset($obj->pages[$page])) ?
-		$obj->toRender($page, FALSE) :
-		$_attach_messages['err_noexist'];
-
-	$html = '';
-	
-	$listall_uri = get_cmd_uri('attach','','',array('pcmd'=>'list'));
-	if (!IS_AJAX){
-		$title_upload = str_replace('$1', $s_page, $_attach_messages['msg_upload']);
-		$title_list = str_replace('$1', $s_page, $_attach_messages['msg_listpage']);
-		$list_uri    = get_cmd_uri('attach','','',array('pcmd'=>'list','refer'=>$page));
-
-		if ($listview) {
-			$html .= '<p><small>[<a href="'.$listall_uri.'">'.$_attach_messages['msg_listall'].'</a>]</small></p>';
-			$html .= '<h3>' . $title_upload . '</h3>'. "\n";
-			$html .= $upload_form;
-			$html .= '<h3>' . $title_list . '</h3>'. "\n";
-			$html .= $list;
-		}else{
-			
-			$html .= $upload_form;
-		}
-	}else{
-		$title_upload = str_replace('$1', $_attach_messages['msg_thispage'], $_attach_messages['msg_upload']);
-		$title_list = str_replace('$1', $_attach_messages['msg_thispage'], $_attach_messages['msg_listpage']);
-		$html = <<< EOD
-<div id="attach_tabs" class="tabs">
-	<ul role="tablist">
-		<li role="tab" id="tab1" aria-controls="attach_upload_tab"><a href="#attach_upload_tab">{$title_upload}</a></li>
-		<li role="tab" id="tab2" aria-controls="attach_list_tab"><a href="#attach_list_tab">{$title_list}</a></li>
-	</ul>
-	<div id="attach_upload_tab" role="tabpanel" aria-labeledby="tab1">
-		{$upload_form}
-		<hr />
-		<p style="text-align:right;"><small>[<a href="{$listall_uri}">{$_attach_messages['msg_listall']}</a>]</small></p>
-	</div>
-	<div id="attach_list_tab" role="tabpanel" aria-labeledby="tab2">
-		{$list}
-	</div>
-</div>
-EOD;
-	}
-	return $html;
+// 進捗状況表示（ってattachプラグインでなくても、これ呼び出す実装かよ）
+function attach_progress(){
+	pkwk_session_start();
+	$key = ini_get('session.upload_progress.prefix') . PKWK_PROGRESS_SESSION_NAME;
+	header("Content-Type: application/json; charset=".CONTENT_CHARSET);
+	echo isset($_SESSION[$key]) ? json_encode($_SESSION[$key]) : json_encode(null);
+	exit;
 }
 
 //-------- クラス
@@ -976,8 +948,7 @@ EOD;
 	<dd><var>{$this->filename}</var></dd>
 EOD;
 		}
-		
-		
+
 		$retval['body'] = $_attach_setimage;
 		if (!IS_AJAX) {
 			$retval = array('msg'=>sprintf($_attach_messages['msg_info'], htmlsc($this->file)));
@@ -1181,8 +1152,7 @@ EOD;
 				break;
 			}
 		}
-		
-		
+
 		ini_set('default_charset', '');
 		mb_http_output('pass');
 		pkwk_common_headers();
@@ -1388,12 +1358,8 @@ class AttachPages
 
 	function toString($page = '', $flat = FALSE, $tag = '')
 	{
-		if ($page != '') {
-			if (! isset($this->pages[$page])) {
-				return '';
-			} else {
-				return $this->pages[$page]->toString($flat,$tag);
-			}
+		if ($page !== '') {
+			return (! isset($this->pages[$page])) ? '' : $this->pages[$page]->toString($flat,$tag);
 		}
 		$ret = '';
 

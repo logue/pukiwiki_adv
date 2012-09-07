@@ -321,8 +321,8 @@ function plugin_backup_get_list($page)
 					isset($data['time']) ? $data['time'] : '';
 
 				$retval[] = '<li><input type="radio" name="age" value="' . $backup_age . '" id="r_' . $backup_age  . '"' .
-					( $backup_age === $age ? ' checked="checked"' : '' ).'><label for="r_' . $backup_age . '">' . format_date($time, false) . '</label>' .
-					( (! auth::check_role('safemode')) ? '<input type="checkbox" name="selectages[]" value="'.$age.'" />' : '')
+					( $backup_age === $age ? ' checked="checked"' : '' ).' /><label for="r_' . $backup_age . '">' . format_date($time, false) . '</label>' .
+					( (! auth::check_role('safemode')) ? '<input type="checkbox" name="selectages[]" value="'.$backup_age.'" />' : '')
 					 . '</li>';
 			}
 			$retval[] = '</ol>';

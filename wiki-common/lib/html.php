@@ -122,8 +122,9 @@ function catbody($title, $page, $body)
 			$link_tags[] = array('rel'=>'help',				'href'=>$_LINK['help'],		'type'=>$http_header,	'title'=>$_LANG['skin']['help']);
 			$link_tags[] = array('rel'=>'home',				'href'=>$_LINK['top'],		'type'=>$http_header,	'title'=>$_LANG['skin']['top']);
 			$link_tags[] = array('rel'=>'index',			'href'=>$_LINK['list'],		'type'=>$http_header,	'title'=>$_LANG['skin']['list']);
+			$link_tags[] = array('rel'=>'search',			'href'=>$_LINK['opensearch'],'type'=>'application/opensearchdescription+xml',	'title'=>$page_title.$_LANG['skin']['search']);
 			$link_tags[] = array('rel'=>'search',			'href'=>$_LINK['search'],	'type'=>$http_header,	'title'=>$_LANG['skin']['search']);
-			$link_tags[] = array('rel'=>'search',			'href'=>$_LINK['search'].'&format=xml',	'type'=>'application/opensearchdescription+xml',	'title'=>$_LANG['skin']['search']);
+			
 			$link_tags[] = array('rel'=>'shortcut icon',	'href'=>$shortcut_icon,		'type'=>'image/vnd.microsoft.icon');
 
 			if ($nofollow || ! $is_read || ! $is_page || check_non_list($_page) ){
@@ -298,6 +299,7 @@ function getLinkSet($_page){
 	// Set $_LINK for skin
 	$_LINK = array(
 		'search'		=> get_cmd_uri('search'),
+		'opensearch'	=> get_cmd_uri('search',	null,	null,	array('format'=>'xml')),
 		'list'			=> get_cmd_uri('list'),
 		'filelist'		=> get_cmd_uri('filelist'),
 

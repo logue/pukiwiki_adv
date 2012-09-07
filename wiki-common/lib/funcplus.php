@@ -29,7 +29,7 @@ function pkwk_session_start()
 
 	if (!isset($use_session)) {
 		$use_session = intval(PLUS_ALLOW_SESSION);
-		if ($use_session > 0) {
+		if ($use_session > 0 && session_id() === '') {
 			if (!is_array($use_trans_sid_address)) $use_trans_sid_address = array();
 
 			if (in_the_net($use_trans_sid_address, get_remoteip())) {
@@ -54,7 +54,7 @@ function pkwk_session_destroy(){
 
 	if (isset($use_session) && $use_session > 0) {
 		session_name(FUNC_SESSION_NAME);
-		@session_start();
+		if (session_id() == "") @session_start();
 
 		// セッション変数を全て解除する
 		$_SESSION = array();

@@ -130,9 +130,13 @@ function check_editable($page, $auth_flag = TRUE, $exit_flag = TRUE)
 	if (edit_auth($page, $auth_flag, $exit_flag) && is_editable($page)) return true;
 
 	if ($exit_flag) {
-		// 無応答
-		header( 'Location: ' . get_page_location_uri($defaultpage));
-		die();
+		if (PKWK_WARNING){
+			die_message($_string['not_editable']);
+		}else{
+			// 無応答
+			header( 'Location: ' . get_page_location_uri($defaultpage));
+			die();
+		}
 	}
 	return false;
 }
@@ -145,9 +149,13 @@ function check_readable($page, $auth_flag = TRUE, $exit_flag = TRUE)
 	if (read_auth($page, $auth_flag, $exit_flag)) return true;
 
 	if ($exit_flag) {
-		// 無応答
-		header( 'Location: ' . get_page_location_uri($defaultpage));
-		die();
+		if (PKWK_WARNING){
+			die_message($_string['not_readable']);
+		}else{
+			// 無応答
+			header( 'Location: ' . get_page_location_uri($defaultpage));
+			die();
+		}
 	}
 	return false;
 }
@@ -176,8 +184,12 @@ function edit_auth($page, $auth_flag = TRUE, $exit_flag = TRUE)
 
 	if ($exit_flag) {
 		// 無応答
-		header( 'Location: ' . get_page_location_uri($defaultpage));
-		die();
+		if (PKWK_WARNING){
+			die_message('You have no permission to edit this page.');
+		}else{
+			header( 'Location: ' . get_page_location_uri($defaultpage));
+			die();
+		}
 	}
 	return false;
 }
@@ -202,9 +214,13 @@ function read_auth($page, $auth_flag = TRUE, $exit_flag = TRUE)
 	return auth::is_page_readable($page, '', '');
 
 	if ($exit_flag) {
-		// 無応答
-		header( 'Location: ' . get_page_location_uri($defaultpage));
-		die();
+		if (PKWK_WARNING){
+			die_message('You have no permission to read this page.');
+		}else{
+			// 無応答
+			header( 'Location: ' . get_page_location_uri($defaultpage));
+			die();
+		}
 	}
 	return false;
 }

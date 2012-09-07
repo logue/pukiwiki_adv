@@ -1655,19 +1655,22 @@ li[role=tab]{
 .icon-pdf			{ background-position: 0 -36px; }
 .icon-list			{ background-position: -18px -36px; }
 .icon-filelist		{ background-position: -36px -36px; }
-.icon-skeylist		{ background-position: -54px -36px; }
-.icon-broken		{ background-position: -72px -36px; }
+.icon-login			{ background-position: -54px -36px; }
+.icon-logout		{ background-position: -72px -36px; }
 .icon-referer		{ background-position: -90px -36px; }
+/*
 .icon-linklist		{ background-position: -108px -36px; }
+*/
 
 .icon-download		{ background-position: 0 -54px; }
 .icon-search		{ background-position: -18px -54px; }
-.icon-log,
-.icon-log_browse	{ background-position: -36px -54px; }
+.icon-log			{ background-position: -36px -54px; }
+/*
 .icon-log_check		{ background-position: -54px -54px; }
 .icon-log_down		{ background-position: -72px -54px; }
 .icon-log_login		{ background-position: -90px -54px; }
 .icon-log_update	{ background-position: -108px -54px; }
+*/
 
 .icon-top			{ background-position: 0 -72px; }
 .icon-home			{ background-position: -18px -72px; }
@@ -1690,8 +1693,8 @@ li[role=tab]{
 
 .pkwk-symbol{
 	display: inline-block;
-	width: 10px;
-	height: 10px;
+	width: 8px;
+	height: 8px;
 	margin:0 2px;
 	padding:1px;
 	line-height:100%;
@@ -1701,7 +1704,7 @@ li[role=tab]{
 	text-shadow:none;
 	color: transparent;
 }
-
+.symbol-add			{ background-position: -36px -114px; }
 .symbol-edit		{ background-position: -54px -114px; }
 .symbol-attach		{ background-position: -72px -114px; }
 .symbol-external	{ background-position: -90px -114px; }

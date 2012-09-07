@@ -76,7 +76,7 @@ $_string = array(
 	'not_writable'		=> T_('<var>%s</var> is not found or not writable.'),
 	'not_found'			=> T_('Page <var>%s</var> was not found.'),
 	'header_sent'		=> T_('Headers already sent at <var>%s</var>, line: <var>%s</var>.'),
-	'blacklisted'		=> T_('Writing was limited by <strong>IPBL</storng> (Blocking SPAM).'),
+	
 	'illegal_chars'		=> T_('Illegal characters contained.'),
 
 	'script_error'		=> T_('A fatal error has occured at line <var>%1s</var> in file <var>%2s</var>.'),
@@ -85,6 +85,12 @@ $_string = array(
 	'plugin_error'		=> T_('Plugin Error: <var>%1s</var> was called over <var>%2s</var> times. SPAM or someting?'),
 	'postid_error'		=> T_('Plugin Error: PostId mismatch.'),
 	'encode_error'		=> T_('Plugin Error: Incorrect encode.'),
+	'not_implemented'	=> T_('Plugin Error: <var>cmd=%s</var> is not implemented.'),
+	
+	'blacklisted'		=> T_('Sorry, Your host is prohibited by <strong>IPBL</storng> (Blocking SPAM).'),
+	'prohibit_country'	=> T_('Sorry, access from your country is prohibited.'),
+	'not_readable'		=> T_('You have no permission to read this page.'),
+	'not_editable'		=> T_('You have no permission to edit this page or create page in lower level of this page.')
 );
 
 $_button = array(
@@ -182,7 +188,14 @@ $_LANG['skin'] = array(
 	'navigation'=> T_('Navigation'),
 	'head'		=> T_('Header area'),
 	'foot'		=> T_('Footer area'),
-	'protect'	=> T_('Protected')
+	'protect'	=> T_('Protected'),
+	
+	// UI
+	'site'		=> T_('Site'),
+	'page'		=> T_('Pages'),
+	'admin'		=> T_('Admin'),
+	'manage'	=> T_('Management'),
+	'tool'		=> T_('Tools')
 );
 
 $_error_type = array(
