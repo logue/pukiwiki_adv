@@ -439,7 +439,7 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 		}
 	}else{
 		$obj = new AttachFile($page, $file['name']);
-			if ($obj->exist)
+			if (isset($obj->exist) )
 				return array('result'=>FALSE,
 					'msg'=>$_attach_messages['err_exists']);
 

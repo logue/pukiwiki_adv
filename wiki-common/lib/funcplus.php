@@ -26,25 +26,25 @@ function pkwk_session_start()
 {
 	global $use_trans_sid_address;
 	static $use_session;
+	
+	$use_session = session_id();
 
-	if (!isset($use_session)) {
-		$use_session = intval(PLUS_ALLOW_SESSION);
-		if ($use_session > 0 && session_id() === '') {
-			if (!is_array($use_trans_sid_address)) $use_trans_sid_address = array();
+	if ($use_session == ""){
+		if (!is_array($use_trans_sid_address)) $use_trans_sid_address = array();
 
-			if (in_the_net($use_trans_sid_address, get_remoteip())) {
-				ini_set('session.use_cookies', 0);
-			} else {
-				ini_set('session.use_cookies', 1);
-				ini_set('session.use_only_cookies', 1);
-			}
-			session_name(FUNC_SESSION_NAME);
-			@session_start();
-			if (ini_get('session.use_cookies') === 0 && ini_get('session.use_trans_sid') === 0) {
-				output_add_rewrite_var(session_name(), session_id());
-			}
+		if (in_the_net($use_trans_sid_address, get_remoteip())) {
+			ini_set('session.use_cookies', 0);
+		} else {
+			ini_set('session.use_cookies', 1);
+			ini_set('session.use_only_cookies', 1);
+		}
+		session_name(FUNC_SESSION_NAME);
+		session_start();
+		if (ini_get('session.use_cookies') === 0 && ini_get('session.use_trans_sid') === 0) {
+			output_add_rewrite_var(session_name(), session_id());
 		}
 	}
+
 	return $use_session;
 }
 
@@ -52,9 +52,9 @@ function pkwk_session_start()
 function pkwk_session_destroy(){
 	static $use_session;
 
-	if (isset($use_session) && $use_session > 0) {
+	if ($use_session == "") {
 		session_name(FUNC_SESSION_NAME);
-		if (session_id() == "") @session_start();
+		session_start();
 
 		// セッション変数を全て解除する
 		$_SESSION = array();

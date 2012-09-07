@@ -8,7 +8,7 @@
  *   jquery.ui.core.js
  *   jquery.ui.widget.js
  */
-(function( $, undefined ) {
+(function( $, window, undefined ) {
 
 $.widget( "ui.rlightbox", {
 	options: {
@@ -108,7 +108,7 @@ $.extend($.ui.rlightbox, {
 				_sets[_setName].splice( _setElementIndex, 0 , setElement );
 			}
 		},
-		
+
 		checkButtonsState: function() {
 			var data = this.data,
 				$lb = this.$lightbox,
@@ -116,31 +116,31 @@ $.extend($.ui.rlightbox, {
 				_totalElements = data.totalElementsNumber,
 				_currentElement = data.currentElementNumber,
 				_isLoop = data.currentSetElement.self.options.loop;
-				
+
 			// if lightbox is opened and there is only one element
 			// single element or one element in named set
 			if ( _currentSet === "single" || _totalElements === 1 ) {
 				this.setButtonState( "disabled" );
 			} else if ( _currentElement === 1 && _isLoop === false ) {
-				
+
 				// in case of 1st element when loop is disabled
 				this.setButtonState( "disabled", $lb.prev );
-				
+
 				// when there are only two elements in a set
 				this.setButtonState( "default", $lb.next );
 			} else if ( _currentElement === _totalElements && _isLoop === false ) {
-				
+
 				// in case of last element
 				this.setButtonState( "disabled", $lb.next );
-				
+
 				// when there are only two elements in a set
-				this.setButtonState( "default", $lb.prev );				
+				this.setButtonState( "default", $lb.prev );
 			} else {
-				
+
 				// between first and last elements or when the loop is enabled
 				this.setButtonState( "default" );
 			}
-		},		
+		},
 
 		checkMinimalSize: function( size, number ) {
 
@@ -164,7 +164,7 @@ $.extend($.ui.rlightbox, {
 				} else {
 					return number;
 				}
-			}			
+			}
 		},
 
 		closeLightbox: function() {
@@ -184,10 +184,10 @@ $.extend($.ui.rlightbox, {
 					.empty()
 					.width( 20 )
 					.height( 20 );
-					
+
 				// hide arrow cue
 				this.hideArrow();
-				
+
 				// reset control buttons states to default
 				this.setButtonState( "default" );
 
@@ -199,7 +199,7 @@ $.extend($.ui.rlightbox, {
 				data.totalElementsNumber = null;
 
 				// remove old title
-				$lb.title.empty();		
+				$lb.title.empty();
 
 				// hide the map
 				this.panoramaHideMap();
@@ -311,7 +311,7 @@ $.extend($.ui.rlightbox, {
 
 			return _result;
 		},
-		
+
 		getAvailableScreenSize: function() {
 			var data = this.data,
 				_padding = data.lightboxPadding;
@@ -320,7 +320,7 @@ $.extend($.ui.rlightbox, {
 				width: this.getWindowSize( "width" ) - _padding,
 				height: this.getWindowSize( "height" ) - data.headerHeight - _padding
 			};
-		},		
+		},
 
 		getCurrentElementNumber: function( element ) {
 			var _currentNumber,
@@ -381,7 +381,7 @@ $.extend($.ui.rlightbox, {
 				statusWidth: _statusWidth,
 				statusHeight: _statusHeight
 			};
-		},		
+		},
 
 		getLightbox: function() {
 			var data = this.data,
@@ -399,12 +399,12 @@ $.extend($.ui.rlightbox, {
 
 				// close the lightbox upon clicking on the close button and the overlay
 				$lb.close.add( $lb.overlay ).click( $.proxy(this.closeLightbox, this) );
-				
+
 				// goes to the next element when button is clicked
 				$lb.next.click( $.proxy(this.next, this) );
-				
+
 				// and goes to the prev element when prev button is clicked
-				$lb.prev.click( $.proxy(this.prev, this) );			
+				$lb.prev.click( $.proxy(this.prev, this) );
 
 				// highlight buttons when mouse hovers over them
 				$lb.next
@@ -420,10 +420,10 @@ $.extend($.ui.rlightbox, {
 						},
 						function() {
 							if ( $(this).is(":not(.ui-state-disabled)") ) {
-								self.setButtonState( "default", $(this) );								
+								self.setButtonState( "default", $(this) );
 							}
 						}
-					);		
+					);
 
 				// add handlers to the content container
 				$lb.contentContainer
@@ -440,7 +440,7 @@ $.extend($.ui.rlightbox, {
 						}
 					)
 					.mousedown( $.proxy(this.panoramaStart, this) )
-					.mouseup( $.proxy(this.panoramaStop, this ) )				
+					.mouseup( $.proxy(this.panoramaStop, this ) )
 					.mouseleave(
 						function() {
 							self.hideArrow.apply( self );
@@ -457,7 +457,7 @@ $.extend($.ui.rlightbox, {
 				$( window ).bind( "resize.rlightbox", $.proxy(this.liveResize, this) );
 
 				// keyboard navigation
-				$( document ).keyup( $.proxy(this.handleKeyboard, this) );			
+				$( document ).keyup( $.proxy(this.handleKeyboard, this) );
 			}
 		},
 
@@ -512,7 +512,7 @@ $.extend($.ui.rlightbox, {
 		getSetName: function( thisElement ) {
 
 			// if an anchor has class of e.g. ‘lb_gallery’ _getSetName() returns ‘gallery’ string as a set
-			// otherwise it returns "single" - single content is placed under "single" set  
+			// otherwise it returns "single" - single content is placed under "single" set
 			var _classNames = $( thisElement.element ).attr( "class" ),
 				_classPrefix = thisElement.options.setPrefix + "_",
 				_classPattern = new RegExp( _classPrefix + "([\\w-_]+)" ),
@@ -520,7 +520,7 @@ $.extend($.ui.rlightbox, {
 
 			return _name ? _name[1] : "single";
 		},
-		
+
 		checkSide: function( event ) {
 			var data = this.data,
 				$lb = this.$lightbox,
@@ -535,8 +535,8 @@ $.extend($.ui.rlightbox, {
 			} else if ( _pos > _center ) {
 				data.side = "right";
 			}
-			
-			// for Panorama to work in IE7 & IE8			
+
+			// for Panorama to work in IE7 & IE8
 			event.preventDefault();
 		},
 
@@ -581,7 +581,7 @@ $.extend($.ui.rlightbox, {
 					// height is larger than window, width fits the window
 					if ( _statusWidth === 1 || _statusWidth === -1 ) {
 						_lightboxTargetHeight = _windowHeight - _headerHeight - _lightboxPadding;
-						_imageTargetHeight = _lightboxTargetHeight;						
+						_imageTargetHeight = _lightboxTargetHeight;
 						_heightRatio = _lightboxTargetHeight / h;
 
 						if (_statusWidth === -1) {
@@ -599,7 +599,7 @@ $.extend($.ui.rlightbox, {
 
 						// width is larger than window, height fit the window
 						_lightboxTargetWidth = _windowWidth - _lightboxPadding;
-						_imageTargetWidth = _lightboxTargetWidth;						
+						_imageTargetWidth = _lightboxTargetWidth;
 						_widthRatio = _lightboxTargetWidth / w;
 
 						if ( _statusHeight === -1 ) {
@@ -629,7 +629,7 @@ $.extend($.ui.rlightbox, {
 							}
 						} else {
 							_lightboxTargetHeight = _windowHeight - _headerHeight - _lightboxPadding;
-							_imageTargetHeight = _lightboxTargetHeight;							
+							_imageTargetHeight = _lightboxTargetHeight;
 							_heightRatio = _lightboxTargetHeight / h;
 							_lightboxTargetWidth = Math.ceil( w * _heightRatio ) - _lightboxPadding;
 							_imageTargetWidth = _lightboxTargetWidth;
@@ -681,7 +681,7 @@ $.extend($.ui.rlightbox, {
 		handleKeyboard: function( event ) {
 			var data = this.data,
 				_currentElement = data.currentSetElement,
-				_options = _currentElement.self.options,
+				_options = typeof(_currentElement.self.options) !== 'undefined' ? _currentElement.self.options : '',
 				_keys = _options.keys,
 				_key = event.which;
 
@@ -710,13 +710,13 @@ $.extend($.ui.rlightbox, {
 				this.panoramaToggle( event );
 			}
 		},
-		
+
 		hideArrow: function() {
 			var $lb = this.$lightbox,
 				$arrow = $lb.arrow;
-				
+
 			$arrow.hide();
-		},		
+		},
 
 		liveResize: function() {
 			var data = this.data,
@@ -772,7 +772,7 @@ $.extend($.ui.rlightbox, {
 				}
 
 				_currentElement.width = _width;
-				_currentElement.height = _height;				
+				_currentElement.height = _height;
 
 				// use real data
 				_structure = self.replaceHtmlPatterns(_structure,
@@ -801,7 +801,7 @@ $.extend($.ui.rlightbox, {
 					.append( _structure )
 					.children()
 						.wrap( $contentWrapper );
-				
+
 				_dfd.resolve();
 			}
 
@@ -818,7 +818,7 @@ $.extend($.ui.rlightbox, {
 				_currentElement = data.currentSetElement,
 				_dfd = $.Deferred(),
 				$newImage = $( "<img />" );
-				
+
 			// show spinner
 			$lb.content.addClass( "ui-lightbox-loader" );
 
@@ -827,21 +827,21 @@ $.extend($.ui.rlightbox, {
 				.bind("load",
 					function() {
 						$( this ).unbind( "load" );
-						
+
 						// keep original size of an image – needed when resizing
 						_currentElement.width = this.width;
 						_currentElement.height = this.height;
 
 						// add the loaded image and hide it
 						$lb.content
-							.removeClass( "ui-lightbox-loader" )			
+							.removeClass( "ui-lightbox-loader" )
 							.empty()
 							.append( this )
 							.children()
 								.hide();
 
 						// continue the animation queue
-						_dfd.resolve();					
+						_dfd.resolve();
 					}
 				)
 				.error(
@@ -852,7 +852,7 @@ $.extend($.ui.rlightbox, {
 						// continue the animation queue
 						_dfd.resolve();
 					}
-				)				
+				)
 				.each(
 					function() {
 						// the code comes from https://github.com/desandro/imagesloaded
@@ -863,9 +863,9 @@ $.extend($.ui.rlightbox, {
 						  // data uri bypasses webkit log warning (thx doug jones)
 						  this.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
 						  this.src = src;
-						}						
+						}
 					}
-				);				
+				);
 
 			return _dfd.promise();
 		},
@@ -873,7 +873,7 @@ $.extend($.ui.rlightbox, {
 		loadContentVimeo: function( url ) {
 			var _width, _height,
 				data = this.data,
-				$lb = this.$lightbox,			
+				$lb = this.$lightbox,
 				self = this,
 				_dfd = $.Deferred(),
 				_apiEnd = data.providers.vimeo,
@@ -909,7 +909,7 @@ $.extend($.ui.rlightbox, {
 							.end()
 						.find( "div:first" )
 							.width( data.width )
-							.height( data.height );							
+							.height( data.height );
 
 					// remember video title
 					if ( _options.overwriteTitle === false ) {
@@ -934,7 +934,7 @@ $.extend($.ui.rlightbox, {
 
 			return _dfd.promise();
 		},
-		
+
 		loadContentYoutube: function( url ) {
 			var $contentWrapper,
 				data = this.data,
@@ -949,15 +949,15 @@ $.extend($.ui.rlightbox, {
 				_width = _options.videoWidth,
 				_height = _options.videoHeight,
 				_structure = data.htmlYoutube;
-				
+
 			function _showError() {
 				$lb.content.removeClass( "ui-lightbox-loader" );
 				self.showErrorMessage();
 
 				// continue the animation queue
-				_dfd.resolve();				
+				_dfd.resolve();
 			}
-			
+
 			// show loader
 			$lb.content.addClass( "ui-lightbox-loader" );
 			$.ajax(
@@ -988,7 +988,7 @@ $.extend($.ui.rlightbox, {
 							url: _currentElement.id
 						}
 					);
-					
+
 					// we have to add ‘width’ and ‘height’ to the $contentWrapper
 					// explicitly since browsers can’t inherit them
 					$contentWrapper = $( "<div></div>" );
@@ -999,7 +999,7 @@ $.extend($.ui.rlightbox, {
 							height: _height
 						}
 					);
-	
+
 					// add structure
 					$content
 						.removeClass( "ui-lightbox-loader" )
@@ -1007,17 +1007,17 @@ $.extend($.ui.rlightbox, {
 						.append( _structure )
 						.children()
 							.wrap( $contentWrapper );
-							
+
 						// remember video title
 						if ( _options.overwriteTitle === false ) {
 							_currentElement.title = json.data.title;
 						}
-	
+
 						// and returned width and height
 						_currentElement.width = _width;
-						_currentElement.height = _height;							
-					
-					_dfd.resolve();					
+						_currentElement.height = _height;
+
+					_dfd.resolve();
 				}
 			)
 			.error(function() {
@@ -1026,7 +1026,7 @@ $.extend($.ui.rlightbox, {
 
 			return _dfd.promise();
 		},
-		
+
 		navigationGoToElement: function( number ) {
 
 			// goes to a custom element
@@ -1042,8 +1042,8 @@ $.extend($.ui.rlightbox, {
 			// reload animation queue and trigger it
 			this.setNextQueue();
 			$lb.queueContainer.next.dequeue( "lightboxNext" );
-		},		
-		
+		},
+
 		next: function() {
 			var data = this.data,
 				sets = this.sets,
@@ -1056,23 +1056,23 @@ $.extend($.ui.rlightbox, {
 				_options = data.currentSetElement.self.options,
 				_isLoop = _options.loop,
 				_play = true;
-				
+
 			if ( _isReady && _set !== "single" && _isPanoramaOn === false ) {
 				if ( _currentElementNumber + 1 <= _totalElementsNumber ) {
-					data.currentElementNumber = _currentElementNumber = _currentElementNumber + 1;			
+					data.currentElementNumber = _currentElementNumber = _currentElementNumber + 1;
 				} else if ( _currentElementNumber + 1 > _totalElementsNumber && _isLoop ) {
 					data.currentElementNumber = _currentElementNumber = 1;
 				} else {
 					// to prevent form loading last element again when loop is disabled
 					_play = false;
 				}
-				
+
 				if ( _play) {
 					data.currentSetElement = sets[_set][_currentElementNumber - 1];
-	
+
 					// next element - trigger the queue ‘next’ - first update it
 					this.setNextQueue();
-					$lb.queueContainer.next.dequeue( "lightboxNext" );					
+					$lb.queueContainer.next.dequeue( "lightboxNext" );
 				}
 			}
 		},
@@ -1099,9 +1099,9 @@ $.extend($.ui.rlightbox, {
 			// set animation queues
 			this.setOpenQueue();
 			this.setNextQueue();
-			
+
 			// to fade or not to fade…
-			this.checkButtonsState();		
+			this.checkButtonsState();
 
 			// start opening the lighbox
 			$lb.queueContainer.open.dequeue( "lightboxOpen" );
@@ -1159,14 +1159,14 @@ $.extend($.ui.rlightbox, {
 
 			if ( _currentImageWidth < _originalImageWidth || _currentImageHeight < _originalImageHeight ) {
 				this.panoramaShowIcon( "expand" );
-				
+
 				// cuz we don’t want to check it twice in panoramaToggle()
 				data.enablePanorama = true;
 			} else {
 				data.enablePanorama = false;
 				this.panoramaHideIcon();
 			}
-		},		
+		},
 
 		panoramaExpand: function( event ) {
 
@@ -1187,10 +1187,10 @@ $.extend($.ui.rlightbox, {
 			} else {
 				this.panoramaShowIcon( "shrink" );
 			}
-			
+
 			// fixes issue with Panorama in Firefox 3.0, 3.5, 3.6
 			$lb.content.css( "overflow", "hidden" );
-			
+
 			// give the natural size to the image
 			$lb.content
 				.find( "img" )
@@ -1203,7 +1203,7 @@ $.extend($.ui.rlightbox, {
 			// center the content and the whole lightbox
 			this.panoramaCenterContent();
 			this.queueCenterLightbox();
-			
+
 			// update header width
 			this.updateTitleWidth();
 
@@ -1211,10 +1211,10 @@ $.extend($.ui.rlightbox, {
 			if ( _options.showMap ) {
 				this.panoramaShowMap();
 			}
-			
+
 			// hide arrow cue
 			this.hideArrow();
-			
+
 			// reset cursor when there is no movement; for example
 			// cursor was ‘pointer’, [Z] buttons was pressed (‘default’ cursor)
 			// [Z] was pressed again → cursor is still ‘pointer’
@@ -1228,12 +1228,12 @@ $.extend($.ui.rlightbox, {
 			$lb.panoramaIcon
 				.hide()
 				.removeClass( "ui-lightbox-panorama-icon-expand ui-lightbox-panorama-icon-shrink" );
-			data.panoramaOn = false;			
+			data.panoramaOn = false;
 		},
 
 		panoramaHideMap: function() {
 			var $lb = this.$lightbox;
-				
+
 			// hide the map
 			$lb.map.hide();
 
@@ -1242,8 +1242,8 @@ $.extend($.ui.rlightbox, {
 			$lb.viewport.css({
 				left: -1,
 				top: -1
-			});		
-		},		
+			});
+		},
 
 		panoramaHighlight: function() {
 			var _suffixPosition,
@@ -1258,7 +1258,7 @@ $.extend($.ui.rlightbox, {
 					} else {
 						return oldValue + _suffix;
 					}
-				});		
+				});
 		},
 
 		panoramaSetContentSize: function() {
@@ -1316,7 +1316,7 @@ $.extend($.ui.rlightbox, {
 				$lb.panoramaIcon
 					.show()
 					.removeClass()
-					.addClass( _newClass );			
+					.addClass( _newClass );
 		},
 
 		panoramaShowMap: function() {
@@ -1387,21 +1387,21 @@ $.extend($.ui.rlightbox, {
 			// resize an image to its previous size and center it
 			this.queueResizeLightbox();
 			this.queueCenterContent();
-			
+
 			// fixes issue with Panorama in Firefox 3.0, 3.5, 3.6
-			$lb.content.css( "overflow", "visible" );			
-			
+			$lb.content.css( "overflow", "visible" );
+
 			// update header width
 			this.updateTitleWidth();
 
 			// hide the map
 			this.panoramaHideMap();
-			
+
 			// reset cursor when there is no movement; for example
 			// cursor was ‘pointer’, [Z] buttons was pressed (‘default’ cursor)
 			// [Z] was pressed again → cursor is still ‘pointer’
 			this.setCursor();
-		},		
+		},
 
 		panoramaStart: function( event ) {
 			var data = this.data,
@@ -1444,7 +1444,7 @@ $.extend($.ui.rlightbox, {
 
 			event.stopPropagation();
 		},
-		
+
 		panoramaToggle: function( event ) {
 
 			// switches between _panoramaExpand and _panoramaShrink
@@ -1458,10 +1458,10 @@ $.extend($.ui.rlightbox, {
 			if ( _isPanoramaEnabled && _panoramaOn === false ) {
 				this.panoramaExpand( event );
 			} else if ( _isPanoramaEnabled && _panoramaOn ) {
-				this.panoramaShrink( event );			
+				this.panoramaShrink( event );
 			}
 		},
-		
+
 		prev: function() {
 			var data = this.data,
 				sets = this.sets,
@@ -1474,10 +1474,10 @@ $.extend($.ui.rlightbox, {
 				_options = data.currentSetElement.self.options,
 				_isLoop = _options.loop,
 				_play = true;
-				
+
 			if ( _isReady && _set !== "single" && _isPanoramaOn === false ) {
 				if ( _currentElementNumber - 1 >= 1 ) {
-					data.currentElementNumber = _currentElementNumber = _currentElementNumber - 1;			
+					data.currentElementNumber = _currentElementNumber = _currentElementNumber - 1;
 				} else if ( _currentElementNumber - 1 < 1 && _isLoop ) {
 					data.currentElementNumber = _currentElementNumber = _totalElementsNumber;
 				} else {
@@ -1487,12 +1487,12 @@ $.extend($.ui.rlightbox, {
 
 				if ( _play ) {
 					data.currentSetElement = sets[_set][_currentElementNumber - 1];
-	
+
 					// next element - trigger the queue ‘next’ - first update it
 					this.setNextQueue();
-					$lb.queueContainer.next.dequeue( "lightboxNext" );					
+					$lb.queueContainer.next.dequeue( "lightboxNext" );
 				}
-			}		
+			}
 		},
 
 		removeSetElement: function( number ) {
@@ -1541,26 +1541,26 @@ $.extend($.ui.rlightbox, {
 
 			return htmlString;
 		},
-		
+
 		setButtonState: function( state, jqElement ) {
 			var $lb = this.$lightbox,
 				jqElem = jqElement || $lb.controlButtons;
-				
+
 			switch ( state ) {
 				case "default":
 					jqElem.removeClass( "ui-state-highlight ui-state-disabled" );
 					break;
-				
+
 				case "highlight":
 					jqElem.addClass( "ui-state-highlight" );
 					break;
-				
+
 				case "disabled":
 					jqElem.addClass( "ui-state-disabled" );
 					break;
 			}
 		},
-		
+
 		setCursor: function( event ) {
 			var data = this.data,
 				$lb = this.$lightbox,
@@ -1575,7 +1575,7 @@ $.extend($.ui.rlightbox, {
 				_isError = data.showErrorMessage,
 				_options = _currentSetElement.self.options,
 				_isLoop = _options.loop;
-			
+
 			if ( data.ready ) {
 				if ( (_currentSet === "single" || _totalElements === 1 || _currentElement === 1 && _side === "left" || _currentElement === _totalElements && _side === "right") && _panoramaEnabled === false && (_setElementType === "image" || (_setElementType !== "image" && _isError)) ) {
 
@@ -1583,11 +1583,11 @@ $.extend($.ui.rlightbox, {
 					// WHEN panorama is DISABLED, and when element type is ‘image’ or the Error Screen is shown
 					// and when loop is DISABLED
 					if ( _isLoop === false ) {
-						$contentContainer.css( "cursor", "default" );						
+						$contentContainer.css( "cursor", "default" );
 					} else {
-						
+
 						// otherwise show ‘pointer’ in cases mentioned above
-						$contentContainer.css( "cursor", "pointer" );						
+						$contentContainer.css( "cursor", "pointer" );
 					}
 
 				} else if ( _panoramaEnabled ) {
@@ -1595,7 +1595,7 @@ $.extend($.ui.rlightbox, {
 					// panorama is enabled
 					$contentContainer.css( "cursor", "move" );
 				} else if ( _setElementType === "image" || (_setElementType !== "image" && _isError) ) {
-					
+
 					// between first and last element in an image set or when the Error Screen is shown
 					$contentContainer.css( "cursor", "pointer" );
 				} else {
@@ -1606,13 +1606,13 @@ $.extend($.ui.rlightbox, {
 			} else {
 				$contentContainer.css( "cursor", "default" );
 			}
-			
+
 			// for Panorama to work in IE7 & IE8
 			if ( event ) {
 				event.preventDefault();
 			}
 		},
-		
+
 		setNextQueue: function() {
 
 			// for description take a look at _setOpenQueue method
@@ -1654,7 +1654,7 @@ $.extend($.ui.rlightbox, {
 
 			// place start animation queue in the queue container
 			$lb.queueContainer.open.queue( "lightboxOpen", queueList );
-		},		
+		},
 
 		setReferences: function() {
 			var $lb = this.$lightbox;
@@ -1666,7 +1666,7 @@ $.extend($.ui.rlightbox, {
 			$lb.content = $lb.contentContainer.find( "#ui-lightbox-content" );
 			$lb.arrow = $lb.contentContainer.find( "#ui-lightbox-arrow" );
 			$lb.header = $lb.root.find( "#ui-lightbox-bottombar" );
-			$lb.headerWrapper = $lb.header.find( "#ui-lightbox-title-wrapper" );		
+			$lb.headerWrapper = $lb.header.find( "#ui-lightbox-title-wrapper" );
 			$lb.overlay = $( "#ui-lightbox-overlay" );
 			$lb.next = $lb.root.find( "#ui-lightbox-button-next" );
 			$lb.prev = $lb.root.find( "#ui-lightbox-button-prev" );
@@ -1682,7 +1682,7 @@ $.extend($.ui.rlightbox, {
 				next: $({})
 			};
 		},
-		
+
 		showArrow: function( event ) {
 			var data = this.data,
 				$lb = this.$lightbox,
@@ -1692,7 +1692,7 @@ $.extend($.ui.rlightbox, {
 				_currentElement = data.currentElementNumber,
 				_totalElements = data.totalElementsNumber,
 				_isLoop = data.currentSetElement.self.options.loop;
-			
+
 			// show arrow cues only in image set or in The Error Screen when it is part of a set
 			if ( data.ready && data.currentSet !== "single" && (data.currentSetElement.type === "image" || _isError) && data.panoramaOn === false ) {
 
@@ -1716,12 +1716,12 @@ $.extend($.ui.rlightbox, {
 					this.hideArrow();
 				}
 			}
-			
-			// for Panorama to work in IE7 & IE8			
+
+			// for Panorama to work in IE7 & IE8
 			if ( event ) {
 				event.preventDefault();
 			}
-		},		
+		},
 
 		showErrorMessage: function() {
 
@@ -1749,10 +1749,10 @@ $.extend($.ui.rlightbox, {
 				{
 					message: _errorMessage,
 					labelAgain: _againLabel,
-					labelReject: _rejectLabel				
+					labelReject: _rejectLabel
 				}
-			);			
-				
+			);
+
 			$structure = $( _structure );
 
 			$again = $structure.find( "#ui-lightbox-error-footer-again" );
@@ -1777,7 +1777,7 @@ $.extend($.ui.rlightbox, {
 					function() {
 						$( this ).toggleClass( "ui-state-hover" );
 					}
-				);			
+				);
 
 			// treat the message as a normal content
 			$lb.content
@@ -1862,7 +1862,7 @@ $.extend($.ui.rlightbox, {
 
 			// hide the map
 			this.panoramaHideMap();
-		},	
+		},
 
 		queueShowOverlay: function( next ) {
 			var data = this.data,
@@ -1871,9 +1871,9 @@ $.extend($.ui.rlightbox, {
 
 			// let know that lightbox is not ready now
 			data.ready = false;
-			
+
 			// change cursor to default
-			this.setCursor();			
+			this.setCursor();
 
 			// show overlay
 			$lb.overlay.fadeIn( _currentElement.options.animationSpeed, next );
@@ -1983,7 +1983,7 @@ $.extend($.ui.rlightbox, {
 
 				// do not let lightbox size be smaller than the minimal one or larger than the window
 				_lightboxTargetWidth = this.getOptimalSize( "width", _currentElement.width );
-				_lightboxTargetHeight = this.getOptimalSize( "height", _currentElement.height );				
+				_lightboxTargetHeight = this.getOptimalSize( "height", _currentElement.height );
 			} else if ( _isError ) {
 				_speed = 0;
 				_lightboxTargetWidth = _errorScreenWidth;
@@ -2026,7 +2026,7 @@ $.extend($.ui.rlightbox, {
 				self = this,
 				_currentElement = data.currentSetElement,
 				_options = _currentElement.self.options,
-				_isError = data.showErrorMessage;			
+				_isError = data.showErrorMessage;
 
 			// show content
 			$lb.content.children()
@@ -2055,17 +2055,17 @@ $.extend($.ui.rlightbox, {
 			// update title
 			this.updateTitleWidth();
 			this.updateTitle();
-			
+
 			// update buttons states
 			this.checkButtonsState();
-			
+
 			// indicate that animation queue is finshed
 			data.ready = true;
-			
+
 			// if you go from penulimate/second element to the last/first element change cursor to ‘default’
 			// must be after ‘data.ready = true’!!!
 			this.setCursor();
-			
+
 			// show arrow cue whenever possible when there is no mouse mouvement
 			this.showArrow();
 		},
@@ -2078,13 +2078,13 @@ $.extend($.ui.rlightbox, {
 
 			// structure is not ready - start an animation
 			data.ready = false;
-			
+
 			// hide arrow cue
 			this.hideArrow();
-			
+
 			// change cursor to default
-			this.setCursor();				
-			
+			this.setCursor();
+
 			$lb.header.slideUp ( _options.animationSpeed, next );
 		},
 
@@ -2135,7 +2135,7 @@ $.extend($.ui.rlightbox, {
 						"<button aria-disabled='false' role='button' id='ui-lightbox-error-footer-reject' class='ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-primary'>" +
 							"<span class='ui-button-icon-primary ui-icon ui-icon-trash'></span>" +
 							"<span class='ui-button-text'>{labelReject}</span>" +
-						"</button>" + 
+						"</button>" +
 					"</div>" +
 				"</div>",
 			htmlYoutube: "<iframe class='youtube-player' type='text/html' width='{width}' height='{height}' src='http://www.youtube.com/embed/{url}' frameborder='0'></iframe>",
@@ -2174,8 +2174,8 @@ $.extend($.ui.rlightbox, {
 				"<div id='ui-lightbox-map' style='display: none'>" +
 					"<div id='ui-lightbox-map-viewport'></div>" +
 				"</div>",
-			htmlOverlay: "<div id='ui-lightbox-overlay' class='ui-widget-overlay' style='display: none'></div>"			
+			htmlOverlay: "<div id='ui-lightbox-overlay' class='ui-widget-overlay' style='display: none'></div>"
 		}
 	}
 });
-})( jQuery );
+})( jQuery, window );

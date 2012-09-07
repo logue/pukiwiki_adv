@@ -1,0 +1,166 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR PukiWiki Advance Developers Team
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../plugin/table_edit2.inc.php:271 ../../plugin/table_edit2.inc.php:1580
+msgid "OK"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:272 ../../plugin/table_edit2.inc.php:433
+#: ../../plugin/table_edit2.inc.php:1583
+msgid "no time stamp"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:432
+msgid "character code in"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:444
+msgid "character code out"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:446
+msgid "no"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:447
+msgid "character"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:448
+msgid "column"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:452
+msgid "w quote"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:452
+msgid "column number"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:455
+msgid "line feed code"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:504
+msgid "close"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:505
+msgid "open"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:525
+msgid "import"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:527 ../../plugin/table_edit2.inc.php:1842
+msgid "export"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:1028
+msgid "edit"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:1029
+msgid "addition"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:1293
+msgid "On updating  $1, a collision has occurred."
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:1294
+msgid "It seems that someone has already updated the page you were editing.<br />"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:1295
+msgid "Your editing contents updated, but there is a possibility that overwrote.<br />"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:1528
+msgid " [Add Mode]"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:1581
+msgid "cancel"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:1582
+msgid "delete"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:1584
+msgid "table"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:1585
+msgid "line"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:1586
+msgid "column line"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:1819
+msgid "download"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:1820
+msgid "back"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:1821
+msgid "ref plugin is not found"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:1851 ../../plugin/table_edit2.inc.php:1857
+#: ../../plugin/table_edit2.inc.php:1863 ../../plugin/table_edit2.inc.php:1869
+#: ../../plugin/table_edit2.inc.php:1875 ../../plugin/table_edit2.inc.php:1881
+#: ../../plugin/table_edit2.inc.php:1890
+msgid "cannot upload"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:1852
+msgid "Please upload it by a POST."
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:1858
+msgid "The uploaded file exceeds the upload_max_filesize directive in php.ini."
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:1864
+msgid "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form."
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:1870
+msgid "The uploaded file was only partially uploaded."
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:1876
+msgid "No file was uploaded."
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:1882
+msgid "Missing a temporary folder."
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:1891
+msgid "A file unlike text was uploaded."
+msgstr ""

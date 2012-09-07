@@ -193,7 +193,6 @@ $_LANG['skin'] = array(
 	// UI
 	'site'		=> T_('Site'),
 	'page'		=> T_('Pages'),
-	'admin'		=> T_('Admin'),
 	'manage'	=> T_('Management'),
 	'tool'		=> T_('Tools')
 );

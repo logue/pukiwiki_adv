@@ -174,19 +174,19 @@ fieldset {
 
 /* calendar.inc.php */
 .style_calendar {
-	background-color:#E0E0E0;
+	background-color:#E0E0E0 !important;
 }
 .style_calendar_top {
 	background-color:#EEFFF5 !important;
 }
 .style_calendar_today {
-	background-color:#EEFFF5;
+	background-color:#EEFFF5 !important;
 }
 .style_calendar_sat {
-	background-color:#DDE5FF;
+	background-color:#DDE5FF !important;
 }
 .style_calendar_sun, .style_calendar_holiday {
-	background-color:#FFEEEE;
+	background-color:#FFEEEE !important;
 }
 .style_calendar_blank {
 

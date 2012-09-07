@@ -35,7 +35,7 @@ defined('ROOT_URI')		or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');
 defined('WWW_HOME')		or define('WWW_HOME', '');
 
 // フレームワークのバージョン（jQuery Mobileはmobile.jsで定義）
-define('JQUERY_VER',	'1.8.0');
+define('JQUERY_VER',	'1.8.1');
 define('JQUERY_UI_VER',	'1.8.23');
 
 // ページ名やファイル名として使用できない文字（エンコード前の文字）
@@ -43,6 +43,10 @@ defined('PKWK_ILLEGAL_CHARS_PATTERN') or define('PKWK_ILLEGAL_CHARS_PATTERN', '/
 
 // アップロード進捗状況のセッション名（PHP5.4以降のみ有効）
 defined('PKWK_PROGRESS_SESSION_NAME') or define('PKWK_PROGRESS_SESSION_NAME', 'pukiwiki_progress');
+
+// PostIDチェックをしないプラグイン
+defined('PKWK_IGNOLE_POSTID_CHECK_PLUGINS') or define('PKWK_IGNOLE_POSTID_CHECK_PLUGINS', '/menu|side|header|footer|full|read|include|calendar|login/');
+
 /////////////////////////////////////////////////
 // Init server variables
 

@@ -358,19 +358,19 @@ tfoot .style_th {
 
 /* calendar.inc.php */
 .style_calendar {
-	background-color:#CCD5DD;
+	background-color:#CCD5DD !important;;
 }
 .style_calendar_top {
 	background-color:#EEF5FF !important;
 }
 .style_calendar_today {
-	background-color:#FFFFDD;
+	background-color:#FFFFDD !important;;
 }
 .style_calendar_sat {
-	background-color:#DDE5FF;
+	background-color:#DDE5FF !important;;
 }
 .style_calendar_sun, .style_calendar_holiday {
-	background-color:#FFEEEE;
+	background-color:#FFEEEE !important;;
 }
 .style_calendar_blank {
 

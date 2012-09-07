@@ -5,10 +5,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-07-07 17:14+0900\n"
+"POT-Creation-Date: 2012-09-08 08:08+0900\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
 "Language-Team: Japanese\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -17,46 +18,46 @@ msgstr ""
 msgid "PKWK_CREATE_PAGE prohibits editing"
 msgstr ""
 
-#: ../../plugin/tracker.inc.php:1594
+#: ../../plugin/tracker.inc.php:1595
 msgid "Page"
 msgstr "ページ名"
 
-#: ../../plugin/tracker.inc.php:1595
+#: ../../plugin/tracker.inc.php:1596
 msgid "Name"
 msgstr "ページ名"
 
-#: ../../plugin/tracker.inc.php:1596
+#: ../../plugin/tracker.inc.php:1597
 msgid "Realname"
 msgstr "ページ名"
 
-#: ../../plugin/tracker.inc.php:1597
+#: ../../plugin/tracker.inc.php:1598
 msgid "Add"
 msgstr "追加"
 
-#: ../../plugin/tracker.inc.php:1598
+#: ../../plugin/tracker.inc.php:1599
 msgid "Date"
 msgstr "日付"
 
-#: ../../plugin/tracker.inc.php:1599
+#: ../../plugin/tracker.inc.php:1600
 msgid "Refer page"
 msgstr "参照"
 
-#: ../../plugin/tracker.inc.php:1600
+#: ../../plugin/tracker.inc.php:1601
 msgid "Base page"
 msgstr "基底"
 
-#: ../../plugin/tracker.inc.php:1601
+#: ../../plugin/tracker.inc.php:1602
 msgid "Update"
 msgstr "更新日時"
 
-#: ../../plugin/tracker.inc.php:1602
+#: ../../plugin/tracker.inc.php:1603
 msgid "Past"
 msgstr "経過"
 
-#: ../../plugin/tracker.inc.php:1603
+#: ../../plugin/tracker.inc.php:1604
 msgid "top <var>$2</var> results out of <var>$1</var>."
 msgstr "全$1件中、上位$2件を表示しています。"
 
-#: ../../plugin/tracker.inc.php:1604
+#: ../../plugin/tracker.inc.php:1605
 msgid "List items of <var>$1</var>"
 msgstr "$1 の項目一覧"
