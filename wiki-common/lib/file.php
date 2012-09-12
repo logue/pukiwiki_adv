@@ -160,7 +160,6 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 				if (isset($vars['page'])){
 					$akismet->setPermalink(get_page_uri($page));
 				}
-				
 				if ($use_spam_check['akismet'] === 2){
 					$akismet->setCommentContent($postdata);
 				}else{

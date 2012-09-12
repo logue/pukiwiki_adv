@@ -670,13 +670,14 @@ function attach_showform()
 
 	$html = array();
 	if (!IS_AJAX){
+		$attach_list = attach_list($page);
 		$html[] = '<p><small>[<a href="' . get_cmd_uri('attach', null, null, array('pcmd'=>'list')) . '">'.$_attach_messages['msg_listall'].'</a>]</small></p>';
 		if ($isEditable){
 			$html[] = '<h3>' . str_replace('$1', $page, $_attach_messages['msg_upload']) . '</h3>'. "\n";
 			$html[] = attach_form($page);
 		}
 		$html[] = '<h3>' . str_replace('$1', $page, $_attach_messages['msg_listpage']) . '</h3>'. "\n";
-		$html[] = attach_list($page)['body'];
+		$html[] = $attach_list['body'];
 	}else{
 		$html[] = '<div class="tabs" role="application">';
 		$html[] = '<ul role="tablist">';
@@ -856,8 +857,8 @@ class AttachFile
 		}
 		$info = $count = '';
 		if ($showinfo) {
-			$_title = str_replace('$1', rawurlencode($this->file), $_attach_messages['msg_info']);
-			$info = "\n<small>[<a href=\"$inf\" title=\"$_title\">{$_attach_messages['btn_info']}</a>]</small>\n";
+			$info = '<small>[<a href="' . $inf . '" title="' . str_replace('$1', rawurlencode($this->file), $_attach_messages['msg_info']) . '">'
+				. $_attach_messages['btn_info'] . '</a>]</small>' ."\n";
 			$count = ($showicon && ! empty($this->status['count'][$this->age])) ?
 				'<small>'.sprintf($_attach_messages['msg_count'], '<var>'.$this->status['count'][$this->age].'</var>').'</small>' : '';
 		}
@@ -1317,9 +1318,10 @@ class AttachFiles
 		}
 		return '<table class="style_table attach_table"><thead>' . "\n" .
 		       '<tr><th class="style_th">' . $_attach_messages['msg_file'] . '</th>' .
-			   '<th class="style_th">' . $_attach_messages['msg_filesize'] . '</th>' .
+		       '<th class="style_th">' . $_attach_messages['msg_filesize'] . '</th>' .
 		       '<th class="style_th">' . $_attach_messages['msg_type'] . '</th>' .
-		       '<th class="style_th">' . $_attach_messages['msg_date'] . '</th></tr></thead>'."\n".'<tbody>' . "\n$ret</tbody></table>\n";
+		       '<th class="style_th">' . $_attach_messages['msg_date'] . '</th></tr></thead>'."\n".
+		       '<tbody>' . "\n$ret</tbody></table>\n";
 	}
 }
 

@@ -48,6 +48,7 @@ class check_proxy
 	 */
 	function is_proxy()
 	{
+		if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) return 0;	// CloudFlareはProxy扱いしない
 		foreach ($this->proxy as $x) {
 			if (!$x[1]) continue; // Proxy判定利用
 			if (isset($_SERVER[$x[0]])) return 1;
@@ -125,7 +126,7 @@ function MyNetCheck($ip)
 	}
 	unset($tmp);
 
-        $obj = new IPBL();
+	$obj = new IPBL();
 
 	if (! empty($log_common['nolog_ip'])) {
 		$obj->setMyNetList( array(array_merge($private_ip, $log_common['nolog_ip'], $dynm_ip)) );
@@ -137,7 +138,7 @@ function MyNetCheck($ip)
 
 	foreach($hosts as $host) {
 		$obj->setName($host);
-		if ($obj->isMyNet()) return true;;
+		if ($obj->isMyNet()) return true;
 	}
 	return false;
 }

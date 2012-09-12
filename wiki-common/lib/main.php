@@ -139,12 +139,12 @@ if ($spam && $method !== 'GET') {
 	if (isset($geoip['country_code']) && $geoip['country_code'] !== false){
 		if (isset($deny_countory) && !empty($deny_countory)) {
 			if (in_array($geoip['country_code'], $deny_countory)) {
-				die('Sorry, access from your country is prohibited.');
+				die('Sorry, access from your country('.$geoip['country_code'].') is prohibited.');
 			}
 		}
 		if (isset($allow_countory) && !empty($allow_countory)) {
 			if (!in_array($geoip['country_code'], $allow_countory)) {
-				die('Sorry, access from your country is prohibited.');
+				die('Sorry, access from your country('.$geoip['country_code'].') is prohibited.');
 			}
 		}
 	}
@@ -237,8 +237,9 @@ if (!empty($plugin)) {
 		if ($retvars === FALSE) exit; // Done
 		$base = (!empty($page)) ? $page : $refer;
 	} else {
+		header('HTTP/1.1 501 Not Implemented');
 		$retvars = array(
-			'msg'=>'Plugin Error',
+			'msg'=>'Not Implemented',
 			'body'=>'<p class="message_box ui-state-error ui-corner-all">cmd=' . htmlsc($plugin) . ' is not implemented.</p>'
 		);
 		$base    = $defaultpage;

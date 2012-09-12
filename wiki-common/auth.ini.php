@@ -48,13 +48,15 @@ $auth_method_type = 'pagename'; // By Page name
 
 /////////////////////////////////////////////////
 // Read auth (0:Disable, 1:Enable)
+// 他のページから参照する場合や、プラグインで使用するページ（:config）を指定しないでください。
+// その場合、参照されたタイミングで閲覧制限がかかります。
 $read_auth = 0;
 
 $read_auth_pages = array(
-	// Regex                   Username or array('user'=>Username,'group'=>Groupname,'role'=>Role),
+	// Regex           Username or array('user'=>Username,'group'=>Groupname,'role'=>Role),
 	'/:log/'		=> $adminname,
 	'#FooBar#'		=> 'hoge',
-	'#(Foo|Bar)#'		=> 'foo,bar,hoge',
+	'#(Foo|Bar)#'	=> 'foo,bar,hoge',
 );
 
 /////////////////////////////////////////////////
@@ -62,10 +64,28 @@ $read_auth_pages = array(
 $edit_auth = 1;
 
 $edit_auth_pages = array(
-	// Regex                   Username or array('user'=>Username,'group'=>Groupname,'role'=>Role),
-	'#(FrontPage|MenuBar|SideBar|Navigation|InterWikiName|Glossary|AutoAliasName|^\:)#'		=> $adminname,
-	'#FooBar#'			=> 'hoge',
-	'#(Foo|Bar)#'		=> 'foo,bar,hoge',
+	// 管理人のみ編集できるページ
+	// サイトの根幹に関わるページです。必要に応じてコメントアウトしてください
+	'/^(' .
+		$defaultpage .			// FrontPage
+		'|' . $menubar .		// MenuBar
+		'|' . $interwiki .		// InterWikiName
+		'|' . $aliaspage .		// AutoAliasName
+		'|' . $sidebar .		// SideBar
+		'|' . $navigation .		// Navigation
+		'|' . $glossarypage .	// Glossary
+		'|' . $headarea .		// :Header
+		'|' . $footarea .		// :Footer
+
+		'|' . $whatsnew .		// RecentChanges
+		'|' . $whatsdeleted .	// RecentDeleted
+	')$/'		=> $adminname,
+	// 設定ページ
+	'/^\:config/' => $adminname,
+
+	// Regex Username or array('user'=>Username,'group'=>Groupname,'role'=>Role),
+	'/FooBar/'			=> 'hoge',
+	'/(Foo|Bar)/'		=> 'foo,bar,hoge',
 );
 
 /////////////////////////////////////////////////

@@ -3,8 +3,8 @@
  * dav plugin.
  *
  * @copyright   Copyright &copy; 2010, Katsumi Saito <jo1upk@users.sourceforge.net>
- * @version     $Id: dav.inc.php,v 1.00 2010/07/10 22:44:00 upk Exp $
- * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
+ * @version	 $Id: dav.inc.php,v 1.0.1 2012/09/12 11:11:00 Logue Exp $
+ * @license	 http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  *
  * 現状では、DOMDocument の実装上、PHP5以降でのみ稼働。
  * CentOS の場合は、php-xml パッケージを導入する必要あり。
@@ -79,7 +79,7 @@ function plugin_dav_action()
 	case 'GET':
 	case 'HEAD':
 		// 通常のファイル参照時は、このメソッドでアクセスされる
-		$obj = & dav_getfileobj($path_info, true);
+		$obj = dav_getfileobj($path_info, true);
 		if($obj != NULL && $obj->exist) {
 			$obj->open();
 		}
@@ -107,7 +107,7 @@ function plugin_dav_action()
 		// それをLOCKしてから、上書きしにくる。
 		// しかし、Pukiwikiは基本上書き禁止。
 		// そこで0バイトの時は無視する。
-                if($size == 0) exit;
+		if($size == 0) exit;
 
 		if($size > PLUGIN_ATTACH_MAX_FILESIZE) {
 			dav_error_exit(403, 'file size error');
@@ -135,7 +135,7 @@ function plugin_dav_action()
 			$must_compress = false;
 		}
 
-		$obj = & dav_getfileobj($path_info, false, $must_compress);
+		$obj = dav_getfileobj($path_info, false, $must_compress);
 
 		if (!is_object($obj)) dav_error_exit(403, 'no page');
 		if($obj->exist){
@@ -159,6 +159,15 @@ function plugin_dav_action()
 			$zp = gzopen($obj->filename, 'wb') or dav_error_exit(500); // 圧縮ファイルが書けません
 			while (!feof($tp)) { gzwrite($zp,fread($tp, 8192)); }
 			gzclose($zp);
+			fclose($tp);
+			chmod($obj->filename, PLUGIN_ATTACH_FILE_MODE);
+			@unlink($tmpfilename);
+			break;
+		case '.bz2':
+			$tp = fopen($tmpfilename,'rb') or dav_error_exit(500); // アップロードされたファイルが読めません
+			$zp = gzopen($obj->filename, 'wb') or dav_error_exit(500); // 圧縮ファイルが書けません
+			while (!feof($tp)) { bzwrite($zp,fread($tp, 8192)); }
+			bzclose($zp);
 			fclose($tp);
 			chmod($obj->filename, PLUGIN_ATTACH_FILE_MODE);
 			@unlink($tmpfilename);
@@ -333,15 +342,15 @@ function plugin_dav_action()
 
 		// PROPFIND の挙動 (作成したフォルダーを表示させるため)
 		$depth = '1';
-                list($dir,$file) = dav_get_folder_info($path_info,$depth);
-                if (!isset($dir)) dav_error_exit(404);
+		list($dir,$file) = dav_get_folder_info($path_info,$depth);
+		if (!isset($dir)) dav_error_exit(404);
 
-                $ret = dav_makemultistat($dir, $file, $_SERVER['REQUEST_URI'], $depth);
-                if(!isset($ret)) dav_error_exit(301, NULL, dav_myurl().'/');
-                header('HTTP/1.1 200 OK');
-                header('Content-Type: text/xml');
-                echo $ret->saveXML();
-                exit;
+		$ret = dav_makemultistat($dir, $file, $_SERVER['REQUEST_URI'], $depth);
+		if(!isset($ret)) dav_error_exit(301, NULL, dav_myurl().'/');
+		header('HTTP/1.1 200 OK');
+		header('Content-Type: text/xml');
+		echo $ret->saveXML();
+		exit;
 
 	case 'PROPPATCH':
 		// PROPPATCH が失敗するとファイルを消すため必要。
@@ -380,9 +389,9 @@ function dav_get_fullpath_page()
 
 function dav_makemultistat($dir, $file, $path, $depth)
 {
-        $ret = new DOMDocument();
-        $ele = $ret->createElementNS('DAV:', 'D:multistatus');
-        $ret->appendChild($ele);
+		$ret = new DOMDocument();
+		$ele = $ret->createElementNS('DAV:', 'D:multistatus');
+		$ret->appendChild($ele);
 
 	// windows の場合、スラッシュで終わらない場合がある
 	if (substr($path,-1) !== '/') $path .= '/';
@@ -500,29 +509,29 @@ function dav_error_exit($code, $msg = NULL, $url = NULL)
 {
 	global $auth_type, $realm;
 
-        $array_msg = array(
-                301 => array('msg1'=>'Moved',                   'msg2'=>''),
-                401 => array('msg1'=>'Authorization Required',  'msg2'=>''),
-                403 => array('msg1'=>'Forbidden',               'msg2'=>'Your request is forbideen.'),
-                404 => array('msg1'=>'Not Found',               'msg2'=>'The file/directory you request is not found.'),
-                405 => array('msg1'=>'Method not Allowed',      'msg2'=>'Your request is not allowd.'),
-                406 => array('msg1'=>'Not acceptable',          'msg2'=>'Your request is not acceptable'),
-		409 => array('msg1'=>'Conflict',		'msg2'=>'A resource cannot be created at the destination until one or more intermediate collections have been created.'), // MOVE,COPY
-		423 => array('msg1'=>'Locked',			'msg2'=>'The source or the destination resource was locked.'), // MOVE,COPY
-                500 => array('msg1'=>'Internal Server Error',   'msg2'=>'Internal Server Error.'),
-                501 => array('msg1'=>'Method not Implemented',  'msg2'=>'The method you request is not implemented.'),
-        );
+		$array_msg = array(
+			301 => array('msg1'=>'Moved',                  'msg2'=>''),
+			401 => array('msg1'=>'Authorization Required', 'msg2'=>''),
+			403 => array('msg1'=>'Forbidden',              'msg2'=> 'Your request is forbideen.'),
+			404 => array('msg1'=>'Not Found',              'msg2'=> 'The file/directory you request is not found.'),
+			405 => array('msg1'=>'Method not Allowed',     'msg2'=> 'Your request is not allowd.'),
+			406 => array('msg1'=>'Not acceptable',         'msg2'=> 'Your request is not acceptable'),
+			409 => array('msg1'=>'Conflict',               'msg2'=> 'A resource cannot be created at the destination until one or more intermediate collections have been created.'), // MOVE,COPY
+			423 => array('msg1'=>'Locked',                 'msg2'=> 'The source or the destination resource was locked.'), // MOVE,COPY
+			500 => array('msg1'=>'Internal Server Error',  'msg2'=> 'Internal Server Error.'),
+			501 => array('msg1'=>'Method not Implemented', 'msg2'=> 'The method you request is not implemented.'),
+		);
 
-        if (!array_key_exists($code,$array_msg)) $code = 500;
-        $msg1 = & $array_msg[$code]['msg1'];
-        $msg2 = & $array_msg[$code]['msg2'];
-        header('HTTP/1.1 '.$code.' '.$msg1);
+		if (!array_key_exists($code,$array_msg)) $code = 500;
+		$msg1 = & $array_msg[$code]['msg1'];
+		$msg2 = & $array_msg[$code]['msg2'];
+		header('HTTP/1.1 '.$code.' '.$msg1);
 
-        switch ($code) {
-        case 301:
-                header('Location: '.$url);
-                exit;
-        case 401:
+		switch ($code) {
+		case 301:
+				header('Location: '.$url);
+				exit;
+		case 401:
 		switch ($auth_type) {
 		case 2:
 			header('WWW-Authenticate: Digest realm="'.$realm.
@@ -530,20 +539,20 @@ function dav_error_exit($code, $msg = NULL, $url = NULL)
 			exit;
 		default:
 			header('WWW-Authenticate: Basic realm="'.$realm.'"');
-                	exit;
+					exit;
 		}
 		exit;
-        }
+		}
 
-        echo '<html><head>';
-        echo '<title>'.$code.' '.$msg1.'</title>';
-        echo '</head><body>';
-        echo '<h1>'.$code.' '.$msg1.'</h1>';
-        echo '<p>'.$msg2.'</p>';
-        if(isset($msg)) echo '<p>'.htmlspecialchars($msg).'</p>';
-        echo '<p>This script should be used with WebDAV protocol.</p>';
-        echo '</body></html>';
-        exit;
+		echo '<html><head>';
+		echo '<title>'.$code.' '.$msg1.'</title>';
+		echo '</head><body>';
+		echo '<h1>'.$code.' '.$msg1.'</h1>';
+		echo '<p>'.$msg2.'</p>';
+		if(isset($msg)) echo '<p>'.htmlsc($msg).'</p>';
+		echo '<p>This script should be used with WebDAV protocol.</p>';
+		echo '</body></html>';
+		exit;
 }
 
 function dav_officious_message()
@@ -691,7 +700,7 @@ function dav_get_folder_info($path,$depth)
 		}
 	}
 
-        // 添付ファイル非表示の場合は、コンテンツ管理者なら表示する
+		// 添付ファイル非表示の場合は、コンテンツ管理者なら表示する
 	if (!$attach_link && auth::check_role('role_adm_contents')) return array($info_dir,$info_file);
 
 	if (isset($pages[$page]['file'])) $info_file = $pages[$page]['file'];
@@ -704,8 +713,8 @@ function dav_get_folder_info($path,$depth)
 
 function dav_strip_slash($x)
 {
-        $x = (substr($x, 0, 1) == '/') ? substr($x, 1) : $x; // 先頭の / は一律カット
-        $x = (substr($x, -1) == '/') ? substr($x, 0, -1) : $x; // 最後の / は一律カット
+		$x = (substr($x, 0, 1) == '/') ? substr($x, 1) : $x; // 先頭の / は一律カット
+		$x = (substr($x, -1) == '/') ? substr($x, 0, -1) : $x; // 最後の / は一律カット
 	return $x;
 }
 
@@ -716,7 +725,7 @@ function dav_get_existpages_cache()
 	$cache_name = CACHE_DIR.encode(DATA_DIR.'.txt').'.txt';
 	if (!cache_timestamp_compare_date('wiki',$cache_name)) {
 		unset($retval);
-        }
+		}
 
 	if (isset($retval)) return $retval;
 
@@ -771,23 +780,23 @@ function dav_get_page_name(& $pages, $path)
 
 function dav_is_last($path,$page)
 {
-        $a    = explode('/', $path);
-        $full = explode('/', $page);
+		$a	= explode('/', $path);
+		$full = explode('/', $page);
 
 	// 最上位階層の場合
-        if (empty($path) || count($full)==1) {
-                return array(0=>1,1=>$full[0],2=>$full[0]);
-        }
+		if (empty($path) || count($full)==1) {
+				return array(0=>1,1=>$full[0],2=>$full[0]);
+		}
 
-        $b    = array_slice($full, count($a));
+		$b	= array_slice($full, count($a));
 
-        // 0: 末端か？
-        $rc[0] = (count($b) < 2) ? true : false;
-        // 1: 第１階層名称 (直下のページ名)
-        $rc[1] = $b[0];
+		// 0: 末端か？
+		$rc[0] = (count($b) < 2) ? true : false;
+		// 1: 第１階層名称 (直下のページ名)
+		$rc[1] = $b[0];
 	// 2: 直下までの絶対ページ名
-        $rc[2] = $path.'/'.$b[0];
-        return $rc;
+		$rc[2] = $path.'/'.$b[0];
+		return $rc;
 }
 
 function dav_is_last_name($path,$name)

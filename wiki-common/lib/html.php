@@ -46,7 +46,6 @@ function catbody($title, $page, $body)
 	$is_createpage = auth::is_check_role(PKWK_CREATE_PAGE);
 
 	pkwk_common_headers(($lastmod && $is_read) ? $filetime : 0);
-
 	if (IS_AJAX && !IS_MOBILE){
 		$ajax = isset($vars['ajax']) ? $vars['ajax'] : 'raw';
 		switch ($ajax) {

@@ -168,6 +168,9 @@ $page_title = 'PukiWiki Advance';
 // Site Logo
 $logo = IMAGE_DIR.'pukiwiki_adv.logo.png';
 
+// Site Image (for OGP)
+$site_image = IMAGE_DIR.'pukiwiki_adv.image.png';
+
 // Shorten $script: Cut its file name (default: not cut)
 $script_directory_index = 'index.php';
 
@@ -190,7 +193,6 @@ $modifier = 'anonymous';
 
 // Site admin's Web page (CHANGE THIS)
 $modifierlink = get_script_absuri();
-//$modifierlink = dirname($_SCRIPT_NAME);
 
 // Default page name
 $defaultpage	= 'FrontPage';		// Top / Default page
@@ -270,14 +272,6 @@ $x_ua_compatible = "IE=edge,chrome=1";	// Render as latest IE, if Chrome Frame i
 // $x_ua_compatible = "IE=edge";	// Render as latest IE
 
 /////////////////////////////////////////////////
-
-// PLUS_ALLOW_SESSION - Allow / Prohibit using Session
-defined('PLUS_ALLOW_SESSION') or define('PLUS_ALLOW_SESSION', 1);
-
-// LOG
-require_once(add_homedir('config-log.ini.php'));
-
-/////////////////////////////////////////////////
 // Blocking SPAM
 $use_spam_check = array(
 	'page_view'			=> 0,	// 閲覧規制（管理者指定による）
@@ -290,14 +284,6 @@ $use_spam_check = array(
 	'bad-behavior'		=> 0,	// Bad Behaviorによるアンチスパム（仮実装）
 	'akismet'			=> 0	// Aksmetによるアンチスパムを有効化する（別途$akismet_api_keyを指定する必要があります。）1は差分のみ、2は全て
 );
-
-/////////////////////////////////////////////////
-// Anti-Spam service config
-
-// Akismet
-// https://akismet.com/signup/
-// server.ini.phpの設定が優先されます。
-$akismet_api_key = '';
 
 /////////////////////////////////////////////////
 // Spam URI insertion filtering
@@ -344,6 +330,17 @@ if ($spam) {
 // SPAM check for Posted Countory(Based on Apache+mod_geoip+GeoIP)
 $allow_countory = array();
 $deny_countory = array();
+
+/////////////////////////////////////////////////
+// Anti-Spam service config
+
+// Akismet
+// https://akismet.com/signup/
+// server.ini.phpの設定が優先されます。
+$akismet_api_key = '';
+
+// LOG
+require_once(add_homedir('config-log.ini.php'));
 
 /////////////////////////////////////////////////
 // TrackBack feature

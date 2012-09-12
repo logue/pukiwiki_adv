@@ -117,7 +117,7 @@ function plugin_calendar_convert()
 	}
 	
 	$ret .= <<<EOD
-<table class="style_table style_calendar" summary="calendar">
+<table class="style_table style_calendar" summary="calendar" data-sortable="false">
 	<thead>
 		<tr>
 			<td class="style_td style_calendar_top" colspan="7">
