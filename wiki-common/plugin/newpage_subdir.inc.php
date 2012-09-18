@@ -1,7 +1,7 @@
 <?php
-// $Id: newpage_subdir.inc.php,v 1.3.8 2011/02/05 12:00:00 Logue Exp $
+// $Id: newpage_subdir.inc.php,v 1.3.9 2012/09/18 15:48:00 Logue Exp $
 // Copyright (C)
-//   2010-2011 PukiWiki Advance Developers Team
+//   2010-2012 PukiWiki Advance Developers Team
 //   2005,2008 PukiWiki Plus! Team
 //
 // @based_on newpage.inc.php
@@ -53,32 +53,35 @@ function build_directory_list($roots, $option=array())
 function print_form_string( $list )
 {
 	global $vars;
-	
-	$form_string  = '<form action="'. get_script_uri() .'" method="post">'."\n".
-			'<fieldset>'."\n". '<legend>'.T_('Page name') . '</legend>';
+
+	$form_string[] = '<form action="'. get_script_uri() .'" method="post">';
+	$form_string[] = '<fieldset>';
+	$form_string[] = '<legend>'.T_('Page name') . '</legend>';
 
 	if($list['directory']) {
-		$form_string .= '<select name="directory">'."\n";
+		$form_string[] = '<select name="directory">';
 		foreach( $list['directory'] as $dir ) {
-			$form_string .= '<option>'.htmlsc($dir).'/</option>'."\n";
+			$form_string[] = '<option>'.htmlsc($dir).'/</option>';
 		}
-		$form_string .= "</select>\n";
+		$form_string[] = '</select>';
 	}
-	
-	$form_string .= '<input type="hidden" name="plugin" value="newpage_subdir" />'."\n".
-			'<input type="hidden" name="refer" value="'.$vars['page'].'" />'."\n".
-			'<input type="text" name="page" size="30" value="" />'."\n".
-			'<input type="submit" value="' . T_('New') . '" />'."\n".
-			'</fieldset>'."\n".
-			'</form>'."\n";
+
+	$form_string[] = '<input type="hidden" name="cmd" value="newpage_subdir" />';
+	$form_string[] = '<input type="hidden" name="refer" value="'.$vars['page'].'" />';
+	$form_string[] = '<input type="text" name="page" size="30" value="" />';
+	$form_string[] = '<input type="submit" value="' . T_('New') . '" />';
+	$form_string[] = '</fieldset>';
+	$form_string[] = '</form>';
 
 	if(isset($list['warning']) && $list['warning']) {
+		$form_string[] = '<p>';
 		foreach( $list['warning'] as $warning ) {
-			$form_string .= $warning;
+			$form_string[] = $warning;
 		}
+		$form_string[] = '</p>';
 	}
 
-	return $form_string;
+	return join("\n",$form_string);
 }
 
 function print_help_message()
@@ -90,10 +93,10 @@ function print_help_message()
 		'<dd>' . T_('The field that adds a new page below the directory specified for [directory] is made.') . '</dd>',
 		'<dd>' . T_('The order of the parameter is arbitrary.') . '</dd>',
 		'<dd>' . T_('When an undefined option is specified, Help is displayed with the message.') . '</dd>',
-		'<dt>' . T_('OPTION') . '</dt>' . 
+		'<dt>' . T_('OPTION') . '</dt>' .
 		'<dd>' . T_('-d Directory Only.	It limits it only to the one with the child page. (The directory specified specifying it is an exception. )') . '</dd>',
-		'<dd>' . T_('-h Help.		This Description is displayed.') . '</dd>',
-		'<dd>' . T_('-q Quiet.		Warning is not displayed.') . '</dd>',
+		'<dd>' . T_('-h Help. This Description is displayed.') . '</dd>',
+		'<dd>' . T_('-q Quiet. Warning is not displayed.') . '</dd>',
 		'<dt>' . T_('EXAMPLE') . '</dt>',
 		'<dd><pre><samp>',
 		'#newpage_subdir() -&gt; implies: #newpage_subdir(&lt;current dir&gt;)',
@@ -109,11 +112,10 @@ function print_help_message()
 
 function plugin_newpage_subdir_convert()
 {
-	global $vars;
+	global $vars, $_string;
 	// $available_option = 'rdhq';
 
-	if (auth::check_role('readonly')) return '';
-	if (auth::is_check_role(PKWK_CREATE_PAGE)) return '';
+	if (auth::check_role('readonly') || auth::is_check_role(PKWK_CREATE_PAGE) ) return sprintf($_string['error_prohibit'], 'Readonly');
 
 	$roots = $option = array();
 
@@ -124,16 +126,16 @@ function plugin_newpage_subdir_convert()
 		if(preg_match("/^\-[a-z\-\s]+\$/",$arg)) {
 			for($i=1;$i<strlen($arg);$i++){
 				switch($arg{$i}) {
-					case 'd' : 
-						$option['directory only'] = true; 
+					case 'd' :
+						$option['directory only'] = true;
 						break;
-					case 'q' : 
-						$option['quiet'] = true; 
+					case 'q' :
+						$option['quiet'] = true;
 						break;
 					case ' ' :
 					case '-' :
 						break;
-					case 'h' :						
+
 					default:
 						return print_help_message();
 				}
@@ -158,8 +160,7 @@ function plugin_newpage_subdir_action()
 {
 	global $vars;
 
-	if (auth::check_role('readonly')) return '';
-	if (auth::is_check_role(PKWK_CREATE_PAGE)) return '';
+	if (auth::check_role('readonly') || auth::is_check_role(PKWK_CREATE_PAGE) ) return sprintf($_string['error_prohibit'], 'Readonly');
 
 	$roots = $retval = array();
 	$page = (empty($vars['page'])) ? '' : $vars['page'];
@@ -175,7 +176,7 @@ function plugin_newpage_subdir_action()
 		);
 	}
 
-	header('Location: '.get_page_location_uri($dir.$page));
+	header('Location: '.get_script_uri().'?cmd=edit&page='.rawurlencode($dir.$page));
 	die();
 }
 /* End of file newpage_subdir.inc.php */
