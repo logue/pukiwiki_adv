@@ -40,11 +40,17 @@ require_once(PKWK_AUTH_WKGRP_FILE);
 // Auth API
 define('PKWK_AUTH_API_FILE', add_homedir('auth_api.ini.php'));
 require_once(PKWK_AUTH_API_FILE);
+
 /////////////////////////////////////////////////
 // Authentication method
 
 $auth_method_type = 'pagename'; // By Page name
 //$auth_method_type = 'contents'; // By Page contents
+
+// Accept specified IP without basic_auth
+$read_auth_pages_accept_ip = array(
+	'#Private\/#' => '127.0.',
+);
 
 /////////////////////////////////////////////////
 // Read auth (0:Disable, 1:Enable)
