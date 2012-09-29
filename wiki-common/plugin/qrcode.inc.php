@@ -181,6 +181,7 @@ function plugin_qrcode_action()
 	pkwk_common_headers(0,null, false);
 	print $qr->png(rawurldecode($vars['d']), false, (empty($vars['e'])) ? 'M' : $vars['e'], (empty($vars['s'])) ? 1 : $vars['s'], 2);
 	pkwk_common_suffixes();
+	exit();
 }
 /* End of file qrcode.inc.php */
 /* Location: ./wiki-common/plugin/qrcode.inc.php */
