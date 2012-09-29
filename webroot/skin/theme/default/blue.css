@@ -72,12 +72,12 @@ blockquote{
 	border: 1px solid #99CCFF;
 }
 
-thead td.style_td,
-tfoot td.style_td{
+thead .style_td,
+tfoot .style_td{
 	background-color:#D0D8E0;
 }
-thead th.style_th,
-tfoot th.style_th{
+thead .style_th,
+tfoot .style_th{
 	background-color:#E0E8F0;
 }
 .style_table{

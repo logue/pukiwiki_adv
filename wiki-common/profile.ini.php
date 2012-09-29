@@ -115,12 +115,11 @@ $agents = array(
 	// Sample: "Mozilla/5.0 (Windows; U; Windows NT 5.0; ja-JP; rv:1.7) Gecko/20040803 Firefox/0.9.3"
 	array('pattern'=>'#\b(Firefox|Netscape)/([0-9\.]+)\b#',	'css'=>'gecko',		'profile'=>'default'),
 	
+	// Mobile
+	array('pattern'=>'#\b(iPhone|iPhone|iPad|iPod|Android)+\b#',	'profile'=>	'mobile'),
+	
 	// Safari / Chrome (WebKit)
 	array('pattern'=>'#\b(AppleWebKit)/([0-9\.]+)\b#',	'css'=>'webkit',	'profile'=>'default'),
-	
-	// Mobile
-	array('pattern'=>'#\b(iPhone|iPad|Android)/([0-9\.]+)\b#',	'profile'=>	'mobile'),
-	
 
 	// Loose default: Including something Mozilla
 	array('pattern'=>'#^([a-zA-z0-9 ]+)/([0-9\.]+)\b#',	'profile'=>'default'),

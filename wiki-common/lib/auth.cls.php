@@ -7,7 +7,7 @@
  * @license	http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 require_once(LIB_DIR . 'auth.def.php');
-
+require_once(LIB_DIR . 'Opauth/Opauth.php');
 /**
  * 認証クラス
  * @abstract

@@ -90,7 +90,7 @@ $_string = array(
 	'blacklisted'		=> T_('Sorry, Your host is prohibited by <strong>IPBL</storng> (Blocking SPAM).'),
 	'prohibit_country'	=> T_('Sorry, access from your country is prohibited.'),
 	'not_readable'		=> T_('You have no permission to read this page.'),
-	'not_editable'		=> T_('You have no permission to edit this page or create page in lower level of this page.')
+	'not_editable'		=> T_('You have no permission to edit page or create page.')
 );
 
 $_button = array(
@@ -164,6 +164,7 @@ $_LANG['skin'] = array(
 	'referer'	=> T_('Referer'),
 
 	'reload'	=> T_('Reload'),
+	'back'		=> T_('Back'),
 	'source'	=> T_('Source'),
 
 	'rss'		=> T_('RSS of recent changes'),

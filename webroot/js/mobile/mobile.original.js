@@ -18,7 +18,8 @@
  */
 
 var pukiwiki = {};
-var JQUERY_MOBILE_VER = '1.1.1';
+//var JQUERY_MOBILE_VER = '1.1.1';
+var JQUERY_MOBILE_VER = 'latest';
 (function ($, window, document) {
 	'use strict';
 	var pkwkInit = [], pkwkBeforeInit = [], pkwkUnload = [], pkwkBeforeUnload = [];
@@ -81,7 +82,7 @@ var JQUERY_MOBILE_VER = '1.1.1';
 		},
 		init : function(){
 			if (DEBUG){
-				console.info('PukiWiki Advance Mobile Debug mode. \nUsing jQuery: ',$.fn.jquery,' / jQuery mobile: ',JQUERY_MOBILE_VER);
+				console.info('PukiWiki Advance Mobile Debug mode. \nUsing jQuery: ',$.fn.jquery,' / jQuery mobile: ',$.mobile.version);
 			}
 			this.image_dir = IMAGE_URI+'ajax/';	// デフォルト
 			
@@ -220,7 +221,9 @@ var JQUERY_MOBILE_VER = '1.1.1';
 				var backup = $this.clone();
 				var data = $this.data();
 				var config = self.config.tablesorter;
-				if ($this.data('enabled') !== true){
+				var sortable = (typeof($this.data('sortable')) === 'undefined' || $this.data('sortable') === true) ? true : false;
+					
+				if ($this.find('thead').length !== 0 && sortable){
 					if ($('tr',this).length > config.pager.minimum_lines && $('thead',this).length !== 0){	// 10行以上の場合ページャーを表示
 						// テーブルのページングウィジット
 						var pager_id = 'table_pager_'+config.counter;
@@ -230,7 +233,6 @@ var JQUERY_MOBILE_VER = '1.1.1';
 						config.sorter.sortList = data.sortList;
 						config.sorter.parsers = data.parsers;
 
-						
 						$this.tablesorter(config.sorter);
 						
 						if (config.pager.location_before === true){
@@ -344,23 +346,6 @@ var JQUERY_MOBILE_VER = '1.1.1';
 				$(prefix + 'form').append('<input type="hidden" name="'+BH_NAME+'" value="'+BH_VALUE+'" />');
 			}
 		},
-		// アンカースクロール＆ハイライト
-		anchor_scroll: function(href,highlight){
-			if ( href.match(/^#\w+?/) ){
-				var target = href.split('#')[1];
-				$.scrollTo(
-					'#'+target,{
-						duration: 800,
-						axis:"y",
-						queue:true,
-						onAfter:function(){
-							// スクロール後ハイライト
-							//if (highlight === true){ $('#'+target).effect("highlight",{}, 2000); }
-						}
-					}
-				);
-			}
-		},
 		// オーバーライド関数
 		register:{
 			init:function(func){
@@ -377,6 +362,7 @@ var JQUERY_MOBILE_VER = '1.1.1';
 			}
 		}
 	};
+	
 	$(document).ready(function(){
 		if (JQUERY_MOBILE_VER !== 'latest'){
 			$("head").append('<link rel="stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.mobile/'+JQUERY_MOBILE_VER+'/jquery.mobile-'+JQUERY_MOBILE_VER+'.min.css" />');
@@ -401,6 +387,13 @@ var JQUERY_MOBILE_VER = '1.1.1';
 		}
 		pukiwiki.init();
 		// ページが読み込まれた時のイベント
+
+		// Google Analytics
+		if (typeof(GOOGLE_ANALYTICS) !== 'undefined'){
+			window._gaq = [['_setAccount',GOOGLE_ANALYTICS],['_trackPageview'],['_trackPageLoadTime']];
+			$.getScript(('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js');
+		}
+
 		$page
 			.live('pageload',function(event, ui){
 				var f;
@@ -420,7 +413,9 @@ var JQUERY_MOBILE_VER = '1.1.1';
 					}
 				}
 				f = null;
-				
+				if (window._gaq){
+					_gaq.push(['_trackPageview', $.mobile.activePage.jqmData('url')]);
+				}
 			})
 		;
 		
@@ -438,24 +433,10 @@ var JQUERY_MOBILE_VER = '1.1.1';
 				$(ads_top).appendTo('.adarea');
 			});
 		}
-		
-		// Google Analytics
-		if (typeof(GOOGLE_ANALYTICS) !== 'undefined'){
-			window._gaq = [['_setAccount',GOOGLE_ANALYTICS],['_trackPageview'],['_trackPageLoadTime']];
-			$.getScript(('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js');
-		}
 
 		if (DEBUG){
 			var D3 = new Date();
 			console.info('Finish. (Process Time :',D3 - D2,'ms / Total :',D3 - D1,'ms)');
-		}
-	});
-	
-	$(document).bind('mobileinit', function(){
-		if (window._gaq){
-			$(':jqmData(role="page")').live('pageshow', function (event, ui) {
-				_gaq.push(['_trackPageview', $.mobile.activePage.jqmData('url')]);
-			});
 		}
 	});
 } )(jQuery, this, this.document );

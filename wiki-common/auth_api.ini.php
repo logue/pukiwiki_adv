@@ -13,12 +13,6 @@ $auth_api = array(
 			'community_id'	=> array(''),	// 'community1', 'community2', ...
 		),
 	),
-	// GFC
-	'auth_gfc' => array(
-		'use'			=> false,
-		'site'			=> '',
-		'hidden_login'  => true,
-	),
 	// RemoteIP
 	'remoteip' => array(
 		'use'			=> false,
@@ -53,8 +47,10 @@ $auth_api = array(
 		'use'		=> false,
 		'hidden'	=> true,
 	),
+
+
 	// Facebook
-	'facebook'	=> array(
+	'Facebook'	=> array(
 		'use'		=> false,
 		'appId'		=> '',
 		'secret'	=> '',
@@ -62,7 +58,8 @@ $auth_api = array(
 		'scope'		=> '',
 		'display'	=> false
 	),
-	'twitter'	=> array(
+	// Twitter
+	'Twitter'	=> array(
 		'use'		=> false,
 		'key'		=> '',
 		'secret'	=> ''

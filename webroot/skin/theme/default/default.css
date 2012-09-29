@@ -43,11 +43,6 @@ dt{
 	font-weight:bold;
 }
 
-dd{
-	margin-left:1.5em;
-	margin-bottom:.5em;
-}
-
 h1, h2, h3, h4, h5, h6{
 	padding: .1em 0 .1em .3em;
 	border:0;
@@ -85,30 +80,6 @@ pre{
 
 q{
 	border:1px dotted #999;
-}
-
-
-ul, ol {
-	margin: 0 .5em 0 2em;
-	padding: .1em 0 .1em 1.5em;
-}
-
-/* Table Tags */
-.style_table{
-	background-color:darkgray;
-}
-
-.style_th{
-	background-color:silver;
-}
-.style_td{
-	background-color:lightgrey;
-}
-.style_table tr:nth-child(even) .style_td{
-	 background-color:whitesmoke;
-}
-.style_td_blank{
-	background-color:lightgrey;
 }
 
 ::-webkit-scrollbar {
@@ -310,49 +281,6 @@ ul, ol {
 #note{
 	padding:0;
 	font-size: 86%;
-}
-
-/** Misc ******************************************************************************************/
-/* html.php/catbody() */
-.word0{
-	background-color:#FFFF66;
-	color:black;
-}
-.word1{
-	background-color:#A0FFFF;
-	color:black;
-}
-.word2{
-	background-color:#99FF99;
-	color:black;
-}
-.word3{
-	background-color:#FF9999;
-	color:black;
-}
-.word4{
-	background-color:#FF66FF;
-	color:black;
-}
-.word5{
-	background-color:#880000;
-	color:white;
-}
-.word6{
-	background-color:#00AA00;
-	color:white;
-}
-.word7{
-	background-color:#886800;
-	color:white;
-}
-.word8{
-	background-color:#004699;
-	color:white;
-}
-.word9{
-	background-color:#990099;
-	color:white;
 }
 
 /** MenuBar/SideBar*********************************************************************************/

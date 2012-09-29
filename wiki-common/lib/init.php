@@ -145,6 +145,7 @@ $user_agent['agent'] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_
 $ua = 'HTTP_USER_AGENT';
 // unset(${$ua}, $_SERVER[$ua], $HTTP_SERVER_VARS[$ua], $ua);	// safety
 if($user_agent['agent'] == '') die();	// UAが取得できない場合は処理を中断
+
 foreach ($agents as $agent) {
 	if (preg_match($agent['pattern'], $user_agent['agent'], $matches)) {
 		$user_agent = array(
@@ -156,7 +157,7 @@ foreach ($agents as $agent) {
 	}
 }
 unset($agents, $matches);
-
+//var_dump($user_agent);
 // Profile-related init and setting
 define('UA_PROFILE', isset($user_agent['profile']) ? $user_agent['profile'] : '');
 
@@ -328,11 +329,13 @@ $arg = str_replace('+','%20',$arg);
 // unset QUERY_STRINGs
 //foreach (array('QUERY_STRING', 'argv', 'argc') as $key) {
 // For OpenID Lib (use QUERY_STRING).
-foreach (array('argv', 'argc') as $key) {
-	unset(${$key}, $_SERVER[$key], $HTTP_SERVER_VARS[$key]);
+if (DEBUG){
+	foreach (array('argv', 'argc') as $key) {
+		unset(${$key}, $_SERVER[$key], $HTTP_SERVER_VARS[$key]);
+	}
+	// $_SERVER['REQUEST_URI'] is used at func.php NOW
+	unset($REQUEST_URI, $HTTP_SERVER_VARS['REQUEST_URI']);
 }
-// $_SERVER['REQUEST_URI'] is used at func.php NOW
-unset($REQUEST_URI, $HTTP_SERVER_VARS['REQUEST_URI']);
 
 // mb_convert_variablesのバグ(?)対策: 配列で渡さないと落ちる
 $arg = array($arg);
@@ -372,8 +375,8 @@ if (empty($_POST)) {
 }
 
 // 入力チェック: 'cmd=' prohibits nasty 'plugin='
-if (isset($vars['cmd']) && isset($vars['plugin']))
-	die( _( 'Using both cmd= and plugin= is not allowed.' ) );
+if (isset($vars['plugin']))
+	die( T_( 'plugin= is obsoleted.' ) );
 
 // 入力チェック: cmd, plugin の文字列は英数字以外ありえない
 foreach(array('cmd', 'plugin') as $var) {

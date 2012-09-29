@@ -700,6 +700,12 @@ function header_lastmod($page = NULL)
 // Get a list of encoded files (must specify a directory and a suffix)
 function get_existfiles($dir = DATA_DIR, $ext = '.txt')
 {
+	// get_existpages を３行で軽くする
+	// http://lsx.sourceforge.jp/?Hack%2Fget_existpages
+	// ただし、Adv.の場合ファイルに別途キャッシュしているのであまり意味ないかも・・・。
+	static $pages = array();
+	if (isset($pages[$dir][$ext])) return $pages[$dir][$ext];
+	
 	$aryret = array();
 	$pattern = '/^(?:[0-9A-F]{2})+' . preg_quote($ext, '/') . '$/';
 
@@ -711,6 +717,7 @@ function get_existfiles($dir = DATA_DIR, $ext = '.txt')
 	}
 	closedir($dp);
 
+	$pages[$dir][$ext] = $aryret;
 	return $aryret;
 }
 

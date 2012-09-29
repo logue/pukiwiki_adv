@@ -10,7 +10,7 @@
 //
 // Plugin related functions
 
-define('PKWK_PLUGIN_CALL_TIME_LIMIT', 768);
+defined('PKWK_PLUGIN_CALL_TIME_LIMIT') or define('PKWK_PLUGIN_CALL_TIME_LIMIT', 768);
 
 // Set global variables for plugins
 function set_plugin_messages($messages)

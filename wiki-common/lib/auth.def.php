@@ -22,7 +22,7 @@ defined('ROLE_AUTH_REMOTEIP')        or define('ROLE_AUTH_REMOTEIP', 5.5);
 defined('ROLE_AUTH_LIVEDOOR')        or define('ROLE_AUTH_LIVEDOOR', 5.6);
 defined('ROLE_AUTH_OPENID')          or define('ROLE_AUTH_OPENID', 5.7);
 defined('ROLE_AUTH_MIXI')            or define('ROLE_AUTH_MIXI', 5.8); // OpenID 対応により廃止
-defined('ROLE_AUTH_GFC')             or define('ROLE_AUTH_GFC', 5.9);
+defined('ROLE_AUTH_GOOGLE')          or define('ROLE_AUTH_GOOGLE', 5.9);
 defined('UNAME_ADM_CONTENTS_TEMP')   or define('UNAME_ADM_CONTENTS_TEMP', 'admin');
 
 // role level => login plugin name
@@ -34,7 +34,6 @@ $login_api = array(
 	strval(ROLE_AUTH_LIVEDOOR)        => 'livedoor',
 	strval(ROLE_AUTH_OPENID)          => 'openid',
 	strval(ROLE_AUTH_MIXI)            => 'mixi',
-	strval(ROLE_AUTH_GFC)		  => 'auth_gfc',
 );
 
 /* End of file auth.def.php */

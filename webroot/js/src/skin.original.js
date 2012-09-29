@@ -27,23 +27,21 @@ var pukiwiki = {};
 (function ($, Modernizr, window, document) {
 	'use strict';
 
-	window.log = function f(){
-		log.history = log.history || [];
-		log.history.push(arguments);
-		if(this.console) {
-			var args = arguments, newarr;
-			args.callee = args.callee.caller;
-			newarr = [].slice.call(args);
-			if (typeof console.log === 'object') log.apply.call(console.log, console, newarr);
-			else console.log.apply(console, newarr);
+	// Avoid `console` errors in browsers that lack a console.
+	if (!(window.console && console.log)) {
+		(function() {
+			var noop = function() {};
+			var methods = ['assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error', 'exception', 'group', 'groupCollapsed', 'groupEnd', 'info', 'log', 'markTimeline', 'profile', 'profileEnd', 'markTimeline', 'table', 'time', 'timeEnd', 'timeStamp', 'trace', 'warn'];
+			var length = methods.length;
+			var console = window.console = {};
+			while (length--) {
+				console[methods[length]] = noop;
+			}
+		}());
+		if (DEBUG) {
+			window.console.debugMode = true;
+			var D1 = new Date();
 		}
-	};
-	(function(a){function b(){}for(var c="assert,count,debug,dir,dirxml,error,exception,group,groupCollapsed,groupEnd,info,log,markTimeline,profile,profileEnd,time,timeEnd,trace,warn".split(","),d;!!(d=c.pop());){a[d]=a[d]||b;}})
-	(function(){try{console.log();return window.console;}catch(a){return (window.console={});}}());
-
-	if (DEBUG) {
-		window.console.debugMode = true;
-		var D1 = new Date();
 	}
 
 	// Detect IE
@@ -111,7 +109,7 @@ var pukiwiki = {};
 				autoArrows:		false,	// if true, arrow mark-up generated automatically = cleaner source code at expense of initialisation performance
 				dropShadows:	false
 			}, this.custom.suckerfish);
-			
+			/*
 			$.extend(true, $.ui.rlightbox.options, {
 				animationSpeed: "fast",
 				setPrefix: "lb",
@@ -131,7 +129,7 @@ var pukiwiki = {};
 				},
 				loop: false
 			}, this.custom.rlightbox);
-			
+			*/
 			$.extend(true, $.beautyOfCode.settings, {
 				theme: 'Default',
 				brushes: ['Plain', 'Diff'],
@@ -230,7 +228,7 @@ var pukiwiki = {};
 
 			// Lazyload（遅延画像ロード）
 			// IE6では、pngの場合アルファチャンネルが効かなくなるため、拡張子がpngのときは処理しない
-			$('*[role=main]' + ((ie < 6) ? 'img[src!$=.png]' : 'img')).lazyload({
+			$('*[role=main] ' + ((ie < 6) ? 'img[src!$=.png]' : 'img')).lazyload({
 				placeholder : this.image_dir+'grey.gif',
 				effect : "fadeIn"
 			});
@@ -426,7 +424,7 @@ var pukiwiki = {};
 			});
 
 			// タブ処理
-			// タブでリンクが貼られている場合は、ajaxは直接出力しなければならない。
+			// <
 			$(prefix + '.tabs li[role=tab] a').each(function(){
 				var $this = $(this);
 				var href = $this.attr('href');
@@ -434,11 +432,28 @@ var pukiwiki = {};
 				if (href.match('#')){
 					$this.data('disableScrolling',true);
 				}else{
+					// タブでリンクが貼られている場合は、ajaxは内部のHTMLを直接出力しなければならない。
+					// したがって、明示的に部分的なHTMLを出力する。（/lib/html.phpを見よ）
+					// リンク書き換えはこのスクリプトで行うため、プラグイン開発者はマークアップさえすれば問題ない。
 					$this.attr('href',href+'&ajax=raw');
 				}
 			});
 			$(prefix + '.tabs').tabs({
-				ajaxOptions: {global:false},
+				ajaxOptions: {
+					global:false,
+					ajaxOptions: {
+						beforeSend: function( xhr, status, index, anchor ) {
+							$( anchor.hash ).html($.i18n('dialog','loading'));
+						},
+						error: function( xhr, status, index, anchor ) {
+							$( anchor.hash ).html([
+								'<div class="ui-state-error ui-corner-all">',
+									'<p id="ajax_error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>'+$.i18n('dialog','error_page')+'</p>',
+								'</div>'
+							].join("\n"));
+						}
+					}
+				},
 				spinner: $.i18n('dialog', 'loading'),
 				load:function(event, ui) {
 					self.init_dom('#' + ui.panel.id);
@@ -483,7 +498,7 @@ var pukiwiki = {};
 			$(prefix + '.button').each(function(){
 				var $this = $(this);
 				var data = $this.data();
-				console.log(data.text);
+				//console.log(data.text);
 
 				$this.button({
 					text: data.text,
@@ -663,7 +678,7 @@ var pukiwiki = {};
 							(params.cmd === 'attach' &&  params.pcmd !== 'list') ||
 							(params.cmd === 'tb' && params.tb_id !== undefined) ||
 							(params.cmd === 'table_edit2' && !params.table_mod ) ||
-							(params.cmd.match(/attach|source|template|freeze|rename|diff|referer|logview/i) && typeof(params.page) !== 'undefined')
+							(params.cmd.match(/attach|source|template|freeze|rename|diff|referer|logview|related/i) && typeof(params.page) !== 'undefined')
 						){
 							// その他の主要なプラグインは、インラインウィンドウで表示
 							if (params.help == 'true'){
@@ -844,9 +859,13 @@ var pukiwiki = {};
 			var table = (prefix) ? prefix + ' .style_table' : '.style_table';
 			$(table).each(function(){
 				var $this = $(this);
-				
-				if ($this.find('thead').length !== 0 && $this.data('disable') !== true && $this.hasClass('style_calendar') !== true){
-					$this.dataTable({aaSorting: []});
+				var sortable = (typeof($this.data('sortable')) === 'undefined' || $this.data('sortable') === true) ? true : false;
+				if ($this.find('thead').length !== 0 && sortable){
+					$this.dataTable({
+						sDom: ($this.find('tr').length >= 10) ? '<"H"pi>tr<"F"lf>' : 'tr',
+						bAutoWidth: true,
+						aaSorting: ! $this.data('filter') ? [] : $this.data('filter')
+					});
 				}
 			});
 		},
@@ -1620,9 +1639,6 @@ var pukiwiki = {};
 				return false;	// Submitで直接送信しないようにする
 */
 			});
-			
-			
-			
 
 			this.assistant(false);
 		},
@@ -2203,7 +2219,7 @@ var pukiwiki = {};
 					'hatena' : {
 						use : true,
 						dom : '<a href="http://b.hatena.ne.jp/entry/" class="hatena-bookmark-button" data-hatena-bookmark-layout="standard">Hatena</a>',
-						script : 'http://b.st-hatena.com/js/bookmark_button.js'
+						script : 'http://b.st-hatena.com/js/bookmark_button_wo_al.js'
 					},
 					// Mixi
 					// http://developer.mixi.co.jp/connect/mixi_plugin/mixi_check/spec_mixi_check/

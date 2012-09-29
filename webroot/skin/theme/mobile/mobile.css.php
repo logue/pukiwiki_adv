@@ -21,70 +21,57 @@ header('Last-Modified: '.gmdate('D, d M Y H:i:s', getlastmod() ) . ' GMT');
 ?>
 @charset "UTF-8";
 @namespace url(http://www.w3.org/1999/xhtml);
-/* HTML5 ✰ Boilerplate
- * ==|== normalize ==========================================================
- */
 
-article, aside, details, figcaption, figure, footer, header, hgroup, nav, section { display: block; }
-audio, canvas, video { display: inline-block; *display: inline; *zoom: 1; }
-audio:not([controls]) { display: none; }
-[hidden] { display: none; }
+/* HTML5 ✰ Boilerplate */
+/* ==|== normalize.css v2.0.1 | MIT License | git.io/normalize ===============*/
+article,aside,details,figcaption,figure,footer,header,hgroup,nav,section,summary{display:block}
+audio,canvas,video{display:inline-block}
+audio:not([controls]){display:none;height:0}
+[hidden]{display:none}
+html{font-family:sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
+body{margin:0}
+a:focus{outline:thin dotted}
+a:active,a:hover{outline:0}
+h1{font-size:2em}
+abbr[title]{border-bottom:1px dotted}
+b,strong{font-weight:bold}
+dfn{font-style:italic}
+mark{background:#ff0;color:#000}
+code,kbd,pre,samp{font-family:monospace,serif;font-size:1em}
+pre{white-space:pre;white-space:pre-wrap;word-wrap:break-word}
+q{quotes:"\201C" "\201D" "\2018" "\2019"}
+small{font-size:80%}
+sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}
+sup{top:-0.5em}
+sub{bottom:-0.25em}
+img{border:0}
+svg:not(:root){overflow:hidden}
+figure{margin:0}
+fieldset{border:1px solid #c0c0c0;margin:0 2px;padding:.35em .625em .75em}
+legend{border:0;padding:0}
+button,input,select,textarea{font-family:inherit;font-size:100%;margin:0}
+button,input{line-height:normal}
+button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer}
+button[disabled],input[disabled]{cursor:default}
+input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0}
+input[type="search"]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}
+input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance:none}
+button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
+textarea{overflow:auto;vertical-align:top}
+table{border-collapse:collapse;border-spacing:0}
 
-html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-body { margin: 0; font-size: 13px; line-height: 1.4; }
-body, button, input, select, textarea { color: #222; }
-
-::-moz-selection { background: #57a1fe; color: #fff; text-shadow: none; }
-::selection { background: #57a1fe; color: #fff; text-shadow: none; }
-
-a { color: #00e; }
-a:visited { color: #551a8b; }
-a:hover { color: #06e; }
-a:focus { outline: thin dotted; }
-a:hover, a:active { outline: 0; }
-
-abbr[title] { border-bottom: 1px dotted; }
-b, strong { font-weight: bold; }
-blockquote { margin: 1em 40px; }
-dfn { font-style: italic; }
-hr { display: block; height: 1px; border: 0; border-top: 1px solid #ccc; margin: 1em 0; padding: 0; }
-ins { background: #ff9; color: #000; text-decoration: none; }
-mark { background: #ff0; color: #000; font-style: italic; font-weight: bold; }
-pre { white-space: pre; white-space: pre-wrap; word-wrap: break-word; }
-q { quotes: none; }
-q:before, q:after { content: ""; content: none; }
-small { font-size: 85%; }
-sub, sup { font-size: 75%; line-height: 0; position: relative; vertical-align: baseline; }
-sup { top: -0.5em; }
-sub { bottom: -0.25em; }
-ul, ol { margin: 1em 0; padding: 0 0 0 40px; }
-dd { margin: 0 0 0 40px; }
-nav ul, nav ol { list-style: none; list-style-image: none; margin: 0; padding: 0; }
-img { border: 0; -ms-interpolation-mode: bicubic; vertical-align: middle; }
-svg:not(:root) { overflow: hidden; }
-figure { margin: 0; }
-
-form { margin: 0; }
-fieldset { border: 0; margin: 0; padding: 0; }
-label { cursor: pointer; }
-legend { border: 0; *margin-left: -7px; padding: 0; }
-button, input, select, textarea { font-size: 100%; margin: 0; vertical-align: baseline; *vertical-align: middle; }
-button, input { line-height: normal; }
-button, input[type="button"], input[type="reset"], input[type="submit"] { cursor: pointer; -webkit-appearance: button; *overflow: visible; }
-input[type="checkbox"], input[type="radio"] { box-sizing: border-box; }
-input[type="search"] { -webkit-appearance: textfield; -moz-box-sizing: content-box; -webkit-box-sizing: content-box; box-sizing: content-box; }
-input[type="search"]::-webkit-search-decoration { -webkit-appearance: none; }
-button::-moz-focus-inner, input::-moz-focus-inner { border: 0; padding: 0; }
-textarea { overflow: auto; vertical-align: top; resize: vertical; }
-input:valid, textarea:valid {  }
-input:invalid, textarea:invalid { background-color: #f0dddd; }
-
-table { border-collapse: collapse; border-spacing: 0; }
-td { vertical-align: top; }
+/* ==|== HTML5 Boilerplate styles - h5bp.com ================================ */
+html,button,input,select,textarea{color: #222;}
+body{font-size: 13px;line-height: 1.4;}
+::-moz-selection,::selection {background: #b3d4fc;text-shadow: none;}
+hr{display: block;height: 1px;border: 0;border-top: 1px solid #ccc;margin: 1em 0;padding: 0;}
+img{vertical-align: middle;}
+textarea{resize: vertical;}
+.chromeframe{margin: 0.2em 0;background: #ccc;color: #000;padding: 0.2em 0;}
 
 /* ==|== PukiWiki Advance Standard Font Set ================================= */
 
-html{
+.no-js {
 	display:none;
 }
 
@@ -393,69 +380,82 @@ textarea, select, option, input, var, pre, code{
 
 /* calendar.inc.php */
 .style_calendar{
-	width:13em;
+	width: 13em;
 }
 .style_calendar a{
-	text-decoration:none;
+	text-decoration: none;
 }
 .style_calendar a:hover{
-	background-color:transparent;
+	background-color: transparent;
 }
-.style_calendar a strong{
+.style_calendar a st rong{
 	text-decoration:underline;
 }
 .style_calendar td, .style_calendar th{
-	text-align:center;
-	font-size:85%;
+	text-align: center;
+	font-size: 85%;
 }
 .style_calendar_navi{
-	display:block;
-	text-align:center;
+	display: block;
+	text-align: center;
 	list-style-image: none;
-	list-style:none;
+	list-style: none;
 	margin: 0;
-	padding:0;
+	padding: 0;
 }
 .style_calendar_title {
-	display:inline;
-	float:none;
+	display: inline;
+	float: none;
 }
 .style_calendar_prev {
-	display:inline;
-	float:left;
-	text-align:left;
+	display: inline;
+	float: left;
+	text-align: left;
 }
 .style_calendar_next {
-	display:inline;
-	float:right;
-	text-align:right;
+	display: inline;
+	float: right;
+	text-align: right;
 }
+.style_calendar .style_calendar_day {
+	background-color:ghostwhite;
+}
+.style_calendar .style_calendar_today {
+	background-color: lightyellow;
+}
+.style_calendar .style_calendar_sat {
+	background-color: aliceblue;
+}
+.style_calendar .style_calendar_sun, .style_calendar .style_calendar_holiday {
+	background-color: lavenderblush;
+}
+
 /* week text color */
 .week_sat{
-	color:blue;
+	color: blue;
 }
 .week_day {
-	color:black;
+	color: black;
 }
 .week_sun, .week_holiday {
-	color:red;
+	color: red;
 }
 /* Fix English calendar week label */
 :lang(en) .style_calendar_week{
 	font-family:monospace !important;
-	padding:.5em .2em;
+	padding: .5em .2em;
 }
 .style_calendar_post p{
 	padding: .25em 1em;
 }
 .style_calendar_post nav{
-	display:none;
+	display: none;
 }
 
 /* calendar_viewer.inc.php */
 .style_calendar_viewer{
-	float:left;
-	width:15em;
+	float: left;
+	width: 15em;
 }
 .style_calendar_post{
 	margin-left: 15em;
@@ -547,25 +547,11 @@ textarea, select, option, input, var, pre, code{
 	border-bottom: 1px dotted;
 }
 
-/* vote.inc.php */
-.vote_table{
-	vertical-align:middle;
-}
-.vote_label {
-	background-color:#FFCCCC;
-}
-.vote_td1 {
-	background-color:#DDE5FF;
-}
-.vote_td2 {
-	background-color:#EEF5FF;
-}
-
 /* ==|== ui icon classes ==================================================== */
 .pkwk-symbol{
 	display: inline-block;
-	width: 10px;
-	height: 10px;
+	width: 8px;
+	height: 8px;
 	margin:0 2px;
 	padding:1px;
 	line-height:100%;
@@ -575,7 +561,7 @@ textarea, select, option, input, var, pre, code{
 	text-shadow:none;
 	color: transparent;
 }
-
+.symbol-add			{ background-position: -36px -114px; }
 .symbol-edit		{ background-position: -54px -114px; }
 .symbol-attach		{ background-position: -72px -114px; }
 .symbol-external	{ background-position: -90px -114px; }
@@ -1050,16 +1036,19 @@ textarea, select, option, input, var, pre, code{
 .browser-wizz{ background-position: -1764px 0; width: 16px; height: 16px; }
 
 
-/* ==|== non-semantic helper classes ======================================== */
-.ir { display: block; border: 0; text-indent: -999em; overflow: hidden; background-color: transparent; background-repeat: no-repeat; text-align: left; direction: ltr; *line-height: 0; }
-.ir br { display: none; }
-.hidden { display: none !important; visibility: hidden; }
-.visuallyhidden { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
-.visuallyhidden.focusable:active, .visuallyhidden.focusable:focus { clip: auto; height: auto; margin: 0; overflow: visible; position: static; width: auto; }
-.invisible { visibility: hidden; }
-.clearfix:before, .clearfix:after { content: ""; display: table; }
-.clearfix:after { clear: both; }
-.clearfix { *zoom: 1; }
+/* ==|== Helper classes ===================================================== */
+.ir {background-color: transparent;border: 0;overflow: hidden;*text-indent: -9999px;}
+.ir:before {content: "";display: block;width: 0;height: 100%;}
+
+.hidden {display: none !important;visibility: hidden;}
+.visuallyhidden {border: 0;clip: rect(0 0 0 0);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}
+.visuallyhidden.focusable:active,.visuallyhidden.focusable:focus {clip: auto;height: auto;margin: 0;overflow: visible;position: static;width: auto;}
+
+.invisible {visibility: hidden;}
+
+.clearfix:before,.clearfix:after {content: " ";display: table;}
+.clearfix:after {clear: both;}
+.clearfix {*zoom: 1;}
 
 /* ==|== jQuery Mobile Override classes ============================== */
 .content-secondary .ui-listview {

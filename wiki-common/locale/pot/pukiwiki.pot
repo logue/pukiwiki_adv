@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Advance 1.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:09+0900\n"
+"POT-Creation-Date: 2012-09-29 09:13+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -340,7 +340,7 @@ msgid "You have no permission to read this page."
 msgstr ""
 
 #: ../../lib/resource.php:93
-msgid "You have no permission to edit this page or create page in lower level of this page."
+msgid "You have no permission to edit page or create page."
 msgstr ""
 
 #: ../../lib/resource.php:98
@@ -387,15 +387,15 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
-#: ../../lib/resource.php:109 ../../lib/resource.php:176
+#: ../../lib/resource.php:109 ../../lib/resource.php:177
 msgid "Login"
 msgstr ""
 
-#: ../../lib/resource.php:110 ../../lib/resource.php:177
+#: ../../lib/resource.php:110 ../../lib/resource.php:178
 msgid "Logout"
 msgstr ""
 
-#: ../../lib/resource.php:112
+#: ../../lib/resource.php:112 ../../lib/resource.php:167
 msgid "Back"
 msgstr ""
 
@@ -524,88 +524,84 @@ msgstr ""
 msgid "Reload"
 msgstr ""
 
-#: ../../lib/resource.php:167
+#: ../../lib/resource.php:168
 msgid "Source"
 msgstr ""
 
-#: ../../lib/resource.php:169
+#: ../../lib/resource.php:170
 msgid "RSS of recent changes"
 msgstr ""
 
-#: ../../lib/resource.php:170
+#: ../../lib/resource.php:171
 msgid "RDF of recent changes"
 msgstr ""
 
-#: ../../lib/resource.php:171
+#: ../../lib/resource.php:172
 msgid "ATOM of recent changes"
 msgstr ""
 
-#: ../../lib/resource.php:173
+#: ../../lib/resource.php:174
 msgid "Logo"
 msgstr ""
 
-#: ../../lib/resource.php:174
+#: ../../lib/resource.php:175
 msgid "Text Formatting Rules"
 msgstr ""
 
-#: ../../lib/resource.php:180
+#: ../../lib/resource.php:181
 msgid "Front page"
 msgstr ""
 
-#: ../../lib/resource.php:181
+#: ../../lib/resource.php:182
 msgid "Recent changes"
 msgstr ""
 
-#: ../../lib/resource.php:182
+#: ../../lib/resource.php:183
 msgid "Recent deleted"
 msgstr ""
 
-#: ../../lib/resource.php:183
+#: ../../lib/resource.php:184
 msgid "Interwiki name"
 msgstr ""
 
-#: ../../lib/resource.php:184
+#: ../../lib/resource.php:185
 msgid "Auto alias name"
 msgstr ""
 
-#: ../../lib/resource.php:185
+#: ../../lib/resource.php:186
 msgid "Glossary"
 msgstr ""
 
-#: ../../lib/resource.php:186
+#: ../../lib/resource.php:187
 msgid "MenuBar"
 msgstr ""
 
-#: ../../lib/resource.php:187
+#: ../../lib/resource.php:188
 msgid "SideBar"
 msgstr ""
 
-#: ../../lib/resource.php:188
+#: ../../lib/resource.php:189
 msgid "Navigation"
 msgstr ""
 
-#: ../../lib/resource.php:189
+#: ../../lib/resource.php:190
 msgid "Header area"
 msgstr ""
 
-#: ../../lib/resource.php:190
+#: ../../lib/resource.php:191
 msgid "Footer area"
 msgstr ""
 
-#: ../../lib/resource.php:191
+#: ../../lib/resource.php:192
 msgid "Protected"
 msgstr ""
 
-#: ../../lib/resource.php:194
+#: ../../lib/resource.php:195
 msgid "Site"
 msgstr ""
 
-#: ../../lib/resource.php:195
-msgid "Pages"
-msgstr ""
-
 #: ../../lib/resource.php:196
-msgid "Admin"
+msgid "Pages"
 msgstr ""
 
 #: ../../lib/resource.php:197

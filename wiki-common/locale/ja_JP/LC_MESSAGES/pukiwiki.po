@@ -7,18 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Advance v1.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:09+0900\n"
-"PO-Revision-Date: 2012-09-08 08:12+0900\n"
+"POT-Creation-Date: 2012-09-29 09:13+0900\n"
+"PO-Revision-Date: 2012-09-29 09:14+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
 "Language-Team: Japanese <logue@hotmail.co.jp>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Japanese\n"
-"X-Poedit-Country: JAPAN\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: ../../pot\n"
+"X-Generator: Poedit 1.5.3\n"
 
 #: ../../lib/resource.php:14
 msgid "Sun"
@@ -172,13 +171,11 @@ msgstr "12"
 msgid "December"
 msgstr "12月（師走）"
 
-#: ../../lib/resource.php:40
-#: ../../lib/resource.php:146
+#: ../../lib/resource.php:40 ../../lib/resource.php:146
 msgid "Freeze"
 msgstr "凍結"
 
-#: ../../lib/resource.php:41
-#: ../../lib/resource.php:147
+#: ../../lib/resource.php:41 ../../lib/resource.php:147
 msgid "Unfreeze"
 msgstr "凍結解除"
 
@@ -191,12 +188,20 @@ msgid "Others"
 msgstr "その他"
 
 #: ../../lib/resource.php:46
-msgid "In the page <strong>$2</strong>, <strong>$3</strong> pages that contain all the terms <var>$1</var> were found."
-msgstr "<var>$1</var>のすべてを含むページは <strong>$3</strong> ページ中、 <strong>$2</strong> ページ見つかりました。"
+msgid ""
+"In the page <strong>$2</strong>, <strong>$3</strong> pages that contain all "
+"the terms <var>$1</var> were found."
+msgstr ""
+"<var>$1</var>のすべてを含むページは <strong>$3</strong> ページ中、 <strong>"
+"$2</strong> ページ見つかりました。"
 
 #: ../../lib/resource.php:47
-msgid "In the page <strong>$2</strong>, <strong>$3</strong> pages that contain at least one of the terms <var>$1</var> were found."
-msgstr "<var>$1</var>のいずれかを含むページは <strong>$3</strong> ページ中、 <strong>$2</strong> ページ見つかりました。"
+msgid ""
+"In the page <strong>$2</strong>, <strong>$3</strong> pages that contain at "
+"least one of the terms <var>$1</var> were found."
+msgstr ""
+"<var>$1</var>のいずれかを含むページは <strong>$3</strong> ページ中、 <strong>"
+"$2</strong> ページ見つかりました。"
 
 #: ../../lib/resource.php:48
 msgid "No page which contains <var>$1</var> has been found."
@@ -210,8 +215,7 @@ msgstr "これらのキーワードがハイライトされています："
 msgid "View Text Formatting Rules"
 msgstr "テキスト整形のルールを表示する"
 
-#: ../../lib/resource.php:51
-#: ../../lib/resource.php:129
+#: ../../lib/resource.php:51 ../../lib/resource.php:129
 msgid "$1 was updated"
 msgstr "$1 を更新しました"
 
@@ -228,16 +232,18 @@ msgstr "パスワードが間違っています。"
 msgid "<var>$1</var> is not a valid <var>$2</var>."
 msgstr "<var>$1</var>は有効な<var>$2</var>ではありません。"
 
-#: ../../lib/resource.php:59
-#: ../../lib/resource.php:128
+#: ../../lib/resource.php:59 ../../lib/resource.php:128
 msgid "On updating $1, a collision has occurred."
 msgstr "$1 で【更新の衝突】が起きました"
 
-#: ../../lib/resource.php:60
-#: ../../lib/resource.php:64
+#: ../../lib/resource.php:60 ../../lib/resource.php:64
 #: ../../lib/resource.php:67
-msgid "It seems that someone has already updated this page while you were editing it."
-msgstr "あなたがこのページを編集している間に、他の人が同じページを更新してしまったようです。"
+msgid ""
+"It seems that someone has already updated this page while you were editing "
+"it."
+msgstr ""
+"あなたがこのページを編集している間に、他の人が同じページを更新してしまったよ"
+"うです。"
 
 #: ../../lib/resource.php:61
 msgid "+ is placed at the beginning of a line that was newly added."
@@ -252,7 +258,9 @@ msgid "Edit those lines, and submit again."
 msgstr "これらの行を編集した後、送信ボタンを押してください。"
 
 #: ../../lib/resource.php:65
-msgid "The collision has been corrected automatically, but there may still be some problems with the page."
+msgid ""
+"The collision has been corrected automatically, but there may still be some "
+"problems with the page."
 msgstr "自動で衝突を解消しましたが、問題がある可能性があります。"
 
 #: ../../lib/resource.php:66
@@ -269,16 +277,24 @@ msgstr "警告"
 
 #: ../../lib/resource.php:72
 #, php-format
-msgid "This Wiki is <var>%s</var> mode now. The action which you are trying to do is prohibited."
-msgstr "現在このWikiは、<var>%s</var>モードになっています。実行しようとしていた作業は、禁止されています。"
+msgid ""
+"This Wiki is <var>%s</var> mode now. The action which you are trying to do "
+"is prohibited."
+msgstr ""
+"現在このWikiは、<var>%s</var>モードになっています。実行しようとしていた作業"
+"は、禁止されています。"
 
 #: ../../lib/resource.php:73
 msgid "A runtime error has occurred."
 msgstr "ランタイムエラーが発生しました。"
 
 #: ../../lib/resource.php:73
-msgid "Please contact to site admin. If you want more information, please change <var>PKWK_WARNING</var> value."
-msgstr "管理人に問い合わせてください。より詳細な情報を表示したい場合は、<var>PKWK_WARNING</var>の値を変更してください。"
+msgid ""
+"Please contact to site admin. If you want more information, please change "
+"<var>PKWK_WARNING</var> value."
+msgstr ""
+"管理人に問い合わせてください。より詳細な情報を表示したい場合は、"
+"<var>PKWK_WARNING</var>の値を変更してください。"
 
 #: ../../lib/resource.php:74
 msgid "This program is running in debug mode."
@@ -286,8 +302,12 @@ msgstr "このプログラムは、デバッグモードで走っています。
 
 #: ../../lib/resource.php:75
 #, php-format
-msgid "<var>$adminpass</var> is not changed! Click <a href=\"%s\">here</a> to generate crypted password and modify auth.ini.php!"
-msgstr "<var>$adminpass</var>が変更されていません！<a href=\"%s\">ここ</a>をクリックしてパスワードを生成し、auth.ini.phpを変更してください。"
+msgid ""
+"<var>$adminpass</var> is not changed! Click <a href=\"%s\">here</a> to "
+"generate crypted password and modify auth.ini.php!"
+msgstr ""
+"<var>$adminpass</var>が変更されていません！<a href=\"%s\">ここ</a>をクリック"
+"してパスワードを生成し、auth.ini.phpを変更してください。"
 
 #: ../../lib/resource.php:76
 #, php-format
@@ -310,8 +330,10 @@ msgstr "無効な文字が含まれています。"
 
 #: ../../lib/resource.php:82
 #, php-format
-msgid "A fatal error has occured at line <var>%1s</var> in file <var>%2s</var>."
-msgstr "致命的なエラーがファイル<var>%2s</var>の<var>%1s</var>行目で発生しました。"
+msgid ""
+"A fatal error has occured at line <var>%1s</var> in file <var>%2s</var>."
+msgstr ""
+"致命的なエラーがファイル<var>%2s</var>の<var>%1s</var>行目で発生しました。"
 
 #: ../../lib/resource.php:83
 msgid "Script execution has been aborted."
@@ -319,8 +341,12 @@ msgstr "スクリプトの実行は中断されました。"
 
 #: ../../lib/resource.php:85
 #, php-format
-msgid "Plugin Error: <var>%1s</var> was called over <var>%2s</var> times. SPAM or someting?"
-msgstr "プラグインエラー：<var>%1s</var>は、短時間の間に、<var>%2s</var>回も呼び出されています。スパムの可能性あり？"
+msgid ""
+"Plugin Error: <var>%1s</var> was called over <var>%2s</var> times. SPAM or "
+"someting?"
+msgstr ""
+"プラグインエラー：<var>%1s</var>は、短時間の間に、<var>%2s</var>回も呼び出さ"
+"れています。スパムの可能性あり？"
 
 #: ../../lib/resource.php:86
 msgid "Plugin Error: PostId mismatch."
@@ -336,8 +362,11 @@ msgid "Plugin Error: <var>cmd=%s</var> is not implemented."
 msgstr "プラグインエラー：plugin=%sは、実装されていません。"
 
 #: ../../lib/resource.php:90
-msgid "Sorry, Your host is prohibited by <strong>IPBL</storng> (Blocking SPAM)."
-msgstr "あなたのホストは、<strong>IPBL</strong>により、接続は拒否されています。（スパムブロック）"
+msgid ""
+"Sorry, Your host is prohibited by <strong>IPBL</storng> (Blocking SPAM)."
+msgstr ""
+"あなたのホストは、<strong>IPBL</strong>により、接続は拒否されています。（スパ"
+"ムブロック）"
 
 #: ../../lib/resource.php:91
 msgid "Sorry, access from your country is prohibited."
@@ -348,8 +377,8 @@ msgid "You have no permission to read this page."
 msgstr "あなたは、このページを読む権限を持っていません。"
 
 #: ../../lib/resource.php:93
-msgid "You have no permission to edit this page or create page in lower level of this page."
-msgstr "あなたは、このページを編集したり下位階層にページを作成する権限を持っていません。"
+msgid "You have no permission to edit page or create page."
+msgstr "あなたは、このページを編集したり作成できる権限を持っていません。"
 
 #: ../../lib/resource.php:98
 msgid "Preview"
@@ -367,13 +396,11 @@ msgstr "ページの更新"
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: ../../lib/resource.php:102
-#: ../../lib/resource.php:139
+#: ../../lib/resource.php:102 ../../lib/resource.php:139
 msgid "Add"
 msgstr "追加"
 
-#: ../../lib/resource.php:103
-#: ../../lib/resource.php:159
+#: ../../lib/resource.php:103 ../../lib/resource.php:159
 msgid "Search"
 msgstr "検索"
 
@@ -381,13 +408,11 @@ msgstr "検索"
 msgid "Load"
 msgstr "読込"
 
-#: ../../lib/resource.php:105
-#: ../../lib/resource.php:144
+#: ../../lib/resource.php:105 ../../lib/resource.php:144
 msgid "Edit"
 msgstr "編集"
 
-#: ../../lib/resource.php:106
-#: ../../lib/resource.php:149
+#: ../../lib/resource.php:106 ../../lib/resource.php:149
 msgid "Edit(GUI)"
 msgstr "編集(GUI)"
 
@@ -399,17 +424,15 @@ msgstr "削除"
 msgid "Remove"
 msgstr "削除"
 
-#: ../../lib/resource.php:109
-#: ../../lib/resource.php:176
+#: ../../lib/resource.php:109 ../../lib/resource.php:177
 msgid "Login"
 msgstr "ログイン"
 
-#: ../../lib/resource.php:110
-#: ../../lib/resource.php:177
+#: ../../lib/resource.php:110 ../../lib/resource.php:178
 msgid "Logout"
 msgstr "ログアウト"
 
-#: ../../lib/resource.php:112
+#: ../../lib/resource.php:112 ../../lib/resource.php:167
 msgid "Back"
 msgstr "戻る"
 
@@ -538,89 +561,85 @@ msgstr "リンク元"
 msgid "Reload"
 msgstr "リロード"
 
-#: ../../lib/resource.php:167
+#: ../../lib/resource.php:168
 msgid "Source"
 msgstr "ソース"
 
-#: ../../lib/resource.php:169
+#: ../../lib/resource.php:170
 msgid "RSS of recent changes"
 msgstr "最終更新のRSS"
 
-#: ../../lib/resource.php:170
+#: ../../lib/resource.php:171
 msgid "RDF of recent changes"
 msgstr "最終更新のRDF"
 
-#: ../../lib/resource.php:171
+#: ../../lib/resource.php:172
 msgid "ATOM of recent changes"
 msgstr "最終更新のATOM"
 
-#: ../../lib/resource.php:173
+#: ../../lib/resource.php:174
 msgid "Logo"
 msgstr "ロゴ"
 
-#: ../../lib/resource.php:174
+#: ../../lib/resource.php:175
 msgid "Text Formatting Rules"
 msgstr "テキスト整形のルールを表示する"
 
-#: ../../lib/resource.php:180
+#: ../../lib/resource.php:181
 msgid "Front page"
 msgstr "ホーム"
 
-#: ../../lib/resource.php:181
+#: ../../lib/resource.php:182
 msgid "Recent changes"
 msgstr "最終更新"
 
-#: ../../lib/resource.php:182
+#: ../../lib/resource.php:183
 msgid "Recent deleted"
 msgstr "最終削除"
 
-#: ../../lib/resource.php:183
+#: ../../lib/resource.php:184
 msgid "Interwiki name"
 msgstr "インターウィキ名"
 
-#: ../../lib/resource.php:184
+#: ../../lib/resource.php:185
 msgid "Auto alias name"
 msgstr "自動エイリアス名"
 
-#: ../../lib/resource.php:185
+#: ../../lib/resource.php:186
 msgid "Glossary"
 msgstr "用語集"
 
-#: ../../lib/resource.php:186
+#: ../../lib/resource.php:187
 msgid "MenuBar"
 msgstr "メニューバー"
 
-#: ../../lib/resource.php:187
+#: ../../lib/resource.php:188
 msgid "SideBar"
 msgstr "サイドバー"
 
-#: ../../lib/resource.php:188
+#: ../../lib/resource.php:189
 msgid "Navigation"
 msgstr "ナビゲーション"
 
-#: ../../lib/resource.php:189
+#: ../../lib/resource.php:190
 msgid "Header area"
 msgstr "ヘッダーエリア"
 
-#: ../../lib/resource.php:190
+#: ../../lib/resource.php:191
 msgid "Footer area"
 msgstr "フッターエリア"
 
-#: ../../lib/resource.php:191
+#: ../../lib/resource.php:192
 msgid "Protected"
 msgstr "機密"
 
-#: ../../lib/resource.php:194
+#: ../../lib/resource.php:195
 msgid "Site"
 msgstr "サイト"
 
-#: ../../lib/resource.php:195
+#: ../../lib/resource.php:196
 msgid "Pages"
 msgstr "ページ"
-
-#: ../../lib/resource.php:196
-msgid "Admin"
-msgstr ""
 
 #: ../../lib/resource.php:197
 msgid "Management"
@@ -673,6 +692,13 @@ msgstr "ユーザ警告"
 #: ../../lib/resource.php:212
 msgid "User Notice"
 msgstr "ユーザ通知"
+
+#~ msgid ""
+#~ "You have no permission to edit this page or create page in lower level of "
+#~ "this page."
+#~ msgstr ""
+#~ "あなたは、このページを編集したり下位階層にページを作成する権限を持っていま"
+#~ "せん。"
 
 #~ msgid "%s execution failed:"
 #~ msgstr "%sで、以下の例外が発生しました："

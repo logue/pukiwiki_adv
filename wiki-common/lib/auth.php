@@ -1,8 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: auth.php,v 1.22.23 2011/02/05 09:01:00 Logue Exp $
+// $Id: auth.php,v 1.22.24 2012/09/25 15:31:00 Logue Exp $
 // Copyright (C)
-//   2011      PukiWiki Advance Developers Team
+//   2011-2012 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
 //   2003-2007,2011 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
@@ -162,11 +162,16 @@ function check_readable($page, $auth_flag = TRUE, $exit_flag = TRUE)
 
 function edit_auth($page, $auth_flag = TRUE, $exit_flag = TRUE)
 {
-	global $edit_auth, $edit_auth_pages, $auth_api, $defaultpage, $_title;
+	global $edit_auth, $edit_auth_pages, $auth_api, $defaultpage, $_title, $edit_auth_pages_accept_ip;
 
 	if (auth::check_role('readonly')) return false;
 
 	if (!$edit_auth) return true;
+
+	// 許可IPの場合チェックしない
+	if(ip_auth($page, $auth_flag, $exit_flag, $edit_auth_pages_accept_ip, $_title['cannotedit'])) {
+		return TRUE;
+	}
 
 	$info = auth::get_user_info();
 	if (!empty($info['key']) &&
@@ -196,9 +201,14 @@ function edit_auth($page, $auth_flag = TRUE, $exit_flag = TRUE)
 
 function read_auth($page, $auth_flag = TRUE, $exit_flag = TRUE)
 {
-	global $read_auth, $read_auth_pages, $auth_api, $defaultpage, $_title;
+	global $read_auth, $read_auth_pages, $auth_api, $defaultpage, $_title, $read_auth_pages_accept_ip;
 
 	if (!$read_auth) return true;
+	
+	// 許可IPの場合チェックしない
+	if(ip_auth($page, $auth_flag, $exit_flag, $read_auth_pages_accept_ip, $_title['cannotread'])) {
+		return TRUE;
+	}
 
 	$info = auth::get_user_info();
 	if (!empty($info['key']) &&
@@ -322,6 +332,40 @@ function digest_auth($page, $auth_flag, $exit_flag, $auth_pages, $title_cannot)
 		exit;
 	}
 	return false;
+}
+
+// http://lsx.sourceforge.jp/?Hack%2Fip_auth
+// IP authentication. allows ip without basic_auth
+function ip_auth($page, $auth_flag, $exit_flag, $auth_pages_accept_ip, $title_cannot)
+{
+	global $auth_method_type;
+	$remote_addr = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
+
+	// Checked by:
+	$target_str = '';
+	if ($auth_method_type == 'pagename') {
+		$target_str = $page; // Page name
+	} else if ($auth_method_type == 'contents') {
+		$target_str = join('', get_source($page)); // Its contents
+	}
+
+	$accept_ip_list = array();
+	foreach($auth_pages_accept_ip as $key=>$val)
+		if (preg_match($key, $target_str))
+			$accept_ip_list = array_merge($accept_ip_list, explode(',', $val));
+
+	$auth = FALSE;
+	if (!empty($accept_ip_list)) {
+		if(isset($remote_addr)) {
+			foreach ($accept_ip_list as $ip) {
+				if(strpos($remote_addr, $ip) !== false) {
+					$auth = TRUE;
+					break;
+				}
+			}
+		}
+	}
+	return $auth;
 }
 
 /* End of file auth.php */

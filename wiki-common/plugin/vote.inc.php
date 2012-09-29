@@ -1,180 +1,766 @@
 <?php
-// PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: vote.inc.php,v 1.24.5 2011/02/05 12:48:00 Logue Exp $
-// Copyright (C)
-//   2011      PukiWiki Advance Developers Team
-//	 2004-2007 PukiWiki Plus! Team
-//   2002-2005 PukiWiki Developers Team
-// License: GPL v2 or (at your option) any later version
-//
-// Vote box plugin
+// PukiWiki Adv.では、VotexプラグインをVoteプラグインとして扱う
 
-// expired 3days
-defined('PLUGIN_VOTE_COOKIE_EXPIRED') or define('PLUGIN_VOTE_COOKIE_EXPIRED',60*60*24*3);
+/**
+ * Yet Another Vote Plugin eXtension
+ * 
+ * @author	 sonots
+ * @license	http://www.gnu.org/licenses/gpl.html GPL v2
+ * @link	   http://lsx.sourceforge.jp/?Plugin%2Fvotex.inc.php
+ * @version	$Id: votex.inc.php,v 1.5 2007-06-05 13:23:20Z sonots $
+ * @package	plugin
+ */
+
+/**
+ *  votex plugin class
+ *
+ *  @author	 sonots
+ *  @license	http://www.gnu.org/licenses/gpl.html	GPL2
+ *  @link	   http://lsx.sourceforge.jp/?Plugin%2Fvotex
+ */
+class PluginVotex
+{
+	function PluginVotex()
+	{
+		// static
+		static $CONF = array();
+		$this->CONF = $CONF;
+		if (empty($this->CONF)) {
+			$this->CONF['RECENT_PAGE']  = 'RecentVotes';
+			$this->CONF['RECENT_LOG']   = CACHE_DIR . 'recentvotes.dat';
+			$this->CONF['RECENT_LIMIT'] = 100;
+			$this->CONF['COOKIE_EXPIRED'] = 60*60*24*3;
+			$this->CONF['BARCHART_LIB_FILE'] = LIB_DIR . 'barchart.cls.php';
+			$this->CONF['BARCHART_COLOR_BAR'] = ' #0000cc';
+			$this->CONF['BARCHART_COLOR_BG'] = 'transparent';
+			$this->CONF['BARCHART_COLOR_BORDER'] = 'transparent';
+		}
+		static $default_options = array();
+		$this->default_options = &$default_options;
+		if (empty($this->default_options)) {
+			$this->default_options['readonly'] = FALSE;
+			$this->default_options['addchoice'] = FALSE;
+			$this->default_options['barchart'] = FALSE;
+		}
+
+		// init
+		$this->options  = $this->default_options;
+		if (function_exists('textdomain')) {
+			textdomain('vote'); // use i18n msgs of vote.inc.php
+		}
+	}
+
+	// static
+	var $CONF;
+	var $default_options;
+	// var
+	var $options;
+
+	/**
+	 * Action Plugin Main Function
+	 * @static
+	 */
+	function action()
+	{
+		global $vars;
+		return ($vars['pcmd'] === 'inline') ? $this->action_inline() : $this->action_convert();
+	}
+
+	/**
+	 * POST action via inline plugin
+	 */
+	function action_inline()
+	{
+		global $vars, $defaultpage, $_string;
+		
+		if (method_exists('auth', 'check_role')) { // Plus!
+			if (auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
+		} else {
+			if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
+		}
+
+		$page		 = isset($vars['refer']) ? $vars['refer'] : $defaultpage;
+		$pcmd		 = $vars['pcmd'];
+		$vote_id	  = $vars['vote_id'];
+		$vars['page'] = $page;
+		$choice_id	= $vars['choice_id'];
+
+		if ($this->is_continuous_vote($page, $pcmd, $vote_id)) {
+			return array(
+				'msg'  => T_('Error in vote'),
+				'body' => T_('Continuation vote cannot be performed.'),
+			);
+		}
+
+		// parse contents of wiki page and get update
+		$lines = get_source($page);
+		list($linenum, $newline, $newtext, $newvotes) = $this->get_update_inline($lines, $vote_id, $choice_id);
+		if ($linenum === false) {
+			die_message(T_('There was no matching vote. '));
+		}
+		$newlines = $lines;
+		$newlines[$linenum] = $newline;
+		$newcontents = implode('', $newlines);
+
+		// collision check
+		$contents = implode('', $lines);
+		if (md5($contents) !== $vars['digest']) {
+			$msg  = $_string['title_collided'];
+			$body = $this->show_preview_form($_string['msg_collided'], $newline);
+			return array('msg'=>$msg, 'body'=>$body);
+		}
+
+		page_write($page, $newcontents, TRUE); // notimestamp
+		$this->update_recent_voted($page, $pcmd, $vote_id, $choice_id, $newvotes);
+		//static in convert() was somehow wierd if return(msg=>'',body=>'');
+		//$msg  = $_string['updated'];
+		//$body = '';
+		//return array('msg'=>$msg, 'body'=>$body);
+		$anchor = $this->get_anchor($pcmd, $vote_id);
+		header('Location: ' . get_script_uri() . '?' . rawurlencode($page) . '#' . $anchor);
+		exit;
+	}
+
+	/**
+	 * POST action via convert plugin
+	 */
+	function action_convert()
+	{
+		global $vars, $defaultpage, $_string;
+		if (method_exists('auth', 'check_role')) { // Plus!
+			if (auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
+		} else {
+			if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
+		}
+
+		$page		 = isset($vars['refer']) ? $vars['refer'] : $defaultpage;
+		$pcmd		 = $vars['pcmd'];
+		$vote_id	  = $vars['vote_id'];
+		$vars['page'] = $page;
+		$choice_id	= $this->get_selected_choice_convert();
+		$addchoice	= isset($vars['addchoice']) && $vars['addchoice'] !== ''
+			? $vars['addchoice'] : null;
+		
+		if ($this->is_continuous_vote($page, $pcmd, $vote_id)) {
+			return array(
+				'msg'  => T_('Error in vote'),
+				'body' => T_('Continuation vote cannot be performed.'),
+			);
+		}
+
+		// parse contents of wiki page and get update
+		$lines = get_source($page);
+		list($linenum, $newline, $newtext, $newvotes) = $this->get_update_convert($lines, $vote_id, $choice_id, $addchoice);
+		if ($linenum === false) {
+			die_message(T_('There was no matching vote. '));
+		}
+		$newlines = $lines;
+		$newlines[$linenum] = $newline;
+		$newcontents = implode('', $newlines);
+
+		// collision check
+		$contents = implode('', $lines);
+		if (md5($contents) !== $vars['digest']) {
+			$msg  = $_string['title_collided'];
+			$body = $this->show_preview_form($_string['msg_collided'], $newline);
+			return array('msg'=>$msg, 'body'=>$body);
+		}
+
+		page_write($page, $newcontents, TRUE); // notimestamp
+		if (isset($addchoice)) $choice_id = count($newvotes) - 1; // to make sure
+		$this->update_recent_voted($page, $pcmd, $vote_id, $choice_id, $newvotes);
+		//static in convert() was somehow wierd if return(msg=>'',body=>'');
+		//$msg  = $_string['updated'];
+		//$body = '';
+		//return array('msg'=>$msg, 'body'=>$body);
+		$anchor = $this->get_anchor($pcmd, $vote_id);
+		header('Location: ' . get_script_uri() . '?' . rawurlencode($page) . '#' . $anchor);
+		exit;
+	}
+
+	/**
+	 * Update Vote for inline plugin
+	 *
+	 * @param array &$lines
+	 * @param integer $vote_id
+	 * @parram string $choice_id
+	 * @return array array($linenum, $updated_line, $updated_text, $updated_votes)
+	 */
+	function get_update_inline(&$lines, $vote_id, $choice_id) 
+	{
+		$contents = implode('', $lines);
+
+		global $vars, $defaultpage;
+		$page = isset($vars['refer']) ? $vars['refer'] : $defaultpage;
+
+		$ic = new InlineConverter(array('plugin'));
+		$vote_count = 0;
+		foreach ($lines as $linenum => $line) {
+			if (strpos($line, ' ') === 0) continue; // skip pre
+			$inlines = $ic->get_objects($line, $page);
+			$pos = 0;
+			foreach ($inlines as $inline) {
+				if ($inline->name !== 'vote') continue;
+				$pos = strpos($line, '&vote', $pos);
+				if ($vote_id > $vote_count++) {
+					$pos++;
+				} else {
+					$l_remain = substr($line, 0, $pos);
+					$r_remain = substr($line, $pos + strlen($inline->text));
+					$arg	  = $inline->param;
+					$body	 = $inline->body;
+					$args	 = csv_explode(',', $arg);
+					list($votes, $options) = $this->parse_args_inline($args, $this->default_options);
+					if ($options['readonly']) return array(false, false, false, false);
+
+					foreach ($votes as $i => $vote) {
+						list($choice, $count) = $vote;
+						if ($i == $choice_id) {
+							++$count;
+							$votes[$i] = array($choice, $count);
+						}
+					}
+					$new_args = $this->restore_args_inline($votes, $options, $this->default_options);
+					$new_arg  = csv_implode(',', $new_args);
+					$body = ($body != '') ? '{' . $body . '};' : ';';
+					$newtext = '&vote(' . $new_arg . ')' . $body;
+					$newline = $l_remain . $newtext . $r_remain;
+					return array($linenum, $newline, $newtext, $votes);
+				}
+			}
+		}
+		return array(false, false, false, false);
+	}
+
+	/**
+	 * Update Vote for convert plugin
+	 *
+	 * @param array &$lines
+	 * @param integer $vote_id
+	 * @parram string $choice_id
+	 * @param string $addchoice
+	 * @return array array($linenum, $updated_line, $updated_text, $updated_votes)
+	 */
+	function get_update_convert(&$lines, $vote_id, $choice_id, $addchoice = null) 
+	{
+		$vote_count  = 0;
+		foreach($lines as $linenum => $line) {
+			$matches = array();
+			if (preg_match('/^#vote(?:\((.*)\)(.*))?$/i', $line, $matches)
+				&& $vote_id == $vote_count++) {
+
+				$args   = csv_explode(',', $matches[1]);
+				$remain = isset($matches[2]) ? $matches[2] : '';
+				list($votes, $options) = $this->parse_args_convert($args, $this->default_options);
+				if ($options['readonly']) return array(false, false, false, false);
+
+				if (isset($addchoice)) {
+					$votes[] = array($addchoice, 1);
+				} elseif (isset($votes[$choice_id])) {
+					list($choice, $count) = $votes[$choice_id];
+					$votes[$choice_id] = array($choice, $count + 1);
+				}
+				$new_args = $this->restore_args_convert($votes, $options, $this->default_options);
+				$new_arg  = csv_implode(',', $new_args);
+				$newtext = '#vote(' . $new_arg . ')';
+				$newline = $newtext . $remain . "\n";
+				return array($linenum, $newline, $newtext, $votes);
+			}
+		}
+		return array(false, false, false, false);
+	}
+
+	/**
+	 * Get the selected choice id
+	 *
+	 * @global $vars;
+	 * @return string $choice_id
+	 * @uses decode_choice()
+	 */
+	function get_selected_choice_convert()
+	{
+		global $vars;
+		$choice_id = false;
+		foreach ($vars as $key => $val) {
+			if (strpos($key, 'choice_') === 0) {
+				$choice_id = $this->decode_choice($key);
+				break;
+			}
+		}
+		return $choice_id;
+	}
+
+	/**
+	 * Recent Voted
+	 *
+	 * @param string $page voted page
+	 * @param string $pcmd convert or inline
+	 * @param integer $vote_id
+	 * @param integer $choice_id
+	 * @param array $votes
+	 * @return void
+	 */
+	function update_recent_voted($page, $pcmd, $vote_id, $choice_id, $votes)
+	{
+		$limit = max(0, $this->CONF['RECENT_LIMIT']);
+		$time = UTIME;
+
+		// RecentVoted
+		$lines = get_source($this->CONF['RECENT_PAGE']);
+		$anchor  = $this->get_anchor($pcmd, $vote_id);
+		$args = array();
+		foreach ($votes as $vote) {
+			list($choice, $count) = $vote;
+			$args[] = $choice . '[' . $count . ']';
+		}
+		$arg = csv_implode(',', $args);
+		list($choice, $count) = $votes[$choice_id];
+		$addline =
+			'-' . format_date($time) . 
+			' - [[' . $page . '#' . $vote_id . '>' . $page . '#' . $anchor . ']] ' .
+			$choice . 
+			' (' . $arg . ')' .
+			"\n";
+		array_unshift($lines, $addline);
+		$lines = array_splice($lines, 0, $limit);
+		page_write($this->CONF['RECENT_PAGE'], implode('', $lines));
+
+		// recentvoted.dat (serialization)
+		if (is_readable($this->CONF['RECENT_LOG'])) {
+			$log_contents = file_get_contents($this->CONF['RECENT_LOG']);
+			$logs = unserialize($log_contents);
+		} else {
+			$logs = array();
+		}
+		$addlog = array($time, $page, $pcmd, $vote_id, $choice_id, $votes);
+		array_unshift($logs, $addlog);
+		$logs = array_splice($logs, 0, $limit);
+		file_put_contents($this->CONF['RECENT_LOG'], serialize($logs));
+	}
+
+	/**
+	 * Check if a continuous vote
+	 *
+	 * @param string $page
+	 * @param string $pcmd convert or inline
+	 * @param integer $vote_id vote form id
+	 * @return boolean true if if is a continuous vote
+	 * @global $_COOKIE
+	 * @global $_SERVER
+	 * @vars $CONF 'COOKIE_EXPIRED'
+	 */
+	function is_continuous_vote($page, $pcmd, $vote_id)
+	{
+		$cmd = 'vote';
+		$votedkey = $cmd . '_' . $pcmd . '_' . $page . '_' . $vote_id;
+		if (isset($_COOKIE[$votedkey])) {
+			return true;
+		}
+		$_COOKIE[$votedkey] = 1;
+		$matches = array();
+		preg_match('!(.*/)!', $_SERVER['REQUEST_URI'], $matches);
+		setcookie($votedkey, 1, time()+$this->CONF['COOKIE_EXPIRED'], $matches[0]);
+		return false;
+	}
+
+	/**
+	 * Get Preview Form HTML (for when collision occured)
+	 *
+	 * @param string $msg message
+	 * @param string $body
+	 * @return string
+	 */
+	function show_preview_form($msg = '', $body = '')
+	{
+		global $vars, $rows, $cols;
+		$form[] = $msg;
+		$form[] = '<form action="' . get_script_uri() . '" method="post">';
+		$form[] = '<input type="hidden" name="cmd"    value="preview" />';
+		$form[] = '<input type="hidden" name="refer"  value="' . htmlsc($vars['refer']) . '" />';
+		$form[] = '<input type="hidden" name="digest" value="' . htmlsc($vars['digest']) . '" />';
+		$form[] = '<textarea name="msg" rows="' . $rows . '" cols="' . $cols . '" id="textarea">' . htmlsc($body) . '</textarea>';
+		$form[] = '</form>';
+		return join("\n", $form);
+	}
+
+	/**
+	 * Get anchor
+	 *
+	 * @param $pcmd
+	 * @param $vote_id
+	 */
+	function get_anchor($pcmd = 'convert', $vote_id = 0)
+	{
+		return rawurlencode('vote_' . $pcmd . '_' . $vote_id);
+	}
+	 
+	/**
+	 * Inline Plugin Main Function
+	 * @static
+	 */
+	function inline()
+	{
+		global $vars, $defaultpage;
+		static $number = array();
+
+		$page = isset($vars['page']) ? $vars['page'] : $defaultpage;
+		if (! isset($number[$page])) $number[$page] = 0; // Init
+		$vote_id = $number[$page]++;
+
+		$args = func_get_args();
+		array_pop($args); // drop {}
+		list($votes, $this->options) = $this->parse_args_inline($args, $this->default_options);
+
+		$form = $this->get_vote_form_inline($votes, $vote_id);
+		return $form;
+	}
+
+	/**
+	 * Get Vote Form HTML for inline plugin
+	 *
+	 * @static
+	 * @param array $vote
+	 * @param integer $vote_id vote form id
+	 * @global $vars
+	 * @global $vars['page']
+	 * @global $defaultpage
+	 * @global $digest
+	 * @var $options 'readonly'
+	 * @uses get_script_uri()
+	 * @return string
+	 */
+	function get_vote_form_inline($votes, $vote_id)
+	{
+		global $vars, $defaultpage;
+		global $digest;
+		$page	  = isset($vars['page']) ? $vars['page'] : $defaultpage;
+/*
+		$r_page	= rawurlencode($page);
+		$r_digest  = rawurlencode($digest);
+		$r_vote_id = rawurlencode($vote_id);
+*/
+		$anchor = $this->get_anchor('inline', $vote_id);
+
+		$form = '';
+		$form .= '<span class="vote" id="' . $anchor . '">';
+		foreach ($votes as $choice_id => $vote) {
+			list($choice, $count) = $vote;
+/*
+			$r_choice_id = rawurlencode($choice_id);
+			$r_choice	= rawurlencode($choice);
+			$r_count	 = rawurlencode($count);
+*/
+			$s_choice	= htmlsc($choice);
+			$s_count	 = htmlsc($count);
+			if ($this->options['readonly']) {
+				$form .= $s_choice . '<var> ' . $s_count . ' </var>';
+			} else {
+/*
+				$form .=
+					'<a href="' . get_script_uri() . '?cmd=vote' .
+					'&amp;pcmd=inline' .
+					'&amp;refer=' . $r_page .
+					'&amp;digest=' . $r_digest .
+					'&amp;vote_id=' . $r_vote_id . 
+					'&amp;choice_id=' . $r_choice_id .
+					'">' . $s_choice . '</a>' .
+					'<span>&nbsp;' . $s_count . '&nbsp;</span>';
+*/
+				$form .= '<a href="' . get_cmd_uri('vote', null, null, array('pcmd'=>'inline', 'refer'=>$page, 'digest'=>$digest, 'vote_id'=>$vote_id, 'choise_id'=>$choise_id)) .
+					'">' . $s_choice . '</a><var> ' . $s_count . ' </var>';
+					
+			}
+		}
+		$form .= '</span>' . "\n";
+		return $form;
+	}
+
+	/**
+	 * Block Plugin Main Function
+	 * @static
+	 */
+	function convert()
+	{
+		global $vars, $defaultpage;
+		static $number = array();
+
+		$page = isset($vars['page']) ? $vars['page'] : $defaultpage;
+		if (! isset($number[$page])) $number[$page] = 0; // Init
+		$vote_id = $number[$page]++;
+
+		$args = func_get_args();
+		list($votes, $this->options) = $this->parse_args_convert($args, $this->default_options);
+
+		$form = $this->get_vote_form_convert($votes, $vote_id);
+		return $form;
+	}
+
+	/**
+	 * Restore Arguments of inline plugin
+	 *
+	 * @param array &$votes
+	 * @param array &$options
+	 * @return array &$args
+	 */
+	function restore_args_inline(&$votes, &$options, &$default_options)
+	{
+		// currently same
+		return $this->restore_args_convert($votes, $options, $default_options);
+	}
+
+	/**
+	 * Parse Arguemnts of inline plugin
+	 *
+	 * @param array &$args arguments
+	 * @param array &$default_options default_options
+	 * @return array $votes id => array($choice[id], $count[id])
+	 * @return array $options
+	 */
+	function parse_args_inline(&$args, &$default_options)
+	{
+		// currently same
+		return $this->parse_args_convert($args, $default_options);
+	}
+
+	/**
+	 * Restore Arguments of convert plugin
+	 *
+	 * @param array &$votes
+	 * @param array &$options
+	 * @param array &$default_options
+	 * @return array &$args
+	 */
+	function restore_args_convert(&$votes, &$options, &$default_options)
+	{
+		$vote_args = array();
+		foreach ($votes as $vote) {
+			list($choice, $count) = $vote;
+			$vote_args[] = $choice . '[' . $count . ']';
+		}
+		$opt_args = array();
+		foreach ($options as $key => $val) {
+			if ($default_options[$key] !== $val) {
+				if (is_bool($val)) {
+					$opt_args[] = $key; // currently supports only on
+				} else {
+					$opt_args[] = $key . '=' . $val;
+				}
+			}
+		}
+		$args = array_merge($vote_args, $opt_args);
+		return $args;
+	}
+
+	/**
+	 * Parse Arguemnts of convert plugin
+	 *
+	 * @param array &$args arguments
+	 * @param array &$default_options default_options
+	 * @return array $votes id => array($choice[id], $count[id])
+	 * @return array $options
+	 */
+	function parse_args_convert(&$args, &$default_options)
+	{
+		$votes = array();
+		$options = $default_options;
+		foreach ($args as $arg) {
+			$arg = trim($arg);
+			list($key, $val) = array_pad(explode('=', $arg, 2), 2, TRUE);
+			if (array_key_exists($key, $options)) {
+				$options[$key] = $val;
+				continue;
+			}
+			$matches = array();
+			$choice  = $arg;
+			$count   = 0;
+			if (preg_match('/^(.+)\[(\d+)\]$/', $arg, $matches)) {
+				$choice = $matches[1];
+				$count  = $matches[2];
+			}
+			$votes[] = array($choice, $count);
+		}
+		if ($options['barchart']) {
+			require_once($this->CONF['BARCHART_LIB_FILE']);
+		}
+		return array($votes, $options);
+	}
+
+	/**
+	 * Decode choice key
+	 *
+	 * @param string $choice_key
+	 * @return integer $id
+	 */
+	function decode_choice($choice_key)
+	{
+		list($prefix, $id) = explode('_', $choice_key, 2);
+		if ($prefix !== 'choice') return false;
+		return $id;
+	}
+
+	/**
+	 * Encode choice to key
+	 *
+	 * @param integer $id
+	 * @return string
+	 */
+	function encode_choice($id)
+	{
+		return 'choice_' . $id;
+	}
+
+	/**
+	 * Get Vote Form HTML for convert plugin
+	 *
+	 * @static
+	 * @param array $votes
+	 * @param integer $vote_id vote form id
+	 * @global $vars
+	 * @global $vars['page']
+	 * @global $defaultpage
+	 * @global $digest
+	 * @var $options 'readonly'
+	 * @var $options 'addchoice'
+	 * @var $options 'barchart'
+	 * @uses get_script_uri()
+	 * @return string
+	 */
+	function get_vote_form_convert($votes, $vote_id)
+	{
+		// Initilization
+		global $vars, $defaultpage;
+		global $digest;
+		$page	 = isset($vars['page']) ? $vars['page'] : $defaultpage;
+		$script = ($this->options['readonly']) ? '' : get_script_uri();
+		$submit = ($this->options['readonly']) ? 'hidden' : 'submit';
+		$anchor = $this->get_anchor('convert', $vote_id);
+
+		// Init barchart
+		if ($this->options['barchart']) {
+			$barchart = new BARCHART(0, 0, 100);
+			$barchart->setColorCompound($this->CONF['BARCHART_COLOR_BAR']);
+			$barchart->setColorBg($this->CONF['BARCHART_COLOR_BG']);
+			$barchart->setColorBorder($this->CONF['BARCHART_COLOR_BORDER']);
+
+			$sum = 0; $max = 0; $argmax = 0;
+			foreach ($votes as $choice_id => $vote) {
+				list($choice, $count) = $vote;
+				$sum += $count;
+				if ($max < $count) {
+					$max = $count;
+					$argmax = $choice_id;
+				}
+			}
+		}
+
+		// Header
+		$form[] = '<div class="table_wrapper">';
+		if (!$this->options['readonly']){
+			$form[] = '<form class="vote_form" action="' . get_script_uri() . '" method="post">';
+			$form[] = '<input type="hidden" name="cmd"     value="vote" />';
+			$form[] = '<input type="hidden" name="pcmd"    value="convert" />';
+			$form[] = '<input type="hidden" name="refer"   value="' . htmlsc($page) . '" />';
+			$form[] = '<input type="hidden" name="vote_id" value="' . htmlsc($vote_id) . '" />';
+			$form[] = '<input type="hidden" name="digest"  value="' . htmlsc($digest) . '" />';
+		}
+		$form[] = '<table class="style_table vote_table" summary="vote" id="' . $anchor . '">';
+		$form[] = '<thead>';
+		$form[] = '<tr>';
+		$form[] = '<th class="style_th" class="vote_choise">' . T_('Selection') . '</th>';
+		$form[] = '<th class="style_th">' . T_('Points') . '</th>';
+		$form[] = ($this->options['readonly']) ? null : '<th class="style_th">'. T_('Vote') .'</th>';
+		$form[] = '</tr>';
+		$form[] = '</thead>';
+		$form[] = '<tbody>';
+		
+		// Body
+		foreach ($votes as $choice_id => $vote) {
+			list($choice, $count) = $vote;
+			if ($this->options['barchart']) {
+				$percent = (int)(($count / $max) * 100); // / $sum
+				$barchart->setCurrPoint($percent);
+				$barchart->setStrAfterBar('&nbsp;' . $s_count);
+				$s_count = $barchart->getBar();
+			}
+			$form[] = '<tr>' . "\n";
+			$form[] = '<td class="style_td vote_choise">' . make_link($choice) . '</td>';
+			$form[] = '<td class="style_td vote_count"><var>'  . htmlsc($count) . '</var></td>';
+			$form[] = ($this->options['readonly']) ? null : '<td class="style_td vote_button"><input type="submit" name="' . $this->encode_choice($choice_id) . '" value="' . T_('Vote') . '" /></td>';
+			$form[] = '</tr>';
+		}
+		$form[] = '</tbody>';
+
+		// add choice
+		if ($this->options['addchoice'] && !$this->options['readonly']) {
+			$choice_id++;
+			$choice_key = $this->encode_choice($choice_id);
+			$form[] = '<tfoot>';
+			$form[] = '<tr>';
+			$form[] = '<th colspan="2" class="style_th">';
+			$form[] = '<input type="text" style="width:100%;" name="addchoice" value="" placeholder="" />';
+			$form[] = '</th>';
+			$form[] = '<th>';
+			$form[] = '<input type="' . $submit . '" name="' . $choice_key . '" value="' . T_('Add') . '" class="submit" />';
+			$form[] = '</th>';
+			$form[] = '</tr>';
+			$form[] = '</tfoot>';
+		}
+
+		// Footer
+		
+		$form[] = '</table>';
+		if (!$this->options['readonly']){
+			$form[] = '</form>';
+		}
+		$form[] = '</div>';
+
+		return join("\n",$form);
+	}
+}
+
+///////////////////////////////////////////
+function plugin_votex_init()
+{
+	global $plugin_votex_name;
+	if (class_exists('PluginVotexUnitTest')) {
+		$plugin_votex_name = 'PluginVotexUnitTest';
+	} elseif (class_exists('PluginVotexUser')) {
+		$plugin_votex_name = 'PluginVotexUser';
+	} else {
+		$plugin_votex_name = 'PluginVotex';
+	}
+}
 
 function plugin_vote_action()
 {
-	global $vars, $cols, $rows, $_string;
-//	global $_title_collided, $_msg_collided, $_title_updated;
-	$s_votes  = T_('Vote');
-$_title_collided   = $_string['title_collided'];
-$_title_updated    = $_string['update'];
-$_msg_collided = $_string['msg_collided'];
-
-	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	if (auth::check_role('readonly')) die_message(sprintf($_string['error_prohibit'], 'PKWK_READONLY'));
-
-	$postdata_old  = get_source($vars['refer']);
-
-	$vote_no = 0;
-	$title = $body = $postdata = $postdata_input = $vote_str = '';
-	$matches = array();
-
-	// added by miko
-	$votedkey = 'vote_'.$vars['refer'].'_'.$vars['vote_no'];
-	if (isset($_COOKIE[$votedkey])) {
-		return array(
-			'msg'  => _('Error in vote'),
-			'body' => _('Continuation vote cannot be performed.'),
-		);
-	}
-	$_COOKIE[$votedkey] = 1;
-	preg_match('!(.*/)!', $_SERVER['REQUEST_URI'], $matches);
-	setcookie($votedkey, 1, time()+PLUGIN_VOTE_COOKIE_EXPIRED, $matches[0]);
-	// added by miko
-
-	foreach($postdata_old as $line) {
-
-		if (! preg_match('/^#vote(?:\((.*)\)(.*))?$/i', $line, $matches) ||
-		    $vote_no++ != $vars['vote_no']) {
-			$postdata .= $line;
-			continue;
-		}
-		$args  = explode(',', $matches[1]);
-		$lefts = isset($matches[2]) ? $matches[2] : '';
-
-		foreach($args as $arg) {
-			$cnt = 0;
-			if (preg_match('/^(.+)\[(\d+)\]$/', $arg, $matches)) {
-				$arg = $matches[1];
-				$cnt = $matches[2];
-			}
-			$e_arg = encode($arg);
-			if (! empty($vars['vote_' . $e_arg]) && $vars['vote_' . $e_arg] == $s_votes)
-				++$cnt;
-
-			$votes[] = $arg . '[' . $cnt . ']';
-		}
-
-		$vote_str       = '#vote(' . @join(',', $votes) . ')' . $lefts . "\n";
-		$postdata_input = $vote_str;
-		$postdata      .= $vote_str;
-	}
-
-	if (md5(@join('', get_source($vars['refer']))) != $vars['digest']) {
-		$title = $_title_collided;
-
-		$s_refer          = htmlsc($vars['refer']);
-		$s_digest         = htmlsc($vars['digest']);
-		$s_postdata_input = htmlsc($postdata_input);
-		$script = get_script_uri();
-		$body = <<<EOD
-$_msg_collided
-<form action="$script" method="post">
-	<input type="hidden" name="refer"  value="$s_refer" />
-	<input type="hidden" name="digest" value="$s_digest" />
-	<input type="hidden" name="cmd" value="preview" />
-	<div class="vote_form">
-		<textarea name="msg" rows="$rows" cols="$cols" id="textarea">$s_postdata_input</textarea>
-	</div>
-</form>
-
-EOD;
-	} else {
-		page_write($vars['refer'], $postdata);
-		$title = $_title_updated;
-	}
-
-	$vars['page'] = $vars['refer'];
-
-	return array('msg'=>$title, 'body'=>$body);
+	global $plugin_votex, $plugin_votex_name;
+	$plugin_votex = new PluginVotex();
+	return $plugin_votex->action();
 }
 
 function plugin_vote_convert()
 {
-	global $vars, $digest;
-	static $number = array();
-
-	$page = isset($vars['page']) ? $vars['page'] : '';
-	
-	// Vote-box-id in the page
-	if (! isset($number[$page])) $number[$page] = 0; // Init
-	$vote_no = $number[$page]++;
-
-	if (! func_num_args()) return '#vote(): No arguments<br />' . "\n";
-
-	// if (PKWK_READONLY) {
-	if (auth::check_role('readonly')) {
-		$_script = '';
-		$_submit = 'hidden';
-	} else {
-		$_script = get_script_uri();
-		$_submit = 'submit';
-	}
-
-	$args     = func_get_args();
-	$s_page   = htmlsc($page);
-	$s_digest = htmlsc($digest);
-	$s_choice = T_('Selection');
-	$s_votes  = T_('Vote');
-
-	$body = <<<EOD
-<form action="$_script" method="post">
-	<input type="hidden" name="cmd"  value="vote" />
-	<input type="hidden" name="refer"   value="$s_page" />
-	<input type="hidden" name="vote_no" value="$vote_no" />
-	<input type="hidden" name="digest"  value="$s_digest" />
-	<table class="style_table vote_table" summary="vote">
-		<thead>
-			<tr>
-				<th class="style_th vote_label">$s_choice</th>
-				<th class="style_th vote_label">$s_votes</th>
-			</tr>
-		</thead>
-		<tbody>
-EOD;
-
-	$tdcnt = 0;
-	$matches = array();
-	foreach($args as $arg) {
-		$cnt = 0;
-
-		if (preg_match('/^(.+)\[(\d+)\]$/', $arg, $matches)) {
-			$arg = $matches[1];
-			$cnt = $matches[2];
-		}
-		$e_arg = encode($arg);
-
-		$link = make_link($arg);
-
-		$body .= <<<EOD
-			<tr>
-				<td class="style_td style_vote_title">$link</td>
-				<td class="style_td style_vote_button">$cnt
-					<input type="$_submit" name="vote_$e_arg" value="$s_votes" class="submit" />
-				</td>
-			</tr>
-EOD;
-	}
-
-	$body .= <<<EOD
-		</tbody>
-	</table>
-</form>
-
-EOD;
-
-	return $body;
+	global $plugin_votex, $plugin_votex_name;
+	$plugin_votex = new PluginVotex();
+	$args = func_get_args();
+	return call_user_func_array(array($plugin_votex, 'convert'), $args);
 }
+
+function plugin_vote_inline()
+{
+	global $plugin_votex, $plugin_votex_name;
+	$plugin_votex = new PluginVotex();
+	$args = func_get_args();
+	return call_user_func_array(array($plugin_votex, 'inline'), $args);
+}
+
+function plugin_vote_write_after()
+{
+	global $plugin_votex, $plugin_votex_name;
+	$plugin_votex = new $plugin_votex_name();
+	$args = func_get_args();
+	return call_user_func_array(array($plugin_votex, 'write_after'), $args);
+}
+
 /* End of file vote.inc.php */
 /* Location: ./wiki-common/plugin/vote.inc.php */

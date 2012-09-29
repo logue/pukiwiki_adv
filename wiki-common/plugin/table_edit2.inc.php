@@ -32,6 +32,7 @@ function plugin_table_edit2_convert()
 	$r_page = rawurlencode($page);
 	if (! function_exists('_')) table_edit2_message();
 
+	// ‰ŠúÝ’è
 	$opt = array(
 		'edit' => 'on',
 		'dot' => '0',
@@ -46,12 +47,7 @@ function plugin_table_edit2_convert()
 	if (! class_exists('auth')) { table_edit2_auth(); }
 	$auth_chk = auth::check_auth();
 	foreach($edit_auth_pages as $key=>$val){
-		if (preg_match($key, $page) && $edit_auth){
-			$opt['edit'] = 'off';
-			if(! empty($auth_chk)){
-				$opt['edit'] = 'on';
-			}
-		}
+		$opt['edit'] = (preg_match($key, $page) && $edit_auth && empty($auth_chk)) ? 'off' : 'on';
 	}
 
 	$head_button = '';
@@ -81,7 +77,7 @@ function plugin_table_edit2_convert()
 
 	// csv
 	if ( ( $opt['csv_select'] == 'import' || $opt['csv_select'] == 'export' || array_search('import', $args) !== FALSE ) && $opt['edit'] != 'off' ) {
-		$csv = new TableEdit2Csv( htmlspecialchars($page), $count);
+		$csv = new TableEdit2Csv( htmlsc($page), $count);
 		return $csv->set_csv($opt['csv_select']);
 	}
 
@@ -108,12 +104,16 @@ function plugin_table_edit2_convert()
 		$tr_edit = 0;
 	}
 
-	if ($opt['edit'] != 'off') $tei = new TableEdit2Indicate($r_page, $count);		//open or close | inline
-
-	// open or close
-	if ($opt['table_mod'] != 'off' && $opt['edit'] != 'off') {
-		if ( isset($opt['csv']) ) $tei->csv_button($opt['csv']);
-		$head_button = $tei->open_close($opt['table_mod'], $opt['edit']);
+	if ($opt['edit'] !== 'off'){
+		$tei = new TableEdit2Indicate($r_page, $count);		//open or close | inline
+		// open or close
+		if ($opt['table_mod'] !== 'off') {
+			if ( isset($opt['csv']) ) $tei->csv_button($opt['csv']);
+			$head_button = $tei->open_close($opt['table_mod'], ($opt['edit'] === 'on') ? 'lock' : 'unlock');
+			if ($opt['table_mod'] === 'unlock'){
+				$td_edit = $tr_edit = 0;
+			}
+		}
 	}
 
 	$arg = preg_replace(array("[\\r|\\n]","[\\r]"), array("\n","\n"), $arg);
@@ -210,10 +210,20 @@ function plugin_table_edit2_convert()
 	}
 
 	$body = convert_html($body);
+	$sortable = 'true';
+	$sorter = "";
 
+	$filter = isset($opt['filter']) ? $opt['filter'] : '';
+	if(isset($opt['sort']) && ! $td_edit) {
+		$sort = new TableEdit2Sort;
+		$sort->sort($opt['sort'],$r_cell_count);
+		$sorter = '['.$sort->sortabletableso.']';
+		$sortable = 'true';
+		//$body = sortabletable_main( $table_id, $body, $sort->sortabletableso, $filter);
+	}
 
 	$body = $head_button . $body;
-	return preg_replace('/<table class="style_table"/', '<table class="style_table table_edit" data-disable="true"', $body);
+	return preg_replace('/<table class="style_table"/', '<table class="style_table table_edit" data-auto-width="false" data-sortable="'. $sortable . '" data-sort="'.$sorter.'" data-filter="'.$filter.'" ', $body);
 }
 
 class TableEdit2Setting extends TableEdit2Form
@@ -234,7 +244,7 @@ class TableEdit2Setting extends TableEdit2Form
 	{
 		$this->page		  = $page;
 		$this->table_num  = $number;
-//		$this->s_page = htmlspecialchars($page);
+//		$this->s_page = htmlsc($page);
 		$this->script_uri = get_script_uri();
 
 
@@ -259,7 +269,7 @@ class TableEdit2Setting extends TableEdit2Form
 		$input_opt .= $this->input_radio('edit',array('on','off'));
 		$input_opt .= $this->input_radio('td_edit',array('on','off','edit','add'));
 		$input_opt .= $this->input_radio('tr_edit',array('on','off','edit','add'));
-		$input_opt .= $this->input_radio('table_mod',array('open','close','off'));
+		$input_opt .= $this->input_radio('table_mod',array('lock','unlock','off'));
 		$input_opt .= $this->input_radio('auth_check',array('off'));
 		$input_opt .= $this->input_radio('csv',array(1,2,3,4,5,6));
 		$input_opt .= $this->input_checkbox('textarea');
@@ -276,12 +286,12 @@ class TableEdit2Setting extends TableEdit2Form
 		$body = <<<EOD
 <form enctype="multipart/form-data" action="{$this->script_uri}" method="post">
 	$input_opt
-	<input type="hidden" name="cmd"    value="table_edit2" />
-	<input type="hidden" name="table_num" value="{$this->table_num}" />
-	<input type="hidden" name="edit_mod"  value="setting" />
-	<input type="hidden" name="refer"     value="{$this->page}" />
-	<input type="hidden" name="table_data"     value="{$this->table_data}" />
-	<input type="submit" name="write"     value="$set_ok" />
+	<input type="hidden" name="cmd"        value="table_edit2" />
+	<input type="hidden" name="table_num"  value="{$this->table_num}" />
+	<input type="hidden" name="edit_mod"   value="setting" />
+	<input type="hidden" name="refer"      value="{$this->page}" />
+	<input type="hidden" name="table_data" value="{$this->table_data}" />
+	<input type="submit" name="write"      value="$set_ok" />
 	$notimestamp_chk
 </form>
 EOD;
@@ -394,7 +404,7 @@ EOD;
 		$this->opt_data_sub['make_table'][1] = 3;
 		$this->opt_key['edit'] = 1;
 		$this->opt_key['table_mod'] = 2;
-		$this->opt_data['table_mod'][0] = 'open';
+		$this->opt_data['table_mod'][0] = 'unlock';
 		$this->opt_key['title_c'] = 1;
 		$this->opt_data['title_c'][0] = 1;
 	}
@@ -434,12 +444,10 @@ class TableEdit2Csv extends TableEdit2Form
 			$r_char_in = $this->field(T_('character code in'), $this->radio($char_data, 'charset_in', 'SJIS'));
 			$notimestamp_chk = T_('no time stamp') . $this->checkbox('notimestamp', 1, 1);
 			$file_save = <<<EOD
-  <input type="hidden" name="write"     value="OK" />
-  <input type="hidden" name="max_file_size" value="$maxsize" />
-   <span class="small">
-	$msg_maxsize
-   </span><br />
-   <label for="_table_edit2_csv_file">file:</label> <input type="file" name="table_edit2_csv_file" id="_table_edit2_csv_file" />
+	<input type="hidden" name="write"         value="OK" />
+	<input type="hidden" name="max_file_size" value="$maxsize" />
+	<small>$msg_maxsize</small><br />
+	<label for="_table_edit2_csv_file">file:</label><input type="file" name="table_edit2_csv_file" id="_table_edit2_csv_file" />
 EOD;
 		} else if ($mode == 'export') {
 			$cancel = 'ex_cancel';
@@ -466,21 +474,17 @@ EOD;
 
 		$body = <<<EOD
 <form enctype="multipart/form-data" action="$script_uri" method="post">
- <div>
-  $r_char_in
-  $r_char_out
-  $w_quote
-  $end_of_line
-  $notimestamp_chk
- </div>
- <div>
-  <input type="hidden" name="cmd" value="table_edit2" />
-  <input type="hidden" name="refer"  value="{$this->page}" />
-  <input type="hidden" name="table_num"  value="{$this->count}" />
-  $file_save
-  <input type="submit" name="csv_mod" value="$mode" />
-  <input type="submit" name="$cancel"  value="cancel" />
- </div>
+	$r_char_in
+	$r_char_out
+	$w_quote
+	$end_of_line
+	$notimestamp_chk
+	<input type="hidden" name="cmd" value="table_edit2" />
+	<input type="hidden" name="refer"  value="{$this->page}" />
+	<input type="hidden" name="table_num"  value="{$this->count}" />
+	$file_save
+	<input type="submit" name="csv_mod" value="$mode" />
+	<input type="submit" name="$cancel"  value="cancel" />
 </form>
 EOD;
 
@@ -503,20 +507,17 @@ class TableEdit2Indicate
 	}
 	function open_close( $mode, $edit )
 	{
-		$s_table_close = T_('close');
-		$s_table_open  = T_('open');
-		if ($mode == 'open' || $mode == ''){
-			$icon = 'data-icons-primary="ui-icon-circlesmall-plus"';
-			$table_mod = 'close';
-		} else if ($mode == 'close'){
-			$icon = 'data-icons-primary="ui-icon-circlesmall-close"';
+		if ($mode == 'lock'){
+			$edit = 'on';
+			$table_mod = 'unlock';
+		}else{
 			$edit = 'off';
-			$table_mod = 'open';
+			$table_mod = 'lock';
 		}
 		$url = get_cmd_uri('table_edit2', null, null, array('refer'=>$this->page, 'table_mod'=>$table_mod, 'table_num'=>$this->count));
 		return <<<EOD
 <div style="float:right;" id="TableEdit2TableNumber{$this->count}">
-<a href="{$url}" class="button" data-text="false" data-ajax="false" $icon>$edit</a>
+<a href="{$url}" class="button" data-text="false" data-ajax="false" data-icons-primary="ui-icon-{$table_mod}ed">{$table_mod}ed</a>
 {$this->set_csv}
 </div>
 <div class="clear"></div>
@@ -585,7 +586,7 @@ class TableEdit2Form
 		if ($this->c_count){
 			if ($this->c_count > 1) {
 				foreach($bg_color as $color){
-					$color = htmlspecialchars($color);
+					$color = htmlsc($color);
 					$this->bgcolor[] = 'style="background-color:' . $color . ';"';
 				}
 			} else {
@@ -1030,7 +1031,7 @@ function plugin_table_edit2_inline()
 	foreach ($args as $opt_key) {
 		if (strpos($opt_key, "=") !== false) {
 			list($key, $val) = explode('=', strtolower($opt_key));
-			$opt[$key] = htmlspecialchars($val);
+			$opt[$key] = htmlsc($val);
 		}
 	}
 
@@ -1047,13 +1048,6 @@ function plugin_table_edit2_inline()
 	} else if ($opt['edit_mod'] == 'tr' || $opt['edit_mod'] == 'td'){
 		$icon = '<span class="pkwk-symbol symbol-add" title="' . $s_table_add . '">'.$s_table_add.'</span>';
 	}
-/*
-	$body .= '<a href="' . $script_uri . "?plugin=table_edit2&amp;refer=$r_page&amp;edit_mod="
-		 . $edit_mod . "&amp;table_num=" . $opt['table_num'] . "&amp;table_sub_num=" . $opt['table_sub_num']
-		 . "&amp;line_count=" . $opt['line_count'] . "&amp;cell_count=" . $opt['cell_count'] . $add_show
-//		 . "&amp;table_f_chose=" . $opt['table_f_chose']
-		 . '"><img src="' . IMAGE_URI . 'plus/' . $image_png . ' /></a>';
-*/
 	$body .= '<a href="' . get_cmd_uri('table_edit2', null, null, array(
 		'refer'         => $page,
 		'edit_mod'      => $edit_mod,
@@ -1317,12 +1311,12 @@ class TableEdit2TableMod
 	function TableEdit2TableMod($mod)
 	{
 		$this->table_mod = $mod;
-		if ($this->table_mod == 'close'){
-			$this->search_r = array ('@table_mod=open@si');
-			$this->replace_r = array ('table_mod=close');
-		} else if ($this->table_mod == 'open') {
-			$this->search_r = array ('@table_mod=close@si');
-			$this->replace_r = array ('table_mod=open');
+		if ($this->table_mod == 'lock'){
+			$this->search_r = array ('@table_mod=unlock@si');
+			$this->replace_r = array ('table_mod=lock');
+		} else if ($this->table_mod == 'unlock') {
+			$this->search_r = array ('@table_mod=lock@si');
+			$this->replace_r = array ('table_mod=unlock');
 		}
 	}
 	function table_mod_chg($matches, $args_line)
@@ -1613,7 +1607,7 @@ EOD;
 		if ( isset($this->opt['add_show']) ) $cell = '';
 		$this->table_header[$cell_count] = isset($this->table_header[$cell_count]) ? $this->table_header[$cell_count] : 0;
 
-		$body .= '  <tr><th class="style_th">' . $this->table_header[$cell_count] . '(' . $cell_count . ')</th><td class="style_td">';
+		$body .= '  <tr><th class="style_th">' . $this->table_header[$cell_count] . '(<var>' . $cell_count . '</var>)</th><td class="style_td">';
 
 		if (isset($this->text_type[$cell_count - 1])) {
 			preg_match('/^([a-z]+)(=|)(.*)$/', $this->text_type[$cell_count - 1], $t_data);
@@ -1623,7 +1617,7 @@ EOD;
 
 		$input_text = $this->text(
 			'cell' . $cell_count,
-			htmlspecialchars($cell),
+			htmlsc($cell),
 			PLUGIN_TABLE_EDIT2_TEXT_SIZE) . '</td></tr>' . "\n";
 
 		if (isset($this->text_type[$cell_count - 1])) {
@@ -1691,6 +1685,7 @@ function plugin_table_edit2_spam($hint)
 	} else {
 		if (PKWK_ENCODING_HINT != '') return TRUE;
 	}
+	return FALSE;
 }
 function plugin_table_edit2_honeypot()
 {
@@ -1820,20 +1815,17 @@ class TableEdit2CsvAction
 
 	$body = <<<EOD
 <h3>$page table number $table_num</h3>
-<br />
-<br />
-<b>$download</b>$ref
-<br />
-<br />
+<fieldset>
+<legend>$download</legend>
+$ref
 <form enctype="multipart/form-data" action="$this->script_uri" method="post">
- <div>
-  <input type="hidden" name="cmd"        value="table_edit2" />
-  <input type="hidden" name="refer"      value="$page" />
-  <input type="hidden" name="table_num"  value="$table_num" />
-  <input type="hidden" name="file_name"  value="$file" />
-  <input type="submit" name="csv_back"   value="$back" />
- </div>
+	<input type="hidden" name="cmd"       value="table_edit2" />
+	<input type="hidden" name="refer"     value="$page" />
+	<input type="hidden" name="table_num" value="$table_num" />
+	<input type="hidden" name="file_name" value="$file" />
+	<input type="submit" name="csv_back"  value="$back" />
 </form>
+</fieldset>
 EOD;
 
 	return array(

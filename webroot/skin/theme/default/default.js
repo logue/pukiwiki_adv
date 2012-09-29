@@ -1,8 +1,8 @@
 // PukiWiki - Yet another WikiWikiWeb clone.
 // xxxloggue skin script.
-// Copyright (c)2010-2011 PukiWiki Advance Developers Team
+// Copyright (c)2010-2012 PukiWiki Advance Developers Team
 
-// $Id: default.js,v 1.0.4 2011/09/12 00:22:08 Logue Exp$
+// $Id: default.js,v 1.0.5 2012/09/21 16:12:13 Logue Exp$
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(function($, pukiwiki, window, document, undef){
+(function($, pukiwiki){
 	if(!jQuery) { alert("pukiwiki: jQuery not included."); }
 	if(!pukiwiki) { alert("pukiwiki: pukiwiki common script is not included. please check skin.js exsists."); }
 
@@ -39,8 +39,8 @@
 			$.cookie('pkwk-colorset', default_set_num,{expires:30,path:'/'});
 		}
 		var color = colorset[$.cookie('pkwk-colorset')];
-		document.getElementById('coloring').href = SKIN_DIR+'theme/default/'+color[0]+'.css';
-		document.getElementById('ui-theme').href = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/themes/'+color[1]+'/jquery-ui.css';
+		$('#coloring').attr('href', SKIN_DIR+'theme/default/'+color[0]+'.css');
+		$('#ui-theme').attr('href','http://ajax.aspnetcdn.com/ajax/jquery.ui/'+$.ui.version+'/themes/'+color[1]+'/jquery-ui.css');
 
 		// カラーセットのリンクボタンを生成
 		var buffer = '';
@@ -56,10 +56,10 @@
 		// カラーセットのリンクボタンにイベント割り当て
 		$('#colorset span').click(function(){
 			var n = this.id.split('-')[1];
-			document.getElementById('coloring').href = SKIN_DIR+'theme/'+THEME_NAME+'/'+colorset[n][0]+'.css';
-			document.getElementById('ui-theme').href = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/'+colorset[n][1]+'/jquery-ui.css';
+			$('#coloring').attr('href', SKIN_DIR+'theme/'+THEME_NAME+'/'+colorset[n][0]+'.css');
+			$('#ui-theme').attr('href','http://ajax.aspnetcdn.com/ajax/jquery.ui/'+$.ui.version+'/themes/'+colorset[n][1]+'/jquery-ui.css');
 			$.cookie('pkwk-colorset',n,{expires:30,path:'/'});
 		});
 	});
 
-} )(jQuery, pukiwiki, this, this.document );
+} )(jQuery, pukiwiki);
