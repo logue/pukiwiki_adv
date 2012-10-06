@@ -316,7 +316,7 @@ class PluginVotex
 		$arg = csv_implode(',', $args);
 		list($choice, $count) = $votes[$choice_id];
 		$addline =
-			'-' . format_date($time) . 
+			'-' . '&epoch('.$time.');' . 
 			' - [[' . $page . '#' . $vote_id . '>' . $page . '#' . $anchor . ']] ' .
 			$choice . 
 			' (' . $arg . ')' .
@@ -663,17 +663,18 @@ class PluginVotex
 			$form[] = '<input type="hidden" name="vote_id" value="' . htmlsc($vote_id) . '" />';
 			$form[] = '<input type="hidden" name="digest"  value="' . htmlsc($digest) . '" />';
 		}
-		$form[] = '<table class="style_table vote_table" summary="vote" id="' . $anchor . '">';
+		$form[] = '<table class="style_table vote_table" summary="vote" id="' . $anchor . '" data-pagenate="false">';
 		$form[] = '<thead>';
 		$form[] = '<tr>';
-		$form[] = '<th class="style_th" class="vote_choise">' . T_('Selection') . '</th>';
+		$form[] = '<th class="style_th">' . T_('Selection') . '</th>';
 		$form[] = '<th class="style_th">' . T_('Points') . '</th>';
 		$form[] = ($this->options['readonly']) ? null : '<th class="style_th">'. T_('Vote') .'</th>';
 		$form[] = '</tr>';
 		$form[] = '</thead>';
-		$form[] = '<tbody>';
+		
 		
 		// Body
+		$form[] = '<tbody>';
 		foreach ($votes as $choice_id => $vote) {
 			list($choice, $count) = $vote;
 			if ($this->options['barchart']) {
@@ -683,9 +684,9 @@ class PluginVotex
 				$s_count = $barchart->getBar();
 			}
 			$form[] = '<tr>' . "\n";
-			$form[] = '<td class="style_td vote_choise">' . make_link($choice) . '</td>';
-			$form[] = '<td class="style_td vote_count"><var>'  . htmlsc($count) . '</var></td>';
-			$form[] = ($this->options['readonly']) ? null : '<td class="style_td vote_button"><input type="submit" name="' . $this->encode_choice($choice_id) . '" value="' . T_('Vote') . '" /></td>';
+			$form[] = '<td class="style_td vote_choise_td">' . make_link($choice) . '</td>';
+			$form[] = '<td class="style_td vote_count_td"><var>'  . htmlsc($count) . '</var></td>';
+			$form[] = ($this->options['readonly']) ? null : '<td class="style_td vote_form_td"><input type="submit" name="' . $this->encode_choice($choice_id) . '" value="' . T_('Vote') . '" /></td>';
 			$form[] = '</tr>';
 		}
 		$form[] = '</tbody>';
@@ -696,10 +697,10 @@ class PluginVotex
 			$choice_key = $this->encode_choice($choice_id);
 			$form[] = '<tfoot>';
 			$form[] = '<tr>';
-			$form[] = '<th colspan="2" class="style_th">';
-			$form[] = '<input type="text" style="width:100%;" name="addchoice" value="" placeholder="" />';
+			$form[] = '<th colspan="2" class="style_th vote_form_td">';
+			$form[] = '<input type="text" style="width:90%;" name="addchoice" value="" placeholder="' . T_('Item name') . '" />';
 			$form[] = '</th>';
-			$form[] = '<th>';
+			$form[] = '<th class="style_th vote_form_td">';
 			$form[] = '<input type="' . $submit . '" name="' . $choice_key . '" value="' . T_('Add') . '" class="submit" />';
 			$form[] = '</th>';
 			$form[] = '</tr>';
@@ -707,7 +708,6 @@ class PluginVotex
 		}
 
 		// Footer
-		
 		$form[] = '</table>';
 		if (!$this->options['readonly']){
 			$form[] = '</form>';

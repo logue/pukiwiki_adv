@@ -339,28 +339,32 @@ function digest_auth($page, $auth_flag, $exit_flag, $auth_pages, $title_cannot)
 function ip_auth($page, $auth_flag, $exit_flag, $auth_pages_accept_ip, $title_cannot)
 {
 	global $auth_method_type;
-	$remote_addr = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
-
-	// Checked by:
-	$target_str = '';
-	if ($auth_method_type == 'pagename') {
-		$target_str = $page; // Page name
-	} else if ($auth_method_type == 'contents') {
-		$target_str = join('', get_source($page)); // Its contents
-	}
-
-	$accept_ip_list = array();
-	foreach($auth_pages_accept_ip as $key=>$val)
-		if (preg_match($key, $target_str))
-			$accept_ip_list = array_merge($accept_ip_list, explode(',', $val));
-
+	
 	$auth = FALSE;
-	if (!empty($accept_ip_list)) {
-		if(isset($remote_addr)) {
-			foreach ($accept_ip_list as $ip) {
-				if(strpos($remote_addr, $ip) !== false) {
-					$auth = TRUE;
-					break;
+	if (is_array($auth_pages_accept_ip)){
+
+		$remote_addr = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
+
+		// Checked by:
+		$target_str = '';
+		if ($auth_method_type == 'pagename') {
+			$target_str = $page; // Page name
+		} else if ($auth_method_type == 'contents') {
+			$target_str = join('', get_source($page)); // Its contents
+		}
+
+		$accept_ip_list = array();
+		foreach($auth_pages_accept_ip as $key=>$val)
+			if (preg_match($key, $target_str))
+				$accept_ip_list = array_merge($accept_ip_list, explode(',', $val));
+
+		if (!empty($accept_ip_list)) {
+			if(isset($remote_addr)) {
+				foreach ($accept_ip_list as $ip) {
+					if(strpos($remote_addr, $ip) !== false) {
+						$auth = TRUE;
+						break;
+					}
 				}
 			}
 		}

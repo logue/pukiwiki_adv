@@ -745,7 +745,7 @@ function format_date($val, $paren = FALSE, $format = null)
 	if (!isset($format)){
 		$date = date($date_format, $val) .
 			'(<abbr class="' . $style . '" title="' . $week[1]. '">'. $week[0] . '</abbr>)' .
-			date($time_format, $val);
+			gmdate($time_format, $val);
 	}else{
 		$month  = $_labels['month'][date('n', $val)];
 		$month_short = $month[0];
@@ -763,7 +763,7 @@ function format_date($val, $paren = FALSE, $format = null)
 				$week[1],
 				'(<abbr class="' . $style . '" title="' . $week[1]. '">'. $week[0] . '</abbr>)'
 			),
-			date($format, $val)
+			gmdate($format, $val)
 		);
 	}
 	

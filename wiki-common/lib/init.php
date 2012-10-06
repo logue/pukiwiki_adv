@@ -19,7 +19,7 @@ define('S_REVSION', '20120709');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &#169; 2010-2012' .
-	' <a href="http://pukiwiki.logue.be/" rel="product">PukiWiki Advance Developers Team</a>.<br />' .
+	' <a href="http://pukiwiki.logue.be/">PukiWiki Advance Developers Team</a>.<br />' .
 	' Licensed under the <a href="http://www.gnu.org/licenses/gpl-2.0.html" rel="license">GPLv2</a>.' .
 	' Based on <a href="http://pukiwiki.cafelounge.net/plus/">"PukiWiki Plus! i18n"</a>'
 );
@@ -35,8 +35,8 @@ defined('ROOT_URI')		or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');
 defined('WWW_HOME')		or define('WWW_HOME', '');
 
 // フレームワークのバージョン（jQuery Mobileはmobile.jsで定義）
-define('JQUERY_VER',	'1.8.1');
-define('JQUERY_UI_VER',	'1.8.23');
+define('JQUERY_VER',	'1.8.2');
+define('JQUERY_UI_VER',	'1.8.24');
 
 // ページ名やファイル名として使用できない文字（エンコード前の文字）
 defined('PKWK_ILLEGAL_CHARS_PATTERN') or define('PKWK_ILLEGAL_CHARS_PATTERN', '/[%|=|&|?|#|\r|\n|\0|\@|\t|;|\$|+|\\|\[|\]|\||^|{|}]/');
@@ -511,6 +511,7 @@ if (!IS_AJAX || IS_MOBILE){
 				/* Use plugins */
 				'activity-indicator',
 				'jquery.a-tools',
+				'jquery.autosize',
 				'jquery.beautyOfCode',
 				'jquery.cookie',
 				'jquery.dataTables',

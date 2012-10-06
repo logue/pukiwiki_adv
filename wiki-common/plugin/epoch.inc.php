@@ -17,12 +17,12 @@
 function plugin_epoch_inline()
 {
 	global $pkwk_dtd;
-	$args = func_get_args();
+	$value = func_get_args();
+	$args = func_num_args();
 
-	if (func_num_args() > 2){
-		return '&new(utime[,class]);';
+	if ($args > 3){
+		return '&epoch(utime[,class]);';
 	}
-	$value = explode(",",$args[0]);
 	
 	$format = format_date($value[0]);
 	$passaage = get_passage($value[0]);
