@@ -16,13 +16,16 @@
 //   below -- Comments are listed below the #pcomment (by reverse order)
 //   reply -- Show radio buttons allow to specify where to reply
 
+defined('PLUGIN_COMMENT_DIRECTION_DEFAULT') or define('PLUGIN_COMMENT_DIRECTION_DEFAULT', '1'); // 1: above 0: below
+defined('PLUGIN_COMMENT_SIZE_MSG') or define('PLUGIN_COMMENT_SIZE_MSG',  68);
+defined('PLUGIN_COMMENT_SIZE_NAME') or define('PLUGIN_COMMENT_SIZE_NAME', 15);
+
+defined('PLUGIN_COMMENT_USE_TEXTAREA') or define('PLUGIN_COMMENT_USE_TEXTAREA', true);
+
 // Default recording page name (%s = $vars['page'] = original page name)
 define('PLUGIN_PCOMMENT_PAGE', T_('[[Comments/%s]]'));
 
 define('PLUGIN_PCOMMENT_NUM_COMMENTS',     10); // Default 'latest N posts'
-define('PLUGIN_PCOMMENT_DIRECTION_DEFAULT', 1); // 1: above 0: below
-define('PLUGIN_PCOMMENT_SIZE_MSG',  68);
-define('PLUGIN_PCOMMENT_SIZE_NAME', 15);
 
 // Auto log rotation
 define('PLUGIN_PCOMMENT_AUTO_LOG', 0); // 0:off 1-N:number of comments per page
@@ -33,7 +36,7 @@ define('PLUGIN_PCOMMENT_TIMESTAMP', 0);
 // ----
 define('PLUGIN_PCOMMENT_FORMAT_NAME',	'[[$name]]');
 define('PLUGIN_PCOMMENT_FORMAT_MSG',	'$msg');
-define('PLUGIN_PCOMMENT_FORMAT_NOW',	'&epoch{'.MUTIME.',comment_date};');
+define('PLUGIN_PCOMMENT_FORMAT_NOW',	'&epoch{'.UTIME.',comment_date};');
 
 // "\x01", "\x02", "\x03", and "\x08" are used just as markers
 define('PLUGIN_PCOMMENT_FORMAT_STRING',
@@ -77,9 +80,11 @@ function plugin_pcomment_action()
 		$vars['page'] = $refer;
 		return $retval;
 	}
+	
+	$hash = isset($vars['reply']) ? '#pcmt'.htmlsc($vars['reply']) : '';
 
 	pkwk_headers_sent();
-	header('Location: ' . get_page_location_uri($refer));
+	header('Location: ' . get_page_location_uri($refer) . $hash);
 	exit;
 }
 
@@ -119,7 +124,7 @@ function plugin_pcomment_convert()
 	if (!is_pagename($_page))
 		return sprintf($_pcmt_messages['err_pagename'], htmlsc($_page));
 
-	$dir = PLUGIN_PCOMMENT_DIRECTION_DEFAULT;
+	$dir = PLUGIN_COMMENT_DIRECTION_DEFAULT;
 	if ($params['below']) {
 		$dir = 0;
 	} elseif ($params['above']) {
@@ -128,77 +133,48 @@ function plugin_pcomment_convert()
 
 	list($comments, $digest) = plugin_pcomment_get_comments($_page, $count, $dir, $params['reply']);
 
-	$auth_guide = '';
+	$form = array();
+	// if (PKWK_READONLY) {
+	if (! auth::check_role('readonly')) {
+		// Show a form
+		$form[] = '<input type="hidden" name="cmd" value="pcomment" />';
+		$form[] = '<input type="hidden" name="digest" value="' . $digest .'" />';
+		$form[] = '<input type="hidden" name="refer"  value="' . htmlsc($vars_page) . '" />';
+		$form[] = '<input type="hidden" name="page"   value="' . htmlsc($page) . '" />';
+		$form[] = '<input type="hidden" name="nodate" value="' . htmlsc($params['nodate']) . '" />';
+		$form[] = '<input type="hidden" name="dir"    value="' . $dir . '" />';
+		$form[] = '<input type="hidden" name="count"  value="' . $count . '" />';
+		$form[] = $params['reply'] ? 
+			'<input type="radio" name="reply" value="0" tabindex="0" checked="checked" />' : null;
+		if (isset($params['noname'])) {
+			list($nick,$link,$disabled) = plugin_pcomment_get_nick();
+			$form[] = '<input type="text" name="name" value="'.$nick.'" '.$disabled.' size="' . PLUGIN_COMMENT_SIZE_NAME . '" placeholder="'.$_pcmt_messages['msg_name'].'" />';
+		}
+		$form[] = (PLUGIN_COMMENT_USE_TEXTAREA) ? 
+			'<textarea name="msg" cols="' . PLUGIN_COMMENT_SIZE_MSG . '" row="1" placeholder="' . $_pcmt_messages['msg_comment'] . '"></textarea>' :
+			'<input type="text" name="msg" size="' . PLUGIN_COMMENT_SIZE_MSG . '" placeholder="' . $_pcmt_messages['msg_comment'] . '" />';
+		$form[] = '<input type="submit" value="' . $_pcmt_messages['btn_comment'] . '" />';
+	}
 	if (PKWK_READONLY == ROLE_AUTH) {
 		exist_plugin('login');
-		$auth_guide = do_plugin_inline('login');
-	}
-
-	// if (PKWK_READONLY) {
-	if (auth::check_role('readonly')) {
-		$form_start = $form = $form_end = '';
-	} else {
-		// Show a form
-
-//		if ($params['noname']) {
-//			$title = $_pcmt_messages['msg_comment'];
-			$name = '';
-//		} else {
-//			$title = $_pcmt_messages['msg_name'];
-			// $name = '<input type="text" name="name" size="' . PLUGIN_PCOMMENT_SIZE_NAME . '" placeholder="'.$_pcmt_messages['msg_name'].'" />';
-			list($nick,$link,$disabled) = plugin_pcomment_get_nick();
-			$name = '<input type="text" name="name" value="'.$nick.'" '.$disabled.' size="' . PLUGIN_PCOMMENT_SIZE_NAME . '" placeholder="'.$_pcmt_messages['msg_name'].'" />';
-//		}
-
-		$radio   = $params['reply'] ?
-			'<input type="radio" name="reply" value="0" tabindex="0" checked="checked" />' : '';
-		$comment = '<input type="text" name="msg" size="' . PLUGIN_PCOMMENT_SIZE_MSG . '" placeholder="'.$_pcmt_messages['msg_comment'].'" />';
-
-		$s_page   = htmlsc($page);
-		$s_refer  = htmlsc($vars_page);
-		$s_nodate = htmlsc($params['nodate']);
-
-		$form_start = '<form action="' . get_script_uri() . '" method="post" class="pcomment_form">' . "\n";
-		$form = <<<EOD
-	<input type="hidden" name="digest" value="$digest" />
-	<input type="hidden" name="cmd" value="pcomment" />
-	<input type="hidden" name="refer"  value="$s_refer" />
-	<input type="hidden" name="page"   value="$s_page" />
-	<input type="hidden" name="nodate" value="$s_nodate" />
-	<input type="hidden" name="dir"    value="$dir" />
-	<input type="hidden" name="count"  value="$count" />
-	<div class="comment_form">
-	$radio $name $comment
-		<input type="submit" value="{$_pcmt_messages['btn_comment']}" />
-	</div>
-EOD;
-		$form_end = '</form>' . "\n";
+		$form[] = do_plugin_inline('login');
 	}
 
 	if (! is_page($_page)) {
 		$link   = make_pagelink($_page);
 		$recent = $_pcmt_messages['msg_none'];
 	} else {
-		$msg    = ($_pcmt_messages['msg_all'] != '') ? $_pcmt_messages['msg_all'] : $_page;
+		$msg    = ! empty($_pcmt_messages['msg_all']) ? $_pcmt_messages['msg_all'] : $_page;
 		$link   = make_pagelink($_page, $msg);
 		$recent = ! empty($count) ? sprintf($_pcmt_messages['msg_recent'], $count) : '';
 	}
 
-	if ($dir) {
-		$string = $auth_guide .
-			'<p>' . $recent . ' ' . $link . '</p>' . "\n" .
-			$form_start .
-				$comments . "\n" .
-				$form .
-			$form_end . "\n";
-	} else {
-		$string = $form_start .
-				$form .
-				$comments. "\n" .
-			$form_end .
-			'<p>' . $recent . ' ' . $link . '</p>' . "\n" .
-			$auth_guide . "\n";
-	}
+	$string = ! auth::check_role('readonly') ? '<form action="'. get_script_uri() .'" method="post" class="comment_form">' : '';
+	$string .= ($dir) ? 
+		'<p>' . $recent . ' ' . $link . '</p>' . "\n" . $comments . "\n" . join("\n",$form) : 
+		join("\n",$form) . "\n" . '<p>' . $recent . ' ' . $link . '</p>' . "\n" . $comments . "\n";
+	$string .= ! auth::check_role('readonly') ? '</form>' : '';
+	
 	return (IS_MOBILE) ? '<div data-role="collapsible" data-theme="b" data-content-theme="d"><h4>'.$_pcmt_messages['msg_comment'].'</h4>'.$string.'</div>' : '<div class="pcomment">' . $string . '</div>';
 }
 
@@ -393,8 +369,8 @@ function plugin_pcomment_get_comments($page, $count, $dir, $reply)
 
 	// Add radio buttons
 	if ($reply)
-		$comments = preg_replace('/<li>' . "\x01" . '(\d+)' . "\x02" . '(.*)' . "\x03" . '/',
-			'<li class="pcomment_comment"><input class="pcmt" type="radio" name="reply" value="$2" tabindex="$1" />',
+		$comments = preg_replace('/<li>' . "\x01" . '(\d+)' . "\x02" . '(.*)' . "\x03" . '(.*)\s\-\-\s(.*)/',
+			'<li class="pcomment_comment"><input class="pcmt" type="radio" name="reply" value="$2" tabindex="$1" id="pcmt$2" /><label for="pcmt$2">$3</label> -- $4',
 			$comments);
 
 	return array($comments, $digest);

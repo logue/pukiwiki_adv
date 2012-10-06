@@ -38,10 +38,10 @@ var pukiwiki = {};
 				console[methods[length]] = noop;
 			}
 		}());
-		if (DEBUG) {
-			window.console.debugMode = true;
-			var D1 = new Date();
-		}
+	}
+	if (DEBUG) {
+		window.console.debugMode = true;
+		var D1 = new Date();
 	}
 
 	// Detect IE
@@ -61,7 +61,8 @@ var pukiwiki = {};
 	// オーバーライド用
 	var pkwkInit = [], pkwkBeforeInit = [], pkwkUnload = [], pkwkBeforeUnload = [], pkwkAjaxLoad = [];
 
-	if (!$) { throw "pukiwiki: jQuery not included."; }
+	if (!$) { throw "pukiwiki: jQuery does not included."; }
+	if (!$.ui) { throw "pukiwiki: jQueryUI does not included."; }
 
 	pukiwiki = {
 		meta : {
@@ -149,8 +150,9 @@ var pukiwiki = {};
 			}, this.custom.syntaxhighlighter);
 			
 			$.extend(true, $.fn.dataTable.defaults, {
-				bJQueryUI: true,
-				sDom: '<"H"pi>tr<"F"lf>',
+				bJQueryUI	: true,
+				bAutoWidth	: false,
+				sDom		: '<"H"pi>tr<"F"lf>',
 				sPaginationType: 'full_numbers',
 				oLanguage: {
 					sEmptyTable		: $.i18n('dataTable', 'sEmptyTable'),
@@ -239,20 +241,20 @@ var pukiwiki = {};
 			// ポップアップ目次
 			this.linkattrs();
 			this.preptoc(this.body);
+		
+			// アシスタント
+			if ($('.edit_form').length !== 0 && $.query.get('cmd') !== 'guiedit'){
+				this.set_editform();
+			}
+			
+			if ($('*[name="msg"]').length !== 0){
+				$('.comment_form').append('<div class="assistant ui-corner-all ui-widget-header ui-helper-clearfix"></div>');
+				this.assistant();
+			}
 
 			// フォームを初期化
 			this.init_dom();
 
-			// アシスタント
-			if ($('textarea[name="msg"]').length !== 0 && $.query.get('cmd') !== 'guiedit'){
-				this.set_editform();
-			}
-			
-			if ($('input[name=msg]').length !== 0){
-				$('.comment_form').append('<div class="assistant ui-corner-all ui-widget-header ui-helper-clearfix"></div>');
-				this.assistant();
-			}
-			
 			/*
 			// FIXME:アップローダーに進捗状況表示（PHP5.4以降のみ）
 			if ($('form[enctype]').length !== 0 && $('.progress_session').length !== 0){
@@ -350,7 +352,8 @@ var pukiwiki = {};
 
 			// Placeholder属性のサポート
 			if (!Modernizr.input.placeholder){
-				$(prefix + '[placeholder]').each(function () {
+				console.log("Placeholder");
+				$(prefix + '*[placeholder]').each(function () {
 					var input = $(this),
 					placeholderText = input.attr('placeholder'),
 					placeholderColor = 'Gray',
@@ -476,7 +479,7 @@ var pukiwiki = {};
 			this.dataTable(prefix);
 
 			// テキストエリアでタブ入力できるように
-			$(prefix + 'textarea').tabby();
+			$(prefix + 'textarea').autosize().tabby();
 
 			// ボタンをjQuery UIのものに
 			$(prefix + 'input[type=submit], '+prefix + 'input[type=reset], '+prefix + 'input[type=button]').button();
@@ -760,10 +763,11 @@ var pukiwiki = {};
 					var container = $('<div class="window"></div>');
 					var content = '';
 					if (typeof(parse) === 'function') { data = parse(data); }
-						// スクリプトタグを無効化
-						if (data !== null){
-						content = data.body.replace(/<script[^>]*>[^<]+/ig,'');
-						dialog_option.title = data.title;
+
+					// スクリプトタグを無効化
+					if (data !== null){
+							content = data.body.replace(/<script[^>]*>[^<]+/ig,'');
+							dialog_option.title = data.title;
 					}else{
 						content = [
 							'<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">',
@@ -861,9 +865,10 @@ var pukiwiki = {};
 				var $this = $(this);
 				var sortable = (typeof($this.data('sortable')) === 'undefined' || $this.data('sortable') === true) ? true : false;
 				if ($this.find('thead').length !== 0 && sortable){
+					var pagenate = (typeof($this.data('pagenate')) === 'undefined' || $this.data('pagenate') === false) ? false : true;
 					$this.dataTable({
-						sDom: ($this.find('tr').length >= 10) ? '<"H"pi>tr<"F"lf>' : 'tr',
-						bAutoWidth: true,
+						bPaginate : pagenate,
+						sDom: (pagenate) ? '<"H"pi>tr<"F"lf>' : 'tr',
 						aaSorting: ! $this.data('filter') ? [] : $this.data('filter')
 					});
 				}

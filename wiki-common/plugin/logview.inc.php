@@ -148,7 +148,7 @@ function plugin_logview_action()
 	$count++;
 	$body .= <<<EOD
 <div class="table_wrapper">
-<table class="style_table table_logview">
+<table class="style_table table_logview" data-pagenate="true">
 <thead>
 <tr>
 

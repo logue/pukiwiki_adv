@@ -138,7 +138,17 @@ function plugin_referer_body($data)
 		$arrow_last = $_referer_msg['msg_Chr_darr'];
 		$sort_last = '0a';
 
-	$body = '';
+	$body = array();
+	$body[] = '<table summary="Referer" class="style_table referer_table" data-pagenate="true">';
+	$body[] = '<thead>';
+	$body[] = '<tr>';
+	$body[] = '<th class="style_th">' . $_referer_msg['msg_Hed_LastUpdate'] . '</th>';
+	$body[] = '<th class="style_th">' . $_referer_msg['msg_Hed_1stDate'] . '</th>';
+	$body[] = '<th class="style_th" style="text-align:right">' . $_referer_msg['msg_Hed_RefCounter'] . '</th>';
+	$body[] = '<th class="style_th">' . $_referer_msg['msg_Hed_Referer'] . '</th>';
+	$body[] = '</tr>';
+	$body[] = '</thead>';
+	$body[] = '<tbody>';
 	$ctr = 0;
 	foreach ($data as $x) {
 		// 'scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment'
@@ -177,42 +187,28 @@ function plugin_referer_body($data)
 		$ldate = get_date($_referer_msg['msg_Fmt_Date'], $ltime); // 最終更新日時文字列
 		$sdate = get_date($_referer_msg['msg_Fmt_Date'], $stime); // 初回登録日時文字列
 
-		$body .=
-			'		<tr>' . "\n" .
-			'			<td class="style_td">' . $ldate . ' ('. $lpass .')</td>' . "\n";
+		$body[] = '<tr>';
+		$body[] = '<td class="style_td">' . $ldate . ' ('. $lpass .')</td>';
+		$body[] = ($count == 1) ?
+			'<td class="style_td">N/A</td>' :
+			'<td class="style_td">' . $sdate .' ('. $spass .')</td>';
 
-		$body .= ($count == 1) ?
-			'			<td class="style_td">N/A</td>' . "\n" :
-			'			<td class="style_td">' . $sdate .' ('. $spass .')</td>' . "\n";
-
-		$body .= '			<td class="style_td" style="text-align:right;">' . $count . '</td>' . "\n";
+		$body[] = '<td class="style_td" style="text-align:right;">' . $count . '</td>';
 
 		// 適用不可データのときはアンカーをつけない
-		$body .= ($sw_ignore) ?
-			'			<td class="style_td">' . $s_url . '</td>' . "\n" :
-			'			<td class="style_td"><a href="' . $e_url . '" rel="nofollow noreferer">' . $s_url . '</a></td>' . "\n";
+		$body[] = ($sw_ignore) ?
+			'<td class="style_td">' . $s_url . '</td>' :
+			'<td class="style_td"><a href="' . $e_url . '" rel="nofollow noreferer">' . $s_url . '</a></td>';
 
-		$body .= '		</tr>' . "\n";
+		$body[] = '</tr>';
 		$ctr++;
 	}
+	$body[] = '</tbody>';
+	$body[] = '</table>';
 
 	if ($ctr === 0) return '<p>'.$_referer_msg['msg_no_data'].'</p>';
 
-	return <<<EOD
-<table summary="Referer" class="style_table">
-	<thead>
-		<tr>
-			<th class="style_th">{$_referer_msg['msg_Hed_LastUpdate']}</th>
-			<th class="style_th">{$_referer_msg['msg_Hed_1stDate']}</th>
-			<th class="style_th" style="text-align:right">{$_referer_msg['msg_Hed_RefCounter']}</th>
-			<th class="style_th">{$_referer_msg['msg_Hed_Referer']}</th>
-		</tr>
-	</thead>
-	<tbody>
-$body
-	</tbody>
-</table>
-EOD;
+	return join("\n",$body);
 }
 
 function plugin_referer_set_color()
@@ -252,7 +248,6 @@ function plugin_referer_ignore_check($url)
 	foreach ($ignore_url as $x)
 		if (strpos($url, $x) !== FALSE)
 			return 1;
-	
 	return 0;
 }
 

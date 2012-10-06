@@ -269,8 +269,12 @@ q{
 	margin:.2em 0 .5em .4em;
 }
 
-#body h4, #body  h5, #body  h6{
+#body h4, #body h5, #body h6{
 	margin:.2em 0 .5em .6em;
+}
+
+#body form, #body figure{
+	margin:.5em 1.5em;
 }
 
 #topicpath{

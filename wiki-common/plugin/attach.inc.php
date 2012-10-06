@@ -1316,7 +1316,7 @@ class AttachFiles
 			}
 			// else{ ... } // delated FIX me!
 		}
-		return '<table class="style_table attach_table"><thead>' . "\n" .
+		return '<table class="style_table attach_table" data-pagenate="true"><thead>' . "\n" .
 		       '<tr><th class="style_th">' . $_attach_messages['msg_file'] . '</th>' .
 		       '<th class="style_th">' . $_attach_messages['msg_filesize'] . '</th>' .
 		       '<th class="style_th">' . $_attach_messages['msg_type'] . '</th>' .

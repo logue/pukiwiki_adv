@@ -15,11 +15,13 @@ defined('PLUGIN_COMMENT_DIRECTION_DEFAULT') or define('PLUGIN_COMMENT_DIRECTION_
 defined('PLUGIN_COMMENT_SIZE_MSG') or define('PLUGIN_COMMENT_SIZE_MSG',  68);
 defined('PLUGIN_COMMENT_SIZE_NAME') or define('PLUGIN_COMMENT_SIZE_NAME', 15);
 
+defined('PLUGIN_COMMENT_USE_TEXTAREA') or define('PLUGIN_COMMENT_USE_TEXTAREA', true);
+
 // ----
 define('PLUGIN_COMMENT_FORMAT_MSG',		'$msg');
 define('PLUGIN_COMMENT_FORMAT_NAME',	'[[$name]]');
 // define('PLUGIN_COMMENT_FORMAT_NOW',	'&new{$now};');
-define('PLUGIN_COMMENT_FORMAT_NOW',		'&epoch{'.MUTIME.',comment_date};');
+define('PLUGIN_COMMENT_FORMAT_NOW',		'&epoch('.UTIME.',comment_date);');
 define('PLUGIN_COMMENT_FORMAT_STRING',	"\x08MSG\x08 -- \x08NAME\x08 \x08NOW\x08");
 
 function plugin_comment_init(){
@@ -171,66 +173,49 @@ function plugin_comment_convert()
 	static $all_numbers = 0;
 	static $comment_cols = PLUGIN_COMMENT_SIZE_MSG;
 
-	$auth_guide = '';
-	if (PKWK_READONLY == ROLE_AUTH) {
+	$ret = array();
+	if (PKWK_READONLY === ROLE_AUTH) {
 		exist_plugin('login');
-		$auth_guide = do_plugin_inline('login');
+		$ret[] = do_plugin_inline('login');
+		$ret[] = '<br />';
 	}
 
-	// if (PKWK_READONLY) return ''; // Show nothing
 	if (auth::check_role('readonly')) return $auth_guide;
 	if (! isset($numbers[$vars['page']])) $numbers[$vars['page']] = 0;
-	$comment_no = $numbers[$vars['page']]++;
-	$comment_all_no = $all_numbers++;
-
+	
 	$options = func_num_args() ? func_get_args() : array();
-
 	list($user, $link, $disabled) = plugin_comment_get_nick();
-
-//	if (in_array('noname', $options)) {
-//		$nametags = '<label for="p_comment_comment_' . $comment_all_no . '">' .
-//			$_comment_messages['label_comment'] . '</label>';
-//	} else {
-//		$nametags = '<label for="p_comment_name_' . $comment_all_no . '">' .
-//			$_comment_messages['label_name'] . '</label>' .
-
-		$nametags =
-			'<input type="text" name="name" id="p_comment_name_' .
-			$comment_all_no .  '" size="' . PLUGIN_COMMENT_SIZE_NAME .
-			'" value="'.$user.'"'.$disabled.' placeholder="'.$_comment_messages['label_name'].'" />' . "\n";
-//	}
-
-	$nodate = in_array('nodate', $options) ? '1' : '0';
-	$above  = in_array('above',  $options) ? '1' :
-		(in_array('below', $options) ? '0' : PLUGIN_COMMENT_DIRECTION_DEFAULT);
-	$refpage = '';
-
-	$s_page = htmlsc($vars['page']);
 
 	$ticket = md5(MUTIME);
 	if (function_exists('pkwk_session_start') && pkwk_session_start() !== 0) {
-		$keyword = $ticket;
-		$_SESSION[$keyword] = md5(get_ticket() . $digest);
+		$_SESSION[$ticket] = md5(get_ticket() . $digest);
 	}
 
-	$script = get_script_uri();
-	$string = <<<EOD
-<br />
-$auth_guide
-<form action="$script" method="post" class="comment_form">
-	<input type="hidden" name="refpage" value="$refpage" />
-	<input type="hidden" name="cmd" value="comment" />
-	<input type="hidden" name="refer"  value="$s_page" />
-	<input type="hidden" name="comment_no" value="$comment_no" />
-	<input type="hidden" name="nodate" value="$nodate" />
-	<input type="hidden" name="above"  value="$above" />
-	<input type="hidden" name="digest" value="$digest" />
-	<input type="hidden" name="ticket" value="$ticket" />
-	$nametags
-	<input type="text"   name="msg" id="p_comment_comment_{$comment_all_no}" size="$comment_cols" placeholder="{$_comment_messages['label_comment']}" />
-	<input type="submit" name="comment" value="{$_comment_messages['label_post']}" />
-</form>
-EOD;
+	$ret[] = '<form action="'. get_script_uri() .'" method="post" class="comment_form">';
+	$ret[] = '<input type="hidden" name="cmd" value="comment" />';
+	$ret[] = '<input type="hidden" name="digest" value="' . $digest . '" />';
+	$ret[] = '<input type="hidden" name="ticket" value="' . $ticket . '" />';
+	$ret[] = '<input type="hidden" name="refer"  value="' . htmlsc($vars['page']) . '" />';
+	$ret[] = '<input type="hidden" name="refpage" value="" />';
+	$ret[] = '<input type="hidden" name="comment_no" value="' . $numbers[$vars['page']]++ . '" />';
+	$ret[] = '<input type="hidden" name="nodate" value="' . in_array('nodate', $options) ? '1' : '0' . '" />';
+	$ret[] = '<input type="hidden" name="above"  value="' . in_array('above',  $options) ? '1' : (in_array('below', $options) ? '0' : PLUGIN_COMMENT_DIRECTION_DEFAULT) . '" />';
+
+	$comment_all_no = $all_numbers++;
+	if (! in_array('noname', $options)) {
+		$ret[] =
+			'<input type="text" name="name" id="p_comment_name_' .
+			$comment_all_no .  '" size="' . PLUGIN_COMMENT_SIZE_NAME .
+			'" value="'.$user.'"'.$disabled.' placeholder="'.$_comment_messages['label_name'].'" />';
+	}
+	$ret[] = (PLUGIN_COMMENT_USE_TEXTAREA) ? 
+		'<textarea name="msg" id="p_comment_comment_'.$comment_all_no.'" cols="'.$comment_cols.'" row="1" placeholder="'.$_comment_messages['label_comment'].'"></textarea>' :
+		'<input type="text" name="msg" id="p_comment_comment_'.$comment_all_no.'" size="'.$comment_cols.'" placeholder="'.$_comment_messages['label_comment'].'" />';
+
+	$ret[] = '<input type="submit" name="comment" value="' . $_comment_messages['label_post'] . '" />';
+	$ret[] = '</form>';
+
+	$string = join("\n",$ret);
 	return (IS_MOBILE) ? '<div data-role="collapsible" data-collapsed="true" data-theme="b" data-content-theme="d"><h4>'.$_comment_messages['label_comment'].'</h4>'.$string.'</div>' : $string;
 }
 /* End of file comment.inc.php */

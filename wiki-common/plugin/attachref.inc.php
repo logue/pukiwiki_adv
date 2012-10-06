@@ -220,7 +220,6 @@ function plugin_attachref_inline()
 			$f_args = htmlsc($s_args);
 			$ret = <<<EOD
 <form action="$script" method="post" class="attachref_form">
-	<input type="hidden" name="encode_hint" value="ぷ" />
 	<input type="hidden" name="attachref_no" value="$attachref_no" />
 	<input type="hidden" name="attachref_opt" value="$f_args" />
 	<input type="hidden" name="digest" value="$digest" />
@@ -238,7 +237,7 @@ EOD;
 				'refer'			=> $vars['page'],
 				'digest'		=> $digest
 			));
-			$ret = $ret.'<a class="pkwk-icon_linktext attach-upload" href="'.$btn_url.'" title="'.$f_btn_text.'">'.$btn_text.'</a>';
+			$ret = $ret.'<a href="'.$btn_url.'" title="'.$f_btn_text.'"><span class="pkwk-symbol symbol-attach">'.$btn_text.'</span></a>';
 	    }
 	}
 	return $ret;

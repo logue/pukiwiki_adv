@@ -278,7 +278,7 @@ function plugin_tracker_action()
 	page_write($page, join('', $template));
 
 	pkwk_headers_sent();
-	header('Location: ' . get_script_uri() . '?' . rawurlencode($page));
+	header('Location: ' . get_page_uri($page));
 	exit;
 }
 
@@ -998,8 +998,10 @@ var st = new SortableTable(document.getElementById('{$trackerid}'),[{$trackerso}
 /* ]]> */</script>
 EOD;
 		}
-	}
 //miko
+	}else{
+		$html = preg_replace('/data-pagenate="false"/','data-pagenate="true"', $html);
+	}
 
 	return convert_html($result);
 }

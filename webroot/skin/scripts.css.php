@@ -60,7 +60,7 @@ table{border-collapse:collapse;border-spacing:0}
 /* ==|== HTML5 Boilerplate styles - h5bp.com ================================ */
 html,button,input,select,textarea{color: #222;}
 body{font-size: 13px;line-height: 1.4;}
-::-moz-selection,::selection {background: #b3d4fc;text-shadow: none;}
+::-moz-selection, ::selection {background: #b3d4fc;text-shadow: none;}
 hr{display: block;height: 1px;border: 0;border-top: 1px solid #ccc;margin: 1em 0;padding: 0;}
 img{vertical-align: middle;}
 textarea{resize: vertical;}
@@ -116,8 +116,12 @@ legend {
 	text-indent:.5em;
 }
 
+label {
+	cursor: pointer;
+}
+
 figure{
-	margin: 0 auto;
+	padding: 0 auto;
 }
 
 /* List tags */
@@ -149,6 +153,7 @@ a img {
 .table_wrapper{
 	text-align: center;
 	width: 100%;
+	max-width:100%;
 	padding: 0 auto;
 }
 
@@ -161,17 +166,20 @@ a img {
 	border-collapse: separate;
 	border-spacing: 1px;
 	background-color: darkgray;
+	width:90%;
 }
 .style_th{
 	background-color: silver;
 	padding: 5px;
 	margin: 1px;
+	white-space: nowrap;
 	text-align: center;
 }
 .style_td{
-	background-color :whitesmoke;
+	background-color: whitesmoke;
 	padding: 5px;
 	margin: 1px;
+	vertical-align: top;
 }
 .style_td_blank{
 	background-color: lightgrey;
@@ -276,6 +284,9 @@ input, textarea, select, button{
 	margin: .1em .2em;
 	vertical-align: middle;
 }
+textarea[row="1"]{
+	height:1em;
+}
 
 /* Remove outline color from Safari and Chrome. */
 input:focus, textarea:focus, select:focus, button:focus{
@@ -372,9 +383,6 @@ input[type='search'][required], textarea[required], select[required] {
 }
 .ui-widget .ui-widget{
 	font-size: 85%;
-}
-.ui-icon{
-	display: inline-block;
 }
 .ui-button{
 	text-shadow: 0 1px 1px rgba(0,0,0,.3);
@@ -875,20 +883,19 @@ input[type='search'][required], textarea[required], select[required] {
 }
 
 /* vote.inc.php */
-.vote_choise {
+.vote_table{
+	width:auto;
+}
+.vote_choise_td {
 	padding:0 1em;
 }
-.vote_count {
+.vote_count_td {
 	text-align:right;
-	min-width:120px;
 	padding-right:1em;
 }
-.vote_button {
-	padding:0;
+.vote_form_td {
+	padding:.1em;
 	text-align:center;
-}
-.vote_addchoise {
-	text-align:right;
 }
 /* ==|== JavaScript Stylesheet classes ====================================== */
 .tocpic{
@@ -1281,19 +1288,20 @@ input[type='search'][required], textarea[required], select[required] {
 /*
  * Table
  */
-.fg-toolbar +.dataTable {
+.fg-toolbar {
+	margin: 0 auto;
+}
+.fg-toolbar, .fg-toolbar +.dataTable {
 	width:100%;
 }
 
 .dataTable thead tr:last-child th{
 	border-bottom: 1px solid black;
-	padding: 3px 18px 3px 10px;
 	cursor: pointer;
 }
 
 .dataTable tfoot tr:first-child th{
 	border-top: 1px solid black;
-	padding: 3px 18px 3px 10px;
 }
 
 .dataTable .odd .sorting_1 { color: black; background-color: #D3D6FF; }
@@ -1304,14 +1312,6 @@ input[type='search'][required], textarea[required], select[required] {
 .dataTable .even td.sorting_3 { color: black; background-color: #F9F9FF; }
 
 
-/*
- * Table wrapper
- */
-.dataTables_wrapper {
-	position: relative;
-	clear: both;
-	*zoom: 1;
-}
 
 /*
  * Page length menu
@@ -1342,10 +1342,6 @@ input[type='search'][required], textarea[required], select[required] {
 .dataTables_paginate {
 	float: right;
 	text-align: right;
-}
-
-.dataTables_paginate {
-	width: 400px;
 }
 
 /* Two button pagination - previous / next */
@@ -3151,6 +3147,18 @@ li[role=tab]{
 		margin-left: 8.547008547008547%;
 		*margin-left: 8.440625568285142%;
 	}
+}
+
+[class*="span"] .style_table {
+	margin-bottom:1em;
+}
+
+[class*="span"] .style_calendar_viewer {
+	float:none;
+	width:auto;
+}
+[class*="span"] form {
+	margin:0;
 }
 /* ==|== Helper classes ===================================================== */
 .ir {background-color: transparent;border: 0;overflow: hidden;*text-indent: -9999px;}

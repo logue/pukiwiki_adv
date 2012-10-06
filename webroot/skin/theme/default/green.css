@@ -199,7 +199,7 @@ fieldset {
 }
 
 .style_calendar tbody .style_td:hover{
-	background-color: #DDFFFF;
+	background-color: #DDFFFF !important;
 }
 
 /* suckerfish.inc.php */
