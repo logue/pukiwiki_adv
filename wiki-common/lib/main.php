@@ -212,7 +212,6 @@ if (is_webdav() && exist_plugin('dav')) {
 	do_plugin_action('dav');
 	exit;
 }
-
 $is_protect = auth::is_protect();
 
 if (DEBUG) {
@@ -238,11 +237,7 @@ if (!empty($plugin)) {
 		$base = (!empty($page)) ? $page : $refer;
 	} else {
 		header('HTTP/1.1 501 Not Implemented');
-		$retvars = array(
-			'msg'=>'Not Implemented',
-			'body'=>'<p class="message_box ui-state-error ui-corner-all">cmd=' . htmlsc($plugin) . ' is not implemented.</p>'
-		);
-		$base    = $defaultpage;
+		die_message(sprintf($_string['plugin_not_implemented'],htmlsc($plugin)));
 	}
 }
 

@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
 //
-// $Id: addline.inc.php,v 0.13.5 2012/05/11 18:04:00 Logue Exp $
+// $Id: addline.inc.php,v 0.13.6 2012/10/11 09:05:00 Logue Exp $
 // Original is sha(0.13)
 /* 
 *プラグイン addline
@@ -69,13 +69,13 @@ function plugin_addline_convert()
 				$above = 1;
 			}
 			else if (preg_match("/btn:(.+)/i",$opt,$args)){
-				$btn_text = htmlspecialchars($args[1]);
+				$btn_text = htmlsc($args[1]);
 			}
 			else if (preg_match("/rtext:(.+)/i",$opt,$args)){
-				$right_text = htmlspecialchars($args[1]);
+				$right_text = htmlsc($args[1]);
 			}
 			else if (preg_match("/ltext:(.+)/i",$opt,$args)){
-				$left_text = htmlspecialchars($args[1]);
+				$left_text = htmlsc($args[1]);
 			}
 			else if ( $opt === 'below' || $opt === 'down' ){
 				$above = 0;
@@ -133,7 +133,7 @@ function plugin_addline_inline()
 	if ( func_num_args() ){
 		$args =func_get_args();
 		$opt = array_pop($args);
-		$btn_text = $opt ? htmlspecialchars($opt) : $btn_text;
+		$btn_text = $opt ? htmlsc($opt) : $btn_text;
 		foreach ( $args as $opt ){
 		if ( $opt === 'before' ){
 				$above = 3;
@@ -200,7 +200,7 @@ function plugin_addline_action()
 	{
 		return array( 
 			'msg' => $_addline_messages['error'],
-			'body' => sprintf($_addline_messages['config_notfound'], htmlspecialchars($configname))
+			'body' => sprintf($_addline_messages['config_notfound'], htmlsc($configname))
 		);
 	}
 	$config->config_name = $configname;
@@ -215,7 +215,7 @@ function plugin_addline_action()
 
 	$title = $_title_updated;
 	$body = '';
-	if (md5(@join('',$postdata_old)) != $vars['digest'])
+	if (md5(join('',$postdata_old)) !== $vars['digest'])
 	{
 		$title = $_addline_messages['title_collided'];
 		$body  = $_addline_messages['msg_collided'] . make_pagelink($refer);
@@ -238,12 +238,11 @@ function addline_block($addline,$postdata_old,$addline_no,$above)
 	$addline_ct = 0;
 	foreach ($postdata_old as $line)
 	{
-		if (!$above) 	$postdata .= $line;
-		if (preg_match('/^#addline/',$line) and $addline_ct++ == $addline_no)
-		{
+		if (!$above) $postdata .= $line;
+		if (preg_match('/^#addline/',$line) and $addline_ct++ == $addline_no){
 			$postdata = rtrim($postdata)."\n$addline\n";
-		if ($above)  $postdata .= "\n";
-	}
+			if ($above) $postdata .= "\n";
+		}
 		if ($above) $postdata .= $line;
 	}
 	return $postdata;

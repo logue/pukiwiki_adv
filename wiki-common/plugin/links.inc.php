@@ -15,15 +15,15 @@ function plugin_links_init()
 			'msg_done'      => T_("The update of cashe was completed."),
 			'msg_error'		=> T_("The update of cashe was failure. Please check password."),
 			'msg_usage1'	=> 
-T_("* Content of processing\n") .
-T_(":Cache update|\n") .
-T_("All pages are scanned, whether on which page certain pages have been linked is investigated, and it records in the cache.\n\n") .
-T_("* CAUTION\n") .
-T_("It is likely to drive it for a few minutes in execution.") .
-T_("Please wait for a while after pushing the execution button.\n\n"),
+				T_('* Content of processing') . "\n" .
+				T_(':Cache update|') . "\n" .
+				T_('All pages are scanned, whether on which page certain pages have been linked is investigated, and it records in the cache.') ."\n\n" .
+				T_('* CAUTION') . "\n" .
+				T_('It is likely to drive it for a few minutes in execution.') .
+				T_('Please wait for a while after pushing the execution button.') . "\n\n",
 			'msg_usage2'	=> 
-T_("* EXEC\n") .
-T_("Please input the Administrator password, and click the [Exec] button.\n")
+				T_('* EXEC') ."\n" .
+				T_('Please input the Administrator password, and click the [Exec] button.') . "\n"
 		),
 	);
 	set_plugin_messages($messages);
@@ -32,10 +32,10 @@ T_("Please input the Administrator password, and click the [Exec] button.\n")
 function plugin_links_action()
 {
 	global $post, $vars, $foot_explain;
-	global $_links_messages;
+	global $_links_messages, $_string;
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits this');
-	if (auth::check_role('readonly')) die_message( _("PKWK_READONLY prohibits this") );
+	if (auth::check_role('readonly')) die_message( $_string['error_prohibit'] );
 
 	$admin_pass = (empty($post['adminpass'])) ? '' : $post['adminpass'];
 	if ( isset($vars['menu']) && (! auth::check_role('role_adm_contents') || pkwk_login($admin_pass) )) {
@@ -46,7 +46,7 @@ function plugin_links_action()
 			$body = & $_links_messages['msg_done'    ];
 			return array('msg'=>$msg, 'body'=>$body);
 		}else{
-			return array('msg'=>$msg, 'body'=>$_links_messages['msg_failure'    ]);
+			return array('msg'=>$msg, 'body'=>$_links_messages['msg_failure']);
 		}
 	}
 
@@ -55,7 +55,7 @@ function plugin_links_action()
 	$script = get_script_uri();
 	$body .= <<<EOD
 <form method="post" action="$script" class="links_form">
-	<input type="hidden" name="plugin" value="links" />
+	<input type="hidden" name="cmd" value="links" />
 	<input type="hidden" name="menu" value="1" />
 EOD;
 	if (auth::check_role('role_adm_contents')) {

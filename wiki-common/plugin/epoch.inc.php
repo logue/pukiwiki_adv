@@ -3,7 +3,7 @@
  * PukiWiki Plus! epoch plugin.
  *
  * @copyright   Copyright &copy; 2008, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: epoch.inc.php,v 0.3 2011/02/05 10:49:00 Logue Exp $
+ * @version     $Id: epoch.inc.php,v 0.4 2012/10/11 09:09:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License
  *
  *  for BugTrack/83
@@ -24,10 +24,12 @@ function plugin_epoch_inline()
 		return '&epoch(utime[,class]);';
 	}
 	
-	$format = format_date($value[0]);
-	$passaage = get_passage($value[0]);
+	$array = explode(',',$value[0]);
 	
-	$class = (!empty($value[1])) ? $value[1] : 'epoch';
+	$format = format_date($array[0]);
+	$passaage = get_passage($array[0]);
+	
+	$class = (!empty($array[1])) ? $array[1] : 'epoch';
 
 	if ($pkwk_dtd == PKWK_DTD_HTML_5) {
 		$ret = '<time datetime="'.get_date('c',$value[0]).'" class="'.$class.'" title="'.$passaage.'">'.$format.'</time>';

@@ -348,6 +348,11 @@ q{
 	font-size:123.1%;
 }
 
+#menubar p, #menubar form{
+	margin: 0;
+	padding: 0;
+}
+
 #menubar ul.menu, #sidebar ul.menu{
 	list-style-type: none;
 	list-style-position: outside;

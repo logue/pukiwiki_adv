@@ -40,7 +40,7 @@
 		}
 		var color = colorset[$.cookie('pkwk-colorset')];
 		$('#coloring').attr('href', SKIN_DIR+'theme/default/'+color[0]+'.css');
-		$('#ui-theme').attr('href','http://ajax.aspnetcdn.com/ajax/jquery.ui/'+$.ui.version+'/themes/'+color[1]+'/jquery-ui.css');
+		$('#ui-theme').attr('href','http://code.jquery.com/ui/'+$.ui.version+'/themes/'+color[1]+'/jquery-ui.css');
 
 		// カラーセットのリンクボタンを生成
 		var buffer = '';

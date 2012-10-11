@@ -2,7 +2,7 @@
  * PukiWiki Advance - Yet another WikiWikiWeb clone.
  * Pukiwiki skin script for jQuery
  * Copyright (c)2010-2012 PukiWiki Advance Developer Team
- *              2010      Logue <http://logue.be/> All rights reserved.
+ *			  2010	  Logue <http://logue.be/> All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,17 +28,21 @@ var pukiwiki = {};
 	'use strict';
 
 	// Avoid `console` errors in browsers that lack a console.
-	if (!(window.console && console.log)) {
-		(function() {
-			var noop = function() {};
-			var methods = ['assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error', 'exception', 'group', 'groupCollapsed', 'groupEnd', 'info', 'log', 'markTimeline', 'profile', 'profileEnd', 'markTimeline', 'table', 'time', 'timeEnd', 'timeStamp', 'trace', 'warn'];
-			var length = methods.length;
-			var console = window.console = {};
-			while (length--) {
-				console[methods[length]] = noop;
-			}
-		}());
+	var noop = function noop() {};
+	var methods = [
+		'assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error',
+		'exception', 'group', 'groupCollapsed', 'groupEnd', 'info', 'log',
+		'markTimeline', 'profile', 'profileEnd', 'table', 'time', 'timeEnd',
+		'timeStamp', 'trace', 'warn'
+	];
+	var length = methods.length;
+	var console = window.console || {};
+
+	while (length--) {
+		// Only stub undefined methods.
+		console[methods[length]] = console[methods[length]] || noop;
 	}
+
 	if (DEBUG) {
 		window.console.debugMode = true;
 		var D1 = new Date();
@@ -241,12 +245,12 @@ var pukiwiki = {};
 			// ポップアップ目次
 			this.linkattrs();
 			this.preptoc(this.body);
-		
+
 			// アシスタント
 			if ($('.edit_form').length !== 0 && $.query.get('cmd') !== 'guiedit'){
 				this.set_editform();
 			}
-			
+
 			if ($('*[name="msg"]').length !== 0){
 				$('.comment_form').append('<div class="assistant ui-corner-all ui-widget-header ui-helper-clearfix"></div>');
 				this.assistant();
@@ -331,7 +335,7 @@ var pukiwiki = {};
 					url: JS_URI+'iepngfix/iepngfix_tilebg.js',
 					dataType: 'script'
 				});
-				$('img[src$=png], .pkwk-icon, .pkwk-symbol, .pkwk-icon_linktext').css({
+				$('img[src$=png], .pkwk-icon, .pkwk-symbol').css({
 					'behavior': 'url('+JS_URI+'iepngfix/iepngfix.htc)'
 				});
 			}
@@ -426,11 +430,13 @@ var pukiwiki = {};
 				this.submit();
 			});
 
-			// タブ処理
-			// <
-			$(prefix + '.tabs li[role=tab] a').each(function(){
+			// タブ/アコーディオン処理
+			$(prefix + 'li[role=tab] a').each(function(){
 				var $this = $(this);
 				var href = $this.attr('href');
+				$this.click(function(){
+					return false;
+				});
 
 				if (href.match('#')){
 					$this.data('disableScrolling',true);
@@ -445,15 +451,36 @@ var pukiwiki = {};
 				ajaxOptions: {
 					global:false,
 					ajaxOptions: {
-						beforeSend: function( xhr, status, index, anchor ) {
-							$( anchor.hash ).html($.i18n('dialog','loading'));
-						},
-						error: function( xhr, status, index, anchor ) {
-							$( anchor.hash ).html([
-								'<div class="ui-state-error ui-corner-all">',
-									'<p id="ajax_error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>'+$.i18n('dialog','error_page')+'</p>',
-								'</div>'
-							].join("\n"));
+						beforeSend: function( event, ui ) {
+							ui.panel.html($.i18n('dialog','loading'));
+							ui.jqXHR.error(function() {
+								ui.panel.html([
+									'<div class="ui-state-error ui-corner-all">',
+										'<p id="ajax_error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>'+$.i18n('dialog','error_page')+'</p>',
+									'</div>'
+								].join("\n"));
+							});
+						}
+					}
+				},
+				spinner: $.i18n('dialog', 'loading'),
+				load:function(event, ui) {
+					self.init_dom('#' + ui.panel.id);
+				}
+			}).removeClass('tabs');
+			$(prefix + '.accordion').accordion({
+				ajaxOptions: {
+					global:false,
+					ajaxOptions: {
+						beforeSend: function( event, ui ) {
+							ui.panel.html($.i18n('dialog','loading'));
+							ui.jqXHR.error(function() {
+								ui.panel.html([
+									'<div class="ui-state-error ui-corner-all">',
+										'<p id="ajax_error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>'+$.i18n('dialog','error_page')+'</p>',
+									'</div>'
+								].join("\n"));
+							});
 						}
 					}
 				},
@@ -479,7 +506,8 @@ var pukiwiki = {};
 			this.dataTable(prefix);
 
 			// テキストエリアでタブ入力できるように
-			$(prefix + 'textarea').autosize().tabby();
+			$(prefix + 'textarea').tabby();
+			$(prefix + 'textarea[row=1]').autosize();
 
 			// ボタンをjQuery UIのものに
 			$(prefix + 'input[type=submit], '+prefix + 'input[type=reset], '+prefix + 'input[type=button]').button();
@@ -644,6 +672,8 @@ var pukiwiki = {};
 								return false;
 							});
 						}
+					}else if (params.ajax === 'raw'){
+						return false;
 					}else if (params.cmd){
 						// PukiWiki Adv.のプラグイン関連の処理
 						if (params.pcmd == 'open' || params.openfile !== undefined){
@@ -875,10 +905,11 @@ var pukiwiki = {};
 			});
 		},
 		// 検索フォームでサジェスト機能
-		search_form: function(){
-			if ($('#search_word').length !== 0){
+		search_form: function(prefix){
+			var form = (prefix) ? prefix + ' input[type="search"]' : 'input[type="search"]';
+			if ($(form).length !== 0){
 				var cache = {},lastXhr, xhr;
-				$('#search_word')
+				$(form)
 					.autocomplete({
 						minLength: 4,
 						source: function( request, response ) {
@@ -1694,7 +1725,7 @@ var pukiwiki = {};
 			}
 			// メインの処理
 			for (p=0; fp[delta + offset] !== len2; p++) {
-				for(k = -p       ; k <  delta; ++k){ snake(k); }
+				for(k = -p	   ; k <  delta; ++k){ snake(k); }
 				for(k = delta + p; k >= delta; --k){ snake(k); }
 			}
 			return ed[delta + offset];

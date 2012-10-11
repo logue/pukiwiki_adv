@@ -1,5 +1,5 @@
 <?php
-// PukiWiki Adv.では、VotexプラグインをVoteプラグインとして扱う
+// PukiWiki Adv.では、Sonots氏のVotexプラグインをVoteプラグインとして扱う
 
 /**
  * Yet Another Vote Plugin eXtension

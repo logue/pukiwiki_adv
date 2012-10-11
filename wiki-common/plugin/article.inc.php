@@ -70,7 +70,7 @@ function plugin_article_action()
 	global $_article_msg, $_string;
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	if (auth::check_role('readonly')) die_message($_string['prohibit']);
+	if (auth::check_role('readonly')) die_message($_string['error_prohibit']);
 
 	if ($post['msg'] == '')
 		return array('msg'=>'','body'=>'');
@@ -160,7 +160,7 @@ EOD;
 
 function plugin_article_convert()
 {
-	global $script, $vars, $digest;
+	global $vars, $digest;
 //	global $_btn_article, $_btn_name, $_btn_subject;
 	global $_article_msg;
 	static $numbers = array();
@@ -178,6 +178,7 @@ function plugin_article_convert()
 	$subject_cols = PLUGIN_ARTICLE_SUBJECT_COLS;
 	$article_rows = PLUGIN_ARTICLE_ROWS;
 	$article_cols = PLUGIN_ARTICLE_COLS;
+	$script = get_script_uri();
 	$string = <<<EOD
 <form action="$script" method="post" class="article_form post_form">
 	<input type="hidden" name="article_no" value="$article_no" />

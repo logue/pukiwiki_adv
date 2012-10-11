@@ -149,9 +149,8 @@ function plugin_ls2_get_headings($page, & $params, $level, $include = FALSE)
 	$matches = array();
 	foreach (get_source($page) as $line) {
 		if ($params['title'] && preg_match('/^(\*{1,3})/', $line, $matches)) {
-			$id    = make_heading($line);
+			$id    = '#' .make_heading($line);
 			$level = strlen($matches[1]);
-			$id    = PLUGIN_LS2_ANCHOR_PREFIX . $anchor++;
 			plugin_ls2_list_push($params, $level + strlen($level));
 			array_push($params['result'],
 				'<li><a href="' . $href . $id . '">' . $line . '</a>');
@@ -205,7 +204,7 @@ function plugin_ls2_list_push(& $params, $level)
 }
 
 // オプションを解析する
-function plugin_ls2_check_arg($value, $params)
+function plugin_ls2_check_arg($value, &$params)
 {
 	if ($value == '') {
 		$params['_done'] = TRUE;

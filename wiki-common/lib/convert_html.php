@@ -17,7 +17,7 @@ function convert_html($lines)
 	static $contents_id = 0;
 
 	// Set digest
-	$digest = md5(get_source($vars['page'], TRUE, TRUE));
+	$digest = empty($digest) ? md5(get_source($vars['page'], TRUE, TRUE)) : $digest;
 
 	if (! is_array($lines)) $lines = explode("\n", $lines);
 

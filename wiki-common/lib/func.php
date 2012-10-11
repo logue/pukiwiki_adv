@@ -373,8 +373,8 @@ function arg_check($str)
 // Encode page-name
 function encode($str)
 {
-	$str = strval($str);
-	return empty($str) ? '' : strtoupper(bin2hex($str));
+	$value = @strval($str);
+	return empty($value) ? '' : strtoupper(bin2hex($value));
 	// Equal to strtoupper(join('', unpack('H*0', $str)));
 	// But PHP 4.3.10 says 'Warning: unpack(): Type H: outside of string in ...'
 }
@@ -568,21 +568,27 @@ function catrule()
 
 // Show (critical) error message
 function die_message($msg, $error_title='', $http_code = 500){
-	global $skin_file, $page_title, $_string, $_title, $_button;
+	global $skin_file, $page_title, $_string, $_title, $_button, $vars;
 	global $memcache, $ob_flag;
+
 	$title = !empty($error_title) ? $error_title : $_title['error'];
 	$page = $_title['error'];
 
 	if (PKWK_WARNING !== true){	// PKWK_WARNINGが有効でない場合は、詳細なエラーを隠す
 		$msg = $_string['error_msg'];
 	}
-	$body = <<<EOD
-<div class="message_box ui-state-error ui-corner-all">
-	<p style="padding:0 .5em;"><span class="ui-icon ui-icon-alert" style="display:inline-block;"></span> 
-	<strong>{$_title['error']}</strong> $msg</p>
-</div>
-EOD;
-	$body .= isset($vars['page']) ? '<hr /><p>[ <a href="'.get_page_location_uri($vars['page']).'">'.$_button['back'].'</a> ]</p>' : '';
+	$ret = array();
+	$ret[] = '<p>[ ';
+	if ( isset($vars['page']) && !empty($vars['page']) ){
+		$ret[] = '<a href="' . get_page_location_uri($vars['page']) .'">'.$_button['back'].'</a> | ';
+		$ret[] = '<a href="' . get_cmd_uri('edit',$vars['page']) . '">Try to edit this page</a> | ';
+	}
+	$ret[] = '<a href="' . get_cmd_uri() . '">Return to FrontPage</a> ]</p>';
+	$ret[] = '<div class="message_box ui-state-error ui-corner-all">';
+	$ret[] = '<p style="padding:0 .5em;"><span class="ui-icon ui-icon-alert"></span> <strong>' . $_title['error'] . '</strong> ' . $msg . '</p>';
+	$ret[] = '</div>';
+	$body = join("\n",$ret);
+
 	global $trackback;
 	$trackback = 0;
 
@@ -592,23 +598,24 @@ EOD;
 
 	if(defined('SKIN_FILE')){
 		if (file_exists(SKIN_FILE) && is_readable(SKIN_FILE)) {
-			catbody($title, $page, $body);
+			catbody($page, $title, $body);
 		} elseif ( !empty($skin_file) && file_exists($skin_file) && is_readable($skin_file)) {
 			define('SKIN_FILE', $skin_file);
-			catbody($title, $page, $body);
+			catbody($page, $title, $body);
 		}
 	}else{	
-		print <<<EOD
-<!doctype html>
-<html>
-	<head>
-		<meta charset="utf-8">
-		<link rel="stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.21/themes/base/jquery-ui.css" type="text/css" />
-		<title>$title - $page_title</title>
-	</head>
-	<body>$body</body>
-</html>
-EOD;
+		$html = array();
+		$html[] = '<!doctype html>';
+		$html[] = '<html>';
+		$html[] = '<head>';
+		$html[] = '<meta charset="utf-8">';
+		$html[] = '<meta name="robots" content="NOINDEX,NOFOLLOW" />';
+		$html[] = '<link rel="stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/' . JQUERY_UI_VER . '/themes/base/jquery-ui.css" type="text/css" />';
+		$html[] = '<title>' . $page . ' - ' . $page_title . '</title>';
+		$html[] = '</head>';
+		$html[] = '<body>' . $body . '</body>';
+		$html[] = '</html>';
+		echo join("\n",$html);
 	}
 	pkwk_common_suffixes();
 	die();
@@ -1336,7 +1343,7 @@ function csv_implode($glue, $pieces)
 }
 
 // Sugar with default settings
-function htmlsc($string = '', $flags = ENT_QUOTES, $charset = CONTENT_CHARSET)
+function htmlsc($string = '', $flags = ENT_QUOTES, $charset = 'UTF-8')
 {
 	return htmlspecialchars($string, $flags, $charset);	// htmlsc()
 }

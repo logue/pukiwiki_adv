@@ -1,6 +1,6 @@
 <?php
 // PukPukiPlus.
-// $Id: attach.inc.php,v 1.92.50 2012/05/11 18:06:00 Logue Exp $
+// $Id: attach.inc.php,v 1.92.51 2012/10/11 19:05:00 Logue Exp $
 // Copyright (C)
 //   2010-2012 PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team
@@ -183,7 +183,7 @@ function plugin_attach_action()
 		case 'freeze':
 		case 'unfreeze':
 			// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-			if (auth::check_role('readonly')) die_message( $_string['prohibit'] );
+			if (auth::check_role('readonly')) die_message( $_string['error_prohibit'] );
 		}
 		switch ($pcmd) {
 			case 'info'     : return attach_info();
@@ -221,7 +221,7 @@ function attach_upload($file, $page, $pass = NULL)
 	global $_attach_messages, $_string;
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	if (auth::check_role('readonly')) die_message($_string['prohibit']);
+	if (auth::check_role('readonly')) die_message($_string['error_prohibit']);
 
 	// Check query-string
 	$query = get_cmd_uri('attach', '', '', array(
@@ -1156,7 +1156,7 @@ EOD;
 
 		ini_set('default_charset', '');
 		mb_http_output('pass');
-		pkwk_common_headers();
+		pkwk_common_headers(filemtime($this->filename));
 
 		// for reduce server load
 		$sendfile = realpath($this->filename);

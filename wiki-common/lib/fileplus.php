@@ -438,7 +438,7 @@ function get_attachfiles_cache($page='')
 	global $memcache;
 	
 	if ($memcache !== null){
-		$cache_name = 'attachfiles';
+		$cache_name = 'attach_files';
 		$cache_data = cache_read($cache_name);
 		if (cache_timestamp_compare_date('attach',$cache_name) && $cache_data !== FALSE) {
 			return $cache_data;
@@ -490,7 +490,7 @@ function get_attachfiles_cache_write($filename,$page)
 		$line = array(filemtime(UPLOAD_DIR.$file), filesize(UPLOAD_DIR.$file), $file,  decode($matches[1]),  decode($matches[2]));
 		
 		if ($memcache === null){
-			fwrite($fp, join("\n",$line) );
+			fwrite($fp, join("\t",$line)."\n" );
 		}else{
 			$data[] = $line;
 		}
@@ -527,6 +527,7 @@ function get_attachfiles_cache_read($filename,$page)
 			$line = fgets($fp, 2048);
 			if ($line === FALSE) continue;
 			$field = explode("\t", $line);
+			
 			$_file = trim($field[4]);
 			// [page][file] = array(time,size);
 			if (! empty($page) && ! preg_match($pattern, $field[2], $matches)) continue;

@@ -3,7 +3,7 @@
  * dav plugin.
  *
  * @copyright   Copyright &copy; 2010, Katsumi Saito <jo1upk@users.sourceforge.net>
- * @version	 $Id: dav.inc.php,v 1.0.1 2012/09/12 11:11:00 Logue Exp $
+ * @version	 $Id: dav.inc.php,v 1.0.2 2012/10/11 09:08:00 Logue Exp $
  * @license	 http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  *
  * 現状では、DOMDocument の実装上、PHP5以降でのみ稼働。
@@ -39,9 +39,11 @@ function plugin_dav_action()
 	header('Cache-Control: no-store, no-cache, must-revalidate');
 	header('Cache-Control: post-check=0, pre-check=0', false);
 	header('Pragma: no-cache');
+	
+	//$_SERVER['REQUEST_METHOD'] = 'PROPFIND';
 
 	$req_headers = apache_request_headers();
-	$path_info = (empty($_SERVER['PATH_INFO'])) ? '' : $_SERVER['PATH_INFO'];
+	$path_info = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '';
 
 	switch ($_SERVER['REQUEST_METHOD']) {
 	case 'OPTIONS':
@@ -65,7 +67,7 @@ function plugin_dav_action()
 			dav_error_exit(301, NULL, dav_myurl1().'/');
 		}
 
-		$depth = $req_headers['Depth'];
+		$depth = isset($req_headers['Depth']) ? $req_headers['Depth'] : 0;
 		list($dir,$file) = dav_get_folder_info($path_info,$depth);
 		if (!isset($dir)) dav_error_exit(404);
 
@@ -80,7 +82,7 @@ function plugin_dav_action()
 	case 'HEAD':
 		// 通常のファイル参照時は、このメソッドでアクセスされる
 		$obj = dav_getfileobj($path_info, true);
-		if($obj != NULL && $obj->exist) {
+		if(isset($obj) && $obj->exists) {
 			$obj->open();
 		}
 		else if($_SERVER['REQUEST_METHOD'] == 'GET' && empty($path_info) && strpos($log_ua, 'MSIE') > 0) {
@@ -102,7 +104,7 @@ function plugin_dav_action()
 			}
 		}
 
-		$size = intval($req_headers['Content-Length']);
+		$size = isset($req_headers['Content-Length']) ? intval($req_headers['Content-Length']) : 0;
 		// Windows 7のクライアントは、まず0バイト書いて、
 		// それをLOCKしてから、上書きしにくる。
 		// しかし、Pukiwikiは基本上書き禁止。
@@ -165,7 +167,7 @@ function plugin_dav_action()
 			break;
 		case '.bz2':
 			$tp = fopen($tmpfilename,'rb') or dav_error_exit(500); // アップロードされたファイルが読めません
-			$zp = gzopen($obj->filename, 'wb') or dav_error_exit(500); // 圧縮ファイルが書けません
+			$zp = bzopen($obj->filename, 'wb') or dav_error_exit(500); // 圧縮ファイルが書けません
 			while (!feof($tp)) { bzwrite($zp,fread($tp, 8192)); }
 			bzclose($zp);
 			fclose($tp);
@@ -245,7 +247,7 @@ function plugin_dav_action()
 		}
 
 		// GET TO (Destination)
-		$destname = $req_headers['Destination'];
+		$destname = isset($req_headers['Destination']) ? $req_headers['Destination'] : '';
 		if(strpos($destname, dav_myurl0()) === 0) {
 			$destname = substr($destname, strlen(dav_myurl0()));
 		}
@@ -376,6 +378,7 @@ function dav_attach_get_ext()
 	if (PLUGIN_ATTACH_COMPRESS_TYPE == 'TGZ' && exist_plugin('dump')) return '.tgz';
 	if (PLUGIN_ATTACH_COMPRESS_TYPE == 'GZ' && extension_loaded('zlib')) return '.gz';
 	if (PLUGIN_ATTACH_COMPRESS_TYPE == 'ZIP' && class_exists('ZipArchive')) return '.zip';
+	if (PLUGIN_ATTACH_COMPRESS_TYPE == 'BZ2' && class_exists('bzip')) return '.bz2';
 	return '';
 }
 
@@ -625,14 +628,16 @@ function dav_myurl0()
 	// $_SERVER['HTTPS'] - https かどうかの判定用
 	// get_script_absuri();
 	// rc - http://jo1upk.blogdns.net:80
-	$url = ($_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
-	$url .= $_SERVER['HTTP_HOST'];
+	$is_https = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? true : false;
+	$url = ($is_https ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'];
+
 	// $port = apache_getenv('SERVER_PORT');
-	$port = $_SERVER['SERVER_PORT'];
-	if(isset($port) && $port != 443 && $_SERVER['HTTPS'] == 'on')
+	$port = isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] ? $_SERVER['SERVER_PORT'] : 80;
+	if( $port !== 443 && $is_https === true)
 		$url .= ':'.$port;
-	else if(isset($port) && $port != 80 && $_SERVER['HTTPS'] != 'on')
+	else if( $port !== 80 && $is_https === false)
 		$url .= ':'.$port;
+
 	return $url;
 }
 function dav_myurl1()
@@ -669,11 +674,10 @@ function dav_get_folder_info($path,$depth)
 
 	$info_dir = $info_file = array();
 	$pages = dav_get_existpages_cache();
-	// natcasesort($pages);
-	list($page,$file,$exist) = dav_get_page_name($pages, $path);
+	list($page, $file, $exist) = dav_get_page_name($pages, $path);
 
 	// 単一の dir または file の情報を戻す
-	if ($depth == '0') {
+	if ($depth === '0') {
 		if (!empty($file) && !$exist) return array(NULL,NULL); // 新規ファイル
 		if (isset($pages[$page]['file'][$file])) {
 			// 実在ファイル
@@ -684,6 +688,7 @@ function dav_get_folder_info($path,$depth)
 		}
 		return array($info_dir,$info_file);
 	}
+	
 
 	foreach($pages as $_page=>$val) {
 		$_time = $val['time'];
@@ -700,12 +705,11 @@ function dav_get_folder_info($path,$depth)
 		}
 	}
 
-		// 添付ファイル非表示の場合は、コンテンツ管理者なら表示する
+	// 添付ファイル非表示の場合は、コンテンツ管理者なら表示する
 	if (!$attach_link && auth::check_role('role_adm_contents')) return array($info_dir,$info_file);
 
 	if (isset($pages[$page]['file'])) $info_file = $pages[$page]['file'];
-
-	natcasesort($info_dir);
+	
 	natcasesort($info_file);
 
 	return array($info_dir,$info_file);
@@ -713,8 +717,8 @@ function dav_get_folder_info($path,$depth)
 
 function dav_strip_slash($x)
 {
-		$x = (substr($x, 0, 1) == '/') ? substr($x, 1) : $x; // 先頭の / は一律カット
-		$x = (substr($x, -1) == '/') ? substr($x, 0, -1) : $x; // 最後の / は一律カット
+	$x = (substr($x, 0, 1) == '/') ? substr($x, 1) : $x; // 先頭の / は一律カット
+	$x = (substr($x, -1) == '/') ? substr($x, 0, -1) : $x; // 最後の / は一律カット
 	return $x;
 }
 
@@ -722,33 +726,33 @@ function dav_get_existpages_cache()
 {
 	static $retval, $attaches;
 
-	$cache_name = CACHE_DIR.encode(DATA_DIR.'.txt').'.txt';
+	$cache_name = CACHE_DIR.PKWK_EXSISTS_DATA_CACHE;
 	if (!cache_timestamp_compare_date('wiki',$cache_name)) {
 		unset($retval);
-		}
+	}
 
 	if (isset($retval)) return $retval;
 
 	$retval = array();
 	$auth_key = auth::get_user_info();
-	$pages = get_existpages_cache(DATA_DIR,'.txt',false);
+	$pages = get_existpages_cache(DATA_DIR,PKWK_TXT_EXTENTION,false);
+	
 	if (!isset($attaches)) $attaches = get_attachfiles_cache();
 
 	foreach($pages as $file=>$val) {
-		$_page = & $val['page'];
-		$_time = & $val['time'];
+		$_page = $val['page'];
+		$_time = $val['time'];
 
 		if (check_non_list($_page)) continue;
-		if (is_ignore_page($_page)) continue;
+		//if (is_ignore_page($_page)) continue;
 		if (! auth::is_page_readable($_page, $auth_key['key'], $auth_key['group'])) continue;
 		if (PLUGIN_DAV_SHOWONLYEDITABLE && !is_editable($_page)) continue;
 
-		$attache = isset($attaches[$_page]) ? $attaches[$_page] : array();
 
 		$retval[$_page]['time'] = $_time;
-		$retval[$_page]['file'] = $attache;
+		$retval[$_page]['file'] = isset($attaches[$_page]) ? $attaches[$_page] : array();
 	}
-	// natcasesort($retval);
+	asort($retval);
 	return $retval;
 }
 
@@ -756,12 +760,12 @@ function dav_get_page_name(& $pages, $path)
 {
 	// ex. ページ/ページ
 	// ex. ページ/ファイル
-	if (empty($path)) return array('','');
-	if (isset($pages[$path])) return array($path,'',1); // 実在ページ
+	if (empty($path)) return array(null, null, 0);
+	if (isset($pages[$path])) return array($path, null, 1); // 実在ページ
 
 	// 中間ページの対応
 	foreach($pages as $_page=>$val) {
-		if (strpos($_page,$path) === 0) return array($path,'',0);
+		if (strpos($_page,$path) === 0) return array($path, null ,0);
 	}
 
 	// 実在しないため、ファイル名付きかの判定
@@ -770,12 +774,12 @@ function dav_get_page_name(& $pages, $path)
 		$page = substr($path, 0, $pos);
 		$file = substr($path, $pos+1);
 		// 実在ページ + 実在ファイル
-		if (isset($pages[$page]['file'][$file])) return array($page,$file,1);
+		if (isset($pages[$page]['file'][$file])) return array($page, $file, 1);
 		// 実在ページ + 新規ファイル
-		if (isset($pages[$page])) return array($page,$file,0);
+		if (isset($pages[$page])) return array($page, $file ,0);
 	}
 
-	return array($path,'',0);
+	return array($path, null, 0);
 }
 
 function dav_is_last($path,$page)

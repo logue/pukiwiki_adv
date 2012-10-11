@@ -680,10 +680,14 @@ $.extend($.ui.rlightbox, {
 
 		handleKeyboard: function( event ) {
 			var data = this.data,
-				_currentElement = data.currentSetElement,
-				_options = (!_currentElement.self.options) ? '' : _currentElement.self.options,
+				_currentElement = data.currentSetElement;
+			
+			if ( typeof(_currentElement.self) === 'undefined') return;
+			var
+				_options = typeof(_currentElement.self.options) ? [] : _currentElement.self.options,
 				_keys = _options.keys,
 				_key = event.which;
+			
 
 			if ( data.ready === false ) {
 				return;

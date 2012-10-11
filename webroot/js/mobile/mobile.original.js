@@ -18,7 +18,7 @@
  */
 
 var pukiwiki = {};
-//var JQUERY_MOBILE_VER = '1.1.1';
+//var JQUERY_MOBILE_VER = '1.2.0';
 var JQUERY_MOBILE_VER = 'latest';
 (function ($, window, document) {
 	'use strict';

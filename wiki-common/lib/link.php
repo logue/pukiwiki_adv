@@ -275,7 +275,7 @@ function links_init()
 		} else {
 			// Create or Update
 			autolink_pattern_write(PKWK_AUTOALIAS_REGEX_CACHE,
-				get_autolink_pattern(array_keys($aliases), $autoalias));
+				get_autolink_pattern(@array_keys($aliases), $autoalias));
 		}
 	}
 
@@ -333,10 +333,8 @@ function links_add($page, $add, $rel_auto)
 				}
 			}
 
-			$ref = array_unique($ref);
-
 			if ($is_page || ! $all_auto || count($ref) !== 0) {
-				$memcache->set($ref_name, $ref, MEMCACHE_COMPRESSED, MEMCACHE_EXPIRE);
+				$memcache->set($ref_name, @array_unique($ref), MEMCACHE_COMPRESSED, MEMCACHE_EXPIRE);
 			}else{
 				$memcache->delete($ref_name);
 			}

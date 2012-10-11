@@ -423,14 +423,15 @@ function plugin_ref_action()
 	}
 	
 	$s_filename = htmlsc($filename);
+	$sendfile = realpath($ref);
 
 	// Output
 	ini_set('default_charset', '');
 	mb_http_output('pass');
-	pkwk_common_headers();
+	pkwk_common_headers(filemtime($sendfile));
 
 	// for reduce server load
-	$sendfile = realpath($ref);
+	
 	if (function_exists('apache_get_modules') && in_array( 'mod_xsendfile', apache_get_modules()) ){
 		// for Apache mod_xsendfile
 		header('X-Sendfile: '.$sendfile);

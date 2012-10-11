@@ -19,9 +19,9 @@ define('S_REVSION', '20120709');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &#169; 2010-2012' .
-	' <a href="http://pukiwiki.logue.be/">PukiWiki Advance Developers Team</a>.<br />' .
-	' Licensed under the <a href="http://www.gnu.org/licenses/gpl-2.0.html" rel="license">GPLv2</a>.' .
-	' Based on <a href="http://pukiwiki.cafelounge.net/plus/">"PukiWiki Plus! i18n"</a>'
+	' <a href="http://pukiwiki.logue.be/" rel="external">PukiWiki Advance Developers Team</a>.<br />' .
+	' Licensed under the <a href="http://www.gnu.org/licenses/gpl-2.0.html">GPLv2</a>.' .
+	' Based on <a href="http://pukiwiki.cafelounge.net/plus/" rel="external">"PukiWiki Plus! i18n"</a>'
 );
 
 define('GENERATOR', S_APPNAME.' '.S_VERSION);
@@ -31,12 +31,14 @@ define('GENERATOR', S_APPNAME.' '.S_VERSION);
 
 defined('DEBUG')		or define('DEBUG', false);
 defined('PKWK_WARNING')	or define('PKWK_WARNING', false);
-defined('ROOT_URI')		or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');
+defined('ROOT_URI')		or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');	// スクリプトが置かれている絶対パス
 defined('WWW_HOME')		or define('WWW_HOME', '');
+defined('COMMON_URI')	or define('COMMON_URI', ROOT_URI);
 
-// フレームワークのバージョン（jQuery Mobileはmobile.jsで定義）
-define('JQUERY_VER',	'1.8.2');
-define('JQUERY_UI_VER',	'1.8.24');
+// フレームワークのバージョン
+define('JQUERY_VER',		'1.8.2');
+define('JQUERY_UI_VER',		'1.8.24');
+define('JQUERY_MOBILE_VER',	'1.2.0');
 
 // ページ名やファイル名として使用できない文字（エンコード前の文字）
 defined('PKWK_ILLEGAL_CHARS_PATTERN') or define('PKWK_ILLEGAL_CHARS_PATTERN', '/[%|=|&|?|#|\r|\n|\0|\@|\t|;|\$|+|\\|\[|\]|\||^|{|}]/');
@@ -481,9 +483,9 @@ if (!IS_AJAX || IS_MOBILE){
 	global $auth_api, $fb, $google_loader;
 
 	// JavaScriptフレームワーク設定
-	// Microsoft CDN
-	// http://www.asp.net/ajaxlibrary/cdn.ashx
-	$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://ajax.aspnetcdn.com/ajax/jQuery/jquery-'.JQUERY_VER.'.min.js');
+	// jQueryUI Official CDN
+	// http://code.jquery.com/
+	$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://code.jquery.com/jquery-'.JQUERY_VER.'.min.js');
 
 	if (!IS_MOBILE){
 		// modernizrの設定
@@ -491,12 +493,12 @@ if (!IS_AJAX || IS_MOBILE){
 		$modernizr = 'js.php?file=modernizr.min';
 		
 		// jQuery UI
-		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://ajax.aspnetcdn.com/ajax/jquery.ui/'.JQUERY_UI_VER.'/jquery-ui.min.js', 'defer'=>'defer');
+		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://code.jquery.com/ui/'.JQUERY_UI_VER.'/jquery-ui.min.js', 'defer'=>'defer');
 		// jQuery UIのCSS
 		if (isset($_SKIN['ui_theme'])){
 			$link_tags[] = array(
 				'rel'=>'stylesheet',
-				'href'=>'http://ajax.aspnetcdn.com/ajax/jquery.ui/'.JQUERY_UI_VER.'/themes/'. $_SKIN['ui_theme'].'/jquery-ui.css',
+				'href'=>'http://code.jquery.com/ui/'.JQUERY_UI_VER.'/themes/'. $_SKIN['ui_theme'].'/jquery-ui.css',
 				'type'=>'text/css',
 				'id'=>'ui-theme'
 			);
@@ -522,7 +524,7 @@ if (!IS_AJAX || IS_MOBILE){
 				'jquery.superfish',
 				'jquery.tabby',
 				'jquery.ui.rlightbox',
-				
+
 				/* MUST BE LOAD LAST */
 				'skin.original'
 			);
@@ -559,7 +561,7 @@ if (!IS_AJAX || IS_MOBILE){
 
 	// DNS prefetching
 	// http://html5boilerplate.com/docs/DNS-Prefetching/
-	$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>'//ajax.aspnetcdn.com');
+	$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>'//code.jquery.com');
 	if (COMMON_URI !== ROOT_URI){
 		$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>COMMON_URI);
 	}

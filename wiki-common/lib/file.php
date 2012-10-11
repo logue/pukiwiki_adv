@@ -121,7 +121,7 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 
 	// SPAM Check (Client(Browser)-Server Ticket Check)
 //	if ( !isset($vars['encode_hint']) && !defined(PKWK_ENCODING_HINT) )
-//		die_message('Plugin Encode Error.');
+//		die_message($_strings['plugin_encode_error']);
 
 	$links = array();
 	// ページ内のリンクを取得（TrackBackと、スパムチェックで使用）
@@ -137,15 +137,15 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 		}
 		// リモートIPによるチェック
 		if ($use_spam_check['page_remote_addr'] && SpamCheck($remote_addr,'ip')) {
-			die_message($_strings['blacklisted'], 'SPAM Error', 400);
+			die_message($_strings['blacklisted'], $_title['prohibit'], 400);
 		}
 		// ページのリンクよるチェック
 		if ($use_spam_check['page_contents'] && SpamCheck($links)) {
-			die_message('Writing was limited by DNSBL (Blocking SPAM).', 'SPAM Error', 400);
+			die_message('Writing was limited by DNSBL (Blocking SPAM).', $_title['prohibit'], 400);
 		}
 		// 匿名プロクシ
 		if ($use_spam_check['page_write_proxy'] && is_proxy()) {
-			die_message('Writing was limited by PROXY (Blocking SPAM).', 'SPAM Error', 400);
+			die_message('Writing was limited by PROXY (Blocking SPAM).', $_title['prohibit'], 400);
 		}
 
 		// Akismet
@@ -172,7 +172,7 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 				
 				if($akismet->isCommentSpam()){
 					honeypot_write();
-					die_message('Writing was limited by Akismet (Blocking SPAM).', 'SPAM Error', 400);
+					die_message('Writing was limited by Akismet (Blocking SPAM).', $_title['prohibit'], 400);
 				}
 			}else{
 				die_message('Akismet API key does not valied.', 500);
@@ -822,7 +822,7 @@ function get_readings()
 				$fp = popen($pagereading_command.' '.$exec_option.' '.$tmpfname, 'r');
 				
 				if($fp === FALSE) {
-					die_message(sprintf(_('%s execution failed:'),$pagereading_api.' <var>'.$pagereading_command.'</var>'));
+					die_message(sprintf('%s execution failed:',$pagereading_api.' <var>'.$pagereading_command.'</var>'));
 				}
 
 				foreach ($readings as $page => $reading) {

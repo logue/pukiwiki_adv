@@ -138,7 +138,7 @@ EOD;
 	    if ( $button ){
 		} else {
 			$f_btn_text = preg_replace('/<[^<>]+>/','',$btn_text);
-			$btn_url = get_cmd_uri('attachref', $_page,	'',	array(
+			$btn_url = get_cmd_uri('attachref', null,null,	array(
 				'attachref_no'	=> $attachref_no,
 				'attachref_opt'	=> $s_args,
 				'refer'			=> $vars['page'],
@@ -211,10 +211,10 @@ function plugin_attachref_inline()
 	}
 
 	if ($dispattach) {
-	    // Escape foreign value
-	    $s_args = trim(join(",", $args));
-	    if ($button) {
-	    	$script = get_script_uri();
+		// Escape foreign value
+		$s_args = trim(join(",", $args));
+		if ($button) {
+			$script = get_script_uri();
 			$s_args .= ',button';
 			$f_page = htmlsc($vars['page']);
 			$f_args = htmlsc($s_args);
@@ -229,7 +229,7 @@ function plugin_attachref_inline()
 	<input type="submit" value="$btn_text" />
 </form>
 EOD;
-	    } else {
+		} else {
 			$f_btn_text = preg_replace('/<[^<>]+>/','',$btn_text);
 			$btn_url = get_cmd_uri('attachref', $vars['page'],	'',	array(
 				'attachref_no'	=> $attachref_no,

@@ -67,30 +67,32 @@ $_string = array(
 	'comment_collided'	=> T_('It seems that someone has already updated this page while you were editing it.').'<br />'."\n".
 						   T_('The string was added, alhough it may be inserted in the wrong position.'),
 
-	// Error messages
+	// Generic Error messages
 	'warning'			=> T_('WARNING'),
-	'error_prohibit'	=> T_('This Wiki is <var>%s</var> mode now. The action which you are trying to do is prohibited.'),
 	'error_msg'			=> T_('A runtime error has occurred.').'<br />'.T_('Please contact to site admin. If you want more information, please change <var>PKWK_WARNING</var> value.'),
 	'debugmode'			=> T_('This program is running in debug mode.'),
 	'changeadminpass'	=> sprintf(T_('<var>$adminpass</var> is not changed! Click <a href="%s">here</a> to generate crypted password and modify auth.ini.php!'),get_cmd_uri('md5')),
 	'not_writable'		=> T_('<var>%s</var> is not found or not writable.'),
 	'not_found'			=> T_('Page <var>%s</var> was not found.'),
 	'header_sent'		=> T_('Headers already sent at <var>%s</var>, line: <var>%s</var>.'),
-	
-	'illegal_chars'		=> T_('Illegal characters contained.'),
 
+	'illegal_chars'		=> T_('Illegal characters contained.'),
 	'script_error'		=> T_('A fatal error has occured at line <var>%1s</var> in file <var>%2s</var>.'),
 	'script_abort'		=> T_('Script execution has been aborted.'),
 	
-	'plugin_error'		=> T_('Plugin Error: <var>%1s</var> was called over <var>%2s</var> times. SPAM or someting?'),
-	'postid_error'		=> T_('Plugin Error: PostId mismatch.'),
-	'encode_error'		=> T_('Plugin Error: Incorrect encode.'),
-	'not_implemented'	=> T_('Plugin Error: <var>cmd=%s</var> is not implemented.'),
-	
+	// Prohibit messages
+	'error_prohibit'	=> T_('This Wiki is <var>%s</var> mode now. The action which you are trying to do is prohibited.'),
 	'blacklisted'		=> T_('Sorry, Your host is prohibited by <strong>IPBL</storng> (Blocking SPAM).'),
 	'prohibit_country'	=> T_('Sorry, access from your country is prohibited.'),
 	'not_readable'		=> T_('You have no permission to read this page.'),
-	'not_editable'		=> T_('You have no permission to edit page or create page.')
+	'not_editable'		=> T_('You have no permission to edit page or create page.'),
+	
+	// Plugin Error messages
+	'plugin_init_error'			=> T_('Plugin init failed: <var>%s</var>'),
+	'plugin_multiple_call'		=> T_('<var>%1s</var> was called over <var>%2s</var> times. SPAM or someting?'),
+	'plugin_postid_error'		=> T_('PostId is mismatched. Is it multi-post?'),
+	'plugin_encode_error'		=> T_('Incorrect encode. Please use a modern browser.'),
+	'plugin_not_implemented'	=> T_('<var>/?cmd=%s</var> is not implemented.')
 );
 
 $_button = array(
@@ -108,8 +110,6 @@ $_button = array(
 	'remove'	=> T_('Remove'),
 	'login'		=> T_('Login'),
 	'logout'	=> T_('Logout'),
-	
-	'back'		=> T_('Back'),
 
 	// CheckBox labels
 	'notchangetimestamp'	=> T_('Do not change timestamp'),
@@ -118,17 +118,25 @@ $_button = array(
 	'and'					=> T_('AND'),
 	'or'					=> T_('OR'),
 	'cookie'				=> T_('Save to cookie'),
-	'connect'				=> T_('Connect to %s')
+	'connect'				=> T_('Connect to %s'),
+
+	// for Error page
+	'back'		=> T_('Back'),
+	'try_edit'		=> T_('Try to edit this page'),
+	'return_home'	=> T_('Return to FrontPage')
 );
 
 $_title = array(
 	// Message title
-	'cannotedit'	=> T_('$1 is not editable'),
-	'cannotread'	=> T_('$1 is not readable'),
-	'collided'		=> T_('On updating $1, a collision has occurred.'),
-	'updated'		=> T_('$1 was updated'),
-	'preview'		=> T_('Preview of $1'),
-	'error'			=> T_('Runtime Error'),
+	'cannotedit'		=> T_('$1 is not editable'),
+	'cannotread'		=> T_('$1 is not readable'),
+	'collided'			=> T_('On updating $1, a collision has occurred.'),
+	'updated'			=> T_('$1 was updated'),
+	'preview'			=> T_('Preview of $1'),
+	'error'				=> T_('Runtime Error'),	// 500
+	'plugin_error'		=> T_('Plugin Error'),
+	'prohibit'			=> T_('Access Prohibited'),	// 403
+	'not_implemented'	=> T_('Not Implemented')	// 501
 );
 
 

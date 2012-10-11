@@ -8,6 +8,6 @@ GOTO end
 
 :full
 rem 同一ディレクトリの圧縮したpngをoutディレクトリに出力
-pngcrush -rem alla -reduce -brute -d "./out" *.png
+pngcrush -rem alla -reduce -brute -d "./out" *
 
 :end

@@ -1,6 +1,6 @@
 <?php
 // PukiPlus - Yet another WikiWikiWeb clone
-// $Id: comment.inc.php,v 1.41.26 2012/05/11 18:10:00 Logue Exp $
+// $Id: comment.inc.php,v 1.41.27 2012/10/11 09:08:00 Logue Exp $
 // Copyright (C)
 //  2010-2012 PukiWiki Advance Developers Team
 //  2005-2008 PukiWiki Plus! Team
@@ -52,7 +52,7 @@ function plugin_comment_action()
 
 	// Petit SPAM Check (Client(Browser)-Server Ticket Check)
 	$spam = FALSE;
-	if (isset($post['encode_hint']) && $post['encode_hint'] != '') {
+	if (isset($post['encode_hint']) && $post['encode_hint'] !== '') {
 		if (PKWK_ENCODING_HINT !== $post['encode_hint']) $spam = TRUE;
 	} else {
 		if (PKWK_ENCODING_HINT !== '') $spam = TRUE;
@@ -198,8 +198,8 @@ function plugin_comment_convert()
 	$ret[] = '<input type="hidden" name="refer"  value="' . htmlsc($vars['page']) . '" />';
 	$ret[] = '<input type="hidden" name="refpage" value="" />';
 	$ret[] = '<input type="hidden" name="comment_no" value="' . $numbers[$vars['page']]++ . '" />';
-	$ret[] = '<input type="hidden" name="nodate" value="' . in_array('nodate', $options) ? '1' : '0' . '" />';
-	$ret[] = '<input type="hidden" name="above"  value="' . in_array('above',  $options) ? '1' : (in_array('below', $options) ? '0' : PLUGIN_COMMENT_DIRECTION_DEFAULT) . '" />';
+	$ret[] = '<input type="hidden" name="nodate" value="' . (in_array('nodate', $options) ? '1' : '0') . '" />';
+	$ret[] = '<input type="hidden" name="above"  value="' . (in_array('above',  $options) ? '1' : (in_array('below', $options) ? '0' : PLUGIN_COMMENT_DIRECTION_DEFAULT)) . '" />';
 
 	$comment_all_no = $all_numbers++;
 	if (! in_array('noname', $options)) {

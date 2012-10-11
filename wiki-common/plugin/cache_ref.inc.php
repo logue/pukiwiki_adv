@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
 //
-// $Id: cache_ref.inc.php,v 1.48.3.4 2012/06/08 22:38:00 Logue Exp $
+// $Id: cache_ref.inc.php,v 1.48.3.5 2012/10/11 09:06:00 Logue Exp $
 //
 // copy ref.inc.php
 
@@ -69,8 +69,9 @@ function plugin_cache_ref_action()
 
 	// @readfile($ref);
 	plus_readfile($ref);
+	pkwk_common_suffixes();
 	exit;
 }
 
-/* End of file bugtrack_list.inc.php */
-/* Location: ./wiki-common/plugin/bugtrack_list.inc.php */
+/* End of file cache_ref.inc.php */
+/* Location: ./wiki-common/plugin/cache_ref.inc.php */

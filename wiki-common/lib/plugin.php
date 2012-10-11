@@ -36,7 +36,7 @@ function get_plugin_option($args, &$params, $tolower=TRUE, $separator=':')
 		if (is_string($_val)) $_val = trim($_val);
 		if (in_array($_key, $keys) && $params['_done'] !== TRUE) {
 			$params[$_key] = $_val;    // Exist keys
-		} elseif ($val != '') {
+		} else if ( !empty($val) ) {
 			$params['_args'][] = $val; // Not exist keys, in '_args'
 			$params['_done'] = TRUE;
 		}
@@ -48,7 +48,7 @@ function get_plugin_option($args, &$params, $tolower=TRUE, $separator=':')
 // Check arguments for plugins
 function check_plugin_option($val, &$params, $tolower=TRUE)
 {
-	if ($val != '') {
+	if ( !empty($val) ) {
 		if ($tolower === TRUE) $_val = strtolower($val);
 		foreach (array_keys($params) as $key) {
 			if (strpos($key, $_val) === 0) {
@@ -67,13 +67,10 @@ function limit_plugin($name)
 	static $count = array();
 
 	$name = strtolower($name);
-	if (!isset($count[$name])) {
-		$count[$name] = 1;
-	}
-	if (++$count[$name] > PKWK_PLUGIN_CALL_TIME_LIMIT) {
-		die_message( sprintf($_string['plugin_error'],  htmlsc($name), PKWK_PLUGIN_CALL_TIME_LIMIT). '<br />' . "\n" .
-		'<a href="' . get_cmd_uri('edit',$vars['page']) .'">Try to edit this page</a><br />' . "\n" .
-		'<a href="' . get_cmd_uri() . '">Return to frontpage</a>');
+	$count[$name] = (!isset($count[$name])) ? 1 : $count[$name]++;
+	
+	if ($count[$name] > PKWK_PLUGIN_CALL_TIME_LIMIT) {
+		die_message( sprintf($_string['plugin_multiple_call'],  htmlsc($name), PKWK_PLUGIN_CALL_TIME_LIMIT));
 	}
 	return TRUE;
 }
@@ -139,23 +136,23 @@ function do_plugin_init($name)
 	static $done = array();
 
 	if (empty($plugin_lang_path[$name])) {
-		bindtextdomain($name, LANG_DIR);
+		// bindtextdomain($name, LANG_DIR);
 		T_bindtextdomain($name,LANG_DIR);
 	} else {
-		bindtextdomain($name, $plugin_lang_path[$name]);
+		// bindtextdomain($name, $plugin_lang_path[$name]);
 		T_bindtextdomain($name,$plugin_lang_path[$name]);
 	}
-	bind_textdomain_codeset($name, SOURCE_ENCODING);
+	// bind_textdomain_codeset($name, SOURCE_ENCODING);
 	T_bind_textdomain_codeset($name,SOURCE_ENCODING); 
 	
 	// i18n (Plus!)
 	$func = 'plugin_' . $name . '_init';
 	if (function_exists($func)) {
 		// TRUE or FALSE or NULL (return nothing)
-		textdomain($name);
+		// textdomain($name);
 		T_textdomain($name);
 		$done[$name] = call_user_func($func);
-		textdomain(DOMAIN);
+		// textdomain(DOMAIN);
 		T_textdomain(DOMAIN);
 		if (!isset($checked[$name])) {
 			$done[$name] = TRUE; // checked.
@@ -179,20 +176,20 @@ function do_plugin_action($name)
 	if (! exist_plugin_action($name)) return array();
 
 	if (do_plugin_init($name) === FALSE) {
-		die_message('Plugin init failed: ' . htmlsc($name));
+		die_message(sprintf( $_string['plugin_init_error'], htmlsc($name) ));
 	}
 
 	// check postid
-	if ($use_spam_check['multiple_post'] && isset($vars['postid']) && !check_postid($vars['postid']) )
-		die_message($_string['postid_error']);
+	if (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] === 1 && isset($vars['postid']) && !check_postid($vars['postid']) )
+		die_message($_string['plugin_postid_error']);
 	
 	if ( isset($vars['encode_hint']) && $vars['encode_hint'] !== PKWK_ENCODING_HINT )
-		die_message($_string['encode_error']);
+		die_message($_string['plugin_encode_error']);
 
-	textdomain($name);
+	// textdomain($name);
 	T_textdomain($name);
 	$retvar = call_user_func('plugin_' . $name . '_action');
-	textdomain(DOMAIN);
+	// textdomain(DOMAIN);
 	T_textdomain(DOMAIN);
 
 	$retvar['body'] = isset($retvar['body']) ? add_hidden_field($retvar['body'], $name) : '';
@@ -203,10 +200,10 @@ function do_plugin_action($name)
 // Call API 'convert' of the plugin
 function do_plugin_convert($name, $args = '')
 {
-	global $digest;
+	global $digest, $_string;
 
 	if (do_plugin_init($name) === FALSE) {
-		return '[Plugin init failed: ' . htmlsc($name) . ']';
+		return '<div class="ui-state-error ui-corner-all">' . sprintf($_string['plugin_init_error'], htmlsc($name)) . '</div>';
 	}
 
 	if (! PKWKEXP_DISABLE_MULTILINE_PLUGIN_HACK) {
@@ -242,7 +239,7 @@ function do_plugin_inline($name, $args='', $body='')
 	global $digest;
 
 	if (do_plugin_init($name) === FALSE) {
-		return '[Plugin init failed: ' . htmlsc($name) . ']';
+		return '<span class="ui-state-error">' . sprintf($_string['plugin_init_error'], htmlsc($name)) . '</span>';
 	}
 
 	$aryargs = empty($args) ? array() : csv_explode(',', $args);
@@ -251,10 +248,10 @@ function do_plugin_inline($name, $args='', $body='')
 	$aryargs[] = & $body; // func_num_args() != 0
 
 	$_digest = $digest;
-	textdomain($name);
+	// textdomain($name);
 	T_textdomain($name);
 	$retvar  = call_user_func_array('plugin_' . $name . '_inline', $aryargs);
-	textdomain(DOMAIN);
+	// textdomain(DOMAIN);
 	T_textdomain(DOMAIN);
 	$digest  = $_digest; // Revert
 
@@ -288,8 +285,9 @@ function use_plugin($plugin, $lines)
 	return FALSE;
 }
 
+// formタグに追加のフォームを挿入
 function add_hidden_field($retvar, $name){
-	global $use_spam_check;
+	global $use_spam_check, $vars, $digest;
 	if (preg_match('/<form\b(?:(?=(\s+(?:method="([^"]*)"|enctype="([^"]*)")|[^\s>]+|\s+))\1)*>/i', $retvar, $matches) !== 0){
 		// Insert a hidden field, supports idenrtifying text enconding
 		$hidden_field[] = ( PKWK_ENCODING_HINT ) ? '<input type="hidden" name="encode_hint" value="' . PKWK_ENCODING_HINT . '" />' : '';
@@ -300,8 +298,7 @@ function add_hidden_field($retvar, $name){
 			// from PukioWikio
 			$hidden_field[] = '<input type="hidden" name="postid" value="'.generate_postid($name).'" />';
 		}
-		
-		
+
 		// PHP5.4以降かつ、マルチパートの場合、進捗状況セッション用のフォームを付加する
 		if (version_compare(PHP_VERSION, '5.4', '>=') && isset($matches[3]) && $matches[3] === 'multipart/form-data') {
 			pkwk_session_start();

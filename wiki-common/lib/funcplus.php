@@ -851,60 +851,6 @@ function is_webdav()
 	return false;
 }
 
-// code from https://gist.github.com/854168
-function download_file ($file, $mtime = MUTIME, $mimetype = 'application/octet-stream') {
-	$realpath = realpath($file);
-	if (file_exists($realpath)) {
-		// Fetching File
-		$mtime = ($mtime = filemtime($realpath)) ? $mtime : gmtime();
-		$size = intval(sprintf("%u", filesize($realpath)));
-		header('Content-type: application/force-download');
-		header('Content-Type: '.$mimetype);
-		if (strstr($_SERVER["HTTP_USER_AGENT"], 'MSIE') !== false) {
-			header('Content-Disposition: attachment; filename=' . urlencode(basename($file_path)) . '; modification-date="' . date('r', $mtime) . '";');
-		} else {
-			header('Content-Disposition: attachment; filename="' . basename($file_path) . '"; modification-date="' . date('r', $mtime) . '";');
-		}
-		if (can_haz_xsendfile()) {
-			// Sending file via mod_xsendfile
-			header('X-Sendfile: ' . join_paths($base_path, $file_path));
-		} else {
-			// Sending file directly via script
-			if (intval($size + 1) > return_bytes(ini_get('memory_limit')) && intval($size * 1.5) <= 1073741824) {	//Not higher than 1GB
-				// Setting memory limit
-				ini_set('memory_limit', intval($size * 1.5));
-			}
-			@apache_setenv('no-gzip', 1);
-			@ini_set('zlib.output_compression', 0);
-			header('Content-Length: ' . $size);
-			// Set the time limit based on an average D/L speed of 50kb/sec
-			set_time_limit(min(7200,	// No more than 120 minutes (this is really bad, but...)
-				($size > 0) ? intval($size / 51200) + 60	// 1 minute more than what it should take to D/L at 50kb/sec
-				: 1	// Minimum of 1 second in case size is found to be 0
-			));
-			$chunksize = 1 * (1024 * 1024); // how many megabytes to read at a time
-			if ($size > $chunksize) {
-				// Chunking file for download
-				$handle = fopen($realpath, 'rb');
-				$buffer = '';
-				while (!feof($handle)) {
-					$buffer = fread($handle, $chunksize);
-					echo $buffer;
-					ob_flush();
-					flush();
-				}
-				fclose($handle);
-			} else {
-				// Streaming whole file for download
-				readfile($realpath);
-			}
-		}
-		return true;
-	} else {
-		// File not found! Throw error here...
-	}
-	return false;
-}
 /* PukiWiki Adv. Extend codes *********************************************************************/
 
 // for debug use
@@ -912,13 +858,16 @@ function download_file ($file, $mtime = MUTIME, $mimetype = 'application/octet-s
 // var_dumpにhtmlspecialcharとかは通用しないため。
 // xDebug有効時はそのままvar_dump
 function pr($value){
-	if (!extension_loaded('xdebug')){
-		echo '<pre class="sh" data-brush="php"><xmp>';
-		var_dump($value);
-		echo '</xmp></pre>';
-	}else{
-		var_dump($value);
+	if (DEBUG){
+		if (!extension_loaded('xdebug')){
+			echo '<pre class="sh" data-brush="php"><xmp>';
+			var_dump($value);
+			echo '</xmp></pre>';
+		}else{
+			var_dump($value);
+		}
 	}
+	return '';
 }
 
 //バックトレースを表示
@@ -951,54 +900,6 @@ function load_entities(){
 	}
 	$fp = file($entities);
 	return trim(join('', $fp));
-}
-
-define('W3C_XHTML_DTD_LOCATION', 'http://www.w3.org/TR/xhtml1/DTD/');
-function update_entities_create($do = FALSE)
-{
-	$files = array('xhtml-lat1.ent', 'xhtml-special.ent', 'xhtml-symbol.ent');
-	
-	$entities = array_map('update_entities_strtr',
-		array_values(get_html_translation_table(HTML_ENTITIES)));
-	$items   = array('php:html_translation_table');
-	$matches = array();
-	foreach ($files as $file) {
-		// FIXME: 'allow_url_fopen = Off' will stop this
-		$source = file(W3C_XHTML_DTD_LOCATION . $file)
-			or die_message('cannot receive ' . W3C_XHTML_DTD_LOCATION . $file . '.');
-		if (! is_array($source)) {
-			$items[] = 'w3c:' . $file . ' COLOR(red):not found.';
-			continue;
-		}
-		$items[] = 'w3c:' . $file;
-		if (preg_match_all('/<!ENTITY\s+([A-Za-z0-9]+)/',
-			join('', $source), $matches, PREG_PATTERN_ORDER))
-		{
-			$entities = array_merge($entities, $matches[1]);
-		}
-	}
-	if (! $do) return $items;
-
-	$entities = array_unique($entities);
-	sort($entities, SORT_STRING);
-	$min = 999;
-	$max = 0;
-	foreach ($entities as $entity) {
-		$len = strlen($entity);
-		$max = max($max, $len);
-		$min = min($min, $len);
-	}
-
-	$pattern = "(?=[a-zA-Z0-9]\{$min,$max})" . generate_trie_regex($entities);
-	pkwk_touch(CACHE_DIR . PKWK_ENTITIES_REGEX_CACHE);
-
-	$fp = fopen(CACHE_DIR . PKWK_ENTITIES_REGEX_CACHE, 'w')
-		or die_message('cannot write file PKWK_ENTITIES_REGEX_CACHE<br />' . "\n" .
-			'maybe permission is not writable or filename is too long');
-	fwrite($fp, $pattern);
-	fclose($fp);
-
-	return $items;
 }
 
 // Remove &amp; => amp
@@ -1091,8 +992,7 @@ if (! function_exists('is_human')) {
 				session_start();
 				$is_human = isset($_SESSION['pkwk_is_human']) && $_SESSION['pkwk_is_human'];
 			}
-		}
-		if (! $is_human) {
+
 			if (ROLE_GUEST < $use_rolelevel && $use_rolelevel <= ROLE_AUTH) {
 				if (is_callable(array('auth', 'check_role'))) { // Plus!
 					$is_human = ! auth::check_role('role_auth');
@@ -1100,8 +1000,7 @@ if (! function_exists('is_human')) {
 					$is_human = isset($_SERVER['PHP_AUTH_USER']);
 				}
 			}
-		}
-		if (! $is_human) {
+
 			if (ROLE_GUEST < $use_rolelevel && $use_rolelevel <= ROLE_ADM_CONTENTS) {
 				$is_human = is_admin(NULL, $use_session, TRUE);
 				// In PukiWiki Official, username 'admin' is the Admin
@@ -1218,4 +1117,3 @@ function MeCab($input){
 	}
 	return $analisys;
 }
-?>
