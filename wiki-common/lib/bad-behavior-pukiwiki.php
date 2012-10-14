@@ -155,7 +155,7 @@ function bb2_read_settings() {
 			$settings[$line[0]] = $line[1];
 		}
 	}
-	return array_merge($bb2_settings_defaults, $settings);
+	return array_merge((array)$bb2_settings_defaults, (array)$settings);
 }
 
 // write settings to database

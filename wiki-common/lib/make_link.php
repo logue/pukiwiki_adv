@@ -916,26 +916,9 @@ function make_pagelink($page, $alias = '', $anchor = '', $refer = '', $isautolin
 		$related[$page] = get_filetime($page);
 
 	if ($isautolink || is_page($page)) {
-		// Hyperlink to the page
-		if ($link_compact) {
-			$title   = '';
-		} else {
-			$title   = ' title="' . $s_page . get_pg_passage($page, FALSE) . '"';
-		}
-
-		// AutoLink marker
-		if ($isautolink) {
-			$al_left  = '<!--autolink--><span class="autolink">';
-			$al_right = '</span><!--/autolink-->';
-		} else {
-			$al_left = $al_right = '';
-		}
-
-		return $al_left . '<a ' . 'href="' . get_page_uri($page) . $anchor .
-			'"' . $title . '>' . $s_alias . '</a>' . $al_right;
-//		return open_uri_in_new_window($al_left .
-//			'<a href="' . get_page_uri($page) . $anchor . '"' . $title . '>' .
-//			$s_alias . '</a>' . $al_right, 'make_pagelink');
+		return '<a href="' . get_page_uri($page) . $anchor . '" ' . 
+			($link_compact ? 'title="' . $s_page . '( ' .get_pg_passage($page, FALSE) . ' )"' : '' ).
+			($isautolink ? ' class="autolink"' : '') .'>' . $s_alias . '</a>';
 	} else {
 		// Dangling link
 		// if (PKWK_READONLY) return $s_alias; // No dacorations

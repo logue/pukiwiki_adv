@@ -449,9 +449,9 @@ class BQuote extends Element
 		if ($head == '<') { // Blockquote close
 			$level       = $this->level;
 			$this->level = 0;
-			$this->last  = & $this->end($root, $level);
-			if ($text != '')
-				$this->last = & $this->last->insert(Factory_Inline($text));
+			$this->last  = $this->end($root, $level);
+			if ($text !== '')
+				$this->last = $this->last->insert(Factory_Inline($text));
 		} else {
 			$this->insert(Factory_Inline($text));
 		}

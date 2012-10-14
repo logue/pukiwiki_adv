@@ -41,10 +41,11 @@ function plugin_table_edit2_convert()
 		'setting' => '',
 		'csv_select' => '',
 		'abs_m' => FALSE,
+		'comma' => '',
 		'table_mod' => '',
 	);
-
 	if (! class_exists('auth')) { table_edit2_auth(); }
+
 	$auth_chk = auth::check_auth();
 	foreach($edit_auth_pages as $key=>$val){
 		$opt['edit'] = (preg_match($key, $page) && $edit_auth && empty($auth_chk)) ? 'off' : 'on';
@@ -55,7 +56,10 @@ function plugin_table_edit2_convert()
 	$body_table = '';
 
 	$args = func_get_args();
+	// データー
 	$arg = (substr(end($args), -1) == "\r")? array_pop($args) : '';
+	
+	// 設定変数で上書き
 	foreach ($args as $opt_key) {
 		if (strpos($opt_key, "=") !== false) {
 			list($key, $val) = explode('=', strtolower($opt_key));
@@ -63,15 +67,15 @@ function plugin_table_edit2_convert()
 		}
 	}
 
-	// if (PKWK_READONLY) {
-	if (auth::check_role('readonly') || is_freeze($page)) {	// || is_freeze($page)
+	// 読み込み専用の時やページが凍結されている場合は編集不可
+	if (auth::check_role('readonly') || is_freeze($page)) {
 		$opt['edit'] = 'off';
 	}
 
 	// plugin setting
-	if ( ( !isset($arg) || $arg == '' || $opt['setting'] == 'on' ) && $opt['edit'] != 'off' && !isset($opt['csv'])) {
+	if ( ( empty($arg) || $opt['setting'] == 'on' ) && $opt['edit'] != 'off' && !isset($opt['csv'])) {
 		$set = new TableEdit2Setting($page, $count);
-		$set->table_data = (!isset($arg) || $arg == '') ? 0 : 1;
+		$set->table_data = empty($arg) ? 0 : 1;
 		return $set->form( $opt );
 	}
 
@@ -105,8 +109,10 @@ function plugin_table_edit2_convert()
 	}
 
 	if ($opt['edit'] !== 'off'){
-		$tei = new TableEdit2Indicate($r_page, $count);		//open or close | inline
-		// open or close
+		// 編集モードが有効な場合
+		$tei = new TableEdit2Indicate($r_page, $count);
+
+		// ロック／アンロックボタンを表示
 		if ($opt['table_mod'] !== 'off') {
 			if ( isset($opt['csv']) ) $tei->csv_button($opt['csv']);
 			$head_button = $tei->open_close($opt['table_mod'], ($opt['edit'] === 'on') ? 'lock' : 'unlock');
@@ -120,6 +126,9 @@ function plugin_table_edit2_convert()
 	$args = explode("\n", $arg);
 
 	if ( $opt['edit'] != 'off' || $calc_chk == 'on' || isset($opt['edit']) ) $editon_or_calcon = 1;		//06.09.19
+	
+	$table_header = 0;
+	
 
 	foreach ($args as $args_line) {
 
@@ -556,7 +565,7 @@ EOD;
 	function link_s( $action, $icon, $csv_mode )
 	{
 		return '<a href="'
-			. get_cmd_link('table_edit2', null, null, array('refer'=>$this->page,'table_num'=>$this->count,'set_csv'=>$csv_mode))
+			. get_cmd_uri('table_edit2', null, null, array('refer'=>$this->page,'table_num'=>$this->count,'set_csv'=>$csv_mode))
 			. ' class="button" data-text="false" data-ajax="false" nofollow="nofollow" title="'.$action.'" data-primary-icon="'.$icon.'">'.$action.'</a>';
 	}
 	function inline( $edit_mod, $count,$line_count, $table_sub_num = NULL, $cell_count = NULL)
@@ -635,14 +644,16 @@ class TableEdit2Form
 	function text($name, $value = '', $size = null)
 	{
 		$size = ( isset($size) ) ? ' size="' . $size . '"' : '';
-		$text = '<input type="text" name="' . $name
-			. '" value="' . $value . '"' . $size . $this->bgcolor[0] . ' />';
+	//	$text = '<input type="text" name="' . $name
+	//		. '" value="' . $value . '"' . $size . $this->bgcolor[0] . ' style="width:99%;" />';
+		$text = '<textarea name="' . $name
+			. '" rows="1" cols="'.$size.'" style="width:99%;">' . $value . '</textarea>';
 		return $text;
 	}
 	function textarea($name, $value = '', $rows = 2,$cols = 40)
 	{
 		$textarea = '<textarea name="' . $name
-			. '" rows="' . $rows . '" cols="' . $cols . '">' . $value . '</textarea>';
+			. '" rows="' . $rows . '" cols="' . $cols . '" style="width:99%;">' . $value . '</textarea>';
 		return $textarea;
 	}
 	function f_input($type, $name, $value)
@@ -753,7 +764,7 @@ class TableEdit2Calc
 			$exp = trim(mb_convert_kana( $cell, "a"));
 			if ( $exp == '' ) $cell = '';
 			if ( preg_match_all('/\@([\w]+)\((?:(\d+),(\d+)|([rc]))\)/', $exp, $matc_cell)){		//func 06.09.13
-				$exp = $this->cell_func($matc_cell,$cell_count,$exp);
+				$exp = @$this->cell_func($matc_cell,$cell_count,$exp);	// 苦しい修正
 				$cell = $exp;
 			}
 			if (preg_match('/^[\d\s\+\-\(]+[\d\.\s\+\-\*\/\%\(\)]*$/', $exp) && preg_match('/[\d\s\)]+$/', $exp) && $exp != ''){
@@ -831,6 +842,7 @@ class TableEdit2Calc
 	function cell_func($matc_cell,$cell_count,$cell)
 	{
 		$func_s = $func_r = array();
+		$first = $cell_func = '';
 		for ($i=0; $i< count($matc_cell[0]); $i++) {
 			$func_name = "sum_r sum_c cell cell_ra avg_r avg_c count_r count_c max_r max_c min_r min_c sum count number";
 			if ( preg_match("/\b" . $matc_cell[1][$i] . "\b/i", $func_name ) ) {
@@ -864,9 +876,11 @@ class TableEdit2Func
 		$end = ($start == 'c') ? $line_count : $cell_count;
 		$position = ($start == 'c') ? $cell_count : $line_count;
 		for ($x = 1;$x <= $end;$x++){
-			$cell_chk = ($start == 'c') ? $cells[$x][$position]:
-				$cells[$position][$x];
-			if (is_numeric($cell_chk)) $count++;
+			if (isset($cells[$x][$position])){
+				$cell_chk = ($start == 'c') ? $cells[$x][$position]:
+					$cells[$position][$x];
+				if (is_numeric($cell_chk)) $count++;
+			}
 		}
 		return $count;
 	}
@@ -919,6 +933,7 @@ class TableEdit2Func
 		$cell_sum = 0;
 		$sum_count = 0;
 		for ( $x = $start;$x <= $end;$x++){
+			if (!isset($cells[$x][$cell_count])) $cells[$x][$cell_count] = 1;
 			$cell_sum += $cells[$x][$cell_count];
 			if (is_numeric($cells[$x][$cell_count])){
 				$sum_count++;
@@ -931,7 +946,7 @@ class TableEdit2Func
 	{
 		$count = 0;
 		for ( $x = $start;$x <= $end;$x++){
-			if (is_numeric($cells[$line_count][$x])){
+			if (isset($cells[$line_count][$x]) && is_numeric($cells[$line_count][$x])){
 				$count++;
 			}
 		}
@@ -941,7 +956,7 @@ class TableEdit2Func
 	{
 		$count = 0;
 		for ( $x = $start;$x <= $end;$x++){
-			if (is_numeric($cells[$x][$cell_count])){
+			if (isset($cells[$x][$cell_count]) && is_numeric($cells[$x][$cell_count])){
 				$count++;
 			}
 		}
@@ -952,7 +967,7 @@ class TableEdit2Func
 		$max_cell = $cells[$line_count][$start];
 		$start++;
 		for ( $x = $start;$x <= $end;$x++){
-			if ($max_cell < $cells[$line_count][$x]){
+			if (isset($cells[$line_count][$x]) && $max_cell < $cells[$line_count][$x]){
 				$max_cell = $cells[$line_count][$x];
 			}
 		}
@@ -960,6 +975,8 @@ class TableEdit2Func
 	}
 	function max_c($start,$end,$cells,$line_count,$cell_count)
 	{
+		if (!isset($cells[$start][$cell_count])) return 0;
+
 		$max_cell = $cells[$start][$cell_count];
 		$start++;
 		for ( $x = $start;$x <= $end;$x++){
@@ -1035,12 +1052,12 @@ function plugin_table_edit2_inline()
 		}
 	}
 
-	$add_show = '';
+	$add_show = false;
 	$edit_mod = $opt['edit_mod'];
 	if (PLUGIN_TABLE_EDIT2_ADD_SHOW && ( $edit_mod == 'td' || $edit_mod == 'tr' )) {
 		if ($edit_mod == 'tr') $edit_mod = 'show';
 		if ($edit_mod == 'td') $edit_mod = 'tdshow';
-		$add_show = '&amp;add_show=1';
+		$add_show = true;
 	}
 
 	if ($opt['edit_mod'] == 'show' || $opt['edit_mod'] == 'tdshow'){
@@ -1054,14 +1071,15 @@ function plugin_table_edit2_inline()
 		'table_num'     => $opt['table_num'],
 		'table_sub_num' => $opt['table_sub_num'],
 		'line_count'    => $opt['line_count'],
-		'cell_count'    => $opt['cell_count'] . $add_show
+		'cell_count'    => $opt['cell_count'],
+		'add_show'		=> ($add_show) ? '1' : '0
 	)
 	) . '">'. $icon . '</a>';
 	return $body;
 }
 function plugin_table_edit2_action()
 {
-	global $vars, $post, $auth_users;
+	global $vars, $post, $auth_users, $_string;
 	$table_num = 	$vars['table_num'];
 	$page = 		$vars['refer'];
 	$script_uri = get_script_uri();
@@ -1071,7 +1089,8 @@ function plugin_table_edit2_action()
 	//	Cancel
 	$anchr_jump = ( PLUGIN_TABLE_EDIT2_ANCHR_JUMP ) ? '#TableEdit2TableNumber' . $table_num : '';
 	if (isset($vars['cancel'])) {
-		header('Location: ' . $script_uri . '?' . rawurlencode($page) . $anchr_jump);
+		//header('Location: ' . $script_uri . '?' . rawurlencode($page) . $anchr_jump);
+		header('Location: ' . get_page_uri($page) . $anchr_jump);
 		exit;
 	}
 
@@ -1082,11 +1101,13 @@ function plugin_table_edit2_action()
 	$import = $export = $csv_cancel = 0;
 
 	if (! function_exists('_')) table_edit2_message();
+	
+	$edit_mod = isset($vars['edit_mod']) ? $vars['edit_mod'] : '';
 
-	$td_edit = ($vars['edit_mod'] == 't_edit_td' || $vars['edit_mod'] == 'td') ? 1 : 0;
-	$tr_edit = ($vars['edit_mod'] == 't_edit' || $vars['edit_mod'] == 'tr') ? 1 : 0;
-	$t_edit = ($vars['edit_mod'] == 't_edit_td' || $vars['edit_mod'] == 't_edit') ? 1 : 0;
-	$edit_show = ($vars['edit_mod'] == 'tdshow' || $vars['edit_mod'] == 'show') ? 1 : 0;
+	$td_edit = ($edit_mod == 't_edit_td' || $edit_mod == 'td') ? 1 : 0;
+	$tr_edit = ($edit_mod == 't_edit'    || $edit_mod == 'tr') ? 1 : 0;
+	$t_edit =  ($edit_mod == 't_edit_td' || $edit_mod == 't_edit') ? 1 : 0;
+	$edit_show = ($edit_mod == 'tdshow'  || $edit_mod == 'show') ? 1 : 0;
 
 	// Petit SPAM Check (Client(Browser)-Server Ticket Check)
 	$spam = FALSE;
@@ -1096,8 +1117,7 @@ function plugin_table_edit2_action()
 
 	if (! class_exists('auth')) { table_edit2_auth(); }
 	if (auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
-//	if (PKWK_READONLY == ROLE_AUTH && auth::get_role_level() > ROLE_AUTH)
-//		die_message( T_('PKWK_READONLY prohibits editing') );
+
 	if ( PLUGIN_TABLE_EDIT2_HTTP_REFERER ) {
 		if (! function_exists('path_check')) {
 			if (! preg_match('/^(' . $script_uri . ')/',$_SERVER['HTTP_REFERER'])) return;
@@ -1106,12 +1126,14 @@ function plugin_table_edit2_action()
 		}
 	}
 
-	if ( $vars['edit_mod'] === 'setting' ) {
+	if ( $edit_mod === 'setting' ) {
 		$set = new TableEdit2SettingWrite($vars);
 		if (!$set->sc) return $set->error;
 		$setting = 1;
 		unset ($vars['table_mod']);
 	}
+	
+	$notimestamp = FALSE;
 
 	if ( isset($vars['csv_mod']) || isset($vars['ex_cancel']) || isset($vars['im_cancel']) || isset($vars['set_csv']) || isset($vars['csv_back'])) {
 		$csv = new TableEdit2CsvAction;
@@ -1180,11 +1202,11 @@ function plugin_table_edit2_action()
 					if( isset($vars['im_cancel']) )  $args_line = $csv->cancel($matches[2], $matches[3], 'import');
 					if( isset($set_csv) )  $args_line = $csv->set_csv_opt($matches[2], $matches[3], $vars['set_csv']);
 
-					if($vars['edit_mod'] == 'tdshow')		//tdshow - td_title - 06.11.11
+					if($edit_mod == 'tdshow')		//tdshow - td_title - 06.11.11
 						if(preg_match('/title_c=(\d+)/i',$matches[2],$match_title))
 							$td_title_count = $match_title[1] - 1;
 
-					if($vars['edit_mod'] == 'show')					//show				header
+					if($edit_mod == 'show')					//show				header
 						if(preg_match('/title_r=(\d+)/i',$matches[2],$m_row_title))
 							$row_title = $m_row_title[1];
 
@@ -1199,7 +1221,7 @@ function plugin_table_edit2_action()
 			}
 		}
 
-		if (preg_match('/^\}{' . $end_line . '}/', $args_line) || !$end_line) $table_find = 0;
+		if ( (isset($end_line) && preg_match('/^\}{' . $end_line . '}/', $args_line)) || !isset($end_line) ) $table_find = 0;
 
 		if($table_find && $table_num == $count && !isset($vars['table_mod']) && !$setting && !$import){
 
@@ -1224,13 +1246,13 @@ function plugin_table_edit2_action()
 					$table_sub_num_chk = 0;
 				}
 
-				if ($vars['line_count'] == $line_count || strtolower( $match_line[2] ) == 'h' || $vars['edit_mod'] == 'tdshow' || $td_edit || $row_title){
+				if ($vars['line_count'] == $line_count || strtolower( $match_line[2] ) == 'h' || $edit_mod == 'tdshow' || $td_edit || $row_title){
 //					$match_t = explode("|", $match_line[1]);
-					if($vars['edit_mod'] == 'tdshow')		//tdshow - td_title - 06.11.11
+					if($edit_mod == 'tdshow')		//tdshow - td_title - 06.11.11
 						$show->td_title[$line_count] = $match_t[$td_title_count];
 				}
 
-				if($vars['edit_mod'] == 'show') {					//show				header
+				if($edit_mod == 'show') {					//show				header
 					if($match_line[2] == 'h' && !$row_title) $show->table_header($match_t);
 					if($line_count == $row_title) $show->table_header($match_t);
 				}
@@ -1246,7 +1268,7 @@ function plugin_table_edit2_action()
 				} else if($vars['line_count'] == $line_count && ! $td_edit)
 				{
 					if( $tr_edit ) {				//t_edit tr_add
-						if ($vars['add_show']) {
+						if (isset($vars['add_show'])) {
 							$source_s .= $args_line;
 							if ( $edit->chose !== 2 ) $edit->chk_csv_source($args, $args_key);
 						}
@@ -1258,7 +1280,7 @@ function plugin_table_edit2_action()
 					}
 
 				} else {
-					if ($vars['edit_mod'] == 'tdshow')		//tdshow and edit_td
+					if ($edit_mod == 'tdshow')		//tdshow and edit_td
 						$show->cells[$line_count] = $match_t;
 
 					$table_sub_num_count_chk = 1;			//td06.09.18
@@ -1282,9 +1304,9 @@ function plugin_table_edit2_action()
 	$collision = 0;
 	if ($tr_edit || $td_edit) {
 		if (md5(get_source($vars['refer'], TRUE, TRUE)) != $vars['digest']) {
-			$title =  T_("On updating  $1, a collision has occurred.");
-			$body  =  T_("It seems that someone has already updated the page you were editing.<br />") .
-					  T_("Your editing contents updated, but there is a possibility that overwrote.<br />")
+			global $_string, $_title;
+			$title =  $_title['collided'];
+			$body  =  $_string['msg_collided_auto']
 					   . make_pagelink($vars['refer']);
 			$collision = 1;
 		}
@@ -1299,7 +1321,8 @@ function plugin_table_edit2_action()
 
 	if ( $edit_show ) return array('msg'=>$show->title, 'body'=>$body);
 
-	header('Location: ' . $script_uri . '?' . rawurlencode($page) . $anchr_jump);
+	//header('Location: ' . $script_uri . '?' . rawurlencode($page) . $anchr_jump);
+	header('Location: ' . get_page_uri($page) . $anchr_jump);
 	exit;
 }
 class TableEdit2TableMod
@@ -1415,7 +1438,7 @@ class TableEdit2Edit
 						. $this->chose_f_table('suffix', '');
 					$this->notimestamp = TRUE;
 				} else {
-					if ($this->opt['add_show']) $source_s .= $this->chose_f_table('chose', $match_t[$x]);
+					if (isset($this->opt['add_show'])) $source_s .= $this->chose_f_table('chose', $match_t[$x]);
 					$source_s .= $this->textarea_br($this->line_count_td);
 				}
 			} else {
@@ -1427,6 +1450,7 @@ class TableEdit2Edit
 	}
 	function tr_edit($args_line, $match_t, $last_character)
 	{
+		$source_s = '';
 		if($this->opt['edit_mod'] == 'tr') $source_s = $args_line;	//tr_add
 		$source_s .= (isset($this->opt['delete']) || $this->chose === 2) ? '' : '|';
 		if($this->opt['edit_mod'] == 't_edit'){				//t_edit
@@ -1434,7 +1458,7 @@ class TableEdit2Edit
 				for ($i = 1;$i < $this->opt['cell_count'];$i++){
 					$source_s .= $this->textarea_br($i);
 				}
-				$source_s .= ($this->opt['add_show']) ? "\n" : $last_character . "\n";
+				$source_s .= isset($this->opt['add_show']) ? "\n" : $last_character . "\n";
 			}
 		} else if($this->opt['edit_mod'] == 'tr'){			//tr	tr_add
 			$this->notimestamp = TRUE;

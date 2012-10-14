@@ -682,7 +682,7 @@ function get_pg_passage($page, $sw = TRUE)
 	$time = get_filetime($page);
 	$pg_passage = ($time != 0) ? get_passage($time, $sw) : '';
 
-	return $sw ? '<small class="passage">' . $pg_passage . '</small>' : ' ' . $pg_passage;
+	return $sw ? '<small class="passage">' . $pg_passage . '</small>' : $pg_passage;
 }
 
 // Last-Modified header

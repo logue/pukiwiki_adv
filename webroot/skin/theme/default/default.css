@@ -348,7 +348,8 @@ q{
 	font-size:123.1%;
 }
 
-#menubar p, #menubar form{
+#menubar p, #menubar form,
+#sidebar p, #sidebar form{
 	margin: 0;
 	padding: 0;
 }

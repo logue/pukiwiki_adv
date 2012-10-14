@@ -664,7 +664,7 @@
 						}
 						
 						/* Classes */
-						if ( bClass )
+						if ( bClass && typeof(nCell) !== 'undefined' )
 						{
 							nCell.className += ' '+oCol.sClass;
 						}
@@ -817,7 +817,9 @@
 			var oCol = oSettings.aoColumns[iCol];
 			var oData = oSettings.aoData[iRow]._aData;
 		
-			oCol.fnSetData( oData, val );
+			try{
+				oCol.fnSetData( oData, val );
+			}catch(e){}
 		}
 		
 		
@@ -4354,7 +4356,7 @@
 					iTargetCol = i % iColumns;
 					
 					/* What is the full list of classes now */
-					sCurrentClass = nTds[i].className;
+					sCurrentClass = nTds[i] ? nTds[i].className : '';
 					/* What sorting class should be applied? */
 					sNewClass = asClasses[iTargetCol];
 					/* What would the new full list be if we did a replacement? */
@@ -4705,7 +4707,7 @@
 			var sAlert = (oSettings===null) ?
 				"DataTables warning: "+sMesg :
 				"DataTables warning (table id = '"+oSettings.sTableId+"'): "+sMesg;
-			
+			/*
 			if ( iLevel === 0 )
 			{
 				if ( DataTable.ext.sErrMode == 'alert' )
@@ -4720,8 +4722,9 @@
 			}
 			else if ( window.console && console.log )
 			{
-				console.log( sAlert );
-			}
+			*/
+				console.warn( sAlert );
+			//}
 		}
 		
 		

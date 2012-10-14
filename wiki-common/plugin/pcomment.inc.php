@@ -368,10 +368,11 @@ function plugin_pcomment_get_comments($page, $count, $dir, $reply)
 	unset($data);
 
 	// Add radio buttons
-	if ($reply)
+	if ($reply){
 		$comments = preg_replace('/<li>' . "\x01" . '(\d+)' . "\x02" . '(.*)' . "\x03" . '(.*)\s\-\-\s(.*)/',
-			'<li class="pcomment_comment"><input class="pcmt" type="radio" name="reply" value="$2" tabindex="$1" id="pcmt$2" /><label for="pcmt$2">$3</label> -- $4',
+			'<li class="pcomment_comment"><input class="pcmt" type="radio" name="reply" value="$2" tabindex="$1" id="pcmt$2" /><label for="pcmt$2">$3 -- $4</label>',
 			$comments);
+	}
 
 	return array($comments, $digest);
 }

@@ -8,7 +8,7 @@
 // cmd=replace
 
 // 凍結してあるページも文字列置換の対象とする
-define(REPLACE_IGNORE_FREEZE, TRUE);
+defined('REPLACE_IGNORE_FREEZE') or define('REPLACE_IGNORE_FREEZE', TRUE);
 
 function plugin_replace_init()
 {
@@ -22,8 +22,9 @@ function plugin_replace_init()
 			'msg_input_replace_word'	=> T_('Substitution character string:'),
 			'btn_exec'					=> T_('Exec'),
 			'msg_warn_pass'				=> T_('SECURITY ERROR:') .
-											T_('It remains as the Administrator password distributes it.') .
-											T_('Please change the password.'),
+										   T_('It remains as the Administrator password distributes it.') .
+										   T_('Please change the password.'),
+			'msg_pass'					=> T_('Password:'),
 			'msg_no_pass'				=> T_('The password is wrong.'),
 			'msg_no_search'				=> T_('The retrieval character string to substitute it is empty.'),
 			'msg_H0_replace'			=> T_('All page character string substitution'),
@@ -91,7 +92,7 @@ function replace_do($search,$replace,$notimestamp)
 				$cycle = 0;
 				set_time_limit(30);
 				page_write($page,$postdata,$notimestamp);
-				$replaced_pages[] = htmlspecialchars($page);
+				$replaced_pages[] = '<li><a href="'.get_page_uri($page).'">'.htmlsc($page).'</a></li>';
 			}
 		}
 	}
@@ -104,7 +105,7 @@ function replace_do($search,$replace,$notimestamp)
 	}
 	return array(
 		'msg'  => $_replace_msg['msg_H0_replaced'],
-		'body' => '<p>' . $_replace_msg['msg_replaced'] . "</p>\n<p>" . join("<br />\n", $replaced_pages) . '</p>'
+		'body' => '<p>' . $_replace_msg['msg_replaced'] . '</p>' . "\n" . '<ul>' . join("\n", $replaced_pages) . '</ul>'
 	);
 }
 
@@ -121,15 +122,11 @@ function replace_adm($pass,$search)
 		$body_pass = "<br />\n";
 	} else {
 		$msg = $_replace_msg['msg_input_pass'];
-		$body_pass = <<<EOD
-<label for="pass">Password</label><br />
-  <input type="password" name="pass" size="12" id="pass" /> <br />
-
-EOD;
+		$body_pass = '<label for="pass">'.$_replace_msg['msg_pass'].'</label><input type="password" name="pass" size="12" id="pass" /><br />';
 		if ($pass == 'pass') {
-			$body .= '<p><strong>'.$_replace_msg['msg_warn_pass']."</strong></p>\n";
+			$body .= '<p><strong>'.$_replace_msg['msg_warn_pass'].'</strong></p>'. "\n";
 		} elseif ($pass != '__nopass__') {
-			$body .= '<p><strong>'.$_replace_msg['msg_no_pass']."</strong></p>\n";
+			$body .= '<p><strong>'.$_replace_msg['msg_no_pass'].'</strong></p>'."\n";
 		}
 	}
 
@@ -138,18 +135,21 @@ EOD;
 	}
 	$script = get_script_uri();
 	$body .= <<<EOD
-<p>$msg</p>
-<form action="$script" method="post" class="replace_form">
-	<input type="hidden" name="cmd" value="replace" />
-	<label for="replace_search">{$_replace_msg['msg_input_search_word']}</label>
-	<input type="text" name="search" id="replace_search" size="24" /><br />
-	<label for="replace_replace">{$_replace_msg['msg_input_replace_word']}</label>
-	<input type="text" name="replace" size="24" /><br />
+<fieldset>
+	<legend>$msg</legend>
+	<form action="$script" method="post" class="replace_form">
+		<input type="hidden" name="cmd" value="replace" />
+		<label for="replace_search">{$_replace_msg['msg_input_search_word']}</label>
+		<input type="text" name="search" id="replace_search" size="24" /><br />
+		<label for="replace_replace">{$_replace_msg['msg_input_replace_word']}</label>
+		<input type="text" name="replace" id="replace_replace" size="24" /><br />
 		$body_pass
-	<input type="checkbox" name="notimestamp" id="replace_notimestamp" />
-	<label for="replace_notimestamp">{$_button['notchangetimestamp']}</label>
-	<input type="submit" name="ok" value="{$_replace_msg['btn_exec']}" />
-</form>
+		<input type="checkbox" name="notimestamp" id="replace_notimestamp" />
+		<label for="replace_notimestamp">{$_button['notchangetimestamp']}</label><br />
+		<input type="submit" name="ok" value="{$_replace_msg['btn_exec']}" />
+	</form>
+</fieldset>
+
 EOD;
 
 	return array('msg'=>$_replace_msg['msg_H0_replace'],'body'=>$body);

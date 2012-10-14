@@ -153,8 +153,6 @@ a img {
 .table_wrapper{
 	text-align: center;
 	width: 100%;
-	max-width:100%;
-	padding: 0 auto;
 }
 
 .style_table{
@@ -166,7 +164,8 @@ a img {
 	border-collapse: separate;
 	border-spacing: 1px;
 	background-color: darkgray;
-	width:90%;
+	max-width:90%;
+	min-width:45%;
 }
 .style_th{
 	background-color: silver;
@@ -727,12 +726,13 @@ input[type='search'][required], textarea[required], select[required] {
 
 /* navi.inc.php */
 .navi {
-	display: block;
+	text-align: center;
+}
+.navi ul {
 	list-style-image: none;
 	list-style: none;
-	margin: 0 !important;
-	padding: 0 !important;
-	text-align: center;
+	margin: 0;
+	padding: 0 .5em;
 }
 .navi_none {
 	display: inline;
@@ -750,7 +750,7 @@ input[type='search'][required], textarea[required], select[required] {
 }
 
 /* navibar.inc.php / toolbar.inc.php / topicpath.inc.php / list.inc.php / logview.inc.php / multilang.inc.php */
-.navibar ul, .toolbar ul, .topicpath ul, .multilang ul{
+.navibar ul, .toolbar ul, .topicpath ul, .multilang ul, .page_initial ul{
 	margin: 0;
 	padding: 0;
 	list-style: none;
@@ -762,10 +762,10 @@ input[type='search'][required], textarea[required], select[required] {
 .navibar ul:after{
 	content: ' ]';
 }
-.navibar li, .toolbar li, .topicpath li, .multilang li{
+.navibar li, .toolbar li, .topicpath li, .multilang li, .page_initial li {
 	display: inline;
 }
-.navibar li:not(:last-of-type):after{
+.navibar li:not(:last-of-type):after, .page_initial li:not(:last-of-type):after{
 	content: ' | ';
 }
 .topicpath li:not(:last-of-type):after{
@@ -780,7 +780,13 @@ input[type='search'][required], textarea[required], select[required] {
 .toolbar li a:hover{
 	text-decoration: none !important;
 }
-.no-js .list_pages, .js .list_pages ul, , .referer_searchkey_list{
+.page_initial ul{
+	margin: 0 auto;
+	text-align:center;
+	width:75%;
+	display:block;
+}
+.list_pages, .referer_searchkey_list{
 	column-count: 2;
 	-moz-column-count: 2;
 	-webkit-column-count: 2;
@@ -788,7 +794,7 @@ input[type='search'][required], textarea[required], select[required] {
 	-ms-column-count: 2;
 }
 @media only screen and (min-width : 800px) {
-	.no-js .list_pages, .js .list_pages ul, .referer_searchkey_list{
+	.list_pages, .referer_searchkey_list{
 		column-count: 3;
 		-moz-column-count: 3;
 		-webkit-column-count: 3;
@@ -796,8 +802,8 @@ input[type='search'][required], textarea[required], select[required] {
 		-ms-column-count: 3;
 	}
 }
-@media only screen and (min-width : 1440px) {
-	.no-js .list_pages, .js .list_pages ul, .referer_searchkey_list{
+@media only screen and (min-width : 1280px) {
+	.list_pages, .referer_searchkey_list{
 		column-count: 4;
 		-moz-column-count: 4;
 		-webkit-column-count: 4;

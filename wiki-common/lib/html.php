@@ -123,7 +123,7 @@ function catbody($title, $page, $body)
 			$link_tags[] = array('rel'=>'index',			'href'=>$_LINK['list'],		'type'=>$http_header,	'title'=>$_LANG['skin']['list']);
 			$link_tags[] = array('rel'=>'search',			'href'=>$_LINK['opensearch'],'type'=>'application/opensearchdescription+xml',	'title'=>$page_title.$_LANG['skin']['search']);
 			$link_tags[] = array('rel'=>'search',			'href'=>$_LINK['search'],	'type'=>$http_header,	'title'=>$_LANG['skin']['search']);
-			
+			$link_tags[] = array('rel'=>'sitemap',			'href'=>$_LINK['sitemap'],	'type'=>$http_header,	'title'=>'Sitemap');
 			$link_tags[] = array('rel'=>'shortcut icon',	'href'=>$shortcut_icon,		'type'=>'image/vnd.microsoft.icon');
 
 			if ($nofollow || ! $is_read || ! $is_page || check_non_list($_page) ){
@@ -301,7 +301,8 @@ function getLinkSet($_page){
 		'opensearch'	=> get_cmd_uri('search',	null,	null,	array('format'=>'xml')),
 		'list'			=> get_cmd_uri('list'),
 		'filelist'		=> get_cmd_uri('filelist'),
-
+		
+		'sitemap'		=> get_cmd_absuri('list', 	null,	'type=sitemap'),
 		'rss'			=> get_cmd_absuri('mixirss'),
 		'rdf'			=> get_cmd_absuri('rss',	null,	'ver=1.0'),
 		'rss10'			=> get_cmd_absuri('rss',	null,	'ver=1.0'), // Same as 'rdf'

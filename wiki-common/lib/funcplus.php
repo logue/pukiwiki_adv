@@ -180,7 +180,7 @@ function mb_ereg_quote($str)
 }
 
 // タグの追加
-function open_uri_in_new_window($anchor, $which)
+function open_uri_in_new_window($anchor, $which = '')
 {
 	global $use_open_uri_in_new_window,		// この関数を使うか否か
 		   $open_uri_in_new_window_opis,		// 同一サーバー(Farm?)
@@ -190,7 +190,7 @@ function open_uri_in_new_window($anchor, $which)
 	global $_symbol_extanchor, $_symbol_innanchor;	// 新規ウィンドウを開くアイコン
 	
 	// この関数を使わない OR 呼び出し元が不正な場合はスルーする
-	if (!$use_open_uri_in_new_window || !$which || !$_symbol_extanchor || !$_symbol_innanchor) {
+	if (!$use_open_uri_in_new_window || empty($which) || !$_symbol_extanchor || !$_symbol_innanchor) {
 		return $anchor;
 	}
 	

@@ -1,8 +1,8 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: init.php,v 1.57.8 2011/11/28 21:35:00 Logue Exp $
+// $Id: init.php,v 1.57.12 2012/10/11 17:21:00 Logue Exp $
 // Copyright (C)
-//   2010-2011 PukiWiki Advance Developers Team
+//   2010-2012 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
 //   2002-2007,2009,2011 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -14,8 +14,8 @@
 
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
-define('S_VERSION', 'v1.0 beta2');
-define('S_REVSION', '20120709');
+define('S_VERSION', 'v1.0 beta3');
+define('S_REVSION', '20121011');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &#169; 2010-2012' .

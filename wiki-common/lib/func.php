@@ -495,11 +495,11 @@ function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', 
 				} else if ($_initial == $sentinel_another) {
 					$_initial = htmlsc($_msg_other);
 				}
-				$retval[] = '	<fieldset id="head_' . $cnt .'" role="tabpanel" aria-labeledby="top_' . $cnt .'">';
+				$retval[] = '	<fieldset id="head_' . $cnt .'">';
 				$retval[] = '		<legend><a href="#top_' . $cnt . '">' . $_initial . '</a></legend>';
 				$retval[] = '		<ul class="list1">';
 
-				$contents[] = '<li id="top_' . $cnt .'" aria-controls="head_'.$cnt.'" role="tab">'.
+				$contents[] = '<li id="top_' . $cnt .'">'.
 								'<a href="#head_' . $cnt . '" title="'.$page_count.'">' .$_initial . '</a></li>';
 			}
 			$retval[] = join("\n", $pages);
@@ -541,10 +541,10 @@ function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', 
 		if (!IS_MOBILE) {
 			array_unshift(
 				$retval,
-				'<ul role="tablist">',
-				join("\n" . '<br />' . "\n", $contents),
-				'</ul>');
-			$ret = '<div class="tabs" role="application">'."\n".join("\n", $retval) . "\n".'</div>';
+				'<div  class="page_initial"><ul>',
+				join("\n" , $contents),
+				'</ul></div>');
+			$ret = '<div class="pages">'."\n".join("\n", $retval) . "\n".'</div>';
 		}else{
 			$ret = '<ul data-role="listview">'.join("\n", $contents).'</ul>';
 		}

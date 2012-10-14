@@ -187,7 +187,7 @@ class ShowRSS_html
 			// RSS1.xの場合
 			$this->title = $xml->channel->title;
 			$this->subtitle = (string) $xml->channel->description;
-			$this->passage =  get_passage( strtotime((string) $dc->date) );
+			$this->passage = ($dc->date) ? get_passage( strtotime((string) $dc->date) ) : '';
 			$this->url = $xml->channel->link;
 			$this->logo = (isset($xml->channels->image)) ? '<a href="'.$xml->channels->image->link.'" title="'.$xml->channels->image->title.'" rel="external"><img src="'.$xml->channels->image->url.'" /></a>' : null;
 

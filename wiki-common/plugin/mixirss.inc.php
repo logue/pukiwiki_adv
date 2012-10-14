@@ -60,10 +60,11 @@ function plugin_mixirss_action()
 		}
 		$time_recent = filemtime($recent);
 	}
-/*
+
 	$rsscache = CACHE_DIR . 'rsscache' . $version . '.dat';
+/*
 	$time_rsscache =  ? filemtime($rsscache) : 0;
-	
+
 	if (file_exists($rsscache)) {
 		// if caching rss file, return cache.
 		if ($time_recent <= $time_rsscache) {
@@ -274,7 +275,7 @@ EOD;
 		break;
 	}
 	print $html;
-
+/*
 	// Write Cache-file
 	$fp = fopen($rsscache, 'w');
 	flock($fp, LOCK_EX);
@@ -282,7 +283,7 @@ EOD;
 	fputs($fp, $html);
 	flock($fp, LOCK_UN);
 	fclose($fp);
-
+*/
 	log_write('cmd','mixirss');
 	exit;
 }

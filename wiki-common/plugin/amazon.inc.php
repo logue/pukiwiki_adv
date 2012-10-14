@@ -656,6 +656,7 @@ class amazon_ecs
 		$this->expire = 24;			// キャッシュ利用時の生存時間
 		$this->is_cache = false;		// キャッシュの利用有無
 		$this->image_size = 'MediumImage';
+		$this->align = '';
 
 		$this->items = array();			// 整形後項目
 		$this->obj_xml = array();		// xml 解析データ保存域
@@ -772,7 +773,7 @@ class amazon_ecs
 	{
 		$rc = pkwk_http_request($url);
 		// return ($rc['rc'] == 200) ? $rc['data'] : '';
-		$this->obj_xml = simplexml_load_string($rc['data']);
+		$this->obj_xml = @simplexml_load_string($rc['data']);
 		if ($rc['rc'] == 200 || !$this->obj_xml->Error) {
 			$this->asin = $this->obj_xml->Items->Item->ASIN;
 			return $rc['data'];
@@ -1054,7 +1055,7 @@ class amazon_ecs
 		return AMAZON_CARGO;
 	}
 
-	function clear($x)
+	static function clear($x)
 	{
 		switch ($x) {
 			case 'clearl': return '<div style="clear:left;display:block;"></div>';
@@ -1064,7 +1065,7 @@ class amazon_ecs
 		return '';
 	}
 
-	function style_float($align)
+	static function style_float($align)
 	{
 		switch($align) {
 		case 'left':

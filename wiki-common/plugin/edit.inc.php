@@ -186,10 +186,13 @@ function plugin_edit_inline()
 
 	// {label}. Strip anchor tags only
 	$s_label = strip_htmltag(array_pop($args), FALSE);
-	if ($s_label == '')	{
+	if (empty($s_label)) {
 		$s_label = $_symbol_paraedit;
 		$s_label_edit = & $_symbol_paraedit;
-		$s_label_guiedit = & $_symbol_paraguiedit;
+//		$s_label_guiedit = & $_symbol_paraguiedit;
+	}else{
+		$s_label_edit = $s_label;
+//		$s_label_guiedit = '';
 	}
 
 	list($page,$id) = array_pad($args,2,'');
@@ -198,8 +201,8 @@ function plugin_edit_inline()
 	}
 
 	$tag_edit = '<a class="anchor_super" id="edit_'.$id.'" href="' . get_cmd_uri('edit',$page,'',array('id'=>$id)) . '" rel="nofollow">' . $s_label_edit . '</a>';
-	$tag_guiedit = '<a class="anchor_super" id="guiedit_'.$id.'" href="' . get_cmd_uri('guiedit',$page,'',array('id'=>$id)) .'" rel="nofollow">' . $s_label_guiedit . '</a>';
-
+//	$tag_guiedit = '<a class="anchor_super" id="guiedit_'.$id.'" href="' . get_cmd_uri('guiedit',$page,'',array('id'=>$id)) .'" rel="nofollow">' . $s_label_guiedit . '</a>';
+/*
 	switch ($fixed_heading_edited) {
 	case 2:
 		return $tag_guiedit;
@@ -208,6 +211,8 @@ function plugin_edit_inline()
 	default:
 		return $tag_edit;
 	}
+*/
+	return $tag_edit;
 }
 
 // Write, add, or insert new comment
