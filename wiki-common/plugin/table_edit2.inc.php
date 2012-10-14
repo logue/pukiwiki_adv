@@ -1072,7 +1072,7 @@ function plugin_table_edit2_inline()
 		'table_sub_num' => $opt['table_sub_num'],
 		'line_count'    => $opt['line_count'],
 		'cell_count'    => $opt['cell_count'],
-		'add_show'		=> ($add_show) ? '1' : '0
+		'add_show'		=> ($add_show ? '1' : '0')
 	)
 	) . '">'. $icon . '</a>';
 	return $body;
