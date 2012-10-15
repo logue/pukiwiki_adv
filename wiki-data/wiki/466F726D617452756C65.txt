@@ -1,3 +1,4 @@
+#freeze
 #multilang(ja){{{
 TITLE:整形ルール
 #norelated

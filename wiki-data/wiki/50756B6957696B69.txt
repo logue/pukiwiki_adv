@@ -25,8 +25,3 @@ PukiWikiは Wiki(WikiWikiWeb) と呼ばれているもののひとつで、基�
 
 - http://sourceforge.jp/projects/pukiwiki/
 -- Sourceforge のプロジェクトサマリです。PukiWikiのダウンロードはこちらからどうぞ。
-
-** 関連ページ [#zf685513]
-
-#ls2
-- [[InterWikiName]] -- [[InterWiki]]のサーバリスト

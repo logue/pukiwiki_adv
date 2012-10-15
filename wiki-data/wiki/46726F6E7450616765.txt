@@ -1,0 +1,18 @@
+#norelated
+* FrontPage
+PukiWiki Advanceへようこそ！PukiWiki Adv.は、PukiWiki Plus! i18nのPHP5.4対応、HTML5+jQueryUIポートです。
+
+*まず最初にすること
+-[[MenuBar]] - サイドメニューを定義します
+-[[Glossary]] - 用語集を定義します。ここで定義されているワードは、他のページでツールチップとして表示されます。
+-[[Navigation]] - ナビゲーションメニューを定義します。ここを編集すると前ページの上部のメニューがポップアップメニューになります。
+-[[SideBar]] - メニューバーと反対側のサイドメニューを表示します。スキンによっては対応していない場合があります。
+-[[:Header]] - ヘッダー部分をカスタマイズします。
+-[[:Footer]] - フッター部分をカスタマイズします。
+
+*サポート
+-[[PukiWiki Adv.公式サイト>http://pukiwiki.logue.be/]]
+--[[問題報告>http://pukiwiki.logue.be/BugTrack]]
+-[[フォーラム>http://forum.logue.be/]]
+-[[Twitter>https://twitter.com/pukiwiki_adv]]
+-[[プロジェクトサイト>https://github.com/logue/pukiwiki_adv]]

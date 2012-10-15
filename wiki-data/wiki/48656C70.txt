@@ -5,7 +5,9 @@ TITLE:ヘルプ
 
 - [[FAQ]](日本語)
 - [[テキスト整形のルール>FormatRule]] 
-- [[プラグインマニュアル>PukiWiki/Manual/Plugin]] 
+- [[プラグインヘルプ>./Plugin]] 
+- [[InterWikiヘルプ>./InterWiki]]
+- [[Navigationヘルプ>./NavigationPage]]
 ----------------------------
 #contents
 ----------------------------

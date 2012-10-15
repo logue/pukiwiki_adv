@@ -4,7 +4,6 @@
 |SEO SPAMボットの攻撃対象になるため、デフォルトでこのページは凍結されています。|
 
 #contents
-[[PukiWiki/1.4/Manual/Plugin#vf3c6f93]]
 * ''見出し'' [#n151e840]
 
 * 大見出し 1 [#a6dc7f79]
@@ -112,14 +111,32 @@ SIZE(20){ COLOR(#333399){ 両方指定(SIZE(20)COLOR(#333399)) } }
 CENTER:中寄せ
 RIGHT:右寄せ
 
-
+* テーブル
+テーブル編集
+#table_edit2(td_edit=off,edit=on,table_mod=unlock){{
 |~1|~2|~3|
 |a|b|c|
 |A|B|C|
+}}
+
+* リキッドレイアウト
+spanプラグインの数値の合計が12になるようにrowプラグインでspanプラグインをくくります。
+#row{{{{
+#span(4){{
+4
+}}
+#span(6){{
+6
+}}
+#span(2){{
+2
+}}
+}}}}
+
 
 *メディア [#a0b6ed69]
 :MP3ファイル|
-http://www.muzie.ne.jp/download/271869/songs424/soutanka_2008-04-23_14-55-18.mp3
+http://www10.muzie.ne.jp/download/388815/songs659/present.mp3
 :MML|
 #mml(Air on the G String){{
 /** Flute **/
@@ -149,12 +166,5 @@ c-e<ed>dc+<c+>b>ba+b<c+>a+b<gef+c-ba>ag+<g+f+>f+e<ed>dc+<c+de>a<ag>g
 f+<f+g>gg+<g+a>aa+<a+bc-e<ed>dc+<c+>e<c+d>dcb+b>ba<ag>gf+<f+e>ed<dc+>
 a<dgaga>at120d1.;
 }}
-
-#article
-**aa [#d5893d3d]
->[[aa]] ()~
-~
-aaaa~
-- aaa -- [[aaa]] &epoch{1324296255.6124,comment_date};
 
 #comment

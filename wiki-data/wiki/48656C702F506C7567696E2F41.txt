@@ -1,0 +1,184 @@
+#navi(../)
+*add [#vef8f18f]
+:種別|
+~コマンド
+:重要度|
+~★☆☆☆☆
+:書式|
+''?cmd=add''
+&color(blue){&page=ページ名};
+:概要|
+~実行すると編集画面が表示されます。更新ボタンを押すと、指定した既存ページの末尾に編集欄で入力した内容が追加されます。
+:引数|
+~ページ名は省略できません。ページ名はエンコードされている必要があります。
+~[[edit>../E-G#i1e8d3e8]]が編集画面に既存のページ内容を表示するのに対し、addは常に編集画面が空となります。不用意に既存の入力内容を変更する事がないため、単純に追記していくだけのページではaddを使うと便利です。
+:備考|
+~もともとデフォルトのskinでメニューの「追加」として使われていましたが、editコマンド(編集)で事足りるため、デフォルトのskinではメニューから外されています。
+~PKWK_READONLY が有効の場合、このプラグインは全てのリクエストを無効とします。
+
+*add [#vef8f18f]
+:種別|
+~コマンド
+:重要度|
+~★☆☆☆☆
+:書式|
+''?cmd=add''
+&color(blue){&page=ページ名};
+:概要|
+~実行すると編集画面が表示されます。更新ボタンを押すと、指定した既存ページの末尾に編集欄で入力した内容が追加されます。
+:引数|
+~ページ名は省略できません。ページ名はエンコードされている必要があります。
+~[[edit>../E-G#i1e8d3e8]]が編集画面に既存のページ内容を表示するのに対し、addは常に編集画面が空となります。不用意に既存の入力内容を変更する事がないため、単純に追記していくだけのページではaddを使うと便利です。
+:備考|
+
+*addline [#j9b1ecc7]
+:種別|
+（コマンド）~
+ブロック型プラグイン~
+インライン型プラグイン~
+:重要度|
+★★☆☆☆
+:書式|
+''#addline(''
+[&color(blue){設定名};] {, [&color(blue){above};|&color(blue){below};|&color(blue){up};|&color(blue){down};|&color(blue){btn:[ボタン名]};|&color(blue){ltext:[左テキスト]};|&color(blue){rtext:[右テキスト]};]}
+'')''~
+''&addline(''
+[&color(blue){設定名};] {, [&color(blue){before};|&color(blue){after};|&color(blue){above};|&color(blue){below};|&color(blue){up};|&color(blue){down};]}
+''){''
+[&color(blue){リンク名};]
+''};''
+:引数|
+設定名: 「：config/plugin/addline/設定名」の指定
+--above|below|up|down: #commentと同じで、追加するのがボタンの上か下かの指定
+--btn: submitボタンに付ける名前
+--ltext,rtext: submitボタンの左右につけるテキスト
+--before,after: インライン型の場合に、追加するのがリンクの前（左）か後（右）の指定
+:概要|
+ボタンやリンクを押すと、設定ページで指定した文字列を行単位でします。
+インライン型は同じ行内での文字列単位で追加も可能。 
+ボタンやリンクの表記も変更可。
+//:使用例|
+:作者|
+sha
+
+*aname [#n9f7bab5]
+:種別|
+~インライン型プラグイン
+~ブロック型プラグイン
+:重要度|
+~★★★★☆
+:書式|
+~''&aname(''
+&color(blue){アンカー名};
+[,{[&color(blue){super};],
+[&color(blue){full};],
+[&color(blue){noid};]}]
+''){''
+&color(blue){アンカー文字列};
+''};''
+~''#aname(''
+&color(blue){アンカー名};
+[,{[&color(blue){super};],
+[&color(blue){full};],
+[&color(blue){noid};]},
+&color(blue){アンカー文字列};]
+'')''
+:概要|
+~指定した位置にアンカー(リンクの飛び先)を設定します。
+:引数|
+~アンカー名の値がアンカーのフラグメント指定子に使用されます。アンカー名は省略できません。アンカー名には半角英字（大文字／小文字）が使用可能です。
+~super,full,noid でアンカーの出力方式を指定します。
+--super － アンカー文字列を上付き表示します。省略時は上付き表示されません。
+--full － フラグメント指定子以外のURIを補ってアンカーを出力します。省略時はフラグメント指定子のみ出力されます。
+--noid － アンカーにフラグメント指定子を出力しません。
+:|~アンカー文字列が指定された場合、指定した文字列に対してアンカーが出力されます。アンカーの存在を利用者に明示したい場合に利用します。省略時は空文字に対するアンカーとなります。
+~
+super,full,noid のいずれかを指定した場合、アンカー文字列を省略または空文字とする事はできません。
+
+:プラグイン内設定|~
+--PLUGIN_ANAME_ID_MAX　アンカー名に指定可能な文字列長の上限
+--PLUGIN_ANAME_ID_REGEX　アンカー名に指定可能な文字列の正規表現
+--PLUGIN_ANAME_ID_MUST_UNIQUE　重複したアンカー名を利用した場合エラーとする
+:備考|
+~通常はインライン型プラグインとして使用します。2つのブロック型プラグインに挟まれた部分にアンカー設定したい場合にインラインプラグインとして記述できないため、ブロック型プラグインとしても使えるようにしてあります。
+~PukiWiki本体処理でanameプラグインを内部的に呼び出しているため、必ず組み込む必要があります。
+
+
+*article [#a06a7f60]
+:種別|
+~（コマンド）
+~ブロック型プラグイン
+:重要度|
+~★★★☆☆
+:書式|
+''#article''
+:概要|
+~指定した位置に簡易掲示板を設置します。
+:プラグイン内設定|~
+--PLUGIN_ARTICLE_COLS　テキストエリアのカラム数
+--PLUGIN_ARTICLE_ROWS　テキストエリアの行数
+--PLUGIN_ARTICLE_NAME_COLS　名前テキストエリアのカラム数
+--PLUGIN_ARTICLE_SUBJECT_COLS　題名テキストエリアのカラム数
+--PLUGIN_ARTICLE_NAME_FORMAT　名前の挿入フォーマット
+--PLUGIN_ARTICLE_SUBJECT_FORMAT　題名の挿入フォーマット
+--PLUGIN_ARTICLE_INS　入力内容を入力欄の前後どちらに挿入するか
+--PLUGIN_ARTICLE_COMMENT　書き込みの下に一行コメントを入れるか
+--PLUGIN_ARTICLE_AUTO_BR　改行を自動的変換するか
+--PLUGIN_ARTICLE_MAIL_AUTO_SEND　投稿内容のメール自動配信をするか
+--PLUGIN_ARTICLE_MAIL_FROM　投稿内容のメール送信時の送信者メールアドレス
+--PLUGIN_ARTICLE_MAIL_SUBJECT_PREFIX　投稿内容のメール送信時の題名
+--$_plugin_article_mailto　投稿内容のメール自動配信先アドレス
+:備考|
+~PKWK_READONLY が有効の場合、このプラグインは全てのリクエストを無効とします。
+
+
+*attach [#qe43bebc]
+:種別|
+~（コマンド）
+~ブロック型プラグイン
+:重要度|
+~★★★★★
+:書式|
+''#attach(''
+[&color(blue){nolist};]
+[,&color(blue){noform};]
+'')''
+:概要|
+~ページの添付ファイルの一覧を表示し、ファイル添付のための入力フォームを設置します。
+:引数|
+~nolist, noform で表示内容を指定します。
+--nolist － ページの添付ファイルの一覧を表示しません。省略時は一覧を表示します。
+--noform － ファイル添付のための入力フォームを表示しません。省略時は入力フォームを表示します。
+:プラグイン内設定|~
+--PLUGIN_ATTACH_MAX_FILESIZE　ファイルアップロードの上限
+--PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY　管理者だけが添付ファイルをアップロードできるようにするか
+--PLUGIN_ATTACH_DELETE_ADMIN_ONLY　管理者だけが添付ファイルを削除できるようにするか
+--PLUGIN_ATTACH_DELETE_ADMIN_NOBACKUP　PLUGIN_ATTACH_DELETE_ADMIN_ONLYのとき、管理者が添付ファイルを削除するときは、バックアップを作らない
+--PLUGIN_ATTACH_PASSWORD_REQUIRE　アップロード/削除時にパスワードを要求するか(PLUGIN_ATTACH_～_ADMIN_ONLYが優先)
+--PLUGIN_ATTACH_RENAME_ENABLE　ファイルのリネームが可能か
+--PLUGIN_ATTACH_FILE_MODE　アップロードされたファイルのアクセス権
+--PLUGIN_ATTACH_FILE_ICON　アイコンイメージのファイル
+--PLUGIN_ATTACH_CONFIG_PAGE_MIME　ダウンロード時のmime-typeを記述したページ
+:備考|
+~デフォルトのskinのメニューの「添付」で呼び出されているため、デフォルトのskinを使う場合には必ず組み込む必要があります。
+~プラグイン内設定の PLUGIN_ATTACH_MAX_FILESIZE を増やす場合は、php.iniの upload_max_filesize やApache の LimitRequestBodyなどPukiWiki以外での上限設定がある事に注意して下さい。
+~PKWK_READONLY が有効の場合、このプラグインは「ファイルの新規添付、削除、凍結（凍結解除）」のリクエストを無効とします。
+
+*attachref [#k589fee9]
+:種別|
+（コマンド）~
+ブロック型プラグイン
+:重要度|
+★★☆☆☆
+:書式|
+''&attachref(''
+[&color(blue){添付ファイル名};] [, {&color(blue){refの引数}; }{, &color(blue){button}; }]}
+''){''
+[&color(blue){ボタン名};]
+''};''
+:引数|
+--button − <form></form>のsubmitボタン表示。デフォルトでは[添付]文字列によるリンク表示。リンクもボタンも、表示する文字列は<ボタン名>で変更可。 
+:概要|
+添付ファイルが存在しているときは ref と同じ動作をします。添付ファイルが存在していないときは画面に [添付] リンクが存在して、それを押すと、アップロードフォーマットが出現して、そこでファイルをアップロードすると、[添付]リンクのあった場所に&amp;ref(...);してくれます。指定サイズでサムネイル表示もできるので便利です。
+:作者|
+sha

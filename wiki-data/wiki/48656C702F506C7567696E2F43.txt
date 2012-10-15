@@ -1,0 +1,215 @@
+#navi(../)
+
+*cache_ref [#xec06fb9]
+:種別|
+（コマンド）~
+:重要度|
+★☆☆☆☆
+:書式|
+?cmd=cache_ref&color(blue){&amp;filename=ファイル名};
+:概要|
+CACHE_DIR に存在するファイルを取得する。
+:引数|
+filename - キャッシュディレクトリ上のファイル名
+
+*calendar [#o67f1fba]
+:種別|
+（コマンド）~
+ブロック型プラグイン
+:重要度|
+★★★☆☆
+:書式|
+''#calendar(''
+[{[&color(blue){ページ名};|&color(blue){*};],
+[&color(blue){yyyymm};],
+[&color(blue){off};]}]
+'')''
+:概要|
+~指定した位置にカレンダーを設置します。表示月のとなりに表示されたリンク(<< および >>)を選択することで先月／次月分のカレンダーを表示できます。カレンダー上でyyyy/mm/ddという日付を選択すると、ページ名/yyyy-mm-ddというページを表示できます。当日分のページが作成されていた場合、カレンダーの右隣に当日分のページ内容を表示します。
+:引数|
+~ページ名で表示するページの上位階層のページを指定できます。ページ名を省略すると設置したページのページとなります。ページ名に*を指定すると上位階層のページはなし（表示するページ名がyyyy-mm-dd）となります。
+~yyyymmで表示するカレンダーの西暦と月を指定できます。省略時は当日の年月となります。
+~offを指定時、当日分ページを表示する機能は抑制されます。省略時は当日分のページを表示します。
+:備考|
+~PukiWiki Adv.のcalenderプラグインは、Plus!のminicalenderプラグインで、元々のプラグインは廃止になっています。
+:作者|
+みこ(miko's cafeterrace)
+
+*calendar_viewer [#ra147b44]
+:種別|
+（コマンド）~
+ブロック型プラグイン
+:重要度|
+★★★☆☆
+:書式|
+''#calendar_viewer(''
+&color(blue){ページ名};,
+&color(blue){yyyy-mm};|
+&color(blue){n};|
+&color(blue){x*y};|
+&color(blue){this};
+[,[&color(blue){past};|&color(blue){pastex};|&color(blue){future};|&color(blue){futureex};|&color(blue){view};]
+[,&color(blue){年月日表示の区切り文字};]]
+'')''
+:概要|
+~calendarプラグインで作成されたページを指定した位置に表示します。
+:引数|
+~ページ名はcalendarプラグインを設置しているページの名前を指定します。ページ名はWikiNameまたはBracketNameで指定します。
+~yyyy-mmを指定時、指定した年月のページを表示します。
+~数字を指定時、指定した件数分のページを表示します。
+~x*yを指定時、先頭より数えて x ページ目(先頭は0)から、y件づつ一覧表示します。x と yはいずれも数値です。
+~thisを指定時、今月のページを一覧表示します。
+~past、pastex、future、futureex、viewで表示するページの条件を指定します。省略/無指定時はpastとなります。
+--past − 今日以前のページを表示します。
+--pastex − 今日以前のページを表示します。（今日を含みません）
+--future − 今日以降のページを表示します。
+--futureex − 今日以降のページを表示します。（今日を含みません）
+--view − 過去から未来へ一覧表示します。
+:|~年月日の区切り文字は-や/などを指定します。省略した場合は-になります。
+:備考|
+~calendarプラグインでは今日の日付の記事がない場合、記事を表示しないため、午前0時になったとたんに記事が表示されなくなるという弱点がありました。calendar_viewerはその弱点を補うために開発されたプラグインです。calendar_viewは、日付が変わっても最新の記事を表示することができます。カレンダーそのものの表示はcalendar(off)で行ないます。
+:作者|
+みこ(miko's cafeterrace)
+
+
+*clear [#v515085f]
+:種別|
+~ブロック型プラグイン
+:重要度|
+~★☆☆☆☆
+:書式|
+''#clear''
+:概要|
+~[[ref>../R]]プラグインのaroundオプションで有効となったテキスト回り込み指定を解除します。
+
+*color [#q9790b97]
+:種別|
+~インライン型プラグイン
+:重要度|
+~★★★★☆
+:書式|
+~''&color(''
+[&color(blue){文字色};]
+[,&color(blue){背景色};]
+''){''
+&color(blue){文章};
+''};''
+:概要|
+~引数で指定したインライン要素(主に文章)の、文字色・背景色を指定します。
+:引数|
+~文字色・背景色はそれぞれ色名(red、blueなど)、シャープで始まる3桁の16進数値(#000～#FFF)、同じく6桁の16進数値(#000000 ～ #FFFFFF)のいずれかで指定することができます。大文字小文字は問いません。
+~文字色・背景色の両方を省略する事はできません。一方を省略した場合は省略した側の色の変更はされません。
+:プラグイン内設定|~
+--PLUGIN_COLOR_ALLOW_CSS　色の変更に(fontタグではなく)CSSを利用する
+--PLUGIN_COLOR_USAGE　エラー時に表示される使用方法
+--PLUGIN_COLOR_REGEX　引数に指定できる色の正規表現
+:備考|
+~以下、[[W3C勧告書:http://www.w3.org/TR/1999/REC-html401-19991224/types.html#h-6.5]]より抜粋した色名。
+Aqua = "#00FFFF",
+Black = "#000000",
+Blue = "#0000FF",
+Fuchsia = "#FF00FF",
+Gray = "#808080",
+Green = "#008000",
+Lime = "#00FF00",
+Maroon = "#800000",
+Navy = "#000080",
+Olive = "#808000",
+Purple = "#800080",
+Red = "#FF0000",
+Silver = "#C0C0C0",
+Teal = "#008080",
+White = "#FFFFFF",
+Yellow = "#FFFF00"
+
+*comment [#kc065cd8]
+:種別|
+~（コマンド）
+~ブロック型プラグイン
+:重要度|
+~★★★★★
+:書式|
+''#comment(''
+{[&color(blue){above};],
+[&color(blue){below};],
+[&color(blue){nodate};],
+[&color(blue){noname};]}
+'')''
+:概要|
+~コメントの入力用の入力欄を表示します。
+:引数|
+~コメントの挿入方法を引数で指定します。
+--above － 入力したコメントがコメント入力欄の上に追加します
+--below － 入力したコメントがコメント入力欄の下に追加します（省略時はaboveが指定されたとみなします）
+--nodate － 挿入するコメントに、挿入時刻を付加しない（省略時は付加します）
+--noname － コメント記入者名の入力欄を非表示とします（省略時は表示します） 
+:プラグイン内設定|~
+--PLUGIN_COMMENT_DIRECTION_DEFAULT　コメントを入力欄の前後どちらに挿入するか
+--PLUGIN_COMMENT_SIZE_MSG　コメントのテキストエリアの表示幅
+--PLUGIN_COMMENT_SIZE_NAME　コメントの名前テキストエリアの表示幅
+--PLUGIN_COMMENT_FORMAT_MSG　コメント欄の挿入フォーマット
+--PLUGIN_COMMENT_FORMAT_NAME　名前欄の挿入フォーマット
+--PLUGIN_COMMENT_FORMAT_NOW　時刻欄の挿入フォーマット
+--PLUGIN_COMMENT_FORMAT_STRING　コメント内容全体の挿入フォーマット
+:備考|
+~PKWK_READONLY が有効の場合、このプラグインは全てのリクエストを無効とします。
+
+
+*contents [#vd4dabcd]
+:種別|
+~擬似ブロック型プラグイン
+:重要度|
+~★★★☆☆
+:書式|
+~''#contents''
+:概要|
+~設置したページ中の見出しの一覧を表示します。
+
+
+*counter [#zedb02cf]
+:種別|
+~ブロック型プラグイン
+~インライン型プラグイン
+:重要度|
+~★★★☆☆
+:書式|
+~''#counter''
+~''&counter(''
+[&color(blue){total};|
+&color(blue){today};|
+&color(blue){yesterday};]
+'');''
+:概要|
+~設置したページの参照回数を表示します。
+:引数|
+~カウンタ表示方法として total, today, yesterday いずれかを指定します。省略時はtotalが指定されたとみなします。
+~
+ブロック型プラグインでは常にtotalが指定されたとみなします。
+--total － そのページが参照された回数の総計を表示します。
+--today － そのページが参照された回数（当日分）を表示します。
+--yesterday － そのページが参照された回数（昨日分）を表示します。
+:プラグイン内設定|~
+--PLUGIN_COUNTER_SUFFIX　ページ参照回数を保持するデータファイルの拡張子
+:備考|
+~すべてのページで参照回数を表示したい場合は、MenuBarやスキンからcounterプラグインを呼び出してください。
+
+
+*cvs2newpage [#wa28730c]
+:種別|
+~（コマンド）
+:重要度|
+~★☆☆☆☆
+:書式|
+~''#cvs2newpage(''
+&color(blue){tracker_configname};
+[&color(blue){upload};|&color(blue){<start line_no>};],[&color(blue){date};|&color(blue){_page};|&color(blue){name};|...]
+'');''
+:概要|
+~CSVファイルからページを新規作成
+:引数|
+~最初の引数は、tracerのconfig名, 次以降はCSVファイルのフィールド順に設定したいフィールド名を記載。
+--yesterday － そのページが参照された回数（昨日分）を表示します。
+:プラグイン内設定|~
+--CSV2NEWPAGE_UPLOAD_ADMIN_ONLY - 管理者だけが添付ファイルをアップロードできるようにする
+--CSV2NEWPAGE_PASSWORD_REQUIRE - アップロード/削除時にパスワードを要求する(ADMIN_ONLYが優先)
+:備考|

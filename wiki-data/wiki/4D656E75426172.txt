@@ -1,0 +1,13 @@
+&multilang(link,en=English,ja=日本語,ko=한국어,zh_CN=简体中文,zh_TW=繁体中文);
+
+#recent(20)
+
+#popular(10,FrontPage,true)
+
+----
+RIGHT:total: &color(green){&counter;};
+RIGHT:today: &color(green){&counter(today);};
+RIGHT:yesterday: &color(green){&counter(yesterday);};
+RIGHT:now: &color(green){&online;};
+----
+&edit(MenuBar,noicon){Edit:MenuBar};

@@ -147,8 +147,6 @@ defined('SKIN_DIR')		or define('SKIN_DIR',  WWW_HOME . 'skin/');
 // Static image files
 defined('IMAGE_DIR')	or define('IMAGE_DIR', WWW_HOME . 'image/');
 
-defined('COMMON_URI')	or define('COMMON_URI', ROOT_URI);
-
 defined('SKIN_URI')		or define('SKIN_URI',	ROOT_URI . 'skin/');
 defined('IMAGE_URI')	or define('IMAGE_URI',	COMMON_URI . 'image/');
 defined('JS_URI')		or define('JS_URI', 	COMMON_URI . 'js/');
