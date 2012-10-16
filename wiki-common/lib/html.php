@@ -825,6 +825,7 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 		echo ' xml:lang="' . $lang_code . '"';
 		if ($version == '1.0') echo ' lang="' . $lang_code . '"'; // Only XHTML 1.0
 	}
+	unset($lang_code);
 
 	if (!IS_MOBILE){
 		$user_agent = $_SERVER['HTTP_USER_AGENT'];
@@ -852,25 +853,23 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 			echo ' xmlns:fb="http://www.facebook.com/2008/fbml"';
 		}
 
-		echo ' xmlns:og="http://ogp.me/ns#" class="no-js '.$browser.'">' . "\n"; // <html>
-		unset($lang_code);
-
-		if ($pkwk_dtd == PKWK_DTD_HTML_5){
-			$meta_tags[] = array('charset'	=> CONTENT_CHARSET);
-		}else{
-			if (!isset($x_ua_compatible)) $x_ua_compatible = 'IE=edge';
-			$meta_tags = array(
-				array('http-equiv'	=> 'content-type',				'content'	=> 'text/html; charset='.CONTENT_CHARSET),
-				array('http-equiv'	=> 'content-language',			'content'	=> $lang_code),
-				array('http-equiv'	=> 'content-style-type',		'content'	=> 'text/css'),
-				array('http-equiv'	=> 'content-script-type',		'content'	=> 'text/javascript'),
-				array('http-equiv'	=> 'X-Frame-Options',			'content'	=> 'deny')
-			);
-		}
-		return tag_helper('meta',$meta_tags);
-	}else{
-		echo '>'."\n";
+		echo ' xmlns:og="http://ogp.me/ns#"';
 	}
+	echo ' class="no-js '.$browser.'">' . "\n"; // <html>
+
+	if ($pkwk_dtd == PKWK_DTD_HTML_5 || IS_MOBILE){
+		$meta_tags[] = array('charset'	=> CONTENT_CHARSET);
+	}else{
+		if (!isset($x_ua_compatible)) $x_ua_compatible = 'IE=edge';
+		$meta_tags = array(
+			array('http-equiv'	=> 'content-type',				'content'	=> 'text/html; charset='.CONTENT_CHARSET),
+			array('http-equiv'	=> 'content-language',			'content'	=> $lang_code),
+			array('http-equiv'	=> 'content-style-type',		'content'	=> 'text/css'),
+			array('http-equiv'	=> 'content-script-type',		'content'	=> 'text/javascript'),
+			array('http-equiv'	=> 'X-Frame-Options',			'content'	=> 'deny')
+		);
+	}
+	return tag_helper('meta',$meta_tags);
 }
 
 // タグヘルパー

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5-u2\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"POT-Creation-Date: 2012-10-16 10:25+0900\n"
 "PO-Revision-Date: 2012-07-05 20:59+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
@@ -35,7 +35,7 @@ msgstr ""
 msgid "(The contents of the page are empty. Updating deletes this page.)"
 msgstr "（ページの内容は空です。更新するとこのページは削除されます。）"
 
-#: ../../plugin/edit.inc.php:222
+#: ../../plugin/edit.inc.php:227
 msgid " $1 was deleted"
 msgstr "$1 を削除しました"
 

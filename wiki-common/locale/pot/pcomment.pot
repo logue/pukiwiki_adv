@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Advance 1.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"POT-Creation-Date: 2012-10-16 10:25+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,49 +17,49 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/pcomment.inc.php:20
+#: ../../plugin/pcomment.inc.php:26
 #, php-format
 msgid "[[Comments/%s]]"
 msgstr ""
 
-#: ../../plugin/pcomment.inc.php:91
+#: ../../plugin/pcomment.inc.php:96
 msgid "Name: "
 msgstr ""
 
-#: ../../plugin/pcomment.inc.php:92
+#: ../../plugin/pcomment.inc.php:97
 msgid "Post Comment"
 msgstr ""
 
-#: ../../plugin/pcomment.inc.php:93
+#: ../../plugin/pcomment.inc.php:98
 msgid "Comment: "
 msgstr ""
 
-#: ../../plugin/pcomment.inc.php:94
+#: ../../plugin/pcomment.inc.php:99
 #, php-format
 msgid "Show recent %d comments."
 msgstr ""
 
-#: ../../plugin/pcomment.inc.php:95
+#: ../../plugin/pcomment.inc.php:100
 msgid "Go to the comment page."
 msgstr ""
 
-#: ../../plugin/pcomment.inc.php:96
+#: ../../plugin/pcomment.inc.php:101
 msgid "No comment."
 msgstr ""
 
-#: ../../plugin/pcomment.inc.php:97
+#: ../../plugin/pcomment.inc.php:102
 #, php-format
 msgid "[[%s]] : not a valid page name."
 msgstr ""
 
-#: ../../plugin/pcomment.inc.php:216
+#: ../../plugin/pcomment.inc.php:192
 msgid "Invalid page name"
 msgstr ""
 
-#: ../../plugin/pcomment.inc.php:217
+#: ../../plugin/pcomment.inc.php:193
 msgid "Cannot add comment"
 msgstr ""
 
-#: ../../plugin/pcomment.inc.php:351
+#: ../../plugin/pcomment.inc.php:327
 msgid "Due to the blocking, no comments could be read from  $1 at all."
 msgstr ""

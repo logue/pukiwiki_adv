@@ -742,9 +742,7 @@ function get_existpages($dir = DATA_DIR, $ext = '.txt')
 // Get PageReading(pronounce-annotated) data in an array()
 function get_readings()
 {
-	global $pagereading_enable, $pagereading_kanji2kana_converter;
-//	global $pagereading_kanji2kana_encoding, $pagereading_chasen_path, $pagereading_mecab_path;
-	global $pagereading_kakasi_path, $pagereading_config_page;
+	global $pagereading_enable, $pagereading_config_page, $mecab_path;
 	global $pagereading_config_dict, $info;
 	
 	global $pagereading_path, $pagereading_api;
@@ -782,57 +780,12 @@ function get_readings()
 			}
 		}
 
-		// Execute ChaSen/KAKASI, and get annotation
-		$pagereading_command = $pagereading_path.'/'.$pagereading_api;
-		if(! file_exists($pagereading_command) ){
-			$info[] = sprintf('<var>%s</var> is not found or cannot execute: ', $pagereading_api).' <var>'.$pagereading_command.'</var>';
-		}
 		if($unknownPage) {
-			if ($pagereading_api){
-				$tmpfname = (CACHE_DIR . PKWK_PAGEREADING_CACHE);
-				pkwk_touch_file($tmpfname);
-				$fp = fopen($tmpfname, 'w') or
-					die_message('Cannot write ' . 'CACHE_DIR/' . PKWK_PAGEREADING_CACHE);
-				// ページ名一覧をキャッシュへ保存
+			if (file_exists($mecab_path)){
 				foreach ($readings as $page => $reading) {
 					if($reading != '') continue;
-					fputs($fp, $page . "\n");
+					$readings[$page] = mecab_reading($page);
 				}
-				fclose($fp);
-		
-				// APIによって処理を分ける
-				switch(strtolower($pagereading_api)) {
-					case 'chasen':
-						// echo [読み込ませたいテキスト] | chasen -F
-						$exec_option = '-F %y';
-						break;
-					case 'kakasi':	/*FALLTHROUGH*/
-					case 'kakashi':
-						// echo [読み込ませたいテキスト] | kakasi -kK -HK -JK
-						$exec_option = '-kK -HK -JK <';
-					case 'mecab':
-						// echo [読み込ませたいテキスト] mecab -Oyomi
-						$exec_option = '-Oyomi';
-					break;
-					default:
-						die_message('Unknown kanji-kana converter: ' . $pagereading_api . '.');
-						break;
-				}
-				// コマンド実行
-				$fp = popen($pagereading_command.' '.$exec_option.' '.$tmpfname, 'r');
-				
-				if($fp === FALSE) {
-					die_message(sprintf('%s execution failed:',$pagereading_api.' <var>'.$pagereading_command.'</var>'));
-				}
-
-				foreach ($readings as $page => $reading) {
-					if($reading != '') continue;
-					$line = fgets($fp);
-					$line = chop($line);
-					$readings[$page] = $line;
-				}
-				pclose($fp);
-//				unlink($tmpfname) or die_message('Temporary file can not be removed: ' . $tmpfname);
 			}else{
 				$patterns = $replacements = $matches = array();
 				foreach (get_source($pagereading_config_dict) as $line) {

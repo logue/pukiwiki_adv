@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Advance 1.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"POT-Creation-Date: 2012-10-16 10:25+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,6 +33,6 @@ msgstr ""
 msgid "(The contents of the page are empty. Updating deletes this page.)"
 msgstr ""
 
-#: ../../plugin/edit.inc.php:222
+#: ../../plugin/edit.inc.php:227
 msgid " $1 was deleted"
 msgstr ""

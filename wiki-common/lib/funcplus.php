@@ -310,7 +310,7 @@ function add_skindir($skin_name)
 		}
 	}
 	
-	die_message('Skin File:<var>'.$skin_name.'</var> is not found or not readable. Please check <var>SKIN_DIR</var> value.');
+	die_message('Skin File:<var>'.$skin_name.'</var> is not found or not readable. Please check <var>SKIN_DIR</var> value. (NOT <var>SKIN_URI</var>. )');
 }
 
 function is_ignore_page($page)
@@ -535,7 +535,7 @@ function make_thumbnail($ofile, $sfile, $maxw, $maxh, $refresh=FALSE, $zoom='10,
 
 function is_mobile()
 {
-	return (UA_PROFILE == 'mobile' || UA_PROFILE == 'keitai');
+	return (UA_PROFILE == 'mobile' || UA_PROFILE == 'handheld');
 }
 
 function get_mimeinfo($filename)
@@ -891,21 +891,6 @@ function error_msg($msg,$body){
 HTML;
 }
 
-// Marge to update_entities.inc.php
-// Fixme
-function load_entities(){
-	$entities = (CACHE_DIR . PKWK_ENTITIES_REGEX_CACHE);
-	if (!file_exists($entities)){
-		update_entities_create();
-	}
-	$fp = file($entities);
-	return trim(join('', $fp));
-}
-
-// Remove &amp; => amp
-function update_entities_strtr($entity){
-	return strtr($entity, array('&'=>'', ';'=>''));
-}
 
 /**************************************************************************************************/
 // move from snots's akismet.inc.php
@@ -1064,56 +1049,99 @@ if (! function_exists('is_admin')) {
 }
 
 /**************************************************************************************************/
-function MeCab($input){
+// Mecabの出力をPHPの配列に変換する関数
+
+if (! function_exists('stream_get_contents')) {
+	function stream_get_contents($handle) {
+		$contents = '';
+		while (!feof($handle)) {
+			$contents .= fread($handle, 8192);
+		}
+		return $contents;
+	}
+}
+// 標準出力からMecabを実行
+// https://github.com/odoku/MeCab-for-PHP5/blob/master/MeCab.php
+function mecab_stdio($switch = '', $str){
 	global $mecab_path;
+	if (!file_exists($mecab_path)){
+		die_message('Mecab is not found or not executable. Please check mecab path: '.$mecab_path);
+	}
 	$pipes = array();
+	$result = $error = '';
 	$descriptorspec = array (
-		0 => array ("pipe", "r"), // stdin
-		1 => array ("pipe", "w"), // stdout
+		0 => array('pipe', "r"), // stdin
+		1 => array('pipe', "w"), // stdout
+		2 => array('pipe', 'w')
 	);
-	$process = proc_open($mecab_path, $descriptorspec, $pipes);
-	if (is_resource($process)){
-		stream_set_blocking($pipes[0], 0);
-		stream_set_blocking($pipes[1], 0);
-		
-		fwrite($pipes[0], $input, 4096);
-		fclose($pipes[0]);
-		
-		//$result = stream_get_contents($pipes[1]);
-		while(!feof($pipes[1])){
-			$result .= fgets($pipes[1], 4096);
-		}
-		fclose($pipes[1]);
-		
-		proc_close($process);
+	
+	$cmd = $mecab_path.' '.$switch;
+	$process = proc_open($cmd, $descriptorspec, $pipes, null, null);
+	if (!is_resource($process)) return false;
 
-		if(strtolower($this->mecab_config['encoding']) != 'utf-8'){
-			$result = mb_convert_encoding($result, 'utf-8', $this->mecab_config['encoding']);
-		}
+	fwrite($pipes[0], $str);
+	fclose($pipes[0]);
 
-		$result = str_replace(array("\r\n", "\r"), "\n", $result);
-		$lines = explode("\n", $result);
-		foreach($lines as $line){
-			if(in_array(trim($line), array('EOS', ''))){
-				continue;
-			}
-			$s = explode("\t", $line);
-			$word = $s[0];
-			$info = explode(',', $s[1]);
-			$analisys[] = array(
-			'word' => $word,
-			'class' => $info[0],
-			/*
-			 'detail1' => $info[1],
-			 'detail2' => $info[2],
-			 'detail3' => $info[3],
-			 'conjugation1' => $info[4],
-			 'conjugation2' => $info[5]
-			 */
-			);
-		}
+	$lines = array();
+	while ($line = fgets($pipes[1])) $lines[] = str_replace(array("\r\n", "\r", "\n"), '', $line);
+	fclose($pipes[1]);
+
+	fwrite($pipes[2], $error);
+	fclose($pipes[2]);
+
+	$status = proc_close($process);
+
+	return join("\n",$lines);
+}
+
+function mecab_parse($input){
+	if (!extension_loaded('mecab')) {
+		global $mecab_path;
+		$result = mecab_stdio('',$input);
 	}else{
-		return false;
+		$mecab = new MeCab_Tagger();
+		$result = $mecab->parse($input);
+	}
+
+	// 出力フォーマット：表層形\t品詞, 品詞細分類1, 品詞細分類2, 品詞細分類3, 活用形, 活用型, 原形, 読み, 発音
+	$lines = explode("\n", $result);
+	foreach($lines as $line){
+		if(in_array(trim($line), array('EOS', ''))){
+			continue;
+		}
+		$s = explode("\t", $line);
+		$surface = $s[0];
+		$info = explode(',', $s[1]);
+		
+		$analisys[] = array(
+			'surface'       => $surface,							// 表層形
+			'class'         => $info[0],							// 品詞
+			'detail1'       => $info[1] !== '*' ? $info[1] : null,	// 品詞細分類1
+			'detail2'       => $info[2] !== '*' ? $info[2] : null,	// 品詞細分類2
+			'detail3'       => $info[3] !== '*' ? $info[3] : null,	// 品詞細分類3
+			'inflections'   => $info[4] !== '*' ? $info[4] : null,	// 活用形
+			'conjugation'   => $info[5] !== '*' ? $info[5] : null,	// 活用型
+			'origin'        => $info[6] !== '*' ? $info[6] : null,	// 原形
+		);
 	}
 	return $analisys;
+}
+
+function mecab_wakati($input){
+	if (!extension_loaded('mecab')) {
+		$str = mecab_stdio('-O wakati', $input);
+		return $str;
+	}else{
+		$mecab = new MeCab_Tagger();
+		return $mecab->keyword($input);
+	}
+}
+
+function mecab_reading($input){
+	if (!extension_loaded('mecab')) {
+		return ( mecab_stdio('-Oyomi', $input));
+	}else{
+		$mecab = new MeCab_Tagger();
+		return $mecab->keyword($input);
+	}
 }

@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone
-// $Id: server.ini.php,v 0.0.1 2012/04/29 11:09:00 Logue Exp $
+// $Id: server.ini.php,v 0.0.2 2012/10/15 20:51:00 Logue Exp $
 // Copyright (C)
 //   2012 PukiWiki Advance Developers Team
 // License: GPL v2 or (at your option) any later version
@@ -19,13 +19,12 @@ define('MEMCACHE_PORT', 11211);
 
 // Enable page-reading feature.
 // (1:Enable, 0:Disable)
-$pagereading_enable = 0;
+$pagereading_enable = 1;
 
-// Specify converter as ChaSen('chasen') or KAKASI('kakasi') or MeCab('mecab') or CaboCha('cabocha')
-$pagereading_api = 'mecab';
-
-// Absolute path of the converter (without last slash)
-$pagereading_path = '/usr/local/bin';
+// Set Mecab path
+$mecab_path = '/usr/bin/mecab';
+// $mecab_path = '/usr/local/bin/mecab';	// for Xrea, Coreserver, Xbeat
+// $mecab_path = 'C:\Program Files (x86)\MeCab\bin\mecab.exe';	// for Windows
 
 // Page name contains pronounce data (written by the converter)
 $pagereading_config_page = ':config/PageReading';

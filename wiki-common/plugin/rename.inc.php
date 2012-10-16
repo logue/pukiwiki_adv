@@ -166,7 +166,7 @@ function plugin_rename_phase1($err = '', $page = '')
 			<input type="radio"  name="method" id="_p_rename_regex" value="regex"$radio_regex />
 			<label for="_p_rename_regex">{$_rename_messages['msg_regex']}:</label><br />
 			<label for="_p_rename_from">From:</label><br />
-			<input type="text" name="src" id="_p_rename_from" size="40" value="$s_src" /><br />
+			<input type="text" name="src" id="_p_rename_from" size="40" value="$s_src" class="suggest" /><br />
 			<label for="_p_rename_to">To:</label><br />
 			<input type="text" name="dst" id="_p_rename_to"   size="40" value="$s_dst" /><br />
 			<input type="submit" value="{$_rename_messages['btn_next']}" />

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Advance 1.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"POT-Creation-Date: 2012-10-16 10:24+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,6 +50,6 @@ msgstr ""
 msgid "Attach and Ref to $1"
 msgstr ""
 
-#: ../../plugin/attachref.inc.php:412
+#: ../../plugin/attachref.inc.php:411
 msgid "file_uploads disabled."
 msgstr ""

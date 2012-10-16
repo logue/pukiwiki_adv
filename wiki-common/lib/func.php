@@ -178,6 +178,7 @@ function auto_template($page)
 function get_search_words($words, $do_escape = FALSE)
 {
 	static $init, $mb_convert_kana, $pre, $post, $quote = '/';
+	global $mecab_path;
 
 	if (! isset($init)) {
 		// function: mb_convert_kana() is for Japanese code only
@@ -208,38 +209,50 @@ function get_search_words($words, $do_escape = FALSE)
 	// Generate regex for the words
 	$regex = array();
 	foreach ($words as $word) {
-		$word = trim($word);
-		if (empty($word)) continue;
+/*
+		if (extension_loaded('mecab') || file_exists($mecab_path)){
+			$reg = '';
+			$wakati = mecab_wakati($word);
+			$ws = explode(' ', $wakati);
+			
+			foreach ($ws as $k)
+				$reg .= !empty($k) ? '(?:'.$k.')' : '';
+			$regex[$word] = $reg;
+		}else{
+*/
+			$word = trim($word);
+			if (empty($word)) continue;
 
-		// Normalize: ASCII letters = to single-byte. Others = to Zenkaku and Katakana
-		$word_nm = $mb_convert_kana($word, 'aKCV');
-		$nmlen   = mb_strlen($word_nm, SOURCE_ENCODING);
+			// Normalize: ASCII letters = to single-byte. Others = to Zenkaku and Katakana
+			$word_nm = $mb_convert_kana($word, 'aKCV');
+			$nmlen   = mb_strlen($word_nm, SOURCE_ENCODING);
 
-		// Each chars may be served ...
-		$chars = array();
-		for ($pos = 0; $pos < $nmlen; $pos++) {
-			$char = mb_substr($word_nm, $pos, 1, SOURCE_ENCODING);
+			// Each chars may be served ...
+			$chars = array();
+			for ($pos = 0; $pos < $nmlen; $pos++) {
+				$char = mb_substr($word_nm, $pos, 1, SOURCE_ENCODING);
 
-			// Just normalized one? (ASCII char or Zenkaku-Katakana?)
-			$or = array(preg_quote($do_escape ? htmlsc($char) : $char, $quote));
-			if (strlen($char) == 1) {
-				// An ASCII (single-byte) character
-				foreach (array(strtoupper($char), strtolower($char)) as $_char) {
-					if ($char != '&') $or[] = preg_quote($_char, $quote); // As-is?
-					$ascii = ord($_char);
-					$or[] = sprintf('&#(?:%d|x%x);', $ascii, $ascii); // As an entity reference?
-					$or[] = preg_quote($mb_convert_kana($_char, 'A'), $quote); // As Zenkaku?
+				// Just normalized one? (ASCII char or Zenkaku-Katakana?)
+				$or = array(preg_quote($do_escape ? htmlsc($char) : $char, $quote));
+				if (strlen($char) == 1) {
+					// An ASCII (single-byte) character
+					foreach (array(strtoupper($char), strtolower($char)) as $_char) {
+						if ($char != '&') $or[] = preg_quote($_char, $quote); // As-is?
+						$ascii = ord($_char);
+						$or[] = sprintf('&#(?:%d|x%x);', $ascii, $ascii); // As an entity reference?
+						$or[] = preg_quote($mb_convert_kana($_char, 'A'), $quote); // As Zenkaku?
+					}
+				} else {
+					// NEVER COME HERE with mb_substr(string, start, length, 'ASCII')
+					// A multi-byte character
+					$or[] = preg_quote($mb_convert_kana($char, 'c'), $quote); // As Hiragana?
+					$or[] = preg_quote($mb_convert_kana($char, 'k'), $quote); // As Hankaku-Katakana?
 				}
-			} else {
-				// NEVER COME HERE with mb_substr(string, start, length, 'ASCII')
-				// A multi-byte character
-				$or[] = preg_quote($mb_convert_kana($char, 'c'), $quote); // As Hiragana?
-				$or[] = preg_quote($mb_convert_kana($char, 'k'), $quote); // As Hankaku-Katakana?
+				$chars[] = '(?:' . join('|', array_unique($or)) . ')'; // Regex for the character
 			}
-			$chars[] = '(?:' . join('|', array_unique($or)) . ')'; // Regex for the character
-		}
 
-		$regex[$word] = $pre . join('', $chars) . $post; // For the word
+			$regex[$word] = $pre . join('', $chars) . $post; // For the word
+//		}
 	}
 
 	return $regex; // For all words
@@ -259,10 +272,11 @@ function do_search($word, $type = 'and', $non_format = FALSE, $base = '')
 
 	$retval = array();
 
-	$b_type = ($type == 'and'); // AND:TRUE OR:FALSE
 	$keys = get_search_words(preg_split('/\s+/', $word, -1, PREG_SPLIT_NO_EMPTY));
 	foreach ($keys as $key=>$value)
 		$keys[$key] = '/' . $value . '/S';
+
+	$b_type = ($type == 'and'); // AND:TRUE OR:FALSE
 
 	$pages = auth::get_existpages();
 
@@ -278,18 +292,6 @@ function do_search($word, $type = 'and', $non_format = FALSE, $base = '')
 	}
 	$pages = array_flip($pages);
 	unset($pages[$whatsnew]);
-	
-	// MeCab使用時
-	// 参考：http://www.kudelab.com/2008/03/phpmecab.html
-	global $pagereading_mecab_path;
-	$process = '';
-	if(file_exists($pagereading_mecab_path)) {
-		$descriptorspec = array(
-			0 => array("pipe", "r"),
-			1 => array("pipe", "w")
-		);
-		$process = proc_open($pagereading_mecab_path, $descriptorspec, $pipes);
-	}
 
 	$count = count($pages);
 	foreach (array_keys($pages) as $page) {
@@ -318,21 +320,14 @@ function do_search($word, $type = 'and', $non_format = FALSE, $base = '')
 		}
 
 		// Search for page contents
+		$page_source = get_source($page, TRUE, TRUE);
+		// 通常検索
 		foreach ($keys as $key) {
-			if (!is_resource($process)) {
-				$b_match = preg_match($key, get_source($page, TRUE, TRUE));
-			}else{
-				// MeCabによる解析
-				fwrite($pipes[0], get_source($page, TRUE, TRUE));
-				fclose($pipes[0]);
-				$b_match = stream_get_contents($pipes[1]);
-				fclose($pipes[1]);
-				proc_close($process);
-			}
-			
+			$b_match = preg_match($key, $page_source);
 			if ($b_type xor $b_match) break; // OR
 		}
 		if ($b_match) continue;
+			
 
 		unset($pages[$page]); // Miss
 	}
@@ -340,24 +335,19 @@ function do_search($word, $type = 'and', $non_format = FALSE, $base = '')
 
 	if ($non_format) return array_keys($pages);
 
-	$r_word = rawurlencode($word);
-	$s_word = htmlsc($word);
 	if (empty($pages))
-		return str_replace('$1', $s_word, $_msg_notfoundresult);
+		return str_replace('$1', htmlsc($word), $_msg_notfoundresult);
 
 	ksort($pages, SORT_STRING);
 
 	$retval = '<ul>' . "\n";
 	foreach (array_keys($pages) as $page) {
-		$r_page  = rawurlencode($page);
-		$s_page  = htmlsc($page);
 		$passage = $show_passage ? ' ' . get_passage(get_filetime($page)) : '';
-		$uri = get_page_uri($page);
-		$retval .= ' <li><a href="' . $uri . '" class="linktip">' . $s_page . '</a>' . $passage . '</li>' . "\n";
+		$retval .= ' <li><a href="' . get_page_uri($page) . '" class="linktip">' . htmlsc($page) . '</a>' . $passage . '</li>' . "\n";
 	}
 	$retval .= '</ul>' . "\n";
 
-	$retval .= '<p>'.str_replace('$1', $s_word, str_replace('$2', count($pages),
+	$retval .= '<p>'.str_replace('$1', htmlsc($word) , str_replace('$2', count($pages),
 		str_replace('$3', $count, $b_type ? $_string['andresult'] : $_string['orresult']))).'</p>';
 
 	return $retval;
@@ -435,18 +425,21 @@ function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', 
 		if ($pagereading_enable) {
 			// WARNING: Japanese code hard-wired
 			if(mb_ereg('^(\:|[A-Za-z])', mb_convert_kana($page, 'a'), $matches) !== FALSE) {
+				// 英数字
 				$initial = & $matches[1];
 			} elseif (isset($readings[$page]) && mb_ereg('^([ァ-ヶ])', $readings[$page], $matches) !== FALSE) { // here
+				// カタカナ
 				$initial = & $matches[1];
 			} elseif (mb_ereg('^[ -~]|[^ぁ-ん亜-熙]', $page)) { // and here
+				// ひらがな、常用漢字
 				$initial = & $sentinel_symbol;
 			} elseif (preg_match('/^([가-힣])/', $page) !== FALSE){
-				// for Korean
+				// ハングル（日本語とバッティングしないため実装）
 				// http://pukiwiki.sourceforge.jp/dev/?BugTrack2%2F13
 				$initial = hangul_chosung($page);
 /*
 			} elseif (mb_ereg('/^([一-龥])/',$page) !== FALSE){
-				// for Simplified Chinese
+				// 簡体字中国語
 */
 			} else {
 				$initial = & $sentinel_another;

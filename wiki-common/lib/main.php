@@ -107,44 +107,46 @@ $remote_addr = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONN
 if (SpamCheckBAN($remote_addr)) die('Sorry, your access is prohibited.');
 
 // Block SPAM countory
-$geoip = array();
+$country_code = '';
 if (isset($_SERVER['HTTP_CF_IPCOUNTRY'])){
 	// CloudFlareを使用している場合、そちらのGeolocationを読み込む
 	// https://www.cloudflare.com/wiki/IP_Geolocation
-	$geoip['country_code'] = $_SERVER['HTTP_CF_IPCOUNTRY'];
+	$country_code = $_SERVER['HTTP_CF_IPCOUNTRY'];
 }else if (isset($_SERVER['GEOIP_COUNTRY_CODE'])){
 	// サーバーが$_SERVER['GEOIP_COUNTRY_CODE']を出力している場合
-	$geoip['country_code'] = $_SERVER['GEOIP_COUNTRY_CODE'];
+	$country_code = $_SERVER['GEOIP_COUNTRY_CODE'];
 }else if (function_exists('geoip_db_avail') && geoip_db_avail(GEOIP_COUNTRY_EDITION) && function_exists('geoip_region_by_name')) {
 	// それでもダメな場合は、phpのgeoip_region_by_name()からGeolocationを取得
-	$geoip = @geoip_region_by_name($remote_addr);
+	$geoip = geoip_region_by_name($remote_addr);
+	$country_code = $geoip['country_code'];
 	$info[] = (!empty($geoip['country_code']) ) ?
 		'GeoIP is usable. Your country code from IP is inferred <var>'.$geoip['country_code'].'</var>.' :
 		'GeoIP is NOT usable. Maybe database is not installed. Please check <a href="http://www.maxmind.com/app/installation?city=1" rel="external">GeoIP Database Installation Instructions</a>';
-}else{
+}else if (function_exists('apache_note')) {
 	// Apacheの場合
-	$geoip['country_code'] = @apache_note('GEOIP_COUNTRY_CODE');
+	$country_code = apache_note('GEOIP_COUNTRY_CODE');
 }
 
 // 使用可能かをチェック
-if ( isset($geoip['country_code']) && !empty($geoip['country_code'])) {
-	$info[] = 'Your country code from IP is inferred <var>'.$geoip['country_code'].'</var>.';
+if ( isset($country_code) && !empty($country_code)) {
+	$info[] = 'Your country code from IP is inferred <var>'.$country_code.'</var>.';
 } else {
 	$info[] = '<var>$deny_countory</var> value and <var>$allow_countory</var> value is ignoled.';
-	$geoip['country_code'] = false;
 }
 
 // Spam filtering
 if ($spam && $method !== 'GET') {
-	if (isset($geoip['country_code']) && $geoip['country_code'] !== false){
+	if (isset($country_code) && $country_code !== false){
 		if (isset($deny_countory) && !empty($deny_countory)) {
-			if (in_array($geoip['country_code'], $deny_countory)) {
+			if (in_array($country_code, $deny_countory)) {
 				die('Sorry, access from your country('.$geoip['country_code'].') is prohibited.');
+				exit;
 			}
 		}
 		if (isset($allow_countory) && !empty($allow_countory)) {
-			if (!in_array($geoip['country_code'], $allow_countory)) {
+			if (!in_array($country_code, $allow_countory)) {
 				die('Sorry, access from your country('.$geoip['country_code'].') is prohibited.');
+				exit;
 			}
 		}
 	}
@@ -216,6 +218,16 @@ $is_protect = auth::is_protect();
 
 if (DEBUG) {
 	$exclude_plugin = array();
+	if (file_exists($mecab_path)){
+		$info[] = 'Mecab is enabled. (It will not work in XAMPP,but not a malfunction....)';
+		if (extension_loaded('mecab')){
+			$info[] = 'Mecab is module mode.';
+		}else{
+			$info[] = 'Mecab is stdio mode. Please concider to install <a href="https://github.com/rsky/php-mecab">php-mecab</a> in your server.';
+		}
+	}else{
+		$info[] = 'Mecab is disabled. If you installed, please check mecab path.';
+	}
 }
 
 $base = '';

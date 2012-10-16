@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Advance 1.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"POT-Creation-Date: 2012-10-16 10:25+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,29 +50,33 @@ msgid "Please change the password."
 msgstr ""
 
 #: ../../plugin/replace.inc.php:27
-msgid "The password is wrong."
+msgid "Password:"
 msgstr ""
 
 #: ../../plugin/replace.inc.php:28
-msgid "The retrieval character string to substitute it is empty."
+msgid "The password is wrong."
 msgstr ""
 
 #: ../../plugin/replace.inc.php:29
-msgid "All page character string substitution"
+msgid "The retrieval character string to substitute it is empty."
 msgstr ""
 
 #: ../../plugin/replace.inc.php:30
-msgid "There is no substituted character string."
+msgid "All page character string substitution"
 msgstr ""
 
 #: ../../plugin/replace.inc.php:31
-msgid "The following pages were substituted."
+msgid "There is no substituted character string."
 msgstr ""
 
 #: ../../plugin/replace.inc.php:32
-msgid "Replaced."
+msgid "The following pages were substituted."
 msgstr ""
 
 #: ../../plugin/replace.inc.php:33
+msgid "Replaced."
+msgstr ""
+
+#: ../../plugin/replace.inc.php:34
 msgid "No search data."
 msgstr ""

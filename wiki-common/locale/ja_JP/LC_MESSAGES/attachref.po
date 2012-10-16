@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5-u2\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"POT-Creation-Date: 2012-10-16 10:24+0900\n"
 "PO-Revision-Date: 2012-07-05 20:53+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
@@ -49,7 +49,7 @@ msgstr "[添付]"
 msgid "Attach and Ref to $1"
 msgstr "$1 にアップロードしました"
 
-#: ../../plugin/attachref.inc.php:412
+#: ../../plugin/attachref.inc.php:411
 msgid "file_uploads disabled."
 msgstr "ファイルアップロードは無効化されています。"
 

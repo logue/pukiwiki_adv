@@ -444,6 +444,7 @@ class TableEdit2Csv extends TableEdit2Form
 		$w_quote = '';
 		$end_of_line = '';
 		$notimestamp_chk = '';
+		$file_save = '';
 		$maxsize = PLUGIN_TABLE_EDIT2_MAX_FILESIZE;
 		$script_uri = get_script_uri();
 		$char_data = array('SJIS', 'UTF-8', 'EUC-JP');
@@ -516,6 +517,11 @@ class TableEdit2Indicate
 	}
 	function open_close( $mode, $edit )
 	{
+		$button_name = array(
+			'lock' => T_('Locked'),
+			'unlock' => T_('Unlocked')
+		);
+		
 		if ($mode == 'lock'){
 			$edit = 'on';
 			$table_mod = 'unlock';
@@ -523,23 +529,23 @@ class TableEdit2Indicate
 			$edit = 'off';
 			$table_mod = 'lock';
 		}
-		$url = get_cmd_uri('table_edit2', null, null, array('refer'=>$this->page, 'table_mod'=>$table_mod, 'table_num'=>$this->count));
-		return <<<EOD
-<div style="float:right;" id="TableEdit2TableNumber{$this->count}">
-<a href="{$url}" class="button" data-text="false" data-ajax="false" data-icons-primary="ui-icon-{$table_mod}ed">{$table_mod}ed</a>
-{$this->set_csv}
-</div>
-<div class="clear"></div>
-EOD;
+		
+		$ret = array();
+		$ret[] = '<div style="float:right;" id="TableEdit2TableNumber' . $this->count . '">';
+		$ret[] = '<a href="' . 
+			get_cmd_uri('table_edit2', null, null , array('refer'=>$this->page, 'table_mod'=>$table_mod, 'table_num'=>$this->count)) . 
+				'" class="button" nofollow="nofollow" data-text="false" data-ajax="false" data-icons-primary="ui-icon-' . $table_mod . 'ed">' . $button_name[$table_mod] . '</a>';
+		$ret[] = $this->set_csv;
+		$ret[] = '</div>';
+		$ret[] = '<div class="clearfix"></div>';
+		return join("\n",$ret);
 	}
 	function csv_button( $csv )
 	{
 		$import_title = T_('import');
-		//$import = $this->link_s($this->img( 'import.png', 11, 11, $import_title), 'import');
 		$import = $this->link_s($import_title, 'ui-icon-gear', 'import');
 		$export_title = T_('export');
-		//$export = $this->link_s($this->img( 'export.png', 11, 11, $export_title), 'export');
-		$export = $this->link_s($export_title, 'ui-icon-desk', 'export');
+		$export = $this->link_s($export_title, 'ui-icon-disk', 'export');
 
 		switch ( $csv ) {
 			case 1:
@@ -566,7 +572,7 @@ EOD;
 	{
 		return '<a href="'
 			. get_cmd_uri('table_edit2', null, null, array('refer'=>$this->page,'table_num'=>$this->count,'set_csv'=>$csv_mode))
-			. ' class="button" data-text="false" data-ajax="false" nofollow="nofollow" title="'.$action.'" data-primary-icon="'.$icon.'">'.$action.'</a>';
+			. '" class="button" nofollow="nofollow" data-text="false" data-ajax="false" data-icons-primary="'.$icon.'">'.$action.'</a>';
 	}
 	function inline( $edit_mod, $count,$line_count, $table_sub_num = NULL, $cell_count = NULL)
 	{
@@ -614,7 +620,7 @@ class TableEdit2Form
 			$selected = ($present == $key_data) ? ' selected="selected"' : '';
 			if ( $selected != '' ) $this->select_chk = 1;
 			$select_list .= ($this->no_null && $key_data == '') ?
-				'' : "    <option value=\"$key_data\"{$this->bgcolor[$count]}$selected>$s_data</option>\n";
+				'' : '<option value="' . $key_data . '"'. $selected . '>' . $s_data . '</option>' ."\n";
 			$count++;
 		}
 		$select = "   <select name=\"$s_name\">$select_list</select>\n";
@@ -627,9 +633,10 @@ class TableEdit2Form
 		foreach($radio_data as $key => $r_data) {
 			$key_data = $equal ? $r_data : $key;
 			$checked = ($present == $key_data) ? ' checked="checked"' : '';
+			
 			if ( $checked != '' ) $this->radio_chk = 1;
 			$radio_list .= ($this->no_null && $key_data == '') ?
-				'' : "  <input type=\"radio\" name=\"$r_name\" value=\"$key_data\"{$this->bgcolor[$count]}$checked />$r_data\n";
+				'' : '<input type="radio" name="' . $r_name . '" value="' . $key_data . '"' . $checked . ' />'.$r_data."\n";
 			$count++;
 		}
 		return $radio_list;
@@ -638,16 +645,16 @@ class TableEdit2Form
 	{
 		$checked = ($present) ? ' checked="checked"' : '';
 		$checkbox = '<input type="checkbox" name="' . $name
-			. '" value="' . $value . '"' . $this->bgcolor[0] . $checked . ' />';
+			. '" value="' . $value . '"' . $checked . ' />';
 		return $checkbox;
 	}
-	function text($name, $value = '', $size = null)
+	function text($name, $value = '', $size = 40)
 	{
 		$size = ( isset($size) ) ? ' size="' . $size . '"' : '';
-	//	$text = '<input type="text" name="' . $name
-	//		. '" value="' . $value . '"' . $size . $this->bgcolor[0] . ' style="width:99%;" />';
-		$text = '<textarea name="' . $name
-			. '" rows="1" cols="'.$size.'" style="width:99%;">' . $value . '</textarea>';
+		$text = '<input type="text" name="' . $name
+			. '" value="' . $value . '"' . $size . ' />';
+	//	$text = '<textarea name="' . $name
+	//		. '" rows="1" cols="'.$size.'">' . $value . '</textarea>';
 		return $text;
 	}
 	function textarea($name, $value = '', $rows = 2,$cols = 40)
@@ -1040,7 +1047,7 @@ function plugin_table_edit2_inline()
 		'cell_count' => '',
 		);
 	if (! function_exists('_')) table_edit2_message();
-
+	
 	$s_table_edit = T_('edit');
 	$s_table_add  = T_('addition');
 
@@ -1061,10 +1068,11 @@ function plugin_table_edit2_inline()
 	}
 
 	if ($opt['edit_mod'] == 'show' || $opt['edit_mod'] == 'tdshow'){
-		$icon = '<span class="pkwk-symbol symbol-edit" title="' . $s_table_edit . '">' . $s_table_edit . '</span>';
+		$icon = '<span class="pkwk-symbol symbol-edit" title="' . $s_table_edit . '" data-ajax="false">' . $s_table_edit . '</span>';
 	} else if ($opt['edit_mod'] == 'tr' || $opt['edit_mod'] == 'td'){
-		$icon = '<span class="pkwk-symbol symbol-add" title="' . $s_table_add . '">'.$s_table_add.'</span>';
+		$icon = '<span class="pkwk-symbol symbol-add" title="' . $s_table_add . '" data-ajax="false">' . $s_table_add . '</span>';
 	}
+	
 	$body .= '<a href="' . get_cmd_uri('table_edit2', null, null, array(
 		'refer'         => $page,
 		'edit_mod'      => $edit_mod,
@@ -1137,10 +1145,10 @@ function plugin_table_edit2_action()
 
 	if ( isset($vars['csv_mod']) || isset($vars['ex_cancel']) || isset($vars['im_cancel']) || isset($vars['set_csv']) || isset($vars['csv_back'])) {
 		$csv = new TableEdit2CsvAction;
-		if ($vars['csv_mod'] === 'import') {
+		if (isset($vars['csv_mod']) && $vars['csv_mod'] === 'import') {
 			$csv->csv_import($vars);
 			$import = 1;
-		} else if ($vars['csv_mod'] === 'export') {
+		} else if (isset($vars['csv_mod']) && $vars['csv_mod'] === 'export') {
 			$export = 1;
 			$csv_export_data = array();
 		} else if (isset($vars['ex_cancel']) || isset($vars['im_cancel'])) {
@@ -1155,7 +1163,8 @@ function plugin_table_edit2_action()
 				unlink($con->filename);
 				unlink($con->logname);
 			}
-			header('Location: ' . $script_uri . '?' . rawurlencode($page));		// . $anchr_jump
+			//header('Location: ' . $script_uri . '?' . rawurlencode($page));		// . $anchr_jump
+			header('Location: ' . get_page_uri($page));
 			exit;
 		} else {
 			return array('msg' => 'csv error','body' => 'csv option error');	// . join("\n", $csv_data)
@@ -1241,12 +1250,12 @@ function plugin_table_edit2_action()
 
 				if ($export) $csv_export_data[] = $match_line[1];
 
-				if ($table_sub_num == $vars['table_sub_num'] && $table_sub_num_chk){		//td 06.09.18
+				if (isset($vars['table_sub_num']) && $table_sub_num == $vars['table_sub_num'] && $table_sub_num_chk){		//td 06.09.18
 					$show->chk_table_sub_first_line = $line_count;
 					$table_sub_num_chk = 0;
 				}
 
-				if ($vars['line_count'] == $line_count || strtolower( $match_line[2] ) == 'h' || $edit_mod == 'tdshow' || $td_edit || $row_title){
+				if (isset($vars['line_count']) && $vars['line_count'] == $line_count || strtolower( $match_line[2] ) == 'h' || $edit_mod == 'tdshow' || $td_edit || $row_title){
 //					$match_t = explode("|", $match_line[1]);
 					if($edit_mod == 'tdshow')		//tdshow - td_title - 06.11.11
 						$show->td_title[$line_count] = $match_t[$td_title_count];
@@ -1265,8 +1274,7 @@ function plugin_table_edit2_action()
 					$source_s .= $edit->td_edit( $match_t ) . $match_line[2] . "\n";
 					$table_sub_num_count_chk = 1;
 
-				} else if($vars['line_count'] == $line_count && ! $td_edit)
-				{
+				} else if (isset($vars['line_count']) && $vars['line_count'] == $line_count && ! $td_edit) {
 					if( $tr_edit ) {				//t_edit tr_add
 						if (isset($vars['add_show'])) {
 							$source_s .= $args_line;
@@ -1804,7 +1812,8 @@ class TableEdit2CsvAction
 
 		return $this->export_d($page, $opt['table_num'], $file['name']);
 
-		header('Location: ' . $this->script_uri . '?' . rawurlencode($page));
+		header('Location: ' . get_page_uri($page));
+		//header('Location: ' . $this->script_uri . '?' . rawurlencode($page));
 		exit;
 
 	}
@@ -1833,11 +1842,11 @@ class TableEdit2CsvAction
 	}
 	function export_d($page, $table_num, $file)
 	{
-	$download = T_('download');
-	$back = T_('back');
-	$ref = (exist_plugin_inline('ref')) ? do_plugin_inline('ref', $page . '/' . $file ) : T_('ref plugin is not found');
+		$download = T_('download');
+		$back = T_('back');
+		$ref = (exist_plugin_inline('ref')) ? do_plugin_inline('ref', $page . '/' . $file ) : T_('ref plugin is not found');
 
-	$body = <<<EOD
+		$body = <<<EOD
 <h3>$page table number $table_num</h3>
 <fieldset>
 <legend>$download</legend>

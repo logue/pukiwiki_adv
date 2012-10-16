@@ -5,27 +5,24 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-29 09:03+0900\n"
+"POT-Creation-Date: 2012-10-16 10:24+0900\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
 "Language-Team: Japanese\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
+"X-Generator: Poedit 1.5.4\n"
 
-#: ../../plugin/vote.inc.php:90
-#: ../../plugin/vote.inc.php:146
+#: ../../plugin/vote.inc.php:90 ../../plugin/vote.inc.php:146
 msgid "Error in vote"
 msgstr "投票時にエラーが発生しました。"
 
-#: ../../plugin/vote.inc.php:91
-#: ../../plugin/vote.inc.php:147
+#: ../../plugin/vote.inc.php:91 ../../plugin/vote.inc.php:147
 msgid "Continuation vote cannot be performed."
 msgstr "連続投票はできません"
 
-#: ../../plugin/vote.inc.php:99
-#: ../../plugin/vote.inc.php:155
+#: ../../plugin/vote.inc.php:99 ../../plugin/vote.inc.php:155
 msgid "There was no matching vote. "
 msgstr "そのような投票箱は存在しません。"
 
@@ -37,12 +34,14 @@ msgstr "選択肢"
 msgid "Points"
 msgstr "投票数"
 
-#: ../../plugin/vote.inc.php:671
-#: ../../plugin/vote.inc.php:688
+#: ../../plugin/vote.inc.php:671 ../../plugin/vote.inc.php:689
 msgid "Vote"
 msgstr "投票"
 
-#: ../../plugin/vote.inc.php:703
+#: ../../plugin/vote.inc.php:701
+msgid "Item name"
+msgstr "項目名"
+
+#: ../../plugin/vote.inc.php:704
 msgid "Add"
 msgstr "項目追加"
-

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Advance 1.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-29 09:13+0900\n"
+"POT-Creation-Date: 2012-10-16 10:25+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,142 +17,138 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/table_edit2.inc.php:283 ../../plugin/table_edit2.inc.php:1572
+#: ../../plugin/table_edit2.inc.php:292 ../../plugin/table_edit2.inc.php:1604
 msgid "OK"
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:284 ../../plugin/table_edit2.inc.php:445
-#: ../../plugin/table_edit2.inc.php:1575
+#: ../../plugin/table_edit2.inc.php:293 ../../plugin/table_edit2.inc.php:455
+#: ../../plugin/table_edit2.inc.php:1607
 msgid "no time stamp"
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:444
+#: ../../plugin/table_edit2.inc.php:454
 msgid "character code in"
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:454
+#: ../../plugin/table_edit2.inc.php:464
 msgid "character code out"
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:456
+#: ../../plugin/table_edit2.inc.php:466
 msgid "no"
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:457
+#: ../../plugin/table_edit2.inc.php:467
 msgid "character"
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:458
+#: ../../plugin/table_edit2.inc.php:468
 msgid "column"
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:462
+#: ../../plugin/table_edit2.inc.php:472
 msgid "w quote"
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:462
+#: ../../plugin/table_edit2.inc.php:472
 msgid "column number"
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:465
+#: ../../plugin/table_edit2.inc.php:475
 msgid "line feed code"
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:528
+#: ../../plugin/table_edit2.inc.php:521
+msgid "Locked"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:522
+msgid "Unlocked"
+msgstr ""
+
+#: ../../plugin/table_edit2.inc.php:545
 msgid "import"
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:531 ../../plugin/table_edit2.inc.php:1832
+#: ../../plugin/table_edit2.inc.php:547 ../../plugin/table_edit2.inc.php:1864
 msgid "export"
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:1027
+#: ../../plugin/table_edit2.inc.php:1051
 msgid "edit"
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:1028
+#: ../../plugin/table_edit2.inc.php:1052
 msgid "addition"
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:1285
-msgid "On updating  $1, a collision has occurred."
-msgstr ""
-
-#: ../../plugin/table_edit2.inc.php:1286
-msgid "It seems that someone has already updated the page you were editing.<br />"
-msgstr ""
-
-#: ../../plugin/table_edit2.inc.php:1287
-msgid "Your editing contents updated, but there is a possibility that overwrote.<br />"
-msgstr ""
-
-#: ../../plugin/table_edit2.inc.php:1520
+#: ../../plugin/table_edit2.inc.php:1552
 msgid " [Add Mode]"
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:1573
+#: ../../plugin/table_edit2.inc.php:1605
 msgid "cancel"
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:1574
+#: ../../plugin/table_edit2.inc.php:1606
 msgid "delete"
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:1576
+#: ../../plugin/table_edit2.inc.php:1608
 msgid "table"
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:1577
+#: ../../plugin/table_edit2.inc.php:1609
 msgid "line"
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:1578
+#: ../../plugin/table_edit2.inc.php:1610
 msgid "column line"
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:1812
+#: ../../plugin/table_edit2.inc.php:1844
 msgid "download"
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:1813
+#: ../../plugin/table_edit2.inc.php:1845
 msgid "back"
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:1814
+#: ../../plugin/table_edit2.inc.php:1846
 msgid "ref plugin is not found"
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:1841 ../../plugin/table_edit2.inc.php:1847
-#: ../../plugin/table_edit2.inc.php:1853 ../../plugin/table_edit2.inc.php:1859
-#: ../../plugin/table_edit2.inc.php:1865 ../../plugin/table_edit2.inc.php:1871
-#: ../../plugin/table_edit2.inc.php:1880
+#: ../../plugin/table_edit2.inc.php:1873 ../../plugin/table_edit2.inc.php:1879
+#: ../../plugin/table_edit2.inc.php:1885 ../../plugin/table_edit2.inc.php:1891
+#: ../../plugin/table_edit2.inc.php:1897 ../../plugin/table_edit2.inc.php:1903
+#: ../../plugin/table_edit2.inc.php:1912
 msgid "cannot upload"
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:1842
+#: ../../plugin/table_edit2.inc.php:1874
 msgid "Please upload it by a POST."
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:1848
+#: ../../plugin/table_edit2.inc.php:1880
 msgid "The uploaded file exceeds the upload_max_filesize directive in php.ini."
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:1854
+#: ../../plugin/table_edit2.inc.php:1886
 msgid "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form."
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:1860
+#: ../../plugin/table_edit2.inc.php:1892
 msgid "The uploaded file was only partially uploaded."
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:1866
+#: ../../plugin/table_edit2.inc.php:1898
 msgid "No file was uploaded."
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:1872
+#: ../../plugin/table_edit2.inc.php:1904
 msgid "Missing a temporary folder."
 msgstr ""
 
-#: ../../plugin/table_edit2.inc.php:1881
+#: ../../plugin/table_edit2.inc.php:1913
 msgid "A file unlike text was uploaded."
 msgstr ""

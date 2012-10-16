@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PukiWiki Plus! 1.4.5-u2\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"POT-Creation-Date: 2012-10-16 10:25+0900\n"
 "PO-Revision-Date: 2011-06-01 15:05+0900\n"
 "Last-Translator: Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
@@ -53,29 +53,33 @@ msgid "Please change the password."
 msgstr "パスワードを変更してください。"
 
 #: ../../plugin/replace.inc.php:27
+msgid "Password:"
+msgstr ""
+
+#: ../../plugin/replace.inc.php:28
 msgid "The password is wrong."
 msgstr "パスワードが間違っています。"
 
-#: ../../plugin/replace.inc.php:28
+#: ../../plugin/replace.inc.php:29
 msgid "The retrieval character string to substitute it is empty."
 msgstr "置換するための検索文字列がありません。"
 
-#: ../../plugin/replace.inc.php:29
+#: ../../plugin/replace.inc.php:30
 msgid "All page character string substitution"
 msgstr "全ページの文字列置換"
 
-#: ../../plugin/replace.inc.php:30
+#: ../../plugin/replace.inc.php:31
 msgid "There is no substituted character string."
 msgstr "置換する文字列はありません"
 
-#: ../../plugin/replace.inc.php:31
+#: ../../plugin/replace.inc.php:32
 msgid "The following pages were substituted."
 msgstr "以下のページを置換しました。"
 
-#: ../../plugin/replace.inc.php:32
+#: ../../plugin/replace.inc.php:33
 msgid "Replaced."
 msgstr "置換しました。"
 
-#: ../../plugin/replace.inc.php:33
+#: ../../plugin/replace.inc.php:34
 msgid "No search data."
 msgstr "対象データがありません。"

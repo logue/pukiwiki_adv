@@ -85,9 +85,10 @@ $edit_auth_pages = array(
 
 		'|' . $whatsnew .		// RecentChanges
 		'|' . $whatsdeleted .	// RecentDeleted
+		'|FormatRule' . 		// FormatRule
 	')$/'		=> $adminname,
-	// 設定ページ
-	'/^\:config/' => $adminname,
+	// 設定ページ/ヘルプ
+	'/^\:config|Help/' => $adminname,
 
 	// Regex Username or array('user'=>Username,'group'=>Groupname,'role'=>Role),
 	'/FooBar/'			=> 'hoge',
