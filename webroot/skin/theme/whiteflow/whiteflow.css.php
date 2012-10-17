@@ -1,9 +1,9 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: whiteflow.css.php,v 1.0.2 2012/08/01 07:57:30 Logue Exp $
+// $Id: whiteflow.css.php,v 1.0.3 2012/10/17 15:44:30 Logue Exp $
 
 // White Flow Adv. skin CSS
-// ver 1.0 (2011/12/10)
+// ver 1.0 (2012/10/17)
 // by Logue (http://logue.be/)
 
 // based on
@@ -55,7 +55,7 @@ a:visited{
 }
 
 p a{
-	margin: 0px 2px;
+	margin: 0 2px;
 }
 
 ul, ol {
@@ -80,10 +80,12 @@ q {
 	quotes: '「' '」' "『" "』";}
 
 q::before{
-	content: open-quote;}
+	content: open-quote;
+}
 
 q::after{
-	content: close-quote;}
+	content: close-quote;
+}
 
 blockquote{
 	padding: 0.5em;
@@ -102,7 +104,7 @@ tfoot .style_th {
 }
 */
 .style_table{
-	background-color:#ccd5dd;
+	background-color: #ccd5dd;
 }
 
 .style_th{
@@ -113,25 +115,25 @@ tfoot .style_th {
 
 .style_table tr .style_td{
 	border: 1px solid grey;
-	background-color:whitesmoke;
+	background-color: whitesmoke;
 }
 
 .style_table tr:nth-child(even) .style_td{
-	 background-color:aliceblue;
+	 background-color: aliceblue;
 }
 
 .style_table tr .style_td:hover{
-	background-color:floralwhite;
+	background-color: floralwhite;
 }
 
 .style_td_blank, tbody .style_td_blank:hover{
 	border: 1px solid darkgrey;
-	background-color:gainsbol;
+	background-color: gainsbol;
 }
 
 pre{
 	color: #444;
-	background-color: #eee;
+	background-color: gainsboro;
 	padding: 15px;
 	line-height: 170%;
 	border: 1px solid #ccc;
@@ -142,20 +144,22 @@ pre{
 .accesskey{
 	font-size: 85%;
 	font-family: monospace;
-	margin: 0px 4px;
-	text-decoration: none;}
+	margin: 0 4px;
+	text-decoration: none;
+}
 
 
 .accesskey kbd{
-	margin: 0px 2px;
-	text-decoration: underline;}
+	margin: 0 2px;
+	text-decoration: underline;
+}
 
 
 /** 2, framework.css ******************************************************************************/
 /* Framework overview */
 
 #edit-area.display {
-	margin           : 10px;
+	margin: 10px;
 }
 #edit-area.work {
 	width:100%;
@@ -167,25 +171,25 @@ pre{
 	margin-right:260px;
 }
 #sidebar {
-	background-color : #f8f8f8;
-	border           : solid #eee;
-	border-width     : 0 1px;
-	width            : 180px;
+	background-color: whitesmoke;
+	border: solid gainsboro;
+	border-width: 0 1px;
+	width: 180px;
 	margin:5px 20px 5px 0;
 	float:right;
 }
 
 #header {
-	border-top       : 1px solid #c3c3c3;
-	height           : 105px;
-	overflow         : hidden;
-	padding          : 0px 15px 0px 0px;
+	border-top: 1px solid #c3c3c3;
+	height: 105px;
+	overflow: hidden;
+	padding: 0 15px 0 0;
 }
 #container {
-	background       : white url(<?php echo $_SKIN['image_dir'] ?>shadow.left.png) left top repeat-y;
-	border-top       : 1px solid #d1d1d1;
-	margin           : 0px 35px;
-	padding-left     : 4px;
+	background: white url(<?php echo $_SKIN['image_dir'] ?>shadow.left.png) left top repeat-y;
+	border-top: 1px solid #d1d1d1;
+	margin: 0 35px;
+	padding-left: 4px;
 }
 #content,
 #footer,
@@ -193,24 +197,24 @@ pre{
 #header {
 	margin-right: auto;
 	margin-left: auto;
-	background       : transparent url(<?php echo $_SKIN['image_dir'] ?>shadow.right.png) right top repeat-y;
+	background: transparent url(<?php echo $_SKIN['image_dir'] ?>shadow.right.png) right top repeat-y;
 }
 
 #footer {
-	background       : #aaa url(<?php echo $_SKIN['image_dir'] ?>shadow.right.png) right top repeat-y;
-	color            : white;
-	clear:both;
-	padding          : 0px 4px 0px 0px;
+	background: #aaa url(<?php echo $_SKIN['image_dir'] ?>shadow.right.png) right top repeat-y;
+	color: white;
+	clear: both;
+	padding: 0 4px 0 0;
 }
 /** 3, parts.header.css ***************************************************************************/
 
 #additional {
-	border             : solid #dedede;
-	border-width       : 1px 0px;
-	font-size          : 95%;
-	font-weight        : normal;
-	padding            : 7px 1em;
-/*	text-align         : right;	*/
+	border: solid lightgrey;
+	border-width: 1px 0;
+	font-size: 95%;
+	font-weight: normal;
+	padding: 7px 1em;
+/*	text-align: right;	*/
 }
 
 .topicpath {
@@ -218,99 +222,99 @@ pre{
 }
 
 .topicpath a {
-	color              : #555;
-	text-decoration    : none;
+	color: #555;
+	text-decoration: none;
 }
 .topicpath a:hover {
-	font-weight        : bold;
+	font-weight: bold;
 }
 
 #lastmodified {
-	padding-left:18px;
-	font-size:93%;
-	background         : transparent url(<?php echo $_SKIN['image_dir'] ?>update.png) no-repeat;
-	float              : right;
-	white-space        : nowrap;
+	padding-left: 18px;
+	font-size: 93%;
+	background: transparent url(<?php echo $_SKIN['image_dir'] ?>update.png) no-repeat;
+	float: right;
+	white-space: nowrap;
 }
 /*
 #lastmodified span{
-	display            : none;
+	display: none;
 }
 #lastmodified:hover span {
-	border-radius      : 4px;
-	background-color   : white;
-	color              : black;
-	display            : block;
-	font-size          : 90%;
-	left               : 60px;
-	padding            : 3px 7px;
-	position           : absolute;
-	top                : 8px;
+	border-radius: 4px;
+	background-color: white;
+	color: black;
+	display: block;
+	font-size: 90%;
+	left: 60px;
+	padding: 3px 7px;
+	position: absolute;
+	top: 8px;
 }
 */
 #header #selection {
-	height             : 80px;
-	margin             : 12px 10px 0px 515px;
-	text-align         : right;
+	height: 80px;
+	margin: 12px 10px 0 515px;
+	text-align: right;
 }
 #header #selection h2 {
-	font-size          : 90%;
-	padding-bottom     : 7px;
+	font-size: 90%;
+	padding-bottom: 7px;
 }
 #header #selection h2::before {
-	content            : url(<?php echo $_SKIN['image_dir'] ?>status.png);
-	margin-right       : 7px;
+	content: url(<?php echo $_SKIN['image_dir'] ?>status.png);
+	margin-right: 7px;
 }
 #header div #popular {
-	padding-left       : 4%;
+	padding-left: 4%;
 }
 #header div #popular select option .counter,
 #header div h3 {
-	display            : none !important;
+	display: none !important;
 }
 #header div #recent {
-	padding-left       : 8%;
+	padding-left: 8%;
 }
 #header div #wrap {
-	white-space        : nowrap;
+	white-space: nowrap;
 }
 #header div #wrap div {
-	float              : left;
-	width              : 44%;
+	float: left;
+	width: 44%;
 }
 #header div div select {
-	font-size          : 85%;
-	width              : 100%;
+	font-size: 85%;
+	width: 100%;
 }
 #header div div select optgroup {
-	font-size          : 90%;
-	padding            : 2px;
-	width              : 50%;
+	font-size: 90%;
+	padding: 2px;
+	width: 50%;
 }
 #header div div select optgroup option,
 #header div div select option:disabled {
-	margin-left        : 1em;
-	padding            : 2px;
+	margin-left: 1em;
+	padding: 2px;
 }
 
 #hgroup {
-	padding            : 20px 0px 0px 10px;
-	float:left;
-	display            : block;
-	height             : 80px;
+	padding: 20px 0 0 10px;
+	float: left;
+	display: block;
+	height: 80px;
 }
 
 #hgroup h1 {
-	font-weight:bold;
-	font-size:197%;
-	background-color:transparent;
+	font-weight: bold;
+	font-size: 197%;
+	background-color: transparent;
 	border: none;
 	margin: 0;
 	padding: 0;
 }
 
 #hgroup h2 {
-	font-weight:normal;
+	font-weight: normal;
 	font-size: 85%;
 	border: none;
 	margin: 0;
@@ -318,39 +322,39 @@ pre{
 }
 
 #logo {
-	display:block;
-	background         : transparent url(<?php echo $_SKIN['image_dir'] ?>title.png) left top no-repeat;
-	float:left;
-	padding            : 10px 10px 0px 40px;
+	display: block;
+	background: transparent url(<?php echo $_SKIN['image_dir'] ?>title.png) left top no-repeat;
+	float: left;
+	padding: 10px 10px 0 40px;
 }
 
 #logo:hover {
-	background-image   : url(<?php echo $_SKIN['image_dir'] ?>title.master.png);
+	background-image: url(<?php echo $_SKIN['image_dir'] ?>title.master.png);
 }
 /** 4, parts.menu.css *****************************************************************************/
 #sidebar{
-	padding:10px;
+	padding: 10px;
 }
 
 #page-menu{
-	margin-bottom:20px;
+	margin-bottom: 20px;
 }
 
 #sidebar h3 {
-	background       : transparent url(<?php echo $_SKIN['image_dir'] ?>sitemenu.png) center left no-repeat;
-	font-size        : 110%;
-	padding-left     : 30px;
+	background: transparent url(<?php echo $_SKIN['image_dir'] ?>sitemenu.png) center left no-repeat;
+	font-size: 110%;
+	padding-left: 30px;
 }
 
 #sidebar ul a:hover{
-	background-color : #5796e9 !important;
-	color            : white;
+	background-color: #5796e9 !important;
+	color: white;
 }
 #sidebar ul a[href="#header"] {
-	background       : white url(<?php echo $_SKIN['image_dir'] ?>arrow2.png) 98% 50% no-repeat;
+	background: white url(<?php echo $_SKIN['image_dir'] ?>arrow2.png) 98% 50% no-repeat;
 }
 #sidebar ul li li:hover a[href="#header"] {
-	background       : #5796e9 url(<?php echo $_SKIN['image_dir'] ?>arrow3.png) 98% 50% no-repeat;
+	background: #5796e9 url(<?php echo $_SKIN['image_dir'] ?>arrow3.png) 98% 50% no-repeat;
 }
 
 #sidebar ul li .noexists a{
@@ -361,60 +365,61 @@ pre{
 /* #content > #edit-area - main contents */
 
 #body {
-	counter-reset     : article;
+	counter-reset: article;
 }
 
 #body h2:before {
-	color: #DDDDDD;
+	color: gainsboro;
 	content: "#" counter(article, decimal);
 	counter-increment: article;
-	font-family: "Courier New",Courier,monospace;
+	font-family: "Courier New", Courier, monospace;
 	font-size: 360%;
 	letter-spacing: -5px;
 	margin-right: -0.35em;
 	vertical-align: top;
 }
 #body h2 {
-    border-color: #EEEEEE;
+    border-color: gainsboro;
     border-style: solid;
     border-width: 1px 0;
-    color: #444444;
+    color: #444;
     height: 1.6em;
     line-height: 100%;
     margin: 30px 0;
     overflow: hidden;
-    padding: 15px 20px 0 0;
+    padding: 15px 30px 0 30px;
     white-space: nowrap;
 }
 
 #body h3 {
-	background        : transparent url(<?php echo $_SKIN['image_dir'] ?>wiki.png) 90% -12px no-repeat;
-	border            : solid #eee;
-	border-width      : 1px 0px;
-	color             : #444;
-	height            : 1.4em;
-	line-height       : 100%;
-	margin            : 30px 0px;
-	overflow          : hidden;
-	padding           : 15px 20px 0px 0px;
+	background: transparent url(<?php echo $_SKIN['image_dir'] ?>wiki.png) 90% -12px no-repeat;
+	border: solid gainsboro;
+	border-width: 1px 0;
+	color: #444;
+	height: 1.4em;
+	line-height: 100%;
+	margin: 30px 0;
+	overflow: hidden;
+	padding: 10px 0 5px 5px;
 }
 #body h3 a {
-	color             : black;
+	color: black;
 }
 #body h4 {
-	background        : white url(<?php echo $_SKIN['image_dir'] ?>star.png) left center no-repeat;
-	margin            : 10px 0px;
-	padding           : 15px 20px 0px 40px;
+	background: white url(<?php echo $_SKIN['image_dir'] ?>star.png) left center no-repeat;
+	margin: 10px 0;
+	padding: 10px 0 0 40px;
+	height: 33px;
 }
 #body h5 {
-	border            : solid 1px #eee;
-	color             : #a6a6a6;
-	margin            : 10px 0px;
+	border: solid 1px gainsboro;
+	color: darkgray;
+	margin: 10px 0;
 }
 #body h6 {
-	border            : solid #eee;
-	color             : #a6a6a6;
-	margin            : 10px;
+	border: solid gainsboro;
+	color: darkgray;
+	margin: 10px;
 }
 
 #body p, #body pre{
@@ -423,63 +428,69 @@ pre{
 }
 
 #content ul > li {
-	list-style-image  : url(<?php echo $_SKIN['image_dir'] ?>arrow.png);
+	list-style-image: url(<?php echo $_SKIN['image_dir'] ?>arrow.png);
 }
 #content ul > li:hover {
-	list-style-image  : url(<?php echo $_SKIN['image_dir'] ?>arrow.hover.png);
+	list-style-image: url(<?php echo $_SKIN['image_dir'] ?>arrow.hover.png);
 }
 
 #signature li, #signature li:hover{
-	list-style-image  : none !important;
+	list-style-image: none !important;
 }
 
 /* comment.inc.php, pcomment.inc.php */
 
 #body form + dl{
-font-size:		90%;}
+	font-size:90%;
+}
 
 #body hr{
-display:		none;}
+	display: none;
+}
 
 #body hr + h3{
-padding-left:		3em;
-background:		white url(<?php echo $_SKIN['image_dir'] ?>comments.png) 20px -20px no-repeat;}
+	padding-left: 3em;
+	background: white url(<?php echo $_SKIN['image_dir'] ?>comments.png) 20px -20px no-repeat;
+}
 
 #body hr + ::before{
-content:		"";}
+	content: "";
+}
 
 #body p .pagename::before{
-content:		"Page: ";}
+	content: "Page: ";
+}
 
 #body p .pagename{
-font-size:		90%;
-padding:		3px;
-background-color:	#eee;
-border:		1px solid #aaa;}
+	font-size: 90%;
+	padding: 3px;
+	background-color: gainsboro;
+	border: 1px solid darkgray;
+}
 
 #misc dl {
-	counter-reset     : ollist;
-	font-size         : 90%;
-	list-style        : none;
-	padding-left      : 2em;
+	counter-reset: ollist;
+	font-size: 90%;
+	list-style: none;
+	padding-left: 2em;
 }
 #misc dl > dd {
-	counter-increment : ollist;
+	counter-increment: ollist;
 }
 #misc dl > dd::before {
-	background-color  : #aaa;
-	border            : 1px solid #333;
-	color             : white;
-	content           : counters(ollist, ".");
-	font-family       : monospace;
-	font-size         : 93%;
-	font-weight       : bold;
-	margin            : 0 0.6em 0 0;
-	padding           : 1px 3px;
-	width             : 1em;
+	background-color: darkgray;
+	border: 1px solid #333;
+	color: white;
+	content: counters(ollist, ".");
+	font-family: monospace;
+	font-size: 93%;
+	font-weight: bold;
+	margin: 0 0.6em 0 0;
+	padding: 1px 3px;
+	width: 1em;
 }
 #misc dl > dd:hover::before {
-	background-color  : #395989;
+	background-color: #395989;
 }
 
 /** Ex, selection.right.css ********************************************************************/
@@ -526,13 +537,13 @@ border:		1px solid #aaa;}
 #sidebar #menubar ul.menu{
 	list-style-type: none;
 	list-style-position: outside;
-	margin: 0px;
-	padding: 0px;
+	margin: 0;
+	padding: 0;
 }
 
 #sidebar #menubar ul.menu li{
-	padding: 0px 0.3em;
-	margin: 0px;
+	padding: 0 0.3em;
+	margin: 0;
 	border-bottom: 1px dotted #FFFCEE;
 }
 
@@ -570,7 +581,7 @@ border:		1px solid #aaa;}
 
 #footer ul{
 	padding: 20px 20px 20px 45px;
-	margin: 0px;
+	margin: 0;
 	font-size: 90%;
 	list-style: none none inside;
 	border-top: 4px double white;
@@ -591,7 +602,7 @@ border:		1px solid #aaa;}
 #footer ul li.inquiry::after,
 #footer ul li.request::after{
 	content: "|";
-	margin: 0px 10px;}
+	margin: 0 10px;}
 
 #footer #validxhtml{
 	float:right;
@@ -609,7 +620,7 @@ border:		1px solid #aaa;}
 	padding:0.5em;
 	position:absolute;
 	text-align:left;
-	text-shadow: white 1px 1px 0px;
+	text-shadow: white 1px 1px 0;
 	width:22em;
 	z-index:1;
 }
@@ -657,7 +668,7 @@ border:		1px solid #aaa;}
 #poptoc h1 a{color:navy; text-decoration:none;}
 #poptoc h1 img {margin-bottom:-3px; margin-right: 2px;}
 #poptoc .nav {text-indent:0em;border-top:1px gray solid; padding-top:0.2em;text-align:center; white-space: nowrap; }
-#poptoc a.here{color: black; background: #EEEEEE; text-decoration: none; border:1px dotted gray;}
+#poptoc a.here{color: black; background: gainsboro; text-decoration: none; border:1px dotted gray;}
 
 .tocpic {
 	display:inline;
@@ -687,8 +698,8 @@ border:		1px solid #aaa;}
 }
 .contents > ul > li {
 	counter-increment : toc;
-	margin            : 0px;
-	padding           : 0px;
+	margin            : 0;
+	padding           : 0;
 }
 .contents > ul > li::before {
 	content           : counters(toc, ".") ".";
@@ -701,80 +712,79 @@ border:		1px solid #aaa;}
 }
 .contents ul {
 	list-style        : none none inside;
-	margin            : 0px;
-	padding           : 0px;
+	margin            : 0;
+	padding           : 0;
 }
 .contents ul ul {
-	background        : transparent url(<?php echo $_SKIN['image_dir'] ?>tree/28.png) 0px repeat-y;
+	background        : transparent url(<?php echo $_SKIN['image_dir'] ?>tree/28.png) 0 repeat-y;
 	list-style-type   : none;
 	padding-left      : 15px;
 }
 .contents ul ul li {
-	background        : transparent url(<?php echo $_SKIN['image_dir'] ?>tree/268.png) 0px no-repeat;
+	background        : transparent url(<?php echo $_SKIN['image_dir'] ?>tree/268.png) 0 no-repeat;
 	margin-left       : -15px;
 	padding-left      : 30px;
 }
 .contents ul ul li:last-child {
-	background        : transparent url(<?php echo $_SKIN['image_dir'] ?>tree/68.png) 0px no-repeat;
+	background        : transparent url(<?php echo $_SKIN['image_dir'] ?>tree/68.png) 0 no-repeat;
 }
 
 /* suckerfish.inc.php */
 .sf-menu, .sf-menu * {
-	margin:			0;
-	padding:		0;
-	list-style:		none;
+	margin: 0;
+	padding: 0;
+	list-style: none;
 }
 .sf-menu {
-	line-height:	1.0;
+	line-height: 1.0;
 }
 .sf-menu ul {
-	position:		absolute;
-	top:			-999em;
-	width:			200px; /* left offset of submenus need to match (see below) */
+	position: absolute;
+	top: -999em;
+	width: 200px; /* left offset of submenus need to match (see below) */
 }
 .sf-menu ul li {
-	width:			194px;
+	width: 194px;
 }
 .sf-menu li:hover {
-	visibility:		inherit; /* fixes IE7 'sticky bug' */
+	visibility: inherit; /* fixes IE7 'sticky bug' */
 }
 .sf-menu li {
-	float:			left;
-	position:		relative;
+	float: left;
+	position: relative;
 }
 .sf-menu a {
-	display:		block;
-	text-indent:	1em;
-	position:		relative;
+	display: block;
+	text-indent: 1em;
+	position: relative;
 }
 .sf-menu li:hover ul,
 .sf-menu li.sfHover ul {
-	left:			0;
-	top:			2.5em; /* match top ul list item height */
-	z-index:		99;
+	left: 0;
+	top: 2.5em; /* match top ul list item height */
+	z-index: 99;
 }
 ul.sf-menu li:hover li ul,
 ul.sf-menu li.sfHover li ul {
-	top:			-999em;
+	top: -999em;
 }
 ul.sf-menu li li:hover ul,
 ul.sf-menu li li.sfHover ul {
-	left:			200px; /* match ul width */
-	top:			0;
+	left: 200px; /* match ul width */
+	top: 0;
 }
 ul.sf-menu li li:hover li ul,
 ul.sf-menu li li.sfHover li ul {
-	top:			-999em;
+	top: -999em;
 }
 ul.sf-menu li li li:hover ul,
 ul.sf-menu li li li.sfHover ul {
-	left:			180px; /* match ul width */
-	top:			0;
+	left: 180px; /* match ul width */
+	top: 0;
 }
 
-/*** DEMO SKIN ***/
 .sf-menu {
-	float:			left;
+	float: left;
 	margin:0;
 	padding:0;
 
@@ -783,7 +793,7 @@ ul.sf-menu li li li.sfHover ul {
 	text-decoration:none;
 }
 .sf-menu a, .sf-menu a:visited  { /* visited pseudo selector so IE6 applies text colour*/
-	color:			#13a;
+	color: #13a;
 }
 
 .sf-menu li {
@@ -797,10 +807,10 @@ ul.sf-menu li li li.sfHover ul {
 	color: #3c618e;
 }
 .sf-menu li li {
-	background:		white;
+	background: white;
 }
 .sf-menu li li li {
-	background:		white;
+	background: white;
 }
 .sf-menu li:hover, .sf-menu li.sfHover,
 .sf-menu a:focus, .sf-menu a:hover, .sf-menu a:active {
@@ -815,8 +825,8 @@ ul.sf-menu li li li.sfHover ul {
 /* this lacks ul at the start of the selector, so the styles from the main CSS file override it where needed */
 .sf-vertical li:hover ul,
 .sf-vertical li.sfHover ul {
-	left:	-200px; /* match ul width */
-	top:	-11px;	/* padding-top + border-width */
+	left: -200px; /* match ul width */
+	top: -11px;	/* padding-top + border-width */
 
 	padding: 10px 0;
 	border: 1px solid #afafaf;
@@ -828,27 +838,27 @@ ul.sf-menu li li li.sfHover ul {
 
 /* search.inc.php */
 .search_form {
-	background-color : #f1f1f1;
-	border           : 1px solid white;
-	font-size        : 90%;
-	margin           : 35px 25px 35px 0px;
-	outline          : 1px solid #cacaca;
-	padding-right    : 20px;
-	white-space      : nowrap;
+	background-color: #f1f1f1;
+	border: 1px solid white;
+	font-size: 90%;
+	margin: 35px 25px 35px 0;
+	outline: 1px solid #cacaca;
+	padding-right: 20px;
+	white-space: nowrap;
 }
 .search_form {
-	background       : transparent url(<?php echo $_SKIN['image_dir'] ?>search.png) 20px 0px no-repeat;
-	margin           : 20px 0px;
-	padding-left     : 70px;
+	background: transparent url(<?php echo $_SKIN['image_dir'] ?>search.png) 20px 0 no-repeat;
+	margin: 20px 0;
+	padding-left: 70px;
 }
 .search_form input[type=search] {
-	height           : auto;
-	margin           : 3px 10px 0px 0px;
-	min-width        : 50%;
-	padding          : 3px;
+	height: auto;
+	margin: 3px 10px 0 0;
+	min-width: 50%;
+	padding: 3px;
 }
 .search_form p {
-	margin           : 15px 0px 10px  0px;
+	margin: 15px 0 10px 0;
 }
 
 /* note.inc.php */
@@ -859,32 +869,33 @@ ul.sf-menu li li li.sfHover ul {
 }
 
 #note dl > dd::before {
-	display           : none;
+	display: none;
 }
 
 #note dt{
-	padding-left:		3em;
+	padding-left: 3em;
 }
 
 #note dt::before{
-	content:	"";
+	content: "";
 }
 
 #note dl{
-	font-size:		90%;
+	font-size: 90%;
 }
 
 #note dl a.note_super{
-	border:		1px solid #333;
-	background-color:	#aaa;
-	color:			white;
-	padding:		0px 5px;
-	font-family:		monospace;
+	border: 1px solid #333;
+	background-color: #aaa;
+	color: white;
+	padding: 0 5px;
+	font-family: monospace;
 }
 
 #note dl a.note_super:hover{
-background:		#325989;
-text-decoration:	none;}
+	background: #325989;
+	text-decoration: none;
+}
 @media screen{
 	#wide-container{
 		min-width:780px;
@@ -893,10 +904,11 @@ text-decoration:	none;}
 @media print{
 	#wide-container,
 	#container{
-	width:99%;
-	border:none;
-	padding:			0;
-	margin:				0;}
+		width:99%;
+		border:none;
+		padding: 0;
+		margin: 0;
+	}
 
 	#hgroup h2, #header img, .navibar, #menubar, #sidebar, #poptoc, #footer, #misc, #toolbar, #logo
 	#sigunature{
@@ -905,67 +917,67 @@ text-decoration:	none;}
 	}
 
 	#header{
-		border:none;
-		margin:0;
-		padding:0;
-		height:auto;
+		border: none;
+		margin: 0;
+		padding: 0;
+		height: auto;
 	}
 
 	#hgroup{
-		margin:0;
-		padding:0;
-		float:none;
-		clear:both;
+		margin: 0;
+		padding: 0;
+		float: none;
+		clear: both;
 	}
 	#hgroup h2{
-		display:none;
+		display: none;
 	}
 	#hgroup h1{
-		width:100%;
-		display:block;
+		width: 100%;
+		display: block;
 	}
 
 	#additional, #body h2, #body h3, #body h4, #body h5, #body h6{
-		height:auto;
-		margin:0;
-		padding:0;
+		height: auto;
+		margin: 0;
+		padding: 0;
 	}
 	#additional{
-		border:none;
+		border: none;
 	}
 	#lastmodified:before{
-		content:'Last modified :';
+		content: 'Last modified :';
 	}
 	#lastmodified{
 		margin: 0;
-		padding:0;
+		padding: 0;
 	}
 
 	#body h2:before, #logo:after{
-		display:none;
+		display: none;
 	}
 /*
 	{
 		padding: 0;
 		margin: 0;
-		height:auto;
+		height: auto;
 	}
 */
 	#content{
-		clear:both;
-		width:100%;
+		clear: both;
+		width: 100%;
 	}
 
 	#edit-area{
-		clear:both;
-		margin:0;
-		padding:0;
-		float:none;
+		clear: both;
+		margin: 0;
+		padding: 0;
+		float: none;
 	}
 
 	#edit-area.work > div ,#edit-area.work > section{
-		margin:0;
-		padding:0;
+		margin: 0;
+		padding: 0;
 	}
 }
 <?php

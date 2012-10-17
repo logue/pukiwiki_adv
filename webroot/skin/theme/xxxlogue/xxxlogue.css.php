@@ -69,10 +69,6 @@ blockquote {
 	padding-left:10px;
 }
 
-p, pre, dl{
-	margin:.5em;
-}
-
 dt{
 	font-weight:bold;
 	color: #333366;
@@ -91,7 +87,7 @@ q{
 	border:1px dotted #999;
 }
 
-p, pre, dl{
+p, pre, dl, form, .table_wrapper{
 	margin:.5em 1.5em;
 }
 
@@ -138,10 +134,10 @@ h4 {
 }
 
 h5, h6 {
-	padding:		2px 2px 3px 8px;
-	border-bottom:	1px solid #bb3333;
-	border-left:	2px solid #E05D21;
-	margin:.5em 0 .5em 0;
+	padding: 2px 2px 3px 8px;
+	border-bottom: 1px solid #bb3333;
+	border-left: 2px solid #E05D21;
+	margin: .5em 0 .5em 0;
 }
 
 h1, h2, h3, h4, h5, h6{
@@ -160,6 +156,7 @@ pre {
 	background-color:#F0F8FF;
 	text-shadow: 1px 1px 3px rgba(0,0,0,.3);
 	background-color:rgba(240,248,255,.5);
+	padding:.5em 1em;
 }
 
 small,.small {
@@ -224,6 +221,7 @@ tfoot .style_th {
 
 .style_table{
 	background-color:#ccd5dd;
+	text-shadow: none;
 }
 
 .style_th{

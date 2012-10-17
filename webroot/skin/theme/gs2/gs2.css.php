@@ -26,6 +26,143 @@ require ('./gs2_color/pukiwiki_gs2_color_'.$gs2_color.'.php');
 // Output CSS ----
 ?>
 @charset "UTF-8";
+
+/** Color setting **/
+
+body{
+	color:<?php echo SKIN_CSS_FGCOLOR; ?>;
+	background-color:<?php echo SKIN_CSS_BGCOLOR; ?>;
+}
+
+a:link {
+	color:<?php echo SKIN_CSS_A_LINK; ?>;
+}
+
+a:active {
+	color:<?php echo SKIN_CSS_A_ACTIVE; ?>;
+}
+
+a:visited {
+	color:<?php echo SKIN_CSS_A_VISITED; ?>;
+}
+
+a:hover {
+	color:<?php echo SKIN_CSS_A_HOVER; ?>;
+}
+hr {
+	border-color:<?php echo SKIN_CSS_PRE_BDCOLOR; ?>;
+}
+h1, h2 {
+	color:<?php echo SKIN_CSS_H2_FGCOLOR; ?>;
+	background-color:<?php echo SKIN_CSS_H2_BGCOLOR; ?>;
+	border-color:<?php echo SKIN_CSS_H2_BDCOLOR ?>;
+}
+
+h3{
+	color:<?php echo SKIN_CSS_H3_FGCOLOR ?>;
+	background-color:<?php echo SKIN_CSS_H3_BGCOLOR; ?>;
+	border-color:<?php echo SKIN_CSS_H3_BDCOLOR; ?>;
+}
+
+h4{
+	color:<?php echo SKIN_CSS_H4_FGCOLOR; ?>;
+	background-color:<?php echo SKIN_CSS_H4_BGCOLOR; ?>;
+	border-color:<?php echo SKIN_CSS_H4_BDCOLOR; ?>;
+}
+
+h5{
+	color:<?php echo SKIN_CSS_H5_FGCOLOR; ?>;
+	background-color:<?php echo SKIN_CSS_H5_BGCOLOR; ?>;
+	border-color:<?php echo SKIN_CSS_H5_BDCOLOR; ?>;
+}
+
+h6{
+	color:<?php echo SKIN_CSS_H6_FGCOLOR; ?>;
+	background-color:<?php echo SKIN_CSS_H6_BGCOLOR; ?>;
+	border-color:<?php echo SKIN_CSS_H6_BDCOLOR; ?>;
+}
+
+pre{
+	border:<?php echo SKIN_CSS_PRE_BDCOLOR; ?> 1px solid;
+	color:<?php echo SKIN_CSS_FGCOLOR; ?>;
+	background-color:<?php echo SKIN_CSS_PRE_BGCOLOR; ?>;
+}
+
+input[type='text'], input[type='password'], input[type='file'],
+input[type='tel'], input[type='url'], input[type='email'], 
+input[type='datetime'], input[type='date'], input[type='month'], 
+input[type='week'], input[type='time'], input[type='datetime-local'], 
+input[type='number'], input[type='range'], input[type='color'], 
+input[type='search'], textarea, select {
+	background-image: url('data:image/svg+xml;base64,<?php echo base64_encode('<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" version="1.0"><defs><linearGradient x1="0" y1="0" x2="0" y2="100%" id="gradient"><stop offset="0%" stop-color="'.SKIN_CSS_BOX_BGCOLOR.'" /><stop offset="100%" stop-color="'.SKIN_CSS_BGCOLOR.'" /></linearGradient></defs><rect fill="url(#gradient)" x="0" y="0" width="100%" height="100%"/></svg>'); ?>');
+	background-color: <?php echo SKIN_CSS_BGCOLOR; ?>;
+	border: 1px solid <?php echo SKIN_CSS_BOX_BDCOLOR; ?>;
+}
+
+.style_table{
+	background-color:<?php echo SKIN_CSS_BGCOLOR; ?>;
+}
+
+thead td.style_td,
+tfoot td.style_td {
+	background-color:<?php echo SKIN_CSS_BGCOLOR; ?>;
+}
+thead th.style_th,
+tfoot th.style_th {
+	background-color:<?php echo SKIN_CSS_BOX_BGCOLOR; ?>;
+}
+.style_table {
+	background-color:<?php echo SKIN_CSS_BOX_BDCOLOR; ?>;
+}
+.style_th{
+	background-color:<?php echo SKIN_CSS_BGCOLOR; ?>;
+}
+.style_td, .style_td_blank{
+	background-color:<?php echo SKIN_CSS_CTS_BGCOLOR; ?>;
+}
+
+.style_table tr:nth-child(even) .style_td{
+	 background-color:<?php echo SKIN_CSS_CTS_BGCOLOR2; ?>;
+}
+
+#header{
+	background-color: <?php echo SKIN_CSS_BOX_BGCOLOR; ?>;
+	border: 2px solid <?php echo SKIN_CSS_BOX_BDCOLOR; ?>;
+	text-shadow: 0 1px 0 <?php echo SKIN_CSS_SHADOW_COLOR; ?>;
+}
+
+#hgroup{
+	color:<?php echo SKIN_CSS_H1_FGCOLOR ?>;
+	background-color: <?php echo SKIN_CSS_H1_BGCOLOR; ?>;
+	border-color: <?php echo SKIN_CSS_H1_BDCOLOR; ?>;
+}
+
+#content{
+	background-color:<?php echo SKIN_CSS_CTS_BGCOLOR; ?>;
+	border:3px solid <?php echo SKIN_CSS_CTS_BDCOLOR; ?>;
+}
+
+.footbox{
+	border:dotted 1px <?php echo SKIN_CSS_BOX_BDCOLOR; ?>;
+	background-color: <?php echo SKIN_CSS_BOX_BGCOLOR; ?>;
+}
+
+.sidebox h1,
+.sidebox h2,
+.sidebox h3,
+.sidebox h4,
+.sidebox h5{
+	border: 2px solid <?php echo SKIN_CSS_BOX_BDCOLOR; ?>;
+	background-color: <?php echo SKIN_CSS_BOX_BGCOLOR; ?>;
+}
+
+/* calendar.inc.php */
+.style_calendar {
+	background-color:<?php echo SKIN_CSS_BOX_BDCOLOR; ?>;
+}
+
+/** start layout setting **/
+
 blockquote { margin-left:32px; }
 
 body {
@@ -404,145 +541,6 @@ hr.full_hr {
 	background-color:inherit;
 }
 
-/****/
-
-body{
-	color:<?php echo SKIN_CSS_FGCOLOR; ?>;
-	background-color:<?php echo SKIN_CSS_BGCOLOR; ?>;
-}
-
-a:link {
-	color:<?php echo SKIN_CSS_A_LINK; ?>;
-}
-
-a:active {
-	color:<?php echo SKIN_CSS_A_ACTIVE; ?>;
-}
-
-a:visited {
-	color:<?php echo SKIN_CSS_A_VISITED; ?>;
-}
-
-a:hover {
-	color:<?php echo SKIN_CSS_A_HOVER; ?>;
-}
-hr {
-	border-color:<?php echo SKIN_CSS_PRE_BDCOLOR; ?>;
-}
-h1, h2 {
-	color:<?php echo SKIN_CSS_H2_FGCOLOR; ?>;
-	background-color:<?php echo SKIN_CSS_H2_BGCOLOR; ?>;
-	border-color:<?php echo SKIN_CSS_H2_BDCOLOR ?>;
-}
-
-h3{
-	color:<?php echo SKIN_CSS_H3_FGCOLOR ?>;
-	background-color:<?php echo SKIN_CSS_H3_BGCOLOR; ?>;
-	border-color:<?php echo SKIN_CSS_H3_BDCOLOR; ?>;
-}
-
-h4{
-	color:<?php echo SKIN_CSS_H4_FGCOLOR; ?>;
-	background-color:<?php echo SKIN_CSS_H4_BGCOLOR; ?>;
-	border-color:<?php echo SKIN_CSS_H4_BDCOLOR; ?>;
-}
-
-h5{
-	color:<?php echo SKIN_CSS_H5_FGCOLOR; ?>;
-	background-color:<?php echo SKIN_CSS_H5_BGCOLOR; ?>;
-	border-color:<?php echo SKIN_CSS_H5_BDCOLOR; ?>;
-}
-
-h6{
-	color:<?php echo SKIN_CSS_H6_FGCOLOR; ?>;
-	background-color:<?php echo SKIN_CSS_H6_BGCOLOR; ?>;
-	border-color:<?php echo SKIN_CSS_H6_BDCOLOR; ?>;
-}
-
-pre{
-	border:<?php echo SKIN_CSS_PRE_BDCOLOR; ?> 1px solid;
-	color:<?php echo SKIN_CSS_FGCOLOR; ?>;
-	background-color:<?php echo SKIN_CSS_PRE_BGCOLOR; ?>;
-}
-
-input[type='text'], input[type='password'], input[type='file'],
-input[type='tel'], input[type='url'], input[type='email'], 
-input[type='datetime'], input[type='date'], input[type='month'], 
-input[type='week'], input[type='time'], input[type='datetime-local'], 
-input[type='number'], input[type='range'], input[type='color'], 
-input[type='search'], textarea, select {
-	color: <?php echo SKIN_CSS_FGCOLOR; ?>;
-	background-image: url('data:image/svg+xml;base64,<?php echo base64_encode('<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" version="1.0"><defs><linearGradient x1="0" y1="0" x2="0" y2="100%" id="gradient"><stop offset="0%" stop-color="'.SKIN_CSS_BOX_BGCOLOR.'" /><stop offset="100%" stop-color="'.SKIN_CSS_BGCOLOR.'" /></linearGradient></defs><rect fill="url(#gradient)" x="0" y="0" width="100%" height="100%"/></svg>'); ?>');
-	background-color: <?php echo SKIN_CSS_BGCOLOR; ?>;
-	border: 1px solid <?php echo SKIN_CSS_BOX_BDCOLOR; ?>;
-}
-
-.style_table{
-	background-color:<?php echo SKIN_CSS_BGCOLOR; ?>;
-}
-
-thead td.style_td,
-tfoot td.style_td {
-	background-color:<?php echo SKIN_CSS_BGCOLOR; ?>;
-}
-thead th.style_th,
-tfoot th.style_th {
-	background-color:<?php echo SKIN_CSS_BOX_BGCOLOR; ?>;
-}
-.style_table {
-	background-color:<?php echo SKIN_CSS_BOX_BDCOLOR; ?>;
-}
-.style_th{
-	background-color:<?php echo SKIN_CSS_BGCOLOR; ?>;
-}
-.style_td, .style_td_blank{
-	background-color:<?php echo SKIN_CSS_CTS_BGCOLOR; ?>;
-}
-
-.style_table tr:nth-child(even) .style_td{
-	 background-color:<?php echo SKIN_CSS_CTS_BGCOLOR2; ?>;
-}
-
-#header{
-	background-color: <?php echo SKIN_CSS_BOX_BGCOLOR; ?>;
-	border: 2px solid <?php echo SKIN_CSS_BOX_BDCOLOR; ?>;
-	text-shadow: 0 1px 0 <?php echo SKIN_CSS_SHADOW_COLOR; ?>;
-}
-
-#hgroup{
-	color:<?php echo SKIN_CSS_H1_FGCOLOR ?>;
-	background-color: <?php echo SKIN_CSS_H1_BGCOLOR; ?>;
-	border-color: <?php echo SKIN_CSS_H1_BDCOLOR; ?>;
-}
-
-#content{
-	background-color:<?php echo SKIN_CSS_CTS_BGCOLOR; ?>;
-	border:3px solid <?php echo SKIN_CSS_CTS_BDCOLOR; ?>;
-}
-
-.footbox{
-	border:dotted 1px <?php echo SKIN_CSS_BOX_BDCOLOR; ?>;
-	background-color: <?php echo SKIN_CSS_BOX_BGCOLOR; ?>;
-}
-
-.sidebox h1 ,
-.sidebox h2 ,
-.sidebox h3 ,
-.sidebox h4 ,
-.sidebox h5 {
-	border: 2px solid <?php echo SKIN_CSS_BOX_BDCOLOR; ?>;
-	background-color: <?php echo SKIN_CSS_BOX_BGCOLOR; ?>;
-}
-
-
-/* calendar*.inc.php */
-.style_calendar {
-	background-color:<?php echo SKIN_CSS_BOX_BDCOLOR; ?>;
-}
-
-.social li{
-	display:inline;
-}
 @media print{
 	#logo, #navigator, #topbox, #leftbox, #leftbox2, #rightbox, #footer,
 	#toolbar, #attach, #related, a.note_super, .jumpmenu, .anchor_super,

@@ -28,7 +28,7 @@ hr{
 	border-color: #999;
 }
 
-p, pre, dl{
+p, pre, dl, form, .table_wrapper{
 	margin:0.5em 1.5em;
 }
 

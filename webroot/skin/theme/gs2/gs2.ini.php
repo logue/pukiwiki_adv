@@ -84,8 +84,5 @@ require ('gs2_color/pukiwiki_gs2_color_'.$_SKIN['color'].'.php');
 $link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.'scripts.css.php?base=' . urlencode(IMAGE_URI) );
 $link_tags[] = array('rel'=>'stylesheet',	'href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/gs2.css.php?gs2color='.$_SKIN['color'],'type'=>'text/css');
 
-// 読み込むスクリプト
-$js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/gs2.js', 'defer'=>'defer');
-
 /* End of file gs2.ini.php */
 /* Location: ./webroot/skin/theme/gs2/gs2.ini.php */

@@ -101,7 +101,7 @@ h5, h6 {
 	background-color:#DDEEFF;
 }
 
-p, pre, dl{
+p, pre, dl, form, .table_wrapper{
 	margin:.5em 1.5em;
 }
 
@@ -115,12 +115,6 @@ pre {
 
 q{
 	border:1px dotted #999;
-}
-
-ul, ol {
-	padding-left:2em;
-	margin-left:1.5em;
-	margin:0.5em;
 }
 
 fieldset pre{

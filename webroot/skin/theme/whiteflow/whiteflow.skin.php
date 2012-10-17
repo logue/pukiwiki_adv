@@ -1,7 +1,7 @@
 <?php
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: whiteflow.css.php,v 1.0.3 2012/08/05 18:06:30 Logue Exp $
+// $Id: whiteflow.css.php,v 1.0.3 2012/10/17 15:44:30 Logue Exp $
 
 // White flow Adv. skin.
 // ver 1.0 (2011/12/10) 
@@ -70,7 +70,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 <!-- START #content -->
 			<div id="content" class="clearfix">
 <!-- START #content > #edit-area -->
-				<div id="edit-area" class="<? echo $layout_class; ?>" role="main">
+				<div id="edit-area" class="<?php echo $layout_class; ?>" role="main">
 					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="body">'."\n" : '<div id="body">'."\n"; ?>
 						<?php echo $body."\n" ?>
 					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</section>'."\n" : '</div>'."\n"; ?>

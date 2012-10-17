@@ -157,27 +157,22 @@ p{
 }
 
 .style_table {
-	color:inherit;
 	background-color:#DDDDDD;
 }
 .style_th {
-	color:inherit;
 	background-color:#EEEEEE;
 }
 
 .style_td {
-	color:inherit;
 	background-color:#EEEEEE
 }
 
 thead .style_td,
 tfoot .style_td {
-	color:inherit;
 	background-color:#D0D8E0;
 }
 thead .style_th,
 tfoot .style_th {
-	color:inherit;
 	background-color:#E0E8F0;
 }
 
@@ -231,7 +226,9 @@ dd {
 	border-color:#999999;
 	border-width:1px 0;
 }
-
+p, pre, dl, form, .table_wrapper{
+	margin:.5em 1.5em;
+}
 /* SideBar
 ----------------------------------------------------------------------------- */
 #menubar {
