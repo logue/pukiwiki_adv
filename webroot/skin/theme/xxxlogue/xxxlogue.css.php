@@ -40,7 +40,7 @@ body{
 
 /* anchor tag */
 a {
-	color:#5D8BB3 !important;
+	color:#3578b2 !important;
 	background-color:inherit;
 	text-decoration:none;
 }
