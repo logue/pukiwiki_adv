@@ -368,11 +368,9 @@ function get_existpages_cache($dir = DATA_DIR, $ext = PKWK_TXT_EXTENTION, $compa
 		}
 	}else{
 		$cache_name = CACHE_DIR.PKWK_EXISTS_PREFIX.$func.'.txt';
-		if (file_exists($cache_name)) {
-			if (cache_timestamp_compare_date($func,$cache_name)) {
-				$pages = get_existpages_cache_read($cache_name,$compat);
-				if (!empty($pages)) return $pages;
-			}
+		if (cache_timestamp_compare_date($func,$cache_name)) {
+			$pages = get_existpages_cache_read($cache_name,$compat);
+			if (!empty($pages)) return $pages;
 		}
 	}
 
