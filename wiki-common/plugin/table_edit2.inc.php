@@ -1276,7 +1276,7 @@ function plugin_table_edit2_action()
 
 				} else if (isset($vars['line_count']) && $vars['line_count'] == $line_count && ! $td_edit) {
 					if( $tr_edit ) {				//t_edit tr_add
-						if (isset($vars['add_show'])) {
+						if (isset($vars['add_show']) && $vars['add_show'] === 1) {
 							$source_s .= $args_line;
 							if ( $edit->chose !== 2 ) $edit->chk_csv_source($args, $args_key);
 						}
@@ -1446,7 +1446,7 @@ class TableEdit2Edit
 						. $this->chose_f_table('suffix', '');
 					$this->notimestamp = TRUE;
 				} else {
-					if (isset($this->opt['add_show'])) $source_s .= $this->chose_f_table('chose', $match_t[$x]);
+					if (isset($this->opt['add_show']) && $this->opt['add_show'] === 1) $source_s .= $this->chose_f_table('chose', $match_t[$x]);
 					$source_s .= $this->textarea_br($this->line_count_td);
 				}
 			} else {
@@ -1466,7 +1466,7 @@ class TableEdit2Edit
 				for ($i = 1;$i < $this->opt['cell_count'];$i++){
 					$source_s .= $this->textarea_br($i);
 				}
-				$source_s .= isset($this->opt['add_show']) ? "\n" : $last_character . "\n";
+				$source_s .= (isset($this->opt['add_show']) && $this->opt['add_show'] === 1) ? "\n" : $last_character . "\n";
 			}
 		} else if($this->opt['edit_mod'] == 'tr'){			//tr	tr_add
 			$this->notimestamp = TRUE;
@@ -1549,7 +1549,7 @@ class TableEdit2Show extends TableEdit2Form
 		$this->t_type = PLUGIN_TABLE_EDIT2_TEXTAREA ;
 		$this->opt = $post_opt;
 		$this->page = $page;
-		$this->add_title = isset($this->opt['add_show']) ? T_(' [Add Mode]'): '';
+		$this->add_title = (isset($this->opt['add_show']) && $this->opt['add_show'] === 1) ? T_(' [Add Mode]'): '';
 	}
 	function text_type($pi_opt)
 	{
@@ -1636,7 +1636,7 @@ EOD;
 	$cell_count = 1;
 	foreach ($edit_cell as $cell){
 
-		if ( isset($this->opt['add_show']) ) $cell = '';
+		if ( isset($this->opt['add_show']) && $this->opt['add_show'] === 1) $cell = '';
 		$this->table_header[$cell_count] = isset($this->table_header[$cell_count]) ? $this->table_header[$cell_count] : 0;
 
 		$body .= '  <tr><th class="style_th">' . $this->table_header[$cell_count] . '(<var>' . $cell_count . '</var>)</th><td class="style_td">';
@@ -1687,7 +1687,7 @@ EOD;
 		$cell_count++;
 	}
 
-	$delete_or_addshow = isset($this->opt['add_show']) ?
+	$delete_or_addshow = isset($this->opt['add_show']) && $this->opt['add_show'] === 1 ?
 		$this->f_input('hidden','add_show', 1) :
 		$this->f_input('submit','delete',$s_table_delete) ;
 
