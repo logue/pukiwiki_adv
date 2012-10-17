@@ -1,39 +1,45 @@
-#freeze
-*trackerプラグインのデフォルト項目設定
+*trackerプラグインのデフォルト項目設定 [#cd0488fd]
 trackerプラグインで項目設定を指定しなかった場合、この設定が使用されます。
 #ls(./)
 
-* fields
-|項目名		|見出し					|形式		|オプション	|デフォルト値|h
-|name		|&_(ja){投稿者};		|page		|20			|anonymous|
-|category	|&_(ja){カテゴリー};	|select		|			||
-|priority	|&_(ja){優先度};		|select		|			|&_(ja){低};|
-|state		|&_(ja){状態};			|select		|			|&_(ja){提案};|
-|version	|&_(ja){バージョン};	|text		|10			||
-|summary	|&_(ja){サマリ};		|title		|60			||
-|body		|&_(ja){メッセージ};	|textarea	|60,6		||
+* fields [#l0778fd9]
+|項目名		|見出し			|形式		|オプション	|デフォルト値|h
+|text		|テキスト		|text		|20		|textのデフォルト値|
+|page		|ページ			|page		|20		|pageのデフォルト値|
+|title		|タイトル		|title		|20		|titleのデフォルト値|
+|format		|テキスト(書式整形)	|format		|20		|formatのデフォルト値|
+|textarea	|テキストエリア		|textarea	|20,10		|textareaのデフォルト値|
+|select		|セレクト		|select		|3,multiple	|項目1,項目3|
+|radio		|ラジオボタン		|radio		|		|項目2|
+|checkbox	|チェックボックス	|checkbox	|		|項目1,項目3|
+|hidden		|隠し			|hidden		|		|項目1|
+|file		|添付ファイル		|file		|		||
 
-* priority
-|見出し			|セルの書式|h
-|&_(ja){緊急};	|BGCOLOR(#ff8080):%s|
-|&_(ja){重要};	|BGCOLOR(#ffcccc):%s|
-|&_(ja){普通};	|BGCOLOR(#cccccc):%s|
-|&_(ja){低};	|BGCOLOR(#ffffff):%s|
+* format [#q4de94e7]
+|条件		|セルの書式			|文字書式|h
+|IS NOT NULL	|BGCOLOR(#ffccff):%s		|[[URL>%s]]|
+|IS NULL	|BGCOLOR(#ccffcc):SIZE(10):%s	|not specified.|
 
-* state
-|見出し					|セルの書式|h
-|&_(ja){提案};			|BGCOLOR(#ffccff):%s|
-|&_(ja){着手};			|BGCOLOR(#ccccff):%s|
-|&_(ja){コミット待ち};	|BGCOLOR(#ffccff):%s|
-|&_(ja){完了};			|BGCOLOR(#ccffcc):%s|
-|&_(ja){保留};			|BGCOLOR(#ccddcc):%s|
-|&_(ja){却下};			|BGCOLOR(#cccccc):%s|
+* select [#v7c24d9f]
+|見出し	|セルの書式|h
+|項目1	|BGCOLOR(#ffccff):%s|
+|項目2	|BGCOLOR(#ccccff):%s|
+|項目3	|BGCOLOR(#ccffcc):%s|
 
-* category
-|見出し						|セルの書式|h
-|&_(ja){本体バグ};			|BGCOLOR(#ffccff):%s|
-|&_(ja){本体新機能};		|BGCOLOR(#ccccff):%s|
-|&_(ja){プラグイン};		|BGCOLOR(#ccffcc):%s|
-|&_(ja){欲しいプラグイン};	|BGCOLOR(#ccffcc):%s|
-|&_(ja){サイト};			|BGCOLOR(#ccddcc):%s|
-|&_(ja){その他};			|BGCOLOR(#cccccc):%s|
+* radio [#n543b4ea]
+|見出し	|セルの書式|h
+|項目1	|BGCOLOR(#ffccff):%s|
+|項目2	|BGCOLOR(#ccccff):%s|
+|項目3	|BGCOLOR(#ccffcc):%s|
+
+* checkbox [#a92457e2]
+|見出し	|セルの書式|h
+|項目1	|BGCOLOR(#ffccff):%s|
+|項目2	|BGCOLOR(#ccccff):%s|
+|項目3	|BGCOLOR(#ccffcc):%s|
+
+* hidden [#qfd7b37d]
+|見出し	|セルの書式|h
+|項目1	|BGCOLOR(#ffccff):%s|
+|項目2	|BGCOLOR(#ccccff):%s|
+|項目3	|BGCOLOR(#ccffcc):%s|

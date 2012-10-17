@@ -30,8 +30,6 @@
 ajaxや表示周りの処理をjQueryを用いて実現しています。
 :jQuery UIによるインラインウィンドウ COLOR(blue){SIZE(9){Adv.}}|
 インラインウィンドウを用いてページを表示します。jQuery UIを用いているためTheme rollerを用いてデザイン可能です。
-:swfuploadによる添付フォーム COLOR(blue){SIZE(9){Adv.}}|
-ページ切り替えなしで一度に複数の添付ファイルをアップロードできます。
 
 *編集関連 [#y331bef8]
 :ajaxedit COLOR(red){SIZE(9){plus!i18n}}|

@@ -1,18 +1,29 @@
 #norelated
-* FrontPage
-PukiWiki Advanceへようこそ！PukiWiki Adv.は、PukiWiki Plus! i18nのPHP5.4対応、HTML5+jQueryUIポートです。
+*ようこそ [#bc51f60e]
+インストール成功おめでとうございます。この画面が正常に表示されているということは、インストールに成功したということです。まずは、[[SandBox]]で行きPukiWiki Adv.の新機能を試してみましょう。PukiWiki Adv.は、PukiWiki Plus! i18nのPHP5.4対応、HTML5+jQueryUIポートです。
 
-*まず最初にすること
+実働環境に置く前に、必ず管理設定（auth.ini.phpの書き換え）や、サイト名の書き換えを行い、index.phpのdefine('DEBUG',true);をコメントアウトしてください。
+
+*カスタマイズ [#bff50f87]
+これらのページは、セキュリティの都合上、デフォルトでは管理人のみ変更できるようになっています。auth.ini.phpで設定したユーザ名とパスワードでログインしてから変更してください。
+-[[FrontPage]] - このページです。
 -[[MenuBar]] - サイドメニューを定義します
 -[[Glossary]] - 用語集を定義します。ここで定義されているワードは、他のページでツールチップとして表示されます。
--[[Navigation]] - ナビゲーションメニューを定義します。ここを編集すると前ページの上部のメニューがポップアップメニューになります。
--[[SideBar]] - メニューバーと反対側のサイドメニューを表示します。スキンによっては対応していない場合があります。
+-[[InterWikiName]] - 外部のWikiと連携させる場合はここで設定します。詳細は、[[Help/InterWiki]]をご覧になって下さい。
+-[[AutoAliasName]] - ここでリンクを設定すると他のページでも自動的に設定されたURLへリンクが貼られます。
+
+#hr
+以下は、スキンによっては対応していない場合があります。対応状況については、[[adv.:Technical Note/Themes]]をご覧になって下さい。
+-[[Navigation]] - ナビゲーションメニューを定義します。ここを編集すると前ページの上部のメニューがポップアップメニューになります。詳細は、[[Help/NavigationPage]]を参考にしてください。
+-[[SideBar]] - メニューバーと反対側のサイドメニューを表示します。
 -[[:Header]] - ヘッダー部分をカスタマイズします。
 -[[:Footer]] - フッター部分をカスタマイズします。
 
-*サポート
+*サポート [#cf8431bf]
+-[[ヘルプ>Help]]
 -[[PukiWiki Adv.公式サイト>http://pukiwiki.logue.be/]]
---[[問題報告>http://pukiwiki.logue.be/BugTrack]]
+--[[PukiWiki Adv.初心者ガイド>adv.:Documents/For Biggner]] - Wikiサイト作りに迷ったらこちら
+--[[問題報告>adv.:BugTrack]]
 -[[フォーラム>http://forum.logue.be/]]
 -[[Twitter>https://twitter.com/pukiwiki_adv]]
 -[[プロジェクトサイト>https://github.com/logue/pukiwiki_adv]]
