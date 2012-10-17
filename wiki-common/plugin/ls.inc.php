@@ -1,8 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: ls.inc.php,v 1.11.2 2010/09/21 19:28:45 Logue Exp $
+// $Id: ls.inc.php,v 1.11.3 2012/10/17 09:48:45 Logue Exp $
 // Copyright (C)
-//   2010      PukiWiki Advance Developers Team
+//   2010-2012 PukiWiki Advance Developers Team
 //   2005-2006 PukiWiki Plus! Team
 //   2002-2004, 2007 PukiWiki Developers Team
 //   2002      Y.MASUI GPL2 http://masui.net/pukiwiki/ masui@masui.net
@@ -25,7 +25,6 @@ function plugin_ls_convert()
 	$prefix = $vars['page'].'/';
 
 	$page  = isset($vars['page']) ? $vars['page'] : '';
-	$pages = preg_grep('#^' .  preg_quote($page . '/' , '#') . '#', get_existpages());
 
 	foreach (auth::get_existpages() as $page)
 	{

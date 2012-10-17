@@ -237,6 +237,8 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 		tb_send($page, $links);
 	}
 
+	@unlink(CACHE_DIR . PKWK_TIMESTAMP_PREFIX . 'wiki.txt');
+
 	log_write('update',$page);
 }
 
@@ -428,6 +430,8 @@ function file_write($dir, $page, $str, $notimestamp = FALSE)
 			die_message('pkwk_mail_notify(): Failed');
 	}
 
+	@unlink(CACHE_DIR . PKWK_TIMESTAMP_PREFIX . 'wiki.txt');
+
 	is_page($page, TRUE); // Clear is_page() cache
 }
 
@@ -545,7 +549,7 @@ function lastmodified_add($update = '', $remove = '')
 		fclose($fp);
 	}else{
 		update_memcache(MEMCACHE_PREFIX.PKWK_MAXSHOW_CACHE, $recent_pages);
-		update_memcache(MEMCACHE_PREFIX.PKWK_TIMESTAMP_PREFIX.PKWK_MAXSHOW_CACHE, UTIME);
+	//	update_memcache(MEMCACHE_PREFIX.PKWK_TIMESTAMP_PREFIX.PKWK_MAXSHOW_CACHE, UTIME);
 	}
 
 	if ($abort) {
