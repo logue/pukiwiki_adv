@@ -11,11 +11,12 @@ header('Last-Modified: '.gmdate('D, d M Y H:i:s', filemtime($color)) . ' GMT');
 ob_start('ob_gzhandler');
 readfile('js/bootstrap.min.js');
 ?>
-
-$('.contents').scrollspy();
-$('*[aria-describedby="tooltip"]').tooltip();
-$('*[title]').tooltip();
-
+$(document).ready(function(){
+	$('#loading').css('display','none');
+	$('.contents').scrollspy();
+	$('*[aria-describedby="tooltip"]').tooltip();
+	$('*[title]').tooltip();
+});
 <?php
 ob_end_flush();
 

@@ -91,19 +91,13 @@ iframe, object{
 
 /* ==|== Tweek Tags ========================================================= */
 /* Fix italic font */
-i, em, cite, q{
+em, cite, q{
 	font-style: normal;
-	-webkit-transform: skewX(-15deg);
-	-moz-transform: skewX(-15deg);
-	-ms-transform: skewX(-15deg);
-	-o-transform: skewX(-15deg);
-	transform: skewX(-15deg);
-}
-
-/* Italic font fix for legacy IE */
-.ie6 i, .ie6 em, .ie6 cite, .ie7 i, .ie7 em, .ie7 cite, .ie8 i, .ie8 em, .ie8 cite{
-	font-family: 'MS PGothic', suns-serif;
-	font-style: italic;
+	-webkit-transform: skewX(-15deg) !important;
+	-moz-transform: skewX(-15deg) !important;
+	-ms-transform: skewX(-15deg) !important;
+	-o-transform: skewX(-15deg) !important;
+	transform: skewX(-15deg) !important;
 }
 
 /* Fix Gecko Ruby Tag */
@@ -295,7 +289,15 @@ i, em, cite, q{
      -moz-border-radius: 4px;
           border-radius: 4px;
 }
-
+.style_table_center{
+	margin: 0 auto;
+}
+.style_table_left{
+	margin:auto auto auto 0;
+}
+.style_table_right{
+	margin:auto 0 auto auto;
+}
 .style_table th,
 .style_table td {
   border-left: 1px solid #dddddd;
@@ -365,6 +367,105 @@ i, em, cite, q{
 }
 .ie8 .edit_form textarea{
 	width: 780px;
+}
+
+button, input[type="submit"], input[type="reset"] {
+  display: inline-block;
+  *display: inline;
+  padding: 4px 14px;
+  margin-bottom: 0;
+  *margin-left: .3em;
+  font-size: 14px;
+  line-height: 20px;
+  *line-height: 20px;
+  color: #333333;
+  text-align: center;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+  vertical-align: middle;
+  cursor: pointer;
+  background-color: #f5f5f5;
+  *background-color: #e6e6e6;
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6));
+  background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: -o-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
+  background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
+  background-repeat: repeat-x;
+  border: 1px solid #bbbbbb;
+  *border: 0;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  border-color: #e6e6e6 #e6e6e6 #bfbfbf;
+  border-bottom-color: #a2a2a2;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+  filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe6e6e6', GradientType=0);
+  filter: progid:dximagetransform.microsoft.gradient(enabled=false);
+  *zoom: 1;
+  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+     -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+button:hover, input[type="submit"]:hover, input[type="reset"]:hover,
+button:active, input[type="submit"]:active, input[type="reset"]:active,
+button[disabled],input[type="submit"][disabled], input[type="reset"][disabled] {
+  color: #333333;
+  background-color: #e6e6e6;
+  *background-color: #d9d9d9;
+}
+
+button:active, input[type="submit"]:active, input[type="reset"]:active,
+button.active {
+  background-color: #cccccc;
+}
+
+button:first-child {
+  *margin-left: 0;
+}
+
+button:hover,input[type="submit"]:hover, input[type="reset"]:hover {
+  color: #333333;
+  text-decoration: none;
+  background-color: #e6e6e6;
+  *background-color: #d9d9d9;
+  /* Buttons in IE7 don't get borders, so darken on hover */
+
+  background-position: 0 -15px;
+  -webkit-transition: background-position 0.1s linear;
+     -moz-transition: background-position 0.1s linear;
+       -o-transition: background-position 0.1s linear;
+          transition: background-position 0.1s linear;
+}
+
+button:focus,input[type="submit"]:focus,input[type="reset"]:focus {
+  outline: thin dotted #333;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+button.active,
+button:active,
+input[type="submit"]:active,input[type="reset"]:active {
+  background-color: #e6e6e6;
+  background-color: #d9d9d9 \9;
+  background-image: none;
+  outline: 0;
+  -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+     -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+          box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+button.disabled,
+button[disabled],input[type="submit"][disabled],input[type="reset"][disabled] {
+  cursor: default;
+  background-color: #e6e6e6;
+  background-image: none;
+  opacity: 0.65;
+  filter: alpha(opacity=65);
+  -webkit-box-shadow: none;
+     -moz-box-shadow: none;
+          box-shadow: none;
 }
 
 /* Note */
@@ -798,17 +899,6 @@ th .ui-icon {
 #loading {
 	display:none;
 	cursor:progress;
-}
-/* Table Sorter */
-.even {
-	background-color: #3D3D3D;
-}
-.odd {
-	background-color: #6E6E6E;
-}
-.highlight {
-	background-color: #3D3D3D;
-	font-weight: bold;
 }
 
 /* Tooltip */
