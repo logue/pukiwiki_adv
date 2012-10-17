@@ -111,15 +111,37 @@ SIZE(20){ COLOR(#333399){ 両方指定(SIZE(20)COLOR(#333399)) } }
 CENTER:中寄せ
 RIGHT:右寄せ
 
-* テーブル
-テーブル編集
+* テーブル [#b9b997ac]
+左寄せテーブル
+LEFT:
+|~1	|~2	|~3	|
+|a	|b	|c	|
+|A	|B	|C	|
+中央寄せテーブル（デフォルト）
+CENTER:
+|~4	|~5	|~6	|
+|d	|e	|f	|
+|D	|E	|F	|
+右寄せテーブル
+RIGHT:
+|~7	|~8	|~9	|
+|g	|h	|i	|
+|G	|H	|I	|
+
+ソート可能なテーブル
+|Flute	|Price	|h
+|Orange	|80	|
+|Apple	|150	|
+|Banana	|100	|
+|Grape	|174	|
+
+編集可能なテーブル
 #table_edit2(td_edit=off,edit=on,table_mod=unlock){{
 |~1|~2|~3|
 |a|b|c|
 |A|B|C|
 }}
-
-* リキッドレイアウト
+* リキッドレイアウト [#ja44520e]
 spanプラグインの数値の合計が12になるようにrowプラグインでspanプラグインをくくります。
 #row{{{{
 #span(4){{

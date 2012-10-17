@@ -1,5 +1,3 @@
-#freeze
-
 #navi(../)
 &_set(page,en){Page};
 &_set(page,ja){ページ};
@@ -26,10 +24,10 @@
 -&_(ja){状態};		: [state]
 -&_(ja){カテゴリ};	: [category]
 -&_(ja){投稿日};	: [_date]
--&_(ja){バージョン};: [version]
+-&_(ja){バージョン};	: [version]
 
 * &_(ja){メッセージ}; [#message]
 [body]
 
 * &_(ja){コメント}; [#comment]
-#pcomment
+#comment

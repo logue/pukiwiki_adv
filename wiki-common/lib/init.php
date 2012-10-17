@@ -14,8 +14,8 @@
 
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
-define('S_VERSION', 'v1.0 beta3');
-define('S_REVSION', '20121011');
+define('S_VERSION', 'v1.0');
+define('S_REVSION', '20121017');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &#169; 2010-2012' .

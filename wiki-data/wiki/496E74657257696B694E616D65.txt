@@ -1,6 +1,6 @@
 *Official [#r1a8ac60]
 
--[http://pukiwiki.sourceforge.jp/? pukiwiki]
--[http://pukiwiki.sourceforge.jp/dev/? dev]
--[http://pukiwiki.cafelounge.net/plus/? plus]
--[http://pukiwiki.logue.be/? adv]
+-[http://pukiwiki.sourceforge.jp/? pukiwiki] euc
+-[http://pukiwiki.sourceforge.jp/dev/? dev] euc
+-[http://pukiwiki.cafelounge.net/plus/? plus] utf8
+-[http://pukiwiki.logue.be/ adv.] utf8
