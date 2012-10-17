@@ -73,7 +73,7 @@ var pukiwiki = {};
 			'@prefix' : '<http://purl.org/net/ns/doas#>',
 			'@about' : '<skin.js>', 'a': ':JavaScript',
 			'title' : 'Pukiwiki skin script for jQuery',
-			'created' : '2008-11-25', 'release': {'revision': '2.2.29', 'created': '2012-08-25'},
+			'created' : '2008-11-25', 'release': {'revision': '2.2.30', 'created': '2012-10-16'},
 			'author' : {'name': 'Logue', 'homepage': '<http://logue.be/>'},
 			'license' : '<http://www.gnu.org/licenses/gpl-2.0.html>'
 		},
@@ -429,6 +429,39 @@ var pukiwiki = {};
 			$('form.autosubmit').change(function(){
 				this.submit();
 			});
+			
+			// テキストエリアでタブ入力できるように
+			$(prefix + 'textarea').tabby();
+			$(prefix + 'textarea[row=1]').autosize();
+
+			// buttonタグは、data要素で処理をカスタマイズ
+			$(prefix + 'button').each(function(){
+				var $this = $(this);
+				var data = $this.data();
+
+				$this.button({
+					text: data.text ? data.text : true,
+					label: data.label ? data.label : this.value,
+					icons: {
+						primary : data.iconsPrimary,
+						secondary: data.iconsSecondary
+					}
+				});
+			});
+			$(prefix + '.button').each(function(){
+				var $this = $(this);
+				var data = $this.data();
+				//console.log(data.text);
+
+				$this.button({
+					text: data.text,
+				//	label: data.label ? data.label : (data.text === true) ? $this.innerText : null,
+					icons: {
+						primary : data.iconsPrimary,
+						secondary: data.iconsSecondary
+					}
+				});
+			}).removeClass(prefix + 'button');
 
 			// タブ/アコーディオン処理
 			$(prefix + 'li[role=tab] a').each(function(){
@@ -492,61 +525,25 @@ var pukiwiki = {};
 
 			// ダイアログ
 			this.setAnchor(prefix);
-			// 検索フォーム（ページ名を提案）
-			this.search_form(prefix);
-			// 用語集
-			this.glossaly(prefix);
 			// シンタックスハイライト
 			this.sh(prefix);
-			// サジェスト
-			this.search_form(prefix);
+			// サジェスト（ページ名を提案）
+			this.suggest(prefix);
 			// Bad Behavior
 			this.bad_behavior(prefix);
+			// 用語集
+			this.glossaly(prefix);
 			// テーブルソート
 			this.dataTable(prefix);
 
-			// テキストエリアでタブ入力できるように
-			$(prefix + 'textarea').tabby();
-			$(prefix + 'textarea[row=1]').autosize();
-
-			// ボタンをjQuery UIのものに
-			$(prefix + 'input[type=submit], '+prefix + 'input[type=reset], '+prefix + 'input[type=button]').button();
-
-			// buttonタグは、data要素で処理をカスタマイズ
-			$(prefix + 'button').each(function(){
-				var $this = $(this);
-				var data = $this.data();
-
-				$this.button({
-					text: data.text ? data.text : true,
-					label: data.label ? data.label : this.value,
-					icons: {
-						primary : data.iconsPrimary,
-						secondary: data.iconsSecondary
-					}
-				});
-			});
-			$(prefix + '.button').each(function(){
-				var $this = $(this);
-				var data = $this.data();
-				//console.log(data.text);
-
-				$this.button({
-					text: data.text,
-				//	label: data.label ? data.label : (data.text === true) ? $this.innerText : null,
-					icons: {
-						primary : data.iconsPrimary,
-						secondary: data.iconsSecondary
-					}
-				});
-			}).removeClass(prefix + 'button');
+			this.set_widget_btn(prefix);
 
 			// フォームロックを解除
 			$(':input').removeAttr('disabled');
-			$('.ui-button').button('option', 'disabled', false);
-			$(prefix + '.buttonset').buttonset().removeClass('buttonset');
+			// ボタンをjQuery UIのものに
+			$(prefix + 'input[type=submit], '+prefix + 'input[type=reset], '+prefix + 'input[type=button]').button();
 
-			this.set_widget_btn(prefix);
+			$(prefix + '.buttonset').buttonset().removeClass('buttonset');
 
 			if(typeof(callback) === 'function'){
 				callback();
@@ -582,9 +579,9 @@ var pukiwiki = {};
 				var href = $this.attr('href');
 				var ext = href.match(/\.(\w+)$/i);
 				var rel = $this.attr('rel') ? $this.attr('rel') : null;
-				var ajax = $this.data('ajax') ? $this.data('ajax') : 'json';
-				
-				if (ajax === false) return true;
+				if ($this.data('ajax') === false){
+					return;
+				}
 
 				if (rel && rel.match(/noreferer|license|product|external/)){
 
@@ -710,7 +707,7 @@ var pukiwiki = {};
 							params.help === 'true' ||
 							(params.cmd === 'attach' &&  params.pcmd !== 'list') ||
 							(params.cmd === 'tb' && params.tb_id !== undefined) ||
-							(params.cmd === 'table_edit2' && !params.table_mod ) ||
+							(params.cmd === 'table_edit2' ) ||
 							(params.cmd.match(/attach|source|template|freeze|rename|diff|referer|logview|related/i) && typeof(params.page) !== 'undefined')
 						){
 							// その他の主要なプラグインは、インラインウィンドウで表示
@@ -756,9 +753,6 @@ var pukiwiki = {};
 
 					// オーバーレイでウィンドウを閉じる
 					var parent = this;
-					$(prefix + '.ui-widget-overlay').click(function(){
-						$(parent).dialog('close');
-					});
 					self.init_dom(prefix);
 					return false;
 				},
@@ -813,6 +807,8 @@ var pukiwiki = {};
 					var container = $('<div class="window"></div>');
 					if (data.status === 401){
 						status = $.i18n('dialog','error_auth');
+					}else if (data.status === 302){
+						document.location.reload();
 					}else if (status === 'error'){
 						status = $.i18n('dialog','error_page');
 					}
@@ -905,8 +901,8 @@ var pukiwiki = {};
 			});
 		},
 		// 検索フォームでサジェスト機能
-		search_form: function(prefix){
-			var form = (prefix) ? prefix + ' input[type="search"]' : 'input[type="search"]';
+		suggest: function(prefix){
+			var form = (prefix) ? prefix + ' .suggest' : '.suggest';
 			if ($(form).length !== 0){
 				var cache = {},lastXhr, xhr;
 				$(form)
@@ -950,10 +946,10 @@ var pukiwiki = {};
 						'<li class="jp-video-play ui-button ui-state-default ui-corner-all" title="' + $.i18n('player','play') + '"><span class="ui-icon ui-icon-video"></span></li>',
 						'<li class="jp-pause ui-button ui-state-default ui-corner-all" title="' + $.i18n('player','pause') + '"><span class="ui-icon ui-icon-pause"></span></li>',
 						'<li class="jp-stop ui-button ui-state-default ui-corner-all" title="' + $.i18n('player','stop') + '"><span class="ui-icon ui-icon-stop"></span></li>',
-						'<li>',
+						'<li><div class="jp-cast">',
 							'<span class="ui-icon ui-icon-clock" style="display:inline-block">Cast:</span>',
 							'<span class="jp-current-time">00:00</span>/<span class="jp-duration">??:??</span>',
-						'</li>',
+						'</div></li>',
 						'<li style="width:300px;"></li>',
 						'<li class="jp-full-screen ui-button ui-state-default ui-corner-all" title="Full screen"><span class="ui-icon ui-icon-arrow-4-diag"></span></li>',
 						'<li class="jp-mute ui-button ui-state-default ui-corner-all" title="' + $.i18n('player','volume_min') + '"><span class="ui-icon ui-icon-volume-off"></span></li>',
@@ -990,6 +986,8 @@ var pukiwiki = {};
 							$play = $('#jp-container .jp-play'),
 							$pause = $('#jp-container .jp-pause')
 						;
+						
+						$playback.slider({range: 'min',animate:true});
 
 						// Instance jPlayer
 						$jPlayer.jPlayer({
@@ -997,13 +995,12 @@ var pukiwiki = {};
 							cssSelectorAncestor: '#jp-container',
 							supplied: ext,
 							wmode: 'window',
+							volume: ($.cookie('volume')) ? $.cookie('volume') : 100,
 							ready: function (event) {
 								$(this).jPlayer('setMedia',media);
 								$(self).dialog('option','title', file);
 								// Slider
 								$playback.slider({
-									range: 'min',
-									animate: true,
 									max: parseInt(event.jPlayer.status.duration),
 									value: parseInt(event.jPlayer.status.currentTime),
 									slide: function(event, ui) {
@@ -1021,7 +1018,7 @@ var pukiwiki = {};
 										$.cookie('volume', ui.value, {expires:30, path:'/'});
 									}
 								});
-								$jPlayer.jPlayer('volume', $.cookie('volume') * 0.01 );
+								
 								$play.click();
 							},
 							load: function(event){
@@ -1060,6 +1057,7 @@ var pukiwiki = {};
 								});
 							}
 						});
+						$jPlayer.jPlayer('volume', ($.cookie('volume')) ? $.cookie('volume') : 100);
 						//hover states on the static widgets
 						$('#jp-content ul li').hover(
 							function() { $(this).addClass('ui-state-hover'); },
@@ -1262,15 +1260,7 @@ var pukiwiki = {};
 				bgiframe: true,
 				width:470,
 				show: 'scale',
-				hide: 'scale',
-				buttons: [
-					{
-						text : $.i18n('dialog','ok'),
-						click : function() {
-							$(this).dialog('close');
-						}
-					}
-				]
+				hide: 'scale'
 			}).html($.i18n('pukiwiki','hint_text1'));
 
 			// ここから、イベント割り当て
