@@ -23,7 +23,7 @@ a:hover{
 	color:#215dc6 !important;
 }
 
-p, pre, dl, blockquote{
+p, pre, dl, blockquote, .table_wrapper{
 	margin:.5em 1.5em;
 }
 

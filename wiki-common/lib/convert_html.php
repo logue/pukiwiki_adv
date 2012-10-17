@@ -545,11 +545,11 @@ class TableCell extends Element
 
 		if (!empty($text) && $text{0} === '#') {
 			// Try using Div class for this $text
-			$obj = & Factory_Div($this, $text);
+			$obj = Factory_Div($this, $text);
 			if (is_a($obj, 'Paragraph'))
-				$obj = & $obj->elements[0];
+				$obj = $obj->elements[0];
 		} else {
-			$obj = & Factory_Inline($text);
+			$obj = Factory_Inline($text);
 		}
 
 		$this->insert($obj);
@@ -595,6 +595,7 @@ class Table extends Element
 	var $type;
 	var $types;
 	var $col; // number of column
+	var $align = 'center';
 
 	function Table($out)
 	{
@@ -683,7 +684,7 @@ class Table extends Element
 			}
 			$string .= $this->wrap($part_string, $part);
 		}
-		$string = $this->wrap($string, 'table', ' class="style_table" data-pagenate="false" ');
+		$string = $this->wrap($string, 'table', ' class="style_table style_table_' . $this->align . '" data-pagenate="false" ');
 
 		return $this->wrap($string, 'div', ' class="table_wrapper"');
 	}
@@ -696,6 +697,7 @@ class Table extends Element
 class YTable extends Element
 {
 	var $col;	// Number of columns
+	var $align = 'center';
 
 	// TODO: Seems unable to show literal '==' without tricks.
 	//       But it will be imcompatible.
@@ -763,7 +765,7 @@ class YTable extends Element
 		foreach ($this->elements as $str) {
 			$rows .= "\n" . '<tr class="style_tr">' . $str . '</tr>' . "\n";
 		}
-		$rows = $this->wrap($rows, 'table', ' class="style_table"');
+		$rows = $this->wrap($rows, 'table', ' class="style_table style_table_' . $this->align . '"');
 		return $this->wrap($rows, 'div', ' class="table_wrapper"');
 	}
 }
@@ -835,6 +837,9 @@ class Align extends Element
 
 	function canContain(& $obj)
 	{
+		if (is_a($obj,'Table') or is_a($obj,'YTable')) {
+			$obj->align = $this->align;
+		}
 		return is_a($obj, 'Inline');
 	}
 

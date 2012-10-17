@@ -154,18 +154,24 @@ a img {
 	text-align: center;
 	width: 100%;
 }
-
 .style_table{
 	border-spacing:2px;
 	padding: 0;
 	border: 0;
-	margin: .1em auto;
 	text-align: left;
 	border-collapse: separate;
 	border-spacing: 1px;
 	background-color: darkgray;
-	max-width:90%;
-	min-width:45%;
+	min-width:30%;
+}
+.style_table_center{
+	margin: 0 auto;
+}
+.style_table_left{
+	margin:auto auto auto 0;
+}
+.style_table_right{
+	margin:auto 0 auto auto;
 }
 .style_th{
 	background-color: silver;
@@ -1271,24 +1277,18 @@ input[type='search'][required], textarea[required], select[required] {
 
 #jp-container .jp-bars {
 	position: relative;
-	left :170px;
+	left :160px;
 	top: .25em;
 	width: 280px;
 }
 #jp-container .ui-slider-handle{
 	height: 1.6em;
 }
-#jp-container .pkwk_widget {
-	display: block;
+#jp-container .jp-cast {
+	padding-top: .5em;
 }
-/*
-#jp-container .jp-loader {
-	height: .2em;
-	border: 0;
-}
-*/
 #jp-container .jp-bars .jp-playback {
-	height: 12px;
+	height: 1em;;
 }
 
 /*
