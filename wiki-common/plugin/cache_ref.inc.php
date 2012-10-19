@@ -8,7 +8,7 @@
 
 function plugin_cache_ref_action()
 {
-	global $vars;
+	global $vars, $use_sendfile_header;
 
 	$usage = 'Usage: cmd=cache_ref&amp;src=filename';
 
@@ -49,23 +49,19 @@ function plugin_cache_ref_action()
 	$date = filemtime($ref);
 
 	// Output
+	ini_set('default_charset', '');
+	mb_http_output('pass');
 	pkwk_common_headers($date, null, false);
+	// for reduce server load
+	if ($use_sendfile_header === true){
+		// for reduce server load
+		header('X-Sendfile: '.realpath($ref));
+	}
 	header('Content-Disposition: inline; filename="' . $filename . '"');
 	header('Content-Length: ' . $size);
 	header('Content-Type: '   . $type);
 
-	// for reduce server load
-	$sendfile = realpath($ref);
-	if (function_exists('apache_get_modules') && in_array( 'mod_xsendfile', apache_get_modules()) ){
-		// for Apache mod_xsendfile
-		header('X-Sendfile: '.$sendfile);
-	}else if (stristr(getenv('SERVER_SOFTWARE'), 'lighttpd') ){
-		// for lighttpd
-		header('X-Lighttpd-Sendfile: '.$sendfile);
-	}else if(stristr(getenv('SERVER_SOFTWARE'), 'nginx') || stristr(getenv('SERVER_SOFTWARE'), 'cherokee')){
-		// nginx
-		header('X-Accel-Redirect: '.$sendfile);
-	}
+	
 
 	// @readfile($ref);
 	plus_readfile($ref);

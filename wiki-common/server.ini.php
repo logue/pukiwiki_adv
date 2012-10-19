@@ -13,6 +13,10 @@ define('MEMCACHE_HOST', '127.0.0.1');
 define('MEMCACHE_PORT', 11211);
 
 /////////////////////////////////////////////////
+// Append X-Sendfile header
+$use_sendfile_header = true;
+
+/////////////////////////////////////////////////
 // Page-reading feature settings
 // (Automatically creating pronounce datas, for Kanji-included page names,
 //  to show sorted page-list correctly)
