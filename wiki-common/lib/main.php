@@ -39,8 +39,11 @@
 set_time_limit(0);
 ignore_user_abort(true);
 ini_set('memory_limit', '128M');
+ini_set('real_path_cache_size','64k');
+ini_set('realpath_cache','120');
 ini_set('zlib.output_compression', 'Off');
 ini_set('zlib.output_handler','mb_output_handler');
+
 $info = array();
 foreach (array('mbstring','json','openssl','curl','gd') as $ext){
 	if (! extension_loaded($ext)){
@@ -55,6 +58,11 @@ if (count($info) !== 0){
 // Include subroutines
 
 defined('LIB_DIR') or define('LIB_DIR', realpath('./').'/');
+
+use Zend\Loader\StandardAutoloader;
+require_once (LIB_DIR.'Zend/Loader/StandardAutoloader.php');
+$loader = new StandardAutoloader(array('autoregister_zf' => true));
+$loader->register();
 
 // Load *.ini.php files and init PukiWiki
 require(LIB_DIR . 'func.php');
@@ -82,7 +90,7 @@ require(LIB_DIR . 'netbios.cls.php');
 require(LIB_DIR . 'ua/user_agent.cls.php');
 
 require(LIB_DIR . 'simple_html_dom.php');
-require(LIB_DIR . 'gettext/gettext.inc');
+//require(LIB_DIR . 'gettext/gettext.inc');
 
 // Defaults
 $notify = $trackback = $referer = 0;

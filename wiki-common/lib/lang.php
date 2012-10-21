@@ -7,6 +7,8 @@
  *
  */
 
+use Zend\I18n\Translator\Translator;
+
 // CORRESPONDENCE LANGUAGE : 対応言語
 // == CASE SENSITIVE ==    : 大文字小文字を区別
 $language_prepared = array('ja_JP', 'zh_TW', 'zh_CN',  'en_US', 'ko_KR');
@@ -21,6 +23,7 @@ function set_language()
 	global $language_considering_setting_level;
 	global $language;
 	global $public_holiday_guest_view;
+	global $translator;
 
 	$language = get_language($language_considering_setting_level);
 /*
@@ -71,6 +74,42 @@ PO_LANG
 
 	// PHP mbstring process.
 	set_mbstring($language);
+
+	global $translator, $core_cache;
+	$translator = new Translator();
+	$translator->factory(array(
+		'locale' => array('ja_JP', 'zh_TW', 'zh_CN',  'en_US', 'ko_KR'),
+		'cache' => $core_cache,
+	));
+}
+
+// gettext to Zend gettext emulator
+function T_setlocale($type, $locale){
+	global $translator;
+	$translator->setLocale($locale);
+}
+
+function T_($string){
+	global $translator, $domain, $language;
+	return $translator->translate($string, $domain, $language);
+}
+
+function T_bindtextdomain($domain, $dir){
+	global $translator, $language;
+	$gettext_file = $dir.PO_LANG.'/LC_MESSAGES/'.$domain.'.mo';
+	
+	if (file_exists($gettext_file)){
+		$translator->addTranslationFile('gettext', $gettext_file, $domain, $language);
+	}
+}
+
+function T_bind_textdomain_codeset($name, $endode){
+	// through
+}
+
+function T_textdomain($text_domain){
+	global $domain;
+	$domain = $text_domain;
 }
 
 /*

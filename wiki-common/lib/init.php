@@ -31,7 +31,7 @@ define('GENERATOR', S_APPNAME.' '.S_VERSION);
 
 defined('DEBUG')		or define('DEBUG', false);
 defined('PKWK_WARNING')	or define('PKWK_WARNING', false);
-defined('ROOT_URI')		or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');	// スクリプトが置かれている絶対パス
+defined('ROOT_URI')		or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');
 defined('WWW_HOME')		or define('WWW_HOME', '');
 defined('COMMON_URI')	or define('COMMON_URI', ROOT_URI);
 
@@ -55,8 +55,7 @@ defined('PKWK_IGNOLE_POSTID_CHECK_PLUGINS') or define('PKWK_IGNOLE_POSTID_CHECK_
 // Compat and suppress notices
 if (!isset($HTTP_SERVER_VARS)) $HTTP_SERVER_VARS = array();
 
-foreach (array('SCRIPT_NAME', 'SERVER_ADMIN', 'SERVER_NAME',
-	'SERVER_PORT', 'SERVER_SOFTWARE', 'HTTPS') as $key) {
+foreach (array('SCRIPT_NAME', 'SERVER_ADMIN', 'SERVER_NAME', 'SERVER_SOFTWARE') as $key) {
 	define($key, isset($_SERVER[$key]) ? $_SERVER[$key] : '');
 	unset(${$key}, $_SERVER[$key], $HTTP_SERVER_VARS[$key]);
 }
@@ -103,8 +102,19 @@ if ($read_usr_ini_file) {
 	unset($read_usr_ini_file);
 }
 
+use Zend\Cache\StorageFactory;
+$cache = StorageFactory::factory(array(
+	'adapter' => array(
+		'name' => 'filesystem',
+		'options' => array(
+			'cache_dir' => CACHE_DIR,
+		),
+	)
+));
+
 /////////////////////////////////////////////////
 // I18N
+
 set_language();
 set_time();
 require(LIB_DIR . 'public_holiday.php');
@@ -117,9 +127,9 @@ if (! ini_get('safe_mode')){
 	putenv('LC_MESSAGES='.PO_LANG);
 }
 T_setlocale(LC_ALL,PO_LANG);
-T_setlocale(LC_CTYPE,PO_LANG);
+//T_setlocale(LC_CTYPE,PO_LANG);
 T_bindtextdomain(DOMAIN,LANG_DIR);
-T_bind_textdomain_codeset(DOMAIN,SOURCE_ENCODING); 
+//T_bind_textdomain_codeset(DOMAIN,SOURCE_ENCODING); 
 T_textdomain(DOMAIN);
 
 /////////////////////////////////////////////////
@@ -297,6 +307,7 @@ if (class_exists('Memcache')){
 	$info[] = 'Memcache is disabled.';
 	unset($memcache);
 }
+
 /////////////////////////////////////////////////
 // TokyoTyrant利用可能時（未実装）
 // 仕様は同上。
