@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: plugin.php,v 1.20.22 2012/01/22 16:23:00 Logue Exp $
+// $Id: plugin.php,v 1.20.23 2012/10/22 14:33:00 Logue Exp $
 // Copyright (C)
 //   2010-2012 PukiWiki Advance Developers Team
 //   2005-2006,2008 PukiWiki Plus! Team
@@ -149,10 +149,8 @@ function do_plugin_init($name)
 	$func = 'plugin_' . $name . '_init';
 	if (function_exists($func)) {
 		// TRUE or FALSE or NULL (return nothing)
-		// textdomain($name);
 		T_textdomain($name);
 		$done[$name] = call_user_func($func);
-		// textdomain(DOMAIN);
 		T_textdomain(DOMAIN);
 		if (!isset($checked[$name])) {
 			$done[$name] = TRUE; // checked.
@@ -186,10 +184,8 @@ function do_plugin_action($name)
 	if ( isset($vars['encode_hint']) && $vars['encode_hint'] !== PKWK_ENCODING_HINT )
 		die_message($_string['plugin_encode_error']);
 
-	// textdomain($name);
 	T_textdomain($name);
 	$retvar = call_user_func('plugin_' . $name . '_action');
-	// textdomain(DOMAIN);
 	T_textdomain(DOMAIN);
 
 	$retvar['body'] = isset($retvar['body']) ? add_hidden_field($retvar['body'], $name) : '';
@@ -222,15 +218,13 @@ function do_plugin_convert($name, $args = '')
 	}
 
 	$_digest = $digest;
-	textdomain($name);
 	T_textdomain($name);
 	$retvar  = call_user_func_array('plugin_' . $name . '_convert', $aryargs);
-	textdomain(DOMAIN);
 	T_textdomain(DOMAIN);
 	$digest  = $_digest; // Revert
 
 	return ($retvar === FALSE) ?
-		htmlsc('#' . $name . ($args != '' ? '(' . $args . ')' : '')) : add_hidden_field($retvar, $name);
+		htmlsc('#' . $name . ($args !== '' ? '(' . $args . ')' : '')) : add_hidden_field($retvar, $name);
 }
 
 // Call API 'inline' of the plugin
@@ -248,10 +242,8 @@ function do_plugin_inline($name, $args='', $body='')
 	$aryargs[] = & $body; // func_num_args() != 0
 
 	$_digest = $digest;
-	// textdomain($name);
 	T_textdomain($name);
 	$retvar  = call_user_func_array('plugin_' . $name . '_inline', $aryargs);
-	// textdomain(DOMAIN);
 	T_textdomain(DOMAIN);
 	$digest  = $_digest; // Revert
 

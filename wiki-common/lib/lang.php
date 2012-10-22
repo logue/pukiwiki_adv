@@ -85,21 +85,33 @@ PO_LANG
 
 // gettext to Zend gettext emulator
 function T_setlocale($type, $locale){
-	global $translator;
+	global $translator, $core_cache;
 	$translator->setLocale($locale);
+	$translator->setCache($core_cache);
 }
 
 function T_($string){
-	global $translator, $domain, $language;
-	return $translator->translate($string, $domain, $language);
+	global $translator, $domain, $language, $core_cache;
+	$gettext_file = LANG_DIR.PO_LANG.'/LC_MESSAGES/'.$domain.'.mo';
+	if (file_exists($gettext_file)){
+		return $translator->translate($string, $domain, $language);
+	}else{
+		return $string;
+	}
+}
+
+if (!function_exists('_')){
+	function _($string){
+		return T_($string);
+	}
 }
 
 function T_bindtextdomain($domain, $dir){
-	global $translator, $language;
-	$gettext_file = $dir.PO_LANG.'/LC_MESSAGES/'.$domain.'.mo';
-	
+	global $translator, $language, $core_cache;
+	$gettext_file = LANG_DIR.PO_LANG.'/LC_MESSAGES/'.$domain.'.mo';
 	if (file_exists($gettext_file)){
 		$translator->addTranslationFile('gettext', $gettext_file, $domain, $language);
+		$translator->setCache($core_cache);
 	}
 }
 

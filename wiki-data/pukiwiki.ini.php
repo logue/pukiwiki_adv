@@ -115,25 +115,25 @@ $public_holiday_guest_view = 0;
 // You may hide these directories (from web browsers)
 // by setting DATA_HOME at index.php.
 
-defined('DATA_DIR')			or define('DATA_DIR',		DATA_HOME . 'wiki/'     );	// Latest wiki texts
-defined('DIFF_DIR')			or define('DIFF_DIR',		DATA_HOME . 'diff/'     );	// Latest diffs
-defined('BACKUP_DIR')		or define('BACKUP_DIR',		DATA_HOME . 'backup/'   );	// Backups
-defined('CACHE_DIR')		or define('CACHE_DIR',		DATA_HOME . 'cache/'    );	// Some sort of caches
-defined('UPLOAD_DIR')		or define('UPLOAD_DIR',		DATA_HOME . 'attach/'   );	// Attached files and logs
-defined('COUNTER_DIR')		or define('COUNTER_DIR',	DATA_HOME . 'counter/'  );	// Counter plugin's counts
-defined('TRACKBACK_DIR')	or define('TRACKBACK_DIR',	DATA_HOME . 'trackback/');	// TrackBack logs
-defined('REFERER_DIR')		or define('REFERER_DIR',	DATA_HOME . 'trackback/');	// Referer logs
-defined('LOG_DIR')			or define('LOG_DIR',		DATA_HOME . 'log/'      );	// Logging file
-defined('INIT_DIR')			or define('INIT_DIR',		DATA_HOME . 'init/'     );	// Initial value (Contents)
+define('DATA_DIR',		DATA_HOME . 'wiki/'     );	// Latest wiki texts
+define('DIFF_DIR',		DATA_HOME . 'diff/'     );	// Latest diffs
+define('BACKUP_DIR',	DATA_HOME . 'backup/'   );	// Backups
+define('CACHE_DIR',		DATA_HOME . 'cache/'    );	// Some sort of caches
+define('UPLOAD_DIR',	DATA_HOME . 'attach/'   );	// Attached files and logs
+define('COUNTER_DIR',	DATA_HOME . 'counter/'  );	// Counter plugin's counts
+define('TRACKBACK_DIR',	DATA_HOME . 'trackback/');	// TrackBack logs
+define('REFERER_DIR',	DATA_HOME . 'trackback/');	// Referer logs
+define('LOG_DIR',		DATA_HOME . 'log/'      );	// Logging file
+define('INIT_DIR',		DATA_HOME . 'init/'     );	// Initial value (Contents)
 
-defined('PLUGIN_DIR')		or define('PLUGIN_DIR',		SITE_HOME . 'plugin/'   );	// Plugin directory
-defined('LANG_DIR')			or define('LANG_DIR',		SITE_HOME . 'locale/'   );	// Language file
-defined('SITE_INIT_DIR')	or define('SITE_INIT_DIR',	SITE_HOME . 'init/'     );	// Initial value (Site)
+define('PLUGIN_DIR',	SITE_HOME . 'plugin/'   );	// Plugin directory
+define('LANG_DIR',		SITE_HOME . 'locale/'   );	// Language file
+define('SITE_INIT_DIR',	SITE_HOME . 'init/'     );	// Initial value (Site)
 
-defined('EXTEND_DIR')		or define('EXTEND_DIR',		SITE_HOME . 'extend/'   );	// Extend directory
-defined('EXT_PLUGIN_DIR')	or define('EXT_PLUGIN_DIR',	EXTEND_DIR. 'plugin/'   );	// Extend Plugin directory
-defined('EXT_LANG_DIR')		or define('EXT_LANG_DIR',	EXTEND_DIR. 'locale/'   );	// Extend Language file
-defined('EXT_SKIN_DIR')		or define('EXT_SKIN_DIR',	EXTEND_DIR. 'skin/'     );	// Extend Skin directory
+define('EXTEND_DIR',	SITE_HOME . 'extend/'   );	// Extend directory
+define('EXT_PLUGIN_DIR',EXTEND_DIR. 'plugin/'   );	// Extend Plugin directory
+define('EXT_LANG_DIR',	EXTEND_DIR. 'locale/'   );	// Extend Language file
+define('EXT_SKIN_DIR',	EXTEND_DIR. 'skin/'     );	// Extend Skin directory
 
 /////////////////////////////////////////////////
 // Directory settings II (ended with '/')
@@ -142,18 +142,18 @@ defined('EXT_SKIN_DIR')		or define('EXT_SKIN_DIR',	EXTEND_DIR. 'skin/'     );	//
 
 // Skin files (SKIN_DIR/*.skin.php) are needed at
 // ./DATAHOME/SKIN_DIR from index.php.
-defined('SKIN_DIR')		or define('SKIN_DIR',  WWW_HOME . 'skin/');
+define('SKIN_DIR',		WWW_HOME . 'skin/');
 
 // Static image files
-defined('IMAGE_DIR')	or define('IMAGE_DIR', WWW_HOME . 'image/');
+define('IMAGE_DIR', 	WWW_HOME . 'image/');
 
-defined('SKIN_URI')		or define('SKIN_URI',	ROOT_URI . 'skin/');
-defined('IMAGE_URI')	or define('IMAGE_URI',	COMMON_URI . 'image/');
-defined('JS_URI')		or define('JS_URI', 	COMMON_URI . 'js/');
+define('SKIN_URI',		ROOT_URI . 'skin/');
+define('IMAGE_URI',		COMMON_URI . 'image/');
+define('JS_URI', 		COMMON_URI . 'js/');
 
 // THEME
 // *.skin.php => SKIN_DIR or SKIN_DIR + THEME_PLUS_NAME or EXT_SKIN_DIR + THEME_PLUS_NAME
-defined('THEME_PLUS_NAME')   or define('THEME_PLUS_NAME',  'theme/');			// SKIN_URI + THEME_PLUS_NAME
+define('THEME_PLUS_NAME',  'theme/');			// SKIN_URI + THEME_PLUS_NAME
 
 /////////////////////////////////////////////////
 // Title of your Wikisite (Name this)
@@ -220,7 +220,7 @@ $nofollow = false; // true = Try hiding from search engines
 
 // Static URL
 // アドレスに?を使わない静的なアドレスにします。
-$static_url = 1;
+$static_url = 0;
 
 // URL Suffix (such as extention)
 // 静的なアドレス使用時の拡張子を入れます。

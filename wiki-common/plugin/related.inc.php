@@ -62,7 +62,7 @@ function make_related($page, $tag = '')
 	}else if ($tag == 'dl') {
 		$retval =  "\n" .
 			'<dl>'."\n".
-			'<dt>'._('Related pages: ').'</dt>' . "\n" .
+			'<dt>'.T_('Related pages: ').'</dt>' . "\n" .
 			'<dd>' . join("</dd>\n<dd>", $_links) . '</dd>' . "\n" .
 			'</dl>' . "\n";
 	} else if ($tag) {

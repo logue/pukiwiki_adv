@@ -29,25 +29,11 @@ define('GENERATOR', S_APPNAME.' '.S_VERSION);
 /////////////////////////////////////////////////
 // Init PukiWiki Advance Enviroment variables
 
-defined('DEBUG')		or define('DEBUG', false);
-defined('PKWK_WARNING')	or define('PKWK_WARNING', false);
-defined('ROOT_URI')		or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');
-defined('WWW_HOME')		or define('WWW_HOME', '');
-defined('COMMON_URI')	or define('COMMON_URI', ROOT_URI);
-
-// フレームワークのバージョン
-define('JQUERY_VER',		'1.8.2');
-define('JQUERY_UI_VER',		'1.9.0');
-define('JQUERY_MOBILE_VER',	'1.2.0');
-
-// ページ名やファイル名として使用できない文字（エンコード前の文字）
-defined('PKWK_ILLEGAL_CHARS_PATTERN') or define('PKWK_ILLEGAL_CHARS_PATTERN', '/[%|=|&|?|#|\r|\n|\0|\@|\t|;|\$|+|\\|\[|\]|\||^|{|}]/');
-
-// アップロード進捗状況のセッション名（PHP5.4以降のみ有効）
-defined('PKWK_PROGRESS_SESSION_NAME') or define('PKWK_PROGRESS_SESSION_NAME', 'pukiwiki_progress');
-
-// PostIDチェックをしないプラグイン
-defined('PKWK_IGNOLE_POSTID_CHECK_PLUGINS') or define('PKWK_IGNOLE_POSTID_CHECK_PLUGINS', '/menu|side|header|footer|full|read|include|calendar|login/');
+defined('DEBUG')			or define('DEBUG', false);
+defined('PKWK_WARNING')		or define('PKWK_WARNING', false);
+defined('ROOT_URI')			or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');
+defined('WWW_HOME')			or define('WWW_HOME', '');
+defined('COMMON_URI')		or define('COMMON_URI', ROOT_URI);
 
 /////////////////////////////////////////////////
 // Init server variables
@@ -59,24 +45,6 @@ foreach (array('SCRIPT_NAME', 'SERVER_ADMIN', 'SERVER_NAME', 'SERVER_SOFTWARE') 
 	define($key, isset($_SERVER[$key]) ? $_SERVER[$key] : '');
 	unset(${$key}, $_SERVER[$key], $HTTP_SERVER_VARS[$key]);
 }
-
-/////////////////////////////////////////////////
-// Init grobal variables
-
-$foot_explain = array();	// Footnotes
-$related      = array();	// Related pages
-$head_tags    = array();	// XHTML tags in <head></head> (Obsolete in Adv.)
-$foot_tags    = array();	// XHTML tags before </body> (Obsolete in Adv.)
-
-$info         = array();	// For debug use.
-
-$meta_tags    = array();	// <meta />Tags
-$link_tags    = array();	// <link />Tags
-$js_tags      = array();	// <script></script>Tags
-$js_blocks    = array();	// Inline scripts(<script>//<![CDATA[ ... //]]></script>)
-$css_blocks   = array();	// Inline styleseets(<style>/*<![CDATA[*/ ... /*]]>*/</style>)
-$js_vars      = array();	// JavaScript initial value.
-$_SKIN        = array();
 
 /////////////////////////////////////////////////
 // Require INI_FILE
@@ -102,16 +70,79 @@ if ($read_usr_ini_file) {
 	unset($read_usr_ini_file);
 }
 
-use Zend\Cache\StorageFactory;
-$cache = StorageFactory::factory(array(
-	'adapter' => array(
-		'name' => 'filesystem',
-		'options' => array(
-			'cache_dir' => CACHE_DIR,
-		),
-	)
-));
+defined('DATA_DIR')			or define('DATA_DIR',		DATA_HOME . 'wiki/'     );	// Latest wiki texts
+defined('DIFF_DIR')			or define('DIFF_DIR',		DATA_HOME . 'diff/'     );	// Latest diffs
+defined('BACKUP_DIR')		or define('BACKUP_DIR',		DATA_HOME . 'backup/'   );	// Backups
+defined('CACHE_DIR')		or define('CACHE_DIR',		DATA_HOME . 'cache/'    );	// Some sort of caches
+defined('UPLOAD_DIR')		or define('UPLOAD_DIR',		DATA_HOME . 'attach/'   );	// Attached files and logs
+defined('COUNTER_DIR')		or define('COUNTER_DIR',	DATA_HOME . 'counter/'  );	// Counter plugin's counts
+defined('TRACKBACK_DIR')	or define('TRACKBACK_DIR',	DATA_HOME . 'trackback/');	// TrackBack logs
+defined('REFERER_DIR')		or define('REFERER_DIR',	DATA_HOME . 'trackback/');	// Referer logs
+defined('LOG_DIR')			or define('LOG_DIR',		DATA_HOME . 'log/'      );	// Logging file
+defined('INIT_DIR')			or define('INIT_DIR',		DATA_HOME . 'init/'     );	// Initial value (Contents)
 
+defined('TEMP_DIR')			or define('TEMP_DIR',		SITE_HOME . 'temp/'     );	// System cache
+defined('PLUGIN_DIR')		or define('PLUGIN_DIR',		SITE_HOME . 'plugin/'   );	// Plugin directory
+defined('LANG_DIR')			or define('LANG_DIR',		SITE_HOME . 'locale/'   );	// Language file
+defined('SITE_INIT_DIR')	or define('SITE_INIT_DIR',	SITE_HOME . 'init/'     );	// Initial value (Site)
+
+defined('EXTEND_DIR')		or define('EXTEND_DIR',		SITE_HOME . 'extend/'   );	// Extend directory
+defined('EXT_PLUGIN_DIR')	or define('EXT_PLUGIN_DIR',	EXTEND_DIR. 'plugin/'   );	// Extend Plugin directory
+defined('EXT_LANG_DIR')		or define('EXT_LANG_DIR',	EXTEND_DIR. 'locale/'   );	// Extend Language file
+defined('EXT_SKIN_DIR')		or define('EXT_SKIN_DIR',	EXTEND_DIR. 'skin/'     );	// Extend Skin directory
+
+defined('SKIN_DIR')			or define('SKIN_DIR',		WWW_HOME . 'skin/'      );	// Path to Skin directory
+defined('IMAGE_DIR')		or define('IMAGE_DIR',		WWW_HOME . 'image/'     );	// Path to 
+
+defined('SKIN_URI')			or define('SKIN_URI',		ROOT_URI . 'skin/'      );	// URI to Skin directory
+defined('IMAGE_URI')		or define('IMAGE_URI',		COMMON_URI . 'image/'   );	// URI to Static Image
+defined('JS_URI')			or define('JS_URI', 		COMMON_URI . 'js/'      );	// URI to JavaScript Libraly
+
+defined('THEME_PLUS_NAME')	or define('THEME_PLUS_NAME',  'theme/');			// SKIN_URI + THEME_PLUS_NAME
+
+// フレームワークのバージョン
+define('JQUERY_VER',		'1.8.2');
+define('JQUERY_UI_VER',		'1.9.0');
+define('JQUERY_MOBILE_VER',	'1.2.0');
+
+// ページ名やファイル名として使用できない文字（エンコード前の文字）
+defined('PKWK_ILLEGAL_CHARS_PATTERN') or define('PKWK_ILLEGAL_CHARS_PATTERN', '/[%|=|&|?|#|\r|\n|\0|\@|\t|;|\$|+|\\|\[|\]|\||^|{|}]/');
+
+// アップロード進捗状況のセッション名（PHP5.4以降のみ有効）
+defined('PKWK_PROGRESS_SESSION_NAME') or define('PKWK_PROGRESS_SESSION_NAME', 'pukiwiki_progress');
+
+// PostIDチェックをしないプラグイン
+defined('PKWK_IGNOLE_POSTID_CHECK_PLUGINS') or define('PKWK_IGNOLE_POSTID_CHECK_PLUGINS', '/menu|side|header|footer|full|read|include|calendar|login/');
+
+/////////////////////////////////////////////////
+// Init grobal variables
+
+$foot_explain = array();	// Footnotes
+$related      = array();	// Related pages
+$head_tags    = array();	// XHTML tags in <head></head> (Obsolete in Adv.)
+$foot_tags    = array();	// XHTML tags before </body> (Obsolete in Adv.)
+
+$info         = array();	// For debug use.
+
+$meta_tags    = array();	// <meta />Tags
+$link_tags    = array();	// <link />Tags
+$js_tags      = array();	// <script></script>Tags
+$js_blocks    = array();	// Inline scripts(<script>//<![CDATA[ ... //]]></script>)
+$css_blocks   = array();	// Inline styleseets(<style>/*<![CDATA[*/ ... /*]]>*/</style>)
+$js_vars      = array();	// JavaScript initial value.
+$_SKIN        = array();
+
+use Zend\Cache\StorageFactory;
+
+$core_cache = StorageFactory::factory(array(
+	'adapter' => array(
+		'name'=>'filesystem',
+		'options' => array(
+			'cache_dir' => TEMP_DIR,
+		)
+	),
+	'plugins' => array('serializer'),
+));
 /////////////////////////////////////////////////
 // I18N
 
@@ -290,7 +321,7 @@ defined('MEMCACHE_COMPRESSED')	or define('MEMCACHE_COMPRESSED', false);
 defined('MEMCACHE_EXPIRE')		or define('MEMCACHE_EXPIRE', 0);
 
 if (class_exists('Memcache')){
-	$memcache = new Memcache;
+	$memcache = new Memcache();
 	if (!@$memcache->connect(MEMCACHE_HOST, MEMCACHE_PORT)) {
 		// Memcacheが使用できない場合
 		$info[] = sprintf('Could not to connect to Memcached: <var>%s:%s%s</var>. Please check Memcached is running.', MEMCACHE_HOST, MEMCACHE_PORT, PHP_EOL);
@@ -304,7 +335,7 @@ if (class_exists('Memcache')){
 		ini_set('session.save_path', (strpos(MEMCACHE_HOST, 'unix://') !== FALSE) ? MEMCACHE_HOST : 'tcp://'.MEMCACHE_HOST.':'.MEMCACHE_PORT);
 	}
 }else{
-	$info[] = 'Memcache is disabled.';
+	$info[] = 'PHP Memcache is not installed.';
 	unset($memcache);
 }
 

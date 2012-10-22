@@ -34,8 +34,8 @@ define('SITE_HOME',	'../wiki-common/');
 // define('DATA_HOME',	'../../wiki-data/contents/');
 define('DATA_HOME',		'../wiki-data/');
 
-//define('ROOT_URI', '');
-//define('WWW_HOME', '');
+define('ROOT_URI', '/');
+//define('WWW_HOME', '/');
 //define('COMMON_URI', '');
 
 // to absolute path
