@@ -384,7 +384,7 @@ function ref_check_size($width = 0, $height = 0, & $params)
 // Output an image (fast, non-logging <==> attach plugin)
 function plugin_ref_action()
 {
-	global $vars;
+	global $vars, $use_sendfile_header;
 
 	$usage = 'Usage: cmd=ref&amp;page=page_name&amp;src=attached_image_name';
 
@@ -421,28 +421,18 @@ function plugin_ref_action()
 			break;
 		}
 	}
-	
-	$s_filename = htmlsc($filename);
-	$sendfile = realpath($ref);
 
 	// Output
 	ini_set('default_charset', '');
 	mb_http_output('pass');
-	pkwk_common_headers(filemtime($sendfile));
+	pkwk_common_headers(filemtime($ref));
 
-	// for reduce server load
-	
-	if (function_exists('apache_get_modules') && in_array( 'mod_xsendfile', apache_get_modules()) ){
-		// for Apache mod_xsendfile
-		header('X-Sendfile: '.$sendfile);
-	}else if (stristr(getenv('SERVER_SOFTWARE'), 'lighttpd') ){
-		// for lighttpd
-		header('X-Lighttpd-Sendfile: '.$sendfile);
-	}else if(stristr(getenv('SERVER_SOFTWARE'), 'nginx') || stristr(getenv('SERVER_SOFTWARE'), 'cherokee')){
-		// nginx
-		header('X-Accel-Redirect: '.$sendfile);
+	if ($use_sendfile_header === true){
+		// for reduce server load
+		header('X-Sendfile: '.realpath($ref));
 	}
 
+	$s_filename = htmlsc($filename);
 	if ($type == 'text/html' || $type == 'application/octet-stream') {
 		header('Content-Disposition: attachment; filename="' . $s_filename . '"');
 		header('Content-Type: application/octet-stream; name="' . $s_filename . '"');

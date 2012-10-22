@@ -49,10 +49,10 @@ function plugin_navi_convert()
 	global $vars, $link_tags, $pkwk_dtd;
 //	global $_navi_prev, $_navi_next, $_navi_up, $_navi_home;
 	static $navi = array();
-	$_navi_prev = _('Prev');
-	$_navi_next = _('Next');
-	$_navi_up   = _('Up');
-	$_navi_home = _('Home');
+	$_navi_prev = T_('Prev');
+	$_navi_next = T_('Next');
+	$_navi_up   = T_('Up');
+	$_navi_home = T_('Home');
 
 	$current = $vars['page'];
 	$reverse = FALSE;
