@@ -509,8 +509,8 @@ class TableCell extends Element
 		$this->style = $matches = array();
 		$this->is_blank = false;
 
-		// •K‚¸$matches‚Ì––”ö‚Ì”z—ñ‚ÉƒeƒLƒXƒg‚Ì“à—e‚ª“ü‚é‚Ì‚Åarray_pop‚Ì•Ô‚è’l‚ðŽg—p‚·‚é•û–@‚É•ÏXB
-		// ‚à‚¤‚·‚±‚µAƒ}ƒV‚ÈŽÀ‘••û–@‚È‚¢‚©‚ÈEEEB12/05/03
+		// å¿…ãš$matchesã®æœ«å°¾ã®é…åˆ—ã«ãƒ†ã‚­ã‚¹ãƒˆã®å†…å®¹ãŒå…¥ã‚‹ã®ã§array_popã®è¿”ã‚Šå€¤ã‚’ä½¿ç”¨ã™ã‚‹æ–¹æ³•ã«å¤‰æ›´ã€‚
+		// ã‚‚ã†ã™ã“ã—ã€ãƒžã‚·ãªå®Ÿè£…æ–¹æ³•ãªã„ã‹ãªãƒ»ãƒ»ãƒ»ã€‚12/05/03
 		while (preg_match('/^(?:(LEFT|CENTER|RIGHT)|(BG)?COLOR\(([#\w]+)\)|SIZE\((\d+)\)|LANG\((\w+2)\)):(.*)$/', $text, $matches)) {
 			if ($matches[1]) {
 				$this->style['align'] = 'text-align:' . strtolower($matches[1]) . ';';
@@ -531,7 +531,7 @@ class TableCell extends Element
 			$this->style['width'] = 'width:' . $text . 'px;';
 
 		if (preg_match("/\S+/", $text) == false){
-			// ƒZƒ‹‚ª‹ó‚¾‚Á‚½‚èA‹ó”’•¶Žš‚µ‚©Žc‚ç‚È‚¢ê‡‚ÍA‹ó—“‚ÌƒZƒ‹‚Æ‚·‚éBiHTML‚Å‚Íƒ^ƒu‚âƒXƒy[ƒX‚àíœj
+			// ã‚»ãƒ«ãŒç©ºã ã£ãŸã‚Šã€ç©ºç™½æ–‡å­—ã—ã‹æ®‹ã‚‰ãªã„å ´åˆã¯ã€ç©ºæ¬„ã®ã‚»ãƒ«ã¨ã™ã‚‹ã€‚ï¼ˆHTMLã§ã¯ã‚¿ãƒ–ã‚„ã‚¹ãƒšãƒ¼ã‚¹ã‚‚å‰Šé™¤ï¼‰
 			$text = '';
 			$this->is_blank = true;
 		} else if ($text == '>') {

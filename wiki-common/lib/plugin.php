@@ -285,21 +285,21 @@ function use_plugin($plugin, $lines)
 	return FALSE;
 }
 
-// formƒ^ƒO‚É’Ç‰Á‚ÌƒtƒH[ƒ€‚ğ‘}“ü
+// formã‚¿ã‚°ã«è¿½åŠ ã®ãƒ•ã‚©ãƒ¼ãƒ ã‚’æŒ¿å…¥
 function add_hidden_field($retvar, $name){
 	global $use_spam_check, $vars, $digest;
 	if (preg_match('/<form\b(?:(?=(\s+(?:method="([^"]*)"|enctype="([^"]*)")|[^\s>]+|\s+))\1)*>/i', $retvar, $matches) !== 0){
 		// Insert a hidden field, supports idenrtifying text enconding
 		$hidden_field[] = ( PKWK_ENCODING_HINT ) ? '<input type="hidden" name="encode_hint" value="' . PKWK_ENCODING_HINT . '" />' : '';
 		
-		// ‘½d“Še‚ğ‹Ö~‚·‚éƒIƒvƒVƒ‡ƒ“‚ª—LŒø‚©‚ÂAmethod‚ªpost‚¾‚Á‚½ê‡APostID‚ğ¶¬‚·‚é
+		// å¤šé‡æŠ•ç¨¿ã‚’ç¦æ­¢ã™ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãŒæœ‰åŠ¹ã‹ã¤ã€methodãŒpostã ã£ãŸå ´åˆã€PostIDã‚’ç”Ÿæˆã™ã‚‹
 		if ( (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] === 1) 
 			&& preg_match(PKWK_IGNOLE_POSTID_CHECK_PLUGINS,$name) !== 1 && $matches[2] !== 'get'){
 			// from PukioWikio
 			$hidden_field[] = '<input type="hidden" name="postid" value="'.generate_postid($name).'" />';
 		}
 
-		// PHP5.4ˆÈ~‚©‚ÂAƒ}ƒ‹ƒ`ƒp[ƒg‚Ìê‡Ai’»ó‹µƒZƒbƒVƒ‡ƒ“—p‚ÌƒtƒH[ƒ€‚ğ•t‰Á‚·‚é
+		// PHP5.4ä»¥é™ã‹ã¤ã€ãƒãƒ«ãƒãƒ‘ãƒ¼ãƒˆã®å ´åˆã€é€²æ—çŠ¶æ³ã‚»ãƒƒã‚·ãƒ§ãƒ³ç”¨ã®ãƒ•ã‚©ãƒ¼ãƒ ã‚’ä»˜åŠ ã™ã‚‹
 		if (version_compare(PHP_VERSION, '5.4', '>=') && isset($matches[3]) && $matches[3] === 'multipart/form-data') {
 			pkwk_session_start();
 			$hidden_field[] = '<input type="hidden" name="' .  ini_get("session.upload_progress.name") . '" value="' . PKWK_PROGRESS_SESSION_NAME . '" class="progress_session" />';

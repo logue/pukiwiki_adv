@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: init.php,v 1.57.12 2012/10/11 17:21:00 Logue Exp $
+// $Id: init.php,v 1.57.12 2012/10/27 17:21:00 Logue Exp $
 // Copyright (C)
 //   2010-2012 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -14,8 +14,8 @@
 
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
-define('S_VERSION', 'v1.0');
-define('S_REVSION', '20121017');
+define('S_VERSION', 'v1.0.1');
+define('S_REVSION', '20121027');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &#169; 2010-2012' .
@@ -427,7 +427,7 @@ define('IS_AJAX', isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVE
 // $WikiName = '(?<![[:alnum:]])(?:[[:upper:]][[:lower:]]+){2,}(?![[:alnum:]])';
 // $WikiName = '(?<!\w)(?:[A-Z][a-z]+){2,}(?!\w)';
 
-// BugTrack2/24対処（éなどの文字が使えないため）
+// BugTrack2/24対処（eなどの文字が使えないため）
 $WikiPart = '[A-Z](?:[a-z]|\\xc3[\\x9f-\\xbf])+'; // \c3\9f through \c3\bf correspond to \df through \ff in ISO8859-1
 $WikiName = "(?:$WikiPart(?:$WikiPart)+)(?!\w)";
 
