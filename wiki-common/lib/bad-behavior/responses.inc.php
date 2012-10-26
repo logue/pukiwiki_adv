@@ -26,6 +26,7 @@ function bb2_get_response($key) {
 		'7ad04a8a' => array('response' => 400, 'explanation' => 'The automated program you are using is not permitted to access this server. Please use a different program or a standard Web browser.', 'log' => 'Prohibited header \'Range\' present'),
 		'7d12528e' => array('response' => 403, 'explanation' => 'You do not have permission to access this server.', 'log' => 'Prohibited header \'Range\' or \'Content-Range\' in POST request'),
 		'939a6fbb' => array('response' => 403, 'explanation' => 'The proxy server you are using is not permitted to access this server. Please bypass the proxy server, or contact your proxy server administrator.', 'log' => 'Banned proxy server in use'),
+		'96c0bd29' => array('response' => 403, 'explanation' => 'You do not have permission to access this server.', 'log' => 'URL pattern found on blacklist'),
 		'9c9e4979' => array('response' => 403, 'explanation' => 'The proxy server you are using is not permitted to access this server. Please bypass the proxy server, or contact your proxy server administrator.', 'log' => 'Prohibited header \'via\' present'),
 		'a0105122' => array('response' => 417, 'explanation' => 'Expectation failed. Please retry your request.', 'log' => 'Header \'Expect\' prohibited; resend without Expect'),
 		'a1084bad' => array('response' => 403, 'explanation' => 'You do not have permission to access this server.', 'log' => 'User-Agent claimed to be MSIE, with invalid Windows version'),
