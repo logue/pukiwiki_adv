@@ -12,7 +12,7 @@
 // ------------------------------------------------------------
 // DATA STRUCTURE of *.ref and *.rel files
 
-// CACHE_DIR/encode('foobar').ref
+// CACHE_DIR/md5('foobar').ref
 // ---------------------------------
 // Page-name1<tab>0<\n>
 // Page-name2<tab>1<\n>
@@ -23,7 +23,7 @@
 //	1 = Added when the sentence 'foobar' found from the page
 //	    by AutoLink feature
 
-// CACHE_DIR/encode('foobar').rel
+// CACHE_DIR/md5('foobar').rel
 // ---------------------------------
 // Page-name1<tab>Page-name2<tab> ... <tab>Page-nameN
 //
@@ -32,69 +32,50 @@
 // ------------------------------------------------------------
 
 // Related cache data extention
-defined('PKWK_REL_EXTENTION')	or define('PKWK_REL_EXTENTION', '.rel');
+defined('PKWK_REL_PREFIX')	or define('PKWK_REL_PREFIX', 'rel-');
 // Refered cache data extention
-defined('PKWK_REF_EXTENTION')	or define('PKWK_REF_EXTENTION', '.ref');
+defined('PKWK_REF_PREFIX')	or define('PKWK_REF_PREFIX', 'ref-');
 
  // Get related-pages from DB
 function links_get_related_db($page)
 {
-	global $memcache;
+	global $cache;
 	
 	$times = array();
-	if ($memcache !== null){
-		$data = $memcache->get(MEMCACHE_PREFIX.PKWK_REF_EXTENTION.encode($page));
-		if ($data === FALSE) return array();
-		foreach ($data as $line) {
-			$time = get_filetime($line[0]);
-			if($time != 0) $times[$line[0]] = $time;
-		}
+	$ref_name = PKWK_REF_PREFIX.md5($page);
+	if (! $cache->hasItem($ref_name)){
+		$data = links_update($page);
 	}else{
-		$ref_name = CACHE_DIR . encode($page) . PKWK_REF_EXTENTION;
-		if (! file_exists($ref_name)) return array();
+		$data = $cache->getItem($ref_name);
+	}
 
-		foreach (file($ref_name) as $line) {
-			list($_page) = explode("\t", rtrim($line));
-			$time = get_filetime($_page);	
-			if($time != 0) $times[$_page] = $time;
-		}
-		
+	foreach ($data as $line) {
+		$time = get_filetime($line);
+		if($time !== 0) $times[$line] = $time;
 	}
 	// $times['pagename'] = utime;
+	
 	return $times;
 }
 
 // Update link-relationships between pages
 function links_update($page)
 {
-	global $memcache;
+	global $cache;
 	// if (PKWK_READONLY) return; // Do nothing
 	if (auth::check_role('readonly')) return; // Do nothing
 
 	if (ini_get('safe_mode') == '0') set_time_limit(0);
 
 	$time = is_page($page, TRUE) ? get_filetime($page) : 0;
-	
-	if ($memcache !== null){
-		$rel_name = MEMCACHE_PREFIX.PKWK_REL_EXTENTION.encode($page);
-		$rel_old = $memcache->get($rel_name);
-		if ($rel_old !== FALSE){
-			$memcache->delete($rel_name);
-			$rel_file_exist = TRUE;
-		}else{
-			$rel_file_exist = FALSE;
-			$rel_old        = array();
-		}
+	$rel_name = PKWK_REL_PREFIX.md5($page);
+
+	if ($cache->hasItem($rel_name)){
+		$rel_old = $cache->getItem($rel_name);
+		$rel_file_exist = TRUE;
 	}else{
+		$rel_file_exist = FALSE;
 		$rel_old        = array();
-		$rel_name       = CACHE_DIR . encode($page) . PKWK_REL_EXTENTION;
-		$rel_file_exist = file_exists($rel_name);
-		if ($rel_file_exist === TRUE) {
-			$lines = file($rel_name);
-			unlink($rel_name);
-			if (isset($lines[0]))
-				$rel_old = explode("\t", rtrim($lines[0]));
-		}
 	}
 
 	$rel_new  = array();	// Reference to
@@ -116,6 +97,7 @@ function links_update($page)
 			$rel_new[]  = $_obj->name;
 		}
 	}
+	// 重複を削除
 	$rel_new = array_unique($rel_new);
 	
 	// All pages "Referenced to" only by AutoLink
@@ -124,20 +106,10 @@ function links_update($page)
 	// All pages "Referenced to"
 	$rel_new = array_merge($rel_new, $rel_auto);
 
-	// .rel: Pages referred from the $page
+	// update Pages referred from the $page
 	if ($time) {
 		// Page exists
-		if (! empty($rel_new)) {
-			if ($memcache !== null){
-				update_memcache($rel_name, $rel_new);
-			}else{
-				pkwk_touch_file($rel_name);
-				$fp = fopen($rel_name, 'w')
-					or die_message('cannot write ' . htmlsc($rel_name));
-				fputs($fp, join("\t", $rel_new));
-				fclose($fp);
-			}
-		}
+		$cache->setItem($rel_name, $rel_new);
 	}
 
 	// .ref: Pages refer to the $page
@@ -158,60 +130,32 @@ function links_update($page)
 				links_update($_page);
 		}
 	}
-	
-	if ($memcache !== null){
-		$ref_name = MEMCACHE_PREFIX.PKWK_REF_EXTENTION.encode($page);
-		$data = $memcache->get($ref_name);
-		if (! $time && $data !== false) {
-			foreach($data as $ref_page=>$ref_auto){
-				// Update pages they refer the $page by AutoLink only [HEAVY]
-				if ($ref_auto) {
-					links_delete($ref_page, array($page));
-				}
-			}
-		}
-	}else{
-		$ref_file = CACHE_DIR . encode($page) . PKWK_REF_EXTENTION;
 
-		// If the $page had been removed
-		if (! $time && file_exists($ref_file)) {
-			foreach (file($ref_file) as $line) {
-				list($ref_page, $ref_auto) = explode("\t", rtrim($line));
-
-				// Update pages they refer the $page by AutoLink only [HEAVY]
-				if ($ref_auto) {
-					links_delete($ref_page, array($page));
-				}
+	$ref_name = PKWK_REF_PREFIX.md5($page);
+	$data = $cache->getItem($ref_name);
+	if (! $time && $data) {
+		foreach($data as $ref_page=>$ref_auto){
+			// Update pages they refer the $page by AutoLink only [HEAVY]
+			if ($ref_auto) {
+				links_delete($ref_page, array($page));
 			}
 		}
 	}
-	return;
+	return $rel_new;
 }
 
 // Init link cache (Called from link plugin)
 function links_init()
 {
-	global $memcache;
+	global $cache;
 	// if (PKWK_READONLY) return; // Do nothing
 	if (auth::check_role('readonly')) return; // Do nothing
 
 	if (ini_get('safe_mode') == '0') set_time_limit(0);
 
 	// Init database
-	if ($memcache !== null){
-		foreach(getMemcacheKeyList() as $key){
-			if (preg_match('/^'.MEMCACHE_PREFIX.'('.PKWK_REL_EXTENTION.'|'.PKWK_REF_EXTENTION.')/', $key) !== FALSE){
-				if (!empty($key)){
-					$memcache->delete($key);
-				}
-			}
-		}
-	}else{
-		foreach (get_existfiles(CACHE_DIR, PKWK_REF_EXTENTION) as $cache)
-			unlink($cache);
-		foreach (get_existfiles(CACHE_DIR, PKWK_REL_EXTENTION) as $cache)
-			unlink($cache);
-	}
+	$cache->clearByPrefix(PKWK_REL_PREFIX);
+	$cache->clearByPrefix(PKWK_REF_PREFIX);
 
 	$ref   = array(); // Reference from
 	foreach (get_existpages() as $page) {
@@ -240,62 +184,16 @@ function links_init()
 		$rel = array_unique($rel);
 		
 		if (! empty($rel)) {
-			if ($memcache !== null){
-				update_memcache(MEMCACHE_PREFIX.PKWK_REL_EXTENTION.encode($page), $rel);
-			}else{
-				$fp = fopen(CACHE_DIR . encode($page) . PKWK_REL_EXTENTION, 'w')
-					or die_message('cannot write ' . htmlsc(CACHE_DIR . encode($page) . PKWK_REL_EXTENTION));
-				fputs($fp, join("\t", $rel));
-				fclose($fp);
-			}
+			$cache->setItem(PKWK_REL_PREFIX.md5($page), $rel);
 		}
 	}
 
-	if ($memcache !== null){
-		update_memcache(MEMCACHE_PREFIX.PKWK_REF_EXTENTION.encode($page), $ref);
-	}else{
-		foreach ($ref as $page=>$arr) {
-			$filename = CACHE_DIR . encode($page) . PKWK_REL_EXTENTION;
-			pkwk_touch_file($filename);
-			$fp = fopen($filename, 'w')
-				or die_message('cannot write ' . htmlsc(CACHE_DIR . encode($page) . PKWK_REF_EXTENTION));
-			foreach ($arr as $ref_page=>$ref_auto)
-				fputs($fp, $ref_page . "\t" . $ref_auto . "\n");
-			fclose($fp);
-		}
-	}
-	
-	global $autoalias, $autoglossary;
-	// Initialize autoalias.dat (AutoAliasName)
-	if ($autoalias) {
-		$aliases = get_autoaliases();
-		if (empty($aliases)) {
-			// Remove
-			autolink_pattern_delete(PKWK_AUTOALIAS_REGEX_CACHE);
-		} else {
-			// Create or Update
-			autolink_pattern_write(PKWK_AUTOALIAS_REGEX_CACHE,
-				get_autolink_pattern(@array_keys($aliases), $autoalias));
-		}
-	}
-
-	// Initialize glossary.dat (AutoGlossary)
-	if ($autoglossary) {
-		$words = get_autoglossaries();
-		if (empty($words)) {
-			// Remove
-			autolink_pattern_delete(PKWK_GLOSSARY_REGEX_CACHE);
-		} else {
-			// Create or Update
-			autolink_pattern_write(PKWK_GLOSSARY_REGEX_CACHE,
-				get_glossary_pattern(array_keys($words), $autoglossary));
-		}
-	}
+	$cache->setItem(PKWK_REF_PREFIX.md5($page), $ref);
 }
 
 function links_add($page, $add, $rel_auto)
 {
-	global $memcache;
+	global $cache;
 	// if (PKWK_READONLY) return; // Do nothing
 	if (auth::check_role('readonly')) return; // Do nothing
 
@@ -304,97 +202,57 @@ function links_add($page, $add, $rel_auto)
 	foreach ($add as $_page) {
 		$all_auto = isset($rel_auto[$_page]);
 		$is_page  = is_page($_page);
+		$ref_name = PKWK_REF_PREFIX.md5($_page);
 
-		if ($memcache === null){
-			$ref      = $page . "\t" . ($all_auto ? 1 : 0) . "\n";
-			$ref_file = CACHE_DIR . encode($_page) . PKWK_REF_EXTENTION;
-			if (file_exists($ref_file)) {
-				foreach (file($ref_file) as $line) {
-					list($ref_page, $ref_auto) = explode("\t", rtrim($line));
-					if (! $ref_auto) $all_auto = FALSE;
-					if ($ref_page !== $page) $ref .= $line;
-				}
-				unlink($ref_file);
+		$data = $cache->getItem($ref_name);
+		$ref[] = array($page, $all_auto);
+		if ($data !== null){
+			foreach ($data as $line) {
+				if ($line[0] !== $page) $ref[] = array($line[0], $line[1]);
 			}
-			if ($is_page || ! $all_auto) {
-				pkwk_touch_file($ref_file);
-				$fp = fopen($ref_file, 'w')
-					 or die_message('cannot write ' . htmlsc($ref_file));
-				fputs($fp, $ref);
-				fclose($fp);
-			}
-		}else{
-			$ref_name = MEMCACHE_PREFIX.PKWK_REF_EXTENTION.encode($_page);
-			$data = $memcache->get($ref_name);
-			$ref[] = array($page, $all_auto);
-			if ($data !== FALSE){
-				foreach ($data as $line) {
-					if ($line[0] !== $page) $ref[] = array($line[0], $line[1]);
-				}
-			}
-
-			if ($is_page || ! $all_auto || count($ref) !== 0) {
-				$memcache->set($ref_name, @array_unique($ref), MEMCACHE_COMPRESSED, MEMCACHE_EXPIRE);
-			}else{
-				$memcache->delete($ref_name);
-			}
-			unset($data, $ref);
 		}
+
+		if ($is_page || ! $all_auto || count($ref) !== 0) {
+			$cache->setItem($ref_name, @array_unique($ref));
+		}else{
+			$cache->removeItem($ref_name);
+		}
+		unset($data, $ref);
+
 	}
 }
 
 function links_delete($page, $del)
 {
-	global $memcache;
+	global $cache;
 	// if (PKWK_READONLY) return; // Do nothing
 	if (auth::check_role('readonly')) return; // Do nothing
 
 	foreach ($del as $_page) {
 		$all_auto = TRUE;
 		$is_page = is_page($_page);
-		if ($memcache === null){
-			$ref_file = CACHE_DIR . encode($_page) . PKWK_REF_EXTENTION;
-			if (! file_exists($ref_file)) continue;
+		
+		$ref_name = PKWK_REF_PREFIX.md5($_page);
+		$data = $cache->getItem($ref_name);
+		if ($data === null) continue;
 
-			$ref = '';
-			foreach (file($ref_file) as $line) {
-				list($ref_page, $ref_auto) = explode("\t", rtrim($line));
-				if ($ref_page !== $page) {
-					if (! $ref_auto) $all_auto = FALSE;
-					$ref .= $line;
-				}
+		$ref = array();
+		foreach ($data as $line) {
+			list($ref_page, $ref_auto) = $line;
+			if ($ref_page !== $page) {
+				$ref[] = array($ref_page, $ref_auto);
 			}
-			unlink($ref_file);
-			if (($is_page || ! $all_auto) && $ref != '') {
-				pkwk_touch_file($ref_file);
-				$fp = fopen($ref_file, 'w')
-					or die_message('cannot write ' . htmlsc($ref_file));
-				fputs($fp, $ref);
-				fclose($fp);
-			}
-		}else{
-			$ref_name = MEMCACHE_PREFIX.PKWK_REF_EXTENTION.encode($_page);
-			$data = $memcache->get($ref_name);
-			if ($data === FALSE) continue;
-
-			$ref = array();
-			foreach ($data as $line) {
-				list($ref_page, $ref_auto) = $line;
-				if ($ref_page !== $page) {
-					$ref[] = array($ref_page, $ref_auto);
-				}
-			}
-			if ($is_page || ! $all_auto || count($ref) == 1) {
-				$memcache->set($ref_name, $ref, MEMCACHE_COMPRESSED, MEMCACHE_EXPIRE);
-			}else{
-				$memcache->delete($ref_name);
-			}
-			unset($data, $ref);
 		}
+		if ($is_page || ! $all_auto || count($ref) == 1) {
+			$cache->setItem($ref_name, @array_unique($ref));
+		}else{
+			$cache->removeItem($ref_name);
+		}
+		unset($data, $ref);
 	}
 }
 
-function & links_get_objects($page, $refresh = FALSE)
+function links_get_objects($page, $refresh = FALSE)
 {
 	static $obj;
 

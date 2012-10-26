@@ -43,9 +43,9 @@ ini_set('real_path_cache_size','64k');
 ini_set('realpath_cache','120');
 ini_set('zlib.output_compression', 'Off');
 ini_set('zlib.output_handler','mb_output_handler');
-
+/*
 $info = array();
-foreach (array('mbstring','json','openssl','curl','gd') as $ext){
+foreach (array('mbstring','openssl','gd') as $ext){
 	if (! extension_loaded($ext)){
 		$info[] = 'PukiWiki Adv. needs the <a href="http://www.php.net/manual/book.'.$ext.'.php">'.$ext.' extension</a>.';
 	}
@@ -53,16 +53,11 @@ foreach (array('mbstring','json','openssl','curl','gd') as $ext){
 if (count($info) !== 0){
 	throw new Exception(join("<br />\n",$info));
 }
-
+*/
 /////////////////////////////////////////////////
 // Include subroutines
 
 defined('LIB_DIR') or define('LIB_DIR', realpath('./').'/');
-
-use Zend\Loader\StandardAutoloader;
-require_once (LIB_DIR.'Zend/Loader/StandardAutoloader.php');
-$loader = new StandardAutoloader(array('autoregister_zf' => true));
-$loader->register();
 
 // Load *.ini.php files and init PukiWiki
 require(LIB_DIR . 'func.php');

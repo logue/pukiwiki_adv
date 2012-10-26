@@ -41,7 +41,7 @@ function plugin_links_action()
 	if ( isset($vars['menu']) && (! auth::check_role('role_adm_contents') || pkwk_login($admin_pass) )) {
 		set_time_limit(0);
 		$msg  = & $_links_messages['title_update'];
-		if (links_init() !== false){
+		if (update_cache('', true) !== false){
 			$foot_explain = array(); // Exhaust footnotes
 			$body = & $_links_messages['msg_done'    ];
 			return array('msg'=>$msg, 'body'=>$body);

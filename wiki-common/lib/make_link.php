@@ -20,7 +20,7 @@ function make_link($string, $page = '')
 
 	$clone = $converter->get_clone($converter);
 
-	return $clone->convert($string, ($page != '') ? $page : $vars['page']);
+	return $clone->convert($string, ($page !== '') ? $page : $vars['page']);
 }
 
 // Converters of inline element
@@ -679,14 +679,14 @@ class Link_autolink extends Link
 
 	function Link_autolink($start)
 	{
-		global $autolink;
+		global $autolink, $cache;
 
 		parent::Link($start);
 		
 		if (! $autolink){
 			return;
 		}else{
-			list($auto, $auto_a, $forceignorepages) = autolink_pattern_read(PKWK_AUTOLINK_REGEX_CACHE);
+			list($auto, $auto_a, $forceignorepages) = $cache->getItem(PKWK_AUTOLINK_REGEX_CACHE);
 			$this->auto   = $auto;
 			$this->auto_a = $auto_a;
 			$this->forceignorepages = $forceignorepages;
@@ -745,14 +745,14 @@ class Link_autoalias extends Link
 
 	function Link_autoalias($start)
 	{
-		global $autoalias, $aliaspage;
+		global $autoalias, $aliaspage, $cache;
 
 		parent::Link($start);
 
 		if (! $autoalias || $this->page == $aliaspage){
 			return;
 		}else{
-			list($auto, $auto_a, $forceignorepages) = autolink_pattern_read(PKWK_AUTOALIAS_REGEX_CACHE);
+			list($auto, $auto_a, $forceignorepages) = $cache->getItem(PKWK_AUTOALIAS_REGEX_CACHE);
 
 			$this->auto = $auto;
 			$this->auto_a = $auto_a;
@@ -810,13 +810,13 @@ class Link_glossary extends Link
 
 	function Link_glossary($start)
 	{
-		global $autoglossary;
+		global $autoglossary, $cache;
 
 		parent::Link($start);
 		if (! $autoglossary){
 			return;
 		}else{
-			list($auto, $auto_a, $forceignorepages) = autolink_pattern_read(PKWK_GLOSSARY_REGEX_CACHE);
+			list($auto, $auto_a, $forceignorepages) = $cache->getItem(PKWK_GLOSSARY_REGEX_CACHE);
 			$this->auto = $auto;
 			$this->auto_a = $auto_a;
 			$this->forceignorepages = $forceignorepages;
@@ -894,6 +894,7 @@ function make_tooltips($term,$glossary_page='')
 function make_pagelink($page, $alias = '', $anchor = '', $refer = '', $isautolink = FALSE)
 {
 	global $vars, $link_compact, $related, $_symbol_noexists;
+	
 
 	$s_page = htmlsc(strip_bracket($page));
 	if (! is_page($page)) {
@@ -908,7 +909,6 @@ function make_pagelink($page, $alias = '', $anchor = '', $refer = '', $isautolin
 	$s_alias = ($alias == '') ? $s_page : $alias;
 
 	if ($page == '') return '<a href="' . $anchor . '">' . $s_alias . '</a>';
-//	if ($page == '') return open_uri_in_new_window('<a href="' . $anchor . '">' . $s_alias . '</a>', 'make_pagelink');
 
 	$r_refer = ($refer == '') ? '' : '&amp;refer=' . rawurlencode($refer);
 
@@ -917,11 +917,10 @@ function make_pagelink($page, $alias = '', $anchor = '', $refer = '', $isautolin
 
 	if ($isautolink || is_page($page)) {
 		return '<a href="' . get_page_uri($page) . $anchor . '" ' . 
-			($link_compact ? 'title="' . $s_page . '( ' .get_pg_passage($page, FALSE) . ' )"' : '' ).
+			(($link_compact === 0) ? 'title="' . $s_page . '( ' .get_pg_passage($page, FALSE) . ' )"' : '' ).
 			($isautolink ? ' class="autolink"' : '') .'>' . $s_alias . '</a>';
 	} else {
 		// Dangling link
-		// if (PKWK_READONLY) return $s_alias; // No dacorations
 		if (auth::check_role('readonly')) return $s_alias; // No dacorations
 
 		$retval = $s_alias . '<a href="' .
@@ -930,7 +929,6 @@ function make_pagelink($page, $alias = '', $anchor = '', $refer = '', $isautolin
 
 		if ($link_compact) {
 			return $retval;
-//			return open_uri_in_new_window($retval, 'make_pagelink_e');
 		} else {
 			return '<span class="noexists">' . $retval . '</span>';
 		}

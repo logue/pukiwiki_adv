@@ -628,7 +628,7 @@ class auth
 		$rc = array();
 
 		// ページ名の取得
-	        $pages = get_existpages_cache($dir, $ext);
+		$pages = get_existpages_cache($dir, $ext);
 		// $pages = get_existpages($dir, $ext);
 		// ユーザ名取得
 		$auth_key = auth::get_user_info();
@@ -638,16 +638,19 @@ class auth
 		// 役割の取得
 		// $now_role = auth::get_role_level();
 
-		foreach($pages as $file=>$page) {
-			if (! auth::is_page_readable($page, $auth_key['key'], $auth_key['group'])) continue;
-			if (substr($page,0,1) != ':') {
-				$rc[$file] = $page;
-				continue;
-			}
+		$rc = array();
+		if (is_array($pages)){
+			foreach($pages as $file=>$page) {
+				if (! auth::is_page_readable($page, $auth_key['key'], $auth_key['group'])) continue;
+				if (substr($page,0,1) != ':') {
+					$rc[$file] = $page;
+					continue;
+				}
 
-			// colon page
-			if ($is_colon) continue;
-			$rc[$file] = $page;
+				// colon page
+				if ($is_colon) continue;
+				$rc[$file] = $page;
+			}
 		}
 		return $rc;
 	}

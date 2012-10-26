@@ -10,29 +10,24 @@
 //
 // File related functions
 
-// Other cache data extention
-defined('PKWK_TSV_EXTENTION')			or define('PKWK_TSV_EXTENTION', '.tsv');	// For tsv data
-defined('PKWK_DAT_EXTENTION')			or define('PKWK_DAT_EXTENTION', '.dat');	// For serialized data
-defined('PKWK_TXT_EXTENTION')			or define('PKWK_TXT_EXTENTION', '.txt');	// For raw text data
-
 // RecentChanges
 defined('PKWK_MAXSHOW_ALLOWANCE')		or define('PKWK_MAXSHOW_ALLOWANCE', 10);
-defined('PKWK_MAXSHOW_CACHE')			or define('PKWK_MAXSHOW_CACHE', 'recent'.PKWK_TSV_EXTENTION);
+defined('PKWK_MAXSHOW_CACHE')			or define('PKWK_MAXSHOW_CACHE', 'recent');
 
 // AutoLink
-defined('PKWK_AUTOLINK_REGEX_CACHE')	or define('PKWK_AUTOLINK_REGEX_CACHE', 'autolink'.PKWK_DAT_EXTENTION);
+defined('PKWK_AUTOLINK_REGEX_CACHE')	or define('PKWK_AUTOLINK_REGEX_CACHE', 'autolink');
 
 // AutoAlias
-defined('PKWK_AUTOALIAS_REGEX_CACHE')	or define('PKWK_AUTOALIAS_REGEX_CACHE', 'autoalias'.PKWK_DAT_EXTENTION);
+defined('PKWK_AUTOALIAS_REGEX_CACHE')	or define('PKWK_AUTOALIAS_REGEX_CACHE', 'autoalias');
 
 // Auto Glossary (Plus!)
-defined('PKWK_GLOSSARY_REGEX_CACHE')	or define('PKWK_GLOSSARY_REGEX_CACHE',  'glossary'.PKWK_DAT_EXTENTION);
+defined('PKWK_GLOSSARY_REGEX_CACHE')	or define('PKWK_GLOSSARY_REGEX_CACHE',  'glossary');
 
 // AutoAlias AutoBase cache (Plus!)
-defined('PKWK_AUTOBASEALIAS_CACHE')		or define('PKWK_AUTOBASEALIAS_CACHE', 'autobasealias'.PKWK_DAT_EXTENTION);
+defined('PKWK_AUTOBASEALIAS_CACHE')		or define('PKWK_AUTOBASEALIAS_CACHE', 'autobasealias');
 
 // PageReading cache (Adv.)
-defined('PKWK_PAGEREADING_CACHE')		or define('PKWK_PAGEREADING_CACHE', 'PageReading.tmp');
+defined('PKWK_PAGEREADING_CACHE')		or define('PKWK_PAGEREADING_CACHE', 'PageReading');
 
 // Timestamp prefix
 defined('PKWK_TIMESTAMP_PREFIX')		or define('PKWK_TIMESTAMP_PREFIX', 'timestamp-');
@@ -190,32 +185,6 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	$user_agent = htmlsc($_SERVER['HTTP_USER_AGENT']);
 	$diffdata .= '// IP:"'. $remote_addr . '" TIME:"' . $now . '" REFERER:"' . $referer . '" USER_AGENT:"' . $user_agent. "\n";
 
-	// Update autoalias.dat (AutoAliasName)
-	if ($autoalias && $page === $aliaspage) {
-		$aliases = get_autoaliases();
-		if (empty($aliases)) {
-			// Remove
-			autolink_pattern_delete(PKWK_AUTOALIAS_REGEX_CACHE);
-		} else {
-			// Create or Update
-			autolink_pattern_write(PKWK_AUTOALIAS_REGEX_CACHE,
-				get_autolink_pattern(array_keys($aliases), $autoalias));
-		}
-	}
-
-	// Update glossary.dat (AutoGlossary)
-	if ($autoglossary && $page === $glossarypage) {
-		$words = get_autoglossaries();
-		if (empty($words)) {
-			// Remove
-			autolink_pattern_delete(PKWK_GLOSSARY_REGEX_CACHE);
-		} else {
-			// Create or Update
-			autolink_pattern_write(PKWK_GLOSSARY_REGEX_CACHE,
-				get_glossary_pattern(array_keys($words), $autoglossary));
-		}
-	}
-
 	// Create wiki text
 	file_write(DATA_DIR, $page, $postdata, $notimestamp);
 
@@ -227,7 +196,7 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	make_backup($page, $postdata == ''); // Is $postdata null?
 
 	// Update *.rel *.ref data.
-	links_update($page);
+	update_cache($page);
 
 	// Logging postdata (Plus!)
 	postdata_write();
@@ -236,8 +205,6 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 		// TrackBack Ping
 		tb_send($page, $links);
 	}
-
-	@unlink(CACHE_DIR . PKWK_TIMESTAMP_PREFIX . 'wiki.txt');
 
 	log_write('update',$page);
 }
@@ -430,8 +397,6 @@ function file_write($dir, $page, $str, $notimestamp = FALSE)
 			die_message('pkwk_mail_notify(): Failed');
 	}
 
-	@unlink(CACHE_DIR . PKWK_TIMESTAMP_PREFIX . 'wiki.txt');
-
 	is_page($page, TRUE); // Clear is_page() cache
 }
 
@@ -483,7 +448,7 @@ function lastmodified_add($update = '', $remove = '')
 {
 	// global $maxshow, $whatsnew, $autolink;
 	global $maxshow, $whatsnew, $autolink, $autobasealias;
-	global $memcache;
+	global $cache;
 
 	// AutoLink implimentation needs everything, for now
 	//if ($autolink) {
@@ -495,33 +460,12 @@ function lastmodified_add($update = '', $remove = '')
 	if (($update == '' || check_non_list($update)) && $remove == '')
 		return; // No need
 
-	if ($memcache === null){
-		$file = CACHE_DIR . PKWK_MAXSHOW_CACHE;
-		if (! file_exists($file)) {
-			put_lastmodified(); // Try to (re)create ALL
-			return;
-		}
-
-		// Open
-		pkwk_touch_file($file);
-		$fp = fopen($file, 'r+') or
-			die_message('Cannot open ' . 'CACHE_DIR/' . PKWK_MAXSHOW_CACHE);
-		set_file_buffer($fp, 0);
-		flock($fp, LOCK_EX);
-
-		// Read (keep the order of the lines)
-		$recent_pages = $matches = array();
-		foreach(file_head($file, $maxshow + PKWK_MAXSHOW_ALLOWANCE, FALSE) as $line) {
-			if (preg_match('/^([0-9]+)\t(.+)/', $line, $matches)) {
-				$recent_pages[$matches[2]] = $matches[1];
-			}
-		}
+	// Check cache exists
+	if (! $cache->hasItem(PKWK_MAXSHOW_CACHE)){
+		put_lastmodified(); // Try to (re)create ALL
+		return;
 	}else{
-		$recent_pages = $memcache->get(MEMCACHE_PREFIX.PKWK_MAXSHOW_CACHE);
-		if ($data === FALSE){
-			put_lastmodified(); // Try to (re)create ALL
-			return;
-		}
+		$recent_pages = $cache->getItem(PKWK_MAXSHOW_CACHE);
 	}
 
 	// Remove if it exists inside
@@ -535,23 +479,10 @@ function lastmodified_add($update = '', $remove = '')
 
 	// Check
 	$abort = count($recent_pages) < $maxshow;
-
-	if ($memcache === null){
-		if (! $abort) {
-			// Write
-			ftruncate($fp, 0);
-			rewind($fp);
-			foreach ($recent_pages as $_page=>$time)
-				fputs($fp, $time . "\t" . $_page . "\n");
-		}
-
-		flock($fp, LOCK_UN);
-		fclose($fp);
-	}else{
-		update_memcache(MEMCACHE_PREFIX.PKWK_MAXSHOW_CACHE, $recent_pages);
-	//	update_memcache(MEMCACHE_PREFIX.PKWK_TIMESTAMP_PREFIX.PKWK_MAXSHOW_CACHE, UTIME);
-	}
-
+	
+	// Update cache
+	$cache->setItem(PKWK_MAXSHOW_CACHE, $recent_pages);
+	
 	if ($abort) {
 		put_lastmodified(); // Try to (re)create ALL
 		return;
@@ -573,11 +504,7 @@ function lastmodified_add($update = '', $remove = '')
 	// Recreate
 	ftruncate($fp, 0);
 	rewind($fp);
-/*
-	foreach ($recent_pages as $_page=>$time)
-		fputs($fp, '-' . htmlsc(format_date($time)) .
-			' - ' . '[[' . htmlsc($_page) . ']]' . "\n");
-*/
+
 	foreach ($recent_pages as $_page=>$time)
 		fputs($fp, '- &epoch('.$time.');' .
 			' - ' . '[[' . htmlsc($_page) . ']]' . "\n");
@@ -595,8 +522,7 @@ function put_lastmodified()
 {
 	// global $maxshow, $whatsnew, $autolink;
 	global $maxshow, $whatsnew, $autolink, $autobasealias;
-	
-	global $memcache;
+	global $cache;
 
 	// if (PKWK_READONLY) return; // Do nothing
 	if (auth::check_role('readonly')) return; // Do nothing
@@ -624,26 +550,8 @@ function put_lastmodified()
 	}
 	$recent_pages = & $_recent;
 
-	// Re-create PKWK_MAXSHOW_CACHE
-	if ($memcache === null){
-		$file = CACHE_DIR . PKWK_MAXSHOW_CACHE;
-		pkwk_touch_file($file);
-		$fp = fopen($file, 'r+') or
-			die_message('Cannot open' . 'CACHE_DIR/' . PKWK_MAXSHOW_CACHE);
-		set_file_buffer($fp, 0);
-		flock($fp, LOCK_EX);
-		$last = ignore_user_abort(1);	// Plus!
-		ftruncate($fp, 0);
-		rewind($fp);
-		foreach ($recent_pages as $page=>$time)
-			fputs($fp, $time . "\t" . $page . "\n");
-		ignore_user_abort($last);	// Plus!
-		flock($fp, LOCK_UN);
-		fclose($fp);
-	}else{
-		update_memcache(MEMCACHE_PREFIX.PKWK_MAXSHOW_CACHE, $recent_pages, null);
-//		update_memcache(MEMCACHE_PREFIX.PKWK_TIMESTAMP_PREFIX.PKWK_MAXSHOW_CACHE, UTIME);	// Wikiの更新日時を保存
-	}
+	// Save to recent cache data
+	$cache->setItem(PKWK_MAXSHOW_CACHE, $recent_pages);
 
 	// Create RecentChanges
 	$file = get_filename($whatsnew);
@@ -656,9 +564,7 @@ function put_lastmodified()
 	rewind($fp);
 	foreach (array_keys($recent_pages) as $page) {
 		$time      = $recent_pages[$page];
-//		$s_lastmod = htmlsc(format_date($time));
 		$s_page    = htmlsc($page);
-//		fputs($fp, '-' . $s_lastmod . ' - [[' . $s_page . ']]' . "\n");
 		fputs($fp, '-&epoch(' . $time . '); - [[' . $s_page . ']]' . "\n");
 	}
 	fputs($fp, '#norelated' . "\n"); // :)
@@ -667,13 +573,12 @@ function put_lastmodified()
 
 	// For AutoLink
 	if ($autolink){
-		autolink_pattern_write(PKWK_AUTOLINK_REGEX_CACHE,
-			get_autolink_pattern($pages, $autolink));
+		$cache->setItem(PKWK_AUTOLINK_REGEX_CACHE, get_autolink_pattern($pages, $autolink));
 	}
 	
 	// AutoBaseAlias (Plus!)
 	if ($autobasealias) {
-		autobasealias_write(PKWK_AUTOBASEALIAS_CACHE, $pages);
+		$cache->setItem(PKWK_AUTOBASEALIAS_CACHE, get_autobasealias($pages));
 	}
 }
 
@@ -704,22 +609,19 @@ function header_lastmod($page = NULL)
 // Get a list of encoded files (must specify a directory and a suffix)
 function get_existfiles($dir = DATA_DIR, $ext = '.txt')
 {
-	// get_existpages を３行で軽くする
-	// http://lsx.sourceforge.jp/?Hack%2Fget_existpages
-	// ただし、Adv.の場合ファイルに別途キャッシュしているのであまり意味ないかも・・・。
-	static $pages = array();
-	if (isset($pages[$dir][$ext])) return $pages[$dir][$ext];
-	
 	$aryret = array();
 	$pattern = '/^(?:[0-9A-F]{2})+' . preg_quote($ext, '/') . '$/';
 
-	$dp = @opendir($dir) or die_message($dir . ' is not found or not readable.');
-	while (($file = readdir($dp)) !== FALSE) {
-		if (preg_match($pattern, $file)) {
-			$aryret[] = $dir . $file;
+	if ($handle = opendir($dir)) {
+		while (false !== ($entry = readdir($handle))) {
+			if (preg_match($pattern, $entry)) {
+				$aryret[] = $dir . $entry;
+			}
 		}
+		closedir($handle);
+	}else{
+		die_message($dir . ' is not found or not readable.');
 	}
-	closedir($dp);
 
 	$pages[$dir][$ext] = $aryret;
 	return $aryret;
@@ -728,17 +630,27 @@ function get_existfiles($dir = DATA_DIR, $ext = '.txt')
 // Get a page list of this wiki
 function get_existpages($dir = DATA_DIR, $ext = '.txt')
 {
+	// get_existpages を３行で軽くする
+	// http://lsx.sourceforge.jp/?Hack%2Fget_existpages
+	// ただし、Adv.の場合ファイルに別途キャッシュしているのであまり意味ないかも・・・。
+	static $pages = array();
+	if (isset($pages[$dir][$ext])) return $pages[$dir][$ext];
+	
 	$aryret = array();
 	$pattern = '/^((?:[0-9A-F]{2})+)' . preg_quote($ext, '/') . '$/';
 
-	$dp = @opendir($dir) or die_message($dir . ' is not found or not readable.');
 	$matches = array();
-	while (($file = readdir($dp)) !== FALSE) {
-		if (preg_match($pattern, $file, $matches)) {
-			$aryret[$file] = decode($matches[1]);
+	if ($handle = opendir($dir)) {
+		while (false !== ($entry = readdir($handle))) {
+			if (preg_match($pattern, $entry, $matches)) {
+				$aryret[$entry] = decode($matches[1]);
+			}
 		}
+		closedir($handle);
+	}else{
+		die_message($dir . ' is not found or not readable.');
 	}
-	closedir($dp);
+	$pages[$dir][$ext] = $aryret;
 
 	return $aryret;
 }
@@ -839,7 +751,7 @@ function links_get_related($page)
 
 	// If possible, merge related pages generated by make_link()
 	$links[$page] = ($page === $vars['page']) ? $related : array();
-
+	
 	// Get repated pages from DB
 	$links[$page] += links_get_related_db($vars['page']);
 

@@ -9,25 +9,21 @@
 // File related functions - extra functions
 
 // Marged from PukioWikio post.php
-defined('POSTID_DIR')		or define('POSTID_DIR', 'PostId/');
+defined('POSTID_PREFIX')		or define('POSTID_DIR', 'PostId-');
 defined('POSTID_EXPIRE')	or define('POSTID_EXPIRE', 3600);	// 60*60 = 1hour
 
 // Ticket file
-defined('PKWK_TICKET_CACHE')	or define('PKWK_TICKET_CACHE', 'ticket'.PKWK_DAT_EXTENTION);
-
-defined('PKWK_EXSISTS_DATA_CACHE')		or define('PKWK_EXSISTS_DATA_CACHE', 'exsists-wiki'.PKWK_TSV_EXTENTION);
-defined('PKWK_EXSISTS_ATTACH_CACHE')	or define('PKWK_EXSISTS_ATTACH_CACHE', 'exsists-attach'.PKWK_TSV_EXTENTION);
-defined('PKWK_TIMESTAMP_DATA_CACHE')	or define('PKWK_TIMESTAMP_DATA_CACHE', 'timestamp-wiki'.PKWK_DAT_EXTENTION);
-defined('PKWK_TIMESTAMP_ATTACH_CACHE')	or define('PKWK_TIMESTAMP_ATTACH_CACHE', 'timestamp-attach'.PKWK_DAT_EXTENTION);
+defined('PKWK_TICKET_CACHE')	or define('PKWK_TICKET_CACHE', 'ticket');
 
 // Get Ticket
 function get_ticket($newticket = FALSE)
 {
-	if (cache_check(PKWK_TICKET_CACHE) && $newticket !== TRUE) {
-		$ticket = cache_read_raw(PKWK_TICKET_CACHE);
+	global $cache;
+	if ($cache->hasItem(PKWK_TICKET_CACHE) && $newticket !== TRUE) {
+		$ticket = $cache->getItem(PKWK_TICKET_CACHE);
 	}else{
 		$ticket = md5(mt_rand());
-		cache_write_raw($ticket,PKWK_TICKET_CACHE);
+		$cache->setItem(PKWK_TICKET_CACHE, $ticket);
 	}
 	return $ticket;
 }
@@ -53,301 +49,84 @@ function plus_readfile($filename)
 	while (@ob_end_flush());
 }
 
-// structure
+function update_cache($page = '', $force = false){
+	global $cache, $aliaspage, $autoalias, $autoglossary, $glossarypage, $autobasealias, $autolink;
 
-/** 汎用キャッシュ処理 ****************************************************************************/
-// キャッシュ存在確認
-function cache_check($cache_key)
-{
-	global $memcache;
-	$data = array();
-	if ($memcache !== null){
-		$data = $memcache->get(MEMCACHE_PREFIX.$cache_key);
-		$ret = ($data !== false) ? true : false;
+	if ($force) {
+		$cache->flush();
+	}
+	
+	// Update page list
+	if (! $cache->hasItem(PKWK_EXISTS_PREFIX.'wiki')){
+		$pages = get_existpages();
+		$cache->setItem(PKWK_EXISTS_PREFIX.'wiki', $pages);
 	}else{
-		$ret = (file_exists(CACHE_DIR.$cache_key) !== FALSE) ? true : false;
+		$pages = $cache->getItem(PKWK_EXISTS_PREFIX.'wiki');
+		$cache->touchItem(PKWK_EXISTS_PREFIX.'wiki');
 	}
-	return $ret;
-}
 
-// キャッシュ読み込み
-function cache_read($cache_key)
-{
-	global $memcache;
-	$data = array();
-	if ($memcache !== null){
-		$data = $memcache->get(MEMCACHE_PREFIX.$cache_key);
-	}else if (file_exists(CACHE_DIR.$cache_key) !== FALSE){
-		$fp = fopen(CACHE_DIR.$cache_key, 'rb');
-		if ($fp === false) return array();
-		@flock($fp, LOCK_SH);
-		$data = unserialize( fread($fp, filesize(CACHE_DIR.$cache_key)) );
-		@flock($fp, LOCK_UN);
-		if(! fclose($fp)) return array();
+	// Update attach list
+	if (! $cache->hasItem(PKWK_EXISTS_PREFIX.'attach') ){
+		$cache->setItem(PKWK_EXISTS_PREFIX.'attach', get_attachfiles());
 	}
-	return $data;
-}
-function cache_read_raw($cache_key)
-{
-	global $memcache;
-	$data = array();
-	if ($memcache !== null){
-		$raw_data = $memcache->get(MEMCACHE_PREFIX.$cache_key);
-	}else if (file_exists(CACHE_DIR.$cache_key) !== FALSE){
-		$fp = fopen(CACHE_DIR.$cache_key, 'rb');
-		if ($fp === false) return array();
-		@flock($fp, LOCK_SH);
-		$raw_data = fread($fp, filesize(CACHE_DIR.$cache_key));
-		@flock($fp, LOCK_UN);
-		if(! fclose($fp)) return array();
-	}
-	return $raw_data;
-}
+	
+	// Update AutoAliasName
+	if ($autoalias !== 0&& (! $cache->hasItem(PKWK_AUTOALIAS_REGEX_CACHE) || $page === $aliaspage) ) {
+		$aliases = get_autoaliases();
 
-// キャッシュ書き出し
-function cache_write($data, $cache_key, $expire = MEMCACHE_EXPIRE, $compress = MEMCACHE_COMPRESSED)
-{
-	global $memcache;
-	if ($memcache !== null){
-		$ret = update_memcache(MEMCACHE_PREFIX.$cache_key, $data, $compress ,$expire);
-	}else{
-		pkwk_touch_file(CACHE_DIR.$cache_key);
-		$fp = fopen(CACHE_DIR.$cache_key, 'wb');
-		if ($fp === false) return false;
-		@flock($fp, LOCK_EX);
-		rewind($fp);
-		$ret = fwrite($fp, serialize($data));
-		fflush($fp);
-		ftruncate($fp, ftell($fp));
-		@flock($fp, LOCK_UN);
-		fclose($fp);
-		cache_cleanup($cache_key, $expire);
-	}
-	return $ret;
-}
-function cache_write_raw($raw_data, $cache_key, $expire = MEMCACHE_EXPIRE, $compress = MEMCACHE_COMPRESSED)
-{
-	global $memcache;
-	if ($memcache !== null){
-		$ret = update_memcache(MEMCACHE_PREFIX.$cache_key, $raw_data, $compress ,$expire);
-	}else{
-		pkwk_touch_file(CACHE_DIR.$cache_key);
-		$fp = fopen(CACHE_DIR.$cache_key, 'wb');
-		if ($fp === false) return false;
-		@flock($fp, LOCK_EX);
-		rewind($fp);
-		$ret = fwrite($fp, $raw_data);
-		fflush($fp);
-		ftruncate($fp, ftell($fp));
-		@flock($fp, LOCK_UN);
-		fclose($fp);
-		cache_cleanup($cache_key, $expire);
-	}
-	return $ret;
-}
-
-// キャッシュ削除
-function cache_delete($cache_key){
-	global $memcache;
-	$ret = false;
-	if ($memcache !== null){
-		$ret = $memcache->delete(MEMCACHE_PREFIX.$cache_key);
- 	}else if (file_exists(CACHE_DIR.$cache_key) !== FALSE){
-		unlink(CACHE_DIR.$cache_key);
-		$ret = true;
-	}
-	return $ret;
-}
-
-// キャッシュクリア
-function cache_clear($pattern = PKWK_DAT_EXTENTION){
-	global $memcache;
-	if ($memcache !== null){
-		foreach (getMemcacheList() as $key){
-			if (preg_match('/^'.$pattern.'/', $key) !== FALSE){
-				$memcache->delete($key);
-			}
-		}
-	}else{
-		$dir = dirname(CACHE_DIR);
-		foreach(scandir($dir) as $file) {
-			$ext = substr($file, strrpos($file, '.') + 1);
-			if (preg_match('/'.$pattern.'$/', $file) !== FALSE){
-				$file_path = $dir.'/'.$file;
-				if (file_exsists($file_path)){
-					@unlink($file_path);
-				}
-			}
+		if (empty($aliases) ) {
+			// Remove
+			$cache->removeItem(PKWK_AUTOALIAS_REGEX_CACHE);
+		} else {
+			// Create or Update
+			$cache->setItem(PKWK_AUTOALIAS_REGEX_CACHE, get_autolink_pattern(array_keys($aliases)) );
 		}
 	}
-}
 
-// クリーンアップ処理（memcache無効時は、処理を行わない）
-function cache_cleanup($file, $expire){
-	global $memcache;
-	if ($memcache == null){
-		$filename = CACHE_DIR.$file;
-		// 保存先のディレクトリ名を取得
-		$dir = dirname($filename);
-		// 拡張子を取得（二重拡張子は不可）
-		$ext = substr($filename, strrpos($filename, '.') + 1);
-		
-		// 同一階層上のファイルを捜査
-		foreach (scandir($dir) as $d_file) {
-			// 同一拡張子のファイルをクリーンアップ
-			if (mb_strpos($d_file, $ext)){
-				$f = $dir.'/'.$d_file;	// ファイルのフルパス
-				//$filetime = exec ('stat -c %Y '. escapeshellarg ($f));
-				$filetime = filectime($f);
-				// 有効期限を過ぎたファイルは削除
-				if ( (UTIME - $filetime) > $expire) {
-					unlink($f);
-				}
-			}
+	// Update AutoGlossary
+	if ($autoglossary !== 0 && (! $cache->hasItem(PKWK_GLOSSARY_REGEX_CACHE) || $page === $glossarypage)) {
+		$words = get_autoglossaries();
+		if (empty($words) ) {
+			// Remove
+			$cache->removeItem(PKWK_GLOSSARY_REGEX_CACHE);
+		} else {
+			// Create or Update
+			$cache->setItem(PKWK_GLOSSARY_REGEX_CACHE, get_glossary_pattern(@array_keys($words)) );
 		}
 	}
-}
-
-// memcache内のキャッシュのキーを取得
-function getMemcacheKeyList(){
-	global $memcache;
-	$list = array();
-	$allSlabs = $memcache->getExtendedStats('slabs');
-	$items = $memcache->getExtendedStats('items');
-	foreach($allSlabs as $server => $slabs) {
-		foreach($slabs AS $slabId => $slabMeta) {
-			$cdump = $memcache->getExtendedStats('cachedump',(int)$slabId);
-			foreach($cdump AS $keys => $arrVal) {
-				if (is_array($arrVal)){
-					foreach($arrVal AS $k=>$v) {
-						$ret[] = $k;
-					}
-				}else{
-					$ret[] = $arrVal;
-				}
-			}
+	
+	// Update autolink
+	if ($autolink !== 0 && ! $cache->hasItem(PKWK_AUTOLINK_REGEX_CACHE) ) {
+		$cache->setItem(PKWK_AUTOLINK_REGEX_CACHE, get_autolink_pattern($pages, $autolink));
+	}
+	
+	// Update AutoBaseAlias
+	if ($autobasealias !== 0&& ! $cache->hasItem(PKWK_AUTOBASEALIAS_CACHE) ) {
+		$basealiases = get_autobasealias($pages);
+		if (empty($basealiase) ) {
+			// Remove
+			$cache->removeItem(PKWK_AUTOBASEALIAS_CACHE);
+		} else {
+			// Create or Update
+			$cache->setItem(PKWK_AUTOBASEALIAS_CACHE, $basealiases );
 		}
 	}
-	return $ret;
-}
-
-// memcacheの値を更新
-// memcache無効時はnullを返す。
-function update_memcache($key, $value, $compress = MEMCACHE_COMPRESSED ,$expire = MEMCACHE_EXPIRE){
-	global $memcache;
-	if ($memcache !== null){
-		$ret = $memcache->replace($key, $value, $compress ,$expire);
-		if( $ret === false ){
-			$ret = $memcache->set($key, $value, $compress ,$expire);
-		}
-	}else{
-		$ret = null;
+	
+	// Update rel and ref cache
+	if ($force) {
+		links_init();
+	}else if ($page !== '' ){
+		links_update($page);
 	}
-	return $ret;
+
+	// Update recent cache
+	if (! $cache->hasItem(PKWK_MAXSHOW_CACHE)) put_lastmodified();
 }
 
-// update autolink data
-function autolink_pattern_write($filename, $autolink_pattern)
-{
-	global $memcache;
+// Move from file.php
 
-	if ($memcache !== null){
-		$cache_name = MEMCACHE_PREFIX.substr($filename,0,strrpos($filename, '.'));
-		update_memcache($cache_name, $autolink_pattern);
-	}else{
-		list($pattern, $pattern_a, $forceignorelist) = $autolink_pattern;
-		pkwk_touch_file(CACHE_DIR.$filename);
-		$fp = fopen(CACHE_DIR.$filename, 'w') or
-				die_message('Cannot open ' . $filename);
-		set_file_buffer($fp, 0);
-		flock($fp, LOCK_EX);
-		rewind($fp);
-		fputs($fp, $pattern   . "\n");
-		fputs($fp, $pattern_a . "\n");
-		fputs($fp, join("\t", $forceignorelist) . "\n");
-		flock($fp, LOCK_UN);
-		fclose($fp);
-	}
-}
-
-// Delete Autolink data
-function autolink_pattern_delete($filename){
-	global $memcache;
-	if ($memcache !== null){
-		$memcache->delete(MEMCACHE_PREFIX.substr($filename,0,strrpos($filename, '.')));
-	}else{
-		@unlink(CACHE_DIR . $filename);
-	}
-}
-
-// Read autolink data
-function autolink_pattern_read($filename){
-	global $memcache;
-	if ($memcache !== null){
-		$cache = $memcache->get(MEMCACHE_PREFIX.substr($filename,0,strrpos($filename, '.')));
-		if ($cache === FALSE){
-			return;
-		}
-		@list($auto, $auto_a, $forceignorepages) = $cache;
-	}else{
-		$file = CACHE_DIR . $filename;
-		if (! file_exists($file)){
-			return;
-		}
-		@list($auto, $auto_a, $forceignorepages_tsv) = file($file);
-		$forceignorepages = explode("\t", trim($forceignorepages_tsv));
-	}
-	return array($auto, $auto_a, $forceignorepages);
-}
-
-// キャッシュのタイムスタンプ関連
-function cache_timestamp_get_name($func='wiki') {
-	$filename = CACHE_DIR.PKWK_TIMESTAMP_PREFIX;
-	switch ($func) {
-	case 'attach':
-		$filename .= $func;
-		break;
-	case 'wiki':
-	default:
-		$filename .= 'page';
-		break;
-	}
-	$filename .= PKWK_TXT_EXTENTION;
-	return $filename;
-}
-
-function cache_timestamp_touch($func='wiki') {
-	pkwk_touch_file (cache_timestamp_get_name($func));
-}
-
-function cache_timestamp_compare_date($func,$file)
-{
-	$org = cache_timestamp_get_name($func);
-	// if (!file_exists($org) || !file_exists($file)) return false;
-
-	if (!file_exists($org)) {
-		cache_timestamp_touch($func);
-		return false;
-	}
-	if (!file_exists($file)) return false;
-
-	$ts_org  = filemtime($org);
-	$ts_file = filemtime($file);
-	if ($ts_org === $ts_file) return true;
-	return false;
-}
-
-function cache_timestamp_set_date($func,$file)
-{
-	$org = cache_timestamp_get_name($func);
-	if (!file_exists($org) || !file_exists($file)) return false;
-	$ts_org = filemtime($org);
-	return pkwk_touch_file($file, $ts_org);
-}
-
-function get_existpages_cache($dir = DATA_DIR, $ext = PKWK_TXT_EXTENTION, $compat = true)
-{
-	global $memcache;
+function get_existpages_cache($dir, $ext){
+	global $cache;
 	
 	switch($dir){
 		case DATA_DIR: $func = 'wiki'; break;
@@ -356,211 +135,50 @@ function get_existpages_cache($dir = DATA_DIR, $ext = PKWK_TXT_EXTENTION, $compa
 		case BACKUP_DIR: $func = 'backup'; break;
 		default: $func = encode($dir.$ext);
 	}
-
-	if ($memcache !== null){
-		$cache_name = MEMCACHE_PREFIX.PKWK_EXISTS_PREFIX.$func;
-		$pages = $memcache->get($cache_name);
-		if ($pages !== FALSE){
-			if (cache_timestamp_compare_date($func, $cache_name)) {
-				$pages = get_existpages_cache_read($cache_name,$compat);
-				if (!empty($pages)) return $pages;
-			}
-		}
+	// Update page list
+	if (! $cache->hasItem(PKWK_EXISTS_PREFIX.$func)){
+		$pages = get_existpages($dir, $ext);
+		$cache->setItem(PKWK_EXISTS_PREFIX.$func, $pages);
 	}else{
-		$cache_name = CACHE_DIR.PKWK_EXISTS_PREFIX.$func.'.txt';
-		if (cache_timestamp_compare_date($func,$cache_name)) {
-			$pages = get_existpages_cache_read($cache_name,$compat);
-			if (!empty($pages)) return $pages;
-		}
+		$pages = $cache->getItem(PKWK_EXISTS_PREFIX.$func);
+		$cache->touchItem(PKWK_EXISTS_PREFIX.$func);
 	}
-
-	cache_timestamp_touch($func);
-
-	$pages = get_existpages($dir ,$ext);
-	if ($memcache !== null){
-		$new_pages = $memcache->replace($cache_name, $pages, null, MEMCACHE_EXPIRE);
-		if( $new_pages === false ){
-			$memcache->set($cache_name, $pages, null, MEMCACHE_EXPIRE);
-		}
-	}else{
-		$new_pages = get_existpages_cache_write($pages, $cache_name, $compat);
-	}
-
-	cache_timestamp_set_date($func,$cache_name);
-	return ($compat) ? $pages : $new_pages;
+	return $pages;
 }
 
-function get_existpages_cache_read($filename,$compat=true)
+function get_attachfiles($page = '')
 {
-	// if (! file_exists($filename)) return array();
-	$rc = array();
-	$fp = @fopen($filename, 'r');
-	if ($fp == FALSE) return $rc;
-	@flock($fp, LOCK_SH);
-
-	while (! feof($fp)) {
-		$line = fgets($fp, 2048);
-		if ($line === FALSE) continue;
-		$field = explode("\t", $line);
-		$page = trim($field[2]);
-		$rc[$field[1]] = ($compat) ? $page : array('page'=>$page,'time'=>$field[0]);
-	}
-
-	@flock($fp, LOCK_UN);
-	if(! fclose($fp)) return array();
-	return $rc;
-}
-
-function get_existpages_cache_write(& $pages, $filename, $compat=true)
-{
-	if (!$compat) $retval = array();
-
-	pkwk_touch_file($filename);
-	$fp = fopen($filename,'w');
-	if ($fp == FALSE) return false;
-	@flock($fp, LOCK_EX);
-	foreach($pages as $file=>$page) {
-		$time = get_filetime($page);
-		fwrite($fp, $time."\t".$file."\t".$page."\n");
-		if (!$compat) {
-			$retval[$file] = array('page'=>$page,'time'=>$time);
-		}
-	}
-	@flock($fp, LOCK_UN);
-	@fclose($fp);
-	return ($compat) ? $pages : $retval;
-}
-
-function get_attachfiles_cache($page='')
-{
-	global $memcache;
-	
-	if ($memcache !== null){
-		$cache_name = 'attach_files';
-		$cache_data = cache_read($cache_name);
-		if (cache_timestamp_compare_date('attach',$cache_name) && $cache_data !== FALSE) {
-			return $cache_data;
-		}else{
-			cache_timestamp_touch('attach');
-		}
-	}else{
-		$cache_name = CACHE_DIR.'attach_files.txt';
-		if (file_exists($cache_name)) {
-			if (cache_timestamp_compare_date('attach',$cache_name)) {
-				return get_attachfiles_cache_read($cache_name,$page);
-			}
-		} else {
-			cache_timestamp_touch('attach');
-		}
-	}
-
-	$retval = get_attachfiles_cache_write($cache_name,$page);
-	cache_timestamp_set_date('attach',$cache_name);
-	return $retval;
-}
-
-function get_attachfiles_cache_write($filename,$page)
-{
-	global $memcache;
-
 	$dir = opendir(UPLOAD_DIR) or
 		die('directory ' . UPLOAD_DIR . ' is not exist or not readable.');
 	$retval = array();
-	$pattern = "/^((?:[0-9A-F]{2})+)_((?:[0-9A-F]{2})+)$/";
 
-	if (!empty($page)) {
+	if ($page !== '') {
 		$page_pattern = preg_quote(encode($page), '/');
-		$scan_pattern = "/^({$page_pattern})_((?:[0-9A-F]{2})+)$/";
-	}
-
-	if ($memcache === null){
-		pkwk_touch_file($filename);
-		$fp = fopen($filename,'w');
-		if ($fp == FALSE) return array();
-		@flock($fp, LOCK_EX);
+		$pattern = "/^({$page_pattern})_((?:[0-9A-F]{2})+)$/";
 	}else{
-		$data = array();
+		$pattern = "/^((?:[0-9A-F]{2})+)_((?:[0-9A-F]{2})+)$/";
 	}
 
-	$matches = array();
-	while ($file = readdir($dir)) {
-		if (! preg_match($pattern, $file, $matches)) continue; // all page
-		$line = array(filemtime(UPLOAD_DIR.$file), filesize(UPLOAD_DIR.$file), $file,  decode($matches[1]),  decode($matches[2]));
-		
-		if ($memcache === null){
-			fwrite($fp, join("\t",$line)."\n" );
-		}else{
-			$data[] = $line;
-		}
-		if (! empty($page) && ! preg_match($scan_pattern, $file, $matches)) continue;
-		// [page][file] = array(time,size);
-		$retval[$_page][$_file] = array('time'=>$time,'size'=>$size);
-	}
-	if ($memcache === null){
-		@flock($fp, LOCK_UN);
-		@fclose($fp);
-	}else{
-		cache_write($filename, $data);
-	}
-	closedir($dir);
-
-	return $retval;
-}
-
-function get_attachfiles_cache_read($filename,$page)
-{
-	global $memcache;
-	
-	$retval = array();
-	$page_pattern = ($page == '') ? '(?:[0-9A-F]{2})+' : preg_quote(encode($page), '/');
-	$pattern = "/^({$page_pattern})_((?:[0-9A-F]{2})+)$/";
-
-	if ($memcache === null){
-		$fp = @fopen($filename, 'r');
-		if ($fp == FALSE) return $retval;
-		@flock($fp, LOCK_SH);
-		
-		$matches = array();
-		while (! feof($fp)) {
-			$line = fgets($fp, 2048);
-			if ($line === FALSE) continue;
-			$field = explode("\t", $line);
+	if ($handle = opendir(UPLOAD_DIR)) {
+		while (false !== ($entry = readdir($handle))) {
+			if (($entry !== '.') && ($entry !== '..')) continue;
+			$matches = array();
 			
-			$_file = trim($field[4]);
+			if (! preg_match($pattern, $entry, $matches)) continue; // all page
+
 			// [page][file] = array(time,size);
-			if (! empty($page) && ! preg_match($pattern, $field[2], $matches)) continue;
-			$retval[$field[3]][$_file] = array('time'=>$field[0],'size'=>$field[1]);
+			$filepath = realpath(UPLOAD_DIR.$entry);
+			$_page = decode($matches[1]);
+			$_file = decode($matches[2]);
+			$retval[$_page][$_file] = array(
+				'time'=>filemtime($filepath),
+				'size'=>filesize($filepath)
+			);
 		}
-
-		@flock($fp, LOCK_UN);
-		if(! fclose($fp)) return array();
-	}else{
-		$data = $memcache->get($filename);
-		foreach($data as $field){
-			$_file = trim($field[4]);
-			$retval[$field[3]][$_file] = array('time'=>$field[0],'size'=>$field[1]);
-		}
+		closedir($handle);
 	}
-	
+
 	return $retval;
-}
-
-// Move from file.php
-
-// Update AutoBaseAlias data
-function autobasealias_write($filename, &$pages)
-{
-	global $autobasealias_nonlist;
-	$pairs = array();
-	foreach ($pages as $page) {
-		if (preg_match('/' . $autobasealias_nonlist . '/', $page)) continue;
-		$base = get_short_pagename($page);
-		if ($base !== $page) {
-			if (! isset($pairs[$base])) $pairs[$base] = array();
-			$pairs[$base][] = $page;
-		}
-	}
-	cache_write($pairs, $filename);
 }
 
 function get_this_time_links($post,$diff)
@@ -760,6 +378,7 @@ function compress_file($in, $method, $chmod=644){
  */
 function generate_postid($cmd = '')
 {
+	global $cache;
 	$idstring_raw = $cmd . mt_rand();		//mt_srand() is necessary if PHP version is lower than 4.2.0
 	$idstring = md5($idstring_raw);
 

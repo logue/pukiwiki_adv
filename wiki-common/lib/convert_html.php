@@ -890,7 +890,7 @@ class Body extends Element
 			if (preg_match('/^(TITLE):(.*)$/',$line,$matches))
 			{
 				global $newtitle, $newbase;
-				if ($newbase === '') {
+				if (empty($newbase)) {
 					// $newbase = trim($matches[2]);
 					$newbase = convert_html($matches[2]);
 					$newbase = strip_htmltag($newbase);

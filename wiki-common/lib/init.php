@@ -132,17 +132,44 @@ $css_blocks   = array();	// Inline styleseets(<style>/*<![CDATA[*/ ... /*]]>*/</
 $js_vars      = array();	// JavaScript initial value.
 $_SKIN        = array();
 
+/////////////////////////////////////////////////
+// Initilalize Zend
+//
+
+require_once (LIB_DIR.'Zend/Loader/StandardAutoloader.php');
+$loader = new Zend\Loader\StandardAutoloader(array(
+	'autoregister_zf' => true
+));
+$loader->register();
+
 use Zend\Cache\StorageFactory;
 
-$core_cache = StorageFactory::factory(array(
-	'adapter' => array(
-		'name'=>'filesystem',
-		'options' => array(
-			'cache_dir' => TEMP_DIR,
-		)
-	),
-	'plugins' => array('serializer'),
-));
+$cache_config = $core_cache_config = array();
+// 他のWikiと競合しないようにするためDATA_HOMEのハッシュを名前空間とする
+$core_cache_config['adapter']['options']['namespace'] = 'pukiwiki_adv';
+$cache_config['adapter']['options']['namespace'] = md5(realpath(DATA_HOME));
+/*
+if (ini_get('apc.enabled')){
+	$adapter = 'Apc';
+}else if ( class_exists('Memcached') ){
+	$adapter = 'Memcached';
+}else{
+*/
+	$adapter = 'Filesystem';
+	$cache_config['adapter']['options']['cache_dir'] = CACHE_DIR;
+	$cache_config['plugins'] = $core_cache_config['plugins'] = array('serializer');
+	unset($cache_config['adapter']['options']['namespace']);	// ファイルキャッシュの場合名前空間は使用しない
+/*
+}
+*/
+$cache_config['adapter']['name'] = $core_cache_config['adapter']['name'] = $adapter;
+$info[] = 'Cache system using '.$adapter;
+
+// PukiWikiのコアで使われる汎用キャッシュ
+$core_cache = StorageFactory::factory($core_cache_config);
+// Wikiごと個別に使われるキャッシュ
+$cache = StorageFactory::factory($cache_config);
+
 /////////////////////////////////////////////////
 // I18N
 
@@ -150,17 +177,8 @@ set_language();
 set_time();
 require(LIB_DIR . 'public_holiday.php');
 
-// Init Resource(for gettext)
-if (! ini_get('safe_mode')){
-	putenv('LANGUAGE='.PO_LANG);
-	putenv('LANG='.PO_LANG);
-	putenv('LC_ALL='.PO_LANG);
-	putenv('LC_MESSAGES='.PO_LANG);
-}
 T_setlocale(LC_ALL,PO_LANG);
-//T_setlocale(LC_CTYPE,PO_LANG);
 T_bindtextdomain(DOMAIN,LANG_DIR);
-//T_bind_textdomain_codeset(DOMAIN,SOURCE_ENCODING); 
 T_textdomain(DOMAIN);
 
 /////////////////////////////////////////////////
@@ -305,40 +323,6 @@ if (isset($_GET['encode_hint']) && empty($_GET['encode_hint']))
 	$encode = mb_detect_encoding($_GET['encode_hint']);
 	mb_convert_variables(SOURCE_ENCODING, $encode, $_GET);
 }
-/////////////////////////////////////////////////
-// Memcache利用可能時
-// Cacheディレクトリ内のキャッシュをMemcacheに保存します。
-
-// Memcacheのホスト。ソケット接続の場合は、unix://var/run/memcache.socketのようにすること。（ラウンドロビン非対応）
-defined('MEMCACHE_HOST')		or define('MEMCACHE_HOST', '127.0.0.1');
-// Memcacheのポート。ソケット接続の場合は、0にすること。
-defined('MEMCACHE_PORT')		or define('MEMCACHE_PORT', 11211);
-// memcacheのプリフィックス（デフォルトはキャッシュディレクトリのパスの\や/を_にしたもの。）
-defined('MEMCACHE_PREFIX')		or define('MEMCACHE_PREFIX', str_replace(array('/','\\'), '_',realpath(CACHE_DIR)).'_');
-// memcache変数を圧縮（ページリストのキャッシュなどの一部の機能では無効化されます。）
-defined('MEMCACHE_COMPRESSED')	or define('MEMCACHE_COMPRESSED', false);
-// memcacheの有効期限（デフォルトは無制限）
-defined('MEMCACHE_EXPIRE')		or define('MEMCACHE_EXPIRE', 0);
-
-if (class_exists('Memcache')){
-	$memcache = new Memcache();
-	if (!@$memcache->connect(MEMCACHE_HOST, MEMCACHE_PORT)) {
-		// Memcacheが使用できない場合
-		$info[] = sprintf('Could not to connect to Memcached: <var>%s:%s%s</var>. Please check Memcached is running.', MEMCACHE_HOST, MEMCACHE_PORT, PHP_EOL);
-		unset($memcache);
-	}else{
-		// Memcacheが使用できる場合
-//		$memcache->setCompressThreshold(20000, 0.2);
-		$info[] = 'Memcache is enabled! Ver.<var>'.$memcache->getVersion().'</var> / ';
-		// セッション管理もMemcacheで行う
-		ini_set('session.save_handler', 'memcache');
-		ini_set('session.save_path', (strpos(MEMCACHE_HOST, 'unix://') !== FALSE) ? MEMCACHE_HOST : 'tcp://'.MEMCACHE_HOST.':'.MEMCACHE_PORT);
-	}
-}else{
-	$info[] = 'PHP Memcache is not installed.';
-	unset($memcache);
-}
-
 /////////////////////////////////////////////////
 // TokyoTyrant利用可能時（未実装）
 // 仕様は同上。
@@ -623,29 +607,33 @@ if (!IS_AJAX || IS_MOBILE){
 	$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.( (DEBUG) ? 'locale.js' : 'js.php?file=locale'), 'defer'=>'defer' );
 	
 	if ( isset($auth_api['facebook']) ){
-		require(LIB_DIR.'facebook.php');
-		$fb = new FaceBook($auth_api['facebook']);
-		// FaceBook Integration
-		$fb_user = $fb->getUser();
-		
-		if ($fb_user === 0) {
-			// 認証されていない場合
-			$url = $fb->getLoginUrl(array(
-				'canvas' => 1,
-				'fbconnect' => 0,
-				'req_perms' => 'status_update,publish_stream' // ステータス更新とフィードへの書き込み許可
-			));
-			$info[] = sprintf(T_('Facebook is not authenticated or url is mismathed. Please click <a href="%s">here</a> and authenticate the application.'), str_replace('&','&amp;',$url));
-		}else{
-			$me = $fb->api('/me');
-			try {
-				// Proceed knowing you have a logged in user who's authenticated.
-				$info[] = sprintf(T_('Facebook is authenticated. Welcome, %s.'), '<var>'.$me['username'].'</var>');
-			} catch (FacebookApiException $e) {
-				$info[] = 'Facebook Error: <samp>'.$e.'</samp>';
+		if (! extension_loaded('curl')){
+			require(LIB_DIR.'facebook.php');
+			$fb = new FaceBook($auth_api['facebook']);
+			// FaceBook Integration
+			$fb_user = $fb->getUser();
+			
+			if ($fb_user === 0) {
+				// 認証されていない場合
+				$url = $fb->getLoginUrl(array(
+					'canvas' => 1,
+					'fbconnect' => 0,
+					'req_perms' => 'status_update,publish_stream' // ステータス更新とフィードへの書き込み許可
+				));
+				$info[] = sprintf(T_('Facebook is not authenticated or url is mismathed. Please click <a href="%s">here</a> and authenticate the application.'), str_replace('&','&amp;',$url));
+			}else{
+				$me = $fb->api('/me');
+				try {
+					// Proceed knowing you have a logged in user who's authenticated.
+					$info[] = sprintf(T_('Facebook is authenticated. Welcome, %s.'), '<var>'.$me['username'].'</var>');
+				} catch (FacebookApiException $e) {
+					$info[] = 'Facebook Error: <samp>'.$e.'</samp>';
+				}
 			}
+			$js_init['FACEBOOK_APPID'] = $fb->getAppId();
+		}else{
+			$info[] = T_('Could not to load Facebook. This function needs <code>curl</code> extention.');
 		}
-		$js_init['FACEBOOK_APPID'] = $fb->getAppId();
 	}
 }
 /* End of file init.php */

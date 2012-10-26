@@ -852,20 +852,10 @@ function is_webdav()
 }
 
 /* PukiWiki Adv. Extend codes *********************************************************************/
-
 // for debug use
-// HTML4.0で廃止された化石のようなxmpタグでタグ無効化・・・
-// var_dumpにhtmlspecialcharとかは通用しないため。
-// xDebug有効時はそのままvar_dump
 function pr($value){
 	if (DEBUG){
-		if (!extension_loaded('xdebug')){
-			echo '<pre class="sh" data-brush="php"><xmp>';
-			var_dump($value);
-			echo '</xmp></pre>';
-		}else{
-			var_dump($value);
-		}
+		echo var_dump($value);
 	}
 	return '';
 }
@@ -893,8 +883,6 @@ HTML;
 
 
 /**************************************************************************************************/
-// move from snots's akismet.inc.php
-
 /////////////// PHP Extesnion ///////////////
 if (! function_exists('slide_rename')) {
 	function slide_rename($basename, $max, $extfmt = '.%d') {
@@ -955,6 +943,16 @@ if (! function_exists('file_put_contents')) {
 	}
 }
 
+if (!function_exists('json_decode')) {
+	function json_decode($value){
+		return Zend\Json\Json::decode($value);
+	}
+}
+if (! function_exists('json_encode')){
+	function json_encode($value){
+		return Zend\Json\Json::encode($value);
+	}
+}
 /////// PukiWiki API Extension //////////////
 if (! function_exists('is_human')) {
 	/**

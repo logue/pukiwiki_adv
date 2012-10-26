@@ -67,7 +67,7 @@ function catbody($title, $page, $body)
 					);
 				}
 				header('Content-Type: application/json; charset=' . CONTENT_CHARSET);
-				echo json_encode($JSON);
+				echo Zend\Json\Json::encode($JSON);
 			break;
 			case 'xml':
 				header('Content-Type: application/xml; charset=' . CONTENT_CHARSET);
@@ -706,14 +706,9 @@ function pkwk_common_headers($modified = 0, $expire = 604800){
 }
 
 function pkwk_common_suffixes($length = ''){
-	global $memcache;
 
 	// close current session
 	if (session_id()) session_write_close();
-
-	if ($memcache !== null){
-		$memcache->close();
-	}
 	// flush all output
 	/*
 	if(!DEBUG){

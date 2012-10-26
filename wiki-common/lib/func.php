@@ -439,7 +439,7 @@ function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', 
 				$initial = hangul_chosung($page);
 /*
 			} elseif (mb_ereg('/^([一-龥])/',$page) !== FALSE){
-				// 簡体字中国語
+				// 簡体中国語
 */
 			} else {
 				$initial = & $sentinel_another;
@@ -562,7 +562,7 @@ function catrule()
 // Show (critical) error message
 function die_message($msg, $error_title='', $http_code = 500){
 	global $skin_file, $page_title, $_string, $_title, $_button, $vars;
-	global $memcache, $ob_flag;
+	global $ob_flag;
 
 	$title = !empty($error_title) ? $error_title : $_title['error'];
 	$page = $_title['error'];
@@ -990,14 +990,10 @@ function get_autoaliases($word = '')
 function get_autoaliases_from_autobasealias()
 {
 	static $paris;
-//	$cachefile = CACHE_DIR . PKWK_AUTOBASEALIAS_CACHE;
+	global $cache;
+
 	if (! isset($pairs)) {
-		$pairs = cache_read(PKWK_AUTOBASEALIAS_CACHE);
-/*
-		if(!file_exists($cachefile)) touch($cachefile);	// ファイル作成
-		$data = file_get_contents($cachefile);
-		$pairs = unserialize($data);
-*/
+		$pairs = $cache->getItem(PKWK_AUTOBASEALIAS_CACHE);
 	}
 	if (!is_array($pairs)) $pairs = array();	// safeモードでよくArgument #2 is not an arrayというエラーになるため
 	return $pairs;
@@ -1007,7 +1003,7 @@ function get_autoaliases_from_autobasealias()
 function get_autoaliases_from_aliaspage()
 {
 	global $aliaspage, $autoalias_max_words;
-	static $pairs;
+	static $pairs = array();
 
 	if (! isset($pairs)) {
 		$pairs = array();
@@ -1070,6 +1066,22 @@ function get_autoglossaries($word = '')
 
 	// A string: Seek the pair
 	return isset($pairs[$word]) ? $pairs[$word]:'';
+}
+
+// Get AutoBaseAlias data
+function get_autobasealias($pages){
+	global $autobasealias_nonlist;
+	static $pairs = array();
+
+	foreach ($pages as $page) {
+		if (preg_match('/' . $autobasealias_nonlist . '/', $page)) continue;
+		$base = get_short_pagename($page);
+		if ($base !== $page) {
+			if (! isset($pairs[$base])) $pairs[$base] = array();
+			$pairs[$base][] = $page;
+		}
+	}
+	return $pairs;
 }
 
 // Get absolute-URI of this script
