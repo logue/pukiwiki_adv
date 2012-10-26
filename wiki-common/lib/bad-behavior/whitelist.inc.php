@@ -10,12 +10,12 @@ function bb2_run_whitelist($package)
 	}
 
 	if (@!empty($whitelists['ip'])) {
-		foreach ($whitelists['ip'] as $range) {
+		foreach (array_filter($whitelists['ip']) as $range) {
 			if (match_cidr($package['ip'], $range)) return true;
 		}
 	}
 	if (@!empty($whitelists['useragent'])) {
-		foreach ($whitelists['useragent'] as $user_agent) {
+		foreach (array_filter($whitelists['useragent']) as $user_agent) {
 			if (!strcmp($package['headers_mixed']['User-Agent'], $user_agent)) return true;
 		}
 	}
@@ -25,7 +25,7 @@ function bb2_run_whitelist($package)
 		} else {
 			$request_uri = substr($package['request_uri'], 0, strpos($package['request_uri'], "?"));
 		}
-		foreach ($whitelists['url'] as $url) {
+		foreach (array_filter($whitelists['url']) as $url) {
 			$pos = strpos($request_uri, $url);
 			if ($pos !== false && $pos == 0) return true;
 		}

@@ -279,8 +279,8 @@ $use_spam_check = array(
 	'trackback'			=> 1,	// TrackBack。splogなど。（DNSBL）
 	'referer'			=> 1,	// Referer SPAM（DNSBL）
 	'multiple_post'		=> 0,	// 多重投稿チェック（ここを有効にすると戻るボタンによる更新ができなくなります）
-	'bad-behavior'		=> 0,	// Bad Behaviorによるアンチスパム（仮実装）
-	'akismet'			=> 0	// Aksmetによるアンチスパムを有効化する（別途$akismet_api_keyを指定する必要があります。）1は差分のみ、2は全て
+	'bad-behavior'		=> 1,	// Bad Behaviorによるアンチスパム（仮実装）
+	'akismet'			=> 1	// Aksmetによるアンチスパムを有効化する（別途$akismet_api_keyを指定する必要があります。）1は差分のみ、2は全て
 );
 
 /////////////////////////////////////////////////

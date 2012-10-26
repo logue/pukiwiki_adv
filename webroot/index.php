@@ -34,7 +34,7 @@ define('SITE_HOME',	'../wiki-common/');
 // define('DATA_HOME',	'../../wiki-data/contents/');
 define('DATA_HOME',		'../wiki-data/');
 
-//define('ROOT_URI', '');
+define('ROOT_URI', '/'); // for Windows
 //define('WWW_HOME', '');
 //define('COMMON_URI', '');
 

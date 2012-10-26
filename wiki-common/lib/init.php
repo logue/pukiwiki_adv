@@ -581,29 +581,33 @@ if (!IS_AJAX || IS_MOBILE){
 	$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.( (DEBUG) ? 'locale.js' : 'js.php?file=locale'), 'defer'=>'defer' );
 	
 	if ( isset($auth_api['facebook']) ){
-		require(LIB_DIR.'facebook.php');
-		$fb = new FaceBook($auth_api['facebook']);
-		// FaceBook Integration
-		$fb_user = $fb->getUser();
-		
-		if ($fb_user === 0) {
-			// 認証されていない場合
-			$url = $fb->getLoginUrl(array(
-				'canvas' => 1,
-				'fbconnect' => 0,
-				'req_perms' => 'status_update,publish_stream' // ステータス更新とフィードへの書き込み許可
-			));
-			$info[] = sprintf(T_('Facebook is not authenticated or url is mismathed. Please click <a href="%s">here</a> and authenticate the application.'), str_replace('&','&amp;',$url));
-		}else{
-			$me = $fb->api('/me');
-			try {
-				// Proceed knowing you have a logged in user who's authenticated.
-				$info[] = sprintf(T_('Facebook is authenticated. Welcome, %s.'), '<var>'.$me['username'].'</var>');
-			} catch (FacebookApiException $e) {
-				$info[] = 'Facebook Error: <samp>'.$e.'</samp>';
+		if (extension_loaded('curl') ){
+			require(LIB_DIR.'facebook.php');
+			$fb = new FaceBook($auth_api['facebook']);
+			// FaceBook Integration
+			$fb_user = $fb->getUser();
+			
+			if ($fb_user === 0) {
+				// 認証されていない場合
+				$url = $fb->getLoginUrl(array(
+					'canvas' => 1,
+					'fbconnect' => 0,
+					'req_perms' => 'status_update,publish_stream' // ステータス更新とフィードへの書き込み許可
+				));
+				$info[] = sprintf(T_('Facebook is not authenticated or url is mismathed. Please click <a href="%s">here</a> and authenticate the application.'), str_replace('&','&amp;',$url));
+			}else{
+				$me = $fb->api('/me');
+				try {
+					// Proceed knowing you have a logged in user who's authenticated.
+					$info[] = sprintf(T_('Facebook is authenticated. Welcome, %s.'), '<var>'.$me['username'].'</var>');
+				} catch (FacebookApiException $e) {
+					$info[] = 'Facebook Error: <samp>'.$e.'</samp>';
+				}
 			}
+			$js_init['FACEBOOK_APPID'] = $fb->getAppId();
+		}else{
+			$info[] = 'Facebook needs cURL extention.';
 		}
-		$js_init['FACEBOOK_APPID'] = $fb->getAppId();
 	}
 }
 /* End of file init.php */

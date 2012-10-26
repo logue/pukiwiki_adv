@@ -42,7 +42,7 @@ ini_set('memory_limit', '128M');
 ini_set('zlib.output_compression', 'Off');
 ini_set('zlib.output_handler','mb_output_handler');
 $info = array();
-foreach (array('mbstring','json','openssl','curl','gd') as $ext){
+foreach (array('mbstring','json') as $ext){
 	if (! extension_loaded($ext)){
 		$info[] = 'PukiWiki Adv. needs the <a href="http://www.php.net/manual/book.'.$ext.'.php">'.$ext.' extension</a>.';
 	}
