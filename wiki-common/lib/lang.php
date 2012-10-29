@@ -6,6 +6,7 @@
  * @version     $Id: lang.php,v 0.27.3 2012/05/20 09:29:00 Logue Exp $
  *
  */
+defined('LANG_DIR') or define('LANG_DIR',SITE_HOME.'locale/');
 
 use Zend\I18n\Translator\Translator;
 
@@ -92,7 +93,7 @@ function T_setlocale($type, $locale){
 
 function T_($string){
 	global $translator, $domain, $language, $core_cache;
-	$gettext_file = LANG_DIR.PO_LANG.'/LC_MESSAGES/'.$domain.'.mo';
+	$gettext_file = LANG_DIR.$language.'/LC_MESSAGES/'.$domain.'.mo';
 	if (file_exists($gettext_file)){
 		return $translator->translate($string, $domain, $language);
 	}else{

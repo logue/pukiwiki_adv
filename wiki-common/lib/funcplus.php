@@ -855,7 +855,7 @@ function is_webdav()
 // for debug use
 function pr($value){
 	if (DEBUG){
-		echo var_dump($value);
+		Zend\Debug\Debug::dump($value);
 	}
 	return '';
 }

@@ -10,7 +10,7 @@ function plugin_cmd_init(){
 
 function plugin_cmd_inline(){
 	global $page;
-	
+
 	global $do_backup, $trackback, $referer;
 	global $function_freeze;
 	global $vars;
@@ -19,7 +19,7 @@ function plugin_cmd_inline(){
 	$num = func_num_args()-1;
 	$args = $num ? func_get_args() : array();
 	array_pop($args);
-	
+
 	$name = $args[0];
 	$pagename = '';
 	if ($num == 1){
@@ -28,8 +28,8 @@ function plugin_cmd_inline(){
 		$_page = $args[1];
 		$pagename = true;
 	}
-	
-	
+
+
 	return;
 }
 
@@ -43,7 +43,7 @@ function plugin_cmd_link($name, $page){
 	// $is_read = (arg_check('read') && is_page($_page));
 	$is_read = is_page($page);
 	$is_editable = is_editable($page);
-	
+
 	switch ($name) {
 		case 'freeze':
 		case 'unfreeze':
@@ -72,7 +72,7 @@ function plugin_cmd_link($name, $page){
 			if ($do_backup) {
 				return plugin_cmd_getlink($name);
 			}
-			
+
 			break;
 		case 'brokenlink':
 		case 'template':
@@ -146,7 +146,6 @@ function plugin_cmd_link($name, $page){
 		default:
 			return plugin_cmd_getlink($name);
 			break;
-		}
 	}
 }
 
@@ -154,18 +153,17 @@ function plugin_cmd_getlink($key, $page, $flag)
 {
 	global $_LANG, $_LINK;
 	$links = getLinkSet($page);
-	$text = (($pagename == false) ? $_LANG['skin'][$key] : $_LANG['skin'][$key].':'.$_page);
-	
+
 	if ($flag['icon'] === true){
-		$icon = ($flag['name'] === true) ? 
+		$icon = ($flag['name'] === true) ?
 			'<span class="pkwk-icon icon-'.$key.'"></span>' : '<span class="pkwk-icon icon-'.$key.'" title="'.$_LANG['skin'][$key].'"></span>';
 	}else{
 		$icon = '';
 	}
-	$link = ($flag['name'] === true) ? 
-		'<a href="' . $links[$key] . '" rel="nofollow" > . $icon . $_LANG['skin'][$key]. '</a>' :
-		'<a href="' . $links[$key] . '" rel="nofollow" > . $icon . '</a>';
-	
+	$link = ($flag['name'] === true) ?
+		'<a href="' . $links[$key] . '" rel="nofollow" >' . $icon . $_LANG['skin'][$key]. '</a>' :
+		'<a href="' . $links[$key] . '" rel="nofollow" >' . $icon . '</a>';
+
 	if ($flag['inline'] === true){
 		return $link;
 	}else{

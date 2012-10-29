@@ -45,59 +45,56 @@ function plugin_recent_convert()
 	$date = '';
 	$items = array();
 	
-	if ($cache->hasItem(PKWK_MAXSHOW_CACHE)){
-		$lines = $cache->getItem(PKWK_MAXSHOW_CACHE);
-		if ($lines !== null){
-			$count = (count($lines) < $recent_lines) ? count($lines) : $recent_lines;
-			$i = 0;
-			foreach ($lines as $page => $time) {
-				if (! auth::is_page_readable($page,$auth_key['key'],$auth_key['group'])) continue;
-				if ($i > $count) break;
-
-				$s_page = htmlsc($page);
-				$_date = get_date($date_format, $time);
-
-				if (!IS_MOBILE){
-					if ($date !== $_date) {
-						// End of the day
-						if (!empty($date)) $items[] = '</ul>';
-
-						// New day
-						$date = $_date;
-						$items[] = '<strong>' . $date . '</strong>';
-						$items[] = '<ul class="recent_list">';
-					}
-
-					if($page === $vars['page']) {
-						// No need to link to the page you just read, or notify where you just read
-						$items[] = ' <li>' . $s_page . '</li>';
-					} else {
-						$passage = $show_passage ? ' ' . get_passage($time) : '';
-						$items[] = ' <li><a href="' . get_page_uri($page) . '"' . 
-							' title="' . $s_page . $passage . '">' . $s_page . '</a></li>';
-					}
-				}else{
-					if ($date !== $_date) {
-						// New day
-						$date = $_date;
-						$items[] = '<li data-role="list-divider">' . $date . '</li>';
-					}
-					if($page === $vars['page']) {
-						// No need to link to the page you just read, or notify where you just read
-						$items[] = ' <li data-theme="e">' . $s_page . '</li>';
-					} else {
-						$passage = $show_passage ? ' ' . '<span class="ui-li-count">'.get_passage($time, false).'</span>' : '';
-						$items[] = ' <li><a href="' . get_page_uri($page) . '" data-transition="slide">' . $s_page . $passage.'</a></li>';
-					}
-				}
-				$i++;
-			}
-			unset($lines,$i);
-		}
-	}else{
-		$count = 0;
+	if (!$cache->hasItem(PKWK_MAXSHOW_CACHE)){
 		put_lastmodified();
-		return '<div class="message_box ui-state-highlight ui-corner-all">#recent(): Now generating recent data. Please reload.</div>' . "\n";
+	}
+	$lines = $cache->getItem(PKWK_MAXSHOW_CACHE);
+	if ($lines !== null){
+		$count = (count($lines) < $recent_lines) ? count($lines) : $recent_lines;
+		$i = 0;
+		foreach ($lines as $page => $time) {
+			if (! auth::is_page_readable($page,$auth_key['key'],$auth_key['group'])) continue;
+			if ($i > $count) break;
+
+			$s_page = htmlsc($page);
+			$_date = get_date($date_format, $time);
+
+			if (!IS_MOBILE){
+				if ($date !== $_date) {
+					// End of the day
+					if (!empty($date)) $items[] = '</ul>';
+
+					// New day
+					$date = $_date;
+					$items[] = '<strong>' . $date . '</strong>';
+					$items[] = '<ul class="recent_list">';
+				}
+
+				if($page === $vars['page']) {
+					// No need to link to the page you just read, or notify where you just read
+					$items[] = ' <li>' . $s_page . '</li>';
+				} else {
+					$passage = $show_passage ? ' ' . get_passage($time) : '';
+					$items[] = ' <li><a href="' . get_page_uri($page) . '"' . 
+						' title="' . $s_page . $passage . '">' . $s_page . '</a></li>';
+				}
+			}else{
+				if ($date !== $_date) {
+					// New day
+					$date = $_date;
+					$items[] = '<li data-role="list-divider">' . $date . '</li>';
+				}
+				if($page === $vars['page']) {
+					// No need to link to the page you just read, or notify where you just read
+					$items[] = ' <li data-theme="e">' . $s_page . '</li>';
+				} else {
+					$passage = $show_passage ? ' ' . '<span class="ui-li-count">'.get_passage($time, false).'</span>' : '';
+					$items[] = ' <li><a href="' . get_page_uri($page) . '" data-transition="slide">' . $s_page . $passage.'</a></li>';
+				}
+			}
+			$i++;
+		}
+		unset($lines,$i);
 	}
 	if ($date !== '') $items[] = '</ul>';
 	// End of the day

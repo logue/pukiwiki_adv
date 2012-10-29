@@ -32,7 +32,7 @@ function plugin_table_edit2_convert()
 	$r_page = rawurlencode($page);
 	if (! function_exists('_')) table_edit2_message();
 
-	// èâä˙ê›íË
+	// ÂàùÊúüË®≠ÂÆö
 	$opt = array(
 		'abs_m' => FALSE,
 		'add_show' => '0',
@@ -59,10 +59,10 @@ function plugin_table_edit2_convert()
 	$body_table = '';
 
 	$args = func_get_args();
-	// ÉfÅ[É^Å[
+	// „Éá„Éº„Çø„Éº
 	$arg = (substr(end($args), -1) == "\r")? array_pop($args) : '';
 	
-	// ê›íËïœêîÇ≈è„èëÇ´
+	// Ë®≠ÂÆöÂ§âÊï∞„Åß‰∏äÊõ∏„Åç
 	foreach ($args as $opt_key) {
 		if (strpos($opt_key, "=") !== false) {
 			list($key, $val) = explode('=', strtolower($opt_key));
@@ -70,7 +70,7 @@ function plugin_table_edit2_convert()
 		}
 	}
 
-	// ì«Ç›çûÇ›êÍópÇÃéûÇ‚ÉyÅ[ÉWÇ™ìÄåãÇ≥ÇÍÇƒÇ¢ÇÈèÍçáÇÕï“èWïsâ¬
+	// Ë™≠„ÅøËæº„ÅøÂ∞ÇÁî®„ÅÆÊôÇ„ÇÑ„Éö„Éº„Ç∏„ÅåÂáçÁµê„Åï„Çå„Å¶„ÅÑ„ÇãÂ†¥Âêà„ÅØÁ∑®ÈõÜ‰∏çÂèØ
 	if (auth::check_role('readonly') || is_freeze($page)) {
 		$opt['edit'] = 'off';
 	}
@@ -112,10 +112,10 @@ function plugin_table_edit2_convert()
 	}
 
 	if ($opt['edit'] !== 'off'){
-		// ï“èWÉÇÅ[ÉhÇ™óLå¯Ç»èÍçá
+		// Á∑®ÈõÜ„É¢„Éº„Éâ„ÅåÊúâÂäπ„Å™Â†¥Âêà
 		$tei = new TableEdit2Indicate($r_page, $count);
 
-		// ÉçÉbÉNÅ^ÉAÉìÉçÉbÉNÉ{É^ÉìÇï\é¶
+		// „É≠„ÉÉ„ÇØÔºè„Ç¢„É≥„É≠„ÉÉ„ÇØ„Éú„Çø„É≥„ÇíË°®Á§∫
 		if ($opt['table_mod'] !== 'off') {
 			if ( isset($opt['csv']) ) $tei->csv_button($opt['csv']);
 			$head_button = $tei->open_close($opt['table_mod'], ($opt['edit'] === 'on') ? 'lock' : 'unlock');
@@ -777,7 +777,7 @@ class TableEdit2Calc
 			$exp = trim(mb_convert_kana( $cell, "a"));
 			if ( $exp == '' ) $cell = '';
 			if ( preg_match_all('/\@([\w]+)\((?:(\d+),(\d+)|([rc]))\)/', $exp, $matc_cell)){		//func 06.09.13
-				$exp = @$this->cell_func($matc_cell,$cell_count,$exp);	// ãÍÇµÇ¢èCê≥
+				$exp = @$this->cell_func($matc_cell,$cell_count,$exp);	// Ëã¶„Åó„ÅÑ‰øÆÊ≠£
 				$cell = $exp;
 			}
 			if (preg_match('/^[\d\s\+\-\(]+[\d\.\s\+\-\*\/\%\(\)]*$/', $exp) && preg_match('/[\d\s\)]+$/', $exp) && $exp != ''){

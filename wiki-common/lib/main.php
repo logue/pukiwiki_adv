@@ -271,11 +271,12 @@ if (!empty($auth_key['home'])) {
 }
 
 // Page output
-$title = htmlsc(strip_bracket($base));
-$page  = make_search($base);
 if (isset($retvars['msg']) && !empty($retvars['msg']) ) {
-	$title = str_replace('$1', $title, $retvars['msg']);
-	$page  = str_replace('$1', $page,  $retvars['msg']);
+	$title = str_replace('$1', htmlsc(strip_bracket($base)), $retvars['msg']);
+	$page  = str_replace('$1', make_search($base),  $retvars['msg']);
+}else{
+	$title = htmlsc(strip_bracket($base));
+	$page  = make_search($base);
 }
 
 if (isset($retvars['body']) && !empty($retvars['body'])) {

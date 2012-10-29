@@ -40,20 +40,19 @@ defined('PKWK_REF_PREFIX')	or define('PKWK_REF_PREFIX', 'ref-');
 function links_get_related_db($page)
 {
 	global $cache;
-	
-	$times = array();
+
 	$ref_name = PKWK_REF_PREFIX.md5($page);
 	if (! $cache->hasItem($ref_name)){
 		$data = links_update($page);
 	}else{
 		$data = $cache->getItem($ref_name);
 	}
-
+	
+	$times = array();
 	foreach ($data as $line) {
-		$time = get_filetime($line);
-		if($time !== 0) $times[$line] = $time;
+		$time = get_filetime($line[0]);
+		if($time !== 0) $times[$line[0]] = $time;
 	}
-	// $times['pagename'] = utime;
 	
 	return $times;
 }

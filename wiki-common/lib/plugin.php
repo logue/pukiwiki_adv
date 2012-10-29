@@ -68,7 +68,7 @@ function limit_plugin($name)
 
 	$name = strtolower($name);
 	$count[$name] = (!isset($count[$name])) ? 1 : $count[$name]++;
-	
+
 	if ($count[$name] > PKWK_PLUGIN_CALL_TIME_LIMIT) {
 		die_message( sprintf($_string['plugin_multiple_call'],  htmlsc($name), PKWK_PLUGIN_CALL_TIME_LIMIT));
 	}
@@ -143,8 +143,8 @@ function do_plugin_init($name)
 		T_bindtextdomain($name,$plugin_lang_path[$name]);
 	}
 	// bind_textdomain_codeset($name, SOURCE_ENCODING);
-	T_bind_textdomain_codeset($name,SOURCE_ENCODING); 
-	
+	T_bind_textdomain_codeset($name,SOURCE_ENCODING);
+
 	// i18n (Plus!)
 	$func = 'plugin_' . $name . '_init';
 	if (function_exists($func)) {
@@ -180,7 +180,7 @@ function do_plugin_action($name)
 	// check postid
 	if (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] === 1 && isset($vars['postid']) && !check_postid($vars['postid']) )
 		die_message($_string['plugin_postid_error']);
-	
+
 	if ( isset($vars['encode_hint']) && $vars['encode_hint'] !== PKWK_ENCODING_HINT )
 		die_message($_string['plugin_encode_error']);
 
@@ -211,7 +211,7 @@ function do_plugin_convert($name, $args = '')
 		}
 	}
 
-	$aryargs = empty($args) ? array() : csv_explode(',', $args);
+	$aryargs = empty($args) ? array() : explode(',', $args);
 
 	if (! PKWKEXP_DISABLE_MULTILINE_PLUGIN_HACK) {
 		if (isset($body)) $aryargs[] = & $body;     // #plugin(){{body}}
@@ -236,7 +236,7 @@ function do_plugin_inline($name, $args='', $body='')
 		return '<span class="ui-state-error">' . sprintf($_string['plugin_init_error'], htmlsc($name)) . '</span>';
 	}
 
-	$aryargs = empty($args) ? array() : csv_explode(',', $args);
+	$aryargs = empty($args) ? array() : explode(',', $args);
 
 	// NOTE: A reference of $body is always the last argument
 	$aryargs[] = & $body; // func_num_args() != 0
@@ -277,21 +277,21 @@ function use_plugin($plugin, $lines)
 	return FALSE;
 }
 
-// formƒ^ƒO‚É’Ç‰Á‚ÌƒtƒH[ƒ€‚ğ‘}“ü
+// formï¿½^ï¿½Oï¿½É’Ç‰ï¿½ï¿½Ìƒtï¿½Hï¿½[ï¿½ï¿½ï¿½ï¿½}ï¿½ï¿½
 function add_hidden_field($retvar, $name){
 	global $use_spam_check, $vars, $digest;
 	if (preg_match('/<form\b(?:(?=(\s+(?:method="([^"]*)"|enctype="([^"]*)")|[^\s>]+|\s+))\1)*>/i', $retvar, $matches) !== 0){
 		// Insert a hidden field, supports idenrtifying text enconding
 		$hidden_field[] = ( PKWK_ENCODING_HINT ) ? '<input type="hidden" name="encode_hint" value="' . PKWK_ENCODING_HINT . '" />' : '';
-		
-		// ‘½d“Še‚ğ‹Ö~‚·‚éƒIƒvƒVƒ‡ƒ“‚ª—LŒø‚©‚ÂAmethod‚ªpost‚¾‚Á‚½ê‡APostID‚ğ¶¬‚·‚é
-		if ( (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] === 1) 
+
+		// ï¿½ï¿½ï¿½dï¿½ï¿½ï¿½eï¿½ï¿½ï¿½Ö~ï¿½ï¿½ï¿½ï¿½Iï¿½vï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Lï¿½ï¿½ÂAmethodï¿½ï¿½postï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‡ï¿½APostIDï¿½ğ¶ï¿½ï¿½ï¿½ï¿½ï¿½
+		if ( (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] === 1)
 			&& preg_match(PKWK_IGNOLE_POSTID_CHECK_PLUGINS,$name) !== 1 && $matches[2] !== 'get'){
 			// from PukioWikio
 			$hidden_field[] = '<input type="hidden" name="postid" value="'.generate_postid($name).'" />';
 		}
 
-		// PHP5.4ˆÈ~‚©‚ÂAƒ}ƒ‹ƒ`ƒp[ƒg‚Ìê‡Ai’»ó‹µƒZƒbƒVƒ‡ƒ“—p‚ÌƒtƒH[ƒ€‚ğ•t‰Á‚·‚é
+		// PHP5.4ï¿½È~ï¿½ï¿½ï¿½ÂAï¿½}ï¿½ï¿½ï¿½`ï¿½pï¿½[ï¿½gï¿½Ìê‡ï¿½Aï¿½iï¿½ï¿½ï¿½ó‹µƒZï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½pï¿½Ìƒtï¿½Hï¿½[ï¿½ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		if (version_compare(PHP_VERSION, '5.4', '>=') && isset($matches[3]) && $matches[3] === 'multipart/form-data') {
 			pkwk_session_start();
 			$hidden_field[] = '<input type="hidden" name="' .  ini_get("session.upload_progress.name") . '" value="' . PKWK_PROGRESS_SESSION_NAME . '" class="progress_session" />';

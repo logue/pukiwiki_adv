@@ -23,8 +23,12 @@ defined('PLUGIN_TB_SITE_CHECK') or define('PLUGIN_TB_SITE_CHECK', TRUE);
 // If trackback error, 'HTTP/1.0 400 Bad Request'
 defined('PLUGIN_TB_HTTP_ERROR') or define('PLUGIN_TB_HTTP_ERROR', FALSE);
 
-define('PLUGIN_TB_OK',      0); 
-define('PLUGIN_TB_ERROR',   1); 
+define('PLUGIN_TB_OK',      0);
+define('PLUGIN_TB_ERROR',   1);
+
+use Zend\Http\ClientStatic;
+use Zend\Http\Request;
+use Zend\Http\Client;
 
 function plugin_tb_init()
 {
@@ -153,8 +157,14 @@ function plugin_tb_save($url, $tb_id)
 	if (!is_url($url)) plugin_tb_return(PLUGIN_TB_ERROR, $_tb_msg['err_invalid_url']);
 
 	if (PLUGIN_TB_SITE_CHECK === TRUE) {
+		/*
 		$result = pkwk_http_request($url);
 		if ($result['rc'] !== 200) plugin_tb_return(PLUGIN_TB_ERROR, $_tb_msg['err_invalid_url']);
+		 */
+		$response = ClientStatic::get($target);
+		if (!$response->isSuccess()){
+			plugin_tb_return(PLUGIN_TB_ERROR, $_tb_msg['err_invalid_url']);
+		}
 		$urlbase = get_script_absuri();
 		$matches = array();
 		if (preg_match_all('#' . preg_quote($urlbase, '#') . '#i', $result['data'], $matches) == 0) {
@@ -166,8 +176,18 @@ function plugin_tb_save($url, $tb_id)
 			plugin_tb_return(PLUGIN_TB_ERROR, $_tb_msg['err_write_prohibited']);
 		}
 	} else {
+		/*
 		$result = pkwk_http_request($url, 'HEAD');
 		if ($result['rc'] !== 200) plugin_tb_return(PLUGIN_TB_ERROR, $_tb_msg['err_invalid_url']);
+		 */
+		$request = new Request();
+		$request->setUri($url);
+		$request->setMethod('HEAD');
+		$client = new Client();
+		$response = $client->dispatch($request);
+		if (! $response->isSuccess()) {
+			plugin_tb_return(PLUGIN_TB_ERROR, $_tb_msg['err_invalid_url']);
+		}
 	}
 
 	// Update TrackBack Ping data
@@ -340,7 +360,7 @@ function plugin_tb_mode_view_set($page)
 		$time = get_date($_tb_date, $time);
 
 		$body .= '<div><fieldset class="trackback_info">'.
-			 '<legend><a class="ext" href="' . $url . '" rel="nofollow">' . $title . 
+			 '<legend><a class="ext" href="' . $url . '" rel="nofollow">' . $title .
 			 '<img src="'.IMAGE_URI.'plus/ext.png" alt="" title="" class="ext" onclick="return open_uri(\'' .
 			 $url . '\', \'_blank\');" /></a></legend>' . "\n".
 
@@ -356,7 +376,7 @@ function plugin_tb_mode_view_set($page)
 
 	$body .= '<p style="text-align:right">' .
 		'<a href="' . get_cmd_uri('tb','','','__mode=view') . '" class="pkwk-icon_linktext cmd-trackback">' .
-		$_tb_msg['title_tb_list'] . 
+		$_tb_msg['title_tb_list'] .
 		'</a>'. "</p>\n";
 
 	return $body;

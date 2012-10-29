@@ -9,7 +9,7 @@
 // File related functions - extra functions
 
 // Marged from PukioWikio post.php
-defined('POSTID_PREFIX')		or define('POSTID_DIR', 'PostId-');
+defined('POSTID_PREFIX')	or define('POSTID_PREFIX', 'PostId-');
 defined('POSTID_EXPIRE')	or define('POSTID_EXPIRE', 3600);	// 60*60 = 1hour
 
 // Ticket file
@@ -101,7 +101,7 @@ function update_cache($page = '', $force = false){
 	}
 	
 	// Update AutoBaseAlias
-	if ($autobasealias !== 0&& ! $cache->hasItem(PKWK_AUTOBASEALIAS_CACHE) ) {
+	if ($autobasealias !== 0 && ! $cache->hasItem(PKWK_AUTOBASEALIAS_CACHE) ) {
 		$basealiases = get_autobasealias($pages);
 		if (empty($basealiase) ) {
 			// Remove
@@ -113,9 +113,9 @@ function update_cache($page = '', $force = false){
 	}
 	
 	// Update rel and ref cache
-	if ($force) {
+	if ($force && $page == '') {
 		links_init();
-	}else if ($page !== '' ){
+	}else {
 		links_update($page);
 	}
 

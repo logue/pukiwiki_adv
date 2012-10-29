@@ -301,7 +301,7 @@ function getLinkSet($_page){
 		'opensearch'	=> get_cmd_uri('search',	null,	null,	array('format'=>'xml')),
 		'list'			=> get_cmd_uri('list'),
 		'filelist'		=> get_cmd_uri('filelist'),
-		
+
 		'sitemap'		=> get_cmd_absuri('list', 	null,	'type=sitemap'),
 		'rss'			=> get_cmd_absuri('mixirss'),
 		'rdf'			=> get_cmd_absuri('rss',	null,	'ver=1.0'),
@@ -621,7 +621,7 @@ function pkwk_headers_sent()
 	if (headers_sent($file, $line)){
 		die_message(sprintf($_string['header_sent'],htmlsc($file),$line));
 	}else{
-		// buffer all upcoming output - make sure we care about compression: 
+		// buffer all upcoming output - make sure we care about compression:
 		if(!DEBUG){
 			if (! @ob_start("ob_gzhandler")){
 				@ob_start();
@@ -701,7 +701,7 @@ function pkwk_common_headers($modified = 0, $expire = 604800){
 	// XSS脆弱性対策（これでいいのか？）
 	// http://msdn.microsoft.com/ja-jp/ie/dd218482
 	header('X-XSS-Protection: '.((DEBUG) ? '0' :'1;mode=block') );
-	
+
 	header('Connection: close');
 }
 
@@ -889,8 +889,7 @@ function tag_helper($tagname,$tags){
 		foreach( $tag as $key=>$val){
 			$IE_flag = '';
 			if ($key == 'content' && ($tagname == 'script' || $tagname == 'style')){
-				// CDATA内はエンコードする必要が無い・・・ハズ
-				$content = "/".'*<![CDATA[*'."/\n".$val."\n/".'*]]>*'.'/';
+				$content = ($tagname !== 'style') ? "/".'*<![CDATA[*'."/\n".$val."\n/".'*]]>*'.'/' : '//<![CDATA['. "\n". $val . "\n".'//]]>';
 			}else if($key == 'IE_flag'){
 				$IE_flag = $val;
 			}else{

@@ -4,7 +4,7 @@
 // Copyright (C) 2012 PukiWiki Advance developers team.
 // License: GPL v2 or (at your option) any later version
 //
-// ƒe[ƒuƒ‹‚Ìƒy[ƒWƒ“ƒO‚ğ—LŒø‰»‚·‚é
+// ãƒ†ãƒ¼ãƒ–ãƒ«ã®ãƒšãƒ¼ã‚¸ãƒ³ã‚°ã‚’æœ‰åŠ¹åŒ–ã™ã‚‹
 //
 // Example:
 // #pagenate{{
@@ -23,8 +23,8 @@ function plugin_table_pagenate_convert(){
 
 	$data = $argv[ --$argc ];
 	array_pop($argv);
-	
-	return preg_replace('/data-pagenate="false"/','data-pagenate="true"',convert_html(line2array($data) );
+
+	return preg_replace('/data-pagenate="false"/','data-pagenate="true"',convert_html(line2array($data)) );
 }
 /* End of file row.inc.php */
 /* Location: ./wiki-common/plugin/table_pagenate.inc.php */

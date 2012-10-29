@@ -71,86 +71,92 @@ define('QR_PNG_MAXIMUM_SIZE',  1024);
 // インラインはアクション用のアドレスを作成するのみ
 
 function plugin_qrcode_init(){
-	require_once QR_BASEDIR."qrspec.php";
+	if (extension_loaded('gd')){
+		require_once QR_BASEDIR."qrspec.php";
+	}
 }
 
 function plugin_qrcode_inline()
 {
-	switch(func_num_args()){
-		case 5:
-			list($s,$e,$v,$n,$d) = func_get_args();
-			break;
-		case 4:
-			list($s,$e,$v,$d) = func_get_args();
-			break;
-		case 3:
-			list($s,$e,$d) = func_get_args();
-			break;
-		case 2:
-			list($s,$d) = func_get_args();
-			break;
-		case 1:
-			list($d) = func_get_args();
-			break;
-		default:
-			return FALSE;
-			break;
-	}
+	if (extension_loaded('gd')){
+		switch(func_num_args()){
+			case 5:
+				list($s,$e,$v,$n,$d) = func_get_args();
+				break;
+			case 4:
+				list($s,$e,$v,$d) = func_get_args();
+				break;
+			case 3:
+				list($s,$e,$d) = func_get_args();
+				break;
+			case 2:
+				list($s,$d) = func_get_args();
+				break;
+			case 1:
+				list($d) = func_get_args();
+				break;
+			default:
+				return FALSE;
+				break;
+		}
 
-	// thx, nanashi and customized
-	$s = ( $s <= 0 ) ? intval($s) : 0;
-	$v = (isset($v) && !( $v <= 0 && $v > QRSPEC_VERSION_MAX )) ? intval($v) : 0;
-	$n = (isset($n) && !( $n <= 0 && $n > QRCODE_MAX_SPLIT )) ? intval($n) : 0;
-	$e = htmlsc(isset($e) ? $e : 'M');
+		// thx, nanashi and customized
+		$s = ( $s <= 0 ) ? intval($s) : 0;
+		$v = (isset($v) && !( $v <= 0 && $v > QRSPEC_VERSION_MAX )) ? intval($v) : 0;
+		$n = (isset($n) && !( $n <= 0 && $n > QRCODE_MAX_SPLIT )) ? intval($n) : 0;
+		$e = htmlsc(isset($e) ? $e : 'M');
 
-	// if no string, no display.
-	if (empty($d)) return FALSE;
+		// if no string, no display.
+		if (empty($d)) return FALSE;
 
-	// thx, nao-pon
-	$d = str_replace('<br />',"\r\n",$d);
-	$d = strip_tags($d);
+		// thx, nao-pon
+		$d = str_replace('<br />',"\r\n",$d);
+		$d = strip_tags($d);
 
-	// docomo is s-jis encoding
-	$d = mb_convert_encoding($d,'SJIS',SOURCE_ENCODING);
+		// docomo is s-jis encoding
+		$d = mb_convert_encoding($d,'SJIS',SOURCE_ENCODING);
 
-	$result = array();
-	$result[] = '<figure class="qrcode">';
-	if ($n < 2 || $n > 16) {
-		$href = get_cmd_uri('qrcode', '', '', array(
-			'd' => $d,
-			's' => 9,
-			'v' => $v,
-			'e' => $e
-		));
-		$src = get_cmd_uri('qrcode', '', '', array(
-			'd' => $d,
-			's' => $s,
-			'v' => $v,
-			'e' => $e
-		));
-		$alt = (defined('UA_MOBILE') && UA_MOBILE != 0) ? 'Mobile' : rawurlencode($d);
-		$result[] = '<a href="'.$href.'"><img src="'.$src.'" alt="'.$alt.'" title="'.$alt.'" /></a>';
-	} else {
-		// 並べる(本来ならPNGを合成するのがきれいでしょうけどね)
-		$i=0;
-		for ($j=1;$j<=$n;$j++) {
-			$splitdata = substr($d,$i,ceil($l/$n));
-			$i += ceil($l/$n);
+		$result = array();
+		$result[] = '<figure class="qrcode">';
+		if ($n < 2 || $n > 16) {
+			$href = get_cmd_uri('qrcode', '', '', array(
+				'd' => $d,
+				's' => 9,
+				'v' => $v,
+				'e' => $e
+			));
 			$src = get_cmd_uri('qrcode', '', '', array(
-				'd' => $splitdata,
+				'd' => $d,
 				's' => $s,
 				'v' => $v,
-				'e' => $e,
-				'm' => $j
+				'e' => $e
 			));
-			$alt = (defined('UA_MOBILE') && UA_MOBILE != 0) ? 'Mobile' : rawurlencode($splitdata);
+			$alt = (defined('UA_MOBILE') && UA_MOBILE != 0) ? 'Mobile' : rawurlencode($d);
+			$result[] = '<a href="'.$href.'"><img src="'.$src.'" alt="'.$alt.'" title="'.$alt.'" /></a>';
+		} else {
+			// 並べる(本来ならPNGを合成するのがきれいでしょうけどね)
+			$i=0;
+			for ($j=1;$j<=$n;$j++) {
+				$splitdata = substr($d,$i,ceil($l/$n));
+				$i += ceil($l/$n);
+				$src = get_cmd_uri('qrcode', '', '', array(
+					'd' => $splitdata,
+					's' => $s,
+					'v' => $v,
+					'e' => $e,
+					'm' => $j
+				));
+				$alt = (defined('UA_MOBILE') && UA_MOBILE != 0) ? 'Mobile' : rawurlencode($splitdata);
 
-			$result[] = '<img src="'.$src.'" alt="'.$alt.'" title="'.$alt.'" />';
-			unset($src);
+				$result[] = '<img src="'.$src.'" alt="'.$alt.'" title="'.$alt.'" />';
+				unset($src);
+			}
 		}
+		$result[] = '</figure>';
+		return join("\n",$result);
+	}else{
+		return '<span class="ui-state-error">&amp;qrcode(): GD2 extention was not loaded!</span>';
 	}
-	$result[] = '</figure>';
-	return join("\n",$result);
 }
 
 // アクションでは、実際の画像を作成

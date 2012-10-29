@@ -10,12 +10,12 @@
 // Referer function
 
 define('REFERER_SPAM_LOG', CACHE_DIR.'referer_spam.log');
-define('REFFRER_BAN_COUNT',	3);	// ƒoƒ“‘ÎÛ‚É‚·‚éƒŠƒtƒ@ƒ‰[‚Ì‰ñ”
+define('REFFRER_BAN_COUNT',	3);	// ãƒãƒ³å¯¾è±¡ã«ã™ã‚‹ãƒªãƒ•ã‚¡ãƒ©ãƒ¼ã®å›æ•°
 
 function ref_get_data($page, $uniquekey=1)
 {
 	$file = ref_get_filename($page);
-	
+
 	if (! file_exists($file)) return array();
 
 	$result = array();
@@ -55,7 +55,7 @@ function ref_save($page)
 		return TRUE;
 /*
 	if ( stristr($parse_url['host'], 'google') !== FALSE && ($parse_url['path'] === '/url' && $parse_url['path'] === '/search') ){
-		// Google‚ÌƒŠƒtƒ@ƒ‰[‚ªƒƒO—e—Ê‚ğ˜Q”ï‚·‚é‚½‚ßB
+		// Googleã®ãƒªãƒ•ã‚¡ãƒ©ãƒ¼ãŒãƒ­ã‚°å®¹é‡ã‚’æµªè²»ã™ã‚‹ãŸã‚ã€‚
 		parse_str($parse_url['query'], $q);
 		$url = $parse_url['scheme'] . '://'. $parse_url['host'] . ( ($q['q'] !== '') ? '/search?q='.$q['q'] : '');
 	}else{
@@ -97,7 +97,7 @@ function ref_save($page)
 	}
 	@flock($fp, LOCK_UN);
 	fclose($fp);
-	
+
 	unset($fp,$filename);
 	return TRUE;
 }
@@ -122,24 +122,27 @@ function ref_count($page)
 	return $i;
 }
 
+use Zend\Http\ClientStatic;
+use Zend\Dom\Query;
 
-// ƒŠƒ“ƒNŒ³‚ÉƒAƒNƒZƒX‚µ‚Ä©ƒTƒCƒg‚Ö‚ÌƒAƒhƒŒƒX‚ª‘¶İ‚·‚é‚©‚Ìƒ`ƒFƒbƒN
+// ãƒªãƒ³ã‚¯å…ƒã«ã‚¢ã‚¯ã‚»ã‚¹ã—ã¦è‡ªã‚µã‚¤ãƒˆã¸ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ãŒå­˜åœ¨ã™ã‚‹ã‹ã®ãƒã‚§ãƒƒã‚¯
 function is_not_valid_referer($ref,$rel){
-	// –{—ˆ‚Í³‹K‰»‚³‚ê‚½ƒAƒhƒŒƒX‚Åƒ`ƒFƒbƒN‚·‚é‚×‚«‚¾‚ë‚¤‚ªA
-	// ‚ß‚ñ‚Ç‚¤‚¾‚©‚çƒXƒNƒŠƒvƒg‚ÌƒAƒhƒŒƒX‚ğŠÜ‚Ş‚©‚Åƒ`ƒFƒbƒN
+	// æœ¬æ¥ã¯æ­£è¦åŒ–ã•ã‚ŒãŸã‚¢ãƒ‰ãƒ¬ã‚¹ã§ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã¹ãã ã‚ã†ãŒã€
+	// ã‚ã‚“ã©ã†ã ã‹ã‚‰ã‚¹ã‚¯ãƒªãƒ—ãƒˆã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å«ã‚€ã‹ã§ãƒã‚§ãƒƒã‚¯
 	// global $vars;
 	// $script = get_page_absuri(isset($vars['page']) ? $vars['page'] : '');
 
-	$script = isset($rel) ? parse_url($rel) : get_script_uri();
-	$condition = $parse_url['host'].$parse_url['path'];	// QueryString‚Í•]‰¿‚µ‚È‚¢B
+	$parse_url = isset($rel) ? parse_url($rel) : get_script_uri();
+	$condition = $parse_url['host'].$parse_url['path'];	// QueryStringã¯è©•ä¾¡ã—ãªã„ã€‚
 
-	// useragent settingi‚È‚º@ƒtƒ@ƒ~ƒRƒ“”ÅChromeH
-	$header = "User-Agent: Mozilla/5.0 (Nintendo Family Computer; U; Family Basic 2.0A; ja-JP) AppleWebKit/525.19 (KHTML, like Gecko) Version/3.1.2 Safari/525.21\r\n";	// ƒtƒ@ƒ~ƒRƒ“”ÅSafari‚Á‚Äˆê‘ÌEEE(w
-//	$header .= "Referer: ".$rel;
-	$header_options = array("http"=> array("method" => "GET", "header" => $header));
-	$header_context = stream_context_create($header_options);
-	$html = file_get_html($ref, FALSE, $header_context);
-	foreach($html->find('a') as $element){	// href‚ªhttp‚©‚çn‚Ü‚éaƒ^ƒO‚ğ‘–¸
+	$response = ClientStatic::get($ref);
+	if (! $response->isSuccess()){
+		return true;
+	}
+	$dom = new Query($response->getBody());
+	$results = $dom->execute('a[href=^"'.$condition.'"]');
+
+	foreach($results as $element){	// hrefãŒhttpã‹ã‚‰å§‹ã¾ã‚‹aã‚¿ã‚°ã‚’èµ°æŸ»
 		if (preg_match('/'.$condition.'/i', $element->href) !== 0){
 			return false;
 			break;
@@ -152,27 +155,27 @@ function is_not_valid_referer($ref,$rel){
 define('CONFIG_REFERER_BL',			'plugin/referer/BlackList');
 define('CONFIG_REFERER_WL',			'plugin/referer/WhiteList');
 
-// RefererŒ³spam‚©‚Ìƒ`ƒFƒbƒN
+// Refererå…ƒspamã‹ã®ãƒã‚§ãƒƒã‚¯
 function is_refspam($url){
 	global $open_uri_in_new_window_servername;
 
-	// ƒTƒCƒg‚Ìƒ‹[ƒg‚ÌƒAƒhƒŒƒX
+	// ã‚µã‚¤ãƒˆã®ãƒ«ãƒ¼ãƒˆã®ã‚¢ãƒ‰ãƒ¬ã‚¹
 	$script = get_script_uri();
-	// ƒŠƒtƒ@ƒ‰[‚ğƒp[ƒX
+	// ãƒªãƒ•ã‚¡ãƒ©ãƒ¼ã‚’ãƒ‘ãƒ¼ã‚¹
 	$parse_url = parse_url($url);
-	
-	// ƒtƒ‰ƒO
-	$is_refspam = true;	// ƒŠƒtƒ@ƒ‰[ƒXƒpƒ€‚©H
-	$hit_bl = false;	// ƒuƒ‰ƒbƒNƒŠƒXƒg‚É“ü‚Á‚Ä‚¢‚é‚©H
-	$BAN = false;		// ƒoƒ“‚·‚é‚©H
-	
+
+	// ãƒ•ãƒ©ã‚°
+	$is_refspam = true;	// ãƒªãƒ•ã‚¡ãƒ©ãƒ¼ã‚¹ãƒ‘ãƒ ã‹ï¼Ÿ
+	$hit_bl = false;	// ãƒ–ãƒ©ãƒƒã‚¯ãƒªã‚¹ãƒˆã«å…¥ã£ã¦ã„ã‚‹ã‹ï¼Ÿ
+	$BAN = false;		// ãƒãƒ³ã™ã‚‹ã‹ï¼Ÿ
+
 	$condition = $parse_url['host'].$parse_url['path'];
 
-	// ƒhƒƒCƒ“‚Í¬•¶š‚É‚·‚éBiƒhƒƒCƒ“‚Ì‘å•¶š¬•¶š‚Í‹æ•Ê‚µ‚È‚¢‚Ì‚ÆAstrpos‚Æstripos‚Å‘¬“x‚É”{‚®‚ç‚¢ˆá‚¢‚ª‚ ‚é‚½‚ßj
-	// “Æ©ƒhƒƒCƒ“‚Å‚È‚¢ê‡‚ğl—¶‚µ‚ÄƒpƒXi/~hoge/j‚ğ•]‰¿‚·‚éB
-	// QueryStringi?aa=bbj‚Í•]‰¿‚µ‚È‚¢B
-	
-	// ƒzƒƒCƒgƒŠƒXƒg‚É“ü‚Á‚Ä‚¢‚éê‡‚Íƒ`ƒFƒbƒN‚µ‚È‚¢
+	// ãƒ‰ãƒ¡ã‚¤ãƒ³ã¯å°æ–‡å­—ã«ã™ã‚‹ã€‚ï¼ˆãƒ‰ãƒ¡ã‚¤ãƒ³ã®å¤§æ–‡å­—å°æ–‡å­—ã¯åŒºåˆ¥ã—ãªã„ã®ã¨ã€strposã¨striposã§é€Ÿåº¦ã«å€ãã‚‰ã„é•ã„ãŒã‚ã‚‹ãŸã‚ï¼‰
+	// ç‹¬è‡ªãƒ‰ãƒ¡ã‚¤ãƒ³ã§ãªã„å ´åˆã‚’è€ƒæ…®ã—ã¦ãƒ‘ã‚¹ï¼ˆ/~hoge/ï¼‰ã‚’è©•ä¾¡ã™ã‚‹ã€‚
+	// QueryStringï¼ˆ?aa=bbï¼‰ã¯è©•ä¾¡ã—ãªã„ã€‚
+
+	// ãƒ›ãƒ¯ã‚¤ãƒˆãƒªã‚¹ãƒˆã«å…¥ã£ã¦ã„ã‚‹å ´åˆã¯ãƒã‚§ãƒƒã‚¯ã—ãªã„
 	$WhiteList = new Config(CONFIG_REFERER_WL);
 	$WhiteList->read();
 	$WhiteListLines = $WhiteList->get('WhiteList');
@@ -184,10 +187,10 @@ function is_refspam($url){
 		}
 	}
 
-	
+
 	if ($is_refspam !== false){
 		$NewBlackListLine = array();
-		// ƒuƒ‰ƒbƒNƒŠƒXƒg‚ğŠm”F
+		// ãƒ–ãƒ©ãƒƒã‚¯ãƒªã‚¹ãƒˆã‚’ç¢ºèª
 		$BlackList = new Config(CONFIG_REFERER_BL);
 		$BlackList->read();
 
@@ -197,12 +200,12 @@ function is_refspam($url){
 		foreach ($BlackListLines as $BlackListLine){
 //			if (preg_match('/'.$BlackListLine[0].'/i', $condition) !== 0){
 			if (stripos($condition, $BlackListLine[0]) !== false){
-				// ‰ß‹‚É“¯‚¶ƒŠƒtƒ@ƒ‰[‚©‚çƒAƒNƒZƒX‚ª‚ ‚Á‚½ê‡
+				// éå»ã«åŒã˜ãƒªãƒ•ã‚¡ãƒ©ãƒ¼ã‹ã‚‰ã‚¢ã‚¯ã‚»ã‚¹ãŒã‚ã£ãŸå ´åˆ
 				$BlackListLine[1]++;
 				if ($BlackListLine[2] == 1 || $BlackListLine[1] <= CONFIG_REFFRER_BAN_COUNT){
-					// ƒoƒ“ƒtƒ‰ƒO‚ª—§‚Á‚Ä‚¢‚éê‡‚©A‚µ‚«‚¢’l‚ğ’´‚¦‚½ê‡ƒoƒ“
+					// ãƒãƒ³ãƒ•ãƒ©ã‚°ãŒç«‹ã£ã¦ã„ã‚‹å ´åˆã‹ã€ã—ãã„å€¤ã‚’è¶…ãˆãŸå ´åˆãƒãƒ³
 					$BAN = true;
-					// ‚í‚´‚Æ”½‰‚ğ’x‚ç‚¹‚é
+					// ã‚ã–ã¨åå¿œã‚’é…ã‚‰ã›ã‚‹
 					sleep(2);
 				}
 				$hit_bl = true;
@@ -211,22 +214,22 @@ function is_refspam($url){
 			$NewBlackListLine[] = array($BlackListLine[0],$BlackListLine[1],$BlackListLine[2]);
 		}
 
-		// ƒuƒ‰ƒbƒNƒŠƒXƒg‚Éƒqƒbƒg‚µ‚È‚©‚Á‚½ê‡
+		// ãƒ–ãƒ©ãƒƒã‚¯ãƒªã‚¹ãƒˆã«ãƒ’ãƒƒãƒˆã—ãªã‹ã£ãŸå ´åˆ
 		if ($hit_bl === false){
-			// ƒŠƒtƒ@ƒ‰[‚ÉƒTƒCƒg‚Ö‚ÌƒAƒhƒŒƒX‚ª‘¶İ‚·‚é‚©‚ğŠm”F
+			// ãƒªãƒ•ã‚¡ãƒ©ãƒ¼ã«ã‚µã‚¤ãƒˆã¸ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ãŒå­˜åœ¨ã™ã‚‹ã‹ã‚’ç¢ºèª
 			$is_refspam = is_not_valid_referer($url);
-			
+
 			if ($is_refspam === true){
-				// ‘¶İ‚µ‚È‚¢ê‡‚ÍƒXƒpƒ€ƒŠƒXƒg‚É’Ç‰Á
+				// å­˜åœ¨ã—ãªã„å ´åˆã¯ã‚¹ãƒ‘ãƒ ãƒªã‚¹ãƒˆã«è¿½åŠ 
 				$NewBlackListLine[] = array($condition,1,0);
 			}else{
-				// ‘¶İ‚µ‚½ê‡‚ÍƒzƒƒCƒgƒŠƒXƒg‚É’Ç‰Á
+				// å­˜åœ¨ã—ãŸå ´åˆã¯ãƒ›ãƒ¯ã‚¤ãƒˆãƒªã‚¹ãƒˆã«è¿½åŠ 
 //				$WhiteListLines[] = array($condition);
 //				$WhiteList->put('WhiteList',$WhiteListLines);
 //				$WhiteList->write();
 			}
 		}
-		// ƒuƒ‰ƒbƒNƒŠƒXƒg‚ğXV
+		// ãƒ–ãƒ©ãƒƒã‚¯ãƒªã‚¹ãƒˆã‚’æ›´æ–°
 		$BlackList->put('BlackList',$NewBlackListLine);
 		$BlackList->write();
 
@@ -234,7 +237,7 @@ function is_refspam($url){
 		unset($WhiteList,$WhiteListLines,$WhiteListLine);
 
 		if ($is_refspam === true || $BAN === true){
-			// ƒXƒpƒ€‚¾‚Á‚½ê‡AƒƒO‚ÉŠÂ‹«‚ğ•Û‘¶‚·‚éB
+			// ã‚¹ãƒ‘ãƒ ã ã£ãŸå ´åˆã€ãƒ­ã‚°ã«ç’°å¢ƒã‚’ä¿å­˜ã™ã‚‹ã€‚
 			$log = array(
 				UTIME,
 				$url,

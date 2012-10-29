@@ -28,6 +28,7 @@
  * class TrackBack_XML     Parse and reveal the TrackBack Ping URL from RDF data
  */
 
+use Zend\Http\Client;
 define('PLUGIN_TRACKBACK_VERSION', 'PukiWiki Adv./TrackBack 0.5');
 
 // Get TrackBack ID from page name
@@ -82,7 +83,7 @@ function tb_send($page, $links)
 	global $trackback, $page_title, $log;
 	$script = get_script_uri();
 
-	if (! $trackback) return;
+	//if (! $trackback) return;
 
 	// No link, END
 	if (! is_array($links) || empty($links)) return;
@@ -100,7 +101,6 @@ function tb_send($page, $links)
 	// Disable 'max execution time' (php.ini: max_execution_time)
 	if (ini_get('safe_mode') == '0') set_time_limit(0);
 
-	$r_page  = rawurlencode($page);
 	$excerpt = strip_htmltag(convert_html(get_source($page)));
 
 	// Sender's information
@@ -112,14 +112,19 @@ function tb_send($page, $links)
 		'charset'   => SOURCE_ENCODING // Ping text encoding (Not defined)
 	);
 
+
 	foreach ($links as $link) {
 		if (path_check($script, $link)) continue; // Same Site
-		$tb_id = tb_get_url($link);  // Get Trackback ID from the URL
-		if (empty($tb_id)) continue; // Trackback is not supported
+		$tb_url = tb_get_url($link);  // Get Trackback ID from the URL
+		if (empty($tb_url)) continue; // Trackback is not supported
 
-		$result = pkwk_http_request($tb_id, 'POST', '', $putdata, 2, CONTENT_CHARSET);
+		$client = new Client($tb_url);
+		$client->setParameterPost($putdata);
+
+		//$result = pkwk_http_request($tb_id, 'POST', '', $putdata, 2, CONTENT_CHARSET);
 		// FIXME: Create warning notification space at pukiwiki.skin!
-		$log[] = $result;
+
+		$log[] = $client->request("POST");
 	}
 }
 
@@ -142,8 +147,7 @@ function tb_get($file, $key = 1)
 	rewind($fp);
 	while ($data = @fgets($fp, 8192)) {
 		// $data[$key] = URL
-		$data = csv_explode(',', $data);
-		$result[rawurldecode($data[$key])] = $data;
+		$result[rawurldecode($data[$key])] = explode(',', $data);
 	}
 	@flock($fp, LOCK_UN);
 	fclose ($fp);
@@ -176,6 +180,7 @@ function tb_get_rdf($page)
 EOD;
 }
 
+use Zend\Http\ClientStatic;
 // HTTP-GET from $uri, and reveal the TrackBack Ping URL
 function tb_get_url($url)
 {
@@ -187,20 +192,22 @@ function tb_get_url($url)
 	   ($use_proxy && ! in_the_net($no_proxy, $parse_url['host'])))
 		return '';
 
-	$data = pkwk_http_request($url);	// Get trackback xml.
-	if ($data['rc'] !== 200) return '';
+	//$data = pkwk_http_request($url);	// Get trackback xml.
+	//if ($data['rc'] !== 200) return '';
 
-	$matches = array();
-	if (! preg_match_all('#<rdf:RDF[^>]*xmlns:trackback=[^>]*>(.*?)</rdf:RDF>#si', $data['data'],
-	    $matches, PREG_PATTERN_ORDER))
-		return '';
+	$response = ClientStatic::get($url);
+	if ($response->isSuccess()){
+		$matches = array();
+		if (! preg_match_all('#<rdf:RDF[^>]*xmlns:trackback=[^>]*>(.*?)</rdf:RDF>#si',  $response->getBody(),
+			$matches, PREG_PATTERN_ORDER))
+			return '';
 
-	$obj = new TrackBack_XML();
-	foreach ($matches[1] as $body) {
-		$tb_url = $obj->parse($body, $url);
-		if ($tb_url !== FALSE) return $tb_url;
+		$obj = new TrackBack_XML();
+		foreach ($matches[1] as $body) {
+			$tb_url = $obj->parse($body, $url);
+			if ($tb_url !== FALSE) return $tb_url;
+		}
 	}
-
 
 	return '';
 }
@@ -254,5 +261,8 @@ class TrackBack_XML
 
 	function end_element($parser, $name) {}
 }
+
+
+
 /* End of file trackback.php */
 /* Location: ./wiki-common/lib/trackback.php */

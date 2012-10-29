@@ -11,7 +11,7 @@
 // Load Hangul Libraly
 require(LIB_DIR . 'hangul.php');
 
-// Adv. merged official cvs 
+// Adv. merged official cvs
 function is_interwiki($str)
 {
 	global $InterWikiName;
@@ -52,7 +52,7 @@ function is_url($str, $only_http = FALSE)
 	}
 	// 許可するスキーマー
 	$scheme = $only_http ? 'https?' : 'https?|ftp|news';
-	
+
 	// URLマッチパターン
 	$pattern = (
 		"!^(?:".$scheme.")://"					// scheme
@@ -214,7 +214,7 @@ function get_search_words($words, $do_escape = FALSE)
 			$reg = '';
 			$wakati = mecab_wakati($word);
 			$ws = explode(' ', $wakati);
-			
+
 			foreach ($ws as $k)
 				$reg .= !empty($k) ? '(?:'.$k.')' : '';
 			$regex[$word] = $reg;
@@ -265,7 +265,7 @@ function do_search($word, $type = 'and', $non_format = FALSE, $base = '')
  	global $search_auth, $show_passage, $search_word_color, $ajax;
 //	global $_msg_andresult, $_msg_orresult, $_msg_notfoundresult;
 	global $_string;
-	
+
 	$_msg_andresult = $_string['andresult'];
 	$_msg_orresult = $_string['orresult'];
 	$_msg_notfoundresult = $_string['notfoundresult'];
@@ -327,7 +327,7 @@ function do_search($word, $type = 'and', $non_format = FALSE, $base = '')
 			if ($b_type xor $b_match) break; // OR
 		}
 		if ($b_match) continue;
-			
+
 
 		unset($pages[$page]); // Miss
 	}
@@ -453,7 +453,7 @@ function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', 
 				$initial = & $sentinel_another;
 			}
 		}
-		
+
 		$str = '			<li>';
 		if ($cmd !== 'read'){
 			$str .= '<a href="' . get_cmd_uri($cmd, $page) . '" >' . htmlsc($page, ENT_QUOTES) . '</a>';
@@ -514,7 +514,7 @@ function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', 
 					$_initial = htmlsc($_msg_other);
 				}
 				$contents[] = '<li data-role="list-divider">' . $_initial . '</li>';
-				
+
 				foreach($array[$_initial] as $page){
 					$contents[] = $page;
 				}
@@ -596,7 +596,8 @@ function die_message($msg, $error_title='', $http_code = 500){
 			define('SKIN_FILE', $skin_file);
 			catbody($page, $title, $body);
 		}
-	}else{	
+	}else{
+		defined('JQUERY_UI_VER') or define('JQUERY_UI_VER', '1.9.0');
 		$html = array();
 		$html[] = '<!doctype html>';
 		$html[] = '<html>';
@@ -618,7 +619,7 @@ function pkwkErrorHandler($errno, $errstr, $errfile, $errline){
 	global $info, $_string, $_error_type;
 	$die = false;
 	$msg = '';
-	
+
 	if (DEBUG !== true || PKWK_WARNING !== true){	// デバッグモード時および、警報表示モード時以外はエラーを
 		if (!(error_reporting() & $_error_type)) {
 			// error_reporting 設定に含まれていないエラーコードです
@@ -640,14 +641,14 @@ function pkwkErrorHandler($errno, $errstr, $errfile, $errline){
 				break;
 		}
 		$msg .= (!isset($_error_type[$errno])) ? '' : '<strong>'.$_error_type[$errno].'</strong>';
-		
+
 		$msg .= '<output>'.htmlsc($errstr).'</output><br />'."\n".
 			'Fatal error on line <var>'.$errline.'</var> in file <var>'.$errfile.'</var>.';
-		
+
 		if ($die === true){
 			$msg .= 'Script execution has been aborted.';
 		}
-		
+
 		$ret = <<<EOD
 <div class="message_box ui-state-error ui-corner-all">
 	<p>$msg</p>
@@ -734,7 +735,7 @@ function format_date($val, $paren = FALSE, $format = null)
 	$week   = $_labels['week'][$wday];
 
 	if ($wday == 0) {
-		// Sunday 
+		// Sunday
 		$style = 'week_sun';
 	} else if ($wday == 6) {
 		// Saturday
@@ -750,8 +751,8 @@ function format_date($val, $paren = FALSE, $format = null)
 		$month  = $_labels['month'][date('n', $val)];
 		$month_short = $month[0];
 		$month_long = $month[1];
-		
-		
+
+
 		$date = str_replace(
 			array(
 				date('M', $val),	// 月。3 文字形式。
@@ -766,7 +767,7 @@ function format_date($val, $paren = FALSE, $format = null)
 			gmdate($format, $val)
 		);
 	}
-	
+
 	return $paren ? '(' . $date . ')' : $date;
 }
 
@@ -908,7 +909,7 @@ function preg_quote_extended($string, $delimiter = NULL)
 //	 * array_keys($array) MUST BE _continuous_integers_started_with_0_.
 //	 * Type of all $array-values MUST BE string.
 //   $_offset : (int) internal use. $array[$_offset	] is the first value to check
-//   $_sentry : (int) internal use. $array[$_sentry - 1] is the last  value to check  
+//   $_sentry : (int) internal use. $array[$_sentry - 1] is the last  value to check
 //   $_pos	: (int) internal use. Position of the letter to start checking. (0 = the first letter)
 //
 // REFERENCE: http://en.wikipedia.org/wiki/Trie
@@ -1023,7 +1024,7 @@ EOD;
 				$name = trim($value[1]);
 				if (! isset($pairs[$name])) {
 					$paris[$name] = array();
-				} 
+				}
 				++$count;
 				$pairs[$name][] = trim($value[2]);
 				unset($matches[$key]);
@@ -1224,7 +1225,7 @@ function get_resolve_uri($cmd='', $page='', $path_reference='rel', $query='', $f
 	if (! empty($page)) {
 		$ret .= $flag.$page_pref.rawurlencode($page);
 
-		if (empty($cmd) && $static_url === 1 && (isset($vars['cmd']) && $vars['cmd'] !== 'search') && 
+		if (empty($cmd) && $static_url === 1 && (isset($vars['cmd']) && $vars['cmd'] !== 'search') &&
 			!( stristr(getenv('SERVER_SOFTWARE'), 'apache') !== FALSE && (strstr($page,':' ) !== FALSE || strstr($page,' ' ) !== FALSE) ) ){	// Apacheは、:が含まれるアドレスを正確に処理できない
 			// To static URL
 			$ret = str_replace('?', '', $ret);
@@ -1301,55 +1302,75 @@ function input_filter($param)
 	}
 }
 
-// Compat for 3rd party plugins. Remove this later
-function sanitize($param) {
-	return input_filter($param);
-}
-
-// Explode Comma-Separated Values to an array
-function csv_explode($separator, $string)
-{
-	if (function_exists('explode')){
-		$retval = explode($separator, $string);
-	}else{
-		$retval = $matches = array();
-
-		$_separator = preg_quote($separator, '/');
-		if (! preg_match_all('/("[^"]*(?:""[^"]*)*"|[^' . $_separator . ']*)' .
-			$_separator . '/', $string . $separator, $matches))
-			return array();
-
-		foreach ($matches[1] as $str) {
-			$len = strlen($str);
-			if ($len > 1 && $str{0} == '"' && $str{$len - 1} == '"')
-				$str = str_replace('""', '"', substr($str, 1, -1));
-			$retval[] = $str;
-		}
-	}
-	return $retval;
-}
-
-// Implode an array with CSV data format (escape double quotes)
-function csv_implode($glue, $pieces)
-{
-	if (function_exists('implode')){
-		return implode($glue, $pieces);
-	}else{
-		$_glue = ($glue != '') ? '\\' . $glue{0} : '';
-		$arr = array();
-		foreach ($pieces as $str) {
-			if (preg_match_all('/[' . $_glue . '"' . "\n\r" . ']/', $str))
-				$str = '"' . str_replace('"', '""', $str) . '"';
-			$arr[] = $str;
-		}
-		return join($glue, $arr);
-	}
-}
-
 // Sugar with default settings
 function htmlsc($string = '', $flags = ENT_QUOTES, $charset = 'UTF-8')
 {
 	return htmlspecialchars($string, $flags, $charset);	// htmlsc()
+}
+
+
+// Move from proxy.php (rejected)
+
+// Separate IPv4 network-address and its netmask
+define('PKWK_CIDR_NETWORK_REGEX', '/^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(?:\/([0-9.]+))?$/');
+
+/*
+ * is_requestable($uri)
+ */
+function is_requestable($uri)
+{
+	$arr1 = parse_url(get_script_absuri());
+	$arr2 = parse_url($uri);
+	$arr1['port']  = isset($arr1['port'])  ? $arr1['port'] : 80;
+	$arr2['port']  = isset($arr2['port'])  ? $arr2['port'] : 80;
+	$arr1['path']  = isset($arr1['path'])  ? dirname($arr1['path'] . 'dummy') : '/';
+	$arr2['path']  = isset($arr2['path'])  ? dirname($arr2['path'] . 'dummy') : '/';
+
+	if ($arr1['scheme'] != $arr2['scheme'] ||
+		$arr1['host'] != $arr2['host'] ||
+		$arr1['port'] != $arr2['port'] ||
+		$arr1['path'] != $arr2['path'])
+		return TRUE;
+
+	return FALSE;
+}
+
+// Check if the $host is in the specified network(s)
+function in_the_net($networks = array(), $host = '')
+{
+	if (empty($networks) || $host == '') return FALSE;
+	if (! is_array($networks)) $networks = array($networks);
+
+	$matches = array();
+
+	if (preg_match(PKWK_CIDR_NETWORK_REGEX, $host, $matches)) {
+		$ip = $matches[1];
+	} else {
+		$ip = gethostbyname($host); // May heavy
+	}
+	$l_ip = ip2long($ip);
+
+	foreach ($networks as $network) {
+		if (preg_match(PKWK_CIDR_NETWORK_REGEX, $network, $matches) &&
+		    is_long($l_ip) && long2ip($l_ip) == $ip) {
+			// $host seems valid IPv4 address
+			// Sample: '10.0.0.0/8' or '10.0.0.0/255.0.0.0'
+			$l_net = ip2long($matches[1]); // '10.0.0.0'
+			$smask  = isset($matches[2]) ? $matches[2] : 32; // '8' or '255.0.0.0'
+			$mask  = is_numeric($smask) ?
+				pow(2, 32) - pow(2, 32 - $smask) : // '8' means '8-bit mask'
+				ip2long($smask);                   // '255.0.0.0' (the same)
+
+			if (($l_ip & $mask) == $l_net) return TRUE;
+		} else {
+			// $host seems not IPv4 address. May be a DNS name like 'foobar.example.com'?
+			foreach ($networks as $network)
+				if (preg_match('/\.?\b' . preg_quote($network, '/') . '$/', $host))
+					return TRUE;
+		}
+	}
+
+	return FALSE; // Not found
 }
 
 /* End of file func.php */

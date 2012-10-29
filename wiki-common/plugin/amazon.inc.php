@@ -24,7 +24,7 @@ defined('AWS_SECRET_ACCESS_KEY')	or define('AWS_SECRET_ACCESS_KEY', '');
 /* **************** */
 /* * 変 更 可 能  * */
 /* **************** */
-defined('USE_CACHE')			or define('USE_CACHE', false);			// キャッシュ機能の使用の有無
+defined('USE_CACHE')			or define('USE_CACHE', true);			// キャッシュ機能の使用の有無
 defined('AMAZON_EXPIRE_CACHE')	or define('AMAZON_EXPIRE_CACHE', 24);	// キャッシュの有効期限(単位:時間)
 defined('AMAZON_ALLOW_CONT')	or define('AMAZON_ALLOW_CONT', true);	// true にすると、紹介本文取り込みが可能
 defined('USE_CARGO')			or define('USE_CARGO', true);			// true にすると買物かごを使用可能
@@ -54,6 +54,7 @@ if (!function_exists('simplexml_load_string')) {
 		return $unserializer->getUnserializedData();
 	}
 }
+use Zend\Http\ClientStatic;
 
 function plugin_amazon_init()
 {
@@ -74,7 +75,8 @@ function plugin_amazon_init()
 			'err_not_found'		=> T_("The ASIN code is fictitious. "),	// ASINコードは架空です。
 			'msg_myname'		=> T_("MY_NAME"),				// お名前
 			'msg_this_edit'		=> T_("THIS EDIT"),				// ここ編集のこと
-			'err_newpage'		=> T_('You have not permission to create new page.')
+			'err_newpage'		=> T_('You have not permission to create new page.'),
+			'err_nodefined'		=> T_('You must define AMAZON_AID and AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY before use.')
 	)
   );
 	set_plugin_messages($msg);
@@ -88,6 +90,10 @@ function plugin_amazon_convert()
 	if (func_num_args() == 0) {
 		if( auth::check_role('readonly') ) die_message( $_string['prohibit'] );
 		return amazon_make_review_page();
+	}
+
+	if (AMAZON_AID === ''|| AWS_ACCESS_KEY_ID === '' || AWS_SECRET_ACCESS_KEY == ''){
+		return '<div class="ui-state-error ui-corner-all">'.$_amazon_msg['err_nodefined'].'</div>';
 	}
 
 	$argv = func_get_args();
@@ -145,7 +151,7 @@ EOD;
 		if (!empty($parm['clear'])) $retval .= amazon_ecs::clear($parm['clear']);
 		return $retval;
 	}
-	   
+
 
 	if ($parm['image']) {
 		if ($pkwk_dtd == PKWK_DTD_HTML_5){
@@ -237,7 +243,7 @@ function amazon_make_review_page()
 		<input type="hidden" name="cmd" value="amazon" />
 		<input type="hidden" name="refer" value="$s_page" />
 		amazon.
-		<select name="locale" class="textbox"> 
+		<select name="locale" class="textbox">
 			<option value="jp" selected="selected">co.jp</option>
 			<option value="com">com</option>
 			<option value="co.uk">co.uk</option>
@@ -247,14 +253,14 @@ function amazon_make_review_page()
 		</select>
 		<input type="text" name="itemid" size="30" value="" placeholder="{$_amazon_msg['msg_Code']}" />
 		<input type="submit" value="{$_amazon_msg['msg_ReviewEdit']}" />
-		
+
 	</div>
 </form>
 
 EOD;
 }
 
-function plugin_amazon_action() 
+function plugin_amazon_action()
 {
 	global $vars;
 	global $_amazon_msg, $_string;
@@ -276,11 +282,11 @@ function plugin_amazon_action()
 	$locale = (empty($vars['locale'])) ? 'jp' : htmlsc($vars['locale']);
 
 	$obj = new amazon_ecs($itemid,$locale);
-		if (!$obj->is_itemid) {
-				$retvars['msg'] = $_amazon_msg['err_code_set'];
-		$retvars['body'] = amazon_make_review_page();
-				return $retvars;
-		}
+	if (!$obj->is_itemid) {
+			$retvars['msg'] = $_amazon_msg['err_code_set'];
+	$retvars['body'] = amazon_make_review_page();
+			return $retvars;
+	}
 
 	$obj->get_items();
 
@@ -299,10 +305,10 @@ function plugin_amazon_action()
 		die_message( str_replace('$1', $r_page, $_title['cannotedit']) );
 	}
 
-		if (!empty($obj->items['Error'])) {
-				$obj->rm_cache(array('xml'=>true,'img'=>true));
-				return array('msg'=>'Error', 'body'=>$obj->items['Error']);
-		}
+	if (!empty($obj->items['Error'])) {
+			$obj->rm_cache(array('xml'=>true,'img'=>true));
+			return array('msg'=>'Error', 'body'=>$obj->items['Error']);
+	}
 
 	if (empty($obj->items['title']) or preg_match('/^\//', $s_page)) {
 		header('Location: '.get_page_uri($_page).'?'.encode($s_page));
@@ -339,9 +345,13 @@ function plugin_amazon_inline()
 {
 	global $_amazon_msg;
 
-		$argv = func_get_args();
-		$parm = amazon_set_parm_inline($argv);
-		if (empty($parm['itemid'])) return $_amazon_msg['err_code_set'];
+	if (AMAZON_AID === ''|| AWS_ACCESS_KEY_ID === '' || AWS_SECRET_ACCESS_KEY == ''){
+		return '<div class="ui-state-error ui-corner-all">'.$_amazon_msg['err_nodefined'].'</div>';
+	}
+
+	$argv = func_get_args();
+	$parm = amazon_set_parm_inline($argv);
+	if (empty($parm['itemid'])) return $_amazon_msg['err_code_set'];
 
 	$obj = new amazon_ecs($parm['itemid'],$parm['locale']);
 		if (!$obj->is_itemid) return '';
@@ -379,8 +389,8 @@ function plugin_amazon_inline()
 
 function amazon_set_parm_inline($argv)
 {
-		$parm = array();
-		$parm['itemid'] = $parm['item'] = '';
+	$parm = array();
+	$parm['itemid'] = $parm['item'] = '';
 	$parm['locale'] = 'jp';
 	$parm['del']['img'] = $parm['del']['xml'] = false;
 	$parm['cache'] = USE_CACHE;
@@ -417,8 +427,8 @@ function amazon_set_parm_inline($argv)
 			case 'format':		// Format
 			case 'isize':		// ItemDimensions - 商品の寸法
 			case 'psize':		// PackageDimensions - パッケージの寸法
-							$parm['item'] = $val[1];
-							break;
+				$parm['item'] = $val[1];
+				break;
 
 			case 'temp':
 			case 'nocache':
@@ -726,21 +736,16 @@ class amazon_ecs
 		return array('','jp');
 	}
 
-	function get_imagelink() 
+	function get_imagelink()
 	{
-		global $script;
-
 		if (empty($this->items['image'])) {
 			$this->items['image'] = AMAZON_NO_IMAGE;
 		} else {
-			if ($this->is_cache) {
-				if (file_exists($this->items['image'])) {
-					$filename_img = substr($this->items['image'], strlen(CACHE_DIR));
-					// $this->items['image'] = $script.'?cmd=cache_ref&amp;src='.$filename_img;
-					$this->items['image'] = get_cmd_uri('cache_ref','','',array('src'=>$filename_img));
-				} else {
-					$this->items['image'] = AMAZON_NO_IMAGE;
-				}
+			if (file_exists($this->items['image'])) {
+				$filename_img = substr($this->items['image'], strlen(CACHE_DIR));
+				$this->items['image'] = get_cmd_uri('cache_ref','','',array('src'=>$filename_img));
+			} else {
+				$this->items['image'] = AMAZON_NO_IMAGE;
 			}
 		}
 
@@ -751,6 +756,7 @@ class amazon_ecs
 
 	function file_write($filename, $data)
 	{
+		pkwk_touch_file($filename);
 		if (!($fp = fopen($filename,'wb'))) return false;
 		@flock($fp, LOCK_EX);
 		fwrite($fp, $data);
@@ -768,15 +774,20 @@ class amazon_ecs
 		fclose($fd);
 		return $rc;
 	}
- 
+
 	function page_read_xml($url)
 	{
-		$rc = pkwk_http_request($url);
+		$response = ClientStatic::get($url);
+		if (! $response->isSuccess()){
+			return null;
+		}
+		$content = $response->getBody();
+		$this->obj_xml = @simplexml_load_string($content);
+
 		// return ($rc['rc'] == 200) ? $rc['data'] : '';
-		$this->obj_xml = @simplexml_load_string($rc['data']);
-		if ($rc['rc'] == 200 || !$this->obj_xml->Error) {
+		if (!$this->obj_xml->Error) {
 			$this->asin = $this->obj_xml->Items->Item->ASIN;
-			return $rc['data'];
+			return $content;
 		} else {
 			$this->items['Error'] = '#amazon(): '.((empty($this->obj_xml->Error->Message)) ? $rc['rc'] : $this->obj_xml->Error->Message);
 			return '';
@@ -785,8 +796,13 @@ class amazon_ecs
 
 	function page_read_img($url)
 	{
-		$rc = pkwk_http_request($url);
-		return ($rc['rc'] == 200) ? $rc['data'] : '';
+//$rc = pkwk_http_request($url);
+		//return ($rc['rc'] == 200) ? $rc['data'] : '';
+		$response = ClientStatic::get($url);
+		if ($response->isSuccess()){
+			return $response->getBody();
+		}
+		return;
 	}
 
 	function rm_cache($func)
@@ -811,7 +827,7 @@ class amazon_ecs
 		if (file_exists($filename_xml) && is_readable($filename_xml)) {
 			// 経過秒数
 			$live = time() - filemtime($filename_xml);
-				}
+		}
 
 		// 一度キャッシュを作成した場合、取得できない場合は継続利用されることになる
 		if ($expire >= $live) {
@@ -857,7 +873,7 @@ class amazon_ecs
 			return true;
 		}
 
-		$img = amazon_ecs::page_read_img($URL);
+		$img = amazon_ecs::page_read_img((string)$URL);
 		if (!empty($img)) amazon_ecs::file_write($filename_img, $img); // write img file.
 		$this->items['image']  = $filename_img;
 		$this->items['Height'] = $Height;
@@ -875,7 +891,7 @@ class amazon_ecs
 	}
 	function set_image_size($x) {$this->image_size = $x; }
 
-	function get_items() 
+	function get_items()
 	{
 		if ($this->is_cache) {
 			// $this->items['image'] の設定あり
@@ -917,7 +933,7 @@ class amazon_ecs
 													   : $this->obj_xml->Items->Item->Offers->Offer->OfferListing->AmountSaved->FormattedPrice;
 		$this->items['psaved'] = (empty($this->obj_xml->Items->Item->Offers->Offer->OfferListing->PercentageSaved)) ? '' : $this->obj_xml->Items->Item->Offers->Offer->OfferListing->PercentageSaved;
 		$this->items['avail']  = (empty($this->obj_xml->Items->Item->Offers->Offer->OfferListing->Availability))	? '' : $this->obj_xml->Items->Item->Offers->Offer->OfferListing->Availability;
-			
+
 
 		/*
 		$this->items['PackageQuantity'] = $this->get_item_attributes('PackageQuantity');	// 個数

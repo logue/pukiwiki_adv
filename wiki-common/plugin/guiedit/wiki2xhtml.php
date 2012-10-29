@@ -12,7 +12,7 @@
 //      PukiWiki Plus! : Copyright (C) 2009 Katsumi Saito
 //
 //
-//	File: 
+//	File:
 //	  wiki2xhtml.php
 //	  PukiWiki の構文を XHTML に変換
 //
@@ -101,14 +101,14 @@ function guiedit_convert_ref($args, $div = TRUE) {
 	$attribute .= ' _noicon="' . $params['noicon'] . '"';
 	$attribute .= ' _noimg="' . $params['noimg'] . '"';
 	$attribute .= ' _zoom="' . $params['zoom'] . '"';
-	
+
 	if ($div) {
 		$tags = "<div $attribute>#ref($options)</div>";
 	}
 	else {
 		$tags = "<span $attribute>&ref($options);</span>";
 	}
-	
+
 	return $tags;
 }
 
@@ -118,7 +118,7 @@ function guiedit_make_line_rules($line) {
 	global $guiedit_line_rules, $guiedit_facemark_rules;
 	global $usefacemark;
 	static $pattern, $replace;
-	
+
 	if (!isset($pattern)) {
 		if ($usefacemark) {
 			$guiedit_line_rules += $guiedit_facemark_rules;
@@ -128,7 +128,7 @@ function guiedit_make_line_rules($line) {
 		unset($guiedit_facemark_rules);
 		unset($guiedit_line_rules);
 	}
-	
+
 	return preg_replace($pattern, $replace, $line);
 }
 
@@ -144,10 +144,10 @@ class InlineConverterEx {
 		// インライン・プラグイン
 		$pattern = '/&amp;(\w+)(?:\(((?:(?!\)[;{]).)*)\))?(?:\{((?:(?R)|(?!};).)*)\})?;/';
 		$line = preg_replace_callback($pattern, array(&$this, 'convert_plugin'), $line);
-		
+
 		// ルールの変換
 		$line = guiedit_make_line_rules($line);
-		
+
 		// 文字サイズの変換
 		$pattern = "/<span\s(style=\"font-size:(\d+)px|class=\"size([1-7])).*?>/";
 		$line = preg_replace_callback($pattern, array(&$this, 'convert_size'), $line);
@@ -161,16 +161,16 @@ class InlineConverterEx {
 
 		// 上付き文字
 		$line = preg_replace('/SUP{(.*?)}/', "<sup>$1</sup>", $line);
-		// 下付き文字・添え字 
+		// 下付き文字・添え字
 		$line = preg_replace('/SUB{(.*?)}/', "<sub>$1</sub>", $line);
-		
+
 		// リンク
 		if ($link) {
 			$pattern = "/\(\(((?:(?R)|(?!\)\)).)*)\)\)/";
 			$replace = "<img alt=\"Note\" title=\"$1\" />";
 			$line = $this->make_link($line);
 		}
-		
+
 		if (preg_match("/^<br\s\/>$/", $line)) {
 			$line .= "\n&nbsp;";
 		}
@@ -181,7 +181,7 @@ class InlineConverterEx {
 	// 文からリンクを検出し、link_replace を呼び出す
 	function make_link($line) {
 		$link_rules = "/(
-			(?:\[\[((?:(?!\]\]).)+):)? 
+			(?:\[\[((?:(?!\]\]).)+):)?
 			((?:https?|ftp|news)(?::\/\/[!~*'();\/?:\@&=+\$,%#\w.-]+))
 			(?(2)\]\])
 			|
@@ -221,13 +221,13 @@ class InlineConverterEx {
 		}
 		return $matches[0];
 	}
-	
+
 	// インラインプラグイン処理メソッド
 	function convert_plugin($matches) {
 		$aryargs = (!empty($matches[2])) ? explode(',', $matches[2]) : array();
 		$name = strtolower($matches[1]);
 		$body = empty($matches[3]) ? '' : $matches[3];
-		
+
 		//	プラグインが存在しない場合はそのまま返す。
 		// if (!file_exists(PLUGIN_DIR . $name . '.inc.php')) {
 		if (!exist_plugin($name)) {
@@ -264,25 +264,25 @@ class InlineConverterEx {
 					return '';
 				if (!preg_match('/^\d+$/', $size))
 					return $body;
-				return '<span style="font-size:' . $size . 'px;line-height:130%">' . 
+				return '<span style="font-size:' . $size . 'px;line-height:130%">' .
 				       $this->convert($body, TRUE, FALSE) . "</span>";
 			case 'ref':
 				return guiedit_convert_ref($aryargs, FALSE);
 		}
-		
+
 		if ($body) {
 			$pattern = array("%%", "''", "[[", "]]", "{", "|", "}");
 			$replace = array("&#037;&#037;", "&#039;&#039;", "&#091;&#091;",
 		 	 	"&#093;&#093;", "&#123;", "&#124;", "&#125;");
 			$body = str_replace($pattern, $replace, $body);
 		}
-		
+
 		$inner = '&' . $matches[1] . ($matches[2] ? '('.$matches[2].')' : '') . ($body ? '{'.$body.'}' : '') . ';';
 		$style = (UA_NAME == MSIE) ? '' : ' style="cursor:default"';
-		
+
 		return '<span class="plugin" contenteditable="false"'.$style.'>'.$inner.'</span>';
 	}
-	
+
 	// 色の変換
 	function convert_color($matches) {
 		$color = $matches[1];
@@ -293,7 +293,7 @@ class InlineConverterEx {
 		if (preg_match("/^#[0-9a-z]{3}$/i", $color)) {
 			$color = preg_replace('/[0-9a-f]/i', "$0$0", $color);
 		}
-		
+
 		// return "<sapn\sstyle=\"color:$color$bgcolor\">";
 		// UPK
 		return '<sapn style="color:'.$color.$bgcolor.'">';
@@ -303,7 +303,7 @@ class InlineConverterEx {
 	function convert_size($matches) {
 		if ($matches[2]) {
 			$size = $matches[2];
-			
+
 			if      ($size <=  8) $size = 8;
 			else if ($size <=  9) $size = 9;
 			else if ($size <= 10) $size = 10;
@@ -319,10 +319,10 @@ class InlineConverterEx {
 			else if ($size <= 44) $size = 40;
 			else if ($size <= 52) $size = 48;
 			else		      $size = 60;
-			
+
 			return '<span style="font-size:' . $size . 'px; line-height:130%">';
 		}
-		
+
 		switch ($matches[3]) {
 			case 1:	$size = 'xx-small';
 			case 2: $size = 'x-small';
@@ -332,7 +332,7 @@ class InlineConverterEx {
 			case 6:	$size = 'x-large';
 			case 7:	$size = 'xx-large';
 		}
-		
+
 		return '<span style="font-size:'.$size.'; line-height:130%">';
 	}
 }
@@ -448,7 +448,7 @@ function & Factory_YTableEx(& $root, $text)
 		return Factory_InlineEx($text);
 	} else {
 		// return new YTableEx(csv_explode(',', substr($text, 1)));
-		$obj = new YTableEx(csv_explode(',', substr($text, 1)));
+		$obj = new YTableEx(explode(',', substr($text, 1)));
 		return $obj;
 	}
 }
@@ -474,7 +474,7 @@ function & Factory_DivEx(& $root, $text)
 				// return new DivEx($matches); // Seems legacy block plugin
 				$obj = new DivEx($matches);
 				return $obj;
-			} else if (preg_match('/\{{' . $len . '}\s*\r(.*)\r\}{' . $len . '}/', $text, $body)) { 
+			} else if (preg_match('/\{{' . $len . '}\s*\r(.*)\r\}{' . $len . '}/', $text, $body)) {
 				$matches[3] .= "\r" . $body[1] . "\r" . str_repeat('}', $len);
 				// return new DivEx($matches); // Seems multiline-enabled block plugin
 				$obj = new DivEx($matches);
@@ -517,7 +517,7 @@ class InlineEx extends ElementEx
 
 	function & toPara($class = '')
 	{
-		$obj = & new ParagraphEx('', $class);
+		$obj = new ParagraphEx('', $class);
 		$obj->insert($this);
 		return $obj;
 	}
@@ -565,13 +565,13 @@ class HeadingEx extends ElementEx
 		parent::ElementEx();
 
 		$this->level = min(3, strspn($text, '*'));
-		
+
 		$text = substr($text, $this->level);
 		if (preg_match('/\s*\[#(\w+)\]/', $text, $matches)) {
 			$this->id = $matches[1];
 		}
 		$text = preg_replace('/\s*\[#\w+\]/', '', $text);
-		
+
 		$this->insert(Factory_InlineEx($text));
 		$this->level++; // h2,h3,h4
 	}
@@ -843,14 +843,14 @@ class TableCellEx extends ElementEx
 				$text = $matches[5];
 			}
 		}
-		
+
 		if ($is_template && is_numeric($text))
 			$this->style['width'] = ' width="' . $text . '"';
 
 		if ($text == '>') {
 			$this->colspan = 0;
 		}
-		
+
 		if ($is_template) {
 			$this->tag = 'col';
 		}
@@ -912,7 +912,7 @@ class TableCellEx extends ElementEx
 			}
 			$param .= ' style="' . join(' ', $this->style) . '"';
 		}
-		
+
 		return $this->wrap($this->is_template ? '' : parent::toString(), $this->tag, $param, FALSE);
 	}
 }
@@ -979,7 +979,7 @@ class TableEx extends ElementEx
 		foreach (array_keys($this->elements) as $nrow) {
 			$row = & $this->elements[$nrow];
 			$colspan = 1;
-			
+
 			if ($this->types[$nrow] == 'c') {
 				for ($i = count($row) - 2; $i >= 0; $i--) {
 					if ($row[$i]->colspan == 0) {
@@ -987,7 +987,7 @@ class TableEx extends ElementEx
 					}
 				}
 			}
-			
+
 			foreach (array_keys($row) as $ncol) {
 				if ($row[$ncol]->colspan == 0) {
 					++$colspan;
@@ -1151,14 +1151,14 @@ class DivEx extends ElementEx
 				$param = ($this->param != '') ? explode(',', $this->param) : array();
 				return guiedit_convert_ref($param);
 		}
-		
+
 		if ($this->text) {
 			$this->text = preg_replace("/\r/", "<br />", $this->text);
 		}
-		
+
 		$inner = "#$this->name" . ($this->param ? "($this->param)" : '') . $this->text;
 		$style = (UA_NAME == MSIE) ? '' : ' style="cursor:default"';
-		
+
 		return $this->wrap($inner, 'div', ' class="plugin" contenteditable="false"' . $style);
 	}
 }
@@ -1198,7 +1198,7 @@ class BodyEx extends ElementEx
 		'|' => 'TableEx',
 		',' => 'YTableEx',
 		'#' => 'DivEx');
-	
+
 	var $comments = array();
 
 	function BodyEx()
@@ -1277,7 +1277,7 @@ class BodyEx extends ElementEx
 			// Line Break
 			if (substr($line, -1) == '~')
 				$line = substr($line, 0, -1) . "\r";
-			
+
 			// Other Character
 			if (isset($this->classes[$head])) {
 				$classname  = $this->classes[$head];
@@ -1308,12 +1308,12 @@ class BodyEx extends ElementEx
 		global $vars;
 
 		$text = parent::toString();
-		
+
 		$text = preg_replace_callback("/___COMMENT___(\n___COMMENT___)*/", array(&$this, 'comment'), $text);
 
 		return $text . "\n";
 	}
-	
+
 	function comment($matches)
 	{
 		$comments = explode("\n", $matches[0]);

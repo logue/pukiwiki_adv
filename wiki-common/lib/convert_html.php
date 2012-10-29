@@ -138,7 +138,7 @@ function & Factory_YTable(& $root, $text)
 	if ($text == ',') {
 		$ret = Factory_Inline($text);
 	} else {
-		$ret = new YTable(csv_explode(',', substr($text, 1)));
+		$ret = new YTable(explode(',', substr($text, 1)));
 	}
 	return $ret;
 }
@@ -163,7 +163,7 @@ function & Factory_Div(& $root, $text)
 			$body = array();
 			if ($len == 0) {
 				$ret = new Div($matches); // Seems legacy block plugin
-			} else if (preg_match('/\{{' . $len . '}\s*\r(.*)\r\}{' . $len . '}/', $text, $body)) { 
+			} else if (preg_match('/\{{' . $len . '}\s*\r(.*)\r\}{' . $len . '}/', $text, $body)) {
 				$matches[2] .= "\r" . $body[1] . "\r";
 				$ret = new Div($matches); // Seems multiline-enabled block plugin
 			}
@@ -465,7 +465,7 @@ class BQuote extends Element
 	function insert(& $obj)
 	{
 		if (!is_object($obj)) return;
-		
+
 		// BugTrack/521, BugTrack/545
 		if (is_a($obj, 'inline'))
 			return parent::insert($obj->toPara(' class="style_blockquote"'));
@@ -509,8 +509,8 @@ class TableCell extends Element
 		$this->style = $matches = array();
 		$this->is_blank = false;
 
-		// •K‚¸$matches‚Ì––”ö‚Ì”z—ñ‚ÉƒeƒLƒXƒg‚Ì“à—e‚ª“ü‚é‚Ì‚Åarray_pop‚Ì•Ô‚è’l‚ðŽg—p‚·‚é•û–@‚É•ÏXB
-		// ‚à‚¤‚·‚±‚µAƒ}ƒV‚ÈŽÀ‘••û–@‚È‚¢‚©‚ÈEEEB12/05/03
+		// ï¿½Kï¿½ï¿½$matchesï¿½Ì–ï¿½ï¿½ï¿½ï¿½Ì”zï¿½ï¿½Éƒeï¿½Lï¿½Xï¿½gï¿½Ì“ï¿½ï¿½eï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½array_popï¿½Ì•Ô‚ï¿½lï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½ï¿½ï¿½@ï¿½É•ÏXï¿½B
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½}ï¿½Vï¿½ÈŽï¿½ï¿½ï¿½ï¿½ï¿½@ï¿½È‚ï¿½ï¿½ï¿½ï¿½ÈEï¿½Eï¿½Eï¿½B12/05/03
 		while (preg_match('/^(?:(LEFT|CENTER|RIGHT)|(BG)?COLOR\(([#\w]+)\)|SIZE\((\d+)\)|LANG\((\w+2)\)):(.*)$/', $text, $matches)) {
 			if ($matches[1]) {
 				$this->style['align'] = 'text-align:' . strtolower($matches[1]) . ';';
@@ -531,7 +531,7 @@ class TableCell extends Element
 			$this->style['width'] = 'width:' . $text . 'px;';
 
 		if (preg_match("/\S+/", $text) == false){
-			// ƒZƒ‹‚ª‹ó‚¾‚Á‚½‚èA‹ó”’•¶Žš‚µ‚©Žc‚ç‚È‚¢ê‡‚ÍA‹ó—“‚ÌƒZƒ‹‚Æ‚·‚éBiHTML‚Å‚Íƒ^ƒu‚âƒXƒy[ƒX‚àíœj
+			// ï¿½Zï¿½ï¿½ï¿½ï¿½ï¿½ó‚¾‚ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ó”’•ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½cï¿½ï¿½È‚ï¿½ï¿½ê‡ï¿½ÍAï¿½ó—“‚ÌƒZï¿½ï¿½ï¿½Æ‚ï¿½ï¿½ï¿½Bï¿½iHTMLï¿½Å‚Íƒ^ï¿½uï¿½ï¿½Xï¿½yï¿½[ï¿½Xï¿½ï¿½ï¿½íœï¿½j
 			$text = '';
 			$this->is_blank = true;
 		} else if ($text == '>') {
@@ -690,8 +690,8 @@ class Table extends Element
 	}
 }
 
-// , cell1  , cell2  ,  cell3 
-// , cell4  , cell5  ,  cell6 
+// , cell1  , cell2  ,  cell3
+// , cell4  , cell5  ,  cell6
 // , cell7  ,        right,==
 // ,left          ,==,  cell8
 class YTable extends Element
@@ -954,7 +954,7 @@ class Body extends Element
 				$this->last = $this->last->add(new Pre($this, $line));
 				continue;
 			}
-			
+
 			// CPre (Plus!)
 			if (substr($line,0,2) === '# ' or substr($line,0,2) == "#\t") {
 				$this->last = &$this->last->add(new CPre($this,$line));
@@ -964,7 +964,7 @@ class Body extends Element
 			// Line Break
 			if (substr($line, -1) === '~')
 				$line = substr($line, 0, -1) . "\r";
-			
+
 			// Other Character
 			if (isset($this->classes[$head]) && gettype($this->last) === 'object') {
 				$classname  = $this->classes[$head];
@@ -975,7 +975,7 @@ class Body extends Element
 			// Other Character
 			if (isset($this->factories[$head]) && gettype($this->last) === 'object') {
 				$factoryname = 'Factory_' . $this->factories[$head];
-				
+
 				$this->last  = $this->last->add($factoryname($this, $line));
 				continue;
 			}

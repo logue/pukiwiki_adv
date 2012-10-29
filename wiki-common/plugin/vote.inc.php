@@ -1,9 +1,9 @@
 <?php
-// PukiWiki Adv.‚Å‚ÍASonotsŽ‚ÌVotexƒvƒ‰ƒOƒCƒ“‚ðVoteƒvƒ‰ƒOƒCƒ“‚Æ‚µ‚Äˆµ‚¤
+// PukiWiki Adv.ï¿½Å‚ÍASonotsï¿½ï¿½ï¿½ï¿½Votexï¿½vï¿½ï¿½ï¿½Oï¿½Cï¿½ï¿½ï¿½ï¿½Voteï¿½vï¿½ï¿½ï¿½Oï¿½Cï¿½ï¿½ï¿½Æ‚ï¿½ï¿½Äˆï¿½ï¿½ï¿½
 
 /**
  * Yet Another Vote Plugin eXtension
- * 
+ *
  * @author	 sonots
  * @license	http://www.gnu.org/licenses/gpl.html GPL v2
  * @link	   http://lsx.sourceforge.jp/?Plugin%2Fvotex.inc.php
@@ -72,7 +72,7 @@ class PluginVotex
 	function action_inline()
 	{
 		global $vars, $defaultpage, $_string;
-		
+
 		if (method_exists('auth', 'check_role')) { // Plus!
 			if (auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
 		} else {
@@ -140,7 +140,7 @@ class PluginVotex
 		$choice_id	= $this->get_selected_choice_convert();
 		$addchoice	= isset($vars['addchoice']) && $vars['addchoice'] !== ''
 			? $vars['addchoice'] : null;
-		
+
 		if ($this->is_continuous_vote($page, $pcmd, $vote_id)) {
 			return array(
 				'msg'  => T_('Error in vote'),
@@ -186,7 +186,7 @@ class PluginVotex
 	 * @parram string $choice_id
 	 * @return array array($linenum, $updated_line, $updated_text, $updated_votes)
 	 */
-	function get_update_inline(&$lines, $vote_id, $choice_id) 
+	function get_update_inline(&$lines, $vote_id, $choice_id)
 	{
 		$contents = implode('', $lines);
 
@@ -209,7 +209,7 @@ class PluginVotex
 					$r_remain = substr($line, $pos + strlen($inline->text));
 					$arg	  = $inline->param;
 					$body	 = $inline->body;
-					$args	 = csv_explode(',', $arg);
+					$args	 = explode(',', $arg);
 					list($votes, $options) = $this->parse_args_inline($args, $this->default_options);
 					if ($options['readonly']) return array(false, false, false, false);
 
@@ -221,7 +221,7 @@ class PluginVotex
 						}
 					}
 					$new_args = $this->restore_args_inline($votes, $options, $this->default_options);
-					$new_arg  = csv_implode(',', $new_args);
+					$new_arg  = implode(',', $new_args);
 					$body = ($body != '') ? '{' . $body . '};' : ';';
 					$newtext = '&vote(' . $new_arg . ')' . $body;
 					$newline = $l_remain . $newtext . $r_remain;
@@ -241,7 +241,7 @@ class PluginVotex
 	 * @param string $addchoice
 	 * @return array array($linenum, $updated_line, $updated_text, $updated_votes)
 	 */
-	function get_update_convert(&$lines, $vote_id, $choice_id, $addchoice = null) 
+	function get_update_convert(&$lines, $vote_id, $choice_id, $addchoice = null)
 	{
 		$vote_count  = 0;
 		foreach($lines as $linenum => $line) {
@@ -249,7 +249,7 @@ class PluginVotex
 			if (preg_match('/^#vote(?:\((.*)\)(.*))?$/i', $line, $matches)
 				&& $vote_id == $vote_count++) {
 
-				$args   = csv_explode(',', $matches[1]);
+				$args   = explode(',', $matches[1]);
 				$remain = isset($matches[2]) ? $matches[2] : '';
 				list($votes, $options) = $this->parse_args_convert($args, $this->default_options);
 				if ($options['readonly']) return array(false, false, false, false);
@@ -261,7 +261,7 @@ class PluginVotex
 					$votes[$choice_id] = array($choice, $count + 1);
 				}
 				$new_args = $this->restore_args_convert($votes, $options, $this->default_options);
-				$new_arg  = csv_implode(',', $new_args);
+				$new_arg  = implode(',', $new_args);
 				$newtext = '#vote(' . $new_arg . ')';
 				$newline = $newtext . $remain . "\n";
 				return array($linenum, $newline, $newtext, $votes);
@@ -313,12 +313,12 @@ class PluginVotex
 			list($choice, $count) = $vote;
 			$args[] = $choice . '[' . $count . ']';
 		}
-		$arg = csv_implode(',', $args);
+		$arg = implode(',', $args);
 		list($choice, $count) = $votes[$choice_id];
 		$addline =
-			'-' . '&epoch('.$time.');' . 
+			'-' . '&epoch('.$time.');' .
 			' - [[' . $page . '#' . $vote_id . '>' . $page . '#' . $anchor . ']] ' .
-			$choice . 
+			$choice .
 			' (' . $arg . ')' .
 			"\n";
 		array_unshift($lines, $addline);
@@ -393,7 +393,7 @@ class PluginVotex
 	{
 		return rawurlencode('vote_' . $pcmd . '_' . $vote_id);
 	}
-	 
+
 	/**
 	 * Inline Plugin Main Function
 	 * @static
@@ -461,14 +461,14 @@ class PluginVotex
 					'&amp;pcmd=inline' .
 					'&amp;refer=' . $r_page .
 					'&amp;digest=' . $r_digest .
-					'&amp;vote_id=' . $r_vote_id . 
+					'&amp;vote_id=' . $r_vote_id .
 					'&amp;choice_id=' . $r_choice_id .
 					'">' . $s_choice . '</a>' .
 					'<span>&nbsp;' . $s_count . '&nbsp;</span>';
 */
 				$form .= '<a href="' . get_cmd_uri('vote', null, null, array('pcmd'=>'inline', 'refer'=>$page, 'digest'=>$digest, 'vote_id'=>$vote_id, 'choise_id'=>$choise_id)) .
 					'">' . $s_choice . '</a><var> ' . $s_count . ' </var>';
-					
+
 			}
 		}
 		$form .= '</span>' . "\n";
@@ -671,8 +671,8 @@ class PluginVotex
 		$form[] = ($this->options['readonly']) ? null : '<th class="style_th">'. T_('Vote') .'</th>';
 		$form[] = '</tr>';
 		$form[] = '</thead>';
-		
-		
+
+
 		// Body
 		$form[] = '<tbody>';
 		foreach ($votes as $choice_id => $vote) {

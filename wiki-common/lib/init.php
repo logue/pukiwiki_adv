@@ -102,7 +102,7 @@ defined('THEME_PLUS_NAME')	or define('THEME_PLUS_NAME',  'theme/');			// SKIN_UR
 
 // フレームワークのバージョン
 define('JQUERY_VER',		'1.8.2');
-define('JQUERY_UI_VER',		'1.9.0');
+define('JQUERY_UI_VER',		'1.9.1');
 define('JQUERY_MOBILE_VER',	'1.2.0');
 
 // ページ名やファイル名として使用できない文字（エンコード前の文字）
