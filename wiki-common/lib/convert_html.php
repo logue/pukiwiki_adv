@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: convert_html.php,v 1.21.29 2012/07/03 23:18:00 Logue Exp $
+// $Id: convert_html.php,v 1.21.31 2012/10/30 12:02:00 Logue Exp $
 // Copyright (C)
 //   2010-2012 PukiWiki Advance Developers Team
 //   2005-2008 PukiWiki Plus! Team
@@ -509,8 +509,8 @@ class TableCell extends Element
 		$this->style = $matches = array();
 		$this->is_blank = false;
 
-		// �K��$matches�̖����̔z��Ƀe�L�X�g�̓��e�����̂�array_pop�̕Ԃ�l���g�p�����@�ɕύX�B
-		// �����������A�}�V�Ȏ�����@�Ȃ����ȁE�E�E�B12/05/03
+		// 必ず$matchesの末尾の配列にテキストの内容が入るのでarray_popの返り値を使用する方法に変更。
+		// もうすこし、マシな実装方法ないかな・・・。12/05/03
 		while (preg_match('/^(?:(LEFT|CENTER|RIGHT)|(BG)?COLOR\(([#\w]+)\)|SIZE\((\d+)\)|LANG\((\w+2)\)):(.*)$/', $text, $matches)) {
 			if ($matches[1]) {
 				$this->style['align'] = 'text-align:' . strtolower($matches[1]) . ';';
@@ -531,7 +531,7 @@ class TableCell extends Element
 			$this->style['width'] = 'width:' . $text . 'px;';
 
 		if (preg_match("/\S+/", $text) == false){
-			// �Z�����󂾂�����A�󔒕��������c��Ȃ��ꍇ�́A�󗓂̃Z���Ƃ���B�iHTML�ł̓^�u��X�y�[�X���폜�j
+			// セルが空だったり、空白文字しか残らない場合は、空欄のセルとする。（HTMLではタブやスペースも削除）
 			$text = '';
 			$this->is_blank = true;
 		} else if ($text == '>') {
@@ -892,8 +892,7 @@ class Body extends Element
 				global $newtitle, $newbase;
 				if (empty($newbase)) {
 					// $newbase = trim($matches[2]);
-					$newbase = convert_html($matches[2]);
-					$newbase = strip_htmltag($newbase);
+					$newbase = strip_htmltag(convert_html($matches[2]));
 					//$newbase = trim($newbase);
 					$newtitle = trim($newbase);
 					// For BugTrack/132.
@@ -995,13 +994,13 @@ class Body extends Element
 		// Heading id (auto-generated)
 		$autoid = 'content_' . $this->id . '_' . $this->count;
 		$this->count++;
+		$anchor = '';
 
 		// Heading id (specified by users)
 		$id = make_heading($text, FALSE); // Cut fixed-anchor from $text
 		if (empty($id)) {
 			// Not specified
-			$id     = & $autoid;
-			$anchor = '';
+			$id     = $autoid;
 		} else {
 			//$anchor = ' &aname(' . $id . ',super,full){' . $_symbol_anchor . '};';
 			//if ($fixed_heading_edited) $anchor .= " &edit(,$id);";
@@ -1030,10 +1029,8 @@ class Body extends Element
 		$text = parent::toString();
 
 		// #contents
-		$text = preg_replace_callback('/<#_contents_>/',
-			array(& $this, 'replace_contents'), $text);
-
-		return $text . "\n";
+		return  preg_replace_callback('/<#_contents_>/',
+			array($this, 'replace_contents'), $text). "\n";
 	}
 
 	function replace_contents($arr)
