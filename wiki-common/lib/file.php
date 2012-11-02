@@ -97,9 +97,8 @@ function get_filename($page)
 function page_write($page, $postdata, $notimestamp = FALSE)
 {
 //	global $autoalias, $aliaspage;
-	global $trackback, $autoalias, $aliaspage;
-	global $autoglossary, $glossarypage;
-	global $use_spam_check, $_strings;
+	global $trackback;
+	global $use_spam_check, $_strings, $_title;
 	global $vars, $now, $akismet_api_key;
 
 	$remote_addr = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
@@ -117,6 +116,11 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	// SPAM Check (Client(Browser)-Server Ticket Check)
 //	if ( !isset($vars['encode_hint']) && !defined(PKWK_ENCODING_HINT) )
 //		die_message($_strings['plugin_encode_error']);
+
+	// Create and write diff
+	$postdata = make_str_rules($postdata);
+	$oldpostdata = is_page($page) ? get_source($page, TRUE, TRUE) : '';
+	$diffdata    = do_diff($oldpostdata, $postdata);
 
 	$links = array();
 	// ページ内のリンクを取得（TrackBackと、スパムチェックで使用）
@@ -164,7 +168,7 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 					$diff = implode("\n",array_diff($new, $old));
 					$akismet->setCommentContent($diff);
 				}
-				
+
 				if($akismet->isCommentSpam()){
 					honeypot_write();
 					die_message('Writing was limited by Akismet (Blocking SPAM).', $_title['prohibit'], 400);
@@ -174,11 +178,6 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 			}
 		}
 	}
-
-	// Create and write diff
-	$postdata = make_str_rules($postdata);
-	$oldpostdata = is_page($page) ? get_source($page, TRUE, TRUE) : '';
-	$diffdata    = do_diff($oldpostdata, $postdata);
 
 	// add client info to diff
 	$referer = (isset($_SERVER['HTTP_REFERER'])) ? htmlsc($_SERVER['HTTP_REFERER']) : 'None';
@@ -249,7 +248,7 @@ function make_str_rules($source)
 		// Replace with $str_rules
 		foreach ($str_rules as $pattern => $replacement)
 			$line = preg_replace('/' . $pattern . '/', $replacement, $line);
-		
+
 		// Adding fixed anchor into headings
 		if ($fixed_heading_anchor &&
 		    preg_match('/^(\*{1,3}.*?)(?:\[#([A-Za-z][\w-]*)\]\s*)?$/', $line, $matches) &&
@@ -329,24 +328,18 @@ function file_write($dir, $page, $str, $notimestamp = FALSE)
 	// ----
 	// Delete?
 
-	if ($dir == DATA_DIR && $str === '') {
+	if ($dir == DATA_DIR && empty($str) ) {
 		// Page deletion
 		if (! $file_exists) return; // Ignore null posting for DATA_DIR
-
 		// Update RecentDeleted (Add the $page)
 		add_recent($page, $whatsdeleted, '', $maxshow_deleted);
-
 		// Remove the page
 		unlink($file);
-
 		// Update RecentDeleted, and remove the page from RecentChanges
 		lastmodified_add($whatsdeleted, $page);
-
 		// Clear is_page() cache
 		is_page($page, TRUE);
-
 		return;
-
 	} else if ($dir == DIFF_DIR && $str === " \n") {
 		return; // Ignore null posting for DIFF_DIR
 	}
@@ -362,7 +355,7 @@ function file_write($dir, $page, $str, $notimestamp = FALSE)
 	$timestamp = ($file_exists && $notimestamp) ? filemtime($file) : FALSE;
 
 	$fp = fopen($file, 'a') or die('fopen() failed: ' .
-		htmlsc(basename($dir) . '/' . encode($page) . '.txt') .	
+		htmlsc(basename($dir) . '/' . encode($page) . '.txt') .
 		'<br />' . "\n" .
 		'Maybe permission is not writable or filename is too long');
 	set_file_buffer($fp, 0);
@@ -479,10 +472,10 @@ function lastmodified_add($update = '', $remove = '')
 
 	// Check
 	$abort = count($recent_pages) < $maxshow;
-	
+
 	// Update cache
 	$cache->setItem(PKWK_MAXSHOW_CACHE, $recent_pages);
-	
+
 	if ($abort) {
 		put_lastmodified(); // Try to (re)create ALL
 		return;
@@ -575,7 +568,7 @@ function put_lastmodified()
 	if ($autolink){
 		$cache->setItem(PKWK_AUTOLINK_REGEX_CACHE, get_autolink_pattern($pages, $autolink));
 	}
-	
+
 	// AutoBaseAlias (Plus!)
 	if ($autobasealias) {
 		$cache->setItem(PKWK_AUTOBASEALIAS_CACHE, get_autobasealias($pages));
@@ -612,7 +605,8 @@ function get_existfiles($dir = DATA_DIR, $ext = '.txt')
 	$aryret = array();
 	$pattern = '/^(?:[0-9A-F]{2})+' . preg_quote($ext, '/') . '$/';
 
-	if ($handle = opendir($dir)) {
+	$handle = opendir($dir);
+	if ($handle) {
 		while (false !== ($entry = readdir($handle))) {
 			if (preg_match($pattern, $entry)) {
 				$aryret[] = $dir . $entry;
@@ -635,12 +629,13 @@ function get_existpages($dir = DATA_DIR, $ext = '.txt')
 	// ただし、Adv.の場合ファイルに別途キャッシュしているのであまり意味ないかも・・・。
 	static $pages = array();
 	if (isset($pages[$dir][$ext])) return $pages[$dir][$ext];
-	
+
 	$aryret = array();
 	$pattern = '/^((?:[0-9A-F]{2})+)' . preg_quote($ext, '/') . '$/';
 
 	$matches = array();
-	if ($handle = opendir($dir)) {
+	$handle = opendir($dir);
+	if ($handle) {
 		while (false !== ($entry = readdir($handle))) {
 			if (preg_match($pattern, $entry, $matches)) {
 				$aryret[$entry] = decode($matches[1]);
@@ -660,13 +655,11 @@ function get_readings()
 {
 	global $pagereading_enable, $pagereading_config_page, $mecab_path;
 	global $pagereading_config_dict, $info;
-	
-	global $pagereading_path, $pagereading_api;
 
 	$pages = get_existpages();
 
 	$readings = array();
-	foreach ($pages as $page) 
+	foreach ($pages as $page)
 		$readings[$page] = '';
 
 	$deletedPage = FALSE;
@@ -745,15 +738,15 @@ function get_readings()
 function links_get_related($page)
 {
 	global $vars, $related;
-	static $links = array();
+	static $links;
 
 	if (isset($links[$page])) return $links[$page];
 
 	// If possible, merge related pages generated by make_link()
 	$links[$page] = ($page === $vars['page']) ? $related : array();
-	
+
 	// Get repated pages from DB
-	$links[$page] += links_get_related_db($vars['page']);
+	$links[$page] += links_get_related_db($page);
 
 	return $links[$page];
 }

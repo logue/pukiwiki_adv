@@ -74,7 +74,6 @@ require(LIB_DIR . 'diff.php');
 require(LIB_DIR . 'config.php');
 require(LIB_DIR . 'link.php');
 require(LIB_DIR . 'auth.php');
-require(LIB_DIR . 'proxy.php');
 require(LIB_DIR . 'lang.php');
 require(LIB_DIR . 'timezone.php');
 require(LIB_DIR . 'log.php');
@@ -83,9 +82,6 @@ require(LIB_DIR . 'proxy.cls.php');
 require(LIB_DIR . 'auth.cls.php');
 require(LIB_DIR . 'netbios.cls.php');
 require(LIB_DIR . 'ua/user_agent.cls.php');
-
-require(LIB_DIR . 'simple_html_dom.php');
-//require(LIB_DIR . 'gettext/gettext.inc');
 
 // Defaults
 $notify = $trackback = $referer = 0;

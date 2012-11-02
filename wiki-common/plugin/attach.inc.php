@@ -1156,11 +1156,13 @@ EOD;
 
 		ini_set('default_charset', '');
 		mb_http_output('pass');
-		pkwk_common_headers(filemtime($this->file), null, false);
+
+		$file = realpath($this->filename);
+		pkwk_common_headers(filemtime($file), null, false);
 
 		if ($use_sendfile_header === true){
 			// for reduce server load
-			header('X-Sendfile: '.realpath($this->file));
+			header('X-Sendfile: '.$file);
 		}
 
 		$s_filename = htmlsc($filename);

@@ -92,7 +92,7 @@ defined('EXT_LANG_DIR')		or define('EXT_LANG_DIR',	EXTEND_DIR. 'locale/'   );	//
 defined('EXT_SKIN_DIR')		or define('EXT_SKIN_DIR',	EXTEND_DIR. 'skin/'     );	// Extend Skin directory
 
 defined('SKIN_DIR')			or define('SKIN_DIR',		WWW_HOME . 'skin/'      );	// Path to Skin directory
-defined('IMAGE_DIR')		or define('IMAGE_DIR',		WWW_HOME . 'image/'     );	// Path to 
+defined('IMAGE_DIR')		or define('IMAGE_DIR',		WWW_HOME . 'image/'     );	// Path to
 
 defined('SKIN_URI')			or define('SKIN_URI',		ROOT_URI . 'skin/'      );	// URI to Skin directory
 defined('IMAGE_URI')		or define('IMAGE_URI',		COMMON_URI . 'image/'   );	// URI to Static Image
@@ -169,7 +169,9 @@ $info[] = 'Cache system using '.$adapter;
 $core_cache = StorageFactory::factory($core_cache_config);
 // Wikiごと個別に使われるキャッシュ
 $cache = StorageFactory::factory($cache_config);
-
+// PostId用キャッシュ
+$cache_config['option']['ttl'] = 60;	// 有効時間は１時間
+$postid_cache = StorageFactory::factory($cache_config);
 /////////////////////////////////////////////////
 // I18N
 
@@ -517,7 +519,7 @@ if (!IS_AJAX || IS_MOBILE){
 		// modernizrの設定
 		// $modernizr = 'modernizr.min.js';
 		$modernizr = 'js.php?file=modernizr.min';
-		
+
 		// jQuery UI
 		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://code.jquery.com/ui/'.JQUERY_UI_VER.'/jquery-ui.min.js', 'defer'=>'defer');
 		// jQuery UIのCSS
@@ -535,7 +537,7 @@ if (!IS_AJAX || IS_MOBILE){
 			$default_js = array(
 				/* libraly */
 				'tzCalculation_LocalTimeZone',
-				
+
 				/* Use plugins */
 				'activity-indicator',
 				'jquery.a-tools',
@@ -573,7 +575,7 @@ if (!IS_AJAX || IS_MOBILE){
 				'jquery.i18n',
 				'jquery.lazyload',
 				'jquery.tablesorter',
-				
+
 				/* MUST BE LOAD LAST */
 				'mobile.original'
 			);
@@ -605,14 +607,14 @@ if (!IS_AJAX || IS_MOBILE){
 	);
 
 	$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.( (DEBUG) ? 'locale.js' : 'js.php?file=locale'), 'defer'=>'defer' );
-	
+
 	if ( isset($auth_api['facebook']) ){
 		if (! extension_loaded('curl')){
 			require(LIB_DIR.'facebook.php');
 			$fb = new FaceBook($auth_api['facebook']);
 			// FaceBook Integration
 			$fb_user = $fb->getUser();
-			
+
 			if ($fb_user === 0) {
 				// 認証されていない場合
 				$url = $fb->getLoginUrl(array(

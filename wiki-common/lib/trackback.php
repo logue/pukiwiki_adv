@@ -262,7 +262,5 @@ class TrackBack_XML
 	function end_element($parser, $name) {}
 }
 
-
-
 /* End of file trackback.php */
 /* Location: ./wiki-common/lib/trackback.php */

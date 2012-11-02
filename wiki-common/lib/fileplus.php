@@ -55,7 +55,7 @@ function update_cache($page = '', $force = false){
 	if ($force) {
 		$cache->flush();
 	}
-	
+
 	// Update page list
 	if (! $cache->hasItem(PKWK_EXISTS_PREFIX.'wiki')){
 		$pages = get_existpages();
@@ -69,7 +69,7 @@ function update_cache($page = '', $force = false){
 	if (! $cache->hasItem(PKWK_EXISTS_PREFIX.'attach') ){
 		$cache->setItem(PKWK_EXISTS_PREFIX.'attach', get_attachfiles());
 	}
-	
+
 	// Update AutoAliasName
 	if ($autoalias !== 0&& (! $cache->hasItem(PKWK_AUTOALIAS_REGEX_CACHE) || $page === $aliaspage) ) {
 		$aliases = get_autoaliases();
@@ -94,12 +94,12 @@ function update_cache($page = '', $force = false){
 			$cache->setItem(PKWK_GLOSSARY_REGEX_CACHE, get_glossary_pattern(@array_keys($words)) );
 		}
 	}
-	
+
 	// Update autolink
 	if ($autolink !== 0 && ! $cache->hasItem(PKWK_AUTOLINK_REGEX_CACHE) ) {
 		$cache->setItem(PKWK_AUTOLINK_REGEX_CACHE, get_autolink_pattern($pages, $autolink));
 	}
-	
+
 	// Update AutoBaseAlias
 	if ($autobasealias !== 0 && ! $cache->hasItem(PKWK_AUTOBASEALIAS_CACHE) ) {
 		$basealiases = get_autobasealias($pages);
@@ -111,7 +111,7 @@ function update_cache($page = '', $force = false){
 			$cache->setItem(PKWK_AUTOBASEALIAS_CACHE, $basealiases );
 		}
 	}
-	
+
 	// Update rel and ref cache
 	if ($force && $page == '') {
 		links_init();
@@ -127,7 +127,7 @@ function update_cache($page = '', $force = false){
 
 function get_existpages_cache($dir, $ext){
 	global $cache;
-	
+
 	switch($dir){
 		case DATA_DIR: $func = 'wiki'; break;
 		case UPLOAD_DIR: $func = 'attach'; break;
@@ -163,7 +163,7 @@ function get_attachfiles($page = '')
 		while (false !== ($entry = readdir($handle))) {
 			if (($entry !== '.') && ($entry !== '..')) continue;
 			$matches = array();
-			
+
 			if (! preg_match($pattern, $entry, $matches)) continue; // all page
 
 			// [page][file] = array(time,size);
@@ -300,8 +300,8 @@ function compress_file($in, $method, $chmod=644){
 	// ファイルの存在確認
 	if (!file_exists ($filename) || !is_readable ($filename)) return false;
 	// 出力ファイル名
-	$out = $file.$method;
-	if ((!file_exists ($out) && !is_writeable (dirname ($out)) || (file_exists($out) && !is_writable($out)) )) return false; 
+	$out = $file.'.'.$method;
+	if ((!file_exists ($out) && !is_writeable (dirname ($out)) || (file_exists($out) && !is_writable($out)) )) return false;
 	// テンポラリファイル名
 	$tmp_name = $file.'.tmp';
 
@@ -314,7 +314,7 @@ function compress_file($in, $method, $chmod=644){
 					$buffer= fread($in_file, 2048);
 					gzwrite ($out_file, $buffer);
 				}
-				fclose ($in_file); 
+				fclose ($in_file);
 				gzclose ($out_file);
 				chmod($out_file, $chmod);
 				break;
@@ -327,7 +327,7 @@ function compress_file($in, $method, $chmod=644){
 					$buffer = fgets ($in_file, 4096);
 					bzwrite ($out_file, $buffer, 4096);
 				}
-				fclose ($in_file); 
+				fclose ($in_file);
 				bzclose ($out_file);
 				chmod($out_file, $chmod);
 				break;
@@ -376,34 +376,33 @@ function compress_file($in, $method, $chmod=644){
 /**
  * generate id from $cmd and random number
  */
+
 function generate_postid($cmd = '')
 {
-	global $cache;
+	global $postid_cache;
 	$idstring_raw = $cmd . mt_rand();		//mt_srand() is necessary if PHP version is lower than 4.2.0
 	$idstring = md5($idstring_raw);
+	$postid_cache->clearExpired();
 
-	$filename = POSTID_DIR . $idstring . PKWK_DAT_EXTENTION;
-	cache_write($_SERVER['REMOTE_ADDR'], $filename, POSTID_EXPIRE);
-	cache_cleanup($filename, POSTID_EXPIRE);
+	$postid_cache->setItem(POSTID_PREFIX . $idstring, $_SERVER['REMOTE_ADDR']);
 	return $idstring;
 }
 
 function check_postid($idstring)
 {
-	global $memcache;
-	$filename = POSTID_DIR . $idstring . PKWK_DAT_EXTENTION;
+	global $postid_cache;
+
 	$ret = TRUE;
-	$data = cache_read($filename);
-	if ($data !== false){
-		if ($data !== $_SERVER['REMOTE_ADDR']){
+	if ($postid_cache->hasItem(POSTID_PREFIX . $idstring)){
+		if ($postid_cache->getItem(POSTID_PREFIX . $idstring) !== $_SERVER['REMOTE_ADDR']){
 			$ret = false;
 		}
 		unset($data);
 	}else{
 		$ret = FALSE;
 	}
-	cache_delete($filename);
-	cache_cleanup($filename, POSTID_EXPIRE);
+	$postid_cache->removeItem(POSTID_PREFIX . $idstring);
+
 	if ($ret === FALSE){
 		honeypot_write();
 	}

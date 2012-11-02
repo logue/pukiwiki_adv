@@ -35,7 +35,7 @@ function ref_get_data($page, $uniquekey=1)
 
 function ref_save($page)
 {
-	global $referer, $use_spam_check;
+	global $referer;
 
 	if (! is_dir(REFERER_DIR))      die_message('No such directory: REFERER_DIR');
 	if (! is_writable(REFERER_DIR)) die_message('Permission denied to write: REFERER_DIR');
@@ -44,10 +44,6 @@ function ref_save($page)
 
 	$url = (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : null;
 	if (! $referer || empty($url) ) return TRUE;
-
-	if ($use_spam_check['bad-behavior']){
-		require(LIB_DIR . 'bad-behavior-pukiwiki.php');
-	}
 
 	// Validate URI (Ignore own)
 	$parse_url = parse_url($url);

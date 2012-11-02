@@ -277,21 +277,21 @@ function use_plugin($plugin, $lines)
 	return FALSE;
 }
 
-// form�^�O�ɒǉ��̃t�H�[����}��
+// formタグに追加のフォームを挿入
 function add_hidden_field($retvar, $name){
 	global $use_spam_check, $vars, $digest;
 	if (preg_match('/<form\b(?:(?=(\s+(?:method="([^"]*)"|enctype="([^"]*)")|[^\s>]+|\s+))\1)*>/i', $retvar, $matches) !== 0){
 		// Insert a hidden field, supports idenrtifying text enconding
 		$hidden_field[] = ( PKWK_ENCODING_HINT ) ? '<input type="hidden" name="encode_hint" value="' . PKWK_ENCODING_HINT . '" />' : '';
 
-		// ���d���e���֎~����I�v�V�������L��Amethod��post�������ꍇ�APostID�𐶐�����
+		// 多重投稿を禁止するオプションが有効かつ、methodがpostだった場合、PostIDを生成する
 		if ( (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] === 1)
 			&& preg_match(PKWK_IGNOLE_POSTID_CHECK_PLUGINS,$name) !== 1 && $matches[2] !== 'get'){
 			// from PukioWikio
 			$hidden_field[] = '<input type="hidden" name="postid" value="'.generate_postid($name).'" />';
 		}
 
-		// PHP5.4�ȍ~���A�}���`�p�[�g�̏ꍇ�A�i���󋵃Z�b�V�����p�̃t�H�[����t������
+		// PHP5.4以降かつ、マルチパートの場合、進捗状況セッション用のフォームを付加する
 		if (version_compare(PHP_VERSION, '5.4', '>=') && isset($matches[3]) && $matches[3] === 'multipart/form-data') {
 			pkwk_session_start();
 			$hidden_field[] = '<input type="hidden" name="' .  ini_get("session.upload_progress.name") . '" value="' . PKWK_PROGRESS_SESSION_NAME . '" class="progress_session" />';

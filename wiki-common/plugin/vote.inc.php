@@ -1,5 +1,5 @@
 <?php
-// PukiWiki Adv.�ł́ASonots����Votex�v���O�C����Vote�v���O�C���Ƃ��Ĉ���
+// PukiWiki Adv.では、Sonots氏のVotexプラグインをVoteプラグインとして扱う
 
 /**
  * Yet Another Vote Plugin eXtension
