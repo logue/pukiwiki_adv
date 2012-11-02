@@ -425,11 +425,12 @@ function plugin_ref_action()
 	// Output
 	ini_set('default_charset', '');
 	mb_http_output('pass');
-	pkwk_common_headers(filemtime($ref));
+	$file = realpath($ref);
+	pkwk_common_headers(filemtime($file));
 
 	if ($use_sendfile_header === true){
 		// for reduce server load
-		header('X-Sendfile: '.realpath($ref));
+		header('X-Sendfile: '.$file);
 	}
 
 	$s_filename = htmlsc($filename);
@@ -441,7 +442,7 @@ function plugin_ref_action()
 		header('Content-Type: ' . htmlsc($type));
 	}
 	plus_readfile($ref);
-	pkwk_common_suffixes(filesize($ref));
+	pkwk_common_suffixes(filesize($file));
 	exit;
 }
 /* End of file ref.inc.php */
