@@ -97,7 +97,7 @@ function plugin_insert_convert()
 <form action="$script" method="post" class="insert_form">
 	<input type="hidden" name="insert_no" value="$insert_no" />
 	<input type="hidden" name="refer"  value="$s_page" />
-	<input type="hidden" name="plugin" value="insert" />
+	<input type="hidden" name="cmd" value="insert" />
 	<input type="hidden" name="digest" value="$s_digest" />
 	<textarea name="msg" rows="$s_rows" cols="$s_cols"></textarea><br />
 	<input type="submit" name="insert" value="$_btn_insert" />

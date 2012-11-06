@@ -48,7 +48,7 @@ function plugin_csv2newpage_convert()
 
 	if (! isset($numbers[$page])) $numbers[$page] = 0;
 	$csv2newpage_no = $numbers[$page]++;
-	
+
 	$newpage = '';
 	$upload = 0;
 	$config_name = 'default';
@@ -90,7 +90,7 @@ function plugin_csv2newpage_convert()
 	$s_text   = htmlsc($_csv2newpage_messages['title_text']);
 
 	$retval .=<<<EOD
-<input type="hidden" name="plugin" value="csv2newpage" />
+<input type="hidden" name="cmd" value="csv2newpage" />
 <input type="hidden" name="_refer" value="$s_page" />
 <input type="hidden" name="_config" value="$s_config" />
 <input type="hidden" name="_upload" value="$upload" />
@@ -125,7 +125,7 @@ function plugin_csv2newpage_action()
 	}
 	$config->config_name = $config_name;
 	$source = $config->page.'/page';
-	
+
 	$refer = (empty($vars['_refer'])) ? '' : $vars['_refer'];
 	if (!is_pagename($refer)) {
 		return array(
@@ -295,7 +295,7 @@ function plugin_csv2newpage_upload($refer)
 	$realfile = UPLOAD_DIR.encode($refer).'_'.encode($attachname);
 	if ( !is_file($realfile)) {
 		return array(
-			'msg' => 'not found the attached file', 
+			'msg' => 'not found the attached file',
 			'body' => "The attached file:'$attachname' does not exist in '$refer'.<br />($realfile)",
 		);
 	}
@@ -326,12 +326,12 @@ function plugin_csv2newpage_write($ary,$base,$postdata,$config)
 	}
 
 	if (!is_pagename($page)) $page = $base;
-	
+
 	while (is_page($page)) {
 		$real = ++$num;
 		$page = $base.'/'.$real;
 	}
-	
+
 	// 規定のデータ
 	$_post = array_merge($ary,$vars,$_FILES);
 	$_post['_date'] = $now;
@@ -342,9 +342,9 @@ function plugin_csv2newpage_write($ary,$base,$postdata,$config)
 
 
 	if (! exist_plugin('tracker'))
-		return array('msg'=>'plugin not found', 'body'=> 'The tracker plugin is not found.'); 
+		return array('msg'=>'plugin not found', 'body'=> 'The tracker plugin is not found.');
 	$fields = plugin_tracker_get_fields($base,$page,$config);
-	
+
 	foreach ($fields as $key=>$class) {
 		if (array_key_exists($key,$_post)) {
 			$val = $class->format_value($_post[$key]);
@@ -365,7 +365,7 @@ function plugin_csv2newpage_showform($retval)
 
 	if (! exist_plugin('attach'))
 		return array('msg'=>'plugin not found', 'body'=> 'The attach plugin is not found.');
-	
+
 	if (!(bool)ini_get('file_uploads')) return 'file_uploads disabled.';
 
 	$maxsize = MAX_FILESIZE;
