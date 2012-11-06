@@ -89,7 +89,7 @@ function plugin_memo_convert()
 	// if (PKWK_READONLY) {
 	if (auth::check_role('readonly')) {
 		$_script = '';
-		$_submit = '';	
+		$_submit = '';
 	} else {
 		$_script = get_script_uri();;
 		$_submit = '<input type="submit" name="memo" value="' . T_('update') . '" />';
@@ -103,7 +103,7 @@ function plugin_memo_convert()
 <form action="$_script" method="post" class="memo_form">
 	<input type="hidden" name="memo_no" value="$memo_no" />
 	<input type="hidden" name="refer"   value="$s_page" />
-	<input type="hidden" name="plugin"  value="memo" />
+	<input type="hidden" name="cmd"  value="memo" />
 	<input type="hidden" name="digest"  value="$s_digest" />
 	<textarea name="msg" rows="$s_rows" cols="$s_cols">$data</textarea><br />
 	$_submit

@@ -6,8 +6,6 @@
  * @version     $Id: lang.php,v 0.27.3 2012/05/20 09:29:00 Logue Exp $
  *
  */
-defined('LANG_DIR') or define('LANG_DIR',SITE_HOME.'locale/');
-
 use Zend\I18n\Translator\Translator;
 
 // CORRESPONDENCE LANGUAGE : 対応言語
@@ -92,7 +90,7 @@ function T_setlocale($type, $locale){
 }
 
 function T_($string){
-	global $translator, $domain, $language, $core_cache;
+	global $translator, $domain, $language;
 	$gettext_file = LANG_DIR.$language.'/LC_MESSAGES/'.$domain.'.mo';
 	if (file_exists($gettext_file)){
 		return $translator->translate($string, $domain, $language);
@@ -454,7 +452,7 @@ class accept_language
 		} else {
 			return '';
 		}
-		
+
 		if ($cookie['lang'] == 'none') return '';
 		$l = accept_language::split_locale_str($cookie['lang']);
 		return array(array($l[0],1));

@@ -51,7 +51,7 @@ function plugin_login_convert()
 		if (isset($auth_api[$auth_key['api']]['hidden_login']) && $auth_api[$auth_key['api']]['hidden_login']) {
 			return  $_login_msg['err_notusable'] ;
 		}
-		
+
 		if ($auth_key['api'] == 'plus') {
 			return <<<EOD
 <div>
@@ -68,9 +68,9 @@ EOD;
 	}
 
 	$ret = array();
-	
+
 	$ret[] = '<form action="' . get_script_uri() . '" method="post">';
-	$ret[] = '<input type="hidden" name="plugin" value="login" />';
+	$ret[] = '<input type="hidden" name="cmd" value="login" />';
 	$ret[] = (isset($type)) ? '<input type="hidden" name="type" value="' . htmlsc($type, ENT_QUOTES) . '" />' : null;
 	$ret[] = (isset($vars['page'])) ? '<input type="hidden" name="type" value="' . $vars['page'] . '" />' : null;
 	$ret[] = '<div class="login_form">';

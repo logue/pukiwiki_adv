@@ -216,7 +216,7 @@ $x .= <<<EOD
 	<legend>htdigest</legend>
 	<p>$msg</p>
 	<form name="htdigest" action="$script" method="post">
-		<input type="hidden" name="plugin" value="htdigest" />
+		<input type="hidden" name="cmd" value="htdigest" />
 		<input type="hidden" name="func" value="$func" />
 		<input type="hidden" name="algorithm" />
 		<input type="hidden" name="hash" />

@@ -39,7 +39,7 @@ defined('COMMON_URI')		or define('COMMON_URI', ROOT_URI);
 // Init server variables
 
 // Compat and suppress notices
-if (!isset($HTTP_SERVER_VARS)) $HTTP_SERVER_VARS = array();
+$HTTP_SERVER_VARS = array();
 
 foreach (array('SCRIPT_NAME', 'SERVER_ADMIN', 'SERVER_NAME', 'SERVER_SOFTWARE') as $key) {
 	define($key, isset($_SERVER[$key]) ? $_SERVER[$key] : '');
@@ -57,13 +57,11 @@ if (file_exists(USR_INI_FILE) && is_readable(USR_INI_FILE)) {
 }
 
 define('INI_FILE',  add_homedir('pukiwiki.ini.php'));
-$die = '';
 if (! file_exists(INI_FILE) || ! is_readable(INI_FILE)) {
-	$die .= T_('File is not found.').' (INI_FILE)' . "\n";
+	die_message(T_('File is not found.').' (INI_FILE)' . "\n");
 } else {
 	require(INI_FILE);
 }
-if ($die) die_message(nl2br("\n\n" . $die));
 
 if ($read_usr_ini_file) {
 	require(USR_INI_FILE);
@@ -188,14 +186,14 @@ T_textdomain(DOMAIN);
 require(LIB_DIR . 'resource.php');
 // Init encoding hint
 // define('PKWK_ENCODING_HINT', isset($_LANG['encode_hint']) ? $_LANG['encode_hint'] : '');
-define('PKWK_ENCODING_HINT', (isset($_LANG['encode_hint']) && $_LANG['encode_hint'] != 'encode_hint') ? $_LANG['encode_hint'] : '');
+define('PKWK_ENCODING_HINT', (isset($_LANG['encode_hint']) && $_LANG['encode_hint'] !== 'encode_hint') ? $_LANG['encode_hint'] : '');
 // unset($_LANG['encode_hint']);
 
 /////////////////////////////////////////////////
 // INI_FILE: Init $script
 
 if (isset($script)) {
-	get_script_uri($script);		// Init manually
+	get_script_uri($script);	// Init manually
 } else {
 	$script = get_script_uri();	// Init automatically
 }
@@ -238,8 +236,8 @@ define('UA_CSS', isset($user_agent['css']) ? $user_agent['css'] : '');
 
 /////////////////////////////////////////////////
 // ディレクトリのチェック
-
 $die = array();
+
 foreach(array('DATA_DIR', 'DIFF_DIR', 'BACKUP_DIR', 'CACHE_DIR') as $dir){
 	if (! is_writable(constant($dir)))
 		$die[] = sprintf($_string,$dir);
@@ -293,7 +291,7 @@ $_COOKIE = input_filter($_COOKIE);
 // <form> で送信された文字 (ブラウザがエンコードしたデータ) のコードを変換
 // POST method は常に form 経由なので、必ず変換する
 //
-if (isset($_POST['encode_hint']) && $_POST['encode_hint'] != '') {
+if (isset($_POST['encode_hint']) && !empty($_POST['encode_hint'])) {
 	// do_plugin_xxx() の中で、<form> に encode_hint を仕込んでいるので、
 	// encode_hint を用いてコード検出する。
 	// 全体を見てコード検出すると、機種依存文字や、妙なバイナリ
@@ -301,7 +299,7 @@ if (isset($_POST['encode_hint']) && $_POST['encode_hint'] != '') {
 	$encode = mb_detect_encoding($_POST['encode_hint']);
 	mb_convert_variables(SOURCE_ENCODING, $encode, $_POST);
 
-} else if (isset($_POST['charset']) && $_POST['charset'] != '') {
+} else if (isset($_POST['charset']) && !empty($_POST['charset'])) {
 	// TrackBack Ping で指定されていることがある
 	// うまくいかない場合は自動検出に切り替え
 	if (mb_convert_variables(SOURCE_ENCODING,

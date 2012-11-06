@@ -446,11 +446,11 @@ function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', 
 			}
 		} else {
 			if (preg_match('/^(\:|[A-Za-z])/', $page, $matches)) {
-				$initial = & $matches[1];
+				$initial = $matches[1];
 			} elseif (preg_match('/^([ -~])/', $page)) {
-				$initial = & $sentinel_symbol;
+				$initial = $sentinel_symbol;
 			} else {
-				$initial = & $sentinel_another;
+				$initial = $sentinel_another;
 			}
 		}
 
@@ -515,8 +515,10 @@ function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', 
 				}
 				$contents[] = '<li data-role="list-divider">' . $_initial . '</li>';
 
-				foreach($array[$_initial] as $page){
-					$contents[] = $page;
+				if ( isset($array[$_initial]) && is_array($array[$_initial]) ){
+					foreach($array[$_initial] as $page){
+						$contents[] = $page;
+					}
 				}
 				//$contents[] = $array[$_initial][$pages];
 			}

@@ -280,7 +280,7 @@ class InlineConverterEx {
 		$inner = '&' . $matches[1] . ($matches[2] ? '('.$matches[2].')' : '') . ($body ? '{'.$body.'}' : '') . ';';
 		$style = (UA_NAME == MSIE) ? '' : ' style="cursor:default"';
 
-		return '<span class="plugin" contenteditable="false"'.$style.'>'.$inner.'</span>';
+		return '<span class="cmd" contenteditable="false"'.$style.'>'.$inner.'</span>';
 	}
 
 	// 色の変換
