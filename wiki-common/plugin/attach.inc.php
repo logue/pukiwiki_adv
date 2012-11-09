@@ -239,7 +239,7 @@ function attach_upload($file, $page, $pass = NULL)
 
 	if (PKWK_QUERY_STRING_MAX && strlen($query) > PKWK_QUERY_STRING_MAX) {
 		pkwk_common_headers();
-		echo($_attach_messages['err_too_long']); 
+		echo($_attach_messages['err_too_long']);
 		exit;
 	} else if (! is_page($page)) {
 		die_message($_attach_messages['err_nopage']);
@@ -313,15 +313,15 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 {
 	global $_attach_messages, $_strings;
 	global $notify, $notify_subject, $notify_exclude, $spam;
-	
+
 	// Check Illigal Chars
 	if (preg_match(PKWK_ILLEGAL_CHARS_PATTERN, $page) || preg_match(PKWK_ILLEGAL_CHARS_PATTERN, $file['name'])){
 		die_message($_strings['illegal_chars']);
 	}
-	
+
 	$type = get_mimeinfo($file['tmp_name']);
 	$must_compress = (PLUGIN_ATTACH_UNKNOWN_COMPRESS !== 0) ? attach_is_compress($type,PLUGIN_ATTACH_UNKNOWN_COMPRESS) : false;
-	
+
 	// ファイル名の長さをチェック
 	$filename_length = strlen(encode($page).'_'.encode($file['name']));
 	if ( $filename_length  >= 255 || ($must_compress && $filename_length >= 251 )){
@@ -381,7 +381,7 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 					$tp = fopen($file['tmp_name'],'rb') or
 						die_message($_attach_messages['err_load_file']);
 					$zp = gzopen($obj->filename, 'wb') or
-						die_message($_attach_messages['err_write_tgz']);	
+						die_message($_attach_messages['err_write_tgz']);
 
 					while (!feof($tp)) { gzwrite($zp,fread($tp, 8192)); }
 					gzclose($zp);
@@ -413,11 +413,11 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 					if ($obj->exist)
 						return array('result'=>FALSE,
 							'msg'=>$_attach_messages['err_exists']);
-					
+
 					$tp = fopen($file['tmp_name'],'rb') or
 						die_message($_attach_messages['err_load_file']);
 					$zp = bzopen($obj->filename, 'wb') or
-						die_message($_attach_messages['err_write_tgz']);	
+						die_message($_attach_messages['err_write_tgz']);
 
 					while (!feof($tp)) { bzwrite($zp,fread($tp, 8192)); }
 					bzclose($zp);
@@ -453,8 +453,6 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 	$obj->getstatus();
 	$obj->status['pass'] = ($pass !== TRUE && $pass !== NULL) ? md5($pass) : '';
 	$obj->putstatus();
-
-	cache_timestamp_touch('attach');
 
 	if ($notify) {
 		$notify_exec = TRUE;
@@ -573,7 +571,6 @@ function attach_delete()
 	if (! $obj->getstatus())
 		return array('msg'=>$_attach_messages['err_notfound']);
 
-	cache_timestamp_touch('attach');	
 	return $obj->delete($pass);
 }
 
@@ -762,7 +759,7 @@ function attach_form($page)
 
 // 進捗状況表示（ってattachプラグインでなくても、これ呼び出す実装かよ）
 function attach_progress(){
-	pkwk_session_start();
+	session_start();
 	$key = ini_get('session.upload_progress.prefix') . PKWK_PROGRESS_SESSION_NAME;
 	header("Content-Type: application/json; charset=".CONTENT_CHARSET);
 	echo isset($_SESSION[$key]) ? json_encode($_SESSION[$key]) : json_encode(null);
@@ -873,13 +870,14 @@ class AttachFile
 	function info($err)
 	{
 		global $_attach_messages, $pkwk_dtd, $vars, $_LANG;
+		
 
 		$script = get_script_uri();
 		$r_page = rawurlencode($this->page);
 		$s_page = htmlsc($this->page);
 		$s_file = htmlsc($this->file);
 		$s_err = ($err == '') ? '' : '<p style="font-weight:bold">' . $_attach_messages[$err] . '</p>';
-		
+
 		$list_uri    = get_cmd_uri('attach','','',array('pcmd'=>'list','refer'=>$this->page));
 		$listall_uri = get_cmd_uri('attach','','',array('pcmd'=>'list'));
 
@@ -923,17 +921,20 @@ class AttachFile
 		}
 		$info = $this->toString(TRUE, FALSE);
 		$hash = $this->gethash();
-		$exif = @exif_read_data($this->filename);
+		
 		$_attach_setimage = '';
-		$size = @getimagesize($this->filename);	// 画像でない場合はfalseを返す
-		if ($size !== false){
-			if ($size[2] > 0 && $size[2] < 3) {
-				if ($size[0] < 200) { $w = $size[0]; $h = $size[1]; }
-				else { $w = 200; $h = $size[1] * (200 / ($size[0]!=0?$size[0]:1) ); }
-				$_attach_setimage  = ($pkwk_dtd == PKWK_DTD_HTML_5) ? '<figure class="img_margin attach_info_image">' : '<div class="img_margin attach_info_image">';
-				$_attach_setimage .= '<img src="'.get_cmd_uri('ref','','',array('page'=>$this->page,'src'=>$this->file));
-				$_attach_setimage .= '" width="' . $w .'" height="' . $h . '" />';
-				$_attach_setimage .= ($pkwk_dtd == PKWK_DTD_HTML_5) ? '</figure>' : '</div>';
+		if (extension_loaded('gd')){
+			$exif = exif_read_data($this->filename);
+			$size = getimagesize($this->filename);	// 画像でない場合はfalseを返す
+			if ($size !== false){
+				if ($size[2] > 0 && $size[2] < 3) {
+					if ($size[0] < 200) { $w = $size[0]; $h = $size[1]; }
+					else { $w = 200; $h = $size[1] * (200 / ($size[0]!=0?$size[0]:1) ); }
+					$_attach_setimage  = ($pkwk_dtd == PKWK_DTD_HTML_5) ? '<figure class="img_margin attach_info_image">' : '<div class="img_margin attach_info_image">';
+					$_attach_setimage .= '<img src="'.get_cmd_uri('ref','','',array('page'=>$this->page,'src'=>$this->file));
+					$_attach_setimage .= '" width="' . $w .'" height="' . $h . '" />';
+					$_attach_setimage .= ($pkwk_dtd == PKWK_DTD_HTML_5) ? '</figure>' : '</div>';
+				}
 			}
 		}
 
@@ -970,7 +971,7 @@ EOD;
 </ul>
 EOD;
  		}
- 		
+
  		$file_info = <<<EOD
 <dl>
 	$info_auth
@@ -989,7 +990,7 @@ EOD;
 	$msg_freezed
 </dl>
 EOD;
-		$retval['body'] .= '<div id="attach_info" role="tabpanel" aria-labeledby="tab1">'."\n".( ($pkwk_dtd === PKWK_DTD_HTML_5) ? 
+		$retval['body'] .= '<div id="attach_info" role="tabpanel" aria-labeledby="tab1">'."\n".( ($pkwk_dtd === PKWK_DTD_HTML_5) ?
 			'<details>'."\n".'<summary>'.$info.'</summary>'."\n".$file_info."\n".'</details>' :
 			'<fieldset>'."\n".'<legend>'.$info.'</legend>'."\n".$file_info."\n".'</fieldset>').'</div>'."\n";
 
@@ -1096,7 +1097,7 @@ EOD;
 					$attachfile_leafname = $matches_leaf[1];
 					$attachfile_leafname_pattern = preg_quote($attachfile_leafname, '/');
 					$pattern = "/^({$attachfile_leafname_pattern})(\.((\d+)|(log)))$/";
-					
+
 					$matches = array();
 					while ($file = readdir($dir)) {
 						if (! preg_match($pattern, $file, $matches))
@@ -1252,7 +1253,7 @@ class AttachFiles
 
 		return $ret;
 	}
-	
+
 	// dlタグで一覧
 	function to_ddtag()
 	{
