@@ -182,19 +182,12 @@ function plugin_comment_convert()
 
 	if (auth::check_role('readonly')) return $auth_guide;
 	if (! isset($numbers[$vars['page']])) $numbers[$vars['page']] = 0;
-	
+
 	$options = func_num_args() ? func_get_args() : array();
 	list($user, $link, $disabled) = plugin_comment_get_nick();
 
-	$ticket = md5(MUTIME);
-	if (function_exists('pkwk_session_start') && pkwk_session_start() !== 0) {
-		$_SESSION[$ticket] = md5(get_ticket() . $digest);
-	}
-
 	$ret[] = '<form action="'. get_script_uri() .'" method="post" class="comment_form">';
 	$ret[] = '<input type="hidden" name="cmd" value="comment" />';
-	$ret[] = '<input type="hidden" name="digest" value="' . $digest . '" />';
-	$ret[] = '<input type="hidden" name="ticket" value="' . $ticket . '" />';
 	$ret[] = '<input type="hidden" name="refer"  value="' . htmlsc($vars['page']) . '" />';
 	$ret[] = '<input type="hidden" name="refpage" value="" />';
 	$ret[] = '<input type="hidden" name="comment_no" value="' . $numbers[$vars['page']]++ . '" />';
@@ -208,7 +201,7 @@ function plugin_comment_convert()
 			$comment_all_no .  '" size="' . PLUGIN_COMMENT_SIZE_NAME .
 			'" value="'.$user.'"'.$disabled.' placeholder="'.$_comment_messages['label_name'].'" />';
 	}
-	$ret[] = (PLUGIN_COMMENT_USE_TEXTAREA) ? 
+	$ret[] = (PLUGIN_COMMENT_USE_TEXTAREA) ?
 		'<textarea name="msg" id="p_comment_comment_'.$comment_all_no.'" cols="'.$comment_cols.'" row="1" placeholder="'.$_comment_messages['label_comment'].'"></textarea>' :
 		'<input type="text" name="msg" id="p_comment_comment_'.$comment_all_no.'" size="'.$comment_cols.'" placeholder="'.$_comment_messages['label_comment'].'" />';
 

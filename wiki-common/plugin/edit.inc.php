@@ -266,7 +266,7 @@ function plugin_edit_write()
 	$oldpagesrc = get_source($page, TRUE, TRUE);
 	$oldpagemd5 = md5($oldpagesrc);
 
-	if ($digest != $oldpagemd5) {
+	if ($digest !== $oldpagemd5) {
 		$vars['digest'] = $oldpagemd5; // Reset
 		$original = isset($vars['original']) ? $vars['original'] : null;
 		list($postdata_input, $auto) = do_update_diff($oldpagesrc, $msg, $original);

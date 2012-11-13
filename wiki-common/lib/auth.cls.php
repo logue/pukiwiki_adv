@@ -371,7 +371,7 @@ class auth
 			 . chr(2) . chr(0) . chr(0) . chr(0) . chr(0)
 			 . chr(0) . chr(0) . chr(0) . chr(0) . chr(0)
 			 . chr(0) . chr(0) . chr(0);
-		
+
 		$strAuth64 = base64_encode($strAuth);
 		$strAuth64 = trim($strAuth64);
 		header( 'HTTP/1.0 401 Unauthorized' );
@@ -494,7 +494,7 @@ class auth
 		$data = array();
 
 		// url に含まれる文字列を含む必要がある
-		// preg_match_all('@(\w+)=([\'"]?)([a-zA-Z0-9=./\_-]+)\2@', $txt, $matches, PREG_SET_ORDER); 
+		// preg_match_all('@(\w+)=([\'"]?)([a-zA-Z0-9=./\_-]+)\2@', $txt, $matches, PREG_SET_ORDER);
 		// preg_match_all('@(\w+)=([\'"]?)([a-zA-Z0-9=./%&\?\_-_+]+)\2@', $txt, $matches, PREG_SET_ORDER);
 		preg_match_all('@(\w+)=([\'"]?)([a-zA-Z0-9=./%&\?\_-]+)\2@', $txt, $matches, PREG_SET_ORDER);
 
@@ -667,27 +667,27 @@ class auth
 
 	function des_session_get($session_name)
 	{
-		global $adminpass;
+		global $adminpass, $session;
 
 		// adminpass の処理
 		list($scheme, $salt) = auth::passwd_parse($adminpass);
 
 		// des化された内容を平文に戻す
-		if (isset($_SESSION[$session_name])) {
+		if (isset($session->$session_name)) {
 			require_once(LIB_DIR . 'des.php');
-			return des($salt, base64_decode($_SESSION[$session_name]), 0, 0, null);
+			return des($salt, base64_decode($session->$session_name), 0, 0, null);
 		}
 		return '';
 	}
 
 	public static function des_session_put($session_name,$val)
 	{
-		global $adminpass;
+		global $adminpass, $session;
 
 		// adminpass の処理
 		list($scheme, $salt) = auth::passwd_parse($adminpass);
 		require_once(LIB_DIR . 'des.php');
-		$_SESSION[$session_name] = base64_encode( des($salt, $val, 1, 0, null) );
+		$session->$session_name = base64_encode( des($salt, $val, 1, 0, null) );
 		session_write_close();
 	}
 

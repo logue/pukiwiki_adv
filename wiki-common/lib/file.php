@@ -35,6 +35,9 @@ defined('PKWK_TIMESTAMP_PREFIX')		or define('PKWK_TIMESTAMP_PREFIX', 'timestamp-
 // Exsists prefix
 defined('PKWK_EXISTS_PREFIX')			or define('PKWK_EXISTS_PREFIX', 'exists-');
 
+// Page cache prefix
+defined('PKWK_PAGECACHE_PREFIX')			or define('PKWK_PAGECACHE_PREFIX', 'page-');
+
 // Get source(wiki text) data of the page
 // Returns FALSE if error occurerd
 function get_source($page = NULL, $lock = TRUE, $join = FALSE)
@@ -98,10 +101,8 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 {
 //	global $autoalias, $aliaspage;
 	global $trackback;
-	global $use_spam_check, $_strings, $_title;
+	global $use_spam_check, $_strings, $_title, $post;
 	global $vars, $now, $akismet_api_key;
-
-	$remote_addr = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
 
 	// Check Illigal Chars
 	if (preg_match(PKWK_ILLEGAL_CHARS_PATTERN, $page)){
@@ -114,8 +115,10 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 		die_message( sprintf($_strings['error_prohibit'], 'PKWK_READONLY') );
 
 	// SPAM Check (Client(Browser)-Server Ticket Check)
-//	if ( !isset($vars['encode_hint']) && !defined(PKWK_ENCODING_HINT) )
-//		die_message($_strings['plugin_encode_error']);
+	if (isset($post['encode_hint']) && !empty($post['encode_hint']) && (PKWK_ENCODING_HINT !== $post['encode_hint']) ) {
+		honeypot_write();
+		die_message($_strings['plugin_encode_error']);
+	}
 
 	// Create and write diff
 	$postdata = make_str_rules($postdata);
@@ -135,15 +138,18 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 			require_once(LIB_DIR . 'bad-behavior-pukiwiki.php');
 		}
 		// リモートIPによるチェック
-		if ($use_spam_check['page_remote_addr'] && SpamCheck($remote_addr,'ip')) {
+		if ($use_spam_check['page_remote_addr'] && SpamCheck(REMOTE_ADDR ,'ip')) {
+			honeypot_write();
 			die_message($_strings['blacklisted'], $_title['prohibit'], 400);
 		}
 		// ページのリンクよるチェック
 		if ($use_spam_check['page_contents'] && SpamCheck($links)) {
+			honeypot_write();
 			die_message('Writing was limited by DNSBL (Blocking SPAM).', $_title['prohibit'], 400);
 		}
 		// 匿名プロクシ
 		if ($use_spam_check['page_write_proxy'] && is_proxy()) {
+			honeypot_write();
 			die_message('Writing was limited by PROXY (Blocking SPAM).', $_title['prohibit'], 400);
 		}
 
@@ -182,7 +188,7 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	// add client info to diff
 	$referer = (isset($_SERVER['HTTP_REFERER'])) ? htmlsc($_SERVER['HTTP_REFERER']) : 'None';
 	$user_agent = htmlsc($_SERVER['HTTP_USER_AGENT']);
-	$diffdata .= '// IP:"'. $remote_addr . '" TIME:"' . $now . '" REFERER:"' . $referer . '" USER_AGENT:"' . $user_agent. "\n";
+	$diffdata .= '// IP:"'. REMOTE_ADDR . '" TIME:"' . $now . '" REFERER:"' . $referer . '" USER_AGENT:"' . $user_agent. "\n";
 
 	// Create wiki text
 	file_write(DATA_DIR, $page, $postdata, $notimestamp);
@@ -627,7 +633,7 @@ function get_existpages($dir = DATA_DIR, $ext = '.txt')
 	// get_existpages を３行で軽くする
 	// http://lsx.sourceforge.jp/?Hack%2Fget_existpages
 	// ただし、Adv.の場合ファイルに別途キャッシュしているのであまり意味ないかも・・・。
-	static $pages = array();
+	static $pages;
 	if (isset($pages[$dir][$ext])) return $pages[$dir][$ext];
 
 	$aryret = array();
@@ -692,7 +698,7 @@ function get_readings()
 		if($unknownPage) {
 			if (file_exists($mecab_path)){
 				foreach ($readings as $page => $reading) {
-					if($reading != '') continue;
+					if(!empty($reading)) continue;
 					$readings[$page] = mecab_reading($page);
 				}
 			}else{
@@ -705,7 +711,7 @@ function get_readings()
 					}
 				}
 				foreach ($readings as $page => $reading) {
-					if($reading != '') continue;
+					if(!empty($reading)) continue;
 
 					$readings[$page] = $page;
 					foreach ($patterns as $no => $pattern)

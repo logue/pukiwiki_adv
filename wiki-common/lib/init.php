@@ -46,6 +46,8 @@ foreach (array('SCRIPT_NAME', 'SERVER_ADMIN', 'SERVER_NAME', 'SERVER_SOFTWARE') 
 	unset(${$key}, $_SERVER[$key], $HTTP_SERVER_VARS[$key]);
 }
 
+define('REMOTE_ADDR', isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR']);
+
 /////////////////////////////////////////////////
 // Require INI_FILE
 
@@ -112,6 +114,12 @@ defined('PKWK_PROGRESS_SESSION_NAME') or define('PKWK_PROGRESS_SESSION_NAME', 'p
 // PostIDチェックをしないプラグイン
 defined('PKWK_IGNOLE_POSTID_CHECK_PLUGINS') or define('PKWK_IGNOLE_POSTID_CHECK_PLUGINS', '/menu|side|header|footer|full|read|include|calendar|login/');
 
+// PukiWiki Adv.共有データーの名前空間（Wikifirm用）
+define('CORE_NAMESPACE', 'pukiwiki-adv');
+
+// Wikiの名前空間（セッションやキャッシュで他のWikiと名前が重複するのを防ぐため）
+define('WIKI_NAMESPACE', md5(realpath(DATA_HOME)) );
+
 /////////////////////////////////////////////////
 // Init grobal variables
 
@@ -144,8 +152,8 @@ use Zend\Cache\StorageFactory;
 
 $cache_config = $core_cache_config = array();
 // 他のWikiと競合しないようにするためDATA_HOMEのハッシュを名前空間とする
-$core_cache_config['adapter']['options']['namespace'] = 'pukiwiki_adv';
-$cache_config['adapter']['options']['namespace'] = md5(realpath(DATA_HOME));
+$core_cache_config['adapter']['options']['namespace'] = CORE_NAMESPACE;
+$cache_config['adapter']['options']['namespace'] = WIKI_NAMESPACE;
 /*
 if (ini_get('apc.enabled')){
 	$adapter = 'Apc';
@@ -167,9 +175,7 @@ $info[] = 'Cache system using '.$adapter;
 $core_cache = StorageFactory::factory($core_cache_config);
 // Wikiごと個別に使われるキャッシュ
 $cache = StorageFactory::factory($cache_config);
-// PostId用キャッシュ
-$cache_config['option']['ttl'] = 60;	// 有効時間は１時間
-$postid_cache = StorageFactory::factory($cache_config);
+
 /////////////////////////////////////////////////
 // I18N
 
@@ -205,7 +211,7 @@ $user_agent = $matches = array();
 $user_agent['agent'] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
 $ua = 'HTTP_USER_AGENT';
 // unset(${$ua}, $_SERVER[$ua], $HTTP_SERVER_VARS[$ua], $ua);	// safety
-if($user_agent['agent'] == '') die();	// UAが取得できない場合は処理を中断
+if ($user_agent['agent'] == '') die();	// UAが取得できない場合は処理を中断
 
 foreach ($agents as $agent) {
 	if (preg_match($agent['pattern'], $user_agent['agent'], $matches)) {
@@ -323,18 +329,7 @@ if (isset($_GET['encode_hint']) && empty($_GET['encode_hint']))
 	$encode = mb_detect_encoding($_GET['encode_hint']);
 	mb_convert_variables(SOURCE_ENCODING, $encode, $_GET);
 }
-/////////////////////////////////////////////////
-// TokyoTyrant利用可能時（未実装）
-// 仕様は同上。
-/*
-defined('TOKYOTYRANT_HOST') or define('TOKYOTYRANT_HOST', '127.0.0.1');
-defined('TOKYOTYRANT_PORT') or define('TOKYOTYRANT_PORT', TokyoTyrant::RDBDEF_PORT);
-if (class_exists('TokyoTyrant')){
-	// Wikiデーターの保存に使用すれば異次元の速度になるだろうなぁ。
-	$tokyotyrant = new TokyoTyrant(TOKYOTYRANT_HOST, TOKYOTYRANT_PORT);
-	$info[] = 'TokyoTyrant is enabled.';
-}
-*/
+
 /////////////////////////////////////////////////
 // QUERY_STRINGを取得
 
@@ -506,7 +501,7 @@ if (IS_MOBILE === true) {
 }
 
 if (!IS_AJAX || IS_MOBILE){
-	global $auth_api, $fb, $google_loader;
+	global $auth_api, $fb;
 
 	// JavaScriptフレームワーク設定
 	// jQueryUI Official CDN

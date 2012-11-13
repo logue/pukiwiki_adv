@@ -278,25 +278,31 @@ function use_plugin($plugin, $lines)
 }
 
 // formタグに追加のフォームを挿入
-function add_hidden_field($retvar, $name){
-	global $use_spam_check, $vars, $digest;
+function add_hidden_field($retvar, $plugin){
+	global $use_spam_check, $vars, $session, $digest;
 	if (preg_match('/<form\b(?:(?=(\s+(?:method="([^"]*)"|enctype="([^"]*)")|[^\s>]+|\s+))\1)*>/i', $retvar, $matches) !== 0){
 		// Insert a hidden field, supports idenrtifying text enconding
+		$hidden_field[] = '<!-- Additional fields START-->';
 		$hidden_field[] = ( PKWK_ENCODING_HINT ) ? '<input type="hidden" name="encode_hint" value="' . PKWK_ENCODING_HINT . '" />' : '';
 
 		// 多重投稿を禁止するオプションが有効かつ、methodがpostだった場合、PostIDを生成する
 		if ( (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] === 1)
-			&& preg_match(PKWK_IGNOLE_POSTID_CHECK_PLUGINS,$name) !== 1 && $matches[2] !== 'get'){
+			&& preg_match(PKWK_IGNOLE_POSTID_CHECK_PLUGINS,$plugin) !== 1 && $matches[2] !== 'get'){
 			// from PukioWikio
-			$hidden_field[] = '<input type="hidden" name="postid" value="'.generate_postid($name).'" />';
+			$hidden_field[] = '<input type="hidden" name="postid" value="'.generate_postid($plugin).'" />';
 		}
 
 		// PHP5.4以降かつ、マルチパートの場合、進捗状況セッション用のフォームを付加する
-		if (version_compare(PHP_VERSION, '5.4', '>=') && isset($matches[3]) && $matches[3] === 'multipart/form-data') {
-			pkwk_session_start();
-			$hidden_field[] = '<input type="hidden" name="' .  ini_get("session.upload_progress.name") . '" value="' . PKWK_PROGRESS_SESSION_NAME . '" class="progress_session" />';
+		if (ini_get('session.upload_progress.enabled') && isset($matches[3]) && $matches[3] === 'multipart/form-data') {
+			$hidden_field[] = '<input type="hidden" name="' .  ini_get('session.upload_progress.name') . '" value="' . WIKI_NAMESPACE . '" class="progress_session" />';
 		}
 
+		if (empty($digest) && isset($vars['page'])) $digest = md5(get_source($vars['page'], TRUE, TRUE));
+		$ticket = md5(MUTIME);
+		$session->$ticket = md5(get_ticket() . $digest);
+		$hidden_field[] = '<input type="hidden" name="digest" value="' . $digest . '" />';	// 更新時の競合を確認するための項目（確認処理はプラグイン側で実装）
+		$hidden_field[] = '<input type="hidden" name="ticket" value="' . $ticket . '" />';	// Spamチェック
+		$hidden_field[] = '<!-- Additional fields END -->';
 		$retvar = preg_replace('/<form[^>]*>/', '$0'. "\n".join("\n",$hidden_field), $retvar);
 	}
 	return $retvar;

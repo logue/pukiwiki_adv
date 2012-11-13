@@ -93,7 +93,7 @@ function is_cantedit($page)
 
 function is_editable($page)
 {
-	static $is_editable = array();
+	static $is_editable;
 
 	if (! isset($is_editable[$page])) {
 		$is_editable[$page] = (
@@ -189,17 +189,6 @@ function get_search_words($words, $do_escape = FALSE)
 			$mb_convert_kana = create_function('$str, $option',
 				'return $str;');
 		}
-/*
-		if (SOURCE_ENCODING == 'EUC-JP') {
-			// Perl memo - Correct pattern-matching with EUC-JP
-			// http://www.din.or.jp/~ohzaki/perl.htm#JP_Match (Japanese)
-			$pre  = '(?<!\x8F)';
-			$post =	'(?=(?:[\xA1-\xFE][\xA1-\xFE])*' . // JIS X 0208
-				'(?:[\x00-\x7F\x8E\x8F]|\z))';	 // ASCII, SS2, SS3, or the last
-		} else {
-			$pre = $post = '';
-		}
-*/
 		$pre = $post = '';
 		$init = TRUE;
 	}
@@ -564,7 +553,6 @@ function catrule()
 // Show (critical) error message
 function die_message($msg, $error_title='', $http_code = 500){
 	global $skin_file, $page_title, $_string, $_title, $_button, $vars;
-	global $ob_flag;
 
 	$title = !empty($error_title) ? $error_title : $_title['error'];
 	$page = $_title['error'];
@@ -1192,6 +1180,17 @@ function get_script_absuri()
 	return $uri;
 }
 
+
+/**
+ * プラグインのアドレスを出力
+ * @param type $cmd プラグイン名
+ * @param type $page ページ名
+ * @param type $path_reference rel属性
+ * @param type $query クエリ（連想配列で）
+ * @param type $fragment
+ * @return type
+ *
+ */
 // function get_cmd_uri($cmd='', $page='', $query='', $fragment='')
 function get_cmd_uri($cmd='', $page='', $path_reference='rel', $query='', $fragment='')
 {

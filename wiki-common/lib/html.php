@@ -394,7 +394,7 @@ function getLinkSet($_page){
 // Show 'edit' form
 function edit_form($page, $postdata, $digest = FALSE, $b_template = TRUE)
 {
-	global $script, $vars, $hr, $function_freeze;
+	global $script, $vars, $hr, $function_freeze, $session;
 	global $load_template_func, $load_refer_related;
 	global $notimeupdate;
 	global $_button, $_string;
@@ -446,11 +446,13 @@ EOD;
 	$s_ticket    = md5(MUTIME);
 	$addtag      = isset($vars['add']) ? '<input type="hidden" name="add" value="true" />' : '';
 
-	if (function_exists('pkwk_session_start') && pkwk_session_start() != 0) {
-		// BugTrack/95 fix Problem: browser RSS request with session
-		$_SESSION[$s_ticket] = md5(get_ticket() . $digest);
-		$_SESSION['origin' . $s_ticket] = md5(get_ticket() . str_replace("\r", '', $s_original));
-	}
+	// BugTrack/95 fix Problem: browser RSS request with session
+	// $_SESSION[$s_ticket] = md5(get_ticket() . $digest);
+	// $_SESSION['origin' . $s_ticket] = md5(get_ticket() . str_replace("\r", '', $s_original));
+
+	$session->$s_ticket = md5(get_ticket() . $digest);
+	$o_ticket = 'origin'.$s_ticket;
+	$session->$o_ticket = md5(get_ticket() . str_replace("\r", '', $s_original));
 
 	$add_notimestamp = '';
 	if ($notimeupdate != 0 && is_page($page)) {
@@ -492,8 +494,6 @@ EOD;
 <form action="$script" method="post" id="form">
 	<input type="hidden" name="cmd"    value="edit" />
 	<input type="hidden" name="page"   value="$s_page" />
-	<input type="hidden" name="digest" value="$s_digest" />
-	<input type="hidden" name="ticket" value="$s_ticket" />
 	<input type="hidden" name="id"     value="$s_id" />
 	<textarea id="original" name="original" rows="1" cols="1" style="display:none">$s_original</textarea>
 	<div class="edit_form">
@@ -646,6 +646,26 @@ function pkwk_common_headers($modified = 0, $expire = 604800){
 	if (preg_match('/\b(gzip|deflate|compress)\b/i', $_SERVER['HTTP_ACCEPT_ENCODING'], $matches)) {
 		$vary .= ',Accept-Encoding';
 	}
+	// RFC2616
+	// http://sonic64.com/2004-02-06.html
+	header('Vary: '.$vary);
+
+	// HTTP access control
+	// JSON脆弱性対策（Adv.では外部にAjax APIを提供することを考慮しない）
+	// https://developer.mozilla.org/ja/HTTP_Access_Control
+	header('Access-Control-Allow-Origin: '.get_script_uri());
+	// Content Security Policy
+	// https://developer.mozilla.org/ja/Security/CSP/Using_Content_Security_Policy
+	// header('X-Content-Security-Policy: allow "self" "inline-script";  img-src *; media-src *;');
+	// IEの自動MIME type判別機能を無効化する
+	// http://msdn.microsoft.com/ja-jp/ie/dd218497.aspx
+	header('X-Content-Type-Options: nosniff');
+	// クリックジャッキング対策
+	// https://developer.mozilla.org/ja/The_X-FRAME-OPTIONS_response_header
+	header('X-Frame-Options: SameDomain');
+	// XSS脆弱性対策（これでいいのか？）
+	// http://msdn.microsoft.com/ja-jp/ie/dd218482
+	header('X-XSS-Protection: '.((DEBUG) ? '0' :'1;mode=block') );
 
 	if ($modified !== 0){
 		// 最終更新日（秒で）が指定されていない場合動的なページとみなす。
@@ -680,28 +700,6 @@ function pkwk_common_headers($modified = 0, $expire = 604800){
 		header('Pragma: no-cache');
 		header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
 	}
-
-	// RFC2616
-	// http://sonic64.com/2004-02-06.html
-	header('Vary: '.$vary);
-
-	// HTTP access control
-	// JSON脆弱性対策（Adv.では外部にAjax APIを提供することを考慮しない）
-	// https://developer.mozilla.org/ja/HTTP_Access_Control
-	header('Access-Control-Allow-Origin: '.get_script_uri());
-	// Content Security Policy
-	// https://developer.mozilla.org/ja/Security/CSP/Using_Content_Security_Policy
-	// header('X-Content-Security-Policy: allow "self" "inline-script";  img-src *; media-src *;');
-	// IEの自動MIME type判別機能を無効化する
-	// http://msdn.microsoft.com/ja-jp/ie/dd218497.aspx
-	header('X-Content-Type-Options: nosniff');
-	// クリックジャッキング対策
-	// https://developer.mozilla.org/ja/The_X-FRAME-OPTIONS_response_header
-	header('X-Frame-Options: SameDomain');
-	// XSS脆弱性対策（これでいいのか？）
-	// http://msdn.microsoft.com/ja-jp/ie/dd218482
-	header('X-XSS-Protection: '.((DEBUG) ? '0' :'1;mode=block') );
-
 	header('Connection: close');
 }
 

@@ -1,7 +1,7 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
 // $Id: tracker.inc.php,v 1.124.16 2012/08/28 20:01:00 Logue Exp $
-// Copyright (C) 
+// Copyright (C)
 //     2010-2012 PukiWiki Advance Developers Team
 //     2004-2009 PukiWiki Plus! Team
 //     2003-2005, 2007 PukiWiki Developers Team
@@ -128,7 +128,7 @@ function plugin_tracker_convert()
 	$script   = get_script_uri();
 	$template = str_replace($from, $to, convert_html($template));
 	$hidden   = implode('<br />' . "\n", $hidden);
-	
+
 	if (function_exists('pkwk_session_start') && pkwk_session_start() != 0) {
 		$_SESSION['tracker'] = md5(get_ticket() . $config_name);
 	}
@@ -155,7 +155,7 @@ function plugin_tracker_action()
 
 	// Petit SPAM Check (Client(Browser)-Server Ticket Check)
 	$config = $tracker_form->config_name; // Rescan
-	
+
 	$md5 = md5(get_ticket() . $config_name);
 	$_SESSION['tracker'] = (pkwk_session_start() !== 0) ? $md5 : '';
 
@@ -637,7 +637,7 @@ class Tracker_field_textarea extends Tracker_field
 }
 
 // Writing text with formatting if trim($cell) != ''
-// See also: http://home.arino.jp/?tracker.inc.php%2F41
+// See also: http://home.arino.jp/?tracker.inc.php
 class Tracker_field_format extends Tracker_field
 {
 	var $sort_type = PLUGIN_TRACKER_SORT_TYPE_STRING;
@@ -698,7 +698,7 @@ class Tracker_field_file extends Tracker_field_format
 		return '<input type="file" name="' . $s_name . '" size="' . $s_size . '" />';
 	}
 
-	function format_value()
+	function format_value($value)
 	{
 		if (isset($_FILES[$this->name])) {
 			require_once(PLUGIN_DIR . 'attach.inc.php');
@@ -1026,7 +1026,7 @@ class Tracker_list
 	var $_list;
 	var $_row;
 	var $_the_first_character_of_the_line;
-	
+
 	var $page_line;	// Plus!
 
 	function init($base, $refer, $config = NULL, $relative = '')
@@ -1042,7 +1042,7 @@ class Tracker_list
 
 		$template_page = $this->form->config->page . '/' . 'page';
 		$fields        = $this->form->fields;
-		
+
 		$pattern        = array();
 		$pattern_fields = array();
 
@@ -1292,7 +1292,7 @@ class Tracker_list
 			call_user_func_array('array_multisort', $params);
 		}
 
-		return TRUE; 
+		return TRUE;
 	}
 
 	// toString(): Sort key: Define to string (internal var => string)
@@ -1377,20 +1377,17 @@ class Tracker_list
 			}
 		}
 
-		// FIX ME
-		$script = get_script_uri();
-		$r_base   = ($refer  != $base) ? '&base='  . rawurlencode($base) : '';
-		$r_config = ($config != PLUGIN_TRACKER_DEFAULT_CONFIG) ? '&config=' . rawurlencode($config) : '';
-		$r_list   = ($list   != PLUGIN_TRACKER_DEFAULT_LIST  ) ? '&list='   . rawurlencode($list)   : '';
-		$r_order  = ! empty($_orders) ? '&order=' . rawurlencode(join(';', $_orders)) : '';
-
 		return
 			 '[[' .
 				$fields[$fieldname]->title . $arrow .
 			'>' .
-				$script . '?plugin=tracker_list' .
-				'&refer=' . rawurlencode($refer) .	// Try to show 'page title' properly
-				$r_base . $r_config . $r_list . $r_order  .
+				get_cmd_uri('tracker_list', null, null, array(
+					'refer'  =>$refer,	// Try to show 'page title' properly
+					'base'   =>($refer  != $base) ? $base : null,
+					'config' =>($config != PLUGIN_TRACKER_DEFAULT_CONFIG) ? $config : null,
+					'list'   =>($list   != PLUGIN_TRACKER_DEFAULT_LIST  ) ? $list : null,
+					'order'  => !empty($_orders) ? join(';', $_orders) : null)
+				) .
 			']]';
 	}
 
@@ -1443,7 +1440,7 @@ class Tracker_list
 			$this->error = "Limit seems not numeric: " . $limit;
 			return FALSE;
 		}
-	
+
 		$form   = & $this->form;
 
 		$this->_list = $list;	// For _replace_title() only
@@ -1482,6 +1479,7 @@ class Tracker_list
 			) . "\n";
 			$rows  = array_slice($this->rows, 0, $limit);
 		}
+		unset($template);
 
 		// Loading template
 		// TODO: How do you feel single/multiple table rows with 'c'(decolation)?

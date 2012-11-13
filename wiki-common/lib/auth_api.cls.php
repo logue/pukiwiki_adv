@@ -52,7 +52,9 @@ class auth_api
 	function auth_session_unset()
 	{
 		// return session_unregister($this->message_md5());
-		unset($_SESSION[$this->message_md5()]);
+		global $session;
+		$md5 = $this->message_md5();
+		unset($session->$md5);
 	}
 
 	function parse_message($message)

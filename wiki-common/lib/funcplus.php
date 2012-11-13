@@ -13,7 +13,6 @@ defined('FUNC_SPAMLOG')			or define('FUNC_SPAMLOG', TRUE);
 defined('FUNC_BLACKLIST')		or define('FUNC_BLACKLIST', TRUE);
 defined('FUNC_SPAMREGEX')		or define('FUNC_SPAMREGEX', '#(?:cialis|hydrocodone|viagra|levitra|tramadol|xanax|\[/link\]|\[/url\])#i');
 defined('FUNC_SPAMCOUNT')		or define('FUNC_SPAMCOUNT', 2);
-defined('FUNC_SESSION_NAME')	or define('FUNC_SESSION_NAME', 'pukiwiki');
 
 function showtaketime(){
 	// http://pukiwiki.sourceforge.jp/dev/?BugTrack2%2F251
@@ -24,12 +23,9 @@ function showtaketime(){
 // Session start
 function pkwk_session_start()
 {
-	global $use_trans_sid_address;
-	static $use_session;
-	
-	$use_session = session_id();
+	global $use_trans_sid_address, $session;
 
-	if ($use_session == ""){
+	if (empty($session)){
 		if (!is_array($use_trans_sid_address)) $use_trans_sid_address = array();
 
 		if (in_the_net($use_trans_sid_address, get_remoteip())) {
@@ -38,48 +34,36 @@ function pkwk_session_start()
 			ini_set('session.use_cookies', 1);
 			ini_set('session.use_only_cookies', 1);
 		}
-		session_name(FUNC_SESSION_NAME);
-		session_start();
 		if (ini_get('session.use_cookies') === 0 && ini_get('session.use_trans_sid') === 0) {
-			output_add_rewrite_var(session_name(), session_id());
+			output_add_rewrite_var(session_name(WIKI_NAMESPACE), session_id());
 		}
+		$session = new Zend\Session\Container(WIKI_NAMESPACE);
 	}
 
-	return $use_session;
+	return $session;
 }
 
 // Session destroy
 function pkwk_session_destroy(){
-	static $use_session;
+	global $session;
 
-	if ($use_session == "") {
-		session_name(FUNC_SESSION_NAME);
-		session_start();
-
+	if (!empty($session)) {
 		// セッション変数を全て解除する
-		$_SESSION = array();
-
 		// セッションを切断するにはセッションクッキーも削除する。
 		// Note: セッション情報だけでなくセッションを破壊する。
 		if (ini_get('session.use_cookies') === 1) {
 			$params = session_get_cookie_params();
-			setcookie(session_name(), '', time() - 42000,
+			setcookie(session_name(WIKI_NAMESPACE), '', time() - 42000,
 				$params['path'], $params['domain'],
 				$params['secure'], $params['httponly']
 			);
 		}
-		session_destroy();
+		$session->destory();
 	}
 }
 
 // same as 'basename' for page
 function basepagename($str)
-{
-	return mb_basename($str);
-}
-
-// multibyte supported 'basename' function
-function mb_basename($str)
 {
 	return preg_replace('#^.*/#', '', $str);
 }
@@ -188,12 +172,12 @@ function open_uri_in_new_window($anchor, $which = '')
 		   $open_uri_in_new_window_opos,		// 外部サーバー
 		   $open_uri_in_new_window_oposi;		// 外部サーバーのInterWiki
 	global $_symbol_extanchor, $_symbol_innanchor;	// 新規ウィンドウを開くアイコン
-	
+
 	// この関数を使わない OR 呼び出し元が不正な場合はスルーする
 	if (!$use_open_uri_in_new_window || empty($which) || !$_symbol_extanchor || !$_symbol_innanchor) {
 		return $anchor;
 	}
-	
+
 
 	// 外部形式のリンクをどうするか
 	// 質問箱/115 対応
@@ -212,7 +196,7 @@ function open_uri_in_new_window($anchor, $which = '')
 		$aclass = (is_inside_uri($anchor) ? 'inn':'ext');
 	}
 	*/
-	
+
 	switch (strtolower($which)) {
 	case 'link_interwikiname':
 	case 'link_url_interwiki':
@@ -295,10 +279,10 @@ function add_skindir($skin_name)
 		SKIN_DIR.THEME_PLUS_NAME.$skin_name.'/',
 		EXT_SKIN_DIR.THEME_PLUS_NAME.$skin_name.'/'
 	);
-	
+
 	$file = basepagename($skin_name).'.skin.php';
 	$conf = basepagename($skin_name).'.ini.php';
-	
+
 	foreach($cond as $dir){
 		if (file_exists($dir.$file) && is_readable($dir.$file)){
 			// スキンが見つかった場合
@@ -309,7 +293,7 @@ function add_skindir($skin_name)
 			return $dir.$file;
 		}
 	}
-	
+
 	die_message('Skin File:<var>'.$skin_name.'</var> is not found or not readable. Please check <var>SKIN_DIR</var> value. (NOT <var>SKIN_URI</var>. )');
 }
 
@@ -717,7 +701,7 @@ function change_uri($cmd='',$force=0)
 
 function init_script_filename()
 {
-	// $scrip にファイル名が設定されていれば、それを求める
+	// $script にファイル名が設定されていれば、それを求める
 	$script = init_script_uri('',1);
 	$pos = strrpos($script, '/');
 	if ($pos !== false) {
@@ -761,6 +745,7 @@ if (! function_exists('http_build_query')) {
 			if (empty($arg_separator)) $arg_separator = '&';
 		}
 		foreach($formdata as $key=>$val) {
+			if (empty($val)) continue;
 			$key1 = (is_numeric($key)) ? $numeric_prefix.$key : $key;
 			$retval .= $flag . $key1 . '=' . rawurlencode($val);
 			$flag = $arg_separator;
@@ -953,99 +938,6 @@ if (! function_exists('json_encode')){
 		return Zend\Json\Json::encode($value);
 	}
 }
-/////// PukiWiki API Extension //////////////
-if (! function_exists('is_human')) {
-	/**
-	 * Human recognition using PukiWiki Auth methods
-	 *
-	 * @param boolean $is_human Tell this is a human (Use TRUE to store into session)
-	 * @param boolean $use_session Use Session log
-	 * @param int $use_rolelevel accepts users whose role levels are stronger than this
-	 * @return boolean
-	 */
-	if (! defined('ROLE_AUTH')) define('ROLE_AUTH', 5); // define for PukiWiki Official
-	if (! defined('ROLE_ENROLLEE')) define('ROLE_ENROLLEE', 4);
-	if (! defined('ROLE_ADM_CONTENTS')) define('ROLE_ADM_CONTENTS', 3);
-	if (! defined('ROLE_ADM')) define('ROLE_ADM', 2);
-	if (! defined('ROLE_GUEST')) define('ROLE_GUEST', 0);
-	function is_human($is_human = FALSE, $use_session = FALSE, $use_rolelevel = 0)
-	{
-		if (! $is_human) {
-			if ($use_session) {
-				session_start();
-				$is_human = isset($_SESSION['pkwk_is_human']) && $_SESSION['pkwk_is_human'];
-			}
-
-			if (ROLE_GUEST < $use_rolelevel && $use_rolelevel <= ROLE_AUTH) {
-				if (is_callable(array('auth', 'check_role'))) { // Plus!
-					$is_human = ! auth::check_role('role_auth');
-				} else { // PukiWiki Official
-					$is_human = isset($_SERVER['PHP_AUTH_USER']);
-				}
-			}
-
-			if (ROLE_GUEST < $use_rolelevel && $use_rolelevel <= ROLE_ADM_CONTENTS) {
-				$is_human = is_admin(NULL, $use_session, TRUE);
-				// In PukiWiki Official, username 'admin' is the Admin
-			}
-		}
-		if ($use_session) {
-			session_start();
-			$_SESSION['pkwk_is_human'] = $is_human;
-		} else {
-			global $vars;
-			$vars['pkwk_is_human'] = $is_human;
-		}
-		return $is_human;
-	}
-}
-if (! function_exists('is_admin')) {
-	/**
-	 * PukiWiki admin login with session
-	 *
-	 * @param string $pass Password. Use NULL when to get current session state. 
-	 * @param boolean $use_session Use Session log
-	 * @param boolean $use_authlog Use Auth log. 
-	 *  Username 'admin' is deemed to be Admin in PukiWiki Official. 
-	 *  PukiWiki Plus! has role management, roles ROLE_ADM and ROLE_ADM_CONTENTS are deemed to be Admin. 
-	 * @return boolean
-	 */
-	function is_admin($pass = NULL, $use_session = FALSE, $use_authlog = FALSE)
-	{
-		$is_admin = FALSE;
-		if (! $is_admin) {
-			
-			if ($use_session) {
-				session_start();
-				$is_admin = isset($_SESSION['pkwk_is_admin']) && $_SESSION['pkwk_is_admin'];
-			}
-			
-			// BasicAuth (etc) login
-			if ($use_authlog) {
-				if (is_callable(array('auth', 'check_role'))) { // Plus!
-					$is_admin = ! auth::check_role('role_adm_contents');
-				} else {
-					$is_admin = (isset($_SERVER['PHP_AUTH_USER']) && $_SERVER['PHP_AUTH_USER'] === 'admin');
-				}
-			}
-			
-			// PukiWiki Admin login
-			if (isset($pass)) {
-				$is_admin = function_exists('pkwk_login') ? pkwk_login($pass) : 
-					md5($pass) === $GLOBALS['adminpass']; // 1.4.3
-			}
-		}
-		if ($use_session) {
-			session_start();
-			if ($is_admin) $_SESSION['pkwk_is_admin'] = TRUE;
-		} else {
-			global $vars;
-			$vars['pkwk_is_admin'] = $is_admin;
-		}
-		return $is_admin;
-	}
-}
-
 /**************************************************************************************************/
 // Mecabの出力をPHPの配列に変換する関数
 
@@ -1072,7 +964,7 @@ function mecab_stdio($switch = '', $str){
 		1 => array('pipe', "w"), // stdout
 		2 => array('pipe', 'w')
 	);
-	
+
 	$cmd = $mecab_path.' '.$switch;
 	$process = proc_open($cmd, $descriptorspec, $pipes, null, null);
 	if (!is_resource($process)) return false;
@@ -1110,7 +1002,7 @@ function mecab_parse($input){
 		$s = explode("\t", $line);
 		$surface = $s[0];
 		$info = explode(',', $s[1]);
-		
+
 		$analisys[] = array(
 			'surface'       => $surface,							// 表層形
 			'class'         => $info[0],							// 品詞

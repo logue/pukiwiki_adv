@@ -68,7 +68,7 @@ function plugin_bugtrack_convert()
 
 function plugin_bugtrack_print_form($base, $category)
 {
-	global $_plugin_bugtrack;
+	global $_plugin_bugtrack, $session;
 	static $id = 0;
 
 	$s_base     = htmlsc($base);
@@ -117,13 +117,16 @@ function plugin_bugtrack_print_form($base, $category)
 	}
 
 	$ticket = md5(MUTIME);
-	if (function_exists('pkwk_session_start') && pkwk_session_start() != 0) {
-		$keyword = 'B_' . $ticket;
-		$_SESSION[$keyword] = md5(get_ticket() . $ticket);
-	}
+	$keyword = 'B_' . $ticket;
+	$session->$keyword = md5(get_ticket() . $ticket);
+
 	$script = get_script_uri();
 	$body = <<<EOD
 <form action="$script" method="post" class="bugtrack_form">
+	<input type="hidden" name="cmd" value="bugtrack" />
+	<input type="hidden" name="ticket" value="$ticket" />
+	<input type="hidden" name="mode"   value="submit" />
+	<input type="hidden" name="base"   value="$s_base" />
 	<table>
 		<tr>
 			<th><label for="_p_bugtrack_name_$id">$s_name</label></th>
@@ -162,10 +165,6 @@ function plugin_bugtrack_print_form($base, $category)
 		<tr>
 			<td colspan="2">
 				<input type="submit" value="$s_submit" />
-				<input type="hidden" name="cmd" value="bugtrack" />
-				<input type="hidden" name="ticket" value="$ticket" />
-				<input type="hidden" name="mode"   value="submit" />
-				<input type="hidden" name="base"   value="$s_base" />
 			</td>
 		</tr>
 	</table>
@@ -340,7 +339,7 @@ EOD;
 		ksort($table[$i], SORT_NUMERIC);
 		$table_html .= join("\n", $table[$i]);
 	}
-	
+
 	$table_html .= '</tbody>'."\n";
 
 	return '<table class="style_table">' . "\n" .

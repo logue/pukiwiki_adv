@@ -102,8 +102,7 @@ $refer = isset($vars['refer']) ? $vars['refer'] : '';
 $plugin = isset($vars['cmd']) ? $vars['cmd'] : '';
 
 // SPAM
-$remote_addr = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
-if (SpamCheckBAN($remote_addr)) die('Sorry, your access is prohibited.');
+if (SpamCheckBAN(REMOTE_ADDR)) die('Sorry, your access is prohibited.');
 
 // Block SPAM countory
 $country_code = '';
@@ -113,9 +112,13 @@ if (isset($_SERVER['HTTP_CF_IPCOUNTRY'])){
 	$country_code = $_SERVER['HTTP_CF_IPCOUNTRY'];
 }else if (isset($_SERVER['GEOIP_COUNTRY_CODE'])){
 	// サーバーが$_SERVER['GEOIP_COUNTRY_CODE']を出力している場合
+	// Apache : http://dev.maxmind.com/geoip/mod_geoip2
+	// nginx : http://wiki.nginx.org/HttpGeoipModule
+	// cherokee : http://www.cherokee-project.com/doc/config_virtual_servers_rule_types.html
 	$country_code = $_SERVER['GEOIP_COUNTRY_CODE'];
 }else if (function_exists('geoip_db_avail') && geoip_db_avail(GEOIP_COUNTRY_EDITION) && function_exists('geoip_region_by_name')) {
 	// それでもダメな場合は、phpのgeoip_region_by_name()からGeolocationを取得
+	// http://php.net/manual/en/function.geoip-region-by-name.php
 	$geoip = geoip_region_by_name($remote_addr);
 	$country_code = $geoip['country_code'];
 	$info[] = (!empty($geoip['country_code']) ) ?

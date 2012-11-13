@@ -80,7 +80,7 @@ function plugin_pcomment_action()
 		$vars['page'] = $refer;
 		return $retval;
 	}
-	
+
 	$hash = isset($vars['reply']) ? '#pcmt'.htmlsc($vars['reply']) : '';
 
 	pkwk_headers_sent();
@@ -144,13 +144,13 @@ function plugin_pcomment_convert()
 		$form[] = '<input type="hidden" name="nodate" value="' . htmlsc($params['nodate']) . '" />';
 		$form[] = '<input type="hidden" name="dir"    value="' . $dir . '" />';
 		$form[] = '<input type="hidden" name="count"  value="' . $count . '" />';
-		$form[] = $params['reply'] ? 
+		$form[] = $params['reply'] ?
 			'<input type="radio" name="reply" value="0" tabindex="0" checked="checked" />' : null;
 		if (isset($params['noname'])) {
 			list($nick,$link,$disabled) = plugin_pcomment_get_nick();
 			$form[] = '<input type="text" name="name" value="'.$nick.'" '.$disabled.' size="' . PLUGIN_COMMENT_SIZE_NAME . '" placeholder="'.$_pcmt_messages['msg_name'].'" />';
 		}
-		$form[] = (PLUGIN_COMMENT_USE_TEXTAREA) ? 
+		$form[] = (PLUGIN_COMMENT_USE_TEXTAREA) ?
 			'<textarea name="msg" cols="' . PLUGIN_COMMENT_SIZE_MSG . '" row="1" placeholder="' . $_pcmt_messages['msg_comment'] . '"></textarea>' :
 			'<input type="text" name="msg" size="' . PLUGIN_COMMENT_SIZE_MSG . '" placeholder="' . $_pcmt_messages['msg_comment'] . '" />';
 		$form[] = '<input type="submit" value="' . $_pcmt_messages['btn_comment'] . '" />';
@@ -170,11 +170,11 @@ function plugin_pcomment_convert()
 	}
 
 	$string = ! auth::check_role('readonly') ? '<form action="'. get_script_uri() .'" method="post" class="comment_form">' : '';
-	$string .= ($dir) ? 
-		'<p>' . $recent . ' ' . $link . '</p>' . "\n" . $comments . "\n" . join("\n",$form) : 
+	$string .= ($dir) ?
+		'<p>' . $recent . ' ' . $link . '</p>' . "\n" . $comments . "\n" . join("\n",$form) :
 		join("\n",$form) . "\n" . '<p>' . $recent . ' ' . $link . '</p>' . "\n" . $comments . "\n";
 	$string .= ! auth::check_role('readonly') ? '</form>' : '';
-	
+
 	return (IS_MOBILE) ? '<div data-role="collapsible" data-theme="b" data-content-theme="d"><h4>'.$_pcmt_messages['msg_comment'].'</h4>'.$string.'</div>' : '<div class="pcomment">' . $string . '</div>';
 }
 
@@ -369,8 +369,8 @@ function plugin_pcomment_get_comments($page, $count, $dir, $reply)
 
 	// Add radio buttons
 	if ($reply){
-		$comments = preg_replace('/<li>' . "\x01" . '(\d+)' . "\x02" . '(.*)' . "\x03" . '(.*)\s\-\-\s(.*)/',
-			'<li class="pcomment_comment"><input class="pcmt" type="radio" name="reply" value="$2" tabindex="$1" id="pcmt$2" /><label for="pcmt$2">$3 -- $4</label>',
+		$comments = preg_replace('/<li>' . "\x01" . '(\d+)' . "\x02" . '(.*)' . "\x03" . '(.*)\s\-\-\s(.*?)/',
+			'<li class="pcomment_comment"><input class="pcmt" type="radio" name="reply" value="$2" tabindex="$1" id="pcmt$2" /><label for="pcmt$2">$3</label> -- $4',
 			$comments);
 	}
 

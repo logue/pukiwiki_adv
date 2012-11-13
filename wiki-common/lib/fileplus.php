@@ -9,7 +9,6 @@
 // File related functions - extra functions
 
 // Marged from PukioWikio post.php
-defined('POSTID_PREFIX')	or define('POSTID_PREFIX', 'PostId-');
 defined('POSTID_EXPIRE')	or define('POSTID_EXPIRE', 3600);	// 60*60 = 1hour
 
 // Ticket file
@@ -53,6 +52,7 @@ function update_cache($page = '', $force = false){
 	global $cache, $aliaspage, $autoalias, $autoglossary, $glossarypage, $autobasealias, $autolink;
 
 	if ($force) {
+		// forceフラグがたってる時は、キャッシュをすべて作り直し
 		$cache->flush();
 	}
 
@@ -66,9 +66,7 @@ function update_cache($page = '', $force = false){
 	}
 
 	// Update attach list
-	if (! $cache->hasItem(PKWK_EXISTS_PREFIX.'attach') ){
-		$cache->setItem(PKWK_EXISTS_PREFIX.'attach', get_attachfiles());
-	}
+	get_attachfiles($page);
 
 	// Update AutoAliasName
 	if ($autoalias !== 0&& (! $cache->hasItem(PKWK_AUTOALIAS_REGEX_CACHE) || $page === $aliaspage) ) {
@@ -113,7 +111,7 @@ function update_cache($page = '', $force = false){
 	}
 
 	// Update rel and ref cache
-	if ($force && $page == '') {
+	if ($force || $page == '') {
 		links_init();
 	}else {
 		links_update($page);
@@ -130,7 +128,6 @@ function get_existpages_cache($dir, $ext){
 
 	switch($dir){
 		case DATA_DIR: $func = 'wiki'; break;
-		case UPLOAD_DIR: $func = 'attach'; break;
 		case COUNTER_DIR: $func = 'counter'; break;
 		case BACKUP_DIR: $func = 'backup'; break;
 		default: $func = encode($dir.$ext);
@@ -143,41 +140,47 @@ function get_existpages_cache($dir, $ext){
 		$pages = $cache->getItem(PKWK_EXISTS_PREFIX.$func);
 		$cache->touchItem(PKWK_EXISTS_PREFIX.$func);
 	}
+	// Save timestamp
+	$cache->setItem(PKWK_TIMESTAMP_PREFIX.$func, UTIME);
 	return $pages;
 }
 
-function get_attachfiles($page = '')
+function get_attachfiles($page = '', $force = false)
 {
-	$dir = opendir(UPLOAD_DIR) or
-		die('directory ' . UPLOAD_DIR . ' is not exist or not readable.');
+	global $cache;
 	$retval = array();
 
-	if ($page !== '') {
-		$page_pattern = preg_quote(encode($page), '/');
-		$pattern = "/^({$page_pattern})_((?:[0-9A-F]{2})+)$/";
+	if ($force) {
+		$cache->removeItem(PKWK_EXISTS_PREFIX.'attach');
+	}
+
+	if ($cache->hasItem(PKWK_EXISTS_PREFIX.'attach')){
+		$retval = $cache->getItem(PKWK_EXISTS_PREFIX.'attach');
 	}else{
-		$pattern = "/^((?:[0-9A-F]{2})+)_((?:[0-9A-F]{2})+)$/";
-	}
+		$handle = opendir(UPLOAD_DIR) or die_message('directory ' . UPLOAD_DIR . ' is not exist or not readable.');
+		if ($handle) {
+			while (false !== ($entry = readdir($handle))) {
+				if (($entry !== '.') && ($entry !== '..')) continue;
+				$matches = array();
 
-	if ($handle = opendir(UPLOAD_DIR)) {
-		while (false !== ($entry = readdir($handle))) {
-			if (($entry !== '.') && ($entry !== '..')) continue;
-			$matches = array();
+				if (! preg_match("/^((?:[0-9A-F]{2})+)_((?:[0-9A-F]{2})+)$/", $entry, $matches)) continue; // all page
 
-			if (! preg_match($pattern, $entry, $matches)) continue; // all page
-
-			// [page][file] = array(time,size);
-			$filepath = realpath(UPLOAD_DIR.$entry);
-			$_page = decode($matches[1]);
-			$_file = decode($matches[2]);
-			$retval[$_page][$_file] = array(
-				'time'=>filemtime($filepath),
-				'size'=>filesize($filepath)
-			);
+				// [page][file] = array(time,size);
+				$filepath = realpath(UPLOAD_DIR.$entry);
+				$_page = decode($matches[1]);
+				$_file = decode($matches[2]);
+				$retval[$_page][$_file] = array(
+					'time'=>filemtime($filepath),
+					'size'=>filesize($filepath)
+				);
+			}
+			closedir($handle);
 		}
-		closedir($handle);
+		$cache->setItem(PKWK_EXISTS_PREFIX.'attach', $retval);
 	}
-
+	if ($page){
+		return $retval[$page];
+	}
 	return $retval;
 }
 
@@ -379,29 +382,26 @@ function compress_file($in, $method, $chmod=644){
 
 function generate_postid($cmd = '')
 {
-	global $postid_cache;
-	$idstring_raw = $cmd . mt_rand();		//mt_srand() is necessary if PHP version is lower than 4.2.0
-	$idstring = md5($idstring_raw);
-	$postid_cache->clearExpired();
+	global $session;
+	$idstring = md5($cmd . mt_rand());	//mt_srand() is necessary if PHP version is lower than 4.2.0
+	// PostIDの値の中身は、ホストを入力
+	$session->$idstring = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
+	// 有効期限を設定
+	$session->setExpirationSeconds(POSTID_EXPIRE, $idstring);
 
-	$postid_cache->setItem(POSTID_PREFIX . $idstring, $_SERVER['REMOTE_ADDR']);
 	return $idstring;
 }
 
 function check_postid($idstring)
 {
-	global $postid_cache;
+	global $session;
 
 	$ret = TRUE;
-	if ($postid_cache->hasItem(POSTID_PREFIX . $idstring)){
-		if ($postid_cache->getItem(POSTID_PREFIX . $idstring) !== $_SERVER['REMOTE_ADDR']){
-			$ret = false;
-		}
-		unset($data);
-	}else{
+	if (! isset($session->$idstring) && $session->$idstring !== REMOTE_ADDR){
 		$ret = FALSE;
 	}
-	$postid_cache->removeItem(POSTID_PREFIX . $idstring);
+	// PostIdを削除
+	unset($session->$idstring);
 
 	if ($ret === FALSE){
 		honeypot_write();

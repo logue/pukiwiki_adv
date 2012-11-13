@@ -50,6 +50,10 @@ defined('PLUGIN_ATTACH_COMPRESS_TYPE')		or define('PLUGIN_ATTACH_COMPRESS_TYPE',
 
 // 進捗状況のセッション名
 defined('PLUGIN_ATTACH_PROGRESS_SESSION_NAME') or define('PLUGIN_ATTACH_PROGRESS_SESSION_NAME', 'pukiwiki_attach');
+
+// 添付ファイルのキャッシュの接頭辞
+defined('PLUGIN_ATTACH_CACHE_NAME') or define('PLUGIN_ATTACH_CACHE_NAME', 'attach_files');
+
 function plugin_attach_init()
 {
 	global $_string;
@@ -263,6 +267,10 @@ function attach_upload($file, $page, $pass = NULL)
 			'result'=>FALSE,
 			'msg'=>$_attach_messages['err_adminpass']);
 	}
+
+	// FIXME:添付ファイル一覧キャッシュを削除
+	global $cache;
+	$cache->remove(PLUGIN_ATTACH_CACHE_NAME);
 
 	return attach_doupload($file, $page, $pass);
 }
@@ -571,6 +579,10 @@ function attach_delete()
 	if (! $obj->getstatus())
 		return array('msg'=>$_attach_messages['err_notfound']);
 
+	// FIXME:添付ファイル一覧キャッシュを削除
+	global $cache;
+	$cache->remove(PLUGIN_ATTACH_CACHE_NAME);
+
 	return $obj->delete($pass);
 }
 
@@ -759,10 +771,11 @@ function attach_form($page)
 
 // 進捗状況表示（ってattachプラグインでなくても、これ呼び出す実装かよ）
 function attach_progress(){
-	session_start();
-	$key = ini_get('session.upload_progress.prefix') . PKWK_PROGRESS_SESSION_NAME;
+	global $session;
+	pkwk_session_start();
+	$key = ini_get('session.upload_progress.prefix') . WIKI_NAMESPACE;
 	header("Content-Type: application/json; charset=".CONTENT_CHARSET);
-	echo isset($_SESSION[$key]) ? json_encode($_SESSION[$key]) : json_encode(null);
+	echo isset($session->$key) ? json_encode($session->$key) : json_encode(null);
 	exit;
 }
 
@@ -870,7 +883,7 @@ class AttachFile
 	function info($err)
 	{
 		global $_attach_messages, $pkwk_dtd, $vars, $_LANG;
-		
+
 
 		$script = get_script_uri();
 		$r_page = rawurlencode($this->page);
@@ -921,9 +934,9 @@ class AttachFile
 		}
 		$info = $this->toString(TRUE, FALSE);
 		$hash = $this->gethash();
-		
+
 		$_attach_setimage = '';
-		if (extension_loaded('gd')){
+		if (extension_loaded('exif') && extension_loaded('gd')){
 			$exif = exif_read_data($this->filename);
 			$size = getimagesize($this->filename);	// 画像でない場合はfalseを返す
 			if ($size !== false){
@@ -1320,6 +1333,8 @@ class AttachFiles
 	}
 }
 
+
+
 // ページコンテナ
 class AttachPages
 {
@@ -1327,30 +1342,36 @@ class AttachPages
 
 	function AttachPages($page = '', $age = NULL)
 	{
-
-		$dir = opendir(UPLOAD_DIR) or
+		global $cache;
+		$handle = opendir(UPLOAD_DIR) or
 			die('directory ' . UPLOAD_DIR . ' is not exist or not readable.');
 
-		$page_pattern = ($page == '') ? '(?:[0-9A-F]{2})+' : preg_quote(encode($page), '/');
-		$age_pattern = ($age === NULL) ?
-			'(?:\.([0-9]+))?' : ($age ?  "\.($age)" : '');
-		$pattern = "/^({$page_pattern})_((?:[0-9A-F]{2})+){$age_pattern}$/";
+		// FIXME
+		if ($cache->hasItem('attach_files') ){
+			$this->pages = $cache->getItem(PLUGIN_ATTACH_CACHE_NAME);
+		}else{
+			$page_pattern = ($page == '') ? '(?:[0-9A-F]{2})+' : preg_quote(encode($page), '/');
+			$age_pattern = ($age === NULL) ?
+				'(?:\.([0-9]+))?' : ($age ?  "\.($age)" : '');
+			$pattern = "/^({$page_pattern})_((?:[0-9A-F]{2})+){$age_pattern}$/";
 
-		$matches = array();
-		while (($file = readdir($dir)) !== FALSE) {
-			if (! preg_match($pattern, $file, $matches)) continue;
+			$matches = array();
+			while (($file = readdir($handle)) !== FALSE) {
+				if (! preg_match($pattern, $file, $matches)) continue;
+				$_page = decode($matches[1]);
+				if (! check_readable($_page, FALSE, FALSE)) continue;
 
-			$_page = decode($matches[1]);
-			if (! check_readable($_page, FALSE, FALSE)) continue;
-
-			$_file = decode($matches[2]);
-			$_age  = isset($matches[3]) ? $matches[3] : 0;
-			if (! isset($this->pages[$_page])) {
-				$this->pages[$_page] = new AttachFiles($_page);
+				$_file = decode($matches[2]);
+				$_age  = isset($matches[3]) ? $matches[3] : 0;
+				if (! isset($this->pages[$_page])) {
+					$this->pages[$_page] = new AttachFiles($_page);
+				}
+				$this->pages[$_page]->add($_file, $_age);
 			}
-			$this->pages[$_page]->add($_file, $_age);
+			closedir($handle);
+
+			if ($page === '') $cache->setItem(PLUGIN_ATTACH_CACHE_NAME, $this->pages);
 		}
-		closedir($dir);
 	}
 
 	function toString($page = '', $flat = FALSE, $tag = '')

@@ -11,7 +11,7 @@ function plugin_list_action()
 	global $vars, $whatsnew;
 	$_title_list = T_('List of pages');
 	$_title_filelist = T_('List of page files');
-	
+
 	$listcmd = isset($vars['listcmd']) ? $vars['listcmd'] : 'read';
 	$type = isset($vars['type']) ? $vars['type'] : '';
 	$pages = array_diff(auth::get_existpages(), array($whatsnew));
@@ -19,6 +19,7 @@ function plugin_list_action()
 	$buffer = array();
 	switch($type) {
 		case 'json' :
+			// インクリメンタルサーチ向け
 			if (isset($vars['term'])){
 				// 酷い実装だ・・・。
 				foreach($pages as $page){
@@ -37,17 +38,17 @@ function plugin_list_action()
 
 			if (!$exists || @filemtime(CACHE_DIR.PKWK_SITEMAPS_XML) < filemtime(CACHE_DIR.PKWK_MAXSHOW_CACHE)){
 				$buffer[] = '<?xml version="1.0" encoding="UTF-8"?>';
-				$buffer[] = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+				$buffer[] = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">';
 				foreach ($pages as $page){
 					$buffer[] = "\t".'<url>';
 					$buffer[] = "\t\t".'<loc>'.get_page_uri($page).'</loc>';
-					$buffer[] = "\t\t".'<lastmod>'.get_date('Y-m-d\TH:i:s', get_filetime($page)).'</lastmod>';
+					$buffer[] = "\t\t".'<lastmod>'.get_date('Y-m-d\TH:i:s\Z', get_filetime($page)).'</lastmod>';
 					$buffer[] = "\t\t".'<priority>0.5</priority>';
 					$buffer[] = "\t".'</url>';
 				}
 				$buffer[] = '</urlset>';
 				$data = join("\n",$buffer);
-				
+
 				pkwk_touch_file(CACHE_DIR.PKWK_SITEMAPS_XML);
 				$fp = fopen(CACHE_DIR.PKWK_SITEMAPS_XML, 'wb');
 				if ($fp === false) return false;
@@ -66,7 +67,7 @@ function plugin_list_action()
 				@flock($fp, LOCK_UN);
 				if(! fclose($fp)) return array();
 			}
-				
+
 			header("Content-Type: application/xml; charset=".CONTENT_CHARSET);
 			echo $data;
 			exit();
@@ -81,7 +82,7 @@ function plugin_list_action()
 				if (! pkwk_login($vars['pass']))
 					$filelist = FALSE;
 			}
-			
+
 			$cmd = ($listcmd == 'read' || $listcmd == 'edit') ? $listcmd : 'read';
 			$ret = page_list($pages,$cmd,$filelist);
 		break;
