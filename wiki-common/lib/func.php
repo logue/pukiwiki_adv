@@ -984,7 +984,7 @@ function get_autoaliases_from_autobasealias()
 	global $cache;
 
 	if (! isset($pairs)) {
-		$pairs = $cache->getItem(PKWK_AUTOBASEALIAS_CACHE);
+		$pairs = $cache['wiki']->getItem(PKWK_AUTOBASEALIAS_CACHE);
 	}
 	if (!is_array($pairs)) $pairs = array();	// safeモードでよくArgument #2 is not an arrayというエラーになるため
 	return $pairs;

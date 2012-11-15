@@ -259,7 +259,7 @@ EOD;
 		// Re-get true plugin name and patameters (for PHP 4.1.2)
 		$matches = array();
 		if (preg_match('/^' . $this->pattern . '/x', $all, $matches)
-			&& $matches[1] != $this->plain) 
+			&& $matches[1] != $this->plain)
 			list(, $this->plain, $name, $this->param) = $matches;
 
 		return parent::setParam($page, $name, $body, 'plugin');
@@ -443,7 +443,7 @@ EOD;
 		$rel = 'external'.( ($nofollow === TRUE) ? ' nofollow': '');
 //		return '<a href="' . $this->name . '" rel="nofollow">' . $this->alias . '</a>';
 		$target = (empty($this->redirect)) ? $this->name : $this->redirect.rawurlencode($this->name);
-		
+
 		if (extension_loaded('intl')){
 			// Fix punycode URL
 			$purl = parse_url($target);
@@ -489,7 +489,7 @@ EOD;
 		list(, $alias, $name) = $this->splice($arr);
 		return parent::setParam($page, $name, '', 'mailto', $alias == '' ? $name : $alias);
 	}
-	
+
 	function toString()
 	{
 		return '<a href="mailto:' . $this->name . '" rel="nofollow"><span class="pkwk-icon icon-mail">mailto:</span>' . $this->alias . '</a>';
@@ -682,11 +682,11 @@ class Link_autolink extends Link
 		global $autolink, $cache;
 
 		parent::Link($start);
-		
+
 		if (! $autolink){
 			return;
 		}else{
-			list($auto, $auto_a, $forceignorepages) = $cache->getItem(PKWK_AUTOLINK_REGEX_CACHE);
+			list($auto, $auto_a, $forceignorepages) = $cache['wiki']->getItem(PKWK_AUTOLINK_REGEX_CACHE);
 			$this->auto   = $auto;
 			$this->auto_a = $auto_a;
 			$this->forceignorepages = $forceignorepages;
@@ -705,8 +705,6 @@ class Link_autolink extends Link
 
 	function set($arr, $page)
 	{
-		global $WikiName;
-
 		list($name) = $this->splice($arr);
 
 		// Ignore pages listed, or Expire ones not found
@@ -752,7 +750,7 @@ class Link_autoalias extends Link
 		if (! $autoalias || $this->page == $aliaspage){
 			return;
 		}else{
-			list($auto, $auto_a, $forceignorepages) = $cache->getItem(PKWK_AUTOALIAS_REGEX_CACHE);
+			list($auto, $auto_a, $forceignorepages) = $cache['wiki']->getItem(PKWK_AUTOALIAS_REGEX_CACHE);
 
 			$this->auto = $auto;
 			$this->auto_a = $auto_a;
@@ -816,7 +814,7 @@ class Link_glossary extends Link
 		if (! $autoglossary){
 			return;
 		}else{
-			list($auto, $auto_a, $forceignorepages) = $cache->getItem(PKWK_GLOSSARY_REGEX_CACHE);
+			list($auto, $auto_a, $forceignorepages) = $cache['wiki']->getItem(PKWK_GLOSSARY_REGEX_CACHE);
 			$this->auto = $auto;
 			$this->auto_a = $auto_a;
 			$this->forceignorepages = $forceignorepages;
@@ -894,7 +892,7 @@ function make_tooltips($term,$glossary_page='')
 function make_pagelink($page, $alias = '', $anchor = '', $refer = '', $isautolink = FALSE)
 {
 	global $vars, $link_compact, $related, $_symbol_noexists;
-	
+
 
 	$s_page = htmlsc(strip_bracket($page));
 	if (! is_page($page)) {
@@ -916,7 +914,7 @@ function make_pagelink($page, $alias = '', $anchor = '', $refer = '', $isautolin
 		$related[$page] = get_filetime($page);
 
 	if ($isautolink || is_page($page)) {
-		return '<a href="' . get_page_uri($page) . $anchor . '" ' . 
+		return '<a href="' . get_page_uri($page) . $anchor . '" ' .
 			(($link_compact === 0) ? 'title="' . $s_page . '( ' .get_pg_passage($page, FALSE) . ' )"' : '' ).
 			($isautolink ? ' class="autolink"' : '') .'>' . $s_alias . '</a>';
 	} else {

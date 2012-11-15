@@ -49,18 +49,6 @@ function plugin_pcomment_action()
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
 	if (auth::check_role('readonly')) die_message(sprintf($_string['error_prohibit'], 'PKWK_READONLY'));
 
-	// Petit SPAM Check (Client(Browser)-Server Ticket Check)
-	$b = FALSE;
-	if (!isset($vars['encode_hint']) && PKWK_ENCODING_HINT == '') {
-		$b = TRUE;
-	} elseif (isset($vars['encode_hint']) && $vars['encode_hint'] == PKWK_ENCODING_HINT) {
-		$b = TRUE;
-	}
-	if ($b === FALSE) {
-		honeypot_write();
-		return array('msg'=>'', 'body'=>''); // Do nothing
-	}
-
 	if (! isset($vars['msg']) || $vars['msg'] == '') return array();
 
 	// Validate

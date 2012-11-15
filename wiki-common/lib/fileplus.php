@@ -8,21 +8,21 @@
 //
 // File related functions - extra functions
 
-// Marged from PukioWikio post.php
-defined('POSTID_EXPIRE')	or define('POSTID_EXPIRE', 3600);	// 60*60 = 1hour
-
 // Ticket file
 defined('PKWK_TICKET_CACHE')	or define('PKWK_TICKET_CACHE', 'ticket');
 
 // Get Ticket
-function get_ticket($newticket = FALSE)
+function get_ticket($flush = FALSE)
 {
 	global $cache;
-	if ($cache->hasItem(PKWK_TICKET_CACHE) && $newticket !== TRUE) {
-		$ticket = $cache->getItem(PKWK_TICKET_CACHE);
+
+	if ($flush) $cache['wiki']->removeItem(PKWK_TICKET_CACHE);
+
+	if ($cache['wiki']->hasItem(PKWK_TICKET_CACHE)) {
+		$ticket = $cache['wiki']->getItem(PKWK_TICKET_CACHE);
 	}else{
-		$ticket = md5(mt_rand());
-		$cache->setItem(PKWK_TICKET_CACHE, $ticket);
+		$ticket = mt_rand();
+		$cache['wiki']->setItem(PKWK_TICKET_CACHE, $ticket);
 	}
 	return $ticket;
 }
@@ -53,60 +53,61 @@ function update_cache($page = '', $force = false){
 
 	if ($force) {
 		// forceフラグがたってる時は、キャッシュをすべて作り直し
-		$cache->flush();
+		$cache['wiki']->flush();
+		$cache['html']->flush();
 	}
 
 	// Update page list
-	if (! $cache->hasItem(PKWK_EXISTS_PREFIX.'wiki')){
+	if (! $cache['wiki']->hasItem(PKWK_EXISTS_PREFIX.'wiki')){
 		$pages = get_existpages();
-		$cache->setItem(PKWK_EXISTS_PREFIX.'wiki', $pages);
+		$cache['wiki']->setItem(PKWK_EXISTS_PREFIX.'wiki', $pages);
 	}else{
-		$pages = $cache->getItem(PKWK_EXISTS_PREFIX.'wiki');
-		$cache->touchItem(PKWK_EXISTS_PREFIX.'wiki');
+		$pages = $cache['wiki']->getItem(PKWK_EXISTS_PREFIX.'wiki');
+		$cache['wiki']->touchItem(PKWK_EXISTS_PREFIX.'wiki');
 	}
 
 	// Update attach list
 	get_attachfiles($page);
 
 	// Update AutoAliasName
-	if ($autoalias !== 0&& (! $cache->hasItem(PKWK_AUTOALIAS_REGEX_CACHE) || $page === $aliaspage) ) {
+	if ($autoalias !== 0&& (! $cache['wiki']->hasItem(PKWK_AUTOALIAS_REGEX_CACHE) || $page === $aliaspage) ) {
 		$aliases = get_autoaliases();
 
 		if (empty($aliases) ) {
 			// Remove
-			$cache->removeItem(PKWK_AUTOALIAS_REGEX_CACHE);
+			$cache['wiki']->removeItem(PKWK_AUTOALIAS_REGEX_CACHE);
 		} else {
 			// Create or Update
-			$cache->setItem(PKWK_AUTOALIAS_REGEX_CACHE, get_autolink_pattern(array_keys($aliases)) );
+			$cache['wiki']->setItem(PKWK_AUTOALIAS_REGEX_CACHE, get_autolink_pattern(array_keys($aliases)) );
 		}
 	}
 
 	// Update AutoGlossary
-	if ($autoglossary !== 0 && (! $cache->hasItem(PKWK_GLOSSARY_REGEX_CACHE) || $page === $glossarypage)) {
+	if ($autoglossary !== 0 && (! $cache['wiki']->hasItem(PKWK_GLOSSARY_REGEX_CACHE) || $page === $glossarypage)) {
 		$words = get_autoglossaries();
 		if (empty($words) ) {
 			// Remove
-			$cache->removeItem(PKWK_GLOSSARY_REGEX_CACHE);
+			$cache['wiki']->removeItem(PKWK_GLOSSARY_REGEX_CACHE);
 		} else {
 			// Create or Update
-			$cache->setItem(PKWK_GLOSSARY_REGEX_CACHE, get_glossary_pattern(@array_keys($words)) );
+			$cache['wiki']->setItem(PKWK_GLOSSARY_REGEX_CACHE, get_glossary_pattern(@array_keys($words)) );
 		}
 	}
 
 	// Update autolink
-	if ($autolink !== 0 && ! $cache->hasItem(PKWK_AUTOLINK_REGEX_CACHE) ) {
-		$cache->setItem(PKWK_AUTOLINK_REGEX_CACHE, get_autolink_pattern($pages, $autolink));
+	if ($autolink !== 0 && ! $cache['wiki']->hasItem(PKWK_AUTOLINK_REGEX_CACHE) ) {
+		$cache['wiki']->setItem(PKWK_AUTOLINK_REGEX_CACHE, get_autolink_pattern($pages, $autolink));
 	}
 
 	// Update AutoBaseAlias
-	if ($autobasealias !== 0 && ! $cache->hasItem(PKWK_AUTOBASEALIAS_CACHE) ) {
+	if ($autobasealias !== 0 && ! $cache['wiki']->hasItem(PKWK_AUTOBASEALIAS_CACHE) ) {
 		$basealiases = get_autobasealias($pages);
 		if (empty($basealiase) ) {
 			// Remove
-			$cache->removeItem(PKWK_AUTOBASEALIAS_CACHE);
+			$cache['wiki']->removeItem(PKWK_AUTOBASEALIAS_CACHE);
 		} else {
 			// Create or Update
-			$cache->setItem(PKWK_AUTOBASEALIAS_CACHE, $basealiases );
+			$cache['wiki']->setItem(PKWK_AUTOBASEALIAS_CACHE, $basealiases );
 		}
 	}
 
@@ -118,7 +119,7 @@ function update_cache($page = '', $force = false){
 	}
 
 	// Update recent cache
-	if (! $cache->hasItem(PKWK_MAXSHOW_CACHE)) put_lastmodified();
+	if (! $cache['wiki']->hasItem(PKWK_MAXSHOW_CACHE)) put_lastmodified();
 }
 
 // Move from file.php
@@ -133,15 +134,15 @@ function get_existpages_cache($dir, $ext){
 		default: $func = encode($dir.$ext);
 	}
 	// Update page list
-	if (! $cache->hasItem(PKWK_EXISTS_PREFIX.$func)){
+	if (! $cache['wiki']->hasItem(PKWK_EXISTS_PREFIX.$func)){
 		$pages = get_existpages($dir, $ext);
-		$cache->setItem(PKWK_EXISTS_PREFIX.$func, $pages);
+		$cache['wiki']->setItem(PKWK_EXISTS_PREFIX.$func, $pages);
 	}else{
-		$pages = $cache->getItem(PKWK_EXISTS_PREFIX.$func);
-		$cache->touchItem(PKWK_EXISTS_PREFIX.$func);
+		$pages = $cache['wiki']->getItem(PKWK_EXISTS_PREFIX.$func);
+		$cache['wiki']->touchItem(PKWK_EXISTS_PREFIX.$func);
 	}
 	// Save timestamp
-	$cache->setItem(PKWK_TIMESTAMP_PREFIX.$func, UTIME);
+	$cache['wiki']->setItem(PKWK_TIMESTAMP_PREFIX.$func, UTIME);
 	return $pages;
 }
 
@@ -151,11 +152,11 @@ function get_attachfiles($page = '', $force = false)
 	$retval = array();
 
 	if ($force) {
-		$cache->removeItem(PKWK_EXISTS_PREFIX.'attach');
+		$cache['wiki']->removeItem(PKWK_EXISTS_PREFIX.'attach');
 	}
 
-	if ($cache->hasItem(PKWK_EXISTS_PREFIX.'attach')){
-		$retval = $cache->getItem(PKWK_EXISTS_PREFIX.'attach');
+	if ($cache['wiki']->hasItem(PKWK_EXISTS_PREFIX.'attach')){
+		$retval = $cache['wiki']->getItem(PKWK_EXISTS_PREFIX.'attach');
 	}else{
 		$handle = opendir(UPLOAD_DIR) or die_message('directory ' . UPLOAD_DIR . ' is not exist or not readable.');
 		if ($handle) {
@@ -176,9 +177,9 @@ function get_attachfiles($page = '', $force = false)
 			}
 			closedir($handle);
 		}
-		$cache->setItem(PKWK_EXISTS_PREFIX.'attach', $retval);
+		$cache['wiki']->setItem(PKWK_EXISTS_PREFIX.'attach', $retval);
 	}
-	if ($page){
+	if ($page && isset($retval[$page])){
 		return $retval[$page];
 	}
 	return $retval;
@@ -385,25 +386,21 @@ function generate_postid($cmd = '')
 	global $session;
 	$idstring = md5($cmd . mt_rand());	//mt_srand() is necessary if PHP version is lower than 4.2.0
 	// PostIDの値の中身は、ホストを入力
-	$session->$idstring = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
+	$session->offsetSet($idstring,REMOTE_ADDR);
 	// 有効期限を設定
 	$session->setExpirationSeconds(POSTID_EXPIRE, $idstring);
-
 	return $idstring;
 }
 
 function check_postid($idstring)
 {
 	global $session;
-
-	$ret = TRUE;
-	if (! isset($session->$idstring) && $session->$idstring !== REMOTE_ADDR){
-		$ret = FALSE;
-	}
-	// PostIdを削除
-	unset($session->$idstring);
-
-	if ($ret === FALSE){
+	$ret = FALSE;
+	if ($session->offsetExists($idstring) && $session->offsetGet($idstring) === REMOTE_ADDR){
+		$ret = TRUE;
+		// PostIdを削除
+		$session->offsetUnset($idstring);
+	}else{
 		honeypot_write();
 	}
 	return $ret;

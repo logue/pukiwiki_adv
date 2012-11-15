@@ -44,11 +44,11 @@ function plugin_recent_convert()
 	$auth_key = auth::get_user_info();
 	$date = '';
 	$items = array();
-	
-	if (!$cache->hasItem(PKWK_MAXSHOW_CACHE)){
+
+	if (!$cache['wiki']->hasItem(PKWK_MAXSHOW_CACHE)){
 		put_lastmodified();
 	}
-	$lines = $cache->getItem(PKWK_MAXSHOW_CACHE);
+	$lines = $cache['wiki']->getItem(PKWK_MAXSHOW_CACHE);
 	if ($lines !== null){
 		$count = (count($lines) < $recent_lines) ? count($lines) : $recent_lines;
 		$i = 0;
@@ -75,7 +75,7 @@ function plugin_recent_convert()
 					$items[] = ' <li>' . $s_page . '</li>';
 				} else {
 					$passage = $show_passage ? ' ' . get_passage($time) : '';
-					$items[] = ' <li><a href="' . get_page_uri($page) . '"' . 
+					$items[] = ' <li><a href="' . get_page_uri($page) . '"' .
 						' title="' . $s_page . $passage . '">' . $s_page . '</a></li>';
 				}
 			}else{

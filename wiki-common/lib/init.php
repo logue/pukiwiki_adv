@@ -120,6 +120,12 @@ define('CORE_NAMESPACE', 'pukiwiki-adv');
 // Wikiの名前空間（セッションやキャッシュで他のWikiと名前が重複するのを防ぐため）
 define('WIKI_NAMESPACE', md5(realpath(DATA_HOME)) );
 
+// convert_htmlのキャッシュ名の接頭辞
+defined('PKWK_RAW_CACHE_EXPIRE') or define('PKWK_RAW_CACHE_EXPIRE', 3600);	// 60*60 = 1hour
+
+// POSTIDの有効期間
+defined('POSTID_EXPIRE')	or define('POSTID_EXPIRE', 3600);	// 60*60 = 1hour
+
 /////////////////////////////////////////////////
 // Init grobal variables
 
@@ -148,6 +154,9 @@ $loader = new Zend\Loader\StandardAutoloader(array(
 ));
 $loader->register();
 
+/////////////////////////////////////////////////
+// Initilalize Cache
+//
 use Zend\Cache\StorageFactory;
 
 $cache_config = $core_cache_config = array();
@@ -171,10 +180,23 @@ if (ini_get('apc.enabled')){
 $cache_config['adapter']['name'] = $core_cache_config['adapter']['name'] = $adapter;
 $info[] = 'Cache system using '.$adapter;
 
-// PukiWikiのコアで使われる汎用キャッシュ
-$core_cache = StorageFactory::factory($core_cache_config);
-// Wikiごと個別に使われるキャッシュ
-$cache = StorageFactory::factory($cache_config);
+// キャッシュ
+$cache = array(
+	// PukiWikiのコアで使われる汎用キャッシュ
+	'core' => StorageFactory::factory($core_cache_config),
+	// Wikiごと個別に使われるキャッシュ
+	'wiki' => StorageFactory::factory($cache_config),
+	// HTMLキャッシュ（このキャッシュのみファイルに保存）
+	'raw' => StorageFactory::factory(array(
+		'adapter'=>array(
+			'name'=>'Filesystem',
+			'options'=>array(
+				'ttl'=>PKWK_RAW_CACHE_EXPIRE,
+				'cache_dir'=>CACHE_DIR
+			)
+		)
+	))
+);
 
 /////////////////////////////////////////////////
 // I18N

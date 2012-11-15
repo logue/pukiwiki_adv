@@ -48,11 +48,10 @@ define('PLUGIN_ATTACH_CONFIG_PAGE_MIME', 'plugin/attach/mime-type');
 defined('PLUGIN_ATTACH_UNKNOWN_COMPRESS')	or define('PLUGIN_ATTACH_UNKNOWN_COMPRESS', 0);			// 1(compress) or 0(raw)
 defined('PLUGIN_ATTACH_COMPRESS_TYPE')		or define('PLUGIN_ATTACH_COMPRESS_TYPE', 'TGZ');		// TGZ, GZ, BZ2 or ZIP
 
-// 進捗状況のセッション名
-defined('PLUGIN_ATTACH_PROGRESS_SESSION_NAME') or define('PLUGIN_ATTACH_PROGRESS_SESSION_NAME', 'pukiwiki_attach');
-
+// 添付ファイルキャッシュを使う（ページの表示やページごとの添付ファイル一覧表示は早くなりますが、全ページではむしろ重くなります）
+defined('PLUGIN_ATTACH_USE_CACHE')		or define('PLUGIN_ATTACH_USE_CACHE', true);
 // 添付ファイルのキャッシュの接頭辞
-defined('PLUGIN_ATTACH_CACHE_NAME') or define('PLUGIN_ATTACH_CACHE_NAME', 'attach_files');
+define('PLUGIN_ATTACH_CACHE_PREFIX', 'attach-');
 
 function plugin_attach_init()
 {
@@ -270,7 +269,7 @@ function attach_upload($file, $page, $pass = NULL)
 
 	// FIXME:添付ファイル一覧キャッシュを削除
 	global $cache;
-	$cache->remove(PLUGIN_ATTACH_CACHE_NAME);
+	$cache['wiki']->removeItem(PLUGIN_ATTACH_CACHE_NAME);
 
 	return attach_doupload($file, $page, $pass);
 }
@@ -581,7 +580,7 @@ function attach_delete()
 
 	// FIXME:添付ファイル一覧キャッシュを削除
 	global $cache;
-	$cache->remove(PLUGIN_ATTACH_CACHE_NAME);
+	$cache['wiki']->setItem(PLUGIN_ATTACH_CACHE_PREFIX.md5($refer));
 
 	return $obj->delete($pass);
 }
@@ -772,10 +771,9 @@ function attach_form($page)
 // 進捗状況表示（ってattachプラグインでなくても、これ呼び出す実装かよ）
 function attach_progress(){
 	global $session;
-	pkwk_session_start();
 	$key = ini_get('session.upload_progress.prefix') . WIKI_NAMESPACE;
 	header("Content-Type: application/json; charset=".CONTENT_CHARSET);
-	echo isset($session->$key) ? json_encode($session->$key) : json_encode(null);
+	echo $session->offsetExists($key) ? json_encode($session->offsetGet($key)) : json_encode(null);
 	exit;
 }
 
@@ -1149,7 +1147,7 @@ EOD;
 	function open()
 	{
 		global $cache, $use_sendfile_header;
-		$cache = true;
+		$cache['wiki'] = true;
 		$this->getstatus();
 		$this->status['count'][$this->age]++;
 		$this->putstatus();
@@ -1340,15 +1338,18 @@ class AttachPages
 {
 	var $pages = array();
 
-	function AttachPages($page = '', $age = NULL)
+	function AttachPages($page = '', $age = NULL, $purge = false)
 	{
 		global $cache;
 		$handle = opendir(UPLOAD_DIR) or
 			die('directory ' . UPLOAD_DIR . ' is not exist or not readable.');
 
-		// FIXME
-		if ($cache->hasItem('attach_files') ){
-			$this->pages = $cache->getItem(PLUGIN_ATTACH_CACHE_NAME);
+//		if ($purge)
+			$cache['wiki']->clearByPrefix(PLUGIN_ATTACH_CACHE_PREFIX);
+
+		if ($page !== '') $cache_name = PLUGIN_ATTACH_CACHE_PREFIX.md5($page);
+		if (PLUGIN_ATTACH_USE_CACHE && $page !== '' && $cache['wiki']->hasItem($cache_name) ){
+			$this->pages[$page] = (object)$cache['wiki']->getItem($cache_name);
 		}else{
 			$page_pattern = ($page == '') ? '(?:[0-9A-F]{2})+' : preg_quote(encode($page), '/');
 			$age_pattern = ($age === NULL) ?
@@ -1356,21 +1357,37 @@ class AttachPages
 			$pattern = "/^({$page_pattern})_((?:[0-9A-F]{2})+){$age_pattern}$/";
 
 			$matches = array();
+			$_page2 = '';
 			while (($file = readdir($handle)) !== FALSE) {
 				if (! preg_match($pattern, $file, $matches)) continue;
 				$_page = decode($matches[1]);
 				if (! check_readable($_page, FALSE, FALSE)) continue;
 
-				$_file = decode($matches[2]);
-				$_age  = isset($matches[3]) ? $matches[3] : 0;
-				if (! isset($this->pages[$_page])) {
-					$this->pages[$_page] = new AttachFiles($_page);
+				if (PLUGIN_ATTACH_USE_CACHE && $cache['wiki']->hasItem(PLUGIN_ATTACH_CACHE_PREFIX.md5($_page)) && $_page !== $page){
+					$this->pages[$_page] = $cache['wiki']->getItem(PLUGIN_ATTACH_CACHE_PREFIX.md5($_page));
+				}else{
+					$_file = decode($matches[2]);
+					$_age  = isset($matches[3]) ? $matches[3] : 0;
+					if (! isset($this->pages[$_page])) {
+						$this->pages[$_page] = new AttachFiles($_page);
+					}
+					$this->pages[$_page]->add($_file, $_age);
 				}
-				$this->pages[$_page]->add($_file, $_age);
+				$_page2 = $_page;
 			}
 			closedir($handle);
-
-			if ($page === '') $cache->setItem(PLUGIN_ATTACH_CACHE_NAME, $this->pages);
+			if (PLUGIN_ATTACH_USE_CACHE){
+				if ($page !== '' && isset($this->pages[$page])){
+					$cache['wiki']->setItem(PLUGIN_ATTACH_CACHE_PREFIX.md5($page), $this->pages[$page]);
+				}else{
+					foreach ($this->pages as $line){
+						$md5 = PLUGIN_ATTACH_CACHE_PREFIX.md5($line->page);
+						if (! $cache['wiki']->hasItem($md5)){
+							$cache['wiki']->setItem($md5, $this->pages[$line->page]);
+						}
+					}
+				}
+			}
 		}
 	}
 

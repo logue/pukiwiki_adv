@@ -450,9 +450,8 @@ EOD;
 	// $_SESSION[$s_ticket] = md5(get_ticket() . $digest);
 	// $_SESSION['origin' . $s_ticket] = md5(get_ticket() . str_replace("\r", '', $s_original));
 
-	$session->$s_ticket = md5(get_ticket() . $digest);
-	$o_ticket = 'origin'.$s_ticket;
-	$session->$o_ticket = md5(get_ticket() . str_replace("\r", '', $s_original));
+	$session->offsetSet($s_ticket,md5(get_ticket() . $digest));
+	$session->offsetSet('origin'.$s_ticket, md5(get_ticket() . str_replace("\r", '', $s_original)));
 
 	$add_notimestamp = '';
 	if ($notimeupdate != 0 && is_page($page)) {
@@ -706,7 +705,7 @@ function pkwk_common_headers($modified = 0, $expire = 604800){
 function pkwk_common_suffixes($length = ''){
 
 	// close current session
-	if (session_id()) session_write_close();
+	//if (session_id()) session_write_close();
 	// flush all output
 	/*
 	if(!DEBUG){

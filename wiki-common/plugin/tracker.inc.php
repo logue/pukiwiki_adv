@@ -63,7 +63,7 @@ define('PLUGIN_TRACKER_SORT_ORDER_DEFAULT', PLUGIN_TRACKER_SORT_ORDER_ASC);
 // Show a form
 function plugin_tracker_convert()
 {
-	global $vars, $config_name;
+	global $vars, $config_name, $session;
 
 //	if (PKWK_READONLY) return ''; // Show nothing
 	if (auth::check_role('readonly')) return ''; // Show nothing
@@ -129,9 +129,10 @@ function plugin_tracker_convert()
 	$template = str_replace($from, $to, convert_html($template));
 	$hidden   = implode('<br />' . "\n", $hidden);
 
-	if (function_exists('pkwk_session_start') && pkwk_session_start() != 0) {
-		$_SESSION['tracker'] = md5(get_ticket() . $config_name);
-	}
+//	if (function_exists('pkwk_session_start') && pkwk_session_start() != 0) {
+//		$_SESSION['tracker'] = md5(get_ticket() . $config_name);
+//	}
+	$session->offsetSet('tracker',  md5(get_ticket() . $config_name));
 
 	// For QA/196, BugTrack/113
 	$form_enctype = is_mobile() ? '' : 'enctype="multipart/form-data"';
@@ -157,10 +158,11 @@ function plugin_tracker_action()
 	$config = $tracker_form->config_name; // Rescan
 
 	$md5 = md5(get_ticket() . $config_name);
-	$_SESSION['tracker'] = (pkwk_session_start() !== 0) ? $md5 : '';
+//	$_SESSION['tracker'] = (pkwk_session_start() !== 0) ? $md5 : '';
 
 	if (function_exists('pkwk_session_start') && pkwk_session_start() !== 0) {
-		$spam = ($_SESSION['tracker'] !== $md5) ? TRUE : FALSE;
+//		$spam = ($_SESSION['tracker'] !== $md5) ? TRUE : FALSE;
+		$spam = ($session->offsetGet('tracker') !== $md5) ? TRUE : FALSE;
 	} else {
 		if (isset($post['encode_hint']) && $post['encode_hint'] != '') {
 			$spam = (PKWK_ENCODING_HINT !== $post['encode_hint']) ? TRUE : FALSE;

@@ -118,7 +118,7 @@ function plugin_bugtrack_print_form($base, $category)
 
 	$ticket = md5(MUTIME);
 	$keyword = 'B_' . $ticket;
-	$session->$keyword = md5(get_ticket() . $ticket);
+	$session->offsetSet($keyword, md5(get_ticket() . $ticket));
 
 	$script = get_script_uri();
 	$body = <<<EOD
@@ -184,14 +184,6 @@ function plugin_bugtrack_action()
 	if (auth::check_role('readonly')) die_message($_string['prohibit']);
 	if (auth::is_check_role(PKWK_CREATE_PAGE)) die_message(str_replace('PKWK_CREATE_PAGE','PKWK_READONLY',$_string['prohibit']));
 	if ($post['mode'] != 'submit') return FALSE;
-
-	// Petit SPAM Check (Client(Browser)-Server Ticket Check)
-	$spam = FALSE;
-	if (isset($post['encode_hint']) && $post['encode_hint'] != '') {
-		if (PKWK_ENCODING_HINT != $post['encode_hint']) $spam = TRUE;
-	} else {
-		if (PKWK_ENCODING_HINT != '') $spam = TRUE;
-	}
 
 	// Vaildation foreign values(by miko)
 	$spam = ( (!in_array($post['priority'], $_plugin_bugtrack['priority_list'])) || (!in_array($post['state'], $_plugin_bugtrack['state_list'])) ) ? TRUE : FALSE;

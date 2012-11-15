@@ -297,11 +297,12 @@ function add_hidden_field($retvar, $plugin){
 			$hidden_field[] = '<input type="hidden" name="' .  ini_get('session.upload_progress.name') . '" value="' . WIKI_NAMESPACE . '" class="progress_session" />';
 		}
 
-		if (empty($digest) && isset($vars['page'])) $digest = md5(get_source($vars['page'], TRUE, TRUE));
-		$ticket = md5(MUTIME);
-		$session->$ticket = md5(get_ticket() . $digest);
-		$hidden_field[] = '<input type="hidden" name="digest" value="' . $digest . '" />';	// 更新時の競合を確認するための項目（確認処理はプラグイン側で実装）
-		$hidden_field[] = '<input type="hidden" name="ticket" value="' . $ticket . '" />';	// Spamチェック
+		// 更新時の競合を確認するための項目
+		if (isset($vars['page'])){
+			if (empty($digest)) $digest = md5(get_source($vars['page'], TRUE, TRUE));
+			$hidden_field[] = '<input type="hidden" name="digest" value="' . $digest . '" />';	
+		}
+
 		$hidden_field[] = '<!-- Additional fields END -->';
 		$retvar = preg_replace('/<form[^>]*>/', '$0'. "\n".join("\n",$hidden_field), $retvar);
 	}

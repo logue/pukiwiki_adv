@@ -156,7 +156,6 @@ class auth
 		foreach($auth_api as $api=>$val) {
 			// どうしても必要な場合のみ開始
 			if (! $val['use']) continue;
-			if (function_exists('pkwk_session_start')) pkwk_session_start();
 			break;
 		}
 
@@ -673,22 +672,22 @@ class auth
 		list($scheme, $salt) = auth::passwd_parse($adminpass);
 
 		// des化された内容を平文に戻す
-		if (isset($session->$session_name)) {
+		if ($session->offsetExists($session_name)) {
 			require_once(LIB_DIR . 'des.php');
-			return des($salt, base64_decode($session->$session_name), 0, 0, null);
+			return des($salt, base64_decode($session->offsetGet($session_name), 0, 0, null) );
 		}
 		return '';
 	}
 
-	public static function des_session_put($session_name,$val)
+	public static function des_session_put($session_name, $val)
 	{
 		global $adminpass, $session;
 
 		// adminpass の処理
 		list($scheme, $salt) = auth::passwd_parse($adminpass);
 		require_once(LIB_DIR . 'des.php');
-		$session->$session_name = base64_encode( des($salt, $val, 1, 0, null) );
-		session_write_close();
+		$session->offsetSet($session_name, base64_encode( des($salt, $val, 1, 0, null) ) );
+//		session_write_close();
 	}
 
 	// See:

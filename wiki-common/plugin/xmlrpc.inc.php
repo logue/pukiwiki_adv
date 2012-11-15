@@ -142,7 +142,6 @@ class WikiRpcService{
 	  * @return xml
 	  */
 	public function getRecentChanges( $timestamp ){
-		global $cache;
 		$pages = get_existpages_cache(DATA_DIR, '.txt');
 
 		$ret = array();
@@ -223,7 +222,7 @@ class WikiRpcService{
 	  * @return struct
 	  */
 	public function getPageInfo( $pagename ){
-		
+
 	}
 	/**
 	  * バージョン指定版ページ情報。
@@ -242,7 +241,9 @@ class WikiRpcService{
 	  * @return array
 	  */
 	public function listLinks( $pagename ){
-
+		$links = array();
+		preg_match_all('#href="(https?://[^"]+)"#', convert_html($pagename), $links, PREG_PATTERN_ORDER);
+		return array_unique($links[1]);
 	}
 	/**
 	  * このページにリンクしているページの配列を返す。
@@ -251,6 +252,7 @@ class WikiRpcService{
 	  * @return array
 	  */
 	public function getBackLinks( $pagename ){
+		return links_get_related($pagename);
 	}
 	/**
 	  * ページを編集する。
@@ -270,7 +272,11 @@ class WikiRpcService{
 	  * @return array
 	  */
 	public function listAttachments( $pagename ){
-
+		if (exist_plugin('attach') && do_plugin_init('attach') !== FALSE){
+			$obj = new AttachPages($pagename, 0);
+			return array_keys($obj->pages[$pagename]->files);
+		}
+		return false;
 	}
 	/**
 	  * base64エンコードされた添付ファイルを返す。

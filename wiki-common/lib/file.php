@@ -114,10 +114,16 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	if (auth::is_check_role(PKWK_CREATE_PAGE))
 		die_message( sprintf($_strings['error_prohibit'], 'PKWK_READONLY') );
 
-	// SPAM Check (Client(Browser)-Server Ticket Check)
+	// エンコードの確認
 	if (isset($post['encode_hint']) && !empty($post['encode_hint']) && (PKWK_ENCODING_HINT !== $post['encode_hint']) ) {
 		honeypot_write();
 		die_message($_strings['plugin_encode_error']);
+	}
+
+	// SPAM Check (Client(Browser)-Server Ticket Check)
+	if (isset($vars['ticket']) && $session->offsetGet($vars['ticket']) !== md5(get_ticket() . $vars['cmd']) ){
+		honeypot_write();
+		die_message('Session error.');
 	}
 
 	// Create and write diff
@@ -460,11 +466,11 @@ function lastmodified_add($update = '', $remove = '')
 		return; // No need
 
 	// Check cache exists
-	if (! $cache->hasItem(PKWK_MAXSHOW_CACHE)){
+	if (! $cache['wiki']->hasItem(PKWK_MAXSHOW_CACHE)){
 		put_lastmodified(); // Try to (re)create ALL
 		return;
 	}else{
-		$recent_pages = $cache->getItem(PKWK_MAXSHOW_CACHE);
+		$recent_pages = $cache['wiki']->getItem(PKWK_MAXSHOW_CACHE);
 	}
 
 	// Remove if it exists inside
@@ -480,7 +486,7 @@ function lastmodified_add($update = '', $remove = '')
 	$abort = count($recent_pages) < $maxshow;
 
 	// Update cache
-	$cache->setItem(PKWK_MAXSHOW_CACHE, $recent_pages);
+	$cache['wiki']->setItem(PKWK_MAXSHOW_CACHE, $recent_pages);
 
 	if ($abort) {
 		put_lastmodified(); // Try to (re)create ALL
@@ -550,7 +556,7 @@ function put_lastmodified()
 	$recent_pages = & $_recent;
 
 	// Save to recent cache data
-	$cache->setItem(PKWK_MAXSHOW_CACHE, $recent_pages);
+	$cache['wiki']->setItem(PKWK_MAXSHOW_CACHE, $recent_pages);
 
 	// Create RecentChanges
 	$file = get_filename($whatsnew);
@@ -572,12 +578,12 @@ function put_lastmodified()
 
 	// For AutoLink
 	if ($autolink){
-		$cache->setItem(PKWK_AUTOLINK_REGEX_CACHE, get_autolink_pattern($pages, $autolink));
+		$cache['wiki']->setItem(PKWK_AUTOLINK_REGEX_CACHE, get_autolink_pattern($pages, $autolink));
 	}
 
 	// AutoBaseAlias (Plus!)
 	if ($autobasealias) {
-		$cache->setItem(PKWK_AUTOBASEALIAS_CACHE, get_autobasealias($pages));
+		$cache['wiki']->setItem(PKWK_AUTOBASEALIAS_CACHE, get_autobasealias($pages));
 	}
 }
 
@@ -818,6 +824,8 @@ function pkwk_chown($filename, $preserve_time = TRUE)
 // touch() with trying pkwk_chown()
 function pkwk_touch_file($filename, $time = FALSE, $atime = FALSE)
 {
+	mkdir_r(dirname($filename));
+
 	// Is the owner incorrected and unable to correct?
 	if (! file_exists($filename) || pkwk_chown($filename)) {
 		if ($time === FALSE) {
@@ -832,6 +840,27 @@ function pkwk_touch_file($filename, $time = FALSE, $atime = FALSE)
 		die_message('pkwk_touch_file(): Invalid UID and (not writable for the directory or not a flie): ' .
 			htmlsc(basename($filename)));
 	}
+}
+
+/**
+ * ディレクトリを再帰的に作成（http://d.hatena.ne.jp/studio-m/20070508/1178636785）
+ *
+ * mkdir_r('hoge/foo') とかやった時にhogeがなければ、hogeを作ってから、その中にfooを作る。
+ * ディレクトリの存在チェックはしない（既にある場合は作成に失敗してfalseが返る）ので注意。
+ *
+ * @access public
+ * @param  string  $dirname 作成するディレクトリ名
+ * @return boolean 作成に成功すればtrue、失敗ならfalse
+ */
+function mkdir_r($dirname)
+{
+    if (file_exists($dirname)) return false;
+    // 階層指定かつ親が存在しなければ再帰
+    if (strpos($dirname, '/') && !file_exists(dirname($dirname))) {
+        // 親でエラーになったら自分の処理はスキップ
+        if (mkdir_r(dirname($dirname)) === false) return false;
+    }
+    return mkdir($dirname);
 }
 
 /* End of file file.php */

@@ -11,20 +11,37 @@
 // function 'convert_html()', wiki text parser
 // and related classes-and-functions
 
+// convert_htmlのキャッシュ
+defined('PKWK_HTML_CACHE_PREFIX') or define('PKWK_HTML_CACHE_PREFIX', 'html-');
 function convert_html($lines)
 {
-	global $vars, $digest;
+	global $vars, $digest, $cache;
 	static $contents_id = 0;
 
 	// Set digest
 	$digest = empty($digest) ? md5(get_source($vars['page'], TRUE, TRUE)) : $digest;
 
-	if (! is_array($lines)) $lines = explode("\n", $lines);
+	// 入力値のハッシュを作成
+	$htmldigest =  md5(is_array($lines) ? join('',$lines) : $lines);
 
-	$body = new Body(++$contents_id);
-	$body->parse($lines);
+	if (PKWK_RAW_CACHE_EXPIRE !== 0 && $cache['raw']->hasItem(PKWK_HTML_CACHE_PREFIX.$htmldigest)){
+		$html = $cache['raw']->getItem(PKWK_HTML_CACHE_PREFIX.$htmldigest);
+		$cache['raw']->touchItem(PKWK_HTML_CACHE_PREFIX.$htmldigest);	// キャッシュの有効期限を伸ばす
+	}else{
+		if (! is_array($lines)) $lines = explode("\n", $lines);
 
-	return $body->toString();
+		$body = new Body(++$contents_id);
+		$body->parse($lines);
+		$html = $body->toString();
+
+		if (PKWK_RAW_CACHE_EXPIRE !== 0){
+			$cache['raw']->setItem(PKWK_HTML_CACHE_PREFIX.$htmldigest,$html);
+		}
+	}
+	if (PKWK_RAW_CACHE_EXPIRE !== 0){
+		$cache['raw']->clearExpired();	// 期限切れのキャッシュを削除
+	}
+	return $html;
 }
 
 // Block elements

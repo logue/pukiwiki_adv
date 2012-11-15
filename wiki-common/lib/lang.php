@@ -74,19 +74,19 @@ PO_LANG
 	// PHP mbstring process.
 	set_mbstring($language);
 
-	global $translator, $core_cache;
+	global $translator, $cache;
 	$translator = new Translator();
 	$translator->factory(array(
 		'locale' => array('ja_JP', 'zh_TW', 'zh_CN',  'en_US', 'ko_KR'),
-		'cache' => $core_cache,
+		'cache' => $cache['core'],
 	));
 }
 
 // gettext to Zend gettext emulator
 function T_setlocale($type, $locale){
-	global $translator, $core_cache;
+	global $translator, $cache;
 	$translator->setLocale($locale);
-	$translator->setCache($core_cache);
+	$translator->setCache($cache['core']);
 }
 
 function T_($string){
@@ -106,11 +106,11 @@ if (!function_exists('_')){
 }
 
 function T_bindtextdomain($domain, $dir){
-	global $translator, $language, $core_cache;
+	global $translator, $language, $cache;
 	$gettext_file = LANG_DIR.PO_LANG.'/LC_MESSAGES/'.$domain.'.mo';
 	if (file_exists($gettext_file)){
 		$translator->addTranslationFile('gettext', $gettext_file, $domain, $language);
-		$translator->setCache($core_cache);
+		$translator->setCache($cache['core']);
 	}
 }
 
