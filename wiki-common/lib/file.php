@@ -36,7 +36,10 @@ defined('PKWK_TIMESTAMP_PREFIX')		or define('PKWK_TIMESTAMP_PREFIX', 'timestamp-
 defined('PKWK_EXISTS_PREFIX')			or define('PKWK_EXISTS_PREFIX', 'exists-');
 
 // Page cache prefix
-defined('PKWK_PAGECACHE_PREFIX')			or define('PKWK_PAGECACHE_PREFIX', 'page-');
+defined('PKWK_PAGECACHE_PREFIX')		or define('PKWK_PAGECACHE_PREFIX', 'page-');
+
+// 
+defined('PKWK_CAPTCHA_SESSION_PREFIX')	or define('PKWK_CAPTCHA_SESSION_PREFIX', 'captcha-');
 
 // Get source(wiki text) data of the page
 // Returns FALSE if error occurerd
@@ -120,12 +123,6 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 		die_message($_strings['plugin_encode_error']);
 	}
 
-	// SPAM Check (Client(Browser)-Server Ticket Check)
-	if (isset($vars['ticket']) && $session->offsetGet($vars['ticket']) !== md5(get_ticket() . $vars['cmd']) ){
-		honeypot_write();
-		die_message('Session error.');
-	}
-
 	// Create and write diff
 	$postdata = make_str_rules($postdata);
 	$oldpostdata = is_page($page) ? get_source($page, TRUE, TRUE) : '';
@@ -137,8 +134,24 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 		$links = get_this_time_links($postdata, $diffdata);
 	}
 
+	$referer = (isset($_SERVER['HTTP_REFERER'])) ? htmlsc($_SERVER['HTTP_REFERER']) : 'None';
+	$user_agent = htmlsc($_SERVER['HTTP_USER_AGENT']);
+
+/*
 	// スパムチェック（自動更新されるページはチェックしない）
-	if (isset($vars['page']) && $vars['page'] === $page && auth::check_role('role_adm_contents')){
+	if ($session->offsetGet(PKWK_CAPTCHA_SESSION_PREFIX.'enabled') !== true){
+		$session->offsetSet(PKWK_CAPTCHA_SESSION_PREFIX.'REQUEST_URI', $_SERVER['REQUEST_URI']);
+		
+		// POST,GETデータ
+		$session->offsetSet(PKWK_CAPTCHA_SESSION_PREFIX.'POST',$_POST);
+		$session->offsetSet(PKWK_CAPTCHA_SESSION_PREFIX.'GET',$_GET);
+		$session->offsetSet(PKWK_CAPTCHA_SESSION_PREFIX.'UA',$_SERVER['HTTP_USER_AGENT']);
+		$session->offsetSet(PKWK_CAPTCHA_SESSION_PREFIX.'COOKIE',$_COOKIE);
+		header('location: '.get_cmd_uri('recaptcha'));
+		exit;
+	}
+*/
+	if (isset($vars['page']) && $vars['page'] === $page || auth::check_role('role_adm_contents') !== ture){
 		// Blocking SPAM
 		if ($use_spam_check['bad-behavior']){
 			require_once(LIB_DIR . 'bad-behavior-pukiwiki.php');
@@ -146,7 +159,7 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 		// リモートIPによるチェック
 		if ($use_spam_check['page_remote_addr'] && SpamCheck(REMOTE_ADDR ,'ip')) {
 			honeypot_write();
-			die_message($_strings['blacklisted'], $_title['prohibit'], 400);
+			die_message($_strings['blacklisted'] , $_title['prohibit'], 400);
 		}
 		// ページのリンクよるチェック
 		if ($use_spam_check['page_contents'] && SpamCheck($links)) {
@@ -160,28 +173,30 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 		}
 
 		// Akismet
-		if ($use_spam_check['akismet'] && $akismet_api_key !== ''){
-			require_once(LIB_DIR.'Akismet.class.php');
-
-			$akismet = new Akismet(get_script_absuri() ,$akismet_api_key);
-			if($akismet->isKeyValid()) {
-				if (isset($vars['name'])){
-					$akismet->setCommentAuthor($vars['name']);
-				}
-				if (isset($vars['page'])){
-					$akismet->setPermalink(get_page_uri($page));
-				}
+		if ($use_spam_check['akismet'] && !empty($akismet_api_key) ){
+			$akismet = new ZendService\Akismet(
+				$akismet_api_key,
+				get_script_absuri()
+			);
+			if ($akismet->verifyKey($akismet_api_key)) {
+				// 送信するデーターをセット
+				$akismet_post = array(
+					'user_ip' => REMOTE_ADDR,
+					'user_agent' => $user_agent,
+					'comment_type' => 'comment',
+					'comment_author' => isset($vars['name']) ? $vars['name'] : 'Anonymous',
+				);
 				if ($use_spam_check['akismet'] === 2){
-					$akismet->setCommentContent($postdata);
+					$akismet_post['comment_content'] = $postdata;
 				}else{
 					// 差分のみをAkismetに渡す
 					$new = explode("\n",$postdata);
 					$old = explode("\n",$oldpostdata);
 					$diff = implode("\n",array_diff($new, $old));
-					$akismet->setCommentContent($diff);
+					$akismet_post['comment_content'] = $diff;
 				}
 
-				if($akismet->isCommentSpam()){
+				if($akismet->isSpam($akismet_post)){
 					honeypot_write();
 					die_message('Writing was limited by Akismet (Blocking SPAM).', $_title['prohibit'], 400);
 				}
@@ -192,8 +207,6 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	}
 
 	// add client info to diff
-	$referer = (isset($_SERVER['HTTP_REFERER'])) ? htmlsc($_SERVER['HTTP_REFERER']) : 'None';
-	$user_agent = htmlsc($_SERVER['HTTP_USER_AGENT']);
 	$diffdata .= '// IP:"'. REMOTE_ADDR . '" TIME:"' . $now . '" REFERER:"' . $referer . '" USER_AGENT:"' . $user_agent. "\n";
 
 	// Create wiki text
