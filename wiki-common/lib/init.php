@@ -14,8 +14,8 @@
 
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
-define('S_VERSION', 'v1.0');
-define('S_REVSION', '20121017');
+define('S_VERSION', 'v1.1-alpha');
+define('S_REVSION', '20121119');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &#169; 2010-2012' .
@@ -101,7 +101,7 @@ defined('JS_URI')			or define('JS_URI', 		COMMON_URI . 'js/'      );	// URI to J
 defined('THEME_PLUS_NAME')	or define('THEME_PLUS_NAME',  'theme/');			// SKIN_URI + THEME_PLUS_NAME
 
 // フレームワークのバージョン
-define('JQUERY_VER',		'1.8.2');
+define('JQUERY_VER',		'1.8.3');
 define('JQUERY_UI_VER',		'1.9.1');
 define('JQUERY_MOBILE_VER',	'1.2.0');
 
@@ -126,6 +126,23 @@ defined('PKWK_RAW_CACHE_EXPIRE') or define('PKWK_RAW_CACHE_EXPIRE', 3600);	// 60
 // POSTIDの有効期間
 defined('POSTID_EXPIRE')	or define('POSTID_EXPIRE', 3600);	// 60*60 = 1hour
 
+// CAPTCHAセッションの接頭辞
+defined('PKWK_CAPTCHA_SESSION_PREFIX') or define('PKWK_CAPTCHA_SESSION_PREFIX','captcha-');
+
+// CAPTCHA認証済みセッションの有効期間（セッション名は、ticketに閲覧者のリモートホストを加えたもののmd5値とする）
+defined('PKWK_CAPTCHA_SESSION_EXPIRE') or define('PKWK_CAPTCHA_SESSION_EXPIRE','3600');	// 1時間
+
+// CAPTCHA画像のフォント（GDを使用する場合）
+defined('PKWK_CAPTCHA_IMAGE_FONT') or define('PKWK_CAPTCHA_IMAGE_FONT', LIB_DIR.'fonts/Vera.ttf');
+
+// CAPTCHA画像の一時保存先（GDを使用する場合）
+defined('PKWK_CAPTCHA_IMAGE_CACHE_DIR') or define('PKWK_CAPTCHA_IMAGE_CACHE_DIR', CACHE_DIR . 'captcha/');
+
+// CAPTCHA認証の有効期間
+defined('PKWK_CAPTCHA_TIMEOUT') or define('PKWK_CAPTCHA_TIMEOUT', 120);	// 2分間
+
+// CAPTCHA認証の入力文字数
+defined('PKWK_CAPTCHA_WORD_LENGTH') or define('PKWK_CAPTCHA_WORD_LENGTH', 6);
 /////////////////////////////////////////////////
 // Init grobal variables
 
@@ -150,7 +167,10 @@ $_SKIN        = array();
 
 require_once (LIB_DIR.'Zend/Loader/StandardAutoloader.php');
 $loader = new Zend\Loader\StandardAutoloader(array(
-	'autoregister_zf' => true
+	Zend\Loader\StandardAutoloader::AUTOREGISTER_ZF => true,
+	Zend\Loader\StandardAutoloader::LOAD_NS => array(
+		'ZendService' => LIB_DIR . 'ZendService'
+	)
 ));
 $loader->register();
 
@@ -163,23 +183,21 @@ $cache_config = $core_cache_config = array();
 // 他のWikiと競合しないようにするためDATA_HOMEのハッシュを名前空間とする
 $core_cache_config['adapter']['options']['namespace'] = CORE_NAMESPACE;
 $cache_config['adapter']['options']['namespace'] = WIKI_NAMESPACE;
-/*
-if (ini_get('apc.enabled')){
+
+if ( class_exists('dba') ){
+	$adapter = 'Dba';
+}else if ( class_exists('apc') && ini_get('apc.enabled') ){
 	$adapter = 'Apc';
 }else if ( class_exists('Memcached') ){
 	$adapter = 'Memcached';
 }else{
-*/
 	$adapter = 'Filesystem';
 	$cache_config['adapter']['options']['cache_dir'] = CACHE_DIR;
 	$cache_config['plugins'] = $core_cache_config['plugins'] = array('serializer');
 	unset($cache_config['adapter']['options']['namespace']);	// ファイルキャッシュの場合名前空間は使用しない
-/*
 }
-*/
 $cache_config['adapter']['name'] = $core_cache_config['adapter']['name'] = $adapter;
-$info[] = 'Cache system using '.$adapter;
-
+$cache_config['options']['ttl'] = 0;
 // キャッシュ
 $cache = array(
 	// PukiWikiのコアで使われる汎用キャッシュ
@@ -197,6 +215,7 @@ $cache = array(
 		)
 	))
 );
+$info[] = 'Cache system using '.$adapter;
 
 /////////////////////////////////////////////////
 // I18N
@@ -624,7 +643,7 @@ if (!IS_AJAX || IS_MOBILE){
 	$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.( (DEBUG) ? 'locale.js' : 'js.php?file=locale'), 'defer'=>'defer' );
 
 	if ( isset($auth_api['facebook']) ){
-		if (! extension_loaded('curl')){
+		if (extension_loaded('curl')){
 			require(LIB_DIR.'facebook.php');
 			$fb = new FaceBook($auth_api['facebook']);
 			// FaceBook Integration

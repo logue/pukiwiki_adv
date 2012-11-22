@@ -129,5 +129,8 @@ define('PKWK_UPDATE_EXEC',
 // https://akismet.com/signup/
 // $akismet_api_key = '';
 
+// recaptcha
+//$recaptcha_public_key  = '6LdBh74SAAAAAPN1_61XL-54m5HajruFB3KJ5gXF';
+//$recaptcha_private_key = '6LdBh74SAAAAABe4IpsEXneAdURwomR1vEWWPZL2';
 /* End of file server.ini.php */
 /* Location: ./wiki-common/server.ini.php */

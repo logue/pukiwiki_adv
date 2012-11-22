@@ -119,7 +119,7 @@ if (isset($_SERVER['HTTP_CF_IPCOUNTRY'])){
 }else if (function_exists('geoip_db_avail') && geoip_db_avail(GEOIP_COUNTRY_EDITION) && function_exists('geoip_region_by_name')) {
 	// それでもダメな場合は、phpのgeoip_region_by_name()からGeolocationを取得
 	// http://php.net/manual/en/function.geoip-region-by-name.php
-	$geoip = geoip_region_by_name($remote_addr);
+	$geoip = geoip_region_by_name(REMOTE_ADDR);
 	$country_code = $geoip['country_code'];
 	$info[] = (!empty($geoip['country_code']) ) ?
 		'GeoIP is usable. Your country code from IP is inferred <var>'.$geoip['country_code'].'</var>.' :

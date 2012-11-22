@@ -11,7 +11,7 @@
 // Ticket file
 defined('PKWK_TICKET_CACHE')	or define('PKWK_TICKET_CACHE', 'ticket');
 
-// Get Ticket
+// Get Ticket（セッションに保存でもいい気がするが・・・）
 function get_ticket($flush = FALSE)
 {
 	global $cache;
@@ -54,7 +54,7 @@ function update_cache($page = '', $force = false){
 	if ($force) {
 		// forceフラグがたってる時は、キャッシュをすべて作り直し
 		$cache['wiki']->flush();
-		$cache['html']->flush();
+		$cache['raw']->flush();
 	}
 
 	// Update page list
@@ -63,14 +63,13 @@ function update_cache($page = '', $force = false){
 		$cache['wiki']->setItem(PKWK_EXISTS_PREFIX.'wiki', $pages);
 	}else{
 		$pages = $cache['wiki']->getItem(PKWK_EXISTS_PREFIX.'wiki');
-		$cache['wiki']->touchItem(PKWK_EXISTS_PREFIX.'wiki');
 	}
 
 	// Update attach list
 	get_attachfiles($page);
 
 	// Update AutoAliasName
-	if ($autoalias !== 0&& (! $cache['wiki']->hasItem(PKWK_AUTOALIAS_REGEX_CACHE) || $page === $aliaspage) ) {
+	if ($autoalias !== 0 && (! $cache['wiki']->hasItem(PKWK_AUTOALIAS_REGEX_CACHE) || $page === $aliaspage) ) {
 		$aliases = get_autoaliases();
 
 		if (empty($aliases) ) {
@@ -112,9 +111,9 @@ function update_cache($page = '', $force = false){
 	}
 
 	// Update rel and ref cache
-	if ($force || $page == '') {
+	if ($force) {
 		links_init();
-	}else {
+	}else if (!empty($page) ){
 		links_update($page);
 	}
 
@@ -368,6 +367,155 @@ function compress_file($in, $method, $chmod=644){
 }
 
 /**
+ * CAPTCHA認証
+ *
+ * @access public
+ * @param $save セッションにCAPTCHA認証済みかを保存するかのフラグ
+ * @param $message メッセージを表示したい場合
+ * @return string 認証済みだった場合そのままreturn。そうでなかった場合フォームを表示。
+ */
+function captcha_check($save = true, $message = ''){
+	global $recaptcha_public_key, $recaptcha_private_key, $vars, $session;
+
+	// Captchaのセッション名（ticketとリモートホストの加算値。ticketはプログラマーから見てもわからない）
+	$session_name = PKWK_CAPTCHA_SESSION_PREFIX.md5(get_ticket() . REMOTE_ADDR);
+
+	if ($save && $session->offsetExists($session_name) && $session->offsetGet($session_name) === true){
+		// CAPTCHA認証済みの場合
+		// return array('msg'=>'CAPTCHA','body'=>'Your host was already to challenged.');
+		return;
+	}
+	if (isset($recaptcha_public_key) && isset($recaptcha_private_key) ){
+		// reCaptchaを使う場合
+		$captcha = new ZendService\ReCaptcha\ReCaptcha($recaptcha_public_key, $recaptcha_private_key);
+		// 入力があった場合
+		if ( isset($vars['recaptcha_challenge_field']) && isset($vars['recaptcha_response_field']) ){
+			if ($captcha->verify($vars['recaptcha_challenge_field'], $vars['recaptcha_response_field']) ) {
+				if ($save){
+					// captcha認証済セッションを保存
+					$session->offsetSet($session_name, true);
+					// captcha認証済セッションの有効期間を設定
+					$session->setExpirationSeconds($session_name, PKWK_CAPTCHA_SESSION_EXPIRE);
+				}
+				// return array('msg'=>'CAPTCHA','body'=>'OK!');
+				return;	// ここで書き込み処理に戻る
+			}else{
+				// CAPTCHA認証失敗ログをつける
+				write_challenged();
+				$message = 'Failed to authenticate.';
+			}
+		}
+		// 念のためcaptcha認証済みセッションを削除
+		$session->offsetUnset($session_name);
+		// reCaptchaの設定をオーバーライド
+		$captcha->setOption('lang',substr(LANG,0,2));
+		$captcha->setOption('theme','clean');
+		$form = $captcha->getHTML();
+	}else{
+		// reCaptchaを使わない場合
+		if (isset($vars['challenge_field']) && isset($vars['response_field'] )){
+			// Captchaチェック処理
+			if ($session->offsetGet(PKWK_CAPTCHA_SESSION_PREFIX.$vars['response_field']) === strtolower($vars['challenge_field'])) {
+				if ($save){
+					// captcha認証済セッションを保存
+					$session->offsetSet($session_name, true);
+					// captcha認証済セッションの有効期間を設定
+					$session->setExpirationSeconds($session_name, PKWK_CAPTCHA_SESSION_EXPIRE);
+				}
+				// 認証用セッションの削除
+				$session->offsetUnset(PKWK_CAPTCHA_SESSION_PREFIX.$vars['response_field']);
+				// キャッシュ画像を削除
+				if (file_exists(PKWK_CAPTCHA_IMAGE_CACHE_DIR.$vars['response_field'].'.png')) unlink(PKWK_CAPTCHA_IMAGE_CACHE_DIR.$vars['response_field'].'.png');
+
+				// return array('msg'=>'CAPTCHA','body'=>'OK!');
+				return;	// ここで書き込み処理に戻る
+			}else{
+				// CAPTCHA認証失敗ログをつける
+				write_challenged();
+				$message = 'Failed to authenticate.';
+			}
+		}
+		// 念のためcaptcha認証済みセッションを削除
+		$session->offsetUnset($session_name);
+		if (extension_loaded('gd')) {
+			// GDが使える場合、画像認証にする
+			mkdir_r(PKWK_CAPTCHA_IMAGE_CACHE_DIR);
+			// 古い画像を削除する
+			if ($handle = opendir(PKWK_CAPTCHA_IMAGE_CACHE_DIR)) {
+				while( $entry = readdir($handle) ){
+					if( $entry !== '.' && $entry !== '..'){
+						$f = realpath(PKWK_CAPTCHA_IMAGE_CACHE_DIR.$entry);
+						if (time() - filectime($f) > PKWK_CAPTCHA_TIMEOUT) unlink($f);
+					}
+				}
+			}
+			$captcha = new Zend\Captcha\Image(array(
+				'wordLen' => PKWK_CAPTCHA_WORD_LENGTH,
+				'timeout' => PKWK_CAPTCHA_TIMEOUT,
+				'font'	=> PKWK_CAPTCHA_IMAGE_FONT,
+				'ImgDir' => PKWK_CAPTCHA_IMAGE_CACHE_DIR
+			));
+			$captcha->generate();
+			// cache_refプラグインを用いて画像を表示
+			$form = '<img src="'. get_cmd_uri('cache_ref', null,null,array('src'=>'captcha/'.$captcha->getId().'.png')) . '" height="'.$captcha->getHeight().'" width="'.$captcha->getWidth().'" alt="'.$captcha->getImgAlt().'" /><br />'."\n";	// 画像を取得
+		}else{
+			// GDがない場合アスキーアート
+			$captcha = new Zend\Captcha\Figlet(array(
+				'wordLen' => PKWK_CAPTCHA_WORD_LENGTH,
+				'timeout' => PKWK_CAPTCHA_TIMEOUT,
+			));
+			$captcha->generate();
+			$form = '<pre style="font-family: Monaco, Menlo, Consolas, \'Courier New\' !important;">'.$captcha->getFiglet()->render($captcha->getWord()).'</pre>'."\n". '<br />'."\n";	// AAを取得
+		}
+		// 識別子のセッション名
+		$response_session = PKWK_CAPTCHA_SESSION_PREFIX.$captcha->getId();
+		// 識別子のセッションを発行
+		$session->offsetSet($response_session, $captcha->getWord());
+		// captchaの有効期間
+		$session->setExpirationSeconds($response_session, PKWK_CAPTCHA_TIMEOUT);
+		$form .= '<input type="hidden" name="response_field" value="'.$captcha->getId().'" />'."\n";
+		$form .= '<input type="text" name="challenge_field" maxlength="'.$captcha->getWordLen().'" size="'.$captcha->getWordLen().'" />';
+		// $form .= $captcha->getWord();
+	}
+//	$ret[] = $session->offsetExists($session_name) ? 'true' : 'false';
+//	$ret[] = Zend\Debug\Debug::Dump($vars);
+//	$ret[] = Zend\Debug\Debug::Dump($captcha->getSession());
+
+
+	if (!empty($message)){
+		$ret[] = '<div class="message_box ui-state-error ui-corner-all"><p><span class="ui-icon ui-icon-alert"></span>'.$message.'</p></div>';
+	}
+
+	// PostIdが有効な場合
+	if ( isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] === 1){
+		$vars['postid'] = generate_postid($vars['cmd']);
+	}
+
+	$ret[] = '<fieldset>';
+	$ret[] = '<legend>CAPTCHA</legend>';
+	$ret[] = '<p>'.T_('Please enter the text that appears below.').'</p>';
+	// フォームを出力
+	$ret[] = '<form method="post" action="'.get_script_uri().'" method="post">';
+	// ストアされている値を出力
+	foreach ($vars as $key=>$value){
+		$ret[] = !empty($value) ? '<input type="hidden" name="' . $key . '" value="' . htmlsc($value) . '" />' : null;
+	}
+	// CAPTCHAフォームを出力
+	$ret[] = $form;
+	$ret[] = '<input type="submit" />';
+	$ret[] = '</form>';
+	$ret[] = '</fieldset>';
+
+	// return array('msg'=>'CAPTCHA','body'=>join("\n",$ret));
+	catbody('CAPTCHA', $vars['page'], join("\n",$ret));
+	exit;
+}
+
+function write_challenged(){
+	error_log(get_remoteip() . "\t" . UTIME . "\t" . $_SERVER['HTTP_USER_AGENT'] . "\n", 3, CACHE_DIR . 'challenged.log');
+}
+
+/**
  * POST data check function $Id$
  *
  * PukioWikio - A WikiWikiWeb clone.
@@ -377,6 +525,8 @@ function compress_file($in, $method, $chmod=644){
  * @license GPL v2 or (at your option) any later version
  */
 
+define('PKWK_SESSION_POSTID_PREFIX', 'postid-');
+
 /**
  * generate id from $cmd and random number
  */
@@ -384,11 +534,11 @@ function compress_file($in, $method, $chmod=644){
 function generate_postid($cmd = '')
 {
 	global $session;
-	$idstring = md5($cmd . mt_rand());	//mt_srand() is necessary if PHP version is lower than 4.2.0
+	$idstring = md5($cmd . mt_rand());
 	// PostIDの値の中身は、ホストを入力
-	$session->offsetSet($idstring,REMOTE_ADDR);
+	$session->offsetSet(PKWK_SESSION_POSTID_PREFIX.$idstring, REMOTE_ADDR);
 	// 有効期限を設定
-	$session->setExpirationSeconds(POSTID_EXPIRE, $idstring);
+	$session->setExpirationSeconds(POSTID_EXPIRE, PKWK_SESSION_POSTID_PREFIX.$idstring);
 	return $idstring;
 }
 
@@ -396,12 +546,12 @@ function check_postid($idstring)
 {
 	global $session;
 	$ret = FALSE;
-	if ($session->offsetExists($idstring) && $session->offsetGet($idstring) === REMOTE_ADDR){
+	if ($session->offsetExists(PKWK_SESSION_POSTID_PREFIX.$idstring) && $session->offsetGet(PKWK_SESSION_POSTID_PREFIX.$idstring) === REMOTE_ADDR){
 		$ret = TRUE;
 		// PostIdを削除
-		$session->offsetUnset($idstring);
+		$session->offsetUnset(PKWK_SESSION_POSTID_PREFIX.$idstring);
 	}else{
-		honeypot_write();
+	//	honeypot_write();
 	}
 	return $ret;
 }

@@ -112,16 +112,15 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 		die_message($_strings['illegal_chars']);
 	}
 
+	// captcha check
+	if ( (isset($use_spam_check['captcha']) && $use_spam_check['captcha'] !== 0 && (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] !== 1)){
+		captcha_check(( $use_spam_check['captcha'] === 2 ? false : true) );
+	}
+
 	// roleのチェック
 	if (auth::check_role('readonly')) return; // Do nothing
 	if (auth::is_check_role(PKWK_CREATE_PAGE))
 		die_message( sprintf($_strings['error_prohibit'], 'PKWK_READONLY') );
-
-	// エンコードの確認
-	if (isset($post['encode_hint']) && !empty($post['encode_hint']) && (PKWK_ENCODING_HINT !== $post['encode_hint']) ) {
-		honeypot_write();
-		die_message($_strings['plugin_encode_error']);
-	}
 
 	// Create and write diff
 	$postdata = make_str_rules($postdata);
@@ -137,20 +136,7 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	$referer = (isset($_SERVER['HTTP_REFERER'])) ? htmlsc($_SERVER['HTTP_REFERER']) : 'None';
 	$user_agent = htmlsc($_SERVER['HTTP_USER_AGENT']);
 
-/*
-	// スパムチェック（自動更新されるページはチェックしない）
-	if ($session->offsetGet(PKWK_CAPTCHA_SESSION_PREFIX.'enabled') !== true){
-		$session->offsetSet(PKWK_CAPTCHA_SESSION_PREFIX.'REQUEST_URI', $_SERVER['REQUEST_URI']);
-		
-		// POST,GETデータ
-		$session->offsetSet(PKWK_CAPTCHA_SESSION_PREFIX.'POST',$_POST);
-		$session->offsetSet(PKWK_CAPTCHA_SESSION_PREFIX.'GET',$_GET);
-		$session->offsetSet(PKWK_CAPTCHA_SESSION_PREFIX.'UA',$_SERVER['HTTP_USER_AGENT']);
-		$session->offsetSet(PKWK_CAPTCHA_SESSION_PREFIX.'COOKIE',$_COOKIE);
-		header('location: '.get_cmd_uri('recaptcha'));
-		exit;
-	}
-*/
+	$isSpam = false;
 	if (isset($vars['page']) && $vars['page'] === $page || auth::check_role('role_adm_contents') !== ture){
 		// Blocking SPAM
 		if ($use_spam_check['bad-behavior']){
@@ -220,7 +206,7 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	make_backup($page, $postdata == ''); // Is $postdata null?
 
 	// Update *.rel *.ref data.
-	update_cache($page);
+	update_cache($page, false);
 
 	// Logging postdata (Plus!)
 	postdata_write();
@@ -752,8 +738,7 @@ function get_readings()
 
 	// Pages that are not prounouncing-clear, return pagenames of themselves
 	foreach ($pages as $page) {
-		if($readings[$page] == '')
-			$readings[$page] = $page;
+		if ( empty($readings[$page]) ) $readings[$page] = $page;
 	}
 
 	return $readings;
@@ -781,13 +766,8 @@ function pkwk_chown($filename, $preserve_time = TRUE)
 {
 	static $php_uid; // PHP's UID '
 
-	if (! isset($php_uid)) {
-		if (extension_loaded('posix')) {
-			$php_uid = posix_getuid(); // Unix
-		} else {
-			$php_uid = 0; // Windows
-		}
-	}
+	// check UID
+	if (! isset($php_uid)) $php_uid = extension_loaded('posix') ? posix_getuid() : 0;
 
 	// Lock for pkwk_chown()
 	$lockfile = CACHE_DIR . 'pkwk_chown.lock';
@@ -867,13 +847,13 @@ function pkwk_touch_file($filename, $time = FALSE, $atime = FALSE)
  */
 function mkdir_r($dirname)
 {
-    if (file_exists($dirname)) return false;
-    // 階層指定かつ親が存在しなければ再帰
-    if (strpos($dirname, '/') && !file_exists(dirname($dirname))) {
-        // 親でエラーになったら自分の処理はスキップ
-        if (mkdir_r(dirname($dirname)) === false) return false;
-    }
-    return mkdir($dirname);
+	if (file_exists($dirname)) return false;
+	// 階層指定かつ親が存在しなければ再帰
+	if (strpos($dirname, '/') && !file_exists(dirname($dirname))) {
+		// 親でエラーになったら自分の処理はスキップ
+		if (mkdir_r(dirname($dirname)) === false) return false;
+	}
+	return mkdir($dirname);
 }
 
 /* End of file file.php */

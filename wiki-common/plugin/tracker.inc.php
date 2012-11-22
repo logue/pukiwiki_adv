@@ -58,6 +58,7 @@ define('PLUGIN_TRACKER_SORT_ORDER_DESC',    3);
 define('PLUGIN_TRACKER_SORT_ORDER_ASC',     4);
 define('PLUGIN_TRACKER_SORT_ORDER_DEFAULT', PLUGIN_TRACKER_SORT_ORDER_ASC);
 
+define('PLUGIN_TRACKER_CACHE_PREFIX, 'tracker-');
 // ----
 
 // Show a form
@@ -157,21 +158,7 @@ function plugin_tracker_action()
 	// Petit SPAM Check (Client(Browser)-Server Ticket Check)
 	$config = $tracker_form->config_name; // Rescan
 
-	$md5 = md5(get_ticket() . $config_name);
-//	$_SESSION['tracker'] = (pkwk_session_start() !== 0) ? $md5 : '';
-
-	if (function_exists('pkwk_session_start') && pkwk_session_start() !== 0) {
-//		$spam = ($_SESSION['tracker'] !== $md5) ? TRUE : FALSE;
-		$spam = ($session->offsetGet('tracker') !== $md5) ? TRUE : FALSE;
-	} else {
-		if (isset($post['encode_hint']) && $post['encode_hint'] != '') {
-			$spam = (PKWK_ENCODING_HINT !== $post['encode_hint']) ? TRUE : FALSE;
-		} else {
-			$spam = (PKWK_ENCODING_HINT !== '') ? TRUE : FALSE;
-		}
-		$spam = (is_spampost(array('body'), PLUGIN_TRACKER_REJECT_SPAMCOUNT)) ? TRUE : FALSE;
-	}
-	if ($spam) {
+	if ( $session->offsetGet('tracker') !== md5(get_ticket() . $config_name) ) {
 		honeypot_write();
 		return array('msg'=>'Cannot write', 'body'=>'Prohibits editing');
 	}

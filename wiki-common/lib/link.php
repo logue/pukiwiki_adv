@@ -1,8 +1,8 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone
-// $Id: link.php,v 1.20.8 2011/11/28 21:36:00 Logue Exp $
+// $Id: link.php,v 1.20.9 2012/11/21 16:04:00 Logue Exp $
 // Copyright (C)
-//   2010-2011 PukiWiki Advance Developers Team
+//   2010-2012 PukiWiki Advance Developers Team
 //   2005-2007 PukiWiki Plus! Team
 //   2003-2007,2011 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
@@ -31,9 +31,9 @@
 
 // ------------------------------------------------------------
 
-// Related cache data extention
+// Related cache data prefix
 defined('PKWK_REL_PREFIX')	or define('PKWK_REL_PREFIX', 'rel-');
-// Refered cache data extention
+// Refered cache data prefix
 defined('PKWK_REF_PREFIX')	or define('PKWK_REF_PREFIX', 'ref-');
 
  // Get related-pages from DB
@@ -69,21 +69,15 @@ function links_update($page)
 
 	$time = is_page($page, TRUE) ? get_filetime($page) : 0;
 	$rel_name = PKWK_REL_PREFIX.md5($page);
+	$rel_file_exist = $cache['wiki']->hasItem($rel_name);
 
-	if ($cache['wiki']->hasItem($rel_name)){
-		$rel_old = $cache['wiki']->getItem($rel_name);
-		$rel_file_exist = TRUE;
-	}else{
-		$rel_file_exist = FALSE;
-		$rel_old        = array();
-	}
-
+	$rel_old  = ($rel_file_exist === true) ? $cache['wiki']->getItem($rel_name) : array();
 	$rel_new  = array();	// Reference to
 	$rel_auto = array();	// by AutoLink
 	$links    = links_get_objects($page, TRUE);
 	foreach ($links as $_obj) {
-		if (! isset($_obj->type) || $_obj->type != 'pagename' ||
-		    $_obj->name === $page || $_obj->name == '')
+		if (! isset($_obj->type) || $_obj->type !== 'pagename' ||
+			$_obj->name === $page || empty($_obj->name) )
 			continue;
 
 		if (is_a($_obj, 'Link_autolink')) { // Not cool though
@@ -120,7 +114,7 @@ function links_update($page)
 
 	// $page seems newly created, and matches with AutoLink
 	if ($time && ! $rel_file_exist && $autolink
-		&& (preg_match("/^$WikiName$/", $page) ? $nowikiname : strlen($page) >= $autolink))
+		&& (preg_match("/^$WikiName$/", $page !== false) ? $nowikiname : strlen($page) >= $autolink))
 	{
 		// Update all, because they __MAY__ refer the $page [HEAVY]
 		$search_non_list = 1;
@@ -151,7 +145,7 @@ function links_init()
 	// if (PKWK_READONLY) return; // Do nothing
 	if (auth::check_role('readonly')) return; // Do nothing
 
-	if (ini_get('safe_mode') == '0') set_time_limit(0);
+	if (ini_get('safe_mode') === '0') set_time_limit(0);
 
 	// Init database
 	$cache['wiki']->clearByPrefix(PKWK_REL_PREFIX);
@@ -164,8 +158,8 @@ function links_init()
 		$rel   = array(); // Reference to
 		$links = links_get_objects($page);
 		foreach ($links as $_obj) {
-			if (! isset($_obj->type) || $_obj->type != 'pagename' ||
-			    $_obj->name == $page || $_obj->name == '')
+			if (! isset($_obj->type) || $_obj->type !== 'pagename' ||
+			    $_obj->name === $page || empty($_obj->name) )
 				continue;
 
 			$_name = $_obj->name;
@@ -204,16 +198,15 @@ function links_add($page, $add, $rel_auto)
 		$is_page  = is_page($_page);
 		$ref_name = PKWK_REF_PREFIX.md5($_page);
 
-		$data = $cache['wiki']->getItem($ref_name);
 		$ref[] = array($page, $all_auto);
-		if ($data !== null){
-			foreach ($data as $line) {
+		if ($cache['wiki']->hasItem($ref_name)){
+			foreach ($cache['wiki']->getItem($ref_name) as $line) {
 				if ($line[0] !== $page) $ref[] = array($line[0], $line[1]);
 			}
 		}
 
 		if ($is_page || ! $all_auto || count($ref) !== 0) {
-			$cache['wiki']->setItem($ref_name, @array_unique($ref));
+			$cache['wiki']->replaceItem($ref_name, @array_unique($ref));
 		}else{
 			$cache['wiki']->removeItem($ref_name);
 		}
@@ -232,18 +225,18 @@ function links_delete($page, $del)
 		$is_page = is_page($_page);
 
 		$ref_name = PKWK_REF_PREFIX.md5($_page);
-		$data = $cache['wiki']->getItem($ref_name);
-		if ($data === null) continue;
+		if (! $cache['wiki']->hasItem($ref_name) ) continue;
 
 		$ref = array();
-		foreach ($data as $line) {
+		foreach ($cache['wiki']->getItem($ref_name) as $line) {
 			list($ref_page, $ref_auto) = $line;
 			if ($ref_page !== $page) {
 				$ref[] = array($ref_page, $ref_auto);
 			}
 		}
+
 		if ($is_page || ! $all_auto || count($ref) == 1) {
-			$cache['wiki']->setItem($ref_name, @array_unique($ref));
+			$cache['wiki']->replaceItem($ref_name, @array_unique($ref));
 		}else{
 			$cache['wiki']->removeItem($ref_name);
 		}

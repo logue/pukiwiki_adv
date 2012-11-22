@@ -177,12 +177,14 @@ function do_plugin_action($name)
 		die_message(sprintf( $_string['plugin_init_error'], htmlsc($name) ));
 	}
 
-	// check postid
-	if (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] === 1 && isset($vars['postid']) && !check_postid($vars['postid']) )
-		die_message($_string['plugin_postid_error']);
+	// Check encode
+	if (isset($vars['encode_hint']) && !empty($vars['encode_hint']) && (PKWK_ENCODING_HINT !== $vars['encode_hint']) ) {
+		die_message($_strings['plugin_encode_error']);
+	}
 
-	if ( isset($vars['encode_hint']) && $vars['encode_hint'] !== PKWK_ENCODING_HINT )
-		die_message($_string['plugin_encode_error']);
+	// check postid
+	if ( (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] === 1) && (isset($vars['postid']) && !check_postid($vars['postid'])) )
+		die_message($_string['plugin_postid_error']);
 
 	T_textdomain($name);
 	$retvar = call_user_func('plugin_' . $name . '_action');
@@ -284,6 +286,7 @@ function add_hidden_field($retvar, $plugin){
 		// Insert a hidden field, supports idenrtifying text enconding
 		$hidden_field[] = '<!-- Additional fields START-->';
 		$hidden_field[] = ( PKWK_ENCODING_HINT ) ? '<input type="hidden" name="encode_hint" value="' . PKWK_ENCODING_HINT . '" />' : '';
+		$hidden_field[] = '<input type="hidden" name="ticket" value="' . md5(get_ticket() . REMOTE_ADDR) . '" />';	// 利用者のホストチェック
 
 		// 多重投稿を禁止するオプションが有効かつ、methodがpostだった場合、PostIDを生成する
 		if ( (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] === 1)

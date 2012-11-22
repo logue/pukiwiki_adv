@@ -18,8 +18,10 @@ defined('PLUGIN_EDIT_PARTAREA') or define('PLUGIN_EDIT_PARTAREA', 'compat');
 
 function plugin_edit_action()
 {
-	// global $vars, $_title_edit, $load_template_func;
+// global $vars, $_title_edit, $load_template_func;
 	global $vars, $load_template_func, $_string;
+
+	$page = isset($vars['page']) ? $vars['page'] : null;
 
 	// if (PKWK_READONLY) die_message(  sprintf($_string['error_prohibit'], 'PKWK_READONLY') );
 	if (auth::check_role('readonly')) die_message( $_string['prohibit'] );
@@ -32,7 +34,6 @@ function plugin_edit_action()
 		return plugin_edit_realview();
 	}
 
-	$page = isset($vars['page']) ? $vars['page'] : '';
 	check_editable($page, true, true);
 
 	if (!is_page($page) && auth::is_check_role(PKWK_CREATE_PAGE)) {
@@ -64,13 +65,13 @@ function plugin_edit_action()
 			$postdata = $vars['original'];
 		}
 	}
-	
+
 	if ($postdata == ''){
 		// Check Page name length
 		// http://pukiwiki.sourceforge.jp/dev/?PukiWiki%2F1.4%2F%A4%C1%A4%E7%A4%C3%A4%C8%CA%D8%CD%F8%A4%CB%2F%C4%B9%A4%B9%A4%AE%A4%EB%A5%DA%A1%BC%A5%B8%CC%BE%A4%CE%A5%DA%A1%BC%A5%B8%A4%CE%BF%B7%B5%AC%BA%EE%C0%AE%A4%F2%CD%DE%BB%DF
 		$filename_max_length = 250;
 		$filename = encode($page) . '.txt';
-		$filename_length = strlen($filename); 
+		$filename_length = strlen($filename);
 		if ($filename_length > $filename_max_length){
 			$msg = "<b>Error: Filename too long.</b><br />\n" .
 				"Page name: " . htmlsc($page) . "<br />\n" .
@@ -110,7 +111,7 @@ function plugin_edit_realview()
 			'taketime'		=> $taketime
 		);
 		header("Content-Type: application/json; charset=".CONTENT_CHARSET);
-		echo json_encode($obj); 
+		echo json_encode($obj);
 	}else{
 		header('Content-type: text/xml; charset=UTF-8');
 		print '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
@@ -243,7 +244,7 @@ function plugin_edit_write()
 	if ($notimestamp && !is_page($page)) {
 		return plugin_edit_honeypot();
 	}
-	
+
 	// Validate
 	if (is_spampost(array('msg')))
 		return plugin_edit_honeypot();
@@ -320,7 +321,7 @@ function plugin_edit_write()
 	} else {
 		$url = ($partid) ? get_page_location_uri($page,'',rawurlencode($partid)) : get_page_location_uri($page);
 	}
-	
+
 	// FaceBook Integration
 	global $fb;
 	if (isset($fb)){
@@ -396,7 +397,7 @@ function plugin_edit_parts($id, &$source, $postdata='')
 				continue;
 			}
 		}
- 
+
 		if ($start === -1) {
 			if (preg_match('/^(\*{1,3})(.*?)\[#(' . preg_quote($id) . ')\](.*?)$/m', $line, $matches)) {
 				$start = $i;
@@ -418,41 +419,5 @@ function plugin_edit_parts($id, &$source, $postdata='')
 	return FALSE;
 }
 
-function plugin_edit_captcha(){
-	global $recaptcha_public_key, $recaptcha_private_key, $vars;
-	require_once(LIB_DIR.'recaptchalib.php');
-	if ($vars['recaptcha_response_field']) {
-		if (!$vars['recaptcha_challenge_field']) return false;
-		$response = recaptcha_check_answer(
-			$recaptcha_private_key,
-			$_SERVER['REMOTE_ADDR'],
-			$vars['recaptcha_challenge_field'],
-			$vars['recaptcha_response_field']
-		);
-		unset($vars['recaptcha_challenge_field'], $vars['recaptcha_response_field']);
-		if ($response->is_valid) {
-			return true;
-		} else {
-			return false;
-		}
-	}else{
-		foreach ($vars as $key=>$value){
-			$form[] = '<input type="hidden" name="' . $key . '" value="' . $value . '" />';
-		}
-		$stored_form = join("\n", $form);
-		$recaptcha_form = recaptcha_get_html($recaptcha_public_key);
-		$script = get_script_uri();
-		$body = <<<HTML
-<form method="post" action="{$script}" method="post">
-	<input type="hidden" name="cmd" value="edit" />
-	<input type="hidden" name="mode" value="captcha" />
-	{$stored_form}
-	{$recaptcha_form}
-	<input type="submit" />
-</form>
-HTML;
-	}
-	return array('msg'=>'CAPTCHA','body'=>$body);
-}
 /* End of file edit.inc.php */
 /* Location: ./wiki-common/plugin/edit.inc.php */
