@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone
-// $Id: link.php,v 1.20.9 2012/11/21 16:04:00 Logue Exp $
+// $Id: link.php,v 1.20.10 2012/11/26 11:53:00 Logue Exp $
 // Copyright (C)
 //   2010-2012 PukiWiki Advance Developers Team
 //   2005-2007 PukiWiki Plus! Team
@@ -33,28 +33,52 @@
 
 // Related cache data prefix
 defined('PKWK_REL_PREFIX')	or define('PKWK_REL_PREFIX', 'rel-');
-// Refered cache data prefix
+// Referred cache data prefix
 defined('PKWK_REF_PREFIX')	or define('PKWK_REF_PREFIX', 'ref-');
 
- // Get related-pages from DB
+// Get related-pages from DB
 function links_get_related_db($page)
 {
 	global $cache;
 
-	$ref_name = PKWK_REF_PREFIX.md5($page);
-	if (! $cache['wiki']->hasItem($ref_name)){
+	$rel_name = PKWK_REL_PREFIX.md5($page);
+	if (! $cache['wiki']->hasItem($rel_name)){
 		$data = links_update($page);
-		$cache['wiki']->setItem($ref_name, $data);
+		$cache['wiki']->setItem($rel_name, $data);
 	}else{
+		$data = $cache['wiki']->getItem($rel_name);
+		$cache['wiki']->touchItem($rel_name);
+	}
+
+	$times = array();
+	foreach ($data as $page) {
+		$time = get_filetime($page);
+		if($time !== 0) $times[$page] = $time;
+	}
+	return $times;
+}
+
+// Get referred-pages from DB
+function links_get_referred($page)
+{
+	global $cache;
+
+	$ref_name = PKWK_REF_PREFIX.md5($page);
+	if ($cache['wiki']->hasItem($ref_name)){
+		$data = $cache['wiki']->getItem($ref_name);
+		$cache['wiki']->touchItem($ref_name);
+	}else{
+		// ページ名を含むページを検索
+		$pages = do_search($page, 'AND', TRUE);
+		links_init($pages, false);
 		$data = $cache['wiki']->getItem($ref_name);
 	}
 
 	$times = array();
-	foreach ($data as $line) {
-		$time = get_filetime($line[0]);
-		if($time !== 0) $times[$line[0]] = $time;
+	foreach ($data as $ref_page=>$ref_auto) {
+		$time = get_filetime($ref_page);
+		if($time !== 0) $times[$ref_page] = $time;
 	}
-
 	return $times;
 }
 
@@ -71,7 +95,7 @@ function links_update($page)
 	$rel_name = PKWK_REL_PREFIX.md5($page);
 	$rel_file_exist = $cache['wiki']->hasItem($rel_name);
 
-	$rel_old  = ($rel_file_exist === true) ? $cache['wiki']->getItem($rel_name) : array();
+	$rel_old  = ($rel_file_exist) ? $cache['wiki']->getItem($rel_name) : array();
 	$rel_new  = array();	// Reference to
 	$rel_auto = array();	// by AutoLink
 	$links    = links_get_objects($page, TRUE);
@@ -104,6 +128,8 @@ function links_update($page)
 	if ($time) {
 		// Page exists
 		$cache['wiki']->setItem($rel_name, $rel_new);
+	}else if ($rel_file_exist){
+		$cache['wiki']->touchItem($rel_name);
 	}
 
 	// .ref: Pages refer to the $page
@@ -126,9 +152,8 @@ function links_update($page)
 	}
 
 	$ref_name = PKWK_REF_PREFIX.md5($page);
-	$data = $cache['wiki']->getItem($ref_name);
-	if (! $time && $data) {
-		foreach($data as $ref_page=>$ref_auto){
+	if (! $time && $cache['wiki']->hastItem($ref_name)) {
+		foreach($cache['wiki']->getItem($ref_name) as $ref_page=>$ref_auto){
 			// Update pages they refer the $page by AutoLink only [HEAVY]
 			if ($ref_auto) {
 				links_delete($ref_page, array($page));
@@ -139,27 +164,28 @@ function links_update($page)
 }
 
 // Init link cache (Called from link plugin)
-function links_init()
+function links_init($pages = '', $force = false)
 {
 	global $cache;
 	// if (PKWK_READONLY) return; // Do nothing
 	if (auth::check_role('readonly')) return; // Do nothing
 
-	if (ini_get('safe_mode') === '0') set_time_limit(0);
+	if ($force){
+		// Init database
+		$cache['wiki']->clearByPrefix(PKWK_REL_PREFIX);
+		$cache['wiki']->clearByPrefix(PKWK_REF_PREFIX);
+	}
 
-	// Init database
-	$cache['wiki']->clearByPrefix(PKWK_REL_PREFIX);
-	$cache['wiki']->clearByPrefix(PKWK_REF_PREFIX);
+	if ( empty($pages) ) $pages = get_existpages();
 
 	$ref   = array(); // Reference from
-	foreach (get_existpages() as $page) {
+	foreach ($pages as $page) {
 		if (is_cantedit($page)) continue;
-
 		$rel   = array(); // Reference to
 		$links = links_get_objects($page);
 		foreach ($links as $_obj) {
 			if (! isset($_obj->type) || $_obj->type !== 'pagename' ||
-			    $_obj->name === $page || empty($_obj->name) )
+				$_obj->name === $page || empty($_obj->name) )
 				continue;
 
 			$_name = $_obj->name;
@@ -175,14 +201,15 @@ function links_init()
 			if (! is_a($_obj, 'Link_autolink'))
 				$ref[$_name][$page] = 0;
 		}
-		$rel = array_unique($rel);
-
-		if (! empty($rel)) {
-			$cache['wiki']->setItem(PKWK_REL_PREFIX.md5($page), $rel);
-		}
+		$cache['wiki']->setItem(PKWK_REL_PREFIX.md5($page), array_unique($rel));
 	}
 
-	$cache['wiki']->setItem(PKWK_REF_PREFIX.md5($page), $ref);
+	foreach ($ref as $page=>$arr) {
+		$cache['wiki']->setItem(PKWK_REF_PREFIX.md5($page), $arr);
+	}
+
+	$cache['wiki']->optimize();
+	return true;
 }
 
 function links_add($page, $add, $rel_auto)
@@ -200,8 +227,9 @@ function links_add($page, $add, $rel_auto)
 
 		$ref[] = array($page, $all_auto);
 		if ($cache['wiki']->hasItem($ref_name)){
-			foreach ($cache['wiki']->getItem($ref_name) as $line) {
-				if ($line[0] !== $page) $ref[] = array($line[0], $line[1]);
+			foreach ($cache['wiki']->getItem($ref_name) as $ref_page=>$ref_auto) {
+				if (! $ref_auto) $all_auto = FALSE;
+				if ($ref_page !== $page) $ref[] = array($page, ($all_auto ? 1 : 0));
 			}
 		}
 
@@ -228,15 +256,12 @@ function links_delete($page, $del)
 		if (! $cache['wiki']->hasItem($ref_name) ) continue;
 
 		$ref = array();
-		foreach ($cache['wiki']->getItem($ref_name) as $line) {
-			list($ref_page, $ref_auto) = $line;
-			if ($ref_page !== $page) {
-				$ref[] = array($ref_page, $ref_auto);
-			}
+		foreach ($cache['wiki']->getItem($ref_name) as $ref_page=>$ref_auto) {
+			if ($line !== $page) $ref[] = array($ref_page,$ref_auto);
 		}
 
 		if ($is_page || ! $all_auto || count($ref) == 1) {
-			$cache['wiki']->replaceItem($ref_name, @array_unique($ref));
+			$cache['wiki']->replaceItem($ref_name, array_unique($ref));
 		}else{
 			$cache['wiki']->removeItem($ref_name);
 		}

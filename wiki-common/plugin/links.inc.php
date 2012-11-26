@@ -9,11 +9,12 @@ function plugin_links_init()
 {
 	$messages = array(
 		'_links_messages'=>array(
-			'title_update'  => T_("Cache update"),
-			'msg_adminpass' => T_("Administrator password"),
-			'btn_submit'    => T_("Exec"),
-			'msg_done'      => T_("The update of cashe was completed."),
-			'msg_error'		=> T_("The update of cashe was failure. Please check password."),
+			'title_update'  => T_('Cache update'),
+			'msg_adminpass' => T_('Administrator password'),
+			'btn_submit'    => T_('Exec'),
+			'btn_force'		=> T_('Force'),
+			'msg_done'      => T_('The update of cashe was completed.'),
+			'msg_error'		=> T_('The update of cashe was failure. Please check password.'),
 			'msg_usage1'	=> 
 				T_('* Content of processing') . "\n" .
 				T_(':Cache update|') . "\n" .
@@ -39,15 +40,18 @@ function plugin_links_action()
 
 	$admin_pass = (empty($post['adminpass'])) ? '' : $post['adminpass'];
 	if ( isset($vars['menu']) && (! auth::check_role('role_adm_contents') || pkwk_login($admin_pass) )) {
-		set_time_limit(0);
+		$force = (isset($post['force']) && $post['force'] === 'on') ? true : false;
 		$msg  = & $_links_messages['title_update'];
-		if (update_cache('', true) !== false){
+
+		if (update_cache(null, $force) !== false){
 			$foot_explain = array(); // Exhaust footnotes
-			$body = & $_links_messages['msg_done'    ];
+			$body = & $_links_messages['msg_done'];
 			return array('msg'=>$msg, 'body'=>$body);
 		}else{
 			return array('msg'=>$msg, 'body'=>$_links_messages['msg_failure']);
 		}
+
+		return array('msg'=>$msg, 'body'=>$body);
 	}
 
 	$msg   = & $_links_messages['title_update'];
@@ -66,6 +70,8 @@ EOD;
 EOD;
 	}
 	$body .= <<<EOD
+	<input type="checkbox" name="force" id="_c_force" />
+	<label for="_c_force">{$_links_messages['btn_force']}</label>
 	<input type="submit" value="{$_links_messages['btn_submit']}" />
 </form>
 EOD;

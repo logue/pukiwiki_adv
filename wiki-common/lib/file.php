@@ -113,7 +113,7 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	}
 
 	// captcha check
-	if ( (isset($use_spam_check['captcha']) && $use_spam_check['captcha'] !== 0 && (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] !== 1)){
+	if ( (isset($use_spam_check['captcha']) && $use_spam_check['captcha'] !== 0) && (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] !== 1)) {
 		captcha_check(( $use_spam_check['captcha'] === 2 ? false : true) );
 	}
 
@@ -272,7 +272,7 @@ function make_str_rules($source)
 
 	// Multiline part has no stopper
 	if (! PKWKEXP_DISABLE_MULTILINE_PLUGIN_HACK &&
-	    $modify === FALSE && $multiline != 0)
+		$modify === FALSE && $multiline != 0)
 		$lines[] = str_repeat('}', $multiline);
 
 	return implode("\n", $lines);

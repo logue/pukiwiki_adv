@@ -69,7 +69,7 @@ function update_cache($page = '', $force = false){
 	get_attachfiles($page);
 
 	// Update AutoAliasName
-	if ($autoalias !== 0 && (! $cache['wiki']->hasItem(PKWK_AUTOALIAS_REGEX_CACHE) || $page === $aliaspage) ) {
+	if ($autoalias !== 0 && ! $cache['wiki']->hasItem(PKWK_AUTOALIAS_REGEX_CACHE)  ) {
 		$aliases = get_autoaliases();
 
 		if (empty($aliases) ) {
@@ -82,7 +82,7 @@ function update_cache($page = '', $force = false){
 	}
 
 	// Update AutoGlossary
-	if ($autoglossary !== 0 && (! $cache['wiki']->hasItem(PKWK_GLOSSARY_REGEX_CACHE) || $page === $glossarypage)) {
+	if ($autoglossary !== 0 && ! $cache['wiki']->hasItem(PKWK_GLOSSARY_REGEX_CACHE) ) {
 		$words = get_autoglossaries();
 		if (empty($words) ) {
 			// Remove
@@ -111,14 +111,16 @@ function update_cache($page = '', $force = false){
 	}
 
 	// Update rel and ref cache
-	if ($force) {
-		links_init();
-	}else if (!empty($page) ){
-		links_update($page);
+	if (!empty($page) ){
+		links_init($page);
+	} else if ($force) {
+		links_init(null, $force);
 	}
 
 	// Update recent cache
 	if (! $cache['wiki']->hasItem(PKWK_MAXSHOW_CACHE)) put_lastmodified();
+
+	return true;
 }
 
 // Move from file.php
