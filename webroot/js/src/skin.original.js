@@ -259,31 +259,34 @@ var pukiwiki = {};
 			// フォームを初期化
 			this.init_dom();
 
-			/*
 			// FIXME:アップローダーに進捗状況表示（PHP5.4以降のみ）
-			if ($('form[enctype]').length !== 0 && $('.progress_session').length !== 0){
+		//	if ($('form[enctype]').length !== 0 && $('form[enctype] .progress_session').length !== 0){
 				var $progress = $('<div style="width:400px;"></div>').progressbar();
-				$('form[enctype] input[type="submit"]').after($progress);
+				$('form[enctype]').after($progress);
+				$progress.show('blind');
 				$('form[enctype]').submit(function(){
+					
 					var f = function() {
 						$.getJSON(
 							SCRIPT,
 							{cmd : 'attach',pcmd : 'progress'},
 							function(data) {
-								console.dir(data);
+								console.log(data);
 								if (data !== null) {
 									$progress.progressbar({value:Math.round(100 * (data["bytes_processed"] / data["content_length"]))});
 									if (!data["done"]) {
 										setTimeout(f, 200);
+									}else{
+								//		$progress.hide('blind');
 									}
 								} 
 							}
 						);
 					};
 					setTimeout(f, 200);
+					return false;
 				});
-			}
-			*/
+		//	}
 
 			// バナーボックス
 			$('#banner_box img').fadeTo(200,0.3);
@@ -551,7 +554,7 @@ var pukiwiki = {};
 		},
 		set_widget_btn : function(prefix){
 			prefix = (prefix) ? prefix + ' ' : '';
-			// hover states on the static widgets//hover states on the static widgets
+			// hover states on the static widgets
 			$(prefix + '.pkwk_widget .ui-state-default').hover(function() {
 				$(this).addClass('ui-state-hover');
 			},function() {
@@ -686,8 +689,9 @@ var pukiwiki = {};
 								$this.attr('href',SCRIPT+'?cmd='+params.cmd+'&refer='+params.refer+'&openfile='+filename);
 							}
 							ext = filename.match(/\.(\w+)$/i);
+							
 							if (ext){
-								switch (ext[1]) {
+								switch (ext[1].toLowerCase()) {
 									case 'jpg': case 'jpeg': case 'gif': case'png': // case'svg' : case 'svgz' :
 										$this.rlightbox();
 									break;
@@ -1602,34 +1606,33 @@ var pukiwiki = {};
 			
 			// 送信イベント時の処理
 			$(prefix + 'form').submit(function(e){
-/*
-
 				var postdata = $(this).serializeObject();	// フォームの内容をサニタイズ
 				postdata.ajax = 'json';
-*/
 				// ローカルストレージをフラッシュ
 				if (isEnableLocalStorage){
 					localStorage.removeItem(PAGE);
 				}
 
-				if ($('#_edit_form_notimestamp:checked') !== true && $('#fb_publish:checked') === true){
-					$.ajax({
-						url:'https://graph.facebook.com/bbeckford/feed',
-						type:'post',
-						data: {
-							method: 'stream.publish',
-							message: PAGE + "\n" + $('link[rel=canonical]')[0].href
-						},
-						cache: false,
-						dataType : 'json',
-						success : function(data){
-							console.log(data.body);
-						},
-						error : function(data){
-							$(prefix + 'input, button, select, textarea').removeAttr('disabled');
-							alert($.i18n('pukiwiki','error'));
-						}
-					});
+				if ( $('#_edit_form_notimestamp:checked') !== true ) {
+					if (FACEBOOK_APPID && $('#fb_publish:checked') === true){
+						$.ajax({
+							url:'https://graph.facebook.com/bbeckford/feed',
+							type:'post',
+							data: {
+								method: 'stream.publish',
+								message: PAGE + "\n" + $('link[rel=canonical]')[0].href
+							},
+							cache: false,
+							dataType : 'json',
+							success : function(data){
+								console.log(data.body);
+							},
+							error : function(data){
+								$(prefix + 'input, button, select, textarea').removeAttr('disabled');
+								alert($.i18n('pukiwiki','error'));
+							}
+						});
+					}
 				}
 /*
 				$.ajax({
