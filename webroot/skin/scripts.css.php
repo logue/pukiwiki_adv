@@ -3271,6 +3271,8 @@ li[role=tab]{
 	.style_td {
 		border: 1px dotted #333333;
 	}
+	
+	a.ui-button { display:none; }
 }
 <?php
 @ob_end_flush();
