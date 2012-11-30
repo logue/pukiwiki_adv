@@ -889,16 +889,13 @@ class Body extends Element
 			// Extend TITLE by miko
 			if (preg_match('/^(TITLE):(.*)$/',$line,$matches))
 			{
-				global $newtitle, $newbase;
+				global $newtitle;
+				static $newbase;
 				if (empty($newbase)) {
 					// $newbase = trim($matches[2]);
-					$newbase = convert_html($matches[2]);
-					$newbase = strip_htmltag($newbase);
-					//$newbase = trim($newbase);
-					$newtitle = trim($newbase);
+					$newbase = trim(strip_htmltag(convert_html($matches[2])));
 					// For BugTrack/132.
-					// $newtitle = htmlsc($newbase);
-					//$newtitle = str_replace('&amp;','&',htmlsc($newbase));
+					$newtitle = htmlsc($newbase);
 				}
 				continue;
 			}
