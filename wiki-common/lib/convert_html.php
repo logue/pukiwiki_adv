@@ -15,31 +15,31 @@
 defined('PKWK_HTML_CACHE_PREFIX') or define('PKWK_HTML_CACHE_PREFIX', 'html-');
 function convert_html($lines)
 {
-	global $vars, $digest, $cache;
+	global $vars, $digest, $cache, $use_html_cache;
 	static $contents_id = 0;
 
 	// Set digest
 	$digest = empty($digest) ? md5(get_source($vars['page'], TRUE, TRUE)) : $digest;
 
-	// 入力値のハッシュを作成
-	$htmldigest =  md5(is_array($lines) ? join('',$lines) : $lines);
+	if (! is_array($lines)) $lines = explode("\n", $lines);
 
-	if (PKWK_RAW_CACHE_EXPIRE !== 0 && $cache['raw']->hasItem(PKWK_HTML_CACHE_PREFIX.$htmldigest)){
-		$html = $cache['raw']->getItem(PKWK_HTML_CACHE_PREFIX.$htmldigest);
-		$cache['raw']->touchItem(PKWK_HTML_CACHE_PREFIX.$htmldigest);	// キャッシュの有効期限を伸ばす
+	if ($use_html_cache){
+		// 入力値のハッシュを作成
+		$htmldigest =  LANG . '-' . md5(is_array($lines) ? join('',$lines) : $lines);
+
+		if ($cache['raw']->hasItem(PKWK_HTML_CACHE_PREFIX.$htmldigest)){
+			$html = $cache['raw']->getItem(PKWK_HTML_CACHE_PREFIX.$htmldigest);
+		}else{
+			$body = new Body(++$contents_id);
+			$body->parse($lines);
+			$html = $body->toString();
+			$cache['raw']->setItem(PKWK_HTML_CACHE_PREFIX.$htmldigest,$html);
+		}
+		$cache['raw']->clearExpired();	// 期限切れのキャッシュを削除
 	}else{
-		if (! is_array($lines)) $lines = explode("\n", $lines);
-
 		$body = new Body(++$contents_id);
 		$body->parse($lines);
 		$html = $body->toString();
-
-		if (PKWK_RAW_CACHE_EXPIRE !== 0){
-			$cache['raw']->setItem(PKWK_HTML_CACHE_PREFIX.$htmldigest,$html);
-		}
-	}
-	if (PKWK_RAW_CACHE_EXPIRE !== 0){
-		$cache['raw']->clearExpired();	// 期限切れのキャッシュを削除
 	}
 	return $html;
 }
@@ -906,15 +906,12 @@ class Body extends Element
 			// Extend TITLE by miko
 			if (preg_match('/^(TITLE):(.*)$/',$line,$matches))
 			{
-				global $newtitle, $newbase;
+				global $newtitle;
+				static $newbase;
 				if (empty($newbase)) {
-					// $newbase = trim($matches[2]);
-					$newbase = strip_htmltag(convert_html($matches[2]));
-					//$newbase = trim($newbase);
-					$newtitle = trim($newbase);
+					$newbase = trim(strip_htmltag(convert_html($matches[2])));
 					// For BugTrack/132.
-					// $newtitle = htmlsc($newbase);
-					//$newtitle = str_replace('&amp;','&',htmlsc($newbase));
+					$newtitle = htmlsc($newbase);
 				}
 				continue;
 			}

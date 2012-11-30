@@ -8,58 +8,16 @@
 //
 // Plus! extension function(s)
 
-defined('FUNC_POSTLOG')			or define('FUNC_POSTLOG', FALSE);
-defined('FUNC_SPAMLOG')			or define('FUNC_SPAMLOG', TRUE);
-defined('FUNC_BLACKLIST')		or define('FUNC_BLACKLIST', TRUE);
-defined('FUNC_SPAMREGEX')		or define('FUNC_SPAMREGEX', '#(?:cialis|hydrocodone|viagra|levitra|tramadol|xanax|\[/link\]|\[/url\])#i');
-defined('FUNC_SPAMCOUNT')		or define('FUNC_SPAMCOUNT', 2);
+defined('FUNC_POSTLOG')		or define('FUNC_POSTLOG', FALSE);
+defined('FUNC_SPAMLOG')		or define('FUNC_SPAMLOG', TRUE);
+defined('FUNC_BLACKLIST')	or define('FUNC_BLACKLIST', TRUE);
+defined('FUNC_SPAMREGEX')	or define('FUNC_SPAMREGEX', '#(?:cialis|hydrocodone|viagra|levitra|tramadol|xanax|\[/link\]|\[/url\])#i');
+defined('FUNC_SPAMCOUNT')	or define('FUNC_SPAMCOUNT', 2);
 
 function showtaketime(){
 	// http://pukiwiki.sourceforge.jp/dev/?BugTrack2%2F251
 	$longtaketime = getmicrotime() - MUTIME;
 	return sprintf('%01.03f', $longtaketime);
-}
-
-// Session start
-function pkwk_session_start()
-{
-	global $use_trans_sid_address, $session;
-
-	if (empty($session)){
-		if (!is_array($use_trans_sid_address)) $use_trans_sid_address = array();
-
-		if (in_the_net($use_trans_sid_address, get_remoteip())) {
-			ini_set('session.use_cookies', 0);
-		} else {
-			ini_set('session.use_cookies', 1);
-			ini_set('session.use_only_cookies', 1);
-		}
-		if (ini_get('session.use_cookies') === 0 && ini_get('session.use_trans_sid') === 0) {
-			output_add_rewrite_var(session_name(WIKI_NAMESPACE), session_id());
-		}
-		$session = new Zend\Session\Container(WIKI_NAMESPACE);
-	}
-
-	return $session;
-}
-
-// Session destroy
-function pkwk_session_destroy(){
-	global $session;
-
-	if (!empty($session)) {
-		// セッション変数を全て解除する
-		// セッションを切断するにはセッションクッキーも削除する。
-		// Note: セッション情報だけでなくセッションを破壊する。
-		if (ini_get('session.use_cookies') === 1) {
-			$params = session_get_cookie_params();
-			setcookie(session_name(WIKI_NAMESPACE), '', time() - 42000,
-				$params['path'], $params['domain'],
-				$params['secure'], $params['httponly']
-			);
-		}
-		$session->destory();
-	}
 }
 
 // same as 'basename' for page
@@ -151,7 +109,7 @@ function get_fancy_uri()
 
 function get_remoteip()
 {
-	static $array_var = array('HTTP_X_REMOTE_ADDR','REMOTE_ADDR'); // HTTP_X_FORWARDED_FOR
+	static $array_var = array('HTTP_CF_CONNECTING_IP', 'HTTP_X_REMOTE_ADDR','REMOTE_ADDR'); // HTTP_X_FORWARDED_FOR
 	foreach($array_var as $x){
 		if (isset($_SERVER[$x])) return $_SERVER[$x];
 	}
@@ -901,58 +859,10 @@ if (! function_exists('move')) {
 		return TRUE;
 	}
 }
-if (! function_exists('file_put_contents')) {
-	/**
-	 * Write a string to a file (PHP5 has this function)
-	 *
-	 * @param string $filename
-	 * @param string $data
-	 * @param int $flags
-	 * @return int the amount of bytes that were written to the file, or FALSE if failure
-	 */
-	if (! defined('FILE_APPEND')) define('FILE_APPEND', 8);
-	if (! defined('FILE_USE_INCLUDE_PATH')) define('FILE_USE_INCLUDE_PATH', 1);
-	function file_put_contents($filename, $data, $flags = 0)
-	{
-		$mode = ($flags & FILE_APPEND) ? 'a' : 'w';
-		$fp = fopen($filename, $mode);
-		if ($fp === FALSE) {
-			return FALSE;
-		}
-		if (is_array($data)) $data = implode('', $data);
-		if ($flags & LOCK_EX) flock($fp, LOCK_EX);
-		$bytes = fwrite($fp, $data);
-		if ($flags & LOCK_EX) flock($fp, LOCK_UN);
-		fclose($fp);
-		return $bytes;
-	}
-}
-
-if (!function_exists('json_decode')) {
-	function json_decode($value){
-		return Zend\Json\Json::decode($value);
-	}
-}
-if (! function_exists('json_encode')){
-	function json_encode($value){
-		return Zend\Json\Json::encode($value);
-	}
-}
 /**************************************************************************************************/
-// Mecabの出力をPHPの配列に変換する関数
-
-if (! function_exists('stream_get_contents')) {
-	function stream_get_contents($handle) {
-		$contents = '';
-		while (!feof($handle)) {
-			$contents .= fread($handle, 8192);
-		}
-		return $contents;
-	}
-}
 // 標準出力からMecabを実行
 // https://github.com/odoku/MeCab-for-PHP5/blob/master/MeCab.php
-function mecab_stdio($switch = '', $str){
+function mecab_stdio($switch, $str){
 	global $mecab_path;
 	if (!file_exists($mecab_path)){
 		die_message('Mecab is not found or not executable. Please check mecab path: '.$mecab_path);
@@ -965,7 +875,7 @@ function mecab_stdio($switch = '', $str){
 		2 => array('pipe', 'w')
 	);
 
-	$cmd = $mecab_path.' '.$switch;
+	$cmd = $mecab_path. isset($switch) ? ' '.$switch : '';
 	$process = proc_open($cmd, $descriptorspec, $pipes, null, null);
 	if (!is_resource($process)) return false;
 
@@ -986,7 +896,6 @@ function mecab_stdio($switch = '', $str){
 
 function mecab_parse($input){
 	if (!extension_loaded('mecab')) {
-		global $mecab_path;
 		$result = mecab_stdio('',$input);
 	}else{
 		$mecab = new MeCab_Tagger();

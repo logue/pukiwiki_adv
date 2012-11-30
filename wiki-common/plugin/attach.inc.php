@@ -49,9 +49,9 @@ defined('PLUGIN_ATTACH_UNKNOWN_COMPRESS')	or define('PLUGIN_ATTACH_UNKNOWN_COMPR
 defined('PLUGIN_ATTACH_COMPRESS_TYPE')		or define('PLUGIN_ATTACH_COMPRESS_TYPE', 'TGZ');		// TGZ, GZ, BZ2 or ZIP
 
 // 添付ファイルキャッシュを使う（ページの表示やページごとの添付ファイル一覧表示は早くなりますが、全ページではむしろ重くなります）
-defined('PLUGIN_ATTACH_USE_CACHE')		or define('PLUGIN_ATTACH_USE_CACHE', true);
+defined('PLUGIN_ATTACH_USE_CACHE')    or define('PLUGIN_ATTACH_USE_CACHE', true);
 // 添付ファイルのキャッシュの接頭辞
-define('PLUGIN_ATTACH_CACHE_PREFIX', 'attach-');
+defined('PLUGIN_ATTACH_CACHE_PREFIX') or define('PLUGIN_ATTACH_CACHE_PREFIX', 'attach-');
 
 function plugin_attach_init()
 {
@@ -198,7 +198,7 @@ function plugin_attach_action()
 			case 'rename'   : return attach_rename();
 			case 'upload'   : return attach_showform();
 			case 'form'     : return array('msg'  =>str_replace('$1', $refer, $_attach_messages['msg_upload']), 'body'=>attach_form($refer));
-			case 'progress' : return attach_progress();
+			case 'progress' : return get_upload_progress();
 		}
 		return ($page == '' || ! is_page($page)) ? attach_list() : attach_showform();
 	}
@@ -768,15 +768,6 @@ function attach_form($page)
 	return join("\n",$attach_form);
 }
 
-// 進捗状況表示（ってattachプラグインでなくても、これ呼び出す実装かよ）
-function attach_progress(){
-	global $session;
-	$key = ini_get('session.upload_progress.prefix') . WIKI_NAMESPACE;
-	header("Content-Type: application/json; charset=".CONTENT_CHARSET);
-	echo $session->offsetExists($key) ? json_encode($session->offsetGet($key)) : json_encode(null);
-	exit;
-}
-
 //-------- クラス
 // ファイル
 class AttachFile
@@ -935,16 +926,19 @@ class AttachFile
 
 		$_attach_setimage = '';
 		if (extension_loaded('exif') && extension_loaded('gd')){
-			$exif = exif_read_data($this->filename);
-			$size = getimagesize($this->filename);	// 画像でない場合はfalseを返す
-			if ($size !== false){
-				if ($size[2] > 0 && $size[2] < 3) {
-					if ($size[0] < 200) { $w = $size[0]; $h = $size[1]; }
-					else { $w = 200; $h = $size[1] * (200 / ($size[0]!=0?$size[0]:1) ); }
-					$_attach_setimage  = ($pkwk_dtd == PKWK_DTD_HTML_5) ? '<figure class="img_margin attach_info_image">' : '<div class="img_margin attach_info_image">';
-					$_attach_setimage .= '<img src="'.get_cmd_uri('ref','','',array('page'=>$this->page,'src'=>$this->file));
-					$_attach_setimage .= '" width="' . $w .'" height="' . $h . '" />';
-					$_attach_setimage .= ($pkwk_dtd == PKWK_DTD_HTML_5) ? '</figure>' : '</div>';
+			$file = $this->filename;
+			if (exif_imagetype($file) === IMAGETYPE_JPEG) {
+				$exif = exif_read_data($file);
+				$size = getimagesize($file);	// 画像でない場合はfalseを返す
+				if ($size !== false){
+					if ($size[2] > 0 && $size[2] < 3) {
+						if ($size[0] < 200) { $w = $size[0]; $h = $size[1]; }
+						else { $w = 200; $h = $size[1] * (200 / ($size[0]!=0?$size[0]:1) ); }
+						$_attach_setimage  = ($pkwk_dtd == PKWK_DTD_HTML_5) ? '<figure class="img_margin attach_info_image">' : '<div class="img_margin attach_info_image">';
+						$_attach_setimage .= '<img src="'.get_cmd_uri('ref','','',array('page'=>$this->page,'src'=>$this->file));
+						$_attach_setimage .= '" width="' . $w .'" height="' . $h . '" />';
+						$_attach_setimage .= ($pkwk_dtd == PKWK_DTD_HTML_5) ? '</figure>' : '</div>';
+					}
 				}
 			}
 		}
@@ -983,7 +977,7 @@ EOD;
 EOD;
  		}
 
- 		$file_info = <<<EOD
+		$file_info = <<<EOD
 <dl>
 	$info_auth
 	<dt>{$_attach_messages['msg_page']}:</dt>
@@ -1001,9 +995,9 @@ EOD;
 	$msg_freezed
 </dl>
 EOD;
-		$retval['body'] .= '<div id="attach_info" role="tabpanel" aria-labeledby="tab1">'."\n".( ($pkwk_dtd === PKWK_DTD_HTML_5) ?
+		$retval['body'] .= '<div id="attach_info" role="tabpanel" aria-labeledby="tab1">' . "\n" . $_attach_setimage . ( ($pkwk_dtd === PKWK_DTD_HTML_5) ?
 			'<details>'."\n".'<summary>'.$info.'</summary>'."\n".$file_info."\n".'</details>' :
-			'<fieldset>'."\n".'<legend>'.$info.'</legend>'."\n".$file_info."\n".'</fieldset>').'</div>'."\n";
+			'<fieldset>'."\n".'<legend>'.$info.'</legend>'."\n".$file_info."\n". '</fieldset>').'</div>'."\n";
 
 		if (!IS_AJAX){ $retval['body'] .= '<hr style="clear:both" />'; }
 		$retval['body'] .= <<< EOD
@@ -1331,8 +1325,6 @@ class AttachFiles
 	}
 }
 
-
-
 // ページコンテナ
 class AttachPages
 {
@@ -1344,11 +1336,12 @@ class AttachPages
 		$handle = opendir(UPLOAD_DIR) or
 			die('directory ' . UPLOAD_DIR . ' is not exist or not readable.');
 
-//		if ($purge)
+		if ($purge)
 			$cache['wiki']->clearByPrefix(PLUGIN_ATTACH_CACHE_PREFIX);
 
-		if ($page !== '') $cache_name = PLUGIN_ATTACH_CACHE_PREFIX.md5($page);
-		if (PLUGIN_ATTACH_USE_CACHE && $page !== '' && $cache['wiki']->hasItem($cache_name) ){
+		if (PLUGIN_ATTACH_USE_CACHE && $page !== '') $cache_name = PLUGIN_ATTACH_CACHE_PREFIX.md5($page);
+
+		if ($page !== '' && $cache['wiki']->hasItem($cache_name) ){
 			$this->pages[$page] = (object)$cache['wiki']->getItem($cache_name);
 		}else{
 			$page_pattern = ($page == '') ? '(?:[0-9A-F]{2})+' : preg_quote(encode($page), '/');
@@ -1363,19 +1356,27 @@ class AttachPages
 				$_page = decode($matches[1]);
 				if (! check_readable($_page, FALSE, FALSE)) continue;
 
-				if (PLUGIN_ATTACH_USE_CACHE && $cache['wiki']->hasItem(PLUGIN_ATTACH_CACHE_PREFIX.md5($_page)) && $_page !== $page){
-					$this->pages[$_page] = $cache['wiki']->getItem(PLUGIN_ATTACH_CACHE_PREFIX.md5($_page));
-				}else{
-					$_file = decode($matches[2]);
-					$_age  = isset($matches[3]) ? $matches[3] : 0;
-					if (! isset($this->pages[$_page])) {
-						$this->pages[$_page] = new AttachFiles($_page);
+				if (PLUGIN_ATTACH_USE_CACHE){
+					$_cache_name = PLUGIN_ATTACH_CACHE_PREFIX.md5($_page);
+					if ( $cache['wiki']->hasItem($_cache_name) ){
+						$this->pages[$_page] = $cache['wiki']->getItem($_cache_name);
+						continue;
 					}
-					$this->pages[$_page]->add($_file, $_age);
 				}
-				$_page2 = $_page;
+
+				$_file = decode($matches[2]);
+				$_age  = isset($matches[3]) ? $matches[3] : 0;
+				if (! isset($this->pages[$_page])) {
+					$this->pages[$_page] = new AttachFiles($_page);
+				}
+				$this->pages[$_page]->add($_file, $_age);
+				if (PLUGIN_ATTACH_USE_CACHE){
+					$_page2 = $_page;
+				}
 			}
 			closedir($handle);
+
+			// ページごとの添付ファイル情報をキャッシュ
 			if (PLUGIN_ATTACH_USE_CACHE){
 				if ($page !== '' && isset($this->pages[$page])){
 					$cache['wiki']->setItem(PLUGIN_ATTACH_CACHE_PREFIX.md5($page), $this->pages[$page]);

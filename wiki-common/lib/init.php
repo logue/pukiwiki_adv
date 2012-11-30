@@ -102,7 +102,7 @@ defined('THEME_PLUS_NAME')	or define('THEME_PLUS_NAME',  'theme/');			// SKIN_UR
 
 // フレームワークのバージョン
 define('JQUERY_VER',		'1.8.3');
-define('JQUERY_UI_VER',		'1.9.1');
+define('JQUERY_UI_VER',		'1.9.2');
 define('JQUERY_MOBILE_VER',	'1.2.0');
 
 // ページ名やファイル名として使用できない文字（エンコード前の文字）
@@ -115,34 +115,17 @@ defined('PKWK_PROGRESS_SESSION_NAME') or define('PKWK_PROGRESS_SESSION_NAME', 'p
 defined('PKWK_IGNOLE_POSTID_CHECK_PLUGINS') or define('PKWK_IGNOLE_POSTID_CHECK_PLUGINS', '/menu|side|header|footer|full|read|include|calendar|login/');
 
 // PukiWiki Adv.共有データーの名前空間（Wikifirm用）
-define('CORE_NAMESPACE', 'pukiwiki-adv');
+define('PKWK_CORE_NAMESPACE', 'pukiwiki_adv');
 
-// Wikiの名前空間（セッションやキャッシュで他のWikiと名前が重複するのを防ぐため）
-define('WIKI_NAMESPACE', md5(realpath(DATA_HOME)) );
+// Wikiの名前空間（セッションやキャッシュで他のWikiと名前が重複するのを防ぐため）7文字で十分だろう・・。
+define('PKWK_WIKI_NAMESPACE', 'pkwk_'.substr(md5(realpath(DATA_HOME)), 0 ,7) );
+
+// 汎用キャッシュの有効期間
+defined('PKWK_CACHE_EXPIRE') or define('PKWK_CACHE_EXPIRE', 604800);	// 60*60*24*7 1week
 
 // convert_htmlのキャッシュ名の接頭辞
 defined('PKWK_RAW_CACHE_EXPIRE') or define('PKWK_RAW_CACHE_EXPIRE', 3600);	// 60*60 = 1hour
 
-// POSTIDの有効期間
-defined('POSTID_EXPIRE')	or define('POSTID_EXPIRE', 3600);	// 60*60 = 1hour
-
-// CAPTCHAセッションの接頭辞
-defined('PKWK_CAPTCHA_SESSION_PREFIX') or define('PKWK_CAPTCHA_SESSION_PREFIX','captcha-');
-
-// CAPTCHA認証済みセッションの有効期間（セッション名は、ticketに閲覧者のリモートホストを加えたもののmd5値とする）
-defined('PKWK_CAPTCHA_SESSION_EXPIRE') or define('PKWK_CAPTCHA_SESSION_EXPIRE','3600');	// 1時間
-
-// CAPTCHA画像のフォント（GDを使用する場合）
-defined('PKWK_CAPTCHA_IMAGE_FONT') or define('PKWK_CAPTCHA_IMAGE_FONT', LIB_DIR.'fonts/Vera.ttf');
-
-// CAPTCHA画像の一時保存先（GDを使用する場合）
-defined('PKWK_CAPTCHA_IMAGE_CACHE_DIR') or define('PKWK_CAPTCHA_IMAGE_CACHE_DIR', CACHE_DIR . 'captcha/');
-
-// CAPTCHA認証の有効期間
-defined('PKWK_CAPTCHA_TIMEOUT') or define('PKWK_CAPTCHA_TIMEOUT', 120);	// 2分間
-
-// CAPTCHA認証の入力文字数
-defined('PKWK_CAPTCHA_WORD_LENGTH') or define('PKWK_CAPTCHA_WORD_LENGTH', 6);
 /////////////////////////////////////////////////
 // Init grobal variables
 
@@ -164,26 +147,49 @@ $_SKIN        = array();
 /////////////////////////////////////////////////
 // Initilalize Zend
 //
+// Composer autoloading
+if (file_exists('autoload.php')) {
+	$loader = include 'autoload.php';
+}
 
-require_once (LIB_DIR.'Zend/Loader/StandardAutoloader.php');
-$loader = new Zend\Loader\StandardAutoloader(array(
-	Zend\Loader\StandardAutoloader::AUTOREGISTER_ZF => true,
-	Zend\Loader\StandardAutoloader::LOAD_NS => array(
-		'ZendService' => LIB_DIR . 'ZendService'
-	)
-));
-$loader->register();
+if (getenv('ZF2_PATH')) {	// Support for ZF2_PATH environment variable or git submodule
+	$zf2Path = getenv('ZF2_PATH');
+} elseif (get_cfg_var('zf2_path')) {	// Support for zf2_path directive value
+	$zf2Path = get_cfg_var('zf2_path');
+} else {
+	$zf2Path = LIB_DIR;
+}
+
+if ($zf2Path) {
+	if (isset($loader)) {
+		$loader->add('Zend', $zf2Path);
+	} else {
+		include $zf2Path . '/Zend/Loader/AutoloaderFactory.php';
+		Zend\Loader\AutoloaderFactory::factory(array(
+			'Zend\Loader\StandardAutoloader' => array(
+				'autoregister_zf' => true,
+				'namespaces' => array(
+					'ZendService' => LIB_DIR . 'ZendService'
+				)
+			)
+		));
+	}
+}
+
+if (!class_exists('Zend\Loader\AutoloaderFactory')) {
+	throw new RuntimeException('Unable to load ZF2. Run `php composer.phar install` or define a ZF2_PATH environment variable.');
+}
+
+/////////////////////////////////////////////////
+// Initilaize Session
+$session = new Zend\Session\Container(PKWK_WIKI_NAMESPACE);
 
 /////////////////////////////////////////////////
 // Initilalize Cache
 //
 use Zend\Cache\StorageFactory;
 
-$cache_config = $core_cache_config = array();
-// 他のWikiと競合しないようにするためDATA_HOMEのハッシュを名前空間とする
-$core_cache_config['adapter']['options']['namespace'] = CORE_NAMESPACE;
-$cache_config['adapter']['options']['namespace'] = WIKI_NAMESPACE;
-
+// 使用するキャッシュストレージを選択
 if ( class_exists('dba') ){
 	$adapter = 'Dba';
 }else if ( class_exists('apc') && ini_get('apc.enabled') ){
@@ -192,19 +198,39 @@ if ( class_exists('dba') ){
 	$adapter = 'Memcached';
 }else{
 	$adapter = 'Filesystem';
-	$cache_config['adapter']['options']['cache_dir'] = CACHE_DIR;
-	$cache_config['plugins'] = $core_cache_config['plugins'] = array('serializer');
-	unset($cache_config['adapter']['options']['namespace']);	// ファイルキャッシュの場合名前空間は使用しない
 }
-$cache_config['adapter']['name'] = $core_cache_config['adapter']['name'] = $adapter;
-$cache_config['options']['ttl'] = 0;
+
 // キャッシュ
 $cache = array(
 	// PukiWikiのコアで使われる汎用キャッシュ
-	'core' => StorageFactory::factory($core_cache_config),
+	'core' => StorageFactory::factory(array(
+		'adapter'=> array(
+			'name' => $adapter,
+			'options' => array(
+				'namespace' => PKWK_CORE_NAMESPACE,
+				'ttl' => PKWK_CACHE_EXPIRE,
+			),
+		),
+		'plugins' => array(
+			($adapter === 'Filesystem') ? 'serializer' : null
+		)
+	)),
 	// Wikiごと個別に使われるキャッシュ
-	'wiki' => StorageFactory::factory($cache_config),
-	// HTMLキャッシュ（このキャッシュのみファイルに保存）
+	'wiki' => StorageFactory::factory(array(
+		'adapter'=> array(
+			'name' => $adapter,
+			'options' => array(
+				// 他のWikiと競合しないようにするためDATA_HOMEのハッシュを名前空間とする
+				'namespace' => ($adapter === 'Filesystem') ? 'zfcache' : PKWK_WIKI_NAMESPACE,
+				'cache_dir' => ($adapter === 'Filesystem') ? CACHE_DIR : null,
+				'ttl' => PKWK_CACHE_EXPIRE,
+			),
+		),
+		'plugins' => array(
+			($adapter === 'Filesystem') ? 'serializer' : null
+		)
+	)),
+	// 生データーキャッシュ（このキャッシュのみファイルに保存。配列などは使用不可）
 	'raw' => StorageFactory::factory(array(
 		'adapter'=>array(
 			'name'=>'Filesystem',
@@ -252,7 +278,7 @@ $user_agent = $matches = array();
 $user_agent['agent'] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
 $ua = 'HTTP_USER_AGENT';
 // unset(${$ua}, $_SERVER[$ua], $HTTP_SERVER_VARS[$ua], $ua);	// safety
-if ($user_agent['agent'] == '') die();	// UAが取得できない場合は処理を中断
+if ( empty($user_agent['agent']) ) die();	// UAが取得できない場合は処理を中断
 
 foreach ($agents as $agent) {
 	if (preg_match($agent['pattern'], $user_agent['agent'], $matches)) {
@@ -442,17 +468,27 @@ if (empty($_POST)) {
 if (isset($vars['plugin']))
 	die( T_( 'plugin= is obsoleted.' ) );
 
-// 入力チェック: cmd, plugin の文字列は英数字以外ありえない
-foreach(array('cmd', 'plugin') as $var) {
-	if (isset($vars[$var]) && ! preg_match('/^[a-zA-Z][a-zA-Z0-9_]*$/', $vars[$var]))
-		unset($get[$var], $post[$var], $vars[$var]);
-}
-
 // 整形: page, strip_bracket()
 if (isset($vars['page'])) {
 	$get['page'] = $post['page'] = $vars['page']  = strip_bracket($vars['page']);
 } else {
 	$get['page'] = $post['page'] = $vars['page'] = '';
+}
+
+// 入力チェック: cmdの文字列は英数字以外ありえない
+if  (isset($vars['cmd']) ) {
+	if (! preg_match('/^[a-zA-Z][a-zA-Z0-9_]*$/', $vars[$var]))
+		unset($get['cmd'], $post['cmd'], $vars['cmd']);
+}else{
+	$get['cmd']  = $post['cmd']  = $vars['cmd']  = 'read';
+
+	$argx = explode('&', $arg);
+	$arg = is_array($argx) ? $argx[0]:$argx;
+	if ($arg == '') $arg = $defaultpage;
+	$arg = rawurldecode($arg);
+	$arg = strip_bracket($arg);
+	$arg = input_filter($arg);
+	$get['page'] = $post['page'] = $vars['page'] = $arg;
 }
 
 // 整形: msg, 改行を取り除く
@@ -463,20 +499,6 @@ if (isset($vars['msg'])) {
 // TrackBack Ping
 if (isset($vars['tb_id']) && $vars['tb_id'] !== '') {
 	$get['cmd'] = $post['cmd'] = $vars['cmd'] = 'tb';
-}
-
-// cmdもpluginも指定されていない場合は、QUERY_STRINGをページ名かInterWikiNameであるとみなす
-if (! isset($vars['cmd']) && ! isset($vars['plugin'])) {
-
-	$get['cmd']  = $post['cmd']  = $vars['cmd']  = 'read';
-
-	$argx = explode('&', $arg);
-	$arg = is_array($argx) ? $argx[0]:$argx;
-	if ($arg == '') $arg = $defaultpage;
-	$arg = rawurldecode($arg);
-	$arg = strip_bracket($arg);
-	$arg = input_filter($arg);
-	$get['page'] = $post['page'] = $vars['page'] = $arg;
 }
 
 // HTTP_X_REQUESTED_WITHヘッダーで、ajaxによるリクエストかを判別
@@ -513,20 +535,18 @@ require(add_homedir('rules.ini.php'));
 $now = format_date(UTIME);
 
 // 日時置換ルールを$line_rulesに加える
-if ($usedatetime) $line_rules = array_merge($datetime_rules,$line_rules);
+if ($usedatetime) $line_rules = array_merge($datetime_rules, $line_rules);
 unset($datetime_rules);
 
 // フェイスマークを$line_rulesに加える
-if ($usefacemark) $line_rules = array_merge($facemark_rules,$line_rules);
+if ($usefacemark) $line_rules = array_merge($facemark_rules, $line_rules);
 unset($facemark_rules);
 
 // 実体参照パターンおよびシステムで使用するパターンを$line_rulesに加える
 // XHTML5では&lt;、&gt;、&amp;、&quot;と、&apos;のみ使える。
 // http://www.w3.org/TR/html5/the-xhtml-syntax.html
-$entity_pattern = '(?=[a-zA-Z0-9]{2,8})(?:apos|amp|lt|gt|quot)';
-
 $line_rules = array_merge(array(
-	'&amp;(#[0-9]+|#x[0-9a-f]+|' . $entity_pattern . ');' => '&$1;',
+	'&amp;(#[0-9]+|#x[0-9a-f]+|(?=[a-zA-Z0-9]{2,8})(?:apos|amp|lt|gt|quot));' => '&$1;',
 	"\r"          => '<br />' . "\n",	/* 行末にチルダは改行 */
 ), $line_rules);
 

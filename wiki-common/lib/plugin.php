@@ -63,8 +63,7 @@ function check_plugin_option($val, &$params, $tolower=TRUE)
 // Check plugin limit
 function limit_plugin($name)
 {
-	global $vars;
-	static $count = array();
+	static $count;
 
 	$name = strtolower($name);
 	$count[$name] = (!isset($count[$name])) ? 1 : $count[$name]++;
@@ -78,8 +77,8 @@ function limit_plugin($name)
 // Check plugin '$name' is here
 function exist_plugin($name)
 {
-	global $exclude_plugin, $plugin_lang_path;
-	static $exist = array();
+	global $exclude_plugin, $plugin_lang_path, $cache;
+	static $exist;
 
 	$name = strtolower($name);
 
@@ -89,13 +88,13 @@ function exist_plugin($name)
 		return FALSE;
 	}
 
-	if (preg_match('/^\w{1,64}$/', $name)) {
-		foreach(array(EXT_PLUGIN_DIR,PLUGIN_DIR) as $p_dir) {
+	if (preg_match('/^\w{1,64}$/', $name) && !isset($exist[$name])){
+		foreach(array(EXT_PLUGIN_DIR, PLUGIN_DIR) as $p_dir) {
 			if (file_exists($p_dir . $name . '.inc.php')) {
 				$plugin_lang_path[$name] = (PLUGIN_DIR == $p_dir) ? LANG_DIR : EXT_LANG_DIR;
 				$exist[$name] = TRUE;
 				load_init_value($name);
-				require_once($p_dir . $name . '.inc.php');
+				require ($p_dir . $name . '.inc.php');
 				return TRUE;
 			}
 		}
@@ -133,7 +132,7 @@ function exist_plugin_inline($name) {
 function do_plugin_init($name)
 {
 	global $plugin_lang_path;
-	static $done = array();
+	static $done, $checked;
 
 	if (empty($plugin_lang_path[$name])) {
 		// bindtextdomain($name, LANG_DIR);
@@ -170,7 +169,7 @@ function do_plugin_init($name)
 // Call API 'action' of the plugin
 function do_plugin_action($name)
 {
-	global $vars, $_string, $use_spam_check;
+	global $vars, $_string, $use_spam_check, $post;
 	if (! exist_plugin_action($name)) return array();
 
 	if (do_plugin_init($name) === FALSE) {
@@ -182,8 +181,12 @@ function do_plugin_action($name)
 		die_message($_strings['plugin_encode_error']);
 	}
 
+//	if ( isset($post['ticket']) && $post['ticket'] !== md5(get_ticket() . REMOTE_ADDR) ){
+//		die_message('host is mismatch!');
+//	}
+
 	// check postid
-	if ( (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] === 1) && (isset($vars['postid']) && !check_postid($vars['postid'])) )
+	if ( (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] === 1) && (isset($post['postid']) && !check_postid($post['postid'])) )
 		die_message($_string['plugin_postid_error']);
 
 	T_textdomain($name);
@@ -297,19 +300,27 @@ function add_hidden_field($retvar, $plugin){
 
 		// PHP5.4以降かつ、マルチパートの場合、進捗状況セッション用のフォームを付加する
 		if (ini_get('session.upload_progress.enabled') && isset($matches[3]) && $matches[3] === 'multipart/form-data') {
-			$hidden_field[] = '<input type="hidden" name="' .  ini_get('session.upload_progress.name') . '" value="' . WIKI_NAMESPACE . '" class="progress_session" />';
+			$hidden_field[] = '<input type="hidden" name="' . ini_get("session.upload_progress.name") . '" value="' . PKWK_WIKI_NAMESPACE . '" class="progress_session" />';
 		}
 
 		// 更新時の競合を確認するための項目
 		if (isset($vars['page'])){
 			if (empty($digest)) $digest = md5(get_source($vars['page'], TRUE, TRUE));
-			$hidden_field[] = '<input type="hidden" name="digest" value="' . $digest . '" />';	
+			$hidden_field[] = '<input type="hidden" name="digest" value="' . $digest . '" />';
 		}
 
 		$hidden_field[] = '<!-- Additional fields END -->';
 		$retvar = preg_replace('/<form[^>]*>/', '$0'. "\n".join("\n",$hidden_field), $retvar);
 	}
 	return $retvar;
+}
+
+// 進捗状況表示（attachプラグインのpcmd=progressで出力）
+function get_upload_progress(){
+	$key = ini_get("session.upload_progress.prefix") . $_POST[ini_get("session.upload_progress.name")];
+	header("Content-Type: application/json; charset=".CONTENT_CHARSET);
+	echo Zend\Json\Json::encode( isset($_SESSION[$key]) ? $_SESSION[$key] : null );
+	exit;
 }
 
 /* End of file plugin.php */

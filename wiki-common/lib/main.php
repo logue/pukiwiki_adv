@@ -201,11 +201,6 @@ if ($spam && $method !== 'GET') {
 	}
 }
 
-// If page output, enable session.
-// NOTE: if action plugin(command) use session, call pkwk_session_start()
-//       in plugin action-API function.
-pkwk_session_start();
-
 // auth remoteip
 if (isset($auth_api['remoteip']['use']) && $auth_api['remoteip']['use']) {
 	if (exist_plugin_inline('remoteip')) do_plugin_inline('remoteip');
