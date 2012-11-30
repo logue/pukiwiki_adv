@@ -907,6 +907,8 @@ function pkwk_chown($filename, $preserve_time = TRUE)
 // touch() with trying pkwk_chown()
 function pkwk_touch_file($filename, $time = FALSE, $atime = FALSE)
 {
+	mkdir_r($filename);
+
 	// Is the owner incorrected and unable to correct?
 	if (! file_exists($filename) || pkwk_chown($filename)) {
 		if ($time === FALSE) {
@@ -921,6 +923,27 @@ function pkwk_touch_file($filename, $time = FALSE, $atime = FALSE)
 		die_message('pkwk_touch_file(): Invalid UID and (not writable for the directory or not a flie): ' .
 			htmlsc(basename($filename)));
 	}
+}
+
+/**
+ * ディレクトリを再帰的に作成
+ *
+ * mkdir_r('hoge/foo') とかやった時にhogeがなければ、hogeを作ってから、その中にfooを作る。
+ * ディレクトリの存在チェックはしない（既にある場合は作成に失敗してfalseが返る）ので注意。
+ *
+ * @access public
+ * @param  string  $dirname 作成するディレクトリ名
+ * @return boolean 作成に成功すればtrue、失敗ならfalse
+ */
+function mkdir_r($dirname)
+{
+	if (file_exists($dirname)) return false;
+	// 階層指定かつ親が存在しなければ再帰
+	if (strpos($dirname, '/') && !file_exists(dirname($dirname))) {
+		// 親でエラーになったら自分の処理はスキップ
+		if (mkdir_r(dirname($dirname)) === false) return false;
+	}
+	return mkdir($dirname);
 }
 
 /* End of file file.php */

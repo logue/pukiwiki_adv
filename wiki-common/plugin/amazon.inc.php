@@ -24,7 +24,7 @@ defined('AWS_SECRET_ACCESS_KEY')	or define('AWS_SECRET_ACCESS_KEY', '');
 /* **************** */
 /* * 変 更 可 能  * */
 /* **************** */
-defined('USE_CACHE')			or define('USE_CACHE', false);			// キャッシュ機能の使用の有無
+defined('USE_CACHE')			or define('USE_CACHE', true);			// キャッシュ機能の使用の有無
 defined('AMAZON_EXPIRE_CACHE')	or define('AMAZON_EXPIRE_CACHE', 24);	// キャッシュの有効期限(単位:時間)
 defined('AMAZON_ALLOW_CONT')	or define('AMAZON_ALLOW_CONT', true);	// true にすると、紹介本文取り込みが可能
 defined('USE_CARGO')			or define('USE_CARGO', true);			// true にすると買物かごを使用可能
@@ -811,7 +811,7 @@ class amazon_ecs
 		if (file_exists($filename_xml) && is_readable($filename_xml)) {
 			// 経過秒数
 			$live = time() - filemtime($filename_xml);
-				}
+		}
 
 		// 一度キャッシュを作成した場合、取得できない場合は継続利用されることになる
 		if ($expire >= $live) {
@@ -871,6 +871,7 @@ class amazon_ecs
 	{
 		static $ext = array('xml'=>'xml','img'=>'jpg');
 		$retval = CACHE_DIR.PLUGIN_AMAZON_CACHE_SUBDIR.'ASIN'.$this->itemid;
+		mkdir_r($retval);
 		return (empty($ext[$x])) ? $retval.'.txt' : $retval.'.'.$ext[$x];
 	}
 	function set_image_size($x) {$this->image_size = $x; }
