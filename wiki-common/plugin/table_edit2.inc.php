@@ -1088,7 +1088,7 @@ function plugin_table_edit2_inline()
 		'cell_count'    => $opt['cell_count'],
 		'add_show'		=> ($add_show ? '1' : '0')
 	)
-	) . '">'. $icon . '</a>';
+	) . '" class="noprint">'. $icon . '</a>';
 	return $body;
 }
 function plugin_table_edit2_action()
