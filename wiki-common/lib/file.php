@@ -907,7 +907,7 @@ function pkwk_chown($filename, $preserve_time = TRUE)
 // touch() with trying pkwk_chown()
 function pkwk_touch_file($filename, $time = FALSE, $atime = FALSE)
 {
-	mkdir_r($filename);
+	mkdir_r(dirname($filename));
 
 	// Is the owner incorrected and unable to correct?
 	if (! file_exists($filename) || pkwk_chown($filename)) {
