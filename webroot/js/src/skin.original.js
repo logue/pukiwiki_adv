@@ -99,7 +99,11 @@ var pukiwiki = {};
 				this.adv = false;
 			}
 			if (DEBUG){
-				console.info('PukiWiki Advance Debug mode. \nUsing Modernizr: ',Modernizr._version,' / jQuery: ',$.fn.jquery,' / jQuery UI: ',$.ui.version);
+				$('.message_box ul').append(
+					'<li>JavaScript framework:' + 
+					'<a href="http://modernizr.com/">Modernizr</a>: <var>'+Modernizr._version+'</var> / ' +
+					'<a href="http://jquery.com/">jQuery</a>: <var>'+$.fn.jquery+'</var> / '+
+					'<a href="http://jqueryui.com">jQuery UI</a>: <var>'+$.ui.version+ '</var>.</li>');
 			}
 
 			var self = this;
@@ -258,35 +262,6 @@ var pukiwiki = {};
 
 			// フォームを初期化
 			this.init_dom();
-
-			// FIXME:アップローダーに進捗状況表示（PHP5.4以降のみ）
-		//	if ($('form[enctype]').length !== 0 && $('form[enctype] .progress_session').length !== 0){
-				var $progress = $('<div style="width:400px;"></div>').progressbar();
-				$('form[enctype]').after($progress);
-				$progress.show('blind');
-				$('form[enctype]').submit(function(){
-					
-					var f = function() {
-						$.getJSON(
-							SCRIPT,
-							{cmd : 'attach',pcmd : 'progress'},
-							function(data) {
-								console.log(data);
-								if (data !== null) {
-									$progress.progressbar({value:Math.round(100 * (data["bytes_processed"] / data["content_length"]))});
-									if (!data["done"]) {
-										setTimeout(f, 200);
-									}else{
-								//		$progress.hide('blind');
-									}
-								} 
-							}
-						);
-					};
-					setTimeout(f, 200);
-					return false;
-				});
-		//	}
 
 			// バナーボックス
 			$('#banner_box img').fadeTo(200,0.3);
@@ -525,6 +500,49 @@ var pukiwiki = {};
 					self.init_dom('#' + ui.panel.id);
 				}
 			}).removeClass('tabs');
+
+			// アップローダーに進捗状況表示（PHP5.4以降のみ）
+			var $form = $(prefix+'form[enctype="multipart/form-data"]');
+			if ($form.length !== 0 && $form.children('.progress_session').length !== 0){
+				// Holds the id from set interval
+				var interval_id = 0;
+				var $progress = $('<div style="width:400px;display:block-inline;"></div>').progressbar().hide();
+				$form.children('input[type="submit"]').before($progress);
+	
+				$form.submit(function(e){
+					$form.children('input[type="submit"]').hide('blind');
+					$progress.show('blind');
+					// フォームに記入されているかを確認
+					if ($form.children('input[type="file"]').val() == ''){
+						e.preventDefault();
+						return;
+					}
+					interval_id = setInterval(function() {
+						$.getJSON(SCRIPT, {cmd : 'attach', pcmd : 'progress'}, function(data){
+							console.dir(data);
+							//if there is some progress then update
+							if(data){
+								$progress.progressbar({
+									value: Math.round(100 * (data['bytes_processed'] / data['content_length']))
+								});
+								//$('#progress').val(data.bytes_processed / data.content_length);
+								console.log('Uploading '+ Math.round((data.bytes_processed / data.content_length)*100) + '%');
+							}else{
+								//When there is no data the upload is complete
+								$progress.progressbar({
+									value: 100
+								});
+								clearInterval(interval_id);
+								$progress.hide('blind');
+								$form.children('input[type="submit"]').show('blind');
+								console.log('Complete');
+							}
+						})
+					}, 200);
+					$(this).ajaxSubmit();
+					e.preventDefault();
+				});
+			}
 
 			// ダイアログ
 			this.setAnchor(prefix);
@@ -1476,8 +1494,9 @@ var pukiwiki = {};
 			this.ajax_count = 0;
 			this.ajax_tim = 0;
 
-			// プレビューボタンを書き換え
-			$(prefix + '.edit_form input[name=write]')
+			var $form = $(prefix + 'form .edit_form');
+
+			$form.children('input[name="write"]')
 				.after(
 					// 簡易差分表示ボタンを追加
 					$('<input type="button" name="view_diff" value="' + $.i18n('editor','diff') + '" accesskey="d" />')
@@ -1486,78 +1505,156 @@ var pukiwiki = {};
 						$('#diff').dialog('open');
 					})
 				)
-				.after('<input type="button" name="add_ajax" value="' + $('.edit_form input[name=preview]').attr('value') + '" accesskey="p" />');
+				.after(
+					// プレビューボタンを書き換え
+					'<input type="button" name="add_ajax" value="' + $('.edit_form input[name=preview]').attr('value') + '" accesskey="p" />'
+				);
 
 			// オリジナルのプレビューボタンを削除
-			$(prefix + '.edit_form input[name=preview]').remove();
+			$form.children('input[name=preview]').remove();
 			
 			// アシスタントのツールバーを前に追加
-			$(prefix + '.edit_form').prepend('<div class="assistant ui-corner-top ui-widget-header ui-helper-clearfix"></div>');
+			$form.prepend('<div class="assistant ui-corner-top ui-widget-header ui-helper-clearfix"></div>');
+			
+			// リアルタイムプレビューの表示画面
+			$form.children('textarea[name="msg"]').before('<div id="realview" style="display:none;"><div></div></div><textarea id="previous" style="display:none;"></textarea>');
 
+			// よく使うDOMをキャッシュ
+			var $indicator = $form.children('#indicator'),
+				$msg = $form.children('textarea[name="msg"]'),
+				msg_height = $msg.height(),
+				$original = $form.children('textarea[name="original"]'),
+				$previous = $form.children('#previous'),
+				$realview = $form.children('#realview'),
+				$textarea = $form.children('textarea');
+			
+			// リアルタイムプレビューの内部処理
+			var realtime_preview = function(){
+				var oSource = document.getElementById('msg');
+				var source = $msg.val();
+				var sttlen, endlen, sellen, finlen;
+
+				if (self.real_preview_mode) {
+					$indicator.html('');
+					$indicator.activity({segments: 8, width:2, space: 0, length: 3, color: 'black'});
+					$previous.val(source);
+					$textarea.attr('disabled', 'disabled');
+
+					if (++self.ajax_count !== 1){ return; }
+					var finlen = source.lastIndexOf("\n",$msg.getSelection().start);
+
+					$.ajax({
+						url : SCRIPT,
+						type : 'post',
+						global:false,
+						data : {
+							cmd : 'edit',
+							realview : 1,
+							page : PAGE,
+							// 編集した位置までスクロールさせるための編集マークプラグイン呼び出しを付加
+							msg : source.substring(0,finlen) +"\n\n" + '&editmark;' + "\n\n" + source.substring(finlen),
+							type : 'json'
+						},
+						cache : false,
+			//			timeout : 2000,//タイムアウト（２秒）
+						dataType : 'json',
+						success : function(data){
+							var $holder = $realview.children('div');
+							$indicator.html('<span class="ui-icon ui-icon-clock" style="float:left;"></span>'+data.taketime);
+							var ret = data.data.replace(/<script[^>]*>[^<]+/ig,'<span class="scripttag" title="Script tag">[SCRIPT]</span>');
+							$holder.html(data.data);
+
+							/*
+							console.log($holder.children('#editmark').offset().top);
+							if ($holder.scrollTop() === 0) {
+								// スクロールが0の時エラーになる問題をごまかす
+								$holder.scrollTop(1);
+							}
+							$holder.animate({
+								scrollTop: $holder.children('#editmark').offset().top-4
+							});
+							*/
+							
+							var marker = document.getElementById('editmark');
+							if (marker){ document.getElementById('realview').scrollTop = marker.offsetTop-4; }
+							
+
+							if (self.ajax_count===1) {
+								self.ajax_count = 0;
+							} else {
+								self.ajax_count = 0;
+								realtime_preview();
+							}
+							$textarea.removeAttr('disabled');
+						},
+						error : function(data,status,thrown){
+							$realview.children('div').html([
+								'<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">',
+									'<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>'+$.i18n('pukiwiki','error')+status+'</p>',
+									'<ul>',
+										'<li>readyState:'+data.readyState+'</li>',
+			//							'<li>responseText:'+data.responseText+'</li>',
+										'<li>status:'+data.status+'</li>',
+										'<li>statusText:'+data.statusText+'</li>',
+									'</ul>',
+								'</div>'].join("\n")
+							);
+						}
+					});
+				}
+			};
+
+			$realview.height(msg_height/2);
 			// プレビューボタンが押された時の処理
-			$(prefix + '.edit_form input[name=add_ajax]').button({icons:{primary:'ui-icon-gear'}}).click(function(){
-				$('textarea').attr('disabled', 'disabled');
+			$form.children('input[name=add_ajax]').click(function(){
+				$textarea.attr('disabled', 'disabled');
 				// フォームの高さを取得
 				// Textarea Resizerで高さが可変になっているため。
-				var msg_height = $('.edit_form textarea[name="msg"]').height();
-				if (self.ajax_apx) {
-					self.ajax_apx = false;
+
+				if (self.real_preview_mode === true) {
+					// もとに戻す
+					self.real_preview_mode = false;
 					// realview_outerを消したあと、フォームの高さを２倍にする
 					// 同時でない理由はFireFoxで表示がバグるため
-					$(prefix + '.edit_form #realview_outer').animate({
-						height:'toggle'
-					},function(){
-						$(prefix + '.edit_form textarea[name="msg"]').animate({height:msg_height*2});
-						$(prefix + '.edit_form #realview').remove();
-						$(prefix + '.edit_form #realview_outer').remove();
-						$(prefix + '.edit_form #previous').remove();
-						$(prefix + '.edit_form textarea').removeAttr('disabled');
-						$(prefix + '.edit_form #indicator').hide().fadeOut();
+					$realview.animate({
+						height:0
+					}, function(){
+						$msg.animate({height:msg_height});
+						$realview.hide();
+						$indicator.hide('slow');
+						$textarea.removeAttr('disabled');
 					});
 				} else {
-					if (!self.ajax_apx){
+					self.real_preview_mode = true;
+					$indicator.activity({segments: 8, width:2, space: 0, length: 3, color: 'black'});
+					$indicator.show();
+					// フォームの高さを半分にしたあと、realviewを表示
+					$msg.animate({
+						height: msg_height/2
+					},function(){
+						$realview.animate({ height:msg_height/2});
 						// Realedit用のDOMを生成
-						$(prefix + '.edit_form textarea[name=msg]').before([
-							'<div id="realview_outer">',
-								'<div id="realview"></div>',
-							'</div>'
-						].join("\n")).after(
-							'<textarea id="previous" style="display:none;"></textarea>'
-						);
-						$(prefix + '.edit_form #indicator').show().fadeIn();
-						$(prefix + '.edit_form #indicator').html('<img src="'+self.image_dir+'spinner.gif" alt="'+$.i18n('dialog','loading')+'" />');
-						$(prefix + '.edit_form #previous').val($('textarea#msg').val());
-
+						$realview.show();
 						// 初回実行時、realview_outerの大きさを、フォームの大きさに揃える。
 						// なお、realview_outerの高さは、フォームの半分とする。
-						$(prefix + '.edit_form #realview_outer').css('height',msg_height/2);
-						$(prefix + '.edit_form #indicator').html('');
-					}
-					self.ajax_apx = true;
-
-					// フォームの高さを半分にしたあと、realview_outerを表示
-					$(prefix + '.edit_form textarea[name=msg]').animate({
-						height:$(this).height() + $('.edit_form #realview_outer').height()
-					},function(){
-						$(prefix + '.edit_form #realview_outer').animate({ height:'toggle'});
-						$(prefix + '.edit_form textarea').removeAttr('disabled');
+						$textarea.removeAttr('disabled');
 					});
-					// このときにフォームの大きさを変更すると、戻したときに恐ろしいことに・・・
-					self.realtime_preview();
+					// 現在のプレビューを出力
+					realtime_preview();
 				}
 				return false;
 			});
 
 			// textareaのイベントリスナ
-			$(prefix + '.edit_form textarea[name=msg]')
+			$msg
 				.blur(function(){
 					// マウスが乗っかった時
-					self.realtime_preview();
+					realtime_preview();
 				})
 				.mouseup(function(){
 					// 前の値と異なるとき
-					if ($(this).val() !== $('textarea#previous').val()){
-						self.realtime_preview();
+					if ($(this).val() !== $original.val()){
+						realtime_preview();
 					}
 				})
 				.keypress(function(elem){
@@ -1602,19 +1699,35 @@ var pukiwiki = {};
 					$('#diff').html('<pre>'+ret.join("\n")+'</pre>');
 				})
 			;
-			
-			
+
 			// 送信イベント時の処理
-			$(prefix + 'form').submit(function(e){
+			$form.submit(function(e){
 				var postdata = $(this).serializeObject();	// フォームの内容をサニタイズ
 				postdata.ajax = 'json';
 				// ローカルストレージをフラッシュ
 				if (isEnableLocalStorage){
 					localStorage.removeItem(PAGE);
 				}
+				
+				// 空更新は無反応
+				console.log($form.children('textarea[name="original"]').val());
+				console.log($form.children('textarea[name="msg"]').val());
+				
+				if ( $original.val() == $msg.val() ){
+					console.error("Void updating");
+					e.preventDefault();
+					return;
+				}
+				
+				// 管理パスが入力されてない状態でタイムスタンプを更新しないになっている場合は、無反応
+				if ( $form.children('input[name="pass"]').length !==0 && ($form.children('checkbox[name="notimestamp"]').is(':checked') && $form.children('input[name="pass"]') === '')){
+					console.error("Password missing");
+					e.preventDefault();
+					return;
+				}
 
-				if ( $('#_edit_form_notimestamp:checked') !== true ) {
-					if (FACEBOOK_APPID && $('#fb_publish:checked') === true){
+				if (typeof(FACEBOOK_APPID) !== 'undefined'  && ! $form.children('checkbox[name="notimestamp"]').is(':checked') ) {
+					if ( $form.children('checkbox[name="fb_publish"]') === true){
 						$.ajax({
 							url:'https://graph.facebook.com/bbeckford/feed',
 							type:'post',
@@ -1634,39 +1747,30 @@ var pukiwiki = {};
 						});
 					}
 				}
-/*
+
+				/*
+				console.log(postdata);
 				$.ajax({
 					url:SCRIPT,
-					type:'post',
+					type:'POST',
 					data: postdata,
 					cache: false,
 					dataType : 'json',
 					success : function(data){
 						// localStrageをフラッシュ（キャンセルボタンを押した場合も）
 
-						console.log(data.body);
+						//console.log(data.body);
+						
 					},
 					error : function(data){
 						$(prefix + 'input, button, select, textarea').removeAttr('disabled');
 						alert($.i18n('pukiwiki','error'));
 					}
 				});
-				$.ajax({
-					url : SCRIPT,
-					type : 'post',
-					data: {
-						cmd : 'recaptcha',
-						action : 'status'
-					},
-					cache : false,
-					success: function(res){
-						if (res.responseText == 1){
-							return true;
-						}else{
+				*/
 
-
-				return false;	// Submitで直接送信しないようにする
-*/
+				$(this).ajaxSubmit();
+				e.preventDefault();
 			});
 
 			this.assistant(false);
@@ -1722,89 +1826,6 @@ var pukiwiki = {};
 				for(k = delta + p; k >= delta; --k){ snake(k); }
 			}
 			return ed[delta + offset];
-		},
-		realtime_preview : function(prefix){
-			// ほとんど、Plusそのまま・・・
-			prefix = (prefix) ? prefix + ' ': '';
-			var oSource = document.getElementById('msg');
-			var source = document.getElementById('msg').value;
-			var self = this;
-			var sttlen, endlen, sellen, finlen;
-
-			if (this.ajax_apx) {
-				$(prefix + '#indicator').html('');
-				$(prefix + '#indicator').activity({segments: 8, width:2, space: 0, length: 3, color: 'black'});
-				$(prefix + '#previous').val(source);
-				$(prefix + 'textarea').attr('disabled', 'disabled');
-
-				if (++this.ajax_count !== 1){ return; }
-
-				if (document.selection) {
-					var sel = document.selection.createRange();
-					sellen = sel.text.length;
-					var end = oSource.createTextRange();
-					var all = end.text.length;
-					// http://pukiwiki.cafelounge.net/plus/?BugTrack%2F191
-					try{
-						end.moveToPoint(sel.offsetLeft,sel.offsetTop);
-						end.moveEnd('textedit');
-					}catch(e){}
-					endlen = end.text.length;
-					sttlen = all - endlen;
-				} else if (oSource.setSelectionRange) {
-					sttlen = oSource.selectionStart;
-					endlen = oSource.value.length - oSource.selectionEnd;
-					sellen = oSource.selectionEnd-sttlen;
-				}
-				finlen = source.lastIndexOf("\n",sttlen);
-				source = source.substring(0,finlen) + "\n\n" + '&editmark;' + "\n\n" + source.substring(finlen);
-
-				$.ajax({
-					url : SCRIPT,
-					type : 'post',
-					global:false,
-					data : {
-						cmd : 'edit',
-						realview : 1,
-						page : PAGE,
-						msg : source,
-						type : 'json'
-					},
-					cache : false,
-		//			timeout : 2000,//タイムアウト（２秒）
-					dataType : 'json',
-					success : function(data){
-						var innbox = document.getElementById('realview_outer');
-						var marker = document.getElementById('editmark');
-
-						if (marker){ innbox.scrollTop = marker.offsetTop - 8; }
-
-						if (self.ajax_count===1) {
-							self.ajax_count = 0;
-						} else {
-							self.ajax_count = 0;
-							self.realtime_preview();
-						}
-						$(prefix + '#indicator').html('<span class="ui-icon ui-icon-clock" style="float:left;"></span>'+data.taketime);
-						var ret = data.data.replace(/<script[^>]*>[^<]+/ig,'<span class="scripttag" title="Script tag">[SCRIPT]</span>');
-						$(prefix + '#realview').html(ret);
-						$(prefix + 'textarea').removeAttr('disabled');
-					},
-					error : function(data,status,thrown){
-						$('#realview').html([
-							'<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">',
-								'<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>'+$.i18n('pukiwiki','error')+status+'</p>',
-								'<ul>',
-									'<li>readyState:'+data.readyState+'</li>',
-		//							'<li>responseText:'+data.responseText+'</li>',
-									'<li>status:'+data.status+'</li>',
-									'<li>statusText:'+data.statusText+'</li>',
-								'</ul>',
-							'</div>'].join("\n")
-						);
-					}
-				});
-			}
 		},
 		/** Collects link types from head element. */
 		linkattrs : function(){

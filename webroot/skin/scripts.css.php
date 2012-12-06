@@ -916,7 +916,7 @@ input[type='search'][required], textarea[required], select[required] {
 }
 
 /* for realedit.js */
-#realview_outer {
+#realview {
 	border: 1px solid silver;
 	background-color: white;
 	padding: .2em;
@@ -926,10 +926,6 @@ input[type='search'][required], textarea[required], select[required] {
 	width: 99%;
 	resize: vertical;
 	overflow-y: scroll;
-}
-
-#realview{
-	padding: .2em;
 }
 
 /* jQueryUI BlockUI */
