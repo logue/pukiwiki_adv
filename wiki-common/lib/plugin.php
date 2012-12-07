@@ -289,24 +289,27 @@ function add_hidden_field($retvar, $plugin){
 		// Insert a hidden field, supports idenrtifying text enconding
 		$hidden_field[] = '<!-- Additional fields START-->';
 		$hidden_field[] = ( PKWK_ENCODING_HINT ) ? '<input type="hidden" name="encode_hint" value="' . PKWK_ENCODING_HINT . '" />' : '';
-		$hidden_field[] = '<input type="hidden" name="ticket" value="' . md5(get_ticket() . REMOTE_ADDR) . '" />';	// 利用者のホストチェック
 
-		// 多重投稿を禁止するオプションが有効かつ、methodがpostだった場合、PostIDを生成する
-		if ( (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] === 1)
-			&& preg_match(PKWK_IGNOLE_POSTID_CHECK_PLUGINS,$plugin) !== 1 && $matches[2] !== 'get'){
-			// from PukioWikio
-			$hidden_field[] = '<input type="hidden" name="postid" value="'.generate_postid($plugin).'" />';
-		}
+		if ($matches[2] !== 'get'){
+			// 利用者のホストチェック
+			$hidden_field[] = '<input type="hidden" name="ticket" value="' . md5(get_ticket() . REMOTE_ADDR) . '" />';
+			// 多重投稿を禁止するオプションが有効かつ、methodがpostだった場合、PostIDを生成する
+			if ( (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] === 1)
+				&& preg_match(PKWK_IGNOLE_POSTID_CHECK_PLUGINS,$plugin) !== 1){
+				// from PukioWikio
+				$hidden_field[] = '<input type="hidden" name="postid" value="'.generate_postid($plugin).'" />';
+			}
 
-		// PHP5.4以降かつ、マルチパートの場合、進捗状況セッション用のフォームを付加する
-		if (ini_get('session.upload_progress.enabled') && isset($matches[3]) && $matches[3] === 'multipart/form-data') {
-			$hidden_field[] = '<input type="hidden" name="' . ini_get("session.upload_progress.name") . '" value="' . PKWK_WIKI_NAMESPACE . '" class="progress_session" />';
-		}
+			// PHP5.4以降かつ、マルチパートの場合、進捗状況セッション用のフォームを付加する
+			if (ini_get('session.upload_progress.enabled') && isset($matches[3]) && $matches[3] === 'multipart/form-data') {
+				$hidden_field[] = '<input type="hidden" name="' . ini_get("session.upload_progress.name") . '" value="' . PKWK_WIKI_NAMESPACE . '" class="progress_session" />';
+			}
 
-		// 更新時の競合を確認するための項目
-		if (isset($vars['page'])){
-			if (empty($digest)) $digest = md5(get_source($vars['page'], TRUE, TRUE));
-			$hidden_field[] = '<input type="hidden" name="digest" value="' . $digest . '" />';
+			// 更新時の競合を確認するための項目（確認処理はプラグイン側で実装すること）
+			if (isset($vars['page'])){
+				if (empty($digest)) $digest = md5(get_source($vars['page'], TRUE, TRUE));
+				$hidden_field[] = '<input type="hidden" name="digest" value="' . $digest . '" />';
+			}
 		}
 
 		$hidden_field[] = '<!-- Additional fields END -->';
@@ -315,11 +318,13 @@ function add_hidden_field($retvar, $plugin){
 	return $retvar;
 }
 
-// 進捗状況表示（attachプラグインのpcmd=progressで出力）
+// FIXME:進捗状況表示（attachプラグインのpcmd=progressで出力）
 function get_upload_progress(){
-	$key = ini_get("session.upload_progress.prefix") . $_POST[ini_get("session.upload_progress.name")];
-	header("Content-Type: application/json; charset=".CONTENT_CHARSET);
+	global $vars;
+	$key = ini_get('session.upload_progress.prefix'). PKWK_WIKI_NAMESPACE;
+	header('Content-Type: application/json; charset='.CONTENT_CHARSET);
 	echo Zend\Json\Json::encode( isset($_SESSION[$key]) ? $_SESSION[$key] : null );
+	
 	exit;
 }
 

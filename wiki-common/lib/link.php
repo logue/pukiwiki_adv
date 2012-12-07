@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone
-// $Id: link.php,v 1.20.10 2012/11/26 11:53:00 Logue Exp $
+// $Id: link.php,v 1.20.10 2012/12/07 19:31:00 Logue Exp $
 // Copyright (C)
 //   2010-2012 PukiWiki Advance Developers Team
 //   2005-2007 PukiWiki Plus! Team
@@ -36,12 +36,11 @@
 class Links{
 	// Links cache namespace
 	const CACHE_NAMESPACE = 'wiki';
-
 	// Related cache data prefix
 	const REL_PREFIX = 'rel-';
 	// Referred cache data prefix
 	const REF_PREFIX = 'ref-';
-
+	// links object cache data prefix
 	const LINKS_PREFIX = 'links-';
 
 	private $cache, $page, $rel_name, $ref_name, $links_obj;
@@ -57,12 +56,15 @@ class Links{
 			$this->ref_name = self::REF_PREFIX.$page_hash;
 		}
 	}
+	public function __destruct() {
+		$this->cache->optimize();
+	}
 
 	// Get related-pages from DB
 	public function get_related(){
 		if (! $this->cache->hasItem($this->rel_name)){
 			$data = $this->update();
-			$this->cache->setItem($rel_name, $data);
+			$this->cache->setItem($this->rel_name, $data);
 		}else{
 			$data = $this->cache->getItem($this->rel_name);
 			$this->cache->touchItem($this->rel_name);
@@ -80,7 +82,7 @@ class Links{
 	public function get_referred(){
 		if (! $this->cache->hasItem($this->ref_name)){
 			$data = $this->update();
-			$this->cache->setItem($ref_name, $data);
+			$this->cache->setItem($this->ref_name, $data);
 		}else{
 			$data = $this->cache->getItem($this->ref_name);
 			$this->cache->touchItem($this->ref_name);
@@ -95,7 +97,7 @@ class Links{
 	}
 
 	// Update link-relationships between pages
-	private function update($page = ''){
+	public function update($page = ''){
 		if (empty($page)){
 			$page = $this->page;
 			$rel_name = $this->rel_name;
@@ -107,11 +109,9 @@ class Links{
 		}
 
 		$time = is_page($page, TRUE) ? get_filetime($page) : 0;
-		$rel_file_exist = $this->cache->hasItem($rel_name);
+		$rel_exist = $this->cache->hasItem($rel_name);
 
 		$rel_old  = ($rel_exist) ? $this->cache->getItem($rel_name) : array();
-		$rel_new  = array();	// Reference to
-		$rel_auto = array();	// by AutoLink
 		foreach ($this->get_objects($page, TRUE) as $_obj) {
 			if (! isset($_obj->type) || $_obj->type !== 'pagename' || $_obj->name === $page || empty($_obj->name) )
 				continue;
@@ -138,7 +138,7 @@ class Links{
 		if ($time) {
 			// Page exists
 			$this->cache->setItem($rel_name, $rel_new);
-		}else if ($rel_file_exist){
+		}else if ($rel_exist){
 			$this->cache->touchItem($rel_name);
 		}
 
@@ -174,7 +174,6 @@ class Links{
 
 	// Init link cache (Called from link plugin)
 	public function init() {
-		global $cache;
 		if (auth::check_role('readonly')) return; // Do nothing
 
 		// Init database
@@ -209,26 +208,25 @@ class Links{
 			$this->cache->setItem(self::REF_PREFIX.md5($ref_page), $ref_auto);
 		}
 		unset($ref_page,$ref_auto);
-
-		$this->cache->optimize();
 	}
 
+	// Add page to referered page cachepage.
 	private function add($add, $rel_auto){
 		if (auth::check_role('readonly')) return; // Do nothing
 
 		$rel_auto = array_flip($rel_auto);
-		$ref = array();
 
 		foreach ($add as $_page) {
+			$ref = array();
 			$all_auto = isset($rel_auto[$_page]);
 			$is_page  = is_page($_page);
 			$ref_name = self::REF_PREFIX.md5($_page);
 
-			$ref[] = array($page, $all_auto);
+			$ref[$this->page] = $all_auto;
 			if ($this->cache->hasItem($ref_name)){
 				foreach ($this->cache->getItem($ref_name) as $ref_page=>$ref_auto) {
 					if (! $ref_auto) $all_auto = FALSE;
-					if ($ref_page !== $this->page) $ref[] = array($this->page, ($all_auto ? 1 : 0));
+					if ($ref_page !== $this->page) $ref[$this->page] = $all_auto ? 1 : 0;
 				}
 			}
 
@@ -237,10 +235,11 @@ class Links{
 			}else{
 				$this->cache->removeItem($ref_name);
 			}
-			unset($data, $ref);
+			unset($ref);
 		}
 	}
 
+	// Remove page from referered page cache.
 	private function remove($del){
 		if (auth::check_role('readonly')) return; // Do nothing
 
@@ -249,11 +248,11 @@ class Links{
 			$is_page = is_page($_page);
 
 			$ref_name = self::REF_PREFIX.md5($_page);
-			if (! $cache['link']->hasItem($ref_name) ) continue;
+			if (! $this->cache->hasItem($ref_name) ) continue;
 
 			$ref = array();
 			foreach ($this->cache->getItem($ref_name) as $ref_page=>$ref_auto) {
-				if ($line !== $this->page) $ref[] = array($ref_page, $ref_auto);
+				if ($ref_page !== $this->page) $ref[$ref_page] = $ref_auto;
 			}
 
 			if ($is_page || ! $all_auto || count($ref) == 1) {
@@ -261,10 +260,11 @@ class Links{
 			}else{
 				$this->cache->removeItem($ref_name);
 			}
-			unset($data, $ref);
+			unset($ref);
 		}
 	}
 
+	// Get link object from page source.
 	private function get_objects($page, $refresh = FALSE){
 		$cache_name = self::LINKS_PREFIX.md5($page);
 		if ($refresh){
@@ -287,7 +287,7 @@ class Links{
 		return $result;
 	}
 }
-
+/*
 // for compatibility
 function links_get_related_db($page){
 	$links = new Links($page);
@@ -307,6 +307,6 @@ function links_init()
 	$links = new Links('');
 	return $links->init();
 }
-
+*/
 /* End of file link.php */
 /* Location: ./wiki-common/lib/link.php */

@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: init.php,v 1.57.12 2012/10/11 17:21:00 Logue Exp $
+// $Id: init.php,v 1.57.12 2012/12/05 17:21:00 Logue Exp $
 // Copyright (C)
 //   2010-2012 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
@@ -15,12 +15,12 @@
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
 define('S_VERSION', 'v1.1-alpha');
-define('S_REVSION', '20121119');
+define('S_REVSION', '20121205');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &#169; 2010-2012' .
 	' <a href="http://pukiwiki.logue.be/" rel="external">PukiWiki Advance Developers Team</a>.<br />' .
-	' Licensed under the <a href="http://www.gnu.org/licenses/gpl-2.0.html">GPLv2</a>.' .
+	' Licensed under the <a href="http://www.gnu.org/licenses/gpl-2.0.html" rel="external">GPLv2</a>.' .
 	' Based on <a href="http://pukiwiki.cafelounge.net/plus/" rel="external">"PukiWiki Plus! i18n"</a>'
 );
 
@@ -123,8 +123,12 @@ define('PKWK_WIKI_NAMESPACE', 'pkwk_'.substr(md5(realpath(DATA_HOME)), 0 ,7) );
 // 汎用キャッシュの有効期間
 defined('PKWK_CACHE_EXPIRE') or define('PKWK_CACHE_EXPIRE', 604800);	// 60*60*24*7 1week
 
-// convert_htmlのキャッシュ名の接頭辞
-defined('PKWK_RAW_CACHE_EXPIRE') or define('PKWK_RAW_CACHE_EXPIRE', 3600);	// 60*60 = 1hour
+// convert_htmlのキャッシュ名の有効期間（デフォルト無効（
+defined('PKWK_HTML_CACHE_EXPIRE') or define('PKWK_HTML_CACHE_EXPIRE', 0);
+
+// Load optional libraries
+if (isset($notify)){ require(LIB_DIR . 'mail.php'); }	// Mail notification
+if (isset($trackback)){ require(LIB_DIR . 'trackback.php'); }	// TrackBack
 
 /////////////////////////////////////////////////
 // Init grobal variables
@@ -143,6 +147,8 @@ $js_blocks    = array();	// Inline scripts(<script>//<![CDATA[ ... //]]></script
 $css_blocks   = array();	// Inline styleseets(<style>/*<![CDATA[*/ ... /*]]>*/</style>)
 $js_vars      = array();	// JavaScript initial value.
 $_SKIN        = array();
+
+$info[] = '<a href="http://php.net/">PHP</a> <var>'.PHP_VERSION.'</var> is running as <var>'.php_sapi_name().'</var> mode. / Powerd by <var>'.getenv('SERVER_SOFTWARE').'</var>.';
 
 /////////////////////////////////////////////////
 // Initilalize Zend
@@ -179,7 +185,7 @@ if ($zf2Path) {
 if (!class_exists('Zend\Loader\AutoloaderFactory')) {
 	throw new RuntimeException('Unable to load ZF2. Run `php composer.phar install` or define a ZF2_PATH environment variable.');
 }
-
+$info[] = sprintf('Using <a href="http://framework.zend.com/">Zend Framework</a> ver<var>%s</var>.', Zend\Version\Version::VERSION);
 /////////////////////////////////////////////////
 // Initilaize Session
 $session = new Zend\Session\Container(PKWK_WIKI_NAMESPACE);
@@ -190,14 +196,16 @@ $session = new Zend\Session\Container(PKWK_WIKI_NAMESPACE);
 use Zend\Cache\StorageFactory;
 
 // 使用するキャッシュストレージを選択
-if ( class_exists('dba') ){
-	$adapter = 'Dba';
-}else if ( class_exists('apc') && ini_get('apc.enabled') ){
-	$adapter = 'Apc';
-}else if ( class_exists('Memcached') ){
-	$adapter = 'Memcached';
-}else{
-	$adapter = 'Filesystem';
+if (!isset($cache_adapter)){
+	if ( class_exists('dba') ){
+		$cache_adapter = 'Dba';
+	}else if ( class_exists('apc') && ini_get('apc.enabled') ){
+		$cache_adapter = 'Apc';
+	}else if ( class_exists('Memcached') ){
+		$cache_adapter = 'Memcached';
+	}else{
+		$cache_adapter = 'Filesystem';
+	}
 }
 
 // キャッシュ
@@ -205,43 +213,67 @@ $cache = array(
 	// PukiWikiのコアで使われる汎用キャッシュ
 	'core' => StorageFactory::factory(array(
 		'adapter'=> array(
-			'name' => $adapter,
+			'name' => $cache_adapter,
 			'options' => array(
 				'namespace' => PKWK_CORE_NAMESPACE,
 				'ttl' => PKWK_CACHE_EXPIRE,
 			),
 		),
 		'plugins' => array(
-			($adapter === 'Filesystem') ? 'serializer' : null
+			($cache_adapter === 'Filesystem') ? 'serializer' : null
 		)
 	)),
 	// Wikiごと個別に使われるキャッシュ
 	'wiki' => StorageFactory::factory(array(
 		'adapter'=> array(
-			'name' => $adapter,
+			'name' => $cache_adapter,
 			'options' => array(
 				// 他のWikiと競合しないようにするためDATA_HOMEのハッシュを名前空間とする
-				'namespace' => ($adapter === 'Filesystem') ? 'zfcache' : PKWK_WIKI_NAMESPACE,
-				'cache_dir' => ($adapter === 'Filesystem') ? CACHE_DIR : null,
+				'namespace' => ($cache_adapter === 'Filesystem') ? 'zfcache' : PKWK_WIKI_NAMESPACE,
+				'cache_dir' => ($cache_adapter === 'Filesystem') ? CACHE_DIR : null
+			),
+		),
+		'plugins' => array(
+			($cache_adapter === 'Filesystem') ? 'serializer' : null
+		)
+	)),
+	// ページ間リンクの関連付けキャッシュ
+	'link' => StorageFactory::factory(array(
+		'adapter'=> array(
+			'name' => $cache_adapter,
+			'options' => array(
+				// 他のWikiと競合しないようにするためDATA_HOMEのハッシュを名前空間とする
+				'namespace' => ($cache_adapter === 'Filesystem') ? 'zfcache' : PKWK_WIKI_NAMESPACE,
+				'cache_dir' => ($cache_adapter === 'Filesystem') ? CACHE_DIR : null,
 				'ttl' => PKWK_CACHE_EXPIRE,
 			),
 		),
 		'plugins' => array(
-			($adapter === 'Filesystem') ? 'serializer' : null
+			($cache_adapter === 'Filesystem') ? 'serializer' : null
 		)
 	)),
-	// 生データーキャッシュ（このキャッシュのみファイルに保存。配列などは使用不可）
+	// 生データーキャッシュ（配列などは使用不可）
 	'raw' => StorageFactory::factory(array(
 		'adapter'=>array(
 			'name'=>'Filesystem',
 			'options'=>array(
-				'ttl'=>PKWK_RAW_CACHE_EXPIRE,
+				'ttl'=>PKWK_CACHE_EXPIRE,
+				'cache_dir'=>CACHE_DIR
+			)
+		)
+	)),
+	// HTMLキャッシュ（高負荷サイト向け）
+	'html' => StorageFactory::factory(array(
+		'adapter'=>array(
+			'name'=>'Filesystem',
+			'options'=>array(
+				'ttl'=>PKWK_HTML_CACHE_EXPIRE,
 				'cache_dir'=>CACHE_DIR
 			)
 		)
 	))
 );
-$info[] = 'Cache system using '.$adapter;
+$info[] = 'Cache system using <var>'.$cache_adapter.'</var>.';
 
 /////////////////////////////////////////////////
 // I18N
@@ -259,7 +291,7 @@ T_textdomain(DOMAIN);
 require(LIB_DIR . 'resource.php');
 // Init encoding hint
 // define('PKWK_ENCODING_HINT', isset($_LANG['encode_hint']) ? $_LANG['encode_hint'] : '');
-define('PKWK_ENCODING_HINT', (isset($_LANG['encode_hint']) && $_LANG['encode_hint'] !== 'encode_hint') ? $_LANG['encode_hint'] : '');
+define('PKWK_ENCODING_HINT', (isset($_LANG['encode_hint']) && $_LANG['encode_hint'] !== 'encode_hint') ? $_LANG['encode_hint'] : 'ぷ');
 // unset($_LANG['encode_hint']);
 
 /////////////////////////////////////////////////
@@ -269,6 +301,52 @@ if (isset($script)) {
 	get_script_uri($script);	// Init manually
 } else {
 	$script = get_script_uri();	// Init automatically
+}
+
+///////////////////////////////////////////////
+// Prevent SPAM by REMOTE IP
+
+if (SpamCheckBAN(REMOTE_ADDR)) die('Sorry, your access is prohibited.');
+
+// Block countory via Geolocation
+$country_code = '';
+if (isset($_SERVER['HTTP_CF_IPCOUNTRY'])){
+	// CloudFlareを使用している場合、そちらのGeolocationを読み込む
+	// https://www.cloudflare.com/wiki/IP_Geolocation
+	$country_code = $_SERVER['HTTP_CF_IPCOUNTRY'];
+}else if (isset($_SERVER['GEOIP_COUNTRY_CODE'])){
+	// サーバーが$_SERVER['GEOIP_COUNTRY_CODE']を出力している場合
+	// Apache : http://dev.maxmind.com/geoip/mod_geoip2
+	// nginx : http://wiki.nginx.org/HttpGeoipModule
+	// cherokee : http://www.cherokee-project.com/doc/config_virtual_servers_rule_types.html
+	$country_code = $_SERVER['GEOIP_COUNTRY_CODE'];
+}else if (function_exists('geoip_db_avail') && geoip_db_avail(GEOIP_COUNTRY_EDITION) && function_exists('geoip_region_by_name')) {
+	// それでもダメな場合は、phpのgeoip_region_by_name()からGeolocationを取得
+	// http://php.net/manual/en/function.geoip-region-by-name.php
+	$geoip = geoip_region_by_name(REMOTE_ADDR);
+	$country_code = $geoip['country_code'];
+	$info[] = (!empty($geoip['country_code']) ) ?
+		'GeoIP is usable. Your country code from IP is inferred <var>'.$geoip['country_code'].'</var>.' :
+		'GeoIP is NOT usable. Maybe database is not installed. Please check <a href="http://www.maxmind.com/app/installation?city=1" rel="external">GeoIP Database Installation Instructions</a>';
+}else if (function_exists('apache_note')) {
+	// Apacheの場合
+	$country_code = apache_note('GEOIP_COUNTRY_CODE');
+}
+
+// 使用可能かをチェック
+if ( isset($country_code) && !empty($country_code)) {
+	$info[] = 'Your country code from IP is inferred <var>'.$country_code.'</var>.';
+} else {
+	$info[] = 'Seems Geolocation is not available. <var>$deny_countory</var> value and <var>$allow_countory</var> value is ignoled.';
+}
+
+/////////////////////////////////////////////////
+// ディレクトリのチェック
+$die = array();
+
+foreach(array('DATA_DIR', 'DIFF_DIR', 'BACKUP_DIR', 'CACHE_DIR') as $dir){
+	if (! is_writable(constant($dir)))
+		$die[] = sprintf($_string,$dir);
 }
 
 /////////////////////////////////////////////////
@@ -307,15 +385,6 @@ define('UA_VERS', isset($user_agent['vers']) ? $user_agent['vers'] : '');
 define('UA_CSS', isset($user_agent['css']) ? $user_agent['css'] : '');
 //unset($user_agent);	// Unset after reading UA_INI_FILE
 
-/////////////////////////////////////////////////
-// ディレクトリのチェック
-$die = array();
-
-foreach(array('DATA_DIR', 'DIFF_DIR', 'BACKUP_DIR', 'CACHE_DIR') as $dir){
-	if (! is_writable(constant($dir)))
-		$die[] = sprintf($_string,$dir);
-}
-
 // 設定ファイルの変数チェック
 $temp = '';
 foreach(array('rss_max', 'page_title', 'note_hr', 'related_link', 'show_passage', 'load_template_func') as $var){
@@ -338,14 +407,12 @@ unset($die, $temp);
 
 /////////////////////////////////////////////////
 // 必須のページが存在しなければ、空のファイルを作成する
-
 foreach(array($defaultpage, $whatsnew, $interwiki) as $page){
 	if (! is_page($page)) pkwk_touch_file(get_filename($page));
 }
 
 /////////////////////////////////////////////////
 // 外部からくる変数のチェック
-
 // Prohibit $_GET attack
 foreach (array('msg', 'pass') as $key) {
 	if (isset($_GET[$key])) die_message(sprintf(T_('Sorry, %s is already reserved.'),$key));
@@ -399,14 +466,13 @@ if (isset($_GET['encode_hint']) && empty($_GET['encode_hint']))
 
 /////////////////////////////////////////////////
 // QUERY_STRINGを取得
-
 $arg = '';
 if (isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING'])) {
-	$arg = & $_SERVER['QUERY_STRING'];
+	$arg = $_SERVER['QUERY_STRING'];
 //} else if (array_key_exists('PATH_INFO',$_SERVER) and !empty($_SERVER['PATH_INFO']) ) {
 //	$arg = preg_replace("/^\/*(.+)\/*$/","$1",$_SERVER['PATH_INFO']);
 } else if (isset($_SERVER['argv']) && ! empty($_SERVER['argv'])) {
-	$arg = & $_SERVER['argv'][0];
+	$arg = $_SERVER['argv'][0];
 }
 if (PKWK_QUERY_STRING_MAX && strlen($arg) > PKWK_QUERY_STRING_MAX) {
 	// Something nasty attack?
@@ -447,7 +513,6 @@ unset($matches);
 
 /////////////////////////////////////////////////
 // GET, POST, COOKIE
-
 $get    = & $_GET;
 $post   = & $_POST;
 $cookie = & $_COOKIE;
@@ -470,25 +535,14 @@ if (isset($vars['plugin']))
 
 // 整形: page, strip_bracket()
 if (isset($vars['page'])) {
-	$get['page'] = $post['page'] = $vars['page']  = strip_bracket($vars['page']);
+	$page = $get['page'] = $post['page'] = $vars['page']  = strip_bracket($vars['page']);
 } else {
-	$get['page'] = $post['page'] = $vars['page'] = '';
+	$page = $get['page'] = $post['page'] = $vars['page'] = null;
 }
 
 // 入力チェック: cmdの文字列は英数字以外ありえない
-if  (isset($vars['cmd']) ) {
-	if (! preg_match('/^[a-zA-Z][a-zA-Z0-9_]*$/', $vars[$var]))
-		unset($get['cmd'], $post['cmd'], $vars['cmd']);
-}else{
-	$get['cmd']  = $post['cmd']  = $vars['cmd']  = 'read';
-
-	$argx = explode('&', $arg);
-	$arg = is_array($argx) ? $argx[0]:$argx;
-	if ($arg == '') $arg = $defaultpage;
-	$arg = rawurldecode($arg);
-	$arg = strip_bracket($arg);
-	$arg = input_filter($arg);
-	$get['page'] = $post['page'] = $vars['page'] = $arg;
+if ( isset($vars['cmd']) && !preg_match('/^[a-zA-Z][a-zA-Z0-9_]*$/', $vars['cmd']) !== FALSE){
+	unset($get['cmd'], $post['cmd'], $vars['cmd']);
 }
 
 // 整形: msg, 改行を取り除く
@@ -497,12 +551,79 @@ if (isset($vars['msg'])) {
 }
 
 // TrackBack Ping
-if (isset($vars['tb_id']) && $vars['tb_id'] !== '') {
+if ( isset($vars['tb_id']) && !empty($vars['tb_id']) ) {
 	$get['cmd'] = $post['cmd'] = $vars['cmd'] = 'tb';
 }
 
 // HTTP_X_REQUESTED_WITHヘッダーで、ajaxによるリクエストかを判別
 define('IS_AJAX', isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' || isset($vars['ajax']));
+
+/////////////////////////////////////////////////
+// Spam filtering
+
+if ($spam && $method !== 'GET') {
+	if (isset($country_code) && $country_code !== false){
+		if (isset($deny_countory) && !empty($deny_countory)) {
+			if (in_array($country_code, $deny_countory)) {
+				die('Sorry, access from your country('.$geoip['country_code'].') is prohibited.');
+				exit;
+			}
+		}
+		if (isset($allow_countory) && !empty($allow_countory)) {
+			if (!in_array($country_code, $allow_countory)) {
+				die('Sorry, access from your country('.$geoip['country_code'].') is prohibited.');
+				exit;
+			}
+		}
+	}
+
+	// Adjustment
+	$_spam   = ! empty($spam);
+	$_cmd = strtolower($cmd);
+	$_ignore = array();
+	switch ($_cmd) {
+		case 'search': $_spam = FALSE; break;
+		case 'edit':
+			$_page = & $page;
+			if (isset($vars['add']) && $vars['add']) {
+				$_cmd = 'add';
+			} else {
+				$_ignore[] = 'original';
+			}
+			break;
+		case 'bugtrack': $_page = & $vars['base'];  break;
+		case 'tracker':  $_page = & $vars['_base']; break;
+		case 'read':     $_page = & $page;  break;
+		default: $_page = & $refer; break;
+	}
+
+	if ($_spam) {
+		require(LIB_DIR . 'spam.php');
+
+		if (isset($spam['method'][$_cmd])) {
+			$_method = & $spam['method'][$_cmd];
+		} else if (isset($spam['method']['_default'])) {
+			$_method = & $spam['method']['_default'];
+		} else {
+			$_method = array();
+		}
+		$exitmode = isset($spam['exitmode']) ? $spam['exitmode'] : null;
+
+		// Hack: ignorance several keys
+		if ($_ignore) {
+			$_vars = array();
+			foreach($vars as $key => $value) {
+				$_vars[$key] = & $vars[$key];
+			}
+			foreach($_ignore as $key) {
+				unset($_vars[$key]);
+			}
+		} else {
+			$_vars = & $vars;
+		}
+		pkwk_spamfilter($method . ' to #' . $_cmd, $_page, $_vars, $_method, $exitmode);
+	}
+}
 
 /////////////////////////////////////////////////
 // 初期設定($WikiName,$BracketNameなど)
@@ -598,6 +719,7 @@ if (!IS_AJAX || IS_MOBILE){
 				'jquery.autosize',
 				'jquery.beautyOfCode',
 				'jquery.cookie',
+				'jquery.form',
 				'jquery.dataTables',
 				'jquery.i18n',
 				'jquery.jplayer',
@@ -692,5 +814,146 @@ if (!IS_AJAX || IS_MOBILE){
 		}
 	}
 }
+
+if (DEBUG) {
+	$exclude_plugin = array();
+	if (file_exists($mecab_path)){
+		$info[] = 'Mecab is enabled. (It will not work in XAMPP,but not a malfunction....)';
+		if (extension_loaded('mecab')){
+			$info[] = 'Mecab is module mode.';
+		}else{
+			$info[] = 'Mecab is stdio mode. Please concider to install <a href="https://github.com/rsky/php-mecab">php-mecab</a> in your server.';
+		}
+	}else{
+		$info[] = 'Mecab is disabled. If you installed, please check mecab path.';
+	}
+}
+
+/////////////////////////////////////////////////
+// Execute Plugin.
+
+// auth remoteip
+if (isset($auth_api['remoteip']['use']) && $auth_api['remoteip']['use']) {
+	if (exist_plugin_inline('remoteip')) do_plugin_inline('remoteip');
+}
+
+// WebDAV
+if (is_webdav() && exist_plugin('dav')) {
+	do_plugin_action('dav');
+	exit;
+}
+
+// cmdが指定されていない場合は、readとみなす。
+if ( !isset($vars['cmd']) ) {
+	// cmdが指定されてない場合は、readとみなす。
+	$cmd = $get['cmd']  = $post['cmd']  = $vars['cmd']  = 'read';
+
+	$argx = explode('&', $arg);
+	$arg = is_array($argx) ? $argx[0]:$argx;
+	if (! empty($arg) ){
+		$arg = rawurldecode($arg);
+		$arg = strip_bracket($arg);
+		$arg = input_filter($arg);
+	}else{
+		$arg = $defaultpage;
+	}
+	$get['page'] = $post['page'] = $vars['page'] = $arg;
+	unset($vars[$arg]);
+}
+
+// プラグインのaction命令を実行
+$cmd = strtolower($vars['cmd']);
+$is_protect = auth::is_protect();
+if ($is_protect) {
+	$plugin_arg = '';
+	if (auth::is_protect_plugin_action($cmd)) {
+		if (exist_plugin_action($cmd)) do_plugin_action($cmd);
+		// Location で飛ばないプラグインの場合
+		$plugin_arg = $cmd;
+	}
+	if (exist_plugin_convert('protect')) do_plugin_convert('protect', $plugin_arg);
+}
+if (! exist_plugin_action($cmd)) {
+	header('HTTP/1.1 501 Not Implemented');
+	die_message(sprintf($_string['plugin_not_implemented'],htmlsc($cmd)));
+}
+$retvars = do_plugin_action($cmd);
+
+if ($is_protect) {
+ 	// Location で飛ぶようなプラグインの対応のため
+	// 上のアクションプラグインの実行後に処理を実施
+	if (exist_plugin_convert('protect')) do_plugin_convert('protect');
+	die('<var>PLUS_PROTECT_MODE</var> is set.');
+}
+// Set Home
+$auth_key = auth::get_user_info();
+if (!empty($auth_key['home']) && ($vars['page'] == $defaultpage || $vars['page'] == $auth_key['home'])){
+	$base = $defaultpage = $auth_key['home'];
+}else{
+	$base = $vars['page'];
+}
+
+///////////////////////////////////////
+// Page output
+
+if (isset($retvars['msg']) && !empty($retvars['msg']) ) {
+	$title = str_replace('$1', htmlsc(strip_bracket($base)), $retvars['msg']);
+	$page  = str_replace('$1', make_search($base),  $retvars['msg']);
+}else{
+	$title = htmlsc(strip_bracket($base));
+	$page  = make_search($base);
+}
+
+if (isset($retvars['body']) && !empty($retvars['body'])) {
+	$body = $retvars['body'];
+} else {
+	if (! is_page($base)) {
+		$base  = $defaultpage;
+		$title = htmlsc(strip_bracket($base));
+		$page  = make_search($base);
+	}
+
+	$vars['cmd']  = 'read';
+	$vars['page'] = $base;
+
+	global $fixed_heading_edited;
+	$source = get_source($base);
+
+	// Virtual action plugin(partedit).
+	// NOTE: Check wiki source only.(*NOT* call convert_html() function)
+	$lines = $source;
+	while (! empty($lines)) {
+		$line = array_shift($lines);
+		if (preg_match("/^\#(partedit)(?:\((.*)\))?/", $line, $matches)) {
+			if ( !isset($matches[2]) || empty($matches[2]) ) {
+				$fixed_heading_edited = ($fixed_heading_edited ? 0:1);
+			} else if ( $matches[2] == 'on') {
+				$fixed_heading_edited = 1;
+			} else if ( $matches[2] == 'off') {
+				$fixed_heading_edited = 0;
+			}
+		}
+	}
+
+	$body = convert_html($source);
+	$body .= ($trackback && $tb_auto_discovery) ? tb_get_rdf($base) : ''; // Add TrackBack-Ping URI
+	if ($referer){
+		require(LIB_DIR . 'referer.php');
+		ref_save($base);
+	}
+	log_write('check',$vars['page']);
+	log_write('browse',$vars['page']);
+}
+
+// global $always_menu_displayed;
+if (arg_check('read')) $always_menu_displayed = 1;
+$body_menu = $body_side = '';
+if ($always_menu_displayed) {
+	if (exist_plugin_convert('menu')) $body_menu = do_plugin_convert('menu');
+	if (exist_plugin_convert('side')) $body_side = do_plugin_convert('side');
+}
+
+catbody($title, $page, $body);
+
 /* End of file init.php */
 /* Location: ./wiki-common/lib/init.php */

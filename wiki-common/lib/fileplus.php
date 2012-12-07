@@ -21,7 +21,7 @@ function get_ticket($flush = FALSE)
 	if ($cache['wiki']->hasItem(PKWK_TICKET_CACHE)) {
 		$ticket = $cache['wiki']->getItem(PKWK_TICKET_CACHE);
 	}else{
-		$ticket = mt_rand();
+		$ticket = Zend\Math\Rand::getString(32);
 		$cache['wiki']->setItem(PKWK_TICKET_CACHE, $ticket);
 	}
 	return $ticket;
@@ -65,13 +65,30 @@ function update_cache($page = '', $force = false){
 		$pages = $cache['wiki']->getItem(PKWK_EXISTS_PREFIX.'wiki');
 	}
 
+	// Update autolink
+	if ( $autolink !== 0 ) {
+		$cache['wiki']->setItem(PKWK_AUTOLINK_REGEX_CACHE, get_autolink_pattern($pages, $autolink));
+	}
+
+
+	// Update rel and ref cache
+	$links = new Links($page);
+	if (!empty($page) ){
+		$links->update($page);
+	} else if ($force) {
+		$links->init();
+	}
+
+	// Update Lastmodifed cache
+	put_lastmodified();
+
 	// Update attach list
 	get_attachfiles($page);
 
 	// Update AutoAliasName
-	if ($autoalias !== 0 && ! $cache['wiki']->hasItem(PKWK_AUTOALIAS_REGEX_CACHE) ) {
+	// http://pukiwiki.cafelounge.net/plus/?Documents%2FRedirect
+	if ($autoalias !== 0 && (! $cache['wiki']->hasItem(PKWK_AUTOALIAS_REGEX_CACHE) || $page === $aliaspage) ) {
 		$aliases = get_autoaliases();
-
 		if (empty($aliases) ) {
 			// Remove
 			$cache['wiki']->removeItem(PKWK_AUTOALIAS_REGEX_CACHE);
@@ -82,7 +99,8 @@ function update_cache($page = '', $force = false){
 	}
 
 	// Update AutoGlossary
-	if ($autoglossary !== 0 && ! $cache['wiki']->hasItem(PKWK_GLOSSARY_REGEX_CACHE) ) {
+	// http://pukiwiki.cafelounge.net/plus/?Documents%2FGlossary
+	if ($autoglossary !== 0 && (! $cache['wiki']->hasItem(PKWK_GLOSSARY_REGEX_CACHE) || $page === $glossarypage) ) {
 		$words = get_autoglossaries();
 		if (empty($words) ) {
 			// Remove
@@ -93,13 +111,9 @@ function update_cache($page = '', $force = false){
 		}
 	}
 
-	// Update autolink
-	if ($autolink !== 0 && ! $cache['wiki']->hasItem(PKWK_AUTOLINK_REGEX_CACHE) ) {
-		$cache['wiki']->setItem(PKWK_AUTOLINK_REGEX_CACHE, get_autolink_pattern($pages, $autolink));
-	}
-
 	// Update AutoBaseAlias
-	if ($autobasealias !== 0 && ! $cache['wiki']->hasItem(PKWK_AUTOBASEALIAS_CACHE) ) {
+	// http://pukiwiki.cafelounge.net/plus/?Documents%2FAutoBaseAlias
+	if ($autobasealias !== 0 ) {
 		$basealiases = get_autobasealias($pages);
 		if (empty($basealiase) ) {
 			// Remove
@@ -109,16 +123,6 @@ function update_cache($page = '', $force = false){
 			$cache['wiki']->setItem(PKWK_AUTOBASEALIAS_CACHE, $basealiases );
 		}
 	}
-
-	// Update rel and ref cache
-	if (!empty($page) ){
-		links_init($page);
-	} else if ($force) {
-		links_init(null, $force);
-	}
-
-	// Update recent cache
-	if (! $cache['wiki']->hasItem(PKWK_MAXSHOW_CACHE)) put_lastmodified();
 
 	return true;
 }

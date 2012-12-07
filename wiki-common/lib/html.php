@@ -12,6 +12,8 @@
 // Plus!NOTE:(policy)not merge official cvs(1.49->1.54)
 // Plus!NOTE:(policy)not merge official cvs(1.58->1.59) See Question/181
 
+use Zend\Http\Response;
+
 // Show page-content
 function catbody($title, $page, $body)
 {
@@ -281,11 +283,14 @@ function catbody($title, $page, $body)
 			if (exist_plugin_convert('side')) $body_side = do_plugin_convert('side');
 		}
 */
-		header('Content-Type: '.$http_header.'; charset='. CONTENT_CHARSET);
-		@header('X-UA-Compatible: '.(empty($x_ua_compatible)) ? 'IE=edge' : $x_ua_compatible);	// とりあえずIE8対策
-		require(SKIN_FILE);
+		//header('Content-Type: '.$http_header.'; charset='. CONTENT_CHARSET);
+		//@header('X-UA-Compatible: '.(empty($x_ua_compatible)) ? 'IE=edge' : $x_ua_compatible);	// とりあえずIE8対策
+
+		global $headers;
+		$headers['Content-Type'] = $http_header . '; charset='. CONTENT_CHARSET;
+		
+		include(SKIN_FILE);
 	}
-	pkwk_common_suffixes();
 	exit;
 }
 
@@ -637,56 +642,60 @@ function pkwk_headers_sent()
 	@return なし
 */
 function pkwk_common_headers($modified = 0, $expire = 604800){
-	global $lastmod, $vars;
+	global $lastmod, $vars, $response, $headers;
 	if (! defined('PKWK_OPTIMISE')) pkwk_headers_sent();
+	$response = new Response();
 
+	// RFC2616
+	// http://sonic64.com/2004-02-06.html
 	$vary = get_language_header_vary();
-
 	if (preg_match('/\b(gzip|deflate|compress)\b/i', $_SERVER['HTTP_ACCEPT_ENCODING'], $matches)) {
 		$vary .= ',Accept-Encoding';
 	}
-	// RFC2616
-	// http://sonic64.com/2004-02-06.html
-	header('Vary: '.$vary);
+	$headers['Vary'] = $vary;
 
 	// HTTP access control
 	// JSON脆弱性対策（Adv.では外部にAjax APIを提供することを考慮しない）
 	// https://developer.mozilla.org/ja/HTTP_Access_Control
-	header('Access-Control-Allow-Origin: '.get_script_uri());
+	$headers['Access-Control-Allow-Origin'] = get_script_uri();
+
 	// Content Security Policy
 	// https://developer.mozilla.org/ja/Security/CSP/Using_Content_Security_Policy
 	// header('X-Content-Security-Policy: allow "self" "inline-script";  img-src *; media-src *;');
 	// IEの自動MIME type判別機能を無効化する
 	// http://msdn.microsoft.com/ja-jp/ie/dd218497.aspx
-	header('X-Content-Type-Options: nosniff');
+	$headers['X-Content-Type-Options'] = 'nosniff';
+
 	// クリックジャッキング対策
 	// https://developer.mozilla.org/ja/The_X-FRAME-OPTIONS_response_header
-	header('X-Frame-Options: SameDomain');
+	$headers['X-Frame-Options'] = 'SameDomain';
+
 	// XSS脆弱性対策（これでいいのか？）
 	// http://msdn.microsoft.com/ja-jp/ie/dd218482
-	header('X-XSS-Protection: '.((DEBUG) ? '0' :'1;mode=block') );
-
+	$headers['X-XSS-Protection'] = DEBUG ? '0' :'1;mode=block';
+	
 	if ($modified !== 0){
 		// 最終更新日（秒で）が指定されていない場合動的なページとみなす。
 		// PHPで条件付きGETとかEtagとかでパフォーマンス向上
 		// http://firegoby.theta.ne.jp/archives/1730
 		$last_modified = gmdate('D, d M Y H:i:s', $modified);
-		$etag = md5($last_modified);
 
-		header('Cache-Control: private');
-		header('Expires: ' .gmdate('D, d M Y H:i:s',time() + $expire) . ' GMT');
-		header('Last-Modified: ' . $last_modified );
-		header('ETag: "'.$etag.'"');
+		$headers['Cache-Control'] = 'private';
+		$headers['Expires'] = gmdate('D, d M Y H:i:s',time() + $expire) . ' GMT';
+		$headers['Last-Modified'] = $last_modified;
+		$headers['ETag'] = md5($last_modified);
 
 		if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ) {
 			if ($_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified) {
-				header('HTTP/1.1 304 Not Modified');
+				$response->setStatusCode(Response::STATUS_CODE_304);
+				$response->renderStatusLine();
 				exit;
 			}
 		}
 		if (isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
 			if (preg_match("/{$etag}/", $_SERVER['HTTP_IF_NONE_MATCH'])) {
-				header('HTTP/1.1 304 Not Modified');
+				$response->setStatusCode(Response::STATUS_CODE_304);
+				$response->renderStatusLine();
 				exit;
 			}
 		}
@@ -695,25 +704,20 @@ function pkwk_common_headers($modified = 0, $expire = 604800){
 
 	}else{
 		// PHPで動的に生成されるページはキャシュすべきではない
-		header('Cache-Control: no-cache');
-		header('Pragma: no-cache');
-		header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
+		$headers['Cache-Control'] = $headers['Pragma'] = 'no-cache';
+		$headers['Expires'] = 'Sat, 26 Jul 1997 05:00:00 GMT';
 	}
-	header('Connection: close');
+	$response->getHeaders()->addHeaders($headers);
+	$response->setStatusCode(Response::STATUS_CODE_200);
+	//pr($response->renderStatusLine());
+	
 }
 
 function pkwk_common_suffixes($length = ''){
-
-	// close current session
-	//if (session_id()) session_write_close();
 	// flush all output
 	/*
 	if(!DEBUG){
-		// get the size of the output
-		// send headers to tell the browser to close the connection
-		//header('Content-Length: '. ($length !== '') ? $length : ob_get_length() );
 		@ob_end_flush();
-		//ob_flush();
 	}
 	*/
 	flush();

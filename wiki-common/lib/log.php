@@ -350,7 +350,7 @@ function log_update($kind,$filename,$key,$mustkey,$data)
 {
 	$log_data = log_read($filename);
 	$log_length = count($log_data);
-	
+
 	// ログの件数が1000件を超えた場合カット
 	if ($log_length > 1000){
 		$log_length = 1000;
@@ -416,7 +416,7 @@ function log_update($kind,$filename,$key,$mustkey,$data)
 	}
 	@flock($fp, LOCK_UN);
 	@fclose($fp);
-} 
+}
 
 function log_mustkey_check($key,$data)
 {
@@ -432,7 +432,12 @@ function log_mustkey_check($key,$data)
  */
 class log
 {
-	/**
+	public function __construct($subdir,$page,$ext='.txt') {
+		$this->filename = LOG_DIR . $subdir . encode($page) . $ext;
+		$this->backup = new Backup($page);
+	}
+
+		/**
 	 * ページのファイル名を得る
 	 * @static
 	 */
@@ -533,7 +538,7 @@ class log
 				return $rc;
 			}else{
 				$tmp = explode(':', $log[$kind][$kind_view]);
-			
+
 				// 妥当性チェック
 				foreach($tmp as $_tmp) {
 					$sw = 0;
@@ -652,17 +657,18 @@ class log
 	 */
 	static function get_backup_age($page,$update_time,$update=true)
 	{
-		static $_page, $backup_page;
+		static $_page, $backup;
 
-		if (!isset($backup_page)) $backup_page = get_backup($page);
-		if (count($backup_page) == 0) return -1; // 存在しない
+		//if (!isset($backup_page)) $backup_page = get_backup($page);
+		//if (count($backup_page) == 0) return -1; // 存在しない
+		if (!isset($backup)) $backup = new Backup($page);
 
 		// 初回バックアップ作成は、文書生成日時となる
-		$create_date = $backup_page[1]['time'];
+		$create_date = $backup->getBackup(1)->time;
 		if ($update_time == $create_date) return 1;
 
 		$match = -1;
-		foreach ($backup_page as $age => $val)
+		foreach ($backup->getBackup() as $age => $val)
 		{
 			if ($val['real'] == $update_time) {
 				$match = $age;

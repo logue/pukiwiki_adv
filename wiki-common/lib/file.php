@@ -38,7 +38,7 @@ defined('PKWK_EXISTS_PREFIX')			or define('PKWK_EXISTS_PREFIX', 'exists-');
 // Page cache prefix
 defined('PKWK_PAGECACHE_PREFIX')		or define('PKWK_PAGECACHE_PREFIX', 'page-');
 
-// 
+//
 defined('PKWK_CAPTCHA_SESSION_PREFIX')	or define('PKWK_CAPTCHA_SESSION_PREFIX', 'captcha-');
 
 // Get source(wiki text) data of the page
@@ -203,10 +203,12 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	unset($oldpostdata, $diffdata);
 
 	// Create backup
-	make_backup($page, $postdata == ''); // Is $postdata null?
+	//make_backup($page, $postdata == ''); // Is $postdata null?
+	$backup = new Backup($page);
+	$backup->setBackup();
 
 	// Update *.rel *.ref data.
-	update_cache($page, false);
+	update_cache($page, false, $notimestamp);
 
 	// Logging postdata (Plus!)
 	postdata_write();
@@ -756,7 +758,9 @@ function links_get_related($page)
 	$links[$page] = ($page === $vars['page']) ? $related : array();
 
 	// Get repated pages from DB
-	$links[$page] += links_get_related_db($page);
+	$link = new Links($page);
+	//$links[$page] += links_get_related_db($page);
+	$links[$page] = $link->get_related();
 
 	return $links[$page];
 }
