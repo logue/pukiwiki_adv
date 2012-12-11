@@ -52,7 +52,7 @@ function plugin_backup_init()
 			'msg_visualdiff'		=> T_('diff for visual'),
 			'msg_arrow'				=> T_('-&gt;'),
 			'msg_delete'			=> T_('Delete'),
-			
+
 			'title_backup'			=> T_('Backup of $1(No. $2)'),
 			'title_backup_delete'	=> T_('Deleting backup of $1'),
 			'title_backupdiff'		=> T_('Backup diff of $1(No. $2)'),
@@ -60,7 +60,7 @@ function plugin_backup_init()
 			'title_backupnowdiff'	=> T_('Backup diff of $1 vs current(No. $2)'),
 			'title_backupsource'	=> T_('Backup source of $1(No. $2)'),
 			'title_pagebackuplist'	=> T_('Backup list of $1'),
-			
+
 			'btn_rollback'				=> T_('Roll back'),
 			'btn_selectdelete'			=> T_('Delete selected backup(s).'),
 			'msg_backup_rollbacked'		=> T_('Rolled back to $1.'),
@@ -85,10 +85,11 @@ function plugin_backup_action()
 	$s_page = htmlsc($page);
 	$r_page = rawurlencode($page);
 
-	$backups = get_backup($page);
-	$backups_count = count($backups);
+	$backup = new BackupFile($page);
+	$backups = $backup->getBackup($page);
+
 	$msg = $_backup_messages['msg_backup'];
-	if ($s_age > $backups_count) $s_age = $backups_count;
+	if ($s_age > count($backups)) $s_age = $backups_count;
 	$body = '';
 
 	/**
@@ -110,6 +111,8 @@ function plugin_backup_action()
 	$body .= '</div>'."\n";
 
 	if ($action){
+		$data = join("\n", $backups[$s_age]['data']);
+		auth::is_role_page($data);
 		switch ($action){
 			case 'delete' :
 				/**
@@ -125,34 +128,30 @@ function plugin_backup_action()
 					}
 					return plugin_backup_delete($page, $vars['selectages']);
 				}
-			case 'rollback' : 
+			case 'rollback' :
 				return plugin_backup_rollback($page, $s_age);
 			break;
 			case 'diff':
 				if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
 				$title = & $_backup_messages['title_backupdiff'];
-				$old = ($s_age > 1) ? join('', $backups[$s_age - 1]['data']) : '';
-				$cur = join('', $backups[$s_age]['data']);
-				auth::is_role_page($old);
-				auth::is_role_page($cur);
-				$body .= plugin_backup_diff(do_diff($old, $cur));
+				$past_data = ($s_age > 1) ? join("\n", $backups[$s_age - 1]['data']) : '';
+				auth::is_role_page($past_data);
+				$body .= plugin_backup_diff(do_diff($past_data, $data));
 			break;
 			case 'nowdiff':
 				if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
 				$title = & $_backup_messages['title_backupnowdiff'];
-				$old = join('', $backups[$s_age]['data']);
-				$cur = get_source($page, TRUE, TRUE);
-				auth::is_role_page($old);
-				auth::is_role_page($cur);
-				$body .= plugin_backup_diff(do_diff($old, $cur));
+				$now_data = get_source($page, TRUE, TRUE);
+				auth::is_role_page($now_data);
+				$body .= plugin_backup_diff(do_diff($data, $now_data));
 			break;
 			case 'visualdiff':
 				$old = join('', $backups[$s_age]['data']);
-				$cur = get_source($page, TRUE, TRUE);
-				auth::is_role_page($old);
-					auth::is_role_page($cur);
+				$now_data = get_source($page, TRUE, TRUE);
+				auth::is_role_page($now_data);
 				// <ins> <del>タグを使う形式に変更。
-				$source = do_diff($old,$cur);
+				$source = do_diff($data, $now_data);
+
 				$source = plugin_backup_visualdiff($source);
 				$body .= drop_submit(convert_html($source));
 				$body = preg_replace('#<p>\#del(.*?)(</p>)#si', '<del class="remove_block">$1', $body);
@@ -169,24 +168,22 @@ function plugin_backup_action()
 			case 'source':
 				if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
 				$title = & $_backup_messages['title_backupsource'];
-				auth::is_role_page($backups[$s_age]['data']);
-				$body .= '<pre class="sh" data-blush="plain">' . htmlsc(join('', $backups[$s_age]['data'])) . '</pre>' . "\n";
+				$body .= '<pre class="sh" data-blush="plain">' . htmlsc($data) . '</pre>' . "\n";
 			break;
 			default:
 				if (PLUGIN_BACKUP_DISABLE_BACKUP_RENDERING) {
 					die_message( T_('This feature is prohibited') );
 				} else {
 					$title = & $_backup_messages['title_backup'];
-					auth::is_role_page($backups[$s_age]['data']);
-					$body .= drop_submit(convert_html($backups[$s_age]['data']));
+					$body .= drop_submit(convert_html($data));
 				}
 			break;
 		}
 		$msg = str_replace('$2', $s_age, $title);
 	}
-	
+
 	if (! auth::check_role('readonly')) {
-		$body .= '<a class="button" href="' . get_cmd_uri('backup', $page, null, array('action'=>'delete')) . '">' . 
+		$body .= '<a class="button" href="' . get_cmd_uri('backup', $page, null, array('action'=>'delete')) . '">' .
 			str_replace('$1', $s_page, $_backup_messages['title_backup_delete']) . '</a>';
 	}
 
@@ -262,20 +259,20 @@ function plugin_backup_diff($str)
 </ul>
 EOD;
 
-	return $ul . '<pre class="sh">' . diff_style_to_css(htmlsc($str)) . '</pre>' . "\n";
+	return $ul . '<pre>' . diff_style_to_css(htmlsc($str)) . '</pre>' . "\n";
 }
 
 function plugin_backup_get_list($page)
 {
 	global $_backup_messages, $vars, $_button;
-	$r_page = rawurlencode($page);
 	$s_page = htmlsc($page);
 	$retval = array();
 	$retval[] = '<p>[ <a href="'.get_page_uri($page).'">'.$_button['back'].'</a> ]</p>'."\n".'<hr />'."\n";
 	$retval[] = '<form action="'.get_script_uri().'" method="get" class="backup_select_form">';
 	$retval[] = '<input type="hidden" name="cmd" value="backup" />';
 	$retval[] = '<input type="hidden" name="page" value="'.$s_page.'" />';
-	$backups = _backup_file_exists($page) ? get_backup($page) : array();
+	$backup = new BackupFile($page);
+	$backups = $backup->getBackup();
 	if (empty($backups)) {
 		$retval[1] .= '<p>' . str_replace('$1', make_pagelink($page), $_backup_messages['msg_nobackup']) . '</p>' . "\n";
 		return join('', $retval);
@@ -291,25 +288,25 @@ function plugin_backup_get_list($page)
 			'delete'	=> $_backup_messages['msg_delete'],
 			'rollback'	=> $_backup_messages['msg_rollback']
 		);
-	
+
 		if (IS_MOBILE) {
 			$retval[] = '<select name="age">';
 			foreach ($backups as $backup_age=>$data) {
-				$time = isset($data['real']) ? $data['real'] : 
+				$time = isset($data['real']) ? $data['real'] :
 					isset($data['time']) ? $data['time'] : '';
 
-				$retval[] = '<option value="' . $backup_age . '"' . 
+				$retval[] = '<option value="' . $backup_age . '"' .
 					( $backup_age === $age ? ' selected="selected"' : '' ).'>' . format_date($time, false) . '</option>';
 			}
 			$retval[] = '</select>';
 		}
-		$retval[] = (IS_MOBILE) ? '<fieldset data-role="controlgroup" data-mini="true">' : 
+		$retval[] = (IS_MOBILE) ? '<fieldset data-role="controlgroup" data-mini="true">' :
 			'<div class="ui-widget-header ui-corner-all">'."\n".'<span class="buttonset">';
 		foreach ($actions as $val=>$act_name){
-			$retval[] = '<input type="radio" name="action" value="'.$val.'"'. 
+			$retval[] = '<input type="radio" name="action" value="'.$val.'"'.
 				( ($val === $action) ? ' checked="checked"' : '' ).' id="r_' . $val . '"/><label for="r_' . $val . '">' . $act_name . '</label>';
 		}
-		$retval[] = (IS_MOBILE) ? '</fieldset>' : 
+		$retval[] = (IS_MOBILE) ? '</fieldset>' :
 			'</span>'."\n".'<input type="submit" value="' . $_backup_messages['btn_jump'] . '" /></div>';
 
 		if (IS_MOBILE) {
@@ -317,7 +314,7 @@ function plugin_backup_get_list($page)
 		}else{
 			$retval[] = '<ol>';
 			foreach ($backups as $backup_age=>$data) {
-				$time = isset($data['real']) ? $data['real'] : 
+				$time = isset($data['real']) ? $data['real'] :
 					isset($data['time']) ? $data['time'] : '';
 
 				$retval[] = '<li><input type="radio" name="age" value="' . $backup_age . '" id="r_' . $backup_age  . '"' .
@@ -328,7 +325,7 @@ function plugin_backup_get_list($page)
 			$retval[] = '</ol>';
 		}
 //		$retval[] = '<input type="password" name="pass" size="12" />';
-		
+
 	}
 	$retval[] = '</form>';
 /*
@@ -427,7 +424,7 @@ function plugin_backup_convert()
 			case 'nolabel'    : $with_label = FALSE; break;
 		}
 	}
-	
+
 	switch($diff_mode) {
 		case 2:
 			$mode = 'visualdiff';
@@ -485,13 +482,20 @@ function plugin_backup_rollback($page, $age)
 	$passvalid = isset($vars['pass']) ? pkwk_login($vars['pass']) : FALSE;
 
 	if ($passvalid) {
-		$backups = _backup_file_exists($page) ? get_backup($page) : array();
-		if(empty($backups) || empty($backups[$age]))
+		$backup = new Backup($page);
+		$backups = $backup->getBackup($age);
+		if( empty($backups) )
 		{
 			die();	// Do nothing
 		}
 
-		page_write($page, implode('', $backups[$vars['age']]['data']));
+		// ファイルの更新日時をバックアップの時点にする
+		pkwk_touch_file(get_filename($page), $backups['time']);
+		// バックアップからロールバック（タイムスタンプを更新しない状態で）
+		page_write($page, implode("\n", $backups['data']), true);
+
+
+		//put_lastmodified();
 
 		return array(
 			'msg'  => $_backup_messages['title_backup_rollbacked'],

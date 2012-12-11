@@ -432,9 +432,9 @@ function log_mustkey_check($key,$data)
  */
 class log
 {
-	public function __construct($subdir,$page,$ext='.txt') {
+	public function __construct($subdir='browse',$page='',$ext='.txt') {
 		$this->filename = LOG_DIR . $subdir . encode($page) . $ext;
-		$this->backup = new Backup($page);
+		$this->backup = new BackupFile($page);
 	}
 
 		/**
@@ -494,7 +494,7 @@ class log
 			'ip'		  => array( 1, 1, 1, 1, 1, 1), // IPアドレス
 			'host'		  => array( 1, 1, 1, 1, 1, 1), // ホスト名 (FQDN)
 			'@guess'	  => array( 1, 1, 1, 0, 0, 0), // 推測
-			'auth_api'	=> array( 0, 0, 0, 0, 1, 1), // 認証API
+			'auth_api'		=> array( 0, 0, 0, 0, 1, 1), // 認証API
 			'user'		  => array( 1, 1, 1, 1, 1, 1), // ユーザ名(認証済)
 			'ntlm'		  => array( 1, 1, 1, 1, 0, 0), // ユーザ名(NTLM認証)
 			'proxy'		  => array( 1, 1, 1, 1, 0, 0), // Proxy情報

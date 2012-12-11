@@ -555,6 +555,19 @@ if ( isset($vars['tb_id']) && !empty($vars['tb_id']) ) {
 	$get['cmd'] = $post['cmd'] = $vars['cmd'] = 'tb';
 }
 
+
+if (! isset($vars['cmd']) ){
+	$get['cmd']  = $post['cmd']  = $vars['cmd']  = 'read';
+
+	$argx = explode('&', $arg);
+	$arg = is_array($argx) ? $argx[0]:$argx;
+	if ($arg == '') $arg = $defaultpage;
+	$arg = rawurldecode($arg);
+	$arg = strip_bracket($arg);
+	$arg = input_filter($arg);
+	$get['page'] = $post['page'] = $vars['page'] = $arg;
+	unset($vars[$arg]);
+}
 // HTTP_X_REQUESTED_WITHヘッダーで、ajaxによるリクエストかを判別
 define('IS_AJAX', isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' || isset($vars['ajax']));
 
@@ -859,6 +872,8 @@ if ( !isset($vars['cmd']) ) {
 	}
 	$get['page'] = $post['page'] = $vars['page'] = $arg;
 	unset($vars[$arg]);
+}else if (empty($vars['page'])){
+	$vars['page'] = $defaultpage;
 }
 
 // プラグインのaction命令を実行
@@ -895,7 +910,6 @@ if (!empty($auth_key['home']) && ($vars['page'] == $defaultpage || $vars['page']
 
 ///////////////////////////////////////
 // Page output
-
 if (isset($retvars['msg']) && !empty($retvars['msg']) ) {
 	$title = str_replace('$1', htmlsc(strip_bracket($base)), $retvars['msg']);
 	$page  = str_replace('$1', make_search($base),  $retvars['msg']);
@@ -903,6 +917,7 @@ if (isset($retvars['msg']) && !empty($retvars['msg']) ) {
 	$title = htmlsc(strip_bracket($base));
 	$page  = make_search($base);
 }
+
 
 if (isset($retvars['body']) && !empty($retvars['body'])) {
 	$body = $retvars['body'];
@@ -916,8 +931,10 @@ if (isset($retvars['body']) && !empty($retvars['body'])) {
 	$vars['cmd']  = 'read';
 	$vars['page'] = $base;
 
+	if (empty($vars['page'])) die('page is missing!');
 	global $fixed_heading_edited;
-	$source = get_source($base);
+	$wiki = new WikiFile($vars['page']);
+	$source = $wiki->source();
 
 	// Virtual action plugin(partedit).
 	// NOTE: Check wiki source only.(*NOT* call convert_html() function)
@@ -935,7 +952,7 @@ if (isset($retvars['body']) && !empty($retvars['body'])) {
 		}
 	}
 
-	$body = convert_html($source);
+	$body = $wiki->render();
 	$body .= ($trackback && $tb_auto_discovery) ? tb_get_rdf($base) : ''; // Add TrackBack-Ping URI
 	if ($referer){
 		require(LIB_DIR . 'referer.php');

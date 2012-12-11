@@ -288,7 +288,7 @@ function catbody($title, $page, $body)
 
 		global $headers;
 		$headers['Content-Type'] = $http_header . '; charset='. CONTENT_CHARSET;
-		
+
 		include(SKIN_FILE);
 	}
 	exit;
@@ -405,9 +405,10 @@ function edit_form($page, $postdata, $digest = FALSE, $b_template = TRUE)
 	global $_button, $_string;
 
 //	global $x_ua_compatible;
+	$w = new WikiFile($page);
 
 	// Newly generate $digest or not
-	if ($digest === FALSE) $digest = md5(get_source($page, TRUE, TRUE));
+	if ($digest === FALSE) $digest = $w->digest();
 
 	$refer = $template = $addtag = $add_top = $add_ajax = null;
 
@@ -416,8 +417,8 @@ function edit_form($page, $postdata, $digest = FALSE, $b_template = TRUE)
 	$pages = DEBUG ? get_existpages() : auth::get_existpages();
 
 	if($load_template_func && $b_template) {
-		$pages  = array();
 		foreach($pages as $_page) {
+			$_w = new WikiFile($_page);
 			if (is_cantedit($_page) || check_non_list($_page))
 				continue;
 			$s_page = htmlsc($_page);
@@ -673,7 +674,7 @@ function pkwk_common_headers($modified = 0, $expire = 604800){
 	// XSS脆弱性対策（これでいいのか？）
 	// http://msdn.microsoft.com/ja-jp/ie/dd218482
 	$headers['X-XSS-Protection'] = DEBUG ? '0' :'1;mode=block';
-	
+
 	if ($modified !== 0){
 		// 最終更新日（秒で）が指定されていない場合動的なページとみなす。
 		// PHPで条件付きGETとかEtagとかでパフォーマンス向上
@@ -710,7 +711,7 @@ function pkwk_common_headers($modified = 0, $expire = 604800){
 	$response->getHeaders()->addHeaders($headers);
 	$response->setStatusCode(Response::STATUS_CODE_200);
 	//pr($response->renderStatusLine());
-	
+
 }
 
 function pkwk_common_suffixes($length = ''){

@@ -14,7 +14,7 @@ class auth_file
 	var $auth_users, $file;
 	var $exist, $write, $f_name;
 
-	function auth_file($file,$name='auth_users')
+	function __construct($file,$name='auth_users')
 	{
 		$this->file = $file;
 		$this->write = FALSE;
@@ -83,7 +83,7 @@ class auth_file
 		return $rc;
 	}
 
-	function get_data($user) 
+	function get_data($user)
 	{
 		if (empty($this->auth_users[$user])) {
 			// scheme, salt, role

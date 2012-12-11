@@ -20,7 +20,7 @@ function plugin_related_init(){
 function plugin_related_convert()
 {
 	global $vars;
-	
+
 	$args = func_get_args();
 	if ($args[0] == 'dl'){
 		return make_related($vars['page'], 'dl');
@@ -48,7 +48,7 @@ function make_related($page, $tag = '')
 
 		$s_page   = htmlsc($page);
 		$passage  = get_passage($lastmod);
-		$_links[] = 
+		$_links[] =
 			'<a href="' . get_page_uri($page) . '">' .
 			$s_page . '</a>' . $passage;
 	}
@@ -83,7 +83,9 @@ function plugin_related_action()
 	if ($_page == '') $_page = $defaultpage;
 
 	// Get related from cache
-	$data = links_get_related_db($_page);
+	//$data = links_get_related_db($_page);
+	$links = new Relational($page);
+	$data = $links->get_related();
 	if (! empty($data)) {
 		// Hide by array keys (not values)
 		foreach(array_keys($data) as $page) {
@@ -100,7 +102,7 @@ function plugin_related_action()
 		'Return to ' . $s_word .'</a><br />'. "\n";
 
 	if (empty($data)) {
-		$retval .= '<ul><li>No related pages found.</li></ul>' . "\n";	
+		$retval .= '<ul><li>No related pages found.</li></ul>' . "\n";
 	} else {
 		// Show count($data)?
 		ksort($data, SORT_STRING);

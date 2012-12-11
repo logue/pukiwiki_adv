@@ -78,7 +78,7 @@ function plugin_rename_action()
 		// $method == 'page'
 		$page  = plugin_rename_getvar('page');
 		$refer = plugin_rename_getvar('refer');
-		
+
 		// Check Illigal Chars
 		if (preg_match(PKWK_ILLEGAL_CHARS_PATTERN, $page)){
 			die_message($_strings['illegal_chars']);
@@ -231,7 +231,7 @@ function plugin_rename_refer()
 {
 	$page  = plugin_rename_getvar('page');
 	$refer = plugin_rename_getvar('refer');
-	
+
 	if (is_cantedit($page)) {
 		return plugin_rename_phase2('notvalid');
 	}
@@ -419,8 +419,11 @@ function plugin_rename_get_files($pages)
 			rename($old, $new);
 
 			// Update link database (BugTrack/327) arino
-			links_update($old);
-			links_update($new);
+			//links_update($old);
+			//links_update($new);
+			$links = new Relational();
+			$links->update($old);
+			$links->update($new);
 		}
 	}
 

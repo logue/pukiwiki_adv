@@ -20,13 +20,14 @@ function is_interwiki($str)
 
 function is_pagename($str)
 {
+/*
 	global $BracketName;
 
 	if (empty($str)) return;
 	$is_pagename = (! is_interwiki($str) &&
 		  preg_match('/^(?!\/)' . $BracketName . '$(?<!\/$)/', $str) &&
 		! preg_match('#(^|/)\.{1,2}(/|$)#', $str));
-/*
+
 	if (defined('SOURCE_ENCODING')) {
 		switch(SOURCE_ENCODING){
 		case 'UTF-8': $pattern =
@@ -40,8 +41,11 @@ function is_pagename($str)
 			$is_pagename = ($is_pagename && preg_match($pattern, $str));
 	}
 	return $is_pagename;
-*/
+
 	return ($is_pagename && preg_match('/^(?:[\x00-\x7F]|(?:[\xC0-\xDF][\x80-\xBF])|(?:[\xE0-\xEF][\x80-\xBF][\x80-\xBF]))+$/', $str));
+*/
+	$w = new WikiFile($str);
+	return $w->is_valied();
 }
 
 function is_url($str, $only_http = FALSE)
@@ -73,8 +77,13 @@ function is_url($str, $only_http = FALSE)
 // If the page exists
 function is_page($page, $clearcache = FALSE)
 {
+	static $wikifile;
+
 	if ($clearcache) clearstatcache();
-	return file_exists(get_filename($page));
+//	return file_exists(get_filename($page));
+	if (empty($page)) return;
+
+	return WikiFileFactory::factory($page)->has();
 }
 
 function is_cantedit($page)
@@ -93,6 +102,7 @@ function is_cantedit($page)
 
 function is_editable($page)
 {
+/*
 	static $is_editable;
 
 	if (! isset($is_editable[$page])) {
@@ -104,13 +114,17 @@ function is_editable($page)
 	}
 
 	return $is_editable[$page];
+*/
+	$f = WikiFileFactory::factory($page);
+//	$f = new WikiFile($page);
+	return $f->is_editable();
 }
 
 function is_freeze($page, $clearcache = FALSE)
 {
+/*
 	global $function_freeze;
 	static $is_freeze = array();
-
 	if ($clearcache === TRUE) $is_freeze = array();
 	if (isset($is_freeze[$page])) return $is_freeze[$page];
 
@@ -129,6 +143,9 @@ function is_freeze($page, $clearcache = FALSE)
 		$is_freeze[$page] = ($buffer != FALSE && rtrim($buffer, "\r\n") == '#freeze');
 		return $is_freeze[$page];
 	}
+*/
+	$w = new WikiFile($page);
+	return $w->is_freezed();
 }
 
 // Handling $non_list
@@ -587,14 +604,13 @@ function die_message($msg, $error_title='', $http_code = 500){
 			catbody($page, $title, $body);
 		}
 	}else{
-		defined('JQUERY_UI_VER') or define('JQUERY_UI_VER', '1.9.0');
 		$html = array();
 		$html[] = '<!doctype html>';
 		$html[] = '<html>';
 		$html[] = '<head>';
 		$html[] = '<meta charset="utf-8">';
 		$html[] = '<meta name="robots" content="NOINDEX,NOFOLLOW" />';
-		$html[] = '<link rel="stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/' . JQUERY_UI_VER . '/themes/base/jquery-ui.css" type="text/css" />';
+		$html[] = '<link rel="stylesheet" href="http://code.jquery.com/ui/' . JQUERY_UI_VER . '/themes/base/jquery-ui.css" type="text/css" />';
 		$html[] = '<title>' . $page . ' - ' . $page_title . '</title>';
 		$html[] = '</head>';
 		$html[] = '<body>' . $body . '</body>';
@@ -604,6 +620,33 @@ function die_message($msg, $error_title='', $http_code = 500){
 	pkwk_common_suffixes();
 	die();
 }
+
+function ridirect($url = ''){
+	global $vars;
+	if (empty($url)) $url = get_page_location_uri($vars['page']);
+	pkwk_headers_sent();
+	header('Status: 301 Moved Permanently');
+	header('Location: ' . $url);
+	$html = array();
+	$html[] = '<!doctype html>';
+	$html[] = '<html>';
+	$html[] = '<head>';
+	$html[] = '<meta charset="utf-8">';
+	$html[] = '<meta name="robots" content="NOINDEX,NOFOLLOW" />';
+	$html[] = '<meta http-equiv="refresh" content="1; URL='.$url.'" />';
+	$html[] = '<link rel="stylesheet" href="http://code.jquery.com/ui/' . JQUERY_UI_VER . '/themes/base/jquery-ui.css" type="text/css" />';
+	$html[] = '<title>301 Moved Permanently</title>';
+	$html[] = '</head>';
+	$html[] = '<body>';
+	$html[] = '<div class="message_box ui-state-info ui-corner-all">';
+	$html[] = '<p style="padding:0 .5em;"><span class="ui-icon ui-icon-alert"></span>Please click <a href="'.$url.'">here</a> if you do not want to move even after a while.</p>';
+	$html[] = '</div>';
+	$html[] = '</body>';
+	$html[] = '</html>';
+	echo join("\n",$html);
+	exit;
+}
+
 /*
 function pkwkErrorHandler($errno, $errstr, $errfile, $errline){
 	global $info, $_string, $_error_type;

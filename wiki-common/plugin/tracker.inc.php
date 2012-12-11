@@ -58,7 +58,7 @@ define('PLUGIN_TRACKER_SORT_ORDER_DESC',    3);
 define('PLUGIN_TRACKER_SORT_ORDER_ASC',     4);
 define('PLUGIN_TRACKER_SORT_ORDER_DEFAULT', PLUGIN_TRACKER_SORT_ORDER_ASC);
 
-define('PLUGIN_TRACKER_CACHE_PREFIX, 'tracker-');
+define('PLUGIN_TRACKER_CACHE_PREFIX', 'tracker-');
 // ----
 
 // Show a form
@@ -989,7 +989,7 @@ EOD;
 		}
 //miko
 	}else{
-		$html = preg_replace('/data-pagenate="false"/','data-pagenate="true"', $html);
+		$result = preg_replace('/data-pagenate="false"/','data-pagenate="true"', $result);
 	}
 
 	return convert_html($result);
@@ -1393,7 +1393,7 @@ class Tracker_list
 
 		$str = '';
 
-		if ($fieldname != '') {
+		if (!empty($fieldname)) {
 			if (! isset($row[$fieldname])) {
 				// Maybe load miss of the page
 				if (isset($fields[$fieldname])) {

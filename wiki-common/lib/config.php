@@ -1,7 +1,7 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
 // $Id: config.php,v 1.7.2 2012/05/29 17:34:00 Logue Exp $
-// Copyright (C) 
+// Copyright (C)
 //               2010-2012 PukiWiki Advance Developers Team
 //               2003-2007 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
@@ -29,10 +29,11 @@ class Config
 	var $name, $page; // Page name
 	var $objs = array();
 
-	function Config($name)
+	function __construct($name)
 	{
 		$this->name = $name;
 		$this->page = PKWK_CONFIG_PREFIX . $name;
+		$this->wikidata = new WikiFile($this->page);
 //		$this->modified = get_filetime(PKWK_CONFIG_PREFIX . $name);
 //		$this->cache_prefix = 'conf-'.encode($this->name);
 	}
@@ -40,7 +41,6 @@ class Config
 	// Load the configuration-page
 	function read()
 	{
-		global $memcache;
 		if (! is_page($this->page)) return FALSE;
 
 		$this->objs = array();
@@ -48,7 +48,7 @@ class Config
 		$matches = array();
 
 //		if ($this->cacheCheck('') === false){
-			foreach (get_source($this->page) as $line) {
+			foreach ($this->wikidata->source() as $line) {
 				if ($line == '') continue;
 
 				$head  = $line{0};	// The first letter
@@ -65,19 +65,19 @@ class Config
 						$this->objs[$obj->title] = $obj;
 						$obj = new ConfigTable($line);
 					} else {
-						if (! is_a($obj, 'ConfigTable_Direct'))
+						if (! $obj instanceof ConfigTable_Direct)
 							$obj = new ConfigTable_Direct('', $obj);
 						$obj->set_key($line);
 					}
-					
+
 				} else if ($head == '-' && $level > 1) {
-					if (! is_a($obj, 'ConfigTable_Direct'))
+					if (! $obj instanceof ConfigTable_Direct)
 						$obj = new ConfigTable_Direct('', $obj);
 					$obj->add_value($line);
 
 				} else if ($head == '|' && preg_match('/^\|(.+)\|\s*$/', $line, $matches)) {
 					// Table row
-					if (! is_a($obj, 'ConfigTable_Sequential'))
+					if (! $obj instanceof ConfigTable_Sequential)
 						$obj = new ConfigTable_Sequential('', $obj);
 					// Trim() each table cell
 					$obj->add_value(array_map('trim', explode('|', $matches[1])));
@@ -131,7 +131,9 @@ class Config
 
 	function write()
 	{
-		page_write($this->page, $this->toString());
+
+		$this->wikidata->write($this->toString());
+		//page_write($this->page, $this->toString());
 	}
 
 	function toString()
@@ -159,7 +161,7 @@ class Config
 	}
 	function cacheWrite($title, $obj){
 		global $memcache;
-		
+
 		if ($title === ''){
 			$cache_file = $this->cache.PKWK_DAT_EXTENTION;
 		}else{
@@ -168,7 +170,7 @@ class Config
 			}
 			$cache_file = $this->cache_name[$title];
 		}
-		
+
 		pkwk_touch_file(CACHE_DIR.$cache_file);
 		$fp = fopen(CACHE_DIR.$cache_file, 'wb');
 		if ($fp === false) return false;
@@ -187,14 +189,14 @@ class Config
 
 	function cacheRead($title){
 		global $memcache;
-		
+
 		if ( !isset($this->cache_name[$title]) ) {
 			$this->cache_name[$title] = $this->cache.'-'.encode($title).PKWK_DAT_EXTENTION;
 		}
 
 		$cache_file = ($title === '') ? $this->cache.PKWK_DAT_EXTENTION : $this->cache_name[$title];
 
-		$ret = ($memcache !== null) ? 
+		$ret = ($memcache !== null) ?
 			$memcache->get(MEMCACHE_PREFIX.$cache_file) : false;
 
 		if ($ret === false){
@@ -219,7 +221,7 @@ class ConfigTable
 	var $after  = array();	// Page contents (except table ones)
 	var $values = array();	// Table contents
 
-	function ConfigTable($title, $obj = NULL)
+	function __construct($title, $obj = NULL)
 	{
 		if ($obj !== NULL) {
 			$this->title  = $obj->title;
@@ -236,7 +238,7 @@ class ConfigTable
 		$this->after[] = $line;
 	}
 
-	function toString()
+	function toString($values = NULL, $level = 2)
 	{
 		return join('', $this->before) . join('', $this->after);
 	}
@@ -250,7 +252,7 @@ class ConfigTable_Sequential extends ConfigTable
 		$this->values[] = (count($value) == 1) ? $value[0] : $value;
 	}
 
-	function toString()
+	function toString($values = NULL, $level = 2)
 	{
 		$retval = join('', $this->before);
 		if (is_array($this->values)) {

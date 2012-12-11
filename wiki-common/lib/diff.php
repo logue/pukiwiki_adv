@@ -60,7 +60,7 @@ function do_update_diff($pagestr, $poststr, $original)
 		global $do_update_diff_table;
 		$table = array();
 		$table[] = <<<EOD
-<table class="style_table">
+<table class="style_table style_table_center">
 	<caption>
 		l : between backup data and stored page data.<br />
 		r : between backup data and your post data.
@@ -81,7 +81,7 @@ EOD;
 			foreach ($params as $key => $text) {
 				$text = htmlsc(rtrim($text));
 				if (empty($text)) $text = '&nbsp;';
-				$table[] = 
+				$table[] =
 					"\t\t\t".'<' . $tags[$key] . ' class="style_' . $tags[$key] . '">' .
 					$text .
 					'</' . $tags[$key] . '>';
@@ -116,7 +116,7 @@ class line_diff
 {
 	var $arr1, $arr2, $m, $n, $pos, $key, $plus, $minus, $equal, $reverse;
 
-	function line_diff($plus = '+', $minus = '-', $equal = ' ')
+	function __construct($plus = '+', $minus = '-', $equal = ' ')
 	{
 		$this->plus  = $plus;
 		$this->minus = $minus;
@@ -203,7 +203,7 @@ class line_diff
 			}
 			$fp[$delta] = $this->snake($delta, $fp[$delta - 1], $fp[$delta + 1]);
 			if ($fp[$delta] >= $this->n) {
-				$this->pos = $this->path[$delta]; // ·ÐÏ©¤ò·èÄê
+				$this->pos = $this->path[$delta]; // ï¿½ï¿½Ï©ï¿½ï¿½ï¿½ï¿½ï¿½
 				return;
 			}
 		}
@@ -218,13 +218,13 @@ class line_diff
 			$_k = $k + 1;
 			$y = $y2;
 		}
-		$this->path[$k] = $this->path[$_k];// ¤³¤³¤Þ¤Ç¤Î·ÐÏ©¤ò¥³¥Ô¡¼
+		$this->path[$k] = $this->path[$_k];// ï¿½ï¿½ï¿½ï¿½ï¿½Þ¤Ç¤Î·ï¿½Ï©ï¿½ò¥³¥Ô¡ï¿½
 		$x = $y - $k;
 		while ((($x + 1) < $this->m) && (($y + 1) < $this->n)
 			and $this->arr1[$x + 1]->compare($this->arr2[$y + 1]))
 		{
 			++$x; ++$y;
-			$this->path[$k][] = array('x'=>$x, 'y'=>$y); // ·ÐÏ©¤òÄÉ²Ã
+			$this->path[$k][] = array('x'=>$x, 'y'=>$y); // ï¿½ï¿½Ï©ï¿½ï¿½ï¿½É²ï¿½
 		}
 		return $y;
 	}
@@ -232,7 +232,7 @@ class line_diff
 	function toArray()
 	{
 		$arr = array();
-		if ($this->reverse) { // ¸ÈÂ©¤Ê¡Ä
+		if ($this->reverse) { // ï¿½ï¿½Â©ï¿½Ê¡ï¿½
 			$_x = 'y'; $_y = 'x'; $_m = $this->n; $arr1 =& $this->arr2; $arr2 =& $this->arr1;
 		} else {
 			$_x = 'x'; $_y = 'y'; $_m = $this->m; $arr1 =& $this->arr1; $arr2 =& $this->arr2;
@@ -271,7 +271,7 @@ class DiffLine
 	var $text;
 	var $status;
 
-	function DiffLine($text)
+	function __construct($text)
 	{
 		$this->text   = $text . "\n";
 		$this->status = array();

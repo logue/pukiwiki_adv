@@ -4,7 +4,7 @@
 //
 // Resource of String
 // Warning: This file is PukiWiki "core" resource strings.
-//          Please Without customizing it. 
+//          Please Without customizing it.
 
 $help_page = 'Help';
 $rule_page = 'FormatRule';
@@ -54,7 +54,7 @@ $_string = array(
 	// Common core error message(s)
 	'invalidpass'		=> T_('Invalid password.'),
 	'invalidiwn'		=> T_('<var>$1</var> is not a valid <var>$2</var>.'),
-	
+
 	// Collision messages
 	'title_collided'	=> T_('On updating $1, a collision has occurred.'),
 	'msg_collided'		=> T_('It seems that someone has already updated this page while you were editing it.') . '<br />'."\n".
@@ -79,20 +79,20 @@ $_string = array(
 	'illegal_chars'		=> T_('Illegal characters contained.'),
 	'script_error'		=> T_('A fatal error has occured at line <var>%1s</var> in file <var>%2s</var>.'),
 	'script_abort'		=> T_('Script execution has been aborted.'),
-	
+
 	// Prohibit messages
 	'error_prohibit'	=> T_('This Wiki is <var>%s</var> mode now. The action which you are trying to do is prohibited.'),
 	'blacklisted'		=> T_('Sorry, Your host is prohibited by <strong>IPBL</storng> (Blocking SPAM).'),
 	'prohibit_country'	=> T_('Sorry, access from your country is prohibited.'),
 	'not_readable'		=> T_('You have no permission to read this page.'),
 	'not_editable'		=> T_('You have no permission to edit page or create page.'),
-	
+
 	// Plugin Error messages
 	'plugin_init_error'			=> T_('Plugin init failed: <var>%s</var>'),
 	'plugin_multiple_call'		=> T_('<var>%1s</var> was called over <var>%2s</var> times. SPAM or someting?'),
 	'plugin_postid_error'		=> T_('PostId is mismatched. Is it multi-post?'),
 	'plugin_encode_error'		=> T_('Incorrect encode. Please use a modern browser.'),
-	'plugin_not_implemented'	=> T_('<var>/?cmd=%s</var> is not implemented.')
+	'plugin_not_implemented'	=> T_('Plugin <var>%s</var> is not implemented.')
 );
 
 $_button = array(
@@ -156,7 +156,7 @@ $_LANG['skin'] = array(
 	'full'		=> T_('Full screen'),
 	'guiedit'	=> T_('Edit(GUI)'),
 	'pdf'		=> T_('Export as PDF'),
-	
+
 	'help'		=> T_('Help'),
 	'list'		=> T_('List of pages'),
 	'log'		=> T_('Log'),
@@ -178,13 +178,13 @@ $_LANG['skin'] = array(
 	'rss'		=> T_('RSS of recent changes'),
 	'rdf'		=> T_('RDF of recent changes'),
 	'atom'		=> T_('ATOM of recent changes'),
-	
+
 	'logo'		=> T_('Logo'),
 	'formatrule'=> T_('Text Formatting Rules'),
-	
+
 	'login'		=> T_('Login'),
 	'logout'	=> T_('Logout'),
-	
+
 	/* Special Page */
 	'top'		=> T_('Front page'),
 	'recent'	=> T_('Recent changes'),
@@ -198,7 +198,7 @@ $_LANG['skin'] = array(
 	'head'		=> T_('Header area'),
 	'foot'		=> T_('Footer area'),
 	'protect'	=> T_('Protected'),
-	
+
 	// UI
 	'site'		=> T_('Site'),
 	'page'		=> T_('Pages'),

@@ -18,12 +18,14 @@
 define('PLUGIN_SHOWRSS_USAGE', '#showrss(URI-to-RSS[,default|menubar|recent[,Cache-lifetime[,Show-timestamp]]])');
 defined('PLUGIN_SHOWRSS_SHOW_DESCRIPTION') or define('PLUGIN_SHOWRSS_SHOW_DESCRIPTION', true);
 
+define('PLUGIN_SHOWRSS_CACHE_PREFIX', 'showrss-');
+
 use Zend\Http\ClientStatic;
 
 // Show related extensions are found or not
 function plugin_showrss_action()
 {
-	global $vars, $use_sendfile_header;
+	global $vars, $use_sendfile_header, $cache;
 	// if (PKWK_SAFE_MODE) die_message('PKWK_SAFE_MODE prohibit this');
 	if (auth::check_role('safemode')) die_message('PKWK_SAFE_MODE prohibits this');
 
@@ -33,14 +35,10 @@ function plugin_showrss_action()
 		$cachehour = 1;
 
 		// Get the cache not expired
-		$filename = CACHE_DIR . md5($target) . '.xml';
+		$cache_name = PLUGIN_SHOWRSS_CACHE_PREFIX . md5($target);
 
-		// Remove expired cache
-		plugin_showrss_cache_expire($cachehour);
-
-		if (is_readable($filename)) {
-			$buf  = join('', file($filename));
-			$time = filemtime($filename);
+		if ($cache['raw']->hasItem($cache_name)) {
+			$buf = $cache['raw']->getItem($cache_name);
 		}else{
 			// Newly get RSS
 			$response = ClientStatic::get($target);
@@ -49,20 +47,7 @@ function plugin_showrss_action()
 			}
 
 			$buf = $response->getBody();
-			$time = UTIME;
-
-			// Save RSS into cache
-			if ($cachehour) {
-				pkwk_touch_file($filename);
-				$fp = fopen($filename, 'w');
-				fwrite($fp, $buf);
-				fclose($fp);
-			}
-		}
-		// for reduce server load
-		if ($use_sendfile_header === true){
-			// for Apache mod_xsendfile
-			header('X-Sendfile: '.realpath($filename));
+			$cache['raw']->setItem($cache_name, $buf);
 		}
 
 		pkwk_common_headers($time);
@@ -202,9 +187,10 @@ class ShowRSS_html
 
 	// エントリの内容
 	function format_line($line){
-		$desc = mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['desc'])), 0, 127, '...');
+		$entry = htmlsc(mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['entry'])), 0, 127, '...'));
+		$desc = htmlsc(mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['desc'])), 0, 127, '...'));
 		if (IS_MOBILE){
-			return '<a href="'. preg_replace("/\s/",'', $line['link']) .'" rel="external">'.$line['entry'].'<span class="ui-li-count">'.get_passage($line['date'],false).'</span></a>';
+			return '<a href="'. preg_replace("/\s/",'', $line['link']) .'" rel="external">'.$entry.'<span class="ui-li-count">'.get_passage($line['date'],false).'</span></a>';
 		}else{
 			return open_uri_in_new_window('<a href="'. $line['link'] .'" title="'.$desc.' '.get_passage($line['date']).'">'.$line['entry'].'</a>', 'link_url');
 		}
@@ -286,11 +272,12 @@ class ShowRSS_html_menubar extends ShowRSS_html
 class ShowRSS_html_recent extends ShowRSS_html
 {
 	function format_line($line){
-		$desc = mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['desc'])), 0, 255, '...');
+		$entry = htmlsc(mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['entry'])), 0, 255, '...'));
+		$desc = htmlsc(mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['desc'])), 0, 255, '...'));
 		if (IS_MOBILE){
-			return '<li><a href="'. $line['link'] .'">'.$line['entry'].'</a><span class="ui-count">'.get_passage($line['date']).'</span></li>';
+			return '<li><a href="'. $line['link'] .'">'.$entry.'</a><span class="ui-count">'.get_passage($line['date']).'</span></li>';
 		}else{
-			return '<li><a href="'. $line['link'] .'" title="'.$desc.' '.get_passage($line['date']).'">'.$line['entry'].'</a></li>';
+			return '<li><a href="'. $line['link'] .'" title="'.$desc.' '.get_passage($line['date']).'">'.$entry.'</a></li>';
 		}
 	}
 
@@ -308,71 +295,30 @@ class ShowRSS_html_recent extends ShowRSS_html
 // Get and save RSS
 function plugin_showrss_get_rss($target, $cachehour)
 {
+	global $cache;
 	$buf  = '';
 	$time = NULL;
 
-	if ($cachehour) {
-		// Get the cache not expired
-		$filename = CACHE_DIR . md5($target) . '.xml';
+	// Get the cache not expired
+	$cache_name = PLUGIN_SHOWRSS_CACHE_PREFIX . md5($target);
 
-		// Remove expired cache
-		plugin_showrss_cache_expire($cachehour);
-
-		if (is_readable($filename)) {
-			$buf  = join('', file($filename));
-			$time = filemtime($filename);
-		}else{
-			// Newly get RSS
-			$response = ClientStatic::get($target);
-			if (!$response->isSuccess()){
-				return array(FALSE, 0);
-			}
-
-			$buf = $response->getBody();
-			$time = UTIME;
-
-			pkwk_touch_file($filename);
-			$fp = fopen($filename, 'w');
-			fwrite($fp, $buf);
-			fclose($fp);
-		}
-		$xml = simplexml_load_file($filename);
+	if ($cache['wiki']->hasItem($cache_name)) {
+		$buf = $cache['wiki']->getItem($cache_name);
 	}else{
-		$time = UTIME;
-		$xml = simplexml_load_file($target);
+		// Newly get RSS
+		$response = ClientStatic::get($target);
+		if (!$response->isSuccess()){
+			return array(FALSE, 0);
+		}
+		$buf = $response->getBody();
+
+		$cache['wiki']->setItem($cache_name, $buf);
 	}
+	$time = $cache['wiki']->getMetadata($cache_name)['mtime'];
+	$xml = simplexml_load_string($buf);
 
 	return array($xml,$time);
 }
 
-// Remove cache if expired limit exeed
-function plugin_showrss_cache_expire($cachehour)
-{
-	$expire = $cachehour * 60 * 60; // Hour
-	$dh = dir(CACHE_DIR);
-	while (($file = $dh->read()) !== FALSE) {
-		if (substr($file, -4) != '.xml') continue;
-		$file = CACHE_DIR . $file;
-		$last = time() - filemtime($file);
-		if ($last > $expire) unlink($file);
-	}
-	$dh->close();
-}
-
-function plugin_showrss_get_timestamp($str)
-{
-	$str = trim($str);
-	if ($str == '') return UTIME;
-
-	$matches = array();
-	if (preg_match('/(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})(([+-])(\d{2}):(\d{2}))?/', $str, $matches)) {
-		$str = $matches[1] . ' ' . $matches[2];
-		if (! empty($matches[3])) {
-			$str .= $matches[4] . $matches[5] . $matches[6];
-		}
-	}
-	$time = strtotime($str);
-	return ($time == -1 || $time === FALSE) ? UTIME : $time;
-}
 /* End of file showrss.inc.php */
 /* Location: ./wiki-common/plugin/showrss.css.php */

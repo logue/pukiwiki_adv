@@ -104,27 +104,28 @@ function exist_plugin($name)
 }
 
 // Check if plguin API exists
-function exist_plugin_function($name, $func)
+function exist_plugin_function($name, $method)
 {
+	$func = 'plugin_'.$name.'_'.$method;
 	if (function_exists($func)) {
 		return limit_plugin($name);
 	} elseif (exist_plugin($name) && function_exists($func)) {
 		return limit_plugin($name);
 	}
-	return FALSE;
+	return true;
 }
 
 // Check if plugin API 'action' exists
 function exist_plugin_action($name) {
-	return exist_plugin_function($name, 'plugin_' . $name . '_action');
+	return exist_plugin_function($name, 'action');
 }
 // Check if plugin API 'convert' exists
 function exist_plugin_convert($name) {
-	return exist_plugin_function($name, 'plugin_' . $name . '_convert');
+	return exist_plugin_function($name, 'convert');
 }
 // Check if plugin API 'inline' exists
 function exist_plugin_inline($name) {
-	return exist_plugin_function($name, 'plugin_' . $name . '_inline');
+	return exist_plugin_function($name, 'inline');
 }
 
 // Call 'init' function for the plugin
@@ -176,9 +177,13 @@ function do_plugin_action($name)
 		die_message(sprintf( $_string['plugin_init_error'], htmlsc($name) ));
 	}
 
+	$func = 'plugin_' . $name . '_action';
+	if (!function_exists($func))
+		die_message(sprintf($_string['plugin_not_implemented'],htmlsc($name)),501);
+
 	// Check encode
 	if (isset($vars['encode_hint']) && !empty($vars['encode_hint']) && (PKWK_ENCODING_HINT !== $vars['encode_hint']) ) {
-		die_message($_strings['plugin_encode_error']);
+		die_message($_string['plugin_encode_error']);
 	}
 
 //	if ( isset($post['ticket']) && $post['ticket'] !== md5(get_ticket() . REMOTE_ADDR) ){
@@ -190,7 +195,7 @@ function do_plugin_action($name)
 		die_message($_string['plugin_postid_error']);
 
 	T_textdomain($name);
-	$retvar = call_user_func('plugin_' . $name . '_action');
+	$retvar = call_user_func($func);
 	T_textdomain(DOMAIN);
 
 	$retvar['body'] = isset($retvar['body']) ? add_hidden_field($retvar['body'], $name) : '';
@@ -206,6 +211,10 @@ function do_plugin_convert($name, $args = '')
 	if (do_plugin_init($name) === FALSE) {
 		return '<div class="ui-state-error ui-corner-all">' . sprintf($_string['plugin_init_error'], htmlsc($name)) . '</div>';
 	}
+
+	$func = 'plugin_' . $name . '_convert';
+	if (!function_exists($func))
+		return '<div class="message_box ui-state-error ui-corner-all">'.sprintf($_string['plugin_not_implemented'],'#'.htmlsc($name).'()').'</div>';
 
 	if (! PKWKEXP_DISABLE_MULTILINE_PLUGIN_HACK) {
 		// Multiline plugin?
@@ -224,7 +233,7 @@ function do_plugin_convert($name, $args = '')
 
 	$_digest = $digest;
 	T_textdomain($name);
-	$retvar  = call_user_func_array('plugin_' . $name . '_convert', $aryargs);
+	$retvar  = call_user_func_array($func, $aryargs);
 	T_textdomain(DOMAIN);
 	$digest  = $_digest; // Revert
 
@@ -235,11 +244,15 @@ function do_plugin_convert($name, $args = '')
 // Call API 'inline' of the plugin
 function do_plugin_inline($name, $args='', $body='')
 {
-	global $digest;
+	global $digest, $_string;
 
 	if (do_plugin_init($name) === FALSE) {
-		return '<span class="ui-state-error">' . sprintf($_string['plugin_init_error'], htmlsc($name)) . '</span>';
+		return '<span class="ui-state-error">' . sprintf($_string['plugin_init_error'], '&'.htmlsc($name).'();') . '</span>';
 	}
+
+	$func = 'plugin_' . $name . '_inline';
+	if (!function_exists($func))
+		return '<span class="ui-state-error">'.sprintf($_string['plugin_not_implemented'],htmlsc($name)).'</span>';
 
 	$aryargs = empty($args) ? array() : explode(',', $args);
 
@@ -248,7 +261,7 @@ function do_plugin_inline($name, $args='', $body='')
 
 	$_digest = $digest;
 	T_textdomain($name);
-	$retvar  = call_user_func_array('plugin_' . $name . '_inline', $aryargs);
+	$retvar  = call_user_func_array($func, $aryargs);
 	T_textdomain(DOMAIN);
 	$digest  = $_digest; // Revert
 
@@ -306,8 +319,11 @@ function add_hidden_field($retvar, $plugin){
 			}
 
 			// 更新時の競合を確認するための項目（確認処理はプラグイン側で実装すること）
-			if (isset($vars['page'])){
-				if (empty($digest)) $digest = md5(get_source($vars['page'], TRUE, TRUE));
+			if (isset($vars['page']) && !empty($vars['page'])){
+				if (empty($digest)){
+					$w = new WikiFile($vars['page']);
+					$digest = md5($w->get(true));
+				}
 				$hidden_field[] = '<input type="hidden" name="digest" value="' . $digest . '" />';
 			}
 		}
@@ -324,7 +340,7 @@ function get_upload_progress(){
 	$key = ini_get('session.upload_progress.prefix'). PKWK_WIKI_NAMESPACE;
 	header('Content-Type: application/json; charset='.CONTENT_CHARSET);
 	echo Zend\Json\Json::encode( isset($_SESSION[$key]) ? $_SESSION[$key] : null );
-	
+
 	exit;
 }
 

@@ -65,7 +65,11 @@ function plugin_referer_action()
 	global $_referer_msg;
 
 	// Setting: Off
-	if (! $referer) return array('msg'=>$_referer_msg['msg_referer'],'body'=>$_referer_msg['msg_disabled']);
+	if (! $referer){
+		return array('msg'=>$_referer_msg['msg_referer'],'body'=>$_referer_msg['msg_disabled']);
+	}else{
+		require(LIB_DIR.'referer.php');
+	}
 	
 	$page = isset($vars['page']) ? $vars['page'] : null;
 	$kind = isset($vars['kind']) ? $vars['kind'] : '';

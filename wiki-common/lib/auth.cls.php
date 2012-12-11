@@ -8,6 +8,8 @@
  */
 require_once(LIB_DIR . 'auth.def.php');
 //require_once(LIB_DIR . 'Opauth/Opauth.php');
+use Zend\Crypt\BlockCipher;
+use Zend\Crypt\Symmetric\Mcrypt;
 /**
  * 認証クラス
  * @abstract
@@ -673,8 +675,16 @@ class auth
 
 		// des化された内容を平文に戻す
 		if ($session->offsetExists($session_name)) {
-			require_once(LIB_DIR . 'des.php');
-			return des($salt, base64_decode($session->offsetGet($session_name), 0, 0, null) );
+			//require_once(LIB_DIR . 'des.php');
+			//return des($salt, base64_decode($session->offsetGet($session_name), 0, 0, null) );
+			$blockCipher = BlockCipher::factory('mcrypt', array(
+				'algo' => 'des',
+				'mode' => 'cfb',
+				'hash' => 'sha512',
+				'salt' => $salt,
+				'padding' => 2
+			));
+			return $blockCipher->decrypt($session->offsetGet($session_name));
 		}
 		return '';
 	}
@@ -685,9 +695,19 @@ class auth
 
 		// adminpass の処理
 		list($scheme, $salt) = auth::passwd_parse($adminpass);
-		require_once(LIB_DIR . 'des.php');
-		$session->offsetSet($session_name, base64_encode( des($salt, $val, 1, 0, null) ) );
+		//require_once(LIB_DIR . 'des.php');
+		//$session->offsetSet($session_name, base64_encode( des($salt, $val, 1, 0, null) ) );
 //		session_write_close();
+		$blockCipher = BlockCipher::factory('mcrypt', array(
+			'algo' => 'des',
+			'mode' => 'cfb',
+			'hash' => 'sha512',
+			'salt' => $salt,
+			'padding' => 2
+		));
+		$result = $blockCipher->encrypt($val);
+		$session->offsetSet($session_name, $result);
+		return $blockCipher;
 	}
 
 	// See:

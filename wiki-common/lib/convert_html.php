@@ -19,10 +19,10 @@ function convert_html($lines)
 	static $contents_id = 0;
 
 	// Set digest
-	$digest = empty($digest) ? md5(get_source($vars['page'], TRUE, TRUE)) : $digest;
+//	$digest = empty($digest) ? md5(get_source($vars['page'], TRUE, TRUE)) : $digest;
 
 	if (! is_array($lines)) $lines = explode("\n", $lines);
-
+/*
 	if ($use_html_cache){
 		// 入力値のハッシュを作成
 		$htmldigest =  LANG . '-' . md5(is_array($lines) ? join('',$lines) : $lines);
@@ -37,11 +37,19 @@ function convert_html($lines)
 		}
 		$cache['raw']->clearExpired();	// 期限切れのキャッシュを削除
 	}else{
+*/
+		$html = BodyFactory::factory($lines);
+//	}
+	return $html;
+}
+
+class BodyFactory{
+	public static function factory($lines){
+		static $contents_id = 0;
 		$body = new Body(++$contents_id);
 		$body->parse($lines);
-		$html = $body->toString();
+		return $body->toString();
 	}
-	return $html;
 }
 
 // Block elements
@@ -209,7 +217,8 @@ class Inline extends Element
 
 	function canContain(& $obj)
 	{
-		return is_a($obj, 'Inline');
+		//return is_a($obj, 'Inline');
+		return ($obj instanceof Inline);
 	}
 
 	function toString()
@@ -235,7 +244,7 @@ class Paragraph extends Element
 	{
 		parent::__construct();
 		$this->param = $param;
-		if ($text == '') return;
+		if (empty($text)) return;
 
 		if (substr($text, 0, 1) == '~')
 			$text = ' ' . substr($text, 1);
@@ -245,7 +254,8 @@ class Paragraph extends Element
 
 	function canContain(& $obj)
 	{
-		return is_a($obj, 'Inline');
+		//return is_a($obj, 'Inline');
+		return ($obj instanceof Inline);
 	}
 
 	function toString()
@@ -350,7 +360,8 @@ class ListContainer extends Element
 
 	function canContain(& $obj)
 	{
-		return (! is_a($obj, 'ListContainer')
+		//return (! is_a($obj, 'ListContainer')
+		return (!($obj instanceof ListContainer)
 			|| ($this->tag == $obj->tag && $this->level == $obj->level));
 	}
 
@@ -361,7 +372,7 @@ class ListContainer extends Element
 		parent::setParent($parent);
 
 		$step = $this->level;
-		if (isset($parent->parent) && is_a($parent->parent, 'ListContainer'))
+		if (isset($parent->parent) && ($parent->parent instanceof ListContainer))
 			$step -= $parent->parent->level;
 
 		$margin = $this->margin * $step;
@@ -404,7 +415,7 @@ class ListElement extends Element
 
 	function canContain(& $obj)
 	{
-		return (! is_a($obj, 'ListContainer') || ($obj->level > $this->level));
+		return (! $obj instanceof ListContainer || ($obj->level > $this->level));
 	}
 
 	function toString()
@@ -484,12 +495,12 @@ class BQuote extends Element
 		if (!is_object($obj)) return;
 
 		// BugTrack/521, BugTrack/545
-		if (is_a($obj, 'inline'))
+		if ($obj instanceof inline)
 			return parent::insert($obj->toPara(' class="style_blockquote"'));
 
-		if (is_a($obj, 'BQuote') && $obj->level == $this->level && count($obj->elements)) {
+		if ( $obj instanceof BQuote && $obj->level == $this->level && count($obj->elements)) {
 			$obj = & $obj->elements[0];
-			if (is_a($this->last, 'Paragraph') && count($obj->elements))
+			if ($this->last instanceof Paragraph && count($obj->elements))
 				$obj = & $obj->elements[0];
 		}
 		return parent::insert($obj);
@@ -505,7 +516,7 @@ class BQuote extends Element
 		$parent = & $root->last;
 
 		while (is_object($parent)) {
-			if (is_a($parent, 'BQuote') && $parent->level == $level)
+			if ($parent instanceof BQuote && $parent->level == $level)
 				return $parent->parent;
 			$parent = & $parent->parent;
 		}
@@ -562,9 +573,7 @@ class TableCell extends Element
 
 		if (!empty($text) && $text{0} === '#') {
 			// Try using Div class for this $text
-			$obj = Factory_Div($this, $text);
-			if (is_a($obj, 'Paragraph'))
-				$obj = $obj->elements[0];
+			$obj = ($obj instanceof Paragraph) ? $obj->elements[0] : Factory_Div($this, $text);
 		} else {
 			$obj = Factory_Inline($text);
 		}
@@ -631,7 +640,7 @@ class Table extends Element
 
 	function canContain(& $obj)
 	{
-		return is_a($obj, 'Table') && ($obj->col == $this->col);
+		return ($obj instanceof Table) && ($obj->col == $this->col);
 	}
 
 	function & insert(& $obj)
@@ -767,7 +776,7 @@ class YTable extends Element
 
 	function canContain(& $obj)
 	{
-		return is_a($obj, 'YTable') && ($obj->col == $this->col);
+		return ($obj instanceof YTable) && ($obj->col == $this->col);
 	}
 
 	function & insert(& $obj)
@@ -802,7 +811,7 @@ class Pre extends Element
 
 	function canContain(& $obj)
 	{
-		return is_a($obj, 'Pre');
+		return ($obj instanceof Pre);
 	}
 
 	function insert(& $obj)
@@ -854,10 +863,10 @@ class Align extends Element
 
 	function canContain(& $obj)
 	{
-		if (is_a($obj,'Table') or is_a($obj,'YTable')) {
+		if ($obj instanceof Table || $obj instanceof YTable) {
 			$obj->align = $this->align;
 		}
-		return is_a($obj, 'Inline');
+		return ($obj instanceof Inline);
 	}
 
 	function toString()
@@ -892,7 +901,7 @@ class Body extends Element
 		parent::__construct();
 	}
 
-	function parse(& $lines)
+	function parse($lines)
 	{
 		$this->last = & $this;
 		$matches = array();
@@ -1032,14 +1041,12 @@ class Body extends Element
 
 	function insert(& $obj)
 	{
-		if (is_a($obj, 'Inline')) $obj = & $obj->toPara();
+		if ($obj instanceof Inline) $obj = & $obj->toPara();
 		return parent::insert($obj);
 	}
 
 	function toString()
 	{
-		global $vars;
-
 		$text = parent::toString();
 
 		// #contents
@@ -1076,7 +1083,7 @@ class Contents_UList extends ListContainer
 		parent::setParent($parent);
 		$step   = $this->level;
 		$margin = $this->left_margin;
-		if (isset($parent->parent) && is_a($parent->parent, 'ListContainer')) {
+		if (isset($parent->parent) && ($parent->parent instanceof ListContainer)) {
 			$step  -= $parent->parent->level;
 			$margin = 0;
 		}
@@ -1100,7 +1107,7 @@ class CPre extends Element
 	}
 	function canContain(& $obj)
 	{
-		return is_a($obj, 'CPre');
+		return ($obj instanceof CPre);
 	}
 	function &insert(&$obj)
 	{

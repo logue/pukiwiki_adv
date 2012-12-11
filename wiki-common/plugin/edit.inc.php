@@ -22,6 +22,7 @@ function plugin_edit_action()
 	global $vars, $load_template_func, $_string;
 
 	$page = isset($vars['page']) ? $vars['page'] : null;
+	$wiki = new WikiFile($page);
 
 	// if (PKWK_READONLY) die_message(  sprintf($_string['error_prohibit'], 'PKWK_READONLY') );
 	if (auth::check_role('readonly')) die_message( $_string['prohibit'] );
@@ -34,9 +35,13 @@ function plugin_edit_action()
 		return plugin_edit_realview();
 	}
 
-	check_editable($page, true, true);
+	if (!$wiki->is_editable()){
+		die_message( $_string['not_editable'] );
+	}
 
-	if (!is_page($page) && auth::is_check_role(PKWK_CREATE_PAGE)) {
+	//check_editable($page, true, true);
+
+	if (!$wiki->has() && auth::is_check_role(PKWK_CREATE_PAGE)) {
 		die_message( sprintf($_string['error_prohibit'], 'PKWK_CREATE_PAGE') );
 	}
 
@@ -52,7 +57,7 @@ function plugin_edit_action()
 		return plugin_edit_cancel();
 	}
 
-	$source = get_source($page);
+	$source = $wiki->source();
 	auth::is_role_page($source);
 
 	$postdata = $vars['original'] = join('', $source);

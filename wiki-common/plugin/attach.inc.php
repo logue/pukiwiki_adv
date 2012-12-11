@@ -49,7 +49,7 @@ defined('PLUGIN_ATTACH_UNKNOWN_COMPRESS')	or define('PLUGIN_ATTACH_UNKNOWN_COMPR
 defined('PLUGIN_ATTACH_COMPRESS_TYPE')		or define('PLUGIN_ATTACH_COMPRESS_TYPE', 'TGZ');		// TGZ, GZ, BZ2 or ZIP
 
 // 添付ファイルキャッシュを使う（ページの表示やページごとの添付ファイル一覧表示は早くなりますが、全ページではむしろ重くなります）
-defined('PLUGIN_ATTACH_USE_CACHE')    or define('PLUGIN_ATTACH_USE_CACHE', true);
+defined('PLUGIN_ATTACH_USE_CACHE')    or define('PLUGIN_ATTACH_USE_CACHE', false);
 // 添付ファイルのキャッシュの接頭辞
 defined('PLUGIN_ATTACH_CACHE_PREFIX') or define('PLUGIN_ATTACH_CACHE_PREFIX', 'attach-');
 
@@ -267,9 +267,10 @@ function attach_upload($file, $page, $pass = NULL)
 			'msg'=>$_attach_messages['err_adminpass']);
 	}
 
-	// FIXME:添付ファイル一覧キャッシュを削除
-	global $cache;
-	$cache['wiki']->removeItem(PLUGIN_ATTACH_CACHE_NAME);
+	if (PLUGIN_ATTACH_USE_CACHE){
+		global $cache;
+		$cache['wiki']->removeItem(PLUGIN_ATTACH_CACHE_PREFIX.md5($refer));
+	}
 
 	return attach_doupload($file, $page, $pass);
 }
@@ -578,9 +579,10 @@ function attach_delete()
 	if (! $obj->getstatus())
 		return array('msg'=>$_attach_messages['err_notfound']);
 
-	// FIXME:添付ファイル一覧キャッシュを削除
-	global $cache;
-	$cache['wiki']->setItem(PLUGIN_ATTACH_CACHE_PREFIX.md5($refer));
+	if (PLUGIN_ATTACH_USE_CACHE){
+		global $cache;
+		$cache['wiki']->removeItem(PLUGIN_ATTACH_CACHE_PREFIX.md5($refer));
+	}
 
 	return $obj->delete($pass);
 }
@@ -790,6 +792,7 @@ class AttachFile
 		$this->logname  = $this->basename . '.log';
 		$this->exists   = file_exists($this->filename);
 		$this->time     = $this->exists ? filemtime($this->filename) : 0;
+		$this->size     = filesize($this->filename);
 	}
 
 	function gethash()
@@ -811,7 +814,6 @@ class AttachFile
 			$this->status['count'] = explode(',', $this->status['count']);
 		}
 		$this->time_str = get_date('Y/m/d H:i:s', $this->time);
-		$this->size     = filesize($this->filename);
 		$this->size_str = sprintf('%01.1f', round($this->size/1024, 1)) . 'KB';
 		$this->type     = attach_mime_content_type($this->filename);
 
@@ -1140,8 +1142,7 @@ EOD;
 
 	function open()
 	{
-		global $cache, $use_sendfile_header;
-		$cache['wiki'] = true;
+		global $use_sendfile_header;
 		$this->getstatus();
 		$this->status['count'][$this->age]++;
 		$this->putstatus();
@@ -1339,9 +1340,9 @@ class AttachPages
 		if ($purge)
 			$cache['wiki']->clearByPrefix(PLUGIN_ATTACH_CACHE_PREFIX);
 
-		if (PLUGIN_ATTACH_USE_CACHE && $page !== '') $cache_name = PLUGIN_ATTACH_CACHE_PREFIX.md5($page);
+		$cache_name = (PLUGIN_ATTACH_USE_CACHE && $page !== '') ? PLUGIN_ATTACH_CACHE_PREFIX.md5($page) : null;
 
-		if ($page !== '' && $cache['wiki']->hasItem($cache_name) ){
+		if ($page !== '' && isset($cache_name) && $cache['wiki']->hasItem($cache_name) ){
 			$this->pages[$page] = (object)$cache['wiki']->getItem($cache_name);
 		}else{
 			$page_pattern = ($page == '') ? '(?:[0-9A-F]{2})+' : preg_quote(encode($page), '/');

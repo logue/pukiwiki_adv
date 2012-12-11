@@ -179,9 +179,10 @@ class WikiRpcService{
 	  * @return string
 	  */
 	public function getPageVersion( $pagename, $version ){
-		$backups = get_backup($pagename);
-		auth::is_role_page($backups[$version]['data']);
-		return join('', $backups[$version]['data']);
+		$backup = new Backup($pagename);
+		$ret = $backup->getBackup($version);
+		auth::is_role_page($ret[$version]['data']);
+		return join("\n", $ret[$version]['data']);
 	}
 	/**
 	  * ページの最新版のHTMLを返す。
@@ -202,9 +203,10 @@ class WikiRpcService{
 	  * @return string
 	  */
 	public function getPageHTMLVersion( $pagename, $version ){
-		$backups = get_backup($pagename);
-		auth::is_role_page($backups[$version]['data']);
-		return convert_html(join('', $backups[$version]['data']));
+		$backup = new Backup($pagename);
+		$ret = $backup->getBackup($version);
+		auth::is_role_page($ret[$version]['data']);
+		return convert_html(join("\n", $ret[$version]['data']));
 	}
 	/**
 	  * 全てのページ名からなる配列を返す。

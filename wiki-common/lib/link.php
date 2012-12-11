@@ -33,7 +33,10 @@
 
 //namespace PukiWiki\Lib;
 
-class Links{
+/**
+ * 関連リンクのデーターベースクラス
+ */
+class Relational{
 	// Links cache namespace
 	const CACHE_NAMESPACE = 'wiki';
 	// Related cache data prefix
@@ -45,23 +48,35 @@ class Links{
 
 	private $cache, $page, $rel_name, $ref_name, $links_obj;
 
-	public function __construct($page){
+	/**
+	 * コンストラクタ
+	 * @global object $cache
+	 * @param string $page ページ名
+	 */
+	public function __construct($page = ''){
 		global $cache;
 		$this->cache = $cache[self::CACHE_NAMESPACE];
 		$this->links_obj = new InlineConverter(NULL, array('note'));
+		$this->page = $page;
 		if (!empty($page)){
-			$this->page = $page;
 			$page_hash = md5($page);
 			$this->rel_name = self::REL_PREFIX.$page_hash;
 			$this->ref_name = self::REF_PREFIX.$page_hash;
 		}
 	}
+	/**
+	 * デストラクタ
+	 */
 	public function __destruct() {
 		$this->cache->optimize();
 	}
 
-	// Get related-pages from DB
+	/**
+	 * 関連リンクを取得
+	 * @return array
+	 */
 	public function get_related(){
+		if (empty($this->page)) return;
 		if (! $this->cache->hasItem($this->rel_name)){
 			$data = $this->update();
 			$this->cache->setItem($this->rel_name, $data);
@@ -71,15 +86,17 @@ class Links{
 		}
 
 		$times = array();
-		foreach ($data as $page) {
-			$time = get_filetime($page);
-			if($time !== 0) $times[$page] = $time;
+		if (is_array($data)){
+			foreach ($data as $page) {
+				$time = get_filetime($page);
+				if($time !== 0) $times[$page] = $time;
+			}
 		}
 		return $times;
 	}
-
-	// Get referred pages from DB
+/*
 	public function get_referred(){
+		if (empty($this->page)) return;
 		if (! $this->cache->hasItem($this->ref_name)){
 			$data = $this->update();
 			$this->cache->setItem($this->ref_name, $data);
@@ -95,8 +112,16 @@ class Links{
 		}
 		return $times;
 	}
-
-	// Update link-relationships between pages
+*/
+	/**
+	 * ページの関連性データーベースを更新
+	 * @global string $WikiName
+	 * @global boolean $autolink
+	 * @global type $nowikiname
+	 * @global array $search_non_list
+	 * @param string $page
+	 * @return void
+	 */
 	public function update($page = ''){
 		if (empty($page)){
 			$page = $this->page;
@@ -112,13 +137,14 @@ class Links{
 		$rel_exist = $this->cache->hasItem($rel_name);
 
 		$rel_old  = ($rel_exist) ? $this->cache->getItem($rel_name) : array();
+		$rel_auto = $rel_new = array();
 		foreach ($this->get_objects($page, TRUE) as $_obj) {
 			if (! isset($_obj->type) || $_obj->type !== 'pagename' || $_obj->name === $page || empty($_obj->name) )
 				continue;
 
-			if (is_a($_obj, 'Link_autolink')) { // Not cool though
+			if ($_obj instanceof Link_autolink) { // Not cool though
 				$rel_auto[] = $_obj->name;
-			} else if (is_a($_obj, 'Link_autoalias')) {
+			} else if ($_obj instanceof Link_autoalias) {
 				$_alias = get_autoaliases($_obj->name);
 				if (is_pagename($_alias)) {
 					$rel_auto[] = $_alias;
@@ -172,7 +198,10 @@ class Links{
 		return $rel_new;
 	}
 
-	// Init link cache (Called from link plugin)
+	/**
+	 * リンクのデーターベースを初期化
+	 * @return void
+	 */
 	public function init() {
 		if (auth::check_role('readonly')) return; // Do nothing
 
@@ -188,7 +217,7 @@ class Links{
 				if (! isset($_obj->type) || $_obj->type !== 'pagename' || $_obj->name === $_page || empty($_obj->name) ) continue;
 
 				$_name = $_obj->name;
-				if (is_a($_obj, 'Link_autoalias')) {
+				if ($_obj instanceof Link_autoalias) {
 					$_alias = get_autoaliases($_name);
 					if (! is_pagename($_alias))
 						continue;	// not PageName
@@ -197,7 +226,7 @@ class Links{
 				$rel[] = $_name;
 				if (! isset($ref[$_name][$_page]))
 					$ref[$_name][$_page] = 1;
-				if (! is_a($_obj, 'Link_autolink'))
+				if (! $_obj instanceof Link_autolink)
 					$ref[$_name][$_page] = 0;
 			}
 			$this->cache->setItem(self::REL_PREFIX.md5($_page), array_unique($rel));
@@ -210,7 +239,12 @@ class Links{
 		unset($ref_page,$ref_auto);
 	}
 
-	// Add page to referered page cachepage.
+	/**
+	 * リンクしているページをキャッシュに追加
+	 * @param array $add 追加するページ名
+	 * @param boolean $rel_auto 自動リンクか？
+	 * @return void
+	 */
 	private function add($add, $rel_auto){
 		if (auth::check_role('readonly')) return; // Do nothing
 
@@ -239,7 +273,11 @@ class Links{
 		}
 	}
 
-	// Remove page from referered page cache.
+	/**
+	 * リンクしているページをキャッシュから削除
+	 * @param array $del 削除するページ名
+	 * @return void
+	 */
 	private function remove($del){
 		if (auth::check_role('readonly')) return; // Do nothing
 
@@ -264,7 +302,12 @@ class Links{
 		}
 	}
 
-	// Get link object from page source.
+	/**
+	 * ページのソースからリンクオブジェクトを取得
+	 * @param type $page
+	 * @param type $refresh
+	 * @return type
+	 */
 	private function get_objects($page, $refresh = FALSE){
 		$cache_name = self::LINKS_PREFIX.md5($page);
 		if ($refresh){
@@ -272,6 +315,7 @@ class Links{
 		}
 
 		if (! $this->cache->hasItem($cache_name) ){
+			$wiki = new WikiFile($page);
 			/*
 			$result = array();
 			foreach ($this->links_obj->get_objects(join('', preg_grep('/^(?!\/\/|\s)./', get_source($page))), $page) as $_obj) {
@@ -279,7 +323,7 @@ class Links{
 				$result[] = $_obj;
 			}
 			*/
-			$result = $this->links_obj->get_objects(join('', preg_grep('/^(?!\/\/|\s)./', get_source($page))), $page);
+			$result = $this->links_obj->get_objects(join('', preg_grep('/^(?!\/\/|\s)./', $wiki->source())), $page);
 			$this->cache->setItem($cache_name, $result);
 		}else{
 			$result = $this->cache->getItem($cache_name);
