@@ -167,9 +167,8 @@ class WikiRpcService{
 	  * @return string
 	  */
 	public function getPage( $pagename ){
-		$source = join('', get_source($pagename));
-		auth::is_role_page($source);
-		return $source;
+		$wiki = new PukiWiki\Lib\File\WikiFile($pagename);
+		return $wiki->source();
 	}
 	/**
 	  * 版を指定してページの生テキストを返す。
@@ -179,7 +178,7 @@ class WikiRpcService{
 	  * @return string
 	  */
 	public function getPageVersion( $pagename, $version ){
-		$backup = new Backup($pagename);
+		$backup = new PukiWiki\Lib\File\BackupFile($pagename);
 		$ret = $backup->getBackup($version);
 		auth::is_role_page($ret[$version]['data']);
 		return join("\n", $ret[$version]['data']);
@@ -191,9 +190,8 @@ class WikiRpcService{
 	  * @return string
 	  */
 	public function getPageHTML( $pagename ){
-		$source = join('', get_source($pagename));
-		auth::is_role_page($source);
-		return convert_html($source);
+		$wiki = new PukiWiki\Lib\File\WikiFile($pagename);
+		return $wiki->render();
 	}
 	/**
 	  * 版を指定してページのHTMLを返す。
@@ -203,7 +201,7 @@ class WikiRpcService{
 	  * @return string
 	  */
 	public function getPageHTMLVersion( $pagename, $version ){
-		$backup = new Backup($pagename);
+		$backup = new PukiWiki\Lib\File\BackupFile($pagename);
 		$ret = $backup->getBackup($version);
 		auth::is_role_page($ret[$version]['data']);
 		return convert_html(join("\n", $ret[$version]['data']));
@@ -243,8 +241,9 @@ class WikiRpcService{
 	  * @return array
 	  */
 	public function listLinks( $pagename ){
+		$wiki = new PukiWiki\Lib\File\WikiFile($pagename);
 		$links = array();
-		preg_match_all('#href="(https?://[^"]+)"#', convert_html($pagename), $links, PREG_PATTERN_ORDER);
+		preg_match_all('#href="(https?://[^"]+)"#', $wiki->render(), $links, PREG_PATTERN_ORDER);
 		return array_unique($links[1]);
 	}
 	/**
@@ -254,7 +253,8 @@ class WikiRpcService{
 	  * @return array
 	  */
 	public function getBackLinks( $pagename ){
-		return links_get_related($pagename);
+		$links = new PukiWiki\Lib\Relational($pagename);
+		return $links->get_related();
 	}
 	/**
 	  * ページを編集する。

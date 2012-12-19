@@ -321,8 +321,7 @@ function add_hidden_field($retvar, $plugin){
 			// 更新時の競合を確認するための項目（確認処理はプラグイン側で実装すること）
 			if (isset($vars['page']) && !empty($vars['page'])){
 				if (empty($digest)){
-					$w = new WikiFile($vars['page']);
-					$digest = md5($w->get(true));
+					$digest = PukiWiki\Lib\File\FileFactory::Wiki($vars['page'])->digest();
 				}
 				$hidden_field[] = '<input type="hidden" name="digest" value="' . $digest . '" />';
 			}

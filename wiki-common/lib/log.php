@@ -8,7 +8,6 @@
  * @version	$Id: log.php,v 0.15 2012/08/27 10:02:00 Logue Exp $
  * @license	http://opensource.org/licenses/gpl-license.php GNU Public License
  */
-
 // require_once('proxy.cls.php');
 
 require_once(LIB_DIR . 'auth_api.cls.php');
@@ -434,7 +433,7 @@ class log
 {
 	public function __construct($subdir='browse',$page='',$ext='.txt') {
 		$this->filename = LOG_DIR . $subdir . encode($page) . $ext;
-		$this->backup = new BackupFile($page);
+		$this->backup = new PukiWiki\Lib\File\BackupFile($page);
 	}
 
 		/**

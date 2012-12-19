@@ -1,0 +1,144 @@
+<?php
+// PukiWiki Advance - Yet another WikiWikiWeb clone.
+// $Id: InterWikiName.php,v 1.0.0 2012/12/18 11:00:00 Logue Exp $
+// Copyright (C)
+//   2012 PukiWiki Advance Developers Team
+// License: GPL v2 or (at your option) any later version
+
+namespace PukiWiki\Lib\Renderer\Inline;
+use PukiWiki\Lib\File\FileFactory;
+
+// InterWikiName-rendered URLs
+class InterWikiName extends Inline
+{
+	const INTERWIKINAME_PATTERN = '\[((?:(?:https?|ftp|news):\/\/|\.\.?\/)[!~*\'();\/?:\@&=+\$,%#\w.-]*)\s([^\]]+)\]\s?([^\s]*)';
+	
+	var $url    = '';
+	var $param  = '';
+	var $anchor = '';
+
+	function __construct($start)
+	{
+		parent::__construct($start);
+	}
+
+	function get_pattern()
+	{
+		$s2 = $this->start + 2;
+		$s5 = $this->start + 5;
+		return
+			'\[\['.                  // open bracket
+			'(?:'.
+			 '((?:(?!\]\]).)+)>'.    // (1) alias
+			')?'.
+			'(\[\[)?'.               // (2) open bracket
+			'((?:(?!\s|:|\]\]).)+)'. // (3) InterWiki
+			'(?<! > | >\[\[ )'.      // not '>' or '>[['
+			':'.                     // separator
+			'('.                     // (4) param
+			 '(\[\[)?'.              // (5) open bracket
+			 '(?:(?!>|\]\]).)+'.
+			 '(?(' . $s5 . ')\]\])'. // close bracket if (5)
+			')'.
+			'(?(' . $s2 . ')\]\])'.  // close bracket if (2)
+			'\]\]';                  // close bracket
+	}
+
+	function get_count()
+	{
+		return 5;
+	}
+
+	function set($arr, $page)
+	{
+		list(, $alias, , $name, $this->param) = $this->splice($arr);
+
+		$matches = array();
+		if (preg_match('/^([^#]+)(#[A-Za-z][\w-]*)$/', $this->param, $matches))
+			list(, $this->param, $this->anchor) = $matches;
+
+		$url = self::get_interwiki_url($name, $this->param);
+		$this->url = ($url === FALSE) ?
+			get_page_uri('[[' . $name . ':' . $this->param . ']]') :
+			htmlsc($url);
+
+		return parent::setParam(
+			$page,
+			htmlsc($name . ':' . $this->param),
+			null,
+			'InterWikiName',
+			empty($alias) ? $name . ':' . $this->param : $alias
+		);
+	}
+
+	function toString()
+	{
+		$rel = FALSE ? '': ' rel="nofollow"';
+		$target = (empty($this->redirect)) ? $this->url : $this->redirect.rawurlencode($this->url);
+		return open_uri_in_new_window('<a href="' . $target . $this->anchor .
+			'" title="' . $this->name . '"' . $rel . '><span class="pkwk-icon icon-interwiki"></span>' . $this->alias . '</a>', get_class($this));
+	}
+	
+	// Render an InterWiki into a URL
+	private function get_interwiki_url($name, $param)
+	{
+		global $WikiName, $interwiki;
+		static $interwikinames;
+		static $encode_aliases = array('sjis'=>'SJIS', 'euc'=>'EUC-JP', 'utf8'=>'UTF-8');
+
+		if (! isset($interwikinames)) {
+			$interwikinames = $matches = array();
+			foreach (FileFacrory::Wiki($interwiki)->source() as $line)
+				if (preg_match(self::INTERWIKINAME_PATTERN,$line, $matches))
+					$interwikinames[$matches[2]] = array($matches[1], $matches[3]);
+		}
+
+		if (! isset($interwikinames[$name])) return FALSE;
+
+		list($url, $opt) = $interwikinames[$name];
+
+		// Encoding
+		switch ($opt) {
+
+			case '':    /* FALLTHROUGH */
+			case 'std': // Simply URL-encode the string, whose base encoding is the internal-encoding
+				$param = rawurlencode($param);
+				break;
+
+			case 'asis': /* FALLTHROUGH */
+			case 'raw' : // Truly as-is
+				break;
+
+			case 'yw': // YukiWiki
+				if (! preg_match('/' . $WikiName . '/', $param))
+					$param = '[[' . mb_convert_encoding($param, 'SJIS', SOURCE_ENCODING) . ']]';
+				break;
+
+			case 'moin': // MoinMoin
+				$param = str_replace('%', '_', rawurlencode($param));
+				break;
+
+			default:
+				// Alias conversion of $opt
+				if (isset($encode_aliases[$opt])) $opt = & $encode_aliases[$opt];
+
+				// Encoding conversion into specified encode, and URLencode
+				$param = rawurlencode(mb_convert_encoding($param, $opt, SOURCE_ENCODING));
+		}
+
+		// Replace or Add the parameter
+		if (strpos($url, '$1') !== FALSE) {
+			$url = str_replace('$1', $param, $url);
+		} else {
+			$url .= $param;
+		}
+
+		$len = strlen($url);
+		if ($len > 512) die_message('InterWiki URL too long: ' . $len . ' characters');
+
+		return $url;
+	}
+}
+
+/* End of file InterWikiName.php */
+/* Location: /vender/PukiWiki/Lib/Renderer/Inline/InterWikiName.php */

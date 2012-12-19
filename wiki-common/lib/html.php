@@ -405,7 +405,7 @@ function edit_form($page, $postdata, $digest = FALSE, $b_template = TRUE)
 	global $_button, $_string;
 
 //	global $x_ua_compatible;
-	$w = new WikiFile($page);
+	$w = new PukiWiki\Lib\File\WikiFile($page);
 
 	// Newly generate $digest or not
 	if ($digest === FALSE) $digest = $w->digest();

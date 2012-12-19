@@ -31,7 +31,9 @@
 
 // ------------------------------------------------------------
 
-//namespace PukiWiki\Lib;
+namespace PukiWiki\Lib;
+use PukiWiki\Lib\Renderer\InlineConverter;
+use PukiWiki\Lib\File\WikiFile;
 
 /**
  * 関連リンクのデーターベースクラス
@@ -142,9 +144,9 @@ class Relational{
 			if (! isset($_obj->type) || $_obj->type !== 'pagename' || $_obj->name === $page || empty($_obj->name) )
 				continue;
 
-			if ($_obj instanceof Link_autolink) { // Not cool though
+			if ($_obj instanceof PukiWiki\Lib\Renderer\Inline\AutoLink) { // Not cool though
 				$rel_auto[] = $_obj->name;
-			} else if ($_obj instanceof Link_autoalias) {
+			} else if ($_obj instanceof PukiWiki\Lib\Renderer\Inline\AutoAlias) {
 				$_alias = get_autoaliases($_obj->name);
 				if (is_pagename($_alias)) {
 					$rel_auto[] = $_alias;
@@ -203,7 +205,7 @@ class Relational{
 	 * @return void
 	 */
 	public function init() {
-		if (auth::check_role('readonly')) return; // Do nothing
+		if (\auth::check_role('readonly')) return; // Do nothing
 
 		// Init database
 		$this->cache->clearByPrefix(self::REL_PREFIX);
@@ -217,7 +219,7 @@ class Relational{
 				if (! isset($_obj->type) || $_obj->type !== 'pagename' || $_obj->name === $_page || empty($_obj->name) ) continue;
 
 				$_name = $_obj->name;
-				if ($_obj instanceof Link_autoalias) {
+				if ($_obj instanceof PukiWiki\Lib\Renderer\Inline\AutoAlias) {
 					$_alias = get_autoaliases($_name);
 					if (! is_pagename($_alias))
 						continue;	// not PageName
@@ -226,7 +228,7 @@ class Relational{
 				$rel[] = $_name;
 				if (! isset($ref[$_name][$_page]))
 					$ref[$_name][$_page] = 1;
-				if (! $_obj instanceof Link_autolink)
+				if (! $_obj instanceof PukiWiki\Lib\Renderer\Inline\AutoLink)
 					$ref[$_name][$_page] = 0;
 			}
 			$this->cache->setItem(self::REL_PREFIX.md5($_page), array_unique($rel));
@@ -246,7 +248,7 @@ class Relational{
 	 * @return void
 	 */
 	private function add($add, $rel_auto){
-		if (auth::check_role('readonly')) return; // Do nothing
+		if (\auth::check_role('readonly')) return; // Do nothing
 
 		$rel_auto = array_flip($rel_auto);
 
@@ -279,7 +281,7 @@ class Relational{
 	 * @return void
 	 */
 	private function remove($del){
-		if (auth::check_role('readonly')) return; // Do nothing
+		if (\auth::check_role('readonly')) return; // Do nothing
 
 		foreach ($del as $_page) {
 			$all_auto = TRUE;
@@ -331,26 +333,5 @@ class Relational{
 		return $result;
 	}
 }
-/*
-// for compatibility
-function links_get_related_db($page){
-	$links = new Links($page);
-	return $links->get_related();
-}
-
-// Update link-relationships between pages
-function links_update($page)
-{
-	$links = new Links($page);
-	return $links->update();
-}
-
-// Init link cache (Called from link plugin)
-function links_init()
-{
-	$links = new Links('');
-	return $links->init();
-}
-*/
 /* End of file link.php */
 /* Location: ./wiki-common/lib/link.php */

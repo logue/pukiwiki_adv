@@ -20,6 +20,8 @@
  * $obj->write();
  */
 
+//namespace PukiWiki\Lib\Config;
+use PukiWiki\Lib\File\WikiFile;
 // Fixed prefix of configuration-page's name
 define('PKWK_CONFIG_PREFIX', ':config/');
 

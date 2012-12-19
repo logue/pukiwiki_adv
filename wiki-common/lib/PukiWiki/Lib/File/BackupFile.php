@@ -1,32 +1,19 @@
 <?php
-/**
- *
- * PukiWiki - Yet another WikiWikiWeb clone.
- *
- * backup.php
- *
- * バックアップを管理する
- *
- * @package org.pukiwiki
- * @access  public
- * @author
- * @create
- * @version $Id: backup.php,v 1.15 2012/12/11 16:33:00 Logue Exp $
- * Copyright (C)
- *   2010-2012 PukiWiki Advance Developer Team
- *   2005-2006 PukiWiki Plus! Team
- *   2002-2006,2011 PukiWiki Developers Team
- *   2001-2002 Originally written by yu-ji
- * License: GPL v2 or (at your option) any later version
- **/
+// PukiWiki Advance - Yet another WikiWikiWeb clone.
+// $Id: BackupFile.php,v 1.0.0 2012/12/18 11:00:00 Logue Exp $
+// Copyright (C)
+//   2012 PukiWiki Advance Developers Team
+// License: GPL v2 or (at your option) any later version
 
-// namespace PukiWiki/Lib
+namespace PukiWiki\Lib\File;
+use PukiWiki\Lib\File\File;
+
 /**
  * バックアップファイルクラス
  */
-class BackupFile extends File implements Storage {
+class BackupFile extends File{
 	// バックアップの世代ごとの区切り文字（default.ini.php）
-	const SPLITTER = PKWK_SPLITTER;
+	const SPLITTER = '>>>>>>>>>>';
 	// バックアップで利用可能な圧縮形式
 	protected $available_ext = array('.lzf', '.bz2', '.gz', '.txt');
 
@@ -34,7 +21,7 @@ class BackupFile extends File implements Storage {
 
 	public function __construct($page){
 		global $do_backup, $cycle, $maxage;
-		if (auth::check_role('readonly') || ! $do_backup) return;
+		if (\auth::check_role('readonly') || ! $do_backup) return;
 
 		// バックアップのページ名
 		$this->page = $page;
@@ -58,6 +45,8 @@ class BackupFile extends File implements Storage {
 		$this->cycle = 60 * 60 * $cycle;
 		// バックアップの上限個数
 		$this->maxage = $maxage;
+		// $this->filenameの定義が独特なためparent::__construct()が使えない
+		$this->info = new \SplFileInfo($this->filename);
 	}
 
 	/**
@@ -155,8 +144,12 @@ class BackupFile extends File implements Storage {
 		} else {
 			// バックアップから指定世代のみ削除
 			$backups = $this->getBackup();
-			foreach($ages as $age) {
-				unset($backups[$age]);
+			if (is_array($ages)){
+				foreach($ages as $age) {
+					unset($backups[$age]);
+				}
+			}else{
+				unset($backups[$ages]);
 			}
 			// 指定世代を削除したバックアップを書き込む
 			$strout = '';
@@ -216,13 +209,7 @@ class BackupFile extends File implements Storage {
 
 		switch ($this->ext) {
 			case '.txt' :
-				/*
-				$fp = fopen($this->file, 'wb')
-					or die_message('Cannot open <var>' . htmlsc($this->file) . '</var>.<br />Maybe permission is not writable or filename is too long');
-				$bytes = fputs($this->file, $content);
-				fclose($this->file);
-				*/
-				return file_put_contents($this->file, $data, LOCK_EX);
+				$bytes = parent::set($data);
 				break;
 			case '.gz':
 				$handle = gzopen($file,'w');
@@ -243,7 +230,7 @@ class BackupFile extends File implements Storage {
 				}
 				break;
 			case '.lzf':
-				return file_put_contents($this->file, lzf_compress($data), LOCK_EX);
+				$bytes = parent::set(lzf_compress($data));
 			break;
 		}
 		return $bytes;
@@ -265,10 +252,10 @@ class BackupFile extends File implements Storage {
 		$data = '';
 		switch ($ext) {
 			case '.txt' :
-				$data = file_get_contents($this->filename);
+				$data = parent::get();
 				break;
 			case '.lzf' :
-				$data = lzf_decompress(file_get_contents($this->filename));
+				$data = lzf_decompress(parent::get());
 				break;
 			case '.gz':
 				$handle = gzopen($this->filename, 'r');
@@ -293,54 +280,5 @@ class BackupFile extends File implements Storage {
 	}
 }
 
-// for compatibility
-
-/**
- * make_backup
- * バックアップを作成する
- *
- * @access    public
- * @param     String    $page        ページ名
- * @param     Boolean   $delete      TRUE:バックアップを削除する
- *
- * @return    Void
- */
-
-function make_backup($page, $delete = FALSE)
-{
-	global $del_backup;
-	$backup = new BackupFile($page);
-
-	if ($del_backup && $delete) {
-		$backup->removeBackup();
-		return;
-	}
-	return $backup->setBackup();
-}
-
-/**
- * get_backup
- * バックアップを取得する
- * $age = 0または省略 : 全てのバックアップデータを配列で取得する
- * $age > 0           : 指定した世代のバックアップデータを取得する
- *
- * @access    public
- * @param     String    $page        ページ名
- * @param     Integer   $age         バックアップの世代番号 省略時は全て
- *
- * @return    String    バックアップ       ($age != 0)
- *            Array     バックアップの配列 ($age == 0)
- */
-function get_backup($page, $age = 0)
-{
-	$backup = new BackupFile($page);
-	return $backup->getBackup($age);
-}
-
-function _backup_file_exists($page){
-	$backup = new BackupFile($page);
-	return $backup->has();
-}
-
-/* End of file backup.php */
-/* Location: ./wiki-common/lib/backup.php */
+/* End of file BackupFile.php */
+/* Location: /vender/PukiWiki/Lib/File/BackupFile.php */

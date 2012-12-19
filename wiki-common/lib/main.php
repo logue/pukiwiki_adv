@@ -60,20 +60,56 @@ if (count($info) !== 0){
 
 defined('LIB_DIR') or define('LIB_DIR', realpath('./').'/');
 
+/////////////////////////////////////////////////
+// Initilalize Zend
+//
+// Composer autoloading
+if (file_exists('autoload.php')) {
+	$loader = include 'autoload.php';
+}
+
+if (getenv('ZF2_PATH')) {	// Support for ZF2_PATH environment variable or git submodule
+	$zf2Path = getenv('ZF2_PATH');
+} elseif (get_cfg_var('zf2_path')) {	// Support for zf2_path directive value
+	$zf2Path = get_cfg_var('zf2_path');
+} else {
+	$zf2Path = LIB_DIR;
+}
+
+if ($zf2Path) {
+	if (isset($loader)) {
+		$loader->add('Zend', $zf2Path);
+	} else {
+		include $zf2Path . '/Zend/Loader/AutoloaderFactory.php';
+		$loader = Zend\Loader\AutoloaderFactory::factory(array(
+			'Zend\Loader\StandardAutoloader' => array(
+				'autoregister_zf' => true,
+				'fallback_autoloader' => true,
+				'namespaces' => array(
+					'ZendService' => LIB_DIR . 'ZendService',
+					'PukiWiki' => LIB_DIR . 'PukiWiki'
+				)
+			)
+		));
+		
+	}
+}
+if (!class_exists('Zend\Loader\AutoloaderFactory')) {
+	throw new RuntimeException('Unable to load ZF2. Run `php composer.phar install` or define a ZF2_PATH environment variable.');
+}
+
+$info[] = sprintf('Using <a href="http://framework.zend.com/">Zend Framework</a> ver<var>%s</var>.', Zend\Version\Version::VERSION);
+/////////////////////////////////////////////////
+
 // Load *.ini.php files and init PukiWiki
 require(LIB_DIR . 'func.php');
-require(LIB_DIR . 'file.php');
 require(LIB_DIR . 'funcplus.php');
 require(LIB_DIR . 'fileplus.php');
 require(LIB_DIR . 'plugin.php');
 require(LIB_DIR . 'html.php');
-require(LIB_DIR . 'backup.php');
 
-require(LIB_DIR . 'convert_html.php');
-require(LIB_DIR . 'make_link.php');
 require(LIB_DIR . 'diff.php');
 require(LIB_DIR . 'config.php');
-require(LIB_DIR . 'link.php');
 require(LIB_DIR . 'auth.php');
 require(LIB_DIR . 'lang.php');
 require(LIB_DIR . 'timezone.php');
@@ -83,6 +119,8 @@ require(LIB_DIR . 'proxy.cls.php');
 require(LIB_DIR . 'auth.cls.php');
 require(LIB_DIR . 'netbios.cls.php');
 require(LIB_DIR . 'ua/user_agent.cls.php');
+
+require(LIB_DIR . 'legacy.php');
 
 // Defaults
 $notify = $trackback = $referer = 0;

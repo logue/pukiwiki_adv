@@ -72,7 +72,7 @@ function update_cache($page = '', $force = false){
 
 
 	// Update rel and ref cache
-	$links = new Relational($page);
+	$links = new \PukiWiki\Lib\Relational($page);
 	if (!empty($page) ){
 		$links->update($page);
 	} else if ($force) {

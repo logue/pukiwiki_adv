@@ -11,6 +11,8 @@
 //
 // Backup plugin
 
+use PukiWiki\Lib\File\BackupFile;
+
 // Prohibit rendering old wiki texts (suppresses load, transfer rate, and security risk)
 // define('PLUGIN_BACKUP_DISABLE_BACKUP_RENDERING', PKWK_SAFE_MODE || PKWK_OPTIMISE);
 define('PLUGIN_BACKUP_DISABLE_BACKUP_RENDERING', auth::check_role('safemode') || PKWK_OPTIMISE);

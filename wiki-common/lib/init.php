@@ -51,6 +51,31 @@ define('REMOTE_ADDR', isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_
 /////////////////////////////////////////////////
 // Require INI_FILE
 
+// dist configure
+/*
+$config_dist = array(
+	'security' => array(
+		'protect_mode' => false,
+		'readonly' => false,
+		'safemode' => false,
+		'disable_create_page' => false,
+		'use_redirect' => false,
+		'disable_inline_image_from_uri' => false,
+		'max_query_string' => 640
+	),
+	'locale'=> array(
+		'default_language' => 'ja_JP',
+		'default_timezone' => 'Asia/Tokyo',
+		'use_local_time' => false,
+		'conside_level' => 2
+	),
+	'directory' => array(
+		'upload' => DATA_HOME . 'attach/',
+		'backup' => DATA_HOME . 'backup/',
+		'data'   => DATA_HOME . 'wiki/',
+		'diff'   => DATA_HOME . 'diff/',
+		
+*/
 define('USR_INI_FILE', add_homedir('pukiwiki.usr.ini.php'));
 $read_usr_ini_file = false;
 if (file_exists(USR_INI_FILE) && is_readable(USR_INI_FILE)) {
@@ -126,6 +151,37 @@ defined('PKWK_CACHE_EXPIRE') or define('PKWK_CACHE_EXPIRE', 604800);	// 60*60*24
 // convert_htmlのキャッシュ名の有効期間（デフォルト無効（
 defined('PKWK_HTML_CACHE_EXPIRE') or define('PKWK_HTML_CACHE_EXPIRE', 0);
 
+// RecentChanges
+defined('PKWK_MAXSHOW_ALLOWANCE')		or define('PKWK_MAXSHOW_ALLOWANCE', 10);
+defined('PKWK_MAXSHOW_CACHE')			or define('PKWK_MAXSHOW_CACHE', 'recent');
+
+// AutoLink
+defined('PKWK_AUTOLINK_REGEX_CACHE')	or define('PKWK_AUTOLINK_REGEX_CACHE', 'autolink');
+
+// AutoAlias
+defined('PKWK_AUTOALIAS_REGEX_CACHE')	or define('PKWK_AUTOALIAS_REGEX_CACHE', 'autoalias');
+
+// Auto Glossary (Plus!)
+defined('PKWK_GLOSSARY_REGEX_CACHE')	or define('PKWK_GLOSSARY_REGEX_CACHE',  'glossary');
+
+// AutoAlias AutoBase cache (Plus!)
+defined('PKWK_AUTOBASEALIAS_CACHE')		or define('PKWK_AUTOBASEALIAS_CACHE', 'autobasealias');
+
+// PageReading cache (Adv.)
+defined('PKWK_PAGEREADING_CACHE')		or define('PKWK_PAGEREADING_CACHE', 'PageReading');
+
+// Timestamp prefix
+defined('PKWK_TIMESTAMP_PREFIX')		or define('PKWK_TIMESTAMP_PREFIX', 'timestamp-');
+
+// Exsists prefix
+defined('PKWK_EXISTS_PREFIX')			or define('PKWK_EXISTS_PREFIX', 'exists-');
+
+// Page cache prefix
+defined('PKWK_PAGECACHE_PREFIX')		or define('PKWK_PAGECACHE_PREFIX', 'page-');
+
+//
+defined('PKWK_CAPTCHA_SESSION_PREFIX')	or define('PKWK_CAPTCHA_SESSION_PREFIX', 'captcha-');
+
 // Load optional libraries
 if (isset($notify)){ require(LIB_DIR . 'mail.php'); }	// Mail notification
 if (isset($trackback)){ require(LIB_DIR . 'trackback.php'); }	// TrackBack
@@ -150,43 +206,6 @@ $_SKIN        = array();
 
 $info[] = '<a href="http://php.net/">PHP</a> <var>'.PHP_VERSION.'</var> is running as <var>'.php_sapi_name().'</var> mode. / Powerd by <var>'.getenv('SERVER_SOFTWARE').'</var>.';
 
-/////////////////////////////////////////////////
-// Initilalize Zend
-//
-// Composer autoloading
-if (file_exists('autoload.php')) {
-	$loader = include 'autoload.php';
-}
-
-if (getenv('ZF2_PATH')) {	// Support for ZF2_PATH environment variable or git submodule
-	$zf2Path = getenv('ZF2_PATH');
-} elseif (get_cfg_var('zf2_path')) {	// Support for zf2_path directive value
-	$zf2Path = get_cfg_var('zf2_path');
-} else {
-	$zf2Path = LIB_DIR;
-}
-
-if ($zf2Path) {
-	if (isset($loader)) {
-		$loader->add('Zend', $zf2Path);
-	} else {
-		include $zf2Path . '/Zend/Loader/AutoloaderFactory.php';
-		Zend\Loader\AutoloaderFactory::factory(array(
-			'Zend\Loader\StandardAutoloader' => array(
-				'autoregister_zf' => true,
-				'namespaces' => array(
-					'ZendService' => LIB_DIR . 'ZendService'
-				)
-			)
-		));
-	}
-}
-
-if (!class_exists('Zend\Loader\AutoloaderFactory')) {
-	throw new RuntimeException('Unable to load ZF2. Run `php composer.phar install` or define a ZF2_PATH environment variable.');
-}
-$info[] = sprintf('Using <a href="http://framework.zend.com/">Zend Framework</a> ver<var>%s</var>.', Zend\Version\Version::VERSION);
-/////////////////////////////////////////////////
 // Initilaize Session
 $session = new Zend\Session\Container(PKWK_WIKI_NAMESPACE);
 
@@ -872,8 +891,6 @@ if ( !isset($vars['cmd']) ) {
 	}
 	$get['page'] = $post['page'] = $vars['page'] = $arg;
 	unset($vars[$arg]);
-}else if (empty($vars['page'])){
-	$vars['page'] = $defaultpage;
 }
 
 // プラグインのaction命令を実行
@@ -907,7 +924,6 @@ if (!empty($auth_key['home']) && ($vars['page'] == $defaultpage || $vars['page']
 }else{
 	$base = $vars['page'];
 }
-
 ///////////////////////////////////////
 // Page output
 if (isset($retvars['msg']) && !empty($retvars['msg']) ) {
@@ -918,7 +934,7 @@ if (isset($retvars['msg']) && !empty($retvars['msg']) ) {
 	$page  = make_search($base);
 }
 
-
+use PukiWiki\Lib\File\WikiFile;
 if (isset($retvars['body']) && !empty($retvars['body'])) {
 	$body = $retvars['body'];
 } else {
@@ -934,11 +950,10 @@ if (isset($retvars['body']) && !empty($retvars['body'])) {
 	if (empty($vars['page'])) die('page is missing!');
 	global $fixed_heading_edited;
 	$wiki = new WikiFile($vars['page']);
-	$source = $wiki->source();
 
 	// Virtual action plugin(partedit).
 	// NOTE: Check wiki source only.(*NOT* call convert_html() function)
-	$lines = $source;
+	$lines = $wiki->source();
 	while (! empty($lines)) {
 		$line = array_shift($lines);
 		if (preg_match("/^\#(partedit)(?:\((.*)\))?/", $line, $matches)) {

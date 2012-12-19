@@ -34,7 +34,8 @@ function make_related($page, $tag = '')
 {
 	global $vars;
 
-	$links = links_get_related($page);
+	$rel = new PukiWiki\Lib\Relational($page);
+	$links = $rel->get_related();
 
 	if ($tag) {
 		ksort($links, SORT_STRING);	// Page name, alphabetical order
@@ -83,8 +84,7 @@ function plugin_related_action()
 	if ($_page == '') $_page = $defaultpage;
 
 	// Get related from cache
-	//$data = links_get_related_db($_page);
-	$links = new Relational($page);
+	$links = new PukiWiki\Lib\Relational($_page);
 	$data = $links->get_related();
 	if (! empty($data)) {
 		// Hide by array keys (not values)

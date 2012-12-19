@@ -22,7 +22,7 @@ function plugin_edit_action()
 	global $vars, $load_template_func, $_string;
 
 	$page = isset($vars['page']) ? $vars['page'] : null;
-	$wiki = new WikiFile($page);
+	$wiki = new PukiWiki\Lib\File\WikiFile($page);
 
 	// if (PKWK_READONLY) die_message(  sprintf($_string['error_prohibit'], 'PKWK_READONLY') );
 	if (auth::check_role('readonly')) die_message( $_string['prohibit'] );

@@ -11,43 +11,6 @@
 // Load Hangul Libraly
 require(LIB_DIR . 'hangul.php');
 
-// Adv. merged official cvs
-function is_interwiki($str)
-{
-	global $InterWikiName;
-	return preg_match('/^' . $InterWikiName . '$/', $str);
-}
-
-function is_pagename($str)
-{
-/*
-	global $BracketName;
-
-	if (empty($str)) return;
-	$is_pagename = (! is_interwiki($str) &&
-		  preg_match('/^(?!\/)' . $BracketName . '$(?<!\/$)/', $str) &&
-		! preg_match('#(^|/)\.{1,2}(/|$)#', $str));
-
-	if (defined('SOURCE_ENCODING')) {
-		switch(SOURCE_ENCODING){
-		case 'UTF-8': $pattern =
-			'/^(?:[\x00-\x7F]|(?:[\xC0-\xDF][\x80-\xBF])|(?:[\xE0-\xEF][\x80-\xBF][\x80-\xBF]))+$/';
-			break;
-		case 'EUC-JP': $pattern =
-			'/^(?:[\x00-\x7F]|(?:[\x8E\xA1-\xFE][\xA1-\xFE])|(?:\x8F[\xA1-\xFE][\xA1-\xFE]))+$/';
-			break;
-		}
-		if (isset($pattern) && !empty($pattern) )
-			$is_pagename = ($is_pagename && preg_match($pattern, $str));
-	}
-	return $is_pagename;
-
-	return ($is_pagename && preg_match('/^(?:[\x00-\x7F]|(?:[\xC0-\xDF][\x80-\xBF])|(?:[\xE0-\xEF][\x80-\xBF][\x80-\xBF]))+$/', $str));
-*/
-	$w = new WikiFile($str);
-	return $w->is_valied();
-}
-
 function is_url($str, $only_http = FALSE)
 {
 	// URLでありえない文字はfalseを返す
@@ -74,17 +37,7 @@ function is_url($str, $only_http = FALSE)
 	return ($ret === 0) ? FALSE : $ret;
 }
 
-// If the page exists
-function is_page($page, $clearcache = FALSE)
-{
-	static $wikifile;
 
-	if ($clearcache) clearstatcache();
-//	return file_exists(get_filename($page));
-	if (empty($page)) return;
-
-	return WikiFileFactory::factory($page)->has();
-}
 
 function is_cantedit($page)
 {
@@ -100,62 +53,7 @@ function is_cantedit($page)
 	return isset($is_cantedit[$page]);
 }
 
-function is_editable($page)
-{
-/*
-	static $is_editable;
 
-	if (! isset($is_editable[$page])) {
-		$is_editable[$page] = (
-			is_pagename($page) &&
-			! is_freeze($page) &&
-			! is_cantedit($page)
-		);
-	}
-
-	return $is_editable[$page];
-*/
-	$f = WikiFileFactory::factory($page);
-//	$f = new WikiFile($page);
-	return $f->is_editable();
-}
-
-function is_freeze($page, $clearcache = FALSE)
-{
-/*
-	global $function_freeze;
-	static $is_freeze = array();
-	if ($clearcache === TRUE) $is_freeze = array();
-	if (isset($is_freeze[$page])) return $is_freeze[$page];
-
-	if (! $function_freeze || ! is_page($page)) {
-		$is_freeze[$page] = FALSE;
-		return FALSE;
-	} else {
-		$fp = fopen(get_filename($page), 'rb') or
-			die('is_freeze(): fopen() failed: ' . htmlsc($page));
-		flock($fp, LOCK_SH) or die('is_freeze(): flock() failed');
-		rewind($fp);
-		$buffer = fgets($fp, 9);
-		flock($fp, LOCK_UN) or die('is_freeze(): flock() failed');
-		fclose($fp) or die('is_freeze(): fclose() failed: ' . htmlsc($page));
-
-		$is_freeze[$page] = ($buffer != FALSE && rtrim($buffer, "\r\n") == '#freeze');
-		return $is_freeze[$page];
-	}
-*/
-	$w = new WikiFile($page);
-	return $w->is_freezed();
-}
-
-// Handling $non_list
-// $non_list will be preg_quote($str, '/') later.
-function check_non_list($page = '')
-{
-	global $non_list;
-	static $regex;
-	return preg_match( (isset($regex) ? $regex : '/' . $non_list . '/') , $page);
-}
 
 // Auto template
 function auto_template($page)
@@ -174,7 +72,7 @@ function auto_template($page)
 		$template_page = preg_replace($rule_pattrn, $template, $page);
 		if (! is_page($template_page)) continue;
 
-		$body = get_source($template_page, TRUE, TRUE);
+		$body = FileFactory::Wiki($template_page)->source();
 
 		// Remove fixed-heading anchors
 		$body = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/m', '$1$2', $body);
@@ -1001,6 +899,63 @@ function get_autolink_pattern_sub(& $pages, $start, $end, $pos)
 	 return generate_trie_regex($pages, $start, $end, $pos);
 }
 
+class AutoAlias{
+	const CACHE_NAME = PKWK_AUTOBASEALIAS_CACHE;
+	// \[\[					# open bracket
+	// ((?:(?!\]\]).)+)>	# (1) alias name
+	// ((?:(?!\]\]).)+)		# (2) alias link
+	// \]\]					# close bracket
+	const PATTERN = '\[\[((?:(?!\]\]).)+)>((?:(?!\]\]).)+)\]\]';
+
+	public function get(){
+		global $cache;
+
+		$pairs = array();
+
+		if (! $cache['wiki']->hasItem(CACHE_NAME)){
+			$cache['wiki']->setItem(CACHE_NAME, $pairs);
+		}else{
+			$pairs = $cache['wiki']->getItem(CACHE_NAME);
+		}
+	}
+
+	private function from_aliaspage(){
+		global $aliaspage, $autoalias_max_words;
+		$postdata = PukiWiki\Lib\FileFactory::Wiki($aliaspage)->source();
+		$matches = array();
+		$count = 0;
+		$max   = max($autoalias_max_words, 0);
+		if (preg_match_all('/' . self::PATTERN . '/x', $postdata, $matches, PREG_SET_ORDER)) {
+			foreach($matches as $key => $value) {
+				if ($count == $max) break;
+				$name = trim($value[1]);
+				if (! isset($pairs[$name])) {
+					$paris[$name] = array();
+				}
+				++$count;
+				$pairs[$name][] = trim($value[2]);
+				unset($matches[$key]);
+			}
+		}
+		return $pairs;
+	}
+
+	private function from_autobasealias(){
+		global $autobasealias_nonlist;
+		static $pairs = array();
+
+		foreach ($pages as $page) {
+			if (preg_match('/' . $autobasealias_nonlist . '/', $page)) continue;
+			$base = get_short_pagename($page);
+			if ($base !== $page) {
+				if (! isset($pairs[$base])) $pairs[$base] = array();
+				$pairs[$base][] = $page;
+			}
+		}
+		return $pairs;
+	}
+}
+
 // Load/get autoalias pairs
 function get_autoaliases($word = '')
 {
@@ -1070,6 +1025,22 @@ EOD;
 	return $pairs;
 }
 
+// Get AutoBaseAlias data
+function get_autobasealias($pages){
+	global $autobasealias_nonlist;
+	static $pairs = array();
+
+	foreach ($pages as $page) {
+		if (preg_match('/' . $autobasealias_nonlist . '/', $page)) continue;
+		$base = get_short_pagename($page);
+		if ($base !== $page) {
+			if (! isset($pairs[$base])) $pairs[$base] = array();
+			$pairs[$base][] = $page;
+		}
+	}
+	return $pairs;
+}
+
 // Load/get setting pairs from Glossary
 function get_autoglossaries($word = '')
 {
@@ -1102,21 +1073,7 @@ function get_autoglossaries($word = '')
 	return isset($pairs[$word]) ? $pairs[$word]:'';
 }
 
-// Get AutoBaseAlias data
-function get_autobasealias($pages){
-	global $autobasealias_nonlist;
-	static $pairs = array();
 
-	foreach ($pages as $page) {
-		if (preg_match('/' . $autobasealias_nonlist . '/', $page)) continue;
-		$base = get_short_pagename($page);
-		if ($base !== $page) {
-			if (! isset($pairs[$base])) $pairs[$base] = array();
-			$pairs[$base][] = $page;
-		}
-	}
-	return $pairs;
-}
 
 // Get absolute-URI of this script
 function init_script_uri($init_uri = '',$get_init_value=0)
