@@ -6,7 +6,7 @@
 // License: GPL v2 or (at your option) any later version
 
 namespace PukiWiki\Lib\Renderer;
-
+use PukiWiki\Lib\Auth\Auth;
 // Converters of inline element
 class InlineConverter
 {
@@ -34,22 +34,24 @@ class InlineConverter
 
 	function __construct($converters = NULL, $excludes = NULL)
 	{
+		global $autolink, $autoalias, $autoglossary;
 		if ($converters === NULL) {
 			$converters = array(
-				'Plugin',               // Inline plugins
-				'Note',                 // Footnotes
-				'Url',                  // URLs
-				'InterWiki',            // URLs (interwiki definition)
-				'Mailto',               // mailto: URL schemes
-				'InterWikiName',        // InterWikiName
-				'WikiName',             // WikiName
-				'BracketName',          // BracketName
-				'AutoLink',             // AutoLink(cjk,other)
-				'AutoAlias',            // AutoAlias(cjk,other)
-				'Glossary',             // AutoGlossary(cjk,other)
-				'AutoLink_Alphabet',    // AutoLink(alphabet)
-				'AutoAlias_Alphabet',   // AutoAlias(alphabet)
-				'Glossary_Alphabet',    // AutoGlossary(alphabet)
+				'Plugin',           // Inline plugins
+				'EasyRef',          // Easy Ref {{param|body}}
+				'Note',             // Footnotes
+				'Url',              // URLs
+				'InterWiki',        // URLs (interwiki definition)
+				'Mailto',           // mailto: URL schemes
+				'InterWikiName',    // InterWikiName
+				'BracketName',      // BracketName
+				'WikiName',         // WikiName
+				$autolink     ? 'AutoLink' : null,              // AutoLink(cjk,other)
+				$autoalias    ? 'AutoAlias' : null,             // AutoAlias(cjk,other)
+				$autoglossary ? 'Glossary' : null,              // AutoGlossary(cjk,other)
+				$autolink     ? 'AutoLink_Alphabet' : null,     // AutoLink(alphabet)
+				$autoalias    ? 'AutoAlias_Alphabet' : null,    // AutoAlias(alphabet)
+				$autoglossary ? 'Glossary_Alphabet' : null,     // AutoGlossary(alphabet)
 			);
 		}
 
@@ -60,6 +62,7 @@ class InlineConverter
 		$start = 1;
 
 		foreach ($converters as $name) {
+			if (!isset($name)) continue;
 			$classname = 'PukiWiki\Lib\Renderer\Inline\\' . $name;
 			$converter = new $classname($start);
 			$pattern   = $converter->get_pattern();

@@ -92,5 +92,5 @@ class Glossary_Alphabet extends Glossary
 	}
 }
 
-/* End of file BlacketName.php */
+/* End of file Glossary.php */
 /* Location: /vender/PukiWiki/Lib/Renderer/Inline/Glossary.php */

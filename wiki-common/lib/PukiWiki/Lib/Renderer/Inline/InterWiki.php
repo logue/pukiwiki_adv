@@ -8,6 +8,8 @@
 // Hyperlink-related functions
 namespace PukiWiki\Lib\Renderer\Inline;
 
+use Zend\Uri\UriFactory;
+
 // URLs (InterWiki definition on "InterWikiName")
 class InterWiki extends Inline
 {

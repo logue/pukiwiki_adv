@@ -23,19 +23,29 @@ class Mailto extends Inline
 			 '\[\['.
 			 '((?:(?!\]\]).)+)(?:>|:)'.     // (1) alias
 			')?'.
-			'([\w.-]+@[\w-]+\.[\w.-]+)'.    // (2) mailto
+			'([\w.-]+@)'.                   // (2) toname
+			'([^\/"<>\s]+\.[A-Za-z0-9-]+)'. // (3) host
 			'(?(' . $s1 . ')\]\])';	        // close bracket if (1)
 	}
 
 	function get_count()
 	{
-		return 2;
+		return 3;
 	}
 
 	function set($arr, $page)
 	{
-		list(, $alias, $name) = $this->splice($arr);
-		return parent::setParam($page, $name, '', 'mailto', $alias == '' ? $name : $alias);
+		list (, $alias, $toname, $host) = $this->splice($arr);
+		$name = $orginalname = $toname . $host;
+		if (extension_loaded('intl')) {
+			// 国際化ドメイン対応
+			if (preg_match('/[^A-Za-z0-9.-]/', $host)) {
+				$name = $toname . idn_to_ascii($host);
+			} else if (!$alias && strtolower(substr($host, 0, 4)) === 'xn--') {
+				$orginalname = $toname . idn_to_utf8($host);
+			}
+		}
+		return parent :: setParam($page, $name, '', 'mailto', $alias === '' ? $orginalname : $alias);
 	}
 
 	function toString()

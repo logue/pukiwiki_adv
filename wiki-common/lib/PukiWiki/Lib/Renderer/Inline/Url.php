@@ -23,21 +23,43 @@ class Url extends Inline
 			 '((?:(?!\]\]).)+)'.    // (2) alias
 			 '(?:>|:)'.
 			')?'.
-			'('.                    // (3) url
-			 '(?:(?:https?|ftp|news):\/\/|mailto:)[\w\/\@\$()!?&%#:;.,~\'=*+-]+'.
+			'('.                    // (3) scheme
+			 '(?:(?:https?|ftp|news|site):\/\/|mailto:)'.
 			')'.
-			'(?('.$s1.')\]\])';         // close bracket
+			'([\w.-]+@)?'.          // (4) mailto name
+			'([^\/"<>\s]+|\/)'.     // (5) host
+			'('.                    // (6) URI
+			 '[\w\/\@\$()!?&%#:;.,~\'=*+-]*'.
+			')'.
+			'(?(' . $s1 . ')\]\])'; // close bracket
 	}
 
 	function get_count()
 	{
-		return 3;
+		return 6;
 	}
 
 	function set($arr, $page)
 	{
-		list(, , $alias, $name) = $this->splice($arr);
-		return parent::setParam($page, htmlsc($name), null, 'url', empty($alias) ? $name : $alias);
+		list (,$bracket, $alias, $scheme, $mail, $host, $uri) = $this->splice($arr);
+		$this->has_bracket = (substr($bracket, 0, 2) === '[[');
+		$this->host = $host;
+		if (extension_loaded('intl') && $host !== '/' && preg_match('/[^A-Za-z0-9.-]/', $host)) {
+			$host = idn_to_ascii($host);
+		}
+		$name = $scheme . $mail . $host;
+		// https?:/// -> $this->cont['ROOT_URL']
+		$name = preg_replace('#^(?:site:|https?:/)//#', ROOT_URI, $name) . $uri;
+		if (!$alias) {
+			// Punycode化されたドメインかを判別
+			$alias = (extension_loaded('intl') && strtolower(substr($host, 0, 4)) === 'xn--') ?
+				($scheme . $mail . idn_to_utf8($host) . $uri)
+				: $name;
+			if (strpos($alias, '%') !== FALSE) {
+				$alias = mb_convert_encoding(rawurldecode($alias), SOURCE_ENCODING , 'AUTO');
+			}
+		}
+		return parent :: setParam($page, htmlsc($name), '', ($mail ? 'mailto' : 'url'), $alias);
 	}
 
 	function toString()

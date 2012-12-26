@@ -10,6 +10,7 @@ namespace PukiWiki\Lib\Renderer\Inline;
 use PukiWiki\Lib\Renderer\InlineConverter;
 use PukiWiki\Lib\File\FileFactory;
 use PukiWiki\Lib\File\WikiFile;
+use PukiWiki\Lib\Auth\Auth;
 
 // Base class of inline elements
 class Inline
@@ -82,7 +83,11 @@ class Inline
 	static function make_pagelink($page, $alias = '', $anchor = '', $refer = '', $isautolink = FALSE)
 	{
 		global $vars, $link_compact, $related, $_symbol_noexists;
-		$s_page = htmlsc(strip_bracket($page));
+
+		if (empty($page)){
+			return '<a href="' . $anchor . '">' . htmlsc($alias) . '</a>';
+		}
+
 		$wiki = new WikiFile($page);
 		if (! $wiki->has()) {
 			$realpages = get_autoaliases(strip_bracket($page));
@@ -93,13 +98,14 @@ class Inline
 				}
 			}
 		}
+
+		$s_page = htmlsc(strip_bracket($page));
 		$s_alias = empty($alias) ? $s_page : $alias;
 
 		if ( empty($page) ) return '<a href="' . $anchor . '">' . $s_alias . '</a>';
 
-		$r_refer = empty($refer) ? '' : '&amp;refer=' . rawurlencode($refer);
 
-		if (! isset($related[$page]) && $page !== $vars['page'] && is_page($page))
+		if (! isset($related[$page]) && $page !== $vars['page'] && $wiki->has())
 			$related[$page] = $wiki->getTime();
 
 		if ($isautolink || $wiki->has()) {
@@ -108,10 +114,10 @@ class Inline
 				($isautolink ? ' class="autolink"' : '') .'>' . $s_alias . '</a>';
 		} else {
 			// Dangling link
-			if (\auth::check_role('readonly')) return $s_alias; // No dacorations
+			if (Auth::check_role('readonly')) return $s_alias; // No dacorations
 
 			$retval = $s_alias . '<a href="' .
-				get_cmd_uri('edit',$page) . $r_refer . '" rel="nofollow">' .
+				get_cmd_uri('edit', $page, null, (empty($refer) ? null : array('refer'=>$refer)) ) . '" rel="nofollow">' .
 				$_symbol_noexists . '</a>';
 
 			if ($link_compact) {
@@ -120,6 +126,23 @@ class Inline
 				return '<span class="noexists">' . $retval . '</span>';
 			}
 		}
+	}
+	
+	function is_inside_uri($anchor){
+		global $open_uri_in_new_window_servername;
+		static $set_baseuri = true;
+
+		if ($set_baseuri) {
+			$set_baseuri = false;
+			$open_uri_in_new_window_servername[] = get_baseuri();
+		}
+
+		foreach ($open_uri_in_new_window_servername as $servername) {
+			if (stristr($anchor, $servername)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
 

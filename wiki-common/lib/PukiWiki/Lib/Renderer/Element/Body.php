@@ -83,10 +83,9 @@ class Body extends Element
 				$this->insert(new HRule($this, $line));
 				continue;
 			}
-/*
+
 			// Multiline-enabled block plugin
-			if (! PKWKEXP_DISABLE_MULTILINE_PLUGIN_HACK &&
-			    preg_match('/^#[^{]+(\{\{+)\s*$/', $line, $matches)) {
+			if (preg_match('/^#[^{]+(\{\{+)\s*$/', $line, $matches)) {
 				$len = strlen($matches[1]);
 				$line .= "\r"; // Delimiter
 				while (! empty($lines)) {
@@ -99,7 +98,7 @@ class Body extends Element
 					}
 				}
 			}
-*/
+
 			// The first character
 			$head = $line{0};
 
@@ -189,8 +188,7 @@ class Body extends Element
 		$text = parent::toString();
 
 		// #contents
-		return  preg_replace_callback('/<#_contents_>/',
-			array($this, 'replace_contents'), $text). "\n";
+		return preg_replace_callback('/<#_contents_>/', array($this, 'replace_contents'), $text). "\n";
 	}
 
 	function replace_contents($arr)

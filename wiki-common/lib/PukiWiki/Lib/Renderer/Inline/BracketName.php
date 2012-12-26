@@ -6,6 +6,7 @@
 // License: GPL v2 or (at your option) any later version
 
 namespace PukiWiki\Lib\Renderer\Inline;
+use PukiWiki\Lib\File\FileFactory;
 
 // BracketNames
 class BracketName extends Inline
@@ -52,7 +53,7 @@ class BracketName extends Inline
 			if ( empty($alias) ) $alias = $name . $this->anchor;
 			if ( !empty($name) ) {
 				$name = self::get_fullname($name, $page);
-				if (! is_pagename($name)) return FALSE;
+				if (! FileFactory::Wiki($name)->is_valied()) return FALSE;
 			}
 		}
 
