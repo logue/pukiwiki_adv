@@ -7,6 +7,7 @@
 //
 
 namespace PukiWiki\Lib\File;
+use PukiWiki\Lib\Utility;
 
 /**
  * ファイルの読み書きを行うクラス
@@ -45,14 +46,12 @@ class File{
 	 * @param int $count 読み込む行数
 	 * @return array
 	 */
-	public function head($count = 1){
+	public function head($count = 1, $join = false){
 		// Read top N lines as an array
 		// (Use PHP file() function if you want to get ALL lines)
-		if (! $this->info->isReadable()) return false;
-
-		// ファイルを開く
-		$fp = fopen($this->filename, 'r');
-		if ($fp === FALSE) return FALSE;
+		if ( !$this->has() ) return false;
+		if ( !$this->info->isReadable() )
+			Utility::die_message(sprintf('File <var>%s</var> is not readable.', Utility::htmlsc($this->filename)));
 
 		// ファイルの読み込み
 		$file = $this->info->openFile('r');
@@ -65,22 +64,31 @@ class File{
 		$result = array();
 		// ファイルを読み込む
 		while (!$file->eof()) {
-			if ($line != FALSE) $result[] = strtr($file->fgets(), "\r", '');
+			if ($count === 1){
+				$result = rtrim($file->fgets());
+				break;
+			}
+			$result[] = rtrim($file->fgets());	// 改行を含む余計な空白文字は削除
 			if (++$index >= $count) break;
 		}
-		// ファイルをアンロック
-		flock($fp, LOCK_UN);
-		if (! fclose($fp)) return FALSE;
+		// アンロック
+		$file->flock(LOCK_UN);
+		// 念のためオブジェクトを開放
+		unset($file);
 
-		return $array;
+		// 出力
+		return $join || $count !== 1 ? join("\n", $result) : $result;
 	}
 	/**
 	 * ファイルの内容を取得
 	 * @param boolean $join 行を含めた文字列として読み込むか、行を配列として読み込むかのフラグ
+	 * @param boolean $legacy 昔の読み込み方でロード（互換性のため）
 	 * @return string or array
 	 */
-	public function get($join = false){
-		if (! $this->info->isReadable()) return false;
+	public function get($join = false, $legacy = false){
+		if ( !$this->has() ) return false;
+		if ( !$this->info->isReadable() )
+			Utility::die_message(sprintf('File <var>%s</var> is not readable.', Utility::htmlsc($this->filename)));
 
 		// ファイルの読み込み
 		$file = $this->info->openFile('r');
@@ -92,7 +100,7 @@ class File{
 		$result = array();
 		// 1行毎ファイルを読む
 		while (!$file->eof()) {
-			$result[] = strtr($file->fgets(), "\r", '');
+			$result[] = $legacy ? strtr($file->fgets(), "\r", '') : rtrim($file->fgets());	// 改行を含む余計な空白文字は削除
 		}
 		// アンロック
 		$file->flock(LOCK_UN);
@@ -109,7 +117,9 @@ class File{
 	 */
 	public function set($str){
 		// 書き込み可能かをチェック
-		if (! $this->info->isWritable()) return false;
+		if ($this->has () && ! $this->info->isWritable())
+			Utility::die_message(sprintf('File <var>%s</var> is not writable.', Utility::htmlsc($this->filename)));
+
 		// 書き込むものがなかった場合、削除とみなす
 		if (empty($str)) return $this->remove();
 		// 配列だった場合、配列を改行にする。
@@ -124,7 +134,7 @@ class File{
 		// 書き込む
 		$ret = $file->fwrite($str);
 		// アンロック
-		$file->flock(LOCK_EX);
+		$file->flock(LOCK_UN);
 		// 念のためオブジェクトを開放
 		unset($file);
 
@@ -204,19 +214,18 @@ class File{
 	private function chown($preserve_time = TRUE){
 		// check UID（Windowsの場合は0になる）
 		$this->php_uid = extension_loaded('posix') ? posix_getuid() : 0;
-		$lockfile = CACHE_DIR . self::LOCK_FILE;
+		$lockfile = new \SplFileInfo(CACHE_DIR . self::LOCK_FILE);
 
 		// Lock for pkwk_chown()
-		$flock = fopen($lockfile, 'a') or
-			die('pkwk_chown(): fopen() failed for: CACHEDIR/' .
-				basename(htmlsc($this->lockfile)));
-		flock($flock, LOCK_EX) or die('pkwk_chown(): flock() failed for lock');
+		$lock = $lockfile->openFile('a') ;
+		$lock->flock(LOCK_EX);
+
+		// ファイルが作成されてないとエラーになる
+		touch($this->filename);
 
 		// Check owner
-		touch($this->filename);	// ファイルが作成されてないとエラーになる
-		$stat = stat($this->filename) or
-			die('pkwk_chown(): stat() failed for: '  . basename(htmlsc($this->filename)));
-		if ($stat[4] === $this->php_uid) {
+		$owner = $this->info->getOwner();
+		if ($owner === $this->php_uid) {
 			// NOTE: Windows always here
 			$result = TRUE; // Seems the same UID. Nothing to do
 		} else {
@@ -224,29 +233,26 @@ class File{
 
 			// Lock source $filename to avoid file corruption
 			// NOTE: Not 'r+'. Don't check write permission here
-			$ffile = fopen($this->filename, 'r') or
-				die('pkwk_chown(): fopen() failed for: ' .
-					basename(htmlsc($this->filename)));
+			$file = $this->info->openFile('r');
 
 			// Try to chown by re-creating files
 			// NOTE:
 			//   * touch() before copy() is for 'rw-r--r--' instead of 'rwxr-xr-x' (with umask 022).
 			//   * (PHP 4 < PHP 4.2.0) touch() with the third argument is not implemented and retuns NULL and Warn.
 			//   * @unlink() before rename() is for Windows but here's for Unix only
-			flock($ffile, LOCK_EX) or die('pkwk_chown(): flock() failed');
-			$result = touch($tmp) && copy($this->filename, $tmp) &&
+			$file->flock(LOCK_EX);
+			$result =
+				touch($tmp) &&
+				copy($this->filename, $tmp) &&
 				($preserve_time ? (touch($tmp, $stat[9], $stat[8]) || touch($tmp, $stat[9])) : TRUE) &&
 				rename($tmp, $this->filename);
-			flock($ffile, LOCK_UN) or die('pkwk_chown(): flock() failed');
-
-			fclose($ffile) or die('pkwk_chown(): fclose() failed');
+			$file->flock(LOCK_UN);
 
 			if ($result === FALSE) unlink($tmp);
 		}
 
 		// Unlock for pkwk_chown()
-		flock($flock, LOCK_UN) or die('pkwk_chown(): flock() failed for lock');
-		fclose($flock) or die('pkwk_chown(): fclose() failed for lock');
+		$lock->flock(LOCK_UN);
 
 		return $result;
 	}
@@ -272,8 +278,8 @@ class File{
 			}
 			return $result;
 		} else {
-			die_message('pkwk_touch_file(): Invalid UID and (not writable for the directory or not a flie): ' .
-				htmlsc(basename($this->filename)));
+			Utility::die_message('pkwk_touch_file(): Invalid UID and (not writable for the directory or not a flie): ' .
+				Utility::htmlsc(basename($this->filename)));
 		}
 	}
 	/**
@@ -281,7 +287,7 @@ class File{
 	 * @return boolean
 	 */
 	private function mkdir_r(){
-		if ($this->exists()) return false;
+		if ($this->has()) return false;
 
 		$dirname = dirname($this->filename);	// ファイルのディレクトリ名
 		// 階層指定かつ親が存在しなければ再帰
@@ -290,6 +296,24 @@ class File{
 			if ($this->mkdir_r(dirname($dirname)) === false) return false;
 		}
 		return mkdir($dirname);
+	}
+	/**
+	 * エイリアス：存在確認
+	 */
+	public function exists(){
+		return self::has();
+	}
+	/**
+	 * エイリアス：読み込み
+	 */
+	public function read($join = false){
+		return self::get($join);
+	}
+	/**
+	 * エイリアス：書き込み
+	 */
+	public function write($str){
+		return self::set($str);
 	}
 	/**
 	 * 特殊：文字列化（readと等価）

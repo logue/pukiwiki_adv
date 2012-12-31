@@ -7,6 +7,8 @@
 
 namespace PukiWiki\Lib\File;
 use PukiWiki\Lib\File\File;
+use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\Auth\Auth;
 
 /**
  * バックアップファイルクラス
@@ -21,7 +23,7 @@ class BackupFile extends File{
 
 	public function __construct($page){
 		global $do_backup, $cycle, $maxage;
-		if (\auth::check_role('readonly') || ! $do_backup) return;
+		if (Auth::check_role('readonly') || ! $do_backup) return;
 
 		// バックアップのページ名
 		$this->page = $page;
@@ -45,8 +47,8 @@ class BackupFile extends File{
 		$this->cycle = 60 * 60 * $cycle;
 		// バックアップの上限個数
 		$this->maxage = $maxage;
-		// $this->filenameの定義が独特なためparent::__construct()が使えない
-		$this->info = new \SplFileInfo($this->filename);
+		
+		parent::__construct($this->name.$this->ext);
 	}
 
 	/**
@@ -84,7 +86,7 @@ class BackupFile extends File{
 
 		// 追加するバックアップデーター
 		// Escape 'lines equal to self::SPLITTER', by inserting a space
-		$body = preg_replace($this->splitter_reglex, '$1 ', get_source($this->page));
+		$body = preg_replace($this->splitter_reglex, '$1 ', FileFactorty::Wiki($this->page)->source());
 		// BugTrack/685 by UPK
 		$body = self::SPLITTER . ' ' . $this->time . ' ' . UTIME . "\n" . join('', $body);
 		$body = preg_replace("/\n*$/", "\n", $body);
@@ -125,7 +127,6 @@ class BackupFile extends File{
 				$retvars[$_age]['data'][] = $line;
 			}
 		}
-
 		return $retvars;
 	}
 	/**
@@ -183,7 +184,7 @@ class BackupFile extends File{
 	 *
 	 * @return    Array     ファイルの内容
 	 */
-	public function get($join = false){
+	public function get($join = false, $legacy = false){
 		foreach ($this->available_ext as $ext){
 			if (file_exists($this->name.$ext)) return $this->read_sub($ext, $join);
 		}

@@ -11,7 +11,9 @@ use PukiWiki\Lib\File\FileFactory;
 // InterWikiName-rendered URLs
 class InterWikiName extends Inline
 {
-	const INTERWIKINAME_PATTERN = '\[((?:(?:https?|ftp|news):\/\/|\.\.?\/)[!~*\'();\/?:\@&=+\$,%#\w.-]*)\s([^\]]+)\]\s?([^\s]*)';
+	const INTERWIKINAME_PATTERN = '/\[((?:(?:https?|ftp|news):\/\/|\.\.?\/)[!~*\'();\/?:\@&=+\$,%#\w.-]*)\s([^\]]+)\]\s?([^\s]*)/';
+	const INTERWIKINAME_ICON = '<span class="pkwk-icon icon-interwiki"></span>';
+	const INTERWIKINAME_CACHE = 'interwiki';
 	
 	var $url    = '';
 	var $param  = '';
@@ -73,24 +75,28 @@ class InterWikiName extends Inline
 
 	function toString()
 	{
-		$rel = FALSE ? '': ' rel="nofollow"';
+		global $nofollow;
+		$icon = parent::is_inside_uri($this->url) ? parent::INTERNAL_LINK_ICON : parent::EXTERNAL_LINK_ICON;
 		$target = (empty($this->redirect)) ? $this->url : $this->redirect.rawurlencode($this->url);
-		return open_uri_in_new_window('<a href="' . $target . $this->anchor .
-			'" title="' . $this->name . '"' . $rel . '><span class="pkwk-icon icon-interwiki"></span>' . $this->alias . '</a>', get_class($this));
+
+		return '<a href="' . $target . $this->anchor . '" title="' . $this->name . '" rel="' . ($nofollow === FALSE ? 'external' : 'external nofollow') . '">'. self::INTERWIKINAME_ICON . $this->alias . $icon . '</a>';
 	}
 	
 	// Render an InterWiki into a URL
 	private function get_interwiki_url($name, $param)
 	{
-		global $WikiName, $interwiki;
-		static $interwikinames;
+		global $WikiName, $interwiki, $cache;
 		static $encode_aliases = array('sjis'=>'SJIS', 'euc'=>'EUC-JP', 'utf8'=>'UTF-8');
 
-		if (! isset($interwikinames)) {
+		if ($cache['wiki']->hasItem(self::INTERWIKINAME_CACHE)) {
+			$interwikinames = $cache['wiki']->getItem(self::INTERWIKINAME_CACHE);
+		}else{
 			$interwikinames = $matches = array();
-			foreach (FileFacrory::Wiki($interwiki)->source() as $line)
+			foreach (FileFactory::Wiki($interwiki)->source() as $line)
 				if (preg_match(self::INTERWIKINAME_PATTERN,$line, $matches))
 					$interwikinames[$matches[2]] = array($matches[1], $matches[3]);
+			array_unique($interwikinames);
+			$cache['wiki']->setItem(self::INTERWIKINAME_CACHE, $interwikinames);
 		}
 
 		if (! isset($interwikinames[$name])) return FALSE;

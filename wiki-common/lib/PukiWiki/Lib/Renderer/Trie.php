@@ -8,50 +8,6 @@
 namespace PukiWiki\Lib\Renderer;
 
 class Trie{
-	public static function get_pattern($pages, $min_len = -1, $force = false){
-		global $cache, $WikiName, $autolink, $nowikiname;
-
-		if ($force){
-			$cache['wiki']->removeItem(self::CACHE_NAME);
-		}
-
-		if ($cache['wiki']->hasItem(self::CACHE_NAME)){
-			return $cache['wiki']->getItem(self::CACHE_NAME);
-		}
-
-		$config = new Config('AutoLink');
-		$config->read();
-		$ignorepages	  = $config->get('IgnoreList');
-		$forceignorepages = $config->get('ForceIgnoreList');
-		unset($config);
-		$auto_pages = array_merge($ignorepages, $forceignorepages);
-
-		if ($min_len == -1) {
-			$min_len = $autolink;   // set $autolink, when omitted.
-		}
-
-		foreach ($pages as $page)
-			if (preg_match('/^' . $WikiName . '$/', $page) ?
-				$nowikiname : strlen($page) >= $min_len)
-				$auto_pages[] = $page;
-
-		if (empty($auto_pages)) {
-			$result = $result_a = $nowikiname ? '(?!)' : $WikiName;
-		} else {
-			$auto_pages = array_unique($auto_pages);
-			sort($auto_pages, SORT_STRING);
-
-			$auto_pages_a = array_values(preg_grep('/^[A-Z]+$/i', $auto_pages));
-			$auto_pages   = array_values(array_diff($auto_pages,  $auto_pages_a));
-
-			$result   = self::generate_trie_regex($auto_pages);
-			$result_a = self::generate_trie_regex($auto_pages_a);
-		}
-		$ret = array($result, $result_a, $forceignorepages);
-		$cache['wiki']->setItem(self::CACHE_NAME, $ret);
-		return $ret;
-	}
-	
 	// Generate one compact regex for quick reTRIEval,
 	// that just matches with all $array-values.
 	//

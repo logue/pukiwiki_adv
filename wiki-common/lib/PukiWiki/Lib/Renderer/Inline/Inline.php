@@ -13,8 +13,11 @@ use PukiWiki\Lib\File\WikiFile;
 use PukiWiki\Lib\Auth\Auth;
 
 // Base class of inline elements
-class Inline
+abstract class Inline
 {
+	const INTERNAL_LINK_ICON = '<span class="pkwk-symbol link_symbol symbol-internal" title="Internal Link"></span>';
+	const EXTERNAL_LINK_ICON = '<span class="pkwk-symbol link_symbol symbol-external" title="External Link"></span>';
+
 	var $start;   // Origin number of parentheses (0 origin)
 	var $text;    // Matched string
 
@@ -27,25 +30,25 @@ class Inline
 	var $redirect;
 
 	// Constructor
-	function __construct($start)
+	public function __construct($start)
 	{
 		$this->start = $start;
 		$this->redirect = (PKWK_USE_REDIRECT) ? get_cmd_uri('redirect',null,null,'u=') : null;	// FIXME
 	}
 
 	// Return a regex pattern to match
-	function get_pattern() {}
+	public function get_pattern() {}
 
 	// Return number of parentheses (except (?:...) )
-	function get_count() {}
+	public function get_count() {}
 
 	// Set pattern that matches
-	function set($arr, $page) {}
+	public function set($arr, $page) {}
 
-	function toString() {}
+	public function toString() {}
 
 	// Private: Get needed parts from a matched array()
-	function splice($arr)
+	public function splice($arr)
 	{
 		$count = $this->get_count() + 1;
 		$arr   = array_pad(array_splice($arr, $this->start, $count), $count, '');
@@ -54,7 +57,7 @@ class Inline
 	}
 
 	// Set basic parameters
-	function setParam($page, $name, $body, $type = '', $alias = '')
+	public function setParam($page, $name, $body, $type = '', $alias = '')
 	{
 		static $converter = NULL;
 
@@ -104,7 +107,6 @@ class Inline
 
 		if ( empty($page) ) return '<a href="' . $anchor . '">' . $s_alias . '</a>';
 
-
 		if (! isset($related[$page]) && $page !== $vars['page'] && $wiki->has())
 			$related[$page] = $wiki->getTime();
 
@@ -128,7 +130,7 @@ class Inline
 		}
 	}
 	
-	function is_inside_uri($anchor){
+	static function is_inside_uri($uri){
 		global $open_uri_in_new_window_servername;
 		static $set_baseuri = true;
 
@@ -138,7 +140,7 @@ class Inline
 		}
 
 		foreach ($open_uri_in_new_window_servername as $servername) {
-			if (stristr($anchor, $servername)) {
+			if (stristr($uri, $servername)) {
 				return true;
 			}
 		}

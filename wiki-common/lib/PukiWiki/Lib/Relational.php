@@ -32,6 +32,7 @@
 // ------------------------------------------------------------
 
 namespace PukiWiki\Lib;
+use PukiWiki\Lib\Auth\Auth;
 use PukiWiki\Lib\Renderer\InlineConverter;
 use PukiWiki\Lib\File\WikiFile;
 
@@ -205,7 +206,7 @@ class Relational{
 	 * @return void
 	 */
 	public function init() {
-		if (\auth::check_role('readonly')) return; // Do nothing
+		if (Auth::check_role('readonly')) return; // Do nothing
 
 		// Init database
 		$this->cache->clearByPrefix(self::REL_PREFIX);
@@ -231,10 +232,12 @@ class Relational{
 				if (! $_obj instanceof PukiWiki\Lib\Renderer\Inline\AutoLink)
 					$ref[$_name][$_page] = 0;
 			}
+			ksort($rel, SORT_NATURAL);
 			$this->cache->setItem(self::REL_PREFIX.md5($_page), array_unique($rel));
 		}
 		unset($rel, $_page);
 
+		ksort($ref, SORT_NATURAL);
 		foreach ($ref as $ref_page=>$ref_auto) {
 			$this->cache->setItem(self::REF_PREFIX.md5($ref_page), $ref_auto);
 		}
@@ -248,7 +251,7 @@ class Relational{
 	 * @return void
 	 */
 	private function add($add, $rel_auto){
-		if (\auth::check_role('readonly')) return; // Do nothing
+		if (Auth::check_role('readonly')) return; // Do nothing
 
 		$rel_auto = array_flip($rel_auto);
 
@@ -267,6 +270,7 @@ class Relational{
 			}
 
 			if ($is_page || ! $all_auto || count($ref) !== 0) {
+				ksort($ref, SORT_NATURAL);
 				$this->cache->replaceItem($ref_name, array_unique($ref));
 			}else{
 				$this->cache->removeItem($ref_name);
@@ -281,7 +285,7 @@ class Relational{
 	 * @return void
 	 */
 	private function remove($del){
-		if (\auth::check_role('readonly')) return; // Do nothing
+		if (Auth::check_role('readonly')) return; // Do nothing
 
 		foreach ($del as $_page) {
 			$all_auto = TRUE;
@@ -296,6 +300,7 @@ class Relational{
 			}
 
 			if ($is_page || ! $all_auto || count($ref) == 1) {
+				ksort($ref, SORT_NATURAL);
 				$this->cache->replaceItem($ref_name, array_unique($ref));
 			}else{
 				$this->cache->removeItem($ref_name);

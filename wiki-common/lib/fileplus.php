@@ -67,18 +67,17 @@ function update_cache($page = '', $force = false){
 
 	// Update autolink
 	if ( $autolink !== 0 ) {
-		$cache['wiki']->setItem(PKWK_AUTOLINK_REGEX_CACHE, get_autolink_pattern($pages, $autolink));
+		PukiWiki\Lib\Renderer\AutoLinkPattern::get_pattern(-1,true);
 	}
 
-
 	// Update rel and ref cache
-	$links = new \PukiWiki\Lib\Relational($page);
+	$links = new PukiWiki\Lib\Relational($page);
 	if (!empty($page) ){
 		$links->update($page);
 	} else if ($force) {
 		$links->init();
 	}
-
+/*
 	// Update Lastmodifed cache
 	put_lastmodified();
 
@@ -123,7 +122,7 @@ function update_cache($page = '', $force = false){
 			$cache['wiki']->setItem(PKWK_AUTOBASEALIAS_CACHE, $basealiases );
 		}
 	}
-
+*/
 	return true;
 }
 

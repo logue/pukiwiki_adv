@@ -102,6 +102,7 @@ $info[] = sprintf('Using <a href="http://framework.zend.com/">Zend Framework</a>
 /////////////////////////////////////////////////
 
 // Load *.ini.php files and init PukiWiki
+
 require(LIB_DIR . 'func.php');
 require(LIB_DIR . 'funcplus.php');
 require(LIB_DIR . 'fileplus.php');
@@ -125,6 +126,8 @@ require(LIB_DIR . 'legacy.php');
 // Defaults
 $notify = $trackback = $referer = 0;
 require(LIB_DIR . 'init.php');
+
+catbody($title, $page, $body);
 exit;
 
 /* End of file main.php */

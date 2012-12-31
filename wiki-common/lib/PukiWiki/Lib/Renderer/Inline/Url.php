@@ -65,10 +65,9 @@ class Url extends Inline
 	function toString()
 	{
 		global $nofollow;
-		$rel = 'external' . ($nofollow === TRUE) ? ' nofollow': '';
-
+		$icon = parent::is_inside_uri($this->name) ? parent::INTERNAL_LINK_ICON : parent::EXTERNAL_LINK_ICON;
 		$target = (empty($this->redirect)) ? $this->name : $this->redirect.rawurlencode($this->name);
-		return open_uri_in_new_window('<a href="' . $target . '" rel="' . $rel . '">' . $this->alias . '</a>', get_class($this));
+		return '<a href="' . $target . '" title="' . $this->name . '" rel="' . ($nofollow === FALSE ? 'external' : 'external nofollow') . '">'. $this->alias . $icon . '</a>';
 	}
 }
 

@@ -74,7 +74,7 @@ $config_dist = array(
 		'backup' => DATA_HOME . 'backup/',
 		'data'   => DATA_HOME . 'wiki/',
 		'diff'   => DATA_HOME . 'diff/',
-		
+
 */
 define('USR_INI_FILE', add_homedir('pukiwiki.usr.ini.php'));
 $read_usr_ini_file = false;
@@ -493,13 +493,13 @@ if (isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING'])) {
 } else if (isset($_SERVER['argv']) && ! empty($_SERVER['argv'])) {
 	$arg = $_SERVER['argv'][0];
 }
+
 if (PKWK_QUERY_STRING_MAX && strlen($arg) > PKWK_QUERY_STRING_MAX) {
 	// Something nasty attack?
 	die_message(_('Query string is too long.'));
 }
-$arg = input_filter($arg); // \0 除去
+$arg = str_replace('+','%20',input_filter($arg)); // \0 除去
 // for QA/250
-$arg = str_replace('+','%20',$arg);
 
 // unset QUERY_STRINGs
 //foreach (array('QUERY_STRING', 'argv', 'argc') as $key) {
@@ -513,10 +513,9 @@ if (DEBUG){
 }
 
 // mb_convert_variablesのバグ(?)対策: 配列で渡さないと落ちる
-$arg = array($arg);
-mb_convert_variables(SOURCE_ENCODING, 'auto', $arg);
-$arg = $arg[0];
-
+$args = array($arg);
+mb_convert_variables(SOURCE_ENCODING, 'auto', $args);
+$arg = $args[0];
 /////////////////////////////////////////////////
 // QUERY_STRINGを分解してコード変換し、$_GET に上書き
 
@@ -524,7 +523,7 @@ $arg = $arg[0];
 $matches = array();
 foreach (explode('&', $arg) as $key_and_value) {
 	if (preg_match('/^([^=]+)=(.+)/', $key_and_value, $matches) &&
-	    (mb_detect_encoding($matches[2]) != 'ASCII' || $matches[1] == 'pukiwiki')) {
+	    (mb_detect_encoding($matches[2]) !== 'ASCII' || $matches[1] === 'pukiwiki')) {
 		$_GET[$matches[1]] = $matches[2];
 	}
 }
@@ -984,8 +983,6 @@ if ($always_menu_displayed) {
 	if (exist_plugin_convert('menu')) $body_menu = do_plugin_convert('menu');
 	if (exist_plugin_convert('side')) $body_side = do_plugin_convert('side');
 }
-
-catbody($title, $page, $body);
 
 /* End of file init.php */
 /* Location: ./wiki-common/lib/init.php */

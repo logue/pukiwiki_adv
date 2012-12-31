@@ -8,7 +8,11 @@
 namespace PukiWiki\Lib\File;
 use PukiWiki\Lib\File\File;
 use PukiWiki\Lib\Renderer\RendererFactory;
-
+use PukiWiki\Lib\Router;
+use PukiWiki\Lib\Relational;
+use PukiWiki\Lib\Utility;
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Auth\AuthUtility;
 /**
  * Wikiページクラス
  */
@@ -41,7 +45,7 @@ class WikiFile extends File{
 		parent::__construct(self::DIR . encode($page) . self::EXT);
 	}
 	/**
-	 * ページが存在するか
+	 * ページが存在するか（hasのエイリアス）
 	 * @paran boolean $clearcache
 	 * @return boolean
 	 */
@@ -51,71 +55,103 @@ class WikiFile extends File{
 	}
 	/**
 	 * 編集可能か
-	 * @staticvar array $is_editable
+	 * @param boolean $authenticate 認証画面を通すかのフラグ
 	 * @return boolean
 	 */
-	public function is_editable()
+	public function is_editable($authenticate = false)
 	{
 		global $edit_auth, $edit_auth_pages, $auth_api, $defaultpage, $_title, $edit_auth_pages_accept_ip;
-		if (!$this->is_valied()) return false;
-		if ($this->is_freezed()) return false;
-		if (\auth::check_role('readonly')) return false;
+		if (!$this->is_valied()) return false;	// 無効なページ名
+		if ($this->is_freezed()) return false;	// 凍結されている
 
-		if (!$edit_auth) return true;
+		if (!$edit_auth) return true;	// 編集時に認証が有効になっていない
 
-		$info = \auth::get_user_info();
+		// 認証画面を表示する
+		if ($authenticate && !AuthUtility::auth($this->page, true, false, $edit_auth_pages, $_title['cannotedit'])) return false;
+
+		if (Auth::check_role('readonly')) return false;	// 未認証時に読み取り専用になっている
+
+		// ユーザ別の権限を読む
+		$info = Auth::get_user_info();
 		if (!empty($info['key']) &&
-			\auth::is_page_readable($page, $info['key'], $info['group']) &&
-			\auth::is_page_editable($page, $info['key'], $info['group'])) {
+			Auth::is_page_readable($this->page, $info['key'], $info['group']) &&
+			Auth::is_page_editable($this->page, $info['key'], $info['group'])) {
 			return true;
 		}
 
 		// Basic, Digest 認証を利用していない場合
-		if (!$auth_api['plus']['use']) return \auth::is_page_readable($this->page, null, null);
-
-		$auth_func_name = get_auth_func_name();
-		if ($auth_flag && ! $auth_func_name($page, $auth_flag, $exit_flag, $edit_auth_pages, $_title['cannotedit'])) return false;
-		if (\auth::is_page_readable($this->page, '', '') && \auth::is_page_editable($this->page,'','')) return true;
+		if (!$auth_api['plus']['use']) return Auth::is_page_readable($this->page, null, null);
+		
+		if (Auth::is_page_readable($this->page, null, null) && Auth::is_page_editable($this->page,null,null)) return true;
 
 		return false;
 	}
 	/**
 	 * 凍結されているか
 	 * @global boolean $function_freeze
-	 * @param boolean $clearcache キャッシュをクリアするか
 	 * @return boolean
 	 */
 	public function is_freezed()
 	{
-		global $function_freeze;
-
-		if ($function_freeze) return;
-		if (!$this->exists()) return false;
 		$buffer = parent::head(1);	// 先頭1行のみ読み込む
-		return strpos(join('',$buffer),'#freeze');
+		return strstr($buffer,'#freeze');
 	}
 	/**
 	 * 読み込み可能か
+	 * @param boolean $authenticate 認証画面を通すかのフラグ
 	 * @return boolean
 	 */
-	public function is_readable()
+	public function is_readable($authenticate = false)
 	{
-		return read_auth($this->page, true, false);
+		global $read_auth, $read_auth_pages, $auth_api, $_title, $read_auth_pages_accept_ip;
+
+		if (!$read_auth) return true;
+		
+		// 許可IPの場合チェックしない
+		if ( AuthUtility::ip_auth($this->page, true, false, $read_auth_pages_accept_ip, $_title['cannotread'])) {
+			return TRUE;
+		}
+
+		$info = auth::get_user_info();
+		if (!empty($info['key']) &&
+		    Auth::is_page_readable($page, $info['key'], $info['group'])) {
+			return true;
+		}
+
+		if (!$auth_api['plus']['use']) return Auth::is_page_readable($page, null, null);
+
+		if ($authenticate && !AuthUtility::auth($this->page, true, false, $read_auth_pages, $_title['cannotread'])) return false;
+		return Auth::is_page_readable($this->page, null, null);
 	}
 	/**
-	 * 有効なページ名か
+	 * 有効なページ名か（is_page()）
 	 * @return boolean
 	 */
 	public function is_valied(){
 		global $BracketName;
-		// 無効な文字が含まれている
-		if (preg_match(self::INVALIED_PAGENAME_PATTERN, $this->page) !== 0) return false;
-
-		$is_pagename = (! $this->is_interwiki() &&
-				preg_match('/^(?!\/)' . $BracketName . '$(?<!\/$)/', $this->page) !== false &&
-				preg_match(self::INVALIED_PAGENAME_PATTERN, $this->page) !== false &&
-				! preg_match('#(^|/)\.{1,2}(/|$)#', $this->page));
-		return ($is_pagename && preg_match(self::VALIED_PAGENAME_PATTERN, $this->page));
+		return (
+				! self::is_interwiki() &&	// InterWikiでない
+				preg_match('/^(?!\/)' . $BracketName . '$(?<!\/$)/', $this->page) !== false &&	// BlacketNameである
+				preg_match(self::INVALIED_PAGENAME_PATTERN, $this->page) !== false &&	// 無効な文字が含まれていない。
+				! preg_match('#(^|/)\.{1,2}(/|$)#', $this->page) &&
+				preg_match(self::VALIED_PAGENAME_PATTERN, $this->page)	// 使用可能な文字である
+		);
+	}
+	/**
+	 * 読み込み可能かをチェック（メッセージを表示する）
+	 */
+	public function check_readable(){
+		if (! self::is_readable()){
+			die_message('You have not permisson to read this page.',403);
+		}
+	}
+	/**
+	 * 編集可能かをチェック（メッセージを表示する）
+	 */
+	public function check_editable(){
+		if (! self::is_editable()){
+			die_message('You have not permisson to edit this page.',403);
+		}
 	}
 	/**
 	 * InterWikiか
@@ -139,7 +175,7 @@ class WikiFile extends File{
 	 * @return array
 	 */
 	public function source(){
-		return $this->get(false);
+		return $this->get(false) ? $this->get(false) : array();
 	}
 	/**
 	 * HTMLに変換
@@ -149,7 +185,17 @@ class WikiFile extends File{
 		return RendererFactory::factory($this->source());
 	}
 	/**
+	 * ダイジェスト（ページの内容のMD5ハッシュ）を出力
+	 * @return string
+	 */
+	public function digest(){
+		return md5($this->get(true));
+	}
+	/**
 	 * 経過時間を取得
+	 * @param boolean $use_tag タグでくくる
+	 * @param boolean $quote ()でくくる
+	 * @return string
 	 */
 	public function passage($use_tag = true, $quote = true){
 		$pg_passage = $quote ? '('.parent::getPassage().')' : parent::getPassage();
@@ -166,33 +212,31 @@ class WikiFile extends File{
 		global $use_spam_check, $_strings, $_title, $post;
 		global $vars, $now, $akismet_api_key;
 
-		if (empty($this->page)) return;
-
 		// captcha check
 		if ( (isset($use_spam_check['captcha']) && $use_spam_check['captcha'] !== 0) && (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] !== 1)) {
 			captcha_check(( $use_spam_check['captcha'] === 2 ? false : true) );
 		}
 
 		// roleのチェック
-		if (\auth::check_role('readonly')) return; // Do nothing
-		if (\auth::is_check_role(PKWK_CREATE_PAGE))
+		if (Auth::check_role('readonly')) return; // Do nothing
+		if (Auth::is_check_role(PKWK_CREATE_PAGE))
 			die_message( sprintf($_strings['error_prohibit'], 'PKWK_READONLY') );
 
 		// Create and write diff
-		$postdata = $this->make_str_rules($str);
-		$oldpostdata = $this->has() ? $this->get(TRUE) : '';
+		$postdata = self::make_str_rules($str);
+		$oldpostdata = self::has() ? self::get(TRUE) : '';
 		$diffdata    = do_diff($oldpostdata, $postdata);
 
 		$links = array();
 		// ページ内のリンクを取得（TrackBackと、スパムチェックで使用）
 		if ( ($trackback > 1) || ( $use_spam_check['page_contents']) ) {
-			$links = $this->get_this_time_links($postdata, $diffdata);
+			$links = self::get_this_time_links($postdata, $diffdata);
 		}
 
-		$referer = (isset($_SERVER['HTTP_REFERER'])) ? htmlsc($_SERVER['HTTP_REFERER']) : 'None';
-		$user_agent = htmlsc($_SERVER['HTTP_USER_AGENT']);
+		$referer = (isset($_SERVER['HTTP_REFERER'])) ? Utility::htmlsc($_SERVER['HTTP_REFERER']) : 'None';
+		$user_agent = Utility::htmlsc($_SERVER['HTTP_USER_AGENT']);
 
-		if (isset($vars['page']) && $vars['page'] === $this->page || !\auth::check_role('role_adm_contents') ){
+		if (isset($vars['page']) && $vars['page'] === $this->page || !Auth::check_role('role_adm_contents') ){
 			// Blocking SPAM
 			if ($use_spam_check['bad-behavior']){
 				require_once(LIB_DIR . 'bad-behavior-pukiwiki.php');
@@ -217,7 +261,7 @@ class WikiFile extends File{
 			if ($use_spam_check['akismet'] && !empty($akismet_api_key) ){
 				$akismet = new ZendService\Akismet(
 					$akismet_api_key,
-					get_script_absuri()
+					Router::get_script_absuri()
 				);
 				if ($akismet->verifyKey($akismet_api_key)) {
 					// 送信するデーターをセット
@@ -277,22 +321,6 @@ class WikiFile extends File{
 		// Create wiki text
 		parent::set($postdata);
 	}
-	public function files(){
-		$aryret = array();
-		$matches = array();
-		$handle = opendir(self::DIR);
-		if ($handle) {
-			while (false !== ($entry = readdir($handle))) {
-				if (preg_match(self::FILENAME_PATTERN, $entry, $matches)) {
-					$aryret[$entry] = decode($matches[1]);
-				}
-			}
-			closedir($handle);
-		}else{
-			die_message(self::DIR . ' is not found or not readable.');
-		}
-		return $aryret;
-	}
 	/**
 	 * 追加されたリンクを取得
 	 * @param string $post 入力データ
@@ -349,14 +377,14 @@ class WikiFile extends File{
 		list($added, $removed) = get_diff_lines($diffdata);
 
 		// Get URLs from <a>(anchor) tag from convert_html()
-		$plus  = \PukiWiki\Lib\Renderer\Factory::factory($added); // WARNING: heavy and may cause side-effect
+		$plus  = RendererFactory::factory($added); // WARNING: heavy and may cause side-effect
 		preg_match_all('#href="(https?://[^"]+)"#', $plus, $links, PREG_PATTERN_ORDER);
 		$links = array_unique($links[1]);
 
 		// Reject from minus list
 		if (! empty($removed) ) {
 			$links_m = array();
-			$minus = \PukiWiki\Lib\Renderer\Factory::factory($removed); // WARNING: heavy and may cause side-effect
+			$minus = RendererFactory::factory($removed); // WARNING: heavy and may cause side-effect
 			preg_match_all('#href="(https?://[^"]+)"#', $minus, $links_m, PREG_PATTERN_ORDER);
 			$links_m = array_unique($links_m[1]);
 
@@ -366,7 +394,7 @@ class WikiFile extends File{
 		unset($plus,$minus);
 
 		// Reject own URL (Pattern _NOT_ started with '$script' and '?')
-		$links = preg_grep('/^(?!' . preg_quote(get_script_absuri(), '/') . '\?)./', $links);
+		$links = preg_grep('/^(?!' . preg_quote(Router::get_script_absuri(), '/') . '\?)./', $links);
 
 		// No link, END
 		if (! is_array($links) || empty($links)) return;
@@ -378,7 +406,7 @@ class WikiFile extends File{
 	 * @param array $source ソース
 	 * @return string
 	 */
-	private function make_str_rules($source){
+	public static function make_str_rules($source){
 		// Modify original text with user-defined / system-defined rules
 		global $str_rules, $fixed_heading_anchor;
 
@@ -424,7 +452,7 @@ class WikiFile extends File{
 		}
 
 		// Multiline part has no stopper
-		if ($modify === FALSE && $multiline != 0) $lines[] = str_repeat('}', $multiline);
+		if ($modify === FALSE && $multiline !== 0) $lines[] = str_repeat('}', $multiline);
 
 		return implode("\n", $lines);
 	}
@@ -435,8 +463,7 @@ class WikiFile extends File{
 	 * @param int $limit 最大行数
 	 */
 	public function add_recent($recentpage, $subject = '', $limit = 0) {
-		//if (PKWK_READONLY || $limit == 0 || $page == '' || $recentpage == '' ||
-		if (\auth::check_role('readonly') || $limit == 0  || $recentpage == '' ||
+		if (Auth::check_role('readonly') || $limit == 0  || empty($recentpage) ||
 			check_non_list($page)) return;
 
 		// Load
@@ -454,21 +481,62 @@ class WikiFile extends File{
 		if (isset($lines[$_page])) unset($lines[$_page]);
 
 		// Add
-		array_unshift($lines, '- &epoch(' . UTIME . '); - ' . $_page . htmlsc($subject) . "\n");
+		array_unshift($lines, '- &epoch(' . UTIME . '); - ' . $_page . Utility::htmlsc($subject) . "\n");
 
 		// Get latest $limit reports
 
 		$f = new File(self::DIR.encode($recentpage));
 		$f->set( '#norelated' . "\n".join('',array_splice($lines, 0, $limit)));
 	}
+	public function auto_template()
+	{
+		global $auto_template_func, $auto_template_rules;
+
+		if (! $auto_template_func) return '';
+
+		$body = '';
+		$matches = array();
+		foreach ($auto_template_rules as $rule => $template) {
+			$rule_pattrn = '/' . $rule . '/';
+
+			if (! preg_match($rule_pattrn, $this->page, $matches)) continue;
+
+			$template_page = preg_replace($rule_pattrn, $template, $this->page);
+			if (! is_page($template_page)) continue;
+
+			$body = FileFactory::Wiki($template_page)->source();
+
+			// Remove fixed-heading anchors
+			$body = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/m', '$1$2', $body);
+
+			// Remove '#freeze'
+			$body = preg_replace('/^#freeze\s*$/m', '', $body);
+
+			$count = count($matches);
+			for ($i = 0; $i < $count; $i++)
+				$body = str_replace('$' . $i, $matches[$i], $body);
+
+			break;
+		}
+		return $body;
+	}
+	/**
+	 * 関連リンクを取得
+	 * @return array
+	 */
+	public function getRelated(){
+		global $related;
+		// Get repated pages from DB
+		$link = new Relational($this->page);
+		$ret = $related + $link->get_related();
+		ksort($ret, SORT_NATURAL);
+		return $ret;
+	}
 	/**
 	 * ページのアドレスを取得
 	 */
 	public function getUri(){
-	//	global $static_url;
-	//	return str_replace('\\', '/', dirname($_SERVER["PHP_SELF"])) . 
-	//		$static_url ? str_replace('%2F', '/', rawurlencode($this->page)) : rawurlencode($this->page);
-		return get_page_uri($this->page);
+		return Router::get_resolve_uri(null,$this->page);
 	}
 }
 

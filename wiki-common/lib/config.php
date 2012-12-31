@@ -51,6 +51,7 @@ class Config
 
 //		if ($this->cacheCheck('') === false){
 			foreach ($this->wikidata->source() as $line) {
+
 				if ($line == '') continue;
 
 				$head  = $line{0};	// The first letter
