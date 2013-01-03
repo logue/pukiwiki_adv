@@ -33,7 +33,7 @@ class Trie{
 	//
 	// REFERENCE: http://en.wikipedia.org/wiki/Trie
 	//
-	protected static function generate_trie_regex($array, $_offset = 0, $_sentry = NULL, $_pos = 0)
+	public static function regex($array, $_offset = 0, $_sentry = NULL, $_pos = 0)
 	{
 		if (empty($array)) return '(?!)'; // Match with nothing
 		if ($_sentry === NULL) $_sentry = count($array);
@@ -65,7 +65,7 @@ class Trie{
 				// Some more keys found
 				// Recurse
 				$regex[] = self::preg_quote_extended($char, '/');
-				$regex[] = self::generate_trie_regex($array, $index, $i, $_pos + 1);
+				$regex[] = self::regex($array, $index, $i, $_pos + 1);
 			} else {
 				// Not found
 				$regex[] = self::preg_quote_extended(mb_substr($array[$index], $_pos), '/');
@@ -79,7 +79,7 @@ class Trie{
 		}
 		if ($skip) $regex[] = '?'; // Match for $pages[$_offset - 1]
 
-		return implode('', $regex);
+		return join('', $regex);
 	}
 
 	// preg_quote(), and also escape PCRE_EXTENDED-related chars

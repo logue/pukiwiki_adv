@@ -7,13 +7,14 @@
 
 namespace PukiWiki\Lib\Renderer\Inline;
 use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\Router;
 
 // InterWikiName-rendered URLs
 class InterWikiName extends Inline
 {
 	const INTERWIKINAME_PATTERN = '/\[((?:(?:https?|ftp|news):\/\/|\.\.?\/)[!~*\'();\/?:\@&=+\$,%#\w.-]*)\s([^\]]+)\]\s?([^\s]*)/';
 	const INTERWIKINAME_ICON = '<span class="pkwk-icon icon-interwiki"></span>';
-	const INTERWIKINAME_CACHE = 'interwiki';
+	const INTERWIKINAME_CACHE = 'interwikiname';
 	
 	var $url    = '';
 	var $param  = '';
@@ -21,6 +22,8 @@ class InterWikiName extends Inline
 
 	function __construct($start)
 	{
+		global $cache;
+		$this->cache = $cache['wiki'];
 		parent::__construct($start);
 	}
 
@@ -61,7 +64,7 @@ class InterWikiName extends Inline
 
 		$url = self::get_interwiki_url($name, $this->param);
 		$this->url = ($url === FALSE) ?
-			get_page_uri('[[' . $name . ':' . $this->param . ']]') :
+			get_page_uri($name . ':' . $this->param) :
 			htmlsc($url);
 
 		return parent::setParam(
@@ -85,18 +88,24 @@ class InterWikiName extends Inline
 	// Render an InterWiki into a URL
 	private function get_interwiki_url($name, $param)
 	{
-		global $WikiName, $interwiki, $cache;
-		static $encode_aliases = array('sjis'=>'SJIS', 'euc'=>'EUC-JP', 'utf8'=>'UTF-8');
+		global $WikiName, $interwiki;
+		static $encode_aliases = array('sjis'=>'SJIS', 'euc'=>'EUC-JP', 'utf8'=>'UTF-8', 'gbk'=>'CP936', 'euckr'=>'EUC-KR', 'big5'=>'BIG5');
+		static $interwikinames;
 
-		if ($cache['wiki']->hasItem(self::INTERWIKINAME_CACHE)) {
-			$interwikinames = $cache['wiki']->getItem(self::INTERWIKINAME_CACHE);
-		}else{
-			$interwikinames = $matches = array();
-			foreach (FileFactory::Wiki($interwiki)->source() as $line)
-				if (preg_match(self::INTERWIKINAME_PATTERN,$line, $matches))
-					$interwikinames[$matches[2]] = array($matches[1], $matches[3]);
-			array_unique($interwikinames);
-			$cache['wiki']->setItem(self::INTERWIKINAME_CACHE, $interwikinames);
+		if (!isset($interwikinames)){
+			// キャッシュ処理
+			$interwikipage = FileFactory::Wiki($interwiki);
+			$cache_meta = $this->cache->getMetadata(self::INTERWIKINAME_CACHE);
+			if ($this->cache->hasItem(self::INTERWIKINAME_CACHE) && $cache_meta['mtime'] > $interwikipage->getTime()) {
+				$interwikinames = $this->cache->getItem(self::INTERWIKINAME_CACHE);
+			}else{
+				// キャッシュが存在してなかったり、定義ページより古い場合は生成。
+				$interwikinames = $matches = array();
+				foreach ($interwikipage->source() as $line)
+					if (preg_match(self::INTERWIKINAME_PATTERN, $line, $matches))
+						$interwikinames[$matches[2]] = array($matches[1], $matches[3]);
+				$this->cache->setItem(self::INTERWIKINAME_CACHE, $interwikinames);
+			}
 		}
 
 		if (! isset($interwikinames[$name])) return FALSE;
@@ -135,6 +144,7 @@ class InterWikiName extends Inline
 		// Replace or Add the parameter
 		if (strpos($url, '$1') !== FALSE) {
 			$url = str_replace('$1', $param, $url);
+			//$url = strtr($url, '$1', $param);
 		} else {
 			$url .= $param;
 		}
