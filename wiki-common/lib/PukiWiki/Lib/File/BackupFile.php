@@ -86,7 +86,7 @@ class BackupFile extends File{
 
 		// 追加するバックアップデーター
 		// Escape 'lines equal to self::SPLITTER', by inserting a space
-		$body = preg_replace($this->splitter_reglex, '$1 ', FileFactorty::Wiki($this->page)->source());
+		$body = preg_replace($this->splitter_reglex, '$1 ', FileFactory::Wiki($this->page)->source());
 		// BugTrack/685 by UPK
 		$body = self::SPLITTER . ' ' . $this->time . ' ' . UTIME . "\n" . join('', $body);
 		$body = preg_replace("/\n*$/", "\n", $body);

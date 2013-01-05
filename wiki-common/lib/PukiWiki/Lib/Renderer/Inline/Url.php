@@ -2,7 +2,7 @@
 // PukiWiki Advance - Yet another WikiWikiWeb clone.
 // $Id: Url.php,v 1.0.0 2012/12/18 11:00:00 Logue Exp $
 // Copyright (C)
-//   2012 PukiWiki Advance Developers Team
+//   2012-2013 PukiWiki Advance Developers Team
 // License: GPL v2 or (at your option) any later version
 
 namespace PukiWiki\Lib\Renderer\Inline;
@@ -59,15 +59,15 @@ class Url extends Inline
 				$alias = mb_convert_encoding(rawurldecode($alias), SOURCE_ENCODING , 'AUTO');
 			}
 		}
+		$this->alias = $alias;
 		return parent :: setParam($page, htmlsc($name), '', ($mail ? 'mailto' : 'url'), $alias);
 	}
 
 	function toString()
 	{
 		global $nofollow;
-		$icon = parent::is_inside_uri($this->name) ? parent::INTERNAL_LINK_ICON : parent::EXTERNAL_LINK_ICON;
 		$target = (empty($this->redirect)) ? $this->name : $this->redirect.rawurlencode($this->name);
-		return '<a href="' . $target . '" title="' . $this->name . '" rel="' . ($nofollow === FALSE ? 'external' : 'external nofollow') . '">'. $this->alias . $icon . '</a>';
+		return parent::make_link($this->alias, $target, $this->name, $nofollow === FALSE ? '' : 'nofollow');
 	}
 }
 

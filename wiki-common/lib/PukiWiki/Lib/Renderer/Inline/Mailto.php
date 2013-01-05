@@ -1,8 +1,8 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: Mailto.php,v 1.0.0 2012/12/18 11:00:00 Logue Exp $
+// $Id: Mailto.php,v 1.0.0 2013/01/05 15:46:00 Logue Exp $
 // Copyright (C)
-//   2012 PukiWiki Advance Developers Team
+//   2012-2013 PukiWiki Advance Developers Team
 // License: GPL v2 or (at your option) any later version
 
 namespace PukiWiki\Lib\Renderer\Inline;
@@ -10,6 +10,8 @@ namespace PukiWiki\Lib\Renderer\Inline;
 // mailto: URL schemes
 class Mailto extends Inline
 {
+	const MAILTO_ICON = '<span class="pkwk-icon icon-mail">mailto:</span>';
+
 	function __construct($start)
 	{
 		parent::__construct($start);
@@ -50,7 +52,7 @@ class Mailto extends Inline
 
 	function toString()
 	{
-		return '<a href="mailto:' . $this->name . '" rel="nofollow"><span class="pkwk-icon icon-mail">mailto:</span>' . $this->alias . '</a>';
+		return '<a href="mailto:' . $this->name . '" rel="nofollow">' . self::MAILTO_ICON . $this->alias . '</a>';
 	}
 }
 

@@ -7,6 +7,7 @@
 
 namespace PukiWiki\Lib\Renderer;
 use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Renderer\Inline\Inline;
 // Converters of inline element
 class InlineConverter
 {
@@ -35,6 +36,7 @@ class InlineConverter
 	function __construct($converters = NULL, $excludes = NULL)
 	{
 		global $autolink, $autoalias, $autoglossary;
+		$autoglossary = 1;
 		if ($converters === NULL) {
 			$converters = array(
 				'Plugin',           // Inline plugins
@@ -88,7 +90,7 @@ class InlineConverter
 		while (! empty($arr)) {
 			$retval .= array_shift($arr) . array_shift($this->result);
 		}
-		return $retval;
+		return trim($retval);
 	}
 
 	function replace($arr)

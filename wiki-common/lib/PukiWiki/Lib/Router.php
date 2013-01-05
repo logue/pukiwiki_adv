@@ -56,7 +56,7 @@ class Router{
 		die();
 	}
 
-	public static function ridirect($url = ''){
+	public static function redirect($url = ''){
 		global $vars;
 		if (empty($url)){
 			$url = isset($vars['page']) ? self::get_page_location_uri($vars['page']) : self::get_script_uri();
@@ -219,6 +219,55 @@ class Router{
 			$ret .= '#'.$fragment;
 		}
 		unset($flag);
+		return $ret;
+	}
+	public static function get_baseuri($path='')
+	{
+		// RFC2396,RFC3986 : relativeURI = ( net_path | abs_path | rel_path ) [ "?" query ]
+		//				   absoluteURI = scheme ":" ( hier_part | opaque_part )
+		$ret = '';
+		$script = self::get_script_uri();
+
+		switch($path) {
+		case 'net': // net_path	  = "//" authority [ abs_path ]
+			$parsed_url = parse_url(self::get_script_absuri());
+			$pref = '//';
+			if (isset($parsed_url['user'])) {
+				$ret .= $pref . $parsed_url['user'];
+				$pref = '';
+				$ret .= (isset($parsed_url['pass'])) ? ':'.$parsed_url['pass'] : '';
+				$ret .= '@';
+			}
+			if (isset($parsed_url['host'])) {
+				$ret .= $pref . $parsed_url['host'];
+				$pref = '';
+			}
+			$ret .= (isset($parsed_url['port'])) ? ':'.$parsed_url['port'] : '';
+		case 'abs': // abs_path	  = "/"  path_segments
+			if ($path === 'abs') $parsed_url = parse_url(get_script_absuri());
+			if (isset($parsed_url['path']) && ($pos = strrpos($parsed_url['path'], '/')) !== false) {
+				$ret .= substr($parsed_url['path'], 0, $pos + 1);
+			} else {
+				$ret .= '/';
+			}
+			break;
+		case 'rel': // rel_path	  = rel_segment [ abs_path ]
+			if (is_url($script, true)) {
+				$ret = './';
+			} else {
+				$parsed_url = parse_url($script);
+				if (isset($parsed_url['path']) && ($pos = strrpos($parsed_url['path'], '/')) !== false) {
+					$ret .= substr($parsed_url['path'], 0, $pos + 1);
+				}
+			}
+			break;
+		case 'full':
+		default:
+			$absoluteURI = get_script_absuri();
+			$ret = substr($absoluteURI, 0, strrpos($absoluteURI, '/')+1);
+			break;
+		}
+
 		return $ret;
 	}
 	private function is_reluri($str)

@@ -1,16 +1,21 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: AutoAlias.php,v 1.0.0 2012/12/18 11:00:00 Logue Exp $
+// $Id: AutoAlias.php,v 1.0.0 2013/01/05 15:46:00 Logue Exp $
 // Copyright (C)
-//   2012 PukiWiki Advance Developers Team
+//   2012-2013 PukiWiki Advance Developers Team
 // License: GPL v2 or (at your option) any later version
 //
 // Hyperlink-related functions
 namespace PukiWiki\Lib\Renderer\Inline;
+use PukiWiki\Lib\Renderer\InlineFactory;
 
 // AutoAlias
 class AutoAlias extends Inline
 {
+	const AUTO_AUTOALIAS_PATTERN_CACHE = 'autoalias';
+	const AUTO_AUTOALIAS_TERM_CACHE = 'autoalias-terms';
+	const AUTO_AUTOALIAS_TERM_PATTERN = '/\[\[/((?:(?!\]\]).)+)>((?:(?!\]\]).)+)\]\]/x';
+
 	var $forceignorepages = array();
 	var $auto;
 	var $auto_a; // alphabet only
@@ -18,20 +23,19 @@ class AutoAlias extends Inline
 
 	function __construct($start)
 	{
-		global $autoalias, $aliaspage, $cache;
+		global  $aliaspage, $cache;
 
 		parent::__construct($start);
 
-		if (! $autoalias || $this->page == $aliaspage){
+		if ($this->page == $aliaspage){
 			return;
-		}else{
-			list($auto, $auto_a, $forceignorepages) = $cache['wiki']->getItem(PKWK_AUTOALIAS_REGEX_CACHE);
-
-			$this->auto = $auto;
-			$this->auto_a = $auto_a;
-			$this->forceignorepages = $forceignorepages;
-			$this->aliases = array();
 		}
+		list($auto, $auto_a, $forceignorepages) = self::get_autoalias_pattern();
+
+		$this->auto = $auto;
+		$this->auto_a = $auto_a;
+		$this->forceignorepages = $forceignorepages;
+		$this->aliases = array();
 	}
 	function get_pattern()
 	{
@@ -55,11 +59,101 @@ class AutoAlias extends Inline
 	function toString()
 	{
 		$this->aliases = get_autoaliases($this->name);
-		if (! empty($this->aliases)) {
-			$link = '[[' . $this->name  . ']]';
-			return parent::make_link($link);
+		if (empty($this->aliases)) return;
+
+		$link = '[[' . $this->name  . ']]';
+		return InlineFactory::factory($link);
+	}
+	/**
+	 * Glossaryの正規表現パターンを生成
+	 * @return string
+	 */
+	private function get_autoalias_pattern(){
+		global $cache;
+		static $pattern;
+
+		if (! isset($pattern)) {
+			// 用語マッチパターンキャッシュを生成
+			if ($cache['wiki']->hasItem(self::AUTO_AUTOALIAS_PATTERN_CACHE)) {
+				$pattern = $cache['wiki']->getItem(self::AUTO_AUTOALIAS_PATTERN_CACHE);
+				$cache['wiki']->touchItem(self::AUTO_AUTOALIAS_PATTERN_CACHE);
+			}else{
+				global $WikiName, $autolink, $nowikiname;
+
+				$config = new \Config('AutoAlias');
+				$config->read();
+				$ignorepages	  = $config->get('IgnoreList');
+				$forceignorepages = $config->get('ForceIgnoreList');
+				unset($config);
+				$auto_pages = array_merge($ignorepages, $forceignorepages);
+
+				foreach (self::get_autoalias_dict() as $term=>$val){
+					if (preg_match('/^' . $WikiName . '$/', $term) ?
+						$nowikiname : mb_strlen($term) >= $autolink)
+						$auto_terms[] = $term;
+				}
+
+				if (empty($auto_terms)) {
+					$result = $result_a = $nowikiname ? '(?!)' : $WikiName;
+				} else {
+					$auto_terms = array_unique($auto_terms);
+					sort($auto_terms, SORT_STRING);
+
+					$auto_terms_a = array_values(preg_grep('/^[A-Z]+$/i', $auto_terms));
+					$auto_terms   = array_values(array_diff($auto_terms,  $auto_terms_a));
+
+					$result   = Trie::regex($auto_terms);
+					$result_a = Trie::regex($auto_terms_a);
+				}
+				$pattern = array($result, $result_a);
+				$cache['wiki']->setItem(self::AUTO_AUTOALIAS_PATTERN_CACHE, $pattern);
+			}
 		}
-		return '';
+		return $pattern;
+	}
+	/**
+	 * AutoAliasNameページから用語と内容の辞書キャッシュを作成
+	 * @param string $term 用語
+	 * @param boolean $expect 要約するか（title属性の中に入れる文字列として出力するか）
+	 * @return string
+	 */
+	function get_autoalias_dict($word = '')
+	{
+		global $cache, $aliaspage, $autoalias_max_words;
+		static $pairs = array();
+		if (! isset($pairs)) {
+			$pairs = array();
+			$wiki = FileFactory::Wiki($aliaspage);
+			$term_cache_meta = $cache['wiki']->getMetadata(self::AUTO_AUTOALIAS_TERM_CACHE);
+			if ($cache['wiki']->hasItem(self::AUTO_AUTOALIAS_TERM_CACHE) &&
+				$term_cache_meta['mtime'] > $wiki->getTime()) {
+				$pairs = $cache['wiki']->getItem(self::AUTO_AUTOALIAS_TERM_CACHE);
+			}else{
+				$matches = array();
+				$count = 0;
+				$max   = max($autoalias_max_words, 0);
+				if (preg_match_all(self::AUTO_AUTOALIAS_TERM_PATTERN, $wiki->source(), $matches, PREG_SET_ORDER)) {
+					foreach($matches as $key => $value) {
+						if ($count == $max) break;
+						$name = trim($value[1]);
+						if (! isset($pairs[$name])) {
+							$paris[$name] = array();
+						}
+						++$count;
+						$pairs[$name][] = trim($value[2]);
+						unset($matches[$key]);
+					}
+				}
+				foreach (array_keys($pairs) as $name) {
+					$pairs[$name] = array_unique($pairs[$name]);
+				}
+				$cache['wiki']->setItem(self::AUTO_AUTOALIAS_TERM_CACHE, $pairs);
+				$cache['wiki']->removeItem(self::AUTO_AUTOALIAS_PATTERN_CACHE);
+			}
+		}
+		if (empty($term)) return $pairs;
+		if (!isset($pairs[$term])) return null;
+		return $pairs[$term];
 	}
 }
 

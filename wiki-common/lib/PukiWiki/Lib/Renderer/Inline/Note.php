@@ -1,11 +1,13 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: Note.php,v 1.0.0 2012/12/18 11:00:00 Logue Exp $
+// $Id: Note.php,v 1.0.0 2013/01/05 15:46:00 Logue Exp $
 // Copyright (C)
-//   2012 PukiWiki Advance Developers Team
+//   2012-2013 PukiWiki Advance Developers Team
 // License: GPL v2 or (at your option) any later version
 
 namespace PukiWiki\Lib\Renderer\Inline;
+use PukiWiki\Lib\Renderer\InlineFactory;
+use PukiWiki\Lib\Router;
 
 // Footnotes
 class Note extends Inline
@@ -17,7 +19,7 @@ class Note extends Inline
 
 	function get_pattern()
 	{
-		return 
+		return
 			'\(\('.
 			 '((?:(?R)|(?!\)\)).)*)'.	// (1) note body
 			'\)\)';
@@ -45,7 +47,7 @@ class Note extends Inline
 		}
 
 		$id   = ++$note_id;
-		$note = make_link($body);
+		$note = InlineFactory::factory($body);
 		$page = isset($vars['page']) ? rawurlencode($vars['page']) : '';
 
 		// Footnote

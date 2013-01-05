@@ -1,12 +1,12 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: Plugin.php,v 1.0.0 2012/12/18 11:00:00 Logue Exp $
+// $Id: Plugin.php,v 1.0.0 2013/01/05 15:46:00 Logue Exp $
 // Copyright (C)
-//   2012 PukiWiki Advance Developers Team
+//   2012-2013 PukiWiki Advance Developers Team
 // License: GPL v2 or (at your option) any later version
 
 namespace PukiWiki\Lib\Renderer\Inline;
-
+use PukiWiki\Lib\Renderer\InlineFactory;
 // Inline plugins
 class Plugin extends Inline
 {
@@ -20,7 +20,7 @@ class Plugin extends Inline
 
 	function get_pattern()
 	{
-		$this->pattern = 
+		$this->pattern =
 			'&'.
 			 '('.        // (1) plain
 			  '(\w+)'.   // (2) plugin name
@@ -59,7 +59,7 @@ class Plugin extends Inline
 
 	function toString()
 	{
-		$body = (empty($this->body)) ? null : make_link($this->body);	// FIXME
+		$body = (empty($this->body)) ? null : InlineFactory::factory($this->body);
 		$str = FALSE;
 
 		// Try to call the plugin
@@ -71,7 +71,7 @@ class Plugin extends Inline
 		} else {
 			// No such plugin, or Failed
 			$body = (($body == '') ? '' : '{' . $body . '}') . ';';
-			return make_line_rules(htmlsc('&' . $this->plain) . $body);
+			return parent::make_line_rules(htmlsc('&' . $this->plain) . $body);
 		}
 	}
 }

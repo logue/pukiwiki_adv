@@ -225,7 +225,7 @@ class WikiFile extends File{
 		// Create and write diff
 		$postdata = self::make_str_rules($str);
 		$oldpostdata = self::has() ? self::get(TRUE) : '';
-		$diffdata    = do_diff($oldpostdata, $postdata);
+//		$diffdata    = do_diff($oldpostdata, $postdata);
 
 		$links = array();
 		// ページ内のリンクを取得（TrackBackと、スパムチェックで使用）
@@ -292,12 +292,13 @@ class WikiFile extends File{
 		}
 
 		// add client info to diff
-		$diffdata .= '// IP:"'. REMOTE_ADDR . '" TIME:"' . $now . '" REFERER:"' . $referer . '" USER_AGENT:"' . $user_agent. "\n";
+		//$diffdata .= '// IP:"'. REMOTE_ADDR . '" TIME:"' . $now . '" REFERER:"' . $referer . '" USER_AGENT:"' . $user_agent. "\n";
 
 
 		// Update data
 		$difffile = new DiffFile($this->page);
-		$difffile->set($diffdata);
+		$difffile->set($postdata);
+/*
 		unset($oldpostdata, $diffdata, $difffile);
 
 		// Create backup
@@ -320,6 +321,7 @@ class WikiFile extends File{
 
 		// Create wiki text
 		parent::set($postdata);
+*/
 	}
 	/**
 	 * 追加されたリンクを取得

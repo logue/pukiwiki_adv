@@ -22,17 +22,12 @@ class File{
 	 * @param string $filename ファイル名（パスも含めること）
 	 */
 	public function __construct($filename) {
+		static $fileinfo;
 		if (empty($filename)){
 			throw new \Exception('File name is missing!');
 		}
 		$this->filename = $filename;
 		$this->info = new \SplFileInfo($this->filename);
-	}
-	/**
-	 * デストラクタ
-	 */
-	public function __destruct() {
-		unset($this->info);
 	}
 	/**
 	 * ファイルが存在するか
@@ -49,7 +44,7 @@ class File{
 	public function head($count = 1, $join = false){
 		// Read top N lines as an array
 		// (Use PHP file() function if you want to get ALL lines)
-		if ( !$this->has() ) return false;
+		if ( !self::has() ) return false;
 		if ( !$this->info->isReadable() )
 			Utility::die_message(sprintf('File <var>%s</var> is not readable.', Utility::htmlsc($this->filename)));
 
@@ -122,17 +117,24 @@ class File{
 
 		// 書き込むものがなかった場合、削除とみなす
 		if (empty($str)) return $this->remove();
-		// 配列だった場合、配列を改行にする。
-		if (is_array($str)) $str = join("\n", $str);
-		// 記入するデーターの整形
-		$str = rtrim(preg_replace('/' . "\r" . '/', '', $str)) . "\n";
+
+		$data = '';
+		if (is_array($str)){
+			foreach ($str as $line){
+				// 余計なデーターを削除しつつ配列を改行にする
+				$data .= rtrim($line) . "\n";
+			}
+		}else{
+			// 記入するデーターの整形
+			$data = rtrim(preg_replace('/' . "\r" . '/', '', $str));
+		}
 
 		// ファイルを読み込み
 		$file = $this->info->openFile('w');
 		// ロック
 		$file->flock(LOCK_EX);
 		// 書き込む
-		$ret = $file->fwrite($str);
+		$ret = $file->fwrite($data);
 		// アンロック
 		$file->flock(LOCK_UN);
 		// 念のためオブジェクトを開放

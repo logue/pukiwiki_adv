@@ -13,11 +13,8 @@ class InlineFactory{
 	public static function factory($string, $page = ''){
 		global $vars;
 		static $converter;
-
-		if (! isset($converter)){ $converter = new InlineConverter(); }
-
+		if (!isset($converter)) $converter = new InlineConverter();
 		$clone = $converter->get_clone($converter);
-
 		return $clone->convert($string, !empty($page) ? $page : $vars['page']);
 	}
 }

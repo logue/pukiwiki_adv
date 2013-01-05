@@ -8,6 +8,8 @@
 
 namespace PukiWiki\Lib\File;
 use PukiWiki\Lib\File\File;
+use PukiWiki\Lib\Diff;
+use PukiWiki\Lib\Router;
 
 class DiffFile extends File{
 	/**#@+
@@ -36,14 +38,18 @@ class DiffFile extends File{
 	 * @global boolean $notify_diff_only
 	 * @param string $str
 	 */
-	public function set($str){
+	public function set($postdata){
 		global $notify, $notify_diff_only;
+		// 差分を作成
+		$diff = new Diff(FileFactory::Wiki($this->page)->source(true), explode("\n",$postdata));
+		$str = $diff->getDiff();
+
 		if ($notify){
 			if ($notify_diff_only) $str = preg_replace('/^[^-+].*\n/m', '', $str);
 			$summary = array(
 				'ACTION'		=> 'Page update',
 				'PAGE'			=> & $page,
-				'URI'			=> get_script_uri() . '?' . rawurlencode($page),
+				'URI'			=> Router::get_script_uri() . '?' . rawurlencode($page),
 				'USER_AGENT'	=> TRUE,
 				'REMOTE_ADDR'	=> TRUE
 			);

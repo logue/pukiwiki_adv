@@ -1,8 +1,27 @@
 namespace PukiWiki\Lib\File;
 
 class FileUtility{
-	public static function get_exsists($dir = DATA_DIR, $pattern = '/^((?:[0-9A-F]{2})+)\.txt$/', $force = false){
-		$cache_name = self::EXSISTS_CACHE_PREFIX.md5($dir);
+	const EXSISTS_CACHE_PREFIX = 'exsists-';
+	/**
+	 * ディレクトリ内のファイルの存在確認
+	 */
+	public static function get_exsists($dir = DATA_DIR, $force = false){
+		switch($dir){
+			case DATA_DIR:
+				$func = 'wiki';
+				$pattern = '/^((?:[0-9A-F]{2})+)\.txt$/';
+				break;
+			case COUNTER_DIR:
+				$func = 'counter';
+				$pattern = '/^((?:[0-9A-F]{2})+)\.count$/';
+				break;
+			case BACKUP_DIR:
+				$func = 'backup';
+				$pattern = '/^((?:[0-9A-F]{2})+)\.[txt|gz|bz2|lzf]$/';
+				break;
+			default: $func = encode($dir.$ext);
+		}
+		$cache_name = self::EXSISTS_CACHE_PREFIX.$func;
 		if ($force){
 			$this->cache->removeItem($cache_name);
 		}else if ($this->cache->hasItem($cache_name)){
