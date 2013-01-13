@@ -520,20 +520,7 @@ EOD;
 
 // make related() moved to related.inc.php
 
-// User-defined rules (convert without replacing source)
-function make_line_rules($str){
-	global $line_rules;
-	static $pattern, $replace;
 
-	if (! isset($pattern)) {
-		$pattern = array_map(create_function('$a',
-			'return \'/\' . $a . \'/\';'), array_keys($line_rules));
-		$replace = array_values($line_rules);
-		unset($line_rules);
-	}
-
-	return preg_replace($pattern, $replace, $str);
-}
 
 // Remove all HTML tags(or just anchor tags), and WikiName-speific decorations
 function strip_htmltag($str, $all = TRUE)

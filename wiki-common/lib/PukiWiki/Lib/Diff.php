@@ -5,6 +5,7 @@
 // based on https://github.com/cubicdaiya/onp
 
 namespace PukiWiki\Lib;
+use PukiWiki\Lib\Utility;
 
 /**
  * The algorithm implemented here is based on "An O(NP) Sequence Comparison Algorithm"
@@ -29,16 +30,16 @@ class Diff{
 	 * @param array $b 新しいデーター
 	 */
 	public function __construct(/* array */$a, /* array */$b){
-		$this->a = $a;
-		$this->b = $b;
-		$this->m = count($a);
-		$this->n = count($b);
+		$this->a = is_array($a) ? $a : explode("\n", $a);
+		$this->b = is_array($a) ? $b : explode("\n", $b);
+		$this->m = count($this->a);
+		$this->n = count($this->b);
 
 		if ($this->m >= $this->n){
-			$this->a = $b;
-			$this->b = $a;
-			$this->m = count($b);
-			$this->n = count($a);
+			$this->a = is_array($b) ? $b : explode("\n", $b);
+			$this->b = is_array($a) ? $a : explode("\n", $a);
+			$this->m = count($this->b);
+			$this->n = count($this->a);
 			$this->reverse = true;
 		}
 		self::compose();
@@ -142,6 +143,23 @@ class Diff{
 			$ret[$k] = $v[0] . $v[1];
 		}
 		return $ret;
+	}
+	public function getHtml(){
+		foreach ($this->ses as $k=>$v){
+			$str = Utility::htmlsc($v[1]);
+			switch($v[0]){
+				case self::SES_ADD:
+					$ret[] = '+<ins class="diff_added">' . $str . '</ins>';
+					break;
+				case self::SES_DELETE:
+					$ret[] = '-<del class="diff_removed">' . $str . '</del>';
+					break;
+				default:
+					$ret[] = ' ' . $str;
+					break;
+			}
+		}
+		return '<pre class="sh" data-brush="diff">' . "\n" . join("\n", $ret) . '</pre>' . "\n";
 	}
 	public function __toString(){
 		return join("\n",self::getDiff());

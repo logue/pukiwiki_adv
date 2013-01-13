@@ -124,30 +124,34 @@ class Glossary extends Inline
 		static $pairs;
 		
 		$wiki = FileFactory::Wiki($glossarypage);
-		$term_cache_meta = $cache['wiki']->getMetadata(self::AUTO_GLOSSARY_TERM_CACHE);
-		if ($cache['wiki']->hasItem(self::AUTO_GLOSSARY_TERM_CACHE) && $term_cache_meta['mtime'] > $wiki->getTime()) {
-			// キャッシュが存在し、Wikiの日時より新しい場合
-			//（Glossaryページの更新と同期しなければならないため、ここの条件分岐の処理が重い・・・。）
-			if (! isset($pairs)) {
-				// メモリに辞書が呼び出されてない場合キャッシュから呼び出す
-				$pairs = $cache['wiki']->getItem(self::AUTO_GLOSSARY_TERM_CACHE);
-			}
-			// キャッシュの有効期限を伸ばす
-			$cache['wiki']->touchItem(self::AUTO_GLOSSARY_TERM_CACHE);
-		}else{
-			// 辞書キャッシュが存在しない場合自動生成
-			$matches = $pairs = array();
-			$count = 0;
-			foreach ($wiki->source() as $line) {
-				if (preg_match(self::AUTO_GLOSSARY_TERM_PATTERN, $line, $matches)) {
-					$name = trim($matches[1]);
-					$pairs[$name] = trim($matches[2]);
+		if ($wiki->has()){
+			$term_cache_meta = $cache['wiki']->getMetadata(self::AUTO_GLOSSARY_TERM_CACHE);
+			if ($cache['wiki']->hasItem(self::AUTO_GLOSSARY_TERM_CACHE) && $term_cache_meta['mtime'] > $wiki->getTime()) {
+				// キャッシュが存在し、Wikiの日時より新しい場合
+				//（Glossaryページの更新と同期しなければならないため、ここの条件分岐の処理が重い・・・。）
+				if (! isset($pairs)) {
+					// メモリに辞書が呼び出されてない場合キャッシュから呼び出す
+					$pairs = $cache['wiki']->getItem(self::AUTO_GLOSSARY_TERM_CACHE);
 				}
+				// キャッシュの有効期限を伸ばす
+				$cache['wiki']->touchItem(self::AUTO_GLOSSARY_TERM_CACHE);
+			}else{
+				// 辞書キャッシュが存在しない場合自動生成
+				$matches = $pairs = array();
+				$count = 0;
+				foreach ($wiki->source() as $line) {
+					if (preg_match(self::AUTO_GLOSSARY_TERM_PATTERN, $line, $matches)) {
+						$name = trim($matches[1]);
+						$pairs[$name] = trim($matches[2]);
+					}
+				}
+				// 辞書キャッシュを保存
+				$cache['wiki']->setItem(self::AUTO_GLOSSARY_TERM_CACHE, $pairs);
+				// 正規表現パターンキャッシュを削除
+				$cache['wiki']->removeItem(self::AUTO_GLOSSARY_PATTERN_CACHE);
 			}
-			// 辞書キャッシュを保存
-			$cache['wiki']->setItem(self::AUTO_GLOSSARY_TERM_CACHE, $pairs);
-			// 正規表現パターンキャッシュを削除
-			$cache['wiki']->removeItem(self::AUTO_GLOSSARY_PATTERN_CACHE);
+		}else{
+			$term = array();
 		}
 		if (empty($term)) return $pairs;
 		if (!isset($pairs[$term])) return null;

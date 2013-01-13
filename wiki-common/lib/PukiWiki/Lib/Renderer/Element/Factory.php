@@ -49,7 +49,7 @@ class Factory{
 	private static function & dList($root, $text){
 		$out = explode('|', ltrim($text), 2);
 		if (count($out) < 2) {
-			$ret = $this->inline($text);
+			$ret = self::inline($text);
 		} else {
 			$ret = new DList($out);
 		}
@@ -58,7 +58,7 @@ class Factory{
 	private static function & table(& $root, $text)
 	{
 		if (! preg_match('/^\|(.+)\|([hHfFcC]?)$/', $text, $out)) {
-			$ret = $this->inline($text);
+			$ret = self::inline($text);
 		} else {
 			$ret = new Table($out);
 		}
@@ -66,7 +66,7 @@ class Factory{
 	}
 	private static function & yTable(& $root, $text){
 		if ($text == ',') {
-			$ret = $this->inline($text);
+			$ret = self::inline($text);
 		} else {
 			$ret = new YTable(explode(',', substr($text, 1)));
 		}

@@ -10,8 +10,12 @@
 // License: GPL v2 or (at your option) any later version
 //
 // Backup plugin
-
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Auth\AuthUtility;
+use PukiWiki\Lib\Router;
+use PukiWiki\Lib\File\WikiFile;
 use PukiWiki\Lib\File\BackupFile;
+use PukiWiki\Lib\Diff;
 
 // Prohibit rendering old wiki texts (suppresses load, transfer rate, and security risk)
 // define('PLUGIN_BACKUP_DISABLE_BACKUP_RENDERING', PKWK_SAFE_MODE || PKWK_OPTIMISE);
@@ -83,7 +87,8 @@ function plugin_backup_action()
 	$action = isset($vars['action']) ? $vars['action'] : null;
 	$s_age  = ( isset($vars['age']) && is_numeric($vars['age']) ) ? $vars['age'] : 0;
 
-	$is_page = is_page($page);
+	$wiki = new WikiFile($page);
+	$is_page = $wiki->has();
 	$s_page = htmlsc($page);
 	$r_page = rawurlencode($page);
 
@@ -100,7 +105,8 @@ function plugin_backup_action()
 	if (!$page) {
 		return array('msg'=>$_backup_messages['title_backuplist'], 'body'=>plugin_backup_get_list_all());
 	}
-	check_readable($page, true, true);
+	
+	$wiki->check_readable();
 
 	if ($s_age <= 0) {
 		return array(
@@ -111,10 +117,10 @@ function plugin_backup_action()
 	$body .= '<div class="ui-widget ui-widget-content ui-corner-all">';
 	$body .= plugin_backup_get_list($page);
 	$body .= '</div>'."\n";
-
+	
 	if ($action){
 		$data = join("\n", $backups[$s_age]['data']);
-		auth::is_role_page($data);
+		Auth::is_role_page($data);
 		switch ($action){
 			case 'delete' :
 				/**
@@ -137,20 +143,21 @@ function plugin_backup_action()
 				if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
 				$title = & $_backup_messages['title_backupdiff'];
 				$past_data = ($s_age > 1) ? join("\n", $backups[$s_age - 1]['data']) : '';
-				auth::is_role_page($past_data);
-				$body .= plugin_backup_diff(do_diff($past_data, $data));
+
+				Auth::is_role_page($past_data);
+				$body .= plugin_backup_diff($past_data, $data);
 			break;
 			case 'nowdiff':
 				if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
 				$title = & $_backup_messages['title_backupnowdiff'];
 				$now_data = get_source($page, TRUE, TRUE);
-				auth::is_role_page($now_data);
-				$body .= plugin_backup_diff(do_diff($data, $now_data));
+				Auth::is_role_page($now_data);
+				$body .= plugin_backup_diff($data, $now_data);
 			break;
 			case 'visualdiff':
 				$old = join('', $backups[$s_age]['data']);
 				$now_data = get_source($page, TRUE, TRUE);
-				auth::is_role_page($now_data);
+				Auth::is_role_page($now_data);
 				// <ins> <del>タグを使う形式に変更。
 				$source = do_diff($data, $now_data);
 
@@ -168,7 +175,7 @@ function plugin_backup_action()
 				$title = & $_backup_messages['title_backupnowdiff'];
 			break;
 			case 'source':
-				if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
+				if (Auth::check_role('safemode')) die_message( $_string['prohibit'] );
 				$title = & $_backup_messages['title_backupsource'];
 				$body .= '<pre class="sh" data-blush="plain">' . htmlsc($data) . '</pre>' . "\n";
 			break;
@@ -203,11 +210,12 @@ function plugin_backup_delete($page, $ages = array())
 	global $vars;
 	global $_backup_messages;
 
-	if (! _backup_file_exists($page))
+	$backup = new BackupFile($page);
+	if (! $backup->has())
 		return array('msg'=>$_backup_messages['title_pagebackuplist'], 'body'=>plugin_backup_get_list($page)); // Say "is not found"
 
-	if (! auth::check_role('role_adm_contents')) {
-		_backup_delete($page);
+	if (! Auth::check_role('role_adm_contents')) {
+		$backup->remove();
 		return array(
 			'msg'  => $_backup_messages['title_backup_delete'],
 			'body' => str_replace('$1', make_pagelink($page), $_backup_messages['msg_backup_deleted'])
@@ -218,7 +226,7 @@ function plugin_backup_delete($page, $ages = array())
 	$invalied = '';
 
 	if (isset($vars['pass'])) {
-		if (pkwk_login($vars['pass'])) {
+		if (AuthUtility::login($vars['pass'])) {
 			//_backup_delete($page, $ages);
 			return array(
 				'msg'  => $_backup_messages['title_backup_delete'],
@@ -251,17 +259,17 @@ EOD;
 	return	array('msg'=>$_backup_messages['title_backup_delete'], 'body'=>$body);
 }
 
-function plugin_backup_diff($str)
+function plugin_backup_diff($a, $b)
 {
 	global $_backup_messages;
 	$ul = <<<EOD
-<ul>
+<ul class="no-js">
 	<li>{$_backup_messages['msg_diff_add']}</li>
 	<li>{$_backup_messages['msg_diff_del']}</li>
 </ul>
 EOD;
-
-	return $ul . '<pre>' . diff_style_to_css(htmlsc($str)) . '</pre>' . "\n";
+	$diff = new Diff($a, $b);
+	return $ul . $diff->getHtml() . "\n";
 }
 
 function plugin_backup_get_list($page)
@@ -481,21 +489,23 @@ function plugin_backup_rollback($page, $age)
 	global $vars;
 	global $_backup_messages;
 
-	$passvalid = isset($vars['pass']) ? pkwk_login($vars['pass']) : FALSE;
+	$passvalid = isset($vars['pass']) ? AuthUtility::login($vars['pass']) : FALSE;
 
 	if ($passvalid) {
-		$backup = new Backup($page);
+		$backup = new BackupFile($page);
 		$backups = $backup->getBackup($age);
 		if( empty($backups) )
 		{
 			die();	// Do nothing
 		}
+		pr($backups);
+		die();
 
-		// ファイルの更新日時をバックアップの時点にする
-		pkwk_touch_file(get_filename($page), $backups['time']);
+		$wiki = new WikiFile($page);
 		// バックアップからロールバック（タイムスタンプを更新しない状態で）
-		page_write($page, implode("\n", $backups['data']), true);
-
+		$wiki->set(implode("\n", $backups['data']));
+		// ファイルの更新日時をバックアップの時点にする
+		$wiki->setTime($backups['time']);
 
 		//put_lastmodified();
 
@@ -504,7 +514,7 @@ function plugin_backup_rollback($page, $age)
 			'body' => str_replace('$1', make_pagelink($page) . '(No. ' . $age . ')', $_backup_messages['msg_backup_rollbacked'])
 		);
 	}else{
-		$script = get_script_uri();
+		$script = Router::get_script_uri();
 		$s_page = htmlsc($page);
 		$body = <<<EOD
 <fieldset>

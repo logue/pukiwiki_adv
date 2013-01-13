@@ -8,13 +8,13 @@
 // Hyperlink-related functions
 namespace PukiWiki\Lib\Renderer\Inline;
 use PukiWiki\Lib\Renderer\InlineFactory;
-
+use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\Renderer\Trie;
 // AutoAlias
 class AutoAlias extends Inline
 {
 	const AUTO_AUTOALIAS_PATTERN_CACHE = 'autoalias';
 	const AUTO_AUTOALIAS_TERM_CACHE = 'autoalias-terms';
-	const AUTO_AUTOALIAS_TERM_PATTERN = '/\[\[/((?:(?!\]\]).)+)>((?:(?!\]\]).)+)\]\]/x';
 
 	var $forceignorepages = array();
 	var $auto;
@@ -23,7 +23,7 @@ class AutoAlias extends Inline
 
 	function __construct($start)
 	{
-		global  $aliaspage, $cache;
+		global  $aliaspage;
 
 		parent::__construct($start);
 
@@ -65,7 +65,7 @@ class AutoAlias extends Inline
 		return InlineFactory::factory($link);
 	}
 	/**
-	 * Glossaryの正規表現パターンを生成
+	 * AutoAliasの正規表現パターンを生成
 	 * @return string
 	 */
 	private function get_autoalias_pattern(){
@@ -105,7 +105,7 @@ class AutoAlias extends Inline
 					$result   = Trie::regex($auto_terms);
 					$result_a = Trie::regex($auto_terms_a);
 				}
-				$pattern = array($result, $result_a);
+				$pattern = array($result, $result_a, $forceignorepages);
 				$cache['wiki']->setItem(self::AUTO_AUTOALIAS_PATTERN_CACHE, $pattern);
 			}
 		}
@@ -117,38 +117,48 @@ class AutoAlias extends Inline
 	 * @param boolean $expect 要約するか（title属性の中に入れる文字列として出力するか）
 	 * @return string
 	 */
-	function get_autoalias_dict($word = '')
+	public static function get_autoalias_dict($word = '')
 	{
 		global $cache, $aliaspage, $autoalias_max_words;
-		static $pairs = array();
+		static $pairs;
+
 		if (! isset($pairs)) {
-			$pairs = array();
+			
 			$wiki = FileFactory::Wiki($aliaspage);
-			$term_cache_meta = $cache['wiki']->getMetadata(self::AUTO_AUTOALIAS_TERM_CACHE);
-			if ($cache['wiki']->hasItem(self::AUTO_AUTOALIAS_TERM_CACHE) &&
-				$term_cache_meta['mtime'] > $wiki->getTime()) {
-				$pairs = $cache['wiki']->getItem(self::AUTO_AUTOALIAS_TERM_CACHE);
-			}else{
-				$matches = array();
-				$count = 0;
-				$max   = max($autoalias_max_words, 0);
-				if (preg_match_all(self::AUTO_AUTOALIAS_TERM_PATTERN, $wiki->source(), $matches, PREG_SET_ORDER)) {
-					foreach($matches as $key => $value) {
-						if ($count == $max) break;
-						$name = trim($value[1]);
-						if (! isset($pairs[$name])) {
-							$paris[$name] = array();
+			if ($wiki->has()){
+				$pairs = array();
+				$pattern =
+					'\[\['.                # open bracket
+					'((?:(?!\]\]).)+)>'.   # (1) alias name
+					'((?:(?!\]\]).)+)'.    # (2) alias link
+					'\]\]';                # close bracket
+
+				$term_cache_meta = $cache['wiki']->getMetadata(self::AUTO_AUTOALIAS_TERM_CACHE);
+				if ($cache['wiki']->hasItem(self::AUTO_AUTOALIAS_TERM_CACHE) &&
+					$term_cache_meta['mtime'] > $wiki->getTime()) {
+					$pairs = $cache['wiki']->getItem(self::AUTO_AUTOALIAS_TERM_CACHE);
+				}else{
+					$matches = array();
+					$count = 0;
+					$max   = max($autoalias_max_words, 0);
+					if (preg_match_all('/' . $pattern . '/x', $wiki->get(true), $matches, PREG_SET_ORDER)) {
+						foreach($matches as $key => $value) {
+							if ($count == $max) break;
+							$name = trim($value[1]);
+							if (! isset($pairs[$name])) {
+								$paris[$name] = array();
+							}
+							++$count;
+							$pairs[$name][] = trim($value[2]);
+							unset($matches[$key]);
 						}
-						++$count;
-						$pairs[$name][] = trim($value[2]);
-						unset($matches[$key]);
 					}
+					foreach (array_keys($pairs) as $name) {
+						$pairs[$name] = array_unique($pairs[$name]);
+					}
+					$cache['wiki']->setItem(self::AUTO_AUTOALIAS_TERM_CACHE, $pairs);
+					$cache['wiki']->removeItem(self::AUTO_AUTOALIAS_PATTERN_CACHE);
 				}
-				foreach (array_keys($pairs) as $name) {
-					$pairs[$name] = array_unique($pairs[$name]);
-				}
-				$cache['wiki']->setItem(self::AUTO_AUTOALIAS_TERM_CACHE, $pairs);
-				$cache['wiki']->removeItem(self::AUTO_AUTOALIAS_PATTERN_CACHE);
 			}
 		}
 		if (empty($term)) return $pairs;

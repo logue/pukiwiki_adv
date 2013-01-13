@@ -66,9 +66,9 @@ function update_cache($page = '', $force = false){
 	}
 
 	// Update autolink
-	if ( $autolink !== 0 ) {
-		PukiWiki\Lib\Renderer\AutoLinkPattern::get_pattern(-1,true);
-	}
+//	if ( $autolink !== 0 ) {
+//		PukiWiki\Lib\Renderer\AutoLinkPattern::get_pattern(-1,true);
+//	}
 
 	// Update rel and ref cache
 	$links = new PukiWiki\Lib\Relational($page);

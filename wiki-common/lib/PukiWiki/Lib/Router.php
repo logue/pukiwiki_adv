@@ -119,11 +119,12 @@ class Router{
 	// Get absolute-URI of this script
 	public static function get_script_uri($path='')
 	{
+	//	$uri = basename(__FILE__);
 		global $absolute_uri, $script_directory_index;
 
-		if ($absolute_uri === 1) return get_script_absuri();
-		$uri = get_baseuri($path);
-		if (! isset($script_directory_index)) $uri .= init();
+		if ($absolute_uri === 1) return self::get_script_absuri();
+		$uri = self::get_baseuri($path);
+		if (! isset($script_directory_index)) $uri .= self::init();
 		return $uri;
 	}
 

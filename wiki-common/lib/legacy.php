@@ -423,7 +423,7 @@ function is_page($page, $clearcache = FALSE)
 {
 	if (empty($page)) return false;
 	return FileFactory::Wiki($page)->has();
-	
+
 }
 
 function is_editable($page)
@@ -610,6 +610,23 @@ function in_the_net($networks = array(), $host = '')
 
 	return FALSE; // Not found
 }
+/**
+ * html.php
+ */
+function make_line_rules($str){
+	global $line_rules;
+	static $pattern, $replace;
+
+	if (! isset($pattern)) {
+		$pattern = array_map(create_function('$a',
+			'return \'/\' . $a . \'/\';'), array_keys($line_rules));
+		$replace = array_values($line_rules);
+		unset($line_rules);
+	}
+
+	return preg_replace($pattern, $replace, $str);
+}
+
 
 /**
  * links.php
@@ -639,6 +656,7 @@ function links_update($page)
  * make_link.php
  */
 use PukiWiki\Lib\Renderer\InlineConverter;
+use PukiWiki\Lib\Renderer\InlineFactory;
 // Hyperlink decoration
 function make_link($string, $page = '')
 {
@@ -649,14 +667,15 @@ function make_link($string, $page = '')
 
 	$clone = $converter->get_clone($converter);
 
-	return $clone->convert($string, ($page !== '') ? $page : $vars['page']);
+	return $clone->convert($string, !empty($page) ? $page : $vars['page']);
+
 }
 
 
 // Make hyperlink for the page
 function make_pagelink($page, $alias = '', $anchor = '', $refer = '', $isautolink = FALSE)
 {
-	return Inline::make_pagelink($page, $alias = '', $anchor = '', $refer = '', $isautolink = FALSE);
+	return Inline::make_pagelink($page, $alias, $anchor, $refer, $isautolink);
 }
 
 // Resolve relative / (Unix-like)absolute path of the page

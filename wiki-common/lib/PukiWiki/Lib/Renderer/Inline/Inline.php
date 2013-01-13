@@ -132,7 +132,7 @@ abstract class Inline
 		}
 
 		$s_page = htmlsc($page);
-		$s_alias = empty($alias) ? $s_page : $alias;
+		$s_alias = htmlsc(empty($alias) ? $page : $alias);
 
 		if ($isautolink || $wiki->has()) {
 			// ページが存在する場合

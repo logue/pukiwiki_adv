@@ -9,6 +9,10 @@
 //
 // Edit plugin (cmd=edit)
 // Plus! NOTE:(policy)not merge official cvs(1.40->1.41) See Question/181
+use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\File\WikiFile;
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Router;
 
 // Remove #freeze written by hand
 define('PLUGIN_EDIT_FREEZE_REGEX', '/^(?:#freeze(?!\w)\s*)+/im');
@@ -22,7 +26,7 @@ function plugin_edit_action()
 	global $vars, $load_template_func, $_string;
 
 	$page = isset($vars['page']) ? $vars['page'] : null;
-	$wiki = new PukiWiki\Lib\File\WikiFile($page);
+	$wiki = new WikiFile($page);
 
 	// if (PKWK_READONLY) die_message(  sprintf($_string['error_prohibit'], 'PKWK_READONLY') );
 	if (auth::check_role('readonly')) die_message( $_string['prohibit'] );
@@ -35,13 +39,13 @@ function plugin_edit_action()
 		return plugin_edit_realview();
 	}
 
-	if (!$wiki->is_editable()){
+	if (!$wiki->is_editable(true)){
 		die_message( $_string['not_editable'] );
 	}
 
 	//check_editable($page, true, true);
 
-	if (!$wiki->has() && auth::is_check_role(PKWK_CREATE_PAGE)) {
+	if (!$wiki->has() && Auth::is_check_role(PKWK_CREATE_PAGE)) {
 		die_message( sprintf($_string['error_prohibit'], 'PKWK_CREATE_PAGE') );
 	}
 
@@ -60,7 +64,7 @@ function plugin_edit_action()
 	$source = $wiki->source();
 	auth::is_role_page($source);
 
-	$postdata = $vars['original'] = join('', $source);
+	$postdata = $vars['original'] = join("\n", $source);
 	if (!empty($vars['id']))
 	{
 		$postdata = plugin_edit_parts($vars['id'],$source);
@@ -86,7 +90,7 @@ function plugin_edit_action()
 			// Filename too long
 			return array('msg'=>$_title_edit, 'body'=>$msg);
 		}else{
-			$postdata = auto_template($page);
+			$postdata = $wiki->auto_template();
 		}
 	}
 
@@ -138,9 +142,9 @@ function plugin_edit_preview()
 	$page = isset($vars['page']) ? $vars['page'] : '';
 
 	// Loading template
-	if (isset($vars['template_page']) && is_page($vars['template_page'])) {
+	if (isset($vars['template_page']) && FileFactory::Wiki($vars['template_page'])->is_valied()) {
 
-		$vars['msg'] = join('', get_source($vars['template_page']));
+		$vars['msg'] = join('', FileFactory::Wiki($vars['template_page'])->source());
 
 		// Cut fixed anchors
 		$vars['msg'] = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/m', '$1$2', $vars['msg']);
@@ -269,8 +273,8 @@ function plugin_edit_write()
 	$retvars = array();
 
 	// Collision Detection
-	$oldpagesrc = get_source($page, TRUE, TRUE);
-	$oldpagemd5 = md5($oldpagesrc);
+	$oldpagesrc = FileFactory::Wiki($page)->source();
+	$oldpagemd5 = FileFactory::Wiki($page)->digest();
 
 	if ($digest !== $oldpagemd5) {
 		$vars['digest'] = $oldpagemd5; // Reset
@@ -293,8 +297,8 @@ function plugin_edit_write()
 	if ($add) {
 		// Compat: add plugin and adding contents
 		$postdata = (isset($post['add_top']) && $post['add_top'])
-			? $msg . "\n\n" . get_source($page, TRUE, TRUE)
-			: get_source($page, TRUE, TRUE) . "\n\n" . $msg;
+			? $msg . "\n\n" . FileFactory::Wiki($page)->source()
+			: FileFactory::Wiki($page)->source() . "\n\n" . $msg;
 	} else {
 		// Edit or Remove
 		$postdata = & $msg;
@@ -302,7 +306,7 @@ function plugin_edit_write()
 
 	// NULL POSTING, OR removing existing page
 	if (empty($postdata)) {
-		page_write($page, $postdata);
+		FileFactory::Wiki($page)->set($postdata);
 		$retvars['msg'] = $_title_deleted;
 		$retvars['body'] = str_replace('$1', htmlsc($page), $_title_deleted);
 		if ($trackback) tb_delete($page);
@@ -354,18 +358,14 @@ function plugin_edit_write()
 			}
 		}
 	}
-	pkwk_headers_sent();
-	header('Location: ' . $url);
-
+	Router::redirect($url);
 	exit;
 }
 
 // Cancel (Back to the page / Escape edit page)
 function plugin_edit_cancel()
 {
-	global $vars;
-	pkwk_headers_sent();
-	header('Location: ' . get_page_location_uri($vars['page']));
+	Router::redirect();
 	exit;
 }
 
@@ -389,18 +389,15 @@ function plugin_edit_parts($id, &$source, $postdata='')
 	$multiline = 0;
 	$matches = array();
 	foreach ($source as $i => $line) {
-		// multiline plugin. refer lib/convert_html
-		if(defined('PKWKEXP_DISABLE_MULTILINE_PLUGIN_HACK') && PKWKEXP_DISABLE_MULTILINE_PLUGIN_HACK === 0) {
-			if ($multiline < 2) {
-				if (preg_match('/^#([^\(\{]+)(?:\(([^\r]*)\))?(\{*)/', $line, $matches)) {
-					$multiline  = strlen($matches[3]);
-				}
-			} else {
-				if (preg_match('/^\}{' . $multiline . '}/', $line, $matches)) {
-					$multiline = 0;
-				}
-				continue;
+		if ($multiline < 2) {
+			if (preg_match('/^#([^\(\{]+)(?:\(([^\r]*)\))?(\{*)/', $line, $matches)) {
+				$multiline  = strlen($matches[3]);
 			}
+		} else {
+			if (preg_match('/^\}{' . $multiline . '}/', $line, $matches)) {
+				$multiline = 0;
+			}
+			continue;
 		}
 
 		if ($start === -1) {

@@ -172,7 +172,7 @@ function catrule()
 		return convert_html(get_source($rule_page));
 	}
 }
-
+//defined('JQUERY_UI_VER') or define('JQUERY_UI_VER',		'1.9.2');
 // Show (critical) error message
 function die_message($msg, $error_title='', $http_code = 500){
 	global $skin_file, $page_title, $_string, $_title, $_button, $vars;

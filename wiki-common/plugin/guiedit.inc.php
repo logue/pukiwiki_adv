@@ -19,6 +19,8 @@ defined('GUIEDIT_FULL_SIZE') or define('GUIEDIT_FULL_SIZE', 0);
 
 define('PLUGIN_GUIEDIT_FREEZE_REGEX', '/^(?:#freeze(?!\w)\s*)+/im');
 
+use PukiWiki\Lib\File\WikiFile;
+use PukiWiki\Lib\File\FileFactory;
 //	コマンド型プラグイン
 function plugin_guiedit_action()
 {
@@ -33,9 +35,13 @@ function plugin_guiedit_action()
 		die_message(  sprintf($_string['error_prohibit'],'PKWK_READONLY') );
 	}
 
-        $page = isset($vars['page']) ? $vars['page'] : '';
+    $page = isset($vars['page']) ? $vars['page'] : '';
 
-	check_editable($page, true, true);
+	$wiki = new WikiFile($page);
+
+	if (! $wiki->is_editable()){
+		die_message('You have not permission to edit this page.');
+	}
 
 	if (!is_page($page) && auth::is_check_role(PKWK_CREATE_PAGE)) {
 		die_message( sprintf($_string['error_prohibit'],'PKWK_CREATE_PAGE') );
@@ -66,9 +72,9 @@ function plugin_guiedit_action()
 		return plugin_guiedit_cancel();
 	}
 
-	$source = get_source($page);
+	$source = $wiki->source();
 	$postdata = $vars['original'] = join('', $source);
-	
+
 	if (isset($vars['text'])) {
 		if (! empty($vars['id'])) {
 			exist_plugin('edit');
@@ -78,7 +84,7 @@ function plugin_guiedit_action()
 				$postdata = $vars['original'];
 			}
 		}
-		if ($postdata == '') $postdata = auto_template($page);
+		if ($postdata == '') $postdata = $wiki->auto_template();
 	}
 
 	return array('msg'=>'GUI Edit', 'body'=>plugin_guiedit_edit_form($page, $postdata));
@@ -87,7 +93,7 @@ function plugin_guiedit_action()
 function plugin_guiedit_send_ajax($postdata){
 	//	文字コードを UTF-8 に変換
 	//$postdata = mb_convert_encoding($postdata, 'UTF-8', SOURCE_ENCODING);
-	
+
 	//	出力
 	pkwk_common_headers();
 	header("Content-Type: application/json; charset=".CONTENT_CHARSET);
@@ -96,7 +102,7 @@ function plugin_guiedit_send_ajax($postdata){
 			'msg'		=> $postdata,
 			'taketime'	=> sprintf('%01.03f', getmicrotime() - MUTIME)
 		)
-	); 
+	);
 	exit;
 }
 
@@ -105,7 +111,7 @@ function plugin_guiedit_edit_data($page)
 {
 	global $vars;
 
-	$source = get_source($vars['page']);
+	$source = FileFactory::Wiki($vars['page'])->source();
 	$postdata = $vars['original'] = join('', $source);
 	if (! empty($vars['id'])) {
 		exist_plugin('edit');
@@ -115,7 +121,7 @@ function plugin_guiedit_edit_data($page)
 			$postdata = $vars['original'];
 		}
 	}
-	if ($postdata == '') $postdata = auto_template($page);
+	if ($postdata == '') $postdata = FileFactory::Wiki($page)->auto_template();
 
 	//	構文の変換
 	$inc = include_once(GUIEDIT_CONF_PATH . 'wiki2xhtml.php');
@@ -134,21 +140,22 @@ function plugin_guiedit_template()
 {
 	global $vars;
 	global $guiedit_use_fck;
-	
+
 	//	テンプレートを取得
-	if (is_page($vars['template_page'])) {
-		$vars['msg'] = join('', get_source($vars['template_page']));
+	$wiki = new WikiFile($vars['template_page']);
+	if ($wiki->has()) {
+		$vars['msg'] = join('', $wiki->source());
 		$vars['msg'] = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/m', '$1$2', $vars['msg']);
 		$vars['msg'] = preg_replace(PLUGIN_GUIEDIT_FREEZE_REGEX, '', $vars['msg']);
 	}
 	else if ($guiedit_use_fck) {
 		exit;
 	}
-	
+
 	if (!$guiedit_use_fck) {
 		return plugin_guiedit_preview();
 	}
-	
+
 	//	構文の変換
 	$inc = include_once(GUIEDIT_CONF_PATH . 'wiki2xhtml.php');
 	if ($inc === false){
@@ -175,7 +182,7 @@ function plugin_guiedit_preview()
 	if ($guiedit_use_fck) {
 		//	構文の変換
 
-		
+
 		//	構文の変換
 		$inc = include_once(GUIEDIT_CONF_PATH . 'xhtml2wiki.php');
 		if ($inc === false){
@@ -191,7 +198,7 @@ function plugin_guiedit_preview()
 		$postdata = explode("\n", $postdata);
 		$postdata = drop_submit(convert_html($postdata));
 	}
-	
+
 	//	テキスト編集の場合
 	if (!$guiedit_use_fck) {
 		$body = $_msg_preview . '<br />' . "\n";
@@ -206,17 +213,17 @@ function plugin_guiedit_preview()
 
 		return array('msg'=>$_title['preview'], 'body'=>$body);
 	}
-	
+
 	//	注釈
 	ksort($foot_explain, SORT_NUMERIC);
 	$postdata .= ! empty($foot_explain) ? $note_hr . join("\n", $foot_explain) : '';
-	
+
 	//	通常の編集フォーム
 	if (DEBUG) {
 		global $hr;
 		$postdata .= $hr . edit_form($vars['page'], $vars['msg']);
 	}
-	
+
 	plugin_guiedit_send_ajax($postdata);
 }
 
@@ -232,10 +239,10 @@ function plugin_guiedit_write()
 			die_message('guiedit.inc.php : Cannot load XHTML2Wiki Libraly.');
 		}else{
 			$vars['msg'] = xhtml2wiki($vars['msg']);
-			
+
 		}
 	}
-	
+
 	if (isset($vars['id']) && $vars['id']) {
 		$source = preg_split('/([^\n]*\n)/', $vars['original'], -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 		if (plugin_guiedit_parts($vars['id'], $source, $vars['msg']) !== FALSE) {
@@ -255,12 +262,12 @@ function plugin_guiedit_write()
 function plugin_guiedit_cancel()
 {
 	global $vars;
-	
+
 	$location = 'Location: ' . get_script_uri() . '?' . rawurlencode($vars['page']);
 	if (!empty($vars['id'])) {
 		$location .= '#' . $vars['id'];
 	}
-	
+
 	pkwk_headers_sent();
 	header($location);
 	exit;
@@ -275,27 +282,27 @@ function plugin_guiedit_edit_form($page, $postdata, $digest = FALSE, $b_template
 	global $notimeupdate;
 	global $js_tags,$link_tags,$js_blocks;
 	global $guiedit_use_fck;
-	
+
 	$script = get_script_uri();
 
 	// Newly generate $digest or not
 	if ($digest === FALSE) $digest = md5(get_source($page, TRUE, TRUE));
 
 	$s_id  = isset($vars['id']) ? htmlspecialchars($vars['id']) : '';
-	
+
 	if (!$guiedit_use_fck) {
 		$body = edit_form($page, $postdata, $digest, $b_template);
-		
+
 		$pattern = "/(<input\s+type=\"hidden\"\s+name=\"cmd\"\s+value=\")edit(\"\s*\/?>)/";
 		$replace = "$1guiedit$2\n" . '  <input type="hidden" name="id"     value="' . $s_id . '" />'
 				 . '  <input type="hidden" name="text"     value="1" />';
 		$body = preg_replace($pattern, $replace, $body);
-		
+
 		return $body;
 	}
-	
+
 	require_once(GUIEDIT_CONF_PATH . 'guiedit.ini.php');
-	
+
 	//	フォームの値の設定
 	$s_digest    = htmlspecialchars($digest);
 	$s_page      = htmlspecialchars($page);
@@ -333,7 +340,7 @@ $s_pages
 <br />
 EOD;
 	}
-	
+
 	// チェックボックス「タイムスタンプを変更しない」
 	$add_notimestamp = '';
 	if ($notimeupdate != 0) {
@@ -350,7 +357,7 @@ EOD;
 			$add_notimestamp .
 			'&nbsp;';
 	}
-	
+
 	//	フォーム
 	$body = <<<EOD
 <div id="guiedit">

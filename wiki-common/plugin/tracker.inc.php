@@ -9,6 +9,7 @@
 //
 // Issue tracker plugin (See Also bugtrack plugin)
 
+use PukiWiki\Lib\File\FileFactory;
 // Tracker_list: Excluding pattern
 define('PLUGIN_TRACKER_LIST_EXCLUDE_PATTERN','#^SubMenu$|/#');	// 'SubMenu' and using '/'
 //define('PLUGIN_TRACKER_LIST_EXCLUDE_PATTERN','#(?!)#');		// Nothing excluded
@@ -1104,20 +1105,21 @@ class Tracker_list
 
 //		$source = plugin_tracker_get_source($pagename, TRUE);
 		$source = plugin_tracker_get_source($pagename, TRUE, $this->page_line);	// Plus!
+		$wiki = FileFactory::Wiki($pagename);
+		$filetime = $wiki->getTime();
 		if ($source === FALSE) $source = '';
 
 		// Compat: 'move to [[page]]' (like bugtrack plugin)
 		$matches = array();
 		if (! $rescan && ! empty($source) && preg_match('/move\sto\s(.+)/', $source, $matches)) {
 			$to_page = strip_bracket(trim($matches[1]));
-			if (is_page($to_page)) {
+			if (FileFactory::Wiki($to_page)->is_valied()) {
 				unset($source, $matches);	// Release
 				return $this->addRow($to_page, TRUE);	// Recurse(Rescan) once
 			}
 		}
 
 		// Default column
-		$filetime = get_filetime($pagename);
 		$row = array(
 			// column => default data of the cell
 			'_page'   => $pagename,	// TODO: Redudant column pair [1]
@@ -1465,7 +1467,7 @@ class Tracker_list
 				array('$1',   '$2'  ),
 				array($count, $limit),
 				plugin_tracker_message('msg_limit')
-			) . "\n";
+			);
 			$rows  = array_slice($this->rows, 0, $limit);
 		}
 		unset($template);
@@ -1501,10 +1503,10 @@ class Tracker_list
 			$this->_row = $row;
 			// Body
 			foreach ($t_body as $line) {
-				if (ltrim($line) != '') {
-					$this->_the_first_character_of_the_line = $line[0];
-					$line = preg_replace_callback($regex, array(& $this, '_replace_item'), $line);
-				}
+				trim($line);
+				if (empty($line) ) continue;
+				$this->_the_first_character_of_the_line = $line[0];
+				$line = preg_replace_callback($regex, array(& $this, '_replace_item'), $line);
 				$source[] = $line;
 			}
 		}
@@ -1515,7 +1517,7 @@ class Tracker_list
 		}
 		unset($t_footer);
 
-		return implode('', $source);
+		return join("\n", $source);
 	}
 }
 
@@ -1543,7 +1545,8 @@ function plugin_tracker_field_pickup($string = '')
 
 function plugin_tracker_get_source($page, $join = FALSE, $line=0)	// add $line=0
 {
-	$source = get_source($page, TRUE, $join);
+	//$source = get_source($page, TRUE, $join);
+	$source = FileFactory::Wiki($page)->get($join);
 	if ($source === FALSE) return FALSE;
 
 	return preg_replace(

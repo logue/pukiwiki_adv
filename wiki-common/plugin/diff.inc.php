@@ -9,6 +9,8 @@
 // License: GPL v2 or (at your option) any later version
 //
 // Showing colored-diff plugin
+use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\Auth\Auth;
 
 function plugin_diff_action()
 {
@@ -45,11 +47,11 @@ function plugin_diff_view($page)
 	$s_page = htmlsc($page);
 
 	$menu = array(
-		'<li>' . $_msg_addline . '</li>',
-		'<li>' . $_msg_delline . '</li>'
+		'<li class="no-js">' . $_msg_addline . '</li>',
+		'<li class="no-js">' . $_msg_delline . '</li>'
 	);
 
-	$is_page = is_page($page);
+	$is_page = FileFactory::Wiki($page)->is_valied();
 	if ($is_page) {
 		$menu[] = ' <li>' . str_replace('$1', '<a href="' . get_page_uri($page) . '">' .
 			$s_page . '</a>', $_msg_goto) . '</li>';
@@ -57,22 +59,15 @@ function plugin_diff_view($page)
 		$menu[] = ' <li>' . str_replace('$1', $s_page, $_msg_deleted) . '</li>';
 	}
 
-	$filename = DIFF_DIR . encode($page) . '.txt';
-	if (file_exists($filename)) {
+	$diff = FileFactory::Diff($page);
+	
+	if ( $diff->has() && ($is_page || Auth::is_role_page($diff)) ) {
 		// if (! PKWK_READONLY) {
 		if (! auth::check_role('readonly')) {
 			$menu[] = '<li><a href="' . get_cmd_uri('diff', $page, null, array('action'=>'delete')) . '">' . str_replace('$1', $s_page, $_title_diff_delete) . '</a></li>';
 		}
-		$source = join('', file($filename));
-		auth::is_role_page($source);
-		//$msg = '<pre>' . diff_style_to_css(htmlsc($source)) . '</pre>' . "\n";
-		
-		$msg = '<pre class="sh" data-brush="diff">' . htmlsc($source) . '</pre>' . "\n";
-	} else if ($is_page) {
-		$source = join('', get_source($page));
-		auth::is_role_page($source);
-		$diffdata = trim(htmlsc($source));
-		$msg = '<pre class="sh" data-brush="diff"><ins class="diff_added">' . $diffdata . '</ins></pre>' . "\n";
+		auth::is_role_page($diff);
+		$msg = $diff->render();
 	} else {
 		return array('msg'=>$_title_diff, 'body'=>$_msg_notfound);
 	}

@@ -85,7 +85,7 @@ if (file_exists(USR_INI_FILE) && is_readable(USR_INI_FILE)) {
 
 define('INI_FILE',  add_homedir('pukiwiki.ini.php'));
 if (! file_exists(INI_FILE) || ! is_readable(INI_FILE)) {
-	die_message(T_('File is not found.').' (INI_FILE)' . "\n");
+	die_message('File <var>'.INI_FILE.'</var> is not found.'.' (INI_FILE)' . "\n");
 } else {
 	require(INI_FILE);
 }
@@ -293,6 +293,15 @@ $cache = array(
 	))
 );
 $info[] = 'Cache system using <var>'.$cache_adapter.'</var>.';
+
+use Zend\Db\Adapter\Adapter;
+
+$db = array(
+	'links' => new Adapter(array(
+		'driver' => 'Pdo_Sqlite',
+		'database' => CACHE_DIR . 'links.db'
+	))
+);
 
 /////////////////////////////////////////////////
 // I18N

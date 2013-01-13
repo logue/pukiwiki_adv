@@ -13,6 +13,8 @@ use PukiWiki\Lib\Relational;
 use PukiWiki\Lib\Utility;
 use PukiWiki\Lib\Auth\Auth;
 use PukiWiki\Lib\Auth\AuthUtility;
+use PukiWiki\Lib\Diff;
+
 /**
  * Wikiページクラス
  */
@@ -159,7 +161,7 @@ class WikiFile extends File{
 	 */
 	public function is_interwiki(){
 		global $InterWikiName;
-		return preg_match('/^' . $InterWikiName . '$/', $this->page);
+		return $InterWikiName === $this->page;
 	}
 	/**
 	 * 表示しないページか（check_non_list()）
@@ -225,7 +227,12 @@ class WikiFile extends File{
 		// Create and write diff
 		$postdata = self::make_str_rules($str);
 		$oldpostdata = self::has() ? self::get(TRUE) : '';
-//		$diffdata    = do_diff($oldpostdata, $postdata);
+		$diff = new Diff($postdata, $oldpostdata);
+
+		foreach ($diff->getSes() as $key=>$line){
+			if ($key !== $diff::SES_ADD) continue;
+			$addeddata[] = $line;
+		}
 
 		$links = array();
 		// ページ内のリンクを取得（TrackBackと、スパムチェックで使用）
@@ -275,10 +282,7 @@ class WikiFile extends File{
 						$akismet_post['comment_content'] = $postdata;
 					}else{
 						// 差分のみをAkismetに渡す
-						$new = explode("\n",$postdata);
-						$old = explode("\n",$oldpostdata);
-						$diff = implode("\n",array_diff($new, $old));
-						$akismet_post['comment_content'] = $diff;
+						$akismet_post['comment_content'] = $addedata;
 					}
 
 					if($akismet->isSpam($akismet_post)){
@@ -294,12 +298,11 @@ class WikiFile extends File{
 		// add client info to diff
 		//$diffdata .= '// IP:"'. REMOTE_ADDR . '" TIME:"' . $now . '" REFERER:"' . $referer . '" USER_AGENT:"' . $user_agent. "\n";
 
-
 		// Update data
 		$difffile = new DiffFile($this->page);
-		$difffile->set($postdata);
-/*
-		unset($oldpostdata, $diffdata, $difffile);
+		$difffile->set($diff->getDiff());
+
+		unset($oldpostdata, $diff, $difffile);
 
 		// Create backup
 		//make_backup($this->page, $postdata == ''); // Is $postdata null?
@@ -321,7 +324,7 @@ class WikiFile extends File{
 
 		// Create wiki text
 		parent::set($postdata);
-*/
+
 	}
 	/**
 	 * 追加されたリンクを取得
@@ -332,8 +335,8 @@ class WikiFile extends File{
 	private function get_this_time_links($post,$diff)
 	{
 		$links = array();
-		$post_links = $this->replace_plugin_link2null($post);
-		$diff_links = $this->get_link_list($diff);
+		$post_links = self::replace_plugin_link2null($post);
+		$diff_links = self::get_link_list($diff);
 
 		foreach($diff_links as $d) {
 			foreach($post_links as $p) {

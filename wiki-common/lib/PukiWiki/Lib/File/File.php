@@ -119,15 +119,15 @@ class File{
 		if (empty($str)) return $this->remove();
 
 		$data = '';
-		if (is_array($str)){
-			foreach ($str as $line){
-				// 余計なデーターを削除しつつ配列を改行にする
-				$data .= rtrim($line) . "\n";
-			}
-		}else{
-			// 記入するデーターの整形
-			$data = rtrim(preg_replace('/' . "\r" . '/', '', $str));
+		if (!is_array($str)){
+			// 入力データが配列でない場合
+			$str = explode( "\n", $str );
 		}
+		foreach ($str as $line){
+			// 末尾の空白文字やヌル文字などゴミデーターをrtrim命令で削除しつつ整形する
+			$data .= rtrim($line) . "\n";
+		}
+		unset($str);
 
 		// ファイルを読み込み
 		$file = $this->info->openFile('w');
@@ -288,7 +288,7 @@ class File{
 	 * 再帰的にディレクトリを作成
 	 * @return boolean
 	 */
-	private function mkdir_r(){
+	public function mkdir_r(){
 		if ($this->has()) return false;
 
 		$dirname = dirname($this->filename);	// ファイルのディレクトリ名

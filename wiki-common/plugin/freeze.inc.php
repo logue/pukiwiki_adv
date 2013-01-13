@@ -8,6 +8,9 @@
 // License: GPL v2 or (at your option) any later version
 //
 // Freeze(Lock) plugin
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Auth\AuthUtility;
+use PukiWiki\Lib\File\WikiFile;
 
 // Reserve 'Do nothing'. '^#freeze' is for internal use only.
 function plugin_freeze_convert() { return ''; }
@@ -24,28 +27,29 @@ function plugin_freeze_action()
 	$_btn_freeze      = T_('Freeze');
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
-	if (! $function_freeze || is_cantedit($page) || ! is_page($page))
-		return array('msg' => '', 'body' => '');
+	$wiki = new WikiFile($page);
+	
+	if (! $function_freeze || ! $wiki->is_editable(true) || ! $wiki->has())
+		return array('msg' => 'Freeze function is disabled.', 'body' => 'You have no permission to freeze this page.');
 
 	$pass = isset($vars['pass']) ? $vars['pass'] : NULL;
 	$msg = $body = '';
-	if (is_freeze($page)) {
+	if ($wiki->is_freezed()) {
 		// Freezed already
 		$msg  = & $_title_isfreezed;
 		$body = str_replace('$1', htmlsc(strip_bracket($page)),
 			$_title_isfreezed);
 
-	} else
-	if ( (! auth::check_role('role_adm_contents') ) ||
-	     ($pass !== NULL && pkwk_login($pass) ) )
-	{
+	} else if ( ! Auth::check_role('role_adm_contents') || $pass !== NULL && AuthUtility::login($pass) ) {
 		// Freeze
-		$postdata = get_source($page);
-		array_unshift($postdata, "#freeze\n");
-		file_write(DATA_DIR, $page, join('', $postdata), TRUE);
+		$postdata = $wiki->source();
+		$time = $wiki->getTime();	// タイムスタンプを取得
+		array_unshift($postdata, "#freeze\n");	//凍結をページに付加
+		$wiki->set(join('',$postdata));
+		$wiki->setTime($time);	// タイムスタンプを更新しない
 
 		// Update
-		is_freeze($page, TRUE);
+		//$wiki->is_freezed();
 		$vars['cmd'] = 'read';
 		$msg  = & $_title_freezed;
 		$body = (!IS_AJAX) ? '' : $_title_freezed;

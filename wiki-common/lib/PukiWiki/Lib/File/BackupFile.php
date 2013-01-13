@@ -1,18 +1,19 @@
 <?php
-// PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: BackupFile.php,v 1.0.0 2012/12/18 11:00:00 Logue Exp $
-// Copyright (C)
-//   2012 PukiWiki Advance Developers Team
-// License: GPL v2 or (at your option) any later version
-
+/**
+ * バックアップファイルクラス
+ *
+ * @package   PukiWiki\Lib\File
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @create    2012/12/18
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: BackupFile.php,v 1.0.0 2013/01/10 17:28:00 Logue Exp $
+ */
 namespace PukiWiki\Lib\File;
-use PukiWiki\Lib\File\File;
 use PukiWiki\Lib\File\FileFactory;
 use PukiWiki\Lib\Auth\Auth;
 
-/**
- * バックアップファイルクラス
- */
 class BackupFile extends File{
 	// バックアップの世代ごとの区切り文字（default.ini.php）
 	const SPLITTER = '>>>>>>>>>>';
@@ -21,6 +22,10 @@ class BackupFile extends File{
 
 	private $splitter_reglex, $page, $ext = '.txt', $name, $time, $cycle, $maxage;
 
+	/**
+	 * コンストラクタ
+	 * @param string $page ページ名
+	 */
 	public function __construct($page){
 		global $do_backup, $cycle, $maxage;
 		if (Auth::check_role('readonly') || ! $do_backup) return;
@@ -42,7 +47,7 @@ class BackupFile extends File{
 		// バックアップの名前（拡張子抜き）
 		$this->name = BACKUP_DIR . encode($page);
 		// バックアップの最終更新日時
-		$this->time = $this->has() ? filemtime($this->filename) : 0;	// このhasBackup()でファイル名（$this->file）も定義
+		$this->time = $this->has() ? filemtime($this->filename) : UTIME;	// このhasBackup()でファイル名（$this->file）も定義
 		// バックアップの頻度
 		$this->cycle = 60 * 60 * $cycle;
 		// バックアップの上限個数
@@ -61,13 +66,13 @@ class BackupFile extends File{
 	 */
 	public function setBackup(){
 		// ページが存在しない場合、バックアップ作成しない。
-		if (! is_page($this->page)) return;
+		if (! FileFactory::Wiki($this->page)->has() ) return;
 
 		// 連続更新があった場合に備えて、バックアップを作成するまでのインターバルを設ける
 		if (! ($this->time == 0 || UTIME - $this->time > $this->cycle) ) return;
 
 		// 現在のバックアップを取得
-		$backups = $this->getBackup();
+		$backups = self::getBackup();
 		$count   = count($backups) + 1;
 
 		// 直後に1件追加するので、(最大件数 - 1)を超える要素を捨てる
@@ -82,17 +87,17 @@ class BackupFile extends File{
 			$strout .= join("\n", $data['data']);
 			unset($backups[$age]);
 		}
-		$strout = preg_replace("/([^\n])\n*$/", "$1\n", $strout);
+		$strout = preg_replace('/([^\n])\n*$/', "$1\n", $strout);		
 
 		// 追加するバックアップデーター
 		// Escape 'lines equal to self::SPLITTER', by inserting a space
 		$body = preg_replace($this->splitter_reglex, '$1 ', FileFactory::Wiki($this->page)->source());
 		// BugTrack/685 by UPK
-		$body = self::SPLITTER . ' ' . $this->time . ' ' . UTIME . "\n" . join('', $body);
+		$body = self::SPLITTER . ' ' . $this->time . ' ' . UTIME . "\n" . join("\n", $body);
 		$body = preg_replace("/\n*$/", "\n", $body);
 
-		// 書き込む
-		$this->set($strout . $body);
+		// 先頭に追記して書き込む
+		self::set($body. $strout);
 	}
 	/**
 	 * バックアップを取得する
@@ -108,7 +113,7 @@ class BackupFile extends File{
 	public function getBackup($age = 0){
 		$_age = 0;
 		$retvars = $match = array();
-		foreach($this->get(false) as $line) {
+		foreach(self::get() as $line) {
 			// BugTrack/685 by UPK
 			if ( preg_match($this->splitter_reglex, $line, $match) ) {
 				// A splitter, tells new data of backup will come
@@ -124,7 +129,7 @@ class BackupFile extends File{
 				$retvars[$_age] = array('time'=>$match[2], 'real'=>$now, 'data'=>array());
 			} else {
 				// The first ... the last line of the data
-				$retvars[$_age]['data'][] = $line;
+				$retvars[$_age]['data'][] = rtrim($line);
 			}
 		}
 		return $retvars;
@@ -144,7 +149,7 @@ class BackupFile extends File{
 			return $this->remove();
 		} else {
 			// バックアップから指定世代のみ削除
-			$backups = $this->getBackup();
+			$backups = self::getBackup();
 			if (is_array($ages)){
 				foreach($ages as $age) {
 					unset($backups[$age]);
@@ -156,10 +161,9 @@ class BackupFile extends File{
 			$strout = '';
 			foreach($backups as $age=>$data) {
 				$strout .= self::SPLITTER . ' ' . $data['time'] . ' ' . $data['real'] . "\n"; // Splitter format
-				$strout .= join('', $data['data']);
-				unset($backups[$age]);
+				$strout .= join("\n", $data['data']);
 			}
-			$this->set(preg_replace("/([^\n])\n*$/", "$1\n", $strout));
+			self::set(preg_replace("/([^\n])\n*$/", "$1\n", $strout));
 		}
 	}
 	/**
@@ -193,7 +197,7 @@ class BackupFile extends File{
 	/**
 	 * write()
 	 * バックアップファイルに書き込む
-	 *
+	 * TODO:gzとbz2圧縮がスレッドセーフでない
 	 * @access    private
 	 * @param     String    $content 文字列
 	 *
@@ -243,7 +247,7 @@ class BackupFile extends File{
 	}
 	/**
 	 * バックアップファイルの内容を圧縮形式に応じて取得する
-	 *
+	 * TODO:gzとbz2解凍がスレッドセーフでない
 	 * @access    private
 	 *
 	 * @return    Array     ファイルの内容
@@ -276,8 +280,16 @@ class BackupFile extends File{
 		// 取得した内容を改行ごとに配列として返す
 		return ($join) ? $data : explode("\n",$data);
 	}
-	public function __toString(){
-		return $this->get(true);
+	/**
+	 * 現在との差分
+	 * @param $age
+	 * @return string
+	 */
+	public function getDiff($age=0){
+		$new = FileFactory::Wiki($this->page)->source();
+		$old = self::getBackup($age);
+		$diff = new Diff($new, $old);
+		return $diff->getHtml();
 	}
 }
 

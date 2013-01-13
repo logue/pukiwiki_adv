@@ -9,6 +9,9 @@
 //
 // Related plugin: Show Backlinks for the page
 
+use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\Relational;
+
 function plugin_related_init(){
 	$messages['_related_messages'] = array(
 		'msg' => T_('Backlinks for: %s'),
@@ -30,12 +33,11 @@ function plugin_related_convert()
 }
 
 // Related pages
-function make_related($page, $tag = '')
+function make_related($_page, $tag = '')
 {
 	global $vars;
 
-	$rel = new PukiWiki\Lib\Relational($page);
-	$links = $rel->get_related();
+	$links = FileFactory::Wiki($_page)->getRelated();
 
 	if ($tag) {
 		ksort($links, SORT_STRING);	// Page name, alphabetical order
@@ -45,13 +47,10 @@ function make_related($page, $tag = '')
 
 	$_links = array();
 	foreach ($links as $page=>$lastmod) {
-		if (check_non_list($page)) continue;
+		$wiki = FileFactory::Wiki($page);
+		if ($wiki->is_hidden()) continue;
 
-		$s_page   = htmlsc($page);
-		$passage  = get_passage($lastmod);
-		$_links[] =
-			'<a href="' . get_page_uri($page) . '">' .
-			$s_page . '</a>' . $passage;
+		$_links[] = '<a href="' . get_page_uri($page) . '">' . htmlsc($page) . '</a>' . $wiki->passage(true,true);
 	}
 	if (empty($_links)) return ''; // Nothing
 
@@ -82,40 +81,35 @@ function plugin_related_action()
 
 	$_page = isset($vars['page']) ? $vars['page'] : '';
 	if ($_page == '') $_page = $defaultpage;
+	// Result
+	$msg = 'Backlinks for: ' . htmlsc($_page);
+	$retval[]  = '<a href="' . get_page_uri($_page) . '">' .
+		'Return to ' . htmlsc($_page) .'</a><br />'. "\n";
 
 	// Get related from cache
-	$links = new PukiWiki\Lib\Relational($_page);
+	$links = new Relational($_page);
 	$data = $links->get_related();
-	if (! empty($data)) {
+	if (empty($data)) {
+		$retval[] = '<ul><li>No related pages found.</li></ul>' . "\n";
+	}else{
 		// Hide by array keys (not values)
 		foreach(array_keys($data) as $page) {
-			if (is_cantedit($page) || check_non_list($page)) {
+			$wiki = FileFactory::Wiki($page);
+			if (! $wiki->is_editable() || $wiki->is_hidden()) {
 				unset($data[$page]);
 			}
 		}
-	}
-
-	// Result
-	$s_word = htmlsc($_page);
-	$msg = 'Backlinks for: ' . $s_word;
-	$retval  = '<a href="' . get_page_uri($_page) . '">' .
-		'Return to ' . $s_word .'</a><br />'. "\n";
-
-	if (empty($data)) {
-		$retval .= '<ul><li>No related pages found.</li></ul>' . "\n";
-	} else {
 		// Show count($data)?
 		ksort($data, SORT_STRING);
-		$retval .= '<ul>' . "\n";
+		
+		$retval[] = '<ul>' . "\n";
 		foreach ($data as $page=>$time) {
-			$s_page  = htmlsc($page);
-			$passage = get_passage($time);
-			$retval .= ' <li><a href="' . get_page_uri($page) . '">' . $s_page .
-				'</a> ' . $passage . '</li>' . "\n";
+			$retval[] = ' <li><a href="' . get_page_uri($page) . '">' . htmlsc($page) .
+				'</a> ' . FileFactory::Wiki($page)->passage(true,true) . '</li>';
 		}
-		$retval .= '</ul>' . "\n";
+		$retval[] .= '</ul>' . "\n";
 	}
-	return array('msg'=>$msg, 'body'=>$retval);
+	return array('msg'=>$msg, 'body'=>join("\n",$retval));
 }
 /* End of file related.inc.php */
 /* Location: ./wiki-common/plugin/related.inc.php */

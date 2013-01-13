@@ -1,3 +1,4 @@
+<?php
 namespace PukiWiki\Lib\File;
 
 class FileUtility{
@@ -6,6 +7,7 @@ class FileUtility{
 	 * ディレクトリ内のファイルの存在確認
 	 */
 	public static function get_exsists($dir = DATA_DIR, $force = false){
+		global $cache;
 		switch($dir){
 			case DATA_DIR:
 				$func = 'wiki';
@@ -23,17 +25,17 @@ class FileUtility{
 		}
 		$cache_name = self::EXSISTS_CACHE_PREFIX.$func;
 		if ($force){
-			$this->cache->removeItem($cache_name);
-		}else if ($this->cache->hasItem($cache_name)){
-			return $this->cache->getItem($cache_name);
+			$cache['wiki']->removeItem($cache_name);
+		}else if ($cache['wiki']->hasItem($cache_name)){
+			return $cache['wiki']->getItem($cache_name);
 		}
-		foreach (new DirectoryIterator($this->dir) as $fileinfo) {
+		foreach (new \DirectoryIterator($dir) as $fileinfo) {
 			$filename = $fileinfo->getFilename();
 			if ($fileinfo->isFile() && preg_match($pattern, $filename, $matches)){
 				$aryret[$filename] = decode($matches[1]);
 			}
 		}
-		$this->cache->setItem($cache_name, $aryret);
+		$cache['wiki']->setItem($cache_name, $aryret);
 		return $aryret;
 	}
 	public static function get_recent(){
