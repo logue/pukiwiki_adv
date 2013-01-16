@@ -189,7 +189,7 @@ function die_message($msg, $error_title='', $http_code = 500){
 		$ret[] = '<a href="' . get_page_location_uri($vars['page']) .'">'.$_button['back'].'</a> | ';
 		$ret[] = '<a href="' . get_cmd_uri('edit',$vars['page']) . '">Try to edit this page</a> | ';
 	}
-	$ret[] = '<a href="' . get_cmd_uri() . '">Return to FrontPage</a> ]</p>';
+	$ret[] = '<a href="' . get_script_uri() . '">Return to FrontPage</a> ]</p>';
 	$ret[] = '<div class="message_box ui-state-error ui-corner-all">';
 	$ret[] = '<p style="padding:0 .5em;"><span class="ui-icon ui-icon-alert"></span> <strong>' . $_title['error'] . '</strong> ' . $msg . '</p>';
 	$ret[] = '</div>';
@@ -216,7 +216,7 @@ function die_message($msg, $error_title='', $http_code = 500){
 		$html[] = '<head>';
 		$html[] = '<meta charset="utf-8">';
 		$html[] = '<meta name="robots" content="NOINDEX,NOFOLLOW" />';
-		$html[] = '<link rel="stylesheet" href="http://code.jquery.com/ui/' . JQUERY_UI_VER . '/themes/base/jquery-ui.css" type="text/css" />';
+		$html[] = '<link rel="stylesheet" href="http://code.jquery.com/ui/jquery-ui-git.css" type="text/css" />';
 		$html[] = '<title>' . $page . ' - ' . $page_title . '</title>';
 		$html[] = '</head>';
 		$html[] = '<body>' . $body . '</body>';

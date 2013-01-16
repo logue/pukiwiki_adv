@@ -1,0 +1,24 @@
+{
+	"name": "pukiwiki_adv",
+	"description": "PukiWiki Advance",
+	"license": "General Public Lisence v2",
+	"keywords": [
+		"pukiwiki",
+		"pukiwiki adv"
+	],
+	"repositories": [
+		{
+			"type": "composer",
+			"url": "https://packages.zendframework.com/"
+		}
+	],
+	"homepage": "http://pukiwiki.logue.be/",
+	"require": {
+		"php": ">=5.3.3",
+		"zendframework/zendframework": "2.*",
+		"zendframework/zendservice-akismet":"2.*",
+		"zendframework/zendservice-recaptcha":"2.*",
+		"bjyoungblood/BjyProfiler": "dev-master",
+		"zendframework/zend-developer-tools": "dev-master"
+	}
+}

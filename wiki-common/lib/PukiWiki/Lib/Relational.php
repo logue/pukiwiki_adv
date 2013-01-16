@@ -232,6 +232,9 @@ class Relational{
 			self::set_ref($_page, $data);
 			unset($data);
 		}
+		// メモリを開放
+		self::get_objects();
+		
 		unset($ref_page,$ref_auto);
 	}
 

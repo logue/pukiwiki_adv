@@ -64,8 +64,8 @@ defined('LIB_DIR') or define('LIB_DIR', realpath('./').'/');
 // Initilalize Zend
 //
 // Composer autoloading
-if (file_exists('autoload.php')) {
-	$loader = include 'autoload.php';
+if (file_exists('../../../vendor/autoload.php')) {
+	$loader = include '../../../vendor/autoload.php';
 }
 
 if (getenv('ZF2_PATH')) {	// Support for ZF2_PATH environment variable or git submodule

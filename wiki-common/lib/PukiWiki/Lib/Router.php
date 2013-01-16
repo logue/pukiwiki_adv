@@ -84,7 +84,7 @@ class Router{
 		exit;
 	}
 	
-	private function init($init_uri = '',$get_init_value=0){
+	private static function init($init_uri = '',$get_init_value=0){
 		global $script_directory_index, $absolute_uri;
 		static $script;
 
@@ -224,10 +224,12 @@ class Router{
 	}
 	public static function get_baseuri($path='')
 	{
+		static $script;
 		// RFC2396,RFC3986 : relativeURI = ( net_path | abs_path | rel_path ) [ "?" query ]
 		//				   absoluteURI = scheme ":" ( hier_part | opaque_part )
 		$ret = '';
-		$script = self::get_script_uri();
+		
+		$script = self::init();
 
 		switch($path) {
 		case 'net': // net_path	  = "//" authority [ abs_path ]
