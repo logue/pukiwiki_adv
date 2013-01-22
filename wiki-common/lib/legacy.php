@@ -507,12 +507,12 @@ function get_script_absuri()
 // function get_cmd_uri($cmd='', $page='', $query='', $fragment='')
 function get_cmd_uri($cmd='', $page='', $path_reference='rel', $query='', $fragment='')
 {
-	return Router::get_resolve_uri($cmd,$page,$path_reference,$query,$fragment,0);
+	return Router::get_cmd_uri($cmd, $page, $path_reference, $query, $fragment);
 }
 // function get_page_uri($page, $query='', $fragment='')
 function get_page_uri($page, $path_reference='rel', $query='', $fragment='')
 {
-	return Router::get_resolve_uri('',$page,$path_reference,$query,$fragment,0);
+	return Router::get_page_uri($page, $path_reference, $query, $fragment);
 }
 // Obsolete (明示指定用)
 function get_cmd_absuri($cmd='', $page='', $query='', $fragment='')
@@ -524,7 +524,6 @@ function get_page_absuri($page, $query='', $fragment='')
 {
 	return Router::get_resolve_uri('',$page,'full',$query,$fragment,0);
 }
-
 // Obsolete (ポカミス用)
 function get_page_location_uri($page='', $query='', $fragment='')
 {

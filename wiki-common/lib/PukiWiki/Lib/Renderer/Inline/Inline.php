@@ -143,7 +143,7 @@ abstract class Inline
 			}
 			return '<a href="' . $wiki->getUri() . $anchor . '" ' .
 				($link_compact === 0 ? 'title="' . $s_page . ' ' . $wiki->passage(false,true) . '"' : '' ).
-				($isautolink ? ' class="autolink"' : '') .
+	//			($isautolink ? ' class="autolink"' : '') .
 				(!empty($glossary) ? 'aria-describedby="tooltip"' : '') .
 				'>' . $s_alias . '</a>';
 		} else {

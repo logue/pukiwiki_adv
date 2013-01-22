@@ -55,6 +55,7 @@ define('REMOTE_ADDR', isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_
 /*
 $config_dist = array(
 	'security' => array(
+		'optimize' => 0,
 		'protect_mode' => false,
 		'readonly' => false,
 		'safemode' => false,
@@ -67,13 +68,46 @@ $config_dist = array(
 		'default_language' => 'ja_JP',
 		'default_timezone' => 'Asia/Tokyo',
 		'use_local_time' => false,
-		'conside_level' => 2
+		'conside_level' => 2,
+		'public_holiday_guest_view' => 0
 	),
-	'directory' => array(
-		'upload' => DATA_HOME . 'attach/',
-		'backup' => DATA_HOME . 'backup/',
-		'data'   => DATA_HOME . 'wiki/',
-		'diff'   => DATA_HOME . 'diff/',
+	'special_pages' = array(
+		'default'       => 'FrontPage',
+		'recent'        => 'RecentChanges',
+		'deleted'       => 'RecentDeleted',
+		'interwiki'     => 'InterWikiName',
+		'alias'         => 'AutoAliasName',
+		'menubar'       => 'MenuBar',
+		'sidebar'       => 'SideBar',
+		'navigation'    => 'Navigation',
+		'glossary       => 'Glossary',
+		'headarea'      => ':Header',
+		'footarea'      => ':Footer',
+		'protect'       => ':login'
+	),
+	'config' => array(
+		'title'         => 'PukiWiki Advance',
+		'image'         => COMMON_URI . 'image/pukiwiki.logo.png',
+		'modifier'      => 'Anonymous',
+		'modifier_link' => WWW_ROOT,
+		'nofollow'      => false,
+		'static_url'    => true,
+		'url_suffix'    => '',
+		'anti_spam' => array(
+			'page_view'         => 0,
+			'page_remote_addr'  => 0,
+			'page_contents'     => 0,
+			'prohibit_proxy'    => 0,
+			'dnsbl'             => 1,
+			'trackback'         => 1,
+			'referer'           => 1,
+			'multiple_post'     => 0,
+			'bad-behavior'      => 0,
+			'akismet'           => 0,
+			'captcha'           => 0
+	),
+	
+	
 
 */
 define('USR_INI_FILE', add_homedir('pukiwiki.usr.ini.php'));
@@ -126,8 +160,8 @@ defined('JS_URI')			or define('JS_URI', 		COMMON_URI . 'js/'      );	// URI to J
 defined('THEME_PLUS_NAME')	or define('THEME_PLUS_NAME',  'theme/');			// SKIN_URI + THEME_PLUS_NAME
 
 // フレームワークのバージョン
-define('JQUERY_VER',		'1.8.3');
-define('JQUERY_UI_VER',		'1.9.2');
+define('JQUERY_VER',		'1.9.0');
+define('JQUERY_UI_VER',		'1.10.0');
 define('JQUERY_MOBILE_VER',	'1.2.0');
 
 // ページ名やファイル名として使用できない文字（エンコード前の文字）

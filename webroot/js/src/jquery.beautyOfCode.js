@@ -1,7 +1,7 @@
 /*!
  * jQuery beautyOfCode Plugin for HTML5
- * Copyright 2011 Logue
- * Version: 0.2.2
+ * Copyright 2011-2013 Logue
+ * Version: 0.2.3
  * Site: http://logue.be/
  * Source: https://bitbucket.org/logue/beautyofcode-for-html5/
  * License: Apache License, Version 2.0; you may not use this file except in compliance with the License.
@@ -273,7 +273,8 @@
 			var code = $item.text();
 			
 			// Fix IE < 9 brake line Bug
-			if($.browser.msie && $.browser.version > 9){
+			var isMSIE = /*@cc_on!@*/false;
+			if (isMSIE){
 				code = code.replace(/\x0D\x0A|\x0D|\x0A/g,'\n\r');
 			}
 
