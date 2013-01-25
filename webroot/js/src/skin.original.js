@@ -595,7 +595,7 @@ var pukiwiki = {};
 			$('.link_symbol').each(function(){
 				var $this = $(this);
 				$this.click(function(){
-					window.open($this.data().uri);
+					window.open($this.parent().attr('href'));
 					return false;
 				});
 			});
@@ -1107,7 +1107,7 @@ var pukiwiki = {};
 		},
 		// 独自のGlossaly処理
 		glossaly: function(prefix){
-			var glossaries = {};
+			var glossaries = {};	// ajaxで読み込んだ内容をキャッシュ
 			$(document).tooltip({
 				items: '[aria-describedby], [title]',
 				track: true,
@@ -1117,10 +1117,10 @@ var pukiwiki = {};
 						$this.removeAttr('title');
 						var aria = $this.attr('aria-describedby');	// aria-describedby要素が他のjQueryUIのウィジットで使われてたorz...
 						if (aria === 'linktip' || aria === 'tooltip') {
-							console.log($this.attr('aria-describedby'));
+							//console.log($this.attr('aria-describedby'));
 							var text = $this.text();
 							if (text !== '' && !glossaries[text]){
-								// ツールチップの種類
+								// キャッシュがない場合
 								var params = ($this.attr('aria-describedby') == 'linktip')
 								 ? {
 									// リンク先の要約文
@@ -1152,20 +1152,27 @@ var pukiwiki = {};
 									}
 								}).done(function(data){
 									if (data.documentElement.textContent) {
+										glossaries[text] = data.documentElement.textContent;
 										callback(data.documentElement.textContent);
 									}
 								}).always(function(data){
 									if (data.responseText) {
+										glossaries[text] = data.responseText;
 										callback(data.responseText);
 									}
 								});
 							}else{
+								// キャッシュから内容を呼び出す
 								return glossaries[text];
 							}
 						}
 						
 					}else if ( $this.is('[title]')){
 						return $this.attr('title');
+					}
+					// ツールチップが複数表示されてしまうのを抑止
+					if ( $('[role="tooltip"]').length > 2 ){
+						$('[role="tooltip"]').remove();
 					}
 				}
 			});
