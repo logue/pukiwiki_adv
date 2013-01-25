@@ -166,7 +166,7 @@ class Search{
 		$retval = '<ul>' . "\n";
 		foreach (array_keys($pages) as $page) {
 			$passage = $show_passage ? ' ' . get_passage(get_filetime($page)) : '';
-			$retval .= ' <li><a href="' . get_page_uri($page) . '" class="linktip">' . htmlsc($page) . '</a>' . $passage . '</li>' . "\n";
+			$retval .= ' <li><a href="' . get_page_uri($page) . '" aria-describedby="linktip">' . htmlsc($page) . '</a>' . $passage . '</li>' . "\n";
 		}
 		$retval .= '</ul>' . "\n";
 

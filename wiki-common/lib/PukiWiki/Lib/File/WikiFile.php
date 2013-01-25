@@ -7,6 +7,7 @@
 //
 namespace PukiWiki\Lib\File;
 use PukiWiki\Lib\File\File;
+use PukiWiki\Lib\File\FileUtility;
 use PukiWiki\Lib\Renderer\RendererFactory;
 use PukiWiki\Lib\Router;
 use PukiWiki\Lib\Relational;
@@ -161,7 +162,7 @@ class WikiFile extends File{
 	 */
 	public function is_interwiki(){
 		global $InterWikiName;
-		return $InterWikiName === $this->page;
+		return preg_match('/^' . $InterWikiName . '/', $this->page);
 	}
 	/**
 	 * 表示しないページか（check_non_list()）
@@ -205,14 +206,19 @@ class WikiFile extends File{
 	}
 	/**
 	 * ページを書き込む
-	 * @param string $postdata 書き込むデーター
+	 * @param string $str 書き込むデーター
 	 * @param boolean $notimestamp タイムスタンプを更新するかのフラグ
 	 * @return void
 	 */
-	public function set($str){
+	public function set($str,$keeptimestamp = false){
 		global $trackback;
 		global $use_spam_check, $_strings, $_title, $post;
 		global $vars, $now, $akismet_api_key;
+
+		if (is_array($str)) {
+			// ポカミス対策：配列だった場合文字列に変換
+			$str = join("\n", $str);
+		}
 
 		// captcha check
 		if ( (isset($use_spam_check['captcha']) && $use_spam_check['captcha'] !== 0) && (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] !== 1)) {
@@ -224,20 +230,27 @@ class WikiFile extends File{
 		if (Auth::is_check_role(PKWK_CREATE_PAGE))
 			die_message( sprintf($_strings['error_prohibit'], 'PKWK_READONLY') );
 
+		if (empty($str)){
+			// 入力が空の場合、削除とする
+			self::create_recent_deleted();
+			return parent::set('');
+		}
+
 		// Create and write diff
 		$postdata = self::make_str_rules($str);
 		$oldpostdata = self::has() ? self::get(TRUE) : '';
 		$diff = new Diff($postdata, $oldpostdata);
 
+		// 差分から追加のみを取得
 		foreach ($diff->getSes() as $key=>$line){
 			if ($key !== $diff::SES_ADD) continue;
-			$addeddata[] = $line;
+			$added_data[] = $line;
 		}
-
+/*
 		$links = array();
 		// ページ内のリンクを取得（TrackBackと、スパムチェックで使用）
 		if ( ($trackback > 1) || ( $use_spam_check['page_contents']) ) {
-			$links = self::get_this_time_links($postdata, $diffdata);
+			$links = self::get_this_time_links($postdata,$oldpostdata);
 		}
 
 		$referer = (isset($_SERVER['HTTP_REFERER'])) ? Utility::htmlsc($_SERVER['HTTP_REFERER']) : 'None';
@@ -297,17 +310,12 @@ class WikiFile extends File{
 
 		// add client info to diff
 		//$diffdata .= '// IP:"'. REMOTE_ADDR . '" TIME:"' . $now . '" REFERER:"' . $referer . '" USER_AGENT:"' . $user_agent. "\n";
-
+*/
 		// Update data
 		$difffile = new DiffFile($this->page);
 		$difffile->set($diff->getDiff());
 
 		unset($oldpostdata, $diff, $difffile);
-
-		// Create backup
-		//make_backup($this->page, $postdata == ''); // Is $postdata null?
-		$backup = new BackupFile($this->page);
-		$backup->setBackup();
 
 		// Update *.rel *.ref data.
 		//update_cache($this->page, false, $notimestamp);
@@ -322,9 +330,15 @@ class WikiFile extends File{
 
 		log_write('update',$this->page);
 
+		self::create_recent_changes();
+
+		// Create backup
+		//make_backup($this->page, $postdata == ''); // Is $postdata null?
+		$backup = new BackupFile($this->page);
+		$backup->setBackup();
+
 		// Create wiki text
 		parent::set($postdata);
-
 	}
 	/**
 	 * 追加されたリンクを取得
@@ -350,7 +364,7 @@ class WikiFile extends File{
 		return $links;
 	}
 	/**
-	 * 一時的にプラグインをnullプラグインにして無効化
+	 * 一時的にプラグインをnullプラグインにして無効化し、リンクのみを取得
 	 * @param $data
 	 * @return array
 	 */
@@ -461,38 +475,6 @@ class WikiFile extends File{
 
 		return implode("\n", $lines);
 	}
-	/**
-	 * 履歴用ページ作成（更新履歴や削除履歴で使用）
-	 * @param string $recentpage 履歴ページ名
-	 * @param string $subject 追加するページ名
-	 * @param int $limit 最大行数
-	 */
-	public function add_recent($recentpage, $subject = '', $limit = 0) {
-		if (Auth::check_role('readonly') || $limit == 0  || empty($recentpage) ||
-			check_non_list($page)) return;
-
-		// Load
-		$lines = $matches = array();
-		$r = new WikiFile($recentpage);
-		foreach ($r->source() as $line) {
-			if (preg_match('/^-(.+) - (\[\[.+\]\])$/', $line, $matches)) {
-				$lines[$matches[2]] = $line;
-			}
-		}
-
-		$_page = '[[' . $this->page . ']]';
-
-		// Remove a report about the same page
-		if (isset($lines[$_page])) unset($lines[$_page]);
-
-		// Add
-		array_unshift($lines, '- &epoch(' . UTIME . '); - ' . $_page . Utility::htmlsc($subject) . "\n");
-
-		// Get latest $limit reports
-
-		$f = new File(self::DIR.encode($recentpage));
-		$f->set( '#norelated' . "\n".join('',array_splice($lines, 0, $limit)));
-	}
 	public function auto_template()
 	{
 		global $auto_template_func, $auto_template_rules;
@@ -542,6 +524,52 @@ class WikiFile extends File{
 	 */
 	public function getUri(){
 		return Router::get_resolve_uri(null,$this->page);
+	}
+	
+	/**
+	 * 配列からRecentChangesページを作成
+	 */
+	private function create_recent_changes(){
+		global $whatsnew;
+
+		if (!self::is_hidden()) return;
+
+		// Create RecentChanges
+		$buffer[] = '#norelated';
+		foreach (array_keys(FileUtility::get_recent(true)) as $page) {
+			$buffer[] = '-&epoch(' . $recent_pages[$page] . '); - [[' . htmlsc($page) . ']]';
+		}
+		$file = FileFactory::Wiki($whatsnew);
+		$file->set($buffer);
+	}
+	/**
+	 * 削除履歴を作成
+	 * @params string $page 削除するページ
+	 */
+	private function create_recent_deleted(){
+		global $whatsdeleted, $maxshow_deleted;
+		if (auth::check_role('readonly') || !self::is_hidden($this->page)) return;
+
+		$delated = FileFactory::Wiki($whatsdeleted);
+
+		foreach ($delated->get() as $line) {
+			if (preg_match('/^-(.+) - (\[\[.+\]\])$/', $line, $matches)) {
+				$lines[$matches[2]] = $line;
+			}
+		}
+
+		$_page = '[[' . $page . ']]';
+
+		// Remove a report about the same page
+		if (isset($lines[$_page])) unset($lines[$_page]);
+
+		// Add
+		array_unshift($lines, '-&epoch(' . UTIME . '); - ' . $_page . htmlsc($subject));
+		array_unshift($lines, '#norelated');
+
+		// Get latest $limit reports
+		$lines = array_splice($lines, 0, $maxshow_deleted);
+		$delated->set($lines);
 	}
 }
 

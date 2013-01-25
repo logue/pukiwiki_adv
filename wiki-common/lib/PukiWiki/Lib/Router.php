@@ -1,88 +1,9 @@
 <?php
 namespace PukiWiki\Lib;
+use PukiWiki\Lib\Utility;
 
 class Router{
-	// Show (critical) error message
-	public static function die_message($msg, $error_title='', $http_code = 500){
-		global $skin_file, $page_title, $_string, $_title, $_button, $vars;
-
-		$title = !empty($error_title) ? $error_title : $_title['error'];
-		$page = $_title['error'];
-
-		if (PKWK_WARNING !== true){	// PKWK_WARNINGが有効でない場合は、詳細なエラーを隠す
-			$msg = $_string['error_msg'];
-		}
-		$ret = array();
-		$ret[] = '<p>[ ';
-		if ( isset($vars['page']) && !empty($vars['page']) ){
-			$ret[] = '<a href="' . get_page_location_uri($vars['page']) .'">'.$_button['back'].'</a> | ';
-			$ret[] = '<a href="' . get_cmd_uri('edit',$vars['page']) . '">Try to edit this page</a> | ';
-		}
-		$ret[] = '<a href="' . get_cmd_uri() . '">Return to FrontPage</a> ]</p>';
-		$ret[] = '<div class="message_box ui-state-error ui-corner-all">';
-		$ret[] = '<p style="padding:0 .5em;"><span class="ui-icon ui-icon-alert"></span> <strong>' . $_title['error'] . '</strong> ' . $msg . '</p>';
-		$ret[] = '</div>';
-		$body = join("\n",$ret);
-
-		global $trackback;
-		$trackback = 0;
-
-		if (!headers_sent()){
-			pkwk_common_headers(0,0, $http_code);
-		}
-
-		if(defined('SKIN_FILE')){
-			if (file_exists(SKIN_FILE) && is_readable(SKIN_FILE)) {
-				catbody($page, $title, $body);
-			} elseif ( !empty($skin_file) && file_exists($skin_file) && is_readable($skin_file)) {
-				define('SKIN_FILE', $skin_file);
-				catbody($page, $title, $body);
-			}
-		}else{
-			$html = array();
-			$html[] = '<!doctype html>';
-			$html[] = '<html>';
-			$html[] = '<head>';
-			$html[] = '<meta charset="utf-8">';
-			$html[] = '<meta name="robots" content="NOINDEX,NOFOLLOW" />';
-			$html[] = '<link rel="stylesheet" href="http://code.jquery.com/ui/' . JQUERY_UI_VER . '/themes/base/jquery-ui.css" type="text/css" />';
-			$html[] = '<title>' . $page . ' - ' . $page_title . '</title>';
-			$html[] = '</head>';
-			$html[] = '<body>' . $body . '</body>';
-			$html[] = '</html>';
-			echo join("\n",$html);
-		}
-		pkwk_common_suffixes();
-		die();
-	}
-
-	public static function redirect($url = ''){
-		global $vars;
-		if (empty($url)){
-			$url = isset($vars['page']) ? self::get_page_location_uri($vars['page']) : self::get_script_uri();
-		}
-		pkwk_headers_sent();
-		header('Status: 301 Moved Permanently');
-		header('Location: ' . $url);
-		$html = array();
-		$html[] = '<!doctype html>';
-		$html[] = '<html>';
-		$html[] = '<head>';
-		$html[] = '<meta charset="utf-8">';
-		$html[] = '<meta name="robots" content="NOINDEX,NOFOLLOW" />';
-		$html[] = '<meta http-equiv="refresh" content="1; URL='.$url.'" />';
-		$html[] = '<link rel="stylesheet" href="http://code.jquery.com/ui/' . JQUERY_UI_VER . '/themes/base/jquery-ui.css" type="text/css" />';
-		$html[] = '<title>301 Moved Permanently</title>';
-		$html[] = '</head>';
-		$html[] = '<body>';
-		$html[] = '<div class="message_box ui-state-info ui-corner-all">';
-		$html[] = '<p style="padding:0 .5em;"><span class="ui-icon ui-icon-alert"></span>Please click <a href="'.$url.'">here</a> if you do not want to move even after a while.</p>';
-		$html[] = '</div>';
-		$html[] = '</body>';
-		$html[] = '</html>';
-		echo join("\n",$html);
-		exit;
-	}
+	
 	
 	private static function init($init_uri = '',$get_init_value=0){
 		global $script_directory_index, $absolute_uri;
@@ -92,7 +13,7 @@ class Router{
 			// Get
 			if (isset($script)) {
 				if ($get_init_value) return $script;
-				return $absolute_uri ? get_script_absuri() : $script;
+				return $absolute_uri ? self::get_script_absuri() : $script;
 			}
 			$script = self::get_script_absuri();
 			return $script;
@@ -100,14 +21,14 @@ class Router{
 
 		// Set manually
 		if (isset($script)) die_message('$script: Already init');
-		if (! self::is_reluri($init_uri) && ! is_url($init_uri, TRUE)) die_message('$script: Invalid URI');
+		if (! self::is_reluri($init_uri) && ! is_url($init_uri, TRUE)) self::die_message('$script: Invalid URI');
 		$script = $init_uri;
 
 		// Cut filename or not
 		if (isset($script_directory_index)) {
 			if (! file_exists($script_directory_index))
-				die_message('Directory index file not found: ' .
-					htmlsc($script_directory_index));
+				self::die_message('Directory index file not found: ' .
+					Utility::htmlsc($script_directory_index));
 			$matches = array();
 			if (preg_match('#^(.+/)' . preg_quote($script_directory_index, '#') . '$#',
 				$script, $matches)) $script = $matches[1];
@@ -138,11 +59,11 @@ class Router{
 		// Get
 		if (isset($uri)) return $uri;
 
-		if (isset($script_abs) && is_url($script_abs,true)) {
+		if (isset($script_abs) && Utility::is_url($script_abs,true)) {
 			$uri = $script_abs;
 			return $uri;
 		} else
-		if (isset($script) && is_url($script,true)) {
+		if (isset($script) && Utility::is_url($script,true)) {
 			$uri = $script;
 			return $uri;
 		}
@@ -187,6 +108,14 @@ class Router{
 
 		return $uri;
 	}
+	public static function get_cmd_uri($cmd='', $page='', $path_reference='rel', $query='', $fragment='')
+	{
+		return self::get_resolve_uri($cmd,$page,$path_reference,$query,$fragment,0);
+	}
+	public static function get_page_uri($page, $path_reference='rel', $query='', $fragment='')
+	{
+		return self::get_resolve_uri('',$page,$path_reference,$query,$fragment,0);
+	}
 
 	public static function get_resolve_uri($cmd='', $page='', $path_reference='rel', $query=array(), $fragment='')
 	{
@@ -228,47 +157,44 @@ class Router{
 		// RFC2396,RFC3986 : relativeURI = ( net_path | abs_path | rel_path ) [ "?" query ]
 		//				   absoluteURI = scheme ":" ( hier_part | opaque_part )
 		$ret = '';
-		
-		$script = self::init();
+		if (!isset($script)) $script = self::init();
+		$parsed_url = parse_url( ($path === 'rel') ? $script : self::get_script_absuri());
 
 		switch($path) {
-		case 'net': // net_path	  = "//" authority [ abs_path ]
-			$parsed_url = parse_url(self::get_script_absuri());
-			$pref = '//';
-			if (isset($parsed_url['user'])) {
-				$ret .= $pref . $parsed_url['user'];
-				$pref = '';
-				$ret .= (isset($parsed_url['pass'])) ? ':'.$parsed_url['pass'] : '';
-				$ret .= '@';
-			}
-			if (isset($parsed_url['host'])) {
-				$ret .= $pref . $parsed_url['host'];
-				$pref = '';
-			}
-			$ret .= (isset($parsed_url['port'])) ? ':'.$parsed_url['port'] : '';
-		case 'abs': // abs_path	  = "/"  path_segments
-			if ($path === 'abs') $parsed_url = parse_url(get_script_absuri());
-			if (isset($parsed_url['path']) && ($pos = strrpos($parsed_url['path'], '/')) !== false) {
-				$ret .= substr($parsed_url['path'], 0, $pos + 1);
-			} else {
-				$ret .= '/';
-			}
-			break;
-		case 'rel': // rel_path	  = rel_segment [ abs_path ]
-			if (is_url($script, true)) {
-				$ret = './';
-			} else {
-				$parsed_url = parse_url($script);
+			case 'net': // net_path	  = "//" authority [ abs_path ]
+				$pref = '//';
+				if (isset($parsed_url['user'])) {
+					$ret .= $pref . $parsed_url['user'];
+					$pref = '';
+					$ret .= (isset($parsed_url['pass'])) ? ':'.$parsed_url['pass'] : '';
+					$ret .= '@';
+				}
+				if (isset($parsed_url['host'])) {
+					$ret .= $pref . $parsed_url['host'];
+					$pref = '';
+				}
+				$ret .= (isset($parsed_url['port'])) ? ':'.$parsed_url['port'] : '';
+			case 'abs': // abs_path	  = "/"  path_segments
 				if (isset($parsed_url['path']) && ($pos = strrpos($parsed_url['path'], '/')) !== false) {
 					$ret .= substr($parsed_url['path'], 0, $pos + 1);
+				} else {
+					$ret .= '/';
 				}
-			}
-			break;
-		case 'full':
-		default:
-			$absoluteURI = get_script_absuri();
-			$ret = substr($absoluteURI, 0, strrpos($absoluteURI, '/')+1);
-			break;
+				break;
+			case 'rel': // rel_path	  = rel_segment [ abs_path ]
+				if (Utility::is_url($script, true)) {
+					$ret = './';
+				} else {
+					if (isset($parsed_url['path']) && ($pos = strrpos($parsed_url['path'], '/')) !== false) {
+						$ret .= substr($parsed_url['path'], 0, $pos + 1);
+					}
+				}
+				break;
+			case 'full':
+			default:
+				$absoluteURI = self::get_script_absuri();
+				$ret = substr($absoluteURI, 0, strrpos($absoluteURI, '/')+1);
+				break;
 		}
 
 		return $ret;

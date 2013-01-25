@@ -8,6 +8,8 @@
 // License: GPL v2 or (at your option) any later version
 //
 // Unfreeze(Unlock) plugin
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\File\FileFactory;
 
 // Show edit form when unfreezed
 defined('PLUGIN_UNFREEZE_EDIT') or define('PLUGIN_UNFREEZE_EDIT', TRUE);
@@ -36,19 +38,18 @@ function plugin_unfreeze_action()
 			$_title_isunfreezed);
 
 	} else
-	if ( (! auth::check_role('role_adm_contents') ) ||
+	if ( (! Auth::check_role('role_adm_contents') ) ||
 	     ($pass !== NULL && pkwk_login($pass)) )
 	{
+		$wiki = FileFactory::Wiki($page);
 		// BugTrack2/255
-		check_readable($page, true, true);
+		$wiki->check_readable();
 		// Unfreeze
-		$postdata = get_source($page);
+		$postdata = $wiki->source();
 		array_shift($postdata);
-		$postdata = join('', $postdata);
-		file_write(DATA_DIR, $page, $postdata, TRUE);
+		$wiki->set(join('', $postdata));
 
-		// Update 
-		is_freeze($page, TRUE);
+		// Update
 		if (PLUGIN_UNFREEZE_EDIT) {
 			// BugTrack2/255
 			check_editable($page, true, true);

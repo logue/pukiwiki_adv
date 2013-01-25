@@ -87,7 +87,8 @@ class Diff{
 
 		$y = max($p, $pp);
 		$x = $y - $k;
-		while ($x < $this->m && $y < $this->n && $this->a[$x] === $this->b[$y]) {
+		while ($x < $this->m && $y < $this->n &&
+			 (isset($this->a[$x]) && isset($this->b[$y]) && $this->a[$x] === $this->b[$y])) {
 			$x++;
 			$y++;
 		}
@@ -103,24 +104,30 @@ class Diff{
 		for ($i = count($epc) - 1; $i>=0; --$i) {
 			while($px_idx < $epc[$i]['x'] || $py_idx < $epc[$i]['y']) {
 				if ($epc[$i]['y'] - $epc[$i]['x'] > $py_idx - $px_idx) {
-					if ($this->reverse) {
-						$this->ses[] = array(self::SES_DELETE, $this->b[$py_idx]);
-					} else {
-						$this->ses[] = array(self::SES_ADD,    $this->b[$py_idx]);
+					if (isset($this->b[$py_idx])){
+						if ($this->reverse) {
+							$this->ses[] = array(self::SES_DELETE, rtrim($this->b[$py_idx]));
+						} else {
+							$this->ses[] = array(self::SES_ADD,    rtrim($this->b[$py_idx]));
+						}
 					}
 					++$y_idx;
 					++$py_idx;
 				} else if ($epc[$i]['y'] - $epc[$i]['x'] < $py_idx - $px_idx) {
-					if ($this->reverse) {
-						$this->ses[] = array(self::SES_ADD,    $this->a[$px_idx]);
-					} else {
-						$this->ses[] = array(self::SES_DELETE, $this->a[$px_idx]);
+					if (isset($this->a[$py_idx])){
+						if ($this->reverse) {
+							$this->ses[] = array(self::SES_ADD,    rtrim($this->a[$px_idx]));
+						} else {
+							$this->ses[] = array(self::SES_DELETE, rtrim($this->a[$px_idx]));
+						}
 					}
 					++$x_idx;
 					++$px_idx;
 				} else {
-					$this->ses[] =     array(self::SES_COMMON, $this->a[$px_idx]);
-					$this->lcs += $this->a[$px_idx];
+					if (isset($this->a[$px_idx])) {
+						$this->ses[] =     array(self::SES_COMMON, rtrim($this->a[$px_idx]));
+						$this->lcs += $this->a[$px_idx];
+					}
 					++$x_idx;
 					++$y_idx;
 					++$px_idx;
@@ -160,6 +167,39 @@ class Diff{
 			}
 		}
 		return '<pre class="sh" data-brush="diff">' . "\n" . join("\n", $ret) . '</pre>' . "\n";
+	}
+	public function getMergeHtml(){
+		// Merge helper (when it conflicts)
+
+		$tags = array('th', 'th', 'td');
+		$table = array();
+		$table[] = '<div class="table_wrapper">';
+		
+		$table[] = '<table class="style_table style_table_center">';
+		$table[] = '<caption>';
+		$table[] = 'l : between backup data and stored page data.<br />';
+		$table[] = 'r : between backup data and your post data.';
+		$table[] = '</caption>';
+		$table[] = '<thead>';
+		$table[] = '<tr>';
+		$table[] = '<th class="style_th">l</th>';
+		$table[] = '<th class="style_th">r</th>';
+		$table[] = '<th class="style_th">text</th>';
+		$table[] = '</tr>';
+		$table[] = '</thead>';
+		$table[] = '<tbody>';
+		
+		foreach ($this->ses as $key=>$value){
+			$table[] = '<tr>';
+			$table[] = '<th class="style_th">' . $value[0] . '</th>';
+			$table[] = '<th class="style_th">' . $value[0] . '</th>';
+			$table[] = '<td class="style_td">' . (!empty($value[1])  ? Utility::htmlsc(rtrim($value[1])) : '&nbsp;') . '</td>';
+			$table[] = '</tr>';
+		}
+		$table[] = '</tbody>';
+		$table[] = '</table>';
+
+		return  join("\n", $table);
 	}
 	public function __toString(){
 		return join("\n",self::getDiff());

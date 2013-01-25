@@ -9,8 +9,6 @@
 use PukiWiki\Lib\Utility;
 use PukiWiki\Lib\Router;
 use PukiWiki\Lib\File\FileFactory;
-use PukiWiki\Lib\File\BackupFile;
-use PukiWiki\Lib\File\WikiFile;
 use PukiWiki\Lib\Renderer\RendererFactory;
 use PukiWiki\Lib\Renderer\Inline\Inline;
 use PukiWiki\Lib\Relational;
@@ -24,7 +22,7 @@ function make_backup($page, $delete = FALSE)
 {
 	global $del_backup;
 	if (empty($page)) return;
-	$backup = new BackupFile($page);
+	$backup = FileFactory::Backup($page);
 
 	if ($del_backup && $delete) {
 		$backup->removeBackup();
@@ -66,7 +64,7 @@ function convert_html($lines)
 function get_source($page = NULL, $lock = TRUE, $join = FALSE)
 {
 	if (empty($page)) return;
-	$wiki = new WikiFile($page);
+	$wiki = FileFactory::Wiki($page);
 	if (!$wiki->has()){
 		return;
 	}
@@ -98,15 +96,7 @@ function get_pg_passage($page, $sw = TRUE)
 function page_write($page, $postdata, $notimestamp = FALSE)
 {
 	if (empty($page)) return;
-	$wiki = new WikiFile($page);
-	if ($notimestamp){
-		$timestamp = $wiki->getTime();
-		$ret = $wiki->set($postdata);
-		$wiki->setTime($timestamp);
-	}else{
-		$ret = $wiki->set($postdata);
-	}
-	return $ret;
+	return FileFactory::Wiki($page)->set($postdata, $notimestamp);
 }
 
 // Get a list of related pages of the page
@@ -264,8 +254,7 @@ function get_readings()
 
 	$deletedPage = FALSE;
 	$matches = array();
-	$w = new WikiFile($pagereading_config_page);
-	foreach ($w->source() as $line) {
+	foreach (FileFactory::Wiki($pagereading_config_page)->source() as $line) {
 		$line = chop($line);
 		if(preg_match('/^-\[\[([^]]+)\]\]\s+(.+)$/', $line, $matches)) {
 			if(isset($readings[$matches[1]])) {
@@ -276,7 +265,9 @@ function get_readings()
 				$deletedPage = TRUE;
 			}
 		}
+		$dict[] = $line;
 	}
+	pr($dict);
 
 	// If enabled ChaSen/KAKASI execution
 	if($pagereading_enable) {
@@ -298,8 +289,7 @@ function get_readings()
 				}
 			}else{
 				$patterns = $replacements = $matches = array();
-				$d = new WikiFile($pagereading_config_dict);
-				foreach ($d->source() as $line) {
+				foreach (FileFactory::Wiki($pagereading_config_dict)->source() as $line) {
 					$line = chop($line);
 					if(preg_match('|^ /([^/]+)/,\s*(.+)$|', $line, $matches)) {
 						$patterns[]     = $matches[1];

@@ -65,12 +65,20 @@ class BackupFile extends File{
 	 * @return    Void
 	 */
 	public function setBackup(){
+		$wiki = FileFactory::Wiki($this->page);
 		// ページが存在しない場合、バックアップ作成しない。
-		if (! FileFactory::Wiki($this->page)->has() ) return;
+		if (! $wiki->has() ) return;
 
-		// 連続更新があった場合に備えて、バックアップを作成するまでのインターバルを設ける
-		if (! ($this->time == 0 || UTIME - $this->time > $this->cycle) ) return;
+		// バックアップに追記するデータ
+		$newdata = $wiki->get(true);
 
+		if (!self::has()){
+			// バックアップ新規作成
+			return self::set(self::SPLITTER . ' ' . $wiki->getTime() . ' ' . UTIME . "\n" . $newdata);
+		}else if (! $this->time == 0 || (UTIME - $this->time > $this->cycle) ){
+			// 連続更新があった場合に備えて、バックアップを作成するまでのインターバルを設ける
+			return;
+		}
 		// 現在のバックアップを取得
 		$backups = self::getBackup();
 		$count   = count($backups) + 1;
@@ -87,17 +95,19 @@ class BackupFile extends File{
 			$strout .= join("\n", $data['data']);
 			unset($backups[$age]);
 		}
-		$strout = preg_replace('/([^\n])\n*$/', "$1\n", $strout);		
+		$strout = preg_replace('/([^\n])\n*$/', "$1\n", $strout);
 
 		// 追加するバックアップデーター
 		// Escape 'lines equal to self::SPLITTER', by inserting a space
-		$body = preg_replace($this->splitter_reglex, '$1 ', FileFactory::Wiki($this->page)->source());
+		$body = preg_replace($this->splitter_reglex, '$1 ', $newdata);
 		// BugTrack/685 by UPK
-		$body = self::SPLITTER . ' ' . $this->time . ' ' . UTIME . "\n" . join("\n", $body);
-		$body = preg_replace("/\n*$/", "\n", $body);
+		$body = self::SPLITTER . ' ' . $wiki->getTime() . ' ' . UTIME . "\n" . $body;
+		$body = preg_replace('/\n*$/', "\n", $body);
 
+		pr($body. $strout);
+		die();
 		// 先頭に追記して書き込む
-		self::set($body. $strout);
+		return self::set($body. $strout);
 	}
 	/**
 	 * バックアップを取得する
@@ -113,23 +123,25 @@ class BackupFile extends File{
 	public function getBackup($age = 0){
 		$_age = 0;
 		$retvars = $match = array();
-		foreach(self::get() as $line) {
-			// BugTrack/685 by UPK
-			if ( preg_match($this->splitter_reglex, $line, $match) ) {
-				// A splitter, tells new data of backup will come
-				++$_age;
-				if ($age > 0 && $_age > $age) return $retvars[$age];
-
+		if (self::has()){
+			foreach(self::get() as $line) {
 				// BugTrack/685 by UPK
-				// 実際ページを保存した時間が指定されている場合（タイムスタンプを更新しないをチェックして更新した場合）
-				// そちらのパラメータをバックアップの日時として使用する。
-				$now = (isset($match[3]) && $match[2] !== $match[3]) ? $match[3] : $match[2];
+				if ( preg_match($this->splitter_reglex, $line, $match) ) {
+					// A splitter, tells new data of backup will come
+					++$_age;
+					if ($age > 0 && $_age > $age) return $retvars[$age];
 
-				// Allocate
-				$retvars[$_age] = array('time'=>$match[2], 'real'=>$now, 'data'=>array());
-			} else {
-				// The first ... the last line of the data
-				$retvars[$_age]['data'][] = rtrim($line);
+					// BugTrack/685 by UPK
+					// 実際ページを保存した時間が指定されている場合（タイムスタンプを更新しないをチェックして更新した場合）
+					// そちらのパラメータをバックアップの日時として使用する。
+					$now = (isset($match[3]) && $match[2] !== $match[3]) ? $match[3] : $match[2];
+
+					// Allocate
+					$retvars[$_age] = array('time'=>$match[2], 'real'=>$now, 'data'=>array());
+				} else {
+					// The first ... the last line of the data
+					$retvars[$_age]['data'][] = rtrim($line);
+				}
 			}
 		}
 		return $retvars;
@@ -203,7 +215,7 @@ class BackupFile extends File{
 	 *
 	 * @return    Boolean   FALSE:失敗 その他:書き込んだバイト数
 	 */
-	public function set($data){
+	public function set($data, $keeptimestamp = false){
 		// 古いバックアップを削除（追記する実装でないため）
 		$this->remove();
 
@@ -235,7 +247,7 @@ class BackupFile extends File{
 				}
 				break;
 			case '.lzf':
-				$bytes = parent::set(lzf_compress($data));
+				$bytes = parent::set(lzf_compress($data), false);
 			break;
 		}
 		return $bytes;

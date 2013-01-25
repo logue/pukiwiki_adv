@@ -13,6 +13,8 @@ use PukiWiki\Lib\File\FileFactory;
 use PukiWiki\Lib\File\WikiFile;
 use PukiWiki\Lib\Auth\Auth;
 use PukiWiki\Lib\Router;
+use PukiWiki\Lib\Utility;
+use PukiWiki\Lib\Diff;
 
 // Remove #freeze written by hand
 define('PLUGIN_EDIT_FREEZE_REGEX', '/^(?:#freeze(?!\w)\s*)+/im');
@@ -273,23 +275,24 @@ function plugin_edit_write()
 	$retvars = array();
 
 	// Collision Detection
-	$oldpagesrc = FileFactory::Wiki($page)->source();
-	$oldpagemd5 = FileFactory::Wiki($page)->digest();
+	$oldwiki = FileFactory::Wiki($page);
+	$oldpagesrc = $oldwiki->get(true);
+	$oldpagemd5 = $oldwiki->digest();
 
 	if ($digest !== $oldpagemd5) {
 		$vars['digest'] = $oldpagemd5; // Reset
 		$original = isset($vars['original']) ? $vars['original'] : null;
-		list($postdata_input, $auto) = do_update_diff($oldpagesrc, $msg, $original);
+		$diff = new Diff($original, $oldpagesrc);
 
 		$_msg_collided_auto = $_string['msg_collided_auto'];
 		$_msg_collided = $_string['msg_collided'];
 		$retvars['msg'] = $_string['title_collided'];
 
-		$retvars['body'] = ($auto ? $_msg_collided_auto : $_msg_collided)."\n";
-		$retvars['body'] .= $do_update_diff_table;
+		$retvars['body'] = $_msg_collided."\n";
+		$retvars['body'] .= $diff->getMergeHtml();
 
 		unset($vars['id']);	// Change edit all-text of pages(from para-edit)
-		$retvars['body'] .= edit_form($page, $postdata_input, $oldpagemd5, FALSE);
+	//	$retvars['body'] .= edit_form($page, $postdata_input, $oldpagemd5, FALSE);
 		return $retvars;
 	}
 
@@ -358,7 +361,7 @@ function plugin_edit_write()
 			}
 		}
 	}
-	Router::redirect($url);
+	Utility::redirect($url);
 	exit;
 }
 

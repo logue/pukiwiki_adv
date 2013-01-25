@@ -13,8 +13,10 @@
 use PukiWiki\Lib\Auth\Auth;
 use PukiWiki\Lib\Auth\AuthUtility;
 use PukiWiki\Lib\Router;
+use PukiWiki\Lib\File\FileFactory;
 use PukiWiki\Lib\File\WikiFile;
 use PukiWiki\Lib\File\BackupFile;
+use PukiWiki\Lib\File\FileUtility;
 use PukiWiki\Lib\Diff;
 
 // Prohibit rendering old wiki texts (suppresses load, transfer rate, and security risk)
@@ -87,24 +89,25 @@ function plugin_backup_action()
 	$action = isset($vars['action']) ? $vars['action'] : null;
 	$s_age  = ( isset($vars['age']) && is_numeric($vars['age']) ) ? $vars['age'] : 0;
 
-	$wiki = new WikiFile($page);
-	$is_page = $wiki->has();
-	$s_page = htmlsc($page);
-	$r_page = rawurlencode($page);
-
-	$backup = new BackupFile($page);
-	$backups = $backup->getBackup($page);
-
-	$msg = $_backup_messages['msg_backup'];
-	if ($s_age > count($backups)) $s_age = $backups_count;
-	$body = '';
-
 	/**
 	 * if page is not set, show list of backup files
 	 */
 	if (!$page) {
 		return array('msg'=>$_backup_messages['title_backuplist'], 'body'=>plugin_backup_get_list_all());
 	}
+
+	$wiki = FileFactory::Wiki($page);
+	$is_page = $wiki->has();
+	$s_page = htmlsc($page);
+	$r_page = rawurlencode($page);
+
+	$backups = FileFactory::Backup($page)->getBackup();
+
+	$msg = $_backup_messages['msg_backup'];
+	if ($s_age > count($backups)) $s_age = $backups_count;
+	$body = '';
+
+	
 	
 	$wiki->check_readable();
 
@@ -150,7 +153,7 @@ function plugin_backup_action()
 			case 'nowdiff':
 				if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
 				$title = & $_backup_messages['title_backupnowdiff'];
-				$now_data = get_source($page, TRUE, TRUE);
+				$now_data = FileFactory::Wiki($page)->get(true);
 				Auth::is_role_page($now_data);
 				$body .= plugin_backup_diff($data, $now_data);
 			break;
@@ -390,7 +393,7 @@ function plugin_backup_get_list_all($withfilename = FALSE)
 
 	if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
 
-	$pages = array_diff(auth::get_existpages(BACKUP_DIR, BACKUP_EXT), $cantedit);
+	$pages = FileUtility::get_exsists(BACKUP_DIR);
 
 	if (empty($pages)) {
 		return '';

@@ -110,13 +110,16 @@ class File{
 	 * @param string or array $str 書き込む文字列
 	 * @return int 書き込んだバイト数
 	 */
-	public function set($str){
+	public function set($str, $keeptimestamp = false){
 		// 書き込み可能かをチェック
 		if ($this->has () && ! $this->info->isWritable())
 			Utility::die_message(sprintf('File <var>%s</var> is not writable.', Utility::htmlsc($this->filename)));
 
 		// 書き込むものがなかった場合、削除とみなす
 		if (empty($str)) return $this->remove();
+
+		// タイムスタンプを取得
+		if ($keeptimestamp) $timestamp = self::getTime();
 
 		$data = '';
 		if (!is_array($str)){
@@ -137,6 +140,8 @@ class File{
 		$ret = $file->fwrite($data);
 		// アンロック
 		$file->flock(LOCK_UN);
+		// タイムスタンプを保持する場合
+		if ($keeptimestamp) self::setTime($timestamp);
 		// 念のためオブジェクトを開放
 		unset($file);
 

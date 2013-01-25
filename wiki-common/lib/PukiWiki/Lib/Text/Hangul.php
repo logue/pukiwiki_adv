@@ -1,5 +1,9 @@
 <?php
 namespace PukiWiki\Lib\Text;
+/**
+ * ハングル文字クラス
+ * http://pukiwiki.sourceforge.jp/dev/?BugTrack2%2F13
+ */
 class Hangul{
 	protected $LCtable = array('ㄱ','ㄱ','ㄴ','ㄷ','ㄷ','ㄹ','ㅁ','ㅂ','ㅂ','ㅅ','ㅅ','ㅇ','ㅈ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ');
 	/**
@@ -9,7 +13,7 @@ class Hangul{
 	 */
 	public static function toChosung($str)
 	{
-		preg_match('/^./u', $str, $temp);	// 先頭の１文字を取得
+		preg_match('/^./u', $str, $temp);
 		$unicode = self::utf8_to_unicode($temp[0]);	// 取得した文字をUnicodeに変換
 
 		if ($unicode[0] >= 44032 && $unicode[0] <= 55203) {	// 字母を抽出

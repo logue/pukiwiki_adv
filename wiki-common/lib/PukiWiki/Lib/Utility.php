@@ -134,6 +134,95 @@ class Utility{
 		$match = array();
 		return preg_match('/^\[\[(.*)\]\]$/', $str, $match) ? $match[1] : $str;
 	}
+	/**
+	 * エラーメッセージを表示
+	 * @param string $msg エラーメッセージ
+	 * @param string $title エラーのタイトル
+	 * @param int $http_code 出力するヘッダー
+	 */
+	public static function die_message($msg, $error_title='', $http_code = 500){
+		global $skin_file, $page_title, $_string, $_title, $_button, $vars;
+
+		$title = !empty($error_title) ? $error_title : $_title['error'];
+		$page = $_title['error'];
+
+		if (PKWK_WARNING !== true){	// PKWK_WARNINGが有効でない場合は、詳細なエラーを隠す
+			$msg = $_string['error_msg'];
+		}
+		$ret = array();
+		$ret[] = '<p>[ ';
+		if ( isset($vars['page']) && !empty($vars['page']) ){
+			$ret[] = '<a href="' . get_page_location_uri($vars['page']) .'">'.$_button['back'].'</a> | ';
+			$ret[] = '<a href="' . self::get_cmd_uri('edit',$vars['page']) . '">Try to edit this page</a> | ';
+		}
+		$ret[] = '<a href="' . get_cmd_uri() . '">Return to FrontPage</a> ]</p>';
+		$ret[] = '<div class="message_box ui-state-error ui-corner-all">';
+		$ret[] = '<p style="padding:0 .5em;"><span class="ui-icon ui-icon-alert"></span> <strong>' . $_title['error'] . '</strong> ' . $msg . '</p>';
+		$ret[] = '</div>';
+		$body = join("\n",$ret);
+
+		global $trackback;
+		$trackback = 0;
+
+		if (!headers_sent()){
+			pkwk_common_headers(0,0, $http_code);
+		}
+
+		if(defined('SKIN_FILE')){
+			if (file_exists(SKIN_FILE) && is_readable(SKIN_FILE)) {
+				catbody($page, $title, $body);
+			} elseif ( !empty($skin_file) && file_exists($skin_file) && is_readable($skin_file)) {
+				define('SKIN_FILE', $skin_file);
+				catbody($page, $title, $body);
+			}
+		}else{
+			$html = array();
+			$html[] = '<!doctype html>';
+			$html[] = '<html>';
+			$html[] = '<head>';
+			$html[] = '<meta charset="utf-8">';
+			$html[] = '<meta name="robots" content="NOINDEX,NOFOLLOW" />';
+			$html[] = '<link rel="stylesheet" href="http://code.jquery.com/ui/' . JQUERY_UI_VER . '/themes/base/jquery-ui.css" type="text/css" />';
+			$html[] = '<title>' . $page . ' - ' . $page_title . '</title>';
+			$html[] = '</head>';
+			$html[] = '<body>' . $body . '</body>';
+			$html[] = '</html>';
+			echo join("\n",$html);
+		}
+		pkwk_common_suffixes();
+		die();
+	}
+	/**
+	 * リダイレクト
+	 * @param string $url リダイレクト先
+	 */
+	public static function redirect($url = ''){
+		global $vars;
+		if (empty($url)){
+			$url = isset($vars['page']) ? self::get_page_uri($vars['page']) : self::get_script_uri();
+		}
+		pkwk_headers_sent();
+		header('Status: 301 Moved Permanently');
+		header('Location: ' . $url);
+		$html = array();
+		$html[] = '<!doctype html>';
+		$html[] = '<html>';
+		$html[] = '<head>';
+		$html[] = '<meta charset="utf-8">';
+		$html[] = '<meta name="robots" content="NOINDEX,NOFOLLOW" />';
+		$html[] = '<meta http-equiv="refresh" content="1; URL='.$url.'" />';
+		$html[] = '<link rel="stylesheet" href="http://code.jquery.com/ui/' . JQUERY_UI_VER . '/themes/base/jquery-ui.css" type="text/css" />';
+		$html[] = '<title>301 Moved Permanently</title>';
+		$html[] = '</head>';
+		$html[] = '<body>';
+		$html[] = '<div class="message_box ui-state-info ui-corner-all">';
+		$html[] = '<p style="padding:0 .5em;"><span class="ui-icon ui-icon-alert"></span>Please click <a href="'.$url.'">here</a> if you do not want to move even after a while.</p>';
+		$html[] = '</div>';
+		$html[] = '</body>';
+		$html[] = '</html>';
+		echo join("\n",$html);
+		exit;
+	}
 }
 
 // hex2bin -- Converts the hex representation of data to binary

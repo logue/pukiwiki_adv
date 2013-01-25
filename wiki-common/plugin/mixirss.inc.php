@@ -5,6 +5,8 @@
 // Publishing RSS feed of RecentChanges
 // Usage: mixirss.inc.php?ver=[0.91|1.0(default)|2.0]
 
+use PukiWiki\Lib\File\FileUtility;
+
 // View Description Letters
 define('MIXIRSS_DESCRIPTION_LENGTH', 256);
 define('MIXIRSS_LANG', LANG);
@@ -34,51 +36,6 @@ function plugin_mixirss_action()
 		default: die('Invalid RSS version!!');
 	}
 
-	$data = array();
-
-	if ($memcache !== null){
-		$lines = $memcache->get(MEMCACHE_PREFIX.PKWK_MAXSHOW_CACHE);
-		if ($lines === FALSE){
-			die('PKWK_MAXSHOW_CACHE does not found in memcache. please reload.');
-		}else{
-			$count = (count($lines) < $rss_max) ? count($lines) : $rss_max;
-			$i = 0;
-			foreach($lines as $page => $time){
-				if ($i > $count) break;
-				$data[$page] = $time;
-				$i++;
-			}
-		}
-		$time_recent = $memcache->get(MEMCACHE_PREFIX.'timestamp-'.$cache_name);
-	}else{
-		$recent = CACHE_DIR . PKWK_MAXSHOW_CACHE;
-		if (! file_exists($recent)) die('PKWK_MAXSHOW_CACHE is not found');
-
-		foreach (file_head($recent, $rss_max) as $line) {
-			list($time, $page) = explode("\t", rtrim($line));
-			$data[$page] = $time;
-		}
-		$time_recent = filemtime($recent);
-	}
-
-	$rsscache = CACHE_DIR . 'rsscache' . $version . '.dat';
-/*
-	$time_rsscache =  ? filemtime($rsscache) : 0;
-
-	if (file_exists($rsscache)) {
-		// if caching rss file, return cache.
-		if ($time_recent <= $time_rsscache) {
-			pkwk_common_headers();
-			header('Content-type: application/xml');
-			print '<?xml version="1.0" encoding="UTF-8"?>' . "\n\n";
-			print implode('', file($rsscache));
-			exit;
-		}
-	}else{
-		
-	
-	}
-*/
 	// Official Main routine ...
 	$page_title_utf8 = mb_convert_encoding($page_title, 'UTF-8', SOURCE_ENCODING);
 	$rss_description_utf8 = mb_convert_encoding(htmlspecialchars($rss_description), 'UTF-8', SOURCE_ENCODING);
@@ -91,7 +48,7 @@ function plugin_mixirss_action()
 
 	// Creating <item>
 	$items = $rdf_li = '';
-	foreach ($data as $page => $time) {
+	foreach (FileUtility::get_recent() as $page => $time) {
 		$r_page = rawurlencode($page);
 		$url    = get_page_uri($page);
 		$title  = mb_convert_encoding($page, 'UTF-8', SOURCE_ENCODING);
