@@ -104,8 +104,8 @@ class BackupFile extends File{
 		$body = self::SPLITTER . ' ' . $wiki->getTime() . ' ' . UTIME . "\n" . $body;
 		$body = preg_replace('/\n*$/', "\n", $body);
 
-		pr($body. $strout);
-		die();
+//		pr($body. $strout);
+//		die();
 		// 先頭に追記して書き込む
 		return self::set($body. $strout);
 	}
