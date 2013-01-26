@@ -1143,13 +1143,7 @@ var pukiwiki = {};
 									dataType : 'xml',
 									global:false,
 									data : params,
-									async:false,
-									beforeSend: function(){
-										$('body').css('cursor','wait');
-									},
-									complete: function(){
-										$('body').css('cursor','auto');
-									}
+									async:false
 								}).done(function(data){
 									if (data.documentElement.textContent) {
 										glossaries[text] = data.documentElement.textContent;

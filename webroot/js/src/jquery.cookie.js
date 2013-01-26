@@ -1,12 +1,9 @@
-/*jshint eqnull:true */
 /*!
- * jQuery Cookie Plugin v1.2
+ * jQuery Cookie Plugin v1.3.1
  * https://github.com/carhartl/jquery-cookie
  *
- * Copyright 2011, Klaus Hartl
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.opensource.org/licenses/GPL-2.0
+ * Copyright 2013 Klaus Hartl
+ * Released under the MIT license
  */
 (function ($, document, undefined) {
 
@@ -17,7 +14,19 @@
 	}
 
 	function decoded(s) {
-		return decodeURIComponent(s.replace(pluses, ' '));
+		return unRfc2068(decodeURIComponent(s.replace(pluses, ' ')));
+	}
+
+	function unRfc2068(value) {
+		if (value.indexOf('"') === 0) {
+			// This is a quoted cookie as according to RFC2068, unescape
+			value = value.slice(1, -1).replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+		}
+		return value;
+	}
+
+	function fromJSON(value) {
+		return config.json ? JSON.parse(value) : value;
 	}
 
 	var config = $.cookie = function (key, value, options) {
@@ -49,20 +58,29 @@
 		// read
 		var decode = config.raw ? raw : decoded;
 		var cookies = document.cookie.split('; ');
-		for (var i = 0, parts; (parts = cookies[i] && cookies[i].split('=')); i++) {
-			if (decode(parts.shift()) === key) {
-				var cookie = decode(parts.join('='));
-				return config.json ? JSON.parse(cookie) : cookie;
+		var result = key ? null : {};
+		for (var i = 0, l = cookies.length; i < l; i++) {
+			var parts = cookies[i].split('=');
+			var name = decode(parts.shift());
+			var cookie = decode(parts.join('='));
+
+			if (key && key === name) {
+				result = fromJSON(cookie);
+				break;
+			}
+
+			if (!key) {
+				result[name] = fromJSON(cookie);
 			}
 		}
 
-		return null;
+		return result;
 	};
 
 	config.defaults = {};
 
 	$.removeCookie = function (key, options) {
-		if ($.cookie(key, options) !== null) {
+		if ($.cookie(key) !== null) {
 			$.cookie(key, null, options);
 			return true;
 		}
