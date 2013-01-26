@@ -1,8 +1,8 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: init.php,v 1.57.12 2012/10/27 17:21:00 Logue Exp $
+// $Id: init.php,v 1.57.13 2013/01/26 09:25:00 Logue Exp $
 // Copyright (C)
-//   2010-2012 PukiWiki Advance Developers Team
+//   2010-2013 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
 //   2002-2007,2009,2011 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -14,11 +14,11 @@
 
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
-define('S_VERSION', 'v1.0.1');
-define('S_REVSION', '20121027');
+define('S_VERSION', 'v1.0.2');
+define('S_REVSION', '20130126');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
-	' Copyright &#169; 2010-2012' .
+	' Copyright &#169; 2010-2013' .
 	' <a href="http://pukiwiki.logue.be/" rel="external">PukiWiki Advance Developers Team</a>.<br />' .
 	' Licensed under the <a href="http://www.gnu.org/licenses/gpl-2.0.html">GPLv2</a>.' .
 	' Based on <a href="http://pukiwiki.cafelounge.net/plus/" rel="external">"PukiWiki Plus! i18n"</a>'
@@ -36,8 +36,8 @@ defined('WWW_HOME')		or define('WWW_HOME', '');
 defined('COMMON_URI')	or define('COMMON_URI', ROOT_URI);
 
 // フレームワークのバージョン
-define('JQUERY_VER',		'1.8.3');
-define('JQUERY_UI_VER',		'1.9.2');
+define('JQUERY_VER',		'1.9.0');
+define('JQUERY_UI_VER',		'1.10.0');
 define('JQUERY_MOBILE_VER',	'1.2.0');
 
 // ページ名やファイル名として使用できない文字（エンコード前の文字）

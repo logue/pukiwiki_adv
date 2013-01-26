@@ -1,5 +1,5 @@
 /*!
- * Modernizr v2.6.1
+ * Modernizr v2.6.2
  * www.modernizr.com
  *
  * Copyright (c) Faruk Ates, Paul Irish, Alex Sexton
@@ -24,7 +24,7 @@
 
 window.Modernizr = (function( window, document, undefined ) {
 
-    var version = '2.6.1',
+    var version = '2.6.2',
 
     Modernizr = {},
 
@@ -96,12 +96,12 @@ window.Modernizr = (function( window, document, undefined ) {
     // Inject element with style element and some CSS rules
     injectElementWithStyles = function( rule, callback, nodes, testnames ) {
 
-      var style, ret, node,
+      var style, ret, node, docOverflow,
           div = document.createElement('div'),
           // After page load injecting a fake body doesn't work so check if body exists
           body = document.body,
           // IE6 and 7 won't return offsetWidth or offsetHeight unless it's in the body element, so we fake it.
-          fakeBody = body ? body : document.createElement('body');
+          fakeBody = body || document.createElement('body');
 
       if ( parseInt(nodes, 10) ) {
           // In order not to give false positives we create a node for each test
@@ -126,13 +126,22 @@ window.Modernizr = (function( window, document, undefined ) {
       fakeBody.appendChild(div);
       if ( !body ) {
           //avoid crashing IE8, if background image is used
-          fakeBody.style.background = "";
+          fakeBody.style.background = '';
+          //Safari 5.13/5.1.4 OSX stops loading if ::-webkit-scrollbar is used and scrollbars are visible
+          fakeBody.style.overflow = 'hidden';
+          docOverflow = docElement.style.overflow;
+          docElement.style.overflow = 'hidden';
           docElement.appendChild(fakeBody);
       }
 
       ret = callback(div, rule);
       // If this is done after page load we don't want to remove the body so check if body exists
-      !body ? fakeBody.parentNode.removeChild(fakeBody) : div.parentNode.removeChild(div);
+      if ( !body ) {
+          fakeBody.parentNode.removeChild(fakeBody);
+          docElement.style.overflow = docOverflow;
+      } else {
+          div.parentNode.removeChild(div);
+      }
 
       return !!ret;
 
@@ -692,8 +701,8 @@ window.Modernizr = (function( window, document, undefined ) {
     tests['generatedcontent'] = function() {
         var bool;
 
-        injectElementWithStyles(['#modernizr:after{content:"',smile,'";visibility:hidden}'].join(''), function( node ) {
-          bool = node.offsetHeight >= 1;
+        injectElementWithStyles(['#',mod,'{font:0/0 a}#',mod,':after{content:"',smile,'";visibility:hidden;font:3px/1 a}'].join(''), function( node ) {
+          bool = node.offsetHeight >= 3;
         });
 
         return bool;
@@ -979,7 +988,7 @@ window.Modernizr = (function( window, document, undefined ) {
 
          test = typeof test == 'function' ? test() : test;
 
-         if (enableClasses) {
+         if (typeof enableClasses !== "undefined" && enableClasses) {
            docElement.className += ' ' + (test ? '' : 'no-') + feature;
          }
          Modernizr[feature] = test;
@@ -995,7 +1004,7 @@ window.Modernizr = (function( window, document, undefined ) {
     modElem = inputElem = null;
 
     /*>>shiv*/
-    /*! HTML5 Shiv v3.6 | @afarkas @jdalton @jon_neal @rem | MIT/GPL2 Licensed */
+    /*! HTML5 Shiv v3.6.1 | @afarkas @jdalton @jon_neal @rem | MIT/GPL2 Licensed */
     ;(function(window, document) {
     /*jshint evil:true */
       /** Preset options */
@@ -1004,8 +1013,8 @@ window.Modernizr = (function( window, document, undefined ) {
       /** Used to skip problem elements */
       var reSkip = /^<|^(?:button|map|select|textarea|object|iframe|option|optgroup)$/i;
 
-      /** Not all elements can be cloned in IE (this list can be shortend) **/
-      var saveClones = /^<|^(?:a|b|button|code|div|fieldset|form|h1|h2|h3|h4|h5|h6|i|iframe|img|input|label|li|link|ol|option|p|param|q|script|select|span|strong|style|table|tbody|td|textarea|tfoot|th|thead|tr|ul)$/i;
+      /** Not all elements can be cloned in IE **/
+      var saveClones = /^(?:a|b|code|div|fieldset|h1|h2|h3|h4|h5|h6|i|label|li|ol|p|q|span|strong|style|table|tbody|td|th|tr|ul)$/i;
 
       /** Detect whether the browser supports default html5 styles */
       var supportsHtml5Styles;
@@ -1756,6 +1765,11 @@ var docElement            = doc.documentElement,
     isFunction            = function ( fn ) {
       return toString.call( fn ) == "[object Function]";
     },
+    readFirstScript       = function() {
+        if (!firstScript || !firstScript.parentNode) {
+            firstScript = doc.getElementsByTagName( "script" )[ 0 ];
+        }
+    },
     globalFilters         = [],
     scriptCache           = {},
     prefixes              = {
@@ -1780,6 +1794,7 @@ var docElement            = doc.documentElement,
   // Takes a preloaded js obj (changes in different browsers) and injects it into the head
   // in the appropriate order
   function injectJs ( src, cb, attrs, timeout, /* internal use */ err, internal ) {
+	  
     var script = doc.createElement( "script" ),
         done, i;
 
@@ -1820,6 +1835,7 @@ var docElement            = doc.documentElement,
     // Inject script into to document
     // or immediately callback if we know there
     // was previously a timeout error
+    readFirstScript();
     err ? script.onload() : firstScript.parentNode.insertBefore( script, firstScript );
   }
 
@@ -1845,6 +1861,7 @@ var docElement            = doc.documentElement,
     }
 
     if ( ! err ) {
+      readFirstScript();
       firstScript.parentNode.insertBefore( link, firstScript );
       sTimeout(cb, 0);
     }
@@ -1909,8 +1926,6 @@ var docElement            = doc.documentElement,
 
         ! started && executeStack();
 
-        // Handle memory leak in IE
-        preloadElem.onload = preloadElem.onreadystatechange = null;
         if ( first ) {
           if ( elem != "img" ) {
             sTimeout(function(){ insBeforeObj.removeChild( preloadElem ) }, 50);
@@ -1921,6 +1936,9 @@ var docElement            = doc.documentElement,
               scriptCache[ url ][ i ].onload();
             }
           }
+          
+          // Handle memory leak in IE
+           preloadElem.onload = preloadElem.onreadystatechange = null;
         }
       }
     }
@@ -1929,6 +1947,10 @@ var docElement            = doc.documentElement,
     // Setting url to data for objects or src for img/scripts
     if ( elem == "object" ) {
       preloadElem.data = url;
+	  
+      // Setting the type attribute to stop Firefox complaining about the mimetype when running locally.
+      // The type doesn't matter as long as it's real, thus text/css instead of text/javascript.
+      preloadElem.setAttribute("type", "text/css");
     } else {
       preloadElem.src = url;
 
@@ -1954,6 +1976,7 @@ var docElement            = doc.documentElement,
     if ( elem != "img" ) {
       // If it's the first time, or we've already loaded it all the way through
       if ( firstFlag || scriptCache[ url ] === 2 ) {
+        readFirstScript();
         insBeforeObj.insertBefore( preloadElem, isGeckoLTE18 ? null : firstScript );
 
         // If something fails, and onerror doesn't fire,
@@ -2041,8 +2064,11 @@ var docElement            = doc.documentElement,
       return res;
     }
 
-    function getExtension ( url ) {
-        return url.split(".").pop().split("?").shift();
+     function getExtension ( url ) {
+      //The extension is always the last characters before the ? and after a period.
+      //The previous method was not accounting for the possibility of a period in the query string.
+      var b = url.split('?')[0];
+      return b.substr(b.lastIndexOf('.')+1);
     }
 
     function loadScriptOrStyle ( input, callback, chain, index, testResult ) {
@@ -2071,7 +2097,7 @@ var docElement            = doc.documentElement,
       }
       else {
         // Handle if we've already had this url and it's completed loaded already
-        if ( scriptCache[ resource['url'] ] ) {
+        if ( scriptCache[ resource['url'] ] && resource['reexecute'] !== true) {
           // don't let this execute again
           resource['noexec'] = true;
         }
@@ -2080,7 +2106,7 @@ var docElement            = doc.documentElement,
         }
 
         // Throw this into the queue
-        chain.load( resource['url'], ( ( resource['forceCSS'] || ( ! resource['forceJS'] && "css" == getExtension( resource['url'] ) ) ) ) ? "c" : undef, resource['noexec'], resource['attrs'], resource['timeout'] );
+        input && chain.load( resource['url'], ( ( resource['forceCSS'] || ( ! resource['forceJS'] && "css" == getExtension( resource['url'] ) ) ) ) ? "c" : undef, resource['noexec'], resource['attrs'], resource['timeout'] );
 
         // If we have a callback, we'll start the chain over
         if ( isFunction( callback ) || isFunction( autoCallback ) ) {
@@ -2108,12 +2134,12 @@ var docElement            = doc.documentElement,
             complete   = testObject['complete'] || noop,
             needGroupSize,
             callbackKey;
-
+            
         // Reusable function for dealing with the different input types
         // NOTE:: relies on closures to keep 'chain' up to date, a bit confusing, but
         // much smaller than the functional equivalent in this case.
         function handleGroup ( needGroup, moreToCome ) {
-          if ( ! needGroup ) {
+          if ( '' !== needGroup && ! needGroup ) {
             // Call the complete callback when there's nothing to load.
             ! moreToCome && complete();
           }
@@ -2180,11 +2206,15 @@ var docElement            = doc.documentElement,
         }
 
         // figure out what this group should do
-        handleGroup( group, !!always );
+        handleGroup( group, !!always || !!testObject['complete']);
 
         // Run our loader on the load/both group too
         // the always stuff always loads second.
         always && handleGroup( always );
+
+	// If complete callback is used without loading anything
+        !always && !!testObject['complete'] && handleGroup('');
+
     }
 
     // Someone just decides to load a single script or css file as a string

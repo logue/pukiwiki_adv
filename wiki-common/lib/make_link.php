@@ -917,7 +917,7 @@ function make_pagelink($page, $alias = '', $anchor = '', $refer = '', $isautolin
 
 	if ($isautolink || is_page($page)) {
 		return '<a href="' . get_page_uri($page) . $anchor . '" ' . 
-			($link_compact ? 'title="' . $s_page . '( ' .get_pg_passage($page, FALSE) . ' )"' : '' ).
+			 'title="' . $s_page . ($link_compact ? '' : '( ' .get_pg_passage($page, FALSE) . ' )' ) . '"' .
 			($isautolink ? ' class="autolink"' : '') .'>' . $s_alias . '</a>';
 	} else {
 		// Dangling link

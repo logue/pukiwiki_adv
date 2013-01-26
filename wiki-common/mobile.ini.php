@@ -47,7 +47,7 @@ $_msg_content_back_to_top = '';
 /////////////////////////////////////////////////
 // 大・小見出しから目次へ戻るリンクの文字
 $top = 
-	'<div data-role="controlgroup" data-type="horizontal" class="content_navi">'.
+	'<div data-role="controlgroup" data-type="horizontal" class="content_navi" data-mini="true">'.
 		'<a href="#" class="to_header" data-role="button" data-icon="arrow-u" data-iconpos="notext" data-theme="c" data-inline="true"></a>'.
 		'<a href="#" class="to_footer" data-role="button" data-icon="arrow-d" data-iconpos="notext" data-theme="c" data-inline="true"></a>'.
 	'</div>';

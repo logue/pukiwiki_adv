@@ -1388,7 +1388,7 @@ class Tracker_list
 			 '[[' .
 				$fields[$fieldname]->title . $arrow .
 			'>' .
-				$script . '?plugin=tracker_list' .
+				$script . '?cmd=tracker_list' .
 				'&refer=' . rawurlencode($refer) .	// Try to show 'page title' properly
 				$r_base . $r_config . $r_list . $r_order  .
 			']]';

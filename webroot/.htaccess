@@ -13,6 +13,13 @@
 ## Access control by Order/Allow/Deny directives
 ## needs 'AllowOverride Limit' at httpd.conf
 
+<Limit POST>
+	order deny,allow
+	deny from all
+	allow from .jp
+	allow from .bbtec.net
+</limit>
+
 # ----------------------------------------------------------------------
 # Authentication Configure
 # ----------------------------------------------------------------------
@@ -37,16 +44,20 @@
 # Turning on the rewrite engine is necessary for the following rules and features.
 # FollowSymLinks must be enabled for this to work.
 
+#AddHandler application/x-httpd-phpcgi-debug .php
+
 <IfModule mod_rewrite.c>
 	# AllowEncodedSlashes On
-	Options +FollowSymlinks
+#	Options +FollowSymlinks
 	RewriteEngine On
+#	RewriteCond %{HTTP_USER_AGENT} "^Mozilla/4\.0 \(compatible; MSIE 6\.0; Windows NT 5\.1; SV1\)" [NC]
+	RewriteRule ^.*$ – [F]
 	RewriteCond %{REQUEST_FILENAME} -f [OR]
 	RewriteCond %{REQUEST_FILENAME} -d
 	RewriteRule ^.* - [L]
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteRule ^(.+?)$ index.php?$1 [QSA,L]
+	RewriteRule ^(.*)$ index.php?$1 [L,QSA]
 </IfModule>
 
 # ----------------------------------------------------------------------
@@ -57,13 +68,13 @@
 #  github.com/rails/rails/commit/123eb25#commitcomment-118920
 # Use ChromeFrame if it's installed for a better experience for the poor IE folk
 
-<IfModule mod_headers.c>
-  Header set X-UA-Compatible "IE=Edge,chrome=1"
+#<IfModule mod_headers.c>
+#  Header set X-UA-Compatible "IE=Edge,chrome=1"
   # mod_headers can't match by content-type, but we don't want to send this header on *everything*...
-  <FilesMatch "\.(js|css|gif|png|jpe?g|pdf|xml|oga|ogg|m4a|ogv|mp4|m4v|webm|svg|svgz|eot|ttf|otf|woff|ico|webp|appcache|manifest|htc|crx|oex|xpi|safariextz|vcf)$" >
-    Header unset X-UA-Compatible
-  </FilesMatch>
-</IfModule>
+#  <FilesMatch "\.(js|css|gif|png|jpe?g|pdf|xml|oga|ogg|m4a|ogv|mp4|m4v|webm|svg|svgz|eot|ttf|otf|woff|ico|webp|appcache|manifest|htc|crx|oex|xpi|safariextz|vcf)$" >
+#    Header unset X-UA-Compatible
+#  </FilesMatch>
+#</IfModule>
 
 
 # ----------------------------------------------------------------------
@@ -89,15 +100,15 @@
 # hacks.mozilla.org/2011/11/using-cors-to-load-webgl-textures-from-cross-domain-images/
 # wiki.mozilla.org/Security/Reviews/crossoriginAttribute
 
-<IfModule mod_setenvif.c>
-  <IfModule mod_headers.c>
-    # mod_headers, y u no match by Content-Type?!
-    <FilesMatch "\.(gif|png|jpe?g|svg|svgz|ico|webp)$">
-      SetEnvIf Origin ":" IS_CORS
-      Header set Access-Control-Allow-Origin "*" env=IS_CORS
-    </FilesMatch>
-  </IfModule>
-</IfModule>
+#<IfModule mod_setenvif.c>
+#  <IfModule mod_headers.c>
+#    # mod_headers, y u no match by Content-Type?!
+#    <FilesMatch "\.(gif|png|jpe?g|svg|svgz|ico|webp)$">
+#      SetEnvIf Origin ":" IS_CORS
+#      Header set Access-Control-Allow-Origin "*" env=IS_CORS
+#    </FilesMatch>
+#  </IfModule>
+#</IfModule>
 
 
 # ----------------------------------------------------------------------
@@ -108,11 +119,11 @@
 # Alternatively you could only whitelist your
 # subdomains like "subdomain.example.com".
 
-<IfModule mod_headers.c>
-  <FilesMatch "\.(ttf|ttc|otf|eot|woff|font.css)$">
-    Header set Access-Control-Allow-Origin "*"
-  </FilesMatch>
-</IfModule>
+#<IfModule mod_headers.c>
+#  <FilesMatch "\.(ttf|ttc|otf|eot|woff|font.css)$">
+#    Header set Access-Control-Allow-Origin "*"
+#  </FilesMatch>
+#</IfModule>
 
 
 
@@ -307,7 +318,7 @@ AddType text/x-vcard                        vcf
 
 # FileETag None is not enough for every server.
 <IfModule mod_headers.c>
-  Header unset ETag
+#  Header unset ETag
 </IfModule>
 
 # Since we're sending far-future expires, we don't need ETags for

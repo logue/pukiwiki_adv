@@ -1,7 +1,7 @@
 <?php
 // PukiWiki Advance Standard CSS.
-// $Id: scripts.css.php,v 1.6.16 2012/09/23 14:41:00 Logue Exp $
-// Copyright (C) 2010-2012 PukiWiki Advance Developer Team
+// $Id: scripts.css.php,v 1.6.17 2013/01/22 14:41:00 Logue Exp $
+// Copyright (C) 2010-2013 PukiWiki Advance Developer Team
 //
 ini_set('zlib.output_compression', 'Off');
 
@@ -20,51 +20,53 @@ header('Last-Modified: '.gmdate('D, d M Y H:i:s', getlastmod() ) . ' GMT');
 @namespace url(http://www.w3.org/1999/xhtml);
 
 /* HTML5 ✰ Boilerplate */
-/* ==|== normalize.css v2.0.1 | MIT License | git.io/normalize ===============*/
-article,aside,details,figcaption,figure,footer,header,hgroup,nav,section,summary{display:block}
+/*! normalize.css v2.1.0 | MIT License | git.io/normalize */
+article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section,summary{display:block}
 audio,canvas,video{display:inline-block}
 audio:not([controls]){display:none;height:0}
 [hidden]{display:none}
 html{font-family:sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
-body{margin:0}
 a:focus{outline:thin dotted}
 a:active,a:hover{outline:0}
-h1{font-size:2em}
+h1{font-size:2em;margin:.67em 0}
 abbr[title]{border-bottom:1px dotted}
-b,strong{font-weight:bold}
+b,strong{font-weight:700}
 dfn{font-style:italic}
+hr{-moz-box-sizing:content-box;box-sizing:content-box;height:0}
 mark{background:#ff0;color:#000}
-code,kbd,pre,samp{font-family:monospace,serif;font-size:1em}
-pre{white-space:pre;white-space:pre-wrap;word-wrap:break-word}
-q{quotes:"\201C" "\201D" "\2018" "\2019"}
+code,kbd,pre,samp{font-family:monospace, serif;font-size:1em}
+pre{white-space:pre-wrap}
+q{quotes:\201C \201D \2018 \2019}
 small{font-size:80%}
 sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}
-sup{top:-0.5em}
-sub{bottom:-0.25em}
+sup{top:-.5em}
+sub{bottom:-.25em}
 img{border:0}
 svg:not(:root){overflow:hidden}
-figure{margin:0}
-fieldset{border:1px solid #c0c0c0;margin:0 2px;padding:.35em .625em .75em}
-legend{border:0;padding:0}
+fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}
 button,input,select,textarea{font-family:inherit;font-size:100%;margin:0}
 button,input{line-height:normal}
-button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer}
-button[disabled],input[disabled]{cursor:default}
-input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0}
-input[type="search"]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}
-input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance:none}
-button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
+button,select{text-transform:none}
+button,html input[type=button],/* 1 */
+input[type=reset],input[type=submit]{-webkit-appearance:button;cursor:pointer}
+button[disabled],html input[disabled]{cursor:default}
+input[type=checkbox],input[type=radio]{box-sizing:border-box;padding:0}
+input[type=search]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}
+input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-search-decoration{-webkit-appearance:none}
 textarea{overflow:auto;vertical-align:top}
 table{border-collapse:collapse;border-spacing:0}
+body,figure{margin:0}
+legend,button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
 
 /* ==|== HTML5 Boilerplate styles - h5bp.com ================================ */
-html,button,input,select,textarea{color: #222;}
-body{font-size: 13px;line-height: 1.4;}
-::-moz-selection, ::selection {background: #b3d4fc;text-shadow: none;}
-hr{display: block;height: 1px;border: 0;border-top: 1px solid #ccc;margin: 1em 0;padding: 0;}
-img{vertical-align: middle;}
-textarea{resize: vertical;}
-.chromeframe{margin: 0.2em 0;background: #ccc;color: #000;padding: 0.2em 0;}
+html,button,input,select,textarea{color:#222}
+body{font-size:13px;line-height:1.4}
+hr{display:block;height:1px;border:0;border-top:1px solid #ccc;margin:1em 0;padding:0}
+img{vertical-align:middle}
+fieldset{border:0;margin:0;padding:0}
+textarea{resize:vertical}
+.chromeframe{background:#ccc;color:#000;margin:.2em 0;padding:.2em 0}
+::-moz-selection,::selection{background:#b3d4fc;text-shadow:none}
 
 /* ==|== PukiWiki Advance Standard Font Set ================================= */
 
@@ -889,7 +891,7 @@ input[type='search'][required], textarea[required], select[required] {
 }
 
 /* tooltip.inc.php */
-[aria-describedby='tooltip'] {
+[aria-describedby='tooltip'], [aria-describedby='linktip'] {
 	border-bottom: 1px dotted;
 	cursor: help;
 }
@@ -916,7 +918,7 @@ input[type='search'][required], textarea[required], select[required] {
 }
 
 /* for realedit.js */
-#realview_outer {
+#realview {
 	border: 1px solid silver;
 	background-color: white;
 	padding: .2em;
@@ -928,10 +930,6 @@ input[type='search'][required], textarea[required], select[required] {
 	overflow-y: scroll;
 }
 
-#realview{
-	padding: .2em;
-}
-
 /* jQueryUI BlockUI */
 #loading {
 	display:none;
@@ -939,56 +937,7 @@ input[type='search'][required], textarea[required], select[required] {
 }
 
 /* Tooltip */
-#tooltip{
-	color: black;
-	font-size: 93%;
-	text-shadow: white 1px 1px 0;
-	position: absolute; /*leave this alone*/
-	display: none; /*leave this alone*/
-	min-width: 16px;
-	min-height: 16px;
-	max-width: 400px;
-	text-align: left;
-	left: 0; /*leave this alone*/
-	top: 0; /*leave this alone*/
-	border: 1px solid gray;
-	padding: .3em;
-	opacity: .8;
-	border-radius: .3em;
-	background-color: white;
-	box-shadow: 3px 3px 5px rgba(0, 0, 0, .6);
-	z-index: 9999;
-}
-
-.ie6 #tooltip, .ie7 #tooltip, .ie8 #tooltip{
-	filter:
-		alpha(opacity=80)
-		progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=white,EndColorStr=gainsboro)
-		progid:DXImageTransform.Microsoft.Shadow(Strength=5, Direction=135, Color='#333333') !important;
-}
-
-.ie9 #tooltip{
-	-ms-filter:"progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=white,EndColorStr=gainsboro)";
-}
-
-.gecko #tooltip{
-	-moz-opacity:.8;
-	-moz-border-radius: .3em;
-	-moz-box-shadow: 3px 3px 5px rgba(0, 0, 0, .6);
-	background: -moz-linear-gradient(top, white, gainsboro);
-}
-
-.webkit #tooltip{
-	-webkit-border-radius: .3em;
-	-webkit-box-shadow: 3px 3px 5px rgba(0, 0, 0, .6);
-	background: -webkit-gradient(linear, left top, left bottom, from(white), to(gainsboro));
-}
-
-.presto #tooltip{
-	background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjpyZ2JhKDI1NSwyNTUsMjU1LDEpOyIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOnJnYmEoMjIwLDIyMCwyMjAsMSk7IiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IGZpbGw9InVybCgjZ3JhZGllbnQpIiBoZWlnaHQ9IjEwMCUiIHdpZHRoPSIxMDAlIiAvPjwvc3ZnPg==') !important;
-}
-
-#tooltip p{
+[role=tooltip] p{
 	margin: 0px;
 	padding: 0px;
 }
@@ -3167,37 +3116,37 @@ li[role=tab]{
 	margin:0;
 }
 /* ==|== Helper classes ===================================================== */
-.ir {background-color: transparent;border: 0;overflow: hidden;*text-indent: -9999px;}
-.ir:before {content: "";display: block;width: 0;height: 100%;}
+.ir{background-color:transparent;border:0;overflow:hidden;text-indent:-9999px}
+.ir:before{content:"";display:block;width:0;height:150%}
 
-.hidden {display: none !important;visibility: hidden;}
-.visuallyhidden {border: 0;clip: rect(0 0 0 0);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}
-.visuallyhidden.focusable:active,.visuallyhidden.focusable:focus {clip: auto;height: auto;margin: 0;overflow: visible;position: static;width: auto;}
+.hidden{display:none!important;visibility:hidden}
+.visuallyhidden{border:0;clip:rect(0000);height:1px;overflow:hidden;position:absolute;width:1px;margin:-1px;padding:0}
+.visuallyhidden.focusable:active,.visuallyhidden.focusable:focus{clip:auto;height:auto;overflow:visible;position:static;width:auto;margin:0}
 
-.invisible {visibility: hidden;}
-
-.clearfix:before,.clearfix:after {content: " ";display: table;}
-.clearfix:after {clear: both;}
-.clearfix {*zoom: 1;}
+.invisible{visibility:hidden}
+.
+clearfix:before,.clearfix:after{content:" ";display:table}
+.clearfix:after{clear:both}
+.clearfix{zoom:1}
 
 /* ==|== print styles ======================================================= */
 @media print {
-	* { background: transparent !important; color: black !important; box-shadow:none !important; text-shadow: none !important; filter:none !important; -ms-filter: none !important; }
-	a, a:visited { text-decoration: underline; }
-	a[href]:after { content: " (" attr(href) ")"; }
-	abbr[title]:after { content: " (" attr(title) ")"; }
-	.ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after { content: ""; }
-	pre, blockquote { border: 1px solid #999; page-break-inside: avoid; }
-	thead { display: table-header-group; }
-	tr, img { page-break-inside: avoid; }
-	img { max-width: 100% !important; }
-	@page { margin: 0.5cm; }
-	p, h2, h3 { orphans: 3; widows: 3; }
-	h2, h3 { page-break-after: avoid; }
+	*{background:transparent!important;color:#000!important;box-shadow:none!important;text-shadow:none!important}
+	a,a:visited{text-decoration:underline}
+	a[href]:after{content:" (" attr(href) ")"}
+	abbr[title]:after{content:" (" attr(title) ")"}
+	.ir a:after,a[href^=javascript:]:after,a[href^=#]:after{content:""}
+	pre,blockquote{border:1px solid #999;page-break-inside:avoid}
+	thead{display:table-header-group}
+	tr,img{page-break-inside:avoid}
+	img{max-width:100%!important}
+	@page{margin:.5cm}
+	p,h2,h3{orphans:3;widows:3}
+	h2,h3{page-break-after:avoid}
 
 	form, nav, .pkwk-icon, .pkwk-symbol,
-	.navibar, .toolbar, .navi, .message_box, .noprint, .tocpic, .sf-menu,.pkwk_widget,
-	.style_calendar_prev, .style_calendar_next, .pkwk-symbol, #poptoc,	#toolbar, .ui-dialog, #topicpath{
+	.navibar, .toolbar, .navi, .message_box, .noprint, .tocpic, .sf-menu,.pkwk_widget, a.ui-button,
+	.style_calendar_prev, .style_calendar_next, .pkwk-symbol, #poptoc, #toolbar, .ui-dialog, #topicpath{
 		display:none !important;
 		visibility: hidden !important;
 	}
@@ -3271,8 +3220,6 @@ li[role=tab]{
 	.style_td {
 		border: 1px dotted #333333;
 	}
-	
-	a.ui-button { display:none; }
 }
 <?php
 @ob_end_flush();

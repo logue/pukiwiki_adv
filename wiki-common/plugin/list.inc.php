@@ -41,7 +41,7 @@ function plugin_list_action()
 				foreach ($pages as $page){
 					$buffer[] = "\t".'<url>';
 					$buffer[] = "\t\t".'<loc>'.get_page_uri($page).'</loc>';
-					$buffer[] = "\t\t".'<lastmod>'.get_date('Y-m-d\TH:i:s', get_filetime($page)).'</lastmod>';
+					$buffer[] = "\t\t".'<lastmod>'.get_date('Y-m-d\TH:i:s\Z', get_filetime($page)).'</lastmod>';
 					$buffer[] = "\t\t".'<priority>0.5</priority>';
 					$buffer[] = "\t".'</url>';
 				}

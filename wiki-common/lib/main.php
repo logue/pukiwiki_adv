@@ -36,8 +36,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-set_time_limit(0);
-ignore_user_abort(true);
+//set_time_limit(0);
+//ignore_user_abort(true);
 ini_set('memory_limit', '128M');
 ini_set('zlib.output_compression', 'Off');
 ini_set('zlib.output_handler','mb_output_handler');
