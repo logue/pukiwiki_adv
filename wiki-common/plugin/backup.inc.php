@@ -389,17 +389,11 @@ function plugin_backup_get_list($page)
 // List for all pages
 function plugin_backup_get_list_all($withfilename = FALSE)
 {
-	global $cantedit,$_string;
+	global $_string;
 
 	if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
 
-	$pages = FileUtility::get_exsists(BACKUP_DIR);
-
-	if (empty($pages)) {
-		return '';
-	} else {
-		return page_list($pages, 'backup', $withfilename);
-	}
+	return FileUtility::get_listing(BACKUP_DIR, 'backup', $withfilename);
 }
 
 // Plus! Extend - Diff

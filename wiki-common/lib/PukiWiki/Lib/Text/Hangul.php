@@ -71,7 +71,7 @@ class Hangul{
 		$unicode = self::utf8_to_unicode($temp[0]);
 		return (($unicode[0] - 16) % 28 !== 0) ? $str.$tail1 : $str.$tail2;
 	}
-	private function utf8_to_unicode($str)
+	private static function utf8_to_unicode($str)
 	{
 		$unicode = array();
 		$values = array();
@@ -105,7 +105,7 @@ class Hangul{
 		return $unicode;
 	}				// utf8_to_unicodea
 
-	private function unicode_to_utf8($str)
+	private static function unicode_to_utf8($str)
 	{
 		$utf8 = '';
 		foreach($str as $unicode) {

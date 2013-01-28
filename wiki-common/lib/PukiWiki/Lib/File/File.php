@@ -15,7 +15,7 @@ use PukiWiki\Lib\Utility;
 class File{
 	const LOCK_FILE = 'chown.lock';
 
-	protected $filename;
+	public $filename;
 
 	/**
 	 * コンストラクタ

@@ -26,7 +26,7 @@ class Glossary extends Inline
 	function __construct($start)
 	{
 		parent::__construct($start);
-		list($auto, $auto_a) = self::get_autoglossary_pattern();
+		list($auto, $auto_a) = self::get_autoglossary_pattern(false);
 		$this->auto = $auto;
 		$this->auto_a = $auto_a;
 	}
@@ -56,7 +56,7 @@ class Glossary extends Inline
 		if (! $wiki->has() ) {
 			return '<abbr aria-describedby="tooltip" title="' . $glossary . '">' . $this->name . '</abbr>';
 		}
-		return '<a href="' . $wiki->getUri() . '" title="' . $glossary . ' ' . $wiki->passage(false) . '" aria-describedby="tooltip">' . $this->name . '</a>';
+		return '<a href="' . $wiki->get_uri() . '" title="' . $glossary . ' ' . $wiki->passage(false) . '" aria-describedby="tooltip">' . $this->name . '</a>';
 	}
 	/**
 	 * 長すぎる場合削減
@@ -70,47 +70,50 @@ class Glossary extends Inline
 	 * Glossaryの正規表現パターンを生成
 	 * @return string
 	 */
-	private function get_autoglossary_pattern(){
+	private function get_autoglossary_pattern($force = false){
 		global $cache;
 		static $pattern;
 
-		if ($cache['wiki']->hasItem(self::AUTO_GLOSSARY_PATTERN_CACHE)) {
-			// キャッシュが存在する場合
-			if (! isset($pattern)) {
-				// メモリにパターンが呼び出されてない場合キャッシュから呼び出す
-				$pattern = $cache['wiki']->getItem(self::AUTO_GLOSSARY_PATTERN_CACHE);
-			}
-			// キャッシュの有効期限を伸ばす
+		// キャッシュ処理
+		if ($force) {
+			unset($pattern);
+			$cache['wiki']->removeItem(self::AUTO_GLOSSARY_PATTERN_CACHE);
+		}else if (!empty($pattern)) {
+			return $pattern;
+		}else if ($cache['wiki']->hasItem(self::AUTO_GLOSSARY_PATTERN_CACHE)) {
+			$pattern = $cache['wiki']->getItem(self::AUTO_GLOSSARY_PATTERN_CACHE);
 			$cache['wiki']->touchItem(self::AUTO_GLOSSARY_PATTERN_CACHE);
-		}else{
-			// パターンキャッシュを生成
-			global $WikiName, $autoglossary, $nowikiname;
-
-			// 用語集を取得
-			$pairs = self::get_glossary_dict();
-			foreach ($pairs as $term=>$val){
-				if (preg_match('/^' . $WikiName . '$/', $term) ?
-					$nowikiname : mb_strlen($term) >= $autoglossary)
-					$auto_terms[] = $term;
-			}
-
-			if (empty($auto_terms)) {
-				return array('(?!)', 'PukiWiki', 'PukiWiki');
-			} else {
-				// 用語辞書パターンからマッチパターン用の正規表現を生成
-				$auto_terms = array_unique($auto_terms);
-				sort($auto_terms, SORT_STRING);
-
-				$auto_terms_a = array_values(preg_grep('/^[A-Z]+$/i', $auto_terms));
-				$auto_terms   = array_values(array_diff($auto_terms,  $auto_terms_a));
-
-				$result   = Trie::regex($auto_terms);
-				$result_a = Trie::regex($auto_terms_a);
-			}
-			$pattern = array($result, $result_a);
-			// パターンキャッシュを保存
-			$cache['wiki']->setItem(self::AUTO_GLOSSARY_PATTERN_CACHE, $pattern);
+			return $pattern;
 		}
+
+		
+		// パターンキャッシュを生成
+		global $WikiName, $autoglossary, $nowikiname;
+
+		// 用語集を取得
+		$pairs = self::get_glossary_dict();
+		foreach ($pairs as $term=>$val){
+			if (preg_match('/^' . $WikiName . '$/', $term) ?
+				$nowikiname : mb_strlen($term) >= $autoglossary)
+				$auto_terms[] = $term;
+		}
+
+		if (empty($auto_terms)) {
+			return array('(?!)', 'PukiWiki', 'PukiWiki');
+		} else {
+			// 用語辞書パターンからマッチパターン用の正規表現を生成
+			$auto_terms = array_unique($auto_terms);
+			sort($auto_terms, SORT_STRING);
+
+			$auto_terms_a = array_values(preg_grep('/^[A-Z]+$/i', $auto_terms));
+			$auto_terms   = array_values(array_diff($auto_terms,  $auto_terms_a));
+
+			$result   = Trie::regex($auto_terms);
+			$result_a = Trie::regex($auto_terms_a);
+		}
+		$pattern = array($result, $result_a);
+		// パターンキャッシュを保存
+		$cache['wiki']->setItem(self::AUTO_GLOSSARY_PATTERN_CACHE, $pattern);
 		return $pattern;
 	}
 	/**

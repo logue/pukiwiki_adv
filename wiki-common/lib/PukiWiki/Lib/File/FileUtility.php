@@ -1,18 +1,28 @@
 <?php
 namespace PukiWiki\Lib\File;
 
+use PukiWiki\Lib\Utility;
+use PukiWiki\Lib\Text\Reading;
+use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\Rooter;
+use PukiWiki\Lib\Auth\Auth;
+
 class FileUtility{
+	// ファイルの存在一覧キャッシュ
 	const EXSISTS_CACHE_PREFIX = 'exsists-';
 	// RecentChanges
 	const RECENT_CACHE_NAME = 'recent';
 	const MAXSHOW_ALLOWANCE = 10;
-	// Listing
-	const PAGENAME_LISTING_CACHE_PREFIX = 'listing-';
+	// ページ一覧キャッシュ
+	const PAGENAME_HEADING_CACHE_PREFIX = 'listing-';
 
 	/**
-	 * ディレクトリ内のファイルの存在確認
+	 * ディレクトリ内のファイルの一覧を作成
+	 * @param string $dir ディレクトリ
+	 * @param boolean $force キャッシュを再生成
+	 * @return array
 	 */
-	public static function get_exsists($dir = DATA_DIR, $force = false){
+	public static function get_exists_all($dir = DATA_DIR, $force = false){
 		global $cache;
 		static $aryret;
 
@@ -37,7 +47,7 @@ class FileUtility{
 				$func = encode($dir.$ext);
 		}
 
-		$func = self::getCacheName($dir);
+		$func = self::get_cache_name($dir);
 		$cache_name = self::EXSISTS_CACHE_PREFIX . $func;
 
 		if ($force){
@@ -47,7 +57,6 @@ class FileUtility{
 		}
 
 		if (!isset($aryret[$func])){
-			
 			if (! $cache['wiki']->hasItem($cache_name)){
 				// キャッシュを再生成
 				foreach (new \DirectoryIterator($dir) as $fileinfo) {
@@ -56,7 +65,7 @@ class FileUtility{
 						$aryret[$func][$filename] = decode($matches[1]);
 					}
 				}
-				$cache['wiki']->setItem($cache_name, $aryret[$dir]);
+				$cache['wiki']->setItem($cache_name, $aryret[$func]);
 			}else{
 				// キャッシュからメモリに呼び出す
 				$aryret[$func] = $cache['wiki']->getItem($cache_name);
@@ -64,7 +73,40 @@ class FileUtility{
 		}
 		return $aryret[$func];
 	}
-	private static function getCacheName($dir = DATA_DIR){
+	/**
+	 * ページ一覧を取得（認証状態によって変わる）
+	 * @param string $dir ディレクトリ
+	 * @param boolean $force キャッシュを再生成
+	 * @return array
+	 */
+	public static function get_exists($dir = DATA_DIR, $force = false){
+		// 全ページ一覧
+		$pages = self::get_exists_all($dir, $force);
+		// ユーザ名取得
+		$auth_key = Auth::get_user_info();
+		// コンテンツ管理者以上は、: のページも閲覧可能
+		$is_colon = Auth::check_role('role_adm_contents');
+		if (is_array($pages)){
+			foreach($pages as $file=>$page) {
+				if (! Auth::is_page_readable($page, $auth_key['key'], $auth_key['group'])) continue;
+				if (substr($page,0,1) != ':') {
+					$rc[$file] = $page;
+					continue;
+				}
+
+				// colon page
+				if ($is_colon) continue;
+				$rc[$file] = $page;
+			}
+		}
+		return $rc;
+	}
+	/**
+	 * キャッシュの識別子およびファイル
+	 * @param string $dir ディレクトリ
+	 * @return string
+	 */
+	private static function get_cache_name($dir = DATA_DIR){
 		switch($dir){
 			case DATA_DIR:
 				$func = 'wiki';
@@ -83,159 +125,132 @@ class FileUtility{
 		}
 		return $func;
 	}
-	
-	private static function getHeading($dir = DATA_DIR, $force = false){
+	/**
+	 * ファイル一覧画面を生成（プラグインでやるべきかもしれないが、この処理はバックアップ一覧などページ名一覧以外の用途でも使うためこのクラスで定義）
+	 * @param string $dir ディレクトリ
+	 * @return string
+	 */
+	public static function get_listing($dir = DATA_DIR, $cmd = 'read', $with_filename = false){
+		// 一覧の配列を取得
+		$heading = self::get_headings($dir);
+
+		if (IS_MOBILE) {
+			// モバイル用
+			$contents[] = '<ul data-role="listview">';
+			foreach ($heading as $initial=>$pages) {
+				$page_lists = self::get_page_lists($pages, $cmd);
+				$count = count($page_lists);
+				if ($count < 1) continue;
+
+				if ($initial == Reading::OTHER_CHAR){
+					$initial = $_string['other'];
+				}else if ($initial == Reading::SYMBOL_CHAR){
+					$initial = $_string['symbol'];
+				}
+				$contents[] = '<li data-role="list-divider">' . Utility::htmlsc($initial) . '<span class="ui-li-count">'. $count . '</span></li>';
+				$contents[] = join("\n",$page_lists);
+			}
+			$contents[] = '</ul>';
+			return join("\n", $contents);
+		}
+		// 通常用
+		$header[] = '<div class="page_initial"><ul>';
+		foreach ($heading as $initial=>$pages) {
+			$page_lists = self::get_page_lists($pages, $cmd, $with_filename);
+			$count = count($page_lists);
+			if ($count < 1) continue;
+
+			$_initial = Utility::htmlsc($initial);
+
+			$header[] = '<li id="top_' . $_initial .'"><a href="#head_' . $_initial . '" title="'. $count .'">' . $_initial . '</a></li>';
+
+			$contents[] = '<fieldset id="head_' . $_initial .'">';
+			$contents[] = '<legend><a href="#top_' . $_initial . '">' . $_initial . '</a> <small>('.$count.')</small></legend>';
+			$contents[] = '<ul>'.join("\n",$page_lists).'</ul>';
+			$contents[] = '</fieldset>';
+		}
+		$header[] = '</ul>';
+		$header[] = '</div>';
+		return join("\n", $header) . '<div class="list_pages">' . join("\n", $contents) . '</div>';
+	}
+	/**
+	 * 一覧をページの読みでソートし出力
+	 * @param string $dir ディレクトリ
+	 * @param boolean $force キャッシュを再生成する（※ページの経過時間はキャッシュの対象外）
+	 * @return array
+	 */
+	private static function get_headings($dir = DATA_DIR, $force = false){
+		global $cache, $_string;
 		static $heading;
-		$pages = self::get_exsists($dir);
-		$func = self::getCacheName($dir);
-		$cache_name = self::PAGENAME_LISTING_CACHE_PREFIX . $func;
+
+		$func = self::get_cache_name($dir);
+		$cache_name = self::PAGENAME_HEADING_CACHE_PREFIX . $func;
 		
 		if ($force){
 			// キャッシュ再生成
-			unset $heading[$func];
+			unset ($heading[$func]);
 			$cache['wiki']->removeItem($cache_name);
-		}else if (!empty($cache_name)){
+		}else if (!empty($heading[$func])){
 			// メモリにキャッシュがある場合
 			return $heading[$func];
-		}else if ($cache['wiki']->hasItem($cache_name) {
+		}else if ($cache['wiki']->hasItem($cache_name)) {
 			// キャッシュから最終更新を読み込む
 			$heading[$func] = $cache['wiki']->getItem($cache_name);
 			return $heading[$func];
 		}
 
-		$_msg_symbol = $_string['symbol'];
-		$_msg_other = $_string['other'];
-		// Sentinel: symbolic-chars < alphabetic-chars < another(multibyte)-chars
-		// = ' ' < '[a-zA-Z]' < 'zz'
-		$sentinel_symbol  = '*';
-		$sentinel_another = 'zz';
-
-		foreach($pages as $file => $page) {
-			if(mb_ereg('^(\:|[A-Za-z])', mb_convert_kana($page, 'a'), $matches) !== FALSE) {
-				// 英数字
-				$initial = $matches[1];
-			} elseif (isset($readings[$page]) && mb_ereg('^([ァ-ヶ])', $readings[$page], $matches) !== FALSE) { // here
-				// ひらがな、カタカナ
-				$initial = $matches[1];
-			} elseif (mb_ereg('^[ -~]|[^ぁ-ん亜-熙]', $page)) { // and here
-				// 常用漢字
-				$initial = $sentinel_symbol;
-			} elseif (preg_match('/^([가-힣])/u', $page) !== FALSE){
-				// ハングル（日本語とバッティングしないため実装）
-				// http://pukiwiki.sourceforge.jp/dev/?BugTrack2%2F13
-				$initial = Hangul::toChoson($page);
-/*
-			} elseif (mb_ereg('/^([一-龥])/',$page) !== FALSE){
-				// 簡体中国語
-*/
-			} else {
-				$initial = $sentinel_another;
+		foreach(self::get_exists($dir) as $file => $page) {
+			$initial = Reading::getReadingChar($page);
+			if ($initial === $page){
+				// 読み込めなかった文字
+				$initial = Reading::OTHER_CHAR;
+			}else if (preg_match('/^('.Reading::SYMBOL_PATTERN.')/u', $initial)) {
+				$initial = Reading::SYMBOL_CHAR;
 			}
-			$heading[$initial][] = $page;
+			// ページの頭文字でページとページの読みを保存
+			$ret[$initial][$page] =  Reading::getReading($page);
 		}
+		unset($initial, $page);
+	
+		// ページの索引でソート
+		ksort($ret, SORT_NATURAL);
+	
+		foreach ($ret as $initial=>$pages){
+			// ページ名の「読み」でソート
+			asort($ret[$initial], SORT_NATURAL);
+			// 「読み」でソートしたやつを$headingに保存
+			$heading[$func][$initial] = array_keys($ret[$initial]);
+		}
+		unset($ret);
+
+		// キャッシュに保存
+		$cache['wiki']->setItem($cache_name, $heading[$func]);
+
+		return $heading[$func];
 	}
 	/**
-	 * ファイル一覧画面を生成
-	 * @param string $dir ディレクトリ
+	 * ページのリンクリストを作る
+	 * @param $pages ページ
+	 * @param $cmd 使用するプラグイン
+	 * @param boolean $with_filename ページのファイル名も表示する
 	 * @return string
 	 */
-	public static function get_listing($dir = DATA_DIR){
-		$files = self::get_exsists($dir);
-		global $pagereading_enable, $list_index, $_string;
-
-		
-
-			$str[] = '<li>';
-			if ($cmd !== 'read'){
-				$str[] = '<a href="' . get_cmd_uri($cmd, $page) . '" >' . htmlsc($page, ENT_QUOTES) . '</a>';
-			}else{
-				if (!IS_MOBILE) {
-					$str[] = '<a href="' . get_page_uri($page) . '" >' . htmlsc($page, ENT_QUOTES) . '</a>' .get_pg_passage($page, true);
-					if ($withfilename) {
-						$str[] = '<br /><var>' . htmlsc($file) . '</var>';
-					}
-				}else{
-					$str[] = '<a href="' . get_page_uri($page) . '" data-transition="slide">' . htmlsc($page, ENT_QUOTES) . '</a>' . '<span class="ui-li-count">'.get_pg_passage($page, false).'</span>';
-				}
-			}
-			$str[] = '</li>';
-			$array[$initial][$page] = $str;
-			$counts[$initial] = count($array[$initial]);
-		}
-		unset($pages);
-		ksort($array, SORT_STRING);
-
-		$cnt = 0;
-		$retval = $contents = array();
-		if (!IS_MOBILE) {
-			$retval[] = '<div class="list_pages">';
-			foreach ($array as $_initial => $pages) {
-				ksort($pages, SORT_STRING);
-				if ($list_index) {
-					++$cnt;
-					$page_count = $counts[$_initial];
-					if ($_initial == $sentinel_symbol) {
-						$_initial = htmlsc($_msg_symbol);
-					} else if ($_initial == $sentinel_another) {
-						$_initial = htmlsc($_msg_other);
-					}
-					$retval[] = '<fieldset id="head_' . $cnt .'">';
-					$retval[] = '<legend><a href="#top_' . $cnt . '">' . $_initial . '</a></legend>';
-					$retval[] = '<ul class="list1">';
-
-					$contents[] = '<li id="top_' . $cnt .'"><a href="#head_' . $cnt . '" title="'.$page_count.'">' .$_initial . '</a></li>';
-				}
-				$retval[] = join("\n", $pages);
-				if ($list_index) {
-					$retval[] = '</ul>';
-					$retval[] = '</fieldset>';
-				}
-			}
-			$retval[] = '</div>';
-		}else{
-			foreach ($array as $_initial => $pages) {
-				ksort($pages, SORT_STRING);
-				if ($list_index) {
-					++$cnt;
-					$page_count = $counts[$_initial];
-					if ($_initial == $sentinel_symbol) {
-						$_initial = htmlsc($_msg_symbol);
-					} else if ($_initial == $sentinel_another) {
-						$_initial = htmlsc($_msg_other);
-					}
-					$contents[] = '<li data-role="list-divider">' . $_initial . '</li>';
-
-					if ( isset($array[$_initial]) && is_array($array[$_initial]) ){
-						foreach($array[$_initial] as $page){
-							$contents[] = $page;
-						}
-					}
-					//$contents[] = $array[$_initial][$pages];
-				}
-			}
-		}
-		unset($array);
-
-		// Insert a table of contents
-		$ret = '';
-		if ($list_index && $cnt) {
-			while (! empty($contents)) {
-				$tmp[] = join('', array_splice($contents, 0));
-			}
-			$contents = & $tmp;
+	private static function get_page_lists($pages, $cmd, $with_filename){
+		$contents = array();
+		foreach ($pages as $page){
+			$wiki = FileFactory::Wiki($page);
+			$_page = Utility::htmlsc($page, ENT_QUOTES);
+			$url = $wiki->get_uri($cmd);
 			if (!IS_MOBILE) {
-				array_unshift(
-					$retval,
-					'<div  class="page_initial"><ul>',
-					join("\n" , $contents),
-					'</ul></div>');
-				$ret = '<div class="pages">'."\n".join("\n", $retval) . "\n".'</div>';
+				$contents[] = '<li><a href="' . $url . '">' . $_page . '</a> ' . $wiki->passage() .
+					($with_filename ? '<br /><var>' . Utility::htmlsc($wiki->filename). '</var>' : '') .
+					'</li>';
 			}else{
-				$ret = '<ul data-role="listview">'.join("\n", $contents).'</ul>';
+				$contents[] = '<li><a href="' . $url . '" data-transition="slide">' . $_page . '</a>' .
+					'<span class="ui-li-count">'. $wiki->passage(false, false) . '</span></li>';
 			}
 		}
-
-		return $ret;
+		return $contents;
 	}
 	/**
 	 * 最終更新のキャッシュを生成
@@ -248,7 +263,7 @@ class FileUtility{
 
 		if ($force){
 			// キャッシュ再生成
-			unset $recent_pages;
+			unset ($recent_pages);
 			$cache['wiki']->removeItem(self::RECENT_CACHE_NAME);
 		}else if (!empty($recent_pages)){
 			// メモリにキャッシュがある場合
@@ -260,7 +275,7 @@ class FileUtility{
 		}
 
 		// Get WHOLE page list
-		$pages = self::get_exsists(DATA_DIR, $force);
+		$pages = self::get_exists(DATA_DIR, $force);
 
 		// Check ALL filetime
 		$recent_pages = array();

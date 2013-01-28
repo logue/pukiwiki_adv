@@ -11,10 +11,13 @@ use PukiWiki\Lib\Renderer\InlineConverter;
 use PukiWiki\Lib\File\FileFactory;
 use PukiWiki\Lib\Auth\Auth;
 use PukiWiki\Lib\Router;
+use PukiWiki\Lib\Utility;
 
 abstract class Inline
 {
+	// 内部リンク
 	const INTERNAL_LINK_ICON = '<span class="pkwk-symbol link_symbol symbol-internal" title="Internal Link"></span>';
+	// 外部リンク
 	const EXTERNAL_LINK_ICON = '<span class="pkwk-symbol link_symbol symbol-external" title="External Link"></span>';
 
 	var $start;   // Origin number of parentheses (0 origin)
@@ -114,7 +117,7 @@ abstract class Inline
 
 		if (empty($page)){
 			// ページ内リンク
-			return '<a href="' . $anchor . '">' . htmlsc($alias) . '</a>';
+			return '<a href="' . $anchor . '">' . Utility::htmlsc($alias) . '</a>';
 		}
 
 		$page = strip_bracket($page);
@@ -131,8 +134,8 @@ abstract class Inline
 			$related[$page] = $wiki->getTime();
 		}
 
-		$s_page = htmlsc($page);
-		$s_alias = htmlsc(empty($alias) ? $page : $alias);
+		$s_page = Utility::htmlsc($page);
+		$s_alias = Utility::htmlsc(empty($alias) ? $page : $alias);
 
 		if ($isautolink || $wiki->has()) {
 			// ページが存在する場合
@@ -141,7 +144,7 @@ abstract class Inline
 				// AutoGlossray
 				$s_page = $glossary;
 			}
-			return '<a href="' . $wiki->getUri() . $anchor . '" ' .
+			return '<a href="' . $wiki->get_uri() . $anchor . '" ' .
 				($link_compact === 0 ? 'title="' . $s_page . ' ' . $wiki->passage(false,true) . '"' : '' ).
 	//			($isautolink ? ' class="autolink"' : '') .
 				(!empty($glossary) ? 'aria-describedby="tooltip"' : '') .
@@ -150,9 +153,7 @@ abstract class Inline
 			// Dangling link
 			if (Auth::check_role('readonly')) return $s_alias; // No dacorations
 
-			$retval = $s_alias . '<a href="' .
-				get_cmd_uri('edit', $page, null, (empty($refer) ? null : array('refer'=>$refer)) ) . '" rel="nofollow">' .
-				$_symbol_noexists . '</a>';
+			$retval = $s_alias . '<a href="' . $wiki->get_uri('edit', (empty($refer) ? null : array('refer'=>$refer)) ) . '" rel="nofollow">' .$_symbol_noexists . '</a>';
 
 			return ($link_compact) ? $retval : '<span class="noexists">' . $retval . '</span>';
 		}

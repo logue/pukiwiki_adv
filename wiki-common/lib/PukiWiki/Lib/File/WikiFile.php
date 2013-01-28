@@ -109,7 +109,7 @@ class WikiFile extends File{
 		global $read_auth, $read_auth_pages, $auth_api, $_title, $read_auth_pages_accept_ip;
 
 		if (!$read_auth) return true;
-		
+
 		// 許可IPの場合チェックしない
 		if ( AuthUtility::ip_auth($this->page, true, false, $read_auth_pages_accept_ip, $_title['cannotread'])) {
 			return TRUE;
@@ -494,7 +494,7 @@ class WikiFile extends File{
 			$body = FileFactory::Wiki($template_page)->source();
 
 			// Remove fixed-heading anchors
-			$body = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/m', '$1$2', $body);
+			$body = preg_replace('/^(\*{1,3}.*)\[#[0-9A-Za-z][\w-]+\](.*)$/m', '$1$2', $body);
 
 			// Remove '#freeze'
 			$body = preg_replace('/^#freeze\s*$/m', '', $body);
@@ -522,8 +522,8 @@ class WikiFile extends File{
 	/**
 	 * ページのアドレスを取得
 	 */
-	public function getUri(){
-		return Router::get_resolve_uri(null,$this->page);
+	public function get_uri($cmd='read', $query=array(), $fragment=''){
+		return Router::get_resolve_uri($cmd, $this->page, 'rel', $query, $fragment);
 	}
 	
 	/**

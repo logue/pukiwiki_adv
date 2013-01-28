@@ -240,91 +240,6 @@ function pkwk_touch_file($filename, $time = FALSE, $atime = FALSE)
 	return FileFactory::Generic($filename)->touch($time, $atime);
 }
 
-// Get PageReading(pronounce-annotated) data in an array()
-function get_readings()
-{
-	global $pagereading_enable, $pagereading_config_page, $mecab_path;
-	global $pagereading_config_dict;
-
-	$pages = get_existpages();
-
-	$readings = array();
-	foreach ($pages as $page)
-		$readings[$page] = '';
-
-	$deletedPage = FALSE;
-	$matches = array();
-	foreach (FileFactory::Wiki($pagereading_config_page)->source() as $line) {
-		$line = chop($line);
-		if(preg_match('/^-\[\[([^]]+)\]\]\s+(.+)$/', $line, $matches)) {
-			if(isset($readings[$matches[1]])) {
-				// This page is not clear how to be pronounced
-				$readings[$matches[1]] = $matches[2];
-			} else {
-				// This page seems deleted
-				$deletedPage = TRUE;
-			}
-		}
-		$dict[] = $line;
-	}
-	pr($dict);
-
-	// If enabled ChaSen/KAKASI execution
-	if($pagereading_enable) {
-
-		// Check there's non-clear-pronouncing page '
-		$unknownPage = FALSE;
-		foreach ($readings as $page => $reading) {
-			if(empty($reading)) {
-				$unknownPage = TRUE;
-				break;
-			}
-		}
-
-		if($unknownPage) {
-			if (file_exists($mecab_path)){
-				foreach ($readings as $page => $reading) {
-					if(!empty($reading)) continue;
-					$readings[$page] = mecab_reading($page);
-				}
-			}else{
-				$patterns = $replacements = $matches = array();
-				foreach (FileFactory::Wiki($pagereading_config_dict)->source() as $line) {
-					$line = chop($line);
-					if(preg_match('|^ /([^/]+)/,\s*(.+)$|', $line, $matches)) {
-						$patterns[]     = $matches[1];
-						$replacements[] = $matches[2];
-					}
-				}
-				foreach ($readings as $page => $reading) {
-					if(!empty($reading)) continue;
-
-					$readings[$page] = $page;
-					foreach ($patterns as $no => $pattern)
-						$readings[$page] = mb_convert_kana(mb_ereg_replace($pattern,
-							$replacements[$no], $readings[$page]), 'aKCV');
-				}
-			}
-		}
-
-		if($unknownPage || $deletedPage) {
-			asort($readings, SORT_STRING); // Sort by pronouncing(alphabetical/reading) order
-			$body = '';
-			foreach ($readings as $page => $reading)
-				$body .= '-[[' . $page . ']] ' . $reading . "\n";
-
-			$w->set($body);
-		}
-	}
-
-	// Pages that are not prounouncing-clear, return pagenames of themselves
-	foreach ($pages as $page) {
-		if ( empty($readings[$page]) ) $readings[$page] = $page;
-	}
-
-	return $readings;
-}
-
 // Last-Modified header
 function header_lastmod($page = NULL)
 {
@@ -362,35 +277,17 @@ function get_existfiles($dir = DATA_DIR, $ext = '.txt')
 // Get a page list of this wiki
 function get_existpages($dir = DATA_DIR, $ext = '.txt')
 {
-	// get_existpages を３行で軽くする
-	// http://lsx.sourceforge.jp/?Hack%2Fget_existpages
-	// ただし、Adv.の場合ファイルに別途キャッシュしているのであまり意味ないかも・・・。
-	static $pages;
-	if (isset($pages[$dir][$ext])) return $pages[$dir][$ext];
-
-	$aryret = array();
-	$pattern = '/^((?:[0-9A-F]{2})+)' . preg_quote($ext, '/') . '$/';
-
-	$matches = array();
-	$handle = opendir($dir);
-	if ($handle) {
-		while (false !== ($entry = readdir($handle))) {
-			if (preg_match($pattern, $entry, $matches)) {
-				$aryret[$entry] = decode($matches[1]);
-			}
-		}
-		closedir($handle);
-	}else{
-		die_message($dir . ' is not found or not readable.');
-	}
-	$pages[$dir][$ext] = $aryret;
-
-	return $aryret;
+	return FileUtility::get_exist_pages($dir);
 }
 
 /**
  * func.php
  */
+// Generate sorted "list of pages" XHTML, with page-reading hints
+function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', $withfilename = FALSE)
+{
+	return FileUtility::get_listing();
+}
 
 function is_url($str, $only_http = FALSE)
 {

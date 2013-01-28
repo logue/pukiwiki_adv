@@ -3,34 +3,77 @@ namespace PukiWiki\Lib\Text;
 use PukiWiki\Lib\Text\Hangul;
 use PukiWiki\Lib\Text\Hiragana;
 class Reading{
-	// すべての漢字にマッチするパターン（ピンイン変換処理を作ってないため未使用）ハングルは含まず
-	// http://tama-san.com/?p=196
-	const ALL_KANJI_PATTERN = '(?:[々〇〻\u3400-\u9FFF\uF900-\uFAFF]|[\uD840-\uD87F][\uDC00-\uDFFF])';
-	// JIS漢字にマッチするパターン
-	const JIS_KANJI_PATTERN = '([亜-煕])';
+	// 特殊ページ
+	const SPECIALPAGE_PATTERN = '[\:]';
+	// アルファベット（ドイツ語やフランス語などを含む）にマッチするパターン
+	const ALPHABET_PATTERN = '[A-Za-zÀ-ɏ]';
+	// :以外のシンボル、数字にマッチするパターン
+	const SYMBOL_PATTERN = '[!-9\;-\@０－９]';
+	// すべての漢字にマッチするパターン（※ハングル、サロゲートペア文字は含まず）
+	// const KANJI_PATTERN = '[亜-熙]';	// ←不完全
+	const KANJI_PATTERN = '[々〇〻㐀-龻豈-頻]';
 	// ひらがな・カタカナにマッチするパターン
-	const KANA_PATTERN = '([ぁ-ヶ])';
-	
+	const KANA_PATTERN = '[ぁ-ヶ]';
 	// ハングル文字にマッチするパターン
-	const HANGUL_PATTERN = '([가-힣])';
-	
+	const HANGUL_PATTERN = '[가-힣]';
+
+	// 強制的に末尾に降る文字
+	const SYMBOL_CHAR = '!SYMBOL';
+	const SPECIAL_CHAR = ' SPECIAL';
+	// 強制的に末尾に降る文字
+	const OTHER_CHAR = 'OTHER';	// は、ソートで使うため外字領域の&#xf8f0;の文字を入れている。
+
 	/**
-	 * 読みを取得（先頭１文字で言語を判断。複数の言語が含まれている場合を考慮しない）
+	 * 読みを取得
+	 * @param string $str 入力文字列
+	 * @return string
 	 */
 	public static function getReading($str){
-		if(preg_match('/^'.self::JIS_KANJI_PATTERN.'/u',$str)) {
-			// JIS漢字をカタカナにする
-			return Hiragana::toKana($str);
-		}else if(preg_match('/^'.self::HANGUL_PATTERN.'/u',$str)) {
+		foreach(self::mbStringToArray($str) as $char){
+			$ret[] = self::getReadingChar($char);
+		}
+		return join('', $ret);
+	}
+	/**
+	 * 文字の読みを取得（先頭１文字で言語を判断。複数の言語が含まれている場合を考慮しない）
+	 * @param string $char 入力文字列
+	 * @return string
+	 */
+	public static function getReadingChar($char){
+		if (preg_match('/^('.self::SPECIALPAGE_PATTERN.')/u',$char, $matches)) {
+			return $matches[1];
+		}else if (preg_match('/^('.self::SYMBOL_PATTERN.')/u',$char, $matches)) {
+			// 数字
+			return $matches[1];
+		}else if (mb_ereg('^('.self::ALPHABET_PATTERN.')', mb_convert_kana($char, 'as'), $matches) !== FALSE) {
+			// 英字
+			return $matches[1];
+		}else if (preg_match('/^('.self::KANA_PATTERN.')/u',$char, $matches)) {
+			// かな／カタカナ
+			return mb_convert_kana($matches[1],'KVC');
+		}else if(preg_match('/^('.self::KANJI_PATTERN.')/u',$char, $matches)) {
+			// 漢字
+			$reading = Hiragana::toKana($matches[1]);
+			if ($reading !== $char) return $reading;
+			// ここにピンイン変換処理を入れること
+		}else if(preg_match('/^('.self::HANGUL_PATTERN.')/u',$char, $matches)) {
 			// ハングル
-			return Hangul::toChosung($str);
+			return Hangul::toChosung($matches[1]);
 		}
-		/*
-		else if(preg_match('/^'.self::ALL_KANJI_PATTERN.'/u',$str)) {
-			// ピンインの英数字に変換
-			return PinYin::getPinYin($str);
+		return $char;
+	}
+	/**
+	 * 文字列を１文字ごとの配列にする
+	 * @param string $sStr 入力文字列
+	 * @param string $sEnc エンコード
+	 * @return array
+	 */
+	private static function mbStringToArray ($sStr, $sEnc='UTF-8') {
+		$aRes = array();
+		while ($iLen = mb_strlen($sStr, $sEnc)) {
+			array_push($aRes, mb_substr($sStr, 0, 1, $sEnc));
+			$sStr = mb_substr($sStr, 1, $iLen, $sEnc);
 		}
-		*/
-		return $str;
+		return $aRes;
 	}
 }

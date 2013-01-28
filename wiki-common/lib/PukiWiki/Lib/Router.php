@@ -117,7 +117,7 @@ class Router{
 		return self::get_resolve_uri('',$page,$path_reference,$query,$fragment,0);
 	}
 
-	public static function get_resolve_uri($cmd='', $page='', $path_reference='rel', $query=array(), $fragment='')
+	public static function get_resolve_uri($cmd='read', $page='', $path_reference='rel', $query=array(), $fragment='')
 	{
 		global $static_url, $url_suffix, $vars;
 		$path = (empty($path_reference)) ? 'rel' : $path_reference;
