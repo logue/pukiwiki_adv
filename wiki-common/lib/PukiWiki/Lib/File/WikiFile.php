@@ -1,9 +1,15 @@
 <?php
-// PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: FileInterface.php,v 1.0.0 2012/12/11 19:55:00 Logue Exp $
-// Copyright (C)
-//   2012 PukiWiki Advance Developers Team
-// License: GPL v2 or (at your option) any later version
+/**
+ * Wikiファイルクラス
+ *
+ * @package   PukiWiki\Lib\File
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @create    2012/12/18
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: WikiFile.php,v 1.0.0 2013/01/29 19:54:00 Logue Exp $
+ */
 //
 namespace PukiWiki\Lib\File;
 use PukiWiki\Lib\File\File;
@@ -201,7 +207,7 @@ class WikiFile extends File{
 	 * @return string
 	 */
 	public function passage($use_tag = true, $quote = true){
-		$pg_passage = $quote ? '('.parent::getPassage().')' : parent::getPassage();
+		$pg_passage = $quote ? '('.parent::passage().')' : parent::passage();
 		return $use_tag ? '<small class="passage">' . $pg_passage . '</small>' : $pg_passage;
 	}
 	/**
@@ -539,8 +545,7 @@ class WikiFile extends File{
 		foreach (array_keys(FileUtility::get_recent(true)) as $page) {
 			$buffer[] = '-&epoch(' . $recent_pages[$page] . '); - [[' . htmlsc($page) . ']]';
 		}
-		$file = FileFactory::Wiki($whatsnew);
-		$file->set($buffer);
+		FileFactory::Wiki($whatsnew)->set($buffer);
 	}
 	/**
 	 * 削除履歴を作成
@@ -551,14 +556,15 @@ class WikiFile extends File{
 		if (auth::check_role('readonly') || !self::is_hidden($this->page)) return;
 
 		$delated = FileFactory::Wiki($whatsdeleted);
+		$lines = $delated->get();
 
-		foreach ($delated->get() as $line) {
+		foreach ($lines as $line) {
 			if (preg_match('/^-(.+) - (\[\[.+\]\])$/', $line, $matches)) {
 				$lines[$matches[2]] = $line;
 			}
 		}
 
-		$_page = '[[' . $page . ']]';
+		$_page = '[[' . $this->page . ']]';
 
 		// Remove a report about the same page
 		if (isset($lines[$_page])) unset($lines[$_page]);
@@ -569,6 +575,8 @@ class WikiFile extends File{
 
 		// Get latest $limit reports
 		$lines = array_splice($lines, 0, $maxshow_deleted);
+		// ファイル一覧キャッシュを再生成
+		FileUtility::get_exists(DATA_DIR, true);
 		$delated->set($lines);
 	}
 }

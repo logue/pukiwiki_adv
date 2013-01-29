@@ -1,19 +1,26 @@
 <?php
-// PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: InterWikiName.php,v 1.0.0 2012/12/18 11:00:00 Logue Exp $
-// Copyright (C)
-//   2012 PukiWiki Advance Developers Team
-// License: GPL v2 or (at your option) any later version
+/**
+ * InterWikiNameパースクラス
+ *
+ * @package   PukiWiki\Lib\Renderer\Inline
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @create    2012/12/18
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: InterWikiName.php,v 1.0.0 2013/01/29 19:54:00 Logue Exp $
+ */
 
 namespace PukiWiki\Lib\Renderer\Inline;
 use PukiWiki\Lib\File\FileFactory;
 use PukiWiki\Lib\Router;
-
-// InterWikiName-rendered URLs
+/**
+ * InterWikiName-rendered URLs
+ */
 class InterWikiName extends Inline
 {
 	const INTERWIKINAME_PATTERN = '/\[((?:(?:https?|ftp|news):\/\/|\.\.?\/)[!~*\'();\/?:\@&=+\$,%#\w.-]*)\s([^\]]+)\]\s?([^\s]*)/';
-	const INTERWIKINAME_ICON = '<span class="pkwk-icon icon-interwiki"></span>';
+	const INTERWIKINAME_ICON = '<span class="pkwk-icon icon-interwiki" title="InterWikiName"></span>';
 	const INTERWIKINAME_CACHE = 'interwikiname';
 	
 	var $url    = '';
@@ -96,7 +103,7 @@ class InterWikiName extends Inline
 			// キャッシュ処理
 			$interwikipage = FileFactory::Wiki($interwiki);
 			$cache_meta = $this->cache->getMetadata(self::INTERWIKINAME_CACHE);
-			if ($this->cache->hasItem(self::INTERWIKINAME_CACHE) && $cache_meta['mtime'] > $interwikipage->getTime()) {
+			if ($this->cache->hasItem(self::INTERWIKINAME_CACHE) && $cache_meta['mtime'] > $interwikipage->time()) {
 				$interwikinames = $this->cache->getItem(self::INTERWIKINAME_CACHE);
 			}else{
 				// キャッシュが存在してなかったり、定義ページより古い場合は生成。

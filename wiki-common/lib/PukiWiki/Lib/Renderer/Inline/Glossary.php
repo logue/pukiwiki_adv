@@ -1,9 +1,15 @@
 <?php
-// PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: Glossary.php,v 1.0.0 2013/01/05 15:46:00 Logue Exp $
-// Copyright (C)
-//   2012-2013 PukiWiki Advance Developers Team
-// License: GPL v2 or (at your option) any later version
+/**
+ * 用語集クラス
+ *
+ * @package   PukiWiki\Lib\Renderer\Inline
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @create    2012/12/18
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: Glossary.php,v 1.0.0 2013/01/29 19:54:00 Logue Exp $
+ */
 
 namespace PukiWiki\Lib\Renderer\Inline;
 use PukiWiki\Lib\File\FileFactory;
@@ -86,7 +92,6 @@ class Glossary extends Inline
 			return $pattern;
 		}
 
-		
 		// パターンキャッシュを生成
 		global $WikiName, $autoglossary, $nowikiname;
 
@@ -129,7 +134,7 @@ class Glossary extends Inline
 		$wiki = FileFactory::Wiki($glossarypage);
 		if ($wiki->has()){
 			$term_cache_meta = $cache['wiki']->getMetadata(self::AUTO_GLOSSARY_TERM_CACHE);
-			if ($cache['wiki']->hasItem(self::AUTO_GLOSSARY_TERM_CACHE) && $term_cache_meta['mtime'] > $wiki->getTime()) {
+			if ($cache['wiki']->hasItem(self::AUTO_GLOSSARY_TERM_CACHE) && $term_cache_meta['mtime'] > $wiki->time()) {
 				// キャッシュが存在し、Wikiの日時より新しい場合
 				//（Glossaryページの更新と同期しなければならないため、ここの条件分岐の処理が重い・・・。）
 				if (! isset($pairs)) {

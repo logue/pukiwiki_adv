@@ -1,4 +1,15 @@
 <?php
+/**
+ * ファイルユーティリティクラス
+ *
+ * @package   PukiWiki\Lib\File
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @create    2013/01/09
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: FileUtility.php,v 1.0.0 2013/01/29 17:28:00 Logue Exp $
+ */
 namespace PukiWiki\Lib\File;
 
 use PukiWiki\Lib\Utility;
@@ -22,84 +33,52 @@ class FileUtility{
 	 * @param boolean $force キャッシュを再生成
 	 * @return array
 	 */
-	public static function get_exists_all($dir = DATA_DIR, $force = false){
+	public static function get_exists($dir = DATA_DIR, $force = false){
 		global $cache;
 		static $aryret;
 
+		$func = self::get_cache_name($dir);
+		$cache_name = self::PAGENAME_HEADING_CACHE_PREFIX . $func;
+
+		if ($force){
+			// キャッシュ再生成
+			unset($heading[$func]);
+			$cache['wiki']->removeItem($cache_name);
+		}else if (!empty($aryret[$func])){
+			// メモリにキャッシュがある場合
+			return $aryret[$func];
+		}else if ($cache['wiki']->hasItem($cache_name)) {
+			// キャッシュから最終更新を読み込む
+			$heading[$func] = $cache['wiki']->getItem($cache_name);
+			return $aryret[$func];
+		}
+
 		switch($dir){
 			case DATA_DIR:
-				$func = 'wiki';
 				$pattern = '/^((?:[0-9A-F]{2})+)\.txt$/';
 				break;
 			case COUNTER_DIR:
-				$func = 'counter';
 				$pattern = '/^((?:[0-9A-F]{2})+)\.count$/';
 				break;
 			case BACKUP_DIR:
-				$func = 'backup';
 				$pattern = '/^((?:[0-9A-F]{2})+)\.(txt|gz|bz2|lzf)$/';
 				break;
 			case UPLOAD_DIR:
-				$func = 'attach';
 				$pattern = '/^((?:[0-9A-F]{2})+)_((?:[0-9A-F]{2})+)$/';
 				break;
 			default:
 				$func = encode($dir.$ext);
 		}
 
-		$func = self::get_cache_name($dir);
-		$cache_name = self::EXSISTS_CACHE_PREFIX . $func;
-
-		if ($force){
-			// キャッシュを削除
-			unset($aryret[$func]);
-			$cache['wiki']->removeItem($cache_name);
-		}
-
-		if (!isset($aryret[$func])){
-			if (! $cache['wiki']->hasItem($cache_name)){
-				// キャッシュを再生成
-				foreach (new \DirectoryIterator($dir) as $fileinfo) {
-					$filename = $fileinfo->getFilename();
-					if ($fileinfo->isFile() && preg_match($pattern, $filename, $matches)){
-						$aryret[$func][$filename] = decode($matches[1]);
-					}
-				}
-				$cache['wiki']->setItem($cache_name, $aryret[$func]);
-			}else{
-				// キャッシュからメモリに呼び出す
-				$aryret[$func] = $cache['wiki']->getItem($cache_name);
+		// キャッシュを再生成
+		foreach (new \DirectoryIterator($dir) as $fileinfo) {
+			$filename = $fileinfo->getFilename();
+			if ($fileinfo->isFile() && preg_match($pattern, $filename, $matches)){
+				$aryret[$func][$filename] = decode($matches[1]);
 			}
 		}
+		$cache['wiki']->setItem($cache_name, $aryret[$func]);
 		return $aryret[$func];
-	}
-	/**
-	 * ページ一覧を取得（認証状態によって変わる）
-	 * @param string $dir ディレクトリ
-	 * @param boolean $force キャッシュを再生成
-	 * @return array
-	 */
-	public static function get_exists($dir = DATA_DIR, $force = false){
-		// 全ページ一覧
-		$pages = self::get_exists_all($dir, $force);
-		// ユーザ名取得
-		$auth_key = Auth::get_user_info();
-		// コンテンツ管理者以上は、: のページも閲覧可能
-		$is_colon = Auth::check_role('role_adm_contents');
-		if (is_array($pages)){
-			foreach($pages as $file=>$page) {
-				if (! Auth::is_page_readable($page, $auth_key['key'], $auth_key['group'])) continue;
-				if (substr($page,0,1) != ':') {
-					$rc[$file] = $page;
-					continue;
-				}
-
-				// colon page
-				if ($is_colon) continue;
-				$rc[$file] = $page;
-			}
-		}
-		return $rc;
 	}
 	/**
 	 * キャッシュの識別子およびファイル
@@ -133,6 +112,7 @@ class FileUtility{
 	public static function get_listing($dir = DATA_DIR, $cmd = 'read', $with_filename = false){
 		// 一覧の配列を取得
 		$heading = self::get_headings($dir);
+		$contents = array();
 
 		if (IS_MOBILE) {
 			// モバイル用
@@ -237,8 +217,19 @@ class FileUtility{
 	 */
 	private static function get_page_lists($pages, $cmd, $with_filename){
 		$contents = array();
+		// ユーザ名取得
+		$auth_key = Auth::get_user_info();
+		// コンテンツ管理者以上は、: のページも閲覧可能
+		$has_permisson = Auth::check_role('role_adm_contents');
+
 		foreach ($pages as $page){
+			if (! Auth::is_page_readable($page, $auth_key['key'], $auth_key['group'])) continue;
+
 			$wiki = FileFactory::Wiki($page);
+			if (!$wiki->has()) continue;
+			
+			if ($wiki->is_hidden() && $has_permisson) continue;
+
 			$_page = Utility::htmlsc($page, ENT_QUOTES);
 			$url = $wiki->get_uri($cmd);
 			if (!IS_MOBILE) {

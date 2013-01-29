@@ -1,14 +1,23 @@
 <?php
-// PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: InlineConverter.php,v 1.0.0 2012/12/18 11:00:00 Logue Exp $
-// Copyright (C)
-//   2012 PukiWiki Advance Developers Team
-// License: GPL v2 or (at your option) any later version
+/**
+ * インライン要素変換クラス
+ *
+ * @package   PukiWiki\Lib\Renderer
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @create    2012/12/18
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: InlineConverter.php,v 1.0.0 2013/01/29 19:54:00 Logue Exp $
+ */
+
 
 namespace PukiWiki\Lib\Renderer;
 use PukiWiki\Lib\Auth\Auth;
 use PukiWiki\Lib\Renderer\Inline\Inline;
-// Converters of inline element
+/**
+ * Converters of inline element
+ */
 class InlineConverter
 {
 	var $converters; // as array()
@@ -85,7 +94,7 @@ class InlineConverter
 		$string = preg_replace_callback('/' . $this->pattern . '/x',
 			array(& $this, 'replace'), $string);
 
-		$arr = explode("\x08", make_line_rules(htmlsc($string)));
+		$arr = explode("\x08", Inline::make_line_rules(htmlsc($string)));
 		$retval = '';
 		while (! empty($arr)) {
 			$retval .= array_shift($arr) . array_shift($this->result);
@@ -98,7 +107,7 @@ class InlineConverter
 		$obj = $this->get_converter($arr);
 
 		$this->result[] = ($obj !== NULL && $obj->set($arr, $this->page) !== FALSE) ?
-			$obj->toString() : make_line_rules(htmlsc($arr[0]));
+			$obj->toString() : Inline::make_line_rules(Utility::htmlsc($arr[0]));
 
 		return "\x08"; // Add a mark into latest processed part
 	}

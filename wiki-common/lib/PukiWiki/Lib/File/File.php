@@ -1,19 +1,26 @@
 <?php
-// PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: File.php,v 1.0.0 2012/12/18 11:00:00 Logue Exp $
-// Copyright (C)
-//   2012 PukiWiki Advance Developers Team
-// License: GPL v2 or (at your option) any later version
-//
+/**
+ * ファイルクラス
+ *
+ * @package   PukiWiki\Lib\File
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @create    2012/12/18
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: File.php,v 1.0.0 2013/01/29 19:54:00 Logue Exp $
+ */
 
 namespace PukiWiki\Lib\File;
+use SplFileInfo;
 use PukiWiki\Lib\Utility;
 
 /**
  * ファイルの読み書きを行うクラス
  */
-class File{
+class File extends SplFileInfo{
 	const LOCK_FILE = 'chown.lock';
+	const LINE_BREAK = "\n";
 
 	public $filename;
 
@@ -26,15 +33,14 @@ class File{
 		if (empty($filename)){
 			throw new \Exception('File name is missing!');
 		}
-		$this->filename = $filename;
-		$this->info = new \SplFileInfo($this->filename);
+		parent::__construct($filename);
 	}
 	/**
 	 * ファイルが存在するか
 	 * @return boolean
 	 */
 	public function has(){
-		return $this->info->isFile();
+		return $this->isFile();
 	}
 	/**
 	 * ファイルの指定行数を取得
@@ -45,11 +51,11 @@ class File{
 		// Read top N lines as an array
 		// (Use PHP file() function if you want to get ALL lines)
 		if ( !self::has() ) return false;
-		if ( !$this->info->isReadable() )
+		if ( !$this->isReadable() )
 			Utility::die_message(sprintf('File <var>%s</var> is not readable.', Utility::htmlsc($this->filename)));
 
 		// ファイルの読み込み
-		$file = $this->info->openFile('r');
+		$file = $this->openFile('r');
 		// ロック
 		$file->flock(LOCK_SH);
 		// 巻き戻し（要るの？）
@@ -72,7 +78,7 @@ class File{
 		unset($file);
 
 		// 出力
-		return $join || $count !== 1 ? join("\n", $result) : $result;
+		return $join || $count !== 1 ? join(self::LINE_BREAK, $result) : $result;
 	}
 	/**
 	 * ファイルの内容を取得
@@ -81,12 +87,12 @@ class File{
 	 * @return string or array
 	 */
 	public function get($join = false, $legacy = false){
-		if ( !$this->has() ) return false;
-		if ( !$this->info->isReadable() )
+		if ( !$this->isFile() ) return false;
+		if ( !$this->isReadable() )
 			Utility::die_message(sprintf('File <var>%s</var> is not readable.', Utility::htmlsc($this->filename)));
 
 		// ファイルの読み込み
-		$file = $this->info->openFile('r');
+		$file = $this->openFile('r');
 		// ロック
 		$file->flock(LOCK_SH);
 		// 巻き戻し（要るの？）
@@ -95,7 +101,14 @@ class File{
 		$result = array();
 		// 1行毎ファイルを読む
 		while (!$file->eof()) {
-			$result[] = $legacy ? strtr($file->fgets(), "\r", '') : rtrim($file->fgets());	// 改行を含む余計な空白文字は削除
+			$line = $file->fgets();
+			if ($legacy) {
+				$result[] = strtr($line, "\r", '');
+			}else if (!empty($line)){
+				// 改行を含む末尾の余計な空白文字は削除
+				// （ただし先頭の1文字目は、スペースやタブの場合があるため除外）
+				$result[] = $line[0] . rtrim(substr($line, 1));
+			}
 		}
 		// アンロック
 		$file->flock(LOCK_UN);
@@ -103,7 +116,7 @@ class File{
 		unset($file);
 		
 		// 出力
-		return $join ? join("\n", $result) : $result;
+		return $join ? join(self::LINE_BREAK, $result) : $result;
 	}
 	/**
 	 * ファイルの書き込み処理
@@ -112,7 +125,7 @@ class File{
 	 */
 	public function set($str, $keeptimestamp = false){
 		// 書き込み可能かをチェック
-		if ($this->has () && ! $this->info->isWritable())
+		if (! $this->isWritable())
 			Utility::die_message(sprintf('File <var>%s</var> is not writable.', Utility::htmlsc($this->filename)));
 
 		// 書き込むものがなかった場合、削除とみなす
@@ -121,75 +134,68 @@ class File{
 		// タイムスタンプを取得
 		if ($keeptimestamp) $timestamp = self::getTime();
 
-		$data = '';
 		if (!is_array($str)){
-			// 入力データが配列でない場合
-			$str = explode( "\n", $str );
+			// 入力データが配列でない場合、念のため改行で分割
+			$str = explode(self::LINE_BREAK, $str );
 		}
+
+		// 改行を含む末尾の余計な空白文字は削除
+		// （ただし先頭の1文字目は、スペースやタブの場合があるため除外）
 		foreach ($str as $line){
-			// 末尾の空白文字やヌル文字などゴミデーターをrtrim命令で削除しつつ整形する
-			$data .= rtrim($line) . "\n";
+			$data[] = (!empty($line)) ? $line[0] . rtrim(substr($line, 1)) : '';
 		}
 		unset($str);
 
 		// ファイルを読み込み
-		$file = $this->info->openFile('w');
+		$file = $this->openFile('w');
 		// ロック
 		$file->flock(LOCK_EX);
 		// 書き込む
-		$ret = $file->fwrite($data);
+		$ret = $file->fwrite(join("\n",$data));
 		// アンロック
 		$file->flock(LOCK_UN);
+
 		// タイムスタンプを保持する場合
 		if ($keeptimestamp) self::setTime($timestamp);
+
 		// 念のためオブジェクトを開放
 		unset($file);
 
 		return $ret;
 	}
 	/**
-	 * ファイルサイズ
-	 * @return int
-	 */
-	public function size(){
-		return $this->info->getSize();
-	}
-	/**
 	 * ハッシュ
 	 * @return string
 	 */
 	public function digest(){
-		return $this->has() ? md5($this->get(true)) : null;
+		return $this->isFile() ? md5($this->get(true)) : null;
 	}
 	/**
 	 * ファイルを削除
 	 * @return int
 	 */
 	public function remove(){
-		return $this->has() ? unlink($this->filename) : false;
+		return $this->isFile() ? unlink($this) : false;
 	}
 	/**
-	 * 更新時刻を取得
+	 * 更新時刻を設定／取得
+	 * @param type $time
 	 * @return int
 	 */
-	public function getTime(){
-		return $this->has() ? $this->info->getMTime() : 0;
-	}
-	/**
-	 * 更新日時を指定
-	 * @param type $time
-	 * @return boolean
-	 */
-	public function setTime($time){
-		return $this->touch($time);
+	public function time($time = ''){
+		if (empty($time)){
+			return $this->isFile() ? $this->getMTime() : 0;
+		}else{
+			return $this->touch($time);
+		}
 	}
 	/**
 	 * ファイルの経過時間を取得
 	 * @return string
 	 */
-	public function getPassage(){
+	public function passage(){
 		static $units = array('m'=>60, 'h'=>24, 'd'=>1);
-		$time = max(0, (MUTIME - $this->info->getMTime()) / 60); // minutes
+		$time = max(0, (MUTIME - $this->time()) / 60); // minutes
 
 		foreach ($units as $unit=>$card) {
 			if ($time < $card) break;
@@ -197,21 +203,6 @@ class File{
 		}
 		$time = floor($time) . $unit;
 		return $time;
-	}
-	/**
-	 * アクセス時刻を取得
-	 * @return int
-	 */
-	public function getAtime(){
-		return $this->info->getATime();
-	}
-	/**
-	 * アクセス日時を指定
-	 * @param int $atime
-	 * @return boolean
-	 */
-	public function setAtime($atime){
-		return $this->touch($this->getTime(), $atime);
 	}
 	/**
 	 * ファイルの所有者変更
@@ -224,14 +215,14 @@ class File{
 		$lockfile = new \SplFileInfo(CACHE_DIR . self::LOCK_FILE);
 
 		// Lock for pkwk_chown()
-		$lock = $lockfile->openFile('a') ;
+		$lock = $lockfile->openFile('a');
 		$lock->flock(LOCK_EX);
 
 		// ファイルが作成されてないとエラーになる
 		touch($this->filename);
 
 		// Check owner
-		$owner = $this->info->getOwner();
+		$owner = $this->getOwner();
 		if ($owner === $this->php_uid) {
 			// NOTE: Windows always here
 			$result = TRUE; // Seems the same UID. Nothing to do
@@ -240,7 +231,7 @@ class File{
 
 			// Lock source $filename to avoid file corruption
 			// NOTE: Not 'r+'. Don't check write permission here
-			$file = $this->info->openFile('r');
+			$file = $this->openFile('r');
 
 			// Try to chown by re-creating files
 			// NOTE:
@@ -305,12 +296,6 @@ class File{
 		return mkdir($dirname);
 	}
 	/**
-	 * エイリアス：存在確認
-	 */
-	public function exists(){
-		return self::has();
-	}
-	/**
 	 * エイリアス：読み込み
 	 */
 	public function read($join = false){
@@ -323,11 +308,11 @@ class File{
 		return self::set($str);
 	}
 	/**
-	 * 特殊：文字列化（readと等価）
+	 * 特殊：ファイル名
 	 * @return string
 	 */
 	public function __toString(){
-		return $this->get(true);
+		return $this->getRealPath();
 	}
 }
 
