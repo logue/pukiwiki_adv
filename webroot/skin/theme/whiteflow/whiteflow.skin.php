@@ -177,14 +177,13 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 				<?php if (exist_plugin_convert('footarea') && do_plugin_convert('footarea') != ''){
 					echo do_plugin_convert('footarea');
 				}else { // or In this skin?>
-						<ul id="signature">
-							<li><address>Site admin: <a href="<?php echo $modifierlink ?>"><?php echo $modifier ?></a></address></li>
-							<li><strong>White flow Adv.</strong> based on <a href="http://note.openvista.jp/" rel="external">leva</a>'s <a href="http://note.openvista.jp/2007/pukiwiki-skin/" rel="external"><strong>White flow</strong></a>.</li>
-							<li><?php echo S_COPYRIGHT;?></li>
-							<li>HTML convert time: <?php echo showtaketime() ?> sec.</li>
-						</ul>
-					<?php } ?>
-				</div>
+					<ul id="signature">
+						<li><address>Site admin: <a href="<?php echo $modifierlink ?>"><?php echo $modifier ?></a></address></li>
+						<li><strong>White flow Adv.</strong> based on <a href="http://note.openvista.jp/" rel="external">leva</a>'s <a href="http://note.openvista.jp/2007/pukiwiki-skin/" rel="external"><strong>White flow</strong></a>.</li>
+						<li><?php echo S_COPYRIGHT;?></li>
+						<li>HTML convert time: <?php echo showtaketime() ?> sec.</li>
+					</ul>
+				<?php } ?>
 <!-- END #footer -->
 			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</footer>'."\n" : '</div>'."\n"; ?>
 <!-- #END #container -->
