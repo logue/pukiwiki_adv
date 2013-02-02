@@ -8,10 +8,11 @@
  * @copyright 2012-2013 PukiWiki Advance Developers Team
  * @create    2012/12/18
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: BackupFile.php,v 1.0.0 2013/01/29 19:54:00 Logue Exp $
+ * @version   $Id: Inline.php,v 1.0.0 2013/01/29 19:54:00 Logue Exp $
  */
 
 namespace PukiWiki\Lib\Renderer\Inline;
+
 use PukiWiki\Lib\Renderer\InlineConverter;
 use PukiWiki\Lib\File\FileFactory;
 use PukiWiki\Lib\Auth\Auth;
@@ -27,7 +28,6 @@ abstract class Inline
 	const INTERNAL_LINK_ICON = '<span class="pkwk-symbol link_symbol symbol-internal" title="Internal Link"></span>';
 	// 外部リンク
 	const EXTERNAL_LINK_ICON = '<span class="pkwk-symbol link_symbol symbol-external" title="External Link"></span>';
-
 	// imgタグに展開する拡張子のパターン
 	const IMAGE_EXTENTION_PATTERN = '/\.(gif|png|bmp|jpe?g|svg?z|webp)$/i';
 	// audioタグで展開する拡張子のパターン
@@ -55,18 +55,23 @@ abstract class Inline
 		$this->start = $start;
 		$this->redirect = (PKWK_USE_REDIRECT) ? get_cmd_uri('redirect',null,null,'u=') : null;	// FIXME
 	}
-
 	/**
 	 * Wikiのパース用正規表現を取得
+	 * @return string
 	 */
-	public function get_pattern() {}
+	public function getPattern() {}
 
 	/**
 	 * 正規表現の(?: ...)などで帰ってくる値
+	 * @return int
 	 */
-	public function get_count() {}
+	public function getCount() {}
 
-	// Set pattern that matches
+	/**
+	 * マッチするパターンを設定
+	 * @param type $arr
+	 * @param type $page
+	 */
 	public function set($arr, $page) {}
 
 	/**
@@ -77,7 +82,7 @@ abstract class Inline
 	// Private: Get needed parts from a matched array()
 	public function splice($arr)
 	{
-		$count = $this->get_count() + 1;
+		$count = $this->getCount() + 1;
 		$arr   = array_pad(array_splice($arr, $this->start, $count), $count, '');
 		$this->text = $arr[0];
 		return $arr;
@@ -86,7 +91,7 @@ abstract class Inline
 	// Set basic parameters
 	public function setParam($page, $name, $body, $type = '', $alias = '')
 	{
-		static $converter = NULL;
+		static $converter;
 
 		$this->page = $page;
 		$this->name = $name;
@@ -97,7 +102,7 @@ abstract class Inline
 				$converter = new InlineConverter(array('Plugin'));
 
 			$alias = $converter->convert($alias, $page);
-			$alias = self::make_line_rules($alias);
+			$alias = self::setLineRules($alias);
 
 			// BugTrack/669: A hack removing anchor tags added by AutoLink
 			$alias = Utility::htmlsc(preg_replace('#</?a[^>]*>#i', '', $alias));
@@ -108,7 +113,7 @@ abstract class Inline
 	}
 
 	// User-defined rules (convert without replacing source)
-	public static function make_line_rules($str){
+	public static function setLineRules($str){
 		global $line_rules;
 		static $pattern, $replace;
 
@@ -122,20 +127,32 @@ abstract class Inline
 		return preg_replace($pattern, $replace, $str);
 	}
 
-	// Make hyperlink for the page
-	public static function make_pagelink($page, $alias = '', $anchor = '', $refer = '', $isautolink = FALSE)
+	/**
+	 * ページの自動リンクを作成
+	 * @global type $vars
+	 * @global type $link_compact
+	 * @global type $related
+	 * @global type $_symbol_noexists
+	 * @param string $page ページ名
+	 * @param string $alias リンクの名前
+	 * @param string $anchor ページ内アンカー（アドレスの#以降のテキスト）
+	 * @param string $refer リンク元
+	 * @param boolean $isautolink 自動リンクか？
+	 * @return string
+	 */
+	public static function setAutoLink($page, $alias = '', $anchor = '', $refer = '', $isautolink = FALSE)
 	{
-		global $vars, $link_compact, $related, $_symbol_noexists;
+		global $vars, $link_compact, $related, $_symbol_noexists, $related;
 
 		if (empty($page)){
 			// ページ内リンク
 			return '<a href="' . $anchor . '">' . Utility::htmlsc($alias) . '</a>';
 		}
 
-		$page = Utility::strip_bracket($page);
+		$page = Utility::stripBracket($page);
 		$wiki = FileFactory::Wiki($page);
 		if (! $wiki->has()) {
-			$realpages = get_autoaliases(strip_bracket($page));
+			$realpages = get_autoaliases(Utility::stripBracket($page));
 			foreach ($realpages as $realpage) {
 				if (FileFactory::Wiki($realpage)->has()) {
 					$page = $realpage;
@@ -151,7 +168,8 @@ abstract class Inline
 
 		if ($isautolink || $wiki->has()) {
 			// ページが存在する場合
-			$glossary = Glossary::get_glossary_dict($page, true);
+			// 用語集にページ名と同じワードが含まれていた場合
+			$glossary = Glossary::getGlossaryDict($page);
 			if (!empty($glossary)){
 				// AutoGlossray
 				$s_page = $glossary;
@@ -170,18 +188,25 @@ abstract class Inline
 			return ($link_compact) ? $retval : '<span class="noexists">' . $retval . '</span>';
 		}
 	}
-	// 外部リンク
-	public static function make_link($term, $uri, $tooltip, $rel = ''){
+	/**
+	 * リンクを作成（厳密にはimgタグ、audioタグ、videoタグにも使用するが）
+	 * @param string $term リンクの名前
+	 * @param string $uri リンク先
+	 * @param string $tooltip title属性の内容
+	 * @param string $rel リンクのタイプ
+	 * @return string
+	 */
+	public static function setLink($term, $uri, $tooltip, $rel = ''){
 		$_uri = Utility::htmlsc($uri);
 		$_tooltip = Utility::htmlsc($tooltip);
 		$ext_rel = (!empty($rel) ? $rel.' ' : '') . 'external';
 
-		if (! PKWK_DISABLE_INLINE_IMAGE_FROM_URI && Utility::is_uri($uri)) {
+		if (! PKWK_DISABLE_INLINE_IMAGE_FROM_URI && Utility::isUri($uri)) {
 			if (preg_match(self::IMAGE_EXTENTION_PATTERN, $uri)) {
 				$term = '<img src="' . $_uri . '" alt="' . Utility::htmlsc($term) . '" />';
 			}else{
-				$anchor = '<a href="' . $_uri . '" title="'.$_tooltip.'" rel="' . (self::is_inside_uri($uri) ? $rel : $ext_rel) . '">'.$term  .'</a>';
-				$icon = self::is_inside_uri($uri) ?
+				$anchor = '<a href="' . $_uri . '" title="'.$_tooltip.'" rel="' . (self::isInsideUri($uri) ? $rel : $ext_rel) . '">'.$term  .'</a>';
+				$icon = self::isInsideUri($uri) ?
 					'<a href="' . $_uri . '" rel="' . $rel . '">' . self::INTERNAL_LINK_ICON .'</a>' :
 					'<a href="' . $_uri . '" rel="' . $ext_rel . '">' . self::EXTERNAL_LINK_ICON . '</a>';
 				if (preg_match(self::VIDEO_EXTENTION_PATTERN, $uri)) {
@@ -191,14 +216,20 @@ abstract class Inline
 				}
 			}
 		}
-		return self::is_inside_uri($uri) ?
+		return self::isInsideUri($uri) ?
 			'<a href="' . $_uri . '" title="'.$_tooltip.'" rel="' . $rel . '">'.$term . self::INTERNAL_LINK_ICON .'</a>' :
 			'<a href="' . $_uri . '" title="'.$_tooltip.'" rel="' . $ext_rel . '">'.$term . self::EXTERNAL_LINK_ICON . '</a>';
 	}
-	// 外部リンクか内部リンクの判定
-	protected static function is_inside_uri($uri){
+	/**
+	 * 外部リンクか内部リンクの判定
+	 * @global type $open_uri_in_new_window_servername
+	 * @staticvar boolean $set_baseuri
+	 * @param type $uri アドレス
+	 * @return boolean
+	 */
+	protected static function isInsideUri($uri){
 		global $open_uri_in_new_window_servername;
-		static $set_baseuri = true;
+		static $set_baseuri;
 
 		if ($set_baseuri) {
 			$set_baseuri = false;

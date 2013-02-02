@@ -28,12 +28,12 @@ class AutoLink extends Inline
 		$this->forceignorepages = $forceignorepages;
 	}
 
-	function get_pattern()
+	function getPattern()
 	{
 		return isset($this->auto) ? '(' . $this->auto . ')' : FALSE;
 	}
 
-	function get_count()
+	function getCount()
 	{
 		return 1;
 	}
@@ -51,7 +51,7 @@ class AutoLink extends Inline
 
 	function toString()
 	{
-		return parent::make_pagelink($this->name, $this->alias, null, $this->page, TRUE);
+		return parent::setAutoLink($this->name, $this->alias, null, $this->page, TRUE);
 	}
 
 	/**
@@ -116,7 +116,7 @@ class AutoLink_Alphabet extends AutoLink
 		parent::__construct($start);
 	}
 
-	function get_pattern()
+	function getPattern()
 	{
 		return isset($this->auto_a) ? '(' . $this->auto_a . ')' : FALSE;
 	}

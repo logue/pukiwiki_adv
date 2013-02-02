@@ -18,12 +18,12 @@ class BracketName extends Inline
 		parent::__construct($start);
 	}
 
-	function get_pattern()
+	function getPattern()
 	{
 		global $WikiName, $BracketName;
 
 		$s2 = $this->start + 2;
-		return 
+		return
 			'\[\['.                     // Open bracket
 			'(?:((?:(?!\]\]).)+)>)?'.   // (1) Alias
 			'(\[\[)?'.                  // (2) Open bracket
@@ -37,7 +37,7 @@ class BracketName extends Inline
 			'\]\]';                     // Close bracket
 	}
 
-	function get_count()
+	function getCount()
 	{
 		return 4;
 	}
@@ -62,7 +62,7 @@ class BracketName extends Inline
 
 	function toString()
 	{
-		return parent::make_pagelink(
+		return parent::setAutoLink(
 			$this->name,
 			$this->alias,
 			$this->anchor,

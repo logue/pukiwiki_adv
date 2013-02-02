@@ -17,10 +17,10 @@ class Mailto extends Inline
 		parent::__construct($start);
 	}
 
-	function get_pattern()
+	function getPattern()
 	{
 		$s1 = $this->start + 1;
-		return 
+		return
 			'(?:'.
 			 '\[\['.
 			 '((?:(?!\]\]).)+)(?:>|:)'.     // (1) alias
@@ -30,7 +30,7 @@ class Mailto extends Inline
 			'(?(' . $s1 . ')\]\])';	        // close bracket if (1)
 	}
 
-	function get_count()
+	function getCount()
 	{
 		return 3;
 	}

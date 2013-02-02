@@ -1,13 +1,19 @@
 <?php
-// PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: Note.php,v 1.0.0 2013/01/05 15:46:00 Logue Exp $
-// Copyright (C)
-//   2012-2013 PukiWiki Advance Developers Team
-// License: GPL v2 or (at your option) any later version
+/**
+ * フットノート変換クラス
+ *
+ * @package   PukiWiki\Lib\Renderer\Inline
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @create    2012/12/18
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: Note.php,v 1.0.0 2013/01/29 19:54:00 Logue Exp $
+ */
 
 namespace PukiWiki\Lib\Renderer\Inline;
+
 use PukiWiki\Lib\Renderer\InlineFactory;
-use PukiWiki\Lib\Router;
 
 // Footnotes
 class Note extends Inline
@@ -17,7 +23,7 @@ class Note extends Inline
 		parent::__construct($start);
 	}
 
-	function get_pattern()
+	function getPattern()
 	{
 		return
 			'\(\('.
@@ -25,7 +31,7 @@ class Note extends Inline
 			'\)\)';
 	}
 
-	function get_count()
+	function getCount()
 	{
 		return 1;
 	}

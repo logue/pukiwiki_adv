@@ -12,10 +12,10 @@
  */
 
 namespace PukiWiki\Lib\Renderer\Inline;
+
 use PukiWiki\Lib\File\FileFactory;
 use PukiWiki\Lib\Renderer\Trie;
 use PukiWiki\Lib\Utility;
-use PukiWiki\Lib\Config;
 
 // Glossary
 class Glossary extends Inline
@@ -32,15 +32,15 @@ class Glossary extends Inline
 	function __construct($start)
 	{
 		parent::__construct($start);
-		list($auto, $auto_a) = self::get_autoglossary_pattern(false);
+		list($auto, $auto_a) = self::getAutoGlossaryPattern(false);
 		$this->auto = $auto;
 		$this->auto_a = $auto_a;
 	}
-	function get_pattern()
+	function getPattern()
 	{
 		return isset($this->auto) ? '(' . $this->auto . ')' : FALSE;
 	}
-	function get_count()
+	function getCount()
 	{
 		return 1;
 	}
@@ -56,9 +56,9 @@ class Glossary extends Inline
 	}
 	function toString()
 	{
-		$term = Utility::strip_bracket($this->name);
+		$term = Utility::stripBracket($this->name);
 		$wiki = FileFactory::Wiki($term);
-		$glossary = self::get_glossary_dict($term, true);
+		$glossary = self::getGlossaryDict($term, true);
 		if (! $wiki->has() ) {
 			return '<abbr aria-describedby="tooltip" title="' . $glossary . '">' . $this->name . '</abbr>';
 		}
@@ -69,14 +69,14 @@ class Glossary extends Inline
 	 * @param string $str
 	 * @return string
 	 */
-	private static function expect_str($str){
+	private static function expectTooltip($str){
 		return mb_strlen($str) > self::MAX_TERM_LENGTH ? mb_substr($str, 0, self::MAX_TERM_LENGTH-3) . '...' : $str;
 	}
 	/**
 	 * Glossaryの正規表現パターンを生成
 	 * @return string
 	 */
-	private function get_autoglossary_pattern($force = false){
+	private function getAutoGlossaryPattern($force = false){
 		global $cache;
 		static $pattern;
 
@@ -96,7 +96,7 @@ class Glossary extends Inline
 		global $WikiName, $autoglossary, $nowikiname;
 
 		// 用語集を取得
-		$pairs = self::get_glossary_dict();
+		$pairs = self::getGlossaryDict();
 		foreach ($pairs as $term=>$val){
 			if (preg_match('/^' . $WikiName . '$/', $term) ?
 				$nowikiname : mb_strlen($term) >= $autoglossary)
@@ -127,10 +127,10 @@ class Glossary extends Inline
 	 * @param boolean $expect 要約するか（title属性の中に入れる文字列として出力するか）
 	 * @return string
 	 */
-	public static function get_glossary_dict($term = '', $expect = false){
+	public static function getGlossaryDict($term = '', $expect = false){
 		global $glossarypage, $cache;
 		static $pairs;
-		
+
 		$wiki = FileFactory::Wiki($glossarypage);
 		if ($wiki->has()){
 			$term_cache_meta = $cache['wiki']->getMetadata(self::AUTO_GLOSSARY_TERM_CACHE);
@@ -164,7 +164,7 @@ class Glossary extends Inline
 		if (empty($term)) return $pairs;
 		if (!isset($pairs[$term])) return null;
 		$ret = htmlsc($pairs[$term]);
-		return $expect ? self::expect_str(str_replace("'", "\\'",$ret)) : $ret;
+		return $expect ? self::expectTooltip(str_replace("'", "\\'",$ret)) : $ret;
 	}
 }
 
@@ -174,7 +174,7 @@ class Glossary_Alphabet extends Glossary
 	{
 		parent::__construct($start);
 	}
-	function get_pattern()
+	function getPattern()
 	{
 		return isset($this->auto_a) ? '(' . $this->auto_a . ')' : FALSE;
 	}

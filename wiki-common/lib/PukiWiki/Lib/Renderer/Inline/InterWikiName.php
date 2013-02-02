@@ -1,6 +1,6 @@
 <?php
 /**
- * InterWikiNameパースクラス
+ * InterWikiName変換クラス
  *
  * @package   PukiWiki\Lib\Renderer\Inline
  * @access    public
@@ -13,16 +13,18 @@
 
 namespace PukiWiki\Lib\Renderer\Inline;
 use PukiWiki\Lib\File\FileFactory;
-use PukiWiki\Lib\Router;
+use PukiWiki\Lib\Utility;
+
 /**
  * InterWikiName-rendered URLs
  */
 class InterWikiName extends Inline
 {
+	const INTERWIKINAME_PAGENAME = 'InterWikiName';
 	const INTERWIKINAME_PATTERN = '/\[((?:(?:https?|ftp|news):\/\/|\.\.?\/)[!~*\'();\/?:\@&=+\$,%#\w.-]*)\s([^\]]+)\]\s?([^\s]*)/';
 	const INTERWIKINAME_ICON = '<span class="pkwk-icon icon-interwiki" title="InterWikiName"></span>';
 	const INTERWIKINAME_CACHE = 'interwikiname';
-	
+
 	var $url    = '';
 	var $param  = '';
 	var $anchor = '';
@@ -34,7 +36,7 @@ class InterWikiName extends Inline
 		parent::__construct($start);
 	}
 
-	function get_pattern()
+	function getPattern()
 	{
 		$s2 = $this->start + 2;
 		$s5 = $this->start + 5;
@@ -56,7 +58,7 @@ class InterWikiName extends Inline
 			'\]\]';                  // close bracket
 	}
 
-	function get_count()
+	function getCount()
 	{
 		return 5;
 	}
@@ -86,16 +88,16 @@ class InterWikiName extends Inline
 	function toString()
 	{
 		global $nofollow;
-		$icon = parent::is_inside_uri($this->url) ? parent::INTERNAL_LINK_ICON : parent::EXTERNAL_LINK_ICON;
+		$icon = parent::isInsideUri($this->url) ? parent::INTERNAL_LINK_ICON : parent::EXTERNAL_LINK_ICON;
 		$target = (empty($this->redirect)) ? $this->url : $this->redirect.rawurlencode($this->url);
 
 		return '<a href="' . $target . $this->anchor . '" title="' . $this->name . '" rel="' . ($nofollow === FALSE ? 'external' : 'external nofollow') . '">'. self::INTERWIKINAME_ICON . $this->alias . $icon . '</a>';
 	}
-	
+
 	// Render an InterWiki into a URL
 	private function get_interwiki_url($name, $param)
 	{
-		global $WikiName, $interwiki;
+		global $interwiki;
 		static $encode_aliases = array('sjis'=>'SJIS', 'euc'=>'EUC-JP', 'utf8'=>'UTF-8', 'gbk'=>'CP936', 'euckr'=>'EUC-KR', 'big5'=>'BIG5');
 		static $interwikinames;
 
@@ -132,7 +134,7 @@ class InterWikiName extends Inline
 				break;
 
 			case 'yw': // YukiWiki
-				if (! preg_match('/' . $WikiName . '/', $param))
+				if (! preg_match('/' . Utility::WIKINAME_PATTERN . '/', $param))
 					$param = '[[' . mb_convert_encoding($param, 'SJIS', SOURCE_ENCODING) . ']]';
 				break;
 
@@ -157,7 +159,7 @@ class InterWikiName extends Inline
 		}
 
 		$len = strlen($url);
-		if ($len > 512) die_message('InterWiki URL too long: ' . $len . ' characters');
+		if ($len > 512) Utility::die_message('InterWiki URL too long: ' . $len . ' characters');
 
 		return $url;
 	}

@@ -1,16 +1,22 @@
 <?php
-// PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: AutoAlias.php,v 1.0.0 2013/01/05 15:46:00 Logue Exp $
-// Copyright (C)
-//   2012-2013 PukiWiki Advance Developers Team
-// License: GPL v2 or (at your option) any later version
-//
-// Hyperlink-related functions
+/**
+ * 自動エイリアス変換クラス
+ *
+ * @package   PukiWiki\Lib\Renderer
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @create    2012/12/18
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: InlineConverter.php,v 1.0.0 2013/02/01 22:54:00 Logue Exp $
+ */
+
 namespace PukiWiki\Lib\Renderer\Inline;
+
 use PukiWiki\Lib\Renderer\InlineFactory;
 use PukiWiki\Lib\File\FileFactory;
 use PukiWiki\Lib\Renderer\Trie;
-// AutoAlias
+
 class AutoAlias extends Inline
 {
 	const AUTO_AUTOALIAS_PATTERN_CACHE = 'autoalias';
@@ -21,7 +27,7 @@ class AutoAlias extends Inline
 	var $auto_a; // alphabet only
 	var $aliases;
 
-	function __construct($start)
+	public function __construct($start)
 	{
 		global  $aliaspage;
 
@@ -30,22 +36,22 @@ class AutoAlias extends Inline
 		if ($this->page == $aliaspage){
 			return;
 		}
-		list($auto, $auto_a, $forceignorepages) = self::get_autoalias_pattern();
+		list($auto, $auto_a, $forceignorepages) = self::getAutoAliasPattern();
 
 		$this->auto = $auto;
 		$this->auto_a = $auto_a;
 		$this->forceignorepages = $forceignorepages;
 		$this->aliases = array();
 	}
-	function get_pattern()
+	public function getPattern()
 	{
 		return isset($this->auto) ? '(' . $this->auto . ')' : FALSE;
 	}
-	function get_count()
+	public function getCount()
 	{
 		return 1;
 	}
-	function set($arr,$page)
+	public function set($arr,$page)
 	{
 		global $WikiName;
 
@@ -58,7 +64,7 @@ class AutoAlias extends Inline
 	}
 	function toString()
 	{
-		$this->aliases = get_autoaliases($this->name);
+		$this->aliases = self::getAutoAliasDict($this->name);
 		if (empty($this->aliases)) return;
 
 		$link = '[[' . $this->name  . ']]';
@@ -68,7 +74,7 @@ class AutoAlias extends Inline
 	 * AutoAliasの正規表現パターンを生成
 	 * @return string
 	 */
-	private function get_autoalias_pattern(){
+	private function getAutoAliasPattern(){
 		global $cache;
 		static $pattern;
 
@@ -87,7 +93,7 @@ class AutoAlias extends Inline
 				unset($config);
 				$auto_pages = array_merge($ignorepages, $forceignorepages);
 
-				foreach (self::get_autoalias_dict() as $term=>$val){
+				foreach (self::getAutoAliasDict() as $term=>$val){
 					if (preg_match('/^' . $WikiName . '$/', $term) ?
 						$nowikiname : mb_strlen($term) >= $autolink)
 						$auto_terms[] = $term;
@@ -117,13 +123,13 @@ class AutoAlias extends Inline
 	 * @param boolean $expect 要約するか（title属性の中に入れる文字列として出力するか）
 	 * @return string
 	 */
-	public static function get_autoalias_dict($word = '')
+	public static function getAutoAliasDict($word = '')
 	{
 		global $cache, $aliaspage, $autoalias_max_words;
 		static $pairs;
 
 		if (! isset($pairs)) {
-			
+
 			$wiki = FileFactory::Wiki($aliaspage);
 			if ($wiki->has()){
 				$pairs = array();
@@ -173,7 +179,7 @@ class AutoAlias_Alphabet extends AutoAlias
 	{
 		parent::__construct($start);
 	}
-	function get_pattern()
+	function getPattern()
 	{
 		return isset($this->auto_a) ? '(' . $this->auto_a . ')' : FALSE;
 	}

@@ -15,14 +15,14 @@ class WikiName extends Inline
 		parent::__construct($start);
 	}
 
-	function get_pattern()
+	function getPattern()
 	{
 		global $WikiName, $nowikiname;
 
 		return $nowikiname ? FALSE : '(' . $WikiName . ')';
 	}
 
-	function get_count()
+	function getCount()
 	{
 		return 1;
 	}

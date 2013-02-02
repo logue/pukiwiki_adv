@@ -12,6 +12,8 @@
 // and related classes-and-functions
 namespace PukiWiki\Lib\Renderer\Element;
 
+use PukiWiki\Lib\Renderer\InlineFactory;
+
 // Block elements
 class Element
 {
@@ -19,7 +21,7 @@ class Element
 	var $elements; // References of childs
 	var $last;     // Insert new one at the back of the $last
 
-	function __construct()
+	public function __construct()
 	{
 		$this->elements = array();
 		$this->last     = & $this;

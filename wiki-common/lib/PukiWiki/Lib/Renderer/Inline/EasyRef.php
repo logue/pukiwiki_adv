@@ -18,7 +18,7 @@ class EasyRef extends Inline {
 		parent::__construct($start);
 	}
 
-	function get_pattern() {
+	function getPattern() {
 		return
 			'\{\{'.
 			 '(.*?)'.   // (1) parameter
@@ -28,7 +28,7 @@ class EasyRef extends Inline {
 			'\}\}';
 	}
 
-	function get_count() {
+	function getCount() {
 		return 2;
 	}
 

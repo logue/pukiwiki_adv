@@ -11,8 +11,10 @@ use PukiWiki\Lib\Renderer\Element\Body;
 class RendererFactory{
 	public static function factory($lines){
 		static $id;
+
 		$body = new Body(++$id);
 		$body->parse($lines);
+
 		return $body->toString();
 	}
 }

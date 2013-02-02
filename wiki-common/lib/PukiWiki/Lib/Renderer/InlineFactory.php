@@ -1,11 +1,15 @@
 <?php
-// PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: InlineFactory.php,v 1.0.0 2012/12/26 11:46:00 Logue Exp $
-// Copyright (C)
-//   2012 PukiWiki Advance Developers Team
-// License: GPL v2 or (at your option) any later version
-
-// Hyperlink decoration (make_link())
+/**
+ * インライン変換ファクトリークラス
+ *
+ * @package   PukiWiki\Lib\Renderer
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @create    2012/12/18
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: InlineFactory.php,v 1.0.0 2013/02/01 19:54:00 Logue Exp $
+ */
 namespace PukiWiki\Lib\Renderer;
 use PukiWiki\Lib\Renderer\InlineConverter;
 
@@ -14,7 +18,7 @@ class InlineFactory{
 		global $vars;
 		static $converter;
 		if (!isset($converter)) $converter = new InlineConverter();
-		$clone = $converter->get_clone($converter);
+		$clone = $converter->getClone($converter);
 		return $clone->convert($string, !empty($page) ? $page : $vars['page']);
 	}
 }

@@ -13,40 +13,34 @@
 
 
 namespace PukiWiki\Lib\Renderer;
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Utility;
 use PukiWiki\Lib\Renderer\Inline\Inline;
 /**
  * Converters of inline element
  */
 class InlineConverter
 {
-	var $converters; // as array()
-	var $pattern;
-	var $pos;
-	var $result;
+	// 変換クラス
+	private $converters = array(); // as array()
+	// 変換処理に用いる正規表現パターン
+	private $pattern;
+	// 結果
+	private $result;
 
-	function get_clone($obj) {
-		static $clone_func;
-
-		if (! isset($clone_func)) {
-			$clone_func = create_function('$a', 'return clone $a;');
-		}
-		return $clone_func($obj);
-	}
-
-	function __clone() {
-		$converters = array();
-		foreach ($this->converters as $key=>$converter) {
-			$converters[$key] = $this->get_clone($converter);
-		}
-		$this->converters = $converters;
-	}
-
-	function __construct($converters = NULL, $excludes = NULL)
+	/**
+	 * コンストラクタ
+	 * @global type $autolink
+	 * @global type $autoalias
+	 * @global type $autoglossary
+	 * @staticvar type $converters
+	 * @param array $converters 使用する変換クラス名
+	 * @param a $excludes 除外する変換クラス名
+	 */
+	public function __construct($converters = NULL, $excludes = NULL)
 	{
 		global $autolink, $autoalias, $autoglossary;
-		$autoglossary = 1;
-		if ($converters === NULL) {
+
+		if (!isset($converters)) {
 			$converters = array(
 				'Plugin',           // Inline plugins
 				'EasyRef',          // Easy Ref {{param|body}}
@@ -65,7 +59,7 @@ class InlineConverter
 				$autoglossary ? 'Glossary_Alphabet' : null,     // AutoGlossary(alphabet)
 			);
 		}
-
+		// 除外する
 		if ($excludes !== NULL)
 			$converters = array_diff($converters, $excludes);
 
@@ -74,60 +68,103 @@ class InlineConverter
 
 		foreach ($converters as $name) {
 			if (!isset($name)) continue;
+
 			$classname = 'PukiWiki\Lib\Renderer\Inline\\' . $name;
 			$converter = new $classname($start);
-			$pattern   = $converter->get_pattern();
+
+			$pattern   = $converter->getPattern();
 			if ($pattern === FALSE) continue;
 
 			$patterns[] = '(' . $pattern . ')';
 			$this->converters[$start] = $converter;
-			$start += $converter->get_count();
+			$start += $converter->getCount();
 			++$start;
 		}
 		$this->pattern = join('|', $patterns);
 	}
+	/**
+	 * 関数のクローン
+	 */
+	public function __clone() {
+		$converters = array();
+		foreach ($this->converters as $key=>$converter) {
+			$converters[$key] = $this->getClone($converter);
+		}
+		$this->converters = $converters;
+	}
+	/**
+	 * クローンした関数を取得
+	 * @staticvar type $clone_func
+	 * @param object $obj オブジェクト名
+	 * @return function
+	 */
+	public function getClone($obj) {
+		static $clone_func;
 
-	function convert($string, $page)
+		if (! isset($clone_func)) {
+			$clone_func = create_function('$a', 'return clone $a;');
+		}
+		return $clone_func($obj);
+	}
+	/**
+	 * 変換
+	 * @param string $string
+	 * @param string $page
+	 * @return type
+	 */
+	public function convert($string, $page)
 	{
 		$this->page   = $page;
 		$this->result = array();
-		$string = preg_replace_callback('/' . $this->pattern . '/x',
-			array(& $this, 'replace'), $string);
+		$string = preg_replace_callback('/' . $this->pattern . '/x', array($this, 'replace'), $string);
 
-		$arr = explode("\x08", Inline::make_line_rules(htmlsc($string)));
+		$arr = explode("\x08", Inline::setLineRules(Utility::htmlsc($string)));
 		$retval = '';
 		while (! empty($arr)) {
 			$retval .= array_shift($arr) . array_shift($this->result);
 		}
 		return trim($retval);
 	}
-
-	function replace($arr)
+	/**
+	 * 置き換え
+	 * @param array $arr
+	 * @return string
+	 */
+	protected function replace($arr)
 	{
-		$obj = $this->get_converter($arr);
+		$obj = self::getConverter($arr);
 
 		$this->result[] = ($obj !== NULL && $obj->set($arr, $this->page) !== FALSE) ?
-			$obj->toString() : Inline::make_line_rules(Utility::htmlsc($arr[0]));
+			$obj->toString() : Inline::setLineRules(Utility::htmlsc($arr[0]));
 
 		return "\x08"; // Add a mark into latest processed part
 	}
-
-	function get_objects($string, $page)
+	/**
+	 * オブジェクトを取得
+	 * @param string $string
+	 * @param string $page
+	 * @return array
+	 */
+	protected function getObjects($string, $page)
 	{
 		$matches = $arr = array();
 		preg_match_all('/' . $this->pattern . '/x', $string, $matches, PREG_SET_ORDER);
 		foreach ($matches as $match) {
-			$obj = $this->get_converter($match);
+			$obj = self::getConverter($match);
 			if ($obj->set($match, $page) !== FALSE) {
-				$arr[] = $this->get_clone($obj);
+				$arr[] = $this->getClone($obj);
 				if ( !empty($obj->body) )
-					$arr = array_merge($arr, $this->get_objects($obj->body, $page));
+					$arr = array_merge($arr, $this->getObjects($obj->body, $page));
 			}
 		}
 		return $arr;
 	}
-
-	function & get_converter(& $arr)
+	/**
+	 * 変換クラスを取得
+	 * @param array $arr
+	 * @return object
+	 */
+	private function getConverter($arr)
 	{
 		foreach (array_keys($this->converters) as $start) {
 			if ($arr[$start] == $arr[0])
