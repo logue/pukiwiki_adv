@@ -1,24 +1,39 @@
 {
-	"name": "pukiwiki_adv",
+	"name": "logue/pukiwiki_adv",
 	"description": "PukiWiki Advance",
-	"license": "General Public Lisence v2",
+	"version": "1.1.0-alpha",
 	"keywords": [
 		"pukiwiki",
-		"pukiwiki adv"
+		"pukiwiki adv",
+		"wiki",
+		"cms"
 	],
+	"homepage": "http://pukiwiki.logue.be/",
+	"license": "GPL-2.0+",
+	"authors": [
+		{
+			"name": "Logue",
+			"email": "logue@hotmail.co.jp",
+			"homepage": "http://logue.be/",
+			"role": "Developer"
+		}
+	],
+	"support": {
+		"issues": "http://pukiwiki.logue.be/BugTrack",
+		"forum": "http://forum.logue.be/",
+		"wiki": "http://pukiwiki.logue.be/",
+		"source" : "http://sourceforge.jp/projects/pukiwiki-adv/releases/"
+	},
+	"require": {
+		"php": ">=5.3.3",
+		"zendframework/zendframework": "2.*",
+		"zendframework/zendservice-akismet":"2.*",
+		"zendframework/zendservice-recaptcha":"2.*"
+	},
 	"repositories": [
 		{
 			"type": "composer",
 			"url": "https://packages.zendframework.com/"
 		}
-	],
-	"homepage": "http://pukiwiki.logue.be/",
-	"require": {
-		"php": ">=5.3.3",
-		"zendframework/zendframework": "2.*",
-		"zendframework/zendservice-akismet":"2.*",
-		"zendframework/zendservice-recaptcha":"2.*",
-		"bjyoungblood/BjyProfiler": "dev-master",
-		"zendframework/zend-developer-tools": "dev-master"
-	}
+	]
 }
