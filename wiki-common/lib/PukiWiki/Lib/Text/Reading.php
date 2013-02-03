@@ -1,7 +1,25 @@
 <?php
+/**
+ * テキスト読み取りクラス
+ *
+ * @package   PukiWiki\Lib\Text
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2013 PukiWiki Advance Developers Team
+ * @create    2013/02/02
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: Reading.php,v 1.0.0 2013/02/02 17:28:00 Logue Exp $
+ **/
+
 namespace PukiWiki\Lib\Text;
+
 use PukiWiki\Lib\Text\Hangul;
 use PukiWiki\Lib\Text\Hiragana;
+use PukiWiki\Lib\Text\PinYin;
+
+/**
+ * テキスト読み取りクラス
+ */
 class Reading{
 	// 特殊ページ
 	const SPECIALPAGE_PATTERN = '[\:]';
@@ -10,7 +28,6 @@ class Reading{
 	// :以外のシンボル、数字にマッチするパターン
 	const SYMBOL_PATTERN = '[!-9\;-\@０－９]';
 	// すべての漢字にマッチするパターン（※ハングル、サロゲートペア文字は含まず）
-	// const KANJI_PATTERN = '[亜-熙]';	// ←不完全
 	const KANJI_PATTERN = '[々〇〻㐀-龻豈-頻]';
 	// ひらがな・カタカナにマッチするパターン
 	const KANA_PATTERN = '[ぁ-ヶ]';
@@ -53,9 +70,16 @@ class Reading{
 			return mb_convert_kana($matches[1],'KVC');
 		}else if(preg_match('/^('.self::KANJI_PATTERN.')/u',$char, $matches)) {
 			// 漢字
-			$reading = Hiragana::toKana($matches[1]);
-			if ($reading !== $char) return $reading;
-			// ここにピンイン変換処理を入れること
+			if (DEFAULT_LANG === 'ja_JP'){
+				//まず、日本語の漢字として処理
+				$reading = Hiragana::toKana($matches[1]);
+				if ($reading !== $char) return $reading;
+				// マッチしない場合は中国語として処理
+				return PinYin::toKana($matches[1]);
+			}else{
+				// デフォルトの言語が日本語以外の場合中国語のピンインとして処理
+				return PinYin::toPinYin($matches[1]);
+			}
 		}else if(preg_match('/^('.self::HANGUL_PATTERN.')/u',$char, $matches)) {
 			// ハングル
 			return Hangul::toChosung($matches[1]);
