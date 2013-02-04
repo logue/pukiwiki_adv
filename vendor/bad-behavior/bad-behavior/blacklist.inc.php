@@ -140,9 +140,6 @@ function bb2_blacklist($package) {
 		"..\\",				// path traversal
 		"%60information_schema%60",	// SQL injection probe
 		"+%2F*%21",			// SQL injection probe
-		"+and+%",			// SQL injection probe
-		"+and+1%",			// SQL injection probe
-		"+and+if",			// SQL injection probe
 		"%27--",			// SQL injection
 		"%27 --",			// SQL injection
 		"%27%23",			// SQL injection
