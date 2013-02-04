@@ -18,12 +18,12 @@ use PukiWiki\Lib\Renderer\InlineFactory;
 // Footnotes
 class Note extends Inline
 {
-	function __construct($start)
+	public function __construct($start)
 	{
 		parent::__construct($start);
 	}
 
-	function getPattern()
+	public function getPattern()
 	{
 		return
 			'\(\('.
@@ -31,12 +31,12 @@ class Note extends Inline
 			'\)\)';
 	}
 
-	function getCount()
+	public function getCount()
 	{
 		return 1;
 	}
 
-	function set($arr, $page)
+	public function setPattern($arr, $page)
 	{
 		global $foot_explain, $vars;
 		static $note_id = 0;
@@ -83,7 +83,7 @@ class Note extends Inline
 		return parent::setParam($page, $name, $body);
 	}
 
-	function toString()
+	public function toString()
 	{
 		return $this->name;
 	}

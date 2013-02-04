@@ -17,12 +17,12 @@ namespace PukiWiki\Lib\Renderer\Inline;
  */
 class InterWiki extends Inline
 {
-	function __construct($start)
+	public function __construct($start)
 	{
 		parent::__construct($start);
 	}
 
-	function getPattern()
+	public function getPattern()
 	{
 		return
 		'\['.       // open bracket
@@ -34,18 +34,18 @@ class InterWiki extends Inline
 		'\]';       // close bracket
 	}
 
-	function getCount()
+	public function getCount()
 	{
 		return 2;
 	}
 
-	function set($arr, $page)
+	public function setPattern($arr, $page)
 	{
 		list(, $name, $alias) = $this->splice($arr);
 		return parent::setParam($page, htmlsc($name), null, 'url', $alias);
 	}
 
-	function toString()
+	public function __toString()
 	{
 		global $nofollow;
 		$rel = 'external' . ($nofollow === TRUE) ? ' nofollow': '';

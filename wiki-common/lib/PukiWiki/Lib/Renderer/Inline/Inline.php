@@ -72,12 +72,12 @@ abstract class Inline
 	 * @param type $arr
 	 * @param type $page
 	 */
-	public function set($arr, $page) {}
+	public function setPattern($arr, $page) {}
 
 	/**
 	 * 文字列化（インライン要素として帰ってくる
 	 */
-	public function toString() {}
+	public function __toString() {}
 
 	// Private: Get needed parts from a matched array()
 	public function splice($arr)
@@ -169,7 +169,7 @@ abstract class Inline
 		if ($isautolink || $wiki->has()) {
 			// ページが存在する場合
 			// 用語集にページ名と同じワードが含まれていた場合
-			$glossary = Glossary::getGlossaryDict($page);
+			$glossary = Glossary::getGlossary($page);
 			if (!empty($glossary)){
 				// AutoGlossray
 				$s_page = $glossary;

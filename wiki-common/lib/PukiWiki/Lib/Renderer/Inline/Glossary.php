@@ -29,22 +29,22 @@ class Glossary extends Inline
 	var $auto;
 	var $auto_a; // alphabet only
 
-	function __construct($start)
+	public function __construct($start)
 	{
 		parent::__construct($start);
-		list($auto, $auto_a) = self::getAutoGlossaryPattern(false);
+		list($auto, $auto_a) = self::getAutoGlossaryPattern(true);
 		$this->auto = $auto;
 		$this->auto_a = $auto_a;
 	}
-	function getPattern()
+	public function getPattern()
 	{
 		return isset($this->auto) ? '(' . $this->auto . ')' : FALSE;
 	}
-	function getCount()
+	public function getCount()
 	{
 		return 1;
 	}
-	function set($arr,$page)
+	public function setPattern($arr,$page)
 	{
 		list($name) = $this->splice($arr);
 		// Ignore words listed
@@ -54,11 +54,11 @@ class Glossary extends Inline
 		}
 		return parent::setParam($page,$name,null,'pagename',$name);
 	}
-	function toString()
+	public function __toString()
 	{
 		$term = Utility::stripBracket($this->name);
 		$wiki = FileFactory::Wiki($term);
-		$glossary = self::getGlossaryDict($term, true);
+		$glossary = self::getGlossary($term, true);
 		if (! $wiki->has() ) {
 			return '<abbr aria-describedby="tooltip" title="' . $glossary . '">' . $this->name . '</abbr>';
 		}
@@ -77,8 +77,19 @@ class Glossary extends Inline
 	 * @return string
 	 */
 	private function getAutoGlossaryPattern($force = false){
-		global $cache;
+		global $cache, $glossarypage;
 		static $pattern;
+
+		$wiki = FileFactory::Wiki($glossarypage);
+		if (! $wiki->has()) return null;
+
+		// Glossaryの更新チェック
+		if ($cache['wiki']->hasItem(self::AUTO_GLOSSARY_TERM_CACHE)){
+			$term_cache_meta = $cache['wiki']->getMetadata(self::AUTO_GLOSSARY_TERM_CACHE);
+			if ($term_cache_meta['mtime'] < $wiki->time()) {
+				$force = true;
+			}
+		}
 
 		// キャッシュ処理
 		if ($force) {
@@ -96,7 +107,7 @@ class Glossary extends Inline
 		global $WikiName, $autoglossary, $nowikiname;
 
 		// 用語集を取得
-		$pairs = self::getGlossaryDict();
+		$pairs = self::getGlossaryDict($force);
 		foreach ($pairs as $term=>$val){
 			if (preg_match('/^' . $WikiName . '$/', $term) ?
 				$nowikiname : mb_strlen($term) >= $autoglossary)
@@ -108,7 +119,7 @@ class Glossary extends Inline
 		} else {
 			// 用語辞書パターンからマッチパターン用の正規表現を生成
 			$auto_terms = array_unique($auto_terms);
-			sort($auto_terms, SORT_STRING);
+			sort($auto_terms, SORT_NATURAL);
 
 			$auto_terms_a = array_values(preg_grep('/^[A-Z]+$/i', $auto_terms));
 			$auto_terms   = array_values(array_diff($auto_terms,  $auto_terms_a));
@@ -127,44 +138,47 @@ class Glossary extends Inline
 	 * @param boolean $expect 要約するか（title属性の中に入れる文字列として出力するか）
 	 * @return string
 	 */
-	public static function getGlossaryDict($term = '', $expect = false){
-		global $glossarypage, $cache;
-		static $pairs;
+	public static function getGlossary($term = '', $expect = false){
+		$pairs = self::getGlossaryDict();
 
-		$wiki = FileFactory::Wiki($glossarypage);
-		if ($wiki->has()){
-			$term_cache_meta = $cache['wiki']->getMetadata(self::AUTO_GLOSSARY_TERM_CACHE);
-			if ($cache['wiki']->hasItem(self::AUTO_GLOSSARY_TERM_CACHE) && $term_cache_meta['mtime'] > $wiki->time()) {
-				// キャッシュが存在し、Wikiの日時より新しい場合
-				//（Glossaryページの更新と同期しなければならないため、ここの条件分岐の処理が重い・・・。）
-				if (! isset($pairs)) {
-					// メモリに辞書が呼び出されてない場合キャッシュから呼び出す
-					$pairs = $cache['wiki']->getItem(self::AUTO_GLOSSARY_TERM_CACHE);
-				}
-				// キャッシュの有効期限を伸ばす
-				$cache['wiki']->touchItem(self::AUTO_GLOSSARY_TERM_CACHE);
-			}else{
-				// 辞書キャッシュが存在しない場合自動生成
-				$matches = $pairs = array();
-				$count = 0;
-				foreach ($wiki->source() as $line) {
-					if (preg_match(self::AUTO_GLOSSARY_TERM_PATTERN, $line, $matches)) {
-						$name = trim($matches[1]);
-						$pairs[$name] = trim($matches[2]);
-					}
-				}
-				// 辞書キャッシュを保存
-				$cache['wiki']->setItem(self::AUTO_GLOSSARY_TERM_CACHE, $pairs);
-				// 正規表現パターンキャッシュを削除
-				$cache['wiki']->removeItem(self::AUTO_GLOSSARY_PATTERN_CACHE);
-			}
-		}else{
-			$term = array();
-		}
 		if (empty($term)) return $pairs;
 		if (!isset($pairs[$term])) return null;
 		$ret = htmlsc($pairs[$term]);
 		return $expect ? self::expectTooltip(str_replace("'", "\\'",$ret)) : $ret;
+	}
+
+	private static function getGlossaryDict($force = false){
+		global $glossarypage, $cache;
+		static $pairs;
+
+		$wiki = FileFactory::Wiki($glossarypage);
+		if (! $wiki->has()) return array();
+
+		// キャッシュ処理
+		if ($force) {
+			unset($pairs);
+			$cache['wiki']->removeItem(self::AUTO_GLOSSARY_TERM_CACHE);
+		}else if (!empty($pairs)) {
+			return $pairs;
+		}else if ($cache['wiki']->hasItem(self::AUTO_GLOSSARY_TERM_CACHE)) {
+			$pairs = $cache['wiki']->getItem(self::AUTO_GLOSSARY_TERM_CACHE);
+			$cache['wiki']->touchItem(self::AUTO_GLOSSARY_TERM_CACHE);
+			return $pairs;
+		}
+
+		// 辞書キャッシュが存在しない場合自動生成
+		$matches = $pairs = array();
+		foreach (FileFactory::Wiki($glossarypage)->source() as $line) {
+			if (preg_match(self::AUTO_GLOSSARY_TERM_PATTERN, $line, $matches)) {
+				$name = trim($matches[1]);
+				$pairs[$name] = trim($matches[2]);
+			}
+		}
+		// 辞書キャッシュを保存
+		$cache['wiki']->setItem(self::AUTO_GLOSSARY_TERM_CACHE, $pairs);
+		// 正規表現パターンキャッシュを削除
+		$cache['wiki']->removeItem(self::AUTO_GLOSSARY_TERM_CACHE);
+		return $pairs;
 	}
 }
 

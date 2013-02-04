@@ -21,12 +21,12 @@ class Plugin extends Inline
 	var $pattern;
 	var $plain,$param;
 
-	function __construct($start)
+	public function __construct($start)
 	{
 		parent::__construct($start);
 	}
 
-	function getPattern()
+	public function getPattern()
 	{
 		$this->pattern =
 			'&'.
@@ -47,12 +47,12 @@ class Plugin extends Inline
 			';';
 	}
 
-	function getCount()
+	public function getCount()
 	{
 		return 4;
 	}
 
-	function set($arr, $page)
+	public function setPattern($arr, $page)
 	{
 		list($all, $this->plain, $name, $this->param, $body) = $this->splice($arr);
 
@@ -65,7 +65,7 @@ class Plugin extends Inline
 		return parent::setParam($page, $name, $body, 'plugin');
 	}
 
-	function toString()
+	public function __toString()
 	{
 		$body = (empty($this->body)) ? null : InlineFactory::factory($this->body);
 		$str = FALSE;

@@ -25,18 +25,20 @@ class InterWikiName extends Inline
 	const INTERWIKINAME_ICON = '<span class="pkwk-icon icon-interwiki" title="InterWikiName"></span>';
 	const INTERWIKINAME_CACHE = 'interwikiname';
 
+	private static $encode_aliases = array('sjis'=>'SJIS', 'euc'=>'EUC-JP', 'utf8'=>'UTF-8', 'gbk'=>'CP936', 'euckr'=>'EUC-KR', 'big5'=>'BIG5');
+
 	var $url    = '';
 	var $param  = '';
 	var $anchor = '';
 
-	function __construct($start)
+	public function __construct($start)
 	{
 		global $cache;
-		$this->cache = $cache['wiki'];
+		$cache['wiki'] = $cache['wiki'];
 		parent::__construct($start);
 	}
 
-	function getPattern()
+	public function getPattern()
 	{
 		$s2 = $this->start + 2;
 		$s5 = $this->start + 5;
@@ -58,20 +60,21 @@ class InterWikiName extends Inline
 			'\]\]';                  // close bracket
 	}
 
-	function getCount()
+	public function getCount()
 	{
 		return 5;
 	}
 
-	function set($arr, $page)
+	public function setPattern($arr, $page)
 	{
 		list(, $alias, , $name, $this->param) = $this->splice($arr);
+
 
 		$matches = array();
 		if (preg_match('/^([^#]+)(#[A-Za-z][\w-]*)$/', $this->param, $matches))
 			list(, $this->param, $this->anchor) = $matches;
 
-		$url = self::get_interwiki_url($name, $this->param);
+		$url = self::getInterWikiUrl($name, $this->param);
 		$this->url = ($url === FALSE) ?
 			get_page_uri($name . ':' . $this->param) :
 			htmlsc($url);
@@ -85,7 +88,7 @@ class InterWikiName extends Inline
 		);
 	}
 
-	function toString()
+	public function __toString()
 	{
 		global $nofollow;
 		$icon = parent::isInsideUri($this->url) ? parent::INTERNAL_LINK_ICON : parent::EXTERNAL_LINK_ICON;
@@ -95,27 +98,9 @@ class InterWikiName extends Inline
 	}
 
 	// Render an InterWiki into a URL
-	private function get_interwiki_url($name, $param)
+	private function getInterWikiUrl($name, $param)
 	{
-		global $interwiki;
-		static $encode_aliases = array('sjis'=>'SJIS', 'euc'=>'EUC-JP', 'utf8'=>'UTF-8', 'gbk'=>'CP936', 'euckr'=>'EUC-KR', 'big5'=>'BIG5');
-		static $interwikinames;
-
-		if (!isset($interwikinames)){
-			// キャッシュ処理
-			$interwikipage = FileFactory::Wiki($interwiki);
-			$cache_meta = $this->cache->getMetadata(self::INTERWIKINAME_CACHE);
-			if ($this->cache->hasItem(self::INTERWIKINAME_CACHE) && $cache_meta['mtime'] > $interwikipage->time()) {
-				$interwikinames = $this->cache->getItem(self::INTERWIKINAME_CACHE);
-			}else{
-				// キャッシュが存在してなかったり、定義ページより古い場合は生成。
-				$interwikinames = $matches = array();
-				foreach ($interwikipage->source() as $line)
-					if (preg_match(self::INTERWIKINAME_PATTERN, $line, $matches))
-						$interwikinames[$matches[2]] = array($matches[1], $matches[3]);
-				$this->cache->setItem(self::INTERWIKINAME_CACHE, $interwikinames);
-			}
-		}
+		$interwikinames = self::getInterWikiNameDict();
 
 		if (! isset($interwikinames[$name])) return FALSE;
 
@@ -162,6 +147,43 @@ class InterWikiName extends Inline
 		if ($len > 512) Utility::die_message('InterWiki URL too long: ' . $len . ' characters');
 
 		return $url;
+	}
+
+	private function getInterWikiNameDict($force = false){
+		global $interwiki, $cache;
+		static $interwikinames;
+	
+		$wiki = FileFactory::Wiki($interwiki);
+		if (! $wiki->has()) return null;
+
+		// InterWikiNameの更新チェック
+		if ($cache['wiki']->hasItem(self::INTERWIKINAME_CACHE)){
+			$term_cache_meta = $cache['wiki']->getMetadata(self::INTERWIKINAME_CACHE);
+			if ($term_cache_meta['mtime'] < $wiki->time()) {
+				$force = true;
+			}
+		}
+
+		// キャッシュ処理
+		if ($force) {
+			unset($interwikinames);
+			$cache['wiki']->removeItem(self::INTERWIKINAME_CACHE);
+		}else if (!empty($interwikinames)) {
+			return $interwikinames;
+		}else if ($cache['wiki']->hasItem(self::INTERWIKINAME_CACHE)) {
+			$interwikinames = $cache['wiki']->getItem(self::INTERWIKINAME_CACHE);
+			$cache['wiki']->touchItem(self::INTERWIKINAME_CACHE);
+			return $interwikinames;
+		}
+
+		// キャッシュが存在してなかったり、定義ページより古い場合は生成。
+		$interwikinames = $matches = array();
+		foreach ($wiki->source() as $line)
+			if (preg_match(self::INTERWIKINAME_PATTERN, $line, $matches))
+				$interwikinames[$matches[2]] = array($matches[1], $matches[3]);
+		$cache['wiki']->setItem(self::INTERWIKINAME_CACHE, $interwikinames);
+
+		return $interwikinames;
 	}
 }
 

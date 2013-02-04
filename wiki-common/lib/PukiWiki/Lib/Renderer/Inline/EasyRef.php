@@ -28,17 +28,17 @@ class EasyRef extends Inline {
 			'\}\}';
 	}
 
-	function getCount() {
+	public function getCount() {
 		return 2;
 	}
 
-	function set($arr, $page) {
+	public function setPattern($arr, $page) {
 		list ($all, $this->param, $body) = $this->splice($arr);
 		$this->param = trim($this->param);
 		return parent::setParam($page, 'ref', $body, 'plugin');
 	}
 
-	function toString() {
+	public function __toString() {
 		$body = empty($this->body) ? '' : InlineFactory($this->body);
 		return do_plugin_inline($this->name, $this->param, $body);
 	}

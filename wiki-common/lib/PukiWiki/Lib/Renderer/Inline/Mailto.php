@@ -10,14 +10,14 @@ namespace PukiWiki\Lib\Renderer\Inline;
 // mailto: URL schemes
 class Mailto extends Inline
 {
-	const MAILTO_ICON = '<span class="pkwk-icon icon-mail">mailto:</span>';
+	const MAILTO_ICON = '<span class="pkwk-icon icon-mail" title="Mail">mailto:</span>';
 
-	function __construct($start)
+	public function __construct($start)
 	{
 		parent::__construct($start);
 	}
 
-	function getPattern()
+	public function getPattern()
 	{
 		$s1 = $this->start + 1;
 		return
@@ -30,12 +30,12 @@ class Mailto extends Inline
 			'(?(' . $s1 . ')\]\])';	        // close bracket if (1)
 	}
 
-	function getCount()
+	public function getCount()
 	{
 		return 3;
 	}
 
-	function set($arr, $page)
+	public function setPattern($arr, $page)
 	{
 		list (, $alias, $toname, $host) = $this->splice($arr);
 		$name = $orginalname = $toname . $host;
@@ -50,7 +50,7 @@ class Mailto extends Inline
 		return parent :: setParam($page, $name, '', 'mailto', $alias === '' ? $orginalname : $alias);
 	}
 
-	function toString()
+	public function __toString()
 	{
 		return '<a href="mailto:' . $this->name . '" rel="nofollow">' . self::MAILTO_ICON . $this->alias . '</a>';
 	}

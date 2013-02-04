@@ -22,7 +22,7 @@ class AutoLink extends Inline
 	{
 		parent::__construct($start);
 
-		list($auto, $auto_a, $forceignorepages) = self::get_autolink_pattern(false);
+		list($auto, $auto_a, $forceignorepages) = self::getAutoLinkPattern(false);
 		$this->auto   = $auto;
 		$this->auto_a = $auto_a;
 		$this->forceignorepages = $forceignorepages;
@@ -38,7 +38,7 @@ class AutoLink extends Inline
 		return 1;
 	}
 
-	function set($arr, $page)
+	function setPattern($arr, $page)
 	{
 		list($name) = $this->splice($arr);
 
@@ -49,7 +49,7 @@ class AutoLink extends Inline
 		return parent::setParam($page, $name, null, 'pagename', $name);
 	}
 
-	function toString()
+	function __toString()
 	{
 		return parent::setAutoLink($this->name, $this->alias, null, $this->page, TRUE);
 	}
@@ -58,7 +58,7 @@ class AutoLink extends Inline
 	 * 自動リンクの正規表現パターンを生成
 	 * @return string
 	 */
-	private function get_autolink_pattern($force = false){
+	private function getAutoLinkPattern($force = false){
 		global $cache;
 		static $pattern;
 
@@ -84,7 +84,7 @@ class AutoLink extends Inline
 		unset($config);
 		$auto_pages = array_merge($ignorepages, $forceignorepages);
 
-		foreach (FileUtility::get_exsists() as $page)
+		foreach (FileUtility::get_exists() as $page)
 			if (preg_match('/^' . $WikiName . '$/', $page) ?
 				$nowikiname : strlen($page) >= $autolink)
 				$auto_pages[] = $page;

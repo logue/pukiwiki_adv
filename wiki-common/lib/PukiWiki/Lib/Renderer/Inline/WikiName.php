@@ -10,30 +10,30 @@ namespace PukiWiki\Lib\Renderer\Inline;
 // WikiNames
 class WikiName extends Inline
 {
-	function __construct($start)
+	public function __construct($start)
 	{
 		parent::__construct($start);
 	}
 
-	function getPattern()
+	public function getPattern()
 	{
 		global $WikiName, $nowikiname;
 
 		return $nowikiname ? FALSE : '(' . $WikiName . ')';
 	}
 
-	function getCount()
+	public function getCount()
 	{
 		return 1;
 	}
 
-	function set($arr, $page)
+	public function setPattern($arr, $page)
 	{
 		list($name) = $this->splice($arr);
 		return parent::setParam($page, $name, null, 'pagename', $name);
 	}
 
-	function toString()
+	public function __toString()
 	{
 		return make_pagelink(
 			$this->name,

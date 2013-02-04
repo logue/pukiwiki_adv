@@ -134,8 +134,8 @@ class InlineConverter
 	{
 		$obj = self::getConverter($arr);
 
-		$this->result[] = ($obj !== NULL && $obj->set($arr, $this->page) !== FALSE) ?
-			$obj->toString() : Inline::setLineRules(Utility::htmlsc($arr[0]));
+		$this->result[] = ($obj !== NULL && $obj->setPattern($arr, $this->page) !== FALSE) ?
+			$obj->__toString() : Inline::setLineRules(Utility::htmlsc($arr[0]));
 
 		return "\x08"; // Add a mark into latest processed part
 	}
@@ -151,7 +151,7 @@ class InlineConverter
 		preg_match_all('/' . $this->pattern . '/x', $string, $matches, PREG_SET_ORDER);
 		foreach ($matches as $match) {
 			$obj = self::getConverter($match);
-			if ($obj->set($match, $page) !== FALSE) {
+			if ($obj->__set($match, $page) !== FALSE) {
 				$arr[] = $this->getClone($obj);
 				if ( !empty($obj->body) )
 					$arr = array_merge($arr, $this->getObjects($obj->body, $page));

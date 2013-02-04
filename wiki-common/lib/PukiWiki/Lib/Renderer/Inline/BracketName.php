@@ -13,12 +13,12 @@ class BracketName extends Inline
 {
 	var $anchor, $refer;
 
-	function __construct($start)
+	public function __construct($start)
 	{
 		parent::__construct($start);
 	}
 
-	function getPattern()
+	public function getPattern()
 	{
 		global $WikiName, $BracketName;
 
@@ -37,12 +37,12 @@ class BracketName extends Inline
 			'\]\]';                     // Close bracket
 	}
 
-	function getCount()
+	public function getCount()
 	{
 		return 4;
 	}
 
-	function set($arr, $page)
+	public function setPattern($arr, $page)
 	{
 		global $WikiName;
 
@@ -52,7 +52,7 @@ class BracketName extends Inline
 		if (empty($name) || ! preg_match('/^' . $WikiName . '$/', $name)) {
 			if ( empty($alias) ) $alias = $name . $this->anchor;
 			if ( !empty($name) ) {
-				$name = self::get_fullname($name, $page);
+				$name = self::getFullname($name, $page);
 				if (! FileFactory::Wiki($name)->is_valied()) return FALSE;
 			}
 		}
@@ -60,7 +60,7 @@ class BracketName extends Inline
 		return parent::setParam($page, $name, null, 'pagename', $alias);
 	}
 
-	function toString()
+	public function __toString()
 	{
 		return parent::setAutoLink(
 			$this->name,
@@ -71,7 +71,7 @@ class BracketName extends Inline
 	}
 
 	// Resolve relative / (Unix-like)absolute path of the page
-	private function get_fullname($name, $refer)
+	private function getFullname($name, $refer)
 	{
 		global $defaultpage;
 

@@ -16,12 +16,12 @@ namespace PukiWiki\Lib\Renderer\Inline;
 // URLs
 class Url extends Inline
 {
-	function __construct($start)
+	public function __construct($start)
 	{
 		parent::__construct($start);
 	}
 
-	function getPattern()
+	public function getPattern()
 	{
 		$s1 = $this->start + 1;
 		return
@@ -40,12 +40,12 @@ class Url extends Inline
 			'(?(' . $s1 . ')\]\])'; // close bracket
 	}
 
-	function getCount()
+	public function getCount()
 	{
 		return 6;
 	}
 
-	function set($arr, $page)
+	public function setPattern($arr, $page)
 	{
 		list (,$bracket, $alias, $scheme, $mail, $host, $uri) = $this->splice($arr);
 		$this->has_bracket = (substr($bracket, 0, 2) === '[[');
@@ -69,7 +69,7 @@ class Url extends Inline
 		return parent :: setParam($page, htmlsc($name), '', ($mail ? 'mailto' : 'url'), $alias);
 	}
 
-	function toString()
+	public function __toString()
 	{
 		global $nofollow;
 		$target = (empty($this->redirect)) ? $this->name : $this->redirect.rawurlencode($this->name);
