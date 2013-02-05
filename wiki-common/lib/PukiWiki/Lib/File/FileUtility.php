@@ -15,16 +15,16 @@ namespace PukiWiki\Lib\File;
 use PukiWiki\Lib\Utility;
 use PukiWiki\Lib\Text\Reading;
 use PukiWiki\Lib\File\FileFactory;
-use PukiWiki\Lib\Rooter;
 use PukiWiki\Lib\Auth\Auth;
 
 class FileUtility{
-	// ファイルの存在一覧キャッシュ
+	// ファイルの存在一覧キャッシュの接頭辞
 	const EXSISTS_CACHE_PREFIX = 'exsists-';
-	// RecentChanges
+	// 更新履歴のキャッシュ名
 	const RECENT_CACHE_NAME = 'recent';
+	// 更新履歴／削除履歴で表示する最小ページ数
 	const MAXSHOW_ALLOWANCE = 10;
-	// ページ一覧キャッシュ
+	// ページ一覧キャッシュの接頭辞
 	const PAGENAME_HEADING_CACHE_PREFIX = 'listing-';
 
 	/**
@@ -38,18 +38,18 @@ class FileUtility{
 		static $aryret;
 
 		$func = self::get_cache_name($dir);
-		$cache_name = self::PAGENAME_HEADING_CACHE_PREFIX . $func;
+		$cache_name = self::EXSISTS_CACHE_PREFIX . $func;
 
 		if ($force){
 			// キャッシュ再生成
-			unset($heading[$func]);
+			unset($aryret[$func]);
 			$cache['wiki']->removeItem($cache_name);
-		}else if (!empty($aryret[$func])){
+		}else if (isset($aryret[$func])){
 			// メモリにキャッシュがある場合
 			return $aryret[$func];
 		}else if ($cache['wiki']->hasItem($cache_name)) {
 			// キャッシュから最終更新を読み込む
-			$heading[$func] = $cache['wiki']->getItem($cache_name);
+			$aryret[$func] = $cache['wiki']->getItem($cache_name);
 			return $aryret[$func];
 		}
 
@@ -74,7 +74,7 @@ class FileUtility{
 		foreach (new \DirectoryIterator($dir) as $fileinfo) {
 			$filename = $fileinfo->getFilename();
 			if ($fileinfo->isFile() && preg_match($pattern, $filename, $matches)){
-				$aryret[$func][$filename] = decode($matches[1]);
+				$aryret[$func][$filename] = Utility::decode($matches[1]);
 			}
 		}
 		$cache['wiki']->setItem($cache_name, $aryret[$func]);
@@ -110,6 +110,7 @@ class FileUtility{
 	 * @return string
 	 */
 	public static function get_listing($dir = DATA_DIR, $cmd = 'read', $with_filename = false){
+		global $_string;
 		// 一覧の配列を取得
 		$heading = self::get_headings($dir);
 		$contents = array();
@@ -160,12 +161,12 @@ class FileUtility{
 	 * @return array
 	 */
 	private static function get_headings($dir = DATA_DIR, $force = false){
-		global $cache, $_string;
+		global $cache;
 		static $heading;
 
 		$func = self::get_cache_name($dir);
 		$cache_name = self::PAGENAME_HEADING_CACHE_PREFIX . $func;
-		
+
 		if ($force){
 			// キャッシュ再生成
 			unset ($heading[$func]);
@@ -191,10 +192,10 @@ class FileUtility{
 			$ret[$initial][$page] =  Reading::getReading($page);
 		}
 		unset($initial, $page);
-	
+
 		// ページの索引でソート
 		ksort($ret, SORT_NATURAL);
-	
+
 		foreach ($ret as $initial=>$pages){
 			// ページ名の「読み」でソート
 			asort($ret[$initial], SORT_NATURAL);
@@ -227,8 +228,8 @@ class FileUtility{
 
 			$wiki = FileFactory::Wiki($page);
 			if (!$wiki->has()) continue;
-			
-			if ($wiki->is_hidden() && $has_permisson) continue;
+
+			if ($wiki->isHidden() && $has_permisson) continue;
 
 			$_page = Utility::htmlsc($page, ENT_QUOTES);
 			$url = $wiki->get_uri($cmd);
@@ -244,12 +245,12 @@ class FileUtility{
 		return $contents;
 	}
 	/**
-	 * 最終更新のキャッシュを生成
+	 * 最終更新のキャッシュを取得
 	 * @param boolean $force キャッシュを再生成する
 	 * @return array
 	 */
 	public static function get_recent($force = false){
-		global $cache, $maxshow, $whatsnew;
+		global $cache, $maxshow, $autolink, $whatsnew, $autobasealias, $cache;
 		static $recent_pages;
 
 		if ($force){
@@ -273,7 +274,7 @@ class FileUtility{
 		foreach($pages as $filename=>$page){
 			if ($page !== $whatsnew){
 				$wiki = FileFactory::Wiki($page);
-				 if (! $wiki->is_hidden() ) $recent_pages[$page] = $wiki->getTime();
+				 if (! $wiki->isHidden() ) $recent_pages[$page] = $wiki->time();
 			}
 		}
 		// Sort decending order of last-modification date
@@ -294,5 +295,101 @@ class FileUtility{
 		$cache['wiki']->setItem(self::RECENT_CACHE_NAME, $recent_pages);
 
 		return $recent_pages;
+	}
+	/**
+	 * 最終更新のキャッシュを更新
+	 * @param string $page_update 更新があったページ
+	 * @param string $page_remove 削除されたページ
+	 * @return void
+	 */
+	public static function set_recent($page_update, $page_remove){
+		global $maxshow, $whatsnew, $autolink, $autobasealias;
+		global $cache;
+
+		// AutoLink implimentation needs everything, for now
+		if ($autolink || $autobasealias) {
+			self::get_recent(true);	// Try to (re)create ALL
+			return;
+		}
+
+		$non_list = FileFactory::Wiki($page_update)->isHidden();
+
+		if ((empty($page_update) || $non_list) && empty($page_remove))
+			return; // No need
+
+		// Check cache exists
+		if (! $cache['wiki']->hasItem(self::RECENT_CACHE_NAME)){
+			self::get_recent(true);	// Try to (re)create ALL
+			return;
+		}else{
+			$recent_pages = $cache['wiki']->getItem(self::RECENT_CACHE_NAME);
+		}
+
+		// Remove if it exists inside
+		if (isset($recent_pages[$page_update])) unset($recent_pages[$page_update]);
+		if (isset($recent_pages[$page_remove])) unset($recent_pages[$page_remove]);
+
+		// Update Cache
+		$cache['wiki']->setItem(self::RECENT_CACHE_NAME, $recent_pages);
+
+		// Add to the top: like array_unshift()
+
+		if (!empty($update) && $update !== $whatsnew && ! $non_list)
+			$recent_pages = array($update_page => FileFactory::Wiki($page_update)->time()) + $recent_pages;
+
+		// Check
+		$abort = count($recent_pages) < $maxshow;
+
+		// Update cache
+		$cache['wiki']->setItem(self::RECENT_CACHE_NAME, $recent_pages);
+
+		if ($abort) {
+			self::get_recent(true);	// Try to (re)create ALL
+			return;
+		}
+
+		// ----
+		// Update the page 'RecentChanges'
+
+		$recent_pages = array_splice($recent_pages, 0, $maxshow);
+
+		$lines[] = '#norelated';
+		foreach ($recent_pages as $_page=>$time){
+			$lines[] = '- &epoch('.$time.');' . ' - ' . '[[' . htmlsc($_page) . ']]';
+		}
+
+		FileFactory::Wiki($whatsnew)->set($lines);
+	}
+	/**
+	 * TrackBack Ping IDからページ名を取得
+	 * @param boolean $force キャッシュを再生成する
+	 * @return string
+	 */
+	public static function get_page_from_tb_id($id, $force = false){
+		static $tb_id;
+		$cache_name = self::EXSISTS_CACHE_PREFIX . 'trackback';
+
+		if ($force){
+			// キャッシュ再生成
+			unset ($tb_id);
+			$cache['wiki']->removeItem($cache_name);
+		}else if (!empty($tb_id)){
+			// メモリにキャッシュがある場合
+			return $tb_id[$id];
+		}else if ($cache['wiki']->hasItem($cache_name)) {
+			// キャッシュから最終更新を読み込む
+			$tb_id = $cache['wiki']->getItem($cache_name);
+			return $tb_id[$id];
+		}
+
+		if (empty($tb_id)){
+			$pages = self::get_exists();
+			foreach ($pages as $page) {
+				$tb_id[md5($page)] = $page;
+			}
+		}
+
+		$cache['wiki']->setItem($cache_name, $tb_id);
+		return $cache[$id];
 	}
 }

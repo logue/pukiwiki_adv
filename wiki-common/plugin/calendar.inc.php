@@ -30,9 +30,9 @@ function plugin_calendar_init(){
 
 function plugin_calendar_convert()
 {
-	global $vars, $post, $get, $pkwk_dtd ,$_labels, $WikiName, $BracketName;
+	global $vars, $post, $get, $pkwk_dtd ,$_label;
 	//global $_calendar_plugin_edit, $_calendar_plugin_empty;
-	global $_calendar_msg, $_calendar_viewer_msg;
+	global $_calendar_msg;
 
 	/* from Plus! */
 	$today_view = TRUE;
@@ -91,7 +91,7 @@ function plugin_calendar_convert()
 
 	$y = substr($date_str, 0, 4) + 0;
 	$m = substr($date_str, 4, 2) + 0;
-	
+
 	$format = '%04d%02d';
 	$prev_link = get_cmd_uri('calendar','','',
 		array(
@@ -115,7 +115,7 @@ function plugin_calendar_convert()
 		$ret .= '<div class="clearfix">'."\n".	// 外枠
 			'<div class="style_calendar_viewer">'."\n";	// カレンダーのdivタグ（$today_view有効時のみ出力）
 	}
-	
+
 	$ret .= <<<EOD
 <table class="style_table style_calendar" summary="calendar" data-sortable="false">
 	<thead>
@@ -135,7 +135,7 @@ EOD;
 	}else{
 		$base_link = get_cmd_uri('calendar','','',array('file'=>$base,'mode'=>$today_args,'date'=>sprintf($format,$y,$m)));
 	}
-	
+
 	if ($prefix) $ret .= "\n" .
 		'				[<a href="' . $base_link . '">' . $s_base . '</a>]';
 
@@ -173,7 +173,7 @@ EOD;
 			$ret .=
 			'		</tr>' . "\n" .
 			'		<tr>' . "\n";
-		
+
 		/* from Plus! */
 		$h_today = public_holiday($year, $m_num, $day);
 		$hday = $h_today['rc'];
@@ -186,7 +186,7 @@ EOD;
 			// Holiday
 			$style = 'style_calendar_holiday';
 		} else if ($wday == 0) {
-			// Sunday 
+			// Sunday
 			$style = 'style_calendar_sun';
 		} else if ($wday == 6) {
 			// Saturday

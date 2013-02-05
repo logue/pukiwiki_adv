@@ -1106,14 +1106,14 @@ class Tracker_list
 //		$source = plugin_tracker_get_source($pagename, TRUE);
 		$source = plugin_tracker_get_source($pagename, TRUE, $this->page_line);	// Plus!
 		$wiki = FileFactory::Wiki($pagename);
-		$filetime = $wiki->getTime();
+		$filetime = $wiki->time();
 		if ($source === FALSE) $source = '';
 
 		// Compat: 'move to [[page]]' (like bugtrack plugin)
 		$matches = array();
 		if (! $rescan && ! empty($source) && preg_match('/move\sto\s(.+)/', $source, $matches)) {
 			$to_page = strip_bracket(trim($matches[1]));
-			if (FileFactory::Wiki($to_page)->is_valied()) {
+			if (FileFactory::Wiki($to_page)->isValied()) {
 				unset($source, $matches);	// Release
 				return $this->addRow($to_page, TRUE);	// Recurse(Rescan) once
 			}

@@ -48,7 +48,7 @@ function make_related($_page, $tag = '')
 	$_links = array();
 	foreach ($links as $page=>$lastmod) {
 		$wiki = FileFactory::Wiki($page);
-		if ($wiki->is_hidden()) continue;
+		if ($wiki->isHidden()) continue;
 
 		$_links[] = '<a href="' . get_page_uri($page) . '">' . htmlsc($page) . '</a>' . $wiki->passage(true,true);
 	}
@@ -95,13 +95,13 @@ function plugin_related_action()
 		// Hide by array keys (not values)
 		foreach(array_keys($data) as $page) {
 			$wiki = FileFactory::Wiki($page);
-			if (! $wiki->is_editable() || $wiki->is_hidden()) {
+			if (! $wiki->isEditable() || $wiki->isHidden()) {
 				unset($data[$page]);
 			}
 		}
 		// Show count($data)?
 		ksort($data, SORT_STRING);
-		
+
 		$retval[] = '<ul>' . "\n";
 		foreach ($data as $page=>$time) {
 			$retval[] = ' <li><a href="' . get_page_uri($page) . '">' . htmlsc($page) .

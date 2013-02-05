@@ -177,17 +177,12 @@ class AutoAlias extends Inline
 			foreach($matches as $key => $value) {
 				if ($count == $max) break;
 				$name = trim($value[1]);
-				if (! isset($pairs[$name])) {
-					$paris[$name] = array();
-				}
 				++$count;
-				$pairs[$name][] = trim($value[2]);
+				$pairs[$name] = trim($value[2]);
 				unset($matches[$key]);
 			}
 		}
-		foreach (array_keys($pairs) as $name) {
-			$pairs[$name] = array_unique($pairs[$name]);
-		}
+		$pairs = array_unique($pairs);
 		$cache['wiki']->setItem(self::AUTOALIAS_TERM_CACHE, $pairs);
 		return $pairs;
 	}

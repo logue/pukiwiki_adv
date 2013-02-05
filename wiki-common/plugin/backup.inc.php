@@ -107,9 +107,9 @@ function plugin_backup_action()
 	if ($s_age > count($backups)) $s_age = $backups_count;
 	$body = '';
 
-	
-	
-	$wiki->check_readable();
+
+
+	$wiki->checkReadable();
 
 	if ($s_age <= 0) {
 		return array(
@@ -120,7 +120,7 @@ function plugin_backup_action()
 	$body .= '<div class="ui-widget ui-widget-content ui-corner-all">';
 	$body .= plugin_backup_get_list($page);
 	$body .= '</div>'."\n";
-	
+
 	if ($action){
 		$data = join("\n", $backups[$s_age]['data']);
 		Auth::is_role_page($data);

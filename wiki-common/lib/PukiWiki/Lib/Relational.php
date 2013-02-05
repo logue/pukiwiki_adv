@@ -86,7 +86,7 @@ class Relational{
 		$times = array();
 		if (is_array($data)){
 			foreach ($data as $page) {
-				$time = FileFactory::Wiki($page)->getTime();
+				$time = FileFactory::Wiki($page)->time();
 				if($time !== 0) $times[$page] = $time;
 			}
 		}
@@ -126,15 +126,15 @@ class Relational{
 		$rel_exist = ($rel_old === array());
 
 		$rel_auto = $rel_new = array();
-		foreach ($this->get_objects($page, TRUE) as $_obj) {
+		foreach ($this->getObjects($page, TRUE) as $_obj) {
 			if (! isset($_obj->type) || $_obj->type !== 'pagename' || $_obj->name === $page || empty($_obj->name) )
 				continue;
 
 			if ($_obj instanceof PukiWiki\Lib\Renderer\Inline\AutoLink) { // Not cool though
 				$rel_auto[] = $_obj->name;
 			} else if ($_obj instanceof PukiWiki\Lib\Renderer\Inline\AutoAlias) {
-				$_alias = AutoAlias::get_autoalias_dict($_obj->name);
-				if (FileFactory::Wiki($_alias)->is_valied()) {
+				$_alias = AutoAlias::getAutoAliasDict($_obj->name);
+				if (FileFactory::Wiki($_alias)->isValied()) {
 					$rel_auto[] = $_alias;
 				}
 			} else {
@@ -201,13 +201,13 @@ class Relational{
 		$ref   = array(); // Reference from
 		foreach (get_existpages() as $_page) {
 			$rel   = array(); // Reference to
-			foreach ($this->get_objects($_page) as $_obj) {
+			foreach ($this->getObjects($_page) as $_obj) {
 				if (! isset($_obj->type) || $_obj->type !== 'pagename' || empty($_obj->name) || $_obj->name === $_page ) continue;
 
 				$_name = $_obj->name;
 				if ($_obj instanceof PukiWiki\Lib\Renderer\Inline\AutoAlias) {
 					$_alias = AutoAlias::get_autoaliases($_name);
-					if (! FileFactory::Wiki($_alias)->is_valied() )
+					if (! FileFactory::Wiki($_alias)->isValied() )
 						continue;	// not PageName
 					$_name = $_alias;
 				}
@@ -218,7 +218,7 @@ class Relational{
 					$ref[$_name][$_page] = 0;
 			}
 			ksort($rel, SORT_NATURAL);
-			
+
 //			$this->cache->setItem(self::REL_PREFIX.md5($_page), array_unique($rel));
 			if (empty($rel)) continue;
 			self::set_rel($_page, $rel);
@@ -234,7 +234,7 @@ class Relational{
 		}
 		// メモリを開放
 		self::get_objects();
-		
+
 		unset($ref_page,$ref_auto);
 	}
 
@@ -305,18 +305,18 @@ class Relational{
 	 * @param type $page
 	 * @return type
 	 */
-	private function get_objects($page){
+	private function getObjects($page){
 		static $result;
 		if (empty($page)) {
 			unset($result);
 			return;
 		}
 		if (! isset($result[$page]) ){
-			$result[$page] = $this->links_obj->get_objects(join('', preg_grep('/^(?!\/\/|\s)./', FileFactory::Wiki($page)->source())), $page);
+			$result[$page] = $this->links_obj->getObjects(join('', preg_grep('/^(?!\/\/|\s)./', FileFactory::Wiki($page)->source())), $page);
 		}
 		return $result[$page];
 	}
-	
+
 	// もっとマシなSQL文って無い？
 
 	/**
@@ -344,7 +344,7 @@ class Relational{
 		foreach ($results as $value) {
 			$ret = $value['data'];
 		}
-		
+
 		return !empty($ret) ? explode("\n", $ret) : array();
 	}
 	/**

@@ -40,7 +40,7 @@ function plugin_list_action()
 			$buffer[] = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">';
 			foreach (FileUtility::get_exists() as $page){
 				$wiki = FileFactory::Wiki($page);
-				if ($wiki->is_hidden()) continue;
+				if ($wiki->isHidden()) continue;
 				$buffer[] = '<url>';
 				$buffer[] = '<loc>'.$wiki->get_uri().'</loc>';
 				$buffer[] = '<lastmod>'.get_date('Y-m-d\TH:i:s\Z', $wiki->getTime()).'</lastmod>';

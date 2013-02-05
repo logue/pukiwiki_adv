@@ -36,7 +36,6 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-
 set_time_limit(0);
 ignore_user_abort(true);
 ini_set('memory_limit', '128M');
@@ -107,13 +106,13 @@ Zend\Loader\AutoloaderFactory::factory(array(
 ));
 
 
+require('../vendor/bad-behavior/bad-behavior-sqlite.php');
+
 /////////////////////////////////////////////////
 
 // Load *.ini.php files and init PukiWiki
 
-require(LIB_DIR . 'func.php');
 require(LIB_DIR . 'funcplus.php');
-require(LIB_DIR . 'fileplus.php');
 require(LIB_DIR . 'plugin.php');
 require(LIB_DIR . 'html.php');
 
@@ -121,12 +120,10 @@ require(LIB_DIR . 'diff.php');
 require(LIB_DIR . 'config.php');
 require(LIB_DIR . 'auth.php');
 require(LIB_DIR . 'lang.php');
-require(LIB_DIR . 'timezone.php');
 require(LIB_DIR . 'log.php');
 require(LIB_DIR . 'spamplus.php');
 require(LIB_DIR . 'proxy.cls.php');
 require(LIB_DIR . 'auth.cls.php');
-require(LIB_DIR . 'netbios.cls.php');
 require(LIB_DIR . 'ua/user_agent.cls.php');
 
 require(LIB_DIR . 'legacy.php');

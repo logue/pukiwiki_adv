@@ -43,7 +43,7 @@ function plugin_unfreeze_action()
 	{
 		$wiki = FileFactory::Wiki($page);
 		// BugTrack2/255
-		$wiki->check_readable();
+		$wiki->checkReadable();
 		// Unfreeze
 		$postdata = $wiki->source();
 		array_shift($postdata);

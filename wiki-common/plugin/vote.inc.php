@@ -197,7 +197,7 @@ class PluginVotex
 		$vote_count = 0;
 		foreach ($lines as $linenum => $line) {
 			if (strpos($line, ' ') === 0) continue; // skip pre
-			$inlines = $ic->get_objects($line, $page);
+			$inlines = $ic->getObjects($line, $page);
 			$pos = 0;
 			foreach ($inlines as $inline) {
 				if ($inline->name !== 'vote') continue;

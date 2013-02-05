@@ -9,8 +9,10 @@
  * @license	http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 // require_once('proxy.cls.php');
+use PukiWiki\Lib\NetBios;
+use PukiWiki\Auth\AuthApi;
 
-require_once(LIB_DIR . 'auth_api.cls.php');
+//require_once(LIB_DIR . 'auth_api.cls.php');
 
 $log_ua = log_set_user_agent(); // 保存
 
@@ -157,7 +159,7 @@ function log_common_check($kind,$page,$parm)
 	global $log;
 	global $log_ua;
 
-	$username = auth::check_auth();
+	$username = Auth::check_auth();
 
 	// 認証済の場合
 	if ($log['auth_nolog'] && !empty($username)) return '';
@@ -202,7 +204,7 @@ function log_common_check($kind,$page,$parm)
 	$rc = array();
 	$field = log::set_fieldname($kind);
 
-	$obj = new auth_api();
+	$obj = new AuthApi();
 	$msg = $obj->auth_session_get();
 
 	foreach ($field as $key) {
@@ -328,7 +330,7 @@ function log_set_signature($kind,$page,$utime)
 		$lines = get_source($page);
 	}
 
-	return auth::get_signature($lines);
+	return Auth::get_signature($lines);
 }
 
 /**
@@ -527,7 +529,7 @@ class log
 		$rc = log::set_fieldname($kind);
 
 		// 認証済の判定
-		$user = auth::check_auth();
+		$user = Auth::check_auth();
 
 		$kind_view = (empty($user)) ? 'guest' : 'view';
 

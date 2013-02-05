@@ -53,7 +53,7 @@ class BracketName extends Inline
 			if ( empty($alias) ) $alias = $name . $this->anchor;
 			if ( !empty($name) ) {
 				$name = self::getFullname($name, $page);
-				if (! FileFactory::Wiki($name)->is_valied()) return FALSE;
+				if (! FileFactory::Wiki($name)->isValied()) return FALSE;
 			}
 		}
 

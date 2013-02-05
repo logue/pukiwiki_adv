@@ -20,6 +20,8 @@ define('PLUGIN_RECENT_EXEC_LIMIT', 3); // N times per one output
 // ----
 
 define('PLUGIN_RECENT_USAGE', '#recent(number-to-show)');
+use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\File\FileUtility;
 
 function plugin_recent_convert()
 {
@@ -41,19 +43,18 @@ function plugin_recent_convert()
 		return '<div class="message_box ui-state-error ui-corner-all">#recent(): You called me too much.</div>' . "\n";
 	}
 
-	$auth_key = auth::get_user_info();
 	$date = '';
 	$items = array();
 
-	if (!$cache['wiki']->hasItem(PKWK_MAXSHOW_CACHE)){
-		put_lastmodified();
-	}
-	$lines = $cache['wiki']->getItem(PKWK_MAXSHOW_CACHE);
+
+	$lines = FileUtility::get_recent();
 	if ($lines !== null){
 		$count = (count($lines) < $recent_lines) ? count($lines) : $recent_lines;
 		$i = 0;
 		foreach ($lines as $page => $time) {
-			if (! auth::is_page_readable($page,$auth_key['key'],$auth_key['group'])) continue;
+			$wiki = FileFactory::Wiki($page);
+			if (! $wiki->isReadable(false)) continue;
+			if (! $wiki->isHidden()) continue;
 			if ($i > $count) break;
 
 			$s_page = htmlsc($page);
@@ -74,8 +75,8 @@ function plugin_recent_convert()
 					// No need to link to the page you just read, or notify where you just read
 					$items[] = ' <li>' . $s_page . '</li>';
 				} else {
-					$passage = $show_passage ? ' ' . get_passage($time) : '';
-					$items[] = ' <li><a href="' . get_page_uri($page) . '"' .
+					$passage = $show_passage ? ' ' . $wiki->passage(true,true) : '';
+					$items[] = ' <li><a href="' . $wiki->get_uri() . '"' .
 						' title="' . $s_page . $passage . '">' . $s_page . '</a></li>';
 				}
 			}else{
@@ -88,8 +89,8 @@ function plugin_recent_convert()
 					// No need to link to the page you just read, or notify where you just read
 					$items[] = ' <li data-theme="e">' . $s_page . '</li>';
 				} else {
-					$passage = $show_passage ? ' ' . '<span class="ui-li-count">'.get_passage($time, false).'</span>' : '';
-					$items[] = ' <li><a href="' . get_page_uri($page) . '" data-transition="slide">' . $s_page . $passage.'</a></li>';
+					$passage = $show_passage ? ' ' . '<span class="ui-li-count">'.$wiki->passage(false,false).'</span>' : '';
+					$items[] = ' <li><a href="' . $wiki->get_uri() . '" data-transition="slide">' . $s_page . $passage.'</a></li>';
 				}
 			}
 			$i++;

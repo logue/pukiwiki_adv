@@ -10,7 +10,9 @@
  * @license   GPL v2 or (at your option) any later version
  * @version   $Id: DiffFile.php,v 1.0.0 2013/01/10 17:28:00 Logue Exp $
  **/
+
 namespace PukiWiki\Lib\File;
+
 use PukiWiki\Lib\Diff;
 use PukiWiki\Lib\Router;
 use PukiWiki\Lib\Utility;
@@ -34,7 +36,7 @@ class DiffFile extends File{
 			throw new Exception('Page name is missing!');
 		}
 		$this->page = $page;
-		parent::__construct(self::DIR . encode($page) . self::EXT);
+		parent::__construct(self::DIR . Utility::encode($page) . self::EXT);
 	}
 	/**
 	 * 書き込み
@@ -49,7 +51,7 @@ class DiffFile extends File{
 		//$str = $diff->getDiff();
 
 		if ($notify){
-			if ($notify_diff_only) $str = preg_replace('/^[^-+].*\n/m', '', $str);
+			$str = ($notify_diff_only) ? preg_replace('/^[^-+].*\n/m', '', $diffdata) : $diffdata;
 			$summary = array(
 				'ACTION'		=> 'Page update',
 				'PAGE'			=> & $page,
@@ -58,7 +60,7 @@ class DiffFile extends File{
 				'REMOTE_ADDR'	=> TRUE
 			);
 			pkwk_mail_notify($notify_subject, $str, $summary) or
-				die_message('pkwk_mail_notify(): Failed');
+				Utility::die_message('pkwk_mail_notify(): Failed');
 		}
 		parent::set($diffdata);
 	}

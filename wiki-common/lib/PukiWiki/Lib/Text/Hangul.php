@@ -5,7 +5,8 @@ namespace PukiWiki\Lib\Text;
  * http://pukiwiki.sourceforge.jp/dev/?BugTrack2%2F13
  */
 class Hangul{
-	protected $LCtable = array('ㄱ','ㄱ','ㄴ','ㄷ','ㄷ','ㄹ','ㅁ','ㅂ','ㅂ','ㅅ','ㅅ','ㅇ','ㅈ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ');
+	// ハングルの母音
+	protected static $LCtable = array('ㄱ','ㄱ','ㄴ','ㄷ','ㄷ','ㄹ','ㅁ','ㅂ','ㅂ','ㅅ','ㅅ','ㅇ','ㅈ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ');
 	/**
 	 * 韓国語の文字列から字母を抽出
 	 * @param string $str

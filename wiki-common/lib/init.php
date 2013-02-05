@@ -29,6 +29,9 @@ define('GENERATOR', S_APPNAME.' '.S_VERSION);
 /////////////////////////////////////////////////
 // Init PukiWiki Advance Enviroment variables
 
+define('UTIME',time());
+define('MUTIME',getmicrotime());
+
 defined('DEBUG')			or define('DEBUG', false);
 defined('PKWK_WARNING')		or define('PKWK_WARNING', false);
 defined('ROOT_URI')			or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');
@@ -185,36 +188,8 @@ defined('PKWK_CACHE_EXPIRE') or define('PKWK_CACHE_EXPIRE', 604800);	// 60*60*24
 // convert_htmlのキャッシュ名の有効期間（デフォルト無効（
 defined('PKWK_HTML_CACHE_EXPIRE') or define('PKWK_HTML_CACHE_EXPIRE', 0);
 
-// RecentChanges
-defined('PKWK_MAXSHOW_ALLOWANCE')		or define('PKWK_MAXSHOW_ALLOWANCE', 10);
-defined('PKWK_MAXSHOW_CACHE')			or define('PKWK_MAXSHOW_CACHE', 'recent');
-
-// AutoLink
-defined('PKWK_AUTOLINK_REGEX_CACHE')	or define('PKWK_AUTOLINK_REGEX_CACHE', 'autolink');
-
-// AutoAlias
-defined('PKWK_AUTOALIAS_REGEX_CACHE')	or define('PKWK_AUTOALIAS_REGEX_CACHE', 'autoalias');
-
-// Auto Glossary (Plus!)
-defined('PKWK_GLOSSARY_REGEX_CACHE')	or define('PKWK_GLOSSARY_REGEX_CACHE',  'glossary');
-
-// AutoAlias AutoBase cache (Plus!)
-defined('PKWK_AUTOBASEALIAS_CACHE')		or define('PKWK_AUTOBASEALIAS_CACHE', 'autobasealias');
-
-// PageReading cache (Adv.)
-defined('PKWK_PAGEREADING_CACHE')		or define('PKWK_PAGEREADING_CACHE', 'PageReading');
-
 // Timestamp prefix
 defined('PKWK_TIMESTAMP_PREFIX')		or define('PKWK_TIMESTAMP_PREFIX', 'timestamp-');
-
-// Exsists prefix
-defined('PKWK_EXISTS_PREFIX')			or define('PKWK_EXISTS_PREFIX', 'exists-');
-
-// Page cache prefix
-defined('PKWK_PAGECACHE_PREFIX')		or define('PKWK_PAGECACHE_PREFIX', 'page-');
-
-//
-defined('PKWK_CAPTCHA_SESSION_PREFIX')	or define('PKWK_CAPTCHA_SESSION_PREFIX', 'captcha-');
 
 // Load optional libraries
 if (isset($notify)){ require(LIB_DIR . 'mail.php'); }	// Mail notification
@@ -239,6 +214,7 @@ $js_vars      = array();	// JavaScript initial value.
 $_SKIN        = array();
 
 $info[] = '<a href="http://php.net/">PHP</a> <var>'.PHP_VERSION.'</var> is running as <var>'.php_sapi_name().'</var> mode. / Powerd by <var>'.getenv('SERVER_SOFTWARE').'</var>.';
+$info[] = 'Using <a href="http://framework.zend.com/">Zend Framework</a> ver.<var>' . Zend\Version\Version::VERSION.'</var>.';
 
 // Initilaize Session
 $session = new Zend\Session\Container(PKWK_WIKI_NAMESPACE);

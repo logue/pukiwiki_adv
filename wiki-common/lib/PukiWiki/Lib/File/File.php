@@ -12,6 +12,7 @@
  */
 
 namespace PukiWiki\Lib\File;
+
 use SplFileInfo;
 use PukiWiki\Lib\Utility;
 
@@ -29,10 +30,13 @@ class File extends SplFileInfo{
 	 * @param string $filename ファイル名（パスも含めること）
 	 */
 	public function __construct($filename) {
-		static $fileinfo;
 		if (empty($filename)){
 			throw new \Exception('File name is missing!');
 		}
+		if (!is_string($filename)){
+			throw new \Exception('File name must be string!');
+		}
+		$this->filename = $filename;
 		parent::__construct($filename);
 	}
 	/**
@@ -102,19 +106,26 @@ class File extends SplFileInfo{
 		// 1行毎ファイルを読む
 		while (!$file->eof()) {
 			$line = $file->fgets();
+
 			if ($legacy) {
 				$result[] = strtr($line, "\r", '');
-			}else if (!empty($line)){
+			}else if (!empty($line) ){
+				// こっちの処理のほうが高速
+				if ($line[0] === self::LINE_BREAK){
+					// 改行のみの場合空白
+					$result[] = '';
+				}else{
 				// 改行を含む末尾の余計な空白文字は削除
 				// （ただし先頭の1文字目は、スペースやタブの場合があるため除外）
-				$result[] = $line[0] . rtrim(substr($line, 1));
+					$result[] = $line[0] . rtrim(substr($line, 1));
+				}
 			}
 		}
 		// アンロック
 		$file->flock(LOCK_UN);
 		// 念のためオブジェクトを開放
 		unset($file);
-		
+
 		// 出力
 		return $join ? join(self::LINE_BREAK, $result) : $result;
 	}
@@ -124,6 +135,9 @@ class File extends SplFileInfo{
 	 * @return int 書き込んだバイト数
 	 */
 	public function set($str, $keeptimestamp = false){
+		// ファイルが存在しない作成
+		if ( !$this->isFile() ) $this->touch();
+
 		// 書き込み可能かをチェック
 		if (! $this->isWritable())
 			Utility::die_message(sprintf('File <var>%s</var> is not writable.', Utility::htmlsc($this->filename)));
@@ -212,7 +226,7 @@ class File extends SplFileInfo{
 	private function chown($preserve_time = TRUE){
 		// check UID（Windowsの場合は0になる）
 		$this->php_uid = extension_loaded('posix') ? posix_getuid() : 0;
-		$lockfile = new \SplFileInfo(CACHE_DIR . self::LOCK_FILE);
+		$lockfile = new SplFileInfo(CACHE_DIR . self::LOCK_FILE);
 
 		// Lock for pkwk_chown()
 		$lock = $lockfile->openFile('a');
@@ -306,13 +320,6 @@ class File extends SplFileInfo{
 	 */
 	public function write($str){
 		return self::set($str);
-	}
-	/**
-	 * 特殊：ファイル名
-	 * @return string
-	 */
-	public function __toString(){
-		return $this->getRealPath();
 	}
 }
 

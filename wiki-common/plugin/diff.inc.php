@@ -51,7 +51,7 @@ function plugin_diff_view($page)
 		'<li class="no-js">' . $_msg_delline . '</li>'
 	);
 
-	$is_page = FileFactory::Wiki($page)->is_valied();
+	$is_page = FileFactory::Wiki($page)->isValied();
 	if ($is_page) {
 		$menu[] = ' <li>' . str_replace('$1', '<a href="' . get_page_uri($page) . '">' .
 			$s_page . '</a>', $_msg_goto) . '</li>';
@@ -60,7 +60,7 @@ function plugin_diff_view($page)
 	}
 
 	$diff = FileFactory::Diff($page);
-	
+
 	if ( $diff->has() && ($is_page || Auth::is_role_page($diff)) ) {
 		// if (! PKWK_READONLY) {
 		if (! auth::check_role('readonly')) {

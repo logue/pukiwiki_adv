@@ -100,4 +100,10 @@ class Reading{
 		}
 		return $aRes;
 	}
+	/**
+	 * エイリアス：読みを取得
+	 */
+	public function __get($str){
+		return self::getReading($str);
+	}
 }

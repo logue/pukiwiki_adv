@@ -8,11 +8,14 @@
  * @copyright 2012-2013 PukiWiki Advance Developers Team
  * @create    2012/12/18
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: BackupFile.php,v 1.0.0 2013/01/10 17:28:00 Logue Exp $
+ * @version   $Id: BackupFile.php,v 1.0.0 2013/02/06 07:25:00 Logue Exp $
  */
+
 namespace PukiWiki\Lib\File;
+
 use PukiWiki\Lib\File\FileFactory;
 use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Utility;
 
 class BackupFile extends File{
 	// バックアップの世代ごとの区切り文字（default.ini.php）
@@ -45,7 +48,7 @@ class BackupFile extends File{
 		// バックアップの世代間の区切りの正規表現
 		$this->splitter_reglex = '/^(' . preg_quote(self::SPLITTER) . '\s\d+(\s(\d+)|))$/';
 		// バックアップの名前（拡張子抜き）
-		$this->name = BACKUP_DIR . encode($page);
+		$this->name = BACKUP_DIR . Utility::encode($page);
 		// バックアップの最終更新日時
 		$this->time = $this->has() ? filemtime($this->filename) : UTIME;	// このhasBackup()でファイル名（$this->file）も定義
 		// バックアップの頻度
@@ -74,7 +77,7 @@ class BackupFile extends File{
 
 		if (!self::has()){
 			// バックアップ新規作成
-			return self::set(self::SPLITTER . ' ' . $wiki->getTime() . ' ' . UTIME . "\n" . $newdata);
+			return self::set(self::SPLITTER . ' ' . $wiki->time() . ' ' . UTIME . "\n" . $newdata);
 		}else if (! $this->time == 0 || (UTIME - $this->time > $this->cycle) ){
 			// 連続更新があった場合に備えて、バックアップを作成するまでのインターバルを設ける
 			return;
@@ -101,7 +104,7 @@ class BackupFile extends File{
 		// Escape 'lines equal to self::SPLITTER', by inserting a space
 		$body = preg_replace($this->splitter_reglex, '$1 ', $newdata);
 		// BugTrack/685 by UPK
-		$body = self::SPLITTER . ' ' . $wiki->getTime() . ' ' . UTIME . "\n" . $body;
+		$body = self::SPLITTER . ' ' . $wiki->time() . ' ' . UTIME . "\n" . $body;
 		$body = preg_replace('/\n*$/', "\n", $body);
 
 //		pr($body. $strout);

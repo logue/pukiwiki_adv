@@ -629,6 +629,7 @@ class auth
 
 		// ページ名の取得
 		$pages = get_existpages_cache($dir, $ext);
+
 		// $pages = get_existpages($dir, $ext);
 		// ユーザ名取得
 		$auth_key = auth::get_user_info();

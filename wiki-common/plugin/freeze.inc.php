@@ -28,13 +28,13 @@ function plugin_freeze_action()
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
 	$wiki = new WikiFile($page);
-	
-	if (! $function_freeze || ! $wiki->is_editable(true) || ! $wiki->has())
+
+	if (! $function_freeze || ! $wiki->isEditable(true) || ! $wiki->has())
 		return array('msg' => 'Freeze function is disabled.', 'body' => 'You have no permission to freeze this page.');
 
 	$pass = isset($vars['pass']) ? $vars['pass'] : NULL;
 	$msg = $body = '';
-	if ($wiki->is_freezed()) {
+	if ($wiki->isFreezed()) {
 		// Freezed already
 		$msg  = & $_title_isfreezed;
 		$body = str_replace('$1', htmlsc(strip_bracket($page)),

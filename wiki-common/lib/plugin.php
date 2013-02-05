@@ -246,13 +246,14 @@ function do_plugin_inline($name, $args='', $body='')
 {
 	global $digest, $_string;
 
+	$func = 'plugin_' . $name . '_inline';
+	if (!function_exists($func))
+		return '&' . htmlsc($name). ';';
+
+	
 	if (do_plugin_init($name) === FALSE) {
 		return '<span class="ui-state-error">' . sprintf($_string['plugin_init_error'], '&'.htmlsc($name).'();') . '</span>';
 	}
-
-	$func = 'plugin_' . $name . '_inline';
-	if (!function_exists($func))
-		return '<span class="ui-state-error">'.sprintf($_string['plugin_not_implemented'],htmlsc($name)).'</span>';
 
 	$aryargs = empty($args) ? array() : explode(',', $args);
 

@@ -10,7 +10,7 @@ class Captcha{
 	// CAPTCHA認証済みセッションの有効期間
 	const CAPTCHA_SESSION_EXPIRE = 3600;	// 1時間
 	// CAPTCHA画像のフォント（GDを使用する場合）
-	const CAPTCHA_IMAGE_FONT = LIB_DIR.'fonts/Vera.ttf';
+	const CAPTCHA_IMAGE_FONT = 'Vera.ttf';
 	// CAPTCHA画像の一時保存先（GDを使用する場合）
 	const CAPTCHA_IMAGE_DIR_NAME = 'captcha/';
 	// CAPTCHA認証の有効期間
@@ -27,7 +27,7 @@ class Captcha{
 		global $recaptcha_public_key, $recaptcha_private_key, $vars, $session;
 
 		// Captchaのセッション名（ticketとリモートホストの加算値。ticketはプログラマーから見てもわからない）
-		$session_name = self::CAPTCHA_SESSION_PREFIX.md5(Utility::get_ticket() . REMOTE_ADDR);
+		$session_name = self::CAPTCHA_SESSION_PREFIX.md5(Utility::getTicket() . REMOTE_ADDR);
 
 		if ($save && $session->offsetExists($session_name) && $session->offsetGet($session_name) === true){
 			// CAPTCHA認証済みの場合

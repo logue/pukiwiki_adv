@@ -41,7 +41,7 @@ function plugin_edit_action()
 		return plugin_edit_realview();
 	}
 
-	if (!$wiki->is_editable(true)){
+	if (!$wiki->isEditable(true)){
 		die_message( $_string['not_editable'] );
 	}
 
@@ -144,7 +144,7 @@ function plugin_edit_preview()
 	$page = isset($vars['page']) ? $vars['page'] : '';
 
 	// Loading template
-	if (isset($vars['template_page']) && FileFactory::Wiki($vars['template_page'])->is_valied()) {
+	if (isset($vars['template_page']) && FileFactory::Wiki($vars['template_page'])->isValied()) {
 
 		$vars['msg'] = join('', FileFactory::Wiki($vars['template_page'])->source());
 
@@ -368,7 +368,7 @@ function plugin_edit_write()
 // Cancel (Back to the page / Escape edit page)
 function plugin_edit_cancel()
 {
-	Router::redirect();
+	Utility::redirect();
 	exit;
 }
 
@@ -419,7 +419,7 @@ function plugin_edit_parts($id, &$source, $postdata='')
 	}
 
 	if ($start !== -1) {
-		return join('', array_splice($source, $start, $final - $start, $postdata));
+		return join("\n", array_splice($source, $start, $final - $start, $postdata));
 	}
 	return FALSE;
 }

@@ -39,7 +39,7 @@ function plugin_guiedit_action()
 
 	$wiki = new WikiFile($page);
 
-	if (! $wiki->is_editable()){
+	if (! $wiki->isEditable()){
 		die_message('You have not permission to edit this page.');
 	}
 

@@ -3,113 +3,17 @@
  * TimeZone
  *
  * @copyright   Copyright &copy; 2005-2006, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: timezone.php,v 0.11.2 2010/10/21 23:35:00 Logue Exp $
+ * @version     $Id: timezone.php,v 0.11.2 2013/02/06 07:51:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License
  */
-
-define('UTIME',time());
-define('MUTIME',getmicrotime());
-
-/*
- * set_time
- *
- */
-function set_time()
-{
-	global $language, $use_local_time;
-
-	if ($use_local_time) {
-		list($zone, $zonetime) = set_timezone( DEFAULT_LANG );
-	} else {
-		list($zone, $zonetime) = set_timezone( $language );
-		list($l_zone, $l_zonetime) = get_localtimezone();
-		if ($l_zonetime != '' && $zonetime != $l_zonetime) {
-			$zone = $l_zone;
-			$zonetime = $l_zonetime;
-		}
-	}
-
-	foreach(array('UTIME'=>time(),'MUTIME'=>getmicrotime(),'ZONE'=>$zone,'ZONETIME'=>$zonetime) as $key => $value ){
-		defined($key) or define($key,$value);
-	}
-}
-
-/*
- * set_timezone
- *
- */
-function set_timezone($lang='')
-{
-	if (empty($lang)) {
-		return array('UTC', 0);
-	}
-	$l = accept_language::split_locale_str( $lang );
-
-	// When the name of a country is uncertain (国名が不明な場合)
-	if (empty($l[2])) {
-		$obj_l2c = new lang2country();
-		$l[2] = $obj_l2c->get_lang2country($l[1]);
-		if (empty($l[2])) {
-			return array('UTC', 0);
-		}
-	}
-
-	$obj = new timezone();
-	$obj->set_datetime(UTIME); // Setting at judgment time. (判定時刻の設定)
-	$obj->set_country($l[2]); // The acquisition country is specified. (取得国を指定)
-
-	// With the installation country in case of the same
-	// 設置者の国と同一の場合
-	if ($lang == DEFAULT_LANG) {
-		if (defined('DEFAULT_TZ_NAME')) {
-			$obj->set_tz_name(DEFAULT_TZ_NAME);
-		}
-	}
-
-	list($zone, $zonetime) = $obj->get_zonetime();
-
-	if ($zonetime == 0 || empty($zone)) {
-		return array('UTC', 0);
-	}
-
-	return array($zone, $zonetime);
-}
-
-function get_localtimezone()
-{
-	if (isset($_COOKIE['timezone'])) {
-		$tz = $_COOKIE['timezone'];
-	} else {
-		return array('','');
-	}
-
-	$tz = trim($tz);
-
-	$offset = substr($tz,0,1);
-	switch ($offset) {
-	case '-':
-	case '+':
-		$tz = substr($tz,1);
-		break;
-	default:
-		$offset = '+';
-	}
-
-	$h = substr($tz,0,2);
-	$i = substr($tz,2,2);
-
-	$zonetime = ($h * 3600) + ($i * 60);
-	$zonetime = ($offset == '-') ? $zonetime * -1 : $zonetime;
-
-	return array($offset.$tz, $zonetime);
-}
+namespace PukiWiki\Lib;
 
 /**
  * timezone
  * @abstract
  *
  */
-class timezone
+class TimeZone
 {
   var $country;
   var $tz_country;
@@ -1005,5 +909,5 @@ class timezone
 
 }
 
-/* End of file timezone.php */
-/* Location: ./wiki-common/lib/timezone.php */
+/* End of file TimeZone.php */
+/* Location: /vender/PukiWiki/Lib/TimeZone.php */

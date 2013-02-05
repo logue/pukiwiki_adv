@@ -10,9 +10,8 @@
  * @license   GPL v2 or (at your option) any later version
  * @version   $Id: WikiFile.php,v 1.0.0 2013/01/29 19:54:00 Logue Exp $
  */
-//
 namespace PukiWiki\Lib\File;
-use PukiWiki\Lib\File\File;
+
 use PukiWiki\Lib\File\FileUtility;
 use PukiWiki\Lib\Renderer\RendererFactory;
 use PukiWiki\Lib\Router;
@@ -50,28 +49,22 @@ class WikiFile extends File{
 		if (empty($page)){
 			throw new \Exception('Page name is missing!');
 		}
+		if (!is_string($page)){
+			throw new \Exception('Page name must be string!');
+		}
 		$this->page = $page;
-		parent::__construct(self::DIR . encode($page) . self::EXT);
-	}
-	/**
-	 * ページが存在するか（hasのエイリアス）
-	 * @paran boolean $clearcache
-	 * @return boolean
-	 */
-	public function is_page($clearcache = true){
-		if ($clearcache) clearstatcache();
-		return $this->has();
+		parent::__construct(self::DIR . Utility::encode($page) . self::EXT);
 	}
 	/**
 	 * 編集可能か
-	 * @param boolean $authenticate 認証画面を通すかのフラグ
+	 * @param boolean $authegnticate 認証画面を通すかのフラグ
 	 * @return boolean
 	 */
-	public function is_editable($authenticate = false)
+	public function isEditable($authenticate = false)
 	{
 		global $edit_auth, $edit_auth_pages, $auth_api, $defaultpage, $_title, $edit_auth_pages_accept_ip;
-		if (!$this->is_valied()) return false;	// 無効なページ名
-		if ($this->is_freezed()) return false;	// 凍結されている
+		if (!$this->isValied()) return false;	// 無効なページ名
+		if ($this->isFreezed()) return false;	// 凍結されている
 
 		if (!$edit_auth) return true;	// 編集時に認証が有効になっていない
 
@@ -90,7 +83,7 @@ class WikiFile extends File{
 
 		// Basic, Digest 認証を利用していない場合
 		if (!$auth_api['plus']['use']) return Auth::is_page_readable($this->page, null, null);
-		
+
 		if (Auth::is_page_readable($this->page, null, null) && Auth::is_page_editable($this->page,null,null)) return true;
 
 		return false;
@@ -100,7 +93,7 @@ class WikiFile extends File{
 	 * @global boolean $function_freeze
 	 * @return boolean
 	 */
-	public function is_freezed()
+	public function isFreezed()
 	{
 		$buffer = parent::head(1);	// 先頭1行のみ読み込む
 		return strstr($buffer,'#freeze');
@@ -110,7 +103,7 @@ class WikiFile extends File{
 	 * @param boolean $authenticate 認証画面を通すかのフラグ
 	 * @return boolean
 	 */
-	public function is_readable($authenticate = false)
+	public function isReadable($authenticate = false)
 	{
 		global $read_auth, $read_auth_pages, $auth_api, $_title, $read_auth_pages_accept_ip;
 
@@ -136,48 +129,46 @@ class WikiFile extends File{
 	 * 有効なページ名か（is_page()）
 	 * @return boolean
 	 */
-	public function is_valied(){
-		global $BracketName;
+	public function isValied(){
 		return (
-				! self::is_interwiki() &&	// InterWikiでない
-				preg_match('/^(?!\/)' . $BracketName . '$(?<!\/$)/', $this->page) !== false &&	// BlacketNameである
+				! Utility::isInterWiki($this->page) &&	// InterWikiでない
+				Utility::isBracketName($this->page) &&	// BlacketNameである
 				preg_match(self::INVALIED_PAGENAME_PATTERN, $this->page) !== false &&	// 無効な文字が含まれていない。
 				! preg_match('#(^|/)\.{1,2}(/|$)#', $this->page) &&
 				preg_match(self::VALIED_PAGENAME_PATTERN, $this->page)	// 使用可能な文字である
 		);
 	}
 	/**
-	 * 読み込み可能かをチェック（メッセージを表示する）
-	 */
-	public function check_readable(){
-		if (! self::is_readable()){
-			die_message('You have not permisson to read this page.',403);
-		}
-	}
-	/**
-	 * 編集可能かをチェック（メッセージを表示する）
-	 */
-	public function check_editable(){
-		if (! self::is_editable()){
-			die_message('You have not permisson to edit this page.',403);
-		}
-	}
-	/**
 	 * InterWikiか
 	 * @return boolean
 	 */
-	public function is_interwiki(){
-		global $InterWikiName;
-		return preg_match('/^' . $InterWikiName . '/', $this->page);
+	public function isInterWiki(){
+		return Utility::isInterWiki($this->page);
 	}
 	/**
 	 * 表示しないページか（check_non_list()）
 	 * @global array $non_list
 	 * @return boolean
 	 */
-	public function is_hidden(){
+	public function isHidden(){
 		global $non_list;
 		return preg_match( '/' . $non_list . '/' , $this->page);
+	}
+	/**
+	 * 読み込み可能かをチェック（メッセージを表示する）
+	 */
+	public function checkReadable(){
+		if (! self::isReadable()){
+			Utility::die_message('You have not permisson to read this page.',403);
+		}
+	}
+	/**
+	 * 編集可能かをチェック（メッセージを表示する）
+	 */
+	public function checkEditable(){
+		if (! self::isEditable()){
+			Utility::die_message('You have not permisson to edit this page.',403);
+		}
 	}
 	/**
 	 * ページのソースを取得
@@ -191,7 +182,11 @@ class WikiFile extends File{
 	 * @return string
 	 */
 	public function render(){
-		return RendererFactory::factory($this->source());
+		global $digest;
+		if (empty($digest)){
+			$digest = self::digest();
+		}
+		return RendererFactory::factory($this->get());
 	}
 	/**
 	 * ダイジェスト（ページの内容のMD5ハッシュ）を出力
@@ -355,7 +350,7 @@ class WikiFile extends File{
 	private function get_this_time_links($post,$diff)
 	{
 		$links = array();
-		$post_links = self::replace_plugin_link2null($post);
+		$post_links = self::replaceNullPlugin($post);
 		$diff_links = self::get_link_list($diff);
 
 		foreach($diff_links as $d) {
@@ -374,7 +369,7 @@ class WikiFile extends File{
 	 * @param $data
 	 * @return array
 	 */
-	private function replace_plugin_link2null($data){
+	private function replaceNullPlugin($data){
 		global $exclude_link_plugin;
 
 		$pattern = $replacement = array();
@@ -384,11 +379,11 @@ class WikiFile extends File{
 		}
 
 		$exclude = preg_replace($pattern,$replacement, explode("\n", $data));
-		$html = convert_html($exclude);
+		$links = array();
+		$html = RendererFactory::factory($exclude);
 		preg_match_all('#href="(https?://[^"]+)"#', $html, $links, PREG_PATTERN_ORDER);
-		$links = array_unique($links[1]);
-		unset($except, $html);
-		return $links;
+		unset($html);
+		return array_unique($links[1]);
 	}
 	/**
 	 * リンク一覧を取得
@@ -421,10 +416,7 @@ class WikiFile extends File{
 		// Reject own URL (Pattern _NOT_ started with '$script' and '?')
 		$links = preg_grep('/^(?!' . preg_quote(Router::get_script_absuri(), '/') . '\?)./', $links);
 
-		// No link, END
-		if (! is_array($links) || empty($links)) return;
-
-		return $links;
+		return (! is_array($links) || empty($links)) ? null : $links;
 	}
 	/**
 	 * ソースをシステム（rules.ini.phpなど）で定義されているルールに基づいて自動修正
@@ -468,7 +460,7 @@ class WikiFile extends File{
 				$line = preg_replace('/' . $pattern . '/', $replacement, $line);
 
 			// Adding fixed anchor into headings
-			if ($fixed_heading_anchor && preg_match('/^(\*{1,3}.*?)(?:\[#([A-Za-z][\w-]*)\]\s*)?$/', $line, $matches) && 
+			if ($fixed_heading_anchor && preg_match('/^(\*{1,3}.*?)(?:\[#([A-Za-z][\w-]*)\]\s*)?$/', $line, $matches) &&
 					(! isset($matches[2]) || empty($matches[2]) )) {
 				// Generate unique id
 				$anchor = Zend\Math\Rand::getString(7,'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
@@ -531,7 +523,7 @@ class WikiFile extends File{
 	public function get_uri($cmd='read', $query=array(), $fragment=''){
 		return Router::get_resolve_uri($cmd, $this->page, 'rel', $query, $fragment);
 	}
-	
+
 	/**
 	 * 配列からRecentChangesページを作成
 	 */

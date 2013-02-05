@@ -5,16 +5,17 @@
  * on a TCP/UDP transport:
  * Detailed specifications
  *
- * @copyright	Copyright &copy; 2004-2005, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version	$Id: netbios.cls.php,v 0.2 2005/05/27 01:07:00 upk Exp $
- * @license	http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright &copy; 2004-2005, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
+ * @version   $Id: netbios.cls.php,v 0.2 2005/05/27 01:07:00 upk Exp $
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  */
+namespace PukiWiki\Lib;
 
 /**
  * NetBIOS 全般の処理
  * @abstract
  */
-class netbios
+class NetBios
 {
 	var $data;
 	var $info , $domain, $computername, $username;
@@ -47,23 +48,23 @@ class netbios
 		array('BF', 1, 'Network Monitor Application'),
 	);
 
-	function netbios($ip)
+	public function __construct($ip)
 	{
 		$this->info = array();
 		$this->domain = '';
 		$this->computername = '';
 		$this->username = '';
-	
+
 		// スペシャルパケットの送信
 		$fp = fsockopen('udp://'.$ip, 137);
 		fwrite($fp, "\x80b\0\0\0\1\0\0\0\0\0\0 CKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\0\0!\0\1");
-	
+
 		// 2秒待ち、戻りのパケットを取得
 		socket_set_timeout($fp, 2);
 		$this->data = fread($fp, 1024);
-	
+
 		if (!strlen($this->data)) return; // length zero
-	
+
 		// NetBIOS番号の取得
 		$nbrec = ord($this->data[56]);
 
@@ -239,4 +240,4 @@ class netbios
 }
 
 /* End of file netbios.cls.php */
-/* Location: ./wiki-common/lib/netbios.cls.php */
+/* Location: ./vendor/PukiWiki/Lib/NetBios.php */

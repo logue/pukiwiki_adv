@@ -120,7 +120,7 @@ class AuthUtility{
 	// Basic-auth related ----
 
 	// Check edit-permission
-	static function check_editable($page, $auth_flag = TRUE, $exit_flag = TRUE) {
+	static function checkEditable($page, $auth_flag = TRUE, $exit_flag = TRUE) {
 		global $_title, $_string, $defaultpage;
 
 		if (edit_auth($page, $auth_flag, $exit_flag) && is_editable($page)) return true;
@@ -139,7 +139,7 @@ class AuthUtility{
 
 
 	// Check read-permission
-	static function check_readable($page, $auth_flag = TRUE, $exit_flag = TRUE)
+	static function checkReadable($page, $auth_flag = TRUE, $exit_flag = TRUE)
 	{
 		global $_title, $defaultpage;
 
@@ -201,7 +201,7 @@ class AuthUtility{
 		global $read_auth, $read_auth_pages, $auth_api, $defaultpage, $_title, $read_auth_pages_accept_ip;
 
 		if (!$read_auth) return true;
-		
+
 		// 許可IPの場合チェックしない
 		if(ip_auth($page, $auth_flag, $exit_flag, $read_auth_pages_accept_ip, $_title['cannotread'])) {
 			return TRUE;
@@ -345,7 +345,7 @@ class AuthUtility{
 	static function ip_auth($page, $auth_flag, $exit_flag, $auth_pages_accept_ip, $title_cannot)
 	{
 		global $auth_method_type;
-		
+
 		$auth = FALSE;
 		if (is_array($auth_pages_accept_ip)){
 
