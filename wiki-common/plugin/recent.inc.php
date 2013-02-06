@@ -53,8 +53,8 @@ function plugin_recent_convert()
 		$i = 0;
 		foreach ($lines as $page => $time) {
 			$wiki = FileFactory::Wiki($page);
-			if (! $wiki->isReadable(false)) continue;
-			if (! $wiki->isHidden()) continue;
+			if (! $wiki->isReadable()) continue;
+			//if (! $wiki->isHidden()) continue;
 			if ($i > $count) break;
 
 			$s_page = htmlsc($page);
@@ -75,7 +75,7 @@ function plugin_recent_convert()
 					// No need to link to the page you just read, or notify where you just read
 					$items[] = ' <li>' . $s_page . '</li>';
 				} else {
-					$passage = $show_passage ? ' ' . $wiki->passage(true,true) : '';
+					$passage = $show_passage ? ' ' . $wiki->passage(false,true) : '';
 					$items[] = ' <li><a href="' . $wiki->get_uri() . '"' .
 						' title="' . $s_page . $passage . '">' . $s_page . '</a></li>';
 				}
@@ -109,7 +109,7 @@ function plugin_recent_convert()
 	}else{
 		return '<ul data-role="listview" data-dividertheme="b">'."\n".
 			'<li data-theme="a">'.$_recent_title.'</li>'."\n".
-			join("\n",$items)."\n";
+			join("\n",$items).'</ul>' ."\n";
 	}
 }
 /* End of file recent.inc.php */

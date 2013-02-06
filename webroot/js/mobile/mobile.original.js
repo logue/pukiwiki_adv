@@ -18,8 +18,8 @@
  */
 
 var pukiwiki = {};
-//var JQUERY_MOBILE_VER = '1.2.0';
-var JQUERY_MOBILE_VER = 'latest';
+var JQUERY_MOBILE_VER = '1.3.0-beta.1';
+//var JQUERY_MOBILE_VER = 'latest';
 (function ($, window, document) {
 	'use strict';
 	var pkwkInit = [], pkwkBeforeInit = [], pkwkUnload = [], pkwkBeforeUnload = [];
@@ -160,25 +160,26 @@ var JQUERY_MOBILE_VER = 'latest';
 					// 一方、PukiWikiで使われるアンカー用ハッシュは常に英数字である。
 					// このため、ローカルリンクの判別は、先頭の文字を\w（A-Za-z0-9_）から判断すればいいと思われる。
 					$this.data('ajax', false);
-					$this.live('tap', function(){
+					$this.on('tap', function(){
 						self.scrollTo(href);
 						return false;
 					});
 				}
 			});
 			
-			$('.to_header').live('tap', function(){
+			$('.to_header').on('tap', function(){
 				self.scrollTo('.ui-page-active header');
 			});
-			$('.to_footer').live('tap', function(){
+			$('.to_footer').on('tap', function(){
 				self.scrollTo('.ui-page-active footer');
 			});
 		},
 		scrollTo: function(target){
 			var $body;
-			if ($(window).scrollTop() === 0) {
+			var $window = $(window);
+			if ($window.scrollTop() === 0) {
 				// スクロールが0の時エラーになる問題をごまかす
-				$(window).scrollTop(1);
+				$window.scrollTop(1);
 			}
 			if ( $('html').scrollTop() > 0 ) {
 				$body = $('html');
@@ -364,15 +365,16 @@ var JQUERY_MOBILE_VER = 'latest';
 	};
 	
 	$(document).ready(function(){
+		var filename = 'jquery.mobile-' + JQUERY_MOBILE_VER + (DEBUG ? '' : '.min');
 		if (JQUERY_MOBILE_VER !== 'latest'){
-			$("head").append('<link rel="stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.mobile/'+JQUERY_MOBILE_VER+'/jquery.mobile-'+JQUERY_MOBILE_VER+'.min.css" />');
-			$.getScript('http://ajax.aspnetcdn.com/ajax/jquery.mobile/'+JQUERY_MOBILE_VER+'/jquery.mobile-'+JQUERY_MOBILE_VER+'.min.js', function(){
+			$("head").append('<link rel="stylesheet" href="http://code.jquery.com/mobile/'+JQUERY_MOBILE_VER+'/'+filename+'.css" />');
+			$.getScript('http://code.jquery.com/mobile/'+JQUERY_MOBILE_VER+'/'+filename+'.js', function(){
 				$('html').fadeIn('fast');	// スクリプトとCSSが読み込まれた段階で、ページを表示。
 				$('html').css('display','block');	// Firefox対策
 			});
 		}else{
-			$("head").append('<link rel="stylesheet" href="http://code.jquery.com/mobile/latest/jquery.mobile.min.css" />');
-			$.getScript('http://code.jquery.com/mobile/latest/jquery.mobile.min.js', function(){
+			$("head").append('<link rel="stylesheet" href="http://code.jquery.com/mobile/latest/jquery.mobile.css" />');
+			$.getScript('http://code.jquery.com/mobile/latest/jquery.mobile.js', function(){
 				$('html').fadeIn('fast');	// スクリプトとCSSが読み込まれた段階で、ページを表示。
 				$('html').css('display','block');	// Firefox対策
 			});
@@ -395,7 +397,7 @@ var JQUERY_MOBILE_VER = 'latest';
 		}
 
 		$page
-			.live('pageload',function(event, ui){
+			.on('pageload',function(event, ui){
 				var f;
 				while( f = pkwkBeforeInit.shift() ){
 					if( f !== null ){
@@ -404,7 +406,7 @@ var JQUERY_MOBILE_VER = 'latest';
 				}
 				f = null;
 			})
-			.live('pageshow',function(event, ui){
+			.on('pageshow',function(event, ui){
 				pukiwiki.init_dom();
 				var f;
 				while( f = pkwkInit.shift() ){
@@ -428,7 +430,7 @@ var JQUERY_MOBILE_VER = 'latest';
 			$(ads_top).appendTo('.adarea');	// 初回読み込み時に広告領域を広告表示領域に代入
 			$adarea_content.remove();	// 元々の広告領域を削除（GoogleのTOSに複数設置できない規定があるため。）
 
-			$page.live('pagehide', function(event, ui) {
+			$page.on('pagehide', function(event, ui) {
 				// ページが読み込まれるたびに、広告表示領域に広告を代入
 				$(ads_top).appendTo('.adarea');
 			});

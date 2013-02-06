@@ -6,9 +6,10 @@
 // Copyright (C)
 //   2012 PukiWiki Advance Developer Team
 
-global $pkwk_dtd, $_SKIN, $is_page, $defaultpage, $do_backup;
+global $pkwk_dtd, $_SKIN, $is_page, $defaultpage, $do_backup, $menubar, $sidebar;
 
 if (!defined('DATA_DIR')) { exit; }
+$_SKIN['showicon'] = true;
 
 if ($newtitle != '' && $is_read) {
 	$title = $newtitle;
@@ -21,75 +22,66 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 ?>
 	<head>
 		<?php echo $meta_content_type; ?>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<?php echo $pkwk_head; ?>
 		<title><?php echo $page_title; ?></title>
 	</head>
-<?php flush(); ?>
+
 	<body>
 		<article data-role="page">
 			<header data-role="header" role="banner" id="header">
 				<h1><?php echo $title ?></h1>
 <?php if (!$is_dialog) { ?>
-				<a href="<?php echo $_LINK['search'] ?>" data-icon="search" data-rel="dialog" class="ui-btn-right"><?php echo $_LANG['skin']['search'] ?></a>
-<?php	if ($is_page) { ?>
+				<a href="#Tool" data-icon="gear" class="ui-btn-right" data-rel="popup" data-position-to="window" data-role="button" data-inline="true" data-transition="pop"><?php echo $_LANG['skin']['tool']; ?></a>
+				<?php if (!empty($_SKIN['adarea'])) echo '<div class="adarea"></div>'; ?>
+<?php } ?>
+<?php if (arg_check('read') ){ ?>
 				<nav data-role="navbar">
 					<ul>
-						<li><a href="<?php echo $_LINK['new'] ?>" data-rel="dialog"><?php echo $_LANG['skin']['new'] ?></a></li>
-<?php		if ($is_freeze) { ?>
-						<li><a href="<?php echo $_LINK['unfreeze'] ?>" data-rel="dialog"><?php echo $_LANG['skin']['unfreeze'] ?></a></li>
-<?php		} else { ?>
-<?php			if ($vars['cmd'] !== 'edit') { ?>
-						<li><a href="<?php echo $_LINK['edit'] ?>" data-transition="flip" data-rel="page"><?php echo $_LANG['skin']['edit'] ?></a></li>
-<?php			} ?>
-						<li><a href="<?php echo $_LINK['freeze'] ?>" data-rel="dialog"><?php echo $_LANG['skin']['freeze'] ?></a></li>
-<?php		} ?>
-						<li><a href="<?php echo $_LINK['diff'] ?>" data-transition="flip"><?php echo $_LANG['skin']['diff'] ?></a></li>
+<?php if (exist_plugin_convert('menu') && is_page($menubar)) { ?>
+						<li><a href="#MenuBar"><?php echo $_LANG['skin']['menu']; ?></a></li>
+<?php } ?>
+<?php if (exist_plugin_convert('side') && is_page($sidebar)) { ?>
+						<li><a href="#SideBar"><?php echo $_LANG['skin']['side']; ?></a></li>
+<?php } ?>
 					</ul>
 				</nav>
-				<?php if (!empty($_SKIN['adarea'])) echo '<div class="adarea"></div>'; ?>
-<?php	} ?>
 <?php } ?>
 			</header>
 
-<?php if (arg_check('read') && exist_plugin_convert('menu')) { ?>
-			<div data-role="content" class="two-colums" data-theme="c">
-				<section class="content-primary" role="main">
-					<?php echo $body ?>
-				</section>
-				<aside class="content-secondary">
-					<div data-role="collapsible" data-collapsed="true" data-theme="b" data-content-theme="d">
-						<h2>メニュー</h2>
-						<?php echo do_plugin_convert('menu') ?>
-					</div>
-				</aside>
-			</div>
-<?php }else{ ?>
-			<section data-role="content" role="main" data-theme="c">
+			<section role="main" data-role="content" data-theme="c">
 				<?php echo $body ?>
 			</section>
-<?php } ?>
 
-			<footer data-role="footer" role="contentinfo" id="footer">
-<?php if (!$is_dialog) { ?>
-				<nav data-role="navbar">
-					<ul>
-<?php	if ($title != $defaultpage) { ?>
-						<li><a href="<?php echo $_LINK['top'] ?>" data-transition="fade"><?php echo $_LANG['skin']['top'] ?></a></li>
-<?php	} ?>
-						<li><a href="<?php echo $_LINK['list'] ?>" data-transition="flip"><?php echo $_LANG['skin']['list'] ?></a></li>
-<?php	if ($is_page && (bool)ini_get('file_uploads')) { ?>
-						<li><a href="<?php echo $_LINK['upload'] ?>" data-rel="dialog"><?php echo $_LANG['skin']['upload'] ?></a></li>
-<?php	} ?>
-<?php if ($do_backup){ ?>
-						<li><a href="<?php echo $_LINK['backup'] ?>" data-transition="flip"><?php echo $_LANG['skin']['backup'] ?></a></li>
-<?php	} ?>
-					</ul>
-				</nav>
-				<h4>Founded by <a href="<?php echo $modifierlink ?>"><?php echo $modifier ?></a></h4>
+<?php if (arg_check('read') ){ ?>
+	<?php if (exist_plugin_convert('menu') && is_page($menubar)) { ?>
+			<aside data-role="panel" id="MenuBar" data-theme="b" data-content-theme="d" data-position="left" data-display="reveal">
+				<?php echo do_plugin_convert('menu') ?>
+			</aside>
+	<?php } ?>
+	<?php if (exist_plugin_convert('side') && is_page($sidebar)) { ?>
+			<aside data-role="panel" id="SideBar" data-theme="b" data-content-theme="d" data-position="right" data-display="reveal">
+				<?php echo do_plugin_convert('side') ?>
+			</aside>
+	<?php } ?>
 <?php } ?>
+			<aside data-role="popup" id="Tool">
+				<div data-role="header" data-theme="a" class="ui-corner-top">
+					<h1><?php echo $_LANG['skin']['tool']; ?></h1>
+					<a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
+				</div>
+				<div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+					<?php
+					exist_plugin('navibar');
+					echo do_plugin_convert('navibar','top,edit,freeze,diff,backup,upload,reload,new,list,search,recent,help,login'); ?>
+				</div>
+			</aside>
+			<footer data-role="footer" role="contentinfo" id="footer">
+				<h4>Founded by <a href="<?php echo $modifierlink ?>"><?php echo $modifier ?></a></h4>
 				<h5 style="text-align:center; clear:both; font-size:87%;"><?php if (!$is_dialog) { ?>Powered by <a href="http://pukiwiki.logue.be/"><?php echo GENERATOR ?></a>. <?php } ?>HTML convert time: <?php echo showtaketime() ?> sec.</h5>
 			</footer><!-- /footer -->
 		</article><!-- /page -->
+		
 
 		<?php if (!empty($_SKIN['adarea'])) echo '<div id="adarea_content">' . $_SKIN['adarea'] . '</div>'; ?>
 		<?php echo $pkwk_tags; ?>

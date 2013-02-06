@@ -29,7 +29,11 @@ function plugin_navibar_convert()
 	$num = func_num_args();
 	$args = $num ? func_get_args() : array();
 
-	$ret[] = '<ul>';
+	if (IS_MOBILE){
+		$ret[] = '<ul data-role="listview">';
+	}else{
+		$ret[] = '<ul>';
+	}
 	while(!empty($args)) {
 		$name = array_shift($args);
 		switch ($name) {
@@ -121,7 +125,7 @@ function plugin_navibar_convert()
 			if (end($ret) !== '<ul>' ){
 				$ret[] = '</ul>';
 				$ret[] = "\n";
-				$ret[] = '<ul>';
+				$ret[] = !IS_MOBILE ? '<ul>' : '<ul data-role="listview">';
 			}
 			break;
 		case 'attach':
@@ -158,7 +162,7 @@ function plugin_navibar_convert()
 	$body = "\n".join('',$ret)."\n";
 
 	if (IS_MOBILE){
-		return '<nav data-role="navbar" data-theme="a">'.$body.'</nav>';
+		return $body;
 	}else{
 		return (($pkwk_dtd == PKWK_DTD_HTML_5) ? '<nav class="navibar">'.$body.'</nav>' : '<div class="navibar">'.$body.'</div>')."\n";
 	}
