@@ -880,8 +880,8 @@ class PinYin {
 	 */
 	public static function toPinYin($char){
 		// 漢字をピンインにする
-		foreach (self::$pinyinable as $pinyin=>$pinyin_pattern){
-			if (preg_match('/'.$kanji_pattern.'+/', $char)){
+		foreach (self::$pinyin_table as $pinyin=>$pinyin_pattern){
+			if (preg_match('/'.$pinyin_pattern.'+/', $char)){
 				return $pinyin;
 			}
 		}
@@ -892,10 +892,10 @@ class PinYin {
 	 * @param string $str 入力文字列
 	 * @return string
 	 */
-	public static function toPinYin($char){
+	public static function toKana($char){
 		// 漢字をピンインにする
-		foreach (self::$pinyinable as $pinyin=>$pinyin_pattern){
-			if (preg_match('/'.$kanji_pattern.'+/', $char)){
+		foreach (self::$pinyin_table as $pinyin=>$pinyin_pattern){
+			if (preg_match('/'.$pinyin_pattern.'+/', $char)){
 				return $kana_table[$char];
 			}
 		}
