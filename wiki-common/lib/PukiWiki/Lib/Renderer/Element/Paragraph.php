@@ -1,19 +1,25 @@
 <?php
-// PukiWiki - Yet another WikiWikiWeb clone
-// $Id: convert_html.php,v 1.0 2012/10/30 12:02:00 Logue Exp $
-// Copyright (C)
-//   2010-2012 PukiWiki Advance Developers Team
-//   2005-2008 PukiWiki Plus! Team
-//   2002-2005, 2007,2011 PukiWiki Developers Team
-//   2001-2002 Originally written by yu-ji
-// License: GPL v2 or (at your option) any later version
-//
-// function 'convert_html()', wiki text parser
-// and related classes-and-functions
-namespace PukiWiki\Lib\Renderer\Element;
-use PukiWiki\Lib\Renderer\Element\Factory;
+/**
+ * 段落クラス
+ *
+ * @package   PukiWiki\Lib\Renderer\Element
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2013 PukiWiki Advance Developers Team
+ * @create    2013/01/26
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: Paragraph.php,v 1.0.0 2013/02/12 15:13:00 Logue Exp $
+ */
 
-// Paragraph: blank-line-separated sentences
+namespace PukiWiki\Lib\Renderer\Element;
+
+use PukiWiki\Lib\Renderer\Element\Element;
+use PukiWiki\Lib\Renderer\Element\ElementFactory;
+use PukiWiki\Lib\Renderer\Element\InlineElement;
+
+/**
+ * Paragraph: blank-line-separated sentences
+ */
 class Paragraph extends Element
 {
 	var $param;
@@ -27,13 +33,13 @@ class Paragraph extends Element
 		if (substr($text, 0, 1) == '~')
 			$text = ' ' . substr($text, 1);
 
-		$this->insert(Factory::factory('Inline', null, $text));
+		$this->insert(ElementFactory::factory('Inline', null, $text));
 	}
 
 	function canContain(& $obj)
 	{
 		//return is_a($obj, 'Inline');
-		return ($obj instanceof Inline);
+		return ($obj instanceof InlineElement);
 	}
 
 	function toString()
@@ -41,3 +47,6 @@ class Paragraph extends Element
 		return $this->wrap(parent::toString(), 'p', $this->param);
 	}
 }
+
+/* End of file Paragraph.php */
+/* Location: ./vender/PukiWiki/Lib/Renderer/Paragraph.php */

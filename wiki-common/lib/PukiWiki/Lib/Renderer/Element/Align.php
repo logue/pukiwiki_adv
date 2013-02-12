@@ -1,19 +1,26 @@
 <?php
-// PukiWiki Advance - Yet another WikiWikiWeb clone
-// $Id: convert_html.php,v 1.0 2012/10/30 12:02:00 Logue Exp $
-// Copyright (C)
-//   2010-2012 PukiWiki Advance Developers Team
-//   2005-2008 PukiWiki Plus! Team
-//   2002-2005, 2007,2011 PukiWiki Developers Team
-//   2001-2002 Originally written by yu-ji
-// License: GPL v2 or (at your option) any later version
-//
-// function 'convert_html()', wiki text parser
-// and related classes-and-functions
-namespace PukiWiki\Lib\Renderer\Element;
-use PukiWiki\Lib\Renderer\Element\Factory;
+/**
+ * 位置決めクラス
+ *
+ * @package   PukiWiki\Lib\Renderer\Element
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2013 PukiWiki Advance Developers Team
+ * @create    2013/01/26
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: Align.php,v 1.0.0 2013/02/12 15:13:00 Logue Exp $
+ */
 
-// LEFT:/CENTER:/RIGHT:
+namespace PukiWiki\Lib\Renderer\Element;
+
+use PukiWiki\Lib\Renderer\Element\Element;
+use PukiWiki\Lib\Renderer\Element\InlineElement;
+use PukiWiki\Lib\Renderer\Element\Table;
+use PukiWiki\Lib\Renderer\Element\YTable;
+
+/**
+ * LEFT: / CENTER: / RIGHT:
+ */
 class Align extends Element
 {
 	var $align;
@@ -29,7 +36,7 @@ class Align extends Element
 		if ($obj instanceof Table || $obj instanceof YTable) {
 			$obj->align = $this->align;
 		}
-		return ($obj instanceof Inline);
+		return ($obj instanceof InlineElement);
 	}
 
 	function toString()
@@ -37,3 +44,6 @@ class Align extends Element
 		return $this->wrap(parent::toString(), 'div', ' style="text-align:' . $this->align . '"');
 	}
 }
+
+/* End of file Align.php */
+/* Location: /vendor/PukiWiki/Lib/Renderer/Element/Align.php */

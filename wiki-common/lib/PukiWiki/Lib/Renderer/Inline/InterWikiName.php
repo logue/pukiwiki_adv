@@ -68,20 +68,22 @@ class InterWikiName extends Inline
 	public function setPattern($arr, $page)
 	{
 		list(, $alias, , $name, $this->param) = $this->splice($arr);
-
-
 		$matches = array();
 		if (preg_match('/^([^#]+)(#[A-Za-z][\w-]*)$/', $this->param, $matches))
 			list(, $this->param, $this->anchor) = $matches;
 
 		$url = self::getInterWikiUrl($name, $this->param);
-		$this->url = ($url === FALSE) ?
-			get_page_uri($name . ':' . $this->param) :
-			htmlsc($url);
+		
+		// http://pukiowikio.sourceforge.jp/index.php?Develop%2FBugTrack1%2F1
+	//	$this->url = ($url === FALSE) ?
+	//		get_page_uri($name . ':' . $this->param) :
+	//		Utility::htmlsc($url);
+		if ($url === FALSE) return $name . ':' . $this->param;
+		$this->url = Utility::htmlsc($url);
 
 		return parent::setParam(
 			$page,
-			htmlsc($name . ':' . $this->param),
+			Utility::htmlsc($name . ':' . $this->param),
 			null,
 			'InterWikiName',
 			empty($alias) ? $name . ':' . $this->param : $alias

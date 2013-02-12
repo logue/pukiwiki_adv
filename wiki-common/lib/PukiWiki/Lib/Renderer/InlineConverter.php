@@ -11,8 +11,8 @@
  * @version   $Id: InlineConverter.php,v 1.0.0 2013/01/29 19:54:00 Logue Exp $
  */
 
-
 namespace PukiWiki\Lib\Renderer;
+
 use PukiWiki\Lib\Utility;
 use PukiWiki\Lib\Renderer\Inline\Inline;
 /**
@@ -42,7 +42,7 @@ class InlineConverter
 
 		if (!isset($converters)) {
 			$converters = array(
-				'Plugin',           // Inline plugins
+				'InlinePlugin',     // Inline plugins
 				'EasyRef',          // Easy Ref {{param|body}}
 				'Note',             // Footnotes
 				'Url',              // URLs

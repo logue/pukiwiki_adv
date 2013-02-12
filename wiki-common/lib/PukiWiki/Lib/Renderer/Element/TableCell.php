@@ -1,24 +1,29 @@
 <?php
-// PukiWiki - Yet another WikiWikiWeb clone
-// $Id: convert_html.php,v 1.0 2012/10/30 12:02:00 Logue Exp $
-// Copyright (C)
-//   2010-2012 PukiWiki Advance Developers Team
-//   2005-2008 PukiWiki Plus! Team
-//   2002-2005, 2007,2011 PukiWiki Developers Team
-//   2001-2002 Originally written by yu-ji
-// License: GPL v2 or (at your option) any later version
-//
-// function 'convert_html()', wiki text parser
-// and related classes-and-functions
+/**
+ * テーブルのセルクラス
+ *
+ * @package   PukiWiki\Lib\Renderer\Element
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2013 PukiWiki Advance Developers Team
+ * @create    2013/01/26
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: TableCell.php,v 1.0.0 2013/02/12 15:13:00 Logue Exp $
+ */
+
 namespace PukiWiki\Lib\Renderer\Element;
-use PukiWiki\Lib\Renderer\Element\Factory;
+
+use PukiWiki\Lib\Renderer\Element\Element;
+use PukiWiki\Lib\Renderer\Element\ElementFactory;
+use PukiWiki\Lib\Renderer\Element\Paragraph;
+use PukiWiki\Lib\Utility;
 
 class TableCell extends Element
 {
-	var $tag = 'td'; // {td|th}
+	var $tag = 'td';    // {td|th}
 	var $colspan = 1;
 	var $rowspan = 1;
-	var $style; // is array('width'=>, 'align'=>...);
+	var $style;         // is array('width'=>, 'align'=>...);
 
 	function __construct($text, $is_template = FALSE)
 	{
@@ -34,10 +39,10 @@ class TableCell extends Element
 				$text = array_pop($matches);
 			} else if ($matches[3]) {
 				$name = $matches[2] ? 'background-color' : 'color';
-				$this->style[$name] = $name . ':' . htmlsc($matches[3]) . ';';
+				$this->style[$name] = $name . ':' . Utility::htmlsc($matches[3]) . ';';
 				$text = array_pop($matches);
 			} else if ($matches[4]) {
-				$this->style['size'] = 'font-size:' . htmlsc($matches[4]) . 'px;';
+				$this->style['size'] = 'font-size:' . Utility::htmlsc($matches[4]) . 'px;';
 				$text = array_pop($matches);
 			} else if ($matches[5]){
 				$this->lang = $matches[6];
@@ -47,7 +52,7 @@ class TableCell extends Element
 		if ($is_template && is_numeric($text))
 			$this->style['width'] = 'width:' . $text . 'px;';
 
-		if (preg_match("/\S+/", $text) == false){
+		if (preg_match("/\S+/", $text) === false){
 			// セルが空だったり、空白文字しか残らない場合は、空欄のセルとする。（HTMLではタブやスペースも削除）
 			$text = '';
 			$this->is_blank = true;
@@ -62,9 +67,9 @@ class TableCell extends Element
 
 		if (!empty($text) && $text{0} === '#') {
 			// Try using Div class for this $text
-			$obj = ($obj instanceof Paragraph) ? $obj->elements[0] : Factory::factory('Div', $this, $text);
+			$obj = ($obj instanceof Paragraph) ? $obj->elements[0] : ElementFactory::factory('Div', $this, $text);
 		} else {
-			$obj = Factory::factory('Inline', null, $text);
+			$obj = ElementFactory::factory('InlineElement', null, $text);
 		}
 
 		$this->insert($obj);
@@ -81,11 +86,8 @@ class TableCell extends Element
 	{
 		if ($this->rowspan == 0 || $this->colspan == 0) return '';
 
-		if($this->is_blank == true && $this->tag == 'td'){
-			$param = ' class="style_td_blank"';
-		}else{
-			$param = ' class="style_' . $this->tag . '"';
-		}
+		$param = ' class="style_' . ($this->is_blank == true && $this->tag == 'td' ? 'td_blank' :  $this->tag) . '"';
+		
 		if ($this->rowspan > 1)
 			$param .= ' rowspan="' . $this->rowspan . '"';
 		if ($this->colspan > 1) {
@@ -101,3 +103,6 @@ class TableCell extends Element
 		return $this->wrap(parent::toString(), $this->tag, $param, FALSE);
 	}
 }
+
+/* End of file TableCell.php */
+/* Location: /vendor/PukiWiki/Lib/Renderer/Element/TableCell.php */

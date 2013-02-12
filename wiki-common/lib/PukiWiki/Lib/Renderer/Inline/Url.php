@@ -13,6 +13,8 @@
 
 namespace PukiWiki\Lib\Renderer\Inline;
 
+use PukiWiki\Lib\Utility;
+
 // URLs
 class Url extends Inline
 {
@@ -66,7 +68,7 @@ class Url extends Inline
 			}
 		}
 		$this->alias = $alias;
-		return parent :: setParam($page, htmlsc($name), '', ($mail ? 'mailto' : 'url'), $alias);
+		return parent::setParam($page, Utility::htmlsc($name), '', ($mail ? 'mailto' : 'url'), $alias);
 	}
 
 	public function __toString()

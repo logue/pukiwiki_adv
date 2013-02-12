@@ -17,8 +17,12 @@ class InlineFactory{
 	public static function factory($string, $page = ''){
 		global $vars;
 		static $converter;
+
+		if (is_array($string)) $string = join("\n", $string);	// ポカミス用
+
 		if (!isset($converter)) $converter = new InlineConverter();
 		$clone = $converter->getClone($converter);
+
 		return $clone->convert($string, !empty($page) ? $page : $vars['page']);
 	}
 }

@@ -1,20 +1,21 @@
 <?php
-// PukiWiki - Yet another WikiWikiWeb clone
-// $Id: convert_html.php,v 1.0 2012/10/30 12:02:00 Logue Exp $
-// Copyright (C)
-//   2010-2012 PukiWiki Advance Developers Team
-//   2005-2008 PukiWiki Plus! Team
-//   2002-2005, 2007,2011 PukiWiki Developers Team
-//   2001-2002 Originally written by yu-ji
-// License: GPL v2 or (at your option) any later version
-//
-// function 'convert_html()', wiki text parser
-// and related classes-and-functions
+/**
+ * ブロック要素クラス
+ *
+ * @package   PukiWiki\Lib\Renderer\Element
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2013 PukiWiki Advance Developers Team
+ * @create    2013/01/26
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: Element.php,v 1.0.0 2013/02/12 15:13:00 Logue Exp $
+ */
+
 namespace PukiWiki\Lib\Renderer\Element;
 
-use PukiWiki\Lib\Renderer\InlineFactory;
-
-// Block elements
+/**
+ * Block elements
+ */
 class Element
 {
 	var $parent;
@@ -43,7 +44,6 @@ class Element
 
 	function insert(& $obj)
 	{
-		global $info;
 		if (gettype($obj) === 'object'){
 			$obj->setParent($this);
 			$this->elements[] = & $obj;
@@ -84,3 +84,6 @@ class Element
 		return $ret;
 	}
 }
+
+/* End of file Element.php */
+/* Location: /vendor/PukiWiki/Lib/Renderer/Element/Element.php */

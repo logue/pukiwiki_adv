@@ -1,26 +1,31 @@
 <?php
-// PukiWiki - Yet another WikiWikiWeb clone
-// $Id: convert_html.php,v 1.0 2012/10/30 12:02:00 Logue Exp $
-// Copyright (C)
-//   2010-2012 PukiWiki Advance Developers Team
-//   2005-2008 PukiWiki Plus! Team
-//   2002-2005, 2007,2011 PukiWiki Developers Team
-//   2001-2002 Originally written by yu-ji
-// License: GPL v2 or (at your option) any later version
-//
-// function 'convert_html()', wiki text parser
-// and related classes-and-functions
-namespace PukiWiki\Lib\Renderer\Element;
-use PukiWiki\Lib\Renderer\Element\Factory;
+/**
+ * テーブルクラス
+ *
+ * @package   PukiWiki\Lib\Renderer\Element
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2013 PukiWiki Advance Developers Team
+ * @create    2013/01/26
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: Table.php,v 1.0.0 2013/02/12 15:13:00 Logue Exp $
+ */
 
-// | title1 | title2 | title3 |
-// | cell1  | cell2  | cell3  |
-// | cell4  | cell5  | cell6  |
+namespace PukiWiki\Lib\Renderer\Element;
+
+use PukiWiki\Lib\Renderer\Element\Element;
+use PukiWiki\Lib\Renderer\Element\TableCell;
+
+/**
+ * | title1 | title2 | title3 |
+ * | cell1  | cell2  | cell3  |
+ * | cell4  | cell5  | cell6  |
+ */
 class Table extends Element
 {
 	var $type;
 	var $types;
-	var $col; // number of column
+	var $col;   // number of column
 	var $align = 'center';
 
 	function __construct($out)
@@ -40,7 +45,7 @@ class Table extends Element
 
 	function canContain(& $obj)
 	{
-		return ($obj instanceof Table) && ($obj->col === $this->col);
+		return ($obj instanceof self) && ($obj->col === $this->col);
 	}
 
 	function & insert(& $obj)
@@ -110,8 +115,11 @@ class Table extends Element
 			}
 			$string .= $this->wrap($part_string, $part);
 		}
-		$string = $this->wrap($string, 'table', ' class="style_table style_table_' . $this->align . '" data-pagenate="false" ');
+		$string = $this->wrap($string, 'table', ' class="style_table style_table_' . $this->align . '" data-pagenate="false"');
 
 		return $this->wrap($string, 'div', ' class="table_wrapper"');
 	}
 }
+
+/* End of file Table.php */
+/* Location: /vendor/PukiWiki/Lib/Renderer/Element/Table.php */

@@ -1,20 +1,27 @@
 <?php
-// PukiWiki - Yet another WikiWikiWeb clone
-// $Id: convert_html.php,v 1.0 2012/10/30 12:02:00 Logue Exp $
-// Copyright (C)
-//   2010-2012 PukiWiki Advance Developers Team
-//   2005-2008 PukiWiki Plus! Team
-//   2002-2005, 2007,2011 PukiWiki Developers Team
-//   2001-2002 Originally written by yu-ji
-// License: GPL v2 or (at your option) any later version
-//
-// function 'convert_html()', wiki text parser
-// and related classes-and-functions
-namespace PukiWiki\Lib\Renderer\Element;
-use PukiWiki\Lib\Renderer\Element\Factory;
+/**
+ * 引用ブロッククラス
+ *
+ * @package   PukiWiki\Lib\Renderer\Element
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2013 PukiWiki Advance Developers Team
+ * @create    2013/01/26
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: Blockquote.php,v 1.0.0 2013/02/12 15:13:00 Logue Exp $
+ */
 
-// > Someting cited
-// > like E-mail text
+namespace PukiWiki\Lib\Renderer\Element;
+
+use PukiWiki\Lib\Renderer\Element\Element;
+use PukiWiki\Lib\Renderer\Element\ElementFactory;
+use PukiWiki\Lib\Renderer\Element\InlineElement;
+use PukiWiki\Lib\Renderer\Element\Paragraph;
+
+/**
+ * > Someting cited
+ * > like E-mail text
+ */
 class Blockquote extends Element
 {
 	var $level;
@@ -27,14 +34,14 @@ class Blockquote extends Element
 		$this->level = min(3, strspn($text, $head));
 		$text = ltrim(substr($text, $this->level));
 
-		if ($head == '<') { // Blockquote close
+		if ($head === '<') { // Blockquote close
 			$level       = $this->level;
 			$this->level = 0;
 			$this->last  = $this->end($root, $level);
-			if ($text !== '')
-				$this->last = $this->last->insert(Factory::factory('Inline', null, $text));
+			if (! empty($text))
+				$this->last = $this->last->insert(ElementFactory::factory('InlineElement', null, $text));
 		} else {
-			$this->insert(Factory::factory('Inline', null, $text));
+			$this->insert(ElementFactory::factory('InlineElement', null, $text));
 		}
 	}
 
@@ -48,10 +55,10 @@ class Blockquote extends Element
 		if (!is_object($obj)) return;
 
 		// BugTrack/521, BugTrack/545
-		if ($obj instanceof inline)
+		if ($obj instanceof InlineElement)
 			return parent::insert($obj->toPara(' class="style_blockquote"'));
 
-		if ( $obj instanceof Blockquote && $obj->level == $this->level && count($obj->elements)) {
+		if ( $obj instanceof self && $obj->level == $this->level && count($obj->elements)) {
 			$obj = & $obj->elements[0];
 			if ($this->last instanceof Paragraph && count($obj->elements))
 				$obj = & $obj->elements[0];
@@ -69,10 +76,13 @@ class Blockquote extends Element
 		$parent = & $root->last;
 
 		while (is_object($parent)) {
-			if ($parent instanceof Blockquote && $parent->level == $level)
+			if ($parent instanceof self && $parent->level == $level)
 				return $parent->parent;
 			$parent = & $parent->parent;
 		}
 		return $this;
 	}
 }
+
+/* End of file Blockquote.php */
+/* Location: /vendor/PukiWiki/Lib/Renderer/Element/Blockquote.php */

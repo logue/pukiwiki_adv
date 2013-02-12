@@ -1,23 +1,29 @@
 <?php
-// PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: EasyRef.php,v 1.0.0 2012/12/26 09:48:00 Logue Exp $
-// Copyright (C)
-//   2012 PukiWiki Advance Developers Team
-// License: GPL v2 or (at your option) any later version
+/**
+ * 簡易表記
+ *
+ * @package   PukiWiki\Lib\Renderer\Inline
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @create    2012/12/18
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: Glossary.php,v 1.0.0 2013/01/29 19:54:00 Logue Exp $
+ */
 
 namespace PukiWiki\Lib\Renderer\Inline;
 use PukiWiki\Lib\Renderer\InlineFactory;
 
-// 画像簡易表記 {{param|body}}
-// from XpWiki
+/**
+ * 簡易表記 {{param|body}}
+ * from XpWiki
+ */
 class EasyRef extends Inline {
 	var $pattern;
 	var $plain, $param;
-
 	function __construct($start) {
 		parent::__construct($start);
 	}
-
 	function getPattern() {
 		return
 			'\{\{'.
@@ -27,17 +33,14 @@ class EasyRef extends Inline {
 			 ')?'.
 			'\}\}';
 	}
-
 	public function getCount() {
 		return 2;
 	}
-
 	public function setPattern($arr, $page) {
-		list ($all, $this->param, $body) = $this->splice($arr);
+		list (, $this->param, $body) = $this->splice($arr);
 		$this->param = trim($this->param);
 		return parent::setParam($page, 'ref', $body, 'plugin');
 	}
-
 	public function __toString() {
 		$body = empty($this->body) ? '' : InlineFactory($this->body);
 		return do_plugin_inline($this->name, $this->param, $body);

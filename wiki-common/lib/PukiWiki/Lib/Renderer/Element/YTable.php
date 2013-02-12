@@ -1,22 +1,27 @@
 <?php
-// PukiWiki - Yet another WikiWikiWeb clone
-// $Id: convert_html.php,v 1.0 2012/10/30 12:02:00 Logue Exp $
-// Copyright (C)
-//   2010-2012 PukiWiki Advance Developers Team
-//   2005-2008 PukiWiki Plus! Team
-//   2002-2005, 2007,2011 PukiWiki Developers Team
-//   2001-2002 Originally written by yu-ji
-// License: GPL v2 or (at your option) any later version
-//
-// function 'convert_html()', wiki text parser
-// and related classes-and-functions
-namespace PukiWiki\Lib\Renderer\Element;
-use PukiWiki\Lib\Renderer\Element\Factory;
+/**
+ * カンマ区切りのテーブルクラス
+ *
+ * @package   PukiWiki\Lib\Renderer\Element
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2013 PukiWiki Advance Developers Team
+ * @create    2013/01/26
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: YTable.php,v 1.0.0 2013/02/12 15:13:00 Logue Exp $
+ */
 
-// , cell1  , cell2  ,  cell3
-// , cell4  , cell5  ,  cell6
-// , cell7  ,        right,==
-// ,left          ,==,  cell8
+namespace PukiWiki\Lib\Renderer\Element;
+
+use PukiWiki\Lib\Renderer\Element\Element;
+use PukiWiki\Lib\Renderer\InlineFactory;
+
+/**
+ * , cell1  , cell2  ,  cell3
+ * , cell4  , cell5  ,  cell6
+ * , cell7  ,   right,==
+ * ,left          ,==,  cell8
+ */
 class YTable extends Element
 {
 	var $col;	// Number of columns
@@ -60,7 +65,7 @@ class YTable extends Element
 			$colspan = 1;
 			while (isset($_value[$i + $colspan]) && $_value[$i + $colspan] === FALSE) ++$colspan;
 			$colspan = ($colspan > 1) ? ' colspan="' . $colspan . '"' : '';
-			$text = preg_match("/\s+/", $_value[$i]) ? '' : make_link($_value[$i]);
+			$text = preg_match("/\s+/", $_value[$i]) ? '' : InlineFactory::factory($_value[$i]);
 			$class = ((empty($text) || !preg_match("/\S+/", $text))) ? 'style_td_blank' : 'style_td';
 			$align = $_align[$i] ? ' style="text-align:' . $_align[$i] . '"' : '';
 			$str[] = '<td class="'.$class.'"' . $align . $colspan . '>' . $text . '</td>';
@@ -73,7 +78,7 @@ class YTable extends Element
 
 	function canContain(& $obj)
 	{
-		return ($obj instanceof YTable) && ($obj->col == $this->col);
+		return ($obj instanceof self) && ($obj->col == $this->col);
 	}
 
 	function & insert(& $obj)
@@ -88,7 +93,10 @@ class YTable extends Element
 		foreach ($this->elements as $str) {
 			$rows .= "\n" . '<tr class="style_tr">' . $str . '</tr>' . "\n";
 		}
-		$rows = $this->wrap($rows, 'table', ' class="style_table style_table_' . $this->align . '"');
+		$rows = $this->wrap($rows, 'table', ' class="style_table style_table_' . $this->align . '" data-pagenate="false"');
 		return $this->wrap($rows, 'div', ' class="table_wrapper"');
 	}
 }
+
+/* End of file YTable.php */
+/* Location: /vendor/PukiWiki/Lib/Renderer/Element/YTable.php */

@@ -14,6 +14,7 @@
 namespace PukiWiki\Lib\Renderer\Inline;
 
 use PukiWiki\Lib\Renderer\InlineFactory;
+use PukiWiki\Lib\File\FileFactory;
 
 // Footnotes
 class Note extends Inline
@@ -49,7 +50,7 @@ class Note extends Inline
 		if (PKWK_ALLOW_RELATIVE_FOOTNOTE_ANCHOR) {
 			$script = '';
 		} else {
-			$script = get_page_uri($page);
+			$script = FileFactory::Wiki($page)->get_uri();
 		}
 
 		$id   = ++$note_id;

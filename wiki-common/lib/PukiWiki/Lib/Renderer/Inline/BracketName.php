@@ -7,7 +7,7 @@
 
 namespace PukiWiki\Lib\Renderer\Inline;
 use PukiWiki\Lib\File\FileFactory;
-
+use PukiWiki\Lib\Utility;
 // BracketNames
 class BracketName extends Inline
 {
@@ -44,12 +44,10 @@ class BracketName extends Inline
 
 	public function setPattern($arr, $page)
 	{
-		global $WikiName;
-
 		list(, $alias, , $name, $this->anchor) = $this->splice($arr);
 		if (empty($name) && empty($this->anchor) ) return FALSE;
 
-		if (empty($name) || ! preg_match('/^' . $WikiName . '$/', $name)) {
+		if (empty($name) || ! Utility::isWikiName($name)) {
 			if ( empty($alias) ) $alias = $name . $this->anchor;
 			if ( !empty($name) ) {
 				$name = self::getFullname($name, $page);

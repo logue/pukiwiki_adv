@@ -54,8 +54,6 @@ class AutoAlias extends Inline
 	}
 	public function setPattern($arr,$page)
 	{
-		global $WikiName;
-
 		list($name) = $this->splice($arr);
 		// Ignore pages listed
 		if (in_array($name, $this->forceignorepages)) {

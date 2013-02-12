@@ -15,6 +15,7 @@ namespace PukiWiki\Lib\Renderer\Inline;
 
 use PukiWiki\Lib\Renderer\InlineConverter;
 use PukiWiki\Lib\Renderer\Inline\AutoAlias;
+use PukiWiki\Lib\Renderer\Inline\Glossary;
 use PukiWiki\Lib\File\FileFactory;
 use PukiWiki\Lib\Auth\Auth;
 use PukiWiki\Lib\Router;
@@ -100,7 +101,7 @@ abstract class Inline
 		$this->type = $type;
 		if (! empty($alias) ) {
 			if ($converter === NULL)
-				$converter = new InlineConverter(array('Plugin'));
+				$converter = new InlineConverter(array('InlinePlugin'));
 
 			$alias = $converter->convert($alias, $page);
 			$alias = self::setLineRules($alias);
@@ -207,7 +208,7 @@ abstract class Inline
 			if (preg_match(self::IMAGE_EXTENTION_PATTERN, $uri)) {
 				$term = '<img src="' . $_uri . '" alt="' . Utility::htmlsc($term) . '" />';
 			}else{
-				$anchor = '<a href="' . $_uri . '" rel="' . (self::isInsideUri($uri) ? $rel : $ext_rel) . '"'.$_tooltip.'>'.$term  .'</a>';
+				$anchor = '<a href="' . $_uri . '" rel="' . (self::isInsideUri($uri) ? $rel : $ext_rel) . '"'.$_tooltip.'>' . $term  .'</a>';
 				$icon = self::isInsideUri($uri) ?
 					'<a href="' . $_uri . '" rel="' . $rel . '">' . self::INTERNAL_LINK_ICON .'</a>' :
 					'<a href="' . $_uri . '" rel="' . $ext_rel . '">' . self::EXTERNAL_LINK_ICON . '</a>';
@@ -245,8 +246,6 @@ abstract class Inline
 		}
 		return false;
 	}
-
-
 }
 
 /* End of file Inline.php */

@@ -16,7 +16,7 @@ namespace PukiWiki\Lib\Renderer\Inline;
 use PukiWiki\Lib\Renderer\InlineFactory;
 
 // Inline plugins
-class Plugin extends Inline
+class InlinePlugin extends Inline
 {
 	var $pattern;
 	var $plain,$param;
