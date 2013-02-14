@@ -15,6 +15,8 @@ define('PLUGIN_ONLINE_TIMEOUT', 60 * 5); // Count users in N seconds
 // List of 'IP-address|last-access-time(seconds)'
 define('PLUGIN_ONLINE_USER_LIST', COUNTER_DIR . 'user.dat');
 
+define('PLUGIN_ONLINE_USER_CACHE_NAME', 'online');
+
 // Regex of 'IP-address|last-access-time(seconds)'
 define('PLUGIN_ONLINE_LIST_REGEX', '/^([^\|]+)\|([0-9]+)$/');
 
@@ -61,23 +63,17 @@ function plugin_online_itself($type = 0)
 // & $count == Number of online users
 function plugin_online_check_online(& $count, $host = '')
 {
-	if (! pkwk_touch_file(PLUGIN_ONLINE_USER_LIST)) return FALSE;
-
+	global $cache;
 	// Open
-	$fp = @fopen(PLUGIN_ONLINE_USER_LIST, 'r');
-	if ($fp == FALSE) return FALSE;
-	set_file_buffer($fp, 0);
-
+	$lines = explode("\n", $cache['wiki']->getItem(PLUGIN_ONLINE_USER_CACHE_NAME));
 	// Init
 	$count   = 0;
 	$found   = FALSE;
 	$matches = array();
 
-	flock($fp, LOCK_SH);
 
 	// Read
-	while (! feof($fp)) {
-		$line = fgets($fp, 512);
+	foreach ($lines as $line){
 		if ($line === FALSE) continue;
 
 		// Ignore invalid-or-outdated lines
@@ -88,11 +84,6 @@ function plugin_online_check_online(& $count, $host = '')
 		++$count;
 		if (! $found && $matches[1] == $host) $found = TRUE;
 	}
-
-	flock($fp, LOCK_UN);
-
-	if(! fclose($fp)) return FALSE;
-
 	if (! $found && $host != '') ++$count; // About you
 
 	return $found;
@@ -102,16 +93,9 @@ function plugin_online_check_online(& $count, $host = '')
 // NOTE: Call this when plugin_online_check_online() returnes FALSE
 function plugin_online_sweep_records($host = '')
 {
+	global $cache;
 	// Open
-	$fp = @fopen(PLUGIN_ONLINE_USER_LIST, 'r+');
-	if ($fp == FALSE) return FALSE;
-	set_file_buffer($fp, 0);
-
-	flock($fp, LOCK_EX);
-
-	// Read to check
-	$lines = @file(PLUGIN_ONLINE_USER_LIST);
-	if ($lines === FALSE) $lines = array();
+	$lines = explode("\n", $cache['wiki']->getItem(PLUGIN_ONLINE_USER_CACHE_NAME));
 
 	// Need modify?
 	$line_count = $count = count($lines);
@@ -136,14 +120,8 @@ function plugin_online_sweep_records($host = '')
 
 	if ($dirty) {
 		// Write
-		if (! ftruncate($fp, 0)) return FALSE;
-		rewind($fp);
-		fputs($fp, join('', $lines));
+		$cache['wiki']->setItem(PLUGIN_ONLINE_USER_CACHE_NAME, join('', $lines));
 	}
-
-	flock($fp, LOCK_UN);
-
-	if(! fclose($fp)) return FALSE;
 
 	return $count; // Number of lines == Number of users online
 }

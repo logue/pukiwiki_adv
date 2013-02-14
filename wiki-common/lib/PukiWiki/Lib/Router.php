@@ -3,8 +3,6 @@ namespace PukiWiki\Lib;
 use PukiWiki\Lib\Utility;
 
 class Router{
-	
-	
 	private static function init($init_uri = '',$get_init_value=0){
 		global $script_directory_index, $absolute_uri;
 		static $script;
@@ -15,13 +13,13 @@ class Router{
 				if ($get_init_value) return $script;
 				return $absolute_uri ? self::get_script_absuri() : $script;
 			}
-			$script = self::get_script_absuri();
+			$script = Utility::get_script_absuri();
 			return $script;
 		}
 
 		// Set manually
 		if (isset($script)) die_message('$script: Already init');
-		if (! self::is_reluri($init_uri) && ! is_url($init_uri, TRUE)) self::die_message('$script: Invalid URI');
+		if (! self::is_reluri($init_uri) && ! is_url($init_uri, TRUE)) Utility::dieMessage('$script: Invalid URI');
 		$script = $init_uri;
 
 		// Cut filename or not
@@ -47,6 +45,15 @@ class Router{
 		$uri = self::get_baseuri($path);
 		if (! isset($script_directory_index)) $uri .= self::init();
 		return $uri;
+	}
+
+	/**
+	 * ページの基準名を取得
+	 * @param string $str
+	 * @return string;
+	 */
+	public static function getBasePageName($str){
+		return preg_replace('#^.*/#', '', $str);
 	}
 
 	// Get absolute-URI of this script
@@ -78,13 +85,13 @@ class Router{
 		$path	= SCRIPT_NAME;
 		if ($path{0} !== '/') {
 			if (! isset($_SERVER['REQUEST_URI']) || $_SERVER['REQUEST_URI']{0} != '/') {
-				die_message($msg);
+				Utility::dieMessage($msg);
 			}
 
 			// REQUEST_URIをパースし、path部分だけを取り出す
 			$parse_url = parse_url($uri . $_SERVER['REQUEST_URI']);
 			if (! isset($parse_url['path']) || $parse_url['path']{0} != '/') {
-				die_message($msg);
+				Utility::dieMessage($msg);
 			}
 
 			$path = $parse_url['path'];
@@ -99,8 +106,8 @@ class Router{
 		// Cut filename or not
 		if (isset($script_directory_index)) {
 			if (! file_exists($script_directory_index))
-				die_message('Directory index file not found: ' .
-				htmlsc($script_directory_index));
+				Utility::dieMessage('Directory index file not found: ' .
+				Utility::htmlsc($script_directory_index));
 			$matches = array();
 			if (preg_match('#^(.+/)' . preg_quote($script_directory_index, '#') . '$#',
 				$uri, $matches)) $uri = $matches[1];
@@ -211,6 +218,41 @@ class Router{
 			}
 		// if (! isset($script_directory_index) && $str == 'index.php') return true;
 		return false;
+	}
+	public static function get_fullname($name, $refer)
+	{
+		global $defaultpage;
+
+		// 'Here'
+		if (empty($name) || $name === './') return $refer;
+
+		// Absolute path
+		if ($name{0} == '/') {
+			$name = substr($name, 1);
+			return empty($name) ? $defaultpage : $name;
+		}
+
+		// Relative path from 'Here'
+		if (substr($name, 0, 2) == './') {
+			$arrn    = preg_split('#/#', $name, -1, PREG_SPLIT_NO_EMPTY);
+			$arrn[0] = $refer;
+			return join('/', $arrn);
+		}
+
+		// Relative path from dirname()
+		if (substr($name, 0, 3) == '../') {
+			$arrn = preg_split('#/#', $name,  -1, PREG_SPLIT_NO_EMPTY);
+			$arrp = preg_split('#/#', $refer, -1, PREG_SPLIT_NO_EMPTY);
+
+			while (! empty($arrn) && $arrn[0] == '..') {
+				array_shift($arrn);
+				array_pop($arrp);
+			}
+			$name = ! empty($arrp) ? join('/', array_merge($arrp, $arrn)) :
+				(! empty($arrn) ? $defaultpage . '/' . join('/', $arrn) : $defaultpage);
+		}
+
+		return $name;
 	}
 
 }

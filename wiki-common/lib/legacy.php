@@ -12,6 +12,8 @@ use PukiWiki\Lib\File\FileFactory;
 use PukiWiki\Lib\File\FileUtility;
 use PukiWiki\Lib\Renderer\RendererFactory;
 use PukiWiki\Lib\Renderer\Inline\Inline;
+use PukiWiki\Lib\Lang\AcceptLanguage;
+use PukiWiki\Lib\Lang\Lang2Country;
 use PukiWiki\Lib\Relational;
 use PukiWiki\Lib\Search;
 use PukiWiki\Lib\TimeZone;
@@ -20,6 +22,7 @@ use PukiWiki\Lib\TimeZone;
  */
 function make_backup($page, $delete = FALSE)
 {
+	trigger_error('make_backup() is deprecated. use FileFactory::Backup()', E_USER_DEPRECATED);
 	global $del_backup;
 	if (empty($page)) return;
 	$backup = FileFactory::Backup($page);
@@ -33,11 +36,13 @@ function make_backup($page, $delete = FALSE)
 
 function get_backup($page, $age = 0)
 {
+	trigger_error('get_backup($page, $age) is deprecated. Use FileFactory::Backup($page)->getBackup($age)', E_USER_DEPRECATED);
 	if (empty($page)) return;
 	return FileFactory::Backup($page)->getBackup($age);
 }
 
 function _backup_file_exists($page){
+	trigger_error('_backup_file_exists($page) is deprecated. Use FileFactory::Backup($page)->has()', E_USER_DEPRECATED);
 	if (empty($page)) return;
 	return FileFactory::Backup($page)->has();
 }
@@ -46,6 +51,7 @@ function _backup_file_exists($page){
  */
 function convert_html($lines)
 {
+	trigger_error('convert_html($lines) is deprecated. Use RendererFactory::factory($lines)', E_USER_DEPRECATED);
 	global $vars, $digest;
 	static $contents_id = 0;
 
@@ -63,6 +69,7 @@ function convert_html($lines)
  */
 function get_source($page = NULL, $lock = TRUE, $join = FALSE)
 {
+	trigger_error('get_source($page, $lock, $join) is deprecated. Use FileFactory::Wiki($page)->get($join)', E_USER_DEPRECATED);
 	if (empty($page)) return;
 	$wiki = FileFactory::Wiki($page);
 	if (!$wiki->has()){
@@ -74,6 +81,7 @@ function get_source($page = NULL, $lock = TRUE, $join = FALSE)
 // Get last-modified filetime of the page
 function get_filetime($page)
 {
+	trigger_error('get_filetime is deprecated. use FileFactory::Wiki($page)->time().', E_USER_DEPRECATED );
 	if (empty($page)) return;
 	return FileFactory::Wiki($page)->time();
 }
@@ -81,6 +89,7 @@ function get_filetime($page)
 // Get physical file name of the page
 function get_filename($page)
 {
+	trigger_error('get_filename is deprecated. use FileFactory::Wiki($page)->filename().', E_USER_DEPRECATED );
 	if (empty($page)) return;
 	return FileFactory::Wiki($page)->filename;
 }
@@ -88,6 +97,7 @@ function get_filename($page)
 // Get elapsed date of the page
 function get_pg_passage($page, $sw = TRUE)
 {
+	trigger_error('get_pg_passage($page) is deprecated. use FileFactory::Wiki($page)->passage($sw).', E_USER_DEPRECATED );
 	if (empty($page)) return;
 	return FileFactory::Wiki($page)->passage($sw, false);
 }
@@ -95,6 +105,7 @@ function get_pg_passage($page, $sw = TRUE)
 // Put a data(wiki text) into a physical file(diff, backup, text)
 function page_write($page, $postdata, $notimestamp = FALSE)
 {
+	trigger_error('get_pg_passage($page, $postdata, $notimestamp) is deprecated. use FileFactory::Wiki($page)->set($postdata, $notimestamp).', E_USER_DEPRECATED );
 	if (empty($page)) return;
 	return FileFactory::Wiki($page)->set($postdata, $notimestamp);
 }
@@ -102,6 +113,7 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 // Get a list of related pages of the page
 function links_get_related($page)
 {
+	trigger_error('links_get_related($page) is deprecated. use FileFactory::Wiki($page)->getRetaled().', E_USER_DEPRECATED );
 	return FileFactory::Wiki($page)->getRetaled();
 }
 
@@ -109,18 +121,21 @@ function links_get_related($page)
 // Use without $autolink
 function lastmodified_add($update = '', $remove = '')
 {
+	trigger_error('lastmodified_add($update, $remove) is deprecated. use FileUtility::set_recent($update, $remove).', E_USER_DEPRECATED );
 	FileUtility::set_recent($update, $remove);
 }
 
 // Re-create PKWK_MAXSHOW_CACHE (Heavy)
 function put_lastmodified()
 {
+	trigger_error('put_lastmodified() is deprecated. use FileUtility::get_recent(true).', E_USER_DEPRECATED );
 	FileUtility::get_recent(true);
 }
 
 // touch() with trying pkwk_chown()
 function pkwk_touch_file($filename, $time = FALSE, $atime = FALSE)
 {
+	trigger_error('pkwk_touch_file($filename, $time, $atime) is deprecated. use FileFactory::Generic($filename)->touch($time, $atime).', E_USER_DEPRECATED );
 	return FileFactory::Generic($filename)->touch($time, $atime);
 }
 
@@ -139,13 +154,14 @@ function header_lastmod($page = NULL)
 // Get a list of encoded files (must specify a directory and a suffix)
 function get_existfiles($dir = DATA_DIR, $ext = '.txt')
 {
-	return FileUtility::get_exists($dir);
+	trigger_error('get_existfiles() is deprecated. use FileUtility::get_exists($dir).', E_USER_DEPRECATED );
+	return FileUtility::getExists($dir);
 }
 
 // Get a page list of this wiki
 function get_existpages($dir = DATA_DIR, $ext = '.txt')
 {
-	return FileUtility::get_exists($dir);
+	return FileUtility::getExists($dir);
 }
 
 /**
@@ -293,7 +309,7 @@ function drop_submit($str)
 // Generate sorted "list of pages" XHTML, with page-reading hints
 function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', $withfilename = FALSE)
 {
-	return FileUtility::get_listing();
+	return FileUtility::getListing();
 }
 
 function is_url($str, $only_http = FALSE)
@@ -440,7 +456,161 @@ function htmlsc($string = '', $flags = ENT_QUOTES, $charset = 'UTF-8')
 	return Utility::htmlsc($string, $flags, $charset);
 }
 
-// Move from proxy.php (rejected)
+/**
+ * funcplus.php
+ */
+
+function showtaketime(){
+	return Utility::getTakeTime();
+}
+
+// same as 'basename' for page
+function basepagename($str)
+{
+	return Router::getBasePageName($str);
+}
+
+function get_remoteip()
+{
+	return Utility::getRemoteIp();
+}
+
+// タグの追加
+function open_uri_in_new_window($anchor, $which = '')
+{
+	throw new Exception('open_uri_in_new_window() is discontinued. Use similar function Inline::setLink();');
+}
+
+
+function get_baseuri($path='')
+{
+	global $script;
+
+	// RFC2396,RFC3986 : relativeURI = ( net_path | abs_path | rel_path ) [ "?" query ]
+	//				   absoluteURI = scheme ":" ( hier_part | opaque_part )
+	$ret = '';
+
+	switch($path) {
+	case 'net': // net_path	  = "//" authority [ abs_path ]
+		$parsed_url = parse_url(get_script_absuri());
+		$pref = '//';
+		if (isset($parsed_url['user'])) {
+			$ret .= $pref . $parsed_url['user'];
+			$pref = '';
+			$ret .= (isset($parsed_url['pass'])) ? ':'.$parsed_url['pass'] : '';
+			$ret .= '@';
+		}
+		if (isset($parsed_url['host'])) {
+			$ret .= $pref . $parsed_url['host'];
+			$pref = '';
+		}
+		$ret .= (isset($parsed_url['port'])) ? ':'.$parsed_url['port'] : '';
+	case 'abs': // abs_path	  = "/"  path_segments
+		if ($path === 'abs') $parsed_url = parse_url(get_script_absuri());
+		if (isset($parsed_url['path']) && ($pos = strrpos($parsed_url['path'], '/')) !== false) {
+			$ret .= substr($parsed_url['path'], 0, $pos + 1);
+		} else {
+			$ret .= '/';
+		}
+		break;
+	case 'rel': // rel_path	  = rel_segment [ abs_path ]
+		if (is_url($script, true)) {
+			$ret = './';
+		} else {
+			$parsed_url = parse_url($script);
+			if (isset($parsed_url['path']) && ($pos = strrpos($parsed_url['path'], '/')) !== false) {
+				$ret .= substr($parsed_url['path'], 0, $pos + 1);
+			}
+		}
+		break;
+	case 'full':
+	default:
+		$absoluteURI = get_script_absuri();
+		$ret = substr($absoluteURI, 0, strrpos($absoluteURI, '/')+1);
+		break;
+	}
+
+	return $ret;
+}
+
+
+// インラインパラメータのデータを１行毎に分割する
+function line2array($x)
+{
+	$x = preg_replace(
+		array("[\\r\\n]","[\\r]"),
+		array("\n","\n"),
+		$x
+	); // 行末の統一
+	return explode("\n", $x);
+}
+
+
+function tbl2dat($data)
+{
+	$x = explode('|',$data);
+	if (substr($data,0,1) == '|') array_shift($x);
+	if (substr($data,-1)  == '|') array_pop($x);
+	return $x;
+}
+
+function is_header($x) { return ( substr($x,-2) == '|h') ? true : false; }
+
+function change_uri($cmd='',$force=0)
+{
+	global $script, $script_abs, $absolute_uri, $script_directory_index;
+	static $onece, $bkup, $bkup_script, $bkup_script_abs, $bkup_absolute_uri;
+	static $target_fields = array('script'=>'bkup_script','script_abs'=>'bkup_script_abs','absolute_uri'=>'bkup_absolute_uri');
+
+	if (! isset($bkup)) {
+		$bkup = true;
+		foreach($target_fields as $org=>$bkup) {
+			if (! isset($$bkup) && isset($org)) $$bkup = $$org;
+		}
+	}
+
+	if (isset($onece)) return;
+
+	switch($cmd) {
+	case 'reset':
+		foreach($target_fields as $org=>$bkup) {
+			if (isset($$bkup)) {
+				$$org = $$bkup;
+			} else {
+				if (isset($$org)) unset($$org);
+			}
+		}
+		return;
+	case 'net':
+	case 'abs':
+	case 'rel':
+		change_uri('reset');
+		$absolute_uri = 0;
+		break;
+	default:
+		$absolute_uri = 1;
+	}
+
+	$script = get_baseuri($cmd);
+	if (! isset($script_directory_index)) $script .= init_script_filename();
+	if ($force === 1) $onece = 1;
+	return;
+}
+
+function init_script_filename()
+{
+	// $script にファイル名が設定されていれば、それを求める
+	$script = init_script_uri('',1);
+	$pos = strrpos($script, '/');
+	if ($pos !== false) {
+		return substr($script, $pos + 1);
+	}
+	return '';
+}
+
+/**
+ * proxy.php
+ */
 // Separate IPv4 network-address and its netmask
 define('PKWK_CIDR_NETWORK_REGEX', '/^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(?:\/([0-9.]+))?$/');
 
@@ -503,6 +673,7 @@ function in_the_net($networks = array(), $host = '')
 	return FALSE; // Not found
 }
 
+
 /**
  * fileplus.php
  */
@@ -535,7 +706,7 @@ function update_cache($page = '', $force = false){
 	}
 
 	// Update page list
-	$pages = FileUtility::get_exists();
+	$pages = FileUtility::getExists();
 
 	// Update autolink
 //	if ( $autolink !== 0 ) {
@@ -562,7 +733,7 @@ function update_cache($page = '', $force = false){
 // Move from file.php
 
 function get_existpages_cache($dir, $ext){
-	return FileUtility::get_exists($dir);
+	return FileUtility::getExists($dir);
 }
 
 /**
@@ -613,7 +784,7 @@ function links_get_related_db($page)
 {
 	if (empty($page)) return false;
 	$relational = new Relational($page);
-	return $relational->get_related();
+	return $relational->getRelated();
 }
 
 // Init link cache (Called from link plugin)
@@ -650,130 +821,19 @@ function make_pagelink($page, $alias = '', $anchor = '', $refer = '', $isautolin
 // Resolve relative / (Unix-like)absolute path of the page
 function get_fullname($name, $refer)
 {
-	global $defaultpage;
-
-	// 'Here'
-	if ($name == '' || $name == './') return $refer;
-
-	// Absolute path
-	if ($name{0} == '/') {
-		$name = substr($name, 1);
-		return ($name == '') ? $defaultpage : $name;
-	}
-
-	// Relative path from 'Here'
-	if (substr($name, 0, 2) == './') {
-		$arrn    = preg_split('#/#', $name, -1, PREG_SPLIT_NO_EMPTY);
-		$arrn[0] = $refer;
-		return join('/', $arrn);
-	}
-
-	// Relative path from dirname()
-	if (substr($name, 0, 3) == '../') {
-		$arrn = preg_split('#/#', $name,  -1, PREG_SPLIT_NO_EMPTY);
-		$arrp = preg_split('#/#', $refer, -1, PREG_SPLIT_NO_EMPTY);
-
-		while (! empty($arrn) && $arrn[0] == '..') {
-			array_shift($arrn);
-			array_pop($arrp);
-		}
-		$name = ! empty($arrp) ? join('/', array_merge($arrp, $arrn)) :
-			(! empty($arrn) ? $defaultpage . '/' . join('/', $arrn) : $defaultpage);
-	}
-
-	return $name;
+	return Router::get_fullname($name, $refer);
 }
 
-/**
- * timezone.php
- */
-//set_time
 function set_time()
 {
-	global $language, $use_local_time;
-
-	if ($use_local_time) {
-		list($zone, $zonetime) = set_timezone( DEFAULT_LANG );
-	} else {
-		list($zone, $zonetime) = set_timezone( $language );
-		list($l_zone, $l_zonetime) = get_localtimezone();
-		if ($l_zonetime != '' && $zonetime != $l_zonetime) {
-			$zone = $l_zone;
-			$zonetime = $l_zonetime;
-		}
-	}
-
-	foreach(array('UTIME'=>time(),'MUTIME'=>getmicrotime(),'ZONE'=>$zone,'ZONETIME'=>$zonetime) as $key => $value ){
-		defined($key) or define($key,$value);
-	}
+	Utility::initTime();
 }
-
-/*
- * set_timezone
- *
- */
 function set_timezone($lang='')
 {
-	if (empty($lang)) {
-		return array('UTC', 0);
-	}
-	$l = accept_language::split_locale_str( $lang );
-
-	// When the name of a country is uncertain (国名が不明な場合)
-	if (empty($l[2])) {
-		$obj_l2c = new lang2country();
-		$l[2] = $obj_l2c->get_lang2country($l[1]);
-		if (empty($l[2])) {
-			return array('UTC', 0);
-		}
-	}
-
-	$obj = new TimeZone();
-	$obj->set_datetime(UTIME); // Setting at judgment time. (判定時刻の設定)
-	$obj->set_country($l[2]); // The acquisition country is specified. (取得国を指定)
-
-	// With the installation country in case of the same
-	// 設置者の国と同一の場合
-	if ($lang == DEFAULT_LANG) {
-		if (defined('DEFAULT_TZ_NAME')) {
-			$obj->set_tz_name(DEFAULT_TZ_NAME);
-		}
-	}
-
-	list($zone, $zonetime) = $obj->get_zonetime();
-
-	if ($zonetime == 0 || empty($zone)) {
-		return array('UTC', 0);
-	}
-
-	return array($zone, $zonetime);
+	return Utility::setTimeZOne($lang);
 }
 
 function get_localtimezone()
 {
-	if (isset($_COOKIE['timezone'])) {
-		$tz = $_COOKIE['timezone'];
-	} else {
-		return array('','');
-	}
-
-	$tz = trim($tz);
-
-	$offset = substr($tz,0,1);
-	switch ($offset) {
-	case '-':
-	case '+':
-		$tz = substr($tz,1);
-		break;
-	default:
-		$offset = '+';
-	}
-
-	$h = substr($tz,0,2);
-	$i = substr($tz,2,2);
-
-	$zonetime = ($h * 3600) + ($i * 60);
-	$zonetime = ($offset == '-') ? $zonetime * -1 : $zonetime;
-
-	return array($offset.$tz, $zonetime);
+	return Utility::getTimeZoneLocal();
 }

@@ -9,7 +9,7 @@
 
 // Notice: This plugin based on minicalendar_viewer.inc.php from PukiWiki Plus!.
 //         Adv. is rejected to minicalendar.inc.php and minicalendar_viewer.inc.php.
-
+use PukiWiki\Lib\Lang\Holiday\PublicHolidayFactory;
 // Page title's date format
 //  * See PHP date() manual for detail
 //  * '$\w' = weeklabel defined in $_msg_week
@@ -240,7 +240,7 @@ function plugin_calendar_viewer_convert()
 				$mm = intval(date('n', $time));
 				$dd = intval(date('d', $time));
 
-				$h_today = public_holiday($yy, $mm, $dd); 
+				$h_today = PublicHolidayFactory::factory('JP', $yy, $mm, $dd); 
 				
 				
 				if ($h_today['rc'] != 0) {

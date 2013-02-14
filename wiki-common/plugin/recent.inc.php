@@ -47,7 +47,7 @@ function plugin_recent_convert()
 	$items = array();
 
 
-	$lines = FileUtility::get_recent();
+	$lines = FileUtility::getRecent();
 	if ($lines !== null){
 		$count = (count($lines) < $recent_lines) ? count($lines) : $recent_lines;
 		$i = 0;

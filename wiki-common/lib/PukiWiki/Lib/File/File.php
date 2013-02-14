@@ -15,6 +15,7 @@ namespace PukiWiki\Lib\File;
 
 use SplFileInfo;
 use PukiWiki\Lib\Utility;
+use PukiWiki\Lib\File\FileUtility;
 
 /**
  * ファイルの読み書きを行うクラス
@@ -56,7 +57,7 @@ class File extends SplFileInfo{
 		// (Use PHP file() function if you want to get ALL lines)
 		if ( !self::has() ) return false;
 		if ( !$this->isReadable() )
-			Utility::die_message(sprintf('File <var>%s</var> is not readable.', Utility::htmlsc($this->filename)));
+			Utility::dieMessage(sprintf('File <var>%s</var> is not readable.', Utility::htmlsc($this->filename)));
 
 		// ファイルの読み込み
 		$file = $this->openFile('r');
@@ -93,7 +94,7 @@ class File extends SplFileInfo{
 	public function get($join = false, $legacy = false){
 		if ( !$this->isFile() ) return false;
 		if ( !$this->isReadable() )
-			Utility::die_message(sprintf('File <var>%s</var> is not readable.', Utility::htmlsc($this->filename)));
+			Utility::dieMessage(sprintf('File <var>%s</var> is not readable.', Utility::htmlsc($this->filename)));
 
 		// ファイルの読み込み
 		$file = $this->openFile('r');
@@ -140,7 +141,7 @@ class File extends SplFileInfo{
 
 		// 書き込み可能かをチェック
 		if (! $this->isWritable())
-			Utility::die_message(sprintf('File <var>%s</var> is not writable.', Utility::htmlsc($this->filename)));
+			Utility::dieMessage(sprintf('File <var>%s</var> is not writable.', Utility::htmlsc($this->filename)));
 
 		// 書き込むものがなかった場合、削除とみなす
 		if (empty($str)) return $this->remove();
@@ -170,7 +171,11 @@ class File extends SplFileInfo{
 		$file->flock(LOCK_UN);
 
 		// タイムスタンプを保持する場合
-		if ($keeptimestamp) self::setTime($timestamp);
+		if ($keeptimestamp){
+			self::setTime($timestamp);
+		}else{
+			FileUtility::clearCache();
+		}
 
 		// 念のためオブジェクトを開放
 		unset($file);
@@ -189,6 +194,7 @@ class File extends SplFileInfo{
 	 * @return int
 	 */
 	public function remove(){
+		FileUtility::clearCache();
 		return $this->isFile() ? unlink($this) : false;
 	}
 	/**
@@ -290,7 +296,7 @@ class File extends SplFileInfo{
 			}
 			return $result;
 		} else {
-			Utility::die_message('pkwk_touch_file(): Invalid UID and (not writable for the directory or not a flie): ' .
+			Utility::dieMessage('pkwk_touch_file(): Invalid UID and (not writable for the directory or not a flie): ' .
 				Utility::htmlsc(basename($this->filename)));
 		}
 	}

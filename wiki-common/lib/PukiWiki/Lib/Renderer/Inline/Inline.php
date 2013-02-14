@@ -55,7 +55,6 @@ abstract class Inline
 	public function __construct($start)
 	{
 		$this->start = $start;
-		$this->redirect = (PKWK_USE_REDIRECT) ? get_cmd_uri('redirect',null,null,'u=') : null;	// FIXME
 	}
 	/**
 	 * Wikiのパース用正規表現を取得
@@ -199,29 +198,38 @@ abstract class Inline
 	 * @param string $rel リンクのタイプ
 	 * @return string
 	 */
-	public static function setLink($term, $uri, $tooltip='', $rel = ''){
+	public static function setLink($term, $uri, $tooltip='', $rel = '', $is_redirect = PKWK_USE_REDIRECT){
+		
 		$_uri = Utility::htmlsc($uri);
-		$_tooltip = !empty($tooltip) ? ' title="' . Utility::htmlsc($tooltip) . '"' : '';
-		$ext_rel = (!empty($rel) ? $rel.' ' : '') . 'external';
+		$href = $is_redirect ? Router::get_cmd_uri('redirect',null,null,array('u'=>$uri)) : $_uri;
 
+		$_term = Utility::htmlsc($term);
+		$_tooltip = !empty($tooltip) ? ' title="' . Utility::htmlsc($tooltip) . '"' : '';
+		$ext_rel = (!empty($rel) ? $rel.' ' : '') . 'external' . $is_redirect ? ' nofollow' : '';
+
+		// メディアファイル
 		if (! PKWK_DISABLE_INLINE_IMAGE_FROM_URI && Utility::isUri($uri)) {
 			if (preg_match(self::IMAGE_EXTENTION_PATTERN, $uri)) {
-				$term = '<img src="' . $_uri . '" alt="' . Utility::htmlsc($term) . '" />';
+				// 画像の場合
+				$term = '<img src="' . $_uri . '" alt="' . $_term . '" '.$_tooltip.' />';
 			}else{
-				$anchor = '<a href="' . $_uri . '" rel="' . (self::isInsideUri($uri) ? $rel : $ext_rel) . '"'.$_tooltip.'>' . $term  .'</a>';
+				// 音声／動画の場合
+				$anchor = '<a href="' . $href . '" rel="' . (self::isInsideUri($uri) ? $rel : $ext_rel) . '"'.$_tooltip.'>' . $_term  .'</a>';
+				// 末尾のアイコン
 				$icon = self::isInsideUri($uri) ?
-					'<a href="' . $_uri . '" rel="' . $rel . '">' . self::INTERNAL_LINK_ICON .'</a>' :
-					'<a href="' . $_uri . '" rel="' . $ext_rel . '">' . self::EXTERNAL_LINK_ICON . '</a>';
+					'<a href="' . $href . '" rel="' . $rel . '">' . self::INTERNAL_LINK_ICON .'</a>' :
+					'<a href="' . $href . '" rel="' . $ext_rel . '">' . self::EXTERNAL_LINK_ICON . '</a>';
 				if (preg_match(self::VIDEO_EXTENTION_PATTERN, $uri)) {
-					return '<video src="' . $_uri . '" controls="controls"'.$_tooltip.'>' . $anchor . '</video>' . $icon;
+					return '<video src="' . $_uri . '" alt="'.$_term.'" controls="controls"'.$_tooltip.'>' . $anchor . '</video>' . $icon;
 				}else if (preg_match(self::AUDIO_EXTENTION_PATTERN, $uri)) {
-					return '<audio src="' . $_uri . '" controls="controls"'.$_tooltip.'>' . $anchor . '</audio>' . $icon;
+					return '<audio src="' . $_uri . '" alt="'.$_term.'" controls="controls"'.$_tooltip.'>' . $anchor . '</audio>' . $icon;
 				}
 			}
 		}
+		// リンクを出力
 		return self::isInsideUri($uri) ?
-			'<a href="' . $_uri . '" rel="' . $rel . '"'.$_tooltip.'>'.$term . self::INTERNAL_LINK_ICON .'</a>' :
-			'<a href="' . $_uri . '" rel="' . $ext_rel . '"'.$_tooltip.'>'.$term . self::EXTERNAL_LINK_ICON . '</a>';
+			'<a href="' . $href . '" rel="' . $rel . '"'.$_tooltip.'>'.$term . self::INTERNAL_LINK_ICON .'</a>' :
+			'<a href="' . $href . '" rel="' . $ext_rel . '"'.$_tooltip.'>'.$term . self::EXTERNAL_LINK_ICON . '</a>';
 	}
 	/**
 	 * 外部リンクか内部リンクの判定

@@ -146,7 +146,7 @@ class InterWikiName extends Inline
 		}
 
 		$len = strlen($url);
-		if ($len > 512) Utility::die_message('InterWiki URL too long: ' . $len . ' characters');
+		if ($len > 512) Utility::dieMessage('InterWiki URL too long: ' . $len . ' characters');
 
 		return $url;
 	}

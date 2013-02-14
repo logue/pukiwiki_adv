@@ -34,10 +34,11 @@ class Reading{
 	// ハングル文字にマッチするパターン
 	const HANGUL_PATTERN = '[가-힣]';
 
-	// 強制的に末尾に降る文字
+	// 強制的に先頭に降るメタ文字
 	const SYMBOL_CHAR = '!SYMBOL';
+	// 強制的に先頭に降るメタ文字
 	const SPECIAL_CHAR = ' SPECIAL';
-	// 強制的に末尾に降る文字
+	// 強制的に末尾に降るメタ文字
 	const OTHER_CHAR = 'OTHER';	// は、ソートで使うため外字領域の&#xf8f0;の文字を入れている。
 
 	/**
@@ -46,6 +47,15 @@ class Reading{
 	 * @return string
 	 */
 	public static function getReading($str){
+		global $mecab_path;
+		if (!preg_match('/zh/', DEFAULT_LANG) ){
+			// 中国語でない場合はMeCabで読むことを試みる
+			$mecab = new MeCab($mecab_path);
+			if ($mecab->usable) {
+				return $mecab->reading($str);
+			}
+			unset($mecab);
+		}
 		foreach(self::mbStringToArray($str) as $char){
 			$ret[] = self::getReadingChar($char);
 		}
@@ -70,16 +80,15 @@ class Reading{
 			return mb_convert_kana($matches[1],'KVC');
 		}else if(preg_match('/^('.self::KANJI_PATTERN.')/u',$char, $matches)) {
 			// 漢字
-			if (DEFAULT_LANG === 'ja_JP'){
-				//まず、日本語の漢字として処理
-				$reading = Hiragana::toKana($matches[1]);
-				if ($reading !== $char) return $reading;
-				// マッチしない場合は中国語として処理
-				return PinYin::toKana($matches[1]);
-			}else{
-				// デフォルトの言語が日本語以外の場合中国語のピンインとして処理
+			if (preg_match('/zh/', DEFAULT_LANG) ){
+				// デフォルトの言語が中国語の場合、ピンインとして処理
 				return PinYin::toPinYin($matches[1]);
 			}
+			$reading = Hiragana::toKana($matches[1]);
+			if ($reading !== $char) return $reading;
+			// マッチしない場合は中国語として処理
+			return PinYin::toKana($matches[1]);
+			
 		}else if(preg_match('/^('.self::HANGUL_PATTERN.')/u',$char, $matches)) {
 			// ハングル
 			return Hangul::toChosung($matches[1]);

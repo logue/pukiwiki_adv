@@ -105,7 +105,6 @@ Zend\Loader\AutoloaderFactory::factory(array(
     ),
 ));
 
-
 require('../vendor/bad-behavior/bad-behavior-sqlite.php');
 
 /////////////////////////////////////////////////
@@ -119,7 +118,6 @@ require(LIB_DIR . 'html.php');
 require(LIB_DIR . 'diff.php');
 require(LIB_DIR . 'config.php');
 require(LIB_DIR . 'auth.php');
-require(LIB_DIR . 'lang.php');
 require(LIB_DIR . 'log.php');
 require(LIB_DIR . 'spamplus.php');
 require(LIB_DIR . 'proxy.cls.php');

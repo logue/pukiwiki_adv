@@ -7,8 +7,11 @@
 namespace PukiWiki\Lib;
 
 use Zend\Math\Rand;
+use PukiWiki\Lib\TimeZone;
+use PukiWiki\Lib\Lang\AcceptLanguage;
 use PukiWiki\Lib\Router;
 use PukiWiki\Lib\Renderer\InlineFactory;
+
 class Utility{
 	// InterWikiName
 	const INTERWIKINAME_PATTERN = '(\[\[)?((?:(?!\s|:|\]\]).)+):(.+)(?(1)\]\])';
@@ -16,11 +19,124 @@ class Utility{
 	const WIKINAME_PATTERN = '(?:[A-Z][a-z][¡-ÿ][Ā-ſ]+){2,}(?!\w)';
 	// BracketName
 	const BRAKETNAME_PATTERN = '(?!\s):?[^\r\n\t\f\[\]<>#&":]+:?(?<!\s)';
-
+	// Note
 	const NOTE_PATTERN = '\(\(((?:(?>(?:(?!\(\()(?!\)\)(?:[^\)]|$)).)+)|(?R))*)\)\)';
 	// チケット名
 	const TICKET_NAME = 'ticket';
 
+	/**
+	 * 基準となる時刻を設定する
+	 * @global type $language
+	 * @global type $use_local_time
+	 * @return array
+	 */
+	public static function initTime() {
+		global $language, $use_local_time;
+
+		if ($use_local_time) {
+			list($zone, $zonetime) = self::setTimeZone( DEFAULT_LANG );
+		} else {
+			list($zone, $zonetime) = self::setTimeZone( $language );
+			list($l_zone, $l_zonetime) = self::getTimeZoneLocal();
+			if ($l_zonetime != '' && $zonetime != $l_zonetime) {
+				$zone = $l_zone;
+				$zonetime = $l_zonetime;
+			}
+		}
+
+		foreach(array('UTIME'=>time(),'MUTIME'=>getmicrotime(),'ZONE'=>$zone,'ZONETIME'=>$zonetime) as $key => $value ){
+			defined($key) or define($key,$value);
+		}
+		return array($zone, $zonetime);
+	}
+	/**
+	 * 言語からTimeZoneを指定
+	 * @param string $lang 言語
+	 * @return array
+	 */
+	static function setTimeZone($lang='')
+	{
+		if (empty($lang)) {
+			return array('UTC', 0);
+		}
+		$l = AcceptLanguage::splitLocaleStr( $lang );
+
+		// When the name of a country is uncertain (国名が不明な場合)
+		if (empty($l[2])) {
+			$obj_l2c = new Lang2Country();
+			$l[2] = $obj_l2c->getLang2Country($l[1]);
+			if (empty($l[2])) {
+				return array('UTC', 0);
+			}
+		}
+
+		$obj = new TimeZone();
+		$obj->set_datetime(UTIME); // Setting at judgment time. (判定時刻の設定)
+		$obj->set_country($l[2]); // The acquisition country is specified. (取得国を指定)
+
+		// With the installation country in case of the same
+		// 設置者の国と同一の場合
+		if ($lang == DEFAULT_LANG) {
+			if (defined('DEFAULT_TZ_NAME')) {
+				$obj->set_tz_name(DEFAULT_TZ_NAME);
+			}
+		}
+
+		list($zone, $zonetime) = $obj->get_zonetime();
+
+		if ($zonetime == 0 || empty($zone)) {
+			return array('UTC', 0);
+		}
+
+		return array($zone, $zonetime);
+	}
+	/**
+	 * ローカルのTimeZoneを取得
+	 * @return array
+	 */
+	static function getTimeZoneLocal()
+	{
+		if (! isset($_COOKIE['timezone'])) return array('','');
+
+		$tz = trim($_COOKIE['timezone']);
+
+		$offset = substr($tz,0,1);
+		switch ($offset) {
+			case '-':
+			case '+':
+				$tz = substr($tz,1);
+				break;
+			default:
+				$offset = '+';
+		}
+
+		$h = substr($tz,0,2);
+		$i = substr($tz,2,2);
+
+		$zonetime = ($h * 3600) + ($i * 60);
+		$zonetime = ($offset == '-') ? $zonetime * -1 : $zonetime;
+
+		return array($offset.$tz, $zonetime);
+	}
+	/**
+	 * ページ作成の所要時間を計算
+	 * @return string
+	 */
+	public static function getTakeTime(){
+		// http://pukiwiki.sourceforge.jp/dev/?BugTrack2%2F251
+		return sprintf('%01.03f', getmicrotime() - MUTIME);
+	}
+	/**
+	 * IPアドレスを取得
+	 * @return string
+	 */
+	public static function getRemoteIp(){
+		static $array_var = array('HTTP_CF_CONNECTING_IP', 'HTTP_X_REMOTE_ADDR','REMOTE_ADDR'); // HTTP_X_FORWARDED_FOR
+		foreach($array_var as $x){
+			if (isset($_SERVER[$x])) return $_SERVER[$x];
+		}
+		return '';
+	}
 	/**
 	 * htmlspacialcharsのエイリアス（PHP5.4対策）
 	 * @param string $string 文字列
@@ -105,6 +221,52 @@ class Utility{
 		return ($ret === 0) ? FALSE : $ret;
 	}
 	/**
+	 * WebDAVからのアクセスか
+	 */
+	public static function isWebDAV()
+	{
+		global $log_ua;
+		static $status = false;
+		if ($status) return true;
+
+		static $ua_dav = array(
+			'Microsoft-WebDAV-MiniRedir\/',
+			'Microsoft Data Access Internet Publishing Provider',
+			'MS FrontPage',
+			'^WebDrive',
+			'^WebDAVFS\/',
+			'^gnome-vfs\/',
+			'^XML Spy',
+			'^Dreamweaver-WebDAV-SCM1',
+			'^Rei.Fs.WebDAV',
+		);
+
+		switch($_SERVER['REQUEST_METHOD']) {
+			case 'OPTIONS':
+			case 'PROPFIND':
+			case 'MOVE':
+			case 'COPY':
+			case 'DELETE':
+			case 'PROPPATCH':
+			case 'MKCOL':
+			case 'LOCK':
+			case 'UNLOCK':
+				$status = true;
+				return $status;
+			default:
+				continue;
+		}
+
+		$matches = array();
+		foreach($ua_dav as $pattern) {
+			if (preg_match('/'.$pattern.'/', $log_ua, $matches)) {
+				$status = true;
+				return true;
+			}
+		}
+		return false;
+	}
+	/**
 	 * InterWikiNameかをチェック
 	 * @param string $str
 	 * @return boolean
@@ -119,6 +281,14 @@ class Utility{
 	 */
 	public static function isBracketName($str){
 		return preg_match('/^(?!\/)' . self::BRAKETNAME_PATTERN . '$(?<!\/$)/', $str);
+	}
+	/**
+	 * Wiki名か
+	 * @param string $str
+	 * @return boolean
+	 */
+	public static function isWikiName($str){
+		return preg_match('/^' . self::WIKINAME_PATTERN . '$/', $str);
 	}
 	/**
 	 * Remove null(\0) bytes from variables
@@ -243,7 +413,7 @@ class Utility{
 	 * @param string $title エラーのタイトル
 	 * @param int $http_code 出力するヘッダー
 	 */
-	public static function die_message($msg, $error_title='', $http_code = 500){
+	public static function dieMessage($msg, $error_title='', $http_code = 500){
 		global $skin_file, $page_title, $_string, $_title, $_button, $vars;
 
 		$title = !empty($error_title) ? $error_title : $_title['error'];
@@ -299,15 +469,16 @@ class Utility{
 	 * リダイレクト
 	 * @param string $url リダイレクト先
 	 */
-	public static function redirect($url = ''){
+	public static function redirect($url = '', $time = 0){
 		global $vars;
 		if (empty($url)){
 			$url = isset($vars['page']) ? Router::get_page_uri($vars['page']) : Router::get_script_uri();
 		}
+		$s_url = self::htmlsc($url);
 		pkwk_headers_sent();
+		header('Status: 301 Moved Permanently');
 		if (!DEBUG){
-			header('Status: 301 Moved Permanently');
-			header('Location: ' . $url);
+			header('Location: ' . $s_url);
 		}
 		$html = array();
 		$html[] = '<!doctype html>';
@@ -316,14 +487,17 @@ class Utility{
 		$html[] = '<meta charset="utf-8">';
 		$html[] = '<meta name="robots" content="NOINDEX,NOFOLLOW" />';
 		if (!DEBUG){
-			$html[] = '<meta http-equiv="refresh" content="1; URL='.$url.'" />';
+			$html[] = '<meta http-equiv="refresh" content="'.$time.'; URL='.$s_url.'" />';
 		}
 		$html[] = '<link rel="stylesheet" href="http://code.jquery.com/ui/' . JQUERY_UI_VER . '/themes/base/jquery-ui.css" type="text/css" />';
 		$html[] = '<title>301 Moved Permanently</title>';
 		$html[] = '</head>';
 		$html[] = '<body>';
 		$html[] = '<div class="message_box ui-state-highlight ui-corner-all">';
-		$html[] = '<p style="padding:0 .5em;"><span class="ui-icon ui-icon-alert" style="display:inline-block;"></span>Please click <a href="'.$url.'">here</a> if you do not want to move even after a while.</p>';
+		$html[] = '<p style="padding:0 .5em;">';
+		$html[] = '<span class="ui-icon ui-icon-alert" style="display:inline-block;"></span>';
+		$html[] = 'The requested page has moved to a new URL. <br />';
+		$html[] = 'Please click <a href="'.$s_url.'">here</a> if you do not want to move even after a while.</p>';
 		$html[] = '</div>';
 		$html[] = '</body>';
 		$html[] = '</html>';

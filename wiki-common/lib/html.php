@@ -13,7 +13,7 @@
 // Plus!NOTE:(policy)not merge official cvs(1.58->1.59) See Question/181
 
 use Zend\Http\Response;
-
+use PukiWiki\Lib\File\FileFactory;
 // Show page-content
 function catbody($title, $page, $body)
 {
@@ -34,15 +34,20 @@ function catbody($title, $page, $body)
 	global $_string, $always_menu_displayed;
 	global $_page, $is_page, $is_read, $is_freeze, $is_readonly, $is_safemode, $is_createpage, $lastmod;
 
-	if (isset($vars['page']) && $vars['page'] !== ''){
+	if (isset($vars['page']) && !empty($vars['page'])){
 		$_page = $vars['page'];
-		$filetime = get_filetime($_page);
 	}
 
-	// Init flags
-	$is_page = (is_pagename($_page) && ! arg_check('backup') && ! is_cantedit($_page));
-	$is_read = (arg_check('read') && is_page($_page));
-	$is_freeze = is_freeze($_page);
+	if (!empty($_page)){
+		$wiki = FileFactory::Wiki($_page);
+		// Init flags
+		$is_page = ($wiki->isValied() && $wiki->isEditable() && ! arg_check('backup'));
+		$is_read = (arg_check('read') && $wiki->isReadable());
+		$is_freeze = $wiki->isFreezed();
+		$filetime = $wiki->time();
+	}
+
+	
 	$is_readonly = auth::check_role('readonly');
 	$is_safemode = auth::check_role('safemode');
 	$is_createpage = auth::is_check_role(PKWK_CREATE_PAGE);
@@ -170,21 +175,8 @@ function catbody($title, $page, $body)
 		}
 		if(isset($google_analytics)){ $js_init['GOOGLE_ANALYTICS'] = $google_analytics; }
 
-		// JSに渡す定義を展開
-		foreach( $js_init as $key=>$val){
-			if ($val !== ''){
-				$js_vars[] = 'var '.$key.' = "'.$val.'";';
-			}
-		}
-		if (is_array($pkwk_head_js)){
-			array_unshift($pkwk_head_js,array('type'=>'text/javascript', 'content'=>join($js_vars,"\n")));
-		}
-		unset($js_var, $key, $val);
+		
 		/* ヘッダー部分の処理ここまで */
-
-		/* フッター部のタグ */
-		$pkwk_tags = tag_helper('script',$pkwk_head_js)."\t\t".tag_helper('script',$js_tags);
-		$pkwk_tags .= (!empty($js_blocks)) ? "\t\t".tag_helper('script',array(array('type'=>'text/javascript', 'content'=>join("\n",$js_blocks)))) : '';
 
 		/* ヘッダー部のタグ */
 		$pkwk_head = tag_helper('meta',$meta_tags)."\t\t".tag_helper('link',$link_tags);
@@ -205,7 +197,24 @@ function catbody($title, $page, $body)
 				$pkwk_tags .= join("\n", $foot_tags) ."\n";
 				$info[] = '<var>$foot_tags</var> is obsolate. Use $meta_tags, $link_tags, $js_tags, $js_blocks, $css_blocks.';
 			}
+			
+		}else{
+			$js_init['JQUERY_MOBILE_VER'] = JQUERY_MOBILE_VER;
 		}
+
+		/* フッター部のタグ */
+		// JSに渡す定義を展開
+		foreach( $js_init as $key=>$val){
+			if ($val !== ''){
+				$js_vars[] = 'var '.$key.' = "'.$val.'";';
+			}
+		}
+		if (is_array($pkwk_head_js)){
+			array_unshift($pkwk_head_js,array('type'=>'text/javascript', 'content'=>join($js_vars,"\n")));
+		}
+		unset($js_var, $key, $val);
+		$pkwk_tags = tag_helper('script',$pkwk_head_js)."\t\t".tag_helper('script',$js_tags);
+		$pkwk_tags .= (!empty($js_blocks)) ? "\t\t".tag_helper('script',array(array('type'=>'text/javascript', 'content'=>join("\n",$js_blocks)))) : '';
 
 		/* Adv.ここまで */
 
@@ -213,7 +222,7 @@ function catbody($title, $page, $body)
 		if ($is_read){
 			global $attach_link, $related_link;
 
-			$lastmodified = get_date('D, d M Y H:i:s T', $filetime). ' ' . get_pg_passage($_page, FALSE);
+			$lastmodified = get_date('D, d M Y H:i:s T', $filetime) . ' ' . FileFactory::Wiki($_page)->passage();
 			if ($pkwk_dtd == PKWK_DTD_HTML_5) {
 				$lastmodified = '<time pubdate="pubdate" datetime="'.get_date('c',$filetime).'">'.$lastmodified.'</time>';
 			}
@@ -419,7 +428,7 @@ function edit_form($page, $postdata, $digest = FALSE, $b_template = TRUE)
 	if($load_template_func && $b_template) {
 		foreach($pages as $_page) {
 			$_w = new WikiFile($_page);
-			if (is_cantedit($_page) || check_non_list($_page))
+			if (! $_w->isEditable() || $_w->isHidden())
 				continue;
 			$s_page = htmlsc($_page);
 			$pages[$_page] = '		<option value="' . $s_page . '">' .$s_page . '</option>'."\n";
@@ -550,6 +559,7 @@ function pkwk_headers_sent()
 	@param expire 有効期限（秒）
 	@return なし
 */
+use PukiWiki\Lib\Lang\Lang;
 function pkwk_common_headers($modified = 0, $expire = 604800){
 	global $lastmod, $vars, $response, $headers;
 	if (! defined('PKWK_OPTIMISE')) pkwk_headers_sent();
@@ -557,7 +567,7 @@ function pkwk_common_headers($modified = 0, $expire = 604800){
 
 	// RFC2616
 	// http://sonic64.com/2004-02-06.html
-	$vary = get_language_header_vary();
+	$vary = Lang::getLanguageHeaderVary();
 	if (preg_match('/\b(gzip|deflate|compress)\b/i', $_SERVER['HTTP_ACCEPT_ENCODING'], $matches)) {
 		$vary .= ',Accept-Encoding';
 	}

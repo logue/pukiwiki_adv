@@ -5,6 +5,9 @@
 // $Id: side.inc.php,v 1.8.7 2011/02/05 12:38:00 Logue Exp $
 //
 
+use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\Renderer\RendererFactory;
+
 // サブメニューを使用する
 define('SIDE_ENABLE_SUBMENU', TRUE);
 
@@ -52,13 +55,15 @@ function plugin_side_convert()
 			}
 		}
 
-		if (! is_page($page)) {
+		$wiki = FileFactory::Wiki($page);
+
+		if (! $wiki->has()) {
 			return '';
 		} else if ($vars['page'] == $page) {
 			return '<!-- #side(): You already view ' . htmlsc($page) . ' -->';
 		} else {
 			// Cut fixed anchors
-			$sidetext = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/m','$1$2',get_source($page));
+			$sidetext = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/m','$1$2',$wiki->get(true));
 //miko patched
 			if (function_exists('convert_filter')) {
 				$sidetext = convert_filter($sidetext);
@@ -68,7 +73,7 @@ function plugin_side_convert()
 			$top = '';
 			$save_newwindow = $use_open_uri_in_new_window;
 			$use_open_uri_in_new_window = 0;
-			$sidehtml = convert_html($sidetext);
+			$sidehtml = RendererFactory::factory($sidetext);;
 			$top = $tmptop;
 			$use_open_uri_in_new_window = $save_newwindow;
 			$sidehtml = str_replace("\n",'',$sidehtml);

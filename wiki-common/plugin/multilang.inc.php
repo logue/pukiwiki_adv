@@ -7,6 +7,10 @@
  *
  */
 
+use PukiWiki\Lib\Lang\Lang;
+use PukiWiki\Lib\Lang\AcceptLanguage;
+use PukiWiki\Lib\Lang\Lang2Country;
+
 // ja_JP, ko_KR, en_US, zh_TW
 // They are used as delimiters at &multilang(link,ja_JP=Japanese,en_US=English,.....);
 defined('PLUGIN_MULTILANG_INLINE_BEFORE')    or define('PLUGIN_MULTILANG_INLINE_BEFORE', '[ ');
@@ -24,7 +28,7 @@ function plugin_multilang_action()
 		setcookie('lang', $lang, 0, get_baseuri('abs'));
 		$_COOKIE['lang'] = $lang; /* To effective promptly */
 		// UPDATE
-		$language = get_language(1);
+		$language = Lang::getLanguage(1);
 	} 
 
 	// Location ヘッダーで飛ばないような環境の場合は、この部分を
@@ -61,7 +65,7 @@ function plugin_multilang_inline_link($option, $args)
 	$body = array();
 	$page = $vars['page'];
 	$url = get_cmd_uri('multilang',$page,'','lang');
-	$obj_l2c = new lang2country();
+	$obj_l2c = new Lang2Country();
 
 	foreach( $args as $arg ) {
 		$arg = htmlsc($arg);
@@ -74,7 +78,7 @@ function plugin_multilang_inline_link($option, $args)
 			if (empty($country)) {
 				@list($lng, $country) = split('_', $lang); // en_US -> en, US
 				if(empty($country)) {
-					$country = $obj_l2c->get_lang2country( strtolower($lng) );
+					$country = $obj_l2c->getLang2Country( strtolower($lng) );
 				}
 			}
 
@@ -101,8 +105,8 @@ function plugin_multilang_accept($lang)
 	global $language;
 
 	// FIXME: level 5
-	$env = ($language_considering_setting_level == 0) ? get_language(5) : $language;
-	$l = accept_language::split_locale_str($env);
+	$env = ($language_considering_setting_level == 0) ? Lang::getLanguage(5) : $language;
+	$l = AcceptLanguage::splitLocaleStr($env);
 	return $lang == $env || $lang == $l[1];
 }
 

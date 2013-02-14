@@ -8,8 +8,9 @@
  * @copyright 2013 PukiWiki Advance Developers Team
  * @create    2013/02/03
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: PinYin.php,v 1.0.0 2013/02/02 17:28:00 Logue Exp $
+ * @version   $Id: PinYin.php,v 1.0.0 2013/02/13 18:58:00 Logue Exp $
  **/
+
 namespace PukiWiki\Lib\Text;
 
 /**
@@ -23,7 +24,7 @@ namespace PukiWiki\Lib\Text;
 class PinYin {
 	// 拼音漢字変換表
 	// http://qingdaonet.org/dic/pinin.htm
-	static protected $pinyin_table = {
+	static protected $pinyin_table = array(
 		'a'         => '阿|啊|呵|锕|吖|腌|嗄',
 		'ai'        => '爱|嫒|暧|瑷|哀|锿|挨|埃|诶|唉|隘|嗌|艾|哎|砹|癌|蔼|霭|矮|碍|皑',
 		'an'        => '安|按|桉|氨|铵|庵|俺|鹌|埯|胺|鞍|桉|案|暗|揞|黯|谙|岸',
@@ -450,7 +451,7 @@ class PinYin {
 	// ピンインをカナに変換
 	// http://staff.aist.go.jp/sakamoto.yasuhiko/acronym/EJCjpinyin.htm
 	// 2007年4月時点版(出典：NHKラジオ中国語講座テキスト2007年4月号入門編の末尾の表)
-	static protected $kana_table = {
+	static protected $kana_table = array(
 		'a'         => 'アー',
 		'ai'        => 'アイ',
 		'an'        => 'アン',
@@ -885,23 +886,23 @@ class PinYin {
 				return $pinyin;
 			}
 		}
-		return $str;
+		return $char;
 	}
 	/**
 	 * かな変換
-	 * @param string $str 入力文字列
+	 * @param string $char 入力文字列
 	 * @return string
 	 */
 	public static function toKana($char){
 		// 漢字をピンインにする
 		foreach (self::$pinyin_table as $pinyin=>$pinyin_pattern){
 			if (preg_match('/'.$pinyin_pattern.'+/', $char)){
-				return $kana_table[$char];
+				return $this->kana_table[$char];
 			}
 		}
-		return $str;
+		return $char;
 	}
 }
 
 /* End of file PinYin.php */
-/* Location: /vender/PukiWiki/Lib/Text/PinYin.php */
+/* Location: /vendor/PukiWiki/Lib/Text/PinYin.php */

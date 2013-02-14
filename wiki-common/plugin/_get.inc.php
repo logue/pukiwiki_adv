@@ -34,8 +34,6 @@ function i18n_gettext($name,$msg)
 		} else {
 			T_bindtextdomain($name, $plugin_lang_path[$name]);
 		}
-		// bindtextdomain($name, LANG_DIR);
-		T_bind_textdomain_codeset($name, SOURCE_ENCODING);
 	}
 
 	T_textdomain($name);

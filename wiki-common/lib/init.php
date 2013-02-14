@@ -12,6 +12,11 @@
 // Plus!I18N:(policy)not merge official cvs(1.44->1.45)
 // Plus!NOTE:(policy)not merge official cvs(1.51->1.52) See Question/181
 
+use PukiWiki\Lib\Lang\Lang;
+use PukiWiki\Lib\Utility;
+use PukiWiki\Lib\Router;
+use Zend\Cache\StorageFactory;
+
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
 define('S_VERSION', 'v1.1-alpha');
@@ -163,9 +168,9 @@ defined('JS_URI')			or define('JS_URI', 		COMMON_URI . 'js/'      );	// URI to J
 defined('THEME_PLUS_NAME')	or define('THEME_PLUS_NAME',  'theme/');			// SKIN_URI + THEME_PLUS_NAME
 
 // フレームワークのバージョン
-define('JQUERY_VER',		'1.9.0');
+define('JQUERY_VER',		'1.9.1');
 define('JQUERY_UI_VER',		'1.10.0');
-define('JQUERY_MOBILE_VER',	'1.2.0');
+define('JQUERY_MOBILE_VER',	'1.3.0-rc.1');
 
 // ページ名やファイル名として使用できない文字（エンコード前の文字）
 defined('PKWK_ILLEGAL_CHARS_PATTERN') or define('PKWK_ILLEGAL_CHARS_PATTERN', '/[%|=|&|?|#|\r|\n|\0|\@|\t|;|\$|+|\\|\[|\]|\||^|{|}]/');
@@ -222,8 +227,6 @@ $session = new Zend\Session\Container(PKWK_WIKI_NAMESPACE);
 /////////////////////////////////////////////////
 // Initilalize Cache
 //
-use Zend\Cache\StorageFactory;
-
 // 使用するキャッシュストレージを選択
 if (!isset($cache_adapter)){
 	if ( class_exists('dba') ){
@@ -304,21 +307,11 @@ $cache = array(
 );
 $info[] = 'Cache system using <var>'.$cache_adapter.'</var>.';
 
-use Zend\Db\Adapter\Adapter;
-
-$db = array(
-	'links' => new Adapter(array(
-		'driver' => 'Pdo_Sqlite',
-		'database' => CACHE_DIR . 'links.db'
-	))
-);
 
 /////////////////////////////////////////////////
 // I18N
-
-set_language();
-set_time();
-require(LIB_DIR . 'public_holiday.php');
+Lang::setLanguage();
+Utility::initTime();
 
 T_setlocale(LC_ALL,PO_LANG);
 T_bindtextdomain(DOMAIN,LANG_DIR);
@@ -336,9 +329,9 @@ define('PKWK_ENCODING_HINT', (isset($_LANG['encode_hint']) && $_LANG['encode_hin
 // INI_FILE: Init $script
 
 if (isset($script)) {
-	get_script_uri($script);	// Init manually
+	Router::get_script_uri($script);	// Init manually
 } else {
-	$script = get_script_uri();	// Init automatically
+	$script = Router::get_script_uri();	// Init automatically
 }
 
 ///////////////////////////////////////////////
@@ -543,7 +536,7 @@ $matches = array();
 foreach (explode('&', $arg) as $key_and_value) {
 	if (preg_match('/^([^=]+)=(.+)/', $key_and_value, $matches) &&
 	    (mb_detect_encoding($matches[2]) !== 'ASCII' || $matches[1] === 'pukiwiki')) {
-		$_GET[$matches[1]] = $matches[2];
+		$_GET[trim($matches[1])] = trim($matches[2]);
 	}
 }
 unset($matches);
@@ -888,7 +881,7 @@ if (isset($auth_api['remoteip']['use']) && $auth_api['remoteip']['use']) {
 }
 
 // WebDAV
-if (is_webdav() && exist_plugin('dav')) {
+if (Utility::isWebDAV() && exist_plugin('dav')) {
 	do_plugin_action('dav');
 	exit;
 }
@@ -1001,6 +994,51 @@ $body_menu = $body_side = '';
 if ($always_menu_displayed) {
 	if (exist_plugin_convert('menu')) $body_menu = do_plugin_convert('menu');
 	if (exist_plugin_convert('side')) $body_side = do_plugin_convert('side');
+}
+
+/** よく使うグローバル関数 **/
+// gettext to Zend gettext emulator
+function T_setlocale($type, $locale){
+	global $translator, $cache;
+	$translator->setLocale($locale);
+	$translator->setCache($cache['core']);
+}
+
+function T_($string){
+	global $translator, $domain, $language;
+	$gettext_file = LANG_DIR.$language.'/LC_MESSAGES/'.$domain.'.mo';
+	if (file_exists($gettext_file)){
+		return $translator->translate($string, $domain, $language);
+	}else{
+		return $string;
+	}
+}
+
+if (!function_exists('_')){
+	function _($string){
+		return T_($string);
+	}
+}
+
+function T_bindtextdomain($domain, $dir){
+	global $translator, $language, $cache;
+	$gettext_file = LANG_DIR.PO_LANG.'/LC_MESSAGES/'.$domain.'.mo';
+	if (file_exists($gettext_file)){
+		$translator->addTranslationFile('gettext', $gettext_file, $domain, $language);
+		$translator->setCache($cache['core']);
+	}
+}
+
+function T_textdomain($text_domain){
+	global $domain;
+	$domain = $text_domain;
+}
+
+function pr($value){
+	if (DEBUG){
+		Zend\Debug\Debug::dump($value);
+	}
+	return '';
 }
 
 /* End of file init.php */

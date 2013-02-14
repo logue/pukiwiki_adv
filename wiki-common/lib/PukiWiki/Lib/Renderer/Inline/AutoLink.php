@@ -84,7 +84,7 @@ class AutoLink extends Inline
 		unset($config);
 		$auto_pages = array_merge($ignorepages, $forceignorepages);
 
-		foreach (FileUtility::get_exists() as $page)
+		foreach (FileUtility::getExists() as $page)
 			if (preg_match('/^' . $WikiName . '$/', $page) ?
 				$nowikiname : strlen($page) >= $autolink)
 				$auto_pages[] = $page;

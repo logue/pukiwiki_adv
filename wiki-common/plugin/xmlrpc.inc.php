@@ -254,7 +254,7 @@ class WikiRpcService{
 	  */
 	public function getBackLinks( $pagename ){
 		$links = new PukiWiki\Lib\Relational($pagename);
-		return $links->get_related();
+		return $links->getRelated();
 	}
 	/**
 	  * ページを編集する。

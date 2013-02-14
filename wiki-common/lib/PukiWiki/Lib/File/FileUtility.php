@@ -28,22 +28,30 @@ class FileUtility{
 	const PAGENAME_HEADING_CACHE_PREFIX = 'listing-';
 
 	/**
+	 * キャッシュをクリア
+	 */
+	public static function clearCache(){
+		self::getExists('',true);
+		self::getRecent(true);
+	}
+	/**
 	 * ディレクトリ内のファイルの一覧を作成
 	 * @param string $dir ディレクトリ
 	 * @param boolean $force キャッシュを再生成
 	 * @return array
 	 */
-	public static function get_exists($dir = DATA_DIR, $force = false){
+	public static function getExists($dir = DATA_DIR, $force = false){
 		global $cache;
 		static $aryret;
 
-		$func = self::get_cache_name($dir);
+		$func = self::getCacheName($dir);
 		$cache_name = self::EXSISTS_CACHE_PREFIX . $func;
 
-		if ($force){
+		if ($force || empty($dir)){
 			// キャッシュ再生成
 			unset($aryret[$func]);
 			$cache['wiki']->removeItem($cache_name);
+			if (empty($dir)) return;	// ディレクトリが指定されていない場合、キャッシュを削除して終わり
 		}else if (isset($aryret[$func])){
 			// メモリにキャッシュがある場合
 			return $aryret[$func];
@@ -85,7 +93,7 @@ class FileUtility{
 	 * @param string $dir ディレクトリ
 	 * @return string
 	 */
-	private static function get_cache_name($dir = DATA_DIR){
+	private static function getCacheName($dir = DATA_DIR){
 		switch($dir){
 			case DATA_DIR:
 				$func = 'wiki';
@@ -100,7 +108,7 @@ class FileUtility{
 				$func = 'attach';
 				break;
 			default:
-				$func = encode($dir.$ext);
+				$func = encode($dir);
 		}
 		return $func;
 	}
@@ -109,17 +117,17 @@ class FileUtility{
 	 * @param string $dir ディレクトリ
 	 * @return string
 	 */
-	public static function get_listing($dir = DATA_DIR, $cmd = 'read', $with_filename = false){
+	public static function getListing($dir = DATA_DIR, $cmd = 'read', $with_filename = false){
 		global $_string;
 		// 一覧の配列を取得
-		$heading = self::get_headings($dir);
+		$heading = self::getHeadings($dir, true);
 		$contents = array();
 
 		if (IS_MOBILE) {
 			// モバイル用
 			$contents[] = '<ul data-role="listview">';
 			foreach ($heading as $initial=>$pages) {
-				$page_lists = self::get_page_lists($pages, $cmd);
+				$page_lists = self::getPageLists($pages, $cmd);
 				$count = count($page_lists);
 				if ($count < 1) continue;
 
@@ -137,7 +145,7 @@ class FileUtility{
 		// 通常用
 		$header[] = '<div class="page_initial"><ul>';
 		foreach ($heading as $initial=>$pages) {
-			$page_lists = self::get_page_lists($pages, $cmd, $with_filename);
+			$page_lists = self::getPageLists($pages, $cmd, $with_filename);
 			$count = count($page_lists);
 			if ($count < 1) continue;
 
@@ -160,11 +168,11 @@ class FileUtility{
 	 * @param boolean $force キャッシュを再生成する（※ページの経過時間はキャッシュの対象外）
 	 * @return array
 	 */
-	private static function get_headings($dir = DATA_DIR, $force = false){
+	private static function getHeadings($dir = DATA_DIR, $force = false){
 		global $cache;
 		static $heading;
 
-		$func = self::get_cache_name($dir);
+		$func = self::getCacheName($dir);
 		$cache_name = self::PAGENAME_HEADING_CACHE_PREFIX . $func;
 
 		if ($force){
@@ -180,7 +188,7 @@ class FileUtility{
 			return $heading[$func];
 		}
 
-		foreach(self::get_exists($dir) as $file => $page) {
+		foreach(self::getExists($dir) as $file => $page) {
 			$initial = Reading::getReadingChar($page);
 			if ($initial === $page){
 				// 読み込めなかった文字
@@ -216,7 +224,7 @@ class FileUtility{
 	 * @param boolean $with_filename ページのファイル名も表示する
 	 * @return string
 	 */
-	private static function get_page_lists($pages, $cmd, $with_filename){
+	private static function getPageLists($pages, $cmd, $with_filename){
 		$contents = array();
 		// ユーザ名取得
 		$auth_key = Auth::get_user_info();
@@ -249,7 +257,7 @@ class FileUtility{
 	 * @param boolean $force キャッシュを再生成する
 	 * @return array
 	 */
-	public static function get_recent($force = false){
+	public static function getRecent($force = false){
 		global $cache, $maxshow, $autolink, $whatsnew, $autobasealias, $cache;
 		static $recent_pages;
 
@@ -267,7 +275,7 @@ class FileUtility{
 		}
 
 		// Get WHOLE page list
-		$pages = self::get_exists(DATA_DIR, $force);
+		$pages = self::getExists(DATA_DIR, $force);
 
 		// Check ALL filetime
 		$recent_pages = array();
@@ -302,13 +310,13 @@ class FileUtility{
 	 * @param string $page_remove 削除されたページ
 	 * @return void
 	 */
-	public static function set_recent($page_update, $page_remove){
+	public static function setRecent($page_update, $page_remove){
 		global $maxshow, $whatsnew, $autolink, $autobasealias;
 		global $cache;
 
 		// AutoLink implimentation needs everything, for now
 		if ($autolink || $autobasealias) {
-			self::get_recent(true);	// Try to (re)create ALL
+			self::getRecent(true);	// Try to (re)create ALL
 			return;
 		}
 
@@ -319,7 +327,7 @@ class FileUtility{
 
 		// Check cache exists
 		if (! $cache['wiki']->hasItem(self::RECENT_CACHE_NAME)){
-			self::get_recent(true);	// Try to (re)create ALL
+			self::getRecent(true);	// Try to (re)create ALL
 			return;
 		}else{
 			$recent_pages = $cache['wiki']->getItem(self::RECENT_CACHE_NAME);
@@ -344,7 +352,7 @@ class FileUtility{
 		$cache['wiki']->setItem(self::RECENT_CACHE_NAME, $recent_pages);
 
 		if ($abort) {
-			self::get_recent(true);	// Try to (re)create ALL
+			self::getRecent(true);	// Try to (re)create ALL
 			return;
 		}
 
@@ -365,7 +373,8 @@ class FileUtility{
 	 * @param boolean $force キャッシュを再生成する
 	 * @return string
 	 */
-	public static function get_page_from_tb_id($id, $force = false){
+	public static function getPageFromTbId($id, $force = false){
+		global $cache;
 		static $tb_id;
 		$cache_name = self::EXSISTS_CACHE_PREFIX . 'trackback';
 
@@ -383,7 +392,7 @@ class FileUtility{
 		}
 
 		if (empty($tb_id)){
-			$pages = self::get_exists();
+			$pages = self::getExists();
 			foreach ($pages as $page) {
 				$tb_id[md5($page)] = $page;
 			}

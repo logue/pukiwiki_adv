@@ -12,5 +12,12 @@ function plugin_nolink_convert()
 	$data = $argv[ --$argc ];
 	return strip_a(convert_html(line2array($data)));
 }
+
+function strip_a($x)
+{
+	$x = preg_replace('#<a href="(.*?)"[^>]*>(.*?)</a>#si', '$2', $x);
+	$x = preg_replace('#<a href="(.*?)"[^>]*>(.*?)<span class="pkwk-symbol.*?</a>#si','$2',$x);
+	return $x;
+}
 /* End of file nolink.inc.php */
 /* Location: ./wiki-common/plugin/nolink.inc.php */

@@ -1,14 +1,24 @@
 <?php
+/**
+ * 簡易音読みクラス
+ *
+ * @package   PukiWiki\Lib\Text
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2013 PukiWiki Advance Developers Team
+ * @create    2013/02/03
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: Hiragana.php,v 1.0.0 2013/02/02 17:28:00 Logue Exp $
+ **/
 namespace PukiWiki\Lib\Text;
-use PukiWiki\Lib\Text\Hangul;
 /**
  * 漢字をひらがなに変換するクラス
  * Wikiからデーターを読み取って一文字ずつ走査するよりも早いと思われ
  */
 class Hiragana{
 	// 読みテーブル（実際はarray_reverseを使って使用する）
-	static private $kanatable = array(
-		'ア'=>'亜|唖|娃|阿|哀|愛|挨|姶|逢|葵|茜|穐|悪|握|渥|旭|葦|芦|鯵|梓|圧|斡|扱|宛|姐|虻|飴|絢|綾|鮎|或|粟|袷|安|庵|按|暗|案|闇|鞍|杏',
+	private static $kana_table = array(
+		'ア'=>'亜|亞|哇|唖|嗚|娃|婀|安|椏|痾|襾|阿|哀|愛|挨|姶|逢|葵|茜|穐|悪|握|渥|旭|葦|芦|鯵|梓|圧|斡|扱|宛|姐|虻|飴|絢|綾|鮎|或|粟|袷|安|庵|按|暗|案|闇|鞍|杏',
 		'イ'=>'以|伊|位|依|偉|囲|夷|委|威|尉|惟|意|慰|易|椅|為|畏|異|移|維|緯|胃|萎|衣|謂|違|遺|医|井|亥|域|育|郁|磯|一|壱|溢|逸|稲|茨|芋|鰯|允|印|咽|員|因|姻|引|飲|淫|胤|蔭|院|陰|隠|韻|吋',
 		'ウ'=>'右|宇|烏|羽|迂|雨|卯|鵜|窺|丑|碓|臼|渦|嘘|唄|欝|蔚|鰻|姥|厩|浦|瓜|閏|噂|云|運|雲',
 		'エ'=>'荏|餌|叡|営|嬰|影|映|曳|栄|永|泳|洩|瑛|盈|穎|頴|英|衛|詠|鋭|液|疫|益|駅|悦|謁|越|閲|榎|厭|円|園|堰|奄|宴|延|怨|掩|援|沿|演|炎|焔|煙|燕|猿|縁|艶|苑|薗|遠|鉛|鴛|塩',
@@ -69,11 +79,14 @@ class Hiragana{
 	 */
 	public static function toKana($char){
 		// 漢字をカタカナにする（あくまでも、漢字のカナの先頭１文字のみ）
-		foreach (self::$kanatable as $kana=>$kanji_pattern){
+		foreach (self::$kana_table as $kana=>$kanji_pattern){
 			if (preg_match('/'.$kanji_pattern.'+/', $char)){
 				return $kana;
 			}
 		}
-		return $str;
+		return $char;
 	}
 }
+
+/* End of file Hiragana.php */
+/* Location: /vendor/PukiWiki/Lib/Text/Hiragana.php */

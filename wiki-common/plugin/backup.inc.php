@@ -393,7 +393,7 @@ function plugin_backup_get_list_all($withfilename = FALSE)
 
 	if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
 
-	return FileUtility::get_listing(BACKUP_DIR, 'backup', $withfilename);
+	return FileUtility::getListing(BACKUP_DIR, 'backup', $withfilename);
 }
 
 // Plus! Extend - Diff

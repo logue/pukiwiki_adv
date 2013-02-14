@@ -27,9 +27,9 @@ class Dnsbl{
 	 * DNSBLにリストされているか？
 	 * @return string リストされていたホスト（リストされていない場合は、
 	 */
-	public static function is_listed(){
+	public static function isListed(){
 			$reverse_ip = implode('.',array_reverse(explode('.',$this->ip)));
-			foreach($dnsbl_hosts as $host){
+			foreach($this->dnsbl_hosts as $host){
 				if (checkdnsrr($reverse_ip.'.'.$host.'.','A')){
 					return $host;
 				}

@@ -1,13 +1,14 @@
 <?php
 /**
- * PukiWiki Plus! 認証処理
+ * PukiWiki Advance 認証処理
  *
- * @author	Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: auth.cls.php,v 0.69 2010/06/15 00:34:00 upk Exp $
- * @license	http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
+ * @author  Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
+ * @version $Id: auth.cls.php,v 0.69 2010/06/15 00:34:00 upk Exp $
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 
 namespace PukiWiki\Lib\Auth;
+
 use PukiWiki\Lib\Auth\AuthUtility;
 
 require_once(LIB_DIR . 'auth.def.php');
@@ -19,6 +20,15 @@ use Zend\Crypt\BlockCipher;
  */
 class Auth
 {
+	const ROLE_GUEST = 0;
+	const ROLE_FORCE = 1;
+	const ROLE_ADMIN = 2;
+	const ROLE_ADMIN_CONTENTS = 3;
+	const ROLE_ADMIN_CONTENTS_TEMP = 3.1;
+	const ROLE_ENROLLEE = 4;
+	const ROLE_AUTH = 5;
+	const ROLE_AUTH_TEMP = 5.1;
+	
 	/*
 	 *	== IIS ==
 	 *	AUTH_USER		- 認証ユーザ名

@@ -22,6 +22,9 @@
  *
  */
 
+use PukiWiki\Lib\Lang\Lang;
+use PukiWiki\Lib\Lang\AcceptLanguage;
+
 function plugin___inline()
 {
 	global $language_considering_setting_level;
@@ -41,13 +44,13 @@ function plugin___inline()
 	$msg = strip_htmltag($msg);
 
         // FIXME: level 5
-	$view_lang  = ($language_considering_setting_level == 0) ? get_language(5) : $language;
-	$view_lang_split = accept_language::split_locale_str($view_lang); // ja_JP なら ja に分割
+	$view_lang  = ($language_considering_setting_level == 0) ? Lang::getLanguage(5) : $language;
+	$view_lang_split = AcceptLanguage::splitLocaleStr($view_lang); // ja_JP なら ja に分割
 
 	if ($parm_lang == $view_lang || $parm_lang == $view_lang_split[1]) return $msg; // 指定言語と同じ
 
 	// 指定文字列が en 以外の場合は、ベース言語に変換後、他言語に変換する
-	$parm_lang_split = accept_language::split_locale_str($parm_lang);
+	$parm_lang_split = AcceptLanguage::splitLocaleStr($parm_lang);
 
 	if (isset($i18n_temp_msg)) {
 		$temp_msg = i18n_TempMsg($parm_lang_split, $view_lang_split, $msg);

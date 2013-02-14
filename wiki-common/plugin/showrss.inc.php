@@ -20,6 +20,7 @@ defined('PLUGIN_SHOWRSS_SHOW_DESCRIPTION') or define('PLUGIN_SHOWRSS_SHOW_DESCRI
 
 define('PLUGIN_SHOWRSS_CACHE_PREFIX', 'showrss-');
 
+use PukiWiki\Lib\Renderer\Inline\Inline;
 use Zend\Http\ClientStatic;
 
 // Show related extensions are found or not
@@ -192,7 +193,7 @@ class ShowRSS_html
 		if (IS_MOBILE){
 			return '<a href="'. preg_replace("/\s/",'', $line['link']) .'" rel="external">'.$entry.'<span class="ui-li-count">'.get_passage($line['date'],false).'</span></a>';
 		}else{
-			return open_uri_in_new_window('<a href="'. $line['link'] .'" title="'.$desc.' '.get_passage($line['date']).'">'.$line['entry'].'</a>', 'link_url');
+			return Inline::setLink($line['entry'], $line['link'], $desc.' '.get_passage($line['date']));
 		}
 	}
 
@@ -206,7 +207,7 @@ class ShowRSS_html
 			$retval[] = $body;
 			$retval[] = '</ul>' . "\n".  '</div>';
 		}else{
-			$title = ($this->url) ? open_uri_in_new_window('<a href="' . $this->url . '" title="' . $this->passage . '" rel="external">' . $this->title . '</a>', 'link_url') : $this->title;
+			$title = ($this->url) ? Inline::setLink($this->title, $this->url, $this->passage) : $this->title;
 			$retval[] = '<legend>'.$title.'</legend>';
 			$retval[] = isset($this->logo) ? '<figure>'.$this->logo.'</figure>' : null;
 			$retval[] = '<ul>';
@@ -245,9 +246,7 @@ class ShowRSS_html_menubar extends ShowRSS_html
 			$retval[] = '</ul>' . isset($this->title) ? '</div>' : '';
 		}else{
 			$desc = $line['desc'] ? mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['desc'])), 0, 255, '...').get_passage($line['date']) : get_passage($line['date']);
-			$title = ($this->url) ?
-				open_uri_in_new_window('<a href="' . $this->url . '" title="' .$desc . '" rel="external">' . $this->title . '</a>', 'link_url') :
-				'<span title="'.$desc.'">' . $this->title . '</span>';
+			$title = ($this->url) ? Inline::setLink($this->title, $this->url, $desc) : '<span title="'.$desc.'">' . $this->title . '</span>';
 			$retval[] = '<h4>'.$title.'</h4>';
 			$retval[] = '<ul>';
 			$retval[] =  $body;

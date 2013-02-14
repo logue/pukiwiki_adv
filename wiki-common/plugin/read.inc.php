@@ -4,6 +4,9 @@
 //
 // Read plugin: Show a page and InterWiki
 
+use PukiWiki\Lib\Router;
+use PukiWiki\Lib\Renderer\Inline\AutoAlias;
+
 function plugin_read_init(){
 	$msg = array(
 		'_read_msg' => array(
@@ -34,18 +37,16 @@ function plugin_read_action()
 		$referer = 0;
 		return do_plugin_action('interwiki'); // InterWikiNameを処理
 	} else if (is_pagename($page)) {
-		$realpages = get_autoaliases($page);
+		$realpages = AutoAlias::getAutoAlias($page);
 		if (count($realpages) == 1) {
 			$realpage = $realpages[0];
 			if (is_page($realpage)) {
 				$referer = 0;
-				header('HTTP/1.0 301 Moved Permanently');
-				header('Location: ' . get_page_location_uri($realpage));
+				Router::redirect(get_page_location_uri($realpage));
 				return;
 			} elseif (is_url($realpage)) {
 				$referer = 0;
-				header('HTTP/1.0 301 Moved Permanently');
-				header('Location: ' . $realpage);
+				Router::redirect($realpage);
 				return;
 			} elseif (is_interwiki($realpage)) {
 				$referer = 0;

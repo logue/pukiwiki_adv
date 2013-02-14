@@ -145,13 +145,13 @@ class InlineConverter
 	 * @param string $page
 	 * @return array
 	 */
-	protected function getObjects($string, $page)
+	public function getObjects($string, $page)
 	{
 		$matches = $arr = array();
 		preg_match_all('/' . $this->pattern . '/x', $string, $matches, PREG_SET_ORDER);
 		foreach ($matches as $match) {
 			$obj = self::getConverter($match);
-			if ($obj->__set($match, $page) !== FALSE) {
+			if ($obj->setPattern($match, $page) !== FALSE) {
 				$arr[] = $this->getClone($obj);
 				if ( !empty($obj->body) )
 					$arr = array_merge($arr, $this->getObjects($obj->body, $page));

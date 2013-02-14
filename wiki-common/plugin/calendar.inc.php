@@ -11,6 +11,8 @@
 // Notice: This plugin based on official calendar2.inc.php r1.24 and Plus!'s minicalendar.inc.php.
 //         Adv. is rejected to original calendar.inc.php.
 
+use PukiWiki\Lib\Lang\Holiday\PublicHolidayFactory;
+
 defined('PLUGIN_CALENDAR_PAGENAME_FORMAT') or define('PLUGIN_CALENDAR_PAGENAME_FORMAT', '%04d-%02d-%02d');	// YYYY-MM-DD
 
 function plugin_calendar_init(){
@@ -30,7 +32,7 @@ function plugin_calendar_init(){
 
 function plugin_calendar_convert()
 {
-	global $vars, $post, $get, $pkwk_dtd ,$_label;
+	global $vars, $post, $get, $pkwk_dtd ,$_labels;
 	//global $_calendar_plugin_edit, $_calendar_plugin_empty;
 	global $_calendar_msg;
 
@@ -175,7 +177,7 @@ EOD;
 			'		<tr>' . "\n";
 
 		/* from Plus! */
-		$h_today = public_holiday($year, $m_num, $day);
+		$h_today = PublicHolidayFactory::factory('JP', $year, $m_num, $day);
 		$hday = $h_today['rc'];
 
 		$style = 'style_calendar_day'; // Weekday
@@ -240,7 +242,6 @@ EOD;
 			$aryargs = array(rawurldecode($base), $page_YM, $today_args);
 			if (exist_plugin('calendar_viewer')) {
 				T_bindtextdomain('calendar_viewer', LANG_DIR);
-				T_bind_textdomain_codeset('calendar_viewer', SOURCE_ENCODING);
 				T_textdomain('calendar_viewer');
 				$str = call_user_func_array('plugin_calendar_viewer_convert',$aryargs);
 				T_textdomain('calendar');

@@ -5,6 +5,9 @@
 // $Id: menu.inc.php,v 1.10.9 2011/02/05 11:06:00 Logue Exp $
 //
 
+use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\Renderer\RendererFactory;
+
 // サブメニューを使用する
 define('MENU_ENABLE_SUBMENU', TRUE);
 
@@ -50,14 +53,15 @@ function plugin_menu_convert()
 				array_pop($path);
 			}
 		}
+		$wiki = FileFactory::Wiki($page);
 
-		if (! is_page($page)) {
+		if (! $wiki->has()) {
 			return '';
 		} else if ($vars['page'] === $page) {
 			return '<!-- #menu(): You already view ' . htmlsc($page) . ' -->';
 		} else {
 			// Cut fixed anchors
-			$menutext = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/m', '$1$2', get_source($page));
+			$menutext = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/m', '$1$2', $wiki->get(true));
 //miko patched
 			if (function_exists('convert_filter')) {
 				$menutext = convert_filter($menutext);
@@ -67,7 +71,7 @@ function plugin_menu_convert()
 			$top = '';
 			$save_newwindow = $use_open_uri_in_new_window;
 			$use_open_uri_in_new_window = 0;
-			$menuhtml = convert_html($menutext);
+			$menuhtml = RendererFactory::factory($menutext);
 			$top = $tmptop;
 			$use_open_uri_in_new_window = $save_newwindow;
 			$menuhtml = str_replace("\n",'',$menuhtml);

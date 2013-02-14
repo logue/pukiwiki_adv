@@ -88,7 +88,7 @@ function plugin_related_action()
 
 	// Get related from cache
 	$links = new Relational($_page);
-	$data = $links->get_related();
+	$data = $links->getRelated();
 	if (empty($data)) {
 		$retval[] = '<ul><li>No related pages found.</li></ul>' . "\n";
 	}else{

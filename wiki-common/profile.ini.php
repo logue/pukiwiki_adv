@@ -119,7 +119,7 @@ $agents = array(
 	array('pattern'=>'#\b(iPhone|iPhone|iPad|iPod|Android)+\b#',	'profile'=>	'mobile'),
 	
 	// Safari / Chrome (WebKit)
-	array('pattern'=>'#\b(AppleWebKit)/([0-9\.]+)\b#',	'css'=>'webkit',	'profile'=>'default'),
+	array('pattern'=>'#\b(AppleWebKit)/([0-9\.]+)\b#',	'css'=>'default',	'profile'=>'default'),
 
 	// Loose default: Including something Mozilla
 	array('pattern'=>'#^([a-zA-z0-9 ]+)/([0-9\.]+)\b#',	'profile'=>'default'),

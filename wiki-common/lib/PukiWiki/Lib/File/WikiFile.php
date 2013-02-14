@@ -38,6 +38,10 @@ class WikiFile extends File{
 	const INVALIED_PAGENAME_PATTERN = '/[%|=|&|?|#|\r|\n|\0|\@|\t|;|\$|+|\\|\[|\]|\||^|{|}]/';
 	// ファイル名のパターン
 	const FILENAME_PATTERN = '/^((?:[0-9A-F]{2})+).txt$/';
+	// 投稿ログ
+	const POST_LOG_FILENAME = 'postlog.log';
+	// 投稿内容のロギングを行う（デバッグ用）
+	const POST_LOGGING = false;
 	/**#@-*/
 
 	/**
@@ -63,6 +67,13 @@ class WikiFile extends File{
 	public function isEditable($authenticate = false)
 	{
 		global $edit_auth, $edit_auth_pages, $auth_api, $defaultpage, $_title, $edit_auth_pages_accept_ip;
+		global $cantedit;
+		
+		// 編集できないページ
+		foreach($cantedit as $key) {
+			if ($this->page === $key) return false;
+		}
+		
 		if (!$this->isValied()) return false;	// 無効なページ名
 		if ($this->isFreezed()) return false;	// 凍結されている
 
@@ -322,7 +333,7 @@ class WikiFile extends File{
 		//update_cache($this->page, false, $notimestamp);
 
 		// Logging postdata (Plus!)
-		postdata_write();
+		self::dumpPost();
 
 		if ($trackback > 1) {
 			// TrackBack Ping
@@ -513,7 +524,7 @@ class WikiFile extends File{
 		global $related;
 		// Get repated pages from DB
 		$link = new Relational($this->page);
-		$ret = $related + $link->get_related();
+		$ret = $related + $link->getRelated();
 		ksort($ret, SORT_NATURAL);
 		return $ret;
 	}
@@ -530,7 +541,7 @@ class WikiFile extends File{
 	private function create_recent_changes(){
 		global $whatsnew;
 
-		if (!self::is_hidden()) return;
+		if (!self::isHidden()) return;
 
 		// Create RecentChanges
 		$buffer[] = '#norelated';
@@ -545,7 +556,7 @@ class WikiFile extends File{
 	 */
 	private function create_recent_deleted(){
 		global $whatsdeleted, $maxshow_deleted;
-		if (auth::check_role('readonly') || !self::is_hidden($this->page)) return;
+		if (auth::check_role('readonly') || !self::isHidden($this->page)) return;
 
 		$delated = FileFactory::Wiki($whatsdeleted);
 		$lines = $delated->get();
@@ -568,8 +579,26 @@ class WikiFile extends File{
 		// Get latest $limit reports
 		$lines = array_splice($lines, 0, $maxshow_deleted);
 		// ファイル一覧キャッシュを再生成
-		FileUtility::get_exists(DATA_DIR, true);
+		FileUtility::getExists(DATA_DIR, true);
 		$delated->set($lines);
+	}
+	/**
+	 * POST logging
+	 */
+	private function dumpPost()
+	{
+		global $get, $post, $vars, $cookie;
+
+		// Logging for POST Report
+		if (self::POST_LOGGING === TRUE) {
+			$logfile = CACHE_DIR . self::POST_LOG_FILENAME;
+			error_log("\n\n----" . date('Y-m-d H:i:s', time()) . "\n", 3, $logfile);
+			error_log("[ADDR]" . get_remoteip() . "\t" . $_SERVER['HTTP_USER_AGENT'] . "\n", 3, $logfile);
+			error_log("[SESS]\n" . var_export($cookie, TRUE) . "\n", 3, $logfile);
+			error_log("[GET]\n"  . var_export($get,	TRUE) . "\n", 3, $logfile);
+			error_log("[POST]\n" . var_export($post,   TRUE) . "\n", 3, $logfile);
+			error_log("[VARS]\n" . var_export($vars,   TRUE) . "\n", 3, $logfile);
+		}
 	}
 }
 

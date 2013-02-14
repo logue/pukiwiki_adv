@@ -60,7 +60,7 @@ class DiffFile extends File{
 				'REMOTE_ADDR'	=> TRUE
 			);
 			pkwk_mail_notify($notify_subject, $str, $summary) or
-				Utility::die_message('pkwk_mail_notify(): Failed');
+				Utility::dieMessage('pkwk_mail_notify(): Failed');
 		}
 		parent::set($diffdata);
 	}

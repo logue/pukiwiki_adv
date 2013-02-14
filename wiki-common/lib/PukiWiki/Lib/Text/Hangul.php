@@ -1,4 +1,5 @@
 <?php
+
 namespace PukiWiki\Lib\Text;
 /**
  * ハングル文字クラス
@@ -6,7 +7,7 @@ namespace PukiWiki\Lib\Text;
  */
 class Hangul{
 	// ハングルの母音
-	protected static $LCtable = array('ㄱ','ㄱ','ㄴ','ㄷ','ㄷ','ㄹ','ㅁ','ㅂ','ㅂ','ㅅ','ㅅ','ㅇ','ㅈ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ');
+	private static $LCtable = array('ㄱ','ㄱ','ㄴ','ㄷ','ㄷ','ㄹ','ㅁ','ㅂ','ㅂ','ㅅ','ㅅ','ㅇ','ㅈ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ');
 	/**
 	 * 韓国語の文字列から字母を抽出
 	 * @param string $str
@@ -105,7 +106,6 @@ class Hangul{
 		}			// for
 		return $unicode;
 	}				// utf8_to_unicodea
-
 	private static function unicode_to_utf8($str)
 	{
 		$utf8 = '';
@@ -128,3 +128,6 @@ class Hangul{
 		return $utf8;
 	}				// unicode_to_utf8
 }
+
+/* End of file Hangul.php */
+/* Location: /vendor/PukiWiki/Lib/Text/Hangul.php */

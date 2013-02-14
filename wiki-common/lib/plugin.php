@@ -142,8 +142,6 @@ function do_plugin_init($name)
 		// bindtextdomain($name, $plugin_lang_path[$name]);
 		T_bindtextdomain($name,$plugin_lang_path[$name]);
 	}
-	// bind_textdomain_codeset($name, SOURCE_ENCODING);
-	T_bind_textdomain_codeset($name,SOURCE_ENCODING);
 
 	// i18n (Plus!)
 	$func = 'plugin_' . $name . '_init';
