@@ -1,5 +1,11 @@
 {
 	"name": "logue/pukiwiki_adv",
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "https://github.com/logue/pukiwiki_adv"
+		}
+    ],
 	"description": "PukiWiki Advance",
 	"version": "1.1.0-alpha",
 	"keywords": [
@@ -26,9 +32,15 @@
 	},
 	"require": {
 		"php": ">=5.3.3",
+		"aferrandini/phpqrcode": "dev-master",
 		"zendframework/zendframework": "2.*",
 		"zendframework/zendservice-akismet":"2.*",
 		"zendframework/zendservice-recaptcha":"2.*"
+	},
+	"suggest":{
+		"ext-curl" : "Facebook needs the CURL PHP extension.",
+		"ext-gd" : "for thumbnail.",
+		"ext-intl" : "for i18n use."
 	},
 	"repositories": [
 		{

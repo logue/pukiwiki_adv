@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
 //
-// $Id: qrcode.inc.php,v 0.9.1 2011/04/03 22:41:00 Logue Exp $
+// $Id: qrcode.inc.php,v 0.9.2 2013/02/19 19:24:00 Logue Exp $
 //
 /*
 *内容
@@ -28,18 +28,14 @@ Adv.版は、 Dominik Dzienia氏のphpqrcodeをベースにしています。
 |分割数     |分割バーコード数(2～16)             |分割しない|
 |文字列     |バーコード化する文字列              |(省略不可)|
 *著作権
-phpqrcode
-Copyright (C) 2010 by Dominik Dzienia 
+This library is an import of PHP QR Code by Dominik Dzienia that you can find at http://phpqrcode.sourceforge.net
 
-Based on C libqrencode library (ver. 3.1.1) 
-Copyright (C) 2006-2010 by Kentaro Fukuchi
+Based on C libqrencode library (ver. 3.1.1), Copyright (C) 2006-2010 by Kentaro Fukuchi
 http://megaui.net/fukuchi/works/qrencode/index.en.html
 
-QR Code is registered trademarks of DENSO WAVE INCORPORATED in JAPAN and other
-countries.
+QR Code is registered trademarks of DENSO WAVE INCORPORATED in JAPAN and other countries.
 
-Reed-Solomon code encoder is written by Phil Karn, KA9Q.
-Copyright (C) 2002, 2003, 2004, 2006 Phil Karn, KA9Q
+Reed-Solomon code encoder is written by Phil Karn, KA9Q. Copyright (C) 2002, 2003, 2004, 2006 Phil Karn, KA9Q
 
 *ライセンス
 GPL
@@ -48,33 +44,6 @@ GPL
 これは分割するなら画像サイズ（＝バージョン）が
 そろっていたほうがいいとおもったためです。
 */
-
-define('QR_BASEDIR', LIB_DIR.'phpqrcode'.DIRECTORY_SEPARATOR);
-
-define('QRCODE_MAX_SPLIT', 16);
-
-// use cache - more disk reads but less CPU power, masks and format templates are stored there
-define('QR_CACHEABLE', false);
-// used when QR_CACHEABLE === true
-define('QR_CACHE_DIR', CACHE_DIR.DIRECTORY_SEPARATOR);
-// default error logs dir
-define('QR_LOG_DIR', CACHE_DIR.DIRECTORY_SEPARATOR);
-// if true, estimates best mask (spec. default, but extremally slow; set to false to significant performance boost but (propably) worst quality code
-define('QR_FIND_BEST_MASK', false);
-// if false, checks all masks available, otherwise value tells count of masks need to be checked, mask id are got randomly
-define('QR_FIND_FROM_RANDOM', false);
-// when QR_FIND_BEST_MASK === false
-define('QR_DEFAULT_MASK', 2);
-// maximum allowed png image width (in pixels), tune to make sure GD and PHP can handle such big images
-define('QR_PNG_MAXIMUM_SIZE',  1024);
-
-// インラインはアクション用のアドレスを作成するのみ
-
-function plugin_qrcode_init(){
-	if (extension_loaded('gd')){
-		require_once QR_BASEDIR."qrspec.php";
-	}
-}
 
 function plugin_qrcode_inline()
 {
@@ -102,8 +71,8 @@ function plugin_qrcode_inline()
 
 		// thx, nanashi and customized
 		$s = ( $s <= 0 ) ? intval($s) : 0;
-		$v = (isset($v) && !( $v <= 0 && $v > QRSPEC_VERSION_MAX )) ? intval($v) : 0;
-		$n = (isset($n) && !( $n <= 0 && $n > QRCODE_MAX_SPLIT )) ? intval($n) : 0;
+		$v = (isset($v) && !( $v <= 0 && $v > PHPQRCode\Constants::QRSPEC_VERSION_MAX )) ? intval($v) : 0;
+		$n = (isset($n) && !( $n <= 0 && $n > PHPQRCode\Constants::QRCODE_MAX_SPLIT )) ? intval($n) : 0;
 		$e = htmlsc(isset($e) ? $e : 'M');
 
 		// if no string, no display.
@@ -162,27 +131,17 @@ function plugin_qrcode_inline()
 // アクションでは、実際の画像を作成
 function plugin_qrcode_action()
 {
-	require_once QR_BASEDIR."qrconst.php";
-	require_once QR_BASEDIR."qrtools.php";
-	require_once QR_BASEDIR."qrimage.php";
-	require_once QR_BASEDIR."qrinput.php";
-	require_once QR_BASEDIR."qrbitstream.php";
-	require_once QR_BASEDIR."qrsplit.php";
-	require_once QR_BASEDIR."qrrscode.php";
-	require_once QR_BASEDIR."qrmask.php";
-	require_once QR_BASEDIR."qrencode.php";
-	
 	global $vars;
 	if (empty($vars['d'])) {
 		return FALSE;
 	}
 //	$parity = (empty($vars['p'])) ? 0	: $vars['p'];	// パリティ（使用しない）
 	
-	$qr = new QRcode();	// 宣言
+	$qr = new PHPQRCode\QRcode();	// 宣言
 	$qr->version	= (empty($vars['v'])) ? 0	: $vars['v'];				// バージョン
-	$qr->mask		= (empty($vars['m'])) ? QR_DEFAULT_MASK	: $vars['m'];	// 分割数
+	$qr->mask		= (empty($vars['m'])) ? PHPQRCode\Constants::QR_DEFAULT_MASK	: $vars['m'];	// 分割数
 	$qr->count		= (empty($vars['n'])) ? 1	: $vars['n'];				// 
-	$qr->hint		= (empty($vars['h'])) ? QR_MODE_AN : $vars['h'];		// 文字コード
+	$qr->hint		= (empty($vars['h'])) ? PHPQRCode\Constants::QR_MODE_AN : $vars['h'];		// 文字コード
 	
 	pkwk_common_headers(0,null, false);
 	print $qr->png(rawurldecode($vars['d']), false, (empty($vars['e'])) ? 'M' : $vars['e'], (empty($vars['s'])) ? 1 : $vars['s'], 2);
