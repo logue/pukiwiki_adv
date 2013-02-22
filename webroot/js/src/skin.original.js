@@ -90,18 +90,12 @@ var pukiwiki = {};
 			var generetor = $('meta[name=generator]')[0].content;
 			if (generetor.match(/[PukiPlus|Advance]/)){
 				this.image_dir = IMAGE_URI+'ajax/';	// デフォルト
-				this.plus = true;
-				this.adv = true;
 			}else if (generetor.match(/plus/)){
 				// PukiWiki Plus!の場合
 				this.image_dir = SKIN_DIR+'theme/'+THEME_NAME+'/';
-				this.plus = true;
-				this.adv = false;
 			}else{
 				// PukiWiki用
 				this.image_dir = SKIN_DIR+this.name+'/image/';
-				this.plus = false;
-				this.adv = false;
 			}
 			if (DEBUG){
 				$('.message_box ul').append(
@@ -222,19 +216,19 @@ var pukiwiki = {};
 				],
 				// パレット設定（横18,縦13で、Dreamweaver風パレット配列）
 				color : [
-					'#000000','#003300','#006600','#009900','#00CC00','#00FF00','#330000','#333300','#336600','#339900','#33CC00','#33FF00','#660000','#663300','#666600','#669900','#66CC00','#66FF00',
-					'#000033','#003333','#006633','#009933','#00CC33','#00FF33','#330033','#333333','#336633','#339933','#33CC33','#33FF33','#660033','#663333','#666633','#669933','#66CC33','#66FF33',
-					'#000066','#003366','#006666','#009966','#00CC66','#00FF66','#330066','#333366','#336666','#339966','#33CC66','#33FF66','#660066','#663366','#666666','#669966','#66CC66','#66FF66',
-					'#000099','#003399','#006699','#009999','#00CC99','#00FF99','#330099','#333399','#336699','#339999','#33CC99','#33FF99','#660099','#663399','#666699','#669999','#66CC99','#66FF99',
-					'#0000CC','#0033CC','#0066CC','#0099CC','#00CCCC','#00FFCC','#3300CC','#3333CC','#3366CC','#3399CC','#33CCCC','#33FFCC','#6600CC','#6633CC','#6666CC','#6699CC','#66CCCC','#66FFCC',
-					'#0000FF','#0033FF','#0066FF','#0099FF','#00CCFF','#00FFFF','#3300FF','#3333FF','#3366FF','#3399FF','#33CCFF','#33FFFF','#6600FF','#6633FF','#6666FF','#6699FF','#66CCFF','#66FFFF',
-					'#990000','#993300','#996600','#999900','#99CC00','#99FF00','#CC0000','#CC3300','#CC6600','#CC9900','#CCCC00','#CCFF00','#FF0000','#FF3300','#FF6600','#FF9900','#FFCC00','#FFFF00',
-					'#990033','#993333','#996633','#999933','#99CC33','#99FF33','#CC0033','#CC3333','#CC6633','#CC9933','#CCCC33','#CCFF33','#FF0033','#FF3333','#FF6633','#FF9933','#FFCC33','#FFFF33',
-					'#990066','#993366','#996666','#999966','#99CC66','#99FF66','#CC0066','#CC3366','#CC6666','#CC9966','#CCCC66','#CCFF66','#FF0066','#FF3366','#FF6666','#FF9966','#FFCC66','#FFFF66',
-					'#990099','#993399','#996699','#999999','#99CC99','#99FF99','#CC0099','#CC3399','#CC6699','#CC9999','#CCCC99','#CCFF99','#FF0099','#FF3399','#FF6699','#FF9999','#FFCC99','#FFFF99',
-					'#9900CC','#9933CC','#9966CC','#9999CC','#99CCCC','#99FFCC','#CC00CC','#CC33CC','#CC66CC','#CC99CC','#CCCCCC','#CCFFCC','#FF00CC','#FF33CC','#FF66CC','#FF99CC','#FFCCCC','#FFFFCC',
-					'#9900FF','#9933FF','#9966FF','#9999FF','#99CCFF','#99FFFF','#CC00FF','#CC33FF','#CC66FF','#CC99FF','#CCCCFF','#CCFFFF','#FF00FF','#FF33FF','#FF66FF','#FF99FF','#FFCCFF','#FFFFFF',
-					'#111111','#222222','#333333','#444444','#555555','#666666','#777777','#888888','#999999','#A5A5A5','#AAAAAA','#BBBBBB','#C3C3C3','#CCCCCC','#D2D2D2','#DDDDDD','#EEEEEE','#FFFFFF'
+					'#000','#030','#060','#090','#0C0','#0F0','#300','#330','#360','#390','#3C0','#3F0','#600','#630','#660','#690','#6C0','#6F0',
+					'#003','#033','#063','#093','#0C3','#0F3','#303','#333','#363','#393','#3C3','#3F3','#603','#633','#663','#693','#6C3','#6F3',
+					'#006','#036','#066','#096','#0C6','#0F6','#306','#336','#366','#396','#3C6','#3F6','#606','#636','#666','#696','#6C6','#6F6',
+					'#009','#039','#069','#099','#0C9','#0F9','#309','#339','#369','#399','#3C9','#3F9','#609','#639','#669','#699','#6C9','#6F9',
+					'#00C','#03C','#06C','#09C','#0CC','#0FC','#30C','#33C','#36C','#39C','#3CC','#3FC','#60C','#63C','#66C','#69C','#6CC','#6FC',
+					'#00F','#03F','#06F','#09F','#0CF','#0FF','#30F','#33F','#36F','#39F','#3CF','#3FF','#60F','#63F','#66F','#69F','#6CF','#6FF',
+					'#900','#930','#960','#990','#9C0','#9F0','#C00','#C30','#C60','#C90','#CC0','#CF0','#F00','#F30','#F60','#F90','#FC0','#FF0',
+					'#903','#933','#963','#993','#9C3','#9F3','#C03','#C33','#C63','#C93','#CC3','#CF3','#F03','#F33','#F63','#F93','#FC3','#FF3',
+					'#906','#936','#966','#996','#9C6','#9F6','#C06','#C36','#C66','#C96','#CC6','#CF6','#F06','#F36','#F66','#F96','#FC6','#FF6',
+					'#909','#939','#969','#999','#9C9','#9F9','#C09','#C39','#C69','#C99','#CC9','#CF9','#F09','#F39','#F69','#F99','#FC9','#FF9',
+					'#90C','#93C','#96C','#99C','#9CC','#9FC','#C0C','#C3C','#C6C','#C9C','#CCC','#CFC','#F0C','#F3C','#F6C','#F9C','#FCC','#FFC',
+					'#90F','#93F','#96F','#99F','#9CF','#9FF','#C0F','#C3F','#C6F','#C9F','#CCF','#CFF','#F0F','#F3F','#F6F','#F9F','#FCF','#FFF',
+					'#111','#222','#333','#444','#555','#666','#777','#888','#999','#A5A5A5','#AAA','#BBB','#C3C3C3','#CCC','#D2D2D2','#DDD','#EEE','#FFF'
 				]
 			};
 
@@ -243,9 +237,9 @@ var pukiwiki = {};
 
 			// Lazyload（遅延画像ロード）
 			// IE6では、pngの場合アルファチャンネルが効かなくなるため、拡張子がpngのときは処理しない
-			$('*[role=main] ' + ((ie < 6) ? 'img[src!$=.png]' : 'img')).lazyload({
+			$('[role=main] ' + ((typeof(ie) !== 'undefined' && ie < 6) ? 'img[src!$=.png]' : 'img')).lazyload({
 				placeholder : this.image_dir+'grey.gif',
-				effect : "fadeIn"
+				effect : 'fadeIn'
 			});
 
 			// Suckerfish（ポップアップメニュー
@@ -337,6 +331,25 @@ var pukiwiki = {};
 				test:Modernizr.canvas,
 				nope:JS_URI+'excanvas.compiled.js'
 			});
+			
+			// Audio実装
+			/*
+			Modernizr.load({
+				test:Modernizr.audio.mp3,
+				nope:JS_URI+'audiojs/audio.min.js',
+				complete: function(){
+					audiojs.events.ready(function() {
+						var as = audiojs.createAll();
+					});
+				}
+			});
+			
+			$.getScript(JS_URI+'audiojs/audio.min.js', function(){
+				audiojs.events.ready(function() {
+					var as = audiojs.createAll();
+				});
+			});
+			*/
 
 			// Placeholder属性のサポート
 			if (!Modernizr.input.placeholder){
@@ -637,7 +650,7 @@ var pukiwiki = {};
 							return false;
 						});
 					}else {
-						$this.click(function(){
+						$this.unbind("click").bind("click", function(){
 							if (ext[1]){
 								switch (ext[1]) {
 									case 'jpg': case 'jpeg': case 'gif': case'png':
@@ -676,7 +689,7 @@ var pukiwiki = {};
 
 						if (disable_scrolling === false){
 							// アンカースクロール
-							$this.click(function(){
+							$this.unbind("click").bind("click", function(){
 								var $body;
 								if ($(window).scrollTop() === 0) {
 									// スクロールが0の時エラーになる問題をごまかす
@@ -743,9 +756,10 @@ var pukiwiki = {};
 							if (params.help == 'true'){
 								params = {cmd:'read', page:'FormatRule'};
 							}
+							
 
 							// ダイアログ描画処理
-							$this.click(function(){
+							$this.unbind("click").bind("click", function(){
 								params.ajax = 'json';
 								self.ajax_dialog(params,prefix,function(){
 									if ((params.cmd == 'attach' && params.pcmd.match(/upload|info/i)) || params.cmd.match(/attachref|read|backup/i) && params.age !== ''){
@@ -866,6 +880,7 @@ var pukiwiki = {};
 			}).
 			always(function(){
 				container.html(content).dialog(dialog_option);
+				$('[role="tooltip"]').remove();	// ツールチップが消えないことがあるので・・・
 			});
 		},
 		blockUI : function(dom){
@@ -1165,7 +1180,7 @@ var pukiwiki = {};
 						return $this.attr('title');
 					}
 					// ツールチップが複数表示されてしまうのを抑止
-					if ( $('[role="tooltip"]').length > 2 ){
+					if ( $('[role="tooltip"]').length > 1 ){
 						$('[role="tooltip"]').remove();
 					}
 				}
