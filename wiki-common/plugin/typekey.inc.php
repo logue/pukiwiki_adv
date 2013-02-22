@@ -18,7 +18,7 @@ defined('TYPEKEY_URL_PROFILE')		or define('TYPEKEY_URL_PROFILE',	'http://profile
 defined('TYPEKEY_REGKEYS')			or define('TYPEKEY_REGKEYS',		'http://www.typekey.com/extras/regkeys.txt');
 defined('TYPEKEY_VERSION')			or define('TYPEKEY_VERSION',		'1.1');
 defined('TYPEKEY_CACHE_TIME')		or define('TYPEKEY_CACHE_TIME',		60*60*24*2); // 2 day
-
+defined('ROLE_AUTH_TYPEKEY')        or define('ROLE_AUTH_TYPEKEY', 6.6);
 class auth_typekey extends AuthApi
 {
 	var $siteToken, $need_email, $regkeys, $version;
@@ -303,13 +303,13 @@ function plugin_typekey_get_user_name()
 {
 	global $auth_api;
 	// role,name,nick,profile
-	if (! $auth_api['typekey']['use']) return array('role'=>ROLE_GUEST,'nick'=>'');
+	if (! $auth_api['typekey']['use']) return array('role'=>Auth::ROLE_GUEST,'nick'=>'');
 	$obj = new auth_typekey();
 	$msg = $obj->auth_session_get();
 	if (! empty($msg['nick']) && ! empty($msg['name'])) {
 		return array('role'=>ROLE_AUTH_TYPEKEY,'name'=>$msg['name'],'nick'=>$msg['nick'],'profile'=>TYPEKEY_URL_PROFILE.$msg['name'],'key'=>$msg['name']);
 	}
-	return array('role'=>ROLE_GUEST,'nick'=>'');
+	return array('role'=>Auth::ROLE_GUEST,'nick'=>'');
 }
 
 /* End of file typekey.inc.php */

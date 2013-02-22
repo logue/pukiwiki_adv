@@ -77,8 +77,9 @@ class Wiki{
 		}
 		// ユーザの情報を取得
 		$info = Auth::get_user_info();
+		if (empty($username)) $username = $info['key'];
+		if (empty($groupname)) $groupname = $info['group'];
 
-		
 
 		$user_list = $group_list = $role = '';
 		// $auth_pages = array(

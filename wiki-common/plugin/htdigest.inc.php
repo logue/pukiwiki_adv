@@ -22,9 +22,8 @@ if (!defined('HTDIGEST_FILE')) {
 	define('HTDIGEST_FILE', HTDIGEST_FILE_PATH.HTDIGEST_FILE_NAME);
 }
 use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\File\AuthFile;
-require(LIB_DIR . 'auth_file.cls.php');
-require(LIB_DIR . 'des.php');
+//use PukiWiki\Lib\File\AuthFile;
+use Zend\Crypt\BlockCipher;
 
 function plugin_htdigest_init()
 {
@@ -122,13 +121,12 @@ function htdigest_is_iis()
 
 function htdigest_menu($msg='&nbsp;')
 {
-	global $realm, $head_tags, $_htdigest_msg;
-
-	$head_tags[] = ' <script type="text/javascript" src="'.SKIN_URI.'js/plugin/crypt/md4.js"></script>';
-	$head_tags[] = ' <script type="text/javascript" src="'.SKIN_URI.'js/plugin/crypt/md5.js"></script>';
-	$head_tags[] = ' <script type="text/javascript" src="'.SKIN_URI.'js/plugin/crypt/sha1.js"></script>';
-	$head_tags[] = ' <script type="text/javascript" src="'.SKIN_URI.'js/plugin/crypt/des.js"></script>';
-	$head_tags[] = ' <script type="text/javascript" src="'.SKIN_URI.'js/plugin/crypt/base64.js"></script>';
+	global $realm, $js_tags, $js_blocks, $_htdigest_msg;
+	$js_tags[] = array('type'=>'text/javascript', 'src'=>JS_URI.'plugin/crypt/md4.js');
+	$js_tags[] = array('type'=>'text/javascript', 'src'=>JS_URI.'plugin/crypt/md5.js');
+	$js_tags[] = array('type'=>'text/javascript', 'src'=>JS_URI.'plugin/crypt/sha1.js');
+	$js_tags[] = array('type'=>'text/javascript', 'src'=>JS_URI.'plugin/crypt/des.js');
+	$js_tags[] = array('type'=>'text/javascript', 'src'=>JS_URI.'plugin/crypt/base64.js');
 
 	// 使用する場合は、変更させることもコピーさせることも不要なので、抑止する
 	$disabled = (USE_APACHE_WRITE_FUNC) ? 'disabled="disabled"' : '';
@@ -146,12 +144,8 @@ function htdigest_menu($msg='&nbsp;')
 		$msg_pass = ($role_level == 2) ? $_htdigest_msg['msg_pass_admin'] : '';
 	}
 	$script = get_script_uri();
-$x = <<<EOD
-<script type="text/javascript">
-//<![CDATA[
-
-function set_hash()
-{
+	$j = <<< EOD
+$('#set_hash').click(function(){
  var a1,ctr,pref,hash,des_key;
  var fn = function(){
    switch(objForm.algorithm.value) {
@@ -168,7 +162,8 @@ function set_hash()
  };
 
  var objForm = eval("document.htdigest");
- objForm.submit.disabled = true;
+// objForm.submit.disabled = true;
+ $('form[name="htdigest"] input[type="submit"]').disabled(true);
 
  if (objForm.passwd.value == "" || objForm.key.value == "") {
    objForm.hash.value = "";
@@ -183,16 +178,15 @@ function set_hash()
      }
    }
 EOD;
-
 	if ($role_level > 2) {
 		// a1
-		$x .= "a1 = objForm.username.value+':'+objForm.realm.value+':'+objForm.key.value;\n";
+		$j .= "a1 = objForm.username.value+':'+objForm.realm.value+':'+objForm.key.value;\n";
 	} else {
 		// adminpass
-		$x .= "a1 = objForm.key.value;\n";
+		$j .= "a1 = objForm.key.value;\n";
 	}
 
-$x .= <<<EOD
+$j .= <<<EOD
    fn();
    des_key = hash;
 
@@ -208,11 +202,11 @@ $x .= <<<EOD
  } else {
    objForm.hash_view.value = objForm.username.value+':'+objForm.realm.value+':'+hash;
  }
-}
-
-//]]>
-</script>
-
+});
+EOD;
+	$js_blocks[] = $j;
+	
+$x = <<<EOD
 <fieldset>
 	<legend>htdigest</legend>
 	<p>$msg</p>
@@ -243,11 +237,11 @@ $x .= <<<EOD
 			<tr>
 				<th>{$_htdigest_msg['Calculate']}</th>
 				<td>
-					<input type="radio" name="scheme" value="MD5" checked="checked" /> <label>MD5</label>
-					<input type="radio" name="scheme" value="SHA-1" /> <label>SHA-1</label>
-					<input type="radio" name="scheme" value="MD4" /> <label>MD4</label>
+					<input type="radio" name="scheme" value="MD5" checked="checked" id="md5" /><label for="md5">MD5</label>
+					<input type="radio" name="scheme" value="SHA-1"  id="sha1" /><label for="sha1">SHA-1</label>
+					<input type="radio" name="scheme" value="MD4" id="md4" /><label for="md4">MD4</label>
 					&nbsp;
-					<input type="button" onclick="set_hash()" value="{$_htdigest_msg['CALC']}" />
+					<input type="button" id="set_hash" value="{$_htdigest_msg['CALC']}" />
 				</td>
 			</tr>
 			<tr>
@@ -305,8 +299,16 @@ function htdigest_save($username,$p_realm,$hash,$role)
 			return $_htdigest_msg['err_md5'];
 		}
 	}
-	$hash = des($key, base64_decode($hash), 0, 0, null);
-	if (! preg_match('/^[a-z0-9]+$/iD', $hash)) {
+	$blockCipher = BlockCipher::factory('mcrypt', array(
+		'algo' => 'des',
+		'mode' => 'cfb',
+		'hash' => 'sha512',
+		'salt' => $key,
+		'padding' => 2
+	));
+	$decrypted_hash = $blockCipher->decrypt($hash);
+//	$hash = des($key, base64_decode($hash), 0, 0, null);
+	if (! preg_match('/^[a-z0-9]+$/iD', $decrypted_hash)) {
 		return $_htdigest_msg['err_key'];
 	}
 
@@ -316,7 +318,7 @@ function htdigest_save($username,$p_realm,$hash,$role)
 	} else {
 		$fp = fopen(HTDIGEST_FILE,'w');
 		@flock($fp, LOCK_EX);
-		fputs($fp, $username.':'.$realm.':'.$hash."\n");
+		fputs($fp, $username.':'.$realm.':'.$decrypted_hash."\n");
 		@flock($fp, LOCK_UN);
 		@fclose($fp);
 		return $_htdigest_msg['msg_1st'];
@@ -326,12 +328,12 @@ function htdigest_save($username,$p_realm,$hash,$role)
 	foreach($lines as $no=>$line) {
 		$field = split(':', trim($line));
 		if ($field[0] == $username && $field[1] == $p_realm) {
-			if ($field[2] == $hash) {
+			if ($field[2] == $decrypted_hash) {
 				return $_htdigest_msg['msg_not_update'];
 			}
 
 			$sw = TRUE;
-			$lines[$no] = $field[0].':'.$field[1].':'.$hash."\n";
+			$lines[$no] = $field[0].':'.$field[1].':'.$decrypted_hash."\n";
 			break;
 		}
 	}
@@ -339,7 +341,7 @@ function htdigest_save($username,$p_realm,$hash,$role)
 	if (! $sw) {
 		$fp = fopen(HTDIGEST_FILE,'a');
 		@flock($fp, LOCK_EX);
-		fputs($fp, $username.':'.$p_realm.':'.$hash."\n");
+		fputs($fp, $username.':'.$p_realm.':'.$decrypted_hash."\n");
 		@flock($fp, LOCK_UN);
 		@fclose($fp);
 		return $_htdigest_msg['msg_add'];

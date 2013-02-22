@@ -115,7 +115,6 @@ require(LIB_DIR . 'funcplus.php');
 require(LIB_DIR . 'plugin.php');
 require(LIB_DIR . 'html.php');
 
-require(LIB_DIR . 'diff.php');
 require(LIB_DIR . 'config.php');
 require(LIB_DIR . 'log.php');
 require(LIB_DIR . 'spamplus.php');

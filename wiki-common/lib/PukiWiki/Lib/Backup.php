@@ -7,7 +7,6 @@ use PukiWiki\Lib\File\FileFactory;
  * バックアップのコントローラー
  */
 class Backup{
-
 	public function __construct($page){
 		$this->page = $page;
 		// 以下はSplFileInfoの派生クラス
@@ -56,7 +55,7 @@ class Backup{
 
 		// 追加するバックアップデーター
 		// Escape 'lines equal to self::SPLITTER', by inserting a space
-		$body = preg_replace($this->splitter_reglex, '$1 ', $newdata);
+		$body = preg_replace($this->backup->splitter_reglex, '$1 ', $newdata);
 		// BugTrack/685 by UPK
 		$body = self::SPLITTER . ' ' . $wiki->time() . ' ' . UTIME . "\n" . $body;
 		$body = preg_replace('/\n*$/', "\n", $body);
@@ -83,7 +82,7 @@ class Backup{
 		if ($this->backup->has()){
 			foreach($this->backup->get() as $line) {
 				// BugTrack/685 by UPK
-				if ( preg_match($this->splitter_reglex, $line, $match) ) {
+				if ( preg_match($this->backup->splitter_reglex, $line, $match) ) {
 					// A splitter, tells new data of backup will come
 					++$_age;
 					if ($age > 0 && $_age > $age) return $retvars[$age];

@@ -7,7 +7,7 @@
  * @version     $Id: jugemkey.inc.php,v 0.15 2010/12/26 17:18:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
-require_once(LIB_DIR . 'hash.php');
+
 defined('ROLE_AUTH_JUGEMKEY')        or define('ROLE_AUTH_JUGEMKEY', 5.4);
 defined('JUGEMKEY_URL_AUTH')  or define('JUGEMKEY_URL_AUTH', 'https://secure.jugemkey.jp/?mode=auth_issue_frob');
 defined('JUGEMKEY_URL_TOKEN') or define('JUGEMKEY_URL_TOKEN','http://api.jugemkey.jp/api/auth/token');

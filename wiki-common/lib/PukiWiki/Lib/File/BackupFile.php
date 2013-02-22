@@ -22,8 +22,8 @@ class BackupFile extends File{
 	const SPLITTER = '>>>>>>>>>>';
 	// バックアップで利用可能な圧縮形式
 	protected $available_ext = array('.lzf', '.bz2', '.gz', '.txt');
-
-	private $splitter_reglex, $page, $ext = '.txt', $name, $time, $cycle, $maxage;
+	public $splitter_reglex;
+	private $page, $ext = '.txt', $name, $time, $cycle, $maxage;
 
 	/**
 	 * コンストラクタ

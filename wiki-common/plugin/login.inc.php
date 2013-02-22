@@ -110,6 +110,7 @@ function plugin_login_inline()
 	if (PKWK_READONLY != Auth::ROLE_AUTH) return '';
 
 	$auth_key = Auth::get_user_info();
+	
 
 	// Offline
 	if (empty($auth_key['key'])) {

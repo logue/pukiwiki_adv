@@ -10,6 +10,7 @@
 //
 // Showing colored-diff plugin
 use PukiWiki\Lib\Factory;
+use PukiWiki\Lib\File\FileFactory;
 use PukiWiki\Lib\Auth\Auth;
 
 function plugin_diff_action()
@@ -51,7 +52,7 @@ function plugin_diff_view($page)
 		'<li class="no-js">' . $_msg_delline . '</li>'
 	);
 
-	$is_page = WikiFactory::Wiki($page)->isValied();
+	$is_page = Factory::Wiki($page)->isValied();
 	if ($is_page) {
 		$menu[] = ' <li>' . str_replace('$1', '<a href="' . get_page_uri($page) . '">' .
 			$s_page . '</a>', $_msg_goto) . '</li>';

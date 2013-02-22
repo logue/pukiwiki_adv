@@ -163,9 +163,9 @@ function plugin_backup_action()
 				$now_data = get_source($page, TRUE, TRUE);
 				Auth::is_role_page($now_data);
 				// <ins> <del>タグを使う形式に変更。
-				$source = do_diff($data, $now_data);
+				$diff = new Diff($data, $now_data);
 
-				$source = plugin_backup_visualdiff($source);
+				$source = plugin_backup_visualdiff($diff->getDiff());
 				$body .= drop_submit(RendererFactorty::factory($source));
 				$body = preg_replace('#<p>\#del(.*?)(</p>)#si', '<del class="remove_block">$1', $body);
 				$body = preg_replace('#<p>\#ins(.*?)(</p>)#si', '<ins class="add_block">$1', $body);

@@ -695,12 +695,12 @@ class TableEdit2Auth
 		unset($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
 		header( 'WWW-Authenticate: Basic realm="'.$m_auth.'"' );
 		header( 'HTTP/1.0 401 Unauthorized' );
-		return Auth::check_auth();
+		return TE2Auth::check_auth();
 	}
 }
 function table_edit2_auth()
 {
-	class Auth {
+	class TE2Auth{
 		function check_auth()
 		{
 			foreach (array('PHP_AUTH_USER', 'AUTH_USER', 'REMOTE_USER', 'LOGON_USER') as $x) {

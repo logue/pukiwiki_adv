@@ -277,7 +277,7 @@ class Auth
 		global $auth_users, $auth_method_type;
 		global $realm;
 
-		if (self::is_page_auth($page, $auth_flag, $auth_pages, null,null)) return true; // No limit
+	//	if (self::is_page_auth($page, $auth_flag, $auth_pages, null,null)) return true; // No limit
 		$user_list = $auth_users;
 
 		if (! self::check_role('role_adm_contents')) return TRUE; // 既にコンテンツ管理者
@@ -523,11 +523,12 @@ class Auth
 	public static function get_auth_pw_info()
 	{
 		global $auth_users, $defaultpage;
+		
 		$retval = array(
 			'role'=>self::ROLE_GUEST,
 			'nick'=>null,
 			'key'=>null,
-			'api'=>null,
+			'api'=>'plus',
 			'group'=>null,
 			'displayname'=>null,
 			'home'=>null,
@@ -536,7 +537,6 @@ class Auth
 		$user = self::check_auth_pw();
 		if (empty($user)) return $retval;
 
-		$retval['api'] = 'plus';
 		$retval['key'] = $retval['nick'] = $user;
 
 		// 登録者かどうか

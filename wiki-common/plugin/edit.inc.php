@@ -143,11 +143,12 @@ function plugin_edit_preview()
 	$_msg_preview_delete	= T_('(The contents of the page are empty. Updating deletes this page.)');
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
+	$wiki = WikiFactory::Wiki($vars['template_page']);
 
 	// Loading template
-	if (isset($vars['template_page']) && WikiFactory::Wiki($vars['template_page'])->isValied()) {
+	if (isset($vars['template_page']) && $wiki->isValied()) {
 
-		$vars['msg'] = join('', WikiFactory::Wiki($vars['template_page'])->source());
+		$vars['msg'] = $wiki->get(true);
 
 		// Cut fixed anchors
 		$vars['msg'] = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/m', '$1$2', $vars['msg']);
@@ -161,7 +162,7 @@ function plugin_edit_preview()
 		if (isset($post['add_top']) && $post['add_top']) {
 			$postdata  = $postdata . "\n\n" . get_source($page, TRUE, TRUE);
 		} else {
-			$postdata  = get_source($page, TRUE, TRUE) . "\n\n" . $postdata;
+			$postdata  = $wiki->get(true) . "\n\n" . $postdata;
 		}
 	}
 

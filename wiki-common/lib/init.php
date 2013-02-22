@@ -172,8 +172,8 @@ defined('THEME_PLUS_NAME')	or define('THEME_PLUS_NAME',  'theme/');			// SKIN_UR
 
 // フレームワークのバージョン
 define('JQUERY_VER',		'1.9.1');
-define('JQUERY_UI_VER',		'1.10.0');
-define('JQUERY_MOBILE_VER',	'1.3.0-rc.1');
+define('JQUERY_UI_VER',		'1.10.1');
+define('JQUERY_MOBILE_VER',	'1.3.0');
 
 // アップロード進捗状況のセッション名（PHP5.4以降のみ有効）
 defined('PKWK_PROGRESS_SESSION_NAME') or define('PKWK_PROGRESS_SESSION_NAME', 'pukiwiki_progress');
@@ -717,6 +717,7 @@ if (!IS_AJAX || IS_MOBILE){
 				'jquery.cookie',
 				'jquery.form',
 				'jquery.dataTables',
+				'jquery.dataTables.naturalsort',
 				'jquery.i18n',
 				'jquery.jplayer',
 				'jquery.lazyload',

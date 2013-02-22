@@ -8,12 +8,12 @@
  * $A1 = md5($data['username'] . ':' . $realm . ':' . $auth_users[$data['username']]);
  */
 use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\File\AuthFile;
+use Zend\Crypt\BlockCipher;
+
 if (!defined('USE_PKWK_WRITE_FUNC')) {
 	define('USE_PKWK_WRITE_FUNC', FALSE);
 }
-
-require_once(LIB_DIR . 'auth_file.cls.php');
-require_once(LIB_DIR . 'des.php');
 
 function plugin_passwd_init()
 {
@@ -415,21 +415,29 @@ function passwd_undes($role,$user,$hash)
 		global $adminpass;
 		list($scheme, $key) = Auth::passwd_parse($adminpass);
 	} else {
-		$obj = new auth_file(PKWK_AUTH_FILE);
-		list($o_scheme,$key,$o_role) = $obj->get_data($user);
+		$obj = new AuthFile(PKWK_AUTH_FILE);
+		list($o_scheme,$key,$o_role) = $obj->getPassword($user);
 	}
 
-	$hash = des($key, base64_decode($hash), 0, 0, null);
-	if (! preg_match('/^[a-z0-9]+$/iD', $hash)) {
+	//$hash = des($key, base64_decode($hash), 0, 0, null);
+	$blockCipher = BlockCipher::factory('mcrypt', array(
+		'algo' => 'des',
+		'mode' => 'cfb',
+		'hash' => 'sha512',
+		'salt' => $key,
+		'padding' => 2
+	));
+	$decrypted_hash = $blockCipher->decrypt($hash);
+	if (! preg_match('/^[a-z0-9]+$/iD', $decrypted_hash)) {
 		return false;
 	}
-	return $hash;
+	return $decrypted_hash;
 }
 
 function passwd_get_scheme($user)
 {
-	$obj = new auth_file(PKWK_AUTH_FILE);
-	list($scheme,$key,$role) = $obj->get_data($user);
+	$obj = new AuthFile(PKWK_AUTH_FILE);
+	list($scheme,$key,$role) = $obj->getPassword($user);
 	$x = explode('-',substr($scheme,1,-1));
 	return $x[count($x)-1];
 }
@@ -438,7 +446,7 @@ function passwd_auth_file_save($username,$algorithm,$passwd,$role)
 {
 	global $auth_type;
 
-	$obj = new auth_file(PKWK_AUTH_FILE);
+	$obj = new AuthFile(PKWK_AUTH_FILE);
 
 	switch ($auth_type) {
 	case 1:
@@ -462,10 +470,10 @@ function passwd_auth_file_save($username,$algorithm,$passwd,$role)
 	}
 
 	// 0:変更なし, 1:追加, 2:変更あり
-	$rc = $obj->set_passwd($username, $scheme.$passwd, $role);
+	$rc = $obj->setPassword($username, $scheme.$passwd, $role);
 	if ($rc == 0) return $rc;
 
-	$obj->write_auth_file();
+	$obj->set();
 
 	// 更新結果の再読込
 	global $auth_users;
@@ -490,12 +498,8 @@ function passwd_get_role_name($role_level)
 
 function passwd_get_auth_file()
 {
-	if (file_exists(PKWK_AUTH_FILE)) {
-		include(PKWK_AUTH_FILE);
-	} else {
-		$auth_users = array();
-	}
-	return $auth_users;
+	$auth_file = new AuthFile(PKWK_AUTH_FILE);
+	return $auth_file->get();
 }
 
 /* End of file passwd.inc.php */

@@ -56,7 +56,7 @@ class Note extends Inline
 		}
 
 		$id   = ++$note_id;
-		$note = InlineFactory::Wiki($body);
+		$note = InlineFactory::factory($body);
 		$page = isset($vars['page']) ? rawurlencode($vars['page']) : '';
 
 		// Footnote

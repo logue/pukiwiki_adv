@@ -10,7 +10,8 @@ namespace PukiWiki\Lib;
 use PukiWiki\Lib\Renderer\RendererDefines;
 use PukiWiki\Lib\Renderer\InlineFactory;
 use PukiWiki\Lib\Router;
-
+use PukiWiki\Lib\Factory;
+use Zend\Http\Response;
 use Zend\Math\Rand;
 
 class Utility{
@@ -359,7 +360,7 @@ class Utility{
 		$ret = array();
 		$ret[] = '<p>[ ';
 		if ( isset($vars['page']) && !empty($vars['page']) ){
-			$ret[] = '<a href="' . Router::get_page_location_uri($vars['page']) .'">'.$_button['back'].'</a> | ';
+			$ret[] = '<a href="' . Factory::Wiki($vars['page'])->uri() .'">'.$_button['back'].'</a> | ';
 			$ret[] = '<a href="' . Router::get_cmd_uri('edit',$vars['page']) . '">Try to edit this page</a> | ';
 		}
 		$ret[] = '<a href="' . get_cmd_uri() . '">Return to FrontPage</a> ]</p>';
@@ -405,14 +406,15 @@ class Utility{
 	 */
 	public static function redirect($url = '', $time = 0){
 		global $vars;
+		$response = new Response();
+
 		if (empty($url)){
 			$url = isset($vars['page']) ? Router::get_page_uri($vars['page']) : Router::get_script_uri();
 		}
 		$s_url = self::htmlsc($url);
-		pkwk_headers_sent();
-		header('Status: 301 Moved Permanently');
+		$response->setStatusCode(301);
 		if (!DEBUG){
-			header('Location: ' . $s_url);
+			$response->getHeaders()->addHeaderLine('Location', $s_url);
 		}
 		$html = array();
 		$html[] = '<!doctype html>';
@@ -435,7 +437,16 @@ class Utility{
 		$html[] = '</div>';
 		$html[] = '</body>';
 		$html[] = '</html>';
-		echo join("\n",$html);
+		$response->setContent(join("\n",$html));
+
+		if (!headers_sent()) {
+			header($response->renderStatusLine());
+			foreach ($response->getHeaders() as $header) {
+				header($header->toString());
+			}
+		}
+
+		echo $response->getBody();
 		exit;
 	}
 	/**
