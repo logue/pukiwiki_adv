@@ -14,8 +14,8 @@
 
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
-define('S_VERSION', 'v1.0.2');
-define('S_REVSION', '20130126');
+define('S_VERSION', 'v1.0.3');
+define('S_REVSION', '20130223');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &#169; 2010-2013' .
@@ -36,9 +36,9 @@ defined('WWW_HOME')		or define('WWW_HOME', '');
 defined('COMMON_URI')	or define('COMMON_URI', ROOT_URI);
 
 // フレームワークのバージョン
-define('JQUERY_VER',		'1.9.0');
-define('JQUERY_UI_VER',		'1.10.0');
-define('JQUERY_MOBILE_VER',	'1.2.0');
+define('JQUERY_VER',		'1.9.1');
+define('JQUERY_UI_VER',		'1.10.1');
+define('JQUERY_MOBILE_VER',	'1.3.0');
 
 // ページ名やファイル名として使用できない文字（エンコード前の文字）
 defined('PKWK_ILLEGAL_CHARS_PATTERN') or define('PKWK_ILLEGAL_CHARS_PATTERN', '/[%|=|&|?|#|\r|\n|\0|\@|\t|;|\$|+|\\|\[|\]|\||^|{|}]/');

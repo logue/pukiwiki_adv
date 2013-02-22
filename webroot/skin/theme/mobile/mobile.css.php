@@ -1,17 +1,17 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: classic.css.php,v 0.0.2 2012/03/31 16:49:30 Logue Exp $
+// $Id: classic.css.php,v 0.0.2 2013/02/06 16:49:30 Logue Exp $
 //
 // PukiWiki Adv. Mobile Theme
 // Copyright (C)
 //   2012 PukiWiki Advance Developer Team
 
-//error_reporting(0); // Nothing
-error_reporting(E_ERROR | E_PARSE); // Avoid E_WARNING, E_NOTICE, etc
 ini_set('zlib.output_compression', 'Off');
 
-$image_dir = isset($_GET['base'])   ? $_GET['base']	: '../image/';
-$expire = isset($_GET['expire'])   ? (int)$_GET['expire'] * 86400	: '604800';	// Default is 7 days.
+$image_dir = isset($_GET['base']) ? $_GET['base']	: '../image/';
+$iconset = isset($_GET['iconset']) ? $_GET['iconset']	: 'default';
+$expire = isset($_GET['expire']) ? (int)$_GET['expire'] * 86400	: '604800';	// Default is 7 days.
+
 // Send header
 header('Content-Type: text/css; charset: UTF-8');
 header('Cache-Control: private');
@@ -21,53 +21,6 @@ header('Last-Modified: '.gmdate('D, d M Y H:i:s', getlastmod() ) . ' GMT');
 ?>
 @charset "UTF-8";
 @namespace url(http://www.w3.org/1999/xhtml);
-
-/* HTML5 ✰ Boilerplate */
-/* ==|== normalize.css v2.0.1 | MIT License | git.io/normalize ===============*/
-article,aside,details,figcaption,figure,footer,header,hgroup,nav,section,summary{display:block}
-audio,canvas,video{display:inline-block}
-audio:not([controls]){display:none;height:0}
-[hidden]{display:none}
-html{font-family:sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
-body{margin:0}
-a:focus{outline:thin dotted}
-a:active,a:hover{outline:0}
-h1{font-size:2em}
-abbr[title]{border-bottom:1px dotted}
-b,strong{font-weight:bold}
-dfn{font-style:italic}
-mark{background:#ff0;color:#000}
-code,kbd,pre,samp{font-family:monospace,serif;font-size:1em}
-pre{white-space:pre;white-space:pre-wrap;word-wrap:break-word}
-q{quotes:"\201C" "\201D" "\2018" "\2019"}
-small{font-size:80%}
-sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}
-sup{top:-0.5em}
-sub{bottom:-0.25em}
-img{border:0}
-svg:not(:root){overflow:hidden}
-figure{margin:0}
-fieldset{border:1px solid #c0c0c0;margin:0 2px;padding:.35em .625em .75em}
-legend{border:0;padding:0}
-button,input,select,textarea{font-family:inherit;font-size:100%;margin:0}
-button,input{line-height:normal}
-button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer}
-button[disabled],input[disabled]{cursor:default}
-input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0}
-input[type="search"]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}
-input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance:none}
-button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
-textarea{overflow:auto;vertical-align:top}
-table{border-collapse:collapse;border-spacing:0}
-
-/* ==|== HTML5 Boilerplate styles - h5bp.com ================================ */
-html,button,input,select,textarea{color: #222;}
-body{font-size: 13px;line-height: 1.4;}
-::-moz-selection,::selection {background: #b3d4fc;text-shadow: none;}
-hr{display: block;height: 1px;border: 0;border-top: 1px solid #ccc;margin: 1em 0;padding: 0;}
-img{vertical-align: middle;}
-textarea{resize: vertical;}
-.chromeframe{margin: 0.2em 0;background: #ccc;color: #000;padding: 0.2em 0;}
 
 /* ==|== PukiWiki Advance Standard Font Set ================================= */
 
@@ -1035,6 +988,93 @@ textarea, select, option, input, var, pre, code{
 .browser-winxbox{ background-position: -1747px 0; width: 16px; height: 16px; }
 .browser-wizz{ background-position: -1764px 0; width: 16px; height: 16px; }
 
+/* ==|== ui icon classes ==================================================== */
+.pkwk-icon{
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	line-height: 100%;
+	background: transparent url('<?php echo $image_dir ?>iconset/<?php echo $iconset ?>.png') -1000px -1000px no-repeat;
+	vertical-align: middle;
+	margin:0 2px;
+	text-align: center;
+	text-shadow: none;
+	color: transparent;
+}
+
+.icon-new			{ background-position: 0 0; }
+.icon-page			{ background-position: -18px 0; }
+.icon-add			{ background-position: -36px 0; }
+.icon-copy			{ background-position: -54px 0; }
+.icon-newsub		{ background-position: -72px 0; }
+.icon-edit			{ background-position: -90px 0; }
+.icon-diff			{ background-position: -108px 0; }
+
+.icon-source		{ background-position: 0 -18px; }
+.icon-rename		{ background-position: -18px -18px; }
+.icon-upload		{ background-position: -36px -18px; }
+.icon-backup		{ background-position: -54px -18px; }
+.icon-reload		{ background-position: -72px -18px; }
+.icon-freeze		{ background-position: -90px -18px; }
+.icon-unfreeze		{ background-position: -108px -18px; }
+
+.icon-pdf			{ background-position: 0 -36px; }
+.icon-list			{ background-position: -18px -36px; }
+.icon-filelist		{ background-position: -36px -36px; }
+.icon-login			{ background-position: -54px -36px; }
+.icon-logout		{ background-position: -72px -36px; }
+.icon-referer		{ background-position: -90px -36px; }
+/*
+.icon-linklist		{ background-position: -108px -36px; }
+*/
+
+.icon-download		{ background-position: 0 -54px; }
+.icon-search		{ background-position: -18px -54px; }
+.icon-log			{ background-position: -36px -54px; }
+/*
+.icon-log_check		{ background-position: -54px -54px; }
+.icon-log_down		{ background-position: -72px -54px; }
+.icon-log_login		{ background-position: -90px -54px; }
+.icon-log_update	{ background-position: -108px -54px; }
+*/
+
+.icon-top			{ background-position: 0 -72px; }
+.icon-home			{ background-position: -18px -72px; }
+.icon-recent		{ background-position: -36px -72px; }
+.icon-help			{ background-position: -54px -72px; }
+.icon-alias			{ background-position: -72px -72px; }
+.icon-glossary		{ background-position: -90px -72px; }
+.icon-deleted		{ background-position: -108px -72px; }
+
+.icon-rss			{ background-position: 0 -90px; }
+.icon-opml			{ background-position: -18px -90px; }
+.icon-share			{ background-position: -36px -90px; }
+.icon-canonical		{ background-position: -54px -90px; }
+.icon-trackback		{ background-position: -72px -90px; }
+.icon-tags			{ background-position: -90px -90px; }
+.icon-toc			{ background-position: -108px -90px; }
+
+.icon-interwiki		{ background-position: 0 -108px; }
+.icon-mail			{ background-position: -18px -108px; }
+
+.pkwk-symbol{
+	display: inline-block;
+	width: 8px;
+	height: 8px;
+	margin:0 2px;
+	padding:1px;
+	line-height:100%;
+	background: transparent url('<?php echo $image_dir ?>iconset/default.png') -1000px -1000px no-repeat;
+	vertical-align: middle;
+	text-align:center;
+	text-shadow:none;
+	color: transparent;
+}
+.symbol-add			{ background-position: -36px -114px; }
+.symbol-edit		{ background-position: -54px -114px; }
+.symbol-attach		{ background-position: -72px -114px; }
+.symbol-external	{ background-position: -90px -114px; }
+.symbol-internal	{ background-position: -108px -114px; }
 
 /* ==|== Helper classes ===================================================== */
 .ir {background-color: transparent;border: 0;overflow: hidden;*text-indent: -9999px;}
