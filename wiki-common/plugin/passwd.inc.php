@@ -7,7 +7,7 @@
  *
  * $A1 = md5($data['username'] . ':' . $realm . ':' . $auth_users[$data['username']]);
  */
-
+use PukiWiki\Lib\Auth\Auth;
 if (!defined('USE_PKWK_WRITE_FUNC')) {
 	define('USE_PKWK_WRITE_FUNC', FALSE);
 }
@@ -58,7 +58,7 @@ function plugin_passwd_action()
 	$body = '';
 	$func = (empty($vars['func'])) ? '' : $vars['func'];
 
-	$user = auth::check_auth();
+	$user = Auth::check_auth();
 
 	// 初回起動時
 	if (empty($func)) {
@@ -73,7 +73,7 @@ function plugin_passwd_action()
 	switch ($func) {
 	case 'save':
         	// サイト管理者権限が無い場合
-		if (auth::check_role('role_adm')) {
+		if (Auth::check_role('role_adm')) {
 			return array('msg'=>$msg,'body'=>passwd_menu($_passwd_msg['err_role']));
 		}
 
@@ -107,7 +107,7 @@ function plugin_passwd_action()
 
 	case 'update':
 		// サイト管理者未満は、自分のパスワードのみ更新ができる
-		$role_level = auth::get_role_level();
+		$role_level = Auth::get_role_level();
 		if ($role_level < 2) {
 			// 未認証者
 			return array('msg'=>$msg,'body'=>passwd_menu($_passwd_msg['err_role']));
@@ -159,7 +159,7 @@ function passwd_menu($msg='&nbsp;')
 	$script = get_script_uri();
 	
 	$func = 'save';
-	$role_level = auth::get_role_level();
+	$role_level = Auth::get_role_level();
 	$old_algorithm = '';
 
 	$r_realm = rawurlencode($realm);
@@ -199,13 +199,13 @@ EOD;
 		// 一般ユーザ
 		$disabled_user = 'disabled="disabled"';
 		// ゲスト時は、admin として一律生成できるようにしておく
-		// $user = ($role_level == 0) ? 'admin' :  auth::check_auth();
+		// $user = ($role_level == 0) ? 'admin' :  Auth::check_auth();
 		if ($role_level == 0) {
 			$user = 'admin';
 			$msg_pass = $_passwd_msg['msg_pass_none'];
 			$a1_des = "a1 = objForm.key.value;\n";
 		} else {
-			$user = auth::check_auth();
+			$user = Auth::check_auth();
 			$msg_pass = $_passwd_msg['msg_pass_old'];
 			$old_algorithm = passwd_get_scheme($user);
 
@@ -413,7 +413,7 @@ function passwd_undes($role,$user,$hash)
 	if ($role == 2) {
 		// adminpass
 		global $adminpass;
-		list($scheme, $key) = auth::passwd_parse($adminpass);
+		list($scheme, $key) = Auth::passwd_parse($adminpass);
 	} else {
 		$obj = new auth_file(PKWK_AUTH_FILE);
 		list($o_scheme,$key,$o_role) = $obj->get_data($user);

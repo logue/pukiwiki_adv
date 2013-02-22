@@ -14,6 +14,7 @@
 namespace PukiWiki\Lib\Renderer\Inline;
 
 use PukiWiki\Lib\Renderer\InlineFactory;
+use PukiWiki\Lib\Utility;
 
 // Inline plugins
 class InlinePlugin extends Inline
@@ -78,8 +79,8 @@ class InlinePlugin extends Inline
 			return $str; // Succeed
 		} else {
 			// No such plugin, or Failed
-			$body = (($body == '') ? '' : '{' . $body . '}') . ';';
-			return parent::setLineRules(htmlsc('&' . $this->plain) . $body);
+			$body = (empty($body) ? '' : '{' . $body . '}') . ';';
+			return parent::setLineRules(Utility::htmlsc('&' . $this->plain) . $body);
 		}
 	}
 }

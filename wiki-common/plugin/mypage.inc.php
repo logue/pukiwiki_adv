@@ -7,6 +7,7 @@
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 require_once(LIB_DIR . 'auth.cls.php');
+use PukiWiki\Lib\Auth\Auth;
 
 function plugin_mypage_init()
 {
@@ -26,7 +27,7 @@ function plugin_mypage_convert()
 	@list($is_page) = func_get_args();
 	$is_page = empty($is_page) ? false : true;
 
-	$auth_key = auth::get_user_info();
+	$auth_key = Auth::get_user_info();
 	// 認証確認
 	if (empty($auth_key['key'])) return '';
 	// マイページ利用の確認

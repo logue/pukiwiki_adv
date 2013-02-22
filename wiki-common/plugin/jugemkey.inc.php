@@ -8,13 +8,13 @@
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 require_once(LIB_DIR . 'hash.php');
-require_once(LIB_DIR . 'auth_api.cls.php');
-
+defined('ROLE_AUTH_JUGEMKEY')        or define('ROLE_AUTH_JUGEMKEY', 5.4);
 defined('JUGEMKEY_URL_AUTH')  or define('JUGEMKEY_URL_AUTH', 'https://secure.jugemkey.jp/?mode=auth_issue_frob');
 defined('JUGEMKEY_URL_TOKEN') or define('JUGEMKEY_URL_TOKEN','http://api.jugemkey.jp/api/auth/token');
 defined('JUGEMKEY_URL_USER')  or define('JUGEMKEY_URL_USER', 'http://api.jugemkey.jp/api/auth/user');
-
-class auth_jugemkey extends auth_api
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Auth\AuthApi;
+class auth_jugemkey extends AuthApi
 {
 	var $sec_key,$api_key;
 
@@ -129,7 +129,7 @@ EOD;
         }
 
 	// 他でログイン
-	$auth_key = auth::get_user_name();
+	$auth_key = Auth::get_user_name();
 	if (! empty($auth_key['nick'])) return '';
 
 	// ボタンを表示するだけ
@@ -174,7 +174,7 @@ function plugin_jugemkey_inline()
 			'(<a href="'.$logout_url.'">'.$_jugemkey_msg['msg_logout'].'</a>)';
         }
 
-	$auth_key = auth::get_user_name();
+	$auth_key = Auth::get_user_name();
 	if (! empty($auth_key['nick'])) return $_jugemkey_msg['msg_jugemkey'];
 
 	$login_url = plugin_jugemkey_jump_url(1);
@@ -246,7 +246,7 @@ function plugin_jugemkey_jump_url($inline=0)
 function plugin_jugemkey_get_user_name()
 {
 	global $auth_api;
-        if (! $auth_api['jugemkey']['use']) return array('role'=>ROLE_GUEST,'nick'=>'');
+        if (! $auth_api['jugemkey']['use']) return array('role'=>Auth::ROLE_GUEST,'nick'=>'');
 
 	$obj = new auth_jugemkey();
 	$msg = $obj->auth_session_get();
@@ -256,7 +256,7 @@ function plugin_jugemkey_get_user_name()
 	// Only, it leaves it only as a location of attestation by JugemKey.
 	$info = 'http://jugemkey.jp/';
 	if (! empty($msg['title'])) return array('role'=>ROLE_AUTH_JUGEMKEY,'nick'=>$msg['title'],'profile'=>$info,'key'=>$msg['title']);
-	return array('role'=>ROLE_GUEST,'nick'=>'');
+	return array('role'=>Auth::ROLE_GUEST,'nick'=>'');
 }
 
 /* End of file jugemkey.inc.php */

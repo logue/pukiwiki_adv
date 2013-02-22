@@ -12,8 +12,10 @@
  */
 
 namespace PukiWiki\Lib\Renderer\Inline;
-use PukiWiki\Lib\File\FileFactory;
+
+use PukiWiki\Lib\Factory;
 use PukiWiki\Lib\Utility;
+
 
 /**
  * InterWikiName-rendered URLs
@@ -24,12 +26,21 @@ class InterWikiName extends Inline
 	const INTERWIKINAME_PATTERN = '/\[((?:(?:https?|ftp|news):\/\/|\.\.?\/)[!~*\'();\/?:\@&=+\$,%#\w.-]*)\s([^\]]+)\]\s?([^\s]*)/';
 	const INTERWIKINAME_ICON = '<span class="pkwk-icon icon-interwiki" title="InterWikiName"></span>';
 	const INTERWIKINAME_CACHE = 'interwikiname';
+	const INTERWIKINAME_MAX_LENGTH = 512;
 
-	private static $encode_aliases = array('sjis'=>'SJIS', 'euc'=>'EUC-JP', 'utf8'=>'UTF-8', 'gbk'=>'CP936', 'euckr'=>'EUC-KR', 'big5'=>'BIG5');
+	private static $encode_aliases = array(
+		'sjis'  => 'SJIS',
+		'euc'   => 'EUC-JP',
+		'utf8'  => 'UTF-8',
+		'gbk'   => 'CP936',
+		'euckr' => 'EUC-KR',
+		'big5'  => 'BIG5'
+	);
 
 	var $url    = '';
 	var $param  = '';
 	var $anchor = '';
+	private $interwikiname;
 
 	public function __construct($start)
 	{
@@ -67,26 +78,26 @@ class InterWikiName extends Inline
 
 	public function setPattern($arr, $page)
 	{
-		list(, $alias, , $name, $this->param) = $this->splice($arr);
+		list(, $alias, , $this->interwikiname, $this->param) = $this->splice($arr);
 		$matches = array();
 		if (preg_match('/^([^#]+)(#[A-Za-z][\w-]*)$/', $this->param, $matches))
 			list(, $this->param, $this->anchor) = $matches;
 
-		$url = self::getInterWikiUrl($name, $this->param);
-		
-		// http://pukiowikio.sourceforge.jp/index.php?Develop%2FBugTrack1%2F1
-	//	$this->url = ($url === FALSE) ?
-	//		get_page_uri($name . ':' . $this->param) :
-	//		Utility::htmlsc($url);
-		if ($url === FALSE) return $name . ':' . $this->param;
+		$url = self::getInterWikiUrl($this->interwikiname, $this->param);
+// 存在しないInterWikiNameの解釈がおかしい
+// http://pukiowikio.sourceforge.jp/index.php?Develop%2FBugTrack1%2F1
+//	$this->url = ($url === FALSE) ?
+//		get_page_uri($name . ':' . $this->param) :
+//		Utility::htmlsc($url);
+		if ($url === FALSE) return $this->interwikiname . ':' . $this->param;
 		$this->url = Utility::htmlsc($url);
 
 		return parent::setParam(
 			$page,
-			Utility::htmlsc($name . ':' . $this->param),
+			Utility::htmlsc($this->interwikiname . ':' . $this->param),
 			null,
 			'InterWikiName',
-			empty($alias) ? $name . ':' . $this->param : $alias
+			empty($alias) ? $this->interwikiname . ':' . $this->param : $alias
 		);
 	}
 
@@ -96,6 +107,9 @@ class InterWikiName extends Inline
 		$icon = parent::isInsideUri($this->url) ? parent::INTERNAL_LINK_ICON : parent::EXTERNAL_LINK_ICON;
 		$target = (empty($this->redirect)) ? $this->url : $this->redirect.rawurlencode($this->url);
 
+		if (!$this->url){
+			return sprintf(parent::NOEXISTS_STRING, $this->interwikiname. ':' .$this->param);
+		}
 		return '<a href="' . $target . $this->anchor . '" title="' . $this->name . '" rel="' . ($nofollow === FALSE ? 'external' : 'external nofollow') . '">'. self::INTERWIKINAME_ICON . $this->alias . $icon . '</a>';
 	}
 
@@ -146,7 +160,7 @@ class InterWikiName extends Inline
 		}
 
 		$len = strlen($url);
-		if ($len > 512) Utility::dieMessage('InterWiki URL too long: ' . $len . ' characters');
+		if ($len > self::INTERWIKINAME_MAX_LENGTH) Utility::dieMessage('InterWiki URL too long: ' . $len . ' characters');
 
 		return $url;
 	}
@@ -155,7 +169,7 @@ class InterWikiName extends Inline
 		global $interwiki, $cache;
 		static $interwikinames;
 	
-		$wiki = FileFactory::Wiki($interwiki);
+		$wiki = Factory::Wiki($interwiki);
 		if (! $wiki->has()) return null;
 
 		// InterWikiNameの更新チェック
@@ -180,7 +194,7 @@ class InterWikiName extends Inline
 
 		// キャッシュが存在してなかったり、定義ページより古い場合は生成。
 		$interwikinames = $matches = array();
-		foreach ($wiki->source() as $line)
+		foreach ($wiki->get() as $line)
 			if (preg_match(self::INTERWIKINAME_PATTERN, $line, $matches))
 				$interwikinames[$matches[2]] = array($matches[1], $matches[3]);
 		$cache['wiki']->setItem(self::INTERWIKINAME_CACHE, $interwikinames);

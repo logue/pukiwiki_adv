@@ -13,7 +13,9 @@
 // Plus!NOTE:(policy)not merge official cvs(1.58->1.59) See Question/181
 
 use Zend\Http\Response;
-use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Factory;
+
 // Show page-content
 function catbody($title, $page, $body)
 {
@@ -39,7 +41,7 @@ function catbody($title, $page, $body)
 	}
 
 	if (!empty($_page)){
-		$wiki = FileFactory::Wiki($_page);
+		$wiki = Factory::Wiki($_page);
 		// Init flags
 		$is_page = ($wiki->isValied() && $wiki->isEditable() && ! arg_check('backup'));
 		$is_read = (arg_check('read') && $wiki->isReadable());
@@ -48,9 +50,9 @@ function catbody($title, $page, $body)
 	}
 
 	
-	$is_readonly = auth::check_role('readonly');
-	$is_safemode = auth::check_role('safemode');
-	$is_createpage = auth::is_check_role(PKWK_CREATE_PAGE);
+	$is_readonly = Auth::check_role('readonly');
+	$is_safemode = Auth::check_role('safemode');
+	$is_createpage = Auth::is_check_role(PKWK_CREATE_PAGE);
 
 	pkwk_common_headers(($lastmod && $is_read) ? $filetime : 0);
 	if (IS_AJAX && !IS_MOBILE){
@@ -222,7 +224,7 @@ function catbody($title, $page, $body)
 		if ($is_read){
 			global $attach_link, $related_link;
 
-			$lastmodified = get_date('D, d M Y H:i:s T', $filetime) . ' ' . FileFactory::Wiki($_page)->passage();
+			$lastmodified = get_date('D, d M Y H:i:s T', $filetime) . ' ' . Factory::Wiki($_page)->passage();
 			if ($pkwk_dtd == PKWK_DTD_HTML_5) {
 				$lastmodified = '<time pubdate="pubdate" datetime="'.get_date('c',$filetime).'">'.$lastmodified.'</time>';
 			}
@@ -423,7 +425,7 @@ function edit_form($page, $postdata, $digest = FALSE, $b_template = TRUE)
 
 	$checked_top  = isset($vars['add_top'])     ? ' checked="checked"' : '';
 	$checked_time = isset($vars['notimestamp']) ? ' checked="checked"' : '';
-	$pages = DEBUG ? get_existpages() : auth::get_existpages();
+	$pages = DEBUG ? get_existpages() : Auth::get_existpages();
 
 	if($load_template_func && $b_template) {
 		foreach($pages as $_page) {
@@ -475,7 +477,7 @@ EOD;
 	<input type="checkbox" name="notimestamp" id="_edit_form_notimestamp" value="true"$checked_time />
 	<label for="_edit_form_notimestamp" data-inline="true">{$_button['notchangetimestamp']}</label>
 EOD;
-		if ($notimeupdate == 2 && auth::check_role('role_adm_contents')) {
+		if ($notimeupdate == 2 && Auth::check_role('role_adm_contents')) {
 			// enable only administrator
 			$add_notimestamp .= '<input type="password" name="pass" size="12" />';
 		}
@@ -485,10 +487,10 @@ EOD;
 			'<input type="submit" id="btn_submit" name="write" value="'.$_button['update'].'" data-icon="check" data-inline="true" data-theme="b" />',
 			'<input type="submit" id="btn_preview" name="preview" value="'.$_button['preview'].'" accesskey="p" data-icon="gear" data-inline="true" data-theme="e" />',
 			'<input type="submit" id="btn_cancel" name="cancel" value="'.$_button['cancel'].'" accesskey="c" data-icon="delete" data-inline="true" />',
-			($notimeupdate == 2 && auth::check_role('role_adm_contents')) ? '<div data-role="fieldcontain">' : '',
+			($notimeupdate == 2 && Auth::check_role('role_adm_contents')) ? '<div data-role="fieldcontain">' : '',
 			($notimeupdate != 0 && is_page($page)) ? '<input type="checkbox" name="notimestamp" id="_edit_form_notimestamp" value="true" $checked_time />'.
 				'<label for="_edit_form_notimestamp" data-inline="true">'.$_button['notchangetimestamp'].'</label>' : null,
-			($notimeupdate == 2 && auth::check_role('role_adm_contents')) ? '<input type="password" name="pass" size="12"  data-inline="true" /></div>' : '',
+			($notimeupdate == 2 && Auth::check_role('role_adm_contents')) ? '<input type="password" name="pass" size="12"  data-inline="true" /></div>' : '',
 			isset($vars['add']) ? "\t\t".'<input type="checkbox" name="add_top" value="true"' .$checked_top . ' /><label for="add_top">' . $_button['addtop'] . '</label>' : null
 		));
 

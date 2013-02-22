@@ -9,6 +9,9 @@
 
 // Notice: This plugin based on minicalendar_viewer.inc.php from PukiWiki Plus!.
 //         Adv. is rejected to minicalendar.inc.php and minicalendar_viewer.inc.php.
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Factory;
+use PukiWiki\Lib\Renderer\RendererFactory;
 use PukiWiki\Lib\Lang\Holiday\PublicHolidayFactory;
 // Page title's date format
 //  * See PHP date() manual for detail
@@ -193,13 +196,15 @@ function plugin_calendar_viewer_convert()
 
 		$page = $pagelist[$tmp];
 		$get['page'] = $post['page'] = $vars['page'] = $page;
+		
+		$wiki = Factory::Wiki($page);
 
 		// 現状で閲覧許可がある場合だけ表示する
-		if (check_readable($page, FALSE, FALSE)) {
+		if ($wiki->isReadable()) {
 			if (function_exists('convert_filter')) {
-				$body = convert_html(convert_filter(get_source($page)));
+				$body = RendererFactory::factory(convert_filter($wiki->get()));
 			} else {
-				$body = convert_html(get_source($page));
+				$body = $wiki->render();
 			}
 		} else {
 			$body = str_replace('$1', $page, $_calendar_viewer_msg['_msg_restrict']);
@@ -223,7 +228,7 @@ function plugin_calendar_viewer_convert()
 		}
 
 		// if (PKWK_READONLY) {
-		if (auth::check_role('readonly')) {
+		if (Auth::check_role('readonly')) {
 			$link = get_page_uri($page);
 		} else {
 			$link = get_cmd_uri('edit',$page,'',array('page'=>$page));
@@ -240,7 +245,7 @@ function plugin_calendar_viewer_convert()
 				$mm = intval(date('n', $time));
 				$dd = intval(date('d', $time));
 
-				$h_today = PublicHolidayFactory::factory('JP', $yy, $mm, $dd); 
+				$h_today = PublicHolidayFactory::Wiki('JP', $yy, $mm, $dd); 
 				
 				
 				if ($h_today['rc'] != 0) {
@@ -265,7 +270,7 @@ function plugin_calendar_viewer_convert()
 		}
 		if (PLUGIN_CALENDAR_VIEWER_COMMENT === TRUE) {
 			if (is_page(':config/plugin/addline/comment') && exist_plugin_inline('addline')) {
-				$comm = convert_html(array('&addline(comment,above){comment};'));
+				$comm = RendererFactory::factory(array('&addline(comment,above){comment};'));
 				$comm = preg_replace(array("'<p>'si","'</p>'si"), array("",""), $comm );
 				$tail .= str_replace('>comment','><img src="'.IMAGE_URI.'plus/comment.png" width="15" height="15" alt="Comment" title="Comment" />Comment',$comm);
 			}

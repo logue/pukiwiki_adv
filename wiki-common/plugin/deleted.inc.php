@@ -8,7 +8,7 @@
 // Usage:
 //   index.php?cmd=deleted[&file=on]
 //   index.php?cmd=deleted&dir=diff[&file=on]
-
+use PukiWiki\Lib\Auth\Auth;
 function plugin_deleted_init()
 {
 	global $_string;
@@ -41,8 +41,8 @@ function plugin_deleted_action()
 		return array('msg'=>'Deleted plugin', 'body'=>$_deleted_msg['no_such_setting']);
 
 	$deleted_pages  = array_diff(
-		auth::get_existpages($_DIR[$dir]['dir'], $_DIR[$dir]['ext']),
-		auth::get_existpages());
+		Auth::get_existpages($_DIR[$dir]['dir'], $_DIR[$dir]['ext']),
+		Auth::get_existpages());
 
 	if ($withfilename) {
 		$retval['msg'] = $_deleted_msg['title_withfilename'];

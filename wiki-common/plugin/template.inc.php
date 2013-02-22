@@ -2,7 +2,7 @@
 // $Id: template.inc.php,v 1.22.7 2012/05/11 18:14:00 Logue Exp $
 //
 // Load template plugin
-
+use PukiWiki\Lib\Auth\Auth;
 define('MAX_LEN', 60);
 
 function plugin_template_init()
@@ -32,7 +32,7 @@ function plugin_template_action()
 	global $vars;
 	global $_template_msg;
 
-	if (auth::check_role('safemode') || auth::check_role('readonly')) die_message($_template_msg['msg_template_prohibited']);
+	if (Auth::check_role('safemode') || Auth::check_role('readonly')) die_message($_template_msg['msg_template_prohibited']);
 	if (! isset($vars['refer']) || ! is_page($vars['refer']))
 		return FALSE;
 
@@ -43,7 +43,7 @@ function plugin_template_action()
 		);
 
 	$lines = get_source($vars['refer']);
-	auth::is_role_page($lines);
+	Auth::is_role_page($lines);
 
 	// Remove '#freeze'
 	if (! empty($lines) && strtolower(rtrim($lines[0])) == '#freeze')

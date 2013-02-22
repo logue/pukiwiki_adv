@@ -9,7 +9,8 @@
 // License: GPL version 2
 //
 // List plugin
-
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Renderer\RendererFactory;
 function plugin_ls_convert()
 {
 	global $vars;
@@ -26,7 +27,7 @@ function plugin_ls_convert()
 
 	$page  = isset($vars['page']) ? $vars['page'] : '';
 
-	foreach (auth::get_existpages() as $page)
+	foreach (Auth::get_existpages() as $page)
 	{
 		if (strpos($page,$prefix) === 0)
 		{
@@ -59,7 +60,7 @@ function plugin_ls_convert()
 		$ls[] = "-[[$page]] $comment";
 	}
 
-	return convert_html($ls);
+	return RendererFactory::factory($ls);
 }
 /* End of file ls.inc.php */
 /* Location: ./wiki-common/plugin/ls.inc.php */

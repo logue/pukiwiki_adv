@@ -3,6 +3,9 @@
 // $Id: links.inc.php,v 1.24.4 2011/06/08 20:05:00 Logue Exp $
 //
 // Update link cache plugin
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Renderer\RendererFactory;
+use PukiWiki\Lib\Relational;
 
 // Message setting
 function plugin_links_init()
@@ -36,14 +39,15 @@ function plugin_links_action()
 	global $_links_messages, $_string;
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits this');
-	if (auth::check_role('readonly')) die_message( $_string['error_prohibit'] );
+	if (Auth::check_role('readonly')) die_message( $_string['error_prohibit'] );
 
 	$admin_pass = (empty($post['adminpass'])) ? '' : $post['adminpass'];
-	if ( isset($vars['menu']) && (! auth::check_role('role_adm_contents') || pkwk_login($admin_pass) )) {
+	if ( isset($vars['menu']) && (! Auth::check_role('role_adm_contents') || pkwk_login($admin_pass) )) {
 		$force = (isset($post['force']) && $post['force'] === 'on') ? true : false;
 		$msg  = & $_links_messages['title_update'];
+		$links = new Relational('');
 
-		if (update_cache(null, $force) !== false){
+		if ($links->init() !== false){
 			$foot_explain = array(); // Exhaust footnotes
 			$body = & $_links_messages['msg_done'];
 			return array('msg'=>$msg, 'body'=>$body);
@@ -55,15 +59,15 @@ function plugin_links_action()
 	}
 
 	$msg   = & $_links_messages['title_update'];
-	$body  = convert_html( sprintf($_links_messages['msg_usage1']) );
+	$body  = RendererFactory::factory( sprintf($_links_messages['msg_usage1']) );
 	$script = get_script_uri();
 	$body .= <<<EOD
 <form method="post" action="$script" class="links_form">
 	<input type="hidden" name="cmd" value="links" />
 	<input type="hidden" name="menu" value="1" />
 EOD;
-	if (auth::check_role('role_adm_contents')) {
-		$body .= convert_html( sprintf($_links_messages['msg_usage2']) );
+	if (Auth::check_role('role_adm_contents')) {
+		$body .= RendererFactory::factory( sprintf($_links_messages['msg_usage2']) );
 		$body .= <<<EOD
 	<label for="_p_links_adminpass">{$_links_messages['msg_adminpass']}</label>
 	<input type="password" name="adminpass" id="_p_links_adminpass" size="20" value="" />

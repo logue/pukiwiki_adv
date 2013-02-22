@@ -9,7 +9,7 @@
 // License: GPL v2 or (at your option) any later version
 //
 // Comment plugin
-
+use PukiWiki\Lib\Auth\Auth;
 // ----
 defined('PLUGIN_COMMENT_DIRECTION_DEFAULT') or define('PLUGIN_COMMENT_DIRECTION_DEFAULT', '1'); // 1: above 0: below
 defined('PLUGIN_COMMENT_SIZE_MSG') or define('PLUGIN_COMMENT_SIZE_MSG',  68);
@@ -59,9 +59,9 @@ function plugin_comment_action()
 	}
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	if (auth::check_role('readonly')) die_message(sprintf($_comment_messages['err_prohibit'],'PKWK_READONLY'));
+	if (Auth::check_role('readonly')) die_message(sprintf($_comment_messages['err_prohibit'],'PKWK_READONLY'));
 
-	if (!is_page($vars['refer']) && auth::is_check_role(PKWK_CREATE_PAGE)) {
+	if (!is_page($vars['refer']) && Auth::is_check_role(PKWK_CREATE_PAGE)) {
 		die_message(sprintf($_comment_messages['err_prohibit'],'PKWK_CREATE_PAGE'));
 	}
 
@@ -147,11 +147,11 @@ function plugin_comment_get_nick()
 	global $vars, $_no_name;
 
 	$name = (empty($vars['name'])) ? $_no_name : $vars['name'];
-	if (PKWK_READONLY != ROLE_AUTH) return array($name,$name,'');
+	if (PKWK_READONLY != Auth::ROLE_AUTH) return array($name,$name,'');
 
-	$auth_key = auth::get_user_name();
+	$auth_key = Auth::get_user_name();
 	if (empty($auth_key['nick'])) return array($name,$name,'');
-	if (auth::get_role_level() < ROLE_AUTH) return array($auth_key['nick'],$name,'');
+	if (Auth::get_role_level() < Auth::ROLE_AUTH) return array($auth_key['nick'],$name,'');
 	$link = (empty($auth_key['profile'])) ? $auth_key['nick'] : $auth_key['nick'].'>'.$auth_key['profile'];
 	return array($auth_key['nick'], $link, "disabled=\"disabled\"");
 }
@@ -174,13 +174,13 @@ function plugin_comment_convert()
 	static $comment_cols = PLUGIN_COMMENT_SIZE_MSG;
 
 	$ret = array();
-	if (PKWK_READONLY === ROLE_AUTH) {
+	if (PKWK_READONLY === Auth::ROLE_AUTH) {
 		exist_plugin('login');
 		$ret[] = do_plugin_inline('login');
 		$ret[] = '<br />';
 	}
 
-	if (auth::check_role('readonly')) return $auth_guide;
+	if (Auth::check_role('readonly')) return $auth_guide;
 	if (! isset($numbers[$vars['page']])) $numbers[$vars['page']] = 0;
 
 	$options = func_num_args() ? func_get_args() : array();

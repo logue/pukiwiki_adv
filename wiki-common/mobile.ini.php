@@ -36,8 +36,6 @@ $list_index = 1;
 /////////////////////////////////////////////////
 // 特殊シンボル
 $_symbol_paraedit		= '<span class="pkwk-symbol symbol-edit" title="Edit here"></span>';
-$_symbol_extanchor		= '<span class="pkwk-symbol link_symbol symbol-external" data-uri="$1" title="External Link"></span>';
-$_symbol_innanchor		= '<span class="pkwk-symbol link_symbol symbol-internal" data-uri="$1" title="Internal Link"></span>';
 $_symbol_attach			= '';
 
 /////////////////////////////////////////////////
@@ -66,9 +64,6 @@ $hr = '<hr />'."\n";
 
 /////////////////////////////////////////////////
 // 脚注機能関連
-
-// 脚注のアンカーに埋め込む本文の最大長
-define('PKWK_FOOTNOTE_TITLE_MAX', 16); // Characters
 
 // 脚注のアンカーを相対パスで表示する (0 = 絶対パス)
 //  * 相対パスの場合、以前のバージョンのOperaで問題になることがあります

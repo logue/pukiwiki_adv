@@ -14,11 +14,13 @@
 namespace PukiWiki\Lib\Renderer\Inline;
 
 use PukiWiki\Lib\Renderer\InlineFactory;
-use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\Factory;
 
 // Footnotes
 class Note extends Inline
 {
+	const FOOTNOTE_TITLE_MAX = 16;
+
 	public function __construct($start)
 	{
 		parent::__construct($start);
@@ -50,11 +52,11 @@ class Note extends Inline
 		if (PKWK_ALLOW_RELATIVE_FOOTNOTE_ANCHOR) {
 			$script = '';
 		} else {
-			$script = FileFactory::Wiki($page)->get_uri();
+			$script = Factory::Wiki($page)->uri();
 		}
 
 		$id   = ++$note_id;
-		$note = InlineFactory::factory($body);
+		$note = InlineFactory::Wiki($body);
 		$page = isset($vars['page']) ? rawurlencode($vars['page']) : '';
 
 		// Footnote
@@ -64,12 +66,12 @@ class Note extends Inline
 
 		if (!IS_MOBILE){
 			// A hyperlink, content-body to footnote
-			if (! is_numeric(PKWK_FOOTNOTE_TITLE_MAX) || PKWK_FOOTNOTE_TITLE_MAX <= 0) {
+			if (! is_numeric(self::FOOTNOTE_TITLE_MAX) || self::FOOTNOTE_TITLE_MAX <= 0) {
 				$title = '';
 			} else {
 				$title = strip_tags($note);
 				$count = mb_strlen($title, SOURCE_ENCODING);
-				$title = mb_substr($title, 0, PKWK_FOOTNOTE_TITLE_MAX, SOURCE_ENCODING);
+				$title = mb_substr($title, 0, self::FOOTNOTE_TITLE_MAX, SOURCE_ENCODING);
 				$abbr  = (mb_strlen($title) < $count) ? '...' : '';
 				$title = ' title="' . $title . $abbr . '"';
 			}

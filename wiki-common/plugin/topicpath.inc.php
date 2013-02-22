@@ -8,7 +8,7 @@
 // License: GPL (any version)
 //
 // 'topicpath' plugin
-
+use PukiWiki\Lib\Auth\Auth;
 // Show a link to $defaultpage or not
 defined('PLUGIN_TOPICPATH_TOP_DISPLAY') or define('PLUGIN_TOPICPATH_TOP_DISPLAY', 1);
 // Label for $defaultpage
@@ -57,7 +57,7 @@ function plugin_topicpath_inline()
 			$b_link = TRUE;
 			$topic_path[] = $element;
 		// } else if (PKWK_READONLY && ! is_page($_landing)) {
-		} else if (auth::check_role('readonly') && ! is_page($_landing)) {
+		} else if (Auth::check_role('readonly') && ! is_page($_landing)) {
 			// Page not exists
 			$topic_path[] = $element;
 		} else {

@@ -12,8 +12,11 @@
 // Plus!I18N:(policy)not merge official cvs(1.44->1.45)
 // Plus!NOTE:(policy)not merge official cvs(1.51->1.52) See Question/181
 
+use PukiWiki\Lib\Auth\Auth;
 use PukiWiki\Lib\Lang\Lang;
+use PukiWiki\Lib\Factory;
 use PukiWiki\Lib\Utility;
+use PukiWiki\Lib\Time;
 use PukiWiki\Lib\Router;
 use Zend\Cache\StorageFactory;
 
@@ -127,7 +130,7 @@ if (file_exists(USR_INI_FILE) && is_readable(USR_INI_FILE)) {
 
 define('INI_FILE',  add_homedir('pukiwiki.ini.php'));
 if (! file_exists(INI_FILE) || ! is_readable(INI_FILE)) {
-	die_message('File <var>'.INI_FILE.'</var> is not found.'.' (INI_FILE)' . "\n");
+	Utility::dieMessage('File <var>'.INI_FILE.'</var> is not found.'.' (INI_FILE)' . "\n");
 } else {
 	require(INI_FILE);
 }
@@ -172,9 +175,6 @@ define('JQUERY_VER',		'1.9.1');
 define('JQUERY_UI_VER',		'1.10.0');
 define('JQUERY_MOBILE_VER',	'1.3.0-rc.1');
 
-// ページ名やファイル名として使用できない文字（エンコード前の文字）
-defined('PKWK_ILLEGAL_CHARS_PATTERN') or define('PKWK_ILLEGAL_CHARS_PATTERN', '/[%|=|&|?|#|\r|\n|\0|\@|\t|;|\$|+|\\|\[|\]|\||^|{|}]/');
-
 // アップロード進捗状況のセッション名（PHP5.4以降のみ有効）
 defined('PKWK_PROGRESS_SESSION_NAME') or define('PKWK_PROGRESS_SESSION_NAME', 'pukiwiki_progress');
 
@@ -189,9 +189,6 @@ define('PKWK_WIKI_NAMESPACE', 'pkwk_'.substr(md5(realpath(DATA_HOME)), 0 ,7) );
 
 // 汎用キャッシュの有効期間
 defined('PKWK_CACHE_EXPIRE') or define('PKWK_CACHE_EXPIRE', 604800);	// 60*60*24*7 1week
-
-// convert_htmlのキャッシュ名の有効期間（デフォルト無効（
-defined('PKWK_HTML_CACHE_EXPIRE') or define('PKWK_HTML_CACHE_EXPIRE', 0);
 
 // Timestamp prefix
 defined('PKWK_TIMESTAMP_PREFIX')		or define('PKWK_TIMESTAMP_PREFIX', 'timestamp-');
@@ -269,37 +266,12 @@ $cache = array(
 			($cache_adapter === 'Filesystem') ? 'serializer' : null
 		)
 	)),
-	// ページ間リンクの関連付けキャッシュ
-	'link' => StorageFactory::factory(array(
-		'adapter'=> array(
-			'name' => $cache_adapter,
-			'options' => array(
-				// 他のWikiと競合しないようにするためDATA_HOMEのハッシュを名前空間とする
-				'namespace' => ($cache_adapter === 'Filesystem') ? 'zfcache' : PKWK_WIKI_NAMESPACE,
-				'cache_dir' => ($cache_adapter === 'Filesystem') ? CACHE_DIR : null,
-				'ttl' => PKWK_CACHE_EXPIRE,
-			),
-		),
-		'plugins' => array(
-			($cache_adapter === 'Filesystem') ? 'serializer' : null
-		)
-	)),
 	// 生データーキャッシュ（配列などは使用不可）
 	'raw' => StorageFactory::factory(array(
 		'adapter'=>array(
 			'name'=>'Filesystem',
 			'options'=>array(
 				'ttl'=>PKWK_CACHE_EXPIRE,
-				'cache_dir'=>CACHE_DIR
-			)
-		)
-	)),
-	// HTMLキャッシュ（高負荷サイト向け）
-	'html' => StorageFactory::factory(array(
-		'adapter'=>array(
-			'name'=>'Filesystem',
-			'options'=>array(
-				'ttl'=>PKWK_HTML_CACHE_EXPIRE,
 				'cache_dir'=>CACHE_DIR
 			)
 		)
@@ -311,7 +283,7 @@ $info[] = 'Cache system using <var>'.$cache_adapter.'</var>.';
 /////////////////////////////////////////////////
 // I18N
 Lang::setLanguage();
-Utility::initTime();
+Time::init();
 
 T_setlocale(LC_ALL,PO_LANG);
 T_bindtextdomain(DOMAIN,LANG_DIR);
@@ -433,13 +405,14 @@ if ($temp) {
 	$die[] = sprintf('The following values were not definded (Maybe the old *.ini.php?): <ul>%s</ul>',$temp);
 }
 
-if($die) die_message(join("\n",$die));
+if($die) Utility::dieMessage(join("\n",$die));
 unset($die, $temp);
 
 /////////////////////////////////////////////////
 // 必須のページが存在しなければ、空のファイルを作成する
 foreach(array($defaultpage, $whatsnew, $interwiki) as $page){
-	if (! is_page($page)) pkwk_touch_file(get_filename($page));
+	$wiki = Factory::Wiki($page);
+	if (! $wiki->has() ) $wiki->touch();
 }
 
 /////////////////////////////////////////////////
@@ -669,26 +642,6 @@ if ($spam && $method !== 'GET') {
 }
 
 /////////////////////////////////////////////////
-// 初期設定($WikiName,$BracketNameなど)
-// $WikiName = '[A-Z][a-z]+(?:[A-Z][a-z]+)+';
-// $WikiName = '\b[A-Z][a-z]+(?:[A-Z][a-z]+)+\b';
-// $WikiName = '(?<![[:alnum:]])(?:[[:upper:]][[:lower:]]+){2,}(?![[:alnum:]])';
-// $WikiName = '(?<!\w)(?:[A-Z][a-z]+){2,}(?!\w)';
-
-// BugTrack2/24対処（éなどの文字が使えないため）
-$WikiPart = '[A-Z](?:[a-z]|\\xc3[\\x9f-\\xbf])+'; // \c3\9f through \c3\bf correspond to \df through \ff in ISO8859-1
-$WikiName = "(?:$WikiPart(?:$WikiPart)+)(?!\w)";
-
-// $BracketName = ':?[^\s\]#&<>":]+:?';
-$BracketName = '(?!\s):?[^\r\n\t\f\[\]<>#&":]+:?(?<!\s)';
-
-// InterWiki
-$InterWikiName = '(\[\[)?((?:(?!\s|:|\]\]).)+):(.+)(?(1)\]\])';
-
-// 注釈
-$NotePattern = '/\(\(((?:(?>(?:(?!\(\()(?!\)\)(?:[^\)]|$)).)+)|(?R))*)\)\)/ex';
-
-/////////////////////////////////////////////////
 // 初期設定(ユーザ定義ルール読み込み)
 require(add_homedir('rules.ini.php'));
 
@@ -895,8 +848,8 @@ if ( !isset($vars['cmd']) ) {
 	$arg = is_array($argx) ? $argx[0]:$argx;
 	if (! empty($arg) ){
 		$arg = rawurldecode($arg);
-		$arg = strip_bracket($arg);
-		$arg = input_filter($arg);
+		$arg = Utility::stripBracket($arg);
+		$arg = Utility::stripNullBytes($arg);
 	}else{
 		$arg = $defaultpage;
 	}
@@ -906,10 +859,10 @@ if ( !isset($vars['cmd']) ) {
 
 // プラグインのaction命令を実行
 $cmd = strtolower($vars['cmd']);
-$is_protect = auth::is_protect();
+$is_protect = Auth::is_protect();
 if ($is_protect) {
 	$plugin_arg = '';
-	if (auth::is_protect_plugin_action($cmd)) {
+	if (Auth::is_protect_plugin_action($cmd)) {
 		if (exist_plugin_action($cmd)) do_plugin_action($cmd);
 		// Location で飛ばないプラグインの場合
 		$plugin_arg = $cmd;
@@ -918,7 +871,7 @@ if ($is_protect) {
 }
 if (! exist_plugin_action($cmd)) {
 	header('HTTP/1.1 501 Not Implemented');
-	die_message(sprintf($_string['plugin_not_implemented'],htmlsc($cmd)));
+	Utility::dieMessage(sprintf($_string['plugin_not_implemented'],Utility::htmlsc($cmd)), 501);
 }
 $retvars = do_plugin_action($cmd);
 
@@ -929,7 +882,7 @@ if ($is_protect) {
 	die('<var>PLUS_PROTECT_MODE</var> is set.');
 }
 // Set Home
-$auth_key = auth::get_user_info();
+$auth_key = Auth::get_user_info();
 if (!empty($auth_key['home']) && ($vars['page'] == $defaultpage || $vars['page'] == $auth_key['home'])){
 	$base = $defaultpage = $auth_key['home'];
 }else{
@@ -945,13 +898,12 @@ if (isset($retvars['msg']) && !empty($retvars['msg']) ) {
 	$page  = make_search($base);
 }
 
-use PukiWiki\Lib\File\WikiFile;
 if (isset($retvars['body']) && !empty($retvars['body'])) {
 	$body = $retvars['body'];
 } else {
 	if (! is_page($base)) {
 		$base  = $defaultpage;
-		$title = htmlsc(strip_bracket($base));
+		$title = Utiliity::htmlsc(strip_bracket($base));
 		$page  = make_search($base);
 	}
 
@@ -960,11 +912,11 @@ if (isset($retvars['body']) && !empty($retvars['body'])) {
 
 	if (empty($vars['page'])) die('page is missing!');
 	global $fixed_heading_edited;
-	$wiki = new WikiFile($vars['page']);
+	$wiki = Factory::Wiki($vars['page']);
 
 	// Virtual action plugin(partedit).
 	// NOTE: Check wiki source only.(*NOT* call convert_html() function)
-	$lines = $wiki->source();
+	$lines = $wiki->get();
 	while (! empty($lines)) {
 		$line = array_shift($lines);
 		if (preg_match("/^\#(partedit)(?:\((.*)\))?/", $line, $matches)) {

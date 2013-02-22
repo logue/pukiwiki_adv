@@ -6,6 +6,7 @@
 // Usage: mixirss.inc.php?ver=[0.91|1.0(default)|2.0]
 
 use PukiWiki\Lib\File\FileUtility;
+use PukiWiki\Lib\Renderer\RendererFactory;
 
 // View Description Letters
 define('MIXIRSS_DESCRIPTION_LENGTH', 256);
@@ -90,7 +91,7 @@ EOD;
 				while(!empty($source)) {
 					$line = array_shift($source);
 					if (preg_match('/^(\*{1,3})(.*)\[#([A-Za-z][\w-]+)\](.*)$/m', $line, $matches)) {
-						$anchortitle = strip_htmltag(convert_html($matches[2]));
+						$anchortitle = strip_htmltag(RendererFactory::factory($matches[2]));
 						$anchortitle = preg_replace("/[\r\n]/",' ',$anchortitle);
 						$anchortitle = '<![CDATA[' . mb_convert_encoding($anchortitle, 'UTF-8', SOURCE_ENCODING) . '(' . $title . ')' . ']]>';
 						$sharp = '#';
@@ -106,7 +107,7 @@ $trackback_ping
 
 EOD;
 					} else if (preg_match('/^(\-{1,3})(.*)$/m', $line, $matches)) {
-						$anchortitle = strip_htmltag(convert_html($matches[2]));
+						$anchortitle = strip_htmltag(RendererFactory::factory($matches[2]));
 						$anchortitle = preg_replace("/[\r\n]/",' ',$anchortitle);
 						$anchortitle = '<![CDATA[' . mb_convert_encoding($anchortitle, 'UTF-8', SOURCE_ENCODING) . '(' . $title . ')' . ']]>';
 						$sharp = '#';
@@ -149,7 +150,7 @@ EOD;
 			} else if (check_readable($page,false,false) && !is_ignore_page($page)) {
 				$get['page'] = $post['page'] = $vars['page'] = $page;
 //miko added
-				$description = strip_htmltag(convert_html(get_source($page)));
+				$description = strip_htmltag(RendererFactory::factory(get_source($page)));
 				$description = mb_strimwidth(preg_replace("/[\r\n]/",' ',$description),0,MIXIRSS_DESCRIPTION_LENGTH,'...');
 				$description = ' <description><![CDATA[' . mb_convert_encoding($description,'UTF-8',SOURCE_ENCODING) . ']]></description>';
 //miko added

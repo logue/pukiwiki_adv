@@ -11,7 +11,9 @@
  * See Aloso	http://d.hatena.ne.jp/mokehehe/20090526/productadvertisingapi
  *
  */
-
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Factory;
+use PukiWiki\Lib\Utility;
 /* **************** */
 /* * 設 定 必 須  * */
 /* **************** */
@@ -88,7 +90,7 @@ function plugin_amazon_convert()
 	global $_amazon_msg, $pkwk_dtd;
 
 	if (func_num_args() == 0) {
-		if( auth::check_role('readonly') ) die_message( $_string['prohibit'] );
+		if( Auth::check_role('readonly') ) die_message( $_string['prohibit'] );
 		return amazon_make_review_page();
 	}
 
@@ -275,8 +277,8 @@ function plugin_amazon_action()
 		$itemid = htmlsc($vars['itemid']);
 	}
 
-	if ( auth::check_role('readonly') ) die_message( $_string['prohibit'] );
-	if ( auth::is_check_role(PKWK_CREATE_PAGE)) die_message( $_amazon_msg['err_newpage'] );
+	if ( Auth::check_role('readonly') ) die_message( $_string['prohibit'] );
+	if ( Auth::is_check_role(PKWK_CREATE_PAGE)) die_message( $_amazon_msg['err_newpage'] );
 	if (empty($vars['refer']) || !check_readable($vars['refer'], false, false)) die();
 
 	$locale = (empty($vars['locale'])) ? 'jp' : htmlsc($vars['locale']);
@@ -300,10 +302,9 @@ function plugin_amazon_action()
 	// $r_page = $s_page . '/' . $obj->itemid;
 
 	$r_page_url = rawurlencode($r_page);
+	$wiki = Factory::Wiki($s_page);
 
-	if (!check_editable($r_page, false, false)) {
-		die_message( str_replace('$1', $r_page, $_title['cannotedit']) );
-	}
+	$wiki->checkEditable(true);
 
 	if (!empty($obj->items['Error'])) {
 			$obj->rm_cache(array('xml'=>true,'img'=>true));
@@ -328,7 +329,7 @@ function plugin_amazon_action()
 
 	$body = str_replace('[group]', $obj->items['group'], $body);
 
-	$auth_key = auth::get_user_name();
+	$auth_key = Auth::get_user_name();
 	$name = (empty($auth_key['nick'])) ? $_amazon_msg['msg_myname'] : $auth_key['nick'];
 	$body = str_replace('[critic]', '[['.$name.']]', $body);
 

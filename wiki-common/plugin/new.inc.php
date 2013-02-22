@@ -10,7 +10,7 @@
 //	&new(pagename/[,nolink]);
 //		// Check multiple pages started with 'pagename/',
 //		// and show the latest one
-
+use PukiWiki\Lib\Auth\Auth;
 define('PLUGIN_NEW_DATE_FORMAT', '<span class="comment_date">%s</span>');
 
 function plugin_new_init()
@@ -56,7 +56,7 @@ function plugin_new_inline()
 			// Check multiple pages started with "$page"
 			$timestamp = 0;
 			$regex = '/^' . preg_quote($page, '/') . '/';
-			foreach (preg_grep($regex, auth::get_existpages()) as $page) {
+			foreach (preg_grep($regex, Auth::get_existpages()) as $page) {
 				// Get the latest pagename and its timestamp
 				$_timestamp = get_filetime($page);
 				if ($timestamp < $_timestamp) {

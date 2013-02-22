@@ -19,7 +19,7 @@ define('PLUGIN_SHOWRSS_USAGE', '#showrss(URI-to-RSS[,default|menubar|recent[,Cac
 defined('PLUGIN_SHOWRSS_SHOW_DESCRIPTION') or define('PLUGIN_SHOWRSS_SHOW_DESCRIPTION', true);
 
 define('PLUGIN_SHOWRSS_CACHE_PREFIX', 'showrss-');
-
+use PukiWiki\Lib\Auth\Auth;
 use PukiWiki\Lib\Renderer\Inline\Inline;
 use Zend\Http\ClientStatic;
 
@@ -28,7 +28,7 @@ function plugin_showrss_action()
 {
 	global $vars, $use_sendfile_header, $cache;
 	// if (PKWK_SAFE_MODE) die_message('PKWK_SAFE_MODE prohibit this');
-	if (auth::check_role('safemode')) die_message('PKWK_SAFE_MODE prohibits this');
+	if (Auth::check_role('safemode')) die_message('PKWK_SAFE_MODE prohibits this');
 
 	if ($vars['feed']){
 		// ajaxによる読み込み

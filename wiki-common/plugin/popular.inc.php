@@ -9,7 +9,7 @@
 //
 // Popular pages plugin: Show an access ranking of this wiki
 // -- like recent plugin, using counter plugin's count --
-
+use PukiWiki\Lib\Auth\Auth;
 /*
  * 通算および今日に別けて一覧を作ることができます。
  *
@@ -175,7 +175,7 @@ function plugin_popular_getlist($view, $max = PLUGIN_POPULAR_DEFAULT, $except){
 	$yesterday = gmdate('Y/m/d',gmmktime(0,0,0, gmdate('m',$localtime), gmdate('d',$localtime)-1, gmdate('Y',$localtime)));
 	
 	$counters = array();
-	foreach (auth::get_existpages(COUNTER_DIR, '.count') as $file=>$page) {
+	foreach (Auth::get_existpages(COUNTER_DIR, '.count') as $file=>$page) {
 		if (($except != '' && preg_match("/".$except."/", $page)) ||
 			is_cantedit($page) || check_non_list($page) ||
 			! is_page($page))

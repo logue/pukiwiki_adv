@@ -15,7 +15,6 @@
 //   above -- Comments are listed above the #pcomment (added by chronological order)
 //   below -- Comments are listed below the #pcomment (by reverse order)
 //   reply -- Show radio buttons allow to specify where to reply
-
 defined('PLUGIN_COMMENT_DIRECTION_DEFAULT') or define('PLUGIN_COMMENT_DIRECTION_DEFAULT', '1'); // 1: above 0: below
 defined('PLUGIN_COMMENT_SIZE_MSG') or define('PLUGIN_COMMENT_SIZE_MSG',  68);
 defined('PLUGIN_COMMENT_SIZE_NAME') or define('PLUGIN_COMMENT_SIZE_NAME', 15);
@@ -42,25 +41,30 @@ define('PLUGIN_PCOMMENT_FORMAT_NOW',	'&epoch{'.UTIME.',comment_date};');
 define('PLUGIN_PCOMMENT_FORMAT_STRING',
 	"\x08" . 'MSG' . "\x08" . ' -- ' . "\x08" . 'NAME' . "\x08" . ' ' . "\x08" . 'DATE' . "\x08");
 
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Factory;
+use PukiWiki\Lib\Renderer\RendererFactory;
+use PukiWiki\Lib\Utility;
+
 function plugin_pcomment_action()
 {
 	global $vars, $_string;
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	if (auth::check_role('readonly')) die_message(sprintf($_string['error_prohibit'], 'PKWK_READONLY'));
+	if (Auth::check_role('readonly')) Utility::dieMessage(sprintf($_string['error_prohibit'], 'PKWK_READONLY'));
 
-	if (! isset($vars['msg']) || $vars['msg'] == '') return array();
+	if (! isset($vars['msg']) || empty($vars['msg'])) return array();
 
 	// Validate
 	if (is_spampost(array('msg'))) {
-		honeypot_write();
+		Utility::dump();
 		return array('msg'=>'', 'body'=>''); // Do nothing
 	}
 
 	$refer = isset($vars['refer']) ? $vars['refer'] : '';
 
-	if (!is_page($refer) && auth::is_check_role(PKWK_CREATE_PAGE)) {
-		die_message( sprintf($_string['error_prohibit'], 'PKWK_CREATE_PAGE') );
+	if (!is_page($refer) && Auth::is_check_role(PKWK_CREATE_PAGE)) {
+		Utility::dieMessage( sprintf($_string['error_prohibit'], 'PKWK_CREATE_PAGE') );
 	}
 
 	$retval = plugin_pcomment_insert();
@@ -69,11 +73,9 @@ function plugin_pcomment_action()
 		return $retval;
 	}
 
-	$hash = isset($vars['reply']) ? '#pcmt'.htmlsc($vars['reply']) : '';
+	$hash = isset($vars['reply']) ? '#pcmt'.Utility::htmlsc($vars['reply']) : '';
 
-	pkwk_headers_sent();
-	header('Location: ' . get_page_location_uri($refer) . $hash);
-	exit;
+	Utility::redirect(get_page_location_uri($refer) . $hash);
 }
 
 function plugin_pcomment_convert()
@@ -123,7 +125,7 @@ function plugin_pcomment_convert()
 
 	$form = array();
 	// if (PKWK_READONLY) {
-	if (! auth::check_role('readonly')) {
+	if (! Auth::check_role('readonly')) {
 		// Show a form
 		$form[] = '<input type="hidden" name="cmd" value="pcomment" />';
 		$form[] = '<input type="hidden" name="digest" value="' . $digest .'" />';
@@ -143,7 +145,7 @@ function plugin_pcomment_convert()
 			'<input type="text" name="msg" size="' . PLUGIN_COMMENT_SIZE_MSG . '" placeholder="' . $_pcmt_messages['msg_comment'] . '" />';
 		$form[] = '<input type="submit" value="' . $_pcmt_messages['btn_comment'] . '" />';
 	}
-	if (PKWK_READONLY == ROLE_AUTH) {
+	if (PKWK_READONLY == Auth::ROLE_AUTH) {
 		exist_plugin('login');
 		$form[] = do_plugin_inline('login');
 	}
@@ -157,11 +159,11 @@ function plugin_pcomment_convert()
 		$recent = ! empty($count) ? sprintf($_pcmt_messages['msg_recent'], $count) : '';
 	}
 
-	$string = ! auth::check_role('readonly') ? '<form action="'. get_script_uri() .'" method="post" class="comment_form">' : '';
+	$string = ! Auth::check_role('readonly') ? '<form action="'. get_script_uri() .'" method="post" class="comment_form">' : '';
 	$string .= ($dir) ?
 		'<p>' . $recent . ' ' . $link . '</p>' . "\n" . $comments . "\n" . join("\n",$form) :
 		join("\n",$form) . "\n" . '<p>' . $recent . ' ' . $link . '</p>' . "\n" . $comments . "\n";
-	$string .= ! auth::check_role('readonly') ? '</form>' : '';
+	$string .= ! Auth::check_role('readonly') ? '</form>' : '';
 
 	return (IS_MOBILE) ? '<div data-role="collapsible" data-theme="b" data-content-theme="d"><h4>'.$_pcmt_messages['msg_comment'].'</h4>'.$string.'</div>' : '<div class="pcomment">' . $string . '</div>';
 }
@@ -315,9 +317,9 @@ function plugin_pcomment_get_comments($page, $count, $dir, $reply)
 		return array(str_replace('$1', $page, T_('Due to the blocking, no comments could be read from  $1 at all.')));
 
 	// $reply = (! PKWK_READONLY && $reply); // Suprress radio-buttons
-	$reply = (! auth::check_role('readonly') && $reply); // Suprress radio-buttons
+	$reply = (! Auth::check_role('readonly') && $reply); // Suprress radio-buttons
 
-	$data = get_source($page);
+	$data = Factory::Wiki($page)->get();
 	$data = preg_replace('/^#pcomment\(?.*/i', '', $data);	// Avoid eternal recurse
 
 	if (! is_array($data)) return array('', 0);
@@ -352,7 +354,7 @@ function plugin_pcomment_get_comments($page, $count, $dir, $reply)
 	while (! empty($data) && substr($data[0], 0, 1) != '-')
 		array_shift($data);
 
-	$comments = convert_html($data);
+	$comments = RendererFactory::factory($data);
 	unset($data);
 
 	// Add radio buttons
@@ -370,11 +372,11 @@ function plugin_pcomment_get_nick()
 	global $vars, $_no_name;
 
 	$name = (empty($vars['name'])) ? $_no_name : $vars['name'];
-	if (PKWK_READONLY != ROLE_AUTH) return array($name,$name,'');
+	if (PKWK_READONLY != Auth::ROLE_AUTH) return array($name,$name,'');
 
-	$auth_key = auth::get_user_name();
+	$auth_key = Auth::get_user_name();
 	if (empty($auth_key['nick'])) return array($name,$name,'');
-	if (auth::get_role_level() < ROLE_AUTH) return array($auth_key['nick'],$name,'');
+	if (Auth::get_role_level() < Auth::ROLE_AUTH) return array($auth_key['nick'],$name,'');
 	$link = (empty($auth_key['profile'])) ? $auth_key['nick'] : $auth_key['nick'].'>'.$auth_key['profile'];
 	return array($auth_key['nick'], $link, "disabled=\"disabled\"");
 }

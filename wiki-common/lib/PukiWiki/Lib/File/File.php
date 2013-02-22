@@ -15,6 +15,7 @@ namespace PukiWiki\Lib\File;
 
 use SplFileInfo;
 use PukiWiki\Lib\Utility;
+use PukiWiki\Lib\Time;
 use PukiWiki\Lib\File\FileUtility;
 
 /**
@@ -214,15 +215,7 @@ class File extends SplFileInfo{
 	 * @return string
 	 */
 	public function passage(){
-		static $units = array('m'=>60, 'h'=>24, 'd'=>1);
-		$time = max(0, (MUTIME - $this->time()) / 60); // minutes
-
-		foreach ($units as $unit=>$card) {
-			if ($time < $card) break;
-			$time /= $card;
-		}
-		$time = floor($time) . $unit;
-		return $time;
+		return Time::passage($this->time());
 	}
 	/**
 	 * ファイルの所有者変更

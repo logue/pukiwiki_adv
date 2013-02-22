@@ -210,7 +210,7 @@ function auth_mixi_get_info($openid)
 
 function auth_mixi_get_user_name($msg,$prof,$key)
 {
-	$rc = array('role'=>ROLE_AUTH_OPENID,'nick'=>$msg['nickname'],'profile'=>$prof,'key'=>$key);
+	$rc = array('role'=>Auth::ROLE_AUTH_OPENID,'nick'=>$msg['nickname'],'profile'=>$prof,'key'=>$key);
 	$info = auth_mixi_get_info($msg['identity_url']);
 	/*
 	 * |field|friends |  community |rem           |h
@@ -244,16 +244,16 @@ function auth_mixi_get_role_config($type,$id)
 		case 3:
 			$config_mixi[3] = $config->get('community');
 			break;
-		default: return ROLE_AUTH_OPENID;
+		default: return Auth::ROLE_AUTH_OPENID;
 		}
 		unset($config);
 	}
 
 	// 登録されたIDでの認証に限って、登録者に昇格させる
 	foreach($config_mixi[$type] as $x) {
-		if ($x[0] === $id) return ROLE_ENROLLEE;
+		if ($x[0] === $id) return Auth::ROLE_ENROLLEE;
 	}
-	return ROLE_AUTH_OPENID;
+	return Auth::ROLE_AUTH_OPENID;
 }
 
 function auth_mixi_get_role_auth_api($type,$id)
@@ -262,7 +262,7 @@ function auth_mixi_get_role_auth_api($type,$id)
 	static $config_mixi = array();
 	static $get_label = array(2=>'my_id',3=>'community_id');
 
-	if (! isset($auth_api['openid']['mixi'])) return ROLE_AUTH_OPENID;
+	if (! isset($auth_api['openid']['mixi'])) return Auth::ROLE_AUTH_OPENID;
 
 	$auth_api_mixi = & $auth_api['openid']['mixi'];
 
@@ -273,9 +273,9 @@ function auth_mixi_get_role_auth_api($type,$id)
 	}
 
 	foreach($config_mixi[$type] as $x) {
-		if ($x === $id) return ROLE_ENROLLEE;
+		if ($x === $id) return Auth::ROLE_ENROLLEE;
 	}
-	return ROLE_AUTH_OPENID;
+	return Auth::ROLE_AUTH_OPENID;
 }
 /* End of file auth_mixi.inc.php */
 /* Location: ./wiki-common/plugin/auth_mixi.inc.php */

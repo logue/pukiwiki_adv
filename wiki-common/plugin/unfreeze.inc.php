@@ -9,7 +9,7 @@
 //
 // Unfreeze(Unlock) plugin
 use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\Factory;
 
 // Show edit form when unfreezed
 defined('PLUGIN_UNFREEZE_EDIT') or define('PLUGIN_UNFREEZE_EDIT', TRUE);
@@ -41,7 +41,7 @@ function plugin_unfreeze_action()
 	if ( (! Auth::check_role('role_adm_contents') ) ||
 	     ($pass !== NULL && pkwk_login($pass)) )
 	{
-		$wiki = FileFactory::Wiki($page);
+		$wiki = WikiFactory::Wiki($page);
 		// BugTrack2/255
 		$wiki->checkReadable();
 		// Unfreeze

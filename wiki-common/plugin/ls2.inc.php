@@ -28,6 +28,11 @@
  * heading title: 見出しのタイトルを指定する (linkを指定した時のみ)
  */
 
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Factory;
+use PukiWiki\Lib\Utility;
+
+
 // 見出しアンカーの書式
 define('PLUGIN_LS2_ANCHOR_PREFIX', '#content_1_');
 
@@ -50,7 +55,7 @@ function plugin_ls2_action()
 	$body = plugin_ls2_show_lists($prefix, $params);
 
 	return array('body'=>$body,
-		'msg'=>str_replace('$1', htmlsc($prefix), T_("List of pages which begin with ' $1'")));
+		'msg'=>str_replace('$1', Utility::htmlsc($prefix), T_("List of pages which begin with ' $1'")));
 }
 
 function plugin_ls2_convert()
@@ -95,12 +100,12 @@ function plugin_ls2_show_lists($prefix, & $params)
 
 	$pages = array();
 	if ($prefix != '') {
-		foreach (auth::get_existpages() as $_page){
+		foreach (Auth::get_existpages() as $_page){
 			if (strpos($_page, $prefix) === 0)
 				$pages[] = $_page;
 		}
 	} else {
-		$pages = auth::get_existpages();
+		$pages = Auth::get_existpages();
 	}
 
 	natcasesort($pages);
@@ -109,7 +114,7 @@ function plugin_ls2_show_lists($prefix, & $params)
 	foreach ($pages as $page) $params['page_ ' . $page] = 0;
 
 	if (empty($pages)) {
-		return str_replace('$1', htmlsc($prefix), '<p>' . T_("There is no child page in ' $1'") . '</p>');
+		return str_replace('$1', Utility::htmlsc($prefix), '<p>' . T_("There is no child page in ' $1'") . '</p>');
 	} else {
 		$params['result'] = $params['saved'] = array();
 		foreach ($pages as $page)
@@ -126,9 +131,10 @@ function plugin_ls2_get_headings($page, & $params, $level, $include = FALSE)
 	$is_done = (isset($params["page_$page"]) && $params["page_$page"] > 0);
 	if (! $is_done) $params["page_$page"] = ++$_ls2_anchor;
 
-	$s_page = htmlsc($page);
-	$title  = $s_page . ' ' . get_pg_passage($page, FALSE);
-	$href   = get_page_uri($page);
+	$s_page = Utility::htmlsc($page);
+	$wiki = WikiFactory::Wiki($page);
+	$title  = $s_page . ' ' . $wiki->passage(false,true);
+	$href   = $wiki->get_uri();
 
 	plugin_ls2_list_push($params, $level);
 	$ret = $include ? '<li>include ' : '<li>';
@@ -147,7 +153,7 @@ function plugin_ls2_get_headings($page, & $params, $level, $include = FALSE)
 
 	$anchor = PLUGIN_LS2_ANCHOR_ORIGIN;
 	$matches = array();
-	foreach (get_source($page) as $line) {
+	foreach ($wiki->get() as $line) {
 		if ($params['title'] && preg_match('/^(\*{1,3})/', $line, $matches)) {
 			$id    = '#' .make_heading($line);
 			$level = strlen($matches[1]);

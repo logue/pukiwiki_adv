@@ -13,6 +13,8 @@
 define('PLUGIN_BUGTRACK_NUMBER_FORMAT', '%d'); // Like 'page/1'
 //define('PLUGIN_BUGTRACK_NUMBER_FORMAT', '%03d'); // Like 'page/001'
 
+use PukiWiki\Lib\Auth\Auth;
+
 function plugin_bugtrack_init()
 {
 	global $_plugin_bugtrack;
@@ -52,8 +54,8 @@ function plugin_bugtrack_convert()
 	global $vars;
 
 	// if (PKWK_READONLY) return ''; // Show nothing
-	if (auth::check_role('readonly')) return ''; // Show nothing
-	if (auth::is_check_role(PKWK_CREATE_PAGE)) return '';
+	if (Auth::check_role('readonly')) return ''; // Show nothing
+	if (Auth::is_check_role(PKWK_CREATE_PAGE)) return '';
 
 	$base = $vars['page'];
 	$category = array();
@@ -181,8 +183,8 @@ function plugin_bugtrack_action()
 	global $_plugin_bugtrack, $_string;
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	if (auth::check_role('readonly')) die_message($_string['prohibit']);
-	if (auth::is_check_role(PKWK_CREATE_PAGE)) die_message(str_replace('PKWK_CREATE_PAGE','PKWK_READONLY',$_string['prohibit']));
+	if (Auth::check_role('readonly')) die_message($_string['prohibit']);
+	if (Auth::is_check_role(PKWK_CREATE_PAGE)) die_message(str_replace('PKWK_CREATE_PAGE','PKWK_READONLY',$_string['prohibit']));
 	if ($post['mode'] != 'submit') return FALSE;
 
 	// Vaildation foreign values(by miko)
@@ -288,7 +290,7 @@ function plugin_bugtrack_list_convert()
 	$data = array();
 	$pattern = $page . '/';
 	$pattern_len = strlen($pattern);
-	foreach (auth::get_existpages() as $page)
+	foreach (Auth::get_existpages() as $page)
 		if (strpos($page, $pattern) === 0 && is_numeric(substr($page, $pattern_len)))
 			array_push($data, plugin_bugtrack_list_pageinfo($page));
 

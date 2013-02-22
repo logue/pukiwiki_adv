@@ -13,7 +13,7 @@
 //   ?cmd=map&refer=pagename
 //   ?cmd=map&refer=pagename&reverse=true
 
-
+use PukiWiki\Lib\Auth\Auth;
 // Show $non_list files
 define('PLUGIN_MAP_SHOW_HIDDEN', 0); // 0, 1
 
@@ -30,7 +30,7 @@ function plugin_map_action()
 	$retval['msg']  = $reverse ? T_('Relation map (link from)') : sprintf(T_('Relation map, from %s'),$refer);
 
 	// Get pages
-	$pages = array_values(array_diff(auth::get_existpages(), array($whatsnew)));
+	$pages = array_values(array_diff(Auth::get_existpages(), array($whatsnew)));
 	if (! PLUGIN_MAP_SHOW_HIDDEN) {
 		$pages = array_diff($pages, preg_grep('/' . $non_list . '/', $pages));
 	}

@@ -9,11 +9,11 @@
 // License: GPL v2
 //
 // Listing cvs revisions of files
-
+use PukiWiki\Lib\Auth\Auth;
 function plugin_versionlist_action()
 {
 	// if (PKWK_SAFE_MODE) die_message('PKWK_SAFE_MODE prohibits this');
-	if (auth::check_role('safemode')) die_message('PKWK_SAFE_MODE prohibits this');
+	if (Auth::check_role('safemode')) die_message('PKWK_SAFE_MODE prohibits this');
 
 	return array(
 		'msg' => _('version list'),
@@ -24,7 +24,7 @@ function plugin_versionlist_action()
 function plugin_versionlist_convert()
 {
 	// if (PKWK_SAFE_MODE) return ''; // Show nothi
-	if (auth::check_role('safemode')) return ''; // Show nothi
+	if (Auth::check_role('safemode')) return ''; // Show nothi
 
 	// Directories to scan
 	$scan['.'       ] = NULL;

@@ -18,9 +18,11 @@ defined('GUIEDIT_CONF_PATH')  or define('GUIEDIT_CONF_PATH',  'guiedit/');
 defined('GUIEDIT_FULL_SIZE') or define('GUIEDIT_FULL_SIZE', 0);
 
 define('PLUGIN_GUIEDIT_FREEZE_REGEX', '/^(?:#freeze(?!\w)\s*)+/im');
-
+use PukiWiki\Lib\Auth\Auth;
 use PukiWiki\Lib\File\WikiFile;
-use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\Factory;
+use PukiWiki\Lib\Renderer\RendererFactory;
+
 //	コマンド型プラグイン
 function plugin_guiedit_action()
 {
@@ -29,9 +31,9 @@ function plugin_guiedit_action()
 	global $menubar, $sidebar, $topicpath;
 
 	// if (PKWK_READONLY) die_message( sprintf($_string['error_prohibit'],'PKWK_READONLY') );
-	if (auth::check_role('readonly')) die_message(  sprintf($_string['error_prohibit'],'PKWK_READONLY') );
+	if (Auth::check_role('readonly')) die_message(  sprintf($_string['error_prohibit'],'PKWK_READONLY') );
 
-	if (PKWK_READONLY == ROLE_AUTH && auth::get_role_level() > ROLE_AUTH) {
+	if (PKWK_READONLY == Auth::ROLE_AUTH && Auth::get_role_level() > Auth::ROLE_AUTH) {
 		die_message(  sprintf($_string['error_prohibit'],'PKWK_READONLY') );
 	}
 
@@ -43,7 +45,7 @@ function plugin_guiedit_action()
 		die_message('You have not permission to edit this page.');
 	}
 
-	if (!is_page($page) && auth::is_check_role(PKWK_CREATE_PAGE)) {
+	if (!is_page($page) && Auth::is_check_role(PKWK_CREATE_PAGE)) {
 		die_message( sprintf($_string['error_prohibit'],'PKWK_CREATE_PAGE') );
 	}
 
@@ -111,7 +113,7 @@ function plugin_guiedit_edit_data($page)
 {
 	global $vars;
 
-	$source = FileFactory::Wiki($vars['page'])->source();
+	$source = WikiFactory::Wiki($vars['page'])->source();
 	$postdata = $vars['original'] = join('', $source);
 	if (! empty($vars['id'])) {
 		exist_plugin('edit');
@@ -121,7 +123,7 @@ function plugin_guiedit_edit_data($page)
 			$postdata = $vars['original'];
 		}
 	}
-	if ($postdata == '') $postdata = FileFactory::Wiki($page)->auto_template();
+	if ($postdata == '') $postdata = WikiFactory::Wiki($page)->auto_template();
 
 	//	構文の変換
 	$inc = include_once(GUIEDIT_CONF_PATH . 'wiki2xhtml.php');
@@ -196,7 +198,7 @@ function plugin_guiedit_preview()
 	if ($postdata) {
 		$postdata = make_str_rules($postdata);
 		$postdata = explode("\n", $postdata);
-		$postdata = drop_submit(convert_html($postdata));
+		$postdata = drop_submit(RendererFactory::factory($postdata));
 	}
 
 	//	テキスト編集の場合
@@ -346,7 +348,7 @@ EOD;
 	if ($notimeupdate != 0) {
 		$checked_time = isset($vars['notimestamp']) ? ' checked="checked"' : '';
 		// if ($notimeupdate == 2) {
-		if ($notimeupdate == 2 && auth::check_role('role_adm_contents')) {
+		if ($notimeupdate == 2 && Auth::check_role('role_adm_contents')) {
 			$add_notimestamp = '   ' .
 				'<input type="password" name="pass" size="12" />' . "\n";
 		}

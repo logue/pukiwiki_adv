@@ -13,7 +13,7 @@
 
 namespace PukiWiki\Lib\File;
 
-use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\Factory;
 use PukiWiki\Lib\Auth\Auth;
 use PukiWiki\Lib\Utility;
 
@@ -68,7 +68,7 @@ class BackupFile extends File{
 	 * @return    Void
 	 */
 	public function setBackup(){
-		$wiki = FileFactory::Wiki($this->page);
+		$wiki = Factory::Wiki($this->page);
 		// ページが存在しない場合、バックアップ作成しない。
 		if (! $wiki->has() ) return;
 
@@ -301,7 +301,7 @@ class BackupFile extends File{
 	 * @return string
 	 */
 	public function getDiff($age=0){
-		$new = FileFactory::Wiki($this->page)->source();
+		$new = Factory::Wiki($this->page)->source();
 		$old = self::getBackup($age);
 		$diff = new Diff($new, $old);
 		return $diff->getHtml();

@@ -21,7 +21,7 @@
  * nodate  日付がつきません。 
  * notile  タイトルの入力項目が表示されません。
  */
-
+use PukiWiki\Lib\Auth\Auth;
 /////////////////////////////////////////////////
 // URLテキストエリアのカラム数
 defined('URLBOOKMARK_URL_COLS') or define('URLBOOKMARK_URL_COLS',30);
@@ -50,7 +50,7 @@ function plugin_urlbookmark_action()
 {
 	global $vars,$post,$now,$_string;
 
-	if( auth::check_role('readonly') ) die_message(sprintf($_string['error_prohibit'], 'PKWK_READONLY'));
+	if( Auth::check_role('readonly') ) die_message(sprintf($_string['error_prohibit'], 'PKWK_READONLY'));
 
 	$post['msg'] = preg_replace("/\n/",'',$post['msg']);
 
@@ -144,7 +144,7 @@ function plugin_urlbookmark_convert()
 	global $vars,$digest;
 	static $numbers = array();
 
-	if( auth::check_role('readonly') ) return '';
+	if( Auth::check_role('readonly') ) return '';
 	
 	if (!array_key_exists($vars['page'],$numbers))
 	{

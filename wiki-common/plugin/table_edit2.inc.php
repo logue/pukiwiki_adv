@@ -2,7 +2,7 @@
 
 // table_edit2.inc.php, 3.1+calc0.6+func0.3 2009/11/19 taru        plugin
 // Modified by PukiWiki Adv. Team 2012
-
+use PukiWiki\Lib\Auth\Auth;
 
 define('PLUGIN_TABLE_EDIT2_TEXT_SIZE',  58);
 define('PLUGIN_TABLE_EDIT2_TEXTAREA_ROWS_LINE',  4);		// textarea
@@ -49,7 +49,7 @@ function plugin_table_edit2_convert()
 	);
 	if (! class_exists('auth')) { table_edit2_auth(); }
 
-	$auth_chk = auth::check_auth();
+	$auth_chk = Auth::check_auth();
 	foreach($edit_auth_pages as $key=>$val){
 		$opt['edit'] = (preg_match($key, $page) && $edit_auth && empty($auth_chk)) ? 'off' : 'on';
 	}
@@ -71,7 +71,7 @@ function plugin_table_edit2_convert()
 	}
 
 	// 読み込み専用の時やページが凍結されている場合は編集不可
-	if (auth::check_role('readonly') || is_freeze($page)) {
+	if (Auth::check_role('readonly') || is_freeze($page)) {
 		$opt['edit'] = 'off';
 	}
 
@@ -695,12 +695,12 @@ class TableEdit2Auth
 		unset($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
 		header( 'WWW-Authenticate: Basic realm="'.$m_auth.'"' );
 		header( 'HTTP/1.0 401 Unauthorized' );
-		return auth::check_auth();
+		return Auth::check_auth();
 	}
 }
 function table_edit2_auth()
 {
-	class auth {
+	class Auth {
 		function check_auth()
 		{
 			foreach (array('PHP_AUTH_USER', 'AUTH_USER', 'REMOTE_USER', 'LOGON_USER') as $x) {
@@ -743,7 +743,7 @@ function table_edit2_auth()
 
 			if (empty($user) && empty($pass)) return 0;
 			if (empty($auth_users[$user])) return 0;
-			if ( pkwk_hash_compute($pass, $auth_users[$user]) !== $auth_users[$user]) return 0;
+			if ( Auth::pkwk_hash_compute($pass, $auth_users[$user]) !== $auth_users[$user]) return 0;
 			return 1;
 		}
 	}
@@ -1130,7 +1130,7 @@ function plugin_table_edit2_action()
 	if ($spam) return plugin_table_edit2_honeypot();
 
 	if (! class_exists('auth')) { table_edit2_auth(); }
-	if (auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
+	if (Auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
 
 	if ( PLUGIN_TABLE_EDIT2_HTTP_REFERER ) {
 		if (! function_exists('path_check')) {
@@ -1201,7 +1201,7 @@ function plugin_table_edit2_action()
 
 					if(preg_match('/auth_check[=_](on|off)/i',$matches[2],$auth_check)) {
 						if ( $auth_check[1] == 'on' ) {
-							if (!auth::auth_pw($auth_users)) {
+							if (!Auth::auth_pw($auth_users)) {
 								$user = TableEdit2Auth::basic_auth();
 								if(empty($user)) return;
 							}

@@ -1,14 +1,22 @@
 <?php
-// PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: BlacketName.php,v 1.0.0 2012/12/18 11:00:00 Logue Exp $
-// Copyright (C)
-//   2012 PukiWiki Advance Developers Team
-// License: GPL v2 or (at your option) any later version
+/**
+ * ブラケット名クラス
+ *
+ * @package   PukiWiki\Lib\Renderer\Inline
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @create    2012/12/18
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: BracketName.php,v 1.0.0 2013/01/29 19:54:00 Logue Exp $
+ */
 
 namespace PukiWiki\Lib\Renderer\Inline;
-use PukiWiki\Lib\File\FileFactory;
+
+use PukiWiki\Lib\Factory;
+use PukiWiki\Lib\Renderer\RendererDefines;
 use PukiWiki\Lib\Utility;
-// BracketNames
+
 class BracketName extends Inline
 {
 	var $anchor, $refer;
@@ -20,21 +28,21 @@ class BracketName extends Inline
 
 	public function getPattern()
 	{
-		global $WikiName, $BracketName;
-
 		$s2 = $this->start + 2;
+		// [[ (1) > (3) # (4) ]]
+		// [[ (2) ]]
 		return
-			'\[\['.                     // Open bracket
-			'(?:((?:(?!\]\]).)+)>)?'.   // (1) Alias
+			'\[\['.                     // Open bracket [[
+			'(?:((?:(?!\]\]).)+)>)?'.   // (1) Alias >
 			'(\[\[)?'.                  // (2) Open bracket
 			'('.                        // (3) PageName
-			 '(?:' . $WikiName . ')'.
+			 '(?:' . RendererDefines::WIKINAME_PATTERN . ')'.
 			 '|'.
-			 '(?:' . $BracketName . ')'.
+			 '(?:' . RendererDefines::BRACKETNAME_PATTERN . ')'.
 			')?'.
 			'(\#(?:[a-zA-Z][\w-]*)?)?'. // (4) Anchor
 			'(?(' . $s2 . ')\]\])'.     // Close bracket if (2)
-			'\]\]';                     // Close bracket
+			'\]\]';                     // Close bracket ]]
 	}
 
 	public function getCount()
@@ -51,7 +59,7 @@ class BracketName extends Inline
 			if ( empty($alias) ) $alias = $name . $this->anchor;
 			if ( !empty($name) ) {
 				$name = self::getFullname($name, $page);
-				if (! FileFactory::Wiki($name)->isValied()) return FALSE;
+				if (! Factory::Wiki($name)->isValied()) return FALSE;
 			}
 		}
 
@@ -101,10 +109,11 @@ class BracketName extends Inline
 			$name = ! empty($arrp) ? join('/', array_merge($arrp, $arrn)) :
 				(! empty($arrn) ? $defaultpage . '/' . join('/', $arrn) : $defaultpage);
 		}
+		
 
 		return $name;
 	}
 }
 
 /* End of file BlacketName.php */
-/* Location: /vender/PukiWiki/Lib/Renderer/Inline/BlacketName.php */
+/* Location: /vendor/PukiWiki/Lib/Renderer/Inline/BlacketName.php */

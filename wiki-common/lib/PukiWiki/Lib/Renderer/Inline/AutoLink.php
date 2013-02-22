@@ -1,14 +1,21 @@
 <?php
-// PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: AutoLink.php,v 1.0.0 2013/01/05 15:46:00 Logue Exp $
-// Copyright (C)
-//   2012-2013 PukiWiki Advance Developers Team
-// License: GPL v2 or (at your option) any later version
-//
-// Hyperlink-related functions
+/**
+ * 自動リンククラス
+ *
+ * @package   PukiWiki\Lib\Renderer\Inline
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @create    2012/12/18
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: AutoLink.php,v 1.0.0 2013/01/29 19:54:00 Logue Exp $
+ */
+
 namespace PukiWiki\Lib\Renderer\Inline;
-use PukiWiki\Lib\Renderer\Trie;
+
 use PukiWiki\Lib\File\FileUtility;
+use PukiWiki\Lib\Renderer\RendererDefines;
+use PukiWiki\Lib\Renderer\Trie;
 
 // AutoLinks
 class AutoLink extends Inline
@@ -75,7 +82,7 @@ class AutoLink extends Inline
 		}
 
 		// 用語マッチパターンキャッシュを生成
-		global $WikiName, $autolink, $nowikiname;
+		global $autolink, $nowikiname;
 
 		$config = new \Config('AutoLink');	// FIXME
 		$config->read();
@@ -85,12 +92,12 @@ class AutoLink extends Inline
 		$auto_pages = array_merge($ignorepages, $forceignorepages);
 
 		foreach (FileUtility::getExists() as $page)
-			if (preg_match('/^' . $WikiName . '$/', $page) ?
+			if (preg_match('/^' . RendererDefines::WIKINAME_PATTERN . '$/', $page) ?
 				$nowikiname : strlen($page) >= $autolink)
 				$auto_pages[] = $page;
 
 		if (empty($auto_pages)) {
-			$result = $result_a = $nowikiname ? '(?!)' : $WikiName;
+			$result = $result_a = $nowikiname ? '(?!)' : RendererDefines::WIKINAME_PATTERN;
 		} else {
 			$auto_pages = array_unique($auto_pages);
 			sort($auto_pages, SORT_STRING);
@@ -123,4 +130,4 @@ class AutoLink_Alphabet extends AutoLink
 }
 
 /* End of file AutoLink.php */
-/* Location: /vender/PukiWiki/Lib/Renderer/Inline/AutoLink.php */
+/* Location: /vendor/PukiWiki/Lib/Renderer/Inline/AutoLink.php */

@@ -11,7 +11,7 @@
 // License: GPL v2 or (at your option) any later version
 //
 // File attach plugin
-
+use PukiWiki\Lib\Auth\Auth;
 // NOTE (PHP > 4.2.3):
 //    This feature is disabled at newer version of PHP.
 //    Set this at php.ini if you want.
@@ -186,7 +186,7 @@ function plugin_attach_action()
 		case 'freeze':
 		case 'unfreeze':
 			// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-			if (auth::check_role('readonly')) die_message( $_string['error_prohibit'] );
+			if (Auth::check_role('readonly')) die_message( $_string['error_prohibit'] );
 		}
 		switch ($pcmd) {
 			case 'info'     : return attach_info();
@@ -224,7 +224,7 @@ function attach_upload($file, $page, $pass = NULL)
 	global $_attach_messages, $_string;
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	if (auth::check_role('readonly')) die_message($_string['error_prohibit']);
+	if (Auth::check_role('readonly')) die_message($_string['error_prohibit']);
 
 	// Check query-string
 	$query = get_cmd_uri('attach', '', '', array(
@@ -260,7 +260,7 @@ function attach_upload($file, $page, $pass = NULL)
 			msg'=>$_attach_messages['err_noparm']);
 
 	// } else if (PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY && $pass !== TRUE &&
-	} else if (PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY && auth::check_role('role_adm_contents') && $pass !== TRUE &&
+	} else if (PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY && Auth::check_role('role_adm_contents') && $pass !== TRUE &&
 		  ($pass === NULL || ! pkwk_login($pass))) {
 		return array(
 			'result'=>FALSE,
@@ -646,7 +646,7 @@ function attach_list()
 {
 	global $vars, $_attach_messages, $_string;
 
-	if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
+	if (Auth::check_role('safemode')) die_message( $_string['prohibit'] );
 
 	$refer = isset($vars['refer']) ? $vars['refer'] : '';
 	$obj = new AttachPages($refer);
@@ -671,7 +671,7 @@ function attach_showform()
 {
 	global $vars, $_attach_messages, $_string;
 
-	if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
+	if (Auth::check_role('safemode')) die_message( $_string['prohibit'] );
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
 	$isEditable = check_editable($page, true, false);
@@ -760,7 +760,7 @@ function attach_form($page)
 	$attach_form[] = '<input type="hidden" name="max_file_size" value="' . PLUGIN_ATTACH_MAX_FILESIZE . '" />';
 	$attach_form[] = '<label for="_p_attach_file">' . $_attach_messages['msg_file'] . ':</label>';
 	$attach_form[] = '<input type="file" name="attach_file" id="_p_attach_file" />';
-	$attach_form[] = ( (PLUGIN_ATTACH_PASSWORD_REQUIRE || PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY) && auth::check_role('role_adm_contents')) ?
+	$attach_form[] = ( (PLUGIN_ATTACH_PASSWORD_REQUIRE || PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY) && Auth::check_role('role_adm_contents')) ?
 						'<br />' . ($_attach_messages[PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY ? 'msg_adminpass' : 'msg_password']) .
 		 					': <input type="password" name="pass" size="8" />' : '';
 	$attach_form[] = '<input type="submit" value="' . $_attach_messages['btn_upload'] . '" />';
@@ -885,7 +885,7 @@ class AttachFile
 		$list_uri    = get_cmd_uri('attach','','',array('pcmd'=>'list','refer'=>$this->page));
 		$listall_uri = get_cmd_uri('attach','','',array('pcmd'=>'list'));
 
-		$role_adm_contents = auth::check_role('role_adm_contents');
+		$role_adm_contents = Auth::check_role('role_adm_contents');
 		$msg_require = ($role_adm_contents) ? $_attach_messages['msg_require'] : '';
 
 		$msg_rename  = '';
@@ -1029,7 +1029,7 @@ EOD;
 		if ($this->status['freeze']) return attach_info('msg_isfreeze');
 
 		// if (! pkwk_login($pass)) {
-		if (auth::check_role('role_adm_contents') && ! pkwk_login($pass)) {
+		if (Auth::check_role('role_adm_contents') && ! pkwk_login($pass)) {
 			if (PLUGIN_ATTACH_DELETE_ADMIN_ONLY || $this->age) {
 				return attach_info('err_adminpass');
 			} else if (PLUGIN_ATTACH_PASSWORD_REQUIRE &&
@@ -1080,7 +1080,7 @@ EOD;
 
 		if ($this->status['freeze']) return attach_info('msg_isfreeze');
 
-		if (auth::check_role('role_adm_contents') && ! pkwk_login($pass))
+		if (Auth::check_role('role_adm_contents') && ! pkwk_login($pass))
 			return attach_info('err_adminpass');
 
 		$newbase = UPLOAD_DIR . encode($this->page) . '_' . encode($newname);
@@ -1130,7 +1130,7 @@ EOD;
 		global $_attach_messages;
 
 		// if (! pkwk_login($pass))
-		if (auth::check_role('role_adm_contents') && ! pkwk_login($pass))
+		if (Auth::check_role('role_adm_contents') && ! Auth::login($pass))
 			return attach_info('err_adminpass');
 
 		$this->getstatus();

@@ -16,10 +16,10 @@ namespace PukiWiki\Lib\Renderer\Inline;
 use PukiWiki\Lib\Renderer\InlineConverter;
 use PukiWiki\Lib\Renderer\Inline\AutoAlias;
 use PukiWiki\Lib\Renderer\Inline\Glossary;
-use PukiWiki\Lib\File\FileFactory;
 use PukiWiki\Lib\Auth\Auth;
 use PukiWiki\Lib\Router;
 use PukiWiki\Lib\Utility;
+use PukiWiki\Lib\Factory;
 
 /**
  * インライン要素パースクラス
@@ -30,6 +30,8 @@ abstract class Inline
 	const INTERNAL_LINK_ICON = '<span class="pkwk-symbol link_symbol symbol-internal" title="Internal Link"></span>';
 	// 外部リンク
 	const EXTERNAL_LINK_ICON = '<span class="pkwk-symbol link_symbol symbol-external" title="External Link"></span>';
+	// 見つからないページのリンク
+	const NOEXISTS_STRING = '<span class="noexists">%s</span>';
 	// imgタグに展開する拡張子のパターン
 	const IMAGE_EXTENTION_PATTERN = '/\.(gif|png|bmp|jpe?g|svg?z|webp)$/i';
 	// audioタグで展開する拡張子のパターン
@@ -103,6 +105,7 @@ abstract class Inline
 				$converter = new InlineConverter(array('InlinePlugin'));
 
 			$alias = $converter->convert($alias, $page);
+
 			$alias = self::setLineRules($alias);
 
 			// BugTrack/669: A hack removing anchor tags added by AutoLink
@@ -152,11 +155,11 @@ abstract class Inline
 
 		$page = Utility::stripBracket($page);
 
-		$wiki = FileFactory::Wiki($page);
+		$wiki = Factory::Wiki($page);
 		if (! $wiki->has()) {
 			// ページが存在しない場合は、AutoAliasから該当ページが存在するかを確認する
 			foreach (AutoAlias::getAutoAliasDict() as $aliaspage=>$realpage) {
-				if (FileFactory::Wiki($realpage)->has()) {
+				if (Factory::Wiki($realpage)->has()) {
 					// リンクをエイリアス先に
 					return self::setLink($page, $aliaspage);
 				}
@@ -176,7 +179,7 @@ abstract class Inline
 				// AutoGlossray
 				$s_page = $glossary;
 			}
-			return '<a href="' . $wiki->get_uri() . $anchor . '" ' .
+			return '<a href="' . $wiki->uri() . $anchor . '" ' .
 				($link_compact === 0 ? 'title="' . $s_page . ' ' . $wiki->passage(false,true) . '"' : '' ).
 	//			($isautolink ? ' class="autolink"' : '') .
 				(!empty($glossary) ? 'aria-describedby="tooltip"' : '') .
@@ -185,9 +188,9 @@ abstract class Inline
 			// Dangling link
 			if (Auth::check_role('readonly')) return $s_alias; // No dacorations
 
-			$retval = $s_alias . '<a href="' . $wiki->get_uri('edit', (empty($refer) ? null : array('refer'=>$refer)) ) . '" rel="nofollow">' .$_symbol_noexists . '</a>';
+			$retval = $s_alias . '<a href="' . $wiki->uri('edit', (empty($refer) ? null : array('refer'=>$refer)) ) . '" rel="nofollow">' .$_symbol_noexists . '</a>';
 
-			return ($link_compact) ? $retval : '<span class="noexists">' . $retval . '</span>';
+			return ($link_compact) ? $retval : sprintf(self::NOEXISTS_STRING, $retval);
 		}
 	}
 	/**
@@ -199,7 +202,6 @@ abstract class Inline
 	 * @return string
 	 */
 	public static function setLink($term, $uri, $tooltip='', $rel = '', $is_redirect = PKWK_USE_REDIRECT){
-		
 		$_uri = Utility::htmlsc($uri);
 		$href = $is_redirect ? Router::get_cmd_uri('redirect',null,null,array('u'=>$uri)) : $_uri;
 
@@ -220,16 +222,17 @@ abstract class Inline
 					'<a href="' . $href . '" rel="' . $rel . '">' . self::INTERNAL_LINK_ICON .'</a>' :
 					'<a href="' . $href . '" rel="' . $ext_rel . '">' . self::EXTERNAL_LINK_ICON . '</a>';
 				if (preg_match(self::VIDEO_EXTENTION_PATTERN, $uri)) {
-					return '<video src="' . $_uri . '" alt="'.$_term.'" controls="controls"'.$_tooltip.'>' . $anchor . '</video>' . $icon;
+					return '<video src="' . $_uri . '" alt="'.$_term.'" controls="controls"'. $_tooltip . '>' . $anchor . '</video>' . $icon;
 				}else if (preg_match(self::AUDIO_EXTENTION_PATTERN, $uri)) {
-					return '<audio src="' . $_uri . '" alt="'.$_term.'" controls="controls"'.$_tooltip.'>' . $anchor . '</audio>' . $icon;
+					return '<audio src="' . $_uri . '" alt="'.$_term.'" controls="controls"'. $_tooltip . '>' . $anchor . '</audio>' . $icon;
 				}
 			}
+			
 		}
 		// リンクを出力
 		return self::isInsideUri($uri) ?
-			'<a href="' . $href . '" rel="' . $rel . '"'.$_tooltip.'>'.$term . self::INTERNAL_LINK_ICON .'</a>' :
-			'<a href="' . $href . '" rel="' . $ext_rel . '"'.$_tooltip.'>'.$term . self::EXTERNAL_LINK_ICON . '</a>';
+			'<a href="' . $href . '" rel="' . $rel . '"' . $_tooltip . '>' . $term . self::INTERNAL_LINK_ICON .'</a>' :
+			'<a href="' . $href . '" rel="' . $ext_rel . '"' . $_tooltip . '>' . $term . self::EXTERNAL_LINK_ICON . '</a>';
 	}
 	/**
 	 * 外部リンクか内部リンクの判定

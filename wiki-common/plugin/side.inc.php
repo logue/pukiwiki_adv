@@ -5,7 +5,7 @@
 // $Id: side.inc.php,v 1.8.7 2011/02/05 12:38:00 Logue Exp $
 //
 
-use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\Factory;
 use PukiWiki\Lib\Renderer\RendererFactory;
 
 // サブメニューを使用する
@@ -55,7 +55,7 @@ function plugin_side_convert()
 			}
 		}
 
-		$wiki = FileFactory::Wiki($page);
+		$wiki = Factory::Wiki($page);
 
 		if (! $wiki->has()) {
 			return '';

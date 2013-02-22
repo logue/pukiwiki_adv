@@ -7,45 +7,15 @@
  * @version     $Id: openid.inc.php,v 0.15.2 2012/05/11 18:27:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
-require_once(LIB_DIR . 'auth_api.cls.php');
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Auth\AuthApi;
+use PukiWiki\Lib\Auth\AuthOpenId;
+use PukiWiki\Lib\Auth\AuthOpenIdVerify;
+use PukiWiki\Lib\Utility;
 
 defined('PLUGIN_OPENID_SIZE_LOGIN')  or define('PLUGIN_OPENID_SIZE_LOGIN', 30);
 defined('PLUGIN_OPENID_STORE_PATH')  or define('PLUGIN_OPENID_STORE_PATH', '/tmp/_php_openid_plus');
 defined('PLUGIN_OPENID_NO_NICKNAME') or define('PLUGIN_OPENID_NO_NICKNAME', 0); // anonymouse
-
-class auth_openid_plus extends auth_api
-{
-	function auth_openid_plus()
-	{
-		$this->auth_name = 'openid';
-		// nickname,email,fullname,dob,gender,postcode,country,language,timezone
-		$this->field_name = array('author','nickname','email','local_id','identity_url','fullname');
-		$this->response = array();
-	}
-}
-
-class auth_openid_plus_verify extends auth_openid_plus
-{
-	function auth_openid_plus_verify()
-	{
-		$this->auth_name = 'openid_verify';
-		// $this->field_name = array('openid.server','openid.delegate','ts','page');
-		$this->field_name = array('author','server_url','local_id','ts','page');
-		$this->response = array();
-	}
-	function get_host()
-	{
-		$msg = $this->auth_session_get();
-		$arr = parse_url($msg['server_url']);
-		return strtolower($arr['host']);
-	}
-	function get_delegate()
-	{
-		$msg = $this->auth_session_get();
-		return $msg['local_id'];
-
-	}
-}
 
 function plugin_openid_init()
 {
@@ -92,11 +62,8 @@ function plugin_openid_logoff_msg($author='openid',$label='OpenID:',$logout_msg=
 {
 	global $vars;
 
-	if (! function_exists('pkwk_session_start')) return '<p>'.$_openid_msg['msg_not_found'].'</p>';
-	if (pkwk_session_start() == 0) return '<p>'.$_openid_msg['msg_not_start'].'</p>';
-
 	// 処理済みか？
-	$obj = new auth_openid_plus();
+	$obj = new AuthOpenId();
 	$name = $obj->auth_session_get();
 
 	if (! empty($name['api'])) {
@@ -139,7 +106,7 @@ function plugin_openid_inline()
 	if (! function_exists('pkwk_session_start')) return $_openid_msg['msg_not_found'];
 	if (pkwk_session_start() == 0) return $_openid_msg['msg_not_start'];
 
-	$obj = new auth_openid_plus();
+	$obj = new AuthOpenId();
 	$name = $obj->auth_session_get();
 
 	if (!empty($name['api']) && $obj->auth_name !== $name['api']) return;
@@ -157,7 +124,7 @@ function plugin_openid_inline()
 			'(<a href="'.$cmd.'&amp;logout'.'">'.$_openid_msg['msg_logout'].'</a>)';
 	}
 
-	 $auth_key = auth::get_user_name();
+	 $auth_key = Auth::get_user_name();
 	if (! empty($auth_key['nick'])) return $_openid_msg['msg_openid'];
 
 	return '<a href="'.$cmd.'">'.$_openid_msg['msg_openid'].'</a>';
@@ -178,10 +145,10 @@ function plugin_openid_action()
 
 	// LOGOUT
 	if (isset($vars['logout'])) {
-		$obj = new auth_openid_plus();
+		$obj = new AuthOpenId();
 		$obj->auth_session_unset();
 		$page = (empty($vars['page'])) ? '' : $vars['page'];
-		header('Location: '.get_page_location_uri($page));
+		Utility::redirect(get_page_location_uri($page));
 		die();
 	}
 
@@ -192,7 +159,7 @@ function plugin_openid_action()
 
 	// AUTH
 	if (!file_exists(PLUGIN_OPENID_STORE_PATH) && !mkdir(PLUGIN_OPENID_STORE_PATH)) {
-		$die_mesage( sprintf($_openid_msg['err_store_path'],PLUGIN_OPENID_STORE_PATH) );
+		Utility::dieMessage( sprintf($_openid_msg['err_store_path'],PLUGIN_OPENID_STORE_PATH) );
 	}
 
 	ini_set('include_path', LIB_DIR . 'openid/');
@@ -315,7 +282,7 @@ function plugin_openid_finish_auth($consumer)
 
 	$die_message = (PLUS_PROTECT_MODE) ? 'die_msg' : 'die_message';
 
-	$obj_verify = new auth_openid_plus_verify();
+	$obj_verify = new AuthOpenIdVerify();
 	$session_verify = $obj_verify->auth_session_get();
 	//$session_verify['server_url']
 	//$session_verify['local_id']
@@ -349,7 +316,7 @@ die();
 			}
 		}
 
-		$obj = new auth_openid_plus();
+		$obj = new AuthOpenId();
 		$obj->response = $sreg; // その他の項目を引き渡す
 		$obj->response['author'] = $author;
 		$obj->response['local_id'] = (!empty($response->endpoint->local_id)) ? $response->endpoint->local_id : $response->endpoint->claimed_id;
@@ -366,10 +333,10 @@ function plugin_openid_get_user_name()
 {
 	global $auth_api;
 	// role,name,nick,profile
-	if (! $auth_api['openid']['use']) return array('role'=>ROLE_GUEST,'nick'=>'');
-	$obj = new auth_openid_plus();
+	if (! $auth_api['openid']['use']) return array('role'=>Auth::ROLE_GUEST,'nick'=>'');
+	$obj = new AuthOpenId();
 	$msg = $obj->auth_session_get();
-	if (empty($msg['nickname'])) return array('role'=>ROLE_GUEST,'nick'=>'');
+	if (empty($msg['nickname'])) return array('role'=>Auth::ROLE_GUEST,'nick'=>'');
 
 	if (empty($msg['local_id'])) {
 		$key = '';
@@ -380,7 +347,7 @@ function plugin_openid_get_user_name()
 
 	$name = plugin_openid_get_call_func($msg['identity_url']);
 	if (empty($name) || !exist_plugin($name)) {
-		return array('role'=>ROLE_AUTH_OPENID,'nick'=>$msg['nickname'],'profile'=>$prof,'key'=>$key);
+		return array('role'=>Auth::ROLE_AUTH_OPENID,'nick'=>$msg['nickname'],'profile'=>$prof,'key'=>$key);
 	}
 
 	if (function_exists($name . '_get_user_name')) {
@@ -388,7 +355,7 @@ function plugin_openid_get_user_name()
 		return call_user_func_array($name . '_get_user_name', $aryargs);
 	}
 
-	return array('role'=>ROLE_AUTH_OPENID,'nick'=>$msg['nickname'],'profile'=>$prof,'key'=>$key);
+	return array('role'=>Auth::ROLE_AUTH_OPENID,'nick'=>$msg['nickname'],'profile'=>$prof,'key'=>$key);
 }
 
 function plugin_openid_jump_url()

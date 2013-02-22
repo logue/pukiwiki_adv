@@ -11,17 +11,18 @@
 //
 // Backup plugin
 use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Auth\AuthUtility;
 use PukiWiki\Lib\Router;
-use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\Factory;
 use PukiWiki\Lib\File\WikiFile;
-use PukiWiki\Lib\File\BackupFile;
+use PukiWiki\Lib\Backup;
 use PukiWiki\Lib\File\FileUtility;
+use PukiWiki\Lib\Renderer\RendererFactory;
 use PukiWiki\Lib\Diff;
+
 
 // Prohibit rendering old wiki texts (suppresses load, transfer rate, and security risk)
 // define('PLUGIN_BACKUP_DISABLE_BACKUP_RENDERING', PKWK_SAFE_MODE || PKWK_OPTIMISE);
-define('PLUGIN_BACKUP_DISABLE_BACKUP_RENDERING', auth::check_role('safemode') || PKWK_OPTIMISE);
+define('PLUGIN_BACKUP_DISABLE_BACKUP_RENDERING', Auth::check_role('safemode') || PKWK_OPTIMISE);
 
 // ロールバック機能を有効にする
 defined('PLUGIN_BACKUP_USE_ROLLBACK') or define('PLUGIN_BACKUP_USE_ROLLBACK', TRUE);
@@ -96,12 +97,12 @@ function plugin_backup_action()
 		return array('msg'=>$_backup_messages['title_backuplist'], 'body'=>plugin_backup_get_list_all());
 	}
 
-	$wiki = FileFactory::Wiki($page);
+	$wiki = Factory::Wiki($page);
 	$is_page = $wiki->has();
 	$s_page = htmlsc($page);
 	$r_page = rawurlencode($page);
 
-	$backups = FileFactory::Backup($page)->getBackup();
+	$backups = Factory::Backup($page)->get();
 
 	$msg = $_backup_messages['msg_backup'];
 	if ($s_age > count($backups)) $s_age = $backups_count;
@@ -143,7 +144,7 @@ function plugin_backup_action()
 				return plugin_backup_rollback($page, $s_age);
 			break;
 			case 'diff':
-				if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
+				if (Auth::check_role('safemode')) die_message( $_string['prohibit'] );
 				$title = & $_backup_messages['title_backupdiff'];
 				$past_data = ($s_age > 1) ? join("\n", $backups[$s_age - 1]['data']) : '';
 
@@ -151,9 +152,9 @@ function plugin_backup_action()
 				$body .= plugin_backup_diff($past_data, $data);
 			break;
 			case 'nowdiff':
-				if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
+				if (Auth::check_role('safemode')) die_message( $_string['prohibit'] );
 				$title = & $_backup_messages['title_backupnowdiff'];
-				$now_data = FileFactory::Wiki($page)->get(true);
+				$now_data = Factory::Wiki($page)->get(true);
 				Auth::is_role_page($now_data);
 				$body .= plugin_backup_diff($data, $now_data);
 			break;
@@ -165,7 +166,7 @@ function plugin_backup_action()
 				$source = do_diff($data, $now_data);
 
 				$source = plugin_backup_visualdiff($source);
-				$body .= drop_submit(convert_html($source));
+				$body .= drop_submit(RendererFactorty::factory($source));
 				$body = preg_replace('#<p>\#del(.*?)(</p>)#si', '<del class="remove_block">$1', $body);
 				$body = preg_replace('#<p>\#ins(.*?)(</p>)#si', '<ins class="add_block">$1', $body);
 				$body = preg_replace('#<p>\#delend(.*?)(</p>)#si', '$1</del>', $body);
@@ -187,14 +188,14 @@ function plugin_backup_action()
 					die_message( T_('This feature is prohibited') );
 				} else {
 					$title = & $_backup_messages['title_backup'];
-					$body .= drop_submit(convert_html($data));
+					$body .= drop_submit(RendererFactory::factory($data));
 				}
 			break;
 		}
 		$msg = str_replace('$2', $s_age, $title);
 	}
 
-	if (! auth::check_role('readonly')) {
+	if (! Auth::check_role('readonly')) {
 		$body .= '<a class="button" href="' . get_cmd_uri('backup', $page, null, array('action'=>'delete')) . '">' .
 			str_replace('$1', $s_page, $_backup_messages['title_backup_delete']) . '</a>';
 	}
@@ -213,7 +214,7 @@ function plugin_backup_delete($page, $ages = array())
 	global $vars;
 	global $_backup_messages;
 
-	$backup = new BackupFile($page);
+	$backup = Factory::Backup($page);
 	if (! $backup->has())
 		return array('msg'=>$_backup_messages['title_pagebackuplist'], 'body'=>plugin_backup_get_list($page)); // Say "is not found"
 
@@ -229,7 +230,7 @@ function plugin_backup_delete($page, $ages = array())
 	$invalied = '';
 
 	if (isset($vars['pass'])) {
-		if (AuthUtility::login($vars['pass'])) {
+		if (Auth::login($vars['pass'])) {
 			//_backup_delete($page, $ages);
 			return array(
 				'msg'  => $_backup_messages['title_backup_delete'],
@@ -240,7 +241,7 @@ function plugin_backup_delete($page, $ages = array())
 		}
 	}
 
-	$s_page = htmlsc($page);
+	$s_page = Utility::htmlsc($page);
 	$href_ages = '';
 	foreach ($ages as $age) {
 		$href_ages .= "\t\t".'<input type="hidden" name="selectages[]" value="' . $age . '" />' . "\n";
@@ -284,8 +285,8 @@ function plugin_backup_get_list($page)
 	$retval[] = '<form action="'.get_script_uri().'" method="get" class="backup_select_form">';
 	$retval[] = '<input type="hidden" name="cmd" value="backup" />';
 	$retval[] = '<input type="hidden" name="page" value="'.$s_page.'" />';
-	$backup = new BackupFile($page);
-	$backups = $backup->getBackup();
+	$backup = Factory::Backup($page);
+	$backups = $backup->get();
 	if (empty($backups)) {
 		$retval[1] .= '<p>' . str_replace('$1', make_pagelink($page), $_backup_messages['msg_nobackup']) . '</p>' . "\n";
 		return join('', $retval);
@@ -332,7 +333,7 @@ function plugin_backup_get_list($page)
 
 				$retval[] = '<li><input type="radio" name="age" value="' . $backup_age . '" id="r_' . $backup_age  . '"' .
 					( $backup_age === $age ? ' checked="checked"' : '' ).' /><label for="r_' . $backup_age . '">' . format_date($time, false) . '</label>' .
-					( (! auth::check_role('safemode')) ? '<input type="checkbox" name="selectages[]" value="'.$backup_age.'" />' : '')
+					( (! Auth::check_role('safemode')) ? '<input type="checkbox" name="selectages[]" value="'.$backup_age.'" />' : '')
 					 . '</li>';
 			}
 			$retval[] = '</ol>';
@@ -348,7 +349,7 @@ function plugin_backup_get_list($page)
 		return join('', $retval);
 	}
 	$_anchor_from = $_anchor_to   = '';
-	$safemode = auth::check_role('safemode');
+	$safemode = Auth::check_role('safemode');
 	foreach ($backups as $age=>$data) {
 		if (! PLUGIN_BACKUP_DISABLE_BACKUP_RENDERING) {
 			$_anchor_from = '<a href="' . get_cmd_uri('backup', $page, null, array('age'=>$age)) . '">';
@@ -391,7 +392,7 @@ function plugin_backup_get_list_all($withfilename = FALSE)
 {
 	global $_string;
 
-	if (auth::check_role('safemode')) die_message( $_string['prohibit'] );
+	if (Auth::check_role('safemode')) die_message( $_string['prohibit'] );
 
 	return FileUtility::getListing(BACKUP_DIR, 'backup', $withfilename);
 }
@@ -486,11 +487,11 @@ function plugin_backup_rollback($page, $age)
 	global $vars;
 	global $_backup_messages;
 
-	$passvalid = isset($vars['pass']) ? AuthUtility::login($vars['pass']) : FALSE;
+	$passvalid = isset($vars['pass']) ? Auth::login($vars['pass']) : FALSE;
 
 	if ($passvalid) {
-		$backup = new BackupFile($page);
-		$backups = $backup->getBackup($age);
+		$backup = Factory::Backup($page);
+		$backups = $backup->get($age);
 		if( empty($backups) )
 		{
 			die();	// Do nothing

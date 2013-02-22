@@ -1,9 +1,15 @@
 <?php
-// PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: Mailto.php,v 1.0.0 2013/01/05 15:46:00 Logue Exp $
-// Copyright (C)
-//   2012-2013 PukiWiki Advance Developers Team
-// License: GPL v2 or (at your option) any later version
+/**
+ * メールアドレス変換クラス
+ *
+ * @package   PukiWiki\Lib\Renderer\Inline
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @create    2012/12/18
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: Mailto.php,v 1.0.0 2013/01/29 19:54:00 Logue Exp $
+ */
 
 namespace PukiWiki\Lib\Renderer\Inline;
 
@@ -57,4 +63,4 @@ class Mailto extends Inline
 }
 
 /* End of file Mailto.php */
-/* Location: /vender/PukiWiki/Lib/Renderer/Inline/Mailto.php */
+/* Location: /vendor/PukiWiki/Lib/Renderer/Inline/Mailto.php */

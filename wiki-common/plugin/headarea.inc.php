@@ -5,6 +5,8 @@
 // $Id: headarea.inc.php,v 1.7.6 2011/02/05 10:54:00 Logue Exp $
 //
 
+use PukiWiki\Lib\Renderer\RendererFactory;
+
 // サブメニューを使用する
 define('HEAD_ENABLE_SUBHEAD', TRUE);
 
@@ -55,7 +57,7 @@ function plugin_headarea_convert()
 	}
 	$save_newwindow = $use_open_uri_in_new_window;
 	$use_open_uri_in_new_window = 0;
-	$headhtml = convert_html($headtext);
+	$headhtml = RendererFactory::factory($headtext);
 	$use_open_uri_in_new_window = $save_newwindow;
         $headhtml = str_replace("\n",'',$headhtml);
 	return preg_replace('/<ul class="list[^>]*>/','<ul class="head">',$headhtml);

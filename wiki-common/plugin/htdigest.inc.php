@@ -21,7 +21,8 @@ if (!defined('HTDIGEST_FILE_NAME')) {
 if (!defined('HTDIGEST_FILE')) {
 	define('HTDIGEST_FILE', HTDIGEST_FILE_PATH.HTDIGEST_FILE_NAME);
 }
-
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\File\AuthFile;
 require(LIB_DIR . 'auth_file.cls.php');
 require(LIB_DIR . 'des.php');
 
@@ -81,7 +82,7 @@ function plugin_htdigest_action()
 	switch ($func) {
 	case 'save':
         	// サイト管理者権限が無い場合
-		if (auth::check_role('role_adm')) {
+		if (Auth::check_role('role_adm')) {
 			return array('msg'=>$msg,'body'=>htdigest_menu($_htdigest_msg['err_role']));
 		}
 		// ADM
@@ -92,14 +93,14 @@ function plugin_htdigest_action()
 
 	case 'update':
 		// サイト管理者未満は、自分のパスワードのみ更新ができる
-		$role_level = auth::get_role_level();
+		$role_level = Auth::get_role_level();
 		if ($role_level < 2) {
 			// Guest
 			return array('msg'=>$msg,'body'=>htdigest_menu($_htdigest_msg['err_role']));
 		}
 		// Auth User
 		global $realm;
-		$user = auth::check_auth();
+		$user = Auth::check_auth();
 		if (USE_APACHE_WRITE_FUNC) {
 			$rc_msg = htdigest_save($user, $realm, $vars['hash'], $role_level);
 		}
@@ -134,10 +135,10 @@ function htdigest_menu($msg='&nbsp;')
 
 	$func = 'save';
 
-	$role_level = auth::get_role_level();
+	$role_level = Auth::get_role_level();
 	if ($role_level > 2) {
 		$user_disabled = 'disabled="disabled"';
-		$user = auth::check_auth();
+		$user = Auth::check_auth();
 		$func = 'update';
 		$msg_pass = $_htdigest_msg['msg_pass_old'];
 	} else {
@@ -298,7 +299,7 @@ function htdigest_save($username,$p_realm,$hash,$role)
 	} else {
 		// adminpass
 		global $adminpass;
-		list($scheme, $key) = auth::passwd_parse($adminpass);
+		list($scheme, $key) = Auth::passwd_parse($adminpass);
 		// FIXME: MD5 ONLY
 		if ($scheme != '{x-php-md5}') {
 			return $_htdigest_msg['err_md5'];

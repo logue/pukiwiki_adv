@@ -3,7 +3,8 @@
 // $Id: list.inc.php,v 1.6.11 2011/09/25 15:54:00 Logue Exp $
 //
 // IndexPages plugin: Show a list of page names
-use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Factory;
 use PukiWiki\Lib\File\FileUtility;
 
 defined('PKWK_SITEMAPS_CACHE') or define('PKWK_SITEMAPS_CACHE', 'sitemaps');
@@ -39,7 +40,7 @@ function plugin_list_action()
 			$buffer[] = '<?xml version="1.0" encoding="UTF-8"?>';
 			$buffer[] = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">';
 			foreach (FileUtility::getExists() as $page){
-				$wiki = FileFactory::Wiki($page);
+				$wiki = WikiFactory::Wiki($page);
 				if ($wiki->isHidden()) continue;
 				$buffer[] = '<url>';
 				$buffer[] = '<loc>'.$wiki->get_uri().'</loc>';
@@ -55,7 +56,7 @@ function plugin_list_action()
 			exit();
 		break;
 		case 'filelist' :
-			if (! auth::check_role('role_adm_contents'))
+			if (! Auth::check_role('role_adm_contents'))
 				$filelist = TRUE;
 			else
 			if (! pkwk_login($vars['pass']))

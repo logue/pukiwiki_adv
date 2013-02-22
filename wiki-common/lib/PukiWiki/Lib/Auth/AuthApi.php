@@ -10,17 +10,20 @@
 // require_once(LIB_DIR . 'hash.php');
 
 namespace PukiWiki\Lib\Auth;
+
 use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Utility;
+use PukiWiki\Lib\Router;
 
 class AuthApi
 {
+	const SESSION_PREFIX = 'auth-';
 	// auth_session_put    - auth_name, field_name, response
 	// responce_xml_parser - response
 	var $auth_name, $field_name, $response;
 
 	static function auth_session_get(){
-		//$val = auth::des_session_get($this->message_md5());
-		$val = md5('plus_auth_msg_'.get_script_absuri().session_id());
+		$val = Auth::des_session_get(self::message_md5());
 		if (empty($val)) {
 			return array();
 		}
@@ -42,10 +45,10 @@ class AuthApi
 				$message .= UTIME;
 				break;
 			default:
-				$message .= encode($this->response[$key]);
+				$message .= Utility::encode($this->response[$key]);
 			}
 		}
-		Auth::des_session_put($this->message_md5(),$message);
+		Auth::des_session_put(self::message_md5(),$message);
 
 		if ($this->auth_name != 'openid_verify') {
 			log_write('login','');
@@ -55,9 +58,7 @@ class AuthApi
 	function auth_session_unset()
 	{
 		// return session_unregister($this->message_md5());
-		global $session;
-		$md5 = $this->message_md5();
-		unset($session->$md5);
+		Auth::des_session_unset(self::message_md5());
 	}
 
 	static function parse_message($message)
@@ -91,7 +92,7 @@ class AuthApi
 	static function message_md5()
 	{
 		// return md5($this->auth_name.'_message_'.get_script_absuri().session_id());
-		return md5('plus_auth_msg_'.get_script_absuri().session_id());
+		return self::SESSION_PREFIX.md5(Router::get_script_absuri().session_id());
 	}
 
 }

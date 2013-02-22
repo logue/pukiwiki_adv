@@ -42,7 +42,7 @@ class InterWiki extends Inline
 	public function setPattern($arr, $page)
 	{
 		list(, $name, $alias) = $this->splice($arr);
-		return parent::setParam($page, htmlsc($name), null, 'url', $alias);
+		return parent::setParam($page, Utility::htmlsc($name), null, 'url', $alias);
 	}
 
 	public function __toString()

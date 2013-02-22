@@ -13,16 +13,21 @@
 
 namespace PukiWiki\Lib\Renderer\Inline;
 
-use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\Factory;
+use PukiWiki\Lib\Renderer\RendererDefines;
 use PukiWiki\Lib\Renderer\Trie;
 use PukiWiki\Lib\Utility;
 
 // Glossary
 class Glossary extends Inline
 {
+	// 用語集の正規表現キャッシュ名
 	const AUTO_GLOSSARY_PATTERN_CACHE = 'glossary';
+	// 用語集の用語キャッシュ名
 	const AUTO_GLOSSARY_TERM_CACHE = 'glossary-terms';
+	// 用語の定義のパターン
 	const AUTO_GLOSSARY_TERM_PATTERN = '/^[:|]([^|]+)\|([^|]+)\|?$/';
+	// 用語集のワードに使える最大文字数
 	const MAX_TERM_LENGTH = 64;
 
 	var $forceignorepages = array();
@@ -57,12 +62,12 @@ class Glossary extends Inline
 	public function __toString()
 	{
 		$term = Utility::stripBracket($this->name);
-		$wiki = FileFactory::Wiki($term);
+		$wiki = Factory::Wiki($term);
 		$glossary = self::getGlossary($term, true);
 		if (! $wiki->has() ) {
 			return '<abbr aria-describedby="tooltip" title="' . $glossary . '">' . $this->name . '</abbr>';
 		}
-		return '<a href="' . $wiki->get_uri() . '" title="' . $glossary . ' ' . $wiki->passage(false) . '" aria-describedby="tooltip">' . $this->name . '</a>';
+		return '<a href="' . $wiki->uri() . '" title="' . $glossary . ' ' . $wiki->passage(false) . '" aria-describedby="tooltip">' . $this->name . '</a>';
 	}
 	/**
 	 * 長すぎる場合削減
@@ -76,17 +81,16 @@ class Glossary extends Inline
 	 * Glossaryの正規表現パターンを生成
 	 * @return string
 	 */
-	private function getAutoGlossaryPattern($force = false){
+	private static function getAutoGlossaryPattern($force = false){
 		global $cache, $glossarypage;
 		static $pattern;
 
-		$wiki = FileFactory::Wiki($glossarypage);
+		$wiki = Factory::Wiki($glossarypage);
 		if (! $wiki->has()) return null;
 
 		// Glossaryの更新チェック
 		if ($cache['wiki']->hasItem(self::AUTO_GLOSSARY_TERM_CACHE)){
-			$term_cache_meta = $cache['wiki']->getMetadata(self::AUTO_GLOSSARY_TERM_CACHE);
-			if ($term_cache_meta['mtime'] < $wiki->time()) {
+			if (self::getGlossaryTime() < $wiki->time()) {
 				$force = true;
 			}
 		}
@@ -104,12 +108,12 @@ class Glossary extends Inline
 		}
 
 		// パターンキャッシュを生成
-		global $WikiName, $autoglossary, $nowikiname;
+		global $autoglossary, $nowikiname;
 
 		// 用語集を取得
 		$pairs = self::getGlossaryDict($force);
 		foreach ($pairs as $term=>$val){
-			if (preg_match('/^' . $WikiName . '$/', $term) ?
+			if (preg_match('/^' . RendererDefines::WIKINAME_PATTERN . '$/', $term) ?
 				$nowikiname : mb_strlen($term) >= $autoglossary)
 				$auto_terms[] = $term;
 		}
@@ -119,7 +123,7 @@ class Glossary extends Inline
 		} else {
 			// 用語辞書パターンからマッチパターン用の正規表現を生成
 			$auto_terms = array_unique($auto_terms);
-			sort($auto_terms, SORT_NATURAL);
+			sort($auto_terms, SORT_STRING);
 
 			$auto_terms_a = array_values(preg_grep('/^[A-Z]+$/i', $auto_terms));
 			$auto_terms   = array_values(array_diff($auto_terms,  $auto_terms_a));
@@ -133,7 +137,7 @@ class Glossary extends Inline
 		return $pattern;
 	}
 	/**
-	 * Glossaryページから用語と内容の辞書キャッシュを作成＆用語から内容を呼び出す
+	 * 用語から内容を呼び出す
 	 * @param string $term 用語
 	 * @param boolean $expect 要約するか（title属性の中に入れる文字列として出力するか）
 	 * @return string
@@ -143,15 +147,30 @@ class Glossary extends Inline
 
 		if (empty($term)) return $pairs;
 		if (!isset($pairs[$term])) return null;
-		$ret = htmlsc($pairs[$term]);
+		$ret = Utility::htmlsc($pairs[$term]);
 		return $expect ? self::expectTooltip(str_replace("'", "\\'",$ret)) : $ret;
 	}
-
+	/**
+	 * Glossaryのキャッシュの時間を取得（時間比較以外にtooltip.inc.phpの更新日時のパラメータとしても使う）
+	 * @global array $cache
+	 * @return int
+	 */
+	public static function getGlossaryTime(){
+		global $cache;
+		$term_cache_meta = $cache['wiki']->getMetadata(self::AUTO_GLOSSARY_TERM_CACHE);
+		return $term_cache_meta['mtime'];
+	}
+	/**
+	 * Glossaryページから用語と内容の辞書キャッシュを作成
+	 * @param string $term 用語
+	 * @param boolean $expect 要約するか（title属性の中に入れる文字列として出力するか）
+	 * @return string
+	 */
 	private static function getGlossaryDict($force = false){
 		global $glossarypage, $cache;
 		static $pairs;
 
-		$wiki = FileFactory::Wiki($glossarypage);
+		$wiki = Factory::Wiki($glossarypage);
 		if (! $wiki->has()) return array();
 
 		// キャッシュ処理
@@ -168,7 +187,7 @@ class Glossary extends Inline
 
 		// 辞書キャッシュが存在しない場合自動生成
 		$matches = $pairs = array();
-		foreach (FileFactory::Wiki($glossarypage)->source() as $line) {
+		foreach (Factory::Wiki($glossarypage)->get() as $line) {
 			if (preg_match(self::AUTO_GLOSSARY_TERM_PATTERN, $line, $matches)) {
 				$name = trim($matches[1]);
 				$pairs[$name] = trim($matches[2]);
@@ -195,4 +214,4 @@ class Glossary_Alphabet extends Glossary
 }
 
 /* End of file Glossary.php */
-/* Location: /vender/PukiWiki/Lib/Renderer/Inline/Glossary.php */
+/* Location: /vendor/PukiWiki/Lib/Renderer/Inline/Glossary.php */

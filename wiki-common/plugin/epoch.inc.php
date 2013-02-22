@@ -13,6 +13,8 @@
  */
 
 // 1day = 86400;
+use PukiWiki\Lib\Utility;
+use PukiWiki\Lib\Time;
 
 function plugin_epoch_inline()
 {
@@ -26,8 +28,8 @@ function plugin_epoch_inline()
 	
 	$array = explode(',',$value[0]);
 	
-	$format = format_date($array[0]);
-	$passaage = get_passage($array[0]);
+	$format = Time::format($array[0]);
+	$passaage = Time::passage($array[0]);
 	
 	$class = (!empty($array[1])) ? $array[1] : 'epoch';
 

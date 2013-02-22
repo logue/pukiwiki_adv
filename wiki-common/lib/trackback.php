@@ -27,7 +27,7 @@
  * tb_get_url($url)        HTTP-GET from $uri, and reveal the TrackBack Ping URL
  * class TrackBack_XML     Parse and reveal the TrackBack Ping URL from RDF data
  */
-
+use PukiWiki\Lib\File\FileFactory;
 use Zend\Http\Client;
 define('PLUGIN_TRACKBACK_VERSION', 'PukiWiki Adv./TrackBack 0.5');
 
@@ -101,7 +101,7 @@ function tb_send($page, $links)
 	// Disable 'max execution time' (php.ini: max_execution_time)
 	if (ini_get('safe_mode') == '0') set_time_limit(0);
 
-	$excerpt = strip_htmltag(convert_html(get_source($page)));
+	$excerpt = strip_htmltag(WikiFactory::Wiki($page)->render());
 
 	// Sender's information
 	$putdata = array(

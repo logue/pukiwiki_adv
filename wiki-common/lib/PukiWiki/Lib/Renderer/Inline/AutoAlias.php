@@ -14,7 +14,7 @@
 namespace PukiWiki\Lib\Renderer\Inline;
 
 use PukiWiki\Lib\Renderer\InlineFactory;
-use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\Factory;
 use PukiWiki\Lib\Renderer\Trie;
 
 class AutoAlias extends Inline
@@ -67,7 +67,7 @@ class AutoAlias extends Inline
 		if (empty($this->aliases)) return;
 
 		$link = '[[' . $this->name  . ']]';
-		return InlineFactory::factory($link);
+		return InlineFactory::Wiki($link);
 	}
 	/**
 	 * AutoAliasの正規表現パターンを生成
@@ -77,7 +77,7 @@ class AutoAlias extends Inline
 		global $cache, $aliaspage;
 		static $pattern;
 
-		$wiki = FileFactory::Wiki($aliaspage);
+		$wiki = Factory::Wiki($aliaspage);
 		if (! $wiki->has()) return null;
 
 		// AutoAliasNameの更新チェック
@@ -153,7 +153,7 @@ class AutoAlias extends Inline
 		global $cache, $aliaspage, $autoalias_max_words;
 		static $pairs;
 
-		$wiki = FileFactory::Wiki($aliaspage);
+		$wiki = Factory::Wiki($aliaspage);
 		if (! $wiki->has()) return array();
 
 		// キャッシュ処理

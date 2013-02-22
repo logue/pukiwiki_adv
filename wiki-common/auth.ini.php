@@ -30,16 +30,9 @@ $adminpass = '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72'; // MD5('pass')
 // ROLE
 //
 // Data is managed by the plugin.
-define('PKWK_AUTH_FILE', add_homedir('auth_users.ini.php'));
-require_once(PKWK_AUTH_FILE);
-
-define('PKWK_AUTH_WKGRP_FILE', add_homedir('auth_wkgrp.ini.php'));
-require_once(PKWK_AUTH_WKGRP_FILE);
-
-/////////////////////////////////////////////////
-// Auth API
-define('PKWK_AUTH_API_FILE', add_homedir('auth_api.ini.php'));
-require_once(PKWK_AUTH_API_FILE);
+$auth_users = include(add_homedir('auth_users.ini.php'));
+$auth_wkgrp_user = include(add_homedir('auth_wkgrp.ini.php'));
+$auth_api = include(add_homedir('auth_api.ini.php'));
 
 /////////////////////////////////////////////////
 // Authentication method

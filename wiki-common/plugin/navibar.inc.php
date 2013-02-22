@@ -8,6 +8,8 @@
 // License: GPL v2 or (at your option) any later version
 // $Id: navibar.php,v 0.1.19 2011/12/20 20:40:00 Logue Exp $
 //
+
+use PukiWiki\Lib\Auth\Auth;
 function plugin_navibar_convert()
 {
 	global $_LINK, $pkwk_dtd;
@@ -23,7 +25,7 @@ function plugin_navibar_convert()
 	$_page  = isset($vars['page']) ? $vars['page'] : null;
 	$is_read = (arg_check('read') && is_page($_page));
 	$is_freeze = is_freeze($_page);
-	$is_readonly = (auth::check_role('readonly') || (PKWK_READONLY == ROLE_AUTH && auth::get_role_level() > ROLE_AUTH) ) ? true : false;
+	$is_readonly = (Auth::check_role('readonly') || (PKWK_READONLY == Auth::ROLE_AUTH && Auth::get_role_level() > Auth::ROLE_AUTH) ) ? true : false;
 	$cmd = isset($vars['cmd']) ? $vars['cmd'] : null;
 
 	$num = func_num_args();
@@ -143,7 +145,7 @@ function plugin_navibar_convert()
 			}
 		break;
 		case 'login':
-			$auth_key = auth::get_user_info();
+			$auth_key = Auth::get_user_info();
 			if (empty($auth_key['key'])) {
 				$ret[] = _navibar($name);
 			}

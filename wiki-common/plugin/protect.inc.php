@@ -8,6 +8,8 @@
  *
  */
 
+use PukiWiki\Lib\Factory;
+
 defined('PLUGIN_PROTECT_MUST_PAGE') or define('PLUGIN_PROTECT_MUST_PAGE', 1);
 
 function plugin_protect_convert()
@@ -153,9 +155,10 @@ function protect_body($plugin)
 
 	$body = '';
 	if ($plugin === 'login') $plugin = '';
+	$wiki = WikiFactory::Wiki($protect);
 
-	if (is_page($protect) && empty($plugin)) {
-		$body .= convert_html(get_source($protect));
+	if ($wiki->isReadable() && empty($plugin)) {
+		$body .= $wiki->render();
 	} else {
 		$plugin = (empty($plugin)) ? 'login' : $plugin;
 		if (exist_plugin_convert($plugin)) $body .= do_plugin_convert($plugin);

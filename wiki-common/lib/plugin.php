@@ -10,6 +10,8 @@
 //
 // Plugin related functions
 
+use PukiWiki\Lib\Factory;
+
 defined('PKWK_PLUGIN_CALL_TIME_LIMIT') or define('PKWK_PLUGIN_CALL_TIME_LIMIT', 768);
 
 // Set global variables for plugins
@@ -320,7 +322,7 @@ function add_hidden_field($retvar, $plugin){
 			// 更新時の競合を確認するための項目（確認処理はプラグイン側で実装すること）
 			if (isset($vars['page']) && !empty($vars['page'])){
 				if (empty($digest)){
-					$digest = PukiWiki\Lib\File\FileFactory::Wiki($vars['page'])->digest();
+					$digest = PukiWiki\Lib\Factory::Wiki($vars['page'])->digest();
 				}
 				$hidden_field[] = '<input type="hidden" name="digest" value="' . $digest . '" />';
 			}

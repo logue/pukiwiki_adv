@@ -21,7 +21,7 @@
  */
 
 //namespace PukiWiki\Lib\Config;
-use PukiWiki\Lib\File\WikiFile;
+use PukiWiki\Lib\Factory;
 // Fixed prefix of configuration-page's name
 define('PKWK_CONFIG_PREFIX', ':config/');
 
@@ -35,7 +35,7 @@ class Config
 	{
 		$this->name = $name;
 		$this->page = PKWK_CONFIG_PREFIX . $name;
-		$this->wikidata = new WikiFile($this->page);
+		$this->wikidata = Factory::Wiki($this->page);
 //		$this->modified = get_filetime(PKWK_CONFIG_PREFIX . $name);
 //		$this->cache_prefix = 'conf-'.encode($this->name);
 	}
@@ -50,7 +50,7 @@ class Config
 		$matches = array();
 
 //		if ($this->cacheCheck('') === false){
-			foreach ($this->wikidata->source() as $line) {
+			foreach ($this->wikidata->get() as $line) {
 
 				if ($line == '') continue;
 

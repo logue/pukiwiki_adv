@@ -7,6 +7,7 @@
  * @version	$Id: logview.php,v 0.25 2011/02/05 11:03:00 Logue Exp $
  * @license	http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
+use PukiWiki\Lib\Auth\Auth;
 
 defined('MAX_LINE')      or define('MAX_LINE', 200);
 defined('VIEW_ROBOTS')   or define('VIEW_ROBOTS', '0');   // robots は表示しない
@@ -72,11 +73,11 @@ function plugin_logview_action()
 	$page = (isset($vars['page'])) ? $vars['page'] : null;
 	
 	$ajax = (isset($vars['ajax'])) ? $vars['ajax'] : null;
-	$is_role_adm = auth::check_role('role_adm');
+	$is_role_adm = Auth::check_role('role_adm');
 
 	// ゲスト表示ができない場合は、認証を要求する
 	if ($kind !== null && empty($log[$kind]['guest'])) {
-		$obj = new auth();
+		$obj = new Auth();
 		$user = $obj->check_auth();
 		if (empty($user)) {
 			if (exist_plugin('login')) {
@@ -389,15 +390,16 @@ function logview_user_list(& $fld, $page,$kind)
 	global $_logview_msg;
 
 	// 登録ユーザ以上でなければ、他のユーザを知ることは禁止
-	if (auth::check_role('role_enrollee')) return '';
+	if (Auth::check_role('role_enrollee')) return '';
+	$wiki = Factory::Wiki($page);
 
-	$all_user = auth::user_list();
+	$all_user = Auth::user_list();
 	$all_user_idx = 0;
 	$excludes_user = array();
 	foreach ($all_user as $auth_api=>$val1) {
 	foreach ($val1 as $user=>$val) {
 		$group = empty($val['group']) ? '' : $val['group'];
-		if ($kind != 'login' && !auth::is_page_readable($page,$user,$group)) {
+		if ($kind != 'login' && !Auth::is_page_readable($page,$user,$group)) {
 			$excludes_user[$auth_api][$user] = '';
 			continue;
 		}

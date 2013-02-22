@@ -8,6 +8,7 @@
 // License: GPL
 //
 // Referer Plugin(Show Related-Link Plugin)
+use PukiWiki\Lib\Auth\Auth;
 
 define('CONFIG_REFERER', 'plugin/referer');
 define('REFERE_TITLE_LENGTH',70);
@@ -113,7 +114,7 @@ function plugin_referer_action()
 				);
 		}
 	}
-	$pages = auth::get_existpages(REFERER_DIR, '.ref');
+	$pages = Auth::get_existpages(REFERER_DIR, '.ref');
 
 	if (empty($pages)) {
 		return array('msg'=>$_referer_msg['msg_referer'], 'body'=>$_referer_msg['msg_notfound']);

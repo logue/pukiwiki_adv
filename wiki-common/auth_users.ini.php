@@ -1,13 +1,14 @@
 <?php
 // see http://pukiwiki.cafelounge.net/plus/?Documents%2FUser%20management
+use PukiWiki\Lib\Auth\Auth;
 /*
-| 2 |ROLE_ADM          |ƒTƒCƒgŠÇ—ŽÒ    |
-| 3 |ROLE_ADM_CONTENTS |ƒRƒ“ƒeƒ“ƒcŠÇ—ŽÒ|
-| 4 |ROLE_ENROLLEE     |“o˜^ŽÒ(‰ïˆõ)    |
+|Auth::ROLE_ADMIN           |ã‚µã‚¤ãƒˆç®¡ç†è€…    |
+|Auth::ROLE_CONTENTS_ADMIN  |ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ç®¡ç†è€…|
+|Auth::ROLE_ENROLLEE        |ç™»éŒ²è€…(ä¼šå“¡)    |
 */
 
-$auth_users = array(
-	$adminname	=> array($adminpass,2),	// Do not change
+return array(
+	$adminname	=> array($adminpass,Auth::ROLE_ADMIN),	// Do not change
 	// Username => array(password, role, group, home, mypage),
 	'bar'	=> array('{x-php-md5}f53ae779077e987718cc285b14dfbe86'), // md5('bar_passwd')
 	'hoge'	=> array('{SMD5}OzJo/boHwM4q5R+g7LCOx2xGMkFKRVEx'), // SMD5 'hoge_passwd'

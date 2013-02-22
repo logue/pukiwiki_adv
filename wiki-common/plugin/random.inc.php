@@ -4,7 +4,7 @@
 //
 // $Id: random.inc.php,v 1.9.3 2012/05/11 18:24:00 Logue Exp $
 //
-
+use PukiWiki\Lib\Auth\Auth;
 /*
  *プラグイン random
   配下のページをランダムに表示する
@@ -36,7 +36,7 @@ function plugin_random_action()
 
 	$pattern = strip_bracket($vars['refer']) . '/';
 	$pages = array();
-	foreach (auth::get_existpages() as $_page) {
+	foreach (Auth::get_existpages() as $_page) {
 		if (strpos($_page, $pattern) === 0)
 			$pages[$_page] = strip_bracket($_page);
 	}

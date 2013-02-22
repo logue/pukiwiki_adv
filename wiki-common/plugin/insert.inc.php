@@ -6,6 +6,7 @@
 define('INSERT_COLS', 70); // Columns of textarea
 define('INSERT_ROWS',  5); // Rows of textarea
 define('INSERT_INS',   1); // Order of insertion (1:before the textarea, 0:after)
+use PukiWiki\Lib\Auth\Auth;
 
 function plugin_insert_action()
 {
@@ -20,7 +21,7 @@ $_msg_collided = T_('It seems that someone has already updated this page while y
  Edit those lines, and submit again.');
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	if (auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
+	if (Auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
 	if (! isset($vars['msg']) || $vars['msg'] == '') return;
 
 	$vars['msg'] = preg_replace('/' . "\r" . '/', '', $vars['msg']);
@@ -82,7 +83,7 @@ function plugin_insert_convert()
 	$_btn_insert = _('add');
 
 	// if (PKWK_READONLY) return ''; // Show nothing
-	if (auth::check_role('readonly')) return ''; // Show nothing
+	if (Auth::check_role('readonly')) return ''; // Show nothing
 
 	if (! isset($numbers[$vars['page']])) $numbers[$vars['page']] = 0;
 

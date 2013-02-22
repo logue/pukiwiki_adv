@@ -6,7 +6,7 @@
  * @version     $Id: login.php,v 0.4.1 2010/12/26 16:52:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
-
+use PukiWiki\Lib\Auth\Auth;
 function plugin_doc_ini_init()
 {
 	$msg = array(
@@ -28,7 +28,7 @@ function plugin_doc_ini_convert()
 {
 	global $vars,$_doc_ini_msg;
 
-	if (auth::check_role('role_adm_contents')) return '';
+	if (Auth::check_role('role_adm_contents')) return '';
 	if (empty($vars['page'])) return '';
 	if (! doc_ini_file_exist($vars['page'])) return '';
 	$script = get_script_uri();
@@ -50,7 +50,7 @@ function plugin_doc_ini_action()
 {
 	global $vars,$_doc_ini_msg;
 
-	if (auth::check_role('role_adm_contents')) die_message('NOT AUTHORIZED.');
+	if (Auth::check_role('role_adm_contents')) die_message('NOT AUTHORIZED.');
 	if (empty($vars['page'])) return;
 	if (! is_pagename($vars['page'])) return '';	// Invalid page name;
 

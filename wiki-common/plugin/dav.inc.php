@@ -21,7 +21,8 @@
  * http://tyche.pu-toyama.ac.jp/~a-urasim/pukiwiki_dav/
  *
 */
-
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Factory;
 defined('PLUGIN_DAV_SHOWONLYEDITABLE') or define('PLUGIN_DAV_SHOWONLYEDITABLE', false);
 defined('PLUGIN_DAV_MUST_COMPRESS') or define('PLUGIN_DAV_MUST_COMPRESS', true); // セキュリティ上 false 運用は厳しい
 defined('PLUGIN_DAV_CREATE_PAGE') or define('PLUGIN_DAV_CREATE_PAGE', false); // false, true
@@ -55,12 +56,12 @@ function plugin_dav_action()
 		exit;
 	case 'PROPFIND':
 		// 添付する際にパスワードまたは、管理者のみの場合は、認証を要求
-		if (!$attach_link || auth::is_protect() || PLUGIN_ATTACH_PASSWORD_REQUIRE || PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY) {
+		if (!$attach_link || Auth::is_protect() || PLUGIN_ATTACH_PASSWORD_REQUIRE || PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY) {
 			$is_admin = PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY ? true : false; // 管理者パスワードを許容するか
-			$login = auth::check_auth_pw();	// 認証済かどうか
+			$login = Auth::check_auth_pw();	// 認証済かどうか
 			if (empty($login)) dav_error_exit(401,$is_admin); // 未認証の場合、認証要求
 			// 認証判定
-			if (dav_login($is_admin) === false || auth::is_protect()) dav_error_exit(403);
+			if (dav_login($is_admin) === false || Auth::is_protect()) dav_error_exit(403);
 		}
 
 		if( empty($path_info)) {
@@ -95,11 +96,11 @@ function plugin_dav_action()
 
 	case 'PUT':
 
-		if (auth::check_role('readonly')) dav_error_exit(403, 'PKWK_READONLY prohibits editing');
+		if (Auth::check_role('readonly')) dav_error_exit(403, 'PKWK_READONLY prohibits editing');
 
 		// 添付する際にパスワードまたは、管理者のみの場合は、認証を要求
 		if (PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY) {
-			if (!auth::check_role('role_adm_contents') && !auth::is_temp_admin()) {
+			if (!Auth::check_role('role_adm_contents') && !Auth::is_temp_admin()) {
 				dav_error_exit(403);
 			}
 		}
@@ -201,7 +202,7 @@ function plugin_dav_action()
 
 	case 'DELETE':
 
-		if (auth::check_role('readonly')) dav_error_exit(403, 'PKWK_READONLY prohibits editing');
+		if (Auth::check_role('readonly')) dav_error_exit(403, 'PKWK_READONLY prohibits editing');
 
 		// WinXP,Win7 では
 		// フォルダーは消せないくせに、消せたように処理してしまう。
@@ -211,7 +212,7 @@ function plugin_dav_action()
 
 		// 添付する際にパスワードまたは、管理者のみの場合は、認証を要求
 		if (PLUGIN_ATTACH_DELETE_ADMIN_ONLY) {
-			if (!auth::check_role('role_adm_contents') && !auth::is_temp_admin()) {
+			if (!Auth::check_role('role_adm_contents') && !Auth::is_temp_admin()) {
 				dav_error_exit(403);
 			}
 		}
@@ -237,11 +238,11 @@ function plugin_dav_action()
 		// 同じページ内での添付ファイルの移動もわざわざ消して書いている
 		// ページのコピーや移動は未実装 
 
-		if (auth::check_role('readonly')) dav_error_exit(403, 'PKWK_READONLY prohibits editing');
+		if (Auth::check_role('readonly')) dav_error_exit(403, 'PKWK_READONLY prohibits editing');
 
 		// 添付する際にパスワードまたは、管理者のみの場合は、認証を要求
 		if (PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY || PLUGIN_ATTACH_DELETE_ADMIN_ONLY) {
-			if (!auth::check_role('role_adm_contents') && !auth::is_temp_admin()) {
+			if (!Auth::check_role('role_adm_contents') && !Auth::is_temp_admin()) {
 				dav_error_exit(403);
 			}
 		}
@@ -321,12 +322,12 @@ function plugin_dav_action()
 	case 'MKCOL':
 		// Microsoft-WebDAV-MiniRedir などは、[新しいフォルダー] をまず作成しようとするので無意味
 		if (!PLUGIN_DAV_CREATE_PAGE) dav_error_exit(403);
-		if (auth::check_role('readonly')) dav_error_exit(403, 'PKWK_READONLY prohibits editing');
-		if (auth::is_check_role(PKWK_CREATE_PAGE)) dav_error_exit(403, 'PKWK_CREATE_PAGE prohibits editing');
+		if (Auth::check_role('readonly')) dav_error_exit(403, 'PKWK_READONLY prohibits editing');
+		if (Auth::is_check_role(PKWK_CREATE_PAGE)) dav_error_exit(403, 'PKWK_CREATE_PAGE prohibits editing');
 
 		// 添付する際にパスワードまたは、管理者のみの場合は、認証を要求
 		if (PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY || PLUGIN_ATTACH_DELETE_ADMIN_ONLY) {
-			if (!auth::check_role('role_adm_contents') && !auth::is_temp_admin()) {
+			if (!Auth::check_role('role_adm_contents') && !Auth::is_temp_admin()) {
 				dav_error_exit(403);
 			}
 		}
@@ -706,7 +707,7 @@ function dav_get_folder_info($path,$depth)
 	}
 
 	// 添付ファイル非表示の場合は、コンテンツ管理者なら表示する
-	if (!$attach_link && auth::check_role('role_adm_contents')) return array($info_dir,$info_file);
+	if (!$attach_link && Auth::check_role('role_adm_contents')) return array($info_dir,$info_file);
 
 	if (isset($pages[$page]['file'])) $info_file = $pages[$page]['file'];
 	
@@ -734,7 +735,7 @@ function dav_get_existpages_cache()
 	if (isset($retval)) return $retval;
 
 	$retval = array();
-	$auth_key = auth::get_user_info();
+	$auth_key = Auth::get_user_info();
 	$pages = get_existpages_cache(DATA_DIR,PKWK_TXT_EXTENTION,false);
 	
 	if (!isset($attaches)) $attaches = get_attachfiles_cache();
@@ -742,11 +743,12 @@ function dav_get_existpages_cache()
 	foreach($pages as $file=>$val) {
 		$_page = $val['page'];
 		$_time = $val['time'];
+		$wiki = Factory::Wiki($_page);
 
-		if (check_non_list($_page)) continue;
+		if ($wiki->isHidden()) continue;
 		//if (is_ignore_page($_page)) continue;
-		if (! auth::is_page_readable($_page, $auth_key['key'], $auth_key['group'])) continue;
-		if (PLUGIN_DAV_SHOWONLYEDITABLE && !is_editable($_page)) continue;
+		if (! $wiki->isReadable()) continue;
+		if (PLUGIN_DAV_SHOWONLYEDITABLE && !$wiki->isEditable()) continue;
 
 
 		$retval[$_page]['time'] = $_time;
@@ -829,11 +831,11 @@ function dav_login($is_admin=false)
 {
 	global $auth_type, $auth_users;
 
-	if ($is_admin && auth::is_temp_admin()) return true;
+	if ($is_admin && Auth::is_temp_admin()) return true;
 
 	switch($auth_type) {
-	case 1: return auth::auth_pw($auth_users);
-	case 2: return auth::auth_digest($auth_users);
+	case 1: return Auth::auth_pw($auth_users);
+	case 2: return Auth::auth_digest($auth_users);
 	}
 
 	return false;

@@ -3,6 +3,7 @@
 // $Id: cmd.inc.php,v 0.0 2010/07/15 10:01:21 Logue Exp $
 //
 // Command link plugin
+use PukiWiki\Lib\Auth\Auth;
 
 function plugin_cmd_init(){
 
@@ -34,9 +35,9 @@ function plugin_cmd_inline(){
 }
 
 function plugin_cmd_link($name, $page){
-	$is_readonly = auth::check_role('readonly');
-	$is_safemode = auth::check_role('safemode');
-	$is_createpage = auth::is_check_role(PKWK_CREATE_PAGE);
+	$is_readonly = Auth::check_role('readonly');
+	$is_safemode = Auth::check_role('safemode');
+	$is_createpage = Auth::is_check_role(PKWK_CREATE_PAGE);
 	if (isset($page)){
 		$page  = isset($vars['page']) ? $vars['page'] : '';
 	}

@@ -5,7 +5,7 @@
 //  2007-2008 PukiWiki Plus! Team
 //
 // Newpage plugin
-
+use PukiWiki\Lib\Auth\Auth;
 function plugin_newpage_convert()
 {
 	global $vars, $BracketName;
@@ -14,8 +14,8 @@ function plugin_newpage_convert()
 	$_msg_newpage = T_('New page');
 
 	// if (PKWK_READONLY) return ''; // Show nothing
-	if (auth::check_role('readonly')) return ''; // Show nothing
-        if (auth::is_check_role(PKWK_CREATE_PAGE)) return '';
+	if (Auth::check_role('readonly')) return ''; // Show nothing
+        if (Auth::is_check_role(PKWK_CREATE_PAGE)) return '';
 
 	$newpage = '';
 	if (func_num_args()) list($newpage) = func_get_args();
@@ -46,8 +46,8 @@ function plugin_newpage_action()
 	$_msg_newpage = T_('New page');
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	if (auth::check_role('readonly')) die_message( sprintf($_string['error_prohibit'], 'PKWK_READONLY') );
-	if (auth::is_check_role(PKWK_CREATE_PAGE)) die_message( sprintf($_string['error_prohibit'], 'PKWK_CREATE_PAGE') );
+	if (Auth::check_role('readonly')) die_message( sprintf($_string['error_prohibit'], 'PKWK_READONLY') );
+	if (Auth::is_check_role(PKWK_CREATE_PAGE)) die_message( sprintf($_string['error_prohibit'], 'PKWK_CREATE_PAGE') );
 
 	if ($vars['page'] == '') {
 		$retvars['msg']  = $_msg_newpage;

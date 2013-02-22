@@ -17,7 +17,7 @@
  * plugin_tb_mode_view($tb_id)  ?__mode=view
  * plugin_tb_recent($line)
  */
-
+use PukiWiki\Lib\Auth\Auth;
 // Trackback site check.(Is foreign site linked my site?)
 defined('PLUGIN_TB_SITE_CHECK') or define('PLUGIN_TB_SITE_CHECK', TRUE);
 // If trackback error, 'HTTP/1.0 400 Bad Request'
@@ -103,7 +103,7 @@ function plugin_tb_action()
 		}
 
 		// Show List of pages that TrackBacks reached
-		$pages = auth::get_existpages(TRACKBACK_DIR, '.txt');
+		$pages = Auth::get_existpages(TRACKBACK_DIR, '.txt');
 		if (! empty($pages)) {
 			return array(
 				'msg'=>$_tb_msg['title_tb'],

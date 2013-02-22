@@ -6,9 +6,11 @@
  * @version     $Id: login.php,v 0.23 2012/04/10 18:02:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
-require_once(LIB_DIR . 'auth.cls.php');
-
 // defined('LOGIN_USE_AUTH_DEFAULT') or define('LOGIN_USE_AUTH_DEFAULT', 1);
+
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Renderer\RendererFactory;
+use PukiWiki\Lib\Utility;
 
 /*
  * 初期処理
@@ -44,7 +46,7 @@ function plugin_login_convert()
 
 	@list($type) = func_get_args();
 
-	$auth_key = auth::get_user_info();
+	$auth_key = Auth::get_user_info();
 
 	// LOGIN
 	if (!empty($auth_key['key'])) {
@@ -105,9 +107,9 @@ EOD;
 
 function plugin_login_inline()
 {
-	if (PKWK_READONLY != ROLE_AUTH) return '';
+	if (PKWK_READONLY != Auth::ROLE_AUTH) return '';
 
-	$auth_key = auth::get_user_info();
+	$auth_key = Auth::get_user_info();
 
 	// Offline
 	if (empty($auth_key['key'])) {
@@ -135,7 +137,7 @@ function plugin_login_auth_guide()
 	}
 
 	if ($sw) return '';
-	return convert_html(sprintf($_login_msg['msg_auth_guide'],$inline));
+	return RendererFactory::factory(sprintf($_login_msg['msg_auth_guide'],$inline));
 }
 
 /*
@@ -150,20 +152,20 @@ function plugin_login_action()
 	if ($api !== 'plus') {
 		if (! exist_plugin($vars['api'])) return;
 		$call_api = 'plugin_'.$vars['api'].'_jump_url';
-		header('Location: '. $call_api());
+		Utility::redirect( $call_api());
 		exit();
 	}
 
 	// NTLM, Negotiate 認証 (IIS 4.0/5.0)
 	$srv_soft = (defined('SERVER_SOFTWARE'))? SERVER_SOFTWARE : $_SERVER['SERVER_SOFTWARE'];
 	if (substr($srv_soft,0,9) == 'Microsoft') {
-		auth::auth_ntlm();
+		Auth::auth_ntlm();
 		login_return_page();
 	}
 
 	switch($auth_type) {
 	case 1:
-		if (! auth::auth_pw($auth_users)) {
+		if (! Auth::auth_pw($auth_users)) {
 			unset($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
 			header('HTTP/1.0 401 Unauthorized');
 			header('WWW-Authenticate: Basic realm="'.$realm.'"');
@@ -175,7 +177,7 @@ function plugin_login_action()
 		}
 		break;
 	case 2:
-		if (! auth::auth_digest($auth_users)) {
+		if (! Auth::auth_digest($auth_users)) {
 			header('HTTP/1.1 401 Unauthorized');
 			header('WWW-Authenticate: Digest realm="'.$realm.
 				'", qop="auth", nonce="'.uniqid().'", opaque="'.md5($realm).'"');
@@ -201,8 +203,7 @@ function login_return_page()
 
 	$page = (empty($vars['page'])) ? '' : $vars['page'];
 	log_write('login','');
-	header( 'Location: ' . get_page_location_uri($page));
-	die();
+	Utility::redirect(get_page_location_uri($page));
 }
 /* End of file login.inc.php */
 /* Location: ./wiki-common/plugin/login.inc.php */

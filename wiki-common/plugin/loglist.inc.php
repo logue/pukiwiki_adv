@@ -7,6 +7,9 @@
  * @license	http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Renderer\RendererFactory;
+
 /*
  * 初期処理
  */
@@ -44,7 +47,7 @@ function plugin_loglist_convert()
 	}
 
 	$dir = log::get_filename($kind,'','');
-	$pages = auth::get_existpages($dir);
+	$pages = Auth::get_existpages($dir);
 
 	if (count($pages) == 0) return $_loglist_messages['msg_not_found'];
 
@@ -87,7 +90,7 @@ function plugin_loglist_convert()
 		}
 		$rc .= "|\n";
 	}
-	return convert_html($rc);
+	return RendererFactory::factory($rc);
 }
 
 /* End of file loglist.inc.php */

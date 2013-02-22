@@ -6,6 +6,7 @@
 
 use PukiWiki\Lib\Router;
 use PukiWiki\Lib\Renderer\Inline\AutoAlias;
+use PukiWiki\Lib\Auth\Auth;
 
 function plugin_read_init(){
 	$msg = array(
@@ -33,7 +34,7 @@ function plugin_read_action()
 		return array('msg'=>'', 'body'=>'');
 
 	// } else if (! PKWK_SAFE_MODE && is_interwiki($page)) {
-	} else if (! auth::check_role('safemode') && is_interwiki($page)) {
+	} else if (! Auth::check_role('safemode') && is_interwiki($page)) {
 		$referer = 0;
 		return do_plugin_action('interwiki'); // InterWikiNameを処理
 	} else if (is_pagename($page)) {

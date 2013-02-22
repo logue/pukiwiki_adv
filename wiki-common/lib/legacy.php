@@ -8,43 +8,49 @@
 // old functions
 use PukiWiki\Lib\Utility;
 use PukiWiki\Lib\Router;
-use PukiWiki\Lib\File\FileFactory;
 use PukiWiki\Lib\File\FileUtility;
 use PukiWiki\Lib\Renderer\RendererFactory;
 use PukiWiki\Lib\Renderer\Inline\Inline;
-use PukiWiki\Lib\Lang\AcceptLanguage;
-use PukiWiki\Lib\Lang\Lang2Country;
 use PukiWiki\Lib\Relational;
 use PukiWiki\Lib\Search;
-use PukiWiki\Lib\TimeZone;
+use PukiWiki\Lib\Time;
+use PukiWiki\Lib\Factory;
+use PukiWiki\Lib\Recent;
+
+/**
+ * auth.php
+ */
+function pkwk_login($pass = '')
+{
+	return Auth::login($pass);
+}
+
+// Basic-auth related ----
+
+// Check edit-permission
+function check_editable($page, $auth_flag = TRUE, $exit_flag = TRUE)
+{
+	return Factory::Wiki($page)->isEditable($auth_flag);
+}
+// Check read-permission
+function check_readable($page, $auth_flag = TRUE, $exit_flag = TRUE)
+{
+	return Factory::Wiki($page)->isReadable($auth_flag);
+}
 /**
  * backup.php
  */
-function make_backup($page, $delete = FALSE)
-{
-	trigger_error('make_backup() is deprecated. use FileFactory::Backup()', E_USER_DEPRECATED);
-	global $del_backup;
-	if (empty($page)) return;
-	$backup = FileFactory::Backup($page);
-
-	if ($del_backup && $delete) {
-		$backup->removeBackup();
-		return;
-	}
-	return $backup->setBackup();
-}
-
 function get_backup($page, $age = 0)
 {
 	trigger_error('get_backup($page, $age) is deprecated. Use FileFactory::Backup($page)->getBackup($age)', E_USER_DEPRECATED);
 	if (empty($page)) return;
-	return FileFactory::Backup($page)->getBackup($age);
+	return Factory::Wiki($page)->getBackup($age);
 }
 
 function _backup_file_exists($page){
 	trigger_error('_backup_file_exists($page) is deprecated. Use FileFactory::Backup($page)->has()', E_USER_DEPRECATED);
 	if (empty($page)) return;
-	return FileFactory::Backup($page)->has();
+	return Factory::Wiki($page)->hasBackup();
 }
 /**
  * convert_html.php
@@ -57,7 +63,7 @@ function convert_html($lines)
 
 	// Set digest
 	if (empty($digest) && !empty($vars['page'])){
-		$digest = FileFactory::Wiki($vars['page'])->digest();
+		$digest = Factory::Wiki($vars['page'])->digest();
 	}
 
 	if (! is_array($lines)) $lines = explode("\n", $lines);
@@ -67,11 +73,11 @@ function convert_html($lines)
 /**
  * file.php
  */
-function get_source($page = NULL, $lock = TRUE, $join = FALSE)
+function get_source($page = NULL, $lock = TRUE, $join = false)
 {
-	trigger_error('get_source($page, $lock, $join) is deprecated. Use FileFactory::Wiki($page)->get($join)', E_USER_DEPRECATED);
+	//trigger_error('get_source($page, $lock, $join) is deprecated. Use WikiFactory::Wiki($page)->get($join)', E_USER_DEPRECATED);
 	if (empty($page)) return;
-	$wiki = FileFactory::Wiki($page);
+	$wiki = Factory::Wiki($page);
 	if (!$wiki->has()){
 		return;
 	}
@@ -81,55 +87,47 @@ function get_source($page = NULL, $lock = TRUE, $join = FALSE)
 // Get last-modified filetime of the page
 function get_filetime($page)
 {
-	trigger_error('get_filetime is deprecated. use FileFactory::Wiki($page)->time().', E_USER_DEPRECATED );
+	trigger_error('get_filetime is deprecated. use WikiFactory::Wiki($page)->time().', E_USER_DEPRECATED );
 	if (empty($page)) return;
-	return FileFactory::Wiki($page)->time();
+	return Factory::Wiki($page)->time();
 }
 
 // Get physical file name of the page
 function get_filename($page)
 {
-	trigger_error('get_filename is deprecated. use FileFactory::Wiki($page)->filename().', E_USER_DEPRECATED );
+	trigger_error('get_filename is deprecated. use WikiFactory::Wiki($page)->filename().', E_USER_DEPRECATED );
 	if (empty($page)) return;
-	return FileFactory::Wiki($page)->filename;
+	return Factory::Wiki($page)->wiki->filename;
 }
 
 // Get elapsed date of the page
 function get_pg_passage($page, $sw = TRUE)
 {
-	trigger_error('get_pg_passage($page) is deprecated. use FileFactory::Wiki($page)->passage($sw).', E_USER_DEPRECATED );
+	trigger_error('get_pg_passage($page) is deprecated. use WikiFactory::Wiki($page)->passage($sw).', E_USER_DEPRECATED );
 	if (empty($page)) return;
-	return FileFactory::Wiki($page)->passage($sw, false);
+	return Factory::Wiki($page)->wiki->passage($sw, false);
 }
 
 // Put a data(wiki text) into a physical file(diff, backup, text)
 function page_write($page, $postdata, $notimestamp = FALSE)
 {
-	trigger_error('get_pg_passage($page, $postdata, $notimestamp) is deprecated. use FileFactory::Wiki($page)->set($postdata, $notimestamp).', E_USER_DEPRECATED );
+	trigger_error('page_write($page, $postdata, $notimestamp) is deprecated. use WikiFactory::Wiki($page)->set($postdata, $notimestamp).', E_USER_DEPRECATED );
 	if (empty($page)) return;
-	return FileFactory::Wiki($page)->set($postdata, $notimestamp);
+	return Factory::Wiki($page)->set($postdata, $notimestamp);
 }
 
 // Get a list of related pages of the page
 function links_get_related($page)
 {
-	trigger_error('links_get_related($page) is deprecated. use FileFactory::Wiki($page)->getRetaled().', E_USER_DEPRECATED );
-	return FileFactory::Wiki($page)->getRetaled();
-}
-
-// Update PKWK_MAXSHOW_CACHE itself (Add or renew about the $page) (Light)
-// Use without $autolink
-function lastmodified_add($update = '', $remove = '')
-{
-	trigger_error('lastmodified_add($update, $remove) is deprecated. use FileUtility::set_recent($update, $remove).', E_USER_DEPRECATED );
-	FileUtility::set_recent($update, $remove);
+	trigger_error('links_get_related($page) is deprecated. use WikiFactory::Wiki($page)->getRetaled().', E_USER_DEPRECATED );
+	return Factory::Wiki($page)->getRetaled();
 }
 
 // Re-create PKWK_MAXSHOW_CACHE (Heavy)
 function put_lastmodified()
 {
 	trigger_error('put_lastmodified() is deprecated. use FileUtility::get_recent(true).', E_USER_DEPRECATED );
-	FileUtility::get_recent(true);
+	Recent::get(true);
 }
 
 // touch() with trying pkwk_chown()
@@ -172,9 +170,9 @@ function catrule()
 {
 	global $rule_page;
 
-	$rule_wiki = FileFactory::Wiki($rule_page);
+	$rule_wiki = Factory::Wiki($rule_page);
 	if (! $rule_wiki->has()) {
-		return '<p>Sorry, page \'' . htmlsc($rule_page) .
+		return '<p>Sorry, page \'' . Utility::htmlsc($rule_page) .
 			'\' unavailable.</p>';
 	} else {
 		return $rule_wiki->render();
@@ -182,10 +180,12 @@ function catrule()
 }
 
 function die_message($msg, $error_title='', $http_code = 500){
-	return Utility::die_message($msg, $error_title, $http_code);
+	return Utility::dieMessage($msg, $error_title, $http_code);
 }
 
-
+function get_passage($time){
+	return Time::passage($time);
+}
 function ridirect($url = ''){
 	return Utility::redirect($url);
 }
@@ -193,8 +193,7 @@ function ridirect($url = ''){
 // Have the time (as microtime)
 function getmicrotime()
 {
-	list($usec, $sec) = explode(' ', microtime());
-	return ((float)$sec + (float)$usec);
+	return Time::getMicroTime();
 }
 
 // Elapsed time by second
@@ -206,90 +205,18 @@ function elapsedtime()
 // Get the date
 function get_date($format, $timestamp = NULL)
 {
-/*
-	$format = preg_replace('/(?<!\\\)T/',
-		preg_replace('/(.)/', '\\\$1', ZONE), $format);
-
-	$time = ZONETIME + (($timestamp !== NULL) ? $timestamp : UTIME);
-
-	return date($format, $time);
-*/
-	/*
-	 * $format で指定される T を ZONE で置換したいが、
-	 * date 関数での書式指定文字となってしまう可能性を回避するための事前処理
-	 */
-	$l = strlen(ZONE);
-	$zone = '';
-	for($i=0;$i<$l;$i++) {
-		$zone .= '\\'.substr(ZONE,$i,1);
-	}
-
-	$format = str_replace('\T','$$$',$format); // \T の置換は除く
-	$format = str_replace('T',$zone,$format);
-	$format = str_replace('$$$','\T',$format); // \T に戻す
-
-	$time = ZONETIME + (($timestamp !== NULL) ? $timestamp : UTIME);
-	$str = gmdate($format, $time);
-	if (ZONETIME == 0) return $str;
-
-	$zonetime = get_zonetime_offset(ZONETIME);
-	return str_replace('+0000', $zonetime, $str);
+	return Time::getZoneTimeDate($format, $timestamp);
 }
 
 function get_zonetime_offset($zonetime)
 {
-	$pm = ($zonetime < 0) ? '-' : '+';
-	$zonetime = abs($zonetime);
-	(int)$h = $zonetime / 3600;
-	$m = $zonetime - ($h * 3600);
-	return sprintf('%s%02d%02d', $pm,$h,$m);
+	return Time::getZoneTimeOffset($zonetime);
 }
 
 // Format date string
 function format_date($val, $paren = FALSE, $format = null)
 {
-	global $date_format, $time_format, $_labels;
-
-	$val += ZONETIME;
-	$wday = date('w', $val);
-
-	$week   = $_labels['week'][$wday];
-
-	if ($wday == 0) {
-		// Sunday
-		$style = 'week_sun';
-	} else if ($wday == 6) {
-		// Saturday
-		$style = 'week_sat';
-	}else{
-		$style = 'week_day';
-	}
-	if (!isset($format)){
-		$date = date($date_format, $val) .
-			'(<abbr class="' . $style . '" title="' . $week[1]. '">'. $week[0] . '</abbr>)' .
-			gmdate($time_format, $val);
-	}else{
-		$month  = $_labels['month'][date('n', $val)];
-		$month_short = $month[0];
-		$month_long = $month[1];
-
-
-		$date = str_replace(
-			array(
-				date('M', $val),	// 月。3 文字形式。
-				date('l', $val),	// 曜日。フルスペル形式。
-				date('D', $val)		// 曜日。3文字のテキスト形式。
-			),
-			array(
-				'<abbr class="month" title="' . $month[1]. '">'. $month[0] . '</abbr>',
-				$week[1],
-				'(<abbr class="' . $style . '" title="' . $week[1]. '">'. $week[0] . '</abbr>)'
-			),
-			gmdate($format, $val)
-		);
-	}
-
-	return $paren ? '(' . $date . ')' : $date;
+	return Time::format($val, $paren, $format);
 }
 
 // Get short pagename(last token without '/')
@@ -325,21 +252,21 @@ function is_interwiki($str)
 function is_pagename($page)
 {
 	if (empty($page)) return false;
-	return FileFactory::Wiki($page)->isValied();
+	return Factory::Wiki($page)->isValied();
 }
 
 // If the page exists
 function is_page($page, $clearcache = FALSE)
 {
 	if (empty($page)) return false;
-	return FileFactory::Wiki($page)->has();
+	return Factory::Wiki($page)->has();
 
 }
 
 function is_editable($page)
 {
 	if (empty($page)) return false;
-	return FileFactory::Wiki($page)->isEditable();
+	return Factory::Wiki($page)->isEditable();
 }
 
 function is_cantedit($page)
@@ -366,7 +293,7 @@ function do_search($word, $type = 'and', $non_format = FALSE, $base = ''){
 function is_freeze($page, $clearcache = FALSE)
 {
 	if (empty($page)) return false;
-	return FileFactory::Wiki($page)->isFreezed();
+	return Factory::Wiki($page)->isFreezed();
 }
 
 
@@ -394,7 +321,7 @@ function decode($str)
 function check_non_list($page = '')
 {
 	if (empty($page)) return false;
-	return FileFactory::Wiki($page)->isHidden();
+	return Factory::Wiki($page)->isHidden();
 }
 
 // Remove [[ ]] (brackets)
@@ -422,7 +349,8 @@ function get_cmd_uri($cmd='', $page='', $path_reference='rel', $query='', $fragm
 // function get_page_uri($page, $query='', $fragment='')
 function get_page_uri($page, $path_reference='rel', $query='', $fragment='')
 {
-	return Router::get_page_uri($page, $path_reference, $query, $fragment);
+	if (empty($page)) return null;
+	return  Router::get_cmd_uri('read', $page, $path_reference, $query, $fragment);
 }
 // Obsolete (明示指定用)
 function get_cmd_absuri($cmd='', $page='', $query='', $fragment='')
@@ -460,8 +388,27 @@ function htmlsc($string = '', $flags = ENT_QUOTES, $charset = 'UTF-8')
  * funcplus.php
  */
 
+
+// SPAM check
+function is_spampost($array, $count=0)
+{
+	return Utility::isSpamPost($array, $count);
+}
+
+function is_ignore_page($page)
+{
+	return Utility::isSpamPost($array, $count);
+}
+
+
+// インクルードで余計なものはソースから削除する
+function convert_filter($str)
+{
+	return Utility::replaceFilter($str);
+}
+
 function showtaketime(){
-	return Utility::getTakeTime();
+	return Time::getTakeTime();
 }
 
 // same as 'basename' for page
@@ -481,6 +428,11 @@ function open_uri_in_new_window($anchor, $which = '')
 	throw new Exception('open_uri_in_new_window() is discontinued. Use similar function Inline::setLink();');
 }
 
+// SPAM logging
+function honeypot_write()
+{
+	Utility::dump();
+}
 
 function get_baseuri($path='')
 {
@@ -760,7 +712,7 @@ function strip_autolink($str)
 function make_search($page)
 {
 	if (empty($page)) return;
-	return '<a href="' . FileFactory::Wiki($page)->get_uri('related') . '">' . Utility::htmlsc($page) . '</a>';
+	return '<a href="' . Factory::Wiki($page)->uri('related') . '">' . Utility::htmlsc($page) . '</a>';
 }
 
 // Make heading string (remove heading-related decorations from Wiki text)
@@ -808,7 +760,7 @@ use PukiWiki\Lib\Renderer\InlineFactory;
 // Hyperlink decoration
 function make_link($string, $page = '')
 {
-	return InlineFactory::factory($string, $page);
+	return InlineFactory::Wiki($string, $page);
 }
 
 
@@ -826,14 +778,14 @@ function get_fullname($name, $refer)
 
 function set_time()
 {
-	Utility::initTime();
+	Time::init();
 }
 function set_timezone($lang='')
 {
-	return Utility::setTimeZOne($lang);
+	return Time::setTimeZone($lang);
 }
 
 function get_localtimezone()
 {
-	return Utility::getTimeZoneLocal();
+	return Time::getTimeZoneLocal();
 }

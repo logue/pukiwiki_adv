@@ -13,6 +13,9 @@
   設定したいフィールド名を記載。
 */
 
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Renderer\RendererFactory;
+
 // 管理者だけが添付ファイルをアップロードできるようにする
 defined('CSV2NEWPAGE_UPLOAD_ADMIN_ONLY') or define('CSV2NEWPAGE_UPLOAD_ADMIN_ONLY',FALSE); // FALSE or TRUE
 
@@ -171,7 +174,7 @@ function plugin_csv2newpage_action()
 
 	return array(
 		'msg'  => 'csv2newpage complete',
-		'body' => convert_html( $np )
+		'body' => RendererFactory::factory( $np )
 	);
 }
 
@@ -373,7 +376,7 @@ function plugin_csv2newpage_showform($retval)
 
 	$pass = '';
 	if (CSV2NEWPAGE_PASSWORD_REQUIRE or CSV2NEWPAGE_UPLOAD_ADMIN_ONLY) {
-		if (auth::check_role('role_adm_contents')) {
+		if (Auth::check_role('role_adm_contents')) {
 			$title = $_csv2newpage_messages[CSV2NEWPAGE_UPLOAD_ADMIN_ONLY ? 'msg_adminpass' : 'msg_password'];
 			$pass = '<br />'.$title.': <input type="password" name="pass" size="8" />';
 		}

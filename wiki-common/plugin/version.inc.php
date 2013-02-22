@@ -7,11 +7,11 @@
 // License: GPL v2 or (at your option) any later version
 //
 // Show PukiWiki version (maybe a sample code)
-
+use PukiWiki\Lib\Auth\Auth;
 function plugin_version_value()
 {
 //	if (PKWK_SAFE_MODE) return '';
-	if (auth::check_role('safemode')) return '';
+	if (Auth::check_role('safemode')) return '';
 	return S_VERSION;
 }
 

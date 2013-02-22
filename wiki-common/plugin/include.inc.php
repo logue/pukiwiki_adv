@@ -41,6 +41,9 @@
 
 // ----
 
+use PukiWiki\Lib\Factory;
+use PukiWiki\Lib\Renderer\RendererFactory;
+
 // Default value of 'title|notitle' option
 defined('PLUGIN_INCLUDE_WITH_TITLE') or define('PLUGIN_INCLUDE_WITH_TITLE', TRUE);	// Default: TRUE(title)
 
@@ -71,6 +74,9 @@ function plugin_include_convert()
 	$args = func_get_args();
 	// strip_bracket() is not necessary but compatible
 	$page = isset($args[0]) ? get_fullname(strip_bracket(array_shift($args)), $root) : '';
+	
+	$wiki = WikiFactory::Wiki($page);
+	
 	$with_title = PLUGIN_INCLUDE_WITH_TITLE;
 	if (isset($args[0])) {
 		switch(strtolower(array_shift($args))) {
@@ -81,7 +87,7 @@ function plugin_include_convert()
 
 	$s_page = htmlsc($page);
 	$r_page = rawurlencode($page);
-	$link = '<a href="' . get_page_uri($page) . '">' . $s_page . '</a>'; // Read link
+	$link = '<a href="' . $wiki->get_uri() . '">' . $s_page . '</a>'; // Read link
 
 	// I'm stuffed
 	if (isset($included[$page])) {
@@ -97,13 +103,15 @@ function plugin_include_convert()
 	// One page, only one time, at a time
 	$included[$page] = TRUE;
 	
-	$source = get_source($page);
-	preg_replace('/^#navi/','/\/\/#navi/',$source);
+	
 
 	// Include A page, that probably includes another pages
 	$get['page'] = $post['page'] = $vars['page'] = $page;
-	if (check_readable($page, false, false)) {
-		$body = convert_html($source);
+	
+	if ($wiki->isReadable()) {
+		$source = $wiki->get($page);
+		preg_replace('/^#navi/','/\/\/#navi/',$source);
+		$body = RendererFactory::factorty($source);
 	} else {
 		$body = str_replace('$1', $page, $_msg_include_restrict);
 	}

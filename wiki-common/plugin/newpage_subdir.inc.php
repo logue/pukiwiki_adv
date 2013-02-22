@@ -7,14 +7,14 @@
 // @based_on newpage.inc.php
 // @based_on ls2.inc.php
 // @thanks to panda (auther of newpage.inc.php/ls2.inc.php)
-
+use PukiWiki\Lib\Auth\Auth;
 function build_directory_list($roots, $option=array())
 {
 	global $WikiName,$BracketName;
 
 	$list = $warnings = array();
 	$list['directory'] = $list['warning'] = array();
-	$pages = auth::get_existpages();
+	$pages = Auth::get_existpages();
 
 	foreach($roots as $root) {
 		$matched = FALSE;
@@ -115,7 +115,7 @@ function plugin_newpage_subdir_convert()
 	global $vars, $_string;
 	// $available_option = 'rdhq';
 
-	if (auth::check_role('readonly') || auth::is_check_role(PKWK_CREATE_PAGE) ) return sprintf($_string['error_prohibit'], 'Readonly');
+	if (Auth::check_role('readonly') || Auth::is_check_role(PKWK_CREATE_PAGE) ) return sprintf($_string['error_prohibit'], 'Readonly');
 
 	$roots = $option = array();
 
@@ -160,7 +160,7 @@ function plugin_newpage_subdir_action()
 {
 	global $vars;
 
-	if (auth::check_role('readonly') || auth::is_check_role(PKWK_CREATE_PAGE) ) return sprintf($_string['error_prohibit'], 'Readonly');
+	if (Auth::check_role('readonly') || Auth::is_check_role(PKWK_CREATE_PAGE) ) return sprintf($_string['error_prohibit'], 'Readonly');
 
 	$roots = $retval = array();
 	$page = (empty($vars['page'])) ? '' : $vars['page'];

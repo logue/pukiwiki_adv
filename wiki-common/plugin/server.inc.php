@@ -3,12 +3,12 @@
 //
 // Server information plugin
 // by Reimy http://pukiwiki.reimy.com/
-
+use PukiWiki\Lib\Auth\Auth;
 function plugin_server_convert()
 {
 
 	// if (PKWK_SAFE_MODE) return ''; // Show nothing
-	if (auth::check_role('safemode')) return ''; // Show nothing
+	if (Auth::check_role('safemode')) return ''; // Show nothing
 
 	return '<dl>' . "\n" .
 		'<dt>Server Name</dt>'     . '<dd>' . SERVER_NAME . '</dd>' . "\n" .

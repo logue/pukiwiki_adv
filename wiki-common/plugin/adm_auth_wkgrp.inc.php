@@ -11,6 +11,11 @@ defined('PLUGIN_ADM_AUTH_WKGRP_USE_WRITE_FUNC') or define('PLUGIN_ADM_AUTH_WKGRP
 // 構成定義ファイル
 define('CONFIG_AUTH_WKGRP','auth/auth_wkgrp');
 
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Router;
+use PukiWiki\Lib\Utility;
+use PukiWiki\Lib\Renderer\RendererFactory;
+
 function plugin_adm_auth_wkgrp_init()
 {
 	$msg = array(
@@ -42,18 +47,18 @@ function plugin_adm_auth_wkgrp_convert()
 {
 	global $_adm_auth_wkgrp_msg, $_LANG;
 
-	if (auth::check_role('role_adm'))  return '';
+	if (Auth::check_role('role_adm'))  return '';
 	if (! PLUGIN_ADM_AUTH_WKGRP_USE_WRITE_FUNC) return '';
 
 	$config_page_name = ':config/'.CONFIG_AUTH_WKGRP;
 	$msg = '';
 	
-	$script      = get_script_uri();
-	$cmd_view    = get_page_uri($config_page_name);
-	$cmd_edit    = get_cmd_uri('edit',$config_page_name);
-	$cmd_guiedit = get_cmd_uri('guiedit',$config_page_name);
-	$cmd_check   = get_cmd_uri('adm_auth_wkgrp','','',array('pcmd'=>'check'));
-	$cmd_import  = get_cmd_uri('adm_auth_wkgrp','','',array('pcmd'=>'import'));
+	$script      = Router::get_script_uri();
+	$cmd_view    = Router::get_page_uri($config_page_name);
+	$cmd_edit    = Router::get_cmd_uri('edit',$config_page_name);
+	$cmd_guiedit = Router::get_cmd_uri('guiedit',$config_page_name);
+	$cmd_check   = Router::get_cmd_uri('adm_auth_wkgrp','','',array('pcmd'=>'check'));
+	$cmd_import  = Router::get_cmd_uri('adm_auth_wkgrp','','',array('pcmd'=>'import'));
 
 	$filetime_auth_wkgrp  = filemtime(PKWK_AUTH_WKGRP_FILE);
 	$date_auth_wkgrp  = format_date($filetime_auth_wkgrp);
@@ -128,7 +133,7 @@ function plugin_adm_auth_wkgrp_action()
 	$retval['msg'] = $_adm_auth_wkgrp_msg['msg_title'];
 
 	// 権限で稼動しないのか？ 機能が有効になっていないのか？を隠蔽するため、この順序で良い
-	if (auth::check_role('role_adm'))  {
+	if (Auth::check_role('role_adm'))  {
 		$retval['body'] = '<p>'.$_adm_auth_wkgrp_msg['err_authority'].'</p>';
 		return $retval;
 	}
@@ -161,7 +166,7 @@ function plugin_adm_auth_wkgrp_action()
 
 function adm_auth_wkgrp_get_page()
 {
-	global $auth_api, $auth_wkgrp_user;
+	global $auth_api;
 
 	$config = new Config(CONFIG_AUTH_WKGRP);
 	$config->read();
@@ -258,7 +263,7 @@ function adm_auth_wkgrp_check()
 {
 	global $_adm_auth_wkgrp_msg;
 	$msg = $_adm_auth_wkgrp_msg['msg_chk_1'].adm_auth_wkgrp_file2page();
-	return convert_html($msg).adm_auth_wkgrp_add_btn();
+	return RendererFactory::factory($msg).adm_auth_wkgrp_add_btn();
 }
 
 function adm_auth_wkgrp_import()

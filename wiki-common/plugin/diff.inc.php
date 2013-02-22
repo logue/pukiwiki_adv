@@ -9,7 +9,7 @@
 // License: GPL v2 or (at your option) any later version
 //
 // Showing colored-diff plugin
-use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\Factory;
 use PukiWiki\Lib\Auth\Auth;
 
 function plugin_diff_action()
@@ -33,7 +33,7 @@ function plugin_diff_view($page)
 //	global $_msg_notfound, $_msg_goto, $_msg_deleted, $_msg_addline, $_msg_delline;
 //	global $_title_diff, $_title_diff_delete;
 
-	if (auth::check_role('safemode')) die_message('PKWK_SAFE_MODE prohibits this');
+	if (Auth::check_role('safemode')) die_message('PKWK_SAFE_MODE prohibits this');
 
 	$_msg_notfound       = T_('The page was not found.');
 	$_msg_addline        = T_('The added line is <span class="diff_added">THIS COLOR</span>.');
@@ -51,7 +51,7 @@ function plugin_diff_view($page)
 		'<li class="no-js">' . $_msg_delline . '</li>'
 	);
 
-	$is_page = FileFactory::Wiki($page)->isValied();
+	$is_page = WikiFactory::Wiki($page)->isValied();
 	if ($is_page) {
 		$menu[] = ' <li>' . str_replace('$1', '<a href="' . get_page_uri($page) . '">' .
 			$s_page . '</a>', $_msg_goto) . '</li>';
@@ -63,10 +63,10 @@ function plugin_diff_view($page)
 
 	if ( $diff->has() && ($is_page || Auth::is_role_page($diff)) ) {
 		// if (! PKWK_READONLY) {
-		if (! auth::check_role('readonly')) {
+		if (! Auth::check_role('readonly')) {
 			$menu[] = '<li><a href="' . get_cmd_uri('diff', $page, null, array('action'=>'delete')) . '">' . str_replace('$1', $s_page, $_title_diff_delete) . '</a></li>';
 		}
-		auth::is_role_page($diff);
+		Auth::is_role_page($diff);
 		$msg = $diff->render();
 	} else {
 		return array('msg'=>$_title_diff, 'body'=>$_msg_notfound);
@@ -89,7 +89,7 @@ function plugin_diff_delete($page)
 //	global $_title_diff_delete, $_msg_diff_deleted;
 //	global $_msg_diff_adminpass, $_btn_delete, $_msg_invalidpass;
 
-	if (auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
+	if (Auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
 
 	$_title_diff_delete  = T_('Deleting diff of $1');
 	$_msg_diff_deleted   = T_('Diff of  $1 has been deleted.');
@@ -103,7 +103,7 @@ function plugin_diff_delete($page)
 	if (! file_exists($filename)) $body = make_pagelink($page) . '\'s diff seems not found';
 	if ($body) return array('msg'=>$_title_diff_delete, 'body'=>$body);
 
-	if (! auth::check_role('role_adm_contents')) {
+	if (! Auth::check_role('role_adm_contents')) {
 		unlink($filename);
 		return array(
 			'msg'  => $_title_diff_delete,

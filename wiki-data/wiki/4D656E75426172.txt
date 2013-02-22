@@ -8,6 +8,7 @@
 RIGHT:total: &color(green){&counter;};
 RIGHT:today: &color(green){&counter(today);};
 RIGHT:yesterday: &color(green){&counter(yesterday);};
-RIGHT:now: &color(green){&online;};
+RIGHT:now: &color(green){&online();};
+
 ----
 &edit(MenuBar,noicon){Edit:MenuBar};

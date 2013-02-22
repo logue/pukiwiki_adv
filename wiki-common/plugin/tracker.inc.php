@@ -8,8 +8,9 @@
 // License: GPL v2 or (at your option) any later version
 //
 // Issue tracker plugin (See Also bugtrack plugin)
-
-use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Factory;
+use PukiWiki\Lib\Renderer\RendererFactory;
 // Tracker_list: Excluding pattern
 define('PLUGIN_TRACKER_LIST_EXCLUDE_PATTERN','#^SubMenu$|/#');	// 'SubMenu' and using '/'
 //define('PLUGIN_TRACKER_LIST_EXCLUDE_PATTERN','#(?!)#');		// Nothing excluded
@@ -68,8 +69,8 @@ function plugin_tracker_convert()
 	global $vars, $config_name, $session;
 
 //	if (PKWK_READONLY) return ''; // Show nothing
-	if (auth::check_role('readonly')) return ''; // Show nothing
-	if (auth::is_check_role(PKWK_CREATE_PAGE)) return '';
+	if (Auth::check_role('readonly')) return ''; // Show nothing
+	if (Auth::is_check_role(PKWK_CREATE_PAGE)) return '';
 
 	$args = func_get_args();
 	$argc = count($args);
@@ -128,7 +129,7 @@ function plugin_tracker_convert()
 	}
 
 	$script   = get_script_uri();
-	$template = str_replace($from, $to, convert_html($template));
+	$template = str_replace($from, $to, RendererFactory::factory($template));
 	$hidden   = implode('<br />' . "\n", $hidden);
 
 //	if (function_exists('pkwk_session_start') && pkwk_session_start() != 0) {
@@ -137,7 +138,7 @@ function plugin_tracker_convert()
 	$session->offsetSet('tracker',  md5(get_ticket() . $config_name));
 
 	// For QA/196, BugTrack/113
-	$form_enctype = is_mobile() ? '' : 'enctype="multipart/form-data"';
+	$form_enctype = IS_MOBILE ? '' : 'enctype="multipart/form-data"';
 	return <<<EOD
 <form $form_enctype action="$script" method="post" class="tracker_form">
 	$hidden
@@ -153,8 +154,8 @@ function plugin_tracker_action()
 
 //	if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
 	// Plus! code start
-	if (auth::check_role('readonly')) die_message($_string['prohibit']);
-	if (auth::is_check_role(PKWK_CREATE_PAGE)) die_message(_('PKWK_CREATE_PAGE prohibits editing'));
+	if (Auth::check_role('readonly')) die_message($_string['prohibit']);
+	if (Auth::is_check_role(PKWK_CREATE_PAGE)) die_message(_('PKWK_CREATE_PAGE prohibits editing'));
 
 	// Petit SPAM Check (Client(Browser)-Server Ticket Check)
 	$config = $tracker_form->config_name; // Rescan
@@ -993,7 +994,7 @@ EOD;
 		$result = preg_replace('/data-pagenate="false"/','data-pagenate="true"', $result);
 	}
 
-	return convert_html($result);
+	return RendererFactory::factory($result);
 }
 
 // Listing class
@@ -1080,7 +1081,7 @@ class Tracker_list
 		$this->page_line = count(plugin_tracker_get_source($this->form->config->page.'/page'));	// Plus! (?)
 
 		// foreach (preg_grep($regex, array_values(get_existpages())) as $pagename) {
-		foreach (preg_grep($regex, array_values(auth::get_existpages())) as $pagename) {	// Plus!
+		foreach (preg_grep($regex, array_values(Auth::get_existpages())) as $pagename) {	// Plus!
 			if (preg_match(PLUGIN_TRACKER_LIST_EXCLUDE_PATTERN, substr($pagename, $len))) {
 				continue;
 			}
@@ -1105,7 +1106,7 @@ class Tracker_list
 
 //		$source = plugin_tracker_get_source($pagename, TRUE);
 		$source = plugin_tracker_get_source($pagename, TRUE, $this->page_line);	// Plus!
-		$wiki = FileFactory::Wiki($pagename);
+		$wiki = Factory::Wiki($pagename);
 		$filetime = $wiki->time();
 		if ($source === FALSE) $source = '';
 
@@ -1113,7 +1114,7 @@ class Tracker_list
 		$matches = array();
 		if (! $rescan && ! empty($source) && preg_match('/move\sto\s(.+)/', $source, $matches)) {
 			$to_page = strip_bracket(trim($matches[1]));
-			if (FileFactory::Wiki($to_page)->isValied()) {
+			if (WikiFactory::Wiki($to_page)->isValied()) {
 				unset($source, $matches);	// Release
 				return $this->addRow($to_page, TRUE);	// Recurse(Rescan) once
 			}
@@ -1546,7 +1547,7 @@ function plugin_tracker_field_pickup($string = '')
 function plugin_tracker_get_source($page, $join = FALSE, $line=0)	// add $line=0
 {
 	//$source = get_source($page, TRUE, $join);
-	$source = FileFactory::Wiki($page)->get($join);
+	$source = Factory::Wiki($page)->get($join);
 	if ($source === FALSE) return FALSE;
 
 	return preg_replace(

@@ -14,7 +14,7 @@
 namespace PukiWiki\Lib;
 
 use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\Factory;
 use PukiWiki\Lib\File\FileUtility;
 use PukiWiki\Lib\Renderer\InlineConverter;
 use PukiWiki\Lib\Renderer\Inline\AutoAlias;
@@ -77,7 +77,7 @@ class Relational{
 		$times = array();
 		if (is_array($data)){
 			foreach ($data as $page) {
-				$time = FileFactory::Wiki($page)->time();
+				$time = Factory::Wiki($page)->time();
 				if($time !== 0) $times[$page] = $time;
 			}
 		}
@@ -93,7 +93,7 @@ class Relational{
 
 		$times = array();
 		foreach ($data as $ref_page=>$ref_auto) {
-			$time = FileFactory::Wiki($ref_page)->time();
+			$time = Factory::Wiki($ref_page)->time();
 			if ($time !== 0) $times[$ref_page] = $time;
 		}
 		return $times;
@@ -109,7 +109,7 @@ class Relational{
 	 * @return void
 	 */
 	public function update($page = ''){
-		$time = FileFactory::Wiki($page)->time();
+		$time = Factory::Wiki($page)->time();
 		$rel_old = self::getRel($this->page);
 		$rel_exist = ($rel_old === array());
 
@@ -122,7 +122,7 @@ class Relational{
 				$rel_auto[] = $_obj->name;
 			} else if ($_obj instanceof PukiWiki\Lib\Renderer\Inline\AutoAlias) {
 				$_alias = AutoAlias::getAutoAliasDict($_obj->name);
-				if (FileFactory::Wiki($_alias)->isValied()) {
+				if (Factory::Wiki($_alias)->isValied()) {
 					$rel_auto[] = $_alias;
 				}
 			} else {
@@ -193,7 +193,7 @@ class Relational{
 				$_name = $_obj->name;
 				if ($_obj instanceof PukiWiki\Lib\Renderer\Inline\AutoAlias) {
 					$_alias = AutoAlias::getAutoAlias($_name);
-					if (! FileFactory::Wiki($_alias)->isValied() )
+					if (! Factory::Wiki($_alias)->isValied() )
 						continue;	// not PageName
 					$_name = $_alias;
 				}
@@ -239,7 +239,7 @@ class Relational{
 		foreach ($add as $_page) {
 			$ref = array();
 			$all_auto = isset($rel_auto[$_page]);
-			$is_page  = FileFactory::Wiki($_page)->valied();
+			$is_page  = Factory::Wiki($_page)->valied();
 
 			$ref[$this->page] = $all_auto;
 			foreach (self::getRef($this->page) as $line) {
@@ -267,7 +267,7 @@ class Relational{
 
 		foreach ($del as $_page) {
 			$all_auto = TRUE;
-			$is_page  = FileFactory::Wiki($_page)->valied();
+			$is_page  = Factory::Wiki($_page)->valied();
 
 			$ref = array();
 			foreach (self::get_ref($this->page) as $line) {
@@ -298,7 +298,7 @@ class Relational{
 			return;
 		}
 		if (! isset($result[$page]) ){
-			$result[$page] = $this->links_obj->getObjects(join('', preg_grep('/^(?!\/\/|\s)./', FileFactory::Wiki($page)->get())), $page);
+			$result[$page] = $this->links_obj->getObjects(join('', preg_grep('/^(?!\/\/|\s)./', Factory::Wiki($page)->get())), $page);
 		}
 		return $result[$page];
 	}

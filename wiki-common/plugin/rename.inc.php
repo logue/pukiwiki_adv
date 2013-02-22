@@ -10,7 +10,7 @@
 // Rename plugin: Rename page-name and related data
 //
 // Usage: http://path/to/index.php?plugin=rename[&refer=page_name]
-
+use PukiWiki\Lib\Auth\Auth;
 define('PLUGIN_RENAME_LOGPAGE', ':RenameLog');
 
 function plugin_rename_init()
@@ -50,14 +50,14 @@ function plugin_rename_action()
 {
 	global $_string;
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits this');
-	if (auth::check_role('readonly')) die_message($_string['prohibit']);
+	if (Auth::check_role('readonly')) die_message($_string['prohibit']);
 	$method = plugin_rename_getvar('method');
 	if ($method == 'regex') {
 		$src = plugin_rename_getvar('src');
 		if ($src == '') return plugin_rename_phase1();
 
 		$src_pattern = '/' . preg_quote($src, '/') . '/';
-		$arr0 = preg_grep($src_pattern, auth::get_existpages());
+		$arr0 = preg_grep($src_pattern, Auth::get_existpages());
 		if (! is_array($arr0) || empty($arr0))
 			return plugin_rename_phase1('nomatch');
 
@@ -280,7 +280,7 @@ function plugin_rename_phase3($pages)
 			if (file_exists($new))
 				$exists[$_page][$old] = $new;
 
-	if ( isset($vars['menu']) && ! auth::check_role('role_adm_contents') ) {
+	if ( isset($vars['menu']) && ! Auth::check_role('role_adm_contents') ) {
 		return plugin_rename_phase4($pages, $files, $exists);
 	}
 
@@ -335,7 +335,7 @@ function plugin_rename_phase3($pages)
 
 	$ret = array();
 	$auth = '';
-	if (auth::check_role('role_adm_contents')) {
+	if (Auth::check_role('role_adm_contents')) {
 		$auth = <<<EOD
   <label for="_p_rename_adminpass">{$_rename_messages['msg_adminpass']}</label>
   <input type="password" name="pass" id="_p_rename_adminpass" value="" />
@@ -473,7 +473,7 @@ function plugin_rename_get_files($pages)
 function plugin_rename_getrelated($page)
 {
 	$related = array();
-	$pages = auth::get_existpages();
+	$pages = Auth::get_existpages();
 	$pattern = '/(?:^|\/)' . preg_quote(strip_bracket($page), '/') . '(?:\/|$)/';
 	foreach ($pages as $name) {
 		if ($name === $page) continue;
@@ -487,7 +487,7 @@ function plugin_rename_getselecttag($page)
 	global $whatsnew;
 
 	$pages = array();
-	foreach (auth::get_existpages() as $_page) {
+	foreach (Auth::get_existpages() as $_page) {
 		if (is_cantedit($_page)) continue;
 
 		$selected = ($_page === $page) ? ' selected' : '';

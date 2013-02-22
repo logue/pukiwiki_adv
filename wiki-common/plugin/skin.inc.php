@@ -9,7 +9,7 @@
 defined('PLUGIN_SKIN_USE')	or define('PLUGIN_SKIN_USE', 1);		// 0:not use, 1:use
 // 有効日数を定義(0 は、ブラウザ終了時消滅)
 defined('PLUGIN_SKIN_EXPIRE') or define('PLUGIN_SKIN_EXPIRE', 0);	// Effective days are defined. (0: Disappearance when a browser ends)
-
+use PukiWiki\Lib\Auth\Auth;
 function plugin_skin_init()
 {
 	$msg = array(
@@ -332,7 +332,7 @@ function skin_search_tdiary()
 function skin_config_update()
 {
 	global $_skin_msg;
-	if (auth::check_role('role_adm')) die_message($_skin_msg['err_not_update']);
+	if (Auth::check_role('role_adm')) die_message($_skin_msg['err_not_update']);
 	skin_config_maintenance(1);
 	return $_skin_msg['msg_update_end'];
 }

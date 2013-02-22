@@ -23,28 +23,30 @@ if (! defined('PKWK_OPTIMISE'))
 
 /////////////////////////////////////////////////
 // Security settings
-// 0 - 機能無効
-// 1 - 強制モード
-// 2 - サイト管理者以上は除く
-// 3 - コンテンツ管理者以上は除く
-// 4 - 登録者
-// 5 - 認証者(未設定時のデフォルト)以上は除く
+// Auth::ROLE_GUEST          - 機能無効
+// Auth::ROLE_FORCE          - 強制モード
+// Auth::ROLE_ADMIN          - サイト管理者以上は除く
+// Auth::ROLE_CONTENTS_ADMIN - コンテンツ管理者以上は除く
+// Auth::ROLE_ENROLLEE       - 登録者
+// Auth::ROLE_AUTH           - 認証者(未設定時のデフォルト)以上は除く
+
+use PukiWiki\Lib\Auth\Auth;
 
 // 認証せずには閲覧できない
-defined('PLUS_PROTECT_MODE')	or define('PLUS_PROTECT_MODE',	0); // 0,2,3,4,5
+defined('PLUS_PROTECT_MODE')	or define('PLUS_PROTECT_MODE',	Auth::ROLE_GUEST); // 0,2,3,4,5
 
 // PKWK_READONLY - Prohibits editing and maintain via WWW
 //   NOTE: Counter-related functions will work now (counter, attach count, etc)
-defined('PKWK_READONLY')		or define('PKWK_READONLY',		0);		// 0,1,2,3,4,5
+defined('PKWK_READONLY')		or define('PKWK_READONLY',		Auth::ROLE_GUEST);		// 0,1,2,3,4,5
 
 // PKWK_SAFE_MODE - Prohibits some unsafe(but compatible) functions
-defined('PKWK_SAFE_MODE')		or define('PKWK_SAFE_MODE',		0);	// 0,1,2,3,4,5
+defined('PKWK_SAFE_MODE')		or define('PKWK_SAFE_MODE',		Auth::ROLE_GUEST);	// 0,1,2,3,4,5
 
 // PKWK_CREATE_PAGE - New page making is prohibited.
-defined('PKWK_CREATE_PAGE')		or define('PKWK_CREATE_PAGE',	0); // 0,1,2,3,4,5
+defined('PKWK_CREATE_PAGE')		or define('PKWK_CREATE_PAGE',	Auth::ROLE_GUEST); // 0,1,2,3,4,5
 
 // PKWK_USE_REDIRECT - When linking outside, Referer is removed.
-defined('PKWK_USE_REDIRECT')	or define('PKWK_USE_REDIRECT',	0); // 0,1
+defined('PKWK_USE_REDIRECT')	or define('PKWK_USE_REDIRECT',	Auth::ROLE_GUEST); // 0,1
 
 // PKWK_DISABLE_INLINE_IMAGE_FROM_URI - Disallow using inline-image-tag for URIs
 //   Inline-image-tag for URIs may allow leakage of Wiki readers' information
@@ -57,20 +59,6 @@ defined('PKWK_DISABLE_INLINE_IMAGE_FROM_URI')
 //   Max length of GET method, prohibits some worm attack ASAP
 //   NOTE: Keep (page-name + attach-file-name) <= PKWK_QUERY_STRING_MAX
 define('PKWK_QUERY_STRING_MAX', 640); // Bytes, 0 = OFF
-
-/////////////////////////////////////////////////
-// Experimental features
-
-// Multiline plugin hack (See BugTrack2/84)
-// EXAMPLE(with a known BUG):
-//   #plugin(args1,args2,...,argsN){{
-//   argsN+1
-//   argsN+1
-//   #memo(foo)
-//   argsN+1
-//   }}
-//   #memo(This makes '#memo(foo)' to this)
-define('PKWKEXP_DISABLE_MULTILINE_PLUGIN_HACK', 0); // 1 = Disabled
 
 /////////////////////////////////////////////////
 // Language / Encoding settings
@@ -112,9 +100,9 @@ $public_holiday_guest_view = 0;
 /////////////////////////////////////////////////
 // Directory settings I (ended with '/', permission '777')
 
-// You may hide these directories (from web browsers)
-// by setting DATA_HOME at index.php.
-
+// データーの入ったディレクトリ設定です。
+// 通常は変更する必要はありません。
+/*
 define('DATA_DIR',		DATA_HOME . 'wiki/'     );	// Latest wiki texts
 define('DIFF_DIR',		DATA_HOME . 'diff/'     );	// Latest diffs
 define('BACKUP_DIR',	DATA_HOME . 'backup/'   );	// Backups
@@ -134,7 +122,7 @@ define('EXTEND_DIR',	SITE_HOME . 'extend/'   );	// Extend directory
 define('EXT_PLUGIN_DIR',EXTEND_DIR. 'plugin/'   );	// Extend Plugin directory
 define('EXT_LANG_DIR',	EXTEND_DIR. 'locale/'   );	// Extend Language file
 define('EXT_SKIN_DIR',	EXTEND_DIR. 'skin/'     );	// Extend Skin directory
-
+*/
 /////////////////////////////////////////////////
 // Directory settings II (ended with '/')
 
@@ -437,14 +425,6 @@ $exclude_link_plugin = array(
 );
 
 /////////////////////////////////////////////////
-// $whatsnew: Max number of RecentChanges
-$maxshow = 60;
-
-// $whatsdeleted: Max number of RecentDeleted
-// (0 = Disabled)
-$maxshow_deleted = 60;
-
-/////////////////////////////////////////////////
 // Page names can't be edit via PukiWiki
 $cantedit = array( $whatsnew, $whatsdeleted );
 
@@ -477,7 +457,6 @@ $do_backup = 1;
 $del_backup = 0;
 
 // Bacukp interval and generation
-$cycle  =   3; // Wait N hours between backup (0 = no wait)
 $maxage = 120; // Stock latest N backups
 
 // NOTE: $cycle x $maxage / 24 = Minimum days to lost your data

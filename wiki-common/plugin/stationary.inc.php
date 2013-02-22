@@ -3,7 +3,7 @@
 //
 // Stationary plugin
 // License: The same as PukiWiki
-
+use PukiWiki\Lib\Auth\Auth;
 // Define someting like this
 define('PLUGIN_STATIONARY_MAX', 10);
 
@@ -11,7 +11,7 @@ define('PLUGIN_STATIONARY_MAX', 10);
 function plugin_stationary_init()
 {
 	// if (PKWK_SAFE_MODE || PKWK_READONLY) return; // Do nothing
-	if (auth::check_role('safemode') || auth::check_role('readonly')) return; // Do nothing
+	if (Auth::check_role('safemode') || Auth::check_role('readonly')) return; // Do nothing
 
 	$messages = array(
 		'_plugin_stationary_A' => 'a',
@@ -25,11 +25,11 @@ function plugin_stationary_convert()
 {
 	// If you don't want this work at secure/productive site,
 	// if (PKWK_SAFE_MODE) return ''; // Show nothing
-	if (auth::check_role('safemode')) return ''; // Show nothing
+	if (Auth::check_role('safemode')) return ''; // Show nothing
 
 	// If this plugin will write someting,
 	// if (PKWK_READONLY) return ''; // Show nothing
-	if (auth::check_role('readonly')) return ''; // Show nothing
+	if (Auth::check_role('readonly')) return ''; // Show nothing
 
 	// Init
 	$args = array();
@@ -50,7 +50,7 @@ function plugin_stationary_convert()
 function plugin_stationary_inline()
 {
 	// if (PKWK_SAFE_MODE || PKWK_READONLY) return ''; // See above
-	if (auth::check_role('safemode') || auth::check_role('readonly')) return ''; // See above
+	if (Auth::check_role('safemode') || Auth::check_role('readonly')) return ''; // See above
 
 	// {bar} is always exists, and already sanitized
 	$args = func_get_args();
@@ -68,7 +68,7 @@ function plugin_stationary_action()
 {
 	// See above
 	// if (PKWK_SAFE_MODE || PKWK_READONLY)
-	if (auth::check_role('safemode') || auth::check_role('readonly'))
+	if (Auth::check_role('safemode') || Auth::check_role('readonly'))
 		die_message('PKWK_SAFE_MODE or PKWK_READONLY prohibits this');
 
 	$msg  = 'Message';

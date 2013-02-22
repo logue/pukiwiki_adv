@@ -20,8 +20,8 @@ define('PLUGIN_RECENT_EXEC_LIMIT', 3); // N times per one output
 // ----
 
 define('PLUGIN_RECENT_USAGE', '#recent(number-to-show)');
-use PukiWiki\Lib\File\FileFactory;
-use PukiWiki\Lib\File\FileUtility;
+use PukiWiki\Lib\Factory;
+use PukiWiki\Lib\Recent;
 
 function plugin_recent_convert()
 {
@@ -47,12 +47,12 @@ function plugin_recent_convert()
 	$items = array();
 
 
-	$lines = FileUtility::getRecent();
+	$lines = Recent::get();
 	if ($lines !== null){
 		$count = (count($lines) < $recent_lines) ? count($lines) : $recent_lines;
 		$i = 0;
 		foreach ($lines as $page => $time) {
-			$wiki = FileFactory::Wiki($page);
+			$wiki = Factory::Wiki($page);
 			if (! $wiki->isReadable()) continue;
 			//if (! $wiki->isHidden()) continue;
 			if ($i > $count) break;
@@ -76,8 +76,7 @@ function plugin_recent_convert()
 					$items[] = ' <li>' . $s_page . '</li>';
 				} else {
 					$passage = $show_passage ? ' ' . $wiki->passage(false,true) : '';
-					$items[] = ' <li><a href="' . $wiki->get_uri() . '"' .
-						' title="' . $s_page . $passage . '">' . $s_page . '</a></li>';
+					$items[] = ' <li><a href="' . $wiki->uri() . '" title="' . $s_page . $passage . '">' . $s_page . '</a></li>';
 				}
 			}else{
 				if ($date !== $_date) {
@@ -90,7 +89,7 @@ function plugin_recent_convert()
 					$items[] = ' <li data-theme="e">' . $s_page . '</li>';
 				} else {
 					$passage = $show_passage ? ' ' . '<span class="ui-li-count">'.$wiki->passage(false,false).'</span>' : '';
-					$items[] = ' <li><a href="' . $wiki->get_uri() . '" data-transition="slide">' . $s_page . $passage.'</a></li>';
+					$items[] = ' <li><a href="' . $wiki->uri() . '" data-transition="slide">' . $s_page . $passage.'</a></li>';
 				}
 			}
 			$i++;

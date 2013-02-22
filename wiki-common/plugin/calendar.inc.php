@@ -177,7 +177,7 @@ EOD;
 			'		<tr>' . "\n";
 
 		/* from Plus! */
-		$h_today = PublicHolidayFactory::factory('JP', $year, $m_num, $day);
+		$h_today = PublicHolidayFactory::Wiki('JP', $year, $m_num, $day);
 		$hday = $h_today['rc'];
 
 		$style = 'style_calendar_day'; // Weekday

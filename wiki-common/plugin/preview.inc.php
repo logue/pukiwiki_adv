@@ -4,17 +4,20 @@
 //
 // Read plugin: Show a page and InterWiki
 
+use PukiWiki\Lib\Factory;
+use PukiWiki\Lib\Renderer\RendererFactory;
+
 function plugin_preview_action()
 {
 	global $vars;
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
+	$wiki = WikiFactory::Wiki($page);
 
-	if (is_page($page)) {
-		check_readable($page, true, true);
-		$source = get_source($page);
+	if ($wiki->isReadable(true) ) {
+		$source = $wiki->get();
 		array_splice($source, 10);
-		$body = convert_html($source);
+		$body = RenderFactory::Wiki($source);
 
 		pkwk_common_headers(true,true);
 		header('Content-type: text/xml');

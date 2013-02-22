@@ -15,6 +15,11 @@
 // &tooltip(<term>,[<用語集>]){<glossary>};
  <term>にマウスカーソルを当てると、<glossary>が出現する。
 */
+use PukiWiki\Lib\Factory;
+use PukiWiki\Lib\Renderer\Inline\Glossary;
+use PukiWiki\Lib\Renderer\RendererFactory;
+use PukiWiki\Lib\Utility;
+
 //========================================================
 function plugin_tooltip_init()
 {
@@ -33,14 +38,15 @@ function plugin_tooltip_init()
 // Plus! ajax Glossary for UTF-8
 function plugin_tooltip_action()
 {
-	global $vars, $glossarypage;
-
+	global $vars;
 	$term = $vars['q'];
 	if (trim($term) == '') { exit; }
-	$glossary = plugin_tooltip_get_glossary($term, '', TRUE);
+	
+	$glossary = Glossary::getGlossary($term);
+	$glossary_lastmod = Glossary::getGlossaryTime();	// なんども通信するのを防ぐためlastmodを出力
 	if ($glossary == FALSE) { exit; }
-	$s_glossary = convert_html($glossary);
-	$glossary_lastmod = get_filetime($glossarypage);	// なんども通信するのを防ぐためlastmodを出力
+	$s_glossary = RendererFactory::factory($glossary);
+	
 	
 	pkwk_common_headers($glossary_lastmod);
 	header('Content-type: text/xml');
@@ -59,28 +65,22 @@ function plugin_tooltip_inline()
 	$glossary_page = '';
 
 	if ( $glossary == '' ){
-		$glossary = plugin_tooltip_get_glossary($term,$glossary_page,FALSE);
+		$glossary = Glossary::getGlossary($term);
 		// $debug .= "B=$glossary/";
 		if ( $glossary === FALSE ) {
 			$glossary = plugin_tooltip_get_page_title($term);
 			if ( $glossary === FALSE ) $glossary = '';
 		}
 	}
-	$s_glossary = htmlsc($glossary);
+	$s_glossary = Utility::htmlsc($glossary);
 
-	$page = strip_bracket($term);
-	if ( is_page($page) ) {
-		$url = get_page_uri($page);
-		$passage = get_pg_passage($page,FALSE);
-		return <<<EOD
-<a href="$url"><abbr aria-describedby="tooltip" title="$s_glossary$passage">$term</abbr></a>
-EOD;
+	$page = Utility::stripBracket($term);
+		
+	$wiki = Factory::Wiki($page);
+	if ( $wiki->isValied() ) {
+		return '<a href="' . $wiki->uri() . '"><abbr aria-describedby="tooltip" title="$s_glossary' . $wiki->passage(true,false). '">' . $term . '</abbr></a>';
 	}
-	else {
-	return <<<EOD
-<dfn aria-describedby="tooltip" title="$s_glossary">$term</dfn>
-EOD;
-	}
+	return '<dfn aria-describedby="tooltip" title="' . $s_glossary . '">' . $term . '</dfn>';
 }
 //========================================================
 function plugin_tooltip_get_page_title($term)
@@ -99,48 +99,6 @@ function plugin_tooltip_get_page_title($term)
 		}
 	}
 	return FALSE;
-}
-//========================================================
-// 用語集を変えた場合のキャッシュがうまく記述できない。
-function plugin_tooltip_get_glossary($term,$g_page,$plain)
-{
-	global $_tooltip_messages, $glossarypage;
-	static $aglossary = '';
-
-	if ( $aglossary == '' ) {
-		$aglossary = array();
-		// $page = ( $g_page != '' )  ? $g_page : $_tooltip_messages['page_glossary'];
-		if (!empty($g_page)) {
-			$page = $g_page;
-		} else
-		if (!empty($glossarypage)) {
-			$page = $glossarypage;
-		} else {
-			$page = $_tooltip_messages['page_glossary'];
-		}
-		if ( ! is_page($page) ) return FALSE;
-		$src = get_source($page);
-		foreach ( $_tooltip_messages['defaults'] as $t=>$d ){
-			$aglossary[$t] = $d;
-		}
-		foreach ( $src as $line ){
-			if ( preg_match('/^[:|]([^|]+)\|([^|]+)\|?$/', $line, $match) ){
-				$dt = trim($match[1]);
-				$dd = trim($match[2]);
-				$aglossary[$dt] = $dd;
-//				echo "[$dt=$dd]";
-			}
-		}
-	}
-	$t = trim($term);
-	$out = isset($aglossary[$t]) ? $aglossary[$t]: '';
-	if (!$plain) {
-		$out = preg_replace('/&br;/', "\n", $out);
-		$out = preg_replace('/&t;/', "\t", $out);
-	}
-//	echo "/out=$out/term=$term";
-	if ( $out == '' ) return FALSE;
-	return $out;
 }
 /* End of file tooltip.inc.php */
 /* Location: ./wiki-common/plugin/tooltip.inc.php */

@@ -4,6 +4,8 @@
 //
 // Legent plugin
 
+use PukiWiki\Lib\Renderer\RendererFactory;
+
 // ----
 define('PLUGIN_CODE_USAGE', 
 	   '<p class="error">Plugin code: Usage:<br />#legend[(title)]{{<br />contents<br />}}</p>');
@@ -25,7 +27,7 @@ function plugin_legend_convert()
 	// FIXME:
 	// class, style で指定可能であったとしても、ブラウザで正しく処理できるのは、align しかなさそう
 	$align = (empty($parm['align'])) ? '' : ' align="'.$parm['align'].'"';
-	return "<fieldset>\n<legend$align>" . $parm['title'] . "</legend>\n" . convert_html(line2array($data)) . "</fieldset>\n";
+	return "<fieldset>\n<legend$align>" . $parm['title'] . "</legend>\n" . RendererFactory::factory(line2array($data)) . "</fieldset>\n";
 
 }
 

@@ -11,6 +11,8 @@
 //   * Usually used at 'MenuBar' page
 //   * Also used at special-page, without no #recnet at 'MenuBar'
 
+use PukiWiki\Lib\Renderer\RendererFactory;
+
 // Default number of 'Show latest N changes'
 define('PLUGIN_MIXIRECENT_DEFAULT_LINES', 10);
 
@@ -81,7 +83,7 @@ function plugin_mixirecent_convert()
 			while(!empty($source)) {
 				$line = array_shift($source);
 				if (preg_match('/^(\*{1,3})(.*)\[#([A-Za-z][\w-]+)\](.*)$/m', $line, $matches)) {
-					$anchortitle = strip_htmltag(convert_html($matches[2]));
+					$anchortitle = strip_htmltag(RendererFactory::factory($matches[2]));
 					$anchortitle = preg_replace("/[\r\n]/", ' ', $anchortitle);
 					$anchortitle = PLUGIN_MIXIRECENT_NOTITLE ? $anchortitle : $anchortitle . '(' . $title . ')';
 					$sharp = '#';

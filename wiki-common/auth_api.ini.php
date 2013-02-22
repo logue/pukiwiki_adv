@@ -1,5 +1,5 @@
 <?php
-$auth_api = array(
+return array(
 	// Basic or Digest
 	'plus' => array(
 		'use'			=> true,

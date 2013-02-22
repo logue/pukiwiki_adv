@@ -5,6 +5,8 @@
 // $Id: footarea.inc.php,v 1.6.7 2011/02/05 10:52:00 Logue Exp $
 //
 
+use PukiWiki\Lib\Renderer\RendererFactory;
+
 // サブメニューを使用する
 define('FOOT_ENABLE_SUBFOOT', TRUE);
 
@@ -55,7 +57,7 @@ function plugin_footarea_convert()
 	}
 	$save_newwindow = $use_open_uri_in_new_window;
 	$use_open_uri_in_new_window = 0;
-	$foothtml = convert_html($foottext);
+	$foothtml = RendererFactory::factory($foottext);
 	$use_open_uri_in_new_window = $save_newwindow;
 	$foothtml = str_replace("\n",'',$foothtml);
 	return preg_replace('/<ul class="list[^>]*>/','<ul class="foot">',$foothtml);

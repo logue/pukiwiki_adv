@@ -7,6 +7,7 @@
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  *
  */
+use PukiWiki\Lib\Auth\Auth;
 function plugin_check_role_convert()
 {
 	global $check_role;
@@ -27,7 +28,7 @@ function plugin_check_role_convert()
 	if (empty($chk_role)) $chk_role = 0;
 
 	$role_func = (empty($chk_role_str[$chk_role])) ? 'role_auth' : $chk_role_str[$chk_role];
-	if (! auth::check_role($role_func)) return '';
+	if (! Auth::check_role($role_func)) return '';
 
 	check_role_die('It is necessary to attest it to inspect this page.');
 }

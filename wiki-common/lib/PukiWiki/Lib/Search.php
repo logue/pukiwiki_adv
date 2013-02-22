@@ -1,7 +1,7 @@
 <?php
 namespace PukiWiki\Lib;
 use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\Factory;
 
 class Search{
 	// Expand search words

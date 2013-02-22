@@ -8,6 +8,9 @@
  *
  */
 
+use PukiWiki\Auth\Auth;
+use PukiWiki\Lib\Renderer\RendererFactory;
+
 function plugin_brokenlink_init()
 {
 	$messages = array(
@@ -34,7 +37,7 @@ function plugin_brokenlink_action()
 	}
 
 	// ユーザ認証されていない
-	$id = auth::check_auth();
+	$id = Auth::check_auth();
 	if (empty($id)) {
 		$retval['body'] = $_brokenlink_msg['msg_not_access'];
 		return $retval;
@@ -64,7 +67,7 @@ function plugin_brokenlink_action()
 		$data = $_brokenlink_msg['msg_all_ok'];
 	}
 
-	$retval['body'] = convert_html($data);
+	$retval['body'] = RendererFactorty::factory($data);
 	return $retval;
 }
 

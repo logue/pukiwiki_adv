@@ -7,7 +7,8 @@
  * @version     $Id: typekey.inc.php,v 0.16 2009/06/11 01:34:00 upk Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
-require_once(LIB_DIR . 'auth_api.cls.php');
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Auth\AuthApi;
 
 defined('TYPEKEY_URL_LOGIN')		or define('TYPEKEY_URL_LOGIN',		'https://www.typekey.com/t/typekey/login');
 //defined('TYPEKEY_URL_LOGOUT')		or define('TYPEKEY_URL_LOGOUT',		'https://www.typekey.com/t/typekey/logout');
@@ -18,7 +19,7 @@ defined('TYPEKEY_REGKEYS')			or define('TYPEKEY_REGKEYS',		'http://www.typekey.c
 defined('TYPEKEY_VERSION')			or define('TYPEKEY_VERSION',		'1.1');
 defined('TYPEKEY_CACHE_TIME')		or define('TYPEKEY_CACHE_TIME',		60*60*24*2); // 2 day
 
-class auth_typekey extends auth_api
+class auth_typekey extends AuthApi
 {
 	var $siteToken, $need_email, $regkeys, $version;
 
@@ -210,7 +211,7 @@ EOD;
 	}
 
 	// 他でログイン
-	$auth_key = auth::get_user_name();
+	$auth_key = Auth::get_user_name();
 	if (! empty($auth_key['nick'])) return '';
 
 	// ボタンを表示するだけ
@@ -248,7 +249,7 @@ function plugin_typekey_inline()
 			$_typekey_msg['msg_logout'].'</a>)';
 	}
 
-	$auth_key = auth::get_user_name();
+	$auth_key = Auth::get_user_name();
 	if (! empty($auth_key['nick'])) return $_typekey_msg['msg_typekey'];
 
 	return '<a href="'.plugin_typekey_jump_url().'">'.$_typekey_msg['msg_typekey'].'</a>';

@@ -15,13 +15,15 @@
 //	* LDAP MD5 / SMD5
 //	* LDAP CRYPT
 
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Utility;
 // User interface of pkwk_hash_compute() for system admin
 function plugin_md5_action()
 {
 	global $get, $post;
 
 	// if (PKWK_SAFE_MODE || PKWK_READONLY) die_message(T_('Prohibited'));
-	if (auth::check_role('safemode') || auth::check_role('readonly')) die_message(T_('Prohibited'));
+	if (Auth::check_role('safemode') || Auth::check_role('readonly')) Utility::dieMessage(T_('Prohibited'));
 
 	// Wait POST
 	$phrase = isset($post['phrase']) ? $post['phrase'] : '';
@@ -52,7 +54,7 @@ function plugin_md5_action()
 			'msg' =>'Result',
 			'body'=>
 				//($prefix ? 'userPassword: ' : '') .
-				pkwk_hash_compute($phrase, $salt, $prefix, TRUE));
+				Auth::pkwk_hash_compute($phrase, $salt, $prefix, TRUE));
 	}
 }
 
@@ -61,7 +63,7 @@ function plugin_md5_action()
 function plugin_md5_show_form($nophrase = FALSE, $value = '')
 {
 	// if (PKWK_SAFE_MODE || PKWK_READONLY) die_message(T_('Prohibited'));
-	if (auth::check_role('safemode') || auth::check_role('readonly')) die_message(T_('Prohibited'));
+	if (Auth::check_role('safemode') || Auth::check_role('readonly')) Utility::dieMessage(T_('Prohibited'));
 	if (strlen($value) > PKWK_PASSPHRASE_LIMIT_LENGTH)
 		die_message(T_('Limit: malicious message length'));
 

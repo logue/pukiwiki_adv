@@ -26,6 +26,8 @@
 	|あいう|えおか|きくけ|
 */
 
+use PukiWiki\Auth\Auth;
+
 /////////////////////////////////////////////////
 // コメントを挿入する位置 1:欄の前 0:欄の後
 defined('ADDLINE_INS') or define('ADDLINE_INS', '1');
@@ -52,7 +54,7 @@ function plugin_addline_convert()
 	static $numbers = array();
 	static $no_flag = 0;
 
-	if( auth::check_role('readonly') ) return '';
+	if( Auth::check_role('readonly') ) return '';
 
 	if (!array_key_exists($vars['page'],$numbers)){
 		$numbers[$vars['page']] = 0;
@@ -119,7 +121,7 @@ function plugin_addline_inline()
 	static $numbers = array();
 	static $no_flag = 0;
 
-	if( auth::check_role('readonly') ) return '';
+	if( Auth::check_role('readonly') ) return '';
 
 	if (!array_key_exists($vars['page'],$numbers))
 	{
@@ -179,7 +181,7 @@ function plugin_addline_inline()
 function plugin_addline_action()
 {
 	global $_addline_messages, $_string, $vars;
-	if( auth::check_role('readonly') ) die_message($_string['prohibit']);
+	if( Auth::check_role('readonly') ) die_message($_string['prohibit']);
 
 	$refer			= $vars['refer'];
 	$postdata_old	= get_source($refer);

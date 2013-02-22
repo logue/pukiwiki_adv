@@ -12,18 +12,15 @@
  */
 namespace PukiWiki\Lib\File;
 
+use DirectoryIterator;
 use PukiWiki\Lib\Utility;
 use PukiWiki\Lib\Text\Reading;
-use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\Factory;
 use PukiWiki\Lib\Auth\Auth;
 
 class FileUtility{
 	// ファイルの存在一覧キャッシュの接頭辞
 	const EXSISTS_CACHE_PREFIX = 'exsists-';
-	// 更新履歴のキャッシュ名
-	const RECENT_CACHE_NAME = 'recent';
-	// 更新履歴／削除履歴で表示する最小ページ数
-	const MAXSHOW_ALLOWANCE = 10;
 	// ページ一覧キャッシュの接頭辞
 	const PAGENAME_HEADING_CACHE_PREFIX = 'listing-';
 
@@ -32,7 +29,6 @@ class FileUtility{
 	 */
 	public static function clearCache(){
 		self::getExists('',true);
-		self::getRecent(true);
 	}
 	/**
 	 * ディレクトリ内のファイルの一覧を作成
@@ -60,7 +56,7 @@ class FileUtility{
 			$aryret[$func] = $cache['wiki']->getItem($cache_name);
 			return $aryret[$func];
 		}
-
+		$pattern = '/^((?:[0-9A-F]{2})+)\.txt$/';
 		switch($dir){
 			case DATA_DIR:
 				$pattern = '/^((?:[0-9A-F]{2})+)\.txt$/';
@@ -75,11 +71,11 @@ class FileUtility{
 				$pattern = '/^((?:[0-9A-F]{2})+)_((?:[0-9A-F]{2})+)$/';
 				break;
 			default:
-				$func = encode($dir.$ext);
+				$func = md5($dir);
 		}
 
 		// キャッシュを再生成
-		foreach (new \DirectoryIterator($dir) as $fileinfo) {
+		foreach (new DirectoryIterator($dir) as $fileinfo) {
 			$filename = $fileinfo->getFilename();
 			if ($fileinfo->isFile() && preg_match($pattern, $filename, $matches)){
 				$aryret[$func][$filename] = Utility::decode($matches[1]);
@@ -108,7 +104,7 @@ class FileUtility{
 				$func = 'attach';
 				break;
 			default:
-				$func = encode($dir);
+				$func = md5($dir);
 		}
 		return $func;
 	}
@@ -225,22 +221,25 @@ class FileUtility{
 	 * @return string
 	 */
 	private static function getPageLists($pages, $cmd, $with_filename){
+		global $read_auth_pages;
+
 		$contents = array();
 		// ユーザ名取得
 		$auth_key = Auth::get_user_info();
 		// コンテンツ管理者以上は、: のページも閲覧可能
-		$has_permisson = Auth::check_role('role_adm_contents');
+		$has_permisson = Auth::check_role('role_contents_admin');
 
 		foreach ($pages as $page){
-			if (! Auth::is_page_readable($page, $auth_key['key'], $auth_key['group'])) continue;
-
-			$wiki = FileFactory::Wiki($page);
+			$wiki = Factory::Wiki($page);
+			// 存在しない場合、当然スルー
 			if (!$wiki->has()) continue;
-
+			// 隠しページの場合かつ、隠しページを表示できる権限がない場合スルー
 			if ($wiki->isHidden() && $has_permisson) continue;
-
+			// 閲覧できる権限がない場合はスルー
+			if (! $wiki->isReadable()) continue;
+			
 			$_page = Utility::htmlsc($page, ENT_QUOTES);
-			$url = $wiki->get_uri($cmd);
+			$url = $wiki->uri($cmd);
 			if (!IS_MOBILE) {
 				$contents[] = '<li><a href="' . $url . '">' . $_page . '</a> ' . $wiki->passage() .
 					($with_filename ? '<br /><var>' . Utility::htmlsc($wiki->filename). '</var>' : '') .
@@ -251,122 +250,6 @@ class FileUtility{
 			}
 		}
 		return $contents;
-	}
-	/**
-	 * 最終更新のキャッシュを取得
-	 * @param boolean $force キャッシュを再生成する
-	 * @return array
-	 */
-	public static function getRecent($force = false){
-		global $cache, $maxshow, $autolink, $whatsnew, $autobasealias, $cache;
-		static $recent_pages;
-
-		if ($force){
-			// キャッシュ再生成
-			unset ($recent_pages);
-			$cache['wiki']->removeItem(self::RECENT_CACHE_NAME);
-		}else if (!empty($recent_pages)){
-			// メモリにキャッシュがある場合
-			return $recent_pages;
-		}else if ($cache['wiki']->hasItem(self::RECENT_CACHE_NAME)) {
-			// キャッシュから最終更新を読み込む
-			$recent_pages = $cache['wiki']->getItem(self::RECENT_CACHE_NAME);
-			return $recent_pages;
-		}
-
-		// Get WHOLE page list
-		$pages = self::getExists(DATA_DIR, $force);
-
-		// Check ALL filetime
-		$recent_pages = array();
-		foreach($pages as $filename=>$page){
-			if ($page !== $whatsnew){
-				$wiki = FileFactory::Wiki($page);
-				 if (! $wiki->isHidden() ) $recent_pages[$page] = $wiki->time();
-			}
-		}
-		// Sort decending order of last-modification date
-		arsort($recent_pages, SORT_NUMERIC);
-
-		// Cut unused lines
-		// BugTrack2/179: array_splice() will break integer keys in hashtable
-		$count   = $maxshow + self::MAXSHOW_ALLOWANCE;
-		$_recent = array();
-		foreach($recent_pages as $key=>$value) {
-			unset($recent_pages[$key]);
-			$_recent[$key] = $value;
-			if (--$count < 1) break;
-		}
-		$recent_pages = & $_recent;
-
-		// Save to recent cache data
-		$cache['wiki']->setItem(self::RECENT_CACHE_NAME, $recent_pages);
-
-		return $recent_pages;
-	}
-	/**
-	 * 最終更新のキャッシュを更新
-	 * @param string $page_update 更新があったページ
-	 * @param string $page_remove 削除されたページ
-	 * @return void
-	 */
-	public static function setRecent($page_update, $page_remove){
-		global $maxshow, $whatsnew, $autolink, $autobasealias;
-		global $cache;
-
-		// AutoLink implimentation needs everything, for now
-		if ($autolink || $autobasealias) {
-			self::getRecent(true);	// Try to (re)create ALL
-			return;
-		}
-
-		$non_list = FileFactory::Wiki($page_update)->isHidden();
-
-		if ((empty($page_update) || $non_list) && empty($page_remove))
-			return; // No need
-
-		// Check cache exists
-		if (! $cache['wiki']->hasItem(self::RECENT_CACHE_NAME)){
-			self::getRecent(true);	// Try to (re)create ALL
-			return;
-		}else{
-			$recent_pages = $cache['wiki']->getItem(self::RECENT_CACHE_NAME);
-		}
-
-		// Remove if it exists inside
-		if (isset($recent_pages[$page_update])) unset($recent_pages[$page_update]);
-		if (isset($recent_pages[$page_remove])) unset($recent_pages[$page_remove]);
-
-		// Update Cache
-		$cache['wiki']->setItem(self::RECENT_CACHE_NAME, $recent_pages);
-
-		// Add to the top: like array_unshift()
-
-		if (!empty($update) && $update !== $whatsnew && ! $non_list)
-			$recent_pages = array($update_page => FileFactory::Wiki($page_update)->time()) + $recent_pages;
-
-		// Check
-		$abort = count($recent_pages) < $maxshow;
-
-		// Update cache
-		$cache['wiki']->setItem(self::RECENT_CACHE_NAME, $recent_pages);
-
-		if ($abort) {
-			self::getRecent(true);	// Try to (re)create ALL
-			return;
-		}
-
-		// ----
-		// Update the page 'RecentChanges'
-
-		$recent_pages = array_splice($recent_pages, 0, $maxshow);
-
-		$lines[] = '#norelated';
-		foreach ($recent_pages as $_page=>$time){
-			$lines[] = '- &epoch('.$time.');' . ' - ' . '[[' . htmlsc($_page) . ']]';
-		}
-
-		FileFactory::Wiki($whatsnew)->set($lines);
 	}
 	/**
 	 * TrackBack Ping IDからページ名を取得

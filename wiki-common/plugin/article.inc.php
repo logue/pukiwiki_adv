@@ -23,6 +23,7 @@
  を設定の上、ご使用ください。
 
  */
+use PukiWiki\Lib\Auth\Auth;
 
 defined('PLUGIN_ARTICLE_COLS')           or define('PLUGIN_ARTICLE_COLS',	70); // テキストエリアのカラム数
 defined('PLUGIN_ARTICLE_ROWS')           or define('PLUGIN_ARTICLE_ROWS',	 5); // テキストエリアの行数
@@ -70,7 +71,7 @@ function plugin_article_action()
 	global $_article_msg, $_string;
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	if (auth::check_role('readonly')) die_message($_string['error_prohibit']);
+	if (Auth::check_role('readonly')) die_message($_string['error_prohibit']);
 
 	if ($post['msg'] == '')
 		return array('msg'=>'','body'=>'');
@@ -166,7 +167,7 @@ function plugin_article_convert()
 	static $numbers = array();
 
 	// if (PKWK_READONLY) return ''; // Show nothing
-	if (auth::check_role('readonly')) return ''; // Show nothing
+	if (Auth::check_role('readonly')) return ''; // Show nothing
 
 	if (! isset($numbers[$vars['page']])) $numbers[$vars['page']] = 0;
 

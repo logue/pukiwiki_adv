@@ -5,15 +5,20 @@
 // Add plugin - Append new text below/above existing page
 // Usage: cmd=add&page=pagename
 
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Utility;
+use PukiWiki\Lib\Factory;
+
 function plugin_add_action()
 {
 	global $get, $post, $vars, $_string;
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	if (auth::check_role('readonly')) die_message($_string['prohibit']);
+	if (Auth::check_role('readonly')) Utility::dieMessage($_string['prohibit']);
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
-	check_editable($page);
+	$wiki = Factory::Wiki($page);
+	$wiki->checkEditable();
 
 	$get['add'] = $post['add'] = $vars['add'] = TRUE;
 	return array(

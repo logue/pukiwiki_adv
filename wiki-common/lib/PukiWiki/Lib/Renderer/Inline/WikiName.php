@@ -1,11 +1,19 @@
 <?php
-// PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: WikiName.php,v 1.0.0 2012/12/18 11:00:00 Logue Exp $
-// Copyright (C)
-//   2012 PukiWiki Advance Developers Team
-// License: GPL v2 or (at your option) any later version
+/**
+ * Wiki名クラス
+ *
+ * @package   PukiWiki\Lib\Renderer\Inline
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @create    2012/12/18
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: WikiName.php,v 1.0.0 2013/01/29 19:54:00 Logue Exp $
+ */
 
 namespace PukiWiki\Lib\Renderer\Inline;
+
+use PukiWiki\Lib\Renderer\RendererDefines;
 
 // WikiNames
 class WikiName extends Inline
@@ -17,9 +25,8 @@ class WikiName extends Inline
 
 	public function getPattern()
 	{
-		global $WikiName, $nowikiname;
-
-		return $nowikiname ? FALSE : '(' . $WikiName . ')';
+		global $nowikiname;
+		return $nowikiname ? FALSE : '(' . RendererDefines::WIKINAME_PATTERN . ')';
 	}
 
 	public function getCount()
@@ -35,7 +42,7 @@ class WikiName extends Inline
 
 	public function __toString()
 	{
-		return make_pagelink(
+		return parent::setAutoLink(
 			$this->name,
 			$this->alias,
 			null,
@@ -45,4 +52,4 @@ class WikiName extends Inline
 }
 
 /* End of file WikiName.php */
-/* Location: /vender/PukiWiki/Lib/Renderer/Inline/WikiName.php */
+/* Location: /vendor/PukiWiki/Lib/Renderer/Inline/WikiName.php */

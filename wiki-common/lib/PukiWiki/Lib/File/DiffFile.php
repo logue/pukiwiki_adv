@@ -47,7 +47,7 @@ class DiffFile extends File{
 	public function set($diffdata, $keeptimestamp = false){
 		global $notify, $notify_diff_only;
 		// 差分を作成
-		//$diff = new Diff(FileFactory::Wiki($this->page)->source(true), explode("\n",$postdata));
+		//$diff = new Diff(WikiFactory::Wiki($this->page)->source(true), explode("\n",$postdata));
 		//$str = $diff->getDiff();
 
 		if ($notify){

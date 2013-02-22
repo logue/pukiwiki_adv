@@ -10,6 +10,7 @@
 use PukiWiki\Lib\Lang\Lang;
 use PukiWiki\Lib\Lang\AcceptLanguage;
 use PukiWiki\Lib\Lang\Lang2Country;
+use PukiWiki\Lib\Renderer\RendererFactory;
 
 // ja_JP, ko_KR, en_US, zh_TW
 // They are used as delimiters at &multilang(link,ja_JP=Japanese,en_US=English,.....);
@@ -124,7 +125,7 @@ function plugin_multilang_convert()
 	if (plugin_multilang_accept($lang)) {
 		$lines = preg_replace(array("[\\r|\\n]","[\\r]"), array("\n","\n"), $lines);
 		// return preg_replace(array("'<p>'si","'</p>'si"), array("",""), convert_html($lines) );
-		return '<div lang="'.$lang.'">'.convert_html($lines).'</div>';
+		return '<div lang="'.$lang.'">'.RendererFactory::factory($lines).'</div>';
 	}
 
 	return '';

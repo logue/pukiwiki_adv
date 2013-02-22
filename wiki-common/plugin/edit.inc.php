@@ -9,10 +9,11 @@
 //
 // Edit plugin (cmd=edit)
 // Plus! NOTE:(policy)not merge official cvs(1.40->1.41) See Question/181
-use PukiWiki\Lib\File\FileFactory;
-use PukiWiki\Lib\File\WikiFile;
+use PukiWiki\Lib\Factory;
+use PukiWiki\Lib\Wiki;
 use PukiWiki\Lib\Auth\Auth;
 use PukiWiki\Lib\Router;
+use PukiWiki\Lib\Renderer\RendererFactory;
 use PukiWiki\Lib\Utility;
 use PukiWiki\Lib\Diff;
 
@@ -28,13 +29,13 @@ function plugin_edit_action()
 	global $vars, $load_template_func, $_string;
 
 	$page = isset($vars['page']) ? $vars['page'] : null;
-	$wiki = new WikiFile($page);
+	$wiki = new Wiki($page);
 
 	// if (PKWK_READONLY) die_message(  sprintf($_string['error_prohibit'], 'PKWK_READONLY') );
-	if (auth::check_role('readonly')) die_message( $_string['prohibit'] );
+	if (Auth::check_role('readonly')) Utility::dieMessage( $_string['prohibit'],403 );
 
-	if (PKWK_READONLY == ROLE_AUTH && auth::get_role_level() > ROLE_AUTH) {
-		die_message( sprintf($_string['error_prohibit'], 'PKWK_READONLY') );
+	if (PKWK_READONLY == Auth::ROLE_AUTH && Auth::get_role_level() > Auth::ROLE_AUTH) {
+		Utility::dieMessage( sprintf($_string['error_prohibit'], 'PKWK_READONLY'), 403 );
 	}
 
 	if (isset($vars['realview'])) {
@@ -48,11 +49,11 @@ function plugin_edit_action()
 	//check_editable($page, true, true);
 
 	if (!$wiki->has() && Auth::is_check_role(PKWK_CREATE_PAGE)) {
-		die_message( sprintf($_string['error_prohibit'], 'PKWK_CREATE_PAGE') );
+		Utility::dieMessage( sprintf($_string['error_prohibit'], 'PKWK_CREATE_PAGE'),403 );
 	}
 
-	if (preg_match(PKWK_ILLEGAL_CHARS_PATTERN, $page)){
-		die_message($_string['illegal_chars']);
+	if (preg_match(Wiki::INVALIED_PAGENAME_PATTERN, $page)){
+		Utility::dieMessage($_string['illegal_chars']);
 	}
 
 	if (isset($vars['preview']) || ($load_template_func && isset($vars['template']))) {
@@ -63,8 +64,8 @@ function plugin_edit_action()
 		return plugin_edit_cancel();
 	}
 
-	$source = $wiki->source();
-	auth::is_role_page($source);
+	$source = $wiki->get();
+	Auth::is_role_page($source);
 
 	$postdata = $vars['original'] = join("\n", $source);
 	if (!empty($vars['id']))
@@ -110,7 +111,7 @@ function plugin_edit_realview()
 	if ($postdata) {
 		$postdata = make_str_rules($postdata);
 		$postdata = explode("\n", $postdata);
-		$postdata = drop_submit(convert_html($postdata));
+		$postdata = drop_submit(RendererFactory::factory($postdata));
 	}
 	// Feeding start
 	pkwk_common_headers();
@@ -144,9 +145,9 @@ function plugin_edit_preview()
 	$page = isset($vars['page']) ? $vars['page'] : '';
 
 	// Loading template
-	if (isset($vars['template_page']) && FileFactory::Wiki($vars['template_page'])->isValied()) {
+	if (isset($vars['template_page']) && WikiFactory::Wiki($vars['template_page'])->isValied()) {
 
-		$vars['msg'] = join('', FileFactory::Wiki($vars['template_page'])->source());
+		$vars['msg'] = join('', WikiFactory::Wiki($vars['template_page'])->source());
 
 		// Cut fixed anchors
 		$vars['msg'] = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/m', '$1$2', $vars['msg']);
@@ -172,7 +173,7 @@ function plugin_edit_preview()
 	if ($postdata) {
 		$postdata = make_str_rules($postdata);
 		$postdata = explode("\n", $postdata);
-		$postdata = drop_submit(convert_html($postdata));
+		$postdata = drop_submit(RendererFactory::factory($postdata));
 		$body .= '<div id="preview">' . $postdata . '</div>' . "\n";
 	}
 	$body .= edit_form($page, $post['msg'], $post['digest'], FALSE);
@@ -189,7 +190,7 @@ function plugin_edit_inline()
 	global $vars, $fixed_heading_edited;
 	global $_symbol_paraedit, $_symbol_paraguiedit;
 
-	if (!$fixed_heading_edited || is_freeze($vars['page']) || auth::check_role('readonly')) {
+	if (!$fixed_heading_edited || is_freeze($vars['page']) || Auth::check_role('readonly')) {
 		return '';
 	}
 
@@ -244,6 +245,7 @@ function plugin_edit_write()
 	$digest = isset($vars['digest']) ? $vars['digest'] : null;
 	$partid = isset($vars['id'])     ? $vars['id']     : null;
 	$notimestamp = isset($vars['notimestamp']) && $vars['notimestamp'] !== null;
+	$wiki = new Wiki($page);
 
 	// SPAM Check (Client(Browser)-Server Ticket Check)
 	if ( isset($vars['encode_hint']) && $vars['encode_hint'] !== PKWK_ENCODING_HINT )
@@ -275,7 +277,7 @@ function plugin_edit_write()
 	$retvars = array();
 
 	// Collision Detection
-	$oldwiki = FileFactory::Wiki($page);
+	$oldwiki = WikiFactory::Wiki($page);
 	$oldpagesrc = $oldwiki->get(true);
 	$oldpagemd5 = $oldwiki->digest();
 
@@ -300,8 +302,8 @@ function plugin_edit_write()
 	if ($add) {
 		// Compat: add plugin and adding contents
 		$postdata = (isset($post['add_top']) && $post['add_top'])
-			? $msg . "\n\n" . FileFactory::Wiki($page)->source()
-			: FileFactory::Wiki($page)->source() . "\n\n" . $msg;
+			? $msg . "\n\n" . WikiFactory::Wiki($page)->source()
+			: WikiFactory::Wiki($page)->source() . "\n\n" . $msg;
 	} else {
 		// Edit or Remove
 		$postdata = & $msg;
@@ -309,7 +311,7 @@ function plugin_edit_write()
 
 	// NULL POSTING, OR removing existing page
 	if (empty($postdata)) {
-		FileFactory::Wiki($page)->set($postdata);
+		$wiki->set($postdata);
 		$retvars['msg'] = $_title_deleted;
 		$retvars['body'] = str_replace('$1', htmlsc($page), $_title_deleted);
 		if ($trackback) tb_delete($page);
@@ -319,14 +321,14 @@ function plugin_edit_write()
 	// $notimeupdate: Checkbox 'Do not change timestamp'
 //	$notimestamp = isset($vars['notimestamp']) && $vars['notimestamp'] != '';
 //	if ($notimeupdate > 1 && $notimestamp && ! pkwk_login($vars['pass'])) {
-	if ($notimeupdate > 1 && $notimestamp && auth::check_role('role_adm_contents') && !pkwk_login($vars['pass'])) {
+	if ($notimeupdate > 1 && $notimestamp && Auth::check_role('role_adm_contents') && !pkwk_login($vars['pass'])) {
 		// Enable only administrator & password error
 		$retvars['body']  = '<p><strong>' . $_msg_invalidpass . '</strong></p>' . "\n";
 		$retvars['body'] .= edit_form($page, $msg, $digest, FALSE);
 		return $retvars;
 	}
 
-	page_write($page, $postdata, $notimeupdate != 0 && $notimestamp);
+	$wiki->set($postdata, $notimeupdate != 0 && $notimestamp);
 
 	if (isset($vars['refpage']) && $vars['refpage'] !== '') {
 		$url = ($partid) ? get_page_location_uri($vars['refpage'],'',rawurlencode($partid)) : get_page_location_uri($vars['refpage']);
@@ -376,7 +378,7 @@ function plugin_edit_cancel()
 function plugin_edit_honeypot()
 {
 	// SPAM Logging
-	honeypot_write();
+	Utility::dump();
 
 	// Same as "Cancel" action
 	return plugin_edit_cancel();

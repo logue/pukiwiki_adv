@@ -12,7 +12,7 @@
 
 /////////////////////////////////////////////////
 // User defines
-
+use PukiWiki\Lib\Auth\Auth;
 // Allow using resture function
 define('PLUGIN_DUMP_ALLOW_RESTORE', TRUE); // FALSE, TRUE
 
@@ -51,14 +51,14 @@ function plugin_dump_action()
 	global $vars, $auth_users, $realm;
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits this');
-	if (auth::check_role('readonly')) die_message( T_("PKWK_READONLY prohibits this") );
+	if (Auth::check_role('readonly')) die_message( T_("PKWK_READONLY prohibits this") );
 
 	$msg = (PLUGIN_DUMP_ALLOW_RESTORE) ? T_("dump & restore") : T_("dump");
 	$body = '';
 
- 	while (auth::check_role('role_adm')) {
+ 	while (Auth::check_role('role_adm')) {
 		unset($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
-		if (!auth::auth_pw($auth_users))
+		if (!Auth::auth_pw($auth_users))
 		{
 			header('WWW-Authenticate: Basic realm="'.$realm.'"');
 			header( 'HTTP/1.0 401 Unauthorized' );

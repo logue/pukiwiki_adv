@@ -7,13 +7,14 @@
  * @version     $Id: hatena.inc.php,v 0.14.1 2010/12/26 17:17:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
-require_once(LIB_DIR . 'auth_api.cls.php');
 
 defined('HATENA_URL_AUTH')	or define('HATENA_URL_AUTH','http://auth.hatena.ne.jp/auth');
 defined('HATENA_URL_XML')	or define('HATENA_URL_XML', 'http://auth.hatena.ne.jp/api/auth.xml');
 defined('HATENA_URL_PROFILE')	or define('HATENA_URL_PROFILE','http://www.hatena.ne.jp/user?userid=');
-
-class auth_hatena extends auth_api
+defined('ROLE_AUTH_HATENA')          or define('ROLE_AUTH_HATENA', 5.3);
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Auth\AuthApi;
+class auth_hatena extends AuthApi
 {
 	var $sec_key,$api_key;
 
@@ -126,7 +127,7 @@ EOD;
 	}
 
 	// 他でログイン
-	$auth_key = auth::get_user_name();
+	$auth_key = Auth::get_user_name();
 	if (! empty($auth_key['nick'])) return '';
 
 	// ボタンを表示するだけ
@@ -170,7 +171,7 @@ function plugin_hatena_inline()
 			'(<a href="'.$logout_url.'">'.$_hatena_msg['msg_logout'].'</a>)';
 	}
 
-	$auth_key = auth::get_user_name();
+	$auth_key = Auth::get_user_name();
 	if (! empty($auth_key['nick'])) return $_hatena_msg['msg_hatena'];
 
 	$login_url = plugin_hatena_jump_url(1);
@@ -230,12 +231,12 @@ function plugin_hatena_get_user_name()
 {
 	global $auth_api;
 	// role,name,nick,profile
-	if (! $auth_api['hatena']['use']) return array('role'=>ROLE_GUEST,'nick'=>'');
+	if (! $auth_api['hatena']['use']) return array('role'=>Auth::ROLE_GUEST,'nick'=>'');
 	$obj = new auth_hatena();
 	$msg = $obj->auth_session_get();
 
 	if (! empty($msg['name'])) return array('role'=>ROLE_AUTH_HATENA,'nick'=>$msg['name'],'profile'=>HATENA_URL_PROFILE.$msg['name'],'key'=>$msg['name']);
-	return array('role'=>ROLE_GUEST,'nick'=>'');
+	return array('role'=>Auth::ROLE_GUEST,'nick'=>null);
 }
 /* End of file hatena.inc.php */
 /* Location: ./wiki-common/plugin/hatena.inc.php */

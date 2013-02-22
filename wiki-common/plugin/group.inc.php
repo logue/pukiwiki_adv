@@ -6,6 +6,8 @@
  * @version     $Id: group.inc.php,v 0.1 2008/08/02 05:20:00 upk Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License(GPL2)
  */
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Renderer\RendererFactory;
 
 function plugin_group_init()
 {
@@ -21,7 +23,7 @@ function plugin_group_convert()
 {
 	global $_group_msg;
 
-	$auth_key = auth::get_user_info();
+	$auth_key = Auth::get_user_info();
 	if (empty($auth_key['group'])) return '';
 
 	$argv = func_get_args();
@@ -38,7 +40,7 @@ EOD;
 
 	$msg = $argv[$i-1];
 	array_pop($argv);
-	if (in_array($auth_key['group'], $argv)) return convert_html( str_replace("\r", "\n", $msg) );
+	if (in_array($auth_key['group'], $argv)) return RendererFactory::factory( str_replace("\r", "\n", $msg) );
 	return '';
 }
 

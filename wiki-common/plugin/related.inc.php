@@ -9,7 +9,7 @@
 //
 // Related plugin: Show Backlinks for the page
 
-use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\Factory;
 use PukiWiki\Lib\Relational;
 
 function plugin_related_init(){
@@ -37,7 +37,7 @@ function make_related($_page, $tag = '')
 {
 	global $vars;
 
-	$links = FileFactory::Wiki($_page)->getRelated();
+	$links = Factory::Wiki($_page)->related();
 
 	if ($tag) {
 		ksort($links, SORT_STRING);	// Page name, alphabetical order
@@ -47,7 +47,7 @@ function make_related($_page, $tag = '')
 
 	$_links = array();
 	foreach ($links as $page=>$lastmod) {
-		$wiki = FileFactory::Wiki($page);
+		$wiki = Factory::Wiki($page);
 		if ($wiki->isHidden()) continue;
 
 		$_links[] = '<a href="' . get_page_uri($page) . '">' . htmlsc($page) . '</a>' . $wiki->passage(true,true);
@@ -94,7 +94,7 @@ function plugin_related_action()
 	}else{
 		// Hide by array keys (not values)
 		foreach(array_keys($data) as $page) {
-			$wiki = FileFactory::Wiki($page);
+			$wiki = Factory::Wiki($page);
 			if (! $wiki->isEditable() || $wiki->isHidden()) {
 				unset($data[$page]);
 			}
@@ -105,7 +105,7 @@ function plugin_related_action()
 		$retval[] = '<ul>' . "\n";
 		foreach ($data as $page=>$time) {
 			$retval[] = ' <li><a href="' . get_page_uri($page) . '">' . htmlsc($page) .
-				'</a> ' . FileFactory::Wiki($page)->passage(true,true) . '</li>';
+				'</a> ' . Factory::Wiki($page)->passage(true,true) . '</li>';
 		}
 		$retval[] .= '</ul>' . "\n";
 	}

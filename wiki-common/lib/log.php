@@ -10,7 +10,9 @@
  */
 // require_once('proxy.cls.php');
 use PukiWiki\Lib\NetBios;
-use PukiWiki\Auth\AuthApi;
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Auth\AuthApi;
+use PukiWiki\Lib\File\FileUtility;
 
 //require_once(LIB_DIR . 'auth_api.cls.php');
 
@@ -725,10 +727,12 @@ class log
 		}
 
 		// ページ毎の場合
-		$pages = get_existpages(LOG_DIR.'update/');
+		$pages = FileUtility::getExists(LOG_DIR.'update/',true);
 		$sum = array();
-		foreach($pages as $file => $_page) {
-			$sum[] = str_replace("\r", '', file(LOG_DIR.'update/'.$file));
+		if (is_array($pages)){
+			foreach($pages as $file => $_page) {
+				$sum[] = str_replace("\r", '', file(LOG_DIR.'update/'.$file));
+			}
 		}
 		unset($pages);
 		return $sum;

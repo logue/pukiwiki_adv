@@ -8,10 +8,12 @@
 //
 // back plugin
 
+use PukiWiki\Lib\Auth\Auth;
+
 // Allow specifying back link by page name and anchor, or
 // by relative or site-abusolute path
 // define('PLUGIN_BACK_ALLOW_PAGELINK', PKWK_SAFE_MODE); // FALSE(Compat), TRUE
-define('PLUGIN_BACK_ALLOW_PAGELINK', auth::check_role('safemode')); // FALSE(Compat), TRUE
+define('PLUGIN_BACK_ALLOW_PAGELINK', Auth::check_role('safemode')); // FALSE(Compat), TRUE
 
 // Allow JavaScript (Compat)
 define('PLUGIN_BACK_ALLOW_JAVASCRIPT', TRUE); // TRUE(Compat), FALSE, PKWK_ALLOW_JAVASCRIPT

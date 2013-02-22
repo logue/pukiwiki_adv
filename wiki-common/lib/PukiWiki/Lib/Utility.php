@@ -6,136 +6,62 @@
 // License: GPL v2 or (at your option) any later version
 namespace PukiWiki\Lib;
 
-use Zend\Math\Rand;
-use PukiWiki\Lib\TimeZone;
-use PukiWiki\Lib\Lang\AcceptLanguage;
-use PukiWiki\Lib\Router;
+
+use PukiWiki\Lib\Renderer\RendererDefines;
 use PukiWiki\Lib\Renderer\InlineFactory;
+use PukiWiki\Lib\Router;
+
+use Zend\Math\Rand;
 
 class Utility{
-	// InterWikiName
-	const INTERWIKINAME_PATTERN = '(\[\[)?((?:(?!\s|:|\]\]).)+):(.+)(?(1)\]\])';
-	// WikiName
-	const WIKINAME_PATTERN = '(?:[A-Z][a-z][¡-ÿ][Ā-ſ]+){2,}(?!\w)';
-	// BracketName
-	const BRAKETNAME_PATTERN = '(?!\s):?[^\r\n\t\f\[\]<>#&":]+:?(?<!\s)';
-	// Note
-	const NOTE_PATTERN = '\(\(((?:(?>(?:(?!\(\()(?!\)\)(?:[^\)]|$)).)+)|(?R))*)\)\)';
 	// チケット名
 	const TICKET_NAME = 'ticket';
-
+	// ブラックリストに保存
+	const SAVE_BLACKLIST = true;
+	// スパムログを使用する
+	const SPAM_LOGGING = true;
+	// スパムのカウント
+	const SPAM_COUNT = 2;
+	// スパムの正規表現マッチパターン
+	const SPAM_PATTERN = '#(?:cialis|hydrocodone|viagra|levitra|tramadol|xanax|\[/link\]|\[/url\])#i';
 	/**
-	 * 基準となる時刻を設定する
-	 * @global type $language
-	 * @global type $use_local_time
-	 * @return array
-	 */
-	public static function initTime() {
-		global $language, $use_local_time;
-
-		if ($use_local_time) {
-			list($zone, $zonetime) = self::setTimeZone( DEFAULT_LANG );
-		} else {
-			list($zone, $zonetime) = self::setTimeZone( $language );
-			list($l_zone, $l_zonetime) = self::getTimeZoneLocal();
-			if ($l_zonetime != '' && $zonetime != $l_zonetime) {
-				$zone = $l_zone;
-				$zonetime = $l_zonetime;
-			}
-		}
-
-		foreach(array('UTIME'=>time(),'MUTIME'=>getmicrotime(),'ZONE'=>$zone,'ZONETIME'=>$zonetime) as $key => $value ){
-			defined($key) or define($key,$value);
-		}
-		return array($zone, $zonetime);
-	}
-	/**
-	 * 言語からTimeZoneを指定
-	 * @param string $lang 言語
-	 * @return array
-	 */
-	static function setTimeZone($lang='')
-	{
-		if (empty($lang)) {
-			return array('UTC', 0);
-		}
-		$l = AcceptLanguage::splitLocaleStr( $lang );
-
-		// When the name of a country is uncertain (国名が不明な場合)
-		if (empty($l[2])) {
-			$obj_l2c = new Lang2Country();
-			$l[2] = $obj_l2c->getLang2Country($l[1]);
-			if (empty($l[2])) {
-				return array('UTC', 0);
-			}
-		}
-
-		$obj = new TimeZone();
-		$obj->set_datetime(UTIME); // Setting at judgment time. (判定時刻の設定)
-		$obj->set_country($l[2]); // The acquisition country is specified. (取得国を指定)
-
-		// With the installation country in case of the same
-		// 設置者の国と同一の場合
-		if ($lang == DEFAULT_LANG) {
-			if (defined('DEFAULT_TZ_NAME')) {
-				$obj->set_tz_name(DEFAULT_TZ_NAME);
-			}
-		}
-
-		list($zone, $zonetime) = $obj->get_zonetime();
-
-		if ($zonetime == 0 || empty($zone)) {
-			return array('UTC', 0);
-		}
-
-		return array($zone, $zonetime);
-	}
-	/**
-	 * ローカルのTimeZoneを取得
-	 * @return array
-	 */
-	static function getTimeZoneLocal()
-	{
-		if (! isset($_COOKIE['timezone'])) return array('','');
-
-		$tz = trim($_COOKIE['timezone']);
-
-		$offset = substr($tz,0,1);
-		switch ($offset) {
-			case '-':
-			case '+':
-				$tz = substr($tz,1);
-				break;
-			default:
-				$offset = '+';
-		}
-
-		$h = substr($tz,0,2);
-		$i = substr($tz,2,2);
-
-		$zonetime = ($h * 3600) + ($i * 60);
-		$zonetime = ($offset == '-') ? $zonetime * -1 : $zonetime;
-
-		return array($offset.$tz, $zonetime);
-	}
-	/**
-	 * ページ作成の所要時間を計算
+	 * 乱数を生成して暗号化時のsaltを生成する
+	 * @param boolean $flush 再生成するか
 	 * @return string
 	 */
-	public static function getTakeTime(){
-		// http://pukiwiki.sourceforge.jp/dev/?BugTrack2%2F251
-		return sprintf('%01.03f', getmicrotime() - MUTIME);
+	public static function getTicket($flush = FALSE)
+	{
+		global $cache;
+		static $ticket;
+
+		if ($flush){
+			unset($ticket);
+			$cache['wiki']->removeItem(self::TICKET_NAME);
+		}
+
+		if (isset($ticket)){
+			return $ticket;
+		}else if ($cache['wiki']->hasItem(self::TICKET_NAME)) {
+			$ticket = $cache['wiki']->getItem(self::TICKET_NAME);
+		}else{
+			// 32バイトの乱数を生成
+			$ticket = Rand::getString(32);
+			$cache['wiki']->setItem(self::TICKET_NAME, $ticket);
+		}
+		return $ticket;
 	}
 	/**
 	 * IPアドレスを取得
 	 * @return string
 	 */
 	public static function getRemoteIp(){
+		// CloudFlareから送られてきたIP、リバースプロクシから送られてきたIP、リモートIPの順番で読み込む
 		static $array_var = array('HTTP_CF_CONNECTING_IP', 'HTTP_X_REMOTE_ADDR','REMOTE_ADDR'); // HTTP_X_FORWARDED_FOR
 		foreach($array_var as $x){
 			if (isset($_SERVER[$x])) return $_SERVER[$x];
 		}
-		return '';
+		self::dieMessage('Could not get IP address.');	// IPアドレスが取得できない場合、念のため処理を止める
+		// return null;
 	}
 	/**
 	 * htmlspacialcharsのエイリアス（PHP5.4対策）
@@ -185,7 +111,7 @@ class Utility{
 
 		// Cut footnotes and tags
 		if ($strip === TRUE)
-			$str = self::stripHtmlTags(InlineFactory::factory(preg_replace('/'.self::NOTE_PATTERN.'/ex', '', $str)));
+			$str = self::stripHtmlTags(InlineFactory::factory(preg_replace('/'.RendererDefines::NOTE_PATTERN.'/ex', '', $str)));
 
 		return $id;
 	}
@@ -267,12 +193,30 @@ class Utility{
 		return false;
 	}
 	/**
+	 * 簡易スパム判定
+	 * @param int $count いくつ存在した時にスパムとみなすか
+	 * @return boolean
+	 */
+	public static function isSpamPost($count=0) {
+		global $vars;
+
+		if ($count <= 0) {
+			$count = intval(self::SPAM_COUNT);
+		}
+		$matches = array();
+		foreach(array_keys($vars) as $idx) {
+			if (preg_match_all(self::SPAM_PATTERN, $vars[$idx], $matches) >= $count)
+				return TRUE;
+		}
+		return FALSE;
+	}
+	/**
 	 * InterWikiNameかをチェック
 	 * @param string $str
 	 * @return boolean
 	 */
 	public static function isInterWiki($str){
-		return preg_match('/^' . self::INTERWIKINAME_PATTERN . '$/', $str);
+		return preg_match('/^' . RendererDefines::INTERWIKINAME_PATTERN . '$/', $str);
 	}
 	/**
 	 * ブラケット名か
@@ -280,7 +224,7 @@ class Utility{
 	 * @return boolean
 	 */
 	public static function isBracketName($str){
-		return preg_match('/^(?!\/)' . self::BRAKETNAME_PATTERN . '$(?<!\/$)/', $str);
+		return preg_match('/^(?!\/)' . RendererDefines::BRACKETNAME_PATTERN . '$(?<!\/$)/', $str);
 	}
 	/**
 	 * Wiki名か
@@ -288,7 +232,7 @@ class Utility{
 	 * @return boolean
 	 */
 	public static function isWikiName($str){
-		return preg_match('/^' . self::WIKINAME_PATTERN . '$/', $str);
+		return preg_match('/^' . RendererDefines::WIKINAME_PATTERN . '$/', $str);
 	}
 	/**
 	 * Remove null(\0) bytes from variables
@@ -356,30 +300,20 @@ class Utility{
 		return preg_replace('#<!--autolink--><a [^>]+>|</a><!--/autolink-->#', '', $str);
 	}
 	/**
-	 * 乱数を生成して暗号化時のsaltを生成する
-	 * @param boolean $flush 再生成するか
+	 * 他のページを読み込むときに余計なものを取り除く
+	 * @param string $str
 	 * @return string
 	 */
-	public static function getTicket($flush = FALSE)
-	{
-		global $cache;
-		static $ticket;
+	public static function replaceFilter($str){
+		global $filter_rules;
+		static $patternf, $replacef;
 
-		if ($flush){
-			unset($ticket);
-			$cache['wiki']->removeItem(self::TICKET_NAME);
+		if (!isset($patternf)) {
+			$patternf = array_map(create_function('$a','return "/$a/";'), array_keys($filter_rules));
+			$replacef = array_values($filter_rules);
+			unset($filter_rules);
 		}
-
-		if (isset($ticket)){
-			return $ticket;
-		}else if ($cache['wiki']->hasItem(self::TICKET_NAME)) {
-			$ticket = $cache['wiki']->getItem(self::TICKET_NAME);
-		}else{
-			// 32バイトの乱数を生成
-			$ticket = Rand::getString(32);
-			$cache['wiki']->setItem(self::TICKET_NAME, $ticket);
-		}
-		return $ticket;
+		return preg_replace($patternf, $replacef, $str);
 	}
 	/**
 	 * ページリンクからページ名とリンクを取得（アンカーは削除）
@@ -413,19 +347,19 @@ class Utility{
 	 * @param string $title エラーのタイトル
 	 * @param int $http_code 出力するヘッダー
 	 */
-	public static function dieMessage($msg, $error_title='', $http_code = 500){
+	public static function dieMessage($msg = '', $error_title='', $http_code = 500){
 		global $skin_file, $page_title, $_string, $_title, $_button, $vars;
 
 		$title = !empty($error_title) ? $error_title : $_title['error'];
 		$page = $_title['error'];
 
-		if (PKWK_WARNING !== true){	// PKWK_WARNINGが有効でない場合は、詳細なエラーを隠す
+		if (PKWK_WARNING !== true || empty($msg)){	// PKWK_WARNINGが有効でない場合は、詳細なエラーを隠す
 			$msg = $_string['error_msg'];
 		}
 		$ret = array();
 		$ret[] = '<p>[ ';
 		if ( isset($vars['page']) && !empty($vars['page']) ){
-			$ret[] = '<a href="' . get_page_location_uri($vars['page']) .'">'.$_button['back'].'</a> | ';
+			$ret[] = '<a href="' . Router::get_page_location_uri($vars['page']) .'">'.$_button['back'].'</a> | ';
 			$ret[] = '<a href="' . Router::get_cmd_uri('edit',$vars['page']) . '">Try to edit this page</a> | ';
 		}
 		$ret[] = '<a href="' . get_cmd_uri() . '">Return to FrontPage</a> ]</p>';
@@ -503,6 +437,45 @@ class Utility{
 		$html[] = '</html>';
 		echo join("\n",$html);
 		exit;
+	}
+	/**
+	 * ダンプ
+	 */
+	public static function dump($type = 'honeypot.log') {
+		global $get, $post, $vars, $cookie;
+
+		// Logging for SPAM Address
+		// NOTE: Not recommended use Rental Server
+		if (self::SAVE_BLACKLIST === TRUE) {
+			$line = array(
+				self::getRemoteIp(),
+				UTIME,
+				$type,
+				$_SERVER['HTTP_USER_AGENT']
+			);
+			error_log( join("\t",$line) . "\n", 3, CACHE_DIR . 'blacklist.log');
+			unset($line);
+		}
+
+		if (self::SPAM_LOGGING === TRUE){
+			// Logging for SPAM Report
+			// NOTE: Not recommended use Rental Server
+			$lines = array(
+				'----' . date('Y-m-d H:i:s', time()),
+				'[ADDR]' . self::getRemoteIp() . "\t" . $_SERVER['HTTP_USER_AGENT'],
+				'[SESS]',
+				var_export($cookie, TRUE),
+				'[GET]',
+				var_export($get, TRUE),
+				'[POST]',
+				var_export($post, TRUE),
+				'[VARS]',
+				var_export($vars, TRUE)
+			);
+			error_log( join("\n",$lines) . "\n", 3, CACHE_DIR . $type . '.log');
+			unset($lines);
+		}
+		self::dieMessage('Spam Protection','Spam Protection', 500);
 	}
 }
 

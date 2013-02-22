@@ -6,6 +6,7 @@
 // License: GPL v2
 //
 // XML-Rpc Server plugin
+use PukiWiki\Lib\Auth\Auth;
 
 defined('XMLRPC_CACHE') or define('XMLRPC_CACHE', CACHE_DIR.'xmlrpc.cache');
 
@@ -180,7 +181,7 @@ class WikiRpcService{
 	public function getPageVersion( $pagename, $version ){
 		$backup = new PukiWiki\Lib\File\BackupFile($pagename);
 		$ret = $backup->getBackup($version);
-		auth::is_role_page($ret[$version]['data']);
+		Auth::is_role_page($ret[$version]['data']);
 		return join("\n", $ret[$version]['data']);
 	}
 	/**
@@ -203,7 +204,7 @@ class WikiRpcService{
 	public function getPageHTMLVersion( $pagename, $version ){
 		$backup = new PukiWiki\Lib\File\BackupFile($pagename);
 		$ret = $backup->getBackup($version);
-		auth::is_role_page($ret[$version]['data']);
+		Auth::is_role_page($ret[$version]['data']);
 		return convert_html(join("\n", $ret[$version]['data']));
 	}
 	/**

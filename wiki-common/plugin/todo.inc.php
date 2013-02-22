@@ -30,7 +30,7 @@
  * 2008-06-25 Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
  *            - NOTICE 対策
  */
-
+use PukiWiki\Lib\Auth\Auth;
 defined('TODO_LABEL_PREFIX') or define('TODO_LABEL_PREFIX','+');
 
 /***************************************************************************
@@ -119,7 +119,7 @@ function todo_search($vars, $page, $mark)
 	if ($page == "''") $page = '';
 
 	// 検索対象を選択
-	foreach (auth::get_existpages() as $file => $name) {
+	foreach (Auth::get_existpages() as $file => $name) {
 		if (strncmp($name, $page, strlen($page)) == 0) {
 			$scan[$file] = $name;
 		}

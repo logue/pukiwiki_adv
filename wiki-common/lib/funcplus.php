@@ -13,59 +13,6 @@ defined('FUNC_BLACKLIST')	or define('FUNC_BLACKLIST', TRUE);
 defined('FUNC_SPAMREGEX')	or define('FUNC_SPAMREGEX', '#(?:cialis|hydrocodone|viagra|levitra|tramadol|xanax|\[/link\]|\[/url\])#i');
 defined('FUNC_SPAMCOUNT')	or define('FUNC_SPAMCOUNT', 2);
 
-// SPAM check
-function is_spampost($array, $count=0)
-{
-	global $vars;
-
-	if ($count <= 0) {
-		$count = intval(FUNC_SPAMCOUNT);
-	}
-	$matches = array();
-	foreach($array as $idx) {
-		if (preg_match_all(FUNC_SPAMREGEX, $vars[$idx], $matches) >= $count)
-			return TRUE;
-	}
-	return FALSE;
-}
-
-
-// SPAM logging
-function honeypot_write()
-{
-	global $get, $post, $vars, $cookie;
-
-	// Logging for SPAM Address
-	// NOTE: Not recommended use Rental Server
-	if ((FUNC_SPAMLOG === TRUE || FUNC_BLACKLIST === TRUE) && version_compare(PHP_VERSION, '4.2.0', '>=')) {
-		error_log(get_remoteip() . "\t" . UTIME . "\t" . $_SERVER['HTTP_USER_AGENT'] . "\n", 3, CACHE_DIR . 'blacklist.log');
-	}
-
-	// Logging for SPAM Report
-	// NOTE: Not recommended use Rental Server
-	if (FUNC_SPAMLOG === TRUE && version_compare(PHP_VERSION, '4.2.0', '>=')) {
-		error_log("----" . date('Y-m-d H:i:s', time()) . "\n", 3, CACHE_DIR . 'honeypot.log');
-		error_log("[ADDR]" . get_remoteip() . "\t" . $_SERVER['HTTP_USER_AGENT'] . "\n", 3, CACHE_DIR . 'honeypot.log');
-		error_log("[SESS]\n" . var_export($cookie, TRUE) . "\n", 3, CACHE_DIR . 'honeypot.log');
-		error_log("[GET]\n"  . var_export($get,	TRUE) . "\n", 3, CACHE_DIR . 'honeypot.log');
-		error_log("[POST]\n" . var_export($post,   TRUE) . "\n", 3, CACHE_DIR . 'honeypot.log');
-		error_log("[VARS]\n" . var_export($vars,   TRUE) . "\n", 3, CACHE_DIR . 'honeypot.log');
-	}
-}
-
-// インクルードで余計なものはソースから削除する
-function convert_filter($str)
-{
-	global $filter_rules;
-	static $patternf, $replacef;
-
-	if (!isset($patternf)) {
-		$patternf = array_map(create_function('$a','return "/$a/";'), array_keys($filter_rules));
-		$replacef = array_values($filter_rules);
-		unset($filter_rules);
-	}
-	return preg_replace($patternf, $replacef, $str);
-}
 
 function get_fancy_uri()
 {
@@ -79,8 +26,6 @@ function get_fancy_uri()
 
 	return $script;
 }
-
-
 
 function load_init_value($name,$must=0)
 {
@@ -136,14 +81,6 @@ function add_skindir($skin_name)
 	die_message('Skin File:<var>'.$skin_name.'</var> is not found or not readable. Please check <var>SKIN_DIR</var> value. (NOT <var>SKIN_URI</var>. )');
 }
 
-function is_ignore_page($page)
-{
-	global $navigation,$whatsnew,$whatsdeleted,$interwiki,$menubar,$sidebar,$headarea,$footarea;
-
-	$ignore_regrex = '/['.$navigation.'|'.$whatsnew.'|'.$whatsdeleted.'|'.
-		$interwiki.'|'.$menubar.'|'.$sidebar.'|'.$headarea.'|'.$footarea.']$/';
-	return (preg_match($ignore_regrex, $page)) ? TRUE : FALSE;
-}
 
 function is_localIP($ip)
 {

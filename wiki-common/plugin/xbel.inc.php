@@ -7,7 +7,7 @@
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  *
  */
-
+use PukiWiki\Lib\Auth\Auth;
 defined('XBEL_PREF_PAGE') or define('XBEL_PREF_PAGE', 'Favorite');
 
 function plugin_xbel_init()
@@ -29,7 +29,7 @@ function plugin_xbel_action()
 	$adm = (empty($vars['adm'])) ? 'page' : $vars['adm'];
 
 	// ユーザ認証されていない
-	$id = auth::check_auth();
+	$id = Auth::check_auth();
 	if (empty($id)) {
 		$adm = 'recent';
 	}
@@ -80,7 +80,7 @@ function plugin_xbel_convert()
 	global $_xbel_msg;
 
 	// ユーザ認証されていない
-	$id = auth::check_auth();
+	$id = Auth::check_auth();
 	if (empty($id)) return '';
 
 	$argv = func_get_args();
@@ -231,7 +231,7 @@ EOD;
 	function get_data_prefix($pref)
 	{
 		static $pages;
-		if (!isset($pages)) $pages = auth::get_existpages();
+		if (!isset($pages)) $pages = Auth::get_existpages();
 
 		$rc = array();
 

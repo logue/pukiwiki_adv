@@ -10,7 +10,7 @@
  * @version	$Id: votex.inc.php,v 1.5 2007-06-05 13:23:20Z sonots $
  * @package	plugin
  */
-
+use PukiWiki\Lib\Auth\Auth;
 /**
  *  votex plugin class
  *
@@ -74,7 +74,7 @@ class PluginVotex
 		global $vars, $defaultpage, $_string;
 
 		if (method_exists('auth', 'check_role')) { // Plus!
-			if (auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
+			if (Auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
 		} else {
 			if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
 		}
@@ -128,7 +128,7 @@ class PluginVotex
 	{
 		global $vars, $defaultpage, $_string;
 		if (method_exists('auth', 'check_role')) { // Plus!
-			if (auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
+			if (Auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
 		} else {
 			if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
 		}

@@ -5,7 +5,7 @@
 // $Id: menu.inc.php,v 1.10.9 2011/02/05 11:06:00 Logue Exp $
 //
 
-use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\Lib\Factory;
 use PukiWiki\Lib\Renderer\RendererFactory;
 
 // サブメニューを使用する
@@ -53,7 +53,7 @@ function plugin_menu_convert()
 				array_pop($path);
 			}
 		}
-		$wiki = FileFactory::Wiki($page);
+		$wiki = Factory::Wiki($page);
 
 		if (! $wiki->has()) {
 			return '';

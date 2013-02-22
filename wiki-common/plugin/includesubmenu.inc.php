@@ -7,6 +7,8 @@
 //
 // Including submenu 
 
+use PukiWiki\Lib\Factory;
+
 function plugin_includesubmenu_convert()
 {
 	global $vars;
@@ -49,12 +51,13 @@ function plugin_includesubmenu_convert()
 		//SubMenu無し
 		return "";
 	}
+	$wiki = WikiFactory::Wiki($SubMenuPageName);
 
-	$body = convert_html(get_source($SubMenuPageName));
+	$body = $wiki->render();
 
 	if ($ShowPageName) {
 		$s_page = htmlsc($SubMenuPageName);
-		$link = '<a href="' . get_cmd_uri('edit',$SubMenuPageName) . '">$s_page</a>';
+		$link = '<a href="' . $wiki->get_uri('edit') . '">$s_page</a>';
 		$body = "<h1>$link</h1>\n$body";
 	}
 	return $body;

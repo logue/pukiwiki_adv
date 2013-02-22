@@ -6,7 +6,7 @@
 
 define('MEMO_COLS', 60); // Columns of textarea
 define('MEMO_ROWS',  5); // Rows of textarea
-
+use PukiWiki\Lib\Auth\Auth;
 function plugin_memo_action()
 {
 	global $vars, $cols, $rows, $_string;
@@ -17,7 +17,7 @@ $_title_updated    = $_string['update'];
 $_msg_collided =  $_string['msg_collided'];
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	if (auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
+	if (Auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
 	if (! isset($vars['msg']) || $vars['msg'] == '') return;
 
 	$memo_body = preg_replace('/' . "\r" . '/', '', $vars['msg']);
@@ -87,7 +87,7 @@ function plugin_memo_convert()
 	$data = htmlsc(str_replace('\n', "\n", $data));
 
 	// if (PKWK_READONLY) {
-	if (auth::check_role('readonly')) {
+	if (Auth::check_role('readonly')) {
 		$_script = '';
 		$_submit = '';
 	} else {

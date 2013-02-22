@@ -7,16 +7,18 @@
  * @version     $Id: livedoor.inc.php,v 0.8.1 2010/12/26 17:24:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
-require_once(LIB_DIR . 'hash.php');
-require_once(LIB_DIR . 'auth_api.cls.php');
 
+use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Lib\Auth\AuthApi;
+require_once(LIB_DIR . 'hash.php');
+defined('ROLE_AUTH_LIVEDOOR')        or define('ROLE_AUTH_LIVEDOOR', 5.6);
 defined('LIVEDOOR_URL_AUTH')  or define('LIVEDOOR_URL_AUTH','http://auth.livedoor.com/login/');
 defined('LIVEDOOR_VERSION')   or define('LIVEDOOR_VERSION','1.0');
 defined('LIVEDOOR_PERMS')     or define('LIVEDOOR_PERMS','id');	// userhash or id
 defined('LIVEDOOR_URL_GETID') or define('LIVEDOOR_URL_GETID','http://auth.livedoor.com/rpc/auth');
 defined('LIVEDOOR_TIMEOUT')   or define('LIVEDOOR_TIMEOUT', 10*60); // 10min
 
-class auth_livedoor extends auth_api
+class auth_livedoor extends AuthApi
 {
 	var $sec_key,$app_key;
 
@@ -162,7 +164,7 @@ EOD;
 	}
 
 	// 他でログイン
-	$auth_key = auth::get_user_name();
+	$auth_key = Auth::get_user_name();
 	if (! empty($auth_key['nick'])) return '';
 
 	// ボタンを表示するだけ
@@ -212,7 +214,7 @@ function plugin_livedoor_inline()
 			'(<a href="'.$logout_url.'">'.$_livedoor_msg['msg_logout'].'</a>)';
 	}
 
-	$auth_key = auth::get_user_name();
+	$auth_key = Auth::get_user_name();
 	if (! empty($auth_key['nick'])) return $_livedoor_msg['msg_livedoor'];
 
 	$login_url = plugin_livedoor_jump_url(1);
@@ -271,13 +273,13 @@ function plugin_livedoor_get_user_name()
 {
 	global $auth_api;
 	// role,name,nick,profile
-	if (! $auth_api['livedoor']['use']) return array('role'=>ROLE_GUEST,'nick'=>'');
+	if (! $auth_api['livedoor']['use']) return array('role'=>Auth::ROLE_GUEST,'nick'=>'');
 	$obj = new auth_livedoor();
 	$msg = $obj->auth_session_get();
 	$info = 'http://www.livedoor.com/';
 	if (! empty($msg['livedoor_id']))
 		return array('role'=>ROLE_AUTH_LIVEDOOR,'nick'=>$msg['livedoor_id'],'key'=>$msg['livedoor_id'],'profile'=>$info);
-	return array('role'=>ROLE_GUEST,'nick'=>'');
+	return array('role'=>Auth::ROLE_GUEST,'nick'=>'');
 }
 
 /* End of file livedoor.inc.php */

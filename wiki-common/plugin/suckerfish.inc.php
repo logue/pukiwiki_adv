@@ -7,7 +7,7 @@
  :author [:name "Logue"; :homepage <http://logue.be/> ];
  :license <http://www.gnu.org/licenses/gpl-3.0.html>;
 */
-
+use PukiWiki\Lib\Auth\Auth;
 // $Id: sukerfish.inc.php,v 1.0.7 2011/12/12 22:26:00 Logue Exp $
 
 // Sukerfish Popup Menu Plugin for PukiWiki.
@@ -179,9 +179,9 @@ function plugin_suckerfish_keyword($name){
 	
 	// $is_read = (arg_check('read') && is_page($vars['page']));
 	$is_read = is_page($vars['page']);
-	$is_readonly = auth::check_role('readonly');
-	$is_safemode = auth::check_role('safemode');
-	$is_createpage = auth::is_check_role(PKWK_CREATE_PAGE);
+	$is_readonly = Auth::check_role('readonly');
+	$is_safemode = Auth::check_role('safemode');
+	$is_createpage = Auth::is_check_role(PKWK_CREATE_PAGE);
 
 	$num = func_num_args();
 	$args = $num ? func_get_args() : array();

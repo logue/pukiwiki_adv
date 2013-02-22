@@ -8,7 +8,7 @@
 // License: GPL v2 or (at your option) any later version
 //
 // Yet list plugin - Show a list of dangling links (not yet created)
-
+use PukiWiki\Lib\Auth\Auth;
 function plugin_yetlist_action()
 {
 //	global $_title_yetlist, $_err_notexist, $_symbol_noexists, $non_list;
@@ -20,7 +20,7 @@ function plugin_yetlist_action()
 	);
 
 	// Diff
-	$pages = array_diff(auth::get_existpages(CACHE_DIR, '.ref'), auth::get_existpages());
+	$pages = array_diff(Auth::get_existpages(CACHE_DIR, '.ref'), Auth::get_existpages());
 	if (empty($pages)) {
 		$retval['body'] = T_('All pages have been created.');
 		return $retval;
@@ -56,7 +56,7 @@ function plugin_yetlist_action()
 
 			$s_page = htmlsc($page);
 //			if (PKWK_READONLY) {
-			if (auth::check_role('readonly')) {
+			if (Auth::check_role('readonly')) {
 				$href = $s_page;
 			} else {
 				// Dangling link
