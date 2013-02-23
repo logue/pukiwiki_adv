@@ -41,8 +41,8 @@
 
 // ----
 
-use PukiWiki\Lib\Factory;
-use PukiWiki\Lib\Renderer\RendererFactory;
+use PukiWiki\Factory;
+use PukiWiki\Renderer\RendererFactory;
 
 // Default value of 'title|notitle' option
 defined('PLUGIN_INCLUDE_WITH_TITLE') or define('PLUGIN_INCLUDE_WITH_TITLE', TRUE);	// Default: TRUE(title)

@@ -11,7 +11,7 @@
 // Notice: This plugin based on official calendar2.inc.php r1.24 and Plus!'s minicalendar.inc.php.
 //         Adv. is rejected to original calendar.inc.php.
 
-use PukiWiki\Lib\Lang\Holiday\PublicHolidayFactory;
+use PukiWiki\Lang\Holiday\PublicHolidayFactory;
 
 defined('PLUGIN_CALENDAR_PAGENAME_FORMAT') or define('PLUGIN_CALENDAR_PAGENAME_FORMAT', '%04d-%02d-%02d');	// YYYY-MM-DD
 

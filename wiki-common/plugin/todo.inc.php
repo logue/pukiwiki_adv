@@ -30,7 +30,7 @@
  * 2008-06-25 Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
  *            - NOTICE 対策
  */
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 defined('TODO_LABEL_PREFIX') or define('TODO_LABEL_PREFIX','+');
 
 /***************************************************************************

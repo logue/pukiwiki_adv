@@ -15,10 +15,10 @@
 // &tooltip(<term>,[<用語集>]){<glossary>};
  <term>にマウスカーソルを当てると、<glossary>が出現する。
 */
-use PukiWiki\Lib\Factory;
-use PukiWiki\Lib\Renderer\Inline\Glossary;
-use PukiWiki\Lib\Renderer\RendererFactory;
-use PukiWiki\Lib\Utility;
+use PukiWiki\Factory;
+use PukiWiki\Renderer\Inline\Glossary;
+use PukiWiki\Renderer\RendererFactory;
+use PukiWiki\Utility;
 
 //========================================================
 function plugin_tooltip_init()

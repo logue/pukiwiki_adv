@@ -7,7 +7,7 @@
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  *
  */
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 
 function plugin_count_inline()
 {
@@ -36,7 +36,7 @@ function count_files($no=0, $pref='')
 	static $ext = array('.txt'  ,'.txt'       ,'.ref'     ,'.txt'  ,BACKUP_EXT,'.count');
 
 	// コンテンツ管理者以上は、全てのファイルを対象にする
-	if (! Auth::check_role('role_adm_contents')) {
+	if (! Auth::check_role('role_contents_admin')) {
 		$pages = get_existpages($dir[$no], $ext[$no]);
 	} else {
 		// 自分が閲覧できるページ数のみ戻す

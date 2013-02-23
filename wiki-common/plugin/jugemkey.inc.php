@@ -12,8 +12,8 @@ defined('ROLE_AUTH_JUGEMKEY')        or define('ROLE_AUTH_JUGEMKEY', 5.4);
 defined('JUGEMKEY_URL_AUTH')  or define('JUGEMKEY_URL_AUTH', 'https://secure.jugemkey.jp/?mode=auth_issue_frob');
 defined('JUGEMKEY_URL_TOKEN') or define('JUGEMKEY_URL_TOKEN','http://api.jugemkey.jp/api/auth/token');
 defined('JUGEMKEY_URL_USER')  or define('JUGEMKEY_URL_USER', 'http://api.jugemkey.jp/api/auth/user');
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Auth\AuthApi;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Auth\AuthApi;
 class auth_jugemkey extends AuthApi
 {
 	var $sec_key,$api_key;

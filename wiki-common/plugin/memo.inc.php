@@ -6,7 +6,7 @@
 
 define('MEMO_COLS', 60); // Columns of textarea
 define('MEMO_ROWS',  5); // Rows of textarea
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 function plugin_memo_action()
 {
 	global $vars, $cols, $rows, $_string;

@@ -4,7 +4,7 @@
 //
 // Filelist plugin: redirect to list plugin
 // cmd=filelist
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 function plugin_filelist_init()
 {
 	global $_filelist_msg;
@@ -25,7 +25,7 @@ function plugin_filelist_action()
 	global $vars;
 
 
-	if (! Auth::check_role('role_adm_contents'))
+	if (! Auth::check_role('role_contents_admin'))
 		return do_plugin_action('list');
 
 	if (!isset($vars['pass'])) return filelist_adm('');

@@ -7,7 +7,7 @@
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 require_once(LIB_DIR . 'auth.cls.php');
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 
 function plugin_mypage_init()
 {

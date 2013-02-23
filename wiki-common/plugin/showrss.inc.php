@@ -19,8 +19,8 @@ define('PLUGIN_SHOWRSS_USAGE', '#showrss(URI-to-RSS[,default|menubar|recent[,Cac
 defined('PLUGIN_SHOWRSS_SHOW_DESCRIPTION') or define('PLUGIN_SHOWRSS_SHOW_DESCRIPTION', true);
 
 define('PLUGIN_SHOWRSS_CACHE_PREFIX', 'showrss-');
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Renderer\Inline\Inline;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Renderer\Inline\Inline;
 use Zend\Http\ClientStatic;
 
 // Show related extensions are found or not

@@ -1,5 +1,5 @@
 <?php
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 /*
 |Auth::ROLE_ADMIN           |サイト管理者    |
 |Auth::ROLE_CONTENTS_ADMIN  |コンテンツ管理者|

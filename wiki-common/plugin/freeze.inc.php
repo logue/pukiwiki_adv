@@ -8,8 +8,8 @@
 // License: GPL v2 or (at your option) any later version
 //
 // Freeze(Lock) plugin
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\File\WikiFile;
+use PukiWiki\Auth\Auth;
+use PukiWiki\File\WikiFile;
 
 // Reserve 'Do nothing'. '^#freeze' is for internal use only.
 function plugin_freeze_convert() { return ''; }
@@ -39,7 +39,7 @@ function plugin_freeze_action()
 		$body = str_replace('$1', htmlsc(strip_bracket($page)),
 			$_title_isfreezed);
 
-	} else if ( ! Auth::check_role('role_adm_contents') || $pass !== NULL && Auth::login($pass) ) {
+	} else if ( ! Auth::check_role('role_contents_admin') || $pass !== NULL && Auth::login($pass) ) {
 		// Freeze
 		$postdata = $wiki->source();
 		$time = $wiki->getTime();	// タイムスタンプを取得

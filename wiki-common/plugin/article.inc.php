@@ -23,7 +23,7 @@
  を設定の上、ご使用ください。
 
  */
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 
 defined('PLUGIN_ARTICLE_COLS')           or define('PLUGIN_ARTICLE_COLS',	70); // テキストエリアのカラム数
 defined('PLUGIN_ARTICLE_ROWS')           or define('PLUGIN_ARTICLE_ROWS',	 5); // テキストエリアの行数

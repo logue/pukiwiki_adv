@@ -9,8 +9,8 @@
 // License: GPL version 2
 //
 // List plugin
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Renderer\RendererFactory;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Renderer\RendererFactory;
 function plugin_ls_convert()
 {
 	global $vars;

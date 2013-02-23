@@ -13,8 +13,8 @@
  */
 
 // 1day = 86400;
-use PukiWiki\Lib\Utility;
-use PukiWiki\Lib\Time;
+use PukiWiki\Utility;
+use PukiWiki\Time;
 
 function plugin_epoch_inline()
 {

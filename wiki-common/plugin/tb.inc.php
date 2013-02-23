@@ -17,7 +17,7 @@
  * plugin_tb_mode_view($tb_id)  ?__mode=view
  * plugin_tb_recent($line)
  */
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 // Trackback site check.(Is foreign site linked my site?)
 defined('PLUGIN_TB_SITE_CHECK') or define('PLUGIN_TB_SITE_CHECK', TRUE);
 // If trackback error, 'HTTP/1.0 400 Bad Request'

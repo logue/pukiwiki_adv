@@ -6,8 +6,8 @@
  * @version     $Id: group.inc.php,v 0.1 2008/08/02 05:20:00 upk Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License(GPL2)
  */
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Renderer\RendererFactory;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Renderer\RendererFactory;
 
 function plugin_group_init()
 {

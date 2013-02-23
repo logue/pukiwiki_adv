@@ -11,10 +11,10 @@ defined('PLUGIN_ADM_AUTH_WKGRP_USE_WRITE_FUNC') or define('PLUGIN_ADM_AUTH_WKGRP
 // 構成定義ファイル
 define('CONFIG_AUTH_WKGRP','auth/auth_wkgrp');
 
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Router;
-use PukiWiki\Lib\Utility;
-use PukiWiki\Lib\Renderer\RendererFactory;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Router;
+use PukiWiki\Utility;
+use PukiWiki\Renderer\RendererFactory;
 
 function plugin_adm_auth_wkgrp_init()
 {

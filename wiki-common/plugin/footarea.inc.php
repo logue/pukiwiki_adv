@@ -5,7 +5,7 @@
 // $Id: footarea.inc.php,v 1.6.7 2011/02/05 10:52:00 Logue Exp $
 //
 
-use PukiWiki\Lib\Renderer\RendererFactory;
+use PukiWiki\Renderer\RendererFactory;
 
 // サブメニューを使用する
 define('FOOT_ENABLE_SUBFOOT', TRUE);

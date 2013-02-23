@@ -3,9 +3,9 @@
 // $Id: list.inc.php,v 1.6.11 2011/09/25 15:54:00 Logue Exp $
 //
 // IndexPages plugin: Show a list of page names
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Factory;
-use PukiWiki\Lib\File\FileUtility;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Factory;
+use PukiWiki\File\FileUtility;
 
 defined('PKWK_SITEMAPS_CACHE') or define('PKWK_SITEMAPS_CACHE', 'sitemaps');
 
@@ -56,7 +56,7 @@ function plugin_list_action()
 			exit();
 		break;
 		case 'filelist' :
-			if (! Auth::check_role('role_adm_contents'))
+			if (! Auth::check_role('role_contents_admin'))
 				$filelist = TRUE;
 			else
 			if (! pkwk_login($vars['pass']))

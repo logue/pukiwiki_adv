@@ -5,7 +5,7 @@
 //  2007-2008 PukiWiki Plus! Team
 //
 // Newpage plugin
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 function plugin_newpage_convert()
 {
 	global $vars, $BracketName;

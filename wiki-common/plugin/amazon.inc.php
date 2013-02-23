@@ -11,9 +11,9 @@
  * See Aloso	http://d.hatena.ne.jp/mokehehe/20090526/productadvertisingapi
  *
  */
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Factory;
-use PukiWiki\Lib\Utility;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Factory;
+use PukiWiki\Utility;
 /* **************** */
 /* * 設 定 必 須  * */
 /* **************** */

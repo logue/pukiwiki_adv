@@ -8,8 +8,8 @@
 // License: GPL v2 or (at your option) any later version
 //
 // Unfreeze(Unlock) plugin
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Factory;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Factory;
 
 // Show edit form when unfreezed
 defined('PLUGIN_UNFREEZE_EDIT') or define('PLUGIN_UNFREEZE_EDIT', TRUE);
@@ -38,7 +38,7 @@ function plugin_unfreeze_action()
 			$_title_isunfreezed);
 
 	} else
-	if ( (! Auth::check_role('role_adm_contents') ) ||
+	if ( (! Auth::check_role('role_contents_admin') ) ||
 	     ($pass !== NULL && pkwk_login($pass)) )
 	{
 		$wiki = WikiFactory::Wiki($page);

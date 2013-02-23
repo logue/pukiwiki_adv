@@ -8,8 +8,8 @@
  *
  */
 
-use PukiWiki\Lib\Renderer\Inline\Inline;
-use PukiWiki\Lib\Utility;
+use PukiWiki\Renderer\Inline\Inline;
+use PukiWiki\Utility;
 
 function plugin_redirect_action()
 {

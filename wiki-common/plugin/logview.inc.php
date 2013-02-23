@@ -7,7 +7,7 @@
  * @version	$Id: logview.php,v 0.25 2011/02/05 11:03:00 Logue Exp $
  * @license	http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 
 defined('MAX_LINE')      or define('MAX_LINE', 200);
 defined('VIEW_ROBOTS')   or define('VIEW_ROBOTS', '0');   // robots は表示しない
@@ -399,7 +399,7 @@ function logview_user_list(& $fld, $page,$kind)
 	foreach ($all_user as $auth_api=>$val1) {
 	foreach ($val1 as $user=>$val) {
 		$group = empty($val['group']) ? '' : $val['group'];
-		if ($kind != 'login' && !Auth::is_page_readable($page,$user,$group)) {
+		if ($kind != 'login' && Auth::checkPermission($page, 'read',$user,$group)) {
 			$excludes_user[$auth_api][$user] = '';
 			continue;
 		}

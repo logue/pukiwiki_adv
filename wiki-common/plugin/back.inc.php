@@ -8,7 +8,7 @@
 //
 // back plugin
 
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 
 // Allow specifying back link by page name and anchor, or
 // by relative or site-abusolute path

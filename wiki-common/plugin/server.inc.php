@@ -3,7 +3,7 @@
 //
 // Server information plugin
 // by Reimy http://pukiwiki.reimy.com/
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 function plugin_server_convert()
 {
 

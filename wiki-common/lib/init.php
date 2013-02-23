@@ -12,12 +12,12 @@
 // Plus!I18N:(policy)not merge official cvs(1.44->1.45)
 // Plus!NOTE:(policy)not merge official cvs(1.51->1.52) See Question/181
 
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Lang\Lang;
-use PukiWiki\Lib\Factory;
-use PukiWiki\Lib\Utility;
-use PukiWiki\Lib\Time;
-use PukiWiki\Lib\Router;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Lang\Lang;
+use PukiWiki\Factory;
+use PukiWiki\Utility;
+use PukiWiki\Time;
+use PukiWiki\Router;
 use Zend\Cache\StorageFactory;
 
 // PukiWiki version / Copyright / License

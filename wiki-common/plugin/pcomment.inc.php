@@ -41,10 +41,10 @@ define('PLUGIN_PCOMMENT_FORMAT_NOW',	'&epoch{'.UTIME.',comment_date};');
 define('PLUGIN_PCOMMENT_FORMAT_STRING',
 	"\x08" . 'MSG' . "\x08" . ' -- ' . "\x08" . 'NAME' . "\x08" . ' ' . "\x08" . 'DATE' . "\x08");
 
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Factory;
-use PukiWiki\Lib\Renderer\RendererFactory;
-use PukiWiki\Lib\Utility;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Factory;
+use PukiWiki\Renderer\RendererFactory;
+use PukiWiki\Utility;
 
 function plugin_pcomment_action()
 {

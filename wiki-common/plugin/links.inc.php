@@ -3,9 +3,9 @@
 // $Id: links.inc.php,v 1.24.4 2011/06/08 20:05:00 Logue Exp $
 //
 // Update link cache plugin
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Renderer\RendererFactory;
-use PukiWiki\Lib\Relational;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Renderer\RendererFactory;
+use PukiWiki\Relational;
 
 // Message setting
 function plugin_links_init()
@@ -42,7 +42,7 @@ function plugin_links_action()
 	if (Auth::check_role('readonly')) die_message( $_string['error_prohibit'] );
 
 	$admin_pass = (empty($post['adminpass'])) ? '' : $post['adminpass'];
-	if ( isset($vars['menu']) && (! Auth::check_role('role_adm_contents') || pkwk_login($admin_pass) )) {
+	if ( isset($vars['menu']) && (! Auth::check_role('role_contents_admin') || pkwk_login($admin_pass) )) {
 		$force = (isset($post['force']) && $post['force'] === 'on') ? true : false;
 		$msg  = & $_links_messages['title_update'];
 		$links = new Relational('');
@@ -66,7 +66,7 @@ function plugin_links_action()
 	<input type="hidden" name="cmd" value="links" />
 	<input type="hidden" name="menu" value="1" />
 EOD;
-	if (Auth::check_role('role_adm_contents')) {
+	if (Auth::check_role('role_contents_admin')) {
 		$body .= RendererFactory::factory( sprintf($_links_messages['msg_usage2']) );
 		$body .= <<<EOD
 	<label for="_p_links_adminpass">{$_links_messages['msg_adminpass']}</label>

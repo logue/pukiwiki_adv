@@ -5,8 +5,8 @@
 // $Id: side.inc.php,v 1.8.7 2011/02/05 12:38:00 Logue Exp $
 //
 
-use PukiWiki\Lib\Factory;
-use PukiWiki\Lib\Renderer\RendererFactory;
+use PukiWiki\Factory;
+use PukiWiki\Renderer\RendererFactory;
 
 // サブメニューを使用する
 define('SIDE_ENABLE_SUBMENU', TRUE);

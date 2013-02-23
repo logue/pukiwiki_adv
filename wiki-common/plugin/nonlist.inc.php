@@ -2,10 +2,10 @@
 // PukiWiki - Yet another WikiWikiWeb clone.
 // $Id: nonlist.inc.php,v 0.0.3 2010/12/26 17:55:00 Logue Exp $
 //
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 function plugin_nonlist_convert()
 {
-	if (Auth::check_role('role_adm_contents')) return '';
+	if (Auth::check_role('role_contents_admin')) return '';
 
 	if (func_num_args() == 1) {
 		list($cmd) = func_get_args();
@@ -31,7 +31,7 @@ function plugin_nonlist_action()
 	global $vars;
 	$_title_nonlist = T_('List of non_list pages');
 
-	if (Auth::check_role('role_adm_contents')) return '';
+	if (Auth::check_role('role_contents_admin')) return '';
 
 	if (isset($vars['env'])) {
 		$cmd = 2;

@@ -6,7 +6,7 @@
 define('INSERT_COLS', 70); // Columns of textarea
 define('INSERT_ROWS',  5); // Rows of textarea
 define('INSERT_INS',   1); // Order of insertion (1:before the textarea, 0:after)
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 
 function plugin_insert_action()
 {

@@ -13,8 +13,8 @@
 // Plus!NOTE:(policy)not merge official cvs(1.58->1.59) See Question/181
 
 use Zend\Http\Response;
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Factory;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Factory;
 
 // Show page-content
 function catbody($title, $page, $body)
@@ -416,7 +416,7 @@ function edit_form($page, $postdata, $digest = FALSE, $b_template = TRUE)
 	global $_button, $_string;
 
 //	global $x_ua_compatible;
-	$w = new PukiWiki\Lib\File\WikiFile($page);
+	$w = new PukiWiki\File\WikiFile($page);
 
 	// Newly generate $digest or not
 	if ($digest === FALSE) $digest = $w->digest();
@@ -477,7 +477,7 @@ EOD;
 	<input type="checkbox" name="notimestamp" id="_edit_form_notimestamp" value="true"$checked_time />
 	<label for="_edit_form_notimestamp" data-inline="true">{$_button['notchangetimestamp']}</label>
 EOD;
-		if ($notimeupdate == 2 && Auth::check_role('role_adm_contents')) {
+		if ($notimeupdate == 2 && Auth::check_role('role_contents_admin')) {
 			// enable only administrator
 			$add_notimestamp .= '<input type="password" name="pass" size="12" />';
 		}
@@ -487,10 +487,10 @@ EOD;
 			'<input type="submit" id="btn_submit" name="write" value="'.$_button['update'].'" data-icon="check" data-inline="true" data-theme="b" />',
 			'<input type="submit" id="btn_preview" name="preview" value="'.$_button['preview'].'" accesskey="p" data-icon="gear" data-inline="true" data-theme="e" />',
 			'<input type="submit" id="btn_cancel" name="cancel" value="'.$_button['cancel'].'" accesskey="c" data-icon="delete" data-inline="true" />',
-			($notimeupdate == 2 && Auth::check_role('role_adm_contents')) ? '<div data-role="fieldcontain">' : '',
+			($notimeupdate == 2 && Auth::check_role('role_contents_admin')) ? '<div data-role="fieldcontain">' : '',
 			($notimeupdate != 0 && is_page($page)) ? '<input type="checkbox" name="notimestamp" id="_edit_form_notimestamp" value="true" $checked_time />'.
 				'<label for="_edit_form_notimestamp" data-inline="true">'.$_button['notchangetimestamp'].'</label>' : null,
-			($notimeupdate == 2 && Auth::check_role('role_adm_contents')) ? '<input type="password" name="pass" size="12"  data-inline="true" /></div>' : '',
+			($notimeupdate == 2 && Auth::check_role('role_contents_admin')) ? '<input type="password" name="pass" size="12"  data-inline="true" /></div>' : '',
 			isset($vars['add']) ? "\t\t".'<input type="checkbox" name="add_top" value="true"' .$checked_top . ' /><label for="add_top">' . $_button['addtop'] . '</label>' : null
 		));
 
@@ -561,7 +561,7 @@ function pkwk_headers_sent()
 	@param expire 有効期限（秒）
 	@return なし
 */
-use PukiWiki\Lib\Lang\Lang;
+use PukiWiki\Lang\Lang;
 function pkwk_common_headers($modified = 0, $expire = 604800){
 	global $lastmod, $vars, $response, $headers;
 	if (! defined('PKWK_OPTIMISE')) pkwk_headers_sent();

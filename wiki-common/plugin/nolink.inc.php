@@ -3,7 +3,7 @@
 // $Id: nolink.inc.php,v 1.0.1 2009/02/16 23:33:00 upk Exp $
 //
 
-use PukiWiki\Lib\Renderer\RendererFactory;
+use PukiWiki\Renderer\RendererFactory;
 
 function plugin_nolink_convert()
 {

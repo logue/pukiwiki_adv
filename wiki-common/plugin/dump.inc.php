@@ -12,7 +12,7 @@
 
 /////////////////////////////////////////////////
 // User defines
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 // Allow using resture function
 define('PLUGIN_DUMP_ALLOW_RESTORE', TRUE); // FALSE, TRUE
 

@@ -5,9 +5,9 @@
 // Add plugin - Append new text below/above existing page
 // Usage: cmd=add&page=pagename
 
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Utility;
-use PukiWiki\Lib\Factory;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Utility;
+use PukiWiki\Factory;
 
 function plugin_add_action()
 {

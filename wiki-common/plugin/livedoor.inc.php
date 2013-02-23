@@ -8,8 +8,8 @@
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Auth\AuthApi;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Auth\AuthApi;
 require_once(LIB_DIR . 'hash.php');
 defined('ROLE_AUTH_LIVEDOOR')        or define('ROLE_AUTH_LIVEDOOR', 5.6);
 defined('LIVEDOOR_URL_AUTH')  or define('LIVEDOOR_URL_AUTH','http://auth.livedoor.com/login/');

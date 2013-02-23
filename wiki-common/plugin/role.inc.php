@@ -6,8 +6,8 @@
  * @version	$Id: role.inc.php,v 0.3 2010/12/26 19:05:00 Logue Exp $
  * @license	http://opensource.org/licenses/gpl-license.php GNU Public License
  */
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Renderer\RendererFactory;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Renderer\RendererFactory;
 /*
  * 初期処理
  */

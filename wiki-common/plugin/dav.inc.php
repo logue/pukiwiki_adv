@@ -21,8 +21,8 @@
  * http://tyche.pu-toyama.ac.jp/~a-urasim/pukiwiki_dav/
  *
 */
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Factory;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Factory;
 defined('PLUGIN_DAV_SHOWONLYEDITABLE') or define('PLUGIN_DAV_SHOWONLYEDITABLE', false);
 defined('PLUGIN_DAV_MUST_COMPRESS') or define('PLUGIN_DAV_MUST_COMPRESS', true); // セキュリティ上 false 運用は厳しい
 defined('PLUGIN_DAV_CREATE_PAGE') or define('PLUGIN_DAV_CREATE_PAGE', false); // false, true
@@ -100,7 +100,7 @@ function plugin_dav_action()
 
 		// 添付する際にパスワードまたは、管理者のみの場合は、認証を要求
 		if (PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY) {
-			if (!Auth::check_role('role_adm_contents') && !Auth::is_temp_admin()) {
+			if (!Auth::check_role('role_contents_admin') && !Auth::is_temp_admin()) {
 				dav_error_exit(403);
 			}
 		}
@@ -212,7 +212,7 @@ function plugin_dav_action()
 
 		// 添付する際にパスワードまたは、管理者のみの場合は、認証を要求
 		if (PLUGIN_ATTACH_DELETE_ADMIN_ONLY) {
-			if (!Auth::check_role('role_adm_contents') && !Auth::is_temp_admin()) {
+			if (!Auth::check_role('role_contents_admin') && !Auth::is_temp_admin()) {
 				dav_error_exit(403);
 			}
 		}
@@ -242,7 +242,7 @@ function plugin_dav_action()
 
 		// 添付する際にパスワードまたは、管理者のみの場合は、認証を要求
 		if (PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY || PLUGIN_ATTACH_DELETE_ADMIN_ONLY) {
-			if (!Auth::check_role('role_adm_contents') && !Auth::is_temp_admin()) {
+			if (!Auth::check_role('role_contents_admin') && !Auth::is_temp_admin()) {
 				dav_error_exit(403);
 			}
 		}
@@ -327,7 +327,7 @@ function plugin_dav_action()
 
 		// 添付する際にパスワードまたは、管理者のみの場合は、認証を要求
 		if (PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY || PLUGIN_ATTACH_DELETE_ADMIN_ONLY) {
-			if (!Auth::check_role('role_adm_contents') && !Auth::is_temp_admin()) {
+			if (!Auth::check_role('role_contents_admin') && !Auth::is_temp_admin()) {
 				dav_error_exit(403);
 			}
 		}
@@ -707,7 +707,7 @@ function dav_get_folder_info($path,$depth)
 	}
 
 	// 添付ファイル非表示の場合は、コンテンツ管理者なら表示する
-	if (!$attach_link && Auth::check_role('role_adm_contents')) return array($info_dir,$info_file);
+	if (!$attach_link && Auth::check_role('role_contents_admin')) return array($info_dir,$info_file);
 
 	if (isset($pages[$page]['file'])) $info_file = $pages[$page]['file'];
 	

@@ -8,7 +8,7 @@
 // License: GPL v2 or (at your option) any later version
 //
 // Yet list plugin - Show a list of dangling links (not yet created)
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 function plugin_yetlist_action()
 {
 //	global $_title_yetlist, $_err_notexist, $_symbol_noexists, $non_list;

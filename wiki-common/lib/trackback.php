@@ -27,7 +27,7 @@
  * tb_get_url($url)        HTTP-GET from $uri, and reveal the TrackBack Ping URL
  * class TrackBack_XML     Parse and reveal the TrackBack Ping URL from RDF data
  */
-use PukiWiki\Lib\File\FileFactory;
+use PukiWiki\File\FileFactory;
 use Zend\Http\Client;
 define('PLUGIN_TRACKBACK_VERSION', 'PukiWiki Adv./TrackBack 0.5');
 

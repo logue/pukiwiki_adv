@@ -8,7 +8,7 @@
  *
  */
 
-use PukiWiki\Lib\Factory;
+use PukiWiki\Factory;
 
 defined('PLUGIN_PROTECT_MUST_PAGE') or define('PLUGIN_PROTECT_MUST_PAGE', 1);
 

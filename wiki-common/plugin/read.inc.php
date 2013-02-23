@@ -4,9 +4,9 @@
 //
 // Read plugin: Show a page and InterWiki
 
-use PukiWiki\Lib\Router;
-use PukiWiki\Lib\Renderer\Inline\AutoAlias;
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Router;
+use PukiWiki\Renderer\Inline\AutoAlias;
+use PukiWiki\Auth\Auth;
 
 function plugin_read_init(){
 	$msg = array(

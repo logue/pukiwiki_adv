@@ -3,7 +3,7 @@
 // $Id: interwiki.inc.php,v 1.11.2 2011/02/05 17:17:00 Logue Exp $
 //
 // InterWiki redirection plugin (OBSOLETE)
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 function plugin_interwiki_action()
 {
 	global $vars, $InterWikiName;

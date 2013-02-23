@@ -8,7 +8,7 @@
 // License: GPL
 //
 // Referer Plugin(Show Related-Link Plugin)
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 
 define('CONFIG_REFERER', 'plugin/referer');
 define('REFERE_TITLE_LENGTH',70);

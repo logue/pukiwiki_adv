@@ -4,8 +4,8 @@
 //
 // Read plugin: Show a page and InterWiki
 
-use PukiWiki\Lib\Factory;
-use PukiWiki\Lib\Renderer\RendererFactory;
+use PukiWiki\Factory;
+use PukiWiki\Renderer\RendererFactory;
 
 function plugin_preview_action()
 {

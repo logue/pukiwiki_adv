@@ -7,8 +7,8 @@
  * @license	http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Renderer\RendererFactory;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Renderer\RendererFactory;
 
 /*
  * 初期処理

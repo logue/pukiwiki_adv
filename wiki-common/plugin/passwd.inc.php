@@ -7,8 +7,8 @@
  *
  * $A1 = md5($data['username'] . ':' . $realm . ':' . $auth_users[$data['username']]);
  */
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\File\AuthFile;
+use PukiWiki\Auth\Auth;
+use PukiWiki\File\AuthFile;
 use Zend\Crypt\BlockCipher;
 
 if (!defined('USE_PKWK_WRITE_FUNC')) {

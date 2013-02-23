@@ -18,10 +18,10 @@ defined('GUIEDIT_CONF_PATH')  or define('GUIEDIT_CONF_PATH',  'guiedit/');
 defined('GUIEDIT_FULL_SIZE') or define('GUIEDIT_FULL_SIZE', 0);
 
 define('PLUGIN_GUIEDIT_FREEZE_REGEX', '/^(?:#freeze(?!\w)\s*)+/im');
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\File\WikiFile;
-use PukiWiki\Lib\Factory;
-use PukiWiki\Lib\Renderer\RendererFactory;
+use PukiWiki\Auth\Auth;
+use PukiWiki\File\WikiFile;
+use PukiWiki\Factory;
+use PukiWiki\Renderer\RendererFactory;
 
 //	コマンド型プラグイン
 function plugin_guiedit_action()
@@ -348,7 +348,7 @@ EOD;
 	if ($notimeupdate != 0) {
 		$checked_time = isset($vars['notimestamp']) ? ' checked="checked"' : '';
 		// if ($notimeupdate == 2) {
-		if ($notimeupdate == 2 && Auth::check_role('role_adm_contents')) {
+		if ($notimeupdate == 2 && Auth::check_role('role_contents_admin')) {
 			$add_notimestamp = '   ' .
 				'<input type="password" name="pass" size="12" />' . "\n";
 		}

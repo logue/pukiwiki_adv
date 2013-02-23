@@ -4,7 +4,7 @@
 //
 // $Id: random.inc.php,v 1.9.3 2012/05/11 18:24:00 Logue Exp $
 //
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 /*
  *プラグイン random
   配下のページをランダムに表示する

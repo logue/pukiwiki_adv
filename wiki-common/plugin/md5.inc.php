@@ -15,8 +15,8 @@
 //	* LDAP MD5 / SMD5
 //	* LDAP CRYPT
 
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Utility;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Utility;
 // User interface of pkwk_hash_compute() for system admin
 function plugin_md5_action()
 {

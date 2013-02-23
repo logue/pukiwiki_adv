@@ -9,7 +9,7 @@
 // License: GPL v2
 //
 // Listing cvs revisions of files
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 function plugin_versionlist_action()
 {
 	// if (PKWK_SAFE_MODE) die_message('PKWK_SAFE_MODE prohibits this');

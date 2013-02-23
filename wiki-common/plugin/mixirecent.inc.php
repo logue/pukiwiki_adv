@@ -11,7 +11,7 @@
 //   * Usually used at 'MenuBar' page
 //   * Also used at special-page, without no #recnet at 'MenuBar'
 
-use PukiWiki\Lib\Renderer\RendererFactory;
+use PukiWiki\Renderer\RendererFactory;
 
 // Default number of 'Show latest N changes'
 define('PLUGIN_MIXIRECENT_DEFAULT_LINES', 10);

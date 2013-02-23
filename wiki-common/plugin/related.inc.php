@@ -9,8 +9,8 @@
 //
 // Related plugin: Show Backlinks for the page
 
-use PukiWiki\Lib\Factory;
-use PukiWiki\Lib\Relational;
+use PukiWiki\Factory;
+use PukiWiki\Relational;
 
 function plugin_related_init(){
 	$messages['_related_messages'] = array(

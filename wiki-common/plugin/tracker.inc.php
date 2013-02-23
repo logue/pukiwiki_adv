@@ -8,9 +8,9 @@
 // License: GPL v2 or (at your option) any later version
 //
 // Issue tracker plugin (See Also bugtrack plugin)
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Factory;
-use PukiWiki\Lib\Renderer\RendererFactory;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Factory;
+use PukiWiki\Renderer\RendererFactory;
 // Tracker_list: Excluding pattern
 define('PLUGIN_TRACKER_LIST_EXCLUDE_PATTERN','#^SubMenu$|/#');	// 'SubMenu' and using '/'
 //define('PLUGIN_TRACKER_LIST_EXCLUDE_PATTERN','#(?!)#');		// Nothing excluded

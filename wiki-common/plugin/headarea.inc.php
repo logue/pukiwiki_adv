@@ -5,7 +5,7 @@
 // $Id: headarea.inc.php,v 1.7.6 2011/02/05 10:54:00 Logue Exp $
 //
 
-use PukiWiki\Lib\Renderer\RendererFactory;
+use PukiWiki\Renderer\RendererFactory;
 
 // サブメニューを使用する
 define('HEAD_ENABLE_SUBHEAD', TRUE);

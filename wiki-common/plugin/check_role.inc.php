@@ -7,7 +7,7 @@
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  *
  */
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 function plugin_check_role_convert()
 {
 	global $check_role;
@@ -15,7 +15,7 @@ function plugin_check_role_convert()
 
 	// role         - 0:Guest, 2:Webmaster, 3:Contents manager, 4:Authorized
 	// chk_role_str - 0,1,4: Authorized, 2:Webmaster, 3:Contents manager
-	static $chk_role_str = array('role_auth','role_auth','role_adm','role_adm_contents','role_auth');
+	static $chk_role_str = array('role_auth','role_auth','role_adm','role_contents_admin','role_auth');
 
 	$argv = func_get_args();
 	$argc = func_num_args();

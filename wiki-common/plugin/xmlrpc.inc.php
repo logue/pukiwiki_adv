@@ -6,7 +6,7 @@
 // License: GPL v2
 //
 // XML-Rpc Server plugin
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 
 defined('XMLRPC_CACHE') or define('XMLRPC_CACHE', CACHE_DIR.'xmlrpc.cache');
 
@@ -168,7 +168,7 @@ class WikiRpcService{
 	  * @return string
 	  */
 	public function getPage( $pagename ){
-		$wiki = new PukiWiki\Lib\File\WikiFile($pagename);
+		$wiki = new PukiWiki\File\WikiFile($pagename);
 		return $wiki->source();
 	}
 	/**
@@ -179,7 +179,7 @@ class WikiRpcService{
 	  * @return string
 	  */
 	public function getPageVersion( $pagename, $version ){
-		$backup = new PukiWiki\Lib\File\BackupFile($pagename);
+		$backup = new PukiWiki\File\BackupFile($pagename);
 		$ret = $backup->getBackup($version);
 		Auth::is_role_page($ret[$version]['data']);
 		return join("\n", $ret[$version]['data']);
@@ -191,7 +191,7 @@ class WikiRpcService{
 	  * @return string
 	  */
 	public function getPageHTML( $pagename ){
-		$wiki = new PukiWiki\Lib\File\WikiFile($pagename);
+		$wiki = new PukiWiki\File\WikiFile($pagename);
 		return $wiki->render();
 	}
 	/**
@@ -202,7 +202,7 @@ class WikiRpcService{
 	  * @return string
 	  */
 	public function getPageHTMLVersion( $pagename, $version ){
-		$backup = new PukiWiki\Lib\File\BackupFile($pagename);
+		$backup = new PukiWiki\File\BackupFile($pagename);
 		$ret = $backup->getBackup($version);
 		Auth::is_role_page($ret[$version]['data']);
 		return convert_html(join("\n", $ret[$version]['data']));
@@ -242,7 +242,7 @@ class WikiRpcService{
 	  * @return array
 	  */
 	public function listLinks( $pagename ){
-		$wiki = new PukiWiki\Lib\File\WikiFile($pagename);
+		$wiki = new PukiWiki\File\WikiFile($pagename);
 		$links = array();
 		preg_match_all('#href="(https?://[^"]+)"#', $wiki->render(), $links, PREG_PATTERN_ORDER);
 		return array_unique($links[1]);
@@ -254,7 +254,7 @@ class WikiRpcService{
 	  * @return array
 	  */
 	public function getBackLinks( $pagename ){
-		$links = new PukiWiki\Lib\Relational($pagename);
+		$links = new PukiWiki\Relational($pagename);
 		return $links->getRelated();
 	}
 	/**

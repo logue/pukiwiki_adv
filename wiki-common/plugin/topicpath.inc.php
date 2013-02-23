@@ -8,7 +8,7 @@
 // License: GPL (any version)
 //
 // 'topicpath' plugin
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 // Show a link to $defaultpage or not
 defined('PLUGIN_TOPICPATH_TOP_DISPLAY') or define('PLUGIN_TOPICPATH_TOP_DISPLAY', 1);
 // Label for $defaultpage

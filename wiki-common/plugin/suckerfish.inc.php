@@ -7,7 +7,7 @@
  :author [:name "Logue"; :homepage <http://logue.be/> ];
  :license <http://www.gnu.org/licenses/gpl-3.0.html>;
 */
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 // $Id: sukerfish.inc.php,v 1.0.7 2011/12/12 22:26:00 Logue Exp $
 
 // Sukerfish Popup Menu Plugin for PukiWiki.

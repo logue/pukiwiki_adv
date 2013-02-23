@@ -8,9 +8,9 @@
  */
 // defined('LOGIN_USE_AUTH_DEFAULT') or define('LOGIN_USE_AUTH_DEFAULT', 1);
 
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Renderer\RendererFactory;
-use PukiWiki\Lib\Utility;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Renderer\RendererFactory;
+use PukiWiki\Utility;
 
 /*
  * 初期処理
@@ -160,7 +160,7 @@ function plugin_login_action()
 	// NTLM, Negotiate 認証 (IIS 4.0/5.0)
 	$srv_soft = (defined('SERVER_SOFTWARE'))? SERVER_SOFTWARE : $_SERVER['SERVER_SOFTWARE'];
 	if (substr($srv_soft,0,9) == 'Microsoft') {
-		Auth::auth_ntlm();
+		Auth::ntlm_auth();
 		login_return_page();
 	}
 

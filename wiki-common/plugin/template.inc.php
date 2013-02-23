@@ -2,7 +2,7 @@
 // $Id: template.inc.php,v 1.22.7 2012/05/11 18:14:00 Logue Exp $
 //
 // Load template plugin
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 define('MAX_LEN', 60);
 
 function plugin_template_init()

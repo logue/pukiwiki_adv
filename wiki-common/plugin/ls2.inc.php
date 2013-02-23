@@ -28,9 +28,9 @@
  * heading title: 見出しのタイトルを指定する (linkを指定した時のみ)
  */
 
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Factory;
-use PukiWiki\Lib\Utility;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Factory;
+use PukiWiki\Utility;
 
 
 // 見出しアンカーの書式

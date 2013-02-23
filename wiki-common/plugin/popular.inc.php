@@ -9,7 +9,7 @@
 //
 // Popular pages plugin: Show an access ranking of this wiki
 // -- like recent plugin, using counter plugin's count --
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 /*
  * 通算および今日に別けて一覧を作ることができます。
  *

@@ -6,16 +6,16 @@
 // License: GPL v2 or (at your option) any later version
 //
 // old functions
-use PukiWiki\Lib\Utility;
-use PukiWiki\Lib\Router;
-use PukiWiki\Lib\File\FileUtility;
-use PukiWiki\Lib\Renderer\RendererFactory;
-use PukiWiki\Lib\Renderer\Inline\Inline;
-use PukiWiki\Lib\Relational;
-use PukiWiki\Lib\Search;
-use PukiWiki\Lib\Time;
-use PukiWiki\Lib\Factory;
-use PukiWiki\Lib\Recent;
+use PukiWiki\Utility;
+use PukiWiki\Router;
+use PukiWiki\File\FileUtility;
+use PukiWiki\Renderer\RendererFactory;
+use PukiWiki\Renderer\Inline\Inline;
+use PukiWiki\Relational;
+use PukiWiki\Search;
+use PukiWiki\Time;
+use PukiWiki\Factory;
+use PukiWiki\Recent;
 
 /**
  * auth.php
@@ -662,11 +662,11 @@ function update_cache($page = '', $force = false){
 
 	// Update autolink
 //	if ( $autolink !== 0 ) {
-//		PukiWiki\Lib\Renderer\AutoLinkPattern::get_pattern(-1,true);
+//		PukiWiki\Renderer\AutoLinkPattern::get_pattern(-1,true);
 //	}
 
 	// Update rel and ref cache
-	$links = new PukiWiki\Lib\Relational($page);
+	$links = new PukiWiki\Relational($page);
 	if (!empty($page) ){
 		$links->update($page);
 	} else if ($force) {
@@ -756,7 +756,7 @@ function links_update($page)
 /**
  * make_link.php
  */
-use PukiWiki\Lib\Renderer\InlineFactory;
+use PukiWiki\Renderer\InlineFactory;
 // Hyperlink decoration
 function make_link($string, $page = '')
 {

@@ -5,8 +5,8 @@
 // $Id: menu.inc.php,v 1.10.9 2011/02/05 11:06:00 Logue Exp $
 //
 
-use PukiWiki\Lib\Factory;
-use PukiWiki\Lib\Renderer\RendererFactory;
+use PukiWiki\Factory;
+use PukiWiki\Renderer\RendererFactory;
 
 // サブメニューを使用する
 define('MENU_ENABLE_SUBMENU', TRUE);

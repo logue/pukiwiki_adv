@@ -9,10 +9,10 @@
  * @license	http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 // require_once('proxy.cls.php');
-use PukiWiki\Lib\NetBios;
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Auth\AuthApi;
-use PukiWiki\Lib\File\FileUtility;
+use PukiWiki\NetBios;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Auth\AuthApi;
+use PukiWiki\File\FileUtility;
 
 //require_once(LIB_DIR . 'auth_api.cls.php');
 
@@ -437,7 +437,7 @@ class log
 {
 	public function __construct($subdir='browse',$page='',$ext='.txt') {
 		$this->filename = LOG_DIR . $subdir . encode($page) . $ext;
-		$this->backup = new PukiWiki\Lib\File\BackupFile($page);
+		$this->backup = new PukiWiki\File\BackupFile($page);
 	}
 
 		/**

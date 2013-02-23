@@ -17,7 +17,7 @@
 //
 // Note: -Dfile.encoding=EUC-JP (or UTF-8) may not work with Windows OS
 //   http://www.simeji.com/wiki/pukiwiki.php?Java%A4%CE%CD%AB%DD%B5 (in Japanese)
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 
 function plugin_touchgraph_action()
 {

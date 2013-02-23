@@ -7,10 +7,10 @@
  *
  */
 
-use PukiWiki\Lib\Lang\Lang;
-use PukiWiki\Lib\Lang\AcceptLanguage;
-use PukiWiki\Lib\Lang\Lang2Country;
-use PukiWiki\Lib\Renderer\RendererFactory;
+use PukiWiki\Lang\Lang;
+use PukiWiki\Lang\AcceptLanguage;
+use PukiWiki\Lang\Lang2Country;
+use PukiWiki\Renderer\RendererFactory;
 
 // ja_JP, ko_KR, en_US, zh_TW
 // They are used as delimiters at &multilang(link,ja_JP=Japanese,en_US=English,.....);

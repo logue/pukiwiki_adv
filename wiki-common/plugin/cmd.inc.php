@@ -3,7 +3,7 @@
 // $Id: cmd.inc.php,v 0.0 2010/07/15 10:01:21 Logue Exp $
 //
 // Command link plugin
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 
 function plugin_cmd_init(){
 

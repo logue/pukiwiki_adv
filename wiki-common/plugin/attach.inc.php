@@ -11,7 +11,7 @@
 // License: GPL v2 or (at your option) any later version
 //
 // File attach plugin
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 // NOTE (PHP > 4.2.3):
 //    This feature is disabled at newer version of PHP.
 //    Set this at php.ini if you want.
@@ -260,7 +260,7 @@ function attach_upload($file, $page, $pass = NULL)
 			msg'=>$_attach_messages['err_noparm']);
 
 	// } else if (PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY && $pass !== TRUE &&
-	} else if (PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY && Auth::check_role('role_adm_contents') && $pass !== TRUE &&
+	} else if (PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY && Auth::check_role('role_contents_admin') && $pass !== TRUE &&
 		  ($pass === NULL || ! pkwk_login($pass))) {
 		return array(
 			'result'=>FALSE,
@@ -760,7 +760,7 @@ function attach_form($page)
 	$attach_form[] = '<input type="hidden" name="max_file_size" value="' . PLUGIN_ATTACH_MAX_FILESIZE . '" />';
 	$attach_form[] = '<label for="_p_attach_file">' . $_attach_messages['msg_file'] . ':</label>';
 	$attach_form[] = '<input type="file" name="attach_file" id="_p_attach_file" />';
-	$attach_form[] = ( (PLUGIN_ATTACH_PASSWORD_REQUIRE || PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY) && Auth::check_role('role_adm_contents')) ?
+	$attach_form[] = ( (PLUGIN_ATTACH_PASSWORD_REQUIRE || PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY) && Auth::check_role('role_contents_admin')) ?
 						'<br />' . ($_attach_messages[PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY ? 'msg_adminpass' : 'msg_password']) .
 		 					': <input type="password" name="pass" size="8" />' : '';
 	$attach_form[] = '<input type="submit" value="' . $_attach_messages['btn_upload'] . '" />';
@@ -885,8 +885,8 @@ class AttachFile
 		$list_uri    = get_cmd_uri('attach','','',array('pcmd'=>'list','refer'=>$this->page));
 		$listall_uri = get_cmd_uri('attach','','',array('pcmd'=>'list'));
 
-		$role_adm_contents = Auth::check_role('role_adm_contents');
-		$msg_require = ($role_adm_contents) ? $_attach_messages['msg_require'] : '';
+		$role_contents_admin = Auth::check_role('role_contents_admin');
+		$msg_require = ($role_contents_admin) ? $_attach_messages['msg_require'] : '';
 
 		$msg_rename  = '';
 		if ($this->age) {
@@ -947,7 +947,7 @@ class AttachFile
 
 		$msg_auth = '';
 		$info_auth = '';
-		if ($role_adm_contents !== FALSE) {
+		if ($role_contents_admin !== FALSE) {
 			$msg_auth = <<<EOD
 	<label for="_p_attach_password">{$_attach_messages['msg_password']}:</label>
 	<input type="password" name="pass" id="_p_attach_password" size="8" />
@@ -1029,7 +1029,7 @@ EOD;
 		if ($this->status['freeze']) return attach_info('msg_isfreeze');
 
 		// if (! pkwk_login($pass)) {
-		if (Auth::check_role('role_adm_contents') && ! pkwk_login($pass)) {
+		if (Auth::check_role('role_contents_admin') && ! pkwk_login($pass)) {
 			if (PLUGIN_ATTACH_DELETE_ADMIN_ONLY || $this->age) {
 				return attach_info('err_adminpass');
 			} else if (PLUGIN_ATTACH_PASSWORD_REQUIRE &&
@@ -1080,7 +1080,7 @@ EOD;
 
 		if ($this->status['freeze']) return attach_info('msg_isfreeze');
 
-		if (Auth::check_role('role_adm_contents') && ! pkwk_login($pass))
+		if (Auth::check_role('role_contents_admin') && ! pkwk_login($pass))
 			return attach_info('err_adminpass');
 
 		$newbase = UPLOAD_DIR . encode($this->page) . '_' . encode($newname);
@@ -1130,7 +1130,7 @@ EOD;
 		global $_attach_messages;
 
 		// if (! pkwk_login($pass))
-		if (Auth::check_role('role_adm_contents') && ! Auth::login($pass))
+		if (Auth::check_role('role_contents_admin') && ! Auth::login($pass))
 			return attach_info('err_adminpass');
 
 		$this->getstatus();

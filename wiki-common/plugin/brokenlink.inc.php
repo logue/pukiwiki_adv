@@ -9,7 +9,7 @@
  */
 
 use PukiWiki\Auth\Auth;
-use PukiWiki\Lib\Renderer\RendererFactory;
+use PukiWiki\Renderer\RendererFactory;
 
 function plugin_brokenlink_init()
 {

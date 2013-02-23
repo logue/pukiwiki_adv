@@ -13,7 +13,7 @@
 define('PLUGIN_BUGTRACK_NUMBER_FORMAT', '%d'); // Like 'page/1'
 //define('PLUGIN_BUGTRACK_NUMBER_FORMAT', '%03d'); // Like 'page/001'
 
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 
 function plugin_bugtrack_init()
 {

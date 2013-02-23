@@ -8,7 +8,7 @@
 // Usage:
 //   index.php?cmd=deleted[&file=on]
 //   index.php?cmd=deleted&dir=diff[&file=on]
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 function plugin_deleted_init()
 {
 	global $_string;

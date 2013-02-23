@@ -9,13 +9,13 @@
 //
 // Edit plugin (cmd=edit)
 // Plus! NOTE:(policy)not merge official cvs(1.40->1.41) See Question/181
-use PukiWiki\Lib\Factory;
-use PukiWiki\Lib\Wiki;
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Router;
-use PukiWiki\Lib\Renderer\RendererFactory;
-use PukiWiki\Lib\Utility;
-use PukiWiki\Lib\Diff;
+use PukiWiki\Factory;
+use PukiWiki\Wiki;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Router;
+use PukiWiki\Renderer\RendererFactory;
+use PukiWiki\Utility;
+use PukiWiki\Diff;
 
 // Remove #freeze written by hand
 define('PLUGIN_EDIT_FREEZE_REGEX', '/^(?:#freeze(?!\w)\s*)+/im');
@@ -322,7 +322,7 @@ function plugin_edit_write()
 	// $notimeupdate: Checkbox 'Do not change timestamp'
 //	$notimestamp = isset($vars['notimestamp']) && $vars['notimestamp'] != '';
 //	if ($notimeupdate > 1 && $notimestamp && ! pkwk_login($vars['pass'])) {
-	if ($notimeupdate > 1 && $notimestamp && Auth::check_role('role_adm_contents') && !pkwk_login($vars['pass'])) {
+	if ($notimeupdate > 1 && $notimestamp && Auth::check_role('role_contents_admin') && !pkwk_login($vars['pass'])) {
 		// Enable only administrator & password error
 		$retvars['body']  = '<p><strong>' . $_msg_invalidpass . '</strong></p>' . "\n";
 		$retvars['body'] .= edit_form($page, $msg, $digest, FALSE);

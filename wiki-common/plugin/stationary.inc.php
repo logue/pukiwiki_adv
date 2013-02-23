@@ -3,7 +3,7 @@
 //
 // Stationary plugin
 // License: The same as PukiWiki
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 // Define someting like this
 define('PLUGIN_STATIONARY_MAX', 10);
 

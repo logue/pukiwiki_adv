@@ -7,7 +7,7 @@
 // @based_on newpage.inc.php
 // @based_on ls2.inc.php
 // @thanks to panda (auther of newpage.inc.php/ls2.inc.php)
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 function build_directory_list($roots, $option=array())
 {
 	global $WikiName,$BracketName;

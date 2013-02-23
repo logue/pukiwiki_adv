@@ -7,7 +7,7 @@
 //
 // Including submenu 
 
-use PukiWiki\Lib\Factory;
+use PukiWiki\Factory;
 
 function plugin_includesubmenu_convert()
 {

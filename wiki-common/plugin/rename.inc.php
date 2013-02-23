@@ -10,7 +10,7 @@
 // Rename plugin: Rename page-name and related data
 //
 // Usage: http://path/to/index.php?plugin=rename[&refer=page_name]
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 define('PLUGIN_RENAME_LOGPAGE', ':RenameLog');
 
 function plugin_rename_init()
@@ -280,7 +280,7 @@ function plugin_rename_phase3($pages)
 			if (file_exists($new))
 				$exists[$_page][$old] = $new;
 
-	if ( isset($vars['menu']) && ! Auth::check_role('role_adm_contents') ) {
+	if ( isset($vars['menu']) && ! Auth::check_role('role_contents_admin') ) {
 		return plugin_rename_phase4($pages, $files, $exists);
 	}
 
@@ -335,7 +335,7 @@ function plugin_rename_phase3($pages)
 
 	$ret = array();
 	$auth = '';
-	if (Auth::check_role('role_adm_contents')) {
+	if (Auth::check_role('role_contents_admin')) {
 		$auth = <<<EOD
   <label for="_p_rename_adminpass">{$_rename_messages['msg_adminpass']}</label>
   <input type="password" name="pass" id="_p_rename_adminpass" value="" />

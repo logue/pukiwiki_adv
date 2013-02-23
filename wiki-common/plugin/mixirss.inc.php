@@ -5,8 +5,8 @@
 // Publishing RSS feed of RecentChanges
 // Usage: mixirss.inc.php?ver=[0.91|1.0(default)|2.0]
 
-use PukiWiki\Lib\File\FileUtility;
-use PukiWiki\Lib\Renderer\RendererFactory;
+use PukiWiki\File\FileUtility;
+use PukiWiki\Renderer\RendererFactory;
 
 // View Description Letters
 define('MIXIRSS_DESCRIPTION_LENGTH', 256);

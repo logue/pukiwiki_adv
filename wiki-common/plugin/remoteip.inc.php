@@ -6,7 +6,7 @@
  * @version     $Id: remoteip.inc.php,v 0.5 2008/06/22 02:58:00 upk Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
-use PukiWiki\Lib\Auth\AuthApi;
+use PukiWiki\Auth\AuthApi;
 defined('REMOTEIP_CONFIG_PAGE') or define('REMOTEIP_CONFIG_PAGE','plugin/remoteip');
 
 function plugin_remoteip_inline()

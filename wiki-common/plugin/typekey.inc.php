@@ -7,8 +7,8 @@
  * @version     $Id: typekey.inc.php,v 0.16 2009/06/11 01:34:00 upk Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Auth\AuthApi;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Auth\AuthApi;
 
 defined('TYPEKEY_URL_LOGIN')		or define('TYPEKEY_URL_LOGIN',		'https://www.typekey.com/t/typekey/login');
 //defined('TYPEKEY_URL_LOGOUT')		or define('TYPEKEY_URL_LOGOUT',		'https://www.typekey.com/t/typekey/logout');

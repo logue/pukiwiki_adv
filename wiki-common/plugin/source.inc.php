@@ -3,9 +3,9 @@
 // $Id: source.inc.php,v 1.14.5 2010/12/26 19:12:00 Logue Exp $
 //
 // Source plugin
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Factory;
-use PukiWiki\Lib\Utility;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Factory;
+use PukiWiki\Utility;
 // Output source text of the page
 function plugin_source_action()
 {

@@ -6,7 +6,7 @@
 //
 // ファイル名一覧の表示
 // cmd=replace
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 // 凍結してあるページも文字列置換の対象とする
 defined('REPLACE_IGNORE_FREEZE') or define('REPLACE_IGNORE_FREEZE', TRUE);
 
@@ -46,7 +46,7 @@ function plugin_replace_action()
 	$replace = isset($post['replace']) ? $post['replace'] : NULL;
 	$notimestamp = isset($post['notimestamp']) ? TRUE : FALSE;
 
-	if ($search != '' && ! Auth::check_role('role_adm_contents'))
+	if ($search != '' && ! Auth::check_role('role_contents_admin'))
 		return replace_do($search,$replace,$notimestamp);
 
 	// パスワードと検索文字列がないと置換はできない。
@@ -117,7 +117,7 @@ function replace_adm($pass,$search)
 
 	$body = '';
 
-	if (! Auth::check_role('role_adm_contents')) {
+	if (! Auth::check_role('role_contents_admin')) {
 		$msg = $_replace_msg['msg_input_str'];
 		$body_pass = "<br />\n";
 	} else {

@@ -9,7 +9,7 @@
 // $Id: navibar.php,v 0.1.19 2011/12/20 20:40:00 Logue Exp $
 //
 
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 function plugin_navibar_convert()
 {
 	global $_LINK, $pkwk_dtd;

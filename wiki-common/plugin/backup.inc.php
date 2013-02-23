@@ -10,14 +10,14 @@
 // License: GPL v2 or (at your option) any later version
 //
 // Backup plugin
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Router;
-use PukiWiki\Lib\Factory;
-use PukiWiki\Lib\File\WikiFile;
-use PukiWiki\Lib\Backup;
-use PukiWiki\Lib\File\FileUtility;
-use PukiWiki\Lib\Renderer\RendererFactory;
-use PukiWiki\Lib\Diff;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Router;
+use PukiWiki\Factory;
+use PukiWiki\File\WikiFile;
+use PukiWiki\Backup;
+use PukiWiki\File\FileUtility;
+use PukiWiki\Renderer\RendererFactory;
+use PukiWiki\Diff;
 
 
 // Prohibit rendering old wiki texts (suppresses load, transfer rate, and security risk)
@@ -218,7 +218,7 @@ function plugin_backup_delete($page, $ages = array())
 	if (! $backup->has())
 		return array('msg'=>$_backup_messages['title_pagebackuplist'], 'body'=>plugin_backup_get_list($page)); // Say "is not found"
 
-	if (! Auth::check_role('role_adm_contents')) {
+	if (! Auth::check_role('role_contents_admin')) {
 		$backup->remove();
 		return array(
 			'msg'  => $_backup_messages['title_backup_delete'],

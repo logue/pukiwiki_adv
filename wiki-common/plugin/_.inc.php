@@ -22,8 +22,8 @@
  *
  */
 
-use PukiWiki\Lib\Lang\Lang;
-use PukiWiki\Lib\Lang\AcceptLanguage;
+use PukiWiki\Lang\Lang;
+use PukiWiki\Lang\AcceptLanguage;
 
 function plugin___inline()
 {

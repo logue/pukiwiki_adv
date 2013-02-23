@@ -10,7 +10,7 @@
 //	&new(pagename/[,nolink]);
 //		// Check multiple pages started with 'pagename/',
 //		// and show the latest one
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 define('PLUGIN_NEW_DATE_FORMAT', '<span class="comment_date">%s</span>');
 
 function plugin_new_init()

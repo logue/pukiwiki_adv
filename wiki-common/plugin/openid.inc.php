@@ -7,11 +7,11 @@
  * @version     $Id: openid.inc.php,v 0.15.2 2012/05/11 18:27:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Auth\AuthApi;
-use PukiWiki\Lib\Auth\AuthOpenId;
-use PukiWiki\Lib\Auth\AuthOpenIdVerify;
-use PukiWiki\Lib\Utility;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Auth\AuthApi;
+use PukiWiki\Auth\AuthOpenId;
+use PukiWiki\Auth\AuthOpenIdVerify;
+use PukiWiki\Utility;
 
 defined('PLUGIN_OPENID_SIZE_LOGIN')  or define('PLUGIN_OPENID_SIZE_LOGIN', 30);
 defined('PLUGIN_OPENID_STORE_PATH')  or define('PLUGIN_OPENID_STORE_PATH', '/tmp/_php_openid_plus');

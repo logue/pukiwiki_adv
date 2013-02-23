@@ -21,8 +21,8 @@ if (!defined('HTDIGEST_FILE_NAME')) {
 if (!defined('HTDIGEST_FILE')) {
 	define('HTDIGEST_FILE', HTDIGEST_FILE_PATH.HTDIGEST_FILE_NAME);
 }
-use PukiWiki\Lib\Auth\Auth;
-//use PukiWiki\Lib\File\AuthFile;
+use PukiWiki\Auth\Auth;
+//use PukiWiki\File\AuthFile;
 use Zend\Crypt\BlockCipher;
 
 function plugin_htdigest_init()

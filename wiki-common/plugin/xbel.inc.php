@@ -7,7 +7,7 @@
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  *
  */
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 defined('XBEL_PREF_PAGE') or define('XBEL_PREF_PAGE', 'Favorite');
 
 function plugin_xbel_init()

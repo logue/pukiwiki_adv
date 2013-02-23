@@ -9,10 +9,10 @@
 
 // Notice: This plugin based on minicalendar_viewer.inc.php from PukiWiki Plus!.
 //         Adv. is rejected to minicalendar.inc.php and minicalendar_viewer.inc.php.
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Factory;
-use PukiWiki\Lib\Renderer\RendererFactory;
-use PukiWiki\Lib\Lang\Holiday\PublicHolidayFactory;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Factory;
+use PukiWiki\Renderer\RendererFactory;
+use PukiWiki\Lang\Holiday\PublicHolidayFactory;
 // Page title's date format
 //  * See PHP date() manual for detail
 //  * '$\w' = weeklabel defined in $_msg_week

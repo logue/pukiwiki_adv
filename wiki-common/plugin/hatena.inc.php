@@ -12,8 +12,8 @@ defined('HATENA_URL_AUTH')	or define('HATENA_URL_AUTH','http://auth.hatena.ne.jp
 defined('HATENA_URL_XML')	or define('HATENA_URL_XML', 'http://auth.hatena.ne.jp/api/auth.xml');
 defined('HATENA_URL_PROFILE')	or define('HATENA_URL_PROFILE','http://www.hatena.ne.jp/user?userid=');
 defined('ROLE_AUTH_HATENA')          or define('ROLE_AUTH_HATENA', 5.3);
-use PukiWiki\Lib\Auth\Auth;
-use PukiWiki\Lib\Auth\AuthApi;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Auth\AuthApi;
 class auth_hatena extends AuthApi
 {
 	var $sec_key,$api_key;

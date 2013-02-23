@@ -2,7 +2,7 @@
 
 // table_edit2.inc.php, 3.1+calc0.6+func0.3 2009/11/19 taru        plugin
 // Modified by PukiWiki Adv. Team 2012
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 
 define('PLUGIN_TABLE_EDIT2_TEXT_SIZE',  58);
 define('PLUGIN_TABLE_EDIT2_TEXTAREA_ROWS_LINE',  4);		// textarea

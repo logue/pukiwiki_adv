@@ -9,9 +9,9 @@
 // License: GPL v2 or (at your option) any later version
 //
 // Showing colored-diff plugin
-use PukiWiki\Lib\Factory;
-use PukiWiki\Lib\File\FileFactory;
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Factory;
+use PukiWiki\File\FileFactory;
+use PukiWiki\Auth\Auth;
 
 function plugin_diff_action()
 {
@@ -104,7 +104,7 @@ function plugin_diff_delete($page)
 	if (! file_exists($filename)) $body = make_pagelink($page) . '\'s diff seems not found';
 	if ($body) return array('msg'=>$_title_diff_delete, 'body'=>$body);
 
-	if (! Auth::check_role('role_adm_contents')) {
+	if (! Auth::check_role('role_contents_admin')) {
 		unlink($filename);
 		return array(
 			'msg'  => $_title_diff_delete,

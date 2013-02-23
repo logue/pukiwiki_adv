@@ -10,7 +10,7 @@
  * @version	$Id: votex.inc.php,v 1.5 2007-06-05 13:23:20Z sonots $
  * @package	plugin
  */
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 /**
  *  votex plugin class
  *

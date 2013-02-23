@@ -3,7 +3,7 @@
 // $Id: navi.inc.php,v 1.24.7 2011/02/05 11:59:00 Logue Exp $
 //
 // Navi plugin: Show DocBook-like navigation bar and contents
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 /*
  * Usage:
  *   #navi(contents-page-name)   <for ALL child pages>

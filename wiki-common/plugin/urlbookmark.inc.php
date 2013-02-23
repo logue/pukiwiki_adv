@@ -21,7 +21,7 @@
  * nodate  日付がつきません。 
  * notile  タイトルの入力項目が表示されません。
  */
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 /////////////////////////////////////////////////
 // URLテキストエリアのカラム数
 defined('URLBOOKMARK_URL_COLS') or define('URLBOOKMARK_URL_COLS',30);

@@ -13,7 +13,7 @@
 //   ?cmd=map&refer=pagename
 //   ?cmd=map&refer=pagename&reverse=true
 
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 // Show $non_list files
 define('PLUGIN_MAP_SHOW_HIDDEN', 0); // 0, 1
 

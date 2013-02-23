@@ -20,8 +20,8 @@ define('PLUGIN_RECENT_EXEC_LIMIT', 3); // N times per one output
 // ----
 
 define('PLUGIN_RECENT_USAGE', '#recent(number-to-show)');
-use PukiWiki\Lib\Factory;
-use PukiWiki\Lib\Recent;
+use PukiWiki\Factory;
+use PukiWiki\Recent;
 
 function plugin_recent_convert()
 {

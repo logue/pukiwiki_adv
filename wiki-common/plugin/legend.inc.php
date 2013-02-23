@@ -4,7 +4,7 @@
 //
 // Legent plugin
 
-use PukiWiki\Lib\Renderer\RendererFactory;
+use PukiWiki\Renderer\RendererFactory;
 
 // ----
 define('PLUGIN_CODE_USAGE', 
