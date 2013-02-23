@@ -13,7 +13,7 @@ class Router{
 				if ($get_init_value) return $script;
 				return $absolute_uri ? self::get_script_absuri() : $script;
 			}
-			$script = Utility::get_script_absuri();
+			$script = self::get_script_absuri();
 			return $script;
 		}
 
@@ -189,7 +189,7 @@ class Router{
 				}
 				break;
 			case 'rel': // rel_path	  = rel_segment [ abs_path ]
-				if (Utility::is_url($script, true)) {
+				if (Utility::isUri($script, true)) {
 					$ret = './';
 				} else {
 					if (isset($parsed_url['path']) && ($pos = strrpos($parsed_url['path'], '/')) !== false) {

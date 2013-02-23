@@ -46,6 +46,11 @@ defined('ROOT_URI')			or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');
 defined('WWW_HOME')			or define('WWW_HOME', '');
 defined('COMMON_URI')		or define('COMMON_URI', ROOT_URI);
 
+// フレームワークのバージョン
+define('JQUERY_VER',		'1.9.1');
+define('JQUERY_UI_VER',		'1.10.1');
+define('JQUERY_MOBILE_VER',	'1.3.0');
+
 /////////////////////////////////////////////////
 // Init server variables
 
@@ -170,10 +175,6 @@ defined('JS_URI')			or define('JS_URI', 		COMMON_URI . 'js/'      );	// URI to J
 
 defined('THEME_PLUS_NAME')	or define('THEME_PLUS_NAME',  'theme/');			// SKIN_URI + THEME_PLUS_NAME
 
-// フレームワークのバージョン
-define('JQUERY_VER',		'1.9.1');
-define('JQUERY_UI_VER',		'1.10.1');
-define('JQUERY_MOBILE_VER',	'1.3.0');
 
 // アップロード進捗状況のセッション名（PHP5.4以降のみ有効）
 defined('PKWK_PROGRESS_SESSION_NAME') or define('PKWK_PROGRESS_SESSION_NAME', 'pukiwiki_progress');

@@ -216,7 +216,7 @@ class Time{
 	 */
 	public static function getTakeTime(){
 		// http://pukiwiki.sourceforge.jp/dev/?BugTrack2%2F251
-		return sprintf('%01.03f', self::getMicroTime() - MUTIME);
+		return sprintf('%01.03f', self::getMicroTime() - $_SERVER['REQUEST_TIME']);
 	}
 	/**
 	 * 経過時間を取得

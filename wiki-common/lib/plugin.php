@@ -216,20 +216,7 @@ function do_plugin_convert($name, $args = '')
 	if (!function_exists($func))
 		return '<div class="message_box ui-state-error ui-corner-all">'.sprintf($_string['plugin_not_implemented'],'#'.htmlsc($name).'()').'</div>';
 
-	if (! PKWKEXP_DISABLE_MULTILINE_PLUGIN_HACK) {
-		// Multiline plugin?
-		$pos  = strpos($args, "\r"); // "\r" is just a delimiter
-		if ($pos !== FALSE) {
-			$body = substr($args, $pos + 1);
-			$args = substr($args, 0, $pos);
-		}
-	}
-
 	$aryargs = empty($args) ? array() : explode(',', $args);
-
-	if (! PKWKEXP_DISABLE_MULTILINE_PLUGIN_HACK) {
-		if (isset($body)) $aryargs[] = & $body;     // #plugin(){{body}}
-	}
 
 	$_digest = $digest;
 	T_textdomain($name);
