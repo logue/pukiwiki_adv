@@ -18,6 +18,8 @@ use PukiWiki\Factory;
 use PukiWiki\File\FileUtility;
 use PukiWiki\Renderer\InlineConverter;
 use PukiWiki\Renderer\Inline\AutoAlias;
+use PukiWiki\Renderer\Inline\AutoLink;
+use PukiWiki\Utility;
 use Zend\Db\Adapter\Adapter;
 
 /**
@@ -62,10 +64,16 @@ class Relational{
 	 * デストラクタ
 	 */
 	public function __destruct(){
-	//	$s = $this->adapter->query('OPTIMIZE TABLE "rel"');
-	//	$s->execute();
-	//	$s = $this->adapter->query('OPTIMIZE TABLE "ref"');
-	//	$s->execute();
+		if (!empty($this->page) && !Factory::Wiki($this->page)->has()) {
+			// ページが削除されている時、関連リンクのデーターも削除
+			$s = $this->adapter->query('DELETE FROM "rel" WHERE "page"=' . $this->adapter->platform->quoteIdentifier($page));
+			$s->execute();
+			$s = $this->adapter->query('DELETE FROM "ref" WHERE "page"=' . $this->adapter->platform->quoteIdentifier($page));
+			$s->execute();
+		}
+		// 最適化
+		$s = $this->adapter->query('VACUUM');
+		$s->execute();
 	}
 
 	/**
@@ -118,9 +126,9 @@ class Relational{
 			if (! isset($_obj->type) || $_obj->type !== 'pagename' || $_obj->name === $page || empty($_obj->name) )
 				continue;
 
-			if ($_obj instanceof PukiWiki\Renderer\Inline\AutoLink) { // Not cool though
+			if ($_obj instanceof AutoLink) { // Not cool though
 				$rel_auto[] = $_obj->name;
-			} else if ($_obj instanceof PukiWiki\Renderer\Inline\AutoAlias) {
+			} else if ($_obj instanceof AutoAlias) {
 				$_alias = AutoAlias::getAutoAliasDict($_obj->name);
 				if (Factory::Wiki($_alias)->isValied()) {
 					$rel_auto[] = $_alias;
@@ -187,11 +195,13 @@ class Relational{
 		$ref   = array(); // Reference from
 		foreach (FileUtility::getExists(DATA_DIR) as $_page) {
 			$rel   = array(); // Reference to
-			foreach (self::getObjects($_page) as $_obj) {
-				if (! isset($_obj->type) || $_obj->type !== 'pagename' || empty($_obj->name) || $_obj->name === $_page ) continue;
+			$objs = self::getObjects($_page);
+			if (empty($objs)) continue;
+			foreach ($objs as $_obj) {
+				if ( ! isset($_obj->type) || $_obj->type !== 'pagename' || empty($_obj->name) || $_obj->name === $_page ) continue;
 
 				$_name = $_obj->name;
-				if ($_obj instanceof PukiWiki\Renderer\Inline\AutoAlias) {
+				if ($_obj instanceof AutoAlias) {
 					$_alias = AutoAlias::getAutoAlias($_name);
 					if (! Factory::Wiki($_alias)->isValied() )
 						continue;	// not PageName
@@ -200,12 +210,11 @@ class Relational{
 				$rel[] = $_name;
 				if (! isset($ref[$_name][$_page]))
 					$ref[$_name][$_page] = 1;
-				if (! $_obj instanceof PukiWiki\Renderer\Inline\AutoLink)
+				if (! $_obj instanceof AutoLink)
 					$ref[$_name][$_page] = 0;
 			}
 			ksort($rel, SORT_NATURAL);
 
-//			$this->cache->setItem(self::REL_PREFIX.md5($_page), array_unique($rel));
 			if (empty($rel)) continue;
 			self::setRel($_page, $rel);
 		}
@@ -298,7 +307,8 @@ class Relational{
 			return;
 		}
 		if (! isset($result[$page]) ){
-			$result[$page] = $this->links_obj->getObjects(join('', preg_grep('/^(?!\/\/|\s)./', Factory::Wiki($page)->get())), $page);
+			$source = Factory::Wiki($page)->get(false);
+			$result[$page] = ($source !== false) ? $this->links_obj->getObjects(join('', preg_grep('/^(?!\/\/|\s)./', $source)), $page) : null;
 		}
 		return $result[$page];
 	}

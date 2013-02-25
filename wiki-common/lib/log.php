@@ -207,7 +207,7 @@ function log_common_check($kind,$page,$parm)
 	$field = log::set_fieldname($kind);
 
 	$obj = new AuthApi();
-	$msg = $obj->auth_session_get();
+	$msg = $obj->getSession();
 
 	foreach ($field as $key) {
 

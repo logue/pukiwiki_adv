@@ -211,7 +211,7 @@ class Time{
 		return $quote ? '(' . $date . ')' : $date;
 	}
 	/**
-	 * ページ作成の所要時間を計算
+	 * 処理時間を計算
 	 * @return string
 	 */
 	public static function getTakeTime(){

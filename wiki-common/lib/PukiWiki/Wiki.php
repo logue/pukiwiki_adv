@@ -42,7 +42,7 @@ class Wiki{
 	 */
 	public function isEditable($authenticate = false)
 	{
-		global $edit_auth, $edit_auth_pages, $auth_api, $defaultpage, $_title, $edit_auth_pages_accept_ip;
+		global $edit_auth, $edit_auth_pages, $_title;
 		global $cantedit;
 
 		if (!$this->isValied()) return false;	// 無効なページ名
@@ -52,17 +52,17 @@ class Wiki{
 			if ($this->page === $key) return false;
 		}
 
-		if ($this->isFreezed()) return false;	// 凍結されている
+		// 凍結されている
+		if ($this->isFreezed()) return false;
 
-		if (!$edit_auth) return true;	// 「編集時に認証する」が有効になっていない
+		// 「編集時に認証する」が有効になっていない
+		if (!$edit_auth) return true;
 
-		// 認証画面を表示する
-		if ($authenticate && !Auth::auth($this->page, true, false, $edit_auth_pages, $_title['cannotedit'])) return false;
-
-		if (Auth::check_role('readonly')) return false;	// 未認証時に読み取り専用になっている
-
+		// 未認証時に読み取り専用になっている
+		if (Auth::check_role('readonly')) return false;	
+		
 		// ユーザ別の権限を読む
-		if (self::checkPermission('read') && self::checkPermission('edit')) return true;
+		if (Auth::auth($this->page, 'read', $authenticate) && Auth::auth($this->page, 'edit', $authenticate)) return true;
 
 		return false;
 	}
@@ -73,20 +73,12 @@ class Wiki{
 	 */
 	public function isReadable($authenticate = false)
 	{
-		global $read_auth, $read_auth_pages, $auth_api, $_title, $read_auth_pages_accept_ip;
+		global $read_auth, $read_auth_pages, $_title;
 
 		if (!$read_auth) return true;
-
-		// 許可IPの場合チェックしない
-		if ( Auth::ip_auth($this->page, $read_auth_pages_accept_ip)) {
-			return TRUE;
-		}
+		
 		// 認証
-		if ($authenticate && !Auth::auth($this->page, true, false, $read_auth_pages, $_title['cannotread'])) return false;
-
-		// ユーザ別の権限を読む
-		if (self::checkPermission('read')) return true;
-
+		if (Auth::auth($this->page, 'read', $authenticate)) return true;
 		return false;
 	}
 	/**
@@ -168,7 +160,6 @@ class Wiki{
 	}
 
 /**************************************************************************************************/
-
 	/**
 	 * HTMLに変換
 	 * @return string
@@ -189,6 +180,13 @@ class Wiki{
 	 */
 	public function uri($cmd='read', $query=array(), $fragment=''){
 		return Router::get_resolve_uri($cmd, $this->page, 'rel', $query, $fragment);
+	}
+	/**
+	 * ページのリンクを取得
+	 */
+	public function link($cmd='read', $query=array(), $fragment=''){
+		$_page = Utility::htmlsc($this->page);
+		return '<a href="' . self::uri($cmd, $query, $fragment) . '" title="' . $_page . ' ' . $this->passage(false, true) . '">'. $_page . '</a>';
 	}
 	/**
 	 * 関連リンクを取得

@@ -18,7 +18,7 @@ function plugin_remoteip_inline()
 
 	// 処理済みか？
 	$obj = new auth_remoteip();
-	$msg = $obj->auth_session_get();
+	$msg = $obj->getSession();
         if (! empty($msg['api']) && $obj->auth_name !== $msg['api']) return '';
 	if (! empty($msg['uid'])) return '';
 
@@ -42,7 +42,7 @@ function plugin_remoteip_inline()
 	}
 
 	// if (empty($obj->response['uid'])) return '';
-	$obj->auth_session_put();
+	$obj->setSession();
 	return '';
 }
 
@@ -58,7 +58,7 @@ function plugin_remoteip_get_user_name()
 	// role,name,nick,profile
 	if (! $auth_api['remoteip']['use']) return array('role'=>ROLE_GUEST,'nick'=>'');
 	$obj = new auth_remoteip();
-	$msg = $obj->auth_session_get();
+	$msg = $obj->getSession();
 	if (! empty($msg['uid'])) return array('role'=>ROLE_AUTH_REMOTEIP,'nick'=>$msg['name'],'uid'=>$msg['uid'],'note'=>$msg['note'],'key'=>$msg['uid']);
 	return array('role'=>ROLE_GUEST,'nick'=>'');
 }

@@ -10,6 +10,10 @@
 // Popular pages plugin: Show an access ranking of this wiki
 // -- like recent plugin, using counter plugin's count --
 use PukiWiki\Auth\Auth;
+use PukiWiki\Factory;
+use PukiWiki\Time;
+use PukiWiki\Utility;
+
 /*
  * 通算および今日に別けて一覧を作ることができます。
  *
@@ -95,18 +99,19 @@ function plugin_popular_convert()
 
 		foreach ($counters as $page=>$count) {
 			$page = substr($page, 1);
+			$wiki = Factory::Wiki($page);
 			$counter = (!IS_MOBILE) ? 
 				'<span class="counter">(' . $count .')</span>' :
 				'<span class="ui-li-count">' . $count .'</span>';
 
-			$s_page = htmlsc($page);
+			$s_page = Utility::htmlsc($page);
 			
 			if ($page === $vars['page']) {
 				// No need to link itself, notifies where you just read
-				$pg_passage = get_pg_passage($page,FALSE);
+				$pg_passage = $wiki->passage(false,false);
 				$items .= ' <li data-theme="e"><span title="' . $s_page . ' ' . $pg_passage . '">' . $s_page . $counter . '</span></li>' . "\n";
 			} else {
-				$items .= ' <li>' . make_pagelink($page, $s_page . $counter) .'</li>' . "\n";
+				$items .= ' <li>' . $wiki->link() . ' ' . $counter . '</li>' . "\n";
 			}
 		}
 		$items .= (!IS_MOBILE) ? '</ul>' . "\n" : '';
@@ -166,7 +171,7 @@ function plugin_popular_action(){
 function plugin_popular_getlist($view, $max = PLUGIN_POPULAR_DEFAULT, $except){
 	static $localtime;
 	if (! isset($localtime)) {
-		list($zone, $zonetime) = set_timezone(DEFAULT_LANG);
+		list($zone, $zonetime) = Time::setTimeZone(DEFAULT_LANG);
 		$localtime = UTIME + $zonetime;
 	}
 
@@ -176,9 +181,8 @@ function plugin_popular_getlist($view, $max = PLUGIN_POPULAR_DEFAULT, $except){
 	
 	$counters = array();
 	foreach (Auth::get_existpages(COUNTER_DIR, '.count') as $file=>$page) {
-		if (($except != '' && preg_match("/".$except."/", $page)) ||
-			is_cantedit($page) || check_non_list($page) ||
-			! is_page($page))
+		$wiki = Factory::Wiki($page);
+		if (($except != '' && preg_match("/".$except."/", $page)) || $wiki->isEditable() || $wiki->isHidden() ||! $wiki->isValied())
 			continue;
 
 		$count_file = COUNTER_DIR . str_replace('.txt','.count', $file);

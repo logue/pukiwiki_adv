@@ -6,6 +6,8 @@
 use PukiWiki\Auth\Auth;
 use PukiWiki\Renderer\RendererFactory;
 use PukiWiki\Relational;
+use PukiWiki\Utility;
+use PukiWiki\Router;
 
 // Message setting
 function plugin_links_init()
@@ -39,7 +41,7 @@ function plugin_links_action()
 	global $_links_messages, $_string;
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits this');
-	if (Auth::check_role('readonly')) die_message( $_string['error_prohibit'] );
+	if (Auth::check_role('readonly')) Utility::dieMessage( $_string['error_prohibit'] );
 
 	$admin_pass = (empty($post['adminpass'])) ? '' : $post['adminpass'];
 	if ( isset($vars['menu']) && (! Auth::check_role('role_contents_admin') || pkwk_login($admin_pass) )) {
@@ -60,7 +62,7 @@ function plugin_links_action()
 
 	$msg   = & $_links_messages['title_update'];
 	$body  = RendererFactory::factory( sprintf($_links_messages['msg_usage1']) );
-	$script = get_script_uri();
+	$script = Router::get_script_uri();
 	$body .= <<<EOD
 <form method="post" action="$script" class="links_form">
 	<input type="hidden" name="cmd" value="links" />

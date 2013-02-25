@@ -6,6 +6,7 @@
 // License: GPL v2 or (at your option) any later version
 //
 // old functions
+use PukiWiki\Auth\Auth;
 use PukiWiki\Utility;
 use PukiWiki\Router;
 use PukiWiki\File\FileUtility;
@@ -42,13 +43,13 @@ function check_readable($page, $auth_flag = TRUE, $exit_flag = TRUE)
  */
 function get_backup($page, $age = 0)
 {
-	trigger_error('get_backup($page, $age) is deprecated. Use FileFactory::Backup($page)->getBackup($age)', E_USER_DEPRECATED);
+	//trigger_error('get_backup($page, $age) is deprecated. Use FileFactory::Backup($page)->getBackup($age)', E_USER_DEPRECATED);
 	if (empty($page)) return;
 	return Factory::Wiki($page)->getBackup($age);
 }
 
 function _backup_file_exists($page){
-	trigger_error('_backup_file_exists($page) is deprecated. Use FileFactory::Backup($page)->has()', E_USER_DEPRECATED);
+	//trigger_error('_backup_file_exists($page) is deprecated. Use FileFactory::Backup($page)->has()', E_USER_DEPRECATED);
 	if (empty($page)) return;
 	return Factory::Wiki($page)->hasBackup();
 }
@@ -57,7 +58,7 @@ function _backup_file_exists($page){
  */
 function convert_html($lines)
 {
-	trigger_error('convert_html($lines) is deprecated. Use RendererFactory::factory($lines)', E_USER_DEPRECATED);
+	//trigger_error('convert_html($lines) is deprecated. Use RendererFactory::factory($lines)', E_USER_DEPRECATED);
 	global $vars, $digest;
 	static $contents_id = 0;
 
@@ -87,7 +88,7 @@ function get_source($page = NULL, $lock = TRUE, $join = false)
 // Get last-modified filetime of the page
 function get_filetime($page)
 {
-	trigger_error('get_filetime is deprecated. use WikiFactory::Wiki($page)->time().', E_USER_DEPRECATED );
+	//trigger_error('get_filetime is deprecated. use WikiFactory::Wiki($page)->time().', E_USER_DEPRECATED );
 	if (empty($page)) return;
 	return Factory::Wiki($page)->time();
 }
@@ -95,7 +96,7 @@ function get_filetime($page)
 // Get physical file name of the page
 function get_filename($page)
 {
-	trigger_error('get_filename is deprecated. use WikiFactory::Wiki($page)->filename().', E_USER_DEPRECATED );
+	//trigger_error('get_filename is deprecated. use WikiFactory::Wiki($page)->filename().', E_USER_DEPRECATED );
 	if (empty($page)) return;
 	return Factory::Wiki($page)->wiki->filename;
 }
@@ -103,7 +104,7 @@ function get_filename($page)
 // Get elapsed date of the page
 function get_pg_passage($page, $sw = TRUE)
 {
-	trigger_error('get_pg_passage($page) is deprecated. use WikiFactory::Wiki($page)->passage($sw).', E_USER_DEPRECATED );
+	//trigger_error('get_pg_passage($page) is deprecated. use WikiFactory::Wiki($page)->passage($sw).', E_USER_DEPRECATED );
 	if (empty($page)) return;
 	return Factory::Wiki($page)->wiki->passage($sw, false);
 }
@@ -111,7 +112,7 @@ function get_pg_passage($page, $sw = TRUE)
 // Put a data(wiki text) into a physical file(diff, backup, text)
 function page_write($page, $postdata, $notimestamp = FALSE)
 {
-	trigger_error('page_write($page, $postdata, $notimestamp) is deprecated. use WikiFactory::Wiki($page)->set($postdata, $notimestamp).', E_USER_DEPRECATED );
+	//trigger_error('page_write($page, $postdata, $notimestamp) is deprecated. use WikiFactory::Wiki($page)->set($postdata, $notimestamp).', E_USER_DEPRECATED );
 	if (empty($page)) return;
 	return Factory::Wiki($page)->set($postdata, $notimestamp);
 }
@@ -119,21 +120,21 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 // Get a list of related pages of the page
 function links_get_related($page)
 {
-	trigger_error('links_get_related($page) is deprecated. use WikiFactory::Wiki($page)->getRetaled().', E_USER_DEPRECATED );
+	//trigger_error('links_get_related($page) is deprecated. use WikiFactory::Wiki($page)->getRetaled().', E_USER_DEPRECATED );
 	return Factory::Wiki($page)->getRetaled();
 }
 
 // Re-create PKWK_MAXSHOW_CACHE (Heavy)
 function put_lastmodified()
 {
-	trigger_error('put_lastmodified() is deprecated. use FileUtility::get_recent(true).', E_USER_DEPRECATED );
+	//trigger_error('put_lastmodified() is deprecated. use FileUtility::get_recent(true).', E_USER_DEPRECATED );
 	Recent::get(true);
 }
 
 // touch() with trying pkwk_chown()
 function pkwk_touch_file($filename, $time = FALSE, $atime = FALSE)
 {
-	trigger_error('pkwk_touch_file($filename, $time, $atime) is deprecated. use FileFactory::Generic($filename)->touch($time, $atime).', E_USER_DEPRECATED );
+	//trigger_error('pkwk_touch_file($filename, $time, $atime) is deprecated. use FileFactory::Generic($filename)->touch($time, $atime).', E_USER_DEPRECATED );
 	return FileFactory::Generic($filename)->touch($time, $atime);
 }
 
@@ -152,7 +153,7 @@ function header_lastmod($page = NULL)
 // Get a list of encoded files (must specify a directory and a suffix)
 function get_existfiles($dir = DATA_DIR, $ext = '.txt')
 {
-	trigger_error('get_existfiles() is deprecated. use FileUtility::get_exists($dir).', E_USER_DEPRECATED );
+	//trigger_error('get_existfiles() is deprecated. use FileUtility::get_exists($dir).', E_USER_DEPRECATED );
 	return FileUtility::getExists($dir);
 }
 

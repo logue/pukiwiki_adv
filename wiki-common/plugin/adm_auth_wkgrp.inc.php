@@ -300,8 +300,8 @@ function adm_auth_wkgrp_role2define($role)
 	static $array_role = array(
 		0 => 'ROLE_GUEST',
 		1 => 'ROLE_FORCE',
-		2 => 'ROLE_ADM',
-		3 => 'ROLE_ADM_CONTENTS',
+		2 => 'ROLE_ADMIN',
+		3 => 'ROLE_CONTENTS_ADMIN',
 		4 => 'ROLE_ENROLLEE',
 		5 => 'ROLE_AUTH'
 	);

@@ -1,67 +1,123 @@
 <?php
 /**
- * PukiWiki Plus! 認証処理
+ * PukiWiki Advance 外部認証処理
  *
  * @copyright   Copyright &copy; 2007-2009, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
  * @author      Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
  * @version     $Id: auth_api.cls.php,v 0.6 2008/06/02 01:40:00 upk Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
-// require_once(LIB_DIR . 'hash.php');
 
 namespace PukiWiki\Auth;
 
 use PukiWiki\Auth\Auth;
 use PukiWiki\Utility;
 use PukiWiki\Router;
+use Zend\Crypt\BlockCipher;
 
-class AuthApi
+/**
+ * 外部認証基底クラス
+ */
+abstract class AuthApi
 {
+	// セッションの接頭辞
 	const SESSION_PREFIX = 'auth-';
 	// auth_session_put    - auth_name, field_name, response
 	// responce_xml_parser - response
-	var $auth_name, $field_name, $response;
+	public $auth_name, $field_name, $response;
 
-	static function auth_session_get(){
-		$val = Auth::getAuthSession(self::message_md5());
-		if (empty($val)) {
-			return array();
-		}
-		return self::parse_message($val);
+	protected $bc, $session_name;
+	/**
+	 * コンストラクタ
+	 */
+	public function __construct(){
+		global $adminpass;
+		// 管理人のパスワードのハッシュを暗号／復号のキーとする
+		list(, $salt) = Auth::passwd_parse($adminpass);
+		// 暗号化
+		$this->bc = BlockCipher::factory('mcrypt', array(
+			'algo' => 'des',
+			'mode' => 'cfb',
+			'hash' => 'sha512',
+			'salt' => $salt,
+			'padding' => 2
+		));
+		// セッション名
+		$this->session_name = self::SESSION_PREFIX.md5(Router::get_script_absuri().session_id());
 	}
-
-	static function auth_session_put()
+	/**
+	 * ログイン用のリンクを取得
+	 * @param string $callback_url コールバック先のURL
+	 * @return string
+	 */
+	public function make_login_link($callback_url){}
+	/**
+	 * 外部認証
+	 * @param string $frob
+	 * @return int
+	 */
+	public function auth($frob){}
+	/**
+	 * ユーザ情報を取得
+	 * @param string $token トークン
+	 * @return int
+	 */
+	public function get_userinfo($token){}
+	/**
+	 * セッションを取得
+	 * @return array
+	 */
+	public function getSession(){
+		global $session;
+		// des化された内容を平文に戻す
+		if ($session->offsetExists($this->session_name)) {
+			return self::parseValue($this->bc->decrypt($session->offsetGet($this->session_name)));
+		}
+		return array();
+	}
+	/**
+	 * セッションを設定
+	 * @return void
+	 */
+	public function setSession()
 	{
-		$message = '';
+		global $session;
+		$value = '';
 		foreach(array_merge(array('api','ts'),$this->field_name) as $key) {
-		// foreach($this->field_name as $key) {
-			$message .= (empty($message)) ? '' : '::'; // delm
-			$message .= $key.'$$';
+			$value .= (empty($value)) ? '' : '::'; // delm
+			$value .= $key.'$$';
 			switch($key) {
 			case 'api':
-				$message .= $this->auth_name;
+				$value .= $this->auth_name;
 				break;
 			case 'ts':
-				$message .= UTIME;
+				$value .= UTIME;
 				break;
 			default:
-				$message .= Utility::encode($this->response[$key]);
+				$value .= Utility::encode($this->response[$key]);
 			}
 		}
-		Auth::setAuthSession(self::message_md5(),$message);
+		// 復号化
+		$session->offsetSet($this->session_name, $this->bc->encrypt($value));
 
 		if ($this->auth_name != 'openid_verify') {
 			log_write('login','');
 		}
 	}
-
-	function auth_session_unset()
+	/**
+	 * セッションを削除
+	 */
+	public function unsetSession()
 	{
-		// return session_unregister($this->message_md5());
-		Auth::unsetAuthSession(self::message_md5());
+		global $session;
+		$session->offsetUnset($this->session_name);
 	}
-
-	static function parse_message($message)
+	/**
+	 * セッションの値をパース
+	 * @param type $message
+	 * @return type
+	 */
+	private static function parseValue($message)
 	{
 		$rc = array();
 		$tmp = explode('::',trim($message));
@@ -75,9 +131,12 @@ class AuthApi
 		}
 		return $rc;
 	}
-
-	// response
-	function responce_xml_parser($data)
+	/**
+	 * レスポンスのXMLをパース
+	 * @param string $data 入力データー
+	 * @return void
+	 */
+	protected function responce_xml_parser($data)
 	{
 		$xml_parser = xml_parser_create();
 		xml_parse_into_struct($xml_parser, $data, $val, $index);
@@ -88,14 +147,7 @@ class AuthApi
 			$this->response[strtolower($x['tag'])] = $x['value'];
 		}
 	}
-
-	static function message_md5()
-	{
-		// return md5($this->auth_name.'_message_'.get_script_absuri().session_id());
-		return self::SESSION_PREFIX.md5(Router::get_script_absuri().session_id());
-	}
-
 }
 
-/* End of file auth_api.cls.php */
-/* Location: ./wiki-common/lib/auth_api.cls.php */
+/* End of file AuthApi.php */
+/* Location: ./vendor/PukiWiki/AuthApi.php */

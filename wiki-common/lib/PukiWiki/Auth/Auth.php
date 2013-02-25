@@ -42,8 +42,6 @@ class Auth
 	const ROLE_AUTH = 5;
 	// 見做し認証者
 	const ROLE_AUTH_TEMP = 5.1;
-	// OpenID認証者
-	const ROLE_AUTH_OPENID = 5.2;
 
 	/**
 	 * 管理人ログイン（非推奨）
@@ -159,12 +157,14 @@ class Auth
 	 * 権限をチェック
 	 * @param string $page ページ名
 	 * @param string $type チェックする権限（read or edit）
+	 * @param boolean $authenticate 認証画面を出すか？
 	 * @param string $username ユーザ名（認証状態のユーザ名が優先される）
 	 * @param string $groupname グループ名（認証状態のユーザのグループが優先される）
 	 * @return boolean
 	 */
-	public function checkPermission($page, $type = 'read', $username='', $groupname='')
+	public static function auth($page, $type = 'read', $authenticate = false, $username='', $groupname='')
 	{
+		global $_title;
 		global $auth_method_type, $read_auth_pages, $edit_auth_pages, $read_auth_pages_accept_ip, $edit_auth_pages_accept_ip;
 
 		$target_str = '';
@@ -178,7 +178,7 @@ class Auth
 				$target_str = Factory::Wiki($page)->get(true);
 				break;
 			default:
-				throw new Exception('Auth::checkPermission() : $auth_method_type is invalied!.');
+				throw new \Exception('Auth::checkPermission() : $auth_method_type = '.$auth_method_type.' is invalied!.');
 				break;
 		}
 
@@ -187,35 +187,30 @@ class Auth
 				// IPをチェック
 				if (self::checkAcceptIp($read_auth_pages_accept_ip, $target_str)) return true;
 				$auth_pages = $read_auth_pages;
+				$title_cannot = $_title['cannotedit'];
 				break;
 			case 'edit':
 				if (self::checkAcceptIp($edit_auth_pages_accept_ip, $target_str)) return true;
 				$auth_pages = $edit_auth_pages;
+				$title_cannot = $_title['cannotread'];
 				break;
 			default:
-				throw new Exception('Wiki::checkPermission() : $type = '.$type.' is invalied!.');
+				throw new \Exception('Auth::checkPermission() : $type = '.$type.' is invalied!.');
 				break;
 		}
-		// ユーザの情報を取得
-		$info = Auth::get_user_info();
-		// ユーザ名などが入力されていない場合、ユーザ情報からパラメーターを取得する
-		if (empty($username)) $username = $info['key'];
-		if (empty($groupname)) $groupname = $info['group'];
-
-		// 認証されていない場合$usernameは空っぽになるので権限ナシ
-		if (empty($username)) return false;
-
+		
 		$user_list = $group_list = $role = '';
+		$matched = false;
 		// $auth_pages = array(
-		//      'ページ名' => array(
+		//      'ページ名の正規表現' => array(
 		//          'user'  => array(ユーザ名のリスト),
 		//          'group' => array(グループのリスト),
 		//          'role'  => array(役割のリスト)
 		//      ),
 		//      ...
 		// );
-		foreach($auth_pages as $key=>$val) {
-			if (preg_match($key, $target_str)) {
+		foreach($auth_pages as $pattern=>$val) {
+			if (preg_match($pattern, $target_str)) {
 				if (is_array($val)) {
 					$user_list  = (empty($val['user']))  ? null : explode(',',$val['user']);
 					$group_list = (empty($val['group'])) ? null : explode(',',$val['group']);
@@ -223,12 +218,34 @@ class Auth
 				} else {
 					$user_list  = (empty($val))          ? null : explode(',',$val);
 				}
+				$matched = true;
 				break;
 			}
 		}
-
-		// No limit
+		// マッチしない場合は対象外
+		if ($matched === false) return true;
+		
+		// 制限対象のページでない場合ここで終了
 		if (empty($user_list) && empty($group_list) && empty($role)) return true;
+		
+		// 認証画面を出す
+		if ($authenticate){
+			global $auth_type;
+			switch ($auth_type) {
+				case 1: return self::basic_auth($target_str, true, false, $auth_pages, $title_cannot);
+				case 2: return self::digest_auth($target_str, true, false, $auth_pages, $title_cannot);
+			}
+		}
+		
+		// ユーザ名が明示的に定義されていないときは、ユーザ情報を呼び出す。グループは上書きでいいのか？
+		if (empty($username)){
+			// ユーザの情報を取得
+			$info = Auth::get_user_info();
+			// ユーザ名などが入力されていない場合、ユーザ情報からパラメーターを取得する
+			$username = $info['key'];
+			$groupname = $info['group'];
+		}
+
 		// ユーザ名検査
 		if (!empty($user_list) && in_array($username, $user_list)) return true;
 		// グループ検査
@@ -261,38 +278,13 @@ class Auth
 		}
 		return false;
 	}
-
-
-	public static function get_auth_func_name()
-	{
-		global $auth_type;
-		switch ($auth_type) {
-			case 1: return 'self::basic_auth';
-			case 2: return 'self::digest_auth';
-		}
-		return 'self::basic_auth';
-	}
-	/**
-	 * 認証
-	 * @param string $page ページ名
-	 * @param boolean $auth_flag 認証画面を出力するか
-	 * @param boolean $exit_flag 失敗した時にエラーを出力するか
-	 * @param array $auth_pages 認証を必要とするページの配列
-	 * @param string $title_cannot 認証できなかった時に表示するメッセージ
-	 * @return boolean
-	 */
-	public static function auth($page, $auth_flag, $exit_flag, $auth_pages, $title_cannot){
-		global $auth_type;
-		switch ($auth_type) {
-			case 1: return self::basic_auth($page, $auth_flag, $exit_flag, $auth_pages, $title_cannot);
-			case 2: return self::digest_auth($page, $auth_flag, $exit_flag, $auth_pages, $title_cannot);
-		}
-	}
-
 	/**
 	 * Basic認証
-	 * @param string $page
-	 * @param
+	 * @param string $page ページ名
+	 * @param boolean $auth_flag 認証画面を出すか
+	 * @param boolean $exit_flag 認証できなかった時メッセージを表示するか
+	 * @param array $auth_pages 認証対象とするページの配列
+	 * @param string $title_cannot 認証できなかった時のメッセージ
 	 * @return boolean
 	 */
 	private static function basic_auth($page, $auth_flag, $exit_flag, $auth_pages, $title_cannot)
@@ -336,8 +328,7 @@ class Auth
 			}
 			if ($exit_flag) {
 				// メッセージを表示する
-				$body = $title = str_replace('$1',
-					Utility::htmlsc(Utility::stripBracket($page)), $title_cannot);
+				$body = $title = str_replace('$1', Utility::htmlsc(Utility::stripBracket($page)), $title_cannot);
 				$page = str_replace('$1', make_search($page), $title_cannot);
 				catbody($title, $page, $body);
 				exit;
@@ -346,8 +337,14 @@ class Auth
 		}
 		return TRUE;
 	}
-
-	// Digest authentication
+	/**
+	 * Digest認証
+	 * @param string $page ページ名
+	 * @param boolean $auth_flag 認証画面を出すか
+	 * @param boolean $exit_flag 認証できなかった時メッセージを表示するか
+	 * @param array $auth_pages 認証対象とするページの配列
+	 * @param string $title_cannot 認証できなかった時のメッセージ
+	 */
 	private static function digest_auth($page, $auth_flag, $exit_flag, $auth_pages, $title_cannot)
 	{
 		global $auth_users;
@@ -520,7 +517,7 @@ class Auth
 		if (! empty($login)) return $login;
 
 		// NTLM対応
-		list($domain, $login, $host, $pass) = self::ntlm_decode();
+		list(, $login, , ) = self::ntlm_decode();
 		return $login;
 	}
 	/**
@@ -542,7 +539,7 @@ class Auth
 				}
 				// ドメイン認証の確認
 				$ms = explode('\\', $_SERVER[$x]);
-				if (count($ms) == 3) {
+				if (count($ms) === 3) {
 					$user = $ms[2]; // DOMAIN\\USERID
 					break;
 				}
@@ -551,7 +548,7 @@ class Auth
 				break;
 			}
 		}
-		if (empty($user)) return '';
+		if (empty($user)) return null;
 
 		// 未定義ユーザは、サーバ側で認証時または、ＯＳでの認証時のワークグループ接続的なイメージ
 		if (!isset($auth_users[$user])) return $user;
@@ -565,9 +562,8 @@ class Auth
 				break;
 			}
 		}
-                if (empty($pass)) return '';
-		if (empty($auth_users[$user][0])) return ''; // パスワードが空は除く
-		return (self::hash_compute($pass,$auth_users[$user][0]) === $auth_users[$user][0]) ? $user : '';
+		if (empty($pass) || empty($auth_users[$user][0])) return null; // パスワードが空は除く
+		return (self::hash_compute($pass,$auth_users[$user][0]) === $auth_users[$user][0]) ? $user : null;
 	}
 	/**
 	 * Digest認証
@@ -578,20 +574,20 @@ class Auth
 	{
 		global $auth_users;
 
-		if (! self::auth_digest($auth_users)) return '';
+		if (! self::auth_digest($auth_users)) return null;
 		$data = self::http_digest_parse($_SERVER['PHP_AUTH_DIGEST']);
 		if (! empty($data['username'])) return $data['username'];
 		return '';
 	}
 	/*
-	 * 管理者パスワードなのかどうか
-	 * @return bool
+	 * 管理者パスワードなのかどうか（暫定管理人か？）
+	 * @return boolean
 	 */
 	public static function is_temp_admin()
 	{
 		global $adminpass;
 		// 管理者パスワードなのかどうか？
-		$temp_admin = ( self::hash_compute($_SERVER['PHP_AUTH_PW'], $adminpass) !== $adminpass) ? false : true;
+		$temp_admin = self::hash_compute($_SERVER['PHP_AUTH_PW'], $adminpass) !== $adminpass ? false : true;
 		if (! $temp_admin && $login == self::TEMP_CONTENTS_ADMIN_NAME) {
 			global $vars;
 			if (isset($vars['pass']) && self::login($vars['pass'])) $temp_admin = true;
@@ -600,7 +596,7 @@ class Auth
 	}
 	/**
 	 * ユーザ情報
-	 * @return type
+	 * @return array
 	 */
 	public static function get_user_info()
 	{
@@ -614,7 +610,7 @@ class Auth
 
 	/**
 	 * ユーザ情報を取得
-	 * @return string
+	 * @return array
 	 */
 	private static function get_auth_pw_info()
 	{
@@ -649,7 +645,13 @@ class Auth
 		$retval['mypage']= (empty($auth_users[$user][4])) ? null : $auth_users[$user][4];
 		return $retval;
 	}
-
+	/**
+	 * 認証されたAPIの情報を取得
+	 * @global type $auth_api
+	 * @global type $auth_wkgrp_user
+	 * @global type $defaultpage
+	 * @return array
+	 */
 	static function get_auth_api_info()
 	{
 		global $auth_api, $auth_wkgrp_user, $defaultpage;
@@ -672,13 +674,13 @@ class Auth
 		}
 
 		$obj = new AuthApi();
-		$msg = $obj->auth_session_get();
+		$msg = $obj->getSession();
 		if (isset($msg['api']) && $auth_api[$msg['api']]['use']) {
 			if (exist_plugin($msg['api'])) {
 				$call_func = 'plugin_'.$msg['api'].'_get_user_name';
 				$auth_key = $call_func();
 				$auth_key['api'] = $msg['api'];
-				if (empty($auth_key['nick'])) return $retval;
+				if (empty($auth_key['nick'])) return $auth_key;
 
 				// 上書き・追加する項目
 				if (! empty($auth_wkgrp_user[$auth_key['api']][$auth_key['key']])) {
@@ -760,11 +762,11 @@ class Auth
 				$chk_role = (defined('PKWK_READONLY')) ? PKWK_READONLY : self::ROLE_GUEST;
 				break;
 			case 'safemode':
-				$chk_role = (defined('PKWK_SAFE_MODE')) ? PKWK_SAFE_MODE : self::ROLE_GUEST;
+				$chk_role = defined('PKWK_SAFE_MODE') ? PKWK_SAFE_MODE : self::ROLE_GUEST;
 				break;
 			case 'su':
 				$now_role = self::get_role_level();
-				if ($now_role == 2 || (int)$now_role == self::ROLE_CONTENTS_ADMIN) return FALSE; // 既に権限有
+				if ($now_role == self::ROLE_ADMIN || (int)$now_role == self::ROLE_CONTENTS_ADMIN) return FALSE; // 既に権限有
 				$chk_role = self::ROLE_CONTENTS_ADMIN;
 				switch ($now_role) {
 				case self::ROLE_AUTH_TEMP:
@@ -895,7 +897,7 @@ class Auth
 				if ($x == 'HTTP_AUTHORIZATION') {
 					// NTLM対応 (domain, login, host, pass)
 					$tmp_ntlm = self::ntlm_decode();
-					if ($tmp_ntlm[3] == '') continue;
+					if (empty($tmp_ntlm[3])) continue;
 					if (empty($user)) $user = $tmp_ntlm[1];
 					$pass = $tmp_ntlm[3];
 					unset($tmp_ntml);
@@ -965,7 +967,7 @@ class Auth
 	{
 		if (!isset($auth_users[$user])) {
 			// scheme, salt, role
-			return array('','','');
+			return array(null,null,null);
 		}
 
 		$role = (empty($auth_users[$user][1])) ? '' : $auth_users[$user][1];
@@ -1059,65 +1061,6 @@ class Auth
 		RendererFactory::factory($cmd); // die();
 		return TRUE;
 	}
-	/**
-	 * セッションを取得
-	 * @param string $session_name セッション名
-	 * @param string
-	 */
-	public static function getAuthSession($session_name)
-	{
-		global $adminpass, $session;
-
-		// adminpass の処理
-		list($scheme, $salt) = self::passwd_parse($adminpass);
-
-		// des化された内容を平文に戻す
-		if ($session->offsetExists($session_name)) {
-			$blockCipher = BlockCipher::factory('mcrypt', array(
-				'algo' => 'des',
-				'mode' => 'cfb',
-				'hash' => 'sha512',
-				'salt' => $salt,
-				'padding' => 2
-			));
-			return $blockCipher->decrypt($session->offsetGet($session_name));
-		}
-		return null;
-	}
-	/**
-	 * セッションを設定
-	 * @param string $session_name セッション名
-	 * @param string $val セッションの値
-	 * @param string
-	 */
-	public static function setAuthSession($session_name, $val)
-	{
-		global $adminpass, $session;
-
-		// adminpass の処理
-		list($scheme, $salt) = self::passwd_parse($adminpass);
-		$blockCipher = BlockCipher::factory('mcrypt', array(
-			'algo' => 'des',
-			'mode' => 'cfb',
-			'hash' => 'sha512',
-			'salt' => $salt,
-			'padding' => 2
-		));
-		$result = $blockCipher->encrypt($val);
-		$session->offsetSet($session_name, $result);
-		return $result;
-	}
-	/**
-	 * セッションを破棄
-	 * @param string $session_name セッション名
-	 * @param string $val セッションの値
-	 * @param string
-	 */
-	public static function unsetAuthSession($session_name){
-		global $session;
-		$session->offsetUnset($session_name);
-	}
-
 	// See:
 	// Web Services Security: UsernameToken Profile 1.0
 	// http://www.xmlconsortium.org/wg/sec/oasis-200401-wss-username-token-profile-1.0-jp.pdf

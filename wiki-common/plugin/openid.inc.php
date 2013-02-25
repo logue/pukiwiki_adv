@@ -8,7 +8,6 @@
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 use PukiWiki\Auth\Auth;
-use PukiWiki\Auth\AuthApi;
 use PukiWiki\Auth\AuthOpenId;
 use PukiWiki\Auth\AuthOpenIdVerify;
 use PukiWiki\Utility;
@@ -64,7 +63,7 @@ function plugin_openid_logoff_msg($author='openid',$label='OpenID:',$logout_msg=
 
 	// 処理済みか？
 	$obj = new AuthOpenId();
-	$name = $obj->auth_session_get();
+	$name = $obj->getSession();
 
 	if (! empty($name['api'])) {
 		switch ($name['api']) {
@@ -72,7 +71,7 @@ function plugin_openid_logoff_msg($author='openid',$label='OpenID:',$logout_msg=
 			break; // 認証
 		case 'openid_verify':
 			// ゴミセッションのため削除
-			$obj->auth_session_unset();
+			$obj->unsetSession();
 			return ''; // 未認証
 		default:
 			return false; // 他で認証済
@@ -104,10 +103,9 @@ function plugin_openid_inline()
 	if (! $auth_api['openid']['use']) return $_openid_msg['msg_invalid'];
 
 	if (! function_exists('pkwk_session_start')) return $_openid_msg['msg_not_found'];
-	if (pkwk_session_start() == 0) return $_openid_msg['msg_not_start'];
 
 	$obj = new AuthOpenId();
-	$name = $obj->auth_session_get();
+	$name = $obj->getSession();
 
 	if (!empty($name['api']) && $obj->auth_name !== $name['api']) return;
 
@@ -134,19 +132,14 @@ function plugin_openid_action()
 {
 	global $vars,$_openid_msg,$auth_api;
 
-	$die_message = (PLUS_PROTECT_MODE) ? 'die_msg' : 'die_message';
-
 	// OpenID 関連プラグイン経由の認証がＯＫの場合のみ通過を許可
 	if (!isset($auth_api['openid']['use'])) return '';
-	if (! $auth_api['openid']['use']) $die_message( $_openid_msg['msg_invalid'] );
-
-	if (! function_exists('pkwk_session_start')) $die_message($_openid_msg['msg_not_found']);
-	if (pkwk_session_start() == 0) $die_message($_openid_msg['msg_not_start']);
+	if (! $auth_api['openid']['use']) Utility::dieMessage( $_openid_msg['msg_invalid'] );
 
 	// LOGOUT
 	if (isset($vars['logout'])) {
 		$obj = new AuthOpenId();
-		$obj->auth_session_unset();
+		$obj->unsetSession();
 		$page = (empty($vars['page'])) ? '' : $vars['page'];
 		Utility::redirect(get_page_location_uri($page));
 		die();
@@ -190,7 +183,7 @@ function plugin_openid_action()
 	}
 
 	// Error.
-	header('Location: '.get_location_uri());
+	Utility::redirect(get_location_uri());
 }
 
 function plugin_openid_login_form()
@@ -247,13 +240,13 @@ function plugin_openid_verify($consumer)
 	if ($shouldSendRedirect) {
 		$redirect_url = $auth_request->redirectURL($trust_root, $return_to);
 		if (Auth_OpenID::isFailure($redirect_url)) {
-			$die_mesage( sprintf($_openid_msg['err_redirect'],$redirect_url->message) );
+			Utility::dieMessage( sprintf($_openid_msg['err_redirect'],$redirect_url->message) );
 		}
 	} else {
 		$form_id = 'openid_message';
 		$form_html = $auth_request->htmlMarkup($trust_root, $return_to, false, array('id' => $form_id));
 		if (Auth_OpenID::isFailure($form_html)) {
-			$die_mesage( sprintf($_openid_msg['err_redirect'],$form_html->message) );
+			Utility::dieMessage( sprintf($_openid_msg['err_redirect'],$form_html->message) );
 		}
 	}
 
@@ -266,13 +259,13 @@ function plugin_openid_verify($consumer)
 		'page'       => $page,
 		'author'     => $author
 	);
-	$obj->auth_session_put();
+	$obj->setSession();
 
 	if ($shouldSendRedirect) {
-		header('Location: '.$redirect_url);
+		Utility::redirect($redirect_url);
 	} else {
 		//print $form_html;
-		die($form_html);
+		Utility::dieMessage($form_html);
 	}
 }
 
@@ -283,12 +276,12 @@ function plugin_openid_finish_auth($consumer)
 	$die_message = (PLUS_PROTECT_MODE) ? 'die_msg' : 'die_message';
 
 	$obj_verify = new AuthOpenIdVerify();
-	$session_verify = $obj_verify->auth_session_get();
+	$session_verify = $obj_verify->getSession();
 	//$session_verify['server_url']
 	//$session_verify['local_id']
 	$page = (empty($session_verify['page'])) ? '' : rawurldecode($session_verify['page']);
 	$author = (empty($session_verify['author'])) ? '' : rawurldecode($session_verify['author']);
-	$obj_verify->auth_session_unset();
+	$obj_verify->unsetSession();
 	$return_to = get_page_location_uri($page);
 	$response = $consumer->complete($return_to);
 
@@ -321,7 +314,7 @@ die();
 		$obj->response['author'] = $author;
 		$obj->response['local_id'] = (!empty($response->endpoint->local_id)) ? $response->endpoint->local_id : $response->endpoint->claimed_id;
 		$obj->response['identity_url'] = $response->getDisplayIdentifier();
-		$obj->auth_session_put();
+		$obj->setSession();
 		break;
 	}
 
@@ -335,7 +328,7 @@ function plugin_openid_get_user_name()
 	// role,name,nick,profile
 	if (! $auth_api['openid']['use']) return array('role'=>Auth::ROLE_GUEST,'nick'=>'');
 	$obj = new AuthOpenId();
-	$msg = $obj->auth_session_get();
+	$msg = $obj->getSession();
 	if (empty($msg['nickname'])) return array('role'=>Auth::ROLE_GUEST,'nick'=>'');
 
 	if (empty($msg['local_id'])) {
@@ -355,7 +348,7 @@ function plugin_openid_get_user_name()
 		return call_user_func_array($name . '_get_user_name', $aryargs);
 	}
 
-	return array('role'=>Auth::ROLE_AUTH_OPENID,'nick'=>$msg['nickname'],'profile'=>$prof,'key'=>$key);
+	return array('role'=>AuthOpenId::ROLE_AUTH_OPENID,'nick'=>$msg['nickname'],'profile'=>$prof,'key'=>$key);
 }
 
 function plugin_openid_jump_url()

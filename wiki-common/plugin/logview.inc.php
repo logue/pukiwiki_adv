@@ -399,7 +399,7 @@ function logview_user_list(& $fld, $page,$kind)
 	foreach ($all_user as $auth_api=>$val1) {
 	foreach ($val1 as $user=>$val) {
 		$group = empty($val['group']) ? '' : $val['group'];
-		if ($kind != 'login' && Auth::checkPermission($page, 'read',$user,$group)) {
+		if ($kind != 'login' && Auth::auth($page, 'read', false, $user,$group)) {
 			$excludes_user[$auth_api][$user] = '';
 			continue;
 		}

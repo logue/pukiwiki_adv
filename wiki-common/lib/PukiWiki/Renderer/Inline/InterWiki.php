@@ -10,7 +10,10 @@
  * @license   GPL v2 or (at your option) any later version
  * @version   $Id: InterWiki.php,v 1.0.0 2013/01/29 19:54:00 Logue Exp $
  */
+
 namespace PukiWiki\Renderer\Inline;
+
+use PukiWiki\Utility;
 
 /**
  * URLs (InterWiki definition on "InterWikiName")

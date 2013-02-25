@@ -12,16 +12,17 @@ class AuthOpenIdVerify extends AuthOpenId
 		// $this->field_name = array('openid.server','openid.delegate','ts','page');
 		$this->field_name = array('author','server_url','local_id','ts','page');
 		$this->response = array();
+		parent::__construct();
 	}
 	function get_host()
 	{
-		$msg = $this->auth_session_get();
+		$msg = $this->getSession();
 		$arr = parse_url($msg['server_url']);
 		return strtolower($arr['host']);
 	}
 	function get_delegate()
 	{
-		$msg = $this->auth_session_get();
+		$msg = $this->getSession();
 		return $msg['local_id'];
 
 	}
