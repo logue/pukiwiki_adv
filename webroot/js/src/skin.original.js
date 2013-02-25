@@ -72,6 +72,8 @@ var pukiwiki = {};
 
 	if (!$) { throw "pukiwiki: jQuery does not included."; }
 	if (!$.ui) { throw "pukiwiki: jQueryUI does not included."; }
+	
+	var $body = $(document.body);
 
 	pukiwiki = {
 		meta : {
@@ -108,6 +110,8 @@ var pukiwiki = {};
 			var self = this;
 			var protocol = ((document.location.protocol === 'https:') ? 'https:' : 'http:')+'//';
 			this.body = this.custom.body ? this.custom.body : '*[role="main"]';
+			var href = $('link[rel=canonical]')[0].href;	// 正規化されたURL
+			var lang = $('html').attr('lang');
 
 			// 言語設定
 			$.i18n(LANG);
@@ -190,6 +194,49 @@ var pukiwiki = {};
 					}
 				}
 			});
+			// ソーシャルブックマークのアイコン
+			var social_config = $.extend(true,{
+				// Hatena
+				// http://b.hatena.ne.jp/guide/bbutton
+				'hatena' : {
+					use : true,
+					dom : '<a href="http://b.hatena.ne.jp/entry/" class="hatena-bookmark-button" data-hatena-bookmark-layout="standard-balloon">Hatena</a>',
+					script : 'http://b.st-hatena.com/js/bookmark_button.js'
+				},
+				// Mixi
+				// http://developer.mixi.co.jp/connect/mixi_plugin/mixi_check/spec_mixi_check/
+				'mixi' : {
+					use : false,
+					dom : '<a href="http://mixi.jp/share.pl" class="mixi-check-button" data-url="'+href+'" data-button="button-6">Mixi</a>',
+					script : 'http://static.mixi.jp/js/share.js'
+				},
+				// Google +1 button
+				// http://www.google.com/intl/ja/webmasters/+1/button/index.html
+				'google+1' : {
+					use : true,
+					dom : '<div class="g-plusone" data-size="medium">Google+1</div>',
+					script: 'https://apis.google.com/js/plusone.js'
+				},
+				// Tweet Button
+				// https://twitter.com/about/resources/buttons
+				'twitter' : {
+					use : true,
+					dom : '<a href="https://twitter.com/share" class="twitter-share-button" data-lang="' + lang+'">Tweet</a>',
+					script : 'http://platform.twitter.com/widgets.js'
+				},
+				// Gree
+				// https://developer.gree.net/connect/plugins/sf
+				'gree' : {
+					use : false,
+					dom : '<iframe src="http://share.gree.jp/share?url='+encodeURIComponent(href)+'&amp;type=1&amp;height=20" scrolling="no" frameborder="0" marginwidth="0" marginheight="0" style="border:none; overflow:hidden; width:100px; height:20px;" allowTransparency="true"></iframe>'
+				},
+				// Tumblr
+				// http://www.tumblr.com/docs/ja/share_button
+				'tumblr' : {
+					use : false,
+					dom : '<a href="http://www.tumblr.com/share" title="Share on Tumblr" style="display:inline-block; text-indent:-9999px; overflow:hidden; width:81px; height:20px; background:url(\'http://platform.tumblr.com/v1/share_1.png\') top left no-repeat transparent;"></a>'
+				}
+			}, this.custom.social);
 
 			this.assistant_setting = {
 				// 絵文字の定義
@@ -272,7 +319,7 @@ var pukiwiki = {};
 					$(this).fadeTo(200,0.3);
 				}
 			);
-			this.social();
+			this.social(social_config);
 
 			// 非同期通信中はUIをブロック
 			this.blockUI(document);
@@ -650,7 +697,7 @@ var pukiwiki = {};
 							return false;
 						});
 					}else {
-						$this.unbind("click").bind("click", function(){
+						$this.unbind('click').bind('click', function(){
 							if (ext[1]){
 								switch (ext[1]) {
 									case 'jpg': case 'jpeg': case 'gif': case'png':
@@ -689,7 +736,7 @@ var pukiwiki = {};
 
 						if (disable_scrolling === false){
 							// アンカースクロール
-							$this.unbind("click").bind("click", function(){
+							$this.unbind('click').bind('click', function(){
 								var $body;
 								if ($(window).scrollTop() === 0) {
 									// スクロールが0の時エラーになる問題をごまかす
@@ -759,7 +806,7 @@ var pukiwiki = {};
 							
 
 							// ダイアログ描画処理
-							$this.unbind("click").bind("click", function(){
+							$this.unbind('click').bind('click', function(){
 								params.ajax = 'json';
 								self.ajax_dialog(params,prefix,function(){
 									if ((params.cmd == 'attach' && params.pcmd.match(/upload|info/i)) || params.cmd.match(/attachref|read|backup/i) && params.age !== ''){
@@ -893,21 +940,34 @@ var pukiwiki = {};
 				'</div>'
 			].join('');
 			$(loading_widget).appendTo('body');
-			$('#loading_activity').activity({segments: 12, width: 24, space: 8, length:64, color: 'black', speed: 1, zIndex: 9999});
-			var $loading = $('#loading_activity');
+			
+			var $loading = $('#loading'), $loading_activity = $('#loading_activity'), $window = $(window);
+			
+			$loading_activity
+				.activity({
+					segments: 12,
+					width: 24,
+					space: 8,
+					length: 64,
+					color: 'black',
+					speed: 1,
+					zIndex: 9999
+				})
+				.css({
+					position : 'absolute',
+					left : ($window.width() / 2) + $window.scrollLeft() - $loading.width() / 2,
+					top : ($window.height() / 2) + $window.scrollTop() - $loading.height() / 2
+				})
+			;
+			
 
 			$(dom)
 				.ajaxSend(function(e, xhr, settings) {
 					// 画面中央にローディング画像を移動させる
-					$loading.css({
-						position : 'absolute',
-						left : ($(window).width() / 2) + $(window).scrollLeft() - $loading.width() / 2,
-						top : ($(window).height() / 2) + $(window).scrollTop() - $loading.height() / 2
-					});
-					$('#loading').fadeIn();
+					$loading.fadeIn();
 				})
 				.ajaxStop(function(){
-					$('#loading').fadeOut();
+					$loading.fadeOut();
 					var f;
 					while( f = pkwkAjaxLoad.shift() ){
 						if( f !== null ){
@@ -947,10 +1007,10 @@ var pukiwiki = {};
 		},
 		// 検索フォームでサジェスト機能
 		suggest: function(prefix){
-			var form = (prefix) ? prefix + ' .suggest' : '.suggest';
-			if ($(form).length !== 0){
+			var $form = $(prefix ? prefix + ' .suggest' : '.suggest');
+			if ($form.length !== 0){
 				var cache = {},lastXhr, xhr;
-				$(form).autocomplete({
+				$form.autocomplete({
 					minLength: 4,
 					source: function( request, response ) {
 						var term = request.term;
@@ -1188,7 +1248,10 @@ var pukiwiki = {};
 		},
 		// 入力アシスタント
 		assistant: function(full){
-			var i, len;
+			var i, len, $msg = $('*[name=msg]');
+			// ダイアログ表示領域のDOMを作成
+			$body.append('<div id="emoji"></div><div id="color_palette"></div><div id="hint"></div>');
+			var $emoji = $('#emoji'), $color_palette = $('#color_palette'), $hint = $('#hint');
 
 			// アシスタントのウィジット
 			$('.assistant').html([
@@ -1218,8 +1281,8 @@ var pukiwiki = {};
 				emoji_widget += '<li class="ui-button ui-state-default ui-corner-all" title="'+name+'" name="'+name+'"><span class="emoji emoji-'+name+'"></span></li>';
 			}
 			emoji_widget += '</ul>';
-			$(document.body).append('<div id="emoji"></div>');
-			$('#emoji').dialog({
+			
+			$emoji.dialog({
 				title:$.i18n('editor','emoji'),
 				autoOpen:false,
 				bgiframe: true,
@@ -1238,8 +1301,8 @@ var pukiwiki = {};
 				j++;
 			}
 			color_widget += '</ul>';
-			$(document.body).append('<div id="color_palette"></div>');
-			$('#color_palette').dialog({
+			
+			$color_palette.dialog({
 				title:$.i18n('editor','color'),
 				autoOpen:false,
 				bgiframe: true,
@@ -1250,8 +1313,8 @@ var pukiwiki = {};
 			}).html(color_widget);
 
 			// ヒントのウィジット
-			$(document.body).append('<div id="hint"></div>');
-			$('#hint').dialog({
+			
+			$hint.dialog({
 				title:$.i18n('editor','hint'),
 				autoOpen:false,
 				bgiframe: true,
@@ -1261,34 +1324,25 @@ var pukiwiki = {};
 			}).html($.i18n('pukiwiki','hint_text1'));
 
 			// ここから、イベント割り当て
-			if (!this.elem){ this.elem = $('*[name=msg]')[0]; }
 			var self = this;
-			// アシスタント
-
-			$('*[name=msg]').focus(function(e){
-				self.elem = this;
-				self.selection = $(this).getSelection().text;
-				return;
-			});
 
 			$('.insert').click(function(){
 				var ret = '';
-				var elem = $(self.elem);
-				var str = elem.getSelection().text;
+				
 				var v = $(this).attr('name');
 
 				switch (v){
 					case 'help' :
-						$('#hint').dialog('open');
+						$hint.dialog('open');
 					break;
 					case 'br':
 						ret = '&br;'+"\n";
 					break;
 					case 'emoji' :
-						$('#emoji').dialog('open');
+						$emoji.dialog('open');
 					break;
 					case 'color' :
-						$('#color_palette').dialog('open');
+						$color_palette.dialog('open');
 					break;
 					case 'flush' :
 						if (Modernizr.localstorage && confirm($.i18n('pukiwiki','flush_restore')) === true){
@@ -1300,28 +1354,25 @@ var pukiwiki = {};
 					break;
 				}
 				if (ret !== ''){
+					$msg.focus();
 					if (str === ''){
-						elem.insertAtCaretPos(ret);
+						$msg.insertAtCaretPos(ret);
 					}else{
-						elem.replaceSelection(ret);
+						$msg.replaceSelection(ret);
 					}
-					elem.focus();
 				}
 				return false;
 			});
 
 			$('.replace').click(function(){
 				var ret = '';
-				var $elem = $(self.elem);
-				var str = $elem.getSelection().text;
+				var str = $msg.getSelection().text;
 				var v = $(this).attr('name');
 
-				if (str === ''|| !$elem){
+				if (str === ''){
 					alert( $.i18n('pukiwiki', 'select'));
 					return false;
 				}
-
-				$elem.focus();
 
 				switch (v){
 					case 'size' :
@@ -1365,44 +1416,39 @@ var pukiwiki = {};
 						}
 					break;
 				}
-				$elem.replaceSelection(ret);
-				// console.log(str);
+				$msg.focus().replaceSelection(ret);
 				return false;
 			});
 
-			$('#emoji ul li').click(function(){
-				var $elem = $(self.elem);
-				var str = $elem.getSelection().text;
-				var v = '&('+$(this).attr('name')+');';;
+			$emoji.children('ul').children('li').click(function(){
+				var str = $msg.getSelection().text;
+				var v = '&('+$(this).attr('name')+');';
 
+				$msg.focus();
 				if (str === ''){
-					$elem.insertAtCaretPos(v);
+					$msg.insertAtCaretPos(v);
 				}else{
-					$elem.replaceSelection(v);
+					$msg.replaceSelection(v);
 				}
-				$elem.focus();
-		//		$('#emoji').dialog('close');
+				$emoji.dialog('close');
 				return;
 			});
-			$('#color_palette ul li').click(function(){
+			$color_palette.children('ul').children('li').click(function(){
 				var ret;
-				var $elem = $(self.elem);
-				var str = $elem.getSelection().text;
+				var str = $msg.getSelection().text;
 				var v = $(this).attr('name');
 
-				if (str === ''|| !$elem){
+				if (str === ''){
 					alert( $.i18n('pukiwiki', 'select'));
 					return;
 				}
 
-				if (str.match(/^&color\([^\)]*\)\{.*\};$/)){
-					$elem.replaceSelection(str.replace(/^(&color\([^\)]*)(\)\{.*\};)$/,"$1," + v + "$2"));
-				}else{
-					$elem.replaceSelection('&color(' + v + '){' + str + '};');
-				}
-				$('#color_palette').dialog('close');
-				$elem.focus();
-
+				$msg.focus().replaceSelection(
+					str.match(/^&color\([^\)]*\)\{.*\};$/) ? 
+					str.replace(/^(&color\([^\)]*)(\)\{.*\};)$/,"$1," + v + "$2") : 
+					'&color(' + v + '){' + str + '};'
+				);
+				$color_palette.dialog('close');
 				return;
 			});
 		},
@@ -1416,17 +1462,17 @@ var pukiwiki = {};
 			// HTMLエンコード
 			var htmlsc = function(ch) {
 				if (typeof(ch) === 'string'){
-					ch = ch.replace(/&/g,"&amp;");
-					ch = ch.replace(/\"/g,"&quot;");
-					ch = ch.replace(/\'/g,"&#039;");
-					ch = ch.replace(/</g,"&lt;");
-					ch = ch.replace(/>/g,"&gt;");
+					ch = ch.replace(/&/g,'&amp;');
+					ch = ch.replace(/\"/g,'&quot;');	// "
+					ch = ch.replace(/\'/g,'&#039;');	// '
+					ch = ch.replace(/</g,'&lt;');
+					ch = ch.replace(/>/g,'&gt;');
 				}
 				return ch;
 			};
 			
 			// 簡易差分表示用ダイアログ
-			$(document.body).append('<div id="diff"></div>');
+			$body.append('<div id="diff"><pre>'+htmlsc(original_text)+'</pre></div>');
 			$('#diff').dialog({
 				title:$.i18n('editor','diff'),
 				autoOpen:false,
@@ -1436,7 +1482,6 @@ var pukiwiki = {};
 				show: 'scale',
 				hide: 'scale'
 			});
-			$('#diff').html('<pre>'+htmlsc(original_text)+'</pre>');
 
 			// JSON.parseが使えるかのチェック
 			Modernizr.load({
@@ -1622,17 +1667,17 @@ var pukiwiki = {};
 
 			// textareaのイベントリスナ
 			$msg
-				.blur(function(){
+				.unbind('blur').bind('blur', function(){
 					// マウスが乗っかった時
 					realtime_preview();
 				})
-				.mouseup(function(){
+				.unbind('mouseup').bind('mouseup', function(){
 					// 前の値と異なるとき
 					if ($(this).val() !== $original.val()){
 						realtime_preview();
 					}
 				})
-				.keypress(function(elem){
+				.unbind('keypress').bind('keypress', function(){
 					// テキストエリアの内容をlocalStrageにページ名と共に保存
 					if (isEnableLocalStorage){
 						var d=new Date();
@@ -1642,7 +1687,7 @@ var pukiwiki = {};
 						}));
 					}
 				})
-				.change(function(){
+				.unbind('change').bind('change', function(){
 					// edit.js v 00 -- pukiwikiの編集を支援
 					// Copyright(c) 2010 mashiki
 					// License: GPL version 3
@@ -2234,58 +2279,16 @@ var pukiwiki = {};
 		},
 		social : function(settings){
 			if (pukiwiki.isPage){
-				var href = $('link[rel=canonical]')[0].href;	// 正規化されたURL
-				var lang = $('html').attr('lang');
+				var $main = $('[role="main"]');
 				var html = [], scripts = [];
+				window.___gcfg = {lang: $('html').attr('lang')};	// for Google +1
 
-				var social = $.extend({},{
-					// Hatena
-					// http://b.hatena.ne.jp/guide/bbutton
-					'hatena' : {
-						use : true,
-						dom : '<a href="http://b.hatena.ne.jp/entry/" class="hatena-bookmark-button" data-hatena-bookmark-layout="standard">Hatena</a>',
-						script : 'http://b.st-hatena.com/js/bookmark_button_wo_al.js'
-					},
-					// Mixi
-					// http://developer.mixi.co.jp/connect/mixi_plugin/mixi_check/spec_mixi_check/
-					'mixi' : {
-						use : false,
-						dom : '<a href="http://mixi.jp/share.pl" class="mixi-check-button" data-url="'+href+'" data-button="button-1">Mixi</a>',
-						script : 'http://static.mixi.jp/js/share.js'
-					},
-					// Google +1 button
-					// http://www.google.com/intl/ja/webmasters/+1/button/index.html
-					'google+1' : {
-						use : true,
-						dom : '<div class="g-plusone" data-size="medium">Google+1</div>',
-						script: 'https://apis.google.com/js/plusone.js'
-					},
-					// Tweet Button
-					// https://twitter.com/about/resources/buttons
-					'twitter' : {
-						use : true,
-						dom : '<a href="https://twitter.com/share" class="twitter-share-button" data-lang="' + lang+'">Tweet</a>',
-						script : 'http://platform.twitter.com/widgets.js'
-					},
-					// Gree
-					// https://developer.gree.net/connect/plugins/sf
-					'gree' : {
-						use : false,
-						dom : '<iframe src="http://share.gree.jp/share?url='+encodeURIComponent(href)+'&amp;type=1&amp;height=20" scrolling="no" frameborder="0" marginwidth="0" marginheight="0" style="border:none; overflow:hidden; width:100px; height:20px;" allowTransparency="true"></iframe>'
-					},
-					// Tumblr
-					// http://www.tumblr.com/docs/ja/share_button
-					'tumblr' : {
-						use : false,
-						dom : '<a href="http://www.tumblr.com/share" title="Share on Tumblr" style="display:inline-block; text-indent:-9999px; overflow:hidden; width:81px; height:20px; background:url(\'http://platform.tumblr.com/v1/share_1.png\') top left no-repeat transparent;"></a>'
-					}
-				}, settings);
 
 				html.push('<hr class="noprint" /><ul class="social noprint clearfix">');
-				for (var key in social) {
-					if (social[key]['use']){
-						html.push('<li>'+social[key]['dom']+'</li>');
-						if (social[key]['script']) { scripts.push(social[key]['script']); }
+				for (var key in settings) {
+					if (settings[key]['use']){
+						html.push('<li>'+settings[key]['dom']+'</li>');
+						if (settings[key]['script']) { scripts.push(settings[key]['script']); }
 					}
 				}
 
@@ -2296,7 +2299,7 @@ var pukiwiki = {};
 					html.push('<li><div class="fb-like" data-href="'+href+'" data-layout="button_count" data-send="true" data-width="450" data-show-faces="true"></div></li>');
 				}
 				html.push('</ul>');
-				$('#body').append(html.join("\n"));
+				$main.append(html.join("\n"));
 
 				for (var i = 0; i < scripts.length; i ++) {
 					$.getScript(scripts[i]);
@@ -2314,7 +2317,7 @@ var pukiwiki = {};
 							window.location.reload();
 						});
 					});
-					$('#body').append('<hr class="noprint" /><div class="fb-comments" href="'+href+'" publish_feed="true" numposts="10" migrated="1"></div>')
+					$main.append('<hr class="noprint" /><div class="fb-comments" href="'+href+'" publish_feed="true" numposts="10" migrated="1"></div>')
 				}
 			}
 		}
