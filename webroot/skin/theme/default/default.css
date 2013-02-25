@@ -113,6 +113,11 @@ q{
 	padding:5px;
 }
 
+#misc {
+	width:100%;
+	clear:both;
+}
+
 #menubar, #sidebar{
 	display:none;
 }
@@ -164,11 +169,6 @@ q{
 		float:left;
 		right:0;
 		position:absolute;
-	}
-
-	.three-colums #misc {
-		width:100%;
-		clear:left;
 	}
 }
 /** Header and Footer *****************************************************************************/

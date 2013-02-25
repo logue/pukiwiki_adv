@@ -35,8 +35,8 @@ http://jqueryui.com/themeroller/
 );
 
 // 読み込むスタイルシート
-$link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.'scripts.css.php?base=' . urlencode(IMAGE_URI) );
-$link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/'.PLUS_THEME.'.css.php');
+$link_tags[] = array('rel'=>'stylesheet', 'type'=>'text/css', 'href'=>SKIN_URI.'scripts.css.php?base=' . urlencode(IMAGE_URI) );
+$link_tags[] = array('rel'=>'stylesheet', 'type'=>'text/css', 'href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/'.PLUS_THEME.'.css.php');
 // 読み込むスクリプト
 $js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/'.PLUS_THEME.'.js', 'defer'=>'defer');
 

@@ -81,8 +81,8 @@ EOD
 // gsスキンのカラーを取得
 require ('gs2_color/pukiwiki_gs2_color_'.$_SKIN['color'].'.php');
 // 読み込むスタイルシート
-$link_tags[] = array('rel'=>'stylesheet','href'=>SKIN_URI.'scripts.css.php?base=' . urlencode(IMAGE_URI) );
-$link_tags[] = array('rel'=>'stylesheet',	'href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/gs2.css.php?gs2color='.$_SKIN['color'],'type'=>'text/css');
+$link_tags[] = array('rel'=>'stylesheet', 'type'=>'text/css', 'href'=>SKIN_URI.'scripts.css.php?base=' . urlencode(IMAGE_URI) );
+$link_tags[] = array('rel'=>'stylesheet', 'type'=>'text/css', 'href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/gs2.css.php?gs2color='.$_SKIN['color'],'type'=>'text/css');
 
 /* End of file gs2.ini.php */
 /* Location: ./webroot/skin/theme/gs2/gs2.ini.php */
