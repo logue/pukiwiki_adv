@@ -15,7 +15,7 @@ namespace PukiWiki;
 
 use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
-use PukiWiki\File\FileUtility;
+use PukiWiki\Listing;
 use PukiWiki\Renderer\InlineConverter;
 use PukiWiki\Renderer\Inline\AutoAlias;
 use PukiWiki\Renderer\Inline\AutoLink;
@@ -193,7 +193,7 @@ class Relational{
 		$s->execute();
 
 		$ref   = array(); // Reference from
-		foreach (FileUtility::getExists(DATA_DIR) as $_page) {
+		foreach (Listing::get('wiki') as $_page) {
 			$rel   = array(); // Reference to
 			$objs = self::getObjects($_page);
 			if (empty($objs)) continue;

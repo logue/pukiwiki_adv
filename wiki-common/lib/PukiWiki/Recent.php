@@ -1,7 +1,7 @@
 <?php
 namespace PukiWiki;
 
-use PukiWiki\File\FileUtility;
+use PukiWiki\Listing;
 use PukiWiki\Factory;
 
 class Recent{
@@ -34,7 +34,7 @@ class Recent{
 		}
 
 		// Get WHOLE page list
-		$pages = FileUtility::getExists(DATA_DIR, $force);
+		$pages = Listing::get('wiki', $force);
 
 		// Check ALL filetime
 		$recent_pages = array();
@@ -78,7 +78,7 @@ class Recent{
 
 		// 自動リンクと自動エイリアス名を使用している場合、常時更新
 		if ($autolink || $autobasealias) {
-			self::getRecent(true);	// Try to (re)create ALL
+			self::get(true);	// Try to (re)create ALL
 		}
 
 		$wiki = Factory::Wiki($page);
@@ -112,11 +112,11 @@ class Recent{
 		$cache['wiki']->setItem(self::RECENT_CACHE_NAME, $recent_pages);
 
 		if ($abort) {
-			self::getRecent(true);	// Try to (re)create ALL
+			self::get(true);	// Try to (re)create ALL
 			return;
 		}
 
-		self::updateRecentChanges($recent_pages);
+		if (!$wiki->isHidden())	self::updateRecentChanges($recent_pages);
 		
 	}
 	/**
@@ -127,9 +127,6 @@ class Recent{
 	 */
 	private static function updateRecentChanges($recent_pages){
 		global $whatsnew;
-
-		if (!self::isHidden()) return;
-
 		// 最終更新ページを作り直す
 		// （削除履歴みたく正規表現で該当箇所を書き換えるよりも、ページを作りなおしてしまったほうが速いだろう・・・）
 		$buffer[] = '#norelated';
@@ -172,7 +169,7 @@ class Recent{
 		// 履歴の最大記録数を制限
 		$lines = array_splice($lines, 0, self::RECENT_MAX_SHOW_PAGES);
 		// ファイル一覧キャッシュを再生成
-		self::getExists(DATA_DIR, true);
+		Listing::get(null, true);
 		// 削除履歴を付ける
 		$delated->set($lines);
 	}

@@ -1,0 +1,191 @@
+<?php
+namespace PukiWiki;
+use PukiWiki\Auth\Auth;
+use PukiWiki\File\FileFactory;
+use PukiWiki\Text\Reading;
+/**
+ * ページ一覧表示クラス
+ */
+class Listing{
+	// ファイルの存在一覧キャッシュの接頭辞
+	const EXSISTS_CACHE_PREFIX = 'exsists-';
+	// ページ一覧キャッシュの接頭辞
+	const PAGENAME_HEADING_CACHE_PREFIX = 'listing-';
+	/**
+	 * 一覧をページの読みでソートし出力
+	 * @param string $type 一覧を表示するタイプ
+	 * @param boolean $force キャッシュを再生成する（※ページの経過時間はキャッシュの対象外）
+	 * @return array
+	 */
+	private static function getHeadings($type='wiki', $force = false){
+		global $cache;
+		static $heading;
+
+		$cache_name = self::PAGENAME_HEADING_CACHE_PREFIX . $type;
+
+		if ($force){
+			// キャッシュ再生成
+			unset ($heading[$type]);
+			$cache['wiki']->removeItem($cache_name);
+		}else if (!empty($heading[$type])){
+			// メモリにキャッシュがある場合
+			return $heading[$type];
+		}else if ($cache['wiki']->hasItem($cache_name)) {
+			// キャッシュから最終更新を読み込む
+			$heading[$type] = $cache['wiki']->getItem($cache_name);
+			return $heading[$type];
+		}
+
+		$ret = array();
+		foreach(FileFactory::exists($type) as $page) {	// ここで一覧取得
+			$initial = Reading::getReadingChar($page);
+			if ($initial === $page){
+				// 読み込めなかった文字
+				$initial = Reading::OTHER_CHAR;
+			}else if (preg_match('/^('.Reading::SYMBOL_PATTERN.')/u', $initial)) {
+				$initial = Reading::SYMBOL_CHAR;
+			}
+			// ページの頭文字でページとページの読みを保存
+			$ret[$initial][$page] =  Reading::getReading($page);
+		}
+		unset($initial, $page);
+
+		// ページの索引でソート
+		ksort($ret, SORT_NATURAL);
+
+		foreach ($ret as $initial=>$pages){
+			// ページ名の「読み」でソート
+			asort($ret[$initial], SORT_NATURAL);
+			// 「読み」でソートしたやつを$headingに保存
+			$heading[$type][$initial] = array_keys($ret[$initial]);
+		}
+		unset($ret);
+
+		// キャッシュに保存
+		$cache['wiki']->setItem($cache_name, $heading[$type]);
+
+		return $heading[$type];
+	}
+	/**
+	 * ファイル一覧画面を生成
+	 * プラグインでやるべきかもしれないが、この処理はバックアップ一覧などページ名一覧以外の用途でも使うためこのクラスで定義
+	 * @param string $type ディレクトリのタイプ
+	 * @return string
+	 */
+	public static function get($type = 'wiki', $cmd = 'read', $with_filename = false){
+		global $_string;
+		// 一覧の配列を取得
+		$heading = self::getHeadings($type, true);
+		$contents = array();
+
+		if (IS_MOBILE) {
+			// モバイル用
+			$contents[] = '<ul data-role="listview">';
+			foreach ($heading as $initial=>$pages) {
+				$page_lists = self::getPageLists($pages, $cmd);
+				$count = count($page_lists);
+				if ($count < 1) continue;
+
+				if ($initial == Reading::OTHER_CHAR){
+					$initial = $_string['other'];
+				}else if ($initial == Reading::SYMBOL_CHAR){
+					$initial = $_string['symbol'];
+				}
+				$contents[] = '<li data-role="list-divider">' . Utility::htmlsc($initial) . '<span class="ui-li-count">'. $count . '</span></li>';
+				$contents[] = join("\n",$page_lists);
+			}
+			$contents[] = '</ul>';
+			return join("\n", $contents);
+		}
+		// 通常用
+		$header[] = '<div class="page_initial"><ul>';
+		foreach ($heading as $initial=>$pages) {
+			$page_lists = self::getPageLists($pages, $cmd, $with_filename);
+			$count = count($page_lists);
+			if ($count < 1) continue;
+
+			$_initial = Utility::htmlsc($initial);
+
+			$header[] = '<li id="top_' . $_initial .'"><a href="#head_' . $_initial . '" title="'. $count .'">' . $_initial . '</a></li>';
+
+			$contents[] = '<fieldset id="head_' . $_initial .'">';
+			$contents[] = '<legend><a href="#top_' . $_initial . '">' . $_initial . '</a> <small>('.$count.')</small></legend>';
+			$contents[] = '<ul>'.join("\n",$page_lists).'</ul>';
+			$contents[] = '</fieldset>';
+		}
+		$header[] = '</ul>';
+		$header[] = '</div>';
+		return join("\n", $header) . '<div class="list_pages">' . join("\n", $contents) . '</div>';
+	}
+	/**
+	 * ページのリンクリストを作る
+	 * @param $pages ページ
+	 * @param $cmd 使用するプラグイン
+	 * @param boolean $with_filename ページのファイル名も表示する
+	 * @return string
+	 */
+	private static function getPageLists($pages, $cmd, $with_filename){
+		global $read_auth_pages;
+
+		$contents = array();
+		// ユーザ名取得
+		$auth_key = Auth::get_user_info();
+		// コンテンツ管理者以上は、: のページも閲覧可能
+		$has_permisson = Auth::check_role('role_contents_admin');
+
+		foreach ($pages as $page){
+			$wiki = Factory::Wiki($page);
+			// 存在しない場合、当然スルー
+			if (!$wiki->has()) continue;
+			// 隠しページの場合かつ、隠しページを表示できる権限がない場合スルー
+			if ($wiki->isHidden() && $has_permisson) continue;
+			// 閲覧できる権限がない場合はスルー
+			if (! $wiki->isReadable()) continue;
+			
+			$_page = Utility::htmlsc($page, ENT_QUOTES);
+			$url = $wiki->uri($cmd);
+			if (!IS_MOBILE) {
+				$contents[] = '<li><a href="' . $url . '">' . $_page . '</a> ' . $wiki->passage() .
+					($with_filename ? '<br /><var>' . Utility::htmlsc($wiki->filename). '</var>' : '') .
+					'</li>';
+			}else{
+				$contents[] = '<li><a href="' . $url . '" data-transition="slide">' . $_page . '</a>' .
+					'<span class="ui-li-count">'. $wiki->passage(false, false) . '</span></li>';
+			}
+		}
+		return $contents;
+	}
+	/**
+	 * TrackBack Ping IDからページ名を取得
+	 * @param boolean $force キャッシュを再生成する
+	 * @return string
+	 */
+	public static function getPageFromTbId($id, $force = false){
+		global $cache;
+		static $tb_id;
+		$cache_name = self::EXSISTS_CACHE_PREFIX . 'trackback';
+
+		if ($force){
+			// キャッシュ再生成
+			unset ($tb_id);
+			$cache['wiki']->removeItem($cache_name);
+		}else if (!empty($tb_id)){
+			// メモリにキャッシュがある場合
+			return $tb_id[$id];
+		}else if ($cache['wiki']->hasItem($cache_name)) {
+			// キャッシュから最終更新を読み込む
+			$tb_id = $cache['wiki']->getItem($cache_name);
+			return $tb_id[$id];
+		}
+
+		if (empty($tb_id)){
+			$pages = self::getExists();
+			foreach ($pages as $page) {
+				$tb_id[md5($page)] = $page;
+			}
+		}
+
+		$cache['wiki']->setItem($cache_name, $tb_id);
+		return $cache[$id];
+	}
+}

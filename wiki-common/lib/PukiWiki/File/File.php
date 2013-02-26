@@ -13,18 +13,37 @@
 
 namespace PukiWiki\File;
 
-use SplFileInfo;
-use PukiWiki\Utility;
-use PukiWiki\Time;
+use DirectoryIterator;
+use Exception;
 use PukiWiki\File\FileUtility;
+use PukiWiki\Time;
+use PukiWiki\Utility;
+use SplFileInfo;
+
 
 /**
  * ファイルの読み書きを行うクラス
  */
-class File extends SplFileInfo{
+abstract class File extends SplFileInfo{
+	/**
+	 * ロックファイル名
+	 */
 	const LOCK_FILE = 'chown.lock';
+	/**
+	 * 改行
+	 */
 	const LINE_BREAK = "\n";
-
+	/**
+	 * 対象ディレクトリ
+	 */
+	public static $dir = '';
+	/**
+	 * デフォルトのファイル名のマッチパターン
+	 */
+	public static $pattern = '/^((?:[0-9A-F]{2})+)\.txt$/';
+	/**
+	 * ファイル名
+	 */
 	public $filename;
 
 	/**
@@ -33,13 +52,36 @@ class File extends SplFileInfo{
 	 */
 	public function __construct($filename) {
 		if (empty($filename)){
-			throw new \Exception('File name is missing!');
+			throw new Exception('File name is missing!');
 		}
 		if (!is_string($filename)){
-			throw new \Exception('File name must be string!');
+			throw new Exception('File name must be string!');
 		}
-		$this->filename = $filename;
+		$this->filename = self::$dir . $filename;
 		parent::__construct($filename);
+	}
+	/**
+	 * ファイル一覧を取得
+	 * ※静的メソッドで呼び出すこと。キャッシュはここでは実装しない
+	 * @return array
+	 */
+	public static function exists($pattern = ''){
+		// 継承元のクラス名を取得（PHPは、__CLASS__で派生元のクラス名が取得できない）
+		$class =  get_called_class();
+		// クラスでディレクトリが定義されていないときは処理しない。(AuthFile.phpなど）
+		if ( empty($class::$dir)) return array();
+		// パターンが指定されていない場合は、クラスで定義されているデフォルトのパターンを使用
+		if ( empty($pattern) ) $pattern = $class::$pattern;
+		// 継承元のクラスの定数をパラメーターとして与える
+		// って、なんだこれ！？
+		foreach (new DirectoryIterator($class::$dir) as $fileinfo) {
+			$filename = $fileinfo->getFilename();
+			$matches = array();
+			if ($fileinfo->isFile() && preg_match($pattern, $filename, $matches)){
+				$ret[] = Utility::decode($matches[1]);
+			}
+		}
+		return $ret;
 	}
 	/**
 	 * ファイルが存在するか

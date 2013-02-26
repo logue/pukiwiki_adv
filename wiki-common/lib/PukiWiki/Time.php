@@ -49,6 +49,10 @@ class Time{
 		}
 		return array($zone, $zonetime);
 	}
+	/**
+	 * マイクロ秒を取得
+	 * @return int
+	 */
 	public static function getMicroTime(){
 		list($usec, $sec) = explode(' ', microtime());
 		return ((float)$sec + (float)$usec);
@@ -216,7 +220,8 @@ class Time{
 	 */
 	public static function getTakeTime(){
 		// http://pukiwiki.sourceforge.jp/dev/?BugTrack2%2F251
-		return sprintf('%01.03f', self::getMicroTime() - $_SERVER['REQUEST_TIME']);
+		return sprintf('%01.03f', self::getMicroTime() - time());
+		//return sprintf('%01.03f', self::getMicroTime() - $_SERVER['REQUEST_TIME']);
 	}
 	/**
 	 * 経過時間を取得

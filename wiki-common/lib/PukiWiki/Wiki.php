@@ -172,21 +172,27 @@ class Wiki{
 		}
 		return RendererFactory::factory($this->wiki->get());
 	}
+	/**
+	 * 記事の要約（md5ハッシュ）を取得
+	 * @return string
+	 */
 	public function digest(){
 		return $this->wiki->digest();
 	}
 	/**
 	 * ページのアドレスを取得
+	 * @return string
 	 */
 	public function uri($cmd='read', $query=array(), $fragment=''){
 		return Router::get_resolve_uri($cmd, $this->page, 'rel', $query, $fragment);
 	}
 	/**
 	 * ページのリンクを取得
+	 * @return string
 	 */
 	public function link($cmd='read', $query=array(), $fragment=''){
 		$_page = Utility::htmlsc($this->page);
-		return '<a href="' . self::uri($cmd, $query, $fragment) . '" title="' . $_page . ' ' . $this->passage(false, true) . '">'. $_page . '</a>';
+		return '<a href="' . $this->uri($cmd, $query, $fragment) . '" title="' . $_page . ' ' . $this->passage(false, true) . '">'. $_page . '</a>';
 	}
 	/**
 	 * 関連リンクを取得
@@ -246,14 +252,24 @@ class Wiki{
 		global $use_spam_check, $_strings, $_title, $post;
 		global $vars, $now, $akismet_api_key;
 
+		// roleのチェック
+		if (Auth::check_role('readonly')) return; // Do nothing
+		if (Auth::is_check_role(PKWK_CREATE_PAGE))
+			Utility::dieMessage( sprintf($_strings['error_prohibit'], 'PKWK_READONLY'), 403 );
+
+		if (empty($str)){
+			Recent::set(null, $this->page);
+			// 入力が空の場合、削除とする
+			Recent::create_recent_deleted();
+			return $this->wiki->set('');
+		}
+
 		if (is_array($str)) {
 			// ポカミス対策：配列だった場合文字列に変換
 			$str = join("\n", $str);
 		}
 
-		// SPAM Check (Client(Browser)-Server Ticket Check)
-		if ( !isset($vars['encode_hint']) && !defined(PKWK_ENCODING_HINT) )
-			Utility::dump();
+		// 簡易スパムチェック（不正なエンコードだった場合ここでエラー）
 		if ( isset($vars['encode_hint']) && $vars['encode_hint'] !== PKWK_ENCODING_HINT ){
 			Utility::dump();
 		}
@@ -264,17 +280,6 @@ class Wiki{
 		// captcha check
 		if ( (isset($use_spam_check['captcha']) && $use_spam_check['captcha'] !== 0) && (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] !== 1)) {
 			captcha_check(( $use_spam_check['captcha'] === 2 ? false : true) );
-		}
-
-		// roleのチェック
-		if (Auth::check_role('readonly')) return; // Do nothing
-		if (Auth::is_check_role(PKWK_CREATE_PAGE))
-			Utility::dieMessage( sprintf($_strings['error_prohibit'], 'PKWK_READONLY'), 403 );
-
-		if (empty($str)){
-			// 入力が空の場合、削除とする
-			self::create_recent_deleted();
-			return $this->wiki->set('');
 		}
 
 		// rule.ini.ph
@@ -353,24 +358,27 @@ class Wiki{
 		//$diffdata .= '// IP:"'. REMOTE_ADDR . '" TIME:"' . $now . '" REFERER:"' . $referer . '" USER_AGENT:"' . $user_agent. "\n";
 */
 		// Update data
-		$this->diff->set($diff->getDiff());
+		$difffile = new File\DiffFile($this->page);
+		$difffile->set($diff->getDiff());
 
 		unset($oldpostdata, $diff, $difffile);
-
+/*
 		if ($trackback > 1) {
 			// TrackBack Ping
 			tb_send($this->page, $links);
 		}
-
+*/
 //		log_write('update',$this->page);
 
-		self::setRecent($this->page);
-
-/*
+		if (!$keeptimestamp){
+			// 最終更新を更新
+			Recent::set($this->page);
+		}
+		
 		// Create backup
 		//make_backup($this->page, $postdata == ''); // Is $postdata null?
 		$backup = new BackupFile($this->page);
-		$this->backup->setBackup();
+		$backup->setBackup();
 
 		// Logging postdata (Plus!)
 		if (self::POST_LOGGING === TRUE) {
@@ -379,7 +387,6 @@ class Wiki{
 
 		// Create wiki text
 		$this->wiki->set($postdata);
-*/
 	}
 
 /**************************************************************************************************/

@@ -13,7 +13,7 @@
 
 namespace PukiWiki\Renderer\Inline;
 
-use PukiWiki\File\FileUtility;
+use PukiWiki\Listing;
 use PukiWiki\Renderer\RendererDefines;
 use PukiWiki\Renderer\Trie;
 
@@ -91,7 +91,7 @@ class AutoLink extends Inline
 		unset($config);
 		$auto_pages = array_merge($ignorepages, $forceignorepages);
 
-		foreach (FileUtility::getExists() as $page)
+		foreach (Listing::get('wiki') as $page)
 			if (preg_match('/^' . RendererDefines::WIKINAME_PATTERN . '$/', $page) ?
 				$nowikiname : strlen($page) >= $autolink)
 				$auto_pages[] = $page;

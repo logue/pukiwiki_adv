@@ -13,19 +13,14 @@
 
 namespace PukiWiki\File;
 
+use Exception;
 use PukiWiki\Diff;
 use PukiWiki\Router;
 use PukiWiki\Utility;
 
 class DiffFile extends File{
-	/**#@+
-	 * 宣言
-	 */
-	// 拡張子
-	const EXT = '.txt';
-	// 格納ディレクトリ
-	const DIR = DIFF_DIR;
-	/**#@-*/
+	private static $dir = DIFF_DIR;
+	private static $pattern = '/^((?:[0-9A-F]{2})+)\.txt$/';
 
 	/**
 	 * コンストラクタ
@@ -36,7 +31,7 @@ class DiffFile extends File{
 			throw new Exception('Page name is missing!');
 		}
 		$this->page = $page;
-		parent::__construct(self::DIR . Utility::encode($page) . self::EXT);
+		parent::__construct(self::$dir . Utility::encode($page) . '.txt');
 	}
 	/**
 	 * 書き込み

@@ -7,6 +7,7 @@
 
 namespace PukiWiki\File;
 
+use Exception;
 /**
  * ファイル操作のファクトリークラス
  */
@@ -25,8 +26,17 @@ class FileFactory
 	/**
 	 * 汎用
 	 */
-	public static function factory($dirver, $name){
-		return new $this->classMap[$driver]($name);
+	public static function factory($driver, $name){
+		if (!in_array($driver, array_keys(self::$classMap))) throw new Exception('$driver = '. $driver . ' is not implemented.');
+		return new self::$classMap[$driver]($name);
+	}
+	/**
+	 * 一覧取得
+	 */
+	public static function exists($driver){
+		if (!in_array($driver, array_keys(self::$classMap))) throw new Exception('$driver = '. $driver . ' is not implemented.');
+		$class = self::$classMap[$driver];
+		return $class::exists();
 	}
 	/**
 	 * ファイル
@@ -56,7 +66,7 @@ class FileFactory
 	 * カウンタファイル
 	 */
 	public static function Counter($page){
-		return CounterFile($page);
+		return new CounterFile($page);
 	}
 }
 

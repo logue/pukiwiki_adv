@@ -17,6 +17,9 @@ use PukiWiki\Factory;
 use PukiWiki\Auth\Auth;
 use PukiWiki\Utility;
 
+/**
+ * バックアップファイルクラス
+ */
 class BackupFile extends File{
 	// バックアップの世代ごとの区切り文字（default.ini.php）
 	const SPLITTER = '>>>>>>>>>>';
@@ -24,6 +27,8 @@ class BackupFile extends File{
 	protected $available_ext = array('.lzf', '.bz2', '.gz', '.txt');
 	public $splitter_reglex;
 	private $page, $ext = '.txt', $name, $time, $cycle, $maxage;
+	public static $dir = BACKUP_DIR;
+	public static $pattern = '/^((?:[0-9A-F]{2})+)\.(txt|gz|bz2|lzf)$/';
 
 	/**
 	 * コンストラクタ
@@ -48,7 +53,7 @@ class BackupFile extends File{
 		// バックアップの世代間の区切りの正規表現
 		$this->splitter_reglex = '/^(' . preg_quote(self::SPLITTER) . '\s\d+(\s(\d+)|))$/';
 		// バックアップの名前（拡張子抜き）
-		$this->name = BACKUP_DIR . Utility::encode($page);
+		$this->name = self::$dir . Utility::encode($page);
 		// バックアップの最終更新日時
 		$this->time = $this->has() ? filemtime($this->filename) : UTIME;	// このhasBackup()でファイル名（$this->file）も定義
 		// バックアップの頻度

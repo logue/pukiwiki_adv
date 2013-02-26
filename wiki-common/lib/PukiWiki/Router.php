@@ -1,7 +1,11 @@
 <?php
 namespace PukiWiki;
+
 use PukiWiki\Utility;
 
+/**
+ * アドレス生成クラス
+ */
 class Router{
 	private static function init($init_uri = '',$get_init_value=0){
 		global $script_directory_index, $absolute_uri;
@@ -35,7 +39,11 @@ class Router{
 		return $absolute_uri ? self::get_script_absuri() : $script;
 	}
 
-	// Get absolute-URI of this script
+	/**
+	 * スクリプトのURLを取得
+	 * @params string $path パス
+	 * @return string
+	 */
 	public static function get_script_uri($path='')
 	{
 	//	$uri = basename(__FILE__);
@@ -56,7 +64,10 @@ class Router{
 		return preg_replace('#^.*/#', '', $str);
 	}
 
-	// Get absolute-URI of this script
+	/**
+	 * スクリプトの絶対URLを取得
+	 * @return string
+	 */
 	public static function get_script_absuri()
 	{
 		global $script_abs, $script_directory_index;
@@ -115,6 +126,9 @@ class Router{
 
 		return $uri;
 	}
+	/**
+	 * プラグインのアドレスを取得
+	 */
 	public static function get_cmd_uri($cmd='', $page='', $path_reference='rel', $query='', $fragment='')
 	{
 		return self::get_resolve_uri($cmd,$page,$path_reference,$query,$fragment,0);
@@ -123,7 +137,15 @@ class Router{
 	{
 		return self::get_resolve_uri('',$page,$path_reference,$query,$fragment,0);
 	}
-
+	/**
+	 * アクションに応じたアドレスを取得
+	 * @param string $cmd プラグイン名
+	 * @param string $page ページ名
+	 * @param string $path_reference 取得するアドレスのタイプ
+	 * @param array $query 渡すQueryStringの配列
+	 * @param string $fragment アンカーを指定
+	 * @return string
+	 */
 	public static function get_resolve_uri($cmd='read', $page='', $path_reference='rel', $query=array(), $fragment='')
 	{
 		global $static_url, $url_suffix, $vars;
@@ -206,6 +228,11 @@ class Router{
 
 		return $ret;
 	}
+	/**
+	 * 相対URLか
+	 * @param string $str 入力文字
+	 * @return boolean
+	 */
 	private function is_reluri($str)
 	{
 		// global $script_directory_index;
@@ -219,40 +246,4 @@ class Router{
 		// if (! isset($script_directory_index) && $str == 'index.php') return true;
 		return false;
 	}
-	public static function get_fullname($name, $refer)
-	{
-		global $defaultpage;
-
-		// 'Here'
-		if (empty($name) || $name === './') return $refer;
-
-		// Absolute path
-		if ($name{0} == '/') {
-			$name = substr($name, 1);
-			return empty($name) ? $defaultpage : $name;
-		}
-
-		// Relative path from 'Here'
-		if (substr($name, 0, 2) == './') {
-			$arrn    = preg_split('#/#', $name, -1, PREG_SPLIT_NO_EMPTY);
-			$arrn[0] = $refer;
-			return join('/', $arrn);
-		}
-
-		// Relative path from dirname()
-		if (substr($name, 0, 3) == '../') {
-			$arrn = preg_split('#/#', $name,  -1, PREG_SPLIT_NO_EMPTY);
-			$arrp = preg_split('#/#', $refer, -1, PREG_SPLIT_NO_EMPTY);
-
-			while (! empty($arrn) && $arrn[0] == '..') {
-				array_shift($arrn);
-				array_pop($arrp);
-			}
-			$name = ! empty($arrp) ? join('/', array_merge($arrp, $arrn)) :
-				(! empty($arrn) ? $defaultpage . '/' . join('/', $arrn) : $defaultpage);
-		}
-
-		return $name;
-	}
-
 }

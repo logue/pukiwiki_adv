@@ -4,8 +4,8 @@
 // Copyright (C)
 //   2012 PukiWiki Advance Developers Team
 // License: GPL v2 or (at your option) any later version
-namespace PukiWiki;
 
+namespace PukiWiki;
 
 use PukiWiki\Renderer\RendererDefines;
 use PukiWiki\Renderer\InlineFactory;
@@ -14,16 +14,29 @@ use PukiWiki\Factory;
 use Zend\Http\Response;
 use Zend\Math\Rand;
 
+/**
+ * 汎用関数
+ */
 class Utility{
-	// チケット名
+	/**
+	 * チケット名
+	 */
 	const TICKET_NAME = 'ticket';
-	// ブラックリストに保存
+	/**
+	 * ブラックリストに保存
+	 */
 	const SAVE_BLACKLIST = true;
-	// スパムログを使用する
+	/**
+	 * スパムログを使用する
+	 */
 	const SPAM_LOGGING = true;
-	// スパムのカウント
+	/**
+	 * スパムのカウント
+	 */
 	const SPAM_COUNT = 2;
-	// スパムの正規表現マッチパターン
+	/**
+	 * スパムの正規表現マッチパターン
+	 */
 	const SPAM_PATTERN = '#(?:cialis|hydrocodone|viagra|levitra|tramadol|xanax|\[/link\]|\[/url\])#i';
 	/**
 	 * 乱数を生成して暗号化時のsaltを生成する
@@ -65,13 +78,53 @@ class Utility{
 		// return null;
 	}
 	/**
+	 * 相対指定のページ名から全ページ名を取得
+	 * @param string $name
+	 * @param string $refer
+	 * @return string
+	 */
+	public static function getPageName($name, $refer) {
+		global $defaultpage;
+
+		// 'Here'
+		if (empty($name) || $name === './') return $refer;
+
+		// Absolute path
+		if ($name{0} === '/') {
+			$name = substr($name, 1);
+			return empty($name) ? $defaultpage : $name;
+		}
+
+		// Relative path from 'Here'
+		if (substr($name, 0, 2) === './') {
+			$arrn    = preg_split('#/#', $name, -1, PREG_SPLIT_NO_EMPTY);
+			$arrn[0] = $refer;
+			return join('/', $arrn);
+		}
+
+		// Relative path from dirname()
+		if (substr($name, 0, 3) === '../') {
+			$arrn = preg_split('#/#', $name,  -1, PREG_SPLIT_NO_EMPTY);
+			$arrp = preg_split('#/#', $refer, -1, PREG_SPLIT_NO_EMPTY);
+
+			while (! empty($arrn) && $arrn[0] == '..') {
+				array_shift($arrn);
+				array_pop($arrp);
+			}
+			$name = ! empty($arrp) ? join('/', array_merge($arrp, $arrn)) :
+				(! empty($arrn) ? $defaultpage . '/' . join('/', $arrn) : $defaultpage);
+		}
+
+		return $name;
+	}
+	/**
 	 * htmlspacialcharsのエイリアス（PHP5.4対策）
 	 * @param string $string 文字列
 	 * @param int $flags 変換する文字
 	 * @param string $charset エンコード
 	 * @return string
 	 */
-	public static function htmlsc($string = '', $flags = ENT_QUOTES, $charset = 'UTF-8'){
+	public static function htmlsc($string = '', $flags = ENT_QUOTES, $charset = SOURCE_ENCODING){
 		// Sugar with default settings
 		return htmlspecialchars($string, $flags, $charset);	// htmlsc()
 	}
