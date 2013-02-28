@@ -7,6 +7,12 @@
 // License: GPL v2 or (at your option) any later version
 //
 // lib/spam.php related maintenance tools
+use PukiWiki\Auth;
+use PukiWiki\Spam\Spam;
+use PukiWiki\Utility;
+use PukiWiki\Router;
+use PukiWiki\Factory;
+use PukiWiki\Listing;
 
 function plugin_spam_init(){
 	$msg = array(
@@ -32,7 +38,7 @@ function plugin_spam_action()
 {
 	global $vars, $_spam_messages;
 
-	if (PKWK_READONLY) die_message($_spam_messages['msg_prohibit']);
+	if (PKWK_READONLY) Utility::die_message($_spam_messages['msg_prohibit']);
 
 	// Dispatch
 	$mode = isset($vars['mode']) ? $vars['mode'] : '';
@@ -45,7 +51,7 @@ function plugin_spam_action()
 	// Check attach
 
 	$body   = 'Choose one: ' . "\n" .
-		'<a href="'. get_cmd_uri('spam','','',array('mode'=>'pages')) . '">'.$_spam_messages['title_pages'].'</a>' . "\n"
+		'<a href="'. Router::get_cmd_uri('spam','','',array('mode'=>'pages')) . '">'.$_spam_messages['title_pages'].'</a>' . "\n"
 		;
 	return array('msg'=>$_spam_messages['title'].$_spam_messages['title_menu'], 'body'=>nl2br($body));
 }
@@ -53,16 +59,13 @@ function plugin_spam_action()
 // mode=pages: Check existing pages
 function plugin_spam_pages()
 {
-	require_once(LIB_DIR . 'spam.php');
-	require_once(LIB_DIR . 'spam_pickup.php');
-
 	global $vars, $post, $_msg_invalidpass, $_spam_messages;
 
 	$ob      = ob_get_level();
-	$script  = get_script_uri();
+	$script  = Router::get_script_uri();
 
 	$start   = isset($post['start']) ? $post['start'] : NULL;
-	$s_start = ($start === NULL) ? '' : htmlsc($start);
+	$s_start = ($start === NULL) ? '' : Utility::htmlsc($start);
 	$pass    = isset($post['pass']) ? $post['pass'] : NULL;
 	$sort    = isset($post['sort']);
 	$s_sort  = $sort ? ' checked' : '';
@@ -86,7 +89,7 @@ function plugin_spam_pages()
 
 EOD;
 
-	if ($pass !== NULL && pkwk_login($pass)) {
+	if ($pass !== NULL && Auth::login($pass)) {
 		// Check and report
 
 		$method = array(
@@ -105,7 +108,7 @@ EOD;
 		flush();
 		if ($ob) @ob_flush();
 
-		$pages = get_existpages();
+		$pages = Listing::exists();
 		if ($sort) sort($pages, SORT_STRING);
 
 		$count = $search = $hit = 0;
@@ -125,17 +128,17 @@ EOD;
 				if ($ob) @ob_flush();
 			}
 
-			$progress = check_uri_spam(get_source($pagename, TRUE, TRUE), $method);
+			$progress = Spam::check_uri_spam(Factory::Wiki($pagename)->get(), $method);
 			if (empty($progress['is_spam'])) {
-				echo htmlsc($pagename);
+				echo Utility::htmlsc($pagename);
 				echo '<br />' . "\n";
 			} else {
 				++$hit;
 				echo '<div style="padding: 0pt 0.7em;" class="ui-state-error ui-corner-all">'.
 					'<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>'.
-					sprintf($_spam_messages['msg_found'],htmlsc($pagename)).'</p>';
+					sprintf($_spam_messages['msg_found'],Utility::htmlsc($pagename)).'</p>';
 				echo '<p>' . "\n";
-				$tmp = summarize_detail_badhost($progress);
+				$tmp = Spam::summarize_detail_badhost($progress);
 				if ($tmp != '') {
 					echo '&nbsp; DETAIL_BADHOST: ' . 
 						str_replace('  ', '&nbsp; ', nl2br(htmlsc($tmp). "\n"));

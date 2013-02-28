@@ -7,17 +7,22 @@
  * @version     $Id: hatena.inc.php,v 0.14.1 2013/02/24 17:17:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
+
 namespace PukiWiki\Auth;
 
 use PukiWiki\Auth\AuthApi;
+
+/**
+ * Jugem認証
+ */
 class AuthJugem extends AuthApi
 {
 	var $sec_key,$api_key;
 	
-	const ROLE_AUTH_JUGEMKEY = 5.4;
 	const JUGEMKEY_URL_AUTH = 'https://secure.jugemkey.jp/?mode=auth_issue_frob';
 	const JUGEMKEY_URL_TOKEN = 'http://api.jugemkey.jp/api/auth/token';
 	const JUGEMKEY_URL_USER = 'http://api.jugemkey.jp/api/auth/user';
+	const ROLE_AUTH_JUGEMKEY = 5.4;
 
 	function __construct()
 	{

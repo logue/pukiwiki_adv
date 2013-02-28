@@ -7,32 +7,36 @@
 
 namespace PukiWiki\Renderer;
 
+/**
+ * Trieクラス
+ */
 class Trie{
-	// Generate one compact regex for quick reTRIEval,
-	// that just matches with all $array-values.
-	//
-	// USAGE (PHP >= 4.4.0, PHP >= 5.0.2):
-	//   $array = array(7 => 'fooa', 5 => 'foob');
-	//   $array = array_unique($array);
-	//   sort($array, SORT_LOCALE_STRING);	// Keys will be replaced
-	//   echo generate_trie_regex($array);	// 'foo(?:a|b)'
-	//
-	// USAGE (PHP >= 5.2.9):
-	//   $array = array(7 => 'fooa', 5 => 'foob');
-	//   $array = array_unique($array, SORT_LOCALE_STRING);
-	//   $array = array_values($array);
-	//   echo generate_trie_regex($array);	// 'foo(?:a|b)'
-	//
-	// ARGUMENTS:
-	//   $array  : A _sorted_string_ array
-	//	 * array_keys($array) MUST BE _continuous_integers_started_with_0_.
-	//	 * Type of all $array-values MUST BE string.
-	//   $_offset : (int) internal use. $array[$_offset	] is the first value to check
-	//   $_sentry : (int) internal use. $array[$_sentry - 1] is the last  value to check
-	//   $_pos	: (int) internal use. Position of the letter to start checking. (0 = the first letter)
-	//
-	// REFERENCE: http://en.wikipedia.org/wiki/Trie
-	//
+	/**
+	 * Generate one compact regex for quick reTRIEval,
+	 * that just matches with all $array-values.
+	 *
+	 * USAGE (PHP >= 4.4.0, PHP >= 5.0.2):
+	 *   $array = array(7 => 'fooa', 5 => 'foob');
+	 *   $array = array_unique($array);
+	 *   sort($array, SORT_LOCALE_STRING);	// Keys will be replaced
+	 *  echo Trie::regex($array);	// 'foo(?:a|b)'
+	 *
+	 * USAGE (PHP >= 5.2.9):
+	 *   $array = array(7 => 'fooa', 5 => 'foob');
+	 *   $array = array_unique($array, SORT_LOCALE_STRING);
+	 *   $array = array_values($array);
+	 *   echo Trie::regex($array);	// 'foo(?:a|b)'
+	 *
+	 * ARGUMENTS:
+	 *   $array  : A _sorted_string_ array
+	 *   * array_keys($array) MUST BE _continuous_integers_started_with_0_.
+	 *   * Type of all $array-values MUST BE string.
+	 *   $_offset : (int) internal use. $array[$_offset	] is the first value to check
+	 *   $_sentry : (int) internal use. $array[$_sentry - 1] is the last  value to check
+	 *   $_pos	: (int) internal use. Position of the letter to start checking. (0 = the first letter)
+	 *
+	 * REFERENCE: http://en.wikipedia.org/wiki/Trie
+	 */
 	public static function regex($array, $_offset = 0, $_sentry = NULL, $_pos = 0)
 	{
 		if (empty($array)) return '(?!)'; // Match with nothing
@@ -82,10 +86,12 @@ class Trie{
 		return join('', $regex);
 	}
 
-	// preg_quote(), and also escape PCRE_EXTENDED-related chars
-	// REFERENCE: http://www.php.net/manual/en/reference.pcre.pattern.modifiers.php
-	// NOTE: Some special whitespace characters may warned by PCRE_EXTRA,
-	//	   because of mismatch-possibility between PCRE_EXTENDED and '[:space:]#'.
+	/**
+	 * preg_quote(), and also escape PCRE_EXTENDED-related chars
+	 * REFERENCE: http://www.php.net/manual/en/reference.pcre.pattern.modifiers.php
+	 * NOTE: Some special whitespace characters may warned by PCRE_EXTRA,
+	 *	   because of mismatch-possibility between PCRE_EXTENDED and '[:space:]#'.
+	 */
 	private static function preg_quote_extended($string, $delimiter = NULL)
 	{
 		// Escape some more chars

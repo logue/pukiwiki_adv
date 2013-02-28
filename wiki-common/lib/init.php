@@ -18,6 +18,7 @@ use PukiWiki\Factory;
 use PukiWiki\Utility;
 use PukiWiki\Time;
 use PukiWiki\Router;
+use PukiWiki\Spam\Spam;
 use Zend\Cache\StorageFactory;
 
 // PukiWiki version / Copyright / License
@@ -175,24 +176,50 @@ defined('JS_URI')			or define('JS_URI', 		COMMON_URI . 'js/'      );	// URI to J
 
 defined('THEME_PLUS_NAME')	or define('THEME_PLUS_NAME',  'theme/');			// SKIN_URI + THEME_PLUS_NAME
 
+defined('SKIN_DIR') or define('SKIN_DIR',		WWW_HOME . 'skin/');
+
+defined('IMAGE_DIR') or define('IMAGE_DIR', 	WWW_HOME . 'image/');
+
+defined('SKIN_URI') or define('SKIN_URI',		ROOT_URI . 'skin/');
+defined('IMAGE_URI') or define('IMAGE_URI',		COMMON_URI . 'image/');
+defined('JS_URI') or define('JS_URI', 		COMMON_URI . 'js/');
+
+defined('PKWK_OPTIMISE') or define('PKWK_OPTIMISE', 0);
+defined('PLUS_PROTECT_MODE')	or define('PLUS_PROTECT_MODE',	Auth::ROLE_GUEST); // 0,2,3,4,5
+defined('PKWK_READONLY')		or define('PKWK_READONLY',		Auth::ROLE_GUEST);		// 0,1,2,3,4,5
+defined('PKWK_SAFE_MODE')		or define('PKWK_SAFE_MODE',		Auth::ROLE_GUEST);	// 0,1,2,3,4,5
+defined('PKWK_CREATE_PAGE')		or define('PKWK_CREATE_PAGE',	Auth::ROLE_GUEST); // 0,1,2,3,4,5
+defined('PKWK_USE_REDIRECT')	or define('PKWK_USE_REDIRECT',	Auth::ROLE_GUEST); // 0,1
+
+// PKWK_DISABLE_INLINE_IMAGE_FROM_URI - Disallow using inline-image-tag for URIs
+//   Inline-image-tag for URIs may allow leakage of Wiki readers' information
+//   (in short, 'Web bug') or external malicious CGI (looks like an image's URL)
+//   attack to Wiki readers, but easy way to show images.
+defined('PKWK_DISABLE_INLINE_IMAGE_FROM_URI') or define('PKWK_DISABLE_INLINE_IMAGE_FROM_URI', 0);
+
+// PKWK_QUERY_STRING_MAX
+//   Max length of GET method, prohibits some worm attack ASAP
+//   NOTE: Keep (page-name + attach-file-name) <= PKWK_QUERY_STRING_MAX
+defined('PKWK_QUERY_STRING_MAX') or define('PKWK_QUERY_STRING_MAX', 640); // Bytes, 0 = OFF
+
+defined('DEFAULT_TZ_NAME') or define('DEFAULT_TZ_NAME', 'Asia/Tokyo');
 
 // アップロード進捗状況のセッション名（PHP5.4以降のみ有効）
 defined('PKWK_PROGRESS_SESSION_NAME') or define('PKWK_PROGRESS_SESSION_NAME', 'pukiwiki_progress');
 
-// PostIDチェックをしないプラグイン
-defined('PKWK_IGNOLE_POSTID_CHECK_PLUGINS') or define('PKWK_IGNOLE_POSTID_CHECK_PLUGINS', '/menu|side|header|footer|full|read|include|calendar|login/');
+defined('DEFAULT_LANG') or define('DEFAULT_LANG', 'ja_JP');
 
 // PukiWiki Adv.共有データーの名前空間（Wikifirm用）
-define('PKWK_CORE_NAMESPACE', 'pukiwiki_adv');
+defined('PKWK_CORE_NAMESPACE') or define('PKWK_CORE_NAMESPACE', 'pukiwiki_adv');
 
 // Wikiの名前空間（セッションやキャッシュで他のWikiと名前が重複するのを防ぐため）7文字で十分だろう・・。
-define('PKWK_WIKI_NAMESPACE', 'pkwk_'.substr(md5(realpath(DATA_HOME)), 0 ,7) );
+defined('PKWK_WIKI_NAMESPACE') or define('PKWK_WIKI_NAMESPACE', 'pkwk_'.substr(md5(realpath(DATA_HOME)), 0 ,7) );
 
 // 汎用キャッシュの有効期間
 defined('PKWK_CACHE_EXPIRE') or define('PKWK_CACHE_EXPIRE', 604800);	// 60*60*24*7 1week
 
 // Timestamp prefix
-defined('PKWK_TIMESTAMP_PREFIX')		or define('PKWK_TIMESTAMP_PREFIX', 'timestamp-');
+defined('PKWK_TIMESTAMP_PREFIX') or define('PKWK_TIMESTAMP_PREFIX', 'timestamp-');
 
 // Load optional libraries
 if (isset($notify)){ require(LIB_DIR . 'mail.php'); }	// Mail notification
@@ -259,7 +286,7 @@ $cache = array(
 			'name' => $cache_adapter,
 			'options' => array(
 				// 他のWikiと競合しないようにするためDATA_HOMEのハッシュを名前空間とする
-				'namespace' => ($cache_adapter === 'Filesystem') ? 'zfcache' : PKWK_WIKI_NAMESPACE,
+				'namespace' => ($cache_adapter === 'Filesystem') ? null : PKWK_WIKI_NAMESPACE,
 				'cache_dir' => ($cache_adapter === 'Filesystem') ? CACHE_DIR : null
 			),
 		),
@@ -272,7 +299,6 @@ $cache = array(
 		'adapter'=>array(
 			'name'=>'Filesystem',
 			'options'=>array(
-				'ttl'=>PKWK_CACHE_EXPIRE,
 				'cache_dir'=>CACHE_DIR
 			)
 		)
@@ -638,7 +664,7 @@ if ($spam && $method !== 'GET') {
 		} else {
 			$_vars = & $vars;
 		}
-		pkwk_spamfilter($method . ' to #' . $_cmd, $_page, $_vars, $_method, $exitmode);
+		Spam::pkwk_spamfilter($method . ' to #' . $_cmd, $_page, $_vars, $_method, $exitmode);
 	}
 }
 
@@ -893,10 +919,10 @@ if (!empty($auth_key['home']) && ($vars['page'] == $defaultpage || $vars['page']
 ///////////////////////////////////////
 // Page output
 if (isset($retvars['msg']) && !empty($retvars['msg']) ) {
-	$title = str_replace('$1', htmlsc(strip_bracket($base)), $retvars['msg']);
+	$title = str_replace('$1', Utility::htmlsc(strip_bracket($base)), $retvars['msg']);
 	$page  = str_replace('$1', make_search($base),  $retvars['msg']);
 }else{
-	$title = htmlsc(strip_bracket($base));
+	$title = Utility::htmlsc(Utility::strip_bracket($base));
 	$page  = make_search($base);
 }
 
@@ -992,7 +1018,7 @@ function pr($value){
 	if (DEBUG){
 		Zend\Debug\Debug::dump($value);
 	}
-	return '';
+	return;
 }
 
 /* End of file init.php */

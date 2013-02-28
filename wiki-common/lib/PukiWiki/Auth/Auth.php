@@ -12,35 +12,53 @@ namespace PukiWiki\Auth;
 use PukiWiki\Renderer\RendererFactory;
 use PukiWiki\Utility;
 use PukiWiki\Factory;
-use PukiWiki\File\FileUtility;
-use Zend\Crypt\BlockCipher;
+use PukiWiki\Listing;
 
 
 /**
  * 認証クラス
- * @abstract
  */
 class Auth
 {
-	// 管理人のグループ名
+	/**
+	 * 管理人のグループ名
+	 */
 	const ADMIN_GROUP = 'Administrator';
-	// パスワードの最大長
+	/**
+	 * パスワードの最大長
+	 */
 	const PASSPHRASE_LIMIT_LENGTH = 512;
-	
+	/**
+	 * みなし管理人の名前
+	 */
 	const TEMP_CONTENTS_ADMIN_NAME = 'admin';
-	// ゲスト
+	/**
+	 * ロール：ゲスト
+	 */
 	const ROLE_GUEST = 0;
-	// 強制モード
+	/**
+	 * ロール：強制モード
+	 */
 	const ROLE_FORCE = 1;
-	// サイト管理者
+	/**
+	 * ロール：サイト管理者
+	 */
 	const ROLE_ADMIN = 2;
-	// コンテンツ管理者
+	/**
+	 * ロール：コンテンツ管理者
+	 */
 	const ROLE_CONTENTS_ADMIN = 3;
-	// 登録者
+	/**
+	 * ロール：登録者
+	 */
 	const ROLE_ENROLLEE = 4;
-	// 認証者
+	/**
+	 * ロール：認証者
+	 */
 	const ROLE_AUTH = 5;
-	// 見做し認証者
+	/**
+	 * ロール：見做し認証者
+	 */
 	const ROLE_AUTH_TEMP = 5.1;
 
 	/**
@@ -178,7 +196,7 @@ class Auth
 				$target_str = Factory::Wiki($page)->get(true);
 				break;
 			default:
-				throw new \Exception('Auth::checkPermission() : $auth_method_type = '.$auth_method_type.' is invalied!.');
+				throw new \Exception('Auth::auth() : $auth_method_type = '.$auth_method_type.' is invalied!.');
 				break;
 		}
 
@@ -195,7 +213,7 @@ class Auth
 				$title_cannot = $_title['cannotread'];
 				break;
 			default:
-				throw new \Exception('Auth::checkPermission() : $type = '.$type.' is invalied!.');
+				throw new \Exception('Auth::auth() : $type = '.$type.' is invalied!.');
 				break;
 		}
 		
@@ -236,13 +254,14 @@ class Auth
 				case 2: return self::digest_auth($target_str, true, false, $auth_pages, $title_cannot);
 			}
 		}
+		// ユーザの情報を取得
+		$info = Auth::get_user_info();
 		
-		// ユーザ名が明示的に定義されていないときは、ユーザ情報を呼び出す。グループは上書きでいいのか？
 		if (empty($username)){
-			// ユーザの情報を取得
-			$info = Auth::get_user_info();
 			// ユーザ名などが入力されていない場合、ユーザ情報からパラメーターを取得する
 			$username = $info['key'];
+		}
+		if (empty($groupname)){
 			$groupname = $info['group'];
 		}
 
@@ -1019,12 +1038,12 @@ class Auth
 	 * @param type $ext
 	 * @return type
 	 */
-	public static function get_existpages($dir = DATA_DIR, $ext = '.txt')
+	public static function get_existpages($type='wiki')
 	{
 		$rc = array();
 
 		// ページ名の取得
-		$pages = FileUtility::getExists($dir);
+		$pages = Listing::get($type);
 
 		// $pages = get_existpages($dir, $ext);
 		// コンテンツ管理者以上は、: のページも閲覧可能

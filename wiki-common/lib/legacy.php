@@ -9,7 +9,6 @@
 use PukiWiki\Auth\Auth;
 use PukiWiki\Utility;
 use PukiWiki\Router;
-use PukiWiki\File\FileUtility;
 use PukiWiki\Renderer\RendererFactory;
 use PukiWiki\Renderer\Inline\Inline;
 use PukiWiki\Relational;
@@ -17,6 +16,7 @@ use PukiWiki\Search;
 use PukiWiki\Time;
 use PukiWiki\Factory;
 use PukiWiki\Recent;
+use PukiWiki\Listing;
 
 /**
  * auth.php
@@ -150,17 +150,10 @@ function header_lastmod($page = NULL)
 	}
 }
 
-// Get a list of encoded files (must specify a directory and a suffix)
-function get_existfiles($dir = DATA_DIR, $ext = '.txt')
-{
-	//trigger_error('get_existfiles() is deprecated. use FileUtility::get_exists($dir).', E_USER_DEPRECATED );
-	return FileUtility::getExists($dir);
-}
-
 // Get a page list of this wiki
 function get_existpages($dir = DATA_DIR, $ext = '.txt')
 {
-	return FileUtility::getExists($dir);
+	return Listing::get('wiki');
 }
 
 /**
@@ -237,7 +230,7 @@ function drop_submit($str)
 // Generate sorted "list of pages" XHTML, with page-reading hints
 function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', $withfilename = FALSE)
 {
-	return FileUtility::getListing();
+	return Listing::get();
 }
 
 function is_url($str, $only_http = FALSE)
@@ -649,44 +642,11 @@ function plus_readfile($filename)
 	while (@ob_end_flush());
 }
 
-function update_cache($page = '', $force = false){
-	global $cache, $aliaspage, $autoalias, $autoglossary, $glossarypage, $autobasealias, $autolink;
-
-	if ($force) {
-		// forceフラグがたってる時は、キャッシュをすべて作り直し
-		$cache['wiki']->flush();
-		$cache['raw']->flush();
-	}
-
-	// Update page list
-	$pages = FileUtility::getExists();
-
-	// Update autolink
-//	if ( $autolink !== 0 ) {
-//		PukiWiki\Renderer\AutoLinkPattern::get_pattern(-1,true);
-//	}
-
-	// Update rel and ref cache
-	$links = new PukiWiki\Relational($page);
-	if (!empty($page) ){
-		$links->update($page);
-	} else if ($force) {
-		$links->init();
-	}
-/*
-	// Update Lastmodifed cache
-	put_lastmodified();
-
-	// Update attach list
-	get_attachfiles($page);
-*/
-	return true;
-}
 
 // Move from file.php
 
 function get_existpages_cache($dir, $ext){
-	return FileUtility::getExists($dir);
+	return Listing::get();
 }
 
 /**
@@ -722,38 +682,6 @@ function make_heading(& $str, $strip = TRUE)
 	return Utility::setHeading($str, $strip);
 }
 
-// Separate a page-name(or URL or null string) and an anchor
-// (last one standing) without sharp
-function anchor_explode($page, $strict_editable = FALSE)
-{
-	return Utility::explodeAnchor($page, $strict_editable);
-}
-
-
-/**
- * links.php
- */
-function links_get_related_db($page)
-{
-	if (empty($page)) return false;
-	$relational = new Relational($page);
-	return $relational->getRelated();
-}
-
-// Init link cache (Called from link plugin)
-function links_init()
-{
-	$links = new Relational('');
-	return $links->init();
-}
-
-// Update link-relationships between pages
-function links_update($page)
-{
-	if (empty($page)) return false;
-	$links = new Relational($page);
-	return $links->update();
-}
 /**
  * make_link.php
  */
@@ -774,7 +702,7 @@ function make_pagelink($page, $alias = '', $anchor = '', $refer = '', $isautolin
 // Resolve relative / (Unix-like)absolute path of the page
 function get_fullname($name, $refer)
 {
-	return Router::get_fullname($name, $refer);
+	return Utility::getPageName($name, $refer);
 }
 
 function set_time()

@@ -9,14 +9,8 @@
 // back plugin
 
 use PukiWiki\Auth\Auth;
-
-// Allow specifying back link by page name and anchor, or
-// by relative or site-abusolute path
-// define('PLUGIN_BACK_ALLOW_PAGELINK', PKWK_SAFE_MODE); // FALSE(Compat), TRUE
-define('PLUGIN_BACK_ALLOW_PAGELINK', Auth::check_role('safemode')); // FALSE(Compat), TRUE
-
-// Allow JavaScript (Compat)
-define('PLUGIN_BACK_ALLOW_JAVASCRIPT', TRUE); // TRUE(Compat), FALSE, PKWK_ALLOW_JAVASCRIPT
+use PukiWiki\Factory;
+use PukiWiki\Utility;
 
 // ----
 define('PLUGIN_BACK_USAGE', '#back([text],[center|left|right][,0(no hr)[,Page-or-URI-to-back]])');
@@ -43,22 +37,21 @@ function plugin_back_convert()
 
 	$link = TRUE;
 	$href = trim($href);
-	if ($href != '') {
-		if (PLUGIN_BACK_ALLOW_PAGELINK) {
+	if (!empty($href)) {
+		if ( Auth::check_role('safemode')) {
 			if (is_url($href)) {
 				$href = rawurlencode($href);
 			} else {
-				$array = anchor_explode($href);
-				$array[1] = ($array[1] != '') ? '#' . rawurlencode($array[1]) : '';
-				$href = get_page_uri($array[0]) .  $array[1];
-				$link = is_page($array[0]);
+				$wiki = Factory::Wiki($array[0]);
+				$array = Utility::explodeAnchor($href);
+				$array[1] = !empty($array[1]) ? '#' . rawurlencode($array[1]) : '';
+				$href = $wiki->uri() . $array[1];
+				$link = $wiki->has();
 			}
 		} else {
 			$href = rawurlencode($href);
 		}
 	} else {
-		if (! PLUGIN_BACK_ALLOW_JAVASCRIPT)
-			return PLUGIN_BACK_USAGE . ': Set a page name or an URI';
 		$href  = 'javascript:history.go(-1)';
 	}
 

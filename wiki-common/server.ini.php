@@ -5,12 +5,6 @@
 //   2012 PukiWiki Advance Developers Team
 // License: GPL v2 or (at your option) any later version
 //
-/////////////////////////////////////////////////
-// Memcache configure
-// Memcache Host. When socket connection unix://var/run/memcache.socket
-define('MEMCACHE_HOST', '127.0.0.1');
-// Memcache Port, When socket connection set 0.
-define('MEMCACHE_PORT', 11211);
 
 /////////////////////////////////////////////////
 // Append X-Sendfile header
@@ -21,21 +15,10 @@ $use_sendfile_header = true;
 // (Automatically creating pronounce datas, for Kanji-included page names,
 //  to show sorted page-list correctly)
 
-// Enable page-reading feature.
-// (1:Enable, 0:Disable)
-$pagereading_enable = 1;
-
 // Set Mecab path
 $mecab_path = '/usr/bin/mecab';
 // $mecab_path = '/usr/local/bin/mecab';	// for Xrea, Coreserver, Xbeat
 // $mecab_path = 'C:\Program Files (x86)\MeCab\bin\mecab.exe';	// for Windows
-
-// Page name contains pronounce data (written by the converter)
-$pagereading_config_page = ':config/PageReading';
-
-// Page name of default pronouncing dictionary, used when converter = 'none'
-// Japanese Only!
-$pagereading_config_dict = ':config/PageReading/dict';
 
 /////////////////////////////////////////////////
 // HTTP proxy setting (for TrackBack etc)

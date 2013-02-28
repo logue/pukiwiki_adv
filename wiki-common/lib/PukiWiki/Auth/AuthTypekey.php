@@ -15,6 +15,9 @@ use PukiWiki\Renderer\Inline\Inline;
 use PukiWiki\Router;
 use PukiWiki\Utility;
 
+/**
+ * TypeKey認証
+ */
 class AuthTypekey extends AuthApi
 {
 	const TYPEKEY_URL_LOGIN = 'https://www.typekey.com/t/typekey/login';

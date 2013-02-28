@@ -11,6 +11,9 @@ namespace PukiWiki\Auth;
 
 use PukiWiki\Auth\AuthApi;
 
+/**
+ * Livedoor認証
+ */
 class AuthLivedoor extends AuthApi
 {
 	var $sec_key,$app_key;

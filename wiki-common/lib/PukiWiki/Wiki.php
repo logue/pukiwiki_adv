@@ -8,7 +8,7 @@ use PukiWiki\Relational;
 use PukiWiki\Utility;
 use PukiWiki\Auth\Auth;
 use PukiWiki\Diff;
-
+use PukiWiki\Backup;
 /**
  * Wikiのコントローラー
  */
@@ -30,8 +30,6 @@ class Wiki{
 		$this->page = $page;
 		// 以下はSplFileInfoの派生クラス
 		$this->wiki = FileFactory::Wiki($this->page);
-//		$this->backup = FileFactory::Backup($this->page);
-//		$this->diff = FileFactory::Diff($this->page);
 	}
 
 /**************************************************************************************************/
@@ -42,28 +40,22 @@ class Wiki{
 	 */
 	public function isEditable($authenticate = false)
 	{
-		global $edit_auth, $edit_auth_pages, $_title;
-		global $cantedit;
+		global $edit_auth, $cantedit;
 
-		if (!$this->isValied()) return false;	// 無効なページ名
-
+		// 「編集時に認証する」が有効になっていない
+		if (!$edit_auth) return true;
+		// 無効なページ名
+		if (!$this->isValied()) return false;	
+		// 凍結されている
+		if ($this->isFreezed()) return false;
 		// 編集できないページ
 		foreach($cantedit as $key) {
 			if ($this->page === $key) return false;
 		}
-
-		// 凍結されている
-		if ($this->isFreezed()) return false;
-
-		// 「編集時に認証する」が有効になっていない
-		if (!$edit_auth) return true;
-
 		// 未認証時に読み取り専用になっている
 		if (Auth::check_role('readonly')) return false;	
-		
 		// ユーザ別の権限を読む
 		if (Auth::auth($this->page, 'read', $authenticate) && Auth::auth($this->page, 'edit', $authenticate)) return true;
-
 		return false;
 	}
 	/**
@@ -73,10 +65,10 @@ class Wiki{
 	 */
 	public function isReadable($authenticate = false)
 	{
-		global $read_auth, $read_auth_pages, $_title;
-
-		if (!$read_auth) return true;
+		global $read_auth;
 		
+		// 閲覧時に認証が有効になっていない
+		if (!$read_auth) return true;
 		// 認証
 		if (Auth::auth($this->page, 'read', $authenticate)) return true;
 		return false;
@@ -88,10 +80,9 @@ class Wiki{
 	 */
 	public function isFreezed()
 	{
-		$buffer = $this->wiki->head(1);	// 先頭1行のみ読み込む
-		return strstr($buffer,'#freeze');
+		// 先頭1行のみ読み込み、そこに#freezeがある場合凍結とみなす
+		return strstr($this->wiki->head(1),'#freeze');
 	}
-	
 	/**
 	 * 有効なページ名か（is_page()）
 	 * @return boolean
@@ -125,7 +116,7 @@ class Wiki{
 	 * 特殊ページか
 	 * @return boolean;
 	 */
-	public function isSpecialPage(){
+	public function isSpecial(){
 		global $navigation,$whatsnew,$whatsdeleted,$interwiki,$menubar,$sidebar,$headarea,$footarea;
 		
 		return preg_match('/['.
@@ -370,15 +361,16 @@ class Wiki{
 */
 //		log_write('update',$this->page);
 
-		if (!$keeptimestamp){
+		global $whatsnew;
+		if (!$keeptimestamp || $page !== $whatsnew){
 			// 最終更新を更新
 			Recent::set($this->page);
 		}
 		
 		// Create backup
 		//make_backup($this->page, $postdata == ''); // Is $postdata null?
-		$backup = new BackupFile($this->page);
-		$backup->setBackup();
+		$backup = new Backup($this->page);
+		$backup->set();
 
 		// Logging postdata (Plus!)
 		if (self::POST_LOGGING === TRUE) {

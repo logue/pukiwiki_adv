@@ -8,7 +8,12 @@ use PukiWiki\File\FileFactory;
  */
 class Backup{
 	public function __construct($page){
+		global $cycle, $maxage;
 		$this->page = $page;
+		// バックアップの頻度
+		$this->cycle = 60 * 60 * $cycle;
+		// バックアップの上限個数
+		$this->maxage = $maxage;
 		// 以下はSplFileInfoの派生クラス
 		$this->wiki = FileFactory::Wiki($this->page);
 		$this->backup = FileFactory::Backup($this->page);
@@ -31,7 +36,7 @@ class Backup{
 		if ($this->backup->has()){
 			// バックアップ新規作成
 			return $this->backup->set(self::SPLITTER . ' ' . $this->wiki->time() . ' ' . UTIME . "\n" . $newdata);
-		}else if (! $this->time == 0 || (UTIME - $this->backup->time > $this->backup->cycle) ){
+		}else if (! $this->backup->time() === 0 || (UTIME - $this->backup->time() > $this->cycle) ){
 			// 連続更新があった場合に備えて、バックアップを作成するまでのインターバルを設ける
 			return;
 		}

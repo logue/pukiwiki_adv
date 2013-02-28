@@ -13,8 +13,9 @@
 
 namespace PukiWiki\File;
 
-use PukiWiki\Factory;
 use PukiWiki\Auth\Auth;
+use PukiWiki\Factory;
+use PukiWiki\File\File;
 use PukiWiki\Utility;
 
 /**
@@ -56,10 +57,7 @@ class BackupFile extends File{
 		$this->name = self::$dir . Utility::encode($page);
 		// バックアップの最終更新日時
 		$this->time = $this->has() ? filemtime($this->filename) : UTIME;	// このhasBackup()でファイル名（$this->file）も定義
-		// バックアップの頻度
-		$this->cycle = 60 * 60 * $cycle;
-		// バックアップの上限個数
-		$this->maxage = $maxage;
+		
 		
 		parent::__construct($this->name.$this->ext);
 	}

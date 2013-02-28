@@ -52,7 +52,7 @@ abstract class AuthApi
 	 */
 	public function make_login_link($callback_url){}
 	/**
-	 * 外部認証
+	 * 認証
 	 * @param string $frob
 	 * @return int
 	 */

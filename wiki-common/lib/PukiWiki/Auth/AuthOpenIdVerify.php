@@ -4,6 +4,9 @@ namespace PukiWiki\Auth;
 
 use PukiWiki\Auth\AuthOpenId;
 
+/**
+ * OpenID認証の確認
+ */
 class AuthOpenIdVerify extends AuthOpenId
 {
 	function __construct()

@@ -18,8 +18,7 @@
 // PKWK_OPTIMISE - Ignore verbose but understandable checking and warning
 //   If you end testing this PukiWiki, set '1'.
 //   If you feel in trouble about this PukiWiki, set '0'.
-if (! defined('PKWK_OPTIMISE'))
-	define('PKWK_OPTIMISE', 0);
+define('PKWK_OPTIMISE', 0);
 
 /////////////////////////////////////////////////
 // Security settings
@@ -30,30 +29,23 @@ if (! defined('PKWK_OPTIMISE'))
 // Auth::ROLE_ENROLLEE       - 登録者
 // Auth::ROLE_AUTH           - 認証者(未設定時のデフォルト)以上は除く
 
-use PukiWiki\Lib\Auth\Auth;
+use PukiWiki\Auth\Auth;
 
 // 認証せずには閲覧できない
-defined('PLUS_PROTECT_MODE')	or define('PLUS_PROTECT_MODE',	Auth::ROLE_GUEST); // 0,2,3,4,5
+define('PLUS_PROTECT_MODE', Auth::ROLE_GUEST);
 
 // PKWK_READONLY - Prohibits editing and maintain via WWW
 //   NOTE: Counter-related functions will work now (counter, attach count, etc)
-defined('PKWK_READONLY')		or define('PKWK_READONLY',		Auth::ROLE_GUEST);		// 0,1,2,3,4,5
+define('PKWK_READONLY',     Auth::ROLE_GUEST);
 
 // PKWK_SAFE_MODE - Prohibits some unsafe(but compatible) functions
-defined('PKWK_SAFE_MODE')		or define('PKWK_SAFE_MODE',		Auth::ROLE_GUEST);	// 0,1,2,3,4,5
+define('PKWK_SAFE_MODE',    Auth::ROLE_GUEST);
 
 // PKWK_CREATE_PAGE - New page making is prohibited.
-defined('PKWK_CREATE_PAGE')		or define('PKWK_CREATE_PAGE',	Auth::ROLE_GUEST); // 0,1,2,3,4,5
+define('PKWK_CREATE_PAGE',  Auth::ROLE_GUEST);
 
 // PKWK_USE_REDIRECT - When linking outside, Referer is removed.
-defined('PKWK_USE_REDIRECT')	or define('PKWK_USE_REDIRECT',	Auth::ROLE_GUEST); // 0,1
-
-// PKWK_DISABLE_INLINE_IMAGE_FROM_URI - Disallow using inline-image-tag for URIs
-//   Inline-image-tag for URIs may allow leakage of Wiki readers' information
-//   (in short, 'Web bug') or external malicious CGI (looks like an image's URL)
-//   attack to Wiki readers, but easy way to show images.
-defined('PKWK_DISABLE_INLINE_IMAGE_FROM_URI')
-								or define('PKWK_DISABLE_INLINE_IMAGE_FROM_URI', 0);
+define('PKWK_USE_REDIRECT', Auth::ROLE_GUEST);
 
 // PKWK_QUERY_STRING_MAX
 //   Max length of GET method, prohibits some worm attack ASAP
@@ -64,7 +56,7 @@ define('PKWK_QUERY_STRING_MAX', 640); // Bytes, 0 = OFF
 // Language / Encoding settings
 // <language>_<territory> = <ISO 639>_<ISO 3166>
 // ja_JP, ko_KR, en_US, zh_TW ...
-defined('DEFAULT_LANG') or define('DEFAULT_LANG', 'ja_JP');
+define('DEFAULT_LANG', 'ja_JP');
 
 // It conforms at the time of server installation location (DEFAULT_LANG).
 // (1: Conforming, 0: Language dependence)
@@ -91,7 +83,7 @@ $language_considering_setting_level = 2;
 // Please refer to lib/timezone.php for the defined character string.
 // en_US など、複数のタイムゾーンが存在する場合に定義して下さい。
 // 定義する文字列は、lib/timezone.php を参照して下さい。
-defined('DEFAULT_TZ_NAME') or define('DEFAULT_TZ_NAME', 'Asia/Tokyo');
+define('DEFAULT_TZ_NAME', 'Asia/Tokyo');
 
 // The view on public holiday applies to installation features.
 // 祝日の表示は、設置場所に準ずる (0:設置者視点, 1:閲覧者視点)
@@ -122,14 +114,7 @@ define('EXTEND_DIR',	SITE_HOME . 'extend/'   );	// Extend directory
 define('EXT_PLUGIN_DIR',EXTEND_DIR. 'plugin/'   );	// Extend Plugin directory
 define('EXT_LANG_DIR',	EXTEND_DIR. 'locale/'   );	// Extend Language file
 define('EXT_SKIN_DIR',	EXTEND_DIR. 'skin/'     );	// Extend Skin directory
-*/
-/////////////////////////////////////////////////
-// Directory settings II (ended with '/')
 
-// Skins / Stylesheets
-
-// Skin files (SKIN_DIR/*.skin.php) are needed at
-// ./DATAHOME/SKIN_DIR from index.php.
 define('SKIN_DIR',		WWW_HOME . 'skin/');
 
 // Static image files
@@ -139,9 +124,8 @@ define('SKIN_URI',		ROOT_URI . 'skin/');
 define('IMAGE_URI',		COMMON_URI . 'image/');
 define('JS_URI', 		COMMON_URI . 'js/');
 
-// THEME
-// *.skin.php => SKIN_DIR or SKIN_DIR + THEME_PLUS_NAME or EXT_SKIN_DIR + THEME_PLUS_NAME
-define('THEME_PLUS_NAME',  'theme/');			// SKIN_URI + THEME_PLUS_NAME
+define('THEME_PLUS_NAME',  'theme/');
+*/
 
 /////////////////////////////////////////////////
 // Title of your Wikisite (Name this)

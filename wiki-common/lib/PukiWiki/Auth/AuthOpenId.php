@@ -4,6 +4,9 @@ namespace PukiWiki\Auth;
 
 use PukiWiki\Auth\AuthApi;
 
+/**
+ * OpenID認証
+ */
 class AuthOpenId extends AuthApi
 {
 	const ROLE_AUTH_OPENID = 5.2;

@@ -12,6 +12,14 @@ class Listing{
 	// ページ一覧キャッシュの接頭辞
 	const PAGENAME_HEADING_CACHE_PREFIX = 'listing-';
 	/**
+	 * 一覧を取得
+	 * @param string $type データーのタイプ
+	 * @return array
+	 */
+	public static function exists($type = 'wiki'){
+		return FileFactory::exists($type);
+	}
+	/**
 	 * 一覧をページの読みでソートし出力
 	 * @param string $type 一覧を表示するタイプ
 	 * @param boolean $force キャッシュを再生成する（※ページの経過時間はキャッシュの対象外）
@@ -37,8 +45,10 @@ class Listing{
 		}
 
 		$ret = array();
-		foreach(FileFactory::exists($type) as $page) {	// ここで一覧取得
-			$initial = Reading::getReadingChar($page);
+		$pages = self::exists($type);
+		foreach($pages as $page) {	// ここで一覧取得
+			
+			$initial = Reading::getReadingChar($page);	// ページの読みを取得
 			if ($initial === $page){
 				// 読み込めなかった文字
 				$initial = Reading::OTHER_CHAR;
@@ -125,11 +135,7 @@ class Listing{
 	 * @return string
 	 */
 	private static function getPageLists($pages, $cmd, $with_filename){
-		global $read_auth_pages;
-
 		$contents = array();
-		// ユーザ名取得
-		$auth_key = Auth::get_user_info();
 		// コンテンツ管理者以上は、: のページも閲覧可能
 		$has_permisson = Auth::check_role('role_contents_admin');
 
@@ -143,15 +149,13 @@ class Listing{
 			if (! $wiki->isReadable()) continue;
 			
 			$_page = Utility::htmlsc($page, ENT_QUOTES);
-			$url = $wiki->uri($cmd);
-			if (!IS_MOBILE) {
-				$contents[] = '<li><a href="' . $url . '">' . $_page . '</a> ' . $wiki->passage() .
-					($with_filename ? '<br /><var>' . Utility::htmlsc($wiki->filename). '</var>' : '') .
-					'</li>';
-			}else{
-				$contents[] = '<li><a href="' . $url . '" data-transition="slide">' . $_page . '</a>' .
-					'<span class="ui-li-count">'. $wiki->passage(false, false) . '</span></li>';
-			}
+			$contents[] = IS_MOBILE ?
+				'<li><a href="' . $wiki->uri($cmd) . '" data-transition="slide">' . $_page . '</a>' .
+				'<span class="ui-li-count">'. $wiki->passage(false, false) . '</span></li>' :
+				'<li><a href="' . $wiki->uri($cmd) . '">' . $_page . '</a> ' . $wiki->passage() .
+				($with_filename ? '<br /><var>' . Utility::htmlsc($wiki->filename). '</var>' : '') .
+				'</li>'
+			;
 		}
 		return $contents;
 	}

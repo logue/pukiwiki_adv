@@ -10,25 +10,44 @@
  */
 namespace PukiWiki\File;
 
+use Exception;
 use PukiWiki\Auth\Auth;
+use PukiWiki\File\File;
 
+/**
+ * 認証ユーザファイルクラス
+ */
 class AuthFile extends File
 {
-	// 変更なし
+	/**
+	 * 変更なし
+	 */
 	const USER_NOTCHANGED = 0;
-	// 追加
+	/**
+	 * 追加
+	 */
 	const USER_ADD = 1;
-	// パスワードのみ変更
+	/**
+	 * パスワードのみ変更
+	 */
 	const USER_PASS_CHANGED = 2;
-	// 両方変更
+	/**
+	 * 両方変更
+	 */
 	const USER_CHANGED = 3;
-	var $auth_users, $file;
+	/**
+	 * 認証ユーザ
+	 */
+	private $auth_users;
 
+	/**
+	 * コンストラクタ
+	 */
 	function __construct($name='auth_users')
 	{
 		$this->filename = DATA_HOME . $name.'.ini.php';
-		parent::__construct($this->filename);
 		$this->auth_users = parent::has() ? include($this->filename) : array();
+		parent::__construct($this->filename);
 	}
 
 	/**
@@ -64,7 +83,13 @@ class AuthFile extends File
 
 		parent::set($lines);
 	}
-
+	/**
+	 * パスワードを設定
+	 * @param string $user ユーザ名
+	 * @param string $passwd パスワード
+	 * @param int $role 役割
+	 * @return
+	 */
 	function setPassword($user,$passwd,$role='')
 	{
 		// 1:追加
@@ -89,7 +114,11 @@ class AuthFile extends File
 		$this->auth_users[$user][self::USER_ADD] = $role;
 		return $rc;
 	}
-
+	/**
+	 * ユーザのパスワードを取得
+	 * @param string $user ユーザ名
+	 * @return array
+	 */
 	function getPassword ($user) {
 		if (empty($this->auth_users[$user])) {
 			// scheme, salt, role
@@ -102,5 +131,5 @@ class AuthFile extends File
 }
 	
 
-/* End of file auth_file.cls.php */
-/* Location: ./wiki-common/lib/auth_file.cls.php */
+/* End of file AuthFile.php */
+/* Location: ./vendor/PukiWiki/File/AuthFile.php */

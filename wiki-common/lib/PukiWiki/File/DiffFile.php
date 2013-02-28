@@ -15,12 +15,16 @@ namespace PukiWiki\File;
 
 use Exception;
 use PukiWiki\Diff;
+use PukiWiki\File\File;
 use PukiWiki\Router;
 use PukiWiki\Utility;
 
+/**
+ * 差分ファイルクラス
+ */
 class DiffFile extends File{
-	private static $dir = DIFF_DIR;
-	private static $pattern = '/^((?:[0-9A-F]{2})+)\.txt$/';
+	public static $dir = DIFF_DIR;
+	public static $pattern = '/^((?:[0-9A-F]{2})+)\.txt$/';
 
 	/**
 	 * コンストラクタ
@@ -59,6 +63,10 @@ class DiffFile extends File{
 		}
 		parent::set($diffdata);
 	}
+	/**
+	 * 差分をHTMLにして出力
+	 * @return string
+	 */
 	public function render(){
 		foreach (self::get() as $line){
 			// 先頭の１文字だけを抜き出す

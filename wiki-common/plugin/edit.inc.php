@@ -278,7 +278,7 @@ function plugin_edit_write()
 	$retvars = array();
 
 	// Collision Detection
-	$oldwiki = WikiFactory::Wiki($page);
+	$oldwiki = Factory::Wiki($page);
 	$oldpagesrc = $oldwiki->get(true);
 	$oldpagemd5 = $oldwiki->digest();
 

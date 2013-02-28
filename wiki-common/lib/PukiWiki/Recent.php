@@ -16,7 +16,7 @@ class Recent{
 	 * @param boolean $force キャッシュを再生成する
 	 * @return array
 	 */
-	public static function get($force = false){
+	public static function get($force = true){
 		global $cache, $whatsnew;
 		static $recent_pages;
 
@@ -34,11 +34,11 @@ class Recent{
 		}
 
 		// Get WHOLE page list
-		$pages = Listing::get('wiki', $force);
+		$pages = Listing::exists('wiki');
 
 		// Check ALL filetime
 		$recent_pages = array();
-		foreach($pages as $filename=>$page){
+		foreach($pages as $page){
 			if ($page !== $whatsnew){
 				$wiki = Factory::Wiki($page);
 				 if (! $wiki->isHidden() ) $recent_pages[$page] = $wiki->time();
@@ -72,6 +72,9 @@ class Recent{
 	public static function set($page, $is_deleted = false){
 		global $whatsnew, $autolink, $autobasealias;
 		global $cache;
+
+		// ページが最終更新だった場合処理しない
+		if ($page === $whatsnew) return;
 		
 		// 削除フラグが立っている場合、削除履歴を付ける
 		if ($is_deleted) self::updateRecentDeleted($page);

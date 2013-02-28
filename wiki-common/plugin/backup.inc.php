@@ -15,7 +15,8 @@ use PukiWiki\Router;
 use PukiWiki\Factory;
 use PukiWiki\File\WikiFile;
 use PukiWiki\Backup;
-use PukiWiki\File\FileUtility;
+use PukiWiki\File\FileFactory;
+use PukiWiki\Listing;
 use PukiWiki\Renderer\RendererFactory;
 use PukiWiki\Diff;
 
@@ -394,7 +395,7 @@ function plugin_backup_get_list_all($withfilename = FALSE)
 
 	if (Auth::check_role('safemode')) die_message( $_string['prohibit'] );
 
-	return FileUtility::getListing(BACKUP_DIR, 'backup', $withfilename);
+	return Listing::get('backup', 'backup', $withfilename);
 }
 
 // Plus! Extend - Diff

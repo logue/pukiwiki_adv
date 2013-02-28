@@ -22,6 +22,7 @@ define('PLUGIN_SHOWRSS_CACHE_PREFIX', 'showrss-');
 use PukiWiki\Auth\Auth;
 use PukiWiki\Renderer\Inline\Inline;
 use Zend\Http\ClientStatic;
+use Zend\Feed\Reader\Reader;
 
 // Show related extensions are found or not
 function plugin_showrss_action()
@@ -106,9 +107,12 @@ function plugin_showrss_convert()
 		$time = '<p style="font-size:small; font-weight:bold; text-align:right;">Last-Modified:' .
 			get_date('Y/m/d H:i:s', $time) .  '</p>';
 	}
+	
+	$feed = new Reader($uri);
+	pr($feed);
 
-	$obj = new $class($rss);
-	return $obj->toString($time);
+//	$obj = new $class($rss);
+//	return $obj->toString($time);
 }
 
 // Create HTML from RSS array()

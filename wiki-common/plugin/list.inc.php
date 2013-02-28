@@ -5,7 +5,7 @@
 // IndexPages plugin: Show a list of page names
 use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
-use PukiWiki\File\FileUtility;
+use PukiWiki\Listing;
 
 defined('PKWK_SITEMAPS_CACHE') or define('PKWK_SITEMAPS_CACHE', 'sitemaps');
 
@@ -24,7 +24,7 @@ function plugin_list_action()
 			// インクリメンタルサーチ向け
 			if (isset($vars['term'])){
 				// 酷い実装だ・・・。
-				foreach(FileUtility::getExists() as $page){
+				foreach(Listing::get() as $page){
 					if (preg_match('/^'.$vars['term'].'/', $page)){
 						$buffer[] = $page;
 					}
@@ -39,7 +39,7 @@ function plugin_list_action()
 
 			$buffer[] = '<?xml version="1.0" encoding="UTF-8"?>';
 			$buffer[] = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">';
-			foreach (FileUtility::getExists() as $page){
+			foreach (Listing::get() as $page){
 				$wiki = WikiFactory::Wiki($page);
 				if ($wiki->isHidden()) continue;
 				$buffer[] = '<url>';
@@ -71,7 +71,7 @@ function plugin_list_action()
 
 	return array(
 		'msg'=>$_title_list,
-		'body'=> FileUtility::getListing(DATA_DIR, ($listcmd == 'read' || $listcmd == 'edit' ? $listcmd : 'read'))
+		'body'=> Listing::get('wiki', ($listcmd == 'read' || $listcmd == 'edit' ? $listcmd : 'read'))
 	);
 }
 /* End of file list.inc.php */
