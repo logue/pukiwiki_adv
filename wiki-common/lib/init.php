@@ -922,7 +922,7 @@ if (isset($retvars['msg']) && !empty($retvars['msg']) ) {
 	$title = str_replace('$1', Utility::htmlsc(strip_bracket($base)), $retvars['msg']);
 	$page  = str_replace('$1', make_search($base),  $retvars['msg']);
 }else{
-	$title = Utility::htmlsc(Utility::strip_bracket($base));
+	$title = Utility::htmlsc(Utility::stripBracket($base));
 	$page  = make_search($base);
 }
 

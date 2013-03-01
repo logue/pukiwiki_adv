@@ -108,11 +108,11 @@ function plugin_showrss_convert()
 			get_date('Y/m/d H:i:s', $time) .  '</p>';
 	}
 	
-	$feed = new Reader($uri);
-	pr($feed);
+//	$feed = new Reader($uri);
+//	pr($feed);
 
-//	$obj = new $class($rss);
-//	return $obj->toString($time);
+	$obj = new $class($rss);
+	return $obj->toString($time);
 }
 
 // Create HTML from RSS array()
