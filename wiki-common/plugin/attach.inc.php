@@ -12,6 +12,7 @@
 //
 // File attach plugin
 use PukiWiki\Auth\Auth;
+use PukiWiki\Spam\Spam;
 // NOTE (PHP > 4.2.3):
 //    This feature is disabled at newer version of PHP.
 //    Set this at php.ini if you want.
@@ -355,7 +356,7 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 				$_method = array();
 			}
 			$exitmode = isset($spam['exitmode']) ? $spam['exitmode'] : '';
-			pkwk_spamfilter('File Attach', $page, $vars, $_method, $exitmode);
+			Spam::pkwk_spamfilter('File Attach', $page, $vars, $_method, $exitmode);
 		}
 	}
 

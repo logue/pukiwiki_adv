@@ -12,8 +12,9 @@ namespace PukiWiki\Spam;
 
 use PukiWiki\Spam\SpamPickup;
 use PukiWiki\Spam\SpamUtility;
+use PukiWiki\Factory;
 
-if (! defined('SPAM_INI_FILE'))   define('SPAM_INI_FILE', SITE_HOME.'spam.ini.php');
+if (! defined('SPAM_INI_FILE'))   define('SPAM_INI_FILE', add_homedir('spam.ini.php'));
 
 class Spam{
 	/**
@@ -65,7 +66,7 @@ class Spam{
 	{
 		if (! is_string($string)) return '';
 
-	 	if (mb_strpos($string, '.') === FALSE || is_ip($string)) {
+	 	if (mb_strpos($string, '.') === FALSE || SpamPickup::is_ip($string)) {
 			// "localhost", IPv4, etc
 			return self::generate_glob_regex($string, $divider);
 		}
@@ -367,7 +368,7 @@ class Spam{
 
 			if ($_method) {
 				$_asap   = isset($method['asap']) ? array('asap' => TRUE) : array();
-				$_result = area_pickup($target, $_method + $_asap);
+				$_result = SpamPickup::area_pickup($target, $_method + $_asap);
 				$_asap   = NULL;
 			} else {
 				$_result = FALSE;
@@ -393,14 +394,14 @@ class Spam{
 		// ----------------------------------------
 		// URI: Pickup
 
-		$pickups = spam_uri_pickup($target, $method);
+		$pickups = SpamPickup::spam_uri_pickup($target, $method);
 
 
 		// Return if ...
 		if (empty($pickups)) return $progress;
 
 		// Normalize all
-		$pickups = uri_pickup_normalize($pickups);
+		$pickups = SpamPickup::uri_pickup_normalize($pickups);
 
 		// ----------------------------------------
 		// Pickup some part of URI
@@ -486,7 +487,7 @@ class Spam{
 
 			$uris = array();
 			foreach (array_keys($pickups) as $key) {
-				$uris[$key] = uri_pickup_implode($pickups[$key]);
+				$uris[$key] = SpamPickup::uri_pickup_implode($pickups[$key]);
 			}
 			$count = count($uris);
 			$uris  = array_unique($uris);
@@ -527,7 +528,7 @@ class Spam{
 
 		if ((! $asap || ! $is_spam) && isset($method['badhost'])) {
 			$list    = self::get_blocklist('list');
-			$blocked = array_merge_leaves(
+			$blocked = SpamUtility::array_merge_leaves(
 				$blocked,
 				self::blocklist_distiller($hosts, array_keys($list), $asap),
 				FALSE
@@ -581,7 +582,7 @@ class Spam{
 		$blocked = array();
 		foreach($progress['blocked'] as $list => $lvalue) {
 			foreach($lvalue as $group => $gvalue) {
-				$flat = implode(', ', array_flat_leaves($gvalue));
+				$flat = implode(', ', SpamUtility::array_flat_leaves($gvalue));
 				if ($flat === $group) {
 					$blocked[$list][]       = $flat;
 				} else {
@@ -614,7 +615,7 @@ class Spam{
 		$trie = array();
 		foreach($progress['hosts'] as $value) {
 			// 'A.foo.bar.example.com'
-			$resp = whois_responsibility($value);	// 'example.com'
+			$resp = SpamPickup::whois_responsibility($value);	// 'example.com'
 			if (empty($resp)) {
 				// One or more test, or do nothing here
 				$resp = strval($value);
@@ -622,7 +623,7 @@ class Spam{
 			} else {
 				$rest = rtrim(substr($value, 0, - strlen($resp)), '.');	// 'A.foo.bar'
 			}
-			$trie = array_merge_leaves($trie, array($resp => array($rest => NULL)), FALSE);
+			$trie = SpamUtility::array_merge_leaves($trie, array($resp => array($rest => NULL)), FALSE);
 		}
 
 		// Format: var_export_shrink() -like output
@@ -663,7 +664,7 @@ class Spam{
 	function spam_dispose()
 	{
 		self::get_blocklist(NULL);
-		whois_responsibility(NULL);
+		SpamPickup::whois_responsibility(NULL);
 	}
 
 	/**
@@ -739,15 +740,17 @@ class Spam{
 			$summary['METRICS'] = self::summarize_spam_progress($progress);
 		}
 
-		$tmp = summarize_detail_badhost($progress);
+		$tmp = self::summarize_detail_badhost($progress);
 		if ($tmp != '') $summary['DETAIL_BADHOST'] = $tmp;
 
 		$tmp = self::summarize_detail_newtral($progress);
 		if (! $asap && $tmp != '') $summary['DETAIL_NEUTRAL_HOST'] = $tmp;
+		
+		$wiki = Factory::Wiki($page);
 
 		$summary['COMMENT'] = $action;
-		$summary['PAGE']    = '[blocked] ' . (is_pagename($page) ? $page : '');
-		$summary['URI']     = get_script_uri() . '?' . rawurlencode($page);
+		$summary['PAGE']    = '[blocked] ' . ($wiki->isValied() ? $page : '');
+		$summary['URI']     = $wiki->uri();
 		$summary['USER_AGENT']  = TRUE;
 		$summary['REMOTE_ADDR'] = TRUE;
 		pkwk_mail_notify($notify_subject,  var_export($target, TRUE), $summary, TRUE);
