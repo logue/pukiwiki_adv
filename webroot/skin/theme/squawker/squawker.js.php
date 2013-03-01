@@ -8,17 +8,15 @@ header('Content-Type: text/javascript; charset: UTF-8');
 header('Cache-Control: private');
 header('Expires: ' .gmdate('D, d M Y H:i:s',time() + $expire) . ' GMT');
 header('Last-Modified: '.gmdate('D, d M Y H:i:s', filemtime($color)) . ' GMT');
-ob_start('ob_gzhandler');
+@ob_start('ob_gzhandler');
 readfile('js/bootstrap.min.js');
 ?>
 $(document).ready(function(){
 	$('#loading').css('display','none');
 	$('.contents').scrollspy();
-	$('*[aria-describedby="tooltip"]').tooltip();
-	$('*[title]').tooltip();
 });
 <?php
-ob_end_flush();
+@ob_end_flush();
 
 /* End of file squawker.js.php */
 /* Location: ./webroot/skin/theme/squawker/squawker.js.php */
