@@ -119,7 +119,6 @@ require(LIB_DIR . 'config.php');
 require(LIB_DIR . 'log.php');
 require(LIB_DIR . 'spamplus.php');
 require(LIB_DIR . 'proxy.cls.php');
-require(LIB_DIR . 'ua/user_agent.cls.php');
 
 require(LIB_DIR . 'legacy.php');
 

@@ -13,14 +13,17 @@
  *   awstats-7.0/wwwroot/cgi-bin/lib/operating_systems.pm (Rev. 1.31)
  */
 
-class ua_operating_systems
+namespace PukiWiki\UA;
+
+class Os
 {
-	var $OSHashID = array(
+	private static $OSHashID = array(
 		# Windows OS family
+		array('windows[_+ ]nt[_+ ]6\.2',	'winlong'),	// windows8
 		array('windows[_+ ]?2008',		'winlong'),	// win7.png
 		array('windows[_+ ]nt[_+ ]6\.1',	'winlong'),
 		array('windows[_+ ]?2005',		'winlong'),	// winlong.png
-		array('windows[_+ ]nt[_+ ]6\.0',	'winlong'),	
+		array('windows[_+ ]nt[_+ ]6',	'winlong'),	
 		array('windows[_+ ]?2003',		'win2003'),	// win2003.png
 		array('windows[_+ ]nt[_+ ]5\.2',	'win2003'),	
 		array('windows[_+ ]xp',			'winxp'),	// winxp.png
@@ -118,15 +121,15 @@ class ua_operating_systems
 		array('windows',			'win'),
 	);
 
-	function get_icon($ua)
+	public static function get_icon($ua)
 	{
-		foreach($this->OSHashID as $x) {
+		foreach(self::$OSHashID as $x) {
 			$pat = "'".$x[0]."'si";
 			if (preg_match($pat,$ua,$regs)) {
 				return $x[1];
 			}
 		}
-		return '';
+		return null;
 	}
 }
 

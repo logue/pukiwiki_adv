@@ -8,6 +8,7 @@
  * @license	http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 use PukiWiki\Auth\Auth;
+use PukiWiki\UA\UserAgent;
 
 defined('MAX_LINE')      or define('MAX_LINE', 200);
 defined('VIEW_ROBOTS')   or define('VIEW_ROBOTS', '0');   // robots は表示しない
@@ -181,7 +182,7 @@ EOD;
 	}
 
 	// USER-AGENT クラス
-	$obj_ua = new user_agent(USE_UA_OPTION);
+	$obj_ua = new UserAgent(USE_UA_OPTION);
 /*
 	$path_flag    = IMAGE_URI .'plugin/logview/flags/';
 	$path_browser = IMAGE_URI .'plugin/logview/browser/';

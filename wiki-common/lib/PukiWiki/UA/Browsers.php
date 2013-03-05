@@ -13,8 +13,9 @@
  *   awstats-7.0/wwwroot/cgi-bin/lib/browsers.pm (Rev. 1.66)
  */
 
-class ua_browsers
-{
+namespace PukiWiki\UA;
+
+class Browsers{
 	//sub UnCompileRegex {
 	//	shift =~ /\(\?[-\w]*:(.*)\)/;
 	//	return $1;

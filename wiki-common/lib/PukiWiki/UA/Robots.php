@@ -17,9 +17,11 @@
  *   awstats-7.1/wwwroot/cgi-bin/lib/robots.pm (Rev. 1.64)
  */
 
-class robots
+namespace PukiWiki\UA;
+
+class Robots
 {
-	var $robots_lib = array(
+	private static $robots_lib = array(
 		// 'robot id' => 'robot clear text'
 
 		# Common robots (In robot file)
@@ -837,14 +839,14 @@ class robots
 		'moewe'					=> 'doko.jp',
 		# Logue Add
 		'Hatena'				=> 'Hatena Antenna',
-		'livedoor'				=> 'livedoor FeedFetcher',
+		'livedoor'				=> 'Livedoor FeedFetcher',
 		'blogmuraBot'			=> 'Blogmura Bot',
 	);
 
 	// ブラウザ識別
-	function get_robots_info($ua)
+	public static function get_robots_info($ua)
 	{
-		foreach ($this->robots_lib as $id => $name) {
+		foreach (self::$robots_lib as $id => $name) {
 			str_replace('_', '\_', $id);
 			// if (preg_match($pat,$ua,$regs)) return array($id,$name);
 			if (preg_match('/'.$id.'/si',$ua,$regs)) {
@@ -853,7 +855,6 @@ class robots
 		}
 		return array('', '');
 	}
-
 }
 
 /* End of file robots.php */

@@ -12,6 +12,8 @@
  *
  */
 
+namespace PukiWiki\UA;
+
 class ccTLD
 {
 	// ISO 3166 (http://www.iana.org/cctld/cctld-whois.htm)
