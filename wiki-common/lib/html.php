@@ -15,6 +15,8 @@
 use Zend\Http\Response;
 use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
+use PukiWiki\Lang\Lang;
+use PukiWiki\Router;
 
 // Show page-content
 function catbody($title, $page, $body)
@@ -54,7 +56,7 @@ function catbody($title, $page, $body)
 	$is_safemode = Auth::check_role('safemode');
 	$is_createpage = Auth::is_check_role(PKWK_CREATE_PAGE);
 
-	pkwk_common_headers(($lastmod && $is_read) ? $filetime : 0);
+	$headers = pkwk_common_headers(($lastmod && $is_read) ? $filetime : 0);
 	if (IS_AJAX && !IS_MOBILE){
 		$ajax = isset($vars['ajax']) ? $vars['ajax'] : 'raw';
 		switch ($ajax) {
@@ -297,8 +299,18 @@ function catbody($title, $page, $body)
 		//header('Content-Type: '.$http_header.'; charset='. CONTENT_CHARSET);
 		//@header('X-UA-Compatible: '.(empty($x_ua_compatible)) ? 'IE=edge' : $x_ua_compatible);	// とりあえずIE8対策
 
-		global $headers;
 		$headers['Content-Type'] = $http_header . '; charset='. CONTENT_CHARSET;
+
+		$response = new Response();
+		$response->setStatusCode(Response::STATUS_CODE_200);
+		$response->getHeaders()->addHeaders($headers);
+
+		if (!headers_sent()) {
+			header($response->renderStatusLine());
+			foreach ($response->getHeaders() as $_header) {
+				header($_header->toString());
+			}
+		}
 
 		include(SKIN_FILE);
 	}
@@ -561,7 +573,7 @@ function pkwk_headers_sent()
 	@param expire 有効期限（秒）
 	@return なし
 */
-use PukiWiki\Lang\Lang;
+
 function pkwk_common_headers($modified = 0, $expire = 604800){
 	global $lastmod, $vars, $response, $headers;
 	if (! defined('PKWK_OPTIMISE')) pkwk_headers_sent();
@@ -628,10 +640,7 @@ function pkwk_common_headers($modified = 0, $expire = 604800){
 		$headers['Cache-Control'] = $headers['Pragma'] = 'no-cache';
 		$headers['Expires'] = 'Sat, 26 Jul 1997 05:00:00 GMT';
 	}
-	$response->getHeaders()->addHeaders($headers);
-	$response->setStatusCode(Response::STATUS_CODE_200);
-	//pr($response->renderStatusLine());
-
+	return $headers;
 }
 
 function pkwk_common_suffixes($length = ''){

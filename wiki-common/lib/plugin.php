@@ -79,6 +79,8 @@ function limit_plugin($name)
 // Check plugin '$name' is here
 function exist_plugin($name)
 {
+	return PukiWiki\Renderer\PluginRenderer::loadPlugin($name);
+/*
 	global $exclude_plugin, $plugin_lang_path, $cache;
 	static $exist;
 
@@ -89,7 +91,6 @@ function exist_plugin($name)
 		$exist[$name] = FALSE;
 		return FALSE;
 	}
-
 	if (preg_match('/^\w{1,64}$/', $name) && !isset($exist[$name])){
 		foreach(array(EXT_PLUGIN_DIR, PLUGIN_DIR) as $p_dir) {
 			if (file_exists($p_dir . $name . '.inc.php')) {
@@ -103,6 +104,7 @@ function exist_plugin($name)
 	}
 	$exist[$name] = FALSE;
 	return FALSE;
+*/
 }
 
 // Check if plguin API exists

@@ -437,7 +437,7 @@ unset($die, $temp);
 
 /////////////////////////////////////////////////
 // 必須のページが存在しなければ、空のファイルを作成する
-foreach(array($defaultpage, $whatsnew, $interwiki) as $page){
+foreach(array($defaultpage, $whatsnew) as $page){
 	$wiki = Factory::Wiki($page);
 	if (! $wiki->has() ) $wiki->touch();
 }
@@ -740,7 +740,8 @@ if (!IS_AJAX || IS_MOBILE){
 				'activity-indicator',
 				'jquery.a-tools',
 				'jquery.autosize',
-				'jquery.beautyOfCode',
+			//	'jquery.beautyOfCode',
+				'jquery.codemirror',
 				'jquery.cookie',
 				'jquery.form',
 				'jquery.dataTables',

@@ -8,7 +8,6 @@ class Search{
 	public static function get_search_words($words, $do_escape = FALSE)
 	{
 		static $init, $mb_convert_kana, $pre, $post, $quote = '/';
-		global $mecab_path;
 
 		if (! isset($init)) {
 			// function: mb_convert_kana() is for Japanese code only
@@ -18,6 +17,9 @@ class Search{
 			}else if (LANG === 'ko'){
 				$mb_convert_kana = create_function('$str, $option',
 					'return PukiWiki\Text\Hangul::toChosung($str);');
+			}else if (LANG === 'zh'){
+				$mb_convert_kana = create_function('$str, $option',
+					'return PukiWiki\Text\PinYin::toKana($str);');
 
 			} else {
 				$mb_convert_kana = create_function('$str, $option',

@@ -20,11 +20,37 @@ use PukiWiki\Renderer\Inline\Inline;
  */
 class InlineConverter
 {
-	// 変換クラス
+	/**
+	 * デフォルトの変換パターン
+	 */
+	private static $default_converters = array(
+		'InlinePlugin',     // Inline plugins
+		'EasyRef',          // Easy Ref {{param|body}}
+		'Note',             // Footnotes
+		'Url',              // URLs
+		'InterWiki',        // URLs (interwiki definition)
+		'Mailto',           // mailto: URL schemes
+		'InterWikiName',    // InterWikiName
+		'BracketName',      // BracketName
+		'WikiName',         // WikiName
+		'AutoLink',         // AutoLink(cjk,other)
+		'AutoAlias',        // AutoAlias(cjk,other)
+		'Glossary',         // AutoGlossary(cjk,other)
+		'AutoLink_Alphabet',    // AutoLink(alphabet)
+		'AutoAlias_Alphabet',   // AutoAlias(alphabet)
+		'Glossary_Alphabet'     // AutoGlossary(alphabet)
+	);
+	/**
+	 * 変換クラス
+	 */
 	private $converters = array(); // as array()
-	// 変換処理に用いる正規表現パターン
+	/**
+	 * 変換処理に用いる正規表現パターン
+	 */
 	private $pattern;
-	// 結果
+	/**
+	 * 結果
+	 */
 	private $result;
 
 	/**
@@ -38,26 +64,8 @@ class InlineConverter
 	 */
 	public function __construct($converters = NULL, $excludes = NULL)
 	{
-		global $autolink, $autoalias, $autoglossary;
-
 		if (!isset($converters)) {
-			$converters = array(
-				'InlinePlugin',     // Inline plugins
-				'EasyRef',          // Easy Ref {{param|body}}
-				'Note',             // Footnotes
-				'Url',              // URLs
-				'InterWiki',        // URLs (interwiki definition)
-				'Mailto',           // mailto: URL schemes
-				'InterWikiName',    // InterWikiName
-				'BracketName',      // BracketName
-				'WikiName',         // WikiName
-				$autolink     ? 'AutoLink' : null,              // AutoLink(cjk,other)
-				$autoalias    ? 'AutoAlias' : null,             // AutoAlias(cjk,other)
-				$autoglossary ? 'Glossary' : null,              // AutoGlossary(cjk,other)
-				$autolink     ? 'AutoLink_Alphabet' : null,     // AutoLink(alphabet)
-				$autoalias    ? 'AutoAlias_Alphabet' : null,    // AutoAlias(alphabet)
-				$autoglossary ? 'Glossary_Alphabet' : null,     // AutoGlossary(alphabet)
-			);
+			$converters = self::$default_converters;
 		}
 		// 除外する
 		if ($excludes !== NULL)

@@ -34,7 +34,7 @@ class Recent{
 		}
 
 		// Get WHOLE page list
-		$pages = Listing::exists('wiki');
+		$pages = Listing::pages('wiki');
 
 		// Check ALL filetime
 		$recent_pages = array();

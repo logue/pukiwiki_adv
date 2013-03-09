@@ -16,8 +16,8 @@ class Listing{
 	 * @param string $type データーのタイプ
 	 * @return array
 	 */
-	public static function exists($type = 'wiki'){
-		return FileFactory::exists($type);
+	public static function pages($type = 'wiki'){
+		return FileFactory::getPages($type);
 	}
 	/**
 	 * 一覧をページの読みでソートし出力
@@ -45,7 +45,7 @@ class Listing{
 		}
 
 		$ret = array();
-		$pages = self::exists($type);
+		$pages = self::pages($type);
 		foreach($pages as $page) {	// ここで一覧取得
 			
 			$initial = Reading::getReadingChar($page);	// ページの読みを取得
@@ -85,7 +85,7 @@ class Listing{
 	public static function get($type = 'wiki', $cmd = 'read', $with_filename = false){
 		global $_string;
 		// 一覧の配列を取得
-		$heading = self::getHeadings($type, true);
+		$heading = self::getHeadings($type);
 		$contents = array();
 
 		if (IS_MOBILE) {

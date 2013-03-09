@@ -196,7 +196,6 @@ class Time{
 			$month_short = $month[0];
 			$month_long = $month[1];
 
-
 			$date = str_replace(
 				array(
 					date('M', $time),	// 月。3 文字形式。
@@ -220,8 +219,8 @@ class Time{
 	 */
 	public static function getTakeTime(){
 		// http://pukiwiki.sourceforge.jp/dev/?BugTrack2%2F251
-		return sprintf('%01.03f', self::getMicroTime() - time());
-		//return sprintf('%01.03f', self::getMicroTime() - $_SERVER['REQUEST_TIME']);
+		//return sprintf('%01.03f', self::getMicroTime() - time());
+		return sprintf('%01.03f', self::getMicroTime() - $_SERVER['REQUEST_TIME']);
 	}
 	/**
 	 * 経過時間を取得
@@ -236,5 +235,11 @@ class Time{
 			$_time /= $card;
 		}
 		return floor($_time) . $unit;
+	}
+	/**
+	 * 時刻を出力
+	 */
+	public static function getDateString($time = UTIME, $class='', $quote = false){
+		return '<time datetime="' .	htmlsc(self::getZoneTimeDate('c',$time)) . '" title="' . Utility::htmlsc(self::passage($time)) . '" class="' . Utility::htmlsc($class) . '">' . Utility::htmlsc(self::format($time)) . '</time>';
 	}
 }

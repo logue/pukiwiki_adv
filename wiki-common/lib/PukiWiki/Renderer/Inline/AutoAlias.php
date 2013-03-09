@@ -67,7 +67,7 @@ class AutoAlias extends Inline
 		if (empty($this->aliases)) return;
 
 		$link = '[[' . $this->name  . ']]';
-		return InlineFactory::Wiki($link);
+		return InlineFactory::factory($link);
 	}
 	/**
 	 * AutoAliasの正規表現パターンを生成

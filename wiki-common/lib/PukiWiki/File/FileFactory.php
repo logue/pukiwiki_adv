@@ -39,6 +39,14 @@ class FileFactory
 		return $class::exists();
 	}
 	/**
+	 * ページ一覧
+	 */
+	public static function getPages($driver, $pattern = ''){
+		if (!in_array($driver, array_keys(self::$classMap))) throw new Exception('$driver = '. $driver . ' is not implemented.');
+		$class = self::$classMap[$driver];
+		return $class::getPages($pattern);
+	}
+	/**
 	 * ファイル
 	 */
 	public static function Generic($filename){

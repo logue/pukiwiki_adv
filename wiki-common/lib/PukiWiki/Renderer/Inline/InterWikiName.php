@@ -44,8 +44,6 @@ class InterWikiName extends Inline
 
 	public function __construct($start)
 	{
-		global $cache;
-		$cache['wiki'] = $cache['wiki'];
 		parent::__construct($start);
 	}
 
@@ -84,11 +82,6 @@ class InterWikiName extends Inline
 			list(, $this->param, $this->anchor) = $matches;
 
 		$url = self::getInterWikiUrl($this->interwikiname, $this->param);
-// 存在しないInterWikiNameの解釈がおかしい
-// http://pukiowikio.sourceforge.jp/index.php?Develop%2FBugTrack1%2F1
-//	$this->url = ($url === FALSE) ?
-//		get_page_uri($name . ':' . $this->param) :
-//		Utility::htmlsc($url);
 		if ($url === FALSE) return $this->interwikiname . ':' . $this->param;
 		$this->url = Utility::htmlsc($url);
 
@@ -164,7 +157,11 @@ class InterWikiName extends Inline
 
 		return $url;
 	}
-
+	/**
+	 * InterWikiNameページから辞書を作成する
+	 * @param boolean $force キャッシュを再生成する
+	 * @return array
+	 */
 	private function getInterWikiNameDict($force = false){
 		global $interwiki, $cache;
 		static $interwikinames;

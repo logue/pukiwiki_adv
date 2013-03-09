@@ -7,6 +7,9 @@ use PukiWiki\File\FileFactory;
  * バックアップのコントローラー
  */
 class Backup{
+	// バックアップの世代ごとの区切り文字（default.ini.php）
+	const SPLITTER = '>>>>>>>>>>';
+
 	public function __construct($page){
 		global $cycle, $maxage;
 		$this->page = $page;

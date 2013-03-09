@@ -13,6 +13,8 @@
 
 namespace PukiWiki\Renderer\Element;
 
+use PukiWiki\Renderer\PluginRenderer;
+
 /**
  *  Block plugin: #something (started with '#')
  */
@@ -35,7 +37,7 @@ class BlockPlugin extends Element
 	function toString()
 	{
 		// Call #plugin
-		return do_plugin_convert($this->name, $this->param);
+		return PluginRenderer::do_plugin_convert($this->name, $this->param);
 	}
 }
 

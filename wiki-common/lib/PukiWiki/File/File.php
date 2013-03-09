@@ -34,6 +34,10 @@ abstract class File extends SplFileInfo{
 	 */
 	const LINE_BREAK = "\n";
 	/**
+	 * ファイル一覧キャッシュの接頭辞
+	 */
+	const EXISTS_CACHE_PREFIX = 'exists-';
+	/**
 	 * 対象ディレクトリ
 	 */
 	public static $dir = '';
@@ -61,28 +65,76 @@ abstract class File extends SplFileInfo{
 		parent::__construct($filename);
 	}
 	/**
-	 * ファイル一覧を取得
-	 * ※静的メソッドで呼び出すこと。キャッシュはここでは実装しない
+	 * ページ一覧を取得
+	 * @param string $pattern ファイルのマッチパターン
 	 * @return array
 	 */
-	public static function exists($pattern = ''){
+	public static function getPages($pattern = ''){
 		// 継承元のクラス名を取得（PHPは、__CLASS__で派生元のクラス名が取得できない）
 		$class =  get_called_class();
-		// クラスでディレクトリが定義されていないときは処理しない。(AuthFile.phpなど）
-		if ( empty($class::$dir)) return array();
 		// パターンが指定されていない場合は、クラスで定義されているデフォルトのパターンを使用
 		if ( empty($pattern) ) $pattern = $class::$pattern;
-		// 継承元のクラスの定数をパラメーターとして与える
-		// って、なんだこれ！？
-		foreach (new DirectoryIterator($class::$dir) as $fileinfo) {
-			$filename = $fileinfo->getFilename();
+		// クラスでディレクトリが定義されていないときは処理しない。(AuthFile.phpなど）
+		if ( empty($class::$dir)) return array();
+
+		foreach (self::exists() as $file) {
 			$matches = array();
-			if ($fileinfo->isFile() && preg_match($pattern, $filename, $matches)){
+			if (preg_match($pattern, $file, $matches)){
 				$ret[] = Utility::decode($matches[1]);
 			}
 		}
 		return $ret;
 	}
+	/**
+	 * ファイル一覧を取得
+	 * @param boolean $force キャッシュを再生成する
+	 * @return array
+	 */
+	public static function exists($force = false){
+		static $files;
+		global $cache;
+
+		// 継承元のクラス名を取得（PHPは、__CLASS__で派生元のクラス名が取得できない）
+		$class =  get_called_class();
+		// クラスでディレクトリが定義されていないときは処理しない。(AuthFile.phpなど）
+		if ( empty($class::$dir)) return array();
+		// キャッシュ名
+		$cache_name = self::EXISTS_CACHE_PREFIX . strtolower(substr(strrchr($class, '\\'),1,4));
+
+
+		if (!$force) {
+			// ディレクトリの更新チェック（変更があった場合、キャッシュを再生成）
+			if ($cache['core']->hasItem($cache_name)){
+				$cache_meta = $cache['core']->getMetadata($cache_name);
+				if ($cache_meta['mtime'] < filemtime($class::$dir)) {
+					$force = true;
+				}
+			}
+		}
+
+		// キャッシュ処理
+		if ($force) {
+			unset($files);
+			$cache['core']->removeItem($cache_name);
+		}else if (!empty($files)) {
+			return $plugins;
+		}else if ($cache['core']->hasItem($cache_name)) {
+			$files = $cache['core']->getItem($cache_name);
+			$cache['core']->touchItem($cache_name);
+			return $files;
+		}
+
+		// ファイル一覧を走査（
+		foreach (new DirectoryIterator($class::$dir) as $fileinfo) {
+			$files[] = $fileinfo->getFilename();
+		}
+		unset($fileinfo);
+
+		// キャッシュに保存
+		$cache['core']->setItem($cache_name, $files);
+		return $files;
+	}
+	
 	/**
 	 * ファイルが存在するか
 	 * @return boolean
