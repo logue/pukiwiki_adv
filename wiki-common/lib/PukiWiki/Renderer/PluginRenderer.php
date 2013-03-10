@@ -1,70 +1,92 @@
 <?php
-
+/**
+ * プラグインレンダラークラス
+ *
+ * @package   PukiWiki
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2013 PukiWiki Advance Developers Team
+ * @create    2013/03/11
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: PluginRenderer.php,v 1.0.0 2013/03/11 08:04:00 Logue Exp $
+ **/
+ 
 namespace PukiWiki\Renderer;
 
 use DirectoryIterator;
+use Exeption;
+use PukiWiki\Factory;
+use PukiWiki\Router;
+use PukiWiki\Spam\PostId;
+use PukiWiki\Utility;
 
+/**
+ * プラグイン処理クラス
+ */
 class PluginRenderer{
-	// Set global variables for plugins
-	public static function set_plugin_messages($messages)
+	/**
+	 * プラグインのファイル一覧キャッシュ名
+	 */
+	const PLUGIN_EXISTS_CACHE = 'plugins';
+	/**
+	 * プラグインの呼び出し回数の上限
+	 */
+	const PLUGIN_CALL_TIME_LIMIT = 1024;
+	/**
+	 * PostIDチェックを行わないプラグイン
+	 */
+	const IGNOLE_POSTID_CHECK_PATTERN = '/^[menu|side|header|footer|full|read|include|calendar|login]$/';
+	/**
+	 * プラグインで使用するメッセージテキストをグローバル変数に保存
+	 * @param array $messages メッセージ
+	 * @return void
+	 */
+	public static function setPluginMessages($messages)
 	{
 		foreach ($messages as $name=>$val)
 			if (! isset($GLOBALS[$name]))
 				$GLOBALS[$name] = $val;
 	}
-
-	// Same as getopt for plugins
-	public static function get_plugin_option($args, &$params, $tolower=TRUE, $separator=':')
+	/**
+	 * プラグインのオプションを取得
+	 * @param string $args 入力文字
+	 * @param array $params パラメーター（参照渡し）
+	 * @param boolean $tolower 与えられたパラメーターを小文字にするか
+	 * @param string $separator 分割子
+	 * @return boolean
+	 */
+	public static function getPluginOption($args, &$params, $tolower=TRUE, $separator=':')
 	{
 		if (empty($args)) {
 			$params['_done'] = TRUE;
 			return TRUE;
 		}
+		
 		$keys = array_keys($params);
-
-		foreach($args as $val) {
-			list($_key, $_val) = array_pad(explode($separator, $val, 2), 2, TRUE);
-			if ($tolower === TRUE) $_key = strtolower($_key);
-			$_key = trim($_key);
-			if (is_string($_val)) $_val = trim($_val);
-			if (in_array($_key, $keys) && $params['_done'] !== TRUE) {
-				$params[$_key] = $_val;    // Exist keys
-			} else if ( !empty($val) ) {
-				$params['_args'][] = $val; // Not exist keys, in '_args'
-				$params['_done'] = TRUE;
+		if (is_array($args)){
+			foreach($args as $val) {
+				list($_key, $_val) = array_pad(explode($separator, $val, 2), 2, TRUE);
+				$_key = trim($tolower === TRUE ? strtolower($_key) : $_key);
+				if (is_string($_val)) $_val = trim($_val);
+				if (in_array($_key, $keys) && $params['_done'] !== TRUE) {
+					$params[$_key] = $_val;    // Exist keys
+				} else if ( !empty($val) ) {
+					$params['_args'][] = $val; // Not exist keys, in '_args'
+					$params['_done'] = TRUE;
+				}
 			}
 		}
 		$params['_done'] = TRUE;
 		return TRUE;
 	}
-
-	// Check arguments for plugins
-	public static function check_plugin_option($val, &$params, $tolower=TRUE)
-	{
-		if ( !empty($val) ) {
-			if ($tolower === TRUE) $_val = strtolower($val);
-			foreach (array_keys($params) as $key) {
-				if (strpos($key, $_val) === 0) {
-					$params[$key] = TRUE;
-					return;
-				}
-			}
-		}
-		$params['_args'][] = $val;
-	}
-
-	
-
-	const PLUGIN_EXISTS_CACHE = 'plugins';
-
 	/**
 	 * プラグインおよび、設定一覧キャッシュを生成
+	 * （あえて、staticキャッシュは使わない）
 	 * @param boolean $force キャッシュ生成を矯正する
 	 * @return array
 	 */
 	private static function getPluginList($force = false){
 		global $cache;
-		static $plugins;
 		//$t1 = microtime();
 
 		if (!$force) {
@@ -83,7 +105,6 @@ class PluginRenderer{
 
 		// キャッシュ処理
 		if ($force) {
-			unset($plugins);
 			$cache['core']->removeItem(self::PLUGIN_EXISTS_CACHE);
 		}else if (!empty($plugins)) {
 			return $plugins;
@@ -97,26 +118,41 @@ class PluginRenderer{
 		foreach(array(PLUGIN_DIR, EXT_PLUGIN_DIR) as $p_dir) {
 			if (!is_dir($p_dir)) continue;
 			foreach (new DirectoryIterator($p_dir) as $fileinfo) {
+				// ファイル以外は無視
+				if (!$fileinfo->isFile()) continue;
+				// プラグイン名を取得
+				$name = $fileinfo->getBasename('.inc.php');
+				// プラグイン名が英数字64文字以下でない
+				if (!preg_match('/^\w{1,64}$/', $name)) throw new Exeption('Plugin name is invalied or too long! (less than 64 chars)');
+			
 				// 読み込み可能ならエイリアスでも読み取ります。
 				if (strpos($fileinfo->getBasename(), '.inc.php') !== false && $fileinfo->isReadable()){
-					$plugins[$fileinfo->getBasename('.inc.php')] = array(
+					$plugins[$name] = array(
 						// 読み込み済みフラグ
 						'loaded' => false,
 						// パス
 						'path' => $fileinfo->getPathname(),
-		//				'lang' => (PLUGIN_DIR == $p_dir) ? LANG_DIR : EXT_LANG_DIR 
+						// 追加のプラグインか？
+						'is_ext' => ($p_dir == EXT_PLUGIN_DIR)
 					);
 				}
 			}
 		}
 		unset($p_dir, $fileinfo);
-		// プラグイン設定ファイルを走査（サイト別の設定がオーバーライドされる）
+		// プラグイン設定ファイルを走査（サイト別の設定が優先して読み込まれる。オーバーライドではないので注意）
 		foreach(array(INIT_DIR, SITE_INIT_DIR) as $p_dir) {
 			if (!is_dir($p_dir)) continue;
 			foreach (new DirectoryIterator($p_dir) as $fileinfo) {
+				// ファイル以外は無視
+				if (!$fileinfo->isFile()) continue;
+				// 設定ファイルから、拡張子をとった名前
+				$ini = $fileinfo->getBasename('.ini.php');
+				// プラグインが存在しない場合はスキップ
+				if (! array_key_exists($ini, $plugins)) continue;
+				// 設定ファイルのパスを変数に代入
 				if (strpos($fileinfo->getBasename(), '.ini.php') !== false && $fileinfo->isReadable()){
 					// 設定ファイル
-					$plugins[$fileinfo->getBasename('.ini.php')]['conf'] = $fileinfo->getPathname();
+					$plugins[$ini]['conf'] = $fileinfo->getPathname();
 				}
 			}
 		}
@@ -130,274 +166,300 @@ class PluginRenderer{
 	 * @param string $name プラグイン名
 	 * @return array
 	 */
-	private static function getPlugin($name){
+	public static function getPlugin($name, $load = true){
 		static $plugins;
 		global $exclude_plugin;
-
+	
+		// 念のためプラグイン名を小文字にする
 		$name = strtolower($name);
-
-		// プラグイン名が長すぎる
-		if (!preg_match('/^\w{1,64}$/', $name)) Utility::dieMessage('Plugin name is too long! (less than 64 chars)');
 
 		// 無効化しているプラグインの場合
 		if (in_array($name, $exclude_plugin)) return FALSE;
 
 		// プラグイン一覧を取得
 		if (!isset($plugins)) $plugins = self::getPluginList();
-
-		// プラグイン読み取り
+		
+		// プラグインが見つからない
 		if (!isset($plugins[$name])) return false;
 
+		// プラグイン読み取り
+		if ($plugins[$name]['loaded'] == false){
+			if ($load == true){
+				// プラグインを読み込む
+				require_once $plugins[$name]['path'];	// FIXME require_onceじゃあまり意味ない。
+				// 設定を読み込む
+				if (isset($plugins[$name]['conf'])) require_once $plugins[$name]['conf'];
+				// 読み込み済フラグ
+				$plugins[$name]['loaded'] = true;
+			}
+			// 利用可能なAPIをチェック
+			foreach (array('init','action','convert','inline') as $method){
+				$plugins[$name]['method'][$method] = function_exists('plugin_'.$name.'_'.$method);	
+			}
+		}
+
+		/**
+		 * 'プラグイン名' => array(
+		 *     'loaded' => 読み込み済みか
+		 *     'path' => プラグインのパス
+		 *     'conf' => 読み込まれた設定のパス
+		 *     'is_ext' => サードパーティー製プラグインか？
+		 *     'method' => array(
+		 *         'init' => true ...
+		 *         利用可能なAPIのリスト
+		 *      )
+		 * );
+		 */
 		return $plugins[$name];
 	}
 	/**
-	 * プラグインを読み込む
+	 * プラグインが利用可能か確認
+	 */
+	public static function hasPlugin($name){
+		$plugin = self::getPlugin($name, false);
+		return $plugin['loaded'];
+	}
+	/**
+	 * プラグインのメソッドの存在確認
 	 * @param string $name プラグイン名
 	 * @return boolean
 	 */
-	public static function loadPlugin($name)
+	public static function hasPluginMethod($name, $method)
 	{
-		global $exclude_plugin, $plugin_lang_path, $cache;
-		static $plugins;
+		global $_string;
+		static $count;
+		$plugin = self::getPlugin($name);
+
+		if ($plugin['method'][$method] == true) {
+			// プラグインの呼び出し回数をチェック
+			$count[$name] = (!isset($count[$name])) ? 1 : $count[$name]++;
+
+			if ($count[$name] > self::PLUGIN_CALL_TIME_LIMIT) {
+				Utility::dieMessage( sprintf($_string['plugin_multiple_call'],  Utility::htmlsc($name), self::PLUGIN_CALL_TIME_LIMIT));
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * プラグインの初期化コマンドを実行
+	 * @staticvar type $done
+	 * @staticvar type $checked
+	 * @param type $name
+	 * @return boolean
+	 */
+	public static function executePluginInit($name)
+	{
+		static $done, $checked;
+		// 初期化完了済みの場合処理しない
+		if (isset($done[$name])) return true;
 
 		$plugin = self::getPlugin($name);
 
-		if ($plugin['loaded'] == false){
-			// プラグインを読み込む
-			require $plugin['path'];
-			// 設定を読み込む
-			if (isset($plugin['conf'])) require $plugin['conf'];
-			// 読み込み可能フラグ
-			$plugin['loaded'] = true;
-		}
-		return true;
-	}
-	/**
-	 * プラグインの呼び出し回数を制限する
-	 * @param string $name プラグイン名
-	 * @return boolean
-	 */
-	private static function limitPlugin($name)
-	{
-		static $count;
-
-		$name = strtolower($name);
-		$count[$name] = (!isset($count[$name])) ? 1 : $count[$name]++;
-
-		if ($count[$name] > self::PLUGIN_CALL_TIME_LIMIT) {
-			Utility::dieMessage( sprintf($_string['plugin_multiple_call'],  htmlsc($name), PKWK_PLUGIN_CALL_TIME_LIMIT));
-		}
-		return TRUE;
-	}
-
-	// Check if plguin API exists
-	public static function exist_plugin_function($name, $method)
-	{
-		$func = 'plugin_'.$name.'_'.$method;
-		if (function_exists($func)) {
-			return limit_plugin($name);
-		} elseif (self::loadPlugin($name) && function_exists($func)) {
-			return limit_plugin($name);
-		}
-		return true;
-	}
-
-	// Call 'init' function for the plugin
-	// NOTE: Returning FALSE means "An erorr occurerd"
-	public static function do_plugin_init($name)
-	{
-		global $plugin_lang_path;
-		static $done, $checked;
-
-		if (empty($plugin_lang_path[$name])) {
-			// bindtextdomain($name, LANG_DIR);
-			T_bindtextdomain($name,LANG_DIR);
+		// 多言語化
+		if ($plugin['is_ext']) {
+			T_bindtextdomain($name,EXT_LANG_DIR);
 		} else {
-			// bindtextdomain($name, $plugin_lang_path[$name]);
-			T_bindtextdomain($name,$plugin_lang_path[$name]);
+			T_bindtextdomain($name,LANG_DIR);
 		}
 
-		$func = 'plugin_' . $name . '_init';
-		if (function_exists($func)) {
-			// TRUE or FALSE or NULL (return nothing)
+		// プラグインの初期化関数を実行（存在する場合）
+		if ($plugin['method']['init']) {
 			T_textdomain($name);
-			$done[$name] = call_user_func($func);
+			$done[$name] = call_user_func('plugin_'.$name.'_init');
 			T_textdomain(DOMAIN);
 			if (!isset($checked[$name])) {
 				$done[$name] = TRUE; // checked.
 			}
-		} else {
-			$done[$name] = TRUE; // checked.
 		}
-		return $done[$name];
+		$done[$name] = TRUE; // checked.
+		return true;
 	}
 
-	// Call API 'action' of the plugin
-	public static function do_plugin_action($name)
+	/**
+	 * アクション型プラグインを実行
+	 * @global type $vars
+	 * @global type $_string
+	 * @global type $use_spam_check
+	 * @global type $post
+	 * @param type $name
+	 * @return type
+	 */
+	public static function executePluginAction($name)
 	{
 		global $vars, $_string, $use_spam_check, $post;
-		if (! exist_plugin_action($name)) return array();
+		$plugin = self::getPlugin($name);
 
-		if (do_plugin_init($name) === FALSE) {
-			die_message(sprintf( $_string['plugin_init_error'], htmlsc($name) ));
+		// 命令が実装されてない
+		if (! $plugin['method']['action'])
+			Utility::dieMessage(sprintf($_string['plugin_not_implemented'],htmlsc($name)),501);
+
+		// プラグインの初期化
+		if (self::executePluginInit($name) === FALSE) {
+			Utility::dieMessage(sprintf( $_string['plugin_init_error'], Utility::htmlsc($name) ));
 		}
 
-		$func = 'plugin_' . $name . '_action';
-		if (!function_exists($func))
-			die_message(sprintf($_string['plugin_not_implemented'],htmlsc($name)),501);
-
-		// Check encode
+		// 入力のエンコードをチェック
 		if (isset($vars['encode_hint']) && !empty($vars['encode_hint']) && (PKWK_ENCODING_HINT !== $vars['encode_hint']) ) {
-			die_message($_string['plugin_encode_error']);
+			Utility::dieMessage($_string['plugin_encode_error']);
 		}
 
-	//	if ( isset($post['ticket']) && $post['ticket'] !== md5(get_ticket() . REMOTE_ADDR) ){
+	//	if ( isset($post['ticket']) && $post['ticket'] !== md5(Utility::getTicket() . REMOTE_ADDR) ){
 	//		die_message('host is mismatch!');
 	//	}
 
-		// check postid
-		if ( (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] === 1) && (isset($post['postid']) && !check_postid($post['postid'])) )
-			die_message($_string['plugin_postid_error']);
+		// postidをチェックする
+		if ( (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] === 1) && (isset($post['postid']) && !PostId::check($post['postid'])) )
+			Utility::dieMessage($_string['plugin_postid_error']);
 
+		// 実行
 		T_textdomain($name);
-		$retvar = call_user_func($func);
+		$retvar = call_user_func('plugin_' . $name . '_action');
 		T_textdomain(DOMAIN);
 
-		$retvar['body'] = isset($retvar['body']) ? add_hidden_field($retvar['body'], $name) : '';
+		$retvar['body'] = isset($retvar['body']) ? self::addHiddenField($retvar['body'], $name) : null;
 
 		return $retvar;
 	}
 
-	// Call API 'convert' of the plugin
-	public static function do_plugin_convert($name, $args = '')
+	/**
+	 * ブロック型プラグインを実行
+	 * @param type $name
+	 * @param type $args
+	 * @return type
+	 */
+	public static function executePluginBlock($name, $args = '')
 	{
 		global $digest, $_string;
+		$plugin = self::getPlugin($name);
 
-		if (self::do_plugin_init($name) === FALSE) {
-			return '<div class="ui-state-error ui-corner-all">' . sprintf($_string['plugin_init_error'], htmlsc($name)) . '</div>';
+		// 命令が実装されてない
+		if (! $plugin['method']['convert'])
+			return '<p class="ui-state-error ui-corner-all">' . sprintf($_string['plugin_not_implemented'],'#'.Utility::htmlsc($name).'()') . '</p>';
+
+		// プラグインの初期化
+		if (self::executePluginInit($name) === FALSE) {
+			return '<p class="ui-state-error ui-corner-all">' . sprintf($_string['plugin_init_error'], Utility::htmlsc($name)) . '</p>';
 		}
 
-		$func = 'plugin_' . $name . '_convert';
-		if (!function_exists($func))
-			return '<div class="message_box ui-state-error ui-corner-all">'.sprintf($_string['plugin_not_implemented'],'#'.Utility::htmlsc($name).'()').'</div>';
-
-		// Multiline plugin?
+		// 複数行のプラグイン
 		$pos  = strpos($args, "\r"); // "\r" is just a delimiter
 		if ($pos !== FALSE) {
 			$body = substr($args, $pos + 1);
 			$args = substr($args, 0, $pos);
 		}
 
+		// プラグインのパラメータを取得。（#plugin(){}の()内の部分をカンマ区切りで分割）
 		$aryargs = empty($args) ? array() : explode(',', $args);
 
-		if (isset($body)) $aryargs[] = & $body;     // #plugin(){{body}}
+		// プラグインの末尾のパラメータを取得（#plugin(){}の{}内の部分）
+		if (isset($body)) $aryargs[] = & $body;
 
+		// digestを知事保存し、ロケールファイルを差し替えて翻訳
 		$_digest = $digest;
 		T_textdomain($name);
-		$retvar  = call_user_func_array($func, $aryargs);
+		// プラグインを実行
+		$retvar  = call_user_func_array('plugin_' . $name . '_convert', $aryargs);
+		// ロケールとdigestをもとに戻す
 		T_textdomain(DOMAIN);
 		$digest  = $_digest; // Revert
 
 		return ($retvar === FALSE) ?
-			'<div class="message_box ui-state-error ui-corner-all">'. Utility::htmlsc('#' . $name . ($args !== '' ? '(' . $args . ')' : '')) .'</div>' :
-			self::add_hidden_field($retvar, $name);
+			'<p class="message_box ui-state-error ui-corner-all">'. Utility::htmlsc('#' . $name . ($args !== '' ? '(' . $args . ')' : '')) .'</p>' :
+			self::addHiddenField($retvar, $name);
 	}
 
-	// Call API 'inline' of the plugin
-	public static function do_plugin_inline($name, $args='', $body='')
+	/**
+	 * インライン型プラグインを実行
+	 * @global type $digest
+	 * @param type $name
+	 * @param type $args
+	 * @param type $body
+	 * @return type
+	 */
+	public static function executePluginInline($name, $args='', $body='')
 	{
 		global $digest, $_string;
-
-		$func = 'plugin_' . $name . '_inline';
-		if (!function_exists($func))
-			return '&' . htmlsc($name). ';';
-
+		$plugin = self::getPlugin($name);
 		
-		if (do_plugin_init($name) === FALSE) {
-			return '<span class="ui-state-error">' . sprintf($_string['plugin_init_error'], '&'.htmlsc($name).'();') . '</span>';
+		// PukiWikiの仕様上、存在しないメソッドの場合、メッセージを出せない（あとで$line_ruleで変換するため）
+		if ($plugin['method']['inline'] === false) return  '&' .Utility::htmlsc($name). ';';
+
+		// プラグインの初期化
+		if (self::executePluginInit($name) === false) {
+			return '<span class="ui-state-error">' . sprintf($_string['plugin_init_error'], Utility::htmlsc('&'.$name).'();') . '</span>';
 		}
 
+		// プラグインのパラメータを取得。（&plugin(){}の()内の部分をカンマ区切りで分割）
 		$aryargs = empty($args) ? array() : explode(',', $args);
 
-		// NOTE: A reference of $body is always the last argument
-		$aryargs[] = & $body; // func_num_args() != 0
+		// プラグインの末尾のパラメータを取得（#plugin(){}の{}内の部分）常に末尾の配列が入る。
+		$aryargs[] = $body; // func_num_args() != 0
 
+		// digestを知事保存し、ロケールファイルを差し替えて翻訳
 		$_digest = $digest;
 		T_textdomain($name);
-		$retvar  = call_user_func_array($func, $aryargs);
+		// プラグインを実行
+		$retvar  = call_user_func_array('plugin_' . $name . '_inline', $aryargs);
+		// ロケールとdigestをもとに戻す
 		T_textdomain(DOMAIN);
 		$digest  = $_digest; // Revert
 
 		if($retvar === FALSE) {
 			// Do nothing
-			return htmlsc('&' . $name . ($args ? '(' . $args . ')' : '') . ';');
+			return Utility::htmlsc('&' . $name . ($args ? '(' . $args . ')' : '') . ';');
 		} else {
-			return add_hidden_field($retvar, $name);
+			return self::addHiddenField($retvar, $name);
 		}
 	}
+	/**
+	 * formタグに追加のフォームを挿入
+	 * @param type $retvar
+	 * @param type $plugin
+	 * @return type 
+	 */
+	private static function addHiddenField($retvar, $plugin){
+		global $use_spam_check, $vars, $digest;
+		if (preg_match('/<form\b(?:(?=(\s+(?:method="([^"]*)"|enctype="([^"]*)")|action="([^"]*)"|[^\s>]+|\s+))\1)*>/i', $retvar, $matches) !== 0){
+			// action属性が、このスクリプト以外を指している場合処理しない
+			if ($matches[4] === Router::get_script_uri()){
+				// Insert a hidden field, supports idenrtifying text enconding
+				$hidden_field[] = '<!-- Additional fields START-->';
+				$hidden_field[] = PKWK_ENCODING_HINT ? '<input type="hidden" name="encode_hint" value="' . PKWK_ENCODING_HINT . '" />' : null;
 
-	// Used Plugin?
-	public static function use_plugin($plugin, $lines)
-	{
-		if (!is_array($lines)) {
-			$delim = array("\r\n", "\r");
-			$lines = str_replace($delim, "\n", $lines);
-			$lines = explode("\n", $lines);
-		}
-
-		foreach ($lines as $line) {
-			if (substr($line, 0, 2) == '//') continue;
-			// Diff data
-			if (substr($line, 0, 1) == '+' || substr($line, 0, 1) == '-') {
-				$line = substr($line, 1);
-			}
-			if (preg_match('/^[#|&]' . $plugin . '[^a-zA-Z]*$/', $line, $matches)) {
-				return $matches[0];
-			}
-		}
-		return FALSE;
-	}
-
-	// formタグに追加のフォームを挿入
-	public static function add_hidden_field($retvar, $plugin){
-		global $use_spam_check, $vars, $session, $digest;
-		if (preg_match('/<form\b(?:(?=(\s+(?:method="([^"]*)"|enctype="([^"]*)")|[^\s>]+|\s+))\1)*>/i', $retvar, $matches) !== 0){
-			// Insert a hidden field, supports idenrtifying text enconding
-			$hidden_field[] = '<!-- Additional fields START-->';
-			$hidden_field[] = ( PKWK_ENCODING_HINT ) ? '<input type="hidden" name="encode_hint" value="' . PKWK_ENCODING_HINT . '" />' : '';
-
-			if ($matches[2] !== 'get'){
-				// 利用者のホストチェック
-				$hidden_field[] = '<input type="hidden" name="ticket" value="' . md5(get_ticket() . REMOTE_ADDR) . '" />';
-				// 多重投稿を禁止するオプションが有効かつ、methodがpostだった場合、PostIDを生成する
-				if ( (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] === 1)
-					&& preg_match(PKWK_IGNOLE_POSTID_CHECK_PLUGINS,$plugin) !== 1){
-					// from PukioWikio
-					$hidden_field[] = '<input type="hidden" name="postid" value="'.generate_postid($plugin).'" />';
-				}
-
-				// PHP5.4以降かつ、マルチパートの場合、進捗状況セッション用のフォームを付加する
-				if (ini_get('session.upload_progress.enabled') && isset($matches[3]) && $matches[3] === 'multipart/form-data') {
-					$hidden_field[] = '<input type="hidden" name="' . ini_get("session.upload_progress.name") . '" value="' . PKWK_WIKI_NAMESPACE . '" class="progress_session" />';
-				}
-
-				// 更新時の競合を確認するための項目（確認処理はプラグイン側で実装すること）
-				if (isset($vars['page']) && !empty($vars['page'])){
-					if (empty($digest)){
-						$digest = PukiWiki\Factory::Wiki($vars['page'])->digest();
+				if ($matches[2] !== 'get'){
+					// 利用者のホストチェック
+					$hidden_field[] = '<input type="hidden" name="ticket" value="' . md5(Utility::getTicket() . REMOTE_ADDR) . '" />';
+					// 多重投稿を禁止するオプションが有効かつ、methodがpostだった場合、PostIDを生成する
+					if ( (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] === 1)
+						&& preg_match(self::IGNOLE_POSTID_CHECK_PATTERN,$plugin) !== 1){
+						// from PukioWikio
+						$hidden_field[] = '<input type="hidden" name="postid" value="' . PostId::generate($plugin) . '" />';
 					}
-					$hidden_field[] = '<input type="hidden" name="digest" value="' . $digest . '" />';
-				}
-			}
 
-			$hidden_field[] = '<!-- Additional fields END -->';
-			$retvar = preg_replace('/<form[^>]*>/', '$0'. "\n".join("\n",$hidden_field), $retvar);
+					// PHP5.4以降かつ、マルチパートの場合、進捗状況セッション用のフォームを付加する
+					if (ini_get('session.upload_progress.enabled') && isset($matches[3]) && $matches[3] === 'multipart/form-data') {
+						$hidden_field[] = '<input type="hidden" name="' . ini_get("session.upload_progress.name") . '" value="' . PKWK_WIKI_NAMESPACE . '" class="progress_session" />';
+					}
+
+					// 更新時の競合を確認するための項目（確認処理はプラグイン側で実装すること）
+					if (isset($vars['page']) && !empty($vars['page'])){
+						if (empty($digest)){
+							$digest = Factory::Wiki($vars['page'])->digest();
+						}
+						$hidden_field[] = '<input type="hidden" name="digest" value="' . $digest . '" />';
+					}
+				}
+
+				$hidden_field[] = '<!-- Additional fields END -->';
+				$retvar = preg_replace('/<form[^>]*>/', '$0'. "\n".join("\n",$hidden_field), $retvar);
+			}
 		}
 		return $retvar;
 	}
 
 	// FIXME:進捗状況表示（attachプラグインのpcmd=progressで出力）
-	function get_upload_progress(){
+	public static function get_upload_progress(){
 		global $vars;
 		$key = ini_get('session.upload_progress.prefix'). PKWK_WIKI_NAMESPACE;
 		header('Content-Type: application/json; charset='.CONTENT_CHARSET);
@@ -406,3 +468,4 @@ class PluginRenderer{
 		exit;
 	}
 }
+

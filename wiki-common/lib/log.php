@@ -13,7 +13,7 @@ use PukiWiki\NetBios;
 use PukiWiki\Auth\Auth;
 use PukiWiki\Auth\AuthApi;
 use PukiWiki\File\FileUtility;
-
+use PukiWiki\Spam\ProxyChecker;
 //require_once(LIB_DIR . 'auth_api.cls.php');
 
 $log_ua = log_set_user_agent(); // 保存
@@ -168,7 +168,7 @@ function log_common_check($kind,$page,$parm)
 
 	$utime     = UTIME;
 	$obj_log   = new log();
-	$obj_proxy = new check_proxy();
+	$obj_proxy = new ProxyChecker();
 
 	$ip         = $obj_log->getip();
 	$hostname   = $obj_log->ip2host($ip);

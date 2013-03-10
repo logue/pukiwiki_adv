@@ -19,6 +19,7 @@ use PukiWiki\Utility;
 use PukiWiki\Time;
 use PukiWiki\Router;
 use PukiWiki\Spam\Spam;
+use PukiWiki\Renderer\PluginRenderer;
 use Zend\Cache\StorageFactory;
 
 // PukiWiki version / Copyright / License
@@ -859,12 +860,12 @@ if (DEBUG) {
 
 // auth remoteip
 if (isset($auth_api['remoteip']['use']) && $auth_api['remoteip']['use']) {
-	if (exist_plugin_inline('remoteip')) do_plugin_inline('remoteip');
+	PluginRenderer::executePluginInline('remoteip');
 }
 
 // WebDAV
-if (Utility::isWebDAV() && exist_plugin('dav')) {
-	do_plugin_action('dav');
+if (Utility::isWebDAV()) {
+	PluginRenderer::executePluginAction('dav');
 	exit;
 }
 
@@ -892,13 +893,13 @@ $is_protect = Auth::is_protect();
 if ($is_protect) {
 	$plugin_arg = '';
 	if (Auth::is_protect_plugin_action($cmd)) {
-		if (exist_plugin_action($cmd)) do_plugin_action($cmd);
+		PluginRenderer::executePluginAction($cmd);
 		// Location で飛ばないプラグインの場合
 		$plugin_arg = $cmd;
 	}
-	if (exist_plugin_convert('protect')) do_plugin_convert('protect', $plugin_arg);
+	PluginRenderer::executePluginBlock('protect', $plugin_arg);
 }
-if (! exist_plugin_action($cmd)) {
+if (! PluginRenderer::hasPluginMethod($cmd, 'action')) {
 	header('HTTP/1.1 501 Not Implemented');
 	Utility::dieMessage(sprintf($_string['plugin_not_implemented'],Utility::htmlsc($cmd)), 501);
 }
@@ -970,12 +971,15 @@ if (isset($retvars['body']) && !empty($retvars['body'])) {
 }
 
 // global $always_menu_displayed;
+/*
 if (arg_check('read')) $always_menu_displayed = 1;
 $body_menu = $body_side = '';
 if ($always_menu_displayed) {
 	if (exist_plugin_convert('menu')) $body_menu = do_plugin_convert('menu');
 	if (exist_plugin_convert('side')) $body_side = do_plugin_convert('side');
 }
+*/
+
 
 /** よく使うグローバル関数 **/
 // gettext to Zend gettext emulator

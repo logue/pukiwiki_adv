@@ -37,7 +37,7 @@ class BlockPlugin extends Element
 	function toString()
 	{
 		// Call #plugin
-		return PluginRenderer::do_plugin_convert($this->name, $this->param);
+		return PluginRenderer::executePluginBlock($this->name, $this->param);
 	}
 }
 

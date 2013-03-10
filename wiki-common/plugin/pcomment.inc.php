@@ -102,7 +102,7 @@ function plugin_pcomment_convert()
 	);
 
 	foreach(func_get_args() as $arg)
-		check_plugin_option($arg, $params);
+		get_plugin_option($arg, $params);
 
 	$vars_page = isset($vars['page']) ? $vars['page'] : '';
 	$page  = (isset($params['_args'][0]) && $params['_args'][0] != '') ? $params['_args'][0] :

@@ -11,13 +11,14 @@ use PukiWiki\Utility;
 use PukiWiki\Router;
 use PukiWiki\Renderer\RendererFactory;
 use PukiWiki\Renderer\Inline\Inline;
-use PukiWiki\Relational;
+use PukiWiki\Renderer\PluginRenderer;
 use PukiWiki\Search;
 use PukiWiki\Time;
 use PukiWiki\Factory;
 use PukiWiki\Recent;
 use PukiWiki\Listing;
 
+/**************************************************************************************************/
 /**
  * auth.php
  */
@@ -38,6 +39,7 @@ function check_readable($page, $auth_flag = TRUE, $exit_flag = TRUE)
 {
 	return Factory::Wiki($page)->isReadable($auth_flag);
 }
+/**************************************************************************************************/
 /**
  * backup.php
  */
@@ -53,6 +55,7 @@ function _backup_file_exists($page){
 	if (empty($page)) return;
 	return Factory::Wiki($page)->hasBackup();
 }
+/**************************************************************************************************/
 /**
  * convert_html.php
  */
@@ -71,6 +74,7 @@ function convert_html($lines)
 
 	return RendererFactory::factory($lines);
 }
+/**************************************************************************************************/
 /**
  * file.php
  */
@@ -156,6 +160,37 @@ function get_existpages($dir = DATA_DIR, $ext = '.txt')
 	return Listing::get('wiki');
 }
 
+/**************************************************************************************************/
+/**
+ * fileplus.php
+ */
+
+// Get Ticket
+function get_ticket($flush = FALSE)
+{
+	return Utility::getTicket($flush);
+}
+
+function plus_readfile($filename)
+{
+	if (($fp = fopen($filename,'rb')) === FALSE) return FALSE;
+	while (!feof($fp))
+	{
+		echo fread($fp, 4096);
+		flush();
+	}
+	fclose($fp);
+	while (@ob_end_flush());
+}
+
+
+// Move from file.php
+
+function get_existpages_cache($dir, $ext){
+	return Listing::get();
+}
+
+/**************************************************************************************************/
 /**
  * func.php
  */
@@ -378,11 +413,10 @@ function htmlsc($string = '', $flags = ENT_QUOTES, $charset = 'UTF-8')
 	return Utility::htmlsc($string, $flags, $charset);
 }
 
+/**************************************************************************************************/
 /**
  * funcplus.php
  */
-
-
 // SPAM check
 function is_spampost($array, $count=0)
 {
@@ -393,8 +427,6 @@ function is_ignore_page($page)
 {
 	return Utility::isSpamPost($array, $count);
 }
-
-
 // インクルードで余計なものはソースから削除する
 function convert_filter($str)
 {
@@ -554,6 +586,158 @@ function init_script_filename()
 	return '';
 }
 
+/**************************************************************************************************/
+/**
+ * html.php
+ */
+function make_line_rules($str){
+	return Inline::setLineRules($str);
+}
+
+
+// Remove all HTML tags(or just anchor tags), and WikiName-speific decorations
+function strip_htmltag($str, $all = TRUE)
+{
+	return Utility::stripHtmlTags($str, $all);
+}
+
+// Remove AutoLink marker with AutoLink itself
+function strip_autolink($str)
+{
+	return Utility::stripAutoLink($str);
+}
+
+// Make a backlink. searching-link of the page name, by the page name, for the page name
+function make_search($page)
+{
+	if (empty($page)) return;
+	return '<a href="' . Factory::Wiki($page)->uri('related') . '">' . Utility::htmlsc($page) . '</a>';
+}
+
+// Make heading string (remove heading-related decorations from Wiki text)
+function make_heading(& $str, $strip = TRUE)
+{
+	return Utility::setHeading($str, $strip);
+}
+
+/**************************************************************************************************/
+/**
+ * make_link.php
+ */
+use PukiWiki\Renderer\InlineFactory;
+// Hyperlink decoration
+function make_link($string, $page = '')
+{
+	return InlineFactory::Wiki($string, $page);
+}
+
+
+// Make hyperlink for the page
+function make_pagelink($page, $alias = '', $anchor = '', $refer = '', $isautolink = FALSE)
+{
+	return Inline::setAutoLink($page, $alias, $anchor, $refer, $isautolink);
+}
+
+// Resolve relative / (Unix-like)absolute path of the page
+function get_fullname($name, $refer)
+{
+	return Utility::getPageName($name, $refer);
+}
+
+function set_time()
+{
+	Time::init();
+}
+function set_timezone($lang='')
+{
+	return Time::setTimeZone($lang);
+}
+
+function get_localtimezone()
+{
+	return Time::getTimeZoneLocal();
+}
+
+/**************************************************************************************************/
+/**
+ * plugin.php
+ */
+// Set global variables for plugins
+function set_plugin_messages($messages)
+{
+	PluginRenderer::setPluginMessages($messages);
+}
+
+// Same as getopt for plugins
+function get_plugin_option($args, &$params, $tolower=TRUE, $separator=':')
+{
+	return PluginRenderer::getPluginOption($args, $params, $tolower, $separator);
+}
+
+// Check plugin '$name' is here
+function exist_plugin($name)
+{
+	$plugin = PluginRenderer::getPlugin($name);
+	return $plugin['loaded'];
+}
+
+// Check if plguin API exists
+function exist_plugin_function($name, $method)
+{
+	$plugin = PluginRenderer::getPlugin($name);
+	return $plugin['method'][$method];
+}
+
+// Check if plugin API 'action' exists
+function exist_plugin_action($name) {
+	return exist_plugin_function($name, 'action');
+}
+// Check if plugin API 'convert' exists
+function exist_plugin_convert($name) {
+	return exist_plugin_function($name, 'convert');
+}
+// Check if plugin API 'inline' exists
+function exist_plugin_inline($name) {
+	return exist_plugin_function($name, 'inline');
+}
+
+// Call 'init' function for the plugin
+// NOTE: Returning FALSE means "An erorr occurerd"
+function do_plugin_init($name)
+{
+	return PluginRenderer::executePluginInit($name);
+}
+
+// Call API 'action' of the plugin
+function do_plugin_action($name)
+{
+
+	return PluginRenderer::executePluginAction($name);
+}
+
+// Call API 'convert' of the plugin
+function do_plugin_convert($name, $args = '')
+{
+	return PluginRenderer::executePluginBlock($name, $args);
+}
+
+// Call API 'inline' of the plugin
+function do_plugin_inline($name, $args='', $body='')
+{
+	return PluginRenderer::executePluginInline($name, $args, $body);
+}
+
+// FIXME:進捗状況表示（attachプラグインのpcmd=progressで出力）
+function get_upload_progress(){
+	global $vars;
+	$key = ini_get('session.upload_progress.prefix'). PKWK_WIKI_NAMESPACE;
+	header('Content-Type: application/json; charset='.CONTENT_CHARSET);
+	echo Zend\Json\Json::encode( isset($_SESSION[$key]) ? $_SESSION[$key] : null );
+
+	exit;
+}
+
+/**************************************************************************************************/
 /**
  * proxy.php
  */
@@ -619,102 +803,3 @@ function in_the_net($networks = array(), $host = '')
 	return FALSE; // Not found
 }
 
-
-/**
- * fileplus.php
- */
-
-// Get Ticket
-function get_ticket($flush = FALSE)
-{
-	return Utility::getTicket($flush);
-}
-
-function plus_readfile($filename)
-{
-	if (($fp = fopen($filename,'rb')) === FALSE) return FALSE;
-	while (!feof($fp))
-	{
-		echo fread($fp, 4096);
-		flush();
-	}
-	fclose($fp);
-	while (@ob_end_flush());
-}
-
-
-// Move from file.php
-
-function get_existpages_cache($dir, $ext){
-	return Listing::get();
-}
-
-/**
- * html.php
- */
-function make_line_rules($str){
-	return Inline::setLineRules($str);
-}
-
-
-// Remove all HTML tags(or just anchor tags), and WikiName-speific decorations
-function strip_htmltag($str, $all = TRUE)
-{
-	return Utility::stripHtmlTags($str, $all);
-}
-
-// Remove AutoLink marker with AutoLink itself
-function strip_autolink($str)
-{
-	return Utility::stripAutoLink($str);
-}
-
-// Make a backlink. searching-link of the page name, by the page name, for the page name
-function make_search($page)
-{
-	if (empty($page)) return;
-	return '<a href="' . Factory::Wiki($page)->uri('related') . '">' . Utility::htmlsc($page) . '</a>';
-}
-
-// Make heading string (remove heading-related decorations from Wiki text)
-function make_heading(& $str, $strip = TRUE)
-{
-	return Utility::setHeading($str, $strip);
-}
-
-/**
- * make_link.php
- */
-use PukiWiki\Renderer\InlineFactory;
-// Hyperlink decoration
-function make_link($string, $page = '')
-{
-	return InlineFactory::Wiki($string, $page);
-}
-
-
-// Make hyperlink for the page
-function make_pagelink($page, $alias = '', $anchor = '', $refer = '', $isautolink = FALSE)
-{
-	return Inline::setAutoLink($page, $alias, $anchor, $refer, $isautolink);
-}
-
-// Resolve relative / (Unix-like)absolute path of the page
-function get_fullname($name, $refer)
-{
-	return Utility::getPageName($name, $refer);
-}
-
-function set_time()
-{
-	Time::init();
-}
-function set_timezone($lang='')
-{
-	return Time::setTimeZone($lang);
-}
-
-function get_localtimezone()
-{
-	return Time::getTimeZoneLocal();
-}

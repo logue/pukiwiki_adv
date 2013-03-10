@@ -9,6 +9,8 @@
  * @license	http://opensource.org/licenses/gpl-license.php GNU Public License
  */
 
+namespace PukiWiki\Spam;
+
 require_once(LIB_DIR . 'spamplus.php');
 
 /**
@@ -95,13 +97,13 @@ class ProxyChecker
 
 function proxy_get_real_ip()
 {
-	$obj = new check_proxy();
+	$obj = new ProxyChecker();
 	return $obj->get_realip();
 }
 
 function is_proxy()
 {
-	$obj = new check_proxy();
+	$obj = new ProxyChecker();
 	$ip = $obj->get_realip();
 	if (!empty($ip) && MyNetCheck($ip)) return false;
 	return $obj->is_proxy();

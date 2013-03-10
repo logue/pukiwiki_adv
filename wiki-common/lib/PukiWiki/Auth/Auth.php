@@ -1069,16 +1069,46 @@ class Auth
 		ksort($rc, SORT_NATURAL);
 		return $rc;
 	}
-
-
+	/**
+	 * 役割のあるページか
+	 * @global type $check_role
+	 * @param type $lines
+	 * @return boolean
+	 */
 	public static function is_role_page($lines)
 	{
 		global $check_role;
 		if (! $check_role) return FALSE;
-		$cmd = use_plugin('check_role',$lines);
+		$cmd = self::use_plugin('check_role',$lines);
 		if ($cmd === FALSE) return FALSE;
 		RendererFactory::factory($cmd); // die();
 		return TRUE;
+	}
+	/**
+	 * Used Plugin?
+	 * @param string $pligin
+	 * @param string $lines
+	 * @return boolean
+	 */
+	private static function use_plugin($plugin, $lines)
+	{
+		if (!is_array($lines)) {
+			$delim = array("\r\n", "\r");
+			$lines = str_replace($delim, "\n", $lines);
+			$lines = explode("\n", $lines);
+		}
+
+		foreach ($lines as $line) {
+			if (substr($line, 0, 2) == '//') continue;
+			// Diff data
+			if (substr($line, 0, 1) == '+' || substr($line, 0, 1) == '-') {
+				$line = substr($line, 1);
+			}
+			if (preg_match('/^[#|&]' . $plugin . '[^a-zA-Z]*$/', $line, $matches)) {
+				return $matches[0];
+			}
+		}
+		return FALSE;
 	}
 	// See:
 	// Web Services Security: UsernameToken Profile 1.0

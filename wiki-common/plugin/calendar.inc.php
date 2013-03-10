@@ -12,6 +12,10 @@
 //         Adv. is rejected to original calendar.inc.php.
 
 use PukiWiki\Lang\Holiday\PublicHolidayFactory;
+use PukiWiki\Factory;
+use PukiWiki\Utility;
+use PukiWiki\Time;
+use PukiWiki\Router;
 
 defined('PLUGIN_CALENDAR_PAGENAME_FORMAT') or define('PLUGIN_CALENDAR_PAGENAME_FORMAT', '%04d-%02d-%02d');	// YYYY-MM-DD
 
@@ -40,8 +44,8 @@ function plugin_calendar_convert()
 	$today_view = TRUE;
 	$today_args = 'view';
 
-	$date_str = get_date('Ym');
-	$base     = strip_bracket($vars['page']);
+	$date_str = Time::get_date('Ym');
+	$base     = Utility::stripBracket($vars['page']);
 
 	$today_view = TRUE;
 	if (func_num_args() > 0) {
@@ -55,7 +59,7 @@ function plugin_calendar_convert()
 				/* from Plus! */
 				$today_args = $arg;
 			} else {
-				$base = strip_bracket($arg);
+				$base = Utility::stripBracket($arg);
 			}
 		}
 	}
@@ -65,8 +69,8 @@ function plugin_calendar_convert()
 	} else {
 		$prefix = $base . '/';
 	}
-	$s_base   = htmlsc($base);
-	$s_prefix = htmlsc($prefix);
+	$s_base   = Utility::htmlsc($base);
+	$s_prefix = Utility::htmlsc($prefix);
 
 	$yr  = substr($date_str, 0, 4);
 	$mon = substr($date_str, 4, 2);
@@ -89,20 +93,20 @@ function plugin_calendar_convert()
 	$wday = $f_today['wday'];
 	$day  = 1;
 
-	$m_name = format_date($today[0] ,false, $_calendar_msg['_calendar_title_format']);
+	$m_name = Time::format($today[0] ,false, $_calendar_msg['_calendar_title_format']);
 
 	$y = substr($date_str, 0, 4) + 0;
 	$m = substr($date_str, 4, 2) + 0;
 
 	$format = '%04d%02d';
-	$prev_link = get_cmd_uri('calendar','','',
+	$prev_link = Router::get_cmd_uri('calendar','','',
 		array(
 			'file'=>$base,
 			'mode'=>$today_args,
 			'date'=>(($m == 1) ? sprintf($format, $y - 1, 12) : sprintf($format, $y, $m - 1))
 		)
 	);
-	$next_link = get_cmd_uri('calendar','','',
+	$next_link = Router::get_cmd_uri('calendar','','',
 		array(
 			'file'=>$base,
 			'mode'=>$today_args,
@@ -133,9 +137,9 @@ function plugin_calendar_convert()
 EOD;
 
 	if ($vars['cmd'] == 'calendar' || $vars['cmd'] == 'calendar_viewer') {
-		$base_link = get_page_uri($base);
+		$base_link = Factory::Wiki($base)->uri();
 	}else{
-		$base_link = get_cmd_uri('calendar','','',array('file'=>$base,'mode'=>$today_args,'date'=>sprintf($format,$y,$m)));
+		$base_link = Router::get_cmd_uri('calendar','','',array('file'=>$base,'mode'=>$today_args,'date'=>sprintf($format,$y,$m)));
 	}
 
 	if ($prefix) $ret .= "\n" .
@@ -169,7 +173,8 @@ EOD;
 	while (checkdate($m_num, $day, $year)) {
 		$dt     = sprintf(PLUGIN_CALENDAR_PAGENAME_FORMAT, $year, $m_num, $day);
 		$page   = $prefix . $dt;
-		$s_page = htmlsc($page);
+		$s_page = Utility::htmlsc($page);
+		$wiki = Factory::Wiki($page);
 
 		if ($wday == 0 && $day > 1)
 			$ret .=
@@ -195,13 +200,13 @@ EOD;
 			$style = 'style_calendar_sat';
 		}
 
-		if (is_page($page)) {
-			$link = '<a href="' . get_page_uri($page) . '" title="' . $s_page . '"><strong>' . $day . '</strong></a>';
+		if ($wiki->isValied()) {
+			$link = '<a href="' . $wiki->uri() . '" title="' . $s_page . '"><strong>' . $day . '</strong></a>';
 		} else {
 			if (PKWK_READONLY) {
 				$link = $day;
 			} else {
-				$link = '<a href="' . get_cmd_uri('edit',$page,'',array('refer'=>$base)) . '" title="' . $s_page . '" rel="nofollow">' . $day . '</a>';
+				$link = '<a href="' . $wiki->uri('edit','',array('refer'=>$base)) . '" title="' . $s_page . '" rel="nofollow">' . $day . '</a>';
 			}
 		}
 
@@ -225,13 +230,13 @@ EOD;
 			$str = (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<article id="'.$tpage.'" class="style_calendar_post">' : '<div id="'.$tpage.'" class="style_calendar_post">')."\n";
 			global $pkwk_dtd;
 			$tpage = $prefix . sprintf(PLUGIN_CALENDAR_PANENAME_FORMAT, $today['year'], $today['mon'], $today['mday']);
-			if (is_page($tpage)) {
+			$t_wiki = Factory::Wiki($tpage);
+			if ($t_wiki->has()) {
 				$_page = $vars['page'];
 				$get['page'] = $post['page'] = $vars['page'] = $tpage;
-				$source = get_source($tpage);
 				preg_replace('/^#navi/','/\/\/#navi/',$source);
-				$str .= convert_html($source);
-				$str .= '<hr /><a href="' . get_cmd_uri('edit', $tpage).'">' . $_calendar_msg['_edit'] . '</a>';
+				$str .= $t_wiki->render();
+				$str .= '<hr /><a href="' . $t_wiki->uri('edit', $tpage).'">' . $_calendar_msg['_edit'] . '</a>';
 				$get['page'] = $post['page'] = $vars['page'] = $_page;
 			} else {
 				$str .= sprintf($_calendar_msg['_empty'],
@@ -260,7 +265,7 @@ function plugin_calendar_action()
 	global $vars;
 	global $_calendar_msg, $_labels;
 
-	$page = strip_bracket($vars['page']);
+	$page = Utility::stripBracket($vars['page']);
 	$vars['page'] = ($vars['file']) ? $vars['file'] : '*';
 
 	$date = $vars['date'] ? $vars['date'] : get_date('Ym');
@@ -270,8 +275,8 @@ function plugin_calendar_action()
 	$month = preg_replace('/^0/','',substr($date, 4, 2));
 
 	$aryargs = array($vars['page'], $date);
-	// $s_page  = '<a href="'.get_page_uri($vars['page']).'">'.htmlsc($vars['page']).'</a>';
-	$s_page  = htmlsc($vars['page']);
+	// $s_page  = '<a href="'.get_page_uri($vars['page']).'">'.Utility::htmlsc($vars['page']).'</a>';
+	$s_page  = Utility::htmlsc($vars['page']);
 
 	$vars['page'] = $page;
 

@@ -14,6 +14,7 @@
 namespace PukiWiki\Renderer\Inline;
 
 use PukiWiki\Renderer\InlineFactory;
+use PukiWiki\Renderer\PluginRenderer;
 use PukiWiki\Utility;
 
 // Inline plugins
@@ -72,8 +73,7 @@ class InlinePlugin extends Inline
 		$str = FALSE;
 
 		// Try to call the plugin
-		if (exist_plugin_inline($this->name))
-			$str = do_plugin_inline($this->name, $this->param, $body);
+		$str = PluginRenderer::executePluginInline($this->name, $this->param, $body);
 
 		if ($str !== FALSE) {
 			return $str; // Succeed
