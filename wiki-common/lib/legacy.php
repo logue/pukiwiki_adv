@@ -12,11 +12,13 @@ use PukiWiki\Router;
 use PukiWiki\Renderer\RendererFactory;
 use PukiWiki\Renderer\Inline\Inline;
 use PukiWiki\Renderer\PluginRenderer;
+use PukiWiki\Renderer\Header;
 use PukiWiki\Search;
 use PukiWiki\Time;
 use PukiWiki\Factory;
 use PukiWiki\Recent;
 use PukiWiki\Listing;
+use Zend\Http\Response;
 
 /**************************************************************************************************/
 /**
@@ -620,6 +622,15 @@ function make_heading(& $str, $strip = TRUE)
 	return Utility::setHeading($str, $strip);
 }
 
+function pkwk_headers_sent()
+{
+	return Header::checkSent();
+}
+
+function pkwk_common_headers($modified = 0, $expire = 604800){
+	$headers = Header::getHeaders('text/html', $modified, $expire);
+	Header::writeResponse($headers);
+}
 /**************************************************************************************************/
 /**
  * make_link.php

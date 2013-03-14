@@ -23,14 +23,6 @@ class Lang {
 		'en_US',
 		'ko_KR'
 	);
-
-	private static $vary = array(
-		'Cookie',
-		'Accept-Language',
-		'User-Agent',
-		'Accept-Charset'
-	);
-
 	private static $lng_func = array(
 		'getCookieLanguage',    // 1 return ja,ja_JP
 		'getAcceptLanguage',    // 2 return ja,ko
@@ -160,29 +152,6 @@ class Lang {
 		mb_http_output('pass');
 		mb_detect_order('auto');
 	}
-
-	/*
-	 * get_language_header_vary
-	 *
-	 */
-	public static function getLanguageHeaderVary()
-	{
-		global $language_considering_setting_level;
-
-		if ($language_considering_setting_level < 1) return '';
-
-		$rc = 'Negotiate';
-
-		for($i=1;$i<=$language_considering_setting_level;$i++) {
-			if (empty(self::$vary[$i])) break;
-			if ($rc != '') {
-				$rc .= ',';
-			}
-			$rc .= self::$vary[$i];
-		}
-		return $rc;
-	}
-
 	/*
 	 * get_mb_language
 	 * @return      string

@@ -7,6 +7,9 @@ use PukiWiki\Utility;
 use SplFileInfo;
 use Zend\Http\Response;
 use Zend\Http\Headers;
+use PukiWiki\Header;
+use PukiWiki\Router;
+
 class AttachFile extends SplFileInfo{
 	public $dir = UPLOAD_DIR;
 	public $pattern = '/^((?:[0-9A-F]{2})+)_((?:[0-9A-F]{2})+)$/';
@@ -86,11 +89,11 @@ class AttachFile extends SplFileInfo{
 
 		$this->getstatus();
 
-		$inf = get_cmd_uri('attach','','',array('pcmd'=>'info','refer'=>$this->page,'age'=>$this->age,'file'=>$this->file));
-		$open = get_cmd_uri('attach','','',array('pcmd'=>'open','refer'=>$this->page,'age'=>$this->age,'file'=>$this->file));
+		$inf = Router::get_cmd_uri('attach','','',array('pcmd'=>'info','refer'=>$this->page,'age'=>$this->age,'file'=>$this->file));
+		$open = Router::get_cmd_uri('attach','','',array('pcmd'=>'open','refer'=>$this->page,'age'=>$this->age,'file'=>$this->file));
 
 		$title = $this->time_str . ' ' . $this->size_str;
-		$label = htmlsc($this->file);
+		$label = Utility::htmlsc($this->file);
 		if ($this->age) {
 			$label .= ' (backup No.' . $this->age . ')';
 		}
@@ -114,14 +117,14 @@ class AttachFile extends SplFileInfo{
 		global $_attach_messages, $pkwk_dtd, $vars, $_LANG;
 
 
-		$script = get_script_uri();
+		$script = Router::get_script_uri();
 		$r_page = rawurlencode($this->page);
-		$s_page = htmlsc($this->page);
-		$s_file = htmlsc($this->file);
+		$s_page = Utility::htmlsc($this->page);
+		$s_file = Utility::htmlsc($this->file);
 		$s_err = ($err == '') ? '' : '<p style="font-weight:bold">' . $_attach_messages[$err] . '</p>';
 
-		$list_uri    = get_cmd_uri('attach','','',array('pcmd'=>'list','refer'=>$this->page));
-		$listall_uri = get_cmd_uri('attach','','',array('pcmd'=>'list'));
+		$list_uri    = Router::get_cmd_uri('attach','','',array('pcmd'=>'list','refer'=>$this->page));
+		$listall_uri = Router::get_cmd_uri('attach','','',array('pcmd'=>'list'));
 
 		$role_contents_admin = Auth::check_role('role_contents_admin');
 		$msg_require = ($role_contents_admin) ? $_attach_messages['msg_require'] : '';
@@ -391,8 +394,6 @@ EOD;
 		$this->getstatus();
 		
 		$filename = $this->file;
-		$realpath = $this->getRealPath();
-
 		// Care for Japanese-character-included file name
 		if (LANG == 'ja_JP') {
 			switch(UA_NAME . '/' . UA_PROFILE){
@@ -409,30 +410,29 @@ EOD;
 		ini_set('default_charset', '');
 		mb_http_output('pass');
 
+		// 添付ファイルの実行を防ぐため明示的にダウンロードとする
+		$content_type = $this->type == 'text/html' ? 'application/octet-stream' : $this->type;
+
 		// ヘッダー出力
-		$header['Last-Modified'] = gmdate('D, d M Y H:i:s', $this->getMTime() ) . ' GMT';
-		if ($this->type == 'text/html' || $this->type == 'application/octet-stream') {
+		$header = Header::getHeaders($content_type, $this->getMTime());
+		if ($content_type == 'application/octet-stream') {
 			$header['Content-Disposition'] = 'attachment; filename="' . $filename . '"';
-			$header['Content-Type'] = 'application/octet-stream';
 		} else {
 			$header['Content-Disposition'] = 'inline; filename="' . $filename . '"';
-			$header['Content-Type'] = $this->type;
 		}
-	//	if ($use_sendfile_header === true){
-			// for reduce server load
-			$header['X-Sendfile'] = $realpath;
-	//	}
+		// ファイルサイズ
 		$header['Content-Length'] = $this->getSize();
-		$header['Cache-Control'] = 'max-age=3600, must-revalidate';
+		
+		if ($use_sendfile_header === true){
+			// for reduce server load
+			$header['X-Sendfile'] = $this->getRealPath();
+		}
 
 		$response->setStatusCode(Response::STATUS_CODE_200);
 		$response->getHeaders()->addHeaders($header);
-
-		if (!headers_sent()) {
-			header($response->renderStatusLine());
-			foreach ($response->getHeaders() as $_header) {
-				header($_header->toString());
-			}
+		header($response->renderStatusLine());
+		foreach ($response->getHeaders() as $_header) {
+			header($_header->toString());
 		}
 		// ファイルの読み込み
 		$f = $this->openFile('rb');

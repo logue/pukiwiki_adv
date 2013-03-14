@@ -17,6 +17,7 @@ use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
 use PukiWiki\Lang\Lang;
 use PukiWiki\Router;
+use PukiWiki\Renderer\Header;
 
 // Show page-content
 function catbody($title, $page, $body)
@@ -51,14 +52,13 @@ function catbody($title, $page, $body)
 		$filetime = $wiki->time();
 	}
 
-	
 	$is_readonly = Auth::check_role('readonly');
 	$is_safemode = Auth::check_role('safemode');
 	$is_createpage = Auth::is_check_role(PKWK_CREATE_PAGE);
 
-	$headers = pkwk_common_headers(($lastmod && $is_read) ? $filetime : 0);
 	if (IS_AJAX && !IS_MOBILE){
 		$ajax = isset($vars['ajax']) ? $vars['ajax'] : 'raw';
+		$response = new Response();
 		switch ($ajax) {
 			case 'json':
 	 			// JSONで出力
@@ -77,20 +77,30 @@ function catbody($title, $page, $body)
 */
 					);
 				}
-				header('Content-Type: application/json; charset=' . CONTENT_CHARSET);
-				echo Zend\Json\Json::encode($JSON);
+				$content_type = 'application/json';
+				$content = Zend\Json\Json::encode($JSON);
 			break;
 			case 'xml':
-				header('Content-Type: application/xml; charset=' . CONTENT_CHARSET);
-				echo '<?xml version="1.0" encoding="'.CONTENT_CHARSET.'" ?>'."\n";
-				echo $body;
+				$content_type = 'application/xml';
+				$content = '<?xml version="1.0" encoding="'.CONTENT_CHARSET.'" ?>'."\n".$body;
 			break;
 			default:
 			case 'raw':
-				header('Content-Type: text/html; charset=' . CONTENT_CHARSET);
-				echo $body;
+				$content_type = 'text/html';
+				$content = $body;
 			break;
 		}
+		$headers = Header::getHeaders($content_type, $is_read ? $filetime : 0);
+		$header['Content-Length'] = strlen($content);
+		$response->setStatusCode(Response::STATUS_CODE_200);
+		$response->getHeaders()->addHeaders($headers);
+		$response->setContent($content);
+		header($response->renderStatusLine());
+		foreach ($response->getHeaders() as $_header) {
+			header($_header->toString());
+		}
+		echo $response->getBody();
+		
 	}else{
 		// Set $_LINK for skin
 		$_LINK = getLinkSet($_page);
@@ -287,31 +297,17 @@ function catbody($title, $page, $body)
 					'</ul></div>'."\n\n".$body;
 		}
 
-/*
-		// global $always_menu_displayed;
-		$always_menu_displayed = (arg_check('read')) ? true : false;
-		$body_menu = $body_side = '';
-		if ($always_menu_displayed) {
-			if (exist_plugin_convert('menu')) $body_menu = do_plugin_convert('menu');
-			if (exist_plugin_convert('side')) $body_side = do_plugin_convert('side');
-		}
-*/
-		//header('Content-Type: '.$http_header.'; charset='. CONTENT_CHARSET);
-		//@header('X-UA-Compatible: '.(empty($x_ua_compatible)) ? 'IE=edge' : $x_ua_compatible);	// とりあえずIE8対策
-
-		$headers['Content-Type'] = $http_header . '; charset='. CONTENT_CHARSET;
-
+		$headers = Header::getHeaders('text/html',$is_read ? $filetime : 0);
 		$response = new Response();
 		$response->setStatusCode(Response::STATUS_CODE_200);
 		$response->getHeaders()->addHeaders($headers);
-
-		if (!headers_sent()) {
-			header($response->renderStatusLine());
-			foreach ($response->getHeaders() as $_header) {
-				header($_header->toString());
-			}
+	//	$response->setContent(include(SKIN_FILE));
+		header($response->renderStatusLine());
+		foreach ($response->getHeaders() as $_header) {
+			header($_header->toString());
 		}
 
+	//	echo $response->getBody();
 		include(SKIN_FILE);
 	}
 	exit;
@@ -544,114 +540,6 @@ EOD;
 // make related() moved to related.inc.php
 
 
-
-// Check HTTP header()s were sent already, or
-// there're blank lines or something out of php blocks '
-function pkwk_headers_sent()
-{
-	global $_string;
-	if (defined('PKWK_OPTIMISE')) return;
-
-	$file = $line = '';
-
-	if (headers_sent($file, $line)){
-		die_message(sprintf($_string['header_sent'],htmlsc($file),$line));
-	}else{
-		// buffer all upcoming output - make sure we care about compression:
-		if(!DEBUG){
-			if (! @ob_start("ob_gzhandler")){
-				@ob_start();
-			}
-		}
-	}
-}
-
-/**
-	@brief Output common HTTP headers
-
-	@param modified 最終更新日時（秒）
-	@param expire 有効期限（秒）
-	@return なし
-*/
-
-function pkwk_common_headers($modified = 0, $expire = 604800){
-	global $lastmod, $vars, $response, $headers;
-	if (! defined('PKWK_OPTIMISE')) pkwk_headers_sent();
-	$response = new Response();
-
-	// RFC2616
-	// http://sonic64.com/2004-02-06.html
-	$vary = Lang::getLanguageHeaderVary();
-	if (preg_match('/\b(gzip|deflate|compress)\b/i', $_SERVER['HTTP_ACCEPT_ENCODING'], $matches)) {
-		$vary .= ',Accept-Encoding';
-	}
-	$headers['Vary'] = $vary;
-
-	// HTTP access control
-	// JSON脆弱性対策（Adv.では外部にAjax APIを提供することを考慮しない）
-	// https://developer.mozilla.org/ja/HTTP_Access_Control
-	$headers['Access-Control-Allow-Origin'] = get_script_uri();
-
-	// Content Security Policy
-	// https://developer.mozilla.org/ja/Security/CSP/Using_Content_Security_Policy
-	// header('X-Content-Security-Policy: allow "self" "inline-script";  img-src *; media-src *;');
-	// IEの自動MIME type判別機能を無効化する
-	// http://msdn.microsoft.com/ja-jp/ie/dd218497.aspx
-	$headers['X-Content-Type-Options'] = 'nosniff';
-
-	// クリックジャッキング対策
-	// https://developer.mozilla.org/ja/The_X-FRAME-OPTIONS_response_header
-	$headers['X-Frame-Options'] = 'SameDomain';
-
-	// XSS脆弱性対策（これでいいのか？）
-	// http://msdn.microsoft.com/ja-jp/ie/dd218482
-	$headers['X-XSS-Protection'] = DEBUG ? '0' :'1;mode=block';
-
-	if ($modified !== 0){
-		// 最終更新日（秒で）が指定されていない場合動的なページとみなす。
-		// PHPで条件付きGETとかEtagとかでパフォーマンス向上
-		// http://firegoby.theta.ne.jp/archives/1730
-		$last_modified = gmdate('D, d M Y H:i:s', $modified);
-
-		$headers['Cache-Control'] = 'private';
-		$headers['Expires'] = gmdate('D, d M Y H:i:s',time() + $expire) . ' GMT';
-		$headers['Last-Modified'] = $last_modified;
-		$headers['ETag'] = md5($last_modified);
-
-		if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ) {
-			if ($_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified) {
-				$response->setStatusCode(Response::STATUS_CODE_304);
-				$response->renderStatusLine();
-				exit;
-			}
-		}
-		if (isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
-			if (preg_match("/{$etag}/", $_SERVER['HTTP_IF_NONE_MATCH'])) {
-				$response->setStatusCode(Response::STATUS_CODE_304);
-				$response->renderStatusLine();
-				exit;
-			}
-		}
-
-//		header('If-Modified-Since: ' . $last_modified );
-
-	}else{
-		// PHPで動的に生成されるページはキャシュすべきではない
-		$headers['Cache-Control'] = $headers['Pragma'] = 'no-cache';
-		$headers['Expires'] = 'Sat, 26 Jul 1997 05:00:00 GMT';
-	}
-	return $headers;
-}
-
-function pkwk_common_suffixes($length = ''){
-	// flush all output
-	/*
-	if(!DEBUG){
-		@ob_end_flush();
-	}
-	*/
-	flush();
-}
 //////////////////////////////////////////////////
 // DTD definitions
 // Adv. does not support HTML4.x

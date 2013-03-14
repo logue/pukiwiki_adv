@@ -401,7 +401,7 @@ class Utility{
 	 * @param string $title エラーのタイトル
 	 * @param int $http_code 出力するヘッダー
 	 */
-	public static function dieMessage($msg = '', $error_title='', $http_code = 500){
+	public static function dieMessage($msg = '', $error_title='', $http_code = Response::STATUS_CODE_500){
 		global $skin_file, $page_title, $_string, $_title, $_button, $vars;
 
 		$title = !empty($error_title) ? $error_title : $_title['error'];
@@ -425,17 +425,19 @@ class Utility{
 		global $trackback;
 		$trackback = 0;
 
-		if (!headers_sent()){
-			pkwk_common_headers(0,0, $http_code);
+		$headers = Header::getHeaders('text/html',$is_read ? $filetime : 0);
+		$response = new Response();
+		$response->setStatusCode($http_code);
+		$response->getHeaders()->addHeaders($headers);;
+		header($response->renderStatusLine());
+		foreach ($response->getHeaders() as $_header) {
+			header($_header->toString());
 		}
-
-		if(defined('SKIN_FILE')){
-			if (file_exists(SKIN_FILE) && is_readable(SKIN_FILE)) {
-				catbody($page, $title, $body);
-			} elseif ( !empty($skin_file) && file_exists($skin_file) && is_readable($skin_file)) {
-				define('SKIN_FILE', $skin_file);
-				catbody($page, $title, $body);
-			}
+		if(defined('SKIN_FILE') && file_exists(SKIN_FILE) && is_readable(SKIN_FILE)) {
+			include(SKIN_FILE);
+		} elseif ( !empty($skin_file) && file_exists($skin_file) && is_readable($skin_file)) {
+		//	echo $response->getBody();
+			include($skin_file);
 		}else{
 			$html = array();
 			$html[] = '<!doctype html>';
@@ -448,24 +450,28 @@ class Utility{
 			$html[] = '</head>';
 			$html[] = '<body>' . $body . '</body>';
 			$html[] = '</html>';
-			echo join("\n",$html);
+			$content = join("\n",$html);
+			$response->getHeaders()->addHeaderLine('Content-Length', strlen($content));
+			$response->setContent($content);
+			echo $response->getBody();
 		}
-		pkwk_common_suffixes();
 		die();
 	}
 	/**
 	 * リダイレクト
 	 * @param string $url リダイレクト先
+	 * @param int $time リダイレクトの待ち時間
 	 */
 	public static function redirect($url = '', $time = 0){
 		global $vars;
 		$response = new Response();
 
+		// URLが空の場合、ページのアドレスか、スクリプトのアドレスを返す
 		if (empty($url)){
-			$url = isset($vars['page']) ? Router::get_page_uri($vars['page']) : Router::get_script_uri();
+			$url = isset($vars['page']) ? Router::get_resolve_uri(null, $vars['page']) : Router::get_script_uri();
 		}
 		$s_url = self::htmlsc($url);
-		$response->setStatusCode(301);
+		$response->setStatusCode(Response::STATUS_CODE_301);
 		if (!DEBUG){
 			$response->getHeaders()->addHeaderLine('Location', $s_url);
 		}
@@ -490,7 +496,9 @@ class Utility{
 		$html[] = '</div>';
 		$html[] = '</body>';
 		$html[] = '</html>';
-		$response->setContent(join("\n",$html));
+		$content = join("\n",$html);
+		$response->getHeaders()->addHeaderLine('Content-Length', strlen($content));
+		$response->setContent($content);
 
 		if (!headers_sent()) {
 			header($response->renderStatusLine());
