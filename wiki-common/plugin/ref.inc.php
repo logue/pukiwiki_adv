@@ -10,6 +10,11 @@
 // Image refernce plugin
 // Include an attached image-file as an inline-image
 
+use \SplFileInfo;
+use \SplFileObject;
+use PukiWiki\Utility;
+use PukiWiki\Renderer\Header;
+use Zend\Http\Response;
 /////////////////////////////////////////////////
 // Default settings
 
@@ -41,15 +46,15 @@ function plugin_ref_inline()
 {
 	// NOTE: Already "$aryargs[] = & $body" at plugin.php
 	if (func_num_args() == 1) {
-		return htmlsc('&ref(): Usage:' . PLUGIN_REF_USAGE . ';');
+		return Utility::htmlsc('&ref(): Usage:' . PLUGIN_REF_USAGE . ';');
 	}
 
 	$params = plugin_ref_body(func_get_args());
 	if (isset($params['_error'])) {
-		return '<span class="ui-state-error">' . htmlsc('#ref(): ERROR: ' . $params['_error']) . '</span>' . "\n";
+		return '<span class="ui-state-error">' . Utility::htmlsc('#ref(): ERROR: ' . $params['_error']) . '</span>' . "\n";
 	}
 	if (! isset($params['_body'])) {
-		return '<span class="ui-state-error">' . htmlsc('#ref(): ERROR: No _body') . '</span>' . "\n";
+		return '<span class="ui-state-error">' . Utility::htmlsc('#ref(): ERROR: No _body') . '</span>' . "\n";
 	}
 
 	return $params['_body'];
@@ -59,15 +64,15 @@ function plugin_ref_convert()
 {
 	global $pkwk_dtd;
 	if (! func_num_args()) {
-		return '<p class="message-box ui-state-info">' . htmlsc('#ref(): Usage:' . PLUGIN_REF_USAGE) . '</p>' . "\n";
+		return '<p class="message-box ui-state-info">' . Utility::htmlsc('#ref(): Usage:' . PLUGIN_REF_USAGE) . '</p>' . "\n";
 	}
 
 	$params = plugin_ref_body(func_get_args());
 	if (isset($params['_error'])) {
-		return '<p class="message-box ui-state-error">' . htmlsc('#ref(): ERROR: ' . $params['_error']) . '</p>' . "\n";
+		return '<p class="message-box ui-state-error">' . Utility::htmlsc('#ref(): ERROR: ' . $params['_error']) . '</p>' . "\n";
 	}
 	if (! isset($params['_body'])) {
-		return '<p class="message-box ui-state-error">' . htmlsc('#ref(): ERROR: No _body') . '</p>' . "\n";
+		return '<p class="message-box ui-state-error">' . Utility::htmlsc('#ref(): ERROR: No _body') . '</p>' . "\n";
 	}
 
 	// Wrap with a table
@@ -86,7 +91,7 @@ function plugin_ref_convert()
 		if (! isset($params['_align']) || $params['_align'] == 'center') {
 			$s_margin_align = '';
 		} else {
-			$s_margin_align = ';margin-' . htmlsc($params['_align']) . ':0px';
+			$s_margin_align = ';margin-' . Utility::htmlsc($params['_align']) . ':0px';
 		}
 		$params['_body'] = <<<EOD
 <table class="style_table" style="margin:$s_margin$s_margin_align">
@@ -257,14 +262,14 @@ function plugin_ref_body($args)
 		}
 	}
 
-	$s_title = isset($params['_title']) ? htmlsc($params['_title']) : '';
+	$s_title = isset($params['_title']) ? Utility::htmlsc($params['_title']) : '';
 	$s_info  = '';
 	if ($seems_image) {
 		$s_title = make_line_rules($s_title);
 		if (ref_check_size($width, $height, $params) &&
 		    isset($params['_w']) && isset($params['_h'])) {
-			$s_info = 'width="'  . htmlsc($params['_w']) .
-			        '" height="' . htmlsc($params['_h']) . '" ';
+			$s_info = 'width="'  . Utility::htmlsc($params['_w']) .
+			        '" height="' . Utility::htmlsc($params['_h']) . '" ';
 		}
 		$body = '<img src="' . $url   . '" ' .
 			'alt="'      . $s_title . '" ' .
@@ -279,7 +284,7 @@ function plugin_ref_body($args)
 		}
 	} else {
 		if (! $is_url && $is_file) {
-			$s_info = htmlsc(get_date('Y/m/d H:i:s', filemtime($file) - LOCALZONE) .
+			$s_info = Utility::htmlsc(get_date('Y/m/d H:i:s', filemtime($file) - LOCALZONE) .
 				' ' . sprintf('%01.1f', round(filesize($file) / 1024, 1)) . 'KB');
 		}
 		$params['_body'] = '<a href="' . $url . '" title="' . $s_info . '"'. ((IS_MOBILE) ? ' data-ajax="false"' : '') . '>' .
@@ -394,30 +399,36 @@ function plugin_ref_action()
 	$page     = $vars['page'];
 	$filename = $vars['src'] ;
 
-	$ref = UPLOAD_DIR . encode($page) . '_' . encode(preg_replace('#^.*/#', '', $filename));
-	if(! file_exists($ref))
+	$ref = UPLOAD_DIR . Utility::encode($page) . '_' . Utility::encode(preg_replace('#^.*/#', '', $filename));
+
+	$fileinfo = new SplFileInfo($ref);
+	
+	if(! $fileinfo->isFile() || !$fileinfo->isReadable())
 		return array('msg' => 'Attach file not found', 'body' => $usage);
 
-	$got = @getimagesize($ref);
-	if (! isset($got[2])) $got[2] = FALSE;
-	switch ($got[2]) {
-	case 1: $type = 'image/gif' ; break;
-	case 2: $type = 'image/jpeg'; break;
-	case 3: $type = 'image/png' ; break;
-	case 4: $type = 'application/x-shockwave-flash'; break;
-	default:
+	try{
+		list($width, $height, $_type, $attr) = getimagesize($ref);
+		switch ($_type) {
+			case 1: $type = 'image/gif' ; break;
+			case 2: $type = 'image/jpeg'; break;
+			case 3: $type = 'image/png' ; break;
+			case 4: $type = 'application/x-shockwave-flash'; break;
+			default:
+				return array('msg' => 'Seems not an image', 'body' => $usage);
+		}
+	}catch (Exception $e){
 		return array('msg' => 'Seems not an image', 'body' => $usage);
 	}
-
+	
 	// Care for Japanese-character-included file name
 	if (LANG == 'ja_JP') {
 		switch(UA_NAME . '/' . UA_PROFILE){
 		case 'Opera/default':
 			// Care for using _auto-encode-detecting_ function
-			$filename = mb_convert_encoding($filename, 'UTF-8', 'auto');
+			$filename = mb_convert_encoding($vars['src'], 'UTF-8', 'auto');
 			break;
 		case 'MSIE/default':
-			$filename = mb_convert_encoding($filename, 'SJIS', 'auto');
+			$filename = mb_convert_encoding($vars['src'], 'SJIS', 'auto');
 			break;
 		}
 	}
@@ -425,24 +436,34 @@ function plugin_ref_action()
 	// Output
 	ini_set('default_charset', '');
 	mb_http_output('pass');
-	$file = realpath($ref);
-	pkwk_common_headers(filemtime($file));
-
+	
+	// ヘッダー出力
+	$header = Header::getHeaders($type ,$fileinfo->getMTime() );
+	$header['Content-Disposition'] = 'inline; filename="' . $filename . '"';
+	// ファイルサイズ
+	$header['Content-Length'] = $fileinfo->getSize();
+	
 	if ($use_sendfile_header === true){
 		// for reduce server load
-		header('X-Sendfile: '.$file);
+		$header['X-Sendfile'] = $fileinfo->getRealPath();
 	}
-
-	$s_filename = htmlsc($filename);
-	if ($type == 'text/html' || $type == 'application/octet-stream') {
-		header('Content-Disposition: attachment; filename="' . $s_filename . '"');
-		header('Content-Type: application/octet-stream; name="' . $s_filename . '"');
-	} else {
-		header('Content-Disposition: inline; filename="' . $s_filename . '"');
-		header('Content-Type: ' . htmlsc($type));
+	$response = new Response();
+	$response->setStatusCode(Response::STATUS_CODE_200);
+	$response->getHeaders()->addHeaders($header);
+	header($response->renderStatusLine());
+	foreach ($response->getHeaders() as $_header) {
+		header($_header->toString());
 	}
-	plus_readfile($ref);
-	pkwk_common_suffixes(filesize($file));
+	$obj = new SplFileObject($ref);
+	// ファイルの読み込み
+	$obj->openFile('rb');
+	// ロック
+	$obj->flock(LOCK_SH);
+	echo $obj->fpassthru();
+	// アンロック
+	$obj->flock(LOCK_UN);
+	// 念のためオブジェクトを開放
+	unset($fileinfo, $obj);
 	exit;
 }
 /* End of file ref.inc.php */

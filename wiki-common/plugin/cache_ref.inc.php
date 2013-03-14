@@ -6,6 +6,13 @@
 //
 // copy ref.inc.php
 
+use \SplFileInfo;
+use \SplFileObject;
+use PukiWiki\Utility;
+use PukiWiki\Renderer\Header;
+use Zend\Http\Response;
+
+
 function plugin_cache_ref_action()
 {
 	global $vars, $use_sendfile_header;
@@ -18,18 +25,24 @@ function plugin_cache_ref_action()
 	$filename = $vars['src'] ;
 
 	$ref = CACHE_DIR . $filename;
-	if(! file_exists($ref))
+
+	$fileinfo = new SplFileInfo($ref);
+	
+	if(! $fileinfo->isFile() || !$fileinfo->isReadable())
 		return array('msg'=>'Cache file not found', 'body'=>$usage);
 
-	$got = @getimagesize($ref);
-	if (! isset($got[2])) $got[2] = FALSE;
-	switch ($got[2]) {
-	case 1: $type = 'image/gif' ; break;
-	case 2: $type = 'image/jpeg'; break;
-	case 3: $type = 'image/png' ; break;
-	case 4: $type = 'application/x-shockwave-flash'; break;
-	default:
-		return array('msg'=>'Seems not an image', 'body'=>$usage);
+	try{
+		list($width, $height, $_type, $attr) = getimagesize($ref);
+		switch ($_type) {
+			case 1: $type = 'image/gif' ; break;
+			case 2: $type = 'image/jpeg'; break;
+			case 3: $type = 'image/png' ; break;
+			case 4: $type = 'application/x-shockwave-flash'; break;
+			default:
+				return array('msg' => 'Seems not an image', 'body' => $usage);
+		}
+	}catch (Exception $e){
+		return array('msg' => 'Seems not an image', 'body' => $usage);
 	}
 
 	// Care for Japanese-character-included file name
@@ -44,28 +57,37 @@ function plugin_cache_ref_action()
 			break;
 		}
 	}
-	$file = htmlsc($filename);
-	$size = filesize($ref);
-	$date = filemtime($ref);
-
 	// Output
 	ini_set('default_charset', '');
 	mb_http_output('pass');
-	pkwk_common_headers($date, null, false);
-	// for reduce server load
+	
+	// ヘッダー出力
+	$header = Header::getHeaders($type ,$fileinfo->getMTime() );
+	$header['Content-Disposition'] = 'inline; filename="' . $filename . '"';
+	// ファイルサイズ
+	$header['Content-Length'] = $fileinfo->getSize();
+	
 	if ($use_sendfile_header === true){
 		// for reduce server load
-		header('X-Sendfile: '.realpath($ref));
+		$header['X-Sendfile'] = $fileinfo->getRealPath();
 	}
-	header('Content-Disposition: inline; filename="' . $filename . '"');
-	header('Content-Length: ' . $size);
-	header('Content-Type: '   . $type);
-
-	
-
-	// @readfile($ref);
-	plus_readfile($ref);
-	pkwk_common_suffixes();
+	$response = new Response();
+	$response->setStatusCode(Response::STATUS_CODE_200);
+	$response->getHeaders()->addHeaders($header);
+	header($response->renderStatusLine());
+	foreach ($response->getHeaders() as $_header) {
+		header($_header->toString());
+	}
+	$obj = new SplFileObject($ref);
+	// ファイルの読み込み
+	$obj->openFile('rb');
+	// ロック
+	$obj->flock(LOCK_SH);
+	echo $obj->fpassthru();
+	// アンロック
+	$obj->flock(LOCK_UN);
+	// 念のためオブジェクトを開放
+	unset($fileinfo, $obj);
 	exit;
 }
 
