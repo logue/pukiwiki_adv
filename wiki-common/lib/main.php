@@ -118,14 +118,15 @@ require(LIB_DIR . 'config.php');
 require(LIB_DIR . 'log.php');
 require(LIB_DIR . 'spamplus.php');
 
-
 require(LIB_DIR . 'legacy.php');
 
 // Defaults
 $notify = $trackback = $referer = 0;
 require(LIB_DIR . 'init.php');
 
-catbody($title, $page, $body);
+
+new PukiWiki\Render($title, $body);
+//catbody($title, $page, $body);
 exit;
 
 /* End of file main.php */

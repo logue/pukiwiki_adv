@@ -50,7 +50,7 @@ defined('COMMON_URI')		or define('COMMON_URI', ROOT_URI);
 
 // フレームワークのバージョン
 define('JQUERY_VER',		'1.9.1');
-define('JQUERY_UI_VER',		'1.10.1');
+define('JQUERY_UI_VER',		'1.10.2');
 define('JQUERY_MOBILE_VER',	'1.3.0');
 
 /////////////////////////////////////////////////
@@ -222,10 +222,6 @@ defined('PKWK_CACHE_EXPIRE') or define('PKWK_CACHE_EXPIRE', 604800);	// 60*60*24
 // Timestamp prefix
 defined('PKWK_TIMESTAMP_PREFIX') or define('PKWK_TIMESTAMP_PREFIX', 'timestamp-');
 
-// Load optional libraries
-if (isset($notify)){ require(LIB_DIR . 'mail.php'); }	// Mail notification
-if (isset($trackback)){ require(LIB_DIR . 'trackback.php'); }	// TrackBack
-
 /////////////////////////////////////////////////
 // Init grobal variables
 
@@ -321,9 +317,8 @@ T_textdomain(DOMAIN);
 // リソースファイルの読み込み
 require(LIB_DIR . 'resource.php');
 // Init encoding hint
-// define('PKWK_ENCODING_HINT', isset($_LANG['encode_hint']) ? $_LANG['encode_hint'] : '');
 define('PKWK_ENCODING_HINT', (isset($_LANG['encode_hint']) && $_LANG['encode_hint'] !== 'encode_hint') ? $_LANG['encode_hint'] : 'ぷ');
-// unset($_LANG['encode_hint']);
+
 
 /////////////////////////////////////////////////
 // INI_FILE: Init $script
@@ -389,7 +384,7 @@ $ua = 'HTTP_USER_AGENT';
 // unset(${$ua}, $_SERVER[$ua], $HTTP_SERVER_VARS[$ua], $ua);	// safety
 if ( empty($user_agent['agent']) ) die();	// UAが取得できない場合は処理を中断
 
-foreach ($agents as $agent) {
+foreach (include(add_homedir('profile.ini.php')) as $agent) {
 	if (preg_match($agent['pattern'], $user_agent['agent'], $matches)) {
 		$user_agent = array(
 			'profile'	=> isset($agent['profile']) ? $agent['profile'] : '',
@@ -414,11 +409,12 @@ if (! file_exists(UA_INI_FILE) || ! is_readable(UA_INI_FILE)) {
 define('UA_NAME', isset($user_agent['name']) ? $user_agent['name'] : '');
 define('UA_VERS', isset($user_agent['vers']) ? $user_agent['vers'] : '');
 define('UA_CSS', isset($user_agent['css']) ? $user_agent['css'] : '');
+
 //unset($user_agent);	// Unset after reading UA_INI_FILE
 
 // 設定ファイルの変数チェック
 $temp = '';
-foreach(array('rss_max', 'page_title', 'note_hr', 'related_link', 'show_passage', 'load_template_func') as $var){
+foreach(array('rss_max', 'page_title', 'related_link', 'show_passage', 'load_template_func') as $var){
 	if (! isset(${$var})) $temp .= '<li>$' . $var . "</li>\n";
 }
 if ($temp) {
@@ -427,7 +423,7 @@ if ($temp) {
 
 $temp = '';
 foreach(array('LANG', 'PLUGIN_DIR') as $def){
-	if (! defined($def)) $temp .= '<li>'.$def . "</li>\n";
+	if (! defined($def)) $temp .= '<li>'.$def . '</li>'."\n";
 }
 if ($temp) {
 	$die[] = sprintf('The following values were not definded (Maybe the old *.ini.php?): <ul>%s</ul>',$temp);
@@ -444,161 +440,9 @@ foreach(array($defaultpage, $whatsnew) as $page){
 }
 
 /////////////////////////////////////////////////
-// 外部からくる変数のチェック
-// Prohibit $_GET attack
-foreach (array('msg', 'pass') as $key) {
-	if (isset($_GET[$key])) die_message(sprintf(T_('Sorry, %s is already reserved.'),$key));
-}
-
-// Expire risk
-unset($HTTP_GET_VARS, $HTTP_POST_VARS);	//, 'SERVER', 'ENV', 'SESSION', ...
-unset($_REQUEST);	// Considered harmful
-
-// Remove null character etc.
-$_GET    = input_filter($_GET);
-$_POST   = input_filter($_POST);
-$_COOKIE = input_filter($_COOKIE);
-
-// 文字コード変換 ($_POST)
-// <form> で送信された文字 (ブラウザがエンコードしたデータ) のコードを変換
-// POST method は常に form 経由なので、必ず変換する
-//
-if (isset($_POST['encode_hint']) && !empty($_POST['encode_hint'])) {
-	// do_plugin_xxx() の中で、<form> に encode_hint を仕込んでいるので、
-	// encode_hint を用いてコード検出する。
-	// 全体を見てコード検出すると、機種依存文字や、妙なバイナリ
-	// コードが混入した場合に、コード検出に失敗する恐れがある。
-	$encode = mb_detect_encoding($_POST['encode_hint']);
-	mb_convert_variables(SOURCE_ENCODING, $encode, $_POST);
-
-} else if (isset($_POST['charset']) && !empty($_POST['charset'])) {
-	// TrackBack Ping で指定されていることがある
-	// うまくいかない場合は自動検出に切り替え
-	if (mb_convert_variables(SOURCE_ENCODING,
-	    $_POST['charset'], $_POST) !== $_POST['charset']) {
-		mb_convert_variables(SOURCE_ENCODING, 'auto', $_POST);
-	}
-
-} else if (! empty($_POST)) {
-	// 全部まとめて、自動検出／変換
-	mb_convert_variables(SOURCE_ENCODING, 'auto', $_POST);
-}
-
-// 文字コード変換 ($_GET)
-// GET method は form からの場合と、<a href="http://script/?key=value"> の場合がある
-// <a href...> の場合は、サーバーが rawurlencode しているので、コード変換は不要
-if (isset($_GET['encode_hint']) && empty($_GET['encode_hint']))
-{
-	// form 経由の場合は、ブラウザがエンコードしているので、コード検出・変換が必要。
-	// encode_hint が含まれているはずなので、それを見て、コード検出した後、変換する。
-	// 理由は、post と同様
-	$encode = mb_detect_encoding($_GET['encode_hint']);
-	mb_convert_variables(SOURCE_ENCODING, $encode, $_GET);
-}
-
-/////////////////////////////////////////////////
 // QUERY_STRINGを取得
-$arg = '';
-if (isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING'])) {
-	$arg = $_SERVER['QUERY_STRING'];
-//} else if (array_key_exists('PATH_INFO',$_SERVER) and !empty($_SERVER['PATH_INFO']) ) {
-//	$arg = preg_replace("/^\/*(.+)\/*$/","$1",$_SERVER['PATH_INFO']);
-} else if (isset($_SERVER['argv']) && ! empty($_SERVER['argv'])) {
-	$arg = $_SERVER['argv'][0];
-}
+Utility::parseArguments();
 
-if (PKWK_QUERY_STRING_MAX && strlen($arg) > PKWK_QUERY_STRING_MAX) {
-	// Something nasty attack?
-	die_message(_('Query string is too long.'));
-}
-$arg = str_replace('+','%20',input_filter($arg)); // \0 除去
-// for QA/250
-
-// unset QUERY_STRINGs
-//foreach (array('QUERY_STRING', 'argv', 'argc') as $key) {
-// For OpenID Lib (use QUERY_STRING).
-if (DEBUG){
-	foreach (array('argv', 'argc') as $key) {
-		unset(${$key}, $_SERVER[$key], $HTTP_SERVER_VARS[$key]);
-	}
-	// $_SERVER['REQUEST_URI'] is used at func.php NOW
-	unset($REQUEST_URI, $HTTP_SERVER_VARS['REQUEST_URI']);
-}
-
-// mb_convert_variablesのバグ(?)対策: 配列で渡さないと落ちる
-$args = array($arg);
-mb_convert_variables(SOURCE_ENCODING, 'auto', $args);
-$arg = $args[0];
-/////////////////////////////////////////////////
-// QUERY_STRINGを分解してコード変換し、$_GET に上書き
-
-// URI を urlencode せずに入力した場合に対処する
-$matches = array();
-foreach (explode('&', $arg) as $key_and_value) {
-	if (preg_match('/^([^=]+)=(.+)/', $key_and_value, $matches) &&
-	    (mb_detect_encoding($matches[2]) !== 'ASCII' || $matches[1] === 'pukiwiki')) {
-		$_GET[trim($matches[1])] = trim($matches[2]);
-	}
-}
-unset($matches);
-
-/////////////////////////////////////////////////
-// GET, POST, COOKIE
-$get    = & $_GET;
-$post   = & $_POST;
-$cookie = & $_COOKIE;
-
-// GET + POST = $vars
-if (empty($_POST)) {
-	$method = 'GET';
-	$vars = & $_GET;  // Major pattern: Read-only access via GET
-} else if (empty($_GET)) {
-	$method = 'POST';
-	$vars = & $_POST; // Minor pattern: Write access via POST etc.
-} else {
-	$method = 'GET and POST';
-	$vars = array_merge($_GET, $_POST); // Considered reliable than $_REQUEST
-}
-
-// 入力チェック: 'cmd=' prohibits nasty 'plugin='
-if (isset($vars['plugin']))
-	die( T_( 'plugin= is obsoleted.' ) );
-
-// 整形: page, strip_bracket()
-if (isset($vars['page'])) {
-	$page = $get['page'] = $post['page'] = $vars['page']  = strip_bracket($vars['page']);
-} else {
-	$page = $get['page'] = $post['page'] = $vars['page'] = null;
-}
-
-// 入力チェック: cmdの文字列は英数字以外ありえない
-if ( isset($vars['cmd']) && !preg_match('/^[a-zA-Z][a-zA-Z0-9_]*$/', $vars['cmd']) !== FALSE){
-	unset($get['cmd'], $post['cmd'], $vars['cmd']);
-}
-
-// 整形: msg, 改行を取り除く
-if (isset($vars['msg'])) {
-	$get['msg'] = $post['msg'] = $vars['msg'] = str_replace("\r", '', $vars['msg']);
-}
-
-// TrackBack Ping
-if ( isset($vars['tb_id']) && !empty($vars['tb_id']) ) {
-	$get['cmd'] = $post['cmd'] = $vars['cmd'] = 'tb';
-}
-
-
-if (! isset($vars['cmd']) ){
-	$get['cmd']  = $post['cmd']  = $vars['cmd']  = 'read';
-
-	$argx = explode('&', $arg);
-	$arg = is_array($argx) ? $argx[0]:$argx;
-	if ($arg == '') $arg = $defaultpage;
-	$arg = rawurldecode($arg);
-	$arg = strip_bracket($arg);
-	$arg = input_filter($arg);
-	$get['page'] = $post['page'] = $vars['page'] = $arg;
-	unset($vars[$arg]);
-}
 // HTTP_X_REQUESTED_WITHヘッダーで、ajaxによるリクエストかを判別
 define('IS_AJAX', isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' || isset($vars['ajax']));
 
@@ -670,30 +514,12 @@ if ($spam && $method !== 'GET') {
 }
 
 /////////////////////////////////////////////////
-// 初期設定(ユーザ定義ルール読み込み)
-require(add_homedir('rules.ini.php'));
-
-/////////////////////////////////////////////////
 // 初期設定(その他のグローバル変数)
 
 // 現在時刻
 $now = format_date(UTIME);
 
-// 日時置換ルールを$line_rulesに加える
-if ($usedatetime) $line_rules = array_merge($datetime_rules, $line_rules);
-unset($datetime_rules);
-
-// フェイスマークを$line_rulesに加える
-if ($usefacemark) $line_rules = array_merge($facemark_rules, $line_rules);
-unset($facemark_rules);
-
-// 実体参照パターンおよびシステムで使用するパターンを$line_rulesに加える
-// XHTML5では&lt;、&gt;、&amp;、&quot;と、&apos;のみ使える。
-// http://www.w3.org/TR/html5/the-xhtml-syntax.html
-$line_rules = array_merge(array(
-	'&amp;(#[0-9]+|#x[0-9a-f]+|(?=[a-zA-Z0-9]{2,8})(?:apos|amp|lt|gt|quot));' => '&$1;',
-	"\r"          => '<br />' . "\n",	/* 行末にチルダは改行 */
-), $line_rules);
+$line_rules = array_merge(PukiWiki\Text\Rules::getLineRules(), $line_rules);
 
 //////////////////////////////////////////////////
 // ajaxではない場合
@@ -706,138 +532,33 @@ if (IS_MOBILE === true) {
 	define('SKIN_FILE', add_skindir(PLUS_THEME));
 }
 
-if (!IS_AJAX || IS_MOBILE){
-	global $auth_api, $fb;
+if ( isset($auth_api['facebook']) ){
+	if (extension_loaded('curl')){
+		require(LIB_DIR.'facebook.php');
+		$fb = new FaceBook($auth_api['facebook']);
+		// FaceBook Integration
+		$fb_user = $fb->getUser();
 
-	// JavaScriptフレームワーク設定
-	// jQueryUI Official CDN
-	// http://code.jquery.com/
-	$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://code.jquery.com/jquery-'.JQUERY_VER.'.min.js');
-
-	if (!IS_MOBILE){
-		// modernizrの設定
-		// $modernizr = 'modernizr.min.js';
-		$modernizr = 'js.php?file=modernizr.min';
-
-		// jQuery UI
-		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://code.jquery.com/ui/'.JQUERY_UI_VER.'/jquery-ui.min.js', 'defer'=>'defer');
-		// jQuery UIのCSS
-		if (isset($_SKIN['ui_theme'])){
-			$link_tags[] = array(
-				'rel'=>'stylesheet',
-				'href'=>'http://code.jquery.com/ui/'.JQUERY_UI_VER.'/themes/'. $_SKIN['ui_theme'].'/jquery-ui.css',
-				'type'=>'text/css',
-				'id'=>'ui-theme'
-			);
-		}
-
-		if (DEBUG === true) {
-			// 読み込むsrcディレクトリ内のJavaScript
-			$default_js = array(
-				/* libraly */
-				'tzCalculation_LocalTimeZone',
-
-				/* Use plugins */
-				'activity-indicator',
-				'jquery.a-tools',
-				'jquery.autosize',
-				'jquery.beautyOfCode',
-			//	'jquery.codemirror',
-				'jquery.cookie',
-				'jquery.form',
-				'jquery.dataTables',
-				'jquery.dataTables.naturalsort',
-				'jquery.i18n',
-				'jquery.jplayer',
-				'jquery.lazyload',
-				'jquery.query',
-				'jquery.superfish',
-				'jquery.tabby',
-				'jquery.ui.rlightbox',
-
-				/* MUST BE LOAD LAST */
-				'skin.original'
-			);
-			foreach($default_js as $script_file)
-				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'src/'.$script_file.'.js', 'defer'=>'defer');
-				//$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'js.php?file=src%2F'.$script_file);
-
-		} else {
-			//$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'skin.js');
-			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'js.php?file=skin', 'defer'=>'defer');
-		}
-	}else{
-		// jquery mobileは、mobile.jsで非同期読み込み。
-		$modernizr = '';
-		if (DEBUG === true) {
-			// 読み込むsrcディレクトリ内のJavaScript
-			$default_js = array(
-				/* Use plugins */
-				'jquery.beautyOfCode',
-				'jquery.i18n',
-				'jquery.lazyload',
-				'jquery.tablesorter',
-
-				/* MUST BE LOAD LAST */
-				'mobile.original'
-			);
-			foreach($default_js as $script_file)
-				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'mobile/'.$script_file.'.js');
-		} else {
-			//$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'mobile.js', 'defer'=>'defer');
-			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'js.php?file=mobile');
-		}
-	}
-
-	// DNS prefetching
-	// http://html5boilerplate.com/docs/DNS-Prefetching/
-	$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>'//code.jquery.com');
-	if (COMMON_URI !== ROOT_URI){
-		$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>COMMON_URI);
-	}
-
-	// JS用初期設定
-	$js_init = array(
-		'DEBUG'=>constant('DEBUG'),
-		'DEFAULT_LANG'=>constant('DEFAULT_LANG'),
-		'IMAGE_URI'=>constant('IMAGE_URI'),
-		'JS_URI'=>constant('JS_URI'),
-		'LANG'=>$language,
-		'SCRIPT'=>get_script_absuri(),
-		'SKIN_DIR'=>constant('SKIN_URI'),
-		'THEME_NAME'=>constant('PLUS_THEME')
-	);
-
-	$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.( (DEBUG) ? 'locale.js' : 'js.php?file=locale'), 'defer'=>'defer' );
-
-	if ( isset($auth_api['facebook']) ){
-		if (extension_loaded('curl')){
-			require(LIB_DIR.'facebook.php');
-			$fb = new FaceBook($auth_api['facebook']);
-			// FaceBook Integration
-			$fb_user = $fb->getUser();
-
-			if ($fb_user === 0) {
-				// 認証されていない場合
-				$url = $fb->getLoginUrl(array(
-					'canvas' => 1,
-					'fbconnect' => 0,
-					'req_perms' => 'status_update,publish_stream' // ステータス更新とフィードへの書き込み許可
-				));
-				$info[] = sprintf(T_('Facebook is not authenticated or url is mismathed. Please click <a href="%s">here</a> and authenticate the application.'), str_replace('&','&amp;',$url));
-			}else{
-				$me = $fb->api('/me');
-				try {
-					// Proceed knowing you have a logged in user who's authenticated.
-					$info[] = sprintf(T_('Facebook is authenticated. Welcome, %s.'), '<var>'.$me['username'].'</var>');
-				} catch (FacebookApiException $e) {
-					$info[] = 'Facebook Error: <samp>'.$e.'</samp>';
-				}
-			}
-			$js_init['FACEBOOK_APPID'] = $fb->getAppId();
+		if ($fb_user === 0) {
+			// 認証されていない場合
+			$url = $fb->getLoginUrl(array(
+				'canvas' => 1,
+				'fbconnect' => 0,
+				'req_perms' => 'status_update,publish_stream' // ステータス更新とフィードへの書き込み許可
+			));
+			$info[] = sprintf(T_('Facebook is not authenticated or url is mismathed. Please click <a href="%s">here</a> and authenticate the application.'), str_replace('&','&amp;',$url));
 		}else{
-			$info[] = T_('Could not to load Facebook. This function needs <code>curl</code> extention.');
+			$me = $fb->api('/me');
+			try {
+				// Proceed knowing you have a logged in user who's authenticated.
+				$info[] = sprintf(T_('Facebook is authenticated. Welcome, %s.'), '<var>'.$me['username'].'</var>');
+			} catch (FacebookApiException $e) {
+				$info[] = 'Facebook Error: <samp>'.$e.'</samp>';
+			}
 		}
+		$js_init['FACEBOOK_APPID'] = $fb->getAppId();
+	}else{
+		$info[] = T_('Could not to load Facebook. This function needs <code>curl</code> extention.');
 	}
 }
 
@@ -869,24 +590,6 @@ if (Utility::isWebDAV()) {
 	exit;
 }
 
-// cmdが指定されていない場合は、readとみなす。
-if ( !isset($vars['cmd']) ) {
-	// cmdが指定されてない場合は、readとみなす。
-	$cmd = $get['cmd']  = $post['cmd']  = $vars['cmd']  = 'read';
-
-	$argx = explode('&', $arg);
-	$arg = is_array($argx) ? $argx[0]:$argx;
-	if (! empty($arg) ){
-		$arg = rawurldecode($arg);
-		$arg = Utility::stripBracket($arg);
-		$arg = Utility::stripNullBytes($arg);
-	}else{
-		$arg = $defaultpage;
-	}
-	$get['page'] = $post['page'] = $vars['page'] = $arg;
-	unset($vars[$arg]);
-}
-
 // プラグインのaction命令を実行
 $cmd = strtolower($vars['cmd']);
 $is_protect = Auth::is_protect();
@@ -899,11 +602,13 @@ if ($is_protect) {
 	}
 	PluginRenderer::executePluginBlock('protect', $plugin_arg);
 }
-if (! PluginRenderer::hasPluginMethod($cmd, 'action')) {
-	header('HTTP/1.1 501 Not Implemented');
-	Utility::dieMessage(sprintf($_string['plugin_not_implemented'],Utility::htmlsc($cmd)), 501);
+if (!empty($cmd)){
+	if (! PluginRenderer::hasPluginMethod($cmd, 'action')) {
+		Utility::dieMessage(sprintf($_string['plugin_not_implemented'],Utility::htmlsc($cmd)), 501);
+	}else{
+		$retvars = do_plugin_action($cmd);
+	}
 }
-$retvars = do_plugin_action($cmd);
 
 if ($is_protect) {
  	// Location で飛ぶようなプラグインの対応のため
@@ -916,7 +621,7 @@ $auth_key = Auth::get_user_info();
 if (!empty($auth_key['home']) && ($vars['page'] == $defaultpage || $vars['page'] == $auth_key['home'])){
 	$base = $defaultpage = $auth_key['home'];
 }else{
-	$base = $vars['page'];
+	$base = isset($vars['page']) ? $vars['page'] : $defaultpage;
 }
 ///////////////////////////////////////
 // Page output
@@ -933,7 +638,7 @@ if (isset($retvars['body']) && !empty($retvars['body'])) {
 } else {
 	if (! is_page($base)) {
 		$base  = $defaultpage;
-		$title = Utiliity::htmlsc(strip_bracket($base));
+		$title = Utility::htmlsc(strip_bracket($base));
 		$page  = make_search($base);
 	}
 
@@ -961,7 +666,6 @@ if (isset($retvars['body']) && !empty($retvars['body'])) {
 	}
 
 	$body = $wiki->render();
-	$body .= ($trackback && $tb_auto_discovery) ? tb_get_rdf($base) : ''; // Add TrackBack-Ping URI
 	if ($referer){
 		require(LIB_DIR . 'referer.php');
 		ref_save($base);

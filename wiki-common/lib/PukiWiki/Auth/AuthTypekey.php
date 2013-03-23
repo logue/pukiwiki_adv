@@ -124,30 +124,25 @@ class AuthTypekey extends AuthApi
 		return $message;
 	}
 
-	function typekey_login_url($return='')
+	function typekey_login_url()
 	{
-		if (empty($return)) {
-			$return = Router::get_script_absuri();
-		}
-		$rc = self::TYPEKEY_URL_LOGIN.'?t='.$this->siteToken.'&amp;v='.$this->version;
-		if ($this->need_email != 0) {
-			$rc .= '&amp;need_email=1';
-		}
-		return $rc.'&amp;_return='.$return;
+		$query = array(
+			't'=>$this->siteToken,
+			'v'=>$this->version,
+			'need_email'=>$this->need_emai,
+			'_return'=>$this->callbackUrl
+		);
+		return self::TYPEKEY_URL_LOGIN.http_build_query($query);
 	}
 
-	function typekey_logout_url($return='')
+	function typekey_logout_url()
 	{
-		if (empty($return)) {
-			$return = Router::get_script_absuri();
-		}
-		// return TYPEKEY_URL_LOGOUT.'?_return='.$return;
-		return self::TYPEKEY_URL_LOGOUT.'?to='.$return;
+		return self::TYPEKEY_URL_LOGOUT.'?to='.rawurlencode($this->callbackUrl);
 	}
 
-	function typekey_login($return)
+	function typekey_login()
 	{
-		Utility::redirect($this->typekey_login_url($return));
+		Utility::redirect($this->typekey_login_url());
 	}
 
 	function typekey_profile_url($name)

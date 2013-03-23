@@ -18,13 +18,13 @@ use PukiWiki\Time;
 
 function plugin_epoch_inline()
 {
-	global $pkwk_dtd;
 	$value = func_get_args();
 	$args = func_num_args();
 
 	if ($args > 3){
 		return '&epoch(utime[,class]);';
 	}
+	pr($value);
 	
 	$array = explode(',',$value[0]);
 	
@@ -33,11 +33,9 @@ function plugin_epoch_inline()
 	
 	$class = (!empty($array[1])) ? $array[1] : 'epoch';
 
-	if ($pkwk_dtd == PKWK_DTD_HTML_5) {
-		$ret = '<time datetime="'.get_date('c',$value[0]).'" class="'.$class.'" title="'.$passaage.'">'.$format.'</time>';
-	}else{
-		$ret = '<small class="'.$class.'" title="'.$passaage.'">'.$format.'</small>';
-	}
+
+	$ret = '<time datetime="'.get_date('c',$value[0]).'" class="'.$class.'" title="'.$passaage.'">'.$format.'</time>';
+	
 	if (!empty($value[1])){
 		$erapse = MUTIME - $value[0];
 		

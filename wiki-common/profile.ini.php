@@ -1,7 +1,8 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone
-// $Id: profile.ini.php,v 0.1 2007/08/16 18:42:00 upk Exp $
+// $Id: profile.ini.php,v 0.1 2013/03/18 18:42:00 Logue Exp $
 // Copyright (C)
+//   2012-2013 PukiWiki Advance Developers Team
 //   2005-2007 PukiWiki Plus! Team
 //   2002-2007 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -17,81 +18,12 @@
 // If you want to to ignore desktop-PC browsers for simple wikisite,
 // copy mobile.ini.php to default.ini.php and customize it.
 
-$agents = array(
+return array(
 // pattern: A regular-expression that matches device(browser)'s name and version
 // profile: A group of browsers
-
-    // Embedded browsers (Rich-clients for PukiWiki)
-
-	// Windows CE (Microsoft(R) Internet Explorer 5.5 for Windows(R) CE)
-	// Sample: "Mozilla/4.0 (compatible; MSIE 5.5; Windows CE; sigmarion3)" (sigmarion, Hand-held PC)
-	array('pattern'=>'#\b(?:MSIE [5-9]).*\b(Windows CE)\b#', 'profile'=>'default'),
-
-	// ACCESS "NetFront" / "Compact NetFront" and thier OEM, expects to be "Mozilla/4.0"
-	// Sample: "Mozilla/4.0 (PS2; PlayStation BB Navigator 1.0) NetFront/3.0" (PlayStation BB Navigator, for SONY PlayStation 2)
-	// Sample: "Mozilla/4.0 (PDA; PalmOS/sony/model crdb/Revision:1.1.19) NetFront/3.0" (SONY Clie series)
-	// Sample: "Mozilla/4.0 (PDA; SL-A300/1.0,Embedix/Qtopia/1.1.0) NetFront/3.0" (SHARP Zaurus)
-	array('pattern'=>'#^(?:Mozilla/4).*\b(NetFront)/([0-9\.]+)#',	'profile'=>'default'),
-
-    // Embedded browsers (Non-rich)
-
-	// Windows CE (the others)
-	// Sample: "Mozilla/2.0 (compatible; MSIE 3.02; Windows CE; 240x320 )" (GFORT, NTT DoCoMo)
-	array('pattern'=>'#\b(Windows CE)\b#', 'profile'=>'handheld'),
-
-	// ACCESS "NetFront" / "Compact NetFront" and thier OEM
-	// Sample: "Mozilla/3.0 (AveFront/2.6)" ("SUNTAC OnlineStation", USB-Modem for PlayStation 2)
-	// Sample: "Mozilla/3.0(DDIPOCKET;JRC/AH-J3001V,AH-J3002V/1.0/0100/c50)CNF/2.0" (DDI Pocket: AirH" handheld by JRC)
-	array('pattern'=>'#\b(NetFront)/([0-9\.]+)#',	'profile'=>'handheld'),
-	array('pattern'=>'#\b(CNF)/([0-9\.]+)#',	'profile'=>'handheld'),
-	array('pattern'=>'#\b(AveFront)/([0-9\.]+)#',	'profile'=>'handheld'),
-	array('pattern'=>'#\b(AVE-Front)/([0-9\.]+)#',	'profile'=>'handheld'), // The same?
-
-	// NTT-DoCoMo, i-mode (embeded Compact NetFront) and FOMA (embedded NetFront) handhelds
-	// Sample: "DoCoMo/1.0/F501i", "DoCoMo/1.0/N504i/c10/TB/serXXXX" // c以降は可変
-	// Sample: "DoCoMo/2.0 MST_v_SH2101V(c100;TB;W22H12;serXXXX;iccxxxx)" // ()の中は可変
-	array('pattern'=>'#^(DoCoMo)/([0-9\.]+)#',	'profile'=>'handheld'),
-
-	// Vodafone's embedded browser
-	// Sample: "J-handheld/2.0/J-T03"	// 2.0は"ブラウザの"バージョン
-	// Sample: "J-handheld/4.0/J-SH51/SNxxxx SH/0001a Profile/MIDP-1.0 Configuration/CLDC-1.0 Ext-Profile/JSCL-1.1.0"
-	array('pattern'=>'#^(J-handheld)/([0-9\.]+)#',	'profile'=>'handheld'),
-
-	// Openwave(R) Mobile Browser (EZweb, WAP handheld, etc)
-	// Sample: "OPWV-SDK/62K UP.Browser/6.2.0.5.136 (GUI) MMP/2.0"
-	array('pattern'=>'#\b(UP\.Browser)/([0-9\.]+)#',	'profile'=>'handheld'),
-
-	// Opera, dressing up as other embedded browsers
-	// Sample: "Mozilla/3.0(DDIPOCKET;KYOCERA/AH-K3001V/1.4.1.67.000000/0.1/C100) Opera 7.0" (Like CNF at 'mobile'-mode)
-	array('pattern'=>'#\b(?:DDIPOCKET|WILLCOM)\b.+\b(Opera) ([0-9\.]+)\b#', 'profile'=>'handheld'),
-
-	// Palm "Web Pro" http://www.palmone.com/us/support/accessories/webpro/
-	// Sample: "Mozilla/4.76 [en] (PalmOS; U; WebPro)"
-	array('pattern'=>'#\b(WebPro)\b#',	'profile'=>'handheld'),
-
-	// ilinx "Palmscape" / "Xiino" http://www.ilinx.co.jp/
-	// Sample: "Xiino/2.1SJ [ja] (v. 4.1; 153x130; c16/d)"
-	array('pattern'=>'#^(Palmscape)/([0-9\.]+)#',	'profile'=>'handheld'),
-	array('pattern'=>'#^(Xiino)/([0-9\.]+)#',	'profile'=>'handheld'),
-
-	// SHARP PDA Browser (SHARP Zaurus)
-	// Sample: "sharp pda browser/6.1[ja](MI-E1/1.0) "
-	array('pattern'=>'#^(sharp [a-z]+ browser)/([0-9\.]+)#',	'profile'=>'handheld'),
-
-	// WebTV
-	array('pattern'=>'#^(WebTV)/([0-9\.]+)#',	'profile'=>'handheld'),
-	
 	// Game machine browsers
 	// PS2: Mozilla/4.0 (PS2; PlayStation BB Navigator 1.0) NetFront/3.0
 	array('pattern'=>'#\b(NetFront)/([0-9\.]+)\b#',		'csssname'=>'netfront',	'profile'=>'default'),
-	
-	// Planetweb http://www.planetweb.com/
-	// Sample: "Mozilla/3.0 (Planetweb/v1.07 Build 141; SPS JP)" ("EGBROWSER", Web browser for PlayStation 2)
-	array('pattern'=>'#\b(Planetweb)/v([0-9\.]+)#', 'profile'=>'handheld'),
-	
-	// DreamPassport, Web browser for SEGA DreamCast
-	// Sample: "Mozilla/3.0 (DreamPassport/3.0)"
-	array('pattern'=>'#\b(DreamPassport)/([0-9\.]+)#',	'profile'=>'handheld'),
 	
 	// Wii
 	// Sample: Opera/9.10 (Nintendo Wii; U; ; 1621; ja)
@@ -116,7 +48,7 @@ $agents = array(
 	array('pattern'=>'#\b(Firefox|Netscape)/([0-9\.]+)\b#',	'css'=>'gecko',		'profile'=>'default'),
 	
 	// Mobile
-	array('pattern'=>'#\b(iPhone|iPhone|iPad|iPod|Android)+\b#',	'profile'=>	'mobile'),
+	array('pattern'=>'#\b(iPhone|iPhone|iPad|iPod|Android|IEMobile)+\b#',	'profile'=>	'mobile'),
 	
 	// Safari / Chrome (WebKit)
 	array('pattern'=>'#\b(AppleWebKit)/([0-9\.]+)\b#',	'css'=>'default',	'profile'=>'default'),

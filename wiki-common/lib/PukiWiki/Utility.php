@@ -9,6 +9,8 @@ namespace PukiWiki;
 
 use PukiWiki\Renderer\RendererDefines;
 use PukiWiki\Renderer\InlineFactory;
+use PukiWiki\Renderer\PluginRenderer;
+use PukiWiki\Renderer\Header;
 use PukiWiki\Router;
 use PukiWiki\Factory;
 use Zend\Http\Response;
@@ -22,6 +24,10 @@ class Utility{
 	 * チケット名
 	 */
 	const TICKET_NAME = 'ticket';
+	/**
+	 * QueryStringの最大文字数
+	 */
+	const MAX_QUERY_STRING_LENGTH = 640; // bytes
 	/**
 	 * ブラックリストに保存
 	 */
@@ -38,6 +44,124 @@ class Utility{
 	 * スパムの正規表現マッチパターン
 	 */
 	const SPAM_PATTERN = '#(?:cialis|hydrocodone|viagra|levitra|tramadol|xanax|\[/link\]|\[/url\])#i';
+
+	/**
+	 * QueryStringをパースし、$_GETに上書き
+	 * @return void
+	 */
+	public static function parseArguments(){
+		global $_GET, $_SERVER, $REQUEST_URI, $HTTP_SERVER_VARS, $HTTP_GET_VARS, $HTTP_POST_VARS, $_REQUEST;
+		global $get, $post, $vars, $cookie;
+		global $defaultpage;
+
+		/////////////////////////////////////////////////
+		// GET, POST, COOKIE
+		$get    = Utility::stripNullBytes($_GET);
+		$post   = Utility::stripNullBytes($_POST);
+		$cookie = Utility::stripNullBytes($_COOKIE);
+
+		// 安全のためデフォルトの外部変数はアンセット
+		unset($_GET, $_POST, $_COOKIE);
+
+		$arg = '';
+		if (isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING'])) {
+			$arg = $_SERVER['QUERY_STRING'];
+		//} else if (array_key_exists('PATH_INFO',$_SERVER) and !empty($_SERVER['PATH_INFO']) ) {
+		//	$arg = preg_replace("/^\/*(.+)\/*$/","$1",$_SERVER['PATH_INFO']);
+		} else if (isset($_SERVER['argv']) && ! empty($_SERVER['argv'])) {
+			$arg = $_SERVER['argv'][0];
+		}
+
+		if (strlen($arg) > self::MAX_QUERY_STRING_LENGTH) {
+			// Something nasty attack?
+			self::dieMessage(_('Query string is too long.'));
+		}
+		$arg = str_replace('+','%20',self::stripNullBytes($arg)); // \0 除去
+		// for QA/250
+
+		// unset QUERY_STRINGs
+		//foreach (array('QUERY_STRING', 'argv', 'argc') as $key) {
+		// For OpenID Lib (use QUERY_STRING).
+		foreach (array('argv', 'argc') as $key) {
+			unset(${$key}, $_SERVER[$key], $HTTP_SERVER_VARS[$key]);
+		}
+		// $_SERVER['REQUEST_URI'] is used at func.php NOW
+		unset($REQUEST_URI, $HTTP_SERVER_VARS['REQUEST_URI']);
+		
+		// Expire risk
+		unset($HTTP_GET_VARS, $HTTP_POST_VARS);	//, 'SERVER', 'ENV', 'SESSION', ...
+		unset($_REQUEST);	// Considered harmful
+
+		/////////////////////////////////////////////////
+		// QUERY_STRINGを分解してコード変換し、$get に上書き
+		// URI を urlencode せずに入力した場合に対処する
+		if (empty($arg)){
+			// Queryがない場合
+			$get['cmd'] = 'read';
+			$get['page'] = $defaultpage;
+		}else if (strpbrk('=', $arg)){
+			// =が含まれている場合querystringの配列とみなし、パースする
+			$matches = array();
+			foreach (explode('&', $arg) as $key_and_value) {
+				if (preg_match('/^([^=]+)=(.+)/', $key_and_value, $matches)) {
+					$key = trim($matches[1]);
+					$value = trim($matches[2]);
+					if (empty($value)) continue;
+					if ($key === 'page') $value = rawurldecode($value);
+					$get[$key] = $value;
+				}
+			}
+			unset($matches);
+			// if (!isset($get['page'])) $get['page'] = '';	// 本当は不要
+		} else {
+			// そうでない場合はすべてページ名とみなす
+			$get['cmd'] = 'read';
+			$get['page'] = rawurldecode($arg);
+		}
+		
+		// 外部からの変数を$vars配列にマージする
+		if (empty($post)) {
+			$method = 'GET';
+			$vars = $get;  // Major pattern: Read-only access via GET
+		} else if (empty($get)) {
+			$method = 'POST';
+			$vars = $post; // Minor pattern: Write access via POST etc.
+		} else {
+			$method = 'GET and POST';
+			$vars = array_merge($get, $post); // Considered reliable than $_REQUEST
+		}
+
+		if (! isset($vars['cmd'])){
+			// プラグイン名が指定されていない場合readプラグインとみなす
+			$get['cmd']  = $post['cmd']  = $vars['cmd']  = 'read';
+		}else if (!preg_match(PluginRenderer::PLUGIN_NAME_PATTERN, $vars['cmd']) !== FALSE){
+			// 入力チェック: cmdの文字列は英数字以外ありえない
+			Utility::dieMessage('Plugin name is invalied or too long! (less than 64 chars)');
+		}
+
+		// 文字コード変換 ($_POST)
+		// <form> で送信された文字 (ブラウザがエンコードしたデータ) のコードを変換
+		// POST method は常に form 経由なので、必ず変換する
+		if (isset($vars['encode_hint']) && !empty($vars['encode_hint'])) {
+			// do_plugin_xxx() の中で、<form> に encode_hint を仕込んでいるので、
+			// encode_hint を用いてコード検出する。
+			// 全体を見てコード検出すると、機種依存文字や、妙なバイナリ
+			// コードが混入した場合に、コード検出に失敗する恐れがある。
+			$encode = mb_detect_encoding($vars['encode_hint']);
+			mb_convert_variables(SOURCE_ENCODING, $encode, $vars);
+		} else {
+			// 全部まとめて、自動検出／変換
+			mb_convert_variables(SOURCE_ENCODING, 'auto', $vars);
+		}
+
+		// 整形: msg, 改行を取り除く（ここでチェックするのは間違い。プラグインで実装すべき）
+		if (isset($vars['msg'])) {
+			// GETメソッドでmsgが送られて来ることはありえない。
+			unset($get['msg']);
+			$post['msg'] = $vars['msg'] = str_replace("\r", '', $vars['msg']);
+		}
+
+	}
 	/**
 	 * 乱数を生成して暗号化時のsaltを生成する
 	 * @param boolean $flush 再生成するか
@@ -116,6 +240,15 @@ class Utility{
 		}
 
 		return $name;
+	}
+	/**
+	 * パスを含まないページ名を取得
+	 * @param $page ページ名
+	 */
+	public static function getPageNameShort($page)
+	{
+		$pagestack = explode('/', $page);
+		return array_pop($pagestack);
 	}
 	/**
 	 * htmlspacialcharsのエイリアス（PHP5.4対策）
@@ -302,7 +435,7 @@ class Utility{
 	 */
 	public static function stripNullBytes($param)
 	{
-		static $magic_quotes_gpc = NULL;
+		static $magic_quotes_gpc;
 		if ($magic_quotes_gpc === NULL)
 			$magic_quotes_gpc = get_magic_quotes_gpc();
 
@@ -352,22 +485,6 @@ class Utility{
 	public static function stripAutolink($str)
 	{
 		return preg_replace('#<!--autolink--><a [^>]+>|</a><!--/autolink-->#', '', $str);
-	}
-	/**
-	 * 他のページを読み込むときに余計なものを取り除く
-	 * @param string $str
-	 * @return string
-	 */
-	public static function replaceFilter($str){
-		global $filter_rules;
-		static $patternf, $replacef;
-
-		if (!isset($patternf)) {
-			$patternf = array_map(create_function('$a','return "/$a/";'), array_keys($filter_rules));
-			$replacef = array_values($filter_rules);
-			unset($filter_rules);
-		}
-		return preg_replace($patternf, $replacef, $str);
 	}
 	/**
 	 * ページリンクからページ名とリンクを取得（アンカーは削除）
@@ -425,20 +542,22 @@ class Utility{
 		global $trackback;
 		$trackback = 0;
 
-		$headers = Header::getHeaders('text/html',$is_read ? $filetime : 0);
+		$headers = Header::getHeaders('text/html');
 		$response = new Response();
 		$response->setStatusCode($http_code);
-		$response->getHeaders()->addHeaders($headers);;
+		$response->getHeaders()->addHeaders($headers);
 		header($response->renderStatusLine());
 		foreach ($response->getHeaders() as $_header) {
 			header($_header->toString());
 		}
+		/*
 		if(defined('SKIN_FILE') && file_exists(SKIN_FILE) && is_readable(SKIN_FILE)) {
 			include(SKIN_FILE);
 		} elseif ( !empty($skin_file) && file_exists($skin_file) && is_readable($skin_file)) {
 		//	echo $response->getBody();
 			include($skin_file);
 		}else{
+		*/
 			$html = array();
 			$html[] = '<!doctype html>';
 			$html[] = '<html>';
@@ -454,7 +573,7 @@ class Utility{
 			$response->getHeaders()->addHeaderLine('Content-Length', strlen($content));
 			$response->setContent($content);
 			echo $response->getBody();
-		}
+		//}
 		die();
 	}
 	/**

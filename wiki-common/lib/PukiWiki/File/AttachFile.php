@@ -1,15 +1,30 @@
 <?php
+/**
+ * 添付ファイル
+ *
+ * @package   PukiWiki
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @create    2012/12/18
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: Listing.php,v 1.0.0 2013/03/23 09:30:00 Logue Exp $
+ */
+
 namespace PukiWiki\File;
 
 use PukiWiki\Auth\Auth;
 use PukiWiki\File\File;
+use PukiWiki\Renderer\Header;
+use PukiWiki\Router;
 use PukiWiki\Utility;
 use SplFileInfo;
-use Zend\Http\Response;
 use Zend\Http\Headers;
-use PukiWiki\Header;
-use PukiWiki\Router;
+use Zend\Http\Response;
 
+/**
+ * 添付ファイルクラス
+ */
 class AttachFile extends SplFileInfo{
 	public $dir = UPLOAD_DIR;
 	public $pattern = '/^((?:[0-9A-F]{2})+)_((?:[0-9A-F]{2})+)$/';

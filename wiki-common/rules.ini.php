@@ -7,49 +7,53 @@
 //   2001-2002 Originally written by yu-ji
 // License: GPL v2 or (at your option) any later version
 //
-// PukiWiki setting file
-if (!defined('DATA_HOME')) { exit; }
+use PukiWiki\Time;
+use PukiWiki\Utility;
 
-/////////////////////////////////////////////////
-// フィルタルール
-//
-//  正規表現で記述してください。?(){}-*./+\$^|など
-//  は \? のようにクォートしてください。
-//  前後に必ず / を含めてください。行頭指定は ^ を頭に。
-//  行末指定は $ を後ろに。
-//
-/////////////////////////////////////////////////
-// フィルタルール(直接ソースを置換)
-$filter_rules = array(
-	"^(TITLE):(.*)$" => "",
-	"#tboff(.*)$" => "",
-	"#skin(.*)$" => "",
-);
+global $date_format, $time_format;
+/**
+ * フィルタルール
+ *
+ *  正規表現で記述してください。?(){}-*./+\$^|など
+ *  は \? のようにクォートしてください。
+ *  前後に必ず / を含めてください。行頭指定は ^ を頭に。
+ *  行末指定は $ を後ろに。
+*/
+return array(
+	/**
+	 *  フィルタルール(直接ソースを置換)
+	 */
+	'filter' => array(
+		"^(TITLE):(.*)$" => "",
+		"#tboff(.*)$" => "",
+		"#skin(.*)$" => "",
+	),
 
-/////////////////////////////////////////////////
-// 日時置換ルール (閲覧時に置換)
-// $usedatetime = 1なら日時置換ルールが適用されます
-// 必要のない方は $usedatetimeを0にしてください。
-$datetime_rules = array(
-	'&amp;_now;'	=> '&epoch('.UTIME.');',
-	'&amp;_date;'	=> get_date($date_format),
-	'&amp;_time;'	=> get_date($time_format),
-);
-
-/////////////////////////////////////////////////
-// ユーザ定義ルール(保存時に置換)
-//  正規表現で記述してください。?(){}-*./+\$^|など
-//  は \? のようにクォートしてください。
-//  前後に必ず / を含めてください。行頭指定は ^ を頭に。
-//  行末指定は $ を後ろに。
-//
-$str_rules = array(
-	'&now;' 	=> '\&epoch\('.UTIME.'\);',
-	'&date;'	=> get_date($date_format),
-	'&time;'	=> get_date($time_format),
-	'&page;'	=> get_short_pagename($vars['page']),
-	'&fpage;'	=> $vars['page'],
-	'&t;'   	=> "\t",
+	/**
+	 * 日時置換ルール (閲覧時に置換)
+	 * $usedatetime = 1なら日時置換ルールが適用されます
+	 * 必要のない方は $usedatetimeを0にしてください。
+	 */
+	'datetime' => array(
+		'&amp;_now;'	=> '&epoch{'.UTIME.'};',
+		'&amp;_date;'	=> Time::getZoneTimeDate($date_format),
+		'&amp;_time;'	=> Time::getZoneTimeDate($time_format),
+	),
+	/**
+	 * ユーザ定義ルール(保存時に置換)
+	 *  正規表現で記述してください。?(){}-*./+\$^|など
+	 *  は \? のようにクォートしてください。
+	 *  前後に必ず / を含めてください。行頭指定は ^ を頭に。
+	 *  行末指定は $ を後ろに。
+	 */
+	'str' => array(
+		'&now;' 	=> '\&epoch\{'.UTIME.'\};',
+		'&date;'	=> Time::getZoneTimeDate($date_format),
+		'&time;'	=> Time::getZoneTimeDate($time_format),
+		'&page;'	=> isset($vars['page']) ? Utility::getPageNameShort($vars['page']) : null,
+		'&fpage;'	=> isset($vars['page']) ? $vars['page'] : null,
+		'&t;'   	=> "\t"
+	)
 );
 
 /* End of file rules.ini.php */

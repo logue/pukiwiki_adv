@@ -115,7 +115,6 @@ function plugin_jugemkey_action()
 
 	if (! $auth_api['jugemkey']['use']) return '';
 
-	$page = (empty($vars['page'])) ? '' : $vars['page'];
 	// LOGIN
 	if (isset($vars['login'])) {
 		Utility::redirect(plugin_jugemkey_jump_url());
@@ -127,7 +126,7 @@ function plugin_jugemkey_action()
 	// LOGOUT
 	if (isset($vars['logout'])) {
 		$obj->unsetSession();
-		Utility::redirect(get_page_location_uri($page));
+		Utility::redirect();
 	}
 
 	// Get token info
@@ -151,7 +150,7 @@ function plugin_jugemkey_action()
 	}
 
 	$obj->setSession();
-	Utility::redirect(get_page_location_uri($page));
+	Utility::redirect();
 	die();
 }
 
@@ -159,25 +158,24 @@ function plugin_jugemkey_jump_url($inline=0)
 {
 	global $vars;
 	$page = (empty($vars['page'])) ? '' : $vars['page'];
-	$callback_url = get_location_uri('jugemkey',$page);
 	$obj = new AuthJugem();
-	$url = $obj->make_login_link($callback_url);
+	$url = $obj->make_login_link();
 	return ($inline) ? $url : str_replace('&amp;','&',$url);
 }
 
 function plugin_jugemkey_get_user_name()
 {
 	global $auth_api;
-        if (! $auth_api['jugemkey']['use']) return array('role'=>Auth::ROLE_GUEST,'nick'=>'');
+	if (! $auth_api['jugemkey']['use']) return array('role'=>Auth::ROLE_GUEST,'nick'=>'');
 
-	$obj = new auth_jugemkey();
+	$obj = new AuthJugemkey();
 	$msg = $obj->getSession();
 	// FIXME
 	// Because user information can be acquired by token only at online, it doesn't mount. 
 	// $info = (empty($msg['token'])) ? '' : get_resolve_uri('jugemkey','', '', 'token='.$msg['token'].'%amp;userinfo');
 	// Only, it leaves it only as a location of attestation by JugemKey.
 	$info = 'http://jugemkey.jp/';
-	if (! empty($msg['title'])) return array('role'=>AuthJugem::ROLE_AUTH_JUGEMKEY,'nick'=>$msg['title'],'profile'=>$info,'key'=>$msg['title']);
+	if (! empty($msg['title'])) return array('role'=>AuthJugemkey::ROLE_AUTH_JUGEMKEY,'nick'=>$msg['title'],'profile'=>$info,'key'=>$msg['title']);
 	return array('role'=>Auth::ROLE_GUEST,'nick'=>'');
 }
 

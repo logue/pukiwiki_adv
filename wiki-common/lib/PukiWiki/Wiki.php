@@ -9,6 +9,8 @@ use PukiWiki\Utility;
 use PukiWiki\Auth\Auth;
 use PukiWiki\Diff;
 use PukiWiki\Backup;
+use PukiWiki\Text\Rules;
+
 /**
  * Wikiのコントローラー
  */
@@ -239,9 +241,7 @@ class Wiki{
 	 * @return void
 	 */
 	public function set($str, $keeptimestamp = false){
-		global $trackback;
-		global $use_spam_check, $_strings, $_title, $post;
-		global $vars, $now, $akismet_api_key;
+		global $use_spam_check, $_strings, $vars;
 
 		// roleのチェック
 		if (Auth::check_role('readonly')) return; // Do nothing
@@ -274,7 +274,7 @@ class Wiki{
 		}
 
 		// rule.ini.ph
-		$postdata = self::make_str_rules($str);
+		$postdata = Rules::make_str_rules($str);
 		$oldpostdata = self::has() ? self::get(TRUE) : '';
 		$diff = new Diff($postdata, $oldpostdata);
 
@@ -460,61 +460,7 @@ class Wiki{
 
 		return (! is_array($links) || empty($links)) ? null : $links;
 	}
-	/**
-	 * ソースをシステム（rules.ini.phpなど）で定義されているルールに基づいて自動修正
-	 * @param array $source ソース
-	 * @return string
-	 */
-	public static function make_str_rules($source){
-		// Modify original text with user-defined / system-defined rules
-		global $str_rules, $fixed_heading_anchor;
-
-		$lines = explode("\n", $source);
-		$count = count($lines);
-
-		$modify    = TRUE;
-		$multiline = 0;
-		$matches   = array();
-		for ($i = 0; $i < $count; $i++) {
-			$line = & $lines[$i]; // Modify directly
-
-			// Ignore null string and preformatted texts
-			if ( empty($line) || $line{0} == ' ' || $line{0} == "\t") continue;
-
-			// Modify this line?
-			if ($modify) {
-				if ($multiline === 0 && preg_match('/#[^{]*(\{\{+)\s*$/', $line, $matches)) {
-					// Multiline convert plugin start
-					$modify    = FALSE;
-					$multiline = strlen($matches[1]); // Set specific number
-				}
-			} else {
-				if ($multiline !== 0 && preg_match('/^\}{' . $multiline . '}\s*$/', $line)) {
-					// Multiline convert plugin end
-					$modify    = TRUE;
-					$multiline = 0;
-				}
-			}
-			if ($modify === FALSE) continue;
-
-			// Replace with $str_rules
-			foreach ($str_rules as $pattern => $replacement)
-				$line = preg_replace('/' . $pattern . '/', $replacement, $line);
-
-			// Adding fixed anchor into headings
-			if ($fixed_heading_anchor && preg_match('/^(\*{1,3}.*?)(?:\[#([A-Za-z][\w-]*)\]\s*)?$/', $line, $matches) &&
-					(! isset($matches[2]) || empty($matches[2]) )) {
-				// Generate unique id
-				$anchor = Zend\Math\Rand::getString(7,'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
-				$line = rtrim($matches[1]) . ' [#' . $anchor . ']';
-			}
-		}
-
-		// Multiline part has no stopper
-		if ($modify === FALSE && $multiline !== 0) $lines[] = str_repeat('}', $multiline);
-
-		return join("\n", $lines);
-	}
+	
 	public function auto_template()
 	{
 		global $auto_template_func, $auto_template_rules;

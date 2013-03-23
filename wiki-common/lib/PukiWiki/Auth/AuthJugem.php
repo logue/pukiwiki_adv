@@ -35,23 +35,26 @@ class AuthJugem extends AuthApi
 		parent::__construct();
 	}
 
-	function make_login_link($callback_url)
+	function make_login_link()
 	{
-		$perms = 'auth';
-		$api_sig = hash_hmac('sha1',$this->api_key.$callback_url.$perms, $this->sec_key);
-		return self::JUGEMKEY_URL_AUTH.'&amp;api_key='.$this->api_key.'&amp;perms='.$perms.'&amp;callback_url='.rawurlencode($callback_url).'&amp;api_sig='.$api_sig;
+		$query = array(
+			'api_key'       => $this->api_key,
+			'perms'         => 'auth',
+			'api_sig'       => hash_hmac('sha1', $this->api_key . $this->callbackUrl . 'auth', $this->sec_key),
+			'callback_url'  => $this->callbackUrl
+		);
+		return self::JUGEMKEY_URL_AUTH.http_build_query($query);
 	}
 
-	function auth($frob)
+	function auth($cert)
 	{
 		// $created = substr_replace(get_date('Y-m-d\TH:i:sO', UTIME), ':', -2, 0);
 		$created = str_replace('+0000', 'Z', gmdate('Y-m-d\TH:i:sO', time()));
-		$api_sig = hash_hmac('sha1',$this->api_key.$created.$frob, $this->sec_key);
 		$headers = array(
 			'X-JUGEMKEY-API-CREATED'=> $created,
 			'X-JUGEMKEY-API-KEY'	=> $this->api_key,
-			'X-JUGEMKEY-API-FROB'	=> $frob,
-			'X-JUGEMKEY-API-SIG'	=> $api_sig,
+			'X-JUGEMKEY-API-FROB'	=> $cert,
+			'X-JUGEMKEY-API-SIG'	=> hash_hmac('sha1', $this->api_key . $created . $cert, $this->sec_key),
 		);
 
 		$data = http_request(self::JUGEMKEY_URL_TOKEN, 'GET', $headers);
@@ -69,12 +72,11 @@ class AuthJugem extends AuthApi
 	{
 		//$created = substr_replace(get_date('Y-m-d\TH:i:sO', UTIME), ':', -2, 0);
 		$created = str_replace('+0000', 'Z', gmdate('Y-m-d\TH:i:sO', time()));
-		$api_sig = hash_hmac('sha1',$this->api_key.$created.$token, $this->sec_key);
 		$headers = array(
 			'X-JUGEMKEY-API-CREATED'=> $created,
 			'X-JUGEMKEY-API-KEY'    => $this->api_key,
 			'X-JUGEMKEY-API-TOKEN'  => $token,
-			'X-JUGEMKEY-API-SIG'    => $api_sig,
+			'X-JUGEMKEY-API-SIG'    => hash_hmac('sha1', $this->api_key . $created.$token, $this->sec_key),
 		);
 
 		$data = http_request(self::JUGEMKEY_URL_USER, 'GET', $headers);

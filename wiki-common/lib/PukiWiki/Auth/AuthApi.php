@@ -10,6 +10,7 @@
 
 namespace PukiWiki\Auth;
 
+use Exception;
 use PukiWiki\Auth\Auth;
 use PukiWiki\Utility;
 use PukiWiki\Router;
@@ -31,10 +32,15 @@ abstract class AuthApi
 	 * コンストラクタ
 	 */
 	public function __construct(){
-		global $adminpass;
+		global $adminpass, $vars;
+
+		if (!isset($this->auth_name)) throw new Exception('$this->auth_name has not set.');
+
+		// コールバック先のページ
+		$page = isset($vars['page']) ? $vars['page'] : null;
 		// 管理人のパスワードのハッシュを暗号／復号のキーとする
 		list(, $salt) = Auth::passwd_parse($adminpass);
-		// 暗号化
+		// 暗号化／復号化用
 		$this->bc = BlockCipher::factory('mcrypt', array(
 			'algo' => 'des',
 			'mode' => 'cfb',
@@ -42,15 +48,18 @@ abstract class AuthApi
 			'salt' => $salt,
 			'padding' => 2
 		));
+		// コールバック先のURL。通常プラグインのコールバックアドレスが返される
+		$this->callbackUrl = Router::get_resolve_uri($this->auth_name ,$vars['page'],'full');
 		// セッション名
 		$this->session_name = self::SESSION_PREFIX.md5(Router::get_script_absuri().session_id());
 	}
 	/**
 	 * ログイン用のリンクを取得
-	 * @param string $callback_url コールバック先のURL
 	 * @return string
 	 */
-	public function make_login_link($callback_url){}
+	public function make_login_link(){
+		return $this->callbackUrl;
+	}
 	/**
 	 * 認証
 	 * @param string $frob
@@ -100,6 +109,7 @@ abstract class AuthApi
 		// 復号化
 		$session->offsetSet($this->session_name, $this->bc->encrypt($value));
 
+		// OpenID認証の場合のみ
 		if ($this->auth_name != 'openid_verify') {
 			log_write('login','');
 		}

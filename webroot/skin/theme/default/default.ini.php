@@ -9,7 +9,7 @@
 //
 global $_SKIN, $link_tags, $js_tags;
 
-$_SKIN = array(
+return array(
 /*
 UI Themes
 jQuery(jQuery UI): 

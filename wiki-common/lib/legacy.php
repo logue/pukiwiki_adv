@@ -18,6 +18,9 @@ use PukiWiki\Time;
 use PukiWiki\Factory;
 use PukiWiki\Recent;
 use PukiWiki\Listing;
+use PukiWiki\Renderer\InlineFactory;
+use PukiWiki\Mailer;
+use PukiWiki\Text\Rules;
 use Zend\Http\Response;
 
 /**************************************************************************************************/
@@ -432,7 +435,7 @@ function is_ignore_page($page)
 // インクルードで余計なものはソースから削除する
 function convert_filter($str)
 {
-	return Utility::replaceFilter($str);
+	return Rules::replaceFilter($str);
 }
 
 function showtaketime(){
@@ -629,13 +632,21 @@ function pkwk_headers_sent()
 
 function pkwk_common_headers($modified = 0, $expire = 604800){
 	$headers = Header::getHeaders('text/html', $modified, $expire);
-	Header::writeResponse($headers);
+	Header::writeResponse($headers, null);
 }
+/**************************************************************************************************/
+/**
+ * mail.php
+ */
+function pkwk_mail_notify($subject, $message, $summary = array(), $summary_position = FALSE){
+	return Mailer::notify($subject, $message, $summary, $summary_position);
+}
+
 /**************************************************************************************************/
 /**
  * make_link.php
  */
-use PukiWiki\Renderer\InlineFactory;
+
 // Hyperlink decoration
 function make_link($string, $page = '')
 {

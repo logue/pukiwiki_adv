@@ -1,9 +1,15 @@
 <?php
-// PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: Factory.php,v 1.0.0 2012/12/18 11:00:00 Logue Exp $
-// Copyright (C)
-//   2012 PukiWiki Advance Developers Team
-// License: GPL v2 or (at your option) any later version
+/**
+ * ファイルファクトリークラス
+ *
+ * @package   PukiWiki\File
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @create    2012/12/18
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: File.php,v 1.0.0 2013/03/23 09:30:00 Logue Exp $
+ */
 
 namespace PukiWiki\File;
 
@@ -22,6 +28,7 @@ class FileFactory
 		'backup'  => 'PukiWiki\File\BackupFile',
 		'diff'    => 'PukiWiki\File\DiffFile',
 		'counter' => 'PukiWiki\File\CounterFile',
+		'referer' => 'PukiWiki\File\Referer'
 	);
 	/**
 	 * 汎用
@@ -75,6 +82,12 @@ class FileFactory
 	 */
 	public static function Counter($page){
 		return new CounterFile($page);
+	}
+	/**
+	 * リンク元ファイル
+	 */
+	public static function Referer($page){
+		return new RefererFile($page);
 	}
 }
 

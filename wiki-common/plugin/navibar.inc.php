@@ -17,11 +17,11 @@ function plugin_navibar_convert()
 	global $function_freeze;
 	global $vars;
 	global $whatsnew,$whatsdeleted;
-
+/*
 	if ($_LINK['reload'] == '') {
 		return '<p class="message_box ui-state-error ui-corner-all">#navibar: plugin called from wikipage. skipped.</p>';
 	}
-
+*/
 	$_page  = isset($vars['page']) ? $vars['page'] : null;
 	$is_read = (arg_check('read') && is_page($_page));
 	$is_freeze = is_freeze($_page);

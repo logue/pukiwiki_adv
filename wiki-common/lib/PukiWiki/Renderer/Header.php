@@ -37,22 +37,25 @@ class Header{
 	 * @return array
 	 */
 	public static function getHeaders($content_type = DEFAULT_CONTENT_TYPE, $modified = 0, $expire = 604800){
-		global $lastmod, $vars;
+		global $lastmod, $vars, $_SERVER;
 		self::checkSent();
 
 		$headers['Content-Type'] = $content_type . ';charset=' . CONTENT_CHARSET;
+		$headers['Content-Language'] = substr(str_replace('_','-',LANG),0,2);
 
 		// 更新日時をチェック
 		if ($modified !== 0){
+			// http://firegoby.jp/archives/1730
 			$last_modified = gmdate('D, d M Y H:i:s', $modified);
 			$etag = md5($last_modified);
 			$headers['Cache-Control'] = 'private';
-			$headers['Expires'] = gmdate('D, d M Y H:i:s',time() + $expire) . ' GMT';
+			$headers['Pragma'] = 'cache';
+			$headers['Expires'] = gmdate('D, d M Y H:i:s', time() + $expire) . ' GMT';
 			$headers['Last-Modified'] = $last_modified;
 			$headers['ETag'] = $etag;
 			if ( (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && $_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified) ||
-				(isset($_SERVER['HTTP_IF_NONE_MATCH']) && preg_match("/{$etag}/", $_SERVER['HTTP_IF_NONE_MATCH'])) ){
-				self::notModified($headers);
+				(isset($_SERVER['HTTP_IF_NONE_MATCH']) && preg_match('/'.$etag.'/', $_SERVER['HTTP_IF_NONE_MATCH'])) ){
+				self::WriteResponse($headers, Response::STATUS_CODE_304, '');
 			}
 	//		header('If-Modified-Since: ' . $last_modified );
 		}else{
@@ -63,11 +66,10 @@ class Header{
 
 		// RFC2616
 		// http://sonic64.com/2004-02-06.html
-		$vary = self::getLanguageHeaderVary();
+		$headers['Vary'] = self::getLanguageHeaderVary();
 		if (preg_match('/\b(gzip|deflate|compress)\b/i', $_SERVER['HTTP_ACCEPT_ENCODING'], $matches)) {
-			$vary .= ',Accept-Encoding';
+			$headers['Vary'] .= ',Accept-Encoding';
 		}
-		$headers['Vary'] = $vary;
 
 		// HTTP access control
 		// JSON脆弱性対策（Adv.では外部にAjax APIを提供することを考慮しない）
@@ -76,34 +78,59 @@ class Header{
 
 		// Content Security Policy
 		// https://developer.mozilla.org/ja/Security/CSP/Using_Content_Security_Policy
-		// header('X-Content-Security-Policy: allow "self" "inline-script";  img-src *; media-src *;');
+		// 現在の実装だとあまり意味は無いが・・・。
+		$headers['X-Content-Security-Policy'] ='allow "self" "inline-script"; img-src *; media-src *; style-src *;srcipt-src *;';
+
 		// IEの自動MIME type判別機能を無効化する
 		// http://msdn.microsoft.com/ja-jp/ie/dd218497.aspx
 		$headers['X-Content-Type-Options'] = 'nosniff';
 
-		// クリックジャッキング対策
+		// クリックジャッキング対策（IFRAME呼び出しは禁止！）
 		// https://developer.mozilla.org/ja/The_X-FRAME-OPTIONS_response_header
-		$headers['X-Frame-Options'] = 'SameDomain';
+		$headers['X-Frame-Options'] = 'deny';
 
 		// XSS脆弱性対策（これでいいのか？）
 		// http://msdn.microsoft.com/ja-jp/ie/dd218482
-		$headers['X-XSS-Protection'] = DEBUG ? '0' :'1;mode=block';
+		$headers['X-XSS-Protection'] = '1;mode=block';
 
 		return $headers;
 	}
 	/**
-	 * ヘッダーをまとめて出力（非推奨）
-	 * @param array $headers
+	 * 出力
+	 * @param array $headers ヘッダー（別途Header::getHeaders()で指定すること）
+	 * @param int $status ステータスコード
+	 * @param string $body 内容
 	 * @return void
 	 */
-	public static function writeResponse($headers){
+	public static function writeResponse($headers, $status = Response::STATUS_CODE_200, $body = ''){
+		// レスポンスをコンストラクト
 		$response = new Response();
-		$response->setStatusCode(Response::STATUS_CODE_200);
+		// ステータスコードを出力
+		$response->setStatusCode($status);
+		if (!empty($body)){
+			// 内容が存在する場合容量をContent-Lengthヘッダーに出力
+			$headers['Content-Length'] = strlen($body);
+			// レスポンスに内容を追加
+			$response->setContent($body);
+		}
+		// ヘッダーをソート
+		ksort($headers);
+		// ヘッダーを指定
 		$response->getHeaders()->addHeaders($headers);
-
+		// ステータスコードを出力
 		header($response->renderStatusLine());
+		// ヘッダーを出力
 		foreach ($response->getHeaders() as $_header) {
 			header($_header->toString());
+		}
+		if (!empty($body)){
+			//ob_start('ob_gzhandler');
+			// 内容を出力
+			echo $response->getBody();
+			// 出力バッファをフラッシュ
+			flush();
+			// 終了
+			exit;
 		}
 	}
 	/*
@@ -126,40 +153,5 @@ class Header{
 			$rc .= self::$vary[$i];
 		}
 		return $rc;
-	}
-	/**
-	 * 304 Not modifiedを出力
-	 * @param array $headers ヘッダー配列
-	 */
-	private static function notModified($headers){
-		$html = array();
-		$html[] = '<!doctype html>';
-		$html[] = '<html>';
-		$html[] = '<head>';
-		$html[] = '<meta charset="utf-8">';
-		$html[] = '<meta name="robots" content="NOINDEX,NOFOLLOW" />';
-		$html[] = '<link rel="stylesheet" href="http://code.jquery.com/ui/' . JQUERY_UI_VER . '/themes/base/jquery-ui.css" type="text/css" />';
-		$html[] = '<title>304 Not Modified</title>';
-		$html[] = '</head>';
-		$html[] = '<body>';
-		$html[] = '<div class="message_box ui-state-highlight ui-corner-all">';
-		$html[] = '<p style="padding:0 .5em;">';
-		$html[] = '<span class="ui-icon ui-icon-info" style="display:inline-block;"></span>';
-		$html[] = 'The requested page has not modifieded. </p>';
-		$html[] = '</div>';
-		$html[] = '</body>';
-		$html[] = '</html>';
-
-		$response = new Response();
-		$response->setContent(join("\n",$html));
-		$response->setStatusCode(Response::STATUS_CODE_304);
-		$response->renderStatusLine();
-
-		header($response->renderStatusLine());
-		foreach ($response->getHeaders() as $header) {
-			header($header->toString());
-		}
-		echo $response->getBody();
-		exit;
 	}
 }

@@ -61,7 +61,7 @@ function plugin_online_itself($type = 0)
 
 // Check I am already online (recorded and not time-out)
 // & $count == Number of online users
-function plugin_online_check_online(& $count, $host = '')
+function plugin_online_check_online($count, $host = '')
 {
 	global $cache;
 	// Open

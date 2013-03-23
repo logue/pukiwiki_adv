@@ -3124,8 +3124,7 @@ li[role=tab]{
 .visuallyhidden.focusable:active,.visuallyhidden.focusable:focus{clip:auto;height:auto;overflow:visible;position:static;width:auto;margin:0}
 
 .invisible{visibility:hidden}
-.
-clearfix:before,.clearfix:after{content:" ";display:table}
+.clearfix:before,.clearfix:after{content:" ";display:table}
 .clearfix:after{clear:both}
 .clearfix{zoom:1}
 

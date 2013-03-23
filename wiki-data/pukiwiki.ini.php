@@ -20,6 +20,30 @@
 //   If you feel in trouble about this PukiWiki, set '0'.
 define('PKWK_OPTIMISE', 0);
 
+$useemoji = true;
+
+/*
+return array(
+	// スキンファイル
+	'skin_file' => isset($cookie['skin_file']) ? $cookie['skin_file'] : SKIN_FILE_DEFAULT,
+	// 雛形とするページの読み込みを可能にする
+	'load_template' => false,
+	// 関連リンクを常時表示
+	'display_related' => true,
+	// 添付ファイルを表示
+	'display_attache' => true,
+	// 未作成のページに編集用のリンクを張る
+	'display_dangling_link' => true,
+	// 検索ワードの色分けを行う
+	'word_coloring' => true,
+	// 絵文字を使用する
+	'use_emoji' => true,
+	// Cookieを使用しないIP
+	'use_trans_sid_address = array(
+	)
+);
+*/
+
 /////////////////////////////////////////////////
 // Security settings
 // Auth::ROLE_GUEST          - 機能無効
@@ -507,18 +531,7 @@ $open_uri_in_new_window_servername = array(
 //	$_SERVER['HTTP_HOST'],
 //	'localhost'
 );
-// URIの種類によって開く動作を設定。
-// "_blank"で別窓へ表示、falseを指定すると無効
-$open_uri_in_new_window_opis  = '_blank';     // pukiwikiの外で同一サーバー内
-$open_uri_in_new_window_opisi = false;        // pukiwikiの外で同一サーバー内(InterWikiLink)
-$open_uri_in_new_window_opos  = '_blank';     // pukiwikiの外で外部サーバー
-$open_uri_in_new_window_oposi = '_blank';     // pukiwikiの外で外部サーバー(InterWikiLink)
 // (注意：あえて拡張しやすいようにしていますが、'_blank'以外は指定しないでください)
-
-// User-Agent settings
-require_once(add_homedir('profile.ini.php'));
 
 // Server settings
 require_once(add_homedir('server.ini.php'));
-
-?>

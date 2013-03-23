@@ -45,6 +45,9 @@ GPL
 そろっていたほうがいいとおもったためです。
 */
 
+use PukiWiki\Renderer\Header;
+use Zend\Http\Response;
+
 function plugin_qrcode_inline()
 {
 	if (extension_loaded('gd')){
@@ -143,9 +146,11 @@ function plugin_qrcode_action()
 	$qr->count		= (empty($vars['n'])) ? 1	: $vars['n'];				// 
 	$qr->hint		= (empty($vars['h'])) ? PHPQRCode\Constants::QR_MODE_AN : $vars['h'];		// 文字コード
 	
-	pkwk_common_headers(0,null, false);
-	print $qr->png(rawurldecode($vars['d']), false, (empty($vars['e'])) ? 'M' : $vars['e'], (empty($vars['s'])) ? 1 : $vars['s'], 2);
-	pkwk_common_suffixes();
+	Header::writeResponse(
+		Header::getHeaders('image/png'),
+		200,
+		$qr->png(rawurldecode($vars['d']), false, (empty($vars['e'])) ? 'M' : $vars['e'], (empty($vars['s'])) ? 1 : $vars['s'], 2)
+	);
 	exit();
 }
 /* End of file qrcode.inc.php */

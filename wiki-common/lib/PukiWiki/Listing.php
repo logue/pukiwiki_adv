@@ -1,8 +1,22 @@
 <?php
+/**
+ * ページ一覧
+ *
+ * @package   PukiWiki
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @create    2012/12/18
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: Listing.php,v 1.0.0 2013/03/23 09:30:00 Logue Exp $
+ */
+
 namespace PukiWiki;
+
 use PukiWiki\Auth\Auth;
 use PukiWiki\File\FileFactory;
 use PukiWiki\Text\Reading;
+
 /**
  * ページ一覧表示クラス
  */

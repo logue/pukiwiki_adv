@@ -214,7 +214,7 @@ function plugin_edit_inline()
 		$page = $vars['page'];
 	}
 
-	$tag_edit = '<a class="anchor_super" id="edit_'.$id.'" href="' . get_cmd_uri('edit',$page,'',array('id'=>$id)) . '" rel="nofollow">' . $s_label_edit . '</a>';
+	$tag_edit = '<a class="anchor_super" id="edit_'.$id.'" href="' . Utility::htmlsc(get_cmd_uri('edit',$page,'',array('id'=>$id))) . '" rel="nofollow">' . $s_label_edit . '</a>';
 //	$tag_guiedit = '<a class="anchor_super" id="guiedit_'.$id.'" href="' . get_cmd_uri('guiedit',$page,'',array('id'=>$id)) .'" rel="nofollow">' . $s_label_guiedit . '</a>';
 /*
 	switch ($fixed_heading_edited) {

@@ -27,7 +27,7 @@ use PukiWiki\Auth\Auth;
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
+use PukiWiki\Factory;
 // Default dom id.
 define('PLUGIN_SUKERFISH_DEFAULT_ID', 'nav');
 
@@ -59,7 +59,7 @@ function plugin_suckerfish_search_navipage($page){
 		$navi_page = $page;
 		if (! empty($page)) $navi_page .= '/';
 		$navi_page .= $navigation;
-		if (is_page($navi_page)) return $navi_page;
+		if (Factory::Wiki($navi_page)->has()) return $navi_page;
 		if (empty($page)) break;
 		$page = substr($page,0,strrpos($page,'/'));
 	}
@@ -69,14 +69,14 @@ function plugin_suckerfish_search_navipage($page){
 function plugin_suckerfish_makehtml($page)
 {
 	global $vars,$pkwk_dtd;
-
-	$lines = get_source($page);
-	convert_html( $lines ); // Processing for prior execution of plug-in.
+	$wiki = Factory::Wiki($page);
+	pr($wiki->has());
+	if (!$wiki->has()) return false;
 
 	$output = '';
 	$before_level = 1;
 	$loop = 0;
-	foreach ($lines as $line) {
+	foreach ($wiki->get(false) as $line) {
 		if ($line == '') continue;
 		$head = $line{0};
 		$level = strspn($line, $head);

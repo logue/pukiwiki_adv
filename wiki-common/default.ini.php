@@ -9,14 +9,16 @@
 // License: GPL v2 or (at your option) any later version
 //
 // PukiWiki setting file (user agent:default)
-@include(add_homedir('default.usr.ini.php'));
-/////////////////////////////////////////////////
-// Skin file
 
 defined('PLUS_THEME') or define('PLUS_THEME','default');
 defined('SKIN_FILE_DEFAULT') or define('SKIN_FILE_DEFAULT', add_skindir(PLUS_THEME));
 
-$skin_file = (isset($_COOKIE['skin_file'])) ? $_COOKIE['skin_file'] : SKIN_FILE_DEFAULT;
+
+	
+/////////////////////////////////////////////////
+// Skin file
+
+$skin_file = isset($_COOKIE['skin_file']) ? $_COOKIE['skin_file'] : SKIN_FILE_DEFAULT;
 
 /////////////////////////////////////////////////
 // メニューバー/サイドバーを常に表示する(1:する 0:しない)
@@ -41,8 +43,6 @@ $list_index = 1;
 /////////////////////////////////////////////////
 // 特殊シンボル
 $_symbol_paraedit		= '<span class="pkwk-symbol symbol-edit" title="Edit here"></span>';
-$_symbol_extanchor		= '<span class="pkwk-symbol link_symbol symbol-external" data-uri="$1" title="External Link"></span>';
-$_symbol_innanchor		= '<span class="pkwk-symbol link_symbol symbol-internal" data-uri="$1" title="Internal Link"></span>';
 $_symbol_attach			= '<span class="pkwk-symbol symbol-attach" title="Attach here"></span>';
 
 /////////////////////////////////////////////////

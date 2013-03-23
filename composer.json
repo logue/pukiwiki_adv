@@ -34,6 +34,8 @@
 		"php": ">=5.3.3",
 		"aferrandini/phpqrcode": "dev-master",
 		"zendframework/zendframework": "2.*",
+		"zendframework/zendoauth": "2.*",
+		"zendframework/zendopenid":"2.*",
 		"zendframework/zendservice-akismet":"2.*",
 		"zendframework/zendservice-recaptcha":"2.*"
 	},

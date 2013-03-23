@@ -92,11 +92,7 @@ function plugin_hatena_inline()
 	if (isset($name['name'])) {
 		// $name = array('name','ts','image_url','thumbnail_url');
 		$link = $name['name'].'<img src="'.$name['thumbnail_url'].'" alt="id:'.$name['name'].'" />';
-		$logout_url = $script.'?cmd=hatena';
-		if (! empty($vars['page'])) {
-			$logout_url .= '&amp;page='.rawurlencode($vars['page']);
-		}
-		$logout_url .= '&amp;logout';
+		$logout_url = Router::get_cmd_uri('hatena', null, null, array('page'=>$vars['page'],'logout'=>'true'));
 		return sprintf($_hatena_msg['msg_logined'],$link) .
 			'(<a href="'.$logout_url.'">'.$_hatena_msg['msg_logout'].'</a>)';
 	}
@@ -104,8 +100,7 @@ function plugin_hatena_inline()
 	$auth_key = Auth::get_user_name();
 	if (! empty($auth_key['nick'])) return $_hatena_msg['msg_hatena'];
 
-	$login_url = plugin_hatena_jump_url(1);
-	return '<a href="'.$login_url.'">'.$_hatena_msg['msg_hatena'].'</a>';
+	return '<a href="'.$obj->make_login_link().'">'.$_hatena_msg['msg_hatena'].'</a>';
 }
 
 function plugin_hatena_action()
@@ -115,18 +110,17 @@ function plugin_hatena_action()
 	if (! $auth_api['hatena']['use']) return '';
 
 	$page = (empty($vars['page'])) ? '' : Utility::decode($vars['page']);
+	$obj = new AuthHatena();
 
 	// LOGIN
 	if (isset($vars['login'])) {
-		Utility::redirect(plugin_hatena_jump_url());
+		Utility::redirect($obj->make_login_link());
 	}
-
-	$obj = new AuthHatena();
 
 	// LOGOUT
 	if (isset($vars['logout'])) {
 		$obj->unsetSession();
-		Utility::redirect(get_page_location_uri($page));
+		Utility::redirect();
 	}
 
 	// AUTH
@@ -139,15 +133,7 @@ function plugin_hatena_action()
 	}
 
 	$obj->setSession();
-	Utility::redirect(get_page_location_uri($page));
-}
-
-function plugin_hatena_jump_url($inline=0)
-{
-	global $vars;
-	$obj = new AuthHatena();
-	$url = $obj->make_login_link(array('page'=>$vars['page'],'plugin'=>'hatena'));
-	return ($inline) ? $url : str_replace('&amp;','&',$url);
+	Utility::redirect();
 }
 
 function plugin_hatena_get_user_name()

@@ -1,16 +1,20 @@
 <?php
 namespace PukiWiki;
+
 use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
 
 class Search{
-	// Expand search words
+	/**
+	 * 検索語句の正規表現を生成
+	 * @param array $words 検索語句
+	 * @param boolean $do_escape
+	 */
 	public static function get_search_words($words, $do_escape = FALSE)
 	{
-		static $init, $mb_convert_kana, $pre, $post, $quote = '/';
+		static $init, $reading, $pre, $post, $quote = '/';
 
 		if (! isset($init)) {
-			// function: mb_convert_kana() is for Japanese code only
 			if (LANG === 'ja' && function_exists('mb_convert_kana')) {
 				$mb_convert_kana = create_function('$str, $option',
 					'return mb_convert_kana($str, $option, SOURCE_ENCODING);');

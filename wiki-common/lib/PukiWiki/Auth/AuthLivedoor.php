@@ -10,6 +10,7 @@
 namespace PukiWiki\Auth;
 
 use PukiWiki\Auth\AuthApi;
+use PukiWiki\Utility;
 
 /**
  * Livedoor認証
@@ -35,27 +36,18 @@ class AuthLivedoor extends AuthApi
 		$this->response = array();
 	}
 
-	function make_login_link($return)
+	function make_login_link()
 	{
-		$userdata = (empty($return)) ? '' : encode($return);
-
 		$query = array(
-			'app_key' => $this->app_key,
-			'perms' => self::LIVEDOOR_PERMS,
-			't' => UTIME,
-			'v' => self::LIVEDOOR_VERSION,
-			'userdata' => $userdata,
+			'app_key'   => $this->app_key,
+			'perms'     => self::LIVEDOOR_PERMS,
+			't'         => UTIME,
+			'v'         => self::LIVEDOOR_VERSION,
+			'userdata'  => empty($this->callbackUrl) ? '' : Utility::encode($this->callbackUrl)
 		);
+		$query['sig'] = $this->make_hash($query);
 
-		$api_sig = $this->make_hash($query);
-
-		$q_str = '';
-		foreach($query as $key=>$val) {
-			$q_str .= (empty($q_str)) ? '?' : '&amp;';
-			$q_str .= $key.'='.rawurlencode($val);
-		}
-
-		return self::LIVEDOOR_URL_AUTH.$q_str.'&amp;sig='.$api_sig;
+		return self::LIVEDOOR_URL_AUTH.http_build_query($query);
 	}
 
 	function make_hash($array)
@@ -74,7 +66,7 @@ class AuthLivedoor extends AuthApi
 		if (! isset($vars['token'])) return array('has_error'=>'true','message'=>'Token is not found.');
 
 		if (isset($vars['userdata'])) {
-			$this->response['userdata'] = decode($vars['userdata']);
+			$this->response['userdata'] = Utility::decode($vars['userdata']);
 		}
 
 		$query = array();

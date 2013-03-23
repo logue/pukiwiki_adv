@@ -407,11 +407,13 @@ function getLinkSet($_page){
 	if ($referer){
 		$_LINK['referer']	= !empty($_page) ? get_cmd_uri('referer',	$_page) : get_cmd_uri('referer');
 	}
+/*
 	if ($trackback){
 		$_LINK['trackback'] = (!empty($_page)) ?
 			get_cmd_uri('tb',null,null,array('__mode'=>'view','tb_id'=>tb_get_id($_page))) :
 			get_cmd_uri('tb',null,null,array('__mode'=>'view'));
 	}
+*/
 	return $_LINK;
 }
 
@@ -662,12 +664,7 @@ function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET
 		}
 		unset($matches);
 
-		global $facebook;
-		if (isset($facebook)){
-			echo ' xmlns:fb="http://www.facebook.com/2008/fbml"';
-		}
-
-		echo ' xmlns:og="http://ogp.me/ns#"';
+		echo ' prefix="og: http://ogp.me/ns# fb: http://www.facebook.com/2008/fbml"';
 	}
 	echo ' class="no-js '.$browser.'">' . "\n"; // <html>
 

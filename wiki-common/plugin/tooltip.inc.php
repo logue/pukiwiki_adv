@@ -18,6 +18,7 @@
 use PukiWiki\Factory;
 use PukiWiki\Renderer\Inline\Glossary;
 use PukiWiki\Renderer\RendererFactory;
+use PukiWiki\Renderer\Header;
 use PukiWiki\Utility;
 
 //========================================================
@@ -47,12 +48,7 @@ function plugin_tooltip_action()
 	if ($glossary == FALSE) { exit; }
 	$s_glossary = RendererFactory::factory($glossary);
 	
-	
-	pkwk_common_headers($glossary_lastmod);
-	header('Content-type: text/xml');
-	print '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-	print $s_glossary;
-	exit;
+	Header::writeResponse(Header::getHeaders('text/xml',$glossary_lastmod), 200, '<?xml version="1.0" encoding="UTF-8"?>' . "\n" .$s_glossary);
 }
 
 //========================================================

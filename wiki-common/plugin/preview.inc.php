@@ -6,24 +6,42 @@
 
 use PukiWiki\Factory;
 use PukiWiki\Renderer\RendererFactory;
+use PukiWiki\Renderer\Header;
+use Zend\Http\Response;
 
 function plugin_preview_action()
 {
 	global $vars;
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
-	$wiki = WikiFactory::Wiki($page);
+	
+	$modified = 0;
 
-	if ($wiki->isReadable(true) ) {
-		$source = $wiki->get();
-		array_splice($source, 10);
-		$body = RenderFactory::Wiki($source);
+	$response = new Response();
 
-		pkwk_common_headers(true,true);
-		header('Content-type: text/xml');
-		print '<' . '?xml version="1.0" encoding="UTF-8"?' . ">\n";
-		print $body;
+	if (!empty($page) ){
+		$wiki = Factory::Wiki($page);
+		if ($wiki->isReadable() ) {
+			$source = $wiki->get();
+			array_splice($source, 10);
+			$response->setStatusCode(Response::STATUS_CODE_200);
+			$response->setContent('<' . '?xml version="1.0" encoding="UTF-8"?' . ">\n" . RendererFactory::factory($source));
+			$headers = Header::getHeaders('text/xml', $wiki->time());
+		}else{
+			$response->setStatusCode(Response::STATUS_CODE_404);
+			$headers = Header::getHeaders('text/xml');
+		}
+	}else{
+		$response->setStatusCode(Response::STATUS_CODE_404);
+		$headers = Header::getHeaders('text/xml');
 	}
+
+	$response->getHeaders()->addHeaders($headers);
+	header($response->renderStatusLine());
+	foreach ($response->getHeaders() as $_header) {
+		header($_header->toString());
+	}
+	echo $response->getBody();
 	exit;
 }
 /* End of file preview.inc.php */

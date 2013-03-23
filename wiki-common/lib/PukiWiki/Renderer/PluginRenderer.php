@@ -37,6 +37,10 @@ class PluginRenderer{
 	 */
 	const IGNOLE_POSTID_CHECK_PATTERN = '/^[menu|side|header|footer|full|read|include|calendar|login]$/';
 	/**
+	 * プラグイン名のマッチパターン
+	 */
+	const PLUGIN_NAME_PATTERN = '/^\w{1,64}$/';
+	/**
 	 * プラグインで使用するメッセージテキストをグローバル変数に保存
 	 * @param array $messages メッセージ
 	 * @return void
@@ -128,6 +132,8 @@ class PluginRenderer{
 				// 読み込み可能ならエイリアスでも読み取ります。
 				if (strpos($fileinfo->getBasename(), '.inc.php') !== false && $fileinfo->isReadable()){
 					$plugins[$name] = array(
+						// 利用可能である
+						'usable' => true,
 						// 読み込み済みフラグ
 						'loaded' => false,
 						// パス
@@ -179,16 +185,25 @@ class PluginRenderer{
 		// プラグイン一覧を取得
 		if (!isset($plugins)) $plugins = self::getPluginList();
 		
-		// プラグインが見つからない
-		if (!isset($plugins[$name])) return false;
-
-		// プラグイン読み取り
-		if ($plugins[$name]['loaded'] == false){
+		
+		if (!isset($plugins[$name])){
+			// プラグインが見つからない
+			$plugins[$name] = array(
+				'loaded' =>true,
+				'method' => array(
+					'init'=>false,
+					'action'=>false,
+					'convert'=>false,
+					'inline'=>false
+				)
+			);
+		}else if ($plugins[$name]['loaded'] == false){
+			// プラグインが読み込まれてないとき
 			if ($load == true){
 				// プラグインを読み込む
 				require_once $plugins[$name]['path'];	// FIXME require_onceじゃあまり意味ない。
 				// 設定を読み込む
-				if (isset($plugins[$name]['conf'])) require_once $plugins[$name]['conf'];
+				if (isset($plugins[$name]['conf'])) require $plugins[$name]['conf'];
 				// 読み込み済フラグ
 				$plugins[$name]['loaded'] = true;
 			}
@@ -224,8 +239,7 @@ class PluginRenderer{
 	 * @param string $name プラグイン名
 	 * @return boolean
 	 */
-	public static function hasPluginMethod($name, $method)
-	{
+	public static function hasPluginMethod($name, $method){
 		global $_string;
 		static $count;
 		$plugin = self::getPlugin($name);
@@ -240,7 +254,6 @@ class PluginRenderer{
 		}
 		return true;
 	}
-
 	/**
 	 * プラグインの初期化コマンドを実行
 	 * @staticvar type $done
@@ -251,6 +264,7 @@ class PluginRenderer{
 	public static function executePluginInit($name)
 	{
 		static $done, $checked;
+
 		// 初期化完了済みの場合処理しない
 		if (isset($done[$name])) return true;
 
@@ -309,7 +323,7 @@ class PluginRenderer{
 	//	}
 
 		// postidをチェックする
-		if ( (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] === 1) && (isset($post['postid']) && !PostId::check($post['postid'])) )
+		if ( (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] === 1) && (isset($vars['postid']) && !PostId::check($vars['postid'])) )
 			Utility::dieMessage($_string['plugin_postid_error']);
 
 		// 実行

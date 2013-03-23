@@ -24,11 +24,11 @@ class AuthHatena extends AuthApi
 	 * はてな認証URI
 	 * @url http://auth.hatena.ne.jp/
 	 */
-	const HATENA_URL_AUTH = 'http://auth.hatena.ne.jp/auth';
+	const HATENA_URL_AUTH = 'http://auth.hatena.ne.jp/auth?';
 	/**
 	 * はてな認証APIのアドレス
 	 */
-	const HATENA_URL_XML = 'http://auth.hatena.ne.jp/api/auth.xml';
+	const HATENA_URL_XML = 'http://auth.hatena.ne.jp/api/auth.xml?';
 	/**
 	 * はてなのプロフィールのアドレス
 	 */
@@ -47,6 +47,7 @@ class AuthHatena extends AuthApi
 		$this->auth_name = 'hatena';
 		$this->sec_key = $auth_api[$this->auth_name]['sec_key'];
 		$this->api_key = $auth_api[$this->auth_name]['api_key'];
+		$this->api_sig = md5($this->sec_key . 'api_key' . $this->api_key);
 		$this->field_name = array('name','image_url','thumbnail_url');
 		$this->response = array();
 		parent::__construct();
@@ -57,17 +58,16 @@ class AuthHatena extends AuthApi
 	 * @param string $return 戻り先のURL
 	 * @return string
 	 */
-	function make_login_link($return)
+	function make_login_link()
 	{
-		$x1 = $x2 = '';
-		foreach($return as $key=>$val) {
-			$r_val = ($key == 'page') ? Utility::encode($val) : rawurlencode($val);
-			$x1 .= $key.$r_val;
-			$x2 .= '&amp;'.$key.'='.$r_val;
-		}
+		$query = array(
+			'page'      => $vars['page'],
+			'cmd'       => $this->auth_name,
+			'api_key'   => $this->api_key,
+			'api_sig'   => $this->sig
+		);
 
-		$api_sig = md5($this->sec_key.'api_key'.$this->api_key.$x1);
-		return self::HATENA_URL_AUTH.'?api_key='.$this->api_key.'&amp;api_sig='.$api_sig.$x2;
+		return self::HATENA_URL_AUTH.http_build_query($query);
 	}
 	/**
 	 * 認証
@@ -76,8 +76,12 @@ class AuthHatena extends AuthApi
 	 */
 	function auth($cert)
 	{
-		$api_sig = md5($this->sec_key.'api_key'.$this->api_key.'cert'.$cert);
-		$url = self::HATENA_URL_XML.'?api_key='.$this->api_key.'&amp;cert='.$cert.'&amp;api_sig='.$api_sig;
+		$query = array(
+			'api_key'   => $this->api_key,
+			'api_sig'   => $this->sig,
+			'cert'      => $cert
+		);
+		$url = self::HATENA_URL_XML.http_build_query($query);
 
 		$data = http_request($url);
 		if ($data['rc'] != 200) return array('has_error'=>'true','message'=>$data['rc']);
@@ -87,7 +91,7 @@ class AuthHatena extends AuthApi
 		xml_parser_free($xml_parser);
 
 		foreach($val as $x) {
-			if ($x['type'] != 'complete') continue;
+			if ($x['type'] !== 'complete') continue;
 			$this->response[strtolower($x['tag'])] = $x['value'];
 		}
 		return $this->response;
