@@ -5,18 +5,22 @@ error_reporting(E_ERROR | E_PARSE); // Avoid E_WARNING, E_NOTICE, etc
 ini_set('zlib.output_compression', 'Off');
 
 $image_dir = isset($_GET['base'])   ? $_GET['base']	: '../image/';
-$expire = isset($_GET['expire']) ? (int)$_GET['expire'] * 86400	: '604800';	// Default is 7 days.
 
+$expire = 0;
+//$expire = isset($_GET['expire']) ? (int)$_GET['expire'] * 86400	: '604800';	// Default is 7 days.
+
+$start_color = isset($_GET['start_color'])   ? $_GET['start_color']	: '#B24926';
+$stop_color  = isset($_GET['stop_color'])   ? $_GET['stop_color']	: '#23A5FA';
 // Send header
 header('Content-Type: text/css; charset: UTF-8');
 header('Cache-Control: private');
 header('Expires: ' .gmdate('D, d M Y H:i:s',time() + $expire) . ' GMT');
 header('Last-Modified: '.gmdate('D, d M Y H:i:s', filemtime($color)) . ' GMT');
-ob_start('ob_gzhandler');
+@ob_start('ob_gzhandler');
 
 readfile('bootstrap.min.css');
 readfile('bootstrap-responsive.min.css');
-readfile('jquery-ui-theme.css');
+readfile('custom-theme/jquery-ui-1.10.0.custom.css');
 ?>
 /* ==|== PukiWiki Advance Standard Font Set ================================= */
 
@@ -71,20 +75,102 @@ iframe, object{
 	padding: 0;
 	overflow: visible;
 }
-
-#qr_code{
-	display:block;
-	float:left;
+/* Override some defaults */
+body {
+    padding-top: 40px; /* 40px to make the container go all the way to the bottom of the topbar */
 }
 
-#banner_box{
-	display:block;
-	float:right;
-	white-space:nowrap;
+/* Jumbotrons
+-------------------------------------------------- */
+
+/* Base class
+------------------------- */
+.jumbotron {
+    position: relative;
+    color: #fff;
+    color: rgba(255,255,255,.75);
+    padding: 40px 0;
+    text-shadow: 0 1px 3px rgba(0,0,0,.4), 0 0 30px rgba(0,0,0,.075);
+    background: #B24926; /* Old browsers */
+    background: -moz-linear-gradient(45deg,  <?php echo $start_color; ?> 0%, #<?php echo $stop_color; ?> 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left bottom, right top, color-stop(0%,<?php echo $start_color; ?>), color-stop(100%,<?php echo $stop_color; ?>)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(45deg,  #2649B2 0%,#23A5FA 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(45deg,  <?php echo $start_color; ?> 0%,<?php echo $stop_color; ?> 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(45deg,  <?php echo $start_color; ?> 0%,<?php echo $stop_color; ?> 100%); /* IE10+ */
+    background: linear-gradient(45deg,  <?php echo $start_color; ?> 0%,<?php echo $stop_color; ?> 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='<?php echo $start_color; ?>', endColorstr='<?php echo $stop_color; ?>',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+    -webkit-box-shadow: inset 0 3px 7px rgba(0,0,0,.2), inset 0 -3px 7px rgba(0,0,0,.2);
+    -moz-box-shadow: inset 0 3px 7px rgba(0,0,0,.2), inset 0 -3px 7px rgba(0,0,0,.2);
+    box-shadow: inset 0 3px 7px rgba(0,0,0,.2), inset 0 -3px 7px rgba(0,0,0,.2);
+}
+.jumbotron h1 {
+    font-size: 80px;
+    font-weight: bold;
+    letter-spacing: -1px;
+    line-height: 1;
+}
+.jumbotron p {
+    font-size: 24px;
+    font-weight: 300;
+    line-height: 1.25;
+    margin-bottom: 30px;
 }
 
+/* Link styles (used on .masthead-links as well) */
+.jumbotron a {
+    color: #fff;
+    color: rgba(255,255,255,.80);
+    -webkit-transition: all .2s ease-in-out;
+    -moz-transition: all .2s ease-in-out;
+    transition: all .2s ease-in-out;
+}
+.jumbotron a:hover {
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255,255,255,.25);
+}
+
+.subhead {
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+.subhead h1 {
+    font-size: 60px;
+}
+.subhead p {
+    margin-bottom: 20px;
+}
+
+header{
+	margin-bottom:20px;
+}
+
+/* The white background content wrapper */
+.container > .content {
+    background-color: #fff;
+    padding: 20px;
+    margin: 0 -20px; /* negative indent the amount of the padding to maintain the grid system */
+    -webkit-border-radius: 0 0 6px 6px;
+    -moz-border-radius: 0 0 6px 6px;
+    border-radius: 0 0 6px 6px;
+    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+    -moz-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+    box-shadow: 0 1px 2px rgba(0,0,0,.15);
+}
+
+footer{
+	text-align:center;
+	padding: 30px 0;
+	margin-top: 70px;
+	border-top: 1px solid #e5e5e5;
+	background-color: #f5f5f5;
+}
+
+#related{
+	font-size:small;
+}
 #sigunature{
-	float:left;
+	font-size:xx-small;
+	display:block;
 	white-space:nowrap;
 	line-height: 122%;
 }
@@ -2062,7 +2148,7 @@ li[role=tab]{
 .browser-winxbox{ background-position: -1747px 0; width: 16px; height: 16px; }
 .browser-wizz{ background-position: -1764px 0; width: 16px; height: 16px; }
 
-<?php ob_end_flush();
+<?php @ob_end_flush();
 
 /* End of file squawker.css.php */
 /* Location: ./webroot/skin/theme/squawker/css/squawker.css.php */

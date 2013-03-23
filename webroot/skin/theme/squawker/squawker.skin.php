@@ -53,7 +53,7 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 		<title><?php echo $page_title; ?></title>
 	</head>
 	<body>
-		<header class="navbar navbar-inverse" role="banner">
+		<div class="navbar navbar-inverse navbar-fixed-top" role="banner">
 			<div class="navbar-inner">
 				<div class="container-fluid">
 					<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse" href="#">
@@ -123,87 +123,76 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 					</div><!-- /.nav-collapse -->
 				</div>
 			</div><!-- /navbar-inner -->
-		</header><!-- /navbar -->
+		</div><!-- /navbar -->
+		<header class="jumbotron subhead" id="overview">
+			<div class="container">
+				<h1><?php echo(($newtitle!='' && $is_read) ? $newtitle: $page) ?></h1>
+				<p class="lead"><?php echo ($is_page && exist_plugin_convert('topicpath')) ? do_plugin_convert('topicpath') : ''; ?></p>
+			</div>
+		</header>
 
-		<div class="container-fluid" role="main">
+		<div class="container">
 			<div class="row-fluid">
-				<?php if (!empty($body_menu) && !empty($side_menu)): ?>
-					<div class="span2"><div id="menubar" class="well hidden-phone"><?php echo $body_menu; ?></div></div>
-					<div class="span8">
-						<?php if ($is_page and exist_plugin_convert('topicpath')) { echo do_plugin_convert('topicpath'); } ?>
-						<div id="body"><?php echo $body ?></div>
-					</div>
-					<div class="span2"><div id="sidebar" class="well hidden-phone"><?php echo $body_side; ?></div></div>
-				<?php elseif (!empty($body_menu)): ?>
-					<div class="span3"><div id="menubar" class="well hidden-phone"><?php echo $body_menu; ?></div></div>
-					<div class="span9">
-						<?php if ($is_page and exist_plugin_convert('topicpath')) { echo do_plugin_convert('topicpath'); } ?>
-						<div id="body"><?php echo $body ?></div>
-					</div>
-				<?php elseif (!empty($body_side)): ?>
-					<div class="span9">
-						<?php if ($is_page and exist_plugin_convert('topicpath')) { echo do_plugin_convert('topicpath'); } ?>
-						<div id="body"><?php echo $body ?></div>
-					</div>
-					<div class="span3"><div id="sidebar" class="well hidden-phone"><?php echo $body_side; ?></div></div>
-				<?php else: ?>
-					<div class="span12">
-						<?php if ($is_page and exist_plugin_convert('topicpath')) { echo do_plugin_convert('topicpath'); } ?>
-						<div id="body"><?php echo $body ?></div>
-					</div>
-				<?php endif; ?>
+<?php if ($layout_class == 'two-colums')  { ?>
+				<div class="span3"><div id="menubar" class="well hidden-phone"><?php echo $body_menu; ?></div></div>
+				<div class="span9">
+					<div id="body" role="main"><?php echo $body ?></div>
+				</div>
+<?php }else if ($layout_class == 'three-colums')  { ?>
+				<div class="span2"><div id="menubar" class="well hidden-phone"><?php echo $body_menu; ?></div></div>
+				<div class="span8">
+					<div id="body" role="main"><?php echo $body ?></div>
+				</div>
+				<div class="span2"><div id="sidebar" class="well hidden-phone"><?php echo $body_side; ?></div></div>
+<?php }else{ ?>
+				<div class="span12">
+					<div id="body" role="main"><?php echo $body ?></div>
+				</div>
+<?php } ?>
 			</div>
 
 			<div class="row-fluid">
-				<?php if ($notes): ?>
+<?php if (isset($notes) && !empty($notes)): ?>
 				<div id="note">
 					<?php echo $notes ?>
 				</div>
-				<?php endif; ?>
+<?php endif; ?>
 
-				<?php if ($attaches): ?>
+<?php if (isset($attaches) && !empty($attaches)): ?>
 				<div id="attach">
 					<?php echo $hr ?>
 					<?php echo $attaches ?>
 				</div>
-				<?php endif; ?>
-
-				<?php echo $hr ?>
-				<?php if (exist_plugin('toolbar')): ?>
-					<?php echo do_plugin_convert('toolbar','reload,|,new,newsub,edit,freeze,diff,upload,copy,rename,|,top,list,search,recent,backup,refer,|,help,|,mixirss'); ?>
-				<?php endif; ?>
-
-				<?php if ($lastmodified): ?>
-				<div id="lastmodified" class="row-fluid">
-					<p class="pull-right">
-						Last-modified: <?php echo $lastmodified ?>
-					</p>
-				</div>
-				<?php endif; ?>
-
-				<?php if ($related): ?>
-				<div id="related" class="row-fluid">
-					Link: <?php echo $related ?>
-				</div>
-				<?php endif; ?>
+<?php endif; ?>
+<?php echo $hr ?>
+				
+<?php if (exist_plugin('toolbar')): ?>
+				<?php echo do_plugin_convert('toolbar','reload,|,new,newsub,edit,freeze,diff,upload,copy,rename,|,top,list,search,recent,backup,refer,|,help,|,mixirss'); ?>
+<?php endif; ?>
 			</div>
+
+<?php if (isset($lastmodified)): ?>
+			<div id="lastmodified" class="row-fluid">
+				<p class="pull-right">Last-modified: <?php echo $lastmodified ?></p>
+			</div>
+<?php endif; ?>
+
+<?php if (isset($related)): ?>
+			<div id="related" class="row-fluid">
+				<?php echo $related ?>
+			</div>
+<?php endif; ?>
 		</div>
-		<hr />
 		
-		<div id="footer" class="footer">
-			<footer class="row-fluid">
-				<div class="span12">
-					<p class="pull-left" style="margin-right:20px;">
-						<?php echo exist_plugin_inline('qrcode') ? plugin_qrcode_inline(1,$_LINK['reload']) : ''; ?>
-					</p>
-					<div id="sigunature">
-						<address>Founded by <a href="<?php echo $modifierlink ?>"><?php echo $modifier ?></a></address>
-						Powered by <a href="http://pukiwiki.logue.be/" rel="product"><?php echo GENERATOR ?></a>. HTML convert time: <?php echo showtaketime() ?> sec. <br />
-						Squawker skin by <a href="http://logue.be">Logue</a> based on <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap.
-					</div>
-				</div>
-			</footer>
-		</div>
+		<footer class="footer row-fluid">
+			<address>Founded by <a href="<?php echo $modifierlink ?>"><?php echo $modifier ?></a></address>
+			<?php echo exist_plugin_inline('qrcode') ? plugin_qrcode_inline(1,$_LINK['reload']) : ''; ?>
+			<div id="sigunature">
+				<?php echo S_COPYRIGHT;?><br />
+				HTML convert time: <?php echo showtaketime() ?> sec. <br />
+				Squawker skin by <a href="http://logue.be">Logue</a> based on <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap.
+			</div>
+		</footer>
 		<?php echo $pkwk_tags; ?>
 	</body>
 </html>

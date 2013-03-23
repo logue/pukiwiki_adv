@@ -37,7 +37,7 @@ defined('COMMON_URI')	or define('COMMON_URI', ROOT_URI);
 
 // フレームワークのバージョン
 define('JQUERY_VER',		'1.9.1');
-define('JQUERY_UI_VER',		'1.10.1');
+define('JQUERY_UI_VER',		'1.10.2');
 define('JQUERY_MOBILE_VER',	'1.3.0');
 
 // ページ名やファイル名として使用できない文字（エンコード前の文字）
