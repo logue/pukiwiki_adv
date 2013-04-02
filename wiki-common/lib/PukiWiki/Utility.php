@@ -521,60 +521,59 @@ class Utility{
 	public static function dieMessage($msg = '', $error_title='', $http_code = Response::STATUS_CODE_500){
 		global $skin_file, $page_title, $_string, $_title, $_button, $vars;
 
-		$title = !empty($error_title) ? $error_title : $_title['error'];
-		$page = $_title['error'];
-
-		if (PKWK_WARNING !== true || empty($msg)){	// PKWK_WARNINGが有効でない場合は、詳細なエラーを隠す
-			$msg = $_string['error_msg'];
-		}
-		$ret = array();
-		$ret[] = '<p>[ ';
+		$html = array();
+		$html[] = '<!doctype html>';
+		$html[] = '<html>';
+		$html[] = '<head>';
+		$html[] = '<meta charset="utf-8">';
+		$html[] = '<meta name="robots" content="NOINDEX,NOFOLLOW" />';
+		$html[] = '<link rel="stylesheet" href="http://code.jquery.com/ui/' . JQUERY_UI_VER . '/themes/ui-lightness/jquery-ui.min.css" type="text/css" />';
+		$html[] = '<title>' . (!empty($error_title) ? $error_title : $_title['error']) . ' - ' . $page_title . '</title>';
+		$html[] = '</head>';
+		$html[] = '<body>';
+		$html[] = '<p>[ ';
 		if ( isset($vars['page']) && !empty($vars['page']) ){
-			$ret[] = '<a href="' . Factory::Wiki($vars['page'])->uri() .'">'.$_button['back'].'</a> | ';
-			$ret[] = '<a href="' . Router::get_cmd_uri('edit',$vars['page']) . '">Try to edit this page</a> | ';
+			$html[] = '<a href="' . Factory::Wiki($vars['page'])->uri() .'">'.$_button['back'].'</a> | ';
+			$html[] = '<a href="' . Router::get_cmd_uri('edit',$vars['page']) . '">Try to edit this page</a> | ';
 		}
-		$ret[] = '<a href="' . get_cmd_uri() . '">Return to FrontPage</a> ]</p>';
-		$ret[] = '<div class="message_box ui-state-error ui-corner-all">';
-		$ret[] = '<p style="padding:0 .5em;"><span class="ui-icon ui-icon-alert" style="display:inline-block;"></span> <strong>' . $_title['error'] . '</strong> ' . $msg . '</p>';
-		$ret[] = '</div>';
-		$body = join("\n",$ret);
-
-		global $trackback;
-		$trackback = 0;
-
-		$headers = Header::getHeaders('text/html');
+		$html[] = '<a href="' . get_cmd_uri() . '">Return to FrontPage</a> ]</p>';
+		$html[] = '<div class="ui-state-error ui-corner-all" style="padding:0 .5em;">';
+		$html[] = '<p><span class="ui-icon ui-icon-alert" style="display:inline-block;"></span> <strong>' . $_title['error'] . '</strong>';
+		$html[] = PKWK_WARNING !== true || empty($msg) ? $msg = $_string['error_msg'] : $msg;
+		$html[] = '</p>';
+		$html[] = '</div>';
+		if (DEBUG) {
+			$html[] = '<div class="ui-state-highlight ui-corner-all" style="padding:0 .5em;">';
+			$html[] = '<p><span class="ui-icon ui-icon-info" style="display:inline-block;"></span> <strong>Back Trace</strong></p>';
+			$html[] = '<ol>';
+			foreach (debug_backtrace() as $k => $v) {
+				if ($k < 2) { 
+					continue;
+				}
+				array_walk($v['args'], function (&$item, $key) {
+					$item = var_export($item, true);
+				});
+				$html[] = '<li>' . (isset($v['file']) ? $v['file'] : '?') . '(<var>' . (isset($v['line']) ? $v['line'] : '?') . '</var>):<br /><code>' . (isset($v['class']) ? '<strong>' . $v['class'] . '</strong>-&gt;' : '') . $v['function'] . '(<var>' . implode(', ', $v['args']) . '</var>)</code></li>' . "\n";
+			}
+			$html[] = '</ol>';
+			$html[] = '</div>';
+		}
+		$html[] = '</body>';
+		$html[] = '</html>';
+		$content = join("\n",$html);
+	
 		$response = new Response();
+		$response->setContent($content);
+		$response->getHeaders()->addHeaders(Header::getHeaders('text/html'));
+		$response->getHeaders()->addHeaderLine('Content-Length', strlen($content));
 		$response->setStatusCode($http_code);
-		$response->getHeaders()->addHeaders($headers);
+
 		header($response->renderStatusLine());
 		foreach ($response->getHeaders() as $_header) {
 			header($_header->toString());
 		}
-		/*
-		if(defined('SKIN_FILE') && file_exists(SKIN_FILE) && is_readable(SKIN_FILE)) {
-			include(SKIN_FILE);
-		} elseif ( !empty($skin_file) && file_exists($skin_file) && is_readable($skin_file)) {
-		//	echo $response->getBody();
-			include($skin_file);
-		}else{
-		*/
-			$html = array();
-			$html[] = '<!doctype html>';
-			$html[] = '<html>';
-			$html[] = '<head>';
-			$html[] = '<meta charset="utf-8">';
-			$html[] = '<meta name="robots" content="NOINDEX,NOFOLLOW" />';
-			$html[] = '<link rel="stylesheet" href="http://code.jquery.com/ui/' . JQUERY_UI_VER . '/themes/base/jquery-ui.css" type="text/css" />';
-			$html[] = '<title>' . $page . ' - ' . $page_title . '</title>';
-			$html[] = '</head>';
-			$html[] = '<body>' . $body . '</body>';
-			$html[] = '</html>';
-			$content = join("\n",$html);
-			$response->getHeaders()->addHeaderLine('Content-Length', strlen($content));
-			$response->setContent($content);
-			echo $response->getBody();
-		//}
-		die();
+		echo $response->getBody();
+		exit();
 	}
 	/**
 	 * リダイレクト
@@ -629,6 +628,12 @@ class Utility{
 		echo $response->getBody();
 		exit;
 	}
+	/**
+	 * バックトレースを取得
+	 */
+	protected static function getBacktrace($ignore = 2) {
+		
+	} 
 	/**
 	 * ダンプ
 	 */

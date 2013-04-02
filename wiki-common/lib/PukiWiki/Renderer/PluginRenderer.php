@@ -19,6 +19,7 @@ use PukiWiki\Factory;
 use PukiWiki\Router;
 use PukiWiki\Spam\PostId;
 use PukiWiki\Utility;
+use Exception;
 
 /**
  * プラグイン処理クラス
@@ -123,14 +124,14 @@ class PluginRenderer{
 			if (!is_dir($p_dir)) continue;
 			foreach (new DirectoryIterator($p_dir) as $fileinfo) {
 				// ファイル以外は無視
-				if (!$fileinfo->isFile()) continue;
-				// プラグイン名を取得
-				$name = $fileinfo->getBasename('.inc.php');
-				// プラグイン名が英数字64文字以下でない
-				if (!preg_match('/^\w{1,64}$/', $name)) throw new Exeption('Plugin name is invalied or too long! (less than 64 chars)');
-			
+				if (!$fileinfo->isFile() || !$fileinfo->isReadable()) continue;
+
 				// 読み込み可能ならエイリアスでも読み取ります。
-				if (strpos($fileinfo->getBasename(), '.inc.php') !== false && $fileinfo->isReadable()){
+				if (strpos($fileinfo->getFilename(), '.inc.php') !== false){
+					// プラグイン名を取得
+					$name = $fileinfo->getBasename('.inc.php');
+					// プラグイン名が英数字64文字以下でない
+					if (!preg_match('/^\w{1,64}$/', $name)) throw new Exception('Plugin name "'.$name.'" is invalied or too long! (less than 64 chars)');
 					$plugins[$name] = array(
 						// 利用可能である
 						'usable' => true,

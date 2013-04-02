@@ -57,7 +57,7 @@ class Wiki{
 		// 未認証時に読み取り専用になっている
 		if (Auth::check_role('readonly')) return false;	
 		// ユーザ別の権限を読む
-		if (Auth::auth($this->page, 'read', $authenticate) && Auth::auth($this->page, 'edit', $authenticate)) return true;
+		if (Auth::auth($this->page, 'edit', $authenticate)) return true;
 		return false;
 	}
 	/**

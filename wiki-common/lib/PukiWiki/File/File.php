@@ -117,7 +117,7 @@ abstract class File extends SplFileInfo{
 			unset($files);
 			$cache['core']->removeItem($cache_name);
 		}else if (!empty($files)) {
-			return $plugins;
+			return $files;
 		}else if ($cache['core']->hasItem($cache_name)) {
 			$files = $cache['core']->getItem($cache_name);
 			$cache['core']->touchItem($cache_name);

@@ -13,7 +13,8 @@ use PukiWiki\Renderer\RendererFactory;
 use PukiWiki\Utility;
 use PukiWiki\Factory;
 use PukiWiki\Listing;
-
+use PukiWiki\Renderer\Header;
+use PukiWiki\Auth\AuthApi;
 
 /**
  * 認証クラス
@@ -60,6 +61,26 @@ class Auth
 	 * ロール：見做し認証者
 	 */
 	const ROLE_AUTH_TEMP = 5.1;
+	/**
+	 * 認証方法：セッション認証
+	 */
+	const AUTH_SESSION = 0;
+	/**
+	 * 認証方法：セッション認証
+	 */
+	const AUTH_BASIC = 1;
+	/**
+	 * 認証方法：Digest認証
+	 */
+	const AUTH_DIGEST = 2;
+	/**
+	 *
+	 */
+	const AUTH_METHOD_PAGENAME = 0;
+	/**
+	 *
+	 */
+	const AUTH_METHOD_CONTENTS = 1;
 
 	/**
 	 * 管理人ログイン（非推奨）
@@ -186,20 +207,23 @@ class Auth
 		global $auth_method_type, $read_auth_pages, $edit_auth_pages, $read_auth_pages_accept_ip, $edit_auth_pages_accept_ip;
 
 		$target_str = '';
+		// 認証の判定条件
 		switch($auth_method_type) {
+			case self::AUTH_METHOD_PAGENAME:
 			case 'pagename':
 				// ページ名で判断
 				$target_str = $page;
 				break;
+			case self::AUTH_METHOD_CONTENTS:
 			case 'contents':
 				// ページのソースで判断
 				$target_str = Factory::Wiki($page)->get(true);
 				break;
 			default:
-				throw new \Exception('Auth::auth() : $auth_method_type = '.$auth_method_type.' is invalied!.');
+				throw new \Exception('Auth::auth() : $auth_method_type = '.$auth_method_type.' is invalied or unmounted!.');
 				break;
 		}
-
+		// 認証のタイプによってメッセージを分ける
 		switch($type){
 			case 'read':
 				// IPをチェック
@@ -216,7 +240,38 @@ class Auth
 				throw new \Exception('Auth::auth() : $type = '.$type.' is invalied!.');
 				break;
 		}
-		
+
+		if ($authenticate){
+			// 認証画面を出す
+			global $auth_type;
+			$ret = null;
+			switch ($auth_type) {
+				case self::AUTH_BASIC:
+					$ret = self::basic_auth(true);
+				break;
+				case self::AUTH_DIGEST:
+					$ret = self::digest_auth(true);
+				break;
+			//	default:
+			//		return self::session_auth($target_str, true, false, $auth_pages, $title_cannot);
+			}
+			if (!$ret === true) {
+				// 認証失敗
+				Utility::dieMessage( str_replace('$1', Utility::htmlsc(Utility::stripBracket($page)), $title_cannot), 'Not Auth', 401);
+				exit;
+			}
+		}
+
+		// ユーザの情報を取得
+		$info = self::get_user_info();
+		if (empty($username)){
+			// ユーザ名などが入力されていない場合、ユーザ情報からパラメーターを取得する
+			$username = $info['key'];
+		}
+		if (empty($groupname)){
+			$groupname = $info['group'];
+		}
+
 		$user_list = $group_list = $role = '';
 		$matched = false;
 		// $auth_pages = array(
@@ -230,11 +285,12 @@ class Auth
 		foreach($auth_pages as $pattern=>$val) {
 			if (preg_match($pattern, $target_str)) {
 				if (is_array($val)) {
-					$user_list  = (empty($val['user']))  ? null : explode(',',$val['user']);
-					$group_list = (empty($val['group'])) ? null : explode(',',$val['group']);
-					$role       = (empty($val['role']))  ? null : $val['role'];
+					$user_list  = empty($val['user'])   ? null : explode(',',$val['user']);
+					$group_list = empty($val['group'])  ? null : explode(',',$val['group']);
+					$role       = empty($val['role'])   ? null : $val['role'];
+					
 				} else {
-					$user_list  = (empty($val))          ? null : explode(',',$val);
+					$user_list  = empty($val)           ? null : explode(',',$val);
 				}
 				$matched = true;
 				break;
@@ -245,32 +301,12 @@ class Auth
 		
 		// 制限対象のページでない場合ここで終了
 		if (empty($user_list) && empty($group_list) && empty($role)) return true;
-		
-		// 認証画面を出す
-		if ($authenticate){
-			global $auth_type;
-			switch ($auth_type) {
-				case 1: return self::basic_auth($target_str, true, false, $auth_pages, $title_cannot);
-				case 2: return self::digest_auth($target_str, true, false, $auth_pages, $title_cannot);
-			}
-		}
-		// ユーザの情報を取得
-		$info = Auth::get_user_info();
-		
-		if (empty($username)){
-			// ユーザ名などが入力されていない場合、ユーザ情報からパラメーターを取得する
-			$username = $info['key'];
-		}
-		if (empty($groupname)){
-			$groupname = $info['group'];
-		}
-
 		// ユーザ名検査
 		if (!empty($user_list) && in_array($username, $user_list)) return true;
 		// グループ検査
 		if (!empty($group_list) && !empty($groupname) && in_array($groupname, $group_list)) return true;
 		// role 検査
-		if (!empty($role) && !Auth::is_check_role($role)) return true;
+		if (!empty($role) && !self::is_check_role($role)) return true;
 		// そうでない場合はナシ
 		return false;
 	}
@@ -299,19 +335,13 @@ class Auth
 	}
 	/**
 	 * Basic認証
-	 * @param string $page ページ名
-	 * @param boolean $auth_flag 認証画面を出すか
-	 * @param boolean $exit_flag 認証できなかった時メッセージを表示するか
-	 * @param array $auth_pages 認証対象とするページの配列
-	 * @param string $title_cannot 認証できなかった時のメッセージ
 	 * @return boolean
 	 */
-	private static function basic_auth($page, $auth_flag, $exit_flag, $auth_pages, $title_cannot)
+	private static function basic_auth($show_auth = false)
 	{
 		global $auth_users;
 		global $realm;
 
-	//	if (self::is_page_auth($page, $auth_flag, $auth_pages, null,null)) return true; // No limit
 		$user_list = $auth_users;
 
 		if (! self::check_role('role_contents_admin')) return TRUE; // 既にコンテンツ管理者
@@ -336,22 +366,12 @@ class Auth
 				$auth_users[$_SERVER['PHP_AUTH_USER']][0]
 				) !== $auth_users[$_SERVER['PHP_AUTH_USER']][0])
 		{
-			// Auth failed
-			if ($auth_flag || $exit_flag) {
-				pkwk_common_headers();
-			}
-			if ($auth_flag) {
+			if ($show_auth){
 				// 再度認証画面を出す
 				header('WWW-Authenticate: Basic realm="'.$realm.'"');
 				header('HTTP/1.0 401 Unauthorized');
 			}
-			if ($exit_flag) {
-				// メッセージを表示する
-				$body = $title = str_replace('$1', Utility::htmlsc(Utility::stripBracket($page)), $title_cannot);
-				$page = str_replace('$1', make_search($page), $title_cannot);
-				catbody($title, $page, $body);
-				exit;
-			}
+			
 			return FALSE;
 		}
 		return TRUE;
@@ -369,7 +389,7 @@ class Auth
 		global $auth_users;
 		global $realm;
 
-		if (self::is_page_auth($page, $auth_flag, $auth_pages, '','')) return true; // No limit
+		
 		//$user_list = get_auth_page_users($page, $auth_pages);
 		//if (empty($user_list)) return true; // No limit
 
@@ -385,13 +405,7 @@ class Auth
 			header('WWW-Authenticate: Digest realm="'.$realm.
 				'", qop="auth", nonce="'.uniqid().'", opaque="'.md5($realm).'"');
 		}
-		if ($exit_flag) {
-			$body = $title = str_replace('$1',
-				Utility::htmlsc(Utility::stripBracket($page)), $title_cannot);
-			$page = str_replace('$1', make_search($page), $title_cannot);
-			catbody($title, $page, $body);
-			exit;
-		}
+		
 		return false;
 	}
 	/**
@@ -598,7 +612,7 @@ class Auth
 		if (! empty($data['username'])) return $data['username'];
 		return '';
 	}
-	/*
+	/**
 	 * 管理者パスワードなのかどうか（暫定管理人か？）
 	 * @return boolean
 	 */
@@ -612,6 +626,55 @@ class Auth
 			if (isset($vars['pass']) && self::login($vars['pass'])) $temp_admin = true;
 		}
 		return $temp_admin;
+	}
+	/**
+	 *ページの管理権限を取得
+	 * @return boolean
+	 */
+	public static function is_page_auth($page, $auth_flag, $auth_pages, $uname, $gname='')
+	{
+		global $auth_method_type;
+		static $info;
+		if (! $auth_flag) return true;
+
+		if (!isset($info)) $info = auth::get_user_info();
+
+		$target_str = '';
+		switch($auth_method_type) {
+			case 'pagename':
+				$target_str = $page;
+				break;
+			case 'contents':
+				$target_str = Factory::Wiki($page)->get();
+				break;
+			}
+
+		$user_list = $group_list = $role = null;
+		foreach($auth_pages as $key=>$val) {
+			if (preg_match($key, $target_str)) {
+				if (is_array($val)) {
+					$user_list  = empty($val['user'])  ? null : explode(',',$val['user']);
+					$group_list = empty($val['group']) ? null : explode(',',$val['group']);
+					$role       = empty($val['role'])  ? null : $val['role'];
+				} else {
+					$user_list  = empty($val)          ? null : explode(',',$val);
+				}
+				break;
+			}
+		}
+
+		// No limit
+		if (empty($user_list) && empty($group_list) && empty($role)) return true;
+		// 未認証者
+		if (empty($uname)) return false;
+
+		// ユーザ名検査
+		if (!empty($user_list) && in_array($uname, $user_list)) return true;
+		// グループ検査
+		if (!empty($group_list) && !empty($gname) && in_array($gname, $group_list)) return true;
+		// role 検査
+		if (!empty($role) && !auth::is_check_role($role)) return true;
+		return false;
 	}
 	/**
 	 * ユーザ情報
