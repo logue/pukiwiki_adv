@@ -16,9 +16,11 @@ namespace PukiWiki;
 use PukiWiki\Factory;
 use PukiWiki\Renderer\Header;
 use PukiWiki\Renderer\View;
+use PukiWiki\Renderer\PluginRenderer;
 use PukiWiki\Router;
 use PukiWiki\Search;
 use PukiWiki\Wiki;
+use PukiWiki\Time;
 use Zend\Http\Response;
 use Zend\Json\Json;
 
@@ -26,6 +28,18 @@ use Zend\Json\Json;
  * ページ出力クラス
  */
 class Render{
+	/**
+	 * カラムなし（本文のみ）
+	 */
+	const CLASS_NO_COLUMS = 'no-colums';
+	/**
+	 * ２カラム（本文＋メニューバー）
+	 */
+	const CLASS_TWO_COLUMS = 'two-colums';
+	/**
+	 * ３カラム（本文＋メニューバー＋サイドバー）
+	 */
+	const CLASS_THREE_COLUMS = 'three-colums';
 	/**
 	 * 通常読み込むスクリプト
 	 */
@@ -74,49 +88,36 @@ class Render{
 	 * @param string $title 題目
 	 * @param string $body 内容
 	 */
-	public function __construct($title, $body){
-		global $vars;
+	public function __construct($title, $body, $http_code = Response::STATUS_CODE_200){
+		global $vars, $lastmod;
 		$this->page = isset($vars['page']) ? $vars['page'] : null;
 		$this->ajax = isset($vars['ajax']) ? $vars['ajax'] : null;
 		$this->wiki = !empty($this->page) ? Factory::Wiki($this->page) : null;
-		self::output($title, $body);
-	}
-	
-	/**
-	 * 出力
-	 * @param string $title 題名
-	 * @param string $body 内容
-	 * @return void
-	 */
-	private function output($title, $body){
-		global $lastmod;
+		$this->title = $title;
+		$this->body = $body;
 		switch ($this->ajax) {
 			case 'json':
-				// JSONで出力
-				if (!isset($JSON)){
-					// $JSON関数が定義されていない場合
-					$JSON = array(
-						'title'			=> $title,
-						'body'			=> $body,
-					);
-				}
 				$content_type = 'application/json';
-				$content = Json::encode($JSON);
+				$content = Json::encode(array(
+					'title' => $this->title,
+					'body'  => $this->body,
+					'process_time' => Time::getTakeTime()
+				));
 			break;
 			case 'xml':
 				$content_type = 'application/xml';
-				$content = '<?xml version="1.0" encoding="'.CONTENT_CHARSET.'" ?>'."\n".$body;
+				$content = '<?xml version="1.0" encoding="'.CONTENT_CHARSET.'" ?>'."\n".$this->body;
 			break;
 			case 'raw':
 				$content_type = 'text/plain';
-				$content = $body;
+				$content = $this->body;
 			break;
 			default:
 				// 厳格にXHTMLとして出力する場合は、ブラウザの対応状況を読んでapplication/xhtml+xmlを出力
 				$content_type =
 					PKWK_STRICT_XHTML === TRUE && strstr($_SERVER['HTTP_ACCEPT'], 'application/xhtml+xml') !== false ?
 					'application/xhtml+xml' : 'text/html';
-				$content = self::getContent($title, $body);
+				$content = self::getContent($this->title, $this->body);
 			break;
 		}
 		if (empty($page) || !$lastmod){
@@ -125,41 +126,50 @@ class Render{
 			$wiki = Factory::Wiki($page);
 			$headers = Header::getHeaders($content_type, $page->time);
 		}
-		Header::writeResponse($headers, Response::STATUS_CODE_200, $content);
+		Header::writeResponse($headers, $http_code, $content);
 	}
 	/**
 	 * ページ出力の内容を生成
-	 * @param string $title 題名
-	 * @param string $body 内容
 	 * @return string
 	 */
-	public function getContent($title, $body){
-		global $vars, $js_tags, $_LINK, $info;
+	public function getContent(){
+		global $js_tags, $_LINK, $info, $vars;
 
 		global $auth_api, $fb;
 
-		$page = isset($vars['page']) ? $vars['page'] : null;
+		$body = $this->body;
 
 		// ページをコンストラクト
-		$_LINK = self::getLinkSet($page);
+		$_LINK = self::getLinkSet($this->page);
 
-		if (!IS_MOBILE) {
-			$view = new View(PLUS_THEME);
-		}else{
-			$view = new View('mobile');
-		}
+		$view = new View(PLUS_THEME);
+		if ($vars['cmd'] === 'read'){
+			global $adminpass, $_string;
+			if ($adminpass == '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72' || $adminpass == '' ){
+				$body = '<div class="message_box ui-state-error ui-corner-all">'.
+					'<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>'.
+					'<strong>'.$_string['warning'].'</strong> '.$_string['changeadminpass'].'</p></div>'."\n".
+					$body;
+			}
 
-		if (!empty($page) ){
+			if (DEBUG === true && ! empty($info)){
+				$body = '<div class="message_box ui-state-highlight ui-corner-all">'.
+						'<p><span class="ui-icon ui-icon-info"></span>'.$_string['debugmode'].'</p>'."\n".
+						'<ul>'."\n".
+						'<li>'.join("</li>\n<li>",$info).'</li>'."\n".
+						'</ul></div>'."\n\n".$body;
+			}
 			// リファラーを保存
-			$referer = Factory::Referer($page);
+			$referer = Factory::Referer($this->page);
 			$referer->set();
 			
 			global $attach_link, $related_link;
 			$view->lastmodified = '<time pubdate="pubdate" datetime="'.get_date('c',$this->wiki->time()).'">'.get_date('D, d M Y H:i:s T', $this->wiki->time()) . ' ' . $this->wiki->passage().'</time>';
 
 			// List of attached files to the page
-			$view->attaches = ($attach_link && (exist_plugin('attach') && do_plugin_init('attach') !== FALSE)) ? attach_filelist() : '';
-			$view->related = ($related_link && (exist_plugin('related') && do_plugin_init('related') !== FALSE)) ? make_related($page,'dl') : '';
+			
+			$view->attaches = ($attach_link &&  PluginRenderer::executePluginInit('attach') !== FALSE) ? attach_filelist() : null;
+			$view->related =  ($related_link && PluginRenderer::executePluginInit('related') !== FALSE) ? make_related($this->page,'dl') : null;
 
 			// List of footnotes
 			global $foot_explain;
@@ -173,45 +183,29 @@ class Render{
 			}
 		}
 
-//		if ($notify_from !== 'from@example.com') $link_tags[] = array('rev'=>'made',	'href'=>'mailto:'.$notify_from,	'title'=>	'Contact to '.$modifier);
+		global $site_name, $newtitle, $modifier, $modifierlink, $menubar, $sidebar, $headarea, $footarea;
 
-		global $adminpass, $_string;
-		if ($adminpass == '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72' || $adminpass == '' ){
-			$body = '<div class="message_box ui-state-error ui-corner-all">'.
-				'<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>'.
-				'<strong>'.$_string['warning'].'</strong> '.$_string['changeadminpass'].'</p></div>'."\n".
-				$body;
+		// モードによって、3カラム、2カラムを切り替える。
+		if ($vars['cmd'] === 'read') {
+			$view->menubar = Factory::Wiki($menubar)->has() ? PluginRenderer::executePluginBlock('menu') : null;
+			if ( Factory::Wiki($sidebar)->has()){
+				$view->sidebar = Factory::Wiki($sidebar)->has() ? PluginRenderer::executePluginBlock('side') : null;
+				$view->colums =  self::CLASS_THREE_COLUMS;
+			}else{
+				$view->colums = self::CLASS_TWO_COLUMS;
+			}
+		}else{
+			$view->colums = self::CLASS_NO_COLUMS;
 		}
 
-		$pkwk_head = $this->getMeta() . $this->getLink();
-		if (!IS_MOBILE) {
-			// modernizrの設定
-			// Modernizrは、ヘッダー内にないと正常に動作しない
-			$pkwk_head .= '<script type="text/javascript" src="'.JS_URI.'js.php?file=modernizr.min'.'"></script>'."\n";	
-		}
-
-		// フッター用
-		
-		if (!empty($css_blocks)){
-			$pkwk_head .= self::tag_helper('style',array(array('type'=>'text/css', 'content'=>join("\n",$css_blocks))));
-		}
-
-		if (DEBUG === true && ! empty($info)){
-			$body = '<div class="message_box ui-state-highlight ui-corner-all">'.
-					'<p><span class="ui-icon ui-icon-info"></span>'.$_string['debugmode'].'</p>'."\n".
-					'<ul>'."\n".
-					'<li>'.join("</li>\n<li>",$info).'</li>'."\n".
-					'</ul></div>'."\n\n".$body;
-		}
-
-		global $page_title, $newtitle, $modifier, $modifierlink;
-
-		$view->head = $pkwk_head;
+		$view->head = self::getHead();
+		$view->headarea = Factory::Wiki($headarea)->has() ? PluginRenderer::executePluginInline('headarea') : null;
+		$view->footarea = Factory::Wiki($footarea)->has() ? PluginRenderer::executePluginInline('footarea') : null;
 		$view->body = $body;
+		$view->links = $_LINK;
+		$view->site_name = $site_name;
 		$view->page = $this->page;
-		$view->title = !empty($newtitle) ? $newtitle : $title;
-		$view->page_title = $page_title;
-		$view->is_page = !empty($this->wiki) && $this->wiki->isReadable();
+		$view->title = !empty($newtitle) ? $newtitle : $this->title;
 		$view->js = $this->getJs();
 		$view->modifier = $modifier;
 		$view->modifierlink = $modifierlink;
@@ -286,10 +280,10 @@ class Render{
 		return $script_tags;
 	}
 	/**
-	 * Metaタグを出力
+	 * ヘッダータグを出力
 	 * @return string
 	 */
-	private function getMeta(){
+	private function getHead(){
 		global $vars, $nofollow, $google_analytics, $google_api_key, $google_site_verification, $yahoo_site_explorer_id, $bing_webmaster_tool, $shortcut_icon, $modifier, $modifierlink;
 		if (IS_MOBILE){
 			$meta_tags[] = array('name' => 'viewport',	'content' => 'width=device-width, initial-scale=1');
@@ -305,17 +299,12 @@ class Render{
 			// Bing（MSN）アクセス解析
 			(!empty($bing_webmaster_tool)) ?		$meta_tags[] = array('name' => 'msvalidate.01',				'content' => $bing_webmaster_tool) : null;
 
-			
-
-			if ($nofollow ){
+			if ($nofollow && $vars['cmd'] === 'read'){
 				$meta_tags[] = array('name' => 'robots', 'content' => 'NOINDEX,NOFOLLOW');
 			}
 
-			if (!empty($this->wiki) ){
-
-				global $keywords, $description, $attach_link, $related_link, $attaches, $related, $notes, $page_title;
-				// ロゴ
-				$logo = !empty($view->logo['src']) ? $view->logo['src'] : IMAGE_URI.'pukiwiki_adv.logo.png';
+			if (!empty($this->wiki) && $vars['cmd'] === 'read'){
+				global $keywords, $description, $attach_link, $related_link, $site_name, $site_logo;
 				// 要約
 				$desc = !empty($description) ? $description : mb_strimwidth(preg_replace("/[\r\n]/" ,' ' ,strip_htmltag($this->wiki->render())) ,0 ,256 ,'...');
 				$meta_tags[] = array('name' => 'description', 'content' => $desc);
@@ -328,8 +317,8 @@ class Render{
 				$meta_tags[] = array('property' => 'og:locale ',		'content' => LANG);
 				$meta_tags[] = array('property' => 'og:type',			'content' => 'website');
 				$meta_tags[] = array('property' => 'og:url',			'content' => $this->wiki->uri());
-				$meta_tags[] = array('property' => 'og:image',			'content' => $logo);
-				$meta_tags[] = array('property' => 'og:site_name',		'content' => $page_title);
+				$meta_tags[] = array('property' => 'og:image',			'content' => $site_logo);
+				$meta_tags[] = array('property' => 'og:site_name',		'content' => $site_name);
 				$meta_tags[] = array('property' => 'og:description',	'content' => $desc);
 				$meta_tags[] = array('property' => 'og:updated_time',	'content' => $this->wiki->time());
 
@@ -339,16 +328,11 @@ class Render{
 				}
 			}
 		}
-		return self::tag_helper('meta',$meta_tags);
-	}
-	/**
-	 * Linkタグの生成
-	 * @return string
-	 */
-	private function getLink(){
+
+		// Linkタグの生成
 		// scriptタグと異なり、順番が変わっても処理への影響がない。
 		// http://www.w3schools.com/html5/tag_link.asp
-		global $_LANG, $_LINK, $page_title;
+		global $_LANG, $_LINK, $site_name;
 
 		$shortcut_icon = isset($view->conf['shortcut_icon']) ? $view->conf['shortcut_icon'] : ROOT_URI.'favicon.ico';
 
@@ -361,7 +345,7 @@ class Render{
 			array('rel'=>'help',			'href'=>$_LINK['help'],		'type'=>'text/html',	'title'=>$_LANG['skin']['help']),
 			array('rel'=>'home',			'href'=>$_LINK['top'],		'type'=>'text/html',	'title'=>$_LANG['skin']['top']),
 			array('rel'=>'index',			'href'=>$_LINK['list'],		'type'=>'text/html',	'title'=>$_LANG['skin']['list']),
-			array('rel'=>'search',			'href'=>$_LINK['opensearch'],'type'=>'application/opensearchdescription+xml',	'title'=>$page_title.$_LANG['skin']['search']),
+			array('rel'=>'search',			'href'=>$_LINK['opensearch'],'type'=>'application/opensearchdescription+xml',	'title'=>$site_name.$_LANG['skin']['search']),
 			array('rel'=>'search',			'href'=>$_LINK['search'],	'type'=>'text/html',	'title'=>$_LANG['skin']['search']),
 			array('rel'=>'sitemap',			'href'=>$_LINK['sitemap'],	'type'=>'text/html',	'title'=>'Sitemap'),
 			array('rel'=>'shortcut icon',	'href'=>$shortcut_icon,		'type'=>'image/vnd.microsoft.icon')
@@ -372,7 +356,12 @@ class Render{
 		if (COMMON_URI !== ROOT_URI){
 			$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>COMMON_URI);
 		}
-		return self::tag_helper('link',$link_tags);
+		
+		return
+			self::tag_helper('meta',$meta_tags) .
+			self::tag_helper('link',$link_tags) .
+			// Modernizrはヘッダー内でないと動作しない
+			(!IS_MOBILE ? '<script type="text/javascript" src="'.JS_URI.'js.php?file=modernizr.min'.'"></script>'."\n" : '');
 	}
 	/**
 	 * リンク一覧を取得
@@ -380,45 +369,46 @@ class Render{
 	 * @return array
 	 */
 	private static function getLinkSet($_page){
-		global $defaultpage, $whatsnew, $whatsdeleted, $interwiki, $aliaspage, $glossarypage;
-		global $menubar, $sidebar, $navigation, $headarea, $footarea, $protect;
+		
 
 		global $trackback, $referer;
 
-		// Set $_LINK for skin
-		$links = array(
-			'search'        => Router::get_cmd_uri('search'),
-			'opensearch'    => Router::get_cmd_uri('search',    null,   null,   array('format'=>'xml')),
-			'list'          => Router::get_cmd_uri('list'),
-			'filelist'      => Router::get_cmd_uri('filelist'),
+		static $d_links;
 
-			'sitemap'       => Router::get_resolve_uri('list',    null, 'full',   array('type'=>'sitemap')),
-			'rss'           => Router::get_resolve_uri('mixirss', null, 'full'),
+		if (!isset($d_links)){
+			global $defaultpage, $whatsnew, $whatsdeleted, $interwiki, $aliaspage, $glossarypage;
+			global $menubar, $sidebar, $navigation, $headarea, $footarea, $protect;
+			// Set $_LINK for skin
+			$d_links = array(
+				'search'        => Router::get_cmd_uri('search'),
+				'opensearch'    => Router::get_cmd_uri('search',    null,   null,   array('format'=>'xml')),
+				'list'          => Router::get_cmd_uri('list'),
+				'filelist'      => Router::get_cmd_uri('filelist'),
 
-			'read'          => Router::get_resolve_uri('read', $_page),
-			'reload'        => Router::get_resolve_uri('read', $_page, 'full'),
+				'sitemap'       => Router::get_resolve_uri('list',    null, 'full',   array('type'=>'sitemap')),
+				'rss'           => Router::get_resolve_uri('mixirss', null, 'full'),
 
-			'login'         => Router::get_cmd_uri('login', $_page),
-			'logout'        => Router::get_cmd_uri('login', $_page, null, array('action'=>'logout') ),
+				'read'          => Router::get_resolve_uri('read', $_page),
+				'reload'        => Router::get_resolve_uri('read', $_page, 'full'),
 
-			/* Special Page */
-			'help'          => Router::get_cmd_uri('help'),
-			'top'           => Router::get_resolve_uri('read',$defaultpage),
-			'recent'        => Router::get_resolve_uri('read',$whatsnew),
-			'deleted'       => Router::get_resolve_uri('read',$whatsdeleted),
-			'interwiki'     => Router::get_resolve_uri('read',$interwiki),
-			'alias'         => Router::get_resolve_uri('read',$aliaspage),
-			'glossary'      => Router::get_resolve_uri('read',$glossarypage),
-			'menu'          => Router::get_resolve_uri('read',$menubar),
-			'side'          => Router::get_resolve_uri('read',$sidebar),
-			'navigation'    => Router::get_resolve_uri('read',$navigation),
-			'head'          => Router::get_resolve_uri('read',$headarea),
-			'foot'          => Router::get_resolve_uri('read',$footarea),
-			'protect'       => Router::get_resolve_uri('read',$protect)
-		);
+				'login'         => Router::get_cmd_uri('login', $_page),
+				'logout'        => Router::get_cmd_uri('login', $_page, null, array('action'=>'logout') ),
 
-        if (empty($_page)) {
-			$links = array_merge($links,array(
+				/* Special Page */
+				'help'          => Router::get_cmd_uri('help'),
+				'top'           => Router::get_resolve_uri('read',$defaultpage),
+				'recent'        => Router::get_resolve_uri('read',$whatsnew),
+				'deleted'       => Router::get_resolve_uri('read',$whatsdeleted),
+				'interwiki'     => Router::get_resolve_uri('read',$interwiki),
+				'alias'         => Router::get_resolve_uri('read',$aliaspage),
+				'glossary'      => Router::get_resolve_uri('read',$glossarypage),
+				'menu'          => Router::get_resolve_uri('read',$menubar),
+				'side'          => Router::get_resolve_uri('read',$sidebar),
+				'navigation'    => Router::get_resolve_uri('read',$navigation),
+				'head'          => Router::get_resolve_uri('read',$headarea),
+				'foot'          => Router::get_resolve_uri('read',$footarea),
+				'protect'       => Router::get_resolve_uri('read',$protect),
+
 				'add'           => Router::get_cmd_uri('add'),
 				'backup'        => Router::get_cmd_uri('backup'),
 				'copy'          => Router::get_cmd_uri('template'),
@@ -431,40 +421,45 @@ class Render{
 				'new'           => Router::get_cmd_uri('newpage'),
 				'newsub'        => Router::get_cmd_uri('newpage_subdir'),
 				'rename'        => Router::get_cmd_uri('rename'),
-				'upload_list'   => Router::get_cmd_uri('attach',    null,   null,   array('pcmd'=>'list'))
-			));
-		}else{
-			$links = array_merge($links,array(
-				'add'           => Router::get_cmd_uri('add',           $_page),
-				'backup'        => Router::get_cmd_uri('backup',        $_page),
-				'brokenlink'    => Router::get_cmd_uri('brokenlink',    $_page),
-				'copy'          => Router::get_cmd_uri('template',      null,   null,   array('refer'=>$_page)),
-				'diff'          => Router::get_cmd_uri('diff',          $_page),
-				'edit'          => Router::get_cmd_uri('edit',          $_page),
-				'freeze'        => Router::get_cmd_uri('freeze',        $_page),
-				'guiedit'       => Router::get_cmd_uri('guiedit',       $_page),
-
-				'log'           => Router::get_cmd_uri('logview',       $_page),
-				'log_browse'    => Router::get_cmd_uri('logview',       $_page, null,   array('kind'=>'browse')),
-				'log_check'     => Router::get_cmd_uri('logview',       $_page, null,   array('kind'=>'check')),
-				'log_down'      => Router::get_cmd_uri('logview',       $_page, null,   array('kind'=>'download')),
-				'log_login'     => Router::get_cmd_uri('logview',       null,   null,   array('kind'=>'login')),
-				'log_update'    => Router::get_cmd_uri('logview',       $_page),
-				'new'           => Router::get_cmd_uri('newpage',       null,   null,   array('refer'=>$_page)),
-				'newsub'        => Router::get_cmd_uri('newpage_subdir',null,   null,   array('directory'=>$_page)),
-				'rename'        => Router::get_cmd_uri('rename',        null,   null,   array('refer'=>$_page)),
-
-				'source'        => Router::get_cmd_uri('source',        $_page),
-
-				'unfreeze'      => Router::get_cmd_uri('unfreeze',      $_page),
-				'upload'        => Router::get_cmd_uri('attach',        $_page, null,   array('pcmd'=>'upload')), // link rel="alternate" にも利用するため absuri にしておく
-
-				'template'      => Router::get_cmd_uri('template',      null,   null,   array('refer'=>$_page))
-			));
+				'upload_list'   => Router::get_cmd_uri('attach',    null,   null,   array('pcmd'=>'list')),
+				'referer'       => $referer ? Router::get_cmd_uri('referer') : null
+			);
 		}
+		$links = $d_links;
 
-		if ($referer){
-			$links['referer']    = !empty($_page) ? Router::get_cmd_uri('referer',    $_page) : Router::get_cmd_uri('referer');
+		if (!empty($_page)){
+			static $p_links;
+			if (!isset($p_links[$_page])){
+				$p_links[$_page] = array(
+					'add'           => Router::get_cmd_uri('add',           $_page),
+					'backup'        => Router::get_cmd_uri('backup',        $_page),
+					'brokenlink'    => Router::get_cmd_uri('brokenlink',    $_page),
+					'copy'          => Router::get_cmd_uri('template',      null,   null,   array('refer'=>$_page)),
+					'diff'          => Router::get_cmd_uri('diff',          $_page),
+					'edit'          => Router::get_cmd_uri('edit',          $_page),
+					'freeze'        => Router::get_cmd_uri('freeze',        $_page),
+					'guiedit'       => Router::get_cmd_uri('guiedit',       $_page),
+
+					'log'           => Router::get_cmd_uri('logview',       $_page),
+					'log_browse'    => Router::get_cmd_uri('logview',       $_page, null,   array('kind'=>'browse')),
+					'log_check'     => Router::get_cmd_uri('logview',       $_page, null,   array('kind'=>'check')),
+					'log_down'      => Router::get_cmd_uri('logview',       $_page, null,   array('kind'=>'download')),
+					'log_login'     => Router::get_cmd_uri('logview',       null,   null,   array('kind'=>'login')),
+					'log_update'    => Router::get_cmd_uri('logview',       $_page),
+					'new'           => Router::get_cmd_uri('newpage',       null,   null,   array('refer'=>$_page)),
+					'newsub'        => Router::get_cmd_uri('newpage_subdir',null,   null,   array('directory'=>$_page)),
+					'rename'        => Router::get_cmd_uri('rename',        null,   null,   array('refer'=>$_page)),
+
+					'source'        => Router::get_cmd_uri('source',        $_page),
+
+					'unfreeze'      => Router::get_cmd_uri('unfreeze',      $_page),
+					'upload'        => Router::get_cmd_uri('attach',        $_page, null,   array('pcmd'=>'upload')), // link rel="alternate" にも利用するため absuri にしておく
+
+					'template'      => Router::get_cmd_uri('template',      null,   null,   array('refer'=>$_page)),
+					'referer'       => $referer ? Router::get_cmd_uri('referer',    $_page) : ''
+				);
+			}
+			$links = array_merge($d_links,$p_links[$_page]);
 		}
 		ksort($links);
 		return $links;

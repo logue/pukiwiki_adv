@@ -14,6 +14,7 @@
 use PukiWiki\File\AttachFile;
 use PukiWiki\Auth\Auth;
 use PukiWiki\Spam\Spam;
+use PukiWiki\Factory;
 // NOTE (PHP > 4.2.3):
 //    This feature is disabled at newer version of PHP.
 //    Set this at php.ini if you want.
@@ -707,45 +708,7 @@ function attach_showform()
 	);
 }
 
-//-------- サービス
-// mime-typeの決定
-function attach_mime_content_type($filename)
-{
-	$type = 'application/octet-stream'; // default
 
-	if (! file_exists($filename)) return $type;
-
-	$size = @getimagesize($filename);
-	if (is_array($size)) {
-		switch ($size[2]) {
-			case 1: return 'image/gif';
-			case 2: return 'image/jpeg';
-			case 3: return 'image/png';
-			case 4: return 'application/x-shockwave-flash';
-		}
-	}
-
-	$matches = array();
-	if (! preg_match('/_((?:[0-9A-F]{2})+)(?:\.\d+)?$/', $filename, $matches))
-		return $type;
-
-	$filename = decode($matches[1]);
-
-	// mime-type一覧表を取得
-	$config = new Config(PLUGIN_ATTACH_CONFIG_PAGE_MIME);
-	$table = $config->read() ? $config->get('mime-type') : array();
-	unset($config); // メモリ節約
-
-	foreach ($table as $row) {
-		$_type = trim($row[0]);
-		$exts = preg_split('/\s+|,/', trim($row[1]), -1, PREG_SPLIT_NO_EMPTY);
-		foreach ($exts as $ext) {
-			if (preg_match("/\.$ext$/i", $filename)) return $_type;
-		}
-	}
-
-	return $type;
-}
 
 // アップロードフォームの出力
 function attach_form($page)
@@ -753,7 +716,7 @@ function attach_form($page)
 	global $_attach_messages;
 
 	if (! ini_get('file_uploads'))	return '#attach(): <code>file_uploads</code> disabled.<br />';
-	if (! is_page($page))			return '#attach(): No such page<br />';
+	if (! Factory::Wiki($page)->has())			return '#attach(): No such page<br />';
 
 	$attach_form[] = '<form enctype="multipart/form-data" action="' . get_script_uri() . '" method="post" class="attach_form">';
 	$attach_form[] = '<input type="hidden" name="cmd" value="attach" />';

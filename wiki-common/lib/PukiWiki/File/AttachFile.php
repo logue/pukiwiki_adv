@@ -18,6 +18,7 @@ use PukiWiki\File\File;
 use PukiWiki\Renderer\Header;
 use PukiWiki\Router;
 use PukiWiki\Utility;
+use PukiWiki\Time;
 use SplFileInfo;
 use Zend\Http\Headers;
 use Zend\Http\Response;
@@ -38,17 +39,17 @@ class AttachFile extends SplFileInfo{
 
 	function __construct($page, $file, $age = 0)
 	{
-		$this->page = $page;
-		$this->file = basepagename($file);
+		$this->page = strstr('%', $page) !== false ? $page : rawurldecode($page);
+		$this->file = basepagename(strstr('%', $file) !== false ? $file :rawurldecode($file) );
 		$this->age  = is_numeric($age) ? $age : 0;
 
-		$this->basename = UPLOAD_DIR . Utility::encode($page) . '_' . Utility::encode($this->file);
+		$this->basename = UPLOAD_DIR . Utility::encode($this->page) . '_' . Utility::encode($this->file);
 		$this->filename = $this->basename . ($age ? '.' . $age : '');
 		$this->logname  = $this->basename . '.log';
 		parent::__construct($this->basename);
 		$this->exists   = $this->isFile();
-		$this->time     = $this->exists ? filemtime($this->filename) : 0;
-		$this->size     = filesize($this->filename);
+		$this->time     = $this->getMTime();
+		$this->size     = $this->getSize();
 	}
 
 	function gethash()
@@ -69,9 +70,9 @@ class AttachFile extends SplFileInfo{
 			}
 			$this->status['count'] = explode(',', $this->status['count']);
 		}
-		$this->time_str = get_date('Y/m/d H:i:s', $this->time);
+		$this->time_str = Time::getZoneTimeDate('Y/m/d H:i:s', $this->time);
 		$this->size_str = sprintf('%01.1f', round($this->size/1024, 1)) . 'KB';
-		$this->type     = attach_mime_content_type($this->filename);
+		$this->type     = self::attach_mime_content_type();
 
 		return TRUE;
 	}
@@ -192,10 +193,10 @@ class AttachFile extends SplFileInfo{
 					if ($size[2] > 0 && $size[2] < 3) {
 						if ($size[0] < 200) { $w = $size[0]; $h = $size[1]; }
 						else { $w = 200; $h = $size[1] * (200 / ($size[0]!=0?$size[0]:1) ); }
-						$_attach_setimage  = ($pkwk_dtd == PKWK_DTD_HTML_5) ? '<figure class="img_margin attach_info_image">' : '<div class="img_margin attach_info_image">';
+						$_attach_setimage  = '<figure class="img_margin attach_info_image">';
 						$_attach_setimage .= '<img src="'.get_cmd_uri('ref','','',array('page'=>$this->page,'src'=>$this->file));
 						$_attach_setimage .= '" width="' . $w .'" height="' . $h . '" />';
-						$_attach_setimage .= ($pkwk_dtd == PKWK_DTD_HTML_5) ? '</figure>' : '</div>';
+						$_attach_setimage .= '</figure>';
 					}
 				}
 			}
@@ -407,9 +408,26 @@ EOD;
 			exit;
 		}
 		$this->getstatus();
-		
+
+		// ファイルの読み込み
+		$f = $this->openFile('rb');
+		// ファイルの内容をGZ圧縮してバッファに保存		
+		ob_start('ob_gzhandler');
+		$f->flock(LOCK_SH);
+		while (!$f->eof()) {
+			echo $f->fgets();
+		}
+		$f->flock(LOCK_SH);
+		unset($f);
+		$buffer = ob_get_clean();
+		flush();
+
+		// 添付ファイルの実行を防ぐため明示的にダウンロードとする
+		$content_type = $this->type == 'text/html' ? 'application/octet-stream' : $this->type;
+		// ヘッダーに含めるファイル名
+		ini_set('default_charset', '');
+		mb_http_output('pass');
 		$filename = $this->file;
-		// Care for Japanese-character-included file name
 		if (LANG == 'ja_JP') {
 			switch(UA_NAME . '/' . UA_PROFILE){
 			case 'Opera/default':
@@ -421,13 +439,6 @@ EOD;
 				break;
 			}
 		}
-
-		ini_set('default_charset', '');
-		mb_http_output('pass');
-
-		// 添付ファイルの実行を防ぐため明示的にダウンロードとする
-		$content_type = $this->type == 'text/html' ? 'application/octet-stream' : $this->type;
-
 		// ヘッダー出力
 		$header = Header::getHeaders($content_type, $this->getMTime());
 		if ($content_type == 'application/octet-stream') {
@@ -435,33 +446,70 @@ EOD;
 		} else {
 			$header['Content-Disposition'] = 'inline; filename="' . $filename . '"';
 		}
-		// ファイルサイズ
-		$header['Content-Length'] = $this->getSize();
-		
 		if ($use_sendfile_header === true){
 			// for reduce server load
 			$header['X-Sendfile'] = $this->getRealPath();
 		}
 
-		$response->setStatusCode(Response::STATUS_CODE_200);
-		$response->getHeaders()->addHeaders($header);
-		header($response->renderStatusLine());
-		foreach ($response->getHeaders() as $_header) {
-			header($_header->toString());
-		}
-		// ファイルの読み込み
-		$f = $this->openFile('rb');
-		// ロック
-		$f->flock(LOCK_SH);
-		echo $f->fpassthru();
-		// アンロック
-		$f->flock(LOCK_UN);
-		// 念のためオブジェクトを開放
-		unset($f);
-
 		// 読み込み回数のカウンタを更新
 		$this->status['count'][$this->age]++;
 		$this->putstatus();
+
+		// 出力
+		Header::writeResponse($header, Response::STATUS_CODE_200, $buffer);
+
 		exit;
+	}
+
+	//-------- サービス
+	// mime-typeの決定
+	private function attach_mime_content_type()
+	{
+		try {
+			// @をつけると処理が重いのでtry-catch文を使う
+			$size = getimagesize($this->getRealPath());
+		}catch(Exception $e) {
+			// 画像でない場合エラーが発生するので例外処理で投げる
+			$matches = array();
+			if (! preg_match('/_((?:[0-9A-F]{2})+)(?:\.\d+)?$/', $filename, $matches))
+				return 'application/octet-stream';
+
+			$filename = Utility::decode($matches[1]);
+
+			// mime-type一覧表を取得
+			$config = new Config(self::ATTACH_CONFIG_PAGE_MIME);
+			$table = $config->read() ? $config->get('mime-type') : array();
+			unset($config); // メモリ節約
+
+			foreach ($table as $row) {
+				$_type = trim($row[0]);
+				$exts = preg_split('/\s+|,/', trim($row[1]), -1, PREG_SPLIT_NO_EMPTY);
+				foreach ($exts as $ext) {
+					if (preg_match("/\.$ext$/i", $filename)) return $_type;
+				}
+			}
+		}
+		// 画像の場合
+		switch ($size[2]) {
+			case IMAGETYPE_BMP     : return 'image/bmp';
+			case IMAGETYPE_GIF     : return 'image/gif';
+			case IMAGETYPE_ICO     : return 'image/vnd.microsoft.icon';
+			case IMAGETYPE_IFF     : return 'image/iff';
+			case IMAGETYPE_JB2     : return 'image/jbig2';
+			case IMAGETYPE_JP2     : return 'image/jp2';
+			case IMAGETYPE_JPC     : return 'image/jpc';
+			case IMAGETYPE_JPEG    : return 'image/jpeg';
+			case IMAGETYPE_JPX     : return 'image/jpx';
+			case IMAGETYPE_PNG     : return 'image/png';
+			case IMAGETYPE_PSD     : return 'image/psd';
+			case IMAGETYPE_SWC     :
+			case IMAGETYPE_SWF     : return 'application/x-shockwave-flash';
+			case IMAGETYPE_TIFF_II :
+			case IMAGETYPE_TIFF_MM : return 'image/tiff';
+			case IMAGETYPE_WBMP    : return 'image/vnd.wap.wbmp';
+			case IMAGETYPE_XBM     : return 'image/xbm';
+			case IMAGETYPE_UNKNOWN :
+			default                : return 'application/octet-stream';
+		}
 	}
 }

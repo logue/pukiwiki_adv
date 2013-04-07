@@ -6,7 +6,7 @@
 //   2005-2008 PukiWiki Plus! Team
 // License: GPL v2 or (at your option) any later version
 //
-
+use PukiWiki\Auth\Auth;
 // Authentication Type
 // 1: basic
 // 2: digest
@@ -37,8 +37,8 @@ $auth_api = include(add_homedir('auth_api.ini.php'));
 /////////////////////////////////////////////////
 // Authentication method
 
-$auth_method_type = 'pagename'; // By Page name
-//$auth_method_type = 'contents'; // By Page contents
+$auth_method_type = Auth::AUTH_METHOD_PAGENAME; // By Page name
+//$auth_method_type = Auth::AUTH_METHOD_CONTENTS; // By Page contents
 
 // Accept specified IP without basic_auth
 $read_auth_pages_accept_ip = array(

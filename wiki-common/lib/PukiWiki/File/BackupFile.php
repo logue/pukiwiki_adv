@@ -221,7 +221,7 @@ class BackupFile extends File{
 	 *
 	 * @return    Boolean   FALSE:失敗 その他:書き込んだバイト数
 	 */
-	public function set($data, $keeptimestamp = false){
+	public function set($data = '', $keeptimestamp = false){
 		// 古いバックアップを削除（追記する実装でないため）
 		$this->remove();
 

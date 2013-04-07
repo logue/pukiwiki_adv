@@ -346,7 +346,7 @@ class Rules{
 			if ($modify === FALSE) continue;
 
 			// Replace with $str_rules
-			foreach ($rules['str_rules'] as $pattern => $replacement)
+			foreach ($rules['str'] as $pattern => $replacement)
 				$line = preg_replace('/' . $pattern . '/', $replacement, $line);
 
 			// Adding fixed anchor into headings
@@ -379,7 +379,7 @@ class Rules{
 		return preg_replace($patternf, $replacef, $str);
 	}
 	public static function getLineRules(){
-		global $usedatetime, $useemoji;
+		global $usedatetime;
 		static $_line_rules;
 
 		if (!isset($_line_rules)){
@@ -387,7 +387,6 @@ class Rules{
 			// 日時置換ルールを$line_rulesに加える
 			$_line_rules = self::$default_rules;
 			if ($usedatetime) $_line_rules += $rules['datetime'];
-			if ($useemoji)
 			$_line_rules += self::$emoji_rules;
 		}
 		return $_line_rules;

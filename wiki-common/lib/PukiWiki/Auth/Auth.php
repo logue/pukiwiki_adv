@@ -15,7 +15,7 @@ use PukiWiki\Factory;
 use PukiWiki\Listing;
 use PukiWiki\Renderer\Header;
 use PukiWiki\Auth\AuthApi;
-
+use Exception;
 /**
  * 認証クラス
  */
@@ -62,11 +62,11 @@ class Auth
 	 */
 	const ROLE_AUTH_TEMP = 5.1;
 	/**
-	 * 認証方法：セッション認証
+	 * 認証方法：セッション認証（未実装）
 	 */
 	const AUTH_SESSION = 0;
 	/**
-	 * 認証方法：セッション認証
+	 * 認証方法：BASIC認証
 	 */
 	const AUTH_BASIC = 1;
 	/**
@@ -74,13 +74,21 @@ class Auth
 	 */
 	const AUTH_DIGEST = 2;
 	/**
-	 *
+	 * 判定条件：ページ名
 	 */
-	const AUTH_METHOD_PAGENAME = 0;
+	const AUTH_METHOD_PAGENAME = 'pagename';
 	/**
-	 *
+	 * 判定条件：ページ内容
 	 */
-	const AUTH_METHOD_CONTENTS = 1;
+	const AUTH_METHOD_CONTENTS = 'contents';
+	/**
+	 * 認証条件：読み込み時
+	 */
+	const AUTH_TYPE_READ = 'read';
+	/**
+	 * 認証条件：編集時
+	 */
+	const AUTH_TYPE_EDIT = 'edit';
 
 	/**
 	 * 管理人ログイン（非推奨）
@@ -195,51 +203,79 @@ class Auth
 	/**
 	 * 権限をチェック
 	 * @param string $page ページ名
-	 * @param string $type チェックする権限（read or edit）
+	 * @param string $type チェックする権限（AUTH_TYPE_READ or AUTH_TYPE_EDIT）
 	 * @param boolean $authenticate 認証画面を出すか？
 	 * @param string $username ユーザ名（認証状態のユーザ名が優先される）
 	 * @param string $groupname グループ名（認証状態のユーザのグループが優先される）
 	 * @return boolean
 	 */
-	public static function auth($page, $type = 'read', $authenticate = false, $username='', $groupname='')
+	public static function auth($page, $type = self::AUTH_TYPE_READ, $authenticate = false, $username='', $groupname='')
 	{
 		global $_title;
 		global $auth_method_type, $read_auth_pages, $edit_auth_pages, $read_auth_pages_accept_ip, $edit_auth_pages_accept_ip;
 
+		// マッチさせる文字列
 		$target_str = '';
 		// 認証の判定条件
 		switch($auth_method_type) {
 			case self::AUTH_METHOD_PAGENAME:
-			case 'pagename':
 				// ページ名で判断
 				$target_str = $page;
 				break;
 			case self::AUTH_METHOD_CONTENTS:
-			case 'contents':
 				// ページのソースで判断
 				$target_str = Factory::Wiki($page)->get(true);
 				break;
 			default:
-				throw new \Exception('Auth::auth() : $auth_method_type = '.$auth_method_type.' is invalied or unmounted!.');
+				throw new Exception('Auth::auth() : $auth_method_type = '.$auth_method_type.' is invalied or unmounted!.');
 				break;
 		}
 		// 認証のタイプによってメッセージを分ける
 		switch($type){
-			case 'read':
+			case self::AUTH_TYPE_READ:
 				// IPをチェック
 				if (self::checkAcceptIp($read_auth_pages_accept_ip, $target_str)) return true;
 				$auth_pages = $read_auth_pages;
 				$title_cannot = $_title['cannotedit'];
 				break;
-			case 'edit':
+			case self::AUTH_TYPE_EDIT:
 				if (self::checkAcceptIp($edit_auth_pages_accept_ip, $target_str)) return true;
 				$auth_pages = $edit_auth_pages;
 				$title_cannot = $_title['cannotread'];
 				break;
 			default:
-				throw new \Exception('Auth::auth() : $type = '.$type.' is invalied!.');
+				throw new Exception('Auth::auth() : $type = '.$type.' is invalied!.');
 				break;
 		}
+
+		$user_list = $group_list = $role = $matched = '';
+		// ページから認証条件を読む
+		// $auth_pages = array(
+		//      'ページ名の正規表現' => array(
+		//          'user'  => array(ユーザ名のリスト),
+		//          'group' => array(グループのリスト),
+		//          'role'  => array(役割のリスト)
+		//      ),
+		//      ...
+		// );
+		foreach($auth_pages as $pattern=>$val) {
+			if ($matched = preg_match($pattern, $target_str)) {
+				// 認証条件に対象文字列がヒットした
+				if (is_array($val)) {
+					$user_list  = empty($val['user'])   ? null : explode(',',$val['user']);
+					$group_list = empty($val['group'])  ? null : explode(',',$val['group']);
+					$role       = empty($val['role'])   ? null : $val['role'];
+				} else {
+					$user_list  = empty($val)           ? null : explode(',',$val);
+				}
+				break;
+			}
+		}
+		// 制限対象のページでない場合ここで終了
+		if (empty($user_list) && empty($group_list) && empty($role)) return true;
+		// マッチしない場合は対象外
+		if ($matched === 0) return true;
+		
 
 		if ($authenticate){
 			// 認証画面を出す
@@ -253,7 +289,7 @@ class Auth
 					$ret = self::digest_auth(true);
 				break;
 			//	default:
-			//		return self::session_auth($target_str, true, false, $auth_pages, $title_cannot);
+			//		return self::session_auth(true);
 			}
 			if (!$ret === true) {
 				// 認証失敗
@@ -261,7 +297,6 @@ class Auth
 				exit;
 			}
 		}
-
 		// ユーザの情報を取得
 		$info = self::get_user_info();
 		if (empty($username)){
@@ -272,35 +307,9 @@ class Auth
 			$groupname = $info['group'];
 		}
 
-		$user_list = $group_list = $role = '';
-		$matched = false;
-		// $auth_pages = array(
-		//      'ページ名の正規表現' => array(
-		//          'user'  => array(ユーザ名のリスト),
-		//          'group' => array(グループのリスト),
-		//          'role'  => array(役割のリスト)
-		//      ),
-		//      ...
-		// );
-		foreach($auth_pages as $pattern=>$val) {
-			if (preg_match($pattern, $target_str)) {
-				if (is_array($val)) {
-					$user_list  = empty($val['user'])   ? null : explode(',',$val['user']);
-					$group_list = empty($val['group'])  ? null : explode(',',$val['group']);
-					$role       = empty($val['role'])   ? null : $val['role'];
-					
-				} else {
-					$user_list  = empty($val)           ? null : explode(',',$val);
-				}
-				$matched = true;
-				break;
-			}
-		}
-		// マッチしない場合は対象外
-		if ($matched === false) return true;
+		// 未認証者
+		if (empty($username)) return false;
 		
-		// 制限対象のページでない場合ここで終了
-		if (empty($user_list) && empty($group_list) && empty($role)) return true;
 		// ユーザ名検査
 		if (!empty($user_list) && in_array($username, $user_list)) return true;
 		// グループ検査

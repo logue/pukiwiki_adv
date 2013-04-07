@@ -606,19 +606,19 @@ if (!empty($cmd)){
 	if (! PluginRenderer::hasPluginMethod($cmd, 'action')) {
 		Utility::dieMessage(sprintf($_string['plugin_not_implemented'],Utility::htmlsc($cmd)), 501);
 	}else{
-		$retvars = do_plugin_action($cmd);
+		$retvars = PluginRenderer::executePluginAction($cmd);
 	}
 }
 
 if ($is_protect) {
  	// Location で飛ぶようなプラグインの対応のため
 	// 上のアクションプラグインの実行後に処理を実施
-	if (exist_plugin_convert('protect')) do_plugin_convert('protect');
+	PluginRenderer::executePluginBlock('protect');
 	die('<var>PLUS_PROTECT_MODE</var> is set.');
 }
 // Set Home
 $auth_key = Auth::get_user_info();
-if (!empty($auth_key['home']) && ($vars['page'] == $defaultpage || $vars['page'] == $auth_key['home'])){
+if (!empty($auth_key['home']) && isset($vars['page']) && ($vars['page'] == $defaultpage || $vars['page'] == $auth_key['home'])){
 	$base = $defaultpage = $auth_key['home'];
 }else{
 	$base = isset($vars['page']) ? $vars['page'] : $defaultpage;
@@ -703,12 +703,6 @@ function T_($string){
 	}
 }
 
-if (!function_exists('_')){
-	function _($string){
-		return T_($string);
-	}
-}
-
 function T_bindtextdomain($domain, $dir){
 	global $translator, $language, $cache;
 	$gettext_file = LANG_DIR.PO_LANG.'/LC_MESSAGES/'.$domain.'.mo';
@@ -723,10 +717,11 @@ function T_textdomain($text_domain){
 	$domain = $text_domain;
 }
 
-function pr($value){
+function pr($value, $break = false){
 	if (DEBUG){
 		Zend\Debug\Debug::dump($value);
 	}
+	if ($break) exit();
 	return;
 }
 

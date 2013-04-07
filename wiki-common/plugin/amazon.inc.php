@@ -95,7 +95,7 @@ function plugin_amazon_convert()
 	}
 
 	if (AMAZON_AID === ''|| AWS_ACCESS_KEY_ID === '' || AWS_SECRET_ACCESS_KEY == ''){
-		return '<div class="ui-state-error ui-corner-all">'.$_amazon_msg['err_nodefined'].'</div>';
+		return '<div class="ui-state-error ui-corner-all message_box">#amazon : '.$_amazon_msg['err_nodefined'].'</div>';
 	}
 
 	$argv = func_get_args();

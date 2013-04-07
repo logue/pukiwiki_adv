@@ -4,13 +4,20 @@ namespace PukiWiki\File;
 
 use DirectoryIterator;
 use Exception;
+use PukiWiki\Auth\Auth;
 use PukiWiki\File\File;
+use PukiWiki\NetBios;
+use PukiWiki\Spam\ProxyChecker;
 use PukiWiki\Utility;
 
 /**
  * ファイルの読み書きを行うクラス
  */
 abstract class LogFile extends File{
+	/**
+	 * ログのキーの保持期間（１年）
+	 */
+	const LOG_LIFE_TIME = 31536000;
 	/**
 	 * ログの種類
 	 */
@@ -64,17 +71,20 @@ abstract class LogFile extends File{
 		if (empty($page)){
 			throw new Exception('Page name is missing!');
 		}
+		// ログ設定
 		global $log;
 		$this->config = $log;
+		// ページ名
 		$this->page = $page;
+		// 派生クラス名からログの種類を指定
 		$class = get_called_class();
 		$this->kind = $class::$kind;
 		if (empty($class::$kind)) throw new Exception('class :'.$class.' does not defined $kind value.');
+		
 		parent::__construct(self::$dir . $this->kind . '/' . Utility::encode($page) . '.txt');
 	}
 	/**
 	 * ファイル一覧を取得
-	 * ※静的メソッドで呼び出すこと。キャッシュはここでは実装しない
 	 * @return array
 	 */
 	public static function exists($pattern = ''){
@@ -96,31 +106,45 @@ abstract class LogFile extends File{
 		return $ret;
 	}
 	/**
+	 * ログの存在チェック
+	 */
+	public function has(){
+		if (!$this->config[$this->kind]['use']) return false;
+		return parent::has();
+	}
+	/**
+	 * ログ件数
+	 */
+	public function count(){
+		return count(parent::get());
+	}
+	/**
 	 * 共通チェック
 	 */
-	function log_common_check($parm)
+	private function log_common_check($parm)
 	{
-		global $log;
 		global $log_ua;
 
+		// 認証中のユーザ名
 		$username = Auth::check_auth();
 
-
 		// 認証済の場合
-		if ($log['auth_nolog'] && !empty($username)) return '';
+		if ($this->config['auth_nolog'] && !empty($username)) return '';
 
+		// タイムスタンプ
 		$utime = UTIME;
+		// リモートIPを取得
 		$ip = Utility::getRemoteIp();
 
-		if (isset($log[$this->kind]['nolog_ip'])) {
+		if (isset($this->config[$this->kind]['nolog_ip'])) {
 			// ロギング対象外IP
-			foreach ($log[$this->kind]['nolog_ip'] as $nolog_ip) {
+			foreach ($this->config[$this->kind]['nolog_ip'] as $nolog_ip) {
 				if ($ip == $nolog_ip) return '';
 			}
 		}
 		unset($obj_log);
 		$rc = array();
-		$field = self::set_fieldname($this->kind);
+		$field = self::set_fieldname();
 
 		foreach ($field as $key) {
 			switch ($key) {
@@ -131,7 +155,7 @@ abstract class LogFile extends File{
 					$rc[$key] = $ip;
 					break;
 				case 'host': // ホスト名 (FQDN)
-					$rc[$key] = self::ip2host($ip);
+					$rc[$key] = gethostbyaddr($ip);
 					break;
 				case 'auth_api': // 認証API名
 					//$obj = new auth_api();
@@ -185,7 +209,7 @@ abstract class LogFile extends File{
 	 * 設定項目名を設定
 	 * @static
 	 */
-	static function set_fieldname()
+	private function set_fieldname()
 	{
 		global $log;
 
@@ -194,10 +218,197 @@ abstract class LogFile extends File{
 		$rc = array();
 		foreach(self::$field as $_field => $sw) {
 			if ($sw[$idx] == 0) continue;
-			if ($_field == 'page' && !isset($log[$kind]['file'])) continue;
+			if ($_field == 'page' && !isset($this->config[$kind]['file'])) continue;
 			$rc[] = $_field;
 		}
 
 		return $rc;
+	}
+	
+	/**
+	 * ログ記入
+	 * @param $value 未使用（何も入れないこと）
+	 *
+	 */
+	public function set($value = null){
+		// 設定
+		$config = $this->config[$this->kind];
+		
+		// ログを取らない場合書き込まない
+		if (!$config['use']) return;
+		// 書き込むデーターを取得
+		$rc = self::log_common_check();
+		// ない場合終了
+		if (empty($rc)) return;
+		// 更新するキーを取得
+
+		if (! empty($config['updtkey'])) {
+			// 最低限記録するキー
+			$mustkey = isset($config['mustkey']) ? $config['mustkey'] : 0;
+			//保存するキーを定義から取得
+			$_key = explode(':',$config['updtkey']);
+			// 設定項目名を取得
+			$name = log::set_fieldname();
+			// ログを読み込む
+			$data = parent::get(false);
+
+			// 更新フラグ
+			$put = false;
+			// 行の分解
+			for($i=0;$i<count($lines);$i++) {
+				// ログの１行を配列に変換した後、項目名を付与する
+				// $line = array(
+				//     'ts' => 000000,
+				//     'ip' => 127.0.0.1
+				//     ...
+				// );
+				// みたいな感じになる
+				$line = self::line2field($lines[$i],$name);
+
+				if (isset($line['ts']) && $line['ts'] <= UTIME - self::LOG_LIFE_TIME){
+					// 一定期間過ぎたエントリは削除
+					unset($data[$i]);
+					$put = true;
+					continue;
+				}
+
+				// 行書き換えフラグ
+				$sw_update = true;
+
+				// 列の分解
+				foreach($_key as $idx) {
+					// 書き込む前のデーターと異なっていた場合
+					if (isset($rc[$idx]) && isset($line[$idx]) && $rc[$idx] !== $line[$idx]) {
+						$sw_update = false;
+						break;
+					}
+/*
+					if (empty($rc[$idx]) || empty($line[$idx])) {
+						$sw_update = false;
+						break;
+					}
+					if ($rc[$idx] !== $line[$idx]) {
+						$sw_update = false;
+						break;
+					}
+*/
+				}
+				
+				if ($sw_update) {
+					// 書き換え
+					$data[$i] = self::array2table($rc);
+					$put = true;
+					break;
+				}
+			}
+
+			unset($i);
+
+			
+			if (! $put) {
+				if ($mustkey) {
+					if (self::log_mustkey_check($_key,$data)) {
+						$data[] = self::array2table($rc);
+					}
+				} else {
+					$data[] = self::array2table($rc);
+				}
+			}
+		} else {]
+			// 新規データー
+			$data = log::array2table( $rc );
+		}
+		// 保存（空行は削除）
+		parent::set(array_filter($data));
+	}
+	
+	private static function log_mustkey_check($key,$data)
+	{
+		foreach($key as $idx) {
+			if (empty($data[$idx])) return false;
+		}
+		return true;
+	}
+	/**
+	 * 配列データを PukiWiki 表形式データに変換
+	 * @static
+	 */
+	private static function array2table($data)
+	{
+		$rc = '';
+		foreach ($data as $x1) {
+			$rc .= '|'.$x1;
+		}
+		$rc .= "|\n";
+		return $rc;
+	}
+
+	/**
+	 * PukiWiki 表形式データかの判定
+	 * @static
+	 */
+	private static function is_table($line)
+	{
+		$x = trim($line);
+		if (substr($x,0,1) !== '|') return FALSE;
+		if (substr($x,-1)  !== '|') return FALSE;
+		return TRUE;
+	}
+
+	/**
+	 * PukiWiki 表形式データを配列データに変換
+	 * @static
+	 */
+	private static function table2array($x)
+	{
+		if (!self::is_table($x)) return array();
+		return explode('|', substr($x,1,-1));
+	}
+
+	/**
+	 * ログの１行を配列に変換した後、項目名を付与する
+	 * @static
+	 */
+	private static function line2field($line,$name)
+	{
+		$_fld = self::table2array($line);
+		$i = 0;
+		$rc = array();
+		foreach($name as $_name) {
+			if (substr($_name,0,1) === '@') continue;
+
+			$rc[$_name] = isset($_fld[$i]) ? $_fld[$i] : '';
+			$i++;
+		}
+		return $rc;
+	}
+	/**
+	 * NetBIOS の適用範囲決定
+	 */
+	private function netbios_scope_check($ip,$host)
+	{
+		static $ip_pattern = '/^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(?:\/(.+))?$/';
+
+		if (!$this->config['auth_netbios']['use']) return FALSE;
+
+		$l_ip = ip2long($ip);
+		$valid = (is_long($l_ip) and long2ip($l_ip) == $ip); // valid ip address
+
+		$matches = array();
+		foreach ($this->config['auth_netbios']['scope'] as $network)
+		{
+			if ($valid and preg_match($ip_pattern,$network,$matches))
+			{
+				$l_net = ip2long($matches[1]);
+				$mask = array_key_exists(2,$matches) ? $matches[2] : 32;
+				$mask = is_numeric($mask) ?
+					pow(2,32) - pow(2,32 - $mask) : // "10.0.0.0/8"
+					ip2long($mask);                 // "10.0.0.0/255.0.0.0"
+				if (($l_ip & $mask) == $l_net) return TRUE;
+			} else {
+				if (preg_match('/'.preg_quote($network,'/').'/',$host)) return FALSE;
+			}
+		}
+		return FALSE;
 	}
 }

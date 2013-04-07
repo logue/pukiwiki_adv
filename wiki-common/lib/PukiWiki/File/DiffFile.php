@@ -43,7 +43,7 @@ class DiffFile extends File{
 	 * @global boolean $notify_diff_only
 	 * @param string $str
 	 */
-	public function set($diffdata, $keeptimestamp = false){
+	public function set($diffdata = '', $keeptimestamp = false){
 		global $notify, $notify_diff_only;
 		// 差分を作成
 		//$diff = new Diff(WikiFactory::Wiki($this->page)->source(true), explode("\n",$postdata));

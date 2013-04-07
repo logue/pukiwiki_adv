@@ -65,7 +65,7 @@ abstract class File extends SplFileInfo{
 		parent::__construct($filename);
 	}
 	/**
-	 * ページ一覧を取得
+	 * ファイル一覧を取得
 	 * @param string $pattern ファイルのマッチパターン
 	 * @return array
 	 */
@@ -227,19 +227,19 @@ abstract class File extends SplFileInfo{
 	}
 	/**
 	 * ファイルの書き込み処理
-	 * @param string or array $str 書き込む文字列
+	 * @param string or array $str 書き込む文字列。空欄時は削除
 	 * @return int 書き込んだバイト数
 	 */
-	public function set($str, $keeptimestamp = false){
+	public function set($str = '', $keeptimestamp = false){
+		// 書き込むものがなかった場合、削除とみなす
+		if (empty($str)) return $this->remove();
+
 		// ファイルが存在しない作成
 		if ( !$this->isFile() ) $this->touch();
 
 		// 書き込み可能かをチェック
 		if (! $this->isWritable())
 			Utility::dieMessage(sprintf('File <var>%s</var> is not writable.', Utility::htmlsc($this->filename)));
-
-		// 書き込むものがなかった場合、削除とみなす
-		if (empty($str)) return $this->remove();
 
 		// タイムスタンプを取得
 		if ($keeptimestamp) $timestamp = self::getTime();
@@ -391,7 +391,7 @@ abstract class File extends SplFileInfo{
 	 * 再帰的にディレクトリを作成
 	 * @return boolean
 	 */
-	public function mkdir_r(){
+	private function mkdir_r(){
 		if ($this->has()) return false;
 
 		$dirname = dirname($this->filename);	// ファイルのディレクトリ名

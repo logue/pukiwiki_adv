@@ -700,6 +700,7 @@ class TableEdit2Auth
 }
 function table_edit2_auth()
 {
+	if (class_exists('TE2Auth')) return;
 	class TE2Auth{
 		function check_auth()
 		{

@@ -19,6 +19,42 @@ use PukiWiki\File\LogFile;
  */
 class UpdateLog extends LogFile{
 	public static $kind = 'update';
+
+	public function set(){
+		if ($this->config['guess_user']['use']){
+			// ユーザを推測する
+			$user = self::guess_user( $rc['user'], $rc['ntlm'], $rc['sig'] );
+			if (empty($user)) return;
+
+			$filename = log::set_filename('guess_user','');	// ログファイル名
+
+			if (file_exists($filename)) {
+				$src = file( $filename );			// ログの読み込み
+			} else {
+				// 最初の１件目
+				$data = log::array2table( array( $data['ua'], $data['host'], $user,"" ) );
+				log_put( $filename, $data);
+				return;
+			}
+
+			$sw = FALSE;
+
+			foreach($src as $_src) {
+				$x = trim($_src);
+				$field = log::table2array($x);	// PukiWiki 表形式データを配列データに変換
+				if (count($field) == 0) continue;
+				if ($field[0] != $data['ua']  ) continue;
+				if ($field[1] != $data['host']) continue;
+				if ($field[2] != $user        ) continue;
+				$sw = TRUE;
+				break;
+			}
+			if ($sw) return; // 既に存在
+			// データの更新
+			$data = log::array2table( array( $data['ua'], $data['host'], $user,'' ) );
+		}
+		parent::set();
+	}
 }
 
 /* End of file WikiFile.php */

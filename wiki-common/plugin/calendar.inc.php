@@ -44,7 +44,7 @@ function plugin_calendar_convert()
 	$today_view = TRUE;
 	$today_args = 'view';
 
-	$date_str = Time::get_date('Ym');
+	$date_str = Time::getZoneTimeDate('Ym');
 	$base     = Utility::stripBracket($vars['page']);
 
 	$today_view = TRUE;
@@ -182,7 +182,7 @@ EOD;
 			'		<tr>' . "\n";
 
 		/* from Plus! */
-		$h_today = PublicHolidayFactory::Wiki('JP', $year, $m_num, $day);
+		$h_today = PublicHolidayFactory::factory('JP', $year, $m_num, $day);
 		$hday = $h_today['rc'];
 
 		$style = 'style_calendar_day'; // Weekday
@@ -200,27 +200,27 @@ EOD;
 			$style = 'style_calendar_sat';
 		}
 
-		if ($wiki->isValied()) {
+		if ($wiki->has()) {
 			$link = '<a href="' . $wiki->uri() . '" title="' . $s_page . '"><strong>' . $day . '</strong></a>';
 		} else {
 			if (PKWK_READONLY) {
 				$link = $day;
 			} else {
-				$link = '<a href="' . $wiki->uri('edit','',array('refer'=>$base)) . '" title="' . $s_page . '" rel="nofollow">' . $day . '</a>';
+				$link = '<a href="' . $wiki->uri('edit',array('refer'=>$base)) . '" title="' . $s_page . '" rel="nofollow">' . $day . '</a>';
 			}
 		}
 
-		$ret .= '			<td class="style_td ' . $style . '">' . $link .'</td>' . "\n";
+		$ret .= '<td class="style_td ' . $style . '">' . $link .'</td>' . "\n";
 		++$day;
 		$wday = ++$wday % 7;
 	}
 
 	if ($wday > 0)
 		while ($wday++ < 7) // Blank
-			$ret .= '			<td class="style_td_blank"></td>' . "\n";
+			$ret .= '<td class="style_td_blank"></td>' . "\n";
 
-	$ret .= '		</tr>'   . "\n" .
-		'	</tbody>'."\n".
+	$ret .= '</tr>'   . "\n" .
+		'</tbody>'."\n".
 		'</table>' . "\n";
 
 	if ($today_view) {

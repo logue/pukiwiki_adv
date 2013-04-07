@@ -420,12 +420,10 @@ class PluginRenderer{
 		T_textdomain(DOMAIN);
 		$digest  = $_digest; // Revert
 
-		if($retvar === FALSE) {
-			// Do nothing
-			return Utility::htmlsc('&' . $name . ($args ? '(' . $args . ')' : '') . ';');
-		} else {
-			return self::addHiddenField($retvar, $name);
-		}
+		return ($retvar === FALSE) ?
+			// プラグインとメソッドが存在するのに出力がない場合はエラー
+			'<span class="ui-state-error">'. Utility::htmlsc('&' . $name . ($args !== '' ? '(' . $args . ')' : '')) .'</span>' :
+			self::addHiddenField($retvar, $name);
 	}
 	/**
 	 * formタグに追加のフォームを挿入

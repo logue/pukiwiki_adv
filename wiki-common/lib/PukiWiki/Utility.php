@@ -12,6 +12,7 @@ use PukiWiki\Renderer\InlineFactory;
 use PukiWiki\Renderer\PluginRenderer;
 use PukiWiki\Renderer\Header;
 use PukiWiki\Router;
+use PukiWiki\Render;
 use PukiWiki\Factory;
 use Zend\Http\Response;
 use Zend\Math\Rand;
@@ -105,9 +106,8 @@ class Utility{
 			foreach (explode('&', $arg) as $key_and_value) {
 				if (preg_match('/^([^=]+)=(.+)/', $key_and_value, $matches)) {
 					$key = trim($matches[1]);
-					$value = trim($matches[2]);
+					$value = trim(rawurldecode($matches[2]));
 					if (empty($value)) continue;
-					if ($key === 'page') $value = rawurldecode($value);
 					$get[$key] = $value;
 				}
 			}
@@ -519,33 +519,24 @@ class Utility{
 	 * @param int $http_code 出力するヘッダー
 	 */
 	public static function dieMessage($msg = '', $error_title='', $http_code = Response::STATUS_CODE_500){
-		global $skin_file, $page_title, $_string, $_title, $_button, $vars;
+		global $page_title, $_string, $_title, $_button, $vars;
 
-		$html = array();
-		$html[] = '<!doctype html>';
-		$html[] = '<html>';
-		$html[] = '<head>';
-		$html[] = '<meta charset="utf-8">';
-		$html[] = '<meta name="robots" content="NOINDEX,NOFOLLOW" />';
-		$html[] = '<link rel="stylesheet" href="http://code.jquery.com/ui/' . JQUERY_UI_VER . '/themes/ui-lightness/jquery-ui.min.css" type="text/css" />';
-		$html[] = '<title>' . (!empty($error_title) ? $error_title : $_title['error']) . ' - ' . $page_title . '</title>';
-		$html[] = '</head>';
-		$html[] = '<body>';
-		$html[] = '<p>[ ';
+		// エラーメッセージの内容
+		$body[] = '<p>[ ';
 		if ( isset($vars['page']) && !empty($vars['page']) ){
-			$html[] = '<a href="' . Factory::Wiki($vars['page'])->uri() .'">'.$_button['back'].'</a> | ';
-			$html[] = '<a href="' . Router::get_cmd_uri('edit',$vars['page']) . '">Try to edit this page</a> | ';
+			$body[] = '<a href="' . Factory::Wiki($vars['page'])->uri() .'">'.$_button['back'].'</a> | ';
+			$body[] = '<a href="' . Router::get_cmd_uri('edit',$vars['page']) . '">Try to edit this page</a> | ';
 		}
-		$html[] = '<a href="' . get_cmd_uri() . '">Return to FrontPage</a> ]</p>';
-		$html[] = '<div class="ui-state-error ui-corner-all" style="padding:0 .5em;">';
-		$html[] = '<p><span class="ui-icon ui-icon-alert" style="display:inline-block;"></span> <strong>' . $_title['error'] . '</strong>';
-		$html[] = PKWK_WARNING !== true || empty($msg) ? $msg = $_string['error_msg'] : $msg;
-		$html[] = '</p>';
-		$html[] = '</div>';
+		$body[] = '<a href="' . Router::get_cmd_uri() . '">Return to FrontPage</a> ]</p>';
+		$body[] = '<div class="message_box ui-state-error ui-corner-all" style="padding:.5em;">';
+		$body[] = '<p><span class="ui-icon ui-icon-alert" style="display:inline-block;"></span> <strong>' . $_title['error'] . '</strong>';
+		$body[] = PKWK_WARNING !== true || empty($msg) ? $msg = $_string['error_msg'] : $msg;
+		$body[] = '</p>';
+		$body[] = '</div>';
 		if (DEBUG) {
-			$html[] = '<div class="ui-state-highlight ui-corner-all" style="padding:0 .5em;">';
-			$html[] = '<p><span class="ui-icon ui-icon-info" style="display:inline-block;"></span> <strong>Back Trace</strong></p>';
-			$html[] = '<ol>';
+			$body[] = '<div class="message_box ui-state-highlight ui-corner-all" style="padding:.5em;">';
+			$body[] = '<p><span class="ui-icon ui-icon-info" style="display:inline-block;"></span> <strong>Back Trace</strong></p>';
+			$body[] = '<ol>';
 			foreach (debug_backtrace() as $k => $v) {
 				if ($k < 2) { 
 					continue;
@@ -553,26 +544,13 @@ class Utility{
 				array_walk($v['args'], function (&$item, $key) {
 					$item = var_export($item, true);
 				});
-				$html[] = '<li>' . (isset($v['file']) ? $v['file'] : '?') . '(<var>' . (isset($v['line']) ? $v['line'] : '?') . '</var>):<br /><code>' . (isset($v['class']) ? '<strong>' . $v['class'] . '</strong>-&gt;' : '') . $v['function'] . '(<var>' . implode(', ', $v['args']) . '</var>)</code></li>' . "\n";
+				$body[] = '<li>' . (isset($v['file']) ? $v['file'] : '?') . '(<var>' . (isset($v['line']) ? $v['line'] : '?') . '</var>):<br /><code>' . (isset($v['class']) ? '<strong>' . $v['class'] . '</strong>-&gt;' : '') . $v['function'] . '(<var>' . implode(', ', $v['args']) . '</var>)</code></li>' . "\n";
 			}
-			$html[] = '</ol>';
-			$html[] = '</div>';
+			$body[] = '</ol>';
+			$body[] = '</div>';
 		}
-		$html[] = '</body>';
-		$html[] = '</html>';
-		$content = join("\n",$html);
-	
-		$response = new Response();
-		$response->setContent($content);
-		$response->getHeaders()->addHeaders(Header::getHeaders('text/html'));
-		$response->getHeaders()->addHeaderLine('Content-Length', strlen($content));
-		$response->setStatusCode($http_code);
 
-		header($response->renderStatusLine());
-		foreach ($response->getHeaders() as $_header) {
-			header($_header->toString());
-		}
-		echo $response->getBody();
+		new Render($error_title, join("\n",$body), $http_code);
 		exit();
 	}
 	/**
@@ -610,7 +588,11 @@ class Utility{
 		$html[] = '<p style="padding:0 .5em;">';
 		$html[] = '<span class="ui-icon ui-icon-alert" style="display:inline-block;"></span>';
 		$html[] = 'The requested page has moved to a new URL. <br />';
-		$html[] = 'Please click <a href="'.$s_url.'">here</a> if you do not want to move even after a while.</p>';
+		$html[] = 'Please click <a href="'.$s_url.'">here</a> if you do not want to move even after a while.';
+		if (!DEBUG){
+			$html[] = '<br />NOTICE: No auto redirect when Debug mode.';
+		}
+		$html[] = '</p>';
 		$html[] = '</div>';
 		$html[] = '</body>';
 		$html[] = '</html>';

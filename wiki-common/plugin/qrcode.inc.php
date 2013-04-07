@@ -46,89 +46,110 @@ GPL
 */
 
 use PukiWiki\Renderer\Header;
+use PukiWiki\Factory;
+use PukiWiki\Utility;
+use PukiWiki\Router;
 use Zend\Http\Response;
 
 function plugin_qrcode_inline()
 {
-	if (extension_loaded('gd')){
-		switch(func_num_args()){
-			case 5:
-				list($s,$e,$v,$n,$d) = func_get_args();
-				break;
-			case 4:
-				list($s,$e,$v,$d) = func_get_args();
-				break;
-			case 3:
-				list($s,$e,$d) = func_get_args();
-				break;
-			case 2:
-				list($s,$d) = func_get_args();
-				break;
-			case 1:
-				list($d) = func_get_args();
-				break;
-			default:
-				return FALSE;
-				break;
-		}
+	if (!extension_loaded('gd')) return '<span class="ui-state-error">&amp;qrcode(): GD2 extention was not loaded!</span>';
 
-		// thx, nanashi and customized
-		$s = ( $s <= 0 ) ? intval($s) : 0;
-		$v = (isset($v) && !( $v <= 0 && $v > PHPQRCode\Constants::QRSPEC_VERSION_MAX )) ? intval($v) : 0;
-		$n = (isset($n) && !( $n <= 0 && $n > PHPQRCode\Constants::QRCODE_MAX_SPLIT )) ? intval($n) : 0;
-		$e = htmlsc(isset($e) ? $e : 'M');
+	/**
+	 * $s サイズ,
+	 * $e 訂正方法,
+	 * $v バージョン,
+	 * $n 分割数
+	 * $d バーコード化する文字列（Adv.版は非サポート）
+	 */
+	switch(func_num_args()){
+//		case 5:
+//			list($s,$e,$v,$n,$d) = func_get_args();
+//			break;
+		case 4:
+			list($s,$e,$v,$d) = func_get_args();
+			break;
+		case 3:
+			list($s,$e,$d) = func_get_args();
+			break;
+		case 2:
+			list($s,$d) = func_get_args();
+			break;
+		case 1:
+			list($d) = func_get_args();
+			break;
+	}
 
-		// if no string, no display.
-		if (empty($d)) return FALSE;
+	// thx, nanashi and customized
+	$s = (isset($s) && $s <= 0 ) ? intval($s) : 0;
+	$v = (isset($v) && !( $v <= 0 && $v > PHPQRCode\Constants::QRSPEC_VERSION_MAX )) ? intval($v) : PHPQRCode\Constants::QRSPEC_VERSION_MAX;
+//	$n = (isset($n) && !( $n <= 0 && $n > 16 )) ? intval($n) : 0;
+	$e = Utility::htmlsc(isset($e) ? $e : 'M');
 
-		// thx, nao-pon
-		$d = str_replace('<br />',"\r\n",$d);
-		$d = strip_tags($d);
+	if (empty($d)) $d = $d = isset($vars['page']) ? Factory::Wiki($vars['page'])->getUri() : Router::get_cmd_uri();
 
-		// docomo is s-jis encoding
-		$d = mb_convert_encoding($d,'SJIS',SOURCE_ENCODING);
+	// thx, nao-pon
+	$d = str_replace('<br />',"\r\n",$d);
+	$d = strip_tags($d);
 
-		$result = array();
-		$result[] = '<figure class="qrcode">';
-		if ($n < 2 || $n > 16) {
-			$href = get_cmd_uri('qrcode', '', '', array(
-				'd' => $d,
-				's' => 9,
-				'v' => $v,
-				'e' => $e
-			));
-			$src = get_cmd_uri('qrcode', '', '', array(
-				'd' => $d,
-				's' => $s,
-				'v' => $v,
-				'e' => $e
-			));
-			$alt = (defined('UA_MOBILE') && UA_MOBILE != 0) ? 'Mobile' : rawurlencode($d);
-			$result[] = '<a href="'.$href.'"><img src="'.$src.'" alt="'.$alt.'" title="'.$alt.'" /></a>';
-		} else {
-			// 並べる(本来ならPNGを合成するのがきれいでしょうけどね)
+	// docomo is s-jis encoding
+	$d = mb_convert_encoding($d,'SJIS',SOURCE_ENCODING);
+
+	$result = array();
+	$result[] = '<figure class="qrcode">';
+	//if ($n < 2 || $n > 16) {
+		$href = get_cmd_uri('qrcode', '', '', array(
+			'd' => $d,
+			's' => 9,
+			'v' => $v,
+			'e' => $e
+		));
+		$src = get_cmd_uri('qrcode', '', '', array(
+			'd' => $d,
+			's' => $s,
+			'v' => $v,
+			'e' => $e
+		));
+		$alt = (defined('UA_MOBILE') && UA_MOBILE != 0) ? 'Mobile' : rawurlencode($d);
+		$result[] = '<a href="'.$href.'"><img src="'.$src.'" alt="'.$alt.'" title="'.$alt.'" /></a>';
+	/*
+	}
+	 else {
+		// パリティを計算
+		$l=strlen($d);
+		if ($l>1){
+			$p=0;
 			$i=0;
-			for ($j=1;$j<=$n;$j++) {
-				$splitdata = substr($d,$i,ceil($l/$n));
-				$i += ceil($l/$n);
-				$src = get_cmd_uri('qrcode', '', '', array(
-					'd' => $splitdata,
-					's' => $s,
-					'v' => $v,
-					'e' => $e,
-					'm' => $j
-				));
-				$alt = (defined('UA_MOBILE') && UA_MOBILE != 0) ? 'Mobile' : rawurlencode($splitdata);
-
-				$result[] = '<img src="'.$src.'" alt="'.$alt.'" title="'.$alt.'" />';
-				unset($src);
+			while ($i<$l){
+				$p=($p ^ ord(substr($d,$i,1)));
+				$i++;
 			}
 		}
-		$result[] = '</figure>';
-		return join("\n",$result);
-	}else{
-		return '<span class="ui-state-error">&amp;qrcode(): GD2 extention was not loaded!</span>';
+		// 並べる(本来ならPNGを合成するのがきれいでしょうけどね)
+		$i=0;
+		for ($j=1;$j<=$n;$j++) {
+			$splitdata = substr($d,$i,ceil($l/$n));
+			$i += ceil($l/$n);
+			$src = get_cmd_uri('qrcode', '', '', array(
+				'd' => $splitdata,
+				's' => $s,
+				'v' => $v,
+				'e' => $e,
+				'm' => $j
+			));
+			$alt = (defined('UA_MOBILE') && UA_MOBILE != 0) ? 'Mobile' : rawurlencode($splitdata);
+
+			$result[] = '<img src="'.$src.'" alt="'.$alt.'" title="'.$alt.'" />';
+			unset($src);
+		}
 	}
+	*/
+	$result[] = '</figure>';
+	return join("\n",$result);
+}
+
+function plugin_qrcode_convert(){
+	
 }
 
 // アクションでは、実際の画像を作成
@@ -136,21 +157,20 @@ function plugin_qrcode_action()
 {
 	global $vars;
 	if (empty($vars['d'])) {
-		return FALSE;
+		// 透過PNG
+		$buffer = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQI12NgYAAAAAMAASDVlMcAAAAASUVORK5CYII=');
+	}else{
+		$qr = new PHPQRCode\QRcode();	// 宣言
+		$qr->version	= (empty($vars['v'])) ? 0	: $vars['v'];				// バージョン
+		$qr->mask		= (empty($vars['m'])) ? PHPQRCode\Constants::QR_DEFAULT_MASK	: $vars['m'];	// 分割数
+		$qr->count		= (empty($vars['n'])) ? 1	: $vars['n'];				// 
+		$qr->hint		= (empty($vars['h'])) ? PHPQRCode\Constants::QR_MODE_AN : $vars['h'];		// 文字コード
+		//	$parity = (empty($vars['p'])) ? 0	: $vars['p'];	// パリティ（使用しない）
+
+		$buffer = $qr->png(rawurldecode($vars['d']), false, (empty($vars['e'])) ? 'M' : $vars['e'], (empty($vars['s'])) ? 1 : $vars['s'], 2);
 	}
-//	$parity = (empty($vars['p'])) ? 0	: $vars['p'];	// パリティ（使用しない）
-	
-	$qr = new PHPQRCode\QRcode();	// 宣言
-	$qr->version	= (empty($vars['v'])) ? 0	: $vars['v'];				// バージョン
-	$qr->mask		= (empty($vars['m'])) ? PHPQRCode\Constants::QR_DEFAULT_MASK	: $vars['m'];	// 分割数
-	$qr->count		= (empty($vars['n'])) ? 1	: $vars['n'];				// 
-	$qr->hint		= (empty($vars['h'])) ? PHPQRCode\Constants::QR_MODE_AN : $vars['h'];		// 文字コード
-	
-	Header::writeResponse(
-		Header::getHeaders('image/png'),
-		200,
-		$qr->png(rawurldecode($vars['d']), false, (empty($vars['e'])) ? 'M' : $vars['e'], (empty($vars['s'])) ? 1 : $vars['s'], 2)
-	);
+	// 出力
+	Header::writeResponse(Header::getHeaders('image/png'),200,$buffer);
 	exit();
 }
 /* End of file qrcode.inc.php */

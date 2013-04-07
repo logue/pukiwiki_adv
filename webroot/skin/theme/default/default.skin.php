@@ -8,30 +8,14 @@
 //
 // $Id: default.skin.php,v 1.4.18 2012/05/03 21:35:00 Logue Exp $
 //
-global $pkwk_head, $newtitle, $page_title,$_LINK, $is_page, $defaultpage, $sidebar, $headarea, $footarea;
-
-// Initialize
-if (!defined('DATA_DIR')) { exit; }
-
-// モードによって、3カラム、2カラムを切り替える。
-if (arg_check('read') && exist_plugin_convert('menu')) {
-	$layout_class = (arg_check('read') && exist_plugin_convert('side') && is_page($sidebar) ? 'three-colums' : 'two-colums');
-}else{
-	$layout_class = '';
-}
-
-// Header and Footer
-$title_style = '';
-$header = '';
-if (is_page($headarea) && exist_plugin_convert('headarea')){
-	$header = do_plugin_convert('headarea');
-	$title_style = "display:none;";
-}
-$footer = is_page($footarea) ? do_plugin_convert('footarea') : '';
+use PukiWiki\Time;
+use PukiWiki\Factory;
+use PukiWiki\Renderer\PluginRenderer;
 
 // navibar
-$navibar = do_plugin_convert('suckerfish');
-if (empty($navibar)) $navibar = do_plugin_convert('navibar','top,|,edit,freeze,diff,backup,upload,reload,|,new,list,search,recent,help,|,login'). '<hr />';
+$navibar = PluginRenderer::executePluginBlock('suckerfish');
+if (empty($navibar)) $navibar = PluginRenderer::executePluginBlock('navibar','top,|,edit,freeze,diff,backup,upload,reload,|,new,list,search,recent,help,|,login'). '<hr />';
+
 // start
 // Output HTML DTD, <html>, and receive content-type
 ?>
@@ -42,22 +26,25 @@ if (empty($navibar)) $navibar = do_plugin_convert('navibar','top,|,edit,freeze,d
 <link rel="stylesheet" type="text/css" href="<?php echo SKIN_URI . 'scripts.css.php?base=' . urlencode(IMAGE_URI) ?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo SKIN_URI . THEME_PLUS_NAME . PLUS_THEME . '/'. PLUS_THEME . '.css.php'; ?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo SKIN_URI . THEME_PLUS_NAME . PLUS_THEME . '/blue.css'; ?>"id="coloring" />
-<title><?php echo $this->title . ' - ' . $this->page_title; ?></title>
+<title><?php echo $this->title . ' - ' . $this->site_name; ?></title>
 </head>
 	<body>
-		<div id="container" class="<?php echo $layout_class ?>" role="document">
+		<div id="container" class="<?php echo $this->colums ?>" role="document">
 <!-- *** Header *** -->
 			<header id="header" role="banner">
-				<a href="<?php echo $_LINK['top'] ?>"  style="<?php echo $title_style; ?>"><img id="logo" src="<?php echo $this->conf['logo']['src'] ?>" width="<?php echo $this->conf['logo']['width'] ?>" height="<?php echo $this->conf['logo']['height'] ?>" alt="<?php echo $this->conf['logo']['alt'] ?>" /></a>
-				<hgroup id="hgroup" style="<?php echo $title_style ?>">
+<?php if (empty($this->headarea)){ ?>
+				<a href="<?php echo $this->links['top'] ?>"><img id="logo" src="<?php echo $this->conf['logo']['src'] ?>" width="<?php echo $this->conf['logo']['width'] ?>" height="<?php echo $this->conf['logo']['height'] ?>" alt="<?php echo $this->conf['logo']['alt'] ?>" /></a>
+				<hgroup id="hgroup">
 					<h1 id="title"><?php echo $this->title ?></h1>
-					<h2><a href="<?php echo $_LINK['reload'] ?>" id="parmalink"><?php echo $_LINK['reload'] ?></a></h2>
+					<h2><a href="<?php echo $this->links['reload'] ?>" id="parmalink"><?php echo $this->links['reload'] ?></a></h2>
 				</hgroup>
-				<?php if ($this->conf['adarea']['header'] && !isset($header)) echo '<div id="ad" class="noprint">' . $this->conf['adarea']['header'] . '</div>'; ?>
-				<?php //if ($this->header) echo $this->header; ?>
 <!-- * Ad space *-->
 				<?php if ($this->conf['adarea']['header']) echo '<div id="ad" class="noprint">' . $this->conf['adarea']['header'] . '</div>'; ?>
 <!-- * End Ad space * -->
+<?php }else{ ?>
+				<h1 id="title" style="display:none;"><?php echo $this->title ?></h1>
+				<?php echo $this->headarea; ?>
+<?php } ?>
 				<?php echo (!empty($this->lastmodified)) ? '<div id="lastmodified">Last-modified: '.$this->lastmodified.'</div>'."\n" : '' ?>
 			</header>
 <!-- *** End Header *** -->
@@ -67,7 +54,7 @@ if (empty($navibar)) $navibar = do_plugin_convert('navibar','top,|,edit,freeze,d
 <!-- Center -->
 				<div id="main_wrapper">
 					<div id="main" role="main">
-						<?php echo $this->is_page ? do_plugin_convert('topicpath') : ''; ?>
+						<?php echo PluginRenderer::executePluginBlock('topicpath'); ?>
 						<section id="body">
 							<?php echo $this->body."\n" ?>
 						</section>
@@ -83,51 +70,51 @@ if (empty($navibar)) $navibar = do_plugin_convert('navibar','top,|,edit,freeze,d
 					</div>
 				</div>
 
-<?php if ($layout_class == 'three-colums' || $layout_class == 'two-colums')  { ?>
+<?php if (!empty($this->menubar))  { ?>
 <!-- Left -->
-				<aside id="menubar" role="navigation">
-					<?php echo do_plugin_convert('menu')."\n" ?>
+				<aside id="menubar">
+					<?php echo $this->menubar ?>
 				</aside>
 <?php } ?>
 
-<?php if ($layout_class == 'three-colums')  { ?>
+<?php if (!empty($this->sidebar))  { ?>
 <!-- Right -->
-				<aside id="sidebar" role="navigation">
-					<?php echo do_plugin_convert('side')."\n" ?>
+				<aside id="sidebar">
+					<?php echo $this->sidebar; ?>
 				</aside>
 <?php } ?>
 			</div>
 			<div id="misc">
-<?php if (!empty($attaches)) { ?>
+<?php if (!empty($this->attaches)) { ?>
 				<hr />
 				<!-- * Attach * -->
 				<aside id="attach">
-					<?php echo $attaches ?>
+					<?php echo $this->attaches ?>
 				</aside>
 				<!--  End Attach -->
 <?php } ?>
-<?php if (!empty($related)) { ?>
+<?php if (!empty($this->related)) { ?>
 				<!-- * Related * -->
 				<hr />
 				<aside id="related">
-					<?php echo $related ?>
+					<?php echo $this->related ?>
 				</aside>
 				<!--  End Related -->
 <?php } ?>
 				<hr />
-				<?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','reload,|,new,newsub,edit,freeze,source,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,log,|,help,|,rss') : '';?>
+				<?php echo PluginRenderer::executePluginBlock('toolbar','reload,|,new,newsub,edit,freeze,source,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,log,|,help,|,rss');?>
 			</div>
 
 			<footer id="footer" class="clearfix" role="contentinfo">
-<?php if ($footer) {
-echo $footer;
-}else{ ?>
+<?php if (!empty($this->footarea)) { ?>
+				<?php echo $this->footarea; ?>
+<?php }else{ ?>
 				<div id="qr_code">
-					<?php echo exist_plugin_inline('qrcode') ? plugin_qrcode_inline(1,$_LINK['reload']) : ''; ?>
+					<?php echo PluginRenderer::executePluginInline('qrcode'); ?>
 				</div>
-				<address>Founded by <a href="<?php echo $this->modifierlink ?>"><?php echo $this->modifier ?></a></address>
+				<address>Founded by <a href="<?php echo $this->modifierlink ?>" rel="contact"><?php echo $this->modifier ?></a></address>
 				<div id="sigunature">
-					Powered by <a href="http://pukiwiki.logue.be/" rel="external"><?php echo GENERATOR ?></a>. HTML convert time: <?php echo showtaketime() ?> sec. <br />
+					Powered by <a href="http://pukiwiki.logue.be/" rel="external"><?php echo GENERATOR ?></a>. Processing time: <var><?php echo $this->getTakeTime() ?></var> sec. <br />
 					Original Theme Design by <a href="http://pukiwiki.cafelounge.net/plus/" rel="external">PukiWiki Plus!</a> Team.
 				</div>
 				<div id="banner_box">

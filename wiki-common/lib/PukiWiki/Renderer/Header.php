@@ -39,6 +39,8 @@ class Header{
 	public static function getHeaders($content_type = DEFAULT_CONTENT_TYPE, $modified = 0, $expire = 604800){
 		global $lastmod, $vars, $_SERVER;
 		self::checkSent();
+		// これまでのヘッダーを取得
+		$headers = getallheaders();
 
 		$headers['Content-Type'] = $content_type . ';charset=' . CONTENT_CHARSET;
 		$headers['Content-Language'] = substr(str_replace('_','-',LANG),0,2);
@@ -53,6 +55,7 @@ class Header{
 			$headers['Expires'] = gmdate('D, d M Y H:i:s', time() + $expire) . ' GMT';
 			$headers['Last-Modified'] = $last_modified;
 			$headers['ETag'] = $etag;
+			
 			if ( (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && $_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified) ||
 				(isset($_SERVER['HTTP_IF_NONE_MATCH']) && preg_match('/'.$etag.'/', $_SERVER['HTTP_IF_NONE_MATCH'])) ){
 				self::WriteResponse($headers, Response::STATUS_CODE_304, '');
@@ -105,14 +108,23 @@ class Header{
 	public static function writeResponse($headers, $status = Response::STATUS_CODE_200, $body = ''){
 		// レスポンスをコンストラクト
 		$response = new Response();
-		// ステータスコードを出力
-		$response->setStatusCode($status);
 		if (!empty($body)){
+			if (isset($headers['If-None-Match']) && !isset($headers['ETag']) ){
+				// Modifiedヘッダーが出力されてない場合、出力内容からETagを生成
+				// 負荷対策にはならないが転送量を抑えることができる
+				$hash = md5($body);
+				if (preg_match('/'.$hash.'/', $headers['If-None-Match'])){
+					$status = Response::STATUS_CODE_304;
+				}
+				$headers['Etag'] = $hash;
+			}
 			// 内容が存在する場合容量をContent-Lengthヘッダーに出力
 			$headers['Content-Length'] = strlen($body);
 			// レスポンスに内容を追加
 			$response->setContent($body);
 		}
+		// ステータスコードを出力
+		$response->setStatusCode($status);
 		// ヘッダーをソート
 		ksort($headers);
 		// ヘッダーを指定

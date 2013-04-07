@@ -32,34 +32,24 @@ use PukiWiki\Factory;
 define('PLUGIN_SUKERFISH_DEFAULT_ID', 'nav');
 
 function plugin_suckerfish_convert(){
-	global $vars, $suckerfish_count, $js_tags;
-/*
-	if(!$suckerfish_count){
-		$js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_DIR.'js/plugin/jquery.superfish.js');
-		$suckerfish_count++;
-	}
-*/
-	$page = strip_bracket($vars['page']);
-
-	$navi_page = plugin_suckerfish_search_navipage($page);
-	if (! empty($navi_page)){
-		return plugin_suckerfish_makehtml($navi_page);
-	}else{
-		return null;
-	}
+	$navi_page = plugin_suckerfish_search_navipage();
+	if (! empty($navi_page)) return plugin_suckerfish_makehtml($navi_page);
 }
 
-function plugin_suckerfish_search_navipage($page){
-	global $navigation;
+function plugin_suckerfish_search_navipage(){
+	global $navigation, $vars;
 	
 	if (!$navigation){
 		$navigation = 'Navigation';
 	}
+	$navi_page = '';
 	while (1) {
-		$navi_page = $page;
-		if (! empty($page)) $navi_page .= '/';
+		if (isset($vars['page'])){
+			$navi_page = $vars['page'];
+			if (! empty($vars['page'])) $navi_page .= '/';
+		}
 		$navi_page .= $navigation;
-		if (Factory::Wiki($navi_page)->has()) return $navi_page;
+		if ( Factory::Wiki($navi_page)->has()) return $navi_page;
 		if (empty($page)) break;
 		$page = substr($page,0,strrpos($page,'/'));
 	}
@@ -69,8 +59,8 @@ function plugin_suckerfish_search_navipage($page){
 function plugin_suckerfish_makehtml($page)
 {
 	global $vars,$pkwk_dtd;
+	if (empty($page)) return false;
 	$wiki = Factory::Wiki($page);
-	pr($wiki->has());
 	if (!$wiki->has()) return false;
 
 	$output = '';

@@ -55,7 +55,7 @@ class AuthFile extends File
 	 * @global type $adminname
 	 * @return type
 	 */
-	function set()
+	function set(null, null)
 	{
 		global $adminname;
 		if ($this->auth_users == array()) return;
