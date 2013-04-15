@@ -8,10 +8,11 @@
 // License: GPL v2 or (at your option) any later version
 //
 // Issue tracker plugin (See Also bugtrack plugin)
-use PukiWiki\Config\Config;
+//use PukiWiki\Config\Config;
 use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
 use PukiWiki\Renderer\RendererFactory;
+use PukiWiki\Listing;
 // Tracker_list: Excluding pattern
 define('PLUGIN_TRACKER_LIST_EXCLUDE_PATTERN','#^SubMenu$|/#');	// 'SubMenu' and using '/'
 //define('PLUGIN_TRACKER_LIST_EXCLUDE_PATTERN','#(?!)#');		// Nothing excluded
@@ -32,9 +33,9 @@ define('PLUGIN_TRACKER_USAGE',      '#tracker([config[/form][,basepage]])');
 define('PLUGIN_TRACKER_LIST_USAGE', '#tracker_list([config[/list]][[,base][,field:sort[;field:sort ...][,limit]]])');
 
 // $refer  : Where the plugin had been set / Where to return back to
-//           If ($refer == '') $refer = $base;
+//           If ($refer == null) $refer = $base;
 // $base   : "$base/nnn" will be added by plugin_tracker_action(), or will be shown by Tracker_list
-//           Compat: If ($base  == '') $base  = $refer;
+//           Compat: If ($base  == null) $base  = $refer;
 // $config : ":config/plugin/tracker/$config" will be load to the Config
 // $form   : ":config/plugin/tracker/$config/$form" will be load as template for XHTML form by Tracker_form
 // $page   : ":config/plugin/tracker/$config/$page" will be load as template for a new page written by Tracker_form
@@ -46,7 +47,7 @@ define('PLUGIN_TRACKER_DEFAULT_CONFIG', 'default');
 define('PLUGIN_TRACKER_DEFAULT_FORM',   'form');
 define('PLUGIN_TRACKER_DEFAULT_PAGE',   'page');
 define('PLUGIN_TRACKER_DEFAULT_LIST',   'list');
-define('PLUGIN_TRACKER_DEFAULT_ORDER',  '');
+define('PLUGIN_TRACKER_DEFAULT_ORDER',  null);
 define('PLUGIN_TRACKER_DEFAULT_LIMIT',  0 );	// 0 = Unlimited
 
 // Sort type
@@ -69,28 +70,28 @@ function plugin_tracker_convert()
 {
 	global $vars, $config_name, $session;
 
-//	if (PKWK_READONLY) return ''; // Show nothing
-	if (Auth::check_role('readonly')) return ''; // Show nothing
-	if (Auth::is_check_role(PKWK_CREATE_PAGE)) return '';
+//	if (PKWK_READONLY) return null; // Show nothing
+	if (Auth::check_role('readonly')) return null; // Show nothing
+	if (Auth::is_check_role(PKWK_CREATE_PAGE)) return null;
 
 	$args = func_get_args();
 	$argc = count($args);
 	if ($argc > 2) return PLUGIN_TRACKER_USAGE . '<br />';
 
-	$base   = isset($vars['page']) ? $vars['page'] : '';
-	$refer  = '';
-	$config = '';
-	$form   = '';
-	$rel    = '';
+	$base   = isset($vars['page']) ? $vars['page'] : null;
+	$refer  = null;
+	$config = null;
+	$form   = null;
+	$rel    = null;
 	switch ($argc) {
 	case 2:
 		$rel = $args[1];
 		/*FALLTHROUGH*/
 	case 1:
 		// Set "$config/$form"
-		if ($args[0] != '') {
+		if ($args[0] != null) {
 			$arg = explode('/', trim($args[0]), 2);
-			if ($arg[0] != '' ) $config = trim($arg[0]);
+			if ($arg[0] != null ) $config = trim($arg[0]);
 			if (isset($arg[1])) $form   = trim($arg[1]);
 		}
 	}
@@ -102,7 +103,7 @@ function plugin_tracker_convert()
 	}
 
 	// Load $template
-	$form = ($form != '') ? $form : PLUGIN_TRACKER_DEFAULT_FORM;
+	$form = ($form != null) ? $form : PLUGIN_TRACKER_DEFAULT_FORM;
 	$form = $tracker_form->config->page . '/' . $form;
 	$template = plugin_tracker_get_source($form, TRUE);
 	if ($template === FALSE || empty($template)) {
@@ -121,7 +122,7 @@ function plugin_tracker_convert()
 		$from[] = '[' . $fieldname . ']';
 		$_to    = $fields[$fieldname]->get_tag();
 		if (is_a($fields[$fieldname], 'Tracker_field_hidden')) {
-			$to[]     = '';
+			$to[]     = null;
 			$hidden[] = $_to;
 		} else {
 			$to[]     = $_to;
@@ -139,7 +140,7 @@ function plugin_tracker_convert()
 	$session->offsetSet('tracker',  md5(get_ticket() . $config_name));
 
 	// For QA/196, BugTrack/113
-	$form_enctype = IS_MOBILE ? '' : 'enctype="multipart/form-data"';
+	$form_enctype = IS_MOBILE ? null : 'enctype="multipart/form-data"';
 	return <<<EOD
 <form $form_enctype action="$script" method="post" class="tracker_form">
 	$hidden
@@ -167,12 +168,12 @@ function plugin_tracker_action()
 	}
 	// Plus! code end
 
-	$base  = isset($post['_base'])  ? $post['_base']  : '';
-	$refer = isset($post['_refer']) ? $post['_refer'] : '';
+	$base  = isset($post['_base'])  ? $post['_base']  : null;
+	$refer = isset($post['_refer']) ? $post['_refer'] : null;
 
 	// $page name to add will be decided here
 	$num  = 0;
-	$name = isset($post['_name']) ? $post['_name'] : '';
+	$name = isset($post['_name']) ? $post['_name'] : null;
 	if (isset($post['_page'])) {
 		$real = $page = $post['_page'];
 	} else {
@@ -185,7 +186,7 @@ function plugin_tracker_action()
 		$page = $base . '/' . $real;
 	}
 
-	$config = isset($post['_config']) ? $post['_config'] : '';
+	$config = isset($post['_config']) ? $post['_config'] : null;
 
 	// TODO: Why here
 	// Default
@@ -220,7 +221,7 @@ function plugin_tracker_action()
 		);
 	}
 
-	if (! $tracker_form->initFields(plugin_tracker_field_pickup(implode('', $template)))) {
+	if (! $tracker_form->initFields(plugin_tracker_field_pickup(implode(null, $template)))) {
 		return array(
 			'msg'  => 'Cannot write',
 			'body' => htmlsc($tracker_form->error)
@@ -231,14 +232,14 @@ function plugin_tracker_action()
 
 	foreach (array_keys($fields) as $field) {
 		$from[] = '[' . $field . ']';
-		$to[]   = isset($_post[$field]) ? $fields[$field]->format_value($_post[$field]) : '';
+		$to[]   = isset($_post[$field]) ? $fields[$field]->format_value($_post[$field]) : null;
 		unset($fields[$field]);
 	}
 
 	// Repalace every [$field]s (found inside $template) to real values
 	$subject = $escape = array();
 	foreach (array_keys($template) as $linenum) {
-		if (trim($template[$linenum]) == '') continue;
+		if (trim($template[$linenum]) == null) continue;
 
 		// Escape some TextFormattingRules
 		$letter = $template[$linenum][0];
@@ -267,7 +268,7 @@ function plugin_tracker_action()
 	unset($from, $to);
 
 	// Write $template, without touch
-	page_write($page, join('', $template));
+	page_write($page, join(null, $template));
 
 	pkwk_headers_sent();
 	header('Location: ' . get_page_uri($page));
@@ -286,18 +287,18 @@ class Tracker_form
 	var $raw_fields;
 	var $fields = array();
 
-	var $error  = '';	// Error message
+	var $error  = null;	// Error message
 
-	function init($base, $refer = '', $config = NULL, $relative = '')
+	function init($base, $refer = null, $config = NULL, $relative = null)
 	{
 		$base     = trim($base);
 		$refer    = trim($refer);
 		$relative = trim($relative);
 
-		if ($refer  == '') $refer  = $base;
-		if ($base   == '') $base   = $refer;	// Compat
+		if ($refer  == null) $refer  = $base;
+		if ($base   == null) $base   = $refer;	// Compat
 
-		if ($base  == '') {
+		if ($base  == null) {
 			$this->error = 'Base not specified';
 			return FALSE;
 		} else if (! is_pagename($refer)) {
@@ -318,12 +319,12 @@ class Tracker_form
 		return TRUE;
 	}
 
-	function loadConfig($config = '')
+	function loadConfig($config = null)
 	{
 		if (isset($this->config)) return TRUE;
 
 		$config = trim($config);
-		if ($config == '') $config = PLUGIN_TRACKER_DEFAULT_CONFIG;
+		if ($config == null) $config = PLUGIN_TRACKER_DEFAULT_CONFIG;
 
 		$obj_config  = new Config('plugin/tracker/' . $config);
 
@@ -349,16 +350,16 @@ class Tracker_form
 			$raw_fields = array();
 			// From config
 			foreach ($this->config->get('fields') as $field) {
-				$fieldname = isset($field[0]) ? $field[0] : '';
+				$fieldname = isset($field[0]) ? $field[0] : null;
 				$raw_fields[$fieldname] = array(
-					'display' => isset($field[1]) ? $field[1] : '',
-					'type'    => isset($field[2]) ? $field[2] : '',
-					'options' => isset($field[3]) ? $field[3] : '',
-					'default' => isset($field[4]) ? $field[4] : '',
+					'display' => isset($field[1]) ? $field[1] : null,
+					'type'    => isset($field[2]) ? $field[2] : null,
+					'options' => isset($field[3]) ? $field[3] : null,
+					'default' => isset($field[4]) ? $field[4] : null,
 				);
 			}
 			// From reserved
-			$default = array('options' => '20', 'default' => '');
+			$default = array('options' => '20', 'default' => null);
 			foreach (array(
 				'_date'   => 'text',	// Post date
 				'_update' => 'date',	// Last modified date
@@ -425,7 +426,7 @@ class Tracker_form
 	}
 
 	// Add $this->fields
-	function addField($fieldname, $displayname, $type = 'text', $options = '20', $default = '')
+	function addField($fieldname, $displayname, $type = 'text', $options = '20', $default = null)
 	{
 		if (isset($this->fields[$fieldname])) return TRUE;	// Already
 
@@ -474,18 +475,18 @@ class Tracker_field
 		$this->id = ++$id;
 
 		$this->form          = & $tracker_form;
-		$this->name          = isset($field[0]) ? $field[0] : '';
-		$this->title         = isset($field[1]) ? $field[1] : '';
+		$this->name          = isset($field[0]) ? $field[0] : null;
+		$this->title         = isset($field[1]) ? $field[1] : null;
 		$this->options       = isset($field[3]) ? explode(',', $field[3]) : array();
-		$this->default_value = isset($field[4]) ? $field[4] : '';
+		$this->default_value = isset($field[4]) ? $field[4] : null;
 
-		$this->data = isset($post[$this->name]) ? $post[$this->name] : '';
+		$this->data = isset($post[$this->name]) ? $post[$this->name] : null;
 	}
 
 	// Output a part of XHTML form for the field
 	function get_tag()
 	{
-		return '';
+		return null;
 	}
 
 	// Format user input before write
@@ -528,7 +529,7 @@ class Tracker_field_text extends Tracker_field
 	function get_tag()
 	{
 		$s_name  = htmlsc($this->name);
-		$s_size  = isset($this->options[0]) ? htmlsc($this->options[0]) : '';
+		$s_size  = isset($this->options[0]) ? htmlsc($this->options[0]) : null;
 		$s_value = htmlsc($this->default_value);
 
 		return '<input type="text"' .
@@ -601,8 +602,8 @@ class Tracker_field_textarea extends Tracker_field
 	function get_tag()
 	{
 		$s_name = htmlsc($this->name);
-		$s_cols = isset($this->options[0]) ? htmlsc($this->options[0]) : '';
-		$s_rows = isset($this->options[1]) ? htmlsc($this->options[1]) : '';
+		$s_cols = isset($this->options[0]) ? htmlsc($this->options[0]) : null;
+		$s_rows = isset($this->options[1]) ? htmlsc($this->options[1]) : null;
 		$s_default = htmlsc($this->default_value);
 
 		return '<textarea' .
@@ -628,7 +629,7 @@ class Tracker_field_textarea extends Tracker_field
 	}
 }
 
-// Writing text with formatting if trim($cell) != ''
+// Writing text with formatting if trim($cell) != null
 // See also: http://home.arino.jp/?tracker.inc.php
 class Tracker_field_format extends Tracker_field
 {
@@ -642,21 +643,21 @@ class Tracker_field_format extends Tracker_field
 		parent::Tracker_field($tracker_form, $field);
 
 		foreach ($this->form->config->get($this->name) as $option) {
-			list($key, $style, $format) = array_pad(array_map('trim', $option), 3, '');
-			if ($style  != '') $this->styles[$key]  = $style;
-			if ($format != '') $this->formats[$key] = $format;
+			list($key, $style, $format) = array_pad(array_map('trim', $option), 3, null);
+			if ($style  != null) $this->styles[$key]  = $style;
+			if ($format != null) $this->formats[$key] = $format;
 		}
 	}
 
 	function get_key($value)
 	{
-		return ($value == '') ? 'IS NULL' : 'IS NOT NULL';
+		return ($value == null) ? 'IS NULL' : 'IS NOT NULL';
 	}
 
 	function get_tag()
 	{
 		$s_name = htmlsc($this->name);
-		$s_size = isset($this->options[0]) ? htmlsc($this->options[0]) : '';
+		$s_size = isset($this->options[0]) ? htmlsc($this->options[0]) : null;
 
 		return '<input type="text" name="' . $s_name . '" size="' . $s_size . '" />';
 	}
@@ -685,7 +686,7 @@ class Tracker_field_file extends Tracker_field_format
 	function get_tag()
 	{
 		$s_name = htmlsc($this->name);
-		$s_size = isset($this->options[0]) ? htmlsc($this->options[0]) : '';
+		$s_size = isset($this->options[0]) ? htmlsc($this->options[0]) : null;
 
 		return '<input type="file" name="' . $s_name . '" size="' . $s_size . '" />';
 	}
@@ -704,7 +705,7 @@ class Tracker_field_file extends Tracker_field_format
 		}
 
 		// Filename not specified, or Fail to upload
-		return parent::format_value('');
+		return parent::format_value(null);
 	}
 }
 
@@ -715,7 +716,7 @@ class Tracker_field_radio extends Tracker_field_format
 
 	function get_tag()
 	{
-		$retval = '';
+		$retval = null;
 
 		$id = 0;
 		$s_name = htmlsc($this->name);
@@ -723,7 +724,7 @@ class Tracker_field_radio extends Tracker_field_format
 			++$id;
 			$s_id = '_p_tracker_' . $s_name . '_' . $this->id . '_' . $id;
 			$s_option = htmlsc($option[0]);
-			$checked  = trim($option[0]) === trim($this->default_value) ? ' checked="checked"' : '';
+			$checked  = trim($option[0]) === trim($this->default_value) ? ' checked="checked"' : null;
 
 			$retval .= '<input type="radio"' .
 				' name="'  . $s_name   . '"' .
@@ -773,9 +774,9 @@ class Tracker_field_select extends Tracker_field_radio
 
 		$s_name = htmlsc($this->name);
 		$s_size = (isset($this->options[0]) && is_numeric($this->options[0])) ?
-			' size="' . htmlsc($this->options[0]) . '"' : '';
+			' size="' . htmlsc($this->options[0]) . '"' : null;
 		$s_multiple = (isset($this->options[1]) && strtolower($this->options[1]) == 'multiple') ?
-			' multiple="multiple"' : '';
+			' multiple="multiple"' : null;
 		$retval[] = '<select name="' . $s_name . '[]"' . $s_size . $s_multiple . '>';
 
 		if ($empty) $retval[] = ' <option value=""></option>';
@@ -783,7 +784,7 @@ class Tracker_field_select extends Tracker_field_radio
 		foreach ($this->form->config->get($this->name) as $option) {
 			$option   = reset($option);
 			$s_option = htmlsc($option);
-			$selected = isset($defaults[trim($option)]) ? ' selected="selected"' : '';
+			$selected = isset($defaults[trim($option)]) ? ' selected="selected"' : null;
 			$retval[] = ' <option value="' . $s_option . '"' . $selected . '>' . $s_option . '</option>';
 		}
 
@@ -806,12 +807,12 @@ class Tracker_field_checkbox extends Tracker_field_radio
 		$defaults = array_flip(preg_split('/\s*,\s*/', $this->default_value, -1, PREG_SPLIT_NO_EMPTY));
 
 		$id     = 0;
-		$retval = '';
+		$retval = null;
 		foreach ($config->get($this->name) as $option) {
 			++$id;
 			$s_id     = '_p_tracker_' . $s_name . '_' . $s_fid . '_' . $id;
 			$s_option = htmlsc($option[0]);
-			$checked  = isset($defaults[trim($option[0])]) ? ' checked="checked"' : '';
+			$checked  = isset($defaults[trim($option[0])]) ? ' checked="checked"' : null;
 
 			$retval .= '<input type="checkbox"' .
 				' name="' . $s_name . '[]" id="' . $s_id . '"' .
@@ -897,12 +898,12 @@ function plugin_tracker_list_convert()
 		return PLUGIN_TRACKER_LIST_USAGE . '<br />';
 	}
 
-	$base   = isset($vars['page']) ? $vars['page'] : '';
-	$refer  = '';
-	$rel    = '';
-	$config = '';
-	$order  = '';
-	$list   = '';
+	$base   = isset($vars['page']) ? $vars['page'] : null;
+	$refer  = null;
+	$rel    = null;
+	$config = null;
+	$order  = null;
+	$list   = null;
 	$limit  = NULL;
 	switch ($argc) {
 	case 4: $limit = $args[3];	/*FALLTHROUGH*/
@@ -910,9 +911,9 @@ function plugin_tracker_list_convert()
 	case 2: $rel   = $args[1];	/*FALLTHROUGH*/
 	case 1:
 		// Set "$config/$list"
-		if ($args[0] != '') {
+		if ($args[0] != null) {
 			$arg = explode('/', $args[0], 2);
-			if ($arg[0] != '' ) $config = $arg[0];
+			if ($arg[0] != null ) $config = $arg[0];
 			if (isset($arg[1])) $list   = $arg[1];
 		}
 	}
@@ -926,12 +927,12 @@ function plugin_tracker_list_action()
 {
 	global $get;
 
-	$base   = isset($get['base'])   ? $get['base']   : '';
-	$refer  = isset($get['refer'])  ? $get['refer']  : '';
-	$rel    = '';
-	$config = isset($get['config']) ? $get['config'] : '';
-	$order  = isset($get['order'])  ? $get['order']  : '';
-	$list   = isset($get['list'])   ? $get['list']   : '';
+	$base   = isset($get['base'])   ? $get['base']   : null;
+	$refer  = isset($get['refer'])  ? $get['refer']  : null;
+	$rel    = null;
+	$config = isset($get['config']) ? $get['config'] : null;
+	$order  = isset($get['order'])  ? $get['order']  : null;
+	$list   = isset($get['list'])   ? $get['list']   : null;
 	$limit  = isset($get['limit'])  ? $get['limit']  : NULL;
 
 	$s_refer = make_pagelink($refer);
@@ -944,7 +945,7 @@ function plugin_tracker_list_action()
 	);
 }
 
-function plugin_tracker_list_render($base, $refer, $rel = '', $config = '', $order = '', $list = '', $limit = NULL)
+function plugin_tracker_list_render($base, $refer, $rel = null, $config = null, $order = null, $list = null, $limit = NULL)
 {
 	// Adv. not use sortabletable.js
 	if (preg_match("/plus/i", S_VERSION)){
@@ -970,6 +971,7 @@ function plugin_tracker_list_render($base, $refer, $rel = '', $config = '', $ord
 	}
 
 	$result = $tracker_list->toString($list, $limit);
+	
 	if ($result === FALSE) {
 		return '#tracker_list: ' . htmlsc($tracker_list->error) . '<br />';
 	}
@@ -1005,7 +1007,7 @@ class Tracker_list
 
 	var $rows   = array();
 	var $orders;
-	var $error  = '';	// Error message
+	var $error  = null;	// Error message
 
 	// _generate_regex()
 	var $pattern;
@@ -1021,7 +1023,7 @@ class Tracker_list
 
 	var $page_line;	// Plus!
 
-	function init($base, $refer, $config = NULL, $relative = '')
+	function init($base, $refer, $config = NULL, $relative = null)
 	{
 		$this->form = new Tracker_form();
 		return $this->form->init($base, $refer, $config, $relative);
@@ -1065,7 +1067,7 @@ class Tracker_list
 			}
 		}
 
-		$this->pattern        = '/' . implode('', $pattern) . '/sS';
+		$this->pattern        = '/' . implode(null, $pattern) . '/sS';
 		$this->pattern_fields = $pattern_fields;
 
 		return TRUE;
@@ -1082,7 +1084,8 @@ class Tracker_list
 		$this->page_line = count(plugin_tracker_get_source($this->form->config->page.'/page'));	// Plus! (?)
 
 		// foreach (preg_grep($regex, array_values(get_existpages())) as $pagename) {
-		foreach (preg_grep($regex, array_values(Auth::get_existpages())) as $pagename) {	// Plus!
+		foreach (preg_grep($regex, Listing::pages()) as $pagename) {	// Plus!
+			if (!Factory::Wiki($pagename)->isReadable()) continue;
 			if (preg_match(PLUGIN_TRACKER_LIST_EXCLUDE_PATTERN, substr($pagename, $len))) {
 				continue;
 			}
@@ -1109,7 +1112,7 @@ class Tracker_list
 		$source = plugin_tracker_get_source($pagename, TRUE, $this->page_line);	// Plus!
 		$wiki = Factory::Wiki($pagename);
 		$filetime = $wiki->time();
-		if ($source === FALSE) $source = '';
+		if ($source === FALSE) $source = null;
 
 		// Compat: 'move to [[page]]' (like bugtrack plugin)
 		$matches = array();
@@ -1147,22 +1150,22 @@ class Tracker_list
 	}
 
 	// setSortOrder()
-	function _order_commands2orders($order_commands = '')
+	function _order_commands2orders($order_commands = null)
 	{
 		$order_commands = trim($order_commands);
-		if ($order_commands == '') $order_commands = PLUGIN_TRACKER_DEFAULT_ORDER;
-		if ($order_commands == '') return array();
+		if ($order_commands == null) $order_commands = PLUGIN_TRACKER_DEFAULT_ORDER;
+		if ($order_commands == null) return array();
 
 		$orders = array();
 
 		$i = 0;
 		foreach (explode(';', $order_commands) as $command) {
 			$command = trim($command);
-			if ($command == '') continue;
+			if ($command == null) continue;
 
 			$arg = explode(':', $command, 2);
-			$fieldname = isset($arg[0]) ? trim($arg[0]) : '';
-			$order     = isset($arg[1]) ? trim($arg[1]) : '';
+			$fieldname = isset($arg[0]) ? trim($arg[0]) : null;
+			$order     = isset($arg[1]) ? trim($arg[1]) : null;
 
 			$_order = $this->_sortkey_string2define($order);
 			if ($_order === FALSE) {
@@ -1183,7 +1186,7 @@ class Tracker_list
 	}
 
 	// Set commands for sort()
-	function setSortOrder($order_commands = '')
+	function setSortOrder($order_commands = null)
 	{
 		$orders = $this->_order_commands2orders($order_commands);
 		if ($orders === FALSE) {
@@ -1251,7 +1254,7 @@ class Tracker_list
 				if (isset($row[$fieldname])) {
 					$columns[$fieldname][] = $fields[$fieldname]->get_value($row[$fieldname]);
 				} else {
-					$columns[$fieldname][] = '';
+					$columns[$fieldname][] = null;
 				}
 			}
 		}
@@ -1304,7 +1307,7 @@ class Tracker_list
 	function _sortkey_string2define($sortkey)
 	{
 		switch (strtoupper(trim($sortkey))) {
-		case '':          return PLUGIN_TRACKER_SORT_ORDER_DEFAULT; break;
+		case null:          return PLUGIN_TRACKER_SORT_ORDER_DEFAULT; break;
 
 		case SORT_ASC:    /*FALLTHROUGH*/ // Compat, will be removed at 1.4.9 or later
 		case 'SORT_ASC':  /*FALLTHROUGH*/
@@ -1332,10 +1335,10 @@ class Tracker_list
 		$orders = $this->orders;
 		$list   = $this->_list;
 
-		$fieldname = isset($matches[1]) ? $matches[1] : '';
+		$fieldname = isset($matches[1]) ? $matches[1] : null;
 		if (! isset($fields[$fieldname])) {
 			// Invalid $fieldname or user's own string or something. Nothing to do
-			return isset($matches[0]) ? $matches[0] : '';
+			return isset($matches[0]) ? $matches[0] : null;
 		}
 
 		// This column seems sorted or not
@@ -1346,7 +1349,7 @@ class Tracker_list
 			$index   = $indexes[$fieldname] + 1;
 			unset($indexes);
 
-			$arrow = '&br;' . ($is_asc ? '&uarr;' : '&darr;') . '(' . $index . ')';
+			$arrow = '&br;'. ($is_asc ? '&#8657;' : '&#8659;') . '(' . $index . ')';
 			// Allow flip, if this is the first column
 			if (($index == 1) xor $is_asc) {
 				$order = PLUGIN_TRACKER_SORT_ORDER_ASC;
@@ -1354,7 +1357,7 @@ class Tracker_list
 				$order = PLUGIN_TRACKER_SORT_ORDER_DESC;
 			}
 		} else {
-			$arrow = '';
+			$arrow = null;
 			$order = PLUGIN_TRACKER_SORT_ORDER_DEFAULT;
 		}
 
@@ -1392,10 +1395,10 @@ class Tracker_list
 		$tfc    = $this->_the_first_character_of_the_line ;
 
 		$params    = isset($matches[1]) ? explode(',', $matches[1]) : array();
-		$fieldname = isset($params[0])  ? $params[0] : '';
+		$fieldname = isset($params[0])  ? $params[0] : null;
 		$stylename = isset($params[1])  ? $params[1] : $fieldname;
 
-		$str = '';
+		$str = null;
 
 		if (!empty($fieldname)) {
 			if (! isset($row[$fieldname])) {
@@ -1403,7 +1406,7 @@ class Tracker_list
 				if (isset($fields[$fieldname])) {
 					$str = '[match_err]';	// Exactlly
 				} else {
-					$str = isset($matches[0]) ? $matches[0] : '';	// Nothing to do
+					$str = isset($matches[0]) ? $matches[0] : null;	// Nothing to do
 				}
 			} else {
 				$str = $row[$fieldname];
@@ -1426,7 +1429,7 @@ class Tracker_list
 	function toString($list = PLUGIN_TRACKER_DEFAULT_LIST, $limit = NULL)
 	{
 		$list = trim($list);
-		if ($list == '') $list = PLUGIN_TRACKER_DEFAULT_LIST;
+		if ($list == null) $list = PLUGIN_TRACKER_DEFAULT_LIST;
 
 		if ($limit == NULL) $limit = PLUGIN_TRACKER_DEFAULT_LIMIT;
 		if (! is_numeric($limit)) {
@@ -1525,7 +1528,7 @@ class Tracker_list
 
 // Roughly checking listed fields from template
 // " [field1] [field2,style1] " => array('fielld', 'field2')
-function plugin_tracker_field_pickup($string = '')
+function plugin_tracker_field_pickup($string = null)
 {
 	if (! is_string($string) || empty($string)) return array();
 
@@ -1557,7 +1560,7 @@ function plugin_tracker_get_source($page, $join = FALSE, $line=0)	// add $line=0
 			'/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/m',	// Remove fixed-heading anchors
 		),
 		array(
-			'',
+			null,
 			'$1$2',
 		),
 		$source
@@ -1565,7 +1568,7 @@ function plugin_tracker_get_source($page, $join = FALSE, $line=0)	// add $line=0
 }
 
 // Escape special characters not to break Wiki syntax
-function plugin_tracker_escape($string, $syntax_hint = '')
+function plugin_tracker_escape($string, $syntax_hint = null)
 {
 	// Default: line-oriented
 	$from = array("\n",   "\r"  );

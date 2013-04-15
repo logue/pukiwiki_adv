@@ -25,6 +25,7 @@ class InlineConverter
 	 */
 	private static $default_converters = array(
 		'InlinePlugin',     // Inline plugins
+		'InlineMathJax',    // MathJax plugin
 		'EasyRef',          // Easy Ref {{param|body}}
 		'Note',             // Footnotes
 		'Url',              // URLs
@@ -129,7 +130,7 @@ class InlineConverter
 		$arr = explode("\x08", Inline::setLineRules(Utility::htmlsc($string)));
 		$retval = '';
 		while (! empty($arr)) {
-			$retval .= array_shift($arr) . array_shift($this->result);
+			$retval .= str_replace('\\$', '$', array_shift($arr)) . array_shift($this->result);
 		}
 		return trim($retval);
 	}

@@ -24,7 +24,6 @@ function plugin_epoch_inline()
 	if ($args > 3){
 		return '&epoch(utime[,class]);';
 	}
-	pr($value);
 	
 	$array = explode(',',$value[0]);
 	

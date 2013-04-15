@@ -109,7 +109,7 @@ abstract class Inline
 			$alias = self::setLineRules($alias);
 
 			// BugTrack/669: A hack removing anchor tags added by AutoLink
-			$alias = Utility::htmlsc(preg_replace('#</?a[^>]*>#i', '', $alias));
+			$alias = preg_replace('#</?a[^>]*>#i', '', $alias);
 		}
 		$this->alias = $alias;
 
@@ -153,8 +153,6 @@ abstract class Inline
 			return '<a href="' . $anchor . '">' . Utility::htmlsc($alias) . '</a>';
 		}
 
-		$page = Utility::stripBracket($page);
-
 		$wiki = Factory::Wiki($page);
 		if (! $wiki->has()) {
 			// ページが存在しない場合は、AutoAliasから該当ページが存在するかを確認する
@@ -164,12 +162,13 @@ abstract class Inline
 					return self::setLink($page, $aliaspage);
 				}
 			}
-		}else if (! isset($related[$page]) && $page !== $vars['page']) {
+		}else if (! isset($related[$page]) && isset($vars['page']) && $page !== $vars['page']) {
 			$related[$page] = $wiki->time();
 		}
 
 		$s_page = Utility::htmlsc($page);
-		$s_alias = Utility::htmlsc(empty($alias) ? $page : $alias);
+		$anchor_name = empty($alias) ? $page : $alias;
+		$anchor_name = str_replace('&amp;#039;', '\'', $anchor_name);	// 'が&#039;になってしまう問題をとりあえず解消
 
 		if ($isautolink || $wiki->has()) {
 			// ページが存在する場合
@@ -183,12 +182,12 @@ abstract class Inline
 				($link_compact === 0 ? 'title="' . $s_page . ' ' . $wiki->passage(false,true) . '"' : '' ).
 	//			($isautolink ? ' class="autolink"' : '') .
 				(!empty($glossary) ? 'aria-describedby="tooltip"' : '') .
-				'>' . $s_alias . '</a>';
+				'>' . $anchor_name . '</a>';
 		} else {
 			// Dangling link
 			if (Auth::check_role('readonly')) return $s_alias; // No dacorations
 
-			$retval = $s_alias . '<a href="' . $wiki->uri('edit', (empty($refer) ? null : array('refer'=>$refer)) ) . '" rel="nofollow">' .$_symbol_noexists . '</a>';
+			$retval = $anchor_name . '<a href="' . $wiki->uri('edit', (empty($refer) ? null : array('refer'=>$refer)) ) . '" rel="nofollow">' .$_symbol_noexists . '</a>';
 
 			return ($link_compact) ? $retval : sprintf(self::NOEXISTS_STRING, $retval);
 		}

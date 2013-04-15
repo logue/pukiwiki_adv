@@ -323,6 +323,30 @@ var pukiwiki = {};
 
 			// 非同期通信中はUIをブロック
 			this.blockUI(document);
+			
+			// MathJax
+			if ($('.mathjax-eq').length !== 0){
+				$.getScript('http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML', function(){
+					MathJax.Hub.Config({
+						displayAlign: "inherit",
+						TeX: {
+							Macros: {
+								bm: ["\\\\boldsymbol{#1}", 1],
+								argmax: ["\\\\mathop{\\\\rm arg\\\\,max}\\\\limits"],
+								argmin: ["\\\\mathop{\\\\rm arg\\\\,min}\\\\limits"]
+							},
+							extensions: ["autobold.js", "color.js"],
+							equationNumbers: {
+								//autoNumber: "all"
+							}
+						},
+						tex2jax: {
+							ignoreClass: ".*",
+							processClass: "mathjax-eq"
+						}
+					});
+				});
+			}
 		},
 		// ページを閉じたとき
 		unload : function(prefix){

@@ -68,14 +68,14 @@ class Url extends Inline
 			}
 		}
 		$this->alias = $alias;
-		return parent::setParam($page, Utility::htmlsc($name), '', ($mail ? 'mailto' : 'url'), $alias);
+		return parent::setParam($page, $name, null, ($mail ? 'mailto' : 'url'), $alias);
 	}
 
 	public function __toString()
 	{
 		global $nofollow;
 		$target = (empty($this->redirect)) ? $this->name : $this->redirect.rawurlencode($this->name);
-		return parent::setLink($this->alias, $target, $this->name, $nofollow === FALSE ? '' : 'nofollow');
+		return parent::setLink($this->alias, $target, $this->name, $nofollow === FALSE ? null : 'nofollow');
 	}
 }
 

@@ -26,6 +26,7 @@ use PukiWiki\Renderer\Element\Pre;
 use PukiWiki\Renderer\Element\SharpPre;
 use PukiWiki\Renderer\Element\UList;
 use PukiWiki\Renderer\RendererFactory;
+use PukiWiki\Renderer\PluginRenderer;
 use PukiWiki\Utility;
 
 /**
@@ -163,6 +164,30 @@ class RootElement extends Element
 						$content = ElementFactory::factory('InlineElement', null, $line);
 						break;
 				}
+
+				// MathJax Expression
+				if (PluginRenderer::hasPlugin('mathjax')){
+					$end_mark = '';
+					if (substr($line, 0, 2) == '\\[') {
+						$end_mark = '\\]';
+					} else if (substr($line, 0, 6) == '\\begin') {
+						$end_mark = '\\end';
+					}
+
+					if ($end_mark) {
+						while (! empty($lines)) {
+							if (strpos($line, $end_mark) !== false) {
+								break;
+							}
+							$next_line = preg_replace("/[\r\n]*$/", '', array_shift($lines));
+							$line .= ' ' . $next_line;
+						}
+						$this->last  = & $this->last->add(new Div(array('', 'mathjax', $line)));
+						continue;
+				}
+				}
+
+				// Default
 				$this->last = $this->last->add($content);
 				unset($content);
 				continue;
