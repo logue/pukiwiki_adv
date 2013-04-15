@@ -15,14 +15,14 @@ namespace PukiWiki\File;
 
 use Exception;
 use PukiWiki\Diff;
-use PukiWiki\File\File;
+use PukiWiki\File\AbstractFile;
 use PukiWiki\Router;
 use PukiWiki\Utility;
 
 /**
  * 差分ファイルクラス
  */
-class DiffFile extends File{
+class DiffFile extends AbstractFile{
 	public static $dir = DIFF_DIR;
 	public static $pattern = '/^((?:[0-9A-F]{2})+)\.txt$/';
 

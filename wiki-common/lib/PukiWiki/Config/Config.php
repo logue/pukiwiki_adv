@@ -11,11 +11,11 @@
 /*
  * $obj = new Config('plugin/plugin_name/')
  * $obj->read();
- * $array = $obj->get($title);
+ * $array = $obj->get($key);
  * $array[] = array(4, 5, 6);		// Add - directly
- * $obj->add($title, array(4, 5, 6));	// Add - method of Config object
+ * $obj->add($key, array(4, 5, 6));	// Add - method of Config object
  * $array = array(1=>array(1, 2, 3));		// Replace - directly
- * $obj->set($title, array(1=>array(1, 2, 3));	// Replace - method of Config object
+ * $obj->set($key, array(1=>array(1, 2, 3));	// Replace - method of Config object
  * $obj->write();
  */
 
@@ -32,8 +32,8 @@ class Config
 	const CONFIG_PAGE_PREFIX = ':config/';
 	const CACHE_PREFIX = 'config-';
 
-	var $name, $page; // Page name
-	var $objs = array();
+	public $name, $page; // Page name
+	private static $objs = array();
 
 	/**
 	 * コンストラクタ
@@ -44,41 +44,20 @@ class Config
 		$this->page = self::CONFIG_PAGE_PREFIX . $name;
 //		$this->cache_name = self::CACHE_PREFIX.md5($name);
 		$this->wiki = Factory::Wiki($this->page);
+		$this->read();
+	}
+	/**
+	 * デストラクタ
+	 */
+	public function __destruct(){
+		$this->write();
 	}
 	/**
 	 * :configページから項目を読み取る
-	 * @param boolean $force キャッシュを再更新する
 	 * @return boolean
 	 */
-	public function read($force = false)
+	public function read()
 	{
-		global $cache;
-		static $objs;
-		if (!$this->wiki->has()) return FALSE;
-/*
-		// Wikiの更新チェック
-		if ($cache['wiki']->hasItem($this->cache_name)){
-			$cache_meta = $cache['wiki']->getMetadata($this->cache_name);
-			if ($cache_meta['mtime'] < $this->wiki->time()) {
-				$force = true;
-			}
-		}
-
-		// キャッシュ処理
-		if ($force) {
-			unset($objs);
-			$cache['wiki']->removeItem($this->cache_name);
-		}else if (!empty($objs)) {
-			$this->objs = $objs;
-			return TRUE;
-		}else if ($cache['wiki']->hasItem($this->cache_name)) {
-			$objs = $cache['wiki']->getItem($this->cache_name);
-			$cache['wiki']->touchItem($this->cache_name);
-			$this->objs = $objs;
-			return TRUE;
-		}
-*/
-		$objs = array();
 		$obj = new ConfigTable('');
 		$matches = array();
 
@@ -136,58 +115,53 @@ class Config
 		}
 		$objs[$obj->title] = $obj;
 
-		$this->objs = $objs;
-//		$objs = $cache['wiki']->setItem($this->cache_name, $objs);
+		self::$objs = $objs;
 		return TRUE;
-	}
-
-	/**
-	 * 設定項目の値を得る
-	 * @param string $title 項目名
-	 * @return string
-	 */
-	public function get($title)
-	{
-		$obj = $this->get_object($title);
-		return $obj->values;
-	}
-	/**
-	 * 設定を保存する
-	 * @param string $title 項目名
-	 * @param string $values 値
-	 */
-	public function set($title, $values)
-	{
-		$obj         = $this->get_object($title);
-		$obj->values = $values;
-	}
-	/**
-	 * 設定を保存する（後方互換。Config::set()のエイリアス）
-	 */
-	public function put($title, $values)
-	{
-		self::set($title, $values);
-	}
-	/**
-	 * 設定を追加する
-	 * @param string $title 項目名
-	 * @param string $values 値
-	 */
-	public function add($title, $value)
-	{
-		$obj = $this->get_object($title);
-		$obj->values[] = $value;
 	}
 	/**
 	 * ページに設定内容を保存する
 	 */
 	public function write()
 	{
-		global $cache;
-		// ページに保存
 		$this->wiki->set(self::toString());
-		// キャッシュも更新
-		$cache['wiki']->setItem(self::CACHE_PREFIX.$this->name, $this->objs);
+	}
+
+	/**
+	 * 設定項目の値を得る
+	 * @param string $key 項目名
+	 * @return string
+	 */
+	public function get($key)
+	{
+		$obj = $this->get_object($key);
+		return $obj->values;
+	}
+	/**
+	 * 設定を保存する
+	 * @param string $key 項目名
+	 * @param string $value 値
+	 */
+	public function set($key, $value)
+	{
+		$obj         = $this->get_object($key);
+		$obj->values = $value;
+	}
+	/**
+	 * 設定を保存する（後方互換。Config::set()のエイリアス）
+	 */
+	public function put($key, $values)
+	{
+		self::set($key, $values);
+	}
+	/**
+	 * 設定を追加する
+	 * @param string $key 項目名
+	 * @param string $values 値
+	 */
+	public function add($key, $value)
+	{
+		$obj = $this->get_object($key);
+		$obj->values[] = $value;
 	}
 	/**
 	 * 設定をWikiに書き込むための文字列にする
@@ -196,21 +170,21 @@ class Config
 	private function toString()
 	{
 		$retval = '';
-		foreach ($this->objs as $title=>$obj)
+		foreach ($this->objs as $key=>$obj)
 			$retval .= $obj->toString();
 		return $retval;
 	}
 	/**
 	 * 項目のオブジェクトを取得
-	 * @param string $title 項目名
+	 * @param string $key 項目名
 	 * @return object
 	 */
-	private function get_object($title)
+	private function get_object($key)
 	{
-		if (! isset($this->objs[$title])){
-			$this->objs[$title] = new ConfigTable('*' . trim($title) . "\n");
+		if (! isset(self::$objs[$key])){
+			self::$objs[$key] = new ConfigTable('*' . trim($key) . "\n");
 		}
-		return $this->objs[$title];
+		return self::$objs[$key];
 	}
 }
 

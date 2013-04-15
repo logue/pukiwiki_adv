@@ -2,7 +2,7 @@
 namespace PukiWiki\Spam;
 use ZendService\ReCaptcha\ReCaptcha;
 use PukiWiki\Utility;
-use PukiWiki\File\File;
+use PukiWiki\File\AbstractFile;
 
 class Captcha{
 	// CAPTCHAセッションの接頭辞（セッション名は、ticketに閲覧者のリモートホストを加えたもののmd5値とする）
@@ -90,7 +90,7 @@ class Captcha{
 			$session->offsetUnset($session_name);
 			if (extension_loaded('gd')) {
 				// GDが使える場合、画像認証にする
-				File::mkdir_r(CACHE_DIR . self::CAPTCHA_IMAGE_DIR_NAME);
+				AbstractFile::mkdir_r(CACHE_DIR . self::CAPTCHA_IMAGE_DIR_NAME);
 				// 古い画像を削除する
 				$handle = opendir(CACHE_DIR . self::CAPTCHA_IMAGE_DIR_NAME);
 				if ($handle) {

@@ -12,6 +12,7 @@
  */
 namespace PukiWiki\File\Log;
 
+use PukiWiki\File\AbstractFile;
 use PukiWiki\File\LogFile;
 
 /**
@@ -20,19 +21,19 @@ use PukiWiki\File\LogFile;
 class UpdateLog extends LogFile{
 	public static $kind = 'update';
 
-	public function set(){
+	public function set($data){
 		if ($this->config['guess_user']['use']){
 			// ユーザを推測する
 			$user = self::guess_user( $rc['user'], $rc['ntlm'], $rc['sig'] );
 			if (empty($user)) return;
 
-			$filename = log::set_filename('guess_user','');	// ログファイル名
+			$guess_user = new SplFileInfo(parent::$dir . 'guess_user.dat');	// ログファイル名
 
-			if (file_exists($filename)) {
+			if ($guess_user->isFile()) {
 				$src = file( $filename );			// ログの読み込み
 			} else {
 				// 最初の１件目
-				$data = log::array2table( array( $data['ua'], $data['host'], $user,"" ) );
+				$data = parent::array2table( array( $data['ua'], $data['host'], $user,"" ) );
 				log_put( $filename, $data);
 				return;
 			}
@@ -51,9 +52,9 @@ class UpdateLog extends LogFile{
 			}
 			if ($sw) return; // 既に存在
 			// データの更新
-			$data = log::array2table( array( $data['ua'], $data['host'], $user,'' ) );
+			$data = parent::array2table( array( $data['ua'], $data['host'], $user,'' ) );
 		}
-		parent::set();
+		parent::set($data);
 	}
 }
 

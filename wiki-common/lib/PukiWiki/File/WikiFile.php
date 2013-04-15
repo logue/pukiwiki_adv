@@ -18,7 +18,7 @@ use PukiWiki\Utility;
 /**
  * Wikiページクラス
  */
-class WikiFile extends File{
+class WikiFile extends AbstractFile{
 	public static $dir = DATA_DIR;
 	public static $pattern = '/^((?:[0-9A-F]{2})+)\.txt$/';
 

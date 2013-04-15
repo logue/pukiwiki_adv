@@ -17,6 +17,7 @@ use PukiWiki\Factory;
 use PukiWiki\Renderer\Header;
 use PukiWiki\Renderer\View;
 use PukiWiki\Renderer\PluginRenderer;
+use PukiWiki\Renderer\MathJax;
 use PukiWiki\Router;
 use PukiWiki\Search;
 use PukiWiki\Wiki;
@@ -273,6 +274,10 @@ class Render{
 		}
 		array_unshift($pkwk_head_js,array('type'=>'text/javascript', 'content'=>join($js_vars,"\n")));
 		unset($js_var, $key, $val);
+
+		// MathJax
+		$pkwk_head_js[] = array('type'=>'text/x-mathjax-config', 'content'=>MathJax::MATHJAX_CONF);
+		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>MathJax::MATHJAX_URL );
 
 		$script_tags = self::tag_helper('script',$pkwk_head_js) . self::tag_helper('script',$js_tags);
 		$script_tags .= (!empty($js_blocks)) ? tag_helper('script',array(array('type'=>'text/javascript', 'content'=>join("\n",$js_blocks)))) : '';

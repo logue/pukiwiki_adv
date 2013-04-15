@@ -18,7 +18,7 @@ use PukiWiki\Utility;
 /**
  * リンク元ファイルクラス
  */
-class RefererFile extends File{
+class RefererFile extends AbstractFile{
 	public static $dir = REFERER_DIR;
 	public static $pattern = '/^((?:[0-9A-F]{2})+)\.ref$/';
 

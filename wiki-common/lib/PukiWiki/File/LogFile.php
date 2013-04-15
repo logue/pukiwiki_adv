@@ -5,7 +5,7 @@ namespace PukiWiki\File;
 use DirectoryIterator;
 use Exception;
 use PukiWiki\Auth\Auth;
-use PukiWiki\File\File;
+use PukiWiki\File\AbstractFile;
 use PukiWiki\NetBios;
 use PukiWiki\Spam\ProxyChecker;
 use PukiWiki\Utility;
@@ -13,11 +13,11 @@ use PukiWiki\Utility;
 /**
  * ファイルの読み書きを行うクラス
  */
-abstract class LogFile extends File{
+abstract class LogFile extends AbstractFile{
 	/**
-	 * ログのキーの保持期間（１年）
+	 * ログのキーの保持期間（１週間）
 	 */
-	const LOG_LIFE_TIME = 31536000;
+	const LOG_LIFE_TIME = 604800;
 	/**
 	 * ログの種類
 	 */
@@ -142,7 +142,6 @@ abstract class LogFile extends File{
 				if ($ip == $nolog_ip) return '';
 			}
 		}
-		unset($obj_log);
 		$rc = array();
 		$field = self::set_fieldname();
 
@@ -211,8 +210,6 @@ abstract class LogFile extends File{
 	 */
 	private function set_fieldname()
 	{
-		global $log;
-
 		$idx = isset(self::$kind_no[self::$kind]) ? self::$kind_no[self::$kind] : 0;
 
 		$rc = array();
@@ -228,9 +225,9 @@ abstract class LogFile extends File{
 	/**
 	 * ログ記入
 	 * @param $value 未使用（何も入れないこと）
-	 *
+	 * @param $keeptimestamp 未使用（何も入れないこと）
 	 */
-	public function set($value = null){
+	public function set($value, $keeptimestamp){
 		// 設定
 		$config = $this->config[$this->kind];
 		
@@ -250,7 +247,7 @@ abstract class LogFile extends File{
 			// 設定項目名を取得
 			$name = log::set_fieldname();
 			// ログを読み込む
-			$data = parent::get(false);
+			$lines = self::get(false);
 
 			// 更新フラグ
 			$put = false;
@@ -267,7 +264,7 @@ abstract class LogFile extends File{
 
 				if (isset($line['ts']) && $line['ts'] <= UTIME - self::LOG_LIFE_TIME){
 					// 一定期間過ぎたエントリは削除
-					unset($data[$i]);
+					unset($lines[$i]);
 					$put = true;
 					continue;
 				}
@@ -296,7 +293,7 @@ abstract class LogFile extends File{
 				
 				if ($sw_update) {
 					// 書き換え
-					$data[$i] = self::array2table($rc);
+					$lines[$i] = self::array2table($rc);
 					$put = true;
 					break;
 				}
@@ -308,20 +305,73 @@ abstract class LogFile extends File{
 			if (! $put) {
 				if ($mustkey) {
 					if (self::log_mustkey_check($_key,$data)) {
-						$data[] = self::array2table($rc);
+						$lines[] = self::array2table($rc);
 					}
 				} else {
-					$data[] = self::array2table($rc);
+					$lines[] = self::array2table($rc);
 				}
 			}
-		} else {]
+		} else {
 			// 新規データー
-			$data = log::array2table( $rc );
+			$lines = self::array2table( $rc );
 		}
+
+		// 見做しユーザ
+		if ($this->kind == 'update' && $this->config['guess_user']['use']) {
+			log_put_guess($rc);
+		}
+		
 		// 保存（空行は削除）
-		parent::set(array_filter($data));
+		parent::set(array_filter($lines));
 	}
-	
+	/**
+	 * ユーザを推測する
+	 * @static
+	 */
+	static function guess_user($user,$ntlm,$sig)
+	{
+		if (!empty($user)) return $user; // 署名ユーザ
+		if (!empty($ntlm)) return $ntlm; // NTLM認証ユーザ
+		if (!empty($sig))  return $sig;  // 本人の署名
+		return '';
+	}
+	/*
+	 * 推測ユーザデータの出力
+	 */
+	function log_put_guess($data)
+	{
+		// ユーザを推測する
+		$user = log::guess_user( $data['user'], $data['ntlm'], $data['sig'] );
+		if (empty($user)) return;
+
+		$filename = log::set_filename('guess_user','');	// ログファイル名
+
+		if (file_exists($filename)) {
+			$src = file( $filename );			// ログの読み込み
+		} else {
+			// 最初の１件目
+			$data = log::array2table( array( $data['ua'], $data['host'], $user,"" ) );
+			log_put( $filename, $data);
+			return;
+		}
+
+		$sw = FALSE;
+
+		foreach($src as $_src) {
+			$x = trim($_src);
+			$field = log::table2array($x);	// PukiWiki 表形式データを配列データに変換
+			if (count($field) == 0) continue;
+			if ($field[0] != $data['ua']  ) continue;
+			if ($field[1] != $data['host']) continue;
+			if ($field[2] != $user        ) continue;
+			$sw = TRUE;
+			break;
+		}
+		if ($sw) return; // 既に存在
+		// データの更新
+		$data = log::array2table( array( $data['ua'], $data['host'], $user,'' ) );
+	 	log_put( $filename, $data);
+	}
 	private static function log_mustkey_check($key,$data)
 	{
 		foreach($key as $idx) {

@@ -15,13 +15,13 @@ namespace PukiWiki\File;
 
 use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
-use PukiWiki\File\File;
+use PukiWiki\File\AbstractFile;
 use PukiWiki\Utility;
 
 /**
  * バックアップファイルクラス
  */
-class BackupFile extends File{
+class BackupFile extends AbstractFile{
 	// バックアップの世代ごとの区切り文字（default.ini.php）
 	const SPLITTER = '>>>>>>>>>>';
 	// バックアップで利用可能な圧縮形式

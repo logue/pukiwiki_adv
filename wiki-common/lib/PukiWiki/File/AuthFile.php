@@ -12,12 +12,12 @@ namespace PukiWiki\File;
 
 use Exception;
 use PukiWiki\Auth\Auth;
-use PukiWiki\File\File;
+use PukiWiki\File\AbstractFile;
 
 /**
  * 認証ユーザファイルクラス
  */
-class AuthFile extends File
+class AuthFile extends AbstractFile
 {
 	/**
 	 * 変更なし
@@ -55,7 +55,7 @@ class AuthFile extends File
 	 * @global type $adminname
 	 * @return type
 	 */
-	function set(null, null)
+	function set($str, $keeptimestamp)
 	{
 		global $adminname;
 		if ($this->auth_users == array()) return;

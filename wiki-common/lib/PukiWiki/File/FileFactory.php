@@ -57,7 +57,7 @@ class FileFactory
 	 * ファイル
 	 */
 	public static function Generic($filename){
-		return new File($filename);
+		return new AbstractFile($filename);
 	}
 	/**
 	 * Wikiファイル

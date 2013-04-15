@@ -14,7 +14,7 @@
 namespace PukiWiki\File;
 
 use PukiWiki\Auth\Auth;
-use PukiWiki\File\File;
+use PukiWiki\File\AbstractFile;
 use PukiWiki\Renderer\Header;
 use PukiWiki\Router;
 use PukiWiki\Utility;
@@ -26,7 +26,7 @@ use Zend\Http\Response;
 /**
  * 添付ファイルクラス
  */
-class AttachFile extends SplFileInfo{
+class AttachFile extends AbstractFile{
 	public $dir = UPLOAD_DIR;
 	public $pattern = '/^((?:[0-9A-F]{2})+)_((?:[0-9A-F]{2})+)$/';
 	
