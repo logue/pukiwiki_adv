@@ -9,7 +9,7 @@
 
 function plugin_toolbar_convert()
 {
-	global $_LINK, $pkwk_dtd;
+	global $_LINK;
 	global $do_backup, $trackback, $referer;
 	global $function_freeze;
 	global $vars;
@@ -145,7 +145,7 @@ function plugin_toolbar_convert()
 	}
 	$body = "\n".join('',$ret)."\n";
 
-	return (($pkwk_dtd == PKWK_DTD_HTML_5) ? '<nav class="toolbar">'.$body.'</nav>' : '<div class="toolbar">'.$body.'</div>')."\n";
+	return '<nav class="toolbar">'.$body.'</nav>' ."\n";
 }
 
 function _toolbar($key, $alt=null)

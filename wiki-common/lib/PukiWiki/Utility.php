@@ -1,12 +1,19 @@
 <?php
-// PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: Utility.php,v 1.0.0 2012/12/31 18:18:00 Logue Exp $
-// Copyright (C)
-//   2012 PukiWiki Advance Developers Team
-// License: GPL v2 or (at your option) any later version
+/**
+ * ユーティリティクラス
+ *
+ * @package   PukiWiki
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @create    2012/12/31
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: Utility.php,v 1.0.0 2013/03/11 08:04:00 Logue Exp $
+ **/
 
 namespace PukiWiki;
 
+use PukiWiki\Auth\Auth;
 use PukiWiki\Renderer\RendererDefines;
 use PukiWiki\Renderer\InlineFactory;
 use PukiWiki\Renderer\PluginRenderer;
@@ -14,6 +21,7 @@ use PukiWiki\Renderer\Header;
 use PukiWiki\Router;
 use PukiWiki\Render;
 use PukiWiki\Factory;
+use PukiWiki\Listing;
 use Zend\Http\Response;
 use Zend\Math\Rand;
 
@@ -57,9 +65,9 @@ class Utility{
 
 		/////////////////////////////////////////////////
 		// GET, POST, COOKIE
-		$get    = Utility::stripNullBytes($_GET);
-		$post   = Utility::stripNullBytes($_POST);
-		$cookie = Utility::stripNullBytes($_COOKIE);
+		$get    = self::stripNullBytes($_GET);
+		$post   = self::stripNullBytes($_POST);
+		$cookie = self::stripNullBytes($_COOKIE);
 
 		// 安全のためデフォルトの外部変数はアンセット
 		unset($_GET, $_POST, $_COOKIE);
@@ -319,19 +327,19 @@ class Utility{
 
 		// URLマッチパターン
 		$pattern = (
-			'!^(?:'.$scheme.')://'					// scheme
-			. '(?:\w+:\w+@)?'						// ( user:pass )?
-			. '('
-			. '(?:[-_0-9a-z]+\.)+(?:[a-z]+)\.?|'	// ( domain name |
-			. '\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|'	//   IP Address  |
-			. 'localhost'							//   localhost )
-			. ')'
-			. '(?::\d{1,5})?(?:/|$)!iD'				// ( :Port )?
+			'!^(?:' . $scheme . ')://' .            // scheme
+			'(?:\w+:\w+@)?' .                       // ( user:pass )?
+			'('. 
+			'(?:[-_0-9a-z]+\.)+(?:[a-z]+)\.?|'.     // ( domain name |
+			'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|' . //   IP Address  |
+			'localhost' .                           //   localhost )
+			')'. 
+			'(?::\d{1,5})?(?:/|$)!iD'               // ( :Port )?
 		);
 		// 正規処理
 		$ret = preg_match($pattern, $str);
 		// マッチしない場合は0が帰るのでFALSEにする
-		return ($ret === 0) ? FALSE : $ret;
+		return $ret === 0 ? FALSE : $ret;
 	}
 	/**
 	 * WebDAVからのアクセスか
@@ -519,7 +527,7 @@ class Utility{
 	 * @param int $http_code 出力するヘッダー
 	 */
 	public static function dieMessage($msg = '', $error_title='', $http_code = Response::STATUS_CODE_500){
-		global $page_title, $_string, $_title, $_button, $vars;
+		global $_string, $_title, $_button, $vars;
 
 		// エラーメッセージの内容
 		$body[] = '<p>[ ';
@@ -551,6 +559,37 @@ class Utility{
 		}
 
 		new Render($error_title, join("\n",$body), $http_code);
+		exit();
+	}
+	/**
+	 * ページが見つからない
+	 * @return void 
+	 */
+	public static function notFound(){
+		global $vars, $_button;
+		$body[] = '<p>[ ';
+		if ( isset($vars['page']) && !empty($vars['page']) ){
+			$body[] = '<a href="' . Factory::Wiki($vars['page'])->uri() .'">'.$_button['back'].'</a> | ';
+			$body[] = '<a href="' . Router::get_cmd_uri('edit',$vars['page']) . '">Try to edit this page</a> | ';
+		}
+		$body[] = '<a href="' . Router::get_cmd_uri() . '">Return to FrontPage</a> ]</p>';
+		$body[] = '<div class="message_box ui-state-error ui-corner-all" style="padding:.5em;">';
+		$body[] = '<p><span class="ui-icon ui-icon-alert" style="display:inline-block;"></span> <strong>Page not found</strong>';
+		$body[] = 'Sorry, but the page you were trying to view does not exist or deleted.';
+		if ( isset($vars['page']) && !empty($vars['page']) ){
+			$body[] = '<br />' . "\n" . sprintf(
+				'Please check <a href="%1s" rel="nofollow">backups</a> or <a href="%2s" rel="nofollow">create page</a>.',
+				Router::get_cmd_uri('backup',$vars['page']),
+				Router::get_cmd_uri('edit',$vars['page'])
+			);
+		}
+		$body[] = '</p>';
+		$body[] = '</div>';
+		$body[] = '<script type="text/javascript">/' .'* <![CDATA *' . '/';
+		$body[] = 'var GOOG_FIXURL_LANG = (navigator.language || null).slice(0,2), GOOG_FIXURL_SITE = location.host;';
+		$body[] = '/' . '* ]]> *' . '/</script>';
+		$body[] = '<script type="text/javascript" src="http://linkhelp.clients.google.com/tbproxy/lh/wm/fixurl.js"></script>';
+		new Render('Page not found', join("\n",$body), Response::STATUS_CODE_404);
 		exit();
 	}
 	/**
@@ -611,11 +650,105 @@ class Utility{
 		exit;
 	}
 	/**
-	 * バックトレースを取得
+	 * 編集画面を表示
+	 * @param string $page 編集しようとしているページ名
+	 * @param string $postdata 入力データー
+	 * @param boolean $show_template テンプレートを表示するか
 	 */
-	protected static function getBacktrace($ignore = 2) {
+	public static function editForm($page, $postdata, $show_template = TRUE)
+	{
+		global $vars, $session;
+		global $_button, $_string;
+		global $notimeupdate, $load_template_func, $load_refer_related;
+
+		if (empty($page)) return self::dieMessage('Page name was not defined.');
+
+		$wiki = Factory::Wiki($page);
+		$original = isset($vars['original']) ? $vars['original'] : $postdata;
+
+		// ticketは、PliginRenderer::addHiddenField()で自動挿入されるので、同じアルゴリズムでチケット名を生成
+		$ticket_name = md5(Utility::getTicket() . REMOTE_ADDR);
+		// BugTrack/95 fix Problem: browser RSS request with session
+		$session->offsetSet('origin-'.$ticket_name, md5(self::getTicket() . str_replace("\r", '', $original)));
+
+		$ret[] = '<form action="' . Router::get_script_uri() . '" method="post" id="form">';
+		$ret[] = '<input type="hidden" name="cmd" value="edit" />';
+		$ret[] = '<input type="hidden" name="page" value="' . self::htmlsc($page) .'" />';
+		$ret[] = isset($vars['id']) ? '<input type="hidden" name="id" value="' . self::htmlsc($vars['id']) . '" />' : null;
+		// 元々のテキスト（比較用）
+		$ret[] = '<textarea id="original" name="original" rows="1" cols="1" style="display:none">' . self::htmlsc($original) . '</textarea>';
 		
-	} 
+		if ($load_template_func && $show_template) {
+			// ひな形を読み込む
+			foreach(Listing::pages() as $_page) {
+				$_w = Factory::Wiki($_page);
+				if (! $_w->isEditable() || $_w->isHidden())
+					continue;
+				$_s_page = self::htmlsc($_page);
+				$_pages[$_page] = '<option value="' . $_s_page . '">' .$_s_page . '</option>'."\n";
+			}
+			
+			// ナチュラルソート
+			ksort($_pages, SORT_NATURAL);
+			$ret[] = '<div class="template_form">';
+			$ret[] = '<select name="template_page" class="template">';
+			$ret[] = '<option value="" disabled="disabled" selected="selected">-- ' . $_button['template'] . ' --</option>';
+			$ret[] = join("\n", $_pages);
+			$ret[] = '</select>';
+			$ret[] = '<input type="submit" name="template" value="' . $_button['load'] . '" accesskey="l" />';
+			$ret[] = '</div>';
+			unset($_s_page, $_w, $_pages);
+		}
+		// 編集フォーム
+		$ret[] = '<div class="edit_form">';
+		$ret[] = '<textarea name="msg" id="msg" rows="20" rows="80">' . self::htmlsc(
+			// 作成元のページが存在する場合、そのリンクを書き込むデーターの先頭に付加する
+			($load_refer_related && isset($vars['refer']) && !empty($vars['refer']) ? '[[' . self::stripBracket($vars['refer']) . ']]' . "\n\n" : '') .
+			$postdata
+		) . '</textarea>';
+		
+		if (IS_MOBILE){
+			// モバイル用
+			$ret[] = '<input type="submit" id="btn_submit" name="write" value="'.$_button['update'].'" data-icon="check" data-inline="true" data-theme="b" />';
+			$ret[] = '<input type="submit" id="btn_preview" name="preview" value="'.$_button['preview'].'" accesskey="p" data-icon="gear" data-inline="true" data-theme="e" />';
+			$ret[] = '<input type="submit" id="btn_cancel" name="cancel" value="'.$_button['cancel'].'" accesskey="c" data-icon="delete" data-inline="true" />';
+			$ret[] = $notimeupdate === 2 && Auth::check_role('role_contents_admin') ? '<div data-role="fieldcontain">' : null;
+			if ($notimeupdate !== 0 && $wiki->isValied()){
+				// タイムスタンプを更新しないのチェックボックス
+				$ret[] = '<input type="checkbox" name="notimestamp" id="_edit_form_notimestamp" value="true" ' . (isset($vars['notimestamp']) ? ' checked="checked"' : null) . ' />';
+				$ret[] = '<label for="_edit_form_notimestamp" data-inline="true">'.$_button['notchangetimestamp'].'</label>';
+			}
+			// 管理人のパス入力
+			$ret[] = $notimeupdate == 2 && Auth::check_role('role_contents_admin') ? '<input type="password" name="pass" size="12"  data-inline="true" />' . "\n" . '</div>' : null;
+			$ret[] = isset($vars['add']) ? '<input type="checkbox" name="add_top" value="true"' . (isset($vars['add']) ? ' checked="checked"' : '') . ' /><label for="add_top">' . $_button['addtop'] . '</label>' : null;
+		}else{
+			// 通常用
+			$ret[] = '<input type="submit" id="btn_submit" name="write" value="' . $_button['update'] . '" accesskey="s" />';
+			$ret[] = isset($vars['add']) ? '<input type="checkbox" name="add_top" value="true"' . (isset($vars['add']) ? ' checked="checked"' : '') . ' /><label for="add_top">' . $_button['addtop'] . '</label>' : null;
+			$ret[] = '<input type="submit" id="btn_preview" name="preview" value="' . $_button['preview'] . '" accesskey="p" />';
+			if ($notimeupdate !== 0 && $wiki->isValied()){
+				// タイムスタンプを更新しないのチェックボックス
+				$ret[] = '<input type="checkbox" name="notimestamp" id="_edit_form_notimestamp" value="true"' . (isset($vars['notimestamp']) ? ' checked="checked"' : null) . ' />';
+				$ret[] = '<label for="_edit_form_notimestamp">' . $_button['notchangetimestamp'] . '</label>';
+			}
+			// 管理人のパス入力
+			$ret[] = $notimeupdate === 2 && Auth::check_role('role_contents_admin') ? '<input type="password" name="pass" size="12" placeholder="Password" />' : null;
+			$ret[] = '<input type="submit" id="btn_cancel" name="cancel" value="' . $_button['cancel'] . '" accesskey="c" />';
+		}
+		$ret[] = '</div>';
+		$ret[] = '</form>';
+
+		if (isset($vars['help'])) {
+			// テキストの整形ルールを表示
+			global $rule_page;
+			$rule_wiki = Factory::Wiki($rule_page);
+			$ret[] = '<hr />';
+			$ret[] =  $rule_wiki->has() ?  $rule_wiki->render() : '<p>Sorry, page \'' . Utility::htmlsc($rule_page) .'\' unavailable.</p>';
+		} else {
+			$ret[] = '<ul><li><a href="' . $wiki->uri('edit',array('help'=>'true')) . '" id="FormatRule">' . $_string['help'] . '</a></li></ul>';
+		}
+		return join("\n", $ret);
+	}
 	/**
 	 * ダンプ
 	 */

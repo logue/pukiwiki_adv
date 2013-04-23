@@ -82,7 +82,7 @@ function plugin_attachref_options(&$extra_options, $args)
 function plugin_attachref_convert()
 {
 	global $vars,$digest;
-	global $_attachref_messages,$pkwk_dtd;
+	global $_attachref_messages;
 
 	$extra_options = array();
 	$args = func_get_args();
@@ -122,12 +122,9 @@ EOD;
 			} else {
 				$style = 'text-align:' . $params['_align'];
 			}
-			// wrapped "div"
-			if ($pkwk_dtd == PKWK_DTD_HTML_5){
-				$ret = '<figure class="img_margin" style="' . $style . '">' . $params['_body'] . "</figure>\n";
-			}else{
-				$ret = '<div class="img_margin" style="' . $style . '">' . $params['_body'] . "</div>\n";
-			}
+			// wrapped "figure"
+			$ret = '<figure class="img_margin" style="' . $style . '">' . $params['_body'] . "</figure>\n";
+			
 			// final --- copy of plugin_ref_convert()
 			$dispattach = 0;
 		}

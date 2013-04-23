@@ -25,9 +25,7 @@ function plugin_topicpath_convert()
 	
 	$ret = plugin_topicpath_inline();
 	
-	if ($ret != ''){
-		return (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<nav class="topicpath">'.$ret.'</nav>'."\n" : '<div class="topicpath">'.$ret.'</div>')."\n";
-	}
+	return !empty($ret) ? '<nav class="topicpath">'.$ret.'</nav>'."\n" : null;
 }
 
 function plugin_topicpath_inline()

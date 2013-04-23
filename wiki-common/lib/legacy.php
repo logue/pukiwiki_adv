@@ -21,7 +21,6 @@ use PukiWiki\Listing;
 use PukiWiki\Renderer\InlineFactory;
 use PukiWiki\Mailer;
 use PukiWiki\Text\Rules;
-use Zend\Http\Response;
 
 /**************************************************************************************************/
 /**
@@ -124,13 +123,6 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 	//trigger_error('page_write($page, $postdata, $notimestamp) is deprecated. use WikiFactory::Wiki($page)->set($postdata, $notimestamp).', E_USER_DEPRECATED );
 	if (empty($page)) return;
 	return Factory::Wiki($page)->set($postdata, $notimestamp);
-}
-
-// Get a list of related pages of the page
-function links_get_related($page)
-{
-	//trigger_error('links_get_related($page) is deprecated. use WikiFactory::Wiki($page)->getRetaled().', E_USER_DEPRECATED );
-	return Factory::Wiki($page)->getRetaled();
 }
 
 // Re-create PKWK_MAXSHOW_CACHE (Heavy)
@@ -595,6 +587,20 @@ function init_script_filename()
 /**
  * html.php
  */
+// Show 'edit' form
+function edit_form($page, $postdata, $digest = FALSE, $b_template = TRUE)
+{
+	return Utility::editForm($page, $postdata);
+}
+
+// Output HTML DTD, <html> start tag. Return content-type.
+function pkwk_output_dtd($pkwk_dtd = PKWK_DTD_HTML_5, $charset = CONTENT_CHARSET)
+{
+	return join("\n", array('<!doctype html>',
+                '<head prefix="og: http://ogp.me/ns# fb: http://www.facebook.com/2008/fbml">',
+                '<meta charset="UTF-8" />')
+        );
+}
 function make_line_rules($str){
 	return Inline::setLineRules($str);
 }

@@ -9,6 +9,7 @@
 //
 // Edit plugin (cmd=edit)
 // Plus! NOTE:(policy)not merge official cvs(1.40->1.41) See Question/181
+
 use PukiWiki\Factory;
 use PukiWiki\Wiki;
 use PukiWiki\Auth\Auth;
@@ -16,6 +17,10 @@ use PukiWiki\Router;
 use PukiWiki\Renderer\RendererFactory;
 use PukiWiki\Utility;
 use PukiWiki\Diff;
+use PukiWiki\Text\Rules;
+use PukiWiki\Renderer\Header;
+use PukiWiki\Time;
+use Zend\Json\Json;
 
 // Remove #freeze written by hand
 define('PLUGIN_EDIT_FREEZE_REGEX', '/^(?:#freeze(?!\w)\s*)+/im');
@@ -109,27 +114,16 @@ function plugin_edit_realview()
 	$postdata = $vars['msg'];
 
 	if ($postdata) {
-		$postdata = make_str_rules($postdata);
+		$postdata = Rules::make_str_rules($postdata);
 		$postdata = explode("\n", $postdata);
 		$postdata = drop_submit(RendererFactory::factory($postdata));
 	}
-	// Feeding start
-	pkwk_common_headers();
-	$longtaketime = getmicrotime() - MUTIME;
-	$taketime     = sprintf('%01.03f', $longtaketime);
-	if ($vars['type'] == 'json'){
-		$obj = array(
-			'data'			=> $postdata,
-			'taketime'		=> $taketime
-		);
-		header("Content-Type: application/json; charset=".CONTENT_CHARSET);
-		echo json_encode($obj);
-	}else{
-		header('Content-type: text/xml; charset=UTF-8');
-		print '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-		print $postdata;
-		print '<span class="small1">(Time:' . $taketime . ')</span>';
-	}
+
+	$headers = Header::getHeaders('application/json');
+	Header::writeResponse($headers, 200, Json::encode(array(
+		'data'			=> $postdata,
+		'taketime'		=> Time::getTakeTime()
+	)));
 	exit;
 }
 

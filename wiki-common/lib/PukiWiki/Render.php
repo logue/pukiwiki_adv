@@ -17,10 +17,8 @@ use PukiWiki\Factory;
 use PukiWiki\Renderer\Header;
 use PukiWiki\Renderer\View;
 use PukiWiki\Renderer\PluginRenderer;
-use PukiWiki\Renderer\MathJax;
 use PukiWiki\Router;
 use PukiWiki\Search;
-use PukiWiki\Wiki;
 use PukiWiki\Time;
 use Zend\Http\Response;
 use Zend\Json\Json;
@@ -231,7 +229,7 @@ class Render{
 			'IMAGE_URI'=>constant('IMAGE_URI'),
 			'JS_URI'=>constant('JS_URI'),
 			'LANG'=>constant('LANG'),
-			'SCRIPT'=>get_script_absuri(),
+			'SCRIPT'=>Router::get_script_absuri(),
 			'SKIN_DIR'=>constant('SKIN_URI'),
 			'THEME_NAME'=>constant('PLUS_THEME'),
 		);
@@ -374,8 +372,6 @@ class Render{
 	 * @return array
 	 */
 	private static function getLinkSet($_page){
-		
-
 		global $trackback, $referer;
 
 		static $d_links;

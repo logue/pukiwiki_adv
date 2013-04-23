@@ -46,7 +46,7 @@ define('PLUGIN_NAVI_LINK_TAGS', TRUE);	// FALSE, TRUE
 
 function plugin_navi_convert()
 {
-	global $vars, $link_tags, $pkwk_dtd;
+	global $vars, $link_tags;
 //	global $_navi_prev, $_navi_next, $_navi_up, $_navi_home;
 	static $navi = array();
 	$_navi_prev = T_('Prev');
@@ -187,7 +187,7 @@ EOD;
 </ul>
 EOD;
 	}
-	return (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<nav class="navi">'.$ret.'</nav>'."\n" : '<div class="navi">'.$ret.'</div>')."\n";
+	return '<nav class="navi">'.$ret.'</nav>'."\n";
 }
 /* End of file navi.inc.php */
 /* Location: ./wiki-common/plugin/navi.inc.php */

@@ -87,7 +87,7 @@ function plugin_amazon_init()
 function plugin_amazon_convert()
 {
 	global $vars, $_string;
-	global $_amazon_msg, $pkwk_dtd;
+	global $_amazon_msg;
 
 	if (func_num_args() == 0) {
 		if( Auth::check_role('readonly') ) die_message( $_string['prohibit'] );
@@ -139,30 +139,18 @@ EOD;
 		if (!empty($obj->items['Width'])) {
 			$style = ' style="width:'.$obj->items['Width'].'px;"';
 		}
-		if ($pkwk_dtd == PKWK_DTD_HTML_5){
-			$retval = '<figure class="amazon_img" style="'.amazon_ecs::style_float($parm['align']).'">'.
-				$obj->get_imagelink().
-				'<figcaption><a href="' . $obj->shop_url() . $obj->asin.'/' . AMAZON_AID . '">' . $obj->items['title'] . '</a></figcaption>'."\n".'</figure>';
-		}else{
-			$retval .= '<div class="amazon_img" style="'.amazon_ecs::style_float($parm['align']).'">'.
-				'<table class="amazon_tbl"'.$style.'><tr>'.
-				'<td class="amazon_td">' . $obj->get_imagelink() . '</td></tr>'.
-				'<tr><td class="amazon_td"><a href="' . $obj->shop_url() . $obj->asin.'/' . AMAZON_AID . '">' . $obj->items['title'] . '</a>'.
-				'</td></tr></table></div>';
-		}
+                $retval = '<figure class="amazon_img" style="'.amazon_ecs::style_float($parm['align']).'">'.
+                        $obj->get_imagelink().
+                        '<figcaption><a href="' . $obj->shop_url() . $obj->asin.'/' . AMAZON_AID . '">' . $obj->items['title'] . '</a></figcaption>'."\n".'</figure>';
 		if (!empty($parm['clear'])) $retval .= amazon_ecs::clear($parm['clear']);
 		return $retval;
 	}
 
 
 	if ($parm['image']) {
-		if ($pkwk_dtd == PKWK_DTD_HTML_5){
-			$retval .= '<figure class="amazon_img" style="'.amazon_ecs::style_float($parm['align']).'">'.
-				$obj->get_imagelink() . '</figure>';
-		}else{
-			$retval .= '<div class="amazon_img" style="'.amazon_ecs::style_float($parm['align']).'">'.
-			$obj->get_imagelink() . '</div>';
-		}
+                $retval .= '<figure class="amazon_img" style="'.amazon_ecs::style_float($parm['align']).'">'.
+                        $obj->get_imagelink() . '</figure>';
+		
 		if ($parm['image'] === 1) {
 			if (!empty($parm['clear'])) $retval .= amazon_ecs::clear($parm['clear']);
 			return $retval;

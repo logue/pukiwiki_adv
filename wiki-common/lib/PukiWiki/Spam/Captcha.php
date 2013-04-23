@@ -1,9 +1,27 @@
 <?php
-namespace PukiWiki\Spam;
-use ZendService\ReCaptcha\ReCaptcha;
-use PukiWiki\Utility;
-use PukiWiki\File\AbstractFile;
+/**
+ * Captchaクラス
+ *
+ * @package   PukiWiki\Spam
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2013 PukiWiki Advance Developers Team
+ * @create    2013/02/03
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: Captcha.php,v 1.0.0 2013/02/02 17:28:00 Logue Exp $
+ **/
 
+namespace PukiWiki\Spam;
+
+use PukiWiki\File\AbstractFile;
+use PukiWiki\Render;
+use PukiWiki\Spam\PostId;
+use PukiWiki\Utility;
+use ZendService\ReCaptcha\ReCaptcha;
+
+/**
+ * Captcha認証クラス
+ */
 class Captcha{
 	// CAPTCHAセッションの接頭辞（セッション名は、ticketに閲覧者のリモートホストを加えたもののmd5値とする）
 	const CAPTCHA_SESSION_PREFIX = 'captcha-';
@@ -82,7 +100,7 @@ class Captcha{
 					return;	// ここで書き込み処理に戻る
 				}else{
 					// CAPTCHA認証失敗ログをつける
-					write_challenged();
+					self::write_challenged();
 					$message = 'Failed to authenticate.';
 				}
 			}
@@ -135,14 +153,13 @@ class Captcha{
 	//	$ret[] = Zend\Debug\Debug::Dump($vars);
 	//	$ret[] = Zend\Debug\Debug::Dump($captcha->getSession());
 
-
 		if (!empty($message)){
 			$ret[] = '<div class="message_box ui-state-error ui-corner-all"><p><span class="ui-icon ui-icon-alert"></span>'.$message.'</p></div>';
 		}
 
 		// PostIdが有効な場合
 		if ( isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] === 1){
-			$vars['postid'] = generate_postid($vars['cmd']);
+			$vars['postid'] = PostId::generate($vars['cmd']);
 		}
 
 		$ret[] = '<fieldset>';
@@ -161,7 +178,7 @@ class Captcha{
 		$ret[] = '</fieldset>';
 
 		// return array('msg'=>'CAPTCHA','body'=>join("\n",$ret));
-		catbody('CAPTCHA', $vars['page'], join("\n",$ret));
+		new Render('CAPTCHA', join("\n",$ret));
 		exit;
 	}
 	/**

@@ -12,7 +12,6 @@
 use PukiWiki\Auth\Auth;
 function plugin_navibar_convert()
 {
-	global $_LINK, $pkwk_dtd;
 	global $do_backup, $trackback, $referer;
 	global $function_freeze;
 	global $vars;
@@ -166,7 +165,7 @@ function plugin_navibar_convert()
 	if (IS_MOBILE){
 		return $body;
 	}else{
-		return (($pkwk_dtd == PKWK_DTD_HTML_5) ? '<nav class="navibar">'.$body.'</nav>' : '<div class="navibar">'.$body.'</div>')."\n";
+		return '<nav class="navibar">'.$body.'</nav>' ."\n";
 	}
 }
 

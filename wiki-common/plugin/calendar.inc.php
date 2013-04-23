@@ -36,7 +36,7 @@ function plugin_calendar_init(){
 
 function plugin_calendar_convert()
 {
-	global $vars, $post, $get, $pkwk_dtd ,$_labels;
+	global $vars, $post, $get ,$_labels;
 	//global $_calendar_plugin_edit, $_calendar_plugin_empty;
 	global $_calendar_msg;
 
@@ -225,10 +225,9 @@ EOD;
 
 	if ($today_view) {
 		$ret .= '</div>'."\n";	// カレンダーのdivタグを閉じる
-		$ret .= (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section class="style_calendar_post">' : '<div class="style_calendar_post">')."\n";
+		$ret .= '<section class="style_calendar_post">'."\n";
 		if ($today_args == '') {
-			$str = (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<article id="'.$tpage.'" class="style_calendar_post">' : '<div id="'.$tpage.'" class="style_calendar_post">')."\n";
-			global $pkwk_dtd;
+			$str = '<article id="'.$tpage.'" class="style_calendar_post">'."\n";
 			$tpage = $prefix . sprintf(PLUGIN_CALENDAR_PANENAME_FORMAT, $today['year'], $today['mon'], $today['mday']);
 			$t_wiki = Factory::Wiki($tpage);
 			if ($t_wiki->has()) {
@@ -242,7 +241,7 @@ EOD;
 				$str .= sprintf($_calendar_msg['_empty'],
 					make_pagelink($prefix . sprintf(PLUGIN_CALENDAR_PANENAME_FORMAT,$today['year'], $today['mon'], $today['mday'])));
 			}
-			$str .= (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</article>' : '</div>')."\n";
+			$str .= '</article>' ."\n";
 		} else {
 			$aryargs = array(rawurldecode($base), $page_YM, $today_args);
 			if (exist_plugin('calendar_viewer')) {
@@ -253,7 +252,7 @@ EOD;
 			}
 		}
 		$ret .= $str . "\n";
-		$ret .= (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</section>' : '</div>')."\n";
+		$ret .= '</section>' ."\n";
 		$ret .= '</div>' . "\n";
 	}
 

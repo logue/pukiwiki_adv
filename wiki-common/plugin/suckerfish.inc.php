@@ -58,7 +58,6 @@ function plugin_suckerfish_search_navipage(){
 
 function plugin_suckerfish_makehtml($page)
 {
-	global $vars,$pkwk_dtd;
 	if (empty($page)) return false;
 	$wiki = Factory::Wiki($page);
 	if (!$wiki->has()) return false;
@@ -106,7 +105,7 @@ function plugin_suckerfish_makehtml($page)
 	}
 	$output = '<ul class="sf-menu">'."\n".$output.'</ul>';
 	
-	return (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<nav id="navigator">'.$output.'</nav>'."\n" : '<div id="navigator">'.$output.'</div>')."\n";
+	return '<nav id="navigator">'.$output.'</nav>'."\n";
 }
 
 function plugin_suckerfish_to_item($line){

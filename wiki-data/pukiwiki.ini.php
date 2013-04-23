@@ -154,13 +154,13 @@ define('THEME_PLUS_NAME',  'theme/');
 /////////////////////////////////////////////////
 // Title of your Wikisite (Name this)
 // Also used as RSS feed's channel name etc
-$page_title = 'PukiWiki Advance';
+$site_name = 'PukiWiki Advance';
 
 // Specify PukiWiki Advance URL (default: auto)
 //$script = './';
 
 // Site Logo
-$logo = IMAGE_DIR.'pukiwiki_adv.logo.png';
+$site_logo = IMAGE_DIR.'pukiwiki_adv.logo.png';
 
 // Site Image (for OGP)
 $site_image = IMAGE_DIR.'pukiwiki_adv.image.png';
@@ -186,7 +186,7 @@ $absolute_uri = 1;
 $modifier = 'anonymous';
 
 // Site admin's Web page (CHANGE THIS)
-$modifierlink = get_script_absuri();
+$modifierlink = Router::get_script_absuri();
 
 // Default page name
 $defaultpage	= 'FrontPage';		// Top / Default page
@@ -240,30 +240,6 @@ $yahoo_site_explorer_id = '';
 // Bing Webmaster Tool
 // http://www.bing.com/webmaster/
 $bing_webmaster_tool = '';
-
-/////////////////////////////////////////////////
-// Change default Document Type Definition
-
-// Some web browser's bug, and / or Java apprets may needs not-Strict DTD.
-// PukiWiki Adv. does not support HTML4.x.
-
-$pkwk_dtd = PKWK_DTD_HTML_5;	// Adv. Default
-//$pkwk_dtd = PKWK_DTD_XHTML_1_1;
-//$pkwk_dtd = PKWK_DTD_XHTML_1_0_STRICT;
-//$pkwk_dtd = PKWK_DTD_XHTML_1_0_TRANSITIONAL;
-
-// PKWK_STRICT_XHTML
-// XHTMLとして処理する場合。（一部のブログパーツやプラグインで不具合が発生する可能性があります）
-defined('PKWK_STRICT_XHTML')	or define('PKWK_STRICT_XHTML', false);
-
-// Change IE rendering mode.
-// http://msdn.microsoft.com/en-us/library/cc288325(VS.85).aspx
-// Note: This setting ignore when edit page for fix IE8 scrolling bug.
-
-$x_ua_compatible = "IE=edge,chrome=1";	// Render as latest IE, if Chrome Frame installed, render as Chrome Frame.　(Default)
-// $x_ua_compatible = "IE=emulateIE7";
-// $x_ua_compatible = "chrome=1";	// Render as Chrome Frame
-// $x_ua_compatible = "IE=edge";	// Render as latest IE
 
 /////////////////////////////////////////////////
 // Blocking SPAM

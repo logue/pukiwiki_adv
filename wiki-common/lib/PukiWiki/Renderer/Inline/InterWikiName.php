@@ -106,50 +106,58 @@ class InterWikiName extends Inline
 		return '<a href="' . $target . $this->anchor . '" title="' . $this->name . '" rel="' . ($nofollow === FALSE ? 'external' : 'external nofollow') . '">'. self::INTERWIKINAME_ICON . $this->alias . $icon . '</a>';
 	}
 
-	// Render an InterWiki into a URL
-	private function getInterWikiUrl($name, $param)
+	/**
+	 * InterWikiNameをURLに変換する
+	 * @param string $name InterWiki名
+	 * @param string $param InterWikiに送るパラメータ
+	 * @return string
+	 */
+	public function getInterWikiUrl($name, $param = '')
 	{
 		$interwikinames = self::getInterWikiNameDict();
 
 		if (! isset($interwikinames[$name])) return FALSE;
 
 		list($url, $opt) = $interwikinames[$name];
+		
+		if (!empty($param)){
 
-		// Encoding
-		switch ($opt) {
+			// Encoding
+			switch ($opt) {
 
-			case '':    /* FALLTHROUGH */
-			case 'std': // Simply URL-encode the string, whose base encoding is the internal-encoding
-				$param = rawurlencode($param);
-				break;
+				case '':    /* FALLTHROUGH */
+				case 'std': // Simply URL-encode the string, whose base encoding is the internal-encoding
+					$param = rawurlencode($param);
+					break;
 
-			case 'asis': /* FALLTHROUGH */
-			case 'raw' : // Truly as-is
-				break;
+				case 'asis': /* FALLTHROUGH */
+				case 'raw' : // Truly as-is
+					break;
 
-			case 'yw': // YukiWiki
-				if (! preg_match('/' . Utility::WIKINAME_PATTERN . '/', $param))
-					$param = '[[' . mb_convert_encoding($param, 'SJIS', SOURCE_ENCODING) . ']]';
-				break;
+				case 'yw': // YukiWiki
+					if (! preg_match('/' . Utility::WIKINAME_PATTERN . '/', $param))
+						$param = '[[' . mb_convert_encoding($param, 'SJIS', SOURCE_ENCODING) . ']]';
+					break;
 
-			case 'moin': // MoinMoin
-				$param = str_replace('%', '_', rawurlencode($param));
-				break;
+				case 'moin': // MoinMoin
+					$param = str_replace('%', '_', rawurlencode($param));
+					break;
 
-			default:
-				// Alias conversion of $opt
-				if (isset($encode_aliases[$opt])) $opt = & $encode_aliases[$opt];
+				default:
+					// Alias conversion of $opt
+					if (isset($encode_aliases[$opt])) $opt = & $encode_aliases[$opt];
 
-				// Encoding conversion into specified encode, and URLencode
-				$param = rawurlencode(mb_convert_encoding($param, $opt, SOURCE_ENCODING));
-		}
+					// Encoding conversion into specified encode, and URLencode
+					$param = rawurlencode(mb_convert_encoding($param, $opt, SOURCE_ENCODING));
+			}
 
-		// Replace or Add the parameter
-		if (strpos($url, '$1') !== FALSE) {
-			$url = str_replace('$1', $param, $url);
-			//$url = strtr($url, '$1', $param);
-		} else {
-			$url .= $param;
+			// Replace or Add the parameter
+			if (strpos($url, '$1') !== FALSE) {
+				$url = str_replace('$1', $param, $url);
+				//$url = strtr($url, '$1', $param);
+			} else {
+				$url .= $param;
+			}
 		}
 
 		$len = strlen($url);
@@ -189,11 +197,13 @@ class InterWikiName extends Inline
 			return $interwikinames;
 		}
 
-		// キャッシュが存在してなかったり、定義ページより古い場合は生成。
+		// 定義ページより生成。
 		$interwikinames = $matches = array();
 		foreach ($wiki->get() as $line)
 			if (preg_match(self::INTERWIKINAME_PATTERN, $line, $matches))
 				$interwikinames[$matches[2]] = array($matches[1], $matches[3]);
+
+		// キャッシュ保存
 		$cache['wiki']->setItem(self::INTERWIKINAME_CACHE, $interwikinames);
 
 		return $interwikinames;

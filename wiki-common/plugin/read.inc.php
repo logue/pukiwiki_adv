@@ -5,17 +5,20 @@
 // Read plugin: Show a page and InterWiki
 
 use PukiWiki\Router;
+use PukiWiki\Renderer\InlineFactory;
 use PukiWiki\Renderer\Inline\AutoAlias;
+use PukiWiki\Renderer\Inline\InterWikiName;
+use PukiWiki\Renderer\PluginRenderer;
 use PukiWiki\Auth\Auth;
+use PukiWiki\Factory;
+use PukiWiki\Utility;
 
 function plugin_read_init(){
 	$msg = array(
 		'_read_msg' => array(
-			'title_invalidwn'	=> T_('Redirect'),
-			'msg_invalidiwn'	=> T_('This pagename is an alias to %s.'),
-			'title_notfound'	=> T_('Page not found'),
-			'msg_notfound1'		=> T_('Sorry, but the page you were trying to view does not exist or deleted.'),
-			'msg_notfound2'		=> T_('Please check <a href="%1s" rel="nofollow">backups</a> or <a href="%2s" rel="nofollow">create page</a>.')
+			'title_invalied'    => T_('Invalied page name'),
+			'msg_invalidiwn'    => T_('This pagename is an alias to %s.'),
+			'msg_ibvaliediw'    => T_('This is not a valid InterWikiName')
 		)
 	);
 	set_plugin_messages($msg);
@@ -23,81 +26,60 @@ function plugin_read_init(){
 
 function plugin_read_action()
 {
-	global $vars, $_read_msg, $referer;
+	global $vars, $_read_msg;
 
-	$page = isset($vars['page']) ? $vars['page'] : '';
+	$page = isset($vars['page']) ? $vars['page'] : null;
+	$ret = array('msg'=>null, 'body'=>null);
 
-	if (is_page($page)) {
-		// ページを表示
-		check_readable($page, true, true);
-		header_lastmod($page);
-		return array('msg'=>'', 'body'=>'');
+	if (!$page) return $ret;
 
-	// } else if (! PKWK_SAFE_MODE && is_interwiki($page)) {
-	} else if (! Auth::check_role('safemode') && is_interwiki($page)) {
-		$referer = 0;
-		return do_plugin_action('interwiki'); // InterWikiNameを処理
-	} else if (is_pagename($page)) {
-		$realpages = AutoAlias::getAutoAlias($page);
-		if (count($realpages) == 1) {
-			$realpage = $realpages[0];
-			if (is_page($realpage)) {
-				$referer = 0;
-				Router::redirect(get_page_location_uri($realpage));
-				return;
-			} elseif (is_url($realpage)) {
-				$referer = 0;
-				Router::redirect($realpage);
-				return;
-			} elseif (is_interwiki($realpage)) {
-				$referer = 0;
-				header('HTTP/1.0 301 Moved Permanently');
-				$vars['page'] = $realpage;
-				return do_plugin_action('interwiki'); // header('Location');
-			} else { 
-				return plugin_read_notfound($page);
-			}
-		} else if (count($realpages) >= 2) {
-			$referer = 0;
-			$body = '<p>';
-			$body .= $_read_msg['msg_invalidwn'] . '<br />';
-			$link = '';
-			foreach ($realpages as $realpage) {
-				$link .= '[[' . $realpage . '>' . $realpage . ']]&br;';
-			}
-			$body .= make_link($link);
-			$body .= '</p>';
-			return array('msg'=>$_read_msg['title_invalidwn'], 'body'=>$body);
-		}
-		return plugin_read_notfound($page);
-	} else {
-		$referer = 0;
-		// 無効なページ名
-		return plugin_read_notfound($page);
+	// 読み込むことができるページか
+	if (Factory::Wiki($page)->isReadable(true)) {
+		return $ret;
 	}
+
+	global $referer;
+	$referer = 0;
+
+	// InterWikiNameに含まれるページか？
+	// ?[http://pukiwiki.logue.be/? adv]みたいな感じでアクセス
+	if (Utility::isInterWiki($page) && preg_match('/^'.InterWikiName::INTERWIKINAME_PATTERN.'$/', $page, $match)){
+		$url = InterWikiName::getInterWikiUrl($match[2], $match[3]);
+		if ($url == false){
+			return array('msg'=>$_read_msg['title_invalied'], 'body'=>$_read_msg['msg_invalidiw']);
+		}
+		Router::redirect($url);
+		return;
+	}
+
+	// AutoAliasに含まれるページか？
+	$realpages = AutoAlias::getAutoAlias($page);
+	if (count($realpages) === 1) {
+		$realpage = $realpages[0];
+		// AutoAliasの指定先のページを指定
+		$a_wiki = Factory::Wiki($realpage);
+		if ($a_wiki->isValied()) {
+			Router::redirect($a_wiki->link());
+			return;
+		} else if (Utility::isUri($realpage)) {
+			Router::redirect($realpage);
+			return;
+		}
+	} else if (count($realpages) >= 2) {
+		$body = '<p>';
+		$body .= $_read_msg['msg_invalidwn'] . '<br />';
+		$link = '';
+		foreach ($realpages as $realpage) {
+			$link .= '[[' . $realpage . '>' . $realpage . ']]&br;';
+		}
+		$body .= InlineFactory::Wiki($link);
+		$body .= '</p>';
+		return array('msg'=>$_read_msg['title_invalied'], 'body'=>$body);
+	}
+	
+	Utility::notfound();
 	exit;
 }
 
-function plugin_read_notfound($page){
-	global $_read_msg;
-	$script = get_script_uri();
-	header('HTTP/1.0 404 Not Found');
-	
-	$msg_edit = sprintf($_read_msg['msg_notfound2'], get_cmd_uri('backup',$page), get_cmd_uri('edit',$page));
-	$body = <<<HTML
-<div class="message_box ui-state-error ui-corner-all">
-<p><span class="ui-icon ui-icon-alert" style="float: left;"></span>{$_read_msg['msg_notfound1']}</p>
-<p>$msg_edit</p>
-</div>
-<script type="text/javascript">/* <![CDATA */
-var GOOG_FIXURL_LANG = (navigator.language || '').slice(0,2),GOOG_FIXURL_SITE = location.host;
-/* ]]> */</script>
-<script type="text/javascript" src="http://linkhelp.clients.google.com/tbproxy/lh/wm/fixurl.js"></script>
-HTML;
-	return array(
-		'msg' => $_read_msg['title_notfound'],
-		'body'=> $body
-	);
-}
 /* End of file read.inc.php */
 /* Location: ./wiki-common/plugin/read.inc.php */

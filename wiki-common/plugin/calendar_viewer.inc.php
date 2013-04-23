@@ -68,7 +68,7 @@ function plugin_calendar_viewer_convert()
 	global $vars, $get, $post, $_labels;
 //	global $_msg_calendar_viewer_right, $_msg_calendar_viewer_left;
 //	global $_msg_calendar_viewer_restrict, $_err_calendar_viewer_param2;
-	global $_symbol_paraedit, $trackback, $pkwk_dtd;
+	global $_symbol_paraedit, $trackback;
 
 	$_calendar_viewer_msg = array(
 		'_err_param2'	=> T_('Wrong second parameter.'),
@@ -283,9 +283,9 @@ function plugin_calendar_viewer_convert()
 			$tail .= '<a class="pkwk-icon_linktext cmd-trackback" href="'.$tb_link.'">'.'Trackback(' . tb_count($page) . ')'.'</a>'."\n";
 		}
 		$page_id= str_replace('/','_',$page);
-		$return_body .= (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<article id="'.$page_id.'">' : '<div id="'.$page_id.'">')."\n";
+		$return_body .= '<article id="'.$page_id.'">' ."\n";
 		$return_body .= $head . $body;
-		$return_body .= (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</article>' : '</div>')."\n";
+		$return_body .= '</article>' ."\n";
 
 		++$tmp;
 	}
@@ -358,7 +358,7 @@ function plugin_calendar_viewer_convert()
 		$center_link = '<a href="'.get_page_uri($page).'">'.$page.'</a>';
 
 		// past modeは<<新 旧>> 他は<<旧 新>>
-		$nav = (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<nav class="calendar_viewer_navi">' : '<div class="calendar_viewer_navi">')."\n";
+		$nav = '<nav class="calendar_viewer_navi">' ."\n";
 		$nav .=  <<<EOD
 <ul class="navi">
 	<li class="navi_left">{$left_link}</li>
@@ -367,7 +367,7 @@ function plugin_calendar_viewer_convert()
 </ul>
 <hr />
 EOD;
-		$nav .= (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</nav>' : '</div>')."\n";
+		$nav .= '</nav>' ."\n";
 	}
 
 	$get['page'] = $post['page'] = $vars['page'] = $tmppage;

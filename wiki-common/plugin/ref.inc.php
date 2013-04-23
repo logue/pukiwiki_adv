@@ -62,7 +62,6 @@ function plugin_ref_inline()
 
 function plugin_ref_convert()
 {
-	global $pkwk_dtd;
 	if (! func_num_args()) {
 		return '<p class="message-box ui-state-info">' . Utility::htmlsc('#ref(): Usage:' . PLUGIN_REF_USAGE) . '</p>' . "\n";
 	}
@@ -107,11 +106,8 @@ EOD;
 	} else {
 		$style = 'text-align:' . $params['_align'];
 	}
-	if ($pkwk_dtd === PKWK_DTD_HTML_5){
-		return '<figure style="'.htmlsc($style).'">'.$params['_body'].'</figure>'."\n";
-	}else{
-		return '<div style="'.htmlsc($style).'">'.$params['_body'].'</div>'."\n";
-	}
+
+	return '<figure style="'.Utility::htmlsc($style).'">'.$params['_body'].'</figure>'."\n";
 }
 
 // Common function

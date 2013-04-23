@@ -111,8 +111,6 @@ class PluginRenderer{
 		// キャッシュ処理
 		if ($force) {
 			$cache['core']->removeItem(self::PLUGIN_EXISTS_CACHE);
-		}else if (!empty($plugins)) {
-			return $plugins;
 		}else if ($cache['core']->hasItem(self::PLUGIN_EXISTS_CACHE)) {
 			$plugins = $cache['core']->getItem(self::PLUGIN_EXISTS_CACHE);
 			$cache['core']->touchItem(self::PLUGIN_EXISTS_CACHE);
@@ -247,7 +245,7 @@ class PluginRenderer{
 
 		if ($plugin['method'][$method] == true) {
 			// プラグインの呼び出し回数をチェック
-			$count[$name] = (!isset($count[$name])) ? 1 : $count[$name]++;
+			$count[$name] = !isset($count[$name]) ? 1 : $count[$name]++;
 
 			if ($count[$name] > self::PLUGIN_CALL_TIME_LIMIT) {
 				Utility::dieMessage( sprintf($_string['plugin_multiple_call'],  Utility::htmlsc($name), self::PLUGIN_CALL_TIME_LIMIT));

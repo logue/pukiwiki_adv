@@ -47,7 +47,7 @@ class Wiki{
 		// 「編集時に認証する」が有効になっていない
 		if (!$edit_auth) return true;
 		// 無効なページ名
-		if (!$this->isValied()) return false;	
+		if (!$this->isValied()) return false;
 		// 凍結されている
 		if ($this->isFreezed()) return false;
 		// 編集できないページ
@@ -68,7 +68,8 @@ class Wiki{
 	public function isReadable($authenticate = false)
 	{
 		global $read_auth;
-		
+		// 存在しない
+		if (!$this->wiki->has()) return false;
 		// 閲覧時に認証が有効になっていない
 		if (!$read_auth) return true;
 		// 認証
