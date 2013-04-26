@@ -112,7 +112,7 @@ class InterWikiName extends Inline
 	 * @param string $param InterWikiに送るパラメータ
 	 * @return string
 	 */
-	public function getInterWikiUrl($name, $param = '')
+	public static function getInterWikiUrl($name, $param = '')
 	{
 		$interwikinames = self::getInterWikiNameDict();
 
@@ -170,7 +170,7 @@ class InterWikiName extends Inline
 	 * @param boolean $force キャッシュを再生成する
 	 * @return array
 	 */
-	private function getInterWikiNameDict($force = false){
+	private static function getInterWikiNameDict($force = false){
 		global $interwiki, $cache;
 		static $interwikinames;
 	

@@ -27,8 +27,8 @@ use Zend\Http\Response;
  * 添付ファイルクラス
  */
 class AttachFile extends AbstractFile{
-	public $dir = UPLOAD_DIR;
-	public $pattern = '/^((?:[0-9A-F]{2})+)_((?:[0-9A-F]{2})+)$/';
+	public static $dir = UPLOAD_DIR;
+	public static $pattern = '/^((?:[0-9A-F]{2})+)_((?:[0-9A-F]{2})+)$/';
 	
 	var $page, $file, $age, $basename, $filename, $logname;
 	var $time = 0;

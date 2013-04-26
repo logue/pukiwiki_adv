@@ -424,7 +424,6 @@ var pukiwiki = {};
 
 			// Placeholder属性のサポート
 			if (!Modernizr.input.placeholder){
-				console.log("Placeholder");
 				$(prefix + '*[placeholder]').each(function () {
 					var input = $(this),
 					placeholderText = input.attr('placeholder'),
@@ -491,10 +490,10 @@ var pukiwiki = {};
 			var self = this;
 			prefix = (prefix) ? prefix + ' ' : '';
 
-			$(':input').attr('disabled','disabled');
+			$(prefix + ':input').attr('disabled','disabled');
 
 			// 自動サブミット型の設定。
-			$('form.autosubmit').change(function(){
+			$(prefix + 'form.autosubmit').change(function(){
 				this.submit();
 			});
 			
@@ -503,7 +502,7 @@ var pukiwiki = {};
 			$(prefix + 'textarea[row=1]').autosize();
 
 			// buttonタグは、data要素で処理をカスタマイズ
-			$(prefix + 'button').each(function(){
+			$(prefix + 'button').not('.ui-button').each(function(){
 				var $this = $(this);
 				var data = $this.data();
 
@@ -516,6 +515,7 @@ var pukiwiki = {};
 					}
 				});
 			});
+
 			$(prefix + '.button').each(function(){
 				var $this = $(this);
 				var data = $this.data();
@@ -530,6 +530,7 @@ var pukiwiki = {};
 					}
 				});
 			}).removeClass(prefix + 'button');
+			
 
 			// タブ/アコーディオン処理
 			$(prefix + 'li[role=tab] a').each(function(){
@@ -645,11 +646,10 @@ var pukiwiki = {};
 			this.glossaly(prefix);
 			// テーブルソート
 			this.dataTable(prefix);
-
 			this.set_widget_btn(prefix);
 
 			// フォームロックを解除
-			$(':input').removeAttr('disabled');
+			$(prefix + ':input').removeAttr('disabled');
 			// ボタンをjQuery UIのものに
 			$(prefix + 'input[type=submit], '+prefix + 'input[type=reset], '+prefix + 'input[type=button]').button();
 

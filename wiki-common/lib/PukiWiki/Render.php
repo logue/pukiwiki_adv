@@ -27,18 +27,7 @@ use Zend\Json\Json;
  * ページ出力クラス
  */
 class Render{
-	/**
-	 * カラムなし（本文のみ）
-	 */
-	const CLASS_NO_COLUMS = 'no-colums';
-	/**
-	 * ２カラム（本文＋メニューバー）
-	 */
-	const CLASS_TWO_COLUMS = 'two-colums';
-	/**
-	 * ３カラム（本文＋メニューバー＋サイドバー）
-	 */
-	const CLASS_THREE_COLUMS = 'three-colums';
+	
 	/**
 	 * 通常読み込むスクリプト
 	 */
@@ -133,17 +122,15 @@ class Render{
 	 */
 	public function getContent(){
 		global $js_tags, $_LINK, $info, $vars;
-
-		global $auth_api, $fb;
+		global $site_name, $newtitle, $modifier, $modifierlink, $menubar, $sidebar, $headarea, $footarea, $navigation;
 
 		$body = $this->body;
-
-		// ページをコンストラクト
 		$_LINK = self::getLinkSet($this->page);
 
+		// ページをコンストラクト
 		$view = new View(PLUS_THEME);
 		if ($vars['cmd'] === 'read'){
-			global $adminpass, $_string;
+			global $adminpass, $_string, $menubar, $sidebar;
 			if ($adminpass == '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72' || $adminpass == '' ){
 				$body = '<div class="message_box ui-state-error ui-corner-all">'.
 					'<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>'.
@@ -159,18 +146,16 @@ class Render{
 						'</ul></div>'."\n\n".$body;
 			}
 			// リファラーを保存
-			$referer = Factory::Referer($this->page);
-			$referer->set();
+			Factory::Referer($this->page)->set();
 			
 			global $attach_link, $related_link;
 			$view->lastmodified = '<time pubdate="pubdate" datetime="'.get_date('c',$this->wiki->time()).'">'.get_date('D, d M Y H:i:s T', $this->wiki->time()) . ' ' . $this->wiki->passage().'</time>';
 
-			// List of attached files to the page
-			
+			// ページの添付ファイル、関連リンク
 			$view->attaches = ($attach_link &&  PluginRenderer::executePluginInit('attach') !== FALSE) ? attach_filelist() : null;
 			$view->related =  ($related_link && PluginRenderer::executePluginInit('related') !== FALSE) ? make_related($this->page,'dl') : null;
 
-			// List of footnotes
+			// ノート
 			global $foot_explain;
 			ksort($foot_explain, SORT_NUMERIC);
 			$view->notes = ! empty($foot_explain) ? '<ul>'.join("\n", $foot_explain).'</ul>' : '';
@@ -180,35 +165,60 @@ class Render{
 				list($body, $notes) = self::hilightWord($vars['word'], array($body, $notes));
 				$body = '<div class="small">' . $_string['word'] . Utility::htmlsc($vars['word']) . '</div>'."\n".'<hr />'."\n".$body;
 			}
+			
+			// モードによって、3カラム、2カラムを切り替える。
+			$view->menubar = Factory::Wiki($menubar)->has() ? PluginRenderer::executePluginBlock('menu') : null;
+			if ( Factory::Wiki($sidebar)->has()){
+				$view->sidebar = Factory::Wiki($sidebar)->has() ? PluginRenderer::executePluginBlock('side') : null;
+				$view->colums = View::CLASS_THREE_COLUMS;
+			}else{
+				$view->colums = View::CLASS_TWO_COLUMS;
+			}
 		}
-
-		global $site_name, $newtitle, $modifier, $modifierlink, $menubar, $sidebar, $headarea, $footarea;
 
 		// モードによって、3カラム、2カラムを切り替える。
 		if ($vars['cmd'] === 'read') {
 			$view->menubar = Factory::Wiki($menubar)->has() ? PluginRenderer::executePluginBlock('menu') : null;
 			if ( Factory::Wiki($sidebar)->has()){
 				$view->sidebar = Factory::Wiki($sidebar)->has() ? PluginRenderer::executePluginBlock('side') : null;
-				$view->colums =  self::CLASS_THREE_COLUMS;
+				$view->colums = View::CLASS_THREE_COLUMS;
 			}else{
-				$view->colums = self::CLASS_TWO_COLUMS;
+				$view->colums = View::CLASS_TWO_COLUMS;
 			}
 		}else{
-			$view->colums = self::CLASS_NO_COLUMS;
+			$view->colums = View::CLASS_NO_COLUMS;
 		}
 
+		// ナビバー
+		$view->navibar = PluginRenderer::executePluginBlock('navibar',$view->conf['navibar']);
+		// ツールバー
+		$view->toolbar = PluginRenderer::executePluginBlock('toolbar',$view->conf['toolbar']);
+		// <head>タグ内
 		$view->head = self::getHead();
+		// ナビゲーション
+		$view->navigation = Factory::Wiki($navigation)->has() ? PluginRenderer::executePluginBlock('suckerfish') : null;
+		// ヘッドエリア
 		$view->headarea = Factory::Wiki($headarea)->has() ? PluginRenderer::executePluginInline('headarea') : null;
+		// フッターエリア
 		$view->footarea = Factory::Wiki($footarea)->has() ? PluginRenderer::executePluginInline('footarea') : null;
+		// パンくずリスト
+		$view->topicpath = PluginRenderer::executePluginBlock('topicpath');
+		// 中身
 		$view->body = $body;
-		$view->links = $_LINK;
+		// サイト名
 		$view->site_name = $site_name;
+		// ページ名
 		$view->page = $this->page;
+		// タイトル
 		$view->title = !empty($newtitle) ? $newtitle : $this->title;
-		$view->js = $this->getJs();
+		// 管理人の名前
 		$view->modifier = $modifier;
+		// 管理人のリンク
 		$view->modifierlink = $modifierlink;
-		return $view->render();
+		// JavaScript
+		$view->js = $this->getJs();
+
+		return $view;
 	}
 	/**
 	 * JavaScriptタグを出力

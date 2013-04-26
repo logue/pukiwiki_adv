@@ -44,6 +44,7 @@ class Relational{
 	 */
 	public function __construct($page = ''){
 		global $cache;
+		if (empty($page)) return;
 		$this->cache = $cache[self::CACHE_NAMESPACE];
 		$this->links_obj = new InlineConverter(NULL, array('note'));
 		$this->page = $page;
@@ -66,14 +67,16 @@ class Relational{
 	public function __destruct(){
 		if (!empty($this->page) && !Factory::Wiki($this->page)->has()) {
 			// ページが削除されている時、関連リンクのデーターも削除
-			$s = $this->adapter->query('DELETE FROM "rel" WHERE "page"=' . $this->adapter->platform->quoteIdentifier($page));
+			$s = $this->adapter->query('DELETE FROM "rel" WHERE "page"=' . $this->adapter->platform->quoteIdentifier($this->page));
 			$s->execute();
-			$s = $this->adapter->query('DELETE FROM "ref" WHERE "page"=' . $this->adapter->platform->quoteIdentifier($page));
+			$s = $this->adapter->query('DELETE FROM "ref" WHERE "page"=' . $this->adapter->platform->quoteIdentifier($this->page));
 			$s->execute();
 		}
+		/*
 		// 最適化
 		$s = $this->adapter->query('VACUUM');
 		$s->execute();
+		*/
 	}
 
 	/**

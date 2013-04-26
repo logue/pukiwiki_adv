@@ -8,26 +8,16 @@
 //
 // $Id: default.skin.php,v 1.4.18 2012/05/03 21:35:00 Logue Exp $
 //
-use PukiWiki\Time;
-use PukiWiki\Factory;
-use PukiWiki\Renderer\PluginRenderer;
-
-// navibar
-$navibar = PluginRenderer::executePluginBlock('suckerfish');
-if (empty($navibar)) $navibar = PluginRenderer::executePluginBlock('navibar','top,|,edit,freeze,diff,backup,upload,reload,|,new,list,search,recent,help,|,login'). '<hr />';
-
-// start
-// Output HTML DTD, <html>, and receive content-type
 ?>
 <!doctype html>
-<head prefix="og: http://ogp.me/ns# fb: http://www.facebook.com/2008/fbml">
+	<head prefix="og: http://ogp.me/ns# fb: http://www.facebook.com/2008/fbml">
 <?php echo $this->head; ?>
-<link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/<?php echo JQUERY_UI_VER; ?>/themes/redmond/jquery-ui.min.css" />
-<link rel="stylesheet" type="text/css" href="<?php echo SKIN_URI . 'scripts.css.php?base=' . urlencode(IMAGE_URI) ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo SKIN_URI . THEME_PLUS_NAME . PLUS_THEME . '/'. PLUS_THEME . '.css.php'; ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo SKIN_URI . THEME_PLUS_NAME . PLUS_THEME . '/blue.css'; ?>"id="coloring" />
-<title><?php echo $this->title . ' - ' . $this->site_name; ?></title>
-</head>
+		<link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/<?php echo JQUERY_UI_VER; ?>/themes/redmond/jquery-ui.min.css" />
+		<link rel="stylesheet" type="text/css" href="<?php echo SKIN_URI . 'scripts.css.php?base=' . urlencode(IMAGE_URI) ?>" />
+		<link rel="stylesheet" type="text/css" href="<?php echo SKIN_URI . THEME_PLUS_NAME . PLUS_THEME . '/'. PLUS_THEME . '.css.php'; ?>" />
+		<link rel="stylesheet" type="text/css" href="<?php echo SKIN_URI . THEME_PLUS_NAME . PLUS_THEME . '/blue.css'; ?>"id="coloring" />
+		<title><?php echo $this->title . ' - ' . $this->site_name; ?></title>
+	</head>
 	<body>
 		<div id="container" class="<?php echo $this->colums ?>" role="document">
 <!-- *** Header *** -->
@@ -36,7 +26,7 @@ if (empty($navibar)) $navibar = PluginRenderer::executePluginBlock('navibar','to
 				<a href="<?php echo $this->links['top'] ?>"><img id="logo" src="<?php echo $this->conf['logo']['src'] ?>" width="<?php echo $this->conf['logo']['width'] ?>" height="<?php echo $this->conf['logo']['height'] ?>" alt="<?php echo $this->conf['logo']['alt'] ?>" /></a>
 				<hgroup id="hgroup">
 					<h1 id="title"><?php echo $this->title ?></h1>
-					<h2><a href="<?php echo $this->links['reload'] ?>" id="parmalink"><?php echo $this->links['reload'] ?></a></h2>
+					<?php if (!empty($this->links)) { ?><h2><a href="<?php echo $this->links['reload'] ?>" id="parmalink"><?php echo $this->links['reload'] ?></a></h2><?php } ?>
 				</hgroup>
 <!-- * Ad space *-->
 				<?php if ($this->conf['adarea']['header']) echo '<div id="ad" class="noprint">' . $this->conf['adarea']['header'] . '</div>'; ?>
@@ -49,12 +39,13 @@ if (empty($navibar)) $navibar = PluginRenderer::executePluginBlock('navibar','to
 			</header>
 <!-- *** End Header *** -->
 
-			<?php echo $navibar; ?>
+			<?php echo !empty($view->navigation) ? $view->navigation : $this->navibar . '<hr />'; ?>
+
 			<div id="wrapper" class="clearfix">
 <!-- Center -->
 				<div id="main_wrapper">
 					<div id="main" role="main">
-						<?php echo PluginRenderer::executePluginBlock('topicpath'); ?>
+						<?php echo $this->topicpath; ?>
 						<section id="body">
 							<?php echo $this->body."\n" ?>
 						</section>
@@ -102,7 +93,7 @@ if (empty($navibar)) $navibar = PluginRenderer::executePluginBlock('navibar','to
 				<!--  End Related -->
 <?php } ?>
 				<hr />
-				<?php echo PluginRenderer::executePluginBlock('toolbar','reload,|,new,newsub,edit,freeze,source,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,log,|,help,|,rss');?>
+				<?php echo $this->toolbar ?>
 			</div>
 
 			<footer id="footer" class="clearfix" role="contentinfo">
@@ -110,11 +101,11 @@ if (empty($navibar)) $navibar = PluginRenderer::executePluginBlock('navibar','to
 				<?php echo $this->footarea; ?>
 <?php }else{ ?>
 				<div id="qr_code">
-					<?php echo PluginRenderer::executePluginInline('qrcode'); ?>
+					<?php echo $this->pluginBlock('qrcode'); ?>
 				</div>
 				<address>Founded by <a href="<?php echo $this->modifierlink ?>" rel="contact"><?php echo $this->modifier ?></a></address>
 				<div id="sigunature">
-					Powered by <a href="http://pukiwiki.logue.be/" rel="external"><?php echo GENERATOR ?></a>. Processing time: <var><?php echo $this->getTakeTime() ?></var> sec. <br />
+					Powered by <a href="http://pukiwiki.logue.be/" rel="external"><?php echo GENERATOR ?></a>. Processing time: <var><?php echo $this->proc_time; ?></var> sec. <br />
 					Original Theme Design by <a href="http://pukiwiki.cafelounge.net/plus/" rel="external">PukiWiki Plus!</a> Team.
 				</div>
 				<div id="banner_box">

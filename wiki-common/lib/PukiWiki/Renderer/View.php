@@ -7,8 +7,52 @@ use Exception;
  * ビュークラス
  */
 class View{
-	private $_vars, $_theme;
-	public $conf, $body, $title;
+	/**
+	 * カラムなし（本文のみ）
+	 */
+	const CLASS_NO_COLUMS = 'no-colums';
+	/**
+	 * ２カラム（本文＋メニューバー）
+	 */
+	const CLASS_TWO_COLUMS = 'two-colums';
+	/**
+	 * ３カラム（本文＋メニューバー＋サイドバー）
+	 */
+	const CLASS_THREE_COLUMS = 'three-colums';
+	/**
+	 * 内部変数
+	 */
+	private $_vars;
+	/**
+	 * テーマ
+	 */
+	private $_theme;
+	/**
+	 * デフォルト設定
+	 */
+	public $conf = array(
+		/**
+		 * jQuery UIのテーマ
+		 */
+		'ui_theme'      => 'redmond',
+		/**
+		 * アドレスの代わりにパスを表示
+		 */
+		'topicpath'     => true,
+		/**
+		 * ナビバープラグインでもアイコンを表示する
+		 */
+		'showicon'      => false,
+		/**
+		 * ナビバーの項目
+		 */
+		'navibar'      => 'top,|,edit,freeze,diff,backup,upload,reload,|,new,list,search,recent,help,|,login',
+		/**
+		 * ツールバーの項目
+		 */
+		'toolbar'      => 'reload,|,new,newsub,edit,freeze,source,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,log,|,help,|,rss',
+	);
+	public $title, $links, $js, $meta;
 	/**
 	 * コンストラクタ
 	 * @param file スキンファイル
@@ -16,9 +60,10 @@ class View{
 	function __construct($theme = ''){
 		$this->_vars = array();
 		$this->_theme = !IS_MOBILE ? $theme : 'mobile';
-		
+		$this->colums = self::CLASS_NO_COLUMS;
+
 		// テーマ設定を読み込む
-		$this->conf = self::loader('ini');
+		$this->conf = array_merge($this->conf, self::loader('ini'));
 	}
 	/**
 	 * 値のセット
@@ -47,27 +92,39 @@ class View{
 	/**
 	 * レンダリング
 	 */
-	public function render()
+	public function __toString()
 	{
+		// 経過時間
+		$this->proc_time =  Time::getTakeTime();
 		// 出力するHTMLをバッファに書き込み出力
 		ob_start('ob_gzhandler');
-		$this->proc_time = 
 		self::loader('skin');
 		return ob_get_clean();
 	}
 	/**
-	 * 処理時間
+	 * ブロック型プラグインを実行
+	 * @param string $name プラグイン名
+	 * @param string $args プラグインに渡す引数
 	 * @return string
 	 */
-	public function getTakeTime(){
-		return Time::getTakeTime();
+	public function pluginBlock($name, $args = ''){
+		return PluginRenderer::executePluginBlock($name, $args);
+	}
+	/**
+	 * インライン型プラグインを実行
+	 * @param string $name プラグイン名
+	 * @param string $args プラグインに渡す引数
+	 * @return string
+	 */
+	public function pluginInline($name, $args = ''){
+		return PluginRenderer::executePluginInline($name, $args);
 	}
 	/**
 	 * テーマと設定を取得
 	 * @param string $skin_name スキン名
+	 * @return void
 	 */
 	private function loader($type = 'skin'){
-		global $site_title;
 		$cond = array(
 			SKIN_DIR . THEME_PLUS_NAME . $this->_theme . '/',
 			EXT_SKIN_DIR . THEME_PLUS_NAME . $this->_theme . '/'
@@ -82,7 +139,7 @@ class View{
 			}
 		}
 		if ($type === 'skin'){
-			// テーマが指定されてない場合scaffoldを出力
+			// テーマが指定されてない場合や、スキンが見つからない場合scaffoldを出力
 			$html = array();
 			$html[] = '<!doctype html>';
 			$html[] = '<html>';

@@ -109,7 +109,7 @@ class Header{
 		// レスポンスをコンストラクト
 		$response = new Response();
 		if (!empty($body)){
-			if (isset($headers['If-None-Match']) && !isset($headers['ETag']) ){
+			if ($status == Response::STATUS_CODE_200 && isset($headers['If-None-Match']) && !isset($headers['ETag']) ){
 				// Modifiedヘッダーが出力されてない場合、出力内容からETagを生成
 				// 負荷対策にはならないが転送量を抑えることができる
 				$hash = md5($body);

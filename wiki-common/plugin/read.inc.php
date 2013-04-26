@@ -4,13 +4,14 @@
 //
 // Read plugin: Show a page and InterWiki
 
-use PukiWiki\Router;
+use PukiWiki\Auth\Auth;
+use PukiWiki\Factory;
 use PukiWiki\Renderer\InlineFactory;
 use PukiWiki\Renderer\Inline\AutoAlias;
 use PukiWiki\Renderer\Inline\InterWikiName;
 use PukiWiki\Renderer\PluginRenderer;
-use PukiWiki\Auth\Auth;
-use PukiWiki\Factory;
+use PukiWiki\Renderer\RendererDefines;
+use PukiWiki\Router;
 use PukiWiki\Utility;
 
 function plugin_read_init(){
@@ -18,7 +19,7 @@ function plugin_read_init(){
 		'_read_msg' => array(
 			'title_invalied'    => T_('Invalied page name'),
 			'msg_invalidiwn'    => T_('This pagename is an alias to %s.'),
-			'msg_ibvaliediw'    => T_('This is not a valid InterWikiName')
+			'msg_ibvaliediw'    => T_('%s is not a valid InterWikiName.')
 		)
 	);
 	set_plugin_messages($msg);
@@ -28,7 +29,7 @@ function plugin_read_action()
 {
 	global $vars, $_read_msg;
 
-	$page = isset($vars['page']) ? $vars['page'] : null;
+	$page = isset($vars['page']) ? Utility::stripBracket($vars['page']) : null;
 	$ret = array('msg'=>null, 'body'=>null);
 
 	if (!$page) return $ret;
@@ -42,37 +43,35 @@ function plugin_read_action()
 	$referer = 0;
 
 	// InterWikiNameに含まれるページか？
-	// ?[http://pukiwiki.logue.be/? adv]みたいな感じでアクセス
-	if (Utility::isInterWiki($page) && preg_match('/^'.InterWikiName::INTERWIKINAME_PATTERN.'$/', $page, $match)){
+	// ?adv:FrontPageみたいな感じでアクセス
+	if (preg_match('/^'.RendererDefines::INTERWIKINAME_PATTERN.'$/', $page, $match)){
 		$url = InterWikiName::getInterWikiUrl($match[2], $match[3]);
 		if ($url == false){
-			return array('msg'=>$_read_msg['title_invalied'], 'body'=>$_read_msg['msg_invalidiw']);
+			return array('msg'=>$_read_msg['title_invalied'], 'body'=>sprintf($_read_msg['msg_ibvaliediw'], $match[2]));
 		}
-		Router::redirect($url);
+		Utility::redirect($url);
 		return;
 	}
 
 	// AutoAliasに含まれるページか？
-	$realpages = AutoAlias::getAutoAlias($page);
-	if (count($realpages) === 1) {
-		$realpage = $realpages[0];
+	$realpage = AutoAlias::getAutoAlias($page);
+	if (count($realpage) === 1) {
 		// AutoAliasの指定先のページを指定
 		$a_wiki = Factory::Wiki($realpage);
 		if ($a_wiki->isValied()) {
-			Router::redirect($a_wiki->link());
+			Utility::redirect($a_wiki->link());
 			return;
 		} else if (Utility::isUri($realpage)) {
-			Router::redirect($realpage);
+			Utility::redirect($realpage);
 			return;
 		}
-	} else if (count($realpages) >= 2) {
+	} else if (count($realpage) >= 2) {
 		$body = '<p>';
 		$body .= $_read_msg['msg_invalidwn'] . '<br />';
-		$link = '';
-		foreach ($realpages as $realpage) {
-			$link .= '[[' . $realpage . '>' . $realpage . ']]&br;';
+		foreach ($realpage as $entry) {
+			$link[] = '[[' . $entry . '>' . $entry . ']]&br;';
 		}
-		$body .= InlineFactory::Wiki($link);
+		$body .= InlineFactory::Wiki(join("\n", $link));
 		$body .= '</p>';
 		return array('msg'=>$_read_msg['title_invalied'], 'body'=>$body);
 	}

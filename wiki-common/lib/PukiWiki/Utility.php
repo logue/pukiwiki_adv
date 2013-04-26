@@ -24,6 +24,7 @@ use PukiWiki\Factory;
 use PukiWiki\Listing;
 use Zend\Http\Response;
 use Zend\Math\Rand;
+use PukiWiki\Renderer\View;
 
 /**
  * 汎用関数
@@ -590,64 +591,49 @@ class Utility{
 		$body[] = '/' . '* ]]> *' . '/</script>';
 		$body[] = '<script type="text/javascript" src="http://linkhelp.clients.google.com/tbproxy/lh/wm/fixurl.js"></script>';
 		new Render('Page not found', join("\n",$body), Response::STATUS_CODE_404);
-		exit();
 	}
 	/**
 	 * リダイレクト
+	 * （この処理特殊すぎるな・・・。）
 	 * @param string $url リダイレクト先
 	 * @param int $time リダイレクトの待ち時間
 	 */
 	public static function redirect($url = '', $time = 0){
 		global $vars;
-		$response = new Response();
 
 		// URLが空の場合、ページのアドレスか、スクリプトのアドレスを返す
 		if (empty($url)){
 			$url = isset($vars['page']) ? Router::get_resolve_uri(null, $vars['page']) : Router::get_script_uri();
 		}
+		
+		$view = new View(PLUS_THEME);
+		
 		$s_url = self::htmlsc($url);
-		$response->setStatusCode(Response::STATUS_CODE_301);
-		if (!DEBUG){
-			$response->getHeaders()->addHeaderLine('Location', $s_url);
-		}
 		$html = array();
-		$html[] = '<!doctype html>';
-		$html[] = '<html>';
-		$html[] = '<head>';
-		$html[] = '<meta charset="utf-8">';
-		$html[] = '<meta name="robots" content="NOINDEX,NOFOLLOW" />';
-		if (!DEBUG){
-			$html[] = '<meta http-equiv="refresh" content="'.$time.'; URL='.$s_url.'" />';
-		}
-		$html[] = '<link rel="stylesheet" href="http://code.jquery.com/ui/' . JQUERY_UI_VER . '/themes/base/jquery-ui.css" type="text/css" />';
-		$html[] = '<title>301 Moved Permanently</title>';
-		$html[] = '</head>';
-		$html[] = '<body>';
-		$html[] = '<div class="message_box ui-state-highlight ui-corner-all">';
-		$html[] = '<p style="padding:0 .5em;">';
-		$html[] = '<span class="ui-icon ui-icon-alert" style="display:inline-block;"></span>';
-		$html[] = 'The requested page has moved to a new URL. <br />';
-		$html[] = 'Please click <a href="'.$s_url.'">here</a> if you do not want to move even after a while.';
-		if (!DEBUG){
-			$html[] = '<br />NOTICE: No auto redirect when Debug mode.';
-		}
-		$html[] = '</p>';
-		$html[] = '</div>';
-		$html[] = '</body>';
-		$html[] = '</html>';
-		$content = join("\n",$html);
-		$response->getHeaders()->addHeaderLine('Content-Length', strlen($content));
-		$response->setContent($content);
-
-		if (!headers_sent()) {
-			header($response->renderStatusLine());
-			foreach ($response->getHeaders() as $header) {
-				header($header->toString());
-			}
+		$view->head = join("\n", array(
+			'<meta charset="utf-8">',
+			'<meta name="robots" content="NOINDEX,NOFOLLOW" />',
+			!DEBUG ? '<meta http-equiv="refresh" content="'.$time.'; URL='.$s_url.'" />' : null,
+			'<link rel="stylesheet" href="http://code.jquery.com/ui/' . JQUERY_UI_VER . '/themes/base/jquery-ui.css" type="text/css" />'
+		));
+		$view->title = '301 Moved Permanently';
+		$view->body = join("\n", array(
+			'<div class="message_box ui-state-highlight ui-corner-all">',
+			'<p style="padding:0 .5em;">',
+			'<span class="ui-icon ui-icon-info" style="display:inline-block;"></span>',
+			'The requested page has moved to a new URL. <br />',
+			'Please click <a href="'.$s_url.'">here</a> if you do not want to move even after a while.',
+			!DEBUG ? '<br />NOTICE: No auto redirect when Debug mode.' : null,
+			'</p>',
+			'</div>'
+		));
+		$headers = getallheaders();
+		$headers['Content-Type'] = 'text/html;charset=' . CONTENT_CHARSET;
+		if (!DEBUG) {
+			$headers['Location'] = $s_url;
 		}
 
-		echo $response->getBody();
-		exit;
+		Header::writeResponse($headers , Response::STATUS_CODE_200, $view);
 	}
 	/**
 	 * 編集画面を表示

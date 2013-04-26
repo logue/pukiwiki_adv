@@ -10,16 +10,16 @@
 // Edit plugin (cmd=edit)
 // Plus! NOTE:(policy)not merge official cvs(1.40->1.41) See Question/181
 
-use PukiWiki\Factory;
-use PukiWiki\Wiki;
 use PukiWiki\Auth\Auth;
-use PukiWiki\Router;
-use PukiWiki\Renderer\RendererFactory;
-use PukiWiki\Utility;
 use PukiWiki\Diff;
-use PukiWiki\Text\Rules;
+use PukiWiki\Factory;
 use PukiWiki\Renderer\Header;
+use PukiWiki\Renderer\RendererFactory;
+use PukiWiki\Router;
+use PukiWiki\Text\Rules;
 use PukiWiki\Time;
+use PukiWiki\Utility;
+use PukiWiki\Wiki;
 use Zend\Json\Json;
 
 // Remove #freeze written by hand
@@ -48,7 +48,7 @@ function plugin_edit_action()
 	}
 
 	if (!$wiki->isEditable(true)){
-		die_message( $_string['not_editable'] );
+		Utility::dieMessage( $_string['not_editable'] );
 	}
 
 	//check_editable($page, true, true);
@@ -69,10 +69,10 @@ function plugin_edit_action()
 		return plugin_edit_cancel();
 	}
 
-	$source = $wiki->get();
+	$source = $wiki->get(true);
 	Auth::is_role_page($source);
 
-	$postdata = $vars['original'] = join("\n", $source);
+	$postdata = $vars['original'] = $source;
 	if (!empty($vars['id']))
 	{
 		$postdata = plugin_edit_parts($vars['id'],$source);
@@ -180,12 +180,14 @@ function plugin_edit_preview()
 // NOTE: Plus! is not compatible for 1.4.4+ style(compatible for 1.4.3 style)
 function plugin_edit_inline()
 {
-	static $usage = '&edit(pagename,anchor);';
+	static $usage = '&amp;edit(pagename,anchor);';
 
 	global $vars, $fixed_heading_edited;
 	global $_symbol_paraedit, $_symbol_paraguiedit;
+	
+	$wiki = Factory::Wiki($vars['page']);
 
-	if (!$fixed_heading_edited || is_freeze($vars['page']) || Auth::check_role('readonly')) {
+	if (!$fixed_heading_edited || $wiki->isFreezed() || Auth::check_role('readonly')) {
 		return '';
 	}
 
@@ -208,8 +210,8 @@ function plugin_edit_inline()
 		$page = $vars['page'];
 	}
 
-	$tag_edit = '<a class="anchor_super" id="edit_'.$id.'" href="' . Utility::htmlsc(get_cmd_uri('edit',$page,'',array('id'=>$id))) . '" rel="nofollow">' . $s_label_edit . '</a>';
-//	$tag_guiedit = '<a class="anchor_super" id="guiedit_'.$id.'" href="' . get_cmd_uri('guiedit',$page,'',array('id'=>$id)) .'" rel="nofollow">' . $s_label_guiedit . '</a>';
+	$tag_edit = '<a class="anchor_super" id="edit_'.$id.'" href="' . Utility::htmlsc($wiki->uri('edit',array('id'=>$id))) . '" rel="nofollow">' . $s_label_edit . '</a>';
+//	$tag_guiedit = '<a class="anchor_super" id="guiedit_'.$id.'" href="' . Utility::htmlsc($wiki->uri('guiedit',array('id'=>$id))) .'" rel="nofollow">' . $s_label_guiedit . '</a>';
 /*
 	switch ($fixed_heading_edited) {
 	case 2:
@@ -240,7 +242,7 @@ function plugin_edit_write()
 	$digest = isset($vars['digest']) ? $vars['digest'] : null;
 	$partid = isset($vars['id'])     ? $vars['id']     : null;
 	$notimestamp = isset($vars['notimestamp']) && $vars['notimestamp'] !== null;
-	$wiki = new Wiki($page);
+	$wiki = Factory::Wiki($page);
 
 	// SPAM Check (Client(Browser)-Server Ticket Check)
 	if ( isset($vars['encode_hint']) && $vars['encode_hint'] !== PKWK_ENCODING_HINT )
@@ -249,7 +251,7 @@ function plugin_edit_write()
 		return plugin_edit_honeypot();
 
 	// Check Validate and Ticket
-	if ($notimestamp && !is_page($page)) {
+	if ($notimestamp && !$wiki->isValied()) {
 		return plugin_edit_honeypot();
 	}
 
@@ -260,7 +262,7 @@ function plugin_edit_write()
 	// Paragraph edit mode
 	if ($partid) {
 		$source = preg_split('/([^\n]*\n)/', $vars['original'], -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
-		$vars['msg'] = (plugin_edit_parts($partid, $source, $vars['msg']) !== FALSE)
+		$vars['msg'] = plugin_edit_parts($partid, $source, $vars['msg']) !== FALSE
 			? join('', $source)
 			: rtrim($vars['original']) . "\n\n" . $vars['msg'];
 	}
@@ -272,9 +274,8 @@ function plugin_edit_write()
 	$retvars = array();
 
 	// Collision Detection
-	$oldwiki = Factory::Wiki($page);
-	$oldpagesrc = $oldwiki->get(true);
-	$oldpagemd5 = $oldwiki->digest();
+	$oldpagesrc = $wiki->get(true);
+	$oldpagemd5 = $wiki->digest();
 
 	if ($digest !== $oldpagemd5) {
 		$vars['digest'] = $oldpagemd5; // Reset
@@ -296,9 +297,9 @@ function plugin_edit_write()
 	// Action?
 	if ($add) {
 		// Compat: add plugin and adding contents
-		$postdata = (isset($post['add_top']) && $post['add_top'])
-			? $msg . "\n\n" . WikiFactory::Wiki($page)->source()
-			: WikiFactory::Wiki($page)->source() . "\n\n" . $msg;
+		$postdata = isset($vars['add_top']) && $vars['add_top']
+			? $msg . "\n\n" . $oldpagesrc
+			: $oldpagesrc . "\n\n" . $msg;
 	} else {
 		// Edit or Remove
 		$postdata = & $msg;
@@ -319,18 +320,19 @@ function plugin_edit_write()
 	if ($notimeupdate > 1 && $notimestamp && Auth::check_role('role_contents_admin') && !pkwk_login($vars['pass'])) {
 		// Enable only administrator & password error
 		$retvars['body']  = '<p><strong>' . $_msg_invalidpass . '</strong></p>' . "\n";
-		$retvars['body'] .= edit_form($page, $msg, $digest, FALSE);
+		$retvars['body'] .= Utility::editForm($page, $msg, FALSE);
 		return $retvars;
 	}
 
-	$wiki->set($postdata, $notimeupdate != 0 && $notimestamp);
+	$wiki->set($postdata, $notimeupdate !== 0 && $notimestamp);
 
 	if (isset($vars['refpage']) && $vars['refpage'] !== '') {
-		$url = ($partid) ? get_page_location_uri($vars['refpage'],'',rawurlencode($partid)) : get_page_location_uri($vars['refpage']);
+		$refwiki = Factory::Wiki($vars['refpage']);
+		$url = $partid ? $refwiki->uri('read', null, rawurlencode($partid)) : $refwiki->uri();
 	} else {
-		$url = ($partid) ? get_page_location_uri($page,'',rawurlencode($partid)) : get_page_location_uri($page);
+		$url = $partid ? $wiki->uri('read', null ,rawurlencode($partid)) : $wiki->uri();
 	}
-
+/*
 	// FaceBook Integration
 	global $fb;
 	if (isset($fb)){
@@ -358,6 +360,7 @@ function plugin_edit_write()
 			}
 		}
 	}
+*/
 	Utility::redirect($url);
 	exit;
 }
