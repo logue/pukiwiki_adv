@@ -301,9 +301,16 @@ function plugin_showrss_get_rss($target, $cachehour)
 	global $cache;
 	$buf  = '';
 	$time = NULL;
+	$expire = $cachehour * 60 * 60; // Hour
 
 	// Get the cache not expired
 	$cache_name = PLUGIN_SHOWRSS_CACHE_PREFIX . md5($target);
+	$cache_meta = $cache['wiki']->getMetadata($cache_name);
+	
+	// 古くなったキャッシュを削除
+	if (UTIME - $cache_meta['mtime'] > $expire) {
+		$cache['wiki']->removeItem($cache_name);
+	}
 
 	if ($cache['wiki']->hasItem($cache_name)) {
 		$buf = $cache['wiki']->getItem($cache_name);
@@ -317,7 +324,7 @@ function plugin_showrss_get_rss($target, $cachehour)
 
 		$cache['wiki']->setItem($cache_name, $buf);
 	}
-	$time = $cache['wiki']->getMetadata($cache_name)['mtime'];
+	$time = $cache_meta['mtime'];
 	$xml = simplexml_load_string($buf);
 
 	return array($xml,$time);
