@@ -10,6 +10,7 @@ use PukiWiki\Auth\Auth;
 use PukiWiki\Diff;
 use PukiWiki\Backup;
 use PukiWiki\Text\Rules;
+use Net_DNSBL;	// pear
 
 /**
  * Wikiのコントローラー
@@ -274,9 +275,11 @@ class Wiki{
 			captcha_check(( $use_spam_check['captcha'] === 2 ? false : true) );
 		}
 
-		// rule.ini.ph
+		// 入力データーを整形
 		$postdata = Rules::make_str_rules($str);
 		$oldpostdata = self::has() ? self::get(TRUE) : '';
+
+		// 差分を生成
 		$diff = new Diff($postdata, $oldpostdata);
 
 		// 差分から追加のみを取得
@@ -284,15 +287,11 @@ class Wiki{
 			if ($key !== $diff::SES_ADD) continue;
 			$added_data[] = $line;
 		}
-/*
-		$links = array();
-		// ページ内のリンクを取得（TrackBackと、スパムチェックで使用）
-		if ( ($trackback > 1) || ( $use_spam_check['page_contents']) ) {
-			$links = self::get_this_time_links($postdata,$oldpostdata);
-		}
 
-		$referer = (isset($_SERVER['HTTP_REFERER'])) ? Utility::htmlsc($_SERVER['HTTP_REFERER']) : 'None';
-		$user_agent = Utility::htmlsc($_SERVER['HTTP_USER_AGENT']);
+/*
+
+	//	$referer = (isset($_SERVER['HTTP_REFERER'])) ? Utility::htmlsc($_SERVER['HTTP_REFERER']) : 'None';
+	//	$user_agent = Utility::htmlsc($_SERVER['HTTP_USER_AGENT']);
 
 		if (isset($vars['page']) && $vars['page'] === $this->page || !Auth::check_role('role_contents_admin') ){
 			// Blocking SPAM
@@ -301,17 +300,17 @@ class Wiki{
 			}
 			// リモートIPによるチェック
 			if ($use_spam_check['page_remote_addr'] && SpamCheck(REMOTE_ADDR ,'ip')) {
-				honeypot_write();
+				Utility::dump();
 				die_message($_strings['blacklisted'] , $_title['prohibit'], 400);
 			}
 			// ページのリンクよるチェック
-			if ($use_spam_check['page_contents'] && SpamCheck($links)) {
-				honeypot_write();
+			if ( $use_spam_check['page_contents'] && SpamCheck( self::get_this_time_links($postdata,$oldpostdata) ) ) {
+				Utility::dump();
 				die_message('Writing was limited by DNSBL (Blocking SPAM).', $_title['prohibit'], 400);
 			}
 			// 匿名プロクシ
 			if ($use_spam_check['page_write_proxy'] && is_proxy()) {
-				honeypot_write();
+				Utility::dump();
 				die_message('Writing was limited by PROXY (Blocking SPAM).', $_title['prohibit'], 400);
 			}
 
@@ -337,7 +336,7 @@ class Wiki{
 					}
 
 					if($akismet->isSpam($akismet_post)){
-						honeypot_write();
+						Utility::dump('akismet.log');
 						die_message('Writing was limited by Akismet (Blocking SPAM).', $_title['prohibit'], 400);
 					}
 				}else{
@@ -349,18 +348,13 @@ class Wiki{
 		// add client info to diff
 		//$diffdata .= '// IP:"'. REMOTE_ADDR . '" TIME:"' . $now . '" REFERER:"' . $referer . '" USER_AGENT:"' . $user_agent. "\n";
 */
-		// Update data
-		$difffile = new File\DiffFile($this->page);
+
+
+		// 差分データーを保存
+		$difffile = new DiffFile($this->page);
 		$difffile->set($diff->getDiff());
 
 		unset($oldpostdata, $diff, $difffile);
-/*
-		if ($trackback > 1) {
-			// TrackBack Ping
-			tb_send($this->page, $links);
-		}
-*/
-//		log_write('update',$this->page);
 
 		global $whatsnew;
 		if (!$keeptimestamp || $page !== $whatsnew){
@@ -377,6 +371,9 @@ class Wiki{
 		if (self::POST_LOGGING === TRUE) {
 			Utility::dump(self::POST_LOG_FILENAME);
 		}
+
+		// 更新ログをつける
+		LogFactory::factory('update',$this->page)->set();
 
 		// Create wiki text
 		$this->wiki->set($postdata);

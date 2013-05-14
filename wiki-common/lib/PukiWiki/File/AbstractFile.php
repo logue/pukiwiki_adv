@@ -54,14 +54,14 @@ abstract class AbstractFile extends SplFileInfo{
 	 * コンストラクタ
 	 * @param string $filename ファイル名（パスも含めること）
 	 */
-	public function __construct($filename) {
+	public function __construct($filename = null) {
 		if (empty($filename)){
 			throw new Exception('File name is missing!');
 		}
 		if (!is_string($filename)){
 			throw new Exception('File name must be string!');
 		}
-		$this->filename = self::$dir . $filename;
+		$this->filename = $filename;
 		parent::__construct($filename);
 	}
 	/**

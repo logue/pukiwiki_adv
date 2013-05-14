@@ -14,7 +14,9 @@ use PukiWiki\Auth\Auth;
 use PukiWiki\Auth\AuthApi;
 use PukiWiki\File\FileUtility;
 use PukiWiki\Spam\ProxyChecker;
-//require_once(LIB_DIR . 'auth_api.cls.php');
+
+// ログのキーの保持期間（１週間）
+defined('PKWK_LOG_LIFE_TIME') or define('PKWK_LOG_LIFE_TIME', 604800);
 
 $log_ua = log_set_user_agent(); // 保存
 
@@ -71,6 +73,9 @@ function log_write($kind,$page)
 		log_update($kind, $filename, $log[$kind]['updtkey'], $mustkey, $rc);
 	} else {
 		$data = log::array2table( $rc );
+
+		pr($data);
+		die;
 	 	log_put( $filename, $data);
 	}
 
@@ -365,12 +370,21 @@ function log_update($kind,$filename,$key,$mustkey,$data)
 	$put = false;
 	for($i=0;$i<$log_length;$i++) {
 		$fld = log::line2field($log_data[$i],$name);
-
+		
+	
 		$sw_update = true;
 		foreach($_key as $idx) {
 			if (isset($data[$idx]) && isset($fld[$idx]) && $data[$idx] != $fld[$idx]) {
 				$sw_update = false;
 				break;
+			}
+			
+
+			if (isset($data['ts']) && $data['ts'] <= UTIME - PKWK_LOG_LIFE_TIME){
+				// 一定期間過ぎたエントリは削除
+				unset($data[$i]);
+				$put = true;
+				continue;
 			}
 
 			/*

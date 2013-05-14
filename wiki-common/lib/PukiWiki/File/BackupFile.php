@@ -17,6 +17,7 @@ use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
 use PukiWiki\File\AbstractFile;
 use PukiWiki\Utility;
+use Exception;
 
 /**
  * バックアップファイルクラス
@@ -35,7 +36,13 @@ class BackupFile extends AbstractFile{
 	 * コンストラクタ
 	 * @param string $page ページ名
 	 */
-	public function __construct($page){
+	public function __construct($page = null){
+		if (empty($page)){
+			throw new Exception('Page name is missing!');
+		}
+		if (!is_string($page)){
+			throw new Exception('Page name must be string!');
+		}
 		global $do_backup, $cycle, $maxage;
 		if (Auth::check_role('readonly') || ! $do_backup) return;
 

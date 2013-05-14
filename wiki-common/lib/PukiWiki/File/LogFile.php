@@ -3,21 +3,28 @@
 namespace PukiWiki\File;
 
 use DirectoryIterator;
+use PukiWiki\File\File;
 use Exception;
 use PukiWiki\Auth\Auth;
 use PukiWiki\File\AbstractFile;
 use PukiWiki\NetBios;
 use PukiWiki\Spam\ProxyChecker;
 use PukiWiki\Utility;
+use PukiWiki\File\DiffFile;
+use PukiWiki\Factory;
 
 /**
  * ファイルの読み書きを行うクラス
  */
-abstract class LogFile extends AbstractFile{
+class LogFile extends AbstractFile{
 	/**
-	 * ログのキーの保持期間（１週間）
+	 * ログのキーの保持期間（30日）
 	 */
-	const LOG_LIFE_TIME = 604800;
+	const LOG_LIFE_TIME = 18144000;
+	/**
+	 * ログの最大エントリ数（500もいらないと思う）
+	 */
+	const LOG_MAX_ENTRIES = 500;
 	/**
 	 * ログの種類
 	 */
@@ -61,27 +68,28 @@ abstract class LogFile extends AbstractFile{
 	/**
 	 * ログの種類
 	 */
-	public static $kind;
+//	public static $kind;
 	/**
 	 * コンストラクタ
 	 * @param string $page
 	 */
 	public function __construct($page) {
-		
-		if (empty($page)){
-			throw new Exception('Page name is missing!');
-		}
+		if (empty($this->kind)) throw new Exception('class :'.$class.' does not defined $kind value.');
 		// ログ設定
 		global $log;
 		$this->config = $log;
-		// ページ名
-		$this->page = $page;
-		// 派生クラス名からログの種類を指定
-		$class = get_called_class();
-		$this->kind = $class::$kind;
-		if (empty($class::$kind)) throw new Exception('class :'.$class.' does not defined $kind value.');
-		
-		parent::__construct(self::$dir . $this->kind . '/' . Utility::encode($page) . '.txt');
+
+		if (!$this->isWiki) {
+			if (empty($page)){
+				throw new Exception('Page name is missing!');
+			}
+			// ページ名
+			$this->page = $page;
+
+			parent::__construct(self::$dir . $this->kind . '/' . Utility::encode($page) . '.txt');
+		}else{
+			parent::__construct(DATA_DIR .Utility::encode(':log/' . $this->kind) . '.txt');
+		}
 	}
 	/**
 	 * ファイル一覧を取得
@@ -121,7 +129,7 @@ abstract class LogFile extends AbstractFile{
 	/**
 	 * 共通チェック
 	 */
-	private function log_common_check($parm)
+	private function log_common_check()
 	{
 		global $log_ua;
 
@@ -129,7 +137,7 @@ abstract class LogFile extends AbstractFile{
 		$username = Auth::check_auth();
 
 		// 認証済の場合
-		if ($this->config['auth_nolog'] && !empty($username)) return '';
+		if ($this->config['auth_nolog'] && !empty($username)) return null;
 
 		// タイムスタンプ
 		$utime = UTIME;
@@ -139,7 +147,7 @@ abstract class LogFile extends AbstractFile{
 		if (isset($this->config[$this->kind]['nolog_ip'])) {
 			// ロギング対象外IP
 			foreach ($this->config[$this->kind]['nolog_ip'] as $nolog_ip) {
-				if ($ip == $nolog_ip) return '';
+				if ($ip == $nolog_ip) return null;
 			}
 		}
 		$rc = array();
@@ -148,7 +156,7 @@ abstract class LogFile extends AbstractFile{
 		foreach ($field as $key) {
 			switch ($key) {
 				case 'ts': // タイムスタンプ (UTIME)
-					$rc[$key] = $utime;
+					$rc[$key] = (int)$utime;
 					break;
 				case 'ip': // IPアドレス
 					$rc[$key] = $ip;
@@ -159,28 +167,28 @@ abstract class LogFile extends AbstractFile{
 				case 'auth_api': // 認証API名
 					//$obj = new auth_api();
 					//$msg = $obj->auth_session_get();
-					$rc[$key] = (isset($msg['api']) && ! empty($username)) ? 'plus' : '';
+					$rc[$key] = (isset($msg['api']) && ! empty($username)) ? 'plus' : null;
 					break;
 				case 'local_id':
-					$rc[$key] = isset($msg['local_id']) ? '' : $msg['local_id'];
+					$rc[$key] = isset($msg['local_id']) ? null : $msg['local_id'];
 					break;
 				case 'user': // ユーザ名(認証済)
 					$rc[$key] = $username;
 					break;
 				case 'ntlm': // ユーザ名(NTLM認証)
-					if (self::netbios_scope_check($ip,$hostname)) {
+					if (self::netbios_scope_check($ip,gethostbyaddr($ip))) {
 						$obj_nbt = new NetBios($ip);
 						$rc[$key] = $obj_nbt->username;
 						unset($obj_nbt);
 					} else {
-						$rc[$key] = '';
+						$rc[$key] = null;
 					}
 					break;
 				case 'proxy': // Proxy情報
 					$obj_proxy = new ProxyChecker();
 					$rc[$key] = $obj_proxy->is_proxy() ? 
 						$obj_proxy->get_proxy_info() . '(' . $obj_proxy->get_realip() . ')' :
-						'';
+						null;
 					unset($obj_proxy);
 					break;
 				case 'ua': // ブラウザ情報
@@ -188,21 +196,47 @@ abstract class LogFile extends AbstractFile{
 					break;
 				case 'del': // 削除フラグ
 					// 更新時は、削除されたか？
-					$rc[$key] = ($kind === 'update' && Factory::Wiki($page)->has()) ? '' : 'DELETE';
+					$rc[$key] = ($kind === 'update' && Factory::Wiki($page)->has()) ? null : 'DELETE';
 					break;
 				case 'sig': // 署名(曖昧)
-					$rc[$key] = Log::log_set_signature($kind,$page,$utime);
+					$rc[$key] = self::log_set_signature($utime);
 					break;
 				case 'file': // ファイル名
-					$rc[$key] = $parm;
+					$rc[$key] = $this->kind;
 					break;
 				case 'page':
 				case 'cmd':
-					$rc[$key] = $page;
+					$rc[$key] = $this->page;
 					break;
 			}
 		}
 		return $rc;
+	}
+	/**
+	 * 署名の特定
+	 */
+	private function log_set_signature($utime)
+	{
+		// $utime は、今後、閲覧者の特定などの際にバックアップファイルから
+		// 特定することを想定し、含めている。
+
+		if ($this->kind != 'update') return null;
+
+		$diff = new DiffFile($this->page); // 差分ファイル名
+
+		$lines = array();
+
+		if ($diff->has()) {
+			// 今回更新行のみ抽出
+			foreach($diff->get() as $_src) {
+				if (substr($_src,0,1) == '+') $lines[] = substr($_src,1);
+			}
+		} else {
+			// 新規ページの全てが対象
+			$lines = Factory::Wiki($page)->get();
+		}
+
+		return Auth::get_signature($lines);
 	}
 	/**
 	 * 設定項目名を設定
@@ -210,12 +244,12 @@ abstract class LogFile extends AbstractFile{
 	 */
 	private function set_fieldname()
 	{
-		$idx = isset(self::$kind_no[self::$kind]) ? self::$kind_no[self::$kind] : 0;
+		$idx = isset(self::$kind_no[$this->kind]) ? self::$kind_no[$this->kind] : 0;
 
 		$rc = array();
 		foreach(self::$field as $_field => $sw) {
 			if ($sw[$idx] == 0) continue;
-			if ($_field == 'page' && !isset($this->config[$kind]['file'])) continue;
+			if ($_field == 'page' && !isset($this->config[$this->kind]['file'])) continue;
 			$rc[] = $_field;
 		}
 
@@ -227,7 +261,7 @@ abstract class LogFile extends AbstractFile{
 	 * @param $value 未使用（何も入れないこと）
 	 * @param $keeptimestamp 未使用（何も入れないこと）
 	 */
-	public function set($value, $keeptimestamp){
+	public function set($value = '', $keeptimestamp = false){
 		// 設定
 		$config = $this->config[$this->kind];
 		
@@ -237,22 +271,24 @@ abstract class LogFile extends AbstractFile{
 		$rc = self::log_common_check();
 		// ない場合終了
 		if (empty($rc)) return;
-		// 更新するキーを取得
+		// ログを読み込む
+		$lines = self::get(false);
+		// 行数
+		$count = count($lines);
 
+		// 更新するキーを取得
 		if (! empty($config['updtkey'])) {
 			// 最低限記録するキー
 			$mustkey = isset($config['mustkey']) ? $config['mustkey'] : 0;
-			//保存するキーを定義から取得
+			// 保存するキーを定義から取得
 			$_key = explode(':',$config['updtkey']);
 			// 設定項目名を取得
-			$name = log::set_fieldname();
-			// ログを読み込む
-			$lines = self::get(false);
+			$name = self::set_fieldname();
 
 			// 更新フラグ
 			$put = false;
 			// 行の分解
-			for($i=0;$i<count($lines);$i++) {
+			for($i=0;$i<$count;$i++) {
 				// ログの１行を配列に変換した後、項目名を付与する
 				// $line = array(
 				//     'ts' => 000000,
@@ -265,7 +301,6 @@ abstract class LogFile extends AbstractFile{
 				if (isset($line['ts']) && $line['ts'] <= UTIME - self::LOG_LIFE_TIME){
 					// 一定期間過ぎたエントリは削除
 					unset($lines[$i]);
-					$put = true;
 					continue;
 				}
 
@@ -313,14 +348,26 @@ abstract class LogFile extends AbstractFile{
 			}
 		} else {
 			// 新規データー
-			$lines = self::array2table( $rc );
+			$lines[] = self::array2table( $rc );
+		}
+
+		// 配列の長さ制限
+		if ( $count > self::LOG_MAX_ENTRIES) {
+			$i = 0;
+			// 古いエントリから削除するため配列を反転
+			foreach (array_reverse($lines) as $line){
+				if ($i > self::LOG_MAX_ENTRIES) break;
+				$ret[] = $line;
+				$i++;
+			}
+			// 戻す
+			$lines = array_reverse($ret);
 		}
 
 		// 見做しユーザ
 		if ($this->kind == 'update' && $this->config['guess_user']['use']) {
 			log_put_guess($rc);
 		}
-		
 		// 保存（空行は削除）
 		parent::set(array_filter($lines));
 	}
@@ -328,50 +375,13 @@ abstract class LogFile extends AbstractFile{
 	 * ユーザを推測する
 	 * @static
 	 */
-	static function guess_user($user,$ntlm,$sig)
-	{
+	private static function guess_user($user,$ntlm,$sig)	{
 		if (!empty($user)) return $user; // 署名ユーザ
 		if (!empty($ntlm)) return $ntlm; // NTLM認証ユーザ
 		if (!empty($sig))  return $sig;  // 本人の署名
-		return '';
+		return null;
 	}
-	/*
-	 * 推測ユーザデータの出力
-	 */
-	function log_put_guess($data)
-	{
-		// ユーザを推測する
-		$user = log::guess_user( $data['user'], $data['ntlm'], $data['sig'] );
-		if (empty($user)) return;
-
-		$filename = log::set_filename('guess_user','');	// ログファイル名
-
-		if (file_exists($filename)) {
-			$src = file( $filename );			// ログの読み込み
-		} else {
-			// 最初の１件目
-			$data = log::array2table( array( $data['ua'], $data['host'], $user,"" ) );
-			log_put( $filename, $data);
-			return;
-		}
-
-		$sw = FALSE;
-
-		foreach($src as $_src) {
-			$x = trim($_src);
-			$field = log::table2array($x);	// PukiWiki 表形式データを配列データに変換
-			if (count($field) == 0) continue;
-			if ($field[0] != $data['ua']  ) continue;
-			if ($field[1] != $data['host']) continue;
-			if ($field[2] != $user        ) continue;
-			$sw = TRUE;
-			break;
-		}
-		if ($sw) return; // 既に存在
-		// データの更新
-		$data = log::array2table( array( $data['ua'], $data['host'], $user,'' ) );
-	 	log_put( $filename, $data);
-	}
+	
 	private static function log_mustkey_check($key,$data)
 	{
 		foreach($key as $idx) {
@@ -389,7 +399,7 @@ abstract class LogFile extends AbstractFile{
 		foreach ($data as $x1) {
 			$rc .= '|'.$x1;
 		}
-		$rc .= "|\n";
+		$rc .= "|";
 		return $rc;
 	}
 
@@ -427,7 +437,7 @@ abstract class LogFile extends AbstractFile{
 		foreach($name as $_name) {
 			if (substr($_name,0,1) === '@') continue;
 
-			$rc[$_name] = isset($_fld[$i]) ? $_fld[$i] : '';
+			$rc[$_name] = isset($_fld[$i]) ? $_fld[$i] : null;
 			$i++;
 		}
 		return $rc;

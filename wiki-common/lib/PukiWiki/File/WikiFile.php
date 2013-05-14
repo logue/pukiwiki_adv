@@ -26,7 +26,7 @@ class WikiFile extends AbstractFile{
 	 * コンストラクタ
 	 * @param string $page
 	 */
-	public function __construct($page) {
+	public function __construct($page = null) {
 
 		if (empty($page)){
 			throw new Exception('Page name is missing!');

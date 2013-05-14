@@ -20,15 +20,16 @@ use PukiWiki\Time;
 use PukiWiki\Router;
 use PukiWiki\Spam\Spam;
 use PukiWiki\Renderer\PluginRenderer;
+use PukiWiki\File\LogFactory;
 use Zend\Cache\StorageFactory;
 
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
 define('S_VERSION', 'v1.1-alpha');
-define('S_REVSION', '20121205');
+define('S_REVSION', '20130509');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
-	' Copyright &#169; 2010-2012' .
+	' Copyright &#169; 2010-2013' .
 	' <a href="http://pukiwiki.logue.be/" rel="external">PukiWiki Advance Developers Team</a>.<br />' .
 	' Licensed under the <a href="http://www.gnu.org/licenses/gpl-2.0.html" rel="external">GPLv2</a>.' .
 	' Based on <a href="http://pukiwiki.cafelounge.net/plus/" rel="external">"PukiWiki Plus! i18n"</a>'
@@ -49,9 +50,9 @@ defined('WWW_HOME')			or define('WWW_HOME', '');
 defined('COMMON_URI')		or define('COMMON_URI', ROOT_URI);
 
 // フレームワークのバージョン
-define('JQUERY_VER',		'1.9.1');
-define('JQUERY_UI_VER',		'1.10.2');
-define('JQUERY_MOBILE_VER',	'1.3.0');
+define('JQUERY_VER',		'2.0.0');
+define('JQUERY_UI_VER',		'1.10.3');
+define('JQUERY_MOBILE_VER',	'1.3.1');
 
 /////////////////////////////////////////////////
 // Init server variables
@@ -137,7 +138,7 @@ if (file_exists(USR_INI_FILE) && is_readable(USR_INI_FILE)) {
 
 define('INI_FILE',  add_homedir('pukiwiki.ini.php'));
 if (! file_exists(INI_FILE) || ! is_readable(INI_FILE)) {
-	Utility::dieMessage('File <var>'.INI_FILE.'</var> is not found.'.' (INI_FILE)' . "\n");
+	die('File <var>'.INI_FILE.'</var> is not found.'.' (INI_FILE)' . "\n");
 } else {
 	require(INI_FILE);
 }
@@ -192,16 +193,7 @@ defined('PKWK_SAFE_MODE')		or define('PKWK_SAFE_MODE',		Auth::ROLE_GUEST);	// 0,
 defined('PKWK_CREATE_PAGE')		or define('PKWK_CREATE_PAGE',	Auth::ROLE_GUEST); // 0,1,2,3,4,5
 defined('PKWK_USE_REDIRECT')	or define('PKWK_USE_REDIRECT',	Auth::ROLE_GUEST); // 0,1
 
-// PKWK_DISABLE_INLINE_IMAGE_FROM_URI - Disallow using inline-image-tag for URIs
-//   Inline-image-tag for URIs may allow leakage of Wiki readers' information
-//   (in short, 'Web bug') or external malicious CGI (looks like an image's URL)
-//   attack to Wiki readers, but easy way to show images.
 defined('PKWK_DISABLE_INLINE_IMAGE_FROM_URI') or define('PKWK_DISABLE_INLINE_IMAGE_FROM_URI', 0);
-
-// PKWK_QUERY_STRING_MAX
-//   Max length of GET method, prohibits some worm attack ASAP
-//   NOTE: Keep (page-name + attach-file-name) <= PKWK_QUERY_STRING_MAX
-defined('PKWK_QUERY_STRING_MAX') or define('PKWK_QUERY_STRING_MAX', 640); // Bytes, 0 = OFF
 
 defined('DEFAULT_TZ_NAME') or define('DEFAULT_TZ_NAME', 'Asia/Tokyo');
 
@@ -215,12 +207,6 @@ defined('PKWK_CORE_NAMESPACE') or define('PKWK_CORE_NAMESPACE', 'pukiwiki_adv');
 
 // Wikiの名前空間（セッションやキャッシュで他のWikiと名前が重複するのを防ぐため）7文字で十分だろう・・。
 defined('PKWK_WIKI_NAMESPACE') or define('PKWK_WIKI_NAMESPACE', 'pkwk_'.substr(md5(realpath(DATA_HOME)), 0 ,7) );
-
-// 汎用キャッシュの有効期間
-defined('PKWK_CACHE_EXPIRE') or define('PKWK_CACHE_EXPIRE', 604800);	// 60*60*24*7 1week
-
-// Timestamp prefix
-defined('PKWK_TIMESTAMP_PREFIX') or define('PKWK_TIMESTAMP_PREFIX', 'timestamp-');
 
 /////////////////////////////////////////////////
 // Init grobal variables
@@ -269,8 +255,7 @@ $cache = array(
 		'adapter'=> array(
 			'name' => $cache_adapter,
 			'options' => array(
-				'namespace' => PKWK_CORE_NAMESPACE,
-				'ttl' => PKWK_CACHE_EXPIRE,
+				'namespace' => PKWK_CORE_NAMESPACE
 			),
 		),
 		'plugins' => array(
@@ -411,26 +396,6 @@ define('UA_VERS', isset($user_agent['vers']) ? $user_agent['vers'] : '');
 define('UA_CSS', isset($user_agent['css']) ? $user_agent['css'] : '');
 
 //unset($user_agent);	// Unset after reading UA_INI_FILE
-
-// 設定ファイルの変数チェック
-$temp = '';
-foreach(array('rss_max', 'page_title', 'related_link', 'show_passage', 'load_template_func') as $var){
-	if (! isset(${$var})) $temp .= '<li>$' . $var . "</li>\n";
-}
-if ($temp) {
-	$die[] = sprintf('The following values were not found (Maybe the old *.ini.php?): <ul>%s</ul>',$temp);
-}
-
-$temp = '';
-foreach(array('LANG', 'PLUGIN_DIR') as $def){
-	if (! defined($def)) $temp .= '<li>'.$def . '</li>'."\n";
-}
-if ($temp) {
-	$die[] = sprintf('The following values were not definded (Maybe the old *.ini.php?): <ul>%s</ul>',$temp);
-}
-
-if($die) Utility::dieMessage(join("\n",$die));
-unset($die, $temp);
 
 /////////////////////////////////////////////////
 // 必須のページが存在しなければ、空のファイルを作成する
@@ -666,24 +631,9 @@ if (isset($retvars['body']) && !empty($retvars['body'])) {
 	}
 
 	$body = $wiki->render();
-	if ($referer){
-		require(LIB_DIR . 'referer.php');
-		ref_save($base);
-	}
-	log_write('check',$vars['page']);
-	log_write('browse',$vars['page']);
+	LogFactory::factory('browse',$vars['page'])->set();
+	LogFactory::factory('check',$vars['page'])->set();
 }
-
-// global $always_menu_displayed;
-/*
-if (arg_check('read')) $always_menu_displayed = 1;
-$body_menu = $body_side = '';
-if ($always_menu_displayed) {
-	if (exist_plugin_convert('menu')) $body_menu = do_plugin_convert('menu');
-	if (exist_plugin_convert('side')) $body_side = do_plugin_convert('side');
-}
-*/
-
 
 /** よく使うグローバル関数 **/
 // gettext to Zend gettext emulator

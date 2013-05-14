@@ -772,7 +772,6 @@ class Utility{
 			error_log( join("\n",$lines) . "\n", 3, CACHE_DIR . $type . '.log');
 			unset($lines);
 		}
-		self::dieMessage('Spam Protection','Spam Protection', 500);
 	}
 }
 

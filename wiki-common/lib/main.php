@@ -120,12 +120,10 @@ require(LIB_DIR . 'spamplus.php');
 require(LIB_DIR . 'legacy.php');
 
 // Defaults
-$notify = $trackback = $referer = 0;
 require(LIB_DIR . 'init.php');
 
 
 new PukiWiki\Render($title, $body);
-//catbody($title, $page, $body);
 exit;
 
 /* End of file main.php */

@@ -27,7 +27,11 @@ use Zend\Json\Json;
  * ページ出力クラス
  */
 class Render{
-	
+	/**
+	 * 厳格なXHTMLモードを使用する
+	 */
+	const USE_STRICT_XHTML = false;
+
 	/**
 	 * 通常読み込むスクリプト
 	 */
@@ -103,7 +107,7 @@ class Render{
 			default:
 				// 厳格にXHTMLとして出力する場合は、ブラウザの対応状況を読んでapplication/xhtml+xmlを出力
 				$content_type =
-					PKWK_STRICT_XHTML === TRUE && strstr($_SERVER['HTTP_ACCEPT'], 'application/xhtml+xml') !== false ?
+					self::USE_STRICT_XHTML === TRUE && strstr($_SERVER['HTTP_ACCEPT'], 'application/xhtml+xml') !== false ?
 					'application/xhtml+xml' : 'text/html';
 				$content = self::getContent($this->title, $this->body);
 			break;
@@ -164,15 +168,6 @@ class Render{
 			if (isset($vars['word'])){
 				list($body, $notes) = self::hilightWord($vars['word'], array($body, $notes));
 				$body = '<div class="small">' . $_string['word'] . Utility::htmlsc($vars['word']) . '</div>'."\n".'<hr />'."\n".$body;
-			}
-			
-			// モードによって、3カラム、2カラムを切り替える。
-			$view->menubar = Factory::Wiki($menubar)->has() ? PluginRenderer::executePluginBlock('menu') : null;
-			if ( Factory::Wiki($sidebar)->has()){
-				$view->sidebar = Factory::Wiki($sidebar)->has() ? PluginRenderer::executePluginBlock('side') : null;
-				$view->colums = View::CLASS_THREE_COLUMS;
-			}else{
-				$view->colums = View::CLASS_TWO_COLUMS;
 			}
 		}
 
@@ -235,13 +230,13 @@ class Render{
 		// JS用初期設定
 		$js_init = array(
 			'DEBUG'=>constant('DEBUG'),
-			'DEFAULT_LANG'=>constant('DEFAULT_LANG'),
-			'IMAGE_URI'=>constant('IMAGE_URI'),
-			'JS_URI'=>constant('JS_URI'),
-			'LANG'=>constant('LANG'),
-			'SCRIPT'=>Router::get_script_absuri(),
-			'SKIN_DIR'=>constant('SKIN_URI'),
-			'THEME_NAME'=>constant('PLUS_THEME'),
+			'DEFAULT_LANG'  => constant('DEFAULT_LANG'),
+			'IMAGE_URI'     => constant('IMAGE_URI'),
+			'JS_URI'        => constant('JS_URI'),
+			'LANG'          => constant('LANG'),
+			'SCRIPT'        => Router::get_script_absuri(),
+			'SKIN_DIR'      => constant('SKIN_URI'),
+			'THEME_NAME'    => constant('PLUS_THEME'),
 		);
 		// JavaScriptタグの組み立て
 		if (isset($vars['page'])){

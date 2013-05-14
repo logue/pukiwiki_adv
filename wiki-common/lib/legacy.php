@@ -136,7 +136,17 @@ function put_lastmodified()
 function pkwk_touch_file($filename, $time = FALSE, $atime = FALSE)
 {
 	//trigger_error('pkwk_touch_file($filename, $time, $atime) is deprecated. use FileFactory::Generic($filename)->touch($time, $atime).', E_USER_DEPRECATED );
-	return FileFactory::Generic($filename)->touch($time, $atime);
+	if ($time === FALSE) {
+		// ファイルの領域を確保
+		$result = touch($filename);
+	} else if ($atime === FALSE) {
+		// ファイルの更新日時を指定して領域を確保
+		$result = touch($filename, $time);
+	} else {
+		// ファイルの更新日時とアクセス日時を指定して領域を確保
+		$result = touch($filename, $time, $atime);
+	}
+	return $result;
 }
 
 // Last-Modified header

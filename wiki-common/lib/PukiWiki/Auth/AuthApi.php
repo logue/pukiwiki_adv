@@ -19,7 +19,7 @@ use Zend\Crypt\BlockCipher;
 /**
  * 外部認証基底クラス
  */
-abstract class AuthApi
+class AuthApi
 {
 	// セッションの接頭辞
 	const SESSION_PREFIX = 'auth-';
@@ -34,7 +34,7 @@ abstract class AuthApi
 	public function __construct(){
 		global $adminpass, $vars;
 
-		if (!isset($this->auth_name)) throw new Exception('$this->auth_name has not set.');
+	//	if (!isset($this->auth_name)) throw new Exception('$this->auth_name has not set.');
 
 		// コールバック先のページ
 		$page = isset($vars['page']) ? $vars['page'] : null;
@@ -45,11 +45,10 @@ abstract class AuthApi
 			'algo' => 'des',
 			'mode' => 'cfb',
 			'hash' => 'sha512',
-			'salt' => $salt,
-			'padding' => 2
+			'salt' => $salt
 		));
 		// コールバック先のURL。通常プラグインのコールバックアドレスが返される
-		$this->callbackUrl = Router::get_resolve_uri($this->auth_name ,$vars['page'],'full');
+		$this->callbackUrl = isset($this->auth_name) ? Router::get_resolve_uri($this->auth_name ,$vars['page'],'full') : null;
 		// セッション名
 		$this->session_name = self::SESSION_PREFIX.md5(Router::get_script_absuri().session_id());
 	}
