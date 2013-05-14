@@ -120,7 +120,7 @@ class Referer{
 	 * リファラーを取得
 	 */
 	public function get(){
-		while ($line = $this->referer->get()) {
+		foreach ($this->file->get() as $line) {
 			$data = explode("\t", $line);
 			$result[rawurldecode($data[1])] = $data;
 		}

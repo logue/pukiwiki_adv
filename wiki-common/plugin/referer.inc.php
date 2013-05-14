@@ -9,7 +9,7 @@
 //
 // Referer Plugin(Show Related-Link Plugin)
 use PukiWiki\Auth\Auth;
-
+use PukiWiki\Factory;
 define('CONFIG_REFERER', 'plugin/referer');
 define('REFERE_TITLE_LENGTH',70);
 
@@ -68,17 +68,15 @@ function plugin_referer_action()
 	// Setting: Off
 	if (! $referer){
 		return array('msg'=>$_referer_msg['msg_referer'],'body'=>$_referer_msg['msg_disabled']);
-	}else{
-		require(LIB_DIR.'referer.php');
 	}
 	
 	$page = isset($vars['page']) ? $vars['page'] : null;
 	$kind = isset($vars['kind']) ? $vars['kind'] : '';
 	$max = isset($vars['max']) ? (int)$vars['max'] :  -1;
+	$wiki = Factory::Wiki($page);
 
-	if (is_page($page)) {
-		check_readable($page, false);
-		$data = ref_get_data($page);
+	if ($wiki->isValied() && $wiki->isReadable()) {
+		$data = Factory::Referer($page)->get();
 		if (!isset($data)) return '<p>'.$_referer_msg['msg_no_data'].'</p>';
 
 		switch ($kind){
