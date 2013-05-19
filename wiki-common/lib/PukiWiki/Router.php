@@ -178,7 +178,7 @@ class Router{
 			$ret .= '#'.$fragment;
 		}
 		unset($flag);
-		return $ret;
+		return Utility::htmlsc($ret);
 	}
 	public static function get_baseuri($path='')
 	{

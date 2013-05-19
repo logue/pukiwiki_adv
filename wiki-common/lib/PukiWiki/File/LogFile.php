@@ -3,15 +3,15 @@
 namespace PukiWiki\File;
 
 use DirectoryIterator;
-use PukiWiki\File\File;
 use Exception;
 use PukiWiki\Auth\Auth;
+use PukiWiki\Factory;
 use PukiWiki\File\AbstractFile;
+use PukiWiki\File\DiffFile;
+use PukiWiki\File\File;
 use PukiWiki\NetBios;
 use PukiWiki\Spam\ProxyChecker;
 use PukiWiki\Utility;
-use PukiWiki\File\DiffFile;
-use PukiWiki\Factory;
 
 /**
  * ファイルの読み書きを行うクラス
@@ -68,13 +68,17 @@ class LogFile extends AbstractFile{
 	/**
 	 * ログの種類
 	 */
-//	public static $kind;
+	protected $kind;
+	/**
+	 * Wikiページに対するログか？
+	 */
+	protected $isWiki = true;
 	/**
 	 * コンストラクタ
 	 * @param string $page
 	 */
-	public function __construct($page) {
-		if (empty($this->kind)) throw new Exception('class :'.$class.' does not defined $kind value.');
+	public function __construct($page = null) {
+		if (empty($this->kind)) throw new Exception('class :'.get_called_class().' does not defined $kind value.');
 		// ログ設定
 		global $log;
 		$this->config = $log;
@@ -88,7 +92,8 @@ class LogFile extends AbstractFile{
 
 			parent::__construct(self::$dir . $this->kind . '/' . Utility::encode($page) . '.txt');
 		}else{
-			parent::__construct(DATA_DIR .Utility::encode(':log/' . $this->kind) . '.txt');
+			// Wikiに保存する場合
+			parent::__construct(DATA_DIR . Utility::encode($this->config[$this->kind]['file']) . '.txt');
 		}
 	}
 	/**
@@ -371,17 +376,6 @@ class LogFile extends AbstractFile{
 		// 保存（空行は削除）
 		parent::set(array_filter($lines));
 	}
-	/**
-	 * ユーザを推測する
-	 * @static
-	 */
-	private static function guess_user($user,$ntlm,$sig)	{
-		if (!empty($user)) return $user; // 署名ユーザ
-		if (!empty($ntlm)) return $ntlm; // NTLM認証ユーザ
-		if (!empty($sig))  return $sig;  // 本人の署名
-		return null;
-	}
-	
 	private static function log_mustkey_check($key,$data)
 	{
 		foreach($key as $idx) {
@@ -399,7 +393,7 @@ class LogFile extends AbstractFile{
 		foreach ($data as $x1) {
 			$rc .= '|'.$x1;
 		}
-		$rc .= "|";
+		$rc .= '|';
 		return $rc;
 	}
 

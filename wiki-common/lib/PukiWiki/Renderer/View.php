@@ -44,6 +44,10 @@ class View{
 		 */
 		'showicon'      => false,
 		/**
+		 * 標準スタイルシートを読み込む
+		 */
+		'default_css'   => true,
+		/**
 		 * ナビバーの項目
 		 */
 		'navibar'      => 'top,|,edit,freeze,diff,backup,upload,reload,|,new,list,search,recent,help,|,login',
@@ -62,7 +66,6 @@ class View{
 		$this->_theme = !IS_MOBILE ? $theme : 'mobile';
 		$this->colums = self::CLASS_NO_COLUMS;
 
-		// テーマ設定を読み込む
 		$this->conf = array_merge($this->conf, self::loader('ini'));
 	}
 	/**
@@ -122,7 +125,7 @@ class View{
 	/**
 	 * テーマと設定を取得
 	 * @param string $skin_name スキン名
-	 * @return void
+	 * @return array
 	 */
 	private function loader($type = 'skin'){
 		$cond = array(

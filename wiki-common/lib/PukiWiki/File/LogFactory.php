@@ -24,10 +24,13 @@ class LogFactory
 	private function __clone() {}
 
 	protected static $classMap = array(
-		'browse'  => 'PukiWiki\File\Log\BrowseLog',
-		'update'  => 'PukiWiki\File\Log\UpdateLog',
-		'download'=> 'PukiWiki\File\Log\DownloadLog',
-		'check'   => 'PukiWiki\File\Log\CheckLog',
+		'browse'        => 'PukiWiki\File\Log\BrowseLog',	// 0
+		'check'         => 'PukiWiki\File\Log\CheckLog',	// 5
+		'cmd'           => 'PukiWiki\File\Log\CommandLog',	// 3
+		'download'      => 'PukiWiki\File\Log\DownloadLog',	// 2
+		'guess_user'    => 'PukiWiki\File\Log\GuessLog',
+		'login'         => 'PukiWiki\File\Log\LoginLog',	// 4
+		'update'        => 'PukiWiki\File\Log\UpdateLog'	// 1
 	);
 
 	public static function factory($kind, $page = null){

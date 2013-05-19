@@ -18,10 +18,10 @@ use PukiWiki\File\LogFile;
  * ログインログファイルクラス
  */
 class LoginLog extends LogFile{
-	function __construct($page) {
+	function __construct($x) {
 		$this->kind = 'login';
 		$this->isWiki = true;
-		parent::__construct($page);
+		parent::__construct();
 	}
 }
 

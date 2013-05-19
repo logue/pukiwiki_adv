@@ -111,7 +111,7 @@ function plugin_logview_action()
 				}
 */
 			}
-			$body .= '</ul>'."\n";
+			$body .= '</ul></div>'."\n";
 			
 			if ($kind === null) return array('msg'  => $title,'body' => $body);
 			

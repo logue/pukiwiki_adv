@@ -12,7 +12,7 @@
  */
 namespace PukiWiki\File\Log;
 
-use PukiWiki\File\File;
+use PukiWiki\File\LogFactory;
 use PukiWiki\File\LogFile;
 
 /**
@@ -27,44 +27,9 @@ class UpdateLog extends LogFile{
 
 	public function set($data){
 		if ($this->config['guess_user']['use']){
-			self::log_put_guess($data);
+			LogFactory::factory('guess')->set($data);
 		}
 		parent::set($data);
-	}
-
-	/*
-	 * 推測ユーザデータの出力
-	 */
-	private function log_put_guess($data)
-	{
-		// ユーザを推測する
-		$user = self::guess_user( $data['user'], $data['ntlm'], $data['sig'] );
-		if (empty($user)) return;
-
-		$file = new File($this->dir . 'guess_user.log');
-
-		if (!$file->has()) {
-			// 最初の１件目
-			$data = self::array2table( array( $data['ua'], $data['host'], $user,null ) );
-			$file->set($data);
-			return;
-		}
-
-		$sw = FALSE;
-
-		foreach($file->get() as $line) {
-			$field = self::table2array($line);	// PukiWiki 表形式データを配列データに変換
-			if (count($field) == 0) continue;
-			if ($field[0] != $data['ua']  ) continue;
-			if ($field[1] != $data['host']) continue;
-			if ($field[2] != $user        ) continue;
-			$sw = TRUE;
-			break;
-		}
-		if ($sw) return; // 既に存在
-		// データの更新
-		$data = self::array2table( array( $data['ua'], $data['host'], $user, null ) );
-	 	$file->set();
 	}
 }
 

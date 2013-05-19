@@ -50,7 +50,8 @@ defined('WWW_HOME')			or define('WWW_HOME', '');
 defined('COMMON_URI')		or define('COMMON_URI', ROOT_URI);
 
 // フレームワークのバージョン
-define('JQUERY_VER',		'2.0.0');
+// define('JQUERY_VER',		'2.0.0');
+define('JQUERY_VER',		'1.9.1');
 define('JQUERY_UI_VER',		'1.10.3');
 define('JQUERY_MOBILE_VER',	'1.3.1');
 

@@ -20,7 +20,6 @@ use PukiWiki\Time;
 use PukiWiki\Utility;
 use SplFileInfo;
 
-
 /**
  * ファイルの読み書きを行うクラス
  */

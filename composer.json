@@ -32,6 +32,7 @@
 	},
 	"require": {
 		"php": ">=5.3.3",
+		"pear-pear/Net_DNSBL" : "1.*",
 		"aferrandini/phpqrcode": "dev-master",
 		"zendframework/zendframework": "2.*",
 		"zendframework/zendoauth": "2.*",
@@ -45,6 +46,10 @@
 		"ext-intl" : "for i18n use."
 	},
 	"repositories": [
+		{  
+			"type": "pear",
+			"url": "http://pear.php.net"
+		},
 		{
 			"type": "composer",
 			"url": "https://packages.zendframework.com/"

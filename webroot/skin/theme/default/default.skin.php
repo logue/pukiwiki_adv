@@ -9,13 +9,12 @@
 // $Id: default.skin.php,v 1.4.18 2012/05/03 21:35:00 Logue Exp $
 //
 ?>
-<!doctype html>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 	<head prefix="og: http://ogp.me/ns# fb: http://www.facebook.com/2008/fbml">
 <?php echo $this->head; ?>
-		<link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/<?php echo JQUERY_UI_VER; ?>/themes/redmond/jquery-ui.min.css" />
-		<link rel="stylesheet" type="text/css" href="<?php echo SKIN_URI . 'scripts.css.php?base=' . urlencode(IMAGE_URI) ?>" />
-		<link rel="stylesheet" type="text/css" href="<?php echo SKIN_URI . THEME_PLUS_NAME . PLUS_THEME . '/'. PLUS_THEME . '.css.php'; ?>" />
-		<link rel="stylesheet" type="text/css" href="<?php echo SKIN_URI . THEME_PLUS_NAME . PLUS_THEME . '/blue.css'; ?>"id="coloring" />
+		<link rel="stylesheet" type="text/css" href="<?php echo $this->path; ?>default.css.php" />
+		<link rel="stylesheet" type="text/css" href="<?php echo $this->path; ?>blue.css" id="coloring" />
 		<title><?php echo $this->title . ' - ' . $this->site_name; ?></title>
 	</head>
 	<body>
@@ -24,10 +23,10 @@
 			<header id="header" role="banner">
 <?php if (empty($this->headarea)){ ?>
 				<a href="<?php echo $this->links['top'] ?>"><img id="logo" src="<?php echo $this->conf['logo']['src'] ?>" width="<?php echo $this->conf['logo']['width'] ?>" height="<?php echo $this->conf['logo']['height'] ?>" alt="<?php echo $this->conf['logo']['alt'] ?>" /></a>
-				<hgroup id="hgroup">
+				<div id="hgroup">
 					<h1 id="title"><?php echo $this->title ?></h1>
 					<?php if (!empty($this->links)) { ?><h2><a href="<?php echo $this->links['reload'] ?>" id="parmalink"><?php echo $this->links['reload'] ?></a></h2><?php } ?>
-				</hgroup>
+				</div>
 <!-- * Ad space *-->
 				<?php if ($this->conf['adarea']['header']) echo '<div id="ad" class="noprint">' . $this->conf['adarea']['header'] . '</div>'; ?>
 <!-- * End Ad space * -->

@@ -15,6 +15,7 @@ use PukiWiki\Auth\Auth;
 use PukiWiki\Utility;
 use PukiWiki\Router;
 use Zend\Crypt\BlockCipher;
+use PukiWiki\File\LogFactory;
 
 /**
  * 外部認証基底クラス
@@ -110,7 +111,7 @@ class AuthApi
 
 		// OpenID認証の場合のみ
 		if ($this->auth_name != 'openid_verify') {
-			log_write('login','');
+			LogFactory::factory('login')->set();
 		}
 	}
 	/**

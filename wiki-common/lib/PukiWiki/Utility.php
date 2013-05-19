@@ -25,6 +25,7 @@ use PukiWiki\Listing;
 use Zend\Http\Response;
 use Zend\Math\Rand;
 use PukiWiki\Renderer\View;
+use SplFileInfo;
 
 /**
  * 汎用関数
@@ -55,6 +56,19 @@ class Utility{
 	 */
 	const SPAM_PATTERN = '#(?:cialis|hydrocodone|viagra|levitra|tramadol|xanax|\[/link\]|\[/url\])#i';
 
+	/**
+	 * 設定ファイルを読み込む
+	 * @param string $file ファイル名
+	 * @return array or boolean
+	 */
+	public static function loadConfig($file){
+		foreach(array(DATA_HOME,SITE_HOME) as $dir) {
+			$f = new SplFileInfo($file);
+			if ($f->isFile() && $f->isReadable()) return include($dir.$file);
+			unset($f);
+		}
+		return false;
+	}
 	/**
 	 * QueryStringをパースし、$_GETに上書き
 	 * @return void

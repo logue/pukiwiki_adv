@@ -8,16 +8,12 @@
 
 // ------------------------------------------------------------
 // Settings (define before here, if you want)
-global $_SKIN, $link_tags, $js_tags;
-
-$_SKIN = array(
+return array(
+	'showicon' => true,
 	// 広告表示領域
 	'adarea'	=> <<<EOD
 EOD
 );
-
-// 読み込むスタイルシート
-$link_tags[] = array('rel'=>'stylesheet', 'type'=>'text/css', 'href'=>SKIN_URI.THEME_PLUS_NAME.'mobile/mobile.css.php?base=' . urlencode(IMAGE_URI) );
 
 /* End of file mobile.ini.php */
 /* Location: ./webroot/skin/theme/mobile/mobile.ini.php */

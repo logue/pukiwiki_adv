@@ -11,6 +11,7 @@
  * @package	plugin
  */
 use PukiWiki\Auth\Auth;
+use PukiWiki\Utility;
 /**
  *  votex plugin class
  *
@@ -30,17 +31,12 @@ class PluginVotex
 			$this->CONF['RECENT_LOG']   = CACHE_DIR . 'recentvotes.dat';
 			$this->CONF['RECENT_LIMIT'] = 100;
 			$this->CONF['COOKIE_EXPIRED'] = 60*60*24*3;
-			$this->CONF['BARCHART_LIB_FILE'] = LIB_DIR . 'barchart.cls.php';
-			$this->CONF['BARCHART_COLOR_BAR'] = ' #0000cc';
-			$this->CONF['BARCHART_COLOR_BG'] = 'transparent';
-			$this->CONF['BARCHART_COLOR_BORDER'] = 'transparent';
 		}
 		static $default_options = array();
 		$this->default_options = &$default_options;
 		if (empty($this->default_options)) {
 			$this->default_options['readonly'] = FALSE;
 			$this->default_options['addchoice'] = FALSE;
-			$this->default_options['barchart'] = FALSE;
 		}
 
 		// init
@@ -73,11 +69,7 @@ class PluginVotex
 	{
 		global $vars, $defaultpage, $_string;
 
-		if (method_exists('auth', 'check_role')) { // Plus!
-			if (Auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
-		} else {
-			if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-		}
+		if (Auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
 
 		$page		 = isset($vars['refer']) ? $vars['refer'] : $defaultpage;
 		$pcmd		 = $vars['pcmd'];
@@ -579,9 +571,6 @@ class PluginVotex
 			}
 			$votes[] = array($choice, $count);
 		}
-		if ($options['barchart']) {
-			require_once($this->CONF['BARCHART_LIB_FILE']);
-		}
 		return array($votes, $options);
 	}
 
@@ -621,7 +610,6 @@ class PluginVotex
 	 * @global $digest
 	 * @var $options 'readonly'
 	 * @var $options 'addchoice'
-	 * @var $options 'barchart'
 	 * @uses get_script_uri()
 	 * @return string
 	 */
@@ -634,24 +622,6 @@ class PluginVotex
 		$script = ($this->options['readonly']) ? '' : get_script_uri();
 		$submit = ($this->options['readonly']) ? 'hidden' : 'submit';
 		$anchor = $this->get_anchor('convert', $vote_id);
-
-		// Init barchart
-		if ($this->options['barchart']) {
-			$barchart = new BARCHART(0, 0, 100);
-			$barchart->setColorCompound($this->CONF['BARCHART_COLOR_BAR']);
-			$barchart->setColorBg($this->CONF['BARCHART_COLOR_BG']);
-			$barchart->setColorBorder($this->CONF['BARCHART_COLOR_BORDER']);
-
-			$sum = 0; $max = 0; $argmax = 0;
-			foreach ($votes as $choice_id => $vote) {
-				list($choice, $count) = $vote;
-				$sum += $count;
-				if ($max < $count) {
-					$max = $count;
-					$argmax = $choice_id;
-				}
-			}
-		}
 
 		// Header
 		$form[] = '<div class="table_wrapper">';
@@ -677,12 +647,6 @@ class PluginVotex
 		$form[] = '<tbody>';
 		foreach ($votes as $choice_id => $vote) {
 			list($choice, $count) = $vote;
-			if ($this->options['barchart']) {
-				$percent = (int)(($count / $max) * 100); // / $sum
-				$barchart->setCurrPoint($percent);
-				$barchart->setStrAfterBar('&nbsp;' . $s_count);
-				$s_count = $barchart->getBar();
-			}
 			$form[] = '<tr>' . "\n";
 			$form[] = '<td class="style_td vote_choise_td">' . make_link($choice) . '</td>';
 			$form[] = '<td class="style_td vote_count_td"><var>'  . htmlsc($count) . '</var></td>';

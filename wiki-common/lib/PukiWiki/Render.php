@@ -65,13 +65,13 @@ class Render{
 	 */
 	private static $mobile_js = array(
 		/* Use plugins */
-		'mobile/jquery.beautyOfCode',
-		'mobile/jquery.i18n',
-		'mobile/jquery.lazyload',
-		'mobile/jquery.tablesorter',
+		'jquery.beautyOfCode',
+		'jquery.i18n',
+		'jquery.lazyload',
+		'jquery.tablesorter',
 
 		/* MUST BE LOAD LAST */
-		'mobile/mobile.original'
+		'mobile.original'
 	);
 
 	private $page, $ajax, $wiki;
@@ -125,7 +125,7 @@ class Render{
 	 * @return string
 	 */
 	public function getContent(){
-		global $js_tags, $_LINK, $info, $vars;
+		global $js_tags, $_LINK, $info, $vars, $_LANG;
 		global $site_name, $newtitle, $modifier, $modifierlink, $menubar, $sidebar, $headarea, $footarea, $navigation;
 
 		$body = $this->body;
@@ -189,7 +189,7 @@ class Render{
 		// ツールバー
 		$view->toolbar = PluginRenderer::executePluginBlock('toolbar',$view->conf['toolbar']);
 		// <head>タグ内
-		$view->head = self::getHead();
+		$view->head = self::getHead($view->conf);
 		// ナビゲーション
 		$view->navigation = Factory::Wiki($navigation)->has() ? PluginRenderer::executePluginBlock('suckerfish') : null;
 		// ヘッドエリア
@@ -212,6 +212,10 @@ class Render{
 		$view->modifierlink = $modifierlink;
 		// JavaScript
 		$view->js = $this->getJs();
+		// 汎用ワード
+		$view->lang = $_LANG;
+		// テーマディレクトリへの相対パス
+		$view->path = SKIN_URI . THEME_PLUS_NAME . PLUS_THEME . '/';
 
 		return $view;
 	}
@@ -262,7 +266,7 @@ class Render{
 		if (DEBUG === true) {
 			// 読み込むsrcディレクトリ内のJavaScript
 			foreach($jsfiles as $script_file)
-				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'src/'.$script_file.'.js');
+				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.(!IS_MOBILE ? 'src/' : 'mobile/').$script_file.'.js');
 		} else {
 			//$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'mobile.js', 'defer'=>'defer');
 			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.$c_js);
@@ -289,14 +293,15 @@ class Render{
 	}
 	/**
 	 * ヘッダータグを出力
+	 * @param array $sytlesheet
 	 * @return string
 	 */
-	private function getHead(){
+	private function getHead($conf){
 		global $vars, $nofollow, $google_analytics, $google_api_key, $google_site_verification, $yahoo_site_explorer_id, $bing_webmaster_tool, $shortcut_icon, $modifier, $modifierlink;
+		$meta_tags[] = array('charset'=>constant('SOURCE_ENCODING'));
 		if (IS_MOBILE){
 			$meta_tags[] = array('name' => 'viewport',	'content' => 'width=device-width, initial-scale=1');
 		}else{
-			$meta_tags[] = array('charset'=>constant('SOURCE_ENCODING'));
 			$meta_tags[] = array('name'=>'generator','content'=>constant('S_APPNAME'));
 			// 管理人
 			($modifier !== 'anonymous') ?			$meta_tags[] = array('name' => 'author',					'content' => $modifier) : '';
@@ -342,8 +347,6 @@ class Render{
 		// http://www.w3schools.com/html5/tag_link.asp
 		global $_LANG, $_LINK, $site_name;
 
-		$shortcut_icon = isset($view->conf['shortcut_icon']) ? $view->conf['shortcut_icon'] : ROOT_URI.'favicon.ico';
-
 		$link_tags = array(
 			array('rel'=>'alternate',		'href'=>$_LINK['rss'],	'type'=>'application/rss+xml',	'title'=>'RSS'),
 			array('rel'=>'canonical',		'href'=>$_LINK['reload'],	'type'=>'text/html',	'title'=>$this->page),
@@ -356,7 +359,7 @@ class Render{
 			array('rel'=>'search',			'href'=>$_LINK['opensearch'],'type'=>'application/opensearchdescription+xml',	'title'=>$site_name.$_LANG['skin']['search']),
 			array('rel'=>'search',			'href'=>$_LINK['search'],	'type'=>'text/html',	'title'=>$_LANG['skin']['search']),
 			array('rel'=>'sitemap',			'href'=>$_LINK['sitemap'],	'type'=>'text/html',	'title'=>'Sitemap'),
-			array('rel'=>'shortcut icon',	'href'=>$shortcut_icon,		'type'=>'image/vnd.microsoft.icon')
+			array('rel'=>'shortcut icon',	'href'=>isset($conf['shortcut_icon']) ? $view->conf['shortcut_icon'] : ROOT_URI.'favicon.ico', 'type'=>'image/vnd.microsoft.icon')
 		);
 		// DNS prefetching
 		// http://html5boilerplate.com/docs/DNS-Prefetching/
@@ -364,7 +367,16 @@ class Render{
 		if (COMMON_URI !== ROOT_URI){
 			$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>COMMON_URI);
 		}
-		
+
+		// jQuery UIのテーマ
+		if (! empty($conf['ui_theme']) ){
+			$link_tags[] = array('rel'=>'stylesheet', 'href'=>'http://code.jquery.com/ui/' . JQUERY_UI_VER .'/themes/' . $conf['ui_theme'] . '/jquery-ui.min.css', 'type'=>'text/css');
+		}
+		// 標準スタイルシート
+		if ($conf['default_css'] ){
+			$link_tags[] = array('rel'=>'stylesheet', 'href'=>SKIN_URI . 'scripts.css.php?base=' . urlencode(IMAGE_URI), 'type'=>'text/css');
+		}
+
 		return
 			self::tag_helper('meta',$meta_tags) .
 			self::tag_helper('link',$link_tags) .
