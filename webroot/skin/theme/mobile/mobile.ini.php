@@ -10,6 +10,9 @@
 // Settings (define before here, if you want)
 return array(
 	'showicon' => true,
+	'ui_theme' => null,
+	'default_css' => false,
+	'navibar' => 'top,edit,freeze,diff,backup,upload,reload,new,list,search,recent,help,login',
 	// L•\Ž¦—Ìˆæ
 	'adarea'	=> <<<EOD
 EOD

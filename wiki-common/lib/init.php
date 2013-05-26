@@ -49,12 +49,6 @@ defined('ROOT_URI')			or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');
 defined('WWW_HOME')			or define('WWW_HOME', '');
 defined('COMMON_URI')		or define('COMMON_URI', ROOT_URI);
 
-// フレームワークのバージョン
-// define('JQUERY_VER',		'2.0.0');
-define('JQUERY_VER',		'1.9.1');
-define('JQUERY_UI_VER',		'1.10.3');
-define('JQUERY_MOBILE_VER',	'1.3.1');
-
 /////////////////////////////////////////////////
 // Init server variables
 
@@ -130,25 +124,9 @@ $config_dist = array(
 	
 
 */
-define('USR_INI_FILE', add_homedir('pukiwiki.usr.ini.php'));
-$read_usr_ini_file = false;
-if (file_exists(USR_INI_FILE) && is_readable(USR_INI_FILE)) {
-	require(USR_INI_FILE);
-	$read_usr_ini_file = true;
-}
 
-define('INI_FILE',  add_homedir('pukiwiki.ini.php'));
-if (! file_exists(INI_FILE) || ! is_readable(INI_FILE)) {
-	die('File <var>'.INI_FILE.'</var> is not found.'.' (INI_FILE)' . "\n");
-} else {
-	require(INI_FILE);
-}
-
-if ($read_usr_ini_file) {
-	require(USR_INI_FILE);
-	unset($read_usr_ini_file);
-}
-
+//Utility::loadConfig('pukiwiki.ini.php', true);
+require(DATA_HOME . 'pukiwiki.ini.php');
 defined('DATA_DIR')			or define('DATA_DIR',		DATA_HOME . 'wiki/'     );	// Latest wiki texts
 defined('DIFF_DIR')			or define('DIFF_DIR',		DATA_HOME . 'diff/'     );	// Latest diffs
 defined('BACKUP_DIR')		or define('BACKUP_DIR',		DATA_HOME . 'backup/'   );	// Backups
@@ -370,7 +348,7 @@ $ua = 'HTTP_USER_AGENT';
 // unset(${$ua}, $_SERVER[$ua], $HTTP_SERVER_VARS[$ua], $ua);	// safety
 if ( empty($user_agent['agent']) ) die();	// UAが取得できない場合は処理を中断
 
-foreach (include(add_homedir('profile.ini.php')) as $agent) {
+foreach (Utility::loadConfig('profile.ini.php') as $agent) {
 	if (preg_match($agent['pattern'], $user_agent['agent'], $matches)) {
 		$user_agent = array(
 			'profile'	=> isset($agent['profile']) ? $agent['profile'] : '',
@@ -380,17 +358,10 @@ foreach (include(add_homedir('profile.ini.php')) as $agent) {
 		break;
 	}
 }
-unset($agents, $matches);
+unset($matches);
 //var_dump($user_agent);
 // Profile-related init and setting
-define('UA_PROFILE', isset($user_agent['profile']) ? $user_agent['profile'] : '');
-
-define('UA_INI_FILE', add_homedir(UA_PROFILE . '.ini.php'));
-if (! file_exists(UA_INI_FILE) || ! is_readable(UA_INI_FILE)) {
-	die_message('UA_INI_FILE for "' . UA_PROFILE . '" not found.');
-} else {
-	require(UA_INI_FILE); // Also manually
-}
+if (isset($user_agent['profile'])) Utility::loadConfig($user_agent['profile'].'ini.php');
 
 define('UA_NAME', isset($user_agent['name']) ? $user_agent['name'] : '');
 define('UA_VERS', isset($user_agent['vers']) ? $user_agent['vers'] : '');
@@ -483,9 +454,7 @@ if ($spam && $method !== 'GET') {
 // 初期設定(その他のグローバル変数)
 
 // 現在時刻
-$now = format_date(UTIME);
-
-$line_rules = array_merge(PukiWiki\Text\Rules::getLineRules(), $line_rules);
+$now = Time::format(UTIME);
 
 //////////////////////////////////////////////////
 // ajaxではない場合
@@ -591,12 +560,13 @@ if (!empty($auth_key['home']) && isset($vars['page']) && ($vars['page'] == $defa
 }
 ///////////////////////////////////////
 // Page output
+$s_base =  Utility::htmlsc(Utility::stripBracket($base));
 if (isset($retvars['msg']) && !empty($retvars['msg']) ) {
-	$title = str_replace('$1', Utility::htmlsc(strip_bracket($base)), $retvars['msg']);
-	$page  = str_replace('$1', make_search($base),  $retvars['msg']);
+	$title = str_replace('$1', $s_base, $retvars['msg']);
+	$page  = str_replace('$1', Factory::Wiki($base)->link('related'),  $retvars['msg']);
 }else{
-	$title = Utility::htmlsc(Utility::stripBracket($base));
-	$page  = make_search($base);
+	$title = $s_base;
+	$page  = Factory::Wiki($base)->link('related');
 }
 
 if (isset($retvars['body']) && !empty($retvars['body'])) {
@@ -604,8 +574,8 @@ if (isset($retvars['body']) && !empty($retvars['body'])) {
 } else {
 	if (! is_page($base)) {
 		$base  = $defaultpage;
-		$title = Utility::htmlsc(strip_bracket($base));
-		$page  = make_search($base);
+		$title = $s_base;
+		$page  = Factory::Wiki($base)->link('related');
 	}
 
 	$vars['cmd']  = 'read';

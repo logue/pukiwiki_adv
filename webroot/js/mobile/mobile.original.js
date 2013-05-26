@@ -1,7 +1,7 @@
 /*!
  * PukiWiki Advance - Yet another WikiWikiWeb clone.
  * Pukiwiki Mobile script for jQuery mobile
- * Copyright (c)2012 PukiWiki Advance Developer Team
+ * Copyright (c)2012-2013 PukiWiki Advance Developer Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  */
 
 var pukiwiki = {};
-var JQUERY_MOBILE_VER = '1.3.1';
 //var JQUERY_MOBILE_VER = 'latest';
 (function ($, window, document) {
 	'use strict';
@@ -166,10 +165,11 @@ var JQUERY_MOBILE_VER = '1.3.1';
 					});
 				}
 			});
-			
+			// 上に行くボタン
 			$('.to_header').on('tap', function(){
 				self.scrollTo('.ui-page-active header');
 			});
+			// 下に行くボタン
 			$('.to_footer').on('tap', function(){
 				self.scrollTo('.ui-page-active footer');
 			});

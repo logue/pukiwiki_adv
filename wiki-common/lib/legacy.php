@@ -632,7 +632,7 @@ function strip_autolink($str)
 function make_search($page)
 {
 	if (empty($page)) return;
-	return '<a href="' . Factory::Wiki($page)->uri('related') . '">' . Utility::htmlsc($page) . '</a>';
+	return Factory::Wiki($page)->link('related');
 }
 
 // Make heading string (remove heading-related decorations from Wiki text)

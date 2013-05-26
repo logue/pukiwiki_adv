@@ -31,7 +31,18 @@ class Render{
 	 * 厳格なXHTMLモードを使用する
 	 */
 	const USE_STRICT_XHTML = false;
-
+	/**
+	 * jQueryのバージョン
+	 */
+	const JQUERY_VER = '1.9.1';
+	/**
+	 * jQuery UIのバージョン
+	 */
+	const JQUERY_UI_VER = '1.10.3';
+	/**
+	 * jQuery Mobileのバージョン
+	 */
+	const JQUERY_MOBILE_VER = '1.3.1';
 	/**
 	 * 通常読み込むスクリプト
 	 */
@@ -112,11 +123,11 @@ class Render{
 				$content = self::getContent($this->title, $this->body);
 			break;
 		}
-		if (empty($page) || !$lastmod){
+		if (empty($this->page) || !$lastmod){
 			$headers = Header::getHeaders($content_type);
 		}else{
-			$wiki = Factory::Wiki($page);
-			$headers = Header::getHeaders($content_type, $page->time);
+			// ページ名が定義されている場合、最終更新日時をヘッダーに追加
+			$headers = Header::getHeaders($content_type, $this->wiki->time());
 		}
 		Header::writeResponse($headers, $http_code, $content);
 	}
@@ -125,7 +136,7 @@ class Render{
 	 * @return string
 	 */
 	public function getContent(){
-		global $js_tags, $_LINK, $info, $vars, $_LANG;
+		global $_LINK, $info, $vars, $_LANG;
 		global $site_name, $newtitle, $modifier, $modifierlink, $menubar, $sidebar, $headarea, $footarea, $navigation;
 
 		$body = $this->body;
@@ -153,7 +164,7 @@ class Render{
 			Factory::Referer($this->page)->set();
 			
 			global $attach_link, $related_link;
-			$view->lastmodified = '<time pubdate="pubdate" datetime="'.get_date('c',$this->wiki->time()).'">'.get_date('D, d M Y H:i:s T', $this->wiki->time()) . ' ' . $this->wiki->passage().'</time>';
+			$view->lastmodified = '<time pubdate="pubdate" datetime="'.Time::getZoneTimeDate('c',$this->wiki->time()).'">'.Time::getZoneTimeDate('D, d M Y H:i:s T', $this->wiki->time()) . ' ' . $this->wiki->passage().'</time>';
 
 			// ページの添付ファイル、関連リンク
 			$view->attaches = ($attach_link &&  PluginRenderer::executePluginInit('attach') !== FALSE) ? attach_filelist() : null;
@@ -215,7 +226,7 @@ class Render{
 		// 汎用ワード
 		$view->lang = $_LANG;
 		// テーマディレクトリへの相対パス
-		$view->path = SKIN_URI . THEME_PLUS_NAME . PLUS_THEME . '/';
+		$view->path =  SKIN_URI . THEME_PLUS_NAME . (!IS_MOBILE ? PLUS_THEME : 'mobile') . '/';
 
 		return $view;
 	}
@@ -224,12 +235,12 @@ class Render{
 	 * @return string
 	 */
 	private function getJs(){
-		global $vars, $js_tags, $google_analytics;
+		global $vars, $js_tags, $js_blocks, $google_analytics;
 		// JavaScriptフレームワーク設定
 		// jQueryUI Official CDN
 		// http://code.jquery.com/
-		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://code.jquery.com/jquery-'.JQUERY_VER.'.min.js');
-		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://code.jquery.com/ui/'.JQUERY_UI_VER.'/jquery-ui.min.js');
+		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://code.jquery.com/jquery-'.self::JQUERY_VER.'.min.js');
+		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://code.jquery.com/ui/'.self::JQUERY_UI_VER.'/jquery-ui.min.js');
 
 		// JS用初期設定
 		$js_init = array(
@@ -256,9 +267,8 @@ class Render{
 			$jsfiles = self::$default_js;
 			$c_js = 'js.php?file=skin';
 		}else{
-			
 			// jquery mobileは、mobile.jsで非同期読み込み。
-			//$js_init['JQUERY_MOBILE_VER'] = constant('JQUERY_MOBILE_VER');
+			$js_init['JQUERY_MOBILE_VER'] = self::JQUERY_MOBILE_VER;
 			$jsfiles = self::$mobile_js;
 			$c_js = 'js.php?file=mobile';
 			
@@ -275,7 +285,7 @@ class Render{
 		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.( DEBUG ? 'locale.js' : 'js.php?file=locale'), 'defer'=>'defer' );
 
 		foreach( $js_init as $key=>$val){
-			if ($val !== ''){
+			if (!empty($val)){
 				$js_vars[] = 'var '.$key.' = "'.$val.'";';
 			}
 		}
@@ -317,7 +327,7 @@ class Render{
 			}
 
 			if (!empty($this->wiki) && $vars['cmd'] === 'read'){
-				global $keywords, $description, $attach_link, $related_link, $site_name, $site_logo;
+				global $keywords, $description, $site_name, $site_logo;
 				// 要約
 				$desc = !empty($description) ? $description : mb_strimwidth(preg_replace("/[\r\n]/" ,' ' ,strip_htmltag($this->wiki->render())) ,0 ,256 ,'...');
 				$meta_tags[] = array('name' => 'description', 'content' => $desc);
@@ -370,7 +380,7 @@ class Render{
 
 		// jQuery UIのテーマ
 		if (! empty($conf['ui_theme']) ){
-			$link_tags[] = array('rel'=>'stylesheet', 'href'=>'http://code.jquery.com/ui/' . JQUERY_UI_VER .'/themes/' . $conf['ui_theme'] . '/jquery-ui.min.css', 'type'=>'text/css');
+			$link_tags[] = array('rel'=>'stylesheet', 'href'=>'http://code.jquery.com/ui/' . self::JQUERY_UI_VER .'/themes/' . $conf['ui_theme'] . '/jquery-ui.min.css', 'type'=>'text/css');
 		}
 		// 標準スタイルシート
 		if ($conf['default_css'] ){
@@ -389,8 +399,6 @@ class Render{
 	 * @return array
 	 */
 	private static function getLinkSet($_page){
-		global $trackback, $referer;
-
 		static $d_links;
 
 		if (!isset($d_links)){
@@ -440,7 +448,7 @@ class Render{
 				'newsub'        => Router::get_cmd_uri('newpage_subdir'),
 				'rename'        => Router::get_cmd_uri('rename'),
 				'upload_list'   => Router::get_cmd_uri('attach',    null,   null,   array('pcmd'=>'list')),
-				'referer'       => $referer ? Router::get_cmd_uri('referer') : null
+				'referer'       => Router::get_cmd_uri('referer')
 			);
 		}
 		$links = $d_links;
@@ -474,7 +482,7 @@ class Render{
 					'upload'        => Router::get_cmd_uri('attach',        $_page, null,   array('pcmd'=>'upload')), // link rel="alternate" にも利用するため absuri にしておく
 
 					'template'      => Router::get_cmd_uri('template',      null,   null,   array('refer'=>$_page)),
-					'referer'       => $referer ? Router::get_cmd_uri('referer',    $_page) : ''
+					'referer'       => Router::get_cmd_uri('referer',       $_page)
 				);
 			}
 			$links = array_merge($d_links,$p_links[$_page]);
