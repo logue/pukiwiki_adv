@@ -120,6 +120,8 @@ class Referer{
 	 * リファラーを取得
 	 */
 	public function get(){
+		if (!$this->file->has()) return array();
+		$result = array();
 		foreach ($this->file->get() as $line) {
 			$data = explode("\t", $line);
 			$result[rawurldecode($data[1])] = $data;
@@ -130,6 +132,7 @@ class Referer{
 	 * 個数
 	 */
 	public function count(){
+		if (!$this->file->has()) return 0;
 		return count($this->get());
 	}
 	/**

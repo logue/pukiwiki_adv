@@ -150,7 +150,7 @@ function bb2_manage() {
 ?>
 <h2><?php _e("Bad Behavior Log"); ?></h2>
 <form method="post" action="<?php echo admin_url("tools.php?page=bb2_manage") ?>">
-	<p>For more information please visit the <a href="http://www.bad-behavior.ioerror.us/">Bad Behavior</a> homepage.</p>
+	<p>For more information please visit the <a href="http://bad-behavior.ioerror.us/">Bad Behavior</a> homepage.</p>
 	<p>See also: <a href="<?php echo admin_url("options-general.php?page=bb2_options") ?>">Settings</a> | <a href="<?php echo admin_url("options-general.php?page=bb2_whitelist") ?>">Whitelist</a></p>
 <div class="tablenav">
 <?php
@@ -272,7 +272,7 @@ function bb2_whitelist()
 	<h2><?php _e("Bad Behavior Whitelist"); ?></h2>
 	<form method="post" action="<?php echo admin_url("options-general.php?page=bb2_whitelist"); ?>">
 	<p>Inappropriate whitelisting WILL expose you to spam, or cause Bad Behavior to stop functioning entirely! DO NOT WHITELIST unless you are 100% CERTAIN that you should.</p>
-	<p>For more information please visit the <a href="http://www.bad-behavior.ioerror.us/">Bad Behavior</a> homepage.</p>
+	<p>For more information please visit the <a href="http://bad-behavior.ioerror.us/">Bad Behavior</a> homepage.</p>
 	<p>See also: <a href="<?php echo admin_url("options-general.php?page=bb2_options") ?>">Settings</a> | <a href="<?php echo admin_url("tools.php?page=bb2_manage"); ?>">Log</a></p>
 
 	<h3><?php _e('IP Address'); ?></h3>
@@ -392,7 +392,7 @@ function bb2_options()
 ?>
 	<h2><?php _e("Bad Behavior"); ?></h2>
 	<form method="post" action="<?php echo admin_url("options-general.php?page=bb2_options"); ?>">
-	<p>For more information please visit the <a href="http://www.bad-behavior.ioerror.us/">Bad Behavior</a> homepage.</p>
+	<p>For more information please visit the <a href="http://bad-behavior.ioerror.us/">Bad Behavior</a> homepage.</p>
 	<p>See also: <a href="<?php echo admin_url("tools.php?page=bb2_manage"); ?>">Log</a> | <a href="<?php echo admin_url("options-general.php?page=bb2_whitelist") ?>">Whitelist</a></p>
 
 	<h3><?php _e('Statistics'); ?></h3>
