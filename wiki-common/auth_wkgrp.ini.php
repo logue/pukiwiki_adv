@@ -1,11 +1,11 @@
 <?php
 use PukiWiki\Auth\Auth;
+global $adminname, $modifier;
 /*
 |Auth::ROLE_ADMIN           |サイト管理者    |
 |Auth::ROLE_CONTENTS_ADMIN  |コンテンツ管理者|
 |Auth::ROLE_ENROLLEE        |登録者(会員)    |
 */
-
 return array(
 	// 管理人の権限。通常は変更しないでください！
 	$adminname		=> array(

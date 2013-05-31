@@ -12,6 +12,10 @@
 // Plus!NOTE:(policy)not merge official cvs(1.139->1.140)
 // Plus!NOTE:(policy)not merge official cvs(1.147->1.148) See Question/181
 
+use PukiWiki\Auth\Auth;
+use PukiWiki\Router;
+use PukiWiki\Utility;
+
 /////////////////////////////////////////////////
 // Functionality settings
 
@@ -52,8 +56,6 @@ return array(
 // Auth::ROLE_CONTENTS_ADMIN - コンテンツ管理者以上は除く
 // Auth::ROLE_ENROLLEE       - 登録者
 // Auth::ROLE_AUTH           - 認証者(未設定時のデフォルト)以上は除く
-
-use PukiWiki\Auth\Auth;
 
 // 認証せずには閲覧できない
 define('PLUS_PROTECT_MODE', Auth::ROLE_GUEST);
@@ -138,6 +140,7 @@ define('EXTEND_DIR',	SITE_HOME . 'extend/'   );	// Extend directory
 define('EXT_PLUGIN_DIR',EXTEND_DIR. 'plugin/'   );	// Extend Plugin directory
 define('EXT_LANG_DIR',	EXTEND_DIR. 'locale/'   );	// Extend Language file
 define('EXT_SKIN_DIR',	EXTEND_DIR. 'skin/'     );	// Extend Skin directory
+*/
 
 define('SKIN_DIR',		WWW_HOME . 'skin/');
 
@@ -149,7 +152,7 @@ define('IMAGE_URI',		COMMON_URI . 'image/');
 define('JS_URI', 		COMMON_URI . 'js/');
 
 define('THEME_PLUS_NAME',  'theme/');
-*/
+
 
 /////////////////////////////////////////////////
 // Title of your Wikisite (Name this)
@@ -309,26 +312,6 @@ $deny_countory = array();
 // server.ini.phpの設定が優先されます。
 $akismet_api_key = '';
 
-// LOG
-require_once(add_homedir('config-log.ini.php'));
-
-/////////////////////////////////////////////////
-// TrackBack feature
-
-// Enable Trackback
-// 0: off
-// 1: on
-//    Only the reception of ping.
-//    Ping is not transmitted by the automatic operation.
-// 2: on
-//    Function in the past. Automatic ping transmission.
-$trackback = 1;
-
-// Enable Trackback Auto-discovery
-// Append to TrackBack RDF to body.
-// Adv. does not enable this function by default for privend trackback spam.
-$tb_auto_discovery = false;
-
 /////////////////////////////////////////////////
 // Referer list feature
 // 0: off
@@ -429,7 +412,7 @@ $time_format = 'H:i:s';
 $rss_max = 15;
 
 // Description
-$rss_description = $page_title.' RecentChanges';
+$rss_description = $site_name.' RecentChanges';
 
 /////////////////////////////////////////////////
 // Backup related settings
@@ -474,7 +457,7 @@ $auto_template_rules = array(
 $notimeupdate = 2;
 
 // Authentication
-require_once(add_homedir('auth.ini.php'));
+Utility::loadConfig('auth.ini.php');
 
 /////////////////////////////////////////////////
 // Ignore list
@@ -510,4 +493,4 @@ $open_uri_in_new_window_servername = array(
 // (注意：あえて拡張しやすいようにしていますが、'_blank'以外は指定しないでください)
 
 // Server settings
-require_once(add_homedir('server.ini.php'));
+Utility::loadConfig('server.ini.php');

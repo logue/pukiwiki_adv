@@ -186,9 +186,9 @@ function plugin_login_action()
 			login_return_page();
 		}
 		break;
-	case 3:
-		plugin_login_session();
-		break;
+	//case 3:
+	//	plugin_login_session();
+	//	break;
 	}
 	header('HTTP/1.1 401 Unauthorized');
 	return array(

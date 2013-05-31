@@ -10,7 +10,7 @@
 use PukiWiki\Time;
 use PukiWiki\Utility;
 
-global $date_format, $time_format;
+global $vars, $date_format, $time_format;
 /**
  * フィルタルール
  *
@@ -35,7 +35,7 @@ return array(
 	 * 必要のない方は $usedatetimeを0にしてください。
 	 */
 	'datetime' => array(
-		'&amp;_now;'	=> '&epoch{'.UTIME.'};',
+		'&amp;_now;'	=> '&epoch{'.time().'};',
 		'&amp;_date;'	=> Time::getZoneTimeDate($date_format),
 		'&amp;_time;'	=> Time::getZoneTimeDate($time_format),
 	),
@@ -47,7 +47,7 @@ return array(
 	 *  行末指定は $ を後ろに。
 	 */
 	'str' => array(
-		'&now;' 	=> '\&epoch\{'.UTIME.'\};',
+		'&now;' 	=> '\&epoch\{'.time().'\};',
 		'&date;'	=> Time::getZoneTimeDate($date_format),
 		'&time;'	=> Time::getZoneTimeDate($time_format),
 		'&page;'	=> isset($vars['page']) ? Utility::getPageNameShort($vars['page']) : null,

@@ -13,6 +13,8 @@
 
 namespace PukiWiki\Text;
 
+use PukiWiki\Utility;
+
 class Rules{
 	private static $default_rules = array(
 		// 実体参照パターンおよびシステムで使用するパターンを$line_rulesに加える
@@ -304,7 +306,7 @@ class Rules{
 	 */
 	private static function init(){
 		static $rules;
-		if (!isset($rules)) $rules = include(add_homedir('rules.ini.php'));
+		if (!isset($rules)) $rules = Utility::loadConfig('rules.ini.php');
 		return $rules;
 	}
 	/**

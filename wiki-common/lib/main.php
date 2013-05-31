@@ -123,7 +123,7 @@ require(LIB_DIR . 'legacy.php');
 require(LIB_DIR . 'init.php');
 
 
-new PukiWiki\Render($title, $body);
+new PukiWiki\Render($title, $body, $http_code);
 exit;
 
 /* End of file main.php */

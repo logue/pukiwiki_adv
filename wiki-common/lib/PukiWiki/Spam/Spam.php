@@ -14,7 +14,7 @@ use PukiWiki\Spam\SpamPickup;
 use PukiWiki\Spam\SpamUtility;
 use PukiWiki\Factory;
 
-if (! defined('SPAM_INI_FILE'))   define('SPAM_INI_FILE', add_homedir('spam.ini.php'));
+if (! defined('SPAM_INI_FILE'))   define('SPAM_INI_FILE', Utility::loadConfig('spam.ini.php'));
 
 class Spam{
 	/**

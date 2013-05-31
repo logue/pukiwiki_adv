@@ -373,7 +373,7 @@ define('UA_CSS', isset($user_agent['css']) ? $user_agent['css'] : '');
 // 必須のページが存在しなければ、空のファイルを作成する
 foreach(array($defaultpage, $whatsnew) as $page){
 	$wiki = Factory::Wiki($page);
-	if (! $wiki->has() ) $wiki->touch();
+	if (! $wiki->has() ) $wiki->wiki->touch();
 }
 
 /////////////////////////////////////////////////
@@ -499,6 +499,7 @@ if ( isset($auth_api['facebook']) ){
 
 if (DEBUG) {
 	$exclude_plugin = array();
+	global $mecab_path;
 	if (file_exists($mecab_path)){
 		$info[] = 'Mecab is enabled. (It will not work in XAMPP,but not a malfunction....)';
 		if (extension_loaded('mecab')){
@@ -568,6 +569,8 @@ if (isset($retvars['msg']) && !empty($retvars['msg']) ) {
 	$title = $s_base;
 	$page  = Factory::Wiki($base)->link('related');
 }
+
+$http_code = isset($retvars['http_code']) ? $retvars['http_code'] : 200;
 
 if (isset($retvars['body']) && !empty($retvars['body'])) {
 	$body = $retvars['body'];

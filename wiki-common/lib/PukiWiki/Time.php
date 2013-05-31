@@ -32,7 +32,7 @@ class Time{
 		} else {
 			list($zone, $zonetime) = self::setTimeZone( $language );
 			list($l_zone, $l_zonetime) = self::getTimeZoneLocal();
-			if ($l_zonetime != '' && $zonetime != $l_zonetime) {
+			if (!empty($l_zonetime) && $zonetime != $l_zonetime) {
 				$zone = $l_zone;
 				$zonetime = $l_zonetime;
 			}

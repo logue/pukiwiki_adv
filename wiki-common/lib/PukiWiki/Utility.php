@@ -61,10 +61,12 @@ class Utility{
 	 * @param string $file ファイル名
 	 * @return array or boolean
 	 */
-	public static function loadConfig($file){
-		foreach(array(DATA_HOME,SITE_HOME) as $dir) {
-			$f = new SplFileInfo($file);
-			if ($f->isFile() && $f->isReadable()) return include($dir.$file);
+	public static function loadConfig($file, $require = false){
+		foreach(array(DATA_HOME, SITE_HOME) as $dir) {
+			$f = new SplFileInfo($dir.$file);
+			if ($f->isFile() && $f->isReadable()){
+				return $require ? require($dir.$file) : include($dir.$file);
+			}
 			unset($f);
 		}
 		return false;
@@ -613,41 +615,55 @@ class Utility{
 	 * @param int $time リダイレクトの待ち時間
 	 */
 	public static function redirect($url = '', $time = 0){
-		global $vars;
+		$response = new Response();
 
 		// URLが空の場合、ページのアドレスか、スクリプトのアドレスを返す
 		if (empty($url)){
 			$url = isset($vars['page']) ? Router::get_resolve_uri(null, $vars['page']) : Router::get_script_uri();
 		}
-		
-		$view = new View(PLUS_THEME);
-		
 		$s_url = self::htmlsc($url);
+		$response->setStatusCode(Response::STATUS_CODE_301);
+		if (!DEBUG){
+			$response->getHeaders()->addHeaderLine('Location', $s_url);
+		}
 		$html = array();
-		$view->head = join("\n", array(
-			'<meta charset="utf-8">',
-			'<meta name="robots" content="NOINDEX,NOFOLLOW" />',
-			!DEBUG ? '<meta http-equiv="refresh" content="'.$time.'; URL='.$s_url.'" />' : null,
-			'<link rel="stylesheet" href="http://code.jquery.com/ui/' . JQUERY_UI_VER . '/themes/base/jquery-ui.css" type="text/css" />'
-		));
-		$view->title = '301 Moved Permanently';
-		$view->body = join("\n", array(
-			'<div class="message_box ui-state-highlight ui-corner-all">',
-			'<p style="padding:0 .5em;">',
-			'<span class="ui-icon ui-icon-info" style="display:inline-block;"></span>',
-			'The requested page has moved to a new URL. <br />',
-			'Please click <a href="'.$s_url.'">here</a> if you do not want to move even after a while.',
-			!DEBUG ? '<br />NOTICE: No auto redirect when Debug mode.' : null,
-			'</p>',
-			'</div>'
-		));
-		$headers = getallheaders();
-		$headers['Content-Type'] = 'text/html;charset=' . CONTENT_CHARSET;
-		if (!DEBUG) {
-			$headers['Location'] = $s_url;
+		$html[] = '<!doctype html>';
+		$html[] = '<html>';
+		$html[] = '<head>';
+		$html[] = '<meta charset="utf-8">';
+		$html[] = '<meta name="robots" content="NOINDEX,NOFOLLOW" />';
+		if (!DEBUG){
+			$html[] = '<meta http-equiv="refresh" content="'.$time.'; URL='.$s_url.'" />';
+		}
+		$html[] = '<link rel="stylesheet" href="http://code.jquery.com/ui/' . Render::JQUERY_UI_VER . '/themes/smoothness/jquery-ui.min.css" type="text/css" />';
+		$html[] = '<title>301 Moved Permanently</title>';
+		$html[] = '</head>';
+		$html[] = '<body>';
+		$html[] = '<div class="message_box ui-state-highlight ui-corner-all">';
+		$html[] = '<p style="padding:0 .5em;">';
+		$html[] = '<span class="ui-icon ui-icon-alert" style="display:inline-block;"></span>';
+		$html[] = 'The requested page has moved to a new URL. <br />';
+		$html[] = 'Please click <a href="'.$s_url.'">here</a> if you do not want to move even after a while.';
+		if (!DEBUG){
+			$html[] = '<br />NOTICE: No auto redirect when Debug mode.';
+		}
+		$html[] = '</p>';
+		$html[] = '</div>';
+		$html[] = '</body>';
+		$html[] = '</html>';
+		$content = join("\n",$html);
+		$response->getHeaders()->addHeaderLine('Content-Length', strlen($content));
+		$response->setContent($content);
+
+		if (!headers_sent()) {
+			header($response->renderStatusLine());
+			foreach ($response->getHeaders() as $header) {
+				header($header->toString());
+			}
 		}
 
-		Header::writeResponse($headers , Response::STATUS_CODE_200, $view);
+		echo $response->getBody();
+		exit;
 	}
 	/**
 	 * 編集画面を表示
@@ -752,7 +768,7 @@ class Utility{
 	/**
 	 * ダンプ
 	 */
-	public static function dump($type = 'honeypot.log') {
+	public static function dump($type = 'honeypot') {
 		global $get, $post, $vars, $cookie;
 
 		// Logging for SPAM Address

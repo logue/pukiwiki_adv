@@ -6,7 +6,12 @@
 //   2005-2008 PukiWiki Plus! Team
 // License: GPL v2 or (at your option) any later version
 //
+
 use PukiWiki\Auth\Auth;
+use PukiWiki\Utility;
+
+global $defaultpage, $menubar, $interwiki, $aliaspage, $sidebar, $navigation, $glossarypage, $headarea, $footarea, $whatsnew, $whatsdeleted;
+
 // Authentication Type
 // 1: basic
 // 2: digest
@@ -30,9 +35,9 @@ $adminpass = '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72'; // MD5('pass')
 // ROLE
 //
 // Data is managed by the plugin.
-$auth_users = include(add_homedir('auth_users.ini.php'));
-$auth_wkgrp_user = include(add_homedir('auth_wkgrp.ini.php'));
-$auth_api = include(add_homedir('auth_api.ini.php'));
+$auth_users = Utility::loadConfig('auth_users.ini.php');
+$auth_wkgrp_user = Utility::loadConfig('auth_wkgrp.ini.php');
+$auth_api = Utility::loadConfig('auth_api.ini.php');
 
 /////////////////////////////////////////////////
 // Authentication method

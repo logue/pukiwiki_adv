@@ -20,6 +20,7 @@ use PukiWiki\Auth\Auth;
 use PukiWiki\Router;
 use PukiWiki\Utility;
 use PukiWiki\Factory;
+use PukiWiki\Text\Rules;
 
 /**
  * インライン要素パースクラス
@@ -118,8 +119,8 @@ abstract class Inline
 
 	// User-defined rules (convert without replacing source)
 	public static function setLineRules($str){
-		global $line_rules;
 		static $pattern, $replace;
+		$line_rules = Rules::getLineRules();
 
 		if (! isset($pattern)) {
 			$pattern = array_map(create_function('$a',

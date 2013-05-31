@@ -6,6 +6,7 @@ use PukiWiki\Router;
 class Aismet{
 	const DEFAULT_USER_NAME = 'Anonymous';
 	public static function check($postdata){
+		global $akismet_api_key;
 		$akismet = new ZendService\Akismet(
 			$akismet_api_key,
 			Router::get_script_absuri()
@@ -13,8 +14,8 @@ class Aismet{
 		if ($akismet->verifyKey($akismet_api_key)) {
 			// 送信するデーターをセット
 			$akismet_post = array(
-				'user_ip' => isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'],
-				'user_agent' => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '',
+				'user_ip' => Utility::getRemoteIp(),
+				'user_agent' => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null,
 				'comment_type' => 'comment',
 				'comment_author' => isset($vars['name']) ? $vars['name'] : self::DEFAULT_USER_NAME,
 			);

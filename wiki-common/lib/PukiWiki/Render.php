@@ -228,6 +228,8 @@ class Render{
 		// テーマディレクトリへの相対パス
 		$view->path =  SKIN_URI . THEME_PLUS_NAME . (!IS_MOBILE ? PLUS_THEME : 'mobile') . '/';
 
+		$view->links = $_LINK;
+
 		return $view;
 	}
 	/**

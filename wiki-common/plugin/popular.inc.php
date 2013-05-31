@@ -13,6 +13,7 @@ use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
 use PukiWiki\Time;
 use PukiWiki\Utility;
+use PukiWiki\Listing;
 
 /*
  * 通算および今日に別けて一覧を作ることができます。
@@ -180,7 +181,7 @@ function plugin_popular_getlist($view, $max = PLUGIN_POPULAR_DEFAULT, $except){
 	$yesterday = gmdate('Y/m/d',gmmktime(0,0,0, gmdate('m',$localtime), gmdate('d',$localtime)-1, gmdate('Y',$localtime)));
 	
 	$counters = array();
-	foreach (Auth::get_existpages(COUNTER_DIR, '.count') as $file=>$page) {
+	foreach (Listing::pages('counter') as $file=>$page) {
 		$wiki = Factory::Wiki($page);
 		if (($except != '' && preg_match("/".$except."/", $page)) || $wiki->isEditable() || $wiki->isHidden() ||! $wiki->isValied())
 			continue;

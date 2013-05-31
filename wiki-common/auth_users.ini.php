@@ -1,6 +1,7 @@
 <?php
 // see http://pukiwiki.cafelounge.net/plus/?Documents%2FUser%20management
 use PukiWiki\Auth\Auth;
+global $adminname, $adminpass;
 /*
 |Auth::ROLE_ADMIN           |サイト管理者    |
 |Auth::ROLE_CONTENTS_ADMIN  |コンテンツ管理者|

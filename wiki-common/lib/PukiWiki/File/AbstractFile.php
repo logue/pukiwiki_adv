@@ -69,6 +69,7 @@ abstract class AbstractFile extends SplFileInfo{
 	 * @return array
 	 */
 	public static function getPages($pattern = ''){
+		$ret = array();
 		// 継承元のクラス名を取得（PHPは、__CLASS__で派生元のクラス名が取得できない）
 		$class =  get_called_class();
 		// パターンが指定されていない場合は、クラスで定義されているデフォルトのパターンを使用

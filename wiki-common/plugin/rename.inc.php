@@ -11,6 +11,9 @@
 //
 // Usage: http://path/to/index.php?plugin=rename[&refer=page_name]
 use PukiWiki\Auth\Auth;
+use PukiWiki\Wiki;
+use PukiWiki\Utility;
+
 define('PLUGIN_RENAME_LOGPAGE', ':RenameLog');
 
 function plugin_rename_init()
@@ -66,7 +69,7 @@ function plugin_rename_action()
 		foreach ($arr1 as $page){
 			if (! is_pagename($page)){
 				return plugin_rename_phase1('notvalid');
-			}else if (preg_match(PKWK_ILLEGAL_CHARS_PATTERN, $page)){
+			}else if (preg_match(Wiki::INVALIED_PAGENAME_PATTERN, $page)){
 				die_message($_strings['illegal_chars']);
 			}
 		}
@@ -80,7 +83,7 @@ function plugin_rename_action()
 		$refer = plugin_rename_getvar('refer');
 
 		// Check Illigal Chars
-		if (preg_match(PKWK_ILLEGAL_CHARS_PATTERN, $page)){
+		if (preg_match(Wiki::INVALIED_PAGENAME_PATTERN, $page)){
 			die_message($_strings['illegal_chars']);
 		}
 
@@ -149,9 +152,9 @@ function plugin_rename_phase1($err = '', $page = '')
 	}
 	$select_refer = plugin_rename_getselecttag($refer);
 
-	$s_src = htmlsc(plugin_rename_getvar('src'));
-	$s_dst = htmlsc(plugin_rename_getvar('dst'));
-	$script = get_script_uri();
+	$s_src = Utility::htmlsc(plugin_rename_getvar('src'));
+	$s_dst = Utility::htmlsc(plugin_rename_getvar('dst'));
+	$script = Router::get_script_uri();
 
 	return array(
 		'msg'	=> $_rename_messages['msg_title'],
@@ -194,12 +197,12 @@ function plugin_rename_phase2($err = '')
 		'<label for="_p_rename_related">' . $_rename_messages['msg_do_related'] . '</label><br />';
 
 	$msg_rename = sprintf($_rename_messages['msg_rename'], make_pagelink($refer));
-	$s_page  = htmlsc($page);
-	$s_refer = htmlsc($refer);
+	$s_page  = Utility::htmlsc($page);
+	$s_refer = Utility::htmlsc($refer);
 
 	$ret = array();
 	$ret['msg']  = $_rename_messages['msg_title'];
-	$script = get_script_uri();
+	$script = Router::get_script_uri();
 	$ret['body'] = <<<EOD
 $msg
 <fieldset>

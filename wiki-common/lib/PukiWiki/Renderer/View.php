@@ -1,7 +1,7 @@
 <?php
 namespace PukiWiki\Renderer;
 use PukiWiki\Time;
-use Exception;
+use PukiWiki\Render;
 
 /**
  * ビュークラス
@@ -50,13 +50,13 @@ class View{
 		/**
 		 * ナビバーの項目
 		 */
-		'navibar'      => 'top,|,edit,freeze,diff,backup,upload,reload,|,new,list,search,recent,help,|,login',
+		'navibar'       => 'top,|,edit,freeze,diff,backup,upload,reload,|,new,list,search,recent,help,|,login',
 		/**
 		 * ツールバーの項目
 		 */
-		'toolbar'      => 'reload,|,new,newsub,edit,freeze,source,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,log,|,help,|,rss',
+		'toolbar'       => 'reload,|,new,newsub,edit,freeze,source,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,log,|,help,|,rss',
 	);
-	public $title, $links, $js, $meta;
+	public $title, $body, $meta;
 	/**
 	 * コンストラクタ
 	 * @param file スキンファイル
@@ -65,7 +65,8 @@ class View{
 		$this->_vars = array();
 		$this->_theme = !IS_MOBILE ? $theme : 'mobile';
 		$this->colums = self::CLASS_NO_COLUMS;
-
+		// テーマディレクトリへの相対パス
+		$this->path =  SKIN_URI . THEME_PLUS_NAME . $this->_theme . '/';
 		$this->conf = array_merge($this->conf, self::loader('ini'));
 	}
 	/**
@@ -99,6 +100,7 @@ class View{
 	{
 		// 経過時間
 		$this->proc_time =  Time::getTakeTime();
+		if (empty($this->path)) $this->_theme = '';
 		// 出力するHTMLをバッファに書き込み出力
 		ob_start('ob_gzhandler');
 		self::loader('skin');
@@ -128,6 +130,23 @@ class View{
 	 * @return array
 	 */
 	private function loader($type = 'skin'){
+		if ($type === 'skin' && empty($this->_theme)){
+			// テーマが指定されてない場合や、スキンが見つからない場合scaffoldを出力
+			$html[] = '<!doctype html>';
+			$html[] = '<html>';
+			$html[] = '<head>';
+			$html[] = '<meta charset="utf-8">';
+			$html[] = $this->meta;
+			$html[] = '<link rel="stylesheet" href="http://code.jquery.com/ui/' . Render::JQUERY_UI_VER . '/themes/' . $this->conf->ui_theme . '/jquery-ui.min.css" type="text/css" />';
+			$html[] = '<title>' . $this->title . '</title>';
+			$html[] = '</head>';
+			$html[] = '<body>';
+			$html[] = $this->body;
+			$html[] = '</body>';
+			$html[] = '</html>';
+			return join("\n",$html);
+		}
+	
 		$cond = array(
 			SKIN_DIR . THEME_PLUS_NAME . $this->_theme . '/',
 			EXT_SKIN_DIR . THEME_PLUS_NAME . $this->_theme . '/'
@@ -141,23 +160,7 @@ class View{
 				return include $dir . $file;
 			}
 		}
-		if ($type === 'skin'){
-			// テーマが指定されてない場合や、スキンが見つからない場合scaffoldを出力
-			$html = array();
-			$html[] = '<!doctype html>';
-			$html[] = '<html>';
-			$html[] = '<head>';
-			$html[] = '<meta charset="utf-8">';
-			$html[] = $this->meta;
-			$html[] = '<link rel="stylesheet" href="http://code.jquery.com/ui/' . JQUERY_UI_VER . '/themes/' . $this->conf->ui_theme . '/jquery-ui.min.css" type="text/css" />';
-			$html[] = '<title>' . $this->title . ' - ' . $site_title . '</title>';
-			$html[] = '</head>';
-			$html[] = '<body>';
-			$html[] = $this->body;
-			$html[] = '</body>';
-			$html[] = '</html>';
-			return join("\n",$html);
-		}
+		
 		return array();
 	}
 }
