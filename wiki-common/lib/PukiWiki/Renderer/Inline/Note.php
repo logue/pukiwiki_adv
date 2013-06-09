@@ -20,6 +20,7 @@ use PukiWiki\Factory;
 class Note extends Inline
 {
 	const FOOTNOTE_TITLE_MAX = 16;
+	const ALLOW_RELATIVE_FOOTNOTE_ANCHOR = true;
 
 	public function __construct($start)
 	{
@@ -49,11 +50,7 @@ class Note extends Inline
 		// Recover of notes(miko)
 		if ($foot_explain === array()) { $note_id = 0; }
 
-		if (PKWK_ALLOW_RELATIVE_FOOTNOTE_ANCHOR) {
-			$script = '';
-		} else {
-			$script = Factory::Wiki($page)->uri();
-		}
+		$script = !self::ALLOW_RELATIVE_FOOTNOTE_ANCHOR ? Factory::Wiki($page)->uri() : null;
 
 		$id   = ++$note_id;
 		$note = InlineFactory::factory($body);

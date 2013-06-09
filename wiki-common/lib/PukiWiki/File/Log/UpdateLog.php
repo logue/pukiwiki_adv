@@ -19,17 +19,39 @@ use PukiWiki\File\LogFile;
  * 更新ログファイルクラス
  */
 class UpdateLog extends LogFile{
+	/**
+	 * コンストラクタ
+	 */
 	function __construct($page) {
 		$this->kind = 'update';
 		$this->isWiki = false;
 		parent::__construct($page);
 	}
-
-	public function set($data){
+	/**
+	 * ログを保存する処理をオーバーライドして見做しログを保存
+	 */
+	public function set($data = '', $keeptimestamp = false){
 		if ($this->config['guess_user']['use']){
-			LogFactory::factory('guess')->set($data);
+			LogFactory::factory('guess_user')->set($data);
 		}
-		parent::set($data);
+		parent::set($data, $keeptimestamp);
+	}
+	/**
+	 * 署名を抽出
+	 */
+	public function getSigunature(){
+		$lines = parent::get();
+		if (!$lines) return;
+		foreach ($lines as $_data) {
+			foreach($_data as $line) {
+				$field = parent::line2field($line,$name);
+				if (empty($field['ua'])) continue;
+				$user = parent::guess_user($field['user'],$field['ntlm'],$field['sig']);
+				if (empty($user)) continue;
+				$sum[$field['ua']][$field['host']][$user] = '';
+			}
+		}
+		return $sum;
 	}
 }
 

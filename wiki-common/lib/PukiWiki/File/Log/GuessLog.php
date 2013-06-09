@@ -28,7 +28,7 @@ class GuessLog extends LogFile{
 	 */
 	public function set($data){
 		// ユーザを推測する
-		$user = self::guess_user( $data['user'], $data['ntlm'], $data['sig'] );
+		$user = parent::guess_user( $data['user'], $data['ntlm'], $data['sig'] );
 		if (empty($user)) return;
 
 		if ($this->has()){
@@ -52,14 +52,31 @@ class GuessLog extends LogFile{
 		return parent::set($data);
 	}
 	/**
-	 * ユーザを推測する
-	 * @static
+	 * 推測ユーザを取得
 	 */
-	private static function guess_user($user,$ntlm,$sig)	{
-		if (!empty($user)) return $user; // 署名ユーザ
-		if (!empty($ntlm)) return $ntlm; // NTLM認証ユーザ
-		if (!empty($sig))  return $sig;  // 本人の署名
-		return null;
+	public function get($join = false, $legacy = false){
+		// ファイルの読み込み
+		$file = $this->openFile('r');
+		// ロック
+		$file->flock(LOCK_SH);
+		// 巻き戻し（要るの？）
+		$file->rewind();
+		// 初期値
+		$result = array();
+		// 1行毎ファイルを読む
+		while (!$file->eof()) {
+			$field = parent::table2array($file->fgets());		// PukiWiki 表形式データを配列データに変換
+			if (count($field) == 0) continue;
+			$user = (empty($field[3])) ? $field[2] : $field[3]; // 任意欄が記入されていれば、それを採用
+			$sum[$field[0]][$field[1]][$user] = '';
+		}
+		// アンロック
+		$file->flock(LOCK_UN);
+		// 念のためオブジェクトを開放
+		unset($file);
+
+		// 出力
+		return $sum;
 	}
 }
 

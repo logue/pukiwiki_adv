@@ -9,6 +9,10 @@
  */
 use PukiWiki\Auth\Auth;
 use PukiWiki\UA\UserAgent;
+use PukiWiki\Renderer\PluginRenderer;
+use PukiWiki\File\LogFactory;
+use PukiWiki\Factory;
+use PukiWiki\Utility;
 
 defined('MAX_LINE')      or define('MAX_LINE', 200);
 defined('VIEW_ROBOTS')   or define('VIEW_ROBOTS', '0');   // robots は表示しない
@@ -66,7 +70,7 @@ function plugin_logview_init()
 function plugin_logview_action()
 {
 	global $vars, $_logview_msg, $_logview_logname;
-	global $log, $sortable_tracker,$_LANG, $vars;
+	global $sortable_tracker,$_LANG, $vars;
 	static $count = 0;
 
 	$kind = (isset($vars['kind'])) ? $vars['kind'] : null;
@@ -76,14 +80,15 @@ function plugin_logview_action()
 	$ajax = (isset($vars['ajax'])) ? $vars['ajax'] : null;
 	$is_role_adm = Auth::check_role('role_adm');
 
+	// 設定を読む
+	$log = Utility::loadConfig('config-log.ini.php');
+
 	// ゲスト表示ができない場合は、認証を要求する
 	if ($kind !== null && empty($log[$kind]['guest'])) {
 		$obj = new Auth();
 		$user = $obj->check_auth();
 		if (empty($user)) {
-			if (exist_plugin('login')) {
-				do_plugin_action('login');
-			}
+			PluginRenderer::executePluginAction('login');
 			unset($obj);
 			return array(
 				'msg'  => $title,
@@ -93,7 +98,10 @@ function plugin_logview_action()
 	}
 	unset($obj);
 
-	check_readable($page, false);
+	if ( empty($page) ) return array('msg'=>'Page name is missing', 'body'=>'Page name is missing.');
+	$wiki = Factory::Wiki($page);
+	if ( ! $wiki->isReadable() ) return array('msg'=>'not readable', 'body'=>'You have no permission to read this log.');
+
 	if ($kind === null){
 		if (!IS_MOBILE) {
 			$body = '<div class="tabs" role="application">'."\n";
@@ -139,12 +147,11 @@ function plugin_logview_action()
 		}
 	}else{
 		$body = '';
-		$nodata = '<p>'.$_logview_msg['msg_nodata'].'</p>';
 	}
 
 	// 保存データの項目名を取得
-	$name = log::get_log_field($kind);
-	$view = log::get_view_field($kind); // 表示したい項目設定
+	$logfile = LogFactory::factory($kind, $page);
+	$view = $logfile->get_view_field(); // 表示したい項目設定
 	
 
 	$count++;
@@ -171,29 +178,22 @@ EOD;
 <tbody>
 EOD;
 
-	// データを取得
-	$fld = logview_get_data(log::set_filename($kind,$page), $name);
+	$nodata = '<p>'.$_logview_msg['msg_nodata'].'</p>';
 
-	if (empty($fld)) {
+	// USER-AGENT クラス
+	$obj_ua = new UserAgent(USE_UA_OPTION);
+	$guess = ($log['guess_user']['use']) ? LogFactory::factory('guess_user')->get() :  LogFactory::factory('update', $page)->getSigunature();
+	$ctr = 0;
+	// データの編集
+	$lines = $logfile->get();
+
+	if (!$lines) {
 		return array(
 			'msg'  => $title,
 			'body' => $nodata,
 		);
 	}
-
-	// USER-AGENT クラス
-	$obj_ua = new UserAgent(USE_UA_OPTION);
-/*
-	$path_flag    = IMAGE_URI .'plugin/logview/flags/';
-	$path_browser = IMAGE_URI .'plugin/logview/browser/';
-	$path_os      = IMAGE_URI .'plugin/logview/os/';
-	$path_domain  = IMAGE_URI .'plugin/logview/option/domain/';
-*/
-	$guess = ($log['guess_user']['use']) ? log::read_guess() : log::summary_signature();
-
-	$ctr = 0;
-	// データの編集
-	foreach($fld as $data) {
+	foreach($lines as $data) {
 		if (!VIEW_ROBOTS && $obj_ua->is_robots($data['ua'])) continue;	// ロボットは対象外
 
 		$body .= "<tr>\n";
@@ -203,7 +203,7 @@ EOD;
 			case 'ts': // タイムスタンプ (UTIME)
 				$body .= ' <td class="style_td">' .
 					get_date('Y-m-d H:i:s', $data['ts']) .
-					' '.get_passage($data['ts']) . "</td>\n";
+					' ('.get_passage($data['ts']) . ")</td>\n";
 				break;
 
 			case '@guess_diff':
@@ -212,19 +212,18 @@ EOD;
 				// FIXME: バックアップ/差分 なしの新規の場合
 				// バックアップデータの確定
 				$body .= ' <td class="style_td">';
-				$age = log::get_backup_age($page,$data['ts'],$update);
+				$age = $logfile->get_backup_age($data['ts'],$update);
 				switch($age) {
 				case -1: // データなし
-					$body .= '<a class="ext" href="'.get_page_uri($page).
-						'" rel="nofollow">none</a>';
+					$body .= '<a class="ext" href="'.$wiki->uri().'" rel="nofollow">none</a>';
 					break;
 				case 0:  // diff
 					$body .= '<a class="ext" href="';
-					$body .= (log::diff_exist($page)) ? get_cmd_uri('diff',$page) : get_page_uri($page);
+					$body .= $logfile->diff_exist() ? $wiki->uri('diff') : $wiki->uri();
 					$body .= '" rel="nofollow">now</a>';
 					break;
 				default: // あり
-					$body .= '<a class="ext" href="'.get_cmd_uri('backup',$page,'',array('age'=>$age,'action'=>'visualdiff')).'"'.
+					$body .= '<a class="ext" href="'.$wiki->uri('backup',null,array('age'=>$age,'action'=>'visualdiff')).'"'.
 						' rel="nofollow">'.$age.'</a>';
 					break;
 				}
@@ -255,7 +254,7 @@ EOD;
 				break;
 
 			case '@guess': // 推測
-				$body .= ' <td class="style_td">'.htmlsc(logview_guess_user($data, $guess), ENT_QUOTES)."</td>\n";
+				$body .= ' <td class="style_td">'.Utility::htmlsc(logview_guess_user($data, $guess), ENT_QUOTES)."</td>\n";
 				break;
 
 			case 'ua': // ブラウザ情報 (USER-AGENT)
@@ -281,7 +280,7 @@ EOD;
 			case 'local_id':
 				if ($is_role_adm) continue;
 			default:
-				$body .= ' <td class="style_td">'.htmlsc($data[$field], ENT_QUOTES)."</td>\n";
+				$body .= ' <td class="style_td">'.Utility::htmlsc($data[$field], ENT_QUOTES)."</td>\n";
 			}
 		}
 
@@ -322,35 +321,6 @@ EOD;
 		'msg'  => $title,
 		'body' => $body
 	);
-}
-
-function logview_get_data($filename,$name)
-{
-	if (! file_exists($filename)) {
-		return array();
-	}
-
-	$rc = array();
-	$fp = @fopen($filename, 'r');
-	if ($fp == FALSE) return $rc;
-	@flock($fp, LOCK_SH);
-
-	$count = 0;
-	while (! feof($fp)) {
-		$line = fgets($fp, 512);
-		if ($line === FALSE) continue;
-		$rc[] = log::line2field($line,$name);
-                ++$count;
-		if ($count > MAX_LINE) {
-			// 古いデータを捨てる
-			array_shift($rc);
-		}
-	}
-
-	@flock($fp, LOCK_UN);
-	if(! fclose($fp)) return array();
-	rsort($rc); // 逆順にソート(最新順になる)
-	return $rc;
 }
 
 /**

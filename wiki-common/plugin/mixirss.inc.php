@@ -5,8 +5,9 @@
 // Publishing RSS feed of RecentChanges
 // Usage: mixirss.inc.php?ver=[0.91|1.0(default)|2.0]
 
-use PukiWiki\File\FileUtility;
-use PukiWiki\Renderer\RendererFactory;
+use PukiWiki\Recent;
+use PukiWiki\Factory;
+use PukiWiki\Renderer\Header;
 
 // View Description Letters
 define('MIXIRSS_DESCRIPTION_LENGTH', 256);
@@ -49,9 +50,10 @@ function plugin_mixirss_action()
 
 	// Creating <item>
 	$items = $rdf_li = '';
-	foreach (FileUtility::get_recent() as $page => $time) {
+	foreach (Recent::get() as $page => $time) {
+		$wiki = Factory::Wiki($page);
 		$r_page = rawurlencode($page);
-		$url    = get_page_uri($page);
+		$url    = $wiki->uri();
 		$title  = mb_convert_encoding($page, 'UTF-8', SOURCE_ENCODING);
 
 		switch ($version) {
@@ -75,11 +77,7 @@ EOD;
 //			$rdf_li .= '    <rdf:li rdf:resource="' . $url . '" />' . "\n";
 
 			$date = substr_replace(get_date('Y-m-d\TH:i:sO', $time), ':', -2, 0);
-			$trackback_ping = '';
-			if ($trackback) {
-				$tb_id = md5($r_page);
-				$trackback_ping = ' <trackback:ping rdf:resource="' . $self . '?tb_id=' . $tb_id . '"/>';
-			}
+
 			if (plugin_mixirss_isValidDate(substr($page,-10)) && check_readable($page,false,false)) {
 				// for Calendar/MiniCalendar
 				$get['page'] = $post['page'] = $vars['page'] = $page;
@@ -118,7 +116,6 @@ EOD;
  <link>$url</link>
  <dc:date>$date</dc:date>
  <dc:identifier>$url</dc:identifier>
-$trackback_ping
 </item>
 
 EOD;
@@ -140,17 +137,16 @@ EOD;
 $description
  <dc:date>$date</dc:date>
  <dc:identifier>$url</dc:identifier>
-$trackback_ping
 </item>
 
 EOD;
 				}
 			// upk 2006-03-22
 			// } else if (check_readable($page,false,false) && !ereg(MIXIRSS_IGNORE_REGEX, $page)) {
-			} else if (check_readable($page,false,false) && !is_ignore_page($page)) {
+			} else if ($wiki->isReadable()) {
 				$get['page'] = $post['page'] = $vars['page'] = $page;
 //miko added
-				$description = strip_htmltag(RendererFactory::factory(get_source($page)));
+				$description = strip_htmltag($wiki->render());
 				$description = mb_strimwidth(preg_replace("/[\r\n]/",' ',$description),0,MIXIRSS_DESCRIPTION_LENGTH,'...');
 				$description = ' <description><![CDATA[' . mb_convert_encoding($description,'UTF-8',SOURCE_ENCODING) . ']]></description>';
 //miko added
@@ -169,7 +165,6 @@ EOD;
 $description
  <dc:date>$date</dc:date>
  <dc:identifier>$url</dc:identifier>
-$trackback_ping
 </item>
 
 EOD;
@@ -179,12 +174,11 @@ EOD;
 	}
 
 	// Feeding start
-	pkwk_common_headers();
-	header('Content-type: application/xml');
-	print '<?xml version="1.0" encoding="UTF-8"?>' . "\n\n";
+	
+	$html = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
 
-	$url_whatsnew = get_page_uri($whatsnew);
-	$html = '';
+	$w_whatsnew = Factory::Wiki($whatsnew);
+	$url_whatsnew = $w_whatsnew->uri();
 	switch ($version) {
 	case '0.91':
 		$html .= '<!DOCTYPE rss PUBLIC "-//Netscape Communications//DTD RSS 0.91//EN"' .
@@ -207,12 +201,9 @@ EOD;
 		break;
 
 	case '1.0':
-		$xmlns_trackback = $trackback ?
-			'  xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/"' : '';
 		$html .= <<<EOD
 <rdf:RDF
   xmlns:dc="http://purl.org/dc/elements/1.1/"
-$xmlns_trackback
   xmlns="http://purl.org/rss/1.0/"
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
   xml:lang="ja">
@@ -232,17 +223,8 @@ $items
 EOD;
 		break;
 	}
-	print $html;
-/*
-	// Write Cache-file
-	$fp = fopen($rsscache, 'w');
-	flock($fp, LOCK_EX);
-	rewind($fp);
-	fputs($fp, $html);
-	flock($fp, LOCK_UN);
-	fclose($fp);
-*/
-	log_write('cmd','mixirss');
+	$header = Header::getHeaders('application/xml', $w_whatsnew->time());
+	Header::writeResponse($header, 200, $html);
 	exit;
 }
 

@@ -84,7 +84,7 @@ updtkey が指定されている場合で、更新キーが入力されている
 
 */
 
-$log = array(
+return array(
 	'browse' => array(
 		// ts:host:@guess:user:ntlm:proxy:ua:page
 		'use'		=> 1,

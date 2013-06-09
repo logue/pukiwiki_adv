@@ -12,6 +12,8 @@ use PukiWiki\File\File;
 use PukiWiki\NetBios;
 use PukiWiki\Spam\ProxyChecker;
 use PukiWiki\Utility;
+use PukiWiki\Backup;
+use PukiWiki\File\FileFactory;
 
 /**
  * ファイルの読み書きを行うクラス
@@ -79,9 +81,7 @@ class LogFile extends AbstractFile{
 	 */
 	public function __construct($page = null) {
 		if (empty($this->kind)) throw new Exception('class :'.get_called_class().' does not defined $kind value.');
-		// ログ設定
-		global $log;
-		$this->config = $log;
+		$this->config = Utility::loadConfig('config-log.ini.php');
 
 		if (!$this->isWiki) {
 			if (empty($page)){
@@ -369,13 +369,45 @@ class LogFile extends AbstractFile{
 			$lines = array_reverse($ret);
 		}
 
-		// 見做しユーザ
-		if ($this->kind == 'update' && $this->config['guess_user']['use']) {
-			log_put_guess($rc);
-		}
 		// 保存（空行は削除）
 		parent::set(array_filter($lines));
 	}
+	/**
+	 * ログファイルを読む
+	 */
+	public function get($join = false, $legacy = false){
+		if ( !$this->isFile() ) return false;
+		if ( !$this->isReadable() )
+			Utility::dieMessage(sprintf('File <var>%s</var> is not readable.', Utility::htmlsc($this->filename)));
+
+		$name = self::get_log_field($this->kind);
+		
+		// ファイルの読み込み
+		$file = $this->openFile('r');
+		// ロック
+		$file->flock(LOCK_SH);
+		// 巻き戻し（要るの？）
+		$file->rewind();
+		// 初期値
+		$result = array();
+		// 1行毎ファイルを読む
+		while (!$file->eof()) {
+			$line = $file->fgets();
+			$result[] = self::line2field($line, $name);
+		}
+		// アンロック
+		$file->flock(LOCK_UN);
+		// 念のためオブジェクトを開放
+		unset($file);
+
+		rsort($result); // 逆順にソート(最新順になる)
+
+		// 出力
+		return $result;
+	}
+	/**
+	 * ログの必須キーチェック
+	 */
 	private static function log_mustkey_check($key,$data)
 	{
 		foreach($key as $idx) {
@@ -464,5 +496,108 @@ class LogFile extends AbstractFile{
 			}
 		}
 		return FALSE;
+	}
+
+	/**
+	 * ログの表示指示項目の設定
+	 * @static
+	 */
+	public function get_view_field()
+	{
+		$rc = self::set_fieldname($this->kind);
+
+		// 認証済の判定
+		$user = Auth::check_auth();
+
+		$kind_view = empty($user) ? 'guest' : 'view';
+
+		$chk = array();
+		if (isset($this->config[$this->kind][$kind_view])){
+			if ($this->config[$this->kind][$kind_view] == 'all'){
+				return $rc;
+			}else{
+				$tmp = explode(':', $this->config[$this->kind][$kind_view]);
+
+				// 妥当性チェック
+				foreach($tmp as $_tmp) {
+					$sw = 0;
+					foreach($rc as $_name) {
+						if ($_name == $_tmp) {
+							$sw = 1;
+							break;
+						}
+					}
+					if (!$sw) continue;
+					$chk[] = $_tmp;
+				}
+				unset($tmp, $sw);
+			}
+		}
+		return $chk;
+	}
+
+	/**
+	 * ログに書き出している項目のみ抽出する
+	 * @static
+	 */
+	public function get_log_field()
+	{
+		// 全項目名を取得
+		$all = self::set_fieldname($this->kind);
+		$rc = array();
+		foreach ($all as $field) {
+			if (substr($field,0,1) == '@') continue; // 表示項目は除去
+			$rc[] = $field;
+		}
+		return $rc;
+	}
+
+	/**
+	 * 更新日時のバックアップデータの世代を確定する
+	 * @static
+	 */
+	public static function get_backup_age($update_time,$update=true)
+	{
+		static $_page, $backup;
+
+		//if (!isset($backup_page)) $backup_page = get_backup($page);
+		//if (count($backup_page) == 0) return -1; // 存在しない
+		if (!isset($backup)) $backup = new Backup($this->page);
+
+		// 初回バックアップ作成は、文書生成日時となる
+		$create_date = $backup->getBackup(1)->time;
+		if ($update_time == $create_date) return 1;
+
+		$match = -1;
+		foreach ($backup->getBackup() as $age => $val)
+		{
+			if ($val['real'] == $update_time) {
+				$match = $age;
+			} elseif (! $update && $val['real'] < $update_time) {
+				$match = $age;
+			}
+		}
+		$match++; // ヒットした次が書き込んだ内容(バックアップなため)
+		if ($age < $match) return 0; // カレント(diffを読む)
+		if ($match > 0) return $match;
+		return -1; // 存在しない(一致したものが存在しない)
+	}
+	/**
+	 * 差分ファイルの存在確認
+	 * @static
+	 */
+	public static function diff_exist()
+	{
+		return FileFactory::factory('diff',$this->page)->has();
+	}
+	/**
+	 * ユーザを推測する
+	 * @static
+	 */
+	public static function guess_user($user,$ntlm,$sig) {
+		if (!empty($user)) return $user; // 署名ユーザ
+		if (!empty($ntlm)) return $ntlm; // NTLM認証ユーザ
+		if (!empty($sig))  return $sig;  // 本人の署名
+		return null;
 	}
 }
