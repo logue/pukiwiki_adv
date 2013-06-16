@@ -1,16 +1,18 @@
 <?php
 namespace PukiWiki;
 
+use PukiWiki\Auth\Auth;
+use PukiWiki\Backup;
+use PukiWiki\Diff;
 use PukiWiki\File\FileFactory;
+use PukiWiki\File\LogFactory;
+use PukiWiki\Relational;
 use PukiWiki\Renderer\RendererFactory;
 use PukiWiki\Router;
-use PukiWiki\Relational;
-use PukiWiki\Utility;
-use PukiWiki\Auth\Auth;
-use PukiWiki\Diff;
-use PukiWiki\Backup;
+use PukiWiki\Spam\IpFilter;
+use PukiWiki\Spam\UrlFilter;
 use PukiWiki\Text\Rules;
-use Net_DNSBL;	// pear
+use PukiWiki\Utility;
 
 /**
  * Wikiのコントローラー
@@ -27,6 +29,10 @@ class Wiki{
 	const POST_LOG_FILENAME = 'postlog.log';
 	// 投稿内容のロギングを行う（デバッグ用）
 	const POST_LOGGING = false;
+	/**
+	 * HTML内のリンクのマッチパターン（画像なども対象とする）アドレスは[2
+	 */
+	const HTML_URI_MATCH_PATTERN = '/<.+? (src|href)="(.*?)".+?>/is';
 	/**#@-*/
 
 	public function __construct($page){
@@ -250,21 +256,35 @@ class Wiki{
 		if (Auth::is_check_role(PKWK_CREATE_PAGE))
 			Utility::dieMessage( sprintf($_strings['error_prohibit'], 'PKWK_READONLY'), 403 );
 
-		if (empty($str)){
-			Recent::set(null, $this->page);
-			// 入力が空の場合、削除とする
-			Recent::create_recent_deleted();
-			return $this->wiki->set('');
-		}
+		// ログイン済みもしくは、自動更新されるページである
+		$has_permission = Auth::check_role('role_contents_admin') || isset($vars['page']) && $vars['page'] === $this->page;
 
-		if (is_array($str)) {
-			// ポカミス対策：配列だった場合文字列に変換
-			$str = join("\n", $str);
+		// 未ログインの場合、S25Rおよび、DNSBLチェック
+		if (!$has_permission) {
+			$ip_filter = new IpFilter();
+			if ($ip_filter->isS25R()) Utility::dieMessage('S25R host is denied.');
+			
+			if ($use_spam_check['page_remote_addr']) {
+				$listed = $ip_filter->checkDNSBL();
+				if ($listed) Utility::dieMessage(sprintf($_strings['blacklisted'],$listed), $_title['prohibit'], 400);
+			}
 		}
 
 		// 簡易スパムチェック（不正なエンコードだった場合ここでエラー）
 		if ( isset($vars['encode_hint']) && $vars['encode_hint'] !== PKWK_ENCODING_HINT ){
 			Utility::dump();
+		}
+
+		// ポカミス対策：配列だった場合文字列に変換
+		if (is_array($str)) {
+			$str = join("\n", $str);
+		}
+
+		if (empty($str)){
+			Recent::set(null, $this->page);
+			// 入力が空の場合、削除とする
+			Recent::create_recent_deleted();
+			return $this->wiki->set('');
 		}
 
 		if (Utility::isSpamPost())
@@ -282,31 +302,14 @@ class Wiki{
 		// 差分を生成
 		$diff = new Diff($postdata, $oldpostdata);
 
-		// 差分から追加のみを取得
-		foreach ($diff->getSes() as $key=>$line){
-			if ($key !== $diff::SES_ADD) continue;
-			$added_data[] = $line;
-		}
-
-/*
-
 	//	$referer = (isset($_SERVER['HTTP_REFERER'])) ? Utility::htmlsc($_SERVER['HTTP_REFERER']) : 'None';
-	//	$user_agent = Utility::htmlsc($_SERVER['HTTP_USER_AGENT']);
+	//	$user_agent = Utility::htmlsc();
 
-		if (isset($vars['page']) && $vars['page'] === $this->page || !Auth::check_role('role_contents_admin') ){
-			// Blocking SPAM
-			if ($use_spam_check['bad-behavior']){
-				require_once(LIB_DIR . 'bad-behavior-pukiwiki.php');
-			}
-			// リモートIPによるチェック
-			if ($use_spam_check['page_remote_addr'] && SpamCheck(REMOTE_ADDR ,'ip')) {
-				Utility::dump();
-				die_message($_strings['blacklisted'] , $_title['prohibit'], 400);
-			}
-			// ページのリンクよるチェック
-			if ( $use_spam_check['page_contents'] && SpamCheck( self::get_this_time_links($postdata,$oldpostdata) ) ) {
-				Utility::dump();
-				die_message('Writing was limited by DNSBL (Blocking SPAM).', $_title['prohibit'], 400);
+
+		if (!$has_permission) {
+			// URLBLチェック
+			if ( $use_spam_check['page_contents']){
+				self::checkUriBl($diff);
 			}
 			// 匿名プロクシ
 			if ($use_spam_check['page_write_proxy'] && is_proxy()) {
@@ -324,7 +327,7 @@ class Wiki{
 					// 送信するデーターをセット
 					$akismet_post = array(
 						'user_ip' => REMOTE_ADDR,
-						'user_agent' => $user_agent,
+						'user_agent' => $_SERVER['HTTP_USER_AGENT'],
 						'comment_type' => 'comment',
 						'comment_author' => isset($vars['name']) ? $vars['name'] : 'Anonymous',
 					);
@@ -332,7 +335,12 @@ class Wiki{
 						$akismet_post['comment_content'] = $postdata;
 					}else{
 						// 差分のみをAkismetに渡す
-						$akismet_post['comment_content'] = $addedata;
+						foreach ($diff->getSes() as $key=>$line){
+							if ($key !== $diff::SES_ADD) continue;
+							$added_data[] = $line;
+						}
+						$akismet_post['comment_content'] = join("\n",$added_data);
+						unset($added_data);
 					}
 
 					if($akismet->isSpam($akismet_post)){
@@ -347,12 +355,10 @@ class Wiki{
 
 		// add client info to diff
 		//$diffdata .= '// IP:"'. REMOTE_ADDR . '" TIME:"' . $now . '" REFERER:"' . $referer . '" USER_AGENT:"' . $user_agent. "\n";
-*/
 
 
 		// 差分データーを保存
-		$difffile = new DiffFile($this->page);
-		$difffile->set($diff->getDiff());
+		FileFactory::Diff($this->page)->set($diff->getDiff());
 
 		unset($oldpostdata, $diff, $difffile);
 
@@ -380,83 +386,70 @@ class Wiki{
 	}
 
 /**************************************************************************************************/
-
 	/**
-	 * 追加されたリンクを取得
-	 * @param string $post 入力データ
-	 * @param string $diff 差分データ
+	 * ソース中のリンクを取得
+	 * @param $source Wikiソース
 	 * @return array
 	 */
-	private function get_this_time_links($post,$diff)
-	{
-		$links = array();
-		$post_links = self::replaceNullPlugin($post);
-		$diff_links = self::get_link_list($diff);
-
-		foreach($diff_links as $d) {
-			foreach($post_links as $p) {
-				if ($p == $d) {
-					$links[] = $p;
-					break;
-				}
+	private static function getLinkList($source){
+		static $plugin_pattern, $replacement;
+		if (empty($plugin_pattern) || empty($replacement)){
+			// プラグインを無効化するためのマッチパターンを作成
+			foreach(PluginRenderer::getPluginList() as $plugin=>$plugin_value){
+				if ($plugin == 'ref' || $plugin = 'attach') continue;	// ただしrefやattachは除外（あまりブロック型で使う人いないけどね）
+				$plugin_pattern[] = '/^#'.$plugin.'\(/i';
+				$replacement[] = '#null(';
 			}
 		}
-		unset($post_links, $diff_links);
-		return $links;
-	}
-	/**
-	 * 一時的にプラグインをnullプラグインにして無効化し、リンクのみを取得
-	 * @param $data
-	 * @return array
-	 */
-	private function replaceNullPlugin($data){
-		global $exclude_link_plugin;
-
-		$pattern = $replacement = array();
-		foreach($exclude_link_plugin as $plugin) {
-			$pattern[] = '/^#'.$plugin.'\(/i';
-			$replacement[] = '#null(';
+		$ret = array();
+		foreach($source as $line){
+			$ret[] = preg_replace($plugin_pattern,$replacement, $line);
 		}
 
-		$exclude = preg_replace($pattern,$replacement, explode("\n", $data));
 		$links = array();
-		$html = RendererFactory::factory($exclude);
-		preg_match_all('#href="(https?://[^"]+)"#', $html, $links, PREG_PATTERN_ORDER);
+		// プラグインを無効化したソースをレンダリング
+		$html = RendererFactory::factory($ret);
+		// レンダリングしたソースからリンクを取得
+		preg_match_all(self::HTML_URI_MATCH_PATTERN, $html, $links, PREG_PATTERN_ORDER);
 		unset($html);
-		return array_unique($links[1]);
+		return array_unique($links[2]);
 	}
 	/**
-	 * リンク一覧を取得
-	 * @param type $diffdata
+	 * 差分から追加されたリンクと削除されたリンクを取得しURIBLチェック
+	 * @param object $diff
 	 * @return type
 	 */
-	private function get_link_list($diffdata)
+	private function checkUriBl($diff)
 	{
-		$links = array();
+		
+		// 変数の初期化
+		$links = $added = $removed = array();
 
-		list($added, $removed) = get_diff_lines($diffdata);
-
-		// Get URLs from <a>(anchor) tag from convert_html()
-		$plus  = RendererFactory::factory($added); // WARNING: heavy and may cause side-effect
-		preg_match_all('#href="(https?://[^"]+)"#', $plus, $links, PREG_PATTERN_ORDER);
-		$links = array_unique($links[1]);
-
-		// Reject from minus list
-		if (! empty($removed) ) {
-			$links_m = array();
-			$minus = RendererFactory::factory($removed); // WARNING: heavy and may cause side-effect
-			preg_match_all('#href="(https?://[^"]+)"#', $minus, $links_m, PREG_PATTERN_ORDER);
-			$links_m = array_unique($links_m[1]);
-
-			$links = array_diff($links, $links_m);
+		// 差分から追加行と削除行を取得
+		foreach ($diff->getSes() as $key=>$line){
+			if ($key === $diff::SES_ADD){
+				$added[] = $line;
+			}else if ($key === $diff::SES_DELETE){
+				$removed[] = $line;
+			}
 		}
 
-		unset($plus,$minus);
+		// それぞれのリンクの差分を取得
+		$links = array_diff( self::getLinkList($added) , self::getLinkList($removed));
+		
+		unset($added, $removed);
 
-		// Reject own URL (Pattern _NOT_ started with '$script' and '?')
+		// 自分自身へのリンクを除外
 		$links = preg_grep('/^(?!' . preg_quote(Router::get_script_absuri(), '/') . '\?)./', $links);
 
-		return (! is_array($links) || empty($links)) ? null : $links;
+		// ホストのみ取得
+		foreach( $links as $temp_uri ) {
+			$temp_uri_info = parse_url( $temp_uri );
+			if (empty($temp_uri_info['host'])) continue;
+			$uri_filter = new UriFilter($temp_uri_info['host']);
+			if ($uri_filter->checkHost()) Utility::dieMessage('URIBL matched! : '.$temp_uri_info['host']);
+			if ($uri_filter->isListedNSBL()) Utility::dieMessage('Name server BL! : '.$temp_uri_info['host']);
+		}
 	}
 	
 	public function auto_template()

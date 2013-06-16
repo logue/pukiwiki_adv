@@ -1,9 +1,11 @@
+<?php
+
 namespace PukiWiki\Spam;
 
 use PukiWiki\Utility;
 use PukiWiki\Router;
 
-class Aismet{
+class Akismet{
 	const DEFAULT_USER_NAME = 'Anonymous';
 	public static function check($postdata){
 		global $akismet_api_key;

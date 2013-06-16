@@ -15,8 +15,6 @@
 namespace PukiWiki\Spam;
 
 use PukiWiki\Utility;
-use Net_DNS_Resolver;
-use Net_DNSBL;
 
 /**
  * IPフィルタクラス
@@ -25,11 +23,11 @@ class IpFilter{
 	/**
 	 * DNSBLキャッシュ名
 	 */
-	const DNSBL_CACHE_NAME = 'dnsbl';
+	const BL_CACHE_NAME = 'dnsbl';
 	/**
 	 * DNSBLキャッシュのエントリの有効期限（1日）
 	 */
-	const DNSBL_CACHE_ENTRY_EXPIRE = 86400;
+	const BL_CACHE_ENTRY_EXPIRE = 86400;
 	/**
 	 * DNSキャッシュ名
 	 */
@@ -81,11 +79,10 @@ class IpFilter{
 	private $dnsbl_hosts = array(
 		'niku.2ch.net',                     // BBQ (Spamhausも含まれるらしい）
 		'bbx.2ch.net',                      // BBX
-		'url.rbl.jp',                       // rbl.jp
+		'all.rbl.jp',                       // rbl.jp
 		'bl.spamcop.net',                   // spamcop.net
 		'dnsbl.tornevall.org',              // Tornevall Networks
-		'bsb.spamlookup.net'                
-	//	'zen.spamhaus.org'                  // Spamhaus
+		'bsb.spamlookup.net'
 	);
 	/**
 	 * ネームサーバーのブラックリスト
@@ -111,7 +108,7 @@ class IpFilter{
 		// 逆引きできないホスト（ルール0に相当）
 		if ($this->ip === $this->host) return true;
 		// 正規表現でチェック
-		foreach ($this->s25r_pattern as $pattern){
+		foreach (self::$s25r_pattern as $pattern){
 			if (preg_match($reg, $this->host) !== false){
 				return true;
 			}
@@ -123,49 +120,47 @@ class IpFilter{
 	 * @param array $hosts DNSBLホスト
 	 * @return void
 	 */
-	public function setDnsblHosts($hosts){
+	public function setBlHosts($hosts){
 		$this->dnsbl_hosts = $hosts;
 	}
 	/**
 	 * 設定されてるDNSBLを取得
 	 * @return array
 	 */
-	public function getDnsblHosts(){
+	public function getBlHosts(){
 		return $this->dnsbl_hosts;
 	}
 	/**
 	 * DNSBLにリストされてるか
 	 * @param boolean $force キャッシュを再生成する
-	 * @return boolean
+	 * @return string
 	 */
-	public function isListedDNSBL($force = false){
+	public function checkHost($force = false){
 		// キャッシュ処理（PukiWiki Adv.全体の共有キャッシュ）
 		if ($force) {
-			$cache['core']->removeItem(self::DNSBL_CACHE_NAME);
-		}else if ($cache['core']->hasItem(self::DNSBL_CACHE_NAME)) {
-			$dnsbl_entries = $cache['core']->getItem(self::DNSBL_CACHE_NAME);
-			$cache['core']->touchItem(self::DNSBL_CACHE_NAME);
+			$cache['core']->removeItem(self::BL_CACHE_NAME);
+		}else if ($cache['core']->hasItem(self::BL_CACHE_NAME)) {
+			$dnsbl_entries = $cache['core']->getItem(self::BL_CACHE_NAME);
+			$cache['core']->touchItem(self::BL_CACHE_NAME);
 		}
 
 		// キャッシュ内のエントリを探す
 		if (isset($ns_entries[$host]){
 			// エントリの更新日時が有効期間内の場合、そのデーターを返す
-			if ($dnsbl_entries[$host]['time'] + self::DNSBL_CACHE_ENTRY_EXPIRE < UTIME){
+			if ($dnsbl_entries[$host]['time'] + self::BL_CACHE_ENTRY_EXPIRE < UTIME){
 				return $dnsbl_entries[$host]['listed'];
 			}
 			// そうでない場合はエントリを削除
 			unset($ns_entries[$host]);
 		}
-		
-		$dnsbl = new Net_DNSBL();
-		$dnsbl->setBlacklists($this->dnsbl_hosts);
+
 		$dnsbl_entries[$host] = array(
 			'time' => UTIME,
-			'listed' => $dnsbl->isListed($this->ip)
+			'listed' => $this->lookupBl()	// ルックアップ（falseか、判定を受けたDNSBLホスト）
 		);
 		// キャッシュを保存
 		$cache['core']->setItem(self::NS_CACHE_NAME, $dnsbl_entries);
-		retrun $dnsbl_entries[$host];
+		retrun $dnsbl_entries[$host]['listed'];
 	}
 	/**
 	 * ネームサーバーがブラックリストに含まれるか
@@ -174,6 +169,20 @@ class IpFilter{
 	public function isListedNSBL(){
 		foreach($this->getDnsNs($this->host) as $ns){
 			if (preg_match($this->nsbl_pattern, $ns) !=== false) return true;
+		}
+		return false;
+	}
+	/**
+	 * DNSBLにIPを渡してヒットした場合、そのDNSBLを返す
+	 * @return string
+	 */
+	private function lookupBl(){
+		foreach ($this->dns_hosts as $dns) {
+			$lookup = implode('.', array_reverse(explode('.', $this->ip))) . '.' . $dns;
+			$result = gethostbyname($lookup);
+			if ($result !== $lookup) {
+				return $dns;
+			}
 		}
 		return false;
 	}
@@ -209,22 +218,11 @@ class IpFilter{
 		do {
 			// ホスト名を上から一つづつ減らしてNSが得られるまで試す
 			// 例: www.subdomain.example.com→subdomain.example.com→example.com
-			$domain = implode(".", $domain_array);
-			// PEARのDNSクラス
-			$resolver = new Net_DNS_Resolver();
-			if (strtoupper(substr(PHP_OS, 0, 3) === 'WIN') $resolver->nameservers[0] = $this->getDNSServer();
-			$response = $resolver->query($domain, 'NS');
-			if ($response) {
-				foreach ($response->answer as $rr) {
-					switch ($rr->type){
-						case 'NS':
-							$ns_array[] = $rr->nsdname;
-							break;
-						case 'CNAME':
-							// CNAMEされてるときは、そっちを再帰で引く
-							$ns_array = $this->getDnsNS($rr->rdatastr());
-							break;
-					}
+			$lookup = dns_get_record(implode(".", $domain_array), DNS_NS);
+
+			if (!empty($lookup)) {
+				foreach ($lookup as $record) {
+					$ns_array[] = $record['target'];
 				}
 				$ns_found = TRUE;
 			}
@@ -253,7 +251,7 @@ class IpFilter{
 			}
 		}
 		if (empty($nameserver)) {
-			Utility::DieMessage('Can not lookup your DNS server');
+			Utility::dieMessage('Can not lookup your DNS server');
 		}
 		//print_a($nameserver, 'label:nameserver');
 		return $nameserver;

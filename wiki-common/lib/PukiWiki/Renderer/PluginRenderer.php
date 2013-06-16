@@ -90,7 +90,7 @@ class PluginRenderer{
 	 * @param boolean $force キャッシュ生成を矯正する
 	 * @return array
 	 */
-	private static function getPluginList($force = false){
+	public static function getPluginList($force = false){
 		global $cache;
 		//$t1 = microtime();
 
