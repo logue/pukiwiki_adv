@@ -19,6 +19,7 @@ use PukiWiki\Utility;
 use PukiWiki\Time;
 use PukiWiki\Router;
 use PukiWiki\Spam\Spam;
+use PukiWiki\Spam\IpFilter;
 use PukiWiki\Renderer\PluginRenderer;
 use PukiWiki\File\LogFactory;
 use Zend\Cache\StorageFactory;
@@ -295,8 +296,9 @@ if (isset($script)) {
 
 ///////////////////////////////////////////////
 // Prevent SPAM by REMOTE IP
+$filter = new IpFilter(REMOTE_ADDR);
 
-if (SpamCheckBAN(REMOTE_ADDR)) die('Sorry, your access is prohibited.');
+if ($filter->isS25R()) die('Sorry, your access is prohibited.');
 
 // Block countory via Geolocation
 $country_code = '';
@@ -461,10 +463,9 @@ $now = Time::format(UTIME);
 // スキンデーター読み込み
 defined('IS_MOBILE') or define('IS_MOBILE', false);
 if (IS_MOBILE === true) {
-	defined('PLUS_THEME') or define('PLUS_THEME', 'mobile');
-	define('SKIN_FILE', add_skindir('mobile'));
+	define('SKIN_FILE', 'mobile');
 }else{
-	define('SKIN_FILE', add_skindir(PLUS_THEME));
+	define('SKIN_FILE', PLUS_THEME);
 }
 
 if ( isset($auth_api['facebook']) ){

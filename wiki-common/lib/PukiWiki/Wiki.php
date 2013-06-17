@@ -18,29 +18,35 @@ use PukiWiki\Utility;
  * Wikiのコントローラー
  */
 class Wiki{
-	/**#@+
-	 * 宣言
+	/**
+	 * ページ名として使用可能な文字
 	 */
-	// ページ名として使用可能な文字
 	const VALIED_PAGENAME_PATTERN = '/^(?:[\x00-\x7F]|(?:[\xC0-\xDF][\x80-\xBF])|(?:[\xE0-\xEF][\x80-\xBF][\x80-\xBF]))+$/';
-	// ページ名に含めることができない文字
+	/**
+	 * ページ名に含めることができない文字
+	 */
 	const INVALIED_PAGENAME_PATTERN = '/[%|=|&|?|#|\r|\n|\0|\@|\t|;|\$|+|\\|\[|\]|\||^|{|}]/';
-	// 投稿ログ
+	/**
+	 * 投稿ログ
+	 */
 	const POST_LOG_FILENAME = 'postlog.log';
-	// 投稿内容のロギングを行う（デバッグ用）
+	/**
+	 * 投稿内容のロギングを行う（デバッグ用）
+	 */
 	const POST_LOGGING = false;
 	/**
-	 * HTML内のリンクのマッチパターン（画像なども対象とする）アドレスは[2
+	 * HTML内のリンクのマッチパターン（画像なども対象とする）アドレスは[2]に格納される
 	 */
 	const HTML_URI_MATCH_PATTERN = '/<.+? (src|href)="(.*?)".+?>/is';
-	/**#@-*/
 
+	/**
+	 * コンストラクタ
+	 */
 	public function __construct($page){
 		$this->page = $page;
 		// 以下はSplFileInfoの派生クラス
 		$this->wiki = FileFactory::Wiki($this->page);
 	}
-
 /**************************************************************************************************/
 	/**
 	 * 編集可能か
@@ -393,15 +399,17 @@ class Wiki{
 	 */
 	private static function getLinkList($source){
 		static $plugin_pattern, $replacement;
+
+		// プラグインを無効化するためのマッチパターンを作成
 		if (empty($plugin_pattern) || empty($replacement)){
-			// プラグインを無効化するためのマッチパターンを作成
 			foreach(PluginRenderer::getPluginList() as $plugin=>$plugin_value){
-				if ($plugin == 'ref' || $plugin = 'attach') continue;	// ただしrefやattachは除外（あまりブロック型で使う人いないけどね）
+				if ($plugin === 'ref' || $plugin === 'attach' || $plugin === 'attachref') continue;	// ただしrefやattachは除外（あまりブロック型で使う人いないけどね）
 				$plugin_pattern[] = '/^#'.$plugin.'\(/i';
 				$replacement[] = '#null(';
 			}
 		}
 		$ret = array();
+		// １行づつ置き換え
 		foreach($source as $line){
 			$ret[] = preg_replace($plugin_pattern,$replacement, $line);
 		}
@@ -412,16 +420,14 @@ class Wiki{
 		// レンダリングしたソースからリンクを取得
 		preg_match_all(self::HTML_URI_MATCH_PATTERN, $html, $links, PREG_PATTERN_ORDER);
 		unset($html);
-		return array_unique($links[2]);
+		return array_unique($links[1][2]);
 	}
 	/**
 	 * 差分から追加されたリンクと削除されたリンクを取得しURIBLチェック
 	 * @param object $diff
 	 * @return type
 	 */
-	private function checkUriBl($diff)
-	{
-		
+	private function checkUriBl($diff) {
 		// 変数の初期化
 		$links = $added = $removed = array();
 
@@ -436,7 +442,6 @@ class Wiki{
 
 		// それぞれのリンクの差分を取得
 		$links = array_diff( self::getLinkList($added) , self::getLinkList($removed));
-		
 		unset($added, $removed);
 
 		// 自分自身へのリンクを除外
@@ -451,7 +456,9 @@ class Wiki{
 			if ($uri_filter->isListedNSBL()) Utility::dieMessage('Name server BL! : '.$temp_uri_info['host']);
 		}
 	}
-	
+	/**
+	 * ソースからひな形を作成
+	 */
 	public function auto_template()
 	{
 		global $auto_template_func, $auto_template_rules;
@@ -468,20 +475,21 @@ class Wiki{
 			$template_page = preg_replace($rule_pattrn, $template, $this->page);
 			if (! is_page($template_page)) continue;
 
-			$body = Factory::Wiki($template_page)->source();
+			// ソースを取得
+			$source = Factory::Wiki($template_page)->source();
 
 			// Remove fixed-heading anchors
-			$body = preg_replace('/^(\*{1,3}.*)\[#[0-9A-Za-z][\w-]+\](.*)$/m', '$1$2', $body);
+			$source = preg_replace('/^(\*{1,3}.*)\[#[0-9A-Za-z][\w-]+\](.*)$/m', '$1$2', $body);
 
 			// Remove '#freeze'
-			$body = preg_replace('/^#freeze\s*$/m', '', $body);
+			$source = preg_replace('/^#freeze\s*$/m', '', $source);
 
 			$count = count($matches);
 			for ($i = 0; $i < $count; $i++)
-				$body = str_replace('$' . $i, $matches[$i], $body);
+				$source = str_replace('$' . $i, $matches[$i], $source);
 
 			break;
 		}
-		return $body;
+		return $source;
 	}
 }

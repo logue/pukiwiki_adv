@@ -95,6 +95,19 @@ class ProxyChecker
 	}
 }
 
+function is_localIP($ip)
+{
+	static $localIP = array('127.0.0.0/8','10.0.0.0/8','172.16.0.0/12','192.168.0.0/16');
+	if (is_ipaddr($ip) === FALSE) return FALSE;
+	return ip_scope_check($ip,$localIP);
+}
+
+function is_ipaddr($ip)
+{
+	$valid = ip2long($ip);
+	return ($valid == -1 || $valid == FALSE) ? FALSE : $valid;
+}
+
 function proxy_get_real_ip()
 {
 	$obj = new ProxyChecker();
@@ -143,6 +156,50 @@ function MyNetCheck($ip)
 		if ($obj->isMyNet()) return true;
 	}
 	return false;
+}
+
+// IP の判定
+function ip_scope_check($ip,$networks)
+{
+	// $l_ip = ip2long( ip2arrangement($ip) );
+	$l_ip = ip2long($ip);
+	foreach($networks as $network) {
+		$range = explode('/', $network);
+		$l_network = ip2long( ip2arrangement($range[0]) );
+		// $l_network = ip2long( $range[0] );
+		if (empty($range[1])) $range[1] = 32;
+		$subnetmask = pow(2,32) - pow(2,32 - $range[1]);
+		if (($l_ip & $subnetmask) == $l_network) return TRUE;
+	}
+	return FALSE;
+}
+
+// ex. ip=192.168.101.1 from=192.168.0.0 to=192.168.211.12
+function ip_range_check($ip,$from,$to)
+{
+	if (empty($to)) return ip_scope_check($ip,array($from));
+		$l_ip = ip2long($ip);
+		$l_from = ip2long( ip2arrangement($from) );
+		$l_to = ip2long( ip2arrangement($to) );
+		return ($l_from <= $l_ip && $l_ip <= $l_to);
+}
+
+// ex. 10 -> 10.0.0.0, 192.168 -> 192.168.0.0
+function ip2arrangement($ip)
+{
+	$x = explode('.', $ip);
+	if (count($x) == 4) return $ip;
+	for($i=0;$i<4;$i++) { if (empty($x[$i])) $x[$i] =0; }
+	return sprintf('%d.%d.%d.%d',$x[0],$x[1],$x[2],$x[3]);
+}
+
+// 予約されたドメイン
+function is_ReservedTLD($host)
+{
+	// RFC2606
+	static $ReservedTLD = array('example' =>'','invalid' =>'','localhost'=>'','test'=>'',);
+	$x = array_reverse(explode('.', strtolower($host) ));
+	return (isset($ReservedTLD[$x[0]])) ? TRUE : FALSE;
 }
 
 /* End of file proxy.cls.php */

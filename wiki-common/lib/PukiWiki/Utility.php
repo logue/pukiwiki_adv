@@ -17,14 +17,12 @@ use PukiWiki\Auth\Auth;
 use PukiWiki\Renderer\RendererDefines;
 use PukiWiki\Renderer\InlineFactory;
 use PukiWiki\Renderer\PluginRenderer;
-use PukiWiki\Renderer\Header;
 use PukiWiki\Router;
 use PukiWiki\Render;
 use PukiWiki\Factory;
 use PukiWiki\Listing;
 use Zend\Http\Response;
 use Zend\Math\Rand;
-use PukiWiki\Renderer\View;
 use SplFileInfo;
 
 /**
@@ -274,6 +272,33 @@ class Utility{
 	{
 		$pagestack = explode('/', $page);
 		return array_pop($pagestack);
+	}
+	/**
+	 * ファイルのMIMEを取得 
+	 * @param string $filename ファイル名
+	 * @return string
+	 */
+	function getMimeInfo($filename){
+		$type = '';
+		if (function_exists('finfo_open')) {
+			$finfo = finfo_open(FILEINFO_MIME);
+			if (!$finfo) return $type;
+			$type = finfo_file($finfo, $filename);
+			finfo_close($finfo);
+			return $type;
+		}
+
+		if (function_exists('mime_content_type')) {
+			$type = mime_content_type($filename);
+			return $type;
+		}
+
+		// PHP >= 4.3.0
+		$filesize = @getimagesize($filename);
+		if (is_array($filesize) && preg_match('/^(image\/)/i', $filesize['mime'])) {
+			$type = $filesize['mime'];
+		}
+		return $type;
 	}
 	/**
 	 * htmlspacialcharsのエイリアス（PHP5.4対策）

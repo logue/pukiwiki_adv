@@ -110,12 +110,7 @@ require('../vendor/bad-behavior/bad-behavior-sqlite.php');
 /////////////////////////////////////////////////
 
 // Load *.ini.php files and init PukiWiki
-
-require(LIB_DIR . 'funcplus.php');
-
 require(LIB_DIR . 'config.php');
-require(LIB_DIR . 'spamplus.php');
-
 require(LIB_DIR . 'legacy.php');
 
 // Defaults

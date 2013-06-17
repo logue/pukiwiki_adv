@@ -15,6 +15,8 @@ use PukiWiki\File\AttachFile;
 use PukiWiki\Auth\Auth;
 use PukiWiki\Spam\Spam;
 use PukiWiki\Factory;
+use PukiWiki\Utility;
+
 // NOTE (PHP > 4.2.3):
 //    This feature is disabled at newer version of PHP.
 //    Set this at php.ini if you want.
@@ -330,7 +332,7 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 		die_message($_strings['illegal_chars']);
 	}
 
-	$type = get_mimeinfo($file['tmp_name']);
+	$type = Utility::getMimeInfo($file['tmp_name']);
 	$must_compress = (PLUGIN_ATTACH_UNKNOWN_COMPRESS !== 0) ? attach_is_compress($type,PLUGIN_ATTACH_UNKNOWN_COMPRESS) : false;
 
 	// ファイル名の長さをチェック

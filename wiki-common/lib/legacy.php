@@ -425,6 +425,15 @@ function htmlsc($string = '', $flags = ENT_QUOTES, $charset = 'UTF-8')
  * funcplus.php
  */
 // SPAM check
+
+function add_homedir($file)
+{
+	foreach(array(DATA_HOME,SITE_HOME) as $dir) {
+		if (file_exists($dir.$file) && is_readable($dir.$file)) return $dir.$file;
+	}
+	return $file;
+}
+
 function is_spampost($array, $count=0)
 {
 	return Utility::isSpamPost($array, $count);

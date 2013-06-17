@@ -23,6 +23,8 @@
 */
 use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
+use PukiWiki\Utility;
+
 defined('PLUGIN_DAV_SHOWONLYEDITABLE') or define('PLUGIN_DAV_SHOWONLYEDITABLE', false);
 defined('PLUGIN_DAV_MUST_COMPRESS') or define('PLUGIN_DAV_MUST_COMPRESS', true); // セキュリティ上 false 運用は厳しい
 defined('PLUGIN_DAV_CREATE_PAGE') or define('PLUGIN_DAV_CREATE_PAGE', false); // false, true
@@ -132,7 +134,7 @@ function plugin_dav_action()
 
 		// FIXME - 勝手にファイル名を変更するため、クライアントの挙動がおかしくなる
 		if (PLUGIN_DAV_MUST_COMPRESS) {
-			$type = get_mimeinfo($tmpfilename);
+			$type = Utility::getMimeInfo($tmpfilename);
 			$must_compress = attach_is_compress($type,PLUGIN_ATTACH_UNKNOWN_COMPRESS);
 		} else {
 			$must_compress = false;

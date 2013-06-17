@@ -107,9 +107,10 @@ class IpFilter{
 	public function isS25R(){
 		// 逆引きできないホスト（ルール0に相当）
 		if ($this->ip === $this->host) return true;
+		
 		// 正規表現でチェック
 		foreach (self::$s25r_pattern as $pattern){
-			if (preg_match($reg, $this->host) !== false){
+			if (preg_match($pattern, $this->host)){
 				return true;
 			}
 		}
@@ -135,42 +136,41 @@ class IpFilter{
 	 * @param boolean $force キャッシュを再生成する
 	 * @return string
 	 */
-	public function checkHost($force = false){
+	public function checkHost($force = true){
+		$bl_entries = array();
+
 		// キャッシュ処理（PukiWiki Adv.全体の共有キャッシュ）
 		if ($force) {
 			$cache['core']->removeItem(self::BL_CACHE_NAME);
 		}else if ($cache['core']->hasItem(self::BL_CACHE_NAME)) {
-			$dnsbl_entries = $cache['core']->getItem(self::BL_CACHE_NAME);
+			$bl_entries = $cache['core']->getItem(self::BL_CACHE_NAME);
 			$cache['core']->touchItem(self::BL_CACHE_NAME);
 		}
 
 		// キャッシュ内のエントリを探す
-		if (isset($ns_entries[$host]){
+		if (isset($bl_entries[$this->host])) {
 			// エントリの更新日時が有効期間内の場合、そのデーターを返す
-			if ($dnsbl_entries[$host]['time'] + self::BL_CACHE_ENTRY_EXPIRE < UTIME){
-				return $dnsbl_entries[$host]['listed'];
+			if ($bl_entries[$this->host]['time'] + self::BL_CACHE_ENTRY_EXPIRE < UTIME){
+				return $bl_entries[$this->host]['listed'];
 			}
 			// そうでない場合はエントリを削除
-			unset($ns_entries[$host]);
+			unset($bl_entries[$this->host]);
 		}
 
-		$dnsbl_entries[$host] = array(
+		$bl_entries[$this->host] = array(
 			'time' => UTIME,
 			'listed' => $this->lookupBl()	// ルックアップ（falseか、判定を受けたDNSBLホスト）
 		);
 		// キャッシュを保存
-		$cache['core']->setItem(self::NS_CACHE_NAME, $dnsbl_entries);
-		retrun $dnsbl_entries[$host]['listed'];
+		$cache['core']->setItem(self::BL_CACHE_NAME, $bl_entries);
+		return $bl_entries[$this->host]['listed'];
 	}
 	/**
 	 * ネームサーバーがブラックリストに含まれるか
 	 * @return boolean
 	 */
 	public function isListedNSBL(){
-		foreach($this->getDnsNs($this->host) as $ns){
-			if (preg_match($this->nsbl_pattern, $ns) !=== false) return true;
-		}
-		return false;
+		return preg_match($this->nsbl_pattern, $this->getDnsNs()) ? true : false;
 	}
 	/**
 	 * DNSBLにIPを渡してヒットした場合、そのDNSBLを返す
@@ -192,8 +192,9 @@ class IpFilter{
 	 * @param boolean $force キャッシュを再生成する
 	 * @return array
 	 */
-	private static function getDnsNS($host, $force = false){
+	private static function getDnsNS($force = false){
 		global $cache;
+		$ns_entries = array();
 
 		// キャッシュ処理（PukiWiki Adv.全体の共有キャッシュ）
 		if ($force) {
@@ -204,16 +205,16 @@ class IpFilter{
 		}
 
 		// キャッシュ内のエントリを探す
-		if (isset($ns_entries[$host]){
+		if (isset($ns_entries[$this->host])) {
 			// エントリの更新日時が有効期間内の場合、そのデーターを返す
-			if ($ns_entries[$host]['time'] + self::NS_CACHE_ENTRY_EXPIRE < UTIME){
-				return $ns_entries[$host]['entries'];
+			if ($ns_entries[$this->host]['time'] + self::NS_CACHE_ENTRY_EXPIRE < UTIME){
+				return $ns_entries[$this->host]['entries'];
 			}
 			// そうでない場合はエントリを削除
-			unset($ns_entries[$host]);
+			unset($ns_entries[$this->host]);
 		}
 
-		$domain_array = explode(".", $host);
+		$domain_array = explode(".", $this->host);
 		$ns_found = FALSE;
 		do {
 			// ホスト名を上から一つづつ減らしてNSが得られるまで試す
@@ -236,7 +237,7 @@ class IpFilter{
 
 		// キャッシュを保存
 		$cache['core']->setItem(self::NS_CACHE_NAME, $ns_entries);
-		retrun $ns_entries[$host];
+		return $ns_entries[$this->host];
 	}
 	/**
 	 * Windows XP SP2, Vista SP1でDNSサーバーを取得する

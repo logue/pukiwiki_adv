@@ -7,6 +7,7 @@
 //   2002-2004 sha
 //
 // File attach & ref plugin
+use PukiWiki\Utility;
 
 defined('ATTACHREF_UPLOAD_MAX_FILESIZE') or define('ATTACHREF_UPLOAD_MAX_FILESIZE', '4M'); // default: 4MB
 // max file size for upload on PHP(PHP default 2MB)
@@ -287,7 +288,7 @@ function plugin_attachref_action()
 
 function attachref_get_attach_filename(&$file)
 {
-	$type = get_mimeinfo($file['tmp_name']);
+	$type = Utility::getMimeInfo($file['tmp_name']);
 	$must_compress = attach_is_compress($type,PLUGIN_ATTACH_UNKNOWN_COMPRESS);
 
 	if ($must_compress && is_uploaded_file($file['tmp_name'])) {
