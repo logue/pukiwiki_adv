@@ -25,6 +25,8 @@ class TableCell extends Element
 	var $rowspan = 1;
 	var $style;         // is array('width'=>, 'align'=>...);
 
+	const CELL_OPTION_MATCH_PATTERN = '/^(?:(LEFT|CENTER|RIGHT)|(BG)?COLOR\(([#\w]+)\)|SIZE\((\d+)\)|LANG\((\w+2)\)|(TOP|MIDDLE|BOTTOM)|(NOWRAP)):(.*)$/';
+
 	function __construct($text, $is_template = FALSE)
 	{
 		parent::__construct();
@@ -33,19 +35,33 @@ class TableCell extends Element
 
 		// 必ず$matchesの末尾の配列にテキストの内容が入るのでarray_popの返り値を使用する方法に変更。
 		// もうすこし、マシな実装方法ないかな・・・。12/05/03
-		while (preg_match('/^(?:(LEFT|CENTER|RIGHT)|(BG)?COLOR\(([#\w]+)\)|SIZE\((\d+)\)|LANG\((\w+2)\)):(.*)$/', $text, $matches)) {
+		while (preg_match(self::CELL_OPTION_MATCH_PATTERN, $text, $matches)) {
 			if ($matches[1]) {
-				$this->style['align'] = 'text-align:' . strtolower($matches[1]) . ';';
+				// LEFT CENTER RIGHT
+				$this->style['align'] = 'text-align:' . strtolower(Utility::htmlsc($matches[1])) . ';';
 				$text = array_pop($matches);
 			} else if ($matches[3]) {
+				// COLOR / BGCOLOR
 				$name = $matches[2] ? 'background-color' : 'color';
 				$this->style[$name] = $name . ':' . Utility::htmlsc($matches[3]) . ';';
 				$text = array_pop($matches);
 			} else if ($matches[4]) {
+				// SIZE
 				$this->style['size'] = 'font-size:' . Utility::htmlsc($matches[4]) . 'px;';
 				$text = array_pop($matches);
 			} else if ($matches[5]){
-				$this->lang = $matches[6];
+				// LANG
+				$this->lang = strtolower(Utility::htmlsc($matches[5]));
+				$text = array_pop($matches);
+			} else if ($matches[6]){
+				// TOP / MIDDLE / BOTTOM
+				// http://pukiwiki.sourceforge.jp/?%E8%B3%AA%E5%95%8F%E7%AE%B14%2F540
+				$this->style['valign'] = 'vertical-align:' . strtolower(Utility::htmlsc($matches[6])) . ';';
+				$text = array_pop($matches);
+			} else if ($matches[7]){
+				// NOWRAP
+				// http://pukiwiki.sourceforge.jp/dev/?PukiWiki%2F1.4%2F%A4%C1%A4%E7%A4%C3%A4%C8%CA%D8%CD%F8%A4%CB%2F%C9%BD%C1%C8%A4%DF%A4%C7nowrap%A4%F2%BB%D8%C4%EA%A4%B9%A4%EB
+				$this->style['white-space'] = 'white-space:nowrap;';
 				$text = array_pop($matches);
 			}
 		}

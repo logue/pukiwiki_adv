@@ -447,7 +447,7 @@ function plugin_backup_convert()
 	$s_page = htmlsc($page);
 	$retval = array();
 	$date = get_date("m/d", get_filetime($page));
-	$backups = _backup_file_exists($page) ? get_backup($page) : array();
+	$backups = _backup_file_exists($page) ?  Factory::Wiki($page)->getBackup($age) : array();
 
 	$retval[] = '<form action="' . get_script_uri() . '" method="get" class="autosubmit">';
 	$retval[] = '<input type="hidden" name="cmd" value="backup" />';

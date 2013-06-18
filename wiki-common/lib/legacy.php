@@ -47,12 +47,6 @@ function check_readable($page, $auth_flag = TRUE, $exit_flag = TRUE)
 /**
  * backup.php
  */
-function get_backup($page, $age = 0)
-{
-	//trigger_error('get_backup($page, $age) is deprecated. Use FileFactory::Backup($page)->getBackup($age)', E_USER_DEPRECATED);
-	if (empty($page)) return;
-	return Factory::Wiki($page)->getBackup($age);
-}
 
 function _backup_file_exists($page){
 	//trigger_error('_backup_file_exists($page) is deprecated. Use FileFactory::Backup($page)->has()', E_USER_DEPRECATED);
@@ -149,18 +143,6 @@ function pkwk_touch_file($filename, $time = FALSE, $atime = FALSE)
 	return $result;
 }
 
-// Last-Modified header
-function header_lastmod($page = NULL)
-{
-	global $lastmod;
-
-	if ($lastmod && is_page($page)) {
-		pkwk_headers_sent();
-		header('Last-Modified: ' .
-			date('D, d M Y H:i:s', get_filetime($page)) . ' GMT');
-	}
-}
-
 // Get a page list of this wiki
 function get_existpages($dir = DATA_DIR, $ext = '.txt')
 {
@@ -201,19 +183,6 @@ function get_existpages_cache($dir, $ext){
 /**
  * func.php
  */
-// Show text formatting rules
-function catrule()
-{
-	global $rule_page;
-
-	$rule_wiki = Factory::Wiki($rule_page);
-	if (! $rule_wiki->has()) {
-		return '<p>Sorry, page \'' . Utility::htmlsc($rule_page) .
-			'\' unavailable.</p>';
-	} else {
-		return $rule_wiki->render();
-	}
-}
 
 function die_message($msg, $error_title='', $http_code = 500){
 	return Utility::dieMessage($msg, $error_title, $http_code);
@@ -222,20 +191,11 @@ function die_message($msg, $error_title='', $http_code = 500){
 function get_passage($time){
 	return Time::passage($time);
 }
-function ridirect($url = ''){
-	return Utility::redirect($url);
-}
 
 // Have the time (as microtime)
 function getmicrotime()
 {
 	return Time::getMicroTime();
-}
-
-// Elapsed time by second
-function elapsedtime()
-{
-	return sprintf('%01.03f', getmicrotime() - MUTIME);
 }
 
 // Get the date
@@ -244,22 +204,10 @@ function get_date($format, $timestamp = NULL)
 	return Time::getZoneTimeDate($format, $timestamp);
 }
 
-function get_zonetime_offset($zonetime)
-{
-	return Time::getZoneTimeOffset($zonetime);
-}
-
 // Format date string
 function format_date($val, $paren = FALSE, $format = null)
 {
 	return Time::format($val, $paren, $format);
-}
-
-// Get short pagename(last token without '/')
-function get_short_pagename($fullpagename)
-{
-	$pagestack = explode('/', $fullpagename);
-	return array_pop($pagestack);
 }
 
 // Hide <input type="(submit|button|image)"...>
@@ -278,11 +226,6 @@ function page_list($pages = array('pagename.txt' => 'pagename'), $cmd = 'read', 
 function is_url($str, $only_http = FALSE)
 {
 	return Utility::isUri($str, $only_http);
-}
-
-function is_interwiki($str)
-{
-	return Utility::isInterWiki($str);
 }
 
 function is_pagename($page)
@@ -318,10 +261,6 @@ function is_cantedit($page)
 
 	return isset($is_cantedit[$page]);
 }
-function get_search_words($words, $do_escape = FALSE){
-	return Search::get_search_words($words, $do_escape);
-}
-
 function do_search($word, $type = 'and', $non_format = FALSE, $base = ''){
 	return Search::do_search($word, $type, $non_format, $base);
 }
@@ -409,11 +348,6 @@ function get_location_uri($cmd='', $page='', $query='', $fragment='')
 	return Router::get_resolve_uri($cmd,$page,'full',$query,$fragment,1);
 }
 
-function input_filter($param)
-{
-	return Utility::stripNullBytes($param);
-}
-
 // Sugar with default settings
 function htmlsc($string = '', $flags = ENT_QUOTES, $charset = 'UTF-8')
 {
@@ -439,18 +373,10 @@ function is_spampost($array, $count=0)
 	return Utility::isSpamPost($array, $count);
 }
 
-function is_ignore_page($page)
-{
-	return Utility::isSpamPost($array, $count);
-}
 // インクルードで余計なものはソースから削除する
 function convert_filter($str)
 {
 	return Rules::replaceFilter($str);
-}
-
-function showtaketime(){
-	return Time::getTakeTime();
 }
 
 // same as 'basename' for page
@@ -462,12 +388,6 @@ function basepagename($str)
 function get_remoteip()
 {
 	return Utility::getRemoteIp();
-}
-
-// タグの追加
-function open_uri_in_new_window($anchor, $which = '')
-{
-	throw new Exception('open_uri_in_new_window() is discontinued. Use similar function Inline::setLink();');
 }
 
 // SPAM logging
@@ -538,17 +458,6 @@ function line2array($x)
 	); // 行末の統一
 	return explode("\n", $x);
 }
-
-
-function tbl2dat($data)
-{
-	$x = explode('|',$data);
-	if (substr($data,0,1) == '|') array_shift($x);
-	if (substr($data,-1)  == '|') array_pop($x);
-	return $x;
-}
-
-function is_header($x) { return ( substr($x,-2) == '|h') ? true : false; }
 
 function change_uri($cmd='',$force=0)
 {
@@ -637,13 +546,6 @@ function strip_autolink($str)
 	return Utility::stripAutoLink($str);
 }
 
-// Make a backlink. searching-link of the page name, by the page name, for the page name
-function make_search($page)
-{
-	if (empty($page)) return;
-	return Factory::Wiki($page)->link('related');
-}
-
 // Make heading string (remove heading-related decorations from Wiki text)
 function make_heading(& $str, $strip = TRUE)
 {
@@ -691,19 +593,11 @@ function get_fullname($name, $refer)
 	return Utility::getPageName($name, $refer);
 }
 
-function set_time()
-{
-	Time::init();
-}
 function set_timezone($lang='')
 {
 	return Time::setTimeZone($lang);
 }
 
-function get_localtimezone()
-{
-	return Time::getTimeZoneLocal();
-}
 
 /**************************************************************************************************/
 /**

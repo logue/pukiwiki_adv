@@ -169,8 +169,8 @@ class IpFilter{
 	 * ネームサーバーがブラックリストに含まれるか
 	 * @return boolean
 	 */
-	public function isListedNSBL(){
-		return preg_match($this->nsbl_pattern, $this->getDnsNs()) ? true : false;
+	public function checkHostNs(){
+		return preg_match($this->nsbl_pattern, $this->getDnsNS()) ? true : false;
 	}
 	/**
 	 * DNSBLにIPを渡してヒットした場合、そのDNSBLを返す
@@ -230,7 +230,7 @@ class IpFilter{
 		} while (!$ns_found && array_shift($domain_array) != NULL);
 
 		// 保存するデータ
-		$ns_entries[$host] = array(
+		$ns_entries[$this->host] = array(
 			'time' => UTIME,
 			'entries' => $ns_array
 		);
