@@ -36,7 +36,7 @@ use PukiWiki\Auth\Auth;
  */
 
 // Exclusive regex pattern of child pages
-define('PLUGIN_NAVI_EXCLUSIVE_REGEX', '');
+define('PLUGIN_NAVI_EXCLUSIVE_REGEX', null);
 //define('PLUGIN_NAVI_EXCLUSIVE_REGEX', '#/_#'); // Ignore 'foobar/_memo' etc.
 
 // Insert <link rel=... /> tags into XHTML <head></head>
@@ -57,7 +57,7 @@ function plugin_navi_convert()
 	$current = $vars['page'];
 	$reverse = FALSE;
 	if (func_num_args()) {
-		list($home, $reverse) = array_pad(func_get_args(), 2, '');
+		list($home, $reverse) = array_pad(func_get_args(), 2, null);
 		// strip_bracket() is not necessary but compatible
 		$home    = get_fullname(strip_bracket($home), $current);
 		$is_home = ($home == $current);
@@ -81,18 +81,18 @@ function plugin_navi_convert()
 	$footer = isset($navi[$home]); // The first time: FALSE, the second: TRUE
 	if (! $footer) {
 		$navi[$home] = array(
-			'up'   =>'',
-			'prev' =>'',
-			'prev1'=>'',
-			'next' =>'',
-			'next1'=>'',
-			'home' =>'',
-			'home1'=>'',
+			'up'   =>null,
+			'prev' =>null,
+			'prev1'=>null,
+			'next' =>null,
+			'next1'=>null,
+			'home' =>null,
+			'home1'=>null,
 		);
 
 		$pages = preg_grep('/^' . preg_quote($home, '/') .
 			'($|\/)/', Auth::get_existpages());
-		if (PLUGIN_NAVI_EXCLUSIVE_REGEX != '') {
+		if (PLUGIN_NAVI_EXCLUSIVE_REGEX != null) {
 			// If old PHP could use preg_grep(,,PREG_GREP_INVERT)...
 			$pages = array_diff($pages,
 				preg_grep(PLUGIN_NAVI_EXCLUSIVE_REGEX, $pages));
@@ -110,7 +110,7 @@ function plugin_navi_convert()
 		$next = current($pages);
 
 		$pos = strrpos($current, '/');
-		$up = '';
+		$up = null;
 		if ($pos > 0) {
 			$up = substr($current, 0, $pos);
 			$navi[$home]['up']    = make_pagelink($up, $_navi_up);
@@ -119,7 +119,7 @@ function plugin_navi_convert()
 			$navi[$home]['prev']  = make_pagelink($prev);
 			$navi[$home]['prev1'] = make_pagelink($prev, $_navi_prev);
 		}
-		if ($next != '') {
+		if ($next != null) {
 			$navi[$home]['next']  = make_pagelink($next);
 			$navi[$home]['next1'] = make_pagelink($next, $_navi_next);
 		}
@@ -131,7 +131,7 @@ function plugin_navi_convert()
 		if (PLUGIN_NAVI_LINK_TAGS) {
 			foreach (array('start'=>$home, 'next'=>$next,
 			    'prev'=>$prev) as $rel=>$_page) {
-				if ($_page != '') {
+				if ($_page != null) {
 					$s_page = htmlsc($_page);
 					$link_tags[] = array('rel'=>$rel, 'href'=>get_page_uri($_page), 'title'=>$s_page);
 				/*
@@ -145,7 +145,7 @@ function plugin_navi_convert()
 		}
 	}
 
-	$ret = '';
+	$ret = null;
 
 	if ($is_home) {
 		// Show contents

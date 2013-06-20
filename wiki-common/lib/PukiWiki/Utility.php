@@ -59,11 +59,18 @@ class Utility{
 	 * @param string $file ファイル名
 	 * @return array or boolean
 	 */
-	public static function loadConfig($file, $require = false){
+	public static function loadConfig($file){
+		return include self::add_homedir($file);
+	}
+	/**
+	 * 設定ファイルを取得
+	 * @param string $file ファイル名
+	 */
+	public static function add_homedir($file){
 		foreach(array(DATA_HOME, SITE_HOME) as $dir) {
 			$f = new SplFileInfo($dir.$file);
 			if ($f->isFile() && $f->isReadable()){
-				return $require ? require($dir.$file) : include($dir.$file);
+				return $dir.$file;
 			}
 			unset($f);
 		}
@@ -490,7 +497,7 @@ class Utility{
 			$magic_quotes_gpc = get_magic_quotes_gpc();
 
 		if (is_array($param)) {
-			return array_map('input_filter', $param);
+			return array_map('PukiWiki\Utility::stripNullBytes', $param);
 		}
 		$result = str_replace('\0', '', $param);
 		if ($magic_quotes_gpc) $result = stripslashes($result);

@@ -36,3 +36,4 @@ class Akismet{
 			Utility::dieMessage('Akismet API key does not valied.', 500);
 		}
 	}
+}

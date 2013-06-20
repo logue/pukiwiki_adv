@@ -31,7 +31,7 @@
 use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
 use PukiWiki\Utility;
-
+use PukiWiki\Listing;
 
 // 見出しアンカーの書式
 define('PLUGIN_LS2_ANCHOR_PREFIX', '#content_1_');
@@ -98,14 +98,11 @@ function plugin_ls2_show_lists($prefix, & $params)
 {
 //	global $_ls2_err_nopages;
 
-	$pages = array();
-	if ($prefix != '') {
-		foreach (Auth::get_existpages() as $_page){
-			if (strpos($_page, $prefix) === 0)
-				$pages[] = $_page;
-		}
-	} else {
-		$pages = Auth::get_existpages();
+	$all = Listing::pages('wiki');
+	foreach ($all as $page){
+		if (!Factory::Wiki($page)->isReadable() ) continue;
+		if ( !empty($prefix) && strpos($page, $prefix) === false) continue;
+		$pages[] = $page;
 	}
 
 	natcasesort($pages);
@@ -132,9 +129,9 @@ function plugin_ls2_get_headings($page, & $params, $level, $include = FALSE)
 	if (! $is_done) $params["page_$page"] = ++$_ls2_anchor;
 
 	$s_page = Utility::htmlsc($page);
-	$wiki = WikiFactory::Wiki($page);
+	$wiki = Factory::Wiki($page);
 	$title  = $s_page . ' ' . $wiki->passage(false,true);
-	$href   = $wiki->get_uri();
+	$href   = $wiki->uri();
 
 	plugin_ls2_list_push($params, $level);
 	$ret = $include ? '<li>include ' : '<li>';

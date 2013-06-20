@@ -44,10 +44,6 @@ class Relational{
 	 */
 	public function __construct($page = ''){
 		global $cache;
-		if (empty($page)) return;
-		$this->cache = $cache[self::CACHE_NAMESPACE];
-		$this->links_obj = new InlineConverter(NULL, array('note'));
-		$this->page = $page;
 
 		// データーベース
 		$this->adapter = new Adapter(array(
@@ -60,6 +56,9 @@ class Relational{
 		$s = $this->adapter->query('CREATE TABLE IF NOT EXISTS "ref" ("page" TEXT UNIQUE NOT NULL, "data" TEXT)');
 		$s->execute();
 		unset($s);
+		$this->cache = $cache[self::CACHE_NAMESPACE];
+		$this->links_obj = new InlineConverter(NULL, array('note'));
+		$this->page = $page;
 	}
 	/**
 	 * デストラクタ
@@ -84,15 +83,15 @@ class Relational{
 	 * @return array
 	 */
 	public function getRelated(){
-		$data = self::getRel($this->page);
-		$times = array();
-		if (is_array($data)){
-			foreach ($data as $page) {
-				$time = Factory::Wiki($page)->time();
-				if($time !== 0) $times[$page] = $time;
-			}
+		if (empty($this->page)) return;
+		$entries = array();
+
+		foreach (self::getRel($this->page) as $page) {
+			$time = Factory::Wiki($page)->time();
+			if ($time === 0) continue;	// AutoGlossaryや作成されてないページの場合0を返すので除外
+			$entries[$page] = $time;
 		}
-		return $times;
+		return $entries;
 	}
 	/**
 	 * リンクされているページ名を取得
@@ -187,8 +186,6 @@ class Relational{
 	 * @return void
 	 */
 	public function init() {
-		if (Auth::check_role('readonly')) return; // Do nothing
-
 		// Init database
 		$s = $this->adapter->query('DELETE FROM rel');
 		$s->execute();
@@ -196,7 +193,7 @@ class Relational{
 		$s->execute();
 
 		$ref   = array(); // Reference from
-		foreach (Listing::get('wiki') as $_page) {
+		foreach (Listing::pages('wiki') as $_page) {
 			$rel   = array(); // Reference to
 			$objs = self::getObjects($_page);
 			if (empty($objs)) continue;
@@ -234,6 +231,10 @@ class Relational{
 		self::getObjects();
 
 		unset($ref_page,$ref_auto);
+
+		// 最適化
+		$s = $this->adapter->query('VACUUM');
+		$s->execute();
 	}
 
 	/**
@@ -244,8 +245,6 @@ class Relational{
 	 * @return void
 	 */
 	private function add($page, $add, $rel_auto){
-		if (Auth::check_role('readonly')) return; // Do nothing
-
 		$rel_auto = array_flip($rel_auto);
 
 		foreach ($add as $_page) {

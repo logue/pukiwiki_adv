@@ -127,7 +127,9 @@ $config_dist = array(
 */
 
 //Utility::loadConfig('pukiwiki.ini.php', true);
-require(DATA_HOME . 'pukiwiki.ini.php');
+require(Utility::add_homedir('pukiwiki.ini.php'));
+require(Utility::add_homedir('auth.ini.php'));
+
 defined('DATA_DIR')			or define('DATA_DIR',		DATA_HOME . 'wiki/'     );	// Latest wiki texts
 defined('DIFF_DIR')			or define('DIFF_DIR',		DATA_HOME . 'diff/'     );	// Latest diffs
 defined('BACKUP_DIR')		or define('BACKUP_DIR',		DATA_HOME . 'backup/'   );	// Backups
@@ -353,9 +355,9 @@ if ( empty($user_agent['agent']) ) die();	// UAが取得できない場合は処
 foreach (Utility::loadConfig('profile.ini.php') as $agent) {
 	if (preg_match($agent['pattern'], $user_agent['agent'], $matches)) {
 		$user_agent = array(
-			'profile'	=> isset($agent['profile']) ? $agent['profile'] : '',
-			'name'		=> isset($matches[1]) ? $matches[1] : '',	// device or browser name
-			'vers'		=> isset($matches[2]) ? $matches[2] : '',	// version
+			'profile'	=> isset($agent['profile']) ? $agent['profile'] : null,
+			'name'		=> isset($matches[1]) ? $matches[1] : null,	// device or browser name
+			'vers'		=> isset($matches[2]) ? $matches[2] : null,	// version
 		);
 		break;
 	}
@@ -363,11 +365,14 @@ foreach (Utility::loadConfig('profile.ini.php') as $agent) {
 unset($matches);
 //var_dump($user_agent);
 // Profile-related init and setting
-if (isset($user_agent['profile'])) Utility::loadConfig($user_agent['profile'].'ini.php');
+$ua_file = Utility::add_homedir($user_agent['profile'].'ini.php');
+if ($ua_file){
+	require($ua_file);
+}
 
-define('UA_NAME', isset($user_agent['name']) ? $user_agent['name'] : '');
-define('UA_VERS', isset($user_agent['vers']) ? $user_agent['vers'] : '');
-define('UA_CSS', isset($user_agent['css']) ? $user_agent['css'] : '');
+define('UA_NAME', isset($user_agent['name']) ? $user_agent['name'] : null);
+define('UA_VERS', isset($user_agent['vers']) ? $user_agent['vers'] : null);
+define('UA_CSS', isset($user_agent['css']) ? $user_agent['css'] : null);
 
 //unset($user_agent);	// Unset after reading UA_INI_FILE
 

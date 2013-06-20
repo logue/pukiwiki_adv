@@ -43,24 +43,20 @@ function plugin_links_action()
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits this');
 	if (Auth::check_role('readonly')) Utility::dieMessage( $_string['error_prohibit'] );
 
-	$admin_pass = (empty($post['adminpass'])) ? '' : $post['adminpass'];
-	if ( isset($vars['menu']) && (! Auth::check_role('role_contents_admin') || pkwk_login($admin_pass) )) {
+	$msg   = 'Links';
+
+	$admin_pass = (empty($post['adminpass'])) ? null : $post['adminpass'];
+	if (! Auth::check_role('role_contents_admin') || Auth::login($admin_pass) ) {
 		$force = (isset($post['force']) && $post['force'] === 'on') ? true : false;
 		$msg  = & $_links_messages['title_update'];
 		$links = new Relational('');
+		$links->init();
 
-		if ($links->init() !== false){
-			$foot_explain = array(); // Exhaust footnotes
-			$body = & $_links_messages['msg_done'];
-			return array('msg'=>$msg, 'body'=>$body);
-		}else{
-			return array('msg'=>$msg, 'body'=>$_links_messages['msg_failure']);
-		}
-
-		return array('msg'=>$msg, 'body'=>$body);
+		return array('msg'=>$msg, 'body'=>$_links_messages['msg_done']);
+	}else{
+		$msg   = $_links_messages['msg_error'];
 	}
-
-	$msg   = & $_links_messages['title_update'];
+	
 	$body  = RendererFactory::factory( sprintf($_links_messages['msg_usage1']) );
 	$script = Router::get_script_uri();
 	$body .= <<<EOD

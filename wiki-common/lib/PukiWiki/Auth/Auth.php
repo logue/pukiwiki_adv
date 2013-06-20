@@ -16,6 +16,7 @@ use PukiWiki\Listing;
 use PukiWiki\Renderer\Header;
 use PukiWiki\Auth\AuthApi;
 use Exception;
+
 /**
  * 認証クラス
  */
@@ -1115,7 +1116,7 @@ class Auth
 		$rc = array();
 
 		// ページ名の取得
-		$pages = Listing::get($type);
+		$pages = Listing::pages($type);
 
 		// $pages = get_existpages($dir, $ext);
 		// コンテンツ管理者以上は、: のページも閲覧可能

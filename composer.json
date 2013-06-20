@@ -7,7 +7,7 @@
 		}
     ],
 	"description": "PukiWiki Advance",
-	"version": "1.1.0-alpha",
+	"version": "2.0.0-alpha",
 	"keywords": [
 		"pukiwiki",
 		"pukiwiki adv",
@@ -32,9 +32,21 @@
 	},
 	"require": {
 		"php": ">=5.3.3",
-		"pear-pear/Net_DNSBL" : "1.*",
 		"aferrandini/phpqrcode": "dev-master",
-		"zendframework/zendframework": "2.*",
+		"zendframework/zend-cache": "2.*",
+		"zendframework/zend-crypt": "2.*",
+		"zendframework/zend-db": "2.*",
+		"zendframework/zend-debug": "2.*",
+		"zendframework/zend-dom": "2.*",
+		"zendframework/zend-http": "2.*",
+		"zendframework/zend-i18n": "2.*",
+		"zendframework/zend-json": "2.*",
+		"zendframework/zend-loader": "2.*",
+		"zendframework/zend-mail": "2.*",
+		"zendframework/zend-math": "2.*",
+		"zendframework/zend-mime": "2.*",
+		"zendframework/zend-Serializer": "2.*",
+		"zendframework/zend-session": "2.*",
 		"zendframework/zendoauth": "2.*",
 		"zendframework/zendopenid":"2.*",
 		"zendframework/zendservice-akismet":"2.*",
@@ -46,10 +58,6 @@
 		"ext-intl" : "for i18n use."
 	},
 	"repositories": [
-		{  
-			"type": "pear",
-			"url": "http://pear.php.net"
-		},
 		{
 			"type": "composer",
 			"url": "https://packages.zendframework.com/"
