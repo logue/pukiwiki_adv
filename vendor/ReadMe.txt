@@ -1,4 +1,4 @@
-Venderフォルダについて
+Vendorフォルダについて
 
 このディレクトリは、composerで自動インストールされたライブラリが入ります。
 PukiWiki Adv.を初回起動する前にpukiwikiのインストールディレクトリで

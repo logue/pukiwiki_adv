@@ -33,6 +33,7 @@
 	"require": {
 		"php": ">=5.3.3",
 		"aferrandini/phpqrcode": "dev-master",
+		"facebook/php-sdk": "dev-master",
 		"zendframework/zend-cache": "2.*",
 		"zendframework/zend-crypt": "2.*",
 		"zendframework/zend-db": "2.*",

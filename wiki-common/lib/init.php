@@ -475,7 +475,6 @@ if (IS_MOBILE === true) {
 
 if ( isset($auth_api['facebook']) ){
 	if (extension_loaded('curl')){
-		require(LIB_DIR.'facebook.php');
 		$fb = new FaceBook($auth_api['facebook']);
 		// FaceBook Integration
 		$fb_user = $fb->getUser();
