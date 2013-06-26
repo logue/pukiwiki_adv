@@ -11,43 +11,70 @@
 
 // ------------------------------------------------------------
 // Settings (define before here, if you want)
-global $_SKIN, $link_tags, $js_tags;
 
-$_SKIN = array(
-/*
-UI Themes
-jQuery(jQuery UI): 
-	base, black-tie, blitzer, cupertino, dark-hive, dot-luv, eggplant, excite-bike, flick, hot-sneaks
-	humanity, le-frog, mint-choc, overcast, pepper-grinder, redmond, smoothness, south-street,
-	start, sunny, swanky-purse, trontastic, ui-darkness, ui-lightness, vader
-
-see also
-http://www.devcurry.com/2010/05/latest-jquery-and-jquery-ui-theme-links.html
-http://jqueryui.com/themeroller/
-*/
+return array(
+	/**
+	 * UI Themes
+	 * jQuery(jQuery UI): 
+	 *  base, black-tie, blitzer, cupertino, dark-hive, dot-luv, eggplant, excite-bike, flick, hot-sneaks
+	 *  humanity, le-frog, mint-choc, overcast, pepper-grinder, redmond, smoothness, south-street,
+	 *  start, sunny, swanky-purse, trontastic, ui-darkness, ui-lightness, vader
+	 *
+	 * see also
+	 * http://www.devcurry.com/2010/05/latest-jquery-and-jquery-ui-theme-links.html
+	 * http://jqueryui.com/themeroller/
+	 */
 	'ui_theme'		=> 'redmond',
 
-	// Navibar系プラグインでもアイコンを表示する
-	'showicon'		=> false,
+	/**
+	 * アドレスの代わりにパスを表示
+	 */
+	'topicpath'		=> true,
 
-	// アドレスの代わりにパスを表示
-	'topicpath'		=> false,
-	
-	// ロゴ設定
+	/**
+	 * ロゴ設定
+	 */
 	'logo'=>array(
-		'src'		=> IMAGE_URI.'pukiwiki_adv.logo.png',
-		'alt'		=> '[PukiWiki Adv.]',
-		'width'		=> '80',
-		'height'	=> '80'
+		'src'       => IMAGE_URI.'pukiwiki_adv.logo.png',
+		'alt'       => '[PukiWiki Adv.]',
+		'width'     => '80',
+		'height'    => '80'
 	),
 
-	// 広告表示領域
-	'adarea'	=> array(
+	/**
+	 * ナビバープラグインでもアイコンを表示する
+	 */
+	'showicon' => false,
+
+	/**
+	 * ナビバーの項目
+	 * （|で区切り）
+	 */
+	'navibar' => 'top,|,edit,freeze,diff,backup,upload,reload,|,new,list,search,recent,help,|,login',
+
+	/**
+	 * ツールバーの項目
+	 */
+	'toolbar' => 'reload,|,new,newsub,edit,freeze,source,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,log,|,help,|,rss',
+
+	/**
+	 * 追加で読み込むJavaScript
+	 */
+	'js'      => array('classic.js'),
+
+	/**
+	 * 広告表示領域
+	 */
+	'adarea' => array(
 		// ページの右上の広告表示領域
-		'header'	=> <<<EOD
+		'header' => <<<EOD
+EOD
+,		// ページ下部の広告表示領域
+		'footer' => <<<EOD
 EOD
 	)
 );
+
 
 // 読み込むスタイルシート
 $link_tags[] = array('rel'=>'stylesheet', 'type'=>'text/css', 'href'=>SKIN_URI.'scripts.css.php?base=' . urlencode(IMAGE_URI) );

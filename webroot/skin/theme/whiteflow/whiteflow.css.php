@@ -21,7 +21,7 @@ $expire = isset($_GET['expire'])   ? (int)$_GET['expire'] * 86400	: '604800';	//
 $menu   = isset($_GET['menu'])   ? $_GET['menu']	: '';
 
 // Read config
-require_once('whiteflow.ini.php');
+$_SKIN = include('whiteflow.ini.php');
 
 // Send header
 header('Content-Type: text/css; charset: UTF-8');

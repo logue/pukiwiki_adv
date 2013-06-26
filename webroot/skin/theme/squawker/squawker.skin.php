@@ -8,49 +8,18 @@
 //
 // $Id: default.skin.php,v 1.4.18 2012/05/03 21:35:00 Logue Exp $
 //
-global $pkwk_dtd, $_SKIN, $is_page, $defaultpage, $sidebar, $headarea, $footarea;
 
 // Initialize
 if (!defined('DATA_DIR')) { exit; }
 
-$site_name = $page_title;
-if ($title != $defaultpage) {
-	$page_title = $title.' - '.$page_title;
-} elseif ($newtitle != '' && $is_read) {
-	$page_title = $newtitle.' - '.$page_title;
-}
-
-$body_menu = do_plugin_convert('menu');
-$body_side = do_plugin_convert('side');
-
-// モードによって、3カラム、2カラムを切り替える。
-if (arg_check('read') && exist_plugin_convert('menu')) {
-	$layout_class = (arg_check('read') && exist_plugin_convert('side') && is_page($sidebar) ? 'three-colums' : 'two-colums');
-}else{
-	$layout_class = '';
-}
-
-// Header and Footer
-$title_style = '';
-$header = '';
-if (is_page($headarea) && exist_plugin_convert('headarea')){
-	$header = do_plugin_convert('headarea');
-	$title_style = "display:none;";
-}
-$footer = (is_page($footarea) && exist_plugin_convert('footarea')) ? do_plugin_convert('footarea') : '';
-
-// navibar
-$navibar = exist_plugin('suckerfish') ? do_plugin_convert('suckerfish') : null;
-
-// start
-
 // Output HTML DTD, <html>, and receive content-type
-$meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_output_dtd();
 ?>
-	<head>
-		<?php echo $meta_content_type; ?>
-		<?php echo $pkwk_head; ?>
-		<title><?php echo $page_title; ?></title>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head prefix="og: http://ogp.me/ns# fb: http://www.facebook.com/2008/fbml">
+<?php echo $this->head; ?>
+		<link rel="stylesheet" type="text/css" href="<?php echo $this->path; ?>css/squawker.css.php?base=<?php echo urlencode(IMAGE_URI); ?>" />
+		<title><?php echo $this->title . ' - ' . $this->site_name; ?></title>
 	</head>
 	<body>
 		<div class="navbar navbar-inverse navbar-fixed-top" role="banner">
@@ -61,64 +30,63 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</a>
-					<a class="brand" href="<?php echo $_LINK['top'] ?>"><?php echo $site_name ?></a>
+					<a class="brand" href="<?php echo $this->links['top'] ?>"><?php echo $this->site_name ?></a>
 					<div class="nav-collapse">
 						<ul class="nav">
-							<li><a href="<?php echo $_LINK['reload'] ?>"><?php echo $_LANG['skin']['reload'] ?></a></li>
-<?php if ($is_page) { ?>
+							<li><a href="<?php echo $this->links['reload'] ?>"><?php echo $this->lang['skin']['reload'] ?></a></li>
+<?php if ($this->is_page) { ?>
 							<li class="dropdown">
-								<a data-toggle="dropdown" href="#"><?php echo $_LANG['skin']['site'] ?><b class="caret"></b></a>
+								<a data-toggle="dropdown" href="#"><?php echo $this->lang['skin']['site'] ?><b class="caret"></b></a>
 								<ul class="dropdown-menu">
-									<li><a href="<?php echo $_LINK['top'] ?>"><i class="icon-home"></i><?php echo $_LANG['skin']['top'] ?></a></li>
-									<li><a href="<?php echo $_LINK['new'] ?>"><i class="icon-plus"></i><?php echo $_LANG['skin']['new'] ?></a></li>
+									<li><a href="<?php echo $this->links['top'] ?>"><i class="icon-home"></i><?php echo $this->lang['skin']['top'] ?></a></li>
+									<li><a href="<?php echo $this->links['new'] ?>"><i class="icon-plus"></i><?php echo $this->lang['skin']['new'] ?></a></li>
 								</ul>
 							</li>
 							<li class="dropdown">
-								<a  data-toggle="dropdown" href="#"><?php echo $_LANG['skin']['page'] ?><b class="caret"></b></a>
+								<a  data-toggle="dropdown" href="#"><?php echo $this->lang['skin']['page'] ?><b class="caret"></b></a>
 								<ul class="dropdown-menu">
-									<li><a href="<?php echo $_LINK['edit'] ?>"><i class="icon-pencil"></i><?php echo $_LANG['skin']['edit'] ?></a></li>
-<?php   if ($is_read and $function_freeze) { ?>
-<?php     if ($is_freeze) { ?>
-									<li><a href="<?php echo $_LINK['unfreeze'] ?>"><i class="icon-wrench"></i><?php echo $_LANG['skin']['unfreeze'] ?></a></li>
+									<li><a href="<?php echo $this->links['edit'] ?>"><i class="icon-pencil"></i><?php echo $this->lang['skin']['edit'] ?></a></li>
+<?php global $function_freeze; ?>
+<?php   if ($this->is_read and $function_freeze) { ?>
+<?php     if ($this->is_freeze) { ?>
+									<li><a href="<?php echo $this->links['unfreeze'] ?>"><i class="icon-wrench"></i><?php echo $this->lang['skin']['unfreeze'] ?></a></li>
 <?php     } else { ?>
-									<li><a href="<?php echo $_LINK['freeze'] ?>"><i class="icon-lock"></i><?php echo $_LANG['skin']['freeze'] ?></a></li>
+									<li><a href="<?php echo $this->links['freeze'] ?>"><i class="icon-lock"></i><?php echo $this->lang['skin']['freeze'] ?></a></li>
 <?php     } ?>
-									<li><a href="<?php echo $_LINK['diff'] ?>"><i class="icon-th-list"></i><?php echo $_LANG['skin']['diff'] ?></a></li>
-									<li><a href="<?php echo $_LINK['copy'] ?>"><i class="icon-tags"></i><?php echo $_LANG['skin']['copy'] ?></a></li>
-									<li><a href="<?php echo $_LINK['rename'] ?>"><i class="icon-tag"></i><?php echo $_LANG['skin']['rename'] ?></a></li>
+									<li><a href="<?php echo $this->links['diff'] ?>"><i class="icon-th-list"></i><?php echo $this->lang['skin']['diff'] ?></a></li>
+									<li><a href="<?php echo $this->links['copy'] ?>"><i class="icon-tags"></i><?php echo $this->lang['skin']['copy'] ?></a></li>
+									<li><a href="<?php echo $this->links['rename'] ?>"><i class="icon-tag"></i><?php echo $this->lang['skin']['rename'] ?></a></li>
 <?php   } ?>
 
-									<li><a href="<?php echo $_LINK['source'] ?>"><i class="icon-leaf"></i><?php echo $_LANG['skin']['source'] ?></a></li>
+									<li><a href="<?php echo $this->links['source'] ?>"><i class="icon-leaf"></i><?php echo $this->lang['skin']['source'] ?></a></li>
 								</ul>
 							</li>
 <?php } ?>
 							<li class="dropdown">
-								<a href="#" data-toggle="dropdown"><?php echo $_LANG['skin']['tool'] ?> <b class="caret"></b></a>
+								<a href="#" data-toggle="dropdown"><?php echo $this->lang['skin']['tool'] ?> <b class="caret"></b></a>
 								<ul class="dropdown-menu">
-									<li><a href="<?php echo $_LINK['login'] ?>"><i class="icon-off"></i><?php echo $_LANG['skin']['login'] ?></a></li>
-<?php if ($do_backup) { ?>
-									<li><a href="<?php echo $_LINK['backup'] ?>"><i class="icon-folder-open"></i><?php echo $_LANG['skin']['backup'] ?></a></li>
-<?php } ?>
+									<li><a href="<?php echo $this->links['login'] ?>"><i class="icon-off"></i><?php echo $this->lang['skin']['login'] ?></a></li>
+									<li><a href="<?php echo $this->links['backup'] ?>"><i class="icon-folder-open"></i><?php echo $this->lang['skin']['backup'] ?></a></li>
 <?php   if ((bool)ini_get('file_uploads')) { ?>
-									<li><a href="<?php echo $_LINK['upload'] ?>"><i class="icon-upload"></i><?php echo $_LANG['skin']['upload'] ?></a></li>
+									<li><a href="<?php echo $this->links['upload'] ?>"><i class="icon-upload"></i><?php echo $this->lang['skin']['upload'] ?></a></li>
 <?php   } ?>
 								</ul>
 							</li>
 							
 							<li class="dropdown">
-								<a href="#" data-toggle="dropdown"><?php echo $_LANG['skin']['list'] ?> <b class="caret"></b></a>
+								<a href="#" data-toggle="dropdown"><?php echo $this->lang['skin']['list'] ?> <b class="caret"></b></a>
 								<ul class="dropdown-menu">
-									<li><a href="<?php echo $_LINK['list'] ?>"><i class="icon-list"></i><?php echo $_LANG['skin']['list'] ?></a></li>
-									<li><a href="<?php echo $_LINK['search'] ?>"><i class="icon-search"></i><?php echo $_LANG['skin']['search'] ?></a></li>
-									<li><a href="<?php echo $_LINK['recent'] ?>"><i class="icon-time"></i><?php echo $_LANG['skin']['recent'] ?></a></li>
-									<li><a href="<?php echo $_LINK['log'] ?>"><i class="icon-book"></i><?php echo $_LANG['skin']['log'] ?></a></li>
+									<li><a href="<?php echo $this->links['list'] ?>"><i class="icon-list"></i><?php echo $this->lang['skin']['list'] ?></a></li>
+									<li><a href="<?php echo $this->links['search'] ?>"><i class="icon-search"></i><?php echo $this->lang['skin']['search'] ?></a></li>
+									<li><a href="<?php echo $this->links['recent'] ?>"><i class="icon-time"></i><?php echo $this->lang['skin']['recent'] ?></a></li>
+									<li><a href="<?php echo $this->links['log'] ?>"><i class="icon-book"></i><?php echo $this->lang['skin']['log'] ?></a></li>
 								</ul>
 							</li>
-							<li><a href="<?php echo $_LINK['help'] ?>"><?php echo $_LANG['skin']['help'] ?></a></li>
+							<li><a href="<?php echo $this->links['help'] ?>"><?php echo $this->lang['skin']['help'] ?></a></li>
 						</ul>
 						<form class="navbar-search left" action="<?php echo get_script_uri(); ?>">
 							<input type="hidden" name="cmd" value="search">
-							<input type="text" class="search-query span2" placeholder="<?php echo $_LANG['skin']['search'] ?>">
+							<input type="text" class="search-query span2" placeholder="<?php echo $this->lang['skin']['search'] ?>">
 						</form>
 					</div><!-- /.nav-collapse -->
 				</div>
@@ -126,73 +94,71 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 		</div><!-- /navbar -->
 		<header class="jumbotron subhead" id="overview">
 			<div class="container">
-				<h1><?php echo(($newtitle!='' && $is_read) ? $newtitle: $page) ?></h1>
-				<p class="lead"><?php echo ($is_page && exist_plugin_convert('topicpath')) ? do_plugin_convert('topicpath') : ''; ?></p>
+				<h1><a href="<?php echo $this->links['related'] ?>"><?php echo $this->title ?></a></h1>
+				<p class="lead"><?php echo $this->topicpath; ?></p>
 			</div>
 		</header>
 
 		<div class="container">
 			<div class="row-fluid">
-<?php if ($layout_class == 'two-colums')  { ?>
-				<div class="span3"><div id="menubar" class="well hidden-phone"><?php echo $body_menu; ?></div></div>
+<?php if ($this->colums == 'two-colums')  { ?>
+				<div class="span3"><div id="menubar" class="well hidden-phone"><?php echo $this->menubar; ?></div></div>
 				<div class="span9">
-					<div id="body" role="main"><?php echo $body ?></div>
+					<div id="body" role="main"><?php echo $this->body ?></div>
 				</div>
-<?php }else if ($layout_class == 'three-colums')  { ?>
-				<div class="span2"><div id="menubar" class="well hidden-phone"><?php echo $body_menu; ?></div></div>
+<?php }else if ($this->colums == 'three-colums')  { ?>
+				<div class="span2"><div id="menubar" class="well hidden-phone"><?php echo $this->menubar; ?></div></div>
 				<div class="span8">
-					<div id="body" role="main"><?php echo $body ?></div>
+					<div id="body" role="main"><?php echo $this->body ?></div>
 				</div>
-				<div class="span2"><div id="sidebar" class="well hidden-phone"><?php echo $body_side; ?></div></div>
+				<div class="span2"><div id="sidebar" class="well hidden-phone"><?php echo $this->sidebar; ?></div></div>
 <?php }else{ ?>
 				<div class="span12">
-					<div id="body" role="main"><?php echo $body ?></div>
+					<div id="body" role="main"><?php echo $this->body ?></div>
 				</div>
 <?php } ?>
 			</div>
 
 			<div class="row-fluid">
-<?php if (isset($notes) && !empty($notes)): ?>
+<?php if (!empty($this->notes)): ?>
 				<div id="note">
-					<?php echo $notes ?>
+					<?php echo $this->notes ?>
 				</div>
 <?php endif; ?>
 
-<?php if (isset($attaches) && !empty($attaches)): ?>
+<?php if ( !empty($this->attaches)): ?>
 				<div id="attach">
-					<?php echo $hr ?>
-					<?php echo $attaches ?>
+					<hr />
+					<?php echo $this->attaches ?>
 				</div>
 <?php endif; ?>
-<?php echo $hr ?>
-				
-<?php if (exist_plugin('toolbar')): ?>
-				<?php echo do_plugin_convert('toolbar','reload,|,new,newsub,edit,freeze,diff,upload,copy,rename,|,top,list,search,recent,backup,refer,|,help,|,mixirss'); ?>
-<?php endif; ?>
+				<hr />
+				<?php echo $this->toolbar; ?>
 			</div>
 
-<?php if (isset($lastmodified)): ?>
+<?php if (isset($this->lastmodified)): ?>
 			<div id="lastmodified" class="row-fluid">
-				<p class="pull-right">Last-modified: <?php echo $lastmodified ?></p>
+				<p class="pull-right">Last-modified: <?php echo $this->lastmodified ?></p>
 			</div>
 <?php endif; ?>
 
-<?php if (isset($related)): ?>
+<?php if (isset($this->related)): ?>
 			<div id="related" class="row-fluid">
-				<?php echo $related ?>
+				<?php echo $this->related ?>
 			</div>
 <?php endif; ?>
 		</div>
 		
 		<footer class="footer row-fluid">
-			<address>Founded by <a href="<?php echo $modifierlink ?>"><?php echo $modifier ?></a></address>
-			<?php echo exist_plugin_inline('qrcode') ? plugin_qrcode_inline(1,$_LINK['reload']) : ''; ?>
+			<address>Founded by <a href="<?php echo $this->modifierlink ?>"><?php echo $this->modifier ?></a></address>
+			<?php echo $this->pluginInline('qrcode',$this->links['reload']); ?>
 			<div id="sigunature">
 				<?php echo S_COPYRIGHT;?><br />
-				HTML convert time: <?php echo showtaketime() ?> sec. <br />
-				Squawker skin by <a href="http://logue.be">Logue</a> based on <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap.
+				Processing time: <var><?php echo $this->proc_time; ?></var> sec.<br />
+				Squawker skin by <a href="http://logue.be">Logue</a> based on <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap</a>.
 			</div>
 		</footer>
-		<?php echo $pkwk_tags; ?>
+		<?php echo $this->js; ?>
+		<script type="text/javascript" src="<?php echo $this->path; ?>squawker.js.php" />
 	</body>
 </html>

@@ -24,7 +24,7 @@
 <?php if (empty($this->headarea)){ ?>
 				<a href="<?php echo $this->links['top'] ?>"><img id="logo" src="<?php echo $this->conf['logo']['src'] ?>" width="<?php echo $this->conf['logo']['width'] ?>" height="<?php echo $this->conf['logo']['height'] ?>" alt="<?php echo $this->conf['logo']['alt'] ?>" /></a>
 				<div id="hgroup">
-					<h1 id="title"><?php echo $this->title ?></h1>
+					<h1 id="title"><a href="<?php echo $this->links['related'] ?>"><?php echo $this->title ?></a></h1>
 					<?php if (!empty($this->links)) { ?><h2><a href="<?php echo $this->links['reload'] ?>" id="parmalink"><?php echo $this->links['reload'] ?></a></h2><?php } ?>
 				</div>
 <!-- * Ad space *-->
@@ -60,17 +60,17 @@
 					</div>
 				</div>
 
-<?php if (!empty($this->menubar))  { ?>
+<?php if ($this->colums == 'three-colums' || $this->colums == 'two-colums')  { ?>
 <!-- Left -->
-				<aside id="menubar">
+				<aside id="menubar" role="navigation">
 					<?php echo $this->menubar ?>
 				</aside>
 <?php } ?>
 
-<?php if (!empty($this->sidebar))  { ?>
+<?php if ($this->colums == 'three-colums')  { ?>
 <!-- Right -->
-				<aside id="sidebar">
-					<?php echo $this->sidebar; ?>
+				<aside id="sidebar" role="navigation">
+					<?php echo $this->sidebar ?>
 				</aside>
 <?php } ?>
 			</div>
@@ -104,7 +104,8 @@
 				</div>
 				<address>Founded by <a href="<?php echo $this->modifierlink ?>" rel="contact"><?php echo $this->modifier ?></a></address>
 				<div id="sigunature">
-					Powered by <a href="http://pukiwiki.logue.be/" rel="external"><?php echo GENERATOR ?></a>. Processing time: <var><?php echo $this->proc_time; ?></var> sec. <br />
+					Powered by <a href="http://pukiwiki.logue.be/" rel="external"><?php echo GENERATOR ?></a>.
+					Processing time: <var><?php echo $this->proc_time; ?></var> sec.<br />
 					Original Theme Design by <a href="http://pukiwiki.cafelounge.net/plus/" rel="external">PukiWiki Plus!</a> Team.
 				</div>
 				<div id="banner_box">
@@ -115,5 +116,6 @@
 			</footer>
 		</div>
 		<?php echo $this->js; ?>
+		<script type="text/javascript" src="<?php echo $this->path; ?>default.js" />
 	</body>
 </html>

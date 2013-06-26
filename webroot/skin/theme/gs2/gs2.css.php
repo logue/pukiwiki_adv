@@ -13,6 +13,8 @@ $image_dir = isset($_GET['base'])   ? $_GET['base']	: '../image/';
 $expire = isset($_GET['expire'])   ? (int)$_GET['expire'] * 86400	: '604800';	// Default is 7 days.
 $gs2_color = isset($_GET['gs2color']) ? $_GET['gs2color'] : 'blue';
 
+require('gs2_color/pukiwiki_gs2_color_'.$gs2_color.'.php');
+
 // Send header
 header('Content-Type: text/css; charset: UTF-8');
 header('Cache-Control: private');

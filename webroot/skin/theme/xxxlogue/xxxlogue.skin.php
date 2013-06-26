@@ -11,123 +11,109 @@
 //
 // License: GPL v3 or (at your option) any later version
 // http://www.opensource.org/licenses/gpl-3.0.html
-
-global $pkwk_dtd, $_SKIN, $is_page, $defaultpage;
-
-if (!defined('DATA_DIR')) { exit; }
-
-if ($title !== $defaultpage) {
-	$page_title = $title.' - '.$page_title;
-} elseif ($newtitle != '' && $is_read) {
-	$page_title = $newtitle.' - '.$page_title;
-}
-
-// navibar
-$navibar = exist_plugin('suckerfish') ? do_plugin_convert('suckerfish') : null;
-
-// Output HTML DTD, <html>, and receive content-type
-$meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_output_dtd();
 ?>
-	<head>
-		<?php echo $meta_content_type; ?>
-		<?php echo $pkwk_head; ?>
-		<title><?php echo $page_title; ?></title>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head prefix="og: http://ogp.me/ns# fb: http://www.facebook.com/2008/fbml">
+<?php echo $this->head; ?>
+		<link rel="stylesheet" type="text/css" href="<?php echo $this->path; ?>xxxlogue.css.php" />
+		<title><?php echo $this->title . ' - ' . $this->site_name; ?></title>
 	</head>
 	<body>
 		<div id="container" role="document">
 <!-- ** Navigator ** -->
-			<?php echo ($navibar === null) ? (exist_plugin('navibar') ? do_plugin_convert('navibar','top,|,edit,freeze,diff,backup,upload,reload,|,new,list,search,recent,help,|,login').'<hr />' :'') : $navibar; ?>
+			<?php echo $this->navibar; ?>
 <!--  End Navigator -->
 <!-- Header -->
-			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<header id="header" class="clearfix" role="banner">'."\n" : '<div id="header" class="clearfix" role="banner">')."\n"; ?>
+			<header id="header" class="clearfix" role="banner">
 <!-- * Title * -->
 				<div id="hgroup" role="banner">
-					<h1 id="title"><?php echo(($newtitle!='' && $is_read)?$newtitle:$page) ?></h1>
-					<?php echo ($is_page && exist_plugin_convert('topicpath')) ? do_plugin_convert('topicpath') : ''; ?>
+					<h1 id="title"><a href="<?php echo $this->links['related'] ?>"><?php echo $this->title ?></a></h1>
+					<?php echo $this->topicpath; ?>
 				</div>
 <!-- * End Title * -->
 <!-- * Ad space *-->
-				<?php echo ($_SKIN['adarea']['header']) ? '<div id="header_ad" class="noprint">' . $_SKIN['adarea']['header'] . '</div>' : ''; ?>
+				<?php echo ($this->conf['adarea']['header']) ? '<div id="header_ad" class="noprint">' . $this->conf['adarea']['header'] . '</div>' : ''; ?>
 <!-- * End Ad space * -->
-			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</header>' : '</div>')."\n"; ?>
+			</header>
 <!-- End Header -->
 <?php if (arg_check('read')){ ?><!-- * Shelf * -->
-			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="shelf">'."\n" : '<div id="shelf">'."\n"; ?>
+			<aside id="shelf">
 				<div id="toggle">
 					<div id="inner_toggle">
-<?php if ($is_page) { ?>
+<?php if (!empty($this->menubar)) { ?>
 						<div id="shelf_form">
-							<p><a href="<?php echo $_LINK['reload'] ?>" id="parmalink" class="small"><?php echo $_LINK['reload'] ?></a></p>
-							<?php if (exist_plugin('search')) echo do_plugin_convert('search'); ?>
+							<p><a href="<?php echo $this->links['reload'] ?>" id="parmalink" class="small"><?php echo $this->links['reload'] ?></a></p>
+							<?php echo $this->pluginBlock('search'); ?>
 						</div>
 <?php } ?>
-<?php if (!empty($attaches)) { ?>
-						<?php echo $hr ?>
+<?php if (!empty($this->attaches)) { ?>
+						<hr />
 <!-- * Attach * -->
-						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="attach" class="clearfix">'."\n" : '<div id="attach">'."\n"; ?>
-							<?php echo $attaches ?>
-						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
+						<aside id="attach" class="clearfix">
+							<?php echo $this->attaches ?>
+						</aside>
 <!--  End Attach -->
 <?php } ?>
 
-<?php if (!empty($related)) { ?>
-						<?php echo $hr ?>
+<?php if (!empty($this->related)) { ?>
+						<hr />
 <!-- * Related * -->
-						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="related" class="clearfix">'."\n" : '<div id="related">'."\n"; ?>
-							<?php echo $related ?>
-						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
+						<aside id="related" class="clearfix">
+							<?php echo $this->related ?>
+						</aside>
 <!--  End Related -->
 <?php } ?>
-						<?php echo exist_plugin('toolbar') ? do_plugin_convert('toolbar','reload,|,new,newsub,edit,freeze,source,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,log,|,help,|,rss') : '';?>
+						<?php echo $this->toolbar;?>
 					</div>
 				</div>
-			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
+			</aside>
 <!-- * End Shelf * --><?php } ?>
 
 <!-- Content -->
 			<div id="content">
 				<div id="content-top" class="noprint"></div>
-				<div id="<?php echo (arg_check('read') && exist_plugin_convert('menu')) ? 'primary-content' : 'single-content'; ?>" role="main">
+				<div id="<?php echo (arg_check('read') && !empty($this->menubar)) ? 'primary-content' : 'single-content'; ?>" role="main">
 <!-- * Main Content * -->
-					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="body" class="body" role="main">'."\n" : '<div id="body" class="body" role="main">'."\n"; ?>
-						<?php echo $body ?>
-					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</section>'."\n" : '</div>'."\n"; ?>
-<?php if (!empty($notes)) { ?>
+					<section id="body" class="body" role="main">
+						<?php echo $this->body ?>
+					</section>
+<?php if (!empty($this->notes)) { ?>
 					<hr />
 <!-- * Note * -->
-					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="note">'."\n" : '<div id="note">'."\n"; ?>
-						<?php echo $notes ?>
-					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
+					<aside id="note">
+						<?php echo $this->notes ?>
+					</aside>
 <!--  End Note -->
 <?php } ?>
-					<?php echo ($_SKIN['adarea']['footer']) ? '<hr /><div id="footer_ad" class="noprint">' . $_SKIN['adarea']['footer'] . '</div>' : ''; ?>
+					<?php echo ($this->conf['adarea']['footer']) ? '<hr /><div id="footer_ad" class="noprint">' . $this->conf['adarea']['footer'] . '</div>' : ''; ?>
 <!-- * end Main Content * -->
 				</div>
 
-<?php if (arg_check('read') && exist_plugin_convert('menu')){ ?>
+<?php if (arg_check('read') && !empty($this->menubar)){ ?>
 <!-- * MenuBar * -->
-				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="sidebar" class="noprint clearfix"  role="navigation">' : '<div id="sidebar"  role="navigation">')."\n"; ?>
-					<?php echo do_plugin_convert('menu') ?>
-				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>')."\n"; ?>
+				<aside id="sidebar" class="noprint clearfix"  role="navigation">
+					<?php echo $this->menubar ?>
+				</aside>
 <!-- * End MenuBar * -->
-				<?php echo (!empty($lastmodified)) ? '<div id="lastmodified">Last-modified: '.$lastmodified.'</div>'."\n" : '' ?>
-<?php }else{ echo $hr; } ?>
-				<address role="contactinfo">Founded by <a href="<?php echo $modifierlink ?>"><?php echo $modifier ?></a></address>
+				<?php echo (!empty($this->lastmodified)) ? '<div id="lastmodified">Last-modified: '.$this->lastmodified.'</div>'."\n" : '' ?>
+<?php }else{ echo '<hr />'; } ?>
+				<address role="contactinfo">Founded by <a href="<?php echo $this->modifierlink ?>"><?php echo $this->modifier ?></a></address>
 				<div id="content-bottom" class="noprint"><a href="#header">&#x021EA;Top</a></div>
 			</div>
 <!-- End Content -->
 		</div>
 
 <!-- Footer -->
-		<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<footer id="footer" class="noprint" role="contactinfo">'."\n" : '<div id="footer" class="noprint">'."\n"; ?>
+		<footer id="footer" class="noprint" role="contactinfo">
 			<p>
-				<?php echo S_COPYRIGHT ?>. HTML convert time: <?php echo showtaketime() ?> sec.<br />
-				<strong>x<sup>x</sup><sub>x</sub>Logue skin v2.4.0</strong> by <a href="http://logue.be/" rel="external">Logue</a> / 
-				based on <a href="http://xuyiyang.com/" rel="external">Xuyi Yang</a>'s <a href="http://xuyiyang.com/wordpress-themes/unnamed/" rel="external">Unnamed v1.23</a>.
+				<?php echo S_COPYRIGHT ?>. HTML convert time: <?php echo $this->proc_time; ?> sec.<br />
+				<strong>x<sup>x</sup><sub>x</sub>Logue skin v2.5.0</strong> by <a href="http://logue.be/" rel="external">Logue</a> / 
+				based on <a href="http://xuyiyang.com/" rel="external">Xuyi Yang</a>&apos;s <a href="http://xuyiyang.com/wordpress-themes/unnamed/" rel="external">Unnamed v1.23</a>.
 			</p>
-		<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</footer>'."\n" : '</div>'."\n"; ?>
+		</footer>
 <!-- End Footer -->
-			
-		<?php echo $pkwk_tags; ?>
+		<?php echo $this->js; ?>
+		<script type="text/javascript" src="<?php echo $this->path; ?>xxxlogue.js" />
 	</body>
 </html>

@@ -9,7 +9,7 @@ $image_dir = isset($_GET['base'])   ? $_GET['base']	: '../image/';
 $expire = 0;
 //$expire = isset($_GET['expire']) ? (int)$_GET['expire'] * 86400	: '604800';	// Default is 7 days.
 
-$start_color = isset($_GET['start_color'])   ? $_GET['start_color']	: '#B24926';
+$start_color = isset($_GET['start_color'])   ? $_GET['start_color']	: '#2649B2';
 $stop_color  = isset($_GET['stop_color'])   ? $_GET['stop_color']	: '#23A5FA';
 // Send header
 header('Content-Type: text/css; charset: UTF-8');
@@ -24,38 +24,6 @@ readfile('custom-theme/jquery-ui-1.10.0.custom.css');
 ?>
 /* ==|== PukiWiki Advance Standard Font Set ================================= */
 
-/* Font set */
-body, .ui-widget{
-	font-family: 'Segoe UI', 'Trebuchet MS', Verdana, Arial, Sans-Serif;
-}
-/* Japanese */
-body:lang(ja), body:lang(ja) .ui-widget{
-	font-family: Meiryo, 'メイリオ', 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', Osaka, 'ＭＳＰ ゴシック';
-}
-/* Korean */
-body:lang(ko), body:lang(ko) .ui-widget{
-	font-family: 'AppleGothic', 'Malgun Gothic', '맑은 고딕', Gulim, Dotum, AppleGothic;
-}
-/*  Chinese */
-body:lang(zh), body:lang(zh) .ui-widget{
-	font-family: 'Hiragino Sans GB W3', 'STHeiti', 'Apple LiGothic Medium', 'Microsoft YaHei', 'Microsoft JhengHei';
-}
-
-/* for Print font */
-@media print{
-	body {
-		font-family: 'Lucida Bright', Century, 'Times New Roman', serif;
-	}
-	:lang(ja) {
-		font-family: 'ヒラギノ明朝 Pro W3', 'Hiragino Mincho Pro', '平成明朝', 'ＭＳ Ｐ明朝', 'MS PMincho', serif;
-	}
-	:lang(zh) {
-		font-family: 'Apple LiSung Light', 'STHeiti Light', 'PMingLiU', 'KaiTi', serif;
-	}
-	:lang(ko) {
-		font-family: '바탕체', Batang, serif;
-	}
-}
 .ie textarea{
 	overflow: auto;
 }
@@ -91,10 +59,10 @@ body {
     color: rgba(255,255,255,.75);
     padding: 40px 0;
     text-shadow: 0 1px 3px rgba(0,0,0,.4), 0 0 30px rgba(0,0,0,.075);
-    background: #B24926; /* Old browsers */
+    background: <?php echo $start_color; ?>; /* Old browsers */
     background: -moz-linear-gradient(45deg,  <?php echo $start_color; ?> 0%, #<?php echo $stop_color; ?> 100%); /* FF3.6+ */
     background: -webkit-gradient(linear, left bottom, right top, color-stop(0%,<?php echo $start_color; ?>), color-stop(100%,<?php echo $stop_color; ?>)); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(45deg,  #2649B2 0%,#23A5FA 100%); /* Chrome10+,Safari5.1+ */
+    background: -webkit-linear-gradient(45deg,  <?php echo $start_color; ?> 0%,<?php echo $stop_color; ?> 100%); /* Chrome10+,Safari5.1+ */
     background: -o-linear-gradient(45deg,  <?php echo $start_color; ?> 0%,<?php echo $stop_color; ?> 100%); /* Opera 11.10+ */
     background: -ms-linear-gradient(45deg,  <?php echo $start_color; ?> 0%,<?php echo $stop_color; ?> 100%); /* IE10+ */
     background: linear-gradient(45deg,  <?php echo $start_color; ?> 0%,<?php echo $stop_color; ?> 100%); /* W3C */

@@ -12,58 +12,48 @@
 // by leva(http://www.geckdev.org)
 
 // License is The MIT/X11 License (http://www.opensource.org/licenses/mit-license.php)
-global $pkwk_dtd, $_SKIN, $is_page, $defaultpage;
 
-if (!defined('DATA_DIR')) { exit; }
-
-if ($title != $defaultpage) {
-	$page_title = $title.' - '.$page_title;
-} elseif ($newtitle != '' && $is_read) {
-	$page_title = $newtitle.' - '.$page_title;
-}
-
-$layout_class = arg_check('read') ? 'work' : 'display';
-
-// Output HTML DTD, <html>, and receive content-type
-$meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_output_dtd();
+$layout_class = $this->is_read ? 'work' : 'display';
 ?>
-	<head>
-		<?php echo $meta_content_type; ?>
-		<?php echo $pkwk_head; ?>
-		<title><?php echo $page_title; ?></title>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head prefix="og: http://ogp.me/ns# fb: http://www.facebook.com/2008/fbml">
+<?php echo $this->head; ?>
+		<link rel="stylesheet" type="text/css" href="<?php echo $this->path; ?>whiteflow.css.php" />
+		<title><?php echo $this->title . ' - ' . $this->site_name; ?></title>
 	</head>
 	<body>
 <!-- START #containar-->
 		<div id="wide-container" role="document">
 <!-- * Ad space *-->
-			<?php if ($_SKIN['adarea']['header']) echo '<div id="header_ad" class="noprint">' . $_SKIN['adarea']['header'] . '</div>'; ?>
+			<?php if ($this->conf['adarea']['header']) echo '<div id="header_ad" class="noprint">' . $this->conf['adarea']['header'] . '</div>'; ?>
 <!-- * End Ad space * -->
-			<?php echo '<div id="container" class="'. $layout_class .'">'; ?>
+			<?php echo '<div id="container" class="'. $this->colums .'">'; ?>
 <!-- START #header -->
-			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<header id="header" role="banner">'."\n" : '<div id="header" role="banner">')."\n"; ?>
-<?php if (exist_plugin_convert('headarea') && do_plugin_convert('headarea') != '') { ?>
-				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<hgroup id="hgroup" style="display:none;">'."\n" : '<div id="hgroup" style="display:none;">')."\n"; ?>
-					<h1 id="title"><?php echo(($newtitle!='' && $is_read) ? $newtitle: $page) ?></h1>
-				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</hgroup>'."\n" : '</div>')."\n"; ?>
-				<?php echo do_plugin_convert('headarea') ?>
+			<header id="header" role="banner">
+<?php if (!empty($this->headarea)) { ?>
+				<hgroup id="hgroup" style="display:none;">
+					<h1 id="title"><a href="<?php echo $this->links['related'] ?>"><?php echo $this->title ?></a></h1>
+				</hgroup>
+				<?php echo $this->headarea ?>
 <?php } else { ?>
-				<a href="<?php echo $_LINK['top'] ?>" id="logo"><img src="<?php echo $_SKIN['logo']['src'] ?>" width="<?php echo $_SKIN['logo']['width'] ?>" height="<?php echo $_SKIN['logo']['height'] ?>" alt="<?php echo $_SKIN['logo']['alt'] ?>" /></a>
-				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '<hgroup id="hgroup">'."\n" : '<div id="hgroup">')."\n"; ?>
-					<h1 id="title"><?php echo (($newtitle!='' && $is_read) ? $newtitle : $page) ?></h1>
+				<a href="<?php echo $this->links['top'] ?>" id="logo"><img src="<?php echo $this->conf['logo']['src'] ?>" width="<?php echo $this->conf['logo']['width'] ?>" height="<?php echo $this->conf['logo']['height'] ?>" alt="<?php echo $this->conf['logo']['alt'] ?>" /></a>
+				<hgroup id="hgroup">
+					<h1 id="title"><a href="<?php echo $this->links['related'] ?>"><?php echo $this->title ?></a></h1>
 					<h2 id="description">PukiWiki - Yet another WikiWikiWeb clone.</h2>
-				<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</hgroup>'."\n" : '</div>')."\n"; ?>
+				</hgroup>
 <?php } ?>
-			<?php echo (($pkwk_dtd === PKWK_DTD_HTML_5) ? '</header>' : '</div>')."\n"; ?>
+			</header>
 <!-- END #header -->
 
 			<div id="additional" class="clearfix">
 <?php if (arg_check('read')){ ?>
-			<?php echo ($is_page && exist_plugin_convert('topicpath')) ? do_plugin_convert('topicpath') : ''; ?>
-			<?php echo (!empty($lastmodified)) ? '<div id="lastmodified">'.$lastmodified.'</div>'."\n" : '' ?>
-<?php }else if ($is_page){ ?>
-			<nav id="topicpath"><a href="<?php echo $_LINK['reload'] ?>"><?php echo $_LANG['skin']['reload'] ?></a></nav>
+			<?php echo $this->topicpath; ?>
+			<?php echo (!empty($this->lastmodified)) ? '<div id="lastmodified">'.$this->lastmodified.'</div>'."\n" : '' ?>
+<?php }else if (!empty($this->menubar)){ ?>
+			<nav id="topicpath"><a href="<?php echo $this->links['reload'] ?>"><?php echo $this->lang['skin']['reload'] ?></a></nav>
 <?php }else{ ?>
-			<nav id="topicpath"><a href="<?php echo $_LINK['top'] ?>"><?php echo $_LANG['skin']['top'] ?></a></nav>
+			<nav id="topicpath"><a href="<?php echo $this->links['top'] ?>"><?php echo $this->lang['skin']['top'] ?></a></nav>
 <?php } ?>
 			</div>
 
@@ -71,39 +61,39 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 			<div id="content" class="clearfix">
 <!-- START #content > #edit-area -->
 				<div id="edit-area" class="<?php echo $layout_class; ?>" role="main">
-					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<section id="body">'."\n" : '<div id="body">'."\n"; ?>
-						<?php echo $body."\n" ?>
-					<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</section>'."\n" : '</div>'."\n"; ?>
+					<section id="body">
+						<?php echo $this->body ?>
+					</section>
 
 					<div id="misc" class="display">
-<?php if (!empty($notes)) { ?>
+<?php if (!empty($this->notes)) { ?>
 						<hr />
 <!-- * Note * -->
-						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="note" role="note">'."\n" : '<div id="note" role="note">'."\n"; ?>
-							<?php echo $notes ?>
-						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
+						<aside id="note" role="note">
+							<?php echo $this->notes ?>
+						</aside>
 <!--  End Note -->
 <?php } ?>
-<?php if (!empty($attaches)) { ?>
-						<?php echo $hr ?>
+<?php if (!empty($this->attaches)) { ?>
+						<hr />
 <!-- * Attach * -->
-						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="attach">'."\n" : '<div id="attach">'."\n"; ?>
-							<?php echo $attaches ?>
-						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
+						<aside id="attach">
+							<?php echo $this->attaches ?>
+						</aside>
 <!--  End Attach -->
 <?php } ?>
 
-<?php if (!empty($related)) { ?>
-						<?php echo $hr ?>
+<?php if (!empty($this->related)) { ?>
+						<hr />
 <!-- * Related * -->
-						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="related">'."\n" : '<div id="related">'."\n"; ?>
-							<?php echo $related ?>
-						<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
+						<aside id="related">
+							<?php echo $this->related ?>
+						</aside>
 <!--  End Related -->
 <?php } ?>
 
 <!-- * Ad space * -->
-						<?php if (!empty($_SKIN['adarea']['footer'])) echo '<div id="footer_adspace" class="noprint" style="text-align:center;">' . $_SKIN['adarea']['footer'] . '</div>'; ?>
+						<?php if (!empty($this->conf['adarea']['footer'])) echo '<div id="footer_adspace" class="noprint" style="text-align:center;">' . $this->conf['adarea']['footer'] . '</div>'; ?>
 <!-- * End Ad space * -->
 					</div>
 				</div>
@@ -111,83 +101,83 @@ $meta_content_type = (isset($pkwk_dtd)) ? pkwk_output_dtd($pkwk_dtd) : pkwk_outp
 
 <?php if (arg_check('read')){ ?>
 <!-- START #content > #menu -->
-				<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<aside id="sidebar" class="clearfix" role="navigation">'."\n" : '<div id="sidebar" class="clearfix">'."\n"; ?>
+				<aside id="sidebar" class="clearfix" role="navigation">
 					<div id="page-menu" class="clearfix">
 <!-- ■BEGIN id:page_action -->
-						<h3><?php echo $_LANG['skin']['edit'] ?></h3>
+						<h3><?php echo $this->lang['skin']['edit'] ?></h3>
 						<ul class="sf-menu sf-vertical">
-<?php if ($is_page) { ?>
-							<li><a href="<?php echo $_LINK['top'] ?>"><span class="pkwk-icon icon-top"></span><?php echo $_LANG['skin']['top'] ?></a></li>
-							<li><a href="<?php echo $_LINK['reload'] ?>"><span class="pkwk-icon icon-reload"></span><?php echo $_LANG['skin']['reload'] ?></a></li>
-							<li><a href="<?php echo $_LINK['new'] ?>"><span class="pkwk-icon icon-new"></span><?php echo $_LANG['skin']['new'] ?></a>
+<?php if (!empty($this->menubar)) { ?>
+							<li><a href="<?php echo $this->links['top'] ?>"><span class="pkwk-icon icon-top"></span><?php echo $this->lang['skin']['top'] ?></a></li>
+							<li><a href="<?php echo $this->links['reload'] ?>"><span class="pkwk-icon icon-reload"></span><?php echo $this->lang['skin']['reload'] ?></a></li>
+							<li><a href="<?php echo $this->links['new'] ?>"><span class="pkwk-icon icon-new"></span><?php echo $this->lang['skin']['new'] ?></a>
 								<ul>
-									<li><a href="<?php echo $_LINK['newsub'] ?>"><span class="pkwk-icon icon-newsub"></span><?php echo $_LANG['skin']['newsub'] ?></a></li>
-									<li><a href="<?php echo $_LINK['rename'] ?>"><span class="pkwk-icon icon-rename"></span><?php echo $_LANG['skin']['rename'] ?></a></li>
+									<li><a href="<?php echo $this->links['newsub'] ?>"><span class="pkwk-icon icon-newsub"></span><?php echo $this->lang['skin']['newsub'] ?></a></li>
+									<li><a href="<?php echo $this->links['rename'] ?>"><span class="pkwk-icon icon-rename"></span><?php echo $this->lang['skin']['rename'] ?></a></li>
 								</ul>
 							</li>
-							<li><a href="<?php echo $_LINK['edit'] ?>"><span class="pkwk-icon icon-edit"></span><?php echo $_LANG['skin']['edit'] ?></a>
+							<li><a href="<?php echo $this->links['edit'] ?>"><span class="pkwk-icon icon-edit"></span><?php echo $this->lang['skin']['edit'] ?></a>
 								<ul>
-<?php   if ($is_read and $function_freeze) { ?>
-<?php     if ($is_freeze) { ?>
-									<li><a href="<?php echo $_LINK['unfreeze'] ?>"><span class="pkwk-icon icon-unfreeze"></span><?php echo $_LANG['skin']['unfreeze'] ?></a></li>
+<?php global $function_freeze ?>
+<?php   if ($this->is_read and $function_freeze) { ?>
+<?php     if ($this->is_freeze) { ?>
+									<li><a href="<?php echo $this->links['unfreeze'] ?>"><span class="pkwk-icon icon-unfreeze"></span><?php echo $this->lang['skin']['unfreeze'] ?></a></li>
 <?php     } else { ?>
-									<li><a href="<?php echo $_LINK['freeze'] ?>"><span class="pkwk-icon icon-freeze"></span><?php echo $_LANG['skin']['freeze'] ?></a></li>
+									<li><a href="<?php echo $this->links['freeze'] ?>"><span class="pkwk-icon icon-freeze"></span><?php echo $this->lang['skin']['freeze'] ?></a></li>
 <?php     } ?>
 <?php   } ?>
 <?php   if ((bool)ini_get('file_uploads')) { ?>
-									<li><a href="<?php echo $_LINK['upload'] ?>"><span class="pkwk-icon icon-upload"></span><?php echo $_LANG['skin']['upload'] ?></a></li>
+									<li><a href="<?php echo $this->links['upload'] ?>"><span class="pkwk-icon icon-upload"></span><?php echo $this->lang['skin']['upload'] ?></a></li>
 <?php   } ?>
-									<li><a href="<?php echo $_LINK['source'] ?>"><span class="pkwk-icon icon-source"></span><?php echo $_LANG['skin']['source'] ?></a></li>
-									<li><a href="<?php echo $_LINK['diff'] ?>"><span class="pkwk-icon icon-diff"></span><?php echo $_LANG['skin']['diff'] ?></a></li>
-<?php if ($do_backup) { ?>
-									<li><a href="<?php echo $_LINK['backup'] ?>"><span class="pkwk-icon icon-backup"></span><?php echo $_LANG['skin']['backup'] ?></a></li>
-<?php } ?>
+									<li><a href="<?php echo $this->links['source'] ?>"><span class="pkwk-icon icon-source"></span><?php echo $this->lang['skin']['source'] ?></a></li>
+									<li><a href="<?php echo $this->links['diff'] ?>"><span class="pkwk-icon icon-diff"></span><?php echo $this->lang['skin']['diff'] ?></a></li>
+									<li><a href="<?php echo $this->links['backup'] ?>"><span class="pkwk-icon icon-backup"></span><?php echo $this->lang['skin']['backup'] ?></a></li>
 								</ul>
 							</li>
 <?php } ?>
-							<li><a href="<?php echo $_LINK['search'] ?>"><span class="pkwk-icon icon-search"></span><?php echo $_LANG['skin']['search'] ?></a></li>
-							<li><a href="<?php echo $_LINK['list'] ?>"><span class="pkwk-icon icon-list"></span><?php echo $_LANG['skin']['list'] ?></a>
+							<li><a href="<?php echo $this->links['search'] ?>"><span class="pkwk-icon icon-search"></span><?php echo $this->lang['skin']['search'] ?></a></li>
+							<li><a href="<?php echo $this->links['list'] ?>"><span class="pkwk-icon icon-list"></span><?php echo $this->lang['skin']['list'] ?></a>
 								<ul>
 <?php if (arg_check('list')) { ?>
-									<li><a href="<?php echo $_LINK['filelist'] ?>"><span class="pkwk-icon icon-filelist"></span><?php echo $_LANG['skin']['filelist'] ?></a></li>
+									<li><a href="<?php echo $this->links['filelist'] ?>"><span class="pkwk-icon icon-filelist"></span><?php echo $this->lang['skin']['filelist'] ?></a></li>
 <?php } ?>
-									<li><a href="<?php echo $_LINK['recent'] ?>"><span class="pkwk-icon icon-recent"></span><?php echo $_LANG['skin']['recent'] ?></a></li>
-									<li><a href="<?php echo $_LINK['referer'] ?>"><span class="pkwk-icon icon-referer"></span><?php echo $_LANG['skin']['referer'] ?></a></li>
-									<li><a href="<?php echo $_LINK['log'] ?>"><span class="pkwk-icon icon-log"></span><?php echo $_LANG['skin']['log'] ?></a></li>
+									<li><a href="<?php echo $this->links['recent'] ?>"><span class="pkwk-icon icon-recent"></span><?php echo $this->lang['skin']['recent'] ?></a></li>
+									<li><a href="<?php echo $this->links['referer'] ?>"><span class="pkwk-icon icon-referer"></span><?php echo $this->lang['skin']['referer'] ?></a></li>
+									<li><a href="<?php echo $this->links['log'] ?>"><span class="pkwk-icon icon-log"></span><?php echo $this->lang['skin']['log'] ?></a></li>
 								</ul>
 							</li>
-							<li><a href="<?php echo $_LINK['login'] ?>"><span class="pkwk-icon icon-login"></span><?php echo $_LANG['skin']['login'] ?></a></li>
+							<li><a href="<?php echo $this->links['login'] ?>"><span class="pkwk-icon icon-login"></span><?php echo $this->lang['skin']['login'] ?></a></li>
 						</ul>
 					</div>
 
-<?php if (exist_plugin_convert('menu')){ ?>
+<?php if (!empty($this->menubar)){ ?>
 					<hr />
 					<div id="menubar">
-						<?php echo do_plugin_convert('menu'); ?>
+						<?php echo $this->menubar; ?>
 					</div>
 <?php } ?>
-				<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</aside>'."\n" : '</div>'."\n"; ?>
+				</aside>
 <!-- END #content > #menu -->
 			</div>
 <!-- END #content -->
 <?php } ?>
 
 <!-- START #footer -->
-			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '<footer id="footer" role="contentinfo">'."\n" : '<div id="footer" role="contentinfo">'."\n"; ?>
-				<?php if (exist_plugin_convert('footarea') && do_plugin_convert('footarea') != ''){
-					echo do_plugin_convert('footarea');
+			<footer id="footer" role="contentinfo">
+				<?php if (!empty($this->footarea)){
+					echo $this->footarea;
 				}else { // or In this skin?>
 					<ul id="signature">
-						<li><address>Site admin: <a href="<?php echo $modifierlink ?>"><?php echo $modifier ?></a></address></li>
-						<li><strong>White flow Adv.</strong> based on <a href="http://note.openvista.jp/" rel="external">leva</a>'s <a href="http://note.openvista.jp/2007/pukiwiki-skin/" rel="external"><strong>White flow</strong></a>.</li>
+						<li><address>Site admin: <a href="<?php echo $this->modifierlink ?>"><?php echo $this->modifier ?></a></address></li>
+						<li><strong>White flow Adv.</strong> based on <a href="http://note.openvista.jp/" rel="external">leva</a>&apos;s <a href="http://note.openvista.jp/2007/pukiwiki-skin/" rel="external"><strong>White flow</strong></a>.</li>
 						<li><?php echo S_COPYRIGHT;?></li>
-						<li>HTML convert time: <?php echo showtaketime() ?> sec.</li>
+						<li>HTML convert time: <?php echo $this->proc_time; ?> sec.</li>
 					</ul>
 				<?php } ?>
 <!-- END #footer -->
-			<?php echo ($pkwk_dtd === PKWK_DTD_HTML_5) ? '</footer>'."\n" : '</div>'."\n"; ?>
+			</footer>
 <!-- #END #container -->
 		</div>
-		<?php echo $pkwk_tags; ?>
+		<?php echo $this->js; ?>
+		<script type="text/javascript" src="<?php echo $this->path; ?>whiteflow.js" />
 	</body>
 </html>

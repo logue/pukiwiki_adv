@@ -19,8 +19,7 @@ error_reporting(E_ERROR | E_PARSE); // Avoid E_WARNING, E_NOTICE, etc
 
 ini_set('zlib.output_compression', 'Off');
 
-require_once('xxxlogue.ini.php');
-global $_SKIN;	// Skin name space
+$_SKIN = require_once('xxxlogue.ini.php');
 
 // Style
 $menubar   = isset($_GET['menubar'])   ? $_GET['menubar']	: '';

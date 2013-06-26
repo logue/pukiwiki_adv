@@ -1,7 +1,7 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
 // $Id: cloudwalk.ini.php,v1.2.1 2011/09/11 22:56:30 Logue Exp $
-// Copyright (C) 2010-2011 PukiWiki Advance Developers Team
+// Copyright (C) 2010-2013 PukiWiki Advance Developers Team
 // PukiWiki Advance Clowdwalk skin
 //
 // License: GPL v2 or (at your option) any later version
@@ -9,10 +9,8 @@
 //
 // ------------------------------------------------------------
 // Settings (define before here, if you want)
-global $_SKIN, $link_tags, $js_tags;
 
-
-$_SKIN = array(
+return array(
 /*
 UI Themes
 jQuery(jQuery UI): 

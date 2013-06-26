@@ -7,9 +7,9 @@
 //
 // $Id: default.skin.php,v 1.0.2 2011/09/11 22:55:00 Logue Exp $
 //
-global $_SKIN, $link_tags, $js_tags;
-
-$_SKIN = array(
+return array(
+	'default_css' => false,
+	'ui-theme' => false,
 	// Navibar系プラグインでもアイコンを表示する
 	'showicon'		=> false,
 
@@ -37,11 +37,7 @@ EOD
 
 // 読み込むスタイルシート
 $link_tags[] = array('rel'=>'stylesheet', 'type'=>'text/css', 'href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/css/squawker.css.php?base=' . urlencode(IMAGE_URI));
-/*
-$link_tags[] = array('rel'=>'stylesheet', 'type'=>'text/css', 'href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/css/bootstrap.min.css');
-$link_tags[] = array('rel'=>'stylesheet', 'type'=>'text/css', 'href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/css/bootstrap-responsive.min.css');
-$link_tags[] = array('rel'=>'stylesheet', 'type'=>'text/css', 'href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/css/jquery-ui-theme.css');
-*/
+
 // 読み込むスクリプト
 $js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/squawker.js.php', 'defer'=>'defer');
 

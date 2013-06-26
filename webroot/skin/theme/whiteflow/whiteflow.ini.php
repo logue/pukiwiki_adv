@@ -7,9 +7,7 @@
 //
 // $Id: whiteflow.ini.php,v 1.0.0 2011/12/10 11:39:00 Logue Exp $
 //
-global $_SKIN, $link_tags, $js_tags;
-
-$_SKIN = array(
+return array(
 /*
 UI Themes
 jQuery(jQuery UI): 
@@ -49,10 +47,5 @@ EOD
 EOD
 	)
 );
-
-// 読み込むスタイルシート
-$link_tags[] = array('rel'=>'stylesheet', 'type'=>'text/css', 'href'=>SKIN_URI.'scripts.css.php?base=' . urlencode(IMAGE_URI) );
-$link_tags[] = array('rel'=>'stylesheet', 'type'=>'text/css', 'href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/whiteflow.css.php');
-
 /* End of file whiteflow.ini.php */
 /* Location: ./webroot/skin/theme/whiteflow/whiteflow.ini.php */
