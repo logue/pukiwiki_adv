@@ -33,7 +33,7 @@ function plugin_search_init()
 // Show a search box on a page
 function plugin_search_convert()
 {
-	static $done;
+//	static $done;
 
 	if (isset($done)) {
 		return '#search(): You already view a search box<br />' . "\n";

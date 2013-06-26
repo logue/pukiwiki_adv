@@ -34,7 +34,7 @@ class Render{
 	/**
 	 * jQueryのバージョン
 	 */
-	const JQUERY_VER = '1.9.1';
+	const JQUERY_VER = '1.10.1';
 	/**
 	 * jQuery UIのバージョン
 	 */
@@ -43,6 +43,22 @@ class Render{
 	 * jQuery Mobileのバージョン
 	 */
 	const JQUERY_MOBILE_VER = '1.3.1';
+	/**
+	 * スキンスクリプト（未圧縮）
+	 */
+	const DEFAULT_JS = 'skin.original.js';
+	/**
+	 * スキンスクリプト（圧縮）
+	 */
+	const DEFAULT_JS_COMPRESSED = 'js.php?file=skin';
+	/**
+	 * モバイルスクリプト（未圧縮）
+	 */
+	const MOBILE_JS = 'mobile.original.js';
+	/**
+	 * モバイルスクリプト（圧縮）
+	 */
+	const MOBILE_JS_COMPRESSED = 'js.php?file=mobile';
 	/**
 	 * 通常読み込むスクリプト
 	 */
@@ -61,15 +77,10 @@ class Render{
 		'jquery.dataTables',
 		'jquery.dataTables.naturalsort',
 		'jquery.i18n',
-		'jquery.jplayer',
-		'jquery.lazyload',
 		'jquery.query',
 		'jquery.superfish',
 		'jquery.tabby',
-		'jquery.ui.rlightbox',
-
-		/* MUST BE LOAD LAST */
-		'skin.original'
+		'jquery.ui.rlightbox'
 	);
 	/**
 	 * モバイル時読み込むスクリプト
@@ -79,10 +90,7 @@ class Render{
 		'jquery.beautyOfCode',
 		'jquery.i18n',
 		'jquery.lazyload',
-		'jquery.tablesorter',
-
-		/* MUST BE LOAD LAST */
-		'mobile.original'
+		'jquery.tablesorter'
 	);
 
 	private $page, $ajax, $wiki;
@@ -140,10 +148,16 @@ class Render{
 		global $site_name, $newtitle, $modifier, $modifierlink, $menubar, $sidebar, $headarea, $footarea, $navigation;
 
 		$body = $this->body;
+
 		$_LINK = self::getLinkSet($this->page);
 
 		// ページをコンストラクト
 		$view = new View(PLUS_THEME);
+
+		$view->is_page = isset($vars['page']);
+		$view->is_read = isset($vars['cmd']) && $vars['cmd'] === 'read';
+		$view->is_freeze = isset($vars['page']) ? Factory::Wiki($vars['page'])->isFreezed() : false;
+
 		if ($vars['cmd'] === 'read'){
 			global $adminpass, $_string, $menubar, $sidebar;
 			if ($adminpass == '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72' || $adminpass == '' ){
@@ -241,8 +255,8 @@ class Render{
 		// JavaScriptフレームワーク設定
 		// jQueryUI Official CDN
 		// http://code.jquery.com/
-		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://code.jquery.com/jquery-'.self::JQUERY_VER.'.min.js');
-		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://code.jquery.com/ui/'.self::JQUERY_UI_VER.'/jquery-ui.min.js');
+		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://code.jquery.com/jquery-'.self::JQUERY_VER.'.min.js', 'defer'=>'defer');
+		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://code.jquery.com/ui/'.self::JQUERY_UI_VER.'/jquery-ui.min.js', 'defer'=>'defer');
 
 		// JS用初期設定
 		$js_init = array(
@@ -267,25 +281,23 @@ class Render{
 
 		if (!IS_MOBILE){
 			$jsfiles = self::$default_js;
-			$c_js = 'js.php?file=skin';
 		}else{
 			// jquery mobileは、mobile.jsで非同期読み込み。
 			$js_init['JQUERY_MOBILE_VER'] = self::JQUERY_MOBILE_VER;
 			$jsfiles = self::$mobile_js;
-			$c_js = 'js.php?file=mobile';
-			
 		}
 		if (DEBUG === true) {
 			// 読み込むsrcディレクトリ内のJavaScript
 			foreach($jsfiles as $script_file)
-				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.(!IS_MOBILE ? 'src/' : 'mobile/').$script_file.'.js');
+				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.(!IS_MOBILE ? 'src/' : 'mobile/').$script_file.'.js', 'defer'=>'defer');
+			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.(!IS_MOBILE ? 'src/'.self::DEFAULT_JS : 'mobile/'.self::MOBILE_JS ), 'defer'=>'defer');
 		} else {
-			//$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'mobile.js', 'defer'=>'defer');
-			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.$c_js);
+			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.(IS_MOBILE ? self::MOBILE_JS_COMPRESSED : self::DEFAULT_JS_COMPRESSED), 'defer'=>'defer' );
 		}
 
 		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.( DEBUG ? 'locale.js' : 'js.php?file=locale'), 'defer'=>'defer' );
 
+//		$js_vars[] = 'var pukiwiki = {};';
 		foreach( $js_init as $key=>$val){
 			if (!empty($val)){
 				$js_vars[] = 'var '.$key.' = "'.$val.'";';
@@ -381,7 +393,7 @@ class Render{
 		}
 
 		// jQuery UIのテーマ
-		if (! empty($conf['ui_theme']) ){
+		if (! empty($conf['ui_theme']) && $conf['ui_theme'] !== false){
 			$link_tags[] = array('rel'=>'stylesheet', 'href'=>'http://code.jquery.com/ui/' . self::JQUERY_UI_VER .'/themes/' . $conf['ui_theme'] . '/jquery-ui.min.css', 'type'=>'text/css');
 		}
 		// 標準スタイルシート
@@ -418,6 +430,7 @@ class Render{
 
 				'read'          => Router::get_resolve_uri('read', $_page),
 				'reload'        => Router::get_resolve_uri('read', $_page, 'full'),
+				'related'       => Router::get_resolve_uri('related', $_page),
 
 				'login'         => Router::get_cmd_uri('login', $_page),
 				'logout'        => Router::get_cmd_uri('login', $_page, null, array('action'=>'logout') ),

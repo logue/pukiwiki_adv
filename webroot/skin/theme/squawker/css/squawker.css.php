@@ -1307,57 +1307,57 @@ li[role=tab]{
 	color: transparent;
 }
 
-.icon-new			{ background-position: 0 0; }
-.icon-page			{ background-position: -18px 0; }
-.icon-add			{ background-position: -36px 0; }
-.icon-copy			{ background-position: -54px 0; }
-.icon-newsub		{ background-position: -72px 0; }
-.icon-edit			{ background-position: -90px 0; }
-.icon-diff			{ background-position: -108px 0; }
+span.icon-new			{ background-position: 0 0; }
+span.icon-page			{ background-position: -18px 0; }
+span.icon-add			{ background-position: -36px 0; }
+span.icon-copy			{ background-position: -54px 0; }
+span.icon-newsub		{ background-position: -72px 0; }
+span.icon-edit			{ background-position: -90px 0; }
+span.icon-diff			{ background-position: -108px 0; }
 
-.icon-source		{ background-position: 0 -18px; }
-.icon-rename		{ background-position: -18px -18px; }
-.icon-upload		{ background-position: -36px -18px; }
-.icon-backup		{ background-position: -54px -18px; }
-.icon-reload		{ background-position: -72px -18px; }
-.icon-freeze		{ background-position: -90px -18px; }
-.icon-unfreeze		{ background-position: -108px -18px; }
+span.icon-source		{ background-position: 0 -18px; }
+span.icon-rename		{ background-position: -18px -18px; }
+span.icon-upload		{ background-position: -36px -18px; }
+span.icon-backup		{ background-position: -54px -18px; }
+span.icon-reload		{ background-position: -72px -18px; }
+span.icon-freeze		{ background-position: -90px -18px; }
+span.icon-unfreeze		{ background-position: -108px -18px; }
 
-.icon-pdf			{ background-position: 0 -36px; }
-.icon-list			{ background-position: -18px -36px; }
-.icon-filelist		{ background-position: -36px -36px; }
-.icon-skeylist		{ background-position: -54px -36px; }
-.icon-broken		{ background-position: -72px -36px; }
-.icon-referer		{ background-position: -90px -36px; }
-.icon-linklist		{ background-position: -108px -36px; }
+span.icon-pdf			{ background-position: 0 -36px; }
+span.icon-list			{ background-position: -18px -36px; }
+span.icon-filelist		{ background-position: -36px -36px; }
+span.icon-skeylist		{ background-position: -54px -36px; }
+span.icon-broken		{ background-position: -72px -36px; }
+span.icon-referer		{ background-position: -90px -36px; }
+span.icon-linklist		{ background-position: -108px -36px; }
 
-.icon-download		{ background-position: 0 -54px; }
-.icon-search		{ background-position: -18px -54px; }
-.icon-log,
-.icon-log_browse	{ background-position: -36px -54px; }
-.icon-log_check		{ background-position: -54px -54px; }
-.icon-log_down		{ background-position: -72px -54px; }
-.icon-log_login		{ background-position: -90px -54px; }
-.icon-log_update	{ background-position: -108px -54px; }
+span.icon-download		{ background-position: 0 -54px; }
+span.icon-search		{ background-position: -18px -54px; }
+span.icon-log,
+span.icon-log_browse	{ background-position: -36px -54px; }
+span.icon-log_check		{ background-position: -54px -54px; }
+span.icon-log_down		{ background-position: -72px -54px; }
+span.icon-log_login		{ background-position: -90px -54px; }
+span.icon-log_update	{ background-position: -108px -54px; }
 
-.icon-top			{ background-position: 0 -72px; }
-.icon-home			{ background-position: -18px -72px; }
-.icon-recent		{ background-position: -36px -72px; }
-.icon-help			{ background-position: -54px -72px; }
-.icon-alias			{ background-position: -72px -72px; }
-.icon-glossary		{ background-position: -90px -72px; }
-.icon-deleted		{ background-position: -108px -72px; }
+span.icon-top			{ background-position: 0 -72px; }
+span.icon-home			{ background-position: -18px -72px; }
+span.icon-recent		{ background-position: -36px -72px; }
+span.icon-help			{ background-position: -54px -72px; }
+span.icon-alias			{ background-position: -72px -72px; }
+span.icon-glossary		{ background-position: -90px -72px; }
+span.icon-deleted		{ background-position: -108px -72px; }
 
-.icon-rss			{ background-position: 0 -90px; }
-.icon-opml			{ background-position: -18px -90px; }
-.icon-share			{ background-position: -36px -90px; }
-.icon-canonical		{ background-position: -54px -90px; }
-.icon-trackback		{ background-position: -72px -90px; }
-.icon-tags			{ background-position: -90px -90px; }
-.icon-toc			{ background-position: -108px -90px; }
+span.icon-rss			{ background-position: 0 -90px; }
+span.icon-opml			{ background-position: -18px -90px; }
+span.icon-share			{ background-position: -36px -90px; }
+span.icon-canonical		{ background-position: -54px -90px; }
+span.icon-trackback		{ background-position: -72px -90px; }
+span.icon-tags			{ background-position: -90px -90px; }
+span.icon-toc			{ background-position: -108px -90px; }
 
-.icon-interwiki		{ background-position: 0 -108px; }
-.icon-mail			{ background-position: -18px -108px; }
+span.icon-interwiki		{ background-position: 0 -108px; }
+span.icon-mail			{ background-position: -18px -108px; }
 
 .pkwk-symbol{
 	display: inline-block;
@@ -1373,10 +1373,10 @@ li[role=tab]{
 	color: transparent;
 }
 
-.symbol-edit		{ background-position: -54px -114px; }
-.symbol-attach		{ background-position: -72px -114px; }
-.symbol-external	{ background-position: -90px -114px; }
-.symbol-internal	{ background-position: -108px -114px; }
+span.symbol-edit		{ background-position: -54px -114px; }
+span.symbol-attach		{ background-position: -72px -114px; }
+span.symbol-external	{ background-position: -90px -114px; }
+span.symbol-internal	{ background-position: -108px -114px; }
 
 /* ==|== emoji classes ====================================================== */
 .emoji{
@@ -2115,6 +2115,182 @@ li[role=tab]{
 .browser-webzip{ background-position: -1730px 0; width: 16px; height: 16px; }
 .browser-winxbox{ background-position: -1747px 0; width: 16px; height: 16px; }
 .browser-wizz{ background-position: -1764px 0; width: 16px; height: 16px; }
+
+/* Responsive
+-------------------------------------------------- */
+
+/* Desktop large
+------------------------- */
+@media (min-width: 1200px) {
+    .bs-docs-container {
+        max-width: 970px;
+    }
+    .bs-docs-sidenav {
+        width: 258px;
+    }
+    .bs-docs-sidenav > li > a {
+        width: 230px \9; /* Override the previous IE8-9 hack */
+    }
+}
+
+/* Desktop
+------------------------- */
+@media (max-width: 980px) {
+    /* Unfloat brand */
+    body > .navbar-fixed-top .brand {
+        float: left;
+        margin-left: 0;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    /* Inline-block quick links for more spacing */
+    .quick-links li {
+        display: inline-block;
+        margin: 5px;
+    }
+
+    /* When affixed, space properly */
+    .bs-docs-sidenav {
+        top: 0;
+        width: 218px;
+        margin-top: 30px;
+        margin-right: 0;
+    }
+}
+
+/* Tablet to desktop
+------------------------- */
+@media (min-width: 768px) and (max-width: 979px) {
+    /* Remove any padding from the body */
+    body {
+        padding-top: 0;
+    }
+    /* Widen masthead and social buttons to fill body padding */
+    .jumbotron {
+        margin-top: -20px; /* Offset bottom margin on .navbar */
+    }
+    /* Adjust sidenav width */
+    .bs-docs-sidenav {
+        width: 166px;
+        margin-top: 20px;
+    }
+    .bs-docs-sidenav.affix {
+        top: 0;
+    }
+}
+
+/* Tablet
+------------------------- */
+@media (max-width: 767px) {
+    /* Remove any padding from the body */
+    body {
+        padding-top: 0;
+    }
+
+    /* Widen masthead and social buttons to fill body padding */
+    .jumbotron {
+        padding: 40px 20px;
+        margin-top:   -20px; /* Offset bottom margin on .navbar */
+        margin-right: -20px;
+        margin-left:  -20px;
+    }
+    .masthead h1 {
+        font-size: 90px;
+    }
+    .masthead p,
+    .masthead .btn {
+        font-size: 24px;
+    }
+    .marketing .span4 {
+        margin-bottom: 40px;
+    }
+    .bs-docs-social {
+        margin: 0 -20px;
+    }
+
+    /* Space out the show-grid examples */
+    .show-grid [class*="span"] {
+        margin-bottom: 5px;
+    }
+
+    /* Sidenav */
+    .bs-docs-sidenav {
+        width: auto;
+        margin-bottom: 20px;
+    }
+    .bs-docs-sidenav.affix {
+        position: static;
+        width: auto;
+        top: 0;
+    }
+
+    /* Unfloat the back to top link in footer */
+    .footer {
+        margin-left: -20px;
+        margin-right: -20px;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    .footer p {
+        margin-bottom: 9px;
+    }
+}
+
+/* Landscape phones
+------------------------- */
+@media (max-width: 480px) {
+    /* Remove padding above jumbotron */
+    body {
+        padding-top: 0;
+    }
+
+    /* Change up some type stuff */
+    h2 small {
+        display: block;
+    }
+
+    /* Downsize the jumbotrons */
+    .jumbotron h1 {
+        font-size: 45px;
+    }
+    .jumbotron p,
+    .jumbotron .btn {
+        font-size: 18px;
+    }
+    .jumbotron .btn {
+        display: block;
+        margin: 0 auto;
+    }
+
+    /* center align subhead text like the masthead */
+    .subhead h1,
+    .subhead p {
+        text-align: center;
+    }
+
+    /* Marketing on home */
+    .marketing h1 {
+        font-size: 30px;
+    }
+    .marketing-byline {
+        font-size: 18px;
+    }
+
+    /* Do our best to make tables work in narrow viewports */
+    table code {
+        white-space: normal;
+        word-wrap: break-word;
+        word-break: break-all;
+    }
+
+    /* Tighten up footer */
+    .footer {
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+}
+
 
 <?php @ob_end_flush();
 

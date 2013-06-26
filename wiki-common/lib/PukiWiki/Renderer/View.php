@@ -55,6 +55,10 @@ class View{
 		 * ツールバーの項目
 		 */
 		'toolbar'       => 'reload,|,new,newsub,edit,freeze,source,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,log,|,help,|,rss',
+		/**
+		 * 追加で読み込むJavaScript
+		 */
+		'js'            => array()
 	);
 	public $title, $body, $meta;
 	/**
@@ -123,6 +127,14 @@ class View{
 	 */
 	public function pluginInline($name, $args = ''){
 		return PluginRenderer::executePluginInline($name, $args);
+	}
+	/**
+	 * プラグインのリンクを返す
+	 * @param string $name プラグイン名
+	 * @return string
+	 */
+	public function pluginLink($name, $query = array(), $fragment = ''){
+		return Router::get_resolve_uri($name, $this->page, 'rel', $query, $fragment);
 	}
 	/**
 	 * テーマと設定を取得

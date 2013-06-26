@@ -178,6 +178,6 @@ $layout_class = $this->is_read ? 'work' : 'display';
 <!-- #END #container -->
 		</div>
 		<?php echo $this->js; ?>
-		<script type="text/javascript" src="<?php echo $this->path; ?>whiteflow.js" />
+		<script type="text/javascript" src="<?php echo $this->path; ?>whiteflow.js" defer="defer"></script>
 	</body>
 </html>

@@ -116,6 +116,6 @@
 			</footer>
 		</div>
 		<?php echo $this->js; ?>
-		<script type="text/javascript" src="<?php echo $this->path; ?>default.js" />
+		<script type="text/javascript" src="<?php echo $this->path; ?>default.js" defer="defer"></script>
 	</body>
 </html>

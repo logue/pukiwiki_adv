@@ -159,6 +159,6 @@ if (!defined('DATA_DIR')) { exit; }
 			</div>
 		</footer>
 		<?php echo $this->js; ?>
-		<script type="text/javascript" src="<?php echo $this->path; ?>squawker.js.php" />
+		<script type="text/javascript" src="<?php echo $this->path; ?>squawker.js.php" defer="defer"></script>
 	</body>
 </html>

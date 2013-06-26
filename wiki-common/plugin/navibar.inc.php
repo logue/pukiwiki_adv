@@ -90,38 +90,9 @@ function plugin_navibar_convert()
 			break;
 		
 		case 'log':
-			if (!empty($_page) && log_exist('login',$vars['page'])) {
+			if (!empty($_page) ) {
 				$ret[] = _navibar($name);
 			}
-
-		case 'log_login':
-			if (!empty($_page) && log_exist('login',$vars['page'])) {
-				$ret[] = _navibar($name);
-			}
-			break;
-		case 'log_check':
-			if (!empty($_page) && log_exist('check',$vars['page'])) {
-				$ret[] = _navibar($name);
-			}
-			break;
-		case 'log_browse':
-			if (!empty($_page)){
-				$ret[] = _navibar($name);
-			}
-//			if (log_exist('browse',$vars['page'])) {
-//				return _navibar($name);
-//			}
-			break;
-		case 'log_update':
-			if (!empty($_page) && log_exist('update',$vars['page'])) {
-				$ret[] = _navibar($name);
-			}
-			break;
-		case 'log_down':
-			if (!empty($_page) && log_exist('download',$vars['page'])) {
-				$ret[] = _navibar($name);
-			}
-			break;
 		case '|':
 			if (end($ret) !== '<ul>' ){
 				$ret[] = '</ul>';

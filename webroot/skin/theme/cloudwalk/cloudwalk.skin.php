@@ -92,5 +92,6 @@
 <!-- ◆ END ◆ ============================================================= -->
 		</div><!-- □END id:wrapper -->
 <?php echo $this->js; ?>
+		<script type="text/javascript" src="<?php echo $this->path; ?>cloudwalk.js" defer="defer"></script>
 	</body>
 </html>

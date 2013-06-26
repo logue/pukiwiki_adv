@@ -73,7 +73,7 @@
 <!-- Content -->
 			<div id="content">
 				<div id="content-top" class="noprint"></div>
-				<div id="<?php echo (arg_check('read') && !empty($this->menubar)) ? 'primary-content' : 'single-content'; ?>" role="main">
+				<div id="<?php echo ($this->is_read && !empty($this->menubar)) ? 'primary-content' : 'single-content'; ?>">
 <!-- * Main Content * -->
 					<section id="body" class="body" role="main">
 						<?php echo $this->body ?>
@@ -114,6 +114,6 @@
 		</footer>
 <!-- End Footer -->
 		<?php echo $this->js; ?>
-		<script type="text/javascript" src="<?php echo $this->path; ?>xxxlogue.js" />
+		<script type="text/javascript" src="<?php echo $this->path; ?>xxxlogue.js" defer="defer"></script>
 	</body>
 </html>

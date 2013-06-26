@@ -282,13 +282,6 @@ var pukiwiki = {};
 			// HTML5サポート
 			this.enableHTML5();
 
-			// Lazyload（遅延画像ロード）
-			// IE6では、pngの場合アルファチャンネルが効かなくなるため、拡張子がpngのときは処理しない
-			$('[role=main] ' + ((typeof(ie) !== 'undefined' && ie < 6) ? 'img[src!$=.png]' : 'img')).lazyload({
-				placeholder : this.image_dir+'grey.gif',
-				effect : 'fadeIn'
-			});
-
 			// Suckerfish（ポップアップメニュー
 			$('.sf-menu').superfish();
 
@@ -365,8 +358,6 @@ var pukiwiki = {};
 //					this.loadingScreen.dialog('close');
 				}
 			}
-
-			$('#jplayer').jPlayer('destroy');	// jPlayerを開放
 			return false;
 		},
 		// HTML5の各種機能をJavaScriptで有効化するための処理
@@ -727,11 +718,6 @@ var pukiwiki = {};
 									case 'jpg': case 'jpeg': case 'gif': case'png':
 										$this.rlightbox();
 									break;
-									case 'mp3':  case 'm4a': case 'm4v':
-									case 'webma': case 'webmv': case 'wav':
-									case 'oga': case 'ogv' : case 'fla': case 'flv':
-										self.media_player(this, ext[1]);
-									break;
 									default :
 										window.open(href);
 									break;
@@ -801,13 +787,8 @@ var pukiwiki = {};
 							
 							if (ext){
 								switch (ext[1].toLowerCase()) {
-									case 'jpg': case 'jpeg': case 'gif': case'png': // case'svg' : case 'svgz' :
+									case 'jpg': case 'jpeg': case 'gif': case'png': case'svg' : case 'svgz' :
 										$this.rlightbox();
-									break;
-									case 'mp3':  case 'm4a': case 'm4v':
-									case 'webma': case 'webmv': case 'wav':
-									case 'oga': case 'ogv' : case 'fla': case 'flv':
-										self.media_player(this, ext[1]);
 									break;
 								}
 							}
@@ -1062,147 +1043,6 @@ var pukiwiki = {};
 					}
 				});
 			}
-		},
-		// ミュージックプレイヤー（拡張子が.mp3や.oggなどといったFlashで再生できるものに限る）
-		media_player: function(target, ext){
-			var jplayer_container = [
-				'<div id="jplayer"></div>',
-				'<div id="jp-container">',
-					'<ul class="ui-widget pkwk_widget">',
-						'<li class="jp-play ui-button ui-state-default ui-corner-all" title="' + $.i18n('player','play') + '"><span class="ui-icon ui-icon-play"></span></li>',
-						'<li class="jp-video-play ui-button ui-state-default ui-corner-all" title="' + $.i18n('player','play') + '"><span class="ui-icon ui-icon-video"></span></li>',
-						'<li class="jp-pause ui-button ui-state-default ui-corner-all" title="' + $.i18n('player','pause') + '"><span class="ui-icon ui-icon-pause"></span></li>',
-						'<li class="jp-stop ui-button ui-state-default ui-corner-all" title="' + $.i18n('player','stop') + '"><span class="ui-icon ui-icon-stop"></span></li>',
-						'<li><div class="jp-cast">',
-							'<span class="ui-icon ui-icon-clock" style="display:inline-block">Cast:</span>',
-							'<span class="jp-current-time">00:00</span>/<span class="jp-duration">??:??</span>',
-						'</div></li>',
-						'<li style="width:300px;"></li>',
-						'<li class="jp-full-screen ui-button ui-state-default ui-corner-all" title="Full screen"><span class="ui-icon ui-icon-arrow-4-diag"></span></li>',
-						'<li class="jp-mute ui-button ui-state-default ui-corner-all" title="' + $.i18n('player','volume_min') + '"><span class="ui-icon ui-icon-volume-off"></span></li>',
-						'<li class="jp-unmute ui-button ui-state-default ui-corner-all" title="' + $.i18n('player','volume_max') + '"><span class="ui-icon ui-icon-volume-on"></span></li>',
-						'<li style="width:200px;"></li>',
-					'</ul>',
-					'<div class="jp-bars" title="' + $.i18n('player','seek') + '">',
-						'<div class="jp-playback"></div>',
-					//	'<div class="jp-loader"></div>',
-					'</div>',
-					'<div title="' + $.i18n('player','volume') + '" class="jp-volume"></div>',
-				'</div>'
-			].join("\n");
-
-			$(target).each(function(){
-				var file = $(this).attr('href');
-				var media = {};
-				media[ext] = file;
-				var dialog_option = {
-					modal: true,
-					resizable: false,
-					show: 'fade',
-					hide: 'fade',
-					title: 'Music Player',
-					dialogClass: 'music_player',
-					width:'680px',
-					bgiframe : (ie > 6) ? true : false,	// for IE6
-					open: function(){
-						var self = this;
-						// Local copy of jQuery selectors, for performance.
-						var	$jPlayer = $('#jplayer'),
-							$playback = $('#jp-container .jp-playback'),
-							$loader = $('#jp-container .jp-loader'),
-							$play = $('#jp-container .jp-play'),
-							$pause = $('#jp-container .jp-pause')
-						;
-						
-						$playback.slider({range: 'min',animate:true});
-
-						// Instance jPlayer
-						$jPlayer.jPlayer({
-							swfPath: SKIN_DIR,
-							cssSelectorAncestor: '#jp-container',
-							supplied: ext,
-							wmode: 'window',
-							volume: ($.cookie('volume')) ? $.cookie('volume') : 100,
-							ready: function (event) {
-								$(this).jPlayer('setMedia',media);
-								$(self).dialog('option','title', file);
-								// Slider
-								$playback.slider({
-									max: parseInt(event.jPlayer.status.duration),
-									value: parseInt(event.jPlayer.status.currentTime),
-									slide: function(event, ui) {
-										$jPlayer.jPlayer('play', ui.value);
-									}
-								});
-								$('#jp-container .jp-volume').slider({
-									value : ($.cookie('volume')) ? $.cookie('volume') : 100,
-									min: 0,
-									max: 100,
-									range: 'min',
-									animate: true,
-									slide: function(event, ui) {
-										$jPlayer.jPlayer('volume', ui.value * 0.01);
-										$.cookie('volume', ui.value, {expires:30, path:'/'});
-									}
-								});
-								
-								$play.click();
-							},
-							load: function(event){
-								$play.click(function() {
-									$jPlayer.jPlayer('play');
-									return false;
-								});
-								$pause.click(function() {
-									$jPlayer.jPlayer('pause');
-									return false;
-								});
-								$('#jp-container .jp-stop').click(function() {
-									$jPlayer.jPlayer('stop');
-									return false;
-								});
-
-							},
-							timeupdate: function(event) {
-								$playback.slider('option', 'value', parseInt(event.jPlayer.status.currentTime));
-								$playback.slider('option', 'max',  parseInt(event.jPlayer.status.duration));
-							},
-							play: function(event) {
-								$play.fadeOut(function(){
-									$pause.fadeIn();
-								});
-								$playback.slider('option', 'max',  parseInt(event.jPlayer.status.duration));
-							},
-							pause: function(event) {
-								$pause.fadeOut(function(){
-									$play.fadeIn();
-								});
-							},
-							ended: function(event) {
-								$pause.fadeOut(function(){
-									$play.fadeIn();
-								});
-							}
-						});
-						$jPlayer.jPlayer('volume', ($.cookie('volume')) ? $.cookie('volume') : 100);
-						//hover states on the static widgets
-						$('#jp-content ul li').hover(
-							function() { $(this).addClass('ui-state-hover'); },
-							function() { $(this).removeClass('ui-state-hover'); }
-						);
-						return false;
-					},
-					close: function(){
-						$(this).remove();
-					}
-				};
-
-				$(this).click(function(){
-					var container = $('<div id="music_player"></div>');
-					container.html(jplayer_container).dialog(dialog_option);
-					return false;
-				});
-			});
 		},
 		// 独自のGlossaly処理
 		glossaly: function(prefix){

@@ -17,25 +17,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pukiwiki_skin.custom = {
-	// スキンスクリプトのinitが実行される前に実行される関数
-	before_init : function(){
-		this.body = '#edit-area';
-	},
-	// スキンスクリプトのinitが実行された前に実行される関数
-	init : function(){
-		/* Shelf */
-		$('#content-top').html('<a id="shelf_link" class="noprint" style="cursor:pointer;">Open/Close</a>');
-		$('a#shelf_link').click(function(){
-			$('#toggle').animate({height: 'toggle'});
-		});
-	},
-	// スキンスクリプトのunloadが実行される前に実行される関数
-	before_unload : function(){
-	},
-	// スキンスクリプトのinitが実行された後に実行される関数
-	unload: function(){
-	},
+pukiwiki.skin = {
 	// Superfish設定
 	// http://users.tpg.com.au/j_birch/plugins/superfish/#options
 	suckerfish : {
