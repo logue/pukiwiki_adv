@@ -10,6 +10,8 @@
 //
 // Comment plugin
 use PukiWiki\Auth\Auth;
+use PukiWiki\Factory;
+use PukiWiki\Utility;
 // ----
 defined('PLUGIN_COMMENT_DIRECTION_DEFAULT') or define('PLUGIN_COMMENT_DIRECTION_DEFAULT', '1'); // 1: above 0: below
 defined('PLUGIN_COMMENT_SIZE_MSG') or define('PLUGIN_COMMENT_SIZE_MSG',  68);
@@ -50,19 +52,12 @@ function plugin_comment_action()
 {
 	global $vars, $post, $_comment_messages;
 
-	// Petit SPAM Check (Client(Browser)-Server Ticket Check)
-	$spam = FALSE;
-	if (isset($post['encode_hint']) && $post['encode_hint'] !== '') {
-		if (PKWK_ENCODING_HINT !== $post['encode_hint']) $spam = TRUE;
-	} else {
-		if (PKWK_ENCODING_HINT !== '') $spam = TRUE;
-	}
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
 	if (Auth::check_role('readonly')) die_message(sprintf($_comment_messages['err_prohibit'],'PKWK_READONLY'));
 
 	if (!is_page($vars['refer']) && Auth::is_check_role(PKWK_CREATE_PAGE)) {
-		die_message(sprintf($_comment_messages['err_prohibit'],'PKWK_CREATE_PAGE'));
+		Utility::dieMessage(sprintf($_comment_messages['err_prohibit'],'PKWK_CREATE_PAGE'));
 	}
 
 	// If SPAM, goto jail.
@@ -75,11 +70,11 @@ function plugin_comment_write()
 	global $vars, $now;
 	global $_no_name, $_comment_messages, $_comment_formats;
 
-	if (! isset($vars['msg'])) return array('msg'=>'', 'body'=>''); // Do nothing
+	if (! isset($vars['msg']) || ! isset($vars['refer'])) return array('msg'=>'', 'body'=>''); // Do nothing
 
-	// Validate
-	if (is_spampost(array('msg')))
-		return plugin_comment_honeypot();
+	$wiki = Factory::Wiki($vars['refer']);
+	if (!$wiki->has()) return array('msg'=>'', 'body'=>''); // Do nothing
+
 
 	$vars['msg'] = str_replace("\n", '', $vars['msg']); // Cut LFs
 	$head = '';
@@ -108,7 +103,7 @@ function plugin_comment_write()
 	$postdata    = '';
 	$comment_no  = 0;
 	$above       = (isset($vars['above']) && $vars['above'] == '1');
-	foreach (get_source($vars['refer']) as $line) {
+	foreach ($wiki->get() as $line) {
 		if (! $above) $postdata .= $line;
 		if (preg_match('/^#comment/i', $line) && $comment_no++ == $vars['comment_no']) {
 			if ($above) {
@@ -125,15 +120,15 @@ function plugin_comment_write()
 
 	$title = $_comment_messages['title_updated'];
 	$body = '';
-	if (md5(@join('', get_source($vars['refer']))) !== $vars['digest']) {
+	if ($wiki->digest() !== $vars['digest']) {
 		$title = $_comment_messages['title_collided'];
-		$body  = $_comment_messages['msg_collided'] . make_pagelink($vars['refer']);
+		$body  = $_comment_messages['msg_collided'] . $wiki->getUri();
 	}
 
-	page_write($vars['refer'], $postdata);
+	$wiki->set($postdata);
 
-	if ($vars['refpage']) {
-		header('Location: ' . get_page_location_uri($vars['refpage']));
+	if (isset($vars['refpage'])) {
+		Utility::redirect(get_page_location_uri($vars['refpage']));
 		exit;
 	}
 

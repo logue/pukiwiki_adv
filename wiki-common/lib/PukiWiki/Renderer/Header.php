@@ -40,7 +40,7 @@ class Header{
 		global $lastmod, $vars, $_SERVER;
 		self::checkSent();
 		// これまでのヘッダーを取得
-		$headers = getallheaders();
+		$headers = function_exists('getallheaders') ? getallheaders() : array();
 
 		$headers['Content-Type'] = $content_type . ';charset=' . CONTENT_CHARSET;
 		$headers['Content-Language'] = substr(str_replace('_','-',LANG),0,2);
@@ -106,6 +106,8 @@ class Header{
 	 * @return void
 	 */
 	public static function writeResponse($headers, $status = Response::STATUS_CODE_200, $body = ''){
+		// なぜかこの行を出力しないと503エラーが起きる
+		echo "";
 		// レスポンスをコンストラクト
 		$response = new Response();
 		if (!empty($body)){

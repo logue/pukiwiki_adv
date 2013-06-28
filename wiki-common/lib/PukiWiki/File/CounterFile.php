@@ -35,7 +35,7 @@ class CounterFile extends AbstractFile{
 			throw new Exception('Page name must be string!');
 		}
 		$this->page = $page;
-		parent::__construct(self::$dir . Utility::encode($page) . '.txt');
+		parent::__construct(self::$dir . Utility::encode($page) . '.count');
 	}
 }
 

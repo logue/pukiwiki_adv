@@ -35,8 +35,10 @@ function plugin_read_action()
 	if (!$page) return $ret;
 
 	// 読み込むことができるページか
-	if (Factory::Wiki($page)->isReadable(true)) {
-		return $ret;
+	$wiki = Factory::Wiki($page);
+	if ($wiki->isReadable(true)) {
+		return array('msg'=>Utility::htmlsc($page), 'body'=>$wiki->render());
+		//return $ret;
 	}
 
 	global $referer;

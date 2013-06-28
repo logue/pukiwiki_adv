@@ -11,7 +11,7 @@
 
 namespace PukiWiki\Spam;
 
-require_once(LIB_DIR . 'spamplus.php');
+//require_once(LIB_DIR . 'spamplus.php');
 
 /**
  * Proxy関連クラス

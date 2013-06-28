@@ -148,7 +148,7 @@ class Listing{
 	 * @param boolean $with_filename ページのファイル名も表示する
 	 * @return string
 	 */
-	private static function getPageLists($pages, $cmd, $with_filename){
+	private static function getPageLists($pages, $cmd = 'read', $with_filename = false){
 		$contents = array();
 		// コンテンツ管理者以上は、: のページも閲覧可能
 		$has_permisson = Auth::check_role('role_contents_admin');

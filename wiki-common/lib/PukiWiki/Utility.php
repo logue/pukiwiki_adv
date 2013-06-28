@@ -575,7 +575,7 @@ class Utility{
 	 * @param string $title エラーのタイトル
 	 * @param int $http_code 出力するヘッダー
 	 */
-	public static function dieMessage($msg = '', $error_title='', $http_code = Response::STATUS_CODE_500){
+	public static function dieMessage($msg = '', $error_title='', $http_code = Response::STATUS_CODE_200){
 		global $_string, $_title, $_button, $vars;
 
 		// エラーメッセージの内容

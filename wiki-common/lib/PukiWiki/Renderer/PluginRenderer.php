@@ -90,7 +90,7 @@ class PluginRenderer{
 	 * @param boolean $force キャッシュ生成を矯正する
 	 * @return array
 	 */
-	public static function getPluginList($force = false){
+	public static function getPluginList($force = true){
 		global $cache;
 		//$t1 = microtime();
 
@@ -179,7 +179,7 @@ class PluginRenderer{
 		$name = strtolower($name);
 
 		// 無効化しているプラグインの場合
-		if (in_array($name, $exclude_plugin)) return FALSE;
+		if (is_array($exclude_plugin) && in_array($name, $exclude_plugin)) return FALSE;
 
 		// プラグイン一覧を取得
 		if (!isset($plugins)) $plugins = self::getPluginList();

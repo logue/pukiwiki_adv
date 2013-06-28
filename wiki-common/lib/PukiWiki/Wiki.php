@@ -268,7 +268,7 @@ class Wiki{
 		// 未ログインの場合、S25Rおよび、DNSBLチェック
 		if (!$has_permission) {
 			$ip_filter = new IpFilter();
-			if ($ip_filter->isS25R()) Utility::dieMessage('S25R host is denied.');
+			//if ($ip_filter->isS25R()) Utility::dieMessage('S25R host is denied.');
 			
 			if ($use_spam_check['page_remote_addr']) {
 				$listed = $ip_filter->checkDNSBL();
@@ -308,10 +308,6 @@ class Wiki{
 		// 差分を生成
 		$diff = new Diff($postdata, $oldpostdata);
 
-	//	$referer = (isset($_SERVER['HTTP_REFERER'])) ? Utility::htmlsc($_SERVER['HTTP_REFERER']) : 'None';
-	//	$user_agent = Utility::htmlsc();
-
-
 		if (!$has_permission) {
 			// URLBLチェック
 			if ( $use_spam_check['page_contents']){
@@ -320,7 +316,7 @@ class Wiki{
 			// 匿名プロクシ
 			if ($use_spam_check['page_write_proxy'] && is_proxy()) {
 				Utility::dump();
-				die_message('Writing was limited by PROXY (Blocking SPAM).', $_title['prohibit'], 400);
+				Utility::dieMessage('Writing was limited by PROXY (Blocking SPAM).', $_title['prohibit'], 400);
 			}
 
 			// Akismet
@@ -351,10 +347,10 @@ class Wiki{
 
 					if($akismet->isSpam($akismet_post)){
 						Utility::dump('akismet.log');
-						die_message('Writing was limited by Akismet (Blocking SPAM).', $_title['prohibit'], 400);
+						Utility::dieMessage('Writing was limited by Akismet (Blocking SPAM).', $_title['prohibit'], 400);
 					}
 				}else{
-					die_message('Akismet API key does not valied.', 500);
+					Utility::dieMessage('Akismet API key does not valied.', 500);
 				}
 			}
 		}

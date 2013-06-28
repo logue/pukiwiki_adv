@@ -77,11 +77,11 @@ class Router{
 		// Get
 		if (isset($uri)) return $uri;
 
-		if (isset($script_abs) && Utility::is_url($script_abs,true)) {
+		if (isset($script_abs) && Utility::isUri($script_abs,true)) {
 			$uri = $script_abs;
 			return $uri;
 		} else
-		if (isset($script) && Utility::is_url($script,true)) {
+		if (isset($script) && Utility::isUri($script,true)) {
 			$uri = $script;
 			return $uri;
 		}

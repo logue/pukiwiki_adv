@@ -67,9 +67,8 @@ function plugin_online_check_online(& $count, & $host = '')	// 参照渡しは�
 	$matches = array();
 
 	// Read
-	foreach ($cache['wiki']->getItem(PLUGIN_ONLINE_USER_CACHE_NAME) as $line){
+	foreach ($cache['wiki']->getItem(PLUGIN_ONLINE_USER_CACHE_NAME) as $ahost=>$atime){
 		// Ignore invalid-or-outdated lines
-		list($ahost, $atime) = $line;
 		if ( ($atime + PLUGIN_ONLINE_TIMEOUT) <= UTIME || $atime <= UTIME) continue;
 
 		++$count;
@@ -93,21 +92,19 @@ function plugin_online_sweep_records($host = '')
 	$count = 1;
 
 	// Open
-	foreach ($cache['wiki']->getItem(PLUGIN_ONLINE_USER_CACHE_NAME) as $line){
-		list($ahost, $atime) = $line;
-		
+	foreach ($cache['wiki']->getItem(PLUGIN_ONLINE_USER_CACHE_NAME) as $ahost=>$atime){
 		if ( ($atime + PLUGIN_ONLINE_TIMEOUT) <= UTIME || $atime > UTIME || $ahost == $host) {
 			
 			--$count;
 			$dirty = TRUE;
 			continue; // Invalid or outdated or invalid date
 		}
-		$ret[] = $line;
+		$ret[$ahost] = $atime;
 		$i++;
 	}
 	if (!empty($host)) {
 		// Add new, at the top of the record
-		$ret[] = array(trim($host), UTIME);
+		$ret[trim($host)] = UTIME;
 		++$count;
 		$dirty = TRUE;
 	}

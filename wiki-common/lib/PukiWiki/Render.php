@@ -244,7 +244,7 @@ class Render{
 
 		$view->links = $_LINK;
 
-		return $view;
+		return $view->__toString();
 	}
 	/**
 	 * JavaScriptタグを出力
@@ -260,7 +260,7 @@ class Render{
 
 		// JS用初期設定
 		$js_init = array(
-			'DEBUG'=>constant('DEBUG'),
+			'DEBUG'         => constant('DEBUG'),
 			'DEFAULT_LANG'  => constant('DEFAULT_LANG'),
 			'IMAGE_URI'     => constant('IMAGE_URI'),
 			'JS_URI'        => constant('JS_URI'),
@@ -299,9 +299,7 @@ class Render{
 
 //		$js_vars[] = 'var pukiwiki = {};';
 		foreach( $js_init as $key=>$val){
-			if (!empty($val)){
-				$js_vars[] = 'var '.$key.' = "'.$val.'";';
-			}
+			$js_vars[] = 'var '.$key.' = ' . (!empty($val) ? '"'.$val.'"' : 'false') .';';
 		}
 		array_unshift($pkwk_head_js,array('type'=>'text/javascript', 'content'=>join($js_vars,"\n")));
 		unset($js_var, $key, $val);

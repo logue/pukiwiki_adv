@@ -51,7 +51,7 @@ function check_readable($page, $auth_flag = TRUE, $exit_flag = TRUE)
 function _backup_file_exists($page){
 	//trigger_error('_backup_file_exists($page) is deprecated. Use FileFactory::Backup($page)->has()', E_USER_DEPRECATED);
 	if (empty($page)) return;
-	return Factory::Wiki($page)->hasBackup();
+	return Factory::Backup($page)->has();
 }
 /**************************************************************************************************/
 /**

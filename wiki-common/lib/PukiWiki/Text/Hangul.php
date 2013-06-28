@@ -19,7 +19,7 @@ class Hangul{
 		$unicode = self::utf8_to_unicode($temp[0]);	// 取得した文字をUnicodeに変換
 
 		if ($unicode[0] >= 44032 && $unicode[0] <= 55203) {	// 字母を抽出
-			return $this->LCtable[(int)($unicode[0] - 44032)/28/21];
+			return self::$LCtable[(int)($unicode[0] - 44032)/28/21];
 		} else
 			return $temp[0];
 	}

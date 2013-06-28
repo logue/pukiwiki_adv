@@ -181,13 +181,16 @@ function plugin_popular_getlist($view, $max = PLUGIN_POPULAR_DEFAULT, $except){
 	$yesterday = gmdate('Y/m/d',gmmktime(0,0,0, gmdate('m',$localtime), gmdate('d',$localtime)-1, gmdate('Y',$localtime)));
 	
 	$counters = array();
-	foreach (Listing::pages('counter') as $file=>$page) {
+	foreach (Listing::pages() as $page) {
+		if (!empty($except) && preg_match("/".$except."/", $page))
+			continue;
 		$wiki = Factory::Wiki($page);
-		if (($except != '' && preg_match("/".$except."/", $page)) || $wiki->isEditable() || $wiki->isHidden() ||! $wiki->isValied())
+		if ($wiki->isEditable() || $wiki->isHidden() ||! $wiki->isValied())
 			continue;
 
-		$count_file = COUNTER_DIR . str_replace('.txt','.count', $file);
-		
+		//$count_file = COUNTER_DIR . str_replace('.txt','.count', $file);
+		$count_file = COUNTER_DIR . Utility::encode($page).'.count';
+
 		if (file_exists($count_file)){
 			$array = file($count_file);
 			$count = rtrim($array[0]);

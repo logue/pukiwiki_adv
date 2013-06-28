@@ -61,7 +61,7 @@ class Referer{
 	public function set(){
 		global $referer;
 		// リファラーが空の場合処理しない
-		if (! $referer || empty($this->referer) ) return;
+		if (! $this->referer || empty($this->referer) ) return;
 
 		// 自分自身を除外
 		$parse_url = parse_url($this->referer);
@@ -84,16 +84,23 @@ class Referer{
 		// URLをキーとする
 		$d_url = rawurldecode($this->referer);
 
+		$lines = array();
+
 		// 改行ごと分割した状態でデーターを読み込む
-		$lines = $this->get(false);
+		foreach ($this->file->get() as $line){
+			$entries = explode("\t",$line);
+			$lines[rawurldecode($entries[3])] = $entries;
+		}
+		unset($entries);
+
 		if (! isset($lines[$d_url])) {
 			// セットされていない場合
 			$lines[$d_url] = array(
-				'',    // [0]: Last update date
-				UTIME, // [1]: Creation date
-				0,     // [2]: Reference counter
-				$url,  // [3]: Referer header
-				0      // [4]: Enable / Disable flag (1 = enable)
+				0,              // [0]: Last update date
+				UTIME,          // [1]: Creation date
+				0,              // [2]: Reference counter
+				$this->referer, // [3]: Referer header
+				0               // [4]: Enable / Disable flag (1 = enable)
 			);
 		}
 
@@ -109,6 +116,7 @@ class Referer{
 				// 一定期間過ぎた古いリファラーは保存しない
 				continue;
 			}
+			
 			// データーを分割
 			$str = trim(join("\t", $data));
 			if (!empty($str)) $ret[] = $str;

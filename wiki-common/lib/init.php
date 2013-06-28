@@ -26,8 +26,8 @@ use Zend\Cache\StorageFactory;
 
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
-define('S_VERSION', 'v1.1-alpha');
-define('S_REVSION', '20130509');
+define('S_VERSION', 'v 2.0.0-alpha');
+define('S_REVSION', '20130627');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &#169; 2010-2013' .
@@ -190,6 +190,9 @@ defined('PKWK_CORE_NAMESPACE') or define('PKWK_CORE_NAMESPACE', 'pukiwiki_adv');
 // Wikiの名前空間（セッションやキャッシュで他のWikiと名前が重複するのを防ぐため）7文字で十分だろう・・。
 defined('PKWK_WIKI_NAMESPACE') or define('PKWK_WIKI_NAMESPACE', 'pkwk_'.substr(md5(realpath(DATA_HOME)), 0 ,7) );
 
+// SORT_NATURALがない場合、SORT_LOCALE_STRINGとする。SORT_NATURAL優先なのは多言語で使うため
+defined('SORT_NATURAL') or define('SORT_NATURAL', SORT_LOCALE_STRING);
+
 /////////////////////////////////////////////////
 // Init grobal variables
 
@@ -218,18 +221,19 @@ $session = new Zend\Session\Container(PKWK_WIKI_NAMESPACE);
 // Initilalize Cache
 //
 // 使用するキャッシュストレージを選択
+$cache_adapter = 'Filesystem';
+/*
 if (!isset($cache_adapter)){
+	
 	if ( class_exists('dba') ){
 		$cache_adapter = 'Dba';
 	}else if ( class_exists('apc') && ini_get('apc.enabled') ){
 		$cache_adapter = 'Apc';
 	}else if ( class_exists('Memcached') ){
 		$cache_adapter = 'Memcached';
-	}else{
-		$cache_adapter = 'Filesystem';
 	}
 }
-
+*/
 // キャッシュ
 $cache = array(
 	// PukiWikiのコアで使われる汎用キャッシュ
@@ -237,7 +241,8 @@ $cache = array(
 		'adapter'=> array(
 			'name' => $cache_adapter,
 			'options' => array(
-				'namespace' => PKWK_CORE_NAMESPACE
+				'namespace' => ($cache_adapter === 'Filesystem') ? null : PKWK_WIKI_NAMESPACE,
+				'cache_dir' => ($cache_adapter === 'Filesystem') ? LIB_DIR.'cache/' : null
 			),
 		),
 		'plugins' => array(
@@ -300,7 +305,7 @@ if (isset($script)) {
 // Prevent SPAM by REMOTE IP
 $filter = new IpFilter(REMOTE_ADDR);
 
-if ($filter->isS25R()) die('Sorry, your access is prohibited.');
+//if ($filter->isS25R()) die('S25R: Sorry, your access is prohibited.');
 
 // Block countory via Geolocation
 $country_code = '';
@@ -613,6 +618,8 @@ if (isset($retvars['body']) && !empty($retvars['body'])) {
 	LogFactory::factory('browse',$vars['page'])->set();
 	LogFactory::factory('check',$vars['page'])->set();
 }
+
+new PukiWiki\Render($title, $body);
 
 /** よく使うグローバル関数 **/
 // gettext to Zend gettext emulator

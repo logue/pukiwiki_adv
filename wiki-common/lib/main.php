@@ -105,7 +105,7 @@ Zend\Loader\AutoloaderFactory::factory(array(
     ),
 ));
 
-require('../vendor/bad-behavior/bad-behavior-sqlite.php');
+///require('../vendor/bad-behavior/bad-behavior-sqlite.php');
 
 /////////////////////////////////////////////////
 
@@ -115,10 +115,6 @@ require(LIB_DIR . 'legacy.php');
 
 // Defaults
 require(LIB_DIR . 'init.php');
-
-
-new PukiWiki\Render($title, $body, $http_code);
-exit;
 
 /* End of file main.php */
 /* Location: ./wiki-common/lib/main.php */

@@ -415,7 +415,8 @@ function plugin_ref_action()
 	}catch (Exception $e){
 		return array('msg' => 'Seems not an image', 'body' => $usage);
 	}
-	
+
+/*
 	// Care for Japanese-character-included file name
 	if (LANG == 'ja_JP') {
 		switch(UA_NAME . '/' . UA_PROFILE){
@@ -428,6 +429,8 @@ function plugin_ref_action()
 			break;
 		}
 	}
+*/
+	$filename = mb_convert_encoding($vars['src'], 'UTF-8', 'auto');
 
 	// Output
 	ini_set('default_charset', '');
@@ -443,6 +446,7 @@ function plugin_ref_action()
 		// for reduce server load
 		$header['X-Sendfile'] = $fileinfo->getRealPath();
 	}
+/*
 	$response = new Response();
 	$response->setStatusCode(Response::STATUS_CODE_200);
 	$response->getHeaders()->addHeaders($header);
@@ -461,6 +465,23 @@ function plugin_ref_action()
 	// 念のためオブジェクトを開放
 	unset($fileinfo, $obj);
 	exit;
+*/
+	$obj = new SplFileObject($ref);
+	// ファイルの読み込み
+	$obj->openFile('rb');
+	// ロック
+	$obj->flock(LOCK_SH);
+	
+	ob_start(! DEBUG ? 'ob_gzhandler': null);
+	
+	echo $obj->fpassthru();
+	
+	$content = ob_get_clean();
+	// アンロック
+	$obj->flock(LOCK_UN);
+	// 念のためオブジェクトを開放
+	unset($fileinfo, $obj);
+	Header::writeResponse($header, Response::STATUS_CODE_200, $content);
 }
 /* End of file ref.inc.php */
 /* Location: ./wiki-common/plugin/ref.inc.php */

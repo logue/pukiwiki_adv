@@ -106,7 +106,7 @@ class View{
 		$this->proc_time =  Time::getTakeTime();
 		if (empty($this->path)) $this->_theme = '';
 		// 出力するHTMLをバッファに書き込み出力
-		ob_start('ob_gzhandler');
+		ob_start(! DEBUG ? 'ob_gzhandler': null);
 		self::loader('skin');
 		return ob_get_clean();
 	}

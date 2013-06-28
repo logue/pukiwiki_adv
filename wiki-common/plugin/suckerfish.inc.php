@@ -167,7 +167,7 @@ function plugin_suckerfish_keyword($name){
 	global $vars;
 	
 	// $is_read = (arg_check('read') && is_page($vars['page']));
-	$is_read = is_page($vars['page']);
+	$is_read = isset($vars['page']) && is_page($vars['page']);
 	$is_readonly = Auth::check_role('readonly');
 	$is_safemode = Auth::check_role('safemode');
 	$is_createpage = Auth::is_check_role(PKWK_CREATE_PAGE);
@@ -204,16 +204,6 @@ function plugin_suckerfish_keyword($name){
 		case 'backup':
 			if ($do_backup) {
 				return _suckerfish($name);
-			}
-			break;
-		case 'trackback':
-			if ($trackback) {
-				$tbcount = tb_count($vars['page']);
-				if ($tbcount > 0) {
-					return _suckerfish($name);
-				} else if (!$is_read) {
-					return _suckerfish($name);
-				}
 			}
 			break;
 		case 'referer':
