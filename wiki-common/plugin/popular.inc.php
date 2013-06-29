@@ -185,7 +185,7 @@ function plugin_popular_getlist($view, $max = PLUGIN_POPULAR_DEFAULT, $except){
 		if (!empty($except) && preg_match("/".$except."/", $page))
 			continue;
 		$wiki = Factory::Wiki($page);
-		if ($wiki->isEditable() || $wiki->isHidden() ||! $wiki->isValied())
+		if (!$wiki->isReadable() || $wiki->isHidden() ||! $wiki->isValied())
 			continue;
 
 		//$count_file = COUNTER_DIR . str_replace('.txt','.count', $file);

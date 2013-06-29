@@ -313,18 +313,19 @@ function plugin_pcomment_get_comments($page, $count, $dir, $reply)
 {
 //	global $_msg_pcomment_restrict;
 
-	if (! check_readable($page, false, false))
-		return array(str_replace('$1', $page, T_('Due to the blocking, no comments could be read from  $1 at all.')));
+	$wiki = Factory::Wiki($page);
+
+	if (! $wiki->has()) return array('', 0);
+
+	if (! $wiki->isReadable())
+		return array(str_replace('$1', $page, T_('Due to the blocking, no comments could be read from  $1 at all.')), 0);
 
 	// $reply = (! PKWK_READONLY && $reply); // Suprress radio-buttons
 	$reply = (! Auth::check_role('readonly') && $reply); // Suprress radio-buttons
 
-	$data = Factory::Wiki($page)->get();
-	$data = preg_replace('/^#pcomment\(?.*/i', '', $data);	// Avoid eternal recurse
+	$data = preg_replace('/^#pcomment\(?.*/i', '', $wiki->get());	// Avoid eternal recurse
 
 	if (! is_array($data)) return array('', 0);
-
-	$digest = md5(join('', $data));
 
 	// Get latest N comments
 	$num  = $cnt     = 0;
@@ -364,7 +365,7 @@ function plugin_pcomment_get_comments($page, $count, $dir, $reply)
 			$comments);
 	}
 
-	return array($comments, $digest);
+	return array($comments, $wiki->digest());
 }
 
 function plugin_pcomment_get_nick()

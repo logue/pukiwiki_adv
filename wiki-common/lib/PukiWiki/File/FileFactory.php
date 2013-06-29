@@ -48,10 +48,10 @@ class FileFactory
 	/**
 	 * ページ一覧
 	 */
-	public static function getPages($driver, $pattern = ''){
+	public static function getPages($driver){
 		if (!in_array($driver, array_keys(self::$classMap))) throw new Exception('$driver = '. $driver . ' is not implemented.');
 		$class = self::$classMap[$driver];
-		return $class::getPages($pattern);
+		return $class::getPages();
 	}
 	/**
 	 * ファイル

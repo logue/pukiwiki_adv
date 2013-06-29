@@ -13,6 +13,7 @@
 use PukiWiki\Auth\Auth;
 use PukiWiki\Wiki;
 use PukiWiki\Utility;
+use PukiWiki\Router;
 
 define('PLUGIN_RENAME_LOGPAGE', ':RenameLog');
 

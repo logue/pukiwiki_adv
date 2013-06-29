@@ -897,7 +897,7 @@ class PinYin {
 		// 漢字をピンインにする
 		foreach (self::$pinyin_table as $pinyin=>$pinyin_pattern){
 			if (preg_match('/'.$pinyin_pattern.'+/', $char)){
-				return self::$kana_table[$char];
+				return self::$kana_table[$pinyin];
 			}
 		}
 		return $char;

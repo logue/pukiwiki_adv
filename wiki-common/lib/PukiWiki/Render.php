@@ -269,6 +269,7 @@ class Render{
 			'SKIN_DIR'      => constant('SKIN_URI'),
 			'THEME_NAME'    => constant('PLUS_THEME'),
 		);
+
 		// JavaScriptタグの組み立て
 		if (isset($vars['page'])){
 			$js_init['PAGE'] = rawurlencode($vars['page']);

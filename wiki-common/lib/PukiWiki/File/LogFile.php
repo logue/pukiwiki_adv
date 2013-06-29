@@ -600,4 +600,34 @@ class LogFile extends AbstractFile{
 		if (!empty($sig))  return $sig;  // 本人の署名
 		return null;
 	}
+	/**
+	 * ホスト名のチェック (a と b のチェック)
+	 * $level で指定された階層までで比較する
+	 * @static
+	 */
+	public function check_host($a,$b,$level)
+	{
+		$tbl_a = array_reverse( explode('.',$a) );
+		$ctr_a = count($tbl_a);
+		$tbl_b = array_reverse( explode('.',$b) );
+		$ctr_b = count($tbl_b);
+
+		$max   = max($ctr_a, $ctr_b);
+		$loop  = min($ctr_a, $ctr_b);
+
+		$sw    = TRUE;
+		for ($i=0; $i<$loop; $i++) {
+			if ($tbl_a[$i] != $tbl_b[$i]) {
+				$sw = FALSE;
+				break;
+			}
+		}
+
+		if ($i != $max) $sw = FALSE; // 打ち切り対応
+		if ($sw) return array(TRUE,$i);
+		if ($level == 0) return array(FALSE,$i); // 完全一致
+		if ($level > $max) return array(TRUE,$i);
+		// 指定レベルよりも一致している場合は真
+		return ($i >= $level) ? array(TRUE,$i) : array(FALSE,$i);
+	}
 }

@@ -332,7 +332,8 @@ function logview_guess_user($data,$guess)
 	$user  = (isset($data['user'])) ? $data['user'] : '';
 	$ntlm  = (isset($data['ntlm'])) ? $data['ntlm'] : '';
 	$sig   = (isset($data['sig']))  ? $data['sig']  : '';
-	$now_user = log::guess_user($user,$ntlm,$sig);
+	$guess_user = LogFactory::factory('guess_user', null);
+	$now_user = $guess_user->guess_user($user,$ntlm,$sig);
 	if (!empty($now_user)) return $now_user;
 
 	// 見做し
@@ -344,7 +345,7 @@ function logview_guess_user($data,$guess)
 	$level = 0; // とりあえずホスト名は完全一致
 
 	foreach($guess[$data['ua']] as $_host => $val1) {
-		list($sw,$lvl) = log::check_host($data['host'],$_host,$level); // ホスト名の一致確認
+		list($sw,$lvl) = $guess_user->check_host($data['host'],$_host,$level); // ホスト名の一致確認
 		if (!$sw) continue; // ホスト名が一致しない
 
 		// UA が等しく、同じIPなものの、複数ユーザまたは改変した場合は、複数人分出力

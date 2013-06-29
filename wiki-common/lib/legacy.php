@@ -188,8 +188,9 @@ function die_message($msg, $error_title='', $http_code = 500){
 	return Utility::dieMessage($msg, $error_title, $http_code);
 }
 
-function get_passage($time){
-	return Time::passage($time);
+function get_passage($time, $paren = TRUE){
+	$time = Time::passage($time);
+	return $paren ? '(' . $time . ')' : $time;
 }
 
 // Have the time (as microtime)

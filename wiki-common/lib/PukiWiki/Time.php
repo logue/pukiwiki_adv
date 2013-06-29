@@ -227,8 +227,8 @@ class Time{
 	 * @return string
 	 */
 	public static function passage($time){
-		static $units = array('m'=>60, 'h'=>24, 'd'=>1);
-		$_time = max(0, (MUTIME - $time) / 60); // minutes
+		static $units = array('s'=>60, 'm'=>60, 'h'=>24, 'd'=>1);
+		$_time = max(0, (MUTIME - $time)); // seconds
 
 		foreach ($units as $unit=>$card) {
 			if ($time < $card) break;

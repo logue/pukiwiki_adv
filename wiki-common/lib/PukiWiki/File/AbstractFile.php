@@ -104,8 +104,8 @@ abstract class AbstractFile extends SplFileInfo{
 
 		if (!$force) {
 			// ディレクトリの更新チェック（変更があった場合、キャッシュを再生成）
-			if ($cache['core']->hasItem($cache_name)){
-				$cache_meta = $cache['core']->getMetadata($cache_name);
+			if ($cache['wiki']->hasItem($cache_name)){
+				$cache_meta = $cache['wiki']->getMetadata($cache_name);
 				if ($cache_meta['mtime'] < filemtime($class::$dir)) {
 					$force = true;
 				}
@@ -115,12 +115,12 @@ abstract class AbstractFile extends SplFileInfo{
 		// キャッシュ処理
 		if ($force) {
 			unset($files);
-			$cache['core']->removeItem($cache_name);
+			$cache['wiki']->removeItem($cache_name);
 		}else if (!empty($files)) {
 			return $files;
-		}else if ($cache['core']->hasItem($cache_name)) {
-			$files = $cache['core']->getItem($cache_name);
-			$cache['core']->touchItem($cache_name);
+		}else if ($cache['wiki']->hasItem($cache_name)) {
+			$files = $cache['wiki']->getItem($cache_name);
+			$cache['wiki']->touchItem($cache_name);
 			return $files;
 		}
 
@@ -131,7 +131,7 @@ abstract class AbstractFile extends SplFileInfo{
 		unset($fileinfo);
 
 		// キャッシュに保存
-		$cache['core']->setItem($cache_name, $files);
+		$cache['wiki']->setItem($cache_name, $files);
 		return $files;
 	}
 	
