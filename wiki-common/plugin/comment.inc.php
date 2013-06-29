@@ -60,8 +60,6 @@ function plugin_comment_action()
 		Utility::dieMessage(sprintf($_comment_messages['err_prohibit'],'PKWK_CREATE_PAGE'));
 	}
 
-	// If SPAM, goto jail.
-	if ($spam) return plugin_comment_honeypot();
 	return plugin_comment_write();
 }
 
@@ -100,22 +98,15 @@ function plugin_comment_write()
 	}
 	$comment = '-' . $head . ' ' . $comment;
 
-	$postdata    = '';
+	$postdata    = array();
 	$comment_no  = 0;
 	$above       = (isset($vars['above']) && $vars['above'] == '1');
 	foreach ($wiki->get() as $line) {
-		if (! $above) $postdata .= $line;
+		if (! $above) $postdata[] = $line;
 		if (preg_match('/^#comment/i', $line) && $comment_no++ == $vars['comment_no']) {
-			if ($above) {
-				$postdata = rtrim($postdata) . "\n" .
-					$comment . "\n" .
-					"\n";  // Insert one blank line above #commment, to avoid indentation
-			} else {
-				$postdata = rtrim($postdata) . "\n" .
-					$comment . "\n"; // Insert one blank line below #commment
-			}
+			$postdata[] = "\n" . $comment . "\n" . ($above ? "\n" : '');  // Insert one blank line above #commment, to avoid indentation
 		}
-		if ($above) $postdata .= $line;
+		if ($above) $postdata[] = $line;
 	}
 
 	$title = $_comment_messages['title_updated'];
