@@ -93,7 +93,7 @@ class Reading{
 			// ハングル
 			return Hangul::toChosung($matches[1]);
 		}
-		return $char;
+		return self::OTHER_CHAR;
 	}
 	/**
 	 * 文字列を１文字ごとの配列にする

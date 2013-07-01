@@ -14,6 +14,9 @@
 namespace PukiWiki\Text;
 
 use PukiWiki\Utility;
+use PukiWiki\Renderer\RendererDefines;
+use PukiWiki\Renderer\InlineFactory;
+use Zend\Math\Rand;
 
 class Rules{
 	private static $default_rules = array(
@@ -302,6 +305,14 @@ class Rules{
 		'&amp;\(shock\);'			=> '<span class="emoji emoji-shock">😱</span>'
 	);
 	/**
+	 * 見出しの固有IDのマッチパターン
+	 */
+	const HEADING_ID_PATTERN = '/^(\*{0,3})(.*?)\[#([A-Za-z0-9][\w-]+)\](.*?)$/m';
+	/**
+	 * 見出しのIDの生成で使用出来る文字
+	 */
+	const HEADING_ID_ACCEPT_CHARS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	/**
 	 * 設定を読み込む
 	 */
 	private static function init(){
@@ -352,11 +363,8 @@ class Rules{
 				$line = preg_replace('/' . $pattern . '/', $replacement, $line);
 
 			// Adding fixed anchor into headings
-			if ($fixed_heading_anchor && preg_match('/^(\*{1,3}.*?)(?:\[#([A-Za-z][\w-]*)\]\s*)?$/', $line, $matches) &&
-					(! isset($matches[2]) || empty($matches[2]) )) {
-				// Generate unique id
-				$anchor = Zend\Math\Rand::getString(7,'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
-				$line = rtrim($matches[1]) . ' [#' . $anchor . ']';
+			if ($fixed_heading_anchor){
+				$line = setHeading($line);
 			}
 		}
 
@@ -364,6 +372,46 @@ class Rules{
 		if ($modify === FALSE && $multiline !== 0) $lines[] = str_repeat('}', $multiline);
 
 		return join("\n", $lines);
+	}
+	/**
+	 * 見出しを作る
+	 * @param string $str 入力文字列
+	 * @param boolean $strip 見出し編集用のアンカーを削除する
+	 * @return string
+	 */
+	public static function setHeading($line)
+	{
+		if (preg_match(self::HEADING_ID_PATTERN, $line, $matches) &&
+				(! isset($matches[2]) || empty($matches[2]) )) {
+			// Generate unique id
+			$anchor = Rand::getString(7,self::HEADING_ID_ACCEPT_CHARS);
+			$line = rtrim($matches[1]) . ' [#' . $anchor . ']';
+		}
+		return $line;
+	}
+	/**
+	 * 見出しからIDを取得
+	 * @param string $str 入力文字列
+	 * @param boolean $strip 見出し編集用のアンカーを削除する
+	 * @return string
+	 */
+	public static function getHeading(& $str, $strip = TRUE)
+	{
+		// Cut fixed-heading anchors
+		$id = '';
+		$matches = array();
+		if (preg_match(self::HEADING_ID_PATTERN, $str, $matches)) {	// 先頭が*から始まってて、なおかつ[#...]が存在する
+			$str = $matches[2] . $matches[4];
+			$id  = & $matches[3];
+		} else {
+			$str = preg_replace('/^\*{0,3}/', '', $str);
+		}
+
+		// Cut footnotes and tags
+		if ($strip === TRUE)
+			$str = Utility::stripHtmlTags(InlineFactory::factory(preg_replace('/'.RendererDefines::NOTE_PATTERN.'/ex', '', $str)));
+
+		return $id;
 	}
 	/**
 	 * 他のページを読み込むときに余計なものを取り除く

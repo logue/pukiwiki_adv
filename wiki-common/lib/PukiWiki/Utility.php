@@ -336,30 +336,6 @@ class Utility{
 		return hex2bin($str);
 	}
 	/**
-	 * 見出しを作る
-	 * @param string $str 入力文字列
-	 * @param boolean $strip 見出し編集用のアンカーを削除する
-	 * @return string
-	 */
-	public static function setHeading(& $str, $strip = TRUE)
-	{
-		// Cut fixed-heading anchors
-		$id = '';
-		$matches = array();
-		if (preg_match('/^(\*{0,3})(.*?)\[#([A-Za-z][\w-]+)\](.*?)$/m', $str, $matches)) {	// 先頭が*から始まってて、なおかつ[#...]が存在する
-			$str = $matches[2] . $matches[4];
-			$id  = & $matches[3];
-		} else {
-			$str = preg_replace('/^\*{0,3}/', '', $str);
-		}
-
-		// Cut footnotes and tags
-		if ($strip === TRUE)
-			$str = self::stripHtmlTags(InlineFactory::factory(preg_replace('/'.RendererDefines::NOTE_PATTERN.'/ex', '', $str)));
-
-		return $id;
-	}
-	/**
 	 * 文字列がURLかをチェック
 	 * @param string $str
 	 * @param boolean $only_http HTTPプロトコルのみを判定にするか

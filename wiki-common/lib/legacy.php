@@ -550,7 +550,7 @@ function strip_autolink($str)
 // Make heading string (remove heading-related decorations from Wiki text)
 function make_heading(& $str, $strip = TRUE)
 {
-	return Utility::setHeading($str, $strip);
+	return Rules::getHeading($str, $strip);
 }
 
 function pkwk_headers_sent()

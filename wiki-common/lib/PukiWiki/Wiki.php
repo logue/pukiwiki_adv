@@ -296,11 +296,12 @@ class Wiki{
 		if (Utility::isSpamPost())
 			Utility::dump();
 
+/*
 		// captcha check
 		if ( (isset($use_spam_check['captcha']) && $use_spam_check['captcha'] !== 0) && (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] !== 1)) {
 			captcha_check(( $use_spam_check['captcha'] === 2 ? false : true) );
 		}
-
+*/
 		// 入力データーを整形
 		$postdata = Rules::make_str_rules($str);
 		$oldpostdata = self::has() ? self::get(TRUE) : '';
@@ -461,7 +462,7 @@ class Wiki{
 
 		if (! $auto_template_func) return '';
 
-		$body = '';
+		$source = '';
 		$matches = array();
 		foreach ($auto_template_rules as $rule => $template) {
 			$rule_pattrn = '/' . $rule . '/';

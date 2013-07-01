@@ -15,7 +15,7 @@ namespace PukiWiki\Renderer\Element;
 
 use PukiWiki\Renderer\Element\Element;
 use PukiWiki\Renderer\Element\ElementFactory;
-use PukiWiki\Utility;
+use PukiWiki\Text\Rules;
 
 /**
  * * Heading1
@@ -53,7 +53,7 @@ class Heading extends Element
 
 	function toString()
 	{
-		$fixed_anchor = Utility::setHeading($this->text, FALSE);
+		$fixed_anchor = Rules::getHeading($this->text, FALSE);
 		$id = (empty($fixed_anchor)) ? $this->id : $fixed_anchor;
 
 		return $this->msg_top .  $this->wrap(parent::toString(),

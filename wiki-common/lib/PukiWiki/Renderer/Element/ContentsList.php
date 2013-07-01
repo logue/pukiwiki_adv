@@ -14,7 +14,7 @@ namespace PukiWiki\Renderer\Element;
 
 use PukiWiki\Renderer\Element\ElementFactory;
 use PukiWiki\Renderer\Element\ListContainer;
-use PukiWiki\Utility;
+use PukiWiki\Text\Rules;
 
 class ContentsList extends ListContainer
 {
@@ -22,7 +22,7 @@ class ContentsList extends ListContainer
 	{
 		// Reformatting $text
 		// A line started with "\n" means "preformatted" ... X(
-		Utility::setHeading($text);
+		Rules::getHeading($text);
 		$text = "\n" . '<a href="#' . $id . '"'. ((IS_MOBILE) ? ' data-ajax="false" data-anchor="' . $id . '"' : '') . '>' . $text . '</a>' . "\n";
 		parent::__construct('ul', 'li', '-', str_repeat('-', $level));
 		

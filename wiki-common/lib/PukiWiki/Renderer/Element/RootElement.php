@@ -27,7 +27,7 @@ use PukiWiki\Renderer\Element\SharpPre;
 use PukiWiki\Renderer\Element\UList;
 use PukiWiki\Renderer\RendererFactory;
 use PukiWiki\Renderer\PluginRenderer;
-use PukiWiki\Utility;
+use PukiWiki\Text\Rules;
 
 /**
  * RootElement
@@ -206,7 +206,7 @@ class RootElement extends Element
 		$anchor = '';
 
 		// Heading id (specified by users)
-		$id = Utility::setHeading($text, FALSE); // Cut fixed-anchor from $text
+		$id = Rules::getHeading($text, FALSE); // Cut fixed-anchor from $text
 		if (empty($id)) {
 			// Not specified
 			$id     = $autoid;
