@@ -37,7 +37,7 @@ class Glossary extends Inline
 	public function __construct($start)
 	{
 		parent::__construct($start);
-		list($auto, $auto_a) = self::getAutoGlossaryPattern(true);
+		list($auto, $auto_a) = self::getAutoGlossaryPattern();
 		$this->auto = $auto;
 		$this->auto_a = $auto_a;
 	}

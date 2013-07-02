@@ -242,14 +242,10 @@ function plugin_edit_write()
 	$digest = isset($vars['digest']) ? $vars['digest'] : null;
 	$partid = isset($vars['id'])     ? $vars['id']     : null;
 	$notimestamp = isset($vars['notimestamp']) && $vars['notimestamp'] !== null;
+
+	if (empty($page)) return array('mgs'=>'Error', 'body'=>'page is missing');
+
 	$wiki = Factory::Wiki($page);
-
-	// SPAM Check (Client(Browser)-Server Ticket Check)
-	if ( isset($vars['encode_hint']) && $vars['encode_hint'] !== PKWK_ENCODING_HINT )
-		return plugin_edit_honeypot();
-	if ( !isset($vars['encode_hint']) && !defined(PKWK_ENCODING_HINT) )
-		return plugin_edit_honeypot();
-
 	// Check Validate and Ticket
 	if ($notimestamp && !$wiki->isValied()) {
 		return plugin_edit_honeypot();
@@ -274,10 +270,11 @@ function plugin_edit_write()
 	$retvars = array();
 
 	// Collision Detection
-	$oldpagesrc = $wiki->get(true);
-	$oldpagemd5 = $wiki->digest();
+	$oldpagesrc = $wiki->has() ? $wiki->get(true) : '';
+	$oldpagemd5 = $wiki->has() ? $wiki->digest() : 0;
 
-	if ($digest !== $oldpagemd5) {
+	if ($oldpagemd5 !== 0 && $digest !== $oldpagemd5) {
+		
 		$vars['digest'] = $oldpagemd5; // Reset
 		$original = isset($vars['original']) ? $vars['original'] : null;
 		$diff = new Diff($original, $oldpagesrc);
@@ -286,7 +283,8 @@ function plugin_edit_write()
 		$_msg_collided = $_string['msg_collided'];
 		$retvars['msg'] = $_string['title_collided'];
 
-		$retvars['body'] = $_msg_collided."\n";
+		$retvars['body'] = '<p>' . $_msg_collided."</p>\n";
+		$retvars['body'] .= DEBUG ? '<p>original :'.$oldpagemd5.' / New: '.$digest.'.</p>' : '';
 		$retvars['body'] .= $diff->getMergeHtml();
 
 		unset($vars['id']);	// Change edit all-text of pages(from para-edit)

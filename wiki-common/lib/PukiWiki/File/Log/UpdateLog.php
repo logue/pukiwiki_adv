@@ -40,7 +40,9 @@ class UpdateLog extends LogFile{
 	 * 署名を抽出
 	 */
 	public function getSigunature(){
+		$sum = array();
 		$lines = parent::get();
+		$name = parent::get_log_field();
 		if (!$lines) return;
 		foreach ($lines as $_data) {
 			foreach($_data as $line) {

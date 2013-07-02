@@ -26,7 +26,7 @@ class SpamPickup{
 	 * @param string $string
 	 * @return array
 	 */
-	function uri_pickup($string = '')
+	static function uri_pickup($string = '')
 	{
 		if (! is_string($string)) return array();
 
@@ -92,7 +92,7 @@ class SpamPickup{
 	 * @param array $uri
 	 * @return string
 	 */
-	function uri_pickup_implode($uri = array())
+	static function uri_pickup_implode($uri = array())
 	{
 		if (empty($uri) || ! is_array($uri)) return NULL;
 
@@ -156,7 +156,7 @@ class SpamPickup{
 	 * @param type $pathfile
 	 * @return type
 	 */
-	function uri_pickup_normalize(& $pickups, $destructive = TRUE, $pathfile = FALSE)
+	static function uri_pickup_normalize(& $pickups, $destructive = TRUE, $pathfile = FALSE)
 	{
 		if (! is_array($pickups)) return $pickups;
 
@@ -194,7 +194,7 @@ class SpamPickup{
 	 * @param type $pickups
 	 * @return type
 	 */
-	function uri_pickup_normalize_pathfile(& $pickups)
+	static function uri_pickup_normalize_pathfile(& $pickups)
 	{
 		if (! is_array($pickups)) return $pickups;
 
@@ -218,7 +218,7 @@ class SpamPickup{
 	 * @param type $abbrevs_harmfull
 	 * @return string
 	 */
-	function scheme_normalize($scheme = '', $abbrevs_harmfull = TRUE)
+	static function scheme_normalize($scheme = '', $abbrevs_harmfull = TRUE)
 	{
 		static $abbrevs = array(
 			'ttp'	=> 'http',
@@ -257,7 +257,7 @@ class SpamPickup{
 	 * @param type $host
 	 * @return string|array
 	 */
-	function host_normalize($host = '')
+	static function host_normalize($host = '')
 	{
 		if (! is_string($host)) return '';
 
@@ -281,7 +281,7 @@ class SpamPickup{
 	 * @param type $scheme_normalize
 	 * @return string
 	 */
-	function port_normalize($port, $scheme, $scheme_normalize = FALSE)
+	static function port_normalize($port, $scheme, $scheme_normalize = FALSE)
 	{
 		/**
 		 * Schemes that users _maybe_ want to add protocol-handlers
@@ -337,7 +337,7 @@ class SpamPickup{
 	 * @param type $add_root
 	 * @return string
 	 */
-	function path_normalize($path = '', $divider = '/', $add_root = TRUE)
+	static function path_normalize($path = '', $divider = '/', $add_root = TRUE)
 	{
 		if (! is_string($divider)) return is_string($path) ? $path : '';
 
@@ -391,7 +391,7 @@ class SpamPickup{
 	 * @param type $file
 	 * @return string
 	 */
-	function file_normalize($file = 'index.html.en')
+	static function file_normalize($file = 'index.html.en')
 	{
 		static $simple_defaults = array(
 			'default.htm'	=> TRUE,
@@ -569,7 +569,7 @@ class SpamPickup{
 	 * @param type $stortolower
 	 * @return string
 	 */
-	function query_normalize($string = '', $equal = TRUE, $equal_cutempty = TRUE, $stortolower = TRUE)
+	static function query_normalize($string = '', $equal = TRUE, $equal_cutempty = TRUE, $stortolower = TRUE)
 	{
 		if (! is_string($string)) return '';
 		if ($stortolower) $string = strtolower($string);
@@ -618,7 +618,7 @@ class SpamPickup{
 	 * @param type $method
 	 * @return array
 	 */
-	function area_pickup($string = '', $method = array())
+	static function area_pickup($string = '', $method = array())
 	{
 		$area = array();
 		if (empty($method)) return $area;
@@ -703,7 +703,7 @@ class SpamPickup{
 	 * @param type $o_key
 	 * @return type
 	 */
-	function area_measure($areas, & $array, $belief = -1, $a_key = 'area', $o_key = 'offset')
+	static function area_measure($areas, & $array, $belief = -1, $a_key = 'area', $o_key = 'offset')
 	{
 		if (! is_array($areas) || ! is_array($array)) return;
 
@@ -733,7 +733,7 @@ class SpamPickup{
 	 * @param type $method
 	 * @return type
 	 */
-	function spam_uri_removing_hocus_pocus($binary = '', $method = array())
+	static function spam_uri_removing_hocus_pocus($binary = '', $method = array())
 	{
 		$from = $to = array();
 
@@ -746,7 +746,7 @@ class SpamPickup{
 			    isset($method['area_bbcode']) || isset($method['uri_bbcode']))
 					$length = 1;	// Seems not effective
 		}
-		$binary = strings($binary, $length, TRUE, FALSE); // Multibyte NOT needed
+	//	$binary = strings($binary, $length, TRUE, FALSE); // Multibyte NOT needed
 
 		// Remove/Replace quoted-spaces within tags
 		$from[] = '#(<\w+ [^<>]*?\w ?= ?")([^"<>]*? [^"<>]*)("[^<>]*?>)#ie';
@@ -768,7 +768,7 @@ class SpamPickup{
 	 * @param type $matches
 	 * @return string
 	 */
-	function _preg_replace_callback_domain_exposure($matches = array())
+	static function _preg_replace_callback_domain_exposure($matches = array())
 	{
 		$result = '';
 
@@ -804,7 +804,7 @@ class SpamPickup{
 	 * @param type $method
 	 * @return string
 	 */
-	function spam_uri_pickup_preprocess($string = '', $method = array())
+	static function spam_uri_pickup_preprocess($string = '', $method = array())
 	{
 		if (! is_string($string)) return '';
 
@@ -906,7 +906,7 @@ class SpamPickup{
 	 * @param type $method
 	 * @return type
 	 */
-	function spam_uri_pickup($string = '', $method = array())
+	static function spam_uri_pickup($string = '', $method = array())
 	{
 		if (! is_array($method) || empty($method)) {
 			$method = Spam::check_uri_spam_method();
@@ -952,7 +952,7 @@ class SpamPickup{
 	 * @param type $string
 	 * @return boolean|int
 	 */
-	function is_ip($string = '')
+	static function is_ip($string = '')
 	{
 		if (! is_string($string)) return FALSE;
 
@@ -981,7 +981,7 @@ class SpamPickup{
 	 * @param type $implicit
 	 * @return string
 	 */
-	function whois_responsibility($fqdn = 'foo.bar.example.com', $parent = FALSE, $implicit = TRUE)
+	static function whois_responsibility($fqdn = 'foo.bar.example.com', $parent = FALSE, $implicit = TRUE)
 	{
 		static $domain;
 

@@ -1,6 +1,7 @@
 <?php
 namespace PukiWiki;
 
+use PukiWiki\Auth\Auth;
 use PukiWiki\Listing;
 use PukiWiki\Factory;
 
@@ -74,7 +75,7 @@ class Recent{
 		global $cache;
 
 		// ページが最終更新だった場合処理しない
-		if ($page === $whatsnew) return;
+		if (empty($page) || $page === $whatsnew) return;
 		
 		// 削除フラグが立っている場合、削除履歴を付ける
 		if ($is_deleted) self::updateRecentDeleted($page);
@@ -148,7 +149,7 @@ class Recent{
 	 */
 	private static function updateRecentDeleted($deleted){
 		global $whatsdeleted;
-		if (auth::check_role('readonly') || !self::isHidden($this->page)) return;
+		if (Auth::check_role('readonly') || !Factory::Wiki($deleted)->isHidden()) return;
 
 		$delated = Factory::Wiki($whatsdeleted);
 

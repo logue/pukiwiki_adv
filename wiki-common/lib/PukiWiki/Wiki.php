@@ -262,8 +262,14 @@ class Wiki{
 		if (Auth::is_check_role(PKWK_CREATE_PAGE))
 			Utility::dieMessage( sprintf($_strings['error_prohibit'], 'PKWK_READONLY'), 403 );
 
+		// 簡易スパムチェック（不正なエンコードだった場合ここでエラー）
+		if ( !isset($vars['encode_hint']) || $vars['encode_hint'] !== PKWK_ENCODING_HINT ){
+			Utility::dump();
+		}
+
 		// ログイン済みもしくは、自動更新されるページである
-		$has_permission = Auth::check_role('role_contents_admin') || isset($vars['page']) && $vars['page'] === $this->page;
+		//$has_permission = Auth::check_role('role_contents_admin') || isset($vars['page']) && $vars['page'] === $this->page;
+		$has_permission = Auth::check_role('role_contents_admin');
 
 		// 未ログインの場合、S25Rおよび、DNSBLチェック
 		if (!$has_permission) {
@@ -276,10 +282,6 @@ class Wiki{
 			}
 		}
 
-		// 簡易スパムチェック（不正なエンコードだった場合ここでエラー）
-		if ( isset($vars['encode_hint']) && $vars['encode_hint'] !== PKWK_ENCODING_HINT ){
-			Utility::dump();
-		}
 
 		// ポカミス対策：配列だった場合文字列に変換
 		if (is_array($str)) {
@@ -321,6 +323,7 @@ class Wiki{
 			}
 
 			// Akismet
+			global $akismet_api_key;
 			if ($use_spam_check['akismet'] && !empty($akismet_api_key) ){
 				$akismet = new ZendService\Akismet(
 					$akismet_api_key,

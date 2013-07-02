@@ -201,7 +201,7 @@ class LogFile extends AbstractFile{
 					break;
 				case 'del': // 削除フラグ
 					// 更新時は、削除されたか？
-					$rc[$key] = ($kind === 'update' && Factory::Wiki($page)->has()) ? null : 'DELETE';
+					$rc[$key] = ($this->kind === 'update' && Factory::Wiki($this->page)->has()) ? null : 'DELETE';
 					break;
 				case 'sig': // 署名(曖昧)
 					$rc[$key] = self::log_set_signature($utime);
@@ -291,7 +291,7 @@ class LogFile extends AbstractFile{
 			$name = self::set_fieldname();
 
 			// 更新フラグ
-			$put = false;
+			$set = false;
 			// 行の分解
 			for($i=0;$i<$count;$i++) {
 				// ログの１行を配列に変換した後、項目名を付与する
@@ -305,7 +305,7 @@ class LogFile extends AbstractFile{
 
 				if (isset($line['ts']) && $line['ts'] <= UTIME - self::LOG_LIFE_TIME){
 					// 一定期間過ぎたエントリは削除
-					unset($lines[$i]);
+					unset($line);
 					continue;
 				}
 
@@ -315,7 +315,7 @@ class LogFile extends AbstractFile{
 				// 列の分解
 				foreach($_key as $idx) {
 					// 書き込む前のデーターと異なっていた場合
-					if (isset($rc[$idx]) && isset($line[$idx]) && $rc[$idx] !== $line[$idx]) {
+					if (isset($data[$idx]) && isset($fld[$idx]) && $data[$idx] != $line[$idx]) {
 						$sw_update = false;
 						break;
 					}
@@ -333,27 +333,27 @@ class LogFile extends AbstractFile{
 				
 				if ($sw_update) {
 					// 書き換え
-					$lines[$i] = self::array2table($rc);
-					$put = true;
+					$lines[$i] = self::array2table($data);
+					$set = true;
 					break;
 				}
 			}
 
 			unset($i);
 
-			
-			if (! $put) {
+			// 追記するデーター
+			if (! $set) {
 				if ($mustkey) {
 					if (self::log_mustkey_check($_key,$data)) {
-						$lines[] = self::array2table($rc);
+						$lines[] = self::array2table($data);
 					}
 				} else {
-					$lines[] = self::array2table($rc);
+					$lines[] = self::array2table($data);
 				}
 			}
 		} else {
 			// 新規データー
-			$lines[] = self::array2table( $rc );
+			$lines[] = self::array2table( $data );
 		}
 
 		// 配列の長さ制限
@@ -455,7 +455,7 @@ class LogFile extends AbstractFile{
 	 * ログの１行を配列に変換した後、項目名を付与する
 	 * @static
 	 */
-	private static function line2field($line,$name)
+	public static function line2field($line,$name)
 	{
 		$_fld = self::table2array($line);
 		$i = 0;

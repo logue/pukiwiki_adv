@@ -280,7 +280,7 @@ function plugin_ref_body($args)
 		}
 	} else {
 		if (! $is_url && $is_file) {
-			$s_info = Utility::htmlsc(get_date('Y/m/d H:i:s', filemtime($file) - LOCALZONE) .
+			$s_info = Utility::htmlsc(get_date('Y/m/d H:i:s', filemtime($file) /*- LOCALZONE*/) .
 				' ' . sprintf('%01.1f', round(filesize($file) / 1024, 1)) . 'KB');
 		}
 		$params['_body'] = '<a href="' . $url . '" title="' . $s_info . '"'. ((IS_MOBILE) ? ' data-ajax="false"' : '') . '>' .

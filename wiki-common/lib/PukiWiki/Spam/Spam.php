@@ -14,8 +14,6 @@ use PukiWiki\Spam\SpamPickup;
 use PukiWiki\Spam\SpamUtility;
 use PukiWiki\Factory;
 
-if (! defined('SPAM_INI_FILE'))   define('SPAM_INI_FILE', Utility::loadConfig('spam.ini.php'));
-
 class Spam{
 	/**
 	 * Regex
@@ -107,43 +105,41 @@ class Spam{
 
 		if (! isset($regexes)) {
 			$regexes = array();
-			if (file_exists(SPAM_INI_FILE)) {
 
-				$blocklist = include(SPAM_INI_FILE);
-				//	$blocklist['list'] = array(
-				//  	//'goodhost' => FALSE;
-				//  	'badhost' => TRUE;
-				// );
-				//	$blocklist['badhost'] = array(
-				//		'*.blogspot.com',	// Blog services's subdomains (only)
-				//		'IANA-examples' => '#^(?:.*\.)?example\.(?:com|net|org)$#',
-				//	);
+			$blocklist = Utility::loadConfig('spam.ini.php');
+			//	$blocklist['list'] = array(
+			//  	//'goodhost' => FALSE;
+			//  	'badhost' => TRUE;
+			// );
+			//	$blocklist['badhost'] = array(
+			//		'*.blogspot.com',	// Blog services's subdomains (only)
+			//		'IANA-examples' => '#^(?:.*\.)?example\.(?:com|net|org)$#',
+			//	);
 
-				foreach(array(
-						'pre',
-						'list',
-					) as $special) {
+			foreach(array(
+					'pre',
+					'list',
+				) as $special) {
 
-					if (! isset($blocklist[$special])) continue;
+				if (! isset($blocklist[$special])) continue;
 
-					$regexes[$special] = $blocklist[$special];
+				$regexes[$special] = $blocklist[$special];
 
-					foreach(array_keys($blocklist[$special]) as $_list) {
-						if (! isset($blocklist[$_list])) continue;
+				foreach(array_keys($blocklist[$special]) as $_list) {
+					if (! isset($blocklist[$_list])) continue;
 
-						foreach ($blocklist[$_list] as $key => $value) {
-							if (is_array($value)) {
-								$regexes[$_list][$key] = array();
-								foreach($value as $_key => $_value) {
-									self::get_blocklist_add($regexes[$_list][$key], $_key, $_value);
-								}
-							} else {
-								self::get_blocklist_add($regexes[$_list], $key, $value);
+					foreach ($blocklist[$_list] as $key => $value) {
+						if (is_array($value)) {
+							$regexes[$_list][$key] = array();
+							foreach($value as $_key => $_value) {
+								self::get_blocklist_add($regexes[$_list][$key], $_key, $_value);
 							}
+						} else {
+							self::get_blocklist_add($regexes[$_list], $key, $value);
 						}
-
-						unset($blocklist[$_list]);
 					}
+
+					unset($blocklist[$_list]);
 				}
 			}
 		}
@@ -701,7 +697,7 @@ class Spam{
 	 * @param type $method
 	 * @param type $exitmode
 	 */
-	function pkwk_spamfilter($action, $page, $target = array('title' => ''), $method = array(), $exitmode = '')
+	public static function pkwk_spamfilter($action, $page, $target = array('title' => ''), $method = array(), $exitmode = '')
 	{
 		$progress = self::check_uri_spam($target, $method);
 

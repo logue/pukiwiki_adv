@@ -630,9 +630,12 @@ class Utility{
 			$url = isset($vars['page']) ? Router::get_resolve_uri(null, $vars['page']) : Router::get_script_uri();
 		}
 		$s_url = self::htmlsc($url);
-		$response->setStatusCode(Response::STATUS_CODE_301);
+		
 		if (!DEBUG){
+			$response->setStatusCode(Response::STATUS_CODE_301);
 			$response->getHeaders()->addHeaderLine('Location', $s_url);
+		}else{
+			$response->setStatusCode(Response::STATUS_CODE_200);
 		}
 		$html = array();
 		$html[] = '<!doctype html>';

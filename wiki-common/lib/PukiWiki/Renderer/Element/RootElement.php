@@ -28,6 +28,7 @@ use PukiWiki\Renderer\Element\UList;
 use PukiWiki\Renderer\RendererFactory;
 use PukiWiki\Renderer\PluginRenderer;
 use PukiWiki\Text\Rules;
+use PukiWiki\Utility;
 
 /**
  * RootElement

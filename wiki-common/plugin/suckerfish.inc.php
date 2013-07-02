@@ -53,7 +53,7 @@ function plugin_suckerfish_search_navipage(){
 		if (empty($page)) break;
 		$page = substr($page,0,strrpos($page,'/'));
 	}
-	return null;
+	return $navigation;
 }
 
 function plugin_suckerfish_makehtml($page)

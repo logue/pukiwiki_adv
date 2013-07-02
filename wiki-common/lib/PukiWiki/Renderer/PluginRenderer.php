@@ -15,6 +15,7 @@ namespace PukiWiki\Renderer;
 
 use DirectoryIterator;
 use Exeption;
+use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
 use PukiWiki\Router;
 use PukiWiki\Spam\PostId;
@@ -199,10 +200,11 @@ class PluginRenderer{
 		}else if ($plugins[$name]['loaded'] == false){
 			// プラグインが読み込まれてないとき
 			if ($load == true){
+				// 設定を読み込む
+				if (isset($plugins[$name]['conf'])) require_once $plugins[$name]['conf'];
 				// プラグインを読み込む
 				require_once $plugins[$name]['path'];	// FIXME require_onceじゃあまり意味ない。
-				// 設定を読み込む
-				if (isset($plugins[$name]['conf'])) require $plugins[$name]['conf'];
+
 				// 読み込み済フラグ
 				$plugins[$name]['loaded'] = true;
 			}

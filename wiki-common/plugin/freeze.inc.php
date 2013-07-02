@@ -9,7 +9,9 @@
 //
 // Freeze(Lock) plugin
 use PukiWiki\Auth\Auth;
-use PukiWiki\File\WikiFile;
+use PukiWiki\Factory;
+use PukiWiki\Utility;
+use PukiWiki\Router;
 
 // Reserve 'Do nothing'. '^#freeze' is for internal use only.
 function plugin_freeze_convert() { return ''; }
@@ -26,7 +28,7 @@ function plugin_freeze_action()
 	$_btn_freeze      = T_('Freeze');
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
-	$wiki = new WikiFile($page);
+	$wiki = Factory::Wiki($page);
 
 	if (! $function_freeze || ! $wiki->isEditable(true) || ! $wiki->has())
 		return array('msg' => 'Freeze function is disabled.', 'body' => 'You have no permission to freeze this page.');
@@ -36,16 +38,14 @@ function plugin_freeze_action()
 	if ($wiki->isFreezed()) {
 		// Freezed already
 		$msg  = & $_title_isfreezed;
-		$body = str_replace('$1', htmlsc(strip_bracket($page)),
+		$body = str_replace('$1', Utility::htmlsc(strip_bracket($page)),
 			$_title_isfreezed);
 
 	} else if ( ! Auth::check_role('role_contents_admin') || $pass !== NULL && Auth::login($pass) ) {
 		// Freeze
 		$postdata = $wiki->source();
-		$time = $wiki->getTime();	// タイムスタンプを取得
 		array_unshift($postdata, "#freeze\n");	//凍結をページに付加
-		$wiki->set(join('',$postdata));
-		$wiki->setTime($time);	// タイムスタンプを更新しない
+		$wiki->set($postdata, true);
 
 		// Update
 		//$wiki->is_freezed();
@@ -56,9 +56,9 @@ function plugin_freeze_action()
 	} else {
 		// Show a freeze form
 		$msg    = & $_title_freeze;
-		$s_page = htmlsc($page);
+		$s_page = Utility::htmlsc($page);
 		$body   = ($pass === NULL) ? '' : "<p><strong>$_msg_invalidpass</strong></p>\n";
-		$script = get_script_uri();
+		$script = Router::get_script_uri();
 		$body  .= <<<EOD
 <fieldset>
 	<legend>$_msg_freezing</legend>

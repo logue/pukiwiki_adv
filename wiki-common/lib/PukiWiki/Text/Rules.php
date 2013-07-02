@@ -364,7 +364,7 @@ class Rules{
 
 			// Adding fixed anchor into headings
 			if ($fixed_heading_anchor){
-				$line = setHeading($line);
+				$line = self::setHeading($line);
 			}
 		}
 

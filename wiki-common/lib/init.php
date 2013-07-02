@@ -435,7 +435,6 @@ if ($spam && $method !== 'GET') {
 	}
 
 	if ($_spam) {
-		require(LIB_DIR . 'spam.php');
 
 		if (isset($spam['method'][$_cmd])) {
 			$_method = & $spam['method'][$_cmd];

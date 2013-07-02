@@ -252,6 +252,7 @@ class Render{
 	 */
 	private function getJs(){
 		global $vars, $js_tags, $js_blocks, $google_analytics;
+
 		// JavaScriptフレームワーク設定
 		// jQueryUI Official CDN
 		// http://code.jquery.com/
