@@ -136,7 +136,8 @@ class IpFilter{
 	 * @param boolean $force キャッシュを再生成する
 	 * @return string
 	 */
-	public function checkHost($force = true){
+	public function checkHost($force = false){
+		global $cache;
 		$bl_entries = array();
 
 		// キャッシュ処理（PukiWiki Adv.全体の共有キャッシュ）
@@ -177,7 +178,17 @@ class IpFilter{
 	 * @return string
 	 */
 	private function lookupBl(){
-		foreach ($this->dns_hosts as $dns) {
+		$quads = explode(".",$this->ip);
+		$listed = false;
+		$rip = $quads[3].".".$quads[2].".".$quads[1].".".$quads[0];
+		for ($i=0; $i<count($this->dnsbl_hosts); $i++) {
+			if (checkdnsrr($rip.".".$this->dnsbl_hosts[$i] . '.',"A")) {
+				$listed .= $this->dnsbl_hosts[$i]." ";
+			}
+		}
+		return $listed;
+/*
+		foreach ($this->dnsbl_hosts as $dns) {
 			$lookup = implode('.', array_reverse(explode('.', $this->ip))) . '.' . $dns;
 			$result = gethostbyname($lookup);
 			if ($result !== $lookup) {
@@ -185,6 +196,7 @@ class IpFilter{
 			}
 		}
 		return false;
+*/
 	}
 	/**
 	 * IPのネームサーバーを取得

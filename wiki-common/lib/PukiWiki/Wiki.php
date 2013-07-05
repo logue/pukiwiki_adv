@@ -7,12 +7,16 @@ use PukiWiki\Diff;
 use PukiWiki\File\FileFactory;
 use PukiWiki\File\LogFactory;
 use PukiWiki\Relational;
+use PukiWiki\Renderer\PluginRenderer;
 use PukiWiki\Renderer\RendererFactory;
 use PukiWiki\Router;
+use PukiWiki\Spam\Captcha;
 use PukiWiki\Spam\IpFilter;
+use PukiWiki\Spam\ProxyChecker;
 use PukiWiki\Spam\UrlFilter;
 use PukiWiki\Text\Rules;
 use PukiWiki\Utility;
+use ZendService\Akismet\Akismet;
 
 /**
  * Wikiのコントローラー
@@ -277,8 +281,8 @@ class Wiki{
 			//if ($ip_filter->isS25R()) Utility::dieMessage('S25R host is denied.');
 			
 			if ($use_spam_check['page_remote_addr']) {
-				$listed = $ip_filter->checkDNSBL();
-				if ($listed) Utility::dieMessage(sprintf($_strings['blacklisted'],$listed), $_title['prohibit'], 400);
+				$listed = $ip_filter->checkHost();
+				if ($listed !== false) Utility::dieMessage(sprintf($_strings['blacklisted'],$listed), $_title['prohibit'], 400);
 			}
 		}
 
@@ -295,17 +299,20 @@ class Wiki{
 			return $this->wiki->set('');
 		}
 
-		if (Utility::isSpamPost())
-			Utility::dump();
-
-/*
 		// captcha check
-		if ( (isset($use_spam_check['captcha']) && $use_spam_check['captcha'] !== 0) && (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] !== 1)) {
-			captcha_check(( $use_spam_check['captcha'] === 2 ? false : true) );
+		if ( (isset($use_spam_check['captcha']) && $use_spam_check['captcha'] !== 0)) {
+			Captcha::check(false);
 		}
-*/
+
+		if (Utility::isSpamPost()){
+			Utility::dieMessage('Writing was limited. (Blocking SPAM)');
+			Utility::dump();
+			exit;
+		}
+
 		// 入力データーを整形
 		$postdata = Rules::make_str_rules($str);
+		// 過去のデーターを取得
 		$oldpostdata = self::has() ? self::get(TRUE) : '';
 
 		// 差分を生成
@@ -314,18 +321,22 @@ class Wiki{
 		if (!$has_permission) {
 			// URLBLチェック
 			if ( $use_spam_check['page_contents']){
-				self::checkUriBl($diff);
+				$reason = self::checkUriBl($diff);
+				if ($reason !== false){
+					Utility::dump($reason);
+					Utility::dieMessage('Writing was limited by URIBL (Blocking SPAM).', $_title['prohibit'], 400);
+				}
 			}
 			// 匿名プロクシ
-			if ($use_spam_check['page_write_proxy'] && is_proxy()) {
-				Utility::dump();
+			if ($use_spam_check['page_write_proxy'] && ProxyChecker::is_proxy()) {
+				Utility::dump('proxy');
 				Utility::dieMessage('Writing was limited by PROXY (Blocking SPAM).', $_title['prohibit'], 400);
 			}
 
 			// Akismet
 			global $akismet_api_key;
 			if ($use_spam_check['akismet'] && !empty($akismet_api_key) ){
-				$akismet = new ZendService\Akismet(
+				$akismet = new Akismet(
 					$akismet_api_key,
 					Router::get_script_absuri()
 				);
@@ -336,10 +347,10 @@ class Wiki{
 						'user_agent' => $_SERVER['HTTP_USER_AGENT'],
 						'comment_type' => 'comment',
 						'comment_author' => isset($vars['name']) ? $vars['name'] : 'Anonymous',
+						'comment_content' => $postdata
 					);
-					if ($use_spam_check['akismet'] === 2){
-						$akismet_post['comment_content'] = $postdata;
-					}else{
+					/*
+					if ($use_spam_check['akismet'] === 1){
 						// 差分のみをAkismetに渡す
 						foreach ($diff->getSes() as $key=>$line){
 							if ($key !== $diff::SES_ADD) continue;
@@ -348,6 +359,8 @@ class Wiki{
 						$akismet_post['comment_content'] = join("\n",$added_data);
 						unset($added_data);
 					}
+					*/
+					
 
 					if($akismet->isSpam($akismet_post)){
 						Utility::dump('akismet.log');
@@ -399,6 +412,7 @@ class Wiki{
 	 */
 	private static function getLinkList($source){
 		static $plugin_pattern, $replacement;
+		pr($source);
 
 		// プラグインを無効化するためのマッチパターンを作成
 		if (empty($plugin_pattern) || empty($replacement)){
@@ -420,7 +434,7 @@ class Wiki{
 		// レンダリングしたソースからリンクを取得
 		preg_match_all(self::HTML_URI_MATCH_PATTERN, $html, $links, PREG_PATTERN_ORDER);
 		unset($html);
-		return array_unique($links[1][2]);
+		return array_unique($links[1]);
 	}
 	/**
 	 * 差分から追加されたリンクと削除されたリンクを取得しURIBLチェック
@@ -452,9 +466,14 @@ class Wiki{
 			$temp_uri_info = parse_url( $temp_uri );
 			if (empty($temp_uri_info['host'])) continue;
 			$uri_filter = new UriFilter($temp_uri_info['host']);
-			if ($uri_filter->checkHost()) Utility::dieMessage('URIBL matched! : '.$temp_uri_info['host']);
-			if ($uri_filter->isListedNSBL()) Utility::dieMessage('Name server BL! : '.$temp_uri_info['host']);
+			if ($uri_filter->checkHost()){
+				return 'uribl';
+			}
+			if ($uri_filter->isListedNSBL()){
+				return 'nsbl';
+			}
 		}
+		return false;
 	}
 	/**
 	 * ソースからひな形を作成

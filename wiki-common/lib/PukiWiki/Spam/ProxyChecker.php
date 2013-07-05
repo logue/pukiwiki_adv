@@ -19,7 +19,7 @@ namespace PukiWiki\Spam;
  */
 class ProxyChecker
 {
-	var $proxy = array(
+	private static $proxy = array(
 		// 取得値は、上から下へ上書きする。下ほど有用。
 		// 0:KEY, 1:Prox判定利用, 2:IP取得利用
 		// ***** IP アドレス取得 *****
@@ -48,10 +48,10 @@ class ProxyChecker
 	/**
 	 * Proxy経由かのチェック
 	 */
-	function is_proxy()
+	public static function is_proxy()
 	{
 		if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) return 0;	// CloudFlareはProxy扱いしない
-		foreach ($this->proxy as $x) {
+		foreach (self::$proxy as $x) {
 			if (!$x[1]) continue; // Proxy判定利用
 			if (isset($_SERVER[$x[0]])) return 1;
 		}
@@ -62,10 +62,10 @@ class ProxyChecker
 	 * Real IPアドレスを戻す
 	 * プライベートアドレスの場合もある
 	 */
-	function get_realip()
+	static function get_realip()
 	{
 		if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) return $_SERVER['HTTP_CF_CONNECTING_IP'];
-		foreach ($this->proxy as $x) {
+		foreach (self::$proxy as $x) {
 			if (!$x[2]) continue; // IP取得利用
 			$rc = '';
 			if (isset($_SERVER[$x[0]])) {
@@ -81,11 +81,11 @@ class ProxyChecker
 	/**
 	 * Proxy経由かのチェック
 	 */
-	function get_proxy_info()
+	static function get_proxy_info()
 	{
 		$rc = '';
 		if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) return '(CloudFlare)';
-		foreach ($this->proxy as $x) {
+		foreach (self::$proxy as $x) {
 			if (!$x[1]) continue; // Proxy判定利用
 			if (isset($_SERVER[$x[0]])) {
 				$rc .= '('.$x[0].':'.$_SERVER[$x[0]].')';

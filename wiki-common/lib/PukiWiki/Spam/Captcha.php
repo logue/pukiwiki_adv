@@ -18,7 +18,8 @@ use PukiWiki\Render;
 use PukiWiki\Spam\PostId;
 use PukiWiki\Utility;
 use ZendService\ReCaptcha\ReCaptcha;
-
+use Zend\Captcha\Figlet;
+use Zend\Captcha\Image;
 /**
  * Captcha認証クラス
  */
@@ -26,9 +27,9 @@ class Captcha{
 	// CAPTCHAセッションの接頭辞（セッション名は、ticketに閲覧者のリモートホストを加えたもののmd5値とする）
 	const CAPTCHA_SESSION_PREFIX = 'captcha-';
 	// CAPTCHA認証済みセッションの有効期間
-	const CAPTCHA_SESSION_EXPIRE = 3600;	// 1時間
+	const CAPTCHA_SESSION_EXPIRE = 60;	// 1分
 	// CAPTCHA画像のフォント（GDを使用する場合）
-	const CAPTCHA_IMAGE_FONT = 'Vera.ttf';
+	const CAPTCHA_IMAGE_FONT = 'fonts/Vera.ttf';
 	// CAPTCHA画像の一時保存先（GDを使用する場合）
 	const CAPTCHA_IMAGE_DIR_NAME = 'captcha/';
 	// CAPTCHA認証の有効期間
@@ -108,7 +109,7 @@ class Captcha{
 			$session->offsetUnset($session_name);
 			if (extension_loaded('gd')) {
 				// GDが使える場合、画像認証にする
-				AbstractFile::mkdir_r(CACHE_DIR . self::CAPTCHA_IMAGE_DIR_NAME);
+				self::mkdir_r(CACHE_DIR . self::CAPTCHA_IMAGE_DIR_NAME);
 				// 古い画像を削除する
 				$handle = opendir(CACHE_DIR . self::CAPTCHA_IMAGE_DIR_NAME);
 				if ($handle) {
@@ -120,18 +121,18 @@ class Captcha{
 					}
 					closedir($handle);
 				}
-				$captcha = new Zend\Captcha\Image(array(
+				$captcha = new Image(array(
 					'wordLen' => self::CAPTCHA_WORD_LENGTH,
 					'timeout' => self::CAPTCHA_TIMEOUT,
-					'font'	=> self::CAPTCHA_IMAGE_FONT,
-					'ImgDir' => self::CAPTCHA_IMAGE_CACHE_DIR
+					'font'	=> LIB_DIR . self::CAPTCHA_IMAGE_FONT,
+					'ImgDir' => CACHE_DIR . self::CAPTCHA_IMAGE_DIR_NAME
 				));
 				$captcha->generate();
 				// cache_refプラグインを用いて画像を表示
 				$form = '<img src="'. get_cmd_uri('cache_ref', null,null,array('src'=>self::CAPTCHA_IMAGE_DIR_NAME.$captcha->getId().'.png')) . '" height="'.$captcha->getHeight().'" width="'.$captcha->getWidth().'" alt="'.$captcha->getImgAlt().'" /><br />'."\n";	// 画像を取得
 			}else{
 				// GDがない場合アスキーアート
-				$captcha = new Zend\Captcha\Figlet(array(
+				$captcha = new Figlet(array(
 					'wordLen' => self::CAPTCHA_WORD_LENGTH,
 					'timeout' => self::CAPTCHA_TIMEOUT,
 				));
@@ -184,7 +185,15 @@ class Captcha{
 	/**
 	 * CAPTCHA認証失敗したホストをログに保存
 	 */
-	private function write_challenged(){
+	private static function write_challenged(){
 		error_log(REMOTE_ADDR . "\t" . UTIME . "\t" . $_SERVER['HTTP_USER_AGENT'] . "\n", 3, CACHE_DIR . 'challenged.log');
+	}
+	private static function mkdir_r($dirname){
+		// 階層指定かつ親が存在しなければ再帰
+		if (strpos($dirname, '/') && !file_exists(dirname($dirname))) {
+			// 親でエラーになったら自分の処理はスキップ
+			if (self::mkdir_r(dirname($dirname)) === false) return false;
+		}
+		//return mkdir($dirname);
 	}
 }

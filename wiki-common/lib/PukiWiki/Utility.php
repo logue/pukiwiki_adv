@@ -52,7 +52,7 @@ class Utility{
 	/**
 	 * スパムの正規表現マッチパターン
 	 */
-	const SPAM_PATTERN = '#(?:cialis|hydrocodone|viagra|levitra|tramadol|xanax|\[/link\]|\[/url\])#i';
+	const SPAM_PATTERN = '#(?:cialis|hydrocodone|viagra|levitra|tramadol|xanax|\</a\>|\[/link\]|\[/url\])#i';
 
 	/**
 	 * 設定ファイルを読み込む

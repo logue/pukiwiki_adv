@@ -267,6 +267,7 @@ class LogFile extends AbstractFile{
 	 * @param $keeptimestamp 未使用（何も入れないこと）
 	 */
 	public function set($value = '', $keeptimestamp = false){
+		///die('break');
 		// 設定
 		$config = $this->config[$this->kind];
 		
@@ -277,9 +278,9 @@ class LogFile extends AbstractFile{
 		// ない場合終了
 		if (empty($rc)) return;
 		// ログを読み込む
-		$lines = self::get(false);
+		$data = self::get(false);
 		// 行数
-		$count = count($lines);
+		$count = count($data);
 
 		// 更新するキーを取得
 		if (! empty($config['updtkey'])) {
@@ -301,9 +302,12 @@ class LogFile extends AbstractFile{
 				//     ...
 				// );
 				// みたいな感じになる
-				$line = self::line2field($lines[$i],$name);
+				$line = self::line2field($data[$i],$name);
+				pr($line);
+				
+				
 
-				if (isset($line['ts']) && $line['ts'] <= UTIME - self::LOG_LIFE_TIME){
+				if (isset($data['ts']) && $data['ts'] <= UTIME - self::LOG_LIFE_TIME){
 					// 一定期間過ぎたエントリは削除
 					unset($line);
 					continue;
@@ -333,7 +337,7 @@ class LogFile extends AbstractFile{
 				
 				if ($sw_update) {
 					// 書き換え
-					$lines[$i] = self::array2table($data);
+					$data[$i] = self::array2table($rc);
 					$set = true;
 					break;
 				}
@@ -345,15 +349,15 @@ class LogFile extends AbstractFile{
 			if (! $set) {
 				if ($mustkey) {
 					if (self::log_mustkey_check($_key,$data)) {
-						$lines[] = self::array2table($data);
+						$data[] = self::array2table($rc);
 					}
 				} else {
-					$lines[] = self::array2table($data);
+					$data[] = self::array2table($rc);
 				}
 			}
 		} else {
 			// 新規データー
-			$lines[] = self::array2table( $data );
+			$data[] = self::array2table( $rc );
 		}
 
 		// 配列の長さ制限
@@ -366,11 +370,11 @@ class LogFile extends AbstractFile{
 				$i++;
 			}
 			// 戻す
-			$lines = array_reverse($ret);
+			$data = array_reverse($ret);
 		}
 
 		// 保存（空行は削除）
-		parent::set(array_filter($lines));
+		parent::set(array_filter($data));
 	}
 	/**
 	 * ログファイルを読む

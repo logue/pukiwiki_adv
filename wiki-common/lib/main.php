@@ -52,13 +52,16 @@ foreach (array('mbstring','openssl','gd') as $ext){
 	}
 }
 if (count($info) !== 0){
-	throw new Exception(join("<br />\n",$info));
+	throw new Exception(join("\n",$info));
 }
 */
 /////////////////////////////////////////////////
 // Include subroutines
 
 defined('LIB_DIR') or define('LIB_DIR', realpath('./').'/');
+
+// Load Bad-behavior
+require(SITE_HOME . '../vendor/bad-behavior/bad-behavior-sqlite.php');
 
 /////////////////////////////////////////////////
 // Initilalize Zend
@@ -104,8 +107,6 @@ Zend\Loader\AutoloaderFactory::factory(array(
         ),
     ),
 ));
-
-///require('../vendor/bad-behavior/bad-behavior-sqlite.php');
 
 /////////////////////////////////////////////////
 

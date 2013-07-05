@@ -22,7 +22,7 @@
 	<body>
 		<div id="container" role="document">
 <!-- ** Navigator ** -->
-			<?php echo $this->navibar; ?>
+			<?php echo !empty($this->navigation) ? $this->navigation : $this->navibar; ?>
 <!--  End Navigator -->
 <!-- Header -->
 			<header id="header" class="clearfix" role="banner">

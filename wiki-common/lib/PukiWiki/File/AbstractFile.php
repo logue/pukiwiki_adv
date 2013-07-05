@@ -391,7 +391,7 @@ abstract class AbstractFile extends SplFileInfo{
 	 * 再帰的にディレクトリを作成
 	 * @return boolean
 	 */
-	private function mkdir_r(){
+	public function mkdir_r(){
 		if ($this->has()) return false;
 
 		$dirname = dirname($this->filename);	// ファイルのディレクトリ名
