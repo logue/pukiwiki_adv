@@ -227,19 +227,22 @@ class Time{
 	 * @return string
 	 */
 	public static function passage($time){
-		static $units = array('s'=>60, 'm'=>60, 'h'=>24, 'd'=>1);
-		$_time = max(0, (MUTIME - $time)); // seconds
+		static $units = array('m'=>60, 'h'=>24, 'd'=>1);
+
+		$time = max(0, (UTIME - $time) / 60); // minutes
 
 		foreach ($units as $unit=>$card) {
 			if ($time < $card) break;
-			$_time /= $card;
+			$time /= $card;
 		}
-		return floor($_time) . $unit;
+		$time = floor($time) . $unit;
+
+		return $time;
 	}
 	/**
 	 * 時刻を出力
 	 */
 	public static function getDateString($time = UTIME, $class='', $quote = false){
-		return '<time datetime="' .	htmlsc(self::getZoneTimeDate('c',$time)) . '" title="' . Utility::htmlsc(self::passage($time)) . '" class="' . Utility::htmlsc($class) . '">' . Utility::htmlsc(self::format($time)) . '</time>';
+		return '<time datetime="' . Utility::htmlsc(self::getZoneTimeDate('c',$time)) . '" title="' . Utility::htmlsc(self::passage($time)) . '" class="' . Utility::htmlsc($class) . '">' . Utility::htmlsc(self::format($time)) . '</time>';
 	}
 }

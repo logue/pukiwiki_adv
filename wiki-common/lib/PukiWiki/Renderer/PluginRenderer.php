@@ -114,7 +114,7 @@ class PluginRenderer{
 			$cache['core']->removeItem(self::PLUGIN_EXISTS_CACHE);
 		}else if ($cache['core']->hasItem(self::PLUGIN_EXISTS_CACHE)) {
 			$plugins = $cache['core']->getItem(self::PLUGIN_EXISTS_CACHE);
-			$cache['core']->touchItem(self::PLUGIN_EXISTS_CACHE);
+		//	$cache['core']->touchItem(self::PLUGIN_EXISTS_CACHE);
 			return $plugins;
 		}
 		

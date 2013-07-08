@@ -242,7 +242,7 @@ $cache = array(
 			'name' => $cache_adapter,
 			'options' => array(
 				'namespace' => ($cache_adapter === 'Filesystem') ? null : PKWK_WIKI_NAMESPACE,
-				'cache_dir' => ($cache_adapter === 'Filesystem') ? LIB_DIR.'cache/' : null
+				'cache_dir' => ($cache_adapter === 'Filesystem') ? SITE_HOME.'cache/' : null
 			),
 		),
 		'plugins' => array(
@@ -614,8 +614,12 @@ if (isset($retvars['body']) && !empty($retvars['body'])) {
 	}
 
 	$body = $wiki->render();
-	LogFactory::factory('browse',$vars['page'])->set();
+	
 	LogFactory::factory('check',$vars['page'])->set();
+}
+
+if ($vars['cmd'] === 'read'){
+	LogFactory::factory('browse',$vars['page'])->set();
 }
 
 new PukiWiki\Render($title, $body);

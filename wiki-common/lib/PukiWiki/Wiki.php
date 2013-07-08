@@ -300,9 +300,9 @@ class Wiki{
 		}
 
 		// captcha check
-		if ( (isset($use_spam_check['captcha']) && $use_spam_check['captcha'] !== 0)) {
+	//	if ( (isset($use_spam_check['captcha']) && $use_spam_check['captcha'] !== 0)) {
 			Captcha::check(false);
-		}
+	//	}
 
 		if (Utility::isSpamPost()){
 			Utility::dieMessage('Writing was limited. (Blocking SPAM)');

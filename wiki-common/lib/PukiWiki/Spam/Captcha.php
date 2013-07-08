@@ -20,6 +20,8 @@ use PukiWiki\Utility;
 use ZendService\ReCaptcha\ReCaptcha;
 use Zend\Captcha\Figlet;
 use Zend\Captcha\Image;
+use PukiWiki\Router;
+
 /**
  * Captcha認証クラス
  */
@@ -46,7 +48,7 @@ class Captcha{
 		global $recaptcha_public_key, $recaptcha_private_key, $vars, $session;
 
 		// Captchaのセッション名（ticketとリモートホストの加算値。ticketはプログラマーから見てもわからない）
-		$session_name = self::CAPTCHA_SESSION_PREFIX.md5(Utility::getTicket() . REMOTE_ADDR);
+		$session_name = self::CAPTCHA_SESSION_PREFIX . md5(Utility::getTicket() . REMOTE_ADDR);
 
 		if ($save && $session->offsetExists($session_name) && $session->offsetGet($session_name) === true){
 			// CAPTCHA認証済みの場合
@@ -69,9 +71,11 @@ class Captcha{
 					return;	// ここで書き込み処理に戻る
 				}else{
 					// CAPTCHA認証失敗ログをつける
-					self::write_challenged();
+					Utility::dump('captcha');
 					$message = 'Failed to authenticate.';
 				}
+				// チャレンジ＆レスポンスデーターを削除
+				unset($vars['recaptcha_challenge_field'], $vars['recaptcha_response_field']);
 			}
 			// 念のためcaptcha認証済みセッションを削除
 			$session->offsetUnset($session_name);
@@ -83,7 +87,7 @@ class Captcha{
 			// reCaptchaを使わない場合
 			if (isset($vars['challenge_field']) && isset($vars['response_field'] )){
 				// Captchaチェック処理
-				if ($session->offsetGet(self::CAPTCHA_SESSION_PREFIX.$vars['response_field']) === strtolower($vars['challenge_field'])) {
+				if ($session->offsetGet(self::CAPTCHA_SESSION_PREFIX . $vars['response_field']) === strtolower($vars['challenge_field'])) {
 					if ($save){
 						// captcha認証済セッションを保存
 						$session->offsetSet($session_name, true);
@@ -91,19 +95,21 @@ class Captcha{
 						$session->setExpirationSeconds($session_name, self::CAPTCHA_SESSION_EXPIRE);
 					}
 					// 認証用セッションの削除
-					$session->offsetUnset(self::CAPTCHA_SESSION_PREFIX.$vars['response_field']);
-					if (file_exists(self::CAPTCHA_IMAGE_CACHE_DIR.$vars['response_field'].'.png')){
+					$session->offsetUnset(self::CAPTCHA_SESSION_PREFIX . $vars['response_field']);
+					if (file_exists(self::CAPTCHA_IMAGE_DIR_NAME.$vars['response_field'].'.png')){
 						// キャッシュ画像を削除
-						unlink(self::CAPTCHA_IMAGE_CACHE_DIR.$vars['response_field'].'.png');
+						unlink(self::CAPTCHA_IMAGE_DIR_NAME.$vars['response_field'].'.png');
 					}
 
 					// return array('msg'=>'CAPTCHA','body'=>'OK!');
 					return;	// ここで書き込み処理に戻る
 				}else{
 					// CAPTCHA認証失敗ログをつける
-					self::write_challenged();
+					Utility::dump('captcha');
 					$message = 'Failed to authenticate.';
 				}
+				// チャレンジ＆レスポンスデーターを削除
+				unset($vars['response_field'], $vars['challenge_field']);
 			}
 			// 念のためcaptcha認証済みセッションを削除
 			$session->offsetUnset($session_name);
@@ -121,6 +127,7 @@ class Captcha{
 					}
 					closedir($handle);
 				}
+				// 画像CAPTCHAを生成
 				$captcha = new Image(array(
 					'wordLen' => self::CAPTCHA_WORD_LENGTH,
 					'timeout' => self::CAPTCHA_TIMEOUT,
@@ -129,7 +136,7 @@ class Captcha{
 				));
 				$captcha->generate();
 				// cache_refプラグインを用いて画像を表示
-				$form = '<img src="'. get_cmd_uri('cache_ref', null,null,array('src'=>self::CAPTCHA_IMAGE_DIR_NAME.$captcha->getId().'.png')) . '" height="'.$captcha->getHeight().'" width="'.$captcha->getWidth().'" alt="'.$captcha->getImgAlt().'" /><br />'."\n";	// 画像を取得
+				$form = '<img src="' . Router::get_cmd_uri('cache_ref', null,null,array('src'=> self::CAPTCHA_IMAGE_DIR_NAME . $captcha->getId().'.png')) . '" height="' . $captcha->getHeight() . '" width="' . $captcha->getWidth() . '" alt="' . Utility::htmlsc($captcha->getImgAlt()) . '" /><br />'."\n";	// 画像を取得
 			}else{
 				// GDがない場合アスキーアート
 				$captcha = new Figlet(array(
@@ -138,7 +145,8 @@ class Captcha{
 				));
 				$captcha->generate();
 				// ＼が￥に見えるのでフォントを明示的に指定。
-				$form = '<pre style="font-family: Monaco, Menlo, Consolas, \'Courier New\' !important;">'.$captcha->getFiglet()->render($captcha->getWord()).'</pre>'."\n". '<br />'."\n";	// AAを取得
+				$form = '<pre style="font-family: Monaco, Menlo, Consolas, \'Courier New\' !important;">' .
+					Utility::htmlsc($captcha->getFiglet()->render($captcha->getWord())) . '</pre>' . "\n" . '<br />' . "\n";	// AAを取得
 			}
 			// 識別子のセッション名
 			$response_session = self::CAPTCHA_SESSION_PREFIX.$captcha->getId();
@@ -146,8 +154,8 @@ class Captcha{
 			$session->offsetSet($response_session, $captcha->getWord());
 			// captchaの有効期間
 			$session->setExpirationSeconds($response_session, self::CAPTCHA_TIMEOUT);
-			$form .= '<input type="hidden" name="response_field" value="'.$captcha->getId().'" />'."\n";
-			$form .= '<input type="text" name="challenge_field" maxlength="'.$captcha->getWordLen().'" size="'.$captcha->getWordLen().'" />';
+			$form .= '<input type="hidden" name="response_field" value="' . $captcha->getId() . '" />' . "\n";
+			$form .= '<input type="text" name="challenge_field" maxlength="' . $captcha->getWordLen() . '" size="'.$captcha->getWordLen() . '" />';
 			// $form .= $captcha->getWord();
 		}
 	//	$ret[] = $session->offsetExists($session_name) ? 'true' : 'false';
@@ -155,7 +163,7 @@ class Captcha{
 	//	$ret[] = Zend\Debug\Debug::Dump($captcha->getSession());
 
 		if (!empty($message)){
-			$ret[] = '<div class="message_box ui-state-error ui-corner-all"><p><span class="ui-icon ui-icon-alert"></span>'.$message.'</p></div>';
+			$ret[] = '<div class="message_box ui-state-error ui-corner-all"><p><span class="ui-icon ui-icon-alert"></span>' . $message . '</p></div>';
 		}
 
 		// PostIdが有効な場合
@@ -167,26 +175,21 @@ class Captcha{
 		$ret[] = '<legend>CAPTCHA</legend>';
 		$ret[] = '<p>'.T_('Please enter the text that appears below.').'</p>';
 		// フォームを出力
-		$ret[] = '<form method="post" action="'.get_script_uri().'" method="post">';
+		$ret[] = '<form method="post" action="' . Router::get_script_uri() . '" method="post">';
 		// ストアされている値を出力
+		pr($vars);
 		foreach ($vars as $key=>$value){
-			$ret[] = !empty($value) ? '<input type="hidden" name="' . $key . '" value="' . htmlsc($value) . '" />' : null;
+			$ret[] = !empty($value) ? '<input type="hidden" name="' . $key . '" value="' . Utility::htmlsc($value) . '" />' : null;
 		}
 		// CAPTCHAフォームを出力
 		$ret[] = $form;
-		$ret[] = '<input type="submit" />';
+		$ret[] = '<input type="submit" value="submit"/>';
 		$ret[] = '</form>';
 		$ret[] = '</fieldset>';
 
 		// return array('msg'=>'CAPTCHA','body'=>join("\n",$ret));
 		new Render('CAPTCHA', join("\n",$ret));
 		exit;
-	}
-	/**
-	 * CAPTCHA認証失敗したホストをログに保存
-	 */
-	private static function write_challenged(){
-		error_log(REMOTE_ADDR . "\t" . UTIME . "\t" . $_SERVER['HTTP_USER_AGENT'] . "\n", 3, CACHE_DIR . 'challenged.log');
 	}
 	private static function mkdir_r($dirname){
 		// 階層指定かつ親が存在しなければ再帰

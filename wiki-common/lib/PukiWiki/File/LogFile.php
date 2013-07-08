@@ -136,8 +136,6 @@ class LogFile extends AbstractFile{
 	 */
 	private function log_common_check()
 	{
-		global $log_ua;
-
 		// 認証中のユーザ名
 		$username = Auth::check_auth();
 
@@ -155,6 +153,7 @@ class LogFile extends AbstractFile{
 				if ($ip == $nolog_ip) return null;
 			}
 		}
+
 		$rc = array();
 		$field = self::set_fieldname();
 
@@ -197,7 +196,11 @@ class LogFile extends AbstractFile{
 					unset($obj_proxy);
 					break;
 				case 'ua': // ブラウザ情報
-					$rc[$key] = $log_ua;
+					if (isset($_SERVER['HTTP_USER_AGENT'])){
+						$rc[$key] = $_SERVER['HTTP_USER_AGENT'];
+					}else if (isset($_SERVER['ALL_HTTP'])) {
+						$rc[$key] = preg_match('/^HTTP_USER_AGENT:(.+)$/m',$_SERVER['ALL_HTTP'], $regs) ? $regs[1] : null;
+					}
 					break;
 				case 'del': // 削除フラグ
 					// 更新時は、削除されたか？
@@ -267,18 +270,21 @@ class LogFile extends AbstractFile{
 	 * @param $keeptimestamp 未使用（何も入れないこと）
 	 */
 	public function set($value = '', $keeptimestamp = false){
-		///die('break');
+		
 		// 設定
 		$config = $this->config[$this->kind];
 		
 		// ログを取らない場合書き込まない
 		if (!$config['use']) return;
+
 		// 書き込むデーターを取得
 		$rc = self::log_common_check();
+
 		// ない場合終了
 		if (empty($rc)) return;
+
 		// ログを読み込む
-		$data = self::get(false);
+		$data = parent::get(false);
 		// 行数
 		$count = count($data);
 
@@ -303,13 +309,9 @@ class LogFile extends AbstractFile{
 				// );
 				// みたいな感じになる
 				$line = self::line2field($data[$i],$name);
-				pr($line);
-				
-				
 
-				if (isset($data['ts']) && $data['ts'] <= UTIME - self::LOG_LIFE_TIME){
+				if (isset($line['ts']) && $line['ts'] <= UTIME - self::LOG_LIFE_TIME){
 					// 一定期間過ぎたエントリは削除
-					unset($line);
 					continue;
 				}
 
@@ -319,7 +321,7 @@ class LogFile extends AbstractFile{
 				// 列の分解
 				foreach($_key as $idx) {
 					// 書き込む前のデーターと異なっていた場合
-					if (isset($data[$idx]) && isset($fld[$idx]) && $data[$idx] != $line[$idx]) {
+					if (isset($rc[$idx]) && isset($line[$idx]) && $rc[$idx] != $line[$idx]) {
 						$sw_update = false;
 						break;
 					}
@@ -342,6 +344,7 @@ class LogFile extends AbstractFile{
 					break;
 				}
 			}
+			
 
 			unset($i);
 
@@ -374,7 +377,7 @@ class LogFile extends AbstractFile{
 		}
 
 		// 保存（空行は削除）
-		parent::set(array_filter($data));
+		parent::set($data);
 	}
 	/**
 	 * ログファイルを読む
