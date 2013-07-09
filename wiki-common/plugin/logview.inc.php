@@ -203,7 +203,7 @@ EOD;
 			case 'ts': // タイムスタンプ (UTIME)
 				$body .= ' <td class="style_td">' .
 					get_date('Y-m-d H:i:s', $data['ts']) .
-					' ('.get_passage($data['ts']) . ")</td>\n";
+					' '.get_passage($data['ts']) . '</td>'."\n";
 				break;
 
 			case '@guess_diff':

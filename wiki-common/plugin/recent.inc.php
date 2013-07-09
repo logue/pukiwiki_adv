@@ -25,7 +25,7 @@ use PukiWiki\Recent;
 
 function plugin_recent_convert()
 {
-	global $vars, $date_format, $show_passage, $page_title; // , $_recent_plugin_frame;
+	global $vars, $date_format, $link_compact, $page_title; // , $_recent_plugin_frame;
 	static $exec_count = 1;
 	global $cache;
 
@@ -75,7 +75,7 @@ function plugin_recent_convert()
 					// No need to link to the page you just read, or notify where you just read
 					$items[] = ' <li>' . $s_page . '</li>';
 				} else {
-					$passage = $show_passage ? ' ' . $wiki->passage(false,true) : '';
+					$passage = !$link_compact ? ' ' . $wiki->passage(false,true) : '';
 					$items[] = ' <li><a href="' . $wiki->uri() . '" title="' . $s_page . $passage . '">' . $s_page . '</a></li>';
 				}
 			}else{
@@ -88,7 +88,7 @@ function plugin_recent_convert()
 					// No need to link to the page you just read, or notify where you just read
 					$items[] = ' <li data-theme="e">' . $s_page . '</li>';
 				} else {
-					$passage = $show_passage ? ' ' . '<span class="ui-li-count">'.$wiki->passage(false,false).'</span>' : '';
+					$passage = !$link_compact ? ' ' . '<span class="ui-li-count">'.$wiki->passage(false,false).'</span>' : '';
 					$items[] = ' <li><a href="' . $wiki->uri() . '" data-transition="slide">' . $s_page . $passage.'</a></li>';
 				}
 			}

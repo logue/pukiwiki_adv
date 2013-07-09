@@ -12,17 +12,17 @@ use PukiWiki\Utility;
 use PukiWiki\Renderer\Header;
 use Zend\Http\Response;
 
-
 function plugin_cache_ref_action()
 {
 	global $vars, $use_sendfile_header;
 
 	$usage = 'Usage: cmd=cache_ref&amp;src=filename';
-
+	
 	if (! isset($vars['src']))
 		return array('msg'=>'Invalid argument', 'body'=>$usage);
 
-	$filename = $vars['src'] ;
+	$filename = rawurldecode($vars['src']);
+	
 
 	$ref = CACHE_DIR . $filename;
 
@@ -74,26 +74,7 @@ function plugin_cache_ref_action()
 		// for reduce server load
 		$header['X-Sendfile'] = $fileinfo->getRealPath();
 	}
-	/*
-	$response = new Response();
-	$response->setStatusCode(Response::STATUS_CODE_200);
-	$response->getHeaders()->addHeaders($header);
-	header($response->renderStatusLine());
-	foreach ($response->getHeaders() as $_header) {
-		header($_header->toString());
-	}
-	$obj = new SplFileObject($ref);
-	// ファイルの読み込み
-	$obj->openFile('rb');
-	// ロック
-	$obj->flock(LOCK_SH);
-	echo $obj->fpassthru();
-	// アンロック
-	$obj->flock(LOCK_UN);
-	// 念のためオブジェクトを開放
-	unset($fileinfo, $obj);
-	exit;
-	*/
+
 	$obj = new SplFileObject($ref);
 	// ファイルの読み込み
 	$obj->openFile('rb');
@@ -101,10 +82,9 @@ function plugin_cache_ref_action()
 	$obj->flock(LOCK_SH);
 	
 	ob_start(! DEBUG ? 'ob_gzhandler': null);
-	
 	echo $obj->fpassthru();
-	
 	$content = ob_get_clean();
+	
 	// アンロック
 	$obj->flock(LOCK_UN);
 	// 念のためオブジェクトを開放

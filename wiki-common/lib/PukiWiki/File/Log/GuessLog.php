@@ -26,7 +26,7 @@ class GuessLog extends LogFile{
 	/**
 	 * 推測ユーザデータの出力
 	 */
-	public function set($data){
+	public function set($data = '', $keeptimestamp = false){
 		// ユーザを推測する
 		$user = parent::guess_user( $data['user'], $data['ntlm'], $data['sig'] );
 		if (empty($user)) return;

@@ -180,7 +180,7 @@ abstract class Inline
 				$s_page = $glossary;
 			}
 			return '<a href="' . $wiki->uri() . $anchor . '" ' .
-				($link_compact === 0 ? 'title="' . $s_page . ' ' . $wiki->passage(false,true) . '"' : '' ).
+				(!$link_compact ? 'title="' . $s_page . ' ' . $wiki->passage(false,true) . '"' : '' ).
 	//			($isautolink ? ' class="autolink"' : '') .
 				(!empty($glossary) ? 'aria-describedby="tooltip"' : '') .
 				'>' . $anchor_name . '</a>';

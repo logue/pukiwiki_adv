@@ -87,10 +87,10 @@ function plugin_comment_write()
 
 	list($nick, $vars['name'], $disabled) = plugin_comment_get_nick();
 
-	if(isset($vars['name']) || ($vars['nodate'] !== '1')) {
+	if(isset($vars['name']) || (isset($vars['nodate']) && $vars['nodate'] !== '1')) {
 		$_name = (! isset($vars['name']) || $vars['name'] == '') ? $_no_name : $vars['name'];
 		$_name = ($_name == '') ? '' : str_replace('$name', $_name, $_comment_formats['name']);
-		$_now  = ($vars['nodate'] == '1') ? '' :
+		$_now  = (isset($vars['nodate']) && $vars['nodate'] == '1') ? '' :
 			str_replace('$now', $now, PLUGIN_COMMENT_FORMAT_NOW);
 		$comment = str_replace("\x08MSG\x08",  $comment, $_comment_formats['str']);
 		$comment = str_replace("\x08NAME\x08", $_name, $comment);
@@ -103,7 +103,7 @@ function plugin_comment_write()
 	$above       = (isset($vars['above']) && $vars['above'] == '1');
 	foreach ($wiki->get() as $line) {
 		if (! $above) $postdata[] = $line;
-		if (preg_match('/^#comment/i', $line) && $comment_no++ == $vars['comment_no']) {
+		if (preg_match('/^#comment/i', $line) && $comment_no++ == (isset($vars['comment_no']) ? $vars['comment_no'] : 0)) {
 			$postdata[] = "\n" . $comment . "\n" . ($above ? "\n" : '');  // Insert one blank line above #commment, to avoid indentation
 		}
 		if ($above) $postdata[] = $line;
