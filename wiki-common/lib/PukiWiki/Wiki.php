@@ -286,7 +286,6 @@ class Wiki{
 			}
 		}
 
-
 		// ポカミス対策：配列だった場合文字列に変換
 		if (is_array($str)) {
 			$str = join("\n", $str);
@@ -299,18 +298,7 @@ class Wiki{
 			return $this->wiki->set('');
 		}
 
-		// captcha check
-	//	if ( (isset($use_spam_check['captcha']) && $use_spam_check['captcha'] !== 0)) {
-			Captcha::check(false);
-	//	}
-
-		if (Utility::isSpamPost()){
-			Utility::dieMessage('Writing was limited. (Blocking SPAM)');
-			Utility::dump();
-			exit;
-		}
-
-		// 入力データーを整形
+		// 入力データーを整形（※string型です）
 		$postdata = Rules::make_str_rules($str);
 		// 過去のデーターを取得
 		$oldpostdata = self::has() ? self::get(TRUE) : '';
@@ -319,6 +307,10 @@ class Wiki{
 		$diff = new Diff($postdata, $oldpostdata);
 
 		if (!$has_permission) {
+			if (Utility::isSpamPost()){
+				Utility::dump();
+				Utility::dieMessage('Writing was limited. (Blocking SPAM)');
+			}
 			// URLBLチェック
 			if ( $use_spam_check['page_contents']){
 				$reason = self::checkUriBl($diff);
@@ -370,6 +362,10 @@ class Wiki{
 					Utility::dieMessage('Akismet API key does not valied.', 500);
 				}
 			}
+			// captcha check
+		//	if ( (isset($use_spam_check['captcha']) && $use_spam_check['captcha'] !== 0)) {
+				Captcha::check(false);
+		//	}
 		}
 
 		// add client info to diff
@@ -400,7 +396,7 @@ class Wiki{
 		// 更新ログをつける
 		LogFactory::factory('update',$this->page)->set();
 
-		// Create wiki text
+		// Wikiを保存
 		$this->wiki->set($postdata);
 	}
 
@@ -412,9 +408,7 @@ class Wiki{
 	 */
 	private static function getLinkList($source){
 		static $plugin_pattern, $replacement;
-		pr($source);
-
-		// プラグインを無効化するためのマッチパターンを作成
+			// プラグインを無効化するためのマッチパターンを作成
 		if (empty($plugin_pattern) || empty($replacement)){
 			foreach(PluginRenderer::getPluginList() as $plugin=>$plugin_value){
 				if ($plugin === 'ref' || $plugin === 'attach' || $plugin === 'attachref') continue;	// ただしrefやattachは除外（あまりブロック型で使う人いないけどね）

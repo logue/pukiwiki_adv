@@ -6,8 +6,7 @@
 // Warning: This file is PukiWiki "core" resource strings.
 //          Please Without customizing it.
 
-$help_page = 'Help';
-$rule_page = 'FormatRule';
+global $_labels, $_string, $_title, $_LANG, $_error_type;
 
 $_labels = array(
 	'week' => array(

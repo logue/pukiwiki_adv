@@ -450,13 +450,28 @@ EOD;
 			// for reduce server load
 			$header['X-Sendfile'] = $this->getRealPath();
 		}
+		
+		$status_code = Response::STATUS_CODE_200;
+		
+		// http://pukiowikio.sourceforge.jp/index.php?Develop%2FBugTrack1%2F49
+		if ( isset($_SERVER['HTTP_RANGE']) ){
+			list($toss, $range) = explode('=', $_SERVER['HTTP_RANGE']);
+			list($range_start, $range_end) = explode('-', $range);
+			$range_end = $filesize - 1;
+			$length = $filesize - $range_start;
+			if($range_start > 0)
+			{
+				$status_code = STATUS_CODE_206;
+				$header['Content-Range'] = 'bytes ' . $range . '/' . $filesize;
+			}
+		}
 
 		// 読み込み回数のカウンタを更新
 		$this->status['count'][$this->age]++;
 		$this->putstatus();
 
 		// 出力
-		Header::writeResponse($header, Response::STATUS_CODE_200, $buffer);
+		Header::writeResponse($header, $status_code, $buffer);
 
 		exit;
 	}

@@ -105,14 +105,13 @@ function plugin_pcomment_convert()
 		get_plugin_option($arg, $params);
 
 	$vars_page = isset($vars['page']) ? $vars['page'] : '';
-	$page  = (isset($params['_args'][0]) && $params['_args'][0] != '') ? $params['_args'][0] :
-		sprintf(PLUGIN_PCOMMENT_PAGE, strip_bracket($vars_page));
+	$page  = (isset($params['_args'][0]) && !empty($params['_args'][0]) ) ? $params['_args'][0] : Utility::stripBracket(sprintf(PLUGIN_PCOMMENT_PAGE, $vars_page));
 	$count = (isset($params['_args'][1])) ? intval($params['_args'][1]) : 0;
 	if ($count == 0) $count = PLUGIN_PCOMMENT_NUM_COMMENTS;
 
 	$_page = get_fullname(strip_bracket($page), $vars_page);
 	if (!is_pagename($_page))
-		return sprintf($_pcmt_messages['err_pagename'], htmlsc($_page));
+		return sprintf($_pcmt_messages['err_pagename'], Utility::htmlsc($_page));
 
 	$dir = PLUGIN_COMMENT_DIRECTION_DEFAULT;
 	if ($params['below']) {
@@ -129,9 +128,9 @@ function plugin_pcomment_convert()
 		// Show a form
 		$form[] = '<input type="hidden" name="cmd" value="pcomment" />';
 		$form[] = '<input type="hidden" name="digest" value="' . $digest .'" />';
-		$form[] = '<input type="hidden" name="refer"  value="' . htmlsc($vars_page) . '" />';
-		$form[] = '<input type="hidden" name="page"   value="' . htmlsc($page) . '" />';
-		$form[] = '<input type="hidden" name="nodate" value="' . htmlsc($params['nodate']) . '" />';
+		$form[] = '<input type="hidden" name="refer"  value="' . Utility::htmlsc($vars_page) . '" />';
+		$form[] = '<input type="hidden" name="page"   value="' . Utility::htmlsc($page) . '" />';
+		$form[] = '<input type="hidden" name="nodate" value="' . Utility::htmlsc($params['nodate']) . '" />';
 		$form[] = '<input type="hidden" name="dir"    value="' . $dir . '" />';
 		$form[] = '<input type="hidden" name="count"  value="' . $count . '" />';
 		$form[] = $params['reply'] ?
@@ -176,15 +175,17 @@ function plugin_pcomment_insert()
 	$refer = isset($vars['refer']) ? $vars['refer'] : '';
 	$page  = isset($vars['page'])  ? $vars['page']  : '';
 	$page  = get_fullname($page, $refer);
+	
+	$wiki = Factory::Wiki($page);
 
-	if (! is_pagename($page))
+	if (! $wiki->isValied())
 		return array(
 			'msg' => T_('Invalid page name'),
 			'body'=> T_('Cannot add comment'),
 			'collided'=>TRUE
 		);
 
-	check_editable($page, true, true);
+	$wiki->checkEditable();
 
 	$ret = array('msg' => $_string['update'], 'collided' => FALSE);
 
@@ -214,7 +215,7 @@ function plugin_pcomment_insert()
 	$msg = rtrim($msg);
 
 	if (! is_page($page)) {
-		$postdata = '[[' . htmlsc(strip_bracket($refer)) . ']]' . "\n\n" .
+		$postdata = '[[' . Utility::htmlsc(strip_bracket($refer)) . ']]' . "\n\n" .
 			'-' . $msg . "\n";
 	} else {
 		$postdata = get_source($page);
@@ -267,16 +268,8 @@ function plugin_pcomment_insert()
 			$_count = isset($vars['count']) ? $vars['count'] : '';
 			plugin_pcomment_auto_log($page, $dir, $_count, $postdata);
 		}
-
-		$postdata = join('', $postdata);
 	}
-	page_write($page, $postdata, PLUGIN_PCOMMENT_TIMESTAMP);
-
-	if (PLUGIN_PCOMMENT_TIMESTAMP) {
-		if ($refer !== '') pkwk_touch_file(get_filename($refer));
-		put_lastmodified();
-	}
-
+	$wiki->set($postdata, PLUGIN_PCOMMENT_TIMESTAMP);
 	return $ret;
 }
 

@@ -19,7 +19,7 @@ use PukiWiki\File\FileFactory;
 use PukiWiki\Listing;
 use PukiWiki\Renderer\RendererFactory;
 use PukiWiki\Diff;
-
+use PukiWiki\Utility;
 
 // Prohibit rendering old wiki texts (suppresses load, transfer rate, and security risk)
 // define('PLUGIN_BACKUP_DISABLE_BACKUP_RENDERING', PKWK_SAFE_MODE || PKWK_OPTIMISE);
@@ -108,8 +108,6 @@ function plugin_backup_action()
 	$msg = $_backup_messages['msg_backup'];
 	if ($s_age > count($backups)) $s_age = $backups_count;
 	$body = '';
-
-
 
 	$wiki->checkReadable();
 

@@ -14,32 +14,32 @@ class Backup{
 		global $cycle, $maxage;
 		$this->page = $page;
 		// バックアップの頻度
-		$this->cycle = 60 * 60 * $cycle;
+		$this->cycle = 0;
+		//$this->cycle = 60 * 60 * $cycle;
 		// バックアップの上限個数
 		$this->maxage = $maxage;
 		// 以下はSplFileInfoの派生クラス
 		$this->wiki = FileFactory::Wiki($this->page);
 		$this->backup = FileFactory::Backup($this->page);
+		// バックアップの世代間の区切りの正規表現
+		$this->splitter_reglex = '/^(' . preg_quote(self::SPLITTER) . '\s\d+(\s(\d+)|))$/';
 	}
 	/**
 	 * バックアップを作成する
-	 *
-	 * @access    public
-	 * @param     Boolean   $delete      TRUE:バックアップを削除する
-	 *
+	 * @param string $newdata バックアップに記載するソース
 	 * @return    Void
 	 */
 	public function set(){
 		// ページが存在しない場合、バックアップ作成しない。
 		if (! $this->wiki->has() ) return;
+		
+		// バックアップを取るWikiデーター
+		$newdata = join("\n",$this->wiki->get());
 
-		// バックアップに追記するデータ
-		$newdata = $this->wiki->get(true);
-
-		if ($this->backup->has()){
-			// バックアップ新規作成
+		if (! $this->backup->has()){
+			// バックアップが存在しない場合、バックアップ新規作成
 			return $this->backup->set(self::SPLITTER . ' ' . $this->wiki->time() . ' ' . UTIME . "\n" . $newdata);
-		}else if (! $this->backup->time() === 0 || (UTIME - $this->backup->time() > $this->cycle) ){
+		}else if (UTIME - $this->backup->time() < $this->cycle){
 			// 連続更新があった場合に備えて、バックアップを作成するまでのインターバルを設ける
 			return;
 		}
@@ -55,23 +55,20 @@ class Backup{
 		$strout = '';
 		foreach($backups as $age=>$data) {
 			// BugTrack/685 by UPK
-			$strout .= self::BACKUP_SPLITTER . ' ' . $data['time'] . ' ' . $data['real'] . "\n"; // Splitter format
+			$strout .= self::SPLITTER . ' ' . $data['time'] . ' ' . $data['real'] . "\n"; // Splitter format
 			$strout .= join("\n", $data['data']);
 			unset($backups[$age]);
 		}
 		$strout = preg_replace('/([^\n])\n*$/', "$1\n", $strout);
 
 		// 追加するバックアップデーター
-		// Escape 'lines equal to self::SPLITTER', by inserting a space
 		$body = preg_replace($this->backup->splitter_reglex, '$1 ', $newdata);
 		// BugTrack/685 by UPK
-		$body = self::SPLITTER . ' ' . $wiki->time() . ' ' . UTIME . "\n" . $body;
+		$body = self::SPLITTER . ' ' . $this->wiki->time() . ' ' . UTIME . "\n" . $body;
 		$body = preg_replace('/\n*$/', "\n", $body);
 
-//		pr($body. $strout);
-//		die();
 		// 先頭に追記して書き込む
-		return self::set($body. $strout);
+		return $this->backup->set($body. $strout);
 	}
 	/**
 	 * バックアップを取得する
@@ -101,7 +98,7 @@ class Backup{
 					$now = (isset($match[3]) && $match[2] !== $match[3]) ? $match[3] : $match[2];
 
 					// Allocate
-					$retvars[$_age] = array('time'=>$match[2], 'real'=>$now, 'data'=>array());
+					$retvars[$_age] = array('time'=>trim($match[2]), 'real'=>trim($now), 'data'=>array());
 				} else {
 					// The first ... the last line of the data
 					$retvars[$_age]['data'][] = rtrim($line);
@@ -125,7 +122,7 @@ class Backup{
 			return $this->backup->remove();
 		} else {
 			// バックアップから指定世代のみ削除
-			$backups = self::getBackup();
+			$backups = self::get();
 			if (is_array($ages)){
 				foreach($ages as $age) {
 					unset($backups[$age]);

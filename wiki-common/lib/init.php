@@ -196,6 +196,8 @@ defined('SORT_NATURAL') or define('SORT_NATURAL', SORT_LOCALE_STRING);
 /////////////////////////////////////////////////
 // Init grobal variables
 
+global $foot_explain, $related, $info, $meta_tags, $link_tags, $js_tags, $js_blocks, $css_blocks, $js_vars, $_SKIN;
+
 $foot_explain = array();	// Footnotes
 $related      = array();	// Related pages
 $head_tags    = array();	// XHTML tags in <head></head> (Obsolete in Adv.)

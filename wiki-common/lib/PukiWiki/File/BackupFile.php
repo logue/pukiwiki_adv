@@ -217,7 +217,7 @@ class BackupFile extends AbstractFile{
 		foreach ($this->available_ext as $ext){
 			if (file_exists($this->name.$ext)) return $this->read_sub($ext, $join);
 		}
-		return $join ? '' :array();
+		return $join ? '' : array();
 	}
 	/**
 	 * write()
