@@ -17,7 +17,7 @@ class Recent{
 	 * @param boolean $force キャッシュを再生成する
 	 * @return array
 	 */
-	public static function get($force = true){
+	public static function get($force = false){
 		global $cache, $whatsnew;
 		static $recent_pages;
 

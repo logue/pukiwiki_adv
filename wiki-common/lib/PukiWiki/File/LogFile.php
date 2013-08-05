@@ -8,7 +8,6 @@ use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
 use PukiWiki\File\AbstractFile;
 use PukiWiki\File\DiffFile;
-use PukiWiki\File\File;
 use PukiWiki\NetBios;
 use PukiWiki\Spam\ProxyChecker;
 use PukiWiki\Utility;

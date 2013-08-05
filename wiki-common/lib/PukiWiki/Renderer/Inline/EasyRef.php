@@ -12,6 +12,8 @@
  */
 
 namespace PukiWiki\Renderer\Inline;
+
+use PukiWiki\Renderer\PluginRenderer;
 use PukiWiki\Renderer\InlineFactory;
 
 /**
@@ -42,8 +44,8 @@ class EasyRef extends Inline {
 		return parent::setParam($page, 'ref', $body, 'plugin');
 	}
 	public function __toString() {
-		$body = empty($this->body) ? '' : InlineFactory($this->body);
-		return do_plugin_inline($this->name, $this->param, $body);
+		$body = empty($this->body) ? '' : InlineFactory::factory($this->body);
+		return PluginRenderer::executePluginInline($this->name, $this->param, $body);
 	}
 }
 

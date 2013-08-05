@@ -14,7 +14,6 @@
 namespace PukiWiki\File;
 
 use Exception;
-use PukiWiki\Diff;
 use PukiWiki\File\AbstractFile;
 use PukiWiki\Router;
 use PukiWiki\Utility;

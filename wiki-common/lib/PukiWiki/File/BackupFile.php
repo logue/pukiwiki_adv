@@ -14,6 +14,7 @@
 namespace PukiWiki\File;
 
 use PukiWiki\Auth\Auth;
+use PukiWiki\Diff\Diff;
 use PukiWiki\Factory;
 use PukiWiki\File\AbstractFile;
 use PukiWiki\Utility;

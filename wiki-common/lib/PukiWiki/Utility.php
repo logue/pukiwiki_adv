@@ -14,13 +14,13 @@
 namespace PukiWiki;
 
 use PukiWiki\Auth\Auth;
+use PukiWiki\Diff\LineDiff;
+use PukiWiki\Factory;
+use PukiWiki\Listing;
 use PukiWiki\Renderer\RendererDefines;
-use PukiWiki\Renderer\InlineFactory;
 use PukiWiki\Renderer\PluginRenderer;
 use PukiWiki\Router;
 use PukiWiki\Render;
-use PukiWiki\Factory;
-use PukiWiki\Listing;
 use Zend\Http\Response;
 use Zend\Math\Rand;
 use SplFileInfo;
@@ -775,6 +775,73 @@ class Utility{
 			$ret[] = '<ul><li><a href="' . $wiki->uri('edit',array('help'=>'true')) . '" id="FormatRule">' . $_string['help'] . '</a></li></ul>';
 		}
 		return join("\n", $ret);
+	}
+	/**
+	 * 競合を出力（do_update_diff）
+	 * @param string $pagestr ページのソース
+	 * @param string $poststr 編集したWikiデーター
+	 * @param string $original 編集時に送信されたオリジナルのソース
+	 */
+	public static function showCollision($pagestr, $poststr, $original)
+	{
+		$obj = new LineDiff();
+
+		$obj->set_str('left', $original, $pagestr);
+		$obj->compare();
+		$diff1 = $obj->toArray();
+
+		$obj->set_str('right', $original, $poststr);
+		$obj->compare();
+		$diff2 = $obj->toArray();
+
+		$arr = $obj->arr_compare('all', $diff1, $diff2);
+
+		global $do_update_diff_table;
+		$table = array();
+		$table[] = '<div class="table_wrapper">';
+		$table[] = '<table class="style_table style_table_center">';
+		$table[] = '<caption>';
+		$table[] = 'l : between backup data and stored page data.<br />';
+		$table[] = 'r : between backup data and your post data.';
+		$table[] = '</caption>';
+		$table[] = '<colgroup span="1" />';
+		$table[] = '<colgroup span="1" />';
+		$table[] = '<thead>';
+		$table[] = '<tr>';
+		$table[] = '<th class="style_th">l</th>';
+		$table[] = '<th class="style_th">r</th>';
+		$table[] = '<th class="style_th">text</th>';
+		$table[] = '</tr>';
+		$table[] = '</thead>';
+		$table[] = '<tbody>';
+
+		$tags = array('th', 'th', 'td');
+		foreach ($arr as $_obj) {
+			$table[] = ' <tr>';
+			$params = array($_obj->get('left'), $_obj->get('right'), $_obj->text());
+			foreach ($params as $key => $text) {
+				$text = self::htmlsc(rtrim($text));
+				$table[] = 
+					'  <' . $tags[$key] . ' class="style_' . $tags[$key] . '">' .
+					$text .
+					'</' . $tags[$key] . '>';
+			}
+			$table[] = ' </tr>';
+		}
+		$table[] =  '</tbody>';
+		$table[] =  '</table>';
+
+		$do_update_diff_table = implode("\n", $table) . "\n";
+		unset($table);
+
+		$body = array();
+		foreach ($arr as $_obj) {
+			if ($_obj->get('left') != '-' && $_obj->get('right') != '-') {
+				$body[] = $_obj->text();
+			}
+		}
+
+		return join("\n",$body);
 	}
 	/**
 	 * ダンプ

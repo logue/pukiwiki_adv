@@ -21,7 +21,7 @@ use ZendService\ReCaptcha\ReCaptcha;
 use Zend\Captcha\Figlet;
 use Zend\Captcha\Image;
 use PukiWiki\Router;
-
+use DirectoryIterator;
 /**
  * Captcha認証クラス
  */
@@ -85,6 +85,11 @@ class Captcha{
 			$form = $captcha->getHTML();
 		}else{
 			// reCaptchaを使わない場合
+			static $captcha_dir;
+			if (empty($captcha_dir)){
+				$captcha_dir = realpath(CACHE_DIR . self::CAPTCHA_IMAGE_DIR_NAME) . DIRECTORY_SEPARATOR;
+			}
+			
 			if (isset($vars['challenge_field']) && isset($vars['response_field'] )){
 				// Captchaチェック処理
 				if ($session->offsetGet(self::CAPTCHA_SESSION_PREFIX . $vars['response_field']) === strtolower($vars['challenge_field'])) {
@@ -96,9 +101,9 @@ class Captcha{
 					}
 					// 認証用セッションの削除
 					$session->offsetUnset(self::CAPTCHA_SESSION_PREFIX . $vars['response_field']);
-					if (file_exists(self::CAPTCHA_IMAGE_DIR_NAME.$vars['response_field'].'.png')){
+					if (file_exists($captcha_dir.$vars['response_field'].'.png')){
 						// キャッシュ画像を削除
-						unlink(self::CAPTCHA_IMAGE_DIR_NAME.$vars['response_field'].'.png');
+						unlink($captcha_dir.$vars['response_field'].'.png');
 					}
 
 					// return array('msg'=>'CAPTCHA','body'=>'OK!');
@@ -115,24 +120,32 @@ class Captcha{
 			$session->offsetUnset($session_name);
 			if (extension_loaded('gd')) {
 				// GDが使える場合、画像認証にする
-				self::mkdir_r(CACHE_DIR . self::CAPTCHA_IMAGE_DIR_NAME);
+				self::mkdir_r($captcha_dir);
 				// 古い画像を削除する
-				$handle = opendir(CACHE_DIR . self::CAPTCHA_IMAGE_DIR_NAME);
+				$di = new DirectoryIterator($captcha_dir );
+				foreach ($di as $f){
+					if (!$f->isFile()) continue;
+					if (time() - $f->getMTime() > self::CAPTCHA_TIMEOUT) unlink($f->getRealPath());
+				}
+				
+/*
+				$handle = opendir($captcha_dir,null);
 				if ($handle) {
 					while( $entry = readdir($handle) ){
 						if( $entry !== '.' && $entry !== '..'){
-							$f = realpath(CACHE_DIR . self::CAPTCHA_IMAGE_DIR_NAME . $entry);
+							$f = realpath($captcha_dir . $entry);
 							if (time() - filectime($f) > self::CAPTCHA_TIMEOUT) unlink($f);
 						}
 					}
 					closedir($handle);
 				}
+*/
 				// 画像CAPTCHAを生成
 				$captcha = new Image(array(
 					'wordLen' => self::CAPTCHA_WORD_LENGTH,
 					'timeout' => self::CAPTCHA_TIMEOUT,
 					'font'	=> LIB_DIR . self::CAPTCHA_IMAGE_FONT,
-					'ImgDir' => CACHE_DIR . self::CAPTCHA_IMAGE_DIR_NAME
+					'ImgDir' => $di->getPath()
 				));
 				$captcha->generate();
 				// cache_refプラグインを用いて画像を表示
@@ -177,7 +190,6 @@ class Captcha{
 		// フォームを出力
 		$ret[] = '<form method="post" action="' . Router::get_script_uri() . '" method="post">';
 		// ストアされている値を出力
-		pr($vars);
 		foreach ($vars as $key=>$value){
 			$ret[] = !empty($value) ? '<input type="hidden" name="' . $key . '" value="' . Utility::htmlsc($value) . '" />' : null;
 		}

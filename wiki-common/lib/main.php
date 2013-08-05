@@ -36,8 +36,6 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-set_time_limit(0);
-ignore_user_abort(true);
 ini_set('memory_limit', '128M');
 ini_set('real_path_cache_size','64k');
 ini_set('realpath_cache','120');
@@ -56,9 +54,20 @@ if (count($info) !== 0){
 }
 */
 /////////////////////////////////////////////////
-// Include subroutines
+// Init PukiWiki Advance Enviroment variables
 
+defined('DEBUG')        or define('DEBUG', false);
+defined('PKWK_WARNING') or define('PKWK_WARNING', false);
+defined('ROOT_URI')     or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');
+defined('WWW_HOME')     or define('WWW_HOME', '');
+defined('COMMON_URI')   or define('COMMON_URI', ROOT_URI);
+
+if (DEBUG) {
+	error_reporting(E_ALL); // Show all errors
+	ini_set('display_errors', 'On');
+}
 defined('LIB_DIR') or define('LIB_DIR', realpath('./').'/');
+defined('SITE_HOME') or define('SITE_HOME', realpath('./').'/');
 
 // Load Bad-behavior
 require(SITE_HOME . '../vendor/bad-behavior/bad-behavior-sqlite.php');

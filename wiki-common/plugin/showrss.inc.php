@@ -1,9 +1,9 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: showrss.inc.php,v 1.22.8 2011/02/05 10:27:00 Logue Exp $
+// $Id: showrss.inc.php,v 1.22.9 2013/08/05 10:27:00 Logue Exp $
 //  Id:showrss.inc.php,v 1.40 2003/03/18 11:52:58 hiro Exp
 // Copyright (C):
-//     2011-2012 PukiWiki Advance Developers Team
+//     2011-2013 PukiWiki Advance Developers Team
 //     2005-2007 PukiWiki Plus! Team
 //     2002-2006,2011 PukiWiki Developers Team
 //     2002      PANDA <panda@arino.jp>
@@ -15,46 +15,36 @@
 //    * This plugin needs 'PHP xml extension'
 //    * Cache data will be stored as CACHE_DIR/*.tmp
 
+use PukiWiki\Auth\Auth;
+use PukiWiki\Utility;
+use PukiWiki\Renderer\Header;
+use Zend\Http\Response;
+
 define('PLUGIN_SHOWRSS_USAGE', '#showrss(URI-to-RSS[,default|menubar|recent[,Cache-lifetime[,Show-timestamp]]])');
 defined('PLUGIN_SHOWRSS_SHOW_DESCRIPTION') or define('PLUGIN_SHOWRSS_SHOW_DESCRIPTION', true);
 
 define('PLUGIN_SHOWRSS_CACHE_PREFIX', 'showrss-');
-use PukiWiki\Auth\Auth;
-use PukiWiki\Renderer\Inline\Inline;
-use Zend\Http\ClientStatic;
-use Zend\Feed\Reader\Reader;
 
 // Show related extensions are found or not
 function plugin_showrss_action()
 {
-	global $vars, $use_sendfile_header, $cache;
+	global $vars, $cache;
 	// if (PKWK_SAFE_MODE) die_message('PKWK_SAFE_MODE prohibit this');
-	if (Auth::check_role('safemode')) die_message('PKWK_SAFE_MODE prohibits this');
+	if (Auth::check_role('safemode')) Utility::dieMessage('PKWK_SAFE_MODE prohibits this');
 
 	if ($vars['feed']){
 		// ajaxによる読み込み
 		$target = $vars['feed'];
-		$cachehour = 1;
 
-		// Get the cache not expired
-		$cache_name = PLUGIN_SHOWRSS_CACHE_PREFIX . md5($target);
+		list($data, $time, $reason) = plugin_showrss_get_rss($vars['feed'], 1, true);
+		$header = Header::getHeaders('aplication/xml' ,$time );
 
-		if ($cache['raw']->hasItem($cache_name)) {
-			$buf = $cache['raw']->getItem($cache_name);
+		if (empty($reason)) {
+			Header::writeResponse($header, Response::STATUS_CODE_200, $data);
 		}else{
-			// Newly get RSS
-			$response = ClientStatic::get($target);
-			if (!$response->isSuccess()){
-				return array(FALSE, 0);
-			}
-
-			$buf = $response->getBody();
-			$cache['raw']->setItem($cache_name, $buf);
+			// とりあえずXMLでエラー
+			Header::writeResponse($header, Response::STATUS_CODE_200, '<?xml version="1.0" encoding="UTF-8"?><response><error>1</error><message>'.Utility::htmlsc($reason).'</message></response>');
 		}
-
-		pkwk_common_headers($time);
-		header('Content-Type: aplication/xml');
-		echo $buf;
 		exit();
 	}
 
@@ -100,16 +90,14 @@ function plugin_showrss_convert()
 	if (! is_requestable($uri))
 		return '<p class="message_box ui-state-error ui-corner-all">#showrss: Prohibit fetching RSS from my server.</p>' . "\n";
 
-	list($rss, $time) = plugin_showrss_get_rss($uri, $cachehour);
-	if ($rss === FALSE) return '<p class="message_box ui-state-error ui-corner-all">#showrss: Failed fetching RSS from the server.</p>' . "\n";
+	list($rss, $time, $reason) = plugin_showrss_get_rss($uri, $cachehour);
+	if (!$rss) return '<p class="message_box ui-state-error ui-corner-all">#showrss: '.$reason.'</p>' . "\n";
 
 	if ($timestamp > 0) {
 		$time = '<p style="font-size:small; font-weight:bold; text-align:right;">Last-Modified:' .
 			get_date('Y/m/d H:i:s', $time) .  '</p>';
 	}
 	
-//	$feed = new Reader($uri);
-//	pr($feed);
 
 	$obj = new $class($rss);
 	return $obj->toString($time);
@@ -121,7 +109,7 @@ class ShowRSS_html
 	var $items = array();
 	var $class = 'showrss';
 
-	function ShowRSS_html($xml)
+	function __construct($xml)
 	{
 		// 整形
 		if ((string) $xml->attributes()->version == '2.0'){
@@ -157,7 +145,7 @@ class ShowRSS_html
 			$this->passage =  get_passage( strtotime((string) $xml->updated) );
 			$this->url = $href;
 			$this->logo = (isset($xml->icon)) ? '<a href="'.$href.' rel="external"><img src="'.(string) $xml->icon.'" /></a>' : null;
-
+			
 			// atom podcastは未対応（複数指定可能ってどんだけー！？）
 			// contentタグには未対応
 			foreach ($xml->entry as $entry) {
@@ -184,7 +172,7 @@ class ShowRSS_html
 					'entry'	=> (string) $item->title,
 					'link'	=> (string) $item->link,
 					'date'	=> strtotime((string) $item_dc->date),
-					'desc'	=> (string) htmlsc($item->description)
+					'desc'	=> (string) Utility::htmlsc($item->description)
 				);
 			}
 		}
@@ -192,12 +180,11 @@ class ShowRSS_html
 
 	// エントリの内容
 	function format_line($line){
-		$entry = htmlsc(mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['entry'])), 0, 127, '...'));
-		$desc = htmlsc(mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['desc'])), 0, 127, '...'));
+		$desc = mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['desc'])), 0, 127, '...');
 		if (IS_MOBILE){
-			return '<a href="'. preg_replace("/\s/",'', $line['link']) .'" rel="external">'.$entry.'<span class="ui-li-count">'.get_passage($line['date'],false).'</span></a>';
+			return '<a href="'. preg_replace("/\s/",'', $line['link']) .'" rel="external">'.$line['entry'].'<span class="ui-li-count">'.get_passage($line['date'],false).'</span></a>';
 		}else{
-			return Inline::setLink($line['entry'], $line['link'], $desc.' '.get_passage($line['date']));
+			return '<a href="'. $line['link'] .'" title="'.$desc.' '.get_passage($line['date']).'">'.$line['entry'].'</a>';
 		}
 	}
 
@@ -206,24 +193,25 @@ class ShowRSS_html
 		$retval = array();
 		if (IS_MOBILE){
 			$retval[] = '<div data-role="collapsible" data-collapsed="true" data-theme="b" data-content-theme="d"><h4>'.$this->title.'</h4>';
-
+			
 			$retval[] = '<ul data-role="listview" data-inset="true">';
 			$retval[] = $body;
 			$retval[] = '</ul>' . "\n".  '</div>';
 		}else{
-			$title = ($this->url) ? Inline::setLink($this->title, $this->url, $this->passage) : $this->title;
+			$title = ($this->url) ? '<a href="' . $this->url . '" title="' . $this->passage . '" rel="external">' . $this->title . '</a>' : $this->title;
 			$retval[] = '<legend>'.$title.'</legend>';
 			$retval[] = isset($this->logo) ? '<figure>'.$this->logo.'</figure>' : null;
 			$retval[] = '<ul>';
-			$retval[] =  $body;
+			$retval[] =  $body; 
 			$retval[] = '</ul>';
 		}
 		return join("\n",$retval);
 	}
 
-	function toString(){
+	function toString($timestamp){
+		$retval = '';
 		$rss_body = array();
-
+		
 		// エントリの内部を展開
 		foreach ($this->items as $item){
 			$rss_body[] = '<li>'.$this->format_line($item).'</li>';
@@ -250,18 +238,21 @@ class ShowRSS_html_menubar extends ShowRSS_html
 			$retval[] = '</ul>' . isset($this->title) ? '</div>' : '';
 		}else{
 			$desc = $line['desc'] ? mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['desc'])), 0, 255, '...').get_passage($line['date']) : get_passage($line['date']);
-			$title = ($this->url) ? Inline::setLink($this->title, $this->url, $desc) : '<span title="'.$desc.'">' . $this->title . '</span>';
+			$title = ($this->url) ? 
+				open_uri_in_new_window('<a href="' . $this->url . '" title="' .$desc . '" rel="external">' . $this->title . '</a>', 'link_url') :
+				'<span title="'.$desc.'">' . $this->title . '</span>';
 			$retval[] = '<h4>'.$title.'</h4>';
 			$retval[] = '<ul>';
-			$retval[] =  $body;
+			$retval[] =  $body; 
 			$retval[] = '</ul>';
 		}
 		return join("\n",$retval);
 	}
-
-	function toString(){
+	
+	function toString($timestamp){
+		$retval = '';
 		$rss_body = array();
-
+		
 		// エントリの内部を展開
 		foreach ($this->items as $item){
 			$rss_body[] = '<li>'.$this->format_line($item).'</li>';
@@ -275,18 +266,17 @@ class ShowRSS_html_menubar extends ShowRSS_html
 class ShowRSS_html_recent extends ShowRSS_html
 {
 	function format_line($line){
-		$entry = htmlsc(mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['entry'])), 0, 255, '...'));
-		$desc = htmlsc(mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['desc'])), 0, 255, '...'));
+		$desc = mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['desc'])), 0, 255, '...');
 		if (IS_MOBILE){
-			return '<li><a href="'. $line['link'] .'">'.$entry.'</a><span class="ui-count">'.get_passage($line['date']).'</span></li>';
+			return '<li><a href="'. $line['link'] .'">'.$line['entry'].'</a><span class="ui-count">'.get_passage($line['date']).'</span></li>';
 		}else{
-			return '<li><a href="'. $line['link'] .'" title="'.$desc.' '.get_passage($line['date']).'">'.$entry.'</a></li>';
+			return '<li><a href="'. $line['link'] .'" title="'.$desc.' '.get_passage($line['date']).'">'.$line['entry'].'</a></li>';
 		}
 	}
 
 	function format_body($body){
 		if (IS_MOBILE){
-			return '<ul data-role="listview">'.
+			return '<ul data-role="listview">'. 
 				'<li data-role="list-divider">' . $date . '</li>' . "\n" . $body . '</ul>' . "\n";
 		}else{
 			return '<strong>' . $date . '</strong>' . "\n" .
@@ -296,39 +286,68 @@ class ShowRSS_html_recent extends ShowRSS_html
 }
 
 // Get and save RSS
-function plugin_showrss_get_rss($target, $cachehour)
+function plugin_showrss_get_rss($target, $cachehour, $raw = false)
 {
 	global $cache;
-	$buf  = '';
-	$time = NULL;
-	$expire = $cachehour * 60 * 60; // Hour
+	$time = UTIME;
+	$cache_name = PLUGIN_SHOWRSS_CACHE_PREFIX.md5($target);
+	$reason = 'Failed fetching RSS from the server.';	// デフォルトのエラー
 
-	// Get the cache not expired
-	$cache_name = PLUGIN_SHOWRSS_CACHE_PREFIX . md5($target);
-	$cache_meta = $cache['wiki']->getMetadata($cache_name);
-	
-	// 古くなったキャッシュを削除
-	if (UTIME - $cache_meta['mtime'] > $expire) {
-		$cache['wiki']->removeItem($cache_name);
+	if ($cache['raw']->hasItem($cache_name)) {
+		$cache_meta = $cache['raw']->getMetadata($cache_name);
+		$time = $cache_meta['mtime'];	// キャッシュの時刻
 	}
 
-	if ($cache['wiki']->hasItem($cache_name)) {
-		$buf = $cache['wiki']->getItem($cache_name);
-	}else{
-		// Newly get RSS
-		$response = ClientStatic::get($target);
-		if (!$response->isSuccess()){
-			return array(FALSE, 0);
+	if (UTIME - $time <= $cachehour * 360){
+		// キャッシュが有効期限を過ぎてた場合
+		try{
+			// file_get_contentsでException飛ばすメモ
+			// https://gist.github.com/mia-0032/4374687
+			ob_start();
+			//warningが出るコード
+			$data = file_get_contents($target);
+			$warning = ob_get_contents();
+			ob_end_clean();
+			//Warningがあれば例外を投げる
+			if ($warning) {
+				throw new Exception($warning);
+			}
+		}catch (Exception $e){
+			// ファイルが取得できなかった
+			return array(false, UTIME, $e->getMessage());
 		}
-		$buf = $response->getBody();
-
-		$cache['wiki']->setItem($cache_name, $buf);
+		$cache['raw']->setItem($cache_name, $data);
+	}else{
+		$data = $cache['raw']->getItem($cache_name);
 	}
-	$time = $cache_meta['mtime'];
-	$xml = simplexml_load_string($buf);
 
-	return array($xml,$time);
+	// そのままXMLを出力
+	if ($raw) return array($data, $time, $reason);
+	
+	try{
+		$xml = new SimpleXMLElement($data);
+	}catch (Exception $e){
+		// XMLの解析に失敗した
+		return array(false, UTIME, $e->getMessage());
+	}
+	return array($xml,$time,null);
 }
 
+
+function plugin_showrss_get_timestamp($str)
+{
+	$str = trim($str);
+	if ($str == '') return UTIME;
+
+	$matches = array();
+	if (preg_match('/(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})(([+-])(\d{2}):(\d{2}))?/', $str, $matches)) {
+		$str = $matches[1] . ' ' . $matches[2];
+		if (! empty($matches[3])) {
+			$str .= $matches[4] . $matches[5] . $matches[6];
+		}
+	}
+	$time = strtotime($str);
+	return ($time == -1 || $time === FALSE) ? UTIME : $time;
+}
 /* End of file showrss.inc.php */
 /* Location: ./wiki-common/plugin/showrss.css.php */

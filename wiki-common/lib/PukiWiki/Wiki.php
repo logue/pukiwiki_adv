@@ -3,7 +3,7 @@ namespace PukiWiki;
 
 use PukiWiki\Auth\Auth;
 use PukiWiki\Backup;
-use PukiWiki\Diff;
+use PukiWiki\Diff\Diff;
 use PukiWiki\File\FileFactory;
 use PukiWiki\File\LogFactory;
 use PukiWiki\Relational;
@@ -13,7 +13,6 @@ use PukiWiki\Router;
 use PukiWiki\Spam\Captcha;
 use PukiWiki\Spam\IpFilter;
 use PukiWiki\Spam\ProxyChecker;
-use PukiWiki\Spam\UrlFilter;
 use PukiWiki\Text\Rules;
 use PukiWiki\Utility;
 use ZendService\Akismet\Akismet;
@@ -259,7 +258,7 @@ class Wiki{
 	 * @return void
 	 */
 	public function set($str, $keeptimestamp = false){
-		global $use_spam_check, $_strings, $vars;
+		global $use_spam_check, $_string, $vars;
 
 		// roleのチェック
 		if (Auth::check_role('readonly')) return; // Do nothing
@@ -267,8 +266,9 @@ class Wiki{
 			Utility::dieMessage( sprintf($_strings['error_prohibit'], 'PKWK_READONLY'), 403 );
 
 		// 簡易スパムチェック（不正なエンコードだった場合ここでエラー）
-		if ( !isset($vars['encode_hint']) || $vars['encode_hint'] !== PKWK_ENCODING_HINT ){
+		if ( !isset($vars['encode_hint']) || $vars['encode_hint'] !== PKWK_ENCODING_HINT || !isset($vars['digest'])){
 			Utility::dump();
+			Utility::dieMessage( $_string['illegal_chars'], 403 );
 		}
 
 		// ログイン済みもしくは、自動更新されるページである
@@ -297,14 +297,36 @@ class Wiki{
 			Recent::create_recent_deleted();
 			return $this->wiki->set('');
 		}
-
+		
+		// 現時点のページのハッシュを読む
+		$old_digest = $this->wiki->has() ? $this->wiki->digest() : 0;
 		// 入力データーを整形（※string型です）
 		$postdata = Rules::make_str_rules($str);
 		// 過去のデーターを取得
 		$oldpostdata = self::has() ? self::get(TRUE) : '';
 
-		// 差分を生成
+		// オリジナルが送られてきている場合、Wikiへの書き込みを中止し、競合画面を出す。
+		// 現時点のページのハッシュと、送信されたページのハッシュを比較して異なる場合、
+		// 自分が更新している間に第三者が更新した（＝競合が起きた）と判断する。
+		$collided = $old_digest !== 0 && $vars['digest'] !== $old_digest;
+
+		if ($collided && isset($vars['original'])){
+			return array(
+				'msg'=>$_string['title_collided'],
+				'body'=>
+					$_string['msg_collided'] .
+					Utility::showCollision($oldpostdata, $postdata, $vars['original']) .
+					Utility::editForm($this->page, $postdata, false)
+			);
+		}
+
+		// 差分を生成（ここでの差分データーはAkismetでも使う）
 		$diff = new Diff($postdata, $oldpostdata);
+
+		// captcha check
+		if ( (isset($use_spam_check['captcha']) && $use_spam_check['captcha'] !== 0)) {
+			Captcha::check(false);
+		}
 
 		if (!$has_permission) {
 			if (Utility::isSpamPost()){
@@ -355,33 +377,22 @@ class Wiki{
 					
 
 					if($akismet->isSpam($akismet_post)){
-						Utility::dump('akismet.log');
+						Utility::dump('akismet');
 						Utility::dieMessage('Writing was limited by Akismet (Blocking SPAM).', $_title['prohibit'], 400);
 					}
 				}else{
 					Utility::dieMessage('Akismet API key does not valied.', 500);
 				}
 			}
-			// captcha check
-		//	if ( (isset($use_spam_check['captcha']) && $use_spam_check['captcha'] !== 0)) {
-				Captcha::check(false);
-		//	}
 		}
 
 		// add client info to diff
 		//$diffdata .= '// IP:"'. REMOTE_ADDR . '" TIME:"' . $now . '" REFERER:"' . $referer . '" USER_AGENT:"' . $user_agent. "\n";
 
-
 		// 差分データーを保存
 		FileFactory::Diff($this->page)->set($diff->getDiff());
 
 		unset($oldpostdata, $diff, $difffile);
-
-		global $whatsnew;
-		if (!$keeptimestamp || $page !== $whatsnew){
-			// 最終更新を更新
-			Recent::set($this->page);
-		}
 		
 		// Create backup
 		//make_backup($this->page, $postdata == ''); // Is $postdata null?
@@ -398,6 +409,17 @@ class Wiki{
 
 		// Wikiを保存
 		$this->wiki->set($postdata);
+
+		// 最終更新を更新
+		global $whatsnew;
+		if (!$keeptimestamp || $page !== $whatsnew){
+			Recent::set($this->page);
+		}
+
+		// 簡易競合チェック
+		if ($collided) {
+			return array('msg'=>$_string['title_collided'], 'body'=>$_string['msg_collided_auto']);
+		}
 	}
 
 /**************************************************************************************************/

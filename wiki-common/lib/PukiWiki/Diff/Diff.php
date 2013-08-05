@@ -4,7 +4,8 @@
 // License: BSD license
 // based on https://github.com/cubicdaiya/onp
 
-namespace PukiWiki;
+namespace PukiWiki\Diff;
+
 use PukiWiki\Utility;
 
 /**
@@ -167,39 +168,6 @@ class Diff{
 			}
 		}
 		return '<pre class="sh" data-brush="diff">' . "\n" . join("\n", $ret) . '</pre>' . "\n";
-	}
-	public function getMergeHtml(){
-		// Merge helper (when it conflicts)
-
-		$tags = array('th', 'th', 'td');
-		$table = array();
-		$table[] = '<div class="table_wrapper">';
-		
-		$table[] = '<table class="style_table style_table_center">';
-		$table[] = '<caption>';
-		$table[] = 'l : between backup data and stored page data.<br />';
-		$table[] = 'r : between backup data and your post data.';
-		$table[] = '</caption>';
-		$table[] = '<thead>';
-		$table[] = '<tr>';
-		$table[] = '<th class="style_th">l</th>';
-		$table[] = '<th class="style_th">r</th>';
-		$table[] = '<th class="style_th">text</th>';
-		$table[] = '</tr>';
-		$table[] = '</thead>';
-		$table[] = '<tbody>';
-		
-		foreach ($this->ses as $key=>$value){
-			$table[] = '<tr>';
-			$table[] = '<th class="style_th">' . $value[0] . '</th>';
-			$table[] = '<th class="style_th">' . $value[0] . '</th>';
-			$table[] = '<td class="style_td">' . (!empty($value[1])  ? Utility::htmlsc(rtrim($value[1])) : '&nbsp;') . '</td>';
-			$table[] = '</tr>';
-		}
-		$table[] = '</tbody>';
-		$table[] = '</table>';
-
-		return  join("\n", $table);
 	}
 	public function __toString(){
 		return join("\n",self::getDiff());

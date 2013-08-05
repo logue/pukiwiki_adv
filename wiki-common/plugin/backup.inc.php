@@ -14,11 +14,9 @@ use PukiWiki\Auth\Auth;
 use PukiWiki\Router;
 use PukiWiki\Factory;
 use PukiWiki\File\WikiFile;
-use PukiWiki\Backup;
-use PukiWiki\File\FileFactory;
 use PukiWiki\Listing;
 use PukiWiki\Renderer\RendererFactory;
-use PukiWiki\Diff;
+use PukiWiki\Diff\Diff;
 use PukiWiki\Utility;
 
 // Prohibit rendering old wiki texts (suppresses load, transfer rate, and security risk)

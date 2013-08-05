@@ -27,7 +27,7 @@ use Zend\Cache\StorageFactory;
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
 define('S_VERSION', 'v 2.0.0-alpha');
-define('S_REVSION', '20130627');
+define('S_REVSION', '20130801');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &#169; 2010-2013' .
@@ -39,19 +39,9 @@ define('S_COPYRIGHT',
 define('GENERATOR', S_APPNAME.' '.S_VERSION);
 
 /////////////////////////////////////////////////
-// Init PukiWiki Advance Enviroment variables
-
-define('UTIME',time());
-define('MUTIME',getmicrotime());
-
-defined('DEBUG')			or define('DEBUG', false);
-defined('PKWK_WARNING')		or define('PKWK_WARNING', false);
-defined('ROOT_URI')			or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');
-defined('WWW_HOME')			or define('WWW_HOME', '');
-defined('COMMON_URI')		or define('COMMON_URI', ROOT_URI);
-
-/////////////////////////////////////////////////
 // Init server variables
+define('UTIME',time());
+define('MUTIME',Time::getMicroTime());
 
 // Compat and suppress notices
 $HTTP_SERVER_VARS = array();
@@ -129,6 +119,7 @@ $config_dist = array(
 //Utility::loadConfig('pukiwiki.ini.php', true);
 require(Utility::add_homedir('pukiwiki.ini.php'));
 require(Utility::add_homedir('auth.ini.php'));
+require(Utility::add_homedir('server.ini.php'));
 
 defined('DATA_DIR')			or define('DATA_DIR',		DATA_HOME . 'wiki/'     );	// Latest wiki texts
 defined('DIFF_DIR')			or define('DIFF_DIR',		DATA_HOME . 'diff/'     );	// Latest diffs
@@ -256,6 +247,8 @@ $cache = array(
 		'adapter'=> array(
 			'name' => $cache_adapter,
 			'options' => array(
+				// デフォルトの有効時間は１日
+				'ttl' => 86400,
 				// 他のWikiと競合しないようにするためDATA_HOMEのハッシュを名前空間とする
 				'namespace' => ($cache_adapter === 'Filesystem') ? null : PKWK_WIKI_NAMESPACE,
 				'cache_dir' => ($cache_adapter === 'Filesystem') ? CACHE_DIR : null

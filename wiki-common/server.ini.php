@@ -92,7 +92,7 @@ $pop_passwd = '';
 /////////////////////////////////////////////////
 // Command execution per update
 
-define('PKWK_UPDATE_EXEC', '');
+defined('PKWK_UPDATE_EXEC') or define('PKWK_UPDATE_EXEC', '');
 
 // Sample: Namazu (Search engine)
 // see http://pukiwiki.sourceforge.jp/?PukiWiki%2FNamazu

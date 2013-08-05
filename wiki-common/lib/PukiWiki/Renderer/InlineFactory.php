@@ -11,6 +11,7 @@
  * @version   $Id: InlineFactory.php,v 1.0.0 2013/02/01 19:54:00 Logue Exp $
  */
 namespace PukiWiki\Renderer;
+
 use PukiWiki\Renderer\InlineConverter;
 
 class InlineFactory{

@@ -431,8 +431,8 @@ class PluginRenderer{
 	 * @return type 
 	 */
 	private static function addHiddenField($retvar, $plugin){
-		global $use_spam_check, $vars, $digest;
-		if (preg_match('/<form\b(?:(?=(\s+(?:method="([^"]*)"|enctype="([^"]*)")|action="([^"]*)"|[^\s>]+|\s+))\1)*>/i', $retvar, $matches) !== 0){
+		global $use_spam_check, $vars;
+		if (preg_match('/<form\b(?:(?=(\s+(?:method="([^"]*)"|enctype="([^"]*)")|action="([^"]*)"|data-auto-collision-check="([^"]*)"|[^\s>]+|\s+))\1)*>/i', $retvar, $matches) !== 0){
 			// action属性が、このスクリプト以外を指している場合処理しない
 			if ($matches[4] === Router::get_script_uri()){
 				// Insert a hidden field, supports idenrtifying text enconding
@@ -454,12 +454,11 @@ class PluginRenderer{
 						$hidden_field[] = '<input type="hidden" name="' . ini_get("session.upload_progress.name") . '" value="' . PKWK_WIKI_NAMESPACE . '" class="progress_session" />';
 					}
 
-					// 更新時の競合を確認するための項目（確認処理はプラグイン側で実装すること）
-					if (isset($vars['page']) && !empty($vars['page'])){
-						if (empty($digest)){
-							$digest = Factory::Wiki($vars['page'])->digest();
-						}
-						$hidden_field[] = '<input type="hidden" name="digest" value="' . $digest . '" />';
+					$wiki = Factory::Wiki($vars['page']);
+					$hidden_field[] = '<input type="hidden" name="digest" value="' . $wiki->digest() . '" />';
+					// 自動競合チェッカー（data-auto-collision-check="true"を加える）
+					if ( (isset($matches[5]) && $matches[5] === 'true') &&isset($vars['page']) && !empty($vars['page'])){
+						$hidden_field[] = '<textarea style="display:hidden;width:0;height:0;" name="original">'. join("\n",$wiki->get()) . '</textarea>';
 					}
 				}
 

@@ -11,11 +11,10 @@
 // Plus! NOTE:(policy)not merge official cvs(1.40->1.41) See Question/181
 
 use PukiWiki\Auth\Auth;
-use PukiWiki\Diff;
+use PukiWiki\Diff\Diff;
 use PukiWiki\Factory;
 use PukiWiki\Renderer\Header;
 use PukiWiki\Renderer\RendererFactory;
-use PukiWiki\Router;
 use PukiWiki\Text\Rules;
 use PukiWiki\Time;
 use PukiWiki\Utility;
@@ -269,29 +268,6 @@ function plugin_edit_write()
 
 	$retvars = array();
 
-	// Collision Detection
-	$oldpagesrc = $wiki->has() ? $wiki->get(true) : '';
-	$oldpagemd5 = $wiki->has() ? $wiki->digest() : 0;
-
-	if ($oldpagemd5 !== 0 && $digest !== $oldpagemd5) {
-		
-		$vars['digest'] = $oldpagemd5; // Reset
-		$original = isset($vars['original']) ? $vars['original'] : null;
-		$diff = new Diff($original, $oldpagesrc);
-
-		$_msg_collided_auto = $_string['msg_collided_auto'];
-		$_msg_collided = $_string['msg_collided'];
-		$retvars['msg'] = $_string['title_collided'];
-
-		$retvars['body'] = '<p>' . $_msg_collided."</p>\n";
-		$retvars['body'] .= DEBUG ? '<p>original :'.$oldpagemd5.' / New: '.$digest.'.</p>' : '';
-		$retvars['body'] .= $diff->getMergeHtml();
-
-		unset($vars['id']);	// Change edit all-text of pages(from para-edit)
-	//	$retvars['body'] .= edit_form($page, $postdata_input, $oldpagemd5, FALSE);
-		return $retvars;
-	}
-
 	// Action?
 	if ($add) {
 		// Compat: add plugin and adding contents
@@ -305,10 +281,9 @@ function plugin_edit_write()
 
 	// NULL POSTING, OR removing existing page
 	if (empty($postdata)) {
-		$wiki->set($postdata);
+		$wiki->set();
 		$retvars['msg'] = $_title_deleted;
 		$retvars['body'] = str_replace('$1', htmlsc($page), $_title_deleted);
-		if ($trackback) tb_delete($page);
 		return $retvars;
 	}
 
