@@ -409,7 +409,9 @@ class Rules{
 
 		// Cut footnotes and tags
 		if ($strip === TRUE)
-			$str = Utility::stripHtmlTags(InlineFactory::factory(preg_replace('/'.RendererDefines::NOTE_PATTERN.'/ex', '', $str)));
+			$str = Utility::stripHtmlTags(
+				InlineFactory::factory(preg_replace('/'.RendererDefines::NOTE_PATTERN.'/x', '', $str))
+			);
 
 		return $id;
 	}
