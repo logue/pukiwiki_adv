@@ -16,6 +16,7 @@ namespace PukiWiki\Renderer\Inline;
 use PukiWiki\Listing;
 use PukiWiki\Renderer\RendererDefines;
 use PukiWiki\Renderer\Trie;
+use PukiWiki\Config\Config;
 
 // AutoLinks
 class AutoLink extends Inline
@@ -84,17 +85,18 @@ class AutoLink extends Inline
 		// 用語マッチパターンキャッシュを生成
 		global $autolink, $nowikiname;
 
-		$config = new \Config('AutoLink');	// FIXME
+		$config = new Config('AutoLink');	// FIXME
 		$config->read();
 		$ignorepages	  = $config->get('IgnoreList');
 		$forceignorepages = $config->get('ForceIgnoreList');
 		unset($config);
 		$auto_pages = array_merge($ignorepages, $forceignorepages);
 
-		foreach (Listing::get('wiki') as $page)
+		foreach (Listing::pages('wiki') as $page) {
 			if (preg_match('/^' . RendererDefines::WIKINAME_PATTERN . '$/', $page) ?
 				$nowikiname : strlen($page) >= $autolink)
 				$auto_pages[] = $page;
+		}
 
 		if (empty($auto_pages)) {
 			$result = $result_a = $nowikiname ? '(?!)' : RendererDefines::WIKINAME_PATTERN;

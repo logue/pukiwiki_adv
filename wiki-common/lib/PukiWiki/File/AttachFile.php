@@ -19,8 +19,7 @@ use PukiWiki\Renderer\Header;
 use PukiWiki\Router;
 use PukiWiki\Utility;
 use PukiWiki\Time;
-use SplFileInfo;
-use Zend\Http\Headers;
+use PukiWiki\Config\Config;
 use Zend\Http\Response;
 
 /**

@@ -29,6 +29,8 @@ defined('PLUGIN_AUTH_MIXI_USE_CONFIG') or define('PLUGIN_AUTH_MIXI_USE_CONFIG', 
 // 構成定義ファイル
 define('CONFIG_AUTH_OPENID_MIXI','auth/openid/mixi');
 
+use PukiWiki\Config\Config;
+
 function plugin_auth_mixi_init()
 {
 	$msg = array(

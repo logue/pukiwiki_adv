@@ -7,6 +7,8 @@
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License (GPL2)
  */
 use PukiWiki\Auth\AuthApi;
+use PukiWiki\Config\Config;
+
 defined('REMOTEIP_CONFIG_PAGE') or define('REMOTEIP_CONFIG_PAGE','plugin/remoteip');
 
 function plugin_remoteip_inline()

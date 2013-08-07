@@ -16,6 +16,7 @@ namespace PukiWiki\Renderer\Inline;
 use PukiWiki\Renderer\InlineFactory;
 use PukiWiki\Factory;
 use PukiWiki\Renderer\Trie;
+use PukiWiki\Config\Config;
 
 class AutoAlias extends Inline
 {
@@ -102,7 +103,7 @@ class AutoAlias extends Inline
 
 		global $WikiName, $autolink, $nowikiname;
 
-		$config = new \Config('AutoAlias');
+		$config = new Config('AutoAlias');
 		$config->read();
 		$ignorepages	  = $config->get('IgnoreList');
 		$forceignorepages = $config->get('ForceIgnoreList');

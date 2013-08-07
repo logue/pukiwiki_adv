@@ -119,11 +119,7 @@ Zend\Loader\AutoloaderFactory::factory(array(
 
 /////////////////////////////////////////////////
 
-// Load *.ini.php files and init PukiWiki
-require(LIB_DIR . 'config.php');
 require(LIB_DIR . 'legacy.php');
-
-// Defaults
 require(LIB_DIR . 'init.php');
 
 /* End of file main.php */

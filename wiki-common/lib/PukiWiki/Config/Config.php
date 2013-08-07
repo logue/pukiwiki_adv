@@ -24,7 +24,7 @@ namespace PukiWiki\Config;
 use PukiWiki\Config\ConfigTable;
 use PukiWiki\Config\Direct;
 use PukiWiki\Config\Sequential;
-use PukiWiki\Factory;
+use PukiWiki\File\FileFactory;
 
 // Configuration-page manager
 class Config
@@ -33,7 +33,7 @@ class Config
 	const CACHE_PREFIX = 'config-';
 
 	public $name, $page; // Page name
-	private static $objs = array();
+	private $objs = array();
 
 	/**
 	 * コンストラクタ
@@ -43,7 +43,7 @@ class Config
 		$this->name = $name;
 		$this->page = self::CONFIG_PAGE_PREFIX . $name;
 //		$this->cache_name = self::CACHE_PREFIX.md5($name);
-		$this->wiki = Factory::Wiki($this->page);
+		$this->wiki = FileFactory::Wiki($this->page);
 		$this->read();
 	}
 	/**
@@ -61,61 +61,64 @@ class Config
 		$obj = new ConfigTable('');
 		$matches = array();
 
-		foreach ($this->wiki->get() as $line) {
+		if ($this->wiki->has()){
 
-			if (empty($line)) continue;
+			foreach ($this->wiki->get() as $line) {
 
-			$head  = $line{0};	// The first letter
-			$level = strspn($line, $head);
+				if (empty($line)) continue;
 
-			if ($level > 3) {
-				$obj->add_line($line);
-			} else {
-				switch ($head){
-					case '*':
-						// 見出し
-						$line = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/', '$1$2', $line);	// paraeditを削除
-						if ($level == 1) {
-							// 見出し1の場合
-							$objs[$obj->title] = $obj;
-							$obj = new ConfigTable($line);
-						} else {
-							// 見出し2~3は箇条書きと同じ扱い
+				$head  = $line{0};	// The first letter
+				$level = strspn($line, $head);
+
+				if ($level > 3) {
+					$obj->add_line($line);
+				} else {
+					switch ($head){
+						case '*':
+							// 見出し
+							$line = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/', '$1$2', $line);	// paraeditを削除
+							if ($level == 1) {
+								// 見出し1の場合
+								$objs[$obj->title] = $obj;
+								$obj = new ConfigTable($line);
+							} else {
+								// 見出し2~3は箇条書きと同じ扱い
+								if (! $obj instanceof Direct) $obj = new Direct(null, $obj);
+								$obj->set_key($line);
+							}
+							break;
+						case '-':
+							// 箇条書き
 							if (! $obj instanceof Direct) $obj = new Direct(null, $obj);
-							$obj->set_key($line);
-						}
-						break;
-					case '-':
-						// 箇条書き
-						if (! $obj instanceof Direct) $obj = new Direct(null, $obj);
-						$obj->add_value($line);
-						break;
-					case '|':
-						// テーブル
-						if (preg_match('/^\|(.+)\|\s*$/', $line, $matches)) {
-						// Table row
-						if (! $obj instanceof Sequential) $obj = new Sequential(null , $obj);
-							// Trim() each table cell
-							$obj->add_value(array_map('trim', explode('|', $matches[1])));
-						}else{
-							$obj->add_line($line);
-						}
-						break;
-/*
-					case ':':
-						// 定義リスト
-						if (preg_match('/^:(.*)\|(.*)$/', $line, $matches)) {
-							$obj->set_key($matchs[0]);
-							$obj->add_value($matches[1]);
-						}
-						break;
-*/
+							$obj->add_value($line);
+							break;
+						case '|':
+							// テーブル
+							if (preg_match('/^\|(.+)\|\s*$/', $line, $matches)) {
+							// Table row
+							if (! $obj instanceof Sequential) $obj = new Sequential(null , $obj);
+								// Trim() each table cell
+								$obj->add_value(array_map('trim', explode('|', $matches[1])));
+							}else{
+								$obj->add_line($line);
+							}
+							break;
+	/*
+						case ':':
+							// 定義リスト
+							if (preg_match('/^:(.*)\|(.*)$/', $line, $matches)) {
+								$obj->set_key($matchs[0]);
+								$obj->add_value($matches[1]);
+							}
+							break;
+	*/
+					}
 				}
 			}
-		}
-		$objs[$obj->title] = $obj;
+			$objs[$obj->title] = $obj;
 
-		self::$objs = $objs;
+			$this->objs = $objs;
+		}
 		return TRUE;
 	}
 	/**
@@ -123,7 +126,7 @@ class Config
 	 */
 	public function write()
 	{
-		$this->wiki->set(self::toString());
+		$this->wiki->set($this->toString());
 	}
 
 	/**
@@ -151,7 +154,7 @@ class Config
 	 */
 	public function put($key, $values)
 	{
-		self::set($key, $values);
+		$this->set($key, $values);
 	}
 	/**
 	 * 設定を追加する
@@ -181,10 +184,10 @@ class Config
 	 */
 	private function get_object($key)
 	{
-		if (! isset(self::$objs[$key])){
-			self::$objs[$key] = new ConfigTable('*' . trim($key) . "\n");
+		if (! isset($this->objs[$key])){
+			$this->objs[$key] = new ConfigTable('*' . trim($key) . "\n");
 		}
-		return self::$objs[$key];
+		return $this->objs[$key];
 	}
 }
 

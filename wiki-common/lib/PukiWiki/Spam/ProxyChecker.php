@@ -11,6 +11,7 @@
 
 namespace PukiWiki\Spam;
 
+use PukiWiki\Config\Config;
 //require_once(LIB_DIR . 'spamplus.php');
 
 /**

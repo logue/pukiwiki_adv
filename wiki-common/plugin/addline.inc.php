@@ -27,7 +27,7 @@
 */
 
 use PukiWiki\Auth\Auth;
-
+use PukiWiki\Config\Config;
 /////////////////////////////////////////////////
 // コメントを挿入する位置 1:欄の前 0:欄の後
 defined('ADDLINE_INS') or define('ADDLINE_INS', '1');

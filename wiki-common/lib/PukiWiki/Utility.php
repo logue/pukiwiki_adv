@@ -566,6 +566,7 @@ class Utility{
 		$body[] = PKWK_WARNING !== true || empty($msg) ? $msg = $_string['error_msg'] : $msg;
 		$body[] = '</p>';
 		$body[] = '</div>';
+/*
 		if (DEBUG) {
 			$body[] = '<div class="message_box ui-state-highlight ui-corner-all" style="padding:.5em;">';
 			$body[] = '<p><span class="ui-icon ui-icon-info" style="display:inline-block;"></span> <strong>Back Trace</strong></p>';
@@ -582,7 +583,7 @@ class Utility{
 			$body[] = '</ol>';
 			$body[] = '</div>';
 		}
-
+*/
 		new Render($error_title, join("\n",$body), $http_code);
 		exit();
 	}

@@ -12,6 +12,7 @@ defined('PLUGIN_ADM_AUTH_WKGRP_USE_WRITE_FUNC') or define('PLUGIN_ADM_AUTH_WKGRP
 define('CONFIG_AUTH_WKGRP','auth/auth_wkgrp');
 
 use PukiWiki\Auth\Auth;
+use PukiWiki\Config\Config;
 use PukiWiki\Router;
 use PukiWiki\Utility;
 use PukiWiki\Renderer\RendererFactory;

@@ -21,7 +21,7 @@
  * All, a specified character string is returned as it is for an undefined word.
  *
  */
-
+use PukiWiki\Config\Config;
 use PukiWiki\Lang\Lang;
 use PukiWiki\Lang\AcceptLanguage;
 

@@ -8,7 +8,7 @@
 // License: GPL v2 or (at your option) any later version
 //
 // Issue tracker plugin (See Also bugtrack plugin)
-//use PukiWiki\Config\Config;
+use PukiWiki\Config\Config;
 use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
 use PukiWiki\Renderer\RendererFactory;

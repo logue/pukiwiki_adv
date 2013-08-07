@@ -126,6 +126,7 @@ abstract class AbstractFile extends SplFileInfo{
 
 		// ファイル一覧を走査（
 		foreach (new DirectoryIterator($class::$dir) as $fileinfo) {
+			if (!$fileinfo->isFile() || !$fileinfo->isReadable()) continue;
 			$files[] = $fileinfo->getFilename();
 		}
 		unset($fileinfo);

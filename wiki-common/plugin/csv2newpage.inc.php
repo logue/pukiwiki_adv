@@ -14,6 +14,7 @@
 */
 
 use PukiWiki\Auth\Auth;
+use PukiWiki\Config\Config;
 use PukiWiki\Renderer\RendererFactory;
 
 // 管理者だけが添付ファイルをアップロードできるようにする

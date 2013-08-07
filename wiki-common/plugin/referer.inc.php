@@ -9,7 +9,9 @@
 //
 // Referer Plugin(Show Related-Link Plugin)
 use PukiWiki\Auth\Auth;
+use PukiWiki\Config\Config;
 use PukiWiki\Factory;
+
 define('CONFIG_REFERER', 'plugin/referer');
 define('REFERE_TITLE_LENGTH',70);
 
