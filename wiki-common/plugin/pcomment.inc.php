@@ -158,7 +158,7 @@ function plugin_pcomment_convert()
 		$recent = ! empty($count) ? sprintf($_pcmt_messages['msg_recent'], $count) : '';
 	}
 
-	$string = ! Auth::check_role('readonly') ? '<form action="'. get_script_uri() .'" method="post" class="comment_form">' : '';
+	$string = ! Auth::check_role('readonly') ? '<form action="'. get_script_uri() .'" method="post" class="comment_form" data-collision-check="false">' : '';
 	$string .= ($dir) ?
 		'<p>' . $recent . ' ' . $link . '</p>' . "\n" . $comments . "\n" . join("\n",$form) :
 		join("\n",$form) . "\n" . '<p>' . $recent . ' ' . $link . '</p>' . "\n" . $comments . "\n";

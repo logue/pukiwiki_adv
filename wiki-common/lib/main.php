@@ -68,43 +68,20 @@ if (DEBUG) {
 }
 defined('LIB_DIR') or define('LIB_DIR', realpath('./').'/');
 defined('SITE_HOME') or define('SITE_HOME', realpath('./').'/');
+define('VENDOR_DIR', realpath(SITE_HOME . '..'. DIRECTORY_SEPARATOR . 'vendor') . DIRECTORY_SEPARATOR);
 
 // Load Bad-behavior
-require(SITE_HOME . '../vendor/bad-behavior/bad-behavior-sqlite.php');
+require( VENDOR_DIR . 'bad-behavior' . DIRECTORY_SEPARATOR . 'bad-behavior-sqlite.php');
 
-/////////////////////////////////////////////////
-// Initilalize Zend
-//
 // Composer autoloading
-if (file_exists(SITE_HOME . '../vendor/autoload.php')) {
-	$loader = include SITE_HOME . '../vendor/autoload.php';
-}
-$zf2Path = false;
-
-if (getenv('ZF2_PATH')) {           // Support for ZF2_PATH environment variable or git submodule
-    $zf2Path = getenv('ZF2_PATH');
-} elseif (get_cfg_var('zf2_path')) { // Support for zf2_path directive value
-    $zf2Path = get_cfg_var('zf2_path');
-} elseif (is_dir('vendor/ZF2/library')) {
-    $zf2Path = 'vendor/zendframework/zendframework/library';
+if (file_exists(SITE_HOME . '..'. DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php')) {
+	$loader = include SITE_HOME . '..'. DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+	$loader->add('Zend', 'vendor/zendframework/zendframework/library');
 }
 
-if ($zf2Path) {
-    if (isset($loader)) {
-        $loader->add('Zend', $zf2Path);
-    } else {
-        include $zf2Path . '/Zend/Loader/AutoloaderFactory.php';
-        Zend\Loader\AutoloaderFactory::factory(array(
-            'Zend\Loader\StandardAutoloader' => array(
-                'autoregister_zf' => true
-            )
-        ));
-    }
-}
 if (!class_exists('Zend\Loader\AutoloaderFactory')) {
-    throw new RuntimeException('Unable to load ZF2. Run `php composer.phar install` or define a ZF2_PATH environment variable.');
+    throw new RuntimeException('Unable to load ZF2. Run `php composer.phar install`.');
 }
-$info[] = sprintf('Using <a href="http://framework.zend.com/">Zend Framework</a> ver<var>%s</var>.', Zend\Version\Version::VERSION);
 
 /////////////////////////////////////////////////
 // Initilalize PukiWiki
@@ -119,7 +96,10 @@ Zend\Loader\AutoloaderFactory::factory(array(
 
 /////////////////////////////////////////////////
 
+// Load *.ini.php files and init PukiWiki
 require(LIB_DIR . 'legacy.php');
+
+// Defaults
 require(LIB_DIR . 'init.php');
 
 /* End of file main.php */

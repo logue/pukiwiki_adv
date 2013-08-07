@@ -13,7 +13,7 @@
 namespace PukiWiki;
 
 use PukiWiki\File\FileFactory;
-use PukiWiki\Config;
+use PukiWiki\Config\Config;
 use PukiWiki\Router;
 use PukiWiki\Utility;
 use Zend\Http\ClientStatic;

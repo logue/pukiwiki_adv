@@ -720,7 +720,7 @@ function attach_form($page)
 	if (! ini_get('file_uploads'))	return '#attach(): <code>file_uploads</code> disabled.<br />';
 	if (! Factory::Wiki($page)->has())			return '#attach(): No such page<br />';
 
-	$attach_form[] = '<form enctype="multipart/form-data" action="' . get_script_uri() . '" method="post" class="attach_form">';
+	$attach_form[] = '<form enctype="multipart/form-data" action="' . get_script_uri() . '" method="post" class="attach_form" data-collision-check="false">';
 	$attach_form[] = '<input type="hidden" name="cmd" value="attach" />';
 	$attach_form[] = '<input type="hidden" name="pcmd" value="post" />';
 	$attach_form[] = '<input type="hidden" name="refer" value="'. htmlsc($page) .'" />';

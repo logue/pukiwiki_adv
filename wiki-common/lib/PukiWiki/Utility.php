@@ -699,12 +699,10 @@ class Utility{
 		// BugTrack/95 fix Problem: browser RSS request with session
 		$session->offsetSet('origin-'.$ticket_name, md5(self::getTicket() . str_replace("\r", '', $original)));
 
-		$ret[] = '<form action="' . Router::get_script_uri() . '" method="post" id="form">';
+		$ret[] = '<form action="' . Router::get_script_uri() . '" method="post" id="form" data-collision-check-strict="true">';
 		$ret[] = '<input type="hidden" name="cmd" value="edit" />';
 		$ret[] = '<input type="hidden" name="page" value="' . self::htmlsc($page) .'" />';
 		$ret[] = isset($vars['id']) ? '<input type="hidden" name="id" value="' . self::htmlsc($vars['id']) . '" />' : null;
-		// 元々のテキスト（比較用）
-		$ret[] = '<textarea id="original" name="original" rows="1" cols="1" style="display:none">' . self::htmlsc($original) . '</textarea>';
 		
 		if ($load_template_func && $show_template) {
 			// ひな形を読み込む
@@ -715,7 +713,6 @@ class Utility{
 				$_s_page = self::htmlsc($_page);
 				$_pages[$_page] = '<option value="' . $_s_page . '">' .$_s_page . '</option>'."\n";
 			}
-			
 			// ナチュラルソート
 			ksort($_pages, SORT_NATURAL);
 			$ret[] = '<div class="template_form">';

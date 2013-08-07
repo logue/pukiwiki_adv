@@ -116,7 +116,7 @@ function plugin_article_action()
 		$s_digest   = htmlsc($post['digest']);
 		$s_postdata = htmlsc($postdata_input);
 		$body .= <<<EOD
-<form action="$script" method="post" class="article_form">
+<form action="$script" method="post" class="article_form" data-collision-check="false">
 	<input type="hidden" name="refer" value="$s_refer" />
 	<input type="hidden" name="digest" value="$s_digest" />
 	<input type="hidden" name="cmd" value="preview" />

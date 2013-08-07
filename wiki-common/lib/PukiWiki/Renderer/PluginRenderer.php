@@ -432,7 +432,8 @@ class PluginRenderer{
 	 */
 	private static function addHiddenField($retvar, $plugin){
 		global $use_spam_check, $vars;
-		if (preg_match('/<form\b(?:(?=(\s+(?:method="([^"]*)"|enctype="([^"]*)")|action="([^"]*)"|data-auto-collision-check="([^"]*)"|[^\s>]+|\s+))\1)*>/i', $retvar, $matches) !== 0){
+		// TODO:複数回実行される問題あり
+		if (preg_match('/<form\b(?:(?=(\s+(?:method="([^"]*)"|enctype="([^"]*)")|action="([^"]*)"|data-collision-check="([^"]*)"|data-collision-check-strict="([^"]*)"|[^\s>]+|\s+))\1)*>/i', $retvar, $matches) !== 0){
 			// action属性が、このスクリプト以外を指している場合処理しない
 			if ($matches[4] === Router::get_script_uri()){
 				// Insert a hidden field, supports idenrtifying text enconding
@@ -454,11 +455,19 @@ class PluginRenderer{
 						$hidden_field[] = '<input type="hidden" name="' . ini_get("session.upload_progress.name") . '" value="' . PKWK_WIKI_NAMESPACE . '" class="progress_session" />';
 					}
 
-					$wiki = Factory::Wiki($vars['page']);
-					$hidden_field[] = '<input type="hidden" name="digest" value="' . $wiki->digest() . '" />';
-					// 自動競合チェッカー（data-auto-collision-check="true"を加える）
-					if ( (isset($matches[5]) && $matches[5] === 'true') &&isset($vars['page']) && !empty($vars['page'])){
-						$hidden_field[] = '<textarea style="display:hidden;width:0;height:0;" name="original">'. join("\n",$wiki->get()) . '</textarea>';
+					// ページ名が含まれていて、data-collision-checkがfalseでない場合、競合チェック用フォームを追記する
+					// data-collision-check="true"にするのは、pcomment.inc.phpのように別のWikiページを更新するプラグインの場合
+					// （これらの自動入力フォームは、常にフォームの先頭に挿入されるので、プラグイン側で重複するフォームがあったところで、
+					// HTML文法的に送られるフォームデーターはプラグインで指定された内容が優先されるためわざわざこんな小細工をしなかったところで実害はないが・・・。）
+					if (isset($vars['page']) && !(isset($matches[5]) && $matches[5] === 'false')){
+						$wiki = Factory::Wiki($vars['page']);
+						$hidden_field[] = '<input type="hidden" name="digest" value="' . $wiki->digest() . '" />';
+						// 自動競合チェッカー
+						// data-collision-check-strict="true"を加えると、ページを送信した時点のオリジナルのソースも送信される。
+						// より精度の高い競合チェックを行うことができるが、データーが倍増するので、ページの編集フォーム以外ではあまり使うべきではない。
+						if ( (isset($matches[6]) && $matches[6] === 'true') &&isset($vars['page']) && !empty($vars['page'])){
+							$hidden_field[] = '<textarea style="display:none;width:0;height:0;" name="original">'. Utility::htmlsc($wiki->get(true)) . '</textarea>';
+						}
 					}
 				}
 

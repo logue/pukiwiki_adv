@@ -206,7 +206,6 @@ $_SKIN        = array();
 
 $info[] = '<a href="http://php.net/">PHP</a> <var>'.PHP_VERSION.'</var> is running as <var>'.php_sapi_name().'</var> mode. / Powerd by <var>'.getenv('SERVER_SOFTWARE').'</var>.';
 $info[] = 'Using <a href="http://framework.zend.com/">Zend Framework</a> ver.<var>' . Zend\Version\Version::VERSION.'</var>.';
-
 // Initilaize Session
 $session = new Zend\Session\Container(PKWK_WIKI_NAMESPACE);
 
