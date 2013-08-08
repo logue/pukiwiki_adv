@@ -43,7 +43,7 @@ function plugin_freeze_action()
 
 	} else if ( ! Auth::check_role('role_contents_admin') || $pass !== NULL && Auth::login($pass) ) {
 		// Freeze
-		$postdata = $wiki->source();
+		$postdata = $wiki->get();
 		array_unshift($postdata, "#freeze\n");	//凍結をページに付加
 		$wiki->set($postdata, true);
 

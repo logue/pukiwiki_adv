@@ -266,24 +266,9 @@ class Wiki{
 			Utility::dieMessage( sprintf($_strings['error_prohibit'], 'PKWK_READONLY'), 403 );
 
 		// 簡易スパムチェック（不正なエンコードだった場合ここでエラー）
-		if ( !isset($vars['encode_hint']) || $vars['encode_hint'] !== PKWK_ENCODING_HINT || !isset($vars['digest'])){
+		if ( !isset($vars['encode_hint']) || $vars['encode_hint'] !== PKWK_ENCODING_HINT ){
 			Utility::dump();
 			Utility::dieMessage( $_string['illegal_chars'], 403 );
-		}
-
-		// ログイン済みもしくは、自動更新されるページである
-		//$has_permission = Auth::check_role('role_contents_admin') || isset($vars['page']) && $vars['page'] === $this->page;
-		$has_permission = Auth::check_role('role_contents_admin');
-
-		// 未ログインの場合、S25Rおよび、DNSBLチェック
-		if (!$has_permission) {
-			$ip_filter = new IpFilter();
-			//if ($ip_filter->isS25R()) Utility::dieMessage('S25R host is denied.');
-			
-			if ($use_spam_check['page_remote_addr']) {
-				$listed = $ip_filter->checkHost();
-				if ($listed !== false) Utility::dieMessage(sprintf($_strings['blacklisted'],$listed), $_title['prohibit'], 400);
-			}
 		}
 
 		// ポカミス対策：配列だった場合文字列に変換
@@ -291,50 +276,38 @@ class Wiki{
 			$str = join("\n", $str);
 		}
 
-		if (empty($str)){
-			Recent::set(null, $this->page);
-			// 入力が空の場合、削除とする
-			Recent::create_recent_deleted();
-			return $this->wiki->set('');
-		}
-		
-		// 現時点のページのハッシュを読む
-		$old_digest = $this->wiki->has() ? $this->wiki->digest() : 0;
+		// ログイン済みもしくは、自動更新されるページである
+		//$has_permission = Auth::check_role('role_contents_admin') || isset($vars['page']) && $vars['page'] === $this->page;
+		$has_permission = Auth::check_role('role_contents_admin');
+
 		// 入力データーを整形（※string型です）
 		$postdata = Rules::make_str_rules($str);
+
 		// 過去のデーターを取得
 		$oldpostdata = self::has() ? self::get(TRUE) : '';
-
-		// オリジナルが送られてきている場合、Wikiへの書き込みを中止し、競合画面を出す。
-		// 現時点のページのハッシュと、送信されたページのハッシュを比較して異なる場合、
-		// 自分が更新している間に第三者が更新した（＝競合が起きた）と判断する。
-		$collided = $old_digest !== 0 && $vars['digest'] !== $old_digest;
-
-		if ($collided && isset($vars['original'])){
-			return array(
-				'msg'=>$_string['title_collided'],
-				'body'=>
-					$_string['msg_collided'] .
-					Utility::showCollision($oldpostdata, $postdata, $vars['original']) .
-					Utility::editForm($this->page, $postdata, false)
-			);
-		}
 
 		// 差分を生成（ここでの差分データーはAkismetでも使う）
 		$diff = new Diff($postdata, $oldpostdata);
 
-		// captcha check
-		if ( (isset($use_spam_check['captcha']) && $use_spam_check['captcha'] !== 0)) {
-			Captcha::check(false);
-		}
-
+		// 未ログインの場合、S25Rおよび、DNSBLチェック
 		if (!$has_permission) {
+			$ip_filter = new IpFilter();
+			//if ($ip_filter->isS25R()) Utility::dieMessage('S25R host is denied.');
+			
+			if (isset($use_spam_check['page_remote_addr']) && $use_spam_check['page_remote_addr'] !== 0) {
+				$listed = $ip_filter->checkHost();
+				if ($listed !== false){
+					Utility::dump('dnsbl');
+					Utility::dieMessage(sprintf($_strings['blacklisted'],$listed), $_title['prohibit'], 400);
+				}
+			}
+
 			if (Utility::isSpamPost()){
 				Utility::dump();
 				Utility::dieMessage('Writing was limited. (Blocking SPAM)');
 			}
 			// URLBLチェック
-			if ( $use_spam_check['page_contents']){
+			if (isset($use_spam_check['page_contents']) && $use_spam_check['page_contents'] !== 0){
 				$reason = self::checkUriBl($diff);
 				if ($reason !== false){
 					Utility::dump($reason);
@@ -349,7 +322,7 @@ class Wiki{
 
 			// Akismet
 			global $akismet_api_key;
-			if ($use_spam_check['akismet'] && !empty($akismet_api_key) ){
+			if (isset($use_spam_check['akismet']) && $use_spam_check['akismet'] !== 0 && !empty($akismet_api_key) ){
 				$akismet = new Akismet(
 					$akismet_api_key,
 					Router::get_script_absuri()
@@ -374,7 +347,6 @@ class Wiki{
 						unset($added_data);
 					}
 					*/
-					
 
 					if($akismet->isSpam($akismet_post)){
 						Utility::dump('akismet');
@@ -384,6 +356,29 @@ class Wiki{
 					Utility::dieMessage('Akismet API key does not valied.', 500);
 				}
 			}
+		}
+
+			// captcha check
+			if ( (isset($use_spam_check['captcha']) && $use_spam_check['captcha'] !== 0)) {
+				Captcha::check(false);
+			}
+
+		// 現時点のページのハッシュを読む
+		$old_digest = $this->wiki->has() ? $this->wiki->digest() : 0;
+
+		// オリジナルが送られてきている場合、Wikiへの書き込みを中止し、競合画面を出す。
+		// 現時点のページのハッシュと、送信されたページのハッシュを比較して異なる場合、
+		// 自分が更新している間に第三者が更新した（＝競合が起きた）と判断する。
+		$collided = $old_digest !== 0 && $vars['digest'] !== $old_digest;
+
+		if ($collided && isset($vars['original'])){
+			return array(
+				'msg'=>$_string['title_collided'],
+				'body'=>
+					$_string['msg_collided'] .
+					Utility::showCollision($oldpostdata, $postdata, $vars['original']) .
+					Utility::editForm($this->page, $postdata, false)
+			);
 		}
 
 		// add client info to diff
@@ -407,6 +402,13 @@ class Wiki{
 		// 更新ログをつける
 		LogFactory::factory('update',$this->page)->set();
 
+		// 入力が空の場合、削除とする
+		if (empty($str)){
+			Recent::set(null, $this->page);
+			// 削除ログ
+			Recent::create_recent_deleted();
+			return $this->wiki->set('');
+		}
 		// Wikiを保存
 		$this->wiki->set($postdata);
 

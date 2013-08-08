@@ -144,27 +144,29 @@ class IpFilter{
 		if ($force) {
 			$cache['core']->removeItem(self::BL_CACHE_NAME);
 		}else if ($cache['core']->hasItem(self::BL_CACHE_NAME)) {
+			// キャッシュからデーターを取得
 			$bl_entries = $cache['core']->getItem(self::BL_CACHE_NAME);
+			// キャッシュのタイムスタンプを更新
 			$cache['core']->touchItem(self::BL_CACHE_NAME);
 		}
 
 		// キャッシュ内のエントリを探す
-		if (isset($bl_entries[$this->host])) {
+		if (isset($bl_entries[$this->ip])) {
 			// エントリの更新日時が有効期間内の場合、そのデーターを返す
-			if ($bl_entries[$this->host]['time'] + self::BL_CACHE_ENTRY_EXPIRE < UTIME){
-				return $bl_entries[$this->host]['listed'];
+			if ($bl_entries[$this->ip]['time'] + self::BL_CACHE_ENTRY_EXPIRE < UTIME){
+				return $bl_entries[$this->ip]['listed'];
 			}
 			// そうでない場合はエントリを削除
-			unset($bl_entries[$this->host]);
+			unset($bl_entries[$this->ip]);
 		}
 
-		$bl_entries[$this->host] = array(
-			'time' => UTIME,
+		$bl_entries[$this->ip] = array(
+			'time' => UTIME,	// チェックした時間のタイムスタンプ
 			'listed' => $this->lookupBl()	// ルックアップ（falseか、判定を受けたDNSBLホスト）
 		);
 		// キャッシュを保存
 		$cache['core']->setItem(self::BL_CACHE_NAME, $bl_entries);
-		return $bl_entries[$this->host]['listed'];
+		return $bl_entries[$this->ip]['listed'];
 	}
 	/**
 	 * ネームサーバーがブラックリストに含まれるか
@@ -178,12 +180,25 @@ class IpFilter{
 	 * @return string
 	 */
 	private function lookupBl(){
-		$quads = explode(".",$this->ip);
 		$listed = false;
-		$rip = $quads[3].".".$quads[2].".".$quads[1].".".$quads[0];
-		for ($i=0; $i<count($this->dnsbl_hosts); $i++) {
-			if (checkdnsrr($rip.".".$this->dnsbl_hosts[$i] . '.',"A")) {
-				$listed .= $this->dnsbl_hosts[$i]." ";
+		// IPをひっくり返す
+		$rip = join('.',array_reverse(explode('.',$this->ip)));
+		
+		foreach ($this->dnsbl_hosts as $dns) {
+			// DNSBLのホストに先ほどのひっくり返したIPをつけて、DNSアドレスを取得
+			// 1.0.0.127.dnsbl.net A
+			if (function_exists("checkdnsrr")) {
+				if (checkdnsrr($rip.'.'.$dns . '.',"A")) {
+					$listed .= $dns . ' ';
+				}
+			}else if (substr(PHP_OS, 0, 3) === 'WIN') {
+				$result = '';
+				@exec('nslookup -type=A ' . $rip . '.' . $dns . '.', $result);
+				foreach ($result as $line) {
+					if (strstr($line, $dns)) {
+						$listed .= $rip . '.' . $dns . ' ';
+					}
+				}
 			}
 		}
 		return $listed;

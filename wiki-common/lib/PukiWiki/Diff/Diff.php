@@ -167,7 +167,7 @@ class Diff{
 					break;
 			}
 		}
-		return '<pre class="sh" data-brush="diff">' . "\n" . join("\n", $ret) . '</pre>' . "\n";
+		return '<pre class="sh" data-lang="diff">' . "\n" . join("\n", $ret) . '</pre>' . "\n";
 	}
 	public function __toString(){
 		return join("\n",self::getDiff());

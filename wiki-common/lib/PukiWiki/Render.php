@@ -70,8 +70,6 @@ class Render{
 		'activity-indicator',
 		'jquery.a-tools',
 		'jquery.autosize',
-		'jquery.beautyOfCode',
-	//	'jquery.codemirror',
 		'jquery.cookie',
 		'jquery.form',
 		'jquery.dataTables',
@@ -79,7 +77,6 @@ class Render{
 		'jquery.i18n',
 		'jquery.query',
 		'jquery.superfish',
-		'jquery.tabby',
 		'jquery.ui.rlightbox'
 	);
 	/**
@@ -298,6 +295,8 @@ class Render{
 		}
 
 		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.( DEBUG ? 'locale.js' : 'js.php?file=locale'), 'defer'=>'defer' );
+
+		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.( DEBUG ? 'codemirror/lib/codemirror.js' : 'js.php?file=codemirror/lib/codemirror.min'), 'defer'=>'defer' );
 
 //		$js_vars[] = 'var pukiwiki = {};';
 		foreach( $js_init as $key=>$val){

@@ -11,14 +11,14 @@ class Sequential extends ConfigTable
 
 	function toString($values = NULL, $level = 2)
 	{
-		$retval = join('', $this->before);
+		$retval[] = trim(join('', $this->before));
 		if (is_array($this->values)) {
 			foreach ($this->values as $value) {
 				$value   = is_array($value) ? join('|', $value) : $value;
-				$retval .= '|' . $value . '|' . "\n";
+				$retval[] = '|' . trim($value) . '|';
 			}
 		}
-		$retval .= join('', $this->after);
-		return $retval;
+		$retval[] = join('', $this->after);
+		return join("\n",$retval);
 	}
 }

@@ -15,6 +15,7 @@ namespace PukiWiki\File;
 
 use Exception;
 use PukiWiki\File\AbstractFile;
+use PukiWiki\Mailer;
 use PukiWiki\Router;
 use PukiWiki\Utility;
 
@@ -57,7 +58,7 @@ class DiffFile extends AbstractFile{
 				'USER_AGENT'	=> TRUE,
 				'REMOTE_ADDR'	=> TRUE
 			);
-			pkwk_mail_notify($notify_subject, $str, $summary) or
+			Mailer::notify($notify_subject, $str, $summary) or
 				Utility::dieMessage('pkwk_mail_notify(): Failed');
 		}
 		parent::set($diffdata);
@@ -91,7 +92,7 @@ class DiffFile extends AbstractFile{
 					break;
 			}
 		}
-		return '<pre class="sh" data-brush="diff">'."\n".join("\n",$ret).'</pre>';
+		return '<pre class="sh" data-mode="diff">'."\n".join("\n",$ret).'</pre>';
 	}
 }
 

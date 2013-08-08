@@ -28,6 +28,6 @@ class ConfigTable
 
 	function toString($values = NULL, $level = 2)
 	{
-		return join('', $this->before) . join('', $this->after);
+		return trim(join('', $this->before). join('', $this->after))."\n";
 	}
 }

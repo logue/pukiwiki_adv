@@ -70,12 +70,9 @@ defined('LIB_DIR') or define('LIB_DIR', realpath('./').'/');
 defined('SITE_HOME') or define('SITE_HOME', realpath('./').'/');
 define('VENDOR_DIR', realpath(SITE_HOME . '..'. DIRECTORY_SEPARATOR . 'vendor') . DIRECTORY_SEPARATOR);
 
-// Load Bad-behavior
-require( VENDOR_DIR . 'bad-behavior' . DIRECTORY_SEPARATOR . 'bad-behavior-sqlite.php');
-
 // Composer autoloading
-if (file_exists(SITE_HOME . '..'. DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php')) {
-	$loader = include SITE_HOME . '..'. DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+if (file_exists(VENDOR_DIR . 'autoload.php')) {
+	$loader = include VENDOR_DIR . 'autoload.php';
 	$loader->add('Zend', 'vendor/zendframework/zendframework/library');
 }
 

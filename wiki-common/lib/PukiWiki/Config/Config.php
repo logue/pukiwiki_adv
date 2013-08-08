@@ -37,20 +37,23 @@ class Config
 
 	/**
 	 * コンストラクタ
+	 * @param $name 設定名
+	 * @param $autoupdate 自動更新するか
 	 */
-	public function __construct($name)
+	public function __construct($name, $autoupdate = false)
 	{
 		$this->name = $name;
 		$this->page = self::CONFIG_PAGE_PREFIX . $name;
 //		$this->cache_name = self::CACHE_PREFIX.md5($name);
 		$this->wiki = FileFactory::Wiki($this->page);
+		$this->autoupdate = $autoupdate;
 		$this->read();
 	}
 	/**
 	 * デストラクタ
 	 */
 	public function __destruct(){
-		$this->write();
+		if ($this->autoupdate) $this->write();
 	}
 	/**
 	 * :configページから項目を読み取る
@@ -126,7 +129,11 @@ class Config
 	 */
 	public function write()
 	{
-		$this->wiki->set($this->toString());
+		foreach (explode("\n",$this->toString()) as $line){
+			if (trim($line) === '') continue;
+			$ret[] = trim($line);
+		}
+		$this->wiki->set($ret);
 	}
 
 	/**
