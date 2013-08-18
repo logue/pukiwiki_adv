@@ -92,24 +92,24 @@ function plugin_article_action()
 
 	if (PLUGIN_ARTICLE_COMMENT) $article .= "\n\n" . '#comment' . "\n";
 
-	$postdata = '';
-	$postdata_old  = get_source($post['refer']);
+	$postdata = array();
+	$wiki = Factory::Wiki($vars['refer']);
 	$article_no = 0;
 
-	foreach($postdata_old as $line) {
-		if (! PLUGIN_ARTICLE_INS) $postdata .= $line;
+	foreach($wiki->get() as $line) {
+		if (! PLUGIN_ARTICLE_INS) $postdata[] = $line;
 		if (preg_match('/^#article/i', $line)) {
 			if ($article_no == $post['article_no'] && $post['msg'] != '')
-				$postdata .= $article . "\n";
+				$postdata[] = $article;
 			++$article_no;
 		}
-		if (PLUGIN_ARTICLE_INS) $postdata .= $line;
+		if (PLUGIN_ARTICLE_INS) $postdata[] = $line;
 	}
 
 	$postdata_input = $article . "\n";
 	$body = '';
 
-	if (md5(get_source($post['refer'], TRUE, TRUE)) !== $post['digest']) {
+	if ($wiki->digest() !== $post['digest']) {
 		$title = $_article_msg['title_collided'];
 		$body = $_article_msg['msg_collided'] . "\n";
 		$s_refer    = htmlsc($post['refer']);
@@ -125,7 +125,7 @@ function plugin_article_action()
 EOD;
 
 	} else {
-		page_write($post['refer'], trim($postdata));
+		$wiki->set($postdata);
 
 		// 投稿内容のメール自動送信
 		if (PLUGIN_ARTICLE_MAIL_AUTO_SEND) {

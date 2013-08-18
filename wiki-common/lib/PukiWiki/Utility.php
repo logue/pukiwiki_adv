@@ -74,7 +74,7 @@ class Utility{
 			}
 			unset($f);
 		}
-		return false;
+		throw new \Exception($file. ' is missing!');
 	}
 	/**
 	 * QueryStringをパースし、$_GETに上書き

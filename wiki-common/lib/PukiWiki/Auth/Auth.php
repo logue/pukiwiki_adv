@@ -651,10 +651,10 @@ class Auth
 
 		$target_str = '';
 		switch($auth_method_type) {
-			case 'pagename':
+			case self::AUTH_METHOD_PAGENAME:
 				$target_str = $page;
 				break;
-			case 'contents':
+			case self::AUTH_METHOD_CONTENTS:
 				$target_str = Factory::Wiki($page)->get();
 				break;
 			}

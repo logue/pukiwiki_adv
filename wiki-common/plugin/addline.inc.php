@@ -28,6 +28,7 @@
 
 use PukiWiki\Auth\Auth;
 use PukiWiki\Config\Config;
+use PukiWiki\Factory;
 /////////////////////////////////////////////////
 // コメントを挿入する位置 1:欄の前 0:欄の後
 defined('ADDLINE_INS') or define('ADDLINE_INS', '1');
@@ -184,7 +185,8 @@ function plugin_addline_action()
 	if( Auth::check_role('readonly') ) die_message($_string['prohibit']);
 
 	$refer			= $vars['refer'];
-	$postdata_old	= get_source($refer);
+        $wiki                   = Factory::Wiki($refer);
+	$postdata_old	        = $wiki->get();
 	$configname		= $vars['configname'];
 	$above			= $vars['above'];
 
@@ -206,12 +208,11 @@ function plugin_addline_action()
 		);
 	}
 	$config->config_name = $configname;
-	$addline = join('', addline_get_source($config->page));
+	$addline = join("\n", addline_get_source($config->page));
 	$addline = rtrim($addline);
-		if ( $block_plugin ){
+	if ( $block_plugin ){
 		$postdata = addline_block($addline,$postdata_old,$addline_no,$above);
-	}
-	else {
+	} else {
 		$postdata = addline_inline($addline,$postdata_old,$addline_no,$above);
 	}
 
@@ -226,7 +227,7 @@ function plugin_addline_action()
 	
 //	$body = $postdata; // debug
 //	foreach ( $vars as $k=>$v ){$body .= "[$k:$v]&br;";}
-	page_write($refer,$postdata);
+	$wiki->set($postdata);
 	
 	$retvars['msg'] = $title;
 	$retvars['body'] = $body;
@@ -293,9 +294,9 @@ function addline_inline($addline,$postdata_old,$addline_no,$above)
 }
 function addline_get_source($page) // tracker.inc.phpのtracker_listから
 {
-	$source = get_source($page);
+	$wiki = Factory::Wiki($page);
 	// 見出しの固有ID部を削除
-	$source = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/m','$1$2',$source);
+	$source = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/m','$1$2',$wiki->get());
 	// #freezeを削除
 	return preg_replace('/^#freeze\s*$/m','',$source);
 }

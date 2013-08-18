@@ -14,6 +14,7 @@
 use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
 use PukiWiki\Utility;
+use PukiWiki\Router;
 /* **************** */
 /* * 設 定 必 須  * */
 /* **************** */
@@ -290,7 +291,7 @@ function plugin_amazon_action()
 	// $r_page = $s_page . '/' . $obj->itemid;
 
 	$r_page_url = rawurlencode($r_page);
-	$wiki = Factory::Wiki($s_page);
+	$wiki = Factory::Wiki($r_page);
 
 	$wiki->checkEditable(true);
 
@@ -300,11 +301,11 @@ function plugin_amazon_action()
 	}
 
 	if (empty($obj->items['title']) or preg_match('/^\//', $s_page)) {
-		header('Location: '.get_page_uri($_page).'?'.encode($s_page));
+		Utility::redirect(Router::get_page_uri($s_page));
 	}
 
 	// レビューページ編集
-	$body = get_source(PLUGIN_AMAZON_TRACKER_PAGE_NAME, true, true);
+	$body = Factory::Wiki(PLUGIN_AMAZON_TRACKER_PAGE_NAME)->get(true);
 	// $body = str_replace('$1', $obj->itemid, $body);
 	$body = str_replace('$1', $obj->asin, $body);
 	$body = str_replace('$2', $obj->locale, $body);
@@ -324,10 +325,8 @@ function plugin_amazon_action()
 	$body = str_replace('[date]', '&date;', $body);
 	$body = str_replace('[recommendation]', '[['.$_amazon_msg['msg_this_edit'].']]', $body);
 	$body = str_replace('[body]', '[['.$_amazon_msg['msg_this_edit'].']]', $body);
-	page_write($r_page, $body);
-	//header('Location: '.$script.'?cmd=edit&page='.$r_page_url);
-	header('Location: '.get_cmd_uri('edit',$r_page));
-	die();
+	$wiki->set($body);
+	Utility::redirect($wiki->uri('edit'));
 }
 
 function plugin_amazon_inline()

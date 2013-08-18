@@ -11,7 +11,7 @@
 // PukiWiki setting file (user agent:default)
 
 defined('PLUS_THEME') or define('PLUS_THEME','default');
-defined('SKIN_FILE_DEFAULT') or define('SKIN_FILE_DEFAULT', add_skindir(PLUS_THEME));
+defined('SKIN_FILE_DEFAULT') or define('SKIN_FILE_DEFAULT', PLUS_THEME);
 
 /////////////////////////////////////////////////
 // Skin file
@@ -67,8 +67,6 @@ $link_compact = 0;
 $use_trans_sid_address = array(
 );
 
-/////////////////////////////////////////////////
-Utility::loadConfig('default.usr.ini.php');
 
 /* End of file default.ini.php */
 /* Location: ./wiki-common/default.ini.php */

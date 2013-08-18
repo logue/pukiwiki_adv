@@ -7,6 +7,8 @@ define('INSERT_COLS', 70); // Columns of textarea
 define('INSERT_ROWS',  5); // Rows of textarea
 define('INSERT_INS',   1); // Order of insertion (1:before the textarea, 0:after)
 use PukiWiki\Auth\Auth;
+use PukiWiki\Factory;
+use PukiWiki\Utility;
 
 function plugin_insert_action()
 {
@@ -27,32 +29,32 @@ $_msg_collided = T_('It seems that someone has already updated this page while y
 	$vars['msg'] = preg_replace('/' . "\r" . '/', '', $vars['msg']);
 	$insert = ($vars['msg'] != '') ? "\n" . $vars['msg'] . "\n" : '';
 
-	$postdata = '';
-	$postdata_old  = get_source($vars['refer']);
+	$postdata = array();
+	$wiki = Factory::Wiki($vars['refer']);
 	$insert_no = 0;
 
 
-	foreach($postdata_old as $line) {
+	foreach($wiki->get() as $line) {
 		if (! INSERT_INS) $postdata .= $line;
 		if (preg_match('/^#insert$/i', $line)) {
 			if ($insert_no == $vars['insert_no'])
-				$postdata .= $insert;
+				$postdata[] = $insert;
 			$insert_no++;
 		}
-		if (INSERT_INS) $postdata .= $line;
+		if (INSERT_INS) $postdata[] = $line;
 	}
 
 	$postdata_input = $insert . "\n";
 
 	$body = '';
-	if (md5(get_source($vars['refer'], TRUE, TRUE)) !== $vars['digest']) {
+	if ($wiki->digest() !== $vars['digest']) {
 		$title = $_title_collided;
 		$body = $_msg_collided . "\n";
 
 		$script = get_script_uri();
-		$s_refer  = htmlsc($vars['refer']);
-		$s_digest = htmlsc($vars['digest']);
-		$s_postdata_input = htmlsc($postdata_input);
+		$s_refer  = Utility::htmlsc($vars['refer']);
+		$s_digest = Utility::htmlsc($vars['digest']);
+		$s_postdata_input = Utility::htmlsc($postdata_input);
 
 		$body .= <<<EOD
 <form action="$script" method="post" class="insert_form">
@@ -63,7 +65,7 @@ $_msg_collided = T_('It seems that someone has already updated this page while y
 </form>
 EOD;
 	} else {
-		page_write($vars['refer'], $postdata);
+		$wiki->set($postdata);
 
 		$title = $_title_updated;
 	}
@@ -80,7 +82,7 @@ function plugin_insert_convert()
 	global $vars, $digest;
 	static $numbers = array();
 
-	$_btn_insert = _('add');
+	$_btn_insert = T_('add');
 
 	// if (PKWK_READONLY) return ''; // Show nothing
 	if (Auth::check_role('readonly')) return ''; // Show nothing
@@ -90,8 +92,8 @@ function plugin_insert_convert()
 	$insert_no = $numbers[$vars['page']]++;
 
 	$script = get_script_uri();
-	$s_page   = htmlsc($vars['page']);
-	$s_digest = htmlsc($digest);
+	$s_page   = Utility::htmlsc($vars['page']);
+	$s_digest = Utility::htmlsc($digest);
 	$s_cols = INSERT_COLS;
 	$s_rows = INSERT_ROWS;
 	$string = <<<EOD

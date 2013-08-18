@@ -8,11 +8,14 @@
 // License: GPL v2 or (at your option) any later version
 //
 // Issue tracker plugin (See Also bugtrack plugin)
+
 use PukiWiki\Config\Config;
 use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
 use PukiWiki\Renderer\RendererFactory;
 use PukiWiki\Listing;
+use PukiWiki\Utility;
+
 // Tracker_list: Excluding pattern
 define('PLUGIN_TRACKER_LIST_EXCLUDE_PATTERN','#^SubMenu$|/#');	// 'SubMenu' and using '/'
 //define('PLUGIN_TRACKER_LIST_EXCLUDE_PATTERN','#(?!)#');		// Nothing excluded
@@ -99,7 +102,7 @@ function plugin_tracker_convert()
 
 	$tracker_form = new Tracker_form();
 	if (! $tracker_form->init($base, $refer, $config, $rel)) {
-		return '#tracker: ' . htmlsc($tracker_form->error) . '<br />';
+		return '#tracker: ' . Utility::htmlsc($tracker_form->error) . '<br />';
 	}
 
 	// Load $template
@@ -112,7 +115,7 @@ function plugin_tracker_convert()
 
 	if (! $tracker_form->initFields(plugin_tracker_field_pickup($template)) ||
 		! $tracker_form->initHiddenFields()) {
-		return '#tracker: ' . htmlsc($tracker_form->error);
+		return '#tracker: ' . Utility::htmlsc($tracker_form->error);
 	}
 	$fields = $tracker_form->fields;
 	unset($tracker_form);
@@ -199,7 +202,6 @@ function plugin_tracker_action()
 
 	// TODO: Why here => See BugTrack/662
 	// Creating an empty page, before attaching files
-	pkwk_touch_file(get_filename($page));
 
 	$from = $to = array();
 
@@ -268,10 +270,10 @@ function plugin_tracker_action()
 	unset($from, $to);
 
 	// Write $template, without touch
-	page_write($page, join(null, $template));
+	$wiki = Factory::Wiki($page);
+	$wiki->set(join(null, $template));
 
-	pkwk_headers_sent();
-	header('Location: ' . get_page_uri($page));
+	Utility::redirect($wiki->uri());
 	exit;
 }
 

@@ -6,7 +6,11 @@
 
 define('MEMO_COLS', 60); // Columns of textarea
 define('MEMO_ROWS',  5); // Rows of textarea
+
 use PukiWiki\Auth\Auth;
+use PukiWiki\Factory;
+use PukiWiki\Utility;
+
 function plugin_memo_action()
 {
 	global $vars, $cols, $rows, $_string;
@@ -25,30 +29,30 @@ $_msg_collided =  $_string['msg_collided'];
 	$memo_body = str_replace('"', '&#x22;', $memo_body); // Escape double quotes
 	$memo_body = str_replace(',', '&#x2c;', $memo_body); // Escape commas
 
-	$postdata_old  = get_source($vars['refer']);
-	$postdata = '';
+	$wiki = Factory::Wiki($vars['refer']);
+	$postdata = array();
 	$memo_no = 0;
-	foreach($postdata_old as $line) {
+	foreach($wiki-get() as $line) {
 		if (preg_match('/^#memo\(?.*\)?$/i', $line)) {
 			if ($memo_no == $vars['memo_no']) {
-				$postdata .= '#memo(' . $memo_body . ')' . "\n";
+				$postdata[] = '#memo(' . $memo_body . ')' . "\n";
 				$line = '';
 			}
 			++$memo_no;
 		}
-		$postdata .= $line;
+		$postdata[] = $line;
 	}
 
 	$postdata_input = $memo_body . "\n";
 
 	$body = '';
-	if (md5(get_source($vars['refer'], TRUE, TRUE)) !== $vars['digest']) {
+	if ($wiki->digest() !== $vars['digest']) {
 		$title = $_title_collided;
 		$body  = $_msg_collided . "\n";
 
-		$s_refer  = htmlsc($vars['refer']);
-		$s_digest = htmlsc($vars['digest']);
-		$s_postdata_input = htmlsc($postdata_input);
+		$s_refer  = Utility::htmlsc($vars['refer']);
+		$s_digest = Utility::htmlsc($vars['digest']);
+		$s_postdata_input = Utility::htmlsc($postdata_input);
 
 		$script = get_script_uri();
 		$body .= <<<EOD
@@ -60,7 +64,7 @@ $_msg_collided =  $_string['msg_collided'];
 </form>
 EOD;
 	} else {
-		page_write($vars['refer'], $postdata);
+		$wiki->set($postdata);
 
 		$title = $_title_updated;
 	}

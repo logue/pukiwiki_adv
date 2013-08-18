@@ -7,6 +7,7 @@
 //   2002-2004 sha
 //
 // File attach & ref plugin
+use PukiWiki\Factory;
 use PukiWiki\Utility;
 
 defined('ATTACHREF_UPLOAD_MAX_FILESIZE') or define('ATTACHREF_UPLOAD_MAX_FILESIZE', '4M'); // default: 4MB
@@ -310,7 +311,7 @@ function attachref_get_attach_filename(&$file)
 
 function attachref_insert_ref($filename)
 {
-	global $vars, $now, $do_backup;
+	global $vars;
 	global $_attachref_messages;
 
 	$ret['msg'] = $_attachref_messages['msg_title'];
@@ -327,17 +328,16 @@ function attachref_insert_ref($filename)
 	
 	$refer = $vars['refer'];
 	$digest = $vars['digest'];
-	$postdata_old = get_source($refer);
-	$thedigest = md5(join('',$postdata_old));
+	$wiki = Factory::Wiki($refer);
 
-	$postdata = '';
+	$postdata = array();
 	$attachref_ct = 0; // count of '#attachref'
 	$attachref_no = $vars['attachref_no'];
 	$skipflag = 0;
 	$postdata_tmp = array();
 
 	// Numbering inline plugin
-	foreach ($postdata_old as $line)
+	foreach ($wiki->get() as $line)
 	{
 		if ( $skipflag || substr($line,0,1) == ' ' || substr($line,0,2) == '//' ){
 //			$postdata .= $line;
@@ -365,7 +365,7 @@ function attachref_insert_ref($filename)
 	// Numbering block-type plugin
 	foreach($postdata_tmp as $line) {
 		if ( $skipflag || substr($line,0,1) == ' ' || substr($line,0,2) == '//' ){
-			$postdata .= $line;
+			$postdata[] = $line;
 			continue;
 		}
 		$ct = preg_match_all('/^#attachref/', $line, $out);
@@ -382,11 +382,11 @@ function attachref_insert_ref($filename)
 			$line = preg_replace('/^#___attachref(\([^(){};]*\))?(\{[^{}]*\})?___/','#attachref$1$2',$line);
 //			$postdata .= "|$ct|$attachref_ct|$attachref_no|$line";
 	    }
-		$postdata .= $line;
+		$postdata[] = $line;
 	}
 
 	// Detect conflict of update
-	if ( $thedigest != $digest ) {
+	if ( $wiki->digest() !== $digest ) {
 		$ret['msg']  = $_attachref_messages['msg_title_collided'];
 		$ret['body'] = $_attachref_messages['msg_collided'];
 	}
@@ -394,7 +394,7 @@ function attachref_insert_ref($filename)
 //	$postdata .= "<hr />$refer, " . join('/',array_keys($vars)) . ", " . join("/",array_values($vars)) . ", s_args=$s_args";
 //	$ret['body'] = $postdata;
 
-	page_write($vars['refer'], $postdata);
+	$wiki->set($postdata);
 
 	return $ret;
 }

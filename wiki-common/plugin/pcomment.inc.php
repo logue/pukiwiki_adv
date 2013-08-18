@@ -110,7 +110,8 @@ function plugin_pcomment_convert()
 	if ($count == 0) $count = PLUGIN_PCOMMENT_NUM_COMMENTS;
 
 	$_page = get_fullname(strip_bracket($page), $vars_page);
-	if (!is_pagename($_page))
+	$wiki = Factory::Wiki($_page);
+	if (!$wiki->isValied())
 		return sprintf($_pcmt_messages['err_pagename'], Utility::htmlsc($_page));
 
 	$dir = PLUGIN_COMMENT_DIRECTION_DEFAULT;
@@ -149,7 +150,7 @@ function plugin_pcomment_convert()
 		$form[] = do_plugin_inline('login');
 	}
 
-	if (! is_page($_page)) {
+	if (! $wiki->has()) {
 		$link   = make_pagelink($_page);
 		$recent = $_pcmt_messages['msg_none'];
 	} else {
@@ -294,9 +295,9 @@ function plugin_pcomment_auto_log($page, $dir, $count, & $postdata)
 	do {
 		++$i;
 		$_page = $page . '/' . $i;
-	} while (is_page($_page));
+	} while (Factory::Wiki($_page)->has());
 
-	page_write($_page, '[[' . $page . ']]' . "\n\n" . join('', $old));
+	Factory::Wiki($_page)->set( '[[' . $page . ']]' . "\n\n" . join('', $old));
 
 	// Recurse :)
 	plugin_pcomment_auto_log($page, $dir, $count, $postdata);

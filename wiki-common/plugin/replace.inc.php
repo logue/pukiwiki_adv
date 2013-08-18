@@ -7,6 +7,9 @@
 // ファイル名一覧の表示
 // cmd=replace
 use PukiWiki\Auth\Auth;
+use PukiWiki\Factory;
+use PukiWiki\Utility;
+
 // 凍結してあるページも文字列置換の対象とする
 defined('REPLACE_IGNORE_FREEZE') or define('REPLACE_IGNORE_FREEZE', TRUE);
 
@@ -68,31 +71,20 @@ function replace_do($search,$replace,$notimestamp)
 	$replaced_pages = array();
 	foreach ($pages as $page)
 	{
-		if (REPLACE_IGNORE_FREEZE) {
-			$editable = (
-				! in_array($page, $cantedit)
-			);
-		} else {
-			$editable = (
-				! is_freeze($page) and
-				! in_array($page, $cantedit)
-                	);
-		}
-		if ($editable) {
+		$wiki = Factory::Wiki($page);
+		if ($wiki->isEditable(false, REPLACE_IGNORE_FREEZE)) {
 			// パスワード一致
-			$postdata = '';
-			$postdata_old = get_source($page);
-			foreach ($postdata_old as $line)
+			$postdata = array();
+			foreach ($wiki->get() as $line)
 			{
 				// キーワードの置換
-				$line = str_replace($search,$replace,$line);
-				$postdata .= $line;
+				$postdata[] = str_replace($search,$replace,$line);
 			}
-			if ($postdata != join('',$postdata_old)) {
+			if (md5(join("\n",$postdata)) !== $wiki->digest()) {
 				$cycle = 0;
 				set_time_limit(30);
-				page_write($page,$postdata,$notimestamp);
-				$replaced_pages[] = '<li><a href="'.get_page_uri($page).'">'.htmlsc($page).'</a></li>';
+				$wiki->set($postdata,$notimestamp);
+				$replaced_pages[] = '<li><a href="'.$wiki->uri().'">'.Utility::htmlsc($page).'</a></li>';
 			}
 		}
 	}

@@ -53,10 +53,11 @@ class Wiki{
 /**************************************************************************************************/
 	/**
 	 * 編集可能か
-	 * @param boolean $authegnticate 認証画面を通すかのフラグ
+	 * @param boolean $authegnticate 認証画面を通すか
+	 * @param boolean $ignole_freeze 凍結されたページを無視するか
 	 * @return boolean
 	 */
-	public function isEditable($authenticate = false)
+	public function isEditable($authenticate = false, $ignole_freeze = false)
 	{
 		global $edit_auth, $cantedit;
 
@@ -64,14 +65,14 @@ class Wiki{
 		if (!$edit_auth) return true;
 		// 無効なページ名
 		if (!$this->isValied()) return false;
-		// 凍結されている
-		if ($this->isFreezed()) return false;
 		// 編集できないページ
 		foreach($cantedit as $key) {
 			if ($this->page === $key) return false;
 		}
-		// 未認証時に読み取り専用になっている
+		// 未認証時は読み取り専用になっている
 		if (Auth::check_role('readonly')) return false;	
+		// 凍結されている
+		if (!$ignole_freeze && $this->isFreezed()) return false;
 		// ユーザ別の権限を読む
 		if (Auth::auth($this->page, 'edit', $authenticate)) return true;
 		return false;
@@ -369,7 +370,7 @@ class Wiki{
 		// オリジナルが送られてきている場合、Wikiへの書き込みを中止し、競合画面を出す。
 		// 現時点のページのハッシュと、送信されたページのハッシュを比較して異なる場合、
 		// 自分が更新している間に第三者が更新した（＝競合が起きた）と判断する。
-		$collided = $old_digest !== 0 && $vars['digest'] !== $old_digest;
+		$collided = isset($vars['digest']) && $old_digest !== 0 && $vars['digest'] !== $old_digest;
 
 		if ($collided && isset($vars['original'])){
 			return array(

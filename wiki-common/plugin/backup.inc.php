@@ -493,12 +493,10 @@ function plugin_backup_rollback($page, $age)
 		{
 			die();	// Do nothing
 		}
-		pr($backups);
-		die();
 
-		$wiki = new WikiFile($page);
+		$wiki = Factory::Wiki($page);
 		// バックアップからロールバック（タイムスタンプを更新しない状態で）
-		$wiki->set(implode("\n", $backups['data']));
+		$wiki->set($backups['data']);
 		// ファイルの更新日時をバックアップの時点にする
 		$wiki->setTime($backups['time']);
 

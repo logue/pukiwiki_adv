@@ -340,9 +340,10 @@ function plugin_dav_action()
 		if(!isset($path_info)) dav_error_exit(403);
 		if(preg_match('/^\/(.+)\/$/', $path_info, $matches) != 1) dav_error_exit(403);
 		$page = dav_strip_slash($path_info);
-		if(is_page($page)) dav_error_exit(403);
+		$wiki = Factory::Wiki($page);
+		if (!$wiki->isValied()) dav_error_exit(403);
 
-		page_write($page, PLUGIN_DAV_FOLODER_PAGE_BODY); // write initial string to the page.
+		$wiki->set(PLUGIN_DAV_FOLODER_PAGE_BODY); // write initial string to the page.
 		cache_timestamp_touch();
 
 		// PROPFIND の挙動 (作成したフォルダーを表示させるため)

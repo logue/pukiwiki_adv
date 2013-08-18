@@ -14,7 +14,7 @@ define('CONFIG_AUTH_WKGRP','auth/auth_wkgrp');
 use PukiWiki\Auth\Auth;
 use PukiWiki\Config\Config;
 use PukiWiki\Router;
-use PukiWiki\Utility;
+use PukiWiki\Factory;
 use PukiWiki\Renderer\RendererFactory;
 
 function plugin_adm_auth_wkgrp_init()
@@ -271,13 +271,13 @@ function adm_auth_wkgrp_import()
 {
 	global $_adm_auth_wkgrp_msg;
 
-	$config_page_name = ':config/'.CONFIG_AUTH_WKGRP;
+	$wiki = Factory::Wiki(':config/'.CONFIG_AUTH_WKGRP);
 	// 処理中に誰かがページを作成した場合にしか発生しないはず
-	if (is_page($config_page_name)) return $_adm_auth_wkgrp_msg['err_already'];
+	if ($wiki->has($config_page_name)) return $_adm_auth_wkgrp_msg['err_already'];
 
 	$data = "#check_role(2)\n".adm_auth_wkgrp_file2page();
 	// このイメージをページに出力
-	page_write($config_page_name, $data);
+	$wiki->set($data);
 	// php ファイルのタイムスタンプとページを一致させる
 	adm_auth_wkgrp_touch_file2page();
 	return sprintf($_adm_auth_wkgrp_msg['msg_ok_import'], '<var>'.$config_page_name.'</var>');

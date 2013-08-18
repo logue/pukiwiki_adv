@@ -12,6 +12,7 @@
 // Usage: http://path/to/index.php?plugin=rename[&refer=page_name]
 use PukiWiki\Auth\Auth;
 use PukiWiki\Wiki;
+use PukiWiki\Factory;
 use PukiWiki\Utility;
 use PukiWiki\Router;
 
@@ -366,7 +367,7 @@ EOD;
 	foreach ($pages as $old=>$new)
 		$ret['body'] .= '<li>' .  make_pagelink(decode($old)) .
 			$_rename_messages['msg_arrow'] .
-			htmlsc(decode($new)) .  '</li>' . "\n";
+			Utility::htmlsc(Utility::decode($new)) .  '</li>' . "\n";
 	$ret['body'] .= '</ul>' . "\n";
 	return $ret;
 }
@@ -431,7 +432,8 @@ function plugin_rename_get_files($pages)
 		}
 	}
 
-	$postdata = get_source(PLUGIN_RENAME_LOGPAGE);
+	$wiki = Factory::Wiki(PLUGIN_RENAME_LOGPAGE);
+	$postdata = $wiki->get();
 	$postdata[] = '*' . $now . "\n";
 	if (plugin_rename_getvar('method') == 'regex') {
 		$postdata[] = '-' . $_rename_messages['msg_regex'] . "\n";
@@ -461,7 +463,7 @@ function plugin_rename_get_files($pages)
 
 	// At this time, collision detection is not implemented
 
-	page_write(PLUGIN_RENAME_LOGPAGE, join('', $postdata));
+	$wiki->set($postdata);
 
 	cache_timestamp_touch();
 

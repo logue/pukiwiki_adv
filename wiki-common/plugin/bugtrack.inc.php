@@ -14,6 +14,8 @@ define('PLUGIN_BUGTRACK_NUMBER_FORMAT', '%d'); // Like 'page/1'
 //define('PLUGIN_BUGTRACK_NUMBER_FORMAT', '%03d'); // Like 'page/001'
 
 use PukiWiki\Auth\Auth;
+use PukiWiki\Factory;
+use PukiWiki\Utility;
 
 function plugin_bugtrack_init()
 {
@@ -73,18 +75,18 @@ function plugin_bugtrack_print_form($base, $category)
 	global $_plugin_bugtrack, $session;
 	static $id = 0;
 
-	$s_base     = htmlsc($base);
-	$s_name     = htmlsc($_plugin_bugtrack['name']);
-	$s_category = htmlsc($_plugin_bugtrack['category']);
-	$s_priority = htmlsc($_plugin_bugtrack['priority']);
-	$s_state    = htmlsc($_plugin_bugtrack['state']);
-	$s_pname    = htmlsc($_plugin_bugtrack['pagename']);
-	$s_pnamec   = htmlsc($_plugin_bugtrack['pagename_comment']);
-	$s_version  = htmlsc($_plugin_bugtrack['version']);
-	$s_versionc = htmlsc($_plugin_bugtrack['version_comment']);
-	$s_summary  = htmlsc($_plugin_bugtrack['summary']);
-	$s_body     = htmlsc($_plugin_bugtrack['body']);
-	$s_submit   = htmlsc($_plugin_bugtrack['submit']);
+	$s_base     = Utility::htmlsc($base);
+	$s_name     = Utility::htmlsc($_plugin_bugtrack['name']);
+	$s_category = Utility::htmlsc($_plugin_bugtrack['category']);
+	$s_priority = Utility::htmlsc($_plugin_bugtrack['priority']);
+	$s_state    = Utility::htmlsc($_plugin_bugtrack['state']);
+	$s_pname    = Utility::htmlsc($_plugin_bugtrack['pagename']);
+	$s_pnamec   = Utility::htmlsc($_plugin_bugtrack['pagename_comment']);
+	$s_version  = Utility::htmlsc($_plugin_bugtrack['version']);
+	$s_versionc = Utility::htmlsc($_plugin_bugtrack['version_comment']);
+	$s_summary  = Utility::htmlsc($_plugin_bugtrack['summary']);
+	$s_body     = Utility::htmlsc($_plugin_bugtrack['body']);
+	$s_submit   = Utility::htmlsc($_plugin_bugtrack['submit']);
 
 	++$id;
 
@@ -93,14 +95,14 @@ function plugin_bugtrack_print_form($base, $category)
 	$selected = '';
 	for ($i = 0; $i < $count; ++$i) {
 		if ($i == ($count - 1)) $selected = ' selected="selected"'; // The last one
-		$priority_list = htmlsc($_plugin_bugtrack['priority_list'][$i]);
+		$priority_list = Utility::htmlsc($_plugin_bugtrack['priority_list'][$i]);
 		$select_priority .= '    <option value="' . $priority_list . '"' .
 			$selected . '>' . $priority_list . '</option>' . "\n";
 	}
 
 	$select_state = "\n";
 	for ($i = 0; $i < count($_plugin_bugtrack['state_list']); ++$i) {
-		$state_list = htmlsc($_plugin_bugtrack['state_list'][$i]);
+		$state_list = Utility::htmlsc($_plugin_bugtrack['state_list'][$i]);
 		$select_state .= '    <option value="' . $state_list . '" style="background-color:'.$_plugin_bugtrack['state_bgcolor'][$i].'">' .
 			$state_list . '</option>' . "\n";
 	}
@@ -111,7 +113,7 @@ function plugin_bugtrack_print_form($base, $category)
 	} else {
 		$encoded_category = '<select name="category" id="_p_bugtrack_category_' . $id . '">';
 		foreach ($category as $_category) {
-			$s_category = htmlsc($_category);
+			$s_category = Utility::htmlsc($_category);
 			$encoded_category .= '<option value="' . $s_category . '">' .
 				$s_category . '</option>' . "\n";
 		}
@@ -199,8 +201,7 @@ function plugin_bugtrack_action()
 		$post['name'], $post['priority'], $post['state'], $post['category'],
 		$post['version'], $post['body']);
 
-	pkwk_headers_sent();
-	header('Location: ' . get_page_location_uri($page));
+	Utility::redirect(get_page_location_uri($page));
 	exit;
 }
 
@@ -225,16 +226,17 @@ function plugin_bugtrack_write($base, $pagename, $summary, $name, $priority, $st
 	while (is_page($page))
 		$page = $base . '/' . sprintf(PLUGIN_BUGTRACK_NUMBER_FORMAT, ++$id);
 
-	if ($pagename == '') {
-		page_write($page, $postdata);
+	if (empty($pagename)) {
+		Factory::Wiki($page)->set($postdata);
 	} else {
-		$pagename = get_fullname($pagename, $base);
-		if (is_page($pagename) || ! is_pagename($pagename)) {
+		$pagename = Utility::getPageName($pagename, $base);
+		$wiki = Factory::Wiki($page);
+		if ($wiki->isValied()) {
 			$pagename = $page; // Set default
 		} else {
-			page_write($page, 'move to [[' . $pagename . ']]');
+			$wiki->set('move to [[' . $pagename . ']]');
 		}
-		page_write($pagename, $postdata);
+		Factory::Wiki($pagename)->set($postdata);
 	}
 
 	return $page;
@@ -254,7 +256,7 @@ function plugin_bugtrack_template($base, $summary, $name, $priority, $state, $ca
 
 	 return <<<EOD
 #navi(../)
-*$summary
+* $summary
 
 - ${_plugin_bugtrack['base'    ]}: $base
 - ${_plugin_bugtrack['name'    ]}: $name

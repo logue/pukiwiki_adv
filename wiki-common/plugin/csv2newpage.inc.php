@@ -14,7 +14,9 @@
 */
 
 use PukiWiki\Auth\Auth;
+use PukiWiki\Factory;
 use PukiWiki\Config\Config;
+use PukiWiki\Utility;
 use PukiWiki\Renderer\RendererFactory;
 
 // 管理者だけが添付ファイルをアップロードできるようにする
@@ -70,7 +72,7 @@ function plugin_csv2newpage_convert()
 
 	$config = new Config('plugin/tracker/'.$config_name);
 	if (!$config->read()) {
-		return "<p>config file '".htmlsc($config_name)."' not found.</p>";
+		return "<p>config file '".Utility::htmlsc($config_name)."' not found.</p>";
 	}
 	$config->config_name = $config_name;
 
@@ -84,14 +86,14 @@ function plugin_csv2newpage_convert()
 	$ct = 0;
 	foreach ( $args as $name ) {
 		$ct ++;
-		$s_name = htmlsc($name);
+		$s_name = Utility::htmlsc($name);
 		$retval .= '<input type="hidden" name="csv_field' . $ct . '" value="' . $s_name . '" />'."\n";
 	}
 
-	$s_title  = htmlsc($_csv2newpage_messages['btn_submit']);
-	$s_page   = htmlsc($page);
-	$s_config = htmlsc($config->config_name);
-	$s_text   = htmlsc($_csv2newpage_messages['title_text']);
+	$s_title  = Utility::htmlsc($_csv2newpage_messages['btn_submit']);
+	$s_page   = Utility::htmlsc($page);
+	$s_config = Utility::htmlsc($config->config_name);
+	$s_text   = Utility::htmlsc($_csv2newpage_messages['title_text']);
 
 	$retval .=<<<EOD
 <input type="hidden" name="cmd" value="csv2newpage" />
@@ -229,39 +231,39 @@ function plugin_csv2newpage_from_page($refer)
 	global $vars;
 
 	$csv2newpage_no = (empty($vars['_csv2newpage_no'])) ? 0 : $vars['_csv2newpage_no'];
-	$postdata_old = get_source($refer);
+	$wiki = Factory::Wiki($refer);
 	$postdata = '';
 	$csvlines = array();
 	$csv2newpage_ct = 0;
 	$target_flag = 0;
 
-	foreach ( $postdata_old as $line ) {
+	foreach ( $wiki->get() as $line ) {
 		$found_plugin = preg_match('/^#csv2newpage/',$line);
 		if ( $found_plugin and $csv2newpage_ct++ == $csv2newpage_no ) {
 			$target_flag = 1;
-			$postdata .= $line;
+			$postdata[] = $line;
 			continue;
 		}
 		if ( $target_flag != 1 ) {
-			$postdata .= $line;
+			$postdata[] = $line;
 			continue;
 		}
 		$topchar = substr($line,0,1);
 		if ( trim($line) == '' || $found_plugin ) {
 			$target_flag = 2;
-			$postdata .= $line;
+			$postdata[] = $line;
 			continue;
 		}
 		else if (  $topchar != ',' && $topchar != ' ' ){
-			$postdata .= $line;
+			$postdata[] = $line;
 			continue;
 		}
-  		$postdata .= '//' . $line;
+  		$postdata[] = '//' . $line;
 		$csvlines[] = substr($line,1);
 	}
 
 	// 書き込み
-	page_write($refer,$postdata);
+	$wiki->set($postdata);
 	return $csvlines;
 }
 
@@ -328,10 +330,11 @@ function plugin_csv2newpage_write($ary,$base,$postdata,$config)
 		$real = is_pagename($name) ? $name : ++$num;
 		$page = get_fullname('./'.$real,$base);
 	}
+	
 
-	if (!is_pagename($page)) $page = $base;
+	if (!Factory::Wiki($page)->isValied()) $page = $base;
 
-	while (is_page($page)) {
+	while (Factory::Wiki($page)->isValied()) {
 		$real = ++$num;
 		$page = $base.'/'.$real;
 	}
@@ -358,7 +361,7 @@ function plugin_csv2newpage_write($ary,$base,$postdata,$config)
 		$postdata = str_replace('['.$key.']', $val, $postdata);
 	}
 	// 書き込み
-	page_write($page,$postdata);
+	Factory::Wiki($page)->set($postdata);
 	return $page;
 }
 

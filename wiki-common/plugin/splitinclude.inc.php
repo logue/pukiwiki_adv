@@ -10,6 +10,8 @@
  ページをインクルードする(分割を有効にする)
 */
 
+use PukiWiki\Factory;
+
 function plugin_splitinclude_convert()
 {
 	global $vars,$get,$post;
@@ -39,14 +41,12 @@ function plugin_splitinclude_convert()
 		
 		$_page = $vars['page'];
 		$get['page'] = $post['page'] = $vars['page'] = $page;
+                
+                $wiki = Factory::Wiki($page);
 		
 		// splitincludeのときは、認証画面をいちいち出さず、後始末もこちらでつける
-		if (check_readable($page, false, false)) {
-			if (function_exists('convert_filter')) {
-				$body = convert_html(convert_filter(get_source($page)));
-			} else {
-				$body = convert_html(get_source($page));
-			}
+		if ($wiki->isReadable()) {
+                        $body = $wiki->render();
 		} else {
 			$body = str_replace('$1',$page,$_msg_splitinclude_restrict);
 		}

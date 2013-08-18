@@ -3,6 +3,8 @@
 // table_edit2.inc.php, 3.1+calc0.6+func0.3 2009/11/19 taru        plugin
 // Modified by PukiWiki Adv. Team 2012
 use PukiWiki\Auth\Auth;
+use PukiWiki\Factory;
+use PukiWiki\Utility;
 
 define('PLUGIN_TABLE_EDIT2_TEXT_SIZE',  58);
 define('PLUGIN_TABLE_EDIT2_TEXTAREA_ROWS_LINE',  4);		// textarea
@@ -132,7 +134,6 @@ function plugin_table_edit2_convert()
 	
 	$table_header = 0;
 	
-
 	foreach ($args as $args_line) {
 
 		$table_f_chose = (preg_match('/^\|(.+)\|([hHfFcC]?)$/', $args_line, $matches)) ? 1 : 0;
@@ -539,7 +540,7 @@ class TableEdit2Indicate
 		$ret = array();
 		$ret[] = '<div style="float:right;" id="TableEdit2TableNumber' . $this->count . '">';
 		$ret[] = '<a href="' . 
-			get_cmd_uri('table_edit2', null, null , array('refer'=>$this->page, 'table_mod'=>$table_mod, 'table_num'=>$this->count)) . 
+			get_cmd_uri('table_edit2', null, null , array('refer'=>$this->page, 'table_mod'=>$table_mod, 'table_num'=>$this->count, 'encode_hint'=>PKWK_ENCODING_HINT)) . 
 				'" class="button" nofollow="nofollow" data-text="false" data-ajax="false" data-icons-primary="ui-icon-' . $table_mod . 'ed">' . $button_name[$table_mod] . '</a>';
 		$ret[] = $this->set_csv;
 		$ret[] = '</div>';
@@ -1130,7 +1131,7 @@ function plugin_table_edit2_action()
 		 $spam = plugin_table_edit2_spam($post['encode_hint']);
 	if ($spam) return plugin_table_edit2_honeypot();
 
-	if (! class_exists('auth')) { table_edit2_auth(); }
+	if (! class_exists('Auth')) { table_edit2_auth(); }
 	if (Auth::check_role('readonly')) die_message('PKWK_READONLY prohibits editing');
 
 	if ( PLUGIN_TABLE_EDIT2_HTTP_REFERER ) {
@@ -1181,10 +1182,11 @@ function plugin_table_edit2_action()
 	if ( isset($vars['table_mod']) ) $chg = new TableEdit2TableMod($vars['table_mod']);
 	if ( $td_edit || $tr_edit ) $edit = new TableEdit2Edit( $vars );
 	if ( $edit_show ) $show = new TableEdit2Show( $vars, $page );
+	
+	$wiki = Factory::Wiki($page);
 
-	$args  = get_source($page);
 	static $count = 0;
-	$source_s = '';
+	$source_s = array();
 	$body = '';
 	$row_title = 0;
 	$td_title_count = 0;
@@ -1192,7 +1194,7 @@ function plugin_table_edit2_action()
 	if( $td_edit || $tr_edit || $setting || $import)
 		$notimestamp = (isset($vars['notimestamp'])) ? TRUE : FALSE;
 
-	foreach ($args as $args_key => $args_line) {
+	foreach ($wiki->get() as $args_key => $args_line) {
 
 		if (preg_match('/^#([^\(\{]+)(?:\(([^\r]*)\))?(\{*)/', $args_line, $matches) !== FALSE){
 			if (isset($matches[1]) && ($matches[1] == 'table_edit2' || $matches[1] == "table_edit2\n") ) {
@@ -1208,7 +1210,7 @@ function plugin_table_edit2_action()
 							}
 						}
 					} else {
-						check_editable($page, true, true);
+						$wiki->checkEditable();
 					}
 
 					if( $setting ) $args_line = $set->plugin_set_opt($matches[3]);
@@ -1278,16 +1280,16 @@ function plugin_table_edit2_action()
 
 				if ( $td_edit && $table_sub_num_chk == 0 && $table_sub_num == $vars['table_sub_num'])
 				{
-					$source_s .= $edit->td_edit( $match_t ) . $match_line[2] . "\n";
+					$source_s[] = $edit->td_edit( $match_t ) . $match_line[2];
 					$table_sub_num_count_chk = 1;
 
 				} else if (isset($vars['line_count']) && $vars['line_count'] == $line_count && ! $td_edit) {
 					if( $tr_edit ) {				//t_edit tr_add
 						if (isset($vars['add_show']) && $vars['add_show'] === 1) {
-							$source_s .= $args_line;
+							$source_s[] = $args_line;
 							if ( $edit->chose !== 2 ) $edit->chk_csv_source($args, $args_key);
 						}
-						$source_s .= $edit->tr_edit($args_line, $match_t, $match_line[2]);
+						$source_s[] = $edit->tr_edit($args_line, $match_t, $match_line[2]);
 
 					} else if( $edit_show ){		//show or tdshow
 						$show->line_count = $line_count;
@@ -1299,7 +1301,7 @@ function plugin_table_edit2_action()
 						$show->cells[$line_count] = $match_t;
 
 					$table_sub_num_count_chk = 1;			//td06.09.18
-					$source_s .= $args_line;
+					$source_s[] = $args_line;
 				}
 				$line_count++;
 			} else {
@@ -1307,10 +1309,10 @@ function plugin_table_edit2_action()
 					$table_sub_num++;
 					$table_sub_num_count_chk = 0;
 				}
-				$source_s .= $args_line;
+				$source_s[] = $args_line;
 			}
 		} else {
-			$source_s .= $args_line;
+			$source_s[] = $args_line;
 		}
 	}
 
@@ -1318,7 +1320,7 @@ function plugin_table_edit2_action()
 
 	$collision = 0;
 	if ($tr_edit || $td_edit) {
-		if (md5(get_source($vars['refer'], TRUE, TRUE)) != $vars['digest']) {
+		if (Factory($vars['refer'])->digest() !== $vars['digest']) {
 			global $_string, $_title;
 			$title =  $_title['collided'];
 			$body  =  $_string['msg_collided_auto']
@@ -1328,7 +1330,7 @@ function plugin_table_edit2_action()
 	}
 
 	if ($tr_edit || $td_edit || isset($vars['table_mod']) || $setting || $import || $csv_cancel || isset($set_csv) )
-		page_write($page, $source_s, $notimestamp);
+		$wiki->set($source_s, $notimestamp);
 
 	$get['page'] = $post['page'] = $vars['page'] = $page;
 
@@ -1337,7 +1339,7 @@ function plugin_table_edit2_action()
 	if ( $edit_show ) return array('msg'=>$show->title, 'body'=>$body);
 
 	//header('Location: ' . $script_uri . '?' . rawurlencode($page) . $anchr_jump);
-	header('Location: ' . get_page_uri($page) . $anchr_jump);
+	Utility::redirect( $wiki->uri() . $anchr_jump);
 	exit;
 }
 class TableEdit2TableMod
@@ -1346,7 +1348,7 @@ class TableEdit2TableMod
 	var $search_r = array ();
 	var $replace_r = array ();
 
-	function TableEdit2TableMod($mod)
+	function __construct($mod)
 	{
 		$this->table_mod = $mod;
 		if ($this->table_mod == 'lock'){
@@ -1374,7 +1376,7 @@ class TableEdit2SettingWrite
 	var $error = array();
 	var $table_data = '';
 
-	function TableEdit2SettingWrite($opt)
+	function __construct($opt)
 	{
 		$this->sc = 0;
 		$s_opt = array();
@@ -1436,7 +1438,7 @@ class TableEdit2Edit
 	var $notimestamp = FALSE;
 	var $chose;
 
-	function TableEdit2Edit($post_opt)
+	function __construct($post_opt)
 	{
 		$this->opt = $post_opt;
 	}
@@ -1947,7 +1949,7 @@ class TableEdit2CsvConversion
 	var $join_line = '';
 	var $list_csv = array();
 
-	function TableEdit2CsvConversion($page, $file, $csv_char = 'SJIS', $csv_mod)
+	function __construct($page, $file, $csv_char = 'SJIS', $csv_mod)
 	{
 		$this->csv_mod = $csv_mod;
 		if ($csv_mod == 'import') {

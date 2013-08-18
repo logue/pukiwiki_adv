@@ -21,7 +21,7 @@ use PukiWiki\Utility;
  */
 class PluginVotex
 {
-	function PluginVotex()
+	function __construct()
 	{
 		// static
 		static $CONF = array();
@@ -76,6 +76,7 @@ class PluginVotex
 		$vote_id	  = $vars['vote_id'];
 		$vars['page'] = $page;
 		$choice_id	= $vars['choice_id'];
+		$wiki = Factory::Wiki($page);
 
 		if ($this->is_continuous_vote($page, $pcmd, $vote_id)) {
 			return array(
@@ -85,31 +86,30 @@ class PluginVotex
 		}
 
 		// parse contents of wiki page and get update
-		$lines = get_source($page);
+		$lines = $wiki->get();
 		list($linenum, $newline, $newtext, $newvotes) = $this->get_update_inline($lines, $vote_id, $choice_id);
 		if ($linenum === false) {
-			die_message(T_('There was no matching vote. '));
+			Utility::dieMessage(T_('There was no matching vote. '));
 		}
 		$newlines = $lines;
 		$newlines[$linenum] = $newline;
 		$newcontents = implode('', $newlines);
 
 		// collision check
-		$contents = implode('', $lines);
-		if (md5($contents) !== $vars['digest']) {
+		if ($wiki->digest() !== $vars['digest']) {
 			$msg  = $_string['title_collided'];
 			$body = $this->show_preview_form($_string['msg_collided'], $newline);
 			return array('msg'=>$msg, 'body'=>$body);
 		}
 
-		page_write($page, $newcontents, TRUE); // notimestamp
+		$wiki->set($newcontents, TRUE); // notimestamp
 		$this->update_recent_voted($page, $pcmd, $vote_id, $choice_id, $newvotes);
 		//static in convert() was somehow wierd if return(msg=>'',body=>'');
 		//$msg  = $_string['updated'];
 		//$body = '';
 		//return array('msg'=>$msg, 'body'=>$body);
 		$anchor = $this->get_anchor($pcmd, $vote_id);
-		header('Location: ' . get_script_uri() . '?' . rawurlencode($page) . '#' . $anchor);
+		Utility::redirect($wiki->uri() . '#' . $anchor);
 		exit;
 	}
 
@@ -141,7 +141,8 @@ class PluginVotex
 		}
 
 		// parse contents of wiki page and get update
-		$lines = get_source($page);
+		$wiki = Factory::Wiki($page);
+		$lines = $wiki->get();
 		list($linenum, $newline, $newtext, $newvotes) = $this->get_update_convert($lines, $vote_id, $choice_id, $addchoice);
 		if ($linenum === false) {
 			die_message(T_('There was no matching vote. '));
@@ -152,13 +153,13 @@ class PluginVotex
 
 		// collision check
 		$contents = implode('', $lines);
-		if (md5($contents) !== $vars['digest']) {
+		if ($wiki->digest() !== $vars['digest']) {
 			$msg  = $_string['title_collided'];
 			$body = $this->show_preview_form($_string['msg_collided'], $newline);
 			return array('msg'=>$msg, 'body'=>$body);
 		}
 
-		page_write($page, $newcontents, TRUE); // notimestamp
+		$wiki->set($newcontents, TRUE); // notimestamp
 		if (isset($addchoice)) $choice_id = count($newvotes) - 1; // to make sure
 		$this->update_recent_voted($page, $pcmd, $vote_id, $choice_id, $newvotes);
 		//static in convert() was somehow wierd if return(msg=>'',body=>'');
@@ -166,7 +167,7 @@ class PluginVotex
 		//$body = '';
 		//return array('msg'=>$msg, 'body'=>$body);
 		$anchor = $this->get_anchor($pcmd, $vote_id);
-		header('Location: ' . get_script_uri() . '?' . rawurlencode($page) . '#' . $anchor);
+		Utility::redirect($wiki->uri() . '#' . $anchor);
 		exit;
 	}
 
@@ -298,7 +299,8 @@ class PluginVotex
 		$time = UTIME;
 
 		// RecentVoted
-		$lines = get_source($this->CONF['RECENT_PAGE']);
+		$wiki = Factory::Wiki($this->CONF['RECENT_PAGE']);
+		$lines = $wiki->get();
 		$anchor  = $this->get_anchor($pcmd, $vote_id);
 		$args = array();
 		foreach ($votes as $vote) {
@@ -315,7 +317,7 @@ class PluginVotex
 			"\n";
 		array_unshift($lines, $addline);
 		$lines = array_splice($lines, 0, $limit);
-		page_write($this->CONF['RECENT_PAGE'], implode('', $lines));
+		$wiki->set(implode('', $lines));
 
 		// recentvoted.dat (serialization)
 		if (is_readable($this->CONF['RECENT_LOG'])) {

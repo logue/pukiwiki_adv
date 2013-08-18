@@ -22,6 +22,8 @@
  * notile  タイトルの入力項目が表示されません。
  */
 use PukiWiki\Auth\Auth;
+use PukiWiki\Factory;
+use PukiWiki\Utility;
 /////////////////////////////////////////////////
 // URLテキストエリアのカラム数
 defined('URLBOOKMARK_URL_COLS') or define('URLBOOKMARK_URL_COLS',30);
@@ -95,41 +97,41 @@ function plugin_urlbookmark_action()
 	$urlbookmark = str_replace("\x08NOW\x08", $_now, $urlbookmark);
 	$urlbookmark = $head.$urlbookmark;
 	
-	$postdata = '';
-	$postdata_old  = get_source($post['refer']);
+	$postdata = array();
+	$wiki = Factory::Wiki($post['refer']);
 	$urlbookmark_no = 0;
 	$urlbookmark_ins = ($post['above'] == '1');
 	
-	foreach ($postdata_old as $line)
+	foreach ($wiki->get() as $line)
 	{
 		if (!$urlbookmark_ins)
 		{
-			$postdata .= $line;
+			$postdata[] = $line;
 		}
 		if (preg_match('/^#urlbookmark/',$line) and $urlbookmark_no++ == $post['urlbookmark_no'])
 		{
-			$postdata = rtrim($postdata)."\n-$urlbookmark\n";
+			$postdata[] = rtrim($postdata);
+			$postdata[] = '-' . $urlbookmark;
 			if ($urlbookmark_ins)
 			{
-				$postdata .= "\n";
+				$postdata[] = '';
 			}
 		}
 		if ($urlbookmark_ins)
 		{
-			$postdata .= $line;
+			$postdata[] = $line;
 		}
 	}
-	
-	$title = _(" $1 was updated");
+	$title = T_(" $1 was updated");
 	$body = '';
-	if (md5(@join('',get_source($post['refer']))) != $post['digest'])
+	if ($wiki->digest() != $post['digest'])
 	{
 		$title = $_string['title_collided'];
 		$body  = $_string['msg_collided'] .
 			 make_pagelink($post['refer']);
 	}
 	
-	page_write($post['refer'],$postdata);
+	$wiki->set($postdata);
 	
 	$retvars['msg'] = $title;
 	$retvars['body'] = $body;

@@ -265,6 +265,7 @@ $cache = array(
 		'adapter'=>array(
 			'name'=>'Filesystem',
 			'options'=>array(
+				'namespace' => 'raw',
 				'cache_dir'=>CACHE_DIR
 			)
 		)
@@ -367,7 +368,7 @@ foreach (Utility::loadConfig('profile.ini.php') as $agent) {
 unset($matches);
 //var_dump($user_agent);
 // Profile-related init and setting
-$ua_file = Utility::add_homedir($user_agent['profile'].'ini.php');
+$ua_file = Utility::add_homedir($user_agent['profile'].'.ini.php');
 if ($ua_file){
 	require($ua_file);
 }
