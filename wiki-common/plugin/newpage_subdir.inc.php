@@ -8,6 +8,10 @@
 // @based_on ls2.inc.php
 // @thanks to panda (auther of newpage.inc.php/ls2.inc.php)
 use PukiWiki\Auth\Auth;
+use PukiWiki\Factory;
+use PukiWiki\Router;
+use PukiWiki\Utility;
+
 function build_directory_list($roots, $option=array())
 {
 	global $WikiName,$BracketName;
@@ -54,20 +58,20 @@ function print_form_string( $list )
 {
 	global $vars;
 
-	$form_string[] = '<form action="'. get_script_uri() .'" method="post">';
+	$form_string[] = '<form action="'. Router::get_script_uri() .'" method="post">';
 	$form_string[] = '<fieldset>';
 	$form_string[] = '<legend>'.T_('Page name') . '</legend>';
 
 	if($list['directory']) {
 		$form_string[] = '<select name="directory">';
 		foreach( $list['directory'] as $dir ) {
-			$form_string[] = '<option>'.htmlsc($dir).'/</option>';
+			$form_string[] = '<option>'.Utility::htmlsc($dir).'/</option>';
 		}
 		$form_string[] = '</select>';
 	}
 
 	$form_string[] = '<input type="hidden" name="cmd" value="newpage_subdir" />';
-	$form_string[] = '<input type="hidden" name="refer" value="'.$vars['page'].'" />';
+	$form_string[] = isset($vars['page']) ? '<input type="hidden" name="refer" value="'.$vars['page'].'" />' : null;
 	$form_string[] = '<input type="text" name="page" size="30" value="" />';
 	$form_string[] = '<input type="submit" value="' . T_('New') . '" />';
 	$form_string[] = '</fieldset>';

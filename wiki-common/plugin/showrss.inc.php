@@ -70,7 +70,7 @@ function plugin_showrss_convert()
 
 	$argv = func_get_args();
 	$timestamp = FALSE;
-	$cachehour = 0;
+	$cachehour = 12;
 	$template = $uri = '';
 	switch ($num) {
 	case 4: $timestamp = (trim($argv[3]) == '1');	/*FALLTHROUGH*/
@@ -286,7 +286,7 @@ class ShowRSS_html_recent extends ShowRSS_html
 }
 
 // Get and save RSS
-function plugin_showrss_get_rss($target, $cachehour, $raw = false)
+function plugin_showrss_get_rss($target, $cachehour = 12, $raw = false)
 {
 	global $cache;
 	$time = UTIME;
@@ -298,7 +298,8 @@ function plugin_showrss_get_rss($target, $cachehour, $raw = false)
 		$time = $cache_meta['mtime'];	// キャッシュの時刻
 	}
 
-	if (UTIME - $time <= $cachehour * 360){
+	if (UTIME - $time >= $cachehour * 360){
+		$cache['raw']->removeItem($cache_name);
 		// キャッシュが有効期限を過ぎてた場合
 		try{
 			// file_get_contentsでException飛ばすメモ

@@ -12,6 +12,7 @@
  */
 use PukiWiki\Auth\Auth;
 use PukiWiki\Utility;
+use PukiWiki\Renderer\InlineFactory;
 /**
  *  votex plugin class
  *
@@ -650,8 +651,8 @@ class PluginVotex
 		foreach ($votes as $choice_id => $vote) {
 			list($choice, $count) = $vote;
 			$form[] = '<tr>' . "\n";
-			$form[] = '<td class="style_td vote_choise_td">' . make_link($choice) . '</td>';
-			$form[] = '<td class="style_td vote_count_td"><var>'  . htmlsc($count) . '</var></td>';
+			$form[] = '<td class="style_td vote_choise_td">' . InlineFactory::factory($choice) . '</td>';
+			$form[] = '<td class="style_td vote_count_td"><var>'  . Utility::htmlsc($count) . '</var></td>';
 			$form[] = ($this->options['readonly']) ? null : '<td class="style_td vote_form_td"><input type="submit" name="' . $this->encode_choice($choice_id) . '" value="' . T_('Vote') . '" /></td>';
 			$form[] = '</tr>';
 		}

@@ -98,10 +98,9 @@ function plugin_ls2_show_lists($prefix, & $params)
 {
 //	global $_ls2_err_nopages;
 
-	$all = Listing::pages('wiki');
 	$pages = array();
 	
-	foreach ($all as $page){
+	foreach (Listing::pages('wiki') as $page){
 		if (!Factory::Wiki($page)->isReadable() ) continue;
 		if ( !empty($prefix) && strpos($page, $prefix) === false) continue;
 		$pages[] = $page;

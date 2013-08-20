@@ -8,6 +8,7 @@
 use PukiWiki\Recent;
 use PukiWiki\Factory;
 use PukiWiki\Renderer\Header;
+use PukiWiki\Renderer\RendererFactory;
 
 // View Description Letters
 define('MIXIRSS_DESCRIPTION_LENGTH', 256);
@@ -22,7 +23,7 @@ defined('FOAF')	or define('FOAF', IMAGE_URI.'social/foaf.png');
 
 function plugin_mixirss_action()
 {
-	global $vars, $get, $post, $rss_max, $rss_description, $page_title, $whatsnew, $trackback;
+	global $vars, $get, $post, $rss_max, $rss_description, $page_title, $whatsnew;
 	global $modifier;
 	global $exclude_plugin;
 	global $memcache;
@@ -100,9 +101,7 @@ EOD;
  <link>$url{$sharp}{$matches[3]}</link>
  <dc:date>$date</dc:date>
  <dc:identifier>$url{$sharp}{$matches[3]}</dc:identifier>
-$trackback_ping
 </item>
-
 EOD;
 					} else if (preg_match('/^(\-{1,3})(.*)$/m', $line, $matches)) {
 						$anchortitle = strip_htmltag(RendererFactory::factory($matches[2]));

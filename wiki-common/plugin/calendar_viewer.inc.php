@@ -245,7 +245,7 @@ function plugin_calendar_viewer_convert()
 				$mm = intval(date('n', $time));
 				$dd = intval(date('d', $time));
 
-				$h_today = PublicHolidayFactory::Wiki('JP', $yy, $mm, $dd); 
+				$h_today = PublicHolidayFactory::factory('JP', $yy, $mm, $dd); 
 				
 				
 				if ($h_today['rc'] != 0) {

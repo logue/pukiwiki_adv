@@ -578,7 +578,7 @@ function pkwk_mail_notify($subject, $message, $summary = array(), $summary_posit
 // Hyperlink decoration
 function make_link($string, $page = '')
 {
-	return InlineFactory::Wiki($string, $page);
+	return InlineFactory::factory($string, $page);
 }
 
 
