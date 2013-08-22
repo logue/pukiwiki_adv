@@ -101,7 +101,7 @@ function plugin_xbel_convert()
 <form action="$script" method="post">
 	<input type="hidden" name="cmd" value="xbel" />
 	<input type="hidden" name="adm" value="list" />
-	<table summary="xebel" class="style_table">
+	<table summary="xebel" class="table table-bordered">
 		<caption>{$_xbel_msg['msg_text']}</caption>
 EOD;
 

@@ -94,9 +94,9 @@ function plugin_ref_convert()
 			$s_margin_align = ';margin-' . Utility::htmlsc($params['_align']) . ':0px';
 		}
 		$params['_body'] = <<<EOD
-<table class="style_table" style="margin:$s_margin$s_margin_align">
+<table class="table table-bordered" style="margin:$s_margin$s_margin_align">
  <tr>
-  <td class="style_td">{$params['_body']}</td>
+  <td>{$params['_body']}</td>
  </tr>
 </table>
 EOD;

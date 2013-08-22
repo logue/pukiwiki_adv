@@ -313,12 +313,12 @@ function plugin_bugtrack_list_convert()
 
 		$row = <<<EOD
 	<tr>
-		<td class="style_td" style="background-color:$bgcolor">$page_link</td>
-		<td class="style_td" style="background-color:$bgcolor">$state</td>
-		<td class="style_td" style="background-color:$bgcolor">$priority</td>
-		<td class="style_td" style="background-color:$bgcolor">$category</td>
-		<td class="style_td" style="background-color:$bgcolor">$name</td>
-		<td class="style_td" style="background-color:$bgcolor">$summary</td>
+		<td style="background-color:$bgcolor">$page_link</td>
+		<td style="background-color:$bgcolor">$state</td>
+		<td style="background-color:$bgcolor">$priority</td>
+		<td style="background-color:$bgcolor">$category</td>
+		<td style="background-color:$bgcolor">$name</td>
+		<td style="background-color:$bgcolor">$summary</td>
 	</tr>
 EOD;
 		$table[$state_no][$no] = $row;
@@ -327,7 +327,7 @@ EOD;
 	$table_html = '<thead>' . "\n" . '	<tr>'. "\n";
 	$bgcolor = htmlsc($_plugin_bugtrack['header_bgcolor']);
 	foreach (array('pagename', 'state', 'priority', 'category', 'name', 'summary') as $item)
-		$table_html .= '  <th class="style_th" style="background-color:' . $bgcolor . '">' .
+		$table_html .= '  <th style="background-color:' . $bgcolor . '">' .
 			htmlsc($_plugin_bugtrack[$item]) . '</th>' . "\n";
 	$table_html .= '	</tr>' . "\n" . '</thead>' ."\n" . '<tbody>' . "\n";
 
@@ -338,7 +338,7 @@ EOD;
 
 	$table_html .= '</tbody>'."\n";
 
-	return '<table class="style_table">' . "\n" .
+	return '<table class="table">' . "\n" .
 		$table_html . "\n" .
 		'</table>';
 }

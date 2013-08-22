@@ -209,32 +209,29 @@ input[type="search"]:focus, input[type="search"]:hover {
 }
 
 /* Table Tags */
-thead .style_td,
-tfoot .style_td {
-	background-color:#D0D8E0;
-}
-thead .style_th,
-tfoot .style_th {
-	background-color:#E0E8F0;
-}
-
-.style_table{
+.table{
 	background-color:#ccd5dd;
-	text-shadow: none;
 }
-
-.style_th{
+.table th{
 	background-color:#EEEEEE;
 }
-
-.style_td{
+.table td{
 	background-color:#EEF5FF;
 }
-
-.style_td_blank{
+.table td.blank{
 	background-color:#E3EAF6;
 }
-
+.table tr:nth-child(even) td{
+	background-color:#EFf5ff;
+}
+.table thead td,
+.table tfoot td {
+	background-color:#D0D8E0;
+}
+.table thead th,
+.table tfoot th {
+	background-color:#E0E8F0;
+}
 
 /* html.php/catbody() */
 .word0 {

@@ -108,13 +108,13 @@ function plugin_attachref_convert()
 			$dispattach = 1;
 		} else {
 			// start --- copy of plugin_ref_convert()
-			if ((PLUGIN_ATTACHREF_WRAP_TABLE && ! $params['nowrap']) || $params['wrap']) {
+			if ((PLUGIN_ATTACHREF_WRAP_TABLE && ! isset($params['nowrap'])) || isset($params['wrap'])) {
 				$margin = ($params['around'] ? '0px' : 'auto');
 				$margin_align = ($params['_align'] == 'center') ? '' : ';margin-' . $params['_align'] . ':0px';
 				$params['_body'] = <<<EOD
-<table class="style_table" style="margin:$margin$margin_align">
+<table style="margin:$margin$margin_align">
 	<tr>
-		<td class="style_td">{$params['_body']}</td>
+		<td>{$params['_body']}</td>
 	</tr>
 </table>
 EOD;

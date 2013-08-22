@@ -20,53 +20,54 @@ header('Last-Modified: '.gmdate('D, d M Y H:i:s', getlastmod() ) . ' GMT');
 @namespace url(http://www.w3.org/1999/xhtml);
 
 /* HTML5 ✰ Boilerplate */
-/*! normalize.css v2.1.0 | MIT License | git.io/normalize */
+/*! normalize.css v2.1.2 | MIT License | git.io/normalize */
 article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section,summary{display:block}
 audio,canvas,video{display:inline-block}
 audio:not([controls]){display:none;height:0}
 [hidden]{display:none}
-html{font-family:sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
+html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}
+body{margin:0}
 a:focus{outline:thin dotted}
 a:active,a:hover{outline:0}
 h1{font-size:2em;margin:.67em 0}
 abbr[title]{border-bottom:1px dotted}
-b,strong{font-weight:700}
+b,strong{font-weight:bold}
 dfn{font-style:italic}
 hr{-moz-box-sizing:content-box;box-sizing:content-box;height:0}
 mark{background:#ff0;color:#000}
-code,kbd,pre,samp{font-family:monospace, serif;font-size:1em}
+code,kbd,pre,samp{font-family:monospace,serif;font-size:1em}
 pre{white-space:pre-wrap}
-q{quotes:\201C \201D \2018 \2019}
+q{quotes:"\201C" "\201D" "\2018" "\2019"}
 small{font-size:80%}
 sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}
-sup{top:-.5em}
-sub{bottom:-.25em}
+sup{top:-0.5em}
+sub{bottom:-0.25em}
 img{border:0}
 svg:not(:root){overflow:hidden}
+figure{margin:0}
 fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}
+legend{border:0;padding:0}
 button,input,select,textarea{font-family:inherit;font-size:100%;margin:0}
 button,input{line-height:normal}
 button,select{text-transform:none}
-button,html input[type=button],/* 1 */
-input[type=reset],input[type=submit]{-webkit-appearance:button;cursor:pointer}
+button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer}
 button[disabled],html input[disabled]{cursor:default}
-input[type=checkbox],input[type=radio]{box-sizing:border-box;padding:0}
-input[type=search]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}
-input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-search-decoration{-webkit-appearance:none}
-textarea{overflow:auto;vertical-align:top}
-table{border-collapse:collapse;border-spacing:0}
-body,figure{margin:0}
-legend,button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
+input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0}
+input[type="search"]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}
+input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance:none}
+button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
+textarea{overflow:auto;vertical-align:top}table{border-collapse:collapse;border-spacing:0}
 
 /* ==|== HTML5 Boilerplate styles - h5bp.com ================================ */
 html,button,input,select,textarea{color:#222}
 body{font-size:13px;line-height:1.4}
+::-moz-selection{background:#b3d4fc;text-shadow:none}
+::selection{background:#b3d4fc;text-shadow:none}
 hr{display:block;height:1px;border:0;border-top:1px solid #ccc;margin:1em 0;padding:0}
-img{vertical-align:middle}
+audio,canvas,img,video{vertical-align:middle}
 fieldset{border:0;margin:0;padding:0}
 textarea{resize:vertical}
-.chromeframe{background:#ccc;color:#000;margin:.2em 0;padding:.2em 0}
-::-moz-selection,::selection{background:#b3d4fc;text-shadow:none}
+.browsehappy{margin:.2em 0;background:#ccc;color:#000;padding:.2em 0}
 
 /* ==|== PukiWiki Advance Standard Font Set ================================= */
 
@@ -156,7 +157,7 @@ a img {
 	text-align: center;
 	width: 100%;
 }
-.style_table{
+.table{
 	border-spacing:2px;
 	padding: 0;
 	border: 0;
@@ -166,35 +167,36 @@ a img {
 	background-color: darkgray;
 	min-width:30%;
 }
-.style_table_center{
+.table_center{
 	margin: 0 auto;
 }
-.style_table_left{
+.table_left{
 	margin:auto auto auto 0;
 }
-.style_table_right{
+.table_right{
 	margin:auto 0 auto auto;
 }
-.style_th{
+.table th{
 	background-color: silver;
 	padding: 5px;
 	margin: 1px;
 	white-space: nowrap;
 	text-align: center;
 }
-.style_td{
-	background-color: whitesmoke;
+.table td{
 	padding: 5px;
 	margin: 1px;
 	vertical-align: top;
 }
-.style_td_blank{
+.table td.blank-cell{
 	background-color: lightgrey;
 }
-.style_table tr:nth-child(even) .style_td{
+.table tr:nth-child(even) td{
+	 background-color:white;
+}
+.table tr:nth-child(odd) td{
 	 background-color:whitesmoke;
 }
-
 /* Week and Month */
 .style_week, .style_month{
 	border: none !important;

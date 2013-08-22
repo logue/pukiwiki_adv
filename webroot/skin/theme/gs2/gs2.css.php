@@ -101,30 +101,25 @@ input[type='search'], textarea, select {
 	border: 1px solid <?php echo SKIN_CSS_BOX_BDCOLOR; ?>;
 }
 
-.style_table{
-	background-color:<?php echo SKIN_CSS_BGCOLOR; ?>;
-}
-
-thead td.style_td,
-tfoot td.style_td {
-	background-color:<?php echo SKIN_CSS_BGCOLOR; ?>;
-}
-thead th.style_th,
-tfoot th.style_th {
-	background-color:<?php echo SKIN_CSS_BOX_BGCOLOR; ?>;
-}
-.style_table {
+.table {
 	background-color:<?php echo SKIN_CSS_BOX_BDCOLOR; ?>;
 }
-.style_th{
+.table th{
 	background-color:<?php echo SKIN_CSS_BGCOLOR; ?>;
 }
-.style_td, .style_td_blank{
+.table td{
 	background-color:<?php echo SKIN_CSS_CTS_BGCOLOR; ?>;
 }
-
-.style_table tr:nth-child(even) .style_td{
-	 background-color:<?php echo SKIN_CSS_CTS_BGCOLOR2; ?>;
+.table tr:nth-child(even) td{
+	background-color:<?php echo SKIN_CSS_CTS_BGCOLOR2; ?>;
+}
+.table thead td,
+.table tfoot td {
+	background-color:<?php echo SKIN_CSS_BGCOLOR; ?>;
+}
+.table thead th,
+.table tfoot th {
+	background-color:<?php echo SKIN_CSS_BOX_BGCOLOR; ?>;
 }
 
 #header{

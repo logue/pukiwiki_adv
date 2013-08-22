@@ -41,7 +41,7 @@ define('ROOT_URI', '/');
 
 // to absolute path
 // Do not change following lines
-define('LIB_DIR',	realpath(SITE_HOME) . '/lib/');
+define('LIB_DIR',	SITE_HOME . 'lib/');
 require(LIB_DIR .	'main.php');
 
 /* End of file index.php */

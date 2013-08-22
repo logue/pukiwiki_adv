@@ -48,32 +48,30 @@ fieldset pre{
 	margin:0.2em;
 }
 
-thead td.style_td,
-tfoot td.style_td{
-	background-color:#D0D8E0;
-}
-thead th.style_th,
-tfoot th.style_th{
-	background-color:#E0E8F0;
-}
-.style_table{
+.table{
 	background-color:#ccd5dd;
 }
-.style_th{
+.table th{
 	background-color:#EEEEEE;
 }
-.style_td{
+.table td{
 	background-color:#EEF5FF;
 }
-.style_td_blank{
+.table td.blank{
 	background-color:#E3EAF6;
+}
+.table thead td,
+.table tfoot td{
+	background-color:#D0D8E0;
+}
+.table thead th,
+.table tfoot th{
+	background-color:#E0E8F0;
 }
 
 .noexists{
 	background-color:#FFFACC;
 }
-
-
 
 .style_calendar_navi ul{
 	list-style-image: none;

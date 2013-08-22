@@ -253,9 +253,7 @@ EOD;
 	$msg_freezed
 </dl>
 EOD;
-		$retval['body'] .= '<div id="attach_info" role="tabpanel" aria-labeledby="tab1">' . "\n" . $_attach_setimage . ( ($pkwk_dtd === PKWK_DTD_HTML_5) ?
-			'<details>'."\n".'<summary>'.$info.'</summary>'."\n".$file_info."\n".'</details>' :
-			'<fieldset>'."\n".'<legend>'.$info.'</legend>'."\n".$file_info."\n". '</fieldset>').'</div>'."\n";
+		$retval['body'] .= '<div id="attach_info" role="tabpanel" aria-labeledby="tab1">' . "\n" . $_attach_setimage . '<details>'."\n".'<summary>'.$info.'</summary>'."\n".$file_info."\n".'</details></div>'."\n";
 
 		if (!IS_AJAX){ $retval['body'] .= '<hr style="clear:both" />'; }
 		$retval['body'] .= <<< EOD

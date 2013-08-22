@@ -115,7 +115,7 @@ class Table extends Element
 			}
 			$string .= $this->wrap($part_string, $part);
 		}
-		$string = $this->wrap($string, 'table', ' class="style_table style_table_' . $this->align . '" data-pagenate="false"');
+		$string = $this->wrap($string, 'table', ' class="table table-bordered table_' . $this->align . '" data-pagenate="false"');
 
 		return $this->wrap($string, 'div', ' class="table_wrapper"');
 	}

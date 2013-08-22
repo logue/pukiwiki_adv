@@ -11,6 +11,7 @@
 
 use PukiWiki\Factory;
 use PukiWiki\Relational;
+use PukiWiki\Utility;
 
 function plugin_related_init(){
 	$messages['_related_messages'] = array(
@@ -24,12 +25,7 @@ function plugin_related_convert()
 {
 	global $vars;
 
-	$args = func_get_args();
-	if ($args[0] == 'dl'){
-		return make_related($vars['page'], 'dl');
-	}else{
-		return make_related($vars['page'], 'p');
-	}
+	return make_related($vars['page'], 'dl');
 }
 
 // Related pages
@@ -50,7 +46,7 @@ function make_related($_page, $tag = '')
 		$wiki = Factory::Wiki($page);
 		if ($wiki->isHidden()) continue;
 
-		$_links[] = '<a href="' . get_page_uri($page) . '">' . htmlsc($page) . '</a>' . $wiki->passage(true,true);
+		$_links[] = '<a href="' . $wiki->uri() . '">' . Utility::htmlsc($page) . '</a>' . $wiki->passage(true,true);
 	}
 	if (empty($_links)) return ''; // Nothing
 
@@ -80,11 +76,12 @@ function plugin_related_action()
 	global $vars, $defaultpage;
 
 	$_page = isset($vars['page']) ? $vars['page'] : '';
-	if ($_page == '') $_page = $defaultpage;
+	if ( empty($_page) ) $_page = $defaultpage;
+
 	// Result
-	$msg = 'Backlinks for: ' . htmlsc($_page);
+	$msg = 'Backlinks for: ' . Utility::htmlsc($_page);
 	$retval[]  = '<a href="' . get_page_uri($_page) . '">' .
-		'Return to ' . htmlsc($_page) .'</a><br />'. "\n";
+		'Return to ' . Utility::htmlsc($_page) .'</a><br />'. "\n";
 
 	// Get related from cache
 	$links = new Relational($_page);
@@ -99,13 +96,15 @@ function plugin_related_action()
 				unset($data[$page]);
 			}
 		}
+		unset($wiki);
 		// Show count($data)?
 		ksort($data, SORT_STRING);
 
 		$retval[] = '<ul>' . "\n";
 		foreach ($data as $page=>$time) {
-			$retval[] = ' <li><a href="' . get_page_uri($page) . '">' . htmlsc($page) .
-				'</a> ' . Factory::Wiki($page)->passage(true,true) . '</li>';
+			$wiki = Factory::Wiki($page);
+			$retval[] = ' <li><a href="' . $wiki->uri() . '">' . Utility::htmlsc($page) .
+				'</a> ' . $wiki->passage(true,true) . '</li>';
 		}
 		$retval[] .= '</ul>' . "\n";
 	}

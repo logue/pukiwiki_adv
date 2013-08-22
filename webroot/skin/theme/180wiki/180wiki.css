@@ -156,23 +156,22 @@ p{
 	margin:5px 20px;
 }
 
-.style_table {
+.table {
 	background-color:#DDDDDD;
 }
-.style_th {
+.table th {
 	background-color:#EEEEEE;
 }
-
-.style_td {
+.table td {
 	background-color:#EEEEEE
 }
 
-thead .style_td,
-tfoot .style_td {
+.table thead td,
+.table tfoot td {
 	background-color:#D0D8E0;
 }
-thead .style_th,
-tfoot .style_th {
+.table thead th,
+.table tfoot th {
 	background-color:#E0E8F0;
 }
 

@@ -103,30 +103,30 @@ tfoot .style_th {
 	background: #91afc7 url(<?php echo $_SKIN['image_dir'] ?>th.bg.png) bottom left repeat-x;
 }
 */
-.style_table{
+.table{
 	background-color: #ccd5dd;
 }
 
-.style_th{
+.table th{
 	border: 1px solid black;
 	color: white;
 	background: #bbb;
 }
 
-.style_table tr .style_td{
+.table tr td{
 	border: 1px solid grey;
 	background-color: whitesmoke;
 }
 
-.style_table tr:nth-child(even) .style_td{
+.table tr:nth-child(even) td{
 	 background-color: aliceblue;
 }
 
-.style_table tr .style_td:hover{
+.table tr .td:hover{
 	background-color: floralwhite;
 }
 
-.style_td_blank, tbody .style_td_blank:hover{
+.table td.blank, .table td.blank:hover{
 	border: 1px solid darkgrey;
 	background-color: gainsbol;
 }

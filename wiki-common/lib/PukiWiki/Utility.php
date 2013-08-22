@@ -680,16 +680,18 @@ class Utility{
 	/**
 	 * 編集画面を表示
 	 * @param string $page 編集しようとしているページ名
-	 * @param string $postdata 入力データー
+	 * @param string $data 入力データー
 	 * @param boolean $show_template テンプレートを表示するか
 	 */
-	public static function editForm($page, $postdata, $show_template = TRUE)
+	public static function editForm($page, $data, $show_template = TRUE)
 	{
 		global $vars, $session;
 		global $_button, $_string;
 		global $notimeupdate, $load_template_func, $load_refer_related;
 
 		if (empty($page)) return self::dieMessage('Page name was not defined.');
+
+		$postdata = is_array($data) ? join("\n", $data) : $data;
 
 		$wiki = Factory::Wiki($page);
 		$original = isset($vars['original']) ? $vars['original'] : $postdata;
@@ -797,7 +799,7 @@ class Utility{
 		global $do_update_diff_table;
 		$table = array();
 		$table[] = '<div class="table_wrapper">';
-		$table[] = '<table class="style_table style_table_center">';
+		$table[] = '<table class="table table_center">';
 		$table[] = '<caption>';
 		$table[] = 'l : between backup data and stored page data.<br />';
 		$table[] = 'r : between backup data and your post data.';
@@ -806,21 +808,20 @@ class Utility{
 		$table[] = '<colgroup span="1" />';
 		$table[] = '<thead>';
 		$table[] = '<tr>';
-		$table[] = '<th class="style_th">l</th>';
-		$table[] = '<th class="style_th">r</th>';
-		$table[] = '<th class="style_th">text</th>';
+		$table[] = '<th>l</th>';
+		$table[] = '<th>r</th>';
+		$table[] = '<th>text</th>';
 		$table[] = '</tr>';
 		$table[] = '</thead>';
 		$table[] = '<tbody>';
 
-		$tags = array('th', 'th', 'td');
 		foreach ($arr as $_obj) {
 			$table[] = ' <tr>';
 			$params = array($_obj->get('left'), $_obj->get('right'), $_obj->text());
 			foreach ($params as $key => $text) {
 				$text = self::htmlsc(rtrim($text));
 				$table[] = 
-					'  <' . $tags[$key] . ' class="style_' . $tags[$key] . '">' .
+					'  <' . $tags[$key] . '>' .
 					$text .
 					'</' . $tags[$key] . '>';
 			}

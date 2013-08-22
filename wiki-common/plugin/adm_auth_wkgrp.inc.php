@@ -95,14 +95,14 @@ EOD;
 <div class="adm_auth_wkgrp">
 	<fieldset>
 		<legend>{$_adm_auth_wkgrp_msg['head_title']}</legend>
-		<table class="style_table">
+		<table class="table">
 			<thead>
 				<tr>
-					<th class="style_th">
+					<th>
 						{$_adm_auth_wkgrp_msg['msg_head_page']}
 						(<a href="$cmd_view">{$_adm_auth_wkgrp_msg['msg_view']}</a>)
 					</td>
-					<th class="style_th">
+					<th>
 						{$_adm_auth_wkgrp_msg['msg_head_file']}
 						(<a href="$cmd_check">{$_adm_auth_wkgrp_msg['msg_check']}</a>)
 					</td>
@@ -110,12 +110,12 @@ EOD;
 			</thead>
 			<tbody>
 				<tr>
-					<td class="style_td">{$_adm_auth_wkgrp_msg['msg_head_update']}: $date_config_page</td>
-					<td class="style_td">{$_adm_auth_wkgrp_msg['msg_head_gen']}: $date_auth_wkgrp</td>
+					<td>{$_adm_auth_wkgrp_msg['msg_head_update']}: $date_config_page</td>
+					<td>{$_adm_auth_wkgrp_msg['msg_head_gen']}: $date_auth_wkgrp</td>
 				</tr>
 				<tr>
-					<td class="style_td">$link_page</td>
-					<td class="style_td">$link_file</td>
+					<td>$link_page</td>
+					<td>$link_file</td>
 				</tr>
 			</tbody>
 		</table>

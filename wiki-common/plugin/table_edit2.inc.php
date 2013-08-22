@@ -239,7 +239,7 @@ function plugin_table_edit2_convert()
 
 	$body = $head_button . $body;
 
-	return preg_replace('/<table class="style_table"/', '<table class="style_table table_edit" data-auto-width="false" data-sortable="'. $sortable . '" data-sort="'.$sorter.'" data-filter="'.$filter.'" ', $body);
+	return preg_replace('/<table class="table table-bordered"/', '<table class="table table-bordered table_edit" data-auto-width="false" data-sortable="'. $sortable . '" data-sort="'.$sorter.'" data-filter="'.$filter.'" ', $body);
 }
 
 class TableEdit2Setting extends TableEdit2Form
@@ -1098,15 +1098,17 @@ function plugin_table_edit2_action()
 	global $vars, $post, $auth_users, $_string;
 	$table_num = 	$vars['table_num'];
 	$page = 		$vars['refer'];
+	$wiki = Factory::Wiki($page);
+
 	$script_uri = get_script_uri();
 
-	if (is_freeze($page)) check_editable($page, true, true);
+	if ($wiki->isFreezed()) $wiki->checkEditable(true);
 
 	//	Cancel
 	$anchr_jump = ( PLUGIN_TABLE_EDIT2_ANCHR_JUMP ) ? '#TableEdit2TableNumber' . $table_num : '';
 	if (isset($vars['cancel'])) {
 		//header('Location: ' . $script_uri . '?' . rawurlencode($page) . $anchr_jump);
-		header('Location: ' . get_page_uri($page) . $anchr_jump);
+		Utility::redirect($wiki->uri() . $anchr_jump);
 		exit;
 	}
 
@@ -1116,7 +1118,7 @@ function plugin_table_edit2_action()
 	$setting = 0;
 	$import = $export = $csv_cancel = 0;
 
-	if (! function_exists('_')) table_edit2_message();
+	if (! function_exists('T_')) table_edit2_message();
 	
 	$edit_mod = isset($vars['edit_mod']) ? $vars['edit_mod'] : '';
 
@@ -1172,7 +1174,8 @@ function plugin_table_edit2_action()
 				unlink($con->logname);
 			}
 			//header('Location: ' . $script_uri . '?' . rawurlencode($page));		// . $anchr_jump
-			header('Location: ' . get_page_uri($page));
+			//header('Location: ' . get_page_uri($page));
+			Utility::redirect($wiki->uri());
 			exit;
 		} else {
 			return array('msg' => 'csv error','body' => 'csv option error');	// . join("\n", $csv_data)
@@ -1182,8 +1185,6 @@ function plugin_table_edit2_action()
 	if ( isset($vars['table_mod']) ) $chg = new TableEdit2TableMod($vars['table_mod']);
 	if ( $td_edit || $tr_edit ) $edit = new TableEdit2Edit( $vars );
 	if ( $edit_show ) $show = new TableEdit2Show( $vars, $page );
-	
-	$wiki = Factory::Wiki($page);
 
 	static $count = 0;
 	$source_s = array();
@@ -1639,7 +1640,7 @@ class TableEdit2Show extends TableEdit2Form
 	$body = <<<EOD
 <h3>$s_table_title=$table_num$line_name=$edit_count{$this->add_title}</h3>
 <form action="$script_uri" method="post">
-<table class="style_table style_table_left">
+<table class="table table_left">
 EOD;
 
 	$cell_count = 1;

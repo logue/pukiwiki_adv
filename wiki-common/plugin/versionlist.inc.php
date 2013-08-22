@@ -55,13 +55,13 @@ function plugin_versionlist_convert()
 
 	$retval = array();
 	$retval[] = <<<EOD
-<table class="style_table">
+<table class="table">
 	<thead>
 		<tr>
-			<th class="style_th">File</th>
-			<th class="style_th">Revision</th>
-			<th class="style_th">Date</th>
-			<th class="style_th">Author</th>
+			<th>File</th>
+			<th>Revision</th>
+			<th>Date</th>
+			<th>Author</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -88,10 +88,10 @@ EOD;
 		}
 		$retval[] = <<<EOD
 		<tr style="color:$color;">
-			<td class="style_td">$file</td>
-			<td class="style_td" style="text-align:right">$rev</td>
-			<td class="style_td">$date</td>
-			<td class="style_td">$author</td>
+			<td>$file</td>
+			<td style="text-align:right">$rev</td>
+			<td>$date</td>
+			<td>$author</td>
 		</tr>
 EOD;
 		unset($row[$path]);

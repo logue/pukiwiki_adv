@@ -71,7 +71,7 @@ figcaption{
 	text-align:center;
 }
 /* Table Tags */
-.style_table{
+.table{
 	border-spacing:2px;
 	padding:0px;
 	border:0px;
@@ -84,19 +84,19 @@ figcaption{
 	text-shadow: none;
 }
 
-.style_th{
+.table th{
 	background-color:lightgrey;
 	padding:5px;
 	margin:1px;
 	text-align:center;
 }
-.style_td{
+.table td{
 	background-color:whitesmoke;
 	padding:5px;
 	margin:1px;
 }
 
-.style_td_blank{
+.table td.blank-cell{
 	background-color:gainsboro;
 }
 /* Week and Month */

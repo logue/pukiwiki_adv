@@ -157,7 +157,7 @@ function plugin_logview_action()
 	$count++;
 	$body .= <<<EOD
 <div class="table_wrapper">
-<table class="style_table table_logview" data-pagenate="true">
+<table class="table table-bordered table_logview" data-pagenate="true">
 <thead>
 <tr>
 
@@ -168,7 +168,7 @@ EOD;
 	// タイトルの処理
 	foreach ($view as $_view) {
 		if ($_view === 'local_id' && $is_role_adm) continue;
-		$body .= '<th class="style_th">'.$_logview_msg[$_view].'</th>'."\n";
+		$body .= '<th>'.$_logview_msg[$_view].'</th>'."\n";
 		$cols++;
 	}
 
@@ -280,7 +280,7 @@ EOD;
 			case 'local_id':
 				if ($is_role_adm) continue;
 			default:
-				$body .= ' <td class="style_td">'.Utility::htmlsc($data[$field], ENT_QUOTES)."</td>\n";
+				$body .= ' <td>'.Utility::htmlsc($data[$field], ENT_QUOTES)."</td>\n";
 			}
 		}
 

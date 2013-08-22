@@ -10,6 +10,7 @@
 // Unfreeze(Unlock) plugin
 use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
+use PukiWiki\Utility;
 
 // Show edit form when unfreezed
 defined('PLUGIN_UNFREEZE_EDIT') or define('PLUGIN_UNFREEZE_EDIT', TRUE);
@@ -26,12 +27,13 @@ function plugin_unfreeze_action()
 	$_btn_unfreeze      = T_('Unfreeze');
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
-	if (! $function_freeze || is_cantedit($page) || ! is_page($page))
+	$wiki = Factory::Wiki($page);
+	if (! $function_freeze || $wiki->isEditable() || ! $wiki->isValied($page))
 		return array('msg' => '', 'body' => '');
 
 	$pass = isset($vars['pass']) ? $vars['pass'] : NULL;
 	$msg = $body = '';
-	if (! is_freeze($page)) {
+	if (! $wiki->isFreezed()) {
 		// Unfreezed already
 		$msg  = $_title_isunfreezed;
 		$body = str_replace('$1', htmlsc(strip_bracket($page)),
@@ -41,18 +43,18 @@ function plugin_unfreeze_action()
 	if ( (! Auth::check_role('role_contents_admin') ) ||
 	     ($pass !== NULL && pkwk_login($pass)) )
 	{
-		$wiki = WikiFactory::Wiki($page);
+		
 		// BugTrack2/255
 		$wiki->checkReadable();
 		// Unfreeze
-		$postdata = $wiki->source();
+		$postdata = $wiki->get();
 		array_shift($postdata);
-		$wiki->set(join('', $postdata));
+		$wiki->set($postdata);
 
 		// Update
 		if (PLUGIN_UNFREEZE_EDIT) {
 			// BugTrack2/255
-			check_editable($page, true, true);
+			$wiki->checkEditable(true);
 //			$vars['cmd'] = 'read'; // To show 'Freeze' link
 			$vars['cmd'] = 'edit';
 			$msg  = $_title_unfreezed;
@@ -66,7 +68,7 @@ function plugin_unfreeze_action()
 	} else {
 		// Show unfreeze form
 		$msg    = $_title_unfreeze;
-		$s_page = htmlsc($page);
+		$s_page = Utility::htmlsc($page);
 		$body   = ($pass === NULL) ? '' : '<p class="message_box ui-state-error"><strong>'.$_msg_invalidpass.'</strong></p>'."\n";
 		$script = get_script_uri();
 		$body  .= <<<EOD

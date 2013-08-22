@@ -127,33 +127,25 @@ fieldset pre{
 }
 
 /* Table Tags */
-thead .style_td,
-tfoot .style_td {
-	background-color:#D0D8E0;
-}
-thead .style_th,
-tfoot .style_th {
-	background-color:#E0E8F0;
-}
-
-.style_table{
+.table{
 	background-color:#ccd5dd;
 }
-
-.style_th{
+.table th{
 	background-color:#EEEEEE;
 }
-
-.style_td{
-	background-color:#EEF5FF;
-}
-
-.style_td_blank{
+.table tr td.blank-cell{
 	background-color:#E3EAF6;
 }
-
-.style_table tr:nth-child(even) .style_td{
+.table tr:nth-child(even) td{
 	background-color:#EFf5ff;
+}
+.table thead td,
+.table tfoot td {
+	background-color:#D0D8E0;
+}
+.table thead th,
+.table tfoot th {
+	background-color:#E0E8F0;
 }
 
 /** Skin Stylesheet *******************************************************************************/

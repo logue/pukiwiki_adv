@@ -1023,7 +1023,7 @@ class TableEx extends ElementEx
 		}
 		$string .= ($old_type == 'c') ? $part_string : $this->wrap($part_string, $parts[$old_type]);
 
-		return $this->wrap($string, 'table', ' class="style_table" cellspacing="1" border="0" align="center"');
+		return $this->wrap($string, 'table', ' class="table table-bordered"');
 	}
 }
 
@@ -1063,7 +1063,7 @@ class YTableEx extends ElementEx
 				while ($i + $colspan[$i] < $count && $value[$i + $colspan[$i]] == '==')
 					$colspan[$i]++;
 				$colspan[$i] = ($colspan[$i] > 1) ? ' colspan="' . $colspan[$i] . '"' : '';
-				$str .= '<td class="style_td"' . $align[$i] . $colspan[$i] . '>' . guiedit_make_link($value[$i]) . '</td>';
+				$str .= '<td ' . $align[$i] . $colspan[$i] . '>' . guiedit_make_link($value[$i]) . '</td>';
 			}
 		}
 		$this->elements[] = $str;
@@ -1084,8 +1084,8 @@ class YTableEx extends ElementEx
 	{
 		$rows = '';
 		foreach ($this->elements as $str)
-			$rows .= "\n" . '<tr class="style_tr">' . $str . '</tr>' . "\n";
-		$rows = $this->wrap($rows, 'table', ' class="style_table" cellspacing="1" border="0"');
+			$rows .= "\n" . '<tr>' . $str . '</tr>' . "\n";
+		$rows = $this->wrap($rows, 'table', ' class="table table-bordered"');
 		return $this->wrap($rows, 'div', ' class="ie5"');
 	}
 }

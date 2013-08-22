@@ -415,7 +415,7 @@ class Wiki{
 
 		// 最終更新を更新
 		global $whatsnew;
-		if (!$keeptimestamp || $page !== $whatsnew){
+		if (!$keeptimestamp || $this->page !== $whatsnew){
 			Recent::set($this->page);
 		}
 

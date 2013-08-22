@@ -123,10 +123,10 @@ function plugin_calendar_convert()
 	}
 
 	$ret .= <<<EOD
-<table class="style_table style_calendar" summary="calendar" data-sortable="false">
+<table class="table table-bordered style_calendar" summary="calendar" data-sortable="false">
 	<thead>
 		<tr>
-			<td class="style_td style_calendar_top" colspan="7">
+			<td class="style_calendar_top" colspan="7">
 				<nav>
 					<ul class="style_calendar_navi">
 						<li class="style_calendar_prev"><a href="$prev_link">&lt;&lt;</a></li>
@@ -160,7 +160,7 @@ EOD;
 		}else{
 			$class = 'week_day';
 		}
-		$ret .= '			<th class="style_th style_calendar_week"><abbr title="'.$_labels['week'][$i][1].'" class="'.$class.'">' . $_labels['week'][$i][0] . '</abbr></th>' . "\n";
+		$ret .= '			<th class="style_calendar_week"><abbr title="'.$_labels['week'][$i][1].'" class="'.$class.'">' . $_labels['week'][$i][0] . '</abbr></th>' . "\n";
 	}
 	unset($i,$class);
 
@@ -168,7 +168,7 @@ EOD;
 		'		<tr>'  . "\n";
 	// Blank
 	for ($i = 0; $i < $wday; $i++)
-		$ret .= '			<td class="style_td_blank"></td>' . "\n";
+		$ret .= '			<td class="blank-cell"></td>' . "\n";
 
 	while (checkdate($m_num, $day, $year)) {
 		$dt     = sprintf(PLUGIN_CALENDAR_PAGENAME_FORMAT, $year, $m_num, $day);

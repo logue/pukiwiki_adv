@@ -996,7 +996,7 @@ var pukiwiki = {};
 		},
 		dataTable : function(prefix){
 			var self = this;
-			var table = (prefix) ? prefix + ' .style_table' : '.style_table';
+			var table = (prefix) ? prefix + ' .table' : '.table';
 			$(table).each(function(){
 				var $this = $(this);
 				var sortable = (typeof($this.data('sortable')) === 'undefined' || $this.data('sortable') === true) ? true : false;

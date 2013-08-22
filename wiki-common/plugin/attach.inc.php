@@ -859,19 +859,19 @@ class AttachFiles
 			$fileinfo = $this->files[$file];
 			if (isset( $fileinfo[0])){
 				$ret .= join('',array(
-					'<tr><td class="style_td">' . $_file . '</td>',
-					'<td class="style_td">' . $fileinfo[0]->size_str . '</td>',
-					'<td class="style_td">' . $fileinfo[0]->type . '</td>',
-					'<td class="style_td">' . $fileinfo[0]->time_str . '</td></tr>'
+					'<tr><td>' . $_file . '</td>',
+					'<td>' . $fileinfo[0]->size_str . '</td>',
+					'<td>' . $fileinfo[0]->type . '</td>',
+					'<td>' . $fileinfo[0]->time_str . '</td></tr>'
 				))."\n";
 			}
 			// else{ ... } // delated FIX me!
 		}
-		return '<table class="style_table attach_table" data-pagenate="true"><thead>' . "\n" .
-		       '<tr><th class="style_th">' . $_attach_messages['msg_file'] . '</th>' .
-		       '<th class="style_th">' . $_attach_messages['msg_filesize'] . '</th>' .
-		       '<th class="style_th">' . $_attach_messages['msg_type'] . '</th>' .
-		       '<th class="style_th">' . $_attach_messages['msg_date'] . '</th></tr></thead>'."\n".
+		return '<table class="table attach_table" data-pagenate="true"><thead>' . "\n" .
+		       '<tr><th>' . $_attach_messages['msg_file'] . '</th>' .
+		       '<th>' . $_attach_messages['msg_filesize'] . '</th>' .
+		       '<th>' . $_attach_messages['msg_type'] . '</th>' .
+		       '<th>' . $_attach_messages['msg_date'] . '</th></tr></thead>'."\n".
 		       '<tbody>' . "\n$ret</tbody></table>\n";
 	}
 }

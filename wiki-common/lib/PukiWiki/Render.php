@@ -70,6 +70,7 @@ class Render{
 		'activity-indicator',
 		'jquery.a-tools',
 		'jquery.autosize',
+		'jquery.beautyOfCode',
 		'jquery.cookie',
 		'jquery.form',
 		'jquery.dataTables',
@@ -77,6 +78,7 @@ class Render{
 		'jquery.i18n',
 		'jquery.query',
 		'jquery.superfish',
+		'jquery.tabby',
 		'jquery.ui.rlightbox'
 	);
 	/**

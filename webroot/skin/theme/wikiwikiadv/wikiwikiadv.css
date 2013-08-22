@@ -160,32 +160,32 @@ p, pre, dl, blockquote, form, .table_wrapper{
 .table_wrapper{
 	width:95%;
 }
-.style_table{
+.table{
 	background-color:silver;
 }
 
-.style_th{
+.table th{
 	background-color:#E0E8F0;
 	border-right: 0px solid;
 	border-top: #fff 1px solid;
 	border-left: #fff 1px solid;
 	border-bottom: 0px solid;
 }
-.style_td{
+.table td{
 	background-color:white;
 }
 
-.style_td_blank{
+.table td.blank{
 	background-color:gainsboro;
 }
 
-thead .style_td,
-tfoot .style_td
+.table thead td,
+.table tfoot td
 {
 	background-color:#EEEEEE;
 }
-thead .style_th,
-tfoot .style_th
+.table thead th,
+.table tfoot th
 {
 	background-color:#DCDCD6;
 }

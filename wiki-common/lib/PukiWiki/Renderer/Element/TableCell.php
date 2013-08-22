@@ -102,7 +102,7 @@ class TableCell extends Element
 	{
 		if ($this->rowspan == 0 || $this->colspan == 0) return '';
 
-		$param = ' class="style_' . ($this->is_blank == true && $this->tag == 'td' ? 'td_blank' :  $this->tag) . '"';
+		$param = ($this->is_blank === true ? ' class="blank-cell' : '');
 		
 		if ($this->rowspan > 1)
 			$param .= ' rowspan="' . $this->rowspan . '"';

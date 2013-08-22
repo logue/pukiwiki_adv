@@ -144,13 +144,13 @@ function plugin_referer_body($data)
 		$sort_last = '0a';
 
 	$body = array();
-	$body[] = '<table summary="Referer" class="style_table referer_table" data-pagenate="true">';
+	$body[] = '<table summary="Referer" class="table table-bordered referer_table" data-pagenate="true">';
 	$body[] = '<thead>';
 	$body[] = '<tr>';
-	$body[] = '<th class="style_th">' . $_referer_msg['msg_Hed_LastUpdate'] . '</th>';
-	$body[] = '<th class="style_th">' . $_referer_msg['msg_Hed_1stDate'] . '</th>';
-	$body[] = '<th class="style_th" style="text-align:right">' . $_referer_msg['msg_Hed_RefCounter'] . '</th>';
-	$body[] = '<th class="style_th">' . $_referer_msg['msg_Hed_Referer'] . '</th>';
+	$body[] = '<th>' . $_referer_msg['msg_Hed_LastUpdate'] . '</th>';
+	$body[] = '<th>' . $_referer_msg['msg_Hed_1stDate'] . '</th>';
+	$body[] = '<th style="text-align:right">' . $_referer_msg['msg_Hed_RefCounter'] . '</th>';
+	$body[] = '<th>' . $_referer_msg['msg_Hed_Referer'] . '</th>';
 	$body[] = '</tr>';
 	$body[] = '</thead>';
 	$body[] = '<tbody>';
@@ -183,7 +183,14 @@ function plugin_referer_body($data)
 		if ($sw_ignore && $referer > 1) continue;
 
 		// 非ASCIIキャラクタ(だけ)をURLエンコードしておく BugTrack/440
-		$e_url = htmlsc(preg_replace('/([" \x80-\xff]+)/', 'rawurlencode("$1")', $url));
+		// $e_url = htmlsc(preg_replace('/([" \x80-\xff]+)/e', 'rawurlencode("$1")', $url));
+		$e_url = preg_replace_callback(
+			'([" \x80-\xff]+)',
+			function ($m) {
+				return rawurlencode($m[1]);
+			},
+			$url
+		);
 		$s_url = @mb_convert_encoding(rawurldecode($url), SOURCE_ENCODING);
 		$s_url = htmlsc(mb_strimwidth($s_url,0,REFERE_TITLE_LENGTH,'...'));
 
@@ -193,17 +200,17 @@ function plugin_referer_body($data)
 		$sdate = get_date($_referer_msg['msg_Fmt_Date'], $stime); // 初回登録日時文字列
 
 		$body[] = '<tr>';
-		$body[] = '<td class="style_td">' . $ldate . ' ('. $lpass .')</td>';
+		$body[] = '<td>' . $ldate . ' ('. $lpass .')</td>';
 		$body[] = ($count == 1) ?
-			'<td class="style_td">N/A</td>' :
-			'<td class="style_td">' . $sdate .' ('. $spass .')</td>';
+			'<td>N/A</td>' :
+			'<td>' . $sdate .' ('. $spass .')</td>';
 
-		$body[] = '<td class="style_td" style="text-align:right;">' . $count . '</td>';
+		$body[] = '<td style="text-align:right;">' . $count . '</td>';
 
 		// 適用不可データのときはアンカーをつけない
 		$body[] = ($sw_ignore) ?
-			'<td class="style_td">' . $s_url . '</td>' :
-			'<td class="style_td"><a href="' . $e_url . '" rel="nofollow noreferer">' . $s_url . '</a></td>';
+			'<td>' . $s_url . '</td>' :
+			'<td><a href="' . $e_url . '" rel="nofollow noreferer">' . $s_url . '</a></td>';
 
 		$body[] = '</tr>';
 		$ctr++;
@@ -444,26 +451,28 @@ function linklist_analysis($data)
 		
 		if (isset($url['query'])){
 			$tok = strtok($url['query'],'&');
-			while($tok) {
-				list($key,$parm)= preg_split ('/=/', $tok); // キーと値に分割
-				$tok = strtok('&'); // 次の処理の準備
+			if (is_array($tok)){
+				while($tok) {
+					list($key,$parm) = preg_split ('/=/', $tok); // キーと値に分割
+					$tok = strtok('&'); // 次の処理の準備
 
-				// 検索キーかの判定
-				$skey = '';
+					// 検索キーかの判定
+					$skey = '';
 
-				foreach ($config_referer['key'] as $y)
-				{
-					if ( (strpos($key,$y[0]) === 0 )) {
-						$skey = $y[0];
-						continue;
+					foreach ($config_referer['key'] as $y)
+					{
+						if ( (strpos($key,$y[0]) === 0 )) {
+							$skey = $y[0];
+							continue;
+						}
 					}
-				}
-				if ($skey !== $key) continue;
-				if (empty($parm)) continue; // 値が入っていない場合
+					if ($skey !== $key) continue;
+					if (empty($parm)) continue; // 値が入っていない場合
 
-				// 検索エンジンからきたもの
-				$sw = 1;
-				break;
+					// 検索エンジンからきたもの
+					$sw = 1;
+					break;
+				}
 			}
 		}
 

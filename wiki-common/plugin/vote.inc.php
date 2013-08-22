@@ -636,12 +636,12 @@ class PluginVotex
 			$form[] = '<input type="hidden" name="vote_id" value="' . htmlsc($vote_id) . '" />';
 			$form[] = '<input type="hidden" name="digest"  value="' . htmlsc($digest) . '" />';
 		}
-		$form[] = '<table class="style_table vote_table" summary="vote" id="' . $anchor . '" data-pagenate="false">';
+		$form[] = '<table class="table vote_table" summary="vote" id="' . $anchor . '" data-pagenate="false">';
 		$form[] = '<thead>';
 		$form[] = '<tr>';
-		$form[] = '<th class="style_th">' . T_('Selection') . '</th>';
-		$form[] = '<th class="style_th">' . T_('Points') . '</th>';
-		$form[] = ($this->options['readonly']) ? null : '<th class="style_th">'. T_('Vote') .'</th>';
+		$form[] = '<th>' . T_('Selection') . '</th>';
+		$form[] = '<th>' . T_('Points') . '</th>';
+		$form[] = ($this->options['readonly']) ? null : '<th>'. T_('Vote') .'</th>';
 		$form[] = '</tr>';
 		$form[] = '</thead>';
 
@@ -651,9 +651,9 @@ class PluginVotex
 		foreach ($votes as $choice_id => $vote) {
 			list($choice, $count) = $vote;
 			$form[] = '<tr>' . "\n";
-			$form[] = '<td class="style_td vote_choise_td">' . InlineFactory::factory($choice) . '</td>';
-			$form[] = '<td class="style_td vote_count_td"><var>'  . Utility::htmlsc($count) . '</var></td>';
-			$form[] = ($this->options['readonly']) ? null : '<td class="style_td vote_form_td"><input type="submit" name="' . $this->encode_choice($choice_id) . '" value="' . T_('Vote') . '" /></td>';
+			$form[] = '<td class="vote_choise_td">' . InlineFactory::factory($choice) . '</td>';
+			$form[] = '<td class="vote_count_td"><var>'  . Utility::htmlsc($count) . '</var></td>';
+			$form[] = ($this->options['readonly']) ? null : '<td class="vote_form_td"><input type="submit" name="' . $this->encode_choice($choice_id) . '" value="' . T_('Vote') . '" /></td>';
 			$form[] = '</tr>';
 		}
 		$form[] = '</tbody>';

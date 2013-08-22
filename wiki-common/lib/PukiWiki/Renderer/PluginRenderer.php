@@ -303,9 +303,10 @@ class PluginRenderer{
 	{
 		global $vars, $_string, $use_spam_check, $post;
 		$plugin = self::getPlugin($name);
+		$funcname = 'plugin_' . $name . '_action';
 
 		// 命令が実装されてない
-		if (! $plugin['method']['action'])
+		if (! $plugin['method']['action'] || !function_exists($funcname))
 			Utility::dieMessage(sprintf($_string['plugin_not_implemented'],htmlsc($name)),501);
 
 		// プラグインの初期化
@@ -326,9 +327,10 @@ class PluginRenderer{
 		if ( (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] === 1) && (isset($vars['postid']) && !PostId::check($vars['postid'])) )
 			Utility::dieMessage($_string['plugin_postid_error']);
 
+		
 		// 実行
 		T_textdomain($name);
-		$retvar = call_user_func('plugin_' . $name . '_action');
+		$retvar = call_user_func($funcname);
 		T_textdomain(DOMAIN);
 
 		$retvar['body'] = isset($retvar['body']) ? self::addHiddenField($retvar['body'], $name) : null;
@@ -346,9 +348,10 @@ class PluginRenderer{
 	{
 		global $digest, $_string;
 		$plugin = self::getPlugin($name);
+		$funcname = 'plugin_' . $name . '_convert';
 
 		// 命令が実装されてない
-		if (! $plugin['method']['convert'])
+		if (! $plugin['method']['convert'] || !function_exists($funcname))
 			return '<p class="ui-state-error ui-corner-all">' . sprintf($_string['plugin_not_implemented'],'#'.Utility::htmlsc($name).'()') . '</p>';
 
 		// プラグインの初期化
@@ -373,7 +376,7 @@ class PluginRenderer{
 		$_digest = $digest;
 		T_textdomain($name);
 		// プラグインを実行
-		$retvar  = call_user_func_array('plugin_' . $name . '_convert', $aryargs);
+		$retvar  = call_user_func_array($funcname, $aryargs);
 		// ロケールとdigestをもとに戻す
 		T_textdomain(DOMAIN);
 		$digest  = $_digest; // Revert
@@ -395,9 +398,11 @@ class PluginRenderer{
 	{
 		global $digest, $_string;
 		$plugin = self::getPlugin($name);
+		$funcname = 'plugin_' . $name . '_inline';
 		
 		// PukiWikiの仕様上、存在しないメソッドの場合、メッセージを出せない（あとで$line_ruleで変換するため）
-		if ($plugin['method']['inline'] === false) return  '&' .Utility::htmlsc($name). ';';
+		if ($plugin['method']['inline'] === false || !function_exists($funcname))
+			return  '&' .Utility::htmlsc($name). ';';
 
 		// プラグインの初期化
 		if (self::executePluginInit($name) === false) {
@@ -414,7 +419,7 @@ class PluginRenderer{
 		$_digest = $digest;
 		T_textdomain($name);
 		// プラグインを実行
-		$retvar  = call_user_func_array('plugin_' . $name . '_inline', $aryargs);
+		$retvar  = call_user_func_array($funcname, $aryargs);
 		// ロケールとdigestをもとに戻す
 		T_textdomain(DOMAIN);
 		$digest  = $_digest; // Revert
