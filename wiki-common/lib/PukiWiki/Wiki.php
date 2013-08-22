@@ -206,6 +206,14 @@ class Wiki{
 		return '<a href="' . $this->uri($cmd, $query, $fragment) . '" title="' . $_page . ' ' . $this->passage(false, true) . '">'. $_page . '</a>';
 	}
 	/**
+	 * ページのタイムスタンプを更新
+	 * @param int $time 更新日時
+	 * @return boolean
+	 */
+	public function touch($time = false){
+		return $this->wiki->touch($time);
+	}
+	/**
 	 * 関連リンクを取得
 	 * @return array
 	 */

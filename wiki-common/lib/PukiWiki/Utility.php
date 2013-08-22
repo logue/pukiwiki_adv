@@ -285,7 +285,7 @@ class Utility{
 	 * @param string $filename ファイル名
 	 * @return string
 	 */
-	function getMimeInfo($filename){
+	public static function getMimeInfo($filename){
 		$type = '';
 		if (function_exists('finfo_open')) {
 			$finfo = finfo_open(FILEINFO_MIME);

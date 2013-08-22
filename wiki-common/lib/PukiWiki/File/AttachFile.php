@@ -36,10 +36,16 @@ class AttachFile extends AbstractFile{
 	var $size_str = '';
 	var $status = array('count'=>array(0), 'age'=>'', 'pass'=>'', 'freeze'=>FALSE);
 
-	function __construct($page, $file, $age = 0)
+	/**
+	 * コンストラクタ
+	 * @param string $page ページ名
+	 * @param string $file ファイル名
+	 * @param int $age バックアップの世代
+	 */
+	public function __construct($page, $file, $age = 0)
 	{
-		$this->page = strstr('%', $page) !== false ? $page : rawurldecode($page);
-		$this->file = basepagename(strstr('%', $file) !== false ? $file :rawurldecode($file) );
+		$this->page = $page;
+		$this->file = $file;
 		$this->age  = is_numeric($age) ? $age : 0;
 
 		$this->basename = UPLOAD_DIR . Utility::encode($this->page) . '_' . Utility::encode($this->file);
@@ -47,17 +53,17 @@ class AttachFile extends AbstractFile{
 		$this->logname  = $this->basename . '.log';
 		parent::__construct($this->basename);
 		$this->exists   = $this->isFile();
-		$this->time     = $this->getMTime();
-		$this->size     = $this->getSize();
+		$this->time     = $this->exists ? $this->getMTime() : 0;
+		$this->size     = $this->exists ? $this->getSize() : 0;
 	}
 
-	function gethash()
+	public function gethash()
 	{
 		return $this->exists ? md5_file($this->filename) : '';
 	}
 
 	// ファイル情報取得
-	function getstatus()
+	public function getstatus()
 	{
 		if (! $this->exists) return FALSE;
 
@@ -77,7 +83,7 @@ class AttachFile extends AbstractFile{
 	}
 
 	// ステータス保存
-	function putstatus()
+	function setstatus()
 	{
 		$this->status['count'] = join(',', $this->status['count']);
 		touch($this->logname);
@@ -394,7 +400,7 @@ EOD;
 		return array('msg'=>$_attach_messages[$freeze ? 'msg_freezed' : 'msg_unfreezed']);
 	}
 
-	function open()
+	public function open()
 	{
 		global $use_sendfile_header;
 		$response = new Response();
@@ -425,6 +431,7 @@ EOD;
 		ini_set('default_charset', '');
 		mb_http_output('pass');
 		$filename = $this->file;
+/*
 		if (LANG == 'ja_JP') {
 			switch(UA_NAME . '/' . UA_PROFILE){
 			case 'Opera/default':
@@ -436,6 +443,8 @@ EOD;
 				break;
 			}
 		}
+*/
+		$filename = mb_convert_encoding($this->file, 'UTF-8', 'auto');
 		// ヘッダー出力
 		$header = Header::getHeaders($content_type, $this->getMTime());
 		if ($content_type == 'application/octet-stream') {
@@ -465,7 +474,7 @@ EOD;
 
 		// 読み込み回数のカウンタを更新
 		$this->status['count'][$this->age]++;
-		$this->putstatus();
+		$this->setstatus();
 
 		// 出力
 		Header::writeResponse($header, $status_code, $buffer);
@@ -473,8 +482,10 @@ EOD;
 		exit;
 	}
 
-	//-------- サービス
-	// mime-typeの決定
+	/**
+	 * mime-typeの決定
+	 * @return string
+	 */
 	private function attach_mime_content_type()
 	{
 		try {

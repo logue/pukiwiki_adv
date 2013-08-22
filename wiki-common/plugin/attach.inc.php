@@ -21,6 +21,10 @@ use PukiWiki\Utility;
 //    This feature is disabled at newer version of PHP.
 //    Set this at php.ini if you want.
 // Max file size for upload on PHP (PHP default: 2MB)
+
+
+defined('PLUGIN_ATTACH_ILLEGAL_CHARS_PATTERN')	or define('PLUGIN_ATTACH_ILLEGAL_CHARS_PATTERN', '/[%|=|&|?|#|\r|\n|\0|\@|\t|;|\$|+|\\|\[|\]|\||^|{|}]/');		// default: 4MB
+
 defined('PLUGIN_ATTACH_UPLOAD_MAX_FILESIZE')	or define('PLUGIN_ATTACH_UPLOAD_MAX_FILESIZE', '4M');		// default: 4MB
 ini_set('upload_max_filesize', PLUGIN_ATTACH_UPLOAD_MAX_FILESIZE);
 
@@ -173,11 +177,13 @@ function plugin_attach_action()
 	$pass  = isset($vars['pass'])  ? $vars['pass']  : NULL;
 	$page  = isset($vars['page'])  ? $vars['page']  : $refer;
 
-	if (!empty($refer) && is_pagename($refer)) {
+	$wiki = Factory::Wiki($page);
+
+	if (!empty($refer) && $wiki->isValied()) {
 		if(in_array($pcmd, array('info', 'open', 'list'))) {
-			check_readable($refer);
+			$wiki->checkReadable();
 		} else {
-			check_editable($refer);
+			$wiki->checkEditable();
 		}
 	}
 
@@ -205,7 +211,7 @@ function plugin_attach_action()
 			case 'form'     : return array('msg'  =>str_replace('$1', $refer, $_attach_messages['msg_upload']), 'body'=>attach_form($refer));
 			case 'progress' : return get_upload_progress();
 		}
-		return ($page == '' || ! is_page($page)) ? attach_list() : attach_showform();
+		return ($page == '' || ! $wiki->isValied()) ? attach_list() : attach_showform();
 	}
 }
 
@@ -228,6 +234,8 @@ function attach_upload($file, $page, $pass = NULL)
 {
 	global $_attach_messages, $_string;
 
+	$wiki = Factory::Wiki($page);
+
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
 	if (Auth::check_role('readonly')) die_message($_string['error_prohibit']);
 
@@ -245,11 +253,12 @@ function attach_upload($file, $page, $pass = NULL)
 		);
 	}
 
+
 	if (PKWK_QUERY_STRING_MAX && strlen($query) > PKWK_QUERY_STRING_MAX) {
 		pkwk_common_headers();
 		echo($_attach_messages['err_too_long']);
 		exit;
-	} else if (! is_page($page)) {
+	} else if (! $wiki->isValied()) {
 		die_message($_attach_messages['err_nopage']);
 	} else if ($file['tmp_name'] == '' || ! is_uploaded_file($file['tmp_name'])) {
 		return array(
@@ -328,15 +337,15 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 	global $notify, $notify_subject, $notify_exclude, $spam;
 
 	// Check Illigal Chars
-	if (preg_match(PKWK_ILLEGAL_CHARS_PATTERN, $page) || preg_match(PKWK_ILLEGAL_CHARS_PATTERN, $file['name'])){
-		die_message($_strings['illegal_chars']);
+	if (preg_match(PLUGIN_ATTACH_ILLEGAL_CHARS_PATTERN, $file['name'])){
+		Utility::dieMessage($_strings['illegal_chars']);
 	}
 
 	$type = Utility::getMimeInfo($file['tmp_name']);
 	$must_compress = (PLUGIN_ATTACH_UNKNOWN_COMPRESS !== 0) ? attach_is_compress($type,PLUGIN_ATTACH_UNKNOWN_COMPRESS) : false;
 
 	// ファイル名の長さをチェック
-	$filename_length = strlen(encode($page).'_'.encode($file['name']));
+	$filename_length = strlen(Utility::encode($page).'_'.Utility::encode($file['name']));
 	if ( $filename_length  >= 255 || ($must_compress && $filename_length >= 251 )){
 		return array(
 			'result'=>FALSE,
@@ -460,12 +469,12 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 				chmod($obj->filename, PLUGIN_ATTACH_FILE_MODE);
 	}
 
-	if (is_page($page))
-		pkwk_touch_file(get_filename($page));
+	// ページのタイムスタンプを更新
+	Factory::Wiki($page)->touch();
 
 	$obj->getstatus();
 	$obj->status['pass'] = ($pass !== TRUE && $pass !== NULL) ? md5($pass) : '';
-	$obj->putstatus();
+	$obj->setstatus();
 
 	if ($notify) {
 		$notify_exec = TRUE;
@@ -496,7 +505,7 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 
 	return array(
 		'result'=>TRUE,
-		'msg'=>$_attach_messages['msg_uploaded']);
+		'msg'=>sprintf($_attach_messages['msg_uploaded'],Utility::htmlsc($page)));
 }
 
 // ファイルタイプによる圧縮添付の判定
