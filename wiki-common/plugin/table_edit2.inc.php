@@ -307,7 +307,7 @@ class TableEdit2Setting extends TableEdit2Form
 	<input type="hidden" name="edit_mod"   value="setting" />
 	<input type="hidden" name="refer"      value="{$this->page}" />
 	<input type="hidden" name="table_data" value="{$this->table_data}" />
-	<input type="submit" name="write"      value="$set_ok" />
+	<input type="submit" class="btn btn-primary" name="write"      value="$set_ok" />
 	$notimestamp_chk
 </form>
 EOD;
@@ -501,7 +501,7 @@ EOD;
 	<input type="hidden" name="table_num"  value="{$this->count}" />
 	$file_save
 	<input type="submit" name="csv_mod" value="$mode" />
-	<input type="submit" name="$cancel"  value="cancel" />
+	<input type="submit" class="btn btn-warning" class="btn btn-primary" name="$cancel"  value="cancel" />
 </form>
 EOD;
 
@@ -1710,9 +1710,9 @@ EOD;
 	<input type="hidden" name="$y_count"      value="$cell_count" />
 	<input type="hidden" name="edit_mod"      value="$edit_mod" />
 	<input type="hidden" name="digest"        value="$digest" />
-	<input type="submit" name="write"         value="$s_table_ok" />
+	<input type="submit" class="btn btn-primary" name="write"         value="$s_table_ok" />
 	<input type="checkbox" name="notimestamp" id="notimestamp" /><label for="notimestamp">$s_table_time_stamp</label>
-	<input type="submit" name="cancel"        value="$s_table_cancel" />
+	<input type="submit" class="btn btn-waring" name="cancel"        value="$s_table_cancel" />
 	$delete_or_addshow
 </form>
 EOD;
@@ -1865,7 +1865,7 @@ $ref
 	<input type="hidden" name="refer"     value="$page" />
 	<input type="hidden" name="table_num" value="$table_num" />
 	<input type="hidden" name="file_name" value="$file" />
-	<input type="submit" name="csv_back"  value="$back" />
+	<input type="submit" class="btn btn-primary" name="csv_back"  value="$back" />
 </form>
 </fieldset>
 EOD;

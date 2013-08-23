@@ -72,7 +72,7 @@ EOD;
 
 	return <<<EOD
 <form action="$login_url" method="post">
-	<input type="submit" value="{$_hatena_msg['btn_login']}" />
+	<input type="submit" class="btn btn-success" value="{$_hatena_msg['btn_login']}" />
 </form>
 
 EOD;

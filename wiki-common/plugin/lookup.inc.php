@@ -36,7 +36,7 @@ function plugin_lookup_convert()
 	<input type="hidden" name="inter"  value="$interwiki" />
 	<label for="_p_lookup_$id">$interwiki:</label>
 	<input type="text" name="page" id="_p_lookup_$id" size="30" value="$default" />
-	<input type="submit" value="$button" />
+	<input type="submit" class="btn btn-primary" value="$button" />
 </form>
 EOD;
 	return $ret;

@@ -201,7 +201,7 @@ function plugin_openid_login_form()
 	<input type="hidden" name="page" value="$r_page" />
 	{$_openid_msg['msg_openid_url']}
 	<input type="text" name="openid_url" size="$size" style="background: url(http://www.openid.net/login-bg.gif) no-repeat; padding-left:18px;" value="" />
-	<input type="submit" value="{$_openid_msg['btn_login']}" />
+	<input type="submit" class="btn btn-success" value="{$_openid_msg['btn_login']}" />
 </form>
 
 EOD;

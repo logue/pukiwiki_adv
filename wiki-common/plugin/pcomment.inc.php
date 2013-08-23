@@ -143,7 +143,7 @@ function plugin_pcomment_convert()
 		$form[] = (PLUGIN_COMMENT_USE_TEXTAREA) ?
 			'<textarea name="msg" cols="' . PLUGIN_COMMENT_SIZE_MSG . '" row="1" placeholder="' . $_pcmt_messages['msg_comment'] . '"></textarea>' :
 			'<input type="text" name="msg" size="' . PLUGIN_COMMENT_SIZE_MSG . '" placeholder="' . $_pcmt_messages['msg_comment'] . '" />';
-		$form[] = '<input type="submit" value="' . $_pcmt_messages['btn_comment'] . '" />';
+		$form[] = '<input type="submit" class="btn btn-primary" value="' . $_pcmt_messages['btn_comment'] . '" />';
 	}
 	if (PKWK_READONLY == Auth::ROLE_AUTH) {
 		exist_plugin('login');

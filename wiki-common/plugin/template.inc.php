@@ -102,7 +102,7 @@ function plugin_template_action()
 	</dl>
 	<label for="_p_template_refer">{$_template_msg['msg_template_refer']}</label>
 	<input type="text" name="page" id="_p_template_refer" value="$s_page" />
-	<input type="submit" name="submit" value="{$_template_msg['btn_template_create']}" />
+	<input type="submit" class="btn btn-primary" name="submit" value="{$_template_msg['btn_template_create']}" />
 	$tag
 </form>
 EOD;

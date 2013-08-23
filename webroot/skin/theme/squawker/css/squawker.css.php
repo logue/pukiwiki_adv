@@ -46,6 +46,21 @@ body {
   padding-top: 50px;
   padding-bottom: 0px;
 }
+textarea, select, option, input, var, pre, code, .ui-button-text{
+	font-family: monospace !important;
+}
+.table_center{
+	width:auto;
+	margin: 0 auto;
+}
+.table_left{
+	width:auto;
+	margin:auto auto auto 0;
+}
+.table_right{
+	width:auto;
+	margin:auto 0 auto auto;
+}
 
 /* Jumbotrons
 -------------------------------------------------- */
@@ -806,6 +821,25 @@ th .ui-icon {
 	padding: 0px;
 }
 
+/* ==|== JavaScript Stylesheet classes ====================================== */
+.tocpic{
+	display: inline;
+	cursor: pointer;
+}
+
+/* for realedit.js */
+#realview {
+	border: 1px solid silver;
+	background-color: white;
+	padding: .2em;
+	margin-bottom: .1em;
+	height: 200px;
+	display: none;
+	width: 99%;
+	resize: vertical;
+	overflow-y: scroll;
+}
+
 /* popup toc */
 #poptoc{
 	background-color: lightyellow;
@@ -879,96 +913,202 @@ th .ui-icon {
 	vertical-align: text-bottom;
 }
 
-/*
-	ColorBox Core Style
-	The following rules are the styles that are consistant between themes.
-	Avoid changing this area to maintain compatability with future versions of ColorBox.
-*/
-#colorbox, #cboxOverlay, #cboxWrapper{position:absolute; top:0; left:0; z-index:9999; overflow:hidden;}
-#cboxOverlay{position:fixed; width:100%; height:100%;}
-#cboxMiddleLeft, #cboxBottomLeft{clear:left;}
-#cboxContent{position:relative; overflow:hidden;}
-#cboxLoadedContent{overflow:auto;}
-#cboxLoadedContent iframe{display:block; width:100%; height:100%; border:0;}
-#cboxTitle{margin:0;}
-#cboxLoadingOverlay, #cboxLoadingGraphic{position:absolute; top:0; left:0; width:100%;}
-#cboxPrevious, #cboxNext, #cboxClose, #cboxSlideshow{cursor:pointer;}
-
-#cboxTopLeft{width:5px; height:5px;}
-#cboxTopRight{width:5px; height:5px;}
-#cboxBottomLeft{width:5px; height:5px;}
-#cboxBottomRight{width:5px; height:5px;}
-#cboxMiddleLeft{width:5px;}
-#cboxMiddleRight{width:5px;}
-#cboxTopCenter{height:5px;}
-#cboxBottomCenter{height:5px;}
-#cboxLoadedContent{margin-bottom:28px;}
-#cboxTitle{position:absolute; bottom:4px; left:0; text-align:center; width:100%;}
-#cboxCurrent{position:absolute; bottom:4px; left:58px;}
-#cboxSlideshow{position:absolute; bottom:4px; right:30px;}
-#cboxPrevious{position:absolute; bottom:0; left:0px;}
-#cboxNext{position:absolute; bottom:0; left:27px;}
-#cboxClose{position:absolute; bottom:0; right:0;}
-#cboxLoadingGraphic {position:fixed; top:50%; left:50%; width:42px; height:42px;}
-
-/* jPlayer */
-#jp-container {
-	position:relative;
-	padding:20px 0;
-}
-
-#jp-container .jp-volume {
-	position: relative;
-	left: 520px;
-	width: 100px;
-	top: -.75em;
-}
-
-#jp-container .jp-bars {
-	position: relative;
-	left :170px;
-	top: .25em;
-	width: 280px;
-}
-#jp-container .ui-slider-handle{
-	height: 1.6em;
-}
-#jp-container .pkwk_widget {
-	display: block;
-}
-/*
-#jp-container .jp-loader {
-	height: .2em;
-	border: 0;
-}
-*/
-#jp-container .jp-bars .jp-playback {
-	height: 12px;
-}
-
-/* Swfupload */
-#swfupload-control p{
-	margin: 10px 5px;
-}
-#swfupload-log{
-	margin: 0; padding: 0; width: 500px;
-}
-#swfupload-log li{
-	list-style-position: inside;
-	margin: 2px;
-	padding: 10px;
-	position: relative;
-}
-#swfupload-log li .progressbar{
-	height: 5px;
-}
-#swfupload-log li p{
+/* ui-lightbox */
+#ui-lightbox, #ui-lightbox-panorama-icon, #ui-lightbox-content-container,
+#ui-lightbox-content, #ui-lightbox-content > *, #ui-lightbox-arrow,
+#ui-lightbox-arrow > span, #ui-lightbox-bottombar, #ui-lightbox-title-wrapper,
+#ui-lightbox-title, #ui-lightbox-bottombar-bottom, #ui-lightbox-button-prev,
+#ui-lightbox-button-prev > span, #ui-lightbox-counter, #ui-lightbox-button-next,
+#ui-lightbox-button-next > span, #ui-lightbox-button-close,
+#ui-lightbox-button-close > span, #ui-lightbox-map, #ui-lightbox-map-viewport,
+#ui-lightbox-overlay {
 	margin: 0;
+	padding: 0;
 }
-#swfupload-log li.success{
-	border:1px solid #339933;
-	background: #ccf9b9;
+
+#ui-lightbox {
+	font-size: 62.5%;
+	padding: 5px;
+	position: fixed;
+	z-index: 9999;
+	width: auto;
+	height: auto;
 }
+
+#ui-lightbox-content-container {
+	position: relative;
+}
+
+#ui-lightbox-content {
+	border: 0;
+	position: relative;
+	width: 20px;
+	height: 20px;
+}
+
+#ui-lightbox-content > * {
+	display: block;
+	position: absolute;
+	z-index: 100;
+}
+
+#ui-lightbox-arrow {
+	cursor: pointer;
+	display: block;
+	position: absolute;
+	top: 50%;
+	margin-top: -8px;
+	z-index: 101;
+}
+
+.ui-lightbox-arrow-next {
+	border-right: 0;
+	right: 0;
+}
+
+.ui-lightbox-arrow-prev {
+	border-left: 0;
+	left: 0;
+}
+
+#ui-lightbox-panorama-icon {
+	cursor: pointer;
+	height: 32px;
+	left: 20px;
+	width: 32px;
+	position: absolute;
+	top: 20px;
+	z-index: 110;
+}
+
+.ui-lightbox-panorama-icon-expand {
+	background: url('<?php echo $image_dir ?>ajax/panorama.png') top left no-repeat;
+}
+
+.ui-lightbox-panorama-icon-expand-hover {
+	background: url('<?php echo $image_dir ?>ajax/panorama.png') bottom left no-repeat;
+}
+
+.ui-lightbox-panorama-icon-shrink {
+	background: url('<?php echo $image_dir ?>ajax/panorama.png') top right no-repeat;
+}
+
+.ui-lightbox-panorama-icon-shrink-hover {
+	background: url('<?php echo $image_dir ?>ajax/panorama.png') bottom right no-repeat;
+}
+
+.ui-lightbox-loader {
+	background: url('<?php echo $image_dir ?>ajax/loader.gif') center center no-repeat;
+}
+
+#ui-lightbox-bottombar {
+	margin-top: 5px;
+	padding: 5px;
+	height: 40px;
+	position: relative;
+}
+
+#ui-lightbox-bottombar > p {
+	margin-right: 20px;
+	height: 20px;
+	line-height: 20px;
+}
+
+#ui-lightbox-bottombar-bottom {
+	text-align: left;
+}
+
+#ui-lightbox-title-wrapper {
+	font-size: 14px;
+	height: 20px;
+	overflow: hidden;
+	text-align: left;
+}
+
+#ui-lightbox-counter {
+	font-size: 9px;
+	line-height: 20px;
+	vertical-align: middle;
+}
+
+#ui-lightbox-separator {
+	line-height: 20px;
+	padding: 0 2px;
+	vertical-align: middle;
+}
+
+#ui-lightbox-button-prev, #ui-lightbox-button-next, #ui-lightbox-button-play {
+	display: inline-block;
+	line-height: 20px;
+	vertical-align: middle;
+}
+
+#ui-lightbox-button-close {
+	line-height: 20px;
+	position: absolute;
+	top: 17px;
+	right: 5px;
+}
+
+.ui-lightbox-button {
+	cursor: pointer;
+}
+
+.ui-lightbox-button.ui-state-highlight {
+	border-style: none;
+	background: none;
+}
+
+#ui-lightbox-map {
+	background-color: black;
+	border: 1px solid white;
+	filter:Alpha(Opacity=20);
+	height: 100px;
+	opacity: .30;
+	position: fixed;
+	right: 20px;
+	top: 20px;
+	width: 150px;
+	z-index: 10000;
+}
+
+#ui-lightbox-map-viewport {
+	border: 1px solid white;
+	left: -1px; /*prevent from overlapping the map border*/
+	position: absolute;
+	top: -1px; /*prevent from overlapping the map border*/
+}
+
+#ui-lightbox-overlay {
+	border: 0;
+	position: fixed;
+}
+
+#ui-lightbox-error {
+	background: url('<?php echo $image_dir ?>ajax/error_bg.png') repeat left top;
+}
+
+#ui-lightbox-error-message {
+	color: #ffffff;
+	font-size: 14px;
+	line-height: 1.5;
+	margin-bottom: 21px;
+	padding-top: 274px;
+	text-align: center;
+}
+
+#ui-lightbox-error-footer {
+	text-align: center;
+}
+
+#ui-lightbox-error-footer > button {
+	margin-right: 15px;
+}
+
+.ui-lightbox-error-icon-sign {
+	background: url('<?php echo $image_dir ?>ajax/error_sign.png') no-repeat center 226px;		 
+}
+
 /* Fix Modernizr cheking dom */
 #modernizr {
 	position: absolute;

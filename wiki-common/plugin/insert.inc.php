@@ -103,7 +103,7 @@ function plugin_insert_convert()
 	<input type="hidden" name="cmd" value="insert" />
 	<input type="hidden" name="digest" value="$s_digest" />
 	<textarea name="msg" rows="$s_rows" cols="$s_cols"></textarea><br />
-	<input type="submit" name="insert" value="$_btn_insert" />
+	<input type="submit" class="btn btn-primary" name="insert" value="$_btn_insert" />
 </form>
 EOD;
 

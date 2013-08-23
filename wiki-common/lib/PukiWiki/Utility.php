@@ -717,12 +717,14 @@ class Utility{
 			}
 			// ナチュラルソート
 			ksort($_pages, SORT_NATURAL);
-			$ret[] = '<div class="template_form">';
-			$ret[] = '<select name="template_page" class="template">';
+			$ret[] = '<div class="form-inline">';
+			$ret[] = '<div class="form-group">';
+			$ret[] = '<select class="form-control" name="template_page" class="template">';
 			$ret[] = '<option value="" disabled="disabled" selected="selected">-- ' . $_button['template'] . ' --</option>';
 			$ret[] = join("\n", $_pages);
 			$ret[] = '</select>';
-			$ret[] = '<input type="submit" name="template" value="' . $_button['load'] . '" accesskey="l" />';
+			$ret[] = '</div>';
+			$ret[] = '<input type="submit" class="btn btn-default" name="template" value="' . $_button['load'] . '" accesskey="l" />';
 			$ret[] = '</div>';
 			unset($_s_page, $_w, $_pages);
 		}
@@ -750,9 +752,9 @@ class Utility{
 			$ret[] = isset($vars['add']) ? '<input type="checkbox" name="add_top" value="true"' . (isset($vars['add']) ? ' checked="checked"' : '') . ' /><label for="add_top">' . $_button['addtop'] . '</label>' : null;
 		}else{
 			// 通常用
-			$ret[] = '<input type="submit" id="btn_submit" name="write" value="' . $_button['update'] . '" accesskey="s" />';
+			$ret[] = '<input type="submit" class="btn btn-primary" id="btn_submit" name="write" value="' . $_button['update'] . '" accesskey="s" />';
 			$ret[] = isset($vars['add']) ? '<input type="checkbox" name="add_top" value="true"' . (isset($vars['add']) ? ' checked="checked"' : '') . ' /><label for="add_top">' . $_button['addtop'] . '</label>' : null;
-			$ret[] = '<input type="submit" id="btn_preview" name="preview" value="' . $_button['preview'] . '" accesskey="p" />';
+			$ret[] = '<input type="submit" class="btn btn-default" id="btn_preview" name="preview" value="' . $_button['preview'] . '" accesskey="p" />';
 			if ($notimeupdate !== 0 && $wiki->isValied()){
 				// タイムスタンプを更新しないのチェックボックス
 				$ret[] = '<input type="checkbox" name="notimestamp" id="_edit_form_notimestamp" value="true"' . (isset($vars['notimestamp']) ? ' checked="checked"' : null) . ' />';
@@ -760,7 +762,7 @@ class Utility{
 			}
 			// 管理人のパス入力
 			$ret[] = $notimeupdate === 2 && Auth::check_role('role_contents_admin') ? '<input type="password" name="pass" size="12" placeholder="Password" />' : null;
-			$ret[] = '<input type="submit" id="btn_cancel" name="cancel" value="' . $_button['cancel'] . '" accesskey="c" />';
+			$ret[] = '<input type="submit" class="btn btn-warning" id="btn_cancel" name="cancel" value="' . $_button['cancel'] . '" accesskey="c" />';
 		}
 		$ret[] = '</div>';
 		$ret[] = '</form>';

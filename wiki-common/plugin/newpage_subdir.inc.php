@@ -73,7 +73,7 @@ function print_form_string( $list )
 	$form_string[] = '<input type="hidden" name="cmd" value="newpage_subdir" />';
 	$form_string[] = isset($vars['page']) ? '<input type="hidden" name="refer" value="'.$vars['page'].'" />' : null;
 	$form_string[] = '<input type="text" name="page" size="30" value="" />';
-	$form_string[] = '<input type="submit" value="' . T_('New') . '" />';
+	$form_string[] = '<input type="submit" class="btn btn-primary" value="' . T_('New') . '" />';
 	$form_string[] = '</fieldset>';
 	$form_string[] = '</form>';
 

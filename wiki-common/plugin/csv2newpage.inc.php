@@ -112,7 +112,7 @@ EOD;
 		return <<<EOD
 <form enctype="multipart/form-data" action="$script" method="post" class="csv2newpage_form">
 	$s_text
-	<input type="submit" value="$s_title" />
+	<input class="btn btn-primary" type="submit" value="$s_title" />
 	<input type="hidden" name="_csv2newpage_no" value="$csv2newpage_no" />
 	$retval
 </form>
@@ -394,7 +394,7 @@ function plugin_csv2newpage_showform($retval)
 	<span class="small">$msg_maxsize</span><br />
 	{$_csv2newpage_messages['msg_file']} <input type="file" name="attach_file" />
 	$pass
-	<input type="submit" value="{$_csv2newpage_messages['btn_upload']}" />
+	<input type="submit" class="btn btn-primary" value="{$_csv2newpage_messages['btn_upload']}" />
 </form>
 EOD;
 }

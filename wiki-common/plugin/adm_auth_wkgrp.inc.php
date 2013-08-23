@@ -78,7 +78,7 @@ EOD;
 <form action="$script" method="post" class="adm_auth_wkgrp_form">
 	<input type="hidden" name="cmd" value="adm_auth_wkgrp" />
 	<input type="hidden" name="pcmd" value="gen" />
-	<input type="submit" value="{$_adm_auth_wkgrp_msg['btn_gen']}" />
+	<input type="submit" class="btn btn-default" value="{$_adm_auth_wkgrp_msg['btn_gen']}" />
 	$guide_msg
 </form>
 
@@ -290,7 +290,7 @@ function adm_auth_wkgrp_add_btn()
 	return <<<EOD
 <form action="$script" method="post" class="form_adm_auth_wkgrp_add">
 	<input type="hidden" name="cmd" value="adm_auth_wkgrp" />
-	<input type="submit" value="{$_adm_auth_wkgrp_msg['btn_auth_wkgrp']}" />
+	<input type="submit" class="btn btn-default" value="{$_adm_auth_wkgrp_msg['btn_auth_wkgrp']}" />
 </form>
 
 EOD;

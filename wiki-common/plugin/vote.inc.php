@@ -653,7 +653,7 @@ class PluginVotex
 			$form[] = '<tr>' . "\n";
 			$form[] = '<td class="vote_choise_td">' . InlineFactory::factory($choice) . '</td>';
 			$form[] = '<td class="vote_count_td"><var>'  . Utility::htmlsc($count) . '</var></td>';
-			$form[] = ($this->options['readonly']) ? null : '<td class="vote_form_td"><input type="submit" name="' . $this->encode_choice($choice_id) . '" value="' . T_('Vote') . '" /></td>';
+			$form[] = ($this->options['readonly']) ? null : '<td class="vote_form_td"><input type="submit" class="btn btn-default" name="' . $this->encode_choice($choice_id) . '" value="' . T_('Vote') . '" /></td>';
 			$form[] = '</tr>';
 		}
 		$form[] = '</tbody>';
@@ -668,7 +668,7 @@ class PluginVotex
 			$form[] = '<input type="text" style="width:90%;" name="addchoice" value="" placeholder="' . T_('Item name') . '" />';
 			$form[] = '</th>';
 			$form[] = '<th class="style_th vote_form_td">';
-			$form[] = '<input type="' . $submit . '" name="' . $choice_key . '" value="' . T_('Add') . '" class="submit" />';
+			$form[] = '<input type="' . $submit . '" class="btn btn-primary" name="' . $choice_key . '" value="' . T_('Add') . '" class="submit" />';
 			$form[] = '</th>';
 			$form[] = '</tr>';
 			$form[] = '</tfoot>';

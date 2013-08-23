@@ -138,7 +138,7 @@ function replace_adm($pass,$search)
 		$body_pass
 		<input type="checkbox" name="notimestamp" id="replace_notimestamp" />
 		<label for="replace_notimestamp">{$_button['notchangetimestamp']}</label><br />
-		<input type="submit" name="ok" value="{$_replace_msg['btn_exec']}" />
+		<input type="submit" class="btn btn-warning" name="ok" value="{$_replace_msg['btn_exec']}" />
 	</form>
 </fieldset>
 

@@ -145,7 +145,7 @@ function plugin_search_search_form($s_word = '', $type = '', $bases = array())
 		$ret[] = '<label for="_p_search_base_id_all">' . $_search_msg['search_all'] . '</label>';
 		$ret[] = (IS_MOBILE) ? '</fieldset>' : null;
 	}
-	$ret[] = '<input type="submit" value="' . $_search_msg['btn_search'] . '" />';
+	$ret[] = '<input type="submit" class="btn btn-info" value="' . $_search_msg['btn_search'] . '" />';
 	$ret[] = '</form>';
 	
 	return join("\n", $ret);

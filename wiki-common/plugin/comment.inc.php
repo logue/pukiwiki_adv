@@ -191,7 +191,7 @@ function plugin_comment_convert()
 		'<textarea name="msg" id="p_comment_comment_'.$comment_all_no.'" cols="'.$comment_cols.'" row="1" placeholder="'.$_comment_messages['label_comment'].'"></textarea>' :
 		'<input type="text" name="msg" id="p_comment_comment_'.$comment_all_no.'" size="'.$comment_cols.'" placeholder="'.$_comment_messages['label_comment'].'" />';
 
-	$ret[] = '<input type="submit" name="comment" value="' . $_comment_messages['label_post'] . '" />';
+	$ret[] = '<input type="submit" class="btn btn-primary" name="comment" value="' . $_comment_messages['label_post'] . '" />';
 	$ret[] = '</form>';
 
 	$string = join("\n",$ret);

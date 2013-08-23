@@ -133,7 +133,7 @@ function plugin_diff_delete($page)
 	<input type="hidden"   name="page"   value="$s_page" />
 	<input type="hidden"   name="action" value="delete" />
 	<input type="password" name="pass"   size="12" />
-	<input type="submit"   name="ok"     value="$_btn_delete" />
+	<input class="btn btn-danger" type="submit"   name="ok"     value="$_btn_delete" />
 </form>
 EOD;
 

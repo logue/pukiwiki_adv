@@ -74,7 +74,7 @@ EOD;
 	$body .= <<<EOD
 	<input type="checkbox" name="force" id="_c_force" />
 	<label for="_c_force">{$_links_messages['btn_force']}</label>
-	<input type="submit" value="{$_links_messages['btn_submit']}" />
+	<input type="submit" class="btn btn-primary" value="{$_links_messages['btn_submit']}" />
 </form>
 EOD;
 

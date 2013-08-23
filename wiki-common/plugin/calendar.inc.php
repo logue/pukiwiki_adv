@@ -264,8 +264,8 @@ function plugin_calendar_action()
 	global $vars;
 	global $_calendar_msg, $_labels;
 
+	$vars['page'] = isset($vars['file']) ? $vars['file'] : '*';
 	$page = Utility::stripBracket($vars['page']);
-	$vars['page'] = ($vars['file']) ? $vars['file'] : '*';
 
 	$date = $vars['date'] ? $vars['date'] : get_date('Ym');
 	$mode = $vars['mode'] ? $vars['mode'] : 'view';

@@ -39,7 +39,7 @@ function plugin_doc_ini_convert()
 	<input type="hidden" name="cmd" value="doc_ini" />
 	<input type="hidden" name="action" value="delete" />
 	<input type="hidden" name="page" value="{$vars['page']}" />
-	<input type="submit" value="{$_doc_ini_msg['btn_init']}" />
+	<input class="btn btn-danger" type="submit" value="{$_doc_ini_msg['btn_init']}" />
 </form>
 
 EOD;
@@ -70,7 +70,7 @@ function plugin_doc_ini_action()
 	<input type="hidden" name="action" value="exec" />
 	<input type="hidden" name="page" value="{$vars['page']}" />
 	$msg_title
-	<input type="submit" value="{$_doc_ini_msg['btn_exec']}" />
+	<input class="btn btn-primary" type="submit" value="{$_doc_ini_msg['btn_exec']}" />
 </form>
 
 EOD;

@@ -78,7 +78,7 @@ function plugin_unfreeze_action()
 		<input type="hidden" name="cmd"  value="unfreeze" />
 		<input type="hidden" name="page" value="$s_page" />
 		<input type="password" name="pass" size="12" />
-		<input type="submit"   name="ok"   value="$_btn_unfreeze" />
+		<input type="submit" class="btn btn-primary"  name="ok"   value="$_btn_unfreeze" />
 	</form>
 </fieldset>
 EOD;

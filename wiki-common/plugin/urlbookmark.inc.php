@@ -187,7 +187,7 @@ function plugin_urlbookmark_convert()
 	<input type="text" name="url" size="$url_cols" placeholder="$_btn_url" /><br />
 $titletags
 	<input type="text" name="msg" size="$urlbookmark_cols" placeholder="$_msg_urlbookmark" /><br />
-	<input type="submit" name="urlbookmark" value="$_btn_urlbookmark" />
+	<input type="submit" class="btn btn-primary" name="urlbookmark" value="$_btn_urlbookmark" />
 </form>
 EOD;
 }

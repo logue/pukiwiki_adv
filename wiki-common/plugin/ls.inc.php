@@ -26,6 +26,7 @@ function plugin_ls_convert()
 	$prefix = $vars['page'].'/';
 
 	$page  = isset($vars['page']) ? $vars['page'] : '';
+	$pages = array();
 
 	foreach (Auth::get_existpages() as $page)
 	{
@@ -37,6 +38,7 @@ function plugin_ls_convert()
 	natcasesort($pages);
 
 	$ls = array();
+	
 	foreach ($pages as $page)
 	{
 		$comment = '';

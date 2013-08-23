@@ -11,6 +11,7 @@
 use PukiWiki\Auth\Auth;
 use PukiWiki\Renderer\RendererFactory;
 use PukiWiki\Utility;
+use PukiWiki\File\LogFactory;
 
 /*
  * 初期処理
@@ -99,7 +100,7 @@ EOD;
 		// 通常認証のみなのでボタン
 		$ret[] = '<input type="hidden" name="api" value="plus" />';
 	}
-	$ret[] = '<input type="submit" value="' . $_login_msg['btn_login'] . '" />';
+	$ret[] = '<input type="submit" class="btn btn-success" value="' . $_login_msg['btn_login'] . '" />';
 	$ret[] = '</div>';
 	$ret[] = '</form>';
 	return join("\n",$ret);
@@ -203,7 +204,7 @@ function login_return_page()
 	global $vars;
 
 	$page = (empty($vars['page'])) ? '' : $vars['page'];
-	log_write('login','');
+	//LogFactory::factory('login')->set();
 	Utility::redirect(get_page_location_uri($page));
 }
 /* End of file login.inc.php */

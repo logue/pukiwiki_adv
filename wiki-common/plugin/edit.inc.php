@@ -11,7 +11,6 @@
 // Plus! NOTE:(policy)not merge official cvs(1.40->1.41) See Question/181
 
 use PukiWiki\Auth\Auth;
-use PukiWiki\Diff\Diff;
 use PukiWiki\Factory;
 use PukiWiki\Renderer\Header;
 use PukiWiki\Renderer\RendererFactory;
@@ -33,6 +32,7 @@ function plugin_edit_action()
 	global $vars, $load_template_func, $_string;
 
 	$page = isset($vars['page']) ? $vars['page'] : null;
+	if (empty($page)) return array('msg'=> T_('Pagename is missing.'), 'body'=>T_('Pagename is missing.'));
 	$wiki = new Wiki($page);
 
 	// if (PKWK_READONLY) die_message(  sprintf($_string['error_prohibit'], 'PKWK_READONLY') );
@@ -101,7 +101,7 @@ function plugin_edit_action()
 		}
 	}
 
-	return array('msg'=> T_('Edit of $1'), 'body'=>edit_form($page, $postdata));
+	return array('msg'=> T_('Edit of $1'), 'body'=>Utility::editForm($page, $postdata));
 }
 
 // Preview by Ajax
@@ -194,7 +194,7 @@ function plugin_edit_inline()
 	$args = func_get_args();
 
 	// {label}. Strip anchor tags only
-	$s_label = strip_htmltag(array_pop($args), FALSE);
+	$s_label = Utility::stripHtmlTags(array_pop($args), FALSE);
 	if (empty($s_label)) {
 		$s_label = $_symbol_paraedit;
 		$s_label_edit = & $_symbol_paraedit;
@@ -257,7 +257,7 @@ function plugin_edit_write()
 	// Paragraph edit mode
 	if ($partid) {
 		$source = preg_split('/([^\n]*\n)/', $vars['original'], -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
-		$vars['msg'] = plugin_edit_parts($partid, $source, $vars['msg']) !== FALSE
+		$vars['msg'] = plugin_edit_parts($partid,$source, $vars['msg']) !== FALSE
 			? join('', $source)
 			: rtrim($vars['original']) . "\n\n" . $vars['msg'];
 	}
@@ -357,8 +357,9 @@ function plugin_edit_honeypot()
 
 // Replace/Pickup a part of source
 // BugTrack/110
-function plugin_edit_parts($id, &$source, $postdata='')
+function plugin_edit_parts($id, &$src, $postdata='')
 {
+	$source = explode("\n",$src);
 	$postdata = rtrim($postdata) . "\n";
 	$start = -1;
 	$final = count($source);

@@ -739,7 +739,7 @@ function attach_form($page)
 	$attach_form[] = ( (PLUGIN_ATTACH_PASSWORD_REQUIRE || PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY) && Auth::check_role('role_contents_admin')) ?
 						'<br />' . ($_attach_messages[PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY ? 'msg_adminpass' : 'msg_password']) .
 		 					': <input type="password" name="pass" size="8" />' : '';
-	$attach_form[] = '<input type="submit" value="' . $_attach_messages['btn_upload'] . '" />';
+	$attach_form[] = '<input class="btn btn-primary" type="submit" value="' . $_attach_messages['btn_upload'] . '" />';
 	$attach_form[] = '<ul class="attach_info"><li>' . sprintf($_attach_messages['msg_maxsize'], '<var>' . number_format(PLUGIN_ATTACH_MAX_FILESIZE / 1024) . '</var>KB') . '</li></ul>';
 	$attach_form[] = '</form>';
 

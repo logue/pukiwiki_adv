@@ -211,8 +211,10 @@ class AttachFile extends AbstractFile{
 		$info_auth = '';
 		if ($role_contents_admin !== FALSE) {
 			$msg_auth = <<<EOD
+<div class="form-group">
 	<label for="_p_attach_password">{$_attach_messages['msg_password']}:</label>
-	<input type="password" name="pass" id="_p_attach_password" size="8" />
+	<input class="form-control" type="password" name="pass" id="_p_attach_password" size="8" />
+</div>
 EOD;
 			$info_auth = <<<EOD
 	<dt>{$_attach_messages['msg_filename']}</dt>
@@ -270,11 +272,13 @@ EOD;
 		<input type="hidden" name="refer" value="$s_page" />
 		<input type="hidden" name="file" value="$s_file" />
 		<input type="hidden" name="age" value="{$this->age}" />
-		$msg_delete
-		$msg_freeze
-		$msg_rename
-		$msg_auth
-		<input type="submit" value="{$_attach_messages['btn_submit']}" />
+        <div class="radio">
+			$msg_delete
+			$msg_freeze
+			$msg_rename
+			$msg_auth
+		</div>
+		<input type="submit" class="btn btn-danger" value="{$_attach_messages['btn_submit']}" />
 	</form>
 </div>
 EOD;

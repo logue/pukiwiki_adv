@@ -83,7 +83,7 @@ function plugin_spam_pages()
 		<label for="sort">{$_spam_messages['label_sort']}</label><br />
 		<label for="pass">{$_spam_messages['label_pass']}</label>
 		<input type="password" name="pass" id="pass" size="12" /><br />
-		<input type="submit" name="check" value="{$_spam_messages['check']}" />
+		<input type="submit" class="btn btn-primary" name="check" value="{$_spam_messages['check']}" />
 	</fieldset>
 </form>
 

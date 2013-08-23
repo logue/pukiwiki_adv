@@ -292,7 +292,7 @@ function plugin_dump_disp_form()
 			<label for="_p_dump_namedecode">$_dump_namedecode</label>
 		</dd>
 	</dl>
-	<p><input type="submit" name="ok" value="$_dump_btn_down" id="download" /></p>
+	<p><input type="submit" class="btn btn-primary" name="ok" value="$_dump_btn_down" id="download" /></p>
 </form>
 EOD;
 
@@ -312,7 +312,7 @@ EOD;
 				<span class="small">$_dump_upload</span>
 			</dd>
 		</dl>
-		<p><input type="submit" name="ok" value="$_dump_btn_up" /></p>
+		<p><input type="submit" class="btn btn-primary" name="ok" value="$_dump_btn_up" /></p>
 	</form>
 </div>
 EOD;

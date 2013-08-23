@@ -853,7 +853,7 @@ class Tracker_field_submit extends Tracker_field
 		$s_config = htmlsc($form->config_name);
 
 		return <<<EOD
-<input type="submit" value="$s_title" />
+<input type="submit" class="btn btn-primary" value="$s_title" />
 <input type="hidden" name="cmd"  value="tracker" />
 <input type="hidden" name="_refer"  value="$s_refer" />
 <input type="hidden" name="_base"   value="$s_base" />

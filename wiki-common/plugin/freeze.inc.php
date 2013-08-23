@@ -67,7 +67,7 @@ function plugin_freeze_action()
 		<input type="hidden"   name="page" value="$s_page" />
 		<div class="freeze_form">
 			<input type="password" name="pass" size="12" />
-			<input type="submit"   name="ok"   value="$_btn_freeze" />
+			<input type="submit" class="btn btn-primary"  name="ok"   value="$_btn_freeze" />
 		</div>
 	</form>
 </fieldset>

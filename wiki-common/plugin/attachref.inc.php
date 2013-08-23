@@ -225,7 +225,7 @@ function plugin_attachref_inline()
 	<input type="hidden" name="cmd" value="attachref" />
 	<input type="hidden" name="refer" value="$f_page" />
 	$ret
-	<input type="submit" value="$btn_text" />
+	<input class="btn btn-default" type="submit" value="$btn_text" />
 </form>
 EOD;
 		} else {
@@ -446,7 +446,7 @@ function attachref_form($page)
 	<p class="small">$msg_maxsize</p>
 	{$_attachref_messages['msg_file']}: <input type="file" name="attach_file" />
 	$pass
-	<input type="submit" value="{$_attachref_messages['btn_upload']}" />
+	<input class="btn btn-primary" type="submit" value="{$_attachref_messages['btn_upload']}" />
 </form>
 EOD;
 }

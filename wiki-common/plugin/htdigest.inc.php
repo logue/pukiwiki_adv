@@ -249,7 +249,7 @@ $x = <<<EOD
 				<td><input type="text" name="hash_view" size="80" $disabled /></td>
 			</tr>
 			<tr>
-				<td colspan="2"><input type="submit" name="submit" value="{$_htdigest_msg['Update']}" disabled="disabled" /></td>
+				<td colspan="2"><input type="submit" class="btn btn-default" name="submit" value="{$_htdigest_msg['Update']}" disabled="disabled" /></td>
 			</tr>
 		</table>
 	</form>

@@ -13,7 +13,6 @@
 
 namespace PukiWiki\Spam;
 
-use PukiWiki\File\AbstractFile;
 use PukiWiki\Render;
 use PukiWiki\Spam\PostId;
 use PukiWiki\Utility;
@@ -168,7 +167,7 @@ class Captcha{
 			// captchaの有効期間
 			$session->setExpirationSeconds($response_session, self::CAPTCHA_TIMEOUT);
 			$form .= '<input type="hidden" name="response_field" value="' . $captcha->getId() . '" />' . "\n";
-			$form .= '<input type="text" name="challenge_field" maxlength="' . $captcha->getWordLen() . '" size="'.$captcha->getWordLen() . '" />';
+			$form .= '<input type="text" class="form-control" name="challenge_field" maxlength="' . $captcha->getWordLen() . '" size="'.$captcha->getWordLen() . '" />';
 			// $form .= $captcha->getWord();
 		}
 	//	$ret[] = $session->offsetExists($session_name) ? 'true' : 'false';
@@ -195,7 +194,7 @@ class Captcha{
 		}
 		// CAPTCHAフォームを出力
 		$ret[] = $form;
-		$ret[] = '<input type="submit" value="submit"/>';
+		$ret[] = '<input class="btn btn-primary" type="submit" value="submit"/>';
 		$ret[] = '</form>';
 		$ret[] = '</fieldset>';
 

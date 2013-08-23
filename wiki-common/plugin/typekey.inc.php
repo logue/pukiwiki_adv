@@ -62,7 +62,7 @@ EOD;
 	$login_url = plugin_typekey_jump_url();
 	return <<<EOD
 <form action="$login_url" method="post" class="typekey_form">
-	<input type="submit" value="{$_typekey_msg['btn_login']}" />
+	<input type="submit" class="btn btn-success" value="{$_typekey_msg['btn_login']}" />
 </form>
 
 EOD;

@@ -57,7 +57,7 @@ function filelist_adm($pass)
 	<form action="$script" method="post" class="filelist_form">
 		<input type="hidden" name="cmd" value="filelist" />
 		<input type="password" name="pass" size="12" />
-		<input type="submit" name="ok" value="$btn" />
+		<input type="submit" class="btn btn-primary" name="ok" value="$btn" />
 	</form>
 </fieldset>
 EOD;

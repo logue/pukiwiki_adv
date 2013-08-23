@@ -73,7 +73,7 @@ EOD;
 	return <<<EOD
 <form action="$login_url" method="post">
 	<div>
-		<input type="submit" value="{$_jugemkey_msg['btn_login']}" />
+		<input type="submit" class="btn btn-success" value="{$_jugemkey_msg['btn_login']}" />
 	</div>
 </form>
 

@@ -89,6 +89,7 @@ class Referer{
 		// 改行ごと分割した状態でデーターを読み込む
 		foreach ($this->file->get() as $line){
 			$entries = explode("\t",$line);
+			if (!isset($entries[3])) continue;
 			$lines[rawurldecode($entries[3])] = $entries;
 		}
 		unset($entries);

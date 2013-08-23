@@ -120,7 +120,7 @@ EOD;
 	<label for="_p_md5_prefix">Add scheme prefix (RFC2307, Using LDAP as NIS)</label><br />
 	<label for="_p_md5_salt">Salt, '{scheme}', '{scheme}salt', or userPassword itself to specify:</label><br />
 	<input type="text" name="salt" id="_p_md5_salt" size="60" /><br />
-	<input type="submit" value="Compute" />
+	<input type="submit" class="btn btn-primary" value="Compute" />
 	<hr />
 	<p>* = Salt enabled</p>
 </form>

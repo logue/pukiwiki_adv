@@ -109,7 +109,7 @@ function plugin_addline_convert()
 	<input type="hidden" name="cmd" value="addline" />
 	<input type="hidden" name="refer" value="$f_page" />
 	$left_text
-	<input type="submit" name="addline" value="$btn_text" />
+	<input type="submit" name="addline" class="btn btn-default" value="$btn_text" />
 	$right_text
 </form>
 EOD;

@@ -98,13 +98,13 @@ function plugin_backup_action()
 
 	$wiki = Factory::Wiki($page);
 	$is_page = $wiki->has();
-	$s_page = htmlsc($page);
+	$s_page = Utility::htmlsc($page);
 	$r_page = rawurlencode($page);
 
 	$backups = Factory::Backup($page)->get();
 
 	$msg = $_backup_messages['msg_backup'];
-	if ($s_age > count($backups)) $s_age = $backups_count;
+	if ($s_age > count($backups)) $s_age = count($backups);
 	$body = '';
 
 	$wiki->checkReadable();

@@ -168,7 +168,7 @@ function plugin_bugtrack_print_form($base, $category)
 		</tr>
 		<tr>
 			<td colspan="2">
-				<input type="submit" value="$s_submit" />
+				<input type="submit" class="btn btn-primary" value="$s_submit" />
 			</td>
 		</tr>
 	</table>

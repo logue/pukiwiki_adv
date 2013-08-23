@@ -174,7 +174,7 @@ function plugin_rename_phase1($err = '', $page = '')
 			<input type="text" name="src" id="_p_rename_from" size="40" value="$s_src" class="suggest" /><br />
 			<label for="_p_rename_to">To:</label><br />
 			<input type="text" name="dst" id="_p_rename_to"   size="40" value="$s_dst" /><br />
-			<input type="submit" value="{$_rename_messages['btn_next']}" />
+			<input type="submit" class="btn btn-warning" value="{$_rename_messages['btn_next']}" />
 		</div>
 	</form>
 </fieldset>
@@ -216,7 +216,7 @@ $msg
 			<label for="_p_rename_newname">{$_rename_messages['msg_newname']}:</label>
 			<input type="text" name="page" id="_p_rename_newname" size="40" value="$s_page" /><br />
 			$msg_related
-			<input type="submit" value="{$_rename_messages['btn_next']}" />
+			<input type="submit" class="btn btn-warning" value="{$_rename_messages['btn_next']}" />
 		</div>
 	</form>
 </fieldset>
@@ -356,7 +356,7 @@ $msg
 		<div class="rename_form">
 			$input
 			$auth
-			<input type="submit" value="{$_rename_messages['btn_submit']}" />
+			<input type="submit" class="btn btn-warning" value="{$_rename_messages['btn_submit']}" />
 		</div>
 	</form>
 	<p>{$_rename_messages['msg_confirm']}</p>

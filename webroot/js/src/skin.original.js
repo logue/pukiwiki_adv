@@ -583,6 +583,7 @@ var pukiwiki = {};
 			}).removeClass('tabs');
 
 			// アップローダーに進捗状況表示（PHP5.4以降のみ）
+			/*
 			var $form = $(prefix+'form[enctype="multipart/form-data"]');
 			if ($form.length !== 0 && $form.children('.progress_session').length !== 0){
 				// Holds the id from set interval
@@ -624,6 +625,7 @@ var pukiwiki = {};
 					e.preventDefault();
 				});
 			}
+			*/
 
 			// ダイアログ
 			this.setAnchor(prefix);
@@ -1383,7 +1385,7 @@ var pukiwiki = {};
 			$form.children('input[name="write"]')
 				.after(
 					// 簡易差分表示ボタンを追加
-					$('<input type="button" name="view_diff" value="' + $.i18n('editor','diff') + '" accesskey="d" />')
+					$('<input type="button" name="view_diff" class="btn bnt-default" value="' + $.i18n('editor','diff') + '" accesskey="d" />')
 					.button()
 					.click(function() {
 						$('#diff').dialog('open');
@@ -1391,7 +1393,7 @@ var pukiwiki = {};
 				)
 				.after(
 					// プレビューボタンを書き換え
-					'<input type="button" name="add_ajax" value="' + $('.edit_form input[name=preview]').attr('value') + '" accesskey="p" />'
+					'<input type="button" name="add_ajax" class="btn bnt-default" value="' + $('.edit_form input[name=preview]').attr('value') + '" accesskey="p" />'
 				);
 
 			// オリジナルのプレビューボタンを削除
@@ -1816,11 +1818,7 @@ var pukiwiki = {};
 								pcmd:'upload',
 								page:PAGE,
 								ajax:'json'
-							},
-							'',
-							function(){
-								self.set_uploader('div.window');
-							});
+							})
 						}
 					break;
 					case 'E':

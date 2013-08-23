@@ -94,7 +94,7 @@ if (!defined('DATA_DIR')) { exit; }
 		<header class="jumbotron">
 			<div class="container">
 				<h1><a href="<?php echo $this->links['related'] ?>"><?php echo $this->title ?></a></h1>
-				<p><?php echo $this->topicpath; ?></p>
+				<?php echo $this->topicpath; ?>
 			</div>
 		</header>
 

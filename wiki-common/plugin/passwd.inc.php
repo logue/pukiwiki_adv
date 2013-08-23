@@ -287,7 +287,7 @@ EOD;
 		$disabled_result = 'disabled="disabled"';
 		$msg_submit = <<<EOD
     <tr>
-      <td><input type="submit" name="submit" value="{$_passwd_msg['Update']}" disabled="disabled" /></td>
+      <td><input type="submit" class="btn btn-primary" name="submit" value="{$_passwd_msg['Update']}" disabled="disabled" /></td>
     </tr>
 
 EOD;
