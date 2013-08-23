@@ -17,11 +17,9 @@ header('Cache-Control: private');
 header('Expires: ' .gmdate('D, d M Y H:i:s',time() + $expire) . ' GMT');
 header('Last-Modified: '.gmdate('D, d M Y H:i:s', filemtime($color)) . ' GMT');
 @ob_start('ob_gzhandler');
-
-readfile('bootstrap.min.css');
-readfile('bootstrap-responsive.min.css');
 readfile('custom-theme/jquery-ui-1.10.0.custom.css');
 ?>
+
 /* ==|== PukiWiki Advance Standard Font Set ================================= */
 
 .ie textarea{
@@ -45,7 +43,8 @@ iframe, object{
 }
 /* Override some defaults */
 body {
-    padding-top: 40px; /* 40px to make the container go all the way to the bottom of the topbar */
+  padding-top: 50px;
+  padding-bottom: 0px;
 }
 
 /* Jumbotrons
@@ -54,10 +53,8 @@ body {
 /* Base class
 ------------------------- */
 .jumbotron {
-    position: relative;
     color: #fff;
     color: rgba(255,255,255,.75);
-    padding: 40px 0;
     text-shadow: 0 1px 3px rgba(0,0,0,.4), 0 0 30px rgba(0,0,0,.075);
     background: <?php echo $start_color; ?>; /* Old browsers */
     background: -moz-linear-gradient(45deg,  <?php echo $start_color; ?> 0%, #<?php echo $stop_color; ?> 100%); /* FF3.6+ */
@@ -71,18 +68,20 @@ body {
     -moz-box-shadow: inset 0 3px 7px rgba(0,0,0,.2), inset 0 -3px 7px rgba(0,0,0,.2);
     box-shadow: inset 0 3px 7px rgba(0,0,0,.2), inset 0 -3px 7px rgba(0,0,0,.2);
 }
-.jumbotron h1 {
-    font-size: 80px;
-    font-weight: bold;
-    letter-spacing: -1px;
-    line-height: 1;
+
+.jumbotron nav {
+  font-size: 12px;
 }
-.jumbotron p {
-    font-size: 24px;
-    font-weight: 300;
-    line-height: 1.25;
-    margin-bottom: 30px;
+
+@media screen and (min-width: 768px) {
+  .jumbotron h1 {
+    font-size: 48px;
+  }
+  .jumbotron nav {
+      font-size: 16px;
+  }
 }
+
 
 /* Link styles (used on .masthead-links as well) */
 .jumbotron a {
@@ -95,34 +94,6 @@ body {
 .jumbotron a:hover {
     color: #fff;
     text-shadow: 0 0 10px rgba(255,255,255,.25);
-}
-
-.subhead {
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-.subhead h1 {
-    font-size: 60px;
-}
-.subhead p {
-    margin-bottom: 20px;
-}
-
-header{
-	margin-bottom:20px;
-}
-
-/* The white background content wrapper */
-.container > .content {
-    background-color: #fff;
-    padding: 20px;
-    margin: 0 -20px; /* negative indent the amount of the padding to maintain the grid system */
-    -webkit-border-radius: 0 0 6px 6px;
-    -moz-border-radius: 0 0 6px 6px;
-    border-radius: 0 0 6px 6px;
-    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.15);
-    -moz-box-shadow: 0 1px 2px rgba(0,0,0,.15);
-    box-shadow: 0 1px 2px rgba(0,0,0,.15);
 }
 
 footer{
@@ -334,82 +305,6 @@ em, cite, q{
   padding: 4px 5px;
 }
 
-.style_table {
-  border: 1px solid #dddddd;
-  border-collapse: separate;
-  *border-collapse: collapsed;
-  border-left: 0;
-  -webkit-border-radius: 4px;
-     -moz-border-radius: 4px;
-          border-radius: 4px;
-}
-.style_table_center{
-	margin: 0 auto;
-}
-.style_table_left{
-	margin:auto auto auto 0;
-}
-.style_table_right{
-	margin:auto 0 auto auto;
-}
-.style_table th,
-.style_table td {
-  border-left: 1px solid #dddddd;
-}
-
-.style_table caption + thead tr:first-child th,
-.style_table caption + tbody tr:first-child th,
-.style_table caption + tbody tr:first-child td,
-.style_table colgroup + thead tr:first-child th,
-.style_table colgroup + tbody tr:first-child th,
-.style_table colgroup + tbody tr:first-child td,
-.style_table thead:first-child tr:first-child th,
-.style_table tbody:first-child tr:first-child th,
-.style_table tbody:first-child tr:first-child td {
-  border-top: 0;
-}
-
-.style_table thead:first-child tr:first-child th:first-child,
-.style_table tbody:first-child tr:first-child td:first-child {
-  -webkit-border-top-left-radius: 4px;
-          border-top-left-radius: 4px;
-  -moz-border-radius-topleft: 4px;
-}
-
-.style_table thead:first-child tr:first-child th:last-child,
-.style_table tbody:first-child tr:first-child td:last-child {
-  -webkit-border-top-right-radius: 4px;
-          border-top-right-radius: 4px;
-  -moz-border-radius-topright: 4px;
-}
-
-.style_table thead:last-child tr:last-child th:first-child,
-.style_table tbody:last-child tr:last-child td:first-child {
-  -webkit-border-radius: 0 0 0 4px;
-     -moz-border-radius: 0 0 0 4px;
-          border-radius: 0 0 0 4px;
-  -webkit-border-bottom-left-radius: 4px;
-          border-bottom-left-radius: 4px;
-  -moz-border-radius-bottomleft: 4px;
-}
-
-.style_table thead:last-child tr:last-child th:last-child,
-.style_table tbody:last-child tr:last-child td:last-child {
-  -webkit-border-bottom-right-radius: 4px;
-          border-bottom-right-radius: 4px;
-  -moz-border-radius-bottomright: 4px;
-}
-
-.table-striped tbody tr:nth-child(odd) td,
-.table-striped tbody tr:nth-child(odd) th {
-  background-color: #f9f9f9;
-}
-
-.table tbody tr:hover td,
-.table tbody tr:hover th {
-  background-color: #f5f5f5;
-}
-
 /* html.php/edit_form() */
 .edit_form { clear: both; }
 
@@ -421,105 +316,6 @@ em, cite, q{
 }
 .ie8 .edit_form textarea{
 	width: 780px;
-}
-
-button, input[type="submit"], input[type="reset"] {
-  display: inline-block;
-  *display: inline;
-  padding: 4px 14px;
-  margin-bottom: 0;
-  *margin-left: .3em;
-  font-size: 14px;
-  line-height: 20px;
-  *line-height: 20px;
-  color: #333333;
-  text-align: center;
-  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
-  vertical-align: middle;
-  cursor: pointer;
-  background-color: #f5f5f5;
-  *background-color: #e6e6e6;
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6));
-  background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6);
-  background-image: -o-linear-gradient(top, #ffffff, #e6e6e6);
-  background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
-  background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
-  background-repeat: repeat-x;
-  border: 1px solid #bbbbbb;
-  *border: 0;
-  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-  border-color: #e6e6e6 #e6e6e6 #bfbfbf;
-  border-bottom-color: #a2a2a2;
-  -webkit-border-radius: 4px;
-     -moz-border-radius: 4px;
-          border-radius: 4px;
-  filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe6e6e6', GradientType=0);
-  filter: progid:dximagetransform.microsoft.gradient(enabled=false);
-  *zoom: 1;
-  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
-     -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
-          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-button:hover, input[type="submit"]:hover, input[type="reset"]:hover,
-button:active, input[type="submit"]:active, input[type="reset"]:active,
-button[disabled],input[type="submit"][disabled], input[type="reset"][disabled] {
-  color: #333333;
-  background-color: #e6e6e6;
-  *background-color: #d9d9d9;
-}
-
-button:active, input[type="submit"]:active, input[type="reset"]:active,
-button.active {
-  background-color: #cccccc;
-}
-
-button:first-child {
-  *margin-left: 0;
-}
-
-button:hover,input[type="submit"]:hover, input[type="reset"]:hover {
-  color: #333333;
-  text-decoration: none;
-  background-color: #e6e6e6;
-  *background-color: #d9d9d9;
-  /* Buttons in IE7 don't get borders, so darken on hover */
-
-  background-position: 0 -15px;
-  -webkit-transition: background-position 0.1s linear;
-     -moz-transition: background-position 0.1s linear;
-       -o-transition: background-position 0.1s linear;
-          transition: background-position 0.1s linear;
-}
-
-button:focus,input[type="submit"]:focus,input[type="reset"]:focus {
-  outline: thin dotted #333;
-  outline: 5px auto -webkit-focus-ring-color;
-  outline-offset: -2px;
-}
-
-button.active,
-button:active,
-input[type="submit"]:active,input[type="reset"]:active {
-  background-color: #e6e6e6;
-  background-color: #d9d9d9 \9;
-  background-image: none;
-  outline: 0;
-  -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
-     -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
-          box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-button.disabled,
-button[disabled],input[type="submit"][disabled],input[type="reset"][disabled] {
-  cursor: default;
-  background-color: #e6e6e6;
-  background-image: none;
-  opacity: 0.65;
-  filter: alpha(opacity=65);
-  -webkit-box-shadow: none;
-     -moz-box-shadow: none;
-          box-shadow: none;
 }
 
 /* Note */
@@ -2115,181 +1911,6 @@ span.symbol-internal	{ background-position: -108px -114px; }
 .browser-webzip{ background-position: -1730px 0; width: 16px; height: 16px; }
 .browser-winxbox{ background-position: -1747px 0; width: 16px; height: 16px; }
 .browser-wizz{ background-position: -1764px 0; width: 16px; height: 16px; }
-
-/* Responsive
--------------------------------------------------- */
-
-/* Desktop large
-------------------------- */
-@media (min-width: 1200px) {
-    .bs-docs-container {
-        max-width: 970px;
-    }
-    .bs-docs-sidenav {
-        width: 258px;
-    }
-    .bs-docs-sidenav > li > a {
-        width: 230px \9; /* Override the previous IE8-9 hack */
-    }
-}
-
-/* Desktop
-------------------------- */
-@media (max-width: 980px) {
-    /* Unfloat brand */
-    body > .navbar-fixed-top .brand {
-        float: left;
-        margin-left: 0;
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-
-    /* Inline-block quick links for more spacing */
-    .quick-links li {
-        display: inline-block;
-        margin: 5px;
-    }
-
-    /* When affixed, space properly */
-    .bs-docs-sidenav {
-        top: 0;
-        width: 218px;
-        margin-top: 30px;
-        margin-right: 0;
-    }
-}
-
-/* Tablet to desktop
-------------------------- */
-@media (min-width: 768px) and (max-width: 979px) {
-    /* Remove any padding from the body */
-    body {
-        padding-top: 0;
-    }
-    /* Widen masthead and social buttons to fill body padding */
-    .jumbotron {
-        margin-top: -20px; /* Offset bottom margin on .navbar */
-    }
-    /* Adjust sidenav width */
-    .bs-docs-sidenav {
-        width: 166px;
-        margin-top: 20px;
-    }
-    .bs-docs-sidenav.affix {
-        top: 0;
-    }
-}
-
-/* Tablet
-------------------------- */
-@media (max-width: 767px) {
-    /* Remove any padding from the body */
-    body {
-        padding-top: 0;
-    }
-
-    /* Widen masthead and social buttons to fill body padding */
-    .jumbotron {
-        padding: 40px 20px;
-        margin-top:   -20px; /* Offset bottom margin on .navbar */
-        margin-right: -20px;
-        margin-left:  -20px;
-    }
-    .masthead h1 {
-        font-size: 90px;
-    }
-    .masthead p,
-    .masthead .btn {
-        font-size: 24px;
-    }
-    .marketing .span4 {
-        margin-bottom: 40px;
-    }
-    .bs-docs-social {
-        margin: 0 -20px;
-    }
-
-    /* Space out the show-grid examples */
-    .show-grid [class*="span"] {
-        margin-bottom: 5px;
-    }
-
-    /* Sidenav */
-    .bs-docs-sidenav {
-        width: auto;
-        margin-bottom: 20px;
-    }
-    .bs-docs-sidenav.affix {
-        position: static;
-        width: auto;
-        top: 0;
-    }
-
-    /* Unfloat the back to top link in footer */
-    .footer {
-        margin-left: -20px;
-        margin-right: -20px;
-        padding-left: 20px;
-        padding-right: 20px;
-    }
-    .footer p {
-        margin-bottom: 9px;
-    }
-}
-
-/* Landscape phones
-------------------------- */
-@media (max-width: 480px) {
-    /* Remove padding above jumbotron */
-    body {
-        padding-top: 0;
-    }
-
-    /* Change up some type stuff */
-    h2 small {
-        display: block;
-    }
-
-    /* Downsize the jumbotrons */
-    .jumbotron h1 {
-        font-size: 45px;
-    }
-    .jumbotron p,
-    .jumbotron .btn {
-        font-size: 18px;
-    }
-    .jumbotron .btn {
-        display: block;
-        margin: 0 auto;
-    }
-
-    /* center align subhead text like the masthead */
-    .subhead h1,
-    .subhead p {
-        text-align: center;
-    }
-
-    /* Marketing on home */
-    .marketing h1 {
-        font-size: 30px;
-    }
-    .marketing-byline {
-        font-size: 18px;
-    }
-
-    /* Do our best to make tables work in narrow viewports */
-    table code {
-        white-space: normal;
-        word-wrap: break-word;
-        word-break: break-all;
-    }
-
-    /* Tighten up footer */
-    .footer {
-        padding-top: 20px;
-        padding-bottom: 20px;
-    }
-}
 
 
 <?php @ob_end_flush();

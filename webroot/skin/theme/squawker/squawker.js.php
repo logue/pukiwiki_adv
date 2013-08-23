@@ -10,12 +10,6 @@ header('Expires: ' .gmdate('D, d M Y H:i:s',time() + $expire) . ' GMT');
 header('Last-Modified: '.gmdate('D, d M Y H:i:s', filemtime($color)) . ' GMT');
 @ob_start('ob_gzhandler');
 readfile('js/bootstrap.min.js');
-?>
-$(document).ready(function(){
-	$('#loading').css('display','none');
-	$('.contents').scrollspy();
-});
-<?php
 @ob_end_flush();
 
 /* End of file squawker.js.php */
