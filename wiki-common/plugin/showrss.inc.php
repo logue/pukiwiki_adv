@@ -70,8 +70,9 @@ function plugin_showrss_convert()
 
 	$argv = func_get_args();
 	$timestamp = FALSE;
-	$cachehour = 12;
-	$template = $uri = '';
+	$cachehour = 6;
+	$template = 'default';
+	$uri = '';
 	switch ($num) {
 	case 4: $timestamp = (trim($argv[3]) == '1');	/*FALLTHROUGH*/
 	case 3: $cachehour = trim($argv[2]);		/*FALLTHROUGH*/
@@ -79,7 +80,7 @@ function plugin_showrss_convert()
 	case 1: $uri       = trim($argv[0]);
 	}
 
-	$class = ($template == '' || $template == 'default') ? 'ShowRSS_html' : 'ShowRSS_html_' . $template;
+	$class = (empty($template) || $template == 'default') ? 'ShowRSS_html' : 'ShowRSS_html_' . $template;
 	if (! is_numeric($cachehour))
 		return '<p class="message_box ui-state-error ui-corner-all">#showrss: Cache-lifetime seems not numeric: <var>' . htmlsc($cachehour) . '</var></p>' . "\n";
 	if (! class_exists($class))
@@ -101,6 +102,76 @@ function plugin_showrss_convert()
 
 	$obj = new $class($rss);
 	return $obj->toString($time);
+}
+
+// Get and save RSS
+function plugin_showrss_get_rss($target, $cachehour = 6, $raw = false)
+{
+	global $cache;
+	$time = UTIME;
+	$xml = null;
+	$cache_name = PLUGIN_SHOWRSS_CACHE_PREFIX.md5($target);
+	$reason = 'Failed fetching RSS from the server.';	// デフォルトのエラー
+	$recreate = false;
+
+	if ($cache['raw']->hasItem($cache_name)) {
+		$cache_meta = $cache['raw']->getMetadata($cache_name);
+		$time = $cache_meta['mtime'];	// キャッシュの時刻
+		if (UTIME - $time >= $cachehour * 360){
+			$cache['raw']->removeItem($cache_name);
+		}
+	}
+
+	if (!$cache['raw']->hasItem($cache_name)) {
+		// キャッシュが有効期限を過ぎてた場合
+		try{
+			// file_get_contentsでException飛ばすメモ
+			// https://gist.github.com/mia-0032/4374687
+			ob_start();
+			//warningが出るコード
+			$data = file_get_contents($target);
+			$warning = ob_get_contents();
+			ob_end_clean();
+			//Warningがあれば例外を投げる
+			if ($warning) {
+				throw new Exception($warning);
+			}
+		}catch (Exception $e){
+			// ファイルが取得できなかった
+			return array(false, UTIME, $e->getMessage());
+		}
+		$cache['raw']->setItem($cache_name, $data);
+	}else{
+		$data = $cache['raw']->getItem($cache_name);
+	}
+
+	// そのままXMLを出力
+	if ($raw) return array($data, $time, $reason);
+	
+	try{
+		$xml = new SimpleXMLElement($data);
+	}catch (Exception $e){
+		// XMLの解析に失敗した
+		return array(false, UTIME, $e->getMessage());
+	}
+	return array($xml,$time,null);
+}
+
+
+function plugin_showrss_get_timestamp($str)
+{
+	$str = trim($str);
+	if ($str == '') return UTIME;
+
+	$matches = array();
+	if (preg_match('/(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})(([+-])(\d{2}):(\d{2}))?/', $str, $matches)) {
+		$str = $matches[1] . ' ' . $matches[2];
+		if (! empty($matches[3])) {
+			$str .= $matches[4] . $matches[5] . $matches[6];
+		}
+	}
+	$time = strtotime($str);
+	return ($time == -1 || $time === FALSE) ? UTIME : $time;
 }
 
 // Create HTML from RSS array()
@@ -283,72 +354,6 @@ class ShowRSS_html_recent extends ShowRSS_html
 				'<ul class="recent_list">' . "\n" . $body . '</ul>' . "\n";
 		}
 	}
-}
-
-// Get and save RSS
-function plugin_showrss_get_rss($target, $cachehour = 12, $raw = false)
-{
-	global $cache;
-	$time = UTIME;
-	$cache_name = PLUGIN_SHOWRSS_CACHE_PREFIX.md5($target);
-	$reason = 'Failed fetching RSS from the server.';	// デフォルトのエラー
-
-	if ($cache['raw']->hasItem($cache_name)) {
-		$cache_meta = $cache['raw']->getMetadata($cache_name);
-		$time = $cache_meta['mtime'];	// キャッシュの時刻
-	}
-
-	if (UTIME - $time >= $cachehour * 360){
-		$cache['raw']->removeItem($cache_name);
-		// キャッシュが有効期限を過ぎてた場合
-		try{
-			// file_get_contentsでException飛ばすメモ
-			// https://gist.github.com/mia-0032/4374687
-			ob_start();
-			//warningが出るコード
-			$data = file_get_contents($target);
-			$warning = ob_get_contents();
-			ob_end_clean();
-			//Warningがあれば例外を投げる
-			if ($warning) {
-				throw new Exception($warning);
-			}
-		}catch (Exception $e){
-			// ファイルが取得できなかった
-			return array(false, UTIME, $e->getMessage());
-		}
-		$cache['raw']->setItem($cache_name, $data);
-	}else{
-		$data = $cache['raw']->getItem($cache_name);
-	}
-
-	// そのままXMLを出力
-	if ($raw) return array($data, $time, $reason);
-	
-	try{
-		$xml = new SimpleXMLElement($data);
-	}catch (Exception $e){
-		// XMLの解析に失敗した
-		return array(false, UTIME, $e->getMessage());
-	}
-	return array($xml,$time,null);
-}
-
-
-function plugin_showrss_get_timestamp($str)
-{
-	$str = trim($str);
-	if ($str == '') return UTIME;
-
-	$matches = array();
-	if (preg_match('/(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})(([+-])(\d{2}):(\d{2}))?/', $str, $matches)) {
-		$str = $matches[1] . ' ' . $matches[2];
-		if (! empty($matches[3])) {
-			$str .= $matches[4] . $matches[5] . $matches[6];
-		}
-	}
-	$time = strtotime($str);
-	return ($time == -1 || $time === FALSE) ? UTIME : $time;
 }
 /* End of file showrss.inc.php */
 /* Location: ./wiki-common/plugin/showrss.css.php */

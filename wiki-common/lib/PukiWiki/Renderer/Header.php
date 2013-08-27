@@ -70,7 +70,7 @@ class Header{
 		// RFC2616
 		// http://sonic64.com/2004-02-06.html
 		$headers['Vary'] = self::getLanguageHeaderVary();
-		if (preg_match('/\b(gzip|deflate|compress)\b/i', $_SERVER['HTTP_ACCEPT_ENCODING'], $matches)) {
+		if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) && preg_match('/\b(gzip|deflate|compress)\b/i', $_SERVER['HTTP_ACCEPT_ENCODING'], $matches)) {
 			$headers['Vary'] .= ',Accept-Encoding';
 		}
 

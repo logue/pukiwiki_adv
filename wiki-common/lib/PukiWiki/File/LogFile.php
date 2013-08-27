@@ -366,7 +366,7 @@ class LogFile extends AbstractFile{
 		if ( $count > self::LOG_MAX_ENTRIES) {
 			$i = 0;
 			// 古いエントリから削除するため配列を反転
-			foreach (array_reverse($lines) as $line){
+			foreach (array_reverse($data) as $line){
 				if ($i > self::LOG_MAX_ENTRIES) break;
 				$ret[] = $line;
 				$i++;
@@ -562,7 +562,7 @@ class LogFile extends AbstractFile{
 	 * 更新日時のバックアップデータの世代を確定する
 	 * @static
 	 */
-	public static function get_backup_age($update_time,$update=true)
+	public function get_backup_age($update_time,$update=true)
 	{
 		static $_page, $backup;
 
@@ -570,12 +570,13 @@ class LogFile extends AbstractFile{
 		//if (count($backup_page) == 0) return -1; // 存在しない
 		if (!isset($backup)) $backup = new Backup($this->page);
 
+		$backups = $backup->get();
+
 		// 初回バックアップ作成は、文書生成日時となる
-		$create_date = $backup->getBackup(1)->time;
-		if ($update_time == $create_date) return 1;
+		if (isset($backups[0]) && $update_time == $backups[0]['time']) return 1;
 
 		$match = -1;
-		foreach ($backup->getBackup() as $age => $val)
+		foreach ($backups as $age => $val)
 		{
 			if ($val['real'] == $update_time) {
 				$match = $age;
@@ -592,7 +593,7 @@ class LogFile extends AbstractFile{
 	 * 差分ファイルの存在確認
 	 * @static
 	 */
-	public static function diff_exist()
+	public function diff_exist()
 	{
 		return FileFactory::factory('diff',$this->page)->has();
 	}

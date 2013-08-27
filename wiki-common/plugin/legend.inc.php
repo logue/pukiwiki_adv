@@ -5,6 +5,7 @@
 // Legent plugin
 
 use PukiWiki\Renderer\RendererFactory;
+use PukiWiki\Utility;
 
 // ----
 define('PLUGIN_CODE_USAGE', 
@@ -37,8 +38,8 @@ function legend_set_parm($argv)
 	$parm['align'] = $parm['title'] = '';
 
 	foreach($argv as $arg) {
-		$val = split('=', $arg);
-		$val[1] = (empty($val[1])) ? htmlsc($val[0]) : htmlsc($val[1]);
+		$val = explode('=', $arg);
+		$val[1] = Utility::htmlsc(empty($val[1]) ? $val[0] : $val[1]);
 
 		switch($val[0]) {
 		case 'r':

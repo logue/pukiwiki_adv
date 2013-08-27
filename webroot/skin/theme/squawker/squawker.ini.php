@@ -9,30 +9,12 @@
 //
 return array(
 	'default_css' => false,
-	'ui-theme' => false,
+	'ui_theme' => false,
 	// Navibar系プラグインでもアイコンを表示する
 	'showicon'		=> false,
 
 	// アドレスの代わりにパスを表示
 	'topicpath'		=> true,
-	
-	// ロゴ設定
-	'logo'=>array(
-		'src'		=> IMAGE_URI.'pukiwiki_adv.logo.png',
-		'alt'		=> '[PukiWiki Adv.]',
-		'width'		=> '80',
-		'height'	=> '80'
-	),
-
-	// 広告表示領域
-	'adarea'	=> array(
-		// ページの右上の広告表示領域
-		'header'	=> <<<EOD
-EOD
-,		// ページ下部の広告表示領域
-		'footer'	=> <<<EOD
-EOD
-	)
 );
 
 /* End of file squawker.ini.php */

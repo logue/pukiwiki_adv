@@ -383,7 +383,7 @@ function plugin_calendar_viewer_action()
 
 	$return_vars_array = array();
 
-	$page = strip_bracket($vars['page']);
+	$page = isset($vars['page']) ? strip_bracket($vars['page']) : null;
 	$vars['page'] = '*';
 	if (isset($vars['file'])) $vars['page'] = $vars['file'];
 

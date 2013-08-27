@@ -170,7 +170,7 @@ function plugin_pcomment_convert()
 
 function plugin_pcomment_insert()
 {
-	global $vars, $now, $_no_name;
+	global $vars, $now, $_no_name, $_string;
 //	global $vars, $now, $_title_updated, $_no_name, $_pcmt_messages, $_string;
 
 	$refer = isset($vars['refer']) ? $vars['refer'] : '';

@@ -75,7 +75,7 @@ function plugin_include_convert()
 	// strip_bracket() is not necessary but compatible
 	$page = isset($args[0]) ? get_fullname(strip_bracket(array_shift($args)), $root) : '';
 	
-	$wiki = WikiFactory::Wiki($page);
+	$wiki = Factory::Wiki($page);
 	
 	$with_title = PLUGIN_INCLUDE_WITH_TITLE;
 	if (isset($args[0])) {

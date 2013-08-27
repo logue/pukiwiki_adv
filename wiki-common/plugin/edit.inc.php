@@ -209,7 +209,7 @@ function plugin_edit_inline()
 		$page = $vars['page'];
 	}
 
-	$tag_edit = '<a class="anchor_super" id="edit_'.$id.'" href="' . Utility::htmlsc($wiki->uri('edit',array('id'=>$id))) . '" rel="nofollow">' . $s_label_edit . '</a>';
+	$tag_edit = '<a class="anchor_super" id="edit_'.$id.'" href="' . $wiki->uri('edit',array('id'=>$id)) . '" rel="nofollow">' . $s_label_edit . '</a>';
 //	$tag_guiedit = '<a class="anchor_super" id="guiedit_'.$id.'" href="' . Utility::htmlsc($wiki->uri('guiedit',array('id'=>$id))) .'" rel="nofollow">' . $s_label_guiedit . '</a>';
 /*
 	switch ($fixed_heading_edited) {

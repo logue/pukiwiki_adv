@@ -75,8 +75,11 @@ function plugin_referer_action()
 	$page = isset($vars['page']) ? $vars['page'] : null;
 	$kind = isset($vars['kind']) ? $vars['kind'] : '';
 	$max = isset($vars['max']) ? (int)$vars['max'] :  -1;
-	$wiki = Factory::Wiki($page);
 
+	if (empty($page)){
+		return array('msg'=>$_referer_msg['msg_referer'], 'body'=>$_referer_msg['msg_notfound']);
+	}
+	$wiki = Factory::Wiki($page);
 	if ($wiki->isValied() && $wiki->isReadable()) {
 		$data = Factory::Referer($page)->get();
 		if (!isset($data)) return '<p>'.$_referer_msg['msg_no_data'].'</p>';
@@ -187,7 +190,7 @@ function plugin_referer_body($data)
 		$e_url = preg_replace_callback(
 			'([" \x80-\xff]+)',
 			function ($m) {
-				return rawurlencode($m[1]);
+				return isset($m[1]) ? rawurlencode($m[1]) : null;
 			},
 			$url
 		);

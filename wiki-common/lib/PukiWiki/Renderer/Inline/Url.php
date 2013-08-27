@@ -64,7 +64,8 @@ class Url extends Inline
 				($scheme . $mail . idn_to_utf8($host) . $uri)
 				: $name;
 			if (strpos($alias, '%') !== FALSE) {
-				$alias = mb_convert_encoding(rawurldecode($alias), SOURCE_ENCODING , 'AUTO');
+				// TODO:mb_convert_encoding(): Unable to detect character encodingが出るので@を付加
+				$alias = @mb_convert_encoding(rawurldecode($alias), SOURCE_ENCODING , 'AUTO');
 			}
 		}
 		$this->alias = $alias;

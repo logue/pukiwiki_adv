@@ -24,6 +24,8 @@
 
  */
 use PukiWiki\Auth\Auth;
+use PukiWiki\Factory;
+use PukiWiki\Utility;
 
 defined('PLUGIN_ARTICLE_COLS')           or define('PLUGIN_ARTICLE_COLS',	70); // テキストエリアのカラム数
 defined('PLUGIN_ARTICLE_ROWS')           or define('PLUGIN_ARTICLE_ROWS',	 5); // テキストエリアの行数
@@ -112,9 +114,9 @@ function plugin_article_action()
 	if ($wiki->digest() !== $post['digest']) {
 		$title = $_article_msg['title_collided'];
 		$body = $_article_msg['msg_collided'] . "\n";
-		$s_refer    = htmlsc($post['refer']);
-		$s_digest   = htmlsc($post['digest']);
-		$s_postdata = htmlsc($postdata_input);
+		$s_refer    = Utility::htmlsc($post['refer']);
+		$s_digest   = Utility::htmlsc($post['digest']);
+		$s_postdata = Utility::htmlsc($postdata_input);
 		$body .= <<<EOD
 <form action="$script" method="post" class="article_form" data-collision-check="false">
 	<input type="hidden" name="refer" value="$s_refer" />
@@ -173,8 +175,8 @@ function plugin_article_convert()
 
 	$article_no = $numbers[$vars['page']]++;
 
-	$s_page   = htmlsc($vars['page']);
-	$s_digest = htmlsc($digest);
+	$s_page   = Utility::htmlsc($vars['page']);
+	$s_digest = Utility::htmlsc($digest);
 	$name_cols = PLUGIN_ARTICLE_NAME_COLS;
 	$subject_cols = PLUGIN_ARTICLE_SUBJECT_COLS;
 	$article_rows = PLUGIN_ARTICLE_ROWS;

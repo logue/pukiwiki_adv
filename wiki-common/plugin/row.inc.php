@@ -21,7 +21,7 @@ function plugin_row_convert(){
 	$argc = func_num_args();
 
 	$data = array_pop($argv);
-	$fluid = isset($argv) && $argv === 'true' ? 'row' : 'row-fluid';
+	$fluid = isset($argv) && $argv === 'false' ? 'row' : 'row-fluid';
 	return '<div class="'.$fluid.'">'."\n".convert_html(line2array($data))."\n".'</div>'."\n";
 }
 /* End of file row.inc.php */

@@ -36,11 +36,11 @@ define('BB2_MAIL_ADDRESSS', "example@example.com");	// You need to change this.
 // These settings are used when settings.ini is not present.
 $bb2_settings_defaults = array(
 	'log_table' => 'bad_behavior',
-	'display_stats' => false,
+	'display_stats' => true,
 	'strict' => false,
 	'verbose' => false,
 	'logging' => true,
-	'httpbl_key' => '',
+	'httpbl_key' => 'qqwrvogrqrmi',
 	'httpbl_threat' => '25',
 	'httpbl_maxage' => '30',
 	'offsite_forms' => false,
@@ -81,11 +81,13 @@ function bb2_db_num_rows($result) {
 // Bad Behavior will use the return value here in other callbacks.
 function bb2_db_query($query) {
 	global $bb2_db;
+	if ($query == 'SET @@session.wait_timeout = 90') return;
+	if (preg_match('/OPTIMIZE/', $query)) $query = 'VACUUM';
 	try {
 		return $bb2_db->query($query);
 	} catch( PDOException $ex ) {
 		// DBアクセス時にエラーとなった時
-		die($query. '<br />' .$ex->getMessage());
+		throw Exception('Bad-behavior :' . $query. '<br />' .$ex->getMessage());
 	}
 }
 

@@ -10,6 +10,10 @@ header('Expires: ' .gmdate('D, d M Y H:i:s',time() + $expire) . ' GMT');
 header('Last-Modified: '.gmdate('D, d M Y H:i:s', filemtime($color)) . ' GMT');
 @ob_start('ob_gzhandler');
 readfile('js/bootstrap.min.js');
+?>
+var bootstrapTooltip = $.fn.tooltip.noConflict();
+$.fn.bstooltip = bootstrapTooltip;
+<?php
 @ob_end_flush();
 
 /* End of file squawker.js.php */

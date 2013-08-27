@@ -70,7 +70,7 @@ if (!defined('DATA_DIR')) { exit; }
 							<ul class="dropdown-menu">
 								<li><a href="<?php echo $this->links['login'] ?>"><i class="glyphicon glyphicon-off"></i><?php echo $this->lang['skin']['login'] ?></a></li>
 								<li><a href="<?php echo $this->links['backup'] ?>"><i class="glyphicon glyphicon-folder-open"></i><?php echo $this->lang['skin']['backup'] ?></a></li>
-<?php   if ((bool)ini_get('file_uploads')) { ?>
+<?php   if ((bool)ini_get('file_uploads') && isset($this->links['upload'])) { ?>
 								<li><a href="<?php echo $this->links['upload'] ?>"><i class="glyphicon glyphicon-upload"></i><?php echo $this->lang['skin']['upload'] ?></a></li>
 <?php   } ?>
 							</ul>
@@ -158,6 +158,7 @@ if (!defined('DATA_DIR')) { exit; }
 			</div>
 		</footer>
 		<?php echo $this->js; ?>
-		<script type="text/javascript" src="<?php echo $this->path; ?>squawker.js.php" defer="defer"></script>
+		<script type="text/javascript" src="<?php echo $this->path; ?>js/bootstrap.min.js" defer="defer"></script>
+		
 	</body>
 </html>

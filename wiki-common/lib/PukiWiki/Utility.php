@@ -822,10 +822,7 @@ class Utility{
 			$params = array($_obj->get('left'), $_obj->get('right'), $_obj->text());
 			foreach ($params as $key => $text) {
 				$text = self::htmlsc(rtrim($text));
-				$table[] = 
-					'  <' . $tags[$key] . '>' .
-					$text .
-					'</' . $tags[$key] . '>';
+				$table[] = '<td>' .$text .'</td>';
 			}
 			$table[] = ' </tr>';
 		}

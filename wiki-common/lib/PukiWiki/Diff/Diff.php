@@ -106,27 +106,30 @@ class Diff{
 			while($px_idx < $epc[$i]['x'] || $py_idx < $epc[$i]['y']) {
 				if ($epc[$i]['y'] - $epc[$i]['x'] > $py_idx - $px_idx) {
 					if (isset($this->b[$py_idx])){
+						$str = isset($this->b[$py_idx]) ? rtrim($this->b[$py_idx]) : '';
 						if ($this->reverse) {
-							$this->ses[] = array(self::SES_DELETE, rtrim($this->b[$py_idx]));
+							$this->ses[] = array(self::SES_DELETE, $str);
 						} else {
-							$this->ses[] = array(self::SES_ADD,    rtrim($this->b[$py_idx]));
+							$this->ses[] = array(self::SES_ADD,    $str);
 						}
 					}
 					++$y_idx;
 					++$py_idx;
 				} else if ($epc[$i]['y'] - $epc[$i]['x'] < $py_idx - $px_idx) {
 					if (isset($this->a[$py_idx])){
+						$str = isset($this->a[$px_idx]) ? rtrim($this->a[$px_idx]) : '';
 						if ($this->reverse) {
-							$this->ses[] = array(self::SES_ADD,    rtrim($this->a[$px_idx]));
+							$this->ses[] = array(self::SES_ADD,    $str);
 						} else {
-							$this->ses[] = array(self::SES_DELETE, rtrim($this->a[$px_idx]));
+							$this->ses[] = array(self::SES_DELETE, $str);
 						}
 					}
 					++$x_idx;
 					++$px_idx;
 				} else {
+					$str = isset($this->a[$px_idx]) ? rtrim($this->a[$px_idx]) : '';
 					if (isset($this->a[$px_idx])) {
-						$this->ses[] =     array(self::SES_COMMON, rtrim($this->a[$px_idx]));
+						$this->ses[] =     array(self::SES_COMMON, $str);
 						$this->lcs += $this->a[$px_idx];
 					}
 					++$x_idx;
@@ -134,6 +137,7 @@ class Diff{
 					++$px_idx;
 					++$py_idx;
 				}
+				unset($str);
 			}
 		}
 	}

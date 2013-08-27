@@ -119,7 +119,7 @@ function plugin_attachref_convert()
 </table>
 EOD;
 			}
-			if ($params['around']) {
+			if (isset($params['around'])) {
 				$style = ($params['_align'] == 'right') ? 'float:right' : 'float:left';
 			} else {
 				$style = 'text-align:' . $params['_align'];
