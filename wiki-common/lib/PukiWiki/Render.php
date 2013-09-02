@@ -384,7 +384,7 @@ class Render{
 			array('rel'=>'search',			'href'=>$_LINK['opensearch'],'type'=>'application/opensearchdescription+xml',	'title'=>$site_name.$_LANG['skin']['search']),
 			array('rel'=>'search',			'href'=>$_LINK['search'],	'type'=>'text/html',	'title'=>$_LANG['skin']['search']),
 			array('rel'=>'sitemap',			'href'=>$_LINK['sitemap'],	'type'=>'text/html',	'title'=>'Sitemap'),
-			array('rel'=>'shortcut icon',	'href'=>isset($conf['shortcut_icon']) ? $view->conf['shortcut_icon'] : ROOT_URI.'favicon.ico', 'type'=>'image/vnd.microsoft.icon')
+			array('rel'=>'shortcut icon',	'href'=>isset($conf['shortcut_icon']) ? $conf['shortcut_icon'] : ROOT_URI.'favicon.ico')
 		);
 		// DNS prefetching
 		// http://html5boilerplate.com/docs/DNS-Prefetching/

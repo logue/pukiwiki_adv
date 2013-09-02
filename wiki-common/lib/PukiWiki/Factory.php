@@ -13,6 +13,10 @@
 
 namespace PukiWiki;
 
+use PukiWiki\Wiki;
+use PukiWiki\Backup;
+use PukiWiki\Referer;
+
 /**
  * ファクトリークラス
  */

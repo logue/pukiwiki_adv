@@ -200,7 +200,7 @@ $aliaspage		= 'AutoAliasName';	// Set AutoAlias definition here
 $menubar		= 'MenuBar';		// Menu
 
 $sidebar		= 'SideBar';		// Side
-$navigation		= 'Navigation';		// Popupmenu Defintion here.
+$navigation		= 'NaviBar';		// Popupmenu Defintion here.
 $glossarypage	= 'Glossary';	 	// Set Glossary definition here
 $headarea		= ':Header';
 $footarea		= ':Footer';
@@ -255,7 +255,8 @@ $use_spam_check = array(
 	'referer'			=> 1,	// Referer SPAM（DNSBL）
 	'multiple_post'		=> 0,	// 多重投稿チェック（ここを有効にすると戻るボタンによる更新ができなくなります）
 	'bad-behavior'		=> 0,	// Bad Behaviorによるアンチスパム（仮実装）
-	'akismet'			=> 0	// Aksmetによるアンチスパムを有効化する（別途$akismet_api_keyを指定する必要があります。）1は差分のみ、2は全て
+	'akismet'			=> 0,	// Aksmetによるアンチスパムを有効化する（別途$akismet_api_keyを指定する必要があります。）1は差分のみ、2は全て
+	'captcha'			=> 0	// Captchaを使う
 );
 
 /////////////////////////////////////////////////
@@ -428,11 +429,7 @@ $maxage = 120; // Stock latest N backups
 
 // NOTE: $cycle x $maxage / 24 = Minimum days to lost your data
 //          3   x   120   / 24 = 15
-
-// Splitter of backup data (NOTE: Too dangerous to change)
-define('PKWK_SPLITTER', '>>>>>>>>>>');
-
-
+$cycle = 1;
 /////////////////////////////////////////////////
 // Remove the first spaces from Preformatted text
 $preformat_ltrim = 1;
@@ -455,9 +452,6 @@ $auto_template_rules = array(
 // Allow to use 'Do not change timestamp' checkbox
 // (0:Disable, 1:For everyone,  2:Only for the administrator)
 $notimeupdate = 2;
-
-// Authentication
-Utility::loadConfig('auth.ini.php');
 
 /////////////////////////////////////////////////
 // Ignore list
@@ -486,8 +480,7 @@ $use_open_uri_in_new_window  = 1;
 
 // 同一サーバーとしてみなすホストのURI
 $open_uri_in_new_window_servername = array(
-	$script,
-//	$_SERVER['HTTP_HOST'],
+	$_SERVER['HTTP_HOST'],
 //	'localhost'
 );
 // (注意：あえて拡張しやすいようにしていますが、'_blank'以外は指定しないでください)

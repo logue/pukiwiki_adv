@@ -1,14 +1,19 @@
 <?php
-// PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: config.php,v 1.7.2 2012/05/29 17:34:00 Logue Exp $
-// Copyright (C)
-//               2010-2013 PukiWiki Advance Developers Team
-//               2003-2007 PukiWiki Developers Team
-// License: GPL v2 or (at your option) any later version
-//
-// Parse a PukiWiki page as a configuration page
+/**
+ * Wiki設定ライブラリ
+ *
+ * @package   PukiWiki
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @create    2013/09/02
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: Config.php,v 1.8.0 2013/09/02 09:30:00 Logue Exp $
+ */
+
 
 /*
+ * 使用法：
  * $obj = new Config('plugin/plugin_name/')
  * $obj->read();
  * $array = $obj->get($key);
@@ -17,6 +22,10 @@
  * $array = array(1=>array(1, 2, 3));		// Replace - directly
  * $obj->set($key, array(1=>array(1, 2, 3));	// Replace - method of Config object
  * $obj->write();
+ * ノート：
+ * ・$obj->write()は、Wikiファイルに直接書き込む実装。（Factory::Wiki(':config/???')->set()を使用しない。）
+ *   このため、SQL化したとき別途書き込む処理を実装する必要がある。
+ * ・オリジナルではデーターを書き換える命令はput()だがAdv.ではset()になっている。
  */
 
 namespace PukiWiki\Config;

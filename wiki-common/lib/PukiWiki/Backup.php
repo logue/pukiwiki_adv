@@ -9,13 +9,15 @@ use PukiWiki\File\FileFactory;
 class Backup{
 	// バックアップの世代ごとの区切り文字（default.ini.php）
 	const SPLITTER = '>>>>>>>>>>';
+	// バックアップのインターバル（１時間）
+	const BACKUP_INTERVAL = 360;
 
 	public function __construct($page){
 		global $cycle, $maxage;
 		$this->page = $page;
 		// バックアップの頻度
-		$this->cycle = 0;
-		//$this->cycle = 60 * 60 * $cycle;
+		//$this->cycle = 0;
+		$this->cycle = !empty($cycle) ? 60 * 60 * $cycle : self::BACKUP_INTERVAL;
 		// バックアップの上限個数
 		$this->maxage = $maxage;
 		// 以下はSplFileInfoの派生クラス
@@ -34,41 +36,43 @@ class Backup{
 		if (! $this->wiki->has() ) return;
 		
 		// バックアップを取るWikiデーター
-		$newdata = join("\n",$this->wiki->get());
+		$newdata = join("\n",$this->wiki->get())."\n";
 
 		if (! $this->backup->has()){
 			// バックアップが存在しない場合、バックアップ新規作成
 			return $this->backup->set(self::SPLITTER . ' ' . $this->wiki->time() . ' ' . UTIME . "\n" . $newdata);
-		}else if (UTIME - $this->backup->time() < $this->cycle){
+		}else if (! UTIME - $this->backup->time() > $this->cycle){
 			// 連続更新があった場合に備えて、バックアップを作成するまでのインターバルを設ける
 			return;
 		}
+
 		// 現在のバックアップを取得
 		$backups = $this->get();
-		$count   = count($backups) + 1;
 
 		// 直後に1件追加するので、(最大件数 - 1)を超える要素を捨てる
-		if ($count > $this->maxage)
+		if (count($backups) + 1 > $this->maxage)
 			array_splice($backups, 0, $count - $this->maxage);
 
 		// バッグアップデーターをパース
-		$strout = '';
+		$pastdata = '';
 		foreach($backups as $age=>$data) {
 			// BugTrack/685 by UPK
-			$strout .= self::SPLITTER . ' ' . $data['time'] . ' ' . $data['real'] . "\n"; // Splitter format
-			$strout .= join("\n", $data['data']);
+			$pastdata .= self::SPLITTER . ' ' . $data['time'] . ' ' . $data['real'] . "\n"; // Splitter format
+			$pastdata .= join("\n", $data['data'])."\n";
 			unset($backups[$age]);
 		}
-		$strout = preg_replace('/([^\n])\n*$/', "$1\n", $strout);
+		$pastdata = preg_replace('/([^\n])\n*$/', "$1\n", $pastdata);
 
 		// 追加するバックアップデーター
-		$body = preg_replace($this->backup->splitter_reglex, '$1 ', $newdata);
-		// BugTrack/685 by UPK
-		$body = self::SPLITTER . ' ' . $this->wiki->time() . ' ' . UTIME . "\n" . $body;
-		$body = preg_replace('/\n*$/', "\n", $body);
+		$adddata =
+			self::SPLITTER . ' ' . $this->wiki->time() . ' ' . UTIME . "\n" .
+			preg_replace($this->backup->splitter_reglex, '$1 ', $newdata);	// BugTrack/685 by UPK
 
-		// 先頭に追記して書き込む
-		return $this->backup->set($body. $strout);
+		$adddata = preg_replace('/\n*$/', "\n", $adddata);
+
+		//echo '<pre>'.$pastdata.$adddata.'</pre>';
+		// 書き込む
+		return $this->backup->set($pastdata . $adddata);
 	}
 	/**
 	 * バックアップを取得する

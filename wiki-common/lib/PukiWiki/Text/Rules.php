@@ -327,7 +327,6 @@ class Rules{
 	 */
 	public static function make_str_rules($source){
 		// Modify original text with user-defined / system-defined rules
-		global $fixed_heading_anchor;
 		$rules = self::init();
 
 		$lines = explode("\n", $source);
@@ -363,9 +362,7 @@ class Rules{
 				$line = preg_replace('/' . $pattern . '/', $replacement, $line);
 
 			// Adding fixed anchor into headings
-			if ($fixed_heading_anchor){
-				$line = self::setHeading($line);
-			}
+			$line = self::setHeading($line);
 		}
 
 		// Multiline part has no stopper
@@ -381,10 +378,10 @@ class Rules{
 	 */
 	public static function setHeading($line)
 	{
-		if (preg_match(self::HEADING_ID_PATTERN, $line, $matches) &&
-				(! isset($matches[2]) || empty($matches[2]) )) {
+		$matches = array();
+		if (preg_match('/^(\*{1,3}.*?)(?:\[#([A-Za-z][\w-]*)\]\s*)?$/', $line, $matches) && (! isset($matches[2]) || empty($matches[2]) )) {
 			// Generate unique id
-			$anchor = Rand::getString(7,self::HEADING_ID_ACCEPT_CHARS);
+			$anchor = Rand::getString(7 ,self::HEADING_ID_ACCEPT_CHARS);
 			$line = rtrim($matches[1]) . ' [#' . $anchor . ']';
 		}
 		return $line;
@@ -415,6 +412,14 @@ class Rules{
 
 		return $id;
 	}
+	/**
+	 * 見出しIDを削除
+	 * @param string $str
+	 * @return string
+	 */
+	public static function removeHeading($str){
+		return preg_replace(self::HEADING_ID_PATTERN, '$1$2', $str);
+	} 
 	/**
 	 * 他のページを読み込むときに余計なものを取り除く
 	 * @param string $str

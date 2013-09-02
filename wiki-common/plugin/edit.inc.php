@@ -17,7 +17,6 @@ use PukiWiki\Renderer\RendererFactory;
 use PukiWiki\Text\Rules;
 use PukiWiki\Time;
 use PukiWiki\Utility;
-use PukiWiki\Wiki;
 use Zend\Json\Json;
 
 // Remove #freeze written by hand
@@ -33,7 +32,7 @@ function plugin_edit_action()
 
 	$page = isset($vars['page']) ? $vars['page'] : null;
 	if (empty($page)) return array('msg'=> T_('Pagename is missing.'), 'body'=>T_('Pagename is missing.'));
-	$wiki = new Wiki($page);
+	$wiki = Factory::Wiki($page);
 
 	// if (PKWK_READONLY) die_message(  sprintf($_string['error_prohibit'], 'PKWK_READONLY') );
 	if (Auth::check_role('readonly')) Utility::dieMessage( $_string['prohibit'],403 );
@@ -56,7 +55,7 @@ function plugin_edit_action()
 		Utility::dieMessage( sprintf($_string['error_prohibit'], 'PKWK_CREATE_PAGE'),403 );
 	}
 
-	if (preg_match(Wiki::INVALIED_PAGENAME_PATTERN, $page)){
+	if (preg_match($wiki::INVALIED_PAGENAME_PATTERN, $page)){
 		Utility::dieMessage($_string['illegal_chars']);
 	}
 
@@ -72,7 +71,8 @@ function plugin_edit_action()
 	Auth::is_role_page($source);
 
 	$postdata = $vars['original'] = $source;
-	if (!empty($vars['id']))
+
+	if (isset($vars['id']) && !empty($vars['id']))
 	{
 		$postdata = plugin_edit_parts($vars['id'],$source);
 		if ($postdata === FALSE)
@@ -82,7 +82,7 @@ function plugin_edit_action()
 		}
 	}
 
-	if ($postdata == ''){
+	if (empty($postdata) ){
 		// Check Page name length
 		// http://pukiwiki.sourceforge.jp/dev/?PukiWiki%2F1.4%2F%A4%C1%A4%E7%A4%C3%A4%C8%CA%D8%CD%F8%A4%CB%2F%C4%B9%A4%B9%A4%AE%A4%EB%A5%DA%A1%BC%A5%B8%CC%BE%A4%CE%A5%DA%A1%BC%A5%B8%A4%CE%BF%B7%B5%AC%BA%EE%C0%AE%A4%F2%CD%DE%BB%DF
 		$filename_max_length = 250;
@@ -136,7 +136,7 @@ function plugin_edit_preview()
 	$_msg_preview_delete	= T_('(The contents of the page are empty. Updating deletes this page.)');
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
-	$wiki = WikiFactory::Wiki($vars['template_page']);
+	$wiki = Factory::Wiki($vars['template_page']);
 
 	// Loading template
 	if (isset($vars['template_page']) && $wiki->isValied()) {
@@ -170,7 +170,7 @@ function plugin_edit_preview()
 		$postdata = drop_submit(RendererFactory::factory($postdata));
 		$body .= '<div id="preview">' . $postdata . '</div>' . "\n";
 	}
-	$body .= edit_form($page, $post['msg'], $post['digest'], FALSE);
+	$body .= Utility::editForm($page, $post['msg'], $post['digest'], FALSE);
 
 	return array('msg'=>$_title_preview, 'body'=>$body);
 }

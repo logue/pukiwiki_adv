@@ -1,4 +1,16 @@
 <?php
+/**
+ * Wikiクラス
+ *
+ * @package   PukiWiki
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @create    2012/12/31
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: Wiki.php,v 1.0.0 2013/09/02 22:56:00 Logue Exp $
+ **/
+
 namespace PukiWiki;
 
 use PukiWiki\Auth\Auth;
@@ -267,7 +279,7 @@ class Wiki{
 	 * @return void
 	 */
 	public function set($str, $keeptimestamp = false){
-		global $use_spam_check, $_string, $vars;
+		global $use_spam_check, $_string, $vars, $_title, $whatsnew, $whatsdeleted;
 
 		// roleのチェック
 		if (Auth::check_role('readonly')) return; // Do nothing
@@ -285,10 +297,6 @@ class Wiki{
 			$str = join("\n", $str);
 		}
 
-		// ログイン済みもしくは、自動更新されるページである
-		//$has_permission = Auth::check_role('role_contents_admin') || isset($vars['page']) && $vars['page'] === $this->page;
-		$has_permission = Auth::check_role('role_contents_admin');
-
 		// 入力データーを整形（※string型です）
 		$postdata = Rules::make_str_rules($str);
 
@@ -298,12 +306,22 @@ class Wiki{
 		// 差分を生成（ここでの差分データーはAkismetでも使う）
 		$diff = new Diff($postdata, $oldpostdata);
 
+		// ログイン済みもしくは、自動更新されるページである
+		$has_not_permission = Auth::check_role('role_contents_admin');
+
 		// 未ログインの場合、S25Rおよび、DNSBLチェック
-		if (!$has_permission) {
+		if ($has_not_permission) {
 			$ip_filter = new IpFilter();
 			//if ($ip_filter->isS25R()) Utility::dieMessage('S25R host is denied.');
+
+			// 簡易スパムチェック
+			if (Utility::isSpamPost()){
+				Utility::dump();
+				Utility::dieMessage('Writing was limited. (Blocking SPAM)');
+			}
 			
 			if (isset($use_spam_check['page_remote_addr']) && $use_spam_check['page_remote_addr'] !== 0) {
+				// DNSBLチェック
 				$listed = $ip_filter->checkHost();
 				if ($listed !== false){
 					Utility::dump('dnsbl');
@@ -311,12 +329,8 @@ class Wiki{
 				}
 			}
 
-			if (Utility::isSpamPost()){
-				Utility::dump();
-				Utility::dieMessage('Writing was limited. (Blocking SPAM)');
-			}
-			// URLBLチェック
 			if (isset($use_spam_check['page_contents']) && $use_spam_check['page_contents'] !== 0){
+				// URLBLチェック
 				$reason = self::checkUriBl($diff);
 				if ($reason !== false){
 					Utility::dump($reason);
@@ -345,17 +359,17 @@ class Wiki{
 						'comment_author' => isset($vars['name']) ? $vars['name'] : 'Anonymous',
 						'comment_content' => $postdata
 					);
-					/*
-					if ($use_spam_check['akismet'] === 1){
-						// 差分のみをAkismetに渡す
-						foreach ($diff->getSes() as $key=>$line){
-							if ($key !== $diff::SES_ADD) continue;
-							$added_data[] = $line;
-						}
-						$akismet_post['comment_content'] = join("\n",$added_data);
-						unset($added_data);
-					}
-					*/
+					
+				//	if ($use_spam_check['akismet'] === 1){
+				//		// 差分のみをAkismetに渡す
+				//		foreach ($diff->getSes() as $key=>$line){
+				//			if ($key !== $diff::SES_ADD) continue;
+				//			$added_data[] = $line;
+				//		}
+				//		$akismet_post['comment_content'] = join("\n",$added_data);
+				//		unset($added_data);
+				//	}
+					
 
 					if($akismet->isSpam($akismet_post)){
 						Utility::dump('akismet');
@@ -365,12 +379,13 @@ class Wiki{
 					Utility::dieMessage('Akismet API key does not valied.', 500);
 				}
 			}
-		}
 
 			// captcha check
 			if ( (isset($use_spam_check['captcha']) && $use_spam_check['captcha'] !== 0)) {
 				Captcha::check(false);
 			}
+
+		}
 
 		// 現時点のページのハッシュを読む
 		$old_digest = $this->wiki->has() ? $this->wiki->digest() : 0;
@@ -397,35 +412,35 @@ class Wiki{
 		FileFactory::Diff($this->page)->set($diff->getDiff());
 
 		unset($oldpostdata, $diff, $difffile);
-		
-		// Create backup
-		//make_backup($this->page, $postdata == ''); // Is $postdata null?
-		$backup = new Backup($this->page);
-		$backup->set();
 
 		// Logging postdata (Plus!)
 		if (self::POST_LOGGING === TRUE) {
 			Utility::dump(self::POST_LOG_FILENAME);
 		}
 
-		// 更新ログをつける
-		LogFactory::factory('update',$this->page)->set();
-
 		// 入力が空の場合、削除とする
 		if (empty($str)){
+			// Wikiページを削除
+			$ret = $this->wiki->set('');
 			Recent::set(null, $this->page);
 			// 削除ログ
 			Recent::create_recent_deleted();
-			return $this->wiki->set('');
+			$keeptimestamp = false;
+		}else{
+			// Wikiを保存
+			$ret = $this->wiki->set($postdata);
 		}
-		// Wikiを保存
-		$this->wiki->set($postdata);
+
+		if ($this->page !== $whatsnew || $this->page !== $whatsdeleted) {
+			// バックアップを更新
+			Factory::Backup($this->page)->set();
+
+			// 更新ログをつける
+			LogFactory::factory('update',$this->page)->set();
+		}
 
 		// 最終更新を更新
-		global $whatsnew;
-		if (!$keeptimestamp || $this->page !== $whatsnew){
-			Recent::set($this->page);
-		}
+		Recent::set($this->page);
 
 		// 簡易競合チェック
 		if ($collided) {
@@ -525,7 +540,7 @@ class Wiki{
 			$source = Factory::Wiki($template_page)->source();
 
 			// Remove fixed-heading anchors
-			$source = preg_replace('/^(\*{1,3}.*)\[#[0-9A-Za-z][\w-]+\](.*)$/m', '$1$2', $body);
+			$source = Rules::removeHeading($source);
 
 			// Remove '#freeze'
 			$source = preg_replace('/^#freeze\s*$/m', '', $source);

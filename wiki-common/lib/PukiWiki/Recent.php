@@ -1,10 +1,25 @@
 <?php
+/**
+ * 最終更新クラス
+ *
+ * @package   PukiWiki
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @create    2012/12/31
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: Recent.php,v 1.0.0 2013/09/02 22:57:00 Logue Exp $
+ **/
+
 namespace PukiWiki;
 
 use PukiWiki\Auth\Auth;
 use PukiWiki\Listing;
-use PukiWiki\Factory;
+use PukiWiki\File\FileFactory;
 
+/**
+ * 最終更新クラス
+ */
 class Recent{
 	// 更新履歴のキャッシュ名
 	const RECENT_CACHE_NAME = 'recent';
@@ -34,10 +49,10 @@ class Recent{
 			return $recent_pages;
 		}
 
-		// Get WHOLE page list
+		// Wikiのページ一覧を取得
 		$pages = Listing::pages('wiki');
 
-		// Check ALL filetime
+		// ページ一覧からファイルの更新日時を取得
 		$recent_pages = array();
 		foreach($pages as $page){
 			if ($page !== $whatsnew){
@@ -45,7 +60,7 @@ class Recent{
 				 if (! $wiki->isHidden() ) $recent_pages[$page] = $wiki->time();
 			}
 		}
-		// Sort decending order of last-modification date
+		// 更新日時順にソート
 		arsort($recent_pages, SORT_NUMERIC);
 
 		// Cut unused lines
@@ -71,60 +86,31 @@ class Recent{
 	 * @return void
 	 */
 	public static function set($page, $is_deleted = false){
-		global $whatsnew, $autolink, $autobasealias;
-		global $cache;
+		global $whatsnew,$cache;
 
 		// ページが最終更新だった場合処理しない
 		if (empty($page) || $page === $whatsnew) return;
-		
-		// 削除フラグが立っている場合、削除履歴を付ける
-		if ($is_deleted) self::updateRecentDeleted($page);
-
-		// 自動リンクと自動エイリアス名を使用している場合、常時更新
-		if ($autolink || $autobasealias) {
-			self::get(true);	// Try to (re)create ALL
-		}
 
 		$wiki = Factory::Wiki($page);
-		// 更新履歴に付けないページか？
-		$is_hidden = $wiki->isHidden();
 
-		if (empty($page) || $is_hidden) return; // No need
+		// 削除フラグが立っている場合、削除履歴を付ける
+		if (!$wiki->has() || $is_deleted) self::updateRecentDeleted($page);
 
-		// Check cache exists
-		if (! $cache['wiki']->hasItem(self::RECENT_CACHE_NAME)){
-			self::getRecent(true);	// Try to (re)create ALL
-			return;
-		}else{
-			$recent_pages = $cache['wiki']->getItem(self::RECENT_CACHE_NAME);
-		}
-
-		// Remove if it exists inside
+		// 更新キャッシュを読み込み（キャッシュ再生成する）
+		$recent_pages = self::get(true);
+/*
+		// キャッシュ内のページ情報を削除
 		if (isset($recent_pages[$page])) unset($recent_pages[$page]);
 
-		// Update Cache
-		$cache['wiki']->setItem(self::RECENT_CACHE_NAME, $recent_pages);
-
-		// Add to the top: like array_unshift()
-		if ( $page !== $whatsnew && ! $is_hidden)
+		// トップにページ情報を追記
+		if ( $page !== $whatsnew)
 			$recent_pages = array($page => $wiki->time()) + $recent_pages;
-
-		// Check
-		$abort = count($recent_pages) < self::RECENT_MAX_SHOW_PAGES;
-
-		// Update cache
-		$cache['wiki']->setItem(self::RECENT_CACHE_NAME, $recent_pages);
-
-		if ($abort) {
-			self::get(true);	// Try to (re)create ALL
-			return;
-		}
-
-		if (!$wiki->isHidden())	self::updateRecentChanges($recent_pages);
-		
+*/
+		// 最終更新ページを更新
+		self::updateRecentChanges($recent_pages);
 	}
 	/**
-	 * 最終更新ページを更新
+	 * 最終更新ページを更新（そもそもわざわざWikiページを作成する必要あるのだろうか・・・？）
 	 * @global string $whatsnew
 	 * @param array $recent_pages
 	 * @return void
@@ -139,7 +125,7 @@ class Recent{
 			// http://pukiwiki.sourceforge.jp/dev/?BugTrack2%2F343#f62964e7 
 			$buffer[] = '- &epoch('.$time.');' . ' - ' . '[[' . str_replace('&#39;', '\'', Utility::htmlsc($_page)) . ']]';
 		}
-		Factory::Wiki($whatsnew)->set($buffer);
+		FileFactory::Wiki($whatsnew)->set($buffer);
 	}
 	/**
 	 * 削除履歴を生成

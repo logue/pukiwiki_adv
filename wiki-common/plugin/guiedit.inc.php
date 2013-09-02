@@ -39,7 +39,7 @@ function plugin_guiedit_action()
 
     $page = isset($vars['page']) ? $vars['page'] : '';
 
-	$wiki = new Factory::Wiki($page);
+	$wiki = Factory::Wiki($page);
 
 	if (! $wiki->isEditable()){
 		die_message('You have not permission to edit this page.');

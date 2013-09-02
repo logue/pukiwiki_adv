@@ -266,10 +266,25 @@ class BackupFile extends AbstractFile{
 		}
 		return $bytes;
 	}
+	/**
+	 * ファイルを削除
+	 * @return int
+	 */
 	public function remove(){
 		foreach ($this->available_ext as $ext){
 			if (file_exists($this->name.$ext)) unlink($this->name.$ext);
 		}
+	}
+	/**
+	 * 更新時刻を設定／取得
+	 * @param type $time
+	 * @return int
+	 */
+	public function time($time = ''){
+		foreach ($this->available_ext as $ext){
+			if (file_exists($this->name.$ext)) return filemtime($this->name.$ext);
+		}
+		return 0;
 	}
 	/**
 	 * バックアップファイルの内容を圧縮形式に応じて取得する

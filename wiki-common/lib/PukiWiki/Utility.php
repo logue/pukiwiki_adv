@@ -692,8 +692,6 @@ class Utility{
 		if (empty($page)) return self::dieMessage('Page name was not defined.');
 
 		$postdata = is_array($data) ? join("\n", $data) : $data;
-
-		$wiki = Factory::Wiki($page);
 		$original = isset($vars['original']) ? $vars['original'] : $postdata;
 
 		// ticketは、PliginRenderer::addHiddenField()で自動挿入されるので、同じアルゴリズムでチケット名を生成
@@ -728,6 +726,7 @@ class Utility{
 			$ret[] = '</div>';
 			unset($_s_page, $_w, $_pages);
 		}
+
 		// 編集フォーム
 		$ret[] = '<div class="edit_form">';
 		$ret[] = '<textarea name="msg" id="msg" rows="20" rows="80">' . self::htmlsc(
@@ -742,7 +741,7 @@ class Utility{
 			$ret[] = '<input type="submit" id="btn_preview" name="preview" value="'.$_button['preview'].'" accesskey="p" data-icon="gear" data-inline="true" data-theme="e" />';
 			$ret[] = '<input type="submit" id="btn_cancel" name="cancel" value="'.$_button['cancel'].'" accesskey="c" data-icon="delete" data-inline="true" />';
 			$ret[] = $notimeupdate === 2 && Auth::check_role('role_contents_admin') ? '<div data-role="fieldcontain">' : null;
-			if ($notimeupdate !== 0 && $wiki->isValied()){
+			if ($notimeupdate !== 0 && Factory::Wiki($page)->isValied()){
 				// タイムスタンプを更新しないのチェックボックス
 				$ret[] = '<input type="checkbox" name="notimestamp" id="_edit_form_notimestamp" value="true" ' . (isset($vars['notimestamp']) ? ' checked="checked"' : null) . ' />';
 				$ret[] = '<label for="_edit_form_notimestamp" data-inline="true">'.$_button['notchangetimestamp'].'</label>';
@@ -755,7 +754,7 @@ class Utility{
 			$ret[] = '<input type="submit" class="btn btn-primary" id="btn_submit" name="write" value="' . $_button['update'] . '" accesskey="s" />';
 			$ret[] = isset($vars['add']) ? '<input type="checkbox" name="add_top" value="true"' . (isset($vars['add']) ? ' checked="checked"' : '') . ' /><label for="add_top">' . $_button['addtop'] . '</label>' : null;
 			$ret[] = '<input type="submit" class="btn btn-default" id="btn_preview" name="preview" value="' . $_button['preview'] . '" accesskey="p" />';
-			if ($notimeupdate !== 0 && $wiki->isValied()){
+			if ($notimeupdate !== 0 && Factory::Wiki($page)->isValied()){
 				// タイムスタンプを更新しないのチェックボックス
 				$ret[] = '<input type="checkbox" name="notimestamp" id="_edit_form_notimestamp" value="true"' . (isset($vars['notimestamp']) ? ' checked="checked"' : null) . ' />';
 				$ret[] = '<label for="_edit_form_notimestamp">' . $_button['notchangetimestamp'] . '</label>';
@@ -774,7 +773,7 @@ class Utility{
 			$ret[] = '<hr />';
 			$ret[] =  $rule_wiki->has() ?  $rule_wiki->render() : '<p>Sorry, page \'' . Utility::htmlsc($rule_page) .'\' unavailable.</p>';
 		} else {
-			$ret[] = '<ul><li><a href="' . $wiki->uri('edit',array('help'=>'true')) . '" id="FormatRule">' . $_string['help'] . '</a></li></ul>';
+			$ret[] = '<ul><li><a href="' . Factory::Wiki($page)->uri('edit',array('help'=>'true')) . '" id="FormatRule">' . $_string['help'] . '</a></li></ul>';
 		}
 		return join("\n", $ret);
 	}

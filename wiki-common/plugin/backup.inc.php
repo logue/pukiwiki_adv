@@ -282,6 +282,7 @@ function plugin_backup_get_list($page)
 	$retval[] = '<form action="'.get_script_uri().'" method="get" class="backup_select_form">';
 	$retval[] = '<input type="hidden" name="cmd" value="backup" />';
 	$retval[] = '<input type="hidden" name="page" value="'.$s_page.'" />';
+
 	$backup = Factory::Backup($page);
 	$backups = $backup->get();
 	if (empty($backups)) {
@@ -289,7 +290,7 @@ function plugin_backup_get_list($page)
 		return join('', $retval);
 	}else{
 		$age = isset($vars['age']) ? (int)$vars['age'] : null;
-		$action = isset($vars['action']) ? $vars['action'] : 'diff';
+		$action = isset($vars['action']) && empty($vars['action']) ? $vars['action'] : 'diff';
 
 		$actions = array(
 			'nowdiff'	=> $_backup_messages['msg_nowdiff'],
@@ -311,14 +312,15 @@ function plugin_backup_get_list($page)
 			}
 			$retval[] = '</select>';
 		}
+		
 		$retval[] = (IS_MOBILE) ? '<fieldset data-role="controlgroup" data-mini="true">' :
-			'<div class="ui-widget-header ui-corner-all">'."\n".'<span class="buttonset">';
+			'<div class="ui-widget-header ui-corner-all">';
 		foreach ($actions as $val=>$act_name){
 			$retval[] = '<input type="radio" name="action" value="'.$val.'"'.
 				( ($val === $action) ? ' checked="checked"' : '' ).' id="r_' . $val . '"/><label for="r_' . $val . '">' . $act_name . '</label>';
 		}
 		$retval[] = (IS_MOBILE) ? '</fieldset>' :
-			'</span>'."\n".'<input type="submit" value="' . $_backup_messages['btn_jump'] . '" /></div>';
+			'<input type="submit" value="' . $_backup_messages['btn_jump'] . '" /></div>';
 
 		if (IS_MOBILE) {
 			$retval[] = '<input type="submit" value="' . $_backup_messages['btn_jump'] . '" />';
