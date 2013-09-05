@@ -307,7 +307,7 @@ class Rules{
 	/**
 	 * 見出しの固有IDのマッチパターン
 	 */
-	const HEADING_ID_PATTERN = '/^(\*{0,3})(.*?)\[#([A-Za-z0-9][\w-]+)\](.*?)$/m';
+	const HEADING_ID_PATTERN = '/^(\*{1,3})(.*?)(?:\[#([A-Za-z0-9][\w-]*)\]\s*)?$/m';
 	/**
 	 * 見出しのIDの生成で使用出来る文字
 	 */
@@ -371,18 +371,17 @@ class Rules{
 		return join("\n", $lines);
 	}
 	/**
-	 * 見出しを作る
+	 * 見出しのIDを作る
 	 * @param string $str 入力文字列
-	 * @param boolean $strip 見出し編集用のアンカーを削除する
+	 * @param string $id 見出しのID
 	 * @return string
 	 */
-	public static function setHeading($line)
+	public static function setHeading($line, $id = null)
 	{
 		$matches = array();
-		if (preg_match('/^(\*{1,3}.*?)(?:\[#([A-Za-z][\w-]*)\]\s*)?$/', $line, $matches) && (! isset($matches[2]) || empty($matches[2]) )) {
-			// Generate unique id
-			$anchor = Rand::getString(7 ,self::HEADING_ID_ACCEPT_CHARS);
-			$line = rtrim($matches[1]) . ' [#' . $anchor . ']';
+		if (preg_match(self::HEADING_ID_PATTERN, $line, $matches) && (! isset($matches[3]) || empty($matches[3]) )) {
+			// 7桁のランダム英数字をアンカー名として表題の末尾に付加
+			$line = rtrim($matches[1] . $matches[2]) . ' [#' . (empty($id) ?  Rand::getString(7 ,self::HEADING_ID_ACCEPT_CHARS) : $id) . ']';
 		}
 		return $line;
 	}
@@ -398,10 +397,10 @@ class Rules{
 		$id = '';
 		$matches = array();
 		if (preg_match(self::HEADING_ID_PATTERN, $str, $matches)) {	// 先頭が*から始まってて、なおかつ[#...]が存在する
-			$str = $matches[2] . $matches[4];
-			$id  = & $matches[3];
+			$str = $matches[2];
+			$id  = isset($matches[3]) ? $matches[3] : null;
 		} else {
-			$str = preg_replace('/^\*{0,3}/', '', $str);
+			$str = self::removeHeading($str);
 		}
 
 		// Cut footnotes and tags

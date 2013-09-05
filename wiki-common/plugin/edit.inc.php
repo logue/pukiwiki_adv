@@ -305,35 +305,6 @@ function plugin_edit_write()
 	} else {
 		$url = $partid ? $wiki->uri('read', null ,rawurlencode($partid)) : $wiki->uri();
 	}
-/*
-	// FaceBook Integration
-	global $fb;
-	if (isset($fb)){
-		$fb_user = $fb->getUser();
-		if ($fb_user === 0) {
-			try {
-				$response = $fb->api(
-					array(
-						'method' => 'stream.publish',
-						'message' => sprintf($_string['update'], '<a href="'.$url.'">'.$page.'</a>'),
-						'action_links' => array(
-							array(
-								'text' => $page_title,
-								'href' => get_script_uri()
-							),
-							array(
-								'text' => $page,
-								'href' => $url
-							)
-						)
-					)
-				);
-			} catch (FacebookApiException $e) {
-
-			}
-		}
-	}
-*/
 	Utility::redirect($url);
 	exit;
 }
@@ -357,15 +328,15 @@ function plugin_edit_honeypot()
 
 // Replace/Pickup a part of source
 // BugTrack/110
-function plugin_edit_parts($id, &$src, $postdata='')
+function plugin_edit_parts($id, &$source, $postdata='')
 {
-	$source = explode("\n",$src);
 	$postdata = rtrim($postdata) . "\n";
 	$start = -1;
 	$final = count($source);
 	$multiline = 0;
 	$matches = array();
 	foreach ($source as $i => $line) {
+		// 複数行のプラグイン
 		if ($multiline < 2) {
 			if (preg_match('/^#([^\(\{]+)(?:\(([^\r]*)\))?(\{*)/', $line, $matches)) {
 				$multiline  = strlen($matches[3]);
@@ -377,6 +348,7 @@ function plugin_edit_parts($id, &$src, $postdata='')
 			continue;
 		}
 
+		// アンカーIDによる判定
 		if ($start === -1) {
 			if (preg_match('/^(\*{1,3})(.*?)\[#(' . preg_quote($id) . ')\](.*?)$/m', $line, $matches)) {
 				$start = $i;

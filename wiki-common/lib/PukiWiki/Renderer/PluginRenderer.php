@@ -101,8 +101,8 @@ class PluginRenderer{
 				if (!is_dir($p_dir)) continue;
 				$d_modified[] = filemtime($p_dir);
 			}
-			if ($cache['core']->hasItem(self::PLUGIN_EXISTS_CACHE)){
-				$term_cache_meta = $cache['core']->getMetadata(self::PLUGIN_EXISTS_CACHE);
+			if ($cache['wiki']->hasItem(self::PLUGIN_EXISTS_CACHE)){
+				$term_cache_meta = $cache['wiki']->getMetadata(self::PLUGIN_EXISTS_CACHE);
 				if ($term_cache_meta['mtime'] < max($d_modified)) {
 					$force = true;
 				}
@@ -111,10 +111,10 @@ class PluginRenderer{
 
 		// キャッシュ処理
 		if ($force) {
-			$cache['core']->removeItem(self::PLUGIN_EXISTS_CACHE);
-		}else if ($cache['core']->hasItem(self::PLUGIN_EXISTS_CACHE)) {
-			$plugins = $cache['core']->getItem(self::PLUGIN_EXISTS_CACHE);
-		//	$cache['core']->touchItem(self::PLUGIN_EXISTS_CACHE);
+			$cache['wiki']->removeItem(self::PLUGIN_EXISTS_CACHE);
+		}else if ($cache['wiki']->hasItem(self::PLUGIN_EXISTS_CACHE)) {
+			$plugins = $cache['wiki']->getItem(self::PLUGIN_EXISTS_CACHE);
+		//	$cache['wiki']->touchItem(self::PLUGIN_EXISTS_CACHE);
 			return $plugins;
 		}
 		
@@ -164,7 +164,7 @@ class PluginRenderer{
 		}
 		unset($p_dir, $fileinfo);
 		// キャッシュを保存
-		$cache['core']->setItem(self::PLUGIN_EXISTS_CACHE, $plugins);
+		$cache['wiki']->setItem(self::PLUGIN_EXISTS_CACHE, $plugins);
 		return $plugins;
 	}
 	/**
