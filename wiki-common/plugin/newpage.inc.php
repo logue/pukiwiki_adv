@@ -6,12 +6,26 @@
 //
 // Newpage plugin
 use PukiWiki\Auth\Auth;
+use PukiWiki\Utility;
+use PukiWiki\Renderer\RendererDefines;
+
+// Message setting
+function plugin_newpage_init()
+{
+	$messages = array(
+		'_newpage_messages'=>array(
+			'title'  => T_('New page'),
+			'form_pagename' => T_('Page name'),
+			'btn_new'   => T_('New')
+		)
+	);
+	set_plugin_messages($messages);
+}
+
 function plugin_newpage_convert()
 {
-	global $vars, $BracketName;
+	global $vars, $_newpage_messages;
 	static $id = 0;
-	$_btn_edit = T_('Edit');
-	$_msg_newpage = T_('New page');
 
 	// if (PKWK_READONLY) return ''; // Show nothing
 	if (Auth::check_role('readonly')) return ''; // Show nothing
@@ -19,20 +33,21 @@ function plugin_newpage_convert()
 
 	$newpage = '';
 	if (func_num_args()) list($newpage) = func_get_args();
-	if (! preg_match('/^' . $BracketName . '$/', $newpage)) $newpage = '';
+	if (! preg_match('/^' . RendererDefines::BRACKETNAME_PATTERN . '$/', $newpage)) $newpage = '';
 
-	$s_page    = htmlsc(isset($vars['refer']) ? $vars['refer'] : $vars['page']);
-	$s_newpage = htmlsc($newpage);
+	$s_page    = Utility::htmlsc(isset($vars['refer']) ? $vars['refer'] : '');
+	$s_newpage = Utility::htmlsc($newpage);
 	++$id;
 	$script = get_script_uri();
 
 	$ret = <<<EOD
-<form action="$script" method="post" class="newpage_form">
+<form action="$script" method="post" class="form-inline plugin-newpage-form">
 	<input type="hidden" name="cmd" value="edit" />
 	<input type="hidden" name="refer"  value="$s_page" />
-	<label for="p_newpage_$id">$_msg_newpage:</label>
-	<input type="text"   name="page" id="p_newpage_$id" value="$s_newpage" size="30" />
-	<input type="submit" value="$_btn_edit" />
+	<div class="form-group">
+		<input type="text" class="form-control" name="page" id="p_newpage_$id" value="$s_newpage" size="30" placeholder="{$_newpage_messages['form_pagename']}" />
+	</div>
+	<input type="submit" value="{$_newpage_messages['btn_new']}" class="btn btn-primary" />
 </form>
 EOD;
 
@@ -41,30 +56,27 @@ EOD;
 
 function plugin_newpage_action()
 {
-	global $vars, $_string;
-	$_btn_edit = T_('Edit');
-	$_msg_newpage = T_('New page');
+	global $vars, $_string, $_newpage_messages;
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
 	if (Auth::check_role('readonly')) die_message( sprintf($_string['error_prohibit'], 'PKWK_READONLY') );
 	if (Auth::is_check_role(PKWK_CREATE_PAGE)) die_message( sprintf($_string['error_prohibit'], 'PKWK_CREATE_PAGE') );
 
 	if (!isset($vars['page'])) {
-		$retvars['msg']  = $_msg_newpage;
+		$retvars['msg']  = $_newpage_messages['title'];
 		$retvars['body'] = plugin_newpage_convert();
 		return $retvars;
 	} else {
-		$page    = strip_bracket($vars['page']);
+		$page    = Utility::stripNullBytes($vars['page']);
 		if (isset($vars['refer'])) {
-			$r_page = get_fullname($page, $vars['refer']);
+			$r_page = Utility::getPageName($page, $vars['refer']);
 			$r_refer = 'refer=' .$vars['refer'];
 		} else {
 			$r_page = $page;
 			$r_refer = '';
 		}
 
-		pkwk_headers_sent();
-		header('Location: ' . get_page_location_uri($r_page,$r_refer));
+		Utility::redirect(get_page_location_uri($r_page,$r_refer));
 		exit;
 	}
 }

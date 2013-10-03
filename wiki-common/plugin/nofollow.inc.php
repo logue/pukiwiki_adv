@@ -7,16 +7,19 @@
 // (See BugTrack2/72)
 
 // Output contents with "nofollow,noindex" option
+
+use PukiWiki\Factory;
+
 function plugin_nofollow_convert()
 {
 	global $vars, $nofollow;
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
-	if (is_freeze($page)) {
+	if (empty($page)) {
+		return '<p class="alert alert-warning">#nofollow: Page name is missing.</p>';
+	}else if(Factory::Wiki($page)->isFreezed(){
 		$nofollow = 1;
-		return '';
-	} else {
-		return '#nofollow: Page not freezed';
+		return '<p class="alert alert-warning">#nofollow: Page not freezed.</p>';
 	}
 }
 /* End of file nofollow.inc.php */

@@ -54,25 +54,9 @@ function plugin_mml_convert(){
 	}else if ($args == 2){
 		// #mml(名前){MML}
 		$title = $value[0];
-		if ($title == "reverse"){
-			$data = plugin_mml_octave_reverse($data);
-			$title = '';
-		}
 		$data = $value[1];
-	}else{
-		// #mml(名前,楽器){MML}	//Mabinogi互換処理（もしくはオクターブが逆転）
-		$title = $value[0];
-		$inst = $value[1];
-		$data = $value[$args-1];
-		//オクターブ反転
-		$data = plugin_mml_mabimml2mml($data);
 	}
 
-	// Mabinogi用のMMLが入力されていた場合（mabimml.inc.phpとの互換処理）
-	if (preg_match ('/^MML@/i', $data)){
-		$data = plugin_mml_mabimml2mml($inst,$data);
-	}
-	
 	$ret = '<pre class="mml-source">'.htmlsc($data).'</pre>';
 	if($title){
 		$html = <<<HTML

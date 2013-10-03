@@ -1,14 +1,15 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: attachref.inc.php,v 0.15.13 2012/05/11 18:07:00 Logue Exp $
+// $Id: attachref.inc.php,v 0.15.14 2013/09/12 17:06:00 Logue Exp $
 // Copyright (C)
-//   2011-2012 PukiWiki Advance Developers Team
+//   2011-2013 PukiWiki Advance Developers Team
 //   2005-2006,2008 PukiWiki Plus! Team
 //   2002-2004 sha
 //
 // File attach & ref plugin
 use PukiWiki\Factory;
 use PukiWiki\Utility;
+use PukiWiki\Router;
 
 defined('ATTACHREF_UPLOAD_MAX_FILESIZE') or define('ATTACHREF_UPLOAD_MAX_FILESIZE', '4M'); // default: 4MB
 // max file size for upload on PHP(PHP default 2MB)
@@ -125,7 +126,7 @@ EOD;
 				$style = 'text-align:' . $params['_align'];
 			}
 			// wrapped "figure"
-			$ret = '<figure class="img_margin" style="' . $style . '">' . $params['_body'] . "</figure>\n";
+			$ret = '<figure style="' . $style . '">' . $params['_body'] . '</figure>'."\n";
 			
 			// final --- copy of plugin_ref_convert()
 			$dispattach = 0;
@@ -213,12 +214,12 @@ function plugin_attachref_inline()
 		// Escape foreign value
 		$s_args = trim(join(",", $args));
 		if ($button) {
-			$script = get_script_uri();
+			$script = Router::get_script_uri();
 			$s_args .= ',button';
-			$f_page = htmlsc($vars['page']);
-			$f_args = htmlsc($s_args);
+			$f_page = Utility::htmlsc($vars['page']);
+			$f_args = Utility::htmlsc($s_args);
 			$ret = <<<EOD
-<form action="$script" method="post" class="attachref_form">
+<form action="$script" method="post" class="plugin-attacherf-form">
 	<input type="hidden" name="attachref_no" value="$attachref_no" />
 	<input type="hidden" name="attachref_opt" value="$f_args" />
 	<input type="hidden" name="digest" value="$digest" />
@@ -236,7 +237,7 @@ EOD;
 				'refer'			=> $vars['page'],
 				'digest'		=> $digest
 			));
-			$ret = $ret.'<a href="'.$btn_url.'" title="'.$f_btn_text.'"><span class="pkwk-symbol symbol-attach">'.$btn_text.'</span></a>';
+			$ret = $ret.'<a href="'.$btn_url.'" title="'.$f_btn_text.'"><small><span class="glyphicon glyphicon-paperclip">'.$btn_text.'</span></small></a>';
 	    }
 	}
 	return $ret;
@@ -246,7 +247,6 @@ function plugin_attachref_action()
 {
 	global $vars;
 	global $_attachref_messages;
-	global $pkwk_dtd;
 
 	$retval['msg'] = $_attachref_messages['msg_title'];
 	$retval['body'] = '';
@@ -280,9 +280,6 @@ function plugin_attachref_action()
 	else
 	{
 		$retval = attachref_showform();
-		// XHTML 1.0 Transitional
-		if (! isset($pkwk_dtd) || $pkwk_dtd == PKWK_DTD_XHTML_1_1)
-			$pkwk_dtd = PKWK_DTD_XHTML_1_0_TRANSITIONAL;
 	}
 	return $retval;
 }
@@ -419,7 +416,7 @@ function attachref_form($page)
 
 	if (!(bool)ini_get('file_uploads')) return '';
 
-	$s_page = htmlsc($page);
+	$s_page = Utility::htmlsc($page);
 
 	$f_digest = isset($vars['digest']) ? $vars['digest'] : '';
 	$f_no = (isset($vars['attachref_no']) && is_numeric($vars['attachref_no'])) ?
@@ -431,11 +428,11 @@ function attachref_form($page)
 	$pass = '';
 	if (ATTACHREF_PASSWORD_REQUIRE or ATTACHREF_UPLOAD_ADMIN_ONLY) {
 		$title = $_attachref_messages[ATTACHREF_UPLOAD_ADMIN_ONLY ? 'msg_adminpass' : 'msg_password'];
-		$pass = '<br />' . $title . ': <input type="password" name="pass" size="8" />';
+		$pass = '<div class="form-group"><br />' . $title . ': <input type="password"  class="form-control" name="pass" size="8" /></div>';
 	}
 	$script = get_script_uri();
 	return <<<EOD
-<form enctype="multipart/form-data" action="$script" method="post" class="attach_form">
+<form enctype="multipart/form-data" action="$script" method="post" class="plugin-attachref-form form-inline">
 	<input type="hidden" name="attachref_no" value="$f_no" />
 	<input type="hidden" name="attachref_opt" value="{$vars['attachref_opt']}" />
 	<input type="hidden" name="digest" value="$f_digest" />
@@ -443,8 +440,11 @@ function attachref_form($page)
 	<input type="hidden" name="pcmd" value="post" />
 	<input type="hidden" name="cmd" value="attachref" />
 	<input type="hidden" name="refer" value="$s_page" />
-	<p class="small">$msg_maxsize</p>
-	{$_attachref_messages['msg_file']}: <input type="file" name="attach_file" />
+	<p>$msg_maxsize</p>
+	<div class="form-group">
+		<label for="attachref-attach-file" class="sr-only">{$_attachref_messages['msg_file']}:</label>
+		<input type="file" id="attachref-attach-file"  class="form-control" name="attach_file" />
+	</div>
 	$pass
 	<input class="btn btn-primary" type="submit" value="{$_attachref_messages['btn_upload']}" />
 </form>

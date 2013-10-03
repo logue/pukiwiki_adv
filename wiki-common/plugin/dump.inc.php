@@ -40,8 +40,8 @@ $_STORAGE['UPLOAD_DIR']['add_filter']     = '^[0-9A-F_]+';
 $_STORAGE['UPLOAD_DIR']['extract_filter'] = '^' . preg_quote(UPLOAD_DIR, '/') . '((?:[0-9A-F]{2})+)_((?:[0-9A-F])+)';
 
 // BACKUP_DIR (backup/*.gz)
-$_STORAGE['BACKUP_DIR']['add_filter']     = '^[0-9A-F]+\.gz';
-$_STORAGE['BACKUP_DIR']['extract_filter'] =  '^' . preg_quote(BACKUP_DIR, '/') . '((?:[0-9A-F])+)(\.gz){0,1}';
+$_STORAGE['BACKUP_DIR']['add_filter']     = '^[0-9A-F]+\.[gz|bz2]';
+$_STORAGE['BACKUP_DIR']['extract_filter'] =  '^' . preg_quote(BACKUP_DIR, '/') . '((?:[0-9A-F])+)(\.gz|.\bz2){0,1}';
 
 
 /////////////////////////////////////////////////
@@ -60,12 +60,8 @@ function plugin_dump_action()
 		unset($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
 		if (!Auth::auth_pw($auth_users))
 		{
-			header('WWW-Authenticate: Basic realm="'.$realm.'"');
-			header( 'HTTP/1.0 401 Unauthorized' );
-
 			$body = "<p><strong>" . T_("The password is different.") . "</strong></p>\n";
-			return array('msg' => $msg, 'body' => $body);
-
+			return array('msg' => $msg, 'body' => $body, 'http_code'=>401);
 		}
 	}
 
@@ -262,37 +258,57 @@ function plugin_dump_disp_form()
 	<dl>
 		<dt>$_dump_arc</dt>
 		<dd>
-			<input type="radio" name="pcmd" id="_p_dump_tgz" value="tgz" checked="checked" />
-			<label for="_p_dump_tgz"> .tar.gz $_dump_form</label>&nbsp;
-			<input type="radio" name="pcmd" id="_p_dump_tar" value="tar" />
-			<label for="_p_dump_tar"> .tar $_dump_form</label>
+			<label class="radio-inline" for="_p_dump_tgz">
+				<input type="radio" name="pcmd" id="_p_dump_tgz" value="tgz" checked="checked" />.tar.gz $_dump_form
+			</label>
+			<label class="radio-inline" for="_p_dump_tar">
+				<input type="radio" name="pcmd" id="_p_dump_tar" value="tar" />.tar $_dump_form
+			</label>
 		</dd>
 		<dt>$_dump_backdir</dt>
 		<dd>
-			<input type="checkbox" name="bk_attach" id="_p_dump_d_attach" checked="checked" />
-			<label for="_p_dump_d_attach">attach</label><br />
-			<input type="checkbox" name="bk_backup" id="_p_dump_d_backup" checked="checked" />
-			<label for="_p_dump_d_backup">backup</label><br />
-			<input type="checkbox" name="bk_cache" id="_p_dump_d_cache" />
-			<label for="_p_dump_d_cache">cache</label><br />
-			<input type="checkbox" name="bk_counter" id="_p_dump_d_counter" />
-			<label for="_p_dump_d_counter">counter</label><br />
-			<input type="checkbox" name="bk_diff" id="_p_dump_d_diff" />
-			<label for="_p_dump_d_diff">diff</label><br />
-			<input type="checkbox" name="bk_log" id="_p_dump_d_log" />
-			<label for="_p_dump_d_diff">log</label><br />
-			<input type="checkbox" name="bk_trackback" id="_p_dump_d_trackback" />
-			<label for="_p_dump_d_trackback">trackback</label><br />
-			<input type="checkbox" name="bk_wiki" id="_p_dump_d_wiki" checked="checked" />
-			<label for="_p_dump_d_wiki">wiki</label>
+			<div class="checkbox">
+				<input type="checkbox" name="bk_attach" id="_p_dump_d_attach" checked="checked" />
+				<label for="_p_dump_d_attach">attach</label>
+			</div>
+			<div class="checkbox">
+				<input type="checkbox" name="bk_backup" id="_p_dump_d_backup" checked="checked" />
+				<label for="_p_dump_d_backup">backup</label>
+			</div>
+			<div class="checkbox">
+				<input type="checkbox" name="bk_cache" id="_p_dump_d_cache" />
+				<label for="_p_dump_d_cache">cache</label>
+			</div>
+			<div class="checkbox">
+				<input type="checkbox" name="bk_counter" id="_p_dump_d_counter" />
+				<label for="_p_dump_d_counter">counter</label>
+			</div>
+			<div class="checkbox">
+				<input type="checkbox" name="bk_diff" id="_p_dump_d_diff" />
+				<label for="_p_dump_d_diff">diff</label>
+			</div>
+			<div class="checkbox">
+				<input type="checkbox" name="bk_log" id="_p_dump_d_log" />
+				<label for="_p_dump_d_diff">log</label>
+			</div>
+			<div class="checkbox">
+				<input type="checkbox" name="bk_trackback" id="_p_dump_d_trackback" />
+				<label for="_p_dump_d_trackback">trackback</label>
+			</div>
+			<div class="checkbox">
+				<input type="checkbox" name="bk_wiki" id="_p_dump_d_wiki" checked="checked" />
+				<label for="_p_dump_d_wiki">wiki</label>
+			</div>
 		</dd>
 		<dt>$_dump_option</dt>
 		<dd>
-			<input type="checkbox" name="namedecode" id="_p_dump_namedecode" />
-			<label for="_p_dump_namedecode">$_dump_namedecode</label>
+			<div class="checkbox">
+				<input type="checkbox" name="namedecode" id="_p_dump_namedecode" />
+				<label for="_p_dump_namedecode">$_dump_namedecode</label>
+			</div>
 		</dd>
 	</dl>
-	<p><input type="submit" class="btn btn-primary" name="ok" value="$_dump_btn_down" id="download" /></p>
+	<p><input type="submit" class="btn btn-warning" name="ok" value="$_dump_btn_down" id="download" /></p>
 </form>
 EOD;
 
@@ -308,11 +324,13 @@ EOD;
 		<dl>
 			<dt><label for="_p_dump_upload_file">$_dump_file:</label></dt>
 			<dd>
-				<input type="file" name="upload_file" id="_p_dump_upload_file" size="40" /><br />
-				<span class="small">$_dump_upload</span>
+				<div class="form-group">
+					<input type="file" name="upload_file" id="_p_dump_upload_file" class="form-control" size="40" />
+					<span class="help-block">$_dump_upload</span>
+				</div>
 			</dd>
 		</dl>
-		<p><input type="submit" class="btn btn-primary" name="ok" value="$_dump_btn_up" /></p>
+		<p><input type="submit" class="btn btn-danger" name="ok" value="$_dump_btn_up" /></p>
 	</form>
 </div>
 EOD;

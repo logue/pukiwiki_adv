@@ -58,9 +58,11 @@ function plugin_article_init()
 			'msg_collided'				=> $_string['msg_collided'],
 			'msg_article_mail_sender'	=> T_('Author: '),
 			'msg_article_mail_page'		=> T_('Page: '),
-			'btn_name'					=> T_('Name: '),
-			'btn_article'				=> T_('Submit'),
-			'btn_subject'				=> T_('Subject: ')
+			'form_name'					=> T_('Name: '),
+			'form_subject'				=> T_('Subject: '),
+			'form_msg'					=> T_('Message: '),
+			'btn_submit'				=> T_('Submit')
+			
 		)
 	);
 	set_plugin_messages($msg);
@@ -75,13 +77,13 @@ function plugin_article_action()
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
 	if (Auth::check_role('readonly')) die_message($_string['error_prohibit']);
 
-	if ($post['msg'] == '')
-		return array('msg'=>'','body'=>'');
+	if (!isset($vars['msg']) || !isset($vars['refer']) )
+		return array('msg'=>null,'body'=>null);
 
-	$name = ($post['name'] == '') ? $_no_name : $post['name'];
-	$name = ($name == '') ? '' : str_replace('$name', $name, PLUGIN_ARTICLE_NAME_FORMAT);
-	$subject = ($post['subject'] == '') ? $_no_subject : $post['subject'];
-	$subject = ($subject == '') ? '' : str_replace('$subject', $subject, PLUGIN_ARTICLE_SUBJECT_FORMAT);
+	$name = !isset($vars['name']) ? $_no_name : $post['name'];
+	$name = empty($name) ? '' : str_replace('$name', $name, PLUGIN_ARTICLE_NAME_FORMAT);
+	$subject = !isset($vars['subject']) ? $_no_subject : $post['subject'];
+	$subject = empty($subject) ? '' : str_replace('$subject', $subject, PLUGIN_ARTICLE_SUBJECT_FORMAT);
 	$article  = $subject . "\n" . '>' . $name . ' (' . $now . ')~' . "\n" . '~' . "\n";
 
 	$msg = rtrim($post['msg']);
@@ -111,48 +113,30 @@ function plugin_article_action()
 	$postdata_input = $article . "\n";
 	$body = '';
 
-	if ($wiki->digest() !== $post['digest']) {
-		$title = $_article_msg['title_collided'];
-		$body = $_article_msg['msg_collided'] . "\n";
-		$s_refer    = Utility::htmlsc($post['refer']);
-		$s_digest   = Utility::htmlsc($post['digest']);
-		$s_postdata = Utility::htmlsc($postdata_input);
-		$body .= <<<EOD
-<form action="$script" method="post" class="article_form" data-collision-check="false">
-	<input type="hidden" name="refer" value="$s_refer" />
-	<input type="hidden" name="digest" value="$s_digest" />
-	<input type="hidden" name="cmd" value="preview" />
-	<textarea name="msg" rows="$rows" cols="$cols" id="textarea">$s_postdata</textarea>
-</form>
-EOD;
+	$wiki->set($postdata);
 
-	} else {
-		$wiki->set($postdata);
+	// 投稿内容のメール自動送信
+	if (PLUGIN_ARTICLE_MAIL_AUTO_SEND) {
+		$mailaddress = implode(',', $_plugin_article_mailto);
+		$mailsubject = PLUGIN_ARTICLE_MAIL_SUBJECT_PREFIX . ' ' . str_replace('**', '', $subject);
+		if ($post['name'])
+			$mailsubject .= '/' . $post['name'];
+		$mailsubject = mb_encode_mimeheader($mailsubject);
 
-		// 投稿内容のメール自動送信
-		if (PLUGIN_ARTICLE_MAIL_AUTO_SEND) {
-			$mailaddress = implode(',', $_plugin_article_mailto);
-			$mailsubject = PLUGIN_ARTICLE_MAIL_SUBJECT_PREFIX . ' ' . str_replace('**', '', $subject);
-			if ($post['name'])
-				$mailsubject .= '/' . $post['name'];
-			$mailsubject = mb_encode_mimeheader($mailsubject);
+		$mailbody = array();
+		$mailbody[] = $post['msg'];
+		$mailbody[] = "\n" . '---';
+		$mailbody[] = $_article_msg['msg_article_mail_sender'] . $post['name'] . ' (' . $now . ')';
+		$mailbody[] = $_article_msg['msg_article_mail_page'] . $post['refer'];
+		$mailbody[] = 'URL: ' . get_page_absuri($post['refer']);
+		$output = mb_convert_encoding(join("\n",$mailbody), 'JIS');
 
-			$mailbody = array();
-			$mailbody[] = $post['msg'];
-			$mailbody[] = "\n" . '---';
-			$mailbody[] = $_article_msg['msg_article_mail_sender'] . $post['name'] . ' (' . $now . ')';
-			$mailbody[] = $_article_msg['msg_article_mail_page'] . $post['refer'];
-			$mailbody[] = 'URL: ' . get_page_absuri($post['refer']);
-			$output = mb_convert_encoding(join("\n",$mailbody), 'JIS');
+		$mailaddheader = 'From: ' . PLUGIN_ARTICLE_MAIL_FROM;
 
-			$mailaddheader = 'From: ' . PLUGIN_ARTICLE_MAIL_FROM;
-
-			mail($mailaddress, $mailsubject, $mailbody, $mailaddheader);
-		}
-
-		$title = $_article_msg['title_updated'];
+		mail($mailaddress, $mailsubject, $mailbody, $mailaddheader);
 	}
-	$retvars['msg'] = $title;
+
+	$retvars['msg'] = $_article_msg['title_updated'];
 	$retvars['body'] = $body;
 
 	$post['page'] = $post['refer'];
@@ -183,17 +167,34 @@ function plugin_article_convert()
 	$article_cols = PLUGIN_ARTICLE_COLS;
 	$script = get_script_uri();
 	$string = <<<EOD
-<form action="$script" method="post" class="article_form post_form">
+<form action="$script" method="post" class="form-horizontal row plugin-article-form">
 	<input type="hidden" name="article_no" value="$article_no" />
 	<input type="hidden" name="cmd" value="article" />
 	<input type="hidden" name="digest" value="$s_digest" />
 	<input type="hidden" name="refer" value="$s_page" />
-	<label for="_p_article_name_$article_no">{$_article_msg['btn_name']}</label>
-	<input type="text" name="name" id="_p_article_name_$article_no" size="$name_cols" /><br />
-	<label for="_p_article_subject_$article_no">{$_article_msg['btn_subject']}</label>
-	<input type="text" name="subject" id="_p_article_subject_$article_no" size="$subject_cols" /><br />
-	<textarea name="msg" class="msg" rows="$article_rows" cols="$article_cols"></textarea><br />
-	<input type="submit" name="article" value="{$_article_msg['btn_article']}" />
+	<div class="form-group">
+		<label for="_p_article_name_$article_no" class="col-md-2 control-label">{$_article_msg['form_name']}</label>
+		<div class="col-md-10">
+			<input type="text" name="name" class="form-control" id="_p_article_name_$article_no" size="$name_cols" placeholder="{$_article_msg['form_name']}" />
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="_p_article_subject_$article_no" class="col-md-2 control-label">{$_article_msg['form_subject']}</label>
+		<div class="col-md-10">
+			<input type="text" name="subject" class="form-control" id="_p_article_subject_$article_no" size="$subject_cols" placeholder="{$_article_msg['form_subject']}" />
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="_p_article_msg_$article_no" class="col-md-2 control-label">{$_article_msg['form_subject']}</label>
+		<div class="col-md-10">
+			<textarea name="msg" id="_p_article_msg_$article_no" class="form-control" rows="$article_rows" cols="$article_cols" placeholder="{$_article_msg['form_subject']}" ></textarea>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-md-offset-2 col-md-10">
+			<input type="submit" name="article" class="btn btn-primary" value="{$_article_msg['btn_submit']}" />
+		</div>
+	</div>
 </form>
 EOD;
 	if (IS_MOBILE) {

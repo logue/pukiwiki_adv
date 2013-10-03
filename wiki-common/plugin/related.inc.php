@@ -15,7 +15,9 @@ use PukiWiki\Utility;
 
 function plugin_related_init(){
 	$messages['_related_messages'] = array(
+		'related' => T_('Related pages: '),
 		'msg' => T_('Backlinks for: %s'),
+		'msg_return' => T_('Return to %s'),
 		'msg_nomatch' => T_('No related pages found.')
 	);
 	set_plugin_messages($messages);
@@ -31,7 +33,7 @@ function plugin_related_convert()
 // Related pages
 function make_related($_page, $tag = '')
 {
-	global $vars;
+	global $vars, $_related_messages;
 
 	$links = Factory::Wiki($_page)->related();
 
@@ -58,7 +60,7 @@ function make_related($_page, $tag = '')
 	}else if ($tag == 'dl') {
 		$retval =  "\n" .
 			'<dl>'."\n".
-			'<dt>'.T_('Related pages: ').'</dt>' . "\n" .
+			'<dt>'.$_related_messages['related'].'</dt>' . "\n" .
 			'<dd>' . join("</dd>\n<dd>", $_links) . '</dd>' . "\n" .
 			'</dl>' . "\n";
 	} else if ($tag) {
@@ -73,21 +75,20 @@ function make_related($_page, $tag = '')
 // Show Backlinks: via related caches for the page
 function plugin_related_action()
 {
-	global $vars, $defaultpage;
+	global $vars, $defaultpage, $_related_messages;
 
-	$_page = isset($vars['page']) ? $vars['page'] : '';
+	$_page = isset($vars['page']) ? $vars['page'] : null;
 	if ( empty($_page) ) $_page = $defaultpage;
 
 	// Result
-	$msg = 'Backlinks for: ' . Utility::htmlsc($_page);
 	$retval[]  = '<a href="' . get_page_uri($_page) . '">' .
-		'Return to ' . Utility::htmlsc($_page) .'</a><br />'. "\n";
+		sprintf($_related_messages['msg_return'],Utility::htmlsc($_page)) .'</a><br />'. "\n";
 
 	// Get related from cache
 	$links = new Relational($_page);
 	$data = $links->getRelated();
 	if (empty($data)) {
-		$retval[] = '<ul><li>No related pages found.</li></ul>' . "\n";
+		$retval[] = '<ul><li>' . $_related_messages['msg_nomatch'] . '</li></ul>' . "\n";
 	}else{
 		// Hide by array keys (not values)
 		foreach(array_keys($data) as $page) {
@@ -108,7 +109,7 @@ function plugin_related_action()
 		}
 		$retval[] .= '</ul>' . "\n";
 	}
-	return array('msg'=>$msg, 'body'=>join("\n",$retval));
+	return array('msg'=>sprintf($_related_messages['msg'], Utility::htmlsc($_page)), 'body'=>join("\n",$retval));
 }
 /* End of file related.inc.php */
 /* Location: ./wiki-common/plugin/related.inc.php */

@@ -492,6 +492,7 @@ var pukiwiki = {};
 			$(prefix + 'textarea').tabby();
 			$(prefix + 'textarea[row=1]').autosize();
 
+/*
 			// buttonタグは、data要素で処理をカスタマイズ
 			$(prefix + 'button').not('.ui-button').each(function(){
 				var $this = $(this);
@@ -521,7 +522,7 @@ var pukiwiki = {};
 					}
 				});
 			}).removeClass(prefix + 'button');
-			
+*/
 
 			// タブ/アコーディオン処理
 			$(prefix + 'li[role=tab] a').each(function(){
@@ -639,14 +640,14 @@ var pukiwiki = {};
 			this.glossaly(prefix);
 			// テーブルソート
 			this.dataTable(prefix);
-			this.set_widget_btn(prefix);
+			//this.set_widget_btn(prefix);
 
 			// フォームロックを解除
 			$(prefix + ':input').removeAttr('disabled');
 			// ボタンをjQuery UIのものに
-			$(prefix + 'input[type=submit], '+prefix + 'input[type=reset], '+prefix + 'input[type=button]').button();
+			// $(prefix + 'input[type=submit], '+prefix + 'input[type=reset], '+prefix + 'input[type=button]').button();
 
-			$(prefix + '.buttonset').buttonset().removeClass('buttonset');
+			//$(prefix + '.buttonset').buttonset().removeClass('buttonset');
 
 			if(typeof(callback) === 'function'){
 				callback();

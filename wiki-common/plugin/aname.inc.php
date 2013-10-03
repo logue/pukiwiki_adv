@@ -1,8 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: aname.inc.php,v 1.28.7 2011/02/05 10:25:00 Logue Exp $
+// $Id: aname.inc.php,v 1.28.8 2013/09/12 16:24:00 Logue Exp $
 // Copyright (C)
-//   2011      PukiWiki Advance Developers Team
+//   2011,2013 PukiWiki Advance Developers Team
 //   2005-2006,2008 PukiWiki Plus! Team
 //   2002-2005,2011 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -22,20 +22,22 @@ defined('PLUGIN_ANAME_ID_MAX') or define('PLUGIN_ANAME_ID_MAX',   40);
 // Pattern of ID
 defined('PLUGIN_ANAME_ID_REGEX') or define('PLUGIN_ANAME_ID_REGEX', '/^[A-Za-z][\w\-]*$/');
 
+use PukiWiki\Utility;
+
 // Show usage
 function plugin_aname_usage($convert = TRUE, $message = '')
 {
 	if ($convert) {
-		if ($message == '') {
-			return '#aname(anchorID[[,super][,full][,noid],Link title])' . '<br />';
+		if (empty($message)) {
+			return '<div class="alert alert-danger">#aname(anchorID[[,super][,full][,noid],Link title])' . '</div>';
 		} else {
-			return '#aname: ' . $message . '<br />';
+			return '<div class="alert alert-warning">#aname: ' . $message . '</div>';
 		}
 	} else {
-		if ($message == '') {
-			return '&amp;aname(anchorID[,super][,full][,noid]){[Link title]};';
+		if (empty($message)) {
+			return '<span class="text-danger">&amp;aname(anchorID[,super][,full][,noid]){[Link title]};</span>';
 		} else {
-			return '&amp;aname: ' . $message . ';';
+			return '<span class="text-warning">&amp;aname: ' . $message . ';</span>';
 		}
 	}
 }
@@ -60,7 +62,7 @@ function plugin_aname_inline()
 		return plugin_aname_usage($convert);
 
 	$args = func_get_args(); // ONE or more
-	$body = strip_htmltag(array_pop($args), FALSE); // Strip anchor tags only
+	$body = Utility::stripHtmlTags(array_pop($args), FALSE); // Strip anchor tags only
 	array_push($args, $body);
 
 	return plugin_aname_tag($args, $convert);
@@ -73,7 +75,7 @@ function plugin_aname_tag($args = array(), $convert = TRUE)
 	global $vars;
 	static $_id = array();
 
-	if (empty($args) || $args[0] == '') return plugin_aname_usage($convert);
+	if (empty($args) || empty($args[0])) return plugin_aname_usage($convert);
 
 	$id = array_shift($args);
 	$body = '';
@@ -100,31 +102,18 @@ function plugin_aname_tag($args = array(), $convert = TRUE)
 	}
 
 	if ($convert) $body = htmlsc($body);
-	$id = htmlsc($id); // Insurance
+	$id = Utility::htmlsc($id); // Insurance
 	$class   = $f_super ? 'anchor_super' : 'anchor';
-//miko
-	// Mobile Phone is not xhtml. umm...
-	if ($f_noid) {
-		$attr_id = '';
-	} elseif (isset($pkwk_dtd) && $pkwk_dtd < PKWK_DTD_XHTML_1_1) {
-		// Compatible of XHTML1/HTML4
-		$attr_id = ' id="' . $id . '" name="' . $id . '"';
-	} elseif (defined('UA_MOBILE') && UA_MOBILE != 0) {
-		// Mobile-phone is Force XHTML1
-		$attr_id = ' id="' . $id . '" name="' . $id . '"';
-	} else {
-		$attr_id = ' id="' . $id . '"';
-	}
-//miko
+
 	$url     = $f_full  ? get_page_uri($vars['page']) : '';
-	if ($body != '') {
+	if (!empty($body)) {
 		$href  = ' href="' . $url . '#' . $id . '"';
 		$title = ' title="' . $id . '"';
 	} else {
 		$href = $title = '';
 	}
 
-	return '<a class="' . $class . '"' . $attr_id . $href . $title . '>' .
+	return '<a class="' . $class . '" id="' . $id . '" . $href . $title . '>' .
 		$body . '</a>';
 }
 /* End of file aname.inc.php */

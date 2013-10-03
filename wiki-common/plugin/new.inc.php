@@ -40,13 +40,13 @@ function plugin_new_inline()
 		//$timestamp = strtotime(preg_replace('/\([^\x00-\x7F]+\)/','',$date));
 		// plus:BugTrack/102
 		$timestamp = strtotime(preg_replace('/\(.*?\)/','',$date));
-		if ($timestamp === -1 || $timestamp === FALSE) return '&amp;new([nodate]){date}: Invalid date string;';
+		if ($timestamp === -1 || $timestamp === FALSE) return '<span class="text-warning">&amp;new([nodate]){date}: Invalid date string;</span>';
 		// $timestamp -= ZONETIME;
 
 		$retval = in_array('nodate', $args) ? '' : htmlsc($date);
 	} else {
 		// Show 'New!' message by the timestamp of the page
-		if (func_num_args() > 3) return '&new(pagename[,nolink]);';
+		if (func_num_args() > 3) return '<span class="text-muted">&new(pagename[,nolink]);</span>';
 
 		$name = strip_bracket(! empty($args) ? array_shift($args) : $vars['page']);
 		$page = get_fullname($name, $vars['page']);
@@ -65,14 +65,14 @@ function plugin_new_inline()
 				}
 			}
 			if ($timestamp == 0)
-				return '&amp;new(pagename/[,nolink]): No such pages;';
+				return '<span class="text-warning">&amp;new(pagename/[,nolink]): No such pages;</span>';
 		} else {
 			// Check a page
 			if (is_page($page)) {
 				$timestamp = get_filetime($page);
 				$retval    = $nolink ? '' : make_pagelink($page, $name);
 			} else {
-				return '&amp;new(pagename[,nolink]): No such page;';
+				return '<span class="text-warning">&amp;new(pagename[,nolink]): No such page;</span>';
 			}
 		}
 	}

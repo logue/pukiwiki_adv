@@ -18,6 +18,7 @@ use PukiWiki\Listing;
 use PukiWiki\Renderer\RendererFactory;
 use PukiWiki\Diff\Diff;
 use PukiWiki\Utility;
+use PukiWiki\Time;
 
 // Prohibit rendering old wiki texts (suppresses load, transfer rate, and security risk)
 // define('PLUGIN_BACKUP_DISABLE_BACKUP_RENDERING', PKWK_SAFE_MODE || PKWK_OPTIMISE);
@@ -115,7 +116,7 @@ function plugin_backup_action()
 			'body'=>plugin_backup_get_list($page)
 		);
 	}
-	$body .= '<div class="ui-widget ui-widget-content ui-corner-all">';
+	$body .= '<div class="panel panel-default">';
 	$body .= plugin_backup_get_list($page);
 	$body .= '</div>'."\n";
 
@@ -141,7 +142,7 @@ function plugin_backup_action()
 				return plugin_backup_rollback($page, $s_age);
 			break;
 			case 'diff':
-				if (Auth::check_role('safemode')) die_message( $_string['prohibit'] );
+				if (Auth::check_role('safemode')) Utility::dieMessage( $_string['prohibit'] );
 				$title = & $_backup_messages['title_backupdiff'];
 				$past_data = ($s_age > 1) ? join("\n", $backups[$s_age - 1]['data']) : '';
 
@@ -163,7 +164,7 @@ function plugin_backup_action()
 				$diff = new Diff($data, $now_data);
 
 				$source = plugin_backup_visualdiff($diff->getDiff());
-				$body .= drop_submit(RendererFactorty::factory($source));
+				$body .= drop_submit(RendererFactory::factory($source));
 				$body = preg_replace('#<p>\#del(.*?)(</p>)#si', '<del class="remove_block">$1', $body);
 				$body = preg_replace('#<p>\#ins(.*?)(</p>)#si', '<ins class="add_block">$1', $body);
 				$body = preg_replace('#<p>\#delend(.*?)(</p>)#si', '$1</del>', $body);
@@ -193,7 +194,7 @@ function plugin_backup_action()
 	}
 
 	if (! Auth::check_role('readonly')) {
-		$body .= '<a class="button" href="' . get_cmd_uri('backup', $page, null, array('action'=>'delete')) . '">' .
+		$body .= '<a class="button" href="' . $wiki->uri('backup', $page, null, array('action'=>'delete')) . '">' .
 			str_replace('$1', $s_page, $_backup_messages['title_backup_delete']) . '</a>';
 	}
 
@@ -223,9 +224,7 @@ function plugin_backup_delete($page, $ages = array())
 		);
 	}
 
-	$body = '';
-	$invalied = '';
-
+	$body = array();
 	if (isset($vars['pass'])) {
 		if (Auth::login($vars['pass'])) {
 			//_backup_delete($page, $ages);
@@ -234,30 +233,26 @@ function plugin_backup_delete($page, $ages = array())
 				'body' => str_replace('$1', make_pagelink($page), $_backup_messages['msg_backup_deleted'])
 			);
 		} else {
-			$body = '<p><strong>' . $_backup_messages['msg_invalidpass'] . '</strong></p>' . "\n";
+			$body[] = '<p style="alert alert-danger">' . $_backup_messages['msg_invalidpass'] . '</p>';
 		}
 	}
 
-	$s_page = Utility::htmlsc($page);
-	$href_ages = '';
+	$body[] = '<fieldset>';
+	$body[] = '<legend>' . $_backup_messages['msg_backup_adminpass'] . '</legend>';
+	$body[] = '<form action="' . Router::get_script_uri() . '" method="post" class="form-inline plugin-backup-delete-form">';
+	$body[] = '<input type="hidden" name="cmd" value="backup" />';
+	$body[] = '<input type="hidden" name="page" value="' . Utility::htmlsc($page) . '" />';
+	$body[] = '<input type="hidden" name="action" value="delete" />';
 	foreach ($ages as $age) {
-		$href_ages .= "\t\t".'<input type="hidden" name="selectages[]" value="' . $age . '" />' . "\n";
+		$body[] = '<input type="hidden" name="selectages[]" value="' . $age . '" />';
 	}
-	$script = get_script_uri();
-	$body .= <<<EOD
-<fieldset>
-	<legend>{$_backup_messages['msg_backup_adminpass']}</legend>
-	<form action="$script" method="post" class="backup_delete_form">
-		<input type="hidden" name="cmd" value="backup" />
-		<input type="hidden" name="page" value="$s_page" />
-		<input type="hidden" name="action" value="delete" />
-$href_ages
-		<input type="password" name="pass" size="12" required="true" />
-		<input type="submit" name="ok" value="{$_backup_messages['btn_delete']}" />
-	</form>
-</fieldset>
-EOD;
-	return	array('msg'=>$_backup_messages['title_backup_delete'], 'body'=>$body);
+	$body[] = '<div class="form-group">';
+	$body[] = '<input type="password" name="pass" size="12" required="true" />';
+	$body[] = '</div>';
+	$body[] = '<input class="btn btn-danger" type="submit" name="ok" value="' . $_backup_messages['btn_delete'] . '" />';
+	$body[] = '</form>';
+	$body[] = '</fieldset>';
+	return	array('msg'=>$_backup_messages['title_backup_delete'], 'body'=>join("\n",$body));
 }
 
 function plugin_backup_diff($a, $b)
@@ -276,19 +271,18 @@ EOD;
 function plugin_backup_get_list($page)
 {
 	global $_backup_messages, $vars, $_button;
-	$s_page = htmlsc($page);
 	$retval = array();
-	$retval[] = '<p>[ <a href="'.get_page_uri($page).'">'.$_button['back'].'</a> ]</p>'."\n".'<hr />'."\n";
-	$retval[] = '<form action="'.get_script_uri().'" method="get" class="backup_select_form">';
-	$retval[] = '<input type="hidden" name="cmd" value="backup" />';
-	$retval[] = '<input type="hidden" name="page" value="'.$s_page.'" />';
+	$retval[] = '<p><a class="btn btn-default" href="'.Router::get_page_uri($page).'">'.$_button['back'].'</a></p>';
 
 	$backup = Factory::Backup($page);
 	$backups = $backup->get();
 	if (empty($backups)) {
-		$retval[1] .= '<p>' . str_replace('$1', make_pagelink($page), $_backup_messages['msg_nobackup']) . '</p>' . "\n";
+		$retval[] = '<p class="alert alert-info">' . str_replace('$1', make_pagelink($page), $_backup_messages['msg_nobackup']) . '</p>';
 		return join('', $retval);
 	}else{
+		$retval[] = '<form action="'.Router::get_script_uri().'" method="get" class="backup_select_form">';
+		$retval[] = '<input type="hidden" name="cmd" value="backup" />';
+		$retval[] = '<input type="hidden" name="page" value="'.Utility::htmlsc($page).'" />';
 		$age = isset($vars['age']) ? (int)$vars['age'] : null;
 		$action = isset($vars['action']) && empty($vars['action']) ? $vars['action'] : 'diff';
 
@@ -306,39 +300,39 @@ function plugin_backup_get_list($page)
 			foreach ($backups as $backup_age=>$data) {
 				$time = isset($data['real']) ? $data['real'] :
 					isset($data['time']) ? $data['time'] : '';
-
 				$retval[] = '<option value="' . $backup_age . '"' .
-					( $backup_age === $age ? ' selected="selected"' : '' ).'>' . format_date($time, false) . '</option>';
+					( $backup_age === $age ? ' selected="selected"' : '' ).'>' . Time::format($time, false) . '</option>';
 			}
 			$retval[] = '</select>';
+		}else{
+			$retval[] = '<div class="panel panel-default">';
+			$retval[] = '<div class="panel-heading">';
 		}
-		
-		$retval[] = (IS_MOBILE) ? '<fieldset data-role="controlgroup" data-mini="true">' :
-			'<div class="ui-widget-header ui-corner-all">';
 		foreach ($actions as $val=>$act_name){
-			$retval[] = '<input type="radio" name="action" value="'.$val.'"'.
-				( ($val === $action) ? ' checked="checked"' : '' ).' id="r_' . $val . '"/><label for="r_' . $val . '">' . $act_name . '</label>';
+			$retval[] = '<label class="radio-inline">';
+			$retval[] = '<input type="radio" name="action" value="'.$val.'"'.( ($val === $action) ? ' checked="checked"' : '' ).' />'.$act_name;
+			$retval[] = '</label>';
 		}
-		$retval[] = (IS_MOBILE) ? '</fieldset>' :
-			'<input type="submit" value="' . $_backup_messages['btn_jump'] . '" /></div>';
-
 		if (IS_MOBILE) {
+			$retval[] = '</fieldset>';
 			$retval[] = '<input type="submit" value="' . $_backup_messages['btn_jump'] . '" />';
 		}else{
+			$retval[] = '<input type="submit"  class="btn btn-info" value="' . $_backup_messages['btn_jump'] . '" />';
+			$retval[] = '</div>';
+			$retval[] = '<div class="panel-body">';
 			$retval[] = '<ol>';
 			foreach ($backups as $backup_age=>$data) {
 				$time = isset($data['real']) ? $data['real'] :
 					isset($data['time']) ? $data['time'] : '';
 
 				$retval[] = '<li><input type="radio" name="age" value="' . $backup_age . '" id="r_' . $backup_age  . '"' .
-					( $backup_age === $age ? ' checked="checked"' : '' ).' /><label for="r_' . $backup_age . '">' . format_date($time, false) . '</label>' .
+					( $backup_age === $age ? ' checked="checked"' : '' ).' /><label for="r_' . $backup_age . '">' . Time::format($time, false) . '</label>' .
 					( (! Auth::check_role('safemode')) ? '<input type="checkbox" name="selectages[]" value="'.$backup_age.'" />' : '')
 					 . '</li>';
 			}
 			$retval[] = '</ol>';
+			$retval[] = '</div>';
 		}
-//		$retval[] = '<input type="password" name="pass" size="12" />';
-
 	}
 	$retval[] = '</form>';
 /*
@@ -405,7 +399,6 @@ function plugin_backup_visualdiff($str)
 	$str = preg_replace('/^(\-)(.*)$/m', "#del\n$2\n#delend", $str);
 	$str = preg_replace('/^(\+)(.*)$/m', "#ins\n$2\n#insend", $str);
 	$str = preg_replace('/^(\x08)(.*)$/m', '$2', $str);
-	$str = trim($str);
 	return $str;
 }
 
@@ -442,23 +435,25 @@ function plugin_backup_convert()
 	}
 
 	$r_page = rawurlencode($page);
-	$s_page = htmlsc($page);
+	$s_page = Utility::htmlsc($page);
 	$retval = array();
 	$date = get_date("m/d", get_filetime($page));
-	$backups =  Factory::Backup($page)->has() && isset($age) ?  Factory::Backup($page)->get($age) : array();
+	$backups =  Factory::Backup($page)->has() ?  Factory::Backup($page)->get() : array();
 
-	$retval[] = '<form action="' . get_script_uri() . '" method="get" class="autosubmit">';
+	$retval[] = '<form action="' . Router::get_script_uri() . '" method="get" class="autosubmit form-inline plugin-backup-form">';
 	$retval[] = '<input type="hidden" name="cmd" value="backup" />';
 	$retval[] = '<input type="hidden" name="action" value="' . $mode . '" />';
 	$retval[] = '<input type="hidden" name="page" value="' . $r_page . '" />';
-	$retval[] = (($with_label) ? '<label for="age">'.$_backup_messages['msg_version'].'</label>' : '') . '<select id="age" name="age" >';
-//	$retval[] = '<option value="" selected="selected" data-placeholder="true" disabled="disabled">'.$_backup_messages['msg_backup'].'</option>';
-	if (count($backups) == 0)
-	{
+	$retval[] = '<div class="form-group">';
+	$retval[] = $with_label ? '<label for="age">'.$_backup_messages['msg_version'].'</label>' : '';
+	$retval[] = '<select id="age" name="age" class="form-control">';
+
+	//$retval[] = '<option value="" selected="selected" data-placeholder="true" disabled="disabled">'.$_backup_messages['msg_backup'].'</option>';
+	if (count($backups) == 0) {
 		$retval[] = '<option value="" selected="selected" disabled="disabled">' .$_backup_messages['msg_arrow'] . ' ' . $date . '(No.1)</option>';
 	}else{
 		$maxcnt = count($backups) + 1;
-		$retval[] = '<option value="" selected="selected">' . $_backup_messages['msg_arrow'] . ' ' . $date . '(No.' . $maxcnt . ')</option>';
+		$retval[] = '<option value="" selected="selected" disabled="disabled">' . $_backup_messages['msg_arrow'] . ' ' . $date . '(No.' . $maxcnt . ')</option>';
 		$backups = array_reverse($backups, True);
 		foreach ($backups as $age=>$data) {
 			if (isset($data['real'])) {
@@ -471,9 +466,10 @@ function plugin_backup_convert()
 			$date = get_date('m/d', $time);
 			$retval[] = '<option value="' . $age . '">' . $date . ' (No.' . $age . ')</option>';
 		}
-		$retval[] = '</select>';
 	}
-	$retval[] = '<input type="submit" value="' . $_backup_messages['btn_jump'] . '" />';
+	$retval[] = '</select>';
+	$retval[] = '</div>';
+	$retval[] = '<button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-chevron-right"></span></button>';
 	$retval[] = '</form>';
 	return join("\n",$retval);
 }
@@ -493,14 +489,14 @@ function plugin_backup_rollback($page, $age)
 		$backups = $backup->get($age);
 		if( empty($backups) )
 		{
-			die();	// Do nothing
+			return array(sprintf($_backup_messages['title_backup_rollback'], $age), 'body'=>$_backup_messages['msg_nobackup']);	// Do nothing
 		}
 
 		$wiki = Factory::Wiki($page);
 		// バックアップからロールバック（タイムスタンプを更新しない状態で）
 		$wiki->set($backups['data']);
 		// ファイルの更新日時をバックアップの時点にする
-		$wiki->setTime($backups['time']);
+		$wiki->time($backups['time']);
 
 		//put_lastmodified();
 
@@ -514,13 +510,15 @@ function plugin_backup_rollback($page, $age)
 		$body = <<<EOD
 <fieldset>
 	<legend>{$_backup_messages['msg_backup_adminpass']}</legend>
-	<form action="$script" method="post" class="backup_rollback_form">
+	<form action="$script" method="post" class="plugin-backup-rollback-form form-inline">
 		<input type="hidden" name="cmd" value="backup" />
 		<input type="hidden" name="action" value="rollback" />
 		<input type="hidden" name="age" value="$age" />
 		<input type="hidden" name="page" value="$s_page" />
-		<input type="password" name="pass" size="12" />
-		<input type="submit" name="ok" value="{$_backup_messages['btn_rollback']}" />
+		<div class="form-group">
+			<input type="password" name="pass" size="12" class="form-control" />
+		</div>
+		<input type="submit" name="ok" value="{$_backup_messages['btn_rollback']}" class="btn btn-warning" />
 	</form>
 </legend>
 EOD;

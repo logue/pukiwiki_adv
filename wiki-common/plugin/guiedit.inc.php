@@ -113,8 +113,8 @@ function plugin_guiedit_edit_data($page)
 {
 	global $vars;
 
-	$source = WikiFactory::Wiki($vars['page'])->source();
-	$postdata = $vars['original'] = join('', $source);
+	$source = Factory::Wiki($vars['page'])->get();
+	$postdata = $vars['original'] = join("\n", $source);
 	if (! empty($vars['id'])) {
 		exist_plugin('edit');
 		$postdata = plugin_edit_parts($vars['id'], $source);
@@ -123,7 +123,7 @@ function plugin_guiedit_edit_data($page)
 			$postdata = $vars['original'];
 		}
 	}
-	if ($postdata == '') $postdata = WikiFactory::Wiki($page)->auto_template();
+	if ($postdata == '') $postdata = Factory::Wiki($page)->auto_template();
 
 	//	構文の変換
 	$inc = include_once(GUIEDIT_CONF_PATH . 'wiki2xhtml.php');

@@ -119,6 +119,9 @@ class Header{
 					$status = Response::STATUS_CODE_304;
 				}
 				$headers['Etag'] = $hash;
+			}else if ($status == Response::STATUS_CODE_401){
+				global $realm;
+				$headers['www-authenticate'] = 'Basic realm="'.$realm.'"';
 			}
 			// 内容が存在する場合容量をContent-Lengthヘッダーに出力
 			$headers['Content-Length'] = strlen($body);

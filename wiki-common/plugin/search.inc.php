@@ -117,17 +117,29 @@ function plugin_search_search_form($s_word = '', $type = '', $bases = array())
 	$and_check = $or_check = '';
 	$base_option = '';
 
-	$ret[] = '<form action="'. get_script_uri() .'" method="' . ( (! PLUGIN_SEARCH_DISABLE_GET_ACCESS) ? 'get' : 'post' ) .'" class="search_form" role="search">';
+	$ret[] = '<form action="'. get_script_uri() .'" method="' . ( (! PLUGIN_SEARCH_DISABLE_GET_ACCESS) ? 'get' : 'post' ) .'" class="form-inline plugin-search-form" role="search">';
 	$ret[] = '<input type="hidden" name="cmd" value="search" />';
-	$ret[] = '<input type="search"  name="word" value="' . $s_word . '" size="20" maxlength="' . PLUGIN_SEARCH_MAX_LENGTH . '" class="suggest" results="5" autosave="'. $page_title .'" placeholder="' . $_search_msg['search_words'] . '" />';
-	$ret[] = ( IS_MOBILE ) ? '<fieldset data-role="controlgroup" data-type="horizontal" >' : null;
-	$ret[] = '<input type="radio" name="type" id="_p_search_AND" value="AND" ' . ( ($type === 'OR') ? '' : 'checked="checked" ' ) . '/>';
-	$ret[] = '<label for="_p_search_AND">' . $_search_msg['btn_and'] . '</label>';
-	$ret[] = '<input type="radio" name="type" id="_p_search_OR" value="OR" ' . ( ($type === 'OR') ? 'checked="checked" ' : '' ) . '/>';
-	$ret[] = '<label for="_p_search_OR">' . $_search_msg['btn_or'] . '</label>';
-	$ret[] = ( IS_MOBILE ) ? '</fieldset>' : null;
-
 	
+	if ( IS_MOBILE ) {
+		$ret[] = '<input type="search" name="word" value="' . $s_word . '" size="20" maxlength="' . PLUGIN_SEARCH_MAX_LENGTH . '" class="form-control suggest" results="5" autosave="'. $page_title .'" placeholder="' . $_search_msg['search_words'] . '" />';
+		$ret[] = '<fieldset data-role="controlgroup" data-type="horizontal" >';
+		$ret[] = '<input type="radio" name="type" id="_p_search_AND" value="AND" ' . ( ($type === 'OR') ? '' : 'checked="checked" ' ) . '/>';
+		$ret[] = '<label for="_p_search_AND">' . $_search_msg['btn_and'] . '</label>';
+		$ret[] = '<input type="radio" name="type" id="_p_search_OR" value="OR" ' . ( ($type === 'OR') ? 'checked="checked" ' : '' ) . '/>';
+		$ret[] = '<label for="_p_search_OR">' . $_search_msg['btn_or'] . '</label>';
+		$ret[] = '</fieldset>';
+	}else{
+		$ret[] = '<div class="form-group">';
+		$ret[] = '<input type="search" name="word" value="' . $s_word . '" size="20" maxlength="' . PLUGIN_SEARCH_MAX_LENGTH . '" class="form-control suggest" results="5" autosave="'. $page_title .'" placeholder="' . $_search_msg['search_words'] . '" />';
+		$ret[] = '</div>';
+		$ret[] = '<label class="checkbox">';
+		$ret[] = '<input type="radio" name="type" value="AND" ' . ( ($type === 'OR') ? '' : 'checked="checked" ' ) . '/>';
+		$ret[] = $_search_msg['btn_and'] . '</label>';
+		$ret[] = '<label class="checkbox">';
+		$ret[] = '<input type="radio" name="type"  value="OR" ' . ( ($type === 'OR') ? 'checked="checked" ' : '' ) . '/>';
+		$ret[] = $_search_msg['btn_or'] . '</label>';
+	}
+
 	if (!empty($bases)) {
 		$ret[] = ( IS_MOBILE ) ? null : '<br />';
 		

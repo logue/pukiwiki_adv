@@ -16,6 +16,8 @@ define('PLUGIN_BUGTRACK_NUMBER_FORMAT', '%d'); // Like 'page/1'
 use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
 use PukiWiki\Utility;
+use PukiWiki\Renderer\RendererDefines;
+use PukiWiki\Text\Rules;
 
 function plugin_bugtrack_init()
 {
@@ -109,9 +111,9 @@ function plugin_bugtrack_print_form($base, $category)
 
 	if (empty($category)) {
 		$encoded_category = '<input name="category" id="_p_bugtrack_category_' . $id .
-			'" type="text" placeholder="'.$s_category.'" />';
+			'" type="text" placeholder="'.$s_category.'" class="form-control" />';
 	} else {
-		$encoded_category = '<select name="category" id="_p_bugtrack_category_' . $id . '">';
+		$encoded_category = '<select name="category" id="_p_bugtrack_category_' . $id . '" class="form-control">';
 		foreach ($category as $_category) {
 			$s_category = Utility::htmlsc($_category);
 			$encoded_category .= '<option value="' . $s_category . '">' .
@@ -126,52 +128,66 @@ function plugin_bugtrack_print_form($base, $category)
 
 	$script = get_script_uri();
 	$body = <<<EOD
-<form action="$script" method="post" class="bugtrack_form">
+<form action="$script" method="post" class="form-horizontal plugin-bugtrack-form">
 	<input type="hidden" name="cmd" value="bugtrack" />
 	<input type="hidden" name="ticket" value="$ticket" />
 	<input type="hidden" name="mode"   value="submit" />
 	<input type="hidden" name="base"   value="$s_base" />
-	<table>
-		<tr>
-			<th><label for="_p_bugtrack_name_$id">$s_name</label></th>
-			<td><input  id="_p_bugtrack_name_$id" name="name" size="20" type="text" placeholder="$s_name" required="true" /></td>
-		</tr>
-		<tr>
-			<th><label for="_p_bugtrack_category_$id">$s_category</label></th>
-			<td>$encoded_category</td>
-		</tr>
-		<tr>
-			<th><label for="_p_bugtrack_priority_$id">$s_priority</label></th>
-			<td><select id="_p_bugtrack_priority_$id" name="priority">$select_priority</select></td>
-		</tr>
-		<tr>
-			<th><label for="_p_bugtrack_state_$id">$s_state</label></th>
-			<td><select id="_p_bugtrack_state_$id" name="state">$select_state</select></td>
-		</tr>
-		<tr>
-			<th><label for="_p_bugtrack_pagename_$id">$s_pname</label></th>
-			<td><input  id="_p_bugtrack_pagename_$id" name="pagename" size="20" type="text" placeholder="$s_pname" />
-			<small>$s_pnamec</small></td>
-		</tr>
-		<tr>
-			<th><label for="_p_bugtrack_version_$id">$s_version</label></th>
-			<td><input  id="_p_bugtrack_version_$id" name="version" size="10" type="text" placeholder="$s_version" />
-			<small>$s_versionc</small></td>
-		</tr>
-		<tr>
-			<th><label for="_p_bugtrack_summary_$id">$s_summary</label></th>
-			<td><input  id="_p_bugtrack_summary_$id" name="summary" size="60" type="text" placeholder="$s_summary" required="true" /></td>
-		</tr>
-		<tr>
-			<th><label   for="_p_bugtrack_body_$id">$s_body</label></th>
-			<td><textarea id="_p_bugtrack_body_$id" name="body" cols="60" rows="6"  placeholder="$s_body" required="true"></textarea></td>
-		</tr>
-		<tr>
-			<td colspan="2">
-				<input type="submit" class="btn btn-primary" value="$s_submit" />
-			</td>
-		</tr>
-	</table>
+	<div class="form-group">
+		<label for="_p_bugtrack_name_$id" class="col-md-2 control-label">$s_name</label>
+		<div class="col-md-10">
+			<input id="_p_bugtrack_name_$id" name="name" size="20" class="form-control" type="text" placeholder="$s_name" required="true" />
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="_p_bugtrack_category_$id" class="col-md-2 control-label">$s_category</label>
+		<div class="col-md-10">
+			$encoded_category
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="_p_bugtrack_priority_$id" class="col-md-2 control-label">$s_priority</label>
+		<div class="col-md-10">
+			<select id="_p_bugtrack_priority_$id" name="priority" class="form-control">$select_priority</select>
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="_p_bugtrack_state_$id" class="col-md-2 control-label">$s_state</label>
+		<div class="col-md-10">
+			<select id="_p_bugtrack_state_$id" name="state" class="form-control">$select_state</select>
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="_p_bugtrack_pagename_$id" class="col-md-2 control-label">$s_pname</label>
+		<div class="col-md-10">
+			<input id="_p_bugtrack_pagename_$id" name="pagename" size="20" type="text" placeholder="$s_pname" class="form-control" />
+			<span class="help-block">$s_pnamec</span>
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="_p_bugtrack_version_$id" class="col-md-2 control-label">$s_version</label>
+		<div class="col-md-10">
+			<input id="_p_bugtrack_version_$id" name="version" size="10" type="text" placeholder="$s_version" class="form-control" />
+			<span class="help-block">$s_versionc</span>
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="_p_bugtrack_summary_$id" class="col-md-2 control-label">$s_summary</label>
+		<div class="col-md-10">
+			<input id="_p_bugtrack_summary_$id" name="summary" size="60" type="text" placeholder="$s_summary" required="true" class="form-control" />
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="_p_bugtrack_body_$id" class="col-md-2 control-label">$s_body</label>
+		<div class="col-md-10">
+			<textarea id="_p_bugtrack_body_$id" name="body" cols="60" rows="6"  placeholder="$s_body" required="true" class="form-control"></textarea>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-md-offset-2 col-md-10">
+			<input type="submit" class="btn btn-primary" value="$s_submit" />
+		</div>
+	</div>
 </form>
 EOD;
 
@@ -346,25 +362,26 @@ EOD;
 // Get one set of data from a page (or a page moved to $page)
 function plugin_bugtrack_list_pageinfo($page, $no = NULL, $recurse = TRUE)
 {
-	global $WikiName, $InterWikiName, $BracketName, $_plugin_bugtrack;
+	global $_plugin_bugtrack;
 
 	if ($no === NULL)
 		$no = preg_match('/\/([0-9]+)$/', $page, $matches) ? $matches[1] : 0;
 
-	$source = get_source($page);
+	$source = Factory::Wiki($page)->get();
 
 	// Check 'moved' page _just once_
-	$regex  = "/move\s*to\s*($WikiName|$InterWikiName|\[\[$BracketName\]\])/";
+	$regex  = '/move\s*to\s*(' . RendererDefines::WIKINAME_PATTERN . '|' .
+		RendererDefines::INTERWIKINAME_PATTERN .'|\[\[' . RendererDefines::BRACKETNAME_PATTERN . '\]\])/';
 	$match  = array();
 	if ($recurse && preg_match($regex, $source[0], $match))
-		return plugin_bugtrack_list_pageinfo(strip_bracket($match[1]), $no, FALSE);
+		return plugin_bugtrack_list_pageinfo(Utility::stripBracket($match[1]), $no, FALSE);
 
 	$body = join("\n", $source);
 	foreach(array('summary', 'name', 'priority', 'state', 'category') as $item) {
 		$regex = '/-\s*' . preg_quote($_plugin_bugtrack[$item], '/') . '\s*:(.*)/';
 		if (preg_match($regex, $body, $matches)) {
 			if ($item == 'name') {
-				$$item = strip_bracket(trim($matches[1]));
+				$$item = Utility::stripBracket(trim($matches[1]));
 			} else {
 				$$item = trim($matches[1]);
 			}
@@ -374,8 +391,7 @@ function plugin_bugtrack_list_pageinfo($page, $no = NULL, $recurse = TRUE)
 	}
 
 	if (preg_match("/\*([^\n]*)/", $body, $matches)) {
-		$summary = $matches[1];
-		make_heading($summary);
+		$summary = Rules::removeHeading($matches[0]);
 	}
 
 	return array($page, $no, $summary, $name, $priority, $state, $category);

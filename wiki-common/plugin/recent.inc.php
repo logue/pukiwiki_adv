@@ -40,7 +40,7 @@ function plugin_recent_convert()
 	}
 
 	if ($exec_count++ > PLUGIN_RECENT_EXEC_LIMIT) {
-		return '<div class="message_box ui-state-error ui-corner-all">#recent(): You called me too much.</div>' . "\n";
+		return '<div class="alert alert-warning">#recent(): You called me too much.</div>' . "\n";
 	}
 
 	$date = '';
@@ -68,7 +68,7 @@ function plugin_recent_convert()
 					// New day
 					$date = $_date;
 					$items[] = '<strong>' . $date . '</strong>';
-					$items[] = '<ul class="recent_list">';
+					$items[] = '<ul class="plugin-recent-list">';
 				}
 
 				if($page === $vars['page']) {

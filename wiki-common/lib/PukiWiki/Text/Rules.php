@@ -19,6 +19,9 @@ use PukiWiki\Renderer\InlineFactory;
 use Zend\Math\Rand;
 
 class Rules{
+	/**
+	 * デフォルトのテキストルール
+	 */
 	private static $default_rules = array(
 		// 実体参照パターンおよびシステムで使用するパターンを$line_rulesに加える
 		// XHTML5では&lt;、&gt;、&amp;、&quot;と、&apos;のみ使える。
@@ -45,6 +48,214 @@ class Rules{
 		"&#039;&#039;&#039;(?!&#039;)((?:(?!&#039;&#039;&#039;).)*)&#039;&#039;&#039;" => '<em>$1</em>',
 		"&#039;&#039;(?!&#039;)((?:(?!&#039;&#039;).)*)&#039;&#039;" => '<strong>$1</strong>'
 	);
+	/**
+	 * Glyphiconルール
+	 * http://getbootstrap.com/components/#glyphicons
+	 */
+	private static $glypicon_rules = array(
+		'&amp;\(adjust\);'          => '<span class="glyphicon glyphicon-adjust"></span>',
+		'&amp;\(align-center\);'    => '<span class="glyphicon glyphicon-align-center"></span>',
+		'&amp;\(align-justify\);'   => '<span class="glyphicon glyphicon-align-justify"></span>',
+		'&amp;\(align-left\);'      => '<span class="glyphicon glyphicon-align-left"></span>',
+		'&amp;\(align-right\);'     => '<span class="glyphicon glyphicon-align-right"></span>',
+		'&amp;\(arrow-down\);'      => '<span class="glyphicon glyphicon-arrow-down"></span>',
+		'&amp;\(arrow-left\);'      => '<span class="glyphicon glyphicon-arrow-left"></span>',
+		'&amp;\(arrow-right\);'     => '<span class="glyphicon glyphicon-arrow-right"></span>',
+		'&amp;\(arrow-up\);'        => '<span class="glyphicon glyphicon-arrow-up"></span>',
+		'&amp;\(asterisk\);'        => '<span class="glyphicon glyphicon-asterisk"></span>',
+		'&amp;\(backward\);'        => '<span class="glyphicon glyphicon-backward"></span>',
+		'&amp;\(ban-circle\);'      => '<span class="glyphicon glyphicon-ban-circle"></span>',
+		'&amp;\(barcode\);'         => '<span class="glyphicon glyphicon-barcode"></span>',
+		'&amp;\(bell\);'            => '<span class="glyphicon glyphicon-bell"></span>',
+		'&amp;\(bold\);'            => '<span class="glyphicon glyphicon-bold"></span>',
+		'&amp;\(book\);'            => '<span class="glyphicon glyphicon-book"></span>',
+		'&amp;\(bookmark\);'        => '<span class="glyphicon glyphicon-bookmark"></span>',
+		'&amp;\(briefcase\);'       => '<span class="glyphicon glyphicon-briefcase"></span>',
+		'&amp;\(bullhorn\);'        => '<span class="glyphicon glyphicon-bullhorn"></span>',
+		'&amp;\(calendar\);'        => '<span class="glyphicon glyphicon-calendar"></span>',
+		'&amp;\(camera\);'          => '<span class="glyphicon glyphicon-camera"></span>',
+		'&amp;\(certificate\);'     => '<span class="glyphicon glyphicon-certificate"></span>',
+		'&amp;\(check\);'           => '<span class="glyphicon glyphicon-check"></span>',
+		'&amp;\(chevron-down\);'    => '<span class="glyphicon glyphicon-chevron-down"></span>',
+		'&amp;\(chevron-left\);'    => '<span class="glyphicon glyphicon-chevron-left"></span>',
+		'&amp;\(chevron-up\);'      => '<span class="glyphicon glyphicon-chevron-up"></span>',
+		'&amp;\(circle-arrow-down\);'   => '<span class="glyphicon glyphicon-circle-arrow-down"></span>',
+		'&amp;\(circle-arrow-left\);'   => '<span class="glyphicon glyphicon-circle-arrow-left"></span>',
+		'&amp;\(circle-arrow-right\);'  => '<span class="glyphicon glyphicon-circle-arrow-right"></span>',
+		'&amp;\(circle-arrow-up\);'     => '<span class="glyphicon glyphicon-circle-arrow-up"></span>',
+		'&amp;\(cloud\);'           => '<span class="glyphicon glyphicon-cloud"></span>',
+		'&amp;\(cloud-download\);'  => '<span class="glyphicon glyphicon-cloud-download"></span>',
+		'&amp;\(cloud-upload\);'    => '<span class="glyphicon glyphicon-cloud-upload"></span>',
+		'&amp;\(cog\);'             => '<span class="glyphicon glyphicon-cog"></span>',
+		'&amp;\(collapse-down\);'   => '<span class="glyphicon glyphicon-collapse-down"></span>',
+		'&amp;\(collapse-up\);'     => '<span class="glyphicon glyphicon-collapse-up"></span>',
+		'&amp;\(comment\);'         => '<span class="glyphicon glyphicon-comment"></span>',
+		'&amp;\(compressed\);'      => '<span class="glyphicon glyphicon-compressed"></span>',
+		'&amp;\(copyright-mark\);'  => '<span class="glyphicon glyphicon-copyright-mark"></span>',
+		'&amp;\(credit-card\);'     => '<span class="glyphicon glyphicon-credit-card"></span>',
+		'&amp;\(cutlery\);'         => '<span class="glyphicon glyphicon-cutlery"></span>',
+		'&amp;\(dashboard\);'       => '<span class="glyphicon glyphicon-dashboard"></span>',
+		'&amp;\(download\);'        => '<span class="glyphicon glyphicon-download"></span>',
+		'&amp;\(download-alt\);'    => '<span class="glyphicon glyphicon-download-alt"></span>',
+		'&amp;\(earphone\);'        => '<span class="glyphicon glyphicon-earphone"></span>',
+		'&amp;\(edit\);'            => '<span class="glyphicon glyphicon-adjust"></span>',
+		'&amp;\(eject\);'           => '<span class="glyphicon glyphicon-eject"></span>',
+		'&amp;\(envelope\);'        => '<span class="glyphicon glyphicon-envelope"></span>',
+		'&amp;\(euro\);'            => '<span class="glyphicon glyphicon-euro"></span>',
+		'&amp;\(exclamation\);'     => '<span class="glyphicon glyphicon-exclamation"></span>',
+		'&amp;\(expand\);'          => '<span class="glyphicon glyphicon-expand"></span>',
+		'&amp;\(export\);'          => '<span class="glyphicon glyphicon-export"></span>',
+		'&amp;\(eye-close\);'       => '<span class="glyphicon glyphicon-eye-close"></span>',
+		'&amp;\(eye-open\);'        => '<span class="glyphicon glyphicon-eye-open"></span>',
+		'&amp;\(facetime-video\);'  => '<span class="glyphicon glyphicon-facetime-video"></span>',
+		'&amp;\(fast-backward\);'   => '<span class="glyphicon glyphicon-fast-backward"></span>',
+		'&amp;\(fast-forward\);'    => '<span class="glyphicon glyphicon-fast-forward"></span>',
+		'&amp;\(file\);'            => '<span class="glyphicon glyphicon-file"></span>',
+		'&amp;\(film\);'            => '<span class="glyphicon glyphicon-film"></span>',
+		'&amp;\(filter\);'          => '<span class="glyphicon glyphicon-filter"></span>',
+		'&amp;\(fire\);'            => '<span class="glyphicon glyphicon-fire"></span>',
+		'&amp;\(flag\);'            => '<span class="glyphicon glyphicon-flag"></span>',
+		'&amp;\(flash\);'           => '<span class="glyphicon glyphicon-flash"></span>',
+		'&amp;\(floppy-disk\);'     => '<span class="glyphicon glyphicon-floppy-disk"></span>',
+		'&amp;\(floppy-open\);'     => '<span class="glyphicon glyphicon-floppy-open"></span>',
+		'&amp;\(floppy-remove\);'   => '<span class="glyphicon glyphicon-floppy-remove"></span>',
+		'&amp;\(floppy-save\);'     => '<span class="glyphicon glyphicon-floppy-save"></span>',
+		'&amp;\(floppy-saved\);'    => '<span class="glyphicon glyphicon-floppy-saved"></span>',
+		'&amp;\(folder-close\);'    => '<span class="glyphicon glyphicon-folder-close"></span>',
+		'&amp;\(folder-open\);'     => '<span class="glyphicon glyphicon-folder-open"></span>',
+		'&amp;\(font\);'            => '<span class="glyphicon glyphicon-font"></span>',
+		'&amp;\(forward\);'         => '<span class="glyphicon glyphicon-forward"></span>',
+		'&amp;\(fullscreen\);'      => '<span class="glyphicon glyphicon-fullscreen"></span>',
+		'&amp;\(gbp\);'             => '<span class="glyphicon glyphicon-gbp"></span>',
+		'&amp;\(gift\);'            => '<span class="glyphicon glyphicon-gift"></span>',
+		'&amp;\(glass\);'           => '<span class="glyphicon glyphicon-glass"></span>',
+		'&amp;\(globe\);'           => '<span class="glyphicon glyphicon-globe"></span>',
+		'&amp;\(hand-down\);'       => '<span class="glyphicon glyphicon-hand-down"></span>',
+		'&amp;\(hand-left\);'       => '<span class="glyphicon glyphicon-hand-left"></span>',
+		'&amp;\(hand-right\);'      => '<span class="glyphicon glyphicon-hand-right"></span>',
+		'&amp;\(hand-up\);'         => '<span class="glyphicon glyphicon-hand-up"></span>',
+		'&amp;\(hd-video\);'        => '<span class="glyphicon glyphicon-hd-video"></span>',
+		'&amp;\(hdd\);'             => '<span class="glyphicon glyphicon-hdd"></span>',
+		'&amp;\(header\);'          => '<span class="glyphicon glyphicon-header"></span>',
+		'&amp;\(headphones\);'      => '<span class="glyphicon glyphicon-headphones"></span>',
+		'&amp;\(heart\);'           => '<span class="glyphicon glyphicon-heart"></span>',
+		'&amp;\(heart-empty\);'     => '<span class="glyphicon glyphicon-heart-empty"></span>',
+		'&amp;\(home\);'            => '<span class="glyphicon glyphicon-home"></span>',
+		'&amp;\(import\);'          => '<span class="glyphicon glyphicon-import"></span>',
+		'&amp;\(inbox\);'           => '<span class="glyphicon glyphicon-inbox"></span>',
+		'&amp;\(indent-left\);'     => '<span class="glyphicon glyphicon-indent-left"></span>',
+		'&amp;\(indent-right\);'    => '<span class="glyphicon glyphicon-indent-right"></span>',
+		'&amp;\(info-sign\);'       => '<span class="glyphicon glyphicon-info-sign"></span>',
+		'&amp;\(italic\);'          => '<span class="glyphicon glyphicon-italic"></span>',
+		'&amp;\(leaf\);'            => '<span class="glyphicon glyphicon-leaf"></span>',
+		'&amp;\(link\);'            => '<span class="glyphicon glyphicon-link"></span>',
+		'&amp;\(list\);'            => '<span class="glyphicon glyphicon-list"></span>',
+		'&amp;\(list-alt\);'        => '<span class="glyphicon glyphicon-list-alt"></span>',
+		'&amp;\(lock\);'            => '<span class="glyphicon glyphicon-lock"></span>',
+		'&amp;\(log-in\);'          => '<span class="glyphicon glyphicon-log-in"></span>',
+		'&amp;\(log-out\);'         => '<span class="glyphicon glyphicon-log-out"></span>',
+		'&amp;\(magnet\);'          => '<span class="glyphicon glyphicon-magnet"></span>',
+		'&amp;\(map-marker\);'      => '<span class="glyphicon glyphicon-map-marker"></span>',
+		'&amp;\(minus\);'           => '<span class="glyphicon glyphicon-minus"></span>',
+		'&amp;\(minus-sign\);'      => '<span class="glyphicon glyphicon-minus-sign"></span>',
+		'&amp;\(move\);'            => '<span class="glyphicon glyphicon-move"></span>',
+		'&amp;\(music\);'           => '<span class="glyphicon glyphicon-music"></span>',
+		'&amp;\(new-window\);'      => '<span class="glyphicon glyphicon-new-window"></span>',
+		'&amp;\(off\);'             => '<span class="glyphicon glyphicon-off"></span>',
+		'&amp;\(ok\);'              => '<span class="glyphicon glyphicon-ok"></span>',
+		'&amp;\(ok-circle\);'       => '<span class="glyphicon glyphicon-ok-circle"></span>',
+		'&amp;\(ok-sign\);'         => '<span class="glyphicon glyphicon-ok-sign"></span>',
+		'&amp;\(open\);'            => '<span class="glyphicon glyphicon-open"></span>',
+		'&amp;\(paperclip\);'       => '<span class="glyphicon glyphicon-paperclip"></span>',
+		'&amp;\(pause\);'           => '<span class="glyphicon glyphicon-pause"></span>',
+		'&amp;\(pencil\);'          => '<span class="glyphicon glyphicon-pencil"></span>',
+		'&amp;\(phone\);'           => '<span class="glyphicon glyphicon-phone"></span>',
+		'&amp;\(phone-alt\);'       => '<span class="glyphicon glyphicon-phone-alt"></span>',
+		'&amp;\(picture\);'         => '<span class="glyphicon glyphicon-picture"></span>',
+		'&amp;\(plane\);'           => '<span class="glyphicon glyphicon-plane"></span>',
+		'&amp;\(play\);'            => '<span class="glyphicon glyphicon-play"></span>',
+		'&amp;\(play-circle\);'     => '<span class="glyphicon glyphicon-play-circle"></span>',
+		'&amp;\(plus\);'            => '<span class="glyphicon glyphicon-plus"></span>',
+		'&amp;\(plus-sign\);'       => '<span class="glyphicon glyphicon-plus-sign"></span>',
+		'&amp;\(print\);'           => '<span class="glyphicon glyphicon-print"></span>',
+		'&amp;\(pushpin\);'         => '<span class="glyphicon glyphicon-pushpin"></span>',
+		'&amp;\(qrcode\);'          => '<span class="glyphicon glyphicon-qrcode"></span>',
+		'&amp;\(question-sign\);'   => '<span class="glyphicon glyphicon-question-sign"></span>',
+		'&amp;\(random\);'          => '<span class="glyphicon glyphicon-random"></span>',
+		'&amp;\(record\);'          => '<span class="glyphicon glyphicon-record"></span>',
+		'&amp;\(refresh\);'         => '<span class="glyphicon glyphicon-refresh"></span>',
+		'&amp;\(registration-mark\);'   => '<span class="glyphicon glyphicon-registration-mark"></span>',
+		'&amp;\(remove\);'          => '<span class="glyphicon glyphicon-remove"></span>',
+		'&amp;\(remove-circle\);'   => '<span class="glyphicon glyphicon-remove-circle"></span>',
+		'&amp;\(remove-sign\);'     => '<span class="glyphicon glyphicon-remove-sign"></span>',
+		'&amp;\(repeat\);'          => '<span class="glyphicon glyphicon-repeat"></span>',
+		'&amp;\(resize-full\);'     => '<span class="glyphicon glyphicon-resize-full"></span>',
+		'&amp;\(resize-horizontal\);'   => '<span class="glyphicon glyphicon-resize-horizontal"></span>',
+		'&amp;\(resize-small\);'    => '<span class="glyphicon glyphicon-resize-small"></span>',
+		'&amp;\(resize-vertical\);' => '<span class="glyphicon glyphicon-resize-vertical"></span>',
+		'&amp;\(retweet\);'         => '<span class="glyphicon glyphicon-retweet"></span>',
+		'&amp;\(road\);'            => '<span class="glyphicon glyphicon-road"></span>',
+		'&amp;\(save\);'            => '<span class="glyphicon glyphicon-save"></span>',
+		'&amp;\(saved\);'           => '<span class="glyphicon glyphicon-saved"></span>',
+		'&amp;\(screenshot\);'      => '<span class="glyphicon glyphicon-screenshot"></span>',
+		'&amp;\(sd-video\);'        => '<span class="glyphicon glyphicon-sd-video"></span>',
+		'&amp;\(search\);'          => '<span class="glyphicon glyphicon-search"></span>',
+		'&amp;\(send\);'            => '<span class="glyphicon glyphicon-send"></span>',
+		'&amp;\(share\);'           => '<span class="glyphicon glyphicon-share"></span>',
+		'&amp;\(share-alt\);'       => '<span class="glyphicon glyphicon-share-alt"></span>',
+		'&amp;\(shopping-cart\);'   => '<span class="glyphicon glyphicon-shopping-cart"></span>',
+		'&amp;\(signal\);'          => '<span class="glyphicon glyphicon-signal"></span>',
+		'&amp;\(sort\);'            => '<span class="glyphicon glyphicon-sort"></span>',
+		'&amp;\(sort-by-alphabet\);'=> '<span class="glyphicon glyphicon-sort-by-alphabet"></span>',
+		'&amp;\(sort-by-alphabet-alt\);'    => '<span class="glyphicon glyphicon-sort-by-alphabet-alt"></span>',
+		'&amp;\(sort-by-attributes\);'  => '<span class="glyphicon glyphicon-sort-by-attributes"></span>',
+		'&amp;\(sort-by-attributes-alt\);'  => '<span class="glyphicon glyphicon-sort-by-attributes-alt"></span>',
+		'&amp;\(sort-by-order\);'   => '<span class="glyphicon glyphicon-sort-by-order"></span>',
+		'&amp;\(sort-by-order-alt\);'   => '<span class="glyphicon glyphicon-sort-by-order-alt"></span>',
+		'&amp;\(sound-5-1\);'       => '<span class="glyphicon glyphicon-sound-5-1"></span>',
+		'&amp;\(sound-6-1\);'       => '<span class="glyphicon glyphicon-sound-6-1"></span>',
+		'&amp;\(sound-7-1\);'       => '<span class="glyphicon glyphicon-sound-7-1"></span>',
+		'&amp;\(sound-dolby\);'     => '<span class="glyphicon glyphicon-sound-dolby"></span>',
+		'&amp;\(sound-stereo\);'    => '<span class="glyphicon glyphicon-sound-stereo"></span>',
+		'&amp;\(star\);'            => '<span class="glyphicon glyphicon-star"></span>',
+		'&amp;\(star-empty\);'      => '<span class="glyphicon glyphicon-star-empty"></span>',
+		'&amp;\(stats\);'           => '<span class="glyphicon glyphicon-stats"></span>',
+		'&amp;\(step-backward\);'   => '<span class="glyphicon glyphicon-step-backward"></span>',
+		'&amp;\(step-forward\);'    => '<span class="glyphicon glyphicon-step-forward"></span>',
+		'&amp;\(stop\);'            => '<span class="glyphicon glyphicon-stop"></span>',
+		'&amp;\(subtitles\);'       => '<span class="glyphicon glyphicon-subtitles"></span>',
+		'&amp;\(tag\);'             => '<span class="glyphicon glyphicon-tag"></span>',
+		'&amp;\(tags\);'            => '<span class="glyphicon glyphicon-tags"></span>',
+		'&amp;\(tasks\);'           => '<span class="glyphicon glyphicon-tasks"></span>',
+		'&amp;\(text-height\);'     => '<span class="glyphicon glyphicon-text-height"></span>',
+		'&amp;\(text-width\);'      => '<span class="glyphicon glyphicon-text-width"></span>',
+		'&amp;\(th\);'              => '<span class="glyphicon glyphicon-th"></span>',
+		'&amp;\(th-large\);'        => '<span class="glyphicon glyphicon-th-large"></span>',
+		'&amp;\(th-list\);'         => '<span class="glyphicon glyphicon-th-list"></span>',
+		'&amp;\(thumbs-down\);'     => '<span class="glyphicon glyphicon-thumbs-down"></span>',
+		'&amp;\(thumbs-up\);'       => '<span class="glyphicon glyphicon-thumbs-up"></span>',
+		'&amp;\(time\);'            => '<span class="glyphicon glyphicon-time"></span>',
+		'&amp;\(tint\);'            => '<span class="glyphicon glyphicon-tint"></span>',
+		'&amp;\(tower\);'           => '<span class="glyphicon glyphicon-tower"></span>',
+		'&amp;\(transfer\);'        => '<span class="glyphicon glyphicon-transfer"></span>',
+		'&amp;\(trash\);'           => '<span class="glyphicon glyphicon-trash"></span>',
+		'&amp;\(tree-conifer\);'    => '<span class="glyphicon glyphicon-tree-conifer"></span>',
+		'&amp;\(tree-deciduous\);'  => '<span class="glyphicon glyphicon-tree-deciduous"></span>',
+		'&amp;\(unchecked\);'       => '<span class="glyphicon glyphicon-unchecked"></span>',
+		'&amp;\(upload\);'          => '<span class="glyphicon glyphicon-upload"></span>',
+		'&amp;\(usd\);'             => '<span class="glyphicon glyphicon-usd"></span>',
+		'&amp;\(user\);'            => '<span class="glyphicon glyphicon-user"></span>',
+		'&amp;\(volume-down\);'     => '<span class="glyphicon glyphicon-volume-down"></span>',
+		'&amp;\(volume-off\);'      => '<span class="glyphicon glyphicon-volume-off"></span>',
+		'&amp;\(volume-up\);'       => '<span class="glyphicon glyphicon-volume-up"></span>',
+		'&amp;\(warning-sign\);'    => '<span class="glyphicon glyphicon-warning-sign"></span>',
+		'&amp;\(wrench\);'          => '<span class="glyphicon glyphicon-wrench"></span>',
+		'&amp;\(zoom-in\);'         => '<span class="glyphicon glyphicon-zoom-in"></span>',
+		'&amp;\(zoom-out\);'        => '<span class="glyphicon glyphicon-zoom-out"></span>'
+	);
+	/**
+	 * 絵文字
+	 */
 	private static $emoji_rules = array(
 		// text is Unicode6.0
 		// http://ja.wikipedia.org/wiki/I%E3%83%A2%E3%83%BC%E3%83%89%E7%B5%B5%E6%96%87%E5%AD%97
@@ -400,7 +611,7 @@ class Rules{
 			$str = $matches[2];
 			$id  = isset($matches[3]) ? $matches[3] : null;
 		} else {
-			$str = self::removeHeading($str);
+			$str = preg_replace('/^\*{0,3}/', '', $str);
 		}
 
 		// Cut footnotes and tags
@@ -417,7 +628,13 @@ class Rules{
 	 * @return string
 	 */
 	public static function removeHeading($str){
-		return preg_replace(self::HEADING_ID_PATTERN, '$1$2', $str);
+		return preg_replace_callback(
+			self::HEADING_ID_PATTERN,
+			function ($matches){
+				return $matches[2];
+			},
+			$str
+		);
 	} 
 	/**
 	 * 他のページを読み込むときに余計なものを取り除く
@@ -434,6 +651,10 @@ class Rules{
 		}
 		return preg_replace($patternf, $replacef, $str);
 	}
+	/**
+	 * テキストのルール設定
+	 * @return array
+	 */
 	public static function getLineRules(){
 		global $usedatetime;
 		static $_line_rules;
@@ -443,6 +664,9 @@ class Rules{
 			// 日時置換ルールを$line_rulesに加える
 			$_line_rules = self::$default_rules;
 			if ($usedatetime) $_line_rules += $rules['datetime'];
+			// Glyphicon
+			$_line_rules += self::$glypicon_rules;
+			// 絵文字
 			$_line_rules += self::$emoji_rules;
 		}
 		return $_line_rules;

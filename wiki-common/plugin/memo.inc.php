@@ -11,13 +11,25 @@ use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
 use PukiWiki\Utility;
 
+// Message setting
+function plugin_memo_init()
+{
+	$messages = array(
+		'_memo_messages'=>array(
+			'title'  => T_('Memo'),
+			'info'   => T_('Insert temporary text.')
+		)
+	);
+	set_plugin_messages($messages);
+}
+
 function plugin_memo_action()
 {
 	global $vars, $cols, $rows, $_string;
 //	global $_title_collided, $_msg_collided, $_title_updated;
 
 $_title_collided   = $_string['title_collided'];
-$_title_updated    = $_string['update'];
+$_title_updated    = $_string['updated'];
 $_msg_collided =  $_string['msg_collided'];
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
@@ -32,7 +44,7 @@ $_msg_collided =  $_string['msg_collided'];
 	$wiki = Factory::Wiki($vars['refer']);
 	$postdata = array();
 	$memo_no = 0;
-	foreach($wiki-get() as $line) {
+	foreach($wiki->get() as $line) {
 		if (preg_match('/^#memo\(?.*\)?$/i', $line)) {
 			if ($memo_no == $vars['memo_no']) {
 				$postdata[] = '#memo(' . $memo_body . ')' . "\n";
@@ -56,16 +68,15 @@ $_msg_collided =  $_string['msg_collided'];
 
 		$script = get_script_uri();
 		$body .= <<<EOD
-<form action="$script" method="post" class="memo_form">
+<form action="$script" method="post" class="plugin-memo-form">
 	<input type="hidden" name="cmd" value="preview" />
 	<input type="hidden" name="refer"  value="$s_refer" />
 	<input type="hidden" name="digest" value="$s_digest" />
-	<textarea name="msg" rows="$rows" cols="$cols" id="textarea">$s_postdata_input</textarea>
+	<textarea name="msg" rows="$rows" cols="$cols" class="form-control">$s_postdata_input</textarea>
 </form>
 EOD;
 	} else {
 		$wiki->set($postdata);
-
 		$title = $_title_updated;
 	}
 	$retvars['msg']  = & $title;
@@ -78,7 +89,7 @@ EOD;
 
 function plugin_memo_convert()
 {
-	global $vars, $digest;
+	global $vars, $_memo_messages;
 	static $numbers = array();
 
 	if (! isset($numbers[$vars['page']])) $numbers[$vars['page']] = 0;
@@ -88,7 +99,7 @@ function plugin_memo_convert()
 	$data = implode(',', $data);	// Care all arguments
 	$data = str_replace('&#x2c;', ',', $data); // Unescape commas
 	$data = str_replace('&#x22;', '"', $data); // Unescape double quotes
-	$data = htmlsc(str_replace('\n', "\n", $data));
+	$data = Utility::htmlsc(str_replace('\n', "\n", $data));
 
 	// if (PKWK_READONLY) {
 	if (Auth::check_role('readonly')) {
@@ -96,22 +107,23 @@ function plugin_memo_convert()
 		$_submit = '';
 	} else {
 		$_script = get_script_uri();;
-		$_submit = '<input type="submit" name="memo" value="' . T_('update') . '" />';
+		$_submit = '<input type="submit" name="memo" value="' . T_('update') . '" class="btn btn-default"/>';
 	}
 
-	$s_page   = htmlsc($vars['page']);
-	$s_digest = htmlsc($digest);
+	$s_page   = Utility::htmlsc($vars['page']);
 	$s_cols   = MEMO_COLS;
 	$s_rows   = MEMO_ROWS;
 	$string   = <<<EOD
-<form action="$_script" method="post" class="memo_form">
-	<input type="hidden" name="memo_no" value="$memo_no" />
-	<input type="hidden" name="refer"   value="$s_page" />
-	<input type="hidden" name="cmd"  value="memo" />
-	<input type="hidden" name="digest"  value="$s_digest" />
-	<textarea name="msg" rows="$s_rows" cols="$s_cols">$data</textarea><br />
-	$_submit
-</form>
+<fieldset>
+	<legend>{$_memo_messages['title']}</legend>
+	<form action="$_script" method="post" class="plugin-memo-form">
+		<input type="hidden" name="memo_no" value="$memo_no" />
+		<input type="hidden" name="refer"   value="$s_page" />
+		<input type="hidden" name="cmd"  value="memo" />
+		<textarea name="msg" rows="$s_rows" cols="$s_cols" class="form-control" placeholder="{$_memo_messages['info']}">$data</textarea>
+		$_submit
+	</form>
+</fieldset>
 EOD;
 
 	return $string;

@@ -11,6 +11,7 @@
 use PukiWiki\Auth\Auth;
 use PukiWiki\Config\Config;
 use PukiWiki\Factory;
+use PukiWiki\Utility;
 
 define('CONFIG_REFERER', 'plugin/referer');
 define('REFERE_TITLE_LENGTH',70);
@@ -161,7 +162,7 @@ function plugin_referer_body($data)
 	foreach ($data as $x) {
 		// 'scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment'
 		// 0:最終更新日時, 1:初回登録日時, 2:参照カウンタ, 3:Referer ヘッダ, 4:利用可否フラグ(1は有効)
-		@list($ltime, $stime, $count, $url, $enable) = $x;
+		list($ltime, $stime, $count, $url, $enable) = $x;
 
 		$uri = isset($url) ? parse_url($url) : null;
 		
@@ -186,7 +187,7 @@ function plugin_referer_body($data)
 		if ($sw_ignore && $referer > 1) continue;
 
 		// 非ASCIIキャラクタ(だけ)をURLエンコードしておく BugTrack/440
-		// $e_url = htmlsc(preg_replace('/([" \x80-\xff]+)/e', 'rawurlencode("$1")', $url));
+		//$e_url = htmlsc(preg_replace('/([" \x80-\xff]+)/e', 'rawurlencode("$1")', $url));
 		$e_url = preg_replace_callback(
 			'([" \x80-\xff]+)',
 			function ($m) {
@@ -194,8 +195,8 @@ function plugin_referer_body($data)
 			},
 			$url
 		);
-		$s_url = @mb_convert_encoding(rawurldecode($url), SOURCE_ENCODING);
-		$s_url = htmlsc(mb_strimwidth($s_url,0,REFERE_TITLE_LENGTH,'...'));
+		$s_url = mb_convert_encoding(rawurldecode($url), SOURCE_ENCODING);
+		$s_url = Utility::htmlsc(mb_strimwidth($s_url,0,REFERE_TITLE_LENGTH,'...'));
 
 		$lpass = get_passage($ltime, FALSE); // 最終更新日時からの経過時間
 		$spass = get_passage($stime, FALSE); // 初回登録日時からの経過時間

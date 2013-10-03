@@ -195,7 +195,7 @@ function plugin_openid_login_form()
 
 	$script = get_script_uri();
 	$rc = <<<EOD
-<form method="get" action="$script" class="openid_form">
+<form method="get" action="$script" class="form-inline plugin-openid-form">
 	<input type="hidden" name="cmd" value="openid" />
 	<input type="hidden" name="action" value="verify" />
 	<input type="hidden" name="page" value="$r_page" />
@@ -212,8 +212,6 @@ function plugin_openid_verify($consumer)
 {
 	global $vars,$_openid_msg;
 
-	$die_message = (PLUS_PROTECT_MODE) ? 'die_msg' : 'die_message';
-
 	$page = (empty($vars['page'])) ? '' : ''.$vars['page'];
 	$openid = $vars['openid_url'];
 	$return_to = get_location_uri('openid','','action=finish_auth');
@@ -224,7 +222,7 @@ function plugin_openid_verify($consumer)
 
 	$auth_request = $consumer->begin($openid);
 	if (!$auth_request) {
-		$die_message( $_openid_msg['err_authentication'] );
+		Utility::dieMessage( $_openid_msg['err_authentication'] );
 	}
 
 	$sreg_request = Auth_OpenID_SRegRequest::build(
@@ -273,8 +271,6 @@ function plugin_openid_finish_auth($consumer)
 {
 	global $vars,$_openid_msg;
 
-	$die_message = (PLUS_PROTECT_MODE) ? 'die_msg' : 'die_message';
-
 	$obj_verify = new AuthOpenIdVerify();
 	$session_verify = $obj_verify->getSession();
 	//$session_verify['server_url']
@@ -293,9 +289,9 @@ die();
 
 	switch($response->status) {
 	case Auth_OpenID_CANCEL:
-		$die_message( $_openid_msg['err_cancel'] );
+		Utility::dieMessage( $_openid_msg['err_cancel'] );
 	case Auth_OpenID_FAILURE:
-		$die_message( $_openid_msg['err_failure'] . $response->message );
+		Utility::dieMessage( $_openid_msg['err_failure'] . $response->message );
 	case Auth_OpenID_SUCCESS:
 		$sreg_resp = Auth_OpenID_SRegResponse::fromSuccessResponse($response);
 		$sreg = $sreg_resp->contents();
@@ -305,7 +301,7 @@ die();
 			if (PLUGIN_OPENID_NO_NICKNAME) {
 				$sreg['nickname'] = 'anonymouse';
 			} else {
-				$die_message( $_openid_msg['err_nickname'] );
+				Utility::dieMessage( $_openid_msg['err_nickname'] );
 			}
 		}
 

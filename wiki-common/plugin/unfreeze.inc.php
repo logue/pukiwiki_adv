@@ -74,10 +74,12 @@ function plugin_unfreeze_action()
 		$body  .= <<<EOD
 <fieldset>
 	<legend>$_msg_unfreezing</legend>
-	<form action="$script" method="post" class="unfreeze_form">
+	<form action="$script" method="post" class="form-inline plugin-form-unfreeze">
 		<input type="hidden" name="cmd"  value="unfreeze" />
 		<input type="hidden" name="page" value="$s_page" />
-		<input type="password" name="pass" size="12" />
+		<div class="form-group">
+			<input type="password" name="pass" size="12" class="form-group" />
+		</div>
 		<input type="submit" class="btn btn-primary"  name="ok"   value="$_btn_unfreeze" />
 	</form>
 </fieldset>

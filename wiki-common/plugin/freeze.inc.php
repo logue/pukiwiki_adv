@@ -62,13 +62,11 @@ function plugin_freeze_action()
 		$body  .= <<<EOD
 <fieldset>
 	<legend>$_msg_freezing</legend>
-	<form action="$script" method="post">
+	<form action="$script" method="post" class="form-inline plugin-freeze-form">
 		<input type="hidden"   name="cmd"  value="freeze" />
 		<input type="hidden"   name="page" value="$s_page" />
-		<div class="freeze_form">
-			<input type="password" name="pass" size="12" />
-			<input type="submit" class="btn btn-primary"  name="ok"   value="$_btn_freeze" />
-		</div>
+		<input type="password" name="pass" size="12" class="form-control" />
+		<input type="submit" class="btn btn-warning" name="ok" value="$_btn_freeze" />
 	</form>
 </fieldset>
 EOD;

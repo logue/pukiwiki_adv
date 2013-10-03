@@ -40,7 +40,7 @@ function build_directory_list($roots, $option=array())
 		if(!$matched) {
 			$list['directory'][] = $root;
 			$warnings[] =
-				'<p><span style="color]:red">' . sprintf( T_("#%s doesn't have the corresponding page. "),$root) . '</span>' .
+				'<p><span class="text-danger">' . sprintf( T_("#%s doesn't have the corresponding page. "),$root) . '</span>' .
 				'(<a href="' . get_page_uri($root) . '">' . T_('making') . "</a>)</p>\n";
 		}
 	}
@@ -58,21 +58,25 @@ function print_form_string( $list )
 {
 	global $vars;
 
-	$form_string[] = '<form action="'. Router::get_script_uri() .'" method="post">';
+	$form_string[] = '<form action="'. Router::get_script_uri() .'" method="post" class="form-inline">';
 	$form_string[] = '<fieldset>';
 	$form_string[] = '<legend>'.T_('Page name') . '</legend>';
 
 	if($list['directory']) {
-		$form_string[] = '<select name="directory">';
+		$form_string[] = '<div class="form-group">';
+		$form_string[] = '<select name="directory" class="form-control">';
 		foreach( $list['directory'] as $dir ) {
 			$form_string[] = '<option>'.Utility::htmlsc($dir).'/</option>';
 		}
 		$form_string[] = '</select>';
+		$form_string[] = '</div>';
 	}
 
 	$form_string[] = '<input type="hidden" name="cmd" value="newpage_subdir" />';
 	$form_string[] = isset($vars['page']) ? '<input type="hidden" name="refer" value="'.$vars['page'].'" />' : null;
-	$form_string[] = '<input type="text" name="page" size="30" value="" />';
+	$form_string[] = '<div class="form-group">';
+	$form_string[] = '<input type="text" name="page" size="30" value="" class="form-control" />';
+	$form_string[] = '</div>';
 	$form_string[] = '<input type="submit" class="btn btn-primary" value="' . T_('New') . '" />';
 	$form_string[] = '</fieldset>';
 	$form_string[] = '</form>';
@@ -91,6 +95,7 @@ function print_form_string( $list )
 function print_help_message()
 {
 	return join("\n",array(
+		'<div class="alert alert-warning">',
 		'#newpage_subdir([directory]... ,[option]... )<br />\n',
 		'<dl>',
 		'<dt>' . T_('DESCRIPTION') . '</dt>',
@@ -110,7 +115,8 @@ function print_help_message()
 		'#newpage_subdir(-h)',
 		'#newpage_subdir(-XYZ) -&gt; implies : #newpage_subdir(-h)',
 		'</samp></pre></dd>',
-		'</dl>'
+		'</dl>',
+		'</div>'
 	));
 }
 
@@ -179,9 +185,7 @@ function plugin_newpage_subdir_action()
 			'body'	=> print_form_string(build_directory_list($roots))
 		);
 	}
-
-	header('Location: '.get_script_uri().'?cmd=edit&page='.rawurlencode($dir.$page));
-	die();
+	Utility::redirect(get_script_uri().'?cmd=edit&page='.rawurlencode($dir.$page));
 }
 /* End of file newpage_subdir.inc.php */
 /* Location: ./wiki-common/plugin/newpage_subdir.inc.php */

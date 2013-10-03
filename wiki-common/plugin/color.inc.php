@@ -14,7 +14,7 @@
 // http://www.w3.org/TR/CSS21/syndata.html#value-def-color
 
 // ----
-define('PLUGIN_COLOR_USAGE', '<span style="ui-error">&amp;color(foreground[,background]){text};</span>');
+define('PLUGIN_COLOR_USAGE', '<span style="text-warning">&amp;color(foreground[,background]){text};</span>');
 define('PLUGIN_COLOR_REGEX', '/^(?:#[0-9a-f]{3}|#[0-9a-f]{6}|[a-z-]+)$/i');
 
 function plugin_color_inline()

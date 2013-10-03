@@ -43,6 +43,7 @@
 
 use PukiWiki\Factory;
 use PukiWiki\Renderer\RendererFactory;
+use PukiWiki\Utility;
 
 // Default value of 'title|notitle' option
 defined('PLUGIN_INCLUDE_WITH_TITLE') or define('PLUGIN_INCLUDE_WITH_TITLE', TRUE);	// Default: TRUE(title)
@@ -85,9 +86,9 @@ function plugin_include_convert()
 		}
 	}
 
-	$s_page = htmlsc($page);
+	$s_page = Utility::htmlsc($page);
 	$r_page = rawurlencode($page);
-	$link = '<a href="' . $wiki->get_uri() . '">' . $s_page . '</a>'; // Read link
+	$link = '<a href="' . $wiki->uri() . '">' . $s_page . '</a>'; // Read link
 
 	// I'm stuffed
 	if (isset($included[$page])) {
@@ -102,8 +103,6 @@ function plugin_include_convert()
 
 	// One page, only one time, at a time
 	$included[$page] = TRUE;
-	
-	
 
 	// Include A page, that probably includes another pages
 	$get['page'] = $post['page'] = $vars['page'] = $page;
@@ -111,7 +110,7 @@ function plugin_include_convert()
 	if ($wiki->isReadable()) {
 		$source = $wiki->get($page);
 		preg_replace('/^#navi/','/\/\/#navi/',$source);
-		$body = RendererFactory::factorty($source);
+		$body = RendererFactory::factory($source);
 	} else {
 		$body = str_replace('$1', $page, $_msg_include_restrict);
 	}
@@ -119,7 +118,7 @@ function plugin_include_convert()
 
 	// Put a title-with-edit-link, before including document
 	if ($with_title) {
-		$link = '<a href="' . get_cmd_uri('edit',$page) . '">' . $s_page . '</a>';
+		$link = '<a href="' . $wiki->uri('edit') . '">' . $s_page . '</a>';
 		if ($page == $menubar || $page == $sidebar) {
 			$body = '<span align="center"><h5 class="side_label">' .
 				$link . '</h5></span><small>' . $body . '</small>';

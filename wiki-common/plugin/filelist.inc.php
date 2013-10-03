@@ -5,6 +5,7 @@
 // Filelist plugin: redirect to list plugin
 // cmd=filelist
 use PukiWiki\Auth\Auth;
+use PukiWiki\Router;
 function plugin_filelist_init()
 {
 	global $_filelist_msg;
@@ -50,13 +51,13 @@ function filelist_adm($pass)
 		$body .= "<p><strong>".$_filelist_msg['msg_no_pass']."</strong></p>";
 	}
 
-	$script = get_script_uri();
+	$script = Router::get_script_uri();
 	$body .= <<<EOD
 <fieldset>
 	<legend>$msg_pass</legend>
-	<form action="$script" method="post" class="filelist_form">
+	<form action="$script" method="post" class="form-inline plugin-filelist-form">
 		<input type="hidden" name="cmd" value="filelist" />
-		<input type="password" name="pass" size="12" />
+		<input type="password" name="pass" size="12" class="form-control" />
 		<input type="submit" class="btn btn-primary" name="ok" value="$btn" />
 	</form>
 </fieldset>

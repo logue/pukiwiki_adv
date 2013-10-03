@@ -18,6 +18,7 @@ use PukiWiki\Factory;
 use PukiWiki\Config\Config;
 use PukiWiki\Utility;
 use PukiWiki\Renderer\RendererFactory;
+use PukiWiki\Router;
 
 // 管理者だけが添付ファイルをアップロードできるようにする
 defined('CSV2NEWPAGE_UPLOAD_ADMIN_ONLY') or define('CSV2NEWPAGE_UPLOAD_ADMIN_ONLY',FALSE); // FALSE or TRUE
@@ -82,42 +83,34 @@ function plugin_csv2newpage_convert()
 
 	$fields = plugin_tracker_get_fields($page,$page,$config);
 
-	$retval = '';
+	$form = array();
 	$ct = 0;
+
+	$form[] = '<input type="hidden" name="cmd" value="csv2newpage" />';
+	$form[] = '<input type="hidden" name="_refer" value="' . Utility::htmlsc($page) . '" />';
+	$form[] = '<input type="hidden" name="_config" value="' .  Utility::htmlsc($config->config_name) . '" />';
+
 	foreach ( $args as $name ) {
 		$ct ++;
 		$s_name = Utility::htmlsc($name);
-		$retval .= '<input type="hidden" name="csv_field' . $ct . '" value="' . $s_name . '" />'."\n";
+		$form[] = '<input type="hidden" name="csv_field' . $ct . '" value="' . $s_name . '" />'."\n";
 	}
-
-	$s_title  = Utility::htmlsc($_csv2newpage_messages['btn_submit']);
-	$s_page   = Utility::htmlsc($page);
-	$s_config = Utility::htmlsc($config->config_name);
-	$s_text   = Utility::htmlsc($_csv2newpage_messages['title_text']);
-
-	$retval .=<<<EOD
-<input type="hidden" name="cmd" value="csv2newpage" />
-<input type="hidden" name="_refer" value="$s_page" />
-<input type="hidden" name="_config" value="$s_config" />
-<input type="hidden" name="_upload" value="$upload" />
-EOD;
 
 	if ( $upload ) {
-$retval .=<<<EOD
-<input type="hidden" name="start_line_no" value="$start_line_no" />
-EOD;
-		return plugin_csv2newpage_showform($retval);
-	} else {
-		$script = get_script_uri();
-		return <<<EOD
-<form enctype="multipart/form-data" action="$script" method="post" class="csv2newpage_form">
-	$s_text
-	<input class="btn btn-primary" type="submit" value="$s_title" />
-	<input type="hidden" name="_csv2newpage_no" value="$csv2newpage_no" />
-	$retval
-</form>
-EOD;
+		$form[] = '<input type="hidden" name="_upload" value="' . $upload . '" />';
+		$form[] = '<input type="hidden" name="start_line_no" value="' . $start_line_no . '" />';
+		return plugin_csv2newpage_showform(join("\n",$form));
 	}
+
+	$ret[] = '<form action="' . Router::get_script_uri() . '" method="post" class="plugin-csv2newpage-form">';
+	$ret[] = '<input type="hidden" name="cmd" value="csv2newpage" />';
+	$ret[] = '<input type="hidden" name="_refer" value="' . Utility::htmlsc($page) . '" />';
+	$ret[] = '<input type="hidden" name="_config" value="' .  Utility::htmlsc($config->config_name) . '" />';
+	$ret[] = '<input type="hidden" name="_csv2newpage_no" value="' . $csv2newpage_no . '" />';
+	$ret[] = Utility::htmlsc($_csv2newpage_messages['title_text']);
+	$ret[] = '<input class="btn btn-primary" type="submit" value="' . Utility::htmlsc($_csv2newpage_messages['btn_submit']) . '" />';
+	$ret[] = '</form>';
+	return join("\n",$ret);
 }
 
 function plugin_csv2newpage_action()

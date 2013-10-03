@@ -83,22 +83,21 @@ function plugin_rename_action()
 		// $method == 'page'
 		$page  = plugin_rename_getvar('page');
 		$refer = plugin_rename_getvar('refer');
-
+		
 		// Check Illigal Chars
 		if (preg_match(Wiki::INVALIED_PAGENAME_PATTERN, $page)){
 			die_message($_strings['illegal_chars']);
 		}
 
-		if ($refer == '') {
+		if (empty($refer)) {
 			return plugin_rename_phase1();
-
 		} else if (! is_page($refer)) {
 			return plugin_rename_phase1('notpage', $refer);
 
 		} else if (is_cantedit($refer)) {
 			return plugin_rename_phase1('norename', $refer);
 
-		 } else if ($page == '' || $page === $refer) {
+		 } else if (!empty($page) || $page === $refer) {
 			return plugin_rename_phase2();
 
 		} else if (! is_pagename($page)) {
@@ -163,19 +162,28 @@ function plugin_rename_phase1($err = '', $page = '')
 		'body'	=> <<<EOD
 <fieldset>
 	<legend>{$_rename_messages['msg_title']}</legend>
-	<form action="$script" method="post">
+	<form action="$script" method="post" class="plugin-rename-form">
 		<input type="hidden" name="cmd" value="rename" />
-		<div class="remane_form">
+		<div class="radio">
 			<input type="radio"  name="method" id="_p_rename_page" value="page"$radio_page />
-			<label for="_p_rename_page">{$_rename_messages['msg_page']}:</label>$select_refer<br />
-			<input type="radio"  name="method" id="_p_rename_regex" value="regex"$radio_regex />
-			<label for="_p_rename_regex">{$_rename_messages['msg_regex']}:</label><br />
-			<label for="_p_rename_from">From:</label><br />
-			<input type="text" name="src" id="_p_rename_from" size="40" value="$s_src" class="suggest" /><br />
-			<label for="_p_rename_to">To:</label><br />
-			<input type="text" name="dst" id="_p_rename_to"   size="40" value="$s_dst" /><br />
-			<input type="submit" class="btn btn-warning" value="{$_rename_messages['btn_next']}" />
+			<label for="_p_rename_page">{$_rename_messages['msg_page']}:</label>
+			$select_refer
 		</div>
+		<div class="radio">
+			<input type="radio"  name="method" id="_p_rename_regex" value="regex"$radio_regex />
+			<label for="_p_rename_regex">{$_rename_messages['msg_regex']}:</label>
+			<div class="row">
+				<div class="col-xs-6 form-group">
+					<label for="_p_rename_from">From:</label>
+					<input type="text" name="src" id="_p_rename_from" size="40" value="$s_src" class="form-control" />
+				</div>
+				<div class="col-xs-6 form-group">
+					<label for="_p_rename_to">To:</label>
+					<input type="text" name="dst" id="_p_rename_to"   size="40" value="$s_dst" class="form-control" />
+				</div>
+			</div>
+		</div>
+		<input type="submit" class="btn btn-warning" value="{$_rename_messages['btn_next']}" />
 	</form>
 </fieldset>
 EOD
@@ -209,15 +217,15 @@ function plugin_rename_phase2($err = '')
 $msg
 <fieldset>
 	<legend>$msg_rename</legend>
-	<form action="$script" method="post">
+	<form action="$script" method="post" class="plugin-rename-form">
 		<input type="hidden" name="cmd" value="rename" />
 		<input type="hidden" name="refer"  value="$s_refer" />
-		<div class="rename_form">
+		<div class="form-group">
 			<label for="_p_rename_newname">{$_rename_messages['msg_newname']}:</label>
-			<input type="text" name="page" id="_p_rename_newname" size="40" value="$s_page" /><br />
-			$msg_related
-			<input type="submit" class="btn btn-warning" value="{$_rename_messages['btn_next']}" />
+			<input type="text" name="page" id="_p_rename_newname" size="40" value="$s_page" class="form-control" />
 		</div>
+		$msg_related
+		<input type="submit" class="btn btn-warning" value="{$_rename_messages['btn_next']}" />
 	</form>
 </fieldset>
 EOD;
@@ -342,22 +350,22 @@ function plugin_rename_phase3($pages)
 	$auth = '';
 	if (Auth::check_role('role_contents_admin')) {
 		$auth = <<<EOD
+<div class="form-group">
   <label for="_p_rename_adminpass">{$_rename_messages['msg_adminpass']}</label>
-  <input type="password" name="pass" id="_p_rename_adminpass" value="" />
+  <input type="password" name="pass" id="_p_rename_adminpass" value="" class="form-control" />
+</div>
 EOD;
 	}
 	$ret['msg'] = $_rename_messages['msg_title'];
 	$script = get_script_uri();
 	$ret['body'] = <<<EOD
 $msg
-	<form action="$script" method="post">
+	<form action="$script" method="post" class="plugin-rename-form">
 		<input type="hidden" name="cmd" value="rename" />
 		<input type="hidden" name="menu"   value="1" />
-		<div class="rename_form">
-			$input
-			$auth
-			<input type="submit" class="btn btn-warning" value="{$_rename_messages['btn_submit']}" />
-		</div>
+		$input
+		$auth
+		<input type="submit" class="btn btn-warning" value="{$_rename_messages['btn_submit']}" />
 	</form>
 	<p>{$_rename_messages['msg_confirm']}</p>
 EOD;
@@ -505,7 +513,7 @@ function plugin_rename_getselecttag($page)
 	$list = join("\n" . ' ', $pages);
 
 	return <<<EOD
-<select name="refer">
+<select name="refer" class="form-control">
 	<option value="" disabled="disabled" selected="selected">--------------------</option>
 	$list
 </select>

@@ -110,7 +110,7 @@ function plugin_logview_action()
 			foreach($log as $key=>$val){
 				$link_text = isset($_logview_logname[$key]) ? $_logview_logname[$key] : $key;
 				if ($val['use'] === 1){
-					$body .= '<li role="tab"><a href="'.get_cmd_uri('logview',$page,null,array('kind'=>$key)).'">'.$link_text.'</a></li>';
+					$body .= '<li role="tab"><a href="'.$wiki->uri('logview',array('kind'=>$key)).'">'.$link_text.'</a></li>';
 				}
 /*
 				else
@@ -131,7 +131,7 @@ function plugin_logview_action()
 			foreach($log as $key=>$val){
 				$link_text = isset($_LANG['skin']['log_'.$key]) ? $_LANG['skin']['log_'.$key] : $key;
 				if ($val['use'] === 1){
-					$body .= '<a href="'.get_cmd_uri('logview',$page,null,array('kind'=>$key)).'" data-role="button">'.$link_text.'</a>';
+					$body .= '<a href="'.$wiki->uri('logview',array('kind'=>$key)).'" data-role="button">'.$link_text.'</a>';
 				}
 /*
 				else
@@ -254,7 +254,7 @@ EOD;
 				break;
 
 			case '@guess': // 推測
-				$body .= ' <td class="style_td">'.Utility::htmlsc(logview_guess_user($data, $guess), ENT_QUOTES)."</td>\n";
+				$body .= ' <td>'.Utility::htmlsc(logview_guess_user($data, $guess), ENT_QUOTES)."</td>\n";
 				break;
 
 			case 'ua': // ブラウザ情報 (USER-AGENT)
@@ -267,12 +267,11 @@ EOD;
 				}
 				$browser = $obj_ua->get_icon_broeswes($data['ua']);
 				if (!empty($browser)) {
-					$s_ua = htmlsc($data['ua'], ENT_QUOTES);
 //					$body .= '<img src="'.$path_browser.$browser.'.png"'.
 //						' alt="'.htmlsc($data['ua'], ENT_QUOTES).
 //						'" title="'.htmlsc($data['ua'], ENT_QUOTES).
 //						'" />';
-					$body .= '<span class="browser browser-'.$browser.'" title="'.$s_ua.'"></span>';
+					$body .= '<span class="browser browser-'.$browser.'" title="'.Utility::htmlsc($data['ua'], ENT_QUOTES).'"></span>';
 				}
 				$body .= "</td>\n";
 				break;

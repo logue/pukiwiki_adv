@@ -620,7 +620,7 @@ if ($vars['cmd'] === 'read'){
 	LogFactory::factory('browse',$vars['page'])->set();
 }
 
-new PukiWiki\Render($title, $body);
+new PukiWiki\Render($title, $body, $http_code);
 
 /** よく使うグローバル関数 **/
 // gettext to Zend gettext emulator

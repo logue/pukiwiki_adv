@@ -42,21 +42,6 @@ defined('PLUGIN_AMAZON_TRACKER_PAGE_NAME') or define('PLUGIN_AMAZON_TRACKER_PAGE
 // スキーマのバージョン
 defined('PLUGIN_AMAZON_SCHEMA_VERSION') or define('PLUGIN_AMAZON_SCHEMA_VERSION', '2011-08-01');
 
-if (!function_exists('simplexml_load_string')) {
-	require_once(LIB_DIR.'Unserializer.php');
-	function simplexml_load_string($data)
-	{
-		// http://pear.php.net/package/XML_Serializer/
-		// http://pear.php.net/package/XML_Parser/
-		// http://pear.php.net/package/PEAR/
-		$options = array(
-			XML_UNSERIALIZER_OPTION_COMPLEXTYPE	=> 'object', // array or object
-		);
-		$unserializer = new XML_Unserializer($options);
-		$unserializer->unserialize($data);
-		return $unserializer->getUnserializedData();
-	}
-}
 use Zend\Http\ClientStatic;
 
 function plugin_amazon_init()
@@ -96,7 +81,7 @@ function plugin_amazon_convert()
 	}
 
 	if (AMAZON_AID === ''|| AWS_ACCESS_KEY_ID === '' || AWS_SECRET_ACCESS_KEY == ''){
-		return '<div class="ui-state-error ui-corner-all message_box">#amazon : '.$_amazon_msg['err_nodefined'].'</div>';
+		return '<div class="alert alert-warning">#amazon : '.$_amazon_msg['err_nodefined'].'</div>';
 	}
 
 	$argv = func_get_args();
@@ -116,7 +101,7 @@ EOD;
 		return $retval;
 	}
 
-	if (empty($parm['itemid'])) return '<div>'.$_amazon_msg['err_code_set'].'</div>';
+	if (empty($parm['itemid'])) return '<div class="alert alert-warning">#amazon: '.$_amazon_msg['err_code_set'].'</div>';
 
 	$obj = new amazon_ecs($parm['itemid'],$parm['locale']);
 	if (!$obj->is_itemid) return false;
@@ -224,27 +209,38 @@ function amazon_make_review_page()
 {
 	global $vars, $vars, $_amazon_msg;
 
-	$s_page = htmlsc($vars['page']);
+	if (!isset($vars['page']) && !isset($vars['refer'])) return 'pagename is missing.';
+
+	$s_page = Utility::htmlsc(isset($vars['page']) ? $vars['page'] : $vars['refer']);
 	$script = get_script_uri();
-	if (empty($s_page)) $s_page = $vars['refer'];
 
 	return <<<EOD
-<form action="$script" method="post">
-	<div class="amazon_form">
-		<input type="hidden" name="cmd" value="amazon" />
-		<input type="hidden" name="refer" value="$s_page" />
-		amazon.
-		<select name="locale" class="textbox">
-			<option value="jp" selected="selected">co.jp</option>
-			<option value="com">com</option>
-			<option value="co.uk">co.uk</option>
-			<option value="ca">ca</option>
-			<option value="fr">fr</option>
-			<option value="de">de</option>
-		</select>
-		<input type="text" name="itemid" size="30" value="" placeholder="{$_amazon_msg['msg_Code']}" />
-		<input type="submit" value="{$_amazon_msg['msg_ReviewEdit']}" />
-
+<form action="$script" method="post" class="form-horizontal plugin-amazon-form">
+	<input type="hidden" name="cmd" value="amazon" />
+	<input type="hidden" name="refer" value="$s_page" />
+	<div class="form-group">
+		<label for="amazon-locale" class="col-md-2 control-label">amazon.</label>
+		<div class="col-md-10">
+			<select name="locale"  class="form-control" id="amazon-locale" class="textbox">
+				<option value="jp" selected="selected">co.jp</option>
+				<option value="com">com</option>
+				<option value="co.uk">co.uk</option>
+				<option value="ca">ca</option>
+				<option value="fr">fr</option>
+				<option value="de">de</option>
+			</select>
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="amazon-itemid" class="col-md-2 control-label">{$_amazon_msg['msg_Code']}</label>
+		<div class="col-md-10">
+			<input type="text" name="itemid" id="amazon-itemid" class="form-control" size="30" value="" placeholder="{$_amazon_msg['msg_Code']}" />
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-md-offset-2 col-md-10">
+			<input type="submit" class="btn btn-default" value="{$_amazon_msg['msg_ReviewEdit']}" />
+		</div>
 	</div>
 </form>
 
@@ -263,14 +259,14 @@ function plugin_amazon_action()
 		$retvars['body'] = amazon_make_review_page();
 		return $retvars;
 	} else {
-		$itemid = htmlsc($vars['itemid']);
+		$itemid = Utility::htmlsc($vars['itemid']);
 	}
 
 	if ( Auth::check_role('readonly') ) die_message( $_string['prohibit'] );
 	if ( Auth::is_check_role(PKWK_CREATE_PAGE)) die_message( $_amazon_msg['err_newpage'] );
 	if (empty($vars['refer']) || !check_readable($vars['refer'], false, false)) die();
 
-	$locale = (empty($vars['locale'])) ? 'jp' : htmlsc($vars['locale']);
+	$locale = (empty($vars['locale'])) ? 'jp' : Utility::htmlsc($vars['locale']);
 
 	$obj = new amazon_ecs($itemid,$locale);
 	if (!$obj->is_itemid) {
@@ -334,7 +330,7 @@ function plugin_amazon_inline()
 	global $_amazon_msg;
 
 	if (AMAZON_AID === ''|| AWS_ACCESS_KEY_ID === '' || AWS_SECRET_ACCESS_KEY == ''){
-		return '<div class="ui-state-error ui-corner-all">'.$_amazon_msg['err_nodefined'].'</div>';
+		return '<span class="text-warning">'.$_amazon_msg['err_nodefined'].'</span>';
 	}
 
 	$argv = func_get_args();
@@ -388,7 +384,7 @@ function amazon_set_parm_inline($argv)
 	foreach($argv as $arg) {
 				// $val = split('=', $arg);
 		$val = explode('=', $arg);
-		$val[1] = (empty($val[1])) ? htmlsc($val[0]) : htmlsc($val[1]);
+		$val[1] = (empty($val[1])) ? Utility::htmlsc($val[0]) : Utility::htmlsc($val[1]);
 
 		switch($val[0]) {
 			case 'title':		// Title
@@ -527,7 +523,7 @@ function amazon_set_parm($argv)
 	foreach($argv as $arg) {
 		// $val = split('=', $arg);
 		$val = explode('=', $arg);
-		$val[1] = (empty($val[1])) ? htmlsc($val[0]) : htmlsc($val[1]);
+		$val[1] = (empty($val[1])) ? Utility::htmlsc($val[0]) : Utility::htmlsc($val[1]);
 
 		switch($val[0]) {
 		case 'r':
@@ -738,8 +734,8 @@ class amazon_ecs
 		}
 
 		return  '<a href="'.$this->shop_url().$this->asin.'/'.AMAZON_AID.'">'.
-			'<img src="'.$this->items['image'].'" alt="'.htmlsc($this->items['title']).'"'.
-			' title="'.htmlsc($this->items['title']).'" /></a>';
+			'<img src="'.$this->items['image'].'" alt="'.Utility::htmlsc($this->items['title']).'"'.
+			' title="'.Utility::htmlsc($this->items['title']).'" /></a>';
 	}
 
 	function file_write($filename, $data)

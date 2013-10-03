@@ -57,11 +57,11 @@ $_msg_collided = T_('It seems that someone has already updated this page while y
 		$s_postdata_input = Utility::htmlsc($postdata_input);
 
 		$body .= <<<EOD
-<form action="$script" method="post" class="insert_form">
+<form action="$script" method="post" class="plugin-insert-form">
 	<input type="hidden" name="cmd" value="preview" />
 	<input type="hidden" name="refer" value="$s_refer" />
 	<input type="hidden" name="digest" value="$s_digest" />
-	<textarea name="msg" rows="$rows" cols="$cols" id="msg">$s_postdata_input</textarea>
+	<textarea name="msg" rows="$rows" cols="$cols" id="msg" class="form-control">$s_postdata_input</textarea>
 </form>
 EOD;
 	} else {
@@ -102,7 +102,7 @@ function plugin_insert_convert()
 	<input type="hidden" name="refer"  value="$s_page" />
 	<input type="hidden" name="cmd" value="insert" />
 	<input type="hidden" name="digest" value="$s_digest" />
-	<textarea name="msg" rows="$s_rows" cols="$s_cols"></textarea><br />
+	<textarea name="msg" rows="$s_rows" cols="$s_cols" class="form-control"></textarea><br />
 	<input type="submit" class="btn btn-primary" name="insert" value="$_btn_insert" />
 </form>
 EOD;

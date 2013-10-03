@@ -52,10 +52,10 @@ function plugin_ref_inline()
 
 	$params = plugin_ref_body(func_get_args());
 	if (isset($params['_error'])) {
-		return '<span class="ui-state-error">' . Utility::htmlsc('#ref(): ERROR: ' . $params['_error']) . '</span>' . "\n";
+		return '<span class="text-warning">' . Utility::htmlsc('#ref(): ERROR: ' . $params['_error']) . '</span>' . "\n";
 	}
 	if (! isset($params['_body'])) {
-		return '<span class="ui-state-error">' . Utility::htmlsc('#ref(): ERROR: No _body') . '</span>' . "\n";
+		return '<span class="text-warning">' . Utility::htmlsc('#ref(): ERROR: No _body') . '</span>' . "\n";
 	}
 
 	return $params['_body'];
@@ -64,15 +64,15 @@ function plugin_ref_inline()
 function plugin_ref_convert()
 {
 	if (! func_num_args()) {
-		return '<p class="message-box ui-state-info">' . Utility::htmlsc('#ref(): Usage:' . PLUGIN_REF_USAGE) . '</p>' . "\n";
+		return '<div class="alert alert-warning">' . Utility::htmlsc('#ref(): Usage:' . PLUGIN_REF_USAGE) . '</div>' . "\n";
 	}
 
 	$params = plugin_ref_body(func_get_args());
 	if (isset($params['_error'])) {
-		return '<p class="message-box ui-state-error">' . Utility::htmlsc('#ref(): ERROR: ' . $params['_error']) . '</p>' . "\n";
+		return '<div class="alert alert-warning">' . Utility::htmlsc('#ref(): ERROR: ' . $params['_error']) . '</div>' . "\n";
 	}
 	if (! isset($params['_body'])) {
-		return '<p class="message-box ui-state-error">' . Utility::htmlsc('#ref(): ERROR: No _body') . '</p>' . "\n";
+		return '<div class="alert alert-warning">' . Utility::htmlsc('#ref(): ERROR: No _body') . '</div>' . "\n";
 	}
 
 	// Wrap with a table

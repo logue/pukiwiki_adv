@@ -659,7 +659,7 @@ class TableEdit2Form
 	{
 		$size = ( isset($size) ) ? ' size="' . $size . '"' : '';
 		$text = '<input type="text" name="' . $name
-			. '" value="' . $value . '"' . $size . ' />';
+			. '" value="' . $value . '"' . $size . ' class="form-control" />';
 	//	$text = '<textarea name="' . $name
 	//		. '" rows="1" cols="'.$size.'">' . $value . '</textarea>';
 		return $text;
@@ -667,7 +667,7 @@ class TableEdit2Form
 	function textarea($name, $value = '', $rows = 2,$cols = 40)
 	{
 		$textarea = '<textarea name="' . $name
-			. '" rows="' . $rows . '" cols="' . $cols . '" style="width:99%;">' . $value . '</textarea>';
+			. '" rows="' . $rows . '" cols="' . $cols . '" class="form-control">' . $value . '</textarea>';
 		return $textarea;
 	}
 	function f_input($type, $name, $value)
@@ -1711,7 +1711,9 @@ EOD;
 	<input type="hidden" name="edit_mod"      value="$edit_mod" />
 	<input type="hidden" name="digest"        value="$digest" />
 	<input type="submit" class="btn btn-primary" name="write"         value="$s_table_ok" />
-	<input type="checkbox" name="notimestamp" id="notimestamp" /><label for="notimestamp">$s_table_time_stamp</label>
+	<label for="notimestamp" class="checkbox-inline">
+	<input type="checkbox" name="notimestamp" id="notimestamp" />$s_table_time_stamp
+	</label>
 	<input type="submit" class="btn btn-waring" name="cancel"        value="$s_table_cancel" />
 	$delete_or_addshow
 </form>
@@ -1821,7 +1823,8 @@ class TableEdit2CsvAction
 
 		return $this->export_d($page, $opt['table_num'], $file['name']);
 
-		header('Location: ' . get_page_uri($page));
+		//header('Location: ' . get_page_uri($page));
+		Utility::redirect(get_page_uri($page));
 		//header('Location: ' . $this->script_uri . '?' . rawurlencode($page));
 		exit;
 

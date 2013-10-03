@@ -15,6 +15,7 @@ use PukiWiki\File\AttachFile;
 use PukiWiki\Auth\Auth;
 use PukiWiki\Spam\Spam;
 use PukiWiki\Factory;
+use PukiWiki\Router;
 use PukiWiki\Utility;
 
 // NOTE (PHP > 4.2.3):
@@ -177,13 +178,15 @@ function plugin_attach_action()
 	$pass  = isset($vars['pass'])  ? $vars['pass']  : NULL;
 	$page  = isset($vars['page'])  ? $vars['page']  : $refer;
 
-	$wiki = Factory::Wiki($page);
+	if (isset($page)){
+		$wiki = Factory::Wiki($page);
 
-	if (!empty($refer) && $wiki->isValied()) {
-		if(in_array($pcmd, array('info', 'open', 'list'))) {
-			$wiki->checkReadable();
-		} else {
-			$wiki->checkEditable();
+		if (!empty($refer) && $wiki->isValied()) {
+			if(in_array($pcmd, array('info', 'open', 'list'))) {
+				$wiki->checkReadable();
+			} else {
+				$wiki->checkEditable();
+			}
 		}
 	}
 
@@ -211,7 +214,7 @@ function plugin_attach_action()
 			case 'form'     : return array('msg'  =>str_replace('$1', $refer, $_attach_messages['msg_upload']), 'body'=>attach_form($refer));
 			case 'progress' : return get_upload_progress();
 		}
-		return ($page == '' || ! $wiki->isValied()) ? attach_list() : attach_showform();
+		return (empty($page) || ! $wiki->isValied()) ? attach_list() : attach_showform();
 	}
 }
 
@@ -240,7 +243,7 @@ function attach_upload($file, $page, $pass = NULL)
 	if (Auth::check_role('readonly')) die_message($_string['error_prohibit']);
 
 	// Check query-string
-	$query = get_cmd_uri('attach', '', '', array(
+	$query = Router::get_cmd_uri('attach', '', '', array(
 		'refer'=>$page,
 		'pcmd'=>'info',
 		'file'=>$file['name']
@@ -249,7 +252,7 @@ function attach_upload($file, $page, $pass = NULL)
 	if ($file['error'] !== UPLOAD_ERR_OK) {
 		return array(
 			'result'=>FALSE,
-			'msg'=>'<p class="message_box ui-state-error">'.attach_set_error_message($file['error']).'</p>'
+			'msg'=>'<p class="alert alert-danger">'.attach_set_error_message($file['error']).'</p>'
 		);
 	}
 
@@ -695,7 +698,7 @@ function attach_showform()
 	$html = array();
 	if (!IS_AJAX){
 		$attach_list = attach_list($page);
-		$html[] = '<p><small>[<a href="' . get_cmd_uri('attach', null, null, array('pcmd'=>'list')) . '">'.$_attach_messages['msg_listall'].'</a>]</small></p>';
+		$html[] = '<p><small>[<a href="' . Router::get_cmd_uri('attach', null, null, array('pcmd'=>'list')) . '">'.$_attach_messages['msg_listall'].'</a>]</small></p>';
 		if ($isEditable){
 			$html[] = '<h3>' . str_replace('$1', $page, $_attach_messages['msg_upload']) . '</h3>'. "\n";
 			$html[] = attach_form($page);
@@ -726,22 +729,30 @@ function attach_form($page)
 {
 	global $_attach_messages;
 
-	if (! ini_get('file_uploads'))	return '#attach(): <code>file_uploads</code> disabled.<br />';
+	if (! ini_get('file_uploads'))	return '<p class="alert alert-warning">#attach(): <code>file_uploads</code> disabled.</p>';
 	if (! Factory::Wiki($page)->has())			return '#attach(): No such page<br />';
 
-	$attach_form[] = '<form enctype="multipart/form-data" action="' . get_script_uri() . '" method="post" class="attach_form" data-collision-check="false">';
+	$attach_form[] = '<form enctype="multipart/form-data" action="' . Router::get_script_uri() . '" method="post" class="form-inline plugin-attach-form" data-collision-check="false">';
 	$attach_form[] = '<input type="hidden" name="cmd" value="attach" />';
 	$attach_form[] = '<input type="hidden" name="pcmd" value="post" />';
-	$attach_form[] = '<input type="hidden" name="refer" value="'. htmlsc($page) .'" />';
+	$attach_form[] = '<input type="hidden" name="refer" value="'. Utility::htmlsc($page) .'" />';
 	$attach_form[] = '<input type="hidden" name="max_file_size" value="' . PLUGIN_ATTACH_MAX_FILESIZE . '" />';
-	$attach_form[] = '<label for="_p_attach_file">' . $_attach_messages['msg_file'] . ':</label>';
-	$attach_form[] = '<input type="file" name="attach_file" id="_p_attach_file" />';
-	$attach_form[] = ( (PLUGIN_ATTACH_PASSWORD_REQUIRE || PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY) && Auth::check_role('role_contents_admin')) ?
-						'<br />' . ($_attach_messages[PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY ? 'msg_adminpass' : 'msg_password']) .
-		 					': <input type="password" name="pass" size="8" />' : '';
+	$attach_form[] = '<div class="form-group">';
+	$attach_form[] = '<label for="_p_attach_file" class="sr-only">' . $_attach_messages['msg_file'] . ':</label>';
+	$attach_form[] = '<input type="file" name="attach_file" id="_p_attach_file" class="form-control" />';
+	$attach_form[] = '</div>';
+	if ((PLUGIN_ATTACH_PASSWORD_REQUIRE || PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY) && Auth::check_role('role_contents_admin')){
+		$attach_form[] = '<div class="form-group">';
+		$attach_form[] = '<input type="password" name="pass" size="8" class="form-control" />';
+		$attach_form[] = '</div>';
+	}
 	$attach_form[] = '<input class="btn btn-primary" type="submit" value="' . $_attach_messages['btn_upload'] . '" />';
-	$attach_form[] = '<ul class="attach_info"><li>' . sprintf($_attach_messages['msg_maxsize'], '<var>' . number_format(PLUGIN_ATTACH_MAX_FILESIZE / 1024) . '</var>KB') . '</li></ul>';
 	$attach_form[] = '</form>';
+	$attach_form[] = '<ul class="attach_info">';
+	$attach_form[] = ( (PLUGIN_ATTACH_PASSWORD_REQUIRE || PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY) && Auth::check_role('role_contents_admin')) ?
+						('<li>' . $_attach_messages[PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY ? 'msg_adminpass' : 'msg_password'] . '</li>') : '';
+	$attach_form[] = '<li>' . sprintf($_attach_messages['msg_maxsize'], '<var>' . number_format(PLUGIN_ATTACH_MAX_FILESIZE / 1024) . '</var>KB') . '</li>';
+	$attach_form[] = '</ul>';
 
 	return join("\n",$attach_form);
 }

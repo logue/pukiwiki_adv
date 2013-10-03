@@ -91,18 +91,32 @@ function plugin_template_action()
 	$s_page  = ($page == '') ? str_replace('$1', $s_refer, $_template_msg['msg_template_page']) : $_page;
 	$script = get_script_uri();
 	$ret     = <<<EOD
-<form action="$script" method="post" class="template_form">
+<form action="$script" method="post" class="form-horizontal plugin-template-form">
 	<input type="hidden" name="cmd" value="template" />
 	<input type="hidden" name="refer" value="$s_refer" />
-	<dl>
-		<dt><label for="_p_template_begin">{$_template_msg['msg_template_start']}</label></dt>
-		<dd><select name="begin" size="10" id="_p_template_begin">$begin_select</select></dd>
-		<dt><labbel for="_p_template_end">{$_template_msg['msg_template_end']}</label></dt>
-		<dd><select name="end"   size="10" id="_p_template_end">$end_select</select></dd>
-	</dl>
-	<label for="_p_template_refer">{$_template_msg['msg_template_refer']}</label>
-	<input type="text" name="page" id="_p_template_refer" value="$s_page" />
-	<input type="submit" class="btn btn-primary" name="submit" value="{$_template_msg['btn_template_create']}" />
+	<div class="form-group">
+		<label for="_p_template_begin" class="col-md-2 control-label">{$_template_msg['msg_template_start']}</label>
+		<div class="col-md-10">
+			<select name="begin" size="10" id="_p_template_begin" class="form-control">$begin_select</select>
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="_p_template_end" class="col-md-2 control-label">{$_template_msg['msg_template_end']}</label>
+		<div class="col-md-10">
+			<select name="end"   size="10" id="_p_template_end" class="form-control">$end_select</select>
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="_p_template_refer" class="col-md-2 control-label">{$_template_msg['msg_template_refer']}</label>
+		<div class="col-md-10">
+			<input type="text" name="page" id="_p_template_refer" class="form-control" value="$s_page" />
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-md-offset-2 col-md-10">
+			<input type="submit" class="btn btn-primary" name="submit" value="{$_template_msg['btn_template_create']}" />
+		</div>
+	</div>
 	$tag
 </form>
 EOD;

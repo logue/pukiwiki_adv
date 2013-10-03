@@ -1,16 +1,16 @@
 <?php
 /**
  * @copyright   Copyright &copy; 2006, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: _get.inc.php,v 0.2.1 2010/12/23 12:57:00 Logue Exp $
+ * @version     $Id: _get.inc.php,v 0.2.2 2013/09/12 16:25:00 Logue Exp $
  * @license     http://opensource.org/licenses/gpl-license.php GNU Public License
  */
-
+use PukiWiki\Utility;
 function plugin__get_inline()
 {
 	switch ( func_num_args() ) {
 	case 2:
 		list($msg) = func_get_args();
-		return strip_htmltag($msg);
+		return Utility::stripHtmlTags($msg);
 	case 3:
 		list($name,$msg) = func_get_args();
 		return i18n_gettext($name,$msg);

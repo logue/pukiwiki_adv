@@ -490,7 +490,7 @@ class Utility{
 		return preg_match('/^\[\[(.*)\]\]$/', $str, $match) ? $match[1] : $str;
 	}
 	/**
-	 * WikiNameからHTMLタグを除く
+	 * WikiNameからHTMLタグを除く(strip_htmltag)
 	 * @param $str string 入力文字
 	 * @param $all boolean 全てのタグかaタグのみか
 	 * @return string
@@ -561,15 +561,15 @@ class Utility{
 			$body[] = '<a href="' . Router::get_cmd_uri('edit',$vars['page']) . '">Try to edit this page</a> | ';
 		}
 		$body[] = '<a href="' . Router::get_cmd_uri() . '">Return to FrontPage</a> ]</p>';
-		$body[] = '<div class="message_box ui-state-error ui-corner-all" style="padding:.5em;">';
-		$body[] = '<p><span class="ui-icon ui-icon-alert" style="display:inline-block;"></span> <strong>' . $_title['error'] . '</strong>';
+		$body[] = '<div class="alert alert-warning">';
+		$body[] = '<p><span class="glyphicon glyphicon-ban-circle"></span> <strong>' . $_title['error'] . '</strong>';
 		$body[] = PKWK_WARNING !== true || empty($msg) ? $msg = $_string['error_msg'] : $msg;
 		$body[] = '</p>';
 		$body[] = '</div>';
-/*
+
 		if (DEBUG) {
-			$body[] = '<div class="message_box ui-state-highlight ui-corner-all" style="padding:.5em;">';
-			$body[] = '<p><span class="ui-icon ui-icon-info" style="display:inline-block;"></span> <strong>Back Trace</strong></p>';
+			$body[] = '<div class="alert alert-info">';
+			$body[] = '<p><span class="glyphicon glyphicon-info-sign"></span> <strong>Back Trace</strong></p>';
 			$body[] = '<ol>';
 			foreach (debug_backtrace() as $k => $v) {
 				if ($k < 2) { 
@@ -583,7 +583,7 @@ class Utility{
 			$body[] = '</ol>';
 			$body[] = '</div>';
 		}
-*/
+
 		new Render($error_title, join("\n",$body), $http_code);
 		exit();
 	}
@@ -599,8 +599,7 @@ class Utility{
 			$body[] = '<a href="' . Router::get_cmd_uri('edit',$vars['page']) . '">Try to edit this page</a> | ';
 		}
 		$body[] = '<a href="' . Router::get_cmd_uri() . '">Return to FrontPage</a> ]</p>';
-		$body[] = '<div class="message_box ui-state-error ui-corner-all" style="padding:.5em;">';
-		$body[] = '<p><span class="ui-icon ui-icon-alert" style="display:inline-block;"></span> <strong>Page not found</strong>';
+		$body[] = '<p class="alert alert-warning"><span class="glyphicon glyphicon-info-sign"></span> <strong>Page not found</strong>';
 		$body[] = 'Sorry, but the page you were trying to view does not exist or deleted.';
 		if ( isset($vars['page']) && !empty($vars['page']) ){
 			$body[] = '<br />' . "\n" . sprintf(
@@ -610,7 +609,6 @@ class Utility{
 			);
 		}
 		$body[] = '</p>';
-		$body[] = '</div>';
 		$body[] = '<script type="text/javascript">/' .'* <![CDATA *' . '/';
 		$body[] = 'var GOOG_FIXURL_LANG = (navigator.language || null).slice(0,2), GOOG_FIXURL_SITE = location.host;';
 		$body[] = '/' . '* ]]> *' . '/</script>';
@@ -647,20 +645,18 @@ class Utility{
 		if (!DEBUG){
 			$html[] = '<meta http-equiv="refresh" content="'.$time.'; URL='.$s_url.'" />';
 		}
-		$html[] = '<link rel="stylesheet" href="http://code.jquery.com/ui/' . Render::JQUERY_UI_VER . '/themes/smoothness/jquery-ui.min.css" type="text/css" />';
+		$html[] = '<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" type="text/css" />';
 		$html[] = '<title>301 Moved Permanently</title>';
 		$html[] = '</head>';
 		$html[] = '<body>';
-		$html[] = '<div class="message_box ui-state-highlight ui-corner-all">';
-		$html[] = '<p style="padding:0 .5em;">';
-		$html[] = '<span class="ui-icon ui-icon-alert" style="display:inline-block;"></span>';
+		$html[] = '<p class="alert alert-success">';
+		$html[] = '<span class="glyphicon glyphicon-info-sign"></span>';
 		$html[] = 'The requested page has moved to a new URL. <br />';
 		$html[] = 'Please click <a href="'.$s_url.'">here</a> if you do not want to move even after a while.';
 		if (!DEBUG){
 			$html[] = '<br />NOTICE: No auto redirect when Debug mode.';
 		}
 		$html[] = '</p>';
-		$html[] = '</div>';
 		$html[] = '</body>';
 		$html[] = '</html>';
 		$content = join("\n",$html);
@@ -699,7 +695,7 @@ class Utility{
 		// BugTrack/95 fix Problem: browser RSS request with session
 		$session->offsetSet('origin-'.$ticket_name, md5(self::getTicket() . str_replace("\r", '', $original)));
 
-		$ret[] = '<form action="' . Router::get_script_uri() . '" method="post" id="form" data-collision-check-strict="true">';
+		$ret[] = '<form action="' . Router::get_script_uri() . '" role="form" method="post" class="form-edit" data-collision-check-strict="true">';
 		$ret[] = '<input type="hidden" name="cmd" value="edit" />';
 		$ret[] = '<input type="hidden" name="page" value="' . self::htmlsc($page) .'" />';
 		$ret[] = isset($vars['id']) ? '<input type="hidden" name="id" value="' . self::htmlsc($vars['id']) . '" />' : null;
@@ -728,13 +724,12 @@ class Utility{
 		}
 
 		// 編集フォーム
-		$ret[] = '<div class="edit_form">';
-		$ret[] = '<textarea name="msg" id="msg" rows="20" rows="80">' . self::htmlsc(
+		$ret[] = '<textarea name="msg" id="msg" rows="20" rows="80" class="form-control">' . self::htmlsc(
 			// 作成元のページが存在する場合、そのリンクを書き込むデーターの先頭に付加する
 			($load_refer_related && isset($vars['refer']) && !empty($vars['refer']) ? '[[' . self::stripBracket($vars['refer']) . ']]' . "\n\n" : '') .
 			$postdata
 		) . '</textarea>';
-		
+		$ret[] = '<div class="form-inline">';
 		if (IS_MOBILE){
 			// モバイル用
 			$ret[] = '<input type="submit" id="btn_submit" name="write" value="'.$_button['update'].'" data-icon="check" data-inline="true" data-theme="b" />';
@@ -756,11 +751,17 @@ class Utility{
 			$ret[] = '<input type="submit" class="btn btn-default" id="btn_preview" name="preview" value="' . $_button['preview'] . '" accesskey="p" />';
 			if ($notimeupdate !== 0 && Factory::Wiki($page)->isValied()){
 				// タイムスタンプを更新しないのチェックボックス
+				$ret[] = '<div class="checkbox">';
 				$ret[] = '<input type="checkbox" name="notimestamp" id="_edit_form_notimestamp" value="true"' . (isset($vars['notimestamp']) ? ' checked="checked"' : null) . ' />';
 				$ret[] = '<label for="_edit_form_notimestamp">' . $_button['notchangetimestamp'] . '</label>';
+				$ret[] = '</div>';
 			}
 			// 管理人のパス入力
-			$ret[] = $notimeupdate === 2 && Auth::check_role('role_contents_admin') ? '<input type="password" name="pass" size="12" placeholder="Password" />' : null;
+			if ($notimeupdate === 2 && Auth::check_role('role_contents_admin')) {
+				$ret[] = '<div class="form-group">';
+				$ret[] = '<input type="password" name="pass" size="12" placeholder="Password" />';
+				$ret[] = '</div>';
+			}
 			$ret[] = '<input type="submit" class="btn btn-warning" id="btn_cancel" name="cancel" value="' . $_button['cancel'] . '" accesskey="c" />';
 		}
 		$ret[] = '</div>';

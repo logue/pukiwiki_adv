@@ -160,15 +160,15 @@ class Render{
 		if ($vars['cmd'] === 'read'){
 			global $adminpass, $_string, $menubar, $sidebar;
 			if ($adminpass == '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72' || $adminpass == '' ){
-				$body = '<div class="message_box ui-state-error ui-corner-all">'.
-					'<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>'.
+				$body = '<div class="alert alert-danger">'.
+					'<p><span class="glyphicon glyphicon-warning-sign"></span>'.
 					'<strong>'.$_string['warning'].'</strong> '.$_string['changeadminpass'].'</p></div>'."\n".
 					$body;
 			}
 
 			if (DEBUG === true && ! empty($info)){
-				$body = '<div class="message_box ui-state-highlight ui-corner-all">'.
-						'<p><span class="ui-icon ui-icon-info"></span>'.$_string['debugmode'].'</p>'."\n".
+				$body = '<div class="alert alert-info">'.
+						'<p><span class="glyphicon glyphicon-info-sign"></span>'.$_string['debugmode'].'</p>'."\n".
 						'<ul>'."\n".
 						'<li>'.join("</li>\n<li>",$info).'</li>'."\n".
 						'</ul></div>'."\n\n".$body;
@@ -177,7 +177,7 @@ class Render{
 			Factory::Referer($this->page)->set();
 			
 			global $attach_link, $related_link;
-			$view->lastmodified = '<time pubdate="pubdate" datetime="'.Time::getZoneTimeDate('c',$this->wiki->time()).'">'.Time::getZoneTimeDate('D, d M Y H:i:s T', $this->wiki->time()) . ' ' . $this->wiki->passage().'</time>';
+			$view->lastmodified = '<time datetime="'.Time::getZoneTimeDate('c',$this->wiki->time()).'">'.Time::getZoneTimeDate('D, d M Y H:i:s T', $this->wiki->time()) . ' ' . $this->wiki->passage().'</time>';
 
 			// ページの添付ファイル、関連リンク
 			$view->attaches = ($attach_link &&  PluginRenderer::executePluginInit('attach') !== FALSE) ? attach_filelist() : null;
@@ -312,7 +312,7 @@ class Render{
 //		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>MathJax::MATHJAX_URL );
 
 		$script_tags = self::tag_helper('script',$pkwk_head_js) . self::tag_helper('script',$js_tags);
-		$script_tags .= (!empty($js_blocks)) ? tag_helper('script',array(array('type'=>'text/javascript', 'content'=>join("\n",$js_blocks)))) : '';
+		$script_tags .= (!empty($js_blocks)) ? self::tag_helper('script',array(array('type'=>'text/javascript', 'content'=>join("\n",$js_blocks)))) : '';
 
 		return $script_tags;
 	}

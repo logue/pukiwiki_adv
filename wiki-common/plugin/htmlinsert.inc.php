@@ -55,9 +55,9 @@ class PluginHtmlinsert
 	{
 		global $vars;
 		list($page, $variables, $this->action_options) = $this->parse_args_action($vars, $this->default_action_options);
-		if ($page == '') { return array('msg'=>$this->plugin, 'body'=> "<p>$this->plugin(): No page is specified. </p>"); }
+		if ($page == '') { return array('msg'=>$this->plugin, 'body'=> '<p class="alert alert-warning">#' . $this->plugin() . ': No page is specified.</p>'); }
 		$source = $this->htmlinsert($page, $variables);
-		if ($this->error != "") { return array('msg'=>$this->plugin, 'body'=> "<p>$this->plugin(): $this->error</p>"); }
+		if ($this->error != "") { return array('msg'=>$this->plugin, 'body'=> '<p class="alert alert-warning">#' . $this->plugin() . ': ' . $this->error . '</p>'); }
 		// no skin
 		pkwk_common_headers(); 
 		if ($this->action_options['content_type'] != '') {
@@ -106,9 +106,9 @@ class PluginHtmlinsert
 		$args = func_get_args();
 		array_pop($args); // drop {}
 		list($page, $variables, $this->options) = $this->parse_args($args, $this->default_options);
-		if (! isset($page) || $page == '') { return '<span>htmlinsert(): No file or page was specified. </span>'; }
+		if (! isset($page) || $page == '') { return '<span class="text-warning">&amp;' . $this->plugin() . ': No file or page was specified. </span>'; }
 		$source  = $this->htmlinsert($page, $variables);
-		if ($this->error != "") { return "<span>htmlinsert(): $this->error</span>"; }
+		if (!empty($this->error)) { return '<span class="text-warning">&amp;' . $this->plugin() . ': ' . $this->error . '</span>'; }
 		if ($this->options['transitional']) {
 			$this->html_transitional();
 		}
@@ -129,9 +129,9 @@ class PluginHtmlinsert
 			array_pop($args); // always get empty element at the end
 		}
 		list($page, $variables, $this->options) = $this->parse_args($args, $this->default_options);
-		if (! isset($page) || $page == '') { return '<p class="message_box ui-state-error ui-corner-all">htmlinsert(): No file or page was specified. </p>'; }
+		if (! isset($page) || $page == '') { return '<p class="alert alert-warning">#htmlinsert: No file or page was specified. </p>'; }
 		$source  = $this->htmlinsert($page, $variables);
-		if ($this->error != "") { return '<p class="message_box ui-state-error ui-corner-all">htmlinsert(): '.$this->error.'</p>'."\n"; }
+		if ($this->error != "") { return '<p class="alert alert-warning">#htmlinsert: '.$this->error.'</p>'."\n"; }
 		if ($this->options['transitional']) {
 			$this->html_transitional();
 		}

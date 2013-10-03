@@ -134,16 +134,42 @@ function plugin_pcomment_convert()
 		$form[] = '<input type="hidden" name="nodate" value="' . Utility::htmlsc($params['nodate']) . '" />';
 		$form[] = '<input type="hidden" name="dir"    value="' . $dir . '" />';
 		$form[] = '<input type="hidden" name="count"  value="' . $count . '" />';
-		$form[] = $params['reply'] ?
-			'<input type="radio" name="reply" value="0" tabindex="0" checked="checked" />' : null;
+
+		$form[] = '<div class="row">';
+
 		if (isset($params['noname'])) {
+			$form[] = '<div class="col-md-3">';
 			list($nick,$link,$disabled) = plugin_pcomment_get_nick();
-			$form[] = '<input type="text" name="name" value="'.$nick.'" '.$disabled.' size="' . PLUGIN_COMMENT_SIZE_NAME . '" placeholder="'.$_pcmt_messages['msg_name'].'" />';
+			if ($params['reply']){
+				$form[] = '<div class="input-group">';
+				$form[] = '<span class="input-group-addon">';
+				$form[] = '<input type="radio" name="reply" value="0" tabindex="0" checked="checked" />';
+				$form[] = '</span>';
+			}
+			$form[] = '<input type="text" name="name" value="'.$nick.'" '.$disabled.' class="form-control" size="' . PLUGIN_COMMENT_SIZE_NAME . '" placeholder="'.$_pcmt_messages['msg_name'].'" />';
+			if ($params['reply']){
+				$form[] = '</div>';
+			}
+			$form[] = '</div>';
+			$form[] = '<div class="col-md-9">';
+			$form[] = '<div class="input-group">';
+		}else{
+			$form[] = '<div class="col-md-12">';
+			$form[] = '<div class="input-group">';
+			if ($params['reply']){
+				$form[] = '<span class="input-group-addon">';
+				$form[] = '<input type="radio" name="reply" value="0" tabindex="0" checked="checked" />';
+				$form[] = '</span>';
+			}
 		}
-		$form[] = (PLUGIN_COMMENT_USE_TEXTAREA) ?
-			'<textarea name="msg" cols="' . PLUGIN_COMMENT_SIZE_MSG . '" row="1" placeholder="' . $_pcmt_messages['msg_comment'] . '"></textarea>' :
-			'<input type="text" name="msg" size="' . PLUGIN_COMMENT_SIZE_MSG . '" placeholder="' . $_pcmt_messages['msg_comment'] . '" />';
-		$form[] = '<input type="submit" class="btn btn-primary" value="' . $_pcmt_messages['btn_comment'] . '" />';
+		$form[] = '<textarea name="msg" cols="' . PLUGIN_COMMENT_SIZE_MSG . '" row="1" class="form-control" placeholder="' . $_pcmt_messages['msg_comment'] . '"></textarea>';
+		$form[] = '<span class="input-group-btn">';
+		$form[] = '<input type="submit" class="btn btn-info" value="' . $_pcmt_messages['btn_comment'] . '" />';
+		$form[] = '</span>';
+		$form[] = '</div>';
+		$form[] = '</div>';
+		
+		$form[] = '</div>';
 	}
 	if (PKWK_READONLY == Auth::ROLE_AUTH) {
 		exist_plugin('login');
@@ -159,7 +185,7 @@ function plugin_pcomment_convert()
 		$recent = ! empty($count) ? sprintf($_pcmt_messages['msg_recent'], $count) : '';
 	}
 
-	$string = ! Auth::check_role('readonly') ? '<form action="'. get_script_uri() .'" method="post" class="comment_form" data-collision-check="false">' : '';
+	$string = ! Auth::check_role('readonly') ? '<form action="'. get_script_uri() .'" method="post" class="plugin-pcomment-form" data-collision-check="false">' : '';
 	$string .= ($dir) ?
 		'<p>' . $recent . ' ' . $link . '</p>' . "\n" . $comments . "\n" . join("\n",$form) :
 		join("\n",$form) . "\n" . '<p>' . $recent . ' ' . $link . '</p>' . "\n" . $comments . "\n";

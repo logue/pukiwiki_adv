@@ -10,7 +10,7 @@ function plugin_keywords_convert()
 	global $keywords;
 
 	$num = func_num_args();
-	if ($num == 0) { return 'Usage: #keywords(keyword,...)'; }
+	if ($num == 0) { return '<p class="alert alert-warning">Usage: #keywords(keyword,...)</p>'; }
 	$args = func_get_args();
 	$contents = array_map('htmlsc',$args);
 

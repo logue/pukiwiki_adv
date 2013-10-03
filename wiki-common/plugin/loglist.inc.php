@@ -36,7 +36,7 @@ function plugin_loglist_convert()
 	global $vars;
 	global $_loglist_messages;
 
-	@list($kind) = func_get_args();
+	list($kind) = func_get_args();
 	$kind = (empty($kind)) ? 'update' : htmlsc($kind, ENT_QUOTES);
 
 	if (!$log[$kind]['use']) return $_loglist_messages['not_active'];

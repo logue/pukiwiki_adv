@@ -66,14 +66,11 @@ function plugin_menu_convert()
 			if (function_exists('convert_filter')) {
 				$menutext = convert_filter($menutext);
 			}
-			global $top, $use_open_uri_in_new_window;
+			global $top;
 			$tmptop = $top;
 			$top = '';
-			$save_newwindow = $use_open_uri_in_new_window;
-			$use_open_uri_in_new_window = 0;
 			$menuhtml = RendererFactory::factory($menutext);
 			$top = $tmptop;
-			$use_open_uri_in_new_window = $save_newwindow;
 			$menuhtml = str_replace("\n",'',$menuhtml);
 			return preg_replace('/<ul class="list[^>]*>/','<ul class="menu">',$menuhtml);
 //miko patched

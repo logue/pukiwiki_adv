@@ -20,6 +20,8 @@
 
 /**************************************************************************************************/
 (function($){
+	if (!$.i18n) throw new TypeError('skin.js does not loaded.' );
+
 	$.i18n('en_US.pukiwiki', {
 		copyed		: 'It copied it onto the clipboard.',
 		select		: 'Please select the range of the object.',

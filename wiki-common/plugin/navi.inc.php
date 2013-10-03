@@ -151,12 +151,12 @@ function plugin_navi_convert()
 		// Show contents
 		$count = count($pages);
 		if ($count == 0) {
-			return '#navi(contents-page-name): You already view the result<br />';
+			return '<p class="alert alert-warning">#navi(contents-page-name): You already view the result</p>';
 		} else if ($count == 1) {
 			// Sentinel only: Show usage and warning
 			$home = htmlsc($home);
-			$ret .= '#navi(' . $home . '): No child page like: ' .
-				$home . '/Foo';
+			$ret .= '<p class="alert alert-warning">#navi(' . $home . '): No child page like: ' .
+				$home . '/Foo</p>';
 		} else {
 			$ret .= '<ul>';
 			foreach ($pages as $page)
@@ -168,26 +168,26 @@ function plugin_navi_convert()
 	} else if (! $footer) {
 		// Header
 		$ret = <<<EOD
-<ul>
-	<li class="navi_left">{$navi[$home]['prev1']}</li>
-	<li class="navi_right">{$navi[$home]['next1']}</li>
-	<li class="navi_none">{$navi[$home]['home']}</li>
+<ul class="list-inline text-center">
+	<li class="pull-left">{$navi[$home]['prev1']}</li>
+	<li class="pull-right">{$navi[$home]['next1']}</li>
+	<li>{$navi[$home]['home']}</li>
 </ul>
-<hr class="full_hr" />
+<hr />
 EOD;
 
 	} else {
 		// Footer
 		$ret = <<<EOD
-<hr class="full_hr" />
-<ul>
-	<li class="navi_left">{$navi[$home]['prev1']}<br />{$navi[$home]['prev']}</li>
-	<li class="navi_right">{$navi[$home]['next1']}<br />{$navi[$home]['next']}</li>
-	<li class="navi_none">{$navi[$home]['home1']}<br />{$navi[$home]['up']}</li>
+<hr />
+<ul class="list-inline text-center">
+	<li class="pull-left">{$navi[$home]['prev1']}<br />{$navi[$home]['prev']}</li>
+	<li class="pull-right">{$navi[$home]['next1']}<br />{$navi[$home]['next']}</li>
+	<li>{$navi[$home]['home1']}<br />{$navi[$home]['up']}</li>
 </ul>
 EOD;
 	}
-	return '<nav class="navi">'.$ret.'</nav>'."\n";
+	return '<nav>'.$ret.'</nav>'."\n";
 }
 /* End of file navi.inc.php */
 /* Location: ./wiki-common/plugin/navi.inc.php */

@@ -73,7 +73,6 @@ function plugin_comment_write()
 	$wiki = Factory::Wiki($vars['refer']);
 	if (!$wiki->has()) return array('msg'=>'', 'body'=>''); // Do nothing
 
-
 	$vars['msg'] = str_replace("\n", '', $vars['msg']); // Cut LFs
 	$head = '';
 	$match = array();
@@ -104,7 +103,7 @@ function plugin_comment_write()
 	foreach ($wiki->get() as $line) {
 		if (! $above) $postdata[] = $line;
 		if (preg_match('/^#comment/i', $line) && $comment_no++ == (isset($vars['comment_no']) ? $vars['comment_no'] : 0)) {
-			$postdata[] = "\n" . $comment . "\n" . ($above ? "\n" : '');  // Insert one blank line above #commment, to avoid indentation
+			$postdata[] = $comment;  // Insert one blank line above #commment, to avoid indentation
 		}
 		if ($above) $postdata[] = $line;
 	}
@@ -172,26 +171,32 @@ function plugin_comment_convert()
 	$options = func_num_args() ? func_get_args() : array();
 	list($user, $link, $disabled) = plugin_comment_get_nick();
 
-	$ret[] = '<form action="'. get_script_uri() .'" method="post" class="comment_form">';
+//	$refpage = '';
+
+	$ret[] = '<form action="'. get_script_uri() .'" method="post" class="plugin-comment-form row">';
 	$ret[] = '<input type="hidden" name="cmd" value="comment" />';
-	$ret[] = '<input type="hidden" name="refer"  value="' . htmlsc($vars['page']) . '" />';
-	$ret[] = '<input type="hidden" name="refpage" value="" />';
+	$ret[] = '<input type="hidden" name="refer"  value="' . Utility::htmlsc($vars['page']) . '" />';
+//	$ret[] = '<input type="hidden" name="refpage" value="' . $refpage . '" />';
 	$ret[] = '<input type="hidden" name="comment_no" value="' . $numbers[$vars['page']]++ . '" />';
 	$ret[] = '<input type="hidden" name="nodate" value="' . (in_array('nodate', $options) ? '1' : '0') . '" />';
 	$ret[] = '<input type="hidden" name="above"  value="' . (in_array('above',  $options) ? '1' : (in_array('below', $options) ? '0' : PLUGIN_COMMENT_DIRECTION_DEFAULT)) . '" />';
 
 	$comment_all_no = $all_numbers++;
 	if (! in_array('noname', $options)) {
-		$ret[] =
-			'<input type="text" name="name" id="p_comment_name_' .
-			$comment_all_no .  '" size="' . PLUGIN_COMMENT_SIZE_NAME .
-			'" value="'.$user.'"'.$disabled.' placeholder="'.$_comment_messages['label_name'].'" />';
+		$ret[] = '<div class="col-md-3">';
+		$ret[] = '<input type="text" class="form-control" name="name" id="p_comment_name_' . $comment_all_no . '" size="' . PLUGIN_COMMENT_SIZE_NAME . '" value="'.$user.'"'.$disabled.' placeholder="'.$_comment_messages['label_name'].'" />';
+		$ret[] = '</div>';
+		$ret[] = '<div class="col-md-9">';
+	}else{
+		$ret[] = '<div class="col-md-12">';
 	}
-	$ret[] = (PLUGIN_COMMENT_USE_TEXTAREA) ?
-		'<textarea name="msg" id="p_comment_comment_'.$comment_all_no.'" cols="'.$comment_cols.'" row="1" placeholder="'.$_comment_messages['label_comment'].'"></textarea>' :
-		'<input type="text" name="msg" id="p_comment_comment_'.$comment_all_no.'" size="'.$comment_cols.'" placeholder="'.$_comment_messages['label_comment'].'" />';
-
+	$ret[] = '<div class="input-group">';
+	$ret[] = '<textarea name="msg" class="form-control" id="p_comment_comment_'.$comment_all_no.'" row="1" placeholder="'.$_comment_messages['label_comment'].'"></textarea>';
+	$ret[] = '<span class="input-group-btn">';
 	$ret[] = '<input type="submit" class="btn btn-primary" name="comment" value="' . $_comment_messages['label_post'] . '" />';
+	$ret[] = '</span>';
+	$ret[] = '</div>';
+	$ret[] = '</div>';
 	$ret[] = '</form>';
 
 	$string = join("\n",$ret);

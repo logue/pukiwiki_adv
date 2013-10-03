@@ -25,15 +25,15 @@ define('PKWK_WARNING', true);
 
 // PukiWiki Adv. THEME (NOT compatible as Original and Plus! skin)
 // ex.  cloudwalk, classic, xxxlogue, whiteflow, gs2, wikiwikiadv, squawker, 180wiki
-define('PLUS_THEME',	'squawker');
+define('PLUS_THEME',	'default');
 
 // Directory definition
 // (Ended with a slash like '../path/to/pkwk/', or '')
 define('SITE_HOME',	'../wiki-common/');
 
 // define('DATA_HOME',	'../../wiki-data/contents/');
-// define('DATA_HOME',		'../../data/');
-define('DATA_HOME',	'../wiki-data/');
+define('DATA_HOME',		'../../data/');
+// define('DATA_HOME',	'../wiki-data/');
 
 define('ROOT_URI', '/');
 //define('WWW_HOME', '/');

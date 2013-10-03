@@ -63,7 +63,7 @@ if (! defined('SORT_NATURAL')) define('SORT_NATURAL', PLUGIN_TRACKER_SORT_TYPE_N
 // Sort order
 define('PLUGIN_TRACKER_SORT_ORDER_DESC',    3);
 define('PLUGIN_TRACKER_SORT_ORDER_ASC',     4);
-define('PLUGIN_TRACKER_SORT_ORDER_DEFAULT', PLUGIN_TRACKER_SORT_ORDER_ASC);
+define('PLUGIN_TRACKER_SORT_ORDER_DEFAULT', PLUGIN_TRACKER_SORT_TYPE_NATURAL);
 
 define('PLUGIN_TRACKER_CACHE_PREFIX', 'tracker-');
 // ----
@@ -145,7 +145,7 @@ function plugin_tracker_convert()
 	// For QA/196, BugTrack/113
 	$form_enctype = IS_MOBILE ? null : 'enctype="multipart/form-data"';
 	return <<<EOD
-<form $form_enctype action="$script" method="post" class="tracker_form">
+<form $form_enctype action="$script" method="post" class="form-horizontal plugin-tracker-form">
 	$hidden
 	$template
 </form>
@@ -534,7 +534,7 @@ class Tracker_field_text extends Tracker_field
 		$s_size  = isset($this->options[0]) ? htmlsc($this->options[0]) : null;
 		$s_value = htmlsc($this->default_value);
 
-		return '<input type="text"' .
+		return '<input type="text" class="form-control"' .
 				' name="'  . $s_name  . '"' .
 				' size="'  . $s_size  . '"' .
 				' value="' . $s_value . '" />';
@@ -608,7 +608,7 @@ class Tracker_field_textarea extends Tracker_field
 		$s_rows = isset($this->options[1]) ? htmlsc($this->options[1]) : null;
 		$s_default = htmlsc($this->default_value);
 
-		return '<textarea' .
+		return '<textarea class="form-control"' .
 				' name="' . $s_name . '"' .
 				' cols="' . $s_cols . '"' .
 				' rows="' . $s_rows . '">' .
@@ -779,7 +779,7 @@ class Tracker_field_select extends Tracker_field_radio
 			' size="' . htmlsc($this->options[0]) . '"' : null;
 		$s_multiple = (isset($this->options[1]) && strtolower($this->options[1]) == 'multiple') ?
 			' multiple="multiple"' : null;
-		$retval[] = '<select name="' . $s_name . '[]"' . $s_size . $s_multiple . '>';
+		$retval[] = '<select name="' . $s_name . '[]"' . $s_size . $s_multiple . ' class="form-control">';
 
 		if ($empty) $retval[] = ' <option value=""></option>';
 

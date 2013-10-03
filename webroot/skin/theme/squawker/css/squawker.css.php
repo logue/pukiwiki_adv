@@ -216,6 +216,10 @@ em, cite, q{
 	display: none;
 }
 
+textarea[row="1"]{
+	height:1em;
+}
+
 /* ==|== PukiWiki Adv. Misc classes ========================================= */
 /* toolbar.inc.php */
 .toolbar{

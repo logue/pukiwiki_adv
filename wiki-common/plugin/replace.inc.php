@@ -92,12 +92,12 @@ function replace_do($search,$replace,$notimestamp)
 	if ( count($replaced_pages) == 0 ) {
 		return array(
 			'msg'  => $_replace_msg['msg_H0_no_data'],
-			'body' => '<p>' . $_replace_msg['msg_no_replaced'] . '</p>'
+			'body' => '<p class="alert alert-danger">' . $_replace_msg['msg_no_replaced'] . '</p>'
 		);
 	}
 	return array(
 		'msg'  => $_replace_msg['msg_H0_replaced'],
-		'body' => '<p>' . $_replace_msg['msg_replaced'] . '</p>' . "\n" . '<ul>' . join("\n", $replaced_pages) . '</ul>'
+		'body' => '<p class="alert alert-success">' . $_replace_msg['msg_replaced'] . '</p>' . "\n" . '<ul>' . join("\n", $replaced_pages) . '</ul>'
 	);
 }
 
@@ -111,33 +111,39 @@ function replace_adm($pass,$search)
 
 	if (! Auth::check_role('role_contents_admin')) {
 		$msg = $_replace_msg['msg_input_str'];
-		$body_pass = "<br />\n";
+		$body_pass = "";
 	} else {
 		$msg = $_replace_msg['msg_input_pass'];
-		$body_pass = '<label for="pass">'.$_replace_msg['msg_pass'].'</label><input type="password" name="pass" size="12" id="pass" /><br />';
+		$body_pass = '<div class="form-group"><label for="pass">'.$_replace_msg['msg_pass'].'</label><input type="password" name="pass" size="12" id="pass" class="form-control" /></div>';
 		if ($pass == 'pass') {
-			$body .= '<p><strong>'.$_replace_msg['msg_warn_pass'].'</strong></p>'. "\n";
+			$body .= '<p class="alert alert-warning">'.$_replace_msg['msg_warn_pass'].'</p>'. "\n";
 		} elseif ($pass != '__nopass__') {
-			$body .= '<p><strong>'.$_replace_msg['msg_no_pass'].'</strong></p>'."\n";
+			$body .= '<p class="alert alert-warning">'.$_replace_msg['msg_no_pass'].'</p>'."\n";
 		}
 	}
 
 	if ($search === '') {
-		$body .= '<p><strong>'.$_replace_msg['msg_no_search']."</strong></p>\n";
+		$body .= '<p class="alert alert-warning">'.$_replace_msg['msg_no_search']."</p>\n";
 	}
 	$script = get_script_uri();
 	$body .= <<<EOD
 <fieldset>
 	<legend>$msg</legend>
-	<form action="$script" method="post" class="replace_form">
+	<form action="$script" method="post" class="plugin-replace-form">
 		<input type="hidden" name="cmd" value="replace" />
-		<label for="replace_search">{$_replace_msg['msg_input_search_word']}</label>
-		<input type="text" name="search" id="replace_search" size="24" /><br />
-		<label for="replace_replace">{$_replace_msg['msg_input_replace_word']}</label>
-		<input type="text" name="replace" id="replace_replace" size="24" /><br />
+		<div class="form-group">
+			<label for="replace_search">{$_replace_msg['msg_input_search_word']}</label>
+			<input type="text" name="search" id="replace_search" size="24" class="form-control" />
+		</div>
+		<div class="form-group">
+			<label for="replace_replace">{$_replace_msg['msg_input_replace_word']}</label>
+			<input type="text" name="replace" id="replace_replace" size="24" class="form-control" />
+		</div>
 		$body_pass
-		<input type="checkbox" name="notimestamp" id="replace_notimestamp" />
-		<label for="replace_notimestamp">{$_button['notchangetimestamp']}</label><br />
+		<div class="checkbox">
+			<input type="checkbox" name="notimestamp" id="replace_notimestamp" />
+			<label for="replace_notimestamp">{$_button['notchangetimestamp']}</label>
+		</div>
 		<input type="submit" class="btn btn-warning" name="ok" value="{$_replace_msg['btn_exec']}" />
 	</form>
 </fieldset>

@@ -373,7 +373,7 @@ class PluginVotex
 		$form[] = '<input type="hidden" name="cmd"    value="preview" />';
 		$form[] = '<input type="hidden" name="refer"  value="' . htmlsc($vars['refer']) . '" />';
 		$form[] = '<input type="hidden" name="digest" value="' . htmlsc($vars['digest']) . '" />';
-		$form[] = '<textarea name="msg" rows="' . $rows . '" cols="' . $cols . '" id="textarea">' . htmlsc($body) . '</textarea>';
+		$form[] = '<textarea name="msg" rows="' . $rows . '" cols="' . $cols . '" class="form-control">' . htmlsc($body) . '</textarea>';
 		$form[] = '</form>';
 		return join("\n", $form);
 	}
@@ -636,7 +636,7 @@ class PluginVotex
 			$form[] = '<input type="hidden" name="vote_id" value="' . htmlsc($vote_id) . '" />';
 			$form[] = '<input type="hidden" name="digest"  value="' . htmlsc($digest) . '" />';
 		}
-		$form[] = '<table class="table vote_table" summary="vote" id="' . $anchor . '" data-pagenate="false">';
+		$form[] = '<table class="table plugin-vote-table" summary="vote" id="' . $anchor . '" data-pagenate="false">';
 		$form[] = '<thead>';
 		$form[] = '<tr>';
 		$form[] = '<th>' . T_('Selection') . '</th>';
@@ -664,10 +664,10 @@ class PluginVotex
 			$choice_key = $this->encode_choice($choice_id);
 			$form[] = '<tfoot>';
 			$form[] = '<tr>';
-			$form[] = '<th colspan="2" class="style_th vote_form_td">';
-			$form[] = '<input type="text" style="width:90%;" name="addchoice" value="" placeholder="' . T_('Item name') . '" />';
+			$form[] = '<th colspan="2">';
+			$form[] = '<input type="text" style="width:90%;" name="addchoice" value="" placeholder="' . T_('Item name') . '" class="form-control" />';
 			$form[] = '</th>';
-			$form[] = '<th class="style_th vote_form_td">';
+			$form[] = '<th>';
 			$form[] = '<input type="' . $submit . '" class="btn btn-primary" name="' . $choice_key . '" value="' . T_('Add') . '" class="submit" />';
 			$form[] = '</th>';
 			$form[] = '</tr>';

@@ -13,6 +13,8 @@
 
 namespace PukiWiki\Lang;
 
+use Locale;
+
 /**
  * CHARSET から言語_国を推測する
  * @abstract

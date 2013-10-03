@@ -310,7 +310,7 @@ class ShowRSS_html_menubar extends ShowRSS_html
 		}else{
 			$desc = $line['desc'] ? mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['desc'])), 0, 255, '...').get_passage($line['date']) : get_passage($line['date']);
 			$title = ($this->url) ? 
-				open_uri_in_new_window('<a href="' . $this->url . '" title="' .$desc . '" rel="external">' . $this->title . '</a>', 'link_url') :
+				'<a href="' . $this->url . '" title="' .$desc . '" rel="external">' . $this->title . '</a>' :
 				'<span title="'.$desc.'">' . $this->title . '</span>';
 			$retval[] = '<h4>'.$title.'</h4>';
 			$retval[] = '<ul>';

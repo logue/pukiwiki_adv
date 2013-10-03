@@ -48,9 +48,9 @@ function plugin_online_itself($type = 0)
 	} else {
 		$error = 'ERROR!';
 		if ($type == 0) {
-			$error = '#online: ' . $error . '<br />' . "\n";
+			$error = '<p class="alert alert-warning">#online: ' . $error . '</p>' . "\n";
 		} else {
-			$error = '&online: ' . $error . ';';
+			$error = '<span class="text-warning">&online: ' . $error . ';</span>';
 		}
 		return $error; // String
 	}
