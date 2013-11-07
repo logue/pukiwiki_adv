@@ -724,7 +724,7 @@ class Utility{
 		}
 
 		// 編集フォーム
-		$ret[] = '<textarea name="msg" id="msg" rows="20" rows="80" class="form-control">' . self::htmlsc(
+		$ret[] = '<textarea name="msg" id="msg" rows="15" rows="80" class="form-control">' . self::htmlsc(
 			// 作成元のページが存在する場合、そのリンクを書き込むデーターの先頭に付加する
 			($load_refer_related && isset($vars['refer']) && !empty($vars['refer']) ? '[[' . self::stripBracket($vars['refer']) . ']]' . "\n\n" : '') .
 			$postdata
@@ -746,9 +746,9 @@ class Utility{
 			$ret[] = isset($vars['add']) ? '<input type="checkbox" name="add_top" value="true"' . (isset($vars['add']) ? ' checked="checked"' : '') . ' /><label for="add_top">' . $_button['addtop'] . '</label>' : null;
 		}else{
 			// 通常用
-			$ret[] = '<input type="submit" class="btn btn-primary" id="btn_submit" name="write" value="' . $_button['update'] . '" accesskey="s" />';
+			$ret[] = '<input type="submit" class="btn btn-primary" name="write" value="' . $_button['update'] . '" accesskey="s" />';
 			$ret[] = isset($vars['add']) ? '<input type="checkbox" name="add_top" value="true"' . (isset($vars['add']) ? ' checked="checked"' : '') . ' /><label for="add_top">' . $_button['addtop'] . '</label>' : null;
-			$ret[] = '<input type="submit" class="btn btn-default" id="btn_preview" name="preview" value="' . $_button['preview'] . '" accesskey="p" />';
+			$ret[] = '<input type="submit" class="btn btn-default" name="preview" value="' . $_button['preview'] . '" accesskey="p" />';
 			if ($notimeupdate !== 0 && Factory::Wiki($page)->isValied()){
 				// タイムスタンプを更新しないのチェックボックス
 				$ret[] = '<div class="checkbox">';
@@ -759,10 +759,10 @@ class Utility{
 			// 管理人のパス入力
 			if ($notimeupdate === 2 && Auth::check_role('role_contents_admin')) {
 				$ret[] = '<div class="form-group">';
-				$ret[] = '<input type="password" name="pass" size="12" placeholder="Password" />';
+				$ret[] = '<input type="password" name="pass" class="form-control" size="12" placeholder="Password" />';
 				$ret[] = '</div>';
 			}
-			$ret[] = '<input type="submit" class="btn btn-warning" id="btn_cancel" name="cancel" value="' . $_button['cancel'] . '" accesskey="c" />';
+			$ret[] = '<input type="submit" class="btn btn-warning" name="cancel" value="' . $_button['cancel'] . '" accesskey="c" />';
 		}
 		$ret[] = '</div>';
 		$ret[] = '</form>';

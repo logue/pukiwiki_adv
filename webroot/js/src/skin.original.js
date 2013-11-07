@@ -290,12 +290,12 @@ var pukiwiki = {};
 			this.preptoc(this.body);
 
 			// アシスタント
-			if ($('.edit_form').length !== 0 && $.query.get('cmd') !== 'guiedit'){
+			if ($('.form-edit').length !== 0 && $.query.get('cmd') !== 'guiedit'){
 				this.set_editform();
 			}
 
 			if ($('*[name="msg"]').length !== 0){
-				$('.comment_form').append('<div class="assistant ui-corner-all ui-widget-header ui-helper-clearfix"></div>');
+				$('.plugin-comment-form').append('<div class="assistant ui-corner-all ui-widget-header ui-helper-clearfix"></div>');
 				this.assistant();
 			}
 
@@ -1122,23 +1122,29 @@ var pukiwiki = {};
 
 			// アシスタントのウィジット
 			$('.assistant').html([
-				'<ul class="ui-widget pkwk_widget" role="widget">',
-					'<li class="replace ui-button ui-state-default ui-corner-left" title="'+$.i18n('editor','bold')+'" name="b" role="button"><strong>b</strong></li>',
-					'<li class="replace ui-button ui-state-default" title="'+$.i18n('editor','italic')+'" name="i" style="font-weight:normal;" role="button"><em>i</em></li>',
-					'<li class="replace ui-button ui-state-default" title="'+$.i18n('editor','strike')+'" name="s" style="font-weight:normal;" role="button"><strike>s</strike></li>',
-					'<li class="replace ui-button ui-state-default" title="'+$.i18n('editor','underline')+'" name="u" style="font-weight:normal;" role="button"><span class="underline">u</span></li>',
-					'<li class="replace ui-button ui-state-default" title="'+$.i18n('editor','code')+'" name="code" style="font-weight:normal;" role="button"><span class="ui-icon ui-icon-script"></span></li>',
-					'<li class="replace ui-button ui-state-default ui-corner-right" title="'+$.i18n('editor','quote')+'" name="q" style="font-weight:normal;" role="button"><span class="ui-icon ui-icon-comment"></span></li>',
-					'<li class="replace ui-button ui-state-default ui-corner-left" title="'+$.i18n('editor','link')+'" name="url"><span class="ui-icon ui-icon-link" role="button"></span></li>',
-					'<li class="replace ui-button ui-state-default" title="'+$.i18n('editor','size')+'" name="size" role="button">size</li>',
-					'<li class="insert ui-button ui-state-default ui-corner-right" title="'+$.i18n('editor','color')+'" name="color" role="button">color</li>',
-					'<li class="insert ui-button ui-state-default ui-corner-left" title="'+$.i18n('editor','emoji')+'" name="emoji" role="button">☺</li>',
-					'<li class="insert ui-button ui-state-default ui-corner-right" title="'+$.i18n('editor','breakline')+'" name="br" role="button">⏎</li>',
-					'<li class="replace ui-button ui-state-default ui-corner-all" title="'+$.i18n('editor','ncr')+'" name="ncr" role="button">&amp;#</li>',
-					'<li class="insert ui-button ui-state-default ui-corner-all" title="'+$.i18n('editor','hint')+'" name="help" role="button"><span class="ui-icon ui-icon ui-icon-lightbulb"></span></li>',
-					(Modernizr.localstorage) ? '<li class="insert ui-state-default ui-corner-all" title="'+$.i18n('editor','flush')+'" name="flush" role="button"><span class="ui-icon ui-icon-trash"></span></li>': null,
-					'<li class="ui-widget-content ui-corner-all" style="float:right; width:auto;display:none;font-weight:normal;" id="indicator"></li>',
-				'</ul>'
+				'<div class="btn-toolbar" role="toolbar">',
+					'<div class="btn-group">',
+						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','bold')+'" name="b"><span class="glyphicon glyphicon-bold"></button>',
+						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','italic')+'" name="i"><span class="glyphicon glyphicon-italic"></button>',
+						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','strike')+'" name="s"><strike>s</strike></button>',
+						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','underline')+'" name="u"><span class="underline">u</span></button>',
+						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','code')+'" name="code"><span class="glyphicon glyphicon-barcode"></span></button>',
+						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','quote')+'" name="q"><span class="glyphicon glyphicon-comment"></span></button>',
+					'</div>',
+					'<div class="btn-group">',
+						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','link')+'" name="url"><span class="glyphicon glyphicon-link" role="button"></span></button>',
+						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','size')+'" name="size"><span class="glyphicon glyphicon-text-height" role="button"></span></button>',
+						'<button class="btn btn-default btn-sm insert" title="'+$.i18n('editor','color')+'" name="color">color</button>',
+					'</div>',
+					'<div class="btn-group">',
+						'<button class="btn btn-default btn-sm insert" title="'+$.i18n('editor','emoji')+'" name="emoji">☺</button>',
+						'<button class="btn btn-default btn-sm insert" title="'+$.i18n('editor','breakline')+'" name="br">⏎</button>',
+					'</div>',
+					'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','ncr')+'" name="ncr">&amp;#</button>',
+					'<button class="btn btn-default btn-sm insert" title="'+$.i18n('editor','hint')+'" name="help"><span class="glyphicon glyphicon-question-sign"></span></button>',
+					(Modernizr.localstorage) ? '<button class="btn btn-default btn-sm insert" title="'+$.i18n('editor','flush')+'" name="flush"><span class="glyphicon glyphicon-trash"></span></button>': null,
+					'<span class="" style="float:right; width:auto;display:none;font-weight:normal;" id="indicator"></span>',
+				'</div>'
 			].join("\n"));
 
 			// 絵文字パレットのウィジット
@@ -1381,30 +1387,29 @@ var pukiwiki = {};
 			this.ajax_count = 0;
 			this.ajax_tim = 0;
 
-			var $form = $(prefix + 'form .edit_form');
+			var $form = $('.form-edit');
 
-			$form.children('input[name="write"]')
+			$form.children('.form-inline').children('input[name="write"]')
 				.after(
 					// 簡易差分表示ボタンを追加
-					$('<input type="button" name="view_diff" class="btn bnt-default" value="' + $.i18n('editor','diff') + '" accesskey="d" />')
-					.button()
+					$('<input type="button" name="view_diff" class="btn btn-default" value="' + $.i18n('editor','diff') + '" accesskey="d" />')
 					.click(function() {
 						$('#diff').dialog('open');
 					})
 				)
 				.after(
 					// プレビューボタンを書き換え
-					'<input type="button" name="add_ajax" class="btn bnt-default" value="' + $('.edit_form input[name=preview]').attr('value') + '" accesskey="p" />'
+					'<input type="button" name="add-ajax" class="btn btn-info" value="' + $('input[name=preview]').attr('value') + '" accesskey="p" />'
 				);
 
 			// オリジナルのプレビューボタンを削除
-			$form.children('input[name=preview]').remove();
+			$form.children('.form-inline').children('input[name=preview]').remove();
 			
 			// アシスタントのツールバーを前に追加
 			$form.prepend('<div class="assistant ui-corner-top ui-widget-header ui-helper-clearfix"></div>');
 			
 			// リアルタイムプレビューの表示画面
-			$form.children('textarea[name="msg"]').before('<div id="realview" style="display:none;"><div></div></div><textarea id="previous" style="display:none;"></textarea>');
+			$form.children('textarea[name="msg"]').before('<div id="realview" class="form-control" style="display:none;"></div><textarea id="previous" style="display:none;"></textarea>');
 
 			// よく使うDOMをキャッシュ
 			var $indicator = $form.children('#indicator'),
@@ -1447,10 +1452,9 @@ var pukiwiki = {};
 						dataType : 'json'
 					}).
 					done(function(data){
-						var $holder = $realview.children('div');
-						$indicator.html('<span class="ui-icon ui-icon-clock" style="float:left;"></span>'+data.taketime);
+						$indicator.html('<span class="glyphicon glyphicon-time"></span>'+data.taketime);
 						var ret = data.data.replace(/<script[^>]*>[^<]+/ig,'<span class="scripttag" title="Script tag">[SCRIPT]</span>');
-						$holder.html(data.data);
+						$realview.html(data.data);
 
 						/*
 						console.log($holder.children('#editmark').offset().top);
@@ -1477,8 +1481,8 @@ var pukiwiki = {};
 					}).
 					fail(function(data,status,thrown){
 						$realview.children('div').html([
-							'<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">',
-								'<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>'+$.i18n('pukiwiki','error')+status+'</p>',
+							'<div class="alert alert-warning">',
+								'<p><span class="glyphicon glyphicon-warning-sign"></span>'+$.i18n('pukiwiki','error')+status+'</p>',
 								'<ul>',
 									'<li>readyState:'+data.readyState+'</li>',
 									'<li>responseText:'+data.responseText+'</li>',
@@ -1493,7 +1497,7 @@ var pukiwiki = {};
 
 			$realview.height(msg_height/2);
 			// プレビューボタンが押された時の処理
-			$form.children('input[name=add_ajax]').click(function(){
+			$form.children('.form-inline').children('input[name=add-ajax]').click(function(){
 				$textarea.attr('disabled', 'disabled');
 				// フォームの高さを取得
 				// Textarea Resizerで高さが可変になっているため。
@@ -1588,55 +1592,37 @@ var pukiwiki = {};
 			;
 
 			// 送信イベント時の処理
-			$form.submit(function(e){
-				var postdata = $(this).serializeObject();	// フォームの内容をサニタイズ
+			$('*[type=submit]').click(function(e){
+				var $this = $(this);
+				var $form = $(this).parents('form');
+				var postdata = $form.serializeObject();	// フォームの内容をサニタイズ
+				$form.children('input, button, select, textarea').attr('disabled', 'disabled');
 				postdata.ajax = 'json';
+
 				// ローカルストレージをフラッシュ
 				if (isEnableLocalStorage){
 					localStorage.removeItem(PAGE);
 				}
-				
+				// キャンセルボタン
+				if (postdata.submit === 'cancel') {
+					location.href = SCRIPT + '?' + PAGE;
+				}
 				// 空更新は無反応
-				console.log($form.children('textarea[name="original"]').val());
-				console.log($form.children('textarea[name="msg"]').val());
-				
-				if ( $original.val() == $msg.val() ){
-					console.error("Void updating");
-					e.preventDefault();
-					return;
+				if ( $original.val() == $msg.val()){
+					$form.children('input, button, select, textarea').removeAttr('disabled');
+					alert("Void updating");
+					return false;
 				}
 				
 				// 管理パスが入力されてない状態でタイムスタンプを更新しないになっている場合は、無反応
-				if ( $form.children('input[name="pass"]').length !==0 && ($form.children('checkbox[name="notimestamp"]').is(':checked') && $form.children('input[name="pass"]') === '')){
-					console.error("Password missing");
-					e.preventDefault();
-					return;
+				if ( $form.find('input[name="pass"]').length !==0 && (postdata.notimestamp && postdata.pass === '')){
+					alert("Password missing");
+					return false;
 				}
+				
+				postdata.write = true;
 
-				if (typeof(FACEBOOK_APPID) !== 'undefined'  && ! $form.children('checkbox[name="notimestamp"]').is(':checked') ) {
-					if ( $form.children('checkbox[name="fb_publish"]') === true){
-						$.ajax({
-							url:'https://graph.facebook.com/bbeckford/feed',
-							type:'post',
-							data: {
-								method: 'stream.publish',
-								message: PAGE + "\n" + $('link[rel=canonical]')[0].href
-							},
-							cache: false,
-							dataType : 'json',
-							success : function(data){
-								console.log(data.body);
-							},
-							error : function(data){
-								$(prefix + 'input, button, select, textarea').removeAttr('disabled');
-								alert($.i18n('pukiwiki','error'));
-							}
-						});
-					}
-				}
-
-				/*
-				console.log(postdata);
+				// ajaxで保存
 				$.ajax({
 					url:SCRIPT,
 					type:'POST',
@@ -1644,20 +1630,40 @@ var pukiwiki = {};
 					cache: false,
 					dataType : 'json',
 					success : function(data){
-						// localStrageをフラッシュ（キャンセルボタンを押した場合も）
-
-						//console.log(data.body);
-						
+						if (data.posted === true) {
+							if (typeof(FACEBOOK_APPID) !== 'undefined' && !postdata.notimestamp ) {
+								if ( postdata.fb-publish === 'true'){
+									$.ajax({
+										url:'https://graph.facebook.com/bbeckford/feed',
+										type:'post',
+										data: {
+											method: 'stream.publish',
+											message: PAGE + "\n" + $('link[rel=canonical]')[0].href
+										},
+										cache: false,
+										dataType : 'json',
+										success : function(data){
+											console.log(data.body);
+										},
+										error : function(data){
+											alert($.i18n('pukiwiki','error'));
+										}
+									});
+								}
+							}
+							alert('Your post has saved.');
+							location.href = SCRIPT + '?' + PAGE;
+						}else{
+							alert('Your post has not saved.');
+							$form.children('input, button, select, textarea').attr('disabled', 'disabled');
+						}
 					},
 					error : function(data){
 						$(prefix + 'input, button, select, textarea').removeAttr('disabled');
 						alert($.i18n('pukiwiki','error'));
 					}
 				});
-				*/
-
-				$(this).ajaxSubmit();
-				e.preventDefault();
+				return false;
 			});
 
 			this.assistant(false);

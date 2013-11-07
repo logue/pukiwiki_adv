@@ -847,9 +847,9 @@ class Robots
 	public static function get_robots_info($ua)
 	{
 		foreach (self::$robots_lib as $id => $name) {
-			str_replace('_', '\_', $id);
+			$pat = '/'.str_replace('_', '\_', $id).'/si';
 			// if (preg_match($pat,$ua,$regs)) return array($id,$name);
-			if (preg_match('/'.$id.'/si',$ua,$regs)) {
+			if (preg_match($pat,$ua,$regs)) {
 				return array($id,$name);
 			}
 		}

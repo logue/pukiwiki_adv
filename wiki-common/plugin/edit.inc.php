@@ -305,7 +305,15 @@ function plugin_edit_write()
 	} else {
 		$url = $partid ? $wiki->uri('read', null ,rawurlencode($partid)) : $wiki->uri();
 	}
-	Utility::redirect($url);
+	if (isset($vars['ajax'])) {
+		$headers = Header::getHeaders('application/json');
+		Header::writeResponse($headers, 200, Json::encode(array(
+			'posted'		=> true,
+			'taketime'		=> Time::getTakeTime()
+		)));
+	}else{
+		Utility::redirect($url);
+	}
 	exit;
 }
 
@@ -319,6 +327,14 @@ function plugin_edit_cancel()
 // Cancel (Back to the page / Escape edit page)
 function plugin_edit_honeypot()
 {
+	if (isset($vars['ajax'])) {
+		$headers = Header::getHeaders('application/json');
+		Header::writeResponse($headers, 200, Json::encode(array(
+			'posted'		=> false,
+			'taketime'		=> Time::getTakeTime()
+		)));
+		exit;
+	}
 	// SPAM Logging
 	Utility::dump();
 
