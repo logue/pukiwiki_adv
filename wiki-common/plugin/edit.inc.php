@@ -67,13 +67,13 @@ function plugin_edit_action()
 		return plugin_edit_cancel();
 	}
 
-	$source = $wiki->get(true);
-	Auth::is_role_page($source);
 
-	$postdata = $vars['original'] = $source;
+	$postdata = $vars['original'] = $wiki->get(true);
+	Auth::is_role_page($postdata);
 
 	if (isset($vars['id']) && !empty($vars['id']))
 	{
+		$source = $wiki->get();
 		$postdata = plugin_edit_parts($vars['id'],$source);
 		if ($postdata === FALSE)
 		{
@@ -257,7 +257,7 @@ function plugin_edit_write()
 	// Paragraph edit mode
 	if ($partid) {
 		$source = preg_split('/([^\n]*\n)/', $vars['original'], -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
-		$vars['msg'] = plugin_edit_parts($partid,$source, $vars['msg']) !== FALSE
+		$vars['msg'] = plugin_edit_parts($partid, $source, $vars['msg']) !== FALSE
 			? join('', $source)
 			: rtrim($vars['original']) . "\n\n" . $vars['msg'];
 	}
@@ -308,8 +308,9 @@ function plugin_edit_write()
 	if (isset($vars['ajax'])) {
 		$headers = Header::getHeaders('application/json');
 		Header::writeResponse($headers, 200, Json::encode(array(
-			'posted'		=> true,
-			'taketime'		=> Time::getTakeTime()
+			'msg'       => 'Your post has been saved.',
+			'posted'    => true,
+			'taketime'  => Time::getTakeTime()
 		)));
 	}else{
 		Utility::redirect($url);
@@ -330,8 +331,9 @@ function plugin_edit_honeypot()
 	if (isset($vars['ajax'])) {
 		$headers = Header::getHeaders('application/json');
 		Header::writeResponse($headers, 200, Json::encode(array(
-			'posted'		=> false,
-			'taketime'		=> Time::getTakeTime()
+			'posted'    => false,
+			'message'   => 'Sorry your post has been prohibited.',
+			'taketime'  => Time::getTakeTime()
 		)));
 		exit;
 	}

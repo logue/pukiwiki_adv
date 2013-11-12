@@ -166,14 +166,14 @@ class Render{
 			global $adminpass, $_string, $menubar, $sidebar;
 			if ($adminpass == '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72' || $adminpass == '' ){
 				$body = '<div class="alert alert-danger">'.
-					'<p><span class="glyphicon glyphicon-warning-sign"></span>'.
+					'<p><span class="fa fa-exclamation-triangle"></span>'.
 					'<strong>'.$_string['warning'].'</strong> '.$_string['changeadminpass'].'</p></div>'."\n".
 					$body;
 			}
 
 			if (DEBUG === true && ! empty($info)){
 				$body = '<div class="alert alert-info">'.
-						'<p><span class="glyphicon glyphicon-info-sign"></span>'.$_string['debugmode'].'</p>'."\n".
+						'<p><span class="fa fa-info-circle"></span>'.$_string['debugmode'].'</p>'."\n".
 						'<ul>'."\n".
 						'<li>'.join("</li>\n<li>",$info).'</li>'."\n".
 						'</ul></div>'."\n\n".$body;
@@ -303,7 +303,7 @@ class Render{
 
 		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.( DEBUG ? 'locale.js' : 'js.php?file=locale'), 'defer'=>'defer' );
 
-		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.( DEBUG ? 'codemirror/lib/codemirror.js' : 'js.php?file=codemirror/lib/codemirror.min'), 'defer'=>'defer' );
+//		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.( DEBUG ? 'codemirror/lib/codemirror.js' : 'js.php?file=codemirror/lib/codemirror.min'), 'defer'=>'defer' );
 
 //		$js_vars[] = 'var pukiwiki = {};';
 		foreach( $js_init as $key=>$val){
@@ -404,7 +404,7 @@ class Render{
 		}
 		// 標準スタイルシート
 		if ($conf['default_css'] ){
-			$link_tags[] = array('rel'=>'stylesheet', 'href'=>SKIN_URI . 'scripts.css.php?base=' . urlencode(IMAGE_URI), 'type'=>'text/css');
+			$link_tags[] = array('rel'=>'stylesheet', 'href'=> COMMON_URI . 'css/pukiwiki.' . (DEBUG ? 'css' : 'min.css'), 'type'=>'text/css');
 		}
 
 		return

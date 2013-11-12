@@ -80,7 +80,7 @@ var pukiwiki = {};
 			'@prefix' : '<http://purl.org/net/ns/doas#>',
 			'@about' : '<skin.js>', 'a': ':JavaScript',
 			'title' : 'Pukiwiki skin script for jQuery',
-			'created' : '2008-11-25', 'release': {'revision': '2.2.31', 'created': '2013-01-22'},
+			'created' : '2008-11-25', 'release': {'revision': '2.5.0', 'created': '2013-01-22'},
 			'author' : {'name': 'Logue', 'homepage': '<http://logue.be/>'},
 			'license' : '<http://www.gnu.org/licenses/gpl-2.0.html>'
 		},
@@ -279,9 +279,6 @@ var pukiwiki = {};
 				]
 			};
 
-			// HTML5サポート
-			this.enableHTML5();
-
 			// Suckerfish（ポップアップメニュー
 			$('.sf-menu').superfish();
 
@@ -345,118 +342,8 @@ var pukiwiki = {};
 		unload : function(prefix){
 //			this.loadingScreen.dialog('open');
 			prefix = (prefix) ? prefix + ' ': '';
-			$('input, select, textarea').attr('disabled','disabled');
-
-			// フォームが変更されている場合
-			if ( $(prefix + '#msg').val() !== $(prefix + '#original' ).val()) {
-				if ( confirm( $.i18n('pukiwiki', 'unload')) ) {
-					this.appendChild(document.createElement('input')).setAttribute('name', 'write');
-					$('<input name="write" />').appendTo(this);
-					$(prefix + 'form').submit();
-					alert( $.i18n('pukiwiki', 'submit'));
-				}else{
-//					this.loadingScreen.dialog('close');
-				}
-			}
+			$('input, select, textarea, button').attr('disabled','disabled');
 			return false;
-		},
-		// HTML5の各種機能をJavaScriptで有効化するための処理
-		enableHTML5 : function(prefix){
-			prefix = (prefix) ? prefix + ' ': '';
-
-			// IE互換処理
-			if (ie <= 6) {
-				// Fix Background flicker
-				try{ document.execCommand('BackgroundImageCache', false, true); }catch(e){}
-				// IE PNG Fix
-				$.ajax({
-					type: 'GET',
-					global : false,
-					url: JS_URI+'iepngfix/iepngfix_tilebg.js',
-					dataType: 'script'
-				});
-				$('img[src$=png], .pkwk-icon, .pkwk-symbol').css({
-					'behavior': 'url('+JS_URI+'iepngfix/iepngfix.htc)'
-				});
-			}
-
-			if (ie <= 7) {
-				$('.navibar ul').before('[ ').after(' ] ');
-			}
-			if (ie <= 8){
-				$('.navibar li:not(:last-child)').after(' | ');
-				$('.topicpath li:not(:last-child)').after(' > ');
-			}
-
-			// Canvas実装
-			Modernizr.load({
-				test:Modernizr.canvas,
-				nope:JS_URI+'excanvas.compiled.js'
-			});
-			
-			// Audio実装
-			/*
-			Modernizr.load({
-				test:Modernizr.audio.mp3,
-				nope:JS_URI+'audiojs/audio.min.js',
-				complete: function(){
-					audiojs.events.ready(function() {
-						var as = audiojs.createAll();
-					});
-				}
-			});
-			
-			$.getScript(JS_URI+'audiojs/audio.min.js', function(){
-				audiojs.events.ready(function() {
-					var as = audiojs.createAll();
-				});
-			});
-			*/
-
-			// Placeholder属性のサポート
-			if (!Modernizr.input.placeholder){
-				$(prefix + '*[placeholder]').each(function () {
-					var input = $(this),
-					placeholderText = input.attr('placeholder'),
-					placeholderColor = 'Gray',
-					defaultColor = input.css('color');
-
-					input.
-						focus(function () {
-							if (input.val() === placeholderText) {
-								input.val('').css('color', defaultColor);
-							}
-						}).
-						blur(function () {
-							if (input.val() === '') {
-								input.val(placeholderText).css('color', placeholderColor);
-							} else if (input.val() === placeholderText) {
-								input.css('color', placeholderColor);
-							}
-						}).
-						blur().
-						parents('form').
-						submit(function () {
-							if (input.val() === placeholderText) {
-								input.val('');
-							}
-						});
-				});
-			}
-
-			// require属性のサポート
-			if (!Modernizr.input.required){
-				$(prefix + '[required]').each(function () {
-					var input = $(this),
-					required = input.attr('required');
-
-					input.parents('form').submit(function () {
-						if (input.val() === '') {
-							return false;
-						}
-					});
-				});
-			}
 		},
 		// オーバーライド関数
 		register:{
@@ -1124,26 +1011,26 @@ var pukiwiki = {};
 			$('.assistant').html([
 				'<div class="btn-toolbar" role="toolbar">',
 					'<div class="btn-group">',
-						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','bold')+'" name="b"><span class="glyphicon glyphicon-bold"></button>',
-						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','italic')+'" name="i"><span class="glyphicon glyphicon-italic"></button>',
-						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','strike')+'" name="s"><strike>s</strike></button>',
-						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','underline')+'" name="u"><span class="underline">u</span></button>',
-						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','code')+'" name="code"><span class="glyphicon glyphicon-barcode"></span></button>',
-						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','quote')+'" name="q"><span class="glyphicon glyphicon-comment"></span></button>',
+						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','bold')+'" name="b"><span class="fa fa-bold"></button>',
+						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','italic')+'" name="i"><span class="fa fa-italic"></button>',
+						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','strike')+'" name="s"><span class="fa fa-strikethrough"></button>',
+						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','underline')+'" name="u"><span class="fa fa-underline"></span></button>',
+						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','code')+'" name="code"><span class="fa fa-barcode"></span></button>',
+						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','quote')+'" name="q"><span class="fa fa-quote-left"></span></button>',
 					'</div>',
 					'<div class="btn-group">',
-						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','link')+'" name="url"><span class="glyphicon glyphicon-link" role="button"></span></button>',
-						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','size')+'" name="size"><span class="glyphicon glyphicon-text-height" role="button"></span></button>',
+						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','link')+'" name="url"><span class="fa fa-link" role="button"></span></button>',
+						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','size')+'" name="size"><span class="fa fa-text-height" role="button"></span></button>',
 						'<button class="btn btn-default btn-sm insert" title="'+$.i18n('editor','color')+'" name="color">color</button>',
 					'</div>',
 					'<div class="btn-group">',
-						'<button class="btn btn-default btn-sm insert" title="'+$.i18n('editor','emoji')+'" name="emoji">☺</button>',
+						'<button class="btn btn-default btn-sm insert" title="'+$.i18n('editor','emoji')+'" name="emoji"><span class="fa fa-smile-o"></span></button>',
 						'<button class="btn btn-default btn-sm insert" title="'+$.i18n('editor','breakline')+'" name="br">⏎</button>',
 					'</div>',
 					'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','ncr')+'" name="ncr">&amp;#</button>',
-					'<button class="btn btn-default btn-sm insert" title="'+$.i18n('editor','hint')+'" name="help"><span class="glyphicon glyphicon-question-sign"></span></button>',
-					(Modernizr.localstorage) ? '<button class="btn btn-default btn-sm insert" title="'+$.i18n('editor','flush')+'" name="flush"><span class="glyphicon glyphicon-trash"></span></button>': null,
-					'<span class="" style="float:right; width:auto;display:none;font-weight:normal;" id="indicator"></span>',
+					'<button class="btn btn-default btn-sm insert" title="'+$.i18n('editor','hint')+'" name="help"><span class="fa fa-question-circle"></span></button>',
+					(Modernizr.localstorage) ? '<button class="btn btn-default btn-sm insert" title="'+$.i18n('editor','flush')+'" name="flush"><span class="fa fa-trash-o"></span></button>': null,
+					'<button class="btn btn-default btn-sm disabled" style="float:right;" id="indicator"><span class="fa fa-spinner fa-spin"></span></button>',
 				'</div>'
 			].join("\n"));
 
@@ -1356,69 +1243,58 @@ var pukiwiki = {};
 				hide: 'scale'
 			});
 
-			// JSON.parseが使えるかのチェック
-			Modernizr.load({
-				test:window.JSON,
-				nope: JS_URI+'json2.js',
-				complete: function () {
-					// テキストエリアの内容をlocalStrageから取得
-					if (Modernizr.localstorage){
-						var msg = $(prefix + '.edit_form textarea[name=msg]').val();
-						var storage = window.localStorage.getItem(PAGE);
-						var data = window.JSON.parse(storage);
-
-						if (data){
-							// 「タイムスタンプを更新しない」で更新した場合、それを検知する方法がないという致命的問題あり。
-							var ask = (MODIFIED > data.modified && data.msg !== msg) ?
-								$.i18n('pukiwiki','info_restore1') : $.i18n('pukiwiki','info_restore2');
-
-							// データーを復元
-							if (confirm(ask)){ $(prefix + '.edit_form textarea[name=msg]').val(data.msg); }
-						}
-
-						isEnableLocalStorage = true;
-					}
-				}
-			});
-
-	//		$('.edit_form input','.edit_form button','.edit_form select','.edit_form textarea').attr('disabled','disabled');
-
 			this.ajax_apx = false;
 			this.ajax_count = 0;
 			this.ajax_tim = 0;
 
 			var $form = $('.form-edit');
 
-			$form.children('.form-inline').children('input[name="write"]')
+			$form.find('button[name="write"]')
 				.after(
 					// 簡易差分表示ボタンを追加
-					$('<input type="button" name="view_diff" class="btn btn-default" value="' + $.i18n('editor','diff') + '" accesskey="d" />')
+					$('<button name="view_diff" class="btn btn-default" accesskey="d"><span class="fa fa-eye-slash"></span>' + $.i18n('editor','diff') + '</button>')
 					.click(function() {
 						$('#diff').dialog('open');
 					})
 				)
 				.after(
 					// プレビューボタンを書き換え
-					'<input type="button" name="add-ajax" class="btn btn-info" value="' + $('input[name=preview]').attr('value') + '" accesskey="p" />'
+					'<button name="add-ajax" class="btn btn-info" accesskey="p">' + $('button[name=preview]').html() + '</button>'
 				);
 
 			// オリジナルのプレビューボタンを削除
-			$form.children('.form-inline').children('input[name=preview]').remove();
+			$form.find('button[name=preview]').remove();
 			
 			// アシスタントのツールバーを前に追加
 			$form.prepend('<div class="assistant ui-corner-top ui-widget-header ui-helper-clearfix"></div>');
 			
 			// リアルタイムプレビューの表示画面
-			$form.children('textarea[name="msg"]').before('<div id="realview" class="form-control" style="display:none;"></div><textarea id="previous" style="display:none;"></textarea>');
+			$form.find('textarea[name="msg"]').before('<div id="realview" class="form-control" style="display:none;"></div><textarea id="previous" style="display:none;"></textarea>');
 
 			// よく使うDOMをキャッシュ
-			var $indicator = $form.children('#indicator'),
-				$msg = $form.children('textarea[name="msg"]'),
+			var $indicator = $('#indicator'),
+				$msg = $form.find('textarea[name="msg"]'),
 				msg_height = $msg.height(),
 				$original = $form.children('textarea[name="original"]'),
 				$previous = $form.children('#previous'),
-				$realview = $form.children('#realview'),
-				$textarea = $form.children('textarea');
+				$realview = $form.children('#realview');
+			
+			if (Modernizr.localstorage){
+				var msg = $(prefix + '.edit_form textarea[name=msg]').val();
+				var storage = window.localStorage.getItem(PAGE);
+				var data = window.JSON.parse(storage);
+
+				if (data){
+					// 「タイムスタンプを更新しない」で更新した場合、それを検知する方法がないという致命的問題あり。
+					var ask = (MODIFIED > data.modified && data.msg !== msg) ?
+						$.i18n('pukiwiki','info_restore1') : $.i18n('pukiwiki','info_restore2');
+
+					// データーを復元
+					if (confirm(ask)){ $msg.val(data.msg); }
+				}
+
+				isEnableLocalStorage = true;
+			}
 			
 			// リアルタイムプレビューの内部処理
 			var realtime_preview = function(){
@@ -1427,10 +1303,9 @@ var pukiwiki = {};
 				var sttlen, endlen, sellen, finlen;
 
 				if (self.real_preview_mode) {
-					$indicator.html('');
-					$indicator.activity({segments: 8, width:2, space: 0, length: 3, color: 'black'});
+					$indicator.css('display:block;');
 					$previous.val(source);
-					$textarea.attr('disabled', 'disabled');
+					$msg.attr('disabled', 'disabled');
 
 					if (++self.ajax_count !== 1){ return; }
 					var finlen = source.lastIndexOf("\n",$msg.getSelection().start);
@@ -1452,20 +1327,18 @@ var pukiwiki = {};
 						dataType : 'json'
 					}).
 					done(function(data){
-						$indicator.html('<span class="glyphicon glyphicon-time"></span>'+data.taketime);
+						$indicator.html('<span class="fa fa-time"></span>'+data.taketime);
 						var ret = data.data.replace(/<script[^>]*>[^<]+/ig,'<span class="scripttag" title="Script tag">[SCRIPT]</span>');
 						$realview.html(data.data);
 
-						/*
-						console.log($holder.children('#editmark').offset().top);
-						if ($holder.scrollTop() === 0) {
+						if ($realview.scrollTop() === 0) {
 							// スクロールが0の時エラーになる問題をごまかす
-							$holder.scrollTop(1);
+							$realview.scrollTop(1);
 						}
-						$holder.animate({
-							scrollTop: $holder.children('#editmark').offset().top-4
+						$realview.animate({
+							scrollTop: $realview.children('#editmark').offset().top
 						});
-						*/
+						
 						
 						var marker = document.getElementById('editmark');
 						if (marker){ document.getElementById('realview').scrollTop = marker.offsetTop-4; }
@@ -1477,12 +1350,12 @@ var pukiwiki = {};
 							self.ajax_count = 0;
 							realtime_preview();
 						}
-						$textarea.removeAttr('disabled');
+						$msg.removeAttr('disabled');
 					}).
 					fail(function(data,status,thrown){
 						$realview.children('div').html([
 							'<div class="alert alert-warning">',
-								'<p><span class="glyphicon glyphicon-warning-sign"></span>'+$.i18n('pukiwiki','error')+status+'</p>',
+								'<p><span class="fa fa-warning-sign"></span>'+$.i18n('pukiwiki','error')+status+'</p>',
 								'<ul>',
 									'<li>readyState:'+data.readyState+'</li>',
 									'<li>responseText:'+data.responseText+'</li>',
@@ -1492,13 +1365,15 @@ var pukiwiki = {};
 							'</div>'].join("\n")
 						);
 					});
+				}else{
+					$indicator.css('display:hidden;');
 				}
 			};
 
 			$realview.height(msg_height/2);
 			// プレビューボタンが押された時の処理
-			$form.children('.form-inline').children('input[name=add-ajax]').click(function(){
-				$textarea.attr('disabled', 'disabled');
+			$form.find('button[name=add-ajax]').click(function(){
+				$msg.attr('disabled', 'disabled');
 				// フォームの高さを取得
 				// Textarea Resizerで高さが可変になっているため。
 
@@ -1513,12 +1388,10 @@ var pukiwiki = {};
 						$msg.animate({height:msg_height});
 						$realview.hide();
 						$indicator.hide('slow');
-						$textarea.removeAttr('disabled');
+						$msg.removeAttr('disabled');
 					});
 				} else {
 					self.real_preview_mode = true;
-					$indicator.activity({segments: 8, width:2, space: 0, length: 3, color: 'black'});
-					$indicator.show();
 					// フォームの高さを半分にしたあと、realviewを表示
 					$msg.animate({
 						height: msg_height/2
@@ -1528,7 +1401,7 @@ var pukiwiki = {};
 						$realview.show();
 						// 初回実行時、realview_outerの大きさを、フォームの大きさに揃える。
 						// なお、realview_outerの高さは、フォームの半分とする。
-						$textarea.removeAttr('disabled');
+						$msg.removeAttr('disabled');
 					});
 					// 現在のプレビューを出力
 					realtime_preview();
@@ -1595,8 +1468,9 @@ var pukiwiki = {};
 			$('*[type=submit]').click(function(e){
 				var $this = $(this);
 				var $form = $(this).parents('form');
+				var $input = $form.find('input, button, select, textarea');
 				var postdata = $form.serializeObject();	// フォームの内容をサニタイズ
-				$form.children('input, button, select, textarea').attr('disabled', 'disabled');
+				$input.attr('disabled', 'disabled');
 				postdata.ajax = 'json';
 
 				// ローカルストレージをフラッシュ
@@ -1604,12 +1478,13 @@ var pukiwiki = {};
 					localStorage.removeItem(PAGE);
 				}
 				// キャンセルボタン
-				if (postdata.submit === 'cancel') {
+				if ($this.attr('name') === 'cancel') {
 					location.href = SCRIPT + '?' + PAGE;
+					return false;
 				}
 				// 空更新は無反応
 				if ( $original.val() == $msg.val()){
-					$form.children('input, button, select, textarea').removeAttr('disabled');
+					$input.removeAttr('disabled');
 					alert("Void updating");
 					return false;
 				}
@@ -1651,15 +1526,17 @@ var pukiwiki = {};
 									});
 								}
 							}
-							alert('Your post has saved.');
 							location.href = SCRIPT + '?' + PAGE;
 						}else{
-							alert('Your post has not saved.');
-							$form.children('input, button, select, textarea').attr('disabled', 'disabled');
+							alert(data.msg);
+							
+							$input.remobeAttr('disabled', 'disabled');
 						}
+						$('title').html(data.title);
+						$('[role="main"]').html(data.msg);
 					},
 					error : function(data){
-						$(prefix + 'input, button, select, textarea').removeAttr('disabled');
+						$input.removeAttr('disabled');
 						alert($.i18n('pukiwiki','error'));
 					}
 				});

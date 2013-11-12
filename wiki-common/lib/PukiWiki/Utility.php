@@ -562,14 +562,14 @@ class Utility{
 		}
 		$body[] = '<a href="' . Router::get_cmd_uri() . '">Return to FrontPage</a> ]</p>';
 		$body[] = '<div class="alert alert-warning">';
-		$body[] = '<p><span class="glyphicon glyphicon-ban-circle"></span> <strong>' . $_title['error'] . '</strong>';
+		$body[] = '<p><span class="fa fa-ban-circle"></span> <strong>' . $_title['error'] . '</strong>';
 		$body[] = PKWK_WARNING !== true || empty($msg) ? $msg = $_string['error_msg'] : $msg;
 		$body[] = '</p>';
 		$body[] = '</div>';
 
 		if (DEBUG) {
 			$body[] = '<div class="alert alert-info">';
-			$body[] = '<p><span class="glyphicon glyphicon-info-sign"></span> <strong>Back Trace</strong></p>';
+			$body[] = '<p><span class="fa fa-info-sign"></span> <strong>Back Trace</strong></p>';
 			$body[] = '<ol>';
 			foreach (debug_backtrace() as $k => $v) {
 				if ($k < 2) { 
@@ -609,7 +609,7 @@ class Utility{
 			$body[] = '<a href="' . Router::get_cmd_uri('edit',$vars['page']) . '">Try to edit this page</a> | ';
 		}
 		$body[] = '<a href="' . Router::get_cmd_uri() . '">Return to FrontPage</a> ]</p>';
-		$body[] = '<p class="alert alert-warning"><span class="glyphicon glyphicon-info-sign"></span> <strong>Page not found</strong>';
+		$body[] = '<p class="alert alert-warning"><span class="fa fa-info-sign"></span> <strong>Page not found</strong>';
 		$body[] = 'Sorry, but the page you were trying to view does not exist or deleted.';
 		if ( isset($vars['page']) && !empty($vars['page']) ){
 			$body[] = '<br />' . "\n" . sprintf(
@@ -810,9 +810,9 @@ class Utility{
 			$ret[] = isset($vars['add']) ? '<input type="checkbox" name="add_top" value="true"' . (isset($vars['add']) ? ' checked="checked"' : '') . ' /><label for="add_top">' . $_button['addtop'] . '</label>' : null;
 		}else{
 			// 通常用
-			$ret[] = '<button type="submit" class="btn btn-primary" name="write" accesskey="s"><span class="glyphicon glyphicon-ok"></span>' . $_button['update'] . '</button>';
+			$ret[] = '<button type="submit" class="btn btn-primary" name="write" accesskey="s"><span class="fa fa-check"></span>' . $_button['update'] . '</button>';
 			$ret[] = isset($vars['add']) ? '<input type="checkbox" name="add_top" value="true"' . (isset($vars['add']) ? ' checked="checked"' : '') . ' /><label for="add_top">' . $_button['addtop'] . '</label>' : null;
-			$ret[] = '<button type="submit" class="btn btn-default" name="preview" accesskey="p"><span class="glyphicon glyphicon-eye-open"></span>' . $_button['preview'] . '</button>';
+			$ret[] = '<button type="submit" class="btn btn-default" name="preview" accesskey="p"><span class="fa fa-eye"></span>' . $_button['preview'] . '</button>';
 			if ($notimeupdate !== 0 && Factory::Wiki($page)->isValied()){
 				// タイムスタンプを更新しないのチェックボックス
 				$ret[] = '<div class="checkbox">';
@@ -826,7 +826,7 @@ class Utility{
 				$ret[] = '<input type="password" name="pass" class="form-control" size="12" placeholder="Password" />';
 				$ret[] = '</div>';
 			}
-			$ret[] = '<button type="submit" class="btn btn-warning" name="cancel" accesskey="c"><span class="glyphicon glyphicon-remove"></span>' . $_button['cancel'] . '</button>';
+			$ret[] = '<button type="submit" class="btn btn-warning" name="cancel" accesskey="c"><span class="fa fa-ban"></span>' . $_button['cancel'] . '</button>';
 		}
 		$ret[] = '</div>';
 		$ret[] = '</form>';

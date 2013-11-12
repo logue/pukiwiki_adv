@@ -82,17 +82,17 @@ function plugin_showrss_convert()
 
 	$class = (empty($template) || $template == 'default') ? 'ShowRSS_html' : 'ShowRSS_html_' . $template;
 	if (! is_numeric($cachehour))
-		return '<p class="message_box ui-state-error ui-corner-all">#showrss: Cache-lifetime seems not numeric: <var>' . htmlsc($cachehour) . '</var></p>' . "\n";
+		return '<p class="alert alert-warning">#showrss: Cache-lifetime seems not numeric: <var>' . htmlsc($cachehour) . '</var></p>' . "\n";
 	if (! class_exists($class))
-		return '<p class="message_box ui-state-error ui-corner-all">#showrss: Template not found: <var>' . htmlsc($template) . '</var></p>' . "\n";
+		return '<p class="alert alert-warning">#showrss: Template not found: <var>' . htmlsc($template) . '</var></p>' . "\n";
 	if (! is_url($uri))
-		return '<p class="message_box ui-state-error ui-corner-all">#showrss: Seems not URI: <var>' . htmlsc($uri) . '</var></p>' . "\n";
+		return '<p class="alert alert-warning">#showrss: Seems not URI: <var>' . htmlsc($uri) . '</var></p>' . "\n";
 
 	if (! is_requestable($uri))
-		return '<p class="message_box ui-state-error ui-corner-all">#showrss: Prohibit fetching RSS from my server.</p>' . "\n";
+		return '<p class="alert alert-warning">#showrss: Prohibit fetching RSS from my server.</p>' . "\n";
 
 	list($rss, $time, $reason) = plugin_showrss_get_rss($uri, $cachehour);
-	if (!$rss) return '<p class="message_box ui-state-error ui-corner-all">#showrss: '.$reason.'</p>' . "\n";
+	if (!$rss) return '<p class="alert alert-warning">#showrss: '.$reason.'</p>' . "\n";
 
 	if ($timestamp > 0) {
 		$time = '<p style="font-size:small; font-weight:bold; text-align:right;">Last-Modified:' .

@@ -444,7 +444,7 @@ function plugin_backup_convert()
 	$retval[] = '<input type="hidden" name="cmd" value="backup" />';
 	$retval[] = '<input type="hidden" name="action" value="' . $mode . '" />';
 	$retval[] = '<input type="hidden" name="page" value="' . $r_page . '" />';
-	$retval[] = '<div class="form-group">';
+	$retval[] = '<div class="input-group">';
 	$retval[] = $with_label ? '<label for="age">'.$_backup_messages['msg_version'].'</label>' : '';
 	$retval[] = '<select id="age" name="age" class="form-control">';
 
@@ -468,8 +468,8 @@ function plugin_backup_convert()
 		}
 	}
 	$retval[] = '</select>';
+	$retval[] = '<span class="input-group-btn"><button type="submit" class="btn btn-success"><span class="fa fa-chevron-right"></span></button></span>';
 	$retval[] = '</div>';
-	$retval[] = '<button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-chevron-right"></span></button>';
 	$retval[] = '</form>';
 	return join("\n",$retval);
 }
