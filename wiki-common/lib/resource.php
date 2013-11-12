@@ -65,6 +65,7 @@ $_string = array(
 						   T_('To confirm the changes to the page, press [Update].'),
 	'comment_collided'	=> T_('It seems that someone has already updated this page while you were editing it.').'<br />'."\n".
 						   T_('The string was added, alhough it may be inserted in the wrong position.'),
+	'collided_caption'	=> T_('l : between backup data and stored page data.<br />r : between backup data and your post data.'),
 
 	// Generic Error messages
 	'warning'			=> T_('WARNING'),
@@ -73,6 +74,12 @@ $_string = array(
 	'changeadminpass'	=> sprintf(T_('<var>$adminpass</var> is not changed! Click <a href="%s">here</a> to generate crypted password and modify auth.ini.php!'),get_cmd_uri('md5')),
 	'not_writable'		=> T_('<var>%s</var> is not found or not writable.'),
 	'not_found'			=> T_('Page <var>%s</var> was not found.'),
+	'not_found_msg1'	=> T_('Sorry, but the page you were trying to view does not exist or deleted.'),
+	'not_found_msg2'	=> T_('Please check <a href="%1s" rel="nofollow">backups</a> or <a href="%2s" rel="nofollow">create page</a>.'),
+	'require_auth'		=> T_('Authorization Required'),
+	'require_auth_msg'	=> T_('This server could not verify that you are authorized to access the document requested. Either you supplied the wrong credentials (e.g., bad password), or your browser doesn\'t understand how to supply the credentials required.'),
+	'redirect'			=> T_('Page Redirect'),
+	'redirect_msg'		=> T_('The requested page has moved to a new URL. <br />Please click <a href="%s">here</a> if you do not want to move even after a while.'),
 	'header_sent'		=> T_('Headers already sent at <var>%s</var>, line: <var>%s</var>.'),
 
 	'illegal_chars'		=> T_('Illegal characters contained.'),
@@ -85,6 +92,7 @@ $_string = array(
 	'prohibit_country'	=> T_('Sorry, access from your country is prohibited.'),
 	'not_readable'		=> T_('You have no permission to read this page.'),
 	'not_editable'		=> T_('You have no permission to edit page or create page.'),
+	
 
 	// Plugin Error messages
 	'plugin_init_error'			=> T_('Plugin init failed: <var>%s</var>'),

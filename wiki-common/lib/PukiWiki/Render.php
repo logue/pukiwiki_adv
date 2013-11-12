@@ -13,6 +13,7 @@
 
 namespace PukiWiki;
 
+use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
 use PukiWiki\Renderer\Header;
 use PukiWiki\Renderer\View;
@@ -135,6 +136,10 @@ class Render{
 		}else{
 			// ページ名が定義されている場合、最終更新日時をヘッダーに追加
 			$headers = Header::getHeaders($content_type, $this->wiki->time());
+		}
+		// レスポンスコードが401の場合、認証画面を出力
+		if ($http_code === Response::STATUS_CODE_401){
+			$headers['www-authenticate'] = Auth::getAuthHeader();
 		}
 		Header::writeResponse($headers, $http_code, $content);
 	}

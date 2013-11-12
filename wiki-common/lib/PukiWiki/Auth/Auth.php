@@ -15,6 +15,7 @@ use PukiWiki\Factory;
 use PukiWiki\Listing;
 use PukiWiki\Renderer\Header;
 use PukiWiki\Auth\AuthApi;
+use Zend\Http\Response;
 use Exception;
 
 /**
@@ -74,6 +75,10 @@ class Auth
 	 * 認証方法：Digest認証
 	 */
 	const AUTH_DIGEST = 2;
+	/**
+	 * 認証方法：NTLM認証
+	 */
+	const AUTH_NTLM = 3;
 	/**
 	 * 判定条件：ページ名
 	 */
@@ -280,21 +285,24 @@ class Auth
 
 		if ($authenticate){
 			// 認証画面を出す
-			global $auth_type;
+			global $auth_type, $http_code;
 			$ret = null;
 			switch ($auth_type) {
 				case self::AUTH_BASIC:
-					$ret = self::basic_auth(true);
+					$ret = self::basic_auth();
 				break;
 				case self::AUTH_DIGEST:
-					$ret = self::digest_auth(true);
+					$ret = self::digest_auth();
+				break;
+				case self::AUTH_NTLM:
+					$ret = self::ntlm_auth();
 				break;
 			//	default:
 			//		return self::session_auth(true);
 			}
 			if (!$ret === true) {
 				// 認証失敗
-				Utility::dieMessage( str_replace('$1', Utility::htmlsc(Utility::stripBracket($page)), $title_cannot), 'Not Auth', 401);
+				Utility::dieMessage( str_replace('$1', Utility::htmlsc(Utility::stripBracket($page)), $title_cannot), 'Not Auth', Response::STATUS_CODE_401);
 				exit;
 			}
 		}
@@ -347,7 +355,7 @@ class Auth
 	 * Basic認証
 	 * @return boolean
 	 */
-	private static function basic_auth($show_auth = false)
+	private static function basic_auth()
 	{
 		global $auth_users;
 		global $realm;
@@ -376,12 +384,6 @@ class Auth
 				$auth_users[$_SERVER['PHP_AUTH_USER']][0]
 				) !== $auth_users[$_SERVER['PHP_AUTH_USER']][0])
 		{
-			if ($show_auth){
-				// 再度認証画面を出す
-				header('WWW-Authenticate: Basic realm="'.$realm.'"');
-				header('HTTP/1.0 401 Unauthorized');
-			}
-			
 			return FALSE;
 		}
 		return TRUE;
@@ -410,12 +412,6 @@ class Auth
 		if ($auth_flag || $exit_flag) {
 			pkwk_common_headers();
 		}
-		if ($auth_flag) {
-			header('HTTP/1.1 401 Unauthorized');
-			header('WWW-Authenticate: Digest realm="'.$realm.
-				'", qop="auth", nonce="'.uniqid().'", opaque="'.md5($realm).'"');
-		}
-		
 		return false;
 	}
 	/**
@@ -450,7 +446,7 @@ class Auth
 
 		if (ord($digest{8})  != 1  ) return 0;
 		if (ord($digest[13]) != 178) return 0;
-
+/*
 		$strAuth = 'NTLMSSP'
 			. chr(0) . chr(2) . chr(0) . chr(0) . chr(0)
 			. chr(0) . chr(0) . chr(0) . chr(0) . chr(40)
@@ -464,8 +460,38 @@ class Auth
 		header( 'HTTP/1.0 401 Unauthorized' );
 		header( 'WWW-Authenticate: NTLM '. $strAuth64 );
 		exit;
-
+*/
 		return 0;
+	}
+	/**
+	 * 認証用ヘッダーを取得（Render.phpより呼び出す）
+	 * @return string
+	 */
+	public static function getAuthHeader(){
+		global $auth_type, $realm;
+		switch ($auth_type) {
+			case self::AUTH_BASIC:
+				return 'Basic realm="'.$realm.'"';
+				break;
+			case self::AUTH_DIGEST:
+				return 'Digest realm="'.$realm.'", qop="auth", nonce="'.uniqid().'", opaque="'.md5($realm).'"';
+				break;
+			case self::AUTH_NTLM:
+				$strAuth = 'NTLMSSP'
+				. chr(0) . chr(2) . chr(0) . chr(0) . chr(0)
+				. chr(0) . chr(0) . chr(0) . chr(0) . chr(40)
+				. chr(0) . chr(0) . chr(0) . chr(1) . chr(130)
+				. chr(0) . chr(0) . chr(0) . chr(2) . chr(2)
+				. chr(2) . chr(0) . chr(0) . chr(0) . chr(0)
+				. chr(0) . chr(0) . chr(0) . chr(0) . chr(0)
+				. chr(0) . chr(0) . chr(0);
+
+				return 'NTLM ' . trim(base64_encode($strAuth));
+				break;
+		//	default:
+		//		return self::session_auth(true);
+		}
+		return null;
 	}
 	/**
 	 * IP認証

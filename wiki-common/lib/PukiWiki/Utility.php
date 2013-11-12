@@ -584,12 +584,22 @@ class Utility{
 			$body[] = '</div>';
 		}
 
-		new Render($error_title, join("\n",$body), $http_code);
+		if (isset($vars['ajax'])) {
+			$headers = Header::getHeaders('application/json');
+			Header::writeResponse($headers, $http_code, Json::encode(array(
+				'posted'    => false,
+				'title'     => $error_title,
+				'msg'       => join("\n",$body),
+				'taketime'  => Time::getTakeTime()
+			)));
+		}else{
+			new Render($error_title, join("\n",$body), $http_code);
+		}
 		exit();
 	}
 	/**
 	 * ページが見つからない
-	 * @return void 
+	 * @return void
 	 */
 	public static function notFound(){
 		global $vars, $_button;
@@ -620,6 +630,7 @@ class Utility{
 	 * （この処理特殊すぎるな・・・。）
 	 * @param string $url リダイレクト先
 	 * @param int $time リダイレクトの待ち時間
+	 * @return void
 	 */
 	public static function redirect($url = '', $time = 0){
 		$response = new Response();
@@ -636,6 +647,59 @@ class Utility{
 		}else{
 			$response->setStatusCode(Response::STATUS_CODE_200);
 		}
+		$html = array();
+		$html[] = '<!doctype html>';
+		$html[] = '<html>';
+		$html[] = '<head>';
+		$html[] = '<meta charset="utf-8">';
+		$html[] = '<meta name="robots" content="NOINDEX,NOFOLLOW" />';
+		if (!DEBUG){
+			$html[] = '<meta http-equiv="refresh" content="'.$time.'; URL='.$s_url.'" />';
+		}
+		$html[] = '<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" type="text/css" />';
+		$html[] = '<title>301 Moved Permanently</title>';
+		$html[] = '</head>';
+		$html[] = '<body>';
+		$html[] = '<p class="alert alert-success">';
+		$html[] = '<span class="glyphicon glyphicon-info-sign"></span>';
+		$html[] = 'The requested page has moved to a new URL. <br />';
+		$html[] = 'Please click <a href="'.$s_url.'">here</a> if you do not want to move even after a while.';
+		if (!DEBUG){
+			$html[] = '<br />NOTICE: No auto redirect when Debug mode.';
+		}
+		$html[] = '</p>';
+		$html[] = '</body>';
+		$html[] = '</html>';
+		$content = join("\n",$html);
+		$response->getHeaders()->addHeaderLine('Content-Length', strlen($content));
+		$response->setContent($content);
+
+		if (!headers_sent()) {
+			header($response->renderStatusLine());
+			foreach ($response->getHeaders() as $header) {
+				header($header->toString());
+			}
+		}
+
+		echo $response->getBody();
+		exit;
+	}
+	/**
+	 * 認証要求
+	 * @return void
+	 */
+	public static function notAuth($realm){
+		$response = new Response();
+
+		// URLが空の場合、ページのアドレスか、スクリプトのアドレスを返す
+		if (empty($url)){
+			$url = isset($vars['page']) ? Router::get_resolve_uri(null, $vars['page']) : Router::get_script_uri();
+		}
+		$s_url = self::htmlsc($url);
+		
+			$response->setStatusCode(Response::STATUS_CODE_301);
+			$response->getHeaders()->addHeaderLine('Location', $s_url);
+
 		$html = array();
 		$html[] = '<!doctype html>';
 		$html[] = '<html>';
@@ -746,9 +810,9 @@ class Utility{
 			$ret[] = isset($vars['add']) ? '<input type="checkbox" name="add_top" value="true"' . (isset($vars['add']) ? ' checked="checked"' : '') . ' /><label for="add_top">' . $_button['addtop'] . '</label>' : null;
 		}else{
 			// 通常用
-			$ret[] = '<input type="submit" class="btn btn-primary" name="write" value="' . $_button['update'] . '" accesskey="s" />';
+			$ret[] = '<button type="submit" class="btn btn-primary" name="write" accesskey="s"><span class="glyphicon glyphicon-ok"></span>' . $_button['update'] . '</button>';
 			$ret[] = isset($vars['add']) ? '<input type="checkbox" name="add_top" value="true"' . (isset($vars['add']) ? ' checked="checked"' : '') . ' /><label for="add_top">' . $_button['addtop'] . '</label>' : null;
-			$ret[] = '<input type="submit" class="btn btn-default" name="preview" value="' . $_button['preview'] . '" accesskey="p" />';
+			$ret[] = '<button type="submit" class="btn btn-default" name="preview" accesskey="p"><span class="glyphicon glyphicon-eye-open"></span>' . $_button['preview'] . '</button>';
 			if ($notimeupdate !== 0 && Factory::Wiki($page)->isValied()){
 				// タイムスタンプを更新しないのチェックボックス
 				$ret[] = '<div class="checkbox">';
@@ -762,7 +826,7 @@ class Utility{
 				$ret[] = '<input type="password" name="pass" class="form-control" size="12" placeholder="Password" />';
 				$ret[] = '</div>';
 			}
-			$ret[] = '<input type="submit" class="btn btn-warning" name="cancel" value="' . $_button['cancel'] . '" accesskey="c" />';
+			$ret[] = '<button type="submit" class="btn btn-warning" name="cancel" accesskey="c"><span class="glyphicon glyphicon-remove"></span>' . $_button['cancel'] . '</button>';
 		}
 		$ret[] = '</div>';
 		$ret[] = '</form>';
@@ -786,6 +850,7 @@ class Utility{
 	 */
 	public static function showCollision($pagestr, $poststr, $original)
 	{
+		global $_string;
 		$obj = new LineDiff();
 
 		$obj->set_str('left', $original, $pagestr);
@@ -802,10 +867,7 @@ class Utility{
 		$table = array();
 		$table[] = '<div class="table_wrapper">';
 		$table[] = '<table class="table table_center">';
-		$table[] = '<caption>';
-		$table[] = 'l : between backup data and stored page data.<br />';
-		$table[] = 'r : between backup data and your post data.';
-		$table[] = '</caption>';
+		$table[] = '<caption>' . $_string['collided_caption'] . '</caption>';
 		$table[] = '<colgroup span="1" />';
 		$table[] = '<colgroup span="1" />';
 		$table[] = '<thead>';
