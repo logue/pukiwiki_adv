@@ -1026,6 +1026,35 @@ var pukiwiki = {};
 					show: 'scale',
 					hide: 'scale'
 				}).html($.i18n('pukiwiki','hint_text1'));
+				
+				$emoji.children('ul').children('li').click(function(){
+					var str = $msg.getSelection().text, v = '&('+$(this).attr('name')+');';
+
+					$msg.focus();
+					if (str === ''){
+						$msg.insertAtCaretPos(v);
+					}else{
+						$msg.replaceSelection(v);
+					}
+					$emoji.dialog('close');
+					return;
+				});
+				$color_palette.children('ul').children('li').click(function(){
+					var ret, str = $msg.getSelection().text, v = $(this).attr('name');
+
+					if (str === ''){
+						alert( $.i18n('pukiwiki', 'select'));
+						return;
+					}
+
+					$msg.focus().replaceSelection(
+						str.match(/^&color\([^\)]*\)\{.*\};$/) ? 
+						str.replace(/^(&color\([^\)]*)(\)\{.*\};)$/,"$1," + v + "$2") : 
+						'&color(' + v + '){' + str + '};'
+					);
+					$color_palette.dialog('close');
+					return;
+				});
 			}
 
 			// ここから、イベント割り当て
@@ -1040,10 +1069,10 @@ var pukiwiki = {};
 						ret = '&br;'+"\n";
 					break;
 					case 'emoji' :
-						$emoji.dialog('open');
+						$('#emoji').dialog('open');
 					break;
 					case 'color' :
-						$color_palette.dialog('open');
+						$('#color_palette').dialog('open');
 					break;
 					case 'flush' :
 						if (Modernizr.localstorage && confirm($.i18n('pukiwiki','flush_restore')) === true){
@@ -1118,34 +1147,7 @@ var pukiwiki = {};
 				return false;
 			});
 
-			$emoji.children('ul').children('li').click(function(){
-				var str = $msg.getSelection().text, v = '&('+$(this).attr('name')+');';
-
-				$msg.focus();
-				if (str === ''){
-					$msg.insertAtCaretPos(v);
-				}else{
-					$msg.replaceSelection(v);
-				}
-				$emoji.dialog('close');
-				return;
-			});
-			$color_palette.children('ul').children('li').click(function(){
-				var ret, str = $msg.getSelection().text, v = $(this).attr('name');
-
-				if (str === ''){
-					alert( $.i18n('pukiwiki', 'select'));
-					return;
-				}
-
-				$msg.focus().replaceSelection(
-					str.match(/^&color\([^\)]*\)\{.*\};$/) ? 
-					str.replace(/^(&color\([^\)]*)(\)\{.*\};)$/,"$1," + v + "$2") : 
-					'&color(' + v + '){' + str + '};'
-				);
-				$color_palette.dialog('close');
-				return;
-			});
+			
 		},
 		// 編集画面のフォームを拡張
 		set_editform: function(prefix){
@@ -1248,7 +1250,7 @@ var pukiwiki = {};
 						len2=arr2.length;
 					// len1 <= len2でなければひっくり返す
 					if (!rev && len1>len2){
-						return this.diff(arr2, arr1, true);
+						return diff(arr2, arr1, true);
 					}
 					// 変数宣言及び配列初期化
 					var k, p,
@@ -1390,7 +1392,9 @@ var pukiwiki = {};
 			$form.find('button').click(function(e){
 				var $this = $(this),
 					$form = $this.parents('form'),
+					postdata = $form.serializeObject(),
 					$input = $form.find('input, button, select, textarea');
+
 				// フォームを無効化
 				$input.attr('disabled', 'disabled');
 
@@ -1444,8 +1448,8 @@ var pukiwiki = {};
 						$('#diff').dialog('open');
 						break;
 					case 'write':
-						var postdata = $form.serializeObject();	// フォームの内容をサニタイズ
 						postdata.write = true;
+						postdata.ajax = 'json';
 
 						// 空更新は無反応
 						if ( $original.val() == $msg.val()){
@@ -1459,6 +1463,7 @@ var pukiwiki = {};
 							alert("Password missing");
 							return false;
 						}
+						
 
 						// ajaxで保存
 						$.ajax({
@@ -1501,7 +1506,11 @@ var pukiwiki = {};
 								$('title').html(data.title);
 								$('[role="main"]').html(data.msg);
 							},
-							error : function(data){
+							error : function(data, err){
+								if (DEBUG) {
+									console.error(err);
+									console.log(data.responseText);
+								}
 								alert($.i18n('pukiwiki','error'));
 							}
 						});
