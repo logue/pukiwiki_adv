@@ -285,7 +285,7 @@ function plugin_ref_body($args)
 				' ' . sprintf('%01.1f', round(filesize($file) / 1024, 1)) . 'KB');
 		}
 		$params['_body'] = '<a href="' . $url . '" title="' . $s_info . '"'. ((IS_MOBILE) ? ' data-ajax="false"' : '') . '>' .
-			(isset($params['noicon']) ? '' : '<span class="pkwk-icon icon-downaload"></span>') . $s_title . '</a>';
+			(isset($params['noicon']) ? '' : '<span class="fa fa-download"></span>') . $s_title . '</a>';
 	}
 
 	return $params;

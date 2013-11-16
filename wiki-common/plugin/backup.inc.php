@@ -319,7 +319,7 @@ function plugin_backup_get_list($page)
 		}else{
 			$retval[] = '<input type="submit"  class="btn btn-info" value="' . $_backup_messages['btn_jump'] . '" />';
 			$retval[] = '</div>';
-			$retval[] = '<div class="panel-body">';
+			$retval[] = '<div class="panel-body list_pages">';
 			$retval[] = '<ol>';
 			foreach ($backups as $backup_age=>$data) {
 				$time = isset($data['real']) ? $data['real'] :
@@ -443,7 +443,7 @@ function plugin_backup_convert()
 	$retval[] = '<form action="' . Router::get_script_uri() . '" method="get" class="autosubmit form-inline plugin-backup-form">';
 	$retval[] = '<input type="hidden" name="cmd" value="backup" />';
 	$retval[] = '<input type="hidden" name="action" value="' . $mode . '" />';
-	$retval[] = '<input type="hidden" name="page" value="' . $r_page . '" />';
+	$retval[] = '<input type="hidden" name="page" value="' . $s_page . '" />';
 	$retval[] = '<div class="input-group">';
 	$retval[] = $with_label ? '<label for="age">'.$_backup_messages['msg_version'].'</label>' : '';
 	$retval[] = '<select id="age" name="age" class="form-control">';

@@ -20,19 +20,19 @@
 @charset "UTF-8";
 @namespace url(http://www.w3.org/1999/xhtml);
 /* Font set */
-html .ui-widget{
+html{
   font-family: 'Segoe UI', 'Trebuchet MS', Verdana, Arial, Sans-Serif;
 }
 /* Japanese */
-:lang(ja), :lang(ja) .ui-widget{
+:lang(ja) {
   font-family: Meiryo, 'メイリオ', 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', Osaka, 'ＭＳＰ ゴシック';
 }
 /* Korean */
-:lang(ko), :lang(ko) .ui-widget{
+:lang(ko) {
   font-family: 'AppleGothic', 'Malgun Gothic', '맑은 고딕', Gulim, Dotum, AppleGothic;
 }
 /* Chinese */
-:lang(zh), :lang(zh) .ui-widget{
+:lang(zh) {
   font-family: 'Hiragino Sans GB W3', 'STHeiti', 'Apple LiGothic Medium', 'Microsoft YaHei', 'Microsoft JhengHei';
 }
 
@@ -50,6 +50,10 @@ html .ui-widget{
   :lang(ko) {
     font-family: '바탕체', Batang, serif;
   }
+}
+
+.ui-widget{
+	font-size:1em !important;
 }
 /*!
  * Bootstrap v3.0.2
@@ -1341,10 +1345,14 @@ th.visible-print,td.visible-print{display:table-cell !important}
 .fa-plus-square-o:before{content:"\f196"}
 
 /* ==|== PukiWiki Advance Standard Font Set ================================= */
-textarea, select, option, input, var, pre, code, .ui-button-text{
+textarea, select, option, input, var, pre, code{
 	font-family: monospace !important;
 	font-size: inherit;
 	line-height: inherit;
+}
+
+textarea[row="1"]{
+	height:1em;
 }
 
 fieldset {
@@ -1433,7 +1441,7 @@ a img {
 	border: none !important;
 }
 
-.webkit ::-webkit-input-placeholder, .gecko input:-moz-placeholder{
+::-webkit-input-placeholder, ::-moz-placeholder{
 	color: grey;
 }
 
@@ -1458,12 +1466,6 @@ i, em, cite, q{
 	-ms-transform: skewX(-15deg);
 	-o-transform: skewX(-15deg);
 	transform: skewX(-15deg);
-}
-
-/* Italic font fix for legacy IE */
-.ie6 i, .ie6 em, .ie6 cite, .ie7 i, .ie7 em, .ie7 cite, .ie8 i, .ie8 em, .ie8 cite{
-	font-family: 'MS PGothic', suns-serif;
-	font-style: italic;
 }
 
 /* Fix Gecko Ruby Tag */
@@ -1595,19 +1597,6 @@ i, em, cite, q{
 	color: white;
 }
 
-/* html.php/edit_form() */
-.edit_form { clear: both; }
-
-.edit_form textarea{
-	min-width: 95%;
-	width: 99%;
-	height:260px;
-	margin: 0;
-}
-.ie8 .edit_form textarea{
-	width: 780px;
-}
-
 /* Note */
 .super_index {
 	color: red;
@@ -1629,12 +1618,6 @@ i, em, cite, q{
 	font-family: monospace !important;
 }
 
-.autosubmit{
-	text-align: center;
-}
-.js .autosubmit input[type="submit"]{
-	display: none;
-}
 /* ==|== PukiWiki Adv. Standard Plugin classes ============================== */
 /* aname.inc.php */
 .anchor_super {
@@ -1702,9 +1685,7 @@ i, em, cite, q{
 .add_block, .remove_block{
 	display: block;
 }
-.backup_form{
-	text-align: center;
-}
+
 .add_word, .add_block{
 	background-color: #FFFF66;
 }
@@ -2000,7 +1981,6 @@ i, em, cite, q{
 #poptoc{
 	background-color: lightyellow;
 	background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMCI%2BDQo8ZGVmcz4NCjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxMDAlIj4NCjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOml2b3J5OyIvPg0KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjpsaWdodHllbGxvdzsiLz4NCjwvbGluZWFyR3JhZGllbnQ%2BDQo8L2RlZnM%2BDQo8cmVjdCB4PSIwIiB5PSIwIiBmaWxsPSJ1cmwoI2dyYWRpZW50KSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgLz4NCjwvc3ZnPg0K');
-	border: gray thin outset;
 	display: none;
 	font-size: 93%;
 	max-width: 25em;
@@ -2008,9 +1988,7 @@ i, em, cite, q{
 	opacity: .9;
 	padding: .5em;
 	position: absolute;
-	text-shadow: white 1px 1px 0;
 	z-index: 1;
-	color: black;
 }
 #poptoc h1{
 	font-size: small;
@@ -2031,11 +2009,6 @@ i, em, cite, q{
 }
 #poptoc > ul, #poptoc > ol{
 	margin: 0 0 0 1em;
-}
-.ie6 #poptoc, .ie7 #poptoc, .ie8 #poptoc {
-	filter:
-		progid:DXImageTransform.Microsoft.Alpha(opacity=90)
-		progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=ivory,EndColorStr=lemonchiffon) !important;
 }
 #poptoc a{
 	color: blue !important;
@@ -2060,14 +2033,6 @@ i, em, cite, q{
 #poptoc h1 img {margin-bottom:-3px; margin-right: 2px;}
 #poptoc .nav {text-indent:0em;border-top:1px gray solid; padding-top:0.2em;text-align:center; white-space: nowrap; }
 #poptoc a.here{color: black; background: #EEEEEE; text-decoration: none; border:1px dotted gray;}
-
-.tocpic {
-	display: inline;
-	cursor: pointer;
-}
-.hrefp, .topic {
-	vertical-align: text-bottom;
-}
 
 /* ui-lightbox */
 #ui-lightbox, #ui-lightbox-panorama-icon, #ui-lightbox-content-container,
@@ -2292,8 +2257,6 @@ i, em, cite, q{
 .dataTable .even td.sorting_2 { color: black; background-color: #F2F3FF; }
 .dataTable .even td.sorting_3 { color: black; background-color: #F9F9FF; }
 
-
-
 /*
  * Page length menu
  */
@@ -2503,7 +2466,7 @@ li[role=tab]{
 	width: 16px;
 	height: 16px;
 	line-height: 100%;
-	background: transparent url('../image/iconset/<?php echo $iconset ?>.png') -1000px -1000px no-repeat;
+	background: transparent url('../image/iconset/default.png') -1000px -1000px no-repeat;
 	vertical-align: middle;
 	margin:0 2px;
 	text-align: center;
@@ -3390,26 +3353,4 @@ li[role=tab]{
 	h1 a[href]:after, #qr_code a[href]:after, a.anchor_super[href]:after, .noexists a[href]:after{ content: ""; }
 
 	.style_week[title]:after { content: ""; }
-
-	.style_table,
-	.style_th,
-	.style_td {
-		border-collapse: collapse;
-		border-spacing: 0;
-	}
-	.style_table {
-		padding: 5px;
-		border: 1px solid #333333;
-	}
-	.style_th,
-	.style_td{
-		padding: 3px;
-		font-size: 90%;
-	}
-	.style_th {
-		border-bottom: 1px solid #333333;
-	}
-	.style_td {
-		border: 1px dotted #333333;
-	}
 }

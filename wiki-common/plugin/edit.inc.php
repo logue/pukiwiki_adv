@@ -281,7 +281,7 @@ function plugin_edit_write()
 
 	// NULL POSTING, OR removing existing page
 	if (empty($postdata)) {
-		$wiki->set();
+		$wiki->set('');
 		$retvars['msg'] = $_title_deleted;
 		$retvars['body'] = str_replace('$1', htmlsc($page), $_title_deleted);
 		return $retvars;

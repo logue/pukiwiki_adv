@@ -12,14 +12,14 @@
 //
 
 var tzCalculation_LocalTimeZone = function(theDomainForTheCookie, printTheTimeZone){	// Beginning of tzCalculation_LocalTimeZone
-    var rightNow;
-    var rightNow_UTC_MillisecondsSinceTimBegan;
-    var rightNow_Local_MillisecondsSinceTimBegan;
-    var rightNow_MillisecondsDifference;
-    var rightNow_MinutesDifference;
-    var rightNow_timeZoneString;
-    var rightNow_MinutesPart;
-    var rightNow_HoursDifference;
+	var rightNow,
+		rightNow_UTC_MillisecondsSinceTimBegan,
+		rightNow_Local_MillisecondsSinceTimBegan,
+		rightNow_MillisecondsDifference,
+		rightNow_MinutesDifference,
+		rightNow_timeZoneString,
+		rightNow_MinutesPart,
+		rightNow_HoursDifference;
 
 	rightNow = new Date();
 

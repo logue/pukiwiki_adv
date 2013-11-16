@@ -1,6 +1,7 @@
 <?php
 namespace PukiWiki\Renderer;
 
+use PukiWiki\Auth\Auth;
 use PukiWiki\Utility;
 use PukiWiki\Router;
 use Zend\Http\Response;
@@ -36,7 +37,7 @@ class Header{
 	 * @param int $exprire 有効期限。デフォルトは１週間
 	 * @return array
 	 */
-	public static function getHeaders($content_type = DEFAULT_CONTENT_TYPE, $modified = 0, $expire = 604800){
+	public static function getHeaders($content_type = self::DEFAULT_CONTENT_TYPE, $modified = 0, $expire = 604800){
 		global $lastmod, $vars, $_SERVER;
 		self::checkSent();
 		// これまでのヘッダーを取得
@@ -120,8 +121,8 @@ class Header{
 				}
 				$headers['Etag'] = $hash;
 			}else if ($status == Response::STATUS_CODE_401){
-				global $realm;
-				$headers['www-authenticate'] = 'Basic realm="'.$realm.'"';
+				// レスポンスコードが401の場合、認証画面を出力
+				$headers['www-authenticate'] = Auth::getAuthHeader();
 			}
 			// 内容が存在する場合容量をContent-Lengthヘッダーに出力
 			$headers['Content-Length'] = strlen($body);

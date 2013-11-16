@@ -13,7 +13,6 @@
 
 namespace PukiWiki;
 
-use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
 use PukiWiki\Renderer\Header;
 use PukiWiki\Renderer\View;
@@ -43,7 +42,7 @@ class Render{
 	/**
 	 * jQuery Mobileのバージョン
 	 */
-	const JQUERY_MOBILE_VER = '1.3.1';
+	const JQUERY_MOBILE_VER = '1.3.2';
 	/**
 	 * スキンスクリプト（未圧縮）
 	 */
@@ -73,7 +72,6 @@ class Render{
 		'jquery.autosize',
 		'jquery.beautyOfCode',
 		'jquery.cookie',
-		'jquery.form',
 		'jquery.dataTables',
 		'jquery.dataTables.naturalsort',
 		'jquery.i18n',
@@ -136,10 +134,6 @@ class Render{
 		}else{
 			// ページ名が定義されている場合、最終更新日時をヘッダーに追加
 			$headers = Header::getHeaders($content_type, $this->wiki->time());
-		}
-		// レスポンスコードが401の場合、認証画面を出力
-		if ($http_code === Response::STATUS_CODE_401){
-			$headers['www-authenticate'] = Auth::getAuthHeader();
 		}
 		Header::writeResponse($headers, $http_code, $content);
 	}
