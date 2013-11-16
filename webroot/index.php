@@ -32,8 +32,8 @@ define('PLUS_THEME',	'default');
 define('SITE_HOME',	'../wiki-common/');
 
 // define('DATA_HOME',	'../../wiki-data/contents/');
-define('DATA_HOME',		'../../data/');
-// define('DATA_HOME',	'../wiki-data/');
+// define('DATA_HOME',		'../../data/');
+define('DATA_HOME',	'../wiki-data/');
 
 define('ROOT_URI', '/');
 //define('WWW_HOME', '/');

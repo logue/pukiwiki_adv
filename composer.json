@@ -7,7 +7,7 @@
 		}
     ],
 	"description": "PukiWiki Advance",
-	"version": "2.0.0-alpha",
+	"version": "2.0.0-beta",
 	"keywords": [
 		"pukiwiki",
 		"pukiwiki adv",
@@ -32,8 +32,8 @@
 	},
 	"require": {
 		"php": ">=5.3.3",
-		"aferrandini/phpqrcode": "dev-master",
-		"facebook/php-sdk": "dev-master",
+		"aferrandini/phpqrcode": "1.*",
+		"facebook/php-sdk": "3.*",
 		"zendframework/zend-cache": "2.*",
 		"zendframework/zend-captcha": "2.*",
 		"zendframework/zend-crypt": "2.*",

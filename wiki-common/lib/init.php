@@ -26,8 +26,8 @@ use Zend\Cache\StorageFactory;
 
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
-define('S_VERSION', 'v 2.0.0-alpha');
-define('S_REVSION', '20130801');
+define('S_VERSION', 'v 2.0.0-beta');
+define('S_REVSION', '20131116');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &#169; 2010-2013' .
