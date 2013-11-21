@@ -31,9 +31,8 @@ class InlineMathJax extends InlinePlugin
 	}
 
 	function setPattern($arr, $page){
-		list($all, $this->plain, $this->param) = $this->splice($arr);
-
-		$matches = array();
-		return parent::setParam($page, 'tex', '', 'plugin');
+		$this->param = "\n";  // flag which means a call from Link_mathjax#toString
+		list($all, $body) = $this->splice($arr);
+		return parent::setParam($page, 'mathjax', $body, 'plugin');
 	}
 }

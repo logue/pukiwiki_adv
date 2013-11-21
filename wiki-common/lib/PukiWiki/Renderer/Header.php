@@ -59,7 +59,8 @@ class Header{
 			
 			if ( (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && $_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified) ||
 				(isset($_SERVER['HTTP_IF_NONE_MATCH']) && preg_match('/'.$etag.'/', $_SERVER['HTTP_IF_NONE_MATCH'])) ){
-				self::WriteResponse($headers, Response::STATUS_CODE_304, '');
+				self::WriteResponse($headers, Response::STATUS_CODE_304, null);
+				exit;
 			}
 	//		header('If-Modified-Since: ' . $last_modified );
 		}else{

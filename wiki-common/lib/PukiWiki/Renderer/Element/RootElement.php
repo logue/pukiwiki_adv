@@ -183,9 +183,9 @@ class RootElement extends Element
 							$next_line = preg_replace("/[\r\n]*$/", '', array_shift($lines));
 							$line .= ' ' . $next_line;
 						}
-						$this->last  = & $this->last->add(new Div(array('', 'mathjax', $line)));
+						$this->last  = $this->last->add(new BlockPlugin(array(null, 'mathjax', $line)));
 						continue;
-				}
+					}
 				}
 
 				// Default
