@@ -17,7 +17,7 @@ function plugin_nofollow_convert()
 	$page = isset($vars['page']) ? $vars['page'] : '';
 	if (empty($page)) {
 		return '<p class="alert alert-warning">#nofollow: Page name is missing.</p>';
-	}else if(Factory::Wiki($page)->isFreezed(){
+	}else if(Factory::Wiki($page)->isFreezed()){
 		$nofollow = 1;
 		return '<p class="alert alert-warning">#nofollow: Page not freezed.</p>';
 	}

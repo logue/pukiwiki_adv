@@ -214,7 +214,7 @@ function plugin_referer_body($data)
 		// 適用不可データのときはアンカーをつけない
 		$body[] = ($sw_ignore) ?
 			'<td>' . $s_url . '</td>' :
-			'<td><a href="' . $e_url . '" rel="nofollow noreferer">' . $s_url . '</a></td>';
+			'<td><a href="' . $e_url . '" rel="nofollow noreferer external">' . $s_url . '</a></td>';
 
 		$body[] = '</tr>';
 		$ctr++;
@@ -304,6 +304,7 @@ function searchkeylist_analysis($data)
 		if (isset($x[4]) && $x[4] === 1) continue;
 		// 'scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment'
 		$url = isset($x[3]) ? parse_url($x[3]) : null;
+		if ($url === false) continue;
 		if (empty($url['host'])) continue;
 		if (strpos($url['host'],'.') == '') continue; // ホスト名にピリオドが１つもない
 		if (plugin_referer_ignore_check($url['host'])) continue;

@@ -16,13 +16,15 @@
 //
 // see http://twitter.github.com/bootstrap/scaffolding.html#fluidGridSystem
 
+use PukiWiki\Renderer\RendererFactory;
+
 function plugin_row_convert(){
 	$argv = func_get_args();
 	$argc = func_num_args();
 
 	$data = array_pop($argv);
-	$fluid = isset($argv) && $argv === 'false' ? 'row' : 'row-fluid';
-	return '<div class="'.$fluid.'">'."\n".convert_html(line2array($data))."\n".'</div>'."\n";
+	$fluid = isset($argv) ? 'row' : 'row-fluid';
+	return '<div class="'.$fluid.'">'."\n".RendererFactory::factory($data)."\n".'</div>'."\n";
 }
 /* End of file row.inc.php */
 /* Location: ./wiki-common/plugin/row.inc.php */

@@ -822,7 +822,8 @@ class Utility{
 			}
 			// 管理人のパス入力
 			if ($notimeupdate === 2 && Auth::check_role('role_contents_admin')) {
-				$ret[] = '<div class="form-group">';
+				$ret[] = '<div class="input-group">';
+				$ret[] = '<span class="input-group-addon"><span class="fa fa-key"></span></span>';
 				$ret[] = '<input type="password" name="pass" class="form-control" size="12" placeholder="Password" />';
 				$ret[] = '</div>';
 			}
