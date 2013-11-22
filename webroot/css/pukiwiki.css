@@ -1345,10 +1345,12 @@ th.visible-print,td.visible-print{display:table-cell !important}
 .fa-plus-square-o:before{content:"\f196"}
 
 /* ==|== PukiWiki Advance Standard Font Set ================================= */
+blockquote p{
+	font-size:100%;
+}
+
 textarea, select, option, input, var, pre, code{
 	font-family: monospace !important;
-	font-size: inherit;
-	line-height: inherit;
 }
 
 textarea[row="1"]{
@@ -1374,14 +1376,6 @@ figure{
 	padding: 0 auto;
 }
 
-/* Fix font setting */
-a{
-	font-size: inherit;
-	font-family: inherit;
-	color: inherit;
-	background-color:inherit;
-}
-
 ins, del{
 	font: inherit !important;
 }
@@ -1389,6 +1383,11 @@ ins, del{
 a img {
 	vertical-align:bottom;
 	background-color:transparent !important;
+}
+
+.ui-button{
+	text-shadow: 0 1px 1px rgba(0,0,0,.3);
+	box-shadow: 0 1px 2px rgba(0,0,0,.2);
 }
 
 /* Table Tags */

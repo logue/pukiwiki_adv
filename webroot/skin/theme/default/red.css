@@ -31,7 +31,6 @@ a:active{
 
 a:visited{
 	color:#a63d21;
-	background-color:inherit;
 }
 
 a:hover{
@@ -65,32 +64,35 @@ pre{
 	border-left:#EEDDDD 1px solid;
 	border-right:#998888 1px solid;
 	background-color:#FFF8F0;
+	background-image: -ms-linear-gradient(top, #FFF8F0, #fff3e5);
+	background-image: -moz-linear-gradient(top, #FFF8F0, #fff3e5);
+	background-image: -webkit-linear-gradient(top, #FFF8F0, #fff3e5);
 }
 
 blockquote{
 	border: 1px solid #FF99CC;
+	box-shadow: 0 1px 6px #ffcce5;
 }
 
-thead td.style_td,
-tfoot td.style_td{
-	background-color:#E0D0D8;
+.table{
+	background-color:#ddccd5;
 }
-thead th.style_th,
-tfoot th.style_th{
-	color:inherit;
-	background-color:#F0E8E0;
-}
-.style_table{
-	background-color:#ddd5cc;
-}
-.style_th{
+.table th{
 	background-color:#EEEEEE;
 }
-.style_td{
-	background-color:#FFF5EE;
+.table tr td.blank-cell{
+	background-color:#F6E3EA;
 }
-.style_td_blank{
-	background-color:#F6EAE3;
+.table tr:nth-child(even) td{
+	background-color:#ffEFf5;
+}
+.table thead td,
+.table tfoot td {
+	background-color:#E0D0D8;
+}
+.table thead th,
+.table tfoot th {
+	background-color:#F0E0E8;
 }
 
 .noexists{
@@ -143,14 +145,14 @@ fieldset {
 }
 
 /** MenuBar/SideBar *******************************************************************************/
-#menubar ul.menu li{
-	border-bottom: 1px dotted #FFEEFC;
-}
-
 #menubar h1, #menubar h2, #menubar h3, #menubar h4, #menubar h5, #menubar h6,
 #sidebar h1, #sidebar h2, #sidebar h3, #sidebar h4, #sidebar h5, #sidebar h6{
 	border: 1px #FF99CC solid;
 	background-color: #FFDDF0;
+	text-shadow: 0 0 2px #ffb2db, 0px 2px 0 white;
+	background-image: -ms-linear-gradient(top, #FFDDF0, #ffcce7);
+	background-image: -moz-linear-gradient(top, #FFDDF0, #ffcce7);
+	background-image: -webkit-linear-gradient(top, #FFDDF0, #ffcce7);
 }
 
 /* Plugin *****************************************************************************************/

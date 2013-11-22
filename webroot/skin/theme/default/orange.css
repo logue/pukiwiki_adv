@@ -63,31 +63,35 @@ pre{
 	border-left:#DDDDEE 1px solid;
 	border-right:#888899 1px solid;
 	background-color:#F0F8FF;
+	background-image: -ms-linear-gradient(top, #f0f8ff, #e5f3ff);
+	background-image: -moz-linear-gradient(top, #f0f8ff, #e5f3ff);
+	background-image: -webkit-linear-gradient(top, #f0f8ff, #e5f3ff);
 }
 
 blockquote{
 	border: 1px solid #FFCC99;
+	box-shadow: 0 1px 6px #ffcce5;
 }
 
-thead td.style_td,
-tfoot td.style_td{
-	background-color:#D0D8E0;
-}
-thead th.style_th,
-tfoot th.style_th{
-	background-color:#E0E8F0;
-}
-.style_table{
+.table{
 	background-color:#ccd5dd;
 }
-.style_th{
+.table th{
 	background-color:#EEEEEE;
 }
-.style_td{
-	background-color:#EEF5FF;
-}
-.style_td_blank{
+.table tr td.blank-cell{
 	background-color:#E3EAF6;
+}
+.table tr:nth-child(even) td{
+	background-color:#EFf5ff;
+}
+.table thead td,
+.table tfoot td {
+	background-color:#D0D8E0;
+}
+.table thead th,
+.table tfoot th {
+	background-color:#E0E8F0;
 }
 
 .noexists{
@@ -147,6 +151,10 @@ fieldset {
 #sidebar h1, #sidebar h2, #sidebar h3, #sidebar h4, #sidebar h5, #sidebar h6{
 	border: 1px #FFCC99 solid;
 	background-color: #FFF0DD;
+	text-shadow: 0 0 2px #b2dbff, 0px 2px 0 white;
+	background-image: -ms-linear-gradient(top, #FFF0DD, #ffe7cc);
+	background-image: -moz-linear-gradient(top, #FFF0DD, #ffe7cc);
+	background-image: -webkit-linear-gradient(top, #FFF0DD, #ffe7cc);
 }
 
 /* Plugin *****************************************************************************************/

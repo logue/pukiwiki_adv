@@ -71,36 +71,39 @@ pre{
 	border-left:#DDEEDD 1px solid;
 	border-right:#889988 1px solid;
 	background-color:#F0FFF8;
+	background-image: -ms-linear-gradient(top, #F0FFF8, #e5fff3);
+	background-image: -moz-linear-gradient(top, #F0FFF8, #e5fff3);
+	background-image: -webkit-linear-gradient(top, #F0FFF8, #e5fff3);
 }
 
 blockquote{
 	border: 1px solid #99FFCC;
+	box-shadow: 0 1px 6px #ccffe5;
 }
 
 hr{
 	border-color: #333333;
 }
 
-thead td.style_td,
-tfoot td.style_td{
-	color:inherit;
-	background-color:#D0E0D8;
-}
-thead th.style_th,
-tfoot th.style_th{
-	background-color:#E0F0E8;
-}
-.style_table{
+.table{
 	background-color:#ccddd5;
 }
-.style_th{
+.table th{
 	background-color:#EEEEEE;
 }
-.style_td{
-	background-color:#EEFFF5;
-}
-.style_td_blank{
+.table tr td.blank-cell{
 	background-color:#E3F6EA;
+}
+.table tr:nth-child(even) td{
+	background-color:#EFfff5;
+}
+.table thead td,
+.table tfoot td {
+	background-color:#D0E0D8;
+}
+.table thead th,
+.table tfoot th {
+	background-color:#E0F0E8;
 }
 
 .noexists{
@@ -142,24 +145,22 @@ fieldset {
 	border-radius: 10px;
 }
 
-#preview{
-	background-color:#F5F8FF;
-}
-
 /* Layout */
 #main_wrapper, #menubar, #sidebar{
 	background-color: #EEFFFC;
 }
 
 /** MenuBar/SideBar *******************************************************************************/
-#menubar ul.menu li, #sidebar ul.menu li{
-	border-bottom: 1px dotted #EEFFFC;
-}
+
 
 #menubar h2, #menubar h3, #menubar h4, #menubar h5,
 #sidebar h2, #sidebar h3, #sidebar h4, #sidebar h5{
 	border: 1px #99FFCC solid;
 	background-color: #DDFFF0;
+	text-shadow: 0 0 2px #b2dbff, 0px 2px 0 white;
+	background-image: -ms-linear-gradient(top, #DDFFF0, #ccffe7);
+	background-image: -moz-linear-gradient(top, #DDFFF0, #ccffe7);
+	background-image: -webkit-linear-gradient(top, #DDFFF0, #ccffe7);
 }
 
 /* Plugin *****************************************************************************************/

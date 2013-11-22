@@ -13,6 +13,9 @@
 a{
 	color:#215dc6;
 	text-decoration:none;
+	-ms-transition: .2s ease-in-out;
+	-moz-transition: .2s ease-in-out;
+	-webkit-transition: .2s ease-in-out;
 }
 
 a:hover{
@@ -28,7 +31,9 @@ p, pre, dl, blockquote, .table_wrapper{
 }
 
 blockquote{
+	border: 1px solid gray;
 	padding: .5em;
+	box-shadow: 0 2px 6px gainsboro;
 }
 
 p{
@@ -45,11 +50,14 @@ dt{
 
 h1, h2, h3, h4, h5, h6{
 	padding: .1em 0 .1em .3em;
-	border:0;
 	border-left:.4em solid;
 	border-bottom:1px solid;
-	vertical-align:bottom;
-	background-color:rgba(255, 255, 255, .9);
+	background-image: -ms-linear-gradient(top, white, whitesmoke);
+	background-image: -moz-linear-gradient(top, white, whitesmoke);
+	background-image: -webkit-linear-gradient(top, white, whitesmoke);
+	box-shadow: 0 1px 6px silver;
+	text-shadow: 0 0 2px silver, 0px 2px 0 white;
+	margin:0;
 }
 
 h1{
@@ -73,12 +81,18 @@ pre{
 	border-bottom:grey 1px solid;
 	border-left:silver 1px solid;
 	border-right:grey 1px solid;
-	background-color:whitesmoke;
+	background-color: whitesmoke;
 	padding:.5em 1em;
+	text-shadow: 1px 1px 3px rgba(0,0,0,.25);
+	box-shadow: 2px 2px 4px gainsboro;
 }
 
 q{
 	border:1px dotted #999;
+}
+
+.table{
+	box-shadow: 0 2px 5px gainsboro;
 }
 
 ::-webkit-scrollbar {
@@ -176,13 +190,13 @@ q{
 	margin:1% 1% 0 1%;
 }
 
-#header .style_table,
-#footer .style_table{
+#header .table,
+#footer .table{
 	background-color: transparent;
 }
 
-#header .style_table .style_th, #header .style_table .style_td,
-#footer .style_table .style_td, #footer .style_table .style_th {
+#header .table th, #header .table th,
+#footer .table td, #footer .table th {
 	margin: 0px;
 	padding: 0px;
 	background-color: transparent;
@@ -205,21 +219,22 @@ q{
 	float:left;
 }
 
-#hgroup h1 {
-	font-weight:bold;
-	font-size:197%;
+#hgroup h1, #hgroup h2{
 	background-color:transparent;
+	background-image:none;
+	box-shadow:none;
+	text-shadow: 1px 1px 3px rgba(0,0,0,.25);
 	border: none;
 	margin: 0;
 	padding: 0;
 }
+#hgroup h1 {
+	font-weight:bold;
+}
 
 #hgroup h2 {
 	font-weight:normal;
-	font-size: 85%;
-	border: none;
-	margin: 0;
-	padding: 0;
+	font-size:85%;
 }
 
 #ad {
@@ -256,6 +271,7 @@ q{
 }
 
 /** Main Content area *****************************************************************************/
+
 #body h1{
 	margin: 0;
 }
@@ -284,6 +300,13 @@ q{
 #note{
 	padding:0;
 	font-size: 86%;
+}
+
+#main_warper{
+	background-color:whitesmoke;
+	background-image: -ms-linear-gradient(top, whitesmoke, #e6e6e6);
+	background-image: -moz-linear-gradient(top, whitesmoke, #e6e6e6);
+	background-image: -webkit-linear-gradient(top, whitesmoke, #e6e6e6);
 }
 
 /** MenuBar/SideBar*********************************************************************************/
@@ -315,23 +338,14 @@ q{
 	background-color:transparent;
 }
 
-#menubar .recent_list, #menubar .popular_list,
-#sidebar .recent_list, #sidebar .popular_list{
-	margin:0 0 0 0.5em;
-	padding:0 0 0 0.5em;
-	word-wrap: break-word;
-}
-
-#menubar .recent_list a, #menubar .popular_list a,
-#sidebar .recent_list a, #sidebar .popular_list a {
-	display: inline;
-	padding: 0;
-}
-
 #menubar h1, #menubar h2, #menubar h3, #menubar h4, #menubar h5, #menubar h6,
 #sidebar h1, #sidebar h2, #sidebar h3, #sidebar h4, #sidebar h5, #sidebar h6{
 	border: 1px gainsboro solid;
 	background-color: gainsboro;
+	background-image: -ms-linear-gradient(top, whitesmoke, gainsboro);
+	background-image: -moz-linear-gradient(top, whitesmoke, gainsboro);
+	background-image: -webkit-linear-gradient(top, whitesmoke, gainsboro);
+	box-shadow:none;
 	margin: 1px;
 	padding: .2em;
 	text-align:center;
@@ -339,38 +353,18 @@ q{
 
 #menubar h1, #menubar h2, #menubar h3,
 #sidebar h1, #sidebar h2, #sidebar h3 {
-	font-size:138.5%;
+	font-size:161.6%;
 }
 
 #menubar h4, #menubar h5, #menubar h6,
 #sidebar h4, #sidebar h5, #sidebar h6{
-	font-size:123.1%;
+	font-size:138.5%;
 }
 
 #menubar p, #menubar form,
 #sidebar p, #sidebar form{
 	margin: 0;
 	padding: 0;
-}
-
-#menubar ul.menu, #sidebar ul.menu{
-	list-style-type: none;
-	list-style-position: outside;
-	margin: 0;
-	padding: 0;
-}
-
-#menubar ul.menu li, #sidebar ul.menu li{
-	padding: 0 .3em;
-	margin: 0;
-	border-bottom: 1px dotted #FFFCEE;
-}
-
-#menubar ul.menu li a, #sidebar ul.menu li a{
-	text-decoration: none;
-	display:block;
-	padding: .1em .3em;
-	margin: 0 -.3em;
 }
 
 /* Hack calendar */
@@ -408,38 +402,6 @@ q{
 }
 .recent_list li{
 	line-height:110%;
-}
-
-/* week text color */
-.week_sat{
-	color:blue;
-}
-.week_day {
-/*	color:black;	*/
-}
-.week_sun, .week_holiday {
-	color:red;
-}
-
-/* diff.inc.php */
-.diff_added{
-	color:blue;
-	background-color:inherit;
-}
-
-.diff_removed{
-	color:red;
-	background-color:inherit;
-}
-
-/* new.inc.php */
-.new1{
-	color:red;
-	background-color:transparent;
-}
-.new5{
-	color:green;
-	background-color:transparent;
 }
 
 /* tooltip.inc.php */
