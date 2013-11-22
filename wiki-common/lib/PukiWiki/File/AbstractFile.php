@@ -247,7 +247,12 @@ abstract class AbstractFile extends SplFileInfo{
 
 		if (!is_array($str)){
 			// 入力データが配列でない場合、念のため改行で分割
-			$str = explode(self::LINE_BREAK, $str );
+			$x = preg_replace(
+				array("[\\r\\n]","[\\r]"),
+				array(self::LINE_BREAK,self::LINE_BREAK),
+				$str
+			); // 行末の統一
+			$str = explode(self::LINE_BREAK,$x);
 		}
 
 		// 改行を含む末尾の余計な空白文字は削除

@@ -27,7 +27,15 @@ class RendererFactory{
 	public static function factory($lines){
 		static $id;
 
-		if (!is_array($lines)) $lines = explode("\n",$lines);	// ポカミス用
+		if (!is_array($lines)){
+			// ポカミス用（旧line2arrayの処理を入れておく）
+			$x = preg_replace(
+				array("[\\r\\n]","[\\r]"),
+				array("\n","\n"),
+				$lines
+			); // 行末の統一
+			$lines = explode("\n",$x);
+		}
 
 		$body = new RootElement(++$id);
 		$body->parse($lines);
