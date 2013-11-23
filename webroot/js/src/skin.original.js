@@ -1,4 +1,4 @@
-/*!
+/**
  * PukiWiki Advance - Yet another WikiWikiWeb clone.
  * Pukiwiki skin script for jQuery
  * Copyright (c)2010-2013 PukiWiki Advance Developer Team
@@ -339,9 +339,8 @@ var pukiwiki = {};
 		},
 		// ページを閉じたとき
 		unload : function(prefix){
-//			this.loadingScreen.dialog('open');
 			prefix = (prefix) ? prefix + ' ': '';
-			$('input, select, textarea, button').attr('disabled','disabled');
+			$(':input').attr('disabled','disabled');
 			return false;
 		},
 		// オーバーライド関数
@@ -505,7 +504,9 @@ var pukiwiki = {};
 		},
 		// アンカータグの処理
 		setAnchor : function(prefix){
-			var self = this;	// pukiwikiへのエイリアス
+			var self = this,	// pukiwikiへのエイリアス
+				dom = (prefix) ? $(prefix).find('a') : $('a');
+			
 
 			$('.link_symbol').each(function(){
 				var $this = $(this);
@@ -515,39 +516,42 @@ var pukiwiki = {};
 				});
 			});
 
-			$(prefix + 'a').each(function(){
+			dom.each(function(){
 				var $this = $(this),	// DOMをキャッシュ
 					href = $this.attr('href'),
-					rel = $this.attr('rel') ? $this.attr('rel') : null,
-					ext = href.match(/\.(\w+)$/i);
+					rel = $this.attr('rel'),
+					ext = href ? href.match(/\.(\w+)$/i) : null,
+					isExternal = rel && rel.match(/noreferer|license|product|external/);
 
 				if (!href || $this.data('ajax') === false){
 					return;
-				}else if (rel && rel.match(/noreferer|license|product|external/)){
-					if (rel.match(/noreferer/)){
-						$this.click(function(){
-							// for IE
+				}else if (isExternal) {
+					$this.click(function(){
+						if (rel.match(/noreferer/)){
+							// リファラーを消す
 							if (ie){
+								// for IE
 								var subwin = window.open('','','location=yes, menubar=yes, toolbar=yes, status=yes, resizable=yes, scrollbars=yes,'),
 									d = subwin.document;
 								d.open();
 								d.write('<meta http-equiv="refresh" content="0;url='+href+'" />');
 								d.close();
-							}
-							// for Safari,Chrome,Firefox
-							else{
-								if ( href.match(/data:text\/html;charset=utf-8/) !== true ){
-									$this.attr('href', 'data:text/html;charset=utf-8,'+encodeURIComponent([
-										'<html><head><script type="text/javascript"><!--',
-										'document.write(\'<meta http-equiv="refresh" content="0;url='+url+'" />\');',
-										'// --><'+'/script></head><body></body></html>'
-									].join("\n")));
+							} else if ( !href.match(/data:text\/html;/)){
+								
+								// for Safari,Chrome,Firefox
+								var dataUri ='data:text/html;charset=utf-8,'+encodeURIComponent(
+									'<html><head><script type="text/javascript"><!--'+"\n"+
+									'document.write(\'<meta http-equiv="refresh" content="0;url='+href+'" />\');'+"\n"+
+									'// --></script></head><body></body></html>');
+								if (rel.match(/external/)){
+									window.open(dataUri);
+								}else{
+									location.href = dataUri;
 								}
+							}else{
+								window.open(href);
 							}
-							return false;
-						});
-					}else {
-						$this.unbind('click').bind('click', function(){
+						}else{
 							if (ext[1]){
 								switch (ext[1]) {
 									case 'jpg': case 'jpeg': case 'gif': case'png':
@@ -557,12 +561,10 @@ var pukiwiki = {};
 										window.open(href);
 									break;
 								}
-							}else{
-								window.open(href);
 							}
-							return false;
-						});
-					}
+						}
+						return false;
+					});
 				}else if (href){
 					// 外部へのリンクは、rel=externalが付いているものとする。
 					// Query Stringをパース。paramsに割り当て
@@ -761,15 +763,14 @@ var pukiwiki = {};
 		blockUI : function(dom){
 			// jQueryUI BlockUI
 			// http://pure-essence.net/2010/01/29/jqueryui-dialog-as-loading-screen-replace-blockui/
-			var $loading = $('#loading'),
+			var $loading,
 				$window = $(window);
 
-			$([
-				'<div id="loading">',
-						'<div class="ui-widget-overlay" style="position:fixed;"></div>',
-						'<div id="loading_activity"></div>',
-				'</div>'
-			].join('')).appendTo('body');
+			$('<div id="loading">'+
+				'<div class="ui-widget-overlay" style="position:fixed;"></div>'+
+				'<div id="loading_activity"></div>'+
+			'</div>').appendTo('body');
+			$loading = $('#loading');
 			
 			$('#loading_activity')
 				.activity({
@@ -787,7 +788,6 @@ var pukiwiki = {};
 					top : ($window.height() / 2) + $window.scrollTop() - $loading.height() / 2
 				})
 			;
-			
 
 			$(dom)
 				.ajaxSend(function(e, xhr, settings) {
@@ -823,6 +823,7 @@ var pukiwiki = {};
 			$(table).each(function(){
 				var $this = $(this),
 					sortable = (typeof($this.data('sortable')) === 'undefined' || $this.data('sortable') === true) ? true : false;
+				self.setAnchor(this);
 				if ($this.find('thead').length !== 0 && sortable){
 					var pagenate = (typeof($this.data('pagenate')) === 'undefined' || $this.data('pagenate') === false) ? false : true;
 					$this.dataTable({
@@ -832,6 +833,7 @@ var pukiwiki = {};
 					});
 				}
 			});
+			
 		},
 		// 検索フォームでサジェスト機能
 		suggest: function(prefix){
@@ -1393,7 +1395,7 @@ var pukiwiki = {};
 				var $this = $(this),
 					$form = $this.parents('form'),
 					postdata = $form.serializeObject(),
-					$input = $form.find('input, button, select, textarea');
+					$input = $form.find(':input');
 
 				// フォームを無効化
 				$input.attr('disabled', 'disabled');
@@ -1501,10 +1503,10 @@ var pukiwiki = {};
 									location.href = SCRIPT + '?' + PAGE;
 								}else{
 									alert(data.msg);
-									$input.remobeAttr('disabled', 'disabled');
 								}
 								$('title').html(data.title);
 								$('[role="main"]').html(data.msg);
+								$input.remobeAttr('disabled', 'disabled');
 							},
 							error : function(data, err){
 								if (DEBUG) {

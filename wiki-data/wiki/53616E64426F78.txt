@@ -189,4 +189,23 @@ f+<f+g>gg+<g+a>aa+<a+bc-e<ed>dc+<c+>e<c+d>dcb+b>ba<ag>gf+<f+e>ed<dc+>
 a<dgaga>at120d1.;
 }}
 
+*数式
+ブロック型：
+ \[
+   p(\bm w) = \prod^N_{n=1}p(w_n)
+ \]
+ \begin{eqnarray}
+   f(\bm x) &=& (x_1 + x_2)^2 \\
+            &=& x_1^2 + 2 x_1 x_2 + x_2^2
+ \end{eqnarray}
+\[
+  p(\bm w) = \prod^N_{n=1}p(w_n)
+\]
+\begin{eqnarray}
+  f(\bm x) &=& (x_1 + x_2)^2 \\
+           &=& x_1^2 + 2 x_1 x_2 + x_2^2
+\end{eqnarray}
+インライン型：
+ $p(d,w_n)=p(d)\sum_z p(w_n|z)p(z|d)$
+$p(d,w_n)=p(d)\sum_z p(w_n|z)p(z|d)$
 #comment
