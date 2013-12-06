@@ -11,6 +11,7 @@
 use PukiWiki\Auth\Auth;
 use PukiWiki\Config\Config;
 use PukiWiki\Factory;
+use PukiWiki\Time;
 use PukiWiki\Utility;
 
 define('CONFIG_REFERER', 'plugin/referer');
@@ -47,8 +48,11 @@ function plugin_referer_init()
 			'msg_mutual_title'		=> T_('Auto Mutual link of %s')
 		)
 	);
-	
-	global $config_referer;
+	set_plugin_messages($messages);
+}
+
+function plugin_referer_get_config(){
+	static $config_referer;
 
 	// config.php
 	if (!isset($config_referer))
@@ -60,8 +64,9 @@ function plugin_referer_init()
 		$config_referer['key']  = $config->get('KEY');
 		unset($config);
 	}
-	set_plugin_messages($messages);
+	return $config_referer;
 }
+
 
 function plugin_referer_action()
 {
@@ -135,7 +140,7 @@ function plugin_referer_body($data)
 {
 	global $_referer_msg;
 	global $referer;
-	global $config_referer;
+	$config_referer = plugin_referer_get_config();
 
 	// 構成定義ファイル読込
 	$IgnoreHost = array_merge($config_referer['spam'], $config_referer['misc']);
@@ -162,7 +167,7 @@ function plugin_referer_body($data)
 	foreach ($data as $x) {
 		// 'scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment'
 		// 0:最終更新日時, 1:初回登録日時, 2:参照カウンタ, 3:Referer ヘッダ, 4:利用可否フラグ(1は有効)
-		list($ltime, $stime, $count, $url, $enable) = $x;
+		list($ltime, $stime, $count, $url) = $x;
 
 		$uri = isset($url) ? parse_url($url) : null;
 		
@@ -198,10 +203,10 @@ function plugin_referer_body($data)
 		$s_url = mb_convert_encoding(rawurldecode($url), SOURCE_ENCODING);
 		$s_url = Utility::htmlsc(mb_strimwidth($s_url,0,REFERE_TITLE_LENGTH,'...'));
 
-		$lpass = get_passage($ltime, FALSE); // 最終更新日時からの経過時間
-		$spass = get_passage($stime, FALSE); // 初回登録日時からの経過時間
-		$ldate = get_date($_referer_msg['msg_Fmt_Date'], $ltime); // 最終更新日時文字列
-		$sdate = get_date($_referer_msg['msg_Fmt_Date'], $stime); // 初回登録日時文字列
+		$lpass = Time::passage($ltime); // 最終更新日時からの経過時間
+		$spass = Time::passage($stime); // 初回登録日時からの経過時間
+		$ldate = Time::getZoneTimeDate($_referer_msg['msg_Fmt_Date'], $ltime); // 最終更新日時文字列
+		$sdate = Time::getZoneTimeDate($_referer_msg['msg_Fmt_Date'], $stime); // 初回登録日時文字列
 
 		$body[] = '<tr>';
 		$body[] = '<td>' . $ldate . ' ('. $lpass .')</td>';
@@ -267,19 +272,6 @@ function plugin_referer_ignore_check($url)
 	return 0;
 }
 
-function parse_query($query) {
-	$queryParts = explode('&', $query);
-
-	$params = array();
-	foreach ($queryParts as $param) {
-		$item = explode('=', $param);
-		if (isset($item[1])){
-			$params[$item[0]] = $item[1];
-		}
-	}
-	return $params;
-} 
-
 /** searchkeylist **************************************************************************************/
 function plugin_referer_searchkeylist($data, $max){
 	$data = searchkeylist_analysis($data);
@@ -295,9 +287,9 @@ function plugin_referer_searchkeylist($data, $max){
 // データを解析
 function searchkeylist_analysis($data)
 {
-	global $config_referer;
+	$config_referer = plugin_referer_get_config();
 	$sum = array();
-
+	
 	// 0:最終更新日時 1:初回登録日時 2:参照カウンタ 3:Referer ヘッダ 4:利用可否フラグ(1は有効)
 	foreach ($data as $x)
 	{
@@ -307,30 +299,30 @@ function searchkeylist_analysis($data)
 		if ($url === false) continue;
 		if (empty($url['host'])) continue;
 		if (strpos($url['host'],'.') == '') continue; // ホスト名にピリオドが１つもない
+		
 		if (plugin_referer_ignore_check($url['host'])) continue;
+		if (empty($url['query'])) continue;
 
-		if (!empty($url['query'])){
-			// querystringの解析
-			$q = parse_query($url['query']);
-			// 検索キーかの判定
-			foreach ($config_referer['key'] as $y){
-				if( array_key_exists($y[0],$q) ) {	// キーが含まれている場合
-					$term = rawurldecode($q[$y[0]]);
-					if ( (strpos($term,'cache:') === 0 )) continue; // google のキャッシュなどの場合
-					
-					if ($url['host'] === 'www.baidu.com'){
-						$parm = mb_convert_encoding($term, SOURCE_ENCODING ,
-							((isset($q['ie']) && $q['ie'] === 'utf-8') ? 'auto' : 'GB2312'));	// Baiduは通常GB2312で処理しているため
-					}else{
-						$parm = mb_convert_encoding($term, SOURCE_ENCODING,'auto');
-					}
-					$parm = searchkeylist_convert_key($parm); // 検索キーを名寄せする
-					
-					if (!isset($sum[$parm])){ $sum[$parm] = 0; }
-					$sum[$parm] += $x[2]; // 参照カウンタ
-
-					break;
+		// querystringの解析
+		parse_str($url['query'], $q);
+		// 検索キーかの判定
+		foreach ($config_referer['key'] as $y){
+			if( array_key_exists($y[0],$q) ) {	// キーが含まれている場合
+				$term = rawurldecode($q[$y[0]]);
+				if ( (strpos($term,'cache:') === 0 )) continue; // google のキャッシュなどの場合
+				
+				if ($url['host'] === 'www.baidu.com'){
+					$parm = mb_convert_encoding($term, SOURCE_ENCODING ,
+						((isset($q['ie']) && $q['ie'] === 'utf-8') ? 'auto' : 'GB2312'));	// Baiduは通常GB2312で処理しているため
+				}else{
+					$parm = mb_convert_encoding($term, SOURCE_ENCODING,'auto');
 				}
+				$parm = searchkeylist_convert_key($parm); // 検索キーを名寄せする
+				
+				if (!isset($sum[$parm])){ $sum[$parm] = 0; }
+				$sum[$parm] += $x[2]; // 参照カウンタ
+
+				break;
 			}
 		}
 	}
@@ -397,12 +389,12 @@ function searchkeylist_print($data,$max)
 		} else {
 			$key = mb_convert_encoding($x[0],'utf-8',SOURCE_ENCODING);
 		}
-		$rc[] = '<li><a href="' . SKEYLIST_SEARCH_URL.rawurlencode($key).'" rel="nofollow noreferer">'.$x[0].'</a> <var>('.$x[1].')</var></li>';
+		$rc[] = '<li><a href="' . SKEYLIST_SEARCH_URL.rawurlencode($key).'" rel="nofollow noreferer external">'.$x[0].'</a> <var>('.$x[1].')</var></li>';
 		$ctr++;
 	}
 	if ($ctr === 0) return '<p>'.$_referer_msg['msg_no_data'].'</p>';
 
-	return '<ul class="referer_searchkey_list">'.join("\n",$rc).'</ul>';
+	return '<ul class="plugin-referer-searchkey-list">'.join("\n",$rc).'</ul>';
 }
 
 /** linklist.inc.php ******************************************************************************/
@@ -525,7 +517,7 @@ function linklist_print($data,$max,$title)
 		$ctr++;
 	}
 	if ($ctr === 0) return '<p>'.$_referer_msg['msg_no_data'].'</p>';
-	return '<ul class="linklist">'.join("\n",$ret).'</ul>';
+	return '<ul class="plugin-referer-linklist">'.join("\n",$ret).'</ul>';
 }
 
 
