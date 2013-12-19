@@ -59,9 +59,9 @@ class ListContainer extends Element
 	function insert(& $obj)
 	{
 		$classname = get_class($this);
-		if (! $obj instanceof $classname )
+		if (! $obj instanceof $classname && $this->level > 3)
 			return $this->last = $this->last->insert($obj);
-
+		
 		// Break if no elements found (BugTrack/524)
 		if (count($obj->elements) == 1 && empty($obj->elements[0]->elements))
 			return $this->last->parent; // up to ListElement
