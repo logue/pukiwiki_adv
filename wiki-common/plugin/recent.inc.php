@@ -63,11 +63,11 @@ function plugin_recent_convert()
 			if (!IS_MOBILE){
 				if ($date !== $_date) {
 					// End of the day
-					if (!empty($date)) $items[] = '</ul>';
+					if (!empty($date)) $items[] = '</ul></li>';
 
 					// New day
 					$date = $_date;
-					$items[] = '<strong>' . $date . '</strong>';
+					$items[] = '<il><strong>' . $date . '</strong>';
 					$items[] = '<ul class="plugin-recent-list">';
 				}
 
@@ -101,10 +101,11 @@ function plugin_recent_convert()
 
 	$_recent_title = sprintf(T_('recent(%d)'),$count);
 	if (!IS_MOBILE) {
-		return '<h5>'.$_recent_title.'</h5>'.
-				'<div class="hslice" id="webslice">'.
-				'<span class="entry-title" style="display:none;">'.$page_title.'</span>'.
-				'<div class="entry-content">' . join("\n",$items).'</div></div>';
+		return '<h5>'.$_recent_title.'</h5>'. "\n" .
+				'<div class="hslice" id="webslice">'. "\n" .
+				'<span class="entry-title" style="display:none;">'.$page_title.'</span>' . "\n" .
+				'<div class="entry-content">' . "\n" . 
+				'<ul class="list-unstyled">' . "\n" .join("\n",$items). "\n" . '</ul>' . "\n" . '</div>' . "\n" . '</div>';
 	}else{
 		return '<ul data-role="listview" data-dividertheme="b">'."\n".
 			'<li data-theme="a">'.$_recent_title.'</li>'."\n".

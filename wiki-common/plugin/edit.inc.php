@@ -14,6 +14,7 @@ use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
 use PukiWiki\Renderer\Header;
 use PukiWiki\Renderer\RendererFactory;
+use PukiWiki\Renderer\RendererDefines;
 use PukiWiki\Text\Rules;
 use PukiWiki\Time;
 use PukiWiki\Utility;
@@ -179,10 +180,9 @@ function plugin_edit_preview()
 // NOTE: Plus! is not compatible for 1.4.4+ style(compatible for 1.4.3 style)
 function plugin_edit_inline()
 {
-	static $usage = '&amp;edit(pagename,anchor);';
+	static $usage = '<span style="alert alert-warning">&amp;edit(pagename,anchor);</span>';
 
 	global $vars, $fixed_heading_edited;
-	global $_symbol_paraedit, $_symbol_paraguiedit;
 	
 	$wiki = Factory::Wiki($vars['page']);
 
@@ -196,12 +196,9 @@ function plugin_edit_inline()
 	// {label}. Strip anchor tags only
 	$s_label = Utility::stripHtmlTags(array_pop($args), FALSE);
 	if (empty($s_label)) {
-		$s_label = $_symbol_paraedit;
-		$s_label_edit = & $_symbol_paraedit;
-//		$s_label_guiedit = & $_symbol_paraguiedit;
+		$s_label_edit = RendererDefines::PARTIAL_EDIT_LINK_ICON;
 	}else{
 		$s_label_edit = $s_label;
-//		$s_label_guiedit = '';
 	}
 
 	list($page,$id) = array_pad($args,2,'');
@@ -210,17 +207,6 @@ function plugin_edit_inline()
 	}
 
 	$tag_edit = '<a class="anchor_super" id="edit_'.$id.'" href="' . $wiki->uri('edit',array('id'=>$id)) . '" rel="nofollow">' . $s_label_edit . '</a>';
-//	$tag_guiedit = '<a class="anchor_super" id="guiedit_'.$id.'" href="' . Utility::htmlsc($wiki->uri('guiedit',array('id'=>$id))) .'" rel="nofollow">' . $s_label_guiedit . '</a>';
-/*
-	switch ($fixed_heading_edited) {
-	case 2:
-		return $tag_guiedit;
-	case 3:
-		return $tag_edit.$tag_guiedit;
-	default:
-		return $tag_edit;
-	}
-*/
 	return $tag_edit;
 }
 

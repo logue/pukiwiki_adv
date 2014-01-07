@@ -13,6 +13,7 @@
 
 namespace PukiWiki\File;
 
+use DirectoryIterator;
 use PukiWiki\Auth\Auth;
 use PukiWiki\File\AbstractFile;
 use PukiWiki\Renderer\Header;
@@ -27,7 +28,7 @@ use Zend\Http\Response;
  */
 class AttachFile extends AbstractFile{
 	public static $dir = UPLOAD_DIR;
-	public static $pattern = '/^((?:[0-9A-F]{2})+)_((?:[0-9A-F]{2})+)$/';
+	public static $pattern = '/^((?:[0-9A-F]{2})+)_((?:[0-9A-F]{2})+)(?:\.([0-9]+))?$/';
 	
 	var $page, $file, $age, $basename, $filename, $logname;
 	var $time = 0;
@@ -56,12 +57,6 @@ class AttachFile extends AbstractFile{
 		$this->time     = $this->exists ? $this->getMTime() : 0;
 		$this->size     = $this->exists ? $this->getSize() : 0;
 	}
-
-	public function gethash()
-	{
-		return $this->exists ? md5_file($this->filename) : '';
-	}
-
 	// ファイル情報取得
 	public function getstatus()
 	{
@@ -135,7 +130,7 @@ class AttachFile extends AbstractFile{
 	// 情報表示
 	function info($err)
 	{
-		global $_attach_messages, $pkwk_dtd, $vars, $_LANG;
+		global $_attach_messages, $vars, $_LANG;
 
 
 		$script = Router::get_script_uri();
@@ -186,7 +181,7 @@ class AttachFile extends AbstractFile{
 			}
 		}
 		$info = $this->toString(TRUE, FALSE);
-		$hash = $this->gethash();
+		$hash = $this->md5();
 
 		$_attach_setimage = '';
 		if (extension_loaded('exif') && extension_loaded('gd')){

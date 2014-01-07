@@ -101,7 +101,6 @@ abstract class AbstractFile extends SplFileInfo{
 		// キャッシュ名
 		$cache_name = self::EXISTS_CACHE_PREFIX . strtolower(substr(strrchr($class, '\\'),1,4));
 
-
 		if (!$force) {
 			// ディレクトリの更新チェック（変更があった場合、キャッシュを再生成）
 			if ($cache['wiki']->hasItem($cache_name)){
@@ -284,11 +283,25 @@ abstract class AbstractFile extends SplFileInfo{
 		return $ret;
 	}
 	/**
-	 * ハッシュ
+	 * ファイルの要約
 	 * @return string
 	 */
 	public function digest(){
 		return $this->isFile() ? md5($this->get(true)) : null;
+	}
+	/**
+	 * ファイルのMD5ハッシュを取得
+	 * @return string
+	 */
+	public function md5() {
+		return $this->isFile() ? md5_file($this->filename) : null;
+	}
+	/**
+	 * ファイルのSHA1ハッシュを取得
+	 * @return string
+	 */
+	public function sha1() {
+		return $this->isFile() ? sha1_file($this->filename) : null;
 	}
 	/**
 	 * ファイルを削除

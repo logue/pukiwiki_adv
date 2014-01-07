@@ -54,7 +54,9 @@ foreach (array('SCRIPT_NAME', 'SERVER_ADMIN', 'SERVER_NAME', 'SERVER_SOFTWARE') 
 define('REMOTE_ADDR', isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR']);
 
 // Load Bad-behavior
-require( VENDOR_DIR . 'bad-behavior' . DIRECTORY_SEPARATOR . 'bad-behavior-sqlite.php');
+if (file_exists(VENDOR_DIR . 'bad-behavior' . DIRECTORY_SEPARATOR . 'bad-behavior-sqlite.php') ){
+	require( VENDOR_DIR . 'bad-behavior' . DIRECTORY_SEPARATOR . 'bad-behavior-sqlite.php');
+}
 
 /////////////////////////////////////////////////
 // Require INI_FILE

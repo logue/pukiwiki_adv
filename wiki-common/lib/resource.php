@@ -210,7 +210,13 @@ $_LANG['skin'] = array(
 	'site'		=> T_('Site'),
 	'page'		=> T_('Pages'),
 	'manage'	=> T_('Management'),
-	'tool'		=> T_('Tools')
+	'tool'		=> T_('Tools'),
+	
+	'attach_title'	=> T_('Attaches :'),
+	'attach_info'	=> T_('File information'),
+	'attach_count'	=> T_('%s download'),
+
+	'related'	=> T_('Related pages: ')
 );
 
 $_error_type = array(

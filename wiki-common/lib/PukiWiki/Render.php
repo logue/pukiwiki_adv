@@ -13,6 +13,7 @@
 
 namespace PukiWiki;
 
+use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
 use PukiWiki\Renderer\Header;
 use PukiWiki\Renderer\View;
@@ -22,6 +23,7 @@ use PukiWiki\Search;
 use PukiWiki\Time;
 use Zend\Http\Response;
 use Zend\Json\Json;
+use PukiWiki\File\File;
 
 /**
  * ページ出力クラス
@@ -43,6 +45,14 @@ class Render{
 	 * jQuery Mobileのバージョン
 	 */
 	const JQUERY_MOBILE_VER = '1.3.2';
+	/**
+	 * Twitter Bootstrapのバージョン
+	 */
+	const TWITTER_BOOTSTRAP_VER = '3.0.3';
+	/**
+	 * Font Awesomeのバージョン
+	 */
+	const FONT_AWESOME_VER = '4.0.3';
 	/**
 	 * スキンスクリプト（未圧縮）
 	 */
@@ -126,7 +136,7 @@ class Render{
 				$content_type =
 					self::USE_STRICT_XHTML === TRUE && strstr($_SERVER['HTTP_ACCEPT'], 'application/xhtml+xml') !== false ?
 					'application/xhtml+xml' : 'text/html';
-				$content = self::getContent($this->title, $this->body);
+				$content = self::getContent();
 			break;
 		}
 		if (empty($this->page) || !$lastmod){
@@ -173,14 +183,18 @@ class Render{
 						'</ul></div>'."\n\n".$body;
 			}
 			// リファラーを保存
-			Factory::Referer($this->page)->set();
+			if ($this->page !== null) Factory::Referer($this->page)->set();
 			
 			global $attach_link, $related_link;
 			$view->lastmodified = '<time datetime="'.Time::getZoneTimeDate('c',$this->wiki->time()).'">'.Time::getZoneTimeDate('D, d M Y H:i:s T', $this->wiki->time()) . ' ' . $this->wiki->passage().'</time>';
 
 			// ページの添付ファイル、関連リンク
-			$view->attaches = ($attach_link &&  PluginRenderer::executePluginInit('attach') !== FALSE) ? attach_filelist() : null;
-			$view->related =  ($related_link && PluginRenderer::executePluginInit('related') !== FALSE) ? make_related($this->page,'dl') : null;
+			if ($attach_link) {
+				$view->attaches = $this->getAttaches();
+			}
+		//	if ($related_link) {
+				$view->related = $this->getRelated();
+		//	}
 
 			// ノート
 			global $foot_explain;
@@ -220,7 +234,7 @@ class Render{
 		// フッターエリア
 		$view->footarea = Factory::Wiki($footarea)->has() ? PluginRenderer::executePluginInline('footarea') : null;
 		// パンくずリスト
-		$view->topicpath = PluginRenderer::executePluginBlock('topicpath');
+		$view->topicpath = $this->getBreadcrumbs();
 		// 中身
 		$view->body = $body;
 		// サイト名
@@ -323,6 +337,7 @@ class Render{
 	private function getHead($conf){
 		global $vars, $nofollow, $google_analytics, $google_api_key, $google_site_verification, $yahoo_site_explorer_id, $bing_webmaster_tool, $shortcut_icon, $modifier, $modifierlink;
 		$meta_tags[] = array('charset'=>constant('SOURCE_ENCODING'));
+		$meta_tags[] = array('http-equiv'=>'x-dns-prefetch-control','content'=>'on');
 		if (IS_MOBILE){
 			$meta_tags[] = array('name' => 'viewport',	'content' => 'width=device-width, initial-scale=1');
 		}else{
@@ -388,18 +403,36 @@ class Render{
 		// DNS prefetching
 		// http://html5boilerplate.com/docs/DNS-Prefetching/
 		$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>'//code.jquery.com');
+		$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>'//netdna.bootstrapcdn.com');
 		if (COMMON_URI !== ROOT_URI){
 			$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>COMMON_URI);
 		}
 
+		// Twitter Bootstrap
+		// http://getbootstrap.com/
+		if ($conf['bootswatch'] === false){
+			$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//netdna.bootstrapcdn.com/bootstrap/' . self::TWITTER_BOOTSTRAP_VER . '/css/bootstrap.min.css', 'type'=>'text/css');
+			$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//netdna.bootstrapcdn.com/bootstrap/' . self::TWITTER_BOOTSTRAP_VER . '/css/bootstrap-theme.min.css', 'type'=>'text/css');
+		}else{
+			// Bootswatch
+			// http://bootswatch.com/
+			$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//netdna.bootstrapcdn.com/bootswatch/' . self::TWITTER_BOOTSTRAP_VER . '/' . $conf['bootswatch'] . '/bootstrap.min.css', 'type'=>'text/css');
+		}
+
 		// jQuery UIのテーマ
 		if (! empty($conf['ui_theme']) && $conf['ui_theme'] !== false){
-			$link_tags[] = array('rel'=>'stylesheet', 'href'=>'http://code.jquery.com/ui/' . self::JQUERY_UI_VER .'/themes/' . $conf['ui_theme'] . '/jquery-ui.min.css', 'type'=>'text/css');
+			$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//code.jquery.com/ui/' . self::JQUERY_UI_VER .'/themes/' . $conf['ui_theme'] . '/jquery-ui.min.css', 'type'=>'text/css');
 		}
+
 		// 標準スタイルシート
 		if ($conf['default_css'] ){
 			$link_tags[] = array('rel'=>'stylesheet', 'href'=> COMMON_URI . 'css/pukiwiki.' . (DEBUG ? 'css' : 'min.css'), 'type'=>'text/css');
 		}
+
+		// Font Awesome
+		// http://fontawesome.io/
+		// ※フォントを標準スタイルシートで書き換えているので、標準スタイルシートよりも後でFont Awesomeを読み込む
+		$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//netdna.bootstrapcdn.com/font-awesome/' . self::FONT_AWESOME_VER . '/css/font-awesome.min.css', 'type'=>'text/css');
 
 		return
 			self::tag_helper('meta',$meta_tags) .
@@ -412,7 +445,7 @@ class Render{
 	 * @param string $_page ページ名
 	 * @return array
 	 */
-	private static function getLinkSet($_page){
+	private static function getLinkSet($_page = ''){
 		static $d_links;
 
 		if (!isset($d_links)){
@@ -602,5 +635,93 @@ class Render{
 		}
 
 		return join("\n",$out)."\n";
+	}
+	/**
+	 * 添付ファイル一覧
+	 * @return string
+	 */
+	private function getAttaches(){
+		// TODO: UPLOAD_DIRの参照方法の変更
+		global $_LANG;
+		$ret = array();
+		$exists = false;
+		$attaches = $this->wiki->attach(false);
+		if (!empty($attaches)) {
+			$ret[] = '<dl class="attach">';
+			$ret[] = '<dt>'.$_LANG['skin']['attach_title'].'</dt>';
+			foreach ($attaches as $filename=>$files){
+				if (!isset($files[0])) continue;
+				$fileinfo = new File(UPLOAD_DIR . $files[0]);
+				$exists = true;
+				if (!$fileinfo->has()) continue;
+				$logfileinfo = new File(UPLOAD_DIR . $files['log']);
+				$count = $logfileinfo->has() ? $logfileinfo->head(0) : '0';
+				$ret[] = '<dd><a href="' . 
+					Router::get_cmd_uri('attach', null, null, array('pcmd'=>'open','refer'=>$this->page, 'age'=>0, 'openfile'=>$filename)) .
+					'" title="' . Time::getZoneTimeDate('Y/m/d H:i:s', $fileinfo->time()) . ' ' .
+					sprintf('%01.1f', round($fileinfo->getSize()/1024, 1)) . 'KB' .
+					'"><span class="fa fa-download"></span>'.Utility::htmlsc($filename).'</a> ' .
+					'<small>(<var>' . $count . '</var>)</small> ' .
+					'<a href="' . Router::get_cmd_uri('attach', null, null, array('pcmd'=>'info','refer'=>$this->page, 'file'=>$filename)) . '" class="btn btn-default btn-xs" title="'.$_LANG['skin']['attach_info'].'">' .
+					'<span class="fa fa-info"></span></a>' .
+					'</dd>';
+			}
+			$ret[] = '</dl>';
+		}
+		return $exists ? join("\n", $ret) : null;
+	}
+	/**
+	 * 関連リンク一覧
+	 * @return string
+	 */
+	private function getRelated(){
+		global $_LANG;
+		$related = $this->wiki->related();
+		if (empty($related)) return;
+		$ret[] = '<dl class="related">';
+		$ret[] = '<dt>'. $_LANG['skin']['related'] . '</dt>';
+		foreach ($related as $page=>$time){
+			$wiki = Factory::Wiki($page);
+			$ret[] = '<dd><a href="' . $wiki->uri('read') . '" title="' . $page . '">'. /* $wiki->title() 重い*/ $page. '</a><small>'. $wiki->passage(false, true) .'</small></dd>';
+		}
+		$ret[] = '</dd>';
+		return join("\n", $ret);
+	}
+	/**
+	 * 階層リストを出力
+	 * return string
+	 */
+	private function getBreadcrumbs(){
+		global $defaultpage, $vars;	// TODO
+		if ($this->page === $defaultpage || $this->page === null){
+			// トップページでは階層リストを表示しない
+			return;
+		}
+		$links = self::getLinkSet();
+		$parts = explode('/', $this->page);
+		while (! empty($parts)) {
+			$_landing = join('/', $parts);
+			$wiki = Factory::Wiki($_landing);
+			$element = htmlsc(array_pop($parts));
+			if ($this->page === $_landing) {
+				// This page ($_landing == $page)
+				if ($vars['cmd'] === 'read'){
+					$ret[] = '<li class="active">' . $element . '</li>';
+				}else{
+					$ret[] = '<li class="active">' . $this->title . '</li>';
+					// 元のページへのリンク
+					$ret[] = '<li><a href="' . $wiki->uri() . '" title="' . $_landing . ' ' . $wiki->passage(false) . '">' .$element . '</a></li>';
+				}
+			// } else if (PKWK_READONLY && ! is_page($_landing)) {
+			} else if (Auth::check_role('readonly') && ! $wiki->isReadable()) {
+				// Page not exists
+				$ret[] = '<li class="disabled">'. $element . '</li>';
+			} else {
+				// Page exists or not exists
+				$ret[] = '<li><a href="' . $wiki->uri() . '" title="' . $_landing . ' ' . $wiki->passage(false) . '">' .$element . '</a></li>';
+			}
+		}
+		$ret[] = '<li><a href="' . $links['top'] . '"><span class="fa fa-home"></span></a></li>';
+		return '<ol class="breadcrumb">' . join("\n", array_reverse( $ret)) .'</ol>';
 	}
 }

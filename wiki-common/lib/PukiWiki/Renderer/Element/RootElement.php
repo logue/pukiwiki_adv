@@ -214,7 +214,7 @@ class RootElement extends Element
 		} else if ($fixed_heading_edited){
 			//$anchor = ' &aname(' . $id . ',super,full){' . $_symbol_anchor . '};';
 			//if ($fixed_heading_edited) $anchor .= " &edit(,$id);";
-			$anchor = " &edit(,$id);";
+			$anchor = ' &edit(,' . $id . ');';
 		}
 
 		$text = ' ' . $text;
