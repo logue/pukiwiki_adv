@@ -23,9 +23,6 @@ use PukiWiki\Utility;
 //   If you end testing this PukiWiki, set '1'.
 //   If you feel in trouble about this PukiWiki, set '0'.
 define('PKWK_OPTIMISE', 0);
-
-$useemoji = true;
-
 /*
 return array(
 	// スキンファイル
