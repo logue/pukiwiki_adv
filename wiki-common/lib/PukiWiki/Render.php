@@ -54,14 +54,6 @@ class Render{
 	 */
 	const FONT_AWESOME_VER = '4.0.3';
 	/**
-	 * Twitter Bootstrapのバージョン
-	 */
-	const TWITTER_BOOTSTRAP_VER = '3.0.3';
-	/**
-	 * Font Awesomeのバージョン
-	 */
-	const FONT_AWESOME_VER = '4.0.3';
-	/**
 	 * スキンスクリプト（未圧縮）
 	 */
 	const DEFAULT_JS = 'skin.original.js';

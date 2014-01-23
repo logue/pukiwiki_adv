@@ -155,13 +155,14 @@ EOD;
 // Add new page
 function plugin_tracker_action()
 {
-	global $post, $vars, $now, $config_name, $_string;
+	global $post, $vars, $now, $config_name, $_string, $session;
 
 //	if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
 	// Plus! code start
 	if (Auth::check_role('readonly')) die_message($_string['prohibit']);
 	if (Auth::is_check_role(PKWK_CREATE_PAGE)) die_message(_('PKWK_CREATE_PAGE prohibits editing'));
 
+	$tracker_form = new Tracker_form();
 	// Petit SPAM Check (Client(Browser)-Server Ticket Check)
 	$config = $tracker_form->config_name; // Rescan
 
@@ -271,7 +272,7 @@ function plugin_tracker_action()
 
 	// Write $template, without touch
 	$wiki = Factory::Wiki($page);
-	$wiki->set(join(null, $template));
+	$wiki->set($template);
 
 	Utility::redirect($wiki->uri());
 	exit;
@@ -868,7 +869,7 @@ class Tracker_field_date extends Tracker_field
 
 	function format_cell($timestamp)
 	{
-		return format_date($timestamp);
+		return '&epoch(' . $timestamp . ');';
 	}
 }
 
