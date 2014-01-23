@@ -13,11 +13,11 @@
 
 namespace PukiWiki\Renderer\Inline;
 
+use PukiWiki\Renderer\RendererDefines;
+
 // mailto: URL schemes
 class Mailto extends Inline
 {
-	const MAILTO_ICON = '<span class="pkwk-icon icon-mail" title="Mail">mailto:</span>';
-
 	public function __construct($start)
 	{
 		parent::__construct($start);
@@ -58,7 +58,7 @@ class Mailto extends Inline
 
 	public function __toString()
 	{
-		return '<a href="mailto:' . $this->name . '" rel="nofollow">' . self::MAILTO_ICON . $this->alias . '</a>';
+		return '<a href="mailto:' . $this->name . '" rel="nofollow">' . RendererDefines::MAILTO_ICON . $this->alias . '</a>';
 	}
 }
 

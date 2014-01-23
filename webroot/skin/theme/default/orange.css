@@ -1,11 +1,11 @@
 @charset "UTF-8";
-/////////////////////////////////////////////////
-// PukiWiki Plus! skin for PukiWiki Advance
-// Original version written by miko and upk.
-// Adv version by Logue.
-//
-// $Id: orange.css,v 1.0.5 2012/01/04 21:48:00 Logue Exp $
-//
+/**
+ * PukiWiki Plus! skin for PukiWiki Advance
+ * Original version written by miko and upk.
+ * Adv version by Logue.
+ *
+ * $Id: blue.css,v 1.0.6 2014/01/14 16:11:00 Logue Exp $
+ */
 
 ::-moz-selection{
 	background: Chocolate;
@@ -18,22 +18,22 @@
 	text-shadow: none;
 }
 
-a:link{
-	color:#215dc6 !important;
+a:not(.btn){
+	color:#215dc6;
 	-webkit-tap-highlight-color: #FF995E;
 }
 
-a:active{
-	color:#215dc6 !important;
+a:active:not(.btn){
+	color:#215dc6;
 	background-color:#CCDDEE;
 }
 
-a:visited{
-	color:#a63d21 !important;
+a:visited:not(.btn){
+	color:#a63d21;
 }
 
-a:hover{
-	color:#215dc6 !important;
+a:hover:not(.btn){
+	color:#215dc6;
 	background-color:#EEDDCC;
 }
 

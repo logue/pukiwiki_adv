@@ -12,18 +12,65 @@
  */
 namespace PukiWiki\Renderer;
 
+/**
+ * レンダラ―定義クラス
+ */
 class RendererDefines{
-	// InterWikiName
+	/**
+	 * InterWikiNameのマッチパターン
+	 */
 	const INTERWIKINAME_PATTERN = '(\[\[)?((?:(?!\s|:|\]\]).)+):(.+)(?(1)\]\])';
-	// WikiName
+	/**
+	 * WikiNameのマッチパターン
+	 */
 	//const WIKINAME_PATTERN ='(?:[A-Z][a-z]+){2,}(?!\w)';
 	// \c3\9f through \c3\bf correspond to \df through \ff in ISO8859-1
 	const WIKINAME_PATTERN = '(?:[A-Z](?:[a-z]|\\xc3[\\x9f-\\xbf])+(?:[A-Z](?:[a-z]|\\xc3[\\x9f-\\xbf])+)+)(?!\w)';
-	// BracketName
+	/**
+	 * BracketNameのマッチパターン
+	 */
 	const BRACKETNAME_PATTERN = '(?!\s):?[^\r\n\t\f\[\]<>#&":]+:?(?<!\s)';
-	// Note
+	/**
+	 * 注釈のパターン
+	 */
 	const NOTE_PATTERN = '\(\(((?:(?>(?:(?!\(\()(?!\)\)(?:[^\)]|$)).)+)|(?R))*)\)\)';
+	/**
+	 * 内部リンクのアイコン
+	 */
+	const INTERNAL_LINK_ICON = '<span class="fa fa-external-link-square" title="Internal Link"></span>';
+	/**
+	 * 外部リンクのアイコン
+	 */
+	const EXTERNAL_LINK_ICON = '<span class="fa fa-external-link" title="External Link"></span>';
+	/**
+	 * メールリンクのアイコン
+	 */
+	const MAILTO_ICON = '<span class="fa fa-envelope" title="mailto:"></span>';
+	/**
+	 * InterWikiNameのアイコン
+	 */
+	const INTERWIKINAME_ICON = '<span class="fa fa-globe" title="InterWikiName"></span>';
+	/**
+	 * 部分編集リンクのアイコン
+	 */
+	const PARTIAL_EDIT_LINK_ICON = '<span class="fa fa-pencil" title="Edit here"></span>';
+	/**
+	 * 見つからないページのリンク
+	 */
+	const NOEXISTS_STRING = '<span class="noexists">%s</span>';
+	/**
+	 * imgタグに展開する拡張子のパターン
+	 */
+	const IMAGE_EXTENTION_PATTERN = '/\.(gif|png|bmp|jpe?g|svg?z|webp)$/i';
+	/**
+	 * audioタグで展開する拡張子のパターン
+	 */
+	const AUDIO_EXTENTION_PATTERN = '/\.(mp3|ogg|m4a)$/i';
+	/**
+	 * videoタグで展開する拡張子のパターン
+	 */
+	const VIDEO_EXTENTION_PATTERN = '/\.(mp4|webm)$/i';
 }
 
 /* End of file RendererDefines.php */
-/* Location: ./vender/PukiWiki/Lib/Renderer/RendererDefines.php */
+/* Location: ./vendor/PukiWiki/Lib/Renderer/RendererDefines.php */

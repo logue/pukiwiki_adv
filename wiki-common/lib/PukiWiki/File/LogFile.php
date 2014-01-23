@@ -99,23 +99,51 @@ class LogFile extends AbstractFile{
 	 * ファイル一覧を取得
 	 * @return array
 	 */
-	public static function exists($pattern = ''){
+	public static function exists($force = false, $clearOnly = false){
 		// 継承元のクラス名を取得（PHPは、__CLASS__で派生元のクラス名が取得できない）
 		$class =  get_called_class();
+		// ディレクトリの指定
 		$dir = self::$dir . $class::$log_dir;
 		// クラスでディレクトリが定義されていないときは処理しない。(AuthFile.phpなど）
 		if ( empty($dir)) return array();
 		// パターンが指定されていない場合は、クラスで定義されているデフォルトのパターンを使用
-		if ( empty($pattern) ) $pattern = $class::$pattern;
-		// 継承元のクラスの定数をパラメーターとして与える
-		foreach (new DirectoryIterator($dir) as $fileinfo) {
-			$filename = $fileinfo->getFilename();
-			$matches = array();
-			if ($fileinfo->isFile() && preg_match($pattern, $filename, $matches)){
-				$ret[] = Utility::decode($matches[1]);
+		$cache_name = self::EXISTS_CACHE_PREFIX . strtolower(substr(strrchr($class, '\\'),1,4));
+
+		if (!$force && !$clearOnly) {
+			// ディレクトリの更新チェック（変更があった場合、キャッシュを再生成）
+			if ($cache['wiki']->hasItem($cache_name)){
+				$cache_meta = $cache['wiki']->getMetadata($cache_name);
+				if ($cache_meta['mtime'] < filemtime($class::$dir)) {
+					$force = true;
+				}
 			}
 		}
-		return $ret;
+
+		// キャッシュ処理
+		if ($force || $clearOnly) {
+			unset($files);
+			$cache['wiki']->removeItem($cache_name);
+			if ($clearOnly) return;
+		}else if (!empty($files)) {
+			return $files;
+		}else if ($cache['wiki']->hasItem($cache_name)) {
+			$files = $cache['wiki']->getItem($cache_name);
+			$cache['wiki']->touchItem($cache_name);
+			return $files;
+		}
+
+		// ファイル一覧を走査（
+		foreach (new DirectoryIterator($class::$dir) as $fileinfo) {
+			if (!$fileinfo->isFile() || !$fileinfo->isReadable()) continue;
+			if ($fileinfo->isFile() && preg_match($class::$pattern, $filename, $matches)){
+				$files[] = $fileinfo->getFilename();
+			}
+		}
+		unset($fileinfo);
+
+		// キャッシュに保存
+		$cache['wiki']->setItem($cache_name, $files);
+		return $files;
 	}
 	/**
 	 * ログの存在チェック

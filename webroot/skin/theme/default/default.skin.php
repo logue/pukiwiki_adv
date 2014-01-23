@@ -44,7 +44,9 @@
 <!-- Center -->
 				<div id="main_wrapper">
 					<div id="main" role="main">
-						<?php echo $this->topicpath; ?>
+						<nav id="topicpath">
+							<?php echo $this->topicpath; ?>
+						</nav>
 						<section id="body">
 							<?php echo $this->body."\n" ?>
 						</section>

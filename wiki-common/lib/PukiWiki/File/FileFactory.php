@@ -24,6 +24,7 @@ class FileFactory
 
 	protected static $classMap = array(
 		'generic' => 'PukiWiki\File\File',
+		'attach'  => 'PukiWiki\File\AttachFile',
 		'wiki'    => 'PukiWiki\File\WikiFile',
 		'backup'  => 'PukiWiki\File\BackupFile',
 		'diff'    => 'PukiWiki\File\DiffFile',
@@ -64,6 +65,12 @@ class FileFactory
 	 */
 	public static function Wiki($page){
 		return new WikiFile($page);
+	}
+	/**
+	 * 添付ファイル
+	 */
+	public static function Attach($page){
+		return new AttachFile($page);
 	}
 	/**
 	 * バックアップ

@@ -13,6 +13,7 @@
 
 namespace PukiWiki\Renderer\Inline;
 
+use PukiWiki\Renderer\RendererDefines;
 use PukiWiki\Renderer\InlineConverter;
 use PukiWiki\Renderer\Inline\AutoAlias;
 use PukiWiki\Renderer\Inline\Glossary;
@@ -27,19 +28,6 @@ use PukiWiki\Text\Rules;
  */
 abstract class Inline
 {
-	// 内部リンク
-	const INTERNAL_LINK_ICON = '<span class="pkwk-symbol link_symbol symbol-internal" title="Internal Link"></span>';
-	// 外部リンク
-	const EXTERNAL_LINK_ICON = '<span class="pkwk-symbol link_symbol symbol-external" title="External Link"></span>';
-	// 見つからないページのリンク
-	const NOEXISTS_STRING = '<span class="noexists">%s</span>';
-	// imgタグに展開する拡張子のパターン
-	const IMAGE_EXTENTION_PATTERN = '/\.(gif|png|bmp|jpe?g|svg?z|webp)$/i';
-	// audioタグで展開する拡張子のパターン
-	const AUDIO_EXTENTION_PATTERN = '/\.(mp3|ogg|m4a)$/i';
-	// videoタグで展開する拡張子のパターン
-	const VIDEO_EXTENTION_PATTERN = '/\.(mp4|webm)$/i';
-
 	var $start;   // Origin number of parentheses (0 origin)
 	var $text;    // Matched string
 
@@ -190,7 +178,7 @@ abstract class Inline
 
 			$retval = $anchor_name . '<a href="' . $wiki->uri('edit', (empty($refer) ? null : array('refer'=>$refer)) ) . '" rel="nofollow">' .$_symbol_noexists . '</a>';
 
-			return ($link_compact) ? $retval : sprintf(self::NOEXISTS_STRING, $retval);
+			return ($link_compact) ? $retval : sprintf(RendererDefines::NOEXISTS_STRING, $retval);
 		}
 	}
 	/**
@@ -211,7 +199,7 @@ abstract class Inline
 
 		// メディアファイル
 		if (! PKWK_DISABLE_INLINE_IMAGE_FROM_URI && Utility::isUri($uri)) {
-			if (preg_match(self::IMAGE_EXTENTION_PATTERN, $uri)) {
+			if (preg_match(RendererDefines::IMAGE_EXTENTION_PATTERN, $uri)) {
 				// 画像の場合
 				$term = '<img src="' . $_uri . '" alt="' . $_term . '" '.$_tooltip.' />';
 			}else{
@@ -219,11 +207,12 @@ abstract class Inline
 				$anchor = '<a href="' . $href . '" rel="' . (self::isInsideUri($uri) ? $rel : $ext_rel) . '"'.$_tooltip.'>' . $_term  .'</a>';
 				// 末尾のアイコン
 				$icon = self::isInsideUri($uri) ?
-					'<a href="' . $href . '" rel="' . $rel . '">' . self::INTERNAL_LINK_ICON .'</a>' :
-					'<a href="' . $href . '" rel="' . $ext_rel . '">' . self::EXTERNAL_LINK_ICON . '</a>';
-				if (preg_match(self::VIDEO_EXTENTION_PATTERN, $uri)) {
+					'<a href="' . $href . '" rel="' . $rel . '">' . RendererDefines::INTERNAL_LINK_ICON .'</a>' :
+					'<a href="' . $href . '" rel="' . $ext_rel . '">' . RendererDefines::EXTERNAL_LINK_ICON . '</a>';
+				
+				if (preg_match(RendererDefines::VIDEO_EXTENTION_PATTERN, $uri)) {
 					return '<video src="' . $_uri . '" alt="'.$_term.'" controls="controls"'. $_tooltip . '>' . $anchor . '</video>' . $icon;
-				}else if (preg_match(self::AUDIO_EXTENTION_PATTERN, $uri)) {
+				}else if (preg_match(RendererDefines::AUDIO_EXTENTION_PATTERN, $uri)) {
 					return '<audio src="' . $_uri . '" alt="'.$_term.'" controls="controls"'. $_tooltip . '>' . $anchor . '</audio>' . $icon;
 				}
 			}
@@ -231,8 +220,8 @@ abstract class Inline
 		}
 		// リンクを出力
 		return self::isInsideUri($uri) ?
-			'<a href="' . $href . '" rel="' . $rel . '"' . $_tooltip . '>' . $term . self::INTERNAL_LINK_ICON .'</a>' :
-			'<a href="' . $href . '" rel="' . $ext_rel . '"' . $_tooltip . '>' . $term . self::EXTERNAL_LINK_ICON . '</a>';
+			'<a href="' . $href . '" rel="' . $rel . '"' . $_tooltip . '>' . $term . RendererDefines::INTERNAL_LINK_ICON .'</a>' :
+			'<a href="' . $href . '" rel="' . $ext_rel . '"' . $_tooltip . '>' . $term . RendererDefines::EXTERNAL_LINK_ICON . '</a>';
 	}
 	/**
 	 * 外部リンクか内部リンクの判定

@@ -440,5 +440,8 @@ var pukiwiki = {};
 			var D3 = new Date();
 			console.info('Finish. (Process Time :',D3 - D2,'ms / Total :',D3 - D1,'ms)');
 		}
+
+		// 戻るボタン
+		$.mobile.page.prototype.options.addBackBtn = true;
 	});
 } )(jQuery, this, this.document );

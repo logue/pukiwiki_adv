@@ -11,11 +11,14 @@
 // License: GPL v2 or (at your option) any later version
 //
 // File attach plugin
+use PukiWiki\File\FileFactory;
 use PukiWiki\File\AttachFile;
+use PukiWiki\Attach;
 use PukiWiki\Auth\Auth;
 use PukiWiki\Spam\Spam;
 use PukiWiki\Factory;
 use PukiWiki\Router;
+use PukiWiki\Listing;
 use PukiWiki\Utility;
 
 // NOTE (PHP > 4.2.3):
@@ -62,6 +65,9 @@ defined('PLUGIN_ATTACH_COMPRESS_TYPE')		or define('PLUGIN_ATTACH_COMPRESS_TYPE',
 defined('PLUGIN_ATTACH_USE_CACHE')    or define('PLUGIN_ATTACH_USE_CACHE', false);
 // 添付ファイルのキャッシュの接頭辞
 defined('PLUGIN_ATTACH_CACHE_PREFIX') or define('PLUGIN_ATTACH_CACHE_PREFIX', 'attach-');
+
+// 添付ファイルフォームの名前
+defined('PLUGIN_ATTACH_FILE_FIELD_NAME') or define('PLUGIN_ATTACH_FILE_FIELD_NAME', 'attach_file');
 
 function plugin_attach_init()
 {
@@ -112,6 +118,7 @@ function plugin_attach_init()
 			'err_ini_size'	=> T_('The value of the upload_max_filesize directive of php.ini is exceeded.'),
 			'err_form_size'	=> T_('MAX_FILE_SIZE specified by the HTML form is exceeded.'),
 			'err_partial'	=> T_('Only part is uploaded.'),
+			'msg_uploaded'  => T_('The file was updaded.'),
 			'err_no_file'	=> T_('The file was not uploaded.'),
 			'err_no_tmp_dir'=> T_('There is no temporary directory.'),
 			'err_cant_write'=> T_('It failed in writing in the disk.'),
@@ -177,45 +184,43 @@ function plugin_attach_action()
 	$refer = isset($vars['refer']) ? $vars['refer'] : NULL;
 	$pass  = isset($vars['pass'])  ? $vars['pass']  : NULL;
 	$page  = isset($vars['page'])  ? $vars['page']  : $refer;
-
-	if (isset($page)){
+	
+	if (!empty($page)){
 		$wiki = Factory::Wiki($page);
 
-		if (!empty($refer) && $wiki->isValied()) {
+		if ($wiki->isValied()) {
+			// メソッドによってパーミッションを分ける
 			if(in_array($pcmd, array('info', 'open', 'list'))) {
+				// 読み込み許可
 				$wiki->checkReadable();
 			} else {
+				// 書き込み許可があるか
 				$wiki->checkEditable();
 			}
 		}
 	}
+	
 
-	// Dispatch
-	if (isset($_FILES['attach_file'])) {
-		// Upload
-		return attach_upload($_FILES['attach_file'], $refer, $pass);
-	} else {
-		switch ($pcmd) {
-		case 'delete':	/*FALLTHROUGH*/
-		case 'freeze':
-		case 'unfreeze':
-			// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-			if (Auth::check_role('readonly')) die_message( $_string['error_prohibit'] );
-		}
-		switch ($pcmd) {
-			case 'info'     : return attach_info();
-			case 'delete'   : return attach_delete();
-			case 'open'     : return attach_open();
-			case 'list'     : return attach_list($page);
-			case 'freeze'   : return attach_freeze(TRUE);
-			case 'unfreeze' : return attach_freeze(FALSE);
-			case 'rename'   : return attach_rename();
-			case 'upload'   : return attach_showform();
-			case 'form'     : return array('msg'  =>str_replace('$1', $refer, $_attach_messages['msg_upload']), 'body'=>attach_form($refer));
-			case 'progress' : return get_upload_progress();
-		}
-		return (empty($page) || ! $wiki->isValied()) ? attach_list() : attach_showform();
+	if(in_array($pcmd, array('delete', 'freeze', 'unfreeze'))) {
+		// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
+		if (Auth::check_role('readonly')) Utility::dieMessage( $_string['error_prohibit'] );
 	}
+
+	switch ($pcmd) {
+		case 'info'     : return attach_info();
+		case 'delete'   : return attach_delete();
+		case 'open'     : return attach_open();
+		case 'list'     : return attach_list($page);
+		case 'freeze'   : return attach_freeze(TRUE);
+		case 'unfreeze' : return attach_freeze(FALSE);
+		case 'rename'   : return attach_rename();
+		default:
+		case 'upload'   : return attach_showform();
+		case 'form'     : return array('msg'  =>str_replace('$1', $refer, $_attach_messages['msg_upload']), 'body'=>attach_form($refer));
+		case 'post'     : return attach_upload($page, $pass);
+		case 'progress' : return get_upload_progress();
+	}
+	return (empty($page) || ! $wiki->isValied()) ? attach_list() : attach_showform();
 }
 
 //-------- call from skin
@@ -233,63 +238,85 @@ function attach_filelist()
 // ファイルアップロード
 // $pass = NULL : パスワードが指定されていない
 // $pass = TRUE : アップロード許可
-function attach_upload($file, $page, $pass = NULL)
+function attach_upload($page, $pass = NULL)
 {
 	global $_attach_messages, $_string;
+	
+	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
+	if (Auth::check_role('readonly')) Utility::dieMessage($_string['error_prohibit']);
 
 	$wiki = Factory::Wiki($page);
 
-	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	if (Auth::check_role('readonly')) die_message($_string['error_prohibit']);
-
-	// Check query-string
-	$query = Router::get_cmd_uri('attach', '', '', array(
-		'refer'=>$page,
-		'pcmd'=>'info',
-		'file'=>$file['name']
-	));
-
-	if ($file['error'] !== UPLOAD_ERR_OK) {
-		return array(
-			'result'=>FALSE,
-			'msg'=>'<p class="alert alert-danger">'.attach_set_error_message($file['error']).'</p>'
-		);
+	if (empty($page)) Utility::dieMessage('#attach: page name is missing.');
+	
+	if (! $wiki->isValied()) { Utility::dieMessage($_attach_messages['err_nopage']); }
+	
+	if ($pass !== TRUE) {
+		if (! $wiki->isEditable()){
+			return array(
+				'result'=>FALSE,
+				'msg'=>$_attach_messages['err_noparm']);
+		}
+	
+		if (PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY && Auth::check_role('role_contents_admin') &&  ($pass === NULL || ! pkwk_login($pass))) {
+			return array(
+				'result'=>FALSE,
+				'msg'=>$_attach_messages['err_adminpass']);
+		}
 	}
 
+	foreach ($_FILES[PLUGIN_ATTACH_FILE_FIELD_NAME]['name'] as $key => $value) {
+		$file = $_FILES[PLUGIN_ATTACH_FILE_FIELD_NAME]['name'][$key];
 
-	if (PKWK_QUERY_STRING_MAX && strlen($query) > PKWK_QUERY_STRING_MAX) {
-		pkwk_common_headers();
-		echo($_attach_messages['err_too_long']);
-		exit;
-	} else if (! $wiki->isValied()) {
-		die_message($_attach_messages['err_nopage']);
-	} else if ($file['tmp_name'] == '' || ! is_uploaded_file($file['tmp_name'])) {
-		return array(
-			'result'=>FALSE,
-			'msg'=>$_attach_messages['err_upload']);
-	} else if ($file['size'] > PLUGIN_ATTACH_MAX_FILESIZE) {
-		return array(
-			'result'=>FALSE,
-			'msg'=>$_attach_messages['err_exceed']);
-	} else if (! is_pagename($page) || ($pass !== TRUE && ! is_editable($page))) {
-		return array(
-			'result'=>FALSE,'
-			msg'=>$_attach_messages['err_noparm']);
+		// 無効な文字が含まれている
+		if (preg_match(PLUGIN_ATTACH_ILLEGAL_CHARS_PATTERN, $file)){
+			$msgs[$file] = $_strings['illegal_chars'];
+			continue;
+		}
 
-	// } else if (PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY && $pass !== TRUE &&
-	} else if (PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY && Auth::check_role('role_contents_admin') && $pass !== TRUE &&
-		  ($pass === NULL || ! pkwk_login($pass))) {
-		return array(
-			'result'=>FALSE,
-			'msg'=>$_attach_messages['err_adminpass']);
+		// 添付ファイルがアップされた時のクエリの長さを取得
+		$query = Router::get_cmd_uri('attach', '', '', array(
+			'refer'=>$page,
+			'pcmd'=>'info',
+			'file'=>$file
+		));
+		// ファイル名が長すぎる
+		if (PKWK_QUERY_STRING_MAX && strlen($query) > PKWK_QUERY_STRING_MAX) {
+			$msgs[$file] = $_attach_messages['err_too_long'];
+			continue;
+		}
+
+		// アップロードに失敗
+		if ($_FILES[PLUGIN_ATTACH_FILE_FIELD_NAME]['error'][$key] !== UPLOAD_ERR_OK) {
+			$msgs[$file] = attach_set_error_message($_FILES[PLUGIN_ATTACH_FILE_FIELD_NAME]['error'][$key]);
+			continue;
+		}
+
+		// 一時ファイルの生成に失敗
+		if (empty($_FILES[PLUGIN_ATTACH_FILE_FIELD_NAME]['tmp_name'][$key]) || ! is_uploaded_file($_FILES[PLUGIN_ATTACH_FILE_FIELD_NAME]['tmp_name'][$key])) {
+			$msgs[$file] = $_attach_messages['err_upload'];
+			continue;
+		}
+
+		// サイズが大きすぎる
+		if ($_FILES[PLUGIN_ATTACH_FILE_FIELD_NAME]['size'][$key] > PLUGIN_ATTACH_MAX_FILESIZE) {
+			$msgs[$file] = $_attach_messages['err_exceed'];
+			continue;
+		}
+
+		
+
+		$ret = attach_doupload($file, $page, $pass, $_FILES[PLUGIN_ATTACH_FILE_FIELD_NAME]['tmp_name'][$key]);
+		$msgs[$file] = $ret['msg'];
 	}
-
-	if (PLUGIN_ATTACH_USE_CACHE){
-		global $cache;
-		$cache['wiki']->removeItem(PLUGIN_ATTACH_CACHE_PREFIX.md5($refer));
+	$body[] = '<ul>';
+	
+	foreach ($msgs as $file=>$result){
+		$body[] = '<li>'.$file.': '.$result.'</li>';
 	}
-
-	return attach_doupload($file, $page, $pass);
+	$body[] = '</ul>';
+	
+	return array('msg'=> sprintf($_attach_messages['msg_uploaded'], $page), 'body'=>'<ul>'.join("\n", $body).'</ul>');
 }
 
 function attach_set_error_message($err_no)
@@ -334,21 +361,16 @@ function attach_gettext($path, $lock=FALSE)
 	return $result;
 }
 
-function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, $notouch=FALSE)
+function attach_doupload($file, $page, $pass=NULL, $temp)
 {
 	global $_attach_messages, $_strings;
 	global $notify, $notify_subject, $notify_exclude, $spam;
 
-	// Check Illigal Chars
-	if (preg_match(PLUGIN_ATTACH_ILLEGAL_CHARS_PATTERN, $file['name'])){
-		Utility::dieMessage($_strings['illegal_chars']);
-	}
-
-	$type = Utility::getMimeInfo($file['tmp_name']);
-	$must_compress = (PLUGIN_ATTACH_UNKNOWN_COMPRESS !== 0) ? attach_is_compress($type,PLUGIN_ATTACH_UNKNOWN_COMPRESS) : false;
-
+	$filename = Utility::encode($page).'_'.Utility::encode($file);
+	$type = Utility::getMimeInfo($temp);
+	$must_compress = (PLUGIN_ATTACH_UNKNOWN_COMPRESS !== 0) ? attach_is_compress($type,PLUGIN_ATTACH_UNKNOWN_COMPRESS) : false;	// 不明なファイルを圧縮するか？
 	// ファイル名の長さをチェック
-	$filename_length = strlen(Utility::encode($page).'_'.Utility::encode($file['name']));
+	$filename_length = strlen($filename);
 	if ( $filename_length  >= 255 || ($must_compress && $filename_length >= 251 )){
 		return array(
 			'result'=>FALSE,
@@ -356,120 +378,102 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 		);
 	}
 
-	if ($must_compress) {
+	// スパムチェック
+	if ($spam !== 0) {
+		// ファイルの内容でスパムチェック
 		// if attach spam, filtering attach file.
 		$vars['uploadname'] = $file['name'];
 		$vars['uploadtext'] = attach_gettext($file['tmp_name']);
 		if ($vars['uploadtext'] === '' || $vars['uploadtext'] === FALSE) return FALSE;
 
-		//global $spam;
-		if ($spam !== 0) {
-			if (isset($spam['method']['attach'])) {
-				$_method = & $spam['method']['attach'];
-			} else if (isset($spam['method']['_default'])) {
-				$_method = & $spam['method']['_default'];
-			} else {
-				$_method = array();
-			}
-			$exitmode = isset($spam['exitmode']) ? $spam['exitmode'] : '';
-			Spam::pkwk_spamfilter('File Attach', $page, $vars, $_method, $exitmode);
+		if (isset($spam['method']['attach'])) {
+			$_method = & $spam['method']['attach'];
+		} else if (isset($spam['method']['_default'])) {
+			$_method = & $spam['method']['_default'];
+		} else {
+			$_method = array();
 		}
+		$exitmode = isset($spam['exitmode']) ? $spam['exitmode'] : '';
+		Spam::pkwk_spamfilter('File Attach', $page, $vars, $_method, $exitmode);
 	}
 
-	if ($must_compress && is_uploaded_file($file['tmp_name'])) {
+	if ($must_compress) {
+		// 添付ファイルを圧縮する
+
 		switch (PLUGIN_ATTACH_COMPRESS_TYPE){
-			case 'TGZ' :
-				if (exist_plugin('dump')) {
-					$obj = new AttachFile($page, $file['name'] . '.tgz');
-					if ($obj->exist)
-						return array('result'=>FALSE,
-							'msg'=>$_attach_messages['err_exists']);
-
-					$tar = new tarlib();
-					$tar->create(CACHE_DIR, 'tgz') or
-						die_message( $_attach_messages['err_tmp_fail'] );
-					$tar->add_file($file['tmp_name'], $file['name']);
-					$tar->close();
-
-					@rename($tar->filename, $obj->filename);
-					chmod($obj->filename, PLUGIN_ATTACH_FILE_MODE);
-					@unlink($tar->filename);
-				}
-			break;
 			case 'GZ' :
-				if (extension_loaded('zlib')) {
-					$obj = new AttachFile($page, $file['name'] . '.gz');
-					if ($obj->exist)
-						return array('result'=>FALSE,
-							'msg'=>$_attach_messages['err_exists']);
-
-					$tp = fopen($file['tmp_name'],'rb') or
-						die_message($_attach_messages['err_load_file']);
-					$zp = gzopen($obj->filename, 'wb') or
-						die_message($_attach_messages['err_write_tgz']);
-
-					while (!feof($tp)) { gzwrite($zp,fread($tp, 8192)); }
-					gzclose($zp);
-					fclose($tp);
-					chmod($obj->filename, PLUGIN_ATTACH_FILE_MODE);
-					@unlink($file['tmp_name']);
-				}
-			break;
-			case 'ZIP' :
-				if (class_exists('ZipArchive')) {
-					$obj = new AttachFile($page, $file['name'] . '.zip');
-					if ($obj->exist)
-						return array('result'=>FALSE,
-							'msg'=>$_attach_messages['err_exists']);
-					$zip = new ZipArchive();
-
-					$zip->addFile($file['tmp_name'],$file['name']);
-					// if ($zip->status !== ZIPARCHIVE::ER_OK)
-					if ($zip->status !== 0)
-						die_message( $_attach_messages['err_upload'].'('.$zip->status.').' );
-					$zip->close();
-					chmod($obj->filename, PLUGIN_ATTACH_FILE_MODE);
-					@unlink($file['tmp_name']);
-				}
-			break;
-			case 'BZ2' :
-				if (extension_loaded('bz2')){
-					$obj = new AttachFile($page, $file['name'] . '.bz2');
-					if ($obj->exist)
-						return array('result'=>FALSE,
-							'msg'=>$_attach_messages['err_exists']);
-
-					$tp = fopen($file['tmp_name'],'rb') or
-						die_message($_attach_messages['err_load_file']);
-					$zp = bzopen($obj->filename, 'wb') or
-						die_message($_attach_messages['err_write_tgz']);
-
-					while (!feof($tp)) { bzwrite($zp,fread($tp, 8192)); }
-					bzclose($zp);
-					fclose($tp);
-					chmod($obj->filename, PLUGIN_ATTACH_FILE_MODE);
-					@unlink($file['tmp_name']);
-				}
-			break;
-			default:
-//miko
-				$obj = new AttachFile($page, $file['name']);
+				if (!extension_loaded('zlib')) Utility::dieMessage('#attach: zlib extention has not loaded.');
+				$obj = new AttachFile($page, $file . '.gz');
 				if ($obj->exist)
 					return array('result'=>FALSE,
 						'msg'=>$_attach_messages['err_exists']);
 
-				if (move_uploaded_file($file['tmp_name'], $obj->filename))
+				$tp = fopen($file['tmp_name'],'rb') or
+					die_message($_attach_messages['err_load_file']);
+				$zp = gzopen($obj->filename, 'wb') or
+					die_message($_attach_messages['err_write_tgz']);
+
+				while (!feof($tp)) { gzwrite($zp,fread($tp, 8192)); }
+				gzclose($zp);
+				fclose($tp);
+				chmod($obj->filename, PLUGIN_ATTACH_FILE_MODE);
+				break;
+			case 'ZIP' :
+				if (!class_exists('ZipArchive')) Utility::dieMessage('#attach: ZipArchive class has not defined.');
+				$obj = new AttachFile($page, $file . '.zip');
+				if ($obj->exist)
+					return array('result'=>FALSE,
+						'msg'=>$_attach_messages['err_exists']);
+				$zip = new ZipArchive();
+
+				$zip->addFile($temp,$file);
+				// if ($zip->status !== ZIPARCHIVE::ER_OK)
+				if ($zip->status !== 0)
+					die_message( $_attach_messages['err_upload'].'('.$zip->status.').' );
+				$zip->close();
+				chmod($obj->filename, PLUGIN_ATTACH_FILE_MODE);
+				break;
+			case 'BZ2' :
+				if (!extension_loaded('bz2')) Utility::dieMessage('#attach: bz2 extention has not loaded.');
+				$obj = new AttachFile($page, $file . '.bz2');
+				if ($obj->exist)
+					return array('result'=>FALSE,
+						'msg'=>$_attach_messages['err_exists']);
+
+				$tp = fopen($file['tmp_name'],'rb') or
+					die_message($_attach_messages['err_load_file']);
+				$zp = bzopen($obj->filename, 'wb') or
+					die_message($_attach_messages['err_write_tgz']);
+
+				while (!feof($tp)) { bzwrite($zp,fread($tp, 8192)); }
+				bzclose($zp);
+				fclose($tp);
+				chmod($obj->filename, PLUGIN_ATTACH_FILE_MODE);
+				break;
+			default:
+				//miko
+				$obj = new AttachFile($page, $file);
+				if ($obj->exist)
+					return array('result'=>FALSE,
+						'msg'=>$_attach_messages['err_exists']);
+
+				if (move_uploaded_file($temp, $obj->filename))
 					chmod($obj->filename, PLUGIN_ATTACH_FILE_MODE);
-			break;
+				break;
 		}
 	}else{
-		$obj = new AttachFile($page, $file['name']);
-			if (isset($obj->exist) )
-				return array('result'=>FALSE,
-					'msg'=>$_attach_messages['err_exists']);
+		// 通常添付
+		$obj = new AttachFile($page, $file);
+		if (isset($obj->exist) )
+			return array('result'=>FALSE,
+				'msg'=>$_attach_messages['err_exists']);
 
-			if (move_uploaded_file($file['tmp_name'], $obj->filename))
-				chmod($obj->filename, PLUGIN_ATTACH_FILE_MODE);
+		if (move_uploaded_file($temp, $obj->filename))
+			chmod($obj->filename, PLUGIN_ATTACH_FILE_MODE);
+	}
+	
+	if (file_exists($temp)){
+		unlink($temp);
 	}
 
 	// ページのタイムスタンプを更新
@@ -490,11 +494,6 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 				break;
 			}
 		}
-	} else {
-		$notify_exec = FALSE;
-	}
-
-	if ($notify_exec !== FALSE) {
 		$footer['ACTION']   = 'File attached';
 		$footer['FILENAME'] = $file['name'];
 		$footer['FILESIZE'] = $file['size'];
@@ -508,75 +507,20 @@ function attach_doupload(&$file, $page, $pass=NULL, $temp='', $copyright=FALSE, 
 
 	return array(
 		'result'=>TRUE,
-		'msg'=>sprintf($_attach_messages['msg_uploaded'],Utility::htmlsc($page)));
+		'msg'=>$_attach_messages['msg_uploaded']
+	);
 }
 
-// ファイルタイプによる圧縮添付の判定
-function attach_is_compress($type,$compress=1)
-{
-	if (empty($type)) return $compress;
-	list($discrete,$composite_tmp) = explode('/', strtolower($type));
-	if (strstr($type,';') === false) {
-		$composite = $composite_tmp;
-		$parameter = '';
-	} else {
-		list($composite,$parameter) = explode(';', $composite_tmp);
-		$parameter = trim($parameter);
-	}
-	unset($composite_tmp);
-
-	// type
-	static $composite_type = array(
-		'application' => array(
-			'msword'			=> 0, // doc
-			'vnd.ms-excel'		=> 0, // xls
-			'vnd.ms-powerpoint'	=> 0, // ppt
-			'vnd.visio'			=> 0,
-			'octet-stream'		=> 0, // bin dms lha lzh exe class so dll img iso
-			'x-bcpio'			=> 0, // bcpio
-			'x-bittorrent'		=> 0, // torrent
-			'x-bzip2'			=> 0, // bz2
-			'x-compress'		=> 0,
-			'x-cpio'			=> 0, // cpio
-			'x-dvi'				=> 0, // dvi
-			'x-gtar'			=> 0, // gtar
-			'x-gzip'			=> 0, // gz tgz
-			'x-rpm'				=> 0, // rpm
-			'x-shockwave-flash'	=> 0, // swf
-			'zip'				=> 0, // zip
-			'x-7z-compressed'	=> 0, // 7zip
-			'x-lzh-compressed'	=> 0, // LZH
-			'x-rar-compressed'	=> 0, // RAR
-			'x-java-archive'	=> 0, // jar
-			'x-javascript'		=> 1, // js
-			'ogg'				=> 0, // ogg
-			'pdf'				=> 0, // pdf
-		),
-	);
-	if (isset($composite_type[$discrete][$composite])) {
-		return $composite_type[$discrete][$composite];
-	}
-
-	// discrete-type
-	static $discrete_type = array(
-		'text'			=> 1,
-		'image'			=> 0,
-		'audio'			=> 0,
-		'video'			=> 0,
-	);
-	return isset($discrete_type[$discrete]) ? $discrete_type[$discrete] : $compress;
-}
 
 // 詳細フォームを表示
 function attach_info($err = '')
 {
 	global $vars, $_attach_messages;
 
-	foreach (array('refer', 'file', 'age') as $var)
-		${$var} = isset($vars[$var]) ? $vars[$var] : '';
+	$age = isset($vars['age']) ? $vars['age'] : 0;
 
-	$obj = new AttachFile($refer, $file, $age);
-	return $obj->getstatus() ?
+	$obj = new Attach($vars['refer'], $vars['file'], $age);
+	return $obj->has($age) ?
 		$obj->info($err) :
 		array('msg'=>$_attach_messages['err_notfound']);
 }
@@ -593,7 +537,7 @@ function attach_delete()
 		return array('msg'=>$_attach_messages['err_noparm']);
 
 	$obj = new AttachFile($refer, $file, $age);
-	if (! $obj->getstatus())
+	if (! $obj->has())
 		return array('msg'=>$_attach_messages['err_notfound']);
 
 	if (PLUGIN_ATTACH_USE_CACHE){
@@ -616,8 +560,8 @@ function attach_freeze($freeze)
 	if (is_freeze($refer) || ! is_editable($refer)) {
 		return array('msg'=>$_attach_messages['err_noparm']);
 	} else {
-		$obj = new AttachFile($refer, $file, $age);
-		return $obj->getstatus() ?
+		$obj = new Attach($refer, $file, $age);
+		return $obj->has() ?
 			$obj->freeze($freeze, $pass) :
 			array('msg'=>$_attach_messages['err_notfound']);
 	}
@@ -635,8 +579,8 @@ function attach_rename()
 	if (is_freeze($refer) || ! is_editable($refer)) {
 		return array('msg'=>$_attach_messages['err_noparm']);
 	}
-	$obj = new AttachFile($refer, $file, $age);
-	if (! $obj->getstatus())
+	$obj = new Attach($refer, $file, $age);
+	if (! $obj->has())
 		return array('msg'=>$_attach_messages['err_notfound']);
 
 	cache_timestamp_touch('attach');
@@ -651,10 +595,11 @@ function attach_open()
 	foreach (array('refer', 'file', 'age') as $var) {
 		${$var} = isset($vars[$var]) ? $vars[$var] : '';
 	}
+	$age = isset($vars['age']) ? $vars['age'] : 0;
+	$obj = new Attach($vars['refer'], $vars['file'], $age);
 
-	$obj = new AttachFile($refer, $file, $age);
-	return $obj->getstatus() ?
-		$obj->open() :
+	return $obj->has() ?
+		$obj->render() :
 		array('msg'=>$_attach_messages['err_notfound']);
 }
 
@@ -665,22 +610,47 @@ function attach_list()
 
 	if (Auth::check_role('safemode')) die_message( $_string['prohibit'] );
 
-	$refer = isset($vars['refer']) ? $vars['refer'] : '';
-	$obj = new AttachPages($refer);
-
-	if ($refer == ''){
-		$msg = $_attach_messages['msg_listall'];
-		$body = (isset($obj->pages)) ?
-			$obj->toString($refer, FALSE) :
-			$_attach_messages['err_noexist'];
-	}else{
+	$refer = isset($vars['refer']) ? $vars['refer'] : null;
+	
+	if (! empty($refer)) {
+		// ページ別添付ファイル一覧
 		$msg = str_replace('$1', htmlsc($refer), $_attach_messages['msg_listpage']);
-		$body = (isset($obj->pages[$refer])) ?
-			$obj->toRender($refer, FALSE) :
-			$_attach_messages['err_noexist'];
-	}
+		$ret[] = '<table class="table table-borderd plugin-attach-list" data-pagenate="true" data-sortable="true"><thead>';
+		$ret[] = '<thead>';
+		$ret[] = '<tr>';
+		$ret[] = '<th>' . $_attach_messages['msg_file'] . '</th>';
+		$ret[] = '<th>' . $_attach_messages['msg_filesize'] . '</th>';
+		$ret[] = '<th>' . $_attach_messages['msg_type'] . '</th>';
+		$ret[] = '<th>' . $_attach_messages['msg_date'] . '</th>';
+		$ret[] = '</tr>';
+		$ret[] = '</thead>';
+		$ret[] = '<tbody>';
+		foreach(Factory::Wiki($refer)->attach() as $name=>$files){
+			unset($files['log']);
+			foreach ($files as $backup=>$file){
+				$attach = new Attach($refer, $name, $backup);
+				
+				$ret[] = '<tr>';
+				if ($backup === 0){
+					$ret[] = '<td>' . $attach->toString() . '</td>';
+				}else{
+					$ret[] = '<td>' . $name . '<em>(Backup no.' . $backup . ')</em></td>';
+				}
+				$ret[] = '<td>' . $attach->getSize() . '</td>';
+				$ret[] = '<td>' . $attach->getMime() . '</td>';
+				$ret[] = '<td>' . $attach->getDate() . '</td>';
+				$ret[] = '</tr>';
+			}
+		}
+		$ret[] = '</tbody>';
+		$ret[] = '</table>';
 
-	return array('msg'=>$msg, 'body'=>$body);
+	}else{
+		// 全ページ添付ファイル一覧
+		$msg = $_attach_messages['msg_listall'];
+		$ret[] = Listing::get('attach', 'attach');
+	}
+	return array('msg'=>$msg, 'body'=>join("\n",$ret));
 }
 
 // アップロードフォームを表示 (action時)
@@ -690,8 +660,11 @@ function attach_showform()
 
 	if (Auth::check_role('safemode')) die_message( $_string['prohibit'] );
 
-	$page = isset($vars['page']) ? $vars['page'] : '';
-	$isEditable = check_editable($page, true, false);
+	$page = isset($vars['page']) ? $vars['page'] : null;
+
+	if (empty($page)) Utility::dieMessage('Page name is not defined');
+	
+	$isEditable = Factory::Wiki($page)->isEditable();
 
 	$vars['refer'] = $page;
 
@@ -700,10 +673,10 @@ function attach_showform()
 		$attach_list = attach_list($page);
 		$html[] = '<p><small>[<a href="' . Router::get_cmd_uri('attach', null, null, array('pcmd'=>'list')) . '">'.$_attach_messages['msg_listall'].'</a>]</small></p>';
 		if ($isEditable){
-			$html[] = '<h3>' . str_replace('$1', $page, $_attach_messages['msg_upload']) . '</h3>'. "\n";
+			$html[] = '<h2>' . str_replace('$1', $page, $_attach_messages['msg_upload']) . '</h2>'. "\n";
 			$html[] = attach_form($page);
 		}
-		$html[] = '<h3>' . str_replace('$1', $page, $_attach_messages['msg_listpage']) . '</h3>'. "\n";
+		$html[] = '<h2>' . str_replace('$1', $page, $_attach_messages['msg_listpage']) . '</h2>'. "\n";
 		$html[] = $attach_list['body'];
 	}else{
 		$html[] = '<div class="tabs" role="application">';
@@ -735,18 +708,18 @@ function attach_form($page)
 	$attach_form[] = '<form enctype="multipart/form-data" action="' . Router::get_script_uri() . '" method="post" class="form-inline plugin-attach-form" data-collision-check="false">';
 	$attach_form[] = '<input type="hidden" name="cmd" value="attach" />';
 	$attach_form[] = '<input type="hidden" name="pcmd" value="post" />';
-	$attach_form[] = '<input type="hidden" name="refer" value="'. Utility::htmlsc($page) .'" />';
-	$attach_form[] = '<input type="hidden" name="max_file_size" value="' . PLUGIN_ATTACH_MAX_FILESIZE . '" />';
+	$attach_form[] = '<input type="hidden" name="page" value="'. Utility::htmlsc($page) .'" />';
+	$attach_form[] = '<input type="hidden" name="MAX_FILE_SIZE" value="' . PLUGIN_ATTACH_MAX_FILESIZE . '" />';
 	$attach_form[] = '<div class="form-group">';
 	$attach_form[] = '<label for="_p_attach_file" class="sr-only">' . $_attach_messages['msg_file'] . ':</label>';
-	$attach_form[] = '<input type="file" name="attach_file" id="_p_attach_file" class="form-control" />';
+	$attach_form[] = '<input type="file" name="' . PLUGIN_ATTACH_FILE_FIELD_NAME . '[]" id="_p_attach_file" class="form-control" />';
 	$attach_form[] = '</div>';
 	if ((PLUGIN_ATTACH_PASSWORD_REQUIRE || PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY) && Auth::check_role('role_contents_admin')){
 		$attach_form[] = '<div class="form-group">';
 		$attach_form[] = '<input type="password" name="pass" size="8" class="form-control" />';
 		$attach_form[] = '</div>';
 	}
-	$attach_form[] = '<input class="btn btn-primary" type="submit" value="' . $_attach_messages['btn_upload'] . '" />';
+	$attach_form[] = '<button class="btn btn-primary" type="submit"><span class="fa fa-upload"></span>' . $_attach_messages['btn_upload'] . '</button>';
 	$attach_form[] = '</form>';
 	$attach_form[] = '<ul class="attach_info">';
 	$attach_form[] = ( (PLUGIN_ATTACH_PASSWORD_REQUIRE || PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY) && Auth::check_role('role_contents_admin')) ?
@@ -757,249 +730,5 @@ function attach_form($page)
 	return join("\n",$attach_form);
 }
 
-//-------- クラス
-// ファイルコンテナ
-class AttachFiles
-{
-	var $page;
-	var $files = array();
-	private $attach_file = 'PukiWiki\File\AttachFile';
-
-	function __construct($page)
-	{
-		$this->page = $page;
-	}
-
-	function add($file, $age)
-	{
-		$this->files[$file][$age] = new AttachFile($this->page, $file, $age);
-	}
-
-	// ファイル一覧を取得
-	function toString($flat = null,$tag = '')
-	{
-		global $_title;
-
-		if (! check_readable($this->page, FALSE, FALSE)) {
-			return str_replace('$1', make_pagelink($this->page), $_title['cannotread']);
-		} else if ($tag == 'dl'){
-			return $this->to_ddtag();
-		} else if ($flat) {
-			return $this->to_flat();
-		}
-
-		$ret = '';
-		$files = array_keys($this->files);
-		sort($files, SORT_STRING);
-
-		foreach ($files as $file) {
-			$_files = array();
-			foreach (array_keys($this->files[$file]) as $age) {
-				$_files[$age] = $this->files[$file][$age]->toString(FALSE, TRUE);
-			}
-			if (! isset($_files[0])) {
-				$_files[0] = htmlsc($file);
-			}
-			ksort($_files, SORT_NUMERIC);
-			$_file = $_files[0];
-			unset($_files[0]);
-			$ret .= " <li>$_file\n";
-			if (count($_files)) {
-				$ret .= "<ul>\n<li>" . join("</li>\n<li>", $_files) . "</li>\n</ul>\n";
-			}
-			$ret .= " </li>\n";
-		}
-		return make_pagelink($this->page) . "\n<ul>\n$ret</ul>\n";
-	}
-
-	// ファイル一覧を取得(inline)
-	function to_flat()
-	{
-		$ret = '';
-		$files = array();
-		foreach (array_keys($this->files) as $file) {
-			if (isset($this->files[$file][0])) {
-				$files[$file] = & $this->files[$file][0];
-			}
-		}
-		uasort($files, array($this->attach_file, 'datecomp'));
-		foreach (array_keys($files) as $file) {
-			$ret .= $files[$file]->toString(TRUE, TRUE) . ' ';
-		}
-
-		return $ret;
-	}
-
-	// dlタグで一覧
-	function to_ddtag()
-	{
-		$ret = '';
-		$files = array();
-		foreach (array_keys($this->files) as $file) {
-			if (isset($this->files[$file][0])) {
-				$files[$file] = & $this->files[$file][0];
-			}
-		}
-		uasort($files, array($this->attach_file, 'datecomp'));
-		foreach (array_keys($files) as $file) {
-			$ret .= '<dd>'.str_replace("\n",'',$files[$file]->toString(TRUE, TRUE)) . '</dd>'."\n";
-		}
-
-		return $ret;
-	}
-
-	// ファイル一覧をテーブルで取得
-	function toRender($flat)
-	{
-		global $_attach_messages;
-		global $_title;
-
-		if (! check_readable($this->page, FALSE, FALSE)) {
-			return str_replace('$1', make_pagelink($this->page), $_title['cannotread']);
-		} else if ($flat) {
-			return $this->to_flat();
-		}
-
-		$ret = '';
-		$files = array_keys($this->files);
-		sort($files, SORT_STRING);
-
-		foreach ($files as $file) {
-			$_files = array();
-			foreach (array_keys($this->files[$file]) as $age) {
-				$_files[$age] = $this->files[$file][$age]->toString(FALSE, TRUE);
-			}
-			if (! isset($_files[0])) {
-				$_files[0] = htmlsc($file);
-			}
-			//pr($this->files[$file]);
-			ksort($_files, SORT_NUMERIC);
-			$_file = $_files[0];
-			unset($_files[0]);
-			$fileinfo = $this->files[$file];
-			if (isset( $fileinfo[0])){
-				$ret .= join('',array(
-					'<tr><td>' . $_file . '</td>',
-					'<td>' . $fileinfo[0]->size_str . '</td>',
-					'<td>' . $fileinfo[0]->type . '</td>',
-					'<td>' . $fileinfo[0]->time_str . '</td></tr>'
-				))."\n";
-			}
-			// else{ ... } // delated FIX me!
-		}
-		return '<table class="table attach_table" data-pagenate="true"><thead>' . "\n" .
-		       '<tr><th>' . $_attach_messages['msg_file'] . '</th>' .
-		       '<th>' . $_attach_messages['msg_filesize'] . '</th>' .
-		       '<th>' . $_attach_messages['msg_type'] . '</th>' .
-		       '<th>' . $_attach_messages['msg_date'] . '</th></tr></thead>'."\n".
-		       '<tbody>' . "\n$ret</tbody></table>\n";
-	}
-}
-
-// ページコンテナ
-class AttachPages
-{
-	var $pages = array();
-
-	function AttachPages($page = '', $age = NULL, $purge = false)
-	{
-		global $cache;
-		$handle = opendir(UPLOAD_DIR) or
-			die('directory ' . UPLOAD_DIR . ' is not exist or not readable.');
-
-		if ($purge)
-			$cache['wiki']->clearByPrefix(PLUGIN_ATTACH_CACHE_PREFIX);
-
-		$cache_name = (PLUGIN_ATTACH_USE_CACHE && $page !== '') ? PLUGIN_ATTACH_CACHE_PREFIX.md5($page) : null;
-
-		if ($page !== '' && isset($cache_name) && $cache['wiki']->hasItem($cache_name) ){
-			$this->pages[$page] = (object)$cache['wiki']->getItem($cache_name);
-		}else{
-			$page_pattern = ($page == '') ? '(?:[0-9A-F]{2})+' : preg_quote(encode($page), '/');
-			$age_pattern = ($age === NULL) ?
-				'(?:\.([0-9]+))?' : ($age ?  "\.($age)" : '');
-			$pattern = "/^({$page_pattern})_((?:[0-9A-F]{2})+){$age_pattern}$/";
-
-			$matches = array();
-			$_page2 = '';
-			while (($file = readdir($handle)) !== FALSE) {
-				if (! preg_match($pattern, $file, $matches)) continue;
-				$_page = decode($matches[1]);
-				if (! check_readable($_page, FALSE, FALSE)) continue;
-
-				if (PLUGIN_ATTACH_USE_CACHE){
-					$_cache_name = PLUGIN_ATTACH_CACHE_PREFIX.md5($_page);
-					if ( $cache['wiki']->hasItem($_cache_name) ){
-						$this->pages[$_page] = $cache['wiki']->getItem($_cache_name);
-						continue;
-					}
-				}
-
-				$_file = decode($matches[2]);
-				$_age  = isset($matches[3]) ? $matches[3] : 0;
-				if (! isset($this->pages[$_page])) {
-					$this->pages[$_page] = new AttachFiles($_page);
-				}
-				$this->pages[$_page]->add($_file, $_age);
-				if (PLUGIN_ATTACH_USE_CACHE){
-					$_page2 = $_page;
-				}
-			}
-			closedir($handle);
-
-			// ページごとの添付ファイル情報をキャッシュ
-			if (PLUGIN_ATTACH_USE_CACHE){
-				if ($page !== '' && isset($this->pages[$page])){
-					$cache['wiki']->setItem(PLUGIN_ATTACH_CACHE_PREFIX.md5($page), $this->pages[$page]);
-				}else{
-					foreach ($this->pages as $line){
-						$md5 = PLUGIN_ATTACH_CACHE_PREFIX.md5($line->page);
-						if (! $cache['wiki']->hasItem($md5)){
-							$cache['wiki']->setItem($md5, $this->pages[$line->page]);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	function toString($page = '', $flat = FALSE, $tag = '')
-	{
-		if ($page !== '') {
-			return (! isset($this->pages[$page])) ? '' : $this->pages[$page]->toString($flat,$tag);
-		}
-		$ret = '';
-
-		$pages = array_keys($this->pages);
-		sort($pages, SORT_STRING);
-
-		foreach ($pages as $page) {
-			if (check_non_list($page)) continue;
-			$ret .= '<li>' . $this->pages[$page]->toString($flat) . '</li>' . "\n";
-		}
-		return "\n" . '<ul>' . "\n" . $ret . '</ul>' . "\n";
-	}
-
-	function toRender($page = '', $pattern = 0)
-	{
-		if ($page != '') {
-			if (! isset($this->pages[$page])) {
-				return '';
-			} else {
-				return $this->pages[$page]->toRender($pattern);
-			}
-		}
-		$ret = '';
-
-		$pages = array_keys($this->pages);
-		sort($pages, SORT_STRING);
-
-		foreach ($pages as $page) {
-			if (check_non_list($page)) continue;
-			$ret .= '<tr><td>' . $this->pages[$page]->toRender($pattern) . '</td></tr>' . "\n";
-		}
-		return "\n" . '<table>' . "\n" . $ret . '</table>' . "\n";
-	}
-}
 /* End of file attach.inc.php */
 /* Location: ./wiki-common/plugin/attach.inc.php */

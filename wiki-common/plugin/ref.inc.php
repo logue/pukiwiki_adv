@@ -406,10 +406,23 @@ function plugin_ref_action()
 	try{
 		list($width, $height, $_type, $attr) = getimagesize($ref);
 		switch ($_type) {
-			case 1: $type = 'image/gif' ; break;
-			case 2: $type = 'image/jpeg'; break;
-			case 3: $type = 'image/png' ; break;
-			case 4: $type = 'application/x-shockwave-flash'; break;
+			case IMAGETYPE_BMP     : $type = 'image/bmp'; break;
+			case IMAGETYPE_GIF     : $type = 'image/gif'; break;
+			case IMAGETYPE_ICO     : $type = 'image/vnd.microsoft.icon'; break;
+			case IMAGETYPE_IFF     : $type = 'image/iff'; break;
+			case IMAGETYPE_JB2     : $type = 'image/jbig2'; break;
+			case IMAGETYPE_JP2     : $type = 'image/jp2'; break;
+			case IMAGETYPE_JPC     : $type = 'image/jpc'; break;
+			case IMAGETYPE_JPEG    : $type = 'image/jpeg'; break;
+			case IMAGETYPE_JPX     : $type = 'image/jpx'; break;
+			case IMAGETYPE_PNG     : $type = 'image/png'; break;
+			case IMAGETYPE_PSD     : $type = 'image/psd'; break;
+			case IMAGETYPE_SWC     :
+			case IMAGETYPE_SWF     : $type = 'application/x-shockwave-flash'; break;
+			case IMAGETYPE_TIFF_II :
+			case IMAGETYPE_TIFF_MM : $type = 'image/tiff'; break;
+			case IMAGETYPE_WBMP    : $type = 'image/vnd.wap.wbmp'; break;
+			case IMAGETYPE_XBM     : $type = 'image/xbm'; break;
 			default:
 				return array('msg' => 'Seems not an image', 'body' => $usage);
 		}

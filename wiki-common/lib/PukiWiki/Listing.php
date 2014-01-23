@@ -60,17 +60,33 @@ class Listing{
 
 		$ret = array();
 		$pages = self::pages($type);
-		foreach($pages as $page) {	// ここで一覧取得
-			
-			$initial = Reading::getReadingChar($page);	// ページの読みを取得
-			if ($initial === $page){
-				// 読み込めなかった文字
-				$initial = Reading::OTHER_CHAR;
-			}else if (preg_match('/^('.Reading::SYMBOL_PATTERN.')/u', $initial)) {
-				$initial = Reading::SYMBOL_CHAR;
+		if ($type !== 'attach'){
+			foreach($pages as $page) {	// ここで一覧取得
+				
+				$initial = Reading::getReadingChar($page);	// ページの読みを取得
+				if ($initial === $page){
+					// 読み込めなかった文字
+					$initial = Reading::OTHER_CHAR;
+				}else if (preg_match('/^('.Reading::SYMBOL_PATTERN.')/u', $initial)) {
+					$initial = Reading::SYMBOL_CHAR;
+				}
+				// ページの頭文字でページとページの読みを保存
+				$ret[$initial][$page] =  Reading::getReading($page);
 			}
-			// ページの頭文字でページとページの読みを保存
-			$ret[$initial][$page] =  Reading::getReading($page);
+		}else{
+			foreach($pages as $page=>$a) {	// ここで一覧取得
+				
+				$initial = Reading::getReadingChar($page);	// ページの読みを取得
+				if ($initial === $page){
+					// 読み込めなかった文字
+					$initial = Reading::OTHER_CHAR;
+				}else if (preg_match('/^('.Reading::SYMBOL_PATTERN.')/u', $initial)) {
+					$initial = Reading::SYMBOL_CHAR;
+				}
+				// ページの頭文字でページとページの読みを保存
+				$ret[$initial][$page] =  Reading::getReading($page);
+			}
+
 		}
 		unset($initial, $page);
 
@@ -163,47 +179,33 @@ class Listing{
 			if (! $wiki->isReadable()) continue;
 			
 			$_page = Utility::htmlsc($page, ENT_QUOTES);
-			$contents[] = IS_MOBILE ?
-				'<li><a href="' . $wiki->uri($cmd) . '" data-transition="slide">' . $_page . '</a>' .
-				'<span class="ui-li-count">'. $wiki->passage(false, false) . '</span></li>' :
-				'<li><a href="' . $wiki->uri($cmd) . '">' . $_page . '</a> ' . $wiki->passage() .
-				($with_filename ? '<br /><var>' . Utility::htmlsc($wiki->filename). '</var>' : '') .
-				'</li>'
-			;
-		}
-		return $contents;
-	}
-	/**
-	 * TrackBack Ping IDからページ名を取得
-	 * @param boolean $force キャッシュを再生成する
-	 * @return string
-	 */
-	public static function getPageFromTbId($id, $force = false){
-		global $cache;
-		static $tb_id;
-		$cache_name = self::EXSISTS_CACHE_PREFIX . 'trackback';
 
-		if ($force){
-			// キャッシュ再生成
-			unset ($tb_id);
-			$cache['wiki']->removeItem($cache_name);
-		}else if (!empty($tb_id)){
-			// メモリにキャッシュがある場合
-			return $tb_id[$id];
-		}else if ($cache['wiki']->hasItem($cache_name)) {
-			// キャッシュから最終更新を読み込む
-			$tb_id = $cache['wiki']->getItem($cache_name);
-			return $tb_id[$id];
-		}
+			if ($cmd !== 'attach'){
+				$contents[] = IS_MOBILE ?
+					'<li><a href="' . $wiki->uri($cmd) . '" data-transition="slide">' . $_page . '</a>' .
+					'<span class="ui-li-count">'. $wiki->passage(false, false) . '</span></li>' :
+					'<li><a href="' . $wiki->uri($cmd) . '">' . $_page . '</a> ' . $wiki->passage() .
+					($with_filename ? '<br /><var>' . Utility::htmlsc($wiki->filename). '</var>' : '');
+				
+					'</li>'
+				;
+			}else{
+				$ret = array();
+				$ret[] = '<li><a href="' . Router::get_cmd_uri('attach',null,null, array('refer'=>$page,'ajax'=>'false')) . '">' . $_page . '</a> ';
 
-		if (empty($tb_id)){
-			$pages = self::getExists();
-			foreach ($pages as $page) {
-				$tb_id[md5($page)] = $page;
+				$attaches = $wiki->attach();
+
+				if (count($attaches) !== 0){
+					$ret[] = '<ul>';
+					foreach ($attaches as $filename=>$files) {
+						$ret[] = '<li><a href="' . Router::get_cmd_uri('attach',null,null, array('refer'=>$page,'pcmd'=>'info','file'=>$filename)). '">' . Utility::htmlsc($filename) . '</a></li>';
+					}
+					$ret[] = '</ul>';
+				}
+				$ret[] = '</li>';
+				$contents[] = join("\n", $ret);
 			}
 		}
-
-		$cache['wiki']->setItem($cache_name, $tb_id);
-		return $cache[$id];
+		return $contents;
 	}
 }

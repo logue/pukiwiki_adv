@@ -68,7 +68,7 @@ class FileUtility{
 				$pattern = '/^((?:[0-9A-F]{2})+)\.(txt|gz|bz2|lzf)$/';
 				break;
 			case UPLOAD_DIR:
-				$pattern = '/^((?:[0-9A-F]{2})+)_((?:[0-9A-F]{2})+)$/';
+				$pattern = '/^((?:[0-9A-F]{2})+)_((?:[0-9A-F]{2})+)(?:\.([0-9]+|log))?$/';
 				break;
 			default:
 				$func = md5($dir);
@@ -78,7 +78,12 @@ class FileUtility{
 		foreach (new DirectoryIterator($dir) as $fileinfo) {
 			$filename = $fileinfo->getFilename();
 			if ($fileinfo->isFile() && preg_match($pattern, $filename, $matches)){
-				$aryret[$func][$filename] = Utility::decode($matches[1]);
+				$page = Utility::decode($matches[1]);
+				if ($dir !== UPLOAD_DIR) {
+					$aryret[$func][$page] = $filename;
+					continue;
+				}
+				$aryret[$func][$page][Utility::decode($matches[2])][isset($matches[3]) ? $matches[3] : 0] = $filename;
 			}
 		}
 		$cache['wiki']->setItem($cache_name, $aryret[$func]);

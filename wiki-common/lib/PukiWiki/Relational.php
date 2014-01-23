@@ -5,10 +5,10 @@
  * @package   PukiWiki
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @copyright 2012-2014 PukiWiki Advance Developers Team
  * @create    2012/12/18
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Relational.php,v 1.0.0 2013/02/10 17:28:00 Logue Exp $
+ * @version   $Id: Relational.php,v 1.0.0 2014/01/21 11:18:00 Logue Exp $
  **/
 
 namespace PukiWiki;
@@ -19,6 +19,7 @@ use PukiWiki\Listing;
 use PukiWiki\Renderer\InlineConverter;
 use PukiWiki\Renderer\Inline\AutoAlias;
 use PukiWiki\Renderer\Inline\AutoLink;
+use PukiWiki\Search;
 use PukiWiki\Utility;
 use Zend\Db\Adapter\Adapter;
 
@@ -26,13 +27,21 @@ use Zend\Db\Adapter\Adapter;
  * 関連リンクのデーターベースクラス
  */
 class Relational{
-	// キャッシュの名前空間
+	/**
+	 *キャッシュの名前空間
+	 */
 	const CACHE_NAMESPACE = 'wiki';
-	// 関連リンクのデーターベースファイル名
+	/**
+	 * 関連リンクのデーターベースファイル名
+	 */
 	const LINKS_DB_FILENAME = 'links.sqlite3';
-	// リンクしているページのテーブル名
+	/**
+	 * リンクしているページのテーブル名
+	 */
 	const REL_TABLE_NAME = 'rel';
-	// リンクされているページのテーブル名
+	/**
+	 * リンクされているページのテーブル名
+	 */
 	const REF_TABLE_NAME = 'ref';
 
 	private $cache, $page, $rel_name, $ref_name, $links_obj;
@@ -164,7 +173,7 @@ class Relational{
 		{
 			// Update all, because they __MAY__ refer the $page [HEAVY]
 			$search_non_list = 1;
-			$pages           = do_search($page, 'AND', TRUE);
+			$pages           = Search::do_search($page, 'AND', TRUE);
 			foreach ($pages as $_page) {
 				if ($_page !== $page)
 					$this->update($_page);

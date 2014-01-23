@@ -12,6 +12,8 @@
  **/
 namespace PukiWiki\Text;
 
+use MeCab_Tagger;
+
 /**
  * MeCabラッパークラス
  */

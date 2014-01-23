@@ -410,7 +410,7 @@ function plugin_referer_mutual($data, $max){
 // データを解析
 function linklist_analysis($data)
 {
-	global $config_referer;
+	$config_referer = plugin_referer_get_config();
 
 	// 構成定義ファイル読込
 	$IgnoreHost = array_merge($config_referer['spam'], $config_referer['misc']);

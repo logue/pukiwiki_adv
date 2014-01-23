@@ -31,7 +31,7 @@ class File extends AbstractFile{
 	public static function getPages($pattern = ''){
 		throw new Exception('File class does not supported getPages().');
 	}
-	public static function exists($force = false){
+	public static function exists($force = false, $clearOnly = false){
 		throw new Exception('File class does not supported exsists().');
 	}
 }

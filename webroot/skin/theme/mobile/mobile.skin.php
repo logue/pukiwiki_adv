@@ -19,7 +19,7 @@
 
 	<body>
 		<article data-role="page">
-			<header data-role="header" role="banner" data-position="fixed">
+			<header data-role="header" role="banner" data-position="fixed" data-add-back-btn="true">
 				<h1><?php echo $this->title ?></h1>
 <?php if (!$is_dialog) { ?>
 				<a href="#toolbar" data-icon="gear" class="ui-btn-right" data-rel="popup" data-position-to="window" data-role="button" data-inline="true"  data-transition="slideup"><?php echo $this->lang['skin']['tool']; ?></a>
@@ -66,7 +66,7 @@
 			</aside>
 			<footer data-role="footer" role="contentinfo" data-position="fixed">
 				<h4>Founded by <a href="<?php echo $this->modifierlink ?>"><?php echo $this->modifier ?></a></h4>
-				<h5 style="text-align:center; clear:both; font-size:87%;"><?php if (!$is_dialog) { ?>Powered by <a href="http://pukiwiki.logue.be/" rel="external"><?php echo GENERATOR ?></a>. <?php } ?>Processing time: <var><?php echo $this->proc_time; ?></var> sec.</h5>
+				<p class="text-center h6">Processing time: <var><?php echo $this->proc_time; ?></var> sec.</p>
 			</footer><!-- /footer -->
 		</article><!-- /page -->
 

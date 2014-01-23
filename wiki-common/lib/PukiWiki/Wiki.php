@@ -16,8 +16,10 @@ namespace PukiWiki;
 use PukiWiki\Auth\Auth;
 use PukiWiki\Backup;
 use PukiWiki\Diff\Diff;
+use PukiWiki\File\AttachFile;
 use PukiWiki\File\FileFactory;
 use PukiWiki\File\LogFactory;
+use PukiWiki\File\FileUtility;
 use PukiWiki\Relational;
 use PukiWiki\Renderer\PluginRenderer;
 use PukiWiki\Renderer\RendererFactory;
@@ -236,6 +238,30 @@ class Wiki{
 		$ret = $related + $link->getRelated();
 		ksort($ret, SORT_NATURAL);
 		return $ret;
+	}
+	/**
+	 * ページのタイトルを取得
+	 * @return string
+	 */
+	public function title(){
+		$lines = self::get();
+		while (! empty($lines)) {
+			$line = array_shift($lines);
+			if (preg_match('/^(TITLE):(.*)$/',$line,$matches)){
+				return trim(Utility::stripHtmlTags(RendererFactory::factory($matches[2])));
+			}
+		}
+		return $this->page;
+	}
+	/**
+	 * 添付ファイルを取得
+	 * @return array
+	 */
+	public function attach($with_hidden = false){
+		$files = FileUtility::getExists(AttachFile::$dir);
+		// ページに含まれる添付ファイルがない場合ここで終了
+		if (!isset($files[$this->page])) return;
+		return $files[$this->page];
 	}
 	/**
 	 * ファイルの存在確認

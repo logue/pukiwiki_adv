@@ -17,6 +17,7 @@
 
 use PukiWiki\Auth\Auth;
 use PukiWiki\Utility;
+
 // User interface of pkwk_hash_compute() for system admin
 function plugin_md5_action()
 {
@@ -36,7 +37,7 @@ function plugin_md5_action()
 
 		return array(
 			'msg' =>T_('Compute userPassword'),
-			'body'=>plugin_md5_show_form(isset($post['phrase']), $value));
+			'body'=> plugin_md5_show_form(isset($post['phrase']), $value));
 
 	} else {
 		// Compute (Don't show its $phrase at the same time)
@@ -54,7 +55,7 @@ function plugin_md5_action()
 			'msg' =>'Result',
 			'body'=>
 				//($prefix ? 'userPassword: ' : '') .
-				Auth::pkwk_hash_compute($phrase, $salt, $prefix, TRUE));
+				Auth::hash_compute($phrase, $salt, $prefix, TRUE));
 	}
 }
 
@@ -65,7 +66,7 @@ function plugin_md5_show_form($nophrase = FALSE, $value = '')
 	// if (PKWK_SAFE_MODE || PKWK_READONLY) die_message(T_('Prohibited'));
 	if (Auth::check_role('safemode') || Auth::check_role('readonly')) Utility::dieMessage(T_('Prohibited'));
 	if (strlen($value) > Auth::PASSPHRASE_LIMIT_LENGTH)
-		die_message(T_('Limit: malicious message length'));
+		Utility::dieMessage(T_('Limit: malicious message length'));
 
 	if ($value != '') $value = 'value="' . htmlsc($value) . '" ';
 
@@ -77,9 +78,7 @@ function plugin_md5_show_form($nophrase = FALSE, $value = '')
 		$md5_checked  = 'checked="checked" ';
 	}
 
-	$form = '<p><strong>'
-	      . T_("NOTICE: Don't use this feature via untrustful or unsure network")
-	      . '</strong></p>' . "\n" . '<hr />' . "\n";
+	$form = '<p class="alert alert-danger">' . T_("NOTICE: Don't use this feature via untrustful or unsure network") . '</p>' . "\n" . '<hr />' . "\n";
 
 	if ($nophrase) $form .= '<strong>' . T_("NO PHRASE") . '</strong><br />';
 	$script = get_script_uri();

@@ -37,6 +37,10 @@ abstract class AbstractFile extends SplFileInfo{
 	 */
 	const EXISTS_CACHE_PREFIX = 'exists-';
 	/**
+	 * デフォルトのファイルのパーミッション
+	 */
+	const FILE_PERMISSION = 0644;
+	/**
 	 * 対象ディレクトリ
 	 */
 	public static $dir = '';
@@ -48,6 +52,7 @@ abstract class AbstractFile extends SplFileInfo{
 	 * ファイル名
 	 */
 	public $filename;
+	
 
 	/**
 	 * コンストラクタ
@@ -55,10 +60,10 @@ abstract class AbstractFile extends SplFileInfo{
 	 */
 	public function __construct($filename = null) {
 		if (empty($filename)){
-			throw new Exception('File name is missing!');
+			throw new Exception('AbstructFile::__construct(): File name is missing!');
 		}
 		if (!is_string($filename)){
-			throw new Exception('File name must be string!');
+			throw new Exception('AbstructFile::__construct(): File name must be string!');
 		}
 		$this->filename = $filename;
 		parent::__construct($filename);
@@ -90,7 +95,7 @@ abstract class AbstractFile extends SplFileInfo{
 	 * @param boolean $force キャッシュを再生成する
 	 * @return array
 	 */
-	public static function exists($force = false){
+	public static function exists($force = false, $clearOnly = false){
 		static $files;
 		global $cache;
 
@@ -101,8 +106,7 @@ abstract class AbstractFile extends SplFileInfo{
 		// キャッシュ名
 		$cache_name = self::EXISTS_CACHE_PREFIX . strtolower(substr(strrchr($class, '\\'),1,4));
 
-
-		if (!$force) {
+		if (!$force && !$clearOnly) {
 			// ディレクトリの更新チェック（変更があった場合、キャッシュを再生成）
 			if ($cache['wiki']->hasItem($cache_name)){
 				$cache_meta = $cache['wiki']->getMetadata($cache_name);
@@ -113,9 +117,10 @@ abstract class AbstractFile extends SplFileInfo{
 		}
 
 		// キャッシュ処理
-		if ($force) {
+		if ($force || $clearOnly) {
 			unset($files);
 			$cache['wiki']->removeItem($cache_name);
+			if ($clearOnly) return;
 		}else if (!empty($files)) {
 			return $files;
 		}else if ($cache['wiki']->hasItem($cache_name)) {
@@ -135,7 +140,12 @@ abstract class AbstractFile extends SplFileInfo{
 		$cache['wiki']->setItem($cache_name, $files);
 		return $files;
 	}
-	
+	/**
+	 * ファイル一覧キャッシュ削除
+	 */
+	public static function clearCache(){
+		self::exists(true, true);
+	}
 	/**
 	 * ファイルが存在するか
 	 * @return boolean
@@ -153,7 +163,7 @@ abstract class AbstractFile extends SplFileInfo{
 		// (Use PHP file() function if you want to get ALL lines)
 		if ( !self::has() ) return false;
 		if ( !$this->isReadable() )
-			Utility::dieMessage(sprintf('File <var>%s</var> is not readable.', Utility::htmlsc($this->filename)));
+			throw new Exception(sprintf('AbstructFile::get(): File %s is not readable.', $this->getRealPath()));
 
 		// ファイルの読み込み
 		$file = $this->openFile('r');
@@ -190,7 +200,7 @@ abstract class AbstractFile extends SplFileInfo{
 	public function get($join = false, $legacy = false){
 		if ( !$this->isFile() ) return false;
 		if ( !$this->isReadable() )
-			Utility::dieMessage(sprintf('File <var>%s</var> is not readable.', Utility::htmlsc($this->filename)));
+			Utility::dieMessage(sprintf('AbstructFile::get(): File %s is not readable.', $this->getRealPath()));
 
 		// ファイルの読み込み
 		$file = $this->openFile('r');
@@ -240,7 +250,7 @@ abstract class AbstractFile extends SplFileInfo{
 
 		// 書き込み可能かをチェック
 		if (! $this->isWritable())
-			Utility::dieMessage(sprintf('File <var>%s</var> is not writable.', Utility::htmlsc($this->filename)));
+			Utility::dieMessage(sprintf('AbstructFile::set(): File %s is not writable.', $this->getRealPath()));
 
 		// タイムスタンプを取得
 		if ($keeptimestamp) $timestamp = self::getTime();
@@ -271,28 +281,43 @@ abstract class AbstractFile extends SplFileInfo{
 		// アンロック
 		$file->flock(LOCK_UN);
 
-		// タイムスタンプを保持する場合
-		if ($keeptimestamp){
-			self::setTime($timestamp);
-		}else{
-			FileUtility::clearCache();
+		if ($ret !== false){
+			// タイムスタンプを保持する場合
+			if ($keeptimestamp){
+				self::setTime($timestamp);
+			}else{
+				FileUtility::clearCache();
+			}
 		}
-
 		// 念のためオブジェクトを開放
 		unset($file);
 
 		return $ret;
 	}
 	/**
-	 * ハッシュ
+	 * ファイルの要約
 	 * @return string
 	 */
 	public function digest(){
 		return $this->isFile() ? md5($this->get(true)) : null;
 	}
 	/**
+	 * ファイルのMD5ハッシュを取得
+	 * @return string
+	 */
+	public function md5() {
+		return $this->isFile() ? md5_file($this->filename) : null;
+	}
+	/**
+	 * ファイルのSHA1ハッシュを取得
+	 * @return string
+	 */
+	public function sha1() {
+		return $this->isFile() ? sha1_file($this->filename) : null;
+	}
+	/**
 	 * ファイルを削除
-	 * @return int
+	 * @return boolean
 	 */
 	public function remove(){
 		FileUtility::clearCache();
@@ -306,9 +331,8 @@ abstract class AbstractFile extends SplFileInfo{
 	public function time($time = ''){
 		if (empty($time)){
 			return $this->isFile() ? $this->getMTime() : 0;
-		}else{
-			return $this->touch($time);
 		}
+		return $this->touch($time);
 	}
 	/**
 	 * ファイルの経過時間を取得
@@ -324,48 +348,26 @@ abstract class AbstractFile extends SplFileInfo{
 	 */
 	private function chown($preserve_time = TRUE){
 		// check UID（Windowsの場合は0になる）
-		$this->php_uid = extension_loaded('posix') ? posix_getuid() : 0;
-		$lockfile = new SplFileInfo(CACHE_DIR . self::LOCK_FILE);
+		$php_uid = extension_loaded('posix') ? posix_getuid() : 0;
 
-		// Lock for pkwk_chown()
-		$lock = $lockfile->openFile('a');
-		$lock->flock(LOCK_EX);
-
-		// ファイルが作成されてないとエラーになる
-		touch($this->filename);
+		if (!$this->has()){
+			$this->touch();
+		}
 
 		// Check owner
 		$owner = $this->getOwner();
-		if ($owner === $this->php_uid) {
+		if ($owner === $php_uid) {
 			// NOTE: Windows always here
-			$result = TRUE; // Seems the same UID. Nothing to do
-		} else {
-			$tmp = tmpfile();
-
-			// Lock source $filename to avoid file corruption
-			// NOTE: Not 'r+'. Don't check write permission here
-			$file = $this->openFile('r');
-
-			// Try to chown by re-creating files
-			// NOTE:
-			//   * touch() before copy() is for 'rw-r--r--' instead of 'rwxr-xr-x' (with umask 022).
-			//   * (PHP 4 < PHP 4.2.0) touch() with the third argument is not implemented and retuns NULL and Warn.
-			//   * @unlink() before rename() is for Windows but here's for Unix only
-			$file->flock(LOCK_EX);
-			$result =
-				touch($tmp) &&
-				copy($this->filename, $tmp) &&
-				($preserve_time ? (touch($tmp, $stat[9], $stat[8]) || touch($tmp, $stat[9])) : TRUE) &&
-				rename($tmp, $this->filename);
-			$file->flock(LOCK_UN);
-
-			if ($result === FALSE) unlink($tmp);
+			return; // Seems the same UID. Nothing to do
+		}else{
+			try{
+				chown($this->getRealPath(), $php_uid);
+				// 念のためパーミッションを変更（通常は0644）
+				chmod($this->getRealPath(), self::FILE_PERMISSION);
+			}catch(Exception $e){
+				Utility::dieMessage(sprintf('AbstructFile::touch(): File %s is invalid UID and (not writable for the directory or not a flie).' ,$this->getRealPath()));
+			}
 		}
-
-		// Unlock for pkwk_chown()
-		$lock->flock(LOCK_UN);
-
-		return $result;
 	}
 	/**
 	 * ファイルの更新日時を修正
@@ -375,23 +377,27 @@ abstract class AbstractFile extends SplFileInfo{
 	 * @return boolean
 	 */
 	public function touch($time = FALSE, $atime = FALSE){
-		// Is the owner incorrected and unable to correct?
-		if (! $this->has() || $this->chown()) {
-			if ($time === FALSE) {
-				// ファイルの領域を確保
-				$result = touch($this->filename);
-			} else if ($atime === FALSE) {
-				// ファイルの更新日時を指定して領域を確保
-				$result = touch($this->filename, $time);
-			} else {
-				// ファイルの更新日時とアクセス日時を指定して領域を確保
-				$result = touch($this->filename, $time, $atime);
-			}
-			return $result;
+		if ($time === FALSE) {
+			// ファイルの領域を確保
+			$result = touch($this->getRealPath());
+		} else if ($atime === FALSE) {
+			// ファイルの更新日時を指定して領域を確保
+			$result = touch($this->getRealPath(), $time);
 		} else {
-			Utility::dieMessage('pkwk_touch_file(): Invalid UID and (not writable for the directory or not a flie): ' .
-				Utility::htmlsc(basename($this->filename)));
+			// ファイルの更新日時とアクセス日時を指定して領域を確保
+			$result = touch($this->getRealPath(), $time, $atime);
 		}
+		return $result;
+	}
+	/**
+	 * 名前変更
+	 * string $to 変更先の名前
+	 * @return boolean
+	 */
+	public function rename($to){
+		if (empty($to)) throw new Exception('AbsructFile::rename(): undefined to newname.');
+		FileUtility::clearCache();
+		return rename($this->filename, $to);
 	}
 	/**
 	 * 再帰的にディレクトリを作成
@@ -412,13 +418,19 @@ abstract class AbstractFile extends SplFileInfo{
 	 * エイリアス：読み込み
 	 */
 	public function read($join = false){
-		return self::get($join);
+		return $this->get($join);
 	}
 	/**
 	 * エイリアス：書き込み
 	 */
 	public function write($str){
-		return self::set($str);
+		return $this->set($str);
+	}
+	/**
+	 * エイリアス：削除
+	 */
+	public function delete(){
+		return $this->remove();
 	}
 }
 

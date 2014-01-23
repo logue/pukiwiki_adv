@@ -15,7 +15,7 @@ namespace PukiWiki\Renderer\Inline;
 
 use PukiWiki\Factory;
 use PukiWiki\Utility;
-
+use PukiWiki\Renderer\RendererDefines;
 
 /**
  * InterWikiName-rendered URLs
@@ -24,7 +24,6 @@ class InterWikiName extends Inline
 {
 	const INTERWIKINAME_PAGENAME = 'InterWikiName';
 	const INTERWIKINAME_PATTERN = '/\[((?:(?:https?|ftp|news):\/\/|\.\.?\/)[!~*\'();\/?:\@&=+\$,%#\w.-]*)\s([^\]]+)\]\s?([^\s]*)/';
-	const INTERWIKINAME_ICON = '<span class="pkwk-icon icon-interwiki" title="InterWikiName"></span>';
 	const INTERWIKINAME_CACHE = 'interwikiname';
 	const INTERWIKINAME_MAX_LENGTH = 512;
 
@@ -97,13 +96,13 @@ class InterWikiName extends Inline
 	public function __toString()
 	{
 		global $nofollow;
-		$icon = parent::isInsideUri($this->url) ? parent::INTERNAL_LINK_ICON : parent::EXTERNAL_LINK_ICON;
+		$icon = parent::isInsideUri($this->url) ? RendererDefines::INTERNAL_LINK_ICON : RendererDefines::EXTERNAL_LINK_ICON;
 		$target = (empty($this->redirect)) ? $this->url : $this->redirect.rawurlencode($this->url);
 
 		if (!$this->url){
 			return sprintf(parent::NOEXISTS_STRING, $this->interwikiname. ':' .$this->param);
 		}
-		return '<a href="' . $target . $this->anchor . '" title="' . $this->name . '" rel="' . ($nofollow === FALSE ? 'external' : 'external nofollow') . '">'. self::INTERWIKINAME_ICON . $this->alias . $icon . '</a>';
+		return '<a href="' . $target . $this->anchor . '" title="' . $this->name . '" rel="' . ($nofollow === FALSE ? 'external' : 'external nofollow') . '">'. RendererDefines::INTERWIKINAME_ICON . $this->alias . $icon . '</a>';
 	}
 
 	/**

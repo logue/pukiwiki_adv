@@ -32,6 +32,10 @@ class View{
 	 */
 	public $conf = array(
 		/**
+		 * Bootswatchのテーマ
+		 */
+		'bootswatch'     => false,
+		/**
 		 * jQuery UIのテーマ
 		 */
 		'ui_theme'      => 'redmond',

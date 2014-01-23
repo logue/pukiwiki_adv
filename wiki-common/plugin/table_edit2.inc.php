@@ -541,7 +541,7 @@ class TableEdit2Indicate
 		$ret[] = '<div style="float:right;" id="TableEdit2TableNumber' . $this->count . '">';
 		$ret[] = '<a href="' . 
 			get_cmd_uri('table_edit2', null, null , array('refer'=>$this->page, 'table_mod'=>$table_mod, 'table_num'=>$this->count, 'encode_hint'=>PKWK_ENCODING_HINT)) . 
-				'" class="button" nofollow="nofollow" data-text="false" data-ajax="false" data-icons-primary="ui-icon-' . $table_mod . 'ed">' . $button_name[$table_mod] . '</a>';
+				'" class="btn btn-default" nofollow="nofollow" data-ajax="false" title="' . $button_name[$table_mod] . '"><span class="fa fa-' . $table_mod . '"></span></a>';
 		$ret[] = $this->set_csv;
 		$ret[] = '</div>';
 		$ret[] = '<div class="clearfix"></div>';
@@ -745,7 +745,7 @@ function table_edit2_auth()
 
 			if (empty($user) && empty($pass)) return 0;
 			if (empty($auth_users[$user])) return 0;
-			if ( Auth::pkwk_hash_compute($pass, $auth_users[$user]) !== $auth_users[$user]) return 0;
+			if ( Auth::hash_compute($pass, $auth_users[$user]) !== $auth_users[$user]) return 0;
 			return 1;
 		}
 	}
@@ -1076,9 +1076,9 @@ function plugin_table_edit2_inline()
 	}
 
 	if ($opt['edit_mod'] == 'show' || $opt['edit_mod'] == 'tdshow'){
-		$icon = '<span class="pkwk-symbol symbol-edit" title="' . $s_table_edit . '" data-ajax="false">' . $s_table_edit . '</span>';
+		$icon = '<span class="fa fa-pencil-square" title="' . $s_table_edit . '" data-ajax="false"></span>';
 	} else if ($opt['edit_mod'] == 'tr' || $opt['edit_mod'] == 'td'){
-		$icon = '<span class="pkwk-symbol symbol-add" title="' . $s_table_add . '" data-ajax="false">' . $s_table_add . '</span>';
+		$icon = '<span class="fa fa-plus-square" title="' . $s_table_add . '" data-ajax="false"></span>';
 	}
 	
 	$body .= '<a href="' . get_cmd_uri('table_edit2', null, null, array(
@@ -1090,7 +1090,7 @@ function plugin_table_edit2_inline()
 		'cell_count'    => $opt['cell_count'],
 		'add_show'		=> ($add_show ? '1' : '0')
 	)
-	) . '">'. $icon . '</a>';
+	) . '">'. $icon . '</a> ';
 	return $body;
 }
 function plugin_table_edit2_action()
@@ -1640,7 +1640,7 @@ class TableEdit2Show extends TableEdit2Form
 	$body = <<<EOD
 <h3>$s_table_title=$table_num$line_name=$edit_count{$this->add_title}</h3>
 <form action="$script_uri" method="post">
-<table class="table table_left">
+<table class="table">
 EOD;
 
 	$cell_count = 1;
@@ -1648,7 +1648,7 @@ EOD;
 
 		if ($this->opt['add_show']) $cell = '';
 	
-		$body .= '  <tr><th class="style_th">' . (isset($this->table_header[$cell_count]) ?  $this->table_header[$cell_count] : '')  . '(<var>' . $cell_count . '</var>)</th><td class="style_td">';
+		$body .= '  <tr><th>' . (isset($this->table_header[$cell_count]) ?  $this->table_header[$cell_count] : '')  . '(<var>' . $cell_count . '</var>)</th><td>';
 
 		if (isset($this->text_type[$cell_count - 1])) {
 			preg_match('/^([a-z]+)(=|)(.*)$/', $this->text_type[$cell_count - 1], $t_data);
@@ -1698,7 +1698,7 @@ EOD;
 
 	$delete_or_addshow = isset($this->opt['add_show']) && $this->opt['add_show'] === 1 ?
 		$this->f_input('hidden','add_show', 1) :
-		$this->f_input('submit','delete',$s_table_delete) ;
+		'<button class="btn btn-danger" name="delete"><span class="fa fa-times"></span>'.$s_table_delete.'</button>';
 
 	$body .= <<<EOD
 	</table>
@@ -1710,11 +1710,11 @@ EOD;
 	<input type="hidden" name="$y_count"      value="$cell_count" />
 	<input type="hidden" name="edit_mod"      value="$edit_mod" />
 	<input type="hidden" name="digest"        value="$digest" />
-	<input type="submit" class="btn btn-primary" name="write"         value="$s_table_ok" />
+	<button type="submit" class="btn btn-primary" name="write"><span class="fa fa-check"></span>$s_table_ok</button>
 	<label for="notimestamp" class="checkbox-inline">
 	<input type="checkbox" name="notimestamp" id="notimestamp" />$s_table_time_stamp
 	</label>
-	<input type="submit" class="btn btn-waring" name="cancel"        value="$s_table_cancel" />
+	<button type="submit" class="btn btn-warning" name="cancel"><span class="fa fa-ban"></span>$s_table_cancel</button>
 	$delete_or_addshow
 </form>
 EOD;
@@ -1868,7 +1868,7 @@ $ref
 	<input type="hidden" name="refer"     value="$page" />
 	<input type="hidden" name="table_num" value="$table_num" />
 	<input type="hidden" name="file_name" value="$file" />
-	<input type="submit" class="btn btn-primary" name="csv_back"  value="$back" />
+	<button type="submit" class="btn btn-primary" name="csv_back"><span class="fa fa-download"></span>$down</button>
 </form>
 </fieldset>
 EOD;

@@ -7,6 +7,13 @@
 // License: GPL v2
 //
 
+function plugin_toolbar_action(){
+	$num = func_num_args();
+	$args = $num ? func_get_args() : array();
+	echo plugin_toolbar_convert('attach|freeze|unfreeze|diff|new|upload|log|search|backup|list');
+	exit;
+}
+
 function plugin_toolbar_convert()
 {
 	global $_LINK;
@@ -15,9 +22,9 @@ function plugin_toolbar_convert()
 	global $vars;
 	global $whatsnew,$whatsdeleted;
 
-	if ($_LINK['reload'] == '') {
-		return '#navibar: plugin called from wikipage. skipped.';
-	}
+//	if ($_LINK['reload'] == '') {
+//		return '#navibar: plugin called from wikipage. skipped.';
+//	}
 
 	$_page  = isset($vars['page']) ? $vars['page'] : '';
 	$is_read = (arg_check('read') && is_page($_page));
@@ -154,8 +161,8 @@ function _toolbar($key, $alt=null)
 	$lang  = $_LANG['skin'];
 	$link  = $_LINK;
 
-	if (!isset($lang[$key])) { return '<!--LANG NOT FOUND-->'; }
-	if (!isset($link[$key])) { return '<!--LINK NOT FOUND-->'; }
+	if (!isset($lang[$key]) || empty($lang[$key])) { return '<!--LANG NOT FOUND-->'; }
+	if (!isset($link[$key]) || empty($link[$key])) { return '<!--LINK NOT FOUND-->'; }
 
 	return '<li><a href="' . $link[$key] . '" rel="nofollow" title="'.$lang[$key].'"><span class="pkwk-icon icon-'.$key.'">' . $lang[$key]. '</span></a></li>';
 }

@@ -7,7 +7,7 @@ use PukiWiki\Router;
 use Zend\Http\Response;
 
 class Header{
-	const DEFAULT_CONTENT_TYPE = 'text/html';
+	const DEFAULT_CONTENT_TYPE = 'text/html;charset=UTF-8';
 	
 	private static $vary = array(
 		'Cookie',

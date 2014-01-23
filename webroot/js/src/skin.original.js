@@ -100,7 +100,7 @@ var pukiwiki = {};
 				this.image_dir = SKIN_DIR+this.name+'/image/';
 			}
 			if (DEBUG){
-				$('.message_box ul').append(
+				$('#pkwk-info ul').append(
 					'<li>JavaScript framework:' + 
 					'<a href="http://modernizr.com/">Modernizr</a>: <var>'+Modernizr._version+'</var> / ' +
 					'<a href="http://jquery.com/">jQuery</a>: <var>'+$.fn.jquery+'</var> / '+
@@ -161,16 +161,16 @@ var pukiwiki = {};
 			}, this.custom.syntaxhighlighter);
 			
 			$.extend(true, $.fn.dataTable.defaults, {
-				bJQueryUI	: true,
-				bAutoWidth	: false,
-				sDom		: '<"H"pi>tr<"F"lf>',
-				sPaginationType: 'full_numbers',
+				bJQueryUI			: true,
+				bAutoWidth			: false,
+				sDom				: '<"H"pi>tr<"F"lf>',
+				sPaginationType		:'full_numbers',
 				oLanguage: {
 					sEmptyTable		: $.i18n('dataTable', 'sEmptyTable'),
 					sInfo			: $.i18n('dataTable', 'sInfo'),
 					sInfoEmpty		: $.i18n('dataTable', 'sInfoEmpty'),
 					sInfoFiltered	: $.i18n('dataTable', 'sInfoFiltered'),
-					sInfoPostFix 	: '',
+//					sInfoPostFix 	: '',
 					sInfoThousands	: $.i18n('dataTable', 'sInfoThousands'),
 					sLengthMenu		: $.i18n('dataTable', 'sLengthMenu'),
 					sLoadingRecords	: $.i18n('dialog', 'loading'),
@@ -179,10 +179,12 @@ var pukiwiki = {};
 					sUrl			: '',
 					sZeroRecords	: $.i18n('dataTable', 'sZeroRecords'),
 					oPaginate : {
-						//sFirst : '<span class="ui-icon ui-icon-arrowthickstop-1-w" title="'+ $.i18n('dialog', 'first') +'"></span>',
-						//sPrevious : '<span class="ui-icon ui-icon-arrowthick-1-w" title="'+ $.i18n('dialog', 'prev') +'"></span>',
-						//sNext : '<span class="ui-icon ui-icon-arrowthick-1-e" title="'+ $.i18n('dialog', 'next') +'"></span>',
-						//sLast : '<span class="ui-icon ui-icon-arrowthickstop-1-e" title="'+ $.i18n('dialog', 'last') +'"></span>'
+/*
+						sFirst : '<span class="fa fa-fast-backward" title="'+ $.i18n('dialog', 'first') +'"></span>',
+						sPrevious : '<span class="fa fa-step-backward" title="'+ $.i18n('dialog', 'prev') +'"></span>',
+						sNext : '<span class="fa fa-step-forward" title="'+ $.i18n('dialog', 'next') +'"></span>',
+						sLast : '<span class="fa fa-fast-forward" title="'+ $.i18n('dialog', 'last') +'"></span>'
+*/
 						sFirst		: $.i18n('dialog', 'first'),
 						sPrevious	: $.i18n('dialog', 'prev'),
 						sNext		: $.i18n('dialog', 'next'),
@@ -364,9 +366,13 @@ var pukiwiki = {};
 		// DOMの初期化
 		init_dom : function(prefix, callback){
 			var self = this;
+			if (prefix !== undefined && typeof prefix !== 'string'){
+				// 超やっつけ仕事！！
+				prefix = prefix.selector;
+			}
 			prefix = (prefix) ? prefix + ' ' : '';
 
-			$(prefix + ':input').attr('disabled','disabled');
+			$(':input').attr('disabled','disabled');
 
 			// 自動サブミット型の設定。
 			$(prefix + 'form.autosubmit').change(function(){
@@ -398,15 +404,15 @@ var pukiwiki = {};
 			$(prefix + '.tabs').tabs({
 				beforeLoad: function( event, ui ) {
 					ui.panel.html([
-						'<div class="ui-state-highlight ui-corner-all">',
-							'<p id="ajax_error"><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>'+$.i18n('dialog', 'loading')+'</p>',
+						'<div class="alert alert-info">',
+							'<p id="ajax_error"><span class="fa fa-info-circle"></span>'+$.i18n('dialog', 'loading')+'</p>',
 						'</div>'
 					].join("\n"));
 					ui.jqXHR.global = false;
 					ui.jqXHR.error(function() {
 						ui.panel.html([
-							'<div class="ui-state-error ui-corner-all">',
-								'<p id="ajax_error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>'+$.i18n('dialog','error_page')+'</p>',
+							'<div class="alert alert-warning">',
+								'<p id="ajax_error"><span class="fa fa-fa-exclamation-triangle"></span>'+$.i18n('dialog','error_page')+'</p>',
 							'</div>'
 						].join("\n"));
 					});
@@ -423,8 +429,8 @@ var pukiwiki = {};
 							ui.panel.html($.i18n('dialog','loading'));
 							ui.jqXHR.error(function() {
 								ui.panel.html([
-									'<div class="ui-state-error ui-corner-all">',
-										'<p id="ajax_error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>'+$.i18n('dialog','error_page')+'</p>',
+									'<div class="alert alert-danger">',
+										'<p id="ajax_error"><span class="fa fa-times-circle"></span>'+$.i18n('dialog','error_page')+'</p>',
 									'</div>'
 								].join("\n"));
 							});
@@ -496,7 +502,7 @@ var pukiwiki = {};
 			this.dataTable(prefix);
 
 			// フォームロックを解除
-			$(prefix + ':input').removeAttr('disabled');
+			$(':input').removeAttr('disabled');
 
 			if(typeof(callback) === 'function'){
 				callback();
@@ -506,7 +512,8 @@ var pukiwiki = {};
 		setAnchor : function(prefix){
 			var self = this,	// pukiwikiへのエイリアス
 				dom = (prefix) ? $(prefix).find('a') : $('a');
-			
+
+			console.log(prefix);
 
 			$('.link_symbol').each(function(){
 				var $this = $(this);
@@ -653,7 +660,8 @@ var pukiwiki = {};
 								params.ajax = 'json';
 								self.ajax_dialog(params,prefix,function(){
 									if ((params.cmd == 'attach' && params.pcmd.match(/upload|info/i)) || params.cmd.match(/attachref|read|backup/i) && params.age !== ''){
-										self.init_dom(prefix + ' .window');
+										var dom = $(prefix).find('.window');
+										self.init_dom(dom);
 									}
 								});
 								return false;
@@ -670,8 +678,8 @@ var pukiwiki = {};
 		// prefix		親のDOM名
 		// callback		開いた時実行する関数。
 		// parse		JSONのパース関数
-		ajax_dialog : function(params,prefix,callback,parse){
-			prefix = (prefix) ? prefix + ' .window' : '.window';
+		ajax_dialog : function(params, prefix,callback,parse){
+			prefix = (prefix) ? $(prefix).find('.window') : $('.window');
 			var self = this,	// pukiwikiへのエイリアス
 				// ダイアログ設定
 				dialog_option = {
@@ -680,7 +688,6 @@ var pukiwiki = {};
 					show: 'fade',
 					hide: 'fade',
 					width: '520px',
-					bgiframe : (ie >= 6) ? true : false,	// for IE6
 					open: function(){
 						if(typeof(callback) === 'function'){ callback(); }
 						// オーバーレイでウィンドウを閉じる
@@ -737,9 +744,16 @@ var pukiwiki = {};
 				}else if (status === 'error'){
 					status = $.i18n('dialog','error_page');
 				}
+
 				dialog_option.title = $.i18n('dialog','error');
 				dialog_option.width = 400;
-				container.html('<p class="alert alert-warning" id="ajax-error"><span class="fa fa-warning"></span>'+status+'</p>').dialog(dialog_option);
+				content = '<p class="alert alert-warning" id="ajax-error"><span class="fa fa-warning"></span>'+status+'</p>';
+				content += (data.responseText);
+			}).
+			always(function(data){
+				container.html(content).dialog(dialog_option);
+				$('*[role="tooltip"]').remove();	// ツールチップが消えないことがあるので・・・
+
 				if (data.status === 500){
 					try{
 						$('#ajax-error').after([
@@ -754,10 +768,6 @@ var pukiwiki = {};
 						].join("\n"));
 					}catch(e){}
 				}
-			}).
-			always(function(){
-				container.html(content).dialog(dialog_option);
-				$('*[role="tooltip"]').remove();	// ツールチップが消えないことがあるので・・・
 			});
 		},
 		blockUI : function(dom){
@@ -819,11 +829,11 @@ var pukiwiki = {};
 		},
 		dataTable : function(prefix){
 			var self = this;
-			var table = (prefix) ? prefix + ' .table' : '.table';
-			$(table).each(function(){
+			var $table = (prefix) ? $(prefix).find('.table') : $('.table');
+			$table.each(function(){
 				var $this = $(this),
 					sortable = (typeof($this.data('sortable')) === 'undefined' || $this.data('sortable') === true) ? true : false;
-				self.setAnchor(this);
+			//	self.setAnchor(this);
 				if ($this.find('thead').length !== 0 && sortable){
 					var pagenate = (typeof($this.data('pagenate')) === 'undefined' || $this.data('pagenate') === false) ? false : true;
 					$this.dataTable({
@@ -987,7 +997,7 @@ var pukiwiki = {};
 				emoji_widget = '<ul class="ui-widget pkwk_widget ui-helper-clearfix">';
 				for(i = 0, len = this.assistant_setting.emoji.length; i < len ; i++ ){
 					var name =  this.assistant_setting.emoji[i];
-					emoji_widget += '<li class="ui-button ui-state-default ui-corner-all" title="'+name+'" name="'+name+'"><span class="emoji emoji-'+name+'"></span></li>';
+					emoji_widget += '<li class="btn btn-default btn-xs" title="'+name+'" name="'+name+'"><span class="emoji emoji-'+name+'"></span></li>';
 				}
 				emoji_widget += '</ul>';
 				$emoji.dialog({
@@ -1005,7 +1015,7 @@ var pukiwiki = {};
 				color_widget = '<ul class="ui-widget pkwk_widget ui-helper-clearfix" id="colors">';
 				for(i = 0, len =  this.assistant_setting.color.length; i < len ; i++ ){
 					var color = this.assistant_setting.color[i];
-					color_widget += '<li class="ui-button ui-state-default" title="'+color+'" name="'+color+'"><span class="emoji" style="background-color:'+color+';"></span></li>';
+					color_widget += '<li class="btn btn-default btn-xs" title="'+color+'" name="'+color+'"><span class="emoji" style="background-color:'+color+';"></span></li>';
 					j++;
 				}
 				color_widget += '</ul>';

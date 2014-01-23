@@ -204,19 +204,6 @@ figcaption{
 	color:white;
 }
 
-/* html.php/edit_form() */
-.edit_form { clear:both; }
-
-.edit_form textarea{
-	width:95%;
-	min-width:99%;
-	resize: vertical;
-	margin:0;
-}
-
-.ie8 .edit_form textarea{
-	width:780px;
-}
 
 /* Note */
 .super_index {
@@ -286,35 +273,6 @@ textarea, select, option, input, var, pre, code{
 	width:160px;
 	font-size:93%;
 	text-align:center;
-}
-
-/* attach.inc.php / related.inc.php */
-#attach, #related{
-	display:block;
-	float:none;
-}
-#attach dl, #related dl{
-	margin:0 1%;
-	display:block;
-}
-#attach dl dt, #related dl dt{
-	display:inline;
-	font-weight:normal;
-	margin: .1em .25em;
-}
-#attach dl dd, #related dl dd{
-	display:inline;
-	margin: .1em .25em;
-}
-.attach_info dl{
-	float:left;
-	display:block;
-	overflow:visible;
-}
-.attach_info_image{
-	right:1em;
-	position:absolute;
-	z-index:-1;
 }
 
 /* backup.inc.php */

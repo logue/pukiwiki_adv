@@ -1,16 +1,14 @@
 @charset "UTF-8";
-/*
-/////////////////////////////////////////////////
-// PukiWiki Plus! skin for PukiWiki Advance
-// Original version written by miko and upk.
-// Adv version by Logue.
-//
-// $Id: default.css,v 1.33.12 2012/01/09 14:59:00 Logue Exp $
-//
-*/
+/**!
+ * PukiWiki Plus! skin for PukiWiki Advance
+ * Original version written by miko and upk.
+ * Adv version by Logue.
+ *
+ * $Id: default.css,v 1.33.12 2012/01/09 14:59:00 Logue Exp $
+ */
 
 /** Generic Tags *********************************************************************************/
-a{
+a:not(.btn){
 	color:#215dc6;
 	text-decoration:none;
 	-ms-transition: .2s ease-in-out;
@@ -18,12 +16,8 @@ a{
 	-webkit-transition: .2s ease-in-out;
 }
 
-a:hover{
+a:not(.btn):hover{
 	text-decoration:underline;
-}
-
-.ui-widget a{
-	color:#215dc6 !important;
 }
 
 p, pre, dl, blockquote, .table_wrapper{
@@ -119,10 +113,6 @@ q{
 }
 
 #main{
-	background-color: whitesmoke;
-}
-
-#main_wrapper #main{
 	background-color: white;
 	padding:5px;
 }
@@ -293,7 +283,7 @@ q{
 }
 
 #topicpath{
-	padding:.5em 1em;
+	padding:0 5px;
 	font-size:96%;
 }
 

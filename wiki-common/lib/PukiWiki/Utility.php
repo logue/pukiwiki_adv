@@ -5,10 +5,10 @@
  * @package   PukiWiki
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @copyright 2012-2014 PukiWiki Advance Developers Team
  * @create    2012/12/31
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Utility.php,v 1.0.0 2013/03/11 08:04:00 Logue Exp $
+ * @version   $Id: Utility.php,v 1.0.1 2014/01/21 11:29:00 Logue Exp $
  **/
 
 namespace PukiWiki;
@@ -19,11 +19,14 @@ use PukiWiki\Factory;
 use PukiWiki\Listing;
 use PukiWiki\Renderer\RendererDefines;
 use PukiWiki\Renderer\PluginRenderer;
+use PukiWiki\Renderer\Header;
 use PukiWiki\Router;
 use PukiWiki\Render;
 use Zend\Http\Response;
 use Zend\Math\Rand;
+use Zend\Json\Json;
 use SplFileInfo;
+use Exception;
 
 /**
  * 汎用関数
@@ -555,12 +558,14 @@ class Utility{
 		global $_string, $_title, $_button, $vars;
 
 		// エラーメッセージの内容
-		$body[] = '<p>[ ';
-		if ( isset($vars['page']) && !empty($vars['page']) ){
-			$body[] = '<a href="' . Factory::Wiki($vars['page'])->uri() .'">'.$_button['back'].'</a> | ';
-			$body[] = '<a href="' . Router::get_cmd_uri('edit',$vars['page']) . '">Try to edit this page</a> | ';
+		if (!isset($vars['ajax'])) {
+			$body[] = '<p>[ ';
+			if ( isset($vars['page']) && !empty($vars['page']) ){
+				$body[] = '<a href="' . Factory::Wiki($vars['page'])->uri() .'">'.$_button['back'].'</a> | ';
+				$body[] = '<a href="' . Router::get_cmd_uri('edit',$vars['page']) . '">Try to edit this page</a> | ';
+			}
+			$body[] = '<a href="' . Router::get_cmd_uri() . '">Return to FrontPage</a> ]</p>';
 		}
-		$body[] = '<a href="' . Router::get_cmd_uri() . '">Return to FrontPage</a> ]</p>';
 		$body[] = '<div class="alert alert-warning">';
 		$body[] = '<p><span class="fa fa-ban-circle"></span> <strong>' . $_title['error'] . '</strong>';
 		$body[] = PKWK_WARNING !== true || empty($msg) ? $msg = $_string['error_msg'] : $msg;
@@ -589,11 +594,12 @@ class Utility{
 			Header::writeResponse($headers, $http_code, Json::encode(array(
 				'posted'    => false,
 				'title'     => $error_title,
-				'msg'       => join("\n",$body),
+				'body'       => join("\n",$body),
 				'taketime'  => Time::getTakeTime()
 			)));
 		}else{
 			new Render($error_title, join("\n",$body), $http_code);
+	//		die(join("\n",$body));
 		}
 		exit();
 	}
