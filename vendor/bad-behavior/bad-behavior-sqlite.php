@@ -40,7 +40,7 @@ $bb2_settings_defaults = array(
 	'strict' => false,
 	'verbose' => false,
 	'logging' => true,
-	'httpbl_key' => 'qqwrvogrqrmi',
+	'httpbl_key' => '',
 	'httpbl_threat' => '25',
 	'httpbl_maxage' => '30',
 	'offsite_forms' => false,
@@ -66,7 +66,7 @@ function bb2_db_affected_rows() {
 // Escape a string for database usage
 function bb2_db_escape($string) {
 	global $bb2_db;
-	return $bb2_db->quote($string);
+	return $bb2_db->quote(trim($string));
 }
 
 // Return the number of rows in a particular query.
@@ -87,7 +87,7 @@ function bb2_db_query($query) {
 		return $bb2_db->query($query);
 	} catch( PDOException $ex ) {
 		// DBアクセス時にエラーとなった時
-		throw Exception('Bad-behavior :' . $query. '<br />' .$ex->getMessage());
+		throw new Exception('Bad-behavior :' . $query. '<br />' .$ex->getMessage());
 	}
 }
 
@@ -105,24 +105,26 @@ function bb2_insert($settings, $package, $key)
 {
 	if (!$settings['logging']) return "";
 	$ip = bb2_db_escape($package['ip']);
-	$date = bb2_db_date();
+	$date = bb2_db_escape(bb2_db_date());
 	$request_method = bb2_db_escape($package['request_method']);
 	$request_uri = bb2_db_escape($package['request_uri']);
 	$server_protocol = bb2_db_escape($package['server_protocol']);
 	$user_agent = bb2_db_escape($package['user_agent']);
 	$headers = "$request_method $request_uri $server_protocol\n";
 	foreach ($package['headers'] as $h => $v) {
-		$headers .= bb2_db_escape("$h: $v\n");
+		$headers .= "$h: $v\n";
 	}
+	$headers = bb2_db_escape($headers);
 	$request_entity = "";
 	if (!strcasecmp($request_method, "POST")) {
 		foreach ($package['request_entity'] as $h => $v) {
-			$request_entity .= bb2_db_escape("$h: $v\n");
+			$request_entity .= "$h: $v\n";
 		}
 	}
-	return "INSERT INTO `" . $settings['log_table']. "`
-		(`ip`, `date`, `request_method`, `request_uri`, `server_protocol`, `http_headers`, `user_agent`, `request_entity`, `key`) VALUES
-		('$ip', '$date', '$request_method', '$request_uri', '$server_protocol', '$headers', '$user_agent', '$request_entity', '$key')";
+	$request_entity = bb2_db_escape($request_entity);
+	return 'INSERT INTO `' . $settings['log_table']. '`' .
+		'(`ip`, `date`, `request_method`, `request_uri`, `server_protocol`, `http_headers`, `user_agent`, `request_entity`, `key`) VALUES' . 
+		'(' . $ip . ', ' . $date . ', ' . $request_method . ', ' . $request_uri . ', ' . $server_protocol . ', ' . $headers . ', ' . $user_agent . ', ' . $request_entity . ', ' . $key .')';
 }
 // Return emergency contact email address.
 function bb2_email() {

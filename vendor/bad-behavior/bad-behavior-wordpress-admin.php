@@ -423,7 +423,7 @@ function bb2_options()
 	</table>
 
 	<h3><?php _e('European Union Cookie'); ?></h3>
-	<p>Select this option if you believe Bad Behavior's site security cookie is not exempt from the 2012 EU cookie regulation. <a href="http://bad-behavior.ioerror.us/2012/05/03/bad-behavior-2-2-4/">More info</a></p>
+	<p>Select this option if you believe Bad Behavior's site security cookie is not exempt from the 2012 EU cookie regulation. <a href="http://bad-behavior.ioerror.us/2012/05/04/eu-cookie-requirement-disclosure/">More info</a></p>
 	<table class="form-table">
 	<tr><td><label><input type="checkbox" name="eu_cookie" value="true" <?php if ($settings['eu_cookie']) { ?>checked="checked" <?php } ?>/> <?php _e('EU cookie handling'); ?></label></td></tr>
 	</table>
