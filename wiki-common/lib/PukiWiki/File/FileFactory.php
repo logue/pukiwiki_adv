@@ -35,14 +35,14 @@ class FileFactory
 	 * 汎用
 	 */
 	public static function factory($driver, $name){
-		if (!in_array($driver, array_keys(self::$classMap))) throw new Exception('$driver = '. $driver . ' is not implemented.');
+		if (!in_array($driver, array_keys(self::$classMap))) throw new Exception('FileFactory::factory(): $driver = '. $driver . ' is not implemented.');
 		return new self::$classMap[$driver]($name);
 	}
 	/**
 	 * 一覧取得
 	 */
 	public static function exists($driver){
-		if (!in_array($driver, array_keys(self::$classMap))) throw new Exception('$driver = '. $driver . ' is not implemented.');
+		if (!in_array($driver, array_keys(self::$classMap))) throw new Exception('FileFactory::exists(): $driver = '. $driver . ' is not implemented.');
 		$class = self::$classMap[$driver];
 		return $class::exists();
 	}
@@ -50,7 +50,7 @@ class FileFactory
 	 * ページ一覧
 	 */
 	public static function getPages($driver){
-		if (!in_array($driver, array_keys(self::$classMap))) throw new Exception('$driver = '. $driver . ' is not implemented.');
+		if (!in_array($driver, array_keys(self::$classMap))) throw new Exception('FileFactory::getPages(): $driver = '. $driver . ' is not implemented.');
 		$class = self::$classMap[$driver];
 		return $class::getPages();
 	}

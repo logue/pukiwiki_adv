@@ -39,10 +39,10 @@ class BackupFile extends AbstractFile{
 	 */
 	public function __construct($page = null){
 		if (empty($page)){
-			throw new Exception('Page name is missing!');
+			throw new Exception('BackupFile::__construct(): Page name is missing!');
 		}
 		if (!is_string($page)){
-			throw new Exception('Page name must be string!');
+			throw new Exception('BackupFile::__construct(): Page name must be string!');
 		}
 		global $do_backup, $cycle, $maxage;
 		if (Auth::check_role('readonly') || ! $do_backup) return;

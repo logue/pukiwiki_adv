@@ -29,10 +29,10 @@ class RefererFile extends AbstractFile{
 	public function __construct($page) {
 
 		if (empty($page)){
-			throw new Exception('Page name is missing!');
+			throw new Exception('RefererFile::__construct(): Page name is missing!');
 		}
 		if (!is_string($page)){
-			throw new Exception('Page name must be string!');
+			throw new Exception('RefererFile::__construct(): Page name must be string!');
 		}
 		$this->page = $page;
 		parent::__construct(self::$dir . Utility::encode($page) . '.ref');
@@ -40,4 +40,4 @@ class RefererFile extends AbstractFile{
 }
 
 /* End of file RefererFile.php */
-/* Location: /vender/PukiWiki/Lib/File/RefererFile.php */
+/* Location: /vendor/PukiWiki/Lib/File/RefererFile.php */

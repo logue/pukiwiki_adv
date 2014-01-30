@@ -60,10 +60,10 @@ abstract class AbstractFile extends SplFileInfo{
 	 */
 	public function __construct($filename = null) {
 		if (empty($filename)){
-			throw new Exception('AbstructFile::__construct(): File name is missing!');
+			throw new Exception('AbstractFile::__construct(): File name is missing!');
 		}
 		if (!is_string($filename)){
-			throw new Exception('AbstructFile::__construct(): File name must be string!');
+			throw new Exception('AbstractFile::__construct(): File name must be string!');
 		}
 		$this->filename = $filename;
 		parent::__construct($filename);
@@ -93,6 +93,7 @@ abstract class AbstractFile extends SplFileInfo{
 	/**
 	 * ファイル一覧を取得
 	 * @param boolean $force キャッシュを再生成する
+	 * @param boolean $clearOnly キャッシュのクリアのみ
 	 * @return array
 	 */
 	public static function exists($force = false, $clearOnly = false){
@@ -163,7 +164,7 @@ abstract class AbstractFile extends SplFileInfo{
 		// (Use PHP file() function if you want to get ALL lines)
 		if ( !self::has() ) return false;
 		if ( !$this->isReadable() )
-			throw new Exception(sprintf('AbstructFile::get(): File %s is not readable.', $this->getRealPath()));
+			throw new Exception(sprintf('AbstractFile::get(): File %s is not readable.', $this->getRealPath()));
 
 		// ファイルの読み込み
 		$file = $this->openFile('r');
@@ -200,7 +201,7 @@ abstract class AbstractFile extends SplFileInfo{
 	public function get($join = false, $legacy = false){
 		if ( !$this->isFile() ) return false;
 		if ( !$this->isReadable() )
-			Utility::dieMessage(sprintf('AbstructFile::get(): File %s is not readable.', $this->getRealPath()));
+			Utility::dieMessage(sprintf('AbstractFile::get(): File %s is not readable.', $this->getRealPath()));
 
 		// ファイルの読み込み
 		$file = $this->openFile('r');
@@ -250,7 +251,7 @@ abstract class AbstractFile extends SplFileInfo{
 
 		// 書き込み可能かをチェック
 		if (! $this->isWritable())
-			Utility::dieMessage(sprintf('AbstructFile::set(): File %s is not writable.', $this->getRealPath()));
+			Utility::dieMessage(sprintf('AbstractFile::set(): File %s is not writable.', $this->getRealPath()));
 
 		// タイムスタンプを取得
 		if ($keeptimestamp) $timestamp = self::getTime();
@@ -365,7 +366,7 @@ abstract class AbstractFile extends SplFileInfo{
 				// 念のためパーミッションを変更（通常は0644）
 				chmod($this->getRealPath(), self::FILE_PERMISSION);
 			}catch(Exception $e){
-				Utility::dieMessage(sprintf('AbstructFile::touch(): File %s is invalid UID and (not writable for the directory or not a flie).' ,$this->getRealPath()));
+				Utility::dieMessage(sprintf('AbstractFile::touch(): File %s is invalid UID and (not writable for the directory or not a flie).' ,$this->getRealPath()));
 			}
 		}
 	}
@@ -395,7 +396,7 @@ abstract class AbstractFile extends SplFileInfo{
 	 * @return boolean
 	 */
 	public function rename($to){
-		if (empty($to)) throw new Exception('AbsructFile::rename(): undefined to newname.');
+		if (empty($to)) Utility::dieMessage('AbsructFile::rename(): New name is undefined.');
 		FileUtility::clearCache();
 		return rename($this->filename, $to);
 	}

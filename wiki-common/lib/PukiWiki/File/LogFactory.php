@@ -34,7 +34,7 @@ class LogFactory
 	);
 
 	public static function factory($kind, $page = null){
-		if (!in_array($kind, array_keys(self::$classMap))) throw new Exception('$driver = '. $kind . ' is not implemented.');
+		if (!in_array($kind, array_keys(self::$classMap))) throw new Exception('LogFactory::factory(): $driver = '. $kind . ' is not implemented.');
 		return new self::$classMap[$kind]($page);
 	}
 }

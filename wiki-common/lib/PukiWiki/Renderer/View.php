@@ -1,5 +1,17 @@
 <?php
+/**
+ * ビュークラス
+ *
+ * @package   PukiWiki
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2012-2014 PukiWiki Advance Developers Team
+ * @create    2012/12/18
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: View.php,v 1.0.0 2014/01/30 14:49:00 Logue Exp $
+ */
 namespace PukiWiki\Renderer;
+
 use PukiWiki\Time;
 use PukiWiki\Render;
 
@@ -102,6 +114,14 @@ class View{
 		return isset($this->_vars[$key]);
 	}
 	/**
+	 * 値を削除
+	 * @param string $key
+	 * @return void
+	 */
+	public function __unset($key){
+		unset($this->_vars[$key]);
+	}
+	/**
 	 * レンダリング
 	 */
 	public function __toString()
@@ -153,7 +173,7 @@ class View{
 			$html[] = '<head>';
 			$html[] = '<meta charset="utf-8">';
 			$html[] = $this->meta;
-			$html[] = '<link rel="stylesheet" href="http://code.jquery.com/ui/' . Render::JQUERY_UI_VER . '/themes/' . $this->conf->ui_theme . '/jquery-ui.min.css" type="text/css" />';
+			$html[] = '<link rel="stylesheet" href="//' . Render::BOOTSTRAP_CDN . '/bootstrap/' . Render::TWITTER_BOOTSTRAP_VER . '/css/bootstrap.min.css" type="text/css" />';
 			$html[] = '<title>' . $this->title . '</title>';
 			$html[] = '</head>';
 			$html[] = '<body>';

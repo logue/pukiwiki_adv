@@ -4,6 +4,7 @@ namespace PukiWiki\Renderer;
 use PukiWiki\Auth\Auth;
 use PukiWiki\Utility;
 use PukiWiki\Router;
+use PukiWiki\Render;
 use Zend\Http\Response;
 
 class Header{
@@ -27,7 +28,7 @@ class Header{
 		$file = $line = '';
 
 		if (headers_sent($file, $line)){
-			Utility::dieMessage(sprintf($_string['header_sent'],Utility::htmlsc($file),$line));
+			Utility::dieMessage(sprintf('Header::checkSent(): ' .$_string['header_sent'],Utility::htmlsc($file),$line));
 		}
 	}
 	/**
@@ -84,7 +85,7 @@ class Header{
 		// Content Security Policy
 		// https://developer.mozilla.org/ja/Security/CSP/Using_Content_Security_Policy
 		// 現在の実装だとあまり意味は無いが・・・。
-		$headers['X-Content-Security-Policy'] ='allow "self" "inline-script"; img-src *; media-src *; style-src *;srcipt-src *;';
+		//$headers['Content-Security-Policy'] ='default-src \'self\' \'unsafe-inline\' ' . Render::JQUERY_CDN . ' ' . Render::BOOTSTRAP_CDN . '; img-src *;';
 
 		// IEの自動MIME type判別機能を無効化する
 		// http://msdn.microsoft.com/ja-jp/ie/dd218497.aspx
@@ -96,7 +97,7 @@ class Header{
 
 		// XSS脆弱性対策（これでいいのか？）
 		// http://msdn.microsoft.com/ja-jp/ie/dd218482
-		$headers['X-XSS-Protection'] = '1;mode=block';
+		$headers['X-XSS-Protection'] = '1; mode=block';
 
 		return $headers;
 	}

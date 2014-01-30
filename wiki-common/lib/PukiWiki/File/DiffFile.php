@@ -32,7 +32,7 @@ class DiffFile extends AbstractFile{
 	 */
 	public function __construct($page) {
 		if (empty($page)){
-			throw new Exception('Page name is missing!');
+			throw new Exception('DiffFile::__construct(): Page name is missing!');
 		}
 		$this->page = $page;
 		parent::__construct(self::$dir . Utility::encode($page) . '.txt');
@@ -59,7 +59,7 @@ class DiffFile extends AbstractFile{
 				'REMOTE_ADDR'	=> TRUE
 			);
 			Mailer::notify($notify_subject, $str, $summary) or
-				Utility::dieMessage('pkwk_mail_notify(): Failed');
+				Utility::dieMessage('Mailer::notify(): Failed');
 		}
 		parent::set($diffdata);
 	}

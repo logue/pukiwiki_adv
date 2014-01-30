@@ -22,6 +22,7 @@ use PukiWiki\Renderer\PluginRenderer;
 use PukiWiki\Renderer\Header;
 use PukiWiki\Router;
 use PukiWiki\Render;
+use Zend\Http\PhpEnvironment\Request;
 use Zend\Http\Response;
 use Zend\Math\Rand;
 use Zend\Json\Json;
@@ -56,6 +57,20 @@ class Utility{
 	 * スパムの正規表現マッチパターン
 	 */
 	const SPAM_PATTERN = '#(?:cialis|hydrocodone|viagra|levitra|tramadol|xanax|\</a\>|\[/link\]|\[/url\])#i';
+	/**
+	 * WebDAVのマッチパターン
+	 */
+	protected static $ua_dav = array(
+		'Microsoft-WebDAV-MiniRedir\/',
+		'Microsoft Data Access Internet Publishing Provider',
+		'MS FrontPage',
+		'^WebDrive',
+		'^WebDAVFS\/',
+		'^gnome-vfs\/',
+		'^XML Spy',
+		'^Dreamweaver-WebDAV-SCM1',
+		'^Rei.Fs.WebDAV',
+	);
 
 	/**
 	 * 設定ファイルを読み込む
@@ -77,102 +92,58 @@ class Utility{
 			}
 			unset($f);
 		}
-		throw new \Exception($file. ' is missing!');
+		return false;
 	}
 	/**
 	 * QueryStringをパースし、$_GETに上書き
 	 * @return void
 	 */
 	public static function parseArguments(){
-		global $_GET, $_SERVER, $REQUEST_URI, $HTTP_SERVER_VARS, $HTTP_GET_VARS, $HTTP_POST_VARS, $_REQUEST;
-		global $get, $post, $vars, $cookie;
+		global $cookie;
 		global $defaultpage;
 
-		/////////////////////////////////////////////////
+		$request  = new Request();
+
 		// GET, POST, COOKIE
-		$get    = self::stripNullBytes($_GET);
-		$post   = self::stripNullBytes($_POST);
-		$cookie = self::stripNullBytes($_COOKIE);
+		$get    = $request->getQuery();
+		$post   = $request->getPost();
+		$cookie = $request->getCookie();
 
-		// 安全のためデフォルトの外部変数はアンセット
-		unset($_GET, $_POST, $_COOKIE);
-
-		$arg = '';
-		if (isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING'])) {
-			$arg = $_SERVER['QUERY_STRING'];
-		//} else if (array_key_exists('PATH_INFO',$_SERVER) and !empty($_SERVER['PATH_INFO']) ) {
-		//	$arg = preg_replace("/^\/*(.+)\/*$/","$1",$_SERVER['PATH_INFO']);
-		} else if (isset($_SERVER['argv']) && ! empty($_SERVER['argv'])) {
-			$arg = $_SERVER['argv'][0];
-		}
-
-		if (strlen($arg) > self::MAX_QUERY_STRING_LENGTH) {
+		if (strlen($get->toString()) > self::MAX_QUERY_STRING_LENGTH) {
 			// Something nasty attack?
 			self::dieMessage(_('Query string is too long.'));
 		}
-		$arg = str_replace('+','%20',self::stripNullBytes($arg)); // \0 除去
-		// for QA/250
 
-		// unset QUERY_STRINGs
-		//foreach (array('QUERY_STRING', 'argv', 'argc') as $key) {
-		// For OpenID Lib (use QUERY_STRING).
-		foreach (array('argv', 'argc') as $key) {
-			unset(${$key}, $_SERVER[$key], $HTTP_SERVER_VARS[$key]);
-		}
-		// $_SERVER['REQUEST_URI'] is used at func.php NOW
-		unset($REQUEST_URI, $HTTP_SERVER_VARS['REQUEST_URI']);
-		
-		// Expire risk
-		unset($HTTP_GET_VARS, $HTTP_POST_VARS);	//, 'SERVER', 'ENV', 'SESSION', ...
-		unset($_REQUEST);	// Considered harmful
-
-		/////////////////////////////////////////////////
-		// QUERY_STRINGを分解してコード変換し、$get に上書き
-		// URI を urlencode せずに入力した場合に対処する
-		if (empty($arg)){
+		if (count($get) === 0){
 			// Queryがない場合
-			$get['cmd'] = 'read';
-			$get['page'] = $defaultpage;
-		}else if (strpbrk('=', $arg)){
-			// =が含まれている場合querystringの配列とみなし、パースする
-			$matches = array();
-			foreach (explode('&', $arg) as $key_and_value) {
-				if (preg_match('/^([^=]+)=(.+)/', $key_and_value, $matches)) {
-					$key = trim($matches[1]);
-					$value = trim(rawurldecode($matches[2]));
-					if (empty($value)) continue;
-					$get[$key] = $value;
-				}
-			}
-			unset($matches);
-			// if (!isset($get['page'])) $get['page'] = '';	// 本当は不要
-		} else {
-			// そうでない場合はすべてページ名とみなす
-			$get['cmd'] = 'read';
-			$get['page'] = rawurldecode($arg);
+			$get->set('cmd', 'read');
+			$get->set('page', $defaultpage);
+		}else if (count($get) === 1 && array_values((array)$get)[0] === ''){
+			// 配列の長さが1で最初の配列に値が存在しない場合はキーをページ名とする。
+			$k = array_keys((array)$get)[0];
+			$get->set('cmd', 'read');
+			$get->set('page', rawurldecode($k));
+			unset($get[$k]);
 		}
 		
 		// 外部からの変数を$vars配列にマージする
 		if (empty($post)) {
-			$method = 'GET';
-			$vars = $get;  // Major pattern: Read-only access via GET
+			$vars = (array)$get;  // Major pattern: Read-only access via GET
 		} else if (empty($get)) {
-			$method = 'POST';
-			$vars = $post; // Minor pattern: Write access via POST etc.
+			$vars = (array)$post; // Minor pattern: Write access via POST etc.
 		} else {
-			$method = 'GET and POST';
-			$vars = array_merge($get, $post); // Considered reliable than $_REQUEST
+			$vars = array_merge((array)$get, (array)$post); // Considered reliable than $_REQUEST
 		}
 
-		if (! isset($vars['cmd'])){
-			// プラグイン名が指定されていない場合readプラグインとみなす
-			$get['cmd']  = $post['cmd']  = $vars['cmd']  = 'read';
-		}else if (!preg_match(PluginRenderer::PLUGIN_NAME_PATTERN, $vars['cmd']) !== FALSE){
+		// ヌル文字を削除
+		$vars = self::stripNullBytes($vars);
+
+		if (!preg_match(PluginRenderer::PLUGIN_NAME_PATTERN, $vars['cmd']) !== FALSE){
 			// 入力チェック: cmdの文字列は英数字以外ありえない
 			Utility::dieMessage('Plugin name is invalied or too long! (less than 64 chars)');
 		}
 
-		// 文字コード変換 ($_POST)
+		// 文字コード変換
 		// <form> で送信された文字 (ブラウザがエンコードしたデータ) のコードを変換
 		// POST method は常に form 経由なので、必ず変換する
 		if (isset($vars['encode_hint']) && !empty($vars['encode_hint'])) {
@@ -187,13 +158,169 @@ class Utility{
 			mb_convert_variables(SOURCE_ENCODING, 'auto', $vars);
 		}
 
-		// 整形: msg, 改行を取り除く（ここでチェックするのは間違い。プラグインで実装すべき）
-		if (isset($vars['msg'])) {
-			// GETメソッドでmsgが送られて来ることはありえない。
-			unset($get['msg']);
-			$post['msg'] = $vars['msg'] = str_replace("\r", '', $vars['msg']);
+		// 環境変数のチェック
+		self::checkEnv($request->getEnv());
+
+		switch ($request->getMethod()){
+			case Request::METHOD_POST:
+				spamCheck($vars['cmd']);
+				break;
+			case Request::METHOD_OPTIONS:
+			case Request::METHOD_PROPFIND:
+			case Request::METHOD_DELETE:
+			case 'MOVE':
+			case 'COPY':
+			case 'PROPPATCH':
+			case 'MKCOL':
+			case 'LOCK':
+			case 'UNLOCK':
+				// WebDAV
+				$matches = array();
+				foreach(self::$ua_dav as $pattern) {
+					if (preg_match('/'.$pattern.'/', $log_ua, $matches)) {
+						PluginRenderer::executePluginAction('dav');
+						exit;
+					}
+				}
+				break;
 		}
 
+		return $vars;
+	}
+	/**
+	 * 環境変数のチェック
+	 */
+	public static function checkEnv($env){
+		global $deny_countory, $allow_countory;
+		// 国別設定
+		$country_code = '';
+		if (isset($env['HTTP_CF_IPCOUNTRY'])){
+			// CloudFlareを使用している場合、そちらのGeolocationを読み込む
+			// https://www.cloudflare.com/wiki/IP_Geolocation
+			$country_code = $env['HTTP_CF_IPCOUNTRY'];
+		}else if (isset($env['GEOIP_COUNTRY_CODE'])){
+			// サーバーが$_SERVER['GEOIP_COUNTRY_CODE']を出力している場合
+			// Apache : http://dev.maxmind.com/geoip/mod_geoip2
+			// nginx : http://wiki.nginx.org/HttpGeoipModule
+			// cherokee : http://www.cherokee-project.com/doc/config_virtual_servers_rule_types.html
+			$country_code = $env['GEOIP_COUNTRY_CODE'];
+		}else if (function_exists('geoip_db_avail') && geoip_db_avail(GEOIP_COUNTRY_EDITION) && function_exists('geoip_region_by_name')) {
+			// それでもダメな場合は、phpのgeoip_region_by_name()からGeolocationを取得
+			// http://php.net/manual/en/function.geoip-region-by-name.php
+			$geoip = geoip_region_by_name(REMOTE_ADDR);
+			$country_code = $geoip['country_code'];
+			$info[] = (!empty($geoip['country_code']) ) ?
+				'GeoIP is usable. Your country code from IP is inferred <var>'.$geoip['country_code'].'</var>.' :
+				'GeoIP is NOT usable. Maybe database is not installed. Please check <a href="http://www.maxmind.com/app/installation?city=1" rel="external">GeoIP Database Installation Instructions</a>';
+		}else if (function_exists('apache_note')) {
+			// Apacheの場合
+			$country_code = apache_note('GEOIP_COUNTRY_CODE');
+		}
+
+		// 使用可能かをチェック
+		if ( !isset($country_code) || empty($country_code)) {
+			$info[] = 'Seems Geolocation is not available. <var>$deny_countory</var> value and <var>$allow_countory</var> value is ignoled.';
+			
+		} else {
+			$info[] = 'Your country code from IP is inferred <var>'.$country_code.'</var>.';
+			if (isset($deny_countory) && !empty($deny_countory)) {
+				if (in_array($country_code, $deny_countory)) {
+					die('Sorry, access from your country('.$geoip['country_code'].') is prohibited.');
+					exit;
+				}
+			}
+			if (isset($allow_countory) && !empty($allow_countory)) {
+				if (!in_array($country_code, $allow_countory)) {
+					die('Sorry, access from your country('.$geoip['country_code'].') is prohibited.');
+					exit;
+				}
+			}
+		}
+
+		// INI_FILE: $agents:  UserAgentの識別
+		$user_agent = $matches = array();
+
+		$user_agent['agent'] = isset($env['HTTP_USER_AGENT']) ? $env['HTTP_USER_AGENT'] : '';
+		// unset(${$ua}, $_SERVER[$ua], $HTTP_SERVER_VARS[$ua], $ua);	// safety
+		if ( empty($user_agent['agent']) ) die();	// UAが取得できない場合は処理を中断
+
+		foreach (self::loadConfig('profile.ini.php') as $agent) {
+			if (preg_match($agent['pattern'], $user_agent['agent'], $matches)) {
+				
+				$user_agent = array(
+					'profile'	=> isset($agent['profile']) ? $agent['profile'] : null,
+					'name'		=> isset($matches[1]) ? $matches[1] : null,	// device or browser name
+					'vers'		=> isset($matches[2]) ? $matches[2] : null,	// version
+				);
+				break;
+			}
+		}
+
+		$ua_file = self::add_homedir($user_agent['profile'].'.ini.php');
+		if ($ua_file){
+			require($ua_file);
+		}
+
+		define('UA_NAME', isset($user_agent['name']) ? $user_agent['name'] : null);
+		define('UA_VERS', isset($user_agent['vers']) ? $user_agent['vers'] : null);
+		define('UA_CSS', isset($user_agent['css']) ? $user_agent['css'] : null);
+
+		// HTTP_X_REQUESTED_WITHヘッダーで、ajaxによるリクエストかを判別
+		define('IS_AJAX', isset($env['HTTP_X_REQUESTED_WITH']) && strtolower($env['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' || isset($vars['ajax']));
+
+	}
+	/**
+	 * スパムフィルタ
+	 * @param string $cmd 動作
+	 */
+	public static function spamCheck($cmd){
+		global $spam, $vars;
+
+		// Adjustment
+		$_spam = !empty($spam);
+		$_cmd = strtolower($cmd);
+		$_ignore = array();
+		switch ($_cmd) {
+			case 'search': $_spam = FALSE; break;
+			case 'edit':
+				$_page = & $page;
+				if (isset($vars['add']) && $vars['add']) {
+					$_cmd = 'add';
+				} else {
+					$_ignore[] = 'original';
+				}
+				break;
+			case 'bugtrack': $_page = & $vars['base'];  break;
+			case 'tracker':  $_page = & $vars['_base']; break;
+			case 'read':     $_page = & $page;  break;
+			default: $_page = & $refer; break;
+		}
+
+		if ($_spam) {
+
+			if (isset($spam['method'][$_cmd])) {
+				$_method = & $spam['method'][$_cmd];
+			} else if (isset($spam['method']['_default'])) {
+				$_method = & $spam['method']['_default'];
+			} else {
+				$_method = array();
+			}
+			$exitmode = isset($spam['exitmode']) ? $spam['exitmode'] : null;
+
+			// Hack: ignorance several keys
+			if ($_ignore) {
+				$_vars = array();
+				foreach($vars as $key => $value) {
+					$_vars[$key] = & $vars[$key];
+				}
+				foreach($_ignore as $key) {
+					unset($_vars[$key]);
+				}
+			} else {
+				$_vars = & $vars;
+			}
+			Spam::pkwk_spamfilter($method . ' to #' . $_cmd, $_page, $_vars, $_method, $exitmode);
+		}
 	}
 	/**
 	 * 乱数を生成して暗号化時のsaltを生成する
@@ -368,52 +495,6 @@ class Utility{
 		$ret = preg_match($pattern, $str);
 		// マッチしない場合は0が帰るのでFALSEにする
 		return $ret === 0 ? FALSE : $ret;
-	}
-	/**
-	 * WebDAVからのアクセスか
-	 */
-	public static function isWebDAV()
-	{
-		global $log_ua;
-		static $status = false;
-		if ($status) return true;
-
-		static $ua_dav = array(
-			'Microsoft-WebDAV-MiniRedir\/',
-			'Microsoft Data Access Internet Publishing Provider',
-			'MS FrontPage',
-			'^WebDrive',
-			'^WebDAVFS\/',
-			'^gnome-vfs\/',
-			'^XML Spy',
-			'^Dreamweaver-WebDAV-SCM1',
-			'^Rei.Fs.WebDAV',
-		);
-
-		switch($_SERVER['REQUEST_METHOD']) {
-			case 'OPTIONS':
-			case 'PROPFIND':
-			case 'MOVE':
-			case 'COPY':
-			case 'DELETE':
-			case 'PROPPATCH':
-			case 'MKCOL':
-			case 'LOCK':
-			case 'UNLOCK':
-				$status = true;
-				return $status;
-			default:
-				continue;
-		}
-
-		$matches = array();
-		foreach($ua_dav as $pattern) {
-			if (preg_match('/'.$pattern.'/', $log_ua, $matches)) {
-				$status = true;
-				return true;
-			}
-		}
-		return false;
 	}
 	/**
 	 * 簡易スパム判定
@@ -828,9 +909,11 @@ class Utility{
 			}
 			// 管理人のパス入力
 			if ($notimeupdate === 2 && Auth::check_role('role_contents_admin')) {
-				$ret[] = '<div class="input-group">';
-				$ret[] = '<span class="input-group-addon"><span class="fa fa-key"></span></span>';
+				$ret[] = '<div class="form-group">';
+				//$ret[] = '<div class="input-group">';
+				//$ret[] = '<span class="input-group-addon"><span class="fa fa-key"></span></span>';
 				$ret[] = '<input type="password" name="pass" class="form-control" size="12" placeholder="Password" />';
+				//$ret[] = '</div>';
 				$ret[] = '</div>';
 			}
 			$ret[] = '<button type="submit" class="btn btn-warning" name="cancel" accesskey="c"><span class="fa fa-ban"></span>' . $_button['cancel'] . '</button>';

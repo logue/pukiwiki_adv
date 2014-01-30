@@ -1,8 +1,8 @@
 <?php
 // PukPukiPlus.
-// $Id: attach.inc.php,v 1.92.51 2012/10/11 19:05:00 Logue Exp $
+// $Id: attach.inc.php,v 1.92.51 2014/01/25 8:38:00 Logue Exp $
 // Copyright (C)
-//   2010-2012 PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
+//   2010-2014 PukiWiki Advance Developers Team <http://pukiwiki.logue.be/>
 //   2005-2009 PukiWiki Plus! Team
 //   2003-2007,2009,2011 PukiWiki Developers Team
 //   2002-2003 PANDA <panda@arino.jp> http://home.arino.jp/
@@ -11,15 +11,18 @@
 // License: GPL v2 or (at your option) any later version
 //
 // File attach plugin
-use PukiWiki\File\FileFactory;
-use PukiWiki\File\AttachFile;
 use PukiWiki\Attach;
 use PukiWiki\Auth\Auth;
-use PukiWiki\Spam\Spam;
 use PukiWiki\Factory;
-use PukiWiki\Router;
+use PukiWiki\File\AttachFile;
+use PukiWiki\File\FileFactory;
 use PukiWiki\Listing;
+use PukiWiki\Renderer\Header;
+use PukiWiki\Renderer\PluginRenderer;
+use PukiWiki\Router;
+use PukiWiki\Spam\Spam;
 use PukiWiki\Utility;
+use Zend\Json\Json;
 
 // NOTE (PHP > 4.2.3):
 //    This feature is disabled at newer version of PHP.
@@ -155,7 +158,7 @@ function plugin_attach_convert()
 
 	$ret = '';
 	if (! $nolist) {
-		$obj  = new AttachPages($page);
+		$obj  = new Attach($page);
 		$ret .= $obj->toString($page, TRUE);
 	}
 	if (! $noform) {
@@ -218,7 +221,7 @@ function plugin_attach_action()
 		case 'upload'   : return attach_showform();
 		case 'form'     : return array('msg'  =>str_replace('$1', $refer, $_attach_messages['msg_upload']), 'body'=>attach_form($refer));
 		case 'post'     : return attach_upload($page, $pass);
-		case 'progress' : return get_upload_progress();
+		case 'progress' : return PluginRenderer::getUploadProgress();
 	}
 	return (empty($page) || ! $wiki->isValied()) ? attach_list() : attach_showform();
 }
@@ -479,9 +482,7 @@ function attach_doupload($file, $page, $pass=NULL, $temp)
 	// ページのタイムスタンプを更新
 	Factory::Wiki($page)->touch();
 
-	$obj->getstatus();
 	$obj->status['pass'] = ($pass !== TRUE && $pass !== NULL) ? md5($pass) : '';
-	$obj->setstatus();
 
 	if ($notify) {
 		$notify_exec = TRUE;
@@ -608,13 +609,21 @@ function attach_list()
 {
 	global $vars, $_attach_messages, $_string;
 
-	if (Auth::check_role('safemode')) die_message( $_string['prohibit'] );
+	if (Auth::check_role('safemode')) Utility::dieMessage( $_string['prohibit'] );
 
-	$refer = isset($vars['refer']) ? $vars['refer'] : null;
-	
+	$page = isset($vars['page']) ? $vars['page'] : null;
+	$refer = isset($vars['refer']) ? $vars['refer'] : $page;
+	$type = isset($vars['type']) ? $vars['type'] : null;
 	if (! empty($refer)) {
+		$wiki = Factory::Wiki($refer);
+		$wiki->isReadable();
+		if ($type === 'json'){
+			$headers = Header::getHeaders('application/json');
+			Header::writeResponse($headers, 200, Json::encode($wiki->attach()));
+			exit;
+		}
 		// ページ別添付ファイル一覧
-		$msg = str_replace('$1', htmlsc($refer), $_attach_messages['msg_listpage']);
+		$msg = str_replace('$1', Utility::htmlsc($refer), $_attach_messages['msg_listpage']);
 		$ret[] = '<table class="table table-borderd plugin-attach-list" data-pagenate="true" data-sortable="true"><thead>';
 		$ret[] = '<thead>';
 		$ret[] = '<tr>';
@@ -625,7 +634,7 @@ function attach_list()
 		$ret[] = '</tr>';
 		$ret[] = '</thead>';
 		$ret[] = '<tbody>';
-		foreach(Factory::Wiki($refer)->attach() as $name=>$files){
+		foreach($wiki->attach() as $name=>$files){
 			unset($files['log']);
 			foreach ($files as $backup=>$file){
 				$attach = new Attach($refer, $name, $backup);
@@ -703,7 +712,7 @@ function attach_form($page)
 	global $_attach_messages;
 
 	if (! ini_get('file_uploads'))	return '<p class="alert alert-warning">#attach(): <code>file_uploads</code> disabled.</p>';
-	if (! Factory::Wiki($page)->has())			return '#attach(): No such page<br />';
+	if (! Factory::Wiki($page)->has())			return '<p class="alert alert-warning">#attach(): No such page.</p>';
 
 	$attach_form[] = '<form enctype="multipart/form-data" action="' . Router::get_script_uri() . '" method="post" class="form-inline plugin-attach-form" data-collision-check="false">';
 	$attach_form[] = '<input type="hidden" name="cmd" value="attach" />';

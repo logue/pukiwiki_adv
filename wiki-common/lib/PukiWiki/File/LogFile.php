@@ -79,12 +79,12 @@ class LogFile extends AbstractFile{
 	 * @param string $page
 	 */
 	public function __construct($page = null) {
-		if (empty($this->kind)) throw new Exception('class :'.get_called_class().' does not defined $kind value.');
+		if (empty($this->kind)) throw new Exception('LogFile::__construct(): class "'.get_called_class().'" does not defined $kind value.');
 		$this->config = Utility::loadConfig('config-log.ini.php');
 
 		if (!$this->isWiki) {
 			if (empty($page)){
-				throw new Exception('Page name is missing!');
+				throw new Exception('LogFile::__construct(): Page name is missing!');
 			}
 			// ページ名
 			$this->page = $page;

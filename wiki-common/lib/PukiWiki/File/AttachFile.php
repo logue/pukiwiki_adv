@@ -25,7 +25,6 @@ class AttachFile extends AbstractFile{
 	protected static $listing_pattern = '/^((?:[0-9A-F]{2})+)_((?:[0-9A-F]{2})+)$/';
 
 	public $filename;
-	
 
 	/**
 	 * コンストラクタ
@@ -35,10 +34,22 @@ class AttachFile extends AbstractFile{
 	 */
 	public function __construct($page, $file, $age = 0)
 	{
+		if (empty($page)){
+			throw new Exception('AttachFile::__construct(): Page name is missing!');
+		}
+		if (!is_string($page)){
+			throw new Exception('AttachFile::__construct(): Page name must be string!');
+		}
+		if (empty($file)){
+			throw new Exception('AttachFile::__construct(): File name is missing!');
+		}
+		if (!is_string($file)){
+			throw new Exception('AttachFile::__construct(): File name must be string!');
+		}
 		parent::__construct(self::$dir . Utility::encode($page) . '_' . Utility::encode($file) . ($age !== 0 ? $age : ''));
 	}
 	/**
-	 * file一覧
+	 * ファイル一覧
 	 */
 	public static function getPages($pattern = ''){
 		$ret = array();

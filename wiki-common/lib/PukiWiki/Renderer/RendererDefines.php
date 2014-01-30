@@ -5,10 +5,10 @@
  * @package   PukiWiki\Renderer
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @copyright 2012-2014 PukiWiki Advance Developers Team
  * @create    2012/12/18
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: RendererDefines.php,v 1.0.0 2013/02/01 19:54:00 Logue Exp $
+ * @version   $Id: RendererDefines.php,v 1.0.0 2014/01/30 14:43:00 Logue Exp $
  */
 namespace PukiWiki\Renderer;
 

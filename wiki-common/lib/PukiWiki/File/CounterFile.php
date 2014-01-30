@@ -29,10 +29,10 @@ class CounterFile extends AbstractFile{
 	public function __construct($page = null) {
 
 		if (empty($page)){
-			throw new Exception('Page name is missing!');
+			throw new Exception('CounterFile::__construct(): Page name is missing!');
 		}
 		if (!is_string($page)){
-			throw new Exception('Page name must be string!');
+			throw new Exception('CounterFile::__construct(): Page name must be string!');
 		}
 		$this->page = $page;
 		parent::__construct(self::$dir . Utility::encode($page) . '.count');

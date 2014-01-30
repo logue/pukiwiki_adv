@@ -300,45 +300,6 @@ if (isset($script)) {
 } else {
 	$script = Router::get_script_uri();	// Init automatically
 }
-
-///////////////////////////////////////////////
-// Prevent SPAM by REMOTE IP
-$filter = new IpFilter(REMOTE_ADDR);
-
-//if ($filter->isS25R()) die('S25R: Sorry, your access is prohibited.');
-
-// Block countory via Geolocation
-$country_code = '';
-if (isset($_SERVER['HTTP_CF_IPCOUNTRY'])){
-	// CloudFlareを使用している場合、そちらのGeolocationを読み込む
-	// https://www.cloudflare.com/wiki/IP_Geolocation
-	$country_code = $_SERVER['HTTP_CF_IPCOUNTRY'];
-}else if (isset($_SERVER['GEOIP_COUNTRY_CODE'])){
-	// サーバーが$_SERVER['GEOIP_COUNTRY_CODE']を出力している場合
-	// Apache : http://dev.maxmind.com/geoip/mod_geoip2
-	// nginx : http://wiki.nginx.org/HttpGeoipModule
-	// cherokee : http://www.cherokee-project.com/doc/config_virtual_servers_rule_types.html
-	$country_code = $_SERVER['GEOIP_COUNTRY_CODE'];
-}else if (function_exists('geoip_db_avail') && geoip_db_avail(GEOIP_COUNTRY_EDITION) && function_exists('geoip_region_by_name')) {
-	// それでもダメな場合は、phpのgeoip_region_by_name()からGeolocationを取得
-	// http://php.net/manual/en/function.geoip-region-by-name.php
-	$geoip = geoip_region_by_name(REMOTE_ADDR);
-	$country_code = $geoip['country_code'];
-	$info[] = (!empty($geoip['country_code']) ) ?
-		'GeoIP is usable. Your country code from IP is inferred <var>'.$geoip['country_code'].'</var>.' :
-		'GeoIP is NOT usable. Maybe database is not installed. Please check <a href="http://www.maxmind.com/app/installation?city=1" rel="external">GeoIP Database Installation Instructions</a>';
-}else if (function_exists('apache_note')) {
-	// Apacheの場合
-	$country_code = apache_note('GEOIP_COUNTRY_CODE');
-}
-
-// 使用可能かをチェック
-if ( isset($country_code) && !empty($country_code)) {
-	$info[] = 'Your country code from IP is inferred <var>'.$country_code.'</var>.';
-} else {
-	$info[] = 'Seems Geolocation is not available. <var>$deny_countory</var> value and <var>$allow_countory</var> value is ignoled.';
-}
-
 /////////////////////////////////////////////////
 // ディレクトリのチェック
 $die = array();
@@ -349,117 +310,16 @@ foreach(array('DATA_DIR', 'DIFF_DIR', 'BACKUP_DIR', 'CACHE_DIR') as $dir){
 }
 
 /////////////////////////////////////////////////
-// INI_FILE: $agents:  UserAgentの識別
-$user_agent = $matches = array();
-
-$user_agent['agent'] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
-$ua = 'HTTP_USER_AGENT';
-// unset(${$ua}, $_SERVER[$ua], $HTTP_SERVER_VARS[$ua], $ua);	// safety
-if ( empty($user_agent['agent']) ) die();	// UAが取得できない場合は処理を中断
-
-foreach (Utility::loadConfig('profile.ini.php') as $agent) {
-	if (preg_match($agent['pattern'], $user_agent['agent'], $matches)) {
-		$user_agent = array(
-			'profile'	=> isset($agent['profile']) ? $agent['profile'] : null,
-			'name'		=> isset($matches[1]) ? $matches[1] : null,	// device or browser name
-			'vers'		=> isset($matches[2]) ? $matches[2] : null,	// version
-		);
-		break;
-	}
-}
-unset($matches);
-//var_dump($user_agent);
-// Profile-related init and setting
-$ua_file = Utility::add_homedir($user_agent['profile'].'.ini.php');
-if ($ua_file){
-	require($ua_file);
-}
-
-define('UA_NAME', isset($user_agent['name']) ? $user_agent['name'] : null);
-define('UA_VERS', isset($user_agent['vers']) ? $user_agent['vers'] : null);
-define('UA_CSS', isset($user_agent['css']) ? $user_agent['css'] : null);
-
-//unset($user_agent);	// Unset after reading UA_INI_FILE
-
-/////////////////////////////////////////////////
 // 必須のページが存在しなければ、空のファイルを作成する
 foreach(array($defaultpage, $whatsnew) as $page){
 	$wiki = Factory::Wiki($page);
 	if (! $wiki->has() ) $wiki->wiki->touch();
+	unset($wiki);
 }
 
 /////////////////////////////////////////////////
 // QUERY_STRINGを取得
-Utility::parseArguments();
-
-// HTTP_X_REQUESTED_WITHヘッダーで、ajaxによるリクエストかを判別
-define('IS_AJAX', isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' || isset($vars['ajax']));
-
-/////////////////////////////////////////////////
-// Spam filtering
-
-if ($spam && $method !== 'GET') {
-	if (isset($country_code) && $country_code !== false){
-		if (isset($deny_countory) && !empty($deny_countory)) {
-			if (in_array($country_code, $deny_countory)) {
-				die('Sorry, access from your country('.$geoip['country_code'].') is prohibited.');
-				exit;
-			}
-		}
-		if (isset($allow_countory) && !empty($allow_countory)) {
-			if (!in_array($country_code, $allow_countory)) {
-				die('Sorry, access from your country('.$geoip['country_code'].') is prohibited.');
-				exit;
-			}
-		}
-	}
-
-	// Adjustment
-	$_spam   = ! empty($spam);
-	$_cmd = strtolower($cmd);
-	$_ignore = array();
-	switch ($_cmd) {
-		case 'search': $_spam = FALSE; break;
-		case 'edit':
-			$_page = & $page;
-			if (isset($vars['add']) && $vars['add']) {
-				$_cmd = 'add';
-			} else {
-				$_ignore[] = 'original';
-			}
-			break;
-		case 'bugtrack': $_page = & $vars['base'];  break;
-		case 'tracker':  $_page = & $vars['_base']; break;
-		case 'read':     $_page = & $page;  break;
-		default: $_page = & $refer; break;
-	}
-
-	if ($_spam) {
-
-		if (isset($spam['method'][$_cmd])) {
-			$_method = & $spam['method'][$_cmd];
-		} else if (isset($spam['method']['_default'])) {
-			$_method = & $spam['method']['_default'];
-		} else {
-			$_method = array();
-		}
-		$exitmode = isset($spam['exitmode']) ? $spam['exitmode'] : null;
-
-		// Hack: ignorance several keys
-		if ($_ignore) {
-			$_vars = array();
-			foreach($vars as $key => $value) {
-				$_vars[$key] = & $vars[$key];
-			}
-			foreach($_ignore as $key) {
-				unset($_vars[$key]);
-			}
-		} else {
-			$_vars = & $vars;
-		}
-		Spam::pkwk_spamfilter($method . ' to #' . $_cmd, $_page, $_vars, $_method, $exitmode);
-	}
-}
+$vars = Utility::parseArguments();
 
 /////////////////////////////////////////////////
 // 初期設定(その他のグローバル変数)
@@ -529,11 +389,6 @@ if (isset($auth_api['remoteip']['use']) && $auth_api['remoteip']['use']) {
 	PluginRenderer::executePluginInline('remoteip');
 }
 
-// WebDAV
-if (Utility::isWebDAV()) {
-	PluginRenderer::executePluginAction('dav');
-	exit;
-}
 
 // プラグインのaction命令を実行
 $cmd = strtolower($vars['cmd']);

@@ -5,10 +5,10 @@
  * @package   PukiWiki
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2013 PukiWiki Advance Developers Team
+ * @copyright 2013-2014 PukiWiki Advance Developers Team
  * @create    2013/03/11
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: PluginRenderer.php,v 1.0.0 2013/03/11 08:04:00 Logue Exp $
+ * @version   $Id: PluginRenderer.php,v 1.0.0 2014/01/30 14:43:00 Logue Exp $
  **/
  
 namespace PukiWiki\Renderer;
@@ -130,7 +130,7 @@ class PluginRenderer{
 					// プラグイン名を取得
 					$name = $fileinfo->getBasename('.inc.php');
 					// プラグイン名が英数字64文字以下でない
-					if (!preg_match('/^\w{1,64}$/', $name)) throw new Exception('Plugin name "'.$name.'" is invalied or too long! (less than 64 chars)');
+					if (!preg_match('/^\w{1,64}$/', $name)) throw new Exception('PluginRenderer::getPluginList(): Plugin name "'.$name.'" is invalied or too long! (less than 64 chars)');
 					$plugins[$name] = array(
 						// 利用可能である
 						'usable' => true,
@@ -249,7 +249,7 @@ class PluginRenderer{
 			$count[$name] = !isset($count[$name]) ? 1 : $count[$name]++;
 
 			if ($count[$name] > self::PLUGIN_CALL_TIME_LIMIT) {
-				Utility::dieMessage( sprintf($_string['plugin_multiple_call'],  Utility::htmlsc($name), self::PLUGIN_CALL_TIME_LIMIT));
+				Utility::dieMessage('PluginRenderer::hasPluginMethod(): '.sprintf($_string['plugin_multiple_call'],  Utility::htmlsc($name), self::PLUGIN_CALL_TIME_LIMIT));
 			}
 		}
 		return true;
@@ -307,16 +307,16 @@ class PluginRenderer{
 
 		// 命令が実装されてない
 		if (! $plugin['method']['action'] || !function_exists($funcname))
-			Utility::dieMessage(sprintf($_string['plugin_not_implemented'],htmlsc($name)),501);
+			Utility::dieMessage('PluginRenderer::executePluginAction(): ' .sprintf($_string['plugin_not_implemented'],htmlsc($name)),501);
 
 		// プラグインの初期化
 		if (self::executePluginInit($name) === FALSE) {
-			Utility::dieMessage(sprintf( $_string['plugin_init_error'], Utility::htmlsc($name) ));
+			Utility::dieMessage('PluginRenderer::executePluginAction(): ' .sprintf( $_string['plugin_init_error'], Utility::htmlsc($name) ));
 		}
 
 		// 入力のエンコードをチェック
 		if (isset($vars['encode_hint']) && !empty($vars['encode_hint']) && (PKWK_ENCODING_HINT !== $vars['encode_hint']) ) {
-			Utility::dieMessage($_string['plugin_encode_error']);
+			Utility::dieMessage('PluginRenderer::executePluginAction(): ' .$_string['plugin_encode_error']);
 		}
 
 	//	if ( isset($post['ticket']) && $post['ticket'] !== md5(Utility::getTicket() . REMOTE_ADDR) ){
@@ -325,7 +325,7 @@ class PluginRenderer{
 
 		// postidをチェックする
 		if ( (isset($use_spam_check['multiple_post']) && $use_spam_check['multiple_post'] === 1) && (isset($vars['postid']) && !PostId::check($vars['postid'])) )
-			Utility::dieMessage($_string['plugin_postid_error']);
+			Utility::dieMessage('PluginRenderer::executePluginAction(): ' .$_string['plugin_postid_error']);
 
 		
 		// 実行
@@ -352,11 +352,11 @@ class PluginRenderer{
 
 		// 命令が実装されてない
 		if (! $plugin['method']['convert'] || !function_exists($funcname))
-			return '<p class="ui-state-error ui-corner-all">' . sprintf($_string['plugin_not_implemented'],'#'.Utility::htmlsc($name).'()') . '</p>';
+			return '<p class="alert alert-warning">PluginRenderer::executePluginBlock(): ' . sprintf($_string['plugin_not_implemented'],'#'.Utility::htmlsc($name).'()') . '</p>';
 
 		// プラグインの初期化
 		if (self::executePluginInit($name) === FALSE) {
-			return '<p class="ui-state-error ui-corner-all">' . sprintf($_string['plugin_init_error'], Utility::htmlsc($name)) . '</p>';
+			return '<p class="alert alert-danger">PluginRenderer::executePluginBlock(): ' . sprintf($_string['plugin_init_error'], Utility::htmlsc($name)) . '</p>';
 		}
 
 		// 複数行のプラグイン
@@ -382,7 +382,7 @@ class PluginRenderer{
 		$digest  = $_digest; // Revert
 
 		return ($retvar === FALSE) ?
-			'<p class="message_box ui-state-error ui-corner-all">'. Utility::htmlsc('#' . $name . ($args !== '' ? '(' . $args . ')' : '')) .'</p>' :
+			'<p class="alert alert-danger">PluginRenderer::executePluginBlock(): '. Utility::htmlsc('#' . $name . ($args !== '' ? '(' . $args . ')' : '')) .'</p>' :
 			self::addHiddenField($retvar, $name);
 	}
 
@@ -406,7 +406,7 @@ class PluginRenderer{
 
 		// プラグインの初期化
 		if (self::executePluginInit($name) === false) {
-			return '<span class="ui-state-error">' . sprintf($_string['plugin_init_error'], Utility::htmlsc('&'.$name).'();') . '</span>';
+			return '<span class="text-warning">PluginRenderer::executePluginInline(): ' . sprintf($_string['plugin_init_error'], Utility::htmlsc('&'.$name).'();') . '</span>';
 		}
 
 		// プラグインのパラメータを取得。（&plugin(){}の()内の部分をカンマ区切りで分割）
@@ -426,7 +426,7 @@ class PluginRenderer{
 
 		return ($retvar === FALSE) ?
 			// プラグインとメソッドが存在するのに出力がない場合はエラー
-			'<span class="ui-state-error">'. Utility::htmlsc('&' . $name . ($args !== '' ? '(' . $args . ')' : '')) .'</span>' :
+			'<span class="text-danger">PluginRenderer::executePluginInline(): '. Utility::htmlsc('&' . $name . ($args !== '' ? '(' . $args . ')' : '')) .'</span>' :
 			self::addHiddenField($retvar, $name);
 	}
 	/**
@@ -484,7 +484,7 @@ class PluginRenderer{
 	}
 
 	// FIXME:進捗状況表示（attachプラグインのpcmd=progressで出力）
-	public static function get_upload_progress(){
+	public static function getUploadProgress(){
 		global $vars;
 		$key = ini_get('session.upload_progress.prefix'). PKWK_WIKI_NAMESPACE;
 		header('Content-Type: application/json; charset='.CONTENT_CHARSET);

@@ -37,6 +37,7 @@ class Render{
 	 * jQueryのバージョン
 	 */
 	const JQUERY_VER = '2.0.3';
+	//const JQUERY_VER = '1.10.2';
 	/**
 	 * jQuery UIのバージョン
 	 */
@@ -69,6 +70,15 @@ class Render{
 	 * モバイルスクリプト（圧縮）
 	 */
 	const MOBILE_JS_COMPRESSED = 'js.php?file=mobile';
+	/**
+	 * jQueryのCDNドメイン名
+	 */
+	const JQUERY_CDN = 'code.jquery.com';
+	/**
+	 * BootstrapのCDNドメイン名
+	 */
+	const BOOTSTRAP_CDN = 'netdna.bootstrapcdn.com';
+	
 	/**
 	 * 通常読み込むスクリプト
 	 */
@@ -268,8 +278,8 @@ class Render{
 		// JavaScriptフレームワーク設定
 		// jQueryUI Official CDN
 		// http://code.jquery.com/
-		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://code.jquery.com/jquery-'.self::JQUERY_VER.'.min.js', 'defer'=>'defer');
-		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'http://code.jquery.com/ui/'.self::JQUERY_UI_VER.'/jquery-ui.min.js', 'defer'=>'defer');
+		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'//'.self::JQUERY_CDN.'/jquery-'.self::JQUERY_VER.'.min.js', 'defer'=>'defer');
+		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'//'.self::JQUERY_CDN.'/ui/'.self::JQUERY_UI_VER.'/jquery-ui.min.js', 'defer'=>'defer');
 
 		// JS用初期設定
 		$js_init = array(
@@ -326,6 +336,12 @@ class Render{
 
 		$script_tags = self::tag_helper('script',$pkwk_head_js) . self::tag_helper('script',$js_tags);
 		$script_tags .= (!empty($js_blocks)) ? self::tag_helper('script',array(array('type'=>'text/javascript', 'content'=>join("\n",$js_blocks)))) : '';
+
+		if (defined('BB2_CWD')){
+			global $bb2_javascript;
+			// Bad-behavior
+			$script_tags .= $bb2_javascript;
+		}
 
 		return $script_tags;
 	}
@@ -402,8 +418,8 @@ class Render{
 
 		// DNS prefetching
 		// http://html5boilerplate.com/docs/DNS-Prefetching/
-		$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>'//code.jquery.com');
-		$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>'//netdna.bootstrapcdn.com');
+		$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>'//'.self::JQUERY_CDN);
+		$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>'//'.self::BOOTSTRAP_CDN);
 		if (COMMON_URI !== ROOT_URI){
 			$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>COMMON_URI);
 		}
@@ -411,17 +427,17 @@ class Render{
 		// Twitter Bootstrap
 		// http://getbootstrap.com/
 		if ($conf['bootswatch'] === false){
-			$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//netdna.bootstrapcdn.com/bootstrap/' . self::TWITTER_BOOTSTRAP_VER . '/css/bootstrap.min.css', 'type'=>'text/css');
-			$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//netdna.bootstrapcdn.com/bootstrap/' . self::TWITTER_BOOTSTRAP_VER . '/css/bootstrap-theme.min.css', 'type'=>'text/css');
+			$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//' . self::BOOTSTRAP_CDN . '/bootstrap/' . self::TWITTER_BOOTSTRAP_VER . '/css/bootstrap.min.css', 'type'=>'text/css');
+			$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//' . self::BOOTSTRAP_CDN . '/bootstrap/' . self::TWITTER_BOOTSTRAP_VER . '/css/bootstrap-theme.min.css', 'type'=>'text/css', 'id'=>'bootstrap-theme');
 		}else{
 			// Bootswatch
 			// http://bootswatch.com/
-			$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//netdna.bootstrapcdn.com/bootswatch/' . self::TWITTER_BOOTSTRAP_VER . '/' . $conf['bootswatch'] . '/bootstrap.min.css', 'type'=>'text/css');
+			$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//' . self::BOOTSTRAP_CDN . '/bootswatch/' . self::TWITTER_BOOTSTRAP_VER . '/' . $conf['bootswatch'] . '/bootstrap.min.css', 'type'=>'text/css', 'id'=>'bootstrap-theme');
 		}
 
 		// jQuery UIのテーマ
 		if (! empty($conf['ui_theme']) && $conf['ui_theme'] !== false){
-			$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//code.jquery.com/ui/' . self::JQUERY_UI_VER .'/themes/' . $conf['ui_theme'] . '/jquery-ui.min.css', 'type'=>'text/css');
+			$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//code.jquery.com/ui/' . self::JQUERY_UI_VER .'/themes/' . $conf['ui_theme'] . '/jquery-ui.min.css', 'type'=>'text/css', 'id'=>'ui-theme');
 		}
 
 		// 標準スタイルシート
@@ -432,7 +448,7 @@ class Render{
 		// Font Awesome
 		// http://fontawesome.io/
 		// ※フォントを標準スタイルシートで書き換えているので、標準スタイルシートよりも後でFont Awesomeを読み込む
-		$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//netdna.bootstrapcdn.com/font-awesome/' . self::FONT_AWESOME_VER . '/css/font-awesome.min.css', 'type'=>'text/css');
+		$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//' . self::BOOTSTRAP_CDN . '/font-awesome/' . self::FONT_AWESOME_VER . '/css/font-awesome.min.css', 'type'=>'text/css');
 
 		return
 			self::tag_helper('meta',$meta_tags) .

@@ -24,14 +24,14 @@ class File extends AbstractFile{
 	 */
 	public function __construct($file) {
 		if (empty($file)){
-			throw new Exception('file name is missing!');
+			throw new Exception('File::__construct(): file name is missing!');
 		}
 		parent::__construct($file);
 	}
 	public static function getPages($pattern = ''){
-		throw new Exception('File class does not supported getPages().');
+		throw new Exception('File::getPages(): File class does not supported getPages().');
 	}
 	public static function exists($force = false, $clearOnly = false){
-		throw new Exception('File class does not supported exsists().');
+		throw new Exception('File::exists(): File class does not supported exsists().');
 	}
 }

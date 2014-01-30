@@ -164,7 +164,7 @@ function plugin_pcomment_convert()
 		}
 		$form[] = '<textarea name="msg" cols="' . PLUGIN_COMMENT_SIZE_MSG . '" row="1" class="form-control" placeholder="' . $_pcmt_messages['msg_comment'] . '"></textarea>';
 		$form[] = '<span class="input-group-btn">';
-		$form[] = '<input type="submit" class="btn btn-info" value="' . $_pcmt_messages['btn_comment'] . '" />';
+		$form[] = '<button type="submit" class="btn btn-info">' . $_pcmt_messages['btn_comment'] . '</button>';
 		$form[] = '</span>';
 		$form[] = '</div>';
 		$form[] = '</div>';

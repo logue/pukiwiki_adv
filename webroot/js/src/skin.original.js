@@ -133,7 +133,7 @@ var pukiwiki = {};
 				againButtonLabel: "Try again",
 				rejectButtonLabel: "Reject this content",
 				overwriteTitle: false,
-				keys: {
+				keys: {
 					next: [78, 39],
 					previous: [80, 37],
 					close: [67, 27],
@@ -313,7 +313,7 @@ var pukiwiki = {};
 			this.social(social_config);
 
 			// 非同期通信中はUIをブロック
-			this.blockUI(document);
+			this.blockUI();
 			
 			// MathJax
 			if ($('.mathjax-eq').length !== 0){
@@ -512,8 +512,6 @@ var pukiwiki = {};
 		setAnchor : function(prefix){
 			var self = this,	// pukiwikiへのエイリアス
 				dom = (prefix) ? $(prefix).find('a') : $('a');
-
-			console.log(prefix);
 
 			$('.link_symbol').each(function(){
 				var $this = $(this);
@@ -770,19 +768,25 @@ var pukiwiki = {};
 				}
 			});
 		},
-		blockUI : function(dom){
+		blockUI : function(){
 			// jQueryUI BlockUI
 			// http://pure-essence.net/2010/01/29/jqueryui-dialog-as-loading-screen-replace-blockui/
-			var $loading,
-				$window = $(window);
+			var $window = $(window), $activity, $loading;
 
 			$('<div id="loading">'+
-				'<div class="ui-widget-overlay" style="position:fixed;"></div>'+
-				'<div id="loading_activity"></div>'+
-			'</div>').appendTo('body');
-			$loading = $('#loading');
+				'<div class="ui-widget-overlay"></div>'+
+				'<div id="loading-activity"></div>'+
+			'</div>')
+				.click(function(){
+					$(this).fadeOut();
+					return false;
+				})
+				.appendTo('body')
+			;
+
+			$activity = $('#loading-activity'), $loading = $('#loading');;
 			
-			$('#loading_activity')
+			$activity
 				.activity({
 					segments: 12,
 					width: 24,
@@ -792,16 +796,17 @@ var pukiwiki = {};
 					speed: 1,
 					zIndex: 9999
 				})
-				.css({
-					position : 'absolute',
-					left : ($window.width() / 2) + $window.scrollLeft() - $loading.width() / 2,
-					top : ($window.height() / 2) + $window.scrollTop() - $loading.height() / 2
-				})
 			;
+			
 
-			$(dom)
+			$window
 				.ajaxSend(function(e, xhr, settings) {
 					// 画面中央にローディング画像を移動させる
+					$activity.css({
+						position : 'absolute',
+						left : ($window.width() / 2) + $window.scrollLeft() - $activity.width() / 2,
+						top : ($window.height() / 2) + $window.scrollTop() - $activity.height() / 2
+					})
 					$loading.fadeIn();
 				})
 				.ajaxStop(function(){
