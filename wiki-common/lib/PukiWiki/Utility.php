@@ -13,21 +13,22 @@
 
 namespace PukiWiki;
 
+use Exception;
 use PukiWiki\Auth\Auth;
 use PukiWiki\Diff\LineDiff;
 use PukiWiki\Factory;
 use PukiWiki\Listing;
-use PukiWiki\Renderer\RendererDefines;
-use PukiWiki\Renderer\PluginRenderer;
-use PukiWiki\Renderer\Header;
-use PukiWiki\Router;
 use PukiWiki\Render;
+use PukiWiki\Renderer\Header;
+use PukiWiki\Renderer\PluginRenderer;
+use PukiWiki\Renderer\RendererDefines;
+use PukiWiki\Router;
+use PukiWiki\Spam\Spam;
+use SplFileInfo;
 use Zend\Http\PhpEnvironment\Request;
 use Zend\Http\Response;
-use Zend\Math\Rand;
 use Zend\Json\Json;
-use SplFileInfo;
-use Exception;
+use Zend\Math\Rand;
 
 /**
  * 汎用関数
@@ -116,15 +117,14 @@ class Utility{
 
 		if (count($get) === 0){
 			// Queryがない場合
-			$get->set('cmd', 'read');
 			$get->set('page', $defaultpage);
 		}else if (count($get) === 1 && array_values((array)$get)[0] === ''){
 			// 配列の長さが1で最初の配列に値が存在しない場合はキーをページ名とする。
 			$k = array_keys((array)$get)[0];
-			$get->set('cmd', 'read');
 			$get->set('page', rawurldecode($k));
 			unset($get[$k]);
 		}
+		
 		
 		// 外部からの変数を$vars配列にマージする
 		if (empty($post)) {
@@ -137,10 +137,15 @@ class Utility{
 
 		// ヌル文字を削除
 		$vars = self::stripNullBytes($vars);
+		
+		if (!isset($vars['cmd'])){
+			$vars['cmd'] = 'read';
+		}
 
 		if (!preg_match(PluginRenderer::PLUGIN_NAME_PATTERN, $vars['cmd']) !== FALSE){
 			// 入力チェック: cmdの文字列は英数字以外ありえない
-			Utility::dieMessage('Plugin name is invalied or too long! (less than 64 chars)');
+			self::dump('suspicious');
+			die(sprintf('Plugin name %s is invalied or too long! (less than 64 chars)', $vars['cmd']));
 		}
 
 		// 文字コード変換
@@ -163,7 +168,7 @@ class Utility{
 
 		switch ($request->getMethod()){
 			case Request::METHOD_POST:
-				spamCheck($vars['cmd']);
+				self:spamCheck($vars['cmd']);
 				break;
 			case Request::METHOD_OPTIONS:
 			case Request::METHOD_PROPFIND:
@@ -184,6 +189,7 @@ class Utility{
 				}
 				break;
 		}
+		
 
 		return $vars;
 	}
@@ -240,7 +246,7 @@ class Utility{
 		// INI_FILE: $agents:  UserAgentの識別
 		$user_agent = $matches = array();
 
-		$user_agent['agent'] = isset($env['HTTP_USER_AGENT']) ? $env['HTTP_USER_AGENT'] : '';
+		$user_agent['agent'] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
 		// unset(${$ua}, $_SERVER[$ua], $HTTP_SERVER_VARS[$ua], $ua);	// safety
 		if ( empty($user_agent['agent']) ) die();	// UAが取得できない場合は処理を中断
 
@@ -682,7 +688,7 @@ class Utility{
 			new Render($error_title, join("\n",$body), $http_code);
 	//		die(join("\n",$body));
 		}
-		exit();
+		die();
 	}
 	/**
 	 * ページが見つからない

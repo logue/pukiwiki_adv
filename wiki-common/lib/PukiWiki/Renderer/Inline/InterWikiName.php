@@ -100,7 +100,7 @@ class InterWikiName extends Inline
 		$target = (empty($this->redirect)) ? $this->url : $this->redirect.rawurlencode($this->url);
 
 		if (!$this->url){
-			return sprintf(parent::NOEXISTS_STRING, $this->interwikiname. ':' .$this->param);
+			return sprintf(RendererDefines::NOEXISTS_STRING, $this->interwikiname. ':' .$this->param);
 		}
 		return '<a href="' . $target . $this->anchor . '" title="' . $this->name . '" rel="' . ($nofollow === FALSE ? 'external' : 'external nofollow') . '">'. RendererDefines::INTERWIKINAME_ICON . $this->alias . $icon . '</a>';
 	}

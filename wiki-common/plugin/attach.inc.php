@@ -617,13 +617,18 @@ function attach_list()
 	if (! empty($refer)) {
 		$wiki = Factory::Wiki($refer);
 		$wiki->isReadable();
+		$attaches = $wiki->attach();
+		
 		if ($type === 'json'){
 			$headers = Header::getHeaders('application/json');
-			Header::writeResponse($headers, 200, Json::encode($wiki->attach()));
+			Header::writeResponse($headers, 200, Json::encode($attaches));
 			exit;
 		}
 		// ページ別添付ファイル一覧
 		$msg = str_replace('$1', Utility::htmlsc($refer), $_attach_messages['msg_listpage']);
+		if (count($attaches) === 0){
+			return array('msg'=>$msg, 'body'=>'No files uploaded.');
+		}
 		$ret[] = '<table class="table table-borderd plugin-attach-list" data-pagenate="true" data-sortable="true"><thead>';
 		$ret[] = '<thead>';
 		$ret[] = '<tr>';
@@ -634,7 +639,7 @@ function attach_list()
 		$ret[] = '</tr>';
 		$ret[] = '</thead>';
 		$ret[] = '<tbody>';
-		foreach($wiki->attach() as $name=>$files){
+		foreach($attaches as $name=>$files){
 			unset($files['log']);
 			foreach ($files as $backup=>$file){
 				$attach = new Attach($refer, $name, $backup);

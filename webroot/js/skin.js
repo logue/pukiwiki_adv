@@ -1,3 +1,17 @@
+/*
+ Copyright 2008-2012 Allan Jardine, all rights reserved.
+
+ This source file is free software, under either the GPL v2 license or a
+ BSD style license, available at:
+   http://datatables.net/license_gpl2
+   http://datatables.net/license_bsd
+
+ This source file is distributed in the hope that it will be useful, but 
+ WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+ or FITNESS FOR A PARTICULAR PURPOSE. See the license files for details.
+
+ For details please refer to: http://www.datatables.net
+*/
 (function(a){function r(d,b){var e=document.createElementNS("http://www.w3.org/2000/svg",d||"svg");b&&a.each(b,function(d,b){e.setAttributeNS(null,d,b)});return a(e)}a.fn.activity=function(d){this.each(function(){var e=a(this),f=e.data("activity");f&&(clearInterval(f.data("interval")),f.remove(),e.removeData("activity"));if(!1!==d){d=a.extend({color:e.css("color")},a.fn.activity.defaults,d);var f=l(e,d).css({position:"absolute",zIndex:d.zIndex}).prependTo(d.outside?"body":e),k=e.outerHeight()-f.height(),
 n=e.outerWidth()-f.width(),k="top"==d.valign?d.padding:"bottom"==d.valign?k-d.padding:Math.floor(k/2),n="left"==d.align?d.padding:"right"==d.align?n-d.padding:Math.floor(n/2),m=e.offset();d.outside?f.css({top:m.top+"px",left:m.left+"px"}):(k-=f.offset().top-m.top,n-=f.offset().left-m.left);f.css({marginTop:k+"px",marginLeft:n+"px"});b(f,d.segments,Math.round(10/d.speed)/10);e.data("activity",f)}});return this};a.fn.activity.defaults={segments:12,space:3,length:7,width:4,speed:1.2,align:"center",valign:"center",
 padding:4,zIndex:1};a.fn.activity.getOpacity=function(d,b){var e=d.steps||d.segments-1,a=void 0!==d.opacity?d.opacity:1/e;return 1-Math.min(b,e)*(1-a)/e};var l=function(){return a("<div>").addClass("busy")},b=function(){};if(document.createElementNS&&document.createElementNS("http://www.w3.org/2000/svg","svg").createSVGRect)if(l=function(d,b){for(var e=2*b.width+b.space,f=e+b.length+Math.ceil(b.width/2)+1,n=r().width(2*f).height(2*f),m=r("g",{"stroke-width":b.width,"stroke-linecap":"round",stroke:b.color}).appendTo(r("g",

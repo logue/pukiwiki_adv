@@ -81,8 +81,12 @@ function bb2_db_num_rows($result) {
 // Bad Behavior will use the return value here in other callbacks.
 function bb2_db_query($query) {
 	global $bb2_db;
+	$matches = array();
 	if ($query == 'SET @@session.wait_timeout = 90') return;
 	if (preg_match('/OPTIMIZE/', $query)) $query = 'VACUUM';
+	if (preg_match('/DELETE FROM `(.+?)` WHERE `(.+?)` < DATE_SUB\(\'(.+?)\', INTERVAL (\d+?) DAY\)/', $query, $matches)){
+		$query = 'DELETE FROM `' . $matches[1] . '` WHERE date(`' . $matches[2] . '`) < date(\''. $matches[3] .'\', \'-'.$matches[4].' days\')';
+	}
 	try {
 		return $bb2_db->query($query);
 	} catch( PDOException $ex ) {
