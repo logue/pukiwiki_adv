@@ -1,16 +1,16 @@
 <?php
-// PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: classic.ini.php,v 0.0.2 2012/03/31 16:49:30 Logue Exp $
-// 
-// PukiWiki Adv. Mobile Theme
-// Copyright (C)
-//   2012 PukiWiki Advance Developer Team
+/**
+ * PukiWiki Advance - Yet another WikiWikiWeb clone.
+ * $Id: mobile.ini.php,v 0.0.4 2014/02/05 19:02:30 Logue Exp $
+ *
+ * PukiWiki Adv. Mobile Theme
+ * Copyright (C)
+ *   2012-2014 PukiWiki Advance Developer Team
+ */
 (bool) $is_dialog = isset($vars['cmd']) ? preg_match('/attach|freeze|unfreeze|diff|new|upload|log|search|backup|list/', $vars['cmd']) : false;
-
-// Output HTML DTD, <html>, and receive content-type
 ?>
 <!doctype html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $this->lang; ?>">
 	<head>
 		<?php echo $this->head; ?>
 		<link rel="stylesheet" type="text/css" href="<?php echo $this->path; ?>mobile.css.php" />
@@ -22,17 +22,17 @@
 			<header data-role="header" role="banner" data-position="fixed" data-add-back-btn="true">
 				<h1><?php echo $this->title ?></h1>
 <?php if (!$is_dialog) { ?>
-				<a href="#toolbar" data-icon="gear" class="ui-btn-right" data-rel="popup" data-position-to="window" data-role="button" data-inline="true"  data-transition="slideup"><?php echo $this->lang['skin']['tool']; ?></a>
+				<a href="#toolbar" data-icon="gear" class="ui-btn-right" data-rel="popup" data-position-to="window" data-role="button" data-inline="true"  data-transition="slideup"><?php echo $this->strings['skin']['tool']; ?></a>
 <?php } ?>
 				<?php if (!empty($this->conf['adarea'])) echo '<div class="adarea"></div>'; ?>
 <?php if (arg_check('read') ){ ?>
 				<nav data-role="navbar">
 					<ul>
 <?php if (!empty($this->menubar)) { ?>
-						<li><a href="#menubar"><?php echo $this->lang['skin']['menu']; ?></a></li>
+						<li><a href="#menubar"><?php echo $this->strings['skin']['menu']; ?></a></li>
 <?php } ?>
 <?php if (!empty($this->sidebar)) { ?>
-						<li><a href="#sidebar" data-inline="true"><?php echo $this->lang['skin']['side']; ?></a></li>
+						<li><a href="#sidebar" data-inline="true"><?php echo $this->strings['skin']['side']; ?></a></li>
 <?php } ?>
 					</ul>
 				</nav>
@@ -57,7 +57,7 @@
 <?php } ?>
 			<aside data-role="popup" id="toolbar">
 				<div data-role="header" data-theme="a" class="ui-corner-top">
-					<h1><?php echo $this->lang['skin']['tool']; ?></h1>
+					<h1><?php echo $this->strings['skin']['tool']; ?></h1>
 					<a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
 				</div>
 				<div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
@@ -70,7 +70,7 @@
 			</footer><!-- /footer -->
 		</article><!-- /page -->
 
-		<?php if (!empty($_SKIN['adarea'])) echo '<div id="adarea_content">' . $_SKIN['adarea'] . '</div>'; ?>
+		<?php if (!empty($this->conf['adarea'])) echo '<div id="adarea_content">' . $this->conf['adarea'] . '</div>'; ?>
 		<?php echo $this->js; ?>
 	</body>
 </html>

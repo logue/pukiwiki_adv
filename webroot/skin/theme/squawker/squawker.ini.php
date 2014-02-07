@@ -1,14 +1,14 @@
 <?php
-/////////////////////////////////////////////////
-// PukiPlus - Yet another WikiWikiWeb clone.
-//
-// PukiWiki Plus! skin for PukiWiki Advance.
-// Override to skin config.
-//
-// $Id: default.skin.php,v 1.0.2 2011/09/11 22:55:00 Logue Exp $
-//
+/**
+ * PukiWiki Advance - Yet another WikiWikiWeb clone.
+ * $Id: squawker.ini.php,v 0.0.5 2014/02/05 19:18:30 Logue Exp $
+ *
+ * PukiWiki Adv. Mobile Theme
+ * Copyright (C)
+ *   2012-2014 PukiWiki Advance Developer Team
+ */
 return array(
-	'default_css' => false,
+	'default_css' => true,
 	'ui_theme' => false,
 	// Navibar系プラグインでもアイコンを表示する
 	'showicon'		=> false,

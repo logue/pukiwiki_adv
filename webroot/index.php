@@ -14,7 +14,7 @@
 error_reporting(E_ALL); // Show all errors
 
 // Debug mode.
-define('DEBUG', true);
+//define('DEBUG', true);
 // Show infomation message.
 define('PKWK_WARNING', true);
 
@@ -25,7 +25,7 @@ define('PKWK_WARNING', true);
 
 // PukiWiki Adv. THEME (NOT compatible as Original and Plus! skin)
 // ex.  cloudwalk, classic, xxxlogue, whiteflow, gs2, wikiwikiadv, squawker, 180wiki
-define('PLUS_THEME',	'default');
+define('PLUS_THEME',	'xxxlogue');
 
 // Directory definition
 // (Ended with a slash like '../path/to/pkwk/', or '')

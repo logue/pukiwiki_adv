@@ -1,17 +1,15 @@
 <?php
-// PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: classic.ini.php,v 2.2.7 2011/09/11 22:58:30 Logue Exp $
-// 
-// PukiWiki Classic Skin
-// Copyright (C)
-//   2010-2011 PukiWiki Advance Developer Team
-//   2005-2010 Logue
-//   2002-2006 PukiWiki Developers Team
-//   2001-2002 Originally written by yu-ji
-
-// ------------------------------------------------------------
-// Settings (define before here, if you want)
-
+/**
+ * PukiWiki Advance - Yet another WikiWikiWeb clone.
+ * $Id: classic.ini.php,v 1.6.5 2014/02/07 18:28:00 Logue Exp $
+ *
+ * PukiWiki Classic Skin for PukiWiki Advance
+ * Copyright (C)
+ *   2010-2014 PukiWiki Advance Developers Team
+ *   2005-2007 Logue (LogueWiki Skin)
+ *   2002-2005 PukiWiki Developers Team
+ *   2001-2002 Originally written by yu-ji
+ */
 return array(
 	/**
 	 * UI Themes
@@ -74,14 +72,5 @@ EOD
 EOD
 	)
 );
-
-
-// 読み込むスタイルシート
-$link_tags[] = array('rel'=>'stylesheet', 'type'=>'text/css', 'href'=>SKIN_URI.'scripts.css.php?base=' . urlencode(IMAGE_URI) );
-$link_tags[] = array('rel'=>'stylesheet', 'type'=>'text/css', 'href'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/classic.css.php');
-
-// 読み込むスクリプト
-$js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.THEME_PLUS_NAME.PLUS_THEME.'/classic.js', 'defer'=>'defer');
-
 /* End of file classic.ini.php */
 /* Location: ./webroot/skin/theme/classic/classic.ini.php */

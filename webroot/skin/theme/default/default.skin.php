@@ -1,16 +1,16 @@
 <?php
-/////////////////////////////////////////////////
-// PukiWiki - Yet another WikiWikiWeb clone.
-//
-// PukiWiki Plus! skin for PukiWiki Advance.
-// Original version by miko and upk.
-// Modified by Logue
-//
-// $Id: default.skin.php,v 1.4.18 2012/05/03 21:35:00 Logue Exp $
-//
+/**
+ * PukiWiki Advance - Yet another WikiWikiWeb clone.
+ *
+ * PukiWiki Plus! skin for PukiWiki Advance.
+ * Original version by miko and upk.
+ * Modified by Logue
+ *
+ * $Id: default.skin.php,v 1.4.19 2014/02/07 18:45:00 Logue Exp $
+ */
 ?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $this->lang; ?>">
 	<head prefix="og: http://ogp.me/ns# fb: http://www.facebook.com/2008/fbml">
 <?php echo $this->head; ?>
 		<link rel="stylesheet" type="text/css" href="<?php echo $this->path; ?>default.css.php" />

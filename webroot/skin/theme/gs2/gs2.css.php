@@ -11,7 +11,7 @@ ini_set('zlib.output_compression', 'Off');
 
 $image_dir = isset($_GET['base'])   ? $_GET['base']	: '../image/';
 $expire = isset($_GET['expire'])   ? (int)$_GET['expire'] * 86400	: '604800';	// Default is 7 days.
-$gs2_color = isset($_GET['gs2color']) ? $_GET['gs2color'] : 'blue';
+$gs2_color = isset($_GET['color']) ? $_GET['color'] : 'blue';
 
 require('gs2_color/pukiwiki_gs2_color_'.$gs2_color.'.php');
 

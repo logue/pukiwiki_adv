@@ -1,15 +1,11 @@
 <?php
-// PukiWiki - Yet another WikiWikiWeb clone.
-//
-// PukiWiki original skin "GS2" 1.5.3
-//     by yiza < http://www.yiza.net/ >
-// Config file
-//
-// []はデフォルト設定を表します
-
-// Settings (define before here, if you want)
-global $link_tags, $js_tags, $showicon, $_SKIN;
-
+/**
+ * PukiWiki - Yet another WikiWikiWeb clone.
+ *
+ * PukiWiki original skin "GS2" 1.5.3
+ *     by yiza < http://www.yiza.net/ >
+ * Config file
+ */
 /////////////////////////////////////////////////
 // GS2スキンの色テーマ設定
 // 
@@ -35,9 +31,6 @@ global $link_tags, $js_tags, $showicon, $_SKIN;
 $color = 'blue';
 
 return array(
-	/////////////////////////////////////////////////
-	// PukiWikiの設定
-	
 	// タイトル周りのナビゲーションバーを表示します
 	// 注意：この設定は表示の切り替えだけで機能を無効にするわけではありません
 	'show_navibar'	=> true,

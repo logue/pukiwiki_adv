@@ -1,24 +1,23 @@
 <?php
-/////////////////////////////////////////////////
-// PukiWiki - Yet another WikiWikiWeb clone.
-//
-// White Flow skin for PukiWiki Advance.
-// Override to skin config.
-//
-// $Id: whiteflow.ini.php,v 1.0.0 2011/12/10 11:39:00 Logue Exp $
-//
+/**
+ * PukiWiki Advance - Yet another WikiWikiWeb clone.
+ * $Id: whiteflow.ini.php,v 1.0.1 2014/02/07 18:24:30 Logue Exp $
+ *
+ * White Flow skin for PukiWiki Advance.
+ * Copyright (C)
+ *   2012-2014 PukiWiki Advance Developer Team
+ */
 return array(
-/*
-UI Themes
-jQuery(jQuery UI): 
-	base, black-tie, blitzer, cupertino, dark-hive, dot-luv, eggplant, excite-bike, flick, hot-sneaks
-	humanity, le-frog, mint-choc, overcast, pepper-grinder, redmond, smoothness, south-street,
-	start, sunny, swanky-purse, trontastic, ui-darkness, ui-lightness, vader
-
-see also
-http://www.devcurry.com/2010/05/latest-jquery-and-jquery-ui-theme-links.html
-http://jqueryui.com/themeroller/
-*/
+	/**
+	 * UI Themes
+	 * jQuery(jQuery UI): 
+	 *  base, black-tie, blitzer, cupertino, dark-hive, dot-luv, eggplant, excite-bike, flick, hot-sneaks
+	 *  humanity, le-frog, mint-choc, overcast, pepper-grinder, redmond, smoothness, south-street,
+	 *  start, sunny, swanky-purse, trontastic, ui-darkness, ui-lightness, vader
+	 *
+	 * see also
+	 * http://jqueryui.com/themeroller/
+	 */
 	'ui_theme'		=> 'smoothness',
 	
 	'image_dir'		=> './image/',

@@ -1,12 +1,12 @@
 <?php
-/////////////////////////////////////////////////
-// PukiPlus - Yet another WikiWikiWeb clone.
-//
-// PukiWiki Plus! skin for PukiWiki Advance.
-// Override to skin config.
-//
-// $Id: default.skin.php,v 2.0.0 2013/04/26 16:31:00 Logue Exp $
-//
+/**
+ * PukiWiki Advance - Yet another WikiWikiWeb clone.
+ *
+ * PukiWiki Plus! skin for PukiWiki Advance.
+ * Override to skin config.
+ *
+ * $Id: default.ini.php,v 2.0.1 2014/02/07 18:36:00 Logue Exp $
+ */
 
 return array(
 	/**
@@ -17,7 +17,6 @@ return array(
 	 *  start, sunny, swanky-purse, trontastic, ui-darkness, ui-lightness, vader
 	 *
 	 * see also
-	 * http://www.devcurry.com/2010/05/latest-jquery-and-jquery-ui-theme-links.html
 	 * http://jqueryui.com/themeroller/
 	 */
 	'ui_theme'		=> 'redmond',

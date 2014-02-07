@@ -137,11 +137,14 @@ class Header{
 		ksort($headers);
 		// ヘッダーを指定
 		$response->getHeaders()->addHeaders($headers);
-		// ステータスコードを出力
-		header($response->renderStatusLine());
-		// ヘッダーを出力
-		foreach ($response->getHeaders() as $_header) {
-			header($_header->toString());
+		// ヘッダー出力をチェック
+		if (!headers_sent() && error_get_last()==NULL ) {
+			// ステータスコードを出力
+			header($response->renderStatusLine());
+			// ヘッダーを出力
+			foreach ($response->getHeaders() as $_header) {
+				header($_header->toString());
+			}
 		}
 		if (!empty($body)){
 			//ob_start('ob_gzhandler');

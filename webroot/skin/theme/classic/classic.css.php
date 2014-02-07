@@ -1,14 +1,15 @@
 <?php
-// PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: classic.css.php,v 2.6.3 2012/03/11 22:26:30 Logue Exp $
-
-// PukiWiki Classic Skin
-// Copyright (C)
-//   2010-2012 PukiWiki Advance Developer Team
-//   2005-2010 Logue
-//   2002-2006 PukiWiki Developers Team
-//   2001-2002 Originally written by yu-ji
-
+/**
+ * PukiWiki Advance - Yet another WikiWikiWeb clone.
+ * $Id: classic.css.php,v 1.6.5 2014/02/07 18:28:00 Logue Exp $
+ *
+ * PukiWiki Classic Skin for PukiWiki Advance
+ * Copyright (C)
+ *   2010-2014 PukiWiki Advance Developers Team
+ *   2005-2007 Logue (LogueWiki Skin)
+ *   2002-2005 PukiWiki Developers Team
+ *   2001-2002 Originally written by yu-ji
+ */
 //error_reporting(0); // Nothing
 error_reporting(E_ERROR | E_PARSE); // Avoid E_WARNING, E_NOTICE, etc
 ini_set('zlib.output_compression', 'Off');

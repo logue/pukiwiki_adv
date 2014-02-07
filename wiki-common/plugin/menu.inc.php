@@ -6,6 +6,7 @@
 //
 
 use PukiWiki\Factory;
+use PukiWiki\Utility;
 use PukiWiki\Renderer\RendererFactory;
 
 // サブメニューを使用する
@@ -21,18 +22,18 @@ function plugin_menu_convert()
 
 //miko patched
 	// Cached MenuHTML
-	if ($menuhtml !== NULL)
-		return preg_replace('/<ul class="list[^>]*>/','<ul class="menu">', $menuhtml);
+//	if ($menuhtml !== NULL)
+//		return preg_replace('/<ul class="list[^>]*>/','<ul class="menu">', $menuhtml);
 //miko patched
 
 	$num = func_num_args();
 	if ($num > 0) {
 		// Try to change default 'MenuBar' page name (only)
-		if ($num > 1)       return '#menu(): Zero or One argument needed';
-		if ($menu !== NULL) return '#menu(): Already set: ' . htmlsc($menu);
+		if ($num > 1)       return '<p class="alert alert-warning">#menu(): Zero or One argument needed</p>';
+		if ($menu !== NULL) return '<p class="alert alert-warning">#menu(): Already set: ' . Utility::htmlsc($menu) . '</p>';
 		$args = func_get_args();
 		if (! is_page($args[0])) {
-			return '#menu(): No such page: ' . htmlsc($args[0]);
+			return '<p class="alert alert-warning">#menu(): No such page: ' . Utility::htmlsc($args[0]) . '</p>';
 		} else {
 			$menu = $args[0]; // Set
 			return '';
@@ -72,7 +73,8 @@ function plugin_menu_convert()
 			$menuhtml = RendererFactory::factory($menutext);
 			$top = $tmptop;
 			$menuhtml = str_replace("\n",'',$menuhtml);
-			return preg_replace('/<ul class="list[^>]*>/','<ul class="menu">',$menuhtml);
+			return $menuhtml;
+			//return preg_replace('/<ul class="list[^>]*>/','<ul class="menu">',$menuhtml);
 //miko patched
 		}
 	}

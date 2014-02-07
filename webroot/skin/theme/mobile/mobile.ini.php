@@ -1,13 +1,14 @@
 <?php
-// PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: mobile.ini.php,v 0.0.3 2012/04/29 13:46:30 Logue Exp $
-// 
-// PukiWiki Adv. Mobile Theme
-// Copyright (C)
-//   2012 PukiWiki Advance Developer Team
+/**
+ * PukiWiki - Yet another WikiWikiWeb clone.
+ * $Id: mobile.ini.php,v 0.0.4 2014/02/05 18:59:30 Logue Exp $
+ * 
+ * PukiWiki Adv. Mobile Theme
+ * Copyright (C)
+ *   2012-2014 PukiWiki Advance Developer Team
+ */
+defined('IS_MOBILE') or define('IS_MOBILE', true);
 
-// ------------------------------------------------------------
-// Settings (define before here, if you want)
 return array(
 	'showicon' => true,
 	'ui_theme' => null,

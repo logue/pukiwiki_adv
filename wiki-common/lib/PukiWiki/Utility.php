@@ -168,7 +168,7 @@ class Utility{
 
 		switch ($request->getMethod()){
 			case Request::METHOD_POST:
-				self:spamCheck($vars['cmd']);
+				self::spamCheck($vars['cmd']);
 				break;
 			case Request::METHOD_OPTIONS:
 			case Request::METHOD_PROPFIND:

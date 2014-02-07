@@ -1,12 +1,12 @@
 <?php
-/////////////////////////////////////////////////
-// PukiWiki Advance - Yet another WikiWikiWeb clone.
-//
-// 180wiki skin for PukiWiki Advance.
-// Override to skin config.
-//
-// $Id: 180wiki.ini.php,v 1.0.2 2012/05/24 18:08:00 Logue Exp $
-//
+/**
+ * PukiWiki Advance - Yet another WikiWikiWeb clone.
+ *
+ * 180wiki skin for PukiWiki Advance.
+ * Override to skin config.
+ *
+ * $Id: 180wiki.ini.php,v 1.0.3 2014/02/07 18:37:00 Logue Exp $
+ */
 return array(
 	/**
 	 * UI Themes
@@ -16,7 +16,6 @@ return array(
 	 *  start, sunny, swanky-purse, trontastic, ui-darkness, ui-lightness, vader
 	 *
 	 * see also
-	 * http://www.devcurry.com/2010/05/latest-jquery-and-jquery-ui-theme-links.html
 	 * http://jqueryui.com/themeroller/
 	 */
 	'ui_theme'		=> 'black-tie',

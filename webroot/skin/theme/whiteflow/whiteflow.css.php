@@ -1,17 +1,19 @@
 <?php
-// PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: whiteflow.css.php,v 1.0.3 2012/10/17 15:44:30 Logue Exp $
-
-// White Flow Adv. skin CSS
-// ver 1.0 (2012/10/17)
-// by Logue (http://logue.be/)
-
-// based on
-// White flow (http://note.openvista.jp/2007/pukiwiki-skin/)
-// by leva(http://www.geckodev.org/)
-
-// License: X11/MIT License
-// http://www.opensource.org/licenses/mit-license.php
+/**
+ * PukiWiki Advance - Yet another WikiWikiWeb clone.
+ * $Id: whiteflow.css.php,v 1.0.4 2014/02/07 18:23:30 Logue Exp $
+ *
+ * White Flow Adv. skin CSS
+ * ver 1.0 (2012/10/17)
+ * by Logue (http://logue.be/)
+ *
+ * based on
+ * White flow (http://note.openvista.jp/2007/pukiwiki-skin/)
+ * by leva(http://www.geckodev.org/)
+ *
+ * License: X11/MIT License
+ * http://www.opensource.org/licenses/mit-license.php
+ */
 
 //error_reporting(0); // Nothing
 error_reporting(E_ERROR | E_PARSE); // Avoid E_WARNING, E_NOTICE, etc
@@ -35,10 +37,10 @@ header('Last-Modified: '.gmdate('D, d M Y H:i:s', getlastmod() ) . ' GMT');
 /* General elements */
 
 body{
-	background-color:	#dfdfdf;
+	background-color: #dfdfdf;
 }
 
-a:link{
+a{
 	color: #325989;
 	text-decoration: none;
 }
@@ -122,7 +124,7 @@ tfoot .style_th {
 	 background-color: aliceblue;
 }
 
-.table tr .td:hover{
+.table tr td:hover{
 	background-color: floralwhite;
 }
 
@@ -154,7 +156,9 @@ pre{
 	text-decoration: underline;
 }
 
-
+.noexists{
+	background-color: lightyellow;
+}
 /** 2, framework.css ******************************************************************************/
 /* Framework overview */
 
@@ -366,6 +370,7 @@ pre{
 
 #body {
 	counter-reset: article;
+	margin-top: .5em;
 }
 
 #body h2:before {
@@ -373,6 +378,7 @@ pre{
 	content: "#" counter(article, decimal);
 	counter-increment: article;
 	font-family: "Courier New", Courier, monospace;
+	font-weight: bold;
 	font-size: 360%;
 	letter-spacing: -5px;
 	margin-right: -0.35em;

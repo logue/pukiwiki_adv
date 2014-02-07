@@ -260,7 +260,9 @@ class Render{
 		// JavaScript
 		$view->js = $this->getJs();
 		// 汎用ワード
-		$view->lang = $_LANG;
+		$view->strings = $_LANG;
+		// 表示言語
+		$view->lang = substr(LANG,0,2);
 		// テーマディレクトリへの相対パス
 		$view->path =  SKIN_URI . THEME_PLUS_NAME . (!IS_MOBILE ? PLUS_THEME : 'mobile') . '/';
 
@@ -280,6 +282,9 @@ class Render{
 		// http://code.jquery.com/
 		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'//'.self::JQUERY_CDN.'/jquery-'.self::JQUERY_VER.'.min.js', 'defer'=>'defer');
 		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'//'.self::JQUERY_CDN.'/ui/'.self::JQUERY_UI_VER.'/jquery-ui.min.js', 'defer'=>'defer');
+
+		// Bootstrap
+		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'//'.self::BOOTSTRAP_CDN . '/bootstrap/' . self::TWITTER_BOOTSTRAP_VER . '/js/bootstrap.min.js', 'defer'=>'defer' );
 
 		// JS用初期設定
 		$js_init = array(

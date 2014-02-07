@@ -1,16 +1,18 @@
 <?php
-// PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: xxxlogue.css.php,v 2.4.5 2012/08/17 07:27:30 Logue Exp $
-// Copyright (C) 2010-2012 PukiWiki Advance Developers Team
-//               2007-2010 Logue
-
-// xxxLogue skin for PukiWiki Advance
-//
-// Based on
-//   Xu Yiyang's (http://xuyiyang.com/) Unnamed (http://xuyiyang.com/wordpress-themes/unnamed/)
-//
-// License: GPL v3 or (at your option) any later version
-// http://www.opensource.org/licenses/gpl-3..html
+/**
+ * PukiWiki Advance - Yet another WikiWikiWeb clone.
+ * $Id: xxxlogue.css.php,v 2.4.6 2014/02/07 18:08:30 Logue Exp $
+ * Copyright (C) 2010-2012,2014 PukiWiki Advance Developers Team
+ *               2007-2010 Logue
+ *
+ * xxxLogue skin for PukiWiki Advance
+ *
+ * Based on
+ *   Xu Yiyang's (http://xuyiyang.com/) Unnamed (http://xuyiyang.com/wordpress-themes/unnamed/)
+ *
+ * License: GPL v3 or (at your option) any later version
+ * http://www.opensource.org/licenses/gpl-3..html
+ */
 
 // Error reporting
 //error_reporting(0); // Nothing
@@ -40,7 +42,6 @@ body{
 /* anchor tag */
 a {
 	color:#3578b2 !important;
-	background-color:inherit;
 	text-decoration:none;
 }
 
@@ -76,23 +77,6 @@ dt{
 dd{
 	margin-left:1.5em;
 	margin-bottom:.5em;
-}
-
-ul, ol{
-	margin:.5em 2em;
-}
-
-q{
-	border:1px dotted #999;
-}
-
-p, pre, dl, form, .table_wrapper{
-	margin:.5em 1.5em;
-}
-
-ul, ol {
-	padding-left:1.5em;
-	margin:.5em 2em;
 }
 
 fieldset pre{
@@ -143,10 +127,6 @@ h1, h2, h3, h4, h5, h6{
 	background-color:rgba(255, 255, 255, .9);
 }
 
-.ie8 h1, .ie8 h2, .ie8 h3, .ie8 h4, .ie8 h5, .ie8 h6{
-	background:url(<?php echo $_SKIN['image_dir'] ?>bg_white.png) repeat center top transparent;
-}
-
 pre {
 	border-top:#DDDDEE 1px solid;
 	border-bottom:#888899 1px solid;
@@ -160,46 +140,6 @@ pre {
 
 small,.small {
 	color:#777;
-}
-
-strike, del {
-	color:#777;
-	text-decoration:line-through;
-}
-
-/* Custimize Form Design */
-input, input, textarea, select{
-	box-shadow: none;
-}
-
-input[type='text']:focus, input[type='password']:focus, input[type='file']:focus,
-input[type='tel']:focus, input[type='url']:focus, input[type='email']:focus,
-input[type='datetime']:focus, input[type='date']:focus, input[type='month']:focus,
-input[type='week']:focus, input[type='time']:focus, input[type='datetime-local']:focus,
-input[type='number']:focus, input[type='range']:focus, input[type='color']:focus,
-input[type='search']:focus, textarea:focus, select:focus {
-	box-shadow: 0 0 3px #fc0;
-	-moz-box-shadow:0 0 3px #fc0;
-	-webkit-box-shadow:0 0 3px #fc0;
-	border:1px solid #fc0;
-}
-
-input[type='text']:hover, input[type='password']:hover, input[type='file']:hover,
-input[type='tel']:hover, input[type='url']:hover, input[type='email']:hover,
-input[type='datetime']:hover, input[type='date']:hover, input[type='month']:hover,
-input[type='week']:hover, input[type='time']:hover, input[type='datetime-local']:hover,
-input[type='number']:hover, input[type='range']:hover, input[type='color']:hover,
-input[type='search']:hover, textarea:hover, select:hover {
-	border:1px solid #fc0;
-	box-shadow: none;
-}
-
-input[type="search"]{
-	background:url(<?php echo $_SKIN['image_dir'] ?>bg_search.png) right 3px no-repeat #f4f4f4;
-}
-
-input[type="search"]:focus, input[type="search"]:hover {
-	background:url(<?php echo $_SKIN['image_dir'] ?>bg_search.png) right -16px no-repeat #fff;
 }
 
 /** Misc ******************************************************************************************/
@@ -231,165 +171,6 @@ input[type="search"]:focus, input[type="search"]:hover {
 .table thead th,
 .table tfoot th {
 	background-color:#E0E8F0;
-}
-
-/* html.php/catbody() */
-.word0 {
-	background-color:#FFFF66;
-	text-shadow:none;
-	color:black;
-}
-.word1 {
-	background-color:#A0FFFF;
-	text-shadow:none;
-	color:black;
-}
-.word2 {
-	background-color:#99FF99;
-	text-shadow:none;
-	color:black;
-}
-.word3 {
-	background-color:#FF9999;
-	text-shadow:none;
-	color:black;
-}
-.word4 {
-	background-color:#FF66FF;
-	text-shadow:none;
-	color:black;
-}
-.word5 {
-	background-color:#880000;
-	text-shadow:none;
-	color:white;
-}
-.word6 {
-	background-color:#00AA00;
-	text-shadow:none;
-	color:white;
-}
-.word7 {
-	background-color:#886800;
-	text-shadow:none;
-	color:white;
-}
-.word8 {
-	background-color:#004699;
-	text-shadow:none;
-	color:white;
-}
-.word9 {
-	background-color:#990099;
-	text-shadow:none;
-	color:white;
-}
-
-
-/* List */
-ul.list1 { list-style-type:disc; }
-ul.list2 { list-style-type:circle; }
-ul.list3 { list-style-type:square; }
-ol.list1 { list-style-type:decimal; }
-ol.list2 { list-style-type:lower-roman; }
-ol.list3 { list-style-type:lower-alpha; }
-
-.super_index {
-	color:#DD3333;
-	background-color:inherit;
-	font-weight:bold;
-	vertical-align:super;
-}
-
-.note_super {
-	color:#DD3333;
-	font-weight:bold;
-	font-size:77%;
-	vertical-align:super;
-	margin: 0 1%;
-}
-
-.jumpmenu {
-	text-align:right;
-}
-
-/* html.php/edit_form() */
-.edit_form
-{
-	/* clear:both; */
-	width:95%;
-	min-width:99%;
-	margin:.5em;
-}
-
-#poptoc {
-	border:gray thin outset;
-	background-color:lightyellow;
-	max-width:25em;
-	min-width:18em;
-	opacity:.9;
-	overflow:visible;
-	padding:.5em;
-	position:absolute;
-	text-align:left;
-	text-shadow: white 1px 1px 0;
-	width:22em;
-	z-index:1;
-}
-
-.ie6 #poptoc, .ie7 #poptoc, .ie8 #poptoc {
-	filter:
-		progid:DXImageTransform.Microsoft.Alpha(opacity=90)
-		progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=ivory,EndColorStr=lemonchiffon) !important;
-}
-
-.webkit #poptoc{
-	background: -webkit-gradient(linear, left top, left bottom, from(ivory), to(lemonchiffon));
-}
-
-.gecko #poptoc{
-	-moz-opacity:.9;
-	background: -moz-linear-gradient(top, ivory, lemonchiffon);
-}
-
-.presto #poptoc{
-	background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMCI%2BDQo8ZGVmcz4NCjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxMDAlIj4NCjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOml2b3J5OyIvPg0KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjpsaWdodHllbGxvdzsiLz4NCjwvbGluZWFyR3JhZGllbnQ%2BDQo8L2RlZnM%2BDQo8cmVjdCB4PSIwIiB5PSIwIiBmaWxsPSJ1cmwoI2dyYWRpZW50KSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgLz4NCjwvc3ZnPg0K');
-}
-.ie9 #poptoc {
-	-ms-filter: "progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=ivory,EndColorStr=lemonchiffon)" !important;
-}
-
-#poptoc a{
-	color:blue !important;
-	cursor:pointer;
-}
-#poptoc a:hover{
-	text-shadow: none;
-	background-color:#ccc;
-}
-#poptoc h1{
-	color:navy;
-	background-color:honeydew;
-	font-size:small;
-	font-weight:normal;
-	padding:.3em;
-	margin:0;
-	text-align:center;
-	border:silver solid 1px;
-	display:block;
-}
-#poptoc h1 a{color:navy; text-decoration:none;}
-#poptoc h1 img {margin-bottom:-3px; margin-right: 2px;}
-#poptoc .nav {text-indent:0em;border-top:1px gray solid; padding-top:.2em;text-align:center; white-space: nowrap; }
-#poptoc a.here{color: black; background: #EEEEEE; text-decoration: none; border:1px dotted gray;}
-
-.tocpic {
-	display: inline;
-	cursor: pointer;
-}
-
-.hrefp, .topic {
-	vertical-align: text-bottom;
 }
 
 /** Skin Stylesheet *******************************************************************************/
@@ -598,7 +379,7 @@ ol.list3 { list-style-type:lower-alpha; }
 /* Primary Cotent and Entries */
 #body {
 	width: auto;
-	padding: 0 1%;
+	padding: 0 2%;
 /*	overflow:hidden; */
 }
 

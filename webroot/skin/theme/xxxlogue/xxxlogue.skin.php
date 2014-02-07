@@ -13,7 +13,7 @@
 // http://www.opensource.org/licenses/gpl-3.0.html
 ?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $this->lang; ?>">
 	<head prefix="og: http://ogp.me/ns# fb: http://www.facebook.com/2008/fbml">
 <?php echo $this->head; ?>
 		<link rel="stylesheet" type="text/css" href="<?php echo $this->path; ?>xxxlogue.css.php" />
@@ -29,7 +29,6 @@
 <!-- * Title * -->
 				<div id="hgroup" role="banner">
 					<h1 id="title"><a href="<?php echo $this->links['related'] ?>"><?php echo $this->title ?></a></h1>
-					<?php echo $this->topicpath; ?>
 				</div>
 <!-- * End Title * -->
 <!-- * Ad space *-->
@@ -76,6 +75,7 @@
 				<div id="<?php echo ($this->is_read && !empty($this->menubar)) ? 'primary-content' : 'single-content'; ?>">
 <!-- * Main Content * -->
 					<section id="body" class="body" role="main">
+						<?php echo $this->topicpath; ?>
 						<?php echo $this->body ?>
 					</section>
 <?php if (!empty($this->notes)) { ?>

@@ -128,7 +128,7 @@ function bb2_insert($settings, $package, $key)
 	$request_entity = bb2_db_escape($request_entity);
 	return 'INSERT INTO `' . $settings['log_table']. '`' .
 		'(`ip`, `date`, `request_method`, `request_uri`, `server_protocol`, `http_headers`, `user_agent`, `request_entity`, `key`) VALUES' . 
-		'(' . $ip . ', ' . $date . ', ' . $request_method . ', ' . $request_uri . ', ' . $server_protocol . ', ' . $headers . ', ' . $user_agent . ', ' . $request_entity . ', ' . $key .')';
+		'(' . $ip . ', ' . $date . ', ' . $request_method . ', ' . $request_uri . ', ' . $server_protocol . ', ' . $headers . ', ' . $user_agent . ', ' . $request_entity . ', ' . bb2_db_escape($key) .')';
 }
 // Return emergency contact email address.
 function bb2_email() {

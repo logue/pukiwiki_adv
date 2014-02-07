@@ -1,16 +1,18 @@
 <?php
-// PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: classic.skin.php,v 1.6.4 2011/09/11 22:58:00 Logue Exp $
-
-// PukiWiki Classic Skin for PukiPlus
-// Copyright (C)
-//   2010-2013 PukiWiki Advance Developers Team
-//   2005-2007 Logue (LogueWiki Skin)
-//   2002-2005 PukiWiki Developers Team
-//   2001-2002 Originally written by yu-ji
+/**
+ * PukiWiki Advance - Yet another WikiWikiWeb clone.
+ * $Id: classic.skin.php,v 1.6.5 2014/02/07 18:28:00 Logue Exp $
+ *
+ * PukiWiki Classic Skin for PukiWiki Advance
+ * Copyright (C)
+ *   2010-2014 PukiWiki Advance Developers Team
+ *   2005-2007 Logue (LogueWiki Skin)
+ *   2002-2005 PukiWiki Developers Team
+ *   2001-2002 Originally written by yu-ji
+ */
 ?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $this->lang; ?>">
 	<head prefix="og: http://ogp.me/ns# fb: http://www.facebook.com/2008/fbml">
 <?php echo $this->head; ?>
 		<link rel="stylesheet" type="text/css" href="<?php echo $this->path; ?>classic.css.php" />

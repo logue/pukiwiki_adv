@@ -1,13 +1,15 @@
 @charset "UTF-8";
-/*
-/////////////////////////////////////////////////
-// WIKIWIKI Adv. skin
-// by Logue
-// Theme inspired from Wikiwiki.jp default skin.
-// 
-// $Id: wikiwikiadv.css,v 1.0.1 2012/03/19 22:09:00 Logue Exp $
-//
-*/
+/**
+ * WIKIWIKI Adv. skin
+ *
+ * Copyright (C)
+ *   2012-2014 PukiWiki Advance Developer Team
+ *
+ * Theme inspired from Wikiwiki.jp default skin.
+ * 
+ * $Id: wikiwikiadv.css,v 1.0.1 2012/03/19 22:09:00 Logue Exp $
+ *
+ */
 
 /** Generic Tags *********************************************************************************/
 a
@@ -194,7 +196,8 @@ p, pre, dl, blockquote, form, .table_wrapper{
 	width:930px;
 	background-color: white;
 	border: 1px #CCC solid;
-	margin: 0 auto;
+	box-shadow:#ccc 0 0 3px 1px;
+	margin: 5px auto;
 	padding: 3px;
 }
 
@@ -340,8 +343,18 @@ p, pre, dl, blockquote, form, .table_wrapper{
 	content:''; 
 }
 
-#naviframe .search_form{
+#naviframe .plugin-search-form{
 	float:right;
+	margin: 0;
+}
+
+#naviframe .plugin-search-form *{
+	font-size:90%;
+}
+
+#naviframe .plugin-search-form .form-control, #naviframe .plugin-search-form .btn{
+	height:28px;
+	font-size:90%;
 }
 
 #naviframe a {
@@ -534,18 +547,15 @@ p, pre, dl, blockquote, form, .table_wrapper{
 #menubar, #sidebar{
 	word-break:break-all;
 	overflow:hidden;
-	
 	letter-spacing:0.15em;
 }
 
 #menubar ul{
 	margin:0px 0px 0px .5em;
-	padding:0px 0px 0px 1em;
 }
 
 #sidebar ul{
 	margin:0px 0px 0px .5em;
-	padding:0px 0px 0px .5em;
 }
 
 #menubar li, #sidebar li{

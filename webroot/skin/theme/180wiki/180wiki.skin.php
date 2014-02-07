@@ -1,16 +1,15 @@
 <?php
-///////////////////////////////////////////////////////////
-// PukiWiki - Yet another WikiWikiWeb clone.
-//
-// $Id: 180wiki.skin.php,v 0.4.1 2012/05/24 19:42:00 Logue Exp $
-//
-// 180wiki skin by hrmz <http://180.style.coocan.jp/wiki/>
-// Modified by Logue
-///////////////////////////////////////////////////////////
-
+/**
+ * PukiWiki Advance - Yet another WikiWikiWeb clone.
+ *
+ * $Id: 180wiki.skin.php,v 0.4.2 2014/02/07 18:37:00 Logue Exp $
+ *
+ * 180wiki skin by hrmz <http://180.style.coocan.jp/wiki/>
+ * Modified by Logue
+ */
 ?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $this->lang; ?>">
 	<head prefix="og: http://ogp.me/ns# fb: http://www.facebook.com/2008/fbml">
 <?php echo $this->head; ?>
 		<link rel="stylesheet" type="text/css" href="<?php echo $this->path; ?>180wiki.css.php" />

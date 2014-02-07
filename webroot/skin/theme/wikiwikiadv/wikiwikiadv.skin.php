@@ -10,7 +10,7 @@
 //
 ?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $this->lang; ?>">
 	<head prefix="og: http://ogp.me/ns# fb: http://www.facebook.com/2008/fbml">
 <?php echo $this->head; ?>
 		<link rel="stylesheet" type="text/css" href="<?php echo $this->path; ?>wikiwikiadv.css" />
@@ -50,7 +50,7 @@
 							<?php echo (!empty($this->lastmodified)) ? '<h2 id="lastmodified">Last-modified: '.$this->lastmodified.'</h2>'."\n" : '' ?>
 						</hgroup>
 
-						<div  role="main">
+						<div>
 							<section id="body" role="main">
 								<?php echo $this->body."\n" ?>
 							</section>
@@ -108,7 +108,7 @@
 					<li><address>Founded by <a href="<?php echo $this->modifierlink ?>"><?php echo $this->modifier ?></a></address></li>
 					<li>Powered by <a href="http://pukiwiki.logue.be/" rel="product"><?php echo GENERATOR ?></a>.</li>
 					<li>Processing time: <var><?php echo $this->proc_time; ?></var> sec.</li>
-					<li class="f_right"><a href="<?php echo $this->links['rss'] ?>"><span class="pkwk-icon icon-rss"><?php echo $this->lang['skin']['rss'] ?></span></a></li>
+					<li class="f_right"><a href="<?php echo $this->links['rss'] ?>"><span class="pkwk-icon icon-rss"><?php echo $this->strings['skin']['rss'] ?></span></a></li>
 				<ul>
 			</footer>
 		</div>

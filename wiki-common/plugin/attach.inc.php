@@ -155,12 +155,15 @@ function plugin_attach_convert()
 			$noform |= ($arg == 'noform');
 		}
 	}
+	
+	if (empty($page)) return '<div class="alert alert-warning">#attach(): No page defined.</div>';
 
 	$ret = '';
 	if (! $nolist) {
-		$obj  = new Attach($page);
-		$ret .= $obj->toString($page, TRUE);
+//		$obj  = new Attach($page);
+//		$ret .= $obj->toString($page, TRUE);
 	}
+
 	if (! $noform) {
 		$ret .= attach_form($page);
 	}

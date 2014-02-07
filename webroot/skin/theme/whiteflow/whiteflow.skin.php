@@ -1,22 +1,22 @@
 <?php
-/////////////////////////////////////////////////
-// PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: whiteflow.css.php,v 1.0.3 2012/10/17 15:44:30 Logue Exp $
-
-// White flow Adv. skin.
-// ver 1.0 (2011/12/10) 
-// by Logue (http://logue.be/)
-
-// based on 
-// White flow (http://note.openvista.jp/2007/pukiwiki-skin/)
-// by leva(http://www.geckdev.org)
-
-// License is The MIT/X11 License (http://www.opensource.org/licenses/mit-license.php)
-
+/**
+ * PukiWiki Advance - Yet another WikiWikiWeb clone.
+ * $Id: whiteflow.skin.php,v 1.0.1 2014/02/07 18:24:30 Logue Exp $
+ *
+ * White Flow skin for PukiWiki Advance.
+ * Copyright (C)
+ *   2012-2014 PukiWiki Advance Developer Team
+ *
+ * based on 
+ *   White flow (http://note.openvista.jp/2007/pukiwiki-skin/)
+ *   by leva(http://www.geckdev.org)
+ *
+ * License is The MIT/X11 License (http://www.opensource.org/licenses/mit-license.php)
+ */
 $layout_class = $this->is_read ? 'work' : 'display';
 ?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $this->lang; ?>">
 	<head prefix="og: http://ogp.me/ns# fb: http://www.facebook.com/2008/fbml">
 <?php echo $this->head; ?>
 		<link rel="stylesheet" type="text/css" href="<?php echo $this->path; ?>whiteflow.css.php" />
@@ -51,9 +51,9 @@ $layout_class = $this->is_read ? 'work' : 'display';
 			<?php echo $this->topicpath; ?>
 			<?php echo (!empty($this->lastmodified)) ? '<div id="lastmodified">'.$this->lastmodified.'</div>'."\n" : '' ?>
 <?php }else if (!empty($this->menubar)){ ?>
-			<nav id="topicpath"><a href="<?php echo $this->links['reload'] ?>"><?php echo $this->lang['skin']['reload'] ?></a></nav>
+			<nav id="topicpath"><a href="<?php echo $this->links['reload'] ?>"><?php echo $this->strings['skin']['reload'] ?></a></nav>
 <?php }else{ ?>
-			<nav id="topicpath"><a href="<?php echo $this->links['top'] ?>"><?php echo $this->lang['skin']['top'] ?></a></nav>
+			<nav id="topicpath"><a href="<?php echo $this->links['top'] ?>"><?php echo $this->strings['skin']['top'] ?></a></nav>
 <?php } ?>
 			</div>
 
@@ -104,48 +104,48 @@ $layout_class = $this->is_read ? 'work' : 'display';
 				<aside id="sidebar" class="clearfix" role="navigation">
 					<div id="page-menu" class="clearfix">
 <!-- ■BEGIN id:page_action -->
-						<h3><?php echo $this->lang['skin']['edit'] ?></h3>
+						<h3><?php echo $this->strings['skin']['edit'] ?></h3>
 						<ul class="sf-menu sf-vertical">
 <?php if (!empty($this->menubar)) { ?>
-							<li><a href="<?php echo $this->links['top'] ?>"><span class="pkwk-icon icon-top"></span><?php echo $this->lang['skin']['top'] ?></a></li>
-							<li><a href="<?php echo $this->links['reload'] ?>"><span class="pkwk-icon icon-reload"></span><?php echo $this->lang['skin']['reload'] ?></a></li>
-							<li><a href="<?php echo $this->links['new'] ?>"><span class="pkwk-icon icon-new"></span><?php echo $this->lang['skin']['new'] ?></a>
+							<li><a href="<?php echo $this->links['top'] ?>"><span class="pkwk-icon icon-top"></span><?php echo $this->strings['skin']['top'] ?></a></li>
+							<li><a href="<?php echo $this->links['reload'] ?>"><span class="pkwk-icon icon-reload"></span><?php echo $this->strings['skin']['reload'] ?></a></li>
+							<li><a href="<?php echo $this->links['new'] ?>"><span class="pkwk-icon icon-new"></span><?php echo $this->strings['skin']['new'] ?></a>
 								<ul>
-									<li><a href="<?php echo $this->links['newsub'] ?>"><span class="pkwk-icon icon-newsub"></span><?php echo $this->lang['skin']['newsub'] ?></a></li>
-									<li><a href="<?php echo $this->links['rename'] ?>"><span class="pkwk-icon icon-rename"></span><?php echo $this->lang['skin']['rename'] ?></a></li>
+									<li><a href="<?php echo $this->links['newsub'] ?>"><span class="pkwk-icon icon-newsub"></span><?php echo $this->strings['skin']['newsub'] ?></a></li>
+									<li><a href="<?php echo $this->links['rename'] ?>"><span class="pkwk-icon icon-rename"></span><?php echo $this->strings['skin']['rename'] ?></a></li>
 								</ul>
 							</li>
-							<li><a href="<?php echo $this->links['edit'] ?>"><span class="pkwk-icon icon-edit"></span><?php echo $this->lang['skin']['edit'] ?></a>
+							<li><a href="<?php echo $this->links['edit'] ?>"><span class="pkwk-icon icon-edit"></span><?php echo $this->strings['skin']['edit'] ?></a>
 								<ul>
 <?php global $function_freeze ?>
 <?php   if ($this->is_read and $function_freeze) { ?>
 <?php     if ($this->is_freeze) { ?>
-									<li><a href="<?php echo $this->links['unfreeze'] ?>"><span class="pkwk-icon icon-unfreeze"></span><?php echo $this->lang['skin']['unfreeze'] ?></a></li>
+									<li><a href="<?php echo $this->links['unfreeze'] ?>"><span class="pkwk-icon icon-unfreeze"></span><?php echo $this->strings['skin']['unfreeze'] ?></a></li>
 <?php     } else { ?>
-									<li><a href="<?php echo $this->links['freeze'] ?>"><span class="pkwk-icon icon-freeze"></span><?php echo $this->lang['skin']['freeze'] ?></a></li>
+									<li><a href="<?php echo $this->links['freeze'] ?>"><span class="pkwk-icon icon-freeze"></span><?php echo $this->strings['skin']['freeze'] ?></a></li>
 <?php     } ?>
 <?php   } ?>
 <?php   if ((bool)ini_get('file_uploads')) { ?>
-									<li><a href="<?php echo $this->links['upload'] ?>"><span class="pkwk-icon icon-upload"></span><?php echo $this->lang['skin']['upload'] ?></a></li>
+									<li><a href="<?php echo $this->links['upload'] ?>"><span class="pkwk-icon icon-upload"></span><?php echo $this->strings['skin']['upload'] ?></a></li>
 <?php   } ?>
-									<li><a href="<?php echo $this->links['source'] ?>"><span class="pkwk-icon icon-source"></span><?php echo $this->lang['skin']['source'] ?></a></li>
-									<li><a href="<?php echo $this->links['diff'] ?>"><span class="pkwk-icon icon-diff"></span><?php echo $this->lang['skin']['diff'] ?></a></li>
-									<li><a href="<?php echo $this->links['backup'] ?>"><span class="pkwk-icon icon-backup"></span><?php echo $this->lang['skin']['backup'] ?></a></li>
+									<li><a href="<?php echo $this->links['source'] ?>"><span class="pkwk-icon icon-source"></span><?php echo $this->strings['skin']['source'] ?></a></li>
+									<li><a href="<?php echo $this->links['diff'] ?>"><span class="pkwk-icon icon-diff"></span><?php echo $this->strings['skin']['diff'] ?></a></li>
+									<li><a href="<?php echo $this->links['backup'] ?>"><span class="pkwk-icon icon-backup"></span><?php echo $this->strings['skin']['backup'] ?></a></li>
 								</ul>
 							</li>
 <?php } ?>
-							<li><a href="<?php echo $this->links['search'] ?>"><span class="pkwk-icon icon-search"></span><?php echo $this->lang['skin']['search'] ?></a></li>
-							<li><a href="<?php echo $this->links['list'] ?>"><span class="pkwk-icon icon-list"></span><?php echo $this->lang['skin']['list'] ?></a>
+							<li><a href="<?php echo $this->links['search'] ?>"><span class="pkwk-icon icon-search"></span><?php echo $this->strings['skin']['search'] ?></a></li>
+							<li><a href="<?php echo $this->links['list'] ?>"><span class="pkwk-icon icon-list"></span><?php echo $this->strings['skin']['list'] ?></a>
 								<ul>
 <?php if (arg_check('list')) { ?>
-									<li><a href="<?php echo $this->links['filelist'] ?>"><span class="pkwk-icon icon-filelist"></span><?php echo $this->lang['skin']['filelist'] ?></a></li>
+									<li><a href="<?php echo $this->links['filelist'] ?>"><span class="pkwk-icon icon-filelist"></span><?php echo $this->strings['skin']['filelist'] ?></a></li>
 <?php } ?>
-									<li><a href="<?php echo $this->links['recent'] ?>"><span class="pkwk-icon icon-recent"></span><?php echo $this->lang['skin']['recent'] ?></a></li>
-									<li><a href="<?php echo $this->links['referer'] ?>"><span class="pkwk-icon icon-referer"></span><?php echo $this->lang['skin']['referer'] ?></a></li>
-									<li><a href="<?php echo $this->links['log'] ?>"><span class="pkwk-icon icon-log"></span><?php echo $this->lang['skin']['log'] ?></a></li>
+									<li><a href="<?php echo $this->links['recent'] ?>"><span class="pkwk-icon icon-recent"></span><?php echo $this->strings['skin']['recent'] ?></a></li>
+									<li><a href="<?php echo $this->links['referer'] ?>"><span class="pkwk-icon icon-referer"></span><?php echo $this->strings['skin']['referer'] ?></a></li>
+									<li><a href="<?php echo $this->links['log'] ?>"><span class="pkwk-icon icon-log"></span><?php echo $this->strings['skin']['log'] ?></a></li>
 								</ul>
 							</li>
-							<li><a href="<?php echo $this->links['login'] ?>"><span class="pkwk-icon icon-login"></span><?php echo $this->lang['skin']['login'] ?></a></li>
+							<li><a href="<?php echo $this->links['login'] ?>"><span class="pkwk-icon icon-login"></span><?php echo $this->strings['skin']['login'] ?></a></li>
 						</ul>
 					</div>
 

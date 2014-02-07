@@ -23,6 +23,10 @@
 
 var pukiwiki = {};
 
+// BootstrapのtooltipがjQueryUIのtooltipと競合するため。
+var bootstrapTooltip = $.fn.tooltip.noConflict();
+$.fn.bstooltip = bootstrapTooltip;
+
 // Bigscope
 (function ($, Modernizr, window, document) {
 	'use strict';

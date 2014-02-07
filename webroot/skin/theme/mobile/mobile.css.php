@@ -1,11 +1,12 @@
 <?php
-// PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: classic.css.php,v 0.0.2 2013/02/06 16:49:30 Logue Exp $
-//
-// PukiWiki Adv. Mobile Theme
-// Copyright (C)
-//   2012 PukiWiki Advance Developer Team
-
+/**
+ * PukiWiki - Yet another WikiWikiWeb clone.
+ * $Id: mobile.css.php,v 0.0.3 2014/02/05 18:59:30 Logue Exp $
+ *
+ * PukiWiki Adv. Mobile Theme
+ * Copyright (C)
+ *   2012-2014 PukiWiki Advance Developer Team
+ */
 ini_set('zlib.output_compression', 'Off');
 
 $image_dir = isset($_GET['base']) ? $_GET['base']	: '../image/';
@@ -70,35 +71,7 @@ figcaption{
 	font-size:93%;
 	text-align:center;
 }
-/* Table Tags */
-.table{
-	border-spacing:2px;
-	padding:0px;
-	border:0px;
-	margin:0.1em auto;
-	text-align:left;
-	border-collapse:separate;
-	border-spacing:1px;
-	background-color:silver;
-	text-shadow:none;
-	text-shadow: none;
-}
 
-.table th{
-	background-color:lightgrey;
-	padding:5px;
-	margin:1px;
-	text-align:center;
-}
-.table td{
-	background-color:whitesmoke;
-	padding:5px;
-	margin:1px;
-}
-
-.table td.blank-cell{
-	background-color:gainsboro;
-}
 /* Week and Month */
 .style_week, .style_month{
 	border:none !important;
@@ -393,30 +366,6 @@ textarea, select, option, input, var, pre, code{
 /* include.inc.php */
 .side_label {
 	text-align:center;
-}
-
-/* navi.inc.php */
-.navi {
-	display:block;
-	list-style-image: none;
-	list-style:none;
-	margin: 0 !important;
-	padding:0 !important;
-	text-align:center;
-}
-.navi_none {
-	display:inline;
-	float:none;
-}
-.navi_left {
-	display:inline;
-	float:left;
-	text-align:left;
-}
-.navi_right {
-	display:inline;
-	float:right;
-	text-align:right;
 }
 
 /* new.inc.php */

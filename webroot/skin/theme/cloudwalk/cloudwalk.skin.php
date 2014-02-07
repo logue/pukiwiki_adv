@@ -1,13 +1,13 @@
 <?php
-/////////////////////////////////////////////////
-// PukiPlus - Yet another WikiWikiWeb clone.
-//
-// $Id: cloudwalk.skin.php,v 1.2.4 2012/03/25 09:23:00 Logue Exp$
-// Original is ari-
-// PukiWiki Advance edition by Logue
+/**
+ * PukiWiki Advance - Yet another WikiWikiWeb clone.
+ *
+ * $Id: cloudwalk.skin.php,v 1.2.4 2014/02/05 17:14:00 Logue Exp$
+ * Original is ari-
+ */
 ?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $this->lang; ?>">
 	<head prefix="og: http://ogp.me/ns# fb: http://www.facebook.com/2008/fbml">
 <?php echo $this->head; ?>
 		<link rel="stylesheet" type="text/css" href="<?php echo $this->path; ?>cloudwalk.css.php" />
@@ -66,11 +66,11 @@
 <!-- ◆sidebar◆ ========================================================== -->
 				<aside id="sidebar">
 					<div id="search_form" class="bar"><!-- ■BEGIN id:search_form -->
-						<h2><?php echo $this->lang['skin']['search'] ?></h2>
+						<h2><?php echo $this->strings['skin']['search'] ?></h2>
 						<?php echo $this->pluginBlock('search'); ?>
 					</div><!-- END id:search_form -->
 					<div id="page_action" class="bar"><!-- ■BEGIN id:page_action -->
-						<h2><?php echo $this->lang['skin']['edit'] ?></h2>
+						<h2><?php echo $this->strings['skin']['edit'] ?></h2>
 						<?php echo $this->pluginBlock('navibar', 'top,reload,new,edit,freeze,upload,diff,list,search,recent,backup,help,login'); ?>
 					</div><!-- □END id:page_action -->
 <?php if (!empty($this->menubar)) { ?>
