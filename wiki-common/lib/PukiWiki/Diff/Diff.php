@@ -3,10 +3,11 @@
 // Copyright (c) 2012 Logue <logue@hotmail.co.jp> All rights reserved.
 // License: BSD license
 // based on https://github.com/cubicdaiya/onp
-
 namespace PukiWiki\Diff;
 
 use PukiWiki\Utility;
+
+ini_set("memory_limit",-1);
 
 /**
  * The algorithm implemented here is based on "An O(NP) Sequence Comparison Algorithm"

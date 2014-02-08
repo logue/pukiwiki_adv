@@ -164,7 +164,7 @@ abstract class AbstractFile extends SplFileInfo{
 		// (Use PHP file() function if you want to get ALL lines)
 		if ( !self::has() ) return false;
 		if ( !$this->isReadable() )
-			throw new Exception(sprintf('AbstractFile::get(): File %s is not readable.', $this->getRealPath()));
+			throw new Exception(sprintf('AbstractFile::get(): File %s is not readable.', $this->filename));
 
 		// ファイルの読み込み
 		$file = $this->openFile('r');
@@ -201,7 +201,7 @@ abstract class AbstractFile extends SplFileInfo{
 	public function get($join = false, $legacy = false){
 		if ( !$this->isFile() ) return false;
 		if ( !$this->isReadable() )
-			Utility::dieMessage(sprintf('AbstractFile::get(): File %s is not readable.', $this->getRealPath()));
+			Utility::dieMessage(sprintf('AbstractFile::get(): File %s is not readable.', $this->filename));
 
 		// ファイルの読み込み
 		$file = $this->openFile('r');
@@ -250,8 +250,9 @@ abstract class AbstractFile extends SplFileInfo{
 		if ( !$this->isFile() ) $this->touch();
 
 		// 書き込み可能かをチェック
-		if (! $this->isWritable())
-			Utility::dieMessage(sprintf('AbstractFile::set(): File %s is not writable.', $this->getRealPath()));
+		if (! $this->isWritable()){
+			Utility::dieMessage(sprintf('AbstractFile::set(): File %s is not writable.', $this->filename));
+		}
 
 		// タイムスタンプを取得
 		if ($keeptimestamp) $timestamp = self::getTime();
@@ -366,7 +367,7 @@ abstract class AbstractFile extends SplFileInfo{
 				// 念のためパーミッションを変更（通常は0644）
 				chmod($this->getRealPath(), self::FILE_PERMISSION);
 			}catch(Exception $e){
-				Utility::dieMessage(sprintf('AbstractFile::touch(): File %s is invalid UID and (not writable for the directory or not a flie).' ,$this->getRealPath()));
+				Utility::dieMessage(sprintf('AbstractFile::touch(): File %s is invalid UID and (not writable for the directory or not a flie).' ,$this->filename));
 			}
 		}
 	}
@@ -380,13 +381,13 @@ abstract class AbstractFile extends SplFileInfo{
 	public function touch($time = FALSE, $atime = FALSE){
 		if ($time === FALSE) {
 			// ファイルの領域を確保
-			$result = touch($this->getRealPath());
+			$result = touch($this->filename);
 		} else if ($atime === FALSE) {
 			// ファイルの更新日時を指定して領域を確保
-			$result = touch($this->getRealPath(), $time);
+			$result = touch($this->filename, $time);
 		} else {
 			// ファイルの更新日時とアクセス日時を指定して領域を確保
-			$result = touch($this->getRealPath(), $time, $atime);
+			$result = touch($this->filename, $time, $atime);
 		}
 		return $result;
 	}

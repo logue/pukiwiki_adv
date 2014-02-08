@@ -12,6 +12,7 @@
 
 use \SplFileInfo;
 use \SplFileObject;
+use PukiWiki\Attach;
 use PukiWiki\Utility;
 use PukiWiki\Renderer\Header;
 use Zend\Http\Response;
@@ -396,86 +397,9 @@ function plugin_ref_action()
 	$page     = $vars['page'];
 	$filename = $vars['src'] ;
 
-	$ref = UPLOAD_DIR . Utility::encode($page) . '_' . Utility::encode(preg_replace('#^.*/#', '', $filename));
-
-	$fileinfo = new SplFileInfo($ref);
-	
-	if(! $fileinfo->isFile() || !$fileinfo->isReadable())
-		return array('msg' => 'Attach file not found', 'body' => $usage);
-
-	try{
-		list($width, $height, $_type, $attr) = getimagesize($ref);
-		switch ($_type) {
-			case IMAGETYPE_BMP     : $type = 'image/bmp'; break;
-			case IMAGETYPE_GIF     : $type = 'image/gif'; break;
-			case IMAGETYPE_ICO     : $type = 'image/vnd.microsoft.icon'; break;
-			case IMAGETYPE_IFF     : $type = 'image/iff'; break;
-			case IMAGETYPE_JB2     : $type = 'image/jbig2'; break;
-			case IMAGETYPE_JP2     : $type = 'image/jp2'; break;
-			case IMAGETYPE_JPC     : $type = 'image/jpc'; break;
-			case IMAGETYPE_JPEG    : $type = 'image/jpeg'; break;
-			case IMAGETYPE_JPX     : $type = 'image/jpx'; break;
-			case IMAGETYPE_PNG     : $type = 'image/png'; break;
-			case IMAGETYPE_PSD     : $type = 'image/psd'; break;
-			case IMAGETYPE_SWC     :
-			case IMAGETYPE_SWF     : $type = 'application/x-shockwave-flash'; break;
-			case IMAGETYPE_TIFF_II :
-			case IMAGETYPE_TIFF_MM : $type = 'image/tiff'; break;
-			case IMAGETYPE_WBMP    : $type = 'image/vnd.wap.wbmp'; break;
-			case IMAGETYPE_XBM     : $type = 'image/xbm'; break;
-			default:
-				return array('msg' => 'Seems not an image', 'body' => $usage);
-		}
-	}catch (Exception $e){
-		return array('msg' => 'Seems not an image', 'body' => $usage);
-	}
-
-/*
-	// Care for Japanese-character-included file name
-	if (LANG == 'ja_JP') {
-		switch(UA_NAME . '/' . UA_PROFILE){
-		case 'Opera/default':
-			// Care for using _auto-encode-detecting_ function
-			$filename = mb_convert_encoding($vars['src'], 'UTF-8', 'auto');
-			break;
-		case 'MSIE/default':
-			$filename = mb_convert_encoding($vars['src'], 'SJIS', 'auto');
-			break;
-		}
-	}
-*/
-	$filename = mb_convert_encoding($vars['src'], 'UTF-8', 'auto');
-
-	// Output
-	ini_set('default_charset', '');
-	mb_http_output('pass');
-	
-	// ヘッダー出力
-	$header = Header::getHeaders($type ,$fileinfo->getMTime() );
-	$header['Content-Disposition'] = 'inline; filename="' . $filename . '"';
-	// ファイルサイズ
-	$header['Content-Length'] = $fileinfo->getSize();
-	
-	if ($use_sendfile_header === true){
-		// for reduce server load
-		$header['X-Sendfile'] = $fileinfo->getRealPath();
-	}
-	$obj = new SplFileObject($ref);
-	// ファイルの読み込み
-	$obj->openFile('rb');
-	// ロック
-	$obj->flock(LOCK_SH);
-	
-	ob_start(! DEBUG ? 'ob_gzhandler': null);
-	
-	echo $obj->fpassthru();
-	
-	$content = ob_get_clean();
-	// アンロック
-	$obj->flock(LOCK_UN);
-	// 念のためオブジェクトを開放
-	unset($fileinfo, $obj);
-	Header::writeResponse($header, Response::STATUS_CODE_200, $content);
+	$attach = new Attach($page, $filename);
+	$attach->render();
+	exit;
 }
 /* End of file ref.inc.php */
 /* Location: ./wiki-common/plugin/ref.inc.php */

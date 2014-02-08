@@ -892,7 +892,7 @@ $.fn.bstooltip = bootstrapTooltip;
 		// 独自のGlossaly処理
 		glossaly: function(prefix){
 			var glossaries = {};	// ajaxで読み込んだ内容をキャッシュ
-			$(document).tooltip({
+			$(document.body).tooltip({
 				items: '[aria-describedby], [title]',
 				track: true,
 				content: function(callback) {
@@ -1521,16 +1521,18 @@ $.fn.bstooltip = bootstrapTooltip;
 									}
 									location.href = SCRIPT + '?' + PAGE;
 								}else{
-									alert(data.msg);
 								}
 								$('title').html(data.title);
-								$('[role="main"]').html(data.msg);
-								$input.remobeAttr('disabled', 'disabled');
+								$('[role="main"]').html(data.body);
+								$input.removeAttr('disabled', 'disabled');
 							},
 							error : function(data, err){
 								if (DEBUG) {
-									console.error(err);
-									console.log(data.responseText);
+									if ($('#debug-window').length === 0) $(document.body).append('<div id="debug-window"></div>');
+									$('#debug-window').html(data.responseText);
+									$('#debug-window').dialog({
+										modal: true
+									});
 								}
 								alert($.i18n('pukiwiki','error'));
 							}
