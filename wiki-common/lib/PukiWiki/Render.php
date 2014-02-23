@@ -36,8 +36,8 @@ class Render{
 	/**
 	 * jQueryのバージョン
 	 */
-	const JQUERY_VER = '2.1.0';
-	//const JQUERY_VER = '1.11.0';
+	//const JQUERY_VER = '2.1.0';
+	const JQUERY_VER = '1.11.0';
 	/**
 	 * jQuery UIのバージョン
 	 */
@@ -49,7 +49,7 @@ class Render{
 	/**
 	 * Twitter Bootstrapのバージョン
 	 */
-	const TWITTER_BOOTSTRAP_VER = '3.1.0';
+	const TWITTER_BOOTSTRAP_VER = '3.1.1';
 	/**
 	 * Font Awesomeのバージョン
 	 */
@@ -668,7 +668,7 @@ class Render{
 		$exists = false;
 		$attaches = $this->wiki->attach(false);
 		if (!empty($attaches)) {
-			$ret[] = '<dl class="attach">';
+			$ret[] = '<dl class="list-inline">';
 			$ret[] = '<dt>'.$_LANG['skin']['attach_title'].'</dt>';
 			foreach ($attaches as $filename=>$files){
 				if (!isset($files[0])) continue;
@@ -699,13 +699,13 @@ class Render{
 		global $_LANG;
 		$related = $this->wiki->related();
 		if (empty($related)) return;
-		$ret[] = '<dl class="related">';
+		$ret[] = '<dl class="list-inline">';
 		$ret[] = '<dt>'. $_LANG['skin']['related'] . '</dt>';
 		foreach ($related as $page=>$time){
 			$wiki = Factory::Wiki($page);
 			$ret[] = '<dd><a href="' . $wiki->uri('read') . '" title="' . $page . '">'. /* $wiki->title() 重い*/ $page. '</a><small>'. $wiki->passage(false, true) .'</small></dd>';
 		}
-		$ret[] = '</dd>';
+		$ret[] = '</dl>';
 		return join("\n", $ret);
 	}
 	/**

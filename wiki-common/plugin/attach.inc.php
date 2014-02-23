@@ -10,7 +10,7 @@
 //   2001-2002 Originally written by yu-ji
 // License: GPL v2 or (at your option) any later version
 //
-// File attach plugin
+
 use PukiWiki\Attach;
 use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
@@ -227,17 +227,6 @@ function plugin_attach_action()
 		case 'progress' : return PluginRenderer::getUploadProgress();
 	}
 	return (empty($page) || ! $wiki->isValied()) ? attach_list() : attach_showform();
-}
-
-//-------- call from skin
-function attach_filelist()
-{
-	global $vars, $_attach_messages;
-
-	$page = isset($vars['page']) ? $vars['page'] : '';
-	$obj = new AttachPages($page, 0);
-
-	return isset($obj->pages[$page]) ? ('<dl class="attach_filelist">'."\n".'<dt>'.$_attach_messages['msg_file'].' :</dt>'."\n".$obj->toString($page, TRUE, 'dl') . '</dl>'."\n") : '';
 }
 
 //-------- 実体
@@ -699,9 +688,9 @@ function attach_showform()
 		$html[] = '<div class="tabs" role="application">';
 		$html[] = '<ul role="tablist">';
 		if ($isEditable){
-			$html[] = '<li role="tab"><a href="' .get_cmd_uri('attach', null, null, array('pcmd'=>'form', 'refer'=>$page)) . '">' . str_replace('$1', $_attach_messages['msg_thispage'], $_attach_messages['msg_upload']) . '</a></li>';
+			$html[] = '<li role="tab"><a href="' .Router::get_cmd_uri('attach', null, null, array('pcmd'=>'form', 'refer'=>$page)) . '">' . str_replace('$1', $_attach_messages['msg_thispage'], $_attach_messages['msg_upload']) . '</a></li>';
 		}
-		$html[] = '<li role="tab"><a href="' .get_cmd_uri('attach', null, null, array('pcmd'=>'list', 'refer'=>$page)) . '">' . str_replace('$1', $_attach_messages['msg_thispage'], $_attach_messages['msg_listpage']) . '</a></li>';
+		$html[] = '<li role="tab"><a href="' .Router::get_cmd_uri('attach', null, null, array('pcmd'=>'list', 'refer'=>$page)) . '">' . str_replace('$1', $_attach_messages['msg_thispage'], $_attach_messages['msg_listpage']) . '</a></li>';
 		$html[] = '</ul>';
 		$html[] = '</div>';
 	}
@@ -738,7 +727,7 @@ function attach_form($page)
 	}
 	$attach_form[] = '<button class="btn btn-primary" type="submit"><span class="fa fa-upload"></span>' . $_attach_messages['btn_upload'] . '</button>';
 	$attach_form[] = '</form>';
-	$attach_form[] = '<ul class="attach_info">';
+	$attach_form[] = '<ul class="plugin-attach-ul">';
 	$attach_form[] = ( (PLUGIN_ATTACH_PASSWORD_REQUIRE || PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY) && Auth::check_role('role_contents_admin')) ?
 						('<li>' . $_attach_messages[PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY ? 'msg_adminpass' : 'msg_password'] . '</li>') : '';
 	$attach_form[] = '<li>' . sprintf($_attach_messages['msg_maxsize'], '<var>' . number_format(PLUGIN_ATTACH_MAX_FILESIZE / 1024) . '</var>KB') . '</li>';

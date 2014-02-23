@@ -191,7 +191,7 @@ class Listing{
 				;
 			}else{
 				$ret = array();
-				$ret[] = '<li><a href="' . Router::get_cmd_uri('attach',null,null, array('refer'=>$page,'ajax'=>'false')) . '">' . $_page . '</a> ';
+				$ret[] = '<li><a href="' . Router::get_cmd_uri('attach',null,null, array('page'=>$page,'ajax'=>'false')) . '">' . $_page . '</a> ';
 
 				$attaches = $wiki->attach();
 

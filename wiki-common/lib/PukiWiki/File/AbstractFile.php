@@ -164,7 +164,7 @@ abstract class AbstractFile extends SplFileInfo{
 		// (Use PHP file() function if you want to get ALL lines)
 		if ( !self::has() ) return false;
 		if ( !$this->isReadable() )
-			throw new Exception(sprintf('AbstractFile::get(): File %s is not readable.', $this->filename));
+			die(sprintf('AbstractFile::get(): File %s is not readable.', $this->filename));
 
 		// ファイルの読み込み
 		$file = $this->openFile('r');
@@ -201,7 +201,7 @@ abstract class AbstractFile extends SplFileInfo{
 	public function get($join = false, $legacy = false){
 		if ( !$this->isFile() ) return false;
 		if ( !$this->isReadable() )
-			Utility::dieMessage(sprintf('AbstractFile::get(): File %s is not readable.', $this->filename));
+			die(sprintf('AbstractFile::get(): File %s is not readable.', $this->filename));
 
 		// ファイルの読み込み
 		$file = $this->openFile('r');
@@ -251,7 +251,7 @@ abstract class AbstractFile extends SplFileInfo{
 
 		// 書き込み可能かをチェック
 		if (! $this->isWritable()){
-			Utility::dieMessage(sprintf('AbstractFile::set(): File %s is not writable.', $this->filename));
+			die(sprintf('AbstractFile::set(): File %s is not writable.', $this->filename));
 		}
 
 		// タイムスタンプを取得
@@ -367,7 +367,7 @@ abstract class AbstractFile extends SplFileInfo{
 				// 念のためパーミッションを変更（通常は0644）
 				chmod($this->getRealPath(), self::FILE_PERMISSION);
 			}catch(Exception $e){
-				Utility::dieMessage(sprintf('AbstractFile::touch(): File %s is invalid UID and (not writable for the directory or not a flie).' ,$this->filename));
+				die(sprintf('AbstractFile::touch(): File %s is invalid UID and (not writable for the directory or not a flie).' ,$this->filename));
 			}
 		}
 	}
@@ -397,7 +397,7 @@ abstract class AbstractFile extends SplFileInfo{
 	 * @return boolean
 	 */
 	public function rename($to){
-		if (empty($to)) Utility::dieMessage('AbsructFile::rename(): New name is undefined.');
+		if (empty($to)) throw new Exception('AbsructFile::rename(): New name is undefined.');
 		FileUtility::clearCache();
 		return rename($this->filename, $to);
 	}

@@ -22,7 +22,7 @@ define('PLUGIN_RECENT_EXEC_LIMIT', 3); // N times per one output
 define('PLUGIN_RECENT_USAGE', '#recent(number-to-show)');
 use PukiWiki\Factory;
 use PukiWiki\Recent;
-
+use PukiWiki\Utility;
 function plugin_recent_convert()
 {
 	global $vars, $date_format, $link_compact, $page_title; // , $_recent_plugin_frame;
@@ -57,26 +57,16 @@ function plugin_recent_convert()
 			//if (! $wiki->isHidden()) continue;
 			if ($i > $count) break;
 
-			$s_page = htmlsc($page);
+			$s_page = Utility::htmlsc($page);
 			$_date = get_date($date_format, $time);
 
 			if (!IS_MOBILE){
-				if ($date !== $_date) {
-					// End of the day
-					if (!empty($date)) $items[] = '</ul></li>';
-
-					// New day
-					$date = $_date;
-					$items[] = '<il><strong>' . $date . '</strong>';
-					$items[] = '<ul class="plugin-recent-list">';
-				}
-
 				if($page === $vars['page']) {
 					// No need to link to the page you just read, or notify where you just read
-					$items[] = ' <li>' . $s_page . '</li>';
+					$items[$_date][] = ' <li>' . $s_page . '</li>';
 				} else {
 					$passage = !$link_compact ? ' ' . $wiki->passage(false,true) : '';
-					$items[] = ' <li><a href="' . $wiki->uri() . '" title="' . $s_page . $passage . '">' . $s_page . '</a></li>';
+					$items[$_date][] = ' <li><a href="' . $wiki->uri() . '" title="' . $s_page . $passage . '">' . $s_page . '</a></li>';
 				}
 			}else{
 				if ($date !== $_date) {
@@ -96,17 +86,31 @@ function plugin_recent_convert()
 		}
 		unset($lines,$i);
 	}
-	if ($date !== '') $items[] = '</ul>';
-	// End of the day
-
+	
 	$_recent_title = sprintf(T_('recent(%d)'),$count);
 	if (!IS_MOBILE) {
-		return '<h5>'.$_recent_title.'</h5>'. "\n" .
-				'<div class="hslice" id="webslice">'. "\n" .
-				'<span class="entry-title" style="display:none;">'.$page_title.'</span>' . "\n" .
-				'<div class="entry-content">' . "\n" . 
-				'<ul class="list-unstyled">' . "\n" .join("\n",$items). "\n" . '</ul>' . "\n" . '</div>' . "\n" . '</div>';
+		// End of the day
+		$ret[] = '<div class="plugin-recent">';
+		$ret[] =  '<h5>'.$_recent_title.'</h5>';
+		$ret[] =  '<div class="hslice" id="webslice">';
+		$ret[] =   '<span class="entry-title" style="display:none;">'.$page_title.'</span>';
+		$ret[] =   '<div class="entry-content">';
+		$ret[] =    '<ul class="list-unstyled">';
+		foreach ($items as $date=>$entries) {
+			$ret[] = '<li><strong>'.$date.'</strong><ul>';
+			foreach ($entries as $entry){
+				$ret[] = $entry;
+			}
+			$ret[] = '</ul></li>';
+		}
+		
+		$ret[] =    '</ul>';
+		$ret[] =   '</div>';
+		$ret[] =  '</div>';
+		$ret[] = '</div>';
+		return join("\n",$ret);
 	}else{
+		
 		return '<ul data-role="listview" data-dividertheme="b">'."\n".
 			'<li data-theme="a">'.$_recent_title.'</li>'."\n".
 			join("\n",$items).'</ul>' ."\n";

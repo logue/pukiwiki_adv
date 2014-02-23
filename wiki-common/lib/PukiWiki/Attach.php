@@ -282,7 +282,6 @@ class Attach{
 		}
 		$f->flock(LOCK_SH);
 		$buffer = ob_get_clean();
-		flush();
 
 		$mime = self::getMime();
 		// HTMLの場合、ダウンロードとする

@@ -170,7 +170,7 @@ abstract class Inline
 			return '<a href="' . $wiki->uri() . $anchor . '" ' .
 				(!$link_compact ? 'title="' . $s_page . ' ' . $wiki->passage(false,true) . '"' : '' ).
 	//			($isautolink ? ' class="autolink"' : '') .
-				(!empty($glossary) ? 'aria-describedby="tooltip"' : '') .
+				(!empty($glossary) ? ' aria-describedby="tooltip"' : '') .
 				'>' . $anchor_name . '</a>';
 		} else {
 			// Dangling link
@@ -195,7 +195,16 @@ abstract class Inline
 
 		$_term = Utility::htmlsc($term);
 		$_tooltip = !empty($tooltip) ? ' title="' . Utility::htmlsc($tooltip) . '"' : '';
-		$ext_rel = (!empty($rel) ? $rel.' ' : '') . 'external' . $is_redirect ? ' nofollow' : '';
+	
+		// rel = "*"を生成
+		$rels[] = 'external';
+		if (!empty($rel)){
+			$rels[] = $rel;
+		}
+		if ($is_redirect){
+			$rels[] = 'nofollow';
+		}
+		$ext_rel = join(" ", $rels);
 
 		// メディアファイル
 		if (! PKWK_DISABLE_INLINE_IMAGE_FROM_URI && Utility::isUri($uri)) {

@@ -1,61 +1,76 @@
 <?php
-// PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: list.inc.php,v 1.6.11 2011/09/25 15:54:00 Logue Exp $
+// PukiWiki Advance - Yet another WikiWikiWeb clone.
+// $Id: list.inc.php,v 1.6.12 2014/02/23 17:10:00 Logue Exp $
 //
 // IndexPages plugin: Show a list of page names
+
 use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
 use PukiWiki\Listing;
+use PukiWiki\Renderer\Header;
+use PukiWiki\Time;
+use Zend\Json\Json;
 
-defined('PKWK_SITEMAPS_CACHE') or define('PKWK_SITEMAPS_CACHE', 'sitemaps');
+function plugin_list_init(){
+	$messages = array(
+		'_list_messages' => array(
+			'title_list' => T_('List of pages'),
+			'title_filelist' => T_('List of page files')
+		)
+	);
+	set_plugin_messages($messages);
+}
 
 function plugin_list_action()
 {
-	global $vars, $whatsnew;
-	$_title_list = T_('List of pages');
-	$_title_filelist = T_('List of page files');
+	global $vars, $_list_messages;
 
 	$listcmd = isset($vars['listcmd']) ? $vars['listcmd'] : 'read';
 	$type = isset($vars['type']) ? $vars['type'] : '';
 
 	$buffer = array();
 	switch($type) {
-		case 'json' :
+		case 'json':
+			$pages = Listing::pages();
+			$headers = Header::getHeaders('application/json');
 			// インクリメンタルサーチ向け
-			if (isset($vars['term'])){
-				// 酷い実装だ・・・。
-				foreach(Listing::get() as $page){
-					if (preg_match('/^'.$vars['term'].'/', $page)){
+			foreach($pages as $page){
+				$wiki = Factory::Wiki($page);
+				if ($wiki->isHidden()) continue;
+				if (isset($vars['term'])){
+					if (preg_match('/'.$vars['term'].'/', $page)){
 						$buffer[] = $page;
 					}
+				}else{
+					$buffer[] = $page;
 				}
-			}else{
-				$buffer = $pages;
 			}
-			header("Content-Type: application/json; charset=".CONTENT_CHARSET);
-			echo json_encode($buffer);
-			exit();
+			unset($wiki);
+			Header::writeResponse($headers, 200, Json::encode($buffer));
+			exit;
 		case 'sitemap' :
-
+			// サイトマップ
+			$pages = Listing::pages();
+			$headers = Header::getHeaders('application/xml');
 			$buffer[] = '<?xml version="1.0" encoding="UTF-8"?>';
 			$buffer[] = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">';
-			foreach (Listing::get() as $page){
-				$wiki = WikiFactory::Wiki($page);
+			foreach (Listing::pages() as $page){
+				
+				$wiki = Factory::Wiki($page);
 				if ($wiki->isHidden()) continue;
 				$buffer[] = '<url>';
-				$buffer[] = '<loc>'.$wiki->get_uri().'</loc>';
-				$buffer[] = '<lastmod>'.get_date('Y-m-d\TH:i:s\Z', $wiki->getTime()).'</lastmod>';
+				$buffer[] = '<loc>'.$wiki->uri().'</loc>';
+				$buffer[] = '<lastmod>'.Time::getZoneTimeDate('Y-m-d\TH:i:s\Z', $wiki->time()).'</lastmod>';
 				$buffer[] = '<priority>0.5</priority>';
 				$buffer[] = '</url>';
 			}
+			unset($wiki);
 			$buffer[] = '</urlset>';
-			$data = join("",$buffer);
-
-			header("Content-Type: application/xml; charset=".CONTENT_CHARSET);
-			echo $data;
-			exit();
+			Header::writeResponse($headers, 200, join("\n",$buffer));
+			exit;
 		break;
 		case 'filelist' :
+			// ファイル一覧
 			if (! Auth::check_role('role_contents_admin'))
 				$filelist = TRUE;
 			else
@@ -63,14 +78,14 @@ function plugin_list_action()
 				$filelist = FALSE;
 
 			return array(
-				'msg'=>$_title_filelist,
+				'msg'=>$_list_messages['title_filelist'],
 				'body'=>FileUtility::getListing(DATA_DIR, 'read', $filelist)
 			);
 		break;
 	}
 
 	return array(
-		'msg'=>$_title_list,
+		'msg'=>$_list_messages['title_list'],
 		'body'=> Listing::get('wiki', ($listcmd == 'read' || $listcmd == 'edit' ? $listcmd : 'read'))
 	);
 }

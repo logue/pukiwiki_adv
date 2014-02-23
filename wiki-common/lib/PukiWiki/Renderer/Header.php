@@ -1,36 +1,41 @@
 <?php
+/**
+ * ヘッダークラス
+ *
+ * @package   PukiWiki\Renderer
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2012-2014 PukiWiki Advance Developers Team
+ * @create    2012/12/18
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: Header.php,v 1.0.0 2014/02/23 19:54:00 Logue Exp $
+ */
+
 namespace PukiWiki\Renderer;
 
 use PukiWiki\Auth\Auth;
-use PukiWiki\Utility;
-use PukiWiki\Router;
 use PukiWiki\Render;
+use PukiWiki\Router;
+use PukiWiki\Utility;
 use Zend\Http\Response;
 
+/**
+ * ヘッダークラス
+ */
 class Header{
-	const DEFAULT_CONTENT_TYPE = 'text/html;charset=UTF-8';
-	
-	private static $vary = array(
-		'Cookie',
-		'Accept-Language',
-		'User-Agent',
-		'Accept-Charset'
-	);
 	/**
-	 * Check HTTP header()s were sent already, or
-	 * there're blank lines or something out of php blocks '
+	 * デフォルトのContent-Type
 	 */
-	public static function checkSent()
-	{
-		global $_string;
-		if (defined('PKWK_OPTIMISE')) return;
-
-		$file = $line = '';
-
-		if (headers_sent($file, $line)){
-			Utility::dieMessage(sprintf('Header::checkSent(): ' .$_string['header_sent'],Utility::htmlsc($file),$line));
-		}
-	}
+	const DEFAULT_CONTENT_TYPE = 'text/html;charset=UTF-8';
+	/**
+	 * Varyヘッダーで主力する項目
+	 */
+	private static $vary = array(
+		'Accept-Charset',
+		'Accept-Language',
+		'Cookie',
+		'User-Agent'
+	);
 	/**
 	 * ヘッダー配列を取得
 	 * @param string $content_type コンテントタイプ
@@ -40,11 +45,10 @@ class Header{
 	 */
 	public static function getHeaders($content_type = self::DEFAULT_CONTENT_TYPE, $modified = 0, $expire = 604800){
 		global $lastmod, $vars, $_SERVER;
-		self::checkSent();
 		// これまでのヘッダーを取得
 		$headers = function_exists('getallheaders') ? getallheaders() : array();
 
-		$headers['Content-Type'] = $content_type . ';charset=' . CONTENT_CHARSET;
+		$headers['Content-Type'] = $content_type;
 		$headers['Content-Language'] = substr(str_replace('_','-',LANG),0,2);
 
 		// 更新日時をチェック
@@ -84,7 +88,6 @@ class Header{
 
 		// Content Security Policy
 		// https://developer.mozilla.org/ja/Security/CSP/Using_Content_Security_Policy
-		// 現在の実装だとあまり意味は無いが・・・。
 		//$headers['Content-Security-Policy'] ='default-src \'self\' \'unsafe-inline\' ' . Render::JQUERY_CDN . ' ' . Render::BOOTSTRAP_CDN . '; img-src *;';
 
 		// IEの自動MIME type判別機能を無効化する
@@ -109,6 +112,7 @@ class Header{
 	 * @return void
 	 */
 	public static function writeResponse($headers, $status = Response::STATUS_CODE_200, $body = ''){
+		global $_string;
 		// なぜかこの行を出力しないと503エラーが起きる
 		echo "";
 		// レスポンスをコンストラクト
@@ -124,7 +128,7 @@ class Header{
 				$headers['Etag'] = $hash;
 			}else if ($status == Response::STATUS_CODE_401){
 				// レスポンスコードが401の場合、認証画面を出力
-				$headers['www-authenticate'] = Auth::getAuthHeader();
+				$headers['WWW-Authenticate'] = Auth::getAuthHeader();
 			}
 			// 内容が存在する場合容量をContent-Lengthヘッダーに出力
 			$headers['Content-Length'] = strlen($body);
@@ -137,30 +141,34 @@ class Header{
 		ksort($headers);
 		// ヘッダーを指定
 		$response->getHeaders()->addHeaders($headers);
+
 		// ヘッダー出力をチェック
-		if (!headers_sent() && error_get_last()==NULL ) {
-			// ステータスコードを出力
-			header($response->renderStatusLine());
-			// ヘッダーを出力
-			foreach ($response->getHeaders() as $_header) {
-				header($_header->toString());
-			}
-		}
-		if (!empty($body)){
-			//ob_start('ob_gzhandler');
-			// 内容を出力
-			echo $response->getBody();
-			// 出力バッファをフラッシュ
-			flush();
-			// 終了
+		if (headers_sent($file, $line)){
+			die(sprintf('Header::writeResponse(): ' .$_string['header_sent'],Utility::htmlsc($file),$line));
 			exit;
 		}
+
+		// ステータスコードを出力
+		header($response->renderStatusLine());
+		// ヘッダーを出力
+		foreach ($response->getHeaders() as $_header) {
+			header($_header->toString());
+		}
+
+		if (!empty($body)){
+			// 内容を出力
+			echo $response->getBody();
+		}
+		// 出力バッファをフラッシュ
+		flush();
+		// 終了
+		exit;
 	}
 	/*
 	 * get_language_header_vary
 	 *
 	 */
-	public static function getLanguageHeaderVary()
+	private static function getLanguageHeaderVary()
 	{
 		global $language_considering_setting_level;
 
