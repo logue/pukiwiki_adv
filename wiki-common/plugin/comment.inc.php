@@ -1,8 +1,8 @@
 <?php
 // PukiPlus - Yet another WikiWikiWeb clone
-// $Id: comment.inc.php,v 1.41.27 2012/10/11 09:08:00 Logue Exp $
+// $Id: comment.inc.php,v 1.41.28 2014/02/23 20:06:00 Logue Exp $
 // Copyright (C)
-//  2010-2012 PukiWiki Advance Developers Team
+//  2010-2014 PukiWiki Advance Developers Team
 //  2005-2008 PukiWiki Plus! Team
 //  2002-2007 PukiWiki Developers Team
 //  2001-2002 Originally written by yu-ji
@@ -157,6 +157,8 @@ function plugin_comment_convert()
 	static $numbers = array();
 	static $all_numbers = 0;
 	static $comment_cols = PLUGIN_COMMENT_SIZE_MSG;
+
+	if (!isset($vars['page'])) return '';
 
 	$ret = array();
 	if (PKWK_READONLY === Auth::ROLE_AUTH) {

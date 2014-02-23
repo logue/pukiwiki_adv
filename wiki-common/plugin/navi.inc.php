@@ -54,7 +54,7 @@ function plugin_navi_convert()
 	$_navi_up   = T_('Up');
 	$_navi_home = T_('Home');
 
-	$current = $vars['page'];
+	$current = isset($vars['page']) ? $vars['page'] : '';
 	$reverse = FALSE;
 	if (func_num_args()) {
 		list($home, $reverse) = array_pad(func_get_args(), 2, null);

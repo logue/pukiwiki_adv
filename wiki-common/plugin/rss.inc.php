@@ -13,10 +13,23 @@
 //
 // Plus!NOTE:(policy)not merge official cvs(1.20->1.21) See BugTrack2/62
 
+use PukiWiki\Listing;
+use PukiWiki\Factory;
+use Zend\Feed\Writer\Feed;
+
+function plugin_rss_init(){
+	$msg = array(
+		'_rss_msg' => array(
+			'msg_description' => T_('Recent changes of %s')
+		)
+	);
+	set_plugin_messages($msg);
+}
+
+
 function plugin_rss_action()
 {
 	global $vars, $rss_max, $rss_description, $page_title, $whatsnew, $trackback;
-	global $memcache;
 
 	$version = isset($vars['ver']) ? $vars['ver'] : '2.0';
 	switch($version){
@@ -36,20 +49,14 @@ function plugin_rss_action()
 	// Creating <item>
 	$items = $rdf_li = '';
 	
-	if ($memcache === null){
-		$recent = CACHE_DIR . PKWK_MAXSHOW_CACHE;
-		if (! file_exists($recent)) die('PKWK_MAXSHOW_CACHE is not found');
+	$recent = CACHE_DIR . PKWK_MAXSHOW_CACHE;
+	if (! file_exists($recent)) die('PKWK_MAXSHOW_CACHE is not found');
 
-		foreach (file_head($recent, $rss_max) as $line) {
-			list($time, $page) = explode("\t", rtrim($line));
-			$items .= plugin_rss_generate_item($version, $time, $page);
-		}
-	}else{
-		$lines = $memcache->get(MEMCACHE_PREFIX.substr(PKWK_MAXSHOW_CACHE,0,strrpos(PKWK_MAXSHOW_CACHE, '.')));
-		foreach($lines as $page => $time){
-			$items .= plugin_rss_generate_item($version, $time, $page);
-		}
+	foreach (file_head($recent, $rss_max) as $line) {
+		list($time, $page) = explode("\t", rtrim($line));
+		$items .= plugin_rss_generate_item($version, $time, $page);
 	}
+	
 
 	// Feeding start
 	pkwk_common_headers($time);

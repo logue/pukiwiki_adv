@@ -86,6 +86,8 @@ function plugin_attachref_convert()
 {
 	global $vars,$digest;
 	global $_attachref_messages;
+	
+	if (!isset($vars['page'])) return '';
 
 	$extra_options = array();
 	$args = func_get_args();

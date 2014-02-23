@@ -62,6 +62,8 @@ function plugin_ls2_convert()
 {
 	global $vars;
 
+	if (!isset($vars['page'])) return '';
+
 	$params = array(
 		'link'    => FALSE,
 		'title'   => FALSE,

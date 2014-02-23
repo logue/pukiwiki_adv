@@ -40,6 +40,8 @@ function plugin_calendar_convert()
 	//global $_calendar_plugin_edit, $_calendar_plugin_empty;
 	global $_calendar_msg;
 
+	if (!isset($vars['page'])) return '';
+
 	/* from Plus! */
 	$today_view = TRUE;
 	$today_args = 'view';

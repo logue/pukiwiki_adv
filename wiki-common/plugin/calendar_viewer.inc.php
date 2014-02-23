@@ -77,7 +77,9 @@ function plugin_calendar_viewer_convert()
 		'_msg_restrict'	=> T_('Due to the blocking, the calendar_viewer cannot refer to $1.'),
 		'_title_format'	=> T_('%1s, %2s %3s %4s')	// Sat, 12 Mar 2011
 	);
-	
+
+	if (!isset($vars['page'])) return '';
+
 	static $viewed = array();
 
 	if (func_num_args() < 2)

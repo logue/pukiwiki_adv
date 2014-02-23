@@ -36,8 +36,8 @@ class Render{
 	/**
 	 * jQueryのバージョン
 	 */
-	//const JQUERY_VER = '2.1.0';
-	const JQUERY_VER = '1.11.0';
+	const JQUERY_VER = '2.1.0';
+	//const JQUERY_VER = '1.11.0';
 	/**
 	 * jQuery UIのバージョン
 	 */
@@ -480,7 +480,7 @@ class Render{
 				'filelist'      => Router::get_cmd_uri('filelist'),
 
 				'sitemap'       => Router::get_resolve_uri('list',    null, 'full',   array('type'=>'sitemap')),
-				'rss'           => Router::get_resolve_uri('mixirss', null, 'full'),
+				'rss'           => Router::get_resolve_uri('feed', null, 'full'),
 
 				'read'          => Router::get_resolve_uri('read', $_page),
 				'reload'        => Router::get_resolve_uri('read', $_page, 'full'),

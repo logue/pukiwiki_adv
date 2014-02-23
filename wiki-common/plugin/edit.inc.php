@@ -184,6 +184,8 @@ function plugin_edit_inline()
 
 	global $vars, $fixed_heading_edited;
 	
+	if (!isset($vars['page'])) return '';
+	
 	$wiki = Factory::Wiki($vars['page']);
 
 	if (!$fixed_heading_edited || $wiki->isFreezed() || Auth::check_role('readonly')) {
