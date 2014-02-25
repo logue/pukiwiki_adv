@@ -290,6 +290,25 @@ class Wiki{
 		return $use_tag ? '<small class="passage">' . $pg_passage . '</small>' : $pg_passage;
 	}
 	/**
+	 * 要約を出力
+	 * @param boolean $use_tag タグでくくる
+	 * @param boolean $quote ()でくくる
+	 * @return string
+	 */
+	public function description($length = 256){
+		$source = $this->get();
+		// ブロック型プラグイン(#～)削除
+		$source = preg_replace("/^\#.*$/",'',$source);
+		// インライン型プラグイン・文字参照(&～;)削除
+		$source = preg_replace("/\&.*\;/",'',$source);
+		// 変換してタグを削除
+		$desc = Utility::stripHtmlTags(RendererFactory::factory($source));
+		// 長さ調整
+		if ($length !== 0) $desc = mb_strimwidth($desc, 0, $length, '...');
+		// 改行を<br />タグに変換して出力
+		return preg_replace("/([\r\n]\s*)+/m", '<br />', $desc);
+	}
+	/**
 	 * ページを読み込む
 	 * @param string $str 書き込むデーター
 	 * @param boolean $notimestamp タイムスタンプを更新するかのフラグ

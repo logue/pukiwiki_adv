@@ -99,7 +99,9 @@ $_string = array(
 	'plugin_multiple_call'		=> T_('<var>%1s</var> was called over <var>%2s</var> times. SPAM or someting?'),
 	'plugin_postid_error'		=> T_('PostId is mismatched. Is it multi-post?'),
 	'plugin_encode_error'		=> T_('Incorrect encode. Please use a modern browser.'),
-	'plugin_not_implemented'	=> T_('Plugin <var>%s</var> is not implemented.')
+	'plugin_not_implemented'	=> T_('Plugin <var>%s</var> is not implemented.'),
+	
+	'feed_description' => T_('Recent changes of %s')
 );
 
 $_button = array(

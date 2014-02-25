@@ -16,7 +16,7 @@ use Zend\I18n\Translator\Translator;
 class Lang {
 	// CORRESPONDENCE LANGUAGE : 対応言語
 	// == CASE SENSITIVE ==    : 大文字小文字を区別
-	private static $language_prepared = array(
+	public static $language_prepared = array(
 		'ja_JP',
 		'zh_TW',
 		'zh_CN',
@@ -92,13 +92,6 @@ class Lang {
 
 		// PHP mbstring process.
 		self::setMbstring($language);
-
-		global $translator, $cache;
-		$translator = new Translator();
-		$translator->factory(array(
-			'locale' => self::$language_prepared,
-			'cache' => $cache['core'],
-		));
 	}
 
 	/*

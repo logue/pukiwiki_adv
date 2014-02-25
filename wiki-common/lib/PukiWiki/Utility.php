@@ -121,11 +121,10 @@ class Utility{
 		}else if (count($get) === 1 && array_values((array)$get)[0] === ''){
 			// 配列の長さが1で最初の配列に値が存在しない場合はキーをページ名とする。
 			$k = array_keys((array)$get)[0];
-			$get->set('page', rawurldecode($k));
+			$get->set('page', rawurldecode($_SERVER['QUERY_STRING']));
 			unset($get[$k]);
 		}
-		
-		
+
 		// 外部からの変数を$vars配列にマージする
 		if (empty($post)) {
 			$vars = (array)$get;  // Major pattern: Read-only access via GET
@@ -134,12 +133,19 @@ class Utility{
 		} else {
 			$vars = array_merge((array)$get, (array)$post); // Considered reliable than $_REQUEST
 		}
+		
 
 		// ヌル文字を削除
 		$vars = self::stripNullBytes($vars);
 		
 		if (!isset($vars['cmd'])){
 			$vars['cmd'] = 'read';
+		}
+		
+		if (!empty($vars['page']) && preg_match(Wiki::INVALIED_PAGENAME_PATTERN, $vars['page'])){
+			// ページ名チェック
+			self::dump('suspicious');
+			die('Invalid page name.');
 		}
 
 		if (!preg_match(PluginRenderer::PLUGIN_NAME_PATTERN, $vars['cmd']) !== FALSE){

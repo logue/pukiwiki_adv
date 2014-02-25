@@ -16,17 +16,41 @@ namespace PukiWiki;
 use PukiWiki\Auth\Auth;
 use PukiWiki\Listing;
 use PukiWiki\File\FileFactory;
+use Exception;
+use Zend\Feed\Writer\Feed;
+use PukiWiki\Renderer\Header;
 
 /**
  * 最終更新クラス
  */
 class Recent{
-	// 更新履歴のキャッシュ名
+	/**
+	 * 更新履歴のキャッシュ名
+	 */
 	const RECENT_CACHE_NAME = 'recent';
-	// 更新履歴／削除履歴で表示する最小ページ数
+	/**
+	 * フィードのキャッシュ名
+	 */
+	const FEED_CACHE_NAME = 'feed';
+	/**
+	 * 更新履歴／削除履歴で表示する最小ページ数
+	 */
 	const RECENT_MIN_SHOW_PAGES = 10;
-	// 更新履歴／削除履歴で表示する最大ページ数
+	/**
+	 * 更新履歴／削除履歴で表示する最大ページ数
+	 */
 	const RECENT_MAX_SHOW_PAGES = 60;
+	/**
+	 * フィードの説明文の長さ
+	 */
+	const FEED_ENTRY_DESCRIPTION_LENGTH = 256;
+	/**
+	 * PubSubHubbubの送信先
+	 */
+	private static $pubsubhub_uris = array(
+		'http://pubsubhubbub.appspot.com',
+		'http://pubsubhubbub.superfeedr.com'
+	);
 	/**
 	 * 最終更新のキャッシュを取得
 	 * @param boolean $force キャッシュを再生成する
@@ -63,14 +87,11 @@ class Recent{
 		// 更新日時順にソート
 		arsort($recent_pages, SORT_NUMERIC);
 
-		// Cut unused lines
-		// BugTrack2/179: array_splice() will break integer keys in hashtable
-		$count   = self::RECENT_MAX_SHOW_PAGES + self::RECENT_MIN_SHOW_PAGES;
+		
 		$_recent = array();
 		foreach($recent_pages as $key=>$value) {
 			unset($recent_pages[$key]);
 			$_recent[$key] = $value;
-			if (--$count < 1) break;
 		}
 		$recent_pages = & $_recent;
 
@@ -120,10 +141,16 @@ class Recent{
 		// 最終更新ページを作り直す
 		// （削除履歴みたく正規表現で該当箇所を書き換えるよりも、ページを作りなおしてしまったほうが速いだろう・・・）
 		$buffer[] = '#norelated';
+		
+		// Cut unused lines
+		// BugTrack2/179: array_splice() will break integer keys in hashtable
+		$count   = self::RECENT_MAX_SHOW_PAGES + self::RECENT_MIN_SHOW_PAGES;
+
 		foreach ($recent_pages as $_page=>$time){
 			// RecentChanges のwikiソース生成部分の問題
 			// http://pukiwiki.sourceforge.jp/dev/?BugTrack2%2F343#f62964e7 
 			$buffer[] = '- &epoch('.$time.');' . ' - ' . '[[' . str_replace('&#39;', '\'', Utility::htmlsc($_page)) . ']]';
+			if (--$count < 1) break;
 		}
 		FileFactory::Wiki($whatsnew)->set($buffer);
 	}
@@ -162,5 +189,113 @@ class Recent{
 		Listing::get(null, true);
 		// 削除履歴を付ける
 		$delated->set($lines);
+	}
+	/**
+	 * Atom/rssを出力
+	 * string $page ページ名（ページ名が入っている場合はキャッシュは無効）
+	 * string $type rssかatomか。
+	 * boolean $force キャッシュ生成しない
+	 * return void
+	 */
+	public static function getFeed($page = '', $type='rss', $force = false){
+		global $vars, $site_name, $site_logo, $modifier, $modifierlink, $_string, $cache;
+		static $feed;
+		
+		// rss, atom以外はエラー
+		if (!($type === 'rss' || $type === 'atom')){
+			throw new Exception('Recent::getFeed(): Unknown feed type.');
+		}
+
+		$content_type = ($type === 'rss') ? 'application/rss+xml' : 'application/atom+xml';
+
+		if (empty($page)){
+			// recentキャッシュの更新チェック
+			if ($cache['wiki']->getMetadata(self::RECENT_CACHE_NAME)['mtime'] > $cache['wiki']->getMetadata(self::FEED_CACHE_NAME)['mtime']){
+				$force = true;
+			}
+
+			if ($force){
+				// キャッシュ再生成
+				unset($feed);
+				$cache['wiki']->removeItem(self::FEED_CACHE_NAME);
+			}else if (!empty($feed)){
+				// メモリにキャッシュがある場合
+				$headers = Header::getHeaders($content_type);
+				Header::writeResponse($headers, 200, $feed->export($type));
+				exit;
+			}else if ($cache['wiki']->hasItem(self::FEED_CACHE_NAME)) {
+				// キャッシュから最終更新を読み込む
+				$feed = $cache['wiki']->getItem(self::FEED_CACHE_NAME);
+				$headers = Header::getHeaders($content_type);
+				Header::writeResponse($headers, 200, $feed->export($type));
+				exit;
+			}
+		}
+
+		// Feedを作る
+		$feed = new Feed();
+		// Wiki名
+		$feed->setTitle($site_name);
+		// Wikiのアドレス
+		$feed->setLink(Router::get_script_absuri());
+		//$feed->setImage($site_logo);
+		// Feedの解説
+		$feed->setDescription(sprintf($_string['feed_description'], $site_name));
+		// Feedの発行者など
+		$feed->addAuthor(array(
+			'name'  => $modifier,
+			'uri'   => $modifierlink,
+		));
+		// feedの更新日時（生成された時間なので、この実装で問題ない）
+		$feed->setDateModified(time());
+		// Feedの生成
+		$feed->setGenerator(S_APPNAME . ' ' . S_VERSION);
+
+		if (empty($page)){
+			// feedのアドレス
+			$feed->setFeedLink(Router::get_cmd_uri('feed',null,null,array('type'=>'atom')), 'atom');
+			$feed->setFeedLink(Router::get_cmd_uri('feed',null,null,array('type'=>'rss')), 'rss');
+			// PubSubHubbubの送信
+			foreach (self::$pubsubhub_uris as $uri){
+				$feed->addHub($uri);
+			}
+		}else{
+			$feed->setFeedLink(Router::get_cmd_uri('feed',$page,null,array('type'=>'atom')), 'atom');
+			$feed->setFeedLink(Router::get_cmd_uri('feed',$page,null,array('type'=>'rss')), 'rss');
+		}
+
+		$i = 0;
+		// エントリを取得
+		foreach(self::get() as $_page=>$time){
+			// ページ名が指定されていた場合、そのページより下位の更新履歴のみ出力
+			if (!empty($page) && strpos($_page, $page.'/') === false) continue;
+			
+			$wiki = Factory::Wiki($_page);
+			if ($wiki->isHidden()) continue;
+
+			$entry = $feed->createEntry();
+			// ページのタイトル
+			$entry->setTitle($wiki->title());
+			// ページのアドレス
+			$entry->setLink($wiki->uri());
+			// ページの更新日時
+			$entry->setDateModified($wiki->time());
+			// ページの要約
+			$entry->setDescription($wiki->description(self::FEED_ENTRY_DESCRIPTION_LENGTH));
+			// 項目を追加
+			$feed->addEntry($entry);
+
+			$i++;
+			if ($i >= PLUGIN_FEED_ENTRIES) break;
+		}
+
+		if (empty($page)){
+			// キャッシュに保存
+			$cache['wiki']->setItem(self::FEED_CACHE_NAME, $feed);
+		}
+
+		$headers = Header::getHeaders($content_type);
+		Header::writeResponse($headers, 200, $feed->export($type));
+		exit;
 	}
 }

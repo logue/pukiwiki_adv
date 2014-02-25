@@ -40,6 +40,7 @@
 		"zendframework/zend-db": "2.*",
 		"zendframework/zend-debug": "2.*",
 		"zendframework/zend-dom": "2.*",
+		"zendframework/zend-feed": "2.*",
 		"zendframework/zend-http": "2.*",
 		"zendframework/zend-i18n": "2.*",
 		"zendframework/zend-json": "2.*",

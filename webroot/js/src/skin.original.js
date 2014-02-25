@@ -443,7 +443,7 @@ $.fn.bstooltip = bootstrapTooltip;
 				},
 				spinner: $.i18n('dialog', 'loading'),
 				load:function(event, ui) {
-					self.init_dom('#' + ui.panel.id);
+					self.init_dom(ui.panel.id);
 				}
 			}).removeClass('tabs');
 
@@ -575,12 +575,12 @@ $.fn.bstooltip = bootstrapTooltip;
 						return false;
 					});
 				}else if (href){
-					// 外部へのリンクは、rel=externalが付いているものとする。
-					// Query Stringをパース。paramsに割り当て
 					var params = {},
 						hashes = href.slice(href.indexOf("?") + 1).split('&'),
 						disable_scrolling = ($this.data('disableScrolling') || $this.parent().attr('role')) ? true : false;
 
+					// 外部へのリンクは、rel=externalが付いているものとする。
+					// Query Stringをパース。paramsに割り当て
 					for(var i = 0; i < hashes.length; i++) {
 						var hash = hashes[i].split('=');
 						try{
@@ -588,6 +588,10 @@ $.fn.bstooltip = bootstrapTooltip;
 							params[hash[0]] = decodeURIComponent(hash[1]).replace(/\+/g, ' ').replace(/%2F/g, '/');
 						}catch(e){}
 					}
+					
+					// 明示的にajaxを無効化するリンクの場合
+					if (params.ajax === 'false') return true;
+					
 					if (href.match('#') && href !== '#'){
 						// アンカースクロールを無効化判定
 						if (disable_scrolling === false){
@@ -663,7 +667,7 @@ $.fn.bstooltip = bootstrapTooltip;
 								self.ajax_dialog(params,prefix,function(){
 									if ((params.cmd == 'attach' && params.pcmd.match(/upload|info/i)) || params.cmd.match(/attachref|read|backup/i) && params.age !== ''){
 										var dom = $(prefix).find('.window');
-										self.init_dom(dom);
+										//self.init_dom(prefix + ' .window');
 									}
 								});
 								return false;
@@ -777,16 +781,18 @@ $.fn.bstooltip = bootstrapTooltip;
 			// http://pure-essence.net/2010/01/29/jqueryui-dialog-as-loading-screen-replace-blockui/
 			var $window = $(window), $activity, $loading;
 
-			$('<div id="loading">'+
-				'<div class="ui-widget-overlay"></div>'+
-				'<div id="loading-activity"></div>'+
-			'</div>')
-				.click(function(){
-					$(this).fadeOut();
-					return false;
-				})
-				.appendTo('body')
-			;
+			if ($('#loading').length === 0){
+				$('<div id="loading">'+
+					'<div class="ui-widget-overlay"></div>'+
+					'<div id="loading-activity"></div>'+
+				'</div>')
+					.click(function(){
+						$(this).fadeOut();
+						return false;
+					})
+					.appendTo('body')
+				;
+			}
 
 			$activity = $('#loading-activity'), $loading = $('#loading');;
 			
@@ -799,6 +805,9 @@ $.fn.bstooltip = bootstrapTooltip;
 					color: 'black',
 					speed: 1,
 					zIndex: 9999
+				})
+				.click(function(){
+					$loading.fadeOut();
 				})
 			;
 			
@@ -1048,6 +1057,7 @@ $.fn.bstooltip = bootstrapTooltip;
 					hide: 'scale'
 				}).html($.i18n('pukiwiki','hint_text1'));
 				
+				// イベントの割り当て
 				$emoji.children('ul').children('li').click(function(){
 					var str = $msg.getSelection().text, v = '&('+$(this).attr('name')+');';
 
@@ -1174,11 +1184,9 @@ $.fn.bstooltip = bootstrapTooltip;
 		set_editform: function(prefix){
 			prefix = (prefix) ? prefix + ' ': '';
 			// よく使うDOMをキャッシュ
-			var $form = $('.form-edit'),
-				$indicator = $('#indicator'),
-				$msg = $('.form-edit').find('textarea[name="msg"]'),
-				$original = $('.form-edit').find('textarea[name="original"]'),
-				$realview = $('#realview'),
+			var $form = $('.form-edit'),,
+				$msg = $form.find('textarea[name="msg"]'),
+				$original = $form.find('textarea[name="original"]'),
 				self = this,
 				isEnableLocalStorage = false,
 				// HTMLエンコード
@@ -1617,12 +1625,6 @@ $.fn.bstooltip = bootstrapTooltip;
 			toc_bg.id='toc_bg';
 			$(toc_bg)
 				.addClass('ui-widget-overlay')
-				.css('top',0)
-				.css('left',0)
-				.css('width','100%')
-				.css('height','100%')
-				.css('position','fixed')
-				.css('z-index',99)
 				.css('display','none')
 				.click(function(){
 					self._hideToc();

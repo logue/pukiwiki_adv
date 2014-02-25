@@ -2,7 +2,7 @@
 // PukiWiki Advance - Yet another WikiWikiWeb clone.
 // $Id: init.php,v 1.57.12 2012/12/05 17:21:00 Logue Exp $
 // Copyright (C)
-//   2010-2012 PukiWiki Advance Developers Team
+//   2010-2014 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
 //   2002-2007,2009,2011 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -23,6 +23,7 @@ use PukiWiki\Spam\IpFilter;
 use PukiWiki\Renderer\PluginRenderer;
 use PukiWiki\File\LogFactory;
 use Zend\Cache\StorageFactory;
+use Zend\I18n\Translator\Translator;
 
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
@@ -281,6 +282,11 @@ $info[] = 'Cache system using <var>'.$cache_adapter.'</var>.';
 Lang::setLanguage();
 Time::init();
 
+$translator = new Translator();
+$translator->factory(array(
+	'locale' => Lang::$language_prepared,
+	'cache' => $cache['core'],
+));
 T_setlocale(LC_ALL,PO_LANG);
 T_bindtextdomain(DOMAIN,LANG_DIR);
 T_textdomain(DOMAIN);
