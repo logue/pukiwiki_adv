@@ -6,4 +6,4 @@ Disallow: ./?:config
 Disallow: ./:config/
 Disallow: ./?cmd=*
 
-Sitemap: ./?cmd=list&type=sitemaps
+Sitemap: ./?cmd=list&type=sitemap

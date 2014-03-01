@@ -29,6 +29,8 @@ use PukiWiki\Spam\IpFilter;
 use PukiWiki\Spam\ProxyChecker;
 use PukiWiki\Text\Rules;
 use PukiWiki\Utility;
+use Zend\XmlRpc\Client;
+use Zend\XmlRpc\Request;
 use ZendService\Akismet\Akismet;
 
 /**
@@ -55,6 +57,15 @@ class Wiki{
 	 * HTML内のリンクのマッチパターン（画像なども対象とする）アドレスは[2]に格納される
 	 */
 	const HTML_URI_MATCH_PATTERN = '/<.+? (src|href)="(.*?)".+?>/is';
+	/**
+	 * weblogUpdates ping
+	 */
+	private static $ping_server = array(
+		'http://rpc.weblogs.com/',
+		'http://ping.feedburner.com/',
+		'http://blogsearch.google.com/ping/RPC2',
+		'http://www.blogpeople.net/ping/'
+	);
 
 	/**
 	 * コンストラクタ
@@ -473,7 +484,7 @@ class Wiki{
 			$keeptimestamp = false;
 		}else{
 			// Wikiを保存
-			$ret = $this->wiki->set($postdata);
+			$ret = $this->wiki->set($postdata, $keeptimestamp);
 		}
 
 		if ($this->page !== $whatsnew || $this->page !== $whatsdeleted) {
@@ -482,6 +493,11 @@ class Wiki{
 
 			// 更新ログをつける
 			LogFactory::factory('update',$this->page)->set();
+
+			if (!$keeptimestamp) {
+				// weblogUpdates.pingを送信
+				self::sendPing();
+			}
 		}
 
 		// 最終更新を更新
@@ -597,5 +613,19 @@ class Wiki{
 			break;
 		}
 		return $source;
+	}
+	/**
+	 * weblogUpdates.pingを送信
+	 * return void
+	 */
+	private function sendPing(){
+		global $site_name;
+		foreach (self::$ping_server as $uri){
+			$client = new Client($uri);
+			$request = new Request();
+			$request->setMethod('weblogUpdates.ping');
+			$request->setParams(array($site_name, Router::get_script_absuri()));
+			$client->doRequest($request);
+		}
 	}
 }

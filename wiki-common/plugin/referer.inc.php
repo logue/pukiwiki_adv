@@ -1,8 +1,8 @@
 <?php
 // PukiWiki Advance.
-// $Id: referer.inc.php,v 1.10.15 2012/02/05 19:55:00 Logue Exp $
+// $Id: referer.inc.php,v 1.10.16 2014/02/28 13:11:00 Logue Exp $
 // Copyright (C)
-//   2010-2012 PukiWiki Advance DevelopersTeam.
+//   2010-2014 PukiWiki Advance DevelopersTeam.
 //   2007      PukiWiki Plus! Team
 //   2003,2005-2008 Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
 // License: GPL
@@ -13,6 +13,7 @@ use PukiWiki\Config\Config;
 use PukiWiki\Factory;
 use PukiWiki\Time;
 use PukiWiki\Utility;
+use PukiWiki\File\PingBackFile;
 
 define('CONFIG_REFERER', 'plugin/referer');
 define('REFERE_TITLE_LENGTH',70);
@@ -29,23 +30,25 @@ function plugin_referer_init()
 {
 	$messages = array(
 		'_referer_msg' => array(
-			'msg_referer'			=> T_('Referer'),
-			'msg_referer_list'		=> T_('Referer List'),
-			'msg_no_data'			=> T_('No data'),
-			'msg_H0_Refer'			=> T_('Referer'),
-			'msg_Hed_LastUpdate'	=> T_('LastUpdate'),
-			'msg_Hed_1stDate'		=> T_('First Register'),
-			'msg_Hed_RefCounter'	=> T_('RefCounter'),
-			'msg_Hed_Referer'		=> T_('Referer'),
-			'msg_Fmt_Date'			=> 'Y-m-d H:i:s',
-			'msg_Chr_uarr'			=> T_('&uArr;'),
-			'msg_Chr_darr'			=> T_('&dArr;'),
-			'msg_disabled'			=> T_('Referer function is disabled.'),
-			'msg_notfound'			=> T_('The page you requested was not found.'),
-			'msg_searchkey'			=> T_('Search keys'),
-			'msg_searchkey_title'	=> T_('All the Search Key of %s'),
-			'msg_mutual'			=> T_('Mutual links'),
-			'msg_mutual_title'		=> T_('Auto Mutual link of %s')
+			'msg_referer'           => T_('Referer'),
+			'msg_referer_list'      => T_('Referer List'),
+			'msg_no_data'           => T_('No data'),
+			'msg_H0_Refer'          => T_('Referer'),
+			'msg_Hed_LastUpdate'    => T_('LastUpdate'),
+			'msg_Hed_1stDate'       => T_('First Register'),
+			'msg_Hed_RefCounter'    => T_('RefCounter'),
+			'msg_Hed_Referer'       => T_('Referer'),
+			'msg_Fmt_Date'          => 'Y-m-d H:i:s',
+			'msg_Chr_uarr'          => T_('&uArr;'),
+			'msg_Chr_darr'          => T_('&dArr;'),
+			'msg_disabled'          => T_('Referer function is disabled.'),
+			'msg_notfound'          => T_('The page you requested was not found.'),
+			'msg_searchkey'         => T_('Search keys'),
+			'msg_searchkey_title'   => T_('All the Search Key of %s'),
+			'msg_mutual'            => T_('Mutual links'),
+			'msg_mutual_title'      => T_('Auto Mutual link of %s'),
+			'msg_pingback'          => T_('PingBack'),
+			'msg_pingback_title'    => T_('PingBacks of %s')
 		)
 	);
 	set_plugin_messages($messages);
@@ -79,16 +82,36 @@ function plugin_referer_action()
 	}
 	
 	$page = isset($vars['page']) ? $vars['page'] : null;
-	$kind = isset($vars['kind']) ? $vars['kind'] : '';
+	$kind = isset($vars['kind']) ? $vars['kind'] : null;
 	$max = isset($vars['max']) ? (int)$vars['max'] :  -1;
 
 	if (empty($page)){
 		return array('msg'=>$_referer_msg['msg_referer'], 'body'=>$_referer_msg['msg_notfound']);
 	}
+	
+	if (empty($kind)){
+		return array(
+			'msg'  => $_referer_msg['msg_H0_Refer'],
+			'body' => 
+				'<div class="tabs" role="application">'."\n".'<ul role="tablist">'."\n".
+				'<li role="tab"><a href="'.get_cmd_uri('referer',$page,null,array('kind'=>'referer')).'">'.$_referer_msg['msg_referer'].'</a></li>'."\n".
+				'<li role="tab"><a href="'.get_cmd_uri('referer',$page,null,array('kind'=>'searchkey')).'">'.$_referer_msg['msg_searchkey'].'</a></li>'."\n".
+				'<li role="tab"><a href="'.get_cmd_uri('referer',$page,null,array('kind'=>'mutual')).'">'.$_referer_msg['msg_mutual'].'</a></li>'."\n".
+				'<li role="tab"><a href="'.get_cmd_uri('referer',$page,null,array('kind'=>'pingback')).'">'.$_referer_msg['msg_pingback'].'</a></li>'."\n".
+				'</ul>'."\n".'</div>'
+		);
+	}
 	$wiki = Factory::Wiki($page);
 	if ($wiki->isValied() && $wiki->isReadable()) {
+		if ($kind === 'pingback'){
+			return array(
+				'msg' => sprintf($_referer_msg['msg_pingback_title'],$page),
+				'body'=> plugin_referer_pingback($page)
+			);
+		}
+		
 		$data = Factory::Referer($page)->get();
-		if (!isset($data)) return '<p>'.$_referer_msg['msg_no_data'].'</p>';
+		if (!isset($data)) return '<p class="alert alert-warning">'.$_referer_msg['msg_no_data'].'</p>';
 
 		switch ($kind){
 			case 'skeylist':	// searchkeylist.inc.phpのなごり
@@ -113,14 +136,10 @@ function plugin_referer_action()
 			break;
 			default:
 				return array(
-					'msg'  => $_referer_msg['msg_H0_Refer'],
-					'body' => 
-						'<div class="tabs" role="application">'."\n".'<ul role="tablist">'."\n".
-						'<li role="tab"><a href="'.get_cmd_uri('referer',$page,null,array('kind'=>'referer')).'">'.$_referer_msg['msg_referer'].'</a></li>'."\n".
-						'<li role="tab"><a href="'.get_cmd_uri('referer',$page,null,array('kind'=>'searchkey')).'">'.$_referer_msg['msg_searchkey'].'</a></li>'."\n".
-						'<li role="tab"><a href="'.get_cmd_uri('referer',$page,null,array('kind'=>'mutual')).'">'.$_referer_msg['msg_mutual'].'</a></li>'."\n".
-						'</ul>'."\n".'</div>'
+					'msg'=>$_referer_msg['msg_referer'],
+					'body' => plugin_referer_body($data)
 				);
+			break;
 		}
 	}
 	$pages = Auth::get_existpages(REFERER_DIR, '.ref');
@@ -227,7 +246,7 @@ function plugin_referer_body($data)
 	$body[] = '</tbody>';
 	$body[] = '</table>';
 
-	if ($ctr === 0) return '<p>'.$_referer_msg['msg_no_data'].'</p>';
+	if ($ctr === 0) return '<p class="alert alert-warning">'.$_referer_msg['msg_no_data'].'</p>';
 
 	return join("\n",$body);
 }
@@ -280,7 +299,7 @@ function plugin_referer_searchkeylist($data, $max){
 	usort($data,create_function('$a,$b','return $b[1] - $a[1];'));
 	$data = searchkeylist_print($data,$max);
 
-	return (empty($data)) ? '<p>'.$_referer_msg['msg_no_data'].'</p>' : $data;
+	return (empty($data)) ? '<p class="alert alert-warning">'.$_referer_msg['msg_no_data'].'</p>' : $data;
 }
 
 
@@ -392,7 +411,7 @@ function searchkeylist_print($data,$max)
 		$rc[] = '<li><a href="' . SKEYLIST_SEARCH_URL.rawurlencode($key).'" rel="nofollow noreferer external">'.$x[0].'</a> <var>('.$x[1].')</var></li>';
 		$ctr++;
 	}
-	if ($ctr === 0) return '<p>'.$_referer_msg['msg_no_data'].'</p>';
+	if ($ctr === 0) return '<p class="alert alert-warning">'.$_referer_msg['msg_no_data'].'</p>';
 
 	return '<ul class="plugin-referer-searchkey-list">'.join("\n",$rc).'</ul>';
 }
@@ -404,7 +423,7 @@ function plugin_referer_mutual($data, $max){
 	// 0:検索キー 1:参照カウンタ
 	usort($data,create_function('$a,$b','return $b[1] - $a[1];'));
 	$data = linklist_print($data,$max,0);
-	return (empty($data)) ? $_referer_msg['msg_no_data'] : $data;
+	return (empty($data)) ? '<p class="alert alert-warning">' . $_referer_msg['msg_no_data'] . '</p>' : $data;
 }
 
 // データを解析
@@ -521,7 +540,6 @@ function linklist_print($data,$max,$title)
 }
 
 
-
 // ホスト名からIPアドレスに変換して評価する
 function linklist_testipaddress ($host)
 {
@@ -536,6 +554,21 @@ function linklist_testipaddress ($host)
 	return 1; // IP アドレス変換できた
 }
 
+/**************************************************************************************************/
+function plugin_referer_pingback($page){
+	global $_referer_msg;
+
+	$pb = new PingBackFile($page);
+	if (!$pb->has() || $pb->count() === 0){
+		return '<p class="alert alert-warning">' . $_referer_msg['msg_no_data'] . '</p>';
+	}
+	foreach ($pb->get() as $line){
+		list($time, $url, $title) = explode("\t", $line);
+		$ret[] = '<li><a href="' . $url . '" rel="external">' . $title . '</a></li>';
+	}
+	
+	return '<ul class="plugin-referer-pingbacklist">'.join("\n",$ret).'</ul>';
+}
 
 /* End of file referer.inc.php */
 /* Location: ./wiki-common/plugin/referer.inc.php */

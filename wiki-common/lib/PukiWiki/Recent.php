@@ -87,7 +87,6 @@ class Recent{
 		// 更新日時順にソート
 		arsort($recent_pages, SORT_NUMERIC);
 
-		
 		$_recent = array();
 		foreach($recent_pages as $key=>$value) {
 			unset($recent_pages[$key]);
@@ -197,7 +196,7 @@ class Recent{
 	 * boolean $force キャッシュ生成しない
 	 * return void
 	 */
-	public static function getFeed($page = '', $type='rss', $force = false){
+	public static function getFeed($page = '', $type='rss', $force = true){
 		global $vars, $site_name, $site_logo, $modifier, $modifierlink, $_string, $cache;
 		static $feed;
 		
@@ -207,6 +206,7 @@ class Recent{
 		}
 
 		$content_type = ($type === 'rss') ? 'application/rss+xml' : 'application/atom+xml';
+		$body = '';
 
 		if (empty($page)){
 			// recentキャッシュの更新チェック
@@ -220,82 +220,87 @@ class Recent{
 				$cache['wiki']->removeItem(self::FEED_CACHE_NAME);
 			}else if (!empty($feed)){
 				// メモリにキャッシュがある場合
-				$headers = Header::getHeaders($content_type);
-				Header::writeResponse($headers, 200, $feed->export($type));
-				exit;
+				$body = $feed->export($type);
 			}else if ($cache['wiki']->hasItem(self::FEED_CACHE_NAME)) {
 				// キャッシュから最終更新を読み込む
 				$feed = $cache['wiki']->getItem(self::FEED_CACHE_NAME);
-				$headers = Header::getHeaders($content_type);
-				Header::writeResponse($headers, 200, $feed->export($type));
-				exit;
+				$body = $feed->export($type);
 			}
 		}
+		
+		if (empty($body)){
+			// Feedを作る
+			$feed = new Feed();
+			// Wiki名
+			$feed->setTitle($site_name);
+			// Wikiのアドレス
+			$feed->setLink(Router::get_script_absuri());
+			// サイトのロゴ
+			//$feed->setImage(array(
+			//	'title'=>$site_name,
+			//	'uri'=>$site_logo,
+			//	'link'=>Router::get_script_absuri()
+			//));
+			// Feedの解説
+			$feed->setDescription(sprintf($_string['feed_description'], $site_name));
+			// Feedの発行者など
+			$feed->addAuthor(array(
+				'name'  => $modifier,
+				'uri'   => $modifierlink,
+			));
+			// feedの更新日時（生成された時間なので、この実装で問題ない）
+			$feed->setDateModified(time());
+			// Feedの生成
+			$feed->setGenerator(S_APPNAME, S_VERSION, 'http://pukiwiki.logue.be/');
 
-		// Feedを作る
-		$feed = new Feed();
-		// Wiki名
-		$feed->setTitle($site_name);
-		// Wikiのアドレス
-		$feed->setLink(Router::get_script_absuri());
-		//$feed->setImage($site_logo);
-		// Feedの解説
-		$feed->setDescription(sprintf($_string['feed_description'], $site_name));
-		// Feedの発行者など
-		$feed->addAuthor(array(
-			'name'  => $modifier,
-			'uri'   => $modifierlink,
-		));
-		// feedの更新日時（生成された時間なので、この実装で問題ない）
-		$feed->setDateModified(time());
-		// Feedの生成
-		$feed->setGenerator(S_APPNAME . ' ' . S_VERSION);
-
-		if (empty($page)){
-			// feedのアドレス
-			$feed->setFeedLink(Router::get_cmd_uri('feed',null,null,array('type'=>'atom')), 'atom');
-			$feed->setFeedLink(Router::get_cmd_uri('feed',null,null,array('type'=>'rss')), 'rss');
-			// PubSubHubbubの送信
-			foreach (self::$pubsubhub_uris as $uri){
-				$feed->addHub($uri);
+			if (empty($page)){
+				// feedのアドレス
+				$feed->setFeedLink(Router::get_cmd_uri('feed',null,null,array('type'=>'atom')), 'atom');
+				$feed->setFeedLink(Router::get_cmd_uri('feed',null,null,array('type'=>'rss')), 'rss');
+				// PubSubHubbubの送信
+				foreach (self::$pubsubhub_uris as $uri){
+					$feed->addHub($uri);
+				}
+			}else{
+				$feed->setFeedLink(Router::get_cmd_uri('feed',$page,null,array('type'=>'atom')), 'atom');
+				$feed->setFeedLink(Router::get_cmd_uri('feed',$page,null,array('type'=>'rss')), 'rss');
 			}
-		}else{
-			$feed->setFeedLink(Router::get_cmd_uri('feed',$page,null,array('type'=>'atom')), 'atom');
-			$feed->setFeedLink(Router::get_cmd_uri('feed',$page,null,array('type'=>'rss')), 'rss');
-		}
 
-		$i = 0;
-		// エントリを取得
-		foreach(self::get() as $_page=>$time){
-			// ページ名が指定されていた場合、そのページより下位の更新履歴のみ出力
-			if (!empty($page) && strpos($_page, $page.'/') === false) continue;
-			
-			$wiki = Factory::Wiki($_page);
-			if ($wiki->isHidden()) continue;
+			$i = 0;
+			// エントリを取得
+			foreach(self::get() as $_page=>$time){
+				// ページ名が指定されていた場合、そのページより下位の更新履歴のみ出力
+				if (!empty($page) && strpos($_page, $page.'/') === false) continue;
+				
+				$wiki = Factory::Wiki($_page);
+				if ($wiki->isHidden()) continue;
 
-			$entry = $feed->createEntry();
-			// ページのタイトル
-			$entry->setTitle($wiki->title());
-			// ページのアドレス
-			$entry->setLink($wiki->uri());
-			// ページの更新日時
-			$entry->setDateModified($wiki->time());
-			// ページの要約
-			$entry->setDescription($wiki->description(self::FEED_ENTRY_DESCRIPTION_LENGTH));
-			// 項目を追加
-			$feed->addEntry($entry);
+				$entry = $feed->createEntry();
+				// ページのタイトル
+				$entry->setTitle($wiki->title());
+				// ページのアドレス
+				$entry->setLink($wiki->uri());
+				// ページの更新日時
+				$entry->setDateModified($wiki->time());
+				// ページの要約
+				$entry->setDescription($wiki->description(self::FEED_ENTRY_DESCRIPTION_LENGTH));
+				// 項目を追加
+				$feed->addEntry($entry);
 
-			$i++;
-			if ($i >= PLUGIN_FEED_ENTRIES) break;
-		}
+				$i++;
+				if ($i >= self::RECENT_MAX_SHOW_PAGES) break;
+			}
 
-		if (empty($page)){
-			// キャッシュに保存
-			$cache['wiki']->setItem(self::FEED_CACHE_NAME, $feed);
+			if (empty($page)){
+				// キャッシュに保存
+				$cache['wiki']->setItem(self::FEED_CACHE_NAME, $feed);
+			}
+
+			$body = $feed->export($type);
 		}
 
 		$headers = Header::getHeaders($content_type);
-		Header::writeResponse($headers, 200, $feed->export($type));
+		Header::writeResponse($headers, 200, $body);
 		exit;
 	}
 }

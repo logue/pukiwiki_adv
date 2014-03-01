@@ -8,7 +8,7 @@
  * @copyright 2012-2014 PukiWiki Advance Developers Team
  * @create    2012/12/18
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Header.php,v 1.0.0 2014/02/23 19:54:00 Logue Exp $
+ * @version   $Id: Header.php,v 1.0.0 2014/02/28 12:52:00 Logue Exp $
  */
 
 namespace PukiWiki\Renderer;
@@ -101,6 +101,11 @@ class Header{
 		// XSS脆弱性対策（これでいいのか？）
 		// http://msdn.microsoft.com/ja-jp/ie/dd218482
 		$headers['X-XSS-Protection'] = '1; mode=block';
+		
+		// PingBack
+		if ($vars['cmd'] === 'read' && isset($vars['page'])){
+			$headers['X-Pingback'] = Router::get_cmd_uri('xmlrpc');
+		}
 
 		return $headers;
 	}

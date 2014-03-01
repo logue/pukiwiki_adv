@@ -18,18 +18,12 @@ use PukiWiki\Router;
 use PukiWiki\Time;
 use PukiWiki\Renderer\Header;
 
-// o—Í‚·‚éƒGƒ“ƒgƒŠ‚Ì”
-define('PLUGIN_FEED_ENTRIES', 25);
-
-// à–¾•¶‚Ì’·‚³
-define('PLUGIN_FEED_ENTRY_DESCRIPTION_LENGTH', 256);
-
 function plugin_feed_action(){
 	global $vars, $site_name, $site_logo, $modifier, $modifierlink, $_feed_msg, $cache;
 	
 	$type = isset($vars['type']) ? $vars['type'] : 'rss';
 	$page = isset($vars['page']) ? $vars['page'] : null;
 	
-	Recent::getFeed($page, $type, false);
+	Recent::getFeed($page, $type);
 	exit;
 }

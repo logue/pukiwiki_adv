@@ -29,7 +29,8 @@ class FileFactory
 		'backup'  => 'PukiWiki\File\BackupFile',
 		'diff'    => 'PukiWiki\File\DiffFile',
 		'counter' => 'PukiWiki\File\CounterFile',
-		'referer' => 'PukiWiki\File\Referer'
+		'referer' => 'PukiWiki\File\Referer',
+		'pingback'=> 'PukiWiki\File\PingBackFile',
 	);
 	/**
 	 * 汎用
@@ -95,6 +96,12 @@ class FileFactory
 	 */
 	public static function Referer($page){
 		return new RefererFile($page);
+	}
+	/**
+	 * PingBackファイル
+	 */
+	public static function PingBack($page){
+		return new PingBackFile($page);
 	}
 }
 

@@ -1184,7 +1184,7 @@ $.fn.bstooltip = bootstrapTooltip;
 		set_editform: function(prefix){
 			prefix = (prefix) ? prefix + ' ': '';
 			// よく使うDOMをキャッシュ
-			var $form = $('.form-edit'),,
+			var $form = $('.form-edit'),
 				$msg = $form.find('textarea[name="msg"]'),
 				$original = $form.find('textarea[name="original"]'),
 				self = this,

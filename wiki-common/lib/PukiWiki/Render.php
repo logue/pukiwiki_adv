@@ -379,7 +379,7 @@ class Render{
 			if (!empty($this->wiki) && $vars['cmd'] === 'read'){
 				global $keywords, $description, $site_name, $site_logo;
 				// 要約
-				$desc = !empty($description) ? $description : mb_strimwidth(preg_replace("/[\r\n]/" ,' ' ,strip_htmltag($this->wiki->render())) ,0 ,256 ,'...');
+				$desc = !empty($description) ? $description : $this->wiki->description();
 				$meta_tags[] = array('name' => 'description', 'content' => $desc);
 				// キーワード
 				if (!empty($keywords)){ $meta_tags[] =  array('name' => 'keywords', 'content' => $keywords); }
@@ -417,7 +417,8 @@ class Render{
 				array('rel'=>'search',			'href'=>$_LINK['opensearch'],'type'=>'application/opensearchdescription+xml',	'title'=>$site_name.$_LANG['skin']['search']),
 				array('rel'=>'search',			'href'=>$_LINK['search'],	'type'=>'text/html',	'title'=>$_LANG['skin']['search']),
 				array('rel'=>'sitemap',			'href'=>$_LINK['sitemap'],	'type'=>'text/html',	'title'=>'Sitemap'),
-				array('rel'=>'shortcut icon',	'href'=>isset($conf['shortcut_icon']) ? $conf['shortcut_icon'] : ROOT_URI.'favicon.ico')
+				array('rel'=>'shortcut icon',	'href'=>isset($conf['shortcut_icon']) ? $conf['shortcut_icon'] : ROOT_URI.'favicon.ico'),
+				array('rel'=>'pingback',	    'href'=>$_LINK['pingback'])
 			);
 		}
 
@@ -517,7 +518,8 @@ class Render{
 				'newsub'        => Router::get_cmd_uri('newpage_subdir'),
 				'rename'        => Router::get_cmd_uri('rename'),
 				'upload_list'   => Router::get_cmd_uri('attach',    null,   null,   array('pcmd'=>'list')),
-				'referer'       => Router::get_cmd_uri('referer')
+				'referer'       => Router::get_cmd_uri('referer'),
+				'pingback'      => Router::get_cmd_uri('xmlrpc')
 			);
 		}
 		$links = $d_links;
@@ -551,7 +553,7 @@ class Render{
 					'upload'        => Router::get_cmd_uri('attach',        $_page, null,   array('pcmd'=>'upload')), // link rel="alternate" にも利用するため absuri にしておく
 
 					'template'      => Router::get_cmd_uri('template',      null,   null,   array('refer'=>$_page)),
-					'referer'       => Router::get_cmd_uri('referer',       $_page)
+					'referer'       => Router::get_cmd_uri('referer',       $_page),
 				);
 			}
 			$links = array_merge($d_links,$p_links[$_page]);
