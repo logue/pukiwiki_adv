@@ -1,6 +1,6 @@
 <?php
 /**
- * フィードプラグイン
+ * 繝輔ぅ繝ｼ繝峨�励Λ繧ｰ繧､繝ｳ
  *
  * @package   PukiWiki
  * @access    public
@@ -22,8 +22,8 @@ function plugin_feed_action(){
 	global $vars, $site_name, $site_logo, $modifier, $modifierlink, $_feed_msg, $cache;
 	
 	$type = isset($vars['type']) ? $vars['type'] : 'rss';
-	$page = isset($vars['page']) ? $vars['page'] : null;
-	
-	Recent::getFeed($page, $type);
+	$refer = isset($vars['refer']) ? $vars['refer'] : null;
+
+	Recent::getFeed($refer, $type);
 	exit;
 }

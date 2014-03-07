@@ -54,9 +54,9 @@ class InterWiki extends Inline
 		$rel = 'external' . ($nofollow === TRUE) ? ' nofollow': '';
 		$target = empty($this->redirect) ? $this->name : $this->redirect.rawurlencode($this->name);
 
-		if (extension_loaded('intl')){
+		$purl = parse_url($target);
+		if (isset($purl['host']) && extension_loaded('intl')){
 			// Fix punycode URL
-			$purl = parse_url($target);
 			$url = preg_replace('/'.$purl['host'].'/', idn_to_ascii($purl['host']), $target);
 		}else{
 			$url = $target;

@@ -52,6 +52,10 @@ class PingBack{
 	 */
 	const RESPONSE_FAULT_ACCESS_DENIED      = 0x0031;
 	/**
+	 * リクエストされた内容が完了しなかった
+	 */
+	const RESPONSE_FAULT_CONNECT            = 0x0032;
+	/**
 	 * タイトルがない場合の名前
 	 */
 	const UNTITLED_TITLE = 'Untitled';
@@ -63,8 +67,6 @@ class PingBack{
 	 * @return int
 	 */
 	public function ping($source, $target) {
-		global $url_suffix;
-
 		// Zend\Uri\Uriオブジェクトを生成
 		$source_url = Uri::factory($source);
 		$target_url = Uri::factory($target);

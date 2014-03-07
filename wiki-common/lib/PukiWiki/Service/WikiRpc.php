@@ -37,6 +37,38 @@ class WikiRpc{
 	 */
 	const WIKI_RPC_VERSION = 2;
 	/**
+	 * 送信に成功した
+	 */
+	const RESPONSE_SUCCESS                  = -1;
+	/**
+	 * 閲覧権限なし
+	 */
+	const RESPONSE_PAGE_NOT_READABLE        = 0x0111;
+	/**
+	 * 編集権限なし
+	 */
+	const RESPONSE_PAGE_NOT_EDITABLE        = 0x0112;
+	/**
+	 * ページが見つからない
+	 */
+	const RESPONSE_PAGE_NOT_FOUND           = 0x0121;
+	/**
+	 * ページ名が空
+	 */
+	const RESPONSE_PAGE_PAGENAME_IS_EMPTY   = 0x0131;
+	/**
+	 * ページの内容が空（未使用）
+	 */
+	const RESPONSE_PAGE_CONTENT_IS_EMPTY    = 0x0132;
+	/**
+	 * 凍結されている
+	 */
+	const RESPONSE_PAGE_FREEZED             = 0x0133;
+	/**
+	 * アクセス拒否
+	 */
+	const RESPONSE_FAULT_ACCESS_DENIED      = 0x0031;
+	/**
 	 * Returns 2 with the supported RPC API version.
 	 * サポートしているWikiRpcのバージョン。２を返す。
 	 * @return int

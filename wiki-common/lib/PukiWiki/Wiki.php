@@ -13,13 +13,14 @@
 
 namespace PukiWiki;
 
+use Exception;
 use PukiWiki\Auth\Auth;
 use PukiWiki\Backup;
 use PukiWiki\Diff\Diff;
 use PukiWiki\File\AttachFile;
 use PukiWiki\File\FileFactory;
-use PukiWiki\File\LogFactory;
 use PukiWiki\File\FileUtility;
+use PukiWiki\File\LogFactory;
 use PukiWiki\Relational;
 use PukiWiki\Renderer\PluginRenderer;
 use PukiWiki\Renderer\RendererFactory;
@@ -29,9 +30,11 @@ use PukiWiki\Spam\IpFilter;
 use PukiWiki\Spam\ProxyChecker;
 use PukiWiki\Text\Rules;
 use PukiWiki\Utility;
-use Zend\XmlRpc\Client;
-use Zend\XmlRpc\Request;
 use ZendService\Akismet\Akismet;
+use Zend\Http\Client;
+use Zend\Http\Request;
+use Zend\XmlRpc\Client as XmlRpcClient;
+use Zend\XmlRpc\Request as XmlRpcRequest;
 
 /**
  * Wikiのコントローラー
@@ -465,7 +468,7 @@ class Wiki{
 		//$diffdata .= '// IP:"'. REMOTE_ADDR . '" TIME:"' . $now . '" REFERER:"' . $referer . '" USER_AGENT:"' . $user_agent. "\n";
 
 		// 差分データーを保存
-		FileFactory::Diff($this->page)->set($diff->getDiff());
+		//FileFactory::Diff($this->page)->set($diff->getDiff());
 
 		unset($oldpostdata, $diff, $difffile);
 
@@ -615,17 +618,97 @@ class Wiki{
 		return $source;
 	}
 	/**
-	 * weblogUpdates.pingを送信
+	 * XmlRpc Pingを送信
 	 * return void
 	 */
 	private function sendPing(){
 		global $site_name;
+
+		$err = array();
+
+		// 現在のページのURIを取得
+		$source_uri = $this->uri();
+
+		// weblogUpdates.pingの生成
+		$request = new XmlRpcRequest();
+		$request->setMethod('weblogUpdates.ping');
+		$request->setParams(array($site_name, Router::get_script_absuri(), $source_uri));
+
 		foreach (self::$ping_server as $uri){
-			$client = new Client($uri);
-			$request = new Request();
-			$request->setMethod('weblogUpdates.ping');
-			$request->setParams(array($site_name, Router::get_script_absuri()));
-			$client->doRequest($request);
+			try {
+				// Pingサーバーに接続
+				$client = new XmlRpcClient($uri);
+				// Pingの送信
+				$client->doRequest($request);
+			} catch (Exception $e) {
+				$err[] = $e;
+			}
 		}
+		
+		$err[] = '-----'."\n";
+
+		unset($client, $request);
+
+		// PingBackを送信
+		$links = array();
+		// Wikiのソースのアドレスを取得
+		if (preg_match_all('(http://[-_.!~*\'()a-zA-Z0-9;/?:@&=+$,%#]+)', $this->get(true), $links, PREG_PATTERN_ORDER) !== false){
+			// 重複を削除
+			$target_uris = array_unique($links[0]);
+			foreach ($target_uris as $target_uri){
+				$pingback = false;
+				// ターゲットとなるURL接続
+				$client = new Client($target_uri);
+				// HEADメソッドでヘッダーのみ取得
+				$client->setMethod(Request::METHOD_HEAD);
+				// 返り値を取得
+				
+				try{
+					$response = $client->send();
+
+					// アクセス失敗
+					if (!$response->isSuccess()) continue;
+
+					// ヘッダーからPingBackのURIを取得
+					$pingback = $response->getHeaders()->get('x-pingback');
+
+					// x-pingbackヘッダーがない場合
+					if ($pingback === false){
+						// GETでアクセスしてコンテンツを取得し、linkタグを探す。
+						$client->setMethod(Request::METHOD_GET);
+						// 返り値を取得
+						$response = $client->send();
+						// linkタグからPingBackのURIを取得
+						if (preg_match('<link rel="pingback" href="([^"]+)" ?/?>', $response->getBody(), $matches) !== false){
+							$pingback = isset($matches[1]) ? $matches[1] : null;
+						}
+					}
+				}catch(Exception $e){
+					$err[] = $e;
+				}
+				// PingBack送信先が見つからない場合スキップ
+				if ($pingback === false) continue;
+
+				// PingBackで送信する内容
+				$request = new XmlRpcRequest();
+				$request->setMethod('pingback.ping');
+				$request->setParams(array($source_uri, $target_uri));
+
+				// 例外を取得
+				try {
+					// PingBack送信先に接続
+					$client = new XmlRpcClient($pingback);
+					// 送信
+					$client->doRequest($request);
+				} catch (Exception $e) {
+					$err[] = $e;
+				}
+				$err[] = '-----'."\n";
+			}
+		}
+		unset($client, $request);
+
+//		var_dump($err);
+		return $err;
 	}
 }

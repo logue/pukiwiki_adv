@@ -633,7 +633,7 @@ class Render{
 				}else if($key == 'IE_flag'){
 					$IE_flag = $val;
 				}else{
-					$tag_contents[] = $key.'="'.Utility::htmlsc($val).'"';
+					$tag_contents[] = $key.'="'.($key !=='href' ? Utility::htmlsc($val) : $val ).'"';
 				}
 			}
 			unset($tag, $key, $val);

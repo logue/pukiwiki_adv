@@ -13,12 +13,12 @@
 
 namespace PukiWiki;
 
-use PukiWiki\Auth\Auth;
-use PukiWiki\Listing;
-use PukiWiki\File\FileFactory;
 use Exception;
-use Zend\Feed\Writer\Feed;
+use PukiWiki\Auth\Auth;
+use PukiWiki\File\FileFactory;
+use PukiWiki\Listing;
 use PukiWiki\Renderer\Header;
+use Zend\Feed\Writer\Feed;
 
 /**
  * 最終更新クラス
@@ -227,7 +227,7 @@ class Recent{
 				$body = $feed->export($type);
 			}
 		}
-		
+
 		if (empty($body)){
 			// Feedを作る
 			$feed = new Feed();
@@ -250,20 +250,23 @@ class Recent{
 			));
 			// feedの更新日時（生成された時間なので、この実装で問題ない）
 			$feed->setDateModified(time());
+			$feed->setDateCreated(time());
 			// Feedの生成
 			$feed->setGenerator(S_APPNAME, S_VERSION, 'http://pukiwiki.logue.be/');
 
 			if (empty($page)){
 				// feedのアドレス
-				$feed->setFeedLink(Router::get_cmd_uri('feed',null,null,array('type'=>'atom')), 'atom');
-				$feed->setFeedLink(Router::get_cmd_uri('feed',null,null,array('type'=>'rss')), 'rss');
+				// ※Zend\Feedの仕様上、&が自動的に&amp;に変更されてしまう
+				$feed->setFeedLink(Router::get_cmd_uri('feed').'&type=atom', 'atom');
+				$feed->setFeedLink(Router::get_cmd_uri('feed'), 'rss');
 				// PubSubHubbubの送信
 				foreach (self::$pubsubhub_uris as $uri){
 					$feed->addHub($uri);
 				}
 			}else{
-				$feed->setFeedLink(Router::get_cmd_uri('feed',$page,null,array('type'=>'atom')), 'atom');
-				$feed->setFeedLink(Router::get_cmd_uri('feed',$page,null,array('type'=>'rss')), 'rss');
+				$r_page = rawurlencode($page);
+				$feed->setFeedLink(Router::get_cmd_uri('feed').'&type=atom&refer='.$r_page, 'atom');
+				$feed->setFeedLink(Router::get_cmd_uri('feed').'&refer='.$r_page, 'rss');
 			}
 
 			$i = 0;
@@ -271,7 +274,7 @@ class Recent{
 			foreach(self::get() as $_page=>$time){
 				// ページ名が指定されていた場合、そのページより下位の更新履歴のみ出力
 				if (!empty($page) && strpos($_page, $page.'/') === false) continue;
-				
+
 				$wiki = Factory::Wiki($_page);
 				if ($wiki->isHidden()) continue;
 
@@ -284,6 +287,7 @@ class Recent{
 				$entry->setDateModified($wiki->time());
 				// ページの要約
 				$entry->setDescription($wiki->description(self::FEED_ENTRY_DESCRIPTION_LENGTH));
+				
 				// 項目を追加
 				$feed->addEntry($entry);
 
@@ -299,8 +303,11 @@ class Recent{
 			$body = $feed->export($type);
 		}
 
-		$headers = Header::getHeaders($content_type);
-		Header::writeResponse($headers, 200, $body);
+		//$headers = Header::getHeaders($content_type);
+		//Header::writeResponse($headers, 200, $body);
+		flush();
+		header('Content-Type: ' . $content_type);
+		echo $body;
 		exit;
 	}
 }
