@@ -152,7 +152,7 @@ class Router{
 		$path = (empty($path_reference)) ? 'rel' : $path_reference;
 		$ret = self::get_script_uri($path);
 
-		if (! empty($cmd) && $cmd !== 'read') {
+		if (! empty($cmd) && ($cmd !== 'read' || count($query) !== 0)) {
 			$ret .= '?cmd='.$cmd;
 			$flag = '&';
 			if (! empty($page)) {

@@ -163,15 +163,15 @@ abstract class Inline
 			// ページが存在する場合
 			// 用語集にページ名と同じワードが含まれていた場合
 			$glossary = Glossary::getGlossary($page);
+
 			if (!empty($glossary)){
 				// AutoGlossray
-				$s_page = $glossary;
+				return '<abbr class="glossary" title="' . $glossary . ' ' . $wiki->passage(false,true) .'">' .
+					'<a href="' . $wiki->uri() . '"' . ($isautolink === true ? ' class="autolink"' : '') . '>' . $anchor_name  . '</a></abbr>';
 			}
-			return '<a href="' . $wiki->uri() . $anchor . '" ' .
+			return '<a href="' . $wiki->uri() . $anchor . '" ' . 
 				(!$link_compact ? 'title="' . $s_page . ' ' . $wiki->passage(false,true) . '"' : '' ).
-	//			($isautolink ? ' class="autolink"' : '') .
-				(!empty($glossary) ? ' aria-describedby="tooltip"' : '') .
-				'>' . $anchor_name . '</a>';
+				($isautolink === true ? ' class="autolink"' : '') . '>' . $anchor_name  . '</a>';
 		} else {
 			// Dangling link
 			if (Auth::check_role('readonly')) return $s_alias; // No dacorations

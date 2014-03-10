@@ -74,9 +74,9 @@ function plugin_tooltip_inline()
 		
 	$wiki = Factory::Wiki($page);
 	if ( $wiki->isValied() ) {
-		return '<a href="' . $wiki->uri() . '"><abbr aria-describedby="tooltip" title="$s_glossary' . $wiki->passage(true,false). '">' . $term . '</abbr></a>';
+		return '<abbr class="glossary" title="$s_glossary' . $wiki->passage(true,false). '"><a href="' . $wiki->uri() . '">' . $term . '</a></abbr>';
 	}
-	return '<dfn aria-describedby="tooltip" title="' . $s_glossary . '">' . $term . '</dfn>';
+	return '<dfn class="glossary" title="' . $s_glossary . '">' . $term . '</dfn>';
 }
 //========================================================
 function plugin_tooltip_get_page_title($term)

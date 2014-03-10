@@ -209,13 +209,14 @@ class Render{
 			// ノート
 			global $foot_explain;
 			ksort($foot_explain, SORT_NUMERIC);
-			$view->notes = ! empty($foot_explain) ? '<ul>'.join("\n", $foot_explain).'</ul>' : '';
+			$notes = ! empty($foot_explain) ? '<ul>'.join("\n", $foot_explain).'</ul>' : '';
 
 			// 検索語句をハイライト
 			if (isset($vars['word'])){
-				list($body, $notes) = self::hilightWord($vars['word'], array($body, $notes));
-				$body = '<div class="small">' . $_string['word'] . Utility::htmlsc($vars['word']) . '</div>'."\n".'<hr />'."\n".$body;
+				$notes = self::hilightWord($vars['word'],$notes);
+				$body = '<p class="alert alert-info">' . $_string['word'] . '<var>' . Utility::htmlsc($vars['word']) . '</var></p>'."\n".'<hr />'."\n".self::hilightWord($vars['word'], $body);
 			}
+			$view->notes = $notes;
 		}
 
 		// モードによって、3カラム、2カラムを切り替える。
@@ -576,9 +577,12 @@ class Render{
 		$words = array_flip($words);
 
 		$keys = array();
-		foreach ($words as $word=>$id) $keys[$word] = strlen($word);
+		foreach ($words as $word=>$id){
+			$keys[$word] = strlen($word);
+		}
 
 		$keys = Search::get_search_words(array_keys($keys), TRUE);
+
 		$id = 0;
 		foreach ($keys as $key=>$pattern) {
 			$s_key    = Utility::htmlsc($key);

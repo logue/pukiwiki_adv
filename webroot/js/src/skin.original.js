@@ -902,64 +902,62 @@ $.fn.bstooltip = bootstrapTooltip;
 		glossaly: function(prefix){
 			var glossaries = {};	// ajaxで読み込んだ内容をキャッシュ
 			$(document.body).tooltip({
-				items: '[aria-describedby], [title]',
+				items: '.glossary, .search-summary, [title]',
 				track: true,
+				show: function(){
+					// ツールチップが複数表示されてしまうのを抑止
+					if ( $('[role="tooltip"]').length > 1 ){
+						$(this).remove();
+					}
+				},
 				content: function(callback) {
 					var $this = $(this);
-					if ( $this.is('[aria-describedby]') ) {
+
+					if ( $this.is('.glossary, .search-summary') ) {
 						$this.removeAttr('title');
-						var aria = $this.attr('aria-describedby');	// aria-describedby要素が他のjQueryUIのウィジットで使われてたorz...
-						if (aria === 'linktip' || aria === 'tooltip') {
-							//console.log($this.attr('aria-describedby'));
-							var text = $this.text();
-							if (text !== '' && !glossaries[text]){
-								// キャッシュがない場合
-								var params = ($this.attr('aria-describedby') == 'linktip')
-								 ? {
-									// リンク先の要約文
-									cmd : 'preview',
-									page : text,
-									word : $.query.get('word'),
-									cache : true
-								} : {
-									// 用語集
-									cmd: 'tooltip',
-									q : text,
-									cache : true
-								};
-								
-								$.ajax({
-									url:SCRIPT,
-									type:'GET',
-									cache: true,
-									timeout:2000,
-									dataType : 'xml',
-									global:false,
-									data : params,
-									async:false
-								}).done(function(data){
-									if (data.documentElement.textContent) {
-										glossaries[text] = data.documentElement.textContent;
-										callback(data.documentElement.textContent);
-									}
-								}).always(function(data){
-									if (data.responseText) {
-										glossaries[text] = data.responseText;
-										callback(data.responseText);
-									}
-								});
-							}else{
-								// キャッシュから内容を呼び出す
-								return glossaries[text];
-							}
+						var text = $this.text();
+						if (text !== '' && !glossaries[text]){
+							// キャッシュがない場合
+							var params = $this.is('.search-summary')
+							 ? {
+								// リンク先の要約文
+								cmd : 'preview',
+								page : text,
+								word : $.query.get('word'),
+								cache : true
+							} : {
+								// 用語集
+								cmd: 'tooltip',
+								q : text,
+								cache : true
+							};
+							$.ajax({
+								url:SCRIPT,
+								type:'GET',
+								cache: true,
+								timeout:2000,
+								dataType : 'xml',
+								global:false,
+								data : params,
+								async:false
+							}).done(function(data){
+								if (data.documentElement.textContent) {
+									glossaries[text] = data.documentElement.textContent;
+									callback(data.documentElement.textContent);
+								}
+							}).always(function(data){
+								if (data.responseText) {
+									glossaries[text] = data.responseText;
+									callback(data.responseText);
+								}
+							});
+						}else{
+							// キャッシュから内容を呼び出す
+							return glossaries[text];
 						}
 						
 					}else if ( $this.is('[title]')){
 						return $this.attr('title');
-					}
-					// ツールチップが複数表示されてしまうのを抑止
-					if ( $('[role="tooltip"]').length > 1 ){
-						$('[role="tooltip"]').remove();
 					}
 				}
 			});

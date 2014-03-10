@@ -65,9 +65,9 @@ class Glossary extends Inline
 		$wiki = Factory::Wiki($term);
 		$glossary = self::getGlossary($term, true);
 		if (! $wiki->has() ) {
-			return '<abbr aria-describedby="tooltip" title="' . $glossary . '">' . $this->name . '</abbr>';
+			return '<abbr class="glossary" title="' . $glossary . '">' . $this->name . '</abbr>';
 		}
-		return '<a href="' . $wiki->uri() . '" title="' . $glossary . ' ' . $wiki->passage(false) . '" aria-describedby="tooltip">' . $this->name . '</a>';
+		return '<abbr class="glossary" title="' . $glossary . '"><a href="' . $wiki->uri() . '">' . $this->name . '</a></abbr>';
 	}
 	/**
 	 * 長すぎる場合削減
