@@ -407,18 +407,10 @@ $.fn.bstooltip = bootstrapTooltip;
 			});
 			$(prefix + '.tabs').tabs({
 				beforeLoad: function( event, ui ) {
-					ui.panel.html([
-						'<div class="alert alert-info">',
-							'<p id="ajax_error"><span class="fa fa-info-circle"></span>'+$.i18n('dialog', 'loading')+'</p>',
-						'</div>'
-					].join("\n"));
+					ui.panel.html('<p id="ajax_error" class="alert alert-info"><span class="fa fa-info-circle"></span>'+$.i18n('dialog', 'loading')+'</p>');
 					ui.jqXHR.global = false;
 					ui.jqXHR.error(function() {
-						ui.panel.html([
-							'<div class="alert alert-warning">',
-								'<p id="ajax_error"><span class="fa fa-fa-exclamation-triangle"></span>'+$.i18n('dialog','error_page')+'</p>',
-							'</div>'
-						].join("\n"));
+						ui.panel.html('<p id="ajax_error" class="alert alert-warning"><span class="fa fa-fa-exclamation-triangle"></span>'+$.i18n('dialog','error_page')+'</p>');
 					});
 				},
 				load : function( event, ui ) {
@@ -432,11 +424,7 @@ $.fn.bstooltip = bootstrapTooltip;
 						beforeSend: function( event, ui ) {
 							ui.panel.html($.i18n('dialog','loading'));
 							ui.jqXHR.error(function() {
-								ui.panel.html([
-									'<div class="alert alert-danger">',
-										'<p id="ajax_error"><span class="fa fa-times-circle"></span>'+$.i18n('dialog','error_page')+'</p>',
-									'</div>'
-								].join("\n"));
+								ui.panel.html('<p id="ajax_error" class="alert alert-danger"><span class="fa fa-times-circle"></span>'+$.i18n('dialog','error_page')+'</p>');
 							});
 						}
 					}
@@ -659,7 +647,6 @@ $.fn.bstooltip = bootstrapTooltip;
 							if (params.help == 'true'){
 								params = {cmd:'read', page:'FormatRule'};
 							}
-							
 
 							// ダイアログ描画処理
 							$this.unbind('click').bind('click', function(){
@@ -667,7 +654,7 @@ $.fn.bstooltip = bootstrapTooltip;
 								self.ajax_dialog(params,prefix,function(){
 									if ((params.cmd == 'attach' && params.pcmd.match(/upload|info/i)) || params.cmd.match(/attachref|read|backup/i) && params.age !== ''){
 										var dom = $(prefix).find('.window');
-										//self.init_dom(prefix + ' .window');
+										self.init_dom(prefix + ' .window');
 									}
 								});
 								return false;
@@ -774,6 +761,8 @@ $.fn.bstooltip = bootstrapTooltip;
 						].join("\n"));
 					}catch(e){}
 				}
+				
+				$('.ui-dialog-titlebar-close').addClass('btn btn-default').html('<span class="fa fa-times"></span>');
 			});
 		},
 		blockUI : function(){
@@ -963,11 +952,11 @@ $.fn.bstooltip = bootstrapTooltip;
 			});
 		},
 		// 入力アシスタント
-		assistant: function(full){
+		assistant: function(normal){
 			var self = this,
 				i, j, len, 
 				emoji_widget, color_widget,
-				$msg,
+				$msg = $('*[name="msg"]'),
 				$emoji,
 				$color_palette,
 				$hint;
@@ -994,29 +983,23 @@ $.fn.bstooltip = bootstrapTooltip;
 					'</div>',
 					'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','ncr')+'" name="ncr">&amp;#</button>',
 					'<button class="btn btn-default btn-sm insert" title="'+$.i18n('editor','hint')+'" name="help"><span class="fa fa-question-circle"></span></button>',
-					(full && Modernizr.localstorage) ? '<button class="btn btn-default btn-sm insert" title="'+$.i18n('editor','flush')+'" name="flush"><span class="fa fa-trash-o"></span></button>': null,
-					full ? '<button class="btn btn-default btn-sm disabled" style="float:right;" id="indicator"><span class="fa fa-spinner fa-spin"></span></button>' : null,
+					(!normal && Modernizr.localstorage) ? '<button class="btn btn-default btn-sm insert" title="'+$.i18n('editor','flush')+'" name="flush"><span class="fa fa-trash-o"></span></button>': null,
+					!normal ? '<button class="btn btn-default btn-sm disabled pull-right hidden" id="indicator"><span class="fa fa-spinner fa-spin"></span></button>' : null,
 				'</div>'
 			].join("\n"));
-			
-			// ダイアログ
-			if ($('#emoji').length === 0 && $('#color_palette').length === 0 && $('#hint').length === 0){
-				// ダイアログ表示領域のDOMを作成
-				$body.append('<div id="emoji"></div><div id="color_palette"></div><div id="hint"></div>');
-				
-				$msg = $('*[name=msg]');
-				$emoji = $('#emoji');
-				$color_palette = $('#color_palette');
-				$hint = $('#hint');
 
-				// 絵文字パレットのウィジット
+			// 絵文字パレットのウィジット
+			if ($('#emoji').length === 0){
+				$body.append('<div id="emoji"></div>');
+
 				emoji_widget = '<ul class="ui-widget pkwk_widget ui-helper-clearfix">';
 				for(i = 0, len = this.assistant_setting.emoji.length; i < len ; i++ ){
 					var name =  this.assistant_setting.emoji[i];
 					emoji_widget += '<li class="btn btn-default btn-xs" title="'+name+'" name="'+name+'"><span class="emoji emoji-'+name+'"></span></li>';
 				}
+
 				emoji_widget += '</ul>';
-				$emoji.dialog({
+				$('#emoji').dialog({
 					title:$.i18n('editor','emoji'),
 					autoOpen:false,
 					bgiframe: true,
@@ -1026,37 +1009,9 @@ $.fn.bstooltip = bootstrapTooltip;
 					show: 'scale',
 					hide: 'scale'
 				}).html(emoji_widget);
-
-				// カラーパレットのウィジット
-				color_widget = '<ul class="ui-widget pkwk_widget ui-helper-clearfix" id="colors">';
-				for(i = 0, len =  this.assistant_setting.color.length; i < len ; i++ ){
-					var color = this.assistant_setting.color[i];
-					color_widget += '<li class="btn btn-default btn-xs" title="'+color+'" name="'+color+'"><span class="emoji" style="background-color:'+color+';"></span></li>';
-					j++;
-				}
-				color_widget += '</ul>';
-				$color_palette.dialog({
-					title:$.i18n('editor','color'),
-					autoOpen:false,
-					bgiframe: true,
-					width:470,
-					height:400,
-					show: 'scale',
-					hide: 'scale'
-				}).html(color_widget);
-
-				// ヒントのウィジット
-				$hint.dialog({
-					title:$.i18n('editor','hint'),
-					autoOpen:false,
-					bgiframe: true,
-					width:470,
-					show: 'scale',
-					hide: 'scale'
-				}).html($.i18n('pukiwiki','hint_text1'));
 				
 				// イベントの割り当て
-				$emoji.children('ul').children('li').click(function(){
+				$('#emoji').children('ul').children('li').click(function(){
 					var str = $msg.getSelection().text, v = '&('+$(this).attr('name')+');';
 
 					$msg.focus();
@@ -1068,7 +1023,32 @@ $.fn.bstooltip = bootstrapTooltip;
 					$emoji.dialog('close');
 					return;
 				});
-				$color_palette.children('ul').children('li').click(function(){
+			}
+			$emoji = $('#emoji');
+
+			// カラーパレットのウィジット
+			if ($('#color_palette').length === 0){
+				$body.append('<div id="color_palette"></div>');
+				
+				color_widget = '<ul class="ui-widget pkwk_widget ui-helper-clearfix" id="colors">';
+				for(i = 0, len =  this.assistant_setting.color.length; i < len ; i++ ){
+					var color = this.assistant_setting.color[i];
+					color_widget += '<li class="btn btn-default btn-xs" title="'+color+'" name="'+color+'"><span class="emoji" style="background-color:'+color+';"></span></li>';
+					j++;
+				}
+				color_widget += '</ul>';
+				$('#color_palette').dialog({
+					title:$.i18n('editor','color'),
+					autoOpen:false,
+					bgiframe: true,
+					width:470,
+					height:400,
+					show: 'scale',
+					hide: 'scale'
+				}).html(color_widget);
+
+				// イベントの割り当て
+				$('#color_palette').children('ul').children('li').click(function(){
 					var ret, str = $msg.getSelection().text, v = $(this).attr('name');
 
 					if (str === ''){
@@ -1086,13 +1066,27 @@ $.fn.bstooltip = bootstrapTooltip;
 				});
 			}
 
+			// ヒントのウィジット
+			if ($('#hint').length === 0){
+				$body.append('<div id="hint"></div>');
+				
+				$('#hint').dialog({
+					title:$.i18n('editor','hint'),
+					autoOpen:false,
+					bgiframe: true,
+					width:470,
+					show: 'scale',
+					hide: 'scale'
+				}).html($.i18n('pukiwiki','hint_text1'));
+			}
+
 			// ここから、イベント割り当て
 			$('.insert').click(function(){
 				var ret = '', v = $(this).attr('name');
 
 				switch (v){
 					case 'help' :
-						$hint.dialog('open');
+						$('#hint').dialog('open');
 					break;
 					case 'br':
 						ret = '&br;'+"\n";
@@ -1120,6 +1114,7 @@ $.fn.bstooltip = bootstrapTooltip;
 						$msg.replaceSelection(ret);
 					}
 				}
+				$('*[role="tooltip]').hide();
 				return false;
 			});
 
@@ -1205,9 +1200,9 @@ $.fn.bstooltip = bootstrapTooltip;
 						$indicator = $('#indicator'),
 						sttlen, endlen, sellen, finlen;
 
-					if (self.real_preview_mode) {
+					if ($realview.is(':visible')) {
+						
 						$indicator.css('display:block;');
-						$msg.attr('disabled', 'disabled');
 
 						if (++self.ajax_count !== 1){ return; }
 						var finlen = source.lastIndexOf("\n",$msg.getSelection().start);
@@ -1219,53 +1214,61 @@ $.fn.bstooltip = bootstrapTooltip;
 							data : {
 								cmd : 'edit',
 								realview : 1,
-								page : PAGE,
+								page : decodeURI(PAGE),
 								// 編集した位置までスクロールさせるための編集マークプラグイン呼び出しを付加
 								msg : source.substring(0,finlen) +"\n\n" + '&editmark;' + "\n\n" + source.substring(finlen),
 								type : 'json'
 							},
 							cache : false,
 				//			timeout : 2000,//タイムアウト（２秒）
-							dataType : 'json'
-						}).
-						done(function(data){
-							$indicator.html('<span class="fa fa-time"></span>'+data.taketime);
-							var ret = data.data.replace(/<script[^>]*>[^<]+/ig,'<div>[SCRIPT]</div>');
-							ret = ret.replace(/<form(.*?)>(.*?)<\/form>/ig,'<div>[FORM]</div>');
-							$realview.html(ret);
+							dataType : 'json',
+							beforeSend : function(){
+								$msg.attr('disabled', 'disabled');
+								$indicator.removeClass('hidden');
+								$indicator.html('<span class="fa fa-spinner fa-spin"></span>');
+							},
+							success : function(data){
+								$indicator.html('<span class="fa fa-clock-o"></span>'+data.taketime);
+								var ret = data.data.replace(/<script[^>]*>[^<]+/ig,'<div>[SCRIPT]</div>'), $editmark;
+								ret = ret.replace(/<form(.*?)>(.*?)<\/form>/ig,'<div>[FORM]</div>');
+								$realview.html(ret);
+								$editmark = $('#editmark')
 
-	//						if ($realview.scrollTop() === 0) {
-								// スクロールが0の時エラーになる問題をごまかす
-	//							$realview.scrollTop(1);
-	//						}
-	//						$realview.animate({
-	//							scrollTop: $('#editmark').offset().top
-	//						});
-							
-							var marker = document.getElementById('editmark');
-							if (marker){ document.getElementById('realview').scrollTop = marker.offsetTop-4; }
-							
+		//						if ($realview.scrollTop() === 0) {
+									// スクロールが0の時エラーになる問題をごまかす
+		//							$realview.scrollTop(1);
+		//						}
+		//						$realview.animate({
+		//							scrollTop: $('#editmark').offset().top
+		//						});
+								if ($editmark.length !== 0 ){
+									$realview.scrollTop($editmark.offset().top - $realview.height()-100);
+								}
 
-							if (self.ajax_count===1) {
-								self.ajax_count = 0;
-							} else {
-								self.ajax_count = 0;
-								realtime_preview();
+								if (self.ajax_count===1) {
+									self.ajax_count = 0;
+								} else {
+									self.ajax_count = 0;
+									realtime_preview();
+								}
+							},
+							error : function(data,status,thrown){
+								console.log(data);
+								$realview.html([
+									'<div class="alert alert-warning">',
+										'<p><span class="fa fa-warning-sign"></span>'+$.i18n('pukiwiki','error')+status+'</p>',
+										'<ul>',
+											'<li>readyState:'+data.readyState+'</li>',
+											'<li>responseText:'+data.responseText+'</li>',
+											'<li>status:'+data.status+'</li>',
+											'<li>statusText:'+data.statusText+'</li>',
+										'</ul>',
+									'</div>'].join("\n")
+								);
+							},
+							complete: function(){
+								$msg.removeAttr('disabled');
 							}
-							$msg.removeAttr('disabled');
-						}).
-						fail(function(data,status,thrown){
-							$realview.children('div').html([
-								'<div class="alert alert-warning">',
-									'<p><span class="fa fa-warning-sign"></span>'+$.i18n('pukiwiki','error')+status+'</p>',
-									'<ul>',
-										'<li>readyState:'+data.readyState+'</li>',
-										'<li>responseText:'+data.responseText+'</li>',
-										'<li>status:'+data.status+'</li>',
-										'<li>statusText:'+data.statusText+'</li>',
-									'</ul>',
-								'</div>'].join("\n")
-							);
 						});
 					}else{
 						$indicator.css('display:hidden;');
@@ -1435,40 +1438,39 @@ $.fn.bstooltip = bootstrapTooltip;
 						break;
 					case 'preview':	// プレビューボタン
 						// フォームの高さを取得
-						var msg_height = $msg.height();
+						var msg_height = $msg.height(), $realview;
 
 						if ($('#realview').length === 0) {
 							// リアルタイムプレビューの表示画面
 							$msg.before('<div id="realview" class="form-control" style="display:none;"></div>');
 						}
+						
+						$realview = $('#realview');
 
 						// Textarea Resizerで高さが可変になっているため。
-						if (self.real_preview_mode === true) {
-							// もとに戻す
-							self.real_preview_mode = false;
+						if ($realview.is(':visible')) {
 							// realview_outerを消したあと、フォームの高さを２倍にする
 							// 同時でない理由はFireFoxで表示がバグるため
-							$realview.animate({
+							$('#realview').animate({
 								height:0
 							}, function(){
-								$msg.animate({height:msg_height});
+								$msg.animate({height:msg_height*2});
 								$('#realview').hide();
-								$indicator.hide('slow');
+								$('#indicator').addClass('hidden');
 								$msg.removeAttr('disabled');
 							});
 						} else {
-							self.real_preview_mode = true;
 							// フォームの高さを半分にしたあと、realviewを表示
 							$msg.animate({
 								height: msg_height/2
 							},function(){
-								$('#realview').css('display','block').animate({ height:msg_height/2});
+								// 現在のプレビューを出力
+								realtime_preview();
 								// 初回実行時、realview_outerの大きさを、フォームの大きさに揃える。
 								// なお、realview_outerの高さは、フォームの半分とする。
+								$('#realview').css('display','block').animate({ height:msg_height/2});
 								$msg.removeAttr('disabled');
 							});
-							// 現在のプレビューを出力
-							realtime_preview();
 						}
 						break;
 					case 'diff' :	// 差分ボタン
@@ -1551,7 +1553,7 @@ $.fn.bstooltip = bootstrapTooltip;
 
 			// アシスタントのツールバーを前に追加
 			$msg.before('<div class="assistant ui-corner-top ui-widget-header ui-helper-clearfix"></div>');
-			this.assistant(false);
+			this.assistant();
 		},
 		/** preparation of popup TOC on init() */
 		preptoc : function(){

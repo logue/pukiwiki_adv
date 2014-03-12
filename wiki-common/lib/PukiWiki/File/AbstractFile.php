@@ -255,7 +255,7 @@ abstract class AbstractFile extends SplFileInfo{
 		}
 
 		// タイムスタンプを取得
-		if ($keeptimestamp) $timestamp = self::getTime();
+		if ($keeptimestamp) $timestamp = $this->time();
 
 		if (!is_array($str)){
 			// 入力データが配列でない場合、念のため改行で分割
@@ -286,7 +286,7 @@ abstract class AbstractFile extends SplFileInfo{
 		if ($ret !== false){
 			// タイムスタンプを保持する場合
 			if ($keeptimestamp){
-				self::setTime($timestamp);
+				$this->touch($timestamp);
 			}else{
 				FileUtility::clearCache();
 			}

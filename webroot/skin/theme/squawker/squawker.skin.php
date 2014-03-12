@@ -36,37 +36,37 @@
 							<li class="dropdown">
 								<a data-toggle="dropdown" href="#"><?php echo $this->strings['skin']['site'] ?><b class="caret"></b></a>
 								<ul class="dropdown-menu">
-									<li><a href="<?php echo $this->links['top'] ?>"><i class="glyphicon glyphicon-home"></i><?php echo $this->strings['skin']['top'] ?></a></li>
-									<li><a href="<?php echo $this->links['new'] ?>"><i class="glyphicon glyphicon-plus"></i><?php echo $this->strings['skin']['new'] ?></a></li>
+									<li><a href="<?php echo $this->links['top'] ?>"><span class="glyphicon glyphicon-home"></span><?php echo $this->strings['skin']['top'] ?></a></li>
+									<li><a href="<?php echo $this->links['new'] ?>"><span class="glyphicon glyphicon-plus"></span><?php echo $this->strings['skin']['new'] ?></a></li>
 								</ul>
 							</li>
 							<li class="dropdown">
 								<a  data-toggle="dropdown" href="#"><?php echo $this->strings['skin']['page'] ?><b class="caret"></b></a>
 								<ul class="dropdown-menu">
-									<li><a href="<?php echo $this->links['edit'] ?>"><i class="glyphicon glyphicon-pencil"></i><?php echo $this->strings['skin']['edit'] ?></a></li>
+									<li><a href="<?php echo $this->links['edit'] ?>"><span class="glyphicon glyphicon-pencil"></i><?php echo $this->strings['skin']['edit'] ?></a></li>
 <?php global $function_freeze; ?>
 <?php   if ($this->is_read and $function_freeze) { ?>
 <?php     if ($this->is_freeze) { ?>
-									<li><a href="<?php echo $this->links['unfreeze'] ?>"><i class="glyphicon glyphicon-wrench"></i><?php echo $this->strings['skin']['unfreeze'] ?></a></li>
+									<li><a href="<?php echo $this->links['unfreeze'] ?>"><span class="glyphicon glyphicon-wrench"></span><?php echo $this->strings['skin']['unfreeze'] ?></a></li>
 <?php     } else { ?>
-									<li><a href="<?php echo $this->links['freeze'] ?>"><i class="glyphicon glyphicon-lock"></i><?php echo $this->strings['skin']['freeze'] ?></a></li>
+									<li><a href="<?php echo $this->links['freeze'] ?>"><span class="glyphicon glyphicon-lock"></span><?php echo $this->strings['skin']['freeze'] ?></a></li>
 <?php     } ?>
-									<li><a href="<?php echo $this->links['diff'] ?>"><i class="glyphicon glyphicon-th-list"></i><?php echo $this->strings['skin']['diff'] ?></a></li>
-									<li><a href="<?php echo $this->links['copy'] ?>"><i class="glyphicon glyphicon-tags"></i><?php echo $this->strings['skin']['copy'] ?></a></li>
-									<li><a href="<?php echo $this->links['rename'] ?>"><i class="glyphicon glyphicon-tag"></i><?php echo $this->strings['skin']['rename'] ?></a></li>
+									<li><a href="<?php echo $this->links['diff'] ?>"><span class="glyphicon glyphicon-th-list"></span><?php echo $this->strings['skin']['diff'] ?></a></li>
+									<li><a href="<?php echo $this->links['copy'] ?>"><span class="glyphicon glyphicon-tags"></span><?php echo $this->strings['skin']['copy'] ?></a></li>
+									<li><a href="<?php echo $this->links['rename'] ?>"><span class="glyphicon glyphicon-tag"></span><?php echo $this->strings['skin']['rename'] ?></a></li>
 <?php   } ?>
 
-									<li><a href="<?php echo $this->links['source'] ?>"><i class="glyphicon glyphicon-leaf"></i><?php echo $this->strings['skin']['source'] ?></a></li>
+									<li><a href="<?php echo $this->links['source'] ?>"><span class="glyphicon glyphicon-leaf"></span><?php echo $this->strings['skin']['source'] ?></a></li>
 								</ul>
 							</li>
 <?php } ?>
 							<li class="dropdown">
 								<a href="#" data-toggle="dropdown"><?php echo $this->strings['skin']['tool'] ?> <b class="caret"></b></a>
 								<ul class="dropdown-menu">
-									<li><a href="<?php echo $this->links['login'] ?>"><i class="glyphicon glyphicon-off"></i><?php echo $this->strings['skin']['login'] ?></a></li>
-									<li><a href="<?php echo $this->links['backup'] ?>"><i class="glyphicon glyphicon-folder-open"></i><?php echo $this->strings['skin']['backup'] ?></a></li>
+									<li><a href="<?php echo $this->links['login'] ?>"><span class="glyphicon glyphicon-off"></span><?php echo $this->strings['skin']['login'] ?></a></li>
+									<li><a href="<?php echo $this->links['backup'] ?>"><span class="glyphicon glyphicon-folder-open"></span><?php echo $this->strings['skin']['backup'] ?></a></li>
 <?php   if ((bool)ini_get('file_uploads') && isset($this->links['upload'])) { ?>
-									<li><a href="<?php echo $this->links['upload'] ?>"><i class="glyphicon glyphicon-upload"></i><?php echo $this->strings['skin']['upload'] ?></a></li>
+									<li><a href="<?php echo $this->links['upload'] ?>"><span class="glyphicon glyphicon-upload"></span><?php echo $this->strings['skin']['upload'] ?></a></li>
 <?php   } ?>
 								</ul>
 							</li>
@@ -74,10 +74,10 @@
 							<li class="dropdown">
 								<a href="#" data-toggle="dropdown"><?php echo $this->strings['skin']['list'] ?> <b class="caret"></b></a>
 								<ul class="dropdown-menu">
-									<li><a href="<?php echo $this->links['list'] ?>"><i class="glyphicon glyphicon-list"></i><?php echo $this->strings['skin']['list'] ?></a></li>
-									<li><a href="<?php echo $this->links['search'] ?>"><i class="glyphicon glyphicon-search"></i><?php echo $this->strings['skin']['search'] ?></a></li>
-									<li><a href="<?php echo $this->links['recent'] ?>"><i class="glyphicon glyphicon-time"></i><?php echo $this->strings['skin']['recent'] ?></a></li>
-									<li><a href="<?php echo $this->links['log'] ?>"><i class="glyphicon glyphicon-book"></i><?php echo $this->strings['skin']['log'] ?></a></li>
+									<li><a href="<?php echo $this->links['list'] ?>"><span class="glyphicon glyphicon-list"></span><?php echo $this->strings['skin']['list'] ?></a></li>
+									<li><a href="<?php echo $this->links['search'] ?>"><span class="glyphicon glyphicon-search"></span><?php echo $this->strings['skin']['search'] ?></a></li>
+									<li><a href="<?php echo $this->links['recent'] ?>"><span class="glyphicon glyphicon-time"></span><?php echo $this->strings['skin']['recent'] ?></a></li>
+									<li><a href="<?php echo $this->links['log'] ?>"><span class="glyphicon glyphicon-book"></span><?php echo $this->strings['skin']['log'] ?></a></li>
 								</ul>
 							</li>
 							<li><a href="<?php echo $this->links['help'] ?>"><?php echo $this->strings['skin']['help'] ?></a></li>

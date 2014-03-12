@@ -659,15 +659,14 @@ class Utility{
 			}
 			$body[] = '<a href="' . Router::get_cmd_uri() . '">Return to FrontPage</a> ]</p>';
 		}
-		$body[] = '<div class="alert alert-warning">';
-		$body[] = '<p><span class="fa fa-ban-circle"></span> <strong>' . $_title['error'] . '</strong>';
+		$body[] = '<p class="alert alert-warning"><span class="fa fa-ban"></span> <strong>' . $_title['error'] . '</strong>';
 		$body[] = PKWK_WARNING !== true || empty($msg) ? $msg = $_string['error_msg'] : $msg;
 		$body[] = '</p>';
-		$body[] = '</div>';
 
 		if (DEBUG) {
-			$body[] = '<div class="alert alert-info">';
-			$body[] = '<p><span class="fa fa-info-sign"></span> <strong>Back Trace</strong></p>';
+			$body[] = '<div class="panel panel-info" style="margin: .5em 1.5em;">';
+			$body[] = '<div class="panel-heading"><span class="fa fa-info-circle"></span> Back Trace</div>';
+			$body[] = '<div class="panel-body">';
 			$body[] = '<ol>';
 			foreach (debug_backtrace() as $k => $v) {
 				if ($k < 2) { 
@@ -679,6 +678,7 @@ class Utility{
 				$body[] = '<li>' . (isset($v['file']) ? $v['file'] : '?') . '(<var>' . (isset($v['line']) ? $v['line'] : '?') . '</var>):<br /><code>' . (isset($v['class']) ? '<strong>' . $v['class'] . '</strong>-&gt;' : '') . $v['function'] . '(<var>' . implode(', ', $v['args']) . '</var>)</code></li>' . "\n";
 			}
 			$body[] = '</ol>';
+			$body[] = '</div>';
 			$body[] = '</div>';
 		}
 

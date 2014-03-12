@@ -1,16 +1,18 @@
 /*!
-	Autosize v1.18.1 - 2013-11-05
+	Autosize v1.18.5 - 2014-03-10
 	Automatically adjust textarea height based on user input.
-	(c) 2013 Jack Moore - http://www.jacklmoore.com/autosize
+	(c) 2014 Jack Moore - http://www.jacklmoore.com/autosize
 	license: http://www.opensource.org/licenses/mit-license.php
 */
 (function ($) {
 	var
 	defaults = {
 		className: 'autosizejs',
+		id: 'autosizejs',
 		append: '',
 		callback: false,
-		resizeDelay: 10
+		resizeDelay: 10,
+		placeholder: true
 	},
 
 	// border:0 is unnecessary, but avoids a bug in Firefox on OSX
@@ -91,23 +93,27 @@
 			});
 
 			// The mirror width must exactly match the textarea width, so using getBoundingClientRect because it doesn't round the sub-pixel value.
+			// window.getComputedStyle, getBoundingClientRect returning a width are unsupported, but also unneeded in IE8 and lower.
 			function setWidth() {
-				var style, width;
+				var width;
+				var style = window.getComputedStyle ? window.getComputedStyle(ta, null) : false;
 				
-				if ('getComputedStyle' in window) {
-					style = window.getComputedStyle(ta, null);
+				if (style) {
+
 					width = ta.getBoundingClientRect().width;
+
+					if (width === 0) {
+						width = parseInt(style.width,10);
+					}
 
 					$.each(['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'], function(i,val){
 						width -= parseInt(style[val],10);
 					});
+				} else {
+					width = Math.max($ta.width(), 0);
+				}
 
-					mirror.style.width = width + 'px';
-				}
-				else {
-					// window.getComputedStyle, getBoundingClientRect returning a width are unsupported and unneeded in IE8 and lower.
-					mirror.style.width = Math.max($ta.width(), 0) + 'px';
-				}
+				mirror.style.width = width + 'px';
 			}
 
 			function initMirror() {
@@ -115,6 +121,7 @@
 
 				mirrored = ta;
 				mirror.className = options.className;
+				mirror.id = options.id;
 				maxHeight = parseInt($ta.css('maxHeight'), 10);
 
 				// mirror is a duplicate textarea located off-screen that
@@ -151,7 +158,15 @@
 					setWidth();
 				}
 
-				mirror.value = ta.value + options.append;
+				if (!ta.value && options.placeholder) {
+					// If the textarea is empty, copy the placeholder text into 
+					// the mirror control and use that for sizing so that we 
+					// don't end up with placeholder getting trimmed.
+					mirror.value = ($ta.attr("placeholder") || '') + options.append;
+				} else {
+					mirror.value = ta.value + options.append;
+				}
+
 				mirror.style.overflowY = ta.style.overflowY;
 				original = parseInt(ta.style.height,10);
 

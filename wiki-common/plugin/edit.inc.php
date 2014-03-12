@@ -130,31 +130,34 @@ function plugin_edit_realview()
 // Preview
 function plugin_edit_preview()
 {
-	global $post, $vars;
+	global $vars;
 	// global $_title_preview, $_msg_preview, $_msg_preview_delete;
 	$_title_preview			= T_('Preview of $1');
 	$_msg_preview			= T_('To confirm the changes, click the button at the bottom of the page');
 	$_msg_preview_delete	= T_('(The contents of the page are empty. Updating deletes this page.)');
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
-	$wiki = Factory::Wiki($vars['template_page']);
+	
 
 	// Loading template
 	if (isset($vars['template_page']) && $wiki->isValied()) {
+		$wiki = Factory::Wiki($vars['template_page']);
 
 		$vars['msg'] = $wiki->get(true);
 
 		// Cut fixed anchors
-		$vars['msg'] = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/m', '$1$2', $vars['msg']);
+		$vars['msg'] = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z0-9][\w-]+\](.*)$/m', '$1$2', $vars['msg']);
+	}else{
+		$wiki = Factory::Wiki($page);
 	}
 
-	$post['msg'] = preg_replace(PLUGIN_EDIT_FREEZE_REGEX, '', $post['msg']);
-	$postdata = $post['msg'];
+	$vars['msg'] = preg_replace(PLUGIN_EDIT_FREEZE_REGEX, '', $vars['msg']);
+	$postdata = $vars['msg'];
 
 	// Compat: add plugin and adding contents
 	if (isset($vars['add']) && $vars['add']) {
 		if (isset($post['add_top']) && $post['add_top']) {
-			$postdata  = $postdata . "\n\n" . get_source($page, TRUE, TRUE);
+			$postdata  = $postdata . "\n\n" . $wiki->get(true);
 		} else {
 			$postdata  = $wiki->get(true) . "\n\n" . $postdata;
 		}
@@ -166,12 +169,12 @@ function plugin_edit_preview()
 	$body .= '<br />' . "\n";
 
 	if ($postdata) {
-		$postdata = make_str_rules($postdata);
+		$postdata = Rules::make_str_rules($postdata);
 		$postdata = explode("\n", $postdata);
 		$postdata = drop_submit(RendererFactory::factory($postdata));
 		$body .= '<div id="preview">' . $postdata . '</div>' . "\n";
 	}
-	$body .= Utility::editForm($page, $post['msg'], $post['digest'], FALSE);
+	$body .= Utility::editForm($page, $vars['msg'], $vars['digest'], FALSE);
 
 	return array('msg'=>$_title_preview, 'body'=>$body);
 }

@@ -5,10 +5,10 @@
  * @package   PukiWiki
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @copyright 2012-2014 PukiWiki Advance Developers Team
  * @create    2012/12/18
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Render.php,v 1.0.0 2013/03/23 09:30:00 Logue Exp $
+ * @version   $Id: Render.php,v 1.0.0 2014/03/12 20:12:00 Logue Exp $
  */
 
 namespace PukiWiki;
@@ -45,7 +45,7 @@ class Render{
 	/**
 	 * jQuery Mobileのバージョン
 	 */
-	const JQUERY_MOBILE_VER = '1.4.0';
+	const JQUERY_MOBILE_VER = '1.4.2';
 	/**
 	 * Twitter Bootstrapのバージョン
 	 */
@@ -179,32 +179,34 @@ class Render{
 		if ($vars['cmd'] === 'read'){
 			global $adminpass, $_string, $menubar, $sidebar;
 			if ($adminpass == '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72' || $adminpass == '' ){
-				$body = '<div class="alert alert-danger">'.
-					'<p><span class="fa fa-exclamation-triangle"></span>'.
-					'<strong>'.$_string['warning'].'</strong> '.$_string['changeadminpass'].'</p></div>'."\n".
+				$body = '<p class="alert alert-danger"><span class="fa fa-exclamation-triangle"></span>'.
+					'<strong>'.$_string['warning'].'</strong> '.$_string['changeadminpass'].'</p>'."\n".
 					$body;
 			}
 
 			if (DEBUG === true && ! empty($info)){
-				$body = '<div class="alert alert-info" id="pkwk-info">'.
-						'<p><span class="fa fa-info-circle"></span>'.$_string['debugmode'].'</p>'."\n".
-						'<ul>'."\n".
+				$body = '<div class="panel panel-info" id="pkwk-info" style="margin: .5em 1.5em;">'.
+						'<div class="panel-heading"><span class="fa fa-info-circle"></span>'.$_string['debugmode'].'</div>'."\n".
+						'<div class="panel-body">' . "\n" . '<ul>'."\n".
 						'<li>'.join("</li>\n<li>",$info).'</li>'."\n".
-						'</ul></div>'."\n\n".$body;
+						'</ul></div></div>'."\n\n".$body;
 			}
 			// リファラーを保存
 			if ($this->page !== null) Factory::Referer($this->page)->set();
 			
 			global $attach_link, $related_link;
 			$view->lastmodified = '<time datetime="'.Time::getZoneTimeDate('c',$this->wiki->time()).'">'.Time::getZoneTimeDate('D, d M Y H:i:s T', $this->wiki->time()) . ' ' . $this->wiki->passage().'</time>';
+			if (!$this->wiki->isEditable()){
+				$view->lastmodified .= '<span class="fa fa-lock"></span>';
+			}
 
 			// ページの添付ファイル、関連リンク
 			if ($attach_link) {
 				$view->attaches = $this->getAttaches();
 			}
-		//	if ($related_link) {
+			if ($related_link) {
 				$view->related = $this->getRelated();
-		//	}
+			}
 
 			// ノート
 			global $foot_explain;
