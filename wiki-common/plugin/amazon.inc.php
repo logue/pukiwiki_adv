@@ -6,8 +6,8 @@
  * Thanks: To reimy, t, Ynak, WikiRoom, upk, 水橋希 and PukiWiki Developers Team.
  *
  * @copyright   Copyright &copy; 2009, Katsumi Saito <jo1upk@users.sourceforge.net>
- *              Copyright &copy; 2010-2012, PukiWiki Advance Developers Team
- * @version	 $Id: amazon.inc.php,v 3.0.3 2012/05/11 18:05:00 Logue Exp $
+ *              Copyright &copy; 2010-2012,2014 PukiWiki Advance Developers Team
+ * @version	 $Id: amazon.inc.php,v 3.0.4 2014/03/11 20:10:00 Logue Exp $
  * See Aloso	http://d.hatena.ne.jp/mokehehe/20090526/productadvertisingapi
  *
  */
@@ -15,6 +15,9 @@ use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
 use PukiWiki\Utility;
 use PukiWiki\Router;
+use PukiWiki\File\File;
+use Zend\Http\ClientStatic;
+
 /* **************** */
 /* * 設 定 必 須  * */
 /* **************** */
@@ -42,7 +45,7 @@ defined('PLUGIN_AMAZON_TRACKER_PAGE_NAME') or define('PLUGIN_AMAZON_TRACKER_PAGE
 // スキーマのバージョン
 defined('PLUGIN_AMAZON_SCHEMA_VERSION') or define('PLUGIN_AMAZON_SCHEMA_VERSION', '2011-08-01');
 
-use Zend\Http\ClientStatic;
+
 
 function plugin_amazon_init()
 {
@@ -95,13 +98,13 @@ function plugin_amazon_convert()
 		// https://affiliate.amazon.co.jp/gp/associates/tips/impressions.html
 		$amazon_aid = AMAZON_AID;
 		$retval .= <<<EOD
-<script type="text/javascript" src="http://www.assoc-amazon.jp/s/link-enhancer?tag={$amazon_aid}&amp;o=9"></script>
-<noscript><img src="http://www.assoc-amazon.jp/s/noscript?tag={$amazon_aid}" alt="" /></noscript>
+<script type="text/javascript" src="http://ir-jp.amazon-adsystem.com/s/impression-counter?tag={$amazon_aid}&o=9"></script>
+<noscript><img src="http://ir-jp.amazon-adsystem.com/s/noscript?tag={$amazon_aid}" alt="" /></noscript>
 EOD;
 		return $retval;
 	}
 
-	if (empty($parm['itemid'])) return '<div class="alert alert-warning">#amazon: '.$_amazon_msg['err_code_set'].'</div>';
+	if (empty($parm['itemid'])) return '<p class="alert alert-warning">#amazon: '.$_amazon_msg['err_code_set'].'</p>';
 
 	$obj = new amazon_ecs($parm['itemid'],$parm['locale']);
 	if (!$obj->is_itemid) return false;
@@ -642,7 +645,7 @@ class amazon_ecs
 	var $is_cache;
 	var $image_size;
 
-	function amazon_ecs($itemid, $locale='jp')
+	function __construct($itemid, $locale='jp')
 	{
 		$this->asin = $this->itemid = '';
 		$this->idtype = 'ASIN';
@@ -738,28 +741,7 @@ class amazon_ecs
 			' title="'.Utility::htmlsc($this->items['title']).'" /></a>';
 	}
 
-	function file_write($filename, $data)
-	{
-		pkwk_touch_file($filename);
-		if (!($fp = fopen($filename,'wb'))) return false;
-		@flock($fp, LOCK_EX);
-		fwrite($fp, $data);
-		@flock($fp, LOCK_UN);
-		@fclose($fp);
-		return true;
-	}
-
-	function file_read($filename)
-	{
-		if (!($fd = fopen($filename,'rb'))) return '';
-		@flock($fd, LOCK_SH);
-		$rc = @fread($fd, filesize($filename));
-		@flock($fd, LOCK_UN);
-		fclose($fd);
-		return $rc;
-	}
-
-	function page_read_xml($url)
+	function fetch_xml($url)
 	{
 		$response = ClientStatic::get($url);
 		if (! $response->isSuccess()){
@@ -777,11 +759,18 @@ class amazon_ecs
 			return '';
 		}
 	}
-
-	function page_read_img($url)
+	function file_write($filename, $data)
 	{
-//$rc = pkwk_http_request($url);
-		//return ($rc['rc'] == 200) ? $rc['data'] : '';
+		if (!($fp = fopen($filename,'wb'))) return false;
+		@flock($fp, LOCK_EX);
+		fwrite($fp, $data);
+		@flock($fp, LOCK_UN);
+		@fclose($fp);
+		return true;
+	}
+
+	function fetch_img($url)
+	{
 		$response = ClientStatic::get($url);
 		if ($response->isSuccess()){
 			return $response->getBody();
@@ -801,21 +790,21 @@ class amazon_ecs
 
 	function cache_control()
 	{
-		$filename_xml = $this->set_cache_filename('xml');
-		$filename_img = $this->set_cache_filename('img');
+		$f_xml = new File($this->set_cache_filename('xml'));
+		$f_img = new File($this->set_cache_filename('img'), true);
 		$live = $expire = $this->expire * 3600;
 		$live++;
 		// AMAZON_NO_IMAGE - $this->items['Height'] = 91; $this->items['Width']  = 69;
 
 		// キャッシュが存在している場合
-		if (file_exists($filename_xml) && is_readable($filename_xml)) {
+		if ($f_xml->has() && $f_xml->isReadable()) {
 			// 経過秒数
-			$live = time() - filemtime($filename_xml);
+			$live = time() - $f_xml->time();
 		}
 
 		// 一度キャッシュを作成した場合、取得できない場合は継続利用されることになる
 		if ($expire >= $live) {
-			$xml = amazon_ecs::file_read($filename_xml); // read cache file.
+			$xml = $f_xml->get(); // read cache file.
 			if (empty($xml)) {
 				$this->items['image'] = '';
 				$this->items['Height'] = 91;
@@ -825,8 +814,8 @@ class amazon_ecs
 			$this->obj_xml = simplexml_load_string($xml);
 			$this->asin = $this->obj_xml->Items->Item->ASIN;
 			list($URL, $Height, $Width) = $this->get_image_size();
-			if (file_exists($filename_img)) {
-				$this->items['image']  = $filename_img;
+			if ($f_img->has()) {
+				$this->items['image']  = $f_img->filename;
 				$this->items['Height'] = $Height;
 				$this->items['Width']  = $Width;
 			} else {
@@ -839,7 +828,7 @@ class amazon_ecs
 
 		// 直接読む場合
 		$url = $this->ecs_url();
-		$xml = $this->page_read_xml($url);
+		$xml = $this->fetch_xml($url);
 		if (!empty($this->items['Error'])) {
 			$this->items['image'] = '';
 			$this->items['Height'] = 91;
@@ -848,7 +837,7 @@ class amazon_ecs
 		}
 
 		// ページが読めた場合
-		amazon_ecs::file_write($filename_xml, $xml); // write xml file.
+		$f_xml->set($xml); // write xml file.
 		list($URL, $Height, $Width) = $this->get_image_size();
 		if (empty($URL)) {
 			$this->items['image'] = '';
@@ -857,9 +846,12 @@ class amazon_ecs
 			return true;
 		}
 
-		$img = amazon_ecs::page_read_img((string)$URL);
-		if (!empty($img)) amazon_ecs::file_write($filename_img, $img); // write img file.
-		$this->items['image']  = $filename_img;
+		$img = $this->fetch_img((string)$URL);
+		if (!empty($img)){
+			// Fileクラスの画像書き込みがちゃんと動かない・・・。
+			self::file_write($f_img->filename, $img); // write img file.
+		}
+		$this->items['image']  = $f_img->filename;
 		$this->items['Height'] = $Height;
 		$this->items['Width']  = $Width;
 		return true;
@@ -885,7 +877,7 @@ class amazon_ecs
 			}
 		} else {
 			$url = $this->ecs_url();
-			$xml = $this->page_read_xml($url);
+			$xml = $this->fetch_xml($url);
 			if (!empty($this->items['Error'])) {
 				return false;
 			}

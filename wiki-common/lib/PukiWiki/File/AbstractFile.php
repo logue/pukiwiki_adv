@@ -257,6 +257,12 @@ abstract class AbstractFile extends SplFileInfo{
 		// タイムスタンプを取得
 		if ($keeptimestamp) $timestamp = $this->time();
 
+		// ファイルを読み込み
+		$file = $this->openFile('w');
+		// ロック
+		$file->flock(LOCK_EX);
+
+		// 入力データのサニタイズ
 		if (!is_array($str)){
 			// 入力データが配列でない場合、念のため改行で分割
 			$x = preg_replace(
@@ -274,12 +280,9 @@ abstract class AbstractFile extends SplFileInfo{
 		}
 		unset($str);
 
-		// ファイルを読み込み
-		$file = $this->openFile('w');
-		// ロック
-		$file->flock(LOCK_EX);
 		// 書き込む
 		$ret = $file->fwrite(join("\n",$data));
+
 		// アンロック
 		$file->flock(LOCK_UN);
 
@@ -379,6 +382,9 @@ abstract class AbstractFile extends SplFileInfo{
 	 * @return boolean
 	 */
 	public function touch($time = FALSE, $atime = FALSE){
+		// ディレクトリがない場合、ディレクトリを作成
+		$this->mkdir_r();
+
 		if ($time === FALSE) {
 			// ファイルの領域を確保
 			$result = touch($this->filename);
@@ -414,6 +420,7 @@ abstract class AbstractFile extends SplFileInfo{
 			// 親でエラーになったら自分の処理はスキップ
 			if ($this->mkdir_r(dirname($dirname)) === false) return false;
 		}
+		if (is_dir($dirname)) return;
 		return mkdir($dirname);
 	}
 	/**
