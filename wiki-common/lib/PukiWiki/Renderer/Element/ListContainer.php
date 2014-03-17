@@ -5,10 +5,10 @@
  * @package   PukiWiki\Renderer\Element
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2013 PukiWiki Advance Developers Team
+ * @copyright 2013-2014 PukiWiki Advance Developers Team
  * @create    2013/01/26
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: ListContainer.php,v 1.0.0 2013/02/12 15:13:00 Logue Exp $
+ * @version   $Id: ListContainer.php,v 1.0.1 2014/03/17 17:30:00 Logue Exp $
  */
 
 namespace PukiWiki\Renderer\Element;
@@ -22,12 +22,12 @@ use PukiWiki\Renderer\Element\ListElement;
  */
 class ListContainer extends Element
 {
-	var $tag;
-	var $tag2;
-	var $level;
-	var $style;
+	protected $tag = 'ul';
+	protected $tag2 = 'li';
+	public $level = 1;
+	protected $style;
 
-	function __construct($tag, $tag2, $head, $text)
+	public function __construct($tag, $tag2, $head, $text)
 	{
 		parent::__construct();
 		$this->tag   = $tag;
@@ -40,14 +40,14 @@ class ListContainer extends Element
 			$this->last = $this->last->insert(ElementFactory::factory('InlineElement', null, $text));
 	}
 
-	function canContain(& $obj)
+	public function canContain(& $obj)
 	{
 		//return (! is_a($obj, 'ListContainer')
 		return !($obj instanceof self)
 			|| ($this->tag == $obj->tag && $this->level == $obj->level);
 	}
 
-	function setParent(& $parent)
+	public function setParent(& $parent)
 	{
 		parent::setParent($parent);
 
@@ -56,7 +56,7 @@ class ListContainer extends Element
 			$step -= $parent->parent->level;
 	}
 
-	function insert(& $obj)
+	public function insert(& $obj)
 	{
 		$classname = get_class($this);
 		if (! $obj instanceof $classname && $this->level > 3)
@@ -73,11 +73,11 @@ class ListContainer extends Element
 		return $this->last;
 	}
 
-	function toString()
+	public function toString()
 	{
 		return $this->wrap(parent::toString(), $this->tag, $this->style);
 	}
 }
 
 /* End of file ListContainer.php */
-/* Location: ./vender/PukiWiki/Lib/Renderer/ListContainer.php */
+/* Location: ./vendor/PukiWiki/Lib/Renderer/ListContainer.php */

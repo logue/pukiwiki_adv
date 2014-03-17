@@ -20,14 +20,14 @@ use PukiWiki\Utility;
 
 class TableCell extends Element
 {
-	var $tag = 'td';    // {td|th}
-	var $colspan = 1;
-	var $rowspan = 1;
-	var $style;         // is array('width'=>, 'align'=>...);
+	protected $tag = 'td';    // {td|th}
+	public $colspan = 1;
+	public $rowspan = 1;
+	protected $style;         // is array('width'=>, 'align'=>...);
 
-	const CELL_OPTION_MATCH_PATTERN = '/^(?:(LEFT|CENTER|RIGHT)|(BG)?COLOR\(([#\w]+)\)|SIZE\((\d+)\)|LANG\((\w+2)\)|(TOP|MIDDLE|BOTTOM)|(NOWRAP)):(.*)$/';
+	const CELL_OPTION_MATCH_PATTERN = '/^(?:(LEFT|CENTER|RIGHT|JUSTIFY)|(BG)?COLOR\(([#\w]+)\)|SIZE\((\d+)\)|LANG\((\w+2)\)|(TOP|MIDDLE|BOTTOM)|(NOWRAP)):(.*)$/';
 
-	function __construct($text, $is_template = FALSE)
+	public function __construct($text, $is_template = FALSE)
 	{
 		parent::__construct();
 		$this->style = $matches = array();
@@ -91,14 +91,14 @@ class TableCell extends Element
 		$this->insert($obj);
 	}
 
-	function setStyle(& $style)
+	public function setStyle(& $style)
 	{
 		foreach ($style as $key=>$value)
 			if (! isset($this->style[$key]))
 				$this->style[$key] = $value;
 	}
 
-	function toString()
+	public function toString()
 	{
 		if ($this->rowspan == 0 || $this->colspan == 0) return '';
 

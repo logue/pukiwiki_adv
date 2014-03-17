@@ -37,12 +37,12 @@ class RootElement extends Element
 {
 	const MULTILINE_DELIMITER = "\r";
 	
-	var $id;
-	var $count = 0;
-	var $contents;
-	var $contents_last;
+	protected $id;
+	protected $count = 0;
+	protected $contents;
+	protected $contents_last;
 
-	function __construct($id)
+	public function __construct($id)
 	{
 		$this->id            = $id;
 		$this->contents      = new Element();
@@ -50,7 +50,7 @@ class RootElement extends Element
 		parent::__construct();
 	}
 
-	function parse($lines)
+	public function parse($lines)
 	{
 		$this->last = & $this;
 		$matches = array();
@@ -74,7 +74,7 @@ class RootElement extends Element
 				continue;
 			}
 
-			if (preg_match('/^(LEFT|CENTER|RIGHT):(.*)$/', $line, $matches)) {
+			if (preg_match('/^(LEFT|CENTER|RIGHT|JUSTIFY):(.*)$/', $line, $matches)) {
 				// <div style="text-align:...">
 				$this->last = $this->last->add(new Align(strtolower($matches[1])));
 				if (empty($matches[2])) continue;
@@ -196,7 +196,7 @@ class RootElement extends Element
 		}
 	}
 
-	function getAnchor($text, $level)
+	public function getAnchor($text, $level)
 	{
 		global $top;
 		global $fixed_heading_edited;	// Plus!
@@ -207,7 +207,7 @@ class RootElement extends Element
 		$anchor = '';
 
 		// Heading id (specified by users)
-		$id = Rules::getHeading($text, FALSE); // Cut fixed-anchor from $text
+		list($text, $id) = Rules::getHeading($text, FALSE); // Cut fixed-anchor from $text
 		if (empty($id)) {
 			// Not specified
 			$id     = $autoid;
@@ -226,19 +226,19 @@ class RootElement extends Element
 		return array($text . $anchor, $this->count > 1 ? "\n" . $top : '', $autoid);
 	}
 
-	function insert(& $obj)
+	public function insert(& $obj)
 	{
-		if ($obj instanceof InlineElement) $obj = & $obj->toPara();
+		if ($obj instanceof InlineElement) $obj = $obj->toPara();
 		return parent::insert($obj);
 	}
 
-	function toString()
+	public function toString()
 	{
 		// #contents
 		return preg_replace_callback('/<#_contents_>/', array($this, 'replaceContents'), parent::toString()). "\n";
 	}
 
-	function replaceContents($arr)
+	private function replaceContents($arr)
 	{
 		return '<div class="contents" id="contents_' . $this->id . '">' . "\n" .
 			$this->contents->toString() .

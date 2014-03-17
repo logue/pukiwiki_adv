@@ -5,10 +5,10 @@
  * @package   PukiWiki\Renderer\Element
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2013 PukiWiki Advance Developers Team
+ * @copyright 2013-2014 PukiWiki Advance Developers Team
  * @create    2013/01/26
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: BlockPlugin.php,v 1.0.0 2013/02/12 15:13:00 Logue Exp $
+ * @version   $Id: BlockPlugin.php,v 1.0.1 2014/03/17 17:20:00 Logue Exp $
  */
 
 namespace PukiWiki\Renderer\Element;
@@ -20,21 +20,21 @@ use PukiWiki\Renderer\PluginRenderer;
  */
 class BlockPlugin extends Element
 {
-	var $name;
-	var $param;
+	protected $name;
+	protected $param;
 
-	function __construct($out)
+	public function __construct($out)
 	{
 		parent::__construct();
 		list(, $this->name, $this->param) = array_pad($out, 3, null);
 	}
 
-	function canContain(& $obj)
+	public function canContain(& $obj)
 	{
 		return FALSE;
 	}
 
-	function toString()
+	public function toString()
 	{
 		// Call #plugin
 		return PluginRenderer::executePluginBlock($this->name, $this->param);

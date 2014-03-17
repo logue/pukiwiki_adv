@@ -5,10 +5,10 @@
  * @package   PukiWiki\Renderer
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @copyright 2012-2014 PukiWiki Advance Developers Team
  * @create    2012/12/18
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: InlineConverter.php,v 1.0.0 2013/02/01 22:54:00 Logue Exp $
+ * @version   $Id: InlineConverter.php,v 1.0.1 2014/03/17 19:22:00 Logue Exp $
  */
 
 namespace PukiWiki\Renderer\Inline;
@@ -24,10 +24,10 @@ class AutoAlias extends Inline
 	const AUTOALIAS_TERM_CACHE = 'autoalias-terms';
 	const AUTOALIAS_TERM_PATTERN = '\[\[((?:(?!\]\]).)+)>((?:(?!\]\]).)+)\]\]';
 
-	var $forceignorepages = array();
-	var $auto;
-	var $auto_a; // alphabet only
-	var $aliases;
+	protected $forceignorepages = array();
+	protected $auto;
+	protected $auto_a; // alphabet only
+	protected $aliases;
 
 	public function __construct($start)
 	{

@@ -5,10 +5,10 @@
  * @package   PukiWiki\Renderer\Inline
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @copyright 2012-2014 PukiWiki Advance Developers Team
  * @create    2012/12/18
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Glossary.php,v 1.0.0 2013/01/29 19:54:00 Logue Exp $
+ * @version   $Id: EasyRef.php,v 1.0.1 2014/03/17 19:23:00 Logue Exp $
  */
 
 namespace PukiWiki\Renderer\Inline;
@@ -21,12 +21,12 @@ use PukiWiki\Renderer\InlineFactory;
  * from XpWiki
  */
 class EasyRef extends Inline {
-	var $pattern;
-	var $plain, $param;
-	function __construct($start) {
+	protected $pattern;
+	protected $plain, $param;
+	public function __construct($start) {
 		parent::__construct($start);
 	}
-	function getPattern() {
+	public function getPattern() {
 		return
 			'\{\{'.
 			 '(.*?)'.   // (1) parameter
@@ -50,4 +50,4 @@ class EasyRef extends Inline {
 }
 
 /* End of file EasyRef.php */
-/* Location: /vender/PukiWiki/Lib/Renderer/Inline/EasyRef.php */
+/* Location: /vendor/PukiWiki/Lib/Renderer/Inline/EasyRef.php */

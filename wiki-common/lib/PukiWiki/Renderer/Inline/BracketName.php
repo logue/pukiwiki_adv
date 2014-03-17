@@ -5,10 +5,10 @@
  * @package   PukiWiki\Renderer\Inline
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @copyright 2012-2014 PukiWiki Advance Developers Team
  * @create    2012/12/18
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: BracketName.php,v 1.0.0 2013/01/29 19:54:00 Logue Exp $
+ * @version   $Id: BracketName.php,v 1.0.1 2014/03/17 19:22:00 Logue Exp $
  */
 
 namespace PukiWiki\Renderer\Inline;
@@ -19,7 +19,7 @@ use PukiWiki\Utility;
 
 class BracketName extends Inline
 {
-	var $anchor, $refer;
+	protected $anchor, $refer;
 
 	public function __construct($start)
 	{

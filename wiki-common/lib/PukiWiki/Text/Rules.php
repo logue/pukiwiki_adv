@@ -796,25 +796,25 @@ class Rules{
 	 * @param boolean $strip 見出し編集用のアンカーを削除する
 	 * @return string
 	 */
-	public static function getHeading(& $str, $strip = TRUE)
+	public static function getHeading($str, $strip = TRUE)
 	{
 		// Cut fixed-heading anchors
-		$id = '';
+		$id = $heading = '';
 		$matches = array();
 		if (preg_match(self::HEADING_ID_PATTERN, $str, $matches)) {	// 先頭が*から始まってて、なおかつ[#...]が存在する
-			$str = $matches[2];
+			$heading = trim($matches[2]);
 			$id  = isset($matches[3]) ? $matches[3] : null;
 		} else {
-			$str = preg_replace('/^\*{0,3}/', '', $str);
+			$heading = preg_replace('/^\*{0,3}/', '', $str);
 		}
 
 		// Cut footnotes and tags
 		if ($strip === TRUE)
-			$str = Utility::stripHtmlTags(
-				InlineFactory::factory(preg_replace('/'.RendererDefines::NOTE_PATTERN.'/x', '', $str))
+			$heading = Utility::stripHtmlTags(
+				InlineFactory::factory(preg_replace('/'.RendererDefines::NOTE_PATTERN.'/x', '', $heading))
 			);
 
-		return $id;
+		return array($heading , $id);
 	}
 	/**
 	 * 見出しIDを削除

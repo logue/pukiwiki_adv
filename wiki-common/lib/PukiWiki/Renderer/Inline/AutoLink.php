@@ -5,10 +5,10 @@
  * @package   PukiWiki\Renderer\Inline
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @copyright 2012-2014 PukiWiki Advance Developers Team
  * @create    2012/12/18
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: AutoLink.php,v 1.0.0 2013/01/29 19:54:00 Logue Exp $
+ * @version   $Id: AutoLink.php,v 1.0.2 2014/03/17 19:21:00 Logue Exp $
  */
 
 namespace PukiWiki\Renderer\Inline;
@@ -22,11 +22,11 @@ use PukiWiki\Config\Config;
 class AutoLink extends Inline
 {
 	const AUTO_LINK_PATTERN_CACHE = 'autolink';
-	var $forceignorepages = array();
-	var $auto;
-	var $auto_a; // alphabet only
+	protected $forceignorepages = array();
+	protected $auto;
+	protected $auto_a; // alphabet only
 
-	function __construct($start)
+	public function __construct($start)
 	{
 		parent::__construct($start);
 
@@ -36,17 +36,17 @@ class AutoLink extends Inline
 		$this->forceignorepages = $forceignorepages;
 	}
 
-	function getPattern()
+	public function getPattern()
 	{
 		return isset($this->auto) ? '(' . $this->auto . ')' : FALSE;
 	}
 
-	function getCount()
+	public function getCount()
 	{
 		return 1;
 	}
 
-	function setPattern($arr, $page)
+	public function setPattern($arr, $page)
 	{
 		list($name) = $this->splice($arr);
 
@@ -57,7 +57,7 @@ class AutoLink extends Inline
 		return parent::setParam($page, $name, null, 'pagename', $name);
 	}
 
-	function __toString()
+	public function __toString()
 	{
 		return parent::setAutoLink($this->name, $this->alias, null, $this->page, TRUE);
 	}
@@ -120,12 +120,12 @@ class AutoLink extends Inline
 
 class AutoLink_Alphabet extends AutoLink
 {
-	function __construct($start)
+	public function __construct($start)
 	{
 		parent::__construct($start);
 	}
 
-	function getPattern()
+	public function getPattern()
 	{
 		return isset($this->auto_a) ? '(' . $this->auto_a . ')' : FALSE;
 	}

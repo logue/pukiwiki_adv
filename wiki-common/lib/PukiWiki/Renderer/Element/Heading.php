@@ -5,10 +5,10 @@
  * @package   PukiWiki\Renderer\Element
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2013 PukiWiki Advance Developers Team
+ * @copyright 2013-2014 PukiWiki Advance Developers Team
  * @create    2013/01/26
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Heading.php,v 1.0.0 2013/02/12 15:13:00 Logue Exp $
+ * @version   $Id: Heading.php,v 1.0.1 2014/03/17 17:24:00 Logue Exp $
  */
 
 namespace PukiWiki\Renderer\Element;
@@ -24,12 +24,12 @@ use PukiWiki\Text\Rules;
  */
 class Heading extends Element
 {
-	var $level;
-	var $id;
-	var $msg_top;
-	var $text;
+	protected $level;
+	protected $id;
+	protected $msg_top;
+	protected $text;
 
-	function __construct(& $root, $text)
+	public function __construct(& $root, $text)
 	{
 		parent::__construct();
 
@@ -40,20 +40,20 @@ class Heading extends Element
 		$this->level++; // h2,h3,h4
 	}
 
-	function & insert(& $obj)
+	public function insert(& $obj)
 	{
 		parent::insert($obj);
 		return $this->last = & $this;
 	}
 
-	function canContain(& $obj)
+	public function canContain(& $obj)
 	{
 		return FALSE;
 	}
 
-	function toString()
+	public function toString()
 	{
-		$fixed_anchor = Rules::getHeading($this->text, FALSE);
+		list($this->text, $fixed_anchor) = Rules::getHeading($this->text, FALSE);
 		$id = (empty($fixed_anchor)) ? $this->id : $fixed_anchor;
 
 		return $this->msg_top .  $this->wrap(parent::toString(),

@@ -5,10 +5,10 @@
  * @package   PukiWiki\Renderer\Element
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2013 PukiWiki Advance Developers Team
+ * @copyright 2013-2014 PukiWiki Advance Developers Team
  * @create    2013/01/26
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Blockquote.php,v 1.0.0 2013/02/12 15:13:00 Logue Exp $
+ * @version   $Id: Blockquote.php,v 1.0.1 2014/03/17 15:33:00 Logue Exp $
  */
 
 namespace PukiWiki\Renderer\Element;
@@ -24,9 +24,9 @@ use PukiWiki\Renderer\Element\Paragraph;
  */
 class Blockquote extends Element
 {
-	var $level;
+	protected $level;
 
-	function __construct(& $root, $text)
+	public function __construct(& $root, $text)
 	{
 		parent::__construct();
 
@@ -45,20 +45,23 @@ class Blockquote extends Element
 		}
 	}
 
-	function canContain(& $obj)
+	public function canContain(& $obj)
 	{
-		return (! is_a($obj, get_class($this)) || $obj->level >= $this->level);
+		$class = get_class($this);
+		return !($obj instanceof $class) || $obj->level >= $this->level;
 	}
 
-	function insert(& $obj)
+	public function insert(& $obj)
 	{
 		if (!is_object($obj)) return;
 
 		// BugTrack/521, BugTrack/545
 		if ($obj instanceof InlineElement)
-			return parent::insert($obj->toPara(' class="style_blockquote"'));
+			return parent::insert($obj);
+			
+		$class = get_class($this);
 
-		if ( $obj instanceof self && $obj->level == $this->level && count($obj->elements)) {
+		if ( $obj instanceof $class && $obj->level == $this->level && count($obj->elements)) {
 			$obj = & $obj->elements[0];
 			if ($this->last instanceof Paragraph && count($obj->elements))
 				$obj = & $obj->elements[0];
@@ -66,12 +69,12 @@ class Blockquote extends Element
 		return parent::insert($obj);
 	}
 
-	function toString()
+	public function toString()
 	{
 		return $this->wrap(parent::toString(), 'blockquote');
 	}
 
-	function & end(& $root, $level)
+	private function end(& $root, $level)
 	{
 		$parent = & $root->last;
 

@@ -5,10 +5,10 @@
  * @package   PukiWiki\Renderer\Element
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2013 PukiWiki Advance Developers Team
+ * @copyright 2013-2014 PukiWiki Advance Developers Team
  * @create    2013/01/26
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Table.php,v 1.0.0 2013/02/12 15:13:00 Logue Exp $
+ * @version   $Id: Table.php,v 1.0.1 2014/03/17 18:32:00 Logue Exp $
  */
 
 namespace PukiWiki\Renderer\Element;
@@ -23,12 +23,12 @@ use PukiWiki\Renderer\Element\TableCell;
  */
 class Table extends Element
 {
-	var $type;
-	var $types;
-	var $col;   // number of column
-	var $align = 'center';
+	protected $type;
+	protected $types;
+	protected $col;   // number of column
+	public $align = 'center';
 
-	function __construct($out)
+	public function __construct($out)
 	{
 		parent::__construct();
 
@@ -43,19 +43,19 @@ class Table extends Element
 		$this->elements[] = $row;
 	}
 
-	function canContain(& $obj)
+	public function canContain(& $obj)
 	{
 		return ($obj instanceof self) && ($obj->col === $this->col);
 	}
 
-	function & insert(& $obj)
+	public function insert(& $obj)
 	{
 		$this->elements[] = $obj->elements[0];
 		$this->types[]    = $obj->type;
 		return $this;
 	}
 
-	function toString()
+	public function toString()
 	{
 		static $parts = array('h'=>'thead', 'f'=>'tfoot', ''=>'tbody');
 

@@ -5,10 +5,10 @@
  * @package   PukiWiki\Renderer\Element
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2013 PukiWiki Advance Developers Team
+ * @copyright 2013-2014 PukiWiki Advance Developers Team
  * @create    2013/01/26
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: YTable.php,v 1.0.0 2013/02/12 15:13:00 Logue Exp $
+ * @version   $Id: YTable.php,v 1.0.1 2014/03/17 18:35:00 Logue Exp $
  */
 
 namespace PukiWiki\Renderer\Element;
@@ -24,13 +24,12 @@ use PukiWiki\Renderer\InlineFactory;
  */
 class YTable extends Element
 {
-	var $col;	// Number of columns
-	var $align = 'center';
+	protected $col;	// Number of columns
 
 	// TODO: Seems unable to show literal '==' without tricks.
 	//       But it will be imcompatible.
 	// TODO: Why toString() or toXHTML() here
-	function __construct($row = array('cell1 ', ' cell2 ', ' cell3'))
+	public function __construct($row = array('cell1 ', ' cell2 ', ' cell3'))
 	{
 		parent::__construct();
 
@@ -76,18 +75,18 @@ class YTable extends Element
 		$this->elements[] = implode('', $str);
 	}
 
-	function canContain(& $obj)
+	public function canContain(& $obj)
 	{
 		return ($obj instanceof self) && ($obj->col == $this->col);
 	}
 
-	function & insert(& $obj)
+	public function insert(& $obj)
 	{
 		$this->elements[] = $obj->elements[0];
 		return $this;
 	}
 
-	function toString()
+	public function toString()
 	{
 		$rows = '';
 		foreach ($this->elements as $str) {

@@ -5,10 +5,10 @@
  * @package   PukiWiki\Renderer\Element
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2013 PukiWiki Advance Developers Team
+ * @copyright 2013-2014 PukiWiki Advance Developers Team
  * @create    2013/01/26
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Element.php,v 1.0.0 2013/02/12 15:13:00 Logue Exp $
+ * @version   $Id: Element.php,v 1.0.1 2014/03/17 17:34:00 Logue Exp $
  */
 
 namespace PukiWiki\Renderer\Element;
@@ -18,9 +18,9 @@ namespace PukiWiki\Renderer\Element;
  */
 class Element
 {
-	var $parent;
-	var $elements; // References of childs
-	var $last;     // Insert new one at the back of the $last
+	protected $parent;
+	protected $elements;    // References of childs
+	protected $last;        // Insert new one at the back of the $last
 
 	public function __construct()
 	{
@@ -28,12 +28,12 @@ class Element
 		$this->last     = & $this;
 	}
 
-	function setParent(& $parent)
+	public function setParent(& $parent)
 	{
 		$this->parent = & $parent;
 	}
 
-	function add(& $obj)
+	public function add(& $obj)
 	{
 		if ($this->canContain($obj)) {
 			return $this->insert($obj);
@@ -42,7 +42,7 @@ class Element
 		}
 	}
 
-	function insert(& $obj)
+	public function insert(& $obj)
 	{
 		if (gettype($obj) === 'object'){
 			$obj->setParent($this);
@@ -53,18 +53,18 @@ class Element
 		return $this->last;
 	}
 
-	function canContain(& $obj)
+	public function canContain(& $obj)
 	{
 		return TRUE;
 	}
 
-	function wrap($string, $tag, $param = '', $canomit = TRUE)
+	public function wrap($string, $tag, $param = '', $canomit = TRUE)
 	{
 		return ($canomit && empty($string)) ? '' :
 			'<' . $tag . $param . '>' . $string . '</' . $tag . '>';
 	}
 
-	function toString()
+	public function toString()
 	{
 		$ret = array();
 		foreach (array_keys($this->elements) as $key)
@@ -72,7 +72,7 @@ class Element
 		return join("\n", $ret);
 	}
 
-	function dump($indent = 0)
+	public function dump($indent = 0)
 	{
 		$ret = str_repeat(' ', $indent) . get_class($this) . "\n";
 		$indent += 2;
