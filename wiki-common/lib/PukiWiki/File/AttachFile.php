@@ -23,6 +23,11 @@ class AttachFile extends AbstractFile{
 	public static $pattern = '/^((?:[0-9A-F]{2})+)_((?:[0-9A-F]{2})+)(?:\.([0-9|log]+))?$/';
 
 	protected static $listing_pattern = '/^((?:[0-9A-F]{2})+)_((?:[0-9A-F]{2})+)$/';
+	
+	/**
+	 * サニタイズ無効化
+	 */
+	const FILE_SANITIZE = false;
 
 	public $filename;
 

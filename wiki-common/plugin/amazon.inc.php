@@ -748,7 +748,7 @@ class amazon_ecs
 			return null;
 		}
 		$content = $response->getBody();
-		$this->obj_xml = @simplexml_load_string($content);
+		$this->obj_xml = simplexml_load_string($content);
 
 		// return ($rc['rc'] == 200) ? $rc['data'] : '';
 		if (!$this->obj_xml->Error) {
@@ -804,7 +804,7 @@ class amazon_ecs
 
 		// 一度キャッシュを作成した場合、取得できない場合は継続利用されることになる
 		if ($expire >= $live) {
-			$xml = $f_xml->get(); // read cache file.
+			$xml = $f_xml->get(true); // read cache file.
 			if (empty($xml)) {
 				$this->items['image'] = '';
 				$this->items['Height'] = 91;
@@ -848,8 +848,9 @@ class amazon_ecs
 
 		$img = $this->fetch_img((string)$URL);
 		if (!empty($img)){
+			$f_img->set($img);
 			// Fileクラスの画像書き込みがちゃんと動かない・・・。
-			self::file_write($f_img->filename, $img); // write img file.
+			//self::file_write($f_img->filename, $img); // write img file.
 		}
 		$this->items['image']  = $f_img->filename;
 		$this->items['Height'] = $Height;

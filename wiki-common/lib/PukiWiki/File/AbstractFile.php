@@ -41,6 +41,10 @@ abstract class AbstractFile extends SplFileInfo{
 	 */
 	const FILE_PERMISSION = 0644;
 	/**
+	 * データーの整形を行う
+	 */
+	const FILE_SANITIZE = true;
+	/**
 	 * 対象ディレクトリ
 	 */
 	public static $dir = '';
@@ -213,20 +217,24 @@ abstract class AbstractFile extends SplFileInfo{
 		$result = array();
 		// 1行毎ファイルを読む
 		while (!$file->eof()) {
-			$line = $file->fgets();
+			if (static::FILE_SANITIZE) {
+				$line = $file->fgets();
 
-			if ($legacy) {
-				$result[] = strtr($line, "\r", '');
-			}else if (!empty($line) ){
-				// こっちの処理のほうが高速
-				if ($line[0] === self::LINE_BREAK){
-					// 改行のみの場合空白
-					$result[] = '';
-				}else{
-				// 改行を含む末尾の余計な空白文字は削除
-				// （ただし先頭の1文字目は、スペースやタブの場合があるため除外）
-					$result[] = $line[0] . rtrim(substr($line, 1));
+				if ($legacy) {
+					$result[] = strtr($line, "\r", '');
+				}else if (!empty($line) ){
+					// こっちの処理のほうが高速
+					if ($line[0] === self::LINE_BREAK){
+						// 改行のみの場合空白
+						$result[] = '';
+					}else{
+					// 改行を含む末尾の余計な空白文字は削除
+					// （ただし先頭の1文字目は、スペースやタブの場合があるため除外）
+						$result[] = $line[0] . rtrim(substr($line, 1));
+					}
 				}
+			}else{
+				$result[] = $file->fgets();
 			}
 		}
 		// アンロック
@@ -264,21 +272,31 @@ abstract class AbstractFile extends SplFileInfo{
 
 		// 入力データのサニタイズ
 		if (!is_array($str)){
-			// 入力データが配列でない場合、念のため改行で分割
-			$x = preg_replace(
-				array("[\\r\\n]","[\\r]"),
-				array(self::LINE_BREAK,self::LINE_BREAK),
-				$str
-			); // 行末の統一
+			if (static::FILE_SANITIZE) {
+				// 入力データが配列でない場合、念のため改行で分割
+				$x = preg_replace(
+					array("[\\r\\n]","[\\r]"),
+					array(self::LINE_BREAK,self::LINE_BREAK),
+					$str
+				);
+			}else{
+				$x = $str;
+			}
 			$str = explode(self::LINE_BREAK,$x);
 		}
 
-		// 改行を含む末尾の余計な空白文字は削除
-		// （ただし先頭の1文字目は、スペースやタブの場合があるため除外）
 		foreach ($str as $line){
-			$data[] = (!empty($line)) ? $line[0] . rtrim(substr($line, 1)) : '';
+			if (static::FILE_SANITIZE) {
+				// 改行を含む末尾の余計な空白文字は削除
+				// （ただし先頭の1文字目は、スペースやタブの場合があるため除外）
+				$data[] = (!empty($line)) ? $line[0] . rtrim(substr($line, 1)) : '';
+			}else{
+				// サニタイズしない場合
+				$data[] = $line;
+			}
 		}
 		unset($str);
+
 
 		// 書き込む
 		$ret = $file->fwrite(join("\n",$data));

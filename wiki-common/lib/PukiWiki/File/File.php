@@ -19,6 +19,10 @@ use Exception;
  */
 class File extends AbstractFile{
 	/**
+	 * サニタイズは無効化
+	 */
+	const FILE_SANITIZE = false;
+	/**
 	 * コンストラクタ
 	 * @param string $file ファイル名
 	 */
