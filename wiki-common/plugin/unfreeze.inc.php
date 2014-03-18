@@ -35,14 +35,9 @@ function plugin_unfreeze_action()
 	$msg = $body = '';
 	if (! $wiki->isFreezed()) {
 		// Unfreezed already
-		$msg  = $_title_isunfreezed;
-		$body = str_replace('$1', htmlsc(strip_bracket($page)),
-			$_title_isunfreezed);
-
-	} else
-	if ( (! Auth::check_role('role_contents_admin') ) ||
-	     ($pass !== NULL && pkwk_login($pass)) )
-	{
+		$msg  = str_replace('$1', Utility::htmlsc(Utility::stripBracket($page)), $_title_isunfreezed);
+		$body = '<p class="alert alert-info">' . $msg . '</p>';
+	} else if ( ! Auth::check_role('role_contents_admin') || $pass !== NULL && Auth::login($pass) ) {
 		
 		// BugTrack2/255
 		$wiki->checkReadable();
@@ -57,19 +52,16 @@ function plugin_unfreeze_action()
 			$wiki->checkEditable(true);
 //			$vars['cmd'] = 'read'; // To show 'Freeze' link
 			$vars['cmd'] = 'edit';
-			$msg  = $_title_unfreezed;
-			$body = (!IS_AJAX) ? edit_form($page, $postdata) : $_title_unfreezed;
-		} else {
+		}else{
 			$vars['cmd'] = 'read';
-			$msg  = $_title_unfreezed;
-			$body = '';
 		}
-
+		$msg  = str_replace('$1', Utility::htmlsc(Utility::stripBracket($page)), $_title_unfreezed);
+		$body = (!IS_AJAX) ? '' : '<p class="alert alert-success">' . $msg . '</p><div class="pull-right"><a href="'.$wiki->uri().'" class="btn btn-primary">OK</a></div>';
 	} else {
 		// Show unfreeze form
 		$msg    = $_title_unfreeze;
 		$s_page = Utility::htmlsc($page);
-		$body   = ($pass === NULL) ? '' : '<p class="message_box ui-state-error"><strong>'.$_msg_invalidpass.'</strong></p>'."\n";
+		$body   = ($pass === NULL) ? '' : '<p class="alert alert-danger">'.$_msg_invalidpass.'</p>'."\n";
 		$script = get_script_uri();
 		$body  .= <<<EOD
 <fieldset>
@@ -77,10 +69,8 @@ function plugin_unfreeze_action()
 	<form action="$script" method="post" class="form-inline plugin-form-unfreeze">
 		<input type="hidden" name="cmd"  value="unfreeze" />
 		<input type="hidden" name="page" value="$s_page" />
-		<div class="form-group">
-			<input type="password" name="pass" size="12" class="form-group" />
-		</div>
-		<input type="submit" class="btn btn-primary"  name="ok"   value="$_btn_unfreeze" />
+		<input type="password" name="pass" size="12" class="form-control" />
+		<button type="submit" class="btn btn-primary" name="ok"><span class="fa fa-unlock"></span>$_btn_unfreeze</button>
 	</form>
 </fieldset>
 EOD;

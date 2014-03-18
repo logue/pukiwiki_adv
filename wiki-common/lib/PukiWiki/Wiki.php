@@ -346,7 +346,7 @@ class Wiki{
 			Utility::dieMessage( sprintf($_strings['error_prohibit'], 'PKWK_READONLY'), 403 );
 
 		// 簡易スパムチェック（不正なエンコードだった場合ここでエラー）
-		if ( !isset($vars['encode_hint']) || $vars['encode_hint'] !== PKWK_ENCODING_HINT ){
+		if ( isset($vars['encode_hint']) && $vars['encode_hint'] !== PKWK_ENCODING_HINT ){
 			Utility::dump();
 			Utility::dieMessage( $_string['illegal_chars'], 403 );
 		}
@@ -483,7 +483,7 @@ class Wiki{
 			$ret = $this->wiki->set('');
 			Recent::set(null, $this->page);
 			// 削除ログ
-			Recent::create_recent_deleted();
+			Recent::updateRecentDeleted();
 			$keeptimestamp = false;
 		}else{
 			// Wikiを保存
@@ -497,7 +497,7 @@ class Wiki{
 			// 更新ログをつける
 			LogFactory::factory('update',$this->page)->set();
 
-			if (!$keeptimestamp) {
+			if (!$keeptimestamp && $vars['cmd'] === 'edit') {
 				// weblogUpdates.pingを送信
 				self::sendPing();
 			}

@@ -31,15 +31,14 @@ function plugin_freeze_action()
 	$wiki = Factory::Wiki($page);
 
 	if (! $function_freeze || ! $wiki->isEditable(true) || ! $wiki->has())
-		return array('msg' => 'Freeze function is disabled.', 'body' => 'You have no permission to freeze this page.');
+		return array('msg' => 'Freeze function is disabled.', 'body' => '<p class="alert alert-danger">You have no permission to freeze this page.</p>');
 
 	$pass = isset($vars['pass']) ? $vars['pass'] : NULL;
 	$msg = $body = '';
 	if ($wiki->isFreezed()) {
 		// Freezed already
-		$msg  = & $_title_isfreezed;
-		$body = str_replace('$1', Utility::htmlsc(strip_bracket($page)),
-			$_title_isfreezed);
+		$msg  = str_replace('$1', Utility::htmlsc(Utility::stripBracket($page)), $_title_isfreezed);
+		$body = '<p class="alert alert-info">' . $msg . '</p>';
 
 	} else if ( ! Auth::check_role('role_contents_admin') || $pass !== NULL && Auth::login($pass) ) {
 		// Freeze
@@ -50,14 +49,14 @@ function plugin_freeze_action()
 		// Update
 		//$wiki->is_freezed();
 		$vars['cmd'] = 'read';
-		$msg  = & $_title_freezed;
-		$body = (!IS_AJAX) ? '' : $_title_freezed;
+		$msg  = str_replace('$1', Utility::htmlsc(Utility::stripBracket($page)), $_title_freezed);
+		$body = (!IS_AJAX) ? '' : '<p class="alert alert-success">' . $msg . '</p><div class="pull-right"><a href="'.$wiki->uri().'" class="btn btn-primary">OK</a></div>';
 
 	} else {
 		// Show a freeze form
 		$msg    = & $_title_freeze;
 		$s_page = Utility::htmlsc($page);
-		$body   = ($pass === NULL) ? '' : "<p><strong>$_msg_invalidpass</strong></p>\n";
+		$body   = ($pass === NULL) ? '' : '<p class="alert alert-warning">$_msg_invalidpass</p>';
 		$script = Router::get_script_uri();
 		$body  .= <<<EOD
 <fieldset>
@@ -66,7 +65,7 @@ function plugin_freeze_action()
 		<input type="hidden"   name="cmd"  value="freeze" />
 		<input type="hidden"   name="page" value="$s_page" />
 		<input type="password" name="pass" size="12" class="form-control" />
-		<input type="submit" class="btn btn-warning" name="ok" value="$_btn_freeze" />
+		<button type="submit" class="btn btn-primary" name="ok"><span class="fa fa-lock"></span>$_btn_unfreeze</button>
 	</form>
 </fieldset>
 EOD;
