@@ -94,6 +94,7 @@ class Render{
 		'jquery.cookie',
 		'jquery.dataTables',
 		'jquery.dataTables.naturalsort',
+		'jquery.form',
 		'jquery.i18n',
 		'jquery.query',
 		'jquery.superfish',

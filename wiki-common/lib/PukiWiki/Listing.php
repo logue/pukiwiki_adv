@@ -39,7 +39,7 @@ class Listing{
 	 * @param boolean $force キャッシュを再生成する（※ページの経過時間はキャッシュの対象外）
 	 * @return array
 	 */
-	private static function getHeadings($type='wiki', $force = true){
+	private static function getHeadings($type='wiki', $force = false){
 		global $cache;
 		static $heading;
 

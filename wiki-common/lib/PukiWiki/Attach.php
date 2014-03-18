@@ -328,7 +328,7 @@ class Attach{
 		$ret[] = empty($err) ? '' : '<p class="error error-warning">' . $_attach_messages[$err] . '</p>';
 
 		if (IS_AJAX) {
-			$retval = array('msg'=>sprintf($_attach_messages['btn_info'], htmlsc($this->filename)));
+			$retval = array('msg'=>sprintf($_attach_messages['btn_info'], Utility::htmlsc($this->filename)));
 			$ret[] = '<div id="attach-info-tabs" class="tabs">';
 			$ret[] = '<ul role="tablist">';
 			$ret[] = '<li role="tab" id="tab1" aria-controls="attach_info"><a href="#attach_info">' . $_attach_messages['msg_info'] . '</a></li>';

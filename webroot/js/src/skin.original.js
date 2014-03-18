@@ -2,7 +2,7 @@
  * PukiWiki Advance - Yet another WikiWikiWeb clone.
  * Pukiwiki skin script for jQuery
  * Copyright (c)2010-2013 PukiWiki Advance Developer Team
- *              2010      Logue <http://logue.be/> All rights reserved.
+ *			  2010	  Logue <http://logue.be/> All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -436,49 +436,7 @@ $.fn.bstooltip = bootstrapTooltip;
 			}).removeClass('tabs');
 
 			// アップローダーに進捗状況表示（PHP5.4以降のみ）
-			/*
-			var $form = $(prefix+'form[enctype="multipart/form-data"]');
-			if ($form.length !== 0 && $form.children('.progress_session').length !== 0){
-				// Holds the id from set interval
-				var interval_id = 0;
-				var $progress = $('<div style="width:400px;display:block-inline;"></div>').progressbar().hide();
-				$form.children('input[type="submit"]').before($progress);
-	
-				$form.submit(function(e){
-					$form.children('input[type="submit"]').hide('blind');
-					$progress.show('blind');
-					// フォームに記入されているかを確認
-					if ($form.children('input[type="file"]').val() == ''){
-						e.preventDefault();
-						return;
-					}
-					interval_id = setInterval(function() {
-						$.getJSON(SCRIPT, {cmd : 'attach', pcmd : 'progress'}, function(data){
-							console.dir(data);
-							//if there is some progress then update
-							if(data){
-								$progress.progressbar({
-									value: Math.round(100 * (data['bytes_processed'] / data['content_length']))
-								});
-								//$('#progress').val(data.bytes_processed / data.content_length);
-								console.log('Uploading '+ Math.round((data.bytes_processed / data.content_length)*100) + '%');
-							}else{
-								//When there is no data the upload is complete
-								$progress.progressbar({
-									value: 100
-								});
-								clearInterval(interval_id);
-								$progress.hide('blind');
-								$form.children('input[type="submit"]').show('blind');
-								console.log('Complete');
-							}
-						})
-					}, 200);
-					$(this).ajaxSubmit();
-					e.preventDefault();
-				});
-			}
-			*/
+			this.setUploaderProgress(prefix);
 
 			// ダイアログ
 			this.setAnchor(prefix);
@@ -498,6 +456,104 @@ $.fn.bstooltip = bootstrapTooltip;
 
 			if(typeof(callback) === 'function'){
 				callback();
+			}
+		},
+		setUploaderProgress : function(prefix){
+			var progressInterval, $form, $progress, $info;
+
+			$form = $(prefix+'form[enctype="multipart/form-data"]');
+			if ($form.length !== 0 && $form.find('.progress_session').length !== 0){
+				$progress = $([
+					'<div class="help-block">',
+						'<div class="progress progress-info progress-striped">',
+							'<div class="bar"></div>',
+						'</div>',
+						'<p></p>',
+					'</div>'
+				].join("\n")),
+				
+				//$progress.hide();
+				$form.append($progress);
+
+				var getProgress = function() {
+					// Poll our controller action with the progress id
+					$.getJSON(SCRIPT, {cmd : 'attach', pcmd : 'progress'}, function(data){
+						if (data.status && !data.status.done) {
+							var value = Math.floor((data.status.current / data.status.total) * 100);
+							showProgress(value,  $.i18n('uploader', 'uploading'));
+						} else {
+							showProgress(100, 'Complete!');
+							clearInterval(progressInterval);
+						}
+					});
+				}
+
+				var startProgress = function() {
+					showProgress(0, 'Starting upload...');
+					progressInterval = setInterval(getProgress, 900);
+				}
+
+				var showProgress = function(amount, message) {
+					$progress.show();
+					$progress.width(amount + '%');
+					$progress.children('p').html(message);
+					if (amount < 100) {
+						$progress.children('.progress')
+							.addClass('progress-info active')
+							.removeClass('progress-success');
+					} else {
+						$progress.children('.progress')
+							.removeClass('progress-info active')
+							.addClass('progress-success');
+					}
+				}
+
+				$(function() {
+					// Register a 'submit' event listener on the form to perform the AJAX POST
+					$form.on('submit', function(e) {
+						e.preventDefault();
+
+						if ($form.children('input[type="file"]').val() === ''){
+							return;
+						}
+
+						// Perform the submit
+						//$.fn.ajaxSubmit.debug = true;
+						$(this).ajaxSubmit({
+							beforeSubmit: function(arr, $form, options) {
+								// Notify backend that submit is via ajax
+								arr.push({ ajax:true });
+							},
+							success: function (response, statusText, xhr, $form) {
+								clearInterval(progressInterval);
+								showProgress(100, 'Complete!');
+
+								// TODO: You'll need to do some custom logic here to handle a successful
+								// form post, and when the form is invalid with validation errors.
+								if (response.status) {
+									// TODO: Do something with a successful form post, like redirect
+									// window.location.replace(response.redirect);
+								} else {
+									// Clear the file input, otherwise the same file gets re-uploaded
+									// http://stackoverflow.com/a/1043969
+									var fileInput = $form.children('input[type="file"]');
+									fileInput.replaceWith( fileInput.val('').clone( true ) );
+
+									// TODO: Do something with these errors
+									// showErrors(response.formErrors);
+								}
+							},
+							error: function(a, b, c) {
+								// NOTE: This callback is *not* called when the form is invalid.
+								// It is called when the browser is unable to initiate or complete the ajax submit.
+								// You will need to handle validation errors in the 'success' callback.
+								console.log(a, b, c);
+							}
+						});
+						// Start the progress polling
+						startProgress();
+					});
+				});
 			}
 		},
 		// アンカータグの処理

@@ -23,7 +23,7 @@ class TableCell extends Element
 	protected $tag = 'td';    // {td|th}
 	public $colspan = 1;
 	public $rowspan = 1;
-	protected $style;         // is array('width'=>, 'align'=>...);
+	public $style;         // is array('width'=>, 'align'=>...);
 
 	const CELL_OPTION_MATCH_PATTERN = '/^(?:(LEFT|CENTER|RIGHT|JUSTIFY)|(BG)?COLOR\(([#\w]+)\)|SIZE\((\d+)\)|LANG\((\w+2)\)|(TOP|MIDDLE|BOTTOM)|(NOWRAP)):(.*)$/';
 

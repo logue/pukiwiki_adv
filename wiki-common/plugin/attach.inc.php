@@ -89,6 +89,7 @@ function plugin_attach_init()
 			'msg_listall'	=> T_('Attached file list of all pages'),
 			'msg_file'		=> T_('Attach file'),
 			'msg_maxsize'	=> T_('Maximum file size is %s.'),
+			'msg_multiple'	=> T_('File may be specified any number of times.'),
 			'msg_count'		=> T_('%s download'),
 			'msg_password'	=> T_('password'),
 			'msg_adminpass'	=> T_('Administrator password'),
@@ -718,7 +719,7 @@ function attach_form($page)
 	$attach_form[] = '<input type="hidden" name="MAX_FILE_SIZE" value="' . PLUGIN_ATTACH_MAX_FILESIZE . '" />';
 	$attach_form[] = '<div class="form-group">';
 	$attach_form[] = '<label for="_p_attach_file" class="sr-only">' . $_attach_messages['msg_file'] . ':</label>';
-	$attach_form[] = '<input type="file" name="' . PLUGIN_ATTACH_FILE_FIELD_NAME . '[]" id="_p_attach_file" class="form-control" />';
+	$attach_form[] = '<input type="file" name="' . PLUGIN_ATTACH_FILE_FIELD_NAME . '[]" id="_p_attach_file" class="form-control" multiple="multiple" />';
 	$attach_form[] = '</div>';
 	if ((PLUGIN_ATTACH_PASSWORD_REQUIRE || PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY) && Auth::check_role('role_contents_admin')){
 		$attach_form[] = '<div class="form-group">';
@@ -731,6 +732,7 @@ function attach_form($page)
 	$attach_form[] = ( (PLUGIN_ATTACH_PASSWORD_REQUIRE || PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY) && Auth::check_role('role_contents_admin')) ?
 						('<li>' . $_attach_messages[PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY ? 'msg_adminpass' : 'msg_password'] . '</li>') : '';
 	$attach_form[] = '<li>' . sprintf($_attach_messages['msg_maxsize'], '<var>' . number_format(PLUGIN_ATTACH_MAX_FILESIZE / 1024) . '</var>KB') . '</li>';
+	$attach_form[] = '<li>'.$_attach_messages['msg_multiple'].'</li>';
 	$attach_form[] = '</ul>';
 
 	return join("\n",$attach_form);

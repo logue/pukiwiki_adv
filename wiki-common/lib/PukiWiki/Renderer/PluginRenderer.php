@@ -17,9 +17,12 @@ use DirectoryIterator;
 use Exeption;
 use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
+use PukiWiki\Renderer\Header;
 use PukiWiki\Router;
 use PukiWiki\Spam\PostId;
 use PukiWiki\Utility;
+use Zend\Json\Json;
+use Zend\ProgressBar\Upload\SessionProgress;
 use Exception;
 
 /**
@@ -482,14 +485,14 @@ class PluginRenderer{
 		}
 		return $retvar;
 	}
-
-	// FIXME:進捗状況表示（attachプラグインのpcmd=progressで出力）
+	/**
+	 * 進捗状況表示（attachプラグインのpcmd=progressで出力）
+	 * @return void
+	 */
 	public static function getUploadProgress(){
-		global $vars;
-		$key = ini_get('session.upload_progress.prefix'). PKWK_WIKI_NAMESPACE;
-		header('Content-Type: application/json; charset='.CONTENT_CHARSET);
-		echo Zend\Json\Json::encode( isset($_SESSION[$key]) ? $_SESSION[$key] : null );
-
+		$headers = Header::getHeaders('application/json');
+		$progress = new SessionProgress();
+		Header::writeResponse($headers, 200, Json::encode($progress->getProgress(PKWK_WIKI_NAMESPACE)));
 		exit;
 	}
 }

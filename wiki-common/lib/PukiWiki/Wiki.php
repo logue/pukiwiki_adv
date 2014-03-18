@@ -272,7 +272,7 @@ class Wiki{
 	 * @return array
 	 */
 	public function attach($with_hidden = false){
-		$files = FileUtility::getExists(AttachFile::$dir);
+		$files = FileUtility::getExists(AttachFile::$dir, true);
 		// ページに含まれる添付ファイルがない場合ここで終了
 		if (!isset($files[$this->page])) return;
 		return $files[$this->page];

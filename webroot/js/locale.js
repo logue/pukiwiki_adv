@@ -36,7 +36,7 @@
 			'[ ☺ ]	button opens emoji palette.',
 			'[ ⏎ ]	button inserts a line break.',
 			'[ &amp;# ]	button converts the selection character string into the numeric character reference.',
-			'[ <span class="ui-icon ui-icon-trash" style="display: inline-block;"></span> ] button flush edits.'
+			'[ <span class="fa fa-trash-o"></span> ] button flush edits.'
 		].join('<br />\n'),
 		inline1		: 'Please input the plugin name. [ & is omitted ]',
 		inline2 	: 'Please input the parameter. [ ( )Inside ]',
@@ -163,7 +163,7 @@
 			'[ ☺ ]	ボタンは、絵文字パレットを開きます。',
 			'[ ⏎ ]	ボタンは、改行を入れます。',
 			'[ &amp;# ]	ボタンは、選択文字列を数値文字参照に変換します。',
-			'[ <span class="ui-icon ui-icon-trash" style="display: inline-block;"></span> ]は、このページの送信前の編集内容をフラッシュします。'
+			'[ <span class="fa fa-trash-o"></span> ]は、このページの送信前の編集内容をフラッシュします。'
 		].join('<br />\n'),
 		hint_text2	: '表示範囲が先頭に戻ってしまい、処理した範囲が見えなくなった時は、[ ESC ]キーを押してみてください。',
 		inline1		: 'プラグイン名を入力してください。[ &は省く ]',
@@ -291,7 +291,7 @@
 			'[ ☺ ]	버튼은 이모티콘 팔레트를 엽니다.',
 			'[ ⏎ ]	버튼은 줄 바꿈합니다.',
 			'[ &amp;# ]	버튼은, 선택 문자열을 수치 문자 참조로 변환합니다.',
-			'[ <span class="ui-icon ui-icon-trash" style="display: inline-block;"></span> ]이 페이지를 보내기 전에 편집 내용을 플러시합니다.'
+			'[ <span class="fa fa-trash-o"></span> ]이 페이지를 보내기 전에 편집 내용을 플러시합니다.'
 		].join('\n'),
 		hint_text2	: '표시 범위가 선두로 돌아와 버려, 처리한 범위가 안보이게 되었을 때는,[ ESC ]키를 눌러 보세요.',
 		to_easy		: '이지 모드로 변경했습니다.',
@@ -413,7 +413,7 @@
 			'[ ☺ ]	繪文字按鈕打開調色板。',
 			'[ ⏎ ]	按鈕插入一個換行符。',
 			'[ &amp;# ] 按鈕，數值文字參照轉換選擇字符串。',
-			'[ <span class="ui-icon ui-icon-trash" style="display: inline-block;"></span> ] 按鈕刷新編輯。'
+			'[ <span class="fa fa-trash-o"></span> ] 按鈕刷新編輯。'
 		].join('<br />\n'),
 		hint_text2	: '表示範圍前頭回來了，處理了的範圍看不見了的時候，請[試著按ESC ]鑰匙。',
 		reload		: [
@@ -533,7 +533,7 @@
 			'[ ☺ ]	按钮打开绘文字调色板。',
 			'[ ⏎ ]	按钮插入一个换行符。',
 			'[ &amp;# ] 按钮，数值文字参照转换选择字符串。',
-			'[ <span class="ui-icon ui-icon-trash" style="display: inline-block;"></span> ] 编辑按钮冲水。'
+			'[ <span class="fa fa-trash-o"></span> ] 编辑按钮冲水。'
 		].join('<br />\n'),
 		hint_text2	: '表示范围前头回来了，处理了的范围看不见了的时候，请[试着按ESC ]钥匙。',
 		reload		: [
