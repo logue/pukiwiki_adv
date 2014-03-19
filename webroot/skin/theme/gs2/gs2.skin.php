@@ -1,10 +1,12 @@
 <?php
 /**
  * PukiWiki Advance - Yet another WikiWikiWeb clone.
+ * $Id: gs2.skin.php,v 2.0 2014/03/19 13:16:00 Logue Exp $
  *
- * PukiWiki original skin "GS2" 1.5.3
- *     by yiza < http://www.yiza.net/ >
- * Adv. Edition by Logue
+ * Copyright (C)
+ *   2011-2014 PukiWiki Advance Developers Team
+ * based on "GS2" v1.5.3
+ *   by yiza < http://www.yiza.net/ >
  */
 ?>
 <!DOCTYPE html>
@@ -41,7 +43,7 @@
 		</header>
 		<div id="wrapper" class="clearfix">
 			<div id="main_wrapper">
-				<div id="main" role="main">
+				<div id="main">
 					
 					<div id="content">
 						<?php echo $this->topicpath; ?>
