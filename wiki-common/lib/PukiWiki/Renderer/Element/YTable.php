@@ -25,6 +25,8 @@ use PukiWiki\Renderer\InlineFactory;
 class YTable extends Element
 {
 	protected $col;	// Number of columns
+	
+	public $align;
 
 	// TODO: Seems unable to show literal '==' without tricks.
 	//       But it will be imcompatible.

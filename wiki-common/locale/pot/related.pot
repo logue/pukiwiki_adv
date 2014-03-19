@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,15 +17,20 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/related.inc.php:14
+#: ../../plugin/related.inc.php:18
+msgid "Related pages: "
+msgstr ""
+
+#: ../../plugin/related.inc.php:19
 #, php-format
 msgid "Backlinks for: %s"
 msgstr ""
 
-#: ../../plugin/related.inc.php:15
-msgid "No related pages found."
+#: ../../plugin/related.inc.php:20
+#, php-format
+msgid "Return to %s"
 msgstr ""
 
-#: ../../plugin/related.inc.php:65
-msgid "Related pages: "
+#: ../../plugin/related.inc.php:21
+msgid "No related pages found."
 msgstr ""

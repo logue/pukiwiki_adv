@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,66 +17,70 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/amazon.inc.php:62
+#: ../../plugin/amazon.inc.php:54
 msgid "Review edit"
 msgstr ""
 
-#: ../../plugin/amazon.inc.php:63
+#: ../../plugin/amazon.inc.php:55
 msgid "(ASIN,ISBN or URL)"
 msgstr ""
 
-#: ../../plugin/amazon.inc.php:64
+#: ../../plugin/amazon.inc.php:56
 msgid "Add to Shopping Cart"
 msgstr ""
 
-#: ../../plugin/amazon.inc.php:65
+#: ../../plugin/amazon.inc.php:57
 msgid "Price"
 msgstr ""
 
-#: ../../plugin/amazon.inc.php:66
+#: ../../plugin/amazon.inc.php:58
 msgid "(Including tax)"
 msgstr ""
 
-#: ../../plugin/amazon.inc.php:67
+#: ../../plugin/amazon.inc.php:59
 msgid "List Price"
 msgstr ""
 
-#: ../../plugin/amazon.inc.php:68
+#: ../../plugin/amazon.inc.php:60
 msgid "You Save"
 msgstr ""
 
-#: ../../plugin/amazon.inc.php:69
+#: ../../plugin/amazon.inc.php:61
 msgid "%"
 msgstr ""
 
-#: ../../plugin/amazon.inc.php:70
+#: ../../plugin/amazon.inc.php:62
 msgid "State of stock"
 msgstr ""
 
-#: ../../plugin/amazon.inc.php:71
+#: ../../plugin/amazon.inc.php:63
 msgid "Currently unavailable."
 msgstr ""
 
-#: ../../plugin/amazon.inc.php:72
+#: ../../plugin/amazon.inc.php:64
 msgid "Release Date"
 msgstr ""
 
-#: ../../plugin/amazon.inc.php:73
+#: ../../plugin/amazon.inc.php:65
 msgid "Please specify the ASIN code, the ISBN code or URL."
 msgstr ""
 
-#: ../../plugin/amazon.inc.php:74
+#: ../../plugin/amazon.inc.php:66
 msgid "The ASIN code is fictitious. "
 msgstr ""
 
-#: ../../plugin/amazon.inc.php:75
+#: ../../plugin/amazon.inc.php:67
 msgid "MY_NAME"
 msgstr ""
 
-#: ../../plugin/amazon.inc.php:76
+#: ../../plugin/amazon.inc.php:68
 msgid "THIS EDIT"
 msgstr ""
 
-#: ../../plugin/amazon.inc.php:77
+#: ../../plugin/amazon.inc.php:69
 msgid "You have not permission to create new page."
+msgstr ""
+
+#: ../../plugin/amazon.inc.php:70
+msgid "You must define AMAZON_AID and AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY before use."
 msgstr ""

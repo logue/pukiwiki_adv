@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,26 +17,26 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/role.inc.php:17
+#: ../../plugin/role.inc.php:18
 msgid "Role"
 msgstr ""
 
-#: ../../plugin/role.inc.php:18
+#: ../../plugin/role.inc.php:19
 msgid "Guest"
 msgstr ""
 
-#: ../../plugin/role.inc.php:19
+#: ../../plugin/role.inc.php:20
 msgid "Webmaster"
 msgstr ""
 
-#: ../../plugin/role.inc.php:20
+#: ../../plugin/role.inc.php:21
 msgid "Contents manager"
 msgstr ""
 
-#: ../../plugin/role.inc.php:21
+#: ../../plugin/role.inc.php:22
 msgid "Enrollee"
 msgstr ""
 
-#: ../../plugin/role.inc.php:22
+#: ../../plugin/role.inc.php:23
 msgid "Authorized"
 msgstr ""

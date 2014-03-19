@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,46 +17,46 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/diff.inc.php:36
+#: ../../plugin/diff.inc.php:39
 msgid "The page was not found."
 msgstr ""
 
-#: ../../plugin/diff.inc.php:37
+#: ../../plugin/diff.inc.php:40
 msgid "The added line is <span class=\"diff_added\">THIS COLOR</span>."
 msgstr ""
 
-#: ../../plugin/diff.inc.php:38
+#: ../../plugin/diff.inc.php:41
 msgid "The deleted line is <span class=\"diff_removed\">THIS COLOR</span>."
 msgstr ""
 
-#: ../../plugin/diff.inc.php:39
+#: ../../plugin/diff.inc.php:42
 msgid "Go to $1."
 msgstr ""
 
-#: ../../plugin/diff.inc.php:40
+#: ../../plugin/diff.inc.php:43
 msgid " $1 has been deleted."
 msgstr ""
 
-#: ../../plugin/diff.inc.php:41
+#: ../../plugin/diff.inc.php:44
 msgid "Diff of $1"
 msgstr ""
 
-#: ../../plugin/diff.inc.php:42 ../../plugin/diff.inc.php:99
+#: ../../plugin/diff.inc.php:45 ../../plugin/diff.inc.php:95
 msgid "Deleting diff of $1"
 msgstr ""
 
-#: ../../plugin/diff.inc.php:100
+#: ../../plugin/diff.inc.php:96
 msgid "Diff of  $1 has been deleted."
 msgstr ""
 
-#: ../../plugin/diff.inc.php:101
+#: ../../plugin/diff.inc.php:97
 msgid "Please input the password for deleting."
 msgstr ""
 
-#: ../../plugin/diff.inc.php:102
+#: ../../plugin/diff.inc.php:98
 msgid "Delete"
 msgstr ""
 
-#: ../../plugin/diff.inc.php:103
+#: ../../plugin/diff.inc.php:99
 msgid "Invalid password."
 msgstr ""

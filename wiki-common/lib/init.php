@@ -1,17 +1,16 @@
 <?php
-// PukiWiki Advance - Yet another WikiWikiWeb clone.
-// $Id: init.php,v 1.57.12 2012/12/05 17:21:00 Logue Exp $
-// Copyright (C)
-//   2010-2014 PukiWiki Advance Developers Team
-//   2005-2009 PukiWiki Plus! Team
-//   2002-2007,2009,2011 PukiWiki Developers Team
-//   2001-2002 Originally written by yu-ji
-// License: GPL v2 or (at your option) any later version
-//
-// Init PukiWiki here
-// Plus!I18N:(policy)not merge official cvs(1.44->1.45)
-// Plus!NOTE:(policy)not merge official cvs(1.51->1.52) See Question/181
-
+/**
+ * PukiWiki Advance - Yet another WikiWikiWeb clone.
+ * $Id: init.php,v 1.57.14 2014/03/19 16:09:00 Logue Exp $
+ * Copyright (C)
+ *   2010-2014 PukiWiki Advance Developers Team
+ *   2005-2009 PukiWiki Plus! Team
+ *   2002-2007,2009,2011 PukiWiki Developers Team
+ *   2001-2002 Originally written by yu-ji
+ * License: GPL v2 or (at your option) any later version
+ *
+ * Init PukiWiki here
+ */
 use PukiWiki\Auth\Auth;
 use PukiWiki\Lang\Lang;
 use PukiWiki\Factory;
@@ -27,11 +26,11 @@ use Zend\I18n\Translator\Translator;
 
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
-define('S_VERSION', 'v 2.0.0-beta');
-define('S_REVSION', '20131116');
+define('S_VERSION', 'v 2.0.0-beta2');
+define('S_REVSION', '20140319');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
-	' Copyright &#169; 2010-2013' .
+	' Copyright &#169; 2010-2014' .
 	' <a href="http://pukiwiki.logue.be/" rel="external">PukiWiki Advance Developers Team</a>.<br />' .
 	' Licensed under the <a href="http://www.gnu.org/licenses/gpl-2.0.html" rel="external">GPLv2</a>.' .
 	' Based on <a href="http://pukiwiki.cafelounge.net/plus/" rel="external">"PukiWiki Plus! i18n"</a>'

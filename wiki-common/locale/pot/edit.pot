@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-10-16 10:25+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,19 +17,23 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/edit.inc.php:87
+#: ../../plugin/edit.inc.php:35
+msgid "Pagename is missing."
+msgstr ""
+
+#: ../../plugin/edit.inc.php:105
 msgid "Edit of $1"
 msgstr ""
 
-#: ../../plugin/edit.inc.php:128
+#: ../../plugin/edit.inc.php:135
 msgid "Preview of $1"
 msgstr ""
 
-#: ../../plugin/edit.inc.php:129
+#: ../../plugin/edit.inc.php:136
 msgid "To confirm the changes, click the button at the bottom of the page"
 msgstr ""
 
-#: ../../plugin/edit.inc.php:130
+#: ../../plugin/edit.inc.php:137
 msgid "(The contents of the page are empty. Updating deletes this page.)"
 msgstr ""
 

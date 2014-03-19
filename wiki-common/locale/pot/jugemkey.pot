@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,39 +17,39 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/jugemkey.inc.php:86
+#: ../../plugin/jugemkey.inc.php:20
 msgid "logout"
 msgstr ""
 
-#: ../../plugin/jugemkey.inc.php:87
+#: ../../plugin/jugemkey.inc.php:21
 #, php-format
 msgid "%s has been approved by JugemKey."
 msgstr ""
 
-#: ../../plugin/jugemkey.inc.php:88
+#: ../../plugin/jugemkey.inc.php:22
 msgid "The function of JugemKey is invalid."
 msgstr ""
 
-#: ../../plugin/jugemkey.inc.php:89
+#: ../../plugin/jugemkey.inc.php:23
 msgid "pkwk_session_start() doesn't exist."
 msgstr ""
 
-#: ../../plugin/jugemkey.inc.php:90
+#: ../../plugin/jugemkey.inc.php:24
 msgid "The session is not start."
 msgstr ""
 
-#: ../../plugin/jugemkey.inc.php:91
+#: ../../plugin/jugemkey.inc.php:25
 msgid "JugemKey"
 msgstr ""
 
-#: ../../plugin/jugemkey.inc.php:92
+#: ../../plugin/jugemkey.inc.php:26
 msgid "LOGIN(JugemKey)"
 msgstr ""
 
-#: ../../plugin/jugemkey.inc.php:93
+#: ../../plugin/jugemkey.inc.php:27
 msgid "JugemKey user information"
 msgstr ""
 
-#: ../../plugin/jugemkey.inc.php:94
+#: ../../plugin/jugemkey.inc.php:28
 msgid "User Name"
 msgstr ""

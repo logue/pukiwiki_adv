@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,102 +29,102 @@ msgstr ""
 msgid "dump"
 msgstr ""
 
-#: ../../plugin/dump.inc.php:66
+#: ../../plugin/dump.inc.php:63
 msgid "The password is different."
 msgstr ""
 
-#: ../../plugin/dump.inc.php:88
+#: ../../plugin/dump.inc.php:84
 msgid "Up-loading was completed."
 msgstr ""
 
-#: ../../plugin/dump.inc.php:88
+#: ../../plugin/dump.inc.php:84
 msgid "It failed in up-loading."
 msgstr ""
 
-#: ../../plugin/dump.inc.php:93
+#: ../../plugin/dump.inc.php:89
 msgid "It is an invalid instruction."
 msgstr ""
 
-#: ../../plugin/dump.inc.php:125
+#: ../../plugin/dump.inc.php:121
 msgid "It failed in the generation of a temporary file."
 msgstr ""
 
-#: ../../plugin/dump.inc.php:140 ../../plugin/dump.inc.php:181
+#: ../../plugin/dump.inc.php:136 ../../plugin/dump.inc.php:177
 msgid "The file was not found."
 msgstr ""
 
-#: ../../plugin/dump.inc.php:156
+#: ../../plugin/dump.inc.php:152
 msgid "Restoring function is not allowed"
 msgstr ""
 
-#: ../../plugin/dump.inc.php:169
+#: ../../plugin/dump.inc.php:165
 msgid "Invalid file suffix: "
 msgstr ""
 
-#: ../../plugin/dump.inc.php:173
+#: ../../plugin/dump.inc.php:169
 msgid "Max file size exceeded: "
 msgstr ""
 
-#: ../../plugin/dump.inc.php:190
+#: ../../plugin/dump.inc.php:186
 msgid "There was no file that was able to be expanded."
 msgstr ""
 
-#: ../../plugin/dump.inc.php:193
+#: ../../plugin/dump.inc.php:189
 msgid "Progressing file list"
 msgstr ""
 
-#: ../../plugin/dump.inc.php:237
+#: ../../plugin/dump.inc.php:233
 msgid "Download of data"
 msgstr ""
 
-#: ../../plugin/dump.inc.php:238
+#: ../../plugin/dump.inc.php:234
 msgid "Form of archive"
 msgstr ""
 
-#: ../../plugin/dump.inc.php:239
+#: ../../plugin/dump.inc.php:235
 msgid "form"
 msgstr ""
 
-#: ../../plugin/dump.inc.php:240
+#: ../../plugin/dump.inc.php:236
 msgid "Backup directory"
 msgstr ""
 
-#: ../../plugin/dump.inc.php:241
+#: ../../plugin/dump.inc.php:237
 msgid "Options"
 msgstr ""
 
-#: ../../plugin/dump.inc.php:242
+#: ../../plugin/dump.inc.php:238
 msgid "Virtual of page name encode is converted into the file name with the directory."
 msgstr ""
 
-#: ../../plugin/dump.inc.php:243
+#: ../../plugin/dump.inc.php:239
 msgid "(The restoration that uses this data cannot be done."
 msgstr ""
 
-#: ../../plugin/dump.inc.php:244
+#: ../../plugin/dump.inc.php:240
 msgid "Moreover, a part of character is substituted for '_'.)"
 msgstr ""
 
-#: ../../plugin/dump.inc.php:246
+#: ../../plugin/dump.inc.php:242
 msgid " Restoration of data"
 msgstr ""
 
-#: ../../plugin/dump.inc.php:247
+#: ../../plugin/dump.inc.php:243
 msgid "[IMPORTANCE]"
 msgstr ""
 
-#: ../../plugin/dump.inc.php:248
+#: ../../plugin/dump.inc.php:244
 msgid "Attention: Please note that the data file of the same name is overwrited."
 msgstr ""
 
-#: ../../plugin/dump.inc.php:250
+#: ../../plugin/dump.inc.php:246
 msgid "File"
 msgstr ""
 
-#: ../../plugin/dump.inc.php:251
+#: ../../plugin/dump.inc.php:247
 msgid "Download execution"
 msgstr ""
 
-#: ../../plugin/dump.inc.php:252
+#: ../../plugin/dump.inc.php:248
 msgid "Upload execution"
 msgstr ""

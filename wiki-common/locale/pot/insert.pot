@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,15 +17,15 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/insert.inc.php:15
+#: ../../plugin/insert.inc.php:18
 msgid "On updating $1, a collision has occurred."
 msgstr ""
 
-#: ../../plugin/insert.inc.php:16
+#: ../../plugin/insert.inc.php:19
 msgid "$1 was updated"
 msgstr ""
 
-#: ../../plugin/insert.inc.php:17
+#: ../../plugin/insert.inc.php:20
 msgid ""
 "It seems that someone has already updated this page while you were editing it.<br />\n"
 " + is placed at the beginning of a line that was newly added.<br />\n"
@@ -33,6 +33,6 @@ msgid ""
 " Edit those lines, and submit again."
 msgstr ""
 
-#: ../../plugin/insert.inc.php:82
+#: ../../plugin/insert.inc.php:85
 msgid "add"
 msgstr ""

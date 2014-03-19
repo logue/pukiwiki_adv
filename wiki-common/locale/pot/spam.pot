@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,48 +17,48 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/spam.inc.php:14
+#: ../../plugin/spam.inc.php:20
 msgid "Spam tools: "
 msgstr ""
 
-#: ../../plugin/spam.inc.php:15
+#: ../../plugin/spam.inc.php:21
 msgid "Menu"
 msgstr ""
 
-#: ../../plugin/spam.inc.php:16
+#: ../../plugin/spam.inc.php:22
 msgid "PKWK_READONLY prohibits this"
 msgstr ""
 
-#: ../../plugin/spam.inc.php:17
+#: ../../plugin/spam.inc.php:23
 msgid "Start from: "
 msgstr ""
 
-#: ../../plugin/spam.inc.php:18
+#: ../../plugin/spam.inc.php:24
 msgid "Sort (heavy)"
 msgstr ""
 
-#: ../../plugin/spam.inc.php:19
+#: ../../plugin/spam.inc.php:25
 msgid "Pass: "
 msgstr ""
 
-#: ../../plugin/spam.inc.php:20
+#: ../../plugin/spam.inc.php:26
 msgid "Check"
 msgstr ""
 
-#: ../../plugin/spam.inc.php:21
+#: ../../plugin/spam.inc.php:27
 msgid "Check existing pages. (badhost only at this time)"
 msgstr ""
 
-#: ../../plugin/spam.inc.php:22
+#: ../../plugin/spam.inc.php:28
 #, php-format
 msgid "FOUND at %s."
 msgstr ""
 
-#: ../../plugin/spam.inc.php:23
+#: ../../plugin/spam.inc.php:29
 #, php-format
 msgid "Pages: %1s hit / %2s checked / %3s all"
 msgstr ""
 
-#: ../../plugin/spam.inc.php:24
+#: ../../plugin/spam.inc.php:30
 msgid "Pages"
 msgstr ""

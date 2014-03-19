@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,62 +17,58 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/links.inc.php:12
+#: ../../plugin/links.inc.php:17
 msgid "Cache update"
 msgstr ""
 
-#: ../../plugin/links.inc.php:13
+#: ../../plugin/links.inc.php:18
 msgid "Administrator password"
 msgstr ""
 
-#: ../../plugin/links.inc.php:14
+#: ../../plugin/links.inc.php:19
 msgid "Exec"
 msgstr ""
 
-#: ../../plugin/links.inc.php:15
-msgid "The update of cashe was completed."
-msgstr ""
-
-#: ../../plugin/links.inc.php:16
-msgid "The update of cashe was failure. Please check password."
-msgstr ""
-
-#: ../../plugin/links.inc.php:18
-msgid "* Content of processing\n"
-msgstr ""
-
-#: ../../plugin/links.inc.php:19
-msgid ":Cache update|\n"
-msgstr ""
-
 #: ../../plugin/links.inc.php:20
-msgid ""
-"All pages are scanned, whether on which page certain pages have been linked is investigated, and it records in the cache.\n"
-"\n"
+msgid "Force"
 msgstr ""
 
 #: ../../plugin/links.inc.php:21
-msgid "* CAUTION\n"
+msgid "The update of cashe was completed."
 msgstr ""
 
 #: ../../plugin/links.inc.php:22
-msgid "It is likely to drive it for a few minutes in execution."
+msgid "The update of cashe was failure. Please check password."
 msgstr ""
 
-#: ../../plugin/links.inc.php:23
-msgid ""
-"Please wait for a while after pushing the execution button.\n"
-"\n"
+#: ../../plugin/links.inc.php:24
+msgid "* Content of processing"
 msgstr ""
 
 #: ../../plugin/links.inc.php:25
-msgid "* EXEC\n"
+msgid ":Cache update|"
 msgstr ""
 
 #: ../../plugin/links.inc.php:26
-msgid "Please input the Administrator password, and click the [Exec] button.\n"
+msgid "All pages are scanned, whether on which page certain pages have been linked is investigated, and it records in the cache."
 msgstr ""
 
-#: ../../plugin/links.inc.php:38
-msgid "PKWK_READONLY prohibits this"
+#: ../../plugin/links.inc.php:27
+msgid "* CAUTION"
+msgstr ""
+
+#: ../../plugin/links.inc.php:28
+msgid "It is likely to drive it for a few minutes in execution."
+msgstr ""
+
+#: ../../plugin/links.inc.php:29
+msgid "Please wait for a while after pushing the execution button."
+msgstr ""
+
+#: ../../plugin/links.inc.php:31
+msgid "* EXEC"
+msgstr ""
+
+#: ../../plugin/links.inc.php:32
+msgid "Please input the Administrator password, and click the [Exec] button."
 msgstr ""

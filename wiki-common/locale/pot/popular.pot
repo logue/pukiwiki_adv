@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,22 +17,22 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/popular.inc.php:37
+#: ../../plugin/popular.inc.php:42
 #, php-format
 msgid "popular(%d)"
 msgstr ""
 
-#: ../../plugin/popular.inc.php:38
+#: ../../plugin/popular.inc.php:43
 #, php-format
 msgid "today's(%d)"
 msgstr ""
 
-#: ../../plugin/popular.inc.php:39
+#: ../../plugin/popular.inc.php:44
 #, php-format
 msgid "yesterday's(%d)"
 msgstr ""
 
-#: ../../plugin/popular.inc.php:40
+#: ../../plugin/popular.inc.php:45
 #, php-format
 msgid "recent's(%d)"
 msgstr ""

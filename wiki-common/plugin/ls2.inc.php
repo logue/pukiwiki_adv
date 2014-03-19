@@ -32,6 +32,7 @@ use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
 use PukiWiki\Utility;
 use PukiWiki\Listing;
+use PukiWiki\Text\Rules;
 
 // 見出しアンカーの書式
 define('PLUGIN_LS2_ANCHOR_PREFIX', '#content_1_');
@@ -86,7 +87,7 @@ function plugin_ls2_convert()
 		str_replace('$1', htmlsc($prefix), T_("List of pages which begin with ' $1'")); // Auto
 
 	if (! $params['link'])
-		return plugin_ls2_show_lists($prefix, $params);
+		return '<div class="list_pages">' . plugin_ls2_show_lists($prefix, $params) . '</div>';
 
 	$tmp = array();
 	if (isset($params['title']))   $tmp[] = 'title=1';
@@ -155,11 +156,11 @@ function plugin_ls2_get_headings($page, & $params, $level, $include = FALSE)
 	$matches = array();
 	foreach ($wiki->get() as $line) {
 		if ($params['title'] && preg_match('/^(\*{1,3})/', $line, $matches)) {
-			$id    = '#' .make_heading($line);
+			list($heading, $id) = Rules::getHeading($line);
 			$level = strlen($matches[1]);
 			plugin_ls2_list_push($params, $level + strlen($level));
 			array_push($params['result'],
-				'<li><a href="' . $href . $id . '">' . $line . '</a>');
+				'<li><a href="' . $href . '#' . $id . '">' . $heading . '</a>');
 		} else if ($params['include'] &&
 			preg_match('/^#include\((.+)\)/', $line, $matches) &&
 			is_page($matches[1]))

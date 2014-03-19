@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,31 +17,31 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/csv2newpage.inc.php:29
+#: ../../plugin/csv2newpage.inc.php:36
 msgid "Exec"
 msgstr ""
 
-#: ../../plugin/csv2newpage.inc.php:30
+#: ../../plugin/csv2newpage.inc.php:37
 msgid "New page generation:"
 msgstr ""
 
-#: ../../plugin/csv2newpage.inc.php:31
+#: ../../plugin/csv2newpage.inc.php:38
 msgid "Attache & Exec"
 msgstr ""
 
-#: ../../plugin/csv2newpage.inc.php:32
+#: ../../plugin/csv2newpage.inc.php:39
 msgid "CSV File:"
 msgstr ""
 
-#: ../../plugin/csv2newpage.inc.php:34
+#: ../../plugin/csv2newpage.inc.php:41
 #, php-format
 msgid "Maximum file size is %s."
 msgstr ""
 
-#: ../../plugin/csv2newpage.inc.php:35
+#: ../../plugin/csv2newpage.inc.php:42
 msgid "password"
 msgstr ""
 
-#: ../../plugin/csv2newpage.inc.php:36
+#: ../../plugin/csv2newpage.inc.php:43
 msgid "Administrator password"
 msgstr ""

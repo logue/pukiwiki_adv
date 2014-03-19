@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-10-16 10:24+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,39 +17,39 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/attachref.inc.php:29
+#: ../../plugin/attachref.inc.php:32
 msgid "Upload to $1"
 msgstr ""
 
-#: ../../plugin/attachref.inc.php:30
+#: ../../plugin/attachref.inc.php:33
 #, php-format
 msgid "Maximum file size is <var>%s</var>."
 msgstr ""
 
-#: ../../plugin/attachref.inc.php:31
+#: ../../plugin/attachref.inc.php:34
 msgid "Administrator password"
 msgstr ""
 
-#: ../../plugin/attachref.inc.php:32
+#: ../../plugin/attachref.inc.php:35
 msgid "password"
 msgstr ""
 
-#: ../../plugin/attachref.inc.php:33
+#: ../../plugin/attachref.inc.php:36
 msgid "Attach file"
 msgstr ""
 
-#: ../../plugin/attachref.inc.php:34
+#: ../../plugin/attachref.inc.php:37
 msgid "Upload"
 msgstr ""
 
-#: ../../plugin/attachref.inc.php:37
+#: ../../plugin/attachref.inc.php:40
 msgid "[Upload]"
 msgstr ""
 
-#: ../../plugin/attachref.inc.php:38
+#: ../../plugin/attachref.inc.php:41
 msgid "Attach and Ref to $1"
 msgstr ""
 
-#: ../../plugin/attachref.inc.php:411
+#: ../../plugin/attachref.inc.php:408
 msgid "file_uploads disabled."
 msgstr ""

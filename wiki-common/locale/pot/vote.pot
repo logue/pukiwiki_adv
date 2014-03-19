@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-10-16 10:24+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,34 +17,34 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/vote.inc.php:90 ../../plugin/vote.inc.php:146
+#: ../../plugin/vote.inc.php:84 ../../plugin/vote.inc.php:139
 msgid "Error in vote"
 msgstr ""
 
-#: ../../plugin/vote.inc.php:91 ../../plugin/vote.inc.php:147
+#: ../../plugin/vote.inc.php:85 ../../plugin/vote.inc.php:140
 msgid "Continuation vote cannot be performed."
 msgstr ""
 
-#: ../../plugin/vote.inc.php:99 ../../plugin/vote.inc.php:155
+#: ../../plugin/vote.inc.php:93 ../../plugin/vote.inc.php:149
 msgid "There was no matching vote. "
 msgstr ""
 
-#: ../../plugin/vote.inc.php:669
+#: ../../plugin/vote.inc.php:642
 msgid "Selection"
 msgstr ""
 
-#: ../../plugin/vote.inc.php:670
+#: ../../plugin/vote.inc.php:643
 msgid "Points"
 msgstr ""
 
-#: ../../plugin/vote.inc.php:671 ../../plugin/vote.inc.php:689
+#: ../../plugin/vote.inc.php:644 ../../plugin/vote.inc.php:656
 msgid "Vote"
 msgstr ""
 
-#: ../../plugin/vote.inc.php:701
+#: ../../plugin/vote.inc.php:668
 msgid "Item name"
 msgstr ""
 
-#: ../../plugin/vote.inc.php:704
+#: ../../plugin/vote.inc.php:671
 msgid "Add"
 msgstr ""

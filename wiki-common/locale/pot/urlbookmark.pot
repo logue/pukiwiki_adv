@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,22 +17,22 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../plugin/urlbookmark.inc.php:123
+#: ../../plugin/urlbookmark.inc.php:125
 msgid " $1 was updated"
 msgstr ""
 
-#: ../../plugin/urlbookmark.inc.php:161
+#: ../../plugin/urlbookmark.inc.php:163
 msgid "Title: "
 msgstr ""
 
-#: ../../plugin/urlbookmark.inc.php:171
+#: ../../plugin/urlbookmark.inc.php:173
 msgid "Comment: "
 msgstr ""
 
-#: ../../plugin/urlbookmark.inc.php:172
+#: ../../plugin/urlbookmark.inc.php:174
 msgid "Add URL"
 msgstr ""
 
-#: ../../plugin/urlbookmark.inc.php:173
+#: ../../plugin/urlbookmark.inc.php:175
 msgid "URL: "
 msgstr ""
