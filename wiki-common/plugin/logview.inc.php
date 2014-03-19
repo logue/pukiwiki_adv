@@ -92,15 +92,15 @@ function plugin_logview_action()
 			unset($obj);
 			return array(
 				'msg'  => $title,
-				'body' => $_logview_msg['msg_not_auth'],
+				'body' => '<p class="alert-warning">'.$_logview_msg['msg_not_auth'].'</p>',
 			);
 		}
 	}
 	unset($obj);
 
-	if ( empty($page) ) return array('msg'=>'Page name is missing', 'body'=>'Page name is missing.');
+	if ( empty($page) ) return array('msg'=>'Page name is missing', 'body'=>'<p class="alert-warning">Page name is missing.</p>');
 	$wiki = Factory::Wiki($page);
-	if ( ! $wiki->isReadable() ) return array('msg'=>'not readable', 'body'=>'You have no permission to read this log.');
+	if ( ! $wiki->isReadable() ) return array('msg'=>'not readable', 'body'=>'<p class="alert-warning">You have no permission to read this log.</p>');
 
 	if ($kind === null){
 		if (!IS_MOBILE) {
@@ -155,30 +155,24 @@ function plugin_logview_action()
 	
 
 	$count++;
-	$body .= <<<EOD
-<div class="table_wrapper">
-<table class="table table-bordered table_logview" data-pagenate="true">
-<thead>
-<tr>
-
-EOD;
+	$body[] = '<div class="table_wrapper">';
+	$body[] = '<table class="table table-bordered table_logview" data-pagenate="true">';
+	$body[] = '<thead>';
+	$body[] = '<tr>';
 	$cols = 0;
-	
 
 	// タイトルの処理
 	foreach ($view as $_view) {
 		if ($_view === 'local_id' && $is_role_adm) continue;
-		$body .= '<th>'.$_logview_msg[$_view].'</th>'."\n";
+		$body[] = '<th>'.$_logview_msg[$_view].'</th>';
 		$cols++;
 	}
 
-	$body .= <<<EOD
-</tr>
-</thead>
-<tbody>
-EOD;
+	$body[] = '</tr>';
+	$body[] = '</thead>';
+	$body[] = '<tbody>';
 
-	$nodata = '<p>'.$_logview_msg['msg_nodata'].'</p>';
+	$nodata = '<p class="alert alert-warning">'.$_logview_msg['msg_nodata'].'</p>';
 
 	// USER-AGENT クラス
 	$obj_ua = new UserAgent(USE_UA_OPTION);
@@ -196,14 +190,12 @@ EOD;
 	foreach($lines as $data) {
 		if (!VIEW_ROBOTS && $obj_ua->is_robots($data['ua'])) continue;	// ロボットは対象外
 
-		$body .= "<tr>\n";
+		$body[] = '<tr>';
 
 		foreach ($view as $field) {
 			switch ($field) {
 			case 'ts': // タイムスタンプ (UTIME)
-				$body .= ' <td class="style_td">' .
-					get_date('Y-m-d H:i:s', $data['ts']) .
-					' '.get_passage($data['ts']) . '</td>'."\n";
+				$body[] = '<td>' . get_date('Y-m-d H:i:s', $data['ts']) . ' '.get_passage($data['ts']) . '</td>';
 				break;
 
 			case '@guess_diff':
@@ -211,79 +203,70 @@ EOD;
 				$update = ($field == '@diff') ? true : false;
 				// FIXME: バックアップ/差分 なしの新規の場合
 				// バックアップデータの確定
-				$body .= ' <td class="style_td">';
+				$body[] = '<td class="style_td">';
 				$age = $logfile->get_backup_age($data['ts'],$update);
 				switch($age) {
 				case -1: // データなし
-					$body .= '<a class="ext" href="'.$wiki->uri().'" rel="nofollow">none</a>';
+					$body[] = '<a href="'.$wiki->uri().'" rel="nofollow">none</a>';
 					break;
 				case 0:  // diff
-					$body .= '<a class="ext" href="';
-					$body .= $logfile->diff_exist() ? $wiki->uri('diff') : $wiki->uri();
-					$body .= '" rel="nofollow">now</a>';
+					$body[] = '<a href="' . ($logfile->diff_exist() ? $wiki->uri('diff') : $wiki->uri()) . '" rel="nofollow">now</a>';
 					break;
 				default: // あり
-					$body .= '<a class="ext" href="'.$wiki->uri('backup',null,array('age'=>$age,'action'=>'visualdiff')).'"'.
-						' rel="nofollow">'.$age.'</a>';
+					$body[] = '<a class="ext" href="'.$wiki->uri('backup',null,array('age'=>$age,'action'=>'visualdiff')).'" rel="nofollow">'.$age.'</a>';
 					break;
 				}
-				$body .= '</td>'."\n";
+				$body[] = '</td>';
 				break;
 
 			case 'host': // ホスト名 (FQDN)
-				$body .= ' <td class="style_td host">';
+				$body[] = ' <td>';
 				if ($data['ip'] != $data['host']) {
 					// 国名取得
 					list($flag_icon,$flag_name) = $obj_ua->get_icon_flag($data['host']);
 					if (!empty($flag_icon) && $flag_icon != 'jp') {
-						$body .= '<span class="flag flag-'.$flag_icon.'" title="'.$flag_name.'" ></span>';
+						$body[] = '<span class="flag flag-'.$flag_icon.'" title="'.$flag_name.'" ></span>';
 					}
 					// ドメイン取得
 					$domain = $obj_ua->get_icon_domain($data['host']);
 					if (!empty($domain)) {
 //						$body .= '<img src="'.$path_domain.$domain.'.png"'.
 //								' alt="'.$data['host'].'" title="'.$data['host'].'" />';
-						$body .= '<span class="flag flag-'.$domain.'" title="'.$data['host'].'" ></span>';
+						$body[] = '<span class="flag flag-'.$domain.'" title="'.$data['host'].'" ></span>';
 					}
 				}
 				if ($data['ip'] !== '::1'){
-					$body .= '<a href="http://robtex.com/ip/'.$data['ip'].'.html" rel="external nofollow">'.$data['host'].'</a></td>'."\n";
+					$body[] = '<a href="http://robtex.com/ip/'.$data['ip'].'.html" rel="external nofollow">'.$data['host'].'</a></td>';
 				}else{
-					$body .= $data['host'].'</td>'."\n";
+					$body[] = $data['host'].'</td>';
 				}
 				break;
 
 			case '@guess': // 推測
-				$body .= ' <td>'.Utility::htmlsc(logview_guess_user($data, $guess), ENT_QUOTES)."</td>\n";
+				$body[] = '<td>'.Utility::htmlsc(logview_guess_user($data, $guess), ENT_QUOTES).'</td>';
 				break;
 
 			case 'ua': // ブラウザ情報 (USER-AGENT)
-				$body .= ' <td class="style_td">';
+				$body[] = ' <td>';
 				$os = $obj_ua->get_icon_os($data['ua']);
 				if (!empty($os)) {
-//					$body .= '<img src="'.$path_os.$os.'.png"'.
-//						' alt="'.$os.'" title="'.$os.'" />';
-					$body .= '<span class="os os-'.$os.'" title="'.$os.'"></span>';
+					$body[] = '<span class="os os-'.$os.'" title="'.$os.'"></span>';
 				}
 				$browser = $obj_ua->get_icon_broeswes($data['ua']);
 				if (!empty($browser)) {
-//					$body .= '<img src="'.$path_browser.$browser.'.png"'.
-//						' alt="'.htmlsc($data['ua'], ENT_QUOTES).
-//						'" title="'.htmlsc($data['ua'], ENT_QUOTES).
-//						'" />';
-					$body .= '<span class="browser browser-'.$browser.'" title="'.Utility::htmlsc($data['ua'], ENT_QUOTES).'"></span>';
+					$body[] = '<span class="browser browser-'.$browser.'" title="'.Utility::htmlsc($data['ua'], ENT_QUOTES).'"></span>';
 				}
-				$body .= "</td>\n";
+				$body[] = '</td>';
 				break;
 
 			case 'local_id':
 				if ($is_role_adm) continue;
 			default:
-				$body .= ' <td>'.Utility::htmlsc($data[$field], ENT_QUOTES)."</td>\n";
+				$body[] = '<td>'.Utility::htmlsc($data[$field], ENT_QUOTES).'</td>';
 			}
 		}
 
-		$body .= '</tr>'."\n";
+		$body[] = '</tr>';
 		$ctr++;
 	}
 
@@ -296,11 +279,9 @@ EOD;
 		);
 	}
 
-	$body .= <<<EOD
-</tbody>
-</table>
-</div>
-EOD;
+	$body[] = '</tbody>';
+	$body[] = '</table>';
+	$body[] = '</div>';
 
 	switch ($kind) {
 		case 'login':
@@ -310,15 +291,16 @@ EOD;
 	}
 	
 	if ($ajax !== 'raw'){
-		$body .= '</div></div>';
+		$body[] = '</div>';
+		$body[] = '</div>';
 	}else{
-		echo $body;
+		echo join("\n", $body);
 		exit();
 	}
 
 	return array(
 		'msg'  => $title,
-		'body' => $body
+		'body' => join("\n", $body)
 	);
 }
 

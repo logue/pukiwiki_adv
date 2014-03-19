@@ -11,6 +11,8 @@ use PukiWiki\Lang\Lang;
 use PukiWiki\Lang\AcceptLanguage;
 use PukiWiki\Lang\Lang2Country;
 use PukiWiki\Renderer\RendererFactory;
+use PukiWiki\Utility;
+use PukiWiki\Router;
 
 // ja_JP, ko_KR, en_US, zh_TW
 // They are used as delimiters at &multilang(link,ja_JP=Japanese,en_US=English,.....);
@@ -65,7 +67,7 @@ function plugin_multilang_inline_link($option, $args)
 
 	$body = array();
 	$page = $vars['page'];
-	$url = get_cmd_uri('multilang',$page,'','lang');
+	
 	$obj_l2c = new Lang2Country();
 
 	foreach( $args as $arg ) {
@@ -89,7 +91,7 @@ function plugin_multilang_inline_link($option, $args)
 			}
 		}
 
-		array_push($body, '<a href="'.$url.$lang.'" rel="alternate" hreflang="'.substr($lang,-2).'">'.$title.'</a>');
+		array_push($body, '<a href="'.Router::get_cmd_uri('multilang',$page,null,array('lang'=>$lang)).'" rel="alternate" hreflang="'.strtolower(str_replace('_','-',$lang)).'">'.$title.'</a>');
 	}
 	
 	if($option == 'delim') { // default: nodelim

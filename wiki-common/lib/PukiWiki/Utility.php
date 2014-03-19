@@ -664,7 +664,7 @@ class Utility{
 		$body[] = '</p>';
 
 		if (DEBUG) {
-			$body[] = '<div class="panel panel-info" style="margin: .5em 1.5em;">';
+			$body[] = '<div class="panel panel-info">';
 			$body[] = '<div class="panel-heading"><span class="fa fa-info-circle"></span> Back Trace</div>';
 			$body[] = '<div class="panel-body">';
 			$body[] = '<ol>';
@@ -755,10 +755,11 @@ class Utility{
 		if (!DEBUG){
 			$html[] = '<meta http-equiv="refresh" content="'.$time.'; URL='.$s_url.'" />';
 		}
-		$html[] = '<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" type="text/css" />';
+		$html[] = '<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/' . Render::TWITTER_BOOTSTRAP_VER . '/css/bootstrap.min.css" type="text/css" />';
 		$html[] = '<title>301 Moved Permanently</title>';
 		$html[] = '</head>';
 		$html[] = '<body>';
+		$html[] = '<div class="container">';
 		$html[] = '<p class="alert alert-success">';
 		$html[] = '<span class="glyphicon glyphicon-info-sign"></span>';
 		$html[] = 'The requested page has moved to a new URL. <br />';
@@ -767,6 +768,7 @@ class Utility{
 			$html[] = '<br />NOTICE: No auto redirect when Debug mode.';
 		}
 		$html[] = '</p>';
+		$html[] = '</div>';
 		$html[] = '</body>';
 		$html[] = '</html>';
 		$content = join("\n",$html);

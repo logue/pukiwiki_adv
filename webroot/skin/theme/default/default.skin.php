@@ -64,14 +64,14 @@
 
 <?php if ($this->colums == 'three-colums' || $this->colums == 'two-colums')  { ?>
 <!-- Left -->
-				<aside id="menubar" role="navigation">
+				<aside id="menubar">
 					<?php echo $this->menubar ?>
 				</aside>
 <?php } ?>
 
 <?php if ($this->colums == 'three-colums')  { ?>
 <!-- Right -->
-				<aside id="sidebar" role="navigation">
+				<aside id="sidebar">
 					<?php echo $this->sidebar ?>
 				</aside>
 <?php } ?>

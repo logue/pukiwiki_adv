@@ -186,7 +186,7 @@ class Render{
 			}
 
 			if (DEBUG === true && ! empty($info)){
-				$body = '<div class="panel panel-info" id="pkwk-info" style="margin: .5em 1.5em;">'.
+				$body = '<div class="panel panel-info" id="pkwk-info">'.
 						'<div class="panel-heading"><span class="fa fa-info-circle"></span>'.$_string['debugmode'].'</div>'."\n".
 						'<div class="panel-body">' . "\n" . '<ul>'."\n".
 						'<li>'.join("</li>\n<li>",$info).'</li>'."\n".
@@ -362,7 +362,7 @@ class Render{
 	private function getHead($conf){
 		global $vars, $nofollow, $google_analytics, $google_api_key, $google_site_verification, $yahoo_site_explorer_id, $bing_webmaster_tool, $shortcut_icon, $modifier, $modifierlink;
 		$meta_tags[] = array('charset'=>constant('SOURCE_ENCODING'));
-		$meta_tags[] = array('http-equiv'=>'x-dns-prefetch-control','content'=>'on');
+		// $meta_tags[] = array('http-equiv'=>'x-dns-prefetch-control','content'=>'on');
 		if (IS_MOBILE){
 			$meta_tags[] = array('name' => 'viewport',	'content' => 'width=device-width, initial-scale=1');
 		}else{
@@ -413,16 +413,16 @@ class Render{
 				array('rel'=>'alternate',		'href'=>$_LINK['rss'],	'type'=>'application/rss+xml',	'title'=>'RSS'),
 				array('rel'=>'canonical',		'href'=>$_LINK['reload'],	'type'=>'text/html',	'title'=>$this->page),
 				array('rel'=>'contents',		'href'=>$_LINK['menu'],		'type'=>'text/html',	'title'=>$_LANG['skin']['menu']),
-				array('rel'=>'sidebar',			'href'=>$_LINK['side'],		'type'=>'text/html',	'title'=>$_LANG['skin']['side']),
 				array('rel'=>'glossary',		'href'=>$_LINK['glossary'],	'type'=>'text/html',	'title'=>$_LANG['skin']['glossary']),
 				array('rel'=>'help',			'href'=>$_LINK['help'],		'type'=>'text/html',	'title'=>$_LANG['skin']['help']),
 				array('rel'=>'home',			'href'=>$_LINK['top'],		'type'=>'text/html',	'title'=>$_LANG['skin']['top']),
 				array('rel'=>'index',			'href'=>$_LINK['list'],		'type'=>'text/html',	'title'=>$_LANG['skin']['list']),
+				array('rel'=>'pingback',	    'href'=>$_LINK['pingback'], 'type'=>'application/xml'),
 				array('rel'=>'search',			'href'=>$_LINK['opensearch'],'type'=>'application/opensearchdescription+xml',	'title'=>$site_name.$_LANG['skin']['search']),
 				array('rel'=>'search',			'href'=>$_LINK['search'],	'type'=>'text/html',	'title'=>$_LANG['skin']['search']),
-				array('rel'=>'sitemap',			'href'=>$_LINK['sitemap'],	'type'=>'text/html',	'title'=>'Sitemap'),
 				array('rel'=>'shortcut icon',	'href'=>isset($conf['shortcut_icon']) ? $conf['shortcut_icon'] : ROOT_URI.'favicon.ico'),
-				array('rel'=>'pingback',	    'href'=>$_LINK['pingback'])
+				array('rel'=>'sidebar',			'href'=>$_LINK['side'],		'type'=>'text/html',	'title'=>$_LANG['skin']['side']),
+				array('rel'=>'sitemap',			'href'=>$_LINK['sitemap'],	'type'=>'application/xml')
 			);
 		}
 
@@ -436,7 +436,7 @@ class Render{
 
 		// Twitter Bootstrap
 		// http://getbootstrap.com/
-		if ($conf['bootswatch'] === false){
+		if ($conf['bootswatch'] === false || empty($conf['bootswatch'])){
 			$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//' . self::BOOTSTRAP_CDN . '/bootstrap/' . self::TWITTER_BOOTSTRAP_VER . '/css/bootstrap.min.css', 'type'=>'text/css');
 			$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//' . self::BOOTSTRAP_CDN . '/bootstrap/' . self::TWITTER_BOOTSTRAP_VER . '/css/bootstrap-theme.min.css', 'type'=>'text/css', 'id'=>'bootstrap-theme');
 		}else{

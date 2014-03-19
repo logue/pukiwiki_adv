@@ -20,7 +20,7 @@ a:not(.btn):hover{
 	text-decoration:underline;
 }
 
-p, pre, dl, blockquote, .table_wrapper{
+p, pre, dl, blockquote, .table_warper, .panel{
 	margin:.5em 1.5em;
 }
 
