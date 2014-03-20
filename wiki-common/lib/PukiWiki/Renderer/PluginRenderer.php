@@ -8,7 +8,7 @@
  * @copyright 2013-2014 PukiWiki Advance Developers Team
  * @create    2013/03/11
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: PluginRenderer.php,v 1.0.0 2014/01/30 14:43:00 Logue Exp $
+ * @version   $Id: PluginRenderer.php,v 1.0.3 2014/03/20 13:36:00 Logue Exp $
  **/
  
 namespace PukiWiki\Renderer;
@@ -96,6 +96,7 @@ class PluginRenderer{
 	 */
 	public static function getPluginList($force = false){
 		global $cache;
+		static $plugins;
 		//$t1 = microtime();
 
 		if (!$force) {
@@ -105,8 +106,8 @@ class PluginRenderer{
 				$d_modified[] = filemtime($p_dir);
 			}
 			if ($cache['wiki']->hasItem(self::PLUGIN_EXISTS_CACHE)){
-				$term_cache_meta = $cache['wiki']->getMetadata(self::PLUGIN_EXISTS_CACHE);
-				if ($term_cache_meta['mtime'] < max($d_modified)) {
+				$exists_cache_meta = $cache['wiki']->getMetadata(self::PLUGIN_EXISTS_CACHE);
+				if ($exists_cache_meta['mtime'] < max($d_modified)) {
 					$force = true;
 				}
 			}
@@ -115,59 +116,62 @@ class PluginRenderer{
 		// キャッシュ処理
 		if ($force) {
 			$cache['wiki']->removeItem(self::PLUGIN_EXISTS_CACHE);
+			$plugins = null;
 		}else if ($cache['wiki']->hasItem(self::PLUGIN_EXISTS_CACHE)) {
 			$plugins = $cache['wiki']->getItem(self::PLUGIN_EXISTS_CACHE);
 		//	$cache['wiki']->touchItem(self::PLUGIN_EXISTS_CACHE);
 			return $plugins;
 		}
 		
-		// プラグインを走査（追加プラグイン内のプラグインがオーバーライドされる）
-		foreach(array(PLUGIN_DIR, EXT_PLUGIN_DIR) as $p_dir) {
-			if (!is_dir($p_dir)) continue;
-			foreach (new DirectoryIterator($p_dir) as $fileinfo) {
-				// ファイル以外は無視
-				if (!$fileinfo->isFile() || !$fileinfo->isReadable()) continue;
+		if (empty($plugins)) {
+			// プラグインを走査（追加プラグイン内のプラグインがオーバーライドされる）
+			foreach(array(PLUGIN_DIR, EXT_PLUGIN_DIR) as $p_dir) {
+				if (!is_dir($p_dir)) continue;
+				foreach (new DirectoryIterator($p_dir) as $fileinfo) {
+					// ファイル以外は無視
+					if (!$fileinfo->isFile() || !$fileinfo->isReadable()) continue;
 
-				// 読み込み可能ならエイリアスでも読み取ります。
-				if (strpos($fileinfo->getFilename(), '.inc.php') !== false){
-					// プラグイン名を取得
-					$name = $fileinfo->getBasename('.inc.php');
-					// プラグイン名が英数字64文字以下でない
-					if (!preg_match('/^\w{1,64}$/', $name)) throw new Exception('PluginRenderer::getPluginList(): Plugin name "'.$name.'" is invalied or too long! (less than 64 chars)');
-					$plugins[$name] = array(
-						// 利用可能である
-						'usable' => true,
-						// 読み込み済みフラグ
-						'loaded' => false,
-						// パス
-						'path' => $fileinfo->getPathname(),
-						// 追加のプラグインか？
-						'is_ext' => ($p_dir == EXT_PLUGIN_DIR)
-					);
+					// 読み込み可能ならエイリアスでも読み取ります。
+					if (strpos($fileinfo->getFilename(), '.inc.php') !== false){
+						// プラグイン名を取得
+						$name = $fileinfo->getBasename('.inc.php');
+						// プラグイン名が英数字64文字以下でない
+						if (!preg_match('/^\w{1,64}$/', $name)) throw new Exception('PluginRenderer::getPluginList(): Plugin name "'.$name.'" is invalied or too long! (less than 64 chars)');
+						$plugins[$name] = array(
+							// 利用可能である
+							'usable' => true,
+							// 読み込み済みフラグ
+							'loaded' => false,
+							// パス
+							'path' => $fileinfo->getPathname(),
+							// 追加のプラグインか？
+							'is_ext' => ($p_dir == EXT_PLUGIN_DIR)
+						);
+					}
 				}
 			}
-		}
-		unset($p_dir, $fileinfo);
-		// プラグイン設定ファイルを走査（サイト別の設定が優先して読み込まれる。オーバーライドではないので注意）
-		foreach(array(INIT_DIR, SITE_INIT_DIR) as $p_dir) {
-			if (!is_dir($p_dir)) continue;
-			foreach (new DirectoryIterator($p_dir) as $fileinfo) {
-				// ファイル以外は無視
-				if (!$fileinfo->isFile()) continue;
-				// 設定ファイルから、拡張子をとった名前
-				$ini = $fileinfo->getBasename('.ini.php');
-				// プラグインが存在しない場合はスキップ
-				if (! array_key_exists($ini, $plugins)) continue;
-				// 設定ファイルのパスを変数に代入
-				if (strpos($fileinfo->getBasename(), '.ini.php') !== false && $fileinfo->isReadable()){
-					// 設定ファイル
-					$plugins[$ini]['conf'] = $fileinfo->getPathname();
+			unset($p_dir, $fileinfo);
+			// プラグイン設定ファイルを走査（サイト別の設定が優先して読み込まれる。オーバーライドではないので注意）
+			foreach(array(INIT_DIR, SITE_INIT_DIR) as $p_dir) {
+				if (!is_dir($p_dir)) continue;
+				foreach (new DirectoryIterator($p_dir) as $fileinfo) {
+					// ファイル以外は無視
+					if (!$fileinfo->isFile()) continue;
+					// 設定ファイルから、拡張子をとった名前
+					$ini = $fileinfo->getBasename('.ini.php');
+					// プラグインが存在しない場合はスキップ
+					if (! array_key_exists($ini, $plugins)) continue;
+					// 設定ファイルのパスを変数に代入
+					if (strpos($fileinfo->getBasename(), '.ini.php') !== false && $fileinfo->isReadable()){
+						// 設定ファイル
+						$plugins[$ini]['conf'] = $fileinfo->getPathname();
+					}
 				}
 			}
+			unset($p_dir, $fileinfo);
+			// キャッシュを保存
+			$cache['wiki']->setItem(self::PLUGIN_EXISTS_CACHE, $plugins);
 		}
-		unset($p_dir, $fileinfo);
-		// キャッシュを保存
-		$cache['wiki']->setItem(self::PLUGIN_EXISTS_CACHE, $plugins);
 		return $plugins;
 	}
 	/**
