@@ -14,6 +14,7 @@ use PukiWiki\Utility;
 use PukiWiki\Factory;
 use PukiWiki\Listing;
 use PukiWiki\Renderer\Header;
+use PukiWiki\Renderer\PluginRenderer;
 use PukiWiki\Auth\AuthApi;
 use Zend\Http\Response;
 use Exception;
@@ -284,22 +285,7 @@ class Auth
 		
 
 		if ($authenticate){
-			// 認証画面を出す
-			global $auth_type, $http_code;
-			$ret = null;
-			switch ($auth_type) {
-				case self::AUTH_BASIC:
-					$ret = self::basic_auth();
-				break;
-				case self::AUTH_DIGEST:
-					$ret = self::digest_auth();
-				break;
-				case self::AUTH_NTLM:
-					$ret = self::ntlm_auth();
-				break;
-			//	default:
-			//		return self::session_auth(true);
-			}
+			$ret = self::authenticate();
 			if (!$ret === true) {
 				// 認証失敗
 				Utility::dieMessage( str_replace('$1', Utility::htmlsc(Utility::stripBracket($page)), $title_cannot), 'Not Auth', Response::STATUS_CODE_401);
@@ -329,139 +315,218 @@ class Auth
 		return false;
 	}
 	/**
-	 * 許可IPをチェック
-	 * @param array $accept_ip 許可IPのリスト
-	 * @param string $target_str チェックパターン
+	 * 認証処理
 	 * @return boolean
 	 */
-	private static function checkAcceptIp($accept_ips, $target_str){
-		if (!is_array($accept_ips)) return false;
-		$remote_addr = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
-
-		foreach($accept_ips as $key=>$val){
-			if (preg_match($key, $target_str)){
-				$accept_ip_list = array_merge($accept_ip_list, explode(',', $val));
-
-				if (!empty($accept_ip_list) && isset($remote_addr)) {
-					foreach ($accept_ip_list as $ip) {
-						if (strpos($remote_addr, $ip) !== false) return TRUE;
-					}
-				}
-			}
-		}
-		return false;
-	}
-	/**
-	 * Basic認証
-	 * @return boolean
-	 */
-	private static function basic_auth()
-	{
-		global $auth_users;
-		global $realm;
-
-		$user_list = $auth_users;
-
+	public static function authenticate(){
+		global $auth_type, $auth_users;
+		
 		if (! self::check_role('role_contents_admin')) return TRUE; // 既にコンテンツ管理者
 
-		$matches = array();
-		if (! isset($_SERVER['PHP_AUTH_USER']) &&
-			! isset($_SERVER ['PHP_AUTH_PW']) &&
-			isset($_SERVER['HTTP_AUTHORIZATION']) &&
-			preg_match('/^Basic (.*)$/', $_SERVER['HTTP_AUTHORIZATION'], $matches))
-		{
+		switch ($auth_type) {
+			case self::AUTH_BASIC:
+				// BASIC認証
+				$user_list = $auth_users;
 
-			// Basic-auth with $_SERVER['HTTP_AUTHORIZATION']
-			list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) =
-				explode(':', base64_decode($matches[1]));
-		}
+				$matches = array();
+				if (! isset($_SERVER['PHP_AUTH_USER']) &&
+					! isset($_SERVER ['PHP_AUTH_PW']) &&
+					isset($_SERVER['HTTP_AUTHORIZATION']) &&
+					preg_match('/^Basic (.*)$/', $_SERVER['HTTP_AUTHORIZATION'], $matches))
+				{
 
-		if (! isset($_SERVER['PHP_AUTH_USER']) ||
-			! in_array($_SERVER['PHP_AUTH_USER'], $user_list) ||
-			! isset($auth_users[$_SERVER['PHP_AUTH_USER']]) ||
-			self::_hash_compute(
-				$_SERVER['PHP_AUTH_PW'],
-				$auth_users[$_SERVER['PHP_AUTH_USER']][0]
-				) !== $auth_users[$_SERVER['PHP_AUTH_USER']][0])
-		{
-			return FALSE;
+					// Basic-auth with $_SERVER['HTTP_AUTHORIZATION']
+					list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) =
+						explode(':', base64_decode($matches[1]));
+				}
+
+				if (! isset($_SERVER['PHP_AUTH_USER']) ||
+					! in_array($_SERVER['PHP_AUTH_USER'], $user_list) ||
+					! isset($auth_users[$_SERVER['PHP_AUTH_USER']]) ||
+					self::_hash_compute(
+						$_SERVER['PHP_AUTH_PW'],
+						$auth_users[$_SERVER['PHP_AUTH_USER']][0]
+						) !== $auth_users[$_SERVER['PHP_AUTH_USER']][0])
+				{
+					return FALSE;
+				}
+				break;
+			case self::AUTH_DIGEST:
+				// Digest認証
+				return self::auth_digest($auth_users);
+				break;
+			case self::AUTH_NTLM:
+				$srv_soft = (defined('SERVER_SOFTWARE'))? SERVER_SOFTWARE : $_SERVER['SERVER_SOFTWARE'];
+				if (substr($srv_soft,0,9) !== 'Microsoft') {
+					throw new Exception('Auth::authenticate() : Your server does not supported to NTLM authenticate.');
+				}
+				// NTLM認証
+				if (!isset($_SERVER['HTTP_AUTHORIZATION'])) return false;
+				$http_auth = $_SERVER['HTTP_AUTHORIZATION'];
+				list($auth_type,$digest64) = explode(' ',$http_auth);
+				switch( strtoupper($auth_type) ) {
+					case 'NTLM':      // IIS 4.0
+						return 1;
+					case 'NEGOTIATE': // IIS 5.0 ('Negotiate')
+						return 2;
+
+					// IIS用 phpMyAdmin-2.6.2-pl1/libraries/auth/http.auth.lib.php
+					case 'BASIC':     // 'Basic'
+						if (!function_exists('base64_decode')) return array('','');
+						return explode(':', base64_decode(substr($http_auth, 6)));
+				}
+
+				$digest = 'NTL' . base64_decode( substr($digest64 ,4) );
+
+				if (ord($digest{8})  != 1  ) return false;
+				if (ord($digest[13]) != 178) return false;
+			break;
+			default:
+				throw new Exception('Auth::authenticate() : The authentication method is not supported.');
+			break;
 		}
-		return TRUE;
+		return true;
 	}
 	/**
-	 * Digest認証
-	 * @param string $page ページ名
-	 * @param boolean $auth_flag 認証画面を出すか
-	 * @param boolean $exit_flag 認証できなかった時メッセージを表示するか
-	 * @param array $auth_pages 認証対象とするページの配列
-	 * @param string $title_cannot 認証できなかった時のメッセージ
+	 * digest認証
+	 * @param string $auth_users ユーザ
+	 * @return boolean
 	 */
-	private static function digest_auth($page, $auth_flag, $exit_flag, $auth_pages, $title_cannot)
+	public static function auth_digest($auth_users)
 	{
-		global $auth_users;
-		global $realm;
+		$data = self::http_digest_parse();
+		if ($data === false) return false;
 
-		
-		//$user_list = get_auth_page_users($page, $auth_pages);
-		//if (empty($user_list)) return true; // No limit
+		list($scheme, $salt, $role) = self::get_data($data['username'], $auth_users);
+		if ($scheme != '{x-digest-md5}') return false;
 
-		if (! self::check_role('role_contents_admin')) return true; // 既にコンテンツ管理者
-		if (self::auth_digest($auth_users)) return true;
-
-		// Auth failed
-		if ($auth_flag || $exit_flag) {
-			pkwk_common_headers();
-		}
-		return false;
+		// $A1 = md5($data['username'] . ':' . $realm . ':' . $auth_users[$data['username']]);
+		$A1 = $salt;
+		$A2 = md5($_SERVER['REQUEST_METHOD'].':'.$data['uri']);
+		$valid_response = md5($A1.':'.$data['nonce'].':'.$data['nc'].':'.$data['cnonce'].':'.$data['qop'].':'.$A2);
+		if ($data['response'] != $valid_response) return false;
+		return true;
 	}
 	/**
-	 * NTLM, Negotiate 認証 (IIS 4.0/5.0)
+	 * パスワードチェック
+	 * @global type $auth_type
+	 * @return type
+	 */
+	public static function check_auth_pw()
+	{
+		global $auth_type, $auth_users;
+
+		switch ($auth_type) {
+			case self::AUTH_BASIC:
+				// BASIC認証
+				$user = '';
+				foreach (array('PHP_AUTH_USER', 'AUTH_USER', 'REMOTE_USER', 'LOGON_USER') as $x) {
+					if (isset($_SERVER[$x]) && ! empty($_SERVER[$x])) {
+						// Digest だったら確実
+						if (! empty($_SERVER['AUTH_TYPE']) && $_SERVER['AUTH_TYPE'] == 'Digest') {
+							$user = $_SERVER[$x];
+							break;
+						}
+						// ドメイン認証の確認
+						$ms = explode('\\', $_SERVER[$x]);
+						if (count($ms) === 3) {
+							$user = $ms[2]; // DOMAIN\\USERID
+							break;
+						}
+						// この変数の内容で確定する
+						$user = $_SERVER[$x];
+						break;
+					}
+				}
+				if (empty($user)) return null;
+
+				// 未定義ユーザは、サーバ側で認証時または、ＯＳでの認証時のワークグループ接続的なイメージ
+				if (!isset($auth_users[$user])) return $user;
+
+				// 定義ユーザならパスワードのチェックを行う
+				$pass = '';
+				foreach (array('PHP_AUTH_PW', 'AUTH_PASSWORD', 'HTTP_AUTHORIZATION') as $pw) {
+					//if (! empty($_SERVER[$pw])) return $_SERVER[$x];
+					if (isset($_SERVER[$pw]) && ! empty($_SERVER[$pw])) {
+						$pass = $_SERVER[$pw];
+						break;
+					}
+				}
+				if (empty($pass) || empty($auth_users[$user][0])) return null; // パスワードが空は除く
+				$login = (self::hash_compute($pass,$auth_users[$user][0]) === $auth_users[$user][0]) ? $user : null;
+				break;
+			case self::AUTH_DIGEST:
+				// Digest認証
+				$data = self::http_digest_parse();
+				if ($data === false) return false;
+
+				list($scheme, $salt, $role) = self::get_data($data['username'], $auth_users);
+				if ($scheme != '{x-digest-md5}') return false;
+
+				// $A1 = $salt;
+				$A1 = md5($data['username'] . ':' . $realm . ':' . $auth_users[$data['username']]);
+				$A2 = md5($_SERVER['REQUEST_METHOD'].':'.$data['uri']);
+				$valid_response = md5($A1 . ':' . $data['nonce'] . ':' . $data['nc'] . ':' . $data['cnonce'] . ':' . $data['qop'] . ':' . $A2);
+				if ($data['response'] !== $valid_response){
+					unset($_SERVER['PHP_AUTH_DIGEST']);
+					return false;
+				}
+				$login = $data['username'];
+				break;
+			case self::AUTH_NTLM:
+				$srv_soft = (defined('SERVER_SOFTWARE'))? SERVER_SOFTWARE : $_SERVER['SERVER_SOFTWARE'];
+				if (substr($srv_soft,0,9) !== 'Microsoft') {
+					throw new Exception('Auth::authenticate() : Your server does not supported to NTLM authenticate.');
+				}
+				list(, $login, , ) = self::ntlm_decode();
+				break;
+			default:
+				throw new Exception('Auth::check_auth_pw() : The authentication method is not supported.');
+				break;
+		}
+		
+		return $login;
+	}
+	/**
+	 * 認証 (PukiWikiの設定に準ずる)
 	 * @static
 	 */
-	public static function ntlm_auth()
+	public static function auth_pw($auth_users)
 	{
-		if (!isset($_SERVER['HTTP_AUTHORIZATION'])) return 0;
-		$http_auth = $_SERVER['HTTP_AUTHORIZATION'];
-
-		if ($http_auth === NULL){
-			header( 'HTTP/1.0 401 Unauthorized' );
-			header( 'WWW-Authenticate: NTLM' );
-			exit;
+		$user = '';
+		foreach (array('PHP_AUTH_USER', 'AUTH_USER') as $x) {
+			if (isset($_SERVER[$x])) {
+				$ms = explode('\\', $_SERVER[$x]);
+				if (count($ms) == 3) {
+					$user = $ms[2]; // DOMAIN\\USERID
+				} else {
+					$user = $_SERVER[$x];
+				}
+				break;
+			}
 		}
 
-		list($auth_type,$digest64) = explode(' ',$http_auth);
-		switch( strtoupper($auth_type) ) {
-			case 'NTLM':      // IIS 4.0
-				return 1;
-			case 'NEGOTIATE': // IIS 5.0 ('Negotiate')
-				return 2;
-
-			// IIS用 phpMyAdmin-2.6.2-pl1/libraries/auth/http.auth.lib.php
-			case 'BASIC':     // 'Basic'
-				if (!function_exists('base64_decode')) return array('','');
-				return explode(':', base64_decode(substr($http_auth, 6)));
+		$pass = '';
+		foreach (array('PHP_AUTH_PW', 'AUTH_PASSWORD', 'HTTP_AUTHORIZATION') as $x) {
+			if (! empty($_SERVER[$x])) {
+				if ($x == 'HTTP_AUTHORIZATION') {
+					// NTLM対応 (domain, login, host, pass)
+					$tmp_ntlm = self::ntlm_decode();
+					if (empty($tmp_ntlm[3])) continue;
+					if (empty($user)) $user = $tmp_ntlm[1];
+					$pass = $tmp_ntlm[3];
+					unset($tmp_ntml);
+					break;
+				}
+				$pass = $_SERVER[$x];
+				break;
+			}
 		}
 
-		$digest = 'NTL' . base64_decode( substr($digest64 ,4) );
-
-		if (ord($digest{8})  != 1  ) return 0;
-		if (ord($digest[13]) != 178) return 0;
-/*
-		$strAuth = 'NTLMSSP'
-			. chr(0) . chr(2) . chr(0) . chr(0) . chr(0)
-			. chr(0) . chr(0) . chr(0) . chr(0) . chr(40)
-			. chr(0) . chr(0) . chr(0) . chr(1) . chr(130)
-			. chr(0) . chr(0) . chr(0) . chr(2) . chr(2)
-			. chr(2) . chr(0) . chr(0) . chr(0) . chr(0)
-			. chr(0) . chr(0) . chr(0) . chr(0) . chr(0)
-			. chr(0) . chr(0) . chr(0);
-
-		$strAuth64 = trim(base64_encode($strAuth));
-		header( 'HTTP/1.0 401 Unauthorized' );
-		header( 'WWW-Authenticate: NTLM '. $strAuth64 );
-		exit;
-*/
-		return 0;
+		if (empty($user) && empty($pass)) return false;
+		if (empty($auth_users[$user][0])) return false;
+		if ( self::hash_compute($pass, $auth_users[$user][0]) !== $auth_users[$user][0]) return false;
+		return true;
 	}
 	/**
 	 * 認証用ヘッダーを取得（Render.phpより呼び出す）
@@ -474,9 +539,13 @@ class Auth
 				return 'Basic realm="'.$realm.'"';
 				break;
 			case self::AUTH_DIGEST:
-				return 'Digest realm="'.$realm.'", qop="auth", nonce="'.uniqid().'", opaque="'.md5($realm).'"';
+				return 'Digest realm="'.$realm.'", qop="auth-int, auth", algorithm="MD5",  nonce="'.uniqid(rand(),true).'", opaque="' . md5($realm). '"';
 				break;
 			case self::AUTH_NTLM:
+				$srv_soft = (defined('SERVER_SOFTWARE'))? SERVER_SOFTWARE : $_SERVER['SERVER_SOFTWARE'];
+				if (substr($srv_soft,0,9) !== 'Microsoft') {
+					throw new Exception('Auth::authenticate() : Your server does not supported to NTLM authenticate.');
+				}
 				$strAuth = 'NTLMSSP'
 				. chr(0) . chr(2) . chr(0) . chr(0) . chr(0)
 				. chr(0) . chr(0) . chr(0) . chr(0) . chr(40)
@@ -488,63 +557,58 @@ class Auth
 
 				return 'NTLM ' . trim(base64_encode($strAuth));
 				break;
-		//	default:
-		//		return self::session_auth(true);
+			default:
+				throw new Exception('Auth::getAuthHeader() : The authentication method is not supported.');
+			break;
 		}
 		return null;
 	}
 	/**
-	 * IP認証
-	 * @global type $auth_method_type
-	 * @param type $page ページ名
-	 * @param type $auth_pages_accept_ip 対象となるIPアドレス
-	 * @return boolean
+	 * PHP_AUTH_DIGEST 変数をパースする関数
+	 * function to parse the http auth header
+	 * @static
 	 */
-	public static function ip_auth($page, $auth_pages_accept_ip)
+	private static function http_digest_parse()
 	{
-		global $auth_method_type;
+		// データが失われている場合への対応
+		$needed_parts = array(
+			'username'  => null,
+			'realm'     => null,
+			'nonce'     => null,
+			'uri'       => $_SERVER['REQUEST_URI'],
+			'cnonce'    => null,
+			'nc'        => null,
+			'response'  => null,
+			'qop'       => null,
+			'opaque'    => null
+		);
+		$digest = null;
 
-		$auth = FALSE;
-		if (is_array($auth_pages_accept_ip)){
-
-			$remote_addr = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
-
-			// Checked by:
-			$target_str = '';
-			if ($auth_method_type == 'pagename') {
-				$target_str = $page; // Page name
-			} else if ($auth_method_type == 'contents') {
-				$target_str = Factory::Wiki($page)->source(); // Its contents
-			}
-
-			$accept_ip_list = array();
-			foreach($auth_pages_accept_ip as $key=>$val)
-				if (preg_match($key, $target_str))
-					$accept_ip_list = array_merge($accept_ip_list, explode(',', $val));
-
-			if (!empty($accept_ip_list)) {
-				if(isset($remote_addr)) {
-					foreach ($accept_ip_list as $ip) {
-						if(strpos($remote_addr, $ip) !== false) {
-							$auth = TRUE;
-							break;
-						}
-					}
-				}
-			}
+		// mod_php
+		if (isset($_SERVER['PHP_AUTH_DIGEST'])) {
+			$digest = $_SERVER['PHP_AUTH_DIGEST'];
+		// most other servers
+		} else if (isset($_SERVER['HTTP_AUTHENTICATION']) && strpos(strtolower($_SERVER['HTTP_AUTHENTICATION']),'digest')===0) {
+			$digest = substr($_SERVER['HTTP_AUTHORIZATION'], 7);
+		}else{
+			return false;
 		}
-		return $auth;
-	}
-	
-	
-	/*
-	 *	== IIS ==
-	 *	AUTH_USER		- 認証ユーザ名
-	 *	AUTH_TYPE		- 認証タイプ
-	 *	HTTP_AUTHORIZATION	- パスワードのダイジェスト
-	 *	LOGON_USER		- サーバへのログオンユーザ名
-	*/
 
+		$data = array();
+
+		// url に含まれる文字列を含む必要がある
+		// preg_match_all('@(\w+)=([\'"]?)([a-zA-Z0-9=./\_-]+)\2@', $txt, $matches, PREG_SET_ORDER);
+		// preg_match_all('@(\w+)=([\'"]?)([a-zA-Z0-9=./%&\?\_-_+]+)\2@', $txt, $matches, PREG_SET_ORDER);
+		//preg_match_all('@(\w+)=([\'"]?)([a-zA-Z0-9=./%&\?\_-]+)\2@', $txt, $matches, PREG_SET_ORDER);
+		preg_match_all('/(\w+)=("([^"]+)"|([a-zA-Z0-9=.\/\_-]+))/',$digest,$matches,PREG_SET_ORDER);
+
+		foreach ($matches as $m){
+			$data[$m[1]] = $m[3] ? $m[3] : $m[4];
+			unset($needed_parts[$m[1]]);
+		}
+
+		return $needed_parts ? FALSE : $data;
+	}
 	/*
 	 * 認証者名を取得
 	 * @static
@@ -563,90 +627,74 @@ class Auth
 		if (self::login($vars['pass'])) return self::TEMP_CONTENTS_ADMIN_NAME;
 		return $auth_key['nick'];
 	}
-
-	/**
-	 * パスワードチェック
-	 * @global type $auth_type
-	 * @return type
+	/*
+	 * ROLEに応じた挙動の確認
+	 * @return boolean
 	 */
-	public static function check_auth_pw()
+	static function check_role($func='')
 	{
-		global $auth_type;
+		global $adminpass;
 
-		$login = '';
-		switch ($auth_type) {
-			case 1:
-				$login = self::check_auth_basic();
+		switch($func) {
+			case 'readonly':
+				$chk_role = (defined('PKWK_READONLY')) ? PKWK_READONLY : self::ROLE_GUEST;
 				break;
-			case 2:
-				$login = self::check_auth_digest();
+			case 'safemode':
+				$chk_role = defined('PKWK_SAFE_MODE') ? PKWK_SAFE_MODE : self::ROLE_GUEST;
 				break;
-		}
+			case 'su':
+				$now_role = self::get_role_level();
+				if ($now_role == self::ROLE_ADMIN || (int)$now_role == self::ROLE_CONTENTS_ADMIN) return FALSE; // 既に権限有
+				$chk_role = self::ROLE_CONTENTS_ADMIN;
+				switch ($now_role) {
+				case self::ROLE_AUTH_TEMP:
+					// FIXME:
+					return TRUE;
+				case self::ROLE_GUEST:
+					// 未認証者は、単に管理者パスワードを要求
+					$user = self::TEMP_CONTENTS_ADMIN_NAME;
+					break;
+				case self::ROLE_ENROLLEE:
+				case self::ROLE_AUTH:
+					// 認証済ユーザは、ユーザ名を維持しつつ管理者パスワードを要求
+					$user = self::check_auth();
+					break;
+			}
+			$auth_temp = array($user => array($adminpass) );
 
-		if (! empty($login)) return $login;
-
-		// NTLM対応
-		list(, $login, , ) = self::ntlm_decode();
-		return $login;
-	}
-	/**
-	 * BASIC認証
-	 * @global type $auth_users
-	 * @return string
-	 */
-	private static function check_auth_basic()
-	{
-		global $auth_users;
-
-		$user = '';
-		foreach (array('PHP_AUTH_USER', 'AUTH_USER', 'REMOTE_USER', 'LOGON_USER') as $x) {
-			if (isset($_SERVER[$x]) && ! empty($_SERVER[$x])) {
-				// Digest だったら確実
-				if (! empty($_SERVER['AUTH_TYPE']) && $_SERVER['AUTH_TYPE'] == 'Digest') {
-					$user = $_SERVER[$x];
+			while(1) {
+				if (!self::auth_pw($auth_temp))
+				{
+					unset($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
+					header( 'WWW-Authenticate: Basic realm="USER NAME is '.$user.'"' );
+					header( 'HTTP/1.0 401 Unauthorized' );
 					break;
 				}
-				// ドメイン認証の確認
-				$ms = explode('\\', $_SERVER[$x]);
-				if (count($ms) === 3) {
-					$user = $ms[2]; // DOMAIN\\USERID
-					break;
-				}
-				// この変数の内容で確定する
-				$user = $_SERVER[$x];
-				break;
+				// ESC : 認証失敗
+				return TRUE;
 			}
+			break;
+		case 'role_admin':
+		case 'role_adm':
+			$chk_role = self::ROLE_ADMIN;
+			break;
+		case 'role_adm_contents':
+			// 互換性のため
+			trigger_error('Auth::check_role(\'role_adm_contents\') is not recommond. Instead use Auth::check_role(\'role_contents_admin\').', E_USER_DEPRECATED);
+		case 'role_contents_admin':
+			$chk_role = self::ROLE_CONTENTS_ADMIN;
+			break;
+		case 'role_enrollee':
+			$chk_role = self::ROLE_ENROLLEE;
+			break;
+		case 'role_auth':
+			$chk_role = self::ROLE_AUTH;
+			break;
+		default:
+			$chk_role = self::ROLE_GUEST;
 		}
-		if (empty($user)) return null;
 
-		// 未定義ユーザは、サーバ側で認証時または、ＯＳでの認証時のワークグループ接続的なイメージ
-		if (!isset($auth_users[$user])) return $user;
-
-		// 定義ユーザならパスワードのチェックを行う
-		$pass = '';
-		foreach (array('PHP_AUTH_PW', 'AUTH_PASSWORD', 'HTTP_AUTHORIZATION') as $pw) {
-			//if (! empty($_SERVER[$pw])) return $_SERVER[$x];
-			if (isset($_SERVER[$pw]) && ! empty($_SERVER[$pw])) {
-				$pass = $_SERVER[$pw];
-				break;
-			}
-		}
-		if (empty($pass) || empty($auth_users[$user][0])) return null; // パスワードが空は除く
-		return (self::hash_compute($pass,$auth_users[$user][0]) === $auth_users[$user][0]) ? $user : null;
-	}
-	/**
-	 * Digest認証
-	 * @global \PukiWiki\Auth\type $auth_users
-	 * @return string
-	 */
-	private static function check_auth_digest()
-	{
-		global $auth_users;
-
-		if (! self::auth_digest($auth_users)) return null;
-		$data = self::http_digest_parse($_SERVER['PHP_AUTH_DIGEST']);
-		if (! empty($data['username'])) return $data['username'];
-		return '';
+		return self::is_check_role($chk_role);
 	}
 	/**
 	 * 管理者パスワードなのかどうか（暫定管理人か？）
@@ -735,14 +783,14 @@ class Auth
 		global $auth_users, $defaultpage;
 		
 		$retval = array(
-			'role'=>self::ROLE_GUEST,
-			'nick'=>null,
-			'key'=>null,
-			'api'=>'plus',
-			'group'=>null,
-			'displayname'=>null,
-			'home'=>null,
-			'mypage'=>null
+			'role'          => self::ROLE_GUEST,
+			'nick'          => null,
+			'key'           => null,
+			'api'           => 'plus',
+			'group'         => null,
+			'displayname'   => null,
+			'home'          => null,
+			'mypage'        => null
 		);
 		$user = self::check_auth_pw();
 		if (empty($user)) return $retval;
@@ -774,15 +822,15 @@ class Auth
 	{
 		global $auth_api, $auth_wkgrp_user, $defaultpage;
 
-		$auth_key = array(
-			'role'=>self::ROLE_GUEST,
-			'nick'=>null,
-			'key'=>null,
-			'api'=>null,
-			'group'=>null,
-			'displayname'=>null,
-			'home'=>null,
-			'mypage'=>null
+		$retval = array(
+			'role'          => self::ROLE_GUEST,
+			'nick'          => null,
+			'key'           => null,
+			'api'           => 'plus',
+			'group'         => null,
+			'displayname'   => null,
+			'home'          => null,
+			'mypage'        => null
 		);
 
 		foreach($auth_api as $api=>$val) {
@@ -794,7 +842,7 @@ class Auth
 		$obj = new AuthApi();
 		$msg = $obj->getSession();
 		if (isset($msg['api']) && $auth_api[$msg['api']]['use']) {
-			if (exist_plugin($msg['api'])) {
+			if (PluginRenderer::hasPlugin($msg['api'])) {
 				$call_func = 'plugin_'.$msg['api'].'_get_user_name';
 				$auth_key = $call_func();
 				$auth_key['api'] = $msg['api'];
@@ -867,75 +915,7 @@ class Auth
 
 		return $rc;
 	}
-	/*
-	 * ROLEに応じた挙動の確認
-	 * @return boolean
-	 */
-	static function check_role($func='')
-	{
-		global $adminpass;
-
-		switch($func) {
-			case 'readonly':
-				$chk_role = (defined('PKWK_READONLY')) ? PKWK_READONLY : self::ROLE_GUEST;
-				break;
-			case 'safemode':
-				$chk_role = defined('PKWK_SAFE_MODE') ? PKWK_SAFE_MODE : self::ROLE_GUEST;
-				break;
-			case 'su':
-				$now_role = self::get_role_level();
-				if ($now_role == self::ROLE_ADMIN || (int)$now_role == self::ROLE_CONTENTS_ADMIN) return FALSE; // 既に権限有
-				$chk_role = self::ROLE_CONTENTS_ADMIN;
-				switch ($now_role) {
-				case self::ROLE_AUTH_TEMP:
-					// FIXME:
-					return TRUE;
-				case self::ROLE_GUEST:
-					// 未認証者は、単に管理者パスワードを要求
-					$user = self::TEMP_CONTENTS_ADMIN_NAME;
-					break;
-				case self::ROLE_ENROLLEE:
-				case self::ROLE_AUTH:
-					// 認証済ユーザは、ユーザ名を維持しつつ管理者パスワードを要求
-					$user = self::check_auth();
-					break;
-			}
-			$auth_temp = array($user => array($adminpass) );
-
-			while(1) {
-				if (!self::auth_pw($auth_temp))
-				{
-					unset($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
-					header( 'WWW-Authenticate: Basic realm="USER NAME is '.$user.'"' );
-					header( 'HTTP/1.0 401 Unauthorized' );
-					break;
-				}
-				// ESC : 認証失敗
-				return TRUE;
-			}
-			break;
-		case 'role_admin':
-		case 'role_adm':
-			$chk_role = self::ROLE_ADMIN;
-			break;
-		case 'role_adm_contents':
-			// 互換性のため
-			trigger_error('Auth::check_role(\'role_adm_contents\') is not recommond. Instead use Auth::check_role(\'role_contents_admin\').', E_USER_DEPRECATED);
-		case 'role_contents_admin':
-			$chk_role = self::ROLE_CONTENTS_ADMIN;
-			break;
-		case 'role_enrollee':
-			$chk_role = self::ROLE_ENROLLEE;
-			break;
-		case 'role_auth':
-			$chk_role = self::ROLE_AUTH;
-			break;
-		default:
-			$chk_role = self::ROLE_GUEST;
-		}
-
-		return self::is_check_role($chk_role);
-	}
+	
 
 	public static function is_check_role($chk_role)
 	{
@@ -957,9 +937,8 @@ class Auth
 		$rc = array('','','','');
 		if (!function_exists('base64_decode')) return $rc;
 		if (!isset($_SERVER['HTTP_AUTHORIZATION'])) return $rc;
-		$http_auth = $_SERVER['HTTP_AUTHORIZATION'];
 
-		list($auth_type,$x) = explode(' ', $http_auth);
+		list($auth_type,$x) = explode(' ', $_SERVER['HTTP_AUTHORIZATION']);
 
 		switch( strtoupper($auth_type) ) {
 			// IIS用 (http://homepage1.nifty.com/yito/namazu/gbook/20021127.1530.html)
@@ -989,94 +968,71 @@ class Auth
 		$rc[] = ''; // pass
 		return $rc; // domain, login, hostname, pass
 	}
-
 	/**
-	 * 認証 (PukiWikiの設定に準ずる)
-	 * @static
-	 */
-	public static function auth_pw($auth_users)
-	{
-		$user = '';
-		foreach (array('PHP_AUTH_USER', 'AUTH_USER') as $x) {
-			if (isset($_SERVER[$x])) {
-				$ms = explode('\\', $_SERVER[$x]);
-				if (count($ms) == 3) {
-					$user = $ms[2]; // DOMAIN\\USERID
-				} else {
-					$user = $_SERVER[$x];
-				}
-				break;
-			}
-		}
-
-		$pass = '';
-		foreach (array('PHP_AUTH_PW', 'AUTH_PASSWORD', 'HTTP_AUTHORIZATION') as $x) {
-			if (! empty($_SERVER[$x])) {
-				if ($x == 'HTTP_AUTHORIZATION') {
-					// NTLM対応 (domain, login, host, pass)
-					$tmp_ntlm = self::ntlm_decode();
-					if (empty($tmp_ntlm[3])) continue;
-					if (empty($user)) $user = $tmp_ntlm[1];
-					$pass = $tmp_ntlm[3];
-					unset($tmp_ntml);
-					break;
-				}
-				$pass = $_SERVER[$x];
-				break;
-			}
-		}
-
-		if (empty($user) && empty($pass)) return false;
-		if (empty($auth_users[$user][0])) return false;
-		if ( self::hash_compute($pass, $auth_users[$user][0]) !== $auth_users[$user][0]) return false;
-		return true;
-	}
-	/**
-	 * digest認証
-	 * @param string $auth_users ユーザ
+	 * IP認証
+	 * @global type $auth_method_type
+	 * @param type $page ページ名
+	 * @param type $auth_pages_accept_ip 対象となるIPアドレス
 	 * @return boolean
 	 */
-	public static function auth_digest($auth_users)
+	public static function ip_auth($page, $auth_pages_accept_ip)
 	{
-		if (! isset($_SERVER['PHP_AUTH_DIGEST']) || empty($_SERVER['PHP_AUTH_DIGEST'])) return false;
-		$data = self::http_digest_parse($_SERVER['PHP_AUTH_DIGEST']);
-		if ($data === false) return false;
+		global $auth_method_type;
 
-		list($scheme, $salt, $role) = self::get_data($data['username'], $auth_users);
-		if ($scheme != '{x-digest-md5}') return false;
+		$auth = FALSE;
+		if (is_array($auth_pages_accept_ip)){
 
-		// $A1 = md5($data['username'] . ':' . $realm . ':' . $auth_users[$data['username']]);
-		$A1 = $salt;
-		$A2 = md5($_SERVER['REQUEST_METHOD'].':'.$data['uri']);
-		$valid_response = md5($A1.':'.$data['nonce'].':'.$data['nc'].':'.$data['cnonce'].':'.$data['qop'].':'.$A2);
-		if ($data['response'] != $valid_response) return false;
-		return true;
-	}
+			$remote_addr = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
 
-	/**
-	 * PHP_AUTH_DIGEST 変数をパースする関数
-	 * function to parse the http auth header
-	 * @static
-	 */
-	private static function http_digest_parse($txt)
-	{
-		// protect against missing data
-		$needed_parts = array('nonce'=>1, 'nc'=>1, 'cnonce'=>1, 'qop'=>1, 'username'=>1, 'uri'=>1, 'response'=>1);
-		$data = array();
+			// Checked by:
+			$target_str = '';
+			if ($auth_method_type == 'pagename') {
+				$target_str = $page; // Page name
+			} else if ($auth_method_type == 'contents') {
+				$target_str = Factory::Wiki($page)->source(); // Its contents
+			}
 
-		// url に含まれる文字列を含む必要がある
-		// preg_match_all('@(\w+)=([\'"]?)([a-zA-Z0-9=./\_-]+)\2@', $txt, $matches, PREG_SET_ORDER);
-		// preg_match_all('@(\w+)=([\'"]?)([a-zA-Z0-9=./%&\?\_-_+]+)\2@', $txt, $matches, PREG_SET_ORDER);
-		preg_match_all('@(\w+)=([\'"]?)([a-zA-Z0-9=./%&\?\_-]+)\2@', $txt, $matches, PREG_SET_ORDER);
+			$accept_ip_list = array();
+			foreach($auth_pages_accept_ip as $key=>$val)
+				if (preg_match($key, $target_str))
+					$accept_ip_list = array_merge($accept_ip_list, explode(',', $val));
 
-		foreach ($matches as $m) {
-			$data[$m[1]] = $m[3];
-			unset($needed_parts[$m[1]]);
+			if (!empty($accept_ip_list)) {
+				if(isset($remote_addr)) {
+					foreach ($accept_ip_list as $ip) {
+						if(strpos($remote_addr, $ip) !== false) {
+							$auth = TRUE;
+							break;
+						}
+					}
+				}
+			}
 		}
-
-		return $needed_parts ? FALSE : $data;
+		return $auth;
 	}
+	/**
+	 * 許可IPをチェック
+	 * @param array $accept_ip 許可IPのリスト
+	 * @param string $target_str チェックパターン
+	 * @return boolean
+	 */
+	private static function checkAcceptIp($accept_ips, $target_str){
+		if (!is_array($accept_ips)) return false;
+		$remote_addr = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
 
+		foreach($accept_ips as $key=>$val){
+			if (preg_match($key, $target_str)){
+				$accept_ip_list = array_merge($accept_ip_list, explode(',', $val));
+
+				if (!empty($accept_ip_list) && isset($remote_addr)) {
+					foreach ($accept_ip_list as $ip) {
+						if (strpos($remote_addr, $ip) !== false) return TRUE;
+					}
+				}
+			}
+		}
+		return false;
+	}
 	/**
 	 * データの分解
 	 * @static
@@ -1293,5 +1249,5 @@ class Auth
 	}
 }
 
-/* End of file auth.cls.php */
-/* Location: ./wiki-common/lib/auth.cls.php */
+/* End of file Auth.php */
+/* Location: ./vendor/PukiWiki/Auth/Auth.php */

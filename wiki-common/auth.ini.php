@@ -13,9 +13,10 @@ use PukiWiki\Utility;
 global $defaultpage, $menubar, $interwiki, $aliaspage, $sidebar, $navigation, $glossarypage, $headarea, $footarea, $whatsnew, $whatsdeleted;
 
 // Authentication Type
-// 1: basic
-// 2: digest
-$auth_type = 1;
+// Auth::AUTH_BASIC: basic
+// Auth::AUTH_DIGEST: digest
+// Auth::AUTH_NTLM : ntlm
+$auth_type = Auth::AUTH_BASIC;
 
 /////////////////////////////////////////////////
 // Authentication Parameter REALM

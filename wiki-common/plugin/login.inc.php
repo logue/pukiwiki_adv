@@ -10,9 +10,10 @@
 
 use PukiWiki\Auth\Auth;
 use PukiWiki\Renderer\RendererFactory;
+use PukiWiki\Renderer\PluginRenderer;
 use PukiWiki\Utility;
 use PukiWiki\File\LogFactory;
-
+use PukiWiki\Factory;
 /*
  * 初期処理
  */
@@ -25,12 +26,12 @@ function plugin_login_init()
 		'btn_login'			=> T_('Login'),
 		'btn_logout'		=> T_('Logout'),
 		'err_notusable'		=>
-			'<p class="message_box ui-state-error ui-corner-all">' .
+			'<p class="alert alert-warning">' .
 			T_('#login() : Could not use auth function. Please check <var>auth_api.ini.php</var> setting.').
 			'</p>',
 		'err_auth'			=> T_('Authorization Required'),
 		'err_auth_guide'	=>
-			'<p class="message_box ui-state-error ui-corner-all"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-alert"></span>' .
+			'<p class="alert alert-danger"><span class="fa fa-ban"></span>' .
 			T_('This server could not verify that you are authorized to access the document requested. Either you supplied the wrong credentials (e.g., bad password), or your browser doesn\'t understand how to supply the credentials required.') .
 			'</p>'
 		)
@@ -64,8 +65,8 @@ function plugin_login_convert()
 
 EOD;
 		}
-		if (exist_plugin($auth_key['api'])) {
-			return do_plugin_convert($auth_key['api']);
+		if (PluginRenderer::hasPlugin($auth_key['api'])) {
+			return PluginRenderer::executePluginBlock($auth_key['api']);
 		}
 		return $_login_msg['err_notusable'];
 	}
@@ -74,7 +75,7 @@ EOD;
 
 	$ret[] = '<form action="' . get_script_uri() . '" method="post">';
 	$ret[] = '<input type="hidden" name="cmd" value="login" />';
-	$ret[] = (isset($type)) ? '<input type="hidden" name="type" value="' . htmlsc($type, ENT_QUOTES) . '" />' : null;
+	$ret[] = (isset($type)) ? '<input type="hidden" name="type" value="' . Utility::htmlsc($type, ENT_QUOTES) . '" />' : null;
 	$ret[] = (isset($vars['page'])) ? '<input type="hidden" name="type" value="' . $vars['page'] . '" />' : null;
 	$ret[] = '<div class="login_form">';
 	$select = '';
@@ -100,7 +101,7 @@ EOD;
 		// 通常認証のみなのでボタン
 		$ret[] = '<input type="hidden" name="api" value="plus" />';
 	}
-	$ret[] = '<input type="submit" class="btn btn-success" value="' . $_login_msg['btn_login'] . '" />';
+	$ret[] = '<button type="submit" class="btn btn-success" /><span class="fa fa-power-off"></span>' . $_login_msg['btn_login'] . '</button>';
 	$ret[] = '</div>';
 	$ret[] = '</form>';
 	return join("\n",$ret);
@@ -119,7 +120,7 @@ function plugin_login_inline()
 	}
 
 	// Online
-	return exist_plugin($auth_key['api']) ? do_plugin_inline($auth_key['api']) : '';
+	return PluginRenderer::hasPlugin($auth_key['api']) ? PluginRenderer::executePluginInline($auth_key['api']) : '';
 }
 
 function plugin_login_auth_guide()
@@ -131,7 +132,7 @@ function plugin_login_auth_guide()
 	foreach($auth_api as $api=>$val) {
 		if ($val['use']) {
 			if (isset($val['hidden']) && $val['hidden']) continue;
-			if (! exist_plugin($api)) continue;
+			if (! PluginRenderer::hasPlugin($api)) continue;
 			$inline .= ($sw) ? '' : ',';
 			$sw = false;
 			$inline .= '&'.$api.'();';
@@ -147,51 +148,25 @@ function plugin_login_auth_guide()
  */
 function plugin_login_action()
 {
-	global $vars,$auth_type, $auth_users, $realm, $_login_msg;
+	global $vars, $_login_msg, $defaultpage;
 
 	$api = isset($vars['api']) ? $vars['api'] : 'plus';
+	$page = isset($vars['page']) ? $vars['page'] : $defaultpage;
 
 	if ($api !== 'plus') {
-		if (! exist_plugin($vars['api'])) return;
+		if (! PluginRenderer::hasPlugin($vars['api'])) return;
 		$call_api = 'plugin_'.$vars['api'].'_jump_url';
 		Utility::redirect( $call_api());
 		exit();
 	}
 
-	// NTLM, Negotiate 認証 (IIS 4.0/5.0)
-	$srv_soft = (defined('SERVER_SOFTWARE'))? SERVER_SOFTWARE : $_SERVER['SERVER_SOFTWARE'];
-	if (substr($srv_soft,0,9) == 'Microsoft') {
-		Auth::ntlm_auth();
-		login_return_page();
+	$auth = Auth::authenticate();
+	if ($auth === true) {
+		// ログイン成功
+		LogFactory::factory('login')->set();
+		Utility::redirect(Factory::Wiki($page)->uri());
+		exit();
 	}
-
-	switch($auth_type) {
-	case 1:
-		if (! Auth::auth_pw($auth_users)) {
-			unset($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
-			header('HTTP/1.0 401 Unauthorized');
-			header('WWW-Authenticate: Basic realm="'.$realm.'"');
-		} else {
-			// FIXME
-			// 認証成功時は、もともとのページに戻れる
-			// 下に記述すると認証すら行えないなぁ
-			login_return_page();
-		}
-		break;
-	case 2:
-		if (! Auth::auth_digest($auth_users)) {
-			header('HTTP/1.1 401 Unauthorized');
-			header('WWW-Authenticate: Digest realm="'.$realm.
-				'", qop="auth", nonce="'.uniqid().'", opaque="'.md5($realm).'"');
-		} else {
-			login_return_page();
-		}
-		break;
-	//case 3:
-	//	plugin_login_session();
-	//	break;
-	}
-	header('HTTP/1.1 401 Unauthorized');
 	return array(
 		'msg'=>$_login_msg['err_auth'],
 		'body'=>$_login_msg['err_auth_guide'],
@@ -199,13 +174,6 @@ function plugin_login_action()
 	);
 }
 
-function login_return_page()
-{
-	global $vars;
 
-	$page = (empty($vars['page'])) ? '' : $vars['page'];
-	//LogFactory::factory('login')->set();
-	Utility::redirect(get_page_location_uri($page));
-}
 /* End of file login.inc.php */
 /* Location: ./wiki-common/plugin/login.inc.php */
