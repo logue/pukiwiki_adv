@@ -1,137 +1,144 @@
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
+# License is GPL2
+# Logue <logue@hotmail.co.jp>, 2014.
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: table_edit2.inc.php ver1.2\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-10-16 10:25+0900\n"
-"PO-Revision-Date: 2012-10-16 10:29+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-03-20 14:01+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
-"Language-Team: taru <taru@s223.xrea.com>\n"
-"Language: ja\n"
+"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"Language: ja_JP\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../pot\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../../plugin/table_edit2.inc.php:292 ../../plugin/table_edit2.inc.php:1604
+#: ../../plugin/table_edit2.inc.php:299 ../../plugin/table_edit2.inc.php:1614
 msgid "OK"
 msgstr "編集内容を更新"
 
-#: ../../plugin/table_edit2.inc.php:293 ../../plugin/table_edit2.inc.php:455
-#: ../../plugin/table_edit2.inc.php:1607
+#: ../../plugin/table_edit2.inc.php:300 ../../plugin/table_edit2.inc.php:462
+#: ../../plugin/table_edit2.inc.php:1617
 msgid "no time stamp"
 msgstr "タイムスタンプを変更しない"
 
-#: ../../plugin/table_edit2.inc.php:454
+#: ../../plugin/table_edit2.inc.php:461
 msgid "character code in"
 msgstr "アップロード文字コード"
 
-#: ../../plugin/table_edit2.inc.php:464
+#: ../../plugin/table_edit2.inc.php:471
 msgid "character code out"
 msgstr "出力文字コード"
 
-#: ../../plugin/table_edit2.inc.php:466
+#: ../../plugin/table_edit2.inc.php:473
 msgid "no"
 msgstr "いいえ"
 
-#: ../../plugin/table_edit2.inc.php:467
+#: ../../plugin/table_edit2.inc.php:474
 msgid "character"
 msgstr "文字だけ括る"
 
-#: ../../plugin/table_edit2.inc.php:468
+#: ../../plugin/table_edit2.inc.php:475
 msgid "column"
 msgstr "列を指定する"
 
-#: ../../plugin/table_edit2.inc.php:472
+#: ../../plugin/table_edit2.inc.php:479
 msgid "w quote"
 msgstr "ダブルクォート"
 
-#: ../../plugin/table_edit2.inc.php:472
+#: ../../plugin/table_edit2.inc.php:479
 msgid "column number"
 msgstr "列番号を指定"
 
-#: ../../plugin/table_edit2.inc.php:475
+#: ../../plugin/table_edit2.inc.php:482
 msgid "line feed code"
 msgstr "改行コード"
 
-#: ../../plugin/table_edit2.inc.php:521
+#: ../../plugin/table_edit2.inc.php:528
 msgid "Locked"
 msgstr "ロック"
 
-#: ../../plugin/table_edit2.inc.php:522
+#: ../../plugin/table_edit2.inc.php:529
 msgid "Unlocked"
 msgstr "アンロック"
 
-#: ../../plugin/table_edit2.inc.php:545
+#: ../../plugin/table_edit2.inc.php:552
 msgid "import"
 msgstr "インポート"
 
-#: ../../plugin/table_edit2.inc.php:547 ../../plugin/table_edit2.inc.php:1864
+#: ../../plugin/table_edit2.inc.php:554 ../../plugin/table_edit2.inc.php:1877
 msgid "export"
 msgstr "エクスポート"
 
-#: ../../plugin/table_edit2.inc.php:1051
+#: ../../plugin/table_edit2.inc.php:1059
 msgid "edit"
 msgstr "編集"
 
-#: ../../plugin/table_edit2.inc.php:1052
+#: ../../plugin/table_edit2.inc.php:1060
 msgid "addition"
 msgstr "追加"
 
-#: ../../plugin/table_edit2.inc.php:1552
+#: ../../plugin/table_edit2.inc.php:1562
 msgid " [Add Mode]"
 msgstr "　［追加モード］"
 
-#: ../../plugin/table_edit2.inc.php:1605
+#: ../../plugin/table_edit2.inc.php:1615
 msgid "cancel"
 msgstr "キャンセル"
 
-#: ../../plugin/table_edit2.inc.php:1606
+#: ../../plugin/table_edit2.inc.php:1616
 msgid "delete"
 msgstr "削除"
 
-#: ../../plugin/table_edit2.inc.php:1608
+#: ../../plugin/table_edit2.inc.php:1618
 msgid "table"
 msgstr "テーブル№"
 
-#: ../../plugin/table_edit2.inc.php:1609
+#: ../../plugin/table_edit2.inc.php:1619
 msgid "line"
 msgstr "行番号"
 
-#: ../../plugin/table_edit2.inc.php:1610
+#: ../../plugin/table_edit2.inc.php:1620
 msgid "column line"
 msgstr "列番号"
 
-#: ../../plugin/table_edit2.inc.php:1844
+#: ../../plugin/table_edit2.inc.php:1857
 msgid "download"
 msgstr "ダウンロード"
 
-#: ../../plugin/table_edit2.inc.php:1845
+#: ../../plugin/table_edit2.inc.php:1858
 msgid "back"
 msgstr "戻る"
 
-#: ../../plugin/table_edit2.inc.php:1846
+#: ../../plugin/table_edit2.inc.php:1859
 msgid "ref plugin is not found"
 msgstr "refプラグインが見つかりません。"
 
-#: ../../plugin/table_edit2.inc.php:1873 ../../plugin/table_edit2.inc.php:1879
-#: ../../plugin/table_edit2.inc.php:1885 ../../plugin/table_edit2.inc.php:1891
-#: ../../plugin/table_edit2.inc.php:1897 ../../plugin/table_edit2.inc.php:1903
-#: ../../plugin/table_edit2.inc.php:1912
+#: ../../plugin/table_edit2.inc.php:1886 ../../plugin/table_edit2.inc.php:1892
+#: ../../plugin/table_edit2.inc.php:1898 ../../plugin/table_edit2.inc.php:1904
+#: ../../plugin/table_edit2.inc.php:1910 ../../plugin/table_edit2.inc.php:1916
+#: ../../plugin/table_edit2.inc.php:1925
 msgid "cannot upload"
 msgstr "ファイルをアップロード出来ませんでした"
 
-#: ../../plugin/table_edit2.inc.php:1874
+#: ../../plugin/table_edit2.inc.php:1887
 msgid "Please upload it by a POST."
 msgstr "POSTでアップロードして下さい。"
 
-#: ../../plugin/table_edit2.inc.php:1880
+#: ../../plugin/table_edit2.inc.php:1893
 msgid "The uploaded file exceeds the upload_max_filesize directive in php.ini."
 msgstr ""
 "アップロードされたファイルは、php.ini の upload_max_filesize ディレクティブの"
 "値を超えています"
 
-#: ../../plugin/table_edit2.inc.php:1886
+#: ../../plugin/table_edit2.inc.php:1899
 msgid ""
 "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in "
 "the HTML form."
@@ -139,19 +146,19 @@ msgstr ""
 "アップロードされたファイルは、HTML フォームで指定された MAX_FILE_SIZE を超え"
 "ています。"
 
-#: ../../plugin/table_edit2.inc.php:1892
+#: ../../plugin/table_edit2.inc.php:1905
 msgid "The uploaded file was only partially uploaded."
 msgstr "アップロードされたファイルは一部のみしかアップロードされていません。"
 
-#: ../../plugin/table_edit2.inc.php:1898
+#: ../../plugin/table_edit2.inc.php:1911
 msgid "No file was uploaded."
 msgstr "ファイルはアップロードされませんでした。"
 
-#: ../../plugin/table_edit2.inc.php:1904
+#: ../../plugin/table_edit2.inc.php:1917
 msgid "Missing a temporary folder."
 msgstr "テンポラリフォルダがありません。"
 
-#: ../../plugin/table_edit2.inc.php:1913
+#: ../../plugin/table_edit2.inc.php:1926
 msgid "A file unlike text was uploaded."
 msgstr "textとは違うファイルがアップされました。"
 

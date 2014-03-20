@@ -1,13 +1,13 @@
-# PukiWiki Plus! - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2005 PukiWiki Plus! Developer Team
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
 # License is GPL2
-# Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>, 2005.
+# Logue <logue@hotmail.co.jp>, 2014.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Adv.\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
 "PO-Revision-Date: 2012-11-26 17:19+0800\n"
 "Last-Translator: 迪艾维尔 <diwill2012@gmail.com>\n"
 "Language-Team: 迪艾维尔 <diwill2012@gmail.com>\n"
@@ -15,68 +15,72 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.4\n"
 "X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../pot\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../../plugin/newpage_subdir.inc.php:39
+#: ../../plugin/newpage_subdir.inc.php:43
 #, php-format
 msgid "#%s doesn't have the corresponding page. "
 msgstr "#%s 没有相应页面。"
 
-#: ../../plugin/newpage_subdir.inc.php:40
+#: ../../plugin/newpage_subdir.inc.php:44
 msgid "making"
 msgstr "生成"
 
-#: ../../plugin/newpage_subdir.inc.php:58
+#: ../../plugin/newpage_subdir.inc.php:63
 msgid "Page name"
 msgstr "页面名称"
 
-#: ../../plugin/newpage_subdir.inc.php:71
+#: ../../plugin/newpage_subdir.inc.php:80
 msgid "New"
 msgstr "新建"
 
-#: ../../plugin/newpage_subdir.inc.php:89
+#: ../../plugin/newpage_subdir.inc.php:101
 msgid "DESCRIPTION"
 msgstr "描述"
 
-#: ../../plugin/newpage_subdir.inc.php:90
+#: ../../plugin/newpage_subdir.inc.php:102
 msgid ""
 "The field that adds a new page below the directory specified for [directory] "
 "is made."
 msgstr "已在指定目录 [目录] 下新增加一页。"
 
-#: ../../plugin/newpage_subdir.inc.php:91
+#: ../../plugin/newpage_subdir.inc.php:103
 msgid "The order of the parameter is arbitrary."
 msgstr "参数的顺序任意。"
 
-#: ../../plugin/newpage_subdir.inc.php:92
+#: ../../plugin/newpage_subdir.inc.php:104
 msgid ""
 "When an undefined option is specified, Help is displayed with the message."
 msgstr "当指定了一个未定义的选项，显示帮助信息。"
 
-#: ../../plugin/newpage_subdir.inc.php:93
+#: ../../plugin/newpage_subdir.inc.php:105
 msgid "OPTION"
 msgstr "选项"
 
-#: ../../plugin/newpage_subdir.inc.php:94
+#: ../../plugin/newpage_subdir.inc.php:106
 msgid ""
 "-d Directory Only.\tIt limits it only to the one with the child page. (The "
 "directory specified specifying it is an exception. )"
 msgstr "-d 目录唯一.\t仅限于拥有子页面（目录明确规定的除外）"
 
-#: ../../plugin/newpage_subdir.inc.php:95
-msgid "-h Help.\t\tThis Description is displayed."
+#: ../../plugin/newpage_subdir.inc.php:107
+#, fuzzy
+msgid "-h Help. This Description is displayed."
 msgstr "-h 帮助\t\t显示此描述。"
 
-#: ../../plugin/newpage_subdir.inc.php:96
-msgid "-q Quiet.\t\tWarning is not displayed."
+#: ../../plugin/newpage_subdir.inc.php:108
+#, fuzzy
+msgid "-q Quiet. Warning is not displayed."
 msgstr "-q 安静.\t\t不显示警告。"
 
-#: ../../plugin/newpage_subdir.inc.php:97
+#: ../../plugin/newpage_subdir.inc.php:109
 msgid "EXAMPLE"
 msgstr "举例"
 
-#: ../../plugin/newpage_subdir.inc.php:173
+#: ../../plugin/newpage_subdir.inc.php:184
 #, php-format
 msgid "Create new page to %s directory"
 msgstr "在 %s 目录创建新页面"

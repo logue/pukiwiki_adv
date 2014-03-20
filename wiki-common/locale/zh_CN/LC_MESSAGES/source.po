@@ -1,11 +1,13 @@
-#
-#
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
+# License is GPL2
+# Logue <logue@hotmail.co.jp>, 2014.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Adv.\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
 "PO-Revision-Date: \n"
 "Last-Translator: 迪艾维尔 <diwill2012@gmail.com>\n"
 "Language-Team: 迪艾维尔 <diwill2012@gmail.com>\n"
@@ -13,17 +15,19 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.4\n"
 "X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../pot\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../../plugin/source.inc.php:20
+#: ../../plugin/source.inc.php:23
 msgid " $1 was not found."
 msgstr "未找到 $1。"
 
-#: ../../plugin/source.inc.php:21
+#: ../../plugin/source.inc.php:24
 msgid "cannot display the page source."
 msgstr "无法显示该页面的源代码。"
 
-#: ../../plugin/source.inc.php:28
+#: ../../plugin/source.inc.php:31
 msgid "Source of  $1"
 msgstr "$1 的源代码"

@@ -1,63 +1,67 @@
-# PukiWiki Plus! - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2007 PukiWiki Plus! Developer Team
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
 # License is GPL2
-# Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>, 2007.
+# Logue <logue@hotmail.co.jp>, 2014.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Plus! 1.4.7-u2-i18n\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
-"PO-Revision-Date: 2011-06-01 15:05+0900\n"
-"Last-Translator: Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>\n"
-"Language-Team: Japanese <ja@li.org>\n"
-"Language: ja\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-03-20 14:01+0900\n"
+"Last-Translator: Logue <logue@hotmail.co.jp>\n"
+"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../pot\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../../plugin/openid.inc.php:54
+#: ../../plugin/openid.inc.php:23
 msgid "logout"
-msgstr "logout"
+msgstr "ログアウト"
 
-#: ../../plugin/openid.inc.php:55
+#: ../../plugin/openid.inc.php:24
 #, php-format
 msgid "%s has been approved by openid."
 msgstr "%s さんは、OpenID  により認証されています。"
 
-#: ../../plugin/openid.inc.php:56
+#: ../../plugin/openid.inc.php:25
 msgid "The function of opeind is invalid."
 msgstr "OpenID の機能は無効です。"
 
-#: ../../plugin/openid.inc.php:57
+#: ../../plugin/openid.inc.php:26
 msgid "pkwk_session_start() doesn't exist."
 msgstr "pkwk_session_start() が見つかりません。"
 
-#: ../../plugin/openid.inc.php:58
+#: ../../plugin/openid.inc.php:27
 msgid "The session is not start."
 msgstr "セッションが開始されていません。"
 
-#: ../../plugin/openid.inc.php:59
+#: ../../plugin/openid.inc.php:28
 msgid "OpenID"
 msgstr "OpenID"
 
-#: ../../plugin/openid.inc.php:60
+#: ../../plugin/openid.inc.php:29
 msgid "OpenID URL:"
 msgstr "OpenID URL:"
 
-#: ../../plugin/openid.inc.php:61
+#: ../../plugin/openid.inc.php:30
 msgid "anonymouse"
 msgstr "匿名"
 
-#: ../../plugin/openid.inc.php:62
+#: ../../plugin/openid.inc.php:31
 msgid "LOGIN"
 msgstr "ログイン"
 
-#: ../../plugin/openid.inc.php:63
+#: ../../plugin/openid.inc.php:32
 msgid "OpenID login form."
 msgstr "OpenID ログイン画面"
 
-#: ../../plugin/openid.inc.php:64
+#: ../../plugin/openid.inc.php:33
 #, php-format
 msgid ""
 "Could not create the FileStore directory %s. Please check the effective "
@@ -65,23 +69,23 @@ msgid ""
 msgstr ""
 "FileStore ディレクトリ(%s) の作成ができません。権限が有効か確認して下さい。"
 
-#: ../../plugin/openid.inc.php:65
+#: ../../plugin/openid.inc.php:34
 msgid "Verification cancelled."
 msgstr "認証拒否"
 
-#: ../../plugin/openid.inc.php:66
+#: ../../plugin/openid.inc.php:35
 msgid "OpenID authentication failed: "
 msgstr "OpenID 認証失敗: "
 
-#: ../../plugin/openid.inc.php:67
+#: ../../plugin/openid.inc.php:36
 msgid "nickname must be set."
 msgstr "nickname は必須です。"
 
-#: ../../plugin/openid.inc.php:68
+#: ../../plugin/openid.inc.php:37
 msgid "Authentication error; not a valid OpenID."
 msgstr "認証エラー; 有効ではない OpenID です。"
 
-#: ../../plugin/openid.inc.php:69
+#: ../../plugin/openid.inc.php:38
 #, php-format
 msgid "Could not redirect to server: %s"
 msgstr "サーバにリダイレクトできませんでした: %s"

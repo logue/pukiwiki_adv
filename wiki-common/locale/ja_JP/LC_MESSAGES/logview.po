@@ -1,138 +1,142 @@
-# PukiWiki Plus! - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2005 PukiWiki Plus! Developer Team
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
 # License is GPL2
-# Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>, 2005.
+# Logue <logue@hotmail.co.jp>, 2014.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Plus! 1.4.5-u2-i18n\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-10-16 10:23+0900\n"
-"PO-Revision-Date: 2012-07-07 17:08+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-03-20 14:01+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
-"Language-Team: Japanese <ja@li.org>\n"
-"Language: ja\n"
+"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../pot\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../../plugin/logview.inc.php:24
+#: ../../plugin/logview.inc.php:30
 #, php-format
 msgid "LogView (%s)"
 msgstr "ログ参照 (%s)"
 
-#: ../../plugin/logview.inc.php:25
+#: ../../plugin/logview.inc.php:31
 msgid "Login is required in order to refer to."
 msgstr "参照するには、ログインが必要です。"
 
-#: ../../plugin/logview.inc.php:26
+#: ../../plugin/logview.inc.php:32
 msgid "Date"
 msgstr "日時"
 
-#: ../../plugin/logview.inc.php:27
+#: ../../plugin/logview.inc.php:33
 msgid "IP Address"
 msgstr "IPアドレス"
 
-#: ../../plugin/logview.inc.php:28
+#: ../../plugin/logview.inc.php:34
 msgid "Host Name"
 msgstr "ホスト名"
 
-#: ../../plugin/logview.inc.php:29
+#: ../../plugin/logview.inc.php:35
 msgid "Authentication API Name"
 msgstr "認証API名"
 
-#: ../../plugin/logview.inc.php:30
+#: ../../plugin/logview.inc.php:36
 msgid "User Name"
 msgstr "ユーザ名"
 
-#: ../../plugin/logview.inc.php:31
+#: ../../plugin/logview.inc.php:37
 msgid "NTLM Auth Name"
 msgstr "NTLM認証名"
 
-#: ../../plugin/logview.inc.php:32
+#: ../../plugin/logview.inc.php:38
 msgid "Proxy Infomation"
 msgstr "Proxy情報"
 
-#: ../../plugin/logview.inc.php:33
+#: ../../plugin/logview.inc.php:39
 msgid "Browse Infomation"
 msgstr "ブラウザ情報"
 
-#: ../../plugin/logview.inc.php:34
+#: ../../plugin/logview.inc.php:40
 msgid "Delete"
 msgstr "削除"
 
-#: ../../plugin/logview.inc.php:35
+#: ../../plugin/logview.inc.php:41
 msgid "Signature"
 msgstr "署名"
 
-#: ../../plugin/logview.inc.php:36
+#: ../../plugin/logview.inc.php:42
 msgid "Faile Name"
 msgstr "ファイル名"
 
-#: ../../plugin/logview.inc.php:37
+#: ../../plugin/logview.inc.php:43
 msgid "Page"
 msgstr "ページ名"
 
-#: ../../plugin/logview.inc.php:38
+#: ../../plugin/logview.inc.php:44
 msgid "CMD"
 msgstr "コマンド"
 
-#: ../../plugin/logview.inc.php:39
+#: ../../plugin/logview.inc.php:45
 msgid "local_id"
 msgstr "local_id(OpenIDのみ)"
 
-#: ../../plugin/logview.inc.php:40
+#: ../../plugin/logview.inc.php:46
 msgid "Contents"
 msgstr "内容"
 
-#: ../../plugin/logview.inc.php:41
+#: ../../plugin/logview.inc.php:47
 msgid "Provisional User Name"
 msgstr "暫定ユーザ名"
 
-#: ../../plugin/logview.inc.php:42
+#: ../../plugin/logview.inc.php:48
 msgid "Provisional Browse Contents"
 msgstr "暫定閲覧ページ"
 
-#: ../../plugin/logview.inc.php:43
+#: ../../plugin/logview.inc.php:49
 msgid "Unused user list"
 msgstr "未利用者一覧"
 
-#: ../../plugin/logview.inc.php:44
+#: ../../plugin/logview.inc.php:50
 msgid "Number of enrollees"
 msgstr "登録者数"
 
-#: ../../plugin/logview.inc.php:45
+#: ../../plugin/logview.inc.php:51
 msgid "Number of Unused"
 msgstr "未利用者数"
 
-#: ../../plugin/logview.inc.php:46
+#: ../../plugin/logview.inc.php:52
 msgid "Availability"
 msgstr "利用率"
 
-#: ../../plugin/logview.inc.php:47
+#: ../../plugin/logview.inc.php:53
 msgid "No entry."
 msgstr "エントリなし"
 
-#: ../../plugin/logview.inc.php:50
+#: ../../plugin/logview.inc.php:56
 msgid "Update Log"
 msgstr "更新ログ"
 
-#: ../../plugin/logview.inc.php:51
+#: ../../plugin/logview.inc.php:57
 msgid "Download Log"
 msgstr "ダウンロードログ"
 
-#: ../../plugin/logview.inc.php:52
+#: ../../plugin/logview.inc.php:58
 msgid "Browse Log"
 msgstr "閲覧ログ"
 
-#: ../../plugin/logview.inc.php:53
+#: ../../plugin/logview.inc.php:59
 msgid "Command Log"
 msgstr "コマンドログ"
 
-#: ../../plugin/logview.inc.php:54
+#: ../../plugin/logview.inc.php:60
 msgid "Login Log"
 msgstr "ログインログ"
 
-#: ../../plugin/logview.inc.php:55
+#: ../../plugin/logview.inc.php:61
 msgid "Checking Log"
 msgstr "チェックログ"

@@ -1,84 +1,96 @@
-# PukiWiki Plus! - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2005 PukiWiki Plus! Developer Team
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
 # License is GPL2
-# Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>, 2005.
+# Logue <logue@hotmail.co.jp>, 2011.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Plus! 1.4.5-u2\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
-"PO-Revision-Date: 2011-06-01 15:05+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-03-20 14:01+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
-"Language-Team: Japanese <ja@li.org>\n"
-"Language: ja\n"
+"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../pot\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../../plugin/amazon.inc.php:62
+#: ../../plugin/amazon.inc.php:54
 msgid "Review edit"
 msgstr "レビュー編集"
 
-#: ../../plugin/amazon.inc.php:63
+#: ../../plugin/amazon.inc.php:55
 msgid "(ASIN,ISBN or URL)"
 msgstr "(ASIN,ISBN または URL)"
 
-#: ../../plugin/amazon.inc.php:64
+#: ../../plugin/amazon.inc.php:56
 msgid "Add to Shopping Cart"
 msgstr "買物かごへ"
 
-#: ../../plugin/amazon.inc.php:65
+#: ../../plugin/amazon.inc.php:57
 msgid "Price"
 msgstr "価格"
 
-#: ../../plugin/amazon.inc.php:66
+#: ../../plugin/amazon.inc.php:58
 msgid "(Including tax)"
 msgstr "(税込)"
 
-#: ../../plugin/amazon.inc.php:67
+#: ../../plugin/amazon.inc.php:59
 msgid "List Price"
 msgstr "参考価格"
 
-#: ../../plugin/amazon.inc.php:68
+#: ../../plugin/amazon.inc.php:60
 msgid "You Save"
 msgstr "OFF"
 
-#: ../../plugin/amazon.inc.php:69
+#: ../../plugin/amazon.inc.php:61
 msgid "%"
 msgstr "％"
 
-#: ../../plugin/amazon.inc.php:70
+#: ../../plugin/amazon.inc.php:62
 msgid "State of stock"
 msgstr "在庫状態"
 
-#: ../../plugin/amazon.inc.php:71
+#: ../../plugin/amazon.inc.php:63
 msgid "Currently unavailable."
 msgstr "現在在庫がありません。"
 
-#: ../../plugin/amazon.inc.php:72
+#: ../../plugin/amazon.inc.php:64
 msgid "Release Date"
 msgstr "発売日"
 
-#: ../../plugin/amazon.inc.php:73
+#: ../../plugin/amazon.inc.php:65
 msgid "Please specify the ASIN code, the ISBN code or URL."
 msgstr "ASINコード、ISBNコードまたはURLを指定して下さい。"
 
-#: ../../plugin/amazon.inc.php:74
+#: ../../plugin/amazon.inc.php:66
 msgid "The ASIN code is fictitious. "
 msgstr "無効なASINコードです。"
 
-#: ../../plugin/amazon.inc.php:75
+#: ../../plugin/amazon.inc.php:67
 msgid "MY_NAME"
 msgstr "お名前"
 
-#: ../../plugin/amazon.inc.php:76
+#: ../../plugin/amazon.inc.php:68
 msgid "THIS EDIT"
 msgstr "ここ編集のこと"
 
-#: ../../plugin/amazon.inc.php:77
+#: ../../plugin/amazon.inc.php:69
 msgid "You have not permission to create new page."
 msgstr "あなたは、新しいページを作成できる権利を持っていません。"
+
+#: ../../plugin/amazon.inc.php:70
+msgid ""
+"You must define AMAZON_AID and AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY "
+"before use."
+msgstr ""
+"このプラグインを使用する前にAMAZON_AIDと、AWS_ACCESS_KEY_IDと、"
+"AWS_SECRET_ACCESS_KEYを指定する必要があります。"
 
 #~ msgid "Author"
 #~ msgstr "作者"

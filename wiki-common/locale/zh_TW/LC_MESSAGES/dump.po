@@ -1,19 +1,24 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
+# License is GPL2
+# Logue <logue@hotmail.co.jp>, 2014.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Plus! 1.4.5_u2\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-07-07 17:14+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
 "PO-Revision-Date: 2011-06-01 15:05+0900\n"
 "Last-Translator: Chung-Yen Chang <candyz@linux.org.tw>\n"
 "Language-Team: Traditional Chinese <zh@li.org>\n"
+"Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../pot\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #: ../../plugin/dump.inc.php:54
 msgid "PKWK_READONLY prohibits this"
@@ -27,107 +32,107 @@ msgstr ""
 msgid "dump"
 msgstr ""
 
-#: ../../plugin/dump.inc.php:66
+#: ../../plugin/dump.inc.php:63
 msgid "The password is different."
 msgstr "密碼不相同。"
 
-#: ../../plugin/dump.inc.php:88
+#: ../../plugin/dump.inc.php:84
 msgid "Up-loading was completed."
 msgstr "上傳完畢。"
 
-#: ../../plugin/dump.inc.php:88
+#: ../../plugin/dump.inc.php:84
 msgid "It failed in up-loading."
 msgstr "上傳失敗。"
 
-#: ../../plugin/dump.inc.php:93
+#: ../../plugin/dump.inc.php:89
 msgid "It is an invalid instruction."
 msgstr ""
 
-#: ../../plugin/dump.inc.php:125
+#: ../../plugin/dump.inc.php:121
 msgid "It failed in the generation of a temporary file."
 msgstr "產生暫存檔失敗。"
 
-#: ../../plugin/dump.inc.php:140 ../../plugin/dump.inc.php:181
+#: ../../plugin/dump.inc.php:136 ../../plugin/dump.inc.php:177
 msgid "The file was not found."
 msgstr "找不到檔案。"
 
-#: ../../plugin/dump.inc.php:156
+#: ../../plugin/dump.inc.php:152
 msgid "Restoring function is not allowed"
 msgstr ""
 
-#: ../../plugin/dump.inc.php:169
+#: ../../plugin/dump.inc.php:165
 msgid "Invalid file suffix: "
 msgstr ""
 
-#: ../../plugin/dump.inc.php:173
+#: ../../plugin/dump.inc.php:169
 msgid "Max file size exceeded: "
 msgstr ""
 
-#: ../../plugin/dump.inc.php:190
+#: ../../plugin/dump.inc.php:186
 msgid "There was no file that was able to be expanded."
 msgstr "沒有檔案可以被擴充。"
 
-#: ../../plugin/dump.inc.php:193
+#: ../../plugin/dump.inc.php:189
 msgid "Progressing file list"
 msgstr "處理檔案清單中"
 
-#: ../../plugin/dump.inc.php:237
+#: ../../plugin/dump.inc.php:233
 msgid "Download of data"
 msgstr "下載資料"
 
-#: ../../plugin/dump.inc.php:238
+#: ../../plugin/dump.inc.php:234
 msgid "Form of archive"
 msgstr "歸檔的表單"
 
-#: ../../plugin/dump.inc.php:239
+#: ../../plugin/dump.inc.php:235
 msgid "form"
 msgstr "表單"
 
-#: ../../plugin/dump.inc.php:240
+#: ../../plugin/dump.inc.php:236
 msgid "Backup directory"
 msgstr "備份目錄"
 
-#: ../../plugin/dump.inc.php:241
+#: ../../plugin/dump.inc.php:237
 msgid "Options"
 msgstr "選項"
 
-#: ../../plugin/dump.inc.php:242
+#: ../../plugin/dump.inc.php:238
 msgid ""
 "Virtual of page name encode is converted into the file name with the "
 "directory."
 msgstr "目錄及檔案名稱將會被編碼轉換成虛擬的頁面名稱。"
 
-#: ../../plugin/dump.inc.php:243
+#: ../../plugin/dump.inc.php:239
 msgid "(The restoration that uses this data cannot be done."
 msgstr "(無法使用這個資料來恢復。"
 
-#: ../../plugin/dump.inc.php:244
+#: ../../plugin/dump.inc.php:240
 #, fuzzy
 msgid "Moreover, a part of character is substituted for '_'.)"
 msgstr "而且，一部份的字元將會被 '_' 所取代。)<br />"
 
-#: ../../plugin/dump.inc.php:246
+#: ../../plugin/dump.inc.php:242
 msgid " Restoration of data"
 msgstr "恢復資料中"
 
-#: ../../plugin/dump.inc.php:247
+#: ../../plugin/dump.inc.php:243
 msgid "[IMPORTANCE]"
 msgstr "[重要]"
 
-#: ../../plugin/dump.inc.php:248
+#: ../../plugin/dump.inc.php:244
 msgid ""
 "Attention: Please note that the data file of the same name is overwrited."
 msgstr "注意：相同檔名的資料檔案將會被覆寫。"
 
-#: ../../plugin/dump.inc.php:250
+#: ../../plugin/dump.inc.php:246
 msgid "File"
 msgstr "檔案"
 
-#: ../../plugin/dump.inc.php:251
+#: ../../plugin/dump.inc.php:247
 msgid "Download execution"
 msgstr ""
 
-#: ../../plugin/dump.inc.php:252
+#: ../../plugin/dump.inc.php:248
 msgid "Upload execution"
 msgstr ""
 

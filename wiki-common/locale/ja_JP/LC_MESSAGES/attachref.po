@@ -1,55 +1,59 @@
-# PukiWiki Plus! - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2005 PukiWiki Plus! Developer Team
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
 # License is GPL2
-# Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>, 2005.
+# Logue <logue@hotmail.co.jp>, 2011.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Plus! 1.4.5-u2\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-10-16 10:24+0900\n"
-"PO-Revision-Date: 2012-07-05 20:53+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-03-20 14:01+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
-"Language-Team: Japanese <ja@li.org>\n"
-"Language: ja\n"
+"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../pot\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../../plugin/attachref.inc.php:29
+#: ../../plugin/attachref.inc.php:32
 msgid "Upload to $1"
 msgstr "$1 への添付"
 
-#: ../../plugin/attachref.inc.php:30
+#: ../../plugin/attachref.inc.php:33
 #, php-format
 msgid "Maximum file size is <var>%s</var>."
 msgstr "アップロード可能最大ファイルサイズは<var>%s</var>です。"
 
-#: ../../plugin/attachref.inc.php:31
+#: ../../plugin/attachref.inc.php:34
 msgid "Administrator password"
 msgstr "管理者パスワード"
 
-#: ../../plugin/attachref.inc.php:32
+#: ../../plugin/attachref.inc.php:35
 msgid "password"
 msgstr "パスワード"
 
-#: ../../plugin/attachref.inc.php:33
+#: ../../plugin/attachref.inc.php:36
 msgid "Attach file"
 msgstr "添付ファイル"
 
-#: ../../plugin/attachref.inc.php:34
+#: ../../plugin/attachref.inc.php:37
 msgid "Upload"
 msgstr "アップロード"
 
-#: ../../plugin/attachref.inc.php:37
+#: ../../plugin/attachref.inc.php:40
 msgid "[Upload]"
 msgstr "[添付]"
 
-#: ../../plugin/attachref.inc.php:38
+#: ../../plugin/attachref.inc.php:41
 msgid "Attach and Ref to $1"
 msgstr "$1 にアップロードしました"
 
-#: ../../plugin/attachref.inc.php:411
+#: ../../plugin/attachref.inc.php:408
 msgid "file_uploads disabled."
 msgstr "ファイルアップロードは無効化されています。"
 

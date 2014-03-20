@@ -1,39 +1,48 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
+# License is GPL2
+# Logue <logue@hotmail.co.jp>, 2014.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Plus! 1.4.5_u2\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-07-07 17:14+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
 "PO-Revision-Date: 2011-06-01 15:05+0900\n"
 "Last-Translator: Chung-Yen Chang <candyz@linux.org.tw>\n"
 "Language-Team: Traditional Chinese <zh@li.org>\n"
+"Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../pot\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../../plugin/edit.inc.php:87
+#: ../../plugin/edit.inc.php:35
+msgid "Pagename is missing."
+msgstr ""
+
+#: ../../plugin/edit.inc.php:105
 #, fuzzy
 msgid "Edit of $1"
 msgstr "$1 的編輯"
 
-#: ../../plugin/edit.inc.php:128
+#: ../../plugin/edit.inc.php:135
 #, fuzzy
 msgid "Preview of $1"
 msgstr "$1 的預覽"
 
-#: ../../plugin/edit.inc.php:129
+#: ../../plugin/edit.inc.php:136
 msgid "To confirm the changes, click the button at the bottom of the page"
 msgstr "請按下本頁最下端的按鈕來確認變更。"
 
-#: ../../plugin/edit.inc.php:130
+#: ../../plugin/edit.inc.php:137
 msgid "(The contents of the page are empty. Updating deletes this page.)"
 msgstr "(這個頁面的內容是空的。正在刪除這個頁面。)"
 
-#: ../../plugin/edit.inc.php:222
+#: ../../plugin/edit.inc.php:227
 msgid " $1 was deleted"
 msgstr " $1 已經被刪除"
 

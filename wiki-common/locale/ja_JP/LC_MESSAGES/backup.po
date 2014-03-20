@@ -1,140 +1,144 @@
-# PukiWiki Plus! - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2005 PukiWiki Plus! Developer Team
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
 # License is GPL2
-# Author: Miko.Hoshina(E.Satoh) <miko@cafeterrace.com>, 2005.
+# Logue <logue@hotmail.co.jp>, 2014.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Plus! 1.4.5-u2\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
-"PO-Revision-Date: 2012-07-05 20:56+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-03-20 14:01+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
-"Language-Team: Japanese\n"
-"Language: \n"
+"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../pot\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../../plugin/backup.inc.php:34 ../../plugin/backup.inc.php:54
+#: ../../plugin/backup.inc.php:43 ../../plugin/backup.inc.php:63
 msgid "Delete"
 msgstr "削除"
 
-#: ../../plugin/backup.inc.php:35
+#: ../../plugin/backup.inc.php:44
 msgid "Jump"
 msgstr "移動"
 
-#: ../../plugin/backup.inc.php:36
+#: ../../plugin/backup.inc.php:45
 msgid "backup"
 msgstr "バックアップ"
 
-#: ../../plugin/backup.inc.php:37
+#: ../../plugin/backup.inc.php:46
 msgid "Please input the password for deleting."
 msgstr "削除用のパスワードを入力してください。"
 
-#: ../../plugin/backup.inc.php:38
+#: ../../plugin/backup.inc.php:47
 msgid "Backup of $1 has been deleted."
 msgstr "$1 のバックアップを削除しました。"
 
-#: ../../plugin/backup.inc.php:39 ../../plugin/backup.inc.php:59
+#: ../../plugin/backup.inc.php:48 ../../plugin/backup.inc.php:68
 msgid "Backup list"
 msgstr "バックアップ一覧"
 
-#: ../../plugin/backup.inc.php:40
+#: ../../plugin/backup.inc.php:49
 msgid " $1 has been deleted."
 msgstr "$1 は削除されています。"
 
-#: ../../plugin/backup.inc.php:41
+#: ../../plugin/backup.inc.php:50
 msgid "diff"
 msgstr "差分"
 
-#: ../../plugin/backup.inc.php:42
+#: ../../plugin/backup.inc.php:51
 msgid "The added line is <ins class=\"diff_added\">THIS COLOR</ins>."
 msgstr "追加された行は<ins class=\"diff_added\">この色</ins>です。"
 
-#: ../../plugin/backup.inc.php:43
+#: ../../plugin/backup.inc.php:52
 msgid "The deleted line is <del class=\"diff_removed\">THIS COLOR</del>."
 msgstr "削除された行は<del class=\"diff_removed\">この色</del>です。"
 
-#: ../../plugin/backup.inc.php:44
+#: ../../plugin/backup.inc.php:53
 msgid "Go to $1."
 msgstr "$1 へ行く。"
 
-#: ../../plugin/backup.inc.php:46
+#: ../../plugin/backup.inc.php:55
 msgid "There are no backup(s) of $1."
 msgstr "$1 のバックアップはありません。"
 
-#: ../../plugin/backup.inc.php:47
+#: ../../plugin/backup.inc.php:56
 msgid "diff current"
 msgstr "現在との差分"
 
-#: ../../plugin/backup.inc.php:48
+#: ../../plugin/backup.inc.php:57
 msgid "source"
 msgstr "ソース"
 
-#: ../../plugin/backup.inc.php:49 ../../plugin/backup.inc.php:64
+#: ../../plugin/backup.inc.php:58 ../../plugin/backup.inc.php:73
 msgid "Roll back"
 msgstr "ロールバック"
 
-#: ../../plugin/backup.inc.php:50
+#: ../../plugin/backup.inc.php:59
 msgid "Versions:"
 msgstr "版："
 
-#: ../../plugin/backup.inc.php:51
+#: ../../plugin/backup.inc.php:60
 msgid "View the $1."
 msgstr "$1 を表示"
 
-#: ../../plugin/backup.inc.php:52
+#: ../../plugin/backup.inc.php:61
 msgid "diff for visual"
 msgstr "現在との差分 - Visual"
 
-#: ../../plugin/backup.inc.php:53
+#: ../../plugin/backup.inc.php:62
 msgid "-&gt;"
 msgstr "→"
 
-#: ../../plugin/backup.inc.php:56
+#: ../../plugin/backup.inc.php:65
 msgid "Backup of $1(No. $2)"
 msgstr "$1 のバックアップ(No.$2)"
 
-#: ../../plugin/backup.inc.php:57
+#: ../../plugin/backup.inc.php:66
 msgid "Deleting backup of $1"
 msgstr "$1 のバックアップを削除"
 
-#: ../../plugin/backup.inc.php:58
+#: ../../plugin/backup.inc.php:67
 msgid "Backup diff of $1(No. $2)"
 msgstr "$1 のバックアップ差分(No.$2)"
 
-#: ../../plugin/backup.inc.php:60
+#: ../../plugin/backup.inc.php:69
 msgid "Backup diff of $1 vs current(No. $2)"
 msgstr "$1 のバックアップの現在との差分(No.$2)"
 
-#: ../../plugin/backup.inc.php:61
+#: ../../plugin/backup.inc.php:70
 msgid "Backup source of $1(No. $2)"
 msgstr "$1 のバックアップソース(No.$2)"
 
-#: ../../plugin/backup.inc.php:62
+#: ../../plugin/backup.inc.php:71
 msgid "Backup list of $1"
 msgstr "$1 のバックアップ一覧"
 
-#: ../../plugin/backup.inc.php:65
+#: ../../plugin/backup.inc.php:74
 msgid "Delete selected backup(s)."
 msgstr "選択されたバックアップを削除"
 
-#: ../../plugin/backup.inc.php:66
+#: ../../plugin/backup.inc.php:75
 msgid "Rolled back to $1."
 msgstr "$1にロールバックされました。"
 
-#: ../../plugin/backup.inc.php:67
+#: ../../plugin/backup.inc.php:76
 #, php-format
 msgid "Roll back from a backup(No. %s), this page."
 msgstr "バックアップ（No. %s）よりページをロールバックする。"
 
-#: ../../plugin/backup.inc.php:68
+#: ../../plugin/backup.inc.php:77
 #, php-format
 msgid "This page has been rolled back from a backup(No. %s)."
 msgstr "このページはバックアップ（No. %s）よりロールバックされました。"
 
-#: ../../plugin/backup.inc.php:177
+#: ../../plugin/backup.inc.php:186
 msgid "This feature is prohibited"
 msgstr "この機能は、禁止されています"
 

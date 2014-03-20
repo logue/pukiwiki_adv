@@ -1,61 +1,65 @@
-# PukiWiki Plus! - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2005 PukiWiki Plus! Developer Team
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
 # License is GPL2
-# Author: Miko.Hoshina(E.Satoh) <miko@cafeterrace.com>, 2005.
+# Logue <logue@hotmail.co.jp>, 2014.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Plus! 1.4.5-u2\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
-"PO-Revision-Date: 2012-07-05 20:59+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-03-20 14:01+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
-"Language-Team: Japanese\n"
-"Language: \n"
+"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../pot\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../../plugin/diff.inc.php:36
+#: ../../plugin/diff.inc.php:39
 msgid "The page was not found."
 msgstr "指定されたページは見つかりませんでした。"
 
-#: ../../plugin/diff.inc.php:37
+#: ../../plugin/diff.inc.php:40
 msgid "The added line is <span class=\"diff_added\">THIS COLOR</span>."
 msgstr "追加された行は<span class=\"diff_added\">この色</span>です。"
 
-#: ../../plugin/diff.inc.php:38
+#: ../../plugin/diff.inc.php:41
 msgid "The deleted line is <span class=\"diff_removed\">THIS COLOR</span>."
 msgstr "削除された行は<span class=\"diff_removed\">この色</span>です。"
 
-#: ../../plugin/diff.inc.php:39
+#: ../../plugin/diff.inc.php:42
 msgid "Go to $1."
 msgstr "$1 へ行く。"
 
-#: ../../plugin/diff.inc.php:40
+#: ../../plugin/diff.inc.php:43
 msgid " $1 has been deleted."
 msgstr "$1 の差分を削除しました。"
 
-#: ../../plugin/diff.inc.php:41
+#: ../../plugin/diff.inc.php:44
 msgid "Diff of $1"
 msgstr "$1 の変更点"
 
-#: ../../plugin/diff.inc.php:42 ../../plugin/diff.inc.php:99
+#: ../../plugin/diff.inc.php:45 ../../plugin/diff.inc.php:95
 msgid "Deleting diff of $1"
 msgstr "$1 の差分を削除"
 
-#: ../../plugin/diff.inc.php:100
+#: ../../plugin/diff.inc.php:96
 msgid "Diff of  $1 has been deleted."
 msgstr "$1 の差分を削除しました。"
 
-#: ../../plugin/diff.inc.php:101
+#: ../../plugin/diff.inc.php:97
 msgid "Please input the password for deleting."
 msgstr "削除を行うためのパスワードを入力して下さい。"
 
-#: ../../plugin/diff.inc.php:102
+#: ../../plugin/diff.inc.php:98
 msgid "Delete"
 msgstr "削除"
 
-#: ../../plugin/diff.inc.php:103
+#: ../../plugin/diff.inc.php:99
 msgid "Invalid password."
 msgstr "パスワードが間違っています。"

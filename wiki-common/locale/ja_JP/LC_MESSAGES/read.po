@@ -1,43 +1,52 @@
-# PukiWiki Plus! - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2006 PukiWiki Plus! Developer Team
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
 # License is GPL2
-# Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>, 2006.
+# Logue <logue@hotmail.co.jp>, 2014.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Plus! 1.4.7-u2-i18n\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
-"PO-Revision-Date: 2012-07-05 21:47+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-03-20 14:01+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
-"Language-Team: Japanese <ja@li.org>\n"
-"Language: ja\n"
+"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../pot\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../../plugin/read.inc.php:10
-msgid "Redirect"
-msgstr "リダイレクト"
+#: ../../plugin/read.inc.php:20
+msgid "Invalied page name"
+msgstr "無効なページ名です。"
 
-#: ../../plugin/read.inc.php:11
+#: ../../plugin/read.inc.php:21
 #, php-format
 msgid "This pagename is an alias to %s."
 msgstr "このページは%sのエイリアスです。"
 
-#: ../../plugin/read.inc.php:12
-msgid "Page not found"
-msgstr "ページがみつかりません。"
-
-#: ../../plugin/read.inc.php:13
-msgid "Sorry, but the page you were trying to view does not exist or deleted."
-msgstr "あなたが、閲覧しようとしたページは見つからないか削除されています。"
-
-#: ../../plugin/read.inc.php:14
+#: ../../plugin/read.inc.php:22
 #, php-format
-msgid ""
-"Please check <a href=\"%1s\" rel=\"nofollow\">backups</a> or <a href=\"%2s\" "
-"rel=\"nofollow\">create page</a>."
-msgstr ""
-"<a href=\"%1s\" rel=\"nofollow\">バックアップ</a>を確認するか、<a href=\"%2s"
-"\" rel=\"nofollow\">ページを作成</a>してください。"
+msgid "%s is not a valid InterWikiName."
+msgstr "%sは、有効なInterWikiNameではありません。"
+
+#~ msgid "Redirect"
+#~ msgstr "リダイレクト"
+
+#~ msgid "Page not found"
+#~ msgstr "ページがみつかりません。"
+
+#~ msgid ""
+#~ "Sorry, but the page you were trying to view does not exist or deleted."
+#~ msgstr "あなたが、閲覧しようとしたページは見つからないか削除されています。"
+
+#~ msgid ""
+#~ "Please check <a href=\"%1s\" rel=\"nofollow\">backups</a> or <a href=\"%2s"
+#~ "\" rel=\"nofollow\">create page</a>."
+#~ msgstr ""
+#~ "<a href=\"%1s\" rel=\"nofollow\">バックアップ</a>を確認するか、<a href="
+#~ "\"%2s\" rel=\"nofollow\">ページを作成</a>してください。"

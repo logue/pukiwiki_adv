@@ -1,46 +1,50 @@
-# PukiWiki Plus! - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2006 PukiWiki Plus! Developer Team
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
 # License is GPL2
-# Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>, 2006.
+# Logue <logue@hotmail.co.jp>, 2014.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Plus! 1.4.6-u1-i18n\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
-"PO-Revision-Date: 2011-06-01 15:05+0900\n"
-"Last-Translator: Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>\n"
-"Language-Team: Japanese <ja@li.org>\n"
-"Language: ja\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-03-20 14:01+0900\n"
+"Last-Translator: Logue <logue@hotmail.co.jp>\n"
+"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../pot\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../../plugin/csv2newpage.inc.php:29
+#: ../../plugin/csv2newpage.inc.php:36
 msgid "Exec"
 msgstr "実行"
 
-#: ../../plugin/csv2newpage.inc.php:30
+#: ../../plugin/csv2newpage.inc.php:37
 msgid "New page generation:"
 msgstr "新規ページ生成:"
 
-#: ../../plugin/csv2newpage.inc.php:31
+#: ../../plugin/csv2newpage.inc.php:38
 msgid "Attache & Exec"
 msgstr "添付＆実行"
 
-#: ../../plugin/csv2newpage.inc.php:32
+#: ../../plugin/csv2newpage.inc.php:39
 msgid "CSV File:"
 msgstr "CSVファイル:"
 
-#: ../../plugin/csv2newpage.inc.php:34
+#: ../../plugin/csv2newpage.inc.php:41
 #, php-format
 msgid "Maximum file size is %s."
 msgstr "アップロード可能最大ファイルサイズは %s です。"
 
-#: ../../plugin/csv2newpage.inc.php:35
+#: ../../plugin/csv2newpage.inc.php:42
 msgid "password"
 msgstr "パスワード"
 
-#: ../../plugin/csv2newpage.inc.php:36
+#: ../../plugin/csv2newpage.inc.php:43
 msgid "Administrator password"
 msgstr "管理者パスワード"

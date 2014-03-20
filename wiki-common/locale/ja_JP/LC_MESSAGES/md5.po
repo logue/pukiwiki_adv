@@ -1,37 +1,41 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
+# License is GPL2
+# Logue <logue@hotmail.co.jp>, 2014.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
-"PO-Revision-Date: 2012-07-05 22:04+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-03-20 14:01+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../pot\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../../plugin/md5.inc.php:24 ../../plugin/md5.inc.php:64
+#: ../../plugin/md5.inc.php:27 ../../plugin/md5.inc.php:68
 msgid "Prohibited"
 msgstr "禁止"
 
-#: ../../plugin/md5.inc.php:36
+#: ../../plugin/md5.inc.php:39
 msgid "Compute userPassword"
 msgstr "パスワードを入力してください。"
 
-#: ../../plugin/md5.inc.php:66
+#: ../../plugin/md5.inc.php:70
 msgid "Limit: malicious message length"
 msgstr "限界：不正な長さのメッセージです。"
 
-#: ../../plugin/md5.inc.php:79
+#: ../../plugin/md5.inc.php:82
 msgid "NOTICE: Don't use this feature via untrustful or unsure network"
 msgstr "通知：この機能は信頼出来ないネットワークでは使用しないでください。"
 
-#: ../../plugin/md5.inc.php:82
+#: ../../plugin/md5.inc.php:84
 msgid "NO PHRASE"
 msgstr "プレーズが入力されていません。"

@@ -1,54 +1,58 @@
-# PukiWiki Plus! - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2006 PukiWiki Plus! Developer Team
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
 # License is GPL2
-# Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>, 2006.
+# Logue <logue@hotmail.co.jp>, 2014.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Plus! 1.4.7-u2-i18n\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
-"PO-Revision-Date: 2011-06-01 15:05+0900\n"
-"Last-Translator: Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>\n"
-"Language-Team: Japanese <ja@li.org>\n"
-"Language: ja\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-03-20 14:01+0900\n"
+"Last-Translator: Logue <logue@hotmail.co.jp>\n"
+"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../pot\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../../plugin/jugemkey.inc.php:86
+#: ../../plugin/jugemkey.inc.php:20
 msgid "logout"
-msgstr "logout"
+msgstr "ログアウト"
 
-#: ../../plugin/jugemkey.inc.php:87
+#: ../../plugin/jugemkey.inc.php:21
 #, php-format
 msgid "%s has been approved by JugemKey."
 msgstr "%s さんは、JugemKey により認証されています。"
 
-#: ../../plugin/jugemkey.inc.php:88
+#: ../../plugin/jugemkey.inc.php:22
 msgid "The function of JugemKey is invalid."
 msgstr "JugemKey の機能は無効です。"
 
-#: ../../plugin/jugemkey.inc.php:89
+#: ../../plugin/jugemkey.inc.php:23
 msgid "pkwk_session_start() doesn't exist."
 msgstr "pkwk_session_start() が見つかりません。"
 
-#: ../../plugin/jugemkey.inc.php:90
+#: ../../plugin/jugemkey.inc.php:24
 msgid "The session is not start."
 msgstr "セッションが開始されていません。"
 
-#: ../../plugin/jugemkey.inc.php:91
+#: ../../plugin/jugemkey.inc.php:25
 msgid "JugemKey"
 msgstr "JugemKey"
 
-#: ../../plugin/jugemkey.inc.php:92
+#: ../../plugin/jugemkey.inc.php:26
 msgid "LOGIN(JugemKey)"
 msgstr "ログイン(JugemKey)"
 
-#: ../../plugin/jugemkey.inc.php:93
+#: ../../plugin/jugemkey.inc.php:27
 msgid "JugemKey user information"
 msgstr "JugemKey ユーザ情報"
 
-#: ../../plugin/jugemkey.inc.php:94
+#: ../../plugin/jugemkey.inc.php:28
 msgid "User Name"
 msgstr "ユーザ名"

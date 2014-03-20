@@ -1,50 +1,54 @@
-# PukiWiki Plus! - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2006 PukiWiki Plus! Developer Team
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
 # License is GPL2
-# Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>, 2006.
+# Logue <logue@hotmail.co.jp>, 2014.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Plus! 1.4.7-u2-i18n\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
-"PO-Revision-Date: 2011-06-01 15:05+0900\n"
-"Last-Translator: Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>\n"
-"Language-Team: Japanese <ja@li.org>\n"
-"Language: ja\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-03-20 14:01+0900\n"
+"Last-Translator: Logue <logue@hotmail.co.jp>\n"
+"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../pot\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../../plugin/typekey.inc.php:171
+#: ../../plugin/typekey.inc.php:19
 msgid "TypeKey"
 msgstr "TypeKey"
 
-#: ../../plugin/typekey.inc.php:172
+#: ../../plugin/typekey.inc.php:20
 msgid "logout"
 msgstr "logout"
 
-#: ../../plugin/typekey.inc.php:173
+#: ../../plugin/typekey.inc.php:21
 #, php-format
 msgid "%s has been approved by TypeKey."
 msgstr "%s さんは、TypeKey により認証されています。"
 
-#: ../../plugin/typekey.inc.php:174
+#: ../../plugin/typekey.inc.php:22
 msgid "site_token must be set."
 msgstr "site_token を設定しなくてはいけません。"
 
-#: ../../plugin/typekey.inc.php:175
+#: ../../plugin/typekey.inc.php:23
 msgid "The function of TypeKey is invalid."
 msgstr "TypeKey の機能は無効です。"
 
-#: ../../plugin/typekey.inc.php:176
+#: ../../plugin/typekey.inc.php:24
 msgid "pkwk_session_start() doesn't exist."
 msgstr "pkwk_session_start() が見つかりません。"
 
-#: ../../plugin/typekey.inc.php:177
+#: ../../plugin/typekey.inc.php:25
 msgid "The session is not start."
 msgstr "セッションが開始されていません。"
 
-#: ../../plugin/typekey.inc.php:178
+#: ../../plugin/typekey.inc.php:26
 msgid "LOGIN(TypeKey)"
 msgstr "ログイン(TypeKey)"

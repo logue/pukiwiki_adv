@@ -1,79 +1,92 @@
-# PukiWiki Plus! - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2005 PukiWiki Plus! Developer Team
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
 # License is GPL2
-# Author: Miko.Hoshina(E.Satoh) <miko@cafeterrace.com>, 2005.
+# Logue <logue@hotmail.co.jp>, 2014.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Plus! 1.4.5-u2\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-10-16 10:23+0900\n"
-"PO-Revision-Date: 2012-07-05 21:44+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-03-20 14:01+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
-"Language-Team: Japanese\n"
-"Language: \n"
+"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../pot\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../../plugin/referer.inc.php:27 ../../plugin/referer.inc.php:30
-#: ../../plugin/referer.inc.php:34
+#: ../../plugin/referer.inc.php:33 ../../plugin/referer.inc.php:36
+#: ../../plugin/referer.inc.php:40
 msgid "Referer"
 msgstr "リンク元の表示"
 
-#: ../../plugin/referer.inc.php:28
+#: ../../plugin/referer.inc.php:34
 msgid "Referer List"
 msgstr "リンク元一覧"
 
-#: ../../plugin/referer.inc.php:29
+#: ../../plugin/referer.inc.php:35
 msgid "No data"
 msgstr "データーがありません。"
 
-#: ../../plugin/referer.inc.php:31
+#: ../../plugin/referer.inc.php:37
 msgid "LastUpdate"
 msgstr "最終更新日時"
 
-#: ../../plugin/referer.inc.php:32
+#: ../../plugin/referer.inc.php:38
 msgid "First Register"
 msgstr "初回登録日時"
 
-#: ../../plugin/referer.inc.php:33
+#: ../../plugin/referer.inc.php:39
 msgid "RefCounter"
 msgstr "カウンタ"
 
-#: ../../plugin/referer.inc.php:36
+#: ../../plugin/referer.inc.php:42
 msgid "&uArr;"
 msgstr "↑"
 
-#: ../../plugin/referer.inc.php:37
+#: ../../plugin/referer.inc.php:43
 msgid "&dArr;"
 msgstr "↓"
 
-#: ../../plugin/referer.inc.php:38
+#: ../../plugin/referer.inc.php:44
 msgid "Referer function is disabled."
 msgstr "リンク元機能は無効化されています。"
 
-#: ../../plugin/referer.inc.php:39
+#: ../../plugin/referer.inc.php:45
 msgid "The page you requested was not found."
 msgstr "リクエストされたページは見つかりませんでした。"
 
-#: ../../plugin/referer.inc.php:40
+#: ../../plugin/referer.inc.php:46
 msgid "Search keys"
 msgstr "検索キーワード"
 
-#: ../../plugin/referer.inc.php:41
+#: ../../plugin/referer.inc.php:47
 #, php-format
 msgid "All the Search Key of %s"
 msgstr "%sの全検索キーワード"
 
-#: ../../plugin/referer.inc.php:42
+#: ../../plugin/referer.inc.php:48
 msgid "Mutual links"
 msgstr "相互リンク"
 
-#: ../../plugin/referer.inc.php:43
+#: ../../plugin/referer.inc.php:49
 #, php-format
 msgid "Auto Mutual link of %s"
 msgstr "%sの自動リンク集"
+
+#: ../../plugin/referer.inc.php:50
+msgid "PingBack"
+msgstr "PingBack"
+
+#: ../../plugin/referer.inc.php:51
+#, php-format
+msgid "PingBacks of %s"
+msgstr "%sのPingBack一覧"
 
 #~ msgid "F j, Y, g:i A"
 #~ msgstr "Y年n月j日 H:i"

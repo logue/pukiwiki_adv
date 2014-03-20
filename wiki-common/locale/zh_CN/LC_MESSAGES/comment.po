@@ -1,13 +1,13 @@
-# PukiWiki Plus! - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2005 PukiWiki Plus! Developer Team
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
 # License is GPL2
-# Author: Miko.Hoshina(E.Satoh) <miko@cafeterrace.com>, 2005.
+# Logue <logue@hotmail.co.jp>, 2014.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Adv.\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-10-16 10:24+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
 "PO-Revision-Date: 2012-11-26 18:02+0800\n"
 "Last-Translator: 迪艾维尔 <diwill2012@gmail.com>\n"
 "Language-Team: 迪艾维尔 <diwill2012@gmail.com>\n"
@@ -15,18 +15,20 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.4\n"
 "X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../pot\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../../plugin/comment.inc.php:35
+#: ../../plugin/comment.inc.php:37
 msgid "Name: "
 msgstr "用户名: "
 
-#: ../../plugin/comment.inc.php:36
+#: ../../plugin/comment.inc.php:38
 msgid "Post Comment"
 msgstr "提交评论"
 
-#: ../../plugin/comment.inc.php:37
+#: ../../plugin/comment.inc.php:39
 msgid "Comment: "
 msgstr "评论: "
 

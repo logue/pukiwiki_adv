@@ -1,37 +1,45 @@
-# PukiWiki Plus! - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2006 PukiWiki Plus! Developer Team
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
 # License is GPL2
-# Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>, 2006.
+# Logue <logue@hotmail.co.jp>, 2014.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Plus! 1.4.6-u1-i18n\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-09 22:31+0900\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
 "PO-Revision-Date: 2012-11-26 16:33+0800\n"
 "Last-Translator: 迪艾维尔 <diwill2012@gmail.com>\n"
-"Language-Team: Japanese <ja@li.org>\n"
+"Language-Team: 迪艾维尔 <diwill2012@gmail.com>\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../pot\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../../plugin/role.inc.php:17
+#: ../../plugin/role.inc.php:18
 msgid "Role"
 msgstr "角色"
 
-#: ../../plugin/role.inc.php:18
+#: ../../plugin/role.inc.php:19
 msgid "Guest"
 msgstr "访客"
 
-#: ../../plugin/role.inc.php:19
+#: ../../plugin/role.inc.php:20
 msgid "Webmaster"
 msgstr "站点管理员"
 
-#: ../../plugin/role.inc.php:20
+#: ../../plugin/role.inc.php:21
 msgid "Contents manager"
 msgstr "内容管理员"
 
-#: ../../plugin/role.inc.php:21
+#: ../../plugin/role.inc.php:22
+msgid "Enrollee"
+msgstr ""
+
+#: ../../plugin/role.inc.php:23
 msgid "Authorized"
 msgstr "已授权"

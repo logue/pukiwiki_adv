@@ -1,60 +1,65 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
+# License is GPL2
+# Logue <logue@hotmail.co.jp>, 2014.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Plus! 1.4.5_u2\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-07-07 17:14+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
 "PO-Revision-Date: 2011-06-01 15:05+0900\n"
 "Last-Translator: Chung-Yen Chang <candyz@linux.org.tw>\n"
 "Language-Team: Traditional Chinese <zh@li.org>\n"
+"Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../pot\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../../plugin/diff.inc.php:36
+#: ../../plugin/diff.inc.php:39
 msgid "The page was not found."
 msgstr "找不到這個頁面。"
 
-#: ../../plugin/diff.inc.php:37
+#: ../../plugin/diff.inc.php:40
 msgid "The added line is <span class=\"diff_added\">THIS COLOR</span>."
 msgstr "新增的行是 <span class=\"diff_added\">這個顏色</span>。"
 
-#: ../../plugin/diff.inc.php:38
+#: ../../plugin/diff.inc.php:41
 msgid "The deleted line is <span class=\"diff_removed\">THIS COLOR</span>."
 msgstr "刪除的行是 <span class=\"diff_removed\">這個顏色</span>。"
 
-#: ../../plugin/diff.inc.php:39
+#: ../../plugin/diff.inc.php:42
 msgid "Go to $1."
 msgstr "前往 $1。"
 
-#: ../../plugin/diff.inc.php:40
+#: ../../plugin/diff.inc.php:43
 msgid " $1 has been deleted."
 msgstr "$1 已經被刪除。"
 
-#: ../../plugin/diff.inc.php:41
+#: ../../plugin/diff.inc.php:44
 msgid "Diff of $1"
 msgstr "$1 的差異"
 
-#: ../../plugin/diff.inc.php:42 ../../plugin/diff.inc.php:99
+#: ../../plugin/diff.inc.php:45 ../../plugin/diff.inc.php:95
 msgid "Deleting diff of $1"
 msgstr "刪除 $1 的差異"
 
-#: ../../plugin/diff.inc.php:100
+#: ../../plugin/diff.inc.php:96
 msgid "Diff of  $1 has been deleted."
 msgstr "$1 的差異已經被刪除。"
 
-#: ../../plugin/diff.inc.php:101
+#: ../../plugin/diff.inc.php:97
 msgid "Please input the password for deleting."
 msgstr "請輸入密碼來刪除。"
 
-#: ../../plugin/diff.inc.php:102
+#: ../../plugin/diff.inc.php:98
 msgid "Delete"
 msgstr "刪除"
 
-#: ../../plugin/diff.inc.php:103
+#: ../../plugin/diff.inc.php:99
 msgid "Invalid password."
 msgstr "無效的密碼。"

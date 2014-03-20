@@ -1,92 +1,96 @@
-# PukiWiki Plus! - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2009 PukiWiki Plus! Developer Team
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
 # License is GPL2
-# Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>, 2009.
+# Logue <logue@hotmail.co.jp>, 2011.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Plus! 1.4.5-u2-i18n\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
-"PO-Revision-Date: 2012-07-07 16:35+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-03-20 14:01+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
-"Language-Team: Japanese <ja@li.org>\n"
-"Language: ja\n"
+"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../pot\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../../plugin/adm_auth_wkgrp.inc.php:18
+#: ../../plugin/adm_auth_wkgrp.inc.php:24
 msgid "User registration management"
 msgstr "利用者登録管理"
 
-#: ../../plugin/adm_auth_wkgrp.inc.php:19
+#: ../../plugin/adm_auth_wkgrp.inc.php:25
 msgid "User registration(auth_wkgrp)"
 msgstr "利用者登録(auth_wkgrp)"
 
-#: ../../plugin/adm_auth_wkgrp.inc.php:20
+#: ../../plugin/adm_auth_wkgrp.inc.php:26
 msgid "Generation"
 msgstr "生成"
 
-#: ../../plugin/adm_auth_wkgrp.inc.php:21
+#: ../../plugin/adm_auth_wkgrp.inc.php:27
 msgid "User registration menu"
 msgstr "利用者登録画面"
 
-#: ../../plugin/adm_auth_wkgrp.inc.php:22
+#: ../../plugin/adm_auth_wkgrp.inc.php:28
 msgid "Page information"
 msgstr "ページ情報"
 
-#: ../../plugin/adm_auth_wkgrp.inc.php:23
+#: ../../plugin/adm_auth_wkgrp.inc.php:29
 msgid "Definition file information"
 msgstr "定義ファイル情報"
 
-#: ../../plugin/adm_auth_wkgrp.inc.php:24
+#: ../../plugin/adm_auth_wkgrp.inc.php:30
 msgid "Updated DateTime"
 msgstr "更新日時"
 
-#: ../../plugin/adm_auth_wkgrp.inc.php:25
+#: ../../plugin/adm_auth_wkgrp.inc.php:31
 msgid "Generation DateTime"
 msgstr "生成日時"
 
-#: ../../plugin/adm_auth_wkgrp.inc.php:26
+#: ../../plugin/adm_auth_wkgrp.inc.php:32
 msgid "Check"
 msgstr "確認"
 
-#: ../../plugin/adm_auth_wkgrp.inc.php:27
+#: ../../plugin/adm_auth_wkgrp.inc.php:33
 msgid "View"
 msgstr "参照"
 
-#: ../../plugin/adm_auth_wkgrp.inc.php:28
+#: ../../plugin/adm_auth_wkgrp.inc.php:34
 msgid "Import"
 msgstr "インポート"
 
-#: ../../plugin/adm_auth_wkgrp.inc.php:29
+#: ../../plugin/adm_auth_wkgrp.inc.php:35
 #, php-format
 msgid "The %s file was generated."
 msgstr "%s ファイルを生成しました。"
 
-#: ../../plugin/adm_auth_wkgrp.inc.php:30
+#: ../../plugin/adm_auth_wkgrp.inc.php:36
 #, php-format
 msgid "Data was taken into %s."
 msgstr "%s にデータを取り込みました。"
 
-#: ../../plugin/adm_auth_wkgrp.inc.php:31
+#: ../../plugin/adm_auth_wkgrp.inc.php:37
 msgid "It is necessary to generate it."
 msgstr "生成が必要です"
 
-#: ../../plugin/adm_auth_wkgrp.inc.php:32
+#: ../../plugin/adm_auth_wkgrp.inc.php:38
 msgid "The manager authority is necessary."
 msgstr "管理者権限が必要です。"
 
-#: ../../plugin/adm_auth_wkgrp.inc.php:33
+#: ../../plugin/adm_auth_wkgrp.inc.php:39
 msgid "The generation function is invalid."
 msgstr "生成機能は無効です。"
 
-#: ../../plugin/adm_auth_wkgrp.inc.php:34
+#: ../../plugin/adm_auth_wkgrp.inc.php:40
 msgid "Because the page already exists, processing is discontinued."
 msgstr "ページが既に存在しますので、処理を中止します。"
 
-#: ../../plugin/adm_auth_wkgrp.inc.php:35
+#: ../../plugin/adm_auth_wkgrp.inc.php:41
 msgid ""
 "The following images are the one (reading auth_wkgrp, and conversion into "
 "page image)."

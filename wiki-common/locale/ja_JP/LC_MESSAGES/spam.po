@@ -1,63 +1,67 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
+# License is GPL2
+# Logue <logue@hotmail.co.jp>, 2014.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Advance 1.0\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-09-08 08:08+0900\n"
-"PO-Revision-Date: 2012-07-05 22:07+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-03-20 14:01+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../pot\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../../plugin/spam.inc.php:14
+#: ../../plugin/spam.inc.php:20
 msgid "Spam tools: "
 msgstr "スパムツール："
 
-#: ../../plugin/spam.inc.php:15
+#: ../../plugin/spam.inc.php:21
 msgid "Menu"
 msgstr "メニュー"
 
-#: ../../plugin/spam.inc.php:16
+#: ../../plugin/spam.inc.php:22
 msgid "PKWK_READONLY prohibits this"
 msgstr ""
 
-#: ../../plugin/spam.inc.php:17
+#: ../../plugin/spam.inc.php:23
 msgid "Start from: "
 msgstr "開始："
 
-#: ../../plugin/spam.inc.php:18
+#: ../../plugin/spam.inc.php:24
 msgid "Sort (heavy)"
 msgstr "ソート（重いです）"
 
-#: ../../plugin/spam.inc.php:19
+#: ../../plugin/spam.inc.php:25
 msgid "Pass: "
 msgstr "パスワード："
 
-#: ../../plugin/spam.inc.php:20
+#: ../../plugin/spam.inc.php:26
 msgid "Check"
 msgstr "チェック"
 
-#: ../../plugin/spam.inc.php:21
+#: ../../plugin/spam.inc.php:27
 msgid "Check existing pages. (badhost only at this time)"
 msgstr "存在するページをチェックしています。"
 
-#: ../../plugin/spam.inc.php:22
+#: ../../plugin/spam.inc.php:28
 #, php-format
 msgid "FOUND at %s."
 msgstr "%sが見つかりました。"
 
-#: ../../plugin/spam.inc.php:23
+#: ../../plugin/spam.inc.php:29
 #, php-format
 msgid "Pages: %1s hit / %2s checked / %3s all"
 msgstr "ページ%1s件ヒット／%2s件チェック／全%3s件"
 
-#: ../../plugin/spam.inc.php:24
+#: ../../plugin/spam.inc.php:30
 msgid "Pages"
 msgstr "ページ"

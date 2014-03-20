@@ -1,118 +1,122 @@
-# PukiWiki Plus! - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2005 PukiWiki Plus! Developer Team
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
 # License is GPL2
-# Author: Miko.Hoshina(E.Satoh) <miko@cafeterrace.com>, 2005.
+# Logue <logue@hotmail.co.jp>, 2014.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Plus! 1.4.5-u2\n"
+"Project-Id-Version: PukiWiki Advance 2.0\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-10-16 10:25+0900\n"
-"PO-Revision-Date: 2012-07-07 04:49+0900\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-03-20 14:01+0900\n"
 "Last-Translator: Logue <logue@hotmail.co.jp>\n"
-"Language-Team: Japanese\n"
-"Language: \n"
+"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../pot\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../../plugin/rename.inc.php:20
+#: ../../plugin/rename.inc.php:25
 #, php-format
 msgid "Error:%s"
 msgstr "エラー:%s"
 
-#: ../../plugin/rename.inc.php:21
+#: ../../plugin/rename.inc.php:26
 msgid "no matching page(s)"
 msgstr "マッチするページがありません。"
 
-#: ../../plugin/rename.inc.php:22
+#: ../../plugin/rename.inc.php:27
 msgid "the new name is invalid."
 msgstr "リネーム後のページ名が正しくありません。"
 
-#: ../../plugin/rename.inc.php:23
+#: ../../plugin/rename.inc.php:28
 msgid "Incorrect administrator password."
 msgstr "管理者パスワードが正しくありません。"
 
-#: ../../plugin/rename.inc.php:24
+#: ../../plugin/rename.inc.php:29
 #, php-format
 msgid "%s is not a valid pagename."
 msgstr "%sはページ名ではありません。"
 
-#: ../../plugin/rename.inc.php:25
+#: ../../plugin/rename.inc.php:30
 #, php-format
 msgid "cannot rename %s."
 msgstr "%sをリネームすることはできません。"
 
-#: ../../plugin/rename.inc.php:26
+#: ../../plugin/rename.inc.php:31
 #, php-format
 msgid "already exists :%s."
 msgstr "ページがすでに存在します。:%s"
 
-#: ../../plugin/rename.inc.php:27
+#: ../../plugin/rename.inc.php:32
 msgid "The following files already exist."
 msgstr "以下のファイルがすでに存在します。"
 
-#: ../../plugin/rename.inc.php:28
+#: ../../plugin/rename.inc.php:33
 msgid "Rename page"
 msgstr "ページ名の変更"
 
-#: ../../plugin/rename.inc.php:29
+#: ../../plugin/rename.inc.php:34
 msgid "specify source page name"
 msgstr "変更元ページを指定"
 
-#: ../../plugin/rename.inc.php:30
+#: ../../plugin/rename.inc.php:35
 msgid "rename with regular expressions."
 msgstr "正規表現で置換"
 
-#: ../../plugin/rename.inc.php:31
+#: ../../plugin/rename.inc.php:36
 msgid "related pages"
 msgstr "関連ページ"
 
-#: ../../plugin/rename.inc.php:32
+#: ../../plugin/rename.inc.php:37
 msgid "A related page is also renamed."
 msgstr "関連ページもリネームする"
 
-#: ../../plugin/rename.inc.php:33
+#: ../../plugin/rename.inc.php:38
 #, php-format
 msgid "rename %s"
 msgstr "%sの名前を変更します。"
 
-#: ../../plugin/rename.inc.php:34
+#: ../../plugin/rename.inc.php:39
 msgid "current page name"
 msgstr "現在の名前"
 
-#: ../../plugin/rename.inc.php:35
+#: ../../plugin/rename.inc.php:40
 msgid "new page name"
 msgstr "新しい名前"
 
-#: ../../plugin/rename.inc.php:36
+#: ../../plugin/rename.inc.php:41
 msgid "Administrator password"
 msgstr "管理者パスワード"
 
-#: ../../plugin/rename.inc.php:37
+#: ../../plugin/rename.inc.php:42
 msgid "->"
 msgstr "→"
 
-#: ../../plugin/rename.inc.php:38
+#: ../../plugin/rename.inc.php:43
 msgid "page is not processed when it already exists."
 msgstr "そのページを処理しない"
 
-#: ../../plugin/rename.inc.php:39
+#: ../../plugin/rename.inc.php:44
 msgid "page is overwritten when it already exists."
 msgstr "そのファイルを上書きする"
 
-#: ../../plugin/rename.inc.php:40
+#: ../../plugin/rename.inc.php:45
 msgid "The following files will be renamed."
 msgstr "以下のファイルをリネームします。"
 
-#: ../../plugin/rename.inc.php:41
+#: ../../plugin/rename.inc.php:46
 msgid "The following files have been overwritten."
 msgstr "以下のファイルを上書きしました。"
 
-#: ../../plugin/rename.inc.php:42
+#: ../../plugin/rename.inc.php:47
 msgid "Submit"
 msgstr "実行"
 
-#: ../../plugin/rename.inc.php:43
+#: ../../plugin/rename.inc.php:48
 msgid "Next"
 msgstr "次へ"
