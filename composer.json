@@ -56,7 +56,8 @@
 		"zendframework/zendoauth": "2.*",
 		"zendframework/zendopenid":"2.*",
 		"zendframework/zendservice-akismet":"2.*",
-		"zendframework/zendservice-recaptcha":"2.*"
+		"zendframework/zendservice-recaptcha":"2.*",
+		"zendframework/zendxml":"*"
 	},
 	"suggest":{
 		"ext-curl" : "Facebook needs the CURL PHP extension.",

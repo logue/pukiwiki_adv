@@ -16,8 +16,9 @@
 //    * Cache data will be stored as CACHE_DIR/*.tmp
 
 use PukiWiki\Auth\Auth;
-use PukiWiki\Utility;
 use PukiWiki\Renderer\Header;
+use PukiWiki\Utility;
+use ZendXml\Security as XmlSecurity;
 use Zend\Http\Response;
 
 define('PLUGIN_SHOWRSS_USAGE', '#showrss(URI-to-RSS[,default|menubar|recent[,Cache-lifetime[,Show-timestamp]]])');
@@ -66,7 +67,7 @@ function plugin_showrss_convert()
 	if (! $_xml) return '#showrss: xml extension is not found<br />' . "\n";
 
 	$num = func_num_args();
-	if ($num == 0) return PLUGIN_SHOWRSS_USAGE . '<br />' . "\n";
+	if ($num == 0) return '<p class="alert alert-success">' . PLUGIN_SHOWRSS_USAGE . '</p>' . "\n";
 
 	$argv = func_get_args();
 	$timestamp = FALSE;
@@ -140,23 +141,21 @@ function plugin_showrss_get_rss($target, $cachehour = 6, $raw = false)
 			// ファイルが取得できなかった
 			return array(false, UTIME, $e->getMessage());
 		}
+		
 		$cache['raw']->setItem($cache_name, $data);
 	}else{
 		$data = $cache['raw']->getItem($cache_name);
 	}
 
-	// そのままXMLを出力
-	if ($raw) return array($data, $time, $reason);
-	
-	try{
-		$xml = new SimpleXMLElement($data);
-	}catch (Exception $e){
-		// XMLの解析に失敗した
-		return array(false, UTIME, $e->getMessage());
+	// ZendXmlでXMLの XML eXternal Entity (XXE) とXML Entity Expansion (XEE)の脆弱性をついた攻撃を排除
+	$xml = XmlSecurity::scan($data);
+	if (!($xml instanceof \SimpleXMLElement)){
+		return array(false, UTIME, 'Invalied XML.');
 	}
-	return array($xml,$time,null);
-}
 
+	// 出力
+	return $raw ? array($xml->asXML(), $time, $reason) : array($xml,$time,null);
+}
 
 function plugin_showrss_get_timestamp($str)
 {
