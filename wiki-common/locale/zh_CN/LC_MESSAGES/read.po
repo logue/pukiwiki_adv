@@ -1,0 +1,45 @@
+# PukiWiki Plus! - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2006 PukiWiki Plus! Developer Team
+# License is GPL2
+# Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>, 2006.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PukiWiki Adv.\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"PO-Revision-Date: 2012-11-29 16:22+0800\n"
+"Last-Translator: 迪艾维尔 <diwill2012@gmail.com>\n"
+"Language-Team: 迪艾维尔 <diwill2012@gmail.com>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#: ../../plugin/read.inc.php:10
+msgid "Redirect"
+msgstr "重定向"
+
+#: ../../plugin/read.inc.php:11
+#, php-format
+msgid "This pagename is an alias to %s."
+msgstr "%s的页面名称是一个别名。"
+
+#: ../../plugin/read.inc.php:12
+msgid "Page not found"
+msgstr "页面未找到。"
+
+#: ../../plugin/read.inc.php:13
+msgid "Sorry, but the page you were trying to view does not exist or deleted."
+msgstr "很抱歉，但你试图查看的页面不存在或已删除。"
+
+#: ../../plugin/read.inc.php:14
+#, php-format
+msgid ""
+"Please check <a href=\"%1s\" rel=\"nofollow\">backups</a> or <a href=\"%2s\" "
+"rel=\"nofollow\">create page</a>."
+msgstr ""
+"请检查<a href=\"%1s\" rel=\"nofollow\">备份</a>或<a href=\"%2s\" rel="
+"\"nofollow\">创建页面</a>。"

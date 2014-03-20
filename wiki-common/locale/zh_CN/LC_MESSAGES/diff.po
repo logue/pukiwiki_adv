@@ -1,0 +1,63 @@
+# PukiWiki Plus! - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2005 PukiWiki Plus! Developer Team
+# License is GPL2
+# Author: Miko.Hoshina(E.Satoh) <miko@cafeterrace.com>, 2005.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PukiWiki Adv.\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"PO-Revision-Date: 2012-11-26 17:00+0800\n"
+"Last-Translator: 迪艾维尔 <diwill2012@gmail.com>\n"
+"Language-Team: 迪艾维尔 <diwill2012@gmail.com>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#: ../../plugin/diff.inc.php:36
+msgid "The page was not found."
+msgstr "页面未找到。"
+
+#: ../../plugin/diff.inc.php:37
+msgid "The added line is <span class=\"diff_added\">THIS COLOR</span>."
+msgstr "<span class=\"diff_added\">蓝色</span>是添加的行。"
+
+#: ../../plugin/diff.inc.php:38
+msgid "The deleted line is <span class=\"diff_removed\">THIS COLOR</span>."
+msgstr "<span class=\"diff_removed\">红色</span>是删除的行。"
+
+#: ../../plugin/diff.inc.php:39
+msgid "Go to $1."
+msgstr "前往 $1。"
+
+#: ../../plugin/diff.inc.php:40
+msgid " $1 has been deleted."
+msgstr "$1 已被删除。"
+
+#: ../../plugin/diff.inc.php:41
+msgid "Diff of $1"
+msgstr "$1 的差异"
+
+#: ../../plugin/diff.inc.php:42 ../../plugin/diff.inc.php:99
+msgid "Deleting diff of $1"
+msgstr "删除 $1 的差异"
+
+#: ../../plugin/diff.inc.php:100
+msgid "Diff of  $1 has been deleted."
+msgstr "$1 的差异已被删除。"
+
+#: ../../plugin/diff.inc.php:101
+msgid "Please input the password for deleting."
+msgstr "请输入删除密码。"
+
+#: ../../plugin/diff.inc.php:102
+msgid "Delete"
+msgstr "删除"
+
+#: ../../plugin/diff.inc.php:103
+msgid "Invalid password."
+msgstr "密码无效。"

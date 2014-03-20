@@ -1,0 +1,49 @@
+#
+#
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PukiWiki Adv.\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-10-16 10:24+0900\n"
+"PO-Revision-Date: \n"
+"Last-Translator: 迪艾维尔 <diwill2012@gmail.com>\n"
+"Language-Team: 迪艾维尔 <diwill2012@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+"Language: zh_CN\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#: ../../plugin/vote.inc.php:90 ../../plugin/vote.inc.php:146
+msgid "Error in vote"
+msgstr "投票时发生错误。"
+
+#: ../../plugin/vote.inc.php:91 ../../plugin/vote.inc.php:147
+msgid "Continuation vote cannot be performed."
+msgstr "不能连续投票。"
+
+#: ../../plugin/vote.inc.php:99 ../../plugin/vote.inc.php:155
+msgid "There was no matching vote. "
+msgstr "没有相关的投票。"
+
+#: ../../plugin/vote.inc.php:669
+msgid "Selection"
+msgstr "选项"
+
+#: ../../plugin/vote.inc.php:670
+msgid "Points"
+msgstr "票数"
+
+#: ../../plugin/vote.inc.php:671 ../../plugin/vote.inc.php:689
+msgid "Vote"
+msgstr "投票"
+
+#: ../../plugin/vote.inc.php:701
+msgid "Item name"
+msgstr "项目名称"
+
+#: ../../plugin/vote.inc.php:704
+msgid "Add"
+msgstr "添加项目"

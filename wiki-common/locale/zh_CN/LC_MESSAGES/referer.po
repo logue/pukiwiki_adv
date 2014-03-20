@@ -1,0 +1,81 @@
+# PukiWiki Plus! - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2005 PukiWiki Plus! Developer Team
+# License is GPL2
+# Author: Miko.Hoshina(E.Satoh) <miko@cafeterrace.com>, 2005.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PukiWiki Adv.\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-10-16 10:23+0900\n"
+"PO-Revision-Date: 2012-12-11 18:47+0800\n"
+"Last-Translator: 迪艾维尔 <diwill2012@gmail.com>\n"
+"Language-Team: 迪艾维尔 <diwill2012@gmail.com>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#: ../../plugin/referer.inc.php:27 ../../plugin/referer.inc.php:30
+#: ../../plugin/referer.inc.php:34
+msgid "Referer"
+msgstr "显示来源"
+
+#: ../../plugin/referer.inc.php:28
+msgid "Referer List"
+msgstr "来源一览"
+
+#: ../../plugin/referer.inc.php:29
+msgid "No data"
+msgstr "没有数据。"
+
+#: ../../plugin/referer.inc.php:31
+msgid "LastUpdate"
+msgstr "最后更新"
+
+#: ../../plugin/referer.inc.php:32
+msgid "First Register"
+msgstr "首次注册时间"
+
+#: ../../plugin/referer.inc.php:33
+msgid "RefCounter"
+msgstr "次数"
+
+#: ../../plugin/referer.inc.php:36
+msgid "&uArr;"
+msgstr "↑"
+
+#: ../../plugin/referer.inc.php:37
+msgid "&dArr;"
+msgstr "↓"
+
+#: ../../plugin/referer.inc.php:38
+msgid "Referer function is disabled."
+msgstr "来源功能已被禁用。"
+
+#: ../../plugin/referer.inc.php:39
+msgid "The page you requested was not found."
+msgstr "您请求的页面未找到。"
+
+#: ../../plugin/referer.inc.php:40
+msgid "Search keys"
+msgstr "搜索关键字"
+
+#: ../../plugin/referer.inc.php:41
+#, php-format
+msgid "All the Search Key of %s"
+msgstr "%s 的全部搜索关键字"
+
+#: ../../plugin/referer.inc.php:42
+msgid "Mutual links"
+msgstr "相互链接"
+
+#: ../../plugin/referer.inc.php:43
+#, php-format
+msgid "Auto Mutual link of %s"
+msgstr "%s 的自动链接集"
+
+#~ msgid "F j, Y, g:i A"
+#~ msgstr "Y年n月j日 H:i"

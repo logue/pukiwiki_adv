@@ -1,0 +1,29 @@
+#
+#
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PukiWiki Adv.\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"PO-Revision-Date: \n"
+"Last-Translator: 迪艾维尔 <diwill2012@gmail.com>\n"
+"Language-Team: 迪艾维尔 <diwill2012@gmail.com>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#: ../../plugin/source.inc.php:20
+msgid " $1 was not found."
+msgstr "未找到 $1。"
+
+#: ../../plugin/source.inc.php:21
+msgid "cannot display the page source."
+msgstr "无法显示该页面的源代码。"
+
+#: ../../plugin/source.inc.php:28
+msgid "Source of  $1"
+msgstr "$1 的源代码"

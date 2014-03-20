@@ -1,0 +1,32 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PukiWiki Adv.\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"PO-Revision-Date: 2012-11-29 16:24+0800\n"
+"Last-Translator: 迪艾维尔 <diwill2012@gmail.com>\n"
+"Language-Team: 迪艾维尔 <diwill2012@gmail.com>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#: ../../plugin/related.inc.php:14
+#, php-format
+msgid "Backlinks for: %s"
+msgstr "%s的相关链接"
+
+#: ../../plugin/related.inc.php:15
+msgid "No related pages found."
+msgstr "没有发现相关页面。"
+
+#: ../../plugin/related.inc.php:65
+msgid "Related pages: "
+msgstr "相关页面："

@@ -1,0 +1,56 @@
+# PukiWiki Plus! - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2005 PukiWiki Plus! Developer Team
+# License is GPL2
+# Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>, 2005.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PukiWiki Adv.\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"PO-Revision-Date: 2012-11-26 18:38+0800\n"
+"Last-Translator: 迪艾维尔 <diwill2012@gmail.com>\n"
+"Language-Team: 迪艾维尔 <diwill2012@gmail.com>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#: ../../plugin/login.inc.php:20
+msgid "UserName"
+msgstr "用户名称"
+
+#: ../../plugin/login.inc.php:21
+#, php-format
+msgid "Please attest it with %s to write the comment."
+msgstr "请使用 %s 验证之后再写评论。"
+
+#: ../../plugin/login.inc.php:22
+msgid "Login"
+msgstr "登录"
+
+#: ../../plugin/login.inc.php:23
+msgid "Logout"
+msgstr "注销"
+
+#: ../../plugin/login.inc.php:26
+msgid ""
+"#login() : Could not use auth function. Please check <var>auth_api.ini.php</"
+"var> setting."
+msgstr ""
+"#login()：无法使用身份验证功能。请检查 <var>auth_api.ini.php</var> 的设置。"
+
+#: ../../plugin/login.inc.php:28
+msgid "Authorization Required"
+msgstr "验证失败"
+
+#: ../../plugin/login.inc.php:31
+msgid ""
+"This server could not verify that you are authorized to access the document "
+"requested. Either you supplied the wrong credentials (e.g., bad password), "
+"or your browser doesn't understand how to supply the credentials required."
+msgstr ""
+"账号或密码错误，有可能是浏览器不支持发送验证信息，无法进行验证。不允许浏览此"
+"页面。"

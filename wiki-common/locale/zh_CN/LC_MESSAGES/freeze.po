@@ -1,0 +1,42 @@
+# PukiWiki Plus! - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2005 PukiWiki Plus! Developer Team
+# License is GPL2
+# Author: Miko.Hoshina(E.Satoh) <miko@cafeterrace.com>, 2005.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 噗叽唯姬 v1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"PO-Revision-Date: 2012-11-26 16:35+0800\n"
+"Last-Translator: 迪艾维尔 <diwill2012@gmail.com>\n"
+"Language-Team: 迪艾维尔 <diwill2012@gmail.com>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+
+#: ../../plugin/freeze.inc.php:19
+msgid " $1 has already been frozen"
+msgstr "$1 已经被锁定"
+
+#: ../../plugin/freeze.inc.php:20
+msgid " $1 has been frozen."
+msgstr "已锁定 $1。"
+
+#: ../../plugin/freeze.inc.php:21
+msgid "Freeze  $1"
+msgstr "锁定 $1"
+
+#: ../../plugin/freeze.inc.php:22
+msgid "Invalid password."
+msgstr "密码无效。"
+
+#: ../../plugin/freeze.inc.php:23
+msgid "Please input the password for freezing."
+msgstr "请输入锁定密码。"
+
+#: ../../plugin/freeze.inc.php:24
+msgid "Freeze"
+msgstr "锁定"

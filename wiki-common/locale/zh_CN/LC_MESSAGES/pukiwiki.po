@@ -1,55 +1,23 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2011 PukiWiki Advance Developers Team
+# License is GPL2
+# Logue <logue@hotmail.co.jp>, 2011.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PukiWiki Advance v1.0\n"
+"Project-Id-Version: PukiWiki Adv.\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2011-09-04 22:37+0900\n"
-"PO-Revision-Date: 2011-09-04 22:40+0900\n"
-"Last-Translator: Logue <logue@hotmail.co.jp>\n"
-"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"POT-Creation-Date: 2012-10-16 10:23+0900\n"
+"PO-Revision-Date: 2012-11-30 15:23+0800\n"
+"Last-Translator: 迪艾维尔 <diwill2012@gmail.com>\n"
+"Language-Team: 迪艾维尔 <diwill2012@gmail.com>\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Chinese\n"
-"X-Poedit-Country: CHINA\n"
-"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-Basepath: ../../pot\n"
-
-#: ../../lib/file.php:757
-#, php-format
-msgid "%s execution failed:"
-msgstr "%s的执行失败："
-
-#: ../../lib/html.php:554
-#, php-format
-msgid "Headers already sent at %s, line: %s."
-msgstr ""
-
-#: ../../lib/init.php:81
-msgid "File is not found."
-msgstr "找不到文件。"
-
-#: ../../lib/init.php:205
-#, php-format
-msgid "Sorry, %s is already reserved."
-msgstr "%s已经预留。"
-
-#: ../../lib/init.php:265
-msgid "Query string is too long."
-msgstr "Query string是太长。"
-
-#: ../../lib/init.php:319
-msgid "Using both cmd= and plugin= is not allowed."
-msgstr "同时使用cmd=和plugin=是不允许的。"
-
-#: ../../lib/proxy.php:153
-#, php-format
-msgid "unable to connect to %s."
-msgstr "无法连接到%s"
+"X-Generator: Poedit 1.5.4\n"
 
 #: ../../lib/resource.php:14
 msgid "Sun"
@@ -57,7 +25,7 @@ msgstr "日"
 
 #: ../../lib/resource.php:14
 msgid "Sunday"
-msgstr "星期天"
+msgstr "星期日"
 
 #: ../../lib/resource.php:15
 msgid "Mon"
@@ -203,15 +171,13 @@ msgstr "12"
 msgid "December"
 msgstr "12月"
 
-#: ../../lib/resource.php:40
-#: ../../lib/resource.php:120
+#: ../../lib/resource.php:40 ../../lib/resource.php:154
 msgid "Freeze"
-msgstr "保护"
+msgstr "锁定"
 
-#: ../../lib/resource.php:41
-#: ../../lib/resource.php:138
+#: ../../lib/resource.php:41 ../../lib/resource.php:155
 msgid "Unfreeze"
-msgstr "取消保护"
+msgstr "取消锁定"
 
 #: ../../lib/resource.php:42
 msgid "Symbols"
@@ -222,12 +188,20 @@ msgid "Others"
 msgstr "其他"
 
 #: ../../lib/resource.php:46
-msgid "In the page <strong>$2</strong>, <strong>$3</strong> pages that contain all the terms <var>$1</var> were found."
-msgstr "在<strong>$2</strong>这个页面中，找到<strong>$3</strong>个完整包含条件<var>$1</var>的页面。"
+msgid ""
+"In the page <strong>$2</strong>, <strong>$3</strong> pages that contain all "
+"the terms <var>$1</var> were found."
+msgstr ""
+"在<strong>$3</strong>个页面中，找到 “<var>$1</var>” 相关页面 <strong>$2</"
+"strong> 个。"
 
 #: ../../lib/resource.php:47
-msgid "In the page <strong>$2</strong>, <strong>$3</strong> pages that contain at least one of the terms <var>$1</var> were found."
-msgstr "在<strong>$2</strong>这个页面中，找到<strong>$3</strong>个至少包含一个条件<var>$1</var>的页面。"
+msgid ""
+"In the page <strong>$2</strong>, <strong>$3</strong> pages that contain at "
+"least one of the terms <var>$1</var> were found."
+msgstr ""
+"在<strong>$3</strong>个页面中，找到 “<var>$1</var>” 之一相关页面 <strong>$2</"
+"strong> 个。"
 
 #: ../../lib/resource.php:48
 msgid "No page which contains <var>$1</var> has been found."
@@ -239,382 +213,577 @@ msgstr "这些搜寻条件已经被高亮度显示∶"
 
 #: ../../lib/resource.php:50
 msgid "View Text Formatting Rules"
-msgstr "检视写作语法"
+msgstr "查看文本格式"
 
-#: ../../lib/resource.php:53
+#: ../../lib/resource.php:51 ../../lib/resource.php:134
+msgid "$1 was updated"
+msgstr "已更新 $1"
+
+#: ../../lib/resource.php:52
+#, php-format
+msgid "Back to %s"
+msgstr "返回 %s"
+
+#: ../../lib/resource.php:55
 msgid "Invalid password."
 msgstr "无效的密码。"
 
-#: ../../lib/resource.php:54
+#: ../../lib/resource.php:56
 msgid "<var>$1</var> is not a valid <var>$2</var>."
 msgstr "<var>$1</var>不是有效的<var>$2</var>。"
 
-#: ../../lib/resource.php:55
-msgid "It seems that someone has already updated the page you were editing.<br />The string was added, alhough it may be inserted in the wrong position."
-msgstr "有人已经更新了您正在编辑的页面。<br />字串已经被加入了，但有可能被插入在错误的位置。"
+#: ../../lib/resource.php:59 ../../lib/resource.php:133
+msgid "On updating $1, a collision has occurred."
+msgstr "在更新 $1 时产生了冲突。"
 
-#: ../../lib/resource.php:58
+#: ../../lib/resource.php:60 ../../lib/resource.php:64
+#: ../../lib/resource.php:67
+msgid ""
+"It seems that someone has already updated this page while you were editing "
+"it."
+msgstr "当你在编辑这个页面时，似乎有其他人更新此页面。"
+
+#: ../../lib/resource.php:61
+msgid "+ is placed at the beginning of a line that was newly added."
+msgstr "以+开始的行，是新添加的。"
+
+#: ../../lib/resource.php:62
+msgid "! is placed at the beginning of a line that has possibly been updated."
+msgstr "以!开始的行，可能已被更改。"
+
+#: ../../lib/resource.php:63
+msgid "Edit those lines, and submit again."
+msgstr "编辑这些行后，请再次提交。"
+
+#: ../../lib/resource.php:65
+msgid ""
+"The collision has been corrected automatically, but there may still be some "
+"problems with the page."
+msgstr "冲突已被自动修正，但可能页面仍有问题。"
+
+#: ../../lib/resource.php:66
+msgid "To confirm the changes to the page, press [Update]."
+msgstr "确认后，请按下[更新页面]。"
+
+#: ../../lib/resource.php:68
+msgid "The string was added, alhough it may be inserted in the wrong position."
+msgstr "内容已经被添加，但可能插入在错误的位置"
+
+#: ../../lib/resource.php:71
 msgid "WARNING"
 msgstr "警告"
 
-#: ../../lib/resource.php:59
-msgid "This Wiki is <var>PKWK_READONLY</var> mode now. The action which you are trying to do is prohibited."
-msgstr "本wiki <var>PKWK_READONLY</var>模式现在。您的行动，试图做的是禁止的。"
-
-#: ../../lib/resource.php:60
+#: ../../lib/resource.php:72
 msgid "A runtime error has occurred."
 msgstr "运行时发生错误。"
 
-#: ../../lib/resource.php:60
-msgid "Please contact to site admin. If you want more information, please change <var>PKWK_WARNING</var> value."
-msgstr "请洽网站管理员。如果您想了解更多信息，请改变的<var>PKWK_WARNING</var>值。"
-
-#: ../../lib/resource.php:61
-msgid "This program is running in debug mode."
-msgstr "这个程序是运行在调试模式。"
-
-#: ../../lib/resource.php:62
-#, php-format
-msgid "<var>$adminpass</var> is not changed! Click <a href=\"%s\">here</a> to generate crypted password and modify auth.ini.php!"
-msgstr "<var>$adminpass</var>是没有变！点击<a href=\"%s\">这里</a>来产生加密的密码和修改auth.ini.php！"
-
-#: ../../lib/resource.php:63
-#, php-format
-msgid "<var>%s</var> is not found or not writable."
-msgstr "<var>%s</var>不存在或者不写。"
-
-#: ../../lib/resource.php:64
-#, php-format
-msgid "Page <var>%s</var> was not found."
-msgstr "佩奇<var>%s</var>没有被发现。"
-
-#: ../../lib/resource.php:65
-#, php-format
-msgid "Headers already sent at <var>%s</var>, line: <var>%s</var>."
+#: ../../lib/resource.php:72
+msgid ""
+"Please contact to site admin. If you want more information, please change "
+"<var>PKWK_WARNING</var> value."
 msgstr ""
-
-#: ../../lib/resource.php:66
-msgid "Writing was limited by <strong>IPBL</storng> (Blocking SPAM)."
-msgstr "写作是有限的<strong>IPBL</strong>（阻塞垃圾邮件）。"
-
-#: ../../lib/resource.php:67
-#, php-format
-msgid "A fatal error has occured at line <var>%1s</var> in file <var>%2s</var>."
-msgstr ""
-
-#: ../../lib/resource.php:68
-msgid "Script execution has been aborted."
-msgstr ""
+"请联系网站管理员。如果您想了解更多信息，请改变 <var>PKWK_WARNING</var> 的值。"
 
 #: ../../lib/resource.php:73
+msgid "This program is running in debug mode."
+msgstr "本程序运行在调试(debug)模式。"
+
+#: ../../lib/resource.php:74
+#, php-format
+msgid ""
+"<var>$adminpass</var> is not changed! Click <a href=\"%s\">here</a> to "
+"generate crypted password and modify auth.ini.php!"
+msgstr ""
+"<var>$adminpass</var> 尚未更改！请点击 <a href=\"%s\">这里</a> 生成加密的密码"
+"并修改 auth.ini.php ！"
+
+#: ../../lib/resource.php:75
+#, php-format
+msgid "<var>%s</var> is not found or not writable."
+msgstr "<var>%s</var> 不存在或者不写。"
+
+#: ../../lib/resource.php:76
+#, php-format
+msgid "Page <var>%s</var> was not found."
+msgstr "找不到 <var>%s</var> 页面。"
+
+#: ../../lib/resource.php:77
+#, php-format
+msgid "Headers already sent at <var>%s</var>, line: <var>%s</var>."
+msgstr "头(Headers)已在 <var>%s</var> 的 <var>%s</var> 行发送。"
+
+#: ../../lib/resource.php:79
+msgid "Illegal characters contained."
+msgstr "包含无效字符。"
+
+#: ../../lib/resource.php:80
+#, php-format
+msgid ""
+"A fatal error has occured at line <var>%1s</var> in file <var>%2s</var>."
+msgstr "在文件 <var>%2s</var> 的 <var>%1s</var> 行发生致命错误。"
+
+#: ../../lib/resource.php:81
+msgid "Script execution has been aborted."
+msgstr "脚本执行已中断。"
+
+#: ../../lib/resource.php:84
+#, php-format
+msgid ""
+"This Wiki is <var>%s</var> mode now. The action which you are trying to do "
+"is prohibited."
+msgstr "本Wiki当前为 <var>%s</var> 模式。尝试的操作被禁止。"
+
+#: ../../lib/resource.php:85
+msgid ""
+"Sorry, Your host is prohibited by <strong>IPBL</storng> (Blocking SPAM)."
+msgstr "对不起，你的主机被 <strong>IPBL</strong> 拒绝访问。(Blocking SPAM)"
+
+#: ../../lib/resource.php:86
+msgid "Sorry, access from your country is prohibited."
+msgstr "对不起，来自贵国的访问被禁止。"
+
+#: ../../lib/resource.php:87
+msgid "You have no permission to read this page."
+msgstr "您没有权限浏览该页面。"
+
+#: ../../lib/resource.php:88
+msgid "You have no permission to edit page or create page."
+msgstr "您没有权限编辑页面或创建页面。"
+
+#: ../../lib/resource.php:91
+#, php-format
+msgid "Plugin init failed: <var>%s</var>"
+msgstr "插件初始化失败：<var>%s</var>"
+
+#: ../../lib/resource.php:92
+#, php-format
+msgid "<var>%1s</var> was called over <var>%2s</var> times. SPAM or someting?"
+msgstr "短时间内 <var>%1s</var> 被调用 <var>%2s</var> 次。是否是SPAM？"
+
+#: ../../lib/resource.php:93
+msgid "PostId is mismatched. Is it multi-post?"
+msgstr "PostId 不一致。是否重复提交？"
+
+#: ../../lib/resource.php:94
+msgid "Incorrect encode. Please use a modern browser."
+msgstr "编码不正确。请使用较新的浏览器。"
+
+#: ../../lib/resource.php:95
+#, php-format
+msgid "<var>/?cmd=%s</var> is not implemented."
+msgstr "<var>cmd=%s</var> 未实现。"
+
+#: ../../lib/resource.php:100
 msgid "Preview"
 msgstr "预览"
 
-#: ../../lib/resource.php:74
+#: ../../lib/resource.php:101
 msgid "Preview again"
-msgstr "重新预览"
+msgstr "再次预览"
 
-#: ../../lib/resource.php:75
+#: ../../lib/resource.php:102
 msgid "Update"
-msgstr "提交编辑"
+msgstr "更新"
 
-#: ../../lib/resource.php:76
+#: ../../lib/resource.php:103
 msgid "Cancel"
-msgstr "撤销编辑"
+msgstr "取消"
 
-#: ../../lib/resource.php:77
-#: ../../lib/resource.php:112
+#: ../../lib/resource.php:104 ../../lib/resource.php:147
 msgid "Add"
 msgstr "添加"
 
-#: ../../lib/resource.php:78
-#: ../../lib/resource.php:133
+#: ../../lib/resource.php:105 ../../lib/resource.php:167
 msgid "Search"
 msgstr "搜索"
 
-#: ../../lib/resource.php:79
+#: ../../lib/resource.php:106
 msgid "Load"
-msgstr "打开"
+msgstr "读取"
 
-#: ../../lib/resource.php:80
-#: ../../lib/resource.php:117
+#: ../../lib/resource.php:107 ../../lib/resource.php:152
 msgid "Edit"
 msgstr "编辑"
 
-#: ../../lib/resource.php:81
-#: ../../lib/resource.php:118
+#: ../../lib/resource.php:108 ../../lib/resource.php:157
 msgid "Edit(GUI)"
-msgstr "编辑(GUI)"
+msgstr "图形化编辑"
 
-#: ../../lib/resource.php:82
+#: ../../lib/resource.php:109
 msgid "Delete"
 msgstr "删除"
 
-#: ../../lib/resource.php:83
+#: ../../lib/resource.php:110
 msgid "Remove"
-msgstr "删除"
+msgstr "清除"
 
-#: ../../lib/resource.php:84
+#: ../../lib/resource.php:111 ../../lib/resource.php:185
 msgid "Login"
 msgstr "登录"
 
-#: ../../lib/resource.php:85
+#: ../../lib/resource.php:112 ../../lib/resource.php:186
 msgid "Logout"
 msgstr "注销"
 
-#: ../../lib/resource.php:88
+#: ../../lib/resource.php:115
 msgid "Do not change timestamp"
 msgstr "不更改时间戳"
 
-#: ../../lib/resource.php:89
+#: ../../lib/resource.php:116
 msgid "Add to top of page"
 msgstr "添加到页面顶部"
 
-#: ../../lib/resource.php:90
+#: ../../lib/resource.php:117
 msgid "Use page as template"
-msgstr "模板页"
+msgstr "用页面作为模板"
 
-#: ../../lib/resource.php:91
+#: ../../lib/resource.php:118
 msgid "AND"
-msgstr "且"
+msgstr "与"
 
-#: ../../lib/resource.php:92
+#: ../../lib/resource.php:119
 msgid "OR"
 msgstr "或"
 
-#: ../../lib/resource.php:93
+#: ../../lib/resource.php:120
 msgid "Save to cookie"
-msgstr "保存到饼干"
+msgstr "保存到cookie"
 
-#: ../../lib/resource.php:94
-#, fuzzy, php-format
+#: ../../lib/resource.php:121
+#, php-format
 msgid "Connect to %s"
-msgstr "无法连接到%s"
+msgstr "连接到 %s"
 
-#: ../../lib/resource.php:99
+#: ../../lib/resource.php:124 ../../lib/resource.php:175
+msgid "Back"
+msgstr "返回"
+
+#: ../../lib/resource.php:125
+msgid "Try to edit this page"
+msgstr "尝试编辑此页"
+
+#: ../../lib/resource.php:126
+msgid "Return to FrontPage"
+msgstr "返回首页"
+
+#: ../../lib/resource.php:131
 msgid "$1 is not editable"
-msgstr "$1 不可编辑"
+msgstr "无法编辑 $1"
 
-#: ../../lib/resource.php:100
+#: ../../lib/resource.php:132
 msgid "$1 is not readable"
-msgstr "$1 不可读取"
+msgstr "无法读取 $1"
 
-#: ../../lib/resource.php:101
-msgid "On updating $1, a collision has occurred."
-msgstr "在更新 $1 时,发生了冲突。"
-
-#: ../../lib/resource.php:102
-msgid "$1 was updated"
-msgstr "$1 已经更新"
-
-#: ../../lib/resource.php:103
+#: ../../lib/resource.php:135
 msgid "Preview of $1"
-msgstr "预览$1"
+msgstr "$1 的预览"
 
-#: ../../lib/resource.php:104
+#: ../../lib/resource.php:136
 msgid "Runtime Error"
 msgstr "运行时错误"
 
-#: ../../lib/resource.php:109
-msgid "encode_hint"
-msgstr "ぷ"
+#: ../../lib/resource.php:137
+msgid "Plugin Error"
+msgstr "插件错误"
 
-#: ../../lib/resource.php:113
+#: ../../lib/resource.php:138
+msgid "Access Prohibited"
+msgstr "禁止访问"
+
+#: ../../lib/resource.php:139
+msgid "Not Implemented"
+msgstr "未实现"
+
+#: ../../lib/resource.php:144
+msgid "encode_hint"
+msgstr "编码提示"
+
+#: ../../lib/resource.php:148
 msgid "Backup"
 msgstr "备份"
 
-#: ../../lib/resource.php:114
+#: ../../lib/resource.php:149
 msgid "Broken Link List"
-msgstr "残破的链接列表"
+msgstr "无效链接列表"
 
-#: ../../lib/resource.php:115
+#: ../../lib/resource.php:150
 msgid "Copy"
 msgstr "复制"
 
-#: ../../lib/resource.php:116
+#: ../../lib/resource.php:151
 msgid "Diff"
 msgstr "差异"
 
-#: ../../lib/resource.php:119
+#: ../../lib/resource.php:153
 msgid "List of page files"
-msgstr "页面档案列表"
+msgstr "页面附件一览"
 
-#: ../../lib/resource.php:121
-msgid "Help"
-msgstr "求助"
-
-#: ../../lib/resource.php:122
-msgid "List of pages"
-msgstr "页面列表"
-
-#: ../../lib/resource.php:123
-msgid "New"
-msgstr "新增"
-
-#: ../../lib/resource.php:124
-msgid "Lower page making"
-msgstr "制定下页"
-
-#: ../../lib/resource.php:125
-msgid "RDF of recent changes"
-msgstr "最新更动的 RDF"
-
-#: ../../lib/resource.php:126
-msgid "Recent changes"
-msgstr "最新更动"
-
-#: ../../lib/resource.php:127
-msgid "Referer"
-msgstr "逆向连结"
-
-#: ../../lib/resource.php:128
-msgid "Reload"
-msgstr "重新载入"
-
-#: ../../lib/resource.php:129
-msgid "Rename"
-msgstr "更名"
-
-#: ../../lib/resource.php:130
-msgid "Image of print"
-msgstr "图像打印"
-
-#: ../../lib/resource.php:131
+#: ../../lib/resource.php:156
 msgid "Full screen"
 msgstr "全屏"
 
-#: ../../lib/resource.php:132
-msgid "RSS of recent changes"
-msgstr "最新更动的 RSS"
+#: ../../lib/resource.php:158
+msgid "Export as PDF"
+msgstr "导出为PDF"
 
-#: ../../lib/resource.php:134
-msgid "Source"
-msgstr "原始码"
+#: ../../lib/resource.php:160
+msgid "Help"
+msgstr "帮助"
 
-#: ../../lib/resource.php:135
-msgid "Template"
-msgstr "范本"
+#: ../../lib/resource.php:161
+msgid "List of pages"
+msgstr "页面一览"
 
-#: ../../lib/resource.php:136
-msgid "Front page"
-msgstr "首页"
-
-#: ../../lib/resource.php:137
-msgid "Trackback"
-msgstr "引用"
-
-#: ../../lib/resource.php:139
-msgid "Upload"
-msgstr "上传"
-
-#: ../../lib/resource.php:140
-msgid "Search Key List"
-msgstr "名单搜索词"
-
-#: ../../lib/resource.php:141
-msgid "Link List"
-msgstr "连结清单"
-
-#: ../../lib/resource.php:142
-msgid "Roll Book"
-msgstr ""
-
-#: ../../lib/resource.php:143
-msgid "Confirmation list"
-msgstr "确认名单"
-
-#: ../../lib/resource.php:144
-msgid "Browse Log"
-msgstr "浏览日志"
-
-#: ../../lib/resource.php:145
-msgid "Update Log"
-msgstr "更新日志"
-
-#: ../../lib/resource.php:146
-msgid "Download Log"
-msgstr "下载日志"
-
-#: ../../lib/resource.php:147
+#: ../../lib/resource.php:162
 msgid "Log"
 msgstr "日志"
 
-#: ../../lib/resource.php:148
+#: ../../lib/resource.php:163
+msgid "New"
+msgstr "新增"
+
+#: ../../lib/resource.php:164
+msgid "Lower page making"
+msgstr "添加子页面"
+
+#: ../../lib/resource.php:165
+msgid "Image of print"
+msgstr "图像打印"
+
+#: ../../lib/resource.php:166
+msgid "Rename"
+msgstr "重命名"
+
+#: ../../lib/resource.php:168
+msgid "Template"
+msgstr "模板"
+
+#: ../../lib/resource.php:169
+msgid "Upload"
+msgstr "上传"
+
+#: ../../lib/resource.php:171
+msgid "Trackback"
+msgstr "引用"
+
+#: ../../lib/resource.php:172
+msgid "Referer"
+msgstr "网站来路"
+
+#: ../../lib/resource.php:174
+msgid "Reload"
+msgstr "重新载入"
+
+#: ../../lib/resource.php:176
+msgid "Source"
+msgstr "源代码"
+
+#: ../../lib/resource.php:178
+msgid "RSS of recent changes"
+msgstr "最新更新的 RSS"
+
+#: ../../lib/resource.php:179
+msgid "RDF of recent changes"
+msgstr "最新更新的 RDF"
+
+#: ../../lib/resource.php:180
+msgid "ATOM of recent changes"
+msgstr "最新更新的 ATOM"
+
+#: ../../lib/resource.php:182
 msgid "Logo"
 msgstr "徽标"
 
-#: ../../lib/resource.php:149
-#, fuzzy
+#: ../../lib/resource.php:183
 msgid "Text Formatting Rules"
-msgstr "检视写作语法"
+msgstr "文本格式"
 
-#: ../../lib/resource.php:151
+#: ../../lib/resource.php:189
+msgid "Front page"
+msgstr "首页"
+
+#: ../../lib/resource.php:190
+msgid "Recent changes"
+msgstr "最近更新"
+
+#: ../../lib/resource.php:191
+msgid "Recent deleted"
+msgstr "最近删除"
+
+#: ../../lib/resource.php:192
+msgid "Interwiki name"
+msgstr "Interwiki名称"
+
+#: ../../lib/resource.php:193
+msgid "Auto alias name"
+msgstr "自动别名名称"
+
+#: ../../lib/resource.php:194
+msgid "Glossary"
+msgstr "词汇表"
+
+#: ../../lib/resource.php:195
 msgid "MenuBar"
 msgstr "菜单栏"
 
-#: ../../lib/resource.php:152
+#: ../../lib/resource.php:196
 msgid "SideBar"
-msgstr "侧栏"
+msgstr "侧边栏"
 
-#: ../../lib/resource.php:153
-msgid "Glossary"
-msgstr "词汇"
+#: ../../lib/resource.php:197
+msgid "Navigation"
+msgstr "导航"
 
-#: ../../lib/resource.php:157
+#: ../../lib/resource.php:198
+msgid "Header area"
+msgstr "页眉区域"
+
+#: ../../lib/resource.php:199
+msgid "Footer area"
+msgstr "页脚区域"
+
+#: ../../lib/resource.php:200
+msgid "Protected"
+msgstr "保密"
+
+#: ../../lib/resource.php:203
+msgid "Site"
+msgstr "站点"
+
+#: ../../lib/resource.php:204
+msgid "Pages"
+msgstr "页眉"
+
+#: ../../lib/resource.php:205
+msgid "Management"
+msgstr "管理"
+
+#: ../../lib/resource.php:206
+msgid "Tools"
+msgstr "工具"
+
+#: ../../lib/resource.php:210
 msgid "Error"
-msgstr ""
+msgstr "错误"
 
-#: ../../lib/resource.php:158
+#: ../../lib/resource.php:211
 msgid "Warning"
-msgstr ""
+msgstr "警告"
 
-#: ../../lib/resource.php:159
+#: ../../lib/resource.php:212
 msgid "Parsing Error"
-msgstr ""
+msgstr "解析错误"
 
-#: ../../lib/resource.php:160
+#: ../../lib/resource.php:213
 msgid "Notice"
-msgstr ""
+msgstr "通知"
 
-#: ../../lib/resource.php:161
-#, fuzzy
+#: ../../lib/resource.php:214
 msgid "Core Error"
-msgstr "运行时错误"
+msgstr "核心错误"
 
-#: ../../lib/resource.php:162
+#: ../../lib/resource.php:215
 msgid "Core Warning"
-msgstr ""
+msgstr "核心警告"
 
-#: ../../lib/resource.php:163
-#, fuzzy
+#: ../../lib/resource.php:216
 msgid "Compile Error"
-msgstr "运行时错误"
+msgstr "编译错误"
 
-#: ../../lib/resource.php:164
+#: ../../lib/resource.php:217
 msgid "Compile Warning"
-msgstr ""
+msgstr "编译警告"
 
-#: ../../lib/resource.php:165
-#, fuzzy
+#: ../../lib/resource.php:218
 msgid "User Error"
-msgstr "运行时错误"
+msgstr "用户错误"
 
-#: ../../lib/resource.php:166
+#: ../../lib/resource.php:219
 msgid "User Warning"
-msgstr ""
+msgstr "用户警告"
 
-#: ../../lib/resource.php:167
+#: ../../lib/resource.php:220
 msgid "User Notice"
-msgstr ""
+msgstr "用户通知"
+
+#~ msgid "Plugin Error: PostId mismatch."
+#~ msgstr "プラグインエラー：PostIdが一致していません。"
+
+#~ msgid "Plugin Error: Incorrect encode."
+#~ msgstr "プラグインエラー：不正なエンコードです。"
+
+#~ msgid ""
+#~ "You have no permission to edit this page or create page in lower level of "
+#~ "this page."
+#~ msgstr ""
+#~ "あなたは、このページを編集したり下位階層にページを作成する権限を持っていま"
+#~ "せん。"
+
+#~ msgid "%s execution failed:"
+#~ msgstr "%sで、以下の例外が発生しました："
+
+#~ msgid "File is not found."
+#~ msgstr "ファイルがみつかりません。"
+
+#~ msgid "Sorry, %s is already reserved."
+#~ msgstr "%sは、すでに定義されています。"
+
+#~ msgid "Query string is too long."
+#~ msgstr "Query Stringが長すぎます。"
+
+#~ msgid "Using both cmd= and plugin= is not allowed."
+#~ msgstr "cmd=とplugin=の両方を使用することはできません。"
+
+#~ msgid ""
+#~ "Facebook is not authenticated or url is mismathed. Please click <a href="
+#~ "\"%s\">here</a> and authenticate the application."
+#~ msgstr ""
+#~ "Facebookの認証ができなかったか、URLが間違っています。<a href=\"%s\">ここ</"
+#~ "a>をクリックして、アプリケーションの認証を行なってください。"
+
+#~ msgid "Facebook is authenticated. Welcome, %s."
+#~ msgstr "Facebook認証に成功しました。ようこそ%sさん。"
+
+#~ msgid "unable to connect to %s."
+#~ msgstr "%sに接続することができません。"
 
 #~ msgid "%s is not found or cannot execute: "
-#~ msgstr "%s是找不到或无法执行："
+#~ msgstr "%sは、見つからないか、実行可能になっていません。"
 
 #~ msgid "Related pages: "
-#~ msgstr "相关网页："
+#~ msgstr "関連ページ："
+
+#~ msgid "Headers already sent at %s, line: %s."
+#~ msgstr "ヘッダーは、%s（行%s）で、すでに出力されています。"
+
+#~ msgid "Search Key List"
+#~ msgstr "検索キー一覧"
+
+#~ msgid "Link List"
+#~ msgstr "自動相互リンク表"
+
+#~ msgid "Roll Book"
+#~ msgstr "出席簿"
+
+#~ msgid "Confirmation list"
+#~ msgstr "確認簿"
+
+#~ msgid "Browse Log"
+#~ msgstr "閲覧ログ"
+
+#~ msgid "Update Log"
+#~ msgstr "更新ログ"
+
+#~ msgid "Download Log"
+#~ msgstr "ダウンロードログ"
 
 #~ msgid "May "
-#~ msgstr "5月"
+#~ msgstr "5月（皐月）"
 
-#~ msgid "PukiWikiAuth"
-#~ msgstr "Pukiwiki认证"
+#~ msgid "Cannot open %s.<br />Maybe permission is not writable."
+#~ msgstr ""
+#~ "%sを開くことができませんでした。<br />パーミッションが書き込み可になってい"
+#~ "るかを確認ください。"
+
+#~ msgid "PKWK_CREATE_PAGE prohibits editing"
+#~ msgstr "PKWK_CREATE_PAGE 編集禁止"

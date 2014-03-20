@@ -1,12 +1,12 @@
 @echo off
-set PATH=%PATH%;"C:\Program Files (x86)\Poedit\bin"
-IF "%1" == "" GOTO usage
-msgmerge %~n1.po ../../pot/%~n1.pot -o %~n1.po
-msgfmt -o %~n1.mo %~n1.po
+set PATH=%PATH%;"C:\Program Files (x86)\Poedit\GettextTools\bin"
 
-:usage
-echo PukiWiki Advance po file updator
-echo USAGE : po_update [plugin_name]
+for /F %%A in ('dir /b ..\..\pot\*.pot') do ( 
+	if exist %%~nA.po (
+		msgmerge %%~nA.po ../../pot/%%~nA -o %%~nA.po
+	) else (
+		copy ..\..\pot\%%~nA.pot %%~nA.po
+	)
+	msgfmt -o %%~nA.mo %%~nA.po
+)
 pause.
-:end
-echo finish.

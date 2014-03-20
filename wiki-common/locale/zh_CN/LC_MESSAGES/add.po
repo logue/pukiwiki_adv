@@ -1,0 +1,30 @@
+# PukiWiki Advance - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2011 PukiWiki Advance Developers Team
+# License is GPL2
+# Logue <logue@hotmail.co.jp>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PukiWiki Adv.\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-09-08 08:08+0900\n"
+"PO-Revision-Date: 2012-11-26 17:29+0800\n"
+"Last-Translator: 迪艾维尔 <diwill2012@gmail.com>\n"
+"Language-Team: 迪艾维尔 <diwill2012@gmail.com>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../pot\n"
+"X-Generator: Poedit 1.5.4\n"
+
+#: ../../plugin/add.inc.php:20
+msgid "Add to $1"
+msgstr "添加到 $1"
+
+#: ../../plugin/add.inc.php:23
+msgid ""
+"Two and the contents of an input are added for a new-line to the contents of "
+"a page of present addition."
+msgstr "输入内容已被添加至当前页面内容。"

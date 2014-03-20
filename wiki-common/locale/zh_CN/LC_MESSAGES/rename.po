@@ -1,0 +1,120 @@
+# PukiWiki Plus! - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2005 PukiWiki Plus! Developer Team
+# License is GPL2
+# Author: Miko.Hoshina(E.Satoh) <miko@cafeterrace.com>, 2005.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PukiWiki Adv.\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-10-16 10:25+0900\n"
+"PO-Revision-Date: 2012-11-29 17:45+0800\n"
+"Last-Translator: 迪艾维尔 <diwill2012@gmail.com>\n"
+"Language-Team: 迪艾维尔 <diwill2012@gmail.com>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#: ../../plugin/rename.inc.php:20
+#, php-format
+msgid "Error:%s"
+msgstr "错误：%s"
+
+#: ../../plugin/rename.inc.php:21
+msgid "no matching page(s)"
+msgstr " 没有符合的页面。"
+
+#: ../../plugin/rename.inc.php:22
+msgid "the new name is invalid."
+msgstr "新名称无效。"
+
+#: ../../plugin/rename.inc.php:23
+msgid "Incorrect administrator password."
+msgstr "管理员密码不正确。"
+
+#: ../../plugin/rename.inc.php:24
+#, php-format
+msgid "%s is not a valid pagename."
+msgstr "%s 不是有效的页面名称。"
+
+#: ../../plugin/rename.inc.php:25
+#, php-format
+msgid "cannot rename %s."
+msgstr "无法重命名 %s。"
+
+#: ../../plugin/rename.inc.php:26
+#, php-format
+msgid "already exists :%s."
+msgstr "页面已存在：%s"
+
+#: ../../plugin/rename.inc.php:27
+msgid "The following files already exist."
+msgstr "以下文件已存在。"
+
+#: ../../plugin/rename.inc.php:28
+msgid "Rename page"
+msgstr "页面重命名"
+
+#: ../../plugin/rename.inc.php:29
+msgid "specify source page name"
+msgstr "指定原始页面的名称"
+
+#: ../../plugin/rename.inc.php:30
+msgid "rename with regular expressions."
+msgstr "用正则表达式替换"
+
+#: ../../plugin/rename.inc.php:31
+msgid "related pages"
+msgstr "相关页面"
+
+#: ../../plugin/rename.inc.php:32
+msgid "A related page is also renamed."
+msgstr "一个相关页面也被重命名。"
+
+#: ../../plugin/rename.inc.php:33
+#, php-format
+msgid "rename %s"
+msgstr "重命名 %s"
+
+#: ../../plugin/rename.inc.php:34
+msgid "current page name"
+msgstr "当前页面名称"
+
+#: ../../plugin/rename.inc.php:35
+msgid "new page name"
+msgstr "新的页面名称"
+
+#: ../../plugin/rename.inc.php:36
+msgid "Administrator password"
+msgstr "管理员密码"
+
+#: ../../plugin/rename.inc.php:37
+msgid "->"
+msgstr "→"
+
+#: ../../plugin/rename.inc.php:38
+msgid "page is not processed when it already exists."
+msgstr "当页面存在时不处理页面。"
+
+#: ../../plugin/rename.inc.php:39
+msgid "page is overwritten when it already exists."
+msgstr "当页面存在时覆盖页面。"
+
+#: ../../plugin/rename.inc.php:40
+msgid "The following files will be renamed."
+msgstr "下列文件将被重命名。"
+
+#: ../../plugin/rename.inc.php:41
+msgid "The following files have been overwritten."
+msgstr "下列文件已被覆盖。"
+
+#: ../../plugin/rename.inc.php:42
+msgid "Submit"
+msgstr "提交"
+
+#: ../../plugin/rename.inc.php:43
+msgid "Next"
+msgstr "下一步"

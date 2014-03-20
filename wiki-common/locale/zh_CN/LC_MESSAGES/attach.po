@@ -1,0 +1,246 @@
+# PukiWiki Plus! - Yet Another WikiWikiWeb Clone
+# Copyright (C) 2005 PukiWiki Plus! Developer Team
+# License is GPL2
+# Author: Miko.Hoshina(E.Satoh) <miko@cafeterrace.com>, 2005.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 噗叽唯姬 v1.0\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2012-10-16 10:24+0900\n"
+"PO-Revision-Date: 2012-11-30 18:34+0800\n"
+"Last-Translator: 迪艾维尔 <diwill2012@gmail.com>\n"
+"Language-Team: 迪艾维尔 <diwill2012@gmail.com>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+
+#: ../../plugin/attach.inc.php:58
+msgid "Uploaded the file to $1"
+msgstr "已经上传到 $1。"
+
+#: ../../plugin/attach.inc.php:59
+msgid "Deleted the file in $1"
+msgstr "从 $1 删除了文件。"
+
+#: ../../plugin/attach.inc.php:60
+msgid "The file has been frozen."
+msgstr "附件已被锁定。"
+
+#: ../../plugin/attach.inc.php:61
+msgid "The file has been unfrozen"
+msgstr "附件已被解锁。"
+
+#: ../../plugin/attach.inc.php:62
+msgid "Upload to $1"
+msgstr "上传至 $1"
+
+#: ../../plugin/attach.inc.php:63
+msgid "File information"
+msgstr "文件信息"
+
+#: ../../plugin/attach.inc.php:64
+#, php-format
+msgid "Delete %s."
+msgstr "已删除 %s。"
+
+#: ../../plugin/attach.inc.php:65
+msgid "List of attached file(s)"
+msgstr "附件列表"
+
+#: ../../plugin/attach.inc.php:66
+msgid "List of attached file(s) in $1"
+msgstr "$1 的附件列表"
+
+#: ../../plugin/attach.inc.php:67
+msgid "Attached file list of all pages"
+msgstr "全页面附件列表"
+
+#: ../../plugin/attach.inc.php:68
+msgid "Attach file"
+msgstr "附件"
+
+#: ../../plugin/attach.inc.php:69
+#, php-format
+msgid "Maximum file size is %s."
+msgstr "可上传最大文件大小为 %s 。"
+
+#: ../../plugin/attach.inc.php:70
+#, php-format
+msgid "%s download"
+msgstr "%s 次下载"
+
+#: ../../plugin/attach.inc.php:71
+msgid "password"
+msgstr "密码"
+
+#: ../../plugin/attach.inc.php:72
+msgid "Administrator password"
+msgstr "管理员密码"
+
+#: ../../plugin/attach.inc.php:73
+msgid "Delete file."
+msgstr "删除文件"
+
+#: ../../plugin/attach.inc.php:74
+msgid "Freeze file."
+msgstr "锁定文件"
+
+#: ../../plugin/attach.inc.php:75
+msgid "Unfreeze file."
+msgstr "解锁文件"
+
+#: ../../plugin/attach.inc.php:76
+msgid "The file has been renamed"
+msgstr "文件名已更新。"
+
+#: ../../plugin/attach.inc.php:77
+msgid "File is frozen."
+msgstr "文件已被锁定。"
+
+#: ../../plugin/attach.inc.php:78
+msgid "Rename"
+msgstr "重命名"
+
+#: ../../plugin/attach.inc.php:79
+msgid "New file name"
+msgstr "新文件名"
+
+#: ../../plugin/attach.inc.php:80
+msgid "(require administrator password)"
+msgstr "(需要管理员密码)"
+
+#: ../../plugin/attach.inc.php:81
+msgid "size"
+msgstr "大小"
+
+#: ../../plugin/attach.inc.php:82
+msgid "type"
+msgstr "类型"
+
+#: ../../plugin/attach.inc.php:83
+msgid "date"
+msgstr "创建时间"
+
+#: ../../plugin/attach.inc.php:84
+msgid "access count"
+msgstr "查看次数"
+
+#: ../../plugin/attach.inc.php:85
+msgid "MD5 hash"
+msgstr "MD5哈希值"
+
+#: ../../plugin/attach.inc.php:86
+msgid "Page"
+msgstr "页面"
+
+#: ../../plugin/attach.inc.php:87
+msgid "Stored filename"
+msgstr "文件存储名称"
+
+#: ../../plugin/attach.inc.php:88
+msgid "This page"
+msgstr "当前页面"
+
+#: ../../plugin/attach.inc.php:89
+msgid "Cannot upload/delete file in $1"
+msgstr "无法在 $1 上传/删除文件"
+
+#: ../../plugin/attach.inc.php:90
+msgid "File size too large to $1"
+msgstr "在 $1 的文件大小过大"
+
+#: ../../plugin/attach.inc.php:91
+msgid "File already exists in $1"
+msgstr "在 $1 上存在同名文件"
+
+#: ../../plugin/attach.inc.php:92
+msgid "Could not find the file in $1"
+msgstr "在 $1 上找不到文件"
+
+#: ../../plugin/attach.inc.php:93
+msgid "File does not exist."
+msgstr "文件不存在。"
+
+#: ../../plugin/attach.inc.php:94
+msgid "Cannot delete file in  $1"
+msgstr "在 $1 无法删除文件"
+
+#: ../../plugin/attach.inc.php:95
+msgid "Cannot rename this file"
+msgstr "$1 无法重命名"
+
+#: ../../plugin/attach.inc.php:97
+msgid "It failed in uploading."
+msgstr "上传失败。"
+
+#: ../../plugin/attach.inc.php:98
+msgid "Wrong administrator password"
+msgstr "管理员密码不正确"
+
+#: ../../plugin/attach.inc.php:99
+msgid "The value of the upload_max_filesize directive of php.ini is exceeded."
+msgstr "超出 php.ini 的 upload_max_filesize 指定的值。"
+
+#: ../../plugin/attach.inc.php:100
+msgid "MAX_FILE_SIZE specified by the HTML form is exceeded."
+msgstr "超出 HTML form指定的MAX_FILE_SIZE值。"
+
+#: ../../plugin/attach.inc.php:101
+msgid "Only part is uploaded."
+msgstr "未完全上传。"
+
+#: ../../plugin/attach.inc.php:102
+msgid "The file was not uploaded."
+msgstr "文件未上传。"
+
+#: ../../plugin/attach.inc.php:103
+msgid "There is no temporary directory."
+msgstr "缺少临时目录。"
+
+#: ../../plugin/attach.inc.php:104
+msgid "It failed in writing in the disk."
+msgstr "写入磁盘失败。"
+
+#: ../../plugin/attach.inc.php:105
+msgid "The uploading of the file was stopped by the enhancement module."
+msgstr "上传文件被增强模块阻止。"
+
+#: ../../plugin/attach.inc.php:106
+msgid "Upload"
+msgstr "上传"
+
+#: ../../plugin/attach.inc.php:107
+msgid "Information"
+msgstr "属性"
+
+#: ../../plugin/attach.inc.php:108
+msgid "Submit"
+msgstr "提交"
+
+#: ../../plugin/attach.inc.php:109
+msgid "Query string (page name and/or file name) too long"
+msgstr "Query string (页面名称或文件名) 太长"
+
+#: ../../plugin/attach.inc.php:110
+msgid "No such page"
+msgstr "页面未找到"
+
+#: ../../plugin/attach.inc.php:111
+msgid "It failed in the generation of a temporary file."
+msgstr "生成临时文件失败。"
+
+#: ../../plugin/attach.inc.php:112
+msgid "The uploaded file cannot be read."
+msgstr "无法读取上传文件。"
+
+#: ../../plugin/attach.inc.php:113
+msgid "The compression file cannot be written."
+msgstr "无法写入压缩文件。"
+
+#: ../../plugin/attach.inc.php:114
+msgid ""
+"File name is too long. Please rename more short file name before upload."
+msgstr "文件名太长。请在上传前改短文件名。"
