@@ -15,6 +15,7 @@ use PukiWiki\Factory;
 use PukiWiki\Renderer\RendererFactory;
 use PukiWiki\Listing;
 use PukiWiki\Utility;
+use PukiWiki\Time;
 
 // Tracker_list: Excluding pattern
 define('PLUGIN_TRACKER_LIST_EXCLUDE_PATTERN','#^SubMenu$|/#');	// 'SubMenu' and using '/'
@@ -79,7 +80,7 @@ function plugin_tracker_convert()
 
 	$args = func_get_args();
 	$argc = count($args);
-	if ($argc > 2) return PLUGIN_TRACKER_USAGE . '<br />';
+	if ($argc > 2) return '<p class="alert alert-info">' . PLUGIN_TRACKER_USAGE . '</p>';
 
 	$base   = isset($vars['page']) ? $vars['page'] : null;
 	$refer  = null;
@@ -102,7 +103,7 @@ function plugin_tracker_convert()
 
 	$tracker_form = new Tracker_form();
 	if (! $tracker_form->init($base, $refer, $config, $rel)) {
-		return '#tracker: ' . Utility::htmlsc($tracker_form->error) . '<br />';
+		return '<p class="alert alert-warning">#tracker: ' . Utility::htmlsc($tracker_form->error) . '</p>';
 	}
 
 	// Load $template
@@ -110,12 +111,12 @@ function plugin_tracker_convert()
 	$form = $tracker_form->config->page . '/' . $form;
 	$template = plugin_tracker_get_source($form, TRUE);
 	if ($template === FALSE || empty($template)) {
-		return '#tracker: Form not found: ' . $form . '<br />';
+		return '<p class="alert alert-warning">#tracker: Form not found: ' . $form . '</p>';
 	}
 
 	if (! $tracker_form->initFields(plugin_tracker_field_pickup($template)) ||
 		! $tracker_form->initHiddenFields()) {
-		return '#tracker: ' . Utility::htmlsc($tracker_form->error);
+		return '<p class="alert alert-warning">#tracker: ' . Utility::htmlsc($tracker_form->error). '</p>;
 	}
 	$fields = $tracker_form->fields;
 	unset($tracker_form);
@@ -137,9 +138,6 @@ function plugin_tracker_convert()
 	$template = str_replace($from, $to, RendererFactory::factory($template));
 	$hidden   = implode('<br />' . "\n", $hidden);
 
-//	if (function_exists('pkwk_session_start') && pkwk_session_start() != 0) {
-//		$_SESSION['tracker'] = md5(get_ticket() . $config_name);
-//	}
 	$session->offsetSet('tracker',  md5(get_ticket() . $config_name));
 
 	// For QA/196, BugTrack/113
@@ -210,7 +208,7 @@ function plugin_tracker_action()
 	if (! $tracker_form->init($base, $refer, $config)) {
 		return array(
 			'msg'  => 'Cannot write',
-			'body' => htmlsc($tracker_form->error)
+			'body' => '<p class="alert alert-warning">' . Utility::htmlsc($tracker_form->error) . '</p>'
 		);
 	}
 
@@ -220,14 +218,14 @@ function plugin_tracker_action()
 	if ($template === FALSE || empty($template)) {
 		return array(
 			'msg'  => 'Cannot write',
-			'body' => 'Page template (' . htmlsc($template_page) . ') not found'
+			'body' => '<p class="alert alert-warning">Page template (' . Utility::htmlsc($template_page) . ') not found</p>'
 		);
 	}
 
 	if (! $tracker_form->initFields(plugin_tracker_field_pickup(implode(null, $template)))) {
 		return array(
 			'msg'  => 'Cannot write',
-			'body' => htmlsc($tracker_form->error)
+			'body' => '<p class="alert alert-warning">'.Utility::htmlsc($tracker_form->error).'</p>';
 		);
 	}
 	$fields = $tracker_form->fields;
@@ -531,14 +529,10 @@ class Tracker_field_text extends Tracker_field
 
 	function get_tag()
 	{
-		$s_name  = htmlsc($this->name);
-		$s_size  = isset($this->options[0]) ? htmlsc($this->options[0]) : null;
-		$s_value = htmlsc($this->default_value);
-
 		return '<input type="text" class="form-control"' .
-				' name="'  . $s_name  . '"' .
-				' size="'  . $s_size  . '"' .
-				' value="' . $s_value . '" />';
+				' name="'  . Utility::htmlsc($this->name)  . '"' .
+				' size="'  . (isset($this->options[0]) ? Utility::htmlsc($this->options[0]) : '')  . '"' .
+				' value="' . Utility::htmlsc($this->default_value) . '" />';
 	}
 }
 
@@ -604,16 +598,11 @@ class Tracker_field_textarea extends Tracker_field
 
 	function get_tag()
 	{
-		$s_name = htmlsc($this->name);
-		$s_cols = isset($this->options[0]) ? htmlsc($this->options[0]) : null;
-		$s_rows = isset($this->options[1]) ? htmlsc($this->options[1]) : null;
-		$s_default = htmlsc($this->default_value);
-
 		return '<textarea class="form-control"' .
-				' name="' . $s_name . '"' .
-				' cols="' . $s_cols . '"' .
-				' rows="' . $s_rows . '">' .
-				$s_default .
+				' name="' . Utility::htmlsc($this->name) . '"' .
+				' cols="' . (isset($this->options[0]) ? Utility::htmlsc($this->options[0]) : '') . '"' .
+				' rows="' . (isset($this->options[1]) ? Utility::htmlsc($this->options[1]) : '') . '">' .
+				Utility::htmlsc($this->default_value) .
 			'</textarea>';
 	}
 
@@ -659,10 +648,7 @@ class Tracker_field_format extends Tracker_field
 
 	function get_tag()
 	{
-		$s_name = htmlsc($this->name);
-		$s_size = isset($this->options[0]) ? htmlsc($this->options[0]) : null;
-
-		return '<input type="text" name="' . $s_name . '" size="' . $s_size . '" />';
+		return '<input type="text" name="' . Utility::htmlsc($this->name) . '" size="' . (isset($this->options[0]) ? Utility::htmlsc($this->options[0]) : '') . '" />';
 	}
 
 	function format_value($value)
@@ -688,10 +674,7 @@ class Tracker_field_file extends Tracker_field_format
 
 	function get_tag()
 	{
-		$s_name = htmlsc($this->name);
-		$s_size = isset($this->options[0]) ? htmlsc($this->options[0]) : null;
-
-		return '<input type="file" name="' . $s_name . '" size="' . $s_size . '" />';
+		return '<input type="file" name="' . Utility::htmlsc($this->name) . '" size="' . (isset($this->options[0]) ? Utility::htmlsc($this->options[0]) : '') . '" />';
 	}
 
 	function format_value($value)
@@ -722,19 +705,17 @@ class Tracker_field_radio extends Tracker_field_format
 		$retval = null;
 
 		$id = 0;
-		$s_name = htmlsc($this->name);
+		$s_name = Utility::htmlsc($this->name);
 		foreach ($this->form->config->get($this->name) as $option) {
 			++$id;
 			$s_id = '_p_tracker_' . $s_name . '_' . $this->id . '_' . $id;
-			$s_option = htmlsc($option[0]);
-			$checked  = trim($option[0]) === trim($this->default_value) ? ' checked="checked"' : null;
 
-			$retval .= '<input type="radio"' .
+			$retval .= '<div class="radio"><input type="radio"' .
 				' name="'  . $s_name   . '"' .
 				' id="'    . $s_id     . '"' .
-				' value="' . $s_option . '"' .
-				$checked . ' />' .
-				'<label for="' . $s_id . '">' . $s_option . '</label>' . "\n";
+				' value="' . Utility::htmlsc($option[0]) . '"' .
+				(trim($option[0]) === trim($this->default_value) ? ' checked="checked"' : '') . ' />' .
+				'<label for="' . $s_id . '">' . $s_option . '</label></div>' . "\n";
 		}
 
 		return $retval;
@@ -775,9 +756,9 @@ class Tracker_field_select extends Tracker_field_radio
 
 		$retval = array();
 
-		$s_name = htmlsc($this->name);
+		$s_name = Utility::htmlsc($this->name);
 		$s_size = (isset($this->options[0]) && is_numeric($this->options[0])) ?
-			' size="' . htmlsc($this->options[0]) . '"' : null;
+			' size="' . Utility::htmlsc($this->options[0]) . '"' : null;
 		$s_multiple = (isset($this->options[1]) && strtolower($this->options[1]) == 'multiple') ?
 			' multiple="multiple"' : null;
 		$retval[] = '<select name="' . $s_name . '[]"' . $s_size . $s_multiple . ' class="form-control">';
@@ -786,7 +767,7 @@ class Tracker_field_select extends Tracker_field_radio
 
 		foreach ($this->form->config->get($this->name) as $option) {
 			$option   = reset($option);
-			$s_option = htmlsc($option);
+			$s_option = Utility::htmlsc($option);
 			$selected = isset($defaults[trim($option)]) ? ' selected="selected"' : null;
 			$retval[] = ' <option value="' . $s_option . '"' . $selected . '>' . $s_option . '</option>';
 		}
@@ -805,8 +786,8 @@ class Tracker_field_checkbox extends Tracker_field_radio
 	{
 		$config   = $this->form->config;
 
-		$s_name   = htmlsc($this->name);
-		$s_fid    = htmlsc($this->id);
+		$s_name   = Utility::htmlsc($this->name);
+		$s_fid    = Utility::htmlsc($this->id);
 		$defaults = array_flip(preg_split('/\s*,\s*/', $this->default_value, -1, PREG_SPLIT_NO_EMPTY));
 
 		$id     = 0;
@@ -814,13 +795,13 @@ class Tracker_field_checkbox extends Tracker_field_radio
 		foreach ($config->get($this->name) as $option) {
 			++$id;
 			$s_id     = '_p_tracker_' . $s_name . '_' . $s_fid . '_' . $id;
-			$s_option = htmlsc($option[0]);
+			$s_option = Utility::htmlsc($option[0]);
 			$checked  = isset($defaults[trim($option[0])]) ? ' checked="checked"' : null;
 
-			$retval .= '<input type="checkbox"' .
+			$retval .= '<div class="checkbox"><input type="checkbox"' .
 				' name="' . $s_name . '[]" id="' . $s_id . '"' .
 				' value="' . $s_option . '"' . $checked . ' />' .
-				'<label for="' . $s_id . '">' . $s_option . '</label>' . "\n";
+				'<label for="' . $s_id . '">' . $s_option . '</label></div>' . "\n";
 		}
 
 		return $retval;
@@ -833,12 +814,9 @@ class Tracker_field_hidden extends Tracker_field_radio
 
 	function get_tag()
 	{
-		$s_name    = htmlsc($this->name);
-		$s_default = htmlsc($this->default_value);
-
 		return '<input type="hidden"' .
-			' name="'  . $s_name    . '"' .
-			' value="' . $s_default . '" />' . "\n";
+			' name="'  . Utility::htmlsc($this->name) . '"' .
+			' value="' . Utility::htmlsc($this->default_value) . '" />' . "\n";
 	}
 }
 
@@ -848,10 +826,10 @@ class Tracker_field_submit extends Tracker_field
 	{
 		$form = $this->form;
 
-		$s_title  = htmlsc($this->title);
-		$s_base   = htmlsc($form->base);
-		$s_refer  = htmlsc($form->refer);
-		$s_config = htmlsc($form->config_name);
+		$s_title  = Utility::htmlsc($this->title);
+		$s_base   = Utility::htmlsc($form->base);
+		$s_refer  = Utility::htmlsc($form->refer);
+		$s_config = Utility::htmlsc($form->config_name);
 
 		return <<<EOD
 <input type="submit" class="btn btn-primary" value="$s_title" />
@@ -884,7 +862,7 @@ class Tracker_field_past extends Tracker_field
 
 	function format_cell($timestamp)
 	{
-		return get_passage($timestamp, FALSE);
+		return Time::passage($timestamp, FALSE);
 	}
 }
 
@@ -898,7 +876,7 @@ function plugin_tracker_list_convert()
 	$args = func_get_args();
 	$argc = count($args);
 	if ($argc > 4) {
-		return PLUGIN_TRACKER_LIST_USAGE . '<br />';
+		return '<p class="alert alert-info">' . PLUGIN_TRACKER_LIST_USAGE . '</p>';
 	}
 
 	$base   = isset($vars['page']) ? $vars['page'] : null;
@@ -966,17 +944,17 @@ function plugin_tracker_list_render($base, $refer, $rel = null, $config = null, 
 
 	if (! $tracker_list->init($base, $refer, $config, $rel)  ||
 		! $tracker_list->setSortOrder($order)) {
-		return '#tracker_list: ' . htmlsc($tracker_list->error) . '<br />';
+		return '<p class="alert alert-warning">#tracker_list: ' . Utility::htmlsc($tracker_list->error) . '</p>';
 	}
 
 	if (! is_page($tracker_list->form->refer)) {
-		return '#tracker_list: Refer page not found: ' . htmlsc($refer) . '<br />';
+		return '<p class="alert alert-warning">#tracker_list: Refer page not found: ' . Utility::htmlsc($refer) . '</p>';
 	}
 
 	$result = $tracker_list->toString($list, $limit);
 	
 	if ($result === FALSE) {
-		return '#tracker_list: ' . htmlsc($tracker_list->error) . '<br />';
+		return '<p class="alert alert-warning">#tracker_list: ' . Utility::htmlsc($tracker_list->error) . '</p>';
 	}
 	unset($tracker_list);
 

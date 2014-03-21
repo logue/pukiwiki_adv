@@ -70,7 +70,7 @@ function plugin_article_init()
 
 function plugin_article_action()
 {
-	global $script, $post, $vars, $cols, $rows, $now;
+	global $vars, $cols, $rows, $now;
 	global $_plugin_article_mailto, $_no_subject, $_no_name;
 	global $_article_msg, $_string;
 
@@ -80,37 +80,44 @@ function plugin_article_action()
 	if (!isset($vars['msg']) || !isset($vars['refer']) )
 		return array('msg'=>null,'body'=>null);
 
-	$name = !isset($vars['name']) ? $_no_name : $post['name'];
+	$name = !isset($vars['name']) ? $_no_name : $vars['name'];
 	$name = empty($name) ? '' : str_replace('$name', $name, PLUGIN_ARTICLE_NAME_FORMAT);
-	$subject = !isset($vars['subject']) ? $_no_subject : $post['subject'];
+	$subject = !isset($vars['subject']) ? $_no_subject : $vars['subject'];
 	$subject = empty($subject) ? '' : str_replace('$subject', $subject, PLUGIN_ARTICLE_SUBJECT_FORMAT);
-	$article  = $subject . "\n" . '>' . $name . ' (' . $now . ')~' . "\n" . '~' . "\n";
+	
+	$ret[] = $subject;
+	$ret[] = '>' . $name . ' (&epoch(' . UTIME . ');)~';
+	$ret[] = '~';
 
-	$msg = rtrim($post['msg']);
+	$msg = rtrim($vars['msg']);
 	if (PLUGIN_ARTICLE_AUTO_BR) {
 		//改行の取り扱いはけっこう厄介。特にURLが絡んだときは…
 		//コメント行、整形済み行には~をつけないように arino
 		$msg = join("\n", preg_replace('/^(?!\/\/)(?!\s)(.*)$/', '$1~', explode("\n", $msg)));
 	}
-	$article .= $msg . "\n\n" . '//';
-
-	if (PLUGIN_ARTICLE_COMMENT) $article .= "\n\n" . '#comment' . "\n";
+	$ret[] = $msg. "\n\n" . '//';
+	
+	if (PLUGIN_ARTICLE_COMMENT){
+		$ret[] = '';
+		$ret[] = '#comment';
+	}
 
 	$postdata = array();
 	$wiki = Factory::Wiki($vars['refer']);
+	$vars['page'] = $vars['refer'];
 	$article_no = 0;
 
 	foreach($wiki->get() as $line) {
 		if (! PLUGIN_ARTICLE_INS) $postdata[] = $line;
 		if (preg_match('/^#article/i', $line)) {
-			if ($article_no == $post['article_no'] && $post['msg'] != '')
-				$postdata[] = $article;
+			if ($article_no === $vars['article_no'] && !empty($vars['msg']))
+				$postdata[] = join("\n",$ret);
 			++$article_no;
 		}
 		if (PLUGIN_ARTICLE_INS) $postdata[] = $line;
 	}
 
-	$postdata_input = $article . "\n";
+	$postdata[] = join("\n",$ret);
 	$body = '';
 
 	$wiki->set($postdata);
@@ -138,10 +145,6 @@ function plugin_article_action()
 
 	$retvars['msg'] = $_article_msg['title_updated'];
 	$retvars['body'] = $body;
-
-	$post['page'] = $post['refer'];
-	$vars['page'] = $post['refer'];
-
 	return $retvars;
 }
 

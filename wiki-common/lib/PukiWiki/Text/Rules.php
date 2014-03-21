@@ -802,10 +802,12 @@ class Rules{
 		$id = $heading = '';
 		$matches = array();
 		if (preg_match(self::HEADING_ID_PATTERN, $str, $matches)) {	// 先頭が*から始まってて、なおかつ[#...]が存在する
+			$level = substr_count($matches[1], '*');
 			$heading = trim($matches[2]);
 			$id  = isset($matches[3]) ? $matches[3] : null;
 		} else {
 			$heading = preg_replace('/^\*{0,3}/', '', $str);
+			$level = 0;
 		}
 
 		// Cut footnotes and tags
@@ -814,7 +816,7 @@ class Rules{
 				InlineFactory::factory(preg_replace('/'.RendererDefines::NOTE_PATTERN.'/x', '', $heading))
 			);
 
-		return array($heading , $id);
+		return array($heading , $id, $level);
 	}
 	/**
 	 * 見出しIDを削除
