@@ -7,9 +7,9 @@
  * License: GPL v2 or (at your option) any later version
  *
  * Inspired from
- *   uupaa's flod.inc.php and �܂̂��낤's region.inc.php
+ *   uupaa's flod.inc.php and まのたろう's region.inc.php
  *
- * region plugin (cmd=edit)
+ * region plugin
  */
 
 use PukiWiki\Renderer\RendererFactory;

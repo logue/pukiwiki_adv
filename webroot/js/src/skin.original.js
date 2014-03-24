@@ -562,20 +562,23 @@ $.fn.bstooltip = bootstrapTooltip;
 		setRegion :function(prefix){
 			var dom = (prefix) ? $(prefix).find('.plugin-region') : $('.plugin-region');
 			
-			var $button = $('<button class="btn btn-default btn-xs pull-left"><span class="fa fa-plus"></span></button>');
+			var $button = $('<button class="btn btn-default btn-xs pull-left"><small class="fa fa-plus"></small></button>');
 			dom.find('.plugin-region-title').before($button);
 			$('.plugin-region-body').hide();
 			
 			$button.click(function(){
 				var $this = $(this),
 					$body = $this.next().next();
+				
+				$this.attr('disabled','disabled');
 					
 				$body.toggle('blind', {}, 500, function(){
 					if ($body.is(':hidden')){
-						$this.html('<span class="fa fa-plus"></span>');
+						$this.html('<small class="fa fa-plus"></small>');
 					}else{
-						$this.html('<span class="fa fa-minus"></span>');
+						$this.html('<small class="fa fa-minus"></small>');
 					}
+					$this.removeAttr('disabled');
 				});
 			});
 		},
