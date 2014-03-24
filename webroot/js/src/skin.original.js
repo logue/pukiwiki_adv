@@ -450,6 +450,8 @@ $.fn.bstooltip = bootstrapTooltip;
 			this.glossaly(prefix);
 			// テーブルソート
 			this.dataTable(prefix);
+			// 
+			this.setRegion(prefix);
 
 			// フォームロックを解除
 			$(':input').removeAttr('disabled');
@@ -464,7 +466,7 @@ $.fn.bstooltip = bootstrapTooltip;
 			$form = $(prefix+'form[enctype="multipart/form-data"]');
 			if ($form.length !== 0 && $form.find('.progress_session').length !== 0){
 				$progress = $([
-					'<div class="help-block">',
+					'<div class="help-block hide">',
 						'<div class="progress progress-info progress-striped">',
 							'<div class="bar"></div>',
 						'</div>',
@@ -527,6 +529,7 @@ $.fn.bstooltip = bootstrapTooltip;
 							success: function (response, statusText, xhr, $form) {
 								clearInterval(progressInterval);
 								showProgress(100, 'Complete!');
+								$progress.hide();
 
 								// TODO: You'll need to do some custom logic here to handle a successful
 								// form post, and when the form is invalid with validation errors.
@@ -555,6 +558,26 @@ $.fn.bstooltip = bootstrapTooltip;
 					});
 				});
 			}
+		},
+		setRegion :function(prefix){
+			var dom = (prefix) ? $(prefix).find('.plugin-region') : $('.plugin-region');
+			
+			var $button = $('<button class="btn btn-default btn-xs pull-left"><span class="fa fa-plus"></span></button>');
+			dom.find('.plugin-region-title').before($button);
+			$('.plugin-region-body').hide();
+			
+			$button.click(function(){
+				var $this = $(this),
+					$body = $this.next().next();
+					
+				$body.toggle('blind', {}, 500, function(){
+					if ($body.is(':hidden')){
+						$this.html('<span class="fa fa-plus"></span>');
+					}else{
+						$this.html('<span class="fa fa-minus"></span>');
+					}
+				});
+			});
 		},
 		// アンカータグの処理
 		setAnchor : function(prefix){
