@@ -1,7 +1,7 @@
 <?php
 /**
  * PukiWiki Advance - Yet another WikiWikiWeb clone.
- * $Id: init.php,v 1.57.14 2014/03/19 16:09:00 Logue Exp $
+ * $Id: init.php,v 1.57.15 2014/03/21 09:06:00 Logue Exp $
  * Copyright (C)
  *   2010-2014 PukiWiki Advance Developers Team
  *   2005-2009 PukiWiki Plus! Team
@@ -27,7 +27,7 @@ use Zend\I18n\Translator\Translator;
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
 define('S_VERSION', 'v 2.0.0-beta2');
-define('S_REVSION', '20140319');
+define('S_REVSION', '20140325');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &#169; 2010-2014' .
