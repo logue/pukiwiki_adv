@@ -164,7 +164,7 @@ class Render{
 	 */
 	public function getContent(){
 		global $_LINK, $info, $vars, $_LANG;
-		global $site_name, $newtitle, $modifier, $modifierlink, $menubar, $sidebar, $headarea, $footarea, $navigation;
+		global $site_name, $newtitle, $modifier, $modifierlink, $menubar, $sidebar, $headarea, $footarea, $navigation, $attach_link, $related_link;
 
 		$body = $this->body;
 

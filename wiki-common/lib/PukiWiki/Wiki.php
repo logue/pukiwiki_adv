@@ -481,16 +481,15 @@ class Wiki{
 		if (empty($str)){
 			// Wikiページを削除
 			$ret = $this->wiki->set('');
-			Recent::set(null, $this->page);
-			// 削除ログ
-			Recent::updateRecentDeleted();
-			$keeptimestamp = false;
+			Recent::set($this->page, true);
 		}else{
 			// Wikiを保存
 			$ret = $this->wiki->set($postdata, $keeptimestamp);
+			// 最終更新を更新
+			Recent::set($this->page);
 		}
 
-		if ($this->page !== $whatsnew || $this->page !== $whatsdeleted) {
+		if ($this->page !== $whatsnew || $this->page !== $whatsdeleted || !$this->isHidden()) {
 			// バックアップを更新
 			Factory::Backup($this->page)->set();
 
@@ -499,12 +498,11 @@ class Wiki{
 
 			if (!$keeptimestamp && $vars['cmd'] === 'edit') {
 				// weblogUpdates.pingを送信
-				self::sendPing();
+				if (!empty($str)){ self::sendPing(); }
 			}
 		}
 
-		// 最終更新を更新
-		Recent::set($this->page);
+		
 
 		// 簡易競合チェック
 		if ($collided) {

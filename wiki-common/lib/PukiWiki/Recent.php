@@ -111,10 +111,11 @@ class Recent{
 		// ページが最終更新だった場合処理しない
 		if (empty($page) || $page === $whatsnew) return;
 
-		$wiki = Factory::Wiki($page);
-
 		// 削除フラグが立っている場合、削除履歴を付ける
-		if (!$wiki->has() || $is_deleted) self::updateRecentDeleted($page);
+		
+		if ($is_deleted){
+			self::updateRecentDeleted($page);
+		}
 
 		// 更新キャッシュを読み込み（キャッシュ再生成する）
 		$recent_pages = self::get(true);
@@ -159,35 +160,41 @@ class Recent{
 	 * @param string $deleted 削除したページ
 	 * @return type
 	 */
-	private static function updateRecentDeleted($deleted){
+	public static function updateRecentDeleted($page){
 		global $whatsdeleted;
-		if (Auth::check_role('readonly') || !Factory::Wiki($deleted)->isHidden()) return;
+		// 隠されたページの場合削除履歴を付けない
+		if (Factory::Wiki($page)->isHidden()){
+			return;
+		}
 
-		$delated = Factory::Wiki($whatsdeleted);
+		// 新たに削除されるページ名
+		$_page = '[[' .  str_replace('&#39;', '\'', Utility::htmlsc($page)) . ']]';
+
+		$delated_wiki = FileFactory::Wiki($whatsdeleted);
+		
+		$lines = array();
 
 		// 削除履歴を確認する
-		foreach ($delated->get() as $line) {
+		foreach ($delated_wiki->get() as $line) {
 			if (preg_match('/^-(.+) - (\[\[.+\]\])$/', $line, $matches)) {
 				$lines[$matches[2]] = $line;
 			}
 		}
 
-		// 新たに削除されるページ名
-		$_page = '[[' .  str_replace('&#39;', '\'', Utility::htmlsc($deleted)) . ']]';
-
 		// 削除されるページ名と同じページが存在した時にそこの行を削除する
-		if (isset($lines[$_page])) unset($lines[$_page]);
+		if (isset($lines[$_page])){
+			unset($lines[$_page]);
+		}
 
 		// 削除履歴に追記
-		array_unshift($lines, '-&epoch(' . UTIME . '); - ' . $_page);
+		array_unshift($lines, '- &epoch(' . UTIME . '); - ' . $_page);
 		array_unshift($lines, '#norelated');
 
 		// 履歴の最大記録数を制限
 		$lines = array_splice($lines, 0, self::RECENT_MAX_SHOW_PAGES);
-		// ファイル一覧キャッシュを再生成
-		Listing::get(null, true);
-		// 削除履歴を付ける
-		$delated->set($lines);
+		
+		// 削除履歴を付ける（この時に最終更新のキャッシュも自動更新される）
+		$delated_wiki->set(array_values($lines));
 	}
 	/**
 	 * Atom/rssを出力

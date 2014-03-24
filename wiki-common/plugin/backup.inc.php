@@ -496,7 +496,7 @@ function plugin_backup_rollback($page, $age)
 		// バックアップからロールバック（タイムスタンプを更新しない状態で）
 		$wiki->set($backups['data']);
 		// ファイルの更新日時をバックアップの時点にする
-		$wiki->time($backups['time']);
+		$wiki->touch($backups['time']);
 
 		//put_lastmodified();
 

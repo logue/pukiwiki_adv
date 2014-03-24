@@ -1,14 +1,15 @@
 <?php
-// PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: edit.inc.php,v 1.49.45 2011/02/05 10:49:00 Logue Exp $
-// Copyright (C)
-//   2010-2011 PukiWiki Advance Developers Team
-//   2005-2009 PukiWiki Plus! Team
-//   2001-2007,2011 PukiWiki Developers Team
-// License: GPL v2 or (at your option) any later version
-//
-// Edit plugin (cmd=edit)
-// Plus! NOTE:(policy)not merge official cvs(1.40->1.41) See Question/181
+/**
+ * PukiWiki Advance - Yet another WikiWikiWeb clone.
+ * $Id: edit.inc.php,v 1.49.46 2014/03/24 9:42:00 Logue Exp $
+ * Copyright (C)
+ *   2010-2014 PukiWiki Advance Developers Team
+ *   2005-2009 PukiWiki Plus! Team
+ *   2001-2007,2011 PukiWiki Developers Team
+ * License: GPL v2 or (at your option) any later version
+ *
+ * Edit plugin (cmd=edit)
+ */
 
 use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
@@ -187,24 +188,26 @@ function plugin_edit_inline()
 
 	global $vars, $fixed_heading_edited;
 	
-	if (!isset($vars['page'])) return '';
+	$page = isset($vars['page']) ? $vars['page'] : null;
 	
-	$wiki = Factory::Wiki($vars['page']);
+	// Arguments
+	$args = func_get_args();
+	
+	if (!empty($args[0])) {
+		$page = $args[0];
+	}
+	
+	if (empty($page)) return '';
+	
+	$wiki = Factory::Wiki($page);
 
 	if (!$fixed_heading_edited || $wiki->isFreezed() || Auth::check_role('readonly')) {
 		return '';
 	}
 
-	// Arguments
-	$args = func_get_args();
-
 	// {label}. Strip anchor tags only
 	$s_label = Utility::stripHtmlTags(array_pop($args), FALSE);
-	if (empty($s_label)) {
-		$s_label_edit = RendererDefines::PARTIAL_EDIT_LINK_ICON;
-	}else{
-		$s_label_edit = $s_label;
-	}
+	$s_label_edit = empty($s_label) ? RendererDefines::PARTIAL_EDIT_LINK_ICON : $s_label;
 
 	list($page,$id) = array_pad($args,2,'');
 	if (!is_page($page)) {
@@ -274,7 +277,7 @@ function plugin_edit_write()
 	if (empty($postdata)) {
 		$wiki->set('');
 		$retvars['msg'] = $_title_deleted;
-		$retvars['body'] = str_replace('$1', htmlsc($page), $_title_deleted);
+		$retvars['body'] = '<p class="alert alert-success">' . str_replace('$1', htmlsc($page), $_title_deleted) . '</p>';
 		return $retvars;
 	}
 
@@ -283,7 +286,7 @@ function plugin_edit_write()
 //	if ($notimeupdate > 1 && $notimestamp && ! pkwk_login($vars['pass'])) {
 	if ($notimeupdate > 1 && $notimestamp && Auth::check_role('role_contents_admin') && !pkwk_login($vars['pass'])) {
 		// Enable only administrator & password error
-		$retvars['body']  = '<p><strong>' . $_msg_invalidpass . '</strong></p>' . "\n";
+		$retvars['body']  = '<p class="alert alert-danger">' . $_msg_invalidpass . '</p>' . "\n";
 		$retvars['body'] .= Utility::editForm($page, $msg, FALSE);
 		return $retvars;
 	}

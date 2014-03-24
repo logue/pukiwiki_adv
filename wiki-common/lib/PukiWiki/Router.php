@@ -1,4 +1,15 @@
 <?php
+/**
+ * ルータークラス
+ *
+ * @package   PukiWiki
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2012-2014 PukiWiki Advance Developers Team
+ * @create    2012/12/18
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: Render.php,v 1.0.0 2014/03/23 23:30:00 Logue Exp $
+ */
 namespace PukiWiki;
 
 use PukiWiki\Utility;
@@ -29,7 +40,7 @@ class Router{
 		// Cut filename or not
 		if (isset($script_directory_index)) {
 			if (! file_exists($script_directory_index))
-				self::die_message('Directory index file not found: ' .
+				Utility::dieMessage('Directory index file not found: ' .
 					Utility::htmlsc($script_directory_index));
 			$matches = array();
 			if (preg_match('#^(.+/)' . preg_quote($script_directory_index, '#') . '$#',
@@ -110,7 +121,7 @@ class Router{
 		$uri .= $path;
 
 		if (! is_url($uri, true) && php_sapi_name() == 'cgi') {
-			die_message($msg);
+			Utility::dieMessage($msg);
 		}
 		unset($msg);
 
