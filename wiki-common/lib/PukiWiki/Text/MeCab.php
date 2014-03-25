@@ -5,10 +5,10 @@
  * @package   PukiWiki\Text
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2013 PukiWiki Advance Developers Team
+ * @copyright 2013-2014 PukiWiki Advance Developers Team
  * @create    2013/02/13
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: MeCab.php,v 1.0.0 2013/02/02 17:28:00 Logue Exp $
+ * @version   $Id: MeCab.php,v 1.0.1 2014/03/25 16:52:00 Logue Exp $
  **/
 namespace PukiWiki\Text;
 
@@ -107,7 +107,7 @@ class MeCab{
 	public function wakati($input){
 		if (extension_loaded('mecab')) {
 			$mecab = new MeCab_Tagger();
-			return $mecab->keyword($input);
+			return $mecab->split($input);
 		}
 		return $this->stdio('-O wakati', $input);
 	}
@@ -119,7 +119,7 @@ class MeCab{
 	public function reading($input){
 		if (extension_loaded('mecab')) {
 			$mecab = new MeCab_Tagger();
-			return $mecab->keyword($input);
+			return $mecab->split($input);
 		}
 		return $this->stdio('-Oyomi', $input);
 	}
