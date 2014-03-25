@@ -1313,7 +1313,7 @@ $.fn.bstooltip = bootstrapTooltip;
 								$indicator.html('<span class="fa fa-clock-o"></span>'+data.taketime);
 								var ret = data.data.replace(/<script[^>]*>[^<]+/ig,'<div>[SCRIPT]</div>'), $editmark;
 								ret = ret.replace(/<form(.*?)>(.*?)<\/form>/ig,'<div>[FORM]</div>');
-								$realview.html(ret);
+								$('#realview').html(ret);
 								$editmark = $('#editmark')
 
 		//						if ($realview.scrollTop() === 0) {
@@ -1410,11 +1410,9 @@ $.fn.bstooltip = bootstrapTooltip;
 					return ed[delta + offset];
 				}
 			;
-			
-			this.ajax_apx = false;
+
 			this.ajax_count = 0;
-			this.ajax_tim = 0;
-			
+
 			if (Modernizr.localstorage){
 				var storage = window.localStorage.getItem(PAGE);
 				var data = window.JSON.parse(storage);
@@ -1517,6 +1515,7 @@ $.fn.bstooltip = bootstrapTooltip;
 							localStorage.removeItem(PAGE);
 						}
 						location.href = SCRIPT + '?' + PAGE;
+						$input.removeAttr('disabled', 'disabled');
 						break;
 					case 'preview':	// プレビューボタン
 						// フォームの高さを取得
@@ -1531,6 +1530,7 @@ $.fn.bstooltip = bootstrapTooltip;
 
 						// Textarea Resizerで高さが可変になっているため。
 						if ($realview.is(':visible')) {
+							//console.log('visible');
 							// realview_outerを消したあと、フォームの高さを２倍にする
 							// 同時でない理由はFireFoxで表示がバグるため
 							$('#realview').animate({
@@ -1539,24 +1539,30 @@ $.fn.bstooltip = bootstrapTooltip;
 								$msg.animate({height:msg_height*2});
 								$('#realview').hide();
 								$('#indicator').addClass('hidden');
-								$msg.removeAttr('disabled');
+								$input.removeAttr('disabled', 'disabled');
 							});
 						} else {
+							//console.log('invisible');
 							// フォームの高さを半分にしたあと、realviewを表示
 							$msg.animate({
 								height: msg_height/2
 							},function(){
-								// 現在のプレビューを出力
-								realtime_preview();
 								// 初回実行時、realview_outerの大きさを、フォームの大きさに揃える。
 								// なお、realview_outerの高さは、フォームの半分とする。
-								$('#realview').css('display','block').animate({ height:msg_height/2});
-								$msg.removeAttr('disabled');
+								$('#realview').css('display','block').animate({
+									height:msg_height/2
+								},function(){
+									// 現在のプレビューを出力
+									realtime_preview();
+									$input.removeAttr('disabled', 'disabled');
+								});
 							});
 						}
+						
 						break;
 					case 'diff' :	// 差分ボタン
 						$('#diff').dialog('open');
+						$input.removeAttr('disabled', 'disabled');
 						break;
 					case 'write':
 						postdata.write = true;
@@ -1625,11 +1631,11 @@ $.fn.bstooltip = bootstrapTooltip;
 									});
 								}
 								alert($.i18n('pukiwiki','error'));
+								$input.removeAttr('disabled', 'disabled');
 							}
 						});
 						break;
 				}	// End of switch
-				$input.removeAttr('disabled', 'disabled');
 				return false;
 			});
 
