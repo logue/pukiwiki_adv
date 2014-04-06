@@ -17,11 +17,11 @@ function plugin_xmlrpc_action(){
 	header('Content-Type: application/xml');
 	$server = new XmlRpcServer();
 	XmlRpcServer\Fault::attachFaultException('Services\Exception');
-	//if (!DEBUG && !XmlRpcServer\Cache::get(XMLRPC_CACHE, $server) ) {
+	if (!DEBUG && !XmlRpcServer\Cache::get(XMLRPC_CACHE, $server) ) {
 		$server->setClass('PukiWiki\Service\PingBack', 'pingback');
 		$server->setClass('PukiWiki\Service\WikiRpc', 'wiki');
-	//	XmlRpcServer\Cache::save(XMLRPC_CACHE, $server);
-	//}
+		XmlRpcServer\Cache::save(XMLRPC_CACHE, $server);
+	}
 	//Header::writeResponse($headers, 200, $server->handle());
 	echo $server->handle();
 	exit;

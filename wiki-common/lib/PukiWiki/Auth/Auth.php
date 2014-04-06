@@ -81,6 +81,10 @@ class Auth
 	 */
 	const AUTH_NTLM = 3;
 	/**
+	 * 認証方法：LDAP認証（未実装）
+	 */
+	const AUTH_LDAP = 4;
+	/**
 	 * 判定条件：ページ名
 	 */
 	const AUTH_METHOD_PAGENAME = 'pagename';
@@ -243,12 +247,12 @@ class Auth
 				// IPをチェック
 				if (self::checkAcceptIp($read_auth_pages_accept_ip, $target_str)) return true;
 				$auth_pages = $read_auth_pages;
-				$title_cannot = $_title['cannotedit'];
+				$title_cannot = $_title['cannotread'];
 				break;
 			case self::AUTH_TYPE_EDIT:
 				if (self::checkAcceptIp($edit_auth_pages_accept_ip, $target_str)) return true;
 				$auth_pages = $edit_auth_pages;
-				$title_cannot = $_title['cannotread'];
+				$title_cannot = $_title['cannotedit'];
 				break;
 			default:
 				throw new Exception('Auth::auth() : $type = '.$type.' is invalied!.');
@@ -380,10 +384,14 @@ class Auth
 
 				if (ord($digest{8})  != 1  ) return false;
 				if (ord($digest[13]) != 178) return false;
-			break;
+				break;
+/*
+			case self::AUTH_LDAP:
+				break;
+*/
 			default:
 				throw new Exception('Auth::authenticate() : The authentication method is not supported.');
-			break;
+				break;
 		}
 		return true;
 	}
@@ -398,15 +406,45 @@ class Auth
 		if ($data === false) return false;
 
 		list($scheme, $salt, $role) = self::get_data($data['username'], $auth_users);
-		if ($scheme != '{x-digest-md5}') return false;
+		if ($scheme !== '{x-digest-md5}') {
+			Utility::dieMessage('Auth::auth_digest(): Digest auth must be password scheme to <var>{x-digest-md5}</var>.');
+		}
 
 		// $A1 = md5($data['username'] . ':' . $realm . ':' . $auth_users[$data['username']]);
 		$A1 = $salt;
 		$A2 = md5($_SERVER['REQUEST_METHOD'].':'.$data['uri']);
-		$valid_response = md5($A1.':'.$data['nonce'].':'.$data['nc'].':'.$data['cnonce'].':'.$data['qop'].':'.$A2);
-		if ($data['response'] != $valid_response) return false;
+		$valid_response = md5($A1 . ':' . $data['nonce'] . ':' . $data['nc'] . ':' . $data['cnonce'] . ':' . $data['qop'] . ':' . $A2);
+		if ($data['response'] !== $valid_response) return false;
 		return true;
 	}
+	/**
+	 * LDAP認証（未実装）
+	 * @param string $auth_users ユーザ
+	 * @return boolean
+	 */
+	public static function auth_ldap($user, $ldappass)
+	{
+		// LDAPモジュールが入っているか？
+		if (!extension_loaded('ldap')) {
+			Utility::dieMessage('LDAP extension not loaded');
+		}
+		$ldapconnect = ldap_connect("localhost", 389);
+		if(! $ldapconnect ){
+			Utility::dieMessage('Unable to connect to LDAP server.');
+		}
+
+		ldap_set_option( $ldapconnect, LDAP_OPT_PROTOCOL_VERSION, 3);
+		ldap_set_option( $ldapconnect, LDAP_OPT_REFERRALS, 0);
+
+		//バインド
+		$ldapbind = ldap_bind($ldapconnect,$ldaprdn,$ldappass);
+
+		// クローズ
+		ldap_close($ldapconnect);
+
+		return $ldapbind;
+	}
+	
 	/**
 	 * パスワードチェック
 	 * @global type $auth_type
@@ -416,10 +454,11 @@ class Auth
 	{
 		global $auth_type, $auth_users;
 
+		$login = '';
+
 		switch ($auth_type) {
 			case self::AUTH_BASIC:
 				// BASIC認証
-				$user = '';
 				foreach (array('PHP_AUTH_USER', 'AUTH_USER', 'REMOTE_USER', 'LOGON_USER') as $x) {
 					if (isset($_SERVER[$x]) && ! empty($_SERVER[$x])) {
 						// Digest だったら確実
@@ -461,7 +500,9 @@ class Auth
 				if ($data === false) return false;
 
 				list($scheme, $salt, $role) = self::get_data($data['username'], $auth_users);
-				if ($scheme != '{x-digest-md5}') return false;
+				if ($scheme !== '{x-digest-md5}') {
+					Utility::dieMessage('Auth::check_auth_pw(): Digest auth must be password scheme to <var>{x-digest-md5}</var>.');
+				}
 
 				// $A1 = $salt;
 				$A1 = md5($data['username'] . ':' . $realm . ':' . $auth_users[$data['username']]);
@@ -474,14 +515,15 @@ class Auth
 				$login = $data['username'];
 				break;
 			case self::AUTH_NTLM:
+				// NTLM認証
 				$srv_soft = (defined('SERVER_SOFTWARE'))? SERVER_SOFTWARE : $_SERVER['SERVER_SOFTWARE'];
 				if (substr($srv_soft,0,9) !== 'Microsoft') {
-					throw new Exception('Auth::authenticate() : Your server does not supported to NTLM authenticate.');
+					Utility::dieMessage('Auth::check_auth_pw() : Your server does not supported to NTLM authenticate.');
 				}
 				list(, $login, , ) = self::ntlm_decode();
 				break;
 			default:
-				throw new Exception('Auth::check_auth_pw() : The authentication method is not supported.');
+				throw new Exception('Auth::check_auth_pw() : The authentication method does not supported.');
 				break;
 		}
 		
@@ -497,11 +539,7 @@ class Auth
 		foreach (array('PHP_AUTH_USER', 'AUTH_USER') as $x) {
 			if (isset($_SERVER[$x])) {
 				$ms = explode('\\', $_SERVER[$x]);
-				if (count($ms) == 3) {
-					$user = $ms[2]; // DOMAIN\\USERID
-				} else {
-					$user = $_SERVER[$x];
-				}
+				$user = count($ms) === 3 ? $ms[2] : $_SERVER[$x]; // DOMAIN\\USERID
 				break;
 			}
 		}

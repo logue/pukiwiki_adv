@@ -228,16 +228,16 @@ class ShowRSS_html
 			}
 		}else{
 //			$rdf = $xml->channel->items->children('http://www.w3.org/1999/02/22-rdf-syntax-ns#');	// RDF（未使用）
-			$dc = $xml->channel->children('http://purl.org/dc/elements/1.1/');	// ダブリンコア
+//			$dc = $xml->channel->children('http://purl.org/dc/elements/1.1/');	// ダブリンコア
 			// RSS1.xの場合
 			$this->title = $xml->channel->title;
 			$this->subtitle = (string) $xml->channel->description;
-			$this->passage = ($dc->date) ? get_passage( strtotime((string) $dc->date) ) : '';
+//			$this->passage = isset($dc->date) ? get_passage( strtotime((string) $dc->date) ) : '';
 			$this->url = $xml->channel->link;
-			$this->logo = (isset($xml->channels->image)) ? '<a href="'.$xml->channels->image->link.'" title="'.$xml->channels->image->title.'" rel="external"><img src="'.$xml->channels->image->url.'" /></a>' : null;
+			$this->logo = isset($xml->channels->image) ? '<a href="'.$xml->channels->image->link.'" title="'.$xml->channels->image->title.'" rel="external"><img src="'.$xml->channels->image->url.'" /></a>' : null;
 
 			foreach ($xml->item as $item) {
-				$item_dc = $item->children('http://purl.org/dc/elements/1.1/');
+//				$item_dc = $item->children('http://purl.org/dc/elements/1.1/');
 				$this->items[] = array(
 					'entry'	=> (string) $item->title,
 					'link'	=> (string) $item->link,
