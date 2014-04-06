@@ -108,7 +108,6 @@ class Render{
 		/* Use plugins */
 		'jquery.beautyOfCode',
 		'jquery.i18n',
-		'jquery.lazyload',
 		'jquery.tablesorter'
 	);
 

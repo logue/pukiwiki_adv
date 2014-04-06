@@ -13,6 +13,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $this->lang; ?>">
 	<head>
 		<?php echo $this->head; ?>
+		<link rel="stylesheet" type="text/css" href="<?php echo $this->path; ?>themes/<?php echo $this->conf['mobile_theme'] ?>.min.css" />
 		<link rel="stylesheet" type="text/css" href="<?php echo $this->path; ?>mobile.css.php" />
 		<title><?php echo $this->site_name; ?></title>
 	</head>

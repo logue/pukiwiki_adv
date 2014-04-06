@@ -128,10 +128,6 @@ var pukiwiki = {};
 			prefix = (prefix) ? prefix + ' ' : '*[role="main"] ';
 			
 			$(prefix + 'img')
-			//	.lazyload({ 
-			//		placeholder : this.image_dir+'grey.gif',
-			//		effect : 'fadeIn'
-			//	})
 				.bind('taphold',function(){
 					window.open($(this).attr('src'));
 				})
@@ -367,13 +363,13 @@ var pukiwiki = {};
 	$(document).ready(function(){
 		var filename = 'jquery.mobile-' + JQUERY_MOBILE_VER + (DEBUG ? '' : '.min');
 		if (JQUERY_MOBILE_VER !== 'latest'){
-			$("head").append('<link rel="stylesheet" href="http://code.jquery.com/mobile/'+JQUERY_MOBILE_VER+'/'+filename+'.css" />');
+			$("head").prepend('<link rel="stylesheet" href="http://code.jquery.com/mobile/'+JQUERY_MOBILE_VER+'/'+filename+'.css" />');
 			$.getScript('http://code.jquery.com/mobile/'+JQUERY_MOBILE_VER+'/'+filename+'.js', function(){
 				$('html').fadeIn('fast');	// スクリプトとCSSが読み込まれた段階で、ページを表示。
 				$('html').css('display','block');	// Firefox対策
 			});
 		}else{
-			$("head").append('<link rel="stylesheet" href="http://code.jquery.com/mobile/latest/jquery.mobile.css" />');
+			$("head").prepend('<link rel="stylesheet" href="http://code.jquery.com/mobile/latest/jquery.mobile.css" />');
 			$.getScript('http://code.jquery.com/mobile/latest/jquery.mobile.js', function(){
 				$('html').fadeIn('fast');	// スクリプトとCSSが読み込まれた段階で、ページを表示。
 				$('html').css('display','block');	// Firefox対策
