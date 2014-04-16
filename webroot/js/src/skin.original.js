@@ -23,9 +23,11 @@
 
 var pukiwiki = {};
 
-// BootstrapのtooltipがjQueryUIのtooltipと競合するため。
+// BootstrapとjQueryUIの競合解消
 var bootstrapTooltip = $.fn.tooltip.noConflict();
 $.fn.bstooltip = bootstrapTooltip;
+var bootstrapButton = $.fn.button.noConflict();
+$.fn.bsbutton = bootstrapButton;
 
 // Bigscope
 (function ($, Modernizr, window, document) {
@@ -407,7 +409,7 @@ $.fn.bstooltip = bootstrapTooltip;
 			});
 			$(prefix + '.tabs').tabs({
 				beforeLoad: function( event, ui ) {
-					ui.panel.html('<p id="ajax_error" class="alert alert-info"><span class="fa fa-info-circle"></span>'+$.i18n('dialog', 'loading')+'</p>');
+					ui.panel.html('<p id="ajax_error" class="alert alert-info"><span class="fa fa-spinner fa-spin"></span>'+$.i18n('dialog', 'loading')+'</p>');
 					ui.jqXHR.global = false;
 					ui.jqXHR.error(function() {
 						ui.panel.html('<p id="ajax_error" class="alert alert-warning"><span class="fa fa-fa-exclamation-triangle"></span>'+$.i18n('dialog','error_page')+'</p>');
@@ -559,6 +561,8 @@ $.fn.bstooltip = bootstrapTooltip;
 				});
 			}
 		},
+		// region.inc.php
+		// ただし、id属性は使ってない
 		setRegion :function(prefix){
 			var dom = (prefix) ? $(prefix).find('.plugin-region') : $('.plugin-region');
 			
@@ -587,7 +591,8 @@ $.fn.bstooltip = bootstrapTooltip;
 			var self = this,	// pukiwikiへのエイリアス
 				dom = (prefix) ? $(prefix).find('a') : $('a');
 
-			$('.link_symbol').each(function(){
+			// 外部リンクアイコン
+			$('.fa-external-link, .fa-external-link-square').each(function(){
 				var $this = $(this);
 				$this.click(function(){
 					window.open($this.parent().attr('href'));
@@ -708,7 +713,7 @@ $.fn.bstooltip = bootstrapTooltip;
 							
 							if (ext){
 								switch (ext[1].toLowerCase()) {
-									case 'jpg': case 'jpeg': case 'gif': case'png': case'svg' : case 'svgz' :
+									case 'jpg': case 'jpeg': case 'gif': case'png':/* case'svg' : case 'svgz' :*/
 										$this.rlightbox();
 									break;
 								}
@@ -843,8 +848,6 @@ $.fn.bstooltip = bootstrapTooltip;
 						].join("\n"));
 					}catch(e){}
 				}
-				
-				$('.ui-dialog-titlebar-close').addClass('btn btn-default').html('<span class="fa fa-times"></span>');
 			});
 		},
 		blockUI : function(){
@@ -885,6 +888,7 @@ $.fn.bstooltip = bootstrapTooltip;
 
 			$window
 				.ajaxSend(function(e, xhr, settings) {
+					$(':input').attr('disabled','disabled');
 					// 画面中央にローディング画像を移動させる
 					$activity.css({
 						position : 'absolute',
@@ -894,6 +898,7 @@ $.fn.bstooltip = bootstrapTooltip;
 					$loading.fadeIn();
 				})
 				.ajaxStop(function(){
+					$(':input').removeAttr('disabled');
 					$loading.fadeOut();
 					var f;
 					while( f = pkwkAjaxLoad.shift() ){
@@ -1190,7 +1195,7 @@ $.fn.bstooltip = bootstrapTooltip;
 				}
 				if (ret !== ''){
 					$msg.focus();
-					if (str === ''){
+					if ($msg.getSelection().text === ''){
 						$msg.insertAtCaretPos(ret);
 					}else{
 						$msg.replaceSelection(ret);
@@ -1538,7 +1543,7 @@ $.fn.bstooltip = bootstrapTooltip;
 							}, function(){
 								$msg.animate({height:msg_height*2});
 								$('#realview').hide();
-								$('#indicator').addClass('hidden');
+								$('#indicator').addClass('hide');
 								$input.removeAttr('disabled', 'disabled');
 							});
 						} else {
@@ -1723,17 +1728,25 @@ $.fn.bstooltip = bootstrapTooltip;
 			this.calcObj(this.toc,300);
 
 			$('.icon-toc').click(function(elem){
-				self._dispToc(elem,this,false);
+				if ($('#'+self.toc.id).hide()){
+					self._dispToc(elem,this,false);
+				}else{
+					self._hideToc(elem);
+				}
 			}).css('display','inline-block');
 
-			$('#poptoc *').click(function(){
+			$('#' + this.toc.id + ' *').click(function(){
 				self._hideToc();
 			});
 			
 			$(window).keydown(function(e){
 				// スラッシュキー（入力フォーム以外）
 				if(!e.target.nodeName.match(/(input|textarea)/i) && e.keyCode === 111){
-					self._dispToc();
+					if ($('#'+self.toc.id).hide()){
+						self._dispToc();
+					}else{
+						self._hideToc();
+					}
 					return false;
 				}
 			});
@@ -1794,8 +1807,8 @@ $.fn.bstooltip = bootstrapTooltip;
 			$('#toc_bg').fadeIn('fast');
 		},
 		_hideToc : function(ev){
+			$(this.toc).hide('slow');
 			$('#toc_bg').fadeOut('fast');
-			$(this.toc).fadeOut('fast');
 		},
 	// Bad Behavior
 		bad_behavior: function(prefix){
@@ -1913,7 +1926,7 @@ $.fn.bstooltip = bootstrapTooltip;
 		}
 */
 	});
-	if (typeof(GOOGLE_ANALYTICS) !== 'undefined'){
+	if (typeof(GOOGLE_ANALYTICS) !== 'undefined' && GOOGLE_ANALYTICS !== false){
 		window._gaq = [['_setAccount',GOOGLE_ANALYTICS],['_trackPageview'],['_trackPageLoadTime']];
 		Modernizr.load({
 			load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js'
