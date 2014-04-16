@@ -112,6 +112,7 @@ class Utility{
 
 		if (strlen($get->toString()) > self::MAX_QUERY_STRING_LENGTH) {
 			// Something nasty attack?
+			self::dump('suspicious');
 			self::dieMessage(_('Query string is too long.'));
 		}
 

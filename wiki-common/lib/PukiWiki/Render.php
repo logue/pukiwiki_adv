@@ -34,6 +34,10 @@ class Render{
 	 */
 	const USE_STRICT_XHTML = false;
 	/**
+	 * CDNを使う
+	 */
+	const USE_CDN = true;
+	/**
 	 * jQueryのバージョン
 	 */
 	const JQUERY_VER = '2.1.0';
@@ -280,15 +284,25 @@ class Render{
 	private function getJs(){
 		global $vars, $js_tags, $js_blocks, $google_analytics;
 
-		// JavaScriptフレームワーク設定
-		// jQueryUI Official CDN
-		// http://code.jquery.com/
-		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'//'.self::JQUERY_CDN.'/jquery-'.self::JQUERY_VER.'.min.js', 'defer'=>'defer');
-		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'//'.self::JQUERY_CDN.'/ui/'.self::JQUERY_UI_VER.'/jquery-ui.min.js', 'defer'=>'defer');
+		if (self::USE_CDN) {
+			// JavaScriptフレームワーク設定
+			// jQueryUI Official CDN
+			// http://code.jquery.com/
+			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'//'.self::JQUERY_CDN.'/jquery-'.self::JQUERY_VER.'.min.js', 'defer'=>'defer');
+			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'//'.self::JQUERY_CDN.'/ui/'.self::JQUERY_UI_VER.'/jquery-ui.min.js', 'defer'=>'defer');
 
-		// Bootstrap
-		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'//'.self::BOOTSTRAP_CDN . '/bootstrap/' . self::TWITTER_BOOTSTRAP_VER . '/js/bootstrap.min.js', 'defer'=>'defer' );
+			// Bootstrap
+			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'//'.self::BOOTSTRAP_CDN . '/bootstrap/' . self::TWITTER_BOOTSTRAP_VER . '/js/bootstrap.min.js', 'defer'=>'defer' );
+		}else{
+			// JavaScriptフレームワーク設定
+			// jQueryUI Official CDN
+			// http://code.jquery.com/
+			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>COMMON_URI . 'js/jquery-'.self::JQUERY_VER . '.min.js', 'defer'=>'defer');
+			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>COMMON_URI . 'js/jquery-ui-'.self::JQUERY_UI_VER . '.min.js', 'defer'=>'defer');
 
+			// Bootstrap
+			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>COMMON_URI . 'js/bootstrap.min.js', 'defer'=>'defer' );
+		}
 		// JS用初期設定
 		$js_init = array(
 			'DEBUG'         => constant('DEBUG'),
@@ -299,6 +313,7 @@ class Render{
 			'SCRIPT'        => Router::get_script_absuri(),
 			'SKIN_DIR'      => constant('SKIN_URI'),
 			'THEME_NAME'    => constant('PLUS_THEME'),
+			'COMMON_URI'    => self::USE_CDN ? false : constant('COMMON_URI'),
 		);
 
 		// JavaScriptタグの組み立て
@@ -425,28 +440,51 @@ class Render{
 			);
 		}
 
-		// DNS prefetching
-		// http://html5boilerplate.com/docs/DNS-Prefetching/
-		$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>'//'.self::JQUERY_CDN);
-		$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>'//'.self::BOOTSTRAP_CDN);
-		if (COMMON_URI !== ROOT_URI){
-			$link_tags[] = array('rel'=>'dns-prefetch',		'href'=>COMMON_URI);
-		}
+		if (self::USE_CDN){
+			// DNS prefetching
+			// http://html5boilerplate.com/docs/DNS-Prefetching/
+			$link_tags[] = array('rel'=>'dns-prefetch', 'href'=>'//'.self::JQUERY_CDN);
+			$link_tags[] = array('rel'=>'dns-prefetch', 'href'=>'//'.self::BOOTSTRAP_CDN);
+			if (COMMON_URI !== ROOT_URI){
+				$link_tags[] = array('rel'=>'dns-prefetch', 'href'=>COMMON_URI);
+			}
 
-		// Twitter Bootstrap
-		// http://getbootstrap.com/
-		if ($conf['bootswatch'] === false || empty($conf['bootswatch'])){
-			$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//' . self::BOOTSTRAP_CDN . '/bootstrap/' . self::TWITTER_BOOTSTRAP_VER . '/css/bootstrap.min.css', 'type'=>'text/css');
-			$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//' . self::BOOTSTRAP_CDN . '/bootstrap/' . self::TWITTER_BOOTSTRAP_VER . '/css/bootstrap-theme.min.css', 'type'=>'text/css', 'id'=>'bootstrap-theme');
+			// Twitter Bootstrap
+			// http://getbootstrap.com/
+			if ($conf['bootswatch'] === false || empty($conf['bootswatch'])){
+				$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//' . self::BOOTSTRAP_CDN . '/bootstrap/' . self::TWITTER_BOOTSTRAP_VER . '/css/bootstrap.min.css', 'type'=>'text/css');
+				$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//' . self::BOOTSTRAP_CDN . '/bootstrap/' . self::TWITTER_BOOTSTRAP_VER . '/css/bootstrap-theme.min.css', 'type'=>'text/css', 'id'=>'bootstrap-theme');
+			}else{
+				// Bootswatch
+				// http://bootswatch.com/
+				$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//' . self::BOOTSTRAP_CDN . '/bootswatch/' . self::TWITTER_BOOTSTRAP_VER . '/' . $conf['bootswatch'] . '/bootstrap.min.css', 'type'=>'text/css', 'id'=>'bootstrap-theme');
+			}
+
+			// jQuery UIのテーマ
+			if (! empty($conf['ui_theme']) && $conf['ui_theme'] !== false){
+				$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//code.jquery.com/ui/' . self::JQUERY_UI_VER .'/themes/' . $conf['ui_theme'] . '/jquery-ui.min.css', 'type'=>'text/css', 'id'=>'ui-theme');
+			}
 		}else{
-			// Bootswatch
-			// http://bootswatch.com/
-			$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//' . self::BOOTSTRAP_CDN . '/bootswatch/' . self::TWITTER_BOOTSTRAP_VER . '/' . $conf['bootswatch'] . '/bootstrap.min.css', 'type'=>'text/css', 'id'=>'bootstrap-theme');
-		}
+			// CDNを使わない場合
+			if (COMMON_URI !== ROOT_URI){
+				$link_tags[] = array('rel'=>'dns-prefetch', 'href'=>COMMON_URI);
+			}
+			
+			// Twitter Bootstrap
+			// http://getbootstrap.com/
+			if ($conf['bootswatch'] === false || empty($conf['bootswatch'])){
+				$link_tags[] = array('rel'=>'stylesheet', 'href'=>COMMON_URI . 'css/bootstrap.min.css', 'type'=>'text/css');
+				$link_tags[] = array('rel'=>'stylesheet', 'href'=>COMMON_URI . 'css/bootstrap-theme.min.css', 'type'=>'text/css', 'id'=>'bootstrap-theme');
+			}else{
+				// Bootswatch
+				// http://bootswatch.com/
+				$link_tags[] = array('rel'=>'stylesheet', 'href'=>COMMON_URI . 'css/bootswatch/' . $conf['bootswatch'] . '/bootstrap.min.css', 'type'=>'text/css', 'id'=>'bootstrap-theme');
+			}
 
-		// jQuery UIのテーマ
-		if (! empty($conf['ui_theme']) && $conf['ui_theme'] !== false){
-			$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//code.jquery.com/ui/' . self::JQUERY_UI_VER .'/themes/' . $conf['ui_theme'] . '/jquery-ui.min.css', 'type'=>'text/css', 'id'=>'ui-theme');
+			// jQuery UIのテーマ
+			if (! empty($conf['ui_theme']) && $conf['ui_theme'] !== false){
+				$link_tags[] = array('rel'=>'stylesheet', 'href'=>COMMON_URI . 'css/jquery-ui/themes/' . $conf['ui_theme'] . '/jquery-ui.min.css', 'type'=>'text/css', 'id'=>'ui-theme');
+			}
 		}
 
 		// 標準スタイルシート
@@ -457,8 +495,11 @@ class Render{
 		// Font Awesome
 		// http://fontawesome.io/
 		// ※フォントを標準スタイルシートで書き換えているので、標準スタイルシートよりも後でFont Awesomeを読み込む
-		$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//' . self::BOOTSTRAP_CDN . '/font-awesome/' . self::FONT_AWESOME_VER . '/css/font-awesome.min.css', 'type'=>'text/css');
-
+		if (self::USE_CDN){
+			$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//' . self::BOOTSTRAP_CDN . '/font-awesome/' . self::FONT_AWESOME_VER . '/css/font-awesome.min.css', 'type'=>'text/css');
+		}else{
+			$link_tags[] = array('rel'=>'stylesheet', 'href'=>COMMON_URI . 'css/font-awesome.min.css', 'type'=>'text/css');
+		}
 		return
 			self::tag_helper('meta',$meta_tags) .
 			self::tag_helper('link',$link_tags) .

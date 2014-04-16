@@ -33,16 +33,16 @@
 	// var symbol = '&#x25fc;';
 	var symbol = '■';
 	var default_set_num = 0;
+	
+	var default_theme = $('#ui-theme').attr('href');
 
 	// スキンスクリプトのinitが実行される前に実行される関数
 	pukiwiki.register.before_init(function(){
 		// クッキーが定義されていないときは、blueとし、クッキーに保存
-		if (!$.cookie('pkwk-colorset')){
-			$.cookie('pkwk-colorset', default_set_num,{expires:30,path:'/'});
-		}
+
 		var color = colorset[$.cookie('pkwk-colorset')];
 		$('#coloring').attr('href', SKIN_DIR+'theme/default/'+color[0]+'.css');
-		$('#ui-theme').attr('href','http://code.jquery.com/ui/'+$.ui.version+'/themes/'+color[1]+'/jquery-ui.css');
+		$('#ui-theme').attr('href', COMMON_URI+'css/jquery-ui/themes/'+color[1]+'/jquery-ui.css');
 
 		// カラーセットのリンクボタンを生成
 		var buffer = '';
@@ -59,7 +59,7 @@
 		$('#colorset span').click(function(){
 			var n = this.id.split('-')[1];
 			$('#coloring').attr('href', SKIN_DIR+'theme/'+THEME_NAME+'/'+colorset[n][0]+'.css');
-			$('#ui-theme').attr('href','http://ajax.aspnetcdn.com/ajax/jquery.ui/'+$.ui.version+'/themes/'+colorset[n][1]+'/jquery-ui.css');
+			$('#ui-theme').attr('href',COMMON_URI+'css/jquery-ui/themes/'+colorset[n][1]+'/jquery-ui.css');
 			$.cookie('pkwk-colorset',n,{expires:30,path:'/'});
 		});
 	});
