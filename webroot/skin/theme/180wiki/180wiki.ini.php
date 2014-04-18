@@ -19,7 +19,13 @@ return array(
 	 * http://jqueryui.com/themeroller/
 	 */
 	'ui_theme'		=> 'black-tie',
-
+	/**
+	 * Bootswatchのテーマを選択
+	 * http://bootswatch.com/
+	 * ameria, cerulean, cosmo, cyborg, flatly, journal, lumen, readable, 
+	 * simplex, slate, spacelab, superhero, united, yeti
+	 */ 
+	'bootswatch' => 'simplex',
 	/**
 	 * ナビバーの項目
 	 * （|で区切り）

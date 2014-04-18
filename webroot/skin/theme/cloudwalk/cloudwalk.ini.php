@@ -21,11 +21,20 @@ return array(
 	 * http://jqueryui.com/themeroller/
 	 */
 	'ui_theme'		=> 'cupertino',
-
-	// Navibar系プラグインでもアイコンを表示する
+	/**
+	 * Bootswatchのテーマを選択
+	 * http://bootswatch.com/
+	 * ameria, cerulean, cosmo, cyborg, flatly, journal, lumen, readable, 
+	 * simplex, slate, spacelab, superhero, united, yeti
+	 */ 
+	'bootswatch' => 'lumen',
+	/**
+	 * Navibar系プラグインでもアイコンを表示する
+	 */
 	'showicon'		=> true,
-
-	// アドレスの代わりにパスを表示
+	/**
+	 * アドレスの代わりにパスを表示
+	 */
 	'topicpath'		=> true,
 
 );

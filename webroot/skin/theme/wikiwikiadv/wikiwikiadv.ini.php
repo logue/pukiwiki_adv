@@ -22,22 +22,33 @@ return array(
 	 * http://jqueryui.com/themeroller/
 	 */
 	'ui_theme'		=> 'ui-lightness',
-
-	// Navibar系プラグインでもアイコンを表示する
+	/**
+	 * Bootswatchのテーマを選択
+	 * http://bootswatch.com/
+	 * ameria, cerulean, cosmo, cyborg, flatly, journal, lumen, readable, 
+	 * simplex, slate, spacelab, superhero, united, yeti
+	 */ 
+	'bootswatch' => 'cerulean',
+	/**
+	 * Navibar系プラグインでもアイコンを表示する
+	 */
 	'showicon'		=> false,
-
-	// アドレスの代わりにパスを表示
+	/**
+	 * アドレスの代わりにパスを表示
+	 */
 	'topicpath'		=> true,
-	
-	// ロゴ設定
+	/**
+	 * ロゴ設定
+	 */
 	'logo'=>array(
 		'src'		=> IMAGE_URI.'pukiwiki_adv.logo.png',
 		'alt'		=> '[PukiWiki Adv.]',
 		'width'		=> '80',
 		'height'	=> '80'
 	),
-
-	// 広告表示領域
+	/**
+	 * 広告表示領域
+	 */
 	'adarea'	=> array(
 		// ページの右上の広告表示領域
 		'header'	=> <<<EOD

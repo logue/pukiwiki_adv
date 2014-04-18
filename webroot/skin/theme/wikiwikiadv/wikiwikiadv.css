@@ -12,8 +12,7 @@
  */
 
 /** Generic Tags *********************************************************************************/
-a
-{
+a:not(.btn){
 	color:#330000;
 	background-color:inherit;
 	text-decoration:none;
@@ -22,24 +21,20 @@ a
 	border-style:solid;
 }
 
-a:visited
+a:not(.btn):visited
 {
 	color:#330000;
 	background-color:inherit;
 	border-color:#CCC;
 }
 
-a:hover
+a:not(.btn):hover
 {
 	color:#330000;
 	background-color:inherit;
 	border-color:black;
 	border-width:0px 0px 2px 0px;
 	border-style:solid;
-}
-
-.ui-widget a{
-	color:#215dc6 !important;
 }
 
 pre, dl, ol, p, blockquote
@@ -51,19 +46,11 @@ pre, dl, ol, p, blockquote
 body{
 	background-color:#ebebeb;
 	line-height:1.7em;
-}
-
-p{
-	padding: .25em;
-}
-
-del{
-	color:grey;
+	color:black;
 }
 
 dt{
 	color: #663333;
-	font-weight:bold;
 	margin-top:1em;
 }
 
@@ -80,8 +67,7 @@ h1, h2, h3, h4, h5, h6{
 	background-color:rgba(255, 255, 255, .9);
 }
 
-h1
-{
+h1{
 	letter-spacing:0.15em;
 	color:#cc0000;
 	font-size: 161.6%;
@@ -90,8 +76,7 @@ h1
 	margin:.2em 0px .2em .5em;
 }
 
-h2
-{
+h2{
 	letter-spacing:0.15em;
 	font-size:100%;
 	color:black;
@@ -104,8 +89,7 @@ h2
 	border-color:#ffffff #ffffff #999999 black;
 }
 
-h3
-{
+h3{
 	letter-spacing:0.15em;
 	font-size:100%;
 	color:black;
@@ -119,8 +103,7 @@ h3
 	border-color:gray;
 }
 
-h4, h5, h6
-{
+h4, h5, h6{
 	letter-spacing:0.15em;
 	font-size:100%;
 	color:black;
@@ -135,7 +118,6 @@ pre{
 	border-bottom:#DDDDEE 1px solid;
 	border-left:#888899 1px solid;
 	border-right:#DDDDEE 1px solid;
-	padding:.5em;
 	color:black;
 	background-color:#F0F8FF;
 	line-break:strict;
@@ -144,24 +126,7 @@ pre{
 	overflow:auto;
 }
 
-q{
-	border:1px dotted #999;
-}
-
-
-ul, ol {
-	margin: 0 .5em 0 2em;
-	padding: .1em 0 .1em 1.5em;
-}
-
-p, pre, dl, blockquote, form, .table_wrapper{
-	margin:.5em 1.5em;
-}
-
 /* Table Tags */
-.table_wrapper{
-	width:95%;
-}
 .table{
 	background-color:silver;
 }
@@ -193,12 +158,11 @@ p, pre, dl, blockquote, form, .table_wrapper{
 }
 /** Layout ****************************************************************************************/
 #container {
-	width:930px;
+	width:960px;
+	margin: 5px auto;
 	background-color: white;
 	border: 1px #CCC solid;
 	box-shadow:#ccc 0 0 3px 1px;
-	margin: 5px auto;
-	padding: 3px;
 }
 
 #main{
@@ -207,14 +171,21 @@ p, pre, dl, blockquote, form, .table_wrapper{
 
 #main_wrapper #main{
 	background-color: white;
-	padding:0 5px;
-	margin:0 1.5em;
 }
 
 #menubar, #sidebar{
 	display:none;
+	padding: 5px;
+	margin: 5px;
+	background-color: #F5F5F5;
+	border-color: black;
+	border-style: solid;
+	border-width: 1px;
 }
 @media screen{
+	#main{
+		padding:.5em 0;
+	}
 	.two-colums #main_wrapper {
 		width:100%;
 		float:right;
@@ -226,45 +197,37 @@ p, pre, dl, blockquote, form, .table_wrapper{
 	}
 
 	.two-colums #menubar {
-		display:block;
-		width:160px;
 		float:right;
-		background-color: #F5F5F5;
-		border-color: black;
-		border-style: solid;
-		border-width: 1px;
-		padding: 5px;
+		display:block;
+		width:170px;
 	}
 
 	.three-colums #wrapper {
 		width:100%;
 		float:left;
-		margin-right:-180px;
 	}
 
 	.three-colums #main_wrapper {
-		width:100%;
-		float:right;
-		margin-left:-180px;
+		width:775px;
+		float:left;
 	}
 
 	.three-colums #main_wrapper #main {
-		margin:0 180px;
-		padding:5px;
+		width:590px;
+		float:right;
+		margin:0;
 	}
 
 	.three-colums #menubar {
 		display:block;
-		width:180px;
-		float:right;
+		width:170px;
+		float:left;
 	}
 
 	.three-colums #sidebar {
 		display:block;
-		width:180px;
-		float:left;
-		right:90px;
-		position:absolute;
+		width:170px;
+		float:right;
 	}
 
 	.three-colums #misc {
@@ -277,13 +240,13 @@ p, pre, dl, blockquote, form, .table_wrapper{
 	margin:1% 1% 0 1%;
 }
 
-#header .style_table,
-#footer .style_table{
+#header .table,
+#footer .table{
 	background-color: transparent;
 }
 
-#header .style_table .style_th, #header .style_table .style_td,
-#footer .style_table .style_td, #footer .style_table .style_th {
+#header .table th, #header .table td,
+#footer .table td, #footer .table th {
 	margin: 0px;
 	padding: 0px;
 	background-color: transparent;
@@ -409,14 +372,12 @@ p, pre, dl, blockquote, form, .table_wrapper{
 }
 
 #footer{
+	background-color:black;
+	color:#ccc;
 	clear:both;
-	background-color: black;
-	border-color: black;
-	border-style: solid;
-	border-width: 1px;
-	color: white;
+	padding: 0.3em  0.5em;
+	margin:5px;
 	font-size: 85%;
-	margin: 0 9px 9px;
 }
 
 #footer a{
@@ -491,76 +452,19 @@ p, pre, dl, blockquote, form, .table_wrapper{
 	font-size: 86%;
 }
 
-/** Misc ******************************************************************************************/
-/* html.php/catbody() */
-.word0{
-	background-color:#FFFF66;
-	color:black;
-}
-.word1{
-	background-color:#A0FFFF;
-	color:black;
-}
-.word2{
-	background-color:#99FF99;
-	color:black;
-}
-.word3{
-	background-color:#FF9999;
-	color:black;
-}
-.word4{
-	background-color:#FF66FF;
-	color:black;
-}
-.word5{
-	background-color:#880000;
-	color:white;
-}
-.word6{
-	background-color:#00AA00;
-	color:white;
-}
-.word7{
-	background-color:#886800;
-	color:white;
-}
-.word8{
-	background-color:#004699;
-	color:white;
-}
-.word9{
-	background-color:#990099;
-	color:white;
-}
-
-.social{
-	list-style:none;
-}
-
-.social li{
-	display:block;
-	padding: 0 0.1em;
-	float:left;
-}
 /** MenuBar/SideBar*********************************************************************************/
 #menubar, #sidebar{
 	word-break:break-all;
 	overflow:hidden;
 	letter-spacing:0.15em;
+	font-size:90%;
 }
 
-#menubar ul{
-	margin:0px 0px 0px .5em;
+#menubar ul, #sidebar ul{
+	margin: 0 0 0 .5em;
+	padding: .1em 0 .1em 1.5em;
 }
 
-#sidebar ul{
-	margin:0px 0px 0px .5em;
-}
-
-#menubar li, #sidebar li{
-	line-height:1.7em;
-}
 #menubar ul li .noexists, #menubar ul li a,
 #sidebar ul li .noexists, #sidebar ul li a {
 	display:block;
@@ -572,19 +476,6 @@ p, pre, dl, blockquote, form, .table_wrapper{
 #sidebar ul li .noexists a{
 	display:inline;
 	background-color:transparent;
-}
-
-#menubar .recent_list, #menubar .popular_list,
-#sidebar .recent_list, #sidebar .popular_list{
-	margin:0 0 0 0.5em;
-	padding:0 0 0 0.5em;
-	word-wrap:break-word;
-}
-
-#menubar .recent_list a, #menubar .popular_list a,
-#sidebar .recent_list a, #sidebar .popular_list a {
-	display:inline;
-	padding:0px;
 }
 
 #menubar h1, #menubar h2, #menubar h3, #menubar h4, #menubar h5, #menubar h6,
@@ -602,26 +493,6 @@ p, pre, dl, blockquote, form, .table_wrapper{
 	padding:4px;
 	border: 1px black solid;
 	text-align:center;
-}
-
-#menubar ul.menu, #sidebar ul.menu{
-	list-style-type: none;
-	list-style-position: outside;
-	margin: 0px;
-	padding: 0px;
-}
-
-#menubar ul.menu li, #sidebar ul.menu li{
-	padding: 0px 0.3em;
-	margin: 0px;
-	border-bottom: 1px dotted #FFFCEE;
-}
-
-#menubar ul.menu li a, #sidebar ul.menu li a{
-	text-decoration: none;
-	display:block;
-	padding:0.1em 0.3em;
-	margin:0px -0.3em;
 }
 
 /* Hack calendar */

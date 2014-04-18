@@ -87,12 +87,7 @@ pre{
 	background-color:<?php echo $ini['pre_bgcolor']; ?>;
 }
 
-input[type='text'], input[type='password'], input[type='file'],
-input[type='tel'], input[type='url'], input[type='email'], 
-input[type='datetime'], input[type='date'], input[type='month'], 
-input[type='week'], input[type='time'], input[type='datetime-local'], 
-input[type='number'], input[type='range'], input[type='color'], 
-input[type='search'], textarea, select {
+.form-control {
 	background-image: url('data:image/svg+xml;base64,<?php echo base64_encode('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 1 1" preserveAspectRatio="none"><linearGradient id="gradient" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="0%" y2="100%"><stop stop-color="'.$ini['box_bgcolor'].'" offset="0"/><stop stop-color="'.$ini['bgcolor'].'" offset="1"/></linearGradient><rect x="0" y="0" width="1" height="1" fill="url(#gradient)" /></svg>'); ?>') !important;
 	background-color: <?php echo $ini['bgcolor']; ?>;
 	border: 1px solid <?php echo $ini['box_bdcolor']; ?>;

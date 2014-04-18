@@ -26,6 +26,13 @@ return array(
 	 * http://jqueryui.com/themeroller/
 	 */
 	'ui_theme'		=> 'redmond',
+	/**
+	 * Bootswatchのテーマを選択
+	 * http://bootswatch.com/
+	 * ameria, cerulean, cosmo, cyborg, flatly, journal, lumen, readable, 
+	 * simplex, slate, spacelab, superhero, united, yeti
+	 */ 
+	'bootswatch' => false,
 
 	// Navibar系プラグインでもアイコンを表示する
 	'showicon'		=> false,

@@ -113,7 +113,7 @@
 <?php } ?>
 				</div>
 
-				<div class="row-fluid">
+				<div class="row">
 <?php if (!empty($this->notes)): ?>
 					<div id="note">
 						<?php echo $this->notes ?>
@@ -137,7 +137,7 @@
 <?php endif; ?>
 
 <?php if (isset($this->related)): ?>
-				<div id="related" class="row-fluid">
+				<div id="related" class="row">
 					<?php echo $this->related ?>
 				</div>
 <?php endif; ?>
@@ -150,7 +150,7 @@
 			<div id="sigunature">
 				<?php echo S_COPYRIGHT;?><br />
 				Processing time: <var><?php echo $this->proc_time; ?></var> sec.<br />
-				Squawker skin by <a href="http://logue.be">Logue</a> based on <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap</a>.
+				Squawker skin by <a href="http://logue.be/" rel="external">Logue</a> based on <a href="http://getbootstrap.com/" rel="external">Bootstrap</a>.
 			</div>
 		</footer>
 		<?php echo $this->js; ?>

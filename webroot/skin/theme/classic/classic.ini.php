@@ -23,12 +23,17 @@ return array(
 	 * http://jqueryui.com/themeroller/
 	 */
 	'ui_theme'		=> 'redmond',
-
+	/**
+	 * Bootswatchのテーマを選択
+	 * http://bootswatch.com/
+	 * ameria, cerulean, cosmo, cyborg, flatly, journal, lumen, readable, 
+	 * simplex, slate, spacelab, superhero, united, yeti
+	 */ 
+	'bootswatch' => 'lumen',
 	/**
 	 * アドレスの代わりにパスを表示
 	 */
 	'topicpath'		=> true,
-
 	/**
 	 * ロゴ設定
 	 */
@@ -38,28 +43,19 @@ return array(
 		'width'     => '80',
 		'height'    => '80'
 	),
-
 	/**
 	 * ナビバープラグインでもアイコンを表示する
 	 */
 	'showicon' => false,
-
 	/**
 	 * ナビバーの項目
 	 * （|で区切り）
 	 */
 	'navibar' => 'top,|,edit,freeze,diff,backup,upload,reload,|,new,list,search,recent,help,|,login',
-
 	/**
 	 * ツールバーの項目
 	 */
 	'toolbar' => 'reload,|,new,newsub,edit,freeze,source,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,log,|,help,|,rss',
-
-	/**
-	 * 追加で読み込むJavaScript
-	 */
-	'js'      => array('classic.js'),
-
 	/**
 	 * 広告表示領域
 	 */

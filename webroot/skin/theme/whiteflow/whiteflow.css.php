@@ -22,9 +22,6 @@ ini_set('zlib.output_compression', 'Off');
 $expire = isset($_GET['expire'])   ? (int)$_GET['expire'] * 86400	: '604800';	// Default is 7 days.
 $menu   = isset($_GET['menu'])   ? $_GET['menu']	: '';
 
-// Read config
-$_SKIN = include('whiteflow.ini.php');
-
 // Send header
 header('Content-Type: text/css; charset: UTF-8');
 header('Cache-Control: private');
@@ -58,11 +55,6 @@ a:visited{
 
 p a{
 	margin: 0 2px;
-}
-
-ul, ol {
-	padding-left:1.5em;
-	margin:0.5em 2em;
 }
 
 dt{
@@ -102,7 +94,7 @@ tfoot .style_td,
 thead .style_th,
 tfoot .style_th {
 	color: white;
-	background: #91afc7 url(<?php echo $_SKIN['image_dir'] ?>th.bg.png) bottom left repeat-x;
+	background: #91afc7 url(./image/th.bg.png) bottom left repeat-x;
 }
 */
 .table{
@@ -167,12 +159,12 @@ pre{
 }
 #edit-area.work {
 	width:100%;
-	margin:0 -260px 0 20px;
+	margin:0 -280px 0 20px;
 	float:left;
 }
 
 #edit-area.work > div ,#edit-area.work > section{
-	margin-right:260px;
+	margin-right:240px;
 }
 #sidebar {
 	background-color: whitesmoke;
@@ -190,7 +182,7 @@ pre{
 	padding: 0 15px 0 0;
 }
 #container {
-	background: white url(<?php echo $_SKIN['image_dir'] ?>shadow.left.png) left top repeat-y;
+	background: white url(./image/shadow.left.png) left top repeat-y;
 	border-top: 1px solid #d1d1d1;
 	margin: 0 35px;
 	padding-left: 4px;
@@ -201,11 +193,11 @@ pre{
 #header {
 	margin-right: auto;
 	margin-left: auto;
-	background: transparent url(<?php echo $_SKIN['image_dir'] ?>shadow.right.png) right top repeat-y;
+	background: transparent url(./image/shadow.right.png) right top repeat-y;
 }
 
 #footer {
-	background: #aaa url(<?php echo $_SKIN['image_dir'] ?>shadow.right.png) right top repeat-y;
+	background: #aaa url(./image/shadow.right.png) right top repeat-y;
 	color: white;
 	clear: both;
 	padding: 0 4px 0 0;
@@ -236,7 +228,7 @@ pre{
 #lastmodified {
 	padding-left: 18px;
 	font-size: 93%;
-	background: transparent url(<?php echo $_SKIN['image_dir'] ?>update.png) no-repeat;
+	background: transparent url(./image/update.png) no-repeat;
 	float: right;
 	white-space: nowrap;
 }
@@ -266,7 +258,7 @@ pre{
 	padding-bottom: 7px;
 }
 #header #selection h2::before {
-	content: url(<?php echo $_SKIN['image_dir'] ?>status.png);
+	content: url(./image/status.png);
 	margin-right: 7px;
 }
 #header div #popular {
@@ -327,13 +319,13 @@ pre{
 
 #logo {
 	display: block;
-	background: transparent url(<?php echo $_SKIN['image_dir'] ?>title.png) left top no-repeat;
+	background: transparent url(./image/title.png) left top no-repeat;
 	float: left;
 	padding: 10px 10px 0 40px;
 }
 
 #logo:hover {
-	background-image: url(<?php echo $_SKIN['image_dir'] ?>title.master.png);
+	background-image: url(./image/title.master.png);
 }
 /** 4, parts.menu.css *****************************************************************************/
 #sidebar{
@@ -345,7 +337,7 @@ pre{
 }
 
 #sidebar h3 {
-	background: transparent url(<?php echo $_SKIN['image_dir'] ?>sitemenu.png) center left no-repeat;
+	background: transparent url(./image/sitemenu.png) center left no-repeat;
 	font-size: 110%;
 	padding-left: 30px;
 }
@@ -355,10 +347,10 @@ pre{
 	color: white;
 }
 #sidebar ul a[href="#header"] {
-	background: white url(<?php echo $_SKIN['image_dir'] ?>arrow2.png) 98% 50% no-repeat;
+	background: white url(./image/arrow2.png) 98% 50% no-repeat;
 }
 #sidebar ul li li:hover a[href="#header"] {
-	background: #5796e9 url(<?php echo $_SKIN['image_dir'] ?>arrow3.png) 98% 50% no-repeat;
+	background: #5796e9 url(./image/arrow3.png) 98% 50% no-repeat;
 }
 
 #sidebar ul li .noexists a{
@@ -398,7 +390,7 @@ pre{
 }
 
 #body h3 {
-	background: transparent url(<?php echo $_SKIN['image_dir'] ?>wiki.png) 90% -12px no-repeat;
+	background: transparent url(./image/wiki.png) 90% -12px no-repeat;
 	border: solid gainsboro;
 	border-width: 1px 0;
 	color: #444;
@@ -412,7 +404,7 @@ pre{
 	color: black;
 }
 #body h4 {
-	background: white url(<?php echo $_SKIN['image_dir'] ?>star.png) left center no-repeat;
+	background: white url(./image/star.png) left center no-repeat;
 	margin: 10px 0;
 	padding: 10px 0 0 40px;
 	height: 33px;
@@ -433,11 +425,11 @@ pre{
 	padding .5em;
 }
 
-#content ul > li {
-	list-style-image: url(<?php echo $_SKIN['image_dir'] ?>arrow.png);
+#content ul:not(.list-unstyled) > li {
+	list-style-image: url(./image/arrow.png);
 }
-#content ul > li:hover {
-	list-style-image: url(<?php echo $_SKIN['image_dir'] ?>arrow.hover.png);
+#content ul:not(.list-unstyled) > li:hover {
+	list-style-image: url(./image/arrow.hover.png);
 }
 
 #signature li, #signature li:hover{
@@ -456,7 +448,7 @@ pre{
 
 #body hr + h3{
 	padding-left: 3em;
-	background: white url(<?php echo $_SKIN['image_dir'] ?>comments.png) 20px -20px no-repeat;
+	background: white url(./image/comments.png) 20px -20px no-repeat;
 }
 
 #body hr + ::before{
@@ -503,34 +495,12 @@ pre{
 /* Framework overview */
 #sidebar{
 	word-break:break-all;
-}
-
-#sidebar #menubar > *{
-	padding:0 0 0 1em;
-}
-
-#sidebar #menubar h2, #sidebar #menubar h3, #sidebar #menubar h4, #sidebar #menubar h5{
-	padding-left:0;
-}
-#sidebar #menubar ul, #sidebar #menubar ol{
-	margin:0 0 0 .5em;
-	padding: 0 0 0 1em;
-}
-
-#sidebar #menubar ul li .noexists, #menubar ul li a {
-	display:block;
+	font-size:90%;
 }
 
 #sidebar #menubar ul li .noexists a{
 	background-color:transparent;
 }
-
-#sidebar #menubar .recent_list, #sidebar .popular_list{
-	margin:0 0 0 .5em;
-	padding:0 0 0 .5em;
-	word-wrap:break-word;
-}
-
 
 #sidebar h1, #sidebar h2, #sidebar h3 {
 	font-size:138.5%;
@@ -538,26 +508,6 @@ pre{
 
 #sidebar h4, #sidebar h5, #sidebar h6{
 	font-size:123.1%;
-}
-
-#sidebar #menubar ul.menu{
-	list-style-type: none;
-	list-style-position: outside;
-	margin: 0;
-	padding: 0;
-}
-
-#sidebar #menubar ul.menu li{
-	padding: 0 0.3em;
-	margin: 0;
-	border-bottom: 1px dotted #FFFCEE;
-}
-
-#sidebar #menubar ul.menu li a{
-	text-decoration: none;
-	display:block;
-	padding:0.1em 0.3em;
-	margin:0px -0.3em;
 }
 
 /* Hack calendar */
@@ -591,7 +541,7 @@ pre{
 	font-size: 90%;
 	list-style: none none inside;
 	border-top: 4px double white;
-	background: transparent url(<?php echo $_SKIN['image_dir'] ?>shadow.bottom.png) left bottom repeat-x;}
+	background: transparent url(./image/shadow.bottom.png) left bottom repeat-x;}
 
 #footer ul li.inquiry,
 #footer ul li.request,
@@ -615,79 +565,9 @@ pre{
 	padding:30px;
 }
 
-/** Popup Toc *************************************************************************************/
-#poptoc {
-	border:gray thin outset;
-	background-color:lightyellow;
-	max-width:25em;
-	min-width:18em;
-	opacity:0.9;
-	overflow:visible;
-	padding:0.5em;
-	position:absolute;
-	text-align:left;
-	text-shadow: white 1px 1px 0;
-	width:22em;
-	z-index:1;
-}
-
-.ie6 #poptoc, .ie7 #poptoc, .ie8 #poptoc {
-	filter:
-		progid:DXImageTransform.Microsoft.Alpha(opacity=90)
-		progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=ivory,EndColorStr=lemonchiffon) !important;
-}
-
-.webkit #poptoc{
-	background: -webkit-gradient(linear, left top, left bottom, from(ivory), to(lemonchiffon));
-}
-
-.gecko #poptoc{
-	background: -moz-linear-gradient(top, ivory, lemonchiffon);
-}
-
-.presto #poptoc{
-	background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMCI%2BDQo8ZGVmcz4NCjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxMDAlIj4NCjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOml2b3J5OyIvPg0KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjpsaWdodHllbGxvdzsiLz4NCjwvbGluZWFyR3JhZGllbnQ%2BDQo8L2RlZnM%2BDQo8cmVjdCB4PSIwIiB5PSIwIiBmaWxsPSJ1cmwoI2dyYWRpZW50KSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgLz4NCjwvc3ZnPg0K');
-}
-.ie9 #poptoc {
-	-ms-filter: "progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=ivory,EndColorStr=lemonchiffon)" !important;
-}
-
-#poptoc a{
-	color:blue !important;
-	cursor:pointer;
-}
-#poptoc a:hover{
-	text-shadow: none;
-	background-color:#ccc;
-}
-#poptoc h1{
-	color:navy;
-	background-color:honeydew;
-	font-size:small;
-	font-weight:normal;
-	padding:0.3em;
-	margin:0;
-	text-align:center;
-	border:silver solid 1px;
-	display:block;
-}
-#poptoc h1 a{color:navy; text-decoration:none;}
-#poptoc h1 img {margin-bottom:-3px; margin-right: 2px;}
-#poptoc .nav {text-indent:0em;border-top:1px gray solid; padding-top:0.2em;text-align:center; white-space: nowrap; }
-#poptoc a.here{color: black; background: gainsboro; text-decoration: none; border:1px dotted gray;}
-
-.tocpic {
-	display:inline;
-	cursor:pointer;
-}
-
-.hrefp, .topic {
-	vertical-align:text-bottom;
-}
-
 /* contents.inc.php */
 .contents {
-	background        : #f6f7fe url(<?php echo $_SKIN['image_dir'] ?>toc.png) 90% -12px no-repeat;
+	background        : #f6f7fe url(./image/toc.png) 90% -12px no-repeat;
 	border            : 1px solid white;
 	margin            : 25px 7.5% 45px 15px;
 	outline           : 1px solid #ccc;
@@ -722,17 +602,17 @@ pre{
 	padding           : 0;
 }
 .contents ul ul {
-	background        : transparent url(<?php echo $_SKIN['image_dir'] ?>tree/28.png) 0 repeat-y;
+	background        : transparent url(./image/tree/28.png) 0 repeat-y;
 	list-style-type   : none;
 	padding-left      : 15px;
 }
 .contents ul ul li {
-	background        : transparent url(<?php echo $_SKIN['image_dir'] ?>tree/268.png) 0 no-repeat;
+	background        : transparent url(./image/tree/268.png) 0 no-repeat;
 	margin-left       : -15px;
 	padding-left      : 30px;
 }
 .contents ul ul li:last-child {
-	background        : transparent url(<?php echo $_SKIN['image_dir'] ?>tree/68.png) 0 no-repeat;
+	background        : transparent url(./image/tree/68.png) 0 no-repeat;
 }
 
 /* suckerfish.inc.php */
@@ -853,7 +733,7 @@ ul.sf-menu li li li.sfHover ul {
 	white-space: nowrap;
 }
 .search_form {
-	background: transparent url(<?php echo $_SKIN['image_dir'] ?>search.png) 20px 0 no-repeat;
+	background: transparent url(./image/search.png) 20px 0 no-repeat;
 	margin: 20px 0;
 	padding-left: 70px;
 }
@@ -869,7 +749,7 @@ ul.sf-menu li li li.sfHover ul {
 
 /* note.inc.php */
 #note {
-	background-image:url(<?php echo $_SKIN['image_dir'] ?>note.png);
+	background-image:url(./image/note.png);
 	background-position: top right;
 	background-repeat:no-repeat;
 }

@@ -1,13 +1,12 @@
 <?php
-/////////////////////////////////////////////////
-// PukiWiki - Yet another WikiWikiWeb clone.
-//
-// WIKIWIKI Adv. Theme.
-// by Logue
-// Inspired from wikiwiki.jp default skin.
-//
-// $Id: wikiwikiadv.skin.php,v 1.0.1 2012/07/09 07:55:00 Logue Exp $
-//
+/**
+ * PukiWiki - Yet another WikiWikiWeb clone.
+ *
+ * WIKIWIKI Adv. Theme.
+ * by Logue
+ * Inspired from wikiwiki.jp default skin.
+ *
+ */
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $this->lang; ?>">
@@ -17,6 +16,7 @@
 		<title><?php echo $this->title . ' - ' . $this->site_name; ?></title>
 	</head>
 	<body>
+		<?php if ($this->conf['adarea']['header']) echo '<div id="header_adspace" class="noprint">' . $this->conf['adarea']['header'] . '</div>'; ?>
 		<div id="container" class="<?php echo $this->colums ?>" role="document">
 <!-- *** Header *** -->
 			<header id="header" role="banner">
@@ -39,13 +39,12 @@
 				<?php echo $this->pluginBlock('toolbar','list,recent,diff,backup,freeze,help');?>
 				<?php echo $this->pluginBlock('search'); ?>
 			</div>
-			<?php echo $this->topicpath; ?>
-			<hr />
 			<div id="wrapper" class="clearfix">
-<!-- Center -->
 				<div id="main_wrapper">
+<!-- Center -->
 					<div id="main">
-						<hgroup id="title" style="'.$title_style.'">
+						<?php echo $this->topicpath; ?>
+						<hgroup id="title">
 							<h1><a href="<?php echo $this->links['related'] ?>"><?php echo $this->title ?></a></h1>
 							<?php echo (!empty($this->lastmodified)) ? '<h2 id="lastmodified">Last-modified: '.$this->lastmodified.'</h2>'."\n" : '' ?>
 						</hgroup>
@@ -56,32 +55,40 @@
 							</section>
 <?php if (!empty($this->notes)) { ?>
 							<hr />
-							<!-- * Note * -->
+<!-- * Note * -->
 							<aside id="note" role="note">
 								<?php echo $this->notes."\n" ?>
 							</aside>
-							<!--  End Note -->
+<!--  End Note -->
 <?php } ?>
 						</div>
 						<?php if (!empty($this->conf['adarea']['footer'])) echo '<div id="footer_adspace" class="noprint" style="text-align:center;">' . $this->conf['adarea']['footer'] . '</div>'; ?>
 					</div>
-				</div>
-
-
-<?php if ($this->colums == 'three-colums' || $this->colums == 'two-colums')  { ?>
+<?php if ($this->colums === 'three-colums')  { ?>
 <!-- Left -->
 				<aside id="menubar" role="navigation">
 					<?php echo $this->menubar ?>
 				</aside>
 <?php } ?>
 
-<?php if ($this->colums == 'three-colums')  { ?>
+				</div>
+
+
+<?php if ($this->colums === 'two-colums')  { ?>
+<!-- Left -->
+				<aside id="menubar" role="navigation">
+					<?php echo $this->menubar ?>
+				</aside>
+<?php } ?>
+
+<?php if ($this->colums === 'three-colums')  { ?>
 <!-- Right -->
 				<aside id="sidebar" role="navigation">
 					<?php echo $this->sidebar ?>
 				</aside>
 <?php } ?>
 			</div>
+
 			<div id="misc">
 <?php if (!empty($this->attaches)) { ?>
 				<hr />
