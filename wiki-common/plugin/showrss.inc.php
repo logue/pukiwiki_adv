@@ -178,6 +178,7 @@ class ShowRSS_html
 {
 	var $items = array();
 	var $class = 'showrss';
+	protected $passage = 0;
 
 	function __construct($xml)
 	{
@@ -237,7 +238,7 @@ class ShowRSS_html
 			$this->logo = isset($xml->channels->image) ? '<a href="'.$xml->channels->image->link.'" title="'.$xml->channels->image->title.'" rel="external"><img src="'.$xml->channels->image->url.'" /></a>' : null;
 
 			foreach ($xml->item as $item) {
-//				$item_dc = $item->children('http://purl.org/dc/elements/1.1/');
+				$item_dc = $item->children('http://purl.org/dc/elements/1.1/');
 				$this->items[] = array(
 					'entry'	=> (string) $item->title,
 					'link'	=> (string) $item->link,

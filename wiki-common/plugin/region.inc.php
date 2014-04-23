@@ -13,25 +13,34 @@
  */
 
 use PukiWiki\Renderer\RendererFactory;
+use PukiWiki\Utility;
 
 function plugin_region_convert() {
 	static $first = 0; // at first call
+	$usage = '<p class="alert alert-warning">#region usage: <code>#region(title){{ content }}</code> or <code>#region([[Pagename#hash]])</code></p>';
 
 	$title = $body = '';
 	$args = func_get_args();
+	$num = func_num_args();
+	
+	$title = array_shift($args);
+	if ($num === 1){
+		// BlacketNameだった場合、そのページをajaxで取得
+		if (preg_match('/^\[\[(.*)\]\]$/', $title, $match)){
+			$ret[] = '<div class="plugin-region clearfix">';
+			$ret[] = '<div class="plugin-region-title">' . RendererFactory::factory($title) . '</div>';
+			$ret[] = '<div class="plugin-region-body" data-page="'.$match[1] . '"></div>';
+			$ret[] = '</div>';
+			return join("\n",$ret);
+		}
+	}else if ($num === 2){
+		$ret[] = '<div class="plugin-region clearfix">';
+		$ret[] = '<div class="plugin-region-title">' . Utility::htmlsc($title) . '</div>';
+		$ret[] = '<div class="plugin-region-body">' . RendererFactory::factory(array_pop($args)) . '</div>';
+		$ret[] = '</div>';
 
-	if (func_num_args() > 1) {
-		$title = array_shift($args);
-		$body = join(',', $args);
-	} else {
-		$body = str_replace(array(chr(0x0d) . chr(0x0a), chr(0x0d), chr(0x0a)), "\n", $args[0]);
-		list($title, $body) = explode("\n", $body, 2);
+		return join("\n",$ret);
 	}
-	$ret[] = '<div class="plugin-region" id="plugin-region-anchor' . $first . '">';
-	$ret[] = '<div class="plugin-region-title">' . RendererFactory::factory($title) . '</div>';
-	$ret[] = '<div class="plugin-region-body">' . RendererFactory::factory($body) . '</div>';
-	$ret[] = '</div>';
-
-	return join("\n",$ret);
+	return $usage;
 }
 

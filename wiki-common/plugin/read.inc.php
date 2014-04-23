@@ -31,13 +31,14 @@ function plugin_read_action()
 
 	$page = isset($vars['page']) ? Utility::stripBracket($vars['page']) : null;
 	$ret = array('msg'=>null, 'body'=>null);
+	$id = isset($vars['id']) ? $vars['id'] : null;
 
 	if (!$page) return $ret;
 
 	// 読み込むことができるページか
 	$wiki = Factory::Wiki($page);
 	if ($wiki->isReadable(true)) {
-		return array('msg'=>Utility::htmlsc($page), 'body'=>$wiki->render());
+		return array('msg'=>Utility::htmlsc($page), 'body'=>$wiki->render($id));
 		//return $ret;
 	}
 
@@ -81,6 +82,5 @@ function plugin_read_action()
 	Utility::notfound();
 	exit;
 }
-
 /* End of file read.inc.php */
 /* Location: ./wiki-common/plugin/read.inc.php */

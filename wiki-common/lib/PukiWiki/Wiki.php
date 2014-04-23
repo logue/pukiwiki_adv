@@ -61,6 +61,10 @@ class Wiki{
 	 */
 	const HTML_URI_MATCH_PATTERN = '/<.+? (src|href)="(.*?)".+?>/is';
 	/**
+	 * weblogUpdates Ping送信のインターバル（１時間）
+	 */
+	const PING_INTERVAL = 360;
+	/**
 	 * weblogUpdates ping
 	 */
 	private static $ping_server = array(
@@ -69,7 +73,10 @@ class Wiki{
 		'http://blogsearch.google.com/ping/RPC2',
 		'http://www.blogpeople.net/ping/'
 	);
-
+	/**
+	 * PingBack送信のインターバル（１日）
+	 */
+	const PINGBACK_INTERVAL = 8640;
 	/**
 	 * コンストラクタ
 	 */
@@ -77,6 +84,9 @@ class Wiki{
 		$this->page = $page;
 		// 以下はSplFileInfoの派生クラス
 		$this->wiki = FileFactory::Wiki($this->page);
+		
+		$this->ping_cycle = !empty($cycle) ? 60 * 60 * $cycle : self::PING_INTERVAL;
+		$this->pingback_cycle = !empty($cycle) ? 60 * 60 * $cycle : self::PINGBACK_INTERVAL;
 	}
 /**************************************************************************************************/
 	/**
@@ -201,15 +211,16 @@ class Wiki{
 /**************************************************************************************************/
 	/**
 	 * HTMLに変換
+	 * @param string $id 出力したい部分のID
 	 * @return string
 	 */
-	public function render(){
+	public function render($id = null){
 		global $digest;
 		if (!$this->wiki->has()) return;
 		if (empty($digest)){
 			$digest = $this->digest();
 		}
-		return RendererFactory::factory($this->wiki->get());
+		return RendererFactory::factory($this->get(false, $id));
 	}
 	/**
 	 * 記事の要約（md5ハッシュ）を取得
@@ -324,12 +335,42 @@ class Wiki{
 	}
 	/**
 	 * ページを読み込む
-	 * @param string $str 書き込むデーター
-	 * @param boolean $notimestamp タイムスタンプを更新するかのフラグ
+	 * @param boolean $join 改行を結合するか
+	 * @param string $id 指定されたIDの部分のみを出力
 	 * @return void
 	 */
-	public function get($join = false){
-		return $this->wiki->get($join);
+	public function get($join = false, $id = null){
+		$source = $this->wiki->get();
+
+		if (!empty($id)){
+			$start = -1;
+			$matches = array();
+			$final = count($source);
+
+			foreach ($source as $i => $line) {
+				// アンカーIDによる判定
+				if ($start === -1) {
+					if (preg_match('/^(\*{1,3})(.*?)\[#(' . preg_quote($id) . ')\](.*?)$/m', $line, $matches)) {
+						$start = $i;
+						$hlen = strlen($matches[1]);
+					}
+				} else {
+					if (preg_match('/^(\*{1,3})/m', $line, $matches)) {
+						if (strlen($matches[1]) <= $hlen) {
+							$final = $i;
+							break;
+						}
+					}
+				}
+			}
+
+			if ($start !== -1) {
+				$source = array_splice($source, $start, $final - $start);
+			}else{
+				$source = null;
+			}
+		}
+		return $join ? join("\n", $source) : $source;
 	}
 	/**
 	 * ページを書き込む
@@ -376,6 +417,13 @@ class Wiki{
 			// 簡易スパムチェック
 			if (Utility::isSpamPost()){
 				Utility::dump();
+				$akismet_post = array(
+					'user_ip' => REMOTE_ADDR,
+					'user_agent' => $_SERVER['HTTP_USER_AGENT'],
+					'comment_type' => 'comment',
+					'comment_author' => isset($vars['name']) ? $vars['name'] : 'Anonymous',
+					'comment_content' => $postdata
+				);
 				Utility::dieMessage('Writing was limited. (Blocking SPAM)');
 			}
 			
@@ -496,14 +544,11 @@ class Wiki{
 			// 更新ログをつける
 			LogFactory::factory('update',$this->page)->set();
 
-			if (!$keeptimestamp && $vars['cmd'] === 'edit') {
+			if (!$keeptimestamp && !empty($str)) {
 				// weblogUpdates.pingを送信
-				if (!empty($str)){ self::sendPing(); }
+				self::sendPing();
 			}
 		}
-
-		
-
 		// 簡易競合チェック
 		if ($collided) {
 			return array('msg'=>$_string['title_collided'], 'body'=>$_string['msg_collided_auto']);
@@ -615,6 +660,13 @@ class Wiki{
 		}
 		return $source;
 	}
+	public function setWeblogUpdatesPingServer($server){
+		if (is_array($server)){
+			$this->ping_server = $server;
+		}else{
+			$this->ping_server[] = $server;
+		}
+	}
 	/**
 	 * XmlRpc Pingを送信
 	 * return void
@@ -626,87 +678,91 @@ class Wiki{
 
 		// 現在のページのURIを取得
 		$source_uri = $this->uri();
+		
+		if (! UTIME - $this->time() > $this->ping_cycle) {
+			// weblogUpdates.pingの生成
+			$request = new XmlRpcRequest();
+			$request->setMethod('weblogUpdates.ping');
+			$request->setParams(array($site_name, Router::get_script_absuri(), $source_uri));
 
-		// weblogUpdates.pingの生成
-		$request = new XmlRpcRequest();
-		$request->setMethod('weblogUpdates.ping');
-		$request->setParams(array($site_name, Router::get_script_absuri(), $source_uri));
-
-		foreach (self::$ping_server as $uri){
-			try {
-				// Pingサーバーに接続
-				$client = new XmlRpcClient($uri);
-				// Pingの送信
-				$client->doRequest($request);
-			} catch (Exception $e) {
-				$err[] = $e;
+			// 送信
+			foreach ($this->ping_server as $uri){
+				try {
+					// Pingサーバーに接続
+					$client = new XmlRpcClient($uri);
+					// Pingの送信
+					$client->doRequest($request);
+				} catch (Zend\XmlRpc\Client\Exception\FaultException $e) {
+					$err[] = $e;
+				}
 			}
+
+			$err[] = '-----'."\n";
+
+			unset($client, $request);
 		}
 		
-		$err[] = '-----'."\n";
-
-		unset($client, $request);
-
-		// PingBackを送信
-		$links = array();
-		// Wikiのソースのアドレスを取得
-		if (preg_match_all('(http://[-_.!~*\'()a-zA-Z0-9;/?:@&=+$,%#]+)', $this->get(true), $links, PREG_PATTERN_ORDER) !== false){
-			// 重複を削除
-			$target_uris = array_unique($links[0]);
-			foreach ($target_uris as $target_uri){
-				$pingback = false;
-				// ターゲットとなるURL接続
-				$client = new Client($target_uri);
-				// HEADメソッドでヘッダーのみ取得
-				$client->setMethod(Request::METHOD_HEAD);
-				// 返り値を取得
-				
-				try{
-					$response = $client->send();
-
-					// アクセス失敗
-					if (!$response->isSuccess()) continue;
-
-					// ヘッダーからPingBackのURIを取得
-					$pingback = $response->getHeaders()->get('x-pingback');
-
-					// x-pingbackヘッダーがない場合
-					if ($pingback === false){
-						// GETでアクセスしてコンテンツを取得し、linkタグを探す。
-						$client->setMethod(Request::METHOD_GET);
-						// 返り値を取得
+		if (! UTIME - $this->time() > $this->pingback_cycle) {
+			// PingBackを送信
+			$links = array();
+			// Wikiのソースのアドレスを取得
+			if (preg_match_all('(http://[-_.!~*\'()a-zA-Z0-9;/?:@&=+$,%#]+)', $this->get(true), $links, PREG_PATTERN_ORDER) !== false){
+				// 重複を削除
+				$target_uris = array_unique($links[0]);
+				foreach ($target_uris as $target_uri){
+					$pingback = false;
+					// ターゲットとなるURL接続
+					$client = new Client($target_uri);
+					// HEADメソッドでヘッダーのみ取得
+					$client->setMethod(Request::METHOD_HEAD);
+					// 返り値を取得
+					
+					try{
 						$response = $client->send();
-						// linkタグからPingBackのURIを取得
-						if (preg_match('<link rel="pingback" href="([^"]+)" ?/?>', $response->getBody(), $matches) !== false){
-							$pingback = isset($matches[1]) ? $matches[1] : null;
+
+						// アクセス失敗
+						if (!$response->isSuccess()) continue;
+
+						// ヘッダーからPingBackのURIを取得
+						$pingback = $response->getHeaders()->get('x-pingback');
+
+						// x-pingbackヘッダーがない場合
+						if ($pingback === false){
+							// GETでアクセスしてコンテンツを取得し、linkタグを探す。
+							$client->setMethod(Request::METHOD_GET);
+							// 返り値を取得
+							$response = $client->send();
+							// linkタグからPingBackのURIを取得
+							if (preg_match('<link rel="pingback" href="([^"]+)" ?/?>', $response->getBody(), $matches) !== false){
+								$pingback = isset($matches[1]) ? $matches[1] : null;
+							}
 						}
+					}catch(Exception $e){
+						$err[] = $e;
 					}
-				}catch(Exception $e){
-					$err[] = $e;
-				}
-				// PingBack送信先が見つからない場合スキップ
-				if ($pingback === false) continue;
+					// PingBack送信先が見つからない場合スキップ
+					if ($pingback === false) continue;
 
-				// PingBackで送信する内容
-				$request = new XmlRpcRequest();
-				$request->setMethod('pingback.ping');
-				$request->setParams(array($source_uri, $target_uri));
+					// PingBackで送信する内容
+					$request = new XmlRpcRequest();
+					$request->setMethod('pingback.ping');
+					$request->setParams(array($source_uri, $target_uri));
 
-				// 例外を取得
-				try {
-					// PingBack送信先に接続
-					$client = new XmlRpcClient($pingback);
-					// 送信
-					$client->doRequest($request);
-				} catch (Exception $e) {
-					$err[] = $e;
+					// 例外を取得
+					try {
+						// PingBack送信先に接続
+						$client = new XmlRpcClient($pingback);
+						// 送信
+						$client->doRequest($request);
+					} catch (Zend\XmlRpc\Client\Exception\FaultException $e) {
+						$err[] = $e;
+					}
+					$err[] = '-----'."\n";
 				}
-				$err[] = '-----'."\n";
 			}
+			unset($client, $request);
 		}
-		unset($client, $request);
 
-//		var_dump($err);
 		return $err;
 	}
 }

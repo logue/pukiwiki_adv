@@ -36,7 +36,7 @@ class Render{
 	/**
 	 * CDNを使う
 	 */
-	const USE_CDN = true;
+	const USE_CDN = false;
 	/**
 	 * jQueryのバージョン
 	 */
