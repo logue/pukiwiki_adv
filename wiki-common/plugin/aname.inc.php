@@ -29,7 +29,7 @@ function plugin_aname_usage($convert = TRUE, $message = '')
 {
 	if ($convert) {
 		if (empty($message)) {
-			return '<div class="alert alert-danger">#aname(anchorID[[,super][,full][,noid],Link title])' . '</div>';
+			return '<div class="alert alert-danger">#aname(anchorID[[,super][,full][,noid],Link title])</div>';
 		} else {
 			return '<div class="alert alert-warning">#aname: ' . $message . '</div>';
 		}
@@ -113,8 +113,7 @@ function plugin_aname_tag($args = array(), $convert = TRUE)
 		$href = $title = '';
 	}
 
-	return '<a class="' . $class . '" id="' . $id . '" . $href . $title . '>' .
-		$body . '</a>';
+	return '<a class="' . $class . '" id="' . $id . '"' . $href . $title . '>' . $body . '</a>';
 }
 /* End of file aname.inc.php */
 /* Location: ./wiki-common/plugin/aname.inc.php */

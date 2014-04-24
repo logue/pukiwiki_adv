@@ -47,6 +47,10 @@ class RendererDefines{
 	 */
 	const MAILTO_ICON = '<span class="fa fa-envelope" title="mailto:"></span>';
 	/**
+	 * 電話番号リンクのアイコン
+	 */
+	const TELEPHONE_ICON = '<span class="fa fa-phone" title="tel:"></span>';
+	/**
 	 * InterWikiNameのアイコン
 	 */
 	const INTERWIKINAME_ICON = '<span class="fa fa-globe" title="InterWikiName"></span>';

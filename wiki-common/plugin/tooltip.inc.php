@@ -87,7 +87,7 @@ function plugin_tooltip_get_page_title($term)
 	$ct = 0;
 	foreach ( $src as $line ) {
 		if ( $ct ++ > 99 ) break;
-		if ( preg_match('/^\*{1,3}(.*)\[#[A-Za-z][\w\-]+\].*$/', $line, $match) ){
+		if ( preg_match('/^\*{1,3}(.*)\[#[A-Za-z0-9][\w\-]+\].*$/', $line, $match) ){
 			return trim($match[1]);
 		}
 		else if ( preg_match('/^\*{1,3}(.*)$/', $line, $match) ){

@@ -39,7 +39,8 @@ class InlineConverter
 		'Glossary',         // AutoGlossary(cjk,other)
 		'AutoLink_Alphabet',    // AutoLink(alphabet)
 		'AutoAlias_Alphabet',   // AutoAlias(alphabet)
-		'Glossary_Alphabet'     // AutoGlossary(alphabet)
+		'Glossary_Alphabet',    // AutoGlossary(alphabet)
+		'Telephone'        // tel: URL schemes
 	);
 	/**
 	 * 変換クラス
@@ -176,7 +177,7 @@ class InlineConverter
 	private function getConverter($arr)
 	{
 		foreach (array_keys($this->converters) as $start) {
-			if ($arr[$start] == $arr[0])
+			if (isset($arr[$start]) && $arr[$start] === $arr[0])
 				return $this->converters[$start];
 		}
 		return NULL;
