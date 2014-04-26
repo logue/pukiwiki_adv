@@ -90,10 +90,9 @@
 URLやメールアドレスは自動的にリンクになります
 - URL -- http://example.org/
 - メールアドレス -- foo@example.org
+- 電話番号 -- tel:0123-456-7890
 - URLが各種画像ファイルであればそのまま表示します
 -- http://pukiwiki.sourceforge.jp/image/b_pukiwiki.official.png
-
-
 * ''その他の文字装飾'' [#l89b765d]
 
  整形済みテキスト整形済みテキスト整形済みテキスト
@@ -107,9 +106,17 @@ SIZE(20){ COLOR(#333399){ 両方指定(SIZE(20)COLOR(#333399)) } }
 
 %%打ち消し線%%
 
-左寄せ
+__アンダーバー__
+
+@@コード@@
+
+@@@引用@@@
+
+標準
+LEFT:左寄せ
 CENTER:中寄せ
 RIGHT:右寄せ
+JUSTIFY:両端揃え（欧文のみ）
 
 * テーブル [#b9b997ac]
 左寄せテーブル
@@ -136,55 +143,65 @@ RIGHT:
 |Grape	|174	|
 
 編集可能なテーブル
-#table_edit2(td_edit=off,edit=on,table_mod=unlock){{
+#table_edit2(td_edit=off,edit=on,table_mod=lock){{
 |~1|~2|~3|
 |a|b|c|
 |A|B|C|
 }}
 * リキッドレイアウト [#ja44520e]
 spanプラグインの数値の合計が12になるようにrowプラグインでspanプラグインをくくります。
-#row{{{{
-#span(4){{
+#row{{{{{{
+#span(4){{{{
+#well{{
 4
 }}
-#span(6){{
+}}}}
+#span(6){{{{
+#well{{
 6
 }}
-#span(2){{
+}}}}
+#span(2){{{{
+#well{{
 2
 }}
 }}}}
-
-
+}}}}}}
 *メディア [#a0b6ed69]
 #mml(Air on the G String){{
-/** Flute **/
-$conf0=@2 @w52 @E1,8,48,80,24 @F1,36,80,18 @L8,36,0,128 @P96 v8l4o5;
-$conf0 t120l2ct32v13f+f+f+8l16bgf+32e32dc+dl64c+dc+dc+8.l16>ba8aa8b+
-b<c8f+c>a<f+cred+agd8edef+rere>ba<dc+gf+f+4.g+ad8d32e32f+f+eedc+>bb32
-<c+32dd8l48c+dc+l16>bc+2<c+4c+l32dc+c-c+l16>aabb+8.bagf+gaf+<bagf+g4
-l32gf+rdl16c+>bc+def+gf+ge<edc+>ba+b<c+8edc+c-c+d32e32>f+ed2d8b8<df+
-ed>e8f+g+aa<agl32f+ea16>a8b8b16<c+dl64c+dc+dc+8l16>bc+drc+a8bb+b<c+f+
-ed8c+c-c+d+gf+e8d+c+d+eagf+d+e>brbgeec+eab<c+eggec+d>a8<f+g32a32d4rf+
-ab+b4.d8>ec+egbagf+<edef+32g32gf+8ed32c+32c-8c+el48dedc+16d16t120d1.;
-$conf0 v13<d2d2d>baal8ed+d+eb.b4&b16<g4.g>e2d4.ef+g+16a16bg+af+f+g+
-e2e4e4el16d+ef+4r8<b8>d+8<d+8e4ee8.>a+b<c+8c+de8rf+>edc+8f+8f+8edg8<
-d8>f+2<d4>ag+a8<b4.l8>bbrf+ee.d16ee<d4.de4.ef+4.f+g4>a4a4<c+>aa<f+4>
-aaga4g2l16<c+eg8g8d8r8c+>br8b8a4gl48f+gf+g8d1.;
-$conf0 v13a2b2dee2<a2>f+2b2aa<d.l8d>addeeaaea2a4a4<a4.c>b4bbb2<e4er
-4g4f+>bbbab2e4f+4g+4eeeerg+a4a4ed4f+f+e4c+c+g4f+e2rgf+edddddef+4d2ab<
-ee>aaagf+4edf+1.;
-
-/** Mandolin **/
-$conf1=@1 @w20 @E1,0,48,36,12 @F1,32,72,64 @P32 v8l4o5;
-$conf1 t120v15l8>d<dc+>c+c-ba>ag<gg+>g+a<ag>gf+<f+e>ed+<d+c-b>e<e
-d>dc+<c+>a<ad<dc+>c+c-bg+eade>el16ab<c+degf+el8>a<ag>gf+<f+e>ed+<d+f+
-c-e<ed>dc+<c+>b>ba+b<c+>a+b<gef+c-ba>ag+<g+f+>f+e<ed>dc+<c+de>a<ag>g
-f+<f+g>gg+<g+a>aa+<a+bc-e<ed>dc+<c+>e<c+d>dcb+b>ba<ag>gf+<f+e>ed<dc+>
-a<dgaga>at120d1.;
+/** Setup **/
+$track1 = @2 @w52 @E1,8,48,80,24 @F1,36,80,18 @L8,36,0,128 @P96 v8l4o5;
+$track2 = @3 @W80 @E1,0,40,30,4  @F1,36,56,18 @P32 v8l4o5;
+/** 1 **/
+$track1 t32v13<f+2f+2f+8l16bgf+32e32dc+dl64c+dc+dc+8.l16>ba8aa8b+b<c8f+c>a<f+cred+agd
+8edef+rere>ba<dc+gf+f+4.g+ad8d32e32f+f+eedc+>bb32<c+32dd8l48c+dc+l16>bc+2<c+4c+l32dc+
+c-c+l16>aabb+8.bagf+gaf+<bagf+g4l32gf+rdl16c+>bc+def+gf+ge<edc+>ba+b<c+8edc+c-c+d32e32
+>f+ed2d8b8<df+edb4.agl32f+ea16>a8b8b16<c+dl64c+dc+dc+8l16>bc+drc+a8bb+b<c+f+ed8c+c-c+
+d+gf+e8d+c+d+eagf+d+e>brbgeec+eab<c+eggec+d>a8<f+g32a32d4rf+ab+b4.d8>ec+egbagf+<edef+
+32g32gf+8ed32c+32c-8c+el48dedc+16d16t120d1.;
+$track1 v13<d2d2d>baal8ed+d+eb.b4&b16<g4.g>e2d4.ef+g+16a16bg+af+f+g+e2e2el16d+ef+4r8<
+b8>d+8<d+8e4ee8.>a+b<c+8c+de8rf+>edc+8f+8f+8edg8<d8>f+2<d4>ag+a8e8f+g+aal8bbrf+ee.d16
+ee<d4.de4.ef+4.f+g4>a4a4<c+>aa<f+4>aaga4g2l16<c+eg8g8d8r8c+>br8b8a4gl48f+gf+g8d1.;
+$track1 v13a2b2dee2<a2>f+2b2aa<d.l8d>addeeaaea2a2<a4.c>b4bbb2<e4er4g4f+>bbbab2e4f+4g+
+4eeeerg+a4a4ed4f+f+e4c+c+g4f+e2rgf+edddddef+4d2ab<ee>aaagf+4edf+1.;
+/** 2 **/
+$track2 t32v15l8>d<dc+>c+c-ba>ag<gg+>g+a<ag>gf+<f+e>ed+<d+c-b>e<ed>dc+<c+>a<ad<dc+>c+
+c-bg+eade>el16ab<c+degf+el8>a<ag>gf+<f+e>ed+<d+f+c-e<ed>dc+<c+>b>ba+b<c+>a+b<gef+c-ba
+>ag+<g+f+>f+e<ed>dc+<c+de>a<ag>gf+<f+g>gg+<g+a>aa+<a+bc-e<ed>dc+<c+>e<c+d>dcb+b>ba<ag
+>gf+<f+e>ed<dc+>a<dgaga>at120d1.;
 }}
-
 *数式 [#bmDXcFT]
+:ブロック型|
+ \begin{aligned}
+ \nabla \times \vec{\mathbf{B}} -\, \frac1c\, \frac{\partial\vec{\mathbf{E}}}{\partial t} & = \frac{4\pi}{c}\vec{\mathbf{j}} \   \nabla \cdot \vec{\mathbf{E}} & = 4 \pi \rho \
+ \nabla \times \vec{\mathbf{E}}\, +\, \frac1c\, \frac{\partial\vec{\mathbf{B}}}{\partial t} & = \vec{\mathbf{0}} \
+ \nabla \cdot \vec{\mathbf{B}} & = 0 \end{aligned}
+\begin{aligned}
+\nabla \times \vec{\mathbf{B}} -\, \frac1c\, \frac{\partial\vec{\mathbf{E}}}{\partial t} & = \frac{4\pi}{c}\vec{\mathbf{j}} \   \nabla \cdot \vec{\mathbf{E}} & = 4 \pi \rho \
+\nabla \times \vec{\mathbf{E}}\, +\, \frac1c\, \frac{\partial\vec{\mathbf{B}}}{\partial t} & = \vec{\mathbf{0}} \
+\nabla \cdot \vec{\mathbf{B}} & = 0 \end{aligned}
+:インライン型|
  $p(d,w_n)=p(d)\sum_z p(w_n|z)p(z|d)$
 $p(d,w_n)=p(d)\sum_z p(w_n|z)p(z|d)$
+
 #comment

@@ -30,30 +30,12 @@ $load_refer_related = 0;
 $search_word_color = 1;
 
 /////////////////////////////////////////////////
-// 特殊シンボル
-$_symbol_paraedit		= '<span class="pkwk-symbol symbol-edit" title="Edit here"></span>';
-$_symbol_attach			= '<span class="pkwk-symbol symbol-attach" title="Attach here"></span>';
-
-/////////////////////////////////////////////////
 // 添付ファイルの一覧を常に表示する (負担がかかります)
 $attach_link = 1;
 
 /////////////////////////////////////////////////
 // 関連するページのリンク一覧を常に表示する(負担がかかります)
 $related_link = 1;
-
-/////////////////////////////////////////////////
-// 脚注機能関連
-
-// 脚注のアンカーを相対パスで表示する (0 = 絶対パス)
-//  * 相対パスの場合、以前のバージョンのOperaで問題になることがあります
-//  * 絶対パスの場合、calendar_viewerなどで問題になることがあります
-// (詳しくは: BugTrack/698)
-define('PKWK_ALLOW_RELATIVE_FOOTNOTE_ANCHOR', 1);
-
-/////////////////////////////////////////////////
-// WikiName,BracketNameに経過時間を付加する
-$show_passage = 1;
 
 /////////////////////////////////////////////////
 // リンク表示をコンパクトにする

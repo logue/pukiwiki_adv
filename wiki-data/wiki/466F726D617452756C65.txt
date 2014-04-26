@@ -1,4 +1,3 @@
-#freeze
 #multilang(ja){{{
 TITLE:整形ルール
 #norelated
@@ -9,11 +8,7 @@ TITLE:整形ルール
 - HTMLのタグは効果がありません。書かれた文章はそのまま(「<font color="red">text</font>」といった形のまま)表示されます
 - 段落と段落の区切りには空行をはさんで下さい。空行をはさまず、連続している複数の行は同じ段落と解釈されます (連結して表示されます)
 
-これに加えて、特定のルールによるテキスト整形を行うことができます。以下では、プラグインについてはよく使われるものだけを簡略に説明しています。プラグインのオプションなど詳細な説明については [[PukiPlus/Manual/Plugin]] を参照してください。
-
--------------------------------------
-#contents
--------------------------------------
+これに加えて、特定のルールによるテキスト整形を行うことができます。以下では、プラグインについてはよく使われるものだけを簡略に説明しています。プラグインのオプションなど詳細な説明については [[Help/Plugin]] を参照してください。
 
 ** ブロック要素 [#webfc17e]
 - ブロック要素は、インライン要素と他のブロック要素を子要素にすることができます。ただし、段落、見出し、水平線、#から始まるブロック要素は他のブロック要素を子要素にすることはできません。
@@ -36,7 +31,7 @@ TITLE:整形ルール
 - 段落の先頭は1文字分字下げされます。但し、番号なしリスト構造、番号付きリスト構造、引用文内の段落では字下げされません。定義リスト内の段落の先頭は1文字分字下げされます。
 - 段落は、新たなブロック要素が現われるまで継続します。
 - 段落は、他のブロック要素の子要素になることができます。
-- 段落は、他のブロック要素を子要素にすることはできません。 
+- 段落は、他のブロック要素を子要素にすることはできません。
 
 *** 引用文 [#h45c3632]
  > インライン要素
@@ -87,21 +82,25 @@ TITLE:整形ルール
  LEFT:
  CENTER:
  RIGHT:
+ JUSTIFY:
  BGCOLOR(色):
  COLOR(色):
  SIZE(サイズ):
+ LANG(言語):
 -- 要素の表示位置及び背景色・文字色・文字サイズ(px単位)を指定します。デフォルトは左寄せになります。
 -
-|表組みの              |各セルの要素の配置に|関するサンプル              |
-|COLOR(crimson):左寄せ |CENTER:センタリング |BGCOLOR(yellow):RIGHT:右寄せ|
-|RIGHT:右寄せ          |左寄せ              |CENTER:センタリング         |
+|表組みの              |各セルの要素の配置に|関するサンプル              ||
+|COLOR(crimson):左寄せ |CENTER:センタリング |BGCOLOR(yellow):RIGHT:右寄せ|JUSTIFY:両端揃え|
+|RIGHT:右寄せ          |左寄せ              |CENTER:センタリング         ||
 - 行末にcを記述すると、書式指定行となります。書式指定行では、次の記述子が指定できます。
  LEFT:
  CENTER:
  RIGHT:
+ JUSTIFY:
  BGCOLOR(色):
  COLOR(色):
  SIZE(サイズ):
+ LANG(言語):
 -- 記述子の後ろに数値を記述すると、セル幅がpx単位で指定できます。
 
 - 行末にhを記述すると、ヘッダ行(thead)になります。
@@ -139,14 +138,15 @@ TITLE:整形ルール
 - 目次は、他のブロック要素の子要素になることができますが、トップレベルに設置することを前提に左マージンを設定してありますので、他のブロック要素の子要素にはしないでください。
 - 目次は、他のブロック要素を子要素にすることはできません。
 
-*** 左寄せ・センタリング・右寄せ [#v8e2ddb9]
+*** 左寄せ・センタリング・右寄せ・両端揃え [#v8e2ddb9]
  LEFT:インライン要素
  CENTER:インライン要素
  RIGHT:インライン要素
-行頭で LEFT:、 CENTER:、 RIGHT: を記述すると、インライン要素が左寄せ、センタリング、右寄せされます。
+ JUSTIFY:インライン要素
+行頭で LEFT:、 CENTER:、 RIGHT:、 JUSTIFY: を記述すると、インライン要素が左寄せ、センタリング、右寄せされます。
 
-- LEFT:、CENTER:、RIGHT:は、他のブロック要素の子要素になることができます。
-- LEFT:、CENTER:、RIGHT:は、他のブロック要素を子要素にすることができません。
+- LEFT:、CENTER:、RIGHT:、JUSTIFY;は、他のブロック要素の子要素になることができます。
+- LEFT:、CENTER:、RIGHT:、JUSTIFY:は、他のブロック要素を子要素にすることができません。
 
 *** 水平線 [#bedd57bf]
  ---------------------------------------------
@@ -168,10 +168,21 @@ TITLE:整形ルール
 - 行間開けは、他のブロック要素の子要素になることができます。
 - 行間開けは、他のブロック要素を子要素にすることはできません。
 
+*** 数式
+ \[
+  LaTeX数式
+ \]
+ \begin{eqnarray}
+  LaTeX数式
+ \end{eqnarray}
+行の先頭が\[から\]までの間はブロック型の数式とみなされます。ここLaTeXの書式として数式に変換されます。
+
 *** 添付ファイル・画像の貼り付け [#fd4fbb86]
  #ref(添付ファイル名)
  #ref(ファイルのURL)
-行頭で #ref を記述すると、添付ファイルまたは指定されたURLにあるファイルへのリンクを貼り付けることができます。ファイルが画像ファイルの場合は、その画像を表示します。
+ {{添付ファイル名}}
+ {{ファイルのURL}}
+行頭で #ref を記述すると、添付ファイルまたは指定されたURLにあるファイルへのリンクを貼り付けることができます。ファイルが画像ファイルの場合は、その画像を表示します。また簡易表記として&#123;&#123;画像ファイル|パラメータ&#125;&#125;という表記でも貼り付けることができます。
 
 - #ref には、カンマで区切って下記のパラメタを指定できます。パラメタを省略した場合はデフォルト値となります。
  添付ファイルのページ
@@ -181,6 +192,7 @@ TITLE:整形ルール
  left
  center
  right
+ justify
 -- ファイルへのリンク・画像を表示する位置を指定します。デフォルトではセンタリングされます。
 -
  wrap
@@ -201,15 +213,13 @@ TITLE:整形ルール
 - #refは、他のブロック要素の子要素になることができます。
 - #refは、他のブロック要素を子要素にすることはできません。
 
+
 *** テキストの回り込みの解除 [#k72a2098]
  #clear
 行頭で #clear を記述すると、 #ref で指定したテキストの回り込みを解除します。 #clear を指定しなくても、記事の末尾でテキストの回り込みが自動的に解除されます。
 
 - #clearは、他のブロック要素の子要素になることができます。
 - #clearは、他のブロック要素を子要素にすることができません。
-
-//  #img(,clear)
-// ~#clearと同じ。
 
 *** フォーム [#m7868255]
  #comment
@@ -269,7 +279,7 @@ TITLE:整形ルール
 - 行中改行は、他のインライン要素の子要素になることができます。
 - 行中改行は、他のインライン要素を子要素にすることはできません。
 
-*** 強調・斜体 [#ee278156]
+*** 強調・斜体・下線・字消し線・コード・引用 [#ee278156]
  ''インライン要素''
 行中のインライン要素を &#39;&#39; ではさむと、インライン要素が ''強調表示'' になります。
 
@@ -282,6 +292,29 @@ TITLE:整形ルール
 - 斜体は、他のインライン要素の子要素になることができます。
 - 斜体は、他のインライン要素を子要素にすることができます。
 
+__インライン要素__
+行中のインライン要素を &#95;&#95; ではさむと、インライン要素が __下線表示__ になります。
+
+- 下線は、他のインライン要素の子要素になることができます。
+- 下線は、他のインライン要素を子要素にすることができます。
+
+ ___インライン要素___
+行中のインライン要素を &#95;&#95;&#95; ではさむと、インライン要素が ___字消し線___ になります。
+
+- 字消し線は、他のインライン要素の子要素になることができます。
+- 字消し線は、他のインライン要素を子要素にすることができます。
+
+ @@インライン要素@@
+行中のインライン要素を &#64;&#64; ではさむと、インライン要素が @@字消し線@@ になります。
+
+- 字消し線は、他のインライン要素の子要素になることができます。
+- 字消し線は、他のインライン要素を子要素にすることができます。
+
+ @@@インライン要素@@@
+行中のインライン要素を &#64;&#64;&#64; ではさむと、インライン要素が @@@コード@@@ になります。
+
+- 字消し線は、他のインライン要素の子要素になることができます。
+- 字消し線は、他のインライン要素を子要素にすることができます。
 *** 文字サイズ [#x3d50be2]
  &size(サイズ){インライン要素};
 行中に &amp;size を書くとインライン要素の文字サイズを指定することができます。サイズはピクセル単位(px)で指定します。例えば20を指定すると、SIZE(20){20ピクセルの文字の大きさ}になります。
@@ -301,12 +334,18 @@ TITLE:整形ルール
 - 文字色は、他のインライン要素の子要素になることができます。
 - 文字色は、他のインライン要素を子要素にすることができます。
 
-*** 取消線 [#hc7ccb73]
+*** 挿入文・削除文 [#hc7ccb73]
  %%インライン要素%%
-行中のインライン要素を&#37;&#37;ではさむと、インライン要素に%%取消線%%が付きます。
+行中のインライン要素を&#37;&#37;ではさむと、インライン要素が%%削除文%%となります。
 
-- 取消線は、他のインライン要素の子要素になることができます。
-- 取消線は、他のインライン要素を子要素にすることができます。
+- 削除文は、他のインライン要素の子要素になることができます。
+- 削除文は、他のインライン要素を子要素にすることができます。
+
+ %%%インライン要素%%%
+行中のインライン要素を&#37;&#37;&#37;ではさむと、インライン要素が%%%挿入文%%%となります。
+
+- 挿入文は、他のインライン要素の子要素になることができます。
+- 挿入文は、他のインライン要素を子要素にすることができます。
 
 ***注釈 [#w4510af0]
  ((インライン要素))
@@ -315,17 +354,14 @@ TITLE:整形ルール
 - 注釈は、他のインライン要素の子要素になることができます。親要素は注釈文ではなく、注釈へのリンクに反映されます。
 - 注釈は、他のインライン要素を子要素にすることができます。子要素は注釈文に反映されます。
 
-// &p;
-//注釈内に&amp;p;を書くと改段落になります ((注釈内改段落は、本来はブロック要素ですが、PukiPlusでは注釈をインラインで記述するため、インライン要素として記述する必要があります。他のインライン要素の子要素にはできないことに留意して使用する必要があります。))。
-//-注釈内改段落は、他のインライン要素の子要素になることはできません。
-//-注釈内改段落は、他のインライン要素を子要素にすることはできません。
-
 *** 添付ファイル・画像の貼り付け [#ecbe8000]
  &ref(添付ファイル名);
  &ref(ファイルのURL);
-行中で &amp;ref を記述すると、添付ファイルまたは指定されたURLにあるファイルへのリンクを貼り付けることができます。ファイルが画像ファイルの場合は、その画像を表示します。
+ {{添付ファイル名}}
+ {{ファイルのURL}}
+行中で &amp;ref を記述すると、添付ファイルまたは指定されたURLにあるファイルへのリンクを貼り付けることができます。ファイルが画像ファイルの場合は、その画像を表示します。また、&#123;&#123;ファイル|パラメータ&#125;&#125;という書式で簡単に画像を挿入することも可能です。
 
-- &amp;ref には、カンマで区切って下記のパラメタを指定できます。パラメタを省略した場合はデフォルト値となります。
+- &amp;ref には、カンマで区切って下記のパラメータを指定できます。パラメタを省略した場合はデフォルト値となります。
  添付ファイルのページ
 -- 添付ファイルが存在するページ名を指定します。デフォルトは現在のページです。
 -- このパラメタを指定する場合は、添付ファイル名の次に記述します。
@@ -341,6 +377,10 @@ TITLE:整形ルール
 - &amp;ref は、他のインライン要素の子要素になることができます。
 - &amp;ref は、他のインライン要素を子要素にはできません。
 
+*** 数式
+ $LaTeX数式$
+行中で、&#36;でくくるとその場所がLaTeXの書式としてみなされ、数式に変換されます。
+
 *** ルビ構造 [#g967c67f]
  &ruby(ルビ){インライン要素};
 行中で &amp;ruby を書くとインライン要素に対するルビをふることができます。ルビに対応していないブラウザではルビが本文中に ( と ) に囲まれて表示されます。
@@ -354,6 +394,7 @@ TITLE:整形ルール
 *** アンカーの設定 [#b5898e73]
  &aname(アンカー名);
  &aname(アンカー名){インライン要素};
+ [#アンカー名]
 行中で &amp;aname を記述するとリンクのアンカーを設定することができます。リンクの飛び先にしたい位置に記述します。
 
 - アンカー名は、半角アルファベットから始まる半角アルファベット・数字・ハイフン・アンダースコアからなる文字列を指定します。
@@ -385,19 +426,12 @@ TITLE:整形ルール
 - オンライン表示は、他のインライン要素の子要素になることができます。
 - オンライン表示は、他のインライン要素を子要素にはできません。
 
-***バージョン表示 [#qc7f937b]
- &version;
-行中で &amp;version を記述するとPukiPlusのバージョンを表示することができます。
-
-- バージョン表示は、他のインライン要素の子要素になることができます。
-- バージョン表示は、他のインライン要素を子要素にはできません。
-
 *** WikiName [#j5808d05]
  WikiName
 行中で、1つ以上の大文字→1つ以上の小文字→1つ以上の大文字→1つ以上の小文字の組合わせからなる半角//文字列はWikiNameになります。
 
 - WikiNameの中には、全角文字や半角空白文字、記号、数字を含めることはできません。
-- WikiNameは、PukiPlus内のページ名になります。すでに存在するページであればそのページへのリンクが自動的に貼られます。存在しない場合はWikiNameの後ろに?が自動的に付き、そのページを新規作成するためのリンクが貼られます。
+- WikiNameは、PukiWiki Adv.内のページ名になります。すでに存在するページであればそのページへのリンクが自動的に貼られます。存在しない場合はWikiNameの後ろに?が自動的に付き、そのページを新規作成するためのリンクが貼られます。
 
 - WikiNameは、他のインライン要素の子要素になることができます。
 - WikiNameは、他のインライン要素を子要素にはできません。
@@ -418,7 +452,7 @@ TITLE:整形ルール
 
 *** InterWiki [#r9416eb3]
  [[InterWikiName:ページ名]]
-行中のページ名形式の文字列の中で、: で2つの文字列を区切るとInterWikiになります。:の前にはInterWikiNameのページで定義したInterWikiNameを、: の後ろにはページ名を記述します。
+行中のページ名形式の文字列の中で、: で2つの文字列を区切るとInterWikiになります。:の前にはInterWikiNameページで定義したInterWikiNameを、: の後ろにはページ名を記述します。
 
  [[InterWikiName:ページ名#アンカー名]]
 - ページ名の後ろにアンカー名をつけることもできます。
@@ -450,7 +484,7 @@ TITLE:整形ルール
  [[エイリアス名>ページ名]]
 行中のページ名形式の文字列の中で、> で2つの文字列を区切るとエイリアスになります。 > の前にはエイリアス名を、> の後ろにはページ名を記述します。
 
-エイリアスはPukiPlus内のページ名とは別のエイリアス名で、指定したページへのリンクを貼ります。
+エイリアスはPukiWiki Adv.内のページ名とは別のエイリアス名で、指定したページへのリンクを貼ります。
 
  [[エイリアス名>ページ名#アンカー名]]
  [[エイリアス名>#アンカー名]]
@@ -505,15 +539,6 @@ TITLE:整形ルール
 - 行中で &amp;time; と書くと、更新時の時刻に置換されます
 - 行中で &amp;now; と書くと、更新時の日時に置換されます
 
- date?
- time?
- now?
-- PukiWiki 1.3系との後方互換性のために、 date&#63;、 time&#63;、 now&#63; についても使用できるようにしてあります。
-
-- &amp;date;、 &amp;time;、 &amp;now;は、記事が書き込まれるときに置換されて記録されます。
-- &amp;date;、 &amp;time;、 &amp;now;は、他のインライン要素の子要素になることができます。
-- &amp;date;、 &amp;time;、 &amp;now;は、他のインライン要素を子要素にはできません。
-
  &_date;
  &_time;
  &_now;
@@ -529,29 +554,6 @@ TITLE:整形ルール
 - %%&amp;_date;、 &amp;_time;、 &amp;_now;、%% &amp;lastmod;は、記事が表示されるときに置換されて出力されます。
 - %%&amp;_date;、 &amp;_time;、 &amp;_now;、%% &amp;lastmod;は、他のインライン要素の子要素になることができます。
 - %%&amp;_date;、 &amp;_time;、 &amp;_now;、%% &amp;lastmod;は、他のインライン要素を子要素にはできません。
-
-*** 文字参照文字 [#ecefc654]
-文字参照は、SGMLで定義されている文字参照文字(&amp;copy;や&amp;reg;など)のほか、下記の独自の文字参照文字が使用できます。
- &heart;
- &smile;
- &bigsmile;
- &huh;
- &oh;
- &wink;
- &sad;
- &worried;
-- 行中で&amp;heart;と書くと、ハートマーク &heart; に置換されて出力されます。
-- 行中で&amp;smile;と書くと、 &smile; に置換されて出力されます。
-- 行中で&amp;bigsmile;と書くと、 &bigsmile; に置換されて出力されます。
-- 行中で&amp;huh;と書くと、 &huh; に置換されて出力されます。
-- 行中で&amp;oh;と書くと、 &oh; に置換されて出力されます。
-- 行中で&amp;wink;と書くと、 &wink; に置換されて出力されます。
-- 行中で&amp;sad;と書くと、 &sad; に置換されて出力されます。
-- 行中で&amp;worried;と書くと、 &worried; に置換されて出力されます。
-
-- 文字参照文字は、表示されるときに置換されます。
-- 文字参照文字は、他のインライン要素の子要素になることができます。
-- 文字参照文字は、他のインライン要素を子要素にはできません。
 
 *** 数値参照文字 [#o4593623]
  &#10進数;
@@ -605,23 +607,23 @@ In the following table you can see how to use the inline text elements of PukiPl
 *Block Elements [#md62854c]
 ~In what follows, examples for the block elements will be given.
 First, you will see the example as it should be entered into PukiPlus,and
-next is the result you'll get. 
+next is the result you'll get.
 
 **Preformatted text [#pe8342c2]
   Preformatted text. There is a space in front of this text.
 
- Preformatted text. There is a space in front of this text. 
+ Preformatted text. There is a space in front of this text.
 &br;
 
 **Headings [#s0a8a979]
  *Heading level 1
  **Heading level 2
  ***Heading level 3
-There are no examples of how the heading looks like here, 
+There are no examples of how the heading looks like here,
 because they would disturb the structure of this document.
-But take a look at the headings above and below to see how 
-it might look. 
-&br; 
+But take a look at the headings above and below to see how
+it might look.
+&br;
 
 **Paragraphs and the tilde as and escape character [#xb454a75]
  ~Paragraph
@@ -662,9 +664,9 @@ Line break escape example~
 :Definition|Description
 &br;
 **Comments [#mbb18dc1]
- A comment is hidden here: 
+ A comment is hidden here:
  //Comment
-A comment is hidden here: 
+A comment is hidden here:
 //Comment
 &br;
 **Horizontal Rule [#f526230c]
@@ -697,15 +699,15 @@ A comment is hidden here:
 ,111,222,333
 
 //**Plug-ins
-// #contents 
-// (This is the table of contents plugin) 
+// #contents
+// (This is the table of contents plugin)
 //
-//#contents 
+//#contents
 //(This is the table of contents plugin)
 // The above does not work?
 
 *Special entities : [#f2d6a870]
-// These expressions do not work with the default settings. 
+// These expressions do not work with the default settings.
 // See pukiwiki.ini.php and default.ini.php.
 //|FormattingSandbox|&amp;page;|This one doesn't seem to work?|
 //|2003-10-28|&amp;date;|This one doesn't seem to work?|
@@ -734,10 +736,10 @@ A comment is hidden here:
 
 *Nesting Elements [#t7cdd4d2]
 **Paragraph Element-Emphasize Element [#l4ed8fbd]
- ~This is the paragraph, which is the parent element that contains emphasized text. 
+ ~This is the paragraph, which is the parent element that contains emphasized text.
  ''This is the emphasized text, that is the child element of the paragraph element.''
  
-~This is the paragraph, which is the parent element that contains emphasized text. 
+~This is the paragraph, which is the parent element that contains emphasized text.
 ''This is the emphasized text, that is the child element of the paragraph element.''
 
 **Quotation Element-List Element [#le7813b4]
@@ -930,7 +932,7 @@ hoge~
 
 **連結 [#h2552195]
  (WikiName)
- PukiPlus 
+ PukiPlus
 PukiPlus
 
  (BracketName)
@@ -1129,7 +1131,7 @@ CENTER:''各種臉型''
 将创建一个定义列表
 : 术语 | 解释
 
--一个定义列表必须包含 | 
+-一个定义列表必须包含 |
 
 *** 禁止排版的文本 [#x9c8dbc7]
 行首为半角空格的文本自动成为禁止排版的文本。
@@ -1402,13 +1404,13 @@ foo@example.com
 *** 符号和表情转移字符 [#r8118be2]
 -&amp;copy; 显示为版权符号&copy;
 -&amp;reg; 显示为专利符号&reg;
--&amp;heart;显示为心形符号 &heart; 
--&amp;smile;显示为 &smile; 
--&amp;bigsmile;显示为 &bigsmile; 
--&amp;huh;显示为 &huh; 
--&amp;oh;显示为 &oh; 
--&amp;wink;显示为 &wink; 
--&amp;sad;显示为 &sad; 
+-&amp;heart;显示为心形符号 &heart;
+-&amp;smile;显示为 &smile;
+-&amp;bigsmile;显示为 &bigsmile;
+-&amp;huh;显示为 &huh;
+-&amp;oh;显示为 &oh;
+-&amp;wink;显示为 &wink;
+-&amp;sad;显示为 &sad;
 -&amp;worried;显示为 &worried;
 
 *** 数值转义字符 [#hcc3361e]
@@ -1935,7 +1937,7 @@ URL이 그림 파일일 경우 그 그림을 표시합니다.
 - 별명은 다른 인라인 요소를 자식 요소로 할 수 있습니다.
 ***탭 [#uf377d69]
  &t;
-줄 안에서 &amp;t;라고 쓰면 탭으로 치환됩니다. 
+줄 안에서 &amp;t;라고 쓰면 탭으로 치환됩니다.
  
 보통 브라우저 안에서는 탭을 키보드로 직접 입력할 수 없는데((클립보드로부터 붙이넣을 경우에는 탭을 직접 입력할 수 있습니다.)), 이런 경우 탭을 입력하고 싶은 위치에 &amp;t;라고 쓰면 저장할 때에 탭으로 치환합니다.
  

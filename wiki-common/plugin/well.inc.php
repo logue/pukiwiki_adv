@@ -20,17 +20,16 @@ function plugin_well_convert() {
 
 	switch ($num_of_arg){
 		default:
-			return '<p class="alert alert-warning">#well(type){{body}}</p>';
+			return '<p class="alert alert-warning">#well{{body}}</p>';
 			break;
 		case 1:
 			$body = $args[0];
 			break;
 	}
 
-	$ret[] = '<div class="well">';
-	$body = str_replace(array(chr(0x0d) . chr(0x0a), chr(0x0d), chr(0x0a)), "\n", $body);
+	$ret[] = '<div class="well">'."\n";
 	$ret[] = RendererFactory::factory($body);
-	$ret[] = '</div>';
+	$ret[] = '</div>'."\n";
 
 	return join("\n",$ret);
 }
