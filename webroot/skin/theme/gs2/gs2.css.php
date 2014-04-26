@@ -33,19 +33,19 @@ body{
 	background-color:<?php echo $ini['bgcolor']; ?>;
 }
 
-a:link {
+a:not(.btn):not([role="presentation"]) {
 	color:<?php echo $ini['a_link']; ?>;
 }
 
-a:active {
+a:not(.btn):not([role="presentation"]):active {
 	color:<?php echo $ini['a_active']; ?>;
 }
 
-a:visited {
+a:not(.btn):not([role="presentation"]):visited {
 	color:<?php echo $ini['a_visited']; ?>;
 }
 
-a:hover {
+a:not(.btn):not([role="presentation"]):hover {
 	color:<?php echo $ini['a_hover']; ?>;
 }
 hr {

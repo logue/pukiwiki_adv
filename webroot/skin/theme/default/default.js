@@ -41,8 +41,13 @@
 		// クッキーが定義されていないときは、blueとし、クッキーに保存
 
 		var color = colorset[$.cookie('pkwk-colorset')];
-		$('#coloring').attr('href', SKIN_DIR+'theme/default/'+color[0]+'.css');
-		$('#ui-theme').attr('href', COMMON_URI+'css/jquery-ui/themes/'+color[1]+'/jquery-ui.css');
+		try{
+			$('#coloring').attr('href', SKIN_DIR+'theme/default/'+color[0]+'.css');
+			$('#ui-theme').attr('href', COMMON_URI+'css/jquery-ui/themes/'+color[1]+'/jquery-ui.css');
+		}catch(e){
+			$('#coloring').attr('href', SKIN_DIR+'theme/default/blue.css');
+			$('#ui-theme').attr('href', COMMON_URI+'css/jquery-ui/themes/redmond/jquery-ui.css');
+		}
 
 		// カラーセットのリンクボタンを生成
 		var buffer = '';

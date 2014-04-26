@@ -23,21 +23,21 @@ body{
 	background-color:white;
 }
 
-a:not(.btn){
+a:not(.btn):not([role="presentation"]){
 	-webkit-tap-highlight-color: #5EFF99;
 }
 
-a:active:not(.btn){
+a:not(.btn):not([role="presentation"]):active{
 	color:#215dc6;
 	background-color:#CCEEDD;
 }
 
-a:visited:not(.btn){
+a:not(.btn):not([role="presentation"]):visited{
 	color:#a63d21;
 	background-color:inherit;
 }
 
-a:hover{
+a:not(.btn):not([role="presentation"]):hover{
 	color:#215dc6;
 	background-color:#CCEEDD;
 }

@@ -18,19 +18,19 @@
 	text-shadow: none;
 }
 
-a:not(.btn){
+a:not(.btn):not([role="presentation"]){
 	-webkit-tap-highlight-color: #5E99FF;
 }
 
-a:active:not(.btn){
+a:not(.btn):not([role="presentation"]):active{
 	color:#215dc6;
 }
 
-a:visited:not(.btn){
+a:not(.btn):not([role="presentation"]):visited{
 	color:#a63d21;
 }
 
-a:hover:not(.btn){
+a:not(.btn):not([role="presentation"]):hover{
 	color:#215dc6;
 	background-color:#CCDDEE;
 }

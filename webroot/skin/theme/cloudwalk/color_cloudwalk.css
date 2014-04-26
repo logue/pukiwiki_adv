@@ -4,13 +4,13 @@ body{
 
 /* Link General
 ----------------------------------------------------------------------------- */
-a:link{
+a:not(.btn):not([role="presentation"]){
 	color:#353573;
 }
-a:visited{
+a:not(.btn):not([role="presentation"]):visited{
 	color:#733535;
 }
-a:hover{
+a:not(.btn):not([role="presentation"]):hover{
 	color:darkorange;
 }
 

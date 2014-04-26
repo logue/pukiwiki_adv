@@ -25,29 +25,25 @@ header('Last-Modified: '.gmdate('D, d M Y H:i:s', getlastmod() ) . ' GMT');
 ?>
 /**************************************************************************************************/
 /* anchor tag */
-a {
+a:not(.btn):not([role="presentation"]) {
 	color:#215dc6;
 	background-color:inherit;
 	text-decoration:none;
 }
 
-a:active {
+a:not(.btn):not([role="presentation"]):active {
 	color:#215dc6 !important;
 }
 
-a:visited {
+a:not(.btn):not([role="presentation"]):visited {
 	color:#a63d21;
 	/* color:#215dc6; */
 }
 
-a:hover {
+a:not(.btn):not([role="presentation"]):hover {
 	color:#215dc6;
 	background-color:#CCDDEE;
 	text-decoration:underline;
-}
-
-.ui-widget a{
-	color:#215dc6 !important;
 }
 
 body{

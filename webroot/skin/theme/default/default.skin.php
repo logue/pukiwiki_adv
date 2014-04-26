@@ -42,7 +42,7 @@
 
 			<div id="wrapper" class="clearfix">
 <!-- Center -->
-				<div id="main_wrapper">
+				<div id="main_wrapper" class="clearfix">
 					<div id="main" role="main">
 						<nav id="topicpath">
 							<?php echo $this->topicpath; ?>

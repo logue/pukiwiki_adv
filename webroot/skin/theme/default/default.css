@@ -8,7 +8,7 @@
  */
 
 /** Generic Tags *********************************************************************************/
-a:not(.btn){
+a:not(.btn):not([role="presentation"]){
 	color:#215dc6;
 	text-decoration:none;
 	-ms-transition: .2s ease-in-out;
@@ -16,26 +16,15 @@ a:not(.btn){
 	-webkit-transition: .2s ease-in-out;
 }
 
-a:not(.btn):hover{
+a:not(.btn):not([role="presentation"]):hover{
 	text-decoration:underline;
 }
 
-p, pre, dl, blockquote, .table_warper, .panel{
-	margin:.5em 1.5em;
-}
-
 blockquote{
+	font-size:100%;
 	border: 1px solid gray;
 	padding: .5em;
 	box-shadow: 0 2px 6px gainsboro;
-}
-
-p{
-	padding: .25em;
-}
-
-del{
-	color:grey;
 }
 
 dt{
@@ -114,7 +103,7 @@ q{
 
 #main{
 	background-color: white;
-	padding:5px;
+	padding:0 1em;
 }
 
 #misc {
@@ -127,7 +116,7 @@ q{
 }
 @media screen{
 	#body{
-		padding: 0 5px;
+		padding: 0 1em;
 	}
 	.two-colums #main_wrapper {
 		width:100%;
@@ -267,15 +256,15 @@ q{
 }
 
 #body h2{
-	margin:.2em 0 .2em .2em;
+	margin:.2em -.5em .2em -.5em;
 }
 
 #body h3{
-	margin:.2em 0 .5em .4em;
+	margin:.2em -.5em .5em -.3em;
 }
 
 #body h4, #body h5, #body h6{
-	margin:.2em 0 .5em .6em;
+	margin:.2em -.5em .5em -.1em;
 }
 
 #body form, #body figure{
@@ -371,6 +360,10 @@ q{
 	margin:1px;
 }
 
+.social{
+	padding:0;
+	margin:0;
+}
 /** Plugin ****************************************************************************************/
 
 /* backup.inc.php */

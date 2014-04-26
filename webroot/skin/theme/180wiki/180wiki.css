@@ -40,19 +40,19 @@ Modified by Logue
 }
 
 /* ----- link ----- */
-a:link {
+a:not(.btn):not([role="presentation"]) {
 	color: #003366;
 	text-decoration: none;
 }
-a:visited {
+a:not(.btn):not([role="presentation"]):visited {
 	color: #003366;
 	text-decoration: none;
 }
-a:active {
+a:not(.btn):not([role="presentation"]):active {
 	color: #999999;
 	text-decoration: underline;
 }
-a:hover {
+a:not(.btn):not([role="presentation"]):hover {
 	color: #FF33CC;
 	text-decoration: underline;
 }

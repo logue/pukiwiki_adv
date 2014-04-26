@@ -40,20 +40,20 @@ body{
 }
 
 /* anchor tag */
-a {
+a:not(.btn):not([role="presentation"]) {
 	color:#3578b2 !important;
 	text-decoration:none;
 }
 
-a:active, a:hover {
+a:not(.btn):not([role="presentation"]):active, a:not(.btn):not([role="presentation"]):hover {
 	color:#215dc6;
 }
 
-a:hover {
+a:not(.btn):not([role="presentation"]):hover {
 	text-decoration:underline;
 }
 
-a:visited{
+a:not(.btn):not([role="presentation"]):visited{
 	/* color:#a63d21; */
 	color:#5D8BB3;
 }

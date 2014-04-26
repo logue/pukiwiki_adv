@@ -37,18 +37,18 @@ body{
 	background-color: #dfdfdf;
 }
 
-a{
+a:not(.btn):not([role="presentation"]){
 	color: #325989;
 	text-decoration: none;
 }
 
-a:hover,
-a:visited:hover{
+a:not(.btn):not([role="presentation"]):hover,
+a:not(.btn):not([role="presentation"]):visited:hover{
 	color: #a2b000;
 	text-decoration: underline;
 }
 
-a:visited{
+a:not(.btn):not([role="presentation"]):visited{
 	color: #2f267d;
 	text-decoration: none;
 }
