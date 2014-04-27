@@ -10,6 +10,9 @@ function plugin_lastmod_inline()
 	global $vars, $WikiName, $BracketName;
 
 	$args = func_get_args();
+	
+	if (!isset($vars['page'])) return false;
+
 	$page = $args[0];
 
 	if ($page == ''){

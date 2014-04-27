@@ -2,8 +2,9 @@
 # www.google.com/support/webmasters/bin/answer.py?hl=en&answer=156449
 
 User-agent: *
-Disallow: ./?:config
-Disallow: ./:config/
-Disallow: ./?cmd=*
+Disallow: /?:config
+Disallow: /:config/
+Disallow: /?cmd=*
+Allow: /?cmd=list
 
 Sitemap: ./?cmd=list&type=sitemap

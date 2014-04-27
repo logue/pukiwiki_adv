@@ -53,6 +53,8 @@ function plugin_popular_convert()
 	global $vars, $_popular_msg;
 //	global $_popular_plugin_frame, $_popular_plugin_today_frame;
 
+	$_page = isset($vars['page']) ? $vars['page'] : '';
+
 	if (!IS_MOBILE){
 		$_popular_plugin_frame				= sprintf('<h5>%s</h5><div>%%s</div>', $_popular_msg['popular']);
 		$_popular_plugin_today_frame		= sprintf('<h5>%s</h5><div>%%s</div>', $_popular_msg['today']);
@@ -107,7 +109,7 @@ function plugin_popular_convert()
 
 			$s_page = Utility::htmlsc($page);
 			
-			if ($page === $vars['page']) {
+			if ($page === $_page) {
 				// No need to link itself, notifies where you just read
 				$pg_passage = $wiki->passage(false,false);
 				$items .= ' <li data-theme="e"><span title="' . $s_page . ' ' . $pg_passage . '">' . $s_page . $counter . '</span></li>' . "\n";

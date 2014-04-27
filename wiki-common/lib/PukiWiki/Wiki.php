@@ -35,7 +35,10 @@ use Zend\Http\Client;
 use Zend\Http\Request;
 use Zend\XmlRpc\Client as XmlRpcClient;
 use Zend\XmlRpc\Request as XmlRpcRequest;
-
+use ZendSearch\Lucene;
+use ZendSearch\Lucene\Document;
+use ZendSearch\Lucene\Index;
+use ZendSearch\Lucene\Analysis\Analyzer;
 /**
  * Wikiのコントローラー
  */
@@ -74,13 +77,31 @@ class Wiki{
 		'http://www.blogpeople.net/ping/'
 	);
 	/**
+	 * ページ名
+	 */
+	public $page;
+	/**
+	 * 見出しID
+	 */
+	public $id;
+	/**
+	 * weblogUpdates Ping送信サイクル
+	 */
+	private $ping_cycle;
+	/**
+	 * PingBack送信サイクル
+	 */
+	private $pingback_cycle;
+
+	/**
 	 * PingBack送信のインターバル（１日）
 	 */
 	const PINGBACK_INTERVAL = 8640;
 	/**
 	 * コンストラクタ
 	 */
-	public function __construct($page){
+	public function __construct($page, $id = null){
+		$this->id = $id;
 		$this->page = $page;
 		// 以下はSplFileInfoの派生クラス
 		$this->wiki = FileFactory::Wiki($this->page);
@@ -214,13 +235,13 @@ class Wiki{
 	 * @param string $id 出力したい部分のID
 	 * @return string
 	 */
-	public function render($id = null){
+	public function render(){
 		global $digest;
 		if (!$this->wiki->has()) return;
 		if (empty($digest)){
 			$digest = $this->digest();
 		}
-		return RendererFactory::factory($this->get(false, $id));
+		return RendererFactory::factory($this->get(false));
 	}
 	/**
 	 * 記事の要約（md5ハッシュ）を取得
@@ -336,13 +357,12 @@ class Wiki{
 	/**
 	 * ページを読み込む
 	 * @param boolean $join 改行を結合するか
-	 * @param string $id 指定されたIDの部分のみを出力
 	 * @return void
 	 */
-	public function get($join = false, $id = null){
+	public function get($join = false){
 		$source = $this->wiki->get();
 
-		if (!empty($id)){
+		if (!empty($this->id)){
 			$start = -1;
 			$matches = array();
 			$final = count($source);
@@ -350,7 +370,7 @@ class Wiki{
 			foreach ($source as $i => $line) {
 				// アンカーIDによる判定
 				if ($start === -1) {
-					if (preg_match('/^(\*{1,3})(.*?)\[#(' . preg_quote($id) . ')\](.*?)$/m', $line, $matches)) {
+					if (preg_match('/^(\*{1,3})(.*?)\[#(' . preg_quote($this->id) . ')\](.*?)$/m', $line, $matches)) {
 						$start = $i;
 						$hlen = strlen($matches[1]);
 					}
@@ -370,7 +390,7 @@ class Wiki{
 				$source = null;
 			}
 		}
-		return $join ? join("\n", $source) : $source;
+		return ($join && is_array($source)) ? join("\n", $source) : $source;
 	}
 	/**
 	 * ページを書き込む

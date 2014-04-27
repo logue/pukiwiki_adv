@@ -74,9 +74,9 @@ function plugin_include_convert()
 	// Get arguments
 	$args = func_get_args();
 	// strip_bracket() is not necessary but compatible
-	$page = isset($args[0]) ? get_fullname(strip_bracket(array_shift($args)), $root) : '';
-	
-	$wiki = Factory::Wiki($page);
+	$page = isset($args[0]) ? array_shift($args) : null;
+
+	$wiki = Factory::Wiki(Utility::getPageName($page, $root));
 	
 	$with_title = PLUGIN_INCLUDE_WITH_TITLE;
 	if (isset($args[0])) {
@@ -92,7 +92,7 @@ function plugin_include_convert()
 
 	// I'm stuffed
 	if (isset($included[$page])) {
-		return '#include(): Included already: ' . $link . '<br />' . "\n";
+		return '<p class="alert alert-warning">' . #include(): Included already: ' . $link . '<br />' . "\n";
 	} if (! is_page($page)) {
 		return '#include(): No such page: ' . $s_page . '<br />' . "\n";
 	} if ($count > PLUGIN_INCLUDE_MAX) {

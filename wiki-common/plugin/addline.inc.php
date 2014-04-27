@@ -55,7 +55,7 @@ function plugin_addline_convert()
 	static $numbers = array();
 	static $no_flag = 0;
 
-	if( Auth::check_role('readonly') ) return '';
+	if( Auth::check_role('readonly') || !isset($vars['page'])) return '';
 
 	if (!array_key_exists($vars['page'],$numbers)){
 		$numbers[$vars['page']] = 0;

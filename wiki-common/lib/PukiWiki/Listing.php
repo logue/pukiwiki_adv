@@ -62,7 +62,6 @@ class Listing{
 		$pages = self::pages($type);
 		if ($type !== 'attach'){
 			foreach($pages as $page) {	// ここで一覧取得
-				
 				$initial = Reading::getReadingChar($page);	// ページの読みを取得
 				if ($initial === $page){
 					// 読み込めなかった文字

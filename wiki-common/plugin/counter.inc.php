@@ -1,8 +1,8 @@
 <?php
 // PukiPlus
-// $Id: counter.inc.php,v 1.19.8 2010/04/29 20:45:00 upk Exp $
+// $Id: counter.inc.php,v 1.19.9 2014/04/26 17:38:00 Logue Exp $
 // Copyright (C)
-//   2010 PukiPlus Team
+//   2010-2014 PukiWiki Advance Developers Team
 //   2004-2007 PukiWiki Plus! Team
 //   2002-2005, 2007 PukiWiki Developers Team
 //   2002 Y.MASUI GPL2 http://masui.net/pukiwiki/ masui@masui.net
@@ -18,7 +18,7 @@ function plugin_counter_inline()
 {
 	global $vars;
 
-	if ($vars['page'] === '') return null;
+	if (!isset($vars['page'])) return null;
 	// BugTrack2/106: Only variables can be passed by reference from PHP 5.0.5
 	$args = func_get_args(); // with array_shift()
 	$arg = strtolower(array_shift($args));
@@ -33,7 +33,7 @@ function plugin_counter_inline()
 		$counter = plugin_counter_get_count($vars['page']);
 		return '';
 	default:
-		return '&counter([total|today|yesterday|none]);';
+		return '<span class="text-warning">&amp;counter([total|today|yesterday|none]);</span>';
 	}
 }
 
@@ -45,7 +45,7 @@ function plugin_counter_convert()
 	if ($vars['page'] === '') return null;
 	$counter = plugin_counter_get_count($vars['page']);
 	return <<<EOD
-<div class="counter">
+<div class="plugin-counter">
 Counter:	<var>{$counter['total']}</var>,
 Today:		<var>{$counter['today']}</var>,
 Yesterday:	<var>{$counter['yesterday']}</var>

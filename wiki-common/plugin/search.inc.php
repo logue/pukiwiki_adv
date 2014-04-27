@@ -48,7 +48,12 @@ function plugin_search_action()
 {
 	global $post, $vars;
 	global $_search_msg, $_LANG;
-
+/*
+	if (isset($vars['update_index'])){
+		PukiWiki\SearchLucene::updateIndex();
+		return array('msg'=>'done.');
+	}
+*/
 	if (PLUGIN_SEARCH_DISABLE_GET_ACCESS) {
 		$s_word = isset($post['word']) ? htmlsc($post['word']) : '';
 	} else {

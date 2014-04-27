@@ -153,7 +153,7 @@ summary {
 	display:block;
 }
 iframe, object {
- background-color: transparent  border: none;
+	background-color: transparent  border: none;
 	margin: 0;
 	padding: 0;
 	overflow: visible;
@@ -664,12 +664,6 @@ i, em, cite, q {
 #poptoc h1 img {
 	margin-bottom: -3px;
 	margin-right: 2px;
-}
-#poptoc .nav {
-	text-align: center;
-}
-#poptoc > ul, #poptoc > ol {
-	margin: 0 0 0 1em;
 }
 #poptoc a {
 	color: blue !important;

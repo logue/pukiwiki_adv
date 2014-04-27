@@ -203,7 +203,7 @@ class Recent{
 	 * boolean $force キャッシュ生成しない
 	 * return void
 	 */
-	public static function getFeed($page = '', $type='rss', $force = true){
+	public static function getFeed($page = '', $type='rss', $force = false){
 		global $vars, $site_name, $site_logo, $modifier, $modifierlink, $_string, $cache;
 		static $feed;
 		
@@ -227,15 +227,14 @@ class Recent{
 				$cache['wiki']->removeItem(self::FEED_CACHE_NAME);
 			}else if (!empty($feed)){
 				// メモリにキャッシュがある場合
-				$body = $feed->export($type);
+
 			}else if ($cache['wiki']->hasItem(self::FEED_CACHE_NAME)) {
 				// キャッシュから最終更新を読み込む
 				$feed = $cache['wiki']->getItem(self::FEED_CACHE_NAME);
-				$body = $feed->export($type);
 			}
 		}
 
-		if (empty($body)){
+		if (empty($feed)){
 			// Feedを作る
 			$feed = new Feed();
 			// Wiki名
@@ -306,15 +305,14 @@ class Recent{
 				// キャッシュに保存
 				$cache['wiki']->setItem(self::FEED_CACHE_NAME, $feed);
 			}
-
-			$body = $feed->export($type);
 		}
 
-		//$headers = Header::getHeaders($content_type);
-		//Header::writeResponse($headers, 200, $body);
 		flush();
-		header('Content-Type: ' . $content_type);
-		echo $body;
+
+		$headers = Header::getHeaders($content_type);
+		Header::writeResponse($headers, 200, $feed->export($type));
+		//header('Content-Type: ' . $content_type);
+		//echo $body;
 		exit;
 	}
 }

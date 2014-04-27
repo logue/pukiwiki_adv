@@ -214,6 +214,8 @@ $info[] = 'Using <a href="http://framework.zend.com/">Zend Framework</a> ver.<va
 // Initilaize Session
 $session = new Zend\Session\Container(PKWK_WIKI_NAMESPACE);
 
+//ZendSearch\Lucene\Analysis\Analyzer\Analyzer::setDefault(new ZendSearch\Lucene\Analysis\Analyzer\Common\Utf8());
+
 /////////////////////////////////////////////////
 // Initilalize Cache
 //

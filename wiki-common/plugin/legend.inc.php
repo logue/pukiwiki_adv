@@ -1,15 +1,15 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: legent.inc.php,v 1.0.2 2011/02/05 11:00:00 Logue Exp $
+// $Id: legend.inc.php,v 1.0.2 2011/02/05 11:00:00 Logue Exp $
 //
-// Legent plugin
+// Legend plugin
 
 use PukiWiki\Renderer\RendererFactory;
 use PukiWiki\Utility;
 
 // ----
 define('PLUGIN_CODE_USAGE', 
-	   '<p class="error">Plugin code: Usage:<br />#legend[(title)]{{<br />contents<br />}}</p>');
+	   '<p class="alert alert-warning">Usage:<br />#legend[(title)]{{<br />contents<br />}}</p>');
 
 function plugin_legend_convert()
 {
@@ -27,8 +27,11 @@ function plugin_legend_convert()
 
 	// FIXME:
 	// class, style で指定可能であったとしても、ブラウザで正しく処理できるのは、align しかなさそう
-	$align = (empty($parm['align'])) ? '' : ' align="'.$parm['align'].'"';
-	return "<fieldset>\n<legend$align>" . $parm['title'] . "</legend>\n" . RendererFactory::factory(line2array($data)) . "</fieldset>\n";
+	$align = (empty($parm['align'])) ? '' : ' class="pull-'.$parm['align'].'"';
+	return '<fieldset>'."\n".
+		'<legend$align>' . $parm['title'] . '</legend>'."\n" . 
+		RendererFactory::factory($data) . 
+		'</fieldset>'."\n";
 
 }
 

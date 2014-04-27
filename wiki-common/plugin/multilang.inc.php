@@ -66,7 +66,7 @@ function plugin_multilang_inline_link($option, $args)
 	global $vars;
 
 	$body = array();
-	$page = $vars['page'];
+	$page = isset($vars['page']) ? $vars['page'] : '';
 	
 	$obj_l2c = new Lang2Country();
 
