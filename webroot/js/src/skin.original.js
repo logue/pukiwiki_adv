@@ -466,6 +466,8 @@ $.fn.bsbutton = bootstrapButton;
 			var progressInterval, $form, $progress, $info;
 
 			$form = $(prefix+'form[enctype="multipart/form-data"]');
+			if ($form.children('input[type="file"]').length === 0) return;
+
 			if ($form.length !== 0 && $form.find('.progress_session').length !== 0){
 				$progress = $([
 					'<div class="help-block hide">',
@@ -512,52 +514,50 @@ $.fn.bsbutton = bootstrapButton;
 					}
 				}
 
-				$(function() {
-					// Register a 'submit' event listener on the form to perform the AJAX POST
-					$form.on('submit', function(e) {
-						e.preventDefault();
+				// Register a 'submit' event listener on the form to perform the AJAX POST
+				$form.find('button').click(function(e){
+					e.preventDefault();
 
-						if ($form.children('input[type="file"]').val() === ''){
-							return;
-						}
+					if ($form.children('input[type="file"]').val() === ''){
+						return;
+					}
 
-						// Perform the submit
-						//$.fn.ajaxSubmit.debug = true;
-						$(this).ajaxSubmit({
-							beforeSubmit: function(arr, $form, options) {
-								// Notify backend that submit is via ajax
-								arr.push({ ajax:true });
-							},
-							success: function (response, statusText, xhr, $form) {
-								clearInterval(progressInterval);
-								showProgress(100, 'Complete!');
-								$progress.hide();
+					// Perform the submit
+					//$.fn.ajaxSubmit.debug = true;
+					$(this).ajaxSubmit({
+						beforeSubmit: function(arr, $form, options) {
+							// Notify backend that submit is via ajax
+							arr.push({ ajax:true });
+						},
+						success: function (response, statusText, xhr, $form) {
+							clearInterval(progressInterval);
+							showProgress(100, 'Complete!');
+							$progress.hide();
 
-								// TODO: You'll need to do some custom logic here to handle a successful
-								// form post, and when the form is invalid with validation errors.
-								if (response.status) {
-									// TODO: Do something with a successful form post, like redirect
-									// window.location.replace(response.redirect);
-								} else {
-									// Clear the file input, otherwise the same file gets re-uploaded
-									// http://stackoverflow.com/a/1043969
-									var fileInput = $form.children('input[type="file"]');
-									fileInput.replaceWith( fileInput.val('').clone( true ) );
+							// TODO: You'll need to do some custom logic here to handle a successful
+							// form post, and when the form is invalid with validation errors.
+							if (response.status) {
+								// TODO: Do something with a successful form post, like redirect
+								// window.location.replace(response.redirect);
+							} else {
+								// Clear the file input, otherwise the same file gets re-uploaded
+								// http://stackoverflow.com/a/1043969
+								var fileInput = $form.children('input[type="file"]');
+								fileInput.replaceWith( fileInput.val('').clone( true ) );
 
-									// TODO: Do something with these errors
-									// showErrors(response.formErrors);
-								}
-							},
-							error: function(a, b, c) {
-								// NOTE: This callback is *not* called when the form is invalid.
-								// It is called when the browser is unable to initiate or complete the ajax submit.
-								// You will need to handle validation errors in the 'success' callback.
-								console.log(a, b, c);
+								// TODO: Do something with these errors
+								// showErrors(response.formErrors);
 							}
-						});
-						// Start the progress polling
-						startProgress();
+						},
+						error: function(a, b, c) {
+							// NOTE: This callback is *not* called when the form is invalid.
+							// It is called when the browser is unable to initiate or complete the ajax submit.
+							// You will need to handle validation errors in the 'success' callback.
+							console.log(a, b, c);
+						}
 					});
+					// Start the progress polling
+					startProgress();
 				});
 			}
 		},
@@ -565,18 +565,61 @@ $.fn.bsbutton = bootstrapButton;
 		// ただし、id属性は使ってない
 		setRegion :function(prefix){
 			var dom = (prefix) ? $(prefix).find('.plugin-region') : $('.plugin-region');
-			
-			var $button = $('<button class="btn btn-default btn-xs pull-left"><small class="fa fa-plus"></small></button>');
+
+			var $button = $('<button class="btn btn-default btn-xs pull-left region-btn"><small class="fa fa-plus"></small></button>');
 			dom.find('.plugin-region-title').before($button);
 			$('.plugin-region-body').hide();
-			
-			$button.click(function(){
+
+			$('.region-btn').click(function(){
 				var $this = $(this),
 					$body = $this.next().next();
-				
+
 				$this.attr('disabled','disabled');
-					
+				
+				
+
 				$body.toggle('blind', {}, 500, function(){
+					if ($body.data('page') !== null && $body.html() === ''){
+						var params = {cmd:'read',ajax:'raw'},
+							content = '',
+							page_hash = $body.data('page').split('#');
+							
+						console.log(page_hash);
+						
+						params.page = page_hash[0];
+						if (page_hash[1]){
+							params.id = page_hash[1];
+						}
+						$this.html('<small class="fa fa-spinner fa-spin"></small>');
+						$.ajax({
+							global:false,
+							dataType: 'text',
+							url: SCRIPT,
+							data : params,
+							type : 'GET',
+							cache : true
+						}).
+						done(function(data){
+							// スクリプトタグを無効化
+							if (data !== null){
+								content = data.replace(/<script[^>]*>[^<]+/ig,'');
+							}else{
+								content = '<p class="alert alert-warning"><span class="fa fa-warning"></span>Data is Null!</p>';
+							}
+						}).
+						fail(function(data,status){
+							// エラー発生
+							if (data.status === 401){
+								status = $.i18n('dialog','error_auth');
+							}else if (status === 'error'){
+								status = $.i18n('dialog','error_page');
+							}
+							content = '<p class="alert alert-warning" id="ajax-error"><span class="fa fa-warning"></span>'+status+'</p>';
+						}).
+						always(function(data){
+							$body.html(content);
+						});
+					};
 					if ($body.is(':hidden')){
 						$this.html('<small class="fa fa-plus"></small>');
 					}else{
@@ -937,6 +980,7 @@ $.fn.bsbutton = bootstrapButton;
 					});
 				}
 			});
+			$('.fg-toolbar input, .fg-toolbar select').addClass('form-control').css('display','inline-block');
 			
 		},
 		// 検索フォームでサジェスト機能
@@ -1071,7 +1115,7 @@ $.fn.bsbutton = bootstrapButton;
 					'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','ncr')+'" name="ncr">&amp;#</button>',
 					'<button class="btn btn-default btn-sm insert" title="'+$.i18n('editor','hint')+'" name="help"><span class="fa fa-question-circle"></span></button>',
 					(!normal && Modernizr.localstorage) ? '<button class="btn btn-default btn-sm insert" title="'+$.i18n('editor','flush')+'" name="flush"><span class="fa fa-trash-o"></span></button>': null,
-					!normal ? '<button class="btn btn-default btn-sm disabled pull-right hidden" id="indicator"><span class="fa fa-spinner fa-spin"></span></button>' : null,
+					!normal ? '<button class="btn btn-default btn-sm disabled pull-right hidden" id="indicator"><span class="fa fa-refresh fa-spin"></span></button>' : null,
 				'</div>'
 			].join("\n"));
 
@@ -1825,7 +1869,7 @@ $.fn.bsbutton = bootstrapButton;
 				window.___gcfg = {lang: $('html').attr('lang')};	// for Google +1
 
 
-				html.push('<hr class="noprint" /><ul class="social noprint clearfix">');
+				html.push('<hr class="noprint" /><ul class="social noprint clearfix list-inline">');
 				for (var key in settings) {
 					if (settings[key]['use']){
 						html.push('<li>'+settings[key]['dom']+'</li>');

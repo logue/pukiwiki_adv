@@ -16,6 +16,7 @@ use PukiWiki\Renderer\RendererFactory;
 use PukiWiki\Listing;
 use PukiWiki\Utility;
 use PukiWiki\Time;
+use PukiWiki\Router;
 
 // Tracker_list: Excluding pattern
 define('PLUGIN_TRACKER_LIST_EXCLUDE_PATTERN','#^SubMenu$|/#');	// 'SubMenu' and using '/'
@@ -116,7 +117,7 @@ function plugin_tracker_convert()
 
 	if (! $tracker_form->initFields(plugin_tracker_field_pickup($template)) ||
 		! $tracker_form->initHiddenFields()) {
-		return '<p class="alert alert-warning">#tracker: ' . Utility::htmlsc($tracker_form->error). '</p>;
+		return '<p class="alert alert-warning">#tracker: ' . Utility::htmlsc($tracker_form->error). '</p>';
 	}
 	$fields = $tracker_form->fields;
 	unset($tracker_form);
@@ -134,7 +135,7 @@ function plugin_tracker_convert()
 		unset($fields[$fieldname]);
 	}
 
-	$script   = get_script_uri();
+	$script   = Router::get_script_uri();
 	$template = str_replace($from, $to, RendererFactory::factory($template));
 	$hidden   = implode('<br />' . "\n", $hidden);
 
@@ -153,12 +154,17 @@ EOD;
 // Add new page
 function plugin_tracker_action()
 {
-	global $post, $vars, $now, $config_name, $_string, $session;
+	global $vars, $now, $config_name, $_string, $session;
 
 //	if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
 	// Plus! code start
 	if (Auth::check_role('readonly')) die_message($_string['prohibit']);
 	if (Auth::is_check_role(PKWK_CREATE_PAGE)) die_message(_('PKWK_CREATE_PAGE prohibits editing'));
+	
+	$base  = isset($vars['_base'])  ? $vars['_base']  : null;
+	$refer = isset($vars['_refer']) ? $vars['_refer'] : null;
+	
+	if (isset($vars['cancel'])) Utility::redirect(Router::get_page_uri($refer));
 
 	$tracker_form = new Tracker_form();
 	// Petit SPAM Check (Client(Browser)-Server Ticket Check)
@@ -170,14 +176,13 @@ function plugin_tracker_action()
 	}
 	// Plus! code end
 
-	$base  = isset($post['_base'])  ? $post['_base']  : null;
-	$refer = isset($post['_refer']) ? $post['_refer'] : null;
+	
 
 	// $page name to add will be decided here
 	$num  = 0;
-	$name = isset($post['_name']) ? $post['_name'] : null;
-	if (isset($post['_page'])) {
-		$real = $page = $post['_page'];
+	$name = isset($vars['_name']) ? $vars['_name'] : null;
+	if (isset($vars['_page'])) {
+		$real = $page = $vars['_page'];
 	} else {
 		$real = is_pagename($name) ? $name : ++$num;
 		$page = get_fullname('./' . $real, $base);
@@ -188,11 +193,13 @@ function plugin_tracker_action()
 		$page = $base . '/' . $real;
 	}
 
-	$config = isset($post['_config']) ? $post['_config'] : null;
+	$config = isset($vars['_config']) ? $vars['_config'] : null;
 
 	// TODO: Why here
 	// Default
-	$_post = array_merge($post, $_FILES);
+	if (isset($_FILES)){
+		$_post = array_merge($vars, $_FILES);
+	}
 	$_post['_date'] = $now;
 	$_post['_page'] = $page;
 	$_post['_name'] = $name;
@@ -225,7 +232,7 @@ function plugin_tracker_action()
 	if (! $tracker_form->initFields(plugin_tracker_field_pickup(implode(null, $template)))) {
 		return array(
 			'msg'  => 'Cannot write',
-			'body' => '<p class="alert alert-warning">'.Utility::htmlsc($tracker_form->error).'</p>';
+			'body' => '<p class="alert alert-warning">'.Utility::htmlsc($tracker_form->error).'</p>'
 		);
 	}
 	$fields = $tracker_form->fields;
@@ -267,12 +274,34 @@ function plugin_tracker_action()
 		unset($to_e);
 	}
 	unset($from, $to);
+	
+	if (isset($vars['preview'])){
+		global $_button;
+		unset($vars['preview'] );
+		
+		$form[] = '<p class="alert alert-success">'.T_('It will be sent with the contents of the following.').'</p>';
+		$form[] = '<form action="'.Router::get_script_uri() . '"enctype="multipart/form-data" method="post" class="form-horizontal plugin-tracker-form">';
+		foreach ($vars as $key=>$value){
+			$form[] = '<input type="hidden" name="'.$key.'" value="'.$value.'" />';
+		}
+		$form[] = '<button type="submit" class="btn btn-primary" name="write" accesskey="s"><span class="fa fa-check"></span>' . $_button['update'] . '</button>';
+		$form[] = '<button type="submit" class="btn btn-warning" name="cancel" accesskey="c"><span class="fa fa-ban"></span>' . $_button['cancel'] . '</button>';
+		$form[] = '</form>';
+		$form[] = '<hr />';
+		$form[] = RendererFactory::factory($template);
 
-	// Write $template, without touch
-	$wiki = Factory::Wiki($page);
-	$wiki->set($template);
+		return array(
+			'msg'  => 'Preview',
+			'body' => join("\n",$form)
+		);
+	}else{
 
-	Utility::redirect($wiki->uri());
+		// Write $template, without touch
+		$wiki = Factory::Wiki($page);
+		$wiki->set($template);
+
+		Utility::redirect($wiki->uri());
+	}
 	exit;
 }
 
@@ -370,7 +399,8 @@ class Tracker_form
 				'_real'   => 'real',	// Page name (Real)
 				'_refer'  => 'page',	// Page name refer from this (Page who has forms)
 				'_base'   => 'page',
-				'_submit' => 'submit'
+				'_submit' => 'submit',
+				'_preview'=> 'preview'
 			) as $fieldname => $type) {
 				if (isset($raw_fields[$fieldname])) continue;
 				$raw_fields[$fieldname] = array(
@@ -470,7 +500,7 @@ class Tracker_field
 
 	function Tracker_field(& $tracker_form, $field)
 	{
-		global $post;
+		global $vars;
 		static $id = 0;
 
 		$this->id = ++$id;
@@ -481,7 +511,7 @@ class Tracker_field
 		$this->options       = isset($field[3]) ? explode(',', $field[3]) : array();
 		$this->default_value = isset($field[4]) ? $field[4] : null;
 
-		$this->data = isset($post[$this->name]) ? $post[$this->name] : null;
+		$this->data = isset($vars[$this->name]) ? $vars[$this->name] : null;
 	}
 
 	// Output a part of XHTML form for the field
@@ -832,11 +862,23 @@ class Tracker_field_submit extends Tracker_field
 		$s_config = Utility::htmlsc($form->config_name);
 
 		return <<<EOD
-<input type="submit" class="btn btn-primary" value="$s_title" />
 <input type="hidden" name="cmd"  value="tracker" />
 <input type="hidden" name="_refer"  value="$s_refer" />
 <input type="hidden" name="_base"   value="$s_base" />
 <input type="hidden" name="_config" value="$s_config" />
+<button type="submit" class="btn btn-primary" name="write"><span class="fa fa-plus"></span>$s_title</button>
+EOD;
+	}
+}
+
+class Tracker_field_preview extends Tracker_field
+{
+	function get_tag()
+	{
+		$s_title  = Utility::htmlsc($this->title);
+
+		return <<<EOD
+<button class="btn btn-default" name="preview" value="true"><span class="fa fa-eye"></span>$s_title</button>
 EOD;
 	}
 }
@@ -1569,6 +1611,7 @@ function plugin_tracker_escape($string, $syntax_hint = null)
 
 function plugin_tracker_message($key)
 {
+	global $_button;
 	$_tracker_messages = array(
 		'btn_page'   => T_('Page'),
 		'btn_name'   => T_('Name'),
@@ -1582,6 +1625,7 @@ function plugin_tracker_message($key)
 		'msg_limit'  => T_('top <var>$2</var> results out of <var>$1</var>.'),
 		'msg_list'   => T_('List items of <var>$1</var>'),
 		'msg_back'   => '<p>$1</p>',
+		'btn_preview'=> $_button['preview']
 	);
 	return isset($_tracker_messages[$key]) ? $_tracker_messages[$key] : 'NOMESSAGE';
 }
