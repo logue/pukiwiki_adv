@@ -407,7 +407,7 @@ class Auth
 
 		list($scheme, $salt, $role) = self::get_data($data['username'], $auth_users);
 		if ($scheme !== '{x-digest-md5}') {
-			Utility::dieMessage('Auth::auth_digest(): Digest auth must be password scheme to <var>{x-digest-md5}</var>.');
+			Utility::dieMessage('Auth::auth_digest(): Digest auth must be password scheme to <var>{x-digest-md5}</var>. To use this authicate method, please click <a href="'.Router::get_cmd_uri('passwd') . '">here</a> to (re)generate password.');
 		}
 
 		// $A1 = md5($data['username'] . ':' . $realm . ':' . $auth_users[$data['username']]);

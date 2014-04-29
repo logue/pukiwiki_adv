@@ -151,14 +151,15 @@ class Search{
 					$b_match = preg_match($key, $page);
 					if ($b_type xor $b_match) break; // OR
 				}
-				if (! $b_match) continue;
 			}
 
 			// 通常検索
+			$source = $wiki->get(true);
 			foreach ($keys as $key) {
-				$b_match = preg_match($key, $wiki->get(true));
+				$b_match = preg_match($key, $source);
 				if ($b_type xor $b_match) break; // OR
 			}
+			unset($source, $key);
 			// マッチしない場合スキップ
 			if (!$b_match) continue;
 
