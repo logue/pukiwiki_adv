@@ -29,9 +29,10 @@ class RendererFactory{
 
 		if (!is_array($lines)){
 			// 改行を正規化
-			str_replace(array(chr(0x0d) . chr(0x0a), chr(0x0d), chr(0x0a)), "\n", $lines);
+			$_lines = str_replace(array(chr(0x0d) . chr(0x0a), chr(0x0d), chr(0x0a)), "\n", $lines);
 			// 改行で配列を分ける
-			$lines = explode("\n",$lines);
+			$lines = explode("\n",$_lines);
+			unset($_lines);
 		}
 
 		$body = new RootElement(++$id);
