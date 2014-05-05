@@ -1971,15 +1971,15 @@ $.fn.bsbutton = bootstrapButton;
 */
 	});
 	if (typeof(GOOGLE_ANALYTICS) !== 'undefined' && GOOGLE_ANALYTICS !== false){
-		(function(i,s,o,g,r,a,m){
-			i['GoogleAnalyticsObject']=r;
-			i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();
-			a=s.createElement(o),
-			m=s.getElementsByTagName(o)[0];
-			a.async=1;
-			a.src=g;
-			m.parentNode.insertBefore(a,m)
-		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+		// http://mathiasbynens.be/notes/async-analytics-snippet#universal-analytics
+		(function(G,o,O,g,l){
+			G.GoogleAnalyticsObject=O;
+			G[O]||(G[O]=function(){
+				(G[O].q=G[O].q||[]).push(arguments)
+			});
+			G[O].l=+new Date;g=o.createElement('script'),l=o.scripts[0];
+			g.src='//www.google-analytics.com/analytics.js';l.parentNode.insertBefore(g,l)
+		}(this,document,'ga'));
 
 		ga('create', GOOGLE_ANALYTICS, 'auto');
 		ga('send', 'pageview',{

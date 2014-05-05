@@ -126,8 +126,6 @@ class View{
 	 */
 	public function __toString()
 	{
-		// 経過時間
-		$this->proc_time =  Time::getTakeTime();
 		if (empty($this->path)) $this->_theme = '';
 		// 出力するHTMLをバッファに書き込み出力
 		ob_start(! DEBUG ? 'ob_gzhandler': null);

@@ -13,7 +13,6 @@
 
 namespace PukiWiki;
 
-use Exception;
 use PukiWiki\Auth\Auth;
 use PukiWiki\Diff\LineDiff;
 use PukiWiki\Factory;
@@ -29,6 +28,8 @@ use Zend\Http\PhpEnvironment\Request;
 use Zend\Http\Response;
 use Zend\Json\Json;
 use Zend\Math\Rand;
+
+defined('SOURCE_ENCODING') or define('SOURCE_ENCODING', 'UTF-8');
 
 /**
  * 汎用関数
@@ -369,7 +370,12 @@ class Utility{
 		// CloudFlareから送られてきたIP、リバースプロクシから送られてきたIP、リモートIPの順番で読み込む
 		static $array_var = array('HTTP_CF_CONNECTING_IP', 'HTTP_X_REMOTE_ADDR','REMOTE_ADDR'); // HTTP_X_FORWARDED_FOR
 		foreach($array_var as $x){
-			if (isset($_SERVER[$x])) return $_SERVER[$x];
+			if (!isset($_SERVER[$x])) continue;
+			// TODO: IPv6の場合、それが出力される
+//			if (filter_var($_SERVER[$x], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)){
+//				return $_SERVER['REMOTE_ADDR'];
+//			}
+			return $_SERVER[$x];
 		}
 		self::dieMessage('Could not get IP address.');	// IPアドレスが取得できない場合、念のため処理を止める
 		// return null;
@@ -693,7 +699,7 @@ class Utility{
 			)));
 		}else{
 			new Render($error_title, join("\n",$body), $http_code);
-	//		die(join("\n",$body));
+			die(join("\n",$body));
 		}
 		die();
 	}

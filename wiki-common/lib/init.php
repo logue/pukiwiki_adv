@@ -17,8 +17,6 @@ use PukiWiki\Factory;
 use PukiWiki\Utility;
 use PukiWiki\Time;
 use PukiWiki\Router;
-use PukiWiki\Spam\Spam;
-use PukiWiki\Spam\IpFilter;
 use PukiWiki\Renderer\PluginRenderer;
 use PukiWiki\File\LogFactory;
 use Zend\Cache\StorageFactory;
@@ -122,10 +120,11 @@ $config_dist = array(
 */
 
 //Utility::loadConfig('pukiwiki.ini.php', true);
-require(Utility::add_homedir('pukiwiki.ini.php'));
-require(Utility::add_homedir('auth.ini.php'));
-require(Utility::add_homedir('server.ini.php'));
-
+foreach (array('pukiwiki.ini.php', 'auth.ini.php', 'server.ini.php') as $file){
+	$path = Utility::add_homedir($file);
+	if (empty($path)) continue;
+	require($path);
+}
 defined('DATA_DIR')			or define('DATA_DIR',		DATA_HOME . 'wiki/'     );	// Latest wiki texts
 defined('DIFF_DIR')			or define('DIFF_DIR',		DATA_HOME . 'diff/'     );	// Latest diffs
 defined('BACKUP_DIR')		or define('BACKUP_DIR',		DATA_HOME . 'backup/'   );	// Backups

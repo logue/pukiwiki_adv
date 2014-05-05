@@ -38,7 +38,7 @@ body {
     color: rgba(255,255,255,.75);
     text-shadow: 0 1px 3px rgba(0,0,0,.4), 0 0 30px rgba(0,0,0,.075);
     background: #2649B2; /* Old browsers */
-    background: -moz-linear-gradient(45deg,  #2649B2 0%, ##23A5FA 100%); /* FF3.6+ */
+    background: -moz-linear-gradient(45deg,  #2649B2 0%, #23A5FA 100%); /* FF3.6+ */
     background: -webkit-gradient(linear, left bottom, right top, color-stop(0%,#2649B2), color-stop(100%,#23A5FA)); /* Chrome,Safari4+ */
     background: -webkit-linear-gradient(45deg,  #2649B2 0%,#23A5FA 100%); /* Chrome10+,Safari5.1+ */
     background: -o-linear-gradient(45deg,  #2649B2 0%,#23A5FA 100%); /* Opera 11.10+ */

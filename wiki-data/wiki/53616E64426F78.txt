@@ -112,12 +112,13 @@ __アンダーバー__
 
 @@@引用@@@
 
+#well{{
 標準
 LEFT:左寄せ
 CENTER:中寄せ
 RIGHT:右寄せ
 JUSTIFY:両端揃え（欧文のみ）
-
+}}
 * テーブル [#b9b997ac]
 左寄せテーブル
 LEFT:
@@ -143,7 +144,7 @@ RIGHT:
 |Grape	|174	|
 
 編集可能なテーブル
-#table_edit2(td_edit=off,edit=on,table_mod=lock){{
+#table_edit2(td_edit=off,edit=on,table_mod=unlock){{
 |~1|~2|~3|
 |a|b|c|
 |A|B|C|
@@ -152,18 +153,18 @@ RIGHT:
 spanプラグインの数値の合計が12になるようにrowプラグインでspanプラグインをくくります。
 #row{{{{{{
 #span(4){{{{
-#well{{
-4
+#panel(4,default){{
+4/12
 }}
 }}}}
 #span(6){{{{
-#well{{
-6
+#panel(6,primary){{
+6/12
 }}
 }}}}
 #span(2){{{{
-#well{{
-2
+#panel(2,danger){{
+2/12
 }}
 }}}}
 }}}}}}

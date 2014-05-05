@@ -1076,9 +1076,9 @@ function plugin_table_edit2_inline()
 	}
 
 	if ($opt['edit_mod'] == 'show' || $opt['edit_mod'] == 'tdshow'){
-		$icon = '<span class="fa fa-pencil-square" title="' . $s_table_edit . '" data-ajax="false"></span>';
+		$icon = '<span class="fa fa-pencil-square-o" title="' . $s_table_edit . '" data-ajax="false"></span>';
 	} else if ($opt['edit_mod'] == 'tr' || $opt['edit_mod'] == 'td'){
-		$icon = '<span class="fa fa-plus-square" title="' . $s_table_add . '" data-ajax="false"></span>';
+		$icon = '<span class="fa fa-plus-square-o" title="' . $s_table_add . '" data-ajax="false"></span>';
 	}
 	
 	$body .= '<a href="' . get_cmd_uri('table_edit2', null, null, array(

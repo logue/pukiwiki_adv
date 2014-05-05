@@ -40,13 +40,13 @@
 	pukiwiki.register.before_init(function(){
 		// クッキーが定義されていないときは、blueとし、クッキーに保存
 
-		var color = colorset[$.cookie('pkwk-colorset')];
+		var color = colorset[$.cookie('pkwk-colorset')], color_css, theme_css;
 		try{
-			$('#coloring').attr('href', SKIN_DIR+'theme/default/'+color[0]+'.css');
-			$('#ui-theme').attr('href', COMMON_URI+'css/jquery-ui/themes/'+color[1]+'/jquery-ui.css');
+			color_css = SKIN_DIR+'theme/default/'+color[0]+'.css';
+			theme_css = COMMON_URI ? COMMON_URI+'css/jquery-ui/themes/'+color[1]+'/jquery-ui.css' : '//code.jquery.com/ui/1.10.4/themes/'+color[1] + '/jquery-ui.min.css';
 		}catch(e){
-			$('#coloring').attr('href', SKIN_DIR+'theme/default/blue.css');
-			$('#ui-theme').attr('href', COMMON_URI+'css/jquery-ui/themes/redmond/jquery-ui.css');
+			color_css = SKIN_DIR+'theme/default/blue.css';
+			theme_css = COMMON_URI ? COMMON_URI+'css/jquery-ui/themes/redmond/jquery-ui.css' : '//code.jquery.com/ui/1.10.4/themes/redmond/jquery-ui.min.css';
 		}
 
 		// カラーセットのリンクボタンを生成

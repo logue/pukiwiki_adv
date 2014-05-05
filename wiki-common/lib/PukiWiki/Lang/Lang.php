@@ -74,12 +74,6 @@ class Lang {
 		define('COUNTRY', $_c[1]);
 		unset($_c);
 
-		// FIXME:
-		// UI_LANG - Content Language for buttons, menus,  etc
-		define('UI_LANG', LANG); // 'en' for Internationalized wikisite
-		// LANG_ENCODING - content encoding ('', 'UTF-8', or ...)
-		define('LANG_ENCODING', 'UTF-8');
-
 		// I18N
 		if (extension_loaded('intl')){
 			Locale::setDefault($language);
@@ -133,14 +127,9 @@ class Lang {
 	 */
 	private static function setMbstring($lang)
 	{
-		// Internal content encoding = Output content charset (for skin)
-		define('CONTENT_CHARSET', 'UTF-8' );    // 'UTF-8', 'iso-8859-1', 'EUC-JP' or ...
-		// Internal content encoding (for mbstring extension)
-		define('SOURCE_ENCODING', 'UTF-8' );    // 'UTF-8', 'ASCII', or 'EUC-JP'
-
 		mb_language( self::getMbLanguage($lang) );
 
-		mb_internal_encoding(SOURCE_ENCODING);
+		mb_internal_encoding('UTF-8');
 		ini_set('mbstring.http_input', 'pass');
 		mb_http_output('pass');
 		mb_detect_order('auto');

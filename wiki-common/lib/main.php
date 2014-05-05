@@ -59,7 +59,7 @@ if (count($info) !== 0){
 defined('DEBUG')        or define('DEBUG', false);
 defined('PKWK_WARNING') or define('PKWK_WARNING', false);
 defined('ROOT_URI')     or define('ROOT_URI', dirname($_SERVER['PHP_SELF']).'/');
-defined('WWW_HOME')     or define('WWW_HOME', '');
+defined('WWW_HOME')     or define('WWW_HOME', './');
 defined('COMMON_URI')   or define('COMMON_URI', ROOT_URI);
 
 if (DEBUG) {

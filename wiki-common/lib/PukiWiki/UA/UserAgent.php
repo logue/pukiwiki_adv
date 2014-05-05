@@ -21,9 +21,7 @@ class UserAgent
 	public function __construct($opt='')
 	{
 		$this->obj_flag	    = new ccTLD();
-		$this->path_flag    = IMAGE_DIR.'icon/flags/';
 		$this->obj_os	    = new Os();
-		$this->path_os	    = IMAGE_DIR.'icon/os/';
 		$this->obj_browsers = new Browsers();
 		$this->obj_robots   = new Robots();
 	}

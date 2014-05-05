@@ -153,7 +153,8 @@ summary {
 	display:block;
 }
 iframe, object {
-	background-color: transparent  border: none;
+	background-color: transparent;
+	border: none;
 	margin: 0;
 	padding: 0;
 	overflow: visible;
@@ -3968,9 +3969,6 @@ li[role=tab] {
 	}
 	abbr[title]:after {
 		content:" (" attr(title) ")"
-	}
-	 .ir a:after, a[href^=javascript:]:after, a[href^=#]:after {
-	content:""
 	}
 	pre, blockquote {
 		border:1px solid #999;

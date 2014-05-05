@@ -36,12 +36,12 @@ class Render{
 	/**
 	 * CDNを使う
 	 */
-	const USE_CDN = false;
+	const USE_CDN = true;
 	/**
 	 * jQueryのバージョン
 	 */
-	const JQUERY_VER = '2.1.0';
-	//const JQUERY_VER = '1.11.0';
+	const JQUERY_VER = '2.1.1';
+	//const JQUERY_VER = '1.11.1';
 	/**
 	 * jQuery UIのバージョン
 	 */
@@ -200,9 +200,6 @@ class Render{
 			
 			global $attach_link, $related_link;
 			$view->lastmodified = '<time datetime="'.Time::getZoneTimeDate('c',$this->wiki->time()).'">'.Time::getZoneTimeDate('D, d M Y H:i:s T', $this->wiki->time()) . ' ' . $this->wiki->passage().'</time>';
-			if (!$this->wiki->isEditable()){
-				$view->lastmodified .= '<span class="fa fa-lock"></span>';
-			}
 
 			// ページの添付ファイル、関連リンク
 			if ($attach_link) {
@@ -210,6 +207,15 @@ class Render{
 			}
 			if ($related_link) {
 				$view->related = $this->getRelated();
+			}
+
+			// ステータスアイコン
+			if (!$this->wiki->isEditable(false, true)){
+				$this->status = '<span class="fa fa-ban" title="Not Editable"></span>';
+			}else if ($this->wiki->isFreezed()){
+				$this->status = '<span class="fa fa-lock" title="Freezed"></span>';
+			}else{
+				$this->status = '<span class="fa fa-pencil-square" title="Editable"></span>';
 			}
 
 			// ノート
@@ -271,9 +277,13 @@ class Render{
 		// 表示言語
 		$view->lang = substr(LANG,0,2);
 		// テーマディレクトリへの相対パス
-		$view->path =  SKIN_URI . THEME_PLUS_NAME . (!IS_MOBILE ? PLUS_THEME : 'mobile') . '/';
+		$view->path =  SKIN_DIR . THEME_PLUS_NAME . (!IS_MOBILE ? PLUS_THEME : 'mobile') . '/';
 
 		$view->links = $_LINK;
+		
+		$view->proc_time = $this->getProcessTime();
+		
+		$view->memory = $this->getMemoryUsage();
 
 		return $view->__toString();
 	}
@@ -311,7 +321,7 @@ class Render{
 			'JS_URI'        => constant('JS_URI'),
 			'LANG'          => constant('LANG'),
 			'SCRIPT'        => Router::get_script_absuri(),
-			'SKIN_DIR'      => constant('SKIN_URI'),
+			'SKIN_DIR'      => constant('SKIN_DIR'),
 			'THEME_NAME'    => constant('PLUS_THEME'),
 			'COMMON_URI'    => self::USE_CDN ? false : constant('COMMON_URI'),
 		);
@@ -434,7 +444,7 @@ class Render{
 				array('rel'=>'pingback',	    'href'=>$_LINK['pingback'], 'type'=>'application/xml'),
 				array('rel'=>'search',			'href'=>$_LINK['opensearch'],'type'=>'application/opensearchdescription+xml',	'title'=>$site_name.$_LANG['skin']['search']),
 				array('rel'=>'search',			'href'=>$_LINK['search'],	'type'=>'text/html',	'title'=>$_LANG['skin']['search']),
-				array('rel'=>'shortcut icon',	'href'=>isset($conf['shortcut_icon']) ? $conf['shortcut_icon'] : ROOT_URI.'favicon.ico'),
+				array('rel'=>'shortcut icon',	'href'=>isset($conf['shortcut_icon']) ? $conf['shortcut_icon'] : WWW_HOME . 'favicon.ico'),
 				array('rel'=>'sidebar',			'href'=>$_LINK['side'],		'type'=>'text/html',	'title'=>$_LANG['skin']['side']),
 				array('rel'=>'sitemap',			'href'=>$_LINK['sitemap'],	'type'=>'application/xml')
 			);
@@ -445,7 +455,7 @@ class Render{
 			// http://html5boilerplate.com/docs/DNS-Prefetching/
 			$link_tags[] = array('rel'=>'dns-prefetch', 'href'=>'//'.self::JQUERY_CDN);
 			$link_tags[] = array('rel'=>'dns-prefetch', 'href'=>'//'.self::BOOTSTRAP_CDN);
-			if (COMMON_URI !== ROOT_URI){
+			if (COMMON_URI !== ROOT_URI && preg_match('/^(\.\/|\/)/', COMMON_URI) === FALSE){
 				$link_tags[] = array('rel'=>'dns-prefetch', 'href'=>COMMON_URI);
 			}
 
@@ -793,5 +803,19 @@ class Render{
 		}
 		$ret[] = '<li><a href="' . $links['top'] . '"><span class="fa fa-home"></span></a></li>';
 		return '<ol class="breadcrumb">' . join("\n", array_reverse( $ret)) .'</ol>';
+	}
+	/**
+	 * ページ生成時間
+	 */
+	private function getProcessTime(){
+		// http://pukiwiki.sourceforge.jp/dev/?BugTrack2%2F251
+		return sprintf('%01.03f', Time::getMicroTime() - $_SERVER['REQUEST_TIME']);
+	}
+	/**
+	 * 使用メモリ
+	 */
+	private function getMemoryUsage(){
+		$mem = memory_get_usage();
+		return number_format($mem);
 	}
 }

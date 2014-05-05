@@ -408,7 +408,7 @@ pre{
 }
 
 #footer li:not(:last-of-type):after{
-	content ' / ';
+	content :' / ';
 	color: white;
 }
 
@@ -697,7 +697,7 @@ pre{
 	}
 	
 	#body{
-		float:clear;
+		float:both;
 		display:block;
 		width:100%;
 	}
