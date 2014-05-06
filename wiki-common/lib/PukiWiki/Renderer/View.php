@@ -182,8 +182,8 @@ class View{
 		}
 	
 		$cond = array(
-			SKIN_DIR . THEME_PLUS_NAME . $this->_theme . '/',
-			EXT_SKIN_DIR . THEME_PLUS_NAME . $this->_theme . '/'
+			ROOT_URI . SKIN_DIR . THEME_PLUS_NAME . $this->_theme . '/',
+			ROOT_URI . EXT_SKIN_DIR . THEME_PLUS_NAME . $this->_theme . '/'
 		);
 
 		$file = basepagename($this->_theme) . '.' . $type . '.php';
@@ -194,6 +194,7 @@ class View{
 				return include $dir . $file;
 			}
 		}
+		die('View: Could not load to Theme file.');
 		
 		return array();
 	}

@@ -33,7 +33,11 @@ function plugin_flash_convert()
 	}
 	$argv = func_get_args();
 	// @ インライン呼び出しかどうか
-	if($argv[$argc-1] == "inline")	{ $binline = 1; array_pop($argv);}
+	$binline = 0;
+	if($argv[$argc-1] == "inline"){
+		$binline = 1;
+		array_pop($argv);
+	}
 
 	// @ 第一引数の受け取り
 	$swf = $argv[0];

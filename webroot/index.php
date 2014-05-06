@@ -31,14 +31,14 @@ define('ROOT_URI', dirname(__FILE__).DIRECTORY_SEPARATOR);
 
 // Directory definition
 // (Ended with a slash like '../path/to/pkwk/', or '')
-define('SITE_HOME',	ROOT_URI . '../wiki-common/');
+define('SITE_HOME',	ROOT_URI . '../../wiki-common/');
 
 // define('DATA_HOME',	'../../wiki-data/contents/');
 // define('DATA_HOME',	ROOT_URI . '../../data/');
-define('DATA_HOME',	'../wiki-data/');
+define('DATA_HOME',	'../../wiki-data/pukiwiki/');
 
-define('WWW_HOME', './');
-define('COMMON_URI', './');
+define('WWW_HOME', '/');
+define('COMMON_URI', 'http://www.logue.be/');
 
 // to absolute path
 // Do not change following lines

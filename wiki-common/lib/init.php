@@ -131,12 +131,10 @@ defined('BACKUP_DIR')		or define('BACKUP_DIR',		DATA_HOME . 'backup/'   );	// Ba
 defined('CACHE_DIR')		or define('CACHE_DIR',		DATA_HOME . 'cache/'    );	// Some sort of caches
 defined('UPLOAD_DIR')		or define('UPLOAD_DIR',		DATA_HOME . 'attach/'   );	// Attached files and logs
 defined('COUNTER_DIR')		or define('COUNTER_DIR',	DATA_HOME . 'counter/'  );	// Counter plugin's counts
-defined('TRACKBACK_DIR')	or define('TRACKBACK_DIR',	DATA_HOME . 'trackback/');	// TrackBack logs
 defined('REFERER_DIR')		or define('REFERER_DIR',	DATA_HOME . 'trackback/');	// Referer logs
 defined('LOG_DIR')			or define('LOG_DIR',		DATA_HOME . 'log/'      );	// Logging file
 defined('INIT_DIR')			or define('INIT_DIR',		DATA_HOME . 'init/'     );	// Initial value (Contents)
 
-defined('TEMP_DIR')			or define('TEMP_DIR',		SITE_HOME . 'temp/'     );	// System cache
 defined('PLUGIN_DIR')		or define('PLUGIN_DIR',		SITE_HOME . 'plugin/'   );	// Plugin directory
 defined('LANG_DIR')			or define('LANG_DIR',		SITE_HOME . 'locale/'   );	// Language file
 defined('SITE_INIT_DIR')	or define('SITE_INIT_DIR',	SITE_HOME . 'init/'     );	// Initial value (Site)
@@ -154,12 +152,6 @@ defined('IMAGE_URI')		or define('IMAGE_URI',		COMMON_URI . 'image/'   );	// URI 
 defined('JS_URI')			or define('JS_URI', 		COMMON_URI . 'js/'      );	// URI to JavaScript Libraly
 
 defined('THEME_PLUS_NAME')	or define('THEME_PLUS_NAME',  'theme/');			// SKIN_URI + THEME_PLUS_NAME
-
-defined('SKIN_DIR') or define('SKIN_DIR',		WWW_HOME . 'skin/');
-
-defined('IMAGE_DIR') or define('IMAGE_DIR', 	WWW_HOME . 'image/');
-
-defined('SKIN_URI') or define('SKIN_URI',		ROOT_URI . 'skin/');
 defined('IMAGE_URI') or define('IMAGE_URI',		COMMON_URI . 'image/');
 defined('JS_URI') or define('JS_URI', 		COMMON_URI . 'js/');
 

@@ -62,7 +62,9 @@ function plugin_include_convert()
 
 	$_msg_include_restrict = T_('Due to the blocking, $1 cannot be include(d).');
 
-	if (func_num_args() == 0) return PLUGIN_INCLUDE_USAGE . '<br />' . "\n";;
+	if (func_num_args() == 0){
+		return '<p class="alert alert-warning">' .PLUGIN_INCLUDE_USAGE . '</p>' . "\n";
+	}
 
 	// $menubar will already be shown via menu plugin
 	if (! isset($included[$menubar])) $included[$menubar] = TRUE;
@@ -85,18 +87,18 @@ function plugin_include_convert()
 		case 'notitle': $with_title = FALSE; break;
 		}
 	}
-
+	
 	$s_page = Utility::htmlsc($page);
-	$r_page = rawurlencode($page);
+
 	$link = '<a href="' . $wiki->uri() . '">' . $s_page . '</a>'; // Read link
 
 	// I'm stuffed
 	if (isset($included[$page])) {
-		return '<p class="alert alert-warning">' . #include(): Included already: ' . $link . '<br />' . "\n";
-	} if (! is_page($page)) {
-		return '#include(): No such page: ' . $s_page . '<br />' . "\n";
-	} if ($count > PLUGIN_INCLUDE_MAX) {
-		return '#include(): Limit exceeded: ' . $link . '<br />' . "\n";
+		return '<p class="alert alert-warning">#include(): Included already: ' . $link . '</p>' . "\n";
+	} else if (! is_page($page)) {
+		return '<p class="alert alert-warning">#include(): No such page: ' . $s_page . '</p>' . "\n";
+	} else if ($count > PLUGIN_INCLUDE_MAX) {
+		return '<p class="alert alert-warning">#include(): Limit exceeded: ' . $link . '</p>' . "\n";
 	} else {
 		++$count;
 	}

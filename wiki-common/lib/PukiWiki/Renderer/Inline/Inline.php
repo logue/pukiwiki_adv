@@ -174,7 +174,7 @@ abstract class Inline
 				($isautolink === true ? ' class="autolink"' : '') . '>' . $anchor_name  . '</a>';
 		} else {
 			// Dangling link
-			if (Auth::check_role('readonly')) return $s_alias; // No dacorations
+			if (Auth::check_role('readonly')) return Utility::htmlsc($alias); // No dacorations
 
 			$retval = $anchor_name . '<a href="' . $wiki->uri('edit', (empty($refer) ? null : array('refer'=>$refer)) ) . '" rel="nofollow">' .$_symbol_noexists . '</a>';
 

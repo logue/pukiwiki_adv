@@ -83,7 +83,7 @@ class Wiki{
 	/**
 	 * 見出しID
 	 */
-	public $id;
+	public $id = null;
 	/**
 	 * weblogUpdates Ping送信サイクル
 	 */
@@ -100,9 +100,17 @@ class Wiki{
 	/**
 	 * コンストラクタ
 	 */
-	public function __construct($page, $id = null){
-		$this->id = $id;
-		$this->page = $page;
+	public function __construct($page){
+		// page#idという形式で入力が合った場合、ページ名とIDで分割する
+		if (strpos($page, '#') !== false) {
+			// #の手前をWikiページとして処理
+			$this->page = strtok($page, '#');
+			// #以降をidとする。
+			$this->id = substr(strrchr($page, '#'),1);
+		}else{
+			// 通常動作
+			$this->page = $page;
+		}
 		// 以下はSplFileInfoの派生クラス
 		$this->wiki = FileFactory::Wiki($this->page);
 		

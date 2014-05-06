@@ -308,8 +308,10 @@ class ShowRSS_html_menubar extends ShowRSS_html
 			$retval[] = $body;
 			$retval[] = '</ul>' . isset($this->title) ? '</div>' : '';
 		}else{
-			$desc = $line['desc'] ? mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['desc'])), 0, 255, '...').get_passage($line['date']) : get_passage($line['date']);
-			$title = ($this->url) ? 
+			$desc = isset($line['desc']) ?
+				mb_strimwidth(preg_replace("/[\r\n]/", ' ', strip_tags($line['desc'])), 0, 255, '...'). get_passage($line['date']) : 
+				(isset($line['date']) ? get_passage($line['date']) : null);
+			$title = isset($this->url) ? 
 				'<a href="' . $this->url . '" title="' .$desc . '" rel="external">' . $this->title . '</a>' :
 				'<span title="'.$desc.'">' . $this->title . '</span>';
 			$retval[] = '<h4>'.$title.'</h4>';
