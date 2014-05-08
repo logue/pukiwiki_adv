@@ -1,4 +1,4 @@
-/**
+/*!
  * PukiWiki Advance - Yet another WikiWikiWeb clone.
  * Pukiwiki skin script for jQuery
  * Copyright (c)2010-2013 PukiWiki Advance Developer Team
@@ -976,7 +976,13 @@ $.fn.bsbutton = bootstrapButton;
 					$this.dataTable({
 						bPaginate : pagenate,
 						sDom: (pagenate) ? '<"H"pi>tr<"F"lf>' : 'tr',
-						aaSorting: ! $this.data('filter') ? [] : $this.data('filter')
+						aaSorting: ! $this.data('filter') ? [] : $this.data('filter'),
+						aoColumnsDefs: [
+							{ sType: "natural" },
+							{ sType: "natural" },
+							{ sType: "natural" },
+							null
+						]
 					});
 				}
 			});

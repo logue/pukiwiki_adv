@@ -1,5 +1,5 @@
 /**!
-* TableSorter 2.15.13 - Client-side table sorting with ease!
+* TableSorter 2.16.4 - Client-side table sorting with ease!
 * @requires jQuery v1.2.6+
 *
 * Copyright (c) 2007 Christian Bach
@@ -24,7 +24,7 @@
 
 			var ts = this;
 
-			ts.version = "2.15.13";
+			ts.version = "2.16.4";
 
 			ts.parsers = [];
 			ts.widgets = [];
@@ -64,7 +64,8 @@
 
 				emptyTo          : 'bottom',   // sort empty cell to bottom, top, none, zero
 				stringTo         : 'max',      // sort strings in numerical column as max, min, top, bottom, zero
-				textExtraction   : 'simple',   // text extraction method/function - function(node, table, cellIndex){}
+				textExtraction   : 'basic',    // text extraction method/function - function(node, table, cellIndex){}
+				textAttribute    : 'data-text',// data-attribute that contains alternate cell text (used in textExtraction function)
 				textSorter       : null,       // choose overall or specific column sorter function(a, b, direction, table, columnIndex) [alt: ts.sortText]
 				numberSorter     : null,       // choose overall numeric sorter function(a, b, direction, maxColumnValue)
 
@@ -167,20 +168,19 @@
 			function getElementText(table, node, cellIndex) {
 				if (!node) { return ""; }
 				var c = table.config,
-					t = c.textExtraction, text = "";
-				if (t === "simple") {
-					if (c.supportsTextContent) {
-						text = node.textContent; // newer browsers support this
-					} else {
-						text = $(node).text();
-					}
+					t = c.textExtraction || '',
+					text = "";
+				if (t === "basic") {
+					// check data-attribute first
+					text = $(node).attr(c.textAttribute) || node.textContent || node.innerText || $(node).text() || "";
 				} else {
-					if (typeof t === "function") {
+					if (typeof(t) === "function") {
 						text = t(node, table, cellIndex);
-					} else if (typeof t === "object" && t.hasOwnProperty(cellIndex)) {
+					} else if (typeof(t) === "object" && t.hasOwnProperty(cellIndex)) {
 						text = t[cellIndex](node, table, cellIndex);
 					} else {
-						text = c.supportsTextContent ? node.textContent : $(node).text();
+						// previous "simple" method
+						text = node.textContent || node.innerText || $(node).text() || "";
 					}
 				}
 				return $.trim(text);
@@ -219,41 +219,49 @@
 				var c = table.config,
 					// update table bodies in case we start with an empty table
 					tb = c.$tbodies = c.$table.children('tbody:not(.' + c.cssInfoBlock + ')'),
-					rows, list, l, i, h, ch, p, time, parsersDebug = "";
-				if ( tb.length === 0) {
+					rows, list, l, i, h, ch, p, time, indx,
+					j = 0,
+					parsersDebug = "",
+					len = tb.length;
+				if ( len === 0) {
 					return c.debug ? log('Warning: *Empty table!* Not building a parser cache') : '';
 				} else if (c.debug) {
 					time = new Date();
 					log('Detecting parsers for each column');
 				}
-				rows = tb[0].rows;
-				if (rows[0]) {
-					list = [];
-					l = rows[0].cells.length;
-					for (i = 0; i < l; i++) {
-						// tons of thanks to AnthonyM1229 for working out the following selector (issue #74) to make this work in IE8!
-						// More fixes to this selector to work properly in iOS and jQuery 1.8+ (issue #132 & #174)
-						h = c.$headers.filter(':not([colspan])');
-						h = h.add( c.$headers.filter('[colspan="1"]') ) // ie8 fix
-							.filter('[data-column="' + i + '"]:last');
-						ch = c.headers[i];
-						// get column parser
-						p = ts.getParserById( ts.getData(h, ch, 'sorter') );
-						// empty cells behaviour - keeping emptyToBottom for backwards compatibility
-						c.empties[i] = ts.getData(h, ch, 'empty') || c.emptyTo || (c.emptyToBottom ? 'bottom' : 'top' );
-						// text strings behaviour in numerical sorts
-						c.strings[i] = ts.getData(h, ch, 'string') || c.stringTo || 'max';
-						if (!p) {
-							p = detectParserForColumn(table, rows, -1, i);
+				list = [];
+				while (j < len) {
+					rows = tb[j].rows;
+					if (rows[j]) {
+						l = rows[j].cells.length;
+						for (i = 0; i < l; i++) {
+							// tons of thanks to AnthonyM1229 for working out the following selector (issue #74) to make this work in IE8!
+							// More fixes to this selector to work properly in iOS and jQuery 1.8+ (issue #132 & #174)
+							h = c.$headers.filter(':not([colspan])');
+							h = h.add( c.$headers.filter('[colspan="1"]') ) // ie8 fix
+								.filter('[data-column="' + i + '"]:last');
+							// get headers option corrected index
+							indx = c.$headers.index(h);
+							ch = c.headers[indx];
+							// get column parser
+							p = ts.getParserById( ts.getData(h, ch, 'sorter') );
+							// empty cells behaviour - keeping emptyToBottom for backwards compatibility
+							c.empties[i] = ts.getData(h, ch, 'empty') || c.emptyTo || (c.emptyToBottom ? 'bottom' : 'top' );
+							// text strings behaviour in numerical sorts
+							c.strings[i] = ts.getData(h, ch, 'string') || c.stringTo || 'max';
+							if (!p) {
+								p = detectParserForColumn(table, rows, -1, i);
+							}
+							if (c.debug) {
+								parsersDebug += "column:" + i + "; parser:" + p.id + "; string:" + c.strings[i] + '; empty: ' + c.empties[i] + "\n";
+							}
+							list.push(p);
 						}
-						if (c.debug) {
-							parsersDebug += "column:" + i + "; parser:" + p.id + "; string:" + c.strings[i] + '; empty: ' + c.empties[i] + "\n";
-						}
-						list.push(p);
 					}
+					j += (list.length) ? len : 1;
 				}
 				if (c.debug) {
-					log(parsersDebug);
+					log(parsersDebug ? parsersDebug : "No parsers detected");
 					benchmark("Completed detecting parsers", time);
 				}
 				c.parsers = list;
@@ -261,72 +269,87 @@
 
 			/* utils */
 			function buildCache(table) {
-				var b = table.tBodies,
-				tc = table.config,
-				totalRows,
-				totalCells,
-				parsers = tc.parsers,
-				t, v, i, j, k, c, cols, cacheTime, colMax = [];
-				tc.cache = {};
+				var cc, t, v, i, j, k, $row, rows, cols, cacheTime,
+					totalRows, rowData, colMax,
+					c = table.config,
+					$tb = c.$table.children('tbody'),
+				parsers = c.parsers;
+				c.cache = {};
 				// if no parsers found, return - it's an empty table.
 				if (!parsers) {
-					return tc.debug ? log('Warning: *Empty table!* Not building a cache') : '';
+					return c.debug ? log('Warning: *Empty table!* Not building a cache') : '';
 				}
-				if (tc.debug) {
+				if (c.debug) {
 					cacheTime = new Date();
 				}
 				// processing icon
-				if (tc.showProcessing) {
+				if (c.showProcessing) {
 					ts.isProcessing(table, true);
 				}
-				for (k = 0; k < b.length; k++) {
-					tc.cache[k] = { row: [], normalized: [] };
+				for (k = 0; k < $tb.length; k++) {
+					colMax = []; // column max value per tbody
+					cc = c.cache[k] = {
+						normalized: [] // array of normalized row data; last entry contains "rowData" above
+						// colMax: #   // added at the end
+					};
+
 					// ignore tbodies with class name from c.cssInfoBlock
-					if (!$(b[k]).hasClass(tc.cssInfoBlock)) {
-						totalRows = (b[k] && b[k].rows.length) || 0;
-						totalCells = (b[k].rows[0] && b[k].rows[0].cells.length) || 0;
+					if (!$tb.eq(k).hasClass(c.cssInfoBlock)) {
+						totalRows = ($tb[k] && $tb[k].rows.length) || 0;
 						for (i = 0; i < totalRows; ++i) {
+							rowData = {
+								// order: original row order #
+								// $row : jQuery Object[]
+								child: [] // child row text (filter widget)
+							};
 							/** Add the table data to main data array */
-							c = $(b[k].rows[i]);
+							$row = $($tb[k].rows[i]);
+							rows = [ new Array(c.columns) ];
 							cols = [];
 							// if this is a child row, add it to the last row's children and continue to the next row
 							// ignore child row class, if it is the first row
-							if (c.hasClass(tc.cssChildRow) && i !== 0) {
-								tc.cache[k].row[tc.cache[k].row.length - 1] = tc.cache[k].row[tc.cache[k].row.length - 1].add(c);
+							if ($row.hasClass(c.cssChildRow) && i !== 0) {
+								t = cc.normalized.length - 1;
+								cc.normalized[t][c.columns].$row = cc.normalized[t][c.columns].$row.add($row);
 								// add "hasChild" class name to parent row
-								if (!c.prev().hasClass(tc.cssChildRow)) {
-									c.prev().addClass(ts.css.cssHasChild);
+								if (!$row.prev().hasClass(c.cssChildRow)) {
+									$row.prev().addClass(ts.css.cssHasChild);
 								}
+								// save child row content (un-parsed!)
+								rowData.child[t] = $.trim( $row[0].textContent || $row[0].innerText || $row.text() || "" );
 								// go to the next for loop
 								continue;
 							}
-							tc.cache[k].row.push(c);
-							for (j = 0; j < totalCells; ++j) {
+							rowData.$row = $row;
+							rowData.order = i; // add original row position to rowCache
+							for (j = 0; j < c.columns; ++j) {
 								if (typeof parsers[j] === 'undefined') {
-									if (tc.debug) {
-										log('No parser found for cell:', c[0].cells[j], 'does it have a header?');
+									if (c.debug) {
+										log('No parser found for cell:', $row[0].cells[j], 'does it have a header?');
 									}
 									continue;
 								}
-								t = getElementText(table, c[0].cells[j], j);
+								t = getElementText(table, $row[0].cells[j], j);
 								// allow parsing if the string is empty, previously parsing would change it to zero,
 								// in case the parser needs to extract data from the table cell attributes
-								v = parsers[j].format(t, table, c[0].cells[j], j);
+								v = parsers[j].format(t, table, $row[0].cells[j], j);
 								cols.push(v);
 								if ((parsers[j].type || '').toLowerCase() === "numeric") {
-									colMax[j] = Math.max(Math.abs(v) || 0, colMax[j] || 0); // determine column max value (ignore sign)
+									// determine column max value (ignore sign)
+									colMax[j] = Math.max(Math.abs(v) || 0, colMax[j] || 0);
 								}
 							}
-							cols.push(tc.cache[k].normalized.length); // add position for rowCache
-							tc.cache[k].normalized.push(cols);
+							// ensure rowData is always in the same location (after the last column)
+							cols[c.columns] = rowData;
+							cc.normalized.push(cols);
 						}
-						tc.cache[k].colMax = colMax;
+						cc.colMax = colMax;
 					}
 				}
-				if (tc.showProcessing) {
+				if (c.showProcessing) {
 					ts.isProcessing(table); // remove processing icon
 				}
-				if (tc.debug) {
+				if (c.debug) {
 					benchmark("Building cache for " + totalRows + " rows", cacheTime);
 				}
 			}
@@ -337,11 +360,11 @@
 					wo = c.widgetOptions,
 					b = table.tBodies,
 					rows = [],
-					c2 = c.cache,
-					r, n, totalRows, checkCell, $bk, $tb,
-					i, j, k, l, pos, appendTime;
+					cc = c.cache,
+					n, totalRows, $bk, $tb,
+					i, k, appendTime;
 				// empty table - fixes #206/#346
-				if (isEmptyObject(c2)) {
+				if (isEmptyObject(cc)) {
 					// run pager appender in case the table was just emptied
 					return c.appender ? c.appender(table, rows) :
 						table.isUpdating ? c.$table.trigger("updateComplete", table) : ''; // Fixes #532
@@ -354,19 +377,13 @@
 					if ($bk.length && !$bk.hasClass(c.cssInfoBlock)) {
 						// get tbody
 						$tb = ts.processTbody(table, $bk, true);
-						r = c2[k].row;
-						n = c2[k].normalized;
+						n = cc[k].normalized;
 						totalRows = n.length;
-						checkCell = totalRows ? (n[0].length - 1) : 0;
 						for (i = 0; i < totalRows; i++) {
-							pos = n[i][checkCell];
-							rows.push(r[pos]);
+							rows.push(n[i][c.columns].$row);
 							// removeRows used by the pager plugin; don't render if using ajax - fixes #411
 							if (!c.appender || (c.pager && (!c.pager.removeRows || !wo.pager_removeRows) && !c.pager.ajax)) {
-								l = r[pos].length;
-								for (j = 0; j < l; j++) {
-									$tb.append(r[pos][j]);
-								}
+								$tb.append(n[i][c.columns].$row);
 							}
 						}
 						// restore tbody
@@ -386,52 +403,6 @@
 				}
 			}
 
-			// computeTableHeaderCellIndexes from:
-			// http://www.javascripttoolbox.com/lib/table/examples.php
-			// http://www.javascripttoolbox.com/temp/table_cellindex.html
-			function computeThIndexes(t) {
-				var matrix = [],
-				lookup = {},
-				cols = 0, // determine the number of columns
-				trs = $(t).children('thead, tfoot').children('tr'), // children tr in tfoot - see issue #196 & #547
-				i, j, k, l, c, cells, rowIndex, cellId, rowSpan, colSpan, firstAvailCol, matrixrow;
-				for (i = 0; i < trs.length; i++) {
-					cells = trs[i].cells;
-					for (j = 0; j < cells.length; j++) {
-						c = cells[j];
-						rowIndex = c.parentNode.rowIndex;
-						cellId = rowIndex + "-" + $(c).index();
-						rowSpan = c.rowSpan || 1;
-						colSpan = c.colSpan || 1;
-						if (typeof(matrix[rowIndex]) === "undefined") {
-							matrix[rowIndex] = [];
-						}
-						// Find first available column in the first row
-						for (k = 0; k < matrix[rowIndex].length + 1; k++) {
-							if (typeof(matrix[rowIndex][k]) === "undefined") {
-								firstAvailCol = k;
-								break;
-							}
-						}
-						lookup[cellId] = firstAvailCol;
-						cols = Math.max(firstAvailCol, cols);
-						// add data-column
-						$(c).attr({ 'data-column' : firstAvailCol }); // 'data-row' : rowIndex
-						for (k = rowIndex; k < rowIndex + rowSpan; k++) {
-							if (typeof(matrix[k]) === "undefined") {
-								matrix[k] = [];
-							}
-							matrixrow = matrix[k];
-							for (l = firstAvailCol; l < firstAvailCol + colSpan; l++) {
-								matrixrow[l] = "x";
-							}
-						}
-					}
-				}
-				// may not be accurate if # header columns !== # tbody columns
-				t.config.columns = cols + 1; // add one because it's a zero-based index
-			}
-
 			function formatSortingOrder(v) {
 				// look for "d" in "desc" order; return true
 				return (/^d/i.test(v) || v === 1);
@@ -446,7 +417,8 @@
 				if (c.debug) {
 					time = new Date();
 				}
-				computeThIndexes(table);
+				// children tr in tfoot - see issue #196 & #547
+				c.columns = ts.computeColumnIndex( c.$table.children('thead, tfoot').children('tr') );
 				// add icon if cssIcon option exists
 				i = c.cssIcon ? '<i class="' + ( c.cssIcon === ts.css.icon ? ts.css.icon : c.cssIcon + ' ' + ts.css.icon ) + '"></i>' : '';
 				c.$headers = $(table).find(c.selectorHeaders).each(function(index) {
@@ -519,33 +491,33 @@
 			}
 
 			function setHeadersCss(table) {
-				var f, i, j, l,
+				var f, i, j,
 					c = table.config,
 					list = c.sortList,
+					len = list.length,
 					none = ts.css.sortNone + ' ' + c.cssNone,
 					css = [ts.css.sortAsc + ' ' + c.cssAsc, ts.css.sortDesc + ' ' + c.cssDesc],
 					aria = ['ascending', 'descending'],
 					// find the footer
-					$t = $(table).find('tfoot tr').children().removeClass(css.join(' '));
+					$t = $(table).find('tfoot tr').children().add(c.$extraHeaders).removeClass(css.join(' '));
 				// remove all header information
 				c.$headers
 					.removeClass(css.join(' '))
 					.addClass(none).attr('aria-sort', 'none');
-				l = list.length;
-				for (i = 0; i < l; i++) {
+				for (i = 0; i < len; i++) {
 					// direction = 2 means reset!
 					if (list[i][1] !== 2) {
 						// multicolumn sorting updating - choose the :last in case there are nested columns
-						f = c.$headers.not('.sorter-false').filter('[data-column="' + list[i][0] + '"]' + (l === 1 ? ':last' : '') );
+						f = c.$headers.not('.sorter-false').filter('[data-column="' + list[i][0] + '"]' + (len === 1 ? ':last' : '') );
 						if (f.length) {
 							for (j = 0; j < f.length; j++) {
 								if (!f[j].sortDisabled) {
 									f.eq(j).removeClass(none).addClass(css[list[i][1]]).attr('aria-sort', aria[list[i][1]]);
-									// add sorted class to footer, if it exists
-									if ($t.length) {
-										$t.filter('[data-column="' + list[i][0] + '"]').eq(j).addClass(css[list[i][1]]);
-									}
 								}
+							}
+							// add sorted class to footer & extra headers, if they exist
+							if ($t.length) {
+								$t.filter('[data-column="' + list[i][0] + '"]').removeClass(none).addClass(css[list[i][1]]);
 							}
 						}
 					}
@@ -574,7 +546,7 @@
 				}
 			}
 
-			function updateHeaderSortCount(table, list) {
+			function updateHeaderSortCount(table, list, triggered) {
 				var s, t, o, c = table.config,
 					sl = list || c.sortList;
 				c.sortList = [];
@@ -582,10 +554,11 @@
 					// ensure all sortList values are numeric - fixes #127
 					s = [ parseInt(v[0], 10), parseInt(v[1], 10) ];
 					// make sure header exists
-					o = c.$headers[s[0]];
+					o = c.$headers.filter('[data-column="' + s[0] + '"]:last')[0];
 					if (o) { // prevents error if sorton array is wrong
 						c.sortList.push(s);
 						t = $.inArray(s[1], o.order); // fixes issue #167
+						if (triggered) { o.count = o.count + 1; }
 						o.count = t >= 0 ? t : s[1] % (c.sortReset ? 3 : 2);
 					}
 				});
@@ -655,7 +628,7 @@
 						// reverse the sorting direction
 						for (col = 0; col < c.sortList.length; col++) {
 							s = c.sortList[col];
-							order = c.$headers[s[0]];
+							order = c.$headers.filter('[data-column="' + s[0] + '"]:last')[0];
 							if (s[0] === indx) {
 								// order.count seems to be incorrect when compared to cell.count
 								s[1] = order.order[cell.count];
@@ -701,8 +674,8 @@
 
 			// sort multiple columns
 			function multisort(table) { /*jshint loopfunc:true */
-				var i, k, num, col, colMax, cache, lc,
-					order, orgOrderCol, sortTime, sort, x, y,
+				var i, k, num, col, sortTime, colMax,
+					cache, order, sort, x, y,
 					dir = 0,
 					c = table.config,
 					cts = c.textSorter || '',
@@ -716,8 +689,7 @@
 				for (k = 0; k < bl; k++) {
 					colMax = c.cache[k].colMax;
 					cache = c.cache[k].normalized;
-					lc = cache.length;
-					orgOrderCol = (cache && cache[0]) ? cache[0].length - 1 : 0;
+
 					cache.sort(function(a, b) {
 						// cache is undefined here in IE, so don't use it!
 						for (i = 0; i < l; i++) {
@@ -727,7 +699,7 @@
 							dir = order === 0;
 
 							if (c.sortStable && a[col] === b[col] && l === 1) {
-								return a[orgOrderCol] - b[orgOrderCol];
+								return a[c.columns].order - b[c.columns].order;
 							}
 
 							// fallback to natural sort since it is more robust
@@ -761,7 +733,7 @@
 							}
 							if (sort) { return sort; }
 						}
-						return a[orgOrderCol] - b[orgOrderCol];
+						return a[c.columns].order - b[c.columns].order;
 					});
 				}
 				if (c.debug) { benchmark("Sorting on " + sortList.toString() + " and dir " + order + " time", sortTime); }
@@ -772,7 +744,7 @@
 				if (table.isUpdating) {
 					$table.trigger('updateComplete');
 				}
-				if (typeof callback === "function") {
+				if ($.isFunction(callback)) {
 					callback($table[0]);
 				}
 			}
@@ -786,8 +758,8 @@
 						resortComplete($table, callback);
 					}, true]);
 				} else {
-					$table.trigger('applyWidgets');
 					resortComplete($table, callback);
+					ts.applyWidget($table[0], false);
 				}
 			}
 
@@ -797,12 +769,15 @@
 				// apply easy methods that trigger bound events
 				$table
 				.unbind('sortReset update updateRows updateCell updateAll addRows updateComplete sorton appendCache updateCache applyWidgetId applyWidgets refreshWidgets destroy mouseup mouseleave '.split(' ').join(c.namespace + ' '))
-				.bind("sortReset" + c.namespace, function(e){
+				.bind("sortReset" + c.namespace, function(e, callback){
 					e.stopPropagation();
 					c.sortList = [];
 					setHeadersCss(table);
 					multisort(table);
 					appendToTable(table);
+					if ($.isFunction(callback)) {
+						callback(table);
+					}
 				})
 				.bind("updateAll" + c.namespace, function(e, resort, callback){
 					e.stopPropagation();
@@ -810,7 +785,7 @@
 					ts.refreshWidgets(table, true, true);
 					ts.restoreHeaders(table);
 					buildHeaders(table);
-					ts.bindEvents(table, c.$headers);
+					ts.bindEvents(table, c.$headers, true);
 					bindMethods(table);
 					commonUpdate(table, resort, callback);
 				})
@@ -826,20 +801,24 @@
 					table.isUpdating = true;
 					$table.find(c.selectorRemove).remove();
 					// get position from the dom
-					var l, row, icell,
+					var v, row, icell,
 					$tb = $table.find('tbody'),
+					$cell = $(cell),
 					// update cache - format: function(s, table, cell, cellIndex)
 					// no closest in jQuery v1.2.6 - tbdy = $tb.index( $(cell).closest('tbody') ),$row = $(cell).closest('tr');
-					tbdy = $tb.index( $(cell).parents('tbody').filter(':first') ),
-					$row = $(cell).parents('tr').filter(':first');
-					cell = $(cell)[0]; // in case cell is a jQuery object
+					tbdy = $tb.index( $.fn.closest ? $cell.closest('tbody') : $cell.parents('tbody').filter(':first') ),
+					$row = $.fn.closest ? $cell.closest('tr') : $cell.parents('tr').filter(':first');
+					cell = $cell[0]; // in case cell is a jQuery object
 					// tbody may not exist if update is initialized while tbody is removed for processing
 					if ($tb.length && tbdy >= 0) {
 						row = $tb.eq(tbdy).find('tr').index( $row );
-						icell = $(cell).index();
-						l = c.cache[tbdy].normalized[row].length - 1;
-						c.cache[tbdy].row[ c.cache[tbdy].normalized[row][l] ] = $row;
-						c.cache[tbdy].normalized[row][icell] = c.parsers[icell].format( getElementText(table, cell, icell), table, cell, icell );
+						icell = $cell.index();
+						c.cache[tbdy].normalized[row][c.columns].$row = $row;
+						v = c.cache[tbdy].normalized[row][icell] = c.parsers[icell].format( getElementText(table, cell, icell), table, cell, icell );
+						if ((c.parsers[icell].type || '').toLowerCase() === "numeric") {
+							// update column max value (ignore sign)
+							c.cache[tbdy].colMax[icell] = Math.max(Math.abs(v) || 0, c.cache[tbdy].colMax[icell] || 0);
+						}
 						checkResort($table, resort, callback);
 					}
 				})
@@ -851,26 +830,35 @@
 						updateHeader(table);
 						commonUpdate(table, resort, callback);
 					} else {
-						var i, j,
+						$row = $($row); // make sure we're using a jQuery object
+						var i, j, l, rowData, cells,
 						rows = $row.filter('tr').length,
-						dat = [], l = $row[0].cells.length,
 						tbdy = $table.find('tbody').index( $row.parents('tbody').filter(':first') );
 						// fixes adding rows to an empty table - see issue #179
-						if (!c.parsers) {
+						if (!(c.parsers && c.parsers.length)) {
 							buildParserCache(table);
 						}
 						// add each row
 						for (i = 0; i < rows; i++) {
+							l = $row[i].cells.length;
+							cells = [];
+							rowData = {
+								child: [],
+								$row : $row.eq(i),
+								order: c.cache[tbdy].normalized.length
+							};
 							// add each cell
 							for (j = 0; j < l; j++) {
-								dat[j] = c.parsers[j].format( getElementText(table, $row[i].cells[j], j), table, $row[i].cells[j], j );
+								cells[j] = c.parsers[j].format( getElementText(table, $row[i].cells[j], j), table, $row[i].cells[j], j );
+								if ((c.parsers[j].type || '').toLowerCase() === "numeric") {
+									// update column max value (ignore sign)
+									c.cache[tbdy].colMax[j] = Math.max(Math.abs(cells[j]) || 0, c.cache[tbdy].colMax[j] || 0);
+								}
 							}
-							// add the row index to the end
-							dat.push(c.cache[tbdy].row.length);
+							// add the row data to the end
+							cells.push(rowData);
 							// update cache
-							c.cache[tbdy].row.push([$row[i]]);
-							c.cache[tbdy].normalized.push(dat);
-							dat = [];
+							c.cache[tbdy].normalized.push(cells);
 						}
 						// resort using current settings
 						checkResort($table, resort, callback);
@@ -884,7 +872,7 @@
 					e.stopPropagation();
 					$table.trigger("sortStart", this);
 					// update header count index
-					updateHeaderSortCount(table, list);
+					updateHeaderSortCount(table, list, true);
 					// set css for headers
 					setHeadersCss(table);
 					// fixes #346
@@ -893,28 +881,27 @@
 					// sort the table and append it to the dom
 					multisort(table);
 					appendToTable(table, init);
-					$table
-						.trigger("sortEnd", this)
-						.trigger('applyWidgets');
-					if (typeof callback === "function") {
+					$table.trigger("sortEnd", this);
+					ts.applyWidget(table);
+					if ($.isFunction(callback)) {
 						callback(table);
 					}
 				})
 				.bind("appendCache" + c.namespace, function(e, callback, init) {
 					e.stopPropagation();
 					appendToTable(table, init);
-					if (typeof callback === "function") {
+					if ($.isFunction(callback)) {
 						callback(table);
 					}
 				})
 				.bind("updateCache" + c.namespace, function(e, callback){
 					// rebuild parsers
-					if (!c.parsers) {
+					if (!(c.parsers && c.parsers.length)) {
 						buildParserCache(table);
 					}
 					// rebuild the cache map
 					buildCache(table);
-					if (typeof callback === "function") {
+					if ($.isFunction(callback)) {
 						callback(table);
 					}
 				})
@@ -972,15 +959,13 @@
 				$.data(table, "tablesorter", c);
 				if (c.debug) { $.data( table, 'startoveralltimer', new Date()); }
 
-				// constants
-				c.supportsTextContent = $('<span>x</span>')[0].textContent === 'x';
 				// removing this in version 3 (only supports jQuery 1.7+)
 				c.supportsDataObject = (function(version) {
 					version[0] = parseInt(version[0], 10);
 					return (version[0] > 1) || (version[0] === 1 && parseInt(version[1], 10) >= 4);
 				})($.fn.jquery.split("."));
 				// digit sort text location; keeping max+/- for backwards compatibility
-				c.string = { 'max': 1, 'min': -1, 'max+': 1, 'max-': -1, 'zero': 0, 'none': 0, 'null': 0, 'top': true, 'bottom': false };
+				c.string = { 'max': 1, 'min': -1, 'emptyMin': 1, 'emptyMax': -1, 'zero': 0, 'none': 0, 'null': 0, 'top': true, 'bottom': false };
 				// add table theme class only if there isn't already one there
 				if (!/tablesorter\-/.test($table.attr('class'))) {
 					k = (c.theme !== '' ? ' tablesorter-' + c.theme : '');
@@ -1005,6 +990,8 @@
 					c.$table.attr('aria-labelledby', 'theCaption');
 				}
 				c.widgetInit = {}; // keep a list of initialized widgets
+				// change textExtraction via data-attribute
+				c.textExtraction = c.$table.attr('data-text-extraction') || c.textExtraction || 'basic';
 				// build headers
 				buildHeaders(table);
 				// fixate columns if the users supplies the fixedWidth option
@@ -1016,7 +1003,7 @@
 				// delayInit will delay building the cache until the user starts a sort
 				if (!c.delayInit) { buildCache(table); }
 				// bind all header events and methods
-				ts.bindEvents(table, c.$headers);
+				ts.bindEvents(table, c.$headers, true);
 				bindMethods(table);
 				// get sort list from jQuery data or metadata
 				// in jQuery < 1.4, an error occurs when calling $table.data()
@@ -1034,7 +1021,7 @@
 					setHeadersCss(table);
 					if (c.initWidgets) {
 						// apply widget format
-						ts.applyWidget(table);
+						ts.applyWidget(table, false);
 					}
 				}
 
@@ -1043,7 +1030,13 @@
 					$table
 					.unbind('sortBegin' + c.namespace + ' sortEnd' + c.namespace)
 					.bind('sortBegin' + c.namespace + ' sortEnd' + c.namespace, function(e) {
-						ts.isProcessing(table, e.type === 'sortBegin');
+						clearTimeout(c.processTimer);
+						ts.isProcessing(table);
+						if (e.type === 'sortBegin') {
+							c.processTimer = setTimeout(function(){
+								ts.isProcessing(table, true);
+							}, 500);
+						}
 					});
 				}
 
@@ -1055,6 +1048,52 @@
 				}
 				$table.trigger('tablesorter-initialized', table);
 				if (typeof c.initialized === 'function') { c.initialized(table); }
+			};
+
+			// computeTableHeaderCellIndexes from:
+			// http://www.javascripttoolbox.com/lib/table/examples.php
+			// http://www.javascripttoolbox.com/temp/table_cellindex.html
+			ts.computeColumnIndex = function(trs) {
+				var matrix = [],
+				lookup = {},
+				cols = 0, // determine the number of columns
+				i, j, k, l, $cell, cell, cells, rowIndex, cellId, rowSpan, colSpan, firstAvailCol, matrixrow;
+				for (i = 0; i < trs.length; i++) {
+					cells = trs[i].cells;
+					for (j = 0; j < cells.length; j++) {
+						cell = cells[j];
+						$cell = $(cell);
+						rowIndex = cell.parentNode.rowIndex;
+						cellId = rowIndex + "-" + $cell.index();
+						rowSpan = cell.rowSpan || 1;
+						colSpan = cell.colSpan || 1;
+						if (typeof(matrix[rowIndex]) === "undefined") {
+							matrix[rowIndex] = [];
+						}
+						// Find first available column in the first row
+						for (k = 0; k < matrix[rowIndex].length + 1; k++) {
+							if (typeof(matrix[rowIndex][k]) === "undefined") {
+								firstAvailCol = k;
+								break;
+							}
+						}
+						lookup[cellId] = firstAvailCol;
+						cols = Math.max(firstAvailCol, cols);
+						// add data-column
+						$cell.attr({ 'data-column' : firstAvailCol }); // 'data-row' : rowIndex
+						for (k = rowIndex; k < rowIndex + rowSpan; k++) {
+							if (typeof(matrix[k]) === "undefined") {
+								matrix[k] = [];
+							}
+							matrixrow = matrix[k];
+							for (l = firstAvailCol; l < firstAvailCol + colSpan; l++) {
+								matrixrow[l] = "x";
+							}
+						}
+					}
+				}
+				// may not be accurate if # header columns !== # tbody columns
+				return cols + 1; // add one because it's a zero-based index
 			};
 
 			// *** Process table ***
@@ -1100,10 +1139,13 @@
 				$(table)[0].config.$tbodies.empty();
 			};
 
-			ts.bindEvents = function(table, $headers){
+			ts.bindEvents = function(table, $headers, core){
 				table = $(table)[0];
 				var downTime,
-				c = table.config;
+					c = table.config;
+				if (core !== true) {
+					c.$extraHeaders = c.$extraHeaders ? c.$extraHeaders.add($headers) : $headers;
+				}
 				// apply event handling to headers and/or additional headers (stickyheaders, scroller, etc)
 				$headers
 				// http://stackoverflow.com/questions/5312849/jquery-find-self;
@@ -1124,7 +1166,7 @@
 					}
 					if (c.delayInit && isEmptyObject(c.cache)) { buildCache(table); }
 					// jQuery v1.2.6 doesn't have closest()
-					cell = /TH|TD/.test(this.tagName) ? this : $(this).parents('th, td')[0];
+					cell = $.fn.closest ? $(this).closest('th, td')[0] : /TH|TD/.test(this.tagName) ? this : $(this).parents('th, td')[0];
 					// reference original table headers and find the same cell
 					cell = c.$headers[ $headers.index( cell ) ];
 					if (!cell.sortDisabled) {
@@ -1165,6 +1207,11 @@
 				$h = $t.find('thead:first'),
 				$r = $h.find('tr.' + ts.css.headerRow).removeClass(ts.css.headerRow + ' ' + c.cssHeaderRow),
 				$f = $t.find('tfoot:first > tr').children('th, td');
+				if (removeClasses === false && $.inArray('uitheme', c.widgets) >= 0) {
+					// reapply uitheme classes, in case we want to maintain appearance
+					$t.trigger('applyWidgetId', ['uitheme']);
+					$t.trigger('applyWidgetId', ['zebra']);
+				}
 				// remove widget added rows, just in case
 				$h.find('tr').not($r).remove();
 				// disable tablesorter
@@ -1173,14 +1220,15 @@
 					.unbind('sortReset update updateAll updateRows updateCell addRows updateComplete sorton appendCache updateCache applyWidgetId applyWidgets refreshWidgets destroy mouseup mouseleave keypress sortBegin sortEnd '.split(' ').join(c.namespace + ' '));
 				c.$headers.add($f)
 					.removeClass( [ts.css.header, c.cssHeader, c.cssAsc, c.cssDesc, ts.css.sortAsc, ts.css.sortDesc, ts.css.sortNone].join(' ') )
-					.removeAttr('data-column');
+					.removeAttr('data-column')
+					.removeAttr('aria-label')
+					.attr('aria-disabled', 'true');
 				$r.find(c.selectorSort).unbind('mousedown mouseup keypress '.split(' ').join(c.namespace + ' '));
 				ts.restoreHeaders(table);
-				if (removeClasses !== false) {
-					$t.removeClass(ts.css.table + ' ' + c.tableClass + ' tablesorter-' + c.theme);
-				}
+				$t.toggleClass(ts.css.table + ' ' + c.tableClass + ' tablesorter-' + c.theme, removeClasses === false);
 				// clear flag in case the plugin is initialized again
 				table.hasInitialized = false;
+				delete table.config.cache;
 				if (typeof callback === 'function') {
 					callback(table);
 				}
@@ -1195,6 +1243,8 @@
 			};
 
 			// Natural sort - https://github.com/overset/javascript-natural-sort (date sorting removed)
+			// this function will only accept strings, or you'll see "TypeError: undefined is not a function"
+			// I could add a = a.toString(); b = b.toString(); but it'll slow down the sort overall
 			ts.sortNatural = function(a, b) {
 				if (a === b) { return 0; }
 				var xN, xD, yN, yD, xF, yF, i, mx,
@@ -1292,20 +1342,20 @@
 
 			// used when replacing accented characters during sorting
 			ts.characterEquivalents = {
-				"a" : "\u00e1\u00e0\u00e2\u00e3\u00e4\u0105\u00e5", // áàâãäąå
-				"A" : "\u00c1\u00c0\u00c2\u00c3\u00c4\u0104\u00c5", // ÁÀÂÃÄĄÅ
-				"c" : "\u00e7\u0107\u010d", // çćč
-				"C" : "\u00c7\u0106\u010c", // ÇĆČ
-				"e" : "\u00e9\u00e8\u00ea\u00eb\u011b\u0119", // éèêëěę
-				"E" : "\u00c9\u00c8\u00ca\u00cb\u011a\u0118", // ÉÈÊËĚĘ
-				"i" : "\u00ed\u00ec\u0130\u00ee\u00ef\u0131", // íìİîïı
-				"I" : "\u00cd\u00cc\u0130\u00ce\u00cf", // ÍÌİÎÏ
-				"o" : "\u00f3\u00f2\u00f4\u00f5\u00f6", // óòôõö
-				"O" : "\u00d3\u00d2\u00d4\u00d5\u00d6", // ÓÒÔÕÖ
-				"ss": "\u00df", // ß (s sharp)
-				"SS": "\u1e9e", // ẞ (Capital sharp s)
-				"u" : "\u00fa\u00f9\u00fb\u00fc\u016f", // úùûüů
-				"U" : "\u00da\u00d9\u00db\u00dc\u016e" // ÚÙÛÜŮ
+				"a" : "\u00e1\u00e0\u00e2\u00e3\u00e4\u0105\u00e5", // Ã¡Ã Ã¢Ã£Ã¤Ä…Ã¥
+				"A" : "\u00c1\u00c0\u00c2\u00c3\u00c4\u0104\u00c5", // ÃÃ€Ã‚ÃƒÃ„Ä„Ã…
+				"c" : "\u00e7\u0107\u010d", // Ã§Ä‡Ä
+				"C" : "\u00c7\u0106\u010c", // Ã‡Ä†ÄŒ
+				"e" : "\u00e9\u00e8\u00ea\u00eb\u011b\u0119", // Ã©Ã¨ÃªÃ«Ä›Ä™
+				"E" : "\u00c9\u00c8\u00ca\u00cb\u011a\u0118", // Ã‰ÃˆÃŠÃ‹ÄšÄ˜
+				"i" : "\u00ed\u00ec\u0130\u00ee\u00ef\u0131", // Ã­Ã¬Ä°Ã®Ã¯Ä±
+				"I" : "\u00cd\u00cc\u0130\u00ce\u00cf", // ÃÃŒÄ°ÃŽÃ
+				"o" : "\u00f3\u00f2\u00f4\u00f5\u00f6", // Ã³Ã²Ã´ÃµÃ¶
+				"O" : "\u00d3\u00d2\u00d4\u00d5\u00d6", // Ã“Ã’Ã”Ã•Ã–
+				"ss": "\u00df", // ÃŸ (s sharp)
+				"SS": "\u1e9e", // áºž (Capital sharp s)
+				"u" : "\u00fa\u00f9\u00fb\u00fc\u016f", // ÃºÃ¹Ã»Ã¼Å¯
+				"U" : "\u00da\u00d9\u00db\u00dc\u016e" // ÃšÃ™Ã›ÃœÅ®
 			};
 			ts.replaceAccents = function(s) {
 				var a, acc = '[', eq = ts.characterEquivalents;
@@ -1382,8 +1432,11 @@
 					wo = c.widgetOptions,
 					widgets = [],
 					time, w, wd;
+				// prevent numerous consecutive widget applications
+				if (init !== false && table.hasInitialized && (table.isApplyingWidgets || table.isUpdating)) { return; }
 				if (c.debug) { time = new Date(); }
 				if (c.widgets.length) {
+					table.isApplyingWidgets = true;
 					// ensure unique widget ids
 					c.widgets = $.grep(c.widgets, function(v, k){
 						return $.inArray(v, c.widgets) === k;
@@ -1419,6 +1472,9 @@
 						}
 					});
 				}
+				setTimeout(function(){
+					table.isApplyingWidgets = false;
+				}, 0);
 				if (c.debug) {
 					w = c.widgets.length;
 					benchmark("Completed " + (init === true ? "initializing " : "applying ") + w + " widget" + (w !== 1 ? "s" : ""), time);
@@ -1540,7 +1596,7 @@
 	ts.addParser({
 		id: "currency",
 		is: function(s) {
-			return (/^\(?\d+[\u00a3$\u20ac\u00a4\u00a5\u00a2?.]|[\u00a3$\u20ac\u00a4\u00a5\u00a2?.]\d+\)?$/).test((s || '').replace(/[+\-,. ]/g,'')); // £$€¤¥¢
+			return (/^\(?\d+[\u00a3$\u20ac\u00a4\u00a5\u00a2?.]|[\u00a3$\u20ac\u00a4\u00a5\u00a2?.]\d+\)?$/).test((s || '').replace(/[+\-,. ]/g,'')); // Â£$â‚¬Â¤Â¥Â¢
 		},
 		format: function(s, table) {
 			var n = ts.formatFloat((s || '').replace(/[^\w,. \-()]/g, ""), table);

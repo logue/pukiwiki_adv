@@ -31,18 +31,18 @@ define('ROOT_URI', dirname(__FILE__).DIRECTORY_SEPARATOR);
 
 // Directory definition
 // (Ended with a slash like '../path/to/pkwk/', or '')
-define('SITE_HOME',	ROOT_URI . '../../wiki-common/');
+define('SITE_HOME',	ROOT_URI . '../wiki-common/');
 
-// define('DATA_HOME',	'../../wiki-data/contents/');
+// define('DATA_HOME', ROOT_URI . '../../wiki-data/contents/');
 // define('DATA_HOME',	ROOT_URI . '../../data/');
-define('DATA_HOME',	'../../wiki-data/pukiwiki/');
+define('DATA_HOME', ROOT_URI . '../wiki-data/');
 
 define('WWW_HOME', '/');
-define('COMMON_URI', 'http://www.logue.be/');
+define('COMMON_URI', '/');
 
 // to absolute path
 // Do not change following lines
-define('LIB_DIR',	SITE_HOME . 'lib/');
+define('LIB_DIR',	SITE_HOME . 'lib' . DIRECTORY_SEPARATOR);
 require(LIB_DIR .	'main.php');
 
 /* End of file index.php */
