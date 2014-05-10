@@ -42,9 +42,9 @@ class ListContainer extends Element
 
 	public function canContain(& $obj)
 	{
-		//return (! is_a($obj, 'ListContainer')
+		//return ! is_a($obj, 'ListContainer')
 		return !($obj instanceof self)
-			|| ($this->tag == $obj->tag && $this->level == $obj->level);
+			|| ($this->tag === $obj->tag && $this->level === $obj->level);
 	}
 
 	public function setParent(& $parent)
@@ -63,7 +63,7 @@ class ListContainer extends Element
 			return $this->last = $this->last->insert($obj);
 		
 		// Break if no elements found (BugTrack/524)
-		if (count($obj->elements) == 1 && empty($obj->elements[0]->elements))
+		if (count($obj->elements) === 1 && empty($obj->elements[0]->elements))
 			return $this->last->parent; // up to ListElement
 
 		// Move elements

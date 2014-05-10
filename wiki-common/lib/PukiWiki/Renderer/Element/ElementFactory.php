@@ -40,7 +40,7 @@ class ElementFactory{
 	}
 	private static function & inline($text){
 		// Check the first letter of the line
-		if (substr($text, 0, 1) == '~') {
+		if (substr($text, 0, 1) === '~') {
 			$ret = new Paragraph(' ' . substr($text, 1));
 		} else {
 			$ret = new InlineElement($text);
@@ -66,7 +66,7 @@ class ElementFactory{
 		return $ret;
 	}
 	private static function & yTable(& $root, $text){
-		if ($text == ',') {
+		if ($text === ',') {
 			$ret = self::inline($text);
 		} else {
 			$ret = new YTable(explode(',', substr($text, 1)));
@@ -79,7 +79,7 @@ class ElementFactory{
 		if (preg_match('/^#([^\(\{]+)(?:\(([^\r]*)\))?(\{*)/', $text, $matches) && exist_plugin_convert($matches[1])) {
 			$len  = strlen($matches[3]);
 			$body = array();
-			if ($len == 0) {
+			if ($len === 0) {
 				$ret = new BlockPlugin($matches);   // Seems legacy block plugin
 			} else if (preg_match('/\{{' . $len . '}\s*\r(.*)\r\}{' . $len . '}/', $text, $body)) {
 				$matches[2] .= "\r" . $body[1] . "\r";

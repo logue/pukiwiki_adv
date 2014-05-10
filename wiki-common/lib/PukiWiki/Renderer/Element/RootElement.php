@@ -208,7 +208,9 @@ class RootElement extends Element
 		$anchor = '';
 
 		// Heading id (specified by users)
-		list($text, $id) = Rules::getHeading($text, FALSE); // Cut fixed-anchor from $text
+		
+		list($_text, $id, $level) = Rules::getHeading($text); // Cut fixed-anchor from $text
+		
 		if (empty($id)) {
 			// Not specified
 			$id     = $autoid;
@@ -217,8 +219,9 @@ class RootElement extends Element
 			//if ($fixed_heading_edited) $anchor .= " &edit(,$id);";
 			$anchor = ' &edit(,' . $id . ');';
 		}
+		//var_dump($text, $id, $level);
 
-		$text = ' ' . $text;
+		$text = ' ' . $_text;
 
 		// Add 'page contents' link to its heading
 		$this->contents_last = $this->contents_last->add(new ContentsList($text, $level, $id));
@@ -236,11 +239,12 @@ class RootElement extends Element
 	public function toString()
 	{
 		// #contents
-		return preg_replace_callback('/<#_contents_>/', array($this, 'replaceContents'), parent::toString()). "\n";
+		return preg_replace_callback('/<#_contents_>/', array(& $this, 'replaceContents'), parent::toString());
 	}
 
-	private function replaceContents($arr)
+	private function replaceContents()
 	{
+		
 		return '<div class="contents" id="contents_' . $this->id . '">' . "\n" .
 			$this->contents->toString() .
 			'</div>' . "\n";

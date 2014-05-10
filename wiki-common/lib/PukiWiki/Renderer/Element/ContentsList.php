@@ -14,26 +14,21 @@ namespace PukiWiki\Renderer\Element;
 
 use PukiWiki\Renderer\Element\ElementFactory;
 use PukiWiki\Renderer\Element\ListContainer;
-use PukiWiki\Text\Rules;
 
 class ContentsList extends ListContainer
 {
-	function __construct($text, $level, $id)
+	public function __construct($text, $level, $id)
 	{
-		// Reformatting $text
-		// A line started with "\n" means "preformatted" ... X(
-		Rules::getHeading($text);
-		$text = "\n" . '<a href="#' . $id . '"'. ((IS_MOBILE) ? ' data-ajax="false" data-anchor="' . $id . '"' : '') . '>' . $text . '</a>' . "\n";
-		parent::__construct('ul', 'li', '-', str_repeat('-', $level));
-		
-		$this->insert(ElementFactory::factory('InlineElement', null, $text));
+		$_text = '[[' . strip_tags($text) . '>#' . $id . ']]';
+		parent::__construct('ul', 'li', $level, $_text);
+		parent::insert(ElementFactory::factory('InlineElement', null, $_text));
 	}
 
-	function setParent(& $parent)
+	public function setParent(& $parent)
 	{
 		parent::setParent($parent);
 		$step   = $this->level;
-		if (isset($parent->parent) && ($parent->parent instanceof ListContainer)) {
+		if (isset($parent->parent) && ($parent->parent instanceof parent)) {
 			$step  -= $parent->parent->level;
 		}
 	}

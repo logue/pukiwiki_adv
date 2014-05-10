@@ -17,6 +17,8 @@ use PukiWiki\Renderer\RendererFactory;
 
 function plugin_contents_convert()
 {
+	return '<#_contents_>';
+	/*
 	global $vars;
 	$page = isset($vars['page']) ? $vars['page'] : null;
 	
@@ -30,6 +32,7 @@ function plugin_contents_convert()
 		$ret[] = str_repeat('-', $level).'[['.$anchor.'>#'.$id.']]';
 	}
 	return '<div class="contents">' . RendererFactory::factory($ret) . '</div>';
+	*/
 }
 /* End of file contents.inc.php */
 /* Location: ./wiki-common/plugin/contents.inc.php */

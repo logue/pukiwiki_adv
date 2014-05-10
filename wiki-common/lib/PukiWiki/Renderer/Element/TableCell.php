@@ -83,7 +83,10 @@ class TableCell extends Element
 
 		if (!empty($text) && $text{0} === '#') {
 			// Try using Div class for this $text
-			$obj = ($obj instanceof Paragraph) ? $obj->elements[0] : ElementFactory::factory('Div', $this, $text);
+			$obj = ElementFactory::factory('Div', $this, $text);
+			if ($obj instanceof Paragraph){
+				$obj = $obj->elements[0];
+			}
 		} else {
 			$obj = ElementFactory::factory('InlineElement', null, $text);
 		}
