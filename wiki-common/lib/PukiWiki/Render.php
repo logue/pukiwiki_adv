@@ -209,15 +209,6 @@ class Render{
 				$view->related = $this->getRelated();
 			}
 
-			// ステータスアイコン
-			if (!$this->wiki->isEditable(false, true)){
-				$this->status = '<span class="fa fa-ban" title="Not Editable"></span>';
-			}else if ($this->wiki->isFreezed()){
-				$this->status = '<span class="fa fa-lock" title="Freezed"></span>';
-			}else{
-				$this->status = '<span class="fa fa-pencil-square" title="Editable"></span>';
-			}
-
 			// ノート
 			global $foot_explain;
 			ksort($foot_explain, SORT_NUMERIC);
@@ -242,6 +233,18 @@ class Render{
 			}
 		}else{
 			$view->colums = View::CLASS_NO_COLUMS;
+		}
+		
+		// ステータスアイコン
+		$view->status = '';
+		if (!$this->wiki->isEditable()){
+			$this->view = '<span class="fa fa-ban" title="Not Editable"></span>';
+		}else if ($this->wiki->isFreezed()){
+			$this->view = '<span class="fa fa-lock" title="Freezed"></span>';
+		}else if (!$view->is_read){
+			$view->status = '<span class="fa fa-cog" title="Function mode"></span>';
+		}else{
+			$this->view = '<span class="fa fa-pencil-square" title="Editable"></span>';
 		}
 
 		// ナビバー

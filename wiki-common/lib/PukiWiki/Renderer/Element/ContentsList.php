@@ -5,10 +5,10 @@
  * @package   PukiWiki\Renderer\Element
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2013 PukiWiki Advance Developers Team
+ * @copyright 2013-2014 PukiWiki Advance Developers Team
  * @create    2013/01/26
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: ContentsList.php,v 1.0.0 2013/02/12 15:13:00 Logue Exp $
+ * @version   $Id: ContentsList.php,v 1.0.1 2014/05/12 20:04:00 Logue Exp $
  */
 namespace PukiWiki\Renderer\Element;
 
@@ -19,9 +19,8 @@ class ContentsList extends ListContainer
 {
 	public function __construct($text, $level, $id)
 	{
-		$_text = '[[' . strip_tags($text) . '>#' . $id . ']]';
-		parent::__construct('ul', 'li', $level, $_text);
-		parent::insert(ElementFactory::factory('InlineElement', null, $_text));
+		$_text = str_repeat('-', $level) . '[[' . strip_tags($text) . '>#' . $id . ']]';
+		parent::__construct('ul', 'li', '-', $_text);
 	}
 
 	public function setParent(& $parent)

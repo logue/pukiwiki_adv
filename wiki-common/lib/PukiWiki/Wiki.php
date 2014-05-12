@@ -130,6 +130,10 @@ class Wiki{
 
 		// 「編集時に認証する」が有効になっていない
 		if (!$edit_auth) return true;
+		
+		// ユーザ別の権限を読む
+		if (Auth::auth($this->page, 'edit', $authenticate)) return true;
+
 		// 無効なページ名
 		if (!$this->isValied()) return false;
 		// 編集できないページ
@@ -140,8 +144,7 @@ class Wiki{
 		if (Auth::check_role('readonly')) return false;	
 		// 凍結されている
 		if (!$ignole_freeze && $this->isFreezed()) return false;
-		// ユーザ別の権限を読む
-		if (Auth::auth($this->page, 'edit', $authenticate)) return true;
+		
 		return false;
 	}
 	/**

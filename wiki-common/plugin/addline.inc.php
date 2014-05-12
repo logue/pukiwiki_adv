@@ -29,6 +29,8 @@
 use PukiWiki\Auth\Auth;
 use PukiWiki\Config\Config;
 use PukiWiki\Factory;
+use PukiWiki\Utility;
+
 /////////////////////////////////////////////////
 // コメントを挿入する位置 1:欄の前 0:欄の後
 defined('ADDLINE_INS') or define('ADDLINE_INS', '1');
@@ -204,12 +206,19 @@ function plugin_addline_action()
 	{
 		return array( 
 			'msg' => $_addline_messages['error'],
-			'body' => sprintf($_addline_messages['config_notfound'], htmlsc($configname))
+			'body' => '<p class="alert alert-warning">' . sprintf($_addline_messages['config_notfound'], Utility::htmlsc($configname)) . '</p>'
 		);
 	}
 	$config->config_name = $configname;
-	$addline = join("\n", addline_get_source($config->page));
-	$addline = rtrim($addline);
+	$template = addline_get_source($config->page);
+	
+	if (!$template) {
+		return array( 
+			'msg' => $_addline_messages['error'],
+			'body' => '<p class="alert alert-warning">' . sprintf($_addline_messages['config_notfound'], Utility::htmlsc($config->page)) . '</p>'
+		);
+	}
+	$addline = rtrim(join("\n", $template));
 	if ( $block_plugin ){
 		$postdata = addline_block($addline,$postdata_old,$addline_no,$above);
 	} else {
@@ -295,6 +304,7 @@ function addline_inline($addline,$postdata_old,$addline_no,$above)
 function addline_get_source($page) // tracker.inc.phpのtracker_listから
 {
 	$wiki = Factory::Wiki($page);
+	if (!$wiki->has()) return false;
 	// 見出しの固有ID部を削除
 	$source = preg_replace('/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/m','$1$2',$wiki->get());
 	// #freezeを削除

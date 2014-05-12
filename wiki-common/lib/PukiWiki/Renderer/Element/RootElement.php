@@ -244,7 +244,7 @@ class RootElement extends Element
 
 	private function replaceContents()
 	{
-		
+		//print_r($this->contents);
 		return '<div class="contents" id="contents_' . $this->id . '">' . "\n" .
 			$this->contents->toString() .
 			'</div>' . "\n";
