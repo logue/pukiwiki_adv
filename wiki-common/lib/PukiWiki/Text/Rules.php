@@ -233,7 +233,6 @@ class Rules{
 		'&amp;\(heart\);'           => '<span class="fa fa-heart"></span>',
 		'&amp;\(heart-empty\);'     => '<span class="fa fa-heart-empty"></span>',
 		'&amp;\(home\);'            => '<span class="fa fa-home"></span>',
-		'&amp;\(hospital\);'        => '<span class="fa fa-hospital"></span>',
 		'&amp;\(h-sign\);'          => '<span class="fa fa-h-sign"></span>',
 		'&amp;\(html5\);'           => '<span class="fa fa-html5"></span>',
 		'&amp;\(inbox\);'           => '<span class="fa fa-inbox"></span>',

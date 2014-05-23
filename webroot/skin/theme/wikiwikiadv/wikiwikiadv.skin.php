@@ -30,7 +30,7 @@
 				<h1 id="title" style="display:none;"><?php echo $this->title ?></h1>
 				<?php echo $this->headarea; ?>
 <?php } ?>
-				<?php if ($this->conf['adarea']['header'] && !isset($header)) echo '<div id="ad" class="noprint">' . $this->conf['adarea']['header'] . '</div>'; ?>
+				<?php if ($this->conf['adarea']['header'] && !isset($header)) echo '<div id="ad" class="noprint pull-right">' . $this->conf['adarea']['header'] . '</div>'; ?>
 				
 			</header>
 <!-- *** End Header *** -->
@@ -49,8 +49,8 @@
 							<?php echo (!empty($this->lastmodified)) ? '<h2 id="lastmodified">Last-modified: '.$this->lastmodified.'</h2>'."\n" : '' ?>
 						</hgroup>
 
-						<div>
-							<section id="body" role="main">
+						<div id="body">
+							<section role="main">
 								<?php echo $this->body."\n" ?>
 							</section>
 <?php if (!empty($this->notes)) { ?>
@@ -62,6 +62,7 @@
 <!--  End Note -->
 <?php } ?>
 						</div>
+
 						<?php if (!empty($this->conf['adarea']['footer'])) echo '<div id="footer_adspace" class="noprint" style="text-align:center;">' . $this->conf['adarea']['footer'] . '</div>'; ?>
 					</div>
 <?php if ($this->colums === 'three-colums')  { ?>

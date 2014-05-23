@@ -237,14 +237,16 @@ class Render{
 		
 		// ステータスアイコン
 		$view->status = '';
-		if (!$this->wiki->isEditable()){
-			$this->view = '<span class="fa fa-ban" title="Not Editable"></span>';
-		}else if ($this->wiki->isFreezed()){
-			$this->view = '<span class="fa fa-lock" title="Freezed"></span>';
-		}else if (!$view->is_read){
-			$view->status = '<span class="fa fa-cog" title="Function mode"></span>';
+		if ($this->wiki || $vars['cmd'] === 'read') {
+			if (!$this->wiki->isEditable()){
+				$this->view = '<span class="fa fa-ban" title="Not Editable"></span>';
+			}else if ($this->wiki->isFreezed()){
+				$this->view = '<span class="fa fa-lock" title="Freezed"></span>';
+			}else{
+				$this->view = '<span class="fa fa-pencil-square" title="Editable"></span>';
+			}
 		}else{
-			$this->view = '<span class="fa fa-pencil-square" title="Editable"></span>';
+			$view->status = '<span class="fa fa-cog" title="Function mode"></span>';
 		}
 
 		// ナビバー

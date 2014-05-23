@@ -209,8 +209,10 @@ class RootElement extends Element
 
 		// Heading id (specified by users)
 		
-		list($_text, $id, $level) = Rules::getHeading($text); // Cut fixed-anchor from $text
+		list($_text, $id, $level) = Rules::getHeading($text, false); // Cut fixed-anchor from $text
 		
+		//var_dump(Rules::getHeading($text, false));
+
 		if (empty($id)) {
 			// Not specified
 			$id     = $autoid;
@@ -221,13 +223,11 @@ class RootElement extends Element
 		}
 		//var_dump($text, $id, $level);
 
-		$text = ' ' . $_text;
-
 		// Add 'page contents' link to its heading
-		$this->contents_last = $this->contents_last->add(new ContentsList($text, $level, $id));
+		$this->contents_last = $this->contents_last->add(new ContentsList($_text, $level, $id));
 
 		// Add heding
-		return array($text . $anchor, $this->count > 1 ? "\n" . $top : '', $autoid);
+		return array($_text . $anchor, $this->count > 1 ? "\n" . $top : '', $autoid);
 	}
 
 	public function insert(& $obj)

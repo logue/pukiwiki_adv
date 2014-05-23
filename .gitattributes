@@ -1,5 +1,11 @@
-*.sh        eol=lf
-*.js        eol=lf
-*.php       eol=lf
-*.bat       eol=crlf
-*.cmd       eol=crlf
+*.bat            eol=crlf
+*.cmd            eol=crlf
+*.css            eol=lf
+*.js             eol=lf
+*.php            eol=lf
+*.pot            eol=lf
+*.sh             eol=lf
+*.txt            eol=lf
+.gitignore       eol=lf
+.htaccess        eol=lf
+.gitattributes   eol=lf

@@ -1029,21 +1029,6 @@ table.dataTable {
 table.dataTable thead .sorting, table.dataTable thead .sorting_asc, table.dataTable thead .sorting_desc, table.dataTable thead .sorting_asc_disabled, table.dataTable thead .sorting_desc_disabled {
 	cursor: pointer;
 }
-table.dataTable thead .sorting {
-	background: url('../images/sort_both.png') no-repeat center right;
-}
-table.dataTable thead .sorting_asc {
-	background: url('../images/sort_asc.png') no-repeat center right;
-}
-table.dataTable thead .sorting_desc {
-	background: url('../images/sort_desc.png') no-repeat center right;
-}
-table.dataTable thead .sorting_asc_disabled {
-	background: url('../images/sort_asc_disabled.png') no-repeat center right;
-}
-table.dataTable thead .sorting_desc_disabled {
-	background: url('../images/sort_desc_disabled.png') no-repeat center right;
-}
 table.dataTable th:active {
 	outline: none;
 }
@@ -1155,6 +1140,20 @@ div.DTFC_RightBodyWrapper tbody tr:first-child th, div.DTFC_RightBodyWrapper tbo
 }
 div.DTFC_RightFootWrapper table, div.DTFC_LeftFootWrapper table {
 	border-top: none;
+}
+
+@media screen and (max-width: 767px) {
+  .dataTables_wrapper .dataTables_length,
+  .dataTables_wrapper .dataTables_filter,
+  .dataTables_wrapper .dataTables_info,
+  .dataTables_wrapper .dataTables_paginate {
+    float: none;
+    text-align: center;
+  }
+  .dataTables_wrapper .dataTables_filter,
+  .dataTables_wrapper .dataTables_paginate {
+    margin-top: 0.5em;
+  }
 }
 /* ==|== Google Search ====================================================== */
 #goog-fixurl ul {

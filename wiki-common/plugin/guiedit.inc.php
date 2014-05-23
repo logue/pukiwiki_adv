@@ -12,7 +12,7 @@
 //	PukiWiki : Copyright (C) 2001-2006 PukiWiki Developers Team
 //	FCKeditor : Copyright (C) 2003-2008 Frederico Caldeira Knabben
 //	PukiWiki Plus! : Copyright (C) 2009 Katsumi Saito
-//	PukiWiki Advance : Copyright (C) 2010 PukiWiki Advance Developers Team
+//	PukiWiki Advance : Copyright (C) 2010,2014 PukiWiki Advance Developers Team
 
 defined('GUIEDIT_CONF_PATH')  or define('GUIEDIT_CONF_PATH',  'guiedit/');
 defined('GUIEDIT_FULL_SIZE') or define('GUIEDIT_FULL_SIZE', 0);
@@ -21,7 +21,10 @@ define('PLUGIN_GUIEDIT_FREEZE_REGEX', '/^(?:#freeze(?!\w)\s*)+/im');
 use PukiWiki\Auth\Auth;
 use PukiWiki\File\WikiFile;
 use PukiWiki\Factory;
+use PukiWiki\Renderer\Header;
 use PukiWiki\Renderer\RendererFactory;
+use PukiWiki\Renderer\GuiEdit\Xhtml2WikiFactory;
+use PukiWiki\Utility;
 
 //	コマンド型プラグイン
 function plugin_guiedit_action()
@@ -30,11 +33,11 @@ function plugin_guiedit_action()
 	global $vars, $load_template_func;
 	global $menubar, $sidebar, $topicpath;
 
-	// if (PKWK_READONLY) die_message( sprintf($_string['error_prohibit'],'PKWK_READONLY') );
-	if (Auth::check_role('readonly')) die_message(  sprintf($_string['error_prohibit'],'PKWK_READONLY') );
+	// if (PKWK_READONLY) Utility::dieMessage( sprintf($_string['error_prohibit'],'PKWK_READONLY') );
+	if (Auth::check_role('readonly')) Utility::dieMessage(  sprintf($_string['error_prohibit'],'PKWK_READONLY') );
 
 	if (PKWK_READONLY == Auth::ROLE_AUTH && Auth::get_role_level() > Auth::ROLE_AUTH) {
-		die_message(  sprintf($_string['error_prohibit'],'PKWK_READONLY') );
+		Utility::dieMessage(  sprintf($_string['error_prohibit'],'PKWK_READONLY') );
 	}
 
     $page = isset($vars['page']) ? $vars['page'] : '';
@@ -42,11 +45,11 @@ function plugin_guiedit_action()
 	$wiki = Factory::Wiki($page);
 
 	if (! $wiki->isEditable()){
-		die_message('You have not permission to edit this page.');
+		Utility::dieMessage('You have not permission to edit this page.');
 	}
 
 	if (!is_page($page) && Auth::is_check_role(PKWK_CREATE_PAGE)) {
-		die_message( sprintf($_string['error_prohibit'],'PKWK_CREATE_PAGE') );
+		Utility::dieMessage( sprintf($_string['error_prohibit'],'PKWK_CREATE_PAGE') );
 	}
 
 	global $guiedit_use_fck;
@@ -74,8 +77,7 @@ function plugin_guiedit_action()
 		return plugin_guiedit_cancel();
 	}
 
-	$source = $wiki->source();
-	$postdata = $vars['original'] = join('', $source);
+	$postdata = $vars['original'] = $wiki->get(true);
 
 	if (isset($vars['text'])) {
 		if (! empty($vars['id'])) {
@@ -93,18 +95,13 @@ function plugin_guiedit_action()
 }
 
 function plugin_guiedit_send_ajax($postdata){
-	//	文字コードを UTF-8 に変換
-	//$postdata = mb_convert_encoding($postdata, 'UTF-8', SOURCE_ENCODING);
-
-	//	出力
-	pkwk_common_headers();
-	header("Content-Type: application/json; charset=".CONTENT_CHARSET);
-	echo json_encode(
+	$headers = Header::getHeaders('application/json');
+	Header::writeResponse($headers, 200, json_encode(
 		array(
 			'msg'		=> $postdata,
 			'taketime'	=> sprintf('%01.03f', getmicrotime() - MUTIME)
 		)
-	);
+	));
 	exit;
 }
 
@@ -126,15 +123,9 @@ function plugin_guiedit_edit_data($page)
 	if ($postdata == '') $postdata = Factory::Wiki($page)->auto_template();
 
 	//	構文の変換
-	$inc = include_once(GUIEDIT_CONF_PATH . 'wiki2xhtml.php');
-	if ($inc === false){
-		die_message('guiedit.inc.php : Cannot load Wiki2XHTML Libraly.');
-		$postdata = 'ERROR!';
-	}else{
-		$postdata = guiedit_convert_html($postdata);
-	}
+	$ret = RendererFactory::factory($postdata);
 
-	plugin_guiedit_send_ajax($postdata);
+	plugin_guiedit_send_ajax($ret);
 }
 
 //	テンプレート
@@ -161,7 +152,7 @@ function plugin_guiedit_template()
 	//	構文の変換
 	$inc = include_once(GUIEDIT_CONF_PATH . 'wiki2xhtml.php');
 	if ($inc === false){
-		die_message('guiedit.inc.php : Cannot load Wiki2XHTML Libraly.');
+		Utility::dieMessage('guiedit.inc.php : Cannot load Wiki2XHTML Libraly.');
 		$postdata = 'ERROR!';
 	}else{
 		$postdata = guiedit_convert_html($vars['msg']);
@@ -182,17 +173,7 @@ function plugin_guiedit_preview()
 	$_msg_preview_delete = _('(The contents of the page are empty. Updating deletes this page.)');
 
 	if ($guiedit_use_fck) {
-		//	構文の変換
-
-
-		//	構文の変換
-		$inc = include_once(GUIEDIT_CONF_PATH . 'xhtml2wiki.php');
-		if ($inc === false){
-			die_message('guiedit.inc.php : Cannot load XHTML2Wiki Libraly.');
-			$postdata = 'ERROR!';
-		}else{
-			$postdata = xhtml2wiki($vars['msg']);
-		}
+		$postdata = Xhtml2WikiFactory::factory($vars['msg']);
 	}
 
 	if ($postdata) {
@@ -222,8 +203,7 @@ function plugin_guiedit_preview()
 
 	//	通常の編集フォーム
 	if (DEBUG) {
-		global $hr;
-		$postdata .= $hr . edit_form($vars['page'], $vars['msg']);
+		$postdata .= '<hr />' . Utility::editForm($vars['page'], $vars['msg']);
 	}
 
 	plugin_guiedit_send_ajax($postdata);
@@ -234,21 +214,17 @@ function plugin_guiedit_write()
 {
 	global $vars;
 	global $guiedit_use_fck;
+	
+	if (!isset($vars['page'])) Utility::dieMessage('Pagename is missing!');
 
 	if ($guiedit_use_fck) {
-		$inc = include_once(GUIEDIT_CONF_PATH . 'xhtml2wiki.php');
-		if ($inc === false){
-			die_message('guiedit.inc.php : Cannot load XHTML2Wiki Libraly.');
-		}else{
-			$vars['msg'] = xhtml2wiki($vars['msg']);
-
-		}
+		$vars['msg'] = Xhtml2WikiFactory::factory($vars['msg']);
 	}
 
 	if (isset($vars['id']) && $vars['id']) {
 		$source = preg_split('/([^\n]*\n)/', $vars['original'], -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 		if (plugin_guiedit_parts($vars['id'], $source, $vars['msg']) !== FALSE) {
-			$vars['msg'] = join('', $source);
+			$vars['msg'] = join("\n", $source);
 		}
 		else {
 			$vars['msg'] = rtrim($vars['original']) . "\n\n" . $vars['msg'];
@@ -263,15 +239,15 @@ function plugin_guiedit_write()
 //	キャンセル
 function plugin_guiedit_cancel()
 {
-	global $vars;
-
-	$location = 'Location: ' . get_script_uri() . '?' . rawurlencode($vars['page']);
+	global $vars, $defaultpage;
+	
+	$page = isset($vars['page']) ? $vars['page'] : $defaultpage;
+	
+	$location = Factory::Wiki($page)->uri();
 	if (!empty($vars['id'])) {
 		$location .= '#' . $vars['id'];
 	}
-
-	pkwk_headers_sent();
-	header($location);
+	Utility::redirect($location);
 	exit;
 }
 
@@ -290,7 +266,7 @@ function plugin_guiedit_edit_form($page, $postdata, $digest = FALSE, $b_template
 	// Newly generate $digest or not
 	if ($digest === FALSE) $digest = md5(get_source($page, TRUE, TRUE));
 
-	$s_id  = isset($vars['id']) ? htmlspecialchars($vars['id']) : '';
+	$s_id  = isset($vars['id']) ? Utility::htmlsc($vars['id']) : '';
 
 	if (!$guiedit_use_fck) {
 		$body = edit_form($page, $postdata, $digest, $b_template);
@@ -306,9 +282,9 @@ function plugin_guiedit_edit_form($page, $postdata, $digest = FALSE, $b_template
 	require_once(GUIEDIT_CONF_PATH . 'guiedit.ini.php');
 
 	//	フォームの値の設定
-	$s_digest    = htmlspecialchars($digest);
-	$s_page      = htmlspecialchars($page);
-	$s_original  = htmlspecialchars($vars['original']);
+	$s_digest    = Utility::htmlsc($digest);
+	$s_page      = Utility::htmlsc($page);
+	$s_original  = Utility::htmlsc($vars['original']);
 	$s_ticket    = md5(MUTIME);
 	if (function_exists('pkwk_session_start') && pkwk_session_start() != 0) {
 		// BugTrack/95 fix Problem: browser RSS request with session
@@ -329,7 +305,7 @@ function plugin_guiedit_edit_form($page, $postdata, $digest = FALSE, $b_template
 				if ($pos !== FALSE && $pos == 0)
 					continue 2;
 			}
-			$_s_page = htmlspecialchars($_page);
+			$_s_page = Utility::htmlsc($_page);
 			$pages[$_page] = '		<option value="' . $_s_page . '">' . $_s_page . '</option>';
 		}
 		ksort($pages);
@@ -371,23 +347,24 @@ EOD;
 		<input type="hidden" name="ticket" value="$s_ticket" />
 		<input type="hidden" name="id"     value="$s_id" />
 		<textarea name="original" rows="1" cols="1" style="display:none">$s_original</textarea>
-		<textarea name="msg" rows="1" cols="1" style="display:none"></textarea>
-		<div style="float:left;">
-		<button type="submit" name="write"   accesskey="s">{$_button['update']}</button>
-		<button type="button" name="preview" accesskey="p">{$_button['preview']}</button>
+		<textarea name="msg" id="editor"></textarea>
+		<div class="pull-left">
+		<button type="submit" name="write"   accesskey="s" class="btn btn-primary">{$_button['update']}</button>
+		<button type="button" name="preview" accesskey="p" class="btn btn-default">{$_button['preview']}</button>
 		$add_notimestamp
 		</div>
 	</form>
-	<form action="$script" method="post" style="margin-top:0px;">
+	<form action="$script" method="post">
 		<input type="hidden" name="cmd"    value="guiedit" />
 		<input type="hidden" name="page"   value="$s_page" />
-		<input type="submit" name="cancel" value="{$_button['cancel']}" accesskey="c" />
+		<input type="submit" name="cancel" value="{$_button['cancel']}" class="btn btn-warning" accesskey="c" />
 	</form>
 </div>
 EOD;
-	$js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/plugin/guiedit/ckeditor/ckeditor.js');
-	$js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/plugin/guiedit/ckeditor/adapters/jquery.js');
-	$js_tags[] = array('type'=>'text/javascript', 'src'=>SKIN_URI.'js/plugin/guiedit/ckeditor4pukiwiki.js');
+	$js_tags[] = array('type'=>'text/javascript', 'src'=>COMMON_URI.'js/ckeditor/ckeditor.js', 'defer'=>'defer');
+	$js_tags[] = array('type'=>'text/javascript', 'src'=>COMMON_URI.'js/ckeditor/adapters/jquery.js', 'defer'=>'defer');
+	$js_tags[] = array('type'=>'text/javascript', 'src'=>COMMON_URI.'js/plugin/guiedit/guiedit.js', 'defer'=>'defer');
+
 	return $body;
 }
 

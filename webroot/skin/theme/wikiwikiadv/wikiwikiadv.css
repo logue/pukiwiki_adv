@@ -65,6 +65,7 @@ h1, h2, h3, h4, h5, h6{
 	border-bottom:1px solid;
 	vertical-align:bottom;
 	background-color:rgba(255, 255, 255, .9);
+	font-size:1.2em;
 }
 
 h1{
@@ -78,7 +79,6 @@ h1{
 
 h2{
 	letter-spacing:0.15em;
-	font-size:100%;
 	color:black;
 	background-color:#dddddd;
 	margin:.2em -19px .5em -19px;
@@ -91,7 +91,6 @@ h2{
 
 h3{
 	letter-spacing:0.15em;
-	font-size:100%;
 	color:black;
 	background-color:transparent;
 	margin:.2em -19px .5em -19px;
@@ -105,7 +104,6 @@ h3{
 
 h4, h5, h6{
 	letter-spacing:0.15em;
-	font-size:100%;
 	color:black;
 	background-color:transparent;
 	margin:.2em -19px .5em -19px;
@@ -346,8 +344,12 @@ pre{
 #title{
 	background-color: #F5F5F5;
 	border: 1px solid #E1E1E1;
-	margin: 0 0.5em;
-	padding: 0.5em;
+	margin: 0 .5em .5em .5em;
+	padding: .5em;
+}
+
+#body{
+	margin: 0 .5em;
 }
 
 #title h1{
@@ -461,8 +463,11 @@ pre{
 }
 
 #menubar ul, #sidebar ul{
-	margin: 0 0 0 .5em;
 	padding: .1em 0 .1em 1.5em;
+}
+
+#menubar ul.list-unstyled, #sidebar ul.list-unstyled{
+	padding-left: 0;
 }
 
 #menubar ul li .noexists, #menubar ul li a,
@@ -490,9 +495,11 @@ pre{
 
 #sidebar h1, #sidebar h2, #sidebar h3, #sidebar h4, #sidebar h5, #sidebar h6{
 	margin:0 0 4px 0;
-	padding:4px;
-	border: 1px black solid;
-	text-align:center;
+}
+
+#menubar h1 a, #menubar h2 a, #menubar h3 a, #menubar h4 a, #menubar h5 a, #menubar h6 a,
+#sidebar h1 a, #sidebar h2 a, #sidebar h3 a, #sidebar h4 a, #sidebar h5 a, #sidebar h6 a{
+	color:white;
 }
 
 /* Hack calendar */
@@ -520,56 +527,12 @@ pre{
 	background-color:#A0FFFF;
 }
 
-/* recent.inc.php,showrss.inc.php */
-.recent_list{
-	padding:0px 0px 0px .5em;
-	margin:0px 0px 0px .5em;
-	border:0px;
-	word-wrap:break-word;
-	word-break:break-all;
-}
-.recent_list li{
-	line-height:110%;
-}
-
-/* week text color */
-.week_sat{
-	color:blue;
-}
-.week_day {
-/*	color:black;	*/
-}
-.week_sun, .week_holiday {
-	color:red;
-}
-
-/* diff.inc.php */
-.diff_added{
-	color:blue;
-	background-color:inherit;
-}
-
-.diff_removed{
-	color:red;
-	background-color:inherit;
-}
-
-/* new.inc.php */
-.new1{
-	color:red;
-	background-color:transparent;
-}
-.new5{
-	color:green;
-	background-color:transparent;
-}
-
 /* tooltip.inc.php */
-.tooltip, .linktip{
+abbr{
 	color: #006565;
 }
 
-.tooltip:hover, .linktip:hover{
+abbr:hover{
 	background-color: #e1ffe4;
 }
 
@@ -581,92 +544,6 @@ pre{
 	padding:0 1%;
 }
 
-/* suckerfish.inc.php */
-.sf-menu {
-	/* These settings are recommended to specify an absolute value. */
-	font-size:13px !important;
-	line-height:16px !important;
-	height:23px;
-	
-	text-shadow:none;
-	width: 100%;
-	
-	clear:both;
-	white-space: nowrap;
-	
-	border: 1px dimgray solid;
-	color: white;
-	background-color: grey;
-}
-
-.sf-menu ul{
-	width: 171px; /* left offset of submenus need to match (see below) */
-	
-	background-color: grey;
-	border: 1px dimgray solid;
-}
-
-.sf-menu li {
-	border: 1px grey solid;
-}
-
-.sf-menu ul li {
-	width: 12em;
-}
-
-.sf-menu li:hover ul,
-.sf-menu li.sfHover ul {
-	left:			-2px;
-	top:			22px; /* match top ul list item height */
-}
-
-.sf-menu li li:hover ul,
-.sf-menu li li.sfHover ul,
-.sf-menu li li li:hover ul,
-.sf-menu li li li.sfHover ul {
-	left:			12em; /* match ul width */
-}
-
-.sf-menu li {
-	padding: 2px 0.5em;
-}
-
-.sf-menu li ul li:hover, .sf-menu li ul li.sfHover,
-.sf-menu a:focus, .sf-menu a:hover, .sf-menu a:active {
-	text-decoration: none;
-}
-
-/* Link color */
-.sf-menu a, .sf-menu a:link {
-	color: white !important;
-	font-weight: bold;
-	text-decoration: none;
-}
-.sf-menu a:visited  { /* visited pseudo selector so IE6 applies text colour*/
-	color: white !important;
-	text-decoration: none;
-}
-
-.sf-menu a:active  {
-	text-decoration: none;
-}
-
-.sf-menu .noexists {
-	background-color:transparent;
-}
-
-.sf-menu li:hover, .sf-menu li.sfHover{
-	color: black !important;
-	background-color: silver;
-	border: 1px white solid;
-}
-
-.sf-menu li ul li:hover, .sf-menu li ul li.sfHover,
-.sf-menu a:focus, .sf-menu a:hover, .sf-menu a:active {
-	color: black !important;
-	background-color: silver;
-	text-decoration: none;
-}
 /** Print Setting *********************************************************************************/
 @media print {
 	#hgroup h2, #header img, #navigator, #menubar, #sidebar, #poptoc, #banner_box, #attach, #toolbar,

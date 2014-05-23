@@ -34,7 +34,7 @@
 				<h1 id="title" style="display:none;"><?php echo $this->title ?></h1>
 				<?php echo $this->headarea; ?>
 <?php } ?>
-				<?php echo (!empty($this->lastmodified)) ? '<div id="lastmodified">Last-modified: '.$this->lastmodified.'</div>'."\n" : '' ?>
+				<?php echo (!empty($this->lastmodified)) ? '<div id="lastmodified" class="pull-right">Last-modified: '.$this->lastmodified.'</div>'."\n" : '' ?>
 			</header>
 <!-- *** End Header *** -->
 
