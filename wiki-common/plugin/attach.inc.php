@@ -242,6 +242,7 @@ function attach_upload($page, $pass = NULL)
 	if (Auth::check_role('readonly')) Utility::dieMessage($_string['error_prohibit']);
 
 	$wiki = Factory::Wiki($page);
+	$msgs = array();
 
 	if (empty($page)) Utility::dieMessage('#attach: page name is missing.');
 	
@@ -300,19 +301,17 @@ function attach_upload($page, $pass = NULL)
 			continue;
 		}
 
-		
-
 		$ret = attach_doupload($file, $page, $pass, $_FILES[PLUGIN_ATTACH_FILE_FIELD_NAME]['tmp_name'][$key]);
 		$msgs[$file] = $ret['msg'];
 	}
 	$body[] = '<ul>';
 	
-	foreach ($msgs as $file=>$result){
-		$body[] = '<li>'.$file.': '.$result.'</li>';
+	foreach ($msgs as $file=>$_result){
+		$body[] = '<li>'.$file.': '.$_result.'</li>';
 	}
 	$body[] = '</ul>';
 	
-	return array('msg'=> sprintf($_attach_messages['msg_uploaded'], $page), 'body'=>'<ul>'.join("\n", $body).'</ul>');
+	return array('msg'=> sprintf($_attach_messages['msg_uploaded'], $page), 'body'=>'<ul>'.join("\n", $body).'</ul>', 'result'=>true);
 }
 
 function attach_set_error_message($err_no)
@@ -505,6 +504,62 @@ function attach_doupload($file, $page, $pass=NULL, $temp)
 	);
 }
 
+// ファイルタイプによる圧縮添付の判定
+function attach_is_compress($type,$compress=1)
+{
+	if (empty($type)) return $compress;
+	list($discrete,$composite_tmp) = explode('/', strtolower($type));
+	if (strstr($type,';') === false) {
+		$composite = $composite_tmp;
+		$parameter = '';
+	} else {
+		list($composite,$parameter) = explode(';', $composite_tmp);
+		$parameter = trim($parameter);
+	}
+	unset($composite_tmp);
+
+	// type
+	static $composite_type = array(
+		'application' => array(
+			'msword'                => 0, // doc
+			'vnd.ms-excel'          => 0, // xls
+			'vnd.ms-powerpoint'     => 0, // ppt
+			'vnd.visio'             => 0,
+			'octet-stream'          => 0, // bin dms lha lzh exe class so dll img iso
+			'x-bcpio'               => 0, // bcpio
+			'x-bittorrent'          => 0, // torrent
+			'x-bzip2'               => 0, // bz2
+			'x-compress'            => 0,
+			'x-cpio'                => 0, // cpio
+			'x-dvi'                 => 0, // dvi
+			'x-gtar'                => 0, // gtar
+			'x-gzip'                => 0, // gz tgz
+			'x-rpm'                 => 0, // rpm
+			'x-shockwave-flash'     => 0, // swf
+			'zip'                   => 0, // zip
+			'x-java-archive'        => 0, // jar
+			'x-javascript'          => 1, // js
+			'ogg'                   => 0, // ogg
+			'pdf'                   => 0, // pdf
+		),
+	);
+	if (isset($composite_type[$discrete][$composite])) {
+		return $composite_type[$discrete][$composite];
+	}
+
+	// discrete-type
+	static $discrete_type = array(
+		'text'                          => 1,
+		'image'                         => 0,
+		'audio'                         => 0,
+		'video'                         => 0,
+	);
+	if (isset($discrete_type[$discrete])) {
+		return $discrete_type[$discrete];
+	}
+
+	return $compress;
+}
 
 // 詳細フォームを表示
 function attach_info($err = '')

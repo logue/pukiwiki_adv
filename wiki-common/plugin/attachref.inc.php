@@ -43,6 +43,13 @@ function plugin_attachref_init()
 			'msg_collided'			=> $_string['msg_collided']
 		),
 	);
+	
+	require_once(PLUGIN_DIR.'attach.inc.php');
+	if (!exist_plugin('attach') or !function_exists('attach_upload'))
+	{
+		return array('msg'=>'attach.inc.php not found or not correct version.');
+	}
+
 	set_plugin_messages($messages);
 }
 
@@ -252,32 +259,37 @@ function plugin_attachref_action()
 
 	$retval['msg'] = $_attachref_messages['msg_title'];
 	$retval['body'] = '';
+	
+	$refer = isset($vars['refer']) ? $vars['refer'] : false;
+	
+	if (isset($_FILES[PLUGIN_ATTACH_FILE_FIELD_NAME]) && $refer !== false) {
+		$wiki = Factory::Wiki($refer);
+		
+		if (!$wiki->isValied()){
+			Utility::dieMessage('#attachref : invalied page.');
+		}
 
-	if (isset($_FILES['attach_file']) && isset($vars['refer']) && is_page($vars['refer'])) {
-		$file = $_FILES['attach_file'];
-		$attachname = $file['name'];
+		$file = $_FILES[PLUGIN_ATTACH_FILE_FIELD_NAME];
+		$attachname = $file['name'][0];
+
 		$filename = preg_replace('/\..+$/','', $attachname,1);
 
 		// If exist file, add a name '_0', '_1', ...
 		$count = '_0';
-		while (file_exists(UPLOAD_DIR .encode($vars['refer']).'_'.encode($attachname)))
+		while (file_exists(UPLOAD_DIR .encode($refer).'_'.encode($attachname)))
 		{
-			$attachname = preg_replace('/^[^\.]+/',$filename.$count++,$file['name']);
+			$attachname = preg_replace('/^[^\.]+/',$filename.$count++,$attachname);
 		}
-		
-		$file['name'] = $attachname;
-		
-		require_once(PLUGIN_DIR.'attach.inc.php');
-		if (!exist_plugin('attach') or !function_exists('attach_upload'))
-		{
-			return array('msg'=>'attach.inc.php not found or not correct version.');
-		}
+		$file['name'][0] = $attachname;
+
 		$attach_filename = attachref_get_attach_filename($file);
 		$pass = isset($vars['pass']) ? md5($vars['pass']) : NULL;
-		$retval = attach_upload($file, $vars['refer'], $pass);
+		$retval = attach_upload($refer, $pass);
+		
 		if ($retval['result'] == TRUE) {
 			$retval = attachref_insert_ref($attach_filename);
 		}
+		Utility::redirect($wiki->uri());
 	}
 	else
 	{
@@ -288,24 +300,24 @@ function plugin_attachref_action()
 
 function attachref_get_attach_filename(&$file)
 {
-	$type = Utility::getMimeInfo($file['tmp_name']);
+	$type = Utility::getMimeInfo($file['tmp_name'][0]);
 	$must_compress = attach_is_compress($type,PLUGIN_ATTACH_UNKNOWN_COMPRESS);
 
-	if ($must_compress && is_uploaded_file($file['tmp_name'])) {
+	if ($must_compress && is_uploaded_file($file['tmp_name'][0])) {
 		if (PLUGIN_ATTACH_COMPRESS_TYPE == 'TGZ' && exist_plugin('dump')) {
-			return $file['name'] . '.tgz';
+			return $file['name'][0] . '.tgz';
 		} else
 		if (PLUGIN_ATTACH_COMPRESS_TYPE == 'GZ' && extension_loaded('zlib')) {
-			return $file['name'] . '.gz';
+			return $file['name'][0] . '.gz';
 		} else
 		if (PLUGIN_ATTACH_COMPRESS_TYPE == 'BZ2' && extension_loaded('bz2')) {
-			return $file['name'] . '.bz2';
+			return $file['name'][0] . '.bz2';
 		} else
 		if (PLUGIN_ATTACH_COMPRESS_TYPE == 'ZIP' && class_exists('ZipArchive')) {
-			return $file['name'] . '.zip';
+			return $file['name'][0] . '.zip';
 		}
 	}
-	return $file['name'];
+	return $file['name'][0];
 }
 
 function attachref_insert_ref($filename)
@@ -315,7 +327,7 @@ function attachref_insert_ref($filename)
 
 	$ret['msg'] = $_attachref_messages['msg_title'];
 
-	$args = split(',', $vars['attachref_opt']);
+	$args = explode(',', $vars['attachref_opt']);
 	if (count($args)) {
 	    $args[0] = './' . $filename;
 	    $s_args = join(",", $args);
@@ -426,31 +438,30 @@ function attachref_form($page)
 
 	$maxsize = ATTACHREF_MAX_FILESIZE;
 	$msg_maxsize = sprintf($_attachref_messages['msg_maxsize'],number_format($maxsize/1000)."KB");
-
-	$pass = '';
+	
+	$ret[] = '<form enctype="multipart/form-data" action="' . get_script_uri() . '" method="post" class="plugin-attachref-form form-inline">';
+	$ret[] = '<input type="hidden" name="attachref_no" value="' . $f_no . '" />';
+	$ret[] = '<input type="hidden" name="attachref_opt" value="' . $vars['attachref_opt'] . '" />';
+	$ret[] = '<input type="hidden" name="digest" value="' . $f_digest . '" />';
+	$ret[] = '<input type="hidden" name="max_file_size" value="' . $maxsize . '" />';
+	$ret[] = '<input type="hidden" name="pcmd" value="post" />';
+	$ret[] = '<input type="hidden" name="cmd" value="attachref" />';
+	$ret[] = '<input type="hidden" name="refer" value="' . $s_page . '" />';
+	$ret[] = '<p></p>';
+	$ret[] = '<div class="form-group">';
+	$ret[] = '<label for="attachref-attach-file" class="sr-only">' . $_attachref_messages['msg_file'] . ':</label>';
+	$ret[] = '<input type="file" id="attachref-attach-file"  class="form-control" name="' . PLUGIN_ATTACH_FILE_FIELD_NAME . '[0]" />';
+	$ret[] = '</div>';
 	if (ATTACHREF_PASSWORD_REQUIRE or ATTACHREF_UPLOAD_ADMIN_ONLY) {
-		$title = $_attachref_messages[ATTACHREF_UPLOAD_ADMIN_ONLY ? 'msg_adminpass' : 'msg_password'];
-		$pass = '<div class="form-group"><br />' . $title . ': <input type="password"  class="form-control" name="pass" size="8" /></div>';
+		$ret[] =  '<div class="form-group">' . ($_attachref_messages[ATTACHREF_UPLOAD_ADMIN_ONLY ? 'msg_adminpass' : 'msg_password'])
+			 . ': <input type="password"  class="form-control" name="pass" size="8" /></div>';
 	}
-	$script = get_script_uri();
-	return <<<EOD
-<form enctype="multipart/form-data" action="$script" method="post" class="plugin-attachref-form form-inline">
-	<input type="hidden" name="attachref_no" value="$f_no" />
-	<input type="hidden" name="attachref_opt" value="{$vars['attachref_opt']}" />
-	<input type="hidden" name="digest" value="$f_digest" />
-	<input type="hidden" name="max_file_size" value="$maxsize" />
-	<input type="hidden" name="pcmd" value="post" />
-	<input type="hidden" name="cmd" value="attachref" />
-	<input type="hidden" name="refer" value="$s_page" />
-	<p>$msg_maxsize</p>
-	<div class="form-group">
-		<label for="attachref-attach-file" class="sr-only">{$_attachref_messages['msg_file']}:</label>
-		<input type="file" id="attachref-attach-file"  class="form-control" name="attach_file" />
-	</div>
-	$pass
-	<input class="btn btn-primary" type="submit" value="{$_attachref_messages['btn_upload']}" />
-</form>
-EOD;
+	$ret[] = '<input class="btn btn-primary" type="submit" value="' . $_attachref_messages['btn_upload'] . '" />';
+	$ret[] = '</form>';
+	$ret[] = '<ul class="plugin-attachref-ul">';
+	$ret[] = '<li>' .$msg_maxsize . '</li>';
+	$ret[] = '</ul>';
+	return join("\n",$ret);
 }
 /* End of file attachref.inc.php */
 /* Location: ./wiki-common/plugin/attachref.inc.php */

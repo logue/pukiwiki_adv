@@ -57,7 +57,7 @@ class Render{
 	/**
 	 * Font Awesomeのバージョン
 	 */
-	const FONT_AWESOME_VER = '4.0.3';
+	const FONT_AWESOME_VER = '4.1.0';
 	/**
 	 * スキンスクリプト（未圧縮）
 	 */

@@ -101,6 +101,9 @@ class Wiki{
 	 * コンストラクタ
 	 */
 	public function __construct($page){
+		if (!is_string($page)){
+			throw new Exception('Wiki.php : invalied page name');
+		}
 		// page#idという形式で入力が合った場合、ページ名とIDで分割する
 		if (strpos($page, '#') !== false) {
 			// #の手前をWikiページとして処理
