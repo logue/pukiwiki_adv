@@ -40,7 +40,7 @@ var pukiwiki_guiedit = {
 		// リサイズを高さのみにする
 		resize_dir : 'vertical',
 		// エディッタ内のスタイルシート
-		contentsCss : [COMMON_URI+'css/pukiwiki.css'],
+		contentsCss : [COMMON_URI+'css/bootstrap.min.css', COMMON_URI+'css/fontawasome.min.css', COMMON_URI+'css/pukiwiki.css'],
 		// プラグイン
 //		extraPlugins : 'InternalEx, FontFormatEx,AlignEx,ListEx,IndentEx,InsertText,PukiWikiPlugin,TableEx,HRuleEx,SmileyEx,SpecialCharEx,Comment',
 		// 文書型宣言
@@ -101,20 +101,16 @@ var pukiwiki_guiedit = {
 		this.editor = $('textarea[name=msg]');	// 変換するフォーム
 		this.editor.ckeditor(
 			function(){
-				/*
+				
 				// CKEditor実行前に実行する処理
 				$("textarea[name='msg']").before('<div id="indicator" style="text-align:right;"></div>');
 				// プレビュー画面のDOM生成
-				$('#guiedit').after([
-					'<div id="realview_outer" style="clear:both;">',
-					'	<div id="realview"></div>',
-					'</div>'
-				].join("\n"));
+				$('#guiedit').append('<div id="realview" class="form-control"></div>');
 				// インジケーター
-				$('div#indicator').html('<img src="'+pukiwiki_skin.image_dir+'spinner.gif" alt="Loading..." />Now Loading...');
-				$('div#indicator').animate({height:'20px'});
+				$('#indicator').html('<span class="fa fa-spin fa-spinner"></span>Now Loading...');
+				$('#indicator').animate({height:'20px'});
 				// デフォルトのテキストを読み込む
-				*/
+				
 				self.load();
 			}
 			//this.config	// 設定を代入
@@ -140,20 +136,20 @@ var pukiwiki_guiedit = {
 			success: function(data){
 				self.editor.val(data.msg);
 				// 生成にかかった時間をインジケーターに表示
-				$('div#indicator').html('Convert time :'+data.taketime);
+				$('#indicator').html('<span class="fa fa-clock-o"></span>Convert time :'+data.taketime);
 	
 				// 投稿ボタンのイベント割当
-				$('button[name=write]').click(function(){
+				$('[name=write]').click(function(){
 					self.write();
 				});
 	
 				// プレビューボタンのイベント割当
-				$('button[name=preview]').click(function(){
+				$('[name=preview]').click(function(){
 					self.preview();
 				});
 	
 				// テンプレートのポップアップメニューのイベント割り当て（値変更時にイベント実行）
-				$('select[name=template_page]').change(function(){
+				$('[name=template_page]').change(function(){
 					self.template();
 				});
 	
@@ -162,7 +158,7 @@ var pukiwiki_guiedit = {
 			},
 			error : function(data,status,thrown){
 				alert(status);
-				console.error(data);
+				console.error(data.responseText);
 				$('input[name=cancel]').attr('disabled');
 			}
 		});
@@ -181,15 +177,15 @@ var pukiwiki_guiedit = {
 				template_page:$('select[name=template_page]').val()
 			},
 			beforeSend: function(){
-				$('#indicator').html('Now Loading...');
+				$('#indicator').html('<span class="fa fa-spin fa-spinner"></span>Now Loading...');
 				$('input','button','select','textarea').attr('disabled','disabled');
 			},
 			success: function(data){
 				self.editor.val(data.msg);
-				$('#indicator').html('Convert time :'+data.taketime);
+				$('#indicator').html('<span class="fa fa-clock-o"></span>Convert time :'+data.taketime);
 			},
 			error : function(data,status,thrown){
-				$('#indicator').html('<span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-alert"></span>Error!');
+				$('#indicator').html('<span class="fa fa-warning"></span>Error!');
 				console.error(data);
 				$('input[name=cancel]').attr('disabled');
 			}
@@ -206,23 +202,24 @@ var pukiwiki_guiedit = {
 			data: {
 				cmd : 'guiedit',
 				edit: 1,
-				page: PAGE,
+				page: $('input[name=page]').val(),
 				msg : this.editor.val()
 			},
 			beforeSend: function(){
-				$('#indicator').html('Now Loading...');
+				$('#indicator').html('<span class="fa fa-spin fa-spinner"></span>Now Loading...');
 				$('input','button','select','textarea').attr('disabled','disabled');
 			},
 			success: function(data){
 				$("#realview_outer").animate({height:'200px'});
-				$('#indicator').html('Convert time :'+data.taketime);
+				$('#indicator').html('<span class="fa fa-clock-o"></span>Convert time :'+data.taketime);
 				$('input','button','select','textarea').attr('disabled');
 				$("#realview").html(data.msg);
 			},
 			error : function(data,status,thrown){
-				$('#indicator').html('<span class="fa fa-danger"></span>Error!');
-				console.error(data);
-				$('input[name=cancel]').attr('disabled');
+				$('#indicator').html('<span class="fa fa-warning"></span>Error!');
+				console.error(status);
+				console.dir(data);
+				$('[name=cancel]').removeAttr('disabled');
 			}
 		});
 	},

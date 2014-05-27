@@ -110,8 +110,8 @@ function plugin_guiedit_edit_data($page)
 {
 	global $vars;
 
-	$source = Factory::Wiki($vars['page'])->get();
-	$postdata = $vars['original'] = join("\n", $source);
+	$source = Factory::Wiki($vars['page'])->get(true);
+	$postdata = $vars['original'] = $source;
 	if (! empty($vars['id'])) {
 		exist_plugin('edit');
 		$postdata = plugin_edit_parts($vars['id'], $source);
