@@ -214,7 +214,7 @@ function plugin_pcomment_insert()
 
 	$wiki->checkEditable();
 
-	$ret = array('msg' => $_string['update'], 'collided' => FALSE);
+	$ret = array('msg' => $_string['updated'], 'collided' => FALSE);
 
 	$msg = str_replace('$msg', rtrim($vars['msg']), PLUGIN_PCOMMENT_FORMAT_MSG);
 	$name = (! isset($vars['name']) || $vars['name'] == '') ? $_no_name : $vars['name'];
