@@ -1,24 +1,16 @@
-# PukiWiki Advance - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
-# License is GPL2
-# Logue <logue@hotmail.co.jp>, 2014.
-#
 msgid ""
-msgstr ""
-"Project-Id-Version: PukiWiki Advance 2.0\n"
+msgstr "Project-Id-Version: pukiwiki-advance\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
 "POT-Creation-Date: 2014-03-19 15:45+0900\n"
-"PO-Revision-Date: 2012-11-30 18:34+0800\n"
-"Last-Translator: 迪艾维尔 <diwill2012@gmail.com>\n"
-"Language-Team: 迪艾维尔 <diwill2012@gmail.com>\n"
+"PO-Revision-Date: 2014-05-30 19:26-0400\n"
+"Last-Translator: logue <logue@hotmail.co.jp>\n"
+"Language-Team: Chinese Simplified\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-Basepath: ../../pot\n"
-"X-Generator: Poedit 1.6.4\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.net\n"
 
 #: ../../plugin/attach.inc.php:80
 msgid "Uploaded the file to $1"
@@ -72,7 +64,7 @@ msgstr "可上传最大文件大小为 %s 。"
 
 #: ../../plugin/attach.inc.php:92
 msgid "File may be specified any number of times."
-msgstr ""
+msgstr "文件可指定为任何次数。"
 
 #: ../../plugin/attach.inc.php:93
 #, php-format
@@ -200,9 +192,8 @@ msgid "Only part is uploaded."
 msgstr "未完全上传。"
 
 #: ../../plugin/attach.inc.php:125
-#, fuzzy
 msgid "The file was updaded."
-msgstr "文件未上传。"
+msgstr "文件已上传。"
 
 #: ../../plugin/attach.inc.php:126
 msgid "The file was not uploaded."
@@ -253,7 +244,6 @@ msgid "The compression file cannot be written."
 msgstr "无法写入压缩文件。"
 
 #: ../../plugin/attach.inc.php:138
-#, fuzzy
-msgid ""
-"File name is too long. Please rename more short file name before upoload."
+msgid "File name is too long. Please rename more short file name before upoload."
 msgstr "文件名太长。请在上传前改短文件名。"
+

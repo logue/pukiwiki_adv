@@ -1,0 +1,61 @@
+msgid ""
+msgstr "Project-Id-Version: pukiwiki-advance\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-05-30 19:26-0400\n"
+"Last-Translator: logue <logue@hotmail.co.jp>\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.net\n"
+
+#: ../../plugin/pcomment.inc.php:25
+#, php-format
+msgid "[[Comments/%s]]"
+msgstr "[[Comments/%s]]"
+
+#: ../../plugin/pcomment.inc.php:86
+msgid "Name: "
+msgstr "Name: "
+
+#: ../../plugin/pcomment.inc.php:87
+msgid "Post Comment"
+msgstr "Post Comment"
+
+#: ../../plugin/pcomment.inc.php:88
+msgid "Comment: "
+msgstr "Comment: "
+
+#: ../../plugin/pcomment.inc.php:89
+#, php-format
+msgid "Show recent %d comments."
+msgstr "Show recent %d comments."
+
+#: ../../plugin/pcomment.inc.php:90
+msgid "Go to the comment page."
+msgstr "Go to the comment page."
+
+#: ../../plugin/pcomment.inc.php:91
+msgid "No comment."
+msgstr "No comment."
+
+#: ../../plugin/pcomment.inc.php:92
+#, php-format
+msgid "[[%s]] : not a valid page name."
+msgstr "[[%s]] : not a valid page name."
+
+#: ../../plugin/pcomment.inc.php:210
+msgid "Invalid page name"
+msgstr "Invalid page name"
+
+#: ../../plugin/pcomment.inc.php:211
+msgid "Cannot add comment"
+msgstr "Cannot add comment"
+
+#: ../../plugin/pcomment.inc.php:341
+msgid "Due to the blocking, no comments could be read from  $1 at all."
+msgstr "Due to the blocking, no comments could be read from  $1 at all."
+

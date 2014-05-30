@@ -1,24 +1,16 @@
-# PukiWiki Advance - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
-# License is GPL2
-# Logue <logue@hotmail.co.jp>, 2014.
-#
 msgid ""
-msgstr ""
-"Project-Id-Version: PukiWiki Advance 2.0\n"
+msgstr "Project-Id-Version: pukiwiki-advance\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
 "POT-Creation-Date: 2014-03-19 15:45+0900\n"
-"PO-Revision-Date: 2014-03-20 14:01+0900\n"
-"Last-Translator: Logue <logue@hotmail.co.jp>\n"
-"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"PO-Revision-Date: 2014-03-26 06:46-0400\n"
+"Last-Translator: logue <logue@hotmail.co.jp>\n"
+"Language-Team: Japanese\n"
 "Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-Basepath: ../../pot\n"
-"X-Generator: Poedit 1.6.4\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.net\n"
 
 #: ../../plugin/table_edit2.inc.php:299 ../../plugin/table_edit2.inc.php:1614
 msgid "OK"
@@ -134,17 +126,11 @@ msgstr "POSTでアップロードして下さい。"
 
 #: ../../plugin/table_edit2.inc.php:1893
 msgid "The uploaded file exceeds the upload_max_filesize directive in php.ini."
-msgstr ""
-"アップロードされたファイルは、php.ini の upload_max_filesize ディレクティブの"
-"値を超えています"
+msgstr "アップロードされたファイルは、php.ini の upload_max_filesize ディレクティブの値を超えています"
 
 #: ../../plugin/table_edit2.inc.php:1899
-msgid ""
-"The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in "
-"the HTML form."
-msgstr ""
-"アップロードされたファイルは、HTML フォームで指定された MAX_FILE_SIZE を超え"
-"ています。"
+msgid "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form."
+msgstr "アップロードされたファイルは、HTML フォームで指定された MAX_FILE_SIZE を超えています。"
 
 #: ../../plugin/table_edit2.inc.php:1905
 msgid "The uploaded file was only partially uploaded."
@@ -162,8 +148,3 @@ msgstr "テンポラリフォルダがありません。"
 msgid "A file unlike text was uploaded."
 msgstr "textとは違うファイルがアップされました。"
 
-#~ msgid "close"
-#~ msgstr "編集モード解除"
-
-#~ msgid "open"
-#~ msgstr "編集モード"

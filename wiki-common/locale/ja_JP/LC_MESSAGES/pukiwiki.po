@@ -1,24 +1,16 @@
-# PukiWiki Advance - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
-# License is GPL2
-# Logue <logue@hotmail.co.jp>, 2014.
-#
 msgid ""
-msgstr ""
-"Project-Id-Version: PukiWiki Advance 2.0\n"
+msgstr "Project-Id-Version: pukiwiki-advance\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
 "POT-Creation-Date: 2014-03-19 15:55+0900\n"
-"PO-Revision-Date: 2014-03-20 14:01+0900\n"
-"Last-Translator: Logue <logue@hotmail.co.jp>\n"
-"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"PO-Revision-Date: 2014-03-26 06:46-0400\n"
+"Last-Translator: logue <logue@hotmail.co.jp>\n"
+"Language-Team: Japanese\n"
 "Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-Basepath: ../../pot\n"
-"X-Generator: Poedit 1.6.4\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.net\n"
 
 #: ../../lib/resource.php:13
 msgid "Sun"
@@ -189,20 +181,12 @@ msgid "Others"
 msgstr "その他"
 
 #: ../../lib/resource.php:45
-msgid ""
-"In the page <strong>$2</strong>, <strong>$3</strong> pages that contain all "
-"the terms <var>$1</var> were found."
-msgstr ""
-"<var>$1</var>のすべてを含むページは <strong>$3</strong> ページ中、 <strong>"
-"$2</strong> ページ見つかりました。"
+msgid "In the page <strong>$2</strong>, <strong>$3</strong> pages that contain all the terms <var>$1</var> were found."
+msgstr "<var>$1</var>のすべてを含むページは <strong>$3</strong> ページ中、 <strong>$2</strong> ページ見つかりました。"
 
 #: ../../lib/resource.php:46
-msgid ""
-"In the page <strong>$2</strong>, <strong>$3</strong> pages that contain at "
-"least one of the terms <var>$1</var> were found."
-msgstr ""
-"<var>$1</var>のいずれかを含むページは <strong>$3</strong> ページ中、 <strong>"
-"$2</strong> ページ見つかりました。"
+msgid "In the page <strong>$2</strong>, <strong>$3</strong> pages that contain at least one of the terms <var>$1</var> were found."
+msgstr "<var>$1</var>のいずれかを含むページは <strong>$3</strong> ページ中、 <strong>$2</strong> ページ見つかりました。"
 
 #: ../../lib/resource.php:47
 msgid "No page which contains <var>$1</var> has been found."
@@ -239,12 +223,8 @@ msgstr "$1 で【更新の衝突】が起きました"
 
 #: ../../lib/resource.php:59 ../../lib/resource.php:63
 #: ../../lib/resource.php:66
-msgid ""
-"It seems that someone has already updated this page while you were editing "
-"it."
-msgstr ""
-"あなたがこのページを編集している間に、他の人が同じページを更新してしまったよ"
-"うです。"
+msgid "It seems that someone has already updated this page while you were editing it."
+msgstr "あなたがこのページを編集している間に、他の人が同じページを更新してしまったようです。"
 
 #: ../../lib/resource.php:60
 msgid "+ is placed at the beginning of a line that was newly added."
@@ -259,9 +239,7 @@ msgid "Edit those lines, and submit again."
 msgstr "これらの行を編集した後、送信ボタンを押してください。"
 
 #: ../../lib/resource.php:64
-msgid ""
-"The collision has been corrected automatically, but there may still be some "
-"problems with the page."
+msgid "The collision has been corrected automatically, but there may still be some problems with the page."
 msgstr "自動で衝突を解消しましたが、問題がある可能性があります。"
 
 #: ../../lib/resource.php:65
@@ -273,12 +251,8 @@ msgid "The string was added, alhough it may be inserted in the wrong position."
 msgstr "内容を追加しましたが、違う位置に挿入されているかもしれません。"
 
 #: ../../lib/resource.php:68
-msgid ""
-"l : between backup data and stored page data.<br />r : between backup data "
-"and your post data."
-msgstr ""
-"l : バックアップと保存されてるデーターの差分<br />r : バックアップとあなたの"
-"投稿したデーターの差分"
+msgid "l : between backup data and stored page data.<br />r : between backup data and your post data."
+msgstr "l : バックアップと保存されてるデーターの差分<br />r : バックアップとあなたの投稿したデーターの差分"
 
 #: ../../lib/resource.php:71
 msgid "WARNING"
@@ -289,12 +263,8 @@ msgid "A runtime error has occurred."
 msgstr "ランタイムエラーが発生しました。"
 
 #: ../../lib/resource.php:72
-msgid ""
-"Please contact to site admin. If you want more information, please change "
-"<var>PKWK_WARNING</var> value."
-msgstr ""
-"管理人に問い合わせてください。より詳細な情報を表示したい場合は、"
-"<var>PKWK_WARNING</var>の値を変更してください。"
+msgid "Please contact to site admin. If you want more information, please change <var>PKWK_WARNING</var> value."
+msgstr "管理人に問い合わせてください。より詳細な情報を表示したい場合は、<var>PKWK_WARNING</var>の値を変更してください。"
 
 #: ../../lib/resource.php:73
 msgid "This program is running in debug mode."
@@ -302,12 +272,8 @@ msgstr "このプログラムは、デバッグモードで走っています。
 
 #: ../../lib/resource.php:74
 #, php-format
-msgid ""
-"<var>$adminpass</var> is not changed! Click <a href=\"%s\">here</a> to "
-"generate crypted password and modify auth.ini.php!"
-msgstr ""
-"<var>$adminpass</var>が変更されていません！<a href=\"%s\">ここ</a>をクリック"
-"してパスワードを生成し、auth.ini.phpを変更してください。"
+msgid "<var>$adminpass</var> is not changed! Click <a href=\"%s\">here</a> to generate crypted password and modify auth.ini.php!"
+msgstr "<var>$adminpass</var>が変更されていません！<a href=\"%s\">ここ</a>をクリックしてパスワードを生成し、auth.ini.phpを変更してください。"
 
 #: ../../lib/resource.php:75
 #, php-format
@@ -325,26 +291,16 @@ msgstr "あなたの閲覧しようとしたページは、存在しないか削
 
 #: ../../lib/resource.php:78
 #, php-format
-msgid ""
-"Please check <a href=\"%1s\" rel=\"nofollow\">backups</a> or <a href=\"%2s\" "
-"rel=\"nofollow\">create page</a>."
-msgstr ""
-"<a href=\"%1s\" rel=\"nofollow\">バックアップ</a>を確認するか、ページを<a "
-"href=\"%2s\" rel=\"nofollow\">作成</a>してください。"
+msgid "Please check <a href=\"%1s\" rel=\"nofollow\">backups</a> or <a href=\"%2s\" rel=\"nofollow\">create page</a>."
+msgstr "<a href=\"%1s\" rel=\"nofollow\">バックアップ</a>を確認するか、ページを<a href=\"%2s\" rel=\"nofollow\">作成</a>してください。"
 
 #: ../../lib/resource.php:79
 msgid "Authorization Required"
 msgstr "権限が必要です"
 
 #: ../../lib/resource.php:80
-msgid ""
-"This server could not verify that you are authorized to access the document "
-"requested. Either you supplied the wrong credentials (e.g., bad password), "
-"or your browser doesn't understand how to supply the credentials required."
-msgstr ""
-"パスワードやアカウントが間違っている、あるいは使用しているブラウザが、認証等"
-"の送信に対応していないために、認証ができませんでした。このページへの閲覧は許"
-"可できません。"
+msgid "This server could not verify that you are authorized to access the document requested. Either you supplied the wrong credentials (e.g., bad password), or your browser doesn't understand how to supply the credentials required."
+msgstr "パスワードやアカウントが間違っている、あるいは使用しているブラウザが、認証等の送信に対応していないために、認証ができませんでした。このページへの閲覧は許可できません。"
 
 #: ../../lib/resource.php:81
 msgid "Page Redirect"
@@ -352,12 +308,8 @@ msgstr "ページのリダイレクト"
 
 #: ../../lib/resource.php:82
 #, php-format
-msgid ""
-"The requested page has moved to a new URL. <br />Please click <a href=\"%s"
-"\">here</a> if you do not want to move even after a while."
-msgstr ""
-"リクエストされたページは新しいURLに移動しました。<br />しばらくしても、移動し"
-"ない場合は、<a href=\"%s\">ここ</a>をクリックしてください。"
+msgid "The requested page has moved to a new URL. <br />Please click <a href=\"%s\">here</a> if you do not want to move even after a while."
+msgstr "リクエストされたページは新しいURLに移動しました。<br />しばらくしても、移動しない場合は、<a href=\"%s\">ここ</a>をクリックしてください。"
 
 #: ../../lib/resource.php:83
 #, php-format
@@ -370,10 +322,8 @@ msgstr "無効な文字が含まれています。"
 
 #: ../../lib/resource.php:86
 #, php-format
-msgid ""
-"A fatal error has occured at line <var>%1s</var> in file <var>%2s</var>."
-msgstr ""
-"致命的なエラーがファイル<var>%2s</var>の<var>%1s</var>行目で発生しました。"
+msgid "A fatal error has occured at line <var>%1s</var> in file <var>%2s</var>."
+msgstr "致命的なエラーがファイル<var>%2s</var>の<var>%1s</var>行目で発生しました。"
 
 #: ../../lib/resource.php:87
 msgid "Script execution has been aborted."
@@ -381,19 +331,12 @@ msgstr "スクリプトの実行は中断されました。"
 
 #: ../../lib/resource.php:90
 #, php-format
-msgid ""
-"This Wiki is <var>%s</var> mode now. The action which you are trying to do "
-"is prohibited."
-msgstr ""
-"現在このWikiは、<var>%s</var>モードになっています。実行しようとしていた作業"
-"は、禁止されています。"
+msgid "This Wiki is <var>%s</var> mode now. The action which you are trying to do is prohibited."
+msgstr "現在このWikiは、<var>%s</var>モードになっています。実行しようとしていた作業は、禁止されています。"
 
 #: ../../lib/resource.php:91
-msgid ""
-"Sorry, Your host is prohibited by <strong>IPBL</storng> (Blocking SPAM)."
-msgstr ""
-"あなたのホストは、<strong>IPBL</strong>により、接続は拒否されています。（スパ"
-"ムブロック）"
+msgid "Sorry, Your host is prohibited by <strong>IPBL</storng> (Blocking SPAM)."
+msgstr "あなたのホストは、<strong>IPBL</strong>により、接続は拒否されています。（スパムブロック）"
 
 #: ../../lib/resource.php:92
 msgid "Sorry, access from your country is prohibited."
@@ -415,9 +358,7 @@ msgstr "プラグインの初期化に失敗しました：<var>%s</var>"
 #: ../../lib/resource.php:99
 #, php-format
 msgid "<var>%1s</var> was called over <var>%2s</var> times. SPAM or someting?"
-msgstr ""
-"<var>%1s</var>は、短時間の間に、<var>%2s</var>回も呼び出されています。スパム"
-"の可能性あり？"
+msgstr "<var>%1s</var>は、短時間の間に、<var>%2s</var>回も呼び出されています。スパムの可能性あり？"
 
 #: ../../lib/resource.php:100
 msgid "PostId is mismatched. Is it multi-post?"
@@ -787,131 +728,3 @@ msgstr "ユーザ警告"
 msgid "User Notice"
 msgstr "ユーザ通知"
 
-#~ msgid "Upload to $1"
-#~ msgstr "$1への添付"
-
-#, fuzzy
-#~ msgid "Delete %s."
-#~ msgstr "削除"
-
-#, fuzzy
-#~ msgid "List of attached file(s)"
-#~ msgstr "ファイル名一覧"
-
-#, fuzzy
-#~ msgid "List of attached file(s) in $1"
-#~ msgstr "ファイル名一覧"
-
-#, fuzzy
-#~ msgid "password"
-#~ msgstr "パスワードが間違っています。"
-
-#, fuzzy
-#~ msgid "Delete file."
-#~ msgstr "削除"
-
-#, fuzzy
-#~ msgid "Freeze file."
-#~ msgstr "凍結"
-
-#, fuzzy
-#~ msgid "Unfreeze file."
-#~ msgstr "凍結解除"
-
-#, fuzzy
-#~ msgid "File is frozen."
-#~ msgstr "ファイルがみつかりません。"
-
-#, fuzzy
-#~ msgid "date"
-#~ msgstr "ページの更新"
-
-#, fuzzy
-#~ msgid "Page"
-#~ msgstr "ページ"
-
-#, fuzzy
-#~ msgid "This page"
-#~ msgstr "一覧"
-
-#, fuzzy
-#~ msgid "File does not exist."
-#~ msgstr "ファイルがみつかりません。"
-
-#, fuzzy
-#~ msgid "The file was updaded."
-#~ msgstr "$1 を更新しました"
-
-#, fuzzy
-#~ msgid "Information"
-#~ msgstr "確認簿"
-
-#~ msgid "Query string (page name and/or file name) too long"
-#~ msgstr "Query String（ページ名もしくは、ファイル名）が長すぎます。"
-
-#~ msgid "Plugin Error: PostId mismatch."
-#~ msgstr "プラグインエラー：PostIdが一致していません。"
-
-#~ msgid "Plugin Error: Incorrect encode."
-#~ msgstr "プラグインエラー：不正なエンコードです。"
-
-#~ msgid ""
-#~ "You have no permission to edit this page or create page in lower level of "
-#~ "this page."
-#~ msgstr ""
-#~ "あなたは、このページを編集したり下位階層にページを作成する権限を持っていま"
-#~ "せん。"
-
-#~ msgid "%s execution failed:"
-#~ msgstr "%sで、以下の例外が発生しました："
-
-#~ msgid "Sorry, %s is already reserved."
-#~ msgstr "%sは、すでに定義されています。"
-
-#~ msgid "Using both cmd= and plugin= is not allowed."
-#~ msgstr "cmd=とplugin=の両方を使用することはできません。"
-
-#~ msgid ""
-#~ "Facebook is not authenticated or url is mismathed. Please click <a href="
-#~ "\"%s\">here</a> and authenticate the application."
-#~ msgstr ""
-#~ "Facebookの認証ができなかったか、URLが間違っています。<a href=\"%s\">ここ</"
-#~ "a>をクリックして、アプリケーションの認証を行なってください。"
-
-#~ msgid "Facebook is authenticated. Welcome, %s."
-#~ msgstr "Facebook認証に成功しました。ようこそ%sさん。"
-
-#~ msgid "unable to connect to %s."
-#~ msgstr "%sに接続することができません。"
-
-#~ msgid "%s is not found or cannot execute: "
-#~ msgstr "%sは、見つからないか、実行可能になっていません。"
-
-#~ msgid "Headers already sent at %s, line: %s."
-#~ msgstr "ヘッダーは、%s（行%s）で、すでに出力されています。"
-
-#~ msgid "Search Key List"
-#~ msgstr "検索キー一覧"
-
-#~ msgid "Link List"
-#~ msgstr "自動相互リンク表"
-
-#~ msgid "Roll Book"
-#~ msgstr "出席簿"
-
-#~ msgid "Browse Log"
-#~ msgstr "閲覧ログ"
-
-#~ msgid "Update Log"
-#~ msgstr "更新ログ"
-
-#~ msgid "May "
-#~ msgstr "5月（皐月）"
-
-#~ msgid "Cannot open %s.<br />Maybe permission is not writable."
-#~ msgstr ""
-#~ "%sを開くことができませんでした。<br />パーミッションが書き込み可になってい"
-#~ "るかを確認ください。"
-
-#~ msgid "PKWK_CREATE_PAGE prohibits editing"
-#~ msgstr "PKWK_CREATE_PAGE 編集禁止"

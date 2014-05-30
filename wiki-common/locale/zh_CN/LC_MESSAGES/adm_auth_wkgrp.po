@@ -1,0 +1,88 @@
+msgid ""
+msgstr "Project-Id-Version: pukiwiki-advance\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-05-30 19:26-0400\n"
+"Last-Translator: logue <logue@hotmail.co.jp>\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.net\n"
+
+#: ../../plugin/adm_auth_wkgrp.inc.php:24
+msgid "User registration management"
+msgstr "用户注册管理"
+
+#: ../../plugin/adm_auth_wkgrp.inc.php:25
+msgid "User registration(auth_wkgrp)"
+msgstr "用户注册(auth_wkgrp)"
+
+#: ../../plugin/adm_auth_wkgrp.inc.php:26
+msgid "Generation"
+msgstr "生成"
+
+#: ../../plugin/adm_auth_wkgrp.inc.php:27
+msgid "User registration menu"
+msgstr "用户注册菜单"
+
+#: ../../plugin/adm_auth_wkgrp.inc.php:28
+msgid "Page information"
+msgstr "页面信息"
+
+#: ../../plugin/adm_auth_wkgrp.inc.php:29
+msgid "Definition file information"
+msgstr "定义文件信息"
+
+#: ../../plugin/adm_auth_wkgrp.inc.php:30
+msgid "Updated DateTime"
+msgstr "更新的日期时间"
+
+#: ../../plugin/adm_auth_wkgrp.inc.php:31
+msgid "Generation DateTime"
+msgstr "生成日期时间"
+
+#: ../../plugin/adm_auth_wkgrp.inc.php:32
+msgid "Check"
+msgstr "检查"
+
+#: ../../plugin/adm_auth_wkgrp.inc.php:33
+msgid "View"
+msgstr "查看"
+
+#: ../../plugin/adm_auth_wkgrp.inc.php:34
+msgid "Import"
+msgstr "导入"
+
+#: ../../plugin/adm_auth_wkgrp.inc.php:35
+#, php-format
+msgid "The %s file was generated."
+msgstr "%s 文件已生成。"
+
+#: ../../plugin/adm_auth_wkgrp.inc.php:36
+#, php-format
+msgid "Data was taken into %s."
+msgstr "数据已写入 %s。"
+
+#: ../../plugin/adm_auth_wkgrp.inc.php:37
+msgid "It is necessary to generate it."
+msgstr "必须生成。"
+
+#: ../../plugin/adm_auth_wkgrp.inc.php:38
+msgid "The manager authority is necessary."
+msgstr "必须拥有管理者权限。"
+
+#: ../../plugin/adm_auth_wkgrp.inc.php:39
+msgid "The generation function is invalid."
+msgstr "生成函数无效。"
+
+#: ../../plugin/adm_auth_wkgrp.inc.php:40
+msgid "Because the page already exists, processing is discontinued."
+msgstr "因为页面已经存在，处理停止。"
+
+#: ../../plugin/adm_auth_wkgrp.inc.php:41
+msgid "The following images are the one (reading auth_wkgrp, and conversion into page image)."
+msgstr "以下图片是其中之一 (已读取 auth_wkgrp，并转换成页面图像)。"
+

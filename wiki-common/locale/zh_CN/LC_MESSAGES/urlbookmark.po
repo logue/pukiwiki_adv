@@ -1,0 +1,34 @@
+msgid ""
+msgstr "Project-Id-Version: pukiwiki-advance\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-05-30 19:26-0400\n"
+"Last-Translator: logue <logue@hotmail.co.jp>\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.net\n"
+
+#: ../../plugin/urlbookmark.inc.php:125
+msgid " $1 was updated"
+msgstr "$1 已更新"
+
+#: ../../plugin/urlbookmark.inc.php:163
+msgid "Title: "
+msgstr "标题："
+
+#: ../../plugin/urlbookmark.inc.php:173
+msgid "Comment: "
+msgstr "评论："
+
+#: ../../plugin/urlbookmark.inc.php:174
+msgid "Add URL"
+msgstr "添加链接"
+
+#: ../../plugin/urlbookmark.inc.php:175
+msgid "URL: "
+msgstr "链接："
+

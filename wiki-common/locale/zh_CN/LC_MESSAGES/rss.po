@@ -1,0 +1,19 @@
+msgid ""
+msgstr "Project-Id-Version: pukiwiki-advance\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-05-30 19:26-0400\n"
+"Last-Translator: logue <logue@hotmail.co.jp>\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.net\n"
+
+#: ../../plugin/rss.inc.php:23
+#, php-format
+msgid "Recent changes of %s"
+msgstr "%s 的最新更改"
+

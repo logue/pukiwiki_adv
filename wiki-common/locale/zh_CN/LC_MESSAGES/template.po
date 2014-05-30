@@ -1,0 +1,66 @@
+msgid ""
+msgstr "Project-Id-Version: pukiwiki-advance\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-05-30 19:26-0400\n"
+"Last-Translator: logue <logue@hotmail.co.jp>\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.net\n"
+
+#: ../../plugin/template.inc.php:12
+msgid "Edit of  $1"
+msgstr "编辑 $1"
+
+#: ../../plugin/template.inc.php:13
+msgid "Start:"
+msgstr "开始："
+
+#: ../../plugin/template.inc.php:14
+msgid "End:"
+msgstr "结束："
+
+#: ../../plugin/template.inc.php:15
+msgid "$1/copy"
+msgstr "复制 $1/"
+
+#: ../../plugin/template.inc.php:16
+msgid "Page:"
+msgstr "页面："
+
+#: ../../plugin/template.inc.php:17
+msgid "Edit with a page name which already exists"
+msgstr "编辑的页面名称已存在"
+
+#: ../../plugin/template.inc.php:18
+msgid " $1 already exists."
+msgstr "$1 已存在。"
+
+#: ../../plugin/template.inc.php:19
+msgid " $1 is not a valid page name."
+msgstr "$1 不是有效的页面的名称。"
+
+#: ../../plugin/template.inc.php:20
+msgid "Create"
+msgstr "创建"
+
+#: ../../plugin/template.inc.php:21
+msgid "create a new page, using  $1 as a template."
+msgstr "创建新页面，使用 $1 作为模板。"
+
+#: ../../plugin/template.inc.php:22
+msgid " $1 was not found."
+msgstr "未找到 $1。"
+
+#: ../../plugin/template.inc.php:23
+msgid "cannot display the page source."
+msgstr "无法显示该页面的源代码。"
+
+#: ../../plugin/template.inc.php:24
+msgid "Prohibited"
+msgstr "已被禁止"
+

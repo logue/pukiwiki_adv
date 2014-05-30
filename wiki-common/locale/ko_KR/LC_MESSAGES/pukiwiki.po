@@ -1,24 +1,16 @@
-# PukiWiki Advance - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
-# License is GPL2
-# Logue <logue@hotmail.co.jp>, 2014.
-#
 msgid ""
-msgstr ""
-"Project-Id-Version: PukiWiki Advance 2.0\n"
+msgstr "Project-Id-Version: pukiwiki-advance\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
-"POT-Creation-Date: 2012-07-05 22:13+0900\n"
-"PO-Revision-Date: 2014-03-20 15:17+0900\n"
-"Last-Translator: Logue <logue@hotmail.co.jp>\n"
-"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"POT-Creation-Date: 2014-03-19 15:55+0900\n"
+"PO-Revision-Date: 2014-03-26 06:46-0400\n"
+"Last-Translator: logue <logue@hotmail.co.jp>\n"
+"Language-Team: Korean\n"
 "Language: ko_KR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-Basepath: ../../pot\n"
-"X-Generator: Poedit 1.6.4\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.net\n"
 
 #: ../../lib/resource.php:13
 msgid "Sun"
@@ -189,20 +181,12 @@ msgid "Others"
 msgstr "기타"
 
 #: ../../lib/resource.php:45
-msgid ""
-"In the page <strong>$2</strong>, <strong>$3</strong> pages that contain all "
-"the terms <var>$1</var> were found."
-msgstr ""
-"검색어 <var>$1</var>을(를) 모두 포함한 페이지는 <strong>$3</strong>페이지중 "
-"<strong>$2</strong>페이지가 발견되었습니다."
+msgid "In the page <strong>$2</strong>, <strong>$3</strong> pages that contain all the terms <var>$1</var> were found."
+msgstr "검색어 <var>$1</var>을(를) 모두 포함한 페이지는 <strong>$3</strong>페이지중 <strong>$2</strong>페이지가 발견되었습니다."
 
 #: ../../lib/resource.php:46
-msgid ""
-"In the page <strong>$2</strong>, <strong>$3</strong> pages that contain at "
-"least one of the terms <var>$1</var> were found."
-msgstr ""
-"검색어 <var>$1</var>을(를) 하나라도 포함한 페이지는 <strong>$3</strong>페이지"
-"중 <strong>$2</strong>페이지가 발견되었습니다."
+msgid "In the page <strong>$2</strong>, <strong>$3</strong> pages that contain at least one of the terms <var>$1</var> were found."
+msgstr "검색어 <var>$1</var>을(를) 하나라도 포함한 페이지는 <strong>$3</strong>페이지중 <strong>$2</strong>페이지가 발견되었습니다."
 
 #: ../../lib/resource.php:47
 msgid "No page which contains <var>$1</var> has been found."
@@ -221,7 +205,7 @@ msgid "$1 was updated"
 msgstr "$1을(를) 갱신했습니다."
 
 #: ../../lib/resource.php:51
-#, fuzzy, php-format
+#, php-format
 msgid "Back to %s"
 msgstr "%s에 연결할 수 없습니다."
 
@@ -239,48 +223,36 @@ msgstr "$1을(를) 저장하는도중 충돌이 일어났습니다."
 
 #: ../../lib/resource.php:59 ../../lib/resource.php:63
 #: ../../lib/resource.php:66
-#, fuzzy
-msgid ""
-"It seems that someone has already updated this page while you were editing "
-"it."
-msgstr ""
-"편집하는 동안 다른사람이 같은 페이지를 갱신해 버린것 같습니다.<br />코멘트는 "
-"추가되었지만, 잘못된 위치에 삽입되었을지도 모릅니다."
+msgid "It seems that someone has already updated this page while you were editing it."
+msgstr "편집하는 동안 다른사람이 같은 페이지를 갱신해 버린것 같습니다.<br />코멘트는 추가되었지만, 잘못된 위치에 삽입되었을지도 모릅니다."
 
 #: ../../lib/resource.php:60
 msgid "+ is placed at the beginning of a line that was newly added."
-msgstr ""
+msgstr "+ is placed at the beginning of a line that was newly added."
 
 #: ../../lib/resource.php:61
 msgid "! is placed at the beginning of a line that has possibly been updated."
-msgstr ""
+msgstr "! is placed at the beginning of a line that has possibly been updated."
 
 #: ../../lib/resource.php:62
 msgid "Edit those lines, and submit again."
-msgstr ""
+msgstr "Edit those lines, and submit again."
 
 #: ../../lib/resource.php:64
-msgid ""
-"The collision has been corrected automatically, but there may still be some "
-"problems with the page."
-msgstr ""
+msgid "The collision has been corrected automatically, but there may still be some problems with the page."
+msgstr "The collision has been corrected automatically, but there may still be some problems with the page."
 
 #: ../../lib/resource.php:65
 msgid "To confirm the changes to the page, press [Update]."
-msgstr ""
+msgstr "To confirm the changes to the page, press [Update]."
 
 #: ../../lib/resource.php:67
-#, fuzzy
 msgid "The string was added, alhough it may be inserted in the wrong position."
-msgstr ""
-"편집하는 동안 다른사람이 같은 페이지를 갱신해 버린것 같습니다.<br />코멘트는 "
-"추가되었지만, 잘못된 위치에 삽입되었을지도 모릅니다."
+msgstr "편집하는 동안 다른사람이 같은 페이지를 갱신해 버린것 같습니다.<br />코멘트는 추가되었지만, 잘못된 위치에 삽입되었을지도 모릅니다."
 
 #: ../../lib/resource.php:68
-msgid ""
-"l : between backup data and stored page data.<br />r : between backup data "
-"and your post data."
-msgstr ""
+msgid "l : between backup data and stored page data.<br />r : between backup data and your post data."
+msgstr "l : between backup data and stored page data.<br />r : between backup data and your post data."
 
 #: ../../lib/resource.php:71
 msgid "WARNING"
@@ -291,12 +263,8 @@ msgid "A runtime error has occurred."
 msgstr "런타임 오류가 발생했습니다."
 
 #: ../../lib/resource.php:72
-msgid ""
-"Please contact to site admin. If you want more information, please change "
-"<var>PKWK_WARNING</var> value."
-msgstr ""
-"관리자에게 문의하십시오. 더 자세한 정보를 표시하려면 <var>PKWK_WARNING</var> "
-"값을 변경하십시오."
+msgid "Please contact to site admin. If you want more information, please change <var>PKWK_WARNING</var> value."
+msgstr "관리자에게 문의하십시오. 더 자세한 정보를 표시하려면 <var>PKWK_WARNING</var> 값을 변경하십시오."
 
 #: ../../lib/resource.php:73
 msgid "This program is running in debug mode."
@@ -304,12 +272,8 @@ msgstr "이 프로그램은 디버그 모드로 달리고 있습니다."
 
 #: ../../lib/resource.php:74
 #, php-format
-msgid ""
-"<var>$adminpass</var> is not changed! Click <a href=\"%s\">here</a> to "
-"generate crypted password and modify auth.ini.php!"
-msgstr ""
-"<var>$adminpass</var> 가 변경되지 않습니다! <a href=\"%s\">여기</a> 를 클릭하"
-"여 암호를 생성하고 auth.ini.php을 변경하십시오."
+msgid "<var>$adminpass</var> is not changed! Click <a href=\"%s\">here</a> to generate crypted password and modify auth.ini.php!"
+msgstr "<var>$adminpass</var> 가 변경되지 않습니다! <a href=\"%s\">여기</a> 를 클릭하여 암호를 생성하고 auth.ini.php을 변경하십시오."
 
 #: ../../lib/resource.php:75
 #, php-format
@@ -323,36 +287,29 @@ msgstr "페이지 <var>%s</var>을 찾을 수 없습니다."
 
 #: ../../lib/resource.php:77
 msgid "Sorry, but the page you were trying to view does not exist or deleted."
-msgstr ""
+msgstr "Sorry, but the page you were trying to view does not exist or deleted."
 
 #: ../../lib/resource.php:78
 #, php-format
-msgid ""
-"Please check <a href=\"%1s\" rel=\"nofollow\">backups</a> or <a href=\"%2s\" "
-"rel=\"nofollow\">create page</a>."
-msgstr ""
+msgid "Please check <a href=\"%1s\" rel=\"nofollow\">backups</a> or <a href=\"%2s\" rel=\"nofollow\">create page</a>."
+msgstr "Please check <a href=\"%1s\" rel=\"nofollow\">backups</a> or <a href=\"%2s\" rel=\"nofollow\">create page</a>."
 
 #: ../../lib/resource.php:79
 msgid "Authorization Required"
-msgstr ""
+msgstr "Authorization Required"
 
 #: ../../lib/resource.php:80
-msgid ""
-"This server could not verify that you are authorized to access the document "
-"requested. Either you supplied the wrong credentials (e.g., bad password), "
-"or your browser doesn't understand how to supply the credentials required."
-msgstr ""
+msgid "This server could not verify that you are authorized to access the document requested. Either you supplied the wrong credentials (e.g., bad password), or your browser doesn't understand how to supply the credentials required."
+msgstr "This server could not verify that you are authorized to access the document requested. Either you supplied the wrong credentials (e.g., bad password), or your browser doesn't understand how to supply the credentials required."
 
 #: ../../lib/resource.php:81
 msgid "Page Redirect"
-msgstr ""
+msgstr "Page Redirect"
 
 #: ../../lib/resource.php:82
 #, php-format
-msgid ""
-"The requested page has moved to a new URL. <br />Please click <a href=\"%s"
-"\">here</a> if you do not want to move even after a while."
-msgstr ""
+msgid "The requested page has moved to a new URL. <br />Please click <a href=\"%s\">here</a> if you do not want to move even after a while."
+msgstr "The requested page has moved to a new URL. <br />Please click <a href=\"%s\">here</a> if you do not want to move even after a while."
 
 #: ../../lib/resource.php:83
 #, php-format
@@ -361,70 +318,63 @@ msgstr "헤더는 <var>%s</var>의 <var>%s</var> 번째에서 이미 보낸 있�
 
 #: ../../lib/resource.php:85
 msgid "Illegal characters contained."
-msgstr ""
+msgstr "Illegal characters contained."
 
 #: ../../lib/resource.php:86
 #, php-format
-msgid ""
-"A fatal error has occured at line <var>%1s</var> in file <var>%2s</var>."
+msgid "A fatal error has occured at line <var>%1s</var> in file <var>%2s</var>."
 msgstr "헤더는 <var>%s</var>의 <var>%s</var> 번째에서 이미 보낸 있습니다."
 
 #: ../../lib/resource.php:87
 msgid "Script execution has been aborted."
-msgstr ""
+msgstr "Script execution has been aborted."
 
 #: ../../lib/resource.php:90
-#, fuzzy, php-format
-msgid ""
-"This Wiki is <var>%s</var> mode now. The action which you are trying to do "
-"is prohibited."
-msgstr ""
-"현재이 Wiki는 <var>PKWK_READONLY</var> 모드로되어 있습니다. 실행하려고했던 작"
-"업은 금지됩니다."
+#, php-format
+msgid "This Wiki is <var>%s</var> mode now. The action which you are trying to do is prohibited."
+msgstr "현재이 Wiki는 <var>PKWK_READONLY</var> 모드로되어 있습니다. 실행하려고했던 작업은 금지됩니다."
 
 #: ../../lib/resource.php:91
-#, fuzzy
-msgid ""
-"Sorry, Your host is prohibited by <strong>IPBL</storng> (Blocking SPAM)."
+msgid "Sorry, Your host is prohibited by <strong>IPBL</storng> (Blocking SPAM)."
 msgstr "<strong>IPBL</strong>하여 쓰기를 제한합니다. (스팸)"
 
 #: ../../lib/resource.php:92
 msgid "Sorry, access from your country is prohibited."
-msgstr ""
+msgstr "Sorry, access from your country is prohibited."
 
 #: ../../lib/resource.php:93
 msgid "You have no permission to read this page."
-msgstr ""
+msgstr "You have no permission to read this page."
 
 #: ../../lib/resource.php:94
 msgid "You have no permission to edit page or create page."
-msgstr ""
+msgstr "You have no permission to edit page or create page."
 
 #: ../../lib/resource.php:98
 #, php-format
 msgid "Plugin init failed: <var>%s</var>"
-msgstr ""
+msgstr "Plugin init failed: <var>%s</var>"
 
 #: ../../lib/resource.php:99
 #, php-format
 msgid "<var>%1s</var> was called over <var>%2s</var> times. SPAM or someting?"
-msgstr ""
+msgstr "<var>%1s</var> was called over <var>%2s</var> times. SPAM or someting?"
 
 #: ../../lib/resource.php:100
 msgid "PostId is mismatched. Is it multi-post?"
-msgstr ""
+msgstr "PostId is mismatched. Is it multi-post?"
 
 #: ../../lib/resource.php:101
 msgid "Incorrect encode. Please use a modern browser."
-msgstr ""
+msgstr "Incorrect encode. Please use a modern browser."
 
 #: ../../lib/resource.php:102
-#, fuzzy, php-format
+#, php-format
 msgid "Plugin <var>%s</var> is not implemented."
 msgstr "페이지 <var>%s</var>을 찾을 수 없습니다."
 
 #: ../../lib/resource.php:104
-#, fuzzy, php-format
+#, php-format
 msgid "Recent changes of %s"
 msgstr "갱신내역"
 
@@ -505,7 +455,7 @@ msgid "Save to cookie"
 msgstr "쿠키에 저장"
 
 #: ../../lib/resource.php:130
-#, fuzzy, php-format
+#, php-format
 msgid "Connect to %s"
 msgstr "%s에 연결할 수 없습니다."
 
@@ -515,11 +465,11 @@ msgstr "백업"
 
 #: ../../lib/resource.php:134
 msgid "Try to edit this page"
-msgstr ""
+msgstr "Try to edit this page"
 
 #: ../../lib/resource.php:135
 msgid "Return to FrontPage"
-msgstr ""
+msgstr "Return to FrontPage"
 
 #: ../../lib/resource.php:140
 msgid "$1 is not editable"
@@ -538,17 +488,16 @@ msgid "Runtime Error"
 msgstr "런타임"
 
 #: ../../lib/resource.php:146
-#, fuzzy
 msgid "Plugin Error"
 msgstr "런타임"
 
 #: ../../lib/resource.php:147
 msgid "Access Prohibited"
-msgstr ""
+msgstr "Access Prohibited"
 
 #: ../../lib/resource.php:148
 msgid "Not Implemented"
-msgstr ""
+msgstr "Not Implemented"
 
 #: ../../lib/resource.php:153
 msgid "encode_hint"
@@ -580,7 +529,7 @@ msgstr "전체 화면"
 
 #: ../../lib/resource.php:167
 msgid "Export as PDF"
-msgstr ""
+msgstr "Export as PDF"
 
 #: ../../lib/resource.php:169
 msgid "Help"
@@ -643,7 +592,6 @@ msgid "RDF of recent changes"
 msgstr "갱신내역의 RDF"
 
 #: ../../lib/resource.php:189
-#, fuzzy
 msgid "ATOM of recent changes"
 msgstr "갱신내역의 RDF"
 
@@ -652,7 +600,6 @@ msgid "Logo"
 msgstr "로고"
 
 #: ../../lib/resource.php:192
-#, fuzzy
 msgid "Text Formatting Rules"
 msgstr "문법을 표시"
 
@@ -666,15 +613,15 @@ msgstr "갱신내역"
 
 #: ../../lib/resource.php:200
 msgid "Recent deleted"
-msgstr ""
+msgstr "Recent deleted"
 
 #: ../../lib/resource.php:201
 msgid "Interwiki name"
-msgstr ""
+msgstr "Interwiki name"
 
 #: ../../lib/resource.php:202
 msgid "Auto alias name"
-msgstr ""
+msgstr "Auto alias name"
 
 #: ../../lib/resource.php:203
 msgid "Glossary"
@@ -690,47 +637,46 @@ msgstr "사이드바"
 
 #: ../../lib/resource.php:206
 msgid "Navigation"
-msgstr ""
+msgstr "Navigation"
 
 #: ../../lib/resource.php:207
 msgid "Header area"
-msgstr ""
+msgstr "Header area"
 
 #: ../../lib/resource.php:208
 msgid "Footer area"
-msgstr ""
+msgstr "Footer area"
 
 #: ../../lib/resource.php:209
 msgid "Protected"
-msgstr ""
+msgstr "Protected"
 
 #: ../../lib/resource.php:212
 msgid "Site"
-msgstr ""
+msgstr "Site"
 
 #: ../../lib/resource.php:213
 msgid "Pages"
-msgstr ""
+msgstr "Pages"
 
 #: ../../lib/resource.php:214
 msgid "Management"
-msgstr ""
+msgstr "Management"
 
 #: ../../lib/resource.php:215
 msgid "Tools"
-msgstr ""
+msgstr "Tools"
 
 #: ../../lib/resource.php:217
 msgid "Attaches :"
-msgstr ""
+msgstr "Attaches :"
 
 #: ../../lib/resource.php:218
-#, fuzzy
 msgid "File information"
 msgstr "파일을 찾을 수 없습니다."
 
 #: ../../lib/resource.php:219
-#, fuzzy, php-format
+#, php-format
 msgid "%s download"
 msgstr "다운로드 로그"
 
@@ -740,92 +686,45 @@ msgstr "관련 페이지 :"
 
 #: ../../lib/resource.php:225
 msgid "Error"
-msgstr ""
+msgstr "Error"
 
 #: ../../lib/resource.php:226
 msgid "Warning"
-msgstr ""
+msgstr "Warning"
 
 #: ../../lib/resource.php:227
 msgid "Parsing Error"
-msgstr ""
+msgstr "Parsing Error"
 
 #: ../../lib/resource.php:228
 msgid "Notice"
-msgstr ""
+msgstr "Notice"
 
 #: ../../lib/resource.php:229
-#, fuzzy
 msgid "Core Error"
 msgstr "런타임"
 
 #: ../../lib/resource.php:230
 msgid "Core Warning"
-msgstr ""
+msgstr "Core Warning"
 
 #: ../../lib/resource.php:231
-#, fuzzy
 msgid "Compile Error"
 msgstr "런타임"
 
 #: ../../lib/resource.php:232
 msgid "Compile Warning"
-msgstr ""
+msgstr "Compile Warning"
 
 #: ../../lib/resource.php:233
-#, fuzzy
 msgid "User Error"
 msgstr "런타임"
 
 #: ../../lib/resource.php:234
 msgid "User Warning"
-msgstr ""
+msgstr "User Warning"
 
 #: ../../lib/resource.php:235
 msgid "User Notice"
-msgstr ""
+msgstr "User Notice"
 
-#~ msgid "%s execution failed:"
-#~ msgstr "%s에서 다음 예외가 발생했습니다:"
-
-#~ msgid "Sorry, %s is already reserved."
-#~ msgstr "%s는 이미 정의되어 있습니다."
-
-#~ msgid "Query string is too long."
-#~ msgstr "Query String이 너무 깁니다."
-
-#~ msgid "Using both cmd= and plugin= is not allowed."
-#~ msgstr "cmd= 및 plugin= 모두 사용할 수 없습니다."
-
-#~ msgid "unable to connect to %s."
-#~ msgstr "%s에 연결할 수 없습니다."
-
-#~ msgid "%s is not found or cannot execute: "
-#~ msgstr "%s은 찾을 수 없거나 실행되고 있지 않습니다."
-
-#~ msgid "Headers already sent at %s, line: %s."
-#~ msgstr "헤더 %s (줄 %s)에서 이미 기록되어 있습니다."
-
-#~ msgid "Search Key List"
-#~ msgstr "검색 키 일람"
-
-#~ msgid "Link List"
-#~ msgstr "링크 리스트"
-
-#~ msgid "Roll Book"
-#~ msgstr "출석부"
-
-#~ msgid "Confirmation list"
-#~ msgstr "확인 정보"
-
-#~ msgid "Browse Log"
-#~ msgstr "열람 로그"
-
-#~ msgid "Update Log"
-#~ msgstr "업데이트 로그"
-
-#~ msgid "May "
-#~ msgstr "5월（가정의 달）"
-
-#~ msgid "PukiWikiAuth"
-#~ msgstr "PukiWikiAuth"

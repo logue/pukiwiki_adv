@@ -1,0 +1,30 @@
+msgid ""
+msgstr "Project-Id-Version: pukiwiki-advance\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-05-30 19:26-0400\n"
+"Last-Translator: logue <logue@hotmail.co.jp>\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.net\n"
+
+#: ../../plugin/insert.inc.php:18
+msgid "On updating $1, a collision has occurred."
+msgstr "On updating $1, a collision has occurred."
+
+#: ../../plugin/insert.inc.php:19
+msgid "$1 was updated"
+msgstr "$1 was updated"
+
+#: ../../plugin/insert.inc.php:20
+msgid "It seems that someone has already updated this page while you were editing it.<br />\n + is placed at the beginning of a line that was newly added.<br />\n ! is placed at the beginning of a line that has possibly been updated.<br />\n Edit those lines, and submit again."
+msgstr "It seems that someone has already updated this page while you were editing it.<br />\n + is placed at the beginning of a line that was newly added.<br />\n ! is placed at the beginning of a line that has possibly been updated.<br />\n Edit those lines, and submit again."
+
+#: ../../plugin/insert.inc.php:85
+msgid "add"
+msgstr "add"
+

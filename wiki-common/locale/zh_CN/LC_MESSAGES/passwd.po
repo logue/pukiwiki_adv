@@ -1,0 +1,114 @@
+msgid ""
+msgstr "Project-Id-Version: pukiwiki-advance\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-05-30 19:26-0400\n"
+"Last-Translator: logue <logue@hotmail.co.jp>\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.net\n"
+
+#: ../../plugin/passwd.inc.php:22
+msgid "UserName"
+msgstr "UserName"
+
+#: ../../plugin/passwd.inc.php:23
+msgid "Passwd"
+msgstr "Passwd"
+
+#: ../../plugin/passwd.inc.php:24
+msgid "Calculate"
+msgstr "Calculate"
+
+#: ../../plugin/passwd.inc.php:25
+msgid "Auth Type"
+msgstr "Auth Type"
+
+#: ../../plugin/passwd.inc.php:26
+msgid "CALC"
+msgstr "CALC"
+
+#: ../../plugin/passwd.inc.php:27
+msgid "Update"
+msgstr "Update"
+
+#: ../../plugin/passwd.inc.php:28
+msgid "Result"
+msgstr "Result"
+
+#: ../../plugin/passwd.inc.php:29
+msgid "Encryption key"
+msgstr "Encryption key"
+
+#: ../../plugin/passwd.inc.php:30
+msgid "Please input Administrator password."
+msgstr "Please input Administrator password."
+
+#: ../../plugin/passwd.inc.php:31
+msgid "Please input the password being used now."
+msgstr "Please input the password being used now."
+
+#: ../../plugin/passwd.inc.php:32
+msgid "Please input a new password."
+msgstr "Please input a new password."
+
+#: ../../plugin/passwd.inc.php:33
+msgid "Please input a suitable character string."
+msgstr "Please input a suitable character string."
+
+#: ../../plugin/passwd.inc.php:34
+msgid "The writing function is limited."
+msgstr "The writing function is limited."
+
+#: ../../plugin/passwd.inc.php:35
+msgid "The authority more than Webmaster for World Wide Web Site is necessary to update it."
+msgstr "The authority more than Webmaster for World Wide Web Site is necessary to update it."
+
+#: ../../plugin/passwd.inc.php:36
+msgid "The encryption key is not corresponding."
+msgstr "The encryption key is not corresponding."
+
+#: ../../plugin/passwd.inc.php:37
+msgid "Because the password was the same, it did not update it."
+msgstr "Because the password was the same, it did not update it."
+
+#: ../../plugin/passwd.inc.php:38
+msgid "The Authentication management file was updated."
+msgstr "The Authentication management file was updated."
+
+#: ../../plugin/passwd.inc.php:39
+msgid "<b>You must be login again.</b> Otherwise, the role is initialized."
+msgstr "<b>You must be login again.</b> Otherwise, the role is initialized."
+
+#: ../../plugin/passwd.inc.php:40
+msgid "One was added."
+msgstr "One was added."
+
+#: ../../plugin/passwd.inc.php:41
+msgid "ERROR."
+msgstr "ERROR."
+
+#: ../../plugin/passwd.inc.php:43
+msgid "Role"
+msgstr "Role"
+
+#: ../../plugin/passwd.inc.php:44
+msgid "Guest"
+msgstr "Guest"
+
+#: ../../plugin/passwd.inc.php:45
+msgid "Webmaster"
+msgstr "Webmaster"
+
+#: ../../plugin/passwd.inc.php:46
+msgid "Contents manager"
+msgstr "Contents manager"
+
+#: ../../plugin/passwd.inc.php:47
+msgid "Authorized"
+msgstr "Authorized"
+

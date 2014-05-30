@@ -1,0 +1,60 @@
+msgid ""
+msgstr "Project-Id-Version: pukiwiki-advance\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-05-30 19:26-0400\n"
+"Last-Translator: logue <logue@hotmail.co.jp>\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.net\n"
+
+#: ../../plugin/spam.inc.php:20
+msgid "Spam tools: "
+msgstr "Spam 工具："
+
+#: ../../plugin/spam.inc.php:21
+msgid "Menu"
+msgstr "菜单"
+
+#: ../../plugin/spam.inc.php:22
+msgid "PKWK_READONLY prohibits this"
+msgstr "已被 PKWK_READONLY 禁止"
+
+#: ../../plugin/spam.inc.php:23
+msgid "Start from: "
+msgstr "从这里开始："
+
+#: ../../plugin/spam.inc.php:24
+msgid "Sort (heavy)"
+msgstr "排序 (重)"
+
+#: ../../plugin/spam.inc.php:25
+msgid "Pass: "
+msgstr "通过："
+
+#: ../../plugin/spam.inc.php:26
+msgid "Check"
+msgstr "检查"
+
+#: ../../plugin/spam.inc.php:27
+msgid "Check existing pages. (badhost only at this time)"
+msgstr "检查现有页面。（此次仅依据 badhost)"
+
+#: ../../plugin/spam.inc.php:28
+#, php-format
+msgid "FOUND at %s."
+msgstr "在 %s 上找到。"
+
+#: ../../plugin/spam.inc.php:29
+#, php-format
+msgid "Pages: %1s hit / %2s checked / %3s all"
+msgstr "页面: %1s 命中 / %2s 检查 / %3s 全部"
+
+#: ../../plugin/spam.inc.php:30
+msgid "Pages"
+msgstr "页面"
+

@@ -1,0 +1,126 @@
+msgid ""
+msgstr "Project-Id-Version: pukiwiki-advance\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-05-30 19:26-0400\n"
+"Last-Translator: logue <logue@hotmail.co.jp>\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.net\n"
+
+#: ../../plugin/dump.inc.php:54
+msgid "PKWK_READONLY prohibits this"
+msgstr "PKWK_READONLY prohibits this"
+
+#: ../../plugin/dump.inc.php:56
+msgid "dump & restore"
+msgstr "dump & restore"
+
+#: ../../plugin/dump.inc.php:56
+msgid "dump"
+msgstr "dump"
+
+#: ../../plugin/dump.inc.php:63
+msgid "The password is different."
+msgstr "The password is different."
+
+#: ../../plugin/dump.inc.php:84
+msgid "Up-loading was completed."
+msgstr "Up-loading was completed."
+
+#: ../../plugin/dump.inc.php:84
+msgid "It failed in up-loading."
+msgstr "It failed in up-loading."
+
+#: ../../plugin/dump.inc.php:89
+msgid "It is an invalid instruction."
+msgstr "It is an invalid instruction."
+
+#: ../../plugin/dump.inc.php:121
+msgid "It failed in the generation of a temporary file."
+msgstr "It failed in the generation of a temporary file."
+
+#: ../../plugin/dump.inc.php:136 ../../plugin/dump.inc.php:177
+msgid "The file was not found."
+msgstr "The file was not found."
+
+#: ../../plugin/dump.inc.php:152
+msgid "Restoring function is not allowed"
+msgstr "Restoring function is not allowed"
+
+#: ../../plugin/dump.inc.php:165
+msgid "Invalid file suffix: "
+msgstr "Invalid file suffix: "
+
+#: ../../plugin/dump.inc.php:169
+msgid "Max file size exceeded: "
+msgstr "Max file size exceeded: "
+
+#: ../../plugin/dump.inc.php:186
+msgid "There was no file that was able to be expanded."
+msgstr "There was no file that was able to be expanded."
+
+#: ../../plugin/dump.inc.php:189
+msgid "Progressing file list"
+msgstr "Progressing file list"
+
+#: ../../plugin/dump.inc.php:233
+msgid "Download of data"
+msgstr "Download of data"
+
+#: ../../plugin/dump.inc.php:234
+msgid "Form of archive"
+msgstr "Form of archive"
+
+#: ../../plugin/dump.inc.php:235
+msgid "form"
+msgstr "form"
+
+#: ../../plugin/dump.inc.php:236
+msgid "Backup directory"
+msgstr "Backup directory"
+
+#: ../../plugin/dump.inc.php:237
+msgid "Options"
+msgstr "Options"
+
+#: ../../plugin/dump.inc.php:238
+msgid "Virtual of page name encode is converted into the file name with the directory."
+msgstr "Virtual of page name encode is converted into the file name with the directory."
+
+#: ../../plugin/dump.inc.php:239
+msgid "(The restoration that uses this data cannot be done."
+msgstr "(The restoration that uses this data cannot be done."
+
+#: ../../plugin/dump.inc.php:240
+msgid "Moreover, a part of character is substituted for '_'.)"
+msgstr "Moreover, a part of character is substituted for '_'.)"
+
+#: ../../plugin/dump.inc.php:242
+msgid " Restoration of data"
+msgstr " Restoration of data"
+
+#: ../../plugin/dump.inc.php:243
+msgid "[IMPORTANCE]"
+msgstr "[IMPORTANCE]"
+
+#: ../../plugin/dump.inc.php:244
+msgid "Attention: Please note that the data file of the same name is overwrited."
+msgstr "Attention: Please note that the data file of the same name is overwrited."
+
+#: ../../plugin/dump.inc.php:246
+msgid "File"
+msgstr "File"
+
+#: ../../plugin/dump.inc.php:247
+msgid "Download execution"
+msgstr "Download execution"
+
+#: ../../plugin/dump.inc.php:248
+msgid "Upload execution"
+msgstr "Upload execution"
+

@@ -1,0 +1,51 @@
+msgid ""
+msgstr "Project-Id-Version: pukiwiki-advance\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-05-30 19:26-0400\n"
+"Last-Translator: logue <logue@hotmail.co.jp>\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.net\n"
+
+#: ../../plugin/jugemkey.inc.php:20
+msgid "logout"
+msgstr "logout"
+
+#: ../../plugin/jugemkey.inc.php:21
+#, php-format
+msgid "%s has been approved by JugemKey."
+msgstr "%s has been approved by JugemKey."
+
+#: ../../plugin/jugemkey.inc.php:22
+msgid "The function of JugemKey is invalid."
+msgstr "The function of JugemKey is invalid."
+
+#: ../../plugin/jugemkey.inc.php:23
+msgid "pkwk_session_start() doesn't exist."
+msgstr "pkwk_session_start() doesn't exist."
+
+#: ../../plugin/jugemkey.inc.php:24
+msgid "The session is not start."
+msgstr "The session is not start."
+
+#: ../../plugin/jugemkey.inc.php:25
+msgid "JugemKey"
+msgstr "JugemKey"
+
+#: ../../plugin/jugemkey.inc.php:26
+msgid "LOGIN(JugemKey)"
+msgstr "LOGIN(JugemKey)"
+
+#: ../../plugin/jugemkey.inc.php:27
+msgid "JugemKey user information"
+msgstr "JugemKey user information"
+
+#: ../../plugin/jugemkey.inc.php:28
+msgid "User Name"
+msgstr "User Name"
+

@@ -1,24 +1,16 @@
-# PukiWiki Advance - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
-# License is GPL2
-# Logue <logue@hotmail.co.jp>, 2014.
-#
 msgid ""
-msgstr ""
-"Project-Id-Version: PukiWiki Advance 2.0\n"
+msgstr "Project-Id-Version: pukiwiki-advance\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
 "POT-Creation-Date: 2014-03-19 15:45+0900\n"
-"PO-Revision-Date: 2014-03-20 14:01+0900\n"
-"Last-Translator: Logue <logue@hotmail.co.jp>\n"
-"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"PO-Revision-Date: 2014-03-26 06:46-0400\n"
+"Last-Translator: logue <logue@hotmail.co.jp>\n"
+"Language-Team: Japanese\n"
 "Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-Basepath: ../../pot\n"
-"X-Generator: Poedit 1.6.4\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.net\n"
 
 #: ../../plugin/dump.inc.php:54
 msgid "PKWK_READONLY prohibits this"
@@ -97,11 +89,8 @@ msgid "Options"
 msgstr "オプション"
 
 #: ../../plugin/dump.inc.php:238
-msgid ""
-"Virtual of page name encode is converted into the file name with the "
-"directory."
-msgstr ""
-" エンコードされているページ名をディレクトリ階層つきのファイルにデコード"
+msgid "Virtual of page name encode is converted into the file name with the directory."
+msgstr " エンコードされているページ名をディレクトリ階層つきのファイルにデコード"
 
 #: ../../plugin/dump.inc.php:239
 msgid "(The restoration that uses this data cannot be done."
@@ -120,8 +109,7 @@ msgid "[IMPORTANCE]"
 msgstr "[重要]"
 
 #: ../../plugin/dump.inc.php:244
-msgid ""
-"Attention: Please note that the data file of the same name is overwrited."
+msgid "Attention: Please note that the data file of the same name is overwrited."
 msgstr " 同じ名前のデータファイルは上書きされますので、十分ご注意ください。"
 
 #: ../../plugin/dump.inc.php:246
@@ -135,3 +123,4 @@ msgstr "ダウンロード実行"
 #: ../../plugin/dump.inc.php:248
 msgid "Upload execution"
 msgstr "アップロード実行"
+

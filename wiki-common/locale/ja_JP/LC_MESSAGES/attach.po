@@ -1,24 +1,16 @@
-# PukiWiki Advance - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
-# License is GPL2
-# Logue <logue@hotmail.co.jp>, 2011.
-#
 msgid ""
-msgstr ""
-"Project-Id-Version: PukiWiki Advance 2.0\n"
+msgstr "Project-Id-Version: pukiwiki-advance\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
 "POT-Creation-Date: 2014-03-19 15:45+0900\n"
-"PO-Revision-Date: 2014-03-20 14:01+0900\n"
-"Last-Translator: Logue <logue@hotmail.co.jp>\n"
-"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"PO-Revision-Date: 2014-03-26 06:46-0400\n"
+"Last-Translator: logue <logue@hotmail.co.jp>\n"
+"Language-Team: Japanese\n"
 "Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-Basepath: ../../pot\n"
-"X-Generator: Poedit 1.6.4\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.net\n"
 
 #: ../../plugin/attach.inc.php:80
 msgid "Uploaded the file to $1"
@@ -252,22 +244,6 @@ msgid "The compression file cannot be written."
 msgstr "圧縮ファイルを書き込めません。"
 
 #: ../../plugin/attach.inc.php:138
-msgid ""
-"File name is too long. Please rename more short file name before upoload."
-msgstr ""
-"ファイル名が長過ぎます。ファイル名を短くしてからもう一度やり直してください。"
+msgid "File name is too long. Please rename more short file name before upoload."
+msgstr "ファイル名が長過ぎます。ファイル名を短くしてからもう一度やり直してください。"
 
-#~ msgid "Wrong password."
-#~ msgstr "パスワードが一致しません。"
-
-#~ msgid " <span class=\"small\">%s download</span>"
-#~ msgstr " <span class=\"small\">%s件</span>"
-
-#~ msgid "PKWK_READONLY prohibits editing"
-#~ msgstr "PKWK_READONLY 編集禁止(アップロード抑止)"
-
-#~ msgid "The error occurred"
-#~ msgstr "エラーが発生しました"
-
-#~ msgid "PKWK_SAFE_MODE prohibits this"
-#~ msgstr "PKWK_SAFE_MODE 操作禁止"

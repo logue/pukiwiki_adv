@@ -1,24 +1,16 @@
-# PukiWiki Advance - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
-# License is GPL2
-# Logue <logue@hotmail.co.jp>, 2011.
-#
 msgid ""
-msgstr ""
-"Project-Id-Version: PukiWiki Advance 2.0\n"
+msgstr "Project-Id-Version: pukiwiki-advance\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
 "POT-Creation-Date: 2014-03-19 15:45+0900\n"
-"PO-Revision-Date: 2014-03-20 14:01+0900\n"
-"Last-Translator: Logue <logue@hotmail.co.jp>\n"
-"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"PO-Revision-Date: 2014-03-26 06:46-0400\n"
+"Last-Translator: logue <logue@hotmail.co.jp>\n"
+"Language-Team: Japanese\n"
 "Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-Basepath: ../../pot\n"
-"X-Generator: Poedit 1.6.4\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.net\n"
 
 #: ../../plugin/amazon.inc.php:54
 msgid "Review edit"
@@ -85,63 +77,6 @@ msgid "You have not permission to create new page."
 msgstr "あなたは、新しいページを作成できる権利を持っていません。"
 
 #: ../../plugin/amazon.inc.php:70
-msgid ""
-"You must define AMAZON_AID and AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY "
-"before use."
-msgstr ""
-"このプラグインを使用する前にAMAZON_AIDと、AWS_ACCESS_KEY_IDと、"
-"AWS_SECRET_ACCESS_KEYを指定する必要があります。"
+msgid "You must define AMAZON_AID and AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY before use."
+msgstr "このプラグインを使用する前にAMAZON_AIDと、AWS_ACCESS_KEY_IDと、AWS_SECRET_ACCESS_KEYを指定する必要があります。"
 
-#~ msgid "Author"
-#~ msgstr "作者"
-
-#~ msgid "Critic"
-#~ msgstr "評者"
-
-#~ msgid "Date"
-#~ msgstr "日付"
-
-#~ msgid "RECOMMENDATION"
-#~ msgstr "お薦め対象"
-
-#~ msgid "Impression"
-#~ msgstr "感想"
-
-#~ msgid ""
-#~ "// First of all, please delete the full text when you stop this review, "
-#~ "and push the [update] button on the page.\n"
-#~ msgstr ""
-#~ "// まず、このレビューを止める場合、全文を削除し、ページの[更新ボタン]を押"
-#~ "してください！\n"
-
-#~ msgid "// (This document have already been registered.)\n"
-#~ msgstr "// (この文章は既に登録されています)\n"
-
-#~ msgid ""
-#~ "// Please delete the [[THIS EDIT]] part on including parentheses, and "
-#~ "rewrite it if you continue.\n"
-#~ msgstr ""
-#~ "// 続けるなら、上の、[[ここ編集のこと]]部分を括弧を含めて削除し、書き直し"
-#~ "てください。\n"
-
-#~ msgid "// Please change the MY_NAME part to my name.\n"
-#~ msgstr "// お名前、部分はご自分の名前に変更してください。\n"
-
-#~ msgid ""
-#~ "// **RECOMMENDATION Above, please do not add a new line. Because it uses "
-#~ "it for the contents making.\n"
-#~ msgstr ""
-#~ "// **お薦め対象、より上は、新しい行を追加しないでください。目次作成に使用"
-#~ "するので。\n"
-
-#~ msgid "// Please cut all the comment lines that start in // finally.\n"
-#~ msgstr "// //で始まるコメント行は、最終的に全部カットしてください。\n"
-
-#~ msgid "// There is a possibility that contents cannot be normally made.\n"
-#~ msgstr "// 目次が正常に作成できない可能性があります。\n"
-
-#~ msgid "PKWK_READONLY prohibits editing"
-#~ msgstr "PKWK_READONLY 編集禁止"
-
-#~ msgid "PKWK_CREATE_PAGE prohibits editing"
-#~ msgstr "PKWK_CREATE_PAGE 編集禁止"

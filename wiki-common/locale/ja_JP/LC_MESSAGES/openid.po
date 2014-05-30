@@ -1,24 +1,16 @@
-# PukiWiki Advance - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
-# License is GPL2
-# Logue <logue@hotmail.co.jp>, 2014.
-#
 msgid ""
-msgstr ""
-"Project-Id-Version: PukiWiki Advance 2.0\n"
+msgstr "Project-Id-Version: pukiwiki-advance\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
 "POT-Creation-Date: 2014-03-19 15:45+0900\n"
-"PO-Revision-Date: 2014-03-20 14:01+0900\n"
-"Last-Translator: Logue <logue@hotmail.co.jp>\n"
-"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"PO-Revision-Date: 2014-03-26 06:46-0400\n"
+"Last-Translator: logue <logue@hotmail.co.jp>\n"
+"Language-Team: Japanese\n"
 "Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-Basepath: ../../pot\n"
-"X-Generator: Poedit 1.6.4\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.net\n"
 
 #: ../../plugin/openid.inc.php:23
 msgid "logout"
@@ -63,11 +55,8 @@ msgstr "OpenID ログイン画面"
 
 #: ../../plugin/openid.inc.php:33
 #, php-format
-msgid ""
-"Could not create the FileStore directory %s. Please check the effective "
-"permissions."
-msgstr ""
-"FileStore ディレクトリ(%s) の作成ができません。権限が有効か確認して下さい。"
+msgid "Could not create the FileStore directory %s. Please check the effective permissions."
+msgstr "FileStore ディレクトリ(%s) の作成ができません。権限が有効か確認して下さい。"
 
 #: ../../plugin/openid.inc.php:34
 msgid "Verification cancelled."
@@ -89,3 +78,4 @@ msgstr "認証エラー; 有効ではない OpenID です。"
 #, php-format
 msgid "Could not redirect to server: %s"
 msgstr "サーバにリダイレクトできませんでした: %s"
+

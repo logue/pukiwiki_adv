@@ -1,0 +1,150 @@
+msgid ""
+msgstr "Project-Id-Version: pukiwiki-advance\n"
+"Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
+"POT-Creation-Date: 2014-03-19 15:45+0900\n"
+"PO-Revision-Date: 2014-05-30 19:26-0400\n"
+"Last-Translator: logue <logue@hotmail.co.jp>\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.net\n"
+
+#: ../../plugin/table_edit2.inc.php:299 ../../plugin/table_edit2.inc.php:1614
+msgid "OK"
+msgstr "OK"
+
+#: ../../plugin/table_edit2.inc.php:300 ../../plugin/table_edit2.inc.php:462
+#: ../../plugin/table_edit2.inc.php:1617
+msgid "no time stamp"
+msgstr "没有时间戳"
+
+#: ../../plugin/table_edit2.inc.php:461
+msgid "character code in"
+msgstr "包含字符代码"
+
+#: ../../plugin/table_edit2.inc.php:471
+msgid "character code out"
+msgstr "去除字符代码"
+
+#: ../../plugin/table_edit2.inc.php:473
+msgid "no"
+msgstr "不"
+
+#: ../../plugin/table_edit2.inc.php:474
+msgid "character"
+msgstr "字符"
+
+#: ../../plugin/table_edit2.inc.php:475
+msgid "column"
+msgstr "列"
+
+#: ../../plugin/table_edit2.inc.php:479
+msgid "w quote"
+msgstr "w 引用"
+
+#: ../../plugin/table_edit2.inc.php:479
+msgid "column number"
+msgstr "列号"
+
+#: ../../plugin/table_edit2.inc.php:482
+msgid "line feed code"
+msgstr "换行的代码"
+
+#: ../../plugin/table_edit2.inc.php:528
+msgid "Locked"
+msgstr "锁定"
+
+#: ../../plugin/table_edit2.inc.php:529
+msgid "Unlocked"
+msgstr "解锁"
+
+#: ../../plugin/table_edit2.inc.php:552
+msgid "import"
+msgstr "导入"
+
+#: ../../plugin/table_edit2.inc.php:554 ../../plugin/table_edit2.inc.php:1877
+msgid "export"
+msgstr "导出"
+
+#: ../../plugin/table_edit2.inc.php:1059
+msgid "edit"
+msgstr "编辑"
+
+#: ../../plugin/table_edit2.inc.php:1060
+msgid "addition"
+msgstr "添加"
+
+#: ../../plugin/table_edit2.inc.php:1562
+msgid " [Add Mode]"
+msgstr "[添加模式]"
+
+#: ../../plugin/table_edit2.inc.php:1615
+msgid "cancel"
+msgstr "取消"
+
+#: ../../plugin/table_edit2.inc.php:1616
+msgid "delete"
+msgstr "删除"
+
+#: ../../plugin/table_edit2.inc.php:1618
+msgid "table"
+msgstr "表"
+
+#: ../../plugin/table_edit2.inc.php:1619
+msgid "line"
+msgstr "行"
+
+#: ../../plugin/table_edit2.inc.php:1620
+msgid "column line"
+msgstr "纵列"
+
+#: ../../plugin/table_edit2.inc.php:1857
+msgid "download"
+msgstr "下载"
+
+#: ../../plugin/table_edit2.inc.php:1858
+msgid "back"
+msgstr "返回"
+
+#: ../../plugin/table_edit2.inc.php:1859
+msgid "ref plugin is not found"
+msgstr "找不到 ref 插件"
+
+#: ../../plugin/table_edit2.inc.php:1886 ../../plugin/table_edit2.inc.php:1892
+#: ../../plugin/table_edit2.inc.php:1898 ../../plugin/table_edit2.inc.php:1904
+#: ../../plugin/table_edit2.inc.php:1910 ../../plugin/table_edit2.inc.php:1916
+#: ../../plugin/table_edit2.inc.php:1925
+msgid "cannot upload"
+msgstr "无法上传"
+
+#: ../../plugin/table_edit2.inc.php:1887
+msgid "Please upload it by a POST."
+msgstr "请使用 POST 上传。"
+
+#: ../../plugin/table_edit2.inc.php:1893
+msgid "The uploaded file exceeds the upload_max_filesize directive in php.ini."
+msgstr "上传的文件大小超过了在 php.ini 中设置的 upload_max_filesize 值。"
+
+#: ../../plugin/table_edit2.inc.php:1899
+msgid "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form."
+msgstr "上传的文件大小超出 HTML 表单中指定的 MAX_FILE_SIZE 数值。"
+
+#: ../../plugin/table_edit2.inc.php:1905
+msgid "The uploaded file was only partially uploaded."
+msgstr "只上传了部分文件"
+
+#: ../../plugin/table_edit2.inc.php:1911
+msgid "No file was uploaded."
+msgstr "未上传文件。"
+
+#: ../../plugin/table_edit2.inc.php:1917
+msgid "Missing a temporary folder."
+msgstr "缺少临时文件夹。"
+
+#: ../../plugin/table_edit2.inc.php:1926
+msgid "A file unlike text was uploaded."
+msgstr "已上传非文本的文件。"
+

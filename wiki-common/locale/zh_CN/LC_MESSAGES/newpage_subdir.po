@@ -1,24 +1,16 @@
-# PukiWiki Advance - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
-# License is GPL2
-# Logue <logue@hotmail.co.jp>, 2014.
-#
 msgid ""
-msgstr ""
-"Project-Id-Version: PukiWiki Advance 2.0\n"
+msgstr "Project-Id-Version: pukiwiki-advance\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
 "POT-Creation-Date: 2014-03-19 15:45+0900\n"
-"PO-Revision-Date: 2012-11-26 17:19+0800\n"
-"Last-Translator: 迪艾维尔 <diwill2012@gmail.com>\n"
-"Language-Team: 迪艾维尔 <diwill2012@gmail.com>\n"
+"PO-Revision-Date: 2014-05-30 19:26-0400\n"
+"Last-Translator: logue <logue@hotmail.co.jp>\n"
+"Language-Team: Chinese Simplified\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-Basepath: ../../pot\n"
-"X-Generator: Poedit 1.6.4\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.net\n"
 
 #: ../../plugin/newpage_subdir.inc.php:43
 #, php-format
@@ -42,9 +34,7 @@ msgid "DESCRIPTION"
 msgstr "描述"
 
 #: ../../plugin/newpage_subdir.inc.php:102
-msgid ""
-"The field that adds a new page below the directory specified for [directory] "
-"is made."
+msgid "The field that adds a new page below the directory specified for [directory] is made."
 msgstr "已在指定目录 [目录] 下新增加一页。"
 
 #: ../../plugin/newpage_subdir.inc.php:103
@@ -52,8 +42,7 @@ msgid "The order of the parameter is arbitrary."
 msgstr "参数的顺序任意。"
 
 #: ../../plugin/newpage_subdir.inc.php:104
-msgid ""
-"When an undefined option is specified, Help is displayed with the message."
+msgid "When an undefined option is specified, Help is displayed with the message."
 msgstr "当指定了一个未定义的选项，显示帮助信息。"
 
 #: ../../plugin/newpage_subdir.inc.php:105
@@ -61,18 +50,14 @@ msgid "OPTION"
 msgstr "选项"
 
 #: ../../plugin/newpage_subdir.inc.php:106
-msgid ""
-"-d Directory Only.\tIt limits it only to the one with the child page. (The "
-"directory specified specifying it is an exception. )"
+msgid "-d Directory Only.\tIt limits it only to the one with the child page. (The directory specified specifying it is an exception. )"
 msgstr "-d 目录唯一.\t仅限于拥有子页面（目录明确规定的除外）"
 
 #: ../../plugin/newpage_subdir.inc.php:107
-#, fuzzy
 msgid "-h Help. This Description is displayed."
 msgstr "-h 帮助\t\t显示此描述。"
 
 #: ../../plugin/newpage_subdir.inc.php:108
-#, fuzzy
 msgid "-q Quiet. Warning is not displayed."
 msgstr "-q 安静.\t\t不显示警告。"
 
@@ -85,8 +70,3 @@ msgstr "举例"
 msgid "Create new page to %s directory"
 msgstr "在 %s 目录创建新页面"
 
-#~ msgid "New page"
-#~ msgstr "新規ページ作成"
-
-#~ msgid "Edit"
-#~ msgstr "編集"

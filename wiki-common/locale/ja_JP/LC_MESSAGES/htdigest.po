@@ -1,24 +1,16 @@
-# PukiWiki Advance - Yet Another WikiWikiWeb Clone
-# Copyright (C) 2010-2014 PukiWiki Advance Developers Team
-# License is GPL2
-# Logue <logue@hotmail.co.jp>, 2014.
-#
 msgid ""
-msgstr ""
-"Project-Id-Version: PukiWiki Advance 2.0\n"
+msgstr "Project-Id-Version: pukiwiki-advance\n"
 "Report-Msgid-Bugs-To: logue@hotmail.co.jp\n"
 "POT-Creation-Date: 2014-03-19 15:45+0900\n"
-"PO-Revision-Date: 2014-03-20 14:01+0900\n"
-"Last-Translator: Logue <logue@hotmail.co.jp>\n"
-"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"PO-Revision-Date: 2014-03-26 06:46-0400\n"
+"Last-Translator: logue <logue@hotmail.co.jp>\n"
+"Language-Team: Japanese\n"
 "Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-Basepath: ../../pot\n"
-"X-Generator: Poedit 1.6.4\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.net\n"
 
 #: ../../plugin/htdigest.inc.php:32
 msgid "realm"
@@ -73,9 +65,7 @@ msgid "The writing function is limited."
 msgstr "書き込み機能は、制限されています。"
 
 #: ../../plugin/htdigest.inc.php:45
-msgid ""
-"The authority more than Webmaster for World Wide Web Site is necessary to "
-"update it."
+msgid "The authority more than Webmaster for World Wide Web Site is necessary to update it."
 msgstr "更新するためには、サイト管理者以上の権限が必要です。"
 
 #: ../../plugin/htdigest.inc.php:46
@@ -83,11 +73,8 @@ msgid "The encryption key is not corresponding."
 msgstr "暗号鍵が一致しません。"
 
 #: ../../plugin/htdigest.inc.php:47
-msgid ""
-"In this version, the Administrator password is supported only with {x-php-"
-"md5}."
-msgstr ""
-"このバージョンでは、管理者パスワードが {x-php-md5} のみサポートされます。"
+msgid "In this version, the Administrator password is supported only with {x-php-md5}."
+msgstr "このバージョンでは、管理者パスワードが {x-php-md5} のみサポートされます。"
 
 #: ../../plugin/htdigest.inc.php:48
 msgid "Realm is not corresponding."
@@ -112,3 +99,4 @@ msgstr "１件追加しました。"
 #: ../../plugin/htdigest.inc.php:53
 msgid "ERROR."
 msgstr "エラー。"
+
