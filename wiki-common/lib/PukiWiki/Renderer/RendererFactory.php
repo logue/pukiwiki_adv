@@ -24,7 +24,7 @@ class RendererFactory{
 	 * @param array or string $lines Wikiテキスト
 	 * @return string
 	 */
-	public static function factory($lines){
+	public static function factory($lines, $guiedit = false){
 		static $id;
 
 		if (!is_array($lines)){
@@ -35,7 +35,7 @@ class RendererFactory{
 			unset($_lines);
 		}
 
-		$body = new RootElement(++$id);
+		$body = new RootElement(++$id, $guiedit);
 		$body->parse($lines);
 
 		return $body->toString();

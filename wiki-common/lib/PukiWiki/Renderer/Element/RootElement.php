@@ -41,12 +41,14 @@ class RootElement extends Element
 	protected $count = 0;
 	protected $contents;
 	protected $contents_last;
+	protected $comments = array();
 
-	public function __construct($id)
+	public function __construct($id, $is_guiedit = false)
 	{
 		$this->id            = $id;
 		$this->contents      = new Element();
 		$this->contents_last = $this->contents;
+		$this->is_guiedit    = $is_guiedit;
 		parent::__construct();
 	}
 
@@ -59,7 +61,14 @@ class RootElement extends Element
 			$line = array_shift($lines);
 
 			// Escape comments
-			if (substr($line, 0, 2) === '//') continue;
+			if (substr($line, 0, 2) === '//'){
+				if ($this->is_guiedit){
+					$this->comments[] = substr($line, 2);
+					$line = '___COMMENT___';
+				}else{
+					continue;
+				}
+			}
 
 			// Extend TITLE by miko
 			if (preg_match('/^(TITLE):(.*)$/',$line,$matches))
@@ -159,7 +168,11 @@ class RootElement extends Element
 						$content = ElementFactory::factory('YTable', $this, $line);
 						break;
 					case '#':
-						$content = ElementFactory::factory('Plugin', $this, $line);
+						if ($this->is_guiedit){
+							$content = ElementFactory::factory('PluginDummy', $this, $line);
+						}else{
+							$content = ElementFactory::factory('Plugin', $this, $line);
+						}
 						break;
 					default:
 						$content = ElementFactory::factory('InlineElement', null, $line);
@@ -238,8 +251,23 @@ class RootElement extends Element
 
 	public function toString()
 	{
+		if ($this->is_guiedit) {
+			$text = parent::toString();
+			$text = preg_replace_callback("/___COMMENT___(\n___COMMENT___)*/", array(&$this, 'comment'), $text);
+			return $text . "\n";
+		}
 		// #contents
 		return preg_replace_callback('/<#_contents_>/', array(& $this, 'replaceContents'), parent::toString());
+	}
+	
+	private function comment($matches)
+	{
+		$comments = explode("\n", $matches[0]);
+		foreach ($comments as $key=>$comment) {
+			$comments[$key] = array_shift($this->comments);
+		}
+		$comment = join("\n", $comments);
+		return '<img alt="Comment" title="' . htmlspecialchars($comment) . '" />';
 	}
 
 	private function replaceContents()

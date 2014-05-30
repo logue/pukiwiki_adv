@@ -1301,6 +1301,12 @@ li[role=tab] {
 	position: absolute;
 	z-index: -999;
 }
+
+#back-top{
+	position:fixed;
+	bottom:5px;
+	right:5px;
+}
 /* ==|== ui icon classes ==================================================== */
 .pkwk-icon {
 	display: inline-block;

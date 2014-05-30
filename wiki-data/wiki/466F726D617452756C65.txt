@@ -1,6 +1,9 @@
 #multilang(ja){{{
 TITLE:整形ルール
 #norelated
+
+#contents
+
 * テキスト整形のルール [#b025f5ea]
 
 通常は入力した文章がそのまま出力されます。

@@ -794,6 +794,46 @@ $.fn.bsbutton = bootstrapButton;
 					
 				}
 			});
+			
+			/**
+			 * トップに戻るボタン
+			 * http://webdesignerwall.com/tutorials/animated-scroll-to-top
+			 */
+			var $body = $(document.body), $window = $(window), $back_top;
+			// DOMを挿入
+			$body.append('<div id="back-top"><a href="#" class="btn btn-primary btn-lg" title="トップへ"><span class="glyphicon glyphicon-arrow-up"></span></a></div>');
+			
+			$back_top = $('#back-top');
+			// 最上部でボタンが表示されるとカッコ悪いので隠す
+			$back_top.hide();
+			// スクロール量に応じて、フェードで「トップに戻る」ボタンを表示/非表示
+			$window.scroll(function () {
+				if ($(this).scrollTop() > $('.masthead').height()) {
+					// スクロールしているときは、フェードインで表示させる
+					$back_top.fadeIn();
+				} else {
+					// スクロールしていないときは、フェードアウトで隠す
+					$back_top.fadeOut();
+				}
+			});
+			// 「トップに戻る」ボタンにイベント割り当て
+			
+			$('#back-top a')
+				.click(function(){
+					$('html,body').animate({scrollTop: 0}, 1000);
+					return false;
+				})
+				.fadeTo('fast',0.5)	// 実は、初期値。
+				.hover(
+					function(){
+						// マウスオーバー時にフェードイン（濃くする）
+						$(this).fadeTo('normal',1);
+					},
+					function(){
+						// マウスが離れたときにフェードアウト（薄くする）
+						$(this).fadeTo('normal',0.5);
+					}
+				);
 		},
 		// ajaxでダイアログ生成。JSON専用！
 		// JSONには必ず、bodyとtitleを入れること！（まぁ、parse関数でbodyとtitleが含まれるオブジェクトにすればいいけど）

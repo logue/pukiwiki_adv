@@ -115,8 +115,9 @@ var pukiwiki_guiedit = {
 			}
 			//this.config	// 設定を代入
 		);
-
+		var common_uri = COMMON_URI ? COMMON_URI : '/';
 		this.CKEditor = this.editor.ckeditorGet();	// CKEditorのエイリアス
+		this.CKEditor.config.contentsCss = [common_uri+'css/bootstrap.min.css', common_uri+'css/font-awesome.min.css', common_uri+'css/pukiwiki.css'];
 	},
 	// ロード
 	load : function(){

@@ -123,7 +123,7 @@ function plugin_guiedit_edit_data($page)
 	if ($postdata == '') $postdata = Factory::Wiki($page)->auto_template();
 
 	//	構文の変換
-	$ret = RendererFactory::factory($postdata);
+	$ret = RendererFactory::factory($postdata, true);
 
 	plugin_guiedit_send_ajax($ret);
 }
@@ -179,7 +179,7 @@ function plugin_guiedit_preview()
 	if ($postdata) {
 		$postdata = make_str_rules($postdata);
 		$postdata = explode("\n", $postdata);
-		$postdata = drop_submit(RendererFactory::factory($postdata));
+		$postdata = drop_submit(RendererFactory::factory($postdata, true));
 	}
 
 	//	テキスト編集の場合

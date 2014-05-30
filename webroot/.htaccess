@@ -245,6 +245,8 @@ AddDefaultCharset utf-8
   # Options +SymLinksIfOwnerMatch
     RewriteEngine On
   # RewriteBase /
+  # RewriteCond %{HTTP:Authorization} ^(.*)
+  # RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^.* - [L]
