@@ -65,7 +65,7 @@ class Render{
 	/**
 	 * スキンスクリプト（圧縮）
 	 */
-	const DEFAULT_JS_COMPRESSED = 'js.php?file=skin';
+	const DEFAULT_JS_COMPRESSED = 'skin.js';
 	/**
 	 * モバイルスクリプト（未圧縮）
 	 */
@@ -73,7 +73,7 @@ class Render{
 	/**
 	 * モバイルスクリプト（圧縮）
 	 */
-	const MOBILE_JS_COMPRESSED = 'js.php?file=mobile';
+	const MOBILE_JS_COMPRESSED = 'mobile.js';
 	/**
 	 * jQueryのCDNドメイン名
 	 */
