@@ -41,7 +41,7 @@ body{
 
 /* anchor tag */
 a:not(.btn):not([role="presentation"]) {
-	color:#3578b2 !important;
+	color:#3578b2;
 	text-decoration:none;
 }
 
