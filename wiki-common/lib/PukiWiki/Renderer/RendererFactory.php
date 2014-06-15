@@ -19,14 +19,13 @@ use PukiWiki\Renderer\Element\RootElement;
  * レンダラーファクトリークラス
  */
 class RendererFactory{
+	private static $id = 0;
 	/**
 	 * ファクトリーメソッド
 	 * @param array or string $lines Wikiテキスト
 	 * @return string
 	 */
 	public static function factory($lines, $guiedit = false){
-		static $id;
-
 		if (!is_array($lines)){
 			// 改行を正規化
 			$_lines = str_replace(array(chr(0x0d) . chr(0x0a), chr(0x0d), chr(0x0a)), "\n", $lines);
@@ -35,7 +34,7 @@ class RendererFactory{
 			unset($_lines);
 		}
 
-		$body = new RootElement(++$id, $guiedit);
+		$body = new RootElement(++self::$id, $guiedit);
 		$body->parse($lines);
 
 		return $body->toString();

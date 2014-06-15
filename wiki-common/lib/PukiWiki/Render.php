@@ -519,7 +519,7 @@ class Render{
 			self::tag_helper('meta',$meta_tags) .
 			self::tag_helper('link',$link_tags) .
 			// Modernizrはヘッダー内でないと動作しない
-			(!IS_MOBILE ? '<script type="text/javascript" src="'.JS_URI.'js.php?file=modernizr.min'.'"></script>'."\n" : '');
+			(!IS_MOBILE ? '<script type="text/javascript" src="'.JS_URI.'modernizr.min.js'.'"></script>'."\n" : '');
 	}
 	/**
 	 * リンク一覧を取得
