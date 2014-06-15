@@ -16,7 +16,7 @@
 */
 /*jshint browser:true, jquery:true, unused:false, expr: true */
 /*global console:false, alert:false */
-!(function($) {
+(function($) {
 	"use strict";
 	$.extend({
 		/*jshint supernew:true */
