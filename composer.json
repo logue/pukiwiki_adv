@@ -40,7 +40,9 @@
 		"zendframework/zendservice-akismet":"2.*",
 		"zendframework/zendservice-recaptcha":"2.*",
 		"zendframework/zendservice-twitter":"2.*",
-		"zendframework/zendxml":"*"
+		"zendframework/zendxml":"*",
+		"logue/igo-php":"*",
+		"zendframework/zendsearch": "dev-master"
 	},
 	"suggest":{
 		"ext-curl" : "Facebook needs the CURL PHP extension.",

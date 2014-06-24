@@ -44,6 +44,7 @@ define('PLUGIN_PCOMMENT_FORMAT_STRING',
 use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
 use PukiWiki\Renderer\RendererFactory;
+use PukiWiki\Renderer\PluginRenderer;
 use PukiWiki\Utility;
 
 function plugin_pcomment_action()
@@ -101,15 +102,17 @@ function plugin_pcomment_convert()
 		'_args' =>array()
 	);
 
-	foreach(func_get_args() as $arg)
-		get_plugin_option($arg, $params);
+	$params = PluginRenderer::getPluginOption(func_get_args(), $params);
+	
+//	var_dump($params);
 
 	$vars_page = isset($vars['page']) ? $vars['page'] : '';
-	$page  = (isset($params['_args'][0]) && !empty($params['_args'][0]) ) ? $params['_args'][0] : Utility::stripBracket(sprintf(PLUGIN_PCOMMENT_PAGE, $vars_page));
-	$count = (isset($params['_args'][1])) ? intval($params['_args'][1]) : 0;
+	$page  = (isset($params['_args'][1]) && !empty($params['_args'][1]) ) ? $params['_args'][0] : Utility::stripBracket(sprintf(PLUGIN_PCOMMENT_PAGE, $vars_page));
+	$count = (isset($params['_args'][0])) ? intval($params['_args'][0]) : 0;
 	if ($count == 0) $count = PLUGIN_PCOMMENT_NUM_COMMENTS;
 
 	$_page = get_fullname(strip_bracket($page), $vars_page);
+
 	$wiki = Factory::Wiki($_page);
 	if (!$wiki->isValied())
 		return sprintf($_pcmt_messages['err_pagename'], Utility::htmlsc($_page));
@@ -125,7 +128,7 @@ function plugin_pcomment_convert()
 
 	$form = array();
 	// if (PKWK_READONLY) {
-	if (! Auth::check_role('readonly')) {
+	if (! Auth::check_role('readonly') && isset($vars['page'])) {
 		// Show a form
 		$form[] = '<input type="hidden" name="cmd" value="pcomment" />';
 		$form[] = '<input type="hidden" name="digest" value="' . $digest .'" />';
@@ -137,7 +140,7 @@ function plugin_pcomment_convert()
 
 		$form[] = '<div class="row">';
 
-		if (isset($params['noname'])) {
+		if ($params['noname'] === false) {
 			$form[] = '<div class="col-md-3">';
 			list($nick,$link,$disabled) = plugin_pcomment_get_nick();
 			if ($params['reply']){
@@ -191,7 +194,7 @@ function plugin_pcomment_convert()
 		join("\n",$form) . "\n" . '<p>' . $recent . ' ' . $link . '</p>' . "\n" . $comments . "\n";
 	$string .= ! Auth::check_role('readonly') ? '</form>' : '';
 
-	return (IS_MOBILE) ? '<div data-role="collapsible" data-theme="b" data-content-theme="d"><h4>'.$_pcmt_messages['msg_comment'].'</h4>'.$string.'</div>' : '<div class="pcomment">' . $string . '</div>';
+	return (IS_MOBILE) ? '<div data-role="collapsible" data-theme="b" data-content-theme="d"><h4>'.$_pcmt_messages['msg_comment'].'</h4>'.$string.'</div>' : '<div class="pcomment form-inline">' . $string . '</div>';
 }
 
 function plugin_pcomment_insert()
@@ -381,7 +384,7 @@ function plugin_pcomment_get_comments($page, $count, $dir, $reply)
 	// Add radio buttons
 	if ($reply){
 		$comments = preg_replace('/<li>' . "\x01" . '(\d+)' . "\x02" . '(.*)' . "\x03" . '(.*)\s\-\-\s(.*?)/',
-			'<li class="pcomment_comment"><input class="pcmt" type="radio" name="reply" value="$2" tabindex="$1" id="pcmt$2" /><label for="pcmt$2">$3</label> -- $4',
+			'<li class="pcomment_comment radio"><input class="pcmt" type="radio" name="reply" value="$2" tabindex="$1" id="pcmt$2" /><label for="pcmt$2">$3</label> -- $4',
 			$comments);
 	}
 
@@ -401,5 +404,23 @@ function plugin_pcomment_get_nick()
 	$link = (empty($auth_key['profile'])) ? $auth_key['nick'] : $auth_key['nick'].'>'.$auth_key['profile'];
 	return array($auth_key['nick'], $link, "disabled=\"disabled\"");
 }
+
+// Check arguments
+function plugin_pcomment_check_arg($val, $key, $params)
+{
+	if ($val != '') {
+		$l_val = strtolower($val);
+		foreach (array_keys($params) as $key) {
+			if (strpos($key, $l_val) === 0) {
+				$params[$key] = TRUE;
+				return;
+			}
+		}
+	}
+
+	$params['_args'][] = $val;
+	return $params;
+}
+
 /* End of file pcomment.inc.php */
 /* Location: ./wiki-common/plugin/pcomment.inc.php */

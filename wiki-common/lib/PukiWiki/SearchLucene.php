@@ -1,6 +1,6 @@
 <?php
 /**
- * ZendSearchiLucenej‚É‚æ‚éŒŸõˆ—
+ * ZendSearchï¼ˆLuceneï¼‰ã«ã‚ˆã‚‹æ¤œç´¢å‡¦ç†
  *
  * @package   PukiWiki
  * @access    public
@@ -8,7 +8,7 @@
  * @copyright 2013-2014 PukiWiki Advance Developers Team
  * @create    2013/05/23
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Search.php,v 1.0.3 2014/03/10 19:24:00 Logue Exp $
+ * @version   $Id: SearchLucene.php,v 1.0.3 2014/03/10 19:24:00 Logue Exp $
  */
 namespace PukiWiki;
 
@@ -17,73 +17,94 @@ use PukiWiki\Factory;
 use PukiWiki\Utility;
 use Igo\Tagger;
 use ZendSearch\Lucene\Lucene;
+use ZendSearch\Lucene\Document as LuceneDoc;
 use ZendSearch\Lucene\Document\Html as LuceneDocHtml;
+use ZendSearch\Lucene\Document\Field;
+use ZendSearch\Lucene\Analysis\Analyzer\Analyzer;
+use ZendSearch\Lucene\Analysis\Analyzer\Common\Utf8;
+use ZendSearch\Lucene\Index\Term;
+use ZendSearch\Lucene\Search\QueryParser;
+use ZendSearch\Lucene\Search\Query\Boolean as QueryBoolean;
 /**
- * ŒŸõƒNƒ‰ƒX
+ * æ¤œç´¢ã‚¯ãƒ©ã‚¹
  */
 class SearchLucene extends Search{
 	/**
-	 * ŒŸõƒCƒ“ƒfƒbƒNƒX–¼
+	 * æ¤œç´¢ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹å
 	 */
-	const INDEX_NAME = 'search-index';
+	const INDEX_NAME = 'lucene';
+	
+	protected static $igo;
 	/**
-	 * ƒCƒ“ƒfƒbƒNƒXƒtƒ@ƒCƒ‹‚ğ¶¬
+	 * ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ç”Ÿæˆ
 	 */
 	public static function updateIndex(){
-		static $igo;
 		
-		if (empty($igo)){
-			$igo = new Tagger('../ipadic', 'reduce_mode'  => true);
+		if (empty(self::$igo)){
+			self::$igo = new Tagger(array('dict_dir'=>LIB_DIR.'ipadic', 'reduce_mode'  => true));
 		}
-		// õˆø‚Ìì¬
+		
+		Analyzer::setDefault(new Utf8());
+
+		// ç´¢å¼•ã®ä½œæˆ
 		$index = Lucene::create(CACHE_DIR . self::INDEX_NAME);
+		
 		foreach (Listing::pages() as $page) {
-			
 			if (empty($page)) continue;
 
 			$wiki = Factory::Wiki($page);
 
-			// “Ç‚ŞŒ ŒÀ‚ª‚È‚¢ê‡ƒXƒLƒbƒv
+			// èª­ã‚€æ¨©é™ãŒãªã„å ´åˆã‚¹ã‚­ãƒƒãƒ—
 			if (!$wiki->isReadable() || $wiki->isHidden()) continue;
-			
-			// HTMLo—Í
+/*
+			// HTMLå‡ºåŠ›
 			$html[] = '<html><head>';
 			$html[] = '<meta http-equiv="Content-type" content="text/html; charset=UTF-8"/>';
 			$html[] = '<title>' . $wiki->title() . '</title>';
 			$html[] = '</head>';
-			// HTML‚ğƒeƒLƒXƒg‚É•ÏŠ·‚µ‚Ä•ª‚©‚¿‘‚«‚µ‚½‚à‚Ì‚ğbody‚Æ‚·‚éB
-			$html[] = '<body>' . $igo->wakati(strip_tags($wiki->render)) . '</body>';
+			$html[] = '<body>' . $wiki->render() . '</body>';
 			$html[] = '</html>';
-			// HTML‚Ì‰ğÍ
-			$doc = LuceneDocHtml::loadHTML(join("\n", $html), false);
+*/
+			$doc = new LuceneDoc();
 			
-			// õˆø‚Ö•¶‘‚Ì“o˜^
+			$doc->addField(Field::Text('title', $wiki->title()));
+
+			// Store document URL to identify it in the search results
+			$doc->addField(Field::Text('url', $wiki->uri()));
+			 
+			// Index document contents
+			//$contents = join(" ", self::$igo->wakati(strip_tags($wiki->render())));
+			$contents = strip_tags($wiki->render());
+			$doc->addField(Field::UnStored('contents', $contents ));
+
+			// ç´¢å¼•ã¸æ–‡æ›¸ã®ç™»éŒ²
 			$index->addDocument($doc);
 		}
+		$index->optimize();
 		
-		//$hits = $index->find('hoge');
-		//var_dump($hits);
 	}
 	/**
-	 * ŒŸõƒƒCƒ“ˆ—
-	 * @param string $word ŒŸõƒ[ƒh
-	 * @param string $type ŒŸõ•û–@iand, orj
+	 * æ¤œç´¢ãƒ¡ã‚¤ãƒ³å‡¦ç†
+	 * @param string $word æ¤œç´¢ãƒ¯ãƒ¼ãƒ‰
+	 * @param string $type æ¤œç´¢æ–¹æ³•ï¼ˆand, orï¼‰
 	 * @param boolean $non_format
-	 * @param string $base ƒx[ƒX‚Æ‚È‚éƒy[ƒW
+	 * @param string $base ãƒ™ãƒ¼ã‚¹ã¨ãªã‚‹ãƒšãƒ¼ã‚¸
 	 * @return string
 	 */
 	public static function do_search($word, $type = 'and', $non_format = FALSE, $base = ''){
-		// ƒCƒ“ƒfƒbƒNƒXƒtƒ@ƒCƒ‹‚ğŠJ‚­
+		// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 		$index = Lucene::open(CACHE_DIR . self::INDEX_NAME);
 		
-		// ŒŸõƒNƒGƒŠ‚ğƒp[ƒX
-		$query = \ZendSearch\Lucene\Search\Query\Boolean();
-		$keys = parent::get_search_words(preg_split('/\s+/', $word, -1, PREG_SPLIT_NO_EMPTY));
-		// Lucene‚É“n‚·
+		// æ¤œç´¢ã‚¯ã‚¨ãƒªã‚’ãƒ‘ãƒ¼ã‚¹
+		$query = QueryBoolean();
+		$keys = QueryParser;;parse($word);
+		// Luceneã«æ¸¡ã™
+		$query->addSubquery($userQuery, true  /* required */);
+		$query->addSubquery($constructedQuery, true  /* required */);
 		foreach ($keys as $key=>$value)
-			$query->addSubquery( new \ZendSearch\Lucene\Index\Term($value), true);
+			$query->addSubquery( new Term($value), true);
 		
-		//  ŒŸõ‚ÆÀs
+		//  æ¤œç´¢ã¨å®Ÿè¡Œ
 		$hits = $index->find($query);
 		var_dump($hits);
 		

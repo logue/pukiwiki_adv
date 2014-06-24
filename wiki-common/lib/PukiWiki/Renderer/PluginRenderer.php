@@ -64,11 +64,12 @@ class PluginRenderer{
 	 * @param string $separator 分割子
 	 * @return boolean
 	 */
-	public static function getPluginOption($args, &$params, $tolower=TRUE, $separator=':')
+	public static function getPluginOption($args, $params, $tolower=TRUE, $separator=':')
 	{
+		$params['_done'] = false;
 		if (empty($args)) {
 			$params['_done'] = TRUE;
-			return TRUE;
+			return $params;
 		}
 		
 		$keys = array_keys($params);
@@ -79,14 +80,13 @@ class PluginRenderer{
 				if (is_string($_val)) $_val = trim($_val);
 				if (in_array($_key, $keys) && $params['_done'] !== TRUE) {
 					$params[$_key] = $_val;    // Exist keys
-				} else if ( !empty($val) ) {
+				}else if ( !empty($val) ) {
 					$params['_args'][] = $val; // Not exist keys, in '_args'
-					$params['_done'] = TRUE;
 				}
 			}
 		}
 		$params['_done'] = TRUE;
-		return TRUE;
+		return $params;
 	}
 	/**
 	 * プラグインおよび、設定一覧キャッシュを生成
