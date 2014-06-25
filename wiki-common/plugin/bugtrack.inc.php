@@ -122,15 +122,14 @@ function plugin_bugtrack_print_form($base, $category)
 		$encoded_category .= '</select>';
 	}
 
-	$ticket = md5(MUTIME);
-	$keyword = 'B_' . $ticket;
-	$session->offsetSet($keyword, md5(get_ticket() . $ticket));
+//	$ticket = md5(MUTIME);
+//	$keyword = 'B_' . $ticket;
+//	$session->offsetSet($keyword, md5(get_ticket() . $ticket));
 
 	$script = get_script_uri();
 	$body = <<<EOD
 <form action="$script" method="post" class="form-horizontal plugin-bugtrack-form">
 	<input type="hidden" name="cmd" value="bugtrack" />
-	<input type="hidden" name="ticket" value="$ticket" />
 	<input type="hidden" name="mode"   value="submit" />
 	<input type="hidden" name="base"   value="$s_base" />
 	<div class="form-group">
@@ -185,7 +184,7 @@ function plugin_bugtrack_print_form($base, $category)
 	</div>
 	<div class="form-group">
 		<div class="col-md-offset-2 col-md-10">
-			<input type="submit" class="btn btn-primary" value="$s_submit" />
+			<button type="submit" class="btn btn-primary"><span class="fa fa-check"></span>$s_submit</button>
 		</div>
 	</div>
 </form>
@@ -197,25 +196,25 @@ EOD;
 // Add new issue
 function plugin_bugtrack_action()
 {
-	global $post;
+	global $vars;
 	global $_plugin_bugtrack, $_string;
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
 	if (Auth::check_role('readonly')) die_message($_string['prohibit']);
 	if (Auth::is_check_role(PKWK_CREATE_PAGE)) die_message(str_replace('PKWK_CREATE_PAGE','PKWK_READONLY',$_string['prohibit']));
-	if ($post['mode'] != 'submit') return FALSE;
+	if ($vars['mode'] != 'submit') return FALSE;
 
 	// Vaildation foreign values(by miko)
-	$spam = ( (!in_array($post['priority'], $_plugin_bugtrack['priority_list'])) || (!in_array($post['state'], $_plugin_bugtrack['state_list'])) ) ? TRUE : FALSE;
+	$spam = ( (!in_array($vars['priority'], $_plugin_bugtrack['priority_list'])) || (!in_array($vars['state'], $_plugin_bugtrack['state_list'])) ) ? TRUE : FALSE;
 
 	if ($spam) {
 		honeypot_write();
 		return array('msg'=>'cannot write', 'body'=>'<p>prohibits editing</p>');
 	}
 
-	$page = plugin_bugtrack_write($post['base'], $post['pagename'], $post['summary'],
-		$post['name'], $post['priority'], $post['state'], $post['category'],
-		$post['version'], $post['body']);
+	$page = plugin_bugtrack_write($vars['base'], $vars['pagename'], $vars['summary'],
+		$vars['name'], $vars['priority'], $vars['state'], $vars['category'],
+		$vars['version'], $vars['body']);
 
 	Utility::redirect(get_page_location_uri($page));
 	exit;
@@ -223,7 +222,7 @@ function plugin_bugtrack_action()
 
 function plugin_bugtrack_write($base, $pagename, $summary, $name, $priority, $state, $category, $version, $body)
 {
-	global $post;
+	global $vars;
 
 	$base     = strip_bracket($base);
 	$pagename = strip_bracket($pagename);
