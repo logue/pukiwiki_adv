@@ -39,7 +39,7 @@ define('PLUGIN_REF_DIRECT_ACCESS', FALSE); // FALSE or TRUE
 /////////////////////////////////////////////////
 
 // Image suffixes allowed
-define('PLUGIN_REF_IMAGE', '/\.(gif|png|jpe?g|svg?z)$/i');
+define('PLUGIN_REF_IMAGE', '/\.(gif|png|jpe?g|svg?z|webp)$/i');
 
 // Usage (a part of)
 define('PLUGIN_REF_USAGE', '([pagename/]attached-file-name[,parameters, ... ][,title])');
@@ -76,40 +76,14 @@ function plugin_ref_convert()
 		return '<div class="alert alert-warning">' . Utility::htmlsc('#ref(): ERROR: No _body') . '</div>' . "\n";
 	}
 
-	// Wrap with a table
-	if ((PLUGIN_REF_WRAP_TABLE && ! isset($params['nowrap'])) || isset($params['wrap'])) {
-		// margin:auto
-		//	Mozilla 1.x  = x (wrap, and around are ignored)
-		//	Opera 6      = o
-		//	Netscape 6   = x (wrap, and around are ignored)
-		//	IE 6         = x (wrap, and around are ignored)
-		// margin:0px
-		//	Mozilla 1.x  = x (aligning seems ignored with wrap)
-		//	Opera 6      = x (aligning seems ignored with wrap)
-		//	Netscape 6   = x (aligning seems ignored with wrap)
-		//	IE6          = o
-		$s_margin = isset($params['around']) ? '0px' : 'auto';
-		if (! isset($params['_align']) || $params['_align'] == 'center') {
-			$s_margin_align = '';
-		} else {
-			$s_margin_align = ';margin-' . Utility::htmlsc($params['_align']) . ':0px';
-		}
-		$params['_body'] = <<<EOD
-<table class="table table-bordered" style="margin:$s_margin$s_margin_align">
- <tr>
-  <td>{$params['_body']}</td>
- </tr>
-</table>
-EOD;
-	}
-
+	$class = '';
 	if (isset($params['around'])) {
-		$style = ($params['_align'] == 'right') ? 'float:right' : 'float:left';
+		$class .= ($params['_align'] == 'right') ? '.pull-right' : '.pull-left';
 	} else {
-		$style = 'text-align:' . $params['_align'];
+		$class .= '.text-' . $params['_align'];
 	}
 
-	return '<figure style="'.Utility::htmlsc($style).'">'.$params['_body'].'</figure>'."\n";
+	return '<figure class="'.$class.'">'.$params['_body'].'</figure>'."\n";
 }
 
 // Common function
@@ -125,13 +99,17 @@ function plugin_ref_body($args)
 		'left'   => FALSE, // Align
 		'center' => FALSE, //      Align
 		'right'  => FALSE, //           Align
-		'wrap'   => FALSE, // Wrap the output with table ...
-		'nowrap' => FALSE, //   or not
+//		'wrap'   => FALSE, // Wrap the output with table ...
+//		'nowrap' => FALSE, //   or not
 		'around' => FALSE, // Text wrap around or not
 		'noicon' => FALSE, // Suppress showing icon
 		'noimg'  => FALSE, // Suppress showing image
 		'nolink' => FALSE, // Suppress link to image itself
 		'zoom'   => FALSE, // Lock image width/height ratio as the original said
+		
+		'borderd'   => FALSE,
+		'rounded'   => FALSE,
+		'circle'    => FALSE,
 
 		// Flags and values
 		'_align' => PLUGIN_REF_DEFAULT_ALIGN,
@@ -141,7 +119,8 @@ function plugin_ref_body($args)
 		//'_%'     => 0,     // Percentage
 		//'_title' => null,  // Reserved
 		//'_body   => null,  // Reserved
-		'_error' => null   // Reserved
+		'_error' => null,  // Reserved,
+		'_class' => ''
 	);
 
 	// [Page_name/maybe-separated-with/slashes/]AttachedFileName.sfx or URI
@@ -212,7 +191,7 @@ function plugin_ref_body($args)
 		}
 	}
 
-	ref_check_args($args, $params);
+	$params = ref_check_args($args, $params);
 
 	$seems_image = (! isset($params['noimg']) && preg_match(PLUGIN_REF_IMAGE, $name));
 
@@ -262,6 +241,7 @@ function plugin_ref_body($args)
 
 	$s_title = isset($params['_title']) ? Utility::htmlsc($params['_title']) : '';
 	$s_info  = '';
+
 	if ($seems_image) {
 		$s_title = make_line_rules($s_title);
 		if (ref_check_size($width, $height, $params) &&
@@ -272,6 +252,7 @@ function plugin_ref_body($args)
 		$body = '<img src="' . $url   . '" ' .
 			'alt="'      . $s_title . '" ' .
 			'title="'    . $s_title . '" ' .
+			'class="'    . $params['_class'] . '" ' .
 			$s_info . '/>';
 		if (! isset($params['nolink']) && $url2) {
 			$params['_body'] =
@@ -292,13 +273,22 @@ function plugin_ref_body($args)
 	return $params;
 }
 
-function ref_check_args($args, & $params)
+function ref_check_args($args, $params)
 {
 	if (! is_array($args) || ! is_array($params)) return;
 
 	$_args   = array();
 	$_title  = array();
 	$matches = array();
+
+	if (isset($_args['rounded'])){
+		$params['_class'] = 'img-rounded';
+	}else if (isset($_args['circle'])){
+		$params['_class'] = 'img-circle';
+	}
+	if (isset($_args['thumbnail'])){
+		$params['_class'] .= ' img-thumbnail';
+	}
 
 	foreach ($args as $arg) {
 		$hit = FALSE;
@@ -343,6 +333,7 @@ function ref_check_args($args, & $params)
 			break;
 		}
 	}
+	
 	return $params;
 }
 

@@ -78,7 +78,7 @@ class PluginRenderer{
 				list($_key, $_val) = array_pad(explode($separator, $val, 2), 2, TRUE);
 				$_key = trim($tolower === TRUE ? strtolower($_key) : $_key);
 				if (is_string($_val)) $_val = trim($_val);
-				if (in_array($_key, $keys) && $params['_done'] !== TRUE) {
+				if (in_array($_key, $keys) && (!isset($params['_done']) || $params['_done'] !== TRUE)) {
 					$params[$_key] = $_val;    // Exist keys
 				}else if ( !empty($val) ) {
 					$params['_args'][] = $val; // Not exist keys, in '_args'

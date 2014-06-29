@@ -63,7 +63,7 @@ textarea, select, option, input, var, pre, code {
 	font-family: monospace !important;
 }
 textarea[row="1"] {
-	height:1em;
+	height:36px;
 }
 fieldset {
 	border: 1px silver solid;

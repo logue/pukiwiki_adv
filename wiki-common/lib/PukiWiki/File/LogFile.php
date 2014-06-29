@@ -177,7 +177,7 @@ class LogFile extends AbstractFile{
 		if (isset($this->config[$this->kind]['nolog_ip'])) {
 			// ロギング対象外IP
 			foreach ($this->config[$this->kind]['nolog_ip'] as $nolog_ip) {
-				if ($ip == $nolog_ip) return null;
+				if ($ip === $nolog_ip){ return null; }
 			}
 		}
 
@@ -255,7 +255,7 @@ class LogFile extends AbstractFile{
 		// $utime は、今後、閲覧者の特定などの際にバックアップファイルから
 		// 特定することを想定し、含めている。
 
-		if ($this->kind != 'update') return null;
+		if ($this->kind !== 'update') return null;
 
 		$diff = new DiffFile($this->page); // 差分ファイル名
 
@@ -264,11 +264,11 @@ class LogFile extends AbstractFile{
 		if ($diff->has()) {
 			// 今回更新行のみ抽出
 			foreach($diff->get() as $_src) {
-				if (substr($_src,0,1) == '+') $lines[] = substr($_src,1);
+				if (substr($_src,0,1) === '+') $lines[] = substr($_src,1);
 			}
 		} else {
 			// 新規ページの全てが対象
-			$lines = Factory::Wiki($page)->get();
+			$lines = Factory::Wiki($this->page)->get();
 		}
 
 		return Auth::get_signature($lines);
@@ -283,8 +283,8 @@ class LogFile extends AbstractFile{
 
 		$rc = array();
 		foreach(self::$field as $_field => $sw) {
-			if ($sw[$idx] == 0) continue;
-			if ($_field == 'page' && !isset($this->config[$this->kind]['file'])) continue;
+			if ($sw[$idx] === 0) continue;
+			if ($_field === 'page' && !isset($this->config[$this->kind]['file'])) continue;
 			$rc[] = $_field;
 		}
 
@@ -411,8 +411,9 @@ class LogFile extends AbstractFile{
 	 */
 	public function get($join = false, $legacy = false){
 		if ( !$this->isFile() ) return false;
-		if ( !$this->isReadable() )
-			Utility::dieMessage(sprintf('File <var>%s</var> is not readable.', Utility::htmlsc($this->filename)));
+		if ( !$this->isReadable() ){
+			Utility::dieMessage(sprintf('LogFile.php : File <var>%s</var> is not readable.', Utility::htmlsc($this->filename)));
+		}
 
 		$name = self::get_log_field($this->kind);
 		
@@ -524,7 +525,7 @@ class LogFile extends AbstractFile{
 				$mask = is_numeric($mask) ?
 					pow(2,32) - pow(2,32 - $mask) : // "10.0.0.0/8"
 					ip2long($mask);                 // "10.0.0.0/255.0.0.0"
-				if (($l_ip & $mask) == $l_net) return TRUE;
+				if (($l_ip & $mask) === $l_net) return TRUE;
 			} else {
 				if (preg_match('/'.preg_quote($network,'/').'/',$host)) return FALSE;
 			}
@@ -547,7 +548,7 @@ class LogFile extends AbstractFile{
 
 		$chk = array();
 		if (isset($this->config[$this->kind][$kind_view])){
-			if ($this->config[$this->kind][$kind_view] == 'all'){
+			if ($this->config[$this->kind][$kind_view] === 'all'){
 				return $rc;
 			}else{
 				$tmp = explode(':', $this->config[$this->kind][$kind_view]);
@@ -556,7 +557,7 @@ class LogFile extends AbstractFile{
 				foreach($tmp as $_tmp) {
 					$sw = 0;
 					foreach($rc as $_name) {
-						if ($_name == $_tmp) {
+						if ($_name === $_tmp) {
 							$sw = 1;
 							break;
 						}
@@ -580,7 +581,7 @@ class LogFile extends AbstractFile{
 		$all = self::set_fieldname($this->kind);
 		$rc = array();
 		foreach ($all as $field) {
-			if (substr($field,0,1) == '@') continue; // 表示項目は除去
+			if (substr($field,0,1) === '@') continue; // 表示項目は除去
 			$rc[] = $field;
 		}
 		return $rc;
@@ -601,12 +602,12 @@ class LogFile extends AbstractFile{
 		$backups = $backup->get();
 
 		// 初回バックアップ作成は、文書生成日時となる
-		if (isset($backups[0]) && $update_time == $backups[0]['time']) return 1;
+		if (isset($backups[0]) && $update_time === $backups[0]['time']) return 1;
 
 		$match = -1;
 		foreach ($backups as $age => $val)
 		{
-			if ($val['real'] == $update_time) {
+			if ($val['real'] === $update_time) {
 				$match = $age;
 			} elseif (! $update && $val['real'] < $update_time) {
 				$match = $age;
@@ -652,15 +653,15 @@ class LogFile extends AbstractFile{
 
 		$sw    = TRUE;
 		for ($i=0; $i<$loop; $i++) {
-			if ($tbl_a[$i] != $tbl_b[$i]) {
+			if ($tbl_a[$i] !== $tbl_b[$i]) {
 				$sw = FALSE;
 				break;
 			}
 		}
 
-		if ($i != $max) $sw = FALSE; // 打ち切り対応
+		if ($i !== $max) $sw = FALSE; // 打ち切り対応
 		if ($sw) return array(TRUE,$i);
-		if ($level == 0) return array(FALSE,$i); // 完全一致
+		if ($level === 0) return array(FALSE,$i); // 完全一致
 		if ($level > $max) return array(TRUE,$i);
 		// 指定レベルよりも一致している場合は真
 		return ($i >= $level) ? array(TRUE,$i) : array(FALSE,$i);
