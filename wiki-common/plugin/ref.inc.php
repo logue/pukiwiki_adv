@@ -78,9 +78,9 @@ function plugin_ref_convert()
 
 	$class = '';
 	if (isset($params['around'])) {
-		$class .= ($params['_align'] == 'right') ? '.pull-right' : '.pull-left';
+		$class .= ($params['_align'] == 'right') ? 'pull-right' : 'pull-left';
 	} else {
-		$class .= '.text-' . $params['_align'];
+		$class .= 'text-' . $params['_align'];
 	}
 
 	return '<figure class="'.$class.'">'.$params['_body'].'</figure>'."\n";

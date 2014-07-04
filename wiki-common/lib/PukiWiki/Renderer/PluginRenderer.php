@@ -24,11 +24,15 @@ use PukiWiki\Utility;
 use Zend\Json\Json;
 use Zend\ProgressBar\Upload\SessionProgress;
 use Exception;
-
+use PukiWiki\Singleton;
 /**
  * プラグイン処理クラス
  */
 class PluginRenderer{
+	/**
+	 * プラグイン一覧
+	 */
+	static private $plugins;
 	/**
 	 * プラグインのファイル一覧キャッシュ名
 	 */
@@ -96,7 +100,6 @@ class PluginRenderer{
 	 */
 	public static function getPluginList($force = false){
 		global $cache;
-		static $plugins;
 		//$t1 = microtime();
 
 		if (!$force) {
@@ -180,22 +183,21 @@ class PluginRenderer{
 	 * @return array
 	 */
 	public static function getPlugin($name, $load = true){
-		static $plugins;
 		global $exclude_plugin;
-	
+		
+		if (empty(self::$plugins)) self::$plugins = self::getPluginList();
+
 		// 念のためプラグイン名を小文字にする
 		$name = strtolower($name);
 
 		// 無効化しているプラグインの場合
 		if (is_array($exclude_plugin) && in_array($name, $exclude_plugin)) return FALSE;
 
-		// プラグイン一覧を取得
-		if (!isset($plugins)) $plugins = self::getPluginList();
-
-		if (!isset($plugins[$name])){
+		if (!isset(self::$plugins[$name])){
 			// プラグインが見つからない
-			$plugins[$name] = array(
-				'loaded' =>true,
+			self::$plugins[$name] = array(
+				'usable' => false,
+				'loaded' =>false,
 				'method' => array(
 					'init'=>false,
 					'action'=>false,
@@ -203,20 +205,29 @@ class PluginRenderer{
 					'inline'=>false
 				)
 			);
-		}else if ($plugins[$name]['loaded'] == false){
+		}else if (self::$plugins[$name]['loaded'] === false){
+			// 関数が存在する場合ロード済とみなす
+			foreach (array('init','action','convert','inline') as $method){
+				if (function_exists('plugin_'.$name.'_'.$method)){
+					$load = false;
+					self::$plugins[$name]['loaded'] = true;
+					break;
+				}
+			}
+
 			// プラグインが読み込まれてないとき
-			if ($load == true){
+			if ($load === true){
 				// 設定を読み込む
-				if (isset($plugins[$name]['conf'])) require_once $plugins[$name]['conf'];
+				if (isset(self::$plugins[$name]['conf'])) require self::$plugins[$name]['conf'];
 				// プラグインを読み込む
-				require_once $plugins[$name]['path'];	// FIXME require_onceじゃあまり意味ない。
+				require self::$plugins[$name]['path'];	// FIXME require_onceじゃあまり意味ない。
 
 				// 読み込み済フラグ
-				$plugins[$name]['loaded'] = true;
+				self::$plugins[$name]['loaded'] = true;
 			}
 			// 利用可能なAPIをチェック
 			foreach (array('init','action','convert','inline') as $method){
-				$plugins[$name]['method'][$method] = function_exists('plugin_'.$name.'_'.$method);	
+				self::$plugins[$name]['method'][$method] = function_exists('plugin_'.$name.'_'.$method);	
 			}
 		}
 
@@ -232,7 +243,7 @@ class PluginRenderer{
 		 *      )
 		 * );
 		 */
-		return $plugins[$name];
+		return self::$plugins[$name];
 	}
 	/**
 	 * プラグインが利用可能か確認
