@@ -45,7 +45,7 @@ class Render{
 	/**
 	 * jQuery UIのバージョン
 	 */
-	const JQUERY_UI_VER = '1.10.4';
+	const JQUERY_UI_VER = '1.11.0';
 	/**
 	 * jQuery Mobileのバージョン
 	 */
@@ -313,7 +313,7 @@ class Render{
 			// jQueryUI Official CDN
 			// http://code.jquery.com/
 			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>COMMON_URI . 'js/jquery-'.self::JQUERY_VER . '.min.js', 'defer'=>'defer');
-			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>COMMON_URI . 'js/jquery-ui-'.self::JQUERY_UI_VER . '.min.js', 'defer'=>'defer');
+			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>COMMON_URI . 'js/jquery-ui.min.js', 'defer'=>'defer');
 
 			// Bootstrap
 			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>COMMON_URI . 'js/bootstrap.min.js', 'defer'=>'defer' );
