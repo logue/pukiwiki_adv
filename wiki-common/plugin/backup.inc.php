@@ -414,6 +414,7 @@ function plugin_backup_convert()
 
 	// Get arguments
 	$with_label = TRUE;
+	$diff_mode = 0;
 	$args = func_get_args();
 	while (isset($args[0])) {
 		switch(array_shift($args)) {
@@ -425,6 +426,7 @@ function plugin_backup_convert()
 		}
 	}
 
+	$mode = 'nowdiff';
 	switch($diff_mode) {
 		case 2:
 			$mode = 'visualdiff';

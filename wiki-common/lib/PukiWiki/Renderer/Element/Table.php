@@ -27,6 +27,11 @@ class Table extends Element
 	protected $types;
 	protected $col;   // number of column
 	public $align = 'center';
+	protected static $parts = array(
+		'h'=>'thead',
+		'f'=>'tfoot',
+		''=>'tbody'
+	);
 
 	public function __construct($out)
 	{
@@ -36,10 +41,11 @@ class Table extends Element
 		$this->col   = count($cells);
 		$this->type  = strtolower($out[2]);
 		$this->types = array($this->type);
-		$is_template = ($this->type == 'c');
+		$is_template = $this->type === 'c';
 		$row = array();
-		foreach ($cells as $cell)
+		foreach ($cells as $cell){
 			$row[] = new TableCell($cell, $is_template);
+		}
 		$this->elements[] = $row;
 	}
 
@@ -57,8 +63,6 @@ class Table extends Element
 
 	public function toString()
 	{
-		static $parts = array('h'=>'thead', 'f'=>'tfoot', ''=>'tbody');
-
 		// Set rowspan (from bottom, to top)
 		for ($ncol = 0; $ncol < $this->col; $ncol++) {
 			$rowspan = 1;
@@ -79,9 +83,9 @@ class Table extends Element
 		// Set colspan and style
 		$stylerow = NULL;
 		foreach (array_keys($this->elements) as $nrow) {
-			$row = & $this->elements[$nrow];
+			$row = $this->elements[$nrow];
 			if ($this->types[$nrow] === 'c')
-				$stylerow = & $row;
+				$stylerow = $row;
 			$colspan = 1;
 			foreach (array_keys($row) as $ncol) {
 				if ($row[$ncol]->colspan === 0) {
@@ -101,13 +105,13 @@ class Table extends Element
 
 		// toString
 		$string = '';
-		foreach ($parts as $type => $part)
+		foreach (static::$parts as $type => $part)
 		{
 			$part_string = '';
 			foreach (array_keys($this->elements) as $nrow) {
 				if ($this->types[$nrow] != $type)
 					continue;
-				$row        = & $this->elements[$nrow];
+				$row        = $this->elements[$nrow];
 				$row_string = '';
 				foreach (array_keys($row) as $ncol)
 					$row_string .= $row[$ncol]->toString();
@@ -117,7 +121,7 @@ class Table extends Element
 		}
 		$string = $this->wrap($string, 'table', ' class="table table-bordered table_' . $this->align . '" data-pagenate="false"');
 
-		return $this->wrap($string, 'div', ' class="table_wrapper"');
+		return $this->wrap($string, 'div', ' class="table-wrapper"');
 	}
 }
 

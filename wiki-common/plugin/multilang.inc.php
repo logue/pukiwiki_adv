@@ -115,13 +115,18 @@ function plugin_multilang_accept($lang)
 
 function plugin_multilang_convert()
 {
-	switch ( func_num_args() ) {
+	$lang = $lines = '';
+	$args = func_get_args();
+	$num = func_num_args();
+	
+	$lines = array_pop($args);
+
+	switch ( $num ) {
 	case 1:
-		list($lines) = func_get_args();
 		$lang = DEFAULT_LANG; // pukiwiki.ini.php
 		break;
 	default:
-		list($lang,$lines) = func_get_args();
+		list($lang) = func_get_args();
 	}
 
 	if (plugin_multilang_accept($lang)) {

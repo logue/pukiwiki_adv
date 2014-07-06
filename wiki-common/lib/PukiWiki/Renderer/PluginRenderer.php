@@ -8,7 +8,7 @@
  * @copyright 2013-2014 PukiWiki Advance Developers Team
  * @create    2013/03/11
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: PluginRenderer.php,v 1.0.3 2014/03/20 13:36:00 Logue Exp $
+ * @version   $Id: PluginRenderer.php,v 1.0.4 2014/07/05 20:54:00 Logue Exp $
  **/
  
 namespace PukiWiki\Renderer;
@@ -24,7 +24,7 @@ use PukiWiki\Utility;
 use Zend\Json\Json;
 use Zend\ProgressBar\Upload\SessionProgress;
 use Exception;
-use PukiWiki\Singleton;
+
 /**
  * プラグイン処理クラス
  */
@@ -98,7 +98,7 @@ class PluginRenderer{
 	 * @param boolean $force キャッシュ生成を矯正する
 	 * @return array
 	 */
-	public static function getPluginList($force = false){
+	private static function getPluginList($force = false){
 		global $cache;
 		//$t1 = microtime();
 
@@ -145,6 +145,8 @@ class PluginRenderer{
 							'usable' => true,
 							// 読み込み済みフラグ
 							'loaded' => false,
+							// 初期化済み
+							'init' => false,
 							// パス
 							'path' => $fileinfo->getPathname(),
 							// 追加のプラグインか？
@@ -182,52 +184,33 @@ class PluginRenderer{
 	 * @param string $name プラグイン名
 	 * @return array
 	 */
-	public static function getPlugin($name, $load = true){
+	public static function getPluginInfo($name, $load = true){
 		global $exclude_plugin;
 		
-		if (empty(self::$plugins)) self::$plugins = self::getPluginList();
-
 		// 念のためプラグイン名を小文字にする
 		$name = strtolower($name);
+		
+		if (is_null(self::$plugins)) self::$plugins = self::getPluginList();
 
 		// 無効化しているプラグインの場合
 		if (is_array($exclude_plugin) && in_array($name, $exclude_plugin)) return FALSE;
 
-		if (!isset(self::$plugins[$name])){
-			// プラグインが見つからない
-			self::$plugins[$name] = array(
-				'usable' => false,
-				'loaded' =>false,
-				'method' => array(
-					'init'=>false,
-					'action'=>false,
-					'convert'=>false,
-					'inline'=>false
-				)
-			);
-		}else if (self::$plugins[$name]['loaded'] === false){
-			// 関数が存在する場合ロード済とみなす
-			foreach (array('init','action','convert','inline') as $method){
-				if (function_exists('plugin_'.$name.'_'.$method)){
-					$load = false;
-					self::$plugins[$name]['loaded'] = true;
-					break;
-				}
-			}
+		if (!isset(self::$plugins[$name])) return false;
 
+		if (!self::$plugins[$name]['loaded'] && self::$plugins[$name]['usable']){
 			// プラグインが読み込まれてないとき
-			if ($load === true){
+			if ($load === true && !self::$plugins[$name]['loaded']){
 				// 設定を読み込む
-				if (isset(self::$plugins[$name]['conf'])) require self::$plugins[$name]['conf'];
+				if (isset(self::$plugins[$name]['conf'])) require_once self::$plugins[$name]['conf'];
 				// プラグインを読み込む
-				require self::$plugins[$name]['path'];	// FIXME require_onceじゃあまり意味ない。
+				require_once self::$plugins[$name]['path'];
 
 				// 読み込み済フラグ
 				self::$plugins[$name]['loaded'] = true;
 			}
 			// 利用可能なAPIをチェック
 			foreach (array('init','action','convert','inline') as $method){
-				self::$plugins[$name]['method'][$method] = function_exists('plugin_'.$name.'_'.$method);	
+				self::$plugins[$name]['method'][$method] = function_exists('plugin_'.$name.'_'.$method);
 			}
 		}
 
@@ -249,8 +232,8 @@ class PluginRenderer{
 	 * プラグインが利用可能か確認
 	 */
 	public static function hasPlugin($name){
-		$plugin = self::getPlugin($name, false);
-		return $plugin['loaded'];
+		self::getPluginInfo($name);
+		return self::$plugins[$name]['loaded'];
 	}
 	/**
 	 * プラグインのメソッドの存在確認
@@ -260,9 +243,9 @@ class PluginRenderer{
 	public static function hasPluginMethod($name, $method){
 		global $_string;
 		static $count;
-		$plugin = self::getPlugin($name);
+		$plugin = self::getPluginInfo($name);
 
-		if ($plugin['method'][$method] == true) {
+		if ($plugin['method'][$method] === true) {
 			// プラグインの呼び出し回数をチェック
 			$count[$name] = !isset($count[$name]) ? 1 : $count[$name]++;
 
@@ -283,28 +266,22 @@ class PluginRenderer{
 	{
 		static $done, $checked;
 
-		// 初期化完了済みの場合処理しない
-		if (isset($done[$name])) return true;
-
-		$plugin = self::getPlugin($name);
+		if (self::$plugins[$name]['init']) return;
 
 		// 多言語化
-		if ($plugin['is_ext']) {
+		if (self::$plugins[$name]['is_ext']) {
 			T_bindtextdomain($name,EXT_LANG_DIR);
 		} else {
 			T_bindtextdomain($name,LANG_DIR);
 		}
 
 		// プラグインの初期化関数を実行（存在する場合）
-		if ($plugin['method']['init']) {
+		if (self::$plugins[$name]['method']['init']) {
 			T_textdomain($name);
 			$done[$name] = call_user_func('plugin_'.$name.'_init');
 			T_textdomain(DOMAIN);
-			if (!isset($checked[$name])) {
-				$done[$name] = TRUE; // checked.
-			}
 		}
-		$done[$name] = TRUE; // checked.
+		self::$plugins[$name]['init'] = true;
 		return true;
 	}
 
@@ -320,12 +297,12 @@ class PluginRenderer{
 	public static function executePluginAction($name)
 	{
 		global $vars, $_string, $use_spam_check, $post;
-		$plugin = self::getPlugin($name);
+		$plugin = self::getPluginInfo($name);
 		$funcname = 'plugin_' . $name . '_action';
 
 		// 命令が実装されてない
 		if (! $plugin['method']['action'] || !function_exists($funcname))
-			Utility::dieMessage('PluginRenderer::executePluginAction(): ' .sprintf($_string['plugin_not_implemented'],htmlsc($name)),501);
+			Utility::dieMessage('PluginRenderer::executePluginAction(): ' .sprintf($_string['plugin_not_implemented'],Utility::htmlsc($name)),501);
 
 		// プラグインの初期化
 		if (self::executePluginInit($name) === FALSE) {
@@ -365,7 +342,7 @@ class PluginRenderer{
 	public static function executePluginBlock($name, $args = '')
 	{
 		global $digest, $_string;
-		$plugin = self::getPlugin($name);
+		$plugin = self::getPluginInfo($name);
 		$funcname = 'plugin_' . $name . '_convert';
 
 		// 命令が実装されてない
@@ -415,7 +392,7 @@ class PluginRenderer{
 	public static function executePluginInline($name, $args='', $body='')
 	{
 		global $digest, $_string;
-		$plugin = self::getPlugin($name);
+		$plugin = self::getPluginInfo($name);
 		$funcname = 'plugin_' . $name . '_inline';
 		
 		// PukiWikiの仕様上、存在しないメソッドの場合、メッセージを出せない（あとで$line_ruleで変換するため）

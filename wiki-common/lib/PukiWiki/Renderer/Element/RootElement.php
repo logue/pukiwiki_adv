@@ -180,7 +180,7 @@ class RootElement extends Element
 				}
 
 				// MathJax Expression
-			//	if (PluginRenderer::hasPlugin('mathjax')){
+				if (PluginRenderer::hasPlugin('mathjax')){
 					$end_mark = '';
 					// 開始行によって終了行を判定する
 					if (substr($line, 0, 2) === '\\[') {
@@ -200,7 +200,7 @@ class RootElement extends Element
 						$this->last  = $this->last->add(new BlockPlugin(array(null, 'mathjax', $line)));
 						continue;
 					}
-			//	}
+				}
 
 				// Default
 				$this->last = $this->last->add($content);

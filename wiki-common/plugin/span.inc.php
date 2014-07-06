@@ -20,7 +20,7 @@ function plugin_span_convert(){
 	$argv = func_get_args();
 	$argc = func_num_args();
 	
-	if ($argc < 1) return PLUGIN_CODE_USAGE;
+	if ($argc < 1) return '<p class="alert alert-warning">#span([1-12])</p>';
 
 	$data = $argv[ --$argc ];
 	array_pop($argv);

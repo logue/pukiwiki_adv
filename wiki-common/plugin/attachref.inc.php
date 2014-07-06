@@ -10,6 +10,7 @@
 use PukiWiki\Factory;
 use PukiWiki\Utility;
 use PukiWiki\Router;
+use PukiWiki\Renderer\PluginRenderer;
 
 defined('ATTACHREF_UPLOAD_MAX_FILESIZE') or define('ATTACHREF_UPLOAD_MAX_FILESIZE', '4M'); // default: 4MB
 // max file size for upload on PHP(PHP default 2MB)
@@ -44,7 +45,7 @@ function plugin_attachref_init()
 		),
 	);
 	
-	require_once(PLUGIN_DIR.'attach.inc.php');
+	PluginRenderer::getPluginInfo('attach', true);
 	if (!exist_plugin('attach') or !function_exists('attach_upload'))
 	{
 		return array('msg'=>'attach.inc.php not found or not correct version.');

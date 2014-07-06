@@ -23,60 +23,59 @@ class TableCell extends Element
 	protected $tag = 'td';    // {td|th}
 	public $colspan = 1;
 	public $rowspan = 1;
-	public $style;         // is array('width'=>, 'align'=>...);
+	public $style = array();         // is array('width'=>, 'align'=>...);
+	public $is_blank = false;
+	public $class = array();
 
 	const CELL_OPTION_MATCH_PATTERN = '/^(?:(LEFT|CENTER|RIGHT|JUSTIFY)|(BG)?COLOR\(([#\w]+)\)|SIZE\((\d+)\)|LANG\((\w+2)\)|(TOP|MIDDLE|BOTTOM)|(NOWRAP)):(.*)$/';
 
 	public function __construct($text, $is_template = FALSE)
 	{
 		parent::__construct();
-		$this->style = $matches = array();
-		$this->is_blank = false;
+		$matches = array();
 
 		// 必ず$matchesの末尾の配列にテキストの内容が入るのでarray_popの返り値を使用する方法に変更。
 		// もうすこし、マシな実装方法ないかな・・・。12/05/03
 		while (preg_match(self::CELL_OPTION_MATCH_PATTERN, $text, $matches)) {
+			// 内容
+			$text = array_pop($matches);
+			// スイッチ
 			if ($matches[1]) {
-				// LEFT CENTER RIGHT
-				$this->style['align'] = 'text-align:' . strtolower(Utility::htmlsc($matches[1])) . ';';
-				$text = array_pop($matches);
+				// LEFT CENTER RIGHT JUSTIFY
+				$this->style['text-align'] = $matches[1];
 			} else if ($matches[3]) {
 				// COLOR / BGCOLOR
 				$name = $matches[2] ? 'background-color' : 'color';
-				$this->style[$name] = $name . ':' . Utility::htmlsc($matches[3]) . ';';
-				$text = array_pop($matches);
+				$this->style[$name] = $matches[3];
 			} else if ($matches[4]) {
 				// SIZE
-				$this->style['size'] = 'font-size:' . Utility::htmlsc($matches[4]) . 'px;';
-				$text = array_pop($matches);
+				$this->style['font-size'] = $matches[4] . 'px';
 			} else if ($matches[5]){
 				// LANG
 				$this->lang = strtolower(Utility::htmlsc($matches[5]));
-				$text = array_pop($matches);
 			} else if ($matches[6]){
 				// TOP / MIDDLE / BOTTOM
 				// http://pukiwiki.sourceforge.jp/?%E8%B3%AA%E5%95%8F%E7%AE%B14%2F540
-				$this->style['valign'] = 'vertical-align:' . strtolower(Utility::htmlsc($matches[6])) . ';';
-				$text = array_pop($matches);
+				$this->style['vertical-align'] = $matches[6];
 			} else if ($matches[7]){
 				// NOWRAP
 				// http://pukiwiki.sourceforge.jp/dev/?PukiWiki%2F1.4%2F%A4%C1%A4%E7%A4%C3%A4%C8%CA%D8%CD%F8%A4%CB%2F%C9%BD%C1%C8%A4%DF%A4%C7nowrap%A4%F2%BB%D8%C4%EA%A4%B9%A4%EB
-				$this->style['white-space'] = 'white-space:nowrap;';
-				$text = array_pop($matches);
+				$this->style['white-space'] = 'nowrap';
 			}
+			
 		}
 		if ($is_template && is_numeric($text))
-			$this->style['width'] = 'width:' . $text . 'px;';
+			$this->style['width'] = $text . 'px;';
 
 		if (preg_match("/\S+/", $text) === false){
 			// セルが空だったり、空白文字しか残らない場合は、空欄のセルとする。（HTMLではタブやスペースも削除）
 			$text = '';
 			$this->is_blank = true;
-		} else if ($text == '>') {
+		} else if ($text === '>') {
 			$this->colspan = 0;
-		} else if ($text == '~') {
+		} else if ($text === '~') {
 			$this->rowspan = 0;
-		} else if (substr($text, 0, 1) == '~') {
+		} else if (substr($text, 0, 1) === '~') {
 			$this->tag = 'th';
 			$text      = substr($text, 1);
 		}
@@ -116,8 +115,13 @@ class TableCell extends Element
 		if (! empty($this->lang))
 			$param .= ' lang="' . $this->lang . '"';
 
-		if (! empty($this->style))
-			$param .= ' style="' . join(' ', $this->style) . '"';
+		if (! empty($this->style)){
+			$style = '';
+			foreach ($this->style as $key=>$value){
+				$style .= $key . ':' .$value . ';';
+			}
+			$param .= ' style="'.strtolower(Utility::htmlsc($style)).'"';
+		}
 
 		return $this->wrap(parent::toString(), $this->tag, $param, FALSE);
 	}

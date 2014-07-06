@@ -619,14 +619,14 @@ function get_plugin_option($args, &$params, $tolower=TRUE, $separator=':')
 // Check plugin '$name' is here
 function exist_plugin($name)
 {
-	$plugin = PluginRenderer::getPlugin($name);
+	$plugin = PluginRenderer::getPluginInfo($name);
 	return $plugin['loaded'];
 }
 
 // Check if plguin API exists
 function exist_plugin_function($name, $method)
 {
-	$plugin = PluginRenderer::getPlugin($name);
+	$plugin = PluginRenderer::getPluginInfo($name);
 	return $plugin['method'][$method];
 }
 

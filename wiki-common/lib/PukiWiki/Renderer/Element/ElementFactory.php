@@ -8,7 +8,7 @@
  * @copyright 2013-2014 PukiWiki Advance Developers Team
  * @create    2013/01/26
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: ElementFactory.php,v 1.0.1 2014/05/30 20:02:00 Logue Exp $
+ * @version   $Id: ElementFactory.php,v 1.0.2 2014/07/05 20:02:00 Logue Exp $
  */
 namespace PukiWiki\Renderer\Element;
 
@@ -17,6 +17,7 @@ use PukiWiki\Renderer\Element\DList;
 use PukiWiki\Renderer\Element\InlineElement;
 use PukiWiki\Renderer\Element\Table;
 use PukiWiki\Renderer\Element\YTable;
+use PukiWiki\Renderer\PluginRenderer;
 
 class ElementFactory{
 	public static function & factory($element, $root, $text, $is_guiedit = false){
@@ -76,7 +77,8 @@ class ElementFactory{
 	private static function & plugin(& $root, $text, $is_guiedit = false){
 		$matches = array();
 
-		if (preg_match('/^#([^\(\{]+)(?:\(([^\r]*)\))?(\{*)/', $text, $matches) && exist_plugin_convert($matches[1])) {
+		if (preg_match('/^#([^\(\{]+)(?:\(([^\r]*)\))?(\{*)/', $text, $matches) && PluginRenderer::hasPluginMethod($matches[1], 'convert')) {
+			
 			$len  = strlen($matches[3]);
 			$body = array();
 			if ($len === 0) {
@@ -99,7 +101,7 @@ class ElementFactory{
 	private static function & pluginDummy(& $root, $text){
 		$matches = array();
 
-		if (preg_match('/^#([^\(\{]+)(?:\(([^\r]*)\))?(\{*)/', $text, $matches) && exist_plugin_convert($matches[1])) {
+		if (preg_match('/^#([^\(\{]+)(?:\(([^\r]*)\))?(\{*)/', $text, $matches) && PluginRenderer::hasPluginMethod($matches[1], 'convert')) {
 			$len  = strlen($matches[3]);
 			$body = array();
 			if ($len === 0) {
