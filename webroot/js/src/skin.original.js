@@ -999,11 +999,15 @@ $.fn.bsbutton = bootstrapButton;
 			var self = this;
 
 			// シンタックスハイライトするDOMを取得
-			var sh = (prefix) ? prefix + ' .sh' : '.sh';
+			var sh = (prefix) ? prefix + ' pre code' : 'pre code';
 
-			if ($(sh).length !== 0){
-				// SyntaxHilighterを実行
-				$.beautyOfCode.beautifyAll({target:sh});
+			if (typeof(Prism) === 'undefined') {
+				$.getScript(JS_URI + 'prism/prism.min.js', function(){
+					$("head").prepend('<link rel="stylesheet" href="' + JS_URI + 'prism/prism.min.css' + '" />');
+					Prism.highlightAll(function(){},function(){/*console.log('プリズマ☆イリヤ')*/});
+				});
+			}else{
+				Prism.highlightElement($(prefix)[0]);
 			}
 		},
 		dataTable : function(prefix){

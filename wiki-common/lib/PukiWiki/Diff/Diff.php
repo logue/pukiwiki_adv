@@ -172,7 +172,7 @@ class Diff{
 					break;
 			}
 		}
-		return '<pre class="sh" data-lang="diff">' . "\n" . join("\n", $ret) . '</pre>' . "\n";
+		return '<pre><code class="language-diff">' . "\n" . join("\n", $ret) . '</code></pre>' . "\n";
 	}
 	public function __toString(){
 		return join("\n",self::getDiff());

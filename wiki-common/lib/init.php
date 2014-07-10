@@ -24,7 +24,7 @@ use Zend\I18n\Translator\Translator;
 
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
-define('S_VERSION', 'v 2.0.0-beta3');
+define('S_VERSION', 'v 2.0.0');
 define('S_REVSION', '20140601');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .

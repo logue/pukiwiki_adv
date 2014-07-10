@@ -232,15 +232,17 @@ HTML;
 			$lang = 'Plain';
 		break;
 	}
+/*
 // for Plus! use
 	if ($langs[$lang] == false){
 		$langs[$lang] = true;
 //		$js_tags[] = array('type'=>'text/javascript', 'src'=>PLUGIN_SH_PATH.'scripts/shBrush'.$lang.'.js');
 		$head_tags[] = '<script type="text/javascript" src="'.PLUGIN_SH_PATH.'scripts/sh'.$lang.'.js"></script>';	// for Plus! use
 	}
-
+*/
 //	return '<pre class="syntaxhighlighter brush: '.strtolower($lang).$option .';">'."\n".$text."\n".'</pre>'."\n";
-	return '<pre class="sh" data-brush="'.strtolower($lang).'">'."\n".$text."\n".'</pre>'."\n";
+	//return '<pre class="sh" data-brush="'.strtolower($lang).'">'."\n".$text."\n".'</pre>'."\n";
+	return '<pre class="line-numbers"><code class="language-'.strtolower($lang).'">'."\n".$text."\n".'</code></pre>'."\n";
 }
 /* End of file sh.inc.php */
 /* Location: ./wiki-common/plugin/sh.inc.php */

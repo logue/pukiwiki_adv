@@ -59,7 +59,7 @@ html {
 blockquote p {
 	font-size:100%;
 }
-textarea, select, option, input, var, pre, code {
+textarea, select, option, input, var, pre, code, pre * {
 	font-family: monospace !important;
 }
 textarea[row="1"] {
