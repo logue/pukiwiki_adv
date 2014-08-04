@@ -148,23 +148,6 @@ $.fn.bsbutton = bootstrapButton;
 				loop: false
 			}, this.custom.rlightbox);
 			*/
-			$.extend(true, $.beautyOfCode.settings, {
-				theme: 'Default',
-				brushes: ['Plain', 'Diff'],
-				useScriptTags : false,
-				baseUrl:JS_URI+'syntaxhighlighter/',
-				config: {
-					strings : {
-						expandSource				: $.i18n('sh', 'expandSource'),
-						viewSource					: $.i18n('sh', 'viewSource'),
-						copyToClipboard				: $.i18n('sh', 'copyToClipboard'),
-						copyToClipboardConfirmation : $.i18n('sh', 'copyToClipboardConfirmation'),
-						print						: $.i18n('sh', 'print'),
-						noBrush						: $.i18n('sh', 'noBrush'),
-						brushNotHtmlScript			: $.i18n('sh', 'brushNotHtmlScript')
-					}
-				}
-			}, this.custom.syntaxhighlighter);
 			
 			$.extend(true, $.fn.dataTable.defaults, {
 				bJQueryUI			: true,
@@ -286,6 +269,14 @@ $.fn.bsbutton = bootstrapButton;
 					'#111','#222','#333','#444','#555','#666','#777','#888','#999','#A5A5A5','#AAA','#BBB','#C3C3C3','#CCC','#D2D2D2','#DDD','#EEE','#FFF'
 				]
 			};
+			// Sunlight Hiliter
+			this.sh_config = $.extend(true,{
+				theme : 'default',
+				options : {
+					lineNumbers: true,
+					showMenu: true
+				}
+			}, this.custom.sh);
 
 			// Suckerfish（ポップアップメニュー
 			$('.sf-menu').superfish();
@@ -402,7 +393,7 @@ $.fn.bsbutton = bootstrapButton;
 					$this.data('disableScrolling',true);
 				}else if (!href.match('ajax=raw')){
 					// タブでリンクが貼られている場合は、ajaxは内部のHTMLを直接出力しなければならない。
-					// したがって、明示的に部分的なHTMLを出力する。（/lib/html.phpを見よ）
+					// したがって、明示的に部分的なHTMLを出力する。
 					// リンク書き換えはこのスクリプトで行うため、プラグイン開発者はマークアップさえすれば問題ない。
 					$this.attr('href',href+'&ajax=raw');
 				}
@@ -575,8 +566,6 @@ $.fn.bsbutton = bootstrapButton;
 					$body = $this.next().next();
 
 				$this.attr('disabled','disabled');
-				
-				
 
 				$body.toggle('blind', {}, 500, function(){
 					if ($body.data('page') !== null && $body.html() === ''){
@@ -584,7 +573,7 @@ $.fn.bsbutton = bootstrapButton;
 							content = '',
 							page_hash = $body.data('page').split('#');
 							
-						console.log(page_hash);
+						// console.log(page_hash);
 						
 						params.page = page_hash[0];
 						if (page_hash[1]){
@@ -615,6 +604,7 @@ $.fn.bsbutton = bootstrapButton;
 								status = $.i18n('dialog','error_page');
 							}
 							content = '<p class="alert alert-warning" id="ajax-error"><span class="fa fa-warning"></span>'+status+'</p>';
+							console.error(data);
 						}).
 						always(function(data){
 							$body.html(content);
@@ -908,6 +898,7 @@ $.fn.bsbutton = bootstrapButton;
 					document.location.reload();
 				}else if (status === 'error'){
 					status = $.i18n('dialog','error_page');
+					console.error(data);
 				}
 
 				dialog_option.title = $.i18n('dialog','error');
@@ -999,15 +990,24 @@ $.fn.bsbutton = bootstrapButton;
 			var self = this;
 
 			// シンタックスハイライトするDOMを取得
-			var sh = (prefix) ? prefix + ' pre code' : 'pre code';
-
-			if (typeof(Prism) === 'undefined') {
-				$.getScript(JS_URI + 'prism/prism.min.js', function(){
-					$("head").prepend('<link rel="stylesheet" href="' + JS_URI + 'prism/prism.min.css' + '" />');
-					Prism.highlightAll(function(){},function(){/*console.log('プリズマ☆イリヤ')*/});
-				});
-			}else{
-				Prism.highlightElement($(prefix)[0]);
+			var sh = (prefix) ? prefix + ' .sh' : '.sh', self = this;
+			
+			if ($(sh).length !== 0) {
+				if (typeof(window.Sunlight) === 'undefined') {
+					$.getScript(JS_URI + 'sunlight/sunlight-all-min.js', function(){
+						$("head").prepend('<link rel="stylesheet" href="' + JS_URI + 'sunlight/themes/sunlight.' + self.sh_config.theme + '.css' + '" />');
+						$.fn.sunlight = function(options) {
+							var highlighter = new window.Sunlight.Highlighter(options);
+							this.each(function() {
+								highlighter.highlightNode(this);
+							});
+							return this;
+						};
+						$(sh).sunlight(self.sh_config.config);
+					});
+				}else{
+					$(sh).sunlight(this.sh_config.config);
+				}
 			}
 		},
 		dataTable : function(prefix){

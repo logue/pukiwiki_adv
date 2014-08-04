@@ -451,13 +451,6 @@ class Wiki{
 			// 簡易スパムチェック
 			if (Utility::isSpamPost()){
 				Utility::dump();
-				$akismet_post = array(
-					'user_ip' => REMOTE_ADDR,
-					'user_agent' => $_SERVER['HTTP_USER_AGENT'],
-					'comment_type' => 'comment',
-					'comment_author' => isset($vars['name']) ? $vars['name'] : 'Anonymous',
-					'comment_content' => $postdata
-				);
 				Utility::dieMessage('Writing was limited. (Blocking SPAM)');
 			}
 			

@@ -639,6 +639,14 @@ i, em, cite, q {
 	margin: 0px;
 	padding: 0px;
 }
+/* sunlight */
+.sunlight-code-container pre{
+	margin:0;
+	padding:0;
+	border:none;
+	border-radius:0;
+	box-shadow:none;
+}
 /* popup toc */
 #poptoc {
 	background-color: lightyellow;

@@ -29,7 +29,7 @@ function plugin_source_action()
 
 	return array(
 		'msg'	=> T_('Source of  $1'),
-		'body'	=> '<pre class="sh">' . Utility::htmlsc($source) . '</pre>'
+		'body'	=> '<pre class="sh sunlight-highlight-plain">' . Utility::htmlsc($source) . '</pre>'
 	);
 }
 /* End of file source.inc.php */

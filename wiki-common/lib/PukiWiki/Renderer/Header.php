@@ -38,7 +38,7 @@ class Header{
 	);
 	/**
 	 * ヘッダー配列を取得
-	 * @param string $content_type コンテントタイプ
+	 * @param string $content_type Mimeタイプ
 	 * @param int $modified 更新日時。通常はfilemtimeの値
 	 * @param int $exprire 有効期限。デフォルトは１週間
 	 * @return array
@@ -136,7 +136,9 @@ class Header{
 				$headers['WWW-Authenticate'] = Auth::getAuthHeader();
 			}
 			// 内容が存在する場合容量をContent-Lengthヘッダーに出力
-			//$headers['Content-Length'] = strlen($body);
+			if (!isset($headers['Content-Length'])){
+				$headers['Content-Length'] = strlen($body);
+			}
 			// レスポンスに内容を追加
 			$response->setContent($body);
 		}

@@ -528,6 +528,7 @@ class Utility{
 		}
 		$matches = array();
 		foreach(array_keys($vars) as $idx) {
+			if ($idx === 'original') continue;	// 編集前の内容はチェックしない
 			if (preg_match_all(self::SPAM_PATTERN, $vars[$idx], $matches) >= $count)
 				return TRUE;
 		}

@@ -172,7 +172,7 @@ class Diff{
 					break;
 			}
 		}
-		return '<pre><code class="language-diff">' . "\n" . join("\n", $ret) . '</code></pre>' . "\n";
+		return '<pre class="sh sunlight-highlight-diff">' . "\n" . join("\n", $ret) . '</pre>' . "\n";
 	}
 	public function __toString(){
 		return join("\n",self::getDiff());

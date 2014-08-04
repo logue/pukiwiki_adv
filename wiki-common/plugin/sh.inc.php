@@ -193,7 +193,7 @@ HTML;
 		case 'javascript':
 		case 'js':
 		case 'jscript':
-			$lang = 'JScript';
+			$lang = 'JavaScript';
 		break;
 		case 'perl':
 		case 'pl':
@@ -242,7 +242,7 @@ HTML;
 */
 //	return '<pre class="syntaxhighlighter brush: '.strtolower($lang).$option .';">'."\n".$text."\n".'</pre>'."\n";
 	//return '<pre class="sh" data-brush="'.strtolower($lang).'">'."\n".$text."\n".'</pre>'."\n";
-	return '<pre class="line-numbers"><code class="language-'.strtolower($lang).'">'."\n".$text."\n".'</code></pre>'."\n";
+	return '<pre class="sh sunlight-highlight-'.strtolower($lang).'">'.$text.'</pre>'."\n";
 }
 /* End of file sh.inc.php */
 /* Location: ./wiki-common/plugin/sh.inc.php */

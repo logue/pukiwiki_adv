@@ -92,7 +92,7 @@ class DiffFile extends AbstractFile{
 					break;
 			}
 		}
-		return '<pre class="line-numbers"><code class="language-diff">'."\n".join("\n",$ret).'</code></pre>';
+		return '<pre class="sh sunlight-highlight-diff">'."\n".join("\n",$ret).'</pre>';
 	}
 }
 
