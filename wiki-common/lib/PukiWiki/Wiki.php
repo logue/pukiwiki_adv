@@ -539,13 +539,14 @@ class Wiki{
 			);
 		}
 
+		// 差分を取得
+		$diffdata = $diff->getDiff();
 		// add client info to diff
-		//$diffdata .= '// IP:"'. REMOTE_ADDR . '" TIME:"' . $now . '" REFERER:"' . $referer . '" USER_AGENT:"' . $user_agent. "\n";
+		// $diffdata[] = '// IP:"'. REMOTE_ADDR . '" TIME:"' . UTIME . '" REFERER:"' . $referer . '" USER_AGENT:"' . $user_agent. "\n";
 
-		// 差分データーを保存
-		//FileFactory::Diff($this->page)->set($diff->getDiff());
+		FileFactory::Diff($this->page)->set($diffdata);
 
-		unset($oldpostdata, $diff, $difffile);
+		unset($oldpostdata, $diff, $diffdata);
 
 		// Logging postdata (Plus!)
 		if (self::POST_LOGGING === TRUE) {

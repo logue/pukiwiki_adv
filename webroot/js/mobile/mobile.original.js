@@ -212,7 +212,7 @@ var pukiwiki = {};
 				].join("\n");
 			}
 
-			$('.style_table').each(function(elem){
+			$('.table').each(function(elem){
 				var table = this;
 				var $this = $(this);
 				var backup = $this.clone();
@@ -315,24 +315,7 @@ var pukiwiki = {};
 			var sh = (prefix) ? prefix + ' .sh' : '.sh';
 
 			if ($(sh).length !== 0){
-				// ロケール設定
-				this.config.syntaxhighlighter = {
-					baseUrl:JS_URI+'syntaxhighlighter/',
-					target: sh,
-					config:{
-						strings : {
-							expandSource				: $.i18n('sh', 'expandSource'),
-							viewSource					: $.i18n('sh', 'viewSource'),
-							copyToClipboard				: $.i18n('sh', 'copyToClipboard'),
-							copyToClipboardConfirmation : $.i18n('sh', 'copyToClipboardConfirmation'),
-							print						: $.i18n('sh', 'print'),
-							noBrush						: $.i18n('sh', 'noBrush'),
-							brushNotHtmlScript			: $.i18n('sh', 'brushNotHtmlScript')
-						}
-					}
-				};
-				// SyntaxHilighterを実行
-				$.beautyOfCode.beautifyAll(this.config.syntaxhighlighter);
+				
 			}
 		},
 		// Bad Behavior

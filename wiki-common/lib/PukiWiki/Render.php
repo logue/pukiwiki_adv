@@ -94,7 +94,6 @@ class Render{
 		'activity-indicator',
 		'jquery.a-tools',
 		'jquery.autosize',
-		'jquery.beautyOfCode',
 		'jquery.cookie',
 		'jquery.dataTables',
 		'jquery.dataTables.naturalsort',
@@ -110,7 +109,6 @@ class Render{
 	 */
 	private static $mobile_js = array(
 		/* Use plugins */
-		'jquery.beautyOfCode',
 		'jquery.i18n',
 		'jquery.tablesorter'
 	);
@@ -239,11 +237,11 @@ class Render{
 		$view->status = '';
 		if ($this->wiki || $vars['cmd'] === 'read') {
 			if (!$this->wiki->isEditable()){
-				$this->view = '<span class="fa fa-ban" title="Not Editable"></span>';
+				$view->status = '<span class="fa fa-ban" title="Not Editable"></span>';
 			}else if ($this->wiki->isFreezed()){
-				$this->view = '<span class="fa fa-lock" title="Freezed"></span>';
+				$view->status = '<span class="fa fa-lock" title="Freezed"></span>';
 			}else{
-				$this->view = '<span class="fa fa-pencil-square" title="Editable"></span>';
+				$view->status = '<span class="fa fa-pencil-square" title="Editable"></span>';
 			}
 		}else{
 			$view->status = '<span class="fa fa-cog" title="Function mode"></span>';

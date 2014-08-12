@@ -904,13 +904,13 @@ $.fn.bsbutton = bootstrapButton;
 				dialog_option.title = $.i18n('dialog','error');
 				dialog_option.width = 400;
 				content = '<p class="alert alert-warning" id="ajax-error"><span class="fa fa-warning"></span>'+status+'</p>';
-				content += (data.responseText);
+				content += data.responseText;
 			}).
 			always(function(data){
 				container.html(content).dialog(dialog_option);
 				$('*[role="tooltip"]').remove();	// ツールチップが消えないことがあるので・・・
 
-				if (data.status === 500){
+				if (data.status !== 200){
 					try{
 						$('#ajax-error').after([
 							'<div class="alert alert-info">',
@@ -1110,8 +1110,7 @@ $.fn.bsbutton = bootstrapButton;
 								timeout:2000,
 								dataType : 'xml',
 								global:false,
-								data : params,
-								async:false
+								data : params
 							}).done(function(data){
 								if (data.documentElement.textContent) {
 									glossaries[text] = data.documentElement.textContent;
@@ -1353,8 +1352,6 @@ $.fn.bsbutton = bootstrapButton;
 				$msg.focus().replaceSelection(ret);
 				return false;
 			});
-
-			
 		},
 		// 編集画面のフォームを拡張
 		set_editform: function(prefix){
@@ -1601,6 +1598,8 @@ $.fn.bsbutton = bootstrapButton;
 
 			// 送信イベント時の処理
 			$form.find('button').click(function(e){
+				e.preventDefault();
+				
 				var $this = $(this),
 					$form = $this.parents('form'),
 					postdata = $form.serializeObject(),
@@ -1682,58 +1681,60 @@ $.fn.bsbutton = bootstrapButton;
 							return false;
 						}
 						
-
 						// ajaxで保存
 						$.ajax({
 							url:SCRIPT,
-							type:'POST',
+							type:'post',
 							data: postdata,
 							cache: false,
-							dataType : 'json',
-							success : function(data){
-								if (data.posted === true) {
-									// ローカルストレージをフラッシュ
-									if (isEnableLocalStorage){
-										localStorage.removeItem(PAGE);
-									}
-									if (typeof(FACEBOOK_APPID) !== 'undefined' && !postdata.notimestamp ) {
-										if ( postdata.fb-publish === 'true'){
-											$.ajax({
-												url:'https://graph.facebook.com/bbeckford/feed',
-												type:'post',
-												data: {
-													method: 'stream.publish',
-													message: PAGE + "\n" + $('link[rel=canonical]')[0].href
-												},
-												cache: false,
-												dataType : 'json',
-												success : function(data){
-													console.log(data.body);
-												},
-												error : function(data){
-													alert($.i18n('pukiwiki','error'));
-												}
-											});
-										}
-									}
-									location.href = SCRIPT + '?' + PAGE;
-								}else{
+							dataType : 'json'
+						}).
+						done(function(data){
+							if (data.posted === true) {
+								// ローカルストレージをフラッシュ
+								if (isEnableLocalStorage){
+									localStorage.removeItem(PAGE);
 								}
-								$('title').html(data.title);
+								if (typeof(FACEBOOK_APPID) !== 'undefined' && !postdata.notimestamp ) {
+									if ( postdata.fb-publish === 'true'){
+										$.ajax({
+											url:'https://graph.facebook.com/bbeckford/feed',
+											type:'post',
+											data: {
+												method: 'stream.publish',
+												message: PAGE + "\n" + $('link[rel=canonical]')[0].href
+											},
+											cache: false,
+											dataType : 'json',
+											success : function(data){
+												console.log(data.body);
+											},
+											error : function(data){
+												alert($.i18n('pukiwiki','error'));
+											}
+										});
+									}
+								}
+								location.href = SCRIPT + '?' + PAGE;
+							}else{
+								// たぶん、captichaが入る
+								$('title').text(data.title);
 								$('[role="main"]').html(data.body);
-								$input.removeAttr('disabled', 'disabled');
-							},
-							error : function(data, err){
-								if (DEBUG) {
-									if ($('#debug-window').length === 0) $(document.body).append('<div id="debug-window"></div>');
-									$('#debug-window').html(data.responseText);
-									$('#debug-window').dialog({
-										modal: true
-									});
-								}
-								alert($.i18n('pukiwiki','error'));
-								$input.removeAttr('disabled', 'disabled');
 							}
+						}).
+						fail(function(data, status){
+							if (DEBUG) {
+								console.error(data, status);
+								if ($('#debug-window').length === 0) $(document.body).append('<div id="debug-window"></div>');
+								$('#debug-window').dialog({
+									modal: true,
+									content: data.statusText
+								});
+							}
+							alert($.i18n('pukiwiki','error'));
+						}).
+						always(function(data, status){
+							$input.removeAttr('disabled', 'disabled');
 						});
 						break;
 				}	// End of switch
