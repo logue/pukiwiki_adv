@@ -818,7 +818,7 @@ class Utility{
 		if (!DEBUG){
 			$html[] = '<meta http-equiv="refresh" content="'.$time.'; URL='.$s_url.'" />';
 		}
-		$html[] = '<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" type="text/css" />';
+		$html[] = '<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/' . Render::TWITTER_BOOTSTRAP_VER . '/css/bootstrap.min.css" type="text/css" />';
 		$html[] = '<title>301 Moved Permanently</title>';
 		$html[] = '</head>';
 		$html[] = '<body>';

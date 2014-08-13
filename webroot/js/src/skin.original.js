@@ -1595,11 +1595,16 @@ $.fn.bsbutton = bootstrapButton;
 					$('#diff').html('<pre>'+ret.join("\n")+'</pre>');
 				})
 			;
+			
+			// ボタンクリックで送信処理を行っているため、元々のformは無効化する。
+			$form.submit(function() {
+				return false;
+			});
 
-			// 送信イベント時の処理
+			// ボタンをクリックした時のイベント
 			$form.find('button').click(function(e){
 				e.preventDefault();
-				
+
 				var $this = $(this),
 					$form = $this.parents('form'),
 					postdata = $form.serializeObject(),
@@ -1607,6 +1612,8 @@ $.fn.bsbutton = bootstrapButton;
 
 				// フォームを無効化
 				$input.attr('disabled', 'disabled');
+				
+				// TODO:念のため、最新の記事を取ってくる
 
 				switch ($this.attr('name')) {
 					case 'cancel' :	// キャンセルボタン
@@ -1615,7 +1622,6 @@ $.fn.bsbutton = bootstrapButton;
 							localStorage.removeItem(PAGE);
 						}
 						location.href = SCRIPT + '?' + PAGE;
-						$input.removeAttr('disabled', 'disabled');
 						break;
 					case 'preview':	// プレビューボタン
 						// フォームの高さを取得
@@ -1654,7 +1660,7 @@ $.fn.bsbutton = bootstrapButton;
 								},function(){
 									// 現在のプレビューを出力
 									realtime_preview();
-									$input.removeAttr('disabled', 'disabled');
+									$input.removeAttr('disabled');
 								});
 							});
 						}
@@ -1662,39 +1668,49 @@ $.fn.bsbutton = bootstrapButton;
 						break;
 					case 'diff' :	// 差分ボタン
 						$('#diff').dialog('open');
-						$input.removeAttr('disabled', 'disabled');
+						$input.removeAttr('disabled');
 						break;
 					case 'write':
+						// 送信ボタンが押された
 						postdata.write = true;
 						postdata.ajax = 'json';
 
 						// 空更新は無反応
 						if ( $original.val() == $msg.val()){
-							$input.removeAttr('disabled');
 							alert("Void updating");
+							$input.removeAttr('disabled');
 							return false;
 						}
 						
 						// 管理パスが入力されてない状態でタイムスタンプを更新しないになっている場合は、無反応
 						if ( $form.find('input[name="pass"]').length !==0 && (postdata.notimestamp && postdata.pass === '')){
-							alert("Password missing");
+							alert("Password is missing");
+							$input.removeAttr('disabled');
 							return false;
 						}
-						
+
 						// ajaxで保存
 						$.ajax({
+							type: 'POST',
 							url:SCRIPT,
-							type:'post',
 							data: postdata,
 							cache: false,
+						//	timeout: 1500,
 							dataType : 'json'
 						}).
 						done(function(data){
+							console.log(data);
+							// たぶん、captichaが入る
+							$('title').text(data.title);
+							$('[role="main"]').html(data.body);
+
+							// ajaxで送信すると、jsonで結果が返る。
 							if (data.posted === true) {
 								// ローカルストレージをフラッシュ
 								if (isEnableLocalStorage){
 									localStorage.removeItem(PAGE);
 								}
+								// facebookに投稿（未実装）
 								if (typeof(FACEBOOK_APPID) !== 'undefined' && !postdata.notimestamp ) {
 									if ( postdata.fb-publish === 'true'){
 										$.ajax({
@@ -1715,14 +1731,14 @@ $.fn.bsbutton = bootstrapButton;
 										});
 									}
 								}
+								// 送信に成功しているので、元のページにジャンプ
 								location.href = SCRIPT + '?' + PAGE;
-							}else{
-								// たぶん、captichaが入る
-								$('title').text(data.title);
-								$('[role="main"]').html(data.body);
+								return false;
 							}
+							// そうでない場合は、CAPTCHAが表示される・・・ハズ。
 						}).
 						fail(function(data, status){
+							console.log(data);
 							if (DEBUG) {
 								console.error(data, status);
 								if ($('#debug-window').length === 0) $(document.body).append('<div id="debug-window"></div>');
@@ -1734,7 +1750,8 @@ $.fn.bsbutton = bootstrapButton;
 							alert($.i18n('pukiwiki','error'));
 						}).
 						always(function(data, status){
-							$input.removeAttr('disabled', 'disabled');
+							// フォームのロックを解除
+							$input.removeAttr('disabled');
 						});
 						break;
 				}	// End of switch

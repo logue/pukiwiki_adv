@@ -139,8 +139,14 @@ class Header{
 			if (!isset($headers['Content-Length'])){
 				$headers['Content-Length'] = strlen($body);
 			}
+			
 			// レスポンスに内容を追加
 			$response->setContent($body);
+		}
+		// ajaxで送信した時に、net::ERR_CONTENT_LENGTH_MISMATCHエラーが発生するので、
+		// その場合、Content Lengthヘッダーを出力しない
+		if (IS_AJAX){
+			unset($headers['Content-Length']);
 		}
 		// ステータスコードを出力
 		$response->setStatusCode($status);

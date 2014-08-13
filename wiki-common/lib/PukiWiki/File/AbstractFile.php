@@ -274,11 +274,7 @@ abstract class AbstractFile extends SplFileInfo{
 		if (!is_array($str)){
 			if (static::FILE_SANITIZE) {
 				// 入力データが配列でない場合、念のため改行で分割
-				$x = preg_replace(
-					array("[\\r\\n]","[\\r]"),
-					array(self::LINE_BREAK,self::LINE_BREAK),
-					$str
-				);
+				$x = str_replace(array(chr(0x0d) . chr(0x0a), chr(0x0d), chr(0x0a)), self::LINE_BREAK, $str);
 			}else{
 				$x = $str;
 			}
@@ -289,14 +285,13 @@ abstract class AbstractFile extends SplFileInfo{
 			if (static::FILE_SANITIZE) {
 				// 改行を含む末尾の余計な空白文字は削除
 				// （ただし先頭の1文字目は、スペースやタブの場合があるため除外）
-				$data[] = (!empty($line)) ? $line[0] . rtrim(substr($line, 1)) : '';
+				$data[] = !empty($line) ? $line[0] . rtrim(substr($line, 1)) : '';
 			}else{
 				// サニタイズしない場合
 				$data[] = $line;
 			}
 		}
 		unset($str);
-
 
 		// 書き込む
 		$ret = $file->fwrite(join("\n",$data));
