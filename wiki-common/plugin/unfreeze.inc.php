@@ -11,32 +11,44 @@
 use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
 use PukiWiki\Utility;
+use PukiWiki\Router;
 
 // Show edit form when unfreezed
 defined('PLUGIN_UNFREEZE_EDIT') or define('PLUGIN_UNFREEZE_EDIT', TRUE);
 
+function plugin_unfreeze_init(){
+	global $_string;
+	$msg = array(
+		'_unfreeze_msg' => array(
+			'title_isunfreezed'=> T_(' $1 is not frozen'),
+			'title_unfreezed'  => T_(' $1 has been unfrozen.'),
+			'title_freeze'     => T_('Unfreeze  $1'),
+			'title_disabled'   => T_('Unfreeze function is disabled.'),
+			'title_unfreeze'   => $_string['invalidpass'],
+			'msg_unfreezing'   => T_('Please input the password for unfreezing.'),
+			'btn_unfreeze'     => T_('Unfreeze')
+		)
+	);
+	set_plugin_messages($msg);
+}
+
 function plugin_unfreeze_action()
 {
-	global $vars, $function_freeze, $_string;
-
-	$_title_isunfreezed = T_(' $1 is not frozen');
-	$_title_unfreezed   = T_(' $1 has been unfrozen.');
-	$_title_unfreeze    = T_('Unfreeze  $1');
-	$_msg_invalidpass   = $_string['invalidpass'];
-	$_msg_unfreezing    = T_('Please input the password for unfreezing.');
-	$_btn_unfreeze      = T_('Unfreeze');
+	global $vars, $function_freeze, $_unfreeze_msg;
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
 	$wiki = Factory::Wiki($page);
-	if (! $function_freeze || $wiki->isEditable() || ! $wiki->isValied($page))
-		return array('msg' => '', 'body' => '');
+	if (! $function_freeze || ! $wiki->isEditable() || ! $wiki->isValied($page))
+		return array('msg' => $_unfreeze_msg['title_disabled'], 'body' => '<p class="alert alert-danger">You have no permission to unfreeze this page.</p>');
 
 	$pass = isset($vars['pass']) ? $vars['pass'] : NULL;
-	$msg = $body = '';
+	
+	$msg = '';
+	$body = array();
 	if (! $wiki->isFreezed()) {
 		// Unfreezed already
-		$msg  = str_replace('$1', Utility::htmlsc(Utility::stripBracket($page)), $_title_isunfreezed);
-		$body = '<p class="alert alert-info">' . $msg . '</p>';
+		$msg  = str_replace('$1', Utility::htmlsc(Utility::stripBracket($page)), $_unfreeze_msg['title_isunfreezed']);
+		$body[] = '<p class="alert alert-info">' . $msg . '</p>';
 	} else if ( ! Auth::check_role('role_contents_admin') || $pass !== NULL && Auth::login($pass) ) {
 		
 		// BugTrack2/255
@@ -55,28 +67,27 @@ function plugin_unfreeze_action()
 		}else{
 			$vars['cmd'] = 'read';
 		}
-		$msg  = str_replace('$1', Utility::htmlsc(Utility::stripBracket($page)), $_title_unfreezed);
-		$body = (!IS_AJAX) ? '' : '<p class="alert alert-success">' . $msg . '</p><div class="pull-right"><a href="'.$wiki->uri().'" class="btn btn-primary">OK</a></div>';
+		$msg  = str_replace('$1', Utility::htmlsc(Utility::stripBracket($page)), $_unfreeze_msg['title_unfreezed']);
+		$body[] = (!IS_AJAX) ? '' : '<p class="alert alert-success">' . $msg . '</p>';
+		$body[] = '<div class="pull-right"><a href="'.$wiki->uri().'" class="btn btn-primary">OK</a></div>';
+		Utility::redirect($wiki->uri());
+		exit;
 	} else {
 		// Show unfreeze form
-		$msg    = $_title_unfreeze;
-		$s_page = Utility::htmlsc($page);
-		$body   = ($pass === NULL) ? '' : '<p class="alert alert-danger">'.$_msg_invalidpass.'</p>'."\n";
-		$script = get_script_uri();
-		$body  .= <<<EOD
-<fieldset>
-	<legend>$_msg_unfreezing</legend>
-	<form action="$script" method="post" class="form-inline plugin-form-unfreeze">
-		<input type="hidden" name="cmd"  value="unfreeze" />
-		<input type="hidden" name="page" value="$s_page" />
-		<input type="password" name="pass" size="12" class="form-control" />
-		<button type="submit" class="btn btn-primary" name="ok"><span class="fa fa-unlock"></span>$_btn_unfreeze</button>
-	</form>
-</fieldset>
-EOD;
+		$msg    = $_unfreeze_msg['title_unfreeze'];
+		$body[] = ($pass === NULL) ? '' : '<p class="alert alert-danger">' . $_unfreeze_msg['msg_invalidpass'] .'</p>'."\n";
+		$body[] = '<fieldset>';
+		$body[] = '<legend>' . $_unfreeze_msg['msg_unfreezing'] . '</legend>';
+		$body[] = '<form action="' . Router::get_script_uri() . '" method="post" class="form-inline plugin-freeze-form">';
+		$body[] = '<input type="hidden"   name="cmd"  value="unfreeze" />';
+		$body[] = '<input type="hidden"   name="page" value="'. Utility::htmlsc($page) . '" />';
+		$body[] = '<input type="password" name="pass" size="12" class="form-control" />';
+		$body[] = '<button type="submit" class="btn btn-primary" name="ok"><span class="fa fa-lock"></span>' . $_unfreeze_msg['btn_unfreeze'] . '</button>';
+		$body[] = '</form>';
+		$body[] = '</fieldset>';
 	}
 
-	return array('msg'=>$msg, 'body'=>$body);
+	return array('msg'=>$msg, 'body'=>join("\n",$body) );
 }
 /* End of file unfreeze.inc.php */
 /* Location: ./wiki-common/plugin/unfreeze.inc.php */
