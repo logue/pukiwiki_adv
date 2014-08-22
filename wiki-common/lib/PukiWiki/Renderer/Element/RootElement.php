@@ -257,7 +257,7 @@ class RootElement extends Element
 			return $text . "\n";
 		}
 		// #contents
-		return preg_replace_callback('/<#_contents_>/', array(& $this, 'replaceContents'), parent::toString());
+		return preg_replace_callback('/<#_contents_>/', array($this, 'replaceContents'), parent::toString());
 	}
 	
 	private function comment($matches)
@@ -267,12 +267,12 @@ class RootElement extends Element
 			$comments[$key] = array_shift($this->comments);
 		}
 		$comment = join("\n", $comments);
-		return '<img alt="Comment" title="' . htmlspecialchars($comment) . '" />';
+		return '<span class="fa fa-comment" title="' . Utility::htmlsc($comment) . '"></span>';
 	}
 
 	private function replaceContents()
 	{
-		//print_r($this->contents);
+		//var_dump($this->contents->toString());
 		return '<div class="contents" id="contents_' . $this->id . '">' . "\n" .
 			$this->contents->toString() .
 			'</div>' . "\n";
