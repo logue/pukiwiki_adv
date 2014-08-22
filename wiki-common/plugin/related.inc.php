@@ -80,9 +80,11 @@ function plugin_related_action()
 	$_page = isset($vars['page']) ? $vars['page'] : null;
 	if ( empty($_page) ) $_page = $defaultpage;
 
-	// Result
-	$retval[]  = '<a href="' . get_page_uri($_page) . '">' .
-		sprintf($_related_messages['msg_return'],Utility::htmlsc($_page)) .'</a><br />'. "\n";
+	if (!IS_AJAX) {
+		// Result
+		$retval[]  = '<a href="' . get_page_uri($_page) . '">' .
+			sprintf($_related_messages['msg_return'],Utility::htmlsc($_page)) .'</a><br />'. "\n";
+	}
 
 	// Get related from cache
 	$links = new Relational($_page);
@@ -101,7 +103,7 @@ function plugin_related_action()
 		// Show count($data)?
 		ksort($data, SORT_STRING);
 
-		$retval[] = '<ul>' . "\n";
+		$retval[] = '<ul class="list_pages">' . "\n";
 		foreach ($data as $page=>$time) {
 			$wiki = Factory::Wiki($page);
 			$retval[] = ' <li><a href="' . $wiki->uri() . '">' . Utility::htmlsc($page) .

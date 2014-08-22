@@ -136,9 +136,9 @@ class Header{
 				$headers['WWW-Authenticate'] = Auth::getAuthHeader();
 			}
 			// 内容が存在する場合容量をContent-Lengthヘッダーに出力
-			if (!isset($headers['Content-Length'])){
+		//	if (!isset($headers['Content-Length'])){
 				$headers['Content-Length'] = strlen($body);
-			}
+		//	}
 			
 			// レスポンスに内容を追加
 			$response->setContent($body);

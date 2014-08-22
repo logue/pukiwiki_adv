@@ -195,8 +195,7 @@ class Render{
 			}
 			// リファラーを保存
 			if ($this->page !== null) Factory::Referer($this->page)->set();
-			
-			global $attach_link, $related_link;
+
 			$view->lastmodified = '<time datetime="'.Time::getZoneTimeDate('c',$this->wiki->time()).'">'.Time::getZoneTimeDate('D, d M Y H:i:s T', $this->wiki->time()) . ' ' . $this->wiki->passage().'</time>';
 
 			// ページの添付ファイル、関連リンク

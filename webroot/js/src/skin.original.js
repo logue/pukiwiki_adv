@@ -78,7 +78,7 @@ $.fn.bsbutton = bootstrapButton;
 
 	if (!$) { throw "pukiwiki: jQuery does not included."; }
 	if (!$.ui) { throw "pukiwiki: jQueryUI does not included."; }
-	
+
 	var $body = $(document.body);
 
 	pukiwiki = {
@@ -148,7 +148,7 @@ $.fn.bsbutton = bootstrapButton;
 				loop: false
 			}, this.custom.rlightbox);
 			*/
-			
+
 			$.extend(true, $.fn.dataTable.defaults, {
 				bJQueryUI			: true,
 				bAutoWidth			: false,
@@ -311,7 +311,7 @@ $.fn.bsbutton = bootstrapButton;
 
 			// 非同期通信中はUIをブロック
 			this.blockUI();
-			
+
 			// MathJax
 			if ($('.mathjax-eq').length !== 0){
 				$.getScript('http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML', function(){
@@ -375,7 +375,7 @@ $.fn.bsbutton = bootstrapButton;
 			$(prefix + 'form.autosubmit').change(function(){
 				this.submit();
 			});
-			
+
 			// テキストエリアでタブ入力できるように
 			$(prefix + 'textarea').tabby();
 			$(prefix + 'textarea[row=1]').autosize();
@@ -468,7 +468,7 @@ $.fn.bsbutton = bootstrapButton;
 						'<p></p>',
 					'</div>'
 				].join("\n")),
-				
+
 				//$progress.hide();
 				$form.append($progress);
 
@@ -572,9 +572,9 @@ $.fn.bsbutton = bootstrapButton;
 						var params = {cmd:'read',ajax:'raw'},
 							content = '',
 							page_hash = $body.data('page').split('#');
-							
+
 						// console.log(page_hash);
-						
+
 						params.page = page_hash[0];
 						if (page_hash[1]){
 							params.id = page_hash[1];
@@ -654,7 +654,7 @@ $.fn.bsbutton = bootstrapButton;
 								d.write('<meta http-equiv="refresh" content="0;url='+href+'" />');
 								d.close();
 							} else if ( !href.match(/data:text\/html;/)){
-								
+
 								// for Safari,Chrome,Firefox
 								var dataUri ='data:text/html;charset=utf-8,'+encodeURIComponent(
 									'<html><head><script type="text/javascript"><!--'+"\n"+
@@ -696,10 +696,10 @@ $.fn.bsbutton = bootstrapButton;
 							params[hash[0]] = decodeURIComponent(hash[1]).replace(/\+/g, ' ').replace(/%2F/g, '/');
 						}catch(e){}
 					}
-					
+
 					// 明示的にajaxを無効化するリンクの場合
 					if (params.ajax === 'false') return true;
-					
+
 					if (href.match('#') && href !== '#'){
 						// アンカースクロールを無効化判定
 						if (disable_scrolling === false){
@@ -743,7 +743,7 @@ $.fn.bsbutton = bootstrapButton;
 								$this.attr('href',SCRIPT+'?cmd='+params.cmd+'&refer='+params.refer+'&openfile='+filename);
 							}
 							ext = filename.match(/\.(\w+)$/i);
-							
+
 							if (ext){
 								switch (ext[1].toLowerCase()) {
 									case 'jpg': case 'jpeg': case 'gif': case'png':/* case'svg' : case 'svgz' :*/
@@ -781,10 +781,10 @@ $.fn.bsbutton = bootstrapButton;
 							});
 						}
 					}
-					
+
 				}
 			});
-			
+
 			/**
 			 * トップに戻るボタン
 			 * http://webdesignerwall.com/tutorials/animated-scroll-to-top
@@ -792,8 +792,8 @@ $.fn.bsbutton = bootstrapButton;
 			if ($('#back-top').length === 0){
 				var $body = $(document.body), $window = $(window), $back_top;
 				// DOMを挿入
-				$body.append('<div id="back-top"><a href="#" class="btn btn-primary btn-lg" title="トップへ"><span class="glyphicon glyphicon-arrow-up"></span></a></div>');
-				
+				$body.append('<div id="back-top"><a href="#" class="btn btn-primary btn-lg" title="Go to Top"><span class="glyphicon glyphicon-arrow-up"></span></a></div>');
+
 				$back_top = $('#back-top');
 				// 最上部でボタンが表示されるとカッコ悪いので隠す
 				$back_top.hide();
@@ -808,7 +808,7 @@ $.fn.bsbutton = bootstrapButton;
 					}
 				});
 				// 「トップに戻る」ボタンにイベント割り当て
-				
+
 				$('#back-top a')
 					.click(function(){
 						$('html,body').animate({scrollTop: 0}, 1000);
@@ -879,16 +879,7 @@ $.fn.bsbutton = bootstrapButton;
 				cache : true
 			}).
 			done(function(data){
-				// 通信成功時
-				if (typeof(parse) === 'function') { data = parse(data); }
-				// スクリプトタグを無効化
-				if (data !== null){
-					content = data.body.replace(/<script[^>]*>[^<]+/ig,'');
-					dialog_option.title = data.title;
-				}else{
-					content = '<p class="alert alert-warning"><span class="fa fa-warning"></span>Data is Null!</p>';
-					dialog_option.title = $.i18n('dialog','error');
-				}
+
 			}).
 			fail(function(data,status){
 				// エラー発生
@@ -907,9 +898,18 @@ $.fn.bsbutton = bootstrapButton;
 				content += data.responseText;
 			}).
 			always(function(data){
+				if (typeof(parse) === 'function') { data = parse(data); }
+				// スクリプトタグを無効化
+				if (typeof(data) !== 'null'){
+					content = data.body.replace(/<script[^>]*>[^<]+/g,'');
+					dialog_option.title = data.title;
+				}else{
+					content = '<p class="alert alert-warning"><span class="fa fa-warning"></span>Data is Null!</p>';
+					dialog_option.title = $.i18n('dialog','error');
+				}
 				container.html(content).dialog(dialog_option);
 				$('*[role="tooltip"]').remove();	// ツールチップが消えないことがあるので・・・
-
+/*
 				if (data.status !== 200){
 					try{
 						$('#ajax-error').after([
@@ -924,6 +924,7 @@ $.fn.bsbutton = bootstrapButton;
 						].join("\n"));
 					}catch(e){}
 				}
+*/
 			});
 		},
 		blockUI : function(){
@@ -944,8 +945,8 @@ $.fn.bsbutton = bootstrapButton;
 				;
 			}
 
-			$activity = $('#loading-activity'), $loading = $('#loading');;
-			
+			$activity = $('#loading-activity'), $loading = $('#loading');
+
 			$activity
 				.activity({
 					segments: 12,
@@ -960,7 +961,7 @@ $.fn.bsbutton = bootstrapButton;
 					$loading.fadeOut();
 				})
 			;
-			
+
 
 			$window
 				.ajaxSend(function(e, xhr, settings) {
@@ -991,7 +992,7 @@ $.fn.bsbutton = bootstrapButton;
 
 			// シンタックスハイライトするDOMを取得
 			var sh = (prefix) ? prefix + ' .sh' : '.sh', self = this;
-			
+
 			if ($(sh).length !== 0) {
 				if (typeof(window.Sunlight) === 'undefined') {
 					$.getScript(JS_URI + 'sunlight/sunlight-all-min.js', function(){
@@ -1033,7 +1034,7 @@ $.fn.bsbutton = bootstrapButton;
 				}
 			});
 			$('.fg-toolbar input, .fg-toolbar select').addClass('form-control').css('display','inline-block');
-			
+
 		},
 		// 検索フォームでサジェスト機能
 		suggest: function(prefix){
@@ -1042,7 +1043,7 @@ $.fn.bsbutton = bootstrapButton;
 			;
 			if ($form.length !== 0){
 				$form.autocomplete({
-					minLength: 4,
+					minLength: 3,
 					source: function( request, response ) {
 						var term = request.term;
 						if ( term in cache ) {
@@ -1126,7 +1127,7 @@ $.fn.bsbutton = bootstrapButton;
 							// キャッシュから内容を呼び出す
 							return glossaries[text];
 						}
-						
+
 					}else if ( $this.is('[title]')){
 						return $this.attr('title');
 					}
@@ -1191,7 +1192,7 @@ $.fn.bsbutton = bootstrapButton;
 					show: 'scale',
 					hide: 'scale'
 				}).html(emoji_widget);
-				
+
 				// イベントの割り当て
 				$('#emoji').children('ul').children('li').click(function(){
 					var str = $msg.getSelection().text, v = '&('+$(this).attr('name')+');';
@@ -1211,7 +1212,7 @@ $.fn.bsbutton = bootstrapButton;
 			// カラーパレットのウィジット
 			if ($('#color_palette').length === 0){
 				$body.append('<div id="color_palette"></div>');
-				
+
 				color_widget = '<ul class="ui-widget pkwk_widget ui-helper-clearfix" id="colors">';
 				for(i = 0, len =  this.assistant_setting.color.length; i < len ; i++ ){
 					var color = this.assistant_setting.color[i];
@@ -1251,7 +1252,7 @@ $.fn.bsbutton = bootstrapButton;
 			// ヒントのウィジット
 			if ($('#hint').length === 0){
 				$body.append('<div id="hint"></div>');
-				
+
 				$('#hint').dialog({
 					title:$.i18n('editor','hint'),
 					autoOpen:false,
@@ -1381,7 +1382,7 @@ $.fn.bsbutton = bootstrapButton;
 						sttlen, endlen, sellen, finlen;
 
 					if ($realview.is(':visible')) {
-						
+
 						$indicator.css('display:block;');
 
 						if (++self.ajax_count !== 1){ return; }
@@ -1406,49 +1407,51 @@ $.fn.bsbutton = bootstrapButton;
 								$msg.attr('disabled', 'disabled');
 								$indicator.removeClass('hidden');
 								$indicator.html('<span class="fa fa-spinner fa-spin"></span>');
-							},
-							success : function(data){
-								$indicator.html('<span class="fa fa-clock-o"></span>'+data.taketime);
-								var ret = data.data.replace(/<script[^>]*>[^<]+/ig,'<div>[SCRIPT]</div>'), $editmark;
-								ret = ret.replace(/<form(.*?)>(.*?)<\/form>/ig,'<div>[FORM]</div>');
-								$('#realview').html(ret);
-								$editmark = $('#editmark')
+							}
+						}).
+						done(function(data, status, xhr){
+							$indicator.html('<span class="fa fa-clock-o"></span>'+data.taketime);
+							var ret = data.data.replace(/<script[^>]*>[^<]+/ig,'<div>[SCRIPT]</div>'), $editmark;
+							ret = ret.replace(/<form(.*?)>(.*?)<\/form>/ig,'<div>[FORM]</div>');
+							$('#realview').html(ret);
+							$editmark = $('#editmark')
 
-		//						if ($realview.scrollTop() === 0) {
-									// スクロールが0の時エラーになる問題をごまかす
-		//							$realview.scrollTop(1);
-		//						}
-		//						$realview.animate({
-		//							scrollTop: $('#editmark').offset().top
-		//						});
-								if ($editmark.length !== 0 ){
-									$realview.scrollTop($editmark.offset().top - $realview.height()-100);
-								}
+	//						if ($realview.scrollTop() === 0) {
+								// スクロールが0の時エラーになる問題をごまかす
+	//							$realview.scrollTop(1);
+	//						}
+	//						$realview.animate({
+	//							scrollTop: $('#editmark').offset().top
+	//						});
+							if ($editmark.length !== 0 ){
+								$realview.scrollTop($editmark.offset().top - $realview.height()-100);
+							}
 
-								if (self.ajax_count===1) {
-									self.ajax_count = 0;
-								} else {
-									self.ajax_count = 0;
-									realtime_preview();
-								}
-							},
-							error : function(data,status,thrown){
-								console.log(data);
+							if (self.ajax_count===1) {
+								self.ajax_count = 0;
+							} else {
+								self.ajax_count = 0;
+								realtime_preview();
+							}
+						}).
+						fail(function(xhr, status, error){
+							console.log(xhr);
+							if (DEBUG) {
 								$realview.html([
 									'<div class="alert alert-warning">',
 										'<p><span class="fa fa-warning-sign"></span>'+$.i18n('pukiwiki','error')+status+'</p>',
 										'<ul>',
-											'<li>readyState:'+data.readyState+'</li>',
-											'<li>responseText:'+data.responseText+'</li>',
-											'<li>status:'+data.status+'</li>',
-											'<li>statusText:'+data.statusText+'</li>',
+											'<li>readyState:'+xhr.readyState+'</li>',
+											'<li>responseText:'+xhr.responseText+'</li>',
+											'<li>status:'+xhr.status+'</li>',
+											'<li>statusText:'+xhr.statusText+'</li>',
 										'</ul>',
 									'</div>'].join("\n")
 								);
-							},
-							complete: function(){
-								$msg.removeAttr('disabled');
 							}
+						}).
+						always(function(){
+							$msg.removeAttr('disabled');
 						});
 					}else{
 						$indicator.css('display:hidden;');
@@ -1595,7 +1598,7 @@ $.fn.bsbutton = bootstrapButton;
 					$('#diff').html('<pre>'+ret.join("\n")+'</pre>');
 				})
 			;
-			
+
 			// ボタンクリックで送信処理を行っているため、元々のformは無効化する。
 			$form.submit(function() {
 				return false;
@@ -1612,7 +1615,7 @@ $.fn.bsbutton = bootstrapButton;
 
 				// フォームを無効化
 				$input.attr('disabled', 'disabled');
-				
+
 				// TODO:念のため、最新の記事を取ってくる
 
 				switch ($this.attr('name')) {
@@ -1631,7 +1634,7 @@ $.fn.bsbutton = bootstrapButton;
 							// リアルタイムプレビューの表示画面
 							$msg.before('<div id="realview" class="form-control" style="display:none;"></div>');
 						}
-						
+
 						$realview = $('#realview');
 
 						// Textarea Resizerで高さが可変になっているため。
@@ -1664,7 +1667,7 @@ $.fn.bsbutton = bootstrapButton;
 								});
 							});
 						}
-						
+
 						break;
 					case 'diff' :	// 差分ボタン
 						$('#diff').dialog('open');
@@ -1681,7 +1684,7 @@ $.fn.bsbutton = bootstrapButton;
 							$input.removeAttr('disabled');
 							return false;
 						}
-						
+
 						// 管理パスが入力されてない状態でタイムスタンプを更新しないになっている場合は、無反応
 						if ( $form.find('input[name="pass"]').length !==0 && (postdata.notimestamp && postdata.pass === '')){
 							alert("Password is missing");
@@ -1699,7 +1702,6 @@ $.fn.bsbutton = bootstrapButton;
 							dataType : 'json'
 						}).
 						done(function(data){
-							console.log(data);
 							// たぶん、captichaが入る
 							$('title').text(data.title);
 							$('[role="main"]').html(data.body);
@@ -1710,6 +1712,7 @@ $.fn.bsbutton = bootstrapButton;
 								if (isEnableLocalStorage){
 									localStorage.removeItem(PAGE);
 								}
+/*
 								// facebookに投稿（未実装）
 								if (typeof(FACEBOOK_APPID) !== 'undefined' && !postdata.notimestamp ) {
 									if ( postdata.fb-publish === 'true'){
@@ -1731,6 +1734,7 @@ $.fn.bsbutton = bootstrapButton;
 										});
 									}
 								}
+*/
 								// 送信に成功しているので、元のページにジャンプ
 								location.href = SCRIPT + '?' + PAGE;
 								return false;
@@ -1792,7 +1796,7 @@ $.fn.bsbutton = bootstrapButton;
 					li[index] = '<li><a href="#'+xid+'">'+$this.text()+'</a></li>';
 				}
 			});
-			
+
 			if($tocs.length !== 0){
 				// #contentsが呼び出されているときは、その内容をTocに入れる。
 				ret = $tocs.html();
@@ -1801,7 +1805,7 @@ $.fn.bsbutton = bootstrapButton;
 				ret = '<ol>'+li.join("\n")+'</ol>';
 			}else if($.query.get('cmd').match(/list|backup/) !== -1){
 				// おまけ。一覧ではトップのナビを入れる。
-				ret = '<div style="text-align:center;">'+$('.page_initial').html()+'</div>';
+				ret = '<ul class="list-inline">' + $('.page_initial').children().html() + '</ul>';
 			}
 
 			return ret;
@@ -1819,7 +1823,7 @@ $.fn.bsbutton = bootstrapButton;
 				.css('z-index',100)
 				.css('display','none')
 				.html([
-				'<h1><a href="#">'+$('h1#title').text()+'</a><abbr title="Table of Contents">[TOC]</abbr></h1>',
+				'<h1><a href="#">'+$('#title').text()+'</a><abbr title="Table of Contents">[TOC]</abbr></h1>',
 				lis.replace(/href/g,'tabindex="1" href')
 			].join(''))
 				.click(function(){
@@ -1852,7 +1856,7 @@ $.fn.bsbutton = bootstrapButton;
 			$('#' + this.toc.id + ' *').click(function(){
 				self._hideToc();
 			});
-			
+
 			$(window).keydown(function(e){
 				// スラッシュキー（入力フォーム以外）
 				if(!e.target.nodeName.match(/(input|textarea)/i) && e.keyCode === 111){
@@ -1887,7 +1891,7 @@ $.fn.bsbutton = bootstrapButton;
 				h = this.toc.height,
 				w = this.toc.width
 			;
-			
+
 			if (ev && tg) {
 				doc = {
 					x:ev.clientX + $(window).scrollLeft(),

@@ -871,6 +871,10 @@ i, em, cite, q {
 .ui-lightbox-error-icon-sign {
 	background: url('../image/ajax/error_sign.png') no-repeat center 226px;
 }
+
+.sunlight-highlighted{
+	word-wrap: normal !important;
+}
 /* ==|== DataTables ========================================================= */
 /*
  * Table
