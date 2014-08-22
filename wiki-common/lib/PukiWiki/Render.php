@@ -45,7 +45,7 @@ class Render{
 	/**
 	 * jQuery UIのバージョン
 	 */
-	const JQUERY_UI_VER = '1.11.0';
+	const JQUERY_UI_VER = '1.11.1';
 	/**
 	 * jQuery Mobileのバージョン
 	 */
