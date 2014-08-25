@@ -1395,7 +1395,7 @@ $.fn.bsbutton = bootstrapButton;
 							data : {
 								cmd : 'edit',
 								realview : 1,
-								page : decodeURI(PAGE),
+								page : decodeURIComponent(PAGE),
 								// 編集した位置までスクロールさせるための編集マークプラグイン呼び出しを付加
 								msg : source.substring(0,finlen) +"\n\n" + '&editmark;' + "\n\n" + source.substring(finlen),
 								type : 'json'
@@ -1435,7 +1435,6 @@ $.fn.bsbutton = bootstrapButton;
 							}
 						}).
 						fail(function(xhr, status, error){
-							console.log(xhr);
 							if (DEBUG) {
 								$realview.html([
 									'<div class="alert alert-warning">',

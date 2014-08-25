@@ -38,7 +38,7 @@ function plugin_unfreeze_action()
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
 	$wiki = Factory::Wiki($page);
-	if (! $function_freeze || ! $wiki->isEditable() || ! $wiki->isValied($page))
+	if (! $function_freeze || ! $wiki->isEditable(false, true) || ! $wiki->isValied($page))
 		return array('msg' => $_unfreeze_msg['title_disabled'], 'body' => '<p class="alert alert-danger">You have no permission to unfreeze this page.</p>');
 
 	$pass = isset($vars['pass']) ? $vars['pass'] : NULL;

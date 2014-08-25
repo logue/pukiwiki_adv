@@ -131,23 +131,26 @@ class Wiki{
 	{
 		global $edit_auth, $cantedit;
 
+		// 無効なページ名
+		if (!$this->isValied()) return false;
+
+		// 編集できないページ
+		foreach($cantedit as $key) {
+			if ($this->page === $key) return false;
+		}
+
+		// 凍結されている
+		if (!$ignole_freeze && $this->isFreezed()) return false;
+
 		// 「編集時に認証する」が有効になっていない
 		if (!$edit_auth) return true;
 		
 		// ユーザ別の権限を読む
 		if (Auth::auth($this->page, 'edit', $authenticate)) return true;
 
-		// 無効なページ名
-		if (!$this->isValied()) return false;
-		// 編集できないページ
-		foreach($cantedit as $key) {
-			if ($this->page === $key) return false;
-		}
 		// 未認証時は読み取り専用になっている
-		if (Auth::check_role('readonly')) return false;	
-		// 凍結されている
-		if (!$ignole_freeze && $this->isFreezed()) return false;
-		
+		if (Auth::check_role('readonly')) return false;
+
 		return false;
 	}
 	/**
@@ -174,7 +177,7 @@ class Wiki{
 	public function isFreezed()
 	{
 		// 先頭1行のみ読み込み、そこに#freezeがある場合凍結とみなす
-		return strstr($this->wiki->head(1),'#freeze');
+		return strstr($this->wiki->head(1),'#freeze') === '#freeze';
 	}
 	/**
 	 * 有効なページ名か（is_page()）

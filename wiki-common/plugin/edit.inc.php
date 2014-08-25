@@ -27,17 +27,38 @@ define('PLUGIN_EDIT_FREEZE_REGEX', '/^(?:#freeze(?!\w)\s*)+/im');
 // Define part-edit area - 'compat':1.4.4compat, 'level':level
 defined('PLUGIN_EDIT_PARTAREA') or define('PLUGIN_EDIT_PARTAREA', 'compat');
 
+function plugin_edit_init(){
+	global $_string;
+	$msg = array(
+		'_edit_msg' => array(
+			'err_empty_page'    => T_('Pagename is missing.'),
+			'title_edit'        => T_('Edit of %s'),
+			'err_long'          => T_('Pagename is too long.'),
+			'title_preview'     => T_('Preview of %s'),
+			'msg_preview'       => T_('To confirm the changes, click the button at the bottom of the page'),
+			'msg_preview_delete'=> T_('(The contents of the page are empty. Updating deletes this page.)'),
+			'title_deleted'     => T_(' $1 was deleted'),
+			'msg_invalidpass'   => $_string['invalidpass']
+		)
+	);
+	set_plugin_messages($msg);
+}
+
 function plugin_edit_action()
 {
 // global $vars, $_title_edit, $load_template_func;
-	global $vars, $load_template_func, $_string;
+	global $vars, $load_template_func, $_string, $_edit_msg;
 
 	$page = isset($vars['page']) ? $vars['page'] : null;
-	if (empty($page)) return array('msg'=> T_('Pagename is missing.'), 'body'=>T_('Pagename is missing.'));
+	if (empty($page)) return array('msg'=> $_edit_msg['msg_edit'], 'body'=>$_edit_msg['err_pagename_empty']);
 	$wiki = Factory::Wiki($page);
 
+	if (!$wiki->isEditable(true)){
+		Utility::dieMessage( $_string['err_empty_page'], 403 );
+	}
+
 	// if (PKWK_READONLY) die_message(  sprintf($_string['error_prohibit'], 'PKWK_READONLY') );
-	if (Auth::check_role('readonly')) Utility::dieMessage( $_string['prohibit'],403 );
+	if (Auth::check_role('readonly')) Utility::dieMessage( $_string['error_prohibit'],403 );
 
 	if (PKWK_READONLY == Auth::ROLE_AUTH && Auth::get_role_level() > Auth::ROLE_AUTH) {
 		Utility::dieMessage( sprintf($_string['error_prohibit'], 'PKWK_READONLY'), 403 );
@@ -46,12 +67,6 @@ function plugin_edit_action()
 	if (isset($vars['realview'])) {
 		return plugin_edit_realview();
 	}
-
-	if (!$wiki->isEditable(true)){
-		Utility::dieMessage( $_string['not_editable'] );
-	}
-
-	//check_editable($page, true, true);
 
 	if (!$wiki->has() && Auth::is_check_role(PKWK_CREATE_PAGE)) {
 		Utility::dieMessage( sprintf($_string['error_prohibit'], 'PKWK_CREATE_PAGE'),403 );
@@ -68,7 +83,6 @@ function plugin_edit_action()
 	} else if (isset($vars['cancel'])) {
 		return plugin_edit_cancel();
 	}
-
 
 	$postdata = $vars['original'] = $wiki->get(true);
 	Auth::is_role_page($postdata);
@@ -88,22 +102,30 @@ function plugin_edit_action()
 		// Check Page name length
 		// http://pukiwiki.sourceforge.jp/dev/?PukiWiki%2F1.4%2F%A4%C1%A4%E7%A4%C3%A4%C8%CA%D8%CD%F8%A4%CB%2F%C4%B9%A4%B9%A4%AE%A4%EB%A5%DA%A1%BC%A5%B8%CC%BE%A4%CE%A5%DA%A1%BC%A5%B8%A4%CE%BF%B7%B5%AC%BA%EE%C0%AE%A4%F2%CD%DE%BB%DF
 		$filename_max_length = 250;
-		$filename = encode($page) . '.txt';
+		$filename = Utility::encode($page) . '.txt';
 		$filename_length = strlen($filename);
 		if ($filename_length > $filename_max_length){
-			$msg = "<b>Error: Filename too long.</b><br />\n" .
-				"Page name: " . htmlsc($page) . "<br />\n" .
-				"Filename: $filename<br>\n" .
-				"Filename length: $filename_length<br />\n" .
-				"Filename limit: $filename_max_length<br />\n";
 			// Filename too long
-			return array('msg'=>$_title_edit, 'body'=>$msg);
+			return array('msg'=>$_edit_msg['title_edit'], 'body'=>join("\n", array(
+				'<p class="alert alert-warning"><span class="fa fa-exclamation-triangle"></span>' . $_edit_msg['err_long'] , '</p>',
+				'<dl class="dl-horizontal">',
+				'<dt>Page name</dt>',
+				'<dd>' . Utility::htmlsc($page) . '</dd>',
+				'<dt>Filename</dt>',
+				'<dd>' . $filename . '</dd>',
+				'<dt>Filename length</dt>',
+				'<dd>' . $filename_length . '</dd>',
+				'<dt>Filename limit</dt>',
+				'<dd>' . $filename_max_length . '</dd>',
+				'</dl>'
+				)
+			));
 		}else{
 			$postdata = $wiki->auto_template();
 		}
 	}
 
-	return array('msg'=> T_('Edit of $1'), 'body'=>Utility::editForm($page, $postdata));
+	return array('msg'=> sprintf($_edit_msg['title_edit'], $page), 'body'=>Utility::editForm($page, $postdata));
 }
 
 // Preview by Ajax
@@ -131,14 +153,11 @@ function plugin_edit_realview()
 // Preview
 function plugin_edit_preview()
 {
-	global $vars;
-	// global $_title_preview, $_msg_preview, $_msg_preview_delete;
-	$_title_preview			= T_('Preview of $1');
+	global $vars, $_edit_msg;
 	$_msg_preview			= T_('To confirm the changes, click the button at the bottom of the page');
 	$_msg_preview_delete	= T_('(The contents of the page are empty. Updating deletes this page.)');
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
-	
 
 	// Loading template
 	if (isset($vars['template_page']) && $wiki->isValied()) {
@@ -157,16 +176,16 @@ function plugin_edit_preview()
 
 	// Compat: add plugin and adding contents
 	if (isset($vars['add']) && $vars['add']) {
-		if (isset($post['add_top']) && $post['add_top']) {
+		if (isset($vars['add_top']) && $vars['add_top']) {
 			$postdata  = $postdata . "\n\n" . $wiki->get(true);
 		} else {
 			$postdata  = $wiki->get(true) . "\n\n" . $postdata;
 		}
 	}
 
-	$body = $_msg_preview . '<br />' . "\n";
+	$body = $_edit_msg['msg_preview'] . '<br />' . "\n";
 	if ($postdata == '')
-		$body .= '<strong>' . $_msg_preview_delete . '</strong>';
+		$body .= '<strong>' . $_edit_msg['msg_preview_delete'] . '</strong>';
 	$body .= '<br />' . "\n";
 
 	if ($postdata) {
@@ -177,7 +196,7 @@ function plugin_edit_preview()
 	}
 	$body .= Utility::editForm($page, $vars['msg'], $vars['digest'], FALSE);
 
-	return array('msg'=>$_title_preview, 'body'=>$body);
+	return array('msg'=>$_msg_edit['title_preview'], 'body'=>$body);
 }
 
 // Inline: Show edit (or unfreeze text) link
@@ -221,14 +240,8 @@ function plugin_edit_inline()
 // Write, add, or insert new comment
 function plugin_edit_write()
 {
-	global $vars, $trackback, $_string;
-	global $notimeupdate, $do_update_diff_table;
-	global $use_trans_sid_address;
-//	global $_title_collided, $_msg_collided_auto, $_msg_collided, $_title_deleted;
-//	global $_msg_invalidpass;
-
-	$_title_deleted = T_(' $1 was deleted');
-	$_msg_invalidpass = $_string['invalidpass'];
+	global $vars, $trackback, $_string, $_msg_edit;
+	global $notimeupdate;
 
 	$page   = isset($vars['page'])   ? $vars['page']   : null;
 	$add    = isset($vars['add'])    ? $vars['add']    : null;
@@ -236,7 +249,7 @@ function plugin_edit_write()
 	$partid = isset($vars['id'])     ? $vars['id']     : null;
 	$notimestamp = isset($vars['notimestamp']) && $vars['notimestamp'] !== null;
 
-	if (empty($page)) return array('mgs'=>'Error', 'body'=>'page is missing');
+	if (empty($page)) return array('mgs'=>'Error', 'body'=>$_msg_edit['err_empty_page']);
 
 	$wiki = Factory::Wiki($page);
 	// Check Validate and Ticket
@@ -276,8 +289,8 @@ function plugin_edit_write()
 	// NULL POSTING, OR removing existing page
 	if (empty($postdata)) {
 		$wiki->set('');
-		$retvars['msg'] = $_title_deleted;
-		$retvars['body'] = '<p class="alert alert-success">' . str_replace('$1', htmlsc($page), $_title_deleted) . '</p>';
+		$retvars['msg'] = sprintf($_msg_edit['title_deleted'], Utility::htmlsc($page));
+		$retvars['body'] = '<p class="alert alert-success">' . sprintf($_msg_edit['title_deleted'], Utility::htmlsc($page)) . '</p>';
 		return $retvars;
 	}
 
@@ -286,7 +299,7 @@ function plugin_edit_write()
 //	if ($notimeupdate > 1 && $notimestamp && ! pkwk_login($vars['pass'])) {
 	if ($notimeupdate > 1 && $notimestamp && Auth::check_role('role_contents_admin') && !pkwk_login($vars['pass'])) {
 		// Enable only administrator & password error
-		$retvars['body']  = '<p class="alert alert-danger">' . $_msg_invalidpass . '</p>' . "\n";
+		$retvars['body']  = '<p class="alert alert-danger">' . $_msg_edit['msg_invalidpass'] . '</p>' . "\n";
 		$retvars['body'] .= Utility::editForm($page, $msg, FALSE);
 		return $retvars;
 	}
