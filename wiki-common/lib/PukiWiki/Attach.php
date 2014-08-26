@@ -221,6 +221,7 @@ class Attach{
 	 * @return void
 	 */
 	public function render(){
+		global $vars;
 		$response = new Response();
 
 		// ステータスコード
@@ -290,11 +291,14 @@ class Attach{
 		$filename = mb_convert_encoding($this->filename, 'UTF-8', 'auto');
 		// ヘッダー出力
 		$header = Header::getHeaders($content_type, $f->getMTime());
-		if ($content_type === self::DEFAULT_MIME_TYPE) {
-			$header['Content-Disposition'] = 'attachment; filename="' . $this->filename . '"';
-		} else {
-			$header['Content-Disposition'] = 'inline; filename="' . $this->filename . '"';
-		}
+
+		// attach系プラグインから読み取るときはattachment、refなど埋め込み系プラグインから読み取るときはinline
+		$disposition = $vars['cmd'] === 'attach' ? 'attachment' : 'inline';
+		
+		// 添付ファイルダウンロードで日本語ファイル名が文字化けする
+		// http://pukiwiki.sourceforge.jp/dev/?BugTrack2%2F354
+		$header['Content-Disposition'] = $disposition . '; filename="' . $this->filename . '"; filename*=utf-8\'\'' . rawurlencode($this->filename);
+
 		$header['X-Sendfile'] = $file->getRealPath();
 		$header['Content-Length'] = $filesize;
 
