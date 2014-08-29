@@ -49,7 +49,7 @@ class Render{
 	/**
 	 * jQuery Mobileのバージョン
 	 */
-	const JQUERY_MOBILE_VER = '1.4.3';
+	const JQUERY_MOBILE_VER = '1.4.4';
 	/**
 	 * Twitter Bootstrapのバージョン
 	 */
@@ -57,7 +57,7 @@ class Render{
 	/**
 	 * Font Awesomeのバージョン
 	 */
-	const FONT_AWESOME_VER = '4.1.0';
+	const FONT_AWESOME_VER = '4.2.0';
 	/**
 	 * スキンスクリプト（未圧縮）
 	 */
@@ -235,10 +235,11 @@ class Render{
 		// ステータスアイコン
 		$view->status = '';
 		if ($this->wiki || $vars['cmd'] === 'read') {
-			if (!$this->wiki->isEditable()){
-				$view->status = '<span class="fa fa-ban" title="Not Editable"></span>';
-			}else if ($this->wiki->isFreezed()){
+			
+			if ($this->wiki->isFreezed()){
 				$view->status = '<span class="fa fa-lock" title="Freezed"></span>';
+			}else if (!$this->wiki->isEditable()){
+				$view->status = '<span class="fa fa-ban" title="Not Editable"></span>';
 			}else{
 				$view->status = '<span class="fa fa-pencil-square" title="Editable"></span>';
 			}
