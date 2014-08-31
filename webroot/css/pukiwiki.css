@@ -62,7 +62,7 @@ blockquote p {
 textarea, select, option, input, var, pre, code, pre * {
 	font-family: monospace !important;
 }
-textarea[row="1"] {
+textarea[rows="1"] {
 	height:36px;
 }
 fieldset {

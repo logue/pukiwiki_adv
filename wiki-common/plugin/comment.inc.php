@@ -193,7 +193,7 @@ function plugin_comment_convert()
 		$ret[] = '<div class="col-md-12">';
 	}
 	$ret[] = '<div class="input-group">';
-	$ret[] = '<textarea name="msg" class="form-control" id="p_comment_comment_'.$comment_all_no.'" row="1" placeholder="'.$_comment_messages['label_comment'].'"></textarea>';
+	$ret[] = '<textarea name="msg" class="form-control" id="p_comment_comment_'.$comment_all_no.'" rows="1" placeholder="'.$_comment_messages['label_comment'].'"></textarea>';
 	$ret[] = '<span class="input-group-btn">';
 	$ret[] = '<input type="submit" class="btn btn-primary" name="comment" value="' . $_comment_messages['label_post'] . '" />';
 	$ret[] = '</span>';

@@ -165,7 +165,7 @@ function plugin_pcomment_convert()
 				$form[] = '</span>';
 			}
 		}
-		$form[] = '<textarea name="msg" cols="' . PLUGIN_COMMENT_SIZE_MSG . '" row="1" class="form-control" placeholder="' . $_pcmt_messages['msg_comment'] . '"></textarea>';
+		$form[] = '<textarea name="msg" cols="' . PLUGIN_COMMENT_SIZE_MSG . '" rows="1" class="form-control" placeholder="' . $_pcmt_messages['msg_comment'] . '"></textarea>';
 		$form[] = '<span class="input-group-btn">';
 		$form[] = '<button type="submit" class="btn btn-info">' . $_pcmt_messages['btn_comment'] . '</button>';
 		$form[] = '</span>';
