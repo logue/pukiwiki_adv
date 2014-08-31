@@ -435,7 +435,7 @@ class Utility{
 	 * @return string
 	 */
 	public static function getMimeInfo($filename){
-		$type = '';
+		$type = 'text/plain';
 		if (function_exists('finfo_open')) {
 			$finfo = finfo_open(FILEINFO_MIME);
 			if (!$finfo) return $type;
@@ -897,7 +897,7 @@ class Utility{
 		}
 
 		// 編集フォーム
-		$ret[] = '<textarea name="msg" id="msg" rows="15" rows="80" class="form-control">' . self::htmlsc(
+		$ret[] = '<textarea name="msg" id="msg" rows="15" class="form-control">' . self::htmlsc(
 			// 作成元のページが存在する場合、そのリンクを書き込むデーターの先頭に付加する
 			($load_refer_related && isset($vars['refer']) && !empty($vars['refer']) ? '[[' . self::stripBracket($vars['refer']) . ']]' . "\n\n" : '') .
 			$postdata
@@ -960,7 +960,7 @@ class Utility{
 			global $rule_page;
 			$rule_wiki = Factory::Wiki($rule_page);
 			$ret[] = '<hr />';
-			$ret[] =  $rule_wiki->has() ?  $rule_wiki->render() : '<p>Sorry, page \'' . Utility::htmlsc($rule_page) .'\' unavailable.</p>';
+			$ret[] =  $rule_wiki->has() ?  $rule_wiki->render() : '<p class="alert alert-warning">Sorry, page \'' . Utility::htmlsc($rule_page) .'\' unavailable.</p>';
 		} else {
 			$ret[] = '<ul><li><a href="' . Factory::Wiki($page)->uri('edit',array('help'=>'true')) . '" id="FormatRule">' . $_string['help'] . '</a></li></ul>';
 		}

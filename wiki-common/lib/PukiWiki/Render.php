@@ -49,7 +49,7 @@ class Render{
 	/**
 	 * jQuery Mobileのバージョン
 	 */
-	const JQUERY_MOBILE_VER = '1.4.4';
+	const JQUERY_MOBILE_VER = '1.4.3';
 	/**
 	 * Twitter Bootstrapのバージョン
 	 */
@@ -347,6 +347,7 @@ class Render{
 			$jsfiles = self::$mobile_js;
 		}
 		if (DEBUG === true) {
+			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'//'.self::JQUERY_CDN.'/jquery-migrate-git.js', 'defer'=>'defer');
 			// 読み込むsrcディレクトリ内のJavaScript
 			foreach($jsfiles as $script_file)
 				$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.(!IS_MOBILE ? 'src/' : 'mobile/').$script_file.'.js', 'defer'=>'defer');
@@ -371,7 +372,7 @@ class Render{
 //		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>MathJax::MATHJAX_URL );
 
 		$script_tags = self::tag_helper('script',$pkwk_head_js) . self::tag_helper('script',$js_tags);
-		$script_tags .= (!empty($js_blocks)) ? self::tag_helper('script',array(array('type'=>'text/javascript', 'content'=>join("\n",$js_blocks)))) : '';
+		$script_tags .= !empty($js_blocks) ? self::tag_helper('script',array(array('type'=>'text/javascript', 'content'=>join("\n",$js_blocks)))) : '';
 
 		if (defined('BB2_CWD')){
 			global $bb2_javascript;

@@ -930,7 +930,7 @@ $.fn.bsbutton = bootstrapButton;
 		blockUI : function(){
 			// jQueryUI BlockUI
 			// http://pure-essence.net/2010/01/29/jqueryui-dialog-as-loading-screen-replace-blockui/
-			var $window = $(window), $activity, $loading;
+			var $document = $(document), $window = $(window), $activity, $loading;
 
 			if ($('#loading').length === 0){
 				$('<div id="loading">'+
@@ -963,7 +963,7 @@ $.fn.bsbutton = bootstrapButton;
 			;
 
 
-			$window
+			$document
 				.ajaxSend(function(e, xhr, settings) {
 					$(':input').attr('disabled','disabled');
 					// 画面中央にローディング画像を移動させる
@@ -1137,6 +1137,7 @@ $.fn.bsbutton = bootstrapButton;
 		// 入力アシスタント
 		assistant: function(normal){
 			var self = this,
+				temp,
 				i, j, len, 
 				emoji_widget, color_widget,
 				$msg = $('*[name="msg"]'),
@@ -1148,9 +1149,9 @@ $.fn.bsbutton = bootstrapButton;
 			$('.assistant').html([
 				'<div class="btn-toolbar" role="toolbar">',
 					'<div class="btn-group">',
-						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','bold')+'" name="b"><span class="fa fa-bold"></button>',
-						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','italic')+'" name="i"><span class="fa fa-italic"></button>',
-						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','strike')+'" name="s"><span class="fa fa-strikethrough"></button>',
+						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','bold')+'" name="b"><span class="fa fa-bold"></span></button>',
+						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','italic')+'" name="i"><span class="fa fa-italic"></span></button>',
+						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','strike')+'" name="s"><span class="fa fa-strikethrough"></span></button>',
 						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','underline')+'" name="u"><span class="fa fa-underline"></span></button>',
 						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','code')+'" name="code"><span class="fa fa-code"></span></button>',
 						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','quote')+'" name="q"><span class="fa fa-quote-left"></span></button>',
