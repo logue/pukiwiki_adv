@@ -59,8 +59,8 @@ function plugin_newpage_action()
 	global $vars, $_string, $_newpage_messages;
 
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	if (Auth::check_role('readonly')) die_message( sprintf($_string['error_prohibit'], 'PKWK_READONLY') );
-	if (Auth::is_check_role(PKWK_CREATE_PAGE)) die_message( sprintf($_string['error_prohibit'], 'PKWK_CREATE_PAGE') );
+	if (Auth::check_role('readonly')) Utility::dieMessage( sprintf($_string['error_prohibit'], 'PKWK_READONLY'),'',403 );
+	if (Auth::is_check_role(PKWK_CREATE_PAGE)) Utility::dieMessage( sprintf($_string['error_prohibit'], 'PKWK_CREATE_PAGE'),'',403 );
 
 	if (!isset($vars['page'])) {
 		$retvars['msg']  = $_newpage_messages['title'];

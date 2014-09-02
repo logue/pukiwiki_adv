@@ -28,7 +28,7 @@ class PostId{
 		global $session;
 		$idstring = md5($cmd . Rand::getFloat());
 		// PostIDの値の中身は、ホストを入力
-		$session->offsetSet(self::POSTID_SESSIO_PREFIX.$idstring, REMOTE_ADDR);
+		$session->offsetSet(self::POSTID_SESSION_PREFIX.$idstring, REMOTE_ADDR);
 		// 有効期限を設定
 		$session->setExpirationSeconds(self::POSTID_SESSION_EXPIRE, self::POSTID_SESSION_PREFIX.$idstring);
 		return $idstring;

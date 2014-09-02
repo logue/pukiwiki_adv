@@ -680,7 +680,7 @@ class Utility{
 				if ($k < 2) { 
 					continue;
 				}
-				array_walk($v['args'], function (&$item, $key) {
+				array_walk($v['args'], function ($item, $key) {
 					$item = var_export($item, true);
 				});
 				$body[] = '<li>' . (isset($v['file']) ? $v['file'] : '?') . '(<var>' . (isset($v['line']) ? $v['line'] : '?') . '</var>):<br /><code>' . (isset($v['class']) ? '<strong>' . $v['class'] . '</strong>-&gt;' : '') . $v['function'] . '(<var>' . implode(', ', $v['args']) . '</var>)</code></li>' . "\n";
@@ -688,6 +688,10 @@ class Utility{
 			$body[] = '</ol>';
 			$body[] = '</div>';
 			$body[] = '</div>';
+		}
+		
+		if (empty($error_title)){
+			$error_title = $_title['error'];
 		}
 
 		if (isset($vars['ajax'])) {

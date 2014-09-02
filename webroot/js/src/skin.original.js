@@ -883,26 +883,21 @@ $.fn.bsbutton = bootstrapButton;
 			}).
 			fail(function(data,status){
 				// エラー発生
-				if (data.status === 401){
-					status = $.i18n('dialog','error_auth');
-				}else if (data.status === 302){
+				if (data.status === 302){
 					document.location.reload();
-				}else if (status === 'error'){
-					status = $.i18n('dialog','error_page');
-					console.error(data);
 				}
-
 				dialog_option.title = $.i18n('dialog','error');
-				dialog_option.width = 400;
-				content = '<p class="alert alert-warning" id="ajax-error"><span class="fa fa-warning"></span>'+status+'</p>';
-				content += data.responseText;
 			}).
 			always(function(data){
 				if (typeof(parse) === 'function') { data = parse(data); }
 				// スクリプトタグを無効化
-				if (typeof(data) !== 'null'){
+				if (typeof(data) !== 'null' && data.body){
 					content = data.body.replace(/<script[^>]*>[^<]+/g,'');
 					dialog_option.title = data.title;
+				}else if (data.status === 401 || data.status === 403){
+					content = '<p class="alert alert-warning" id="ajax-error"><span class="fa fa-warning"></span>'+$.i18n('dialog','error_auth')+'</p>';
+				}else if (status === 'error'){
+					content = '<p class="alert alert-warning" id="ajax-error"><span class="fa fa-warning"></span>'+$.i18n('dialog','error_page')+'</p>';					
 				}else{
 					content = '<p class="alert alert-warning"><span class="fa fa-warning"></span>Data is Null!</p>';
 					dialog_option.title = $.i18n('dialog','error');
@@ -1079,8 +1074,8 @@ $.fn.bsbutton = bootstrapButton;
 				track: true,
 				show: function(){
 					// ツールチップが複数表示されてしまうのを抑止
-					if ( $('[role="tooltip"]').length > 1 ){
-						$(this).remove();
+					if ( $('*[role="tooltip"]').length > 1 ){
+						$('*[role="tooltip"]').remove();
 					}
 				},
 				content: function(callback) {

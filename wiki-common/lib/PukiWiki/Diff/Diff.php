@@ -117,7 +117,7 @@ class Diff{
 					++$y_idx;
 					++$py_idx;
 				} else if ($epc[$i]['y'] - $epc[$i]['x'] < $py_idx - $px_idx) {
-					if (isset($this->a[$py_idx])){
+					if (isset($this->a[$px_idx])){
 						$str = isset($this->a[$px_idx]) ? rtrim($this->a[$px_idx]) : '';
 						if ($this->reverse) {
 							$this->ses[] = array(self::SES_ADD,    $str);

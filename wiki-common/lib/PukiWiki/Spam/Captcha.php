@@ -8,7 +8,7 @@
  * @copyright 2013 PukiWiki Advance Developers Team
  * @create    2013/02/03
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Captcha.php,v 1.0.0 2013/02/02 17:28:00 Logue Exp $
+ * @version   $Id: Captcha.php,v 1.0.1 2014/09/02 20:19:00 Logue Exp $
  **/
 
 namespace PukiWiki\Spam;
@@ -175,7 +175,7 @@ class Captcha{
 	//	$ret[] = Zend\Debug\Debug::Dump($captcha->getSession());
 
 		if (!empty($message)){
-			$ret[] = '<div class="message_box ui-state-error ui-corner-all"><p><span class="ui-icon ui-icon-alert"></span>' . $message . '</p></div>';
+			$ret[] = '<p class="alert alert-warning"><span class="fa fa-warning"></span>' . $message . '</p>';
 		}
 
 		// PostIdが有効な場合
@@ -187,14 +187,18 @@ class Captcha{
 		$ret[] = '<legend>CAPTCHA</legend>';
 		$ret[] = '<p>'.T_('Please enter the text that appears below.').'</p>';
 		// フォームを出力
-		$ret[] = '<form method="post" action="' . Router::get_script_uri() . '" method="post">';
+		$ret[] = '<form method="post" action="' . Router::get_script_uri() . '" method="post" class="form-inline">';
+		//unset($vars['ajax']);
 		// ストアされている値を出力
 		foreach ($vars as $key=>$value){
+			if ($key === 'ajax') continue;
 			$ret[] = !empty($value) ? '<input type="hidden" name="' . $key . '" value="' . Utility::htmlsc($value) . '" />' : null;
 		}
+		$ret[] = '<div class="input-group">';
 		// CAPTCHAフォームを出力
 		$ret[] = $form;
-		$ret[] = '<input class="btn btn-primary" type="submit" value="submit"/>';
+		$ret[] = '<input class="btn btn-primary" type="submit" />';
+		$ret[] = '</div>';
 		$ret[] = '</form>';
 		$ret[] = '</fieldset>';
 
