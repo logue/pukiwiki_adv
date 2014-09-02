@@ -378,7 +378,7 @@ $.fn.bsbutton = bootstrapButton;
 
 			// テキストエリアでタブ入力できるように
 			$(prefix + 'textarea').tabby();
-			$(prefix + 'textarea[row=1]').autosize();
+			$(prefix + 'textarea[rows=1]').autosize();
 
 			// タブ/アコーディオン処理
 			$(prefix + 'li[role=tab] a').each(function(){

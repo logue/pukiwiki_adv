@@ -248,7 +248,6 @@ $use_spam_check = array(
 	'page_remote_addr'	=> 0,	// 書き込み端末規制（IPBL）
 	'page_contents'		=> 0,	// 書き込み内容規制（DNSBL）
 	'page_write_proxy'	=> 0,	// Proxy経由での書き込み規制
-	'trackback'			=> 1,	// TrackBack。splogなど。（DNSBL）
 	'referer'			=> 1,	// Referer SPAM（DNSBL）
 	'multiple_post'		=> 0,	// 多重投稿チェック（ここを有効にすると戻るボタンによる更新ができなくなります）
 	'bad-behavior'		=> 0,	// Bad Behaviorによるアンチスパム（仮実装）
@@ -309,6 +308,14 @@ $deny_countory = array();
 // https://akismet.com/signup/
 // server.ini.phpの設定が優先されます。
 $akismet_api_key = '';
+
+/////////////////////////////////////////////////
+// reCaptcha
+// http://www.google.com/recaptcha/intro/
+// CaptchaをreCaptchaにします。server.ini.phpの設定が優先されます。
+
+//$recaptcha_public_key = ''
+//$recaptcha_private_key = ''
 
 /////////////////////////////////////////////////
 // Referer list feature
@@ -406,13 +413,6 @@ $date_format = 'Y-m-d';
 $time_format = 'H:i:s';
 
 /////////////////////////////////////////////////
-// Max number of RSS feed
-$rss_max = 15;
-
-// Description
-$rss_description = $site_name.' RecentChanges';
-
-/////////////////////////////////////////////////
 // Backup related settings
 
 // Enable backup
@@ -470,10 +470,6 @@ $fixed_heading_anchor = 1;
 // 0:無効
 // 1:edit, 2:guiedit, 3:edit+guiedit プラグインを利用
 $fixed_heading_edited = 1;
-
-/////////////////////////////////////////////////
-// ページを任意のフレームに開く時に使う設定
-$use_open_uri_in_new_window  = 1;
 
 // 同一サーバーとしてみなすホストのURI
 $open_uri_in_new_window_servername = array(
