@@ -131,7 +131,8 @@ class InlineConverter
 		$arr = explode("\x08", Inline::setLineRules(Utility::htmlsc($string)));
 		$retval = '';
 		while (! empty($arr)) {
-			$retval .= str_replace('\\$', '$', array_shift($arr)) . array_shift($this->result);
+			// $retval .= array_shift($arr) . array_shift($this->result);
+			$retval .= str_replace('\\$$', '$$', array_shift($arr)) . array_shift($this->result);
 		}
 		return trim($retval);
 	}

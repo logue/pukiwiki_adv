@@ -14,7 +14,6 @@
 namespace PukiWiki\Renderer;
 
 use DirectoryIterator;
-use Exeption;
 use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
 use PukiWiki\Renderer\Header;

@@ -202,7 +202,7 @@ c-bg+eade>el16ab<c+degf+el8>a<ag>gf+<f+e>ed+<d+f+c-e<ed>dc+<c+>b>ba+b<c+>a+b<gef
 \nabla \times \vec{\mathbf{E}}\, +\, \frac1c\, \frac{\partial\vec{\mathbf{B}}}{\partial t} & = \vec{\mathbf{0}} \
 \nabla \cdot \vec{\mathbf{B}} & = 0 \end{aligned}
 :インライン型|
- $p(d,w_n)=p(d)\sum_z p(w_n|z)p(z|d)$
-$p(d,w_n)=p(d)\sum_z p(w_n|z)p(z|d)$
+ $$p(d,w_n)=p(d)\sum_z p(w_n|z)p(z|d)$$
+$$p(d,w_n)=p(d)\sum_z p(w_n|z)p(z|d)$$
 
 #comment

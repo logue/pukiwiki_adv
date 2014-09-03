@@ -22,7 +22,7 @@ class InlineMathJax extends InlinePlugin
 	}
 
 	public function getPattern(){
-		$this->pattern = '(?<!\\\\)\$((.+?))(?<!\\\\)\$';
+		$this->pattern = '(?<!\\\\)\$\$((.+?))(?<!\\\\)\$\$';
 		return $this->pattern;
 	}
 
