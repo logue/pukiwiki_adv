@@ -250,9 +250,8 @@ $use_spam_check = array(
 	'page_write_proxy'	=> 0,	// Proxy経由での書き込み規制
 	'referer'			=> 1,	// Referer SPAM（DNSBL）
 	'multiple_post'		=> 0,	// 多重投稿チェック（ここを有効にすると戻るボタンによる更新ができなくなります）
-	'bad-behavior'		=> 0,	// Bad Behaviorによるアンチスパム（仮実装）
 	'akismet'			=> 0,	// Aksmetによるアンチスパムを有効化する（別途$akismet_api_keyを指定する必要があります。）1は差分のみ、2は全て
-	'captcha'			=> 0	// Captchaを使う
+	'captcha'			=> 0	// Captchaを使う（GDがインストールされてない場合はアスキーアートの文字になります。別途reCaptchaの設定をすることも可能です。）
 );
 
 /////////////////////////////////////////////////
@@ -476,7 +475,6 @@ $open_uri_in_new_window_servername = array(
 	$_SERVER['HTTP_HOST'],
 //	'localhost'
 );
-// (注意：あえて拡張しやすいようにしていますが、'_blank'以外は指定しないでください)
 
 // Server settings
 Utility::loadConfig('server.ini.php');

@@ -2,7 +2,7 @@
 // PukiWiki Advance - Yet another WikiWikiWeb clone.
 // $Id: default.ini.php,v 1.25.16 2012/04/29 13:22:00 Logue Exp $
 // Copyright (C)
-//   2010-2012 PukiWiki Advance Developer Team
+//   2010-2014 PukiWiki Advance Developers Team
 //   2005-2006,2009 PukiWiki Plus! Team
 //   2003-2005 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -36,6 +36,10 @@ $attach_link = 1;
 /////////////////////////////////////////////////
 // 関連するページのリンク一覧を常に表示する(負担がかかります)
 $related_link = 1;
+
+/////////////////////////////////////////////////
+// WikiName,BracketNameに経過時間を付加する
+$show_passage = 0;
 
 /////////////////////////////////////////////////
 // リンク表示をコンパクトにする

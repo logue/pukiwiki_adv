@@ -2,7 +2,7 @@
 // PukiWiki Advance - Yet another WikiWikiWeb clone.
 // $Id: default.ini.php,v 1.25.17 2012/03/31 16:49:00 Logue Exp $
 // Copyright (C)
-//   2010-2012 PukiWiki Advance Developer Team
+//   2010-2014 PukiWiki Advance Developer Team
 //   2005-2006,2009 PukiWiki Plus! Team
 //   2003-2005 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -12,10 +12,6 @@
 /////////////////////////////////////////////////
 // Skin file
 define('IS_MOBILE',true);
-
-/////////////////////////////////////////////////
-// メニューバー/サイドバーを常に表示する(1:する 0:しない)
-$always_menu_displayed = 0;
 
 /////////////////////////////////////////////////
 // 雛形とするページの読み込みを可能にする(1:する 0:しない)
@@ -28,11 +24,6 @@ $load_refer_related = 0;
 /////////////////////////////////////////////////
 // 検索文字列を色分けする(1:する 0:しない)
 $search_word_color = 1;
-
-/////////////////////////////////////////////////
-// 特殊シンボル
-$_symbol_paraedit		= '<span class="pkwk-symbol symbol-edit" title="Edit here"></span>';
-$_symbol_attach			= '';
 
 /////////////////////////////////////////////////
 // 添付ファイルの一覧を常に表示する (負担がかかります)
