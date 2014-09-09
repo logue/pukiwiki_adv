@@ -122,7 +122,7 @@ class Utility{
 			$get->set('page', $defaultpage);
 		}else if (count($get) === 1 && array_values((array)$get)[0] === ''){
 			// 配列の長さが1で最初の配列に値が存在しない場合はキーをページ名とする。
-			$k = array_keys((array)$get)[0];
+			$k = trim(array_keys((array)$get)[0]);
 			$get->set('page', rawurldecode($_SERVER['QUERY_STRING']));
 			unset($get[$k]);
 		}

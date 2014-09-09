@@ -56,13 +56,13 @@ abstract class AbstractFile extends SplFileInfo{
 	 * ファイル名
 	 */
 	public $filename;
-	
 
 	/**
 	 * コンストラクタ
 	 * @param string $filename ファイル名（パスも含めること）
 	 */
 	public function __construct($filename = null) {
+		$filename = trim($filename);
 		if (empty($filename)){
 			throw new Exception('AbstractFile::__construct(): File name is missing!');
 		}

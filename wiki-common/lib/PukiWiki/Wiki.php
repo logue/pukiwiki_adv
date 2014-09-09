@@ -102,7 +102,12 @@ class Wiki{
 	 */
 	public function __construct($page){
 		if (!is_string($page)){
-			throw new Exception('Wiki.php : invalied page name');
+			throw new Exception('Wiki.php : invalied page name type.');
+		}
+		// 空白のページが作成されないようにする
+		$page = trim($page);
+		if (empty($page)){
+			throw new Exception('Wiki.php : page name is empty.');
 		}
 		// page#idという形式で入力が合った場合、ページ名とIDで分割する
 		if (strpos($page, '#') !== false) {
