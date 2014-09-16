@@ -2,7 +2,7 @@
 /**
  * PukiWiki Advance - Yet another WikiWikiWeb clone.
  *
- * $Id: cloudwalk.skin.php,v 1.2.4 2014/02/05 17:14:00 Logue Exp$
+ * $Id: cloudwalk.skin.php,v 1.2.5 2014/09/09 22:36:00 Logue Exp$
  * Original is ari-
  */
 ?>
@@ -92,6 +92,5 @@
 <!-- ◆ END ◆ ============================================================= -->
 		</div><!-- □END id:wrapper -->
 <?php echo $this->js; ?>
-		<script type="text/javascript" src="<?php echo $this->path; ?>cloudwalk.js" defer="defer"></script>
 	</body>
 </html>

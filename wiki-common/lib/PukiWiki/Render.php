@@ -102,7 +102,8 @@ class Render{
 		'jquery.query',
 		'jquery.superfish',
 		'jquery.tabby',
-		'jquery.ui.rlightbox'
+		'jquery.ui.rlightbox',
+		'dataTables.jqueryui'
 	);
 	/**
 	 * モバイル時読み込むスクリプト
@@ -281,11 +282,11 @@ class Render{
 		$view->lang = substr(LANG,0,2);
 		// テーマディレクトリへの相対パス
 		$view->path =  SKIN_DIR . THEME_PLUS_NAME . (!IS_MOBILE ? PLUS_THEME : 'mobile') . '/';
-
+		// リンク
 		$view->links = $_LINK;
-		
+		// 処理にかかった所要時間
 		$view->proc_time = $this->getProcessTime();
-		
+		// メモリ使用量
 		$view->memory = $this->getMemoryUsage();
 
 		return $view->__toString();

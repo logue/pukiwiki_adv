@@ -79,7 +79,7 @@
 			<footer id="footer" role="contuctinfo"><!-- ■BEGIN id:footer -->
 				<address>Site admin: <a href="<?php echo $this->modifierlink ?>"><?php echo $this->modifier ?></a></address>
 				<?php echo S_COPYRIGHT ?>.
-				Designed by <a href="http://180.style.coocan.jp/wiki/" rel="product">180.style</a>. 
+				Designed by <a href="http://180xz.com/">180.style</a>. 
 				Processing time: <var><?php echo $this->proc_time; ?></var> sec.
 			</footer><!-- □END id:footer -->
 <!-- ◆ END ◆ ============================================================= -->
