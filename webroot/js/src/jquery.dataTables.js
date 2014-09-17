@@ -4938,13 +4938,15 @@
 			// Backwards compatibility pre 1.10
 			var ext = DataTable.ext;
 			var type = ext.sErrMode || ext.errMode;
-
+/*
 			if ( type == 'alert' ) {
 				alert( msg );
 			}
 			else {
 				throw new Error(msg);
 			}
+*/
+console.error(msg);
 		}
 		else if ( window.console && console.log ) {
 			console.log( msg );
