@@ -83,9 +83,9 @@ class Table extends Element
 		// Set colspan and style
 		$stylerow = NULL;
 		foreach (array_keys($this->elements) as $nrow) {
-			$row = $this->elements[$nrow];
+			$row = & $this->elements[$nrow];
 			if ($this->types[$nrow] === 'c')
-				$stylerow = $row;
+				$stylerow = & $row;
 			$colspan = 1;
 			foreach (array_keys($row) as $ncol) {
 				if ($row[$ncol]->colspan === 0) {
@@ -111,7 +111,7 @@ class Table extends Element
 			foreach (array_keys($this->elements) as $nrow) {
 				if ($this->types[$nrow] != $type)
 					continue;
-				$row        = $this->elements[$nrow];
+				$row        = & $this->elements[$nrow];
 				$row_string = '';
 				foreach (array_keys($row) as $ncol)
 					$row_string .= $row[$ncol]->toString();
