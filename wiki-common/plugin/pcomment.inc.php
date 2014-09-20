@@ -188,13 +188,13 @@ function plugin_pcomment_convert()
 		$recent = ! empty($count) ? sprintf($_pcmt_messages['msg_recent'], $count) : '';
 	}
 
-	$string = ! Auth::check_role('readonly') ? '<form action="'. get_script_uri() .'" method="post" class="plugin-pcomment-form" data-collision-check="false">' : '';
+	$string = ! Auth::check_role('readonly') ? '<form action="'. get_script_uri() .'" method="post" class="plugin-pcomment-form form-inline" data-collision-check="false">' : '';
 	$string .= ($dir) ?
 		'<p>' . $recent . ' ' . $link . '</p>' . "\n" . $comments . "\n" . join("\n",$form) :
 		join("\n",$form) . "\n" . '<p>' . $recent . ' ' . $link . '</p>' . "\n" . $comments . "\n";
 	$string .= ! Auth::check_role('readonly') ? '</form>' : '';
 
-	return (IS_MOBILE) ? '<div data-role="collapsible" data-theme="b" data-content-theme="d"><h4>'.$_pcmt_messages['msg_comment'].'</h4>'.$string.'</div>' : '<div class="pcomment form-inline">' . $string . '</div>';
+	return (IS_MOBILE) ? '<div data-role="collapsible" data-theme="b" data-content-theme="d"><h4>'.$_pcmt_messages['msg_comment'].'</h4>'.$string.'</div>' : '<div class="pcomment">' . $string . '</div>';
 }
 
 function plugin_pcomment_insert()
@@ -363,8 +363,7 @@ function plugin_pcomment_get_comments($page, $count, $dir, $reply)
 			// Ready for radio-buttons
 			if ($reply) {
 				++$num;
-				$cmts[] = $matches[1] . "\x01" . $num . "\x02" .
-					md5($matches[2]) . "\x03" . $matches[2] . "\n";
+				$cmts[] = $matches[1] . "\x01" . $num . "\x02" . md5($matches[2]) . "\x03" . $matches[2] . "\n";
 				continue;
 			}
 		}
@@ -383,8 +382,8 @@ function plugin_pcomment_get_comments($page, $count, $dir, $reply)
 
 	// Add radio buttons
 	if ($reply){
-		$comments = preg_replace('/<li>' . "\x01" . '(\d+)' . "\x02" . '(.*)' . "\x03" . '(.*)\s\-\-\s(.*?)/',
-			'<li class="pcomment_comment radio"><input class="pcmt" type="radio" name="reply" value="$2" tabindex="$1" id="pcmt$2" /><label for="pcmt$2">$3</label> -- $4',
+		$comments = preg_replace('/<li>' . "\x01" . '(\d+)' . "\x02" . '(.*)' . "\x03" . '(.*)/',
+			'<li class="pcomment_comment radio"><label><input type="radio" name="reply" value="$2" tabindex="$1" />$3</label>',
 			$comments);
 	}
 
