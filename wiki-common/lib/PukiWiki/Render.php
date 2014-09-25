@@ -102,8 +102,7 @@ class Render{
 		'jquery.query',
 		'jquery.superfish',
 		'jquery.tabby',
-		'jquery.ui.rlightbox',
-		'dataTables.jqueryui'
+		'jquery.ui.rlightbox'
 	);
 	/**
 	 * モバイル時読み込むスクリプト
@@ -138,7 +137,7 @@ class Render{
 			break;
 			case 'xml':
 				$content_type = 'application/xml';
-				$content = '<?xml version="1.0" encoding="'.CONTENT_CHARSET.'" ?>'."\n".$this->body;
+				$content = '<?xml version="1.0" encoding="UTF-8" ?>'."\n".'<response><![CDATA[' .$this->body . ']]></response>';
 			break;
 			case 'raw':
 				$content_type = 'text/plain';
@@ -357,7 +356,7 @@ class Render{
 			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.(IS_MOBILE ? self::MOBILE_JS_COMPRESSED : self::DEFAULT_JS_COMPRESSED), 'defer'=>'defer' );
 		}
 
-		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.( DEBUG ? 'locale.js' : 'js.php?file=locale'), 'defer'=>'defer' );
+		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'locale.js', 'defer'=>'defer' );
 
 //		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.( DEBUG ? 'codemirror/lib/codemirror.js' : 'js.php?file=codemirror/lib/codemirror.min'), 'defer'=>'defer' );
 

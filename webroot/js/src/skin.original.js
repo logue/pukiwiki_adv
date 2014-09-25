@@ -642,6 +642,35 @@ $.fn.bsbutton = bootstrapButton;
 
 				if (!href || $this.data('ajax') === false){
 					return;
+				}else if (href === $('link[rel="canonical"]').attr('href')){
+					// クイックリロード
+					$this.unbind('click').bind('click', function(){
+						//alert('Quick Reload');
+						$.ajax({
+							dataType: 'xml',
+							url: SCRIPT,
+							data : {
+								cmd:'read',
+								page: PAGE,
+								ajax:'xml'
+							},
+							type : 'GET',
+							cache : true
+						}).done(function(data){
+							//
+						}).
+						fail(function(data,status){
+							//
+						}).
+						always(function(xml){
+							var $main = $('*[role="main"]');
+							$(xml).find('response').each(function(){
+								$main.html($(this).text());
+								self.init_dom('*[role="main"]');
+							});
+						});
+						return false;
+					});
 				}else if (isExternal) {
 					$this.click(function(){
 						if (rel.match(/noreferer/)){
