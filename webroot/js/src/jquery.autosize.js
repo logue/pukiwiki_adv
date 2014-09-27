@@ -1,8 +1,7 @@
 /*!
-	Autosize v1.18.9 - 2014-05-27
-	Automatically adjust textarea height based on user input.
-	(c) 2014 Jack Moore - http://www.jacklmoore.com/autosize
-	license: http://www.opensource.org/licenses/mit-license.php
+	Autosize 1.18.12
+	license: MIT
+	http://www.jacklmoore.com/autosize
 */
 (function ($) {
 	var
@@ -27,7 +26,8 @@
 		'letterSpacing',
 		'textTransform',
 		'wordSpacing',
-		'textIndent'
+		'textIndent',
+		'whiteSpace'
 	],
 
 	// to keep track which textarea is being mirrored when adjust() is called.
@@ -202,6 +202,7 @@
 					if (callback) {
 						options.callback.call(ta,ta);
 					}
+					$ta.trigger('autosize.resized');
 				}
 			}
 
@@ -269,4 +270,4 @@
 			adjust();
 		});
 	};
-}(window.jQuery || window.$)); // jQuery or jQuery-like library, such as Zepto
+}(jQuery || $)); // jQuery or jQuery-like library, such as Zepto

@@ -96,7 +96,6 @@ class Render{
 		'jquery.autosize',
 		'jquery.cookie',
 		'jquery.dataTables',
-		'jquery.dataTables.naturalsort',
 		'jquery.form',
 		'jquery.i18n',
 		'jquery.query',
@@ -137,7 +136,10 @@ class Render{
 			break;
 			case 'xml':
 				$content_type = 'application/xml';
-				$content = '<?xml version="1.0" encoding="UTF-8" ?>'."\n".'<response><![CDATA[' .$this->body . ']]></response>';
+				$content = '<?xml version="1.0" encoding="UTF-8" ?>'."\n".'<response>' . "\n" . 
+				'<title>' . $this->title . '</title>' . "\n" . 
+				'<body><![CDATA[' . $this->body . ']]></body>' . "\n" .
+				'<process_time>' . Time::getTakeTime() . '</process_time>' . "\n" . '</response>';
 			break;
 			case 'raw':
 				$content_type = 'text/plain';

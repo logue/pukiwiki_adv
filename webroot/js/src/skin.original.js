@@ -645,7 +645,7 @@ $.fn.bsbutton = bootstrapButton;
 				}else if (href === $('link[rel="canonical"]').attr('href')){
 					// クイックリロード
 					$this.unbind('click').bind('click', function(){
-						//alert('Quick Reload');
+						//
 						$.ajax({
 							dataType: 'xml',
 							url: SCRIPT,
@@ -655,7 +655,7 @@ $.fn.bsbutton = bootstrapButton;
 								ajax:'xml'
 							},
 							type : 'GET',
-							cache : true
+							cache : false
 						}).done(function(data){
 							//
 						}).
@@ -664,9 +664,10 @@ $.fn.bsbutton = bootstrapButton;
 						}).
 						always(function(xml){
 							var $main = $('*[role="main"]');
-							$(xml).find('response').each(function(){
+
+							$(xml).find('body').each(function(){
 								$main.html($(this).text());
-								self.init_dom('*[role="main"]');
+								self.init();
 							});
 						});
 						return false;
