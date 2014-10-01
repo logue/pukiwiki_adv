@@ -538,7 +538,7 @@ class TableEdit2Indicate
 		}
 		
 		$ret = array();
-		$ret[] = '<div style="float:right;" id="TableEdit2TableNumber' . $this->count . '">';
+		$ret[] = '<div class="pull-right" id="TableEdit2TableNumber' . $this->count . '">';
 		$ret[] = '<a href="' . 
 			get_cmd_uri('table_edit2', null, null , array('refer'=>$this->page, 'table_mod'=>$table_mod, 'table_num'=>$this->count, 'encode_hint'=>PKWK_ENCODING_HINT)) . 
 				'" class="btn btn-default" nofollow="nofollow" data-ajax="false" title="' . $button_name[$table_mod] . '"><span class="fa fa-' . $table_mod . '"></span></a>';
@@ -626,7 +626,7 @@ class TableEdit2Form
 			$key_data = $equal ? $s_data : $key;
 			$selected = ($present == $key_data) ? ' selected="selected"' : '';
 			if ( $selected != '' ) $this->select_chk = 1;
-			$select_list .= ($this->no_null && $key_data == '') ?
+			$select_list .= ($this->no_null && empty($key_data)) ?
 				'' : '<option value="' . $key_data . '"'. $selected . '>' . $s_data . '</option>' ."\n";
 			$count++;
 		}
@@ -1321,7 +1321,7 @@ function plugin_table_edit2_action()
 
 	$collision = 0;
 	if ($tr_edit || $td_edit) {
-		if (Factory($vars['refer'])->digest() !== $vars['digest']) {
+		if (Factory::Wiki($vars['refer'])->digest() !== $vars['digest']) {
 			global $_string, $_title;
 			$title =  $_title['collided'];
 			$body  =  $_string['msg_collided_auto']
@@ -1476,7 +1476,7 @@ class TableEdit2Edit
 				for ($i = 1;$i < $this->opt['cell_count'];$i++){
 					$source_s .= $this->textarea_br($i);
 				}
-				$source_s .= ($this->opt['add_show']) ? "\n" : $last_character . "\n";
+				$source_s .= isset($this->opt['add_show']) ? "\n" : $last_character . "\n";
 			}
 		} else if($this->opt['edit_mod'] == 'tr'){			//tr	tr_add
 			$this->notimestamp = TRUE;
