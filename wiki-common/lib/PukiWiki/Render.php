@@ -333,7 +333,7 @@ class Render{
 
 		// JavaScriptタグの組み立て
 		if (isset($vars['page'])){
-			$js_init['PAGE'] = rawurlencode($vars['page']);
+			$js_init['PAGE'] = str_replace('%2F', '/' ,rawurlencode($vars['page']));
 			$js_init['MODIFIED'] = $this->wiki->time();
 		}
 
