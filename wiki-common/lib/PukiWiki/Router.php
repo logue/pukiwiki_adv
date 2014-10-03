@@ -33,7 +33,7 @@ class Router{
 		}
 
 		// Set manually
-		if (isset($script)) die_message('$script: Already init');
+		if (isset($script)) Utility::dieMessage('$script: Already init');
 		if (! self::is_reluri($init_uri) && ! is_url($init_uri, TRUE)) Utility::dieMessage('$script: Invalid URI');
 		$script = $init_uri;
 
@@ -161,20 +161,17 @@ class Router{
 	 */
 	public static function get_resolve_uri($cmd='read', $page='', $path_reference='rel', $query=array(), $fragment='')
 	{
-		global $static_url, $url_suffix, $vars;
-		$path = (empty($path_reference)) ? 'rel' : $path_reference;
+		global $static_url, $url_suffix;
+
+		$path = empty($path_reference) ? 'rel' : $path_reference;
 		$ret = self::get_script_uri($path);
 
 		if (! empty($cmd) && ($cmd !== 'read' || count($query) !== 0)) {
-			$ret .= '?cmd='.$cmd;
-			$flag = '&';
+			$query['cmd'] = $cmd;
 			if (! empty($page)) {
-				$ret .= $flag. 'page='.rawurlencode($page);
+				$query['page'] = $page;
 			}
-			// query
-			if (! empty($query)) {
-				$ret .= '&' . (is_string($query) ? $query : http_build_query($query));
-			}
+			$ret .= http_build_query($query);
 		}else{
 			// Apacheは、:が含まれるアドレスを正確に処理できない
 			// https://issues.apache.org/bugzilla/show_bug.cgi?id=41441
@@ -188,7 +185,7 @@ class Router{
 
 		// fragment
 		if (! empty($fragment)) {
-			$ret .= '#'.$fragment;
+			$ret .= '#' . $fragment;
 		}
 		unset($flag);
 		return Utility::htmlsc($ret);

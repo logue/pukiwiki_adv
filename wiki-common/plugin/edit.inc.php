@@ -31,6 +31,7 @@ function plugin_edit_init(){
 	global $_string;
 	$msg = array(
 		'_edit_msg' => array(
+			'msg_edit'          => T_('Edit'),
 			'err_empty_page'    => T_('Pagename is missing.'),
 			'title_edit'        => T_('Edit of %s'),
 			'err_long'          => T_('Pagename is too long.'),
@@ -50,7 +51,7 @@ function plugin_edit_action()
 	global $vars, $load_template_func, $_string, $_edit_msg;
 
 	$page = isset($vars['page']) ? $vars['page'] : null;
-	if (empty($page)) return array('msg'=> $_edit_msg['msg_edit'], 'body'=>$_edit_msg['err_pagename_empty']);
+	if (empty($page)) return array('msg'=> $_edit_msg['msg_edit'], 'body'=>$_edit_msg['err_empty_page']);
 	$wiki = Factory::Wiki($page);
 
 	if (!$wiki->isEditable(true)){

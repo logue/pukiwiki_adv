@@ -366,7 +366,7 @@ class Wiki{
 	public function description($length = 256){
 		$source = $this->get();
 		// ブロック型プラグイン(#～)削除
-		$source = preg_replace("/^\#.*$/",'',$source);
+//		$source = preg_replace("/^\#.*$/",'',$source);
 		// インライン型プラグイン・文字参照(&～;)削除
 		$source = preg_replace("/\&.*\;/",'',$source);
 		// 変換してタグを削除

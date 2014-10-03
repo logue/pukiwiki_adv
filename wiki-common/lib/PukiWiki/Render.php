@@ -49,7 +49,7 @@ class Render{
 	/**
 	 * jQuery Mobileのバージョン
 	 */
-	const JQUERY_MOBILE_VER = '1.4.3';
+	const JQUERY_MOBILE_VER = '1.4.4';
 	/**
 	 * Twitter Bootstrapのバージョン
 	 */

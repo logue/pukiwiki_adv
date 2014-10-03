@@ -185,7 +185,7 @@ function plugin_newpage_subdir_action()
 			'body'	=> print_form_string(build_directory_list($roots))
 		);
 	}
-	Utility::redirect(get_script_uri().'?cmd=edit&page='.rawurlencode($dir.$page));
+	Utility::redirect(Factory::Wiki($dir.$page)->uri('edit'));
 }
 /* End of file newpage_subdir.inc.php */
 /* Location: ./wiki-common/plugin/newpage_subdir.inc.php */
