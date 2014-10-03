@@ -171,7 +171,7 @@ class Router{
 			if (! empty($page)) {
 				$query['page'] = $page;
 			}
-			$ret .= http_build_query($query);
+			$ret .= '?' . http_build_query($query);
 		}else{
 			// Apacheは、:が含まれるアドレスを正確に処理できない
 			// https://issues.apache.org/bugzilla/show_bug.cgi?id=41441

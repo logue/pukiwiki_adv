@@ -59,7 +59,7 @@ html {
 blockquote p {
 	font-size:100%;
 }
-textarea, select, option, input, var, pre, code, pre * {
+textarea, select, option, input, var, pre, code, pre > *  {
 	font-family: monospace !important;
 }
 textarea[rows="1"] {
@@ -646,6 +646,16 @@ i, em, cite, q {
 	border:none;
 	border-radius:0;
 	box-shadow:none;
+	font-family:inherit;
+}
+
+.sunlight-highlighted{
+	font-family:inherit;
+	word-wrap: normal !important;
+}
+
+.sunlight-highlighted *, .sunlight-highlighted * *{
+	font-family:inherit;
 }
 /* popup toc */
 #poptoc {
@@ -870,10 +880,6 @@ i, em, cite, q {
 }
 .ui-lightbox-error-icon-sign {
 	background: url('../image/ajax/error_sign.png') no-repeat center 226px;
-}
-
-.sunlight-highlighted{
-	word-wrap: normal !important;
 }
 /* ==|== DataTables ========================================================= */
 /*

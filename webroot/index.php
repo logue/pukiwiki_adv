@@ -34,8 +34,8 @@ define('ROOT_URI', dirname(__FILE__).DIRECTORY_SEPARATOR);
 define('SITE_HOME',	ROOT_URI . '../wiki-common/');
 
 // define('DATA_HOME', ROOT_URI . '../../wiki-data/contents/');
-define('DATA_HOME',	ROOT_URI . '../../data/');
-// define('DATA_HOME', ROOT_URI . '../wiki-data/');
+// define('DATA_HOME',	ROOT_URI . '../../data/');
+define('DATA_HOME', ROOT_URI . '../wiki-data/');
 
 define('WWW_HOME', '/');
 define('COMMON_URI', '/');
