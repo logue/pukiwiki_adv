@@ -3,7 +3,7 @@
 // $Id: main.php,v 1.23.30 2012/12/05 23:15:00 Logue Exp $
 //
 // PukiWiki Advance
-//  Copyright (C) 2010-2012 by PukiWiki Advance Team
+//  Copyright (C) 2010-2014 by PukiWiki Advance Team
 //  http://pukiwiki.logue.be/
 //
 // PukiWiki Plus! 1.4.*
@@ -36,23 +36,16 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+if (version_compare(phpversion(), '5.4.0', '<')) {
+	throw new RuntimeException('PukiWiki Advance requires PHP version 5.4.0 or newer.');
+}
+
 ini_set('memory_limit', '128M');
 ini_set('real_path_cache_size','64k');
 ini_set('realpath_cache','120');
 ini_set('zlib.output_compression', 'Off');
 ini_set('zlib.output_handler','mb_output_handler');
 
-/*
-$info = array();
-foreach (array('mbstring','openssl','gd') as $ext){
-	if (! extension_loaded($ext)){
-		$info[] = 'PukiWiki Adv. needs the <a href="http://www.php.net/manual/book.'.$ext.'.php">'.$ext.' extension</a>.';
-	}
-}
-if (count($info) !== 0){
-	throw new Exception(join("\n",$info));
-}
-*/
 /////////////////////////////////////////////////
 // Init PukiWiki Advance Enviroment variables
 

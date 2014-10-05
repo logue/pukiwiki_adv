@@ -159,18 +159,19 @@ class Router{
 	 * @param string $fragment アンカーを指定
 	 * @return string
 	 */
-	public static function get_resolve_uri($cmd='read', $page='', $path_reference='rel', $query=array(), $fragment='')
+	public static function get_resolve_uri($cmd='read', $page=null, $path_reference='rel', $query=array(), $fragment=null)
 	{
 		global $static_url, $url_suffix;
 
 		$path = empty($path_reference) ? 'rel' : $path_reference;
 		$ret = self::get_script_uri($path);
 
-		if (! empty($cmd) && ($cmd !== 'read' || count($query) !== 0)) {
+		if ( is_array($query) && !empty($cmd) && $cmd !== 'read') {
 			$query['cmd'] = $cmd;
 			if (! empty($page)) {
 				$query['page'] = $page;
 			}
+			
 			$ret .= '?' . http_build_query($query);
 		}else{
 			// Apacheは、:が含まれるアドレスを正確に処理できない
