@@ -166,15 +166,8 @@ class Router{
 		$path = empty($path_reference) ? 'rel' : $path_reference;
 		$ret = self::get_script_uri($path);
 
-		if ( is_array($query) && !empty($cmd) && $cmd !== 'read') {
-			$query['cmd'] = $cmd;
-			if (! empty($page)) {
-				$query['page'] = $page;
-			}
-			
-			$ret .= '?' . http_build_query($query);
-		}else{
-			// Apacheは、:が含まれるアドレスを正確に処理できない
+		if ($cmd === 'read') {
+		// Apacheは、:が含まれるアドレスを正確に処理できない
 			// https://issues.apache.org/bugzilla/show_bug.cgi?id=41441
 			if ($static_url === 1 && 
 				!( stristr(getenv('SERVER_SOFTWARE'), 'apache') !== FALSE && (strstr($page, ':' ) !== FALSE || strstr($page,' ' ) !== FALSE) )){
@@ -182,14 +175,20 @@ class Router{
 			}else{
 				$ret .= '?' . rawurlencode($page);
 			}
+		}else{
+			$query['cmd'] = $cmd;
+			if (! empty($page)) {
+				$query['page'] = $page;
+			}
+			$ret .= '?' . http_build_query($query);
 		}
 
 		// fragment
 		if (! empty($fragment)) {
-			$ret .= '#' . $fragment;
+			$ret .= '#' . Utility::htmlsc($fragment);
 		}
 		unset($flag);
-		return Utility::htmlsc($ret);
+		return $ret;
 	}
 	public static function get_baseuri($path='')
 	{
