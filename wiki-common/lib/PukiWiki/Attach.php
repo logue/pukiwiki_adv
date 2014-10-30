@@ -389,36 +389,30 @@ class Attach{
 
 		if ($this->age) {
 			$ret[] = '<div class="radio">';
-			$ret[] = '<input type="radio" name="pcmd" id="_p_attach_delete" value="delete" />';
-			$ret[] = '<label for="_p_attach_delete">' . $_attach_messages['msg_delete'] . $msg_require . '</label>';
+			$ret[] = '<label for="_p_attach_delete"><input type="radio" name="pcmd" id="_p_attach_delete" value="delete" />' . $_attach_messages['msg_delete'] . $msg_require . '</label>';
 			$ret[] = '</div>';
 		} else {
 			if ($this->status['freeze']) {
 				$ret[] = '<div class="radio">';
-				$ret[] = '<input type="radio" name="pcmd" id="_p_attach_unfreeze" value="unfreeze" />';
-				$ret[] = '<label for="_p_attach_unfreeze">' .  $_attach_messages['msg_unfreeze'] . $msg_require . '</label>';
+				$ret[] = '<label for="_p_attach_unfreeze"><input type="radio" name="pcmd" id="_p_attach_unfreeze" value="unfreeze" />' . $_attach_messages['msg_unfreeze'] . $msg_require . '</label>';
 				$ret[] = '</div>';
 			} else {
 				$ret[] = '<div class="radio">';
-				$ret[] = '<input type="radio" name="pcmd" id="_p_attach_delete" value="delete" />';
-				$ret[] = '<label for="_p_attach_delete">' . $_attach_messages['msg_delete'] . (self::DELETE_ADMIN_ONLY || $this->age ? $msg_require : '') . '</label>';
+				$ret[] = '<label for="_p_attach_delete"><input type="radio" name="pcmd" id="_p_attach_delete" value="delete" />' . $_attach_messages['msg_delete'] . (self::DELETE_ADMIN_ONLY || $this->age ? $msg_require : '') . '</label>';
 				$ret[] = '</div>';
 
 				$ret[] = '<div class="radio">';
-				$ret[] = '<input type="radio" name="pcmd" id="_p_attach_freeze" value="freeze" />';
-				$ret[] = '<label for="_p_attach_freeze">' .  $_attach_messages['msg_freeze']  . $msg_require . '</label>';
+				$ret[] = '<label for="_p_attach_freeze"><input type="radio" name="pcmd" id="_p_attach_freeze" value="freeze" />' . $_attach_messages['msg_freeze']  . $msg_require . '</label>';
 				$ret[] = '</div>';
 				if (self::ENABLE_RENAME) {
 					$ret[] = '<div class="radio">';
-					$ret[] = '<input type="radio" name="pcmd" id="_p_attach_rename" value="rename" />';
-					$ret[] = '<label for="_p_attach_rename">' .  $_attach_messages['msg_rename'] . $msg_require . '</label>';
+					$ret[] = '<label for="_p_attach_rename"><input type="radio" name="pcmd" id="_p_attach_rename" value="rename" />' . $_attach_messages['msg_rename'] . $msg_require . '</label>';
 					$ret[] = '</div>';
 					$ret[] = '<div class="form-group">';
 					$ret[] = '<label for="_p_attach_newname">' . $_attach_messages['msg_newname'] . ':</label> ';
 					$ret[] = '<input type="text" name="newname" class="form-control" id="_p_attach_newname" size="40" value="' .$this->filename . '" />';
 					$ret[] = '</div>';
 				}
-				
 			}
 		}
 		if ($role_contents_admin !== FALSE) {

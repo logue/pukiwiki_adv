@@ -112,7 +112,7 @@ class Search{
 	 */
 	public static function do_search($word, $type = 'and', $non_format = FALSE, $base = '')
 	{
-		global $show_passage, $search_word_color;
+		global $show_passage;
 		global $_string;
 
 		$retval = array();

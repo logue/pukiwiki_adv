@@ -51,7 +51,7 @@ class AttachFile extends AbstractFile{
 		if (!is_string($file)){
 			throw new Exception('AttachFile::__construct(): File name must be string!');
 		}
-		parent::__construct(self::$dir . Utility::encode($page) . '_' . Utility::encode($file) . ($age !== 0 ? $age : ''));
+		parent::__construct(self::$dir . Utility::encode($page) . '_' . Utility::encode($file) . ($age !== 0 ? '.'.$age : ''));
 	}
 	/**
 	 * ファイル一覧

@@ -24,6 +24,8 @@ use PukiWiki\Time;
 use Zend\Http\Response;
 use Zend\Json\Json;
 use PukiWiki\File\File;
+use PukiWiki\File\AttachFile;
+use PukiWiki\File\AttachLogFile;
 
 /**
  * ページ出力クラス
@@ -167,7 +169,7 @@ class Render{
 	 */
 	public function getContent(){
 		global $_LINK, $info, $vars, $_LANG;
-		global $site_name, $newtitle, $modifier, $modifierlink, $menubar, $sidebar, $headarea, $footarea, $navigation, $attach_link, $related_link;
+		global $site_name, $newtitle, $modifier, $modifierlink, $menubar, $sidebar, $headarea, $footarea, $navigation;
 
 		$body = $this->body;
 
@@ -200,13 +202,10 @@ class Render{
 
 			$view->lastmodified = '<time datetime="'.Time::getZoneTimeDate('c',$this->wiki->time()).'">'.Time::getZoneTimeDate('D, d M Y H:i:s T', $this->wiki->time()) . ' ' . $this->wiki->passage().'</time>';
 
-			// ページの添付ファイル、関連リンク
-			if ($attach_link) {
-				$view->attaches = $this->getAttaches();
-			}
-			if ($related_link) {
-				$view->related = $this->getRelated();
-			}
+			// ページの添付ファイル
+			$view->attaches = $this->getAttaches();
+			// 関連リンク
+			$view->related = $this->getRelated();
 
 			// ノート
 			global $foot_explain;
@@ -737,17 +736,19 @@ class Render{
 			$ret[] = '<dt>'.$_LANG['skin']['attach_title'].'</dt>';
 			foreach ($attaches as $filename=>$files){
 				if (!isset($files[0])) continue;
-				$fileinfo = new File(UPLOAD_DIR . $files[0]);
+				$fileinfo = new AttachFile($this->page, $filename);
 				$exists = true;
 				if (!$fileinfo->has()) continue;
-				$logfileinfo = new File(UPLOAD_DIR . $files['log']);
-				$count = $logfileinfo->has() ? $logfileinfo->head(0) : '0';
+			//	$logfileinfo = new AttachFile($this->page, $filename, 'log');
+			//	var_dump($logfileinfo->filename);
+			//	$count = $logfileinfo->has() ? $logfileinfo->head(0) : '0';
+				
 				$ret[] = '<dd><a href="' . 
 					Router::get_cmd_uri('attach', null, null, array('pcmd'=>'open','refer'=>$this->page, 'age'=>0, 'openfile'=>$filename)) .
 					'" title="' . Time::getZoneTimeDate('Y/m/d H:i:s', $fileinfo->time()) . ' ' .
 					sprintf('%01.1f', round($fileinfo->getSize()/1024, 1)) . 'KB' .
 					'"><span class="fa fa-download"></span>'.Utility::htmlsc($filename).'</a> ' .
-					'<small>(<var>' . $count . '</var>)</small> ' .
+			//		'<small>(<var>' . $count . '</var>)</small> ' .
 					'<a href="' . Router::get_cmd_uri('attach', null, null, array('pcmd'=>'info','refer'=>$this->page, 'file'=>$filename)) . '" class="btn btn-default btn-xs" title="'.$_LANG['skin']['attach_info'].'">' .
 					'<span class="fa fa-info"></span></a>' .
 					'</dd>';
