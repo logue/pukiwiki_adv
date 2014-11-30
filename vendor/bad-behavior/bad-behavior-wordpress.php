@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Bad Behavior
-Version: 2.2.15
+Version: 2.2.16
 Description: Deny automated spambots access to your PHP-based Web site.
 Plugin URI: http://bad-behavior.ioerror.us/
 Author: Michael Hampton
