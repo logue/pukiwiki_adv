@@ -1,5 +1,5 @@
 /*!
-	Autosize 1.18.12
+	Autosize 1.18.15
 	license: MIT
 	http://www.jacklmoore.com/autosize
 */
@@ -84,7 +84,7 @@
 			}
 
 			// IE8 and lower return 'auto', which parses to NaN, if no min-height is set.
-			minHeight = Math.max(parseInt($ta.css('minHeight'), 10) - boxOffset || 0, $ta.height());
+			minHeight = Math.max(parseFloat($ta.css('minHeight')) - boxOffset || 0, $ta.height());
 
 			$ta.css({
 				overflow: 'hidden',
@@ -103,17 +103,17 @@
 			function setWidth() {
 				var width;
 				var style = window.getComputedStyle ? window.getComputedStyle(ta, null) : false;
-				
+
 				if (style) {
 
 					width = ta.getBoundingClientRect().width;
 
 					if (width === 0 || typeof width !== 'number') {
-						width = parseInt(style.width,10);
+						width = parseFloat(style.width);
 					}
 
 					$.each(['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'], function(i,val){
-						width -= parseInt(style[val],10);
+						width -= parseFloat(style[val]);
 					});
 				} else {
 					width = $ta.width();
@@ -128,7 +128,7 @@
 				mirrored = ta;
 				mirror.className = options.className;
 				mirror.id = options.id;
-				maxHeight = parseInt($ta.css('maxHeight'), 10);
+				maxHeight = parseFloat($ta.css('maxHeight'));
 
 				// mirror is a duplicate textarea located off-screen that
 				// is automatically updated to contain the same text as the
@@ -138,7 +138,7 @@
 				$.each(typographyStyles, function(i,val){
 					styles[val] = $ta.css(val);
 				});
-				
+
 				$(mirror).css(styles).attr('wrap', $ta.attr('wrap'));
 
 				setWidth();
@@ -166,16 +166,17 @@
 				}
 
 				if (!ta.value && options.placeholder) {
-					// If the textarea is empty, copy the placeholder text into 
-					// the mirror control and use that for sizing so that we 
+					// If the textarea is empty, copy the placeholder text into
+					// the mirror control and use that for sizing so that we
 					// don't end up with placeholder getting trimmed.
-					mirror.value = ($ta.attr("placeholder") || '') + options.append;
+					mirror.value = ($ta.attr("placeholder") || '');
 				} else {
-					mirror.value = ta.value + options.append;
+					mirror.value = ta.value;
 				}
 
+				mirror.value += options.append || '';
 				mirror.style.overflowY = ta.style.overflowY;
-				original = parseInt(ta.style.height,10);
+				original = parseFloat(ta.style.height);
 
 				// Setting scrollTop to zero is needed in IE8 and lower for the next step to be accurately applied
 				mirror.scrollTop = 0;
@@ -199,6 +200,10 @@
 
 				if (original !== height) {
 					ta.style.height = height + 'px';
+
+					// Trigger a repaint for IE8 for when ta is nested 2 or more levels inside an inline-block
+					mirror.className = mirror.className;
+
 					if (callback) {
 						options.callback.call(ta,ta);
 					}

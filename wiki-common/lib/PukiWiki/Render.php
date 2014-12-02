@@ -55,7 +55,7 @@ class Render{
 	/**
 	 * Twitter Bootstrapのバージョン
 	 */
-	const TWITTER_BOOTSTRAP_VER = '3.2.0';
+	const TWITTER_BOOTSTRAP_VER = '3.3.1';
 	/**
 	 * Font Awesomeのバージョン
 	 */
