@@ -112,7 +112,7 @@ function plugin_comment_write()
 	$body = '';
 	if ($wiki->digest() !== $vars['digest']) {
 		$title = $_comment_messages['title_collided'];
-		$body  = $_comment_messages['msg_collided'] . $wiki->getUri();
+		$body  = $_comment_messages['msg_collided'] . $wiki->uri();
 	}
 
 	$wiki->set($postdata);
@@ -195,7 +195,7 @@ function plugin_comment_convert()
 	$ret[] = '<div class="input-group">';
 	$ret[] = '<textarea name="msg" class="form-control" id="p_comment_comment_'.$comment_all_no.'" rows="1" placeholder="'.$_comment_messages['label_comment'].'"></textarea>';
 	$ret[] = '<span class="input-group-btn">';
-	$ret[] = '<input type="submit" class="btn btn-primary" name="comment" value="' . $_comment_messages['label_post'] . '" />';
+	$ret[] = '<button type="submit" class="btn btn-primary" /><span class="fa fa-comment-o"></span>' . $_comment_messages['label_post'] . '</button>';
 	$ret[] = '</span>';
 	$ret[] = '</div>';
 	$ret[] = '</div>';

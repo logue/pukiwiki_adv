@@ -101,7 +101,7 @@ class Utility{
 	 * @return void
 	 */
 	public static function parseArguments(){
-		global $cookie;
+		global $cookie, $get, $post;
 		global $defaultpage;
 
 		$request  = new Request();
@@ -137,13 +137,10 @@ class Utility{
 		}
 		
 
-		// ヌル文字を削除
-		$vars = self::stripNullBytes($vars);
-		
 		if (!isset($vars['cmd'])){
 			$vars['cmd'] = 'read';
 		}
-		
+
 		if (!empty($vars['page']) && preg_match(Wiki::INVALIED_PAGENAME_PATTERN, $vars['page'])){
 			// ページ名チェック
 			self::dump('suspicious');
@@ -197,7 +194,6 @@ class Utility{
 				}
 				break;
 		}
-		
 
 		return $vars;
 	}
@@ -559,31 +555,6 @@ class Utility{
 		return preg_match('/^' . RendererDefines::WIKINAME_PATTERN . '$/', $str);
 	}
 	/**
-	 * Remove null(\0) bytes from variables
-	 * NOTE: PHP had vulnerabilities that opens "hoge.php" via fopen("hoge.php\0.txt") etc.
-	 * [PHP-users 12736] null byte attack
-	 * http://ns1.php.gr.jp/pipermail/php-users/2003-January/012742.html
-	 *
-	 * 2003-05-16: magic quotes gpcの復元処理を統合
-	 * 2003-05-21: 連想配列のキーはbinary safe
-	 *
-	 * @param string $param
-	 * @return string
-	 */
-	public static function stripNullBytes($param)
-	{
-		static $magic_quotes_gpc;
-		if ($magic_quotes_gpc === NULL)
-			$magic_quotes_gpc = get_magic_quotes_gpc();
-
-		if (is_array($param)) {
-			return array_map('PukiWiki\Utility::stripNullBytes', $param);
-		}
-		$result = str_replace('\0', '', $param);
-		if ($magic_quotes_gpc) $result = stripslashes($result);
-		return $result;
-	}
-	/**
 	 * ブラケット（[[ ]]）を取り除く
 	 * @param string $str
 	 * @return string
@@ -762,7 +733,7 @@ class Utility{
 		$html[] = '<!doctype html>';
 		$html[] = '<html>';
 		$html[] = '<head>';
-		$html[] = '<meta charset="utf-8">';
+		$html[] = '<meta charset="utf-8" />';
 		$html[] = '<meta name="robots" content="NOINDEX,NOFOLLOW" />';
 		if (!DEBUG){
 			$html[] = '<meta http-equiv="refresh" content="'.$time.'; URL='.$s_url.'" />';
