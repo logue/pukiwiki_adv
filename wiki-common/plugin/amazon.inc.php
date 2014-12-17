@@ -34,8 +34,8 @@ defined('USE_CACHE')			or define('USE_CACHE', true);			// キャッシュ機能�
 defined('AMAZON_EXPIRE_CACHE')	or define('AMAZON_EXPIRE_CACHE', 24);	// キャッシュの有効期限(単位:時間)
 defined('AMAZON_ALLOW_CONT')	or define('AMAZON_ALLOW_CONT', true);	// true にすると、紹介本文取り込みが可能
 defined('USE_CARGO')			or define('USE_CARGO', true);			// true にすると買物かごを使用可能
-defined('AMAZON_NO_IMAGE')		or define('AMAZON_NO_IMAGE', 'http://images.amazon.com/images/G/09/x-locale/detail/thumb-no-image');		// 写影なしの画像
-defined('AMAZON_CARGO')			or define('AMAZON_CARGO',	'http://images.amazon.com/images/G/09/extranet/associates/buttons/remote-buy-jp1.gif');	// 買物かごのアイコン
+defined('AMAZON_NO_IMAGE')		or define('AMAZON_NO_IMAGE', '//images.amazon.com/images/G/09/x-locale/detail/thumb-no-image');		// 写影なしの画像
+defined('AMAZON_CARGO')			or define('AMAZON_CARGO',	'//images.amazon.com/images/G/09/extranet/associates/buttons/remote-buy-jp1.gif');	// 買物かごのアイコン
 
 // 画像サイズ SwatchImage, SmallImage, ThumbnailImage, TinyImage, MediumImage, LargeImage
 defined('PLUGIN_AMAZON_IMAGE_SIZE') or define('PLUGIN_AMAZON_IMAGE_SIZE', 'MediumImage');
@@ -98,8 +98,8 @@ function plugin_amazon_convert()
 		// https://affiliate.amazon.co.jp/gp/associates/tips/impressions.html
 		$amazon_aid = AMAZON_AID;
 		$retval .= <<<EOD
-<script type="text/javascript" src="http://ir-jp.amazon-adsystem.com/s/impression-counter?tag={$amazon_aid}&o=9"></script>
-<noscript><img src="http://ir-jp.amazon-adsystem.com/s/noscript?tag={$amazon_aid}" alt="" /></noscript>
+<script type="text/javascript" src="//ir-jp.amazon-adsystem.com/s/impression-counter?tag={$amazon_aid}&o=9"></script>
+<noscript><img src="//ir-jp.amazon-adsystem.com/s/noscript?tag={$amazon_aid}" alt="" /></noscript>
 EOD;
 		return $retval;
 	}
@@ -1038,8 +1038,8 @@ class amazon_ecs
 		return $url;
 	}
 
-	function shop_url() { return 'http://www.amazon.'.$this->locale.'/exec/obidos/ASIN/'; }
-	function cart_url() { return 'http://www.amazon.'.$this->locale.'/gp/aws/cart/add.html'; }
+	function shop_url() { return '//www.amazon.'.$this->locale.'/exec/obidos/ASIN/'; }
+	function cart_url() { return '//www.amazon.'.$this->locale.'/gp/aws/cart/add.html'; }
 	function cart_img_url()
 	{
 		$locale_no = array('com'=>'01','uk'=>'02','co.uk'=>'02','de'=>'03','fr'=>'08','jp'=>'09','ca'=>'15');

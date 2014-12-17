@@ -100,10 +100,11 @@ class Router{
 		// Set automatically
 		$msg	 = 'get_script_absuri() failed: Please set [$script or $script_abs] at INI_FILE manually';
 
-		$uri  = ( ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'];
-                if(strpos($uri,':')===FALSE) {
-                        $uri .= ($_SERVER['SERVER_PORT'] == 80 || $_SERVER['SERVER_PORT'] == 443) ? '' : ':' . $_SERVER['SERVER_PORT'];  // port
-                }
+		$uri  = ( self::is_ssl() ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'];
+		if(strpos($uri,':') === FALSE) {
+			// :が含まれていた場合
+			$uri .= ($_SERVER['SERVER_PORT'] == 80 || $_SERVER['SERVER_PORT'] == 443) ? '' : ':' . $_SERVER['SERVER_PORT'];  // port
+		}
 
 		// SCRIPT_NAME が'/'で始まっていない場合(cgiなど) REQUEST_URIを使ってみる
 		$path	= SCRIPT_NAME;
@@ -254,6 +255,39 @@ class Router{
 				return true;
 			}
 		// if (! isset($script_directory_index) && $str == 'index.php') return true;
+		return false;
+	}
+	/**
+	 * SSL接続か
+	 * @return boolean
+	 */
+	private static function is_ssl(){
+		// ポート番号はアテにならないので判定には使わない
+		if (defined('FORCE_SSL')) return true;
+
+		// 一般的なSSL判定
+		if (isset($_SERVER['HTTPS'])){
+			return $_SERVER['HTTPS'] === 'on';
+		}
+		if (isset($_SERVER['HTTP_X_SSL'])){
+			return $_SERVER['HTTP_X_SSL'] === 'on';
+		}
+		// nginx
+		if (isset($_SERVER['HTTP_X_FORWARDED_PROTO'])){
+			return $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https';
+		}
+		// CloudFlare
+		if (isset($_SERVER['HTTP_CF_VISITOR'])){
+			return $_SERVER['HTTP_CF_VISITOR'] === '{"scheme":"https"}';	// これでいいのか？
+		}
+		// さくらの共有サーバー
+		if (isset($_SERVER['HTTP_X_SAKURA_FORWARDED_FOR'])){
+			return true;
+		}
+		// Coreserver / xrea
+		if (isset($_SERVER['HTTP_VIA']) && preg_match('/coressl\.jp|xrea\.com/')){
+			return true;
+		}
 		return false;
 	}
 }

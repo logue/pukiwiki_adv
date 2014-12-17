@@ -12,7 +12,7 @@
 
 function plugin_flash_init(){
 	global $js_tags;
-	$js_tags[] = array('type'=>'text/javascript', 'src'=>'https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js');
+	$js_tags[] = array('type'=>'text/javascript', 'src'=>'//ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js');
 }
 
 function plugin_flash_inline()

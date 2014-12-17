@@ -191,15 +191,15 @@ $.fn.bsbutton = bootstrapButton;
 				// http://b.hatena.ne.jp/guide/bbutton
 				'hatena' : {
 					use : true,
-					dom : '<a href="http://b.hatena.ne.jp/entry/" class="hatena-bookmark-button" data-hatena-bookmark-layout="standard-balloon">Hatena</a>',
-					script : 'http://b.st-hatena.com/js/bookmark_button.js'
+					dom : '<a href="//b.hatena.ne.jp/entry/" class="hatena-bookmark-button" data-hatena-bookmark-layout="standard-balloon">Hatena</a>',
+					script : '//b.st-hatena.com/js/bookmark_button.js'
 				},
 				// Mixi
 				// http://developer.mixi.co.jp/connect/mixi_plugin/mixi_check/spec_mixi_check/
 				'mixi' : {
 					use : false,
-					dom : '<a href="http://mixi.jp/share.pl" class="mixi-check-button" data-url="'+href+'" data-button="button-6">Mixi</a>',
-					script : 'http://static.mixi.jp/js/share.js'
+					dom : '<a href="//mixi.jp/share.pl" class="mixi-check-button" data-url="'+href+'" data-button="button-6">Mixi</a>',
+					script : '//static.mixi.jp/js/share.js'
 				},
 				// Google +1 button
 				// http://www.google.com/intl/ja/webmasters/+1/button/index.html
@@ -212,20 +212,16 @@ $.fn.bsbutton = bootstrapButton;
 				// https://twitter.com/about/resources/buttons
 				'twitter' : {
 					use : true,
-					dom : '<a href="https://twitter.com/share" class="twitter-share-button" data-lang="' + lang+'">Tweet</a>',
-					script : 'http://platform.twitter.com/widgets.js'
-				},
-				// Gree
-				// https://developer.gree.net/connect/plugins/sf
-				'gree' : {
-					use : false,
-					dom : '<iframe src="http://share.gree.jp/share?url='+encodeURIComponent(href)+'&amp;type=1&amp;height=20" scrolling="no" frameborder="0" marginwidth="0" marginheight="0" style="border:none; overflow:hidden; width:100px; height:20px;" allowTransparency="true"></iframe>'
+					dom : '<a href="//twitter.com/share" class="twitter-share-button" data-dnt="true" data-lang="' + lang+'">Tweet</a>',
+					script : '//platform.twitter.com/widgets.js'
+					<a href="https://twitter.com/share" class="twitter-share-button" >Tweet</a>
 				},
 				// Tumblr
-				// http://www.tumblr.com/docs/ja/share_button
+				// https://www.tumblr.com/buttons
 				'tumblr' : {
 					use : false,
-					dom : '<a href="http://www.tumblr.com/share" title="Share on Tumblr" style="display:inline-block; text-indent:-9999px; overflow:hidden; width:81px; height:20px; background:url(\'http://platform.tumblr.com/v1/share_1.png\') top left no-repeat transparent;"></a>'
+					dom : '<a href="//www.tumblr.com/share" title="Share on Tumblr" style="display:inline-block; text-indent:-9999px; overflow:hidden; width:81px; height:20px; background:url(\'//platform.tumblr.com/v1/share_1.png\') top left no-repeat transparent;"></a>',
+					script: '//platform.tumblr.com/v1/share.js'
 				}
 			}, this.custom.social);
 
@@ -314,7 +310,7 @@ $.fn.bsbutton = bootstrapButton;
 
 			// MathJax
 			if ($('.mathjax-eq').length !== 0){
-				$.getScript('http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML', function(){
+				$.getScript('//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML', function(){
 					MathJax.Hub.Config({
 						displayAlign: "inherit",
 						TeX: {
@@ -1989,7 +1985,7 @@ $.fn.bsbutton = bootstrapButton;
 					$.getScript(scripts[i]);
 				}
 				if (typeof(FACEBOOK_APPID) !== 'undefined'){
-					$.getScript('http://'+ 'connect.facebook.net/' + LANG + '/all.js', function() {
+					$.getScript('//'+ 'connect.facebook.net/' + LANG + '/all.js', function() {
 						FB.init({
 							appId: FACEBOOK_APPID,
 							status	: true, // check login status

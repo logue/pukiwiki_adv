@@ -1,8 +1,8 @@
 <?php
 // PukiWiki Advance
-// $Id: index.php,v 1.9.8 2011/09/12 21:41:00 Logue Exp $
+// $Id: index.php,v 1.9.9 2014/12/17 21:24:00 Logue Exp $
 // Copyright (C)
-//   2010-2012 PukiWiki Advance Developers Team
+//   2010-2014 PukiWiki Advance Developers Team
 //   2005-2007,2009 PukiWiki Plus! Team
 //   2001-2006 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
@@ -39,6 +39,9 @@ define('DATA_HOME',	ROOT_URI . '../../data/');
 
 define('WWW_HOME', '/');
 define('COMMON_URI', '/');
+
+// Force protocol to https://
+// define('FORCE_SSL', true)
 
 // to absolute path
 // Do not change following lines
