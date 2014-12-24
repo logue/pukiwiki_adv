@@ -1,8 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: backup.inc.php,v 1.29.24 2012/03/10 23:14:00 Logue Exp $
+// $Id: backup.inc.php,v 1.29.25 2014/12/24 23:14:00 Logue Exp $
 // Copyright (C)
-//   2010-2012 PukiWiki Advance Developers Team
+//   2010-2014 PukiWiki Advance Developers Team
 //   2008 PukioWikio Developers Team
 //   2005-2008 PukiWiki Plus! Team
 //   2002-2005,2007 PukiWiki Developers Team
@@ -409,7 +409,9 @@ function plugin_backup_convert()
 	global $_backup_messages;
 	global $js_blocks, $plugin_backup_count;
 
-	$page   = isset($vars['page']) ? $vars['page']   : '';
+	$page   = isset($vars['page']) ? $vars['page']   : null;
+	if (empty($page)) return;
+	
 	check_readable($page, false);
 
 	// Get arguments

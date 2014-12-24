@@ -1,7 +1,7 @@
 /*!
  * PukiWiki Advance - Yet another WikiWikiWeb clone.
  * Pukiwiki skin script for jQuery
- * Copyright (c)2010-2013 PukiWiki Advance Developer Team
+ * Copyright (c)2010-2014 PukiWiki Advance Developer Team
  *			  2010	  Logue <http://logue.be/> All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -214,7 +214,6 @@ $.fn.bsbutton = bootstrapButton;
 					use : true,
 					dom : '<a href="//twitter.com/share" class="twitter-share-button" data-dnt="true" data-lang="' + lang+'">Tweet</a>',
 					script : '//platform.twitter.com/widgets.js'
-					<a href="https://twitter.com/share" class="twitter-share-button" >Tweet</a>
 				},
 				// Tumblr
 				// https://www.tumblr.com/buttons
@@ -381,7 +380,7 @@ $.fn.bsbutton = bootstrapButton;
 				var $this = $(this),
 					href = $this.attr('href');
 
-				$this.click(function(){
+				$this.on('click', function(){
 					return false;
 				});
 
@@ -502,7 +501,7 @@ $.fn.bsbutton = bootstrapButton;
 				}
 
 				// Register a 'submit' event listener on the form to perform the AJAX POST
-				$form.find('button').click(function(e){
+				$form.find('button').on('click',function(e){
 					e.preventDefault();
 
 					if ($form.children('input[type="file"]').val() === ''){
@@ -557,7 +556,7 @@ $.fn.bsbutton = bootstrapButton;
 			dom.find('.plugin-region-title').before($button);
 			$('.plugin-region-body').hide();
 
-			$('.region-btn').click(function(){
+			$('.region-btn').on('click',function(){
 				var $this = $(this),
 					$body = $this.next().next();
 
@@ -623,7 +622,7 @@ $.fn.bsbutton = bootstrapButton;
 			// 外部リンクアイコン
 			$('.fa-external-link, .fa-external-link-square').each(function(){
 				var $this = $(this);
-				$this.click(function(){
+				$this.on('click',function(){
 					window.open($this.parent().attr('href'));
 					return false;
 				});
@@ -640,7 +639,7 @@ $.fn.bsbutton = bootstrapButton;
 					return;
 				}else if (href === $('link[rel="canonical"]').attr('href')){
 					// クイックリロード
-					$this.unbind('click').bind('click', function(){
+					$this.on('click', function(){
 						//
 						$.ajax({
 							dataType: 'xml',
@@ -669,7 +668,7 @@ $.fn.bsbutton = bootstrapButton;
 						return false;
 					});
 				}else if (isExternal) {
-					$this.click(function(){
+					$this.on('click',function(){
 						if (rel.match(/noreferer/)){
 							// リファラーを消す
 							if (ie){
@@ -730,7 +729,7 @@ $.fn.bsbutton = bootstrapButton;
 						// アンカースクロールを無効化判定
 						if (disable_scrolling === false){
 							// アンカースクロール
-							$this.unbind('click').bind('click', function(){
+							$this.on('click', function(){
 								var $body;
 								if ($(window).scrollTop() === 0) {
 									// スクロールが0の時エラーになる問題をごまかす
@@ -795,7 +794,7 @@ $.fn.bsbutton = bootstrapButton;
 							}
 
 							// ダイアログ描画処理
-							$this.unbind('click').bind('click', function(){
+							$this.on('click', function(){
 								params.ajax = 'json';
 								self.ajax_dialog(params,prefix,function(){
 									if ((params.cmd == 'attach' && params.pcmd.match(/upload|info/i)) || params.cmd.match(/attachref|read|backup/i) && params.age !== ''){
@@ -836,7 +835,7 @@ $.fn.bsbutton = bootstrapButton;
 				// 「トップに戻る」ボタンにイベント割り当て
 
 				$('#back-top a')
-					.click(function(){
+					.on('click', function(){
 						$('html,body').animate({scrollTop: 0}, 1000);
 						return false;
 					})
@@ -958,7 +957,7 @@ $.fn.bsbutton = bootstrapButton;
 					'<div class="ui-widget-overlay"></div>'+
 					'<div id="loading-activity"></div>'+
 				'</div>')
-					.click(function(){
+					.on('click',function(){
 						$(this).fadeOut();
 						return false;
 					})
@@ -978,7 +977,7 @@ $.fn.bsbutton = bootstrapButton;
 					speed: 1,
 					zIndex: 9999
 				})
-				.click(function(){
+				.on('click',function(){
 					$loading.fadeOut();
 				})
 			;
@@ -1216,7 +1215,7 @@ $.fn.bsbutton = bootstrapButton;
 				}).html(emoji_widget);
 
 				// イベントの割り当て
-				$('#emoji').children('ul').children('li').click(function(){
+				$('#emoji').children('ul').children('li').on('click',function(){
 					var str = $msg.getSelection().text, v = '&('+$(this).attr('name')+');';
 
 					$msg.focus();
@@ -1253,7 +1252,7 @@ $.fn.bsbutton = bootstrapButton;
 				}).html(color_widget);
 
 				// イベントの割り当て
-				$('#color_palette').children('ul').children('li').click(function(){
+				$('#color_palette').children('ul').children('li').on('cliock',function(){
 					var ret, str = $msg.getSelection().text, v = $(this).attr('name');
 
 					if (str === ''){
@@ -1286,7 +1285,7 @@ $.fn.bsbutton = bootstrapButton;
 			}
 
 			// ここから、イベント割り当て
-			$('.insert').click(function(){
+			$('.insert').on('click',function(){
 				var ret = '', v = $(this).attr('name');
 
 				switch (v){
@@ -1323,7 +1322,7 @@ $.fn.bsbutton = bootstrapButton;
 				return false;
 			});
 
-			$('.replace').click(function(){
+			$('.replace').on('click', function(){
 				var ret = '', str = $msg.getSelection().text, v = $(this).attr('name');
 
 				if (str === ''){
@@ -1626,7 +1625,7 @@ $.fn.bsbutton = bootstrapButton;
 			});
 
 			// ボタンをクリックした時のイベント
-			$form.find('button').click(function(e){
+			$form.find('button').on('click',function(e){
 				e.preventDefault();
 
 				var $this = $(this),
@@ -1847,7 +1846,7 @@ $.fn.bsbutton = bootstrapButton;
 				'<h1><a href="#">'+$('#title').text()+'</a><abbr title="Table of Contents">[TOC]</abbr></h1>',
 				lis.replace(/href/g,'tabindex="1" href')
 			].join(''))
-				.click(function(){
+				.on('click',function(){
 					self._hideToc();
 				}
 			);
@@ -1858,7 +1857,7 @@ $.fn.bsbutton = bootstrapButton;
 			$(toc_bg)
 				.addClass('ui-widget-overlay')
 				.css('display','none')
-				.click(function(){
+				.on('click',function(){
 					self._hideToc();
 				}
 			);
@@ -1866,7 +1865,7 @@ $.fn.bsbutton = bootstrapButton;
 
 			this.calcObj(this.toc,300);
 
-			$('.icon-toc').click(function(elem){
+			$('.icon-toc').on('click', function(elem){
 				if ($('#'+self.toc.id).hide()){
 					self._dispToc(elem,this,false);
 				}else{
@@ -1874,7 +1873,7 @@ $.fn.bsbutton = bootstrapButton;
 				}
 			}).css('display','inline-block');
 
-			$('#' + this.toc.id + ' *').click(function(){
+			$('#' + this.toc.id + ' *').on('click', function(){
 				self._hideToc();
 			});
 

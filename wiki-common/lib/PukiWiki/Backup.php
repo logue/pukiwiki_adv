@@ -1,4 +1,15 @@
 <?php
+/**
+ * バックアップ管理
+ *
+ * @package   PukiWiki
+ * @access    public
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2014 PukiWiki Advance Developers Team
+ * @create    2014/01/23
+ * @license   GPL v2 or (at your option) any later version
+ * @version   $Id: BackUp.php,v 1.0.1 2014/12/24 23:29:00 Logue Exp $
+ */
 namespace PukiWiki;
 
 use PukiWiki\File\FileFactory;
@@ -50,7 +61,8 @@ class Backup{
 		$backups = $this->get();
 
 		// 直後に1件追加するので、(最大件数 - 1)を超える要素を捨てる
-		if (count($backups) + 1 > $this->maxage)
+		$count = count($backups);
+		if ($count + 1 > $this->maxage)
 			array_splice($backups, 0, $count - $this->maxage);
 
 		// バッグアップデーターをパース

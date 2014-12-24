@@ -8,7 +8,7 @@
  * @copyright 2012-2014 PukiWiki Advance Developers Team
  * @create    2012/12/18
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Render.php,v 1.0.0 2014/03/23 23:30:00 Logue Exp $
+ * @version   $Id: Render.php,v 1.0.1 2014/12/24 23:27:00 Logue Exp $
  */
 namespace PukiWiki;
 
@@ -167,7 +167,7 @@ class Router{
 		$path = empty($path_reference) ? 'rel' : $path_reference;
 		$ret = self::get_script_uri($path);
 
-		if ($cmd === 'read') {
+		if (empty($cmd) || $cmd === 'read') {
 		// Apacheは、:が含まれるアドレスを正確に処理できない
 			// https://issues.apache.org/bugzilla/show_bug.cgi?id=41441
 			if ($static_url === 1 && 
@@ -271,6 +271,10 @@ class Router{
 		}
 		if (isset($_SERVER['HTTP_X_SSL'])){
 			return $_SERVER['HTTP_X_SSL'] === 'on';
+		}
+		// apache
+		if (function_exists('apache_getenv')){
+			return apache_getenv('HTTPS') === 'on';
 		}
 		// nginx
 		if (isset($_SERVER['HTTP_X_FORWARDED_PROTO'])){

@@ -5,10 +5,10 @@
  * @package   PukiWiki
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2012-2014 PukiWiki Advance Developers Team
+ * @copyright 2014 PukiWiki Advance Developers Team
  * @create    2014/01/23
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Listing.php,v 1.0.0 2014/01/23 16:54:00 Logue Exp $
+ * @version   $Id: Attach.php,v 1.0.1 2014/12/24 23:29:00 Logue Exp $
  */
 
 namespace PukiWiki;
@@ -269,6 +269,7 @@ class Attach{
 			$rest = $range_end - $range_start + 1;
 
 			// ファイルを出力
+			$readsize = 0;
 			while (!$f->eof() && $rest > 0) {
 				if ($blocksize > $rest) {
 					$readsize = $rest;

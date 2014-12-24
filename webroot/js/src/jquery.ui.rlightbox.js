@@ -2108,8 +2108,8 @@ $.extend($.ui.rlightbox, {
 				height: 100
 			},
 			providers: {
-				vimeo: "http://www.vimeo.com/api/oembed.json?callback=?",
-				youtube: "http://gdata.youtube.com/feeds/api/videos/"
+				vimeo: "//www.vimeo.com/api/oembed.json?callback=?",
+				youtube: "//gdata.youtube.com/feeds/api/videos/"
 			},
 			showErrorMessage: false,
 			currentSetElement: {},
@@ -2142,7 +2142,7 @@ $.extend($.ui.rlightbox, {
 						"</button>" +
 					"</div>" +
 				"</div>",
-			htmlYoutube: "<iframe class='youtube-player' type='text/html' width='{width}' height='{height}' src='http://www.youtube.com/embed/{url}' frameborder='0'></iframe>",
+			htmlYoutube: "<iframe class='youtube-player' type='text/html' width='{width}' height='{height}' src='//www.youtube.com/embed/{url}' frameborder='0'></iframe>",
 			htmlLightbox: "" +
 				"<div id='ui-lightbox' class='ui-widget ui-widget-content ui-corner-all' style='display: none'>" +
 					"<div id='ui-lightbox-panorama-icon' style='display: none'></div>" +

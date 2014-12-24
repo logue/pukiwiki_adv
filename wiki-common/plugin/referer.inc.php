@@ -1,6 +1,6 @@
 <?php
 // PukiWiki Advance.
-// $Id: referer.inc.php,v 1.10.16 2014/02/28 13:11:00 Logue Exp $
+// $Id: referer.inc.php,v 1.10.17 2014/12/24 23:37:00 Logue Exp $
 // Copyright (C)
 //   2010-2014 PukiWiki Advance DevelopersTeam.
 //   2007      PukiWiki Plus! Team
@@ -73,7 +73,7 @@ function plugin_referer_get_config(){
 
 function plugin_referer_action()
 {
-	global $vars, $referer;
+	global $vars, $referer, $use_pingback;
 	global $_referer_msg;
 
 	// Setting: Off
@@ -92,13 +92,13 @@ function plugin_referer_action()
 	if (empty($kind)){
 		return array(
 			'msg'  => $_referer_msg['msg_H0_Refer'],
-			'body' => 
+			'body' => join("\n",array( 
 				'<div class="tabs" role="application">'."\n".'<ul role="tablist">'."\n".
-				'<li role="tab"><a href="'.get_cmd_uri('referer',$page,null,array('kind'=>'referer')).'">'.$_referer_msg['msg_referer'].'</a></li>'."\n".
-				'<li role="tab"><a href="'.get_cmd_uri('referer',$page,null,array('kind'=>'searchkey')).'">'.$_referer_msg['msg_searchkey'].'</a></li>'."\n".
-				'<li role="tab"><a href="'.get_cmd_uri('referer',$page,null,array('kind'=>'mutual')).'">'.$_referer_msg['msg_mutual'].'</a></li>'."\n".
-				'<li role="tab"><a href="'.get_cmd_uri('referer',$page,null,array('kind'=>'pingback')).'">'.$_referer_msg['msg_pingback'].'</a></li>'."\n".
-				'</ul>'."\n".'</div>'
+				'<li role="tab"><a href="'.get_cmd_uri('referer',$page,null,array('kind'=>'referer')).'">'.$_referer_msg['msg_referer'].'</a></li>',
+				'<li role="tab"><a href="'.get_cmd_uri('referer',$page,null,array('kind'=>'searchkey')).'">'.$_referer_msg['msg_searchkey'].'</a></li>',
+				'<li role="tab"><a href="'.get_cmd_uri('referer',$page,null,array('kind'=>'mutual')).'">'.$_referer_msg['msg_mutual'].'</a></li>',
+				$use_pingback ? '<li role="tab"><a href="'.get_cmd_uri('referer',$page,null,array('kind'=>'pingback')).'">'.$_referer_msg['msg_pingback'].'</a></li>' : null,
+				'</ul>','</div>'))
 		);
 	}
 	$wiki = Factory::Wiki($page);

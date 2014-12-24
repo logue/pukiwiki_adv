@@ -5,10 +5,10 @@
  * @package   PukiWiki
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @copyright 2012-2014 PukiWiki Advance Developers Team
  * @create    2012/12/31
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Wiki.php,v 1.0.0 2013/09/02 22:56:00 Logue Exp $
+ * @version   $Id: Wiki.php,v 1.0.1 2014/12/24 23:34:00 Logue Exp $
  **/
 
 namespace PukiWiki;
@@ -21,6 +21,7 @@ use PukiWiki\File\AttachFile;
 use PukiWiki\File\FileFactory;
 use PukiWiki\File\FileUtility;
 use PukiWiki\File\LogFactory;
+use PukiWiki\Ping;
 use PukiWiki\Relational;
 use PukiWiki\Renderer\PluginRenderer;
 use PukiWiki\Renderer\RendererFactory;
@@ -30,15 +31,12 @@ use PukiWiki\Spam\IpFilter;
 use PukiWiki\Spam\ProxyChecker;
 use PukiWiki\Text\Rules;
 use PukiWiki\Utility;
-use ZendService\Akismet\Akismet;
-use Zend\Http\Client;
-use Zend\Http\Request;
-use Zend\XmlRpc\Client as XmlRpcClient;
-use Zend\XmlRpc\Request as XmlRpcRequest;
 use ZendSearch\Lucene;
+use ZendSearch\Lucene\Analysis\Analyzer;
 use ZendSearch\Lucene\Document;
 use ZendSearch\Lucene\Index;
-use ZendSearch\Lucene\Analysis\Analyzer;
+use ZendService\Akismet\Akismet;
+
 /**
  * Wikiのコントローラー
  */
@@ -64,19 +62,6 @@ class Wiki{
 	 */
 	const HTML_URI_MATCH_PATTERN = '/<.+? (src|href)="(.*?)".+?>/is';
 	/**
-	 * weblogUpdates Ping送信のインターバル（１時間）
-	 */
-	const PING_INTERVAL = 360;
-	/**
-	 * weblogUpdates ping
-	 */
-	private static $ping_server = array(
-		'http://rpc.weblogs.com/',
-		'http://ping.feedburner.com/',
-		'http://blogsearch.google.com/ping/RPC2',
-		'http://www.blogpeople.net/ping/'
-	);
-	/**
 	 * ページ名
 	 */
 	public $page;
@@ -84,19 +69,6 @@ class Wiki{
 	 * 見出しID
 	 */
 	public $id = null;
-	/**
-	 * weblogUpdates Ping送信サイクル
-	 */
-	private $ping_cycle;
-	/**
-	 * PingBack送信サイクル
-	 */
-	private $pingback_cycle;
-
-	/**
-	 * PingBack送信のインターバル（１日）
-	 */
-	const PINGBACK_INTERVAL = 8640;
 	/**
 	 * コンストラクタ
 	 */
@@ -121,9 +93,6 @@ class Wiki{
 		}
 		// 以下はSplFileInfoの派生クラス
 		$this->wiki = FileFactory::Wiki($this->page);
-		
-		$this->ping_cycle = !empty($cycle) ? 60 * 60 * $cycle : self::PING_INTERVAL;
-		$this->pingback_cycle = !empty($cycle) ? 60 * 60 * $cycle : self::PINGBACK_INTERVAL;
 	}
 /**************************************************************************************************/
 	/**
@@ -511,7 +480,6 @@ class Wiki{
 				//		$akismet_post['comment_content'] = join("\n",$added_data);
 				//		unset($added_data);
 				//	}
-					
 
 					if($akismet->isSpam($akismet_post)){
 						Utility::dump('akismet');
@@ -582,7 +550,8 @@ class Wiki{
 
 			if (!$keeptimestamp && !empty($str)) {
 				// weblogUpdates.pingを送信
-				self::sendPing();
+				$ping = new Ping($this->page);
+				$ping->send();
 			}
 		}
 		// 簡易競合チェック
@@ -695,110 +664,5 @@ class Wiki{
 			break;
 		}
 		return $source;
-	}
-	public function setWeblogUpdatesPingServer($server){
-		if (is_array($server)){
-			$this->ping_server = $server;
-		}else{
-			$this->ping_server[] = $server;
-		}
-	}
-	/**
-	 * XmlRpc Pingを送信
-	 * return void
-	 */
-	private function sendPing(){
-		global $site_name;
-
-		$err = array();
-
-		// 現在のページのURIを取得
-		$source_uri = $this->uri();
-		
-		if (! UTIME - $this->time() > $this->ping_cycle) {
-			// weblogUpdates.pingの生成
-			$request = new XmlRpcRequest();
-			$request->setMethod('weblogUpdates.ping');
-			$request->setParams(array($site_name, Router::get_script_absuri(), $source_uri));
-
-			// 送信
-			foreach ($this->ping_server as $uri){
-				try {
-					// Pingサーバーに接続
-					$client = new XmlRpcClient($uri);
-					// Pingの送信
-					$client->doRequest($request);
-				} catch (Zend\XmlRpc\Client\Exception\FaultException $e) {
-					$err[] = $e;
-				}
-			}
-
-			$err[] = '-----'."\n";
-
-			unset($client, $request);
-		}
-		
-		if (! UTIME - $this->time() > $this->pingback_cycle) {
-			// PingBackを送信
-			$links = array();
-			// Wikiのソースのアドレスを取得
-			if (preg_match_all('(http://[-_.!~*\'()a-zA-Z0-9;/?:@&=+$,%#]+)', $this->get(true), $links, PREG_PATTERN_ORDER) !== false){
-				// 重複を削除
-				$target_uris = array_unique($links[0]);
-				foreach ($target_uris as $target_uri){
-					$pingback = false;
-					// ターゲットとなるURL接続
-					$client = new Client($target_uri);
-					// HEADメソッドでヘッダーのみ取得
-					$client->setMethod(Request::METHOD_HEAD);
-					// 返り値を取得
-					
-					try{
-						$response = $client->send();
-
-						// アクセス失敗
-						if (!$response->isSuccess()) continue;
-
-						// ヘッダーからPingBackのURIを取得
-						$pingback = $response->getHeaders()->get('x-pingback');
-
-						// x-pingbackヘッダーがない場合
-						if ($pingback === false){
-							// GETでアクセスしてコンテンツを取得し、linkタグを探す。
-							$client->setMethod(Request::METHOD_GET);
-							// 返り値を取得
-							$response = $client->send();
-							// linkタグからPingBackのURIを取得
-							if (preg_match('<link rel="pingback" href="([^"]+)" ?/?>', $response->getBody(), $matches) !== false){
-								$pingback = isset($matches[1]) ? $matches[1] : null;
-							}
-						}
-					}catch(Exception $e){
-						$err[] = $e;
-					}
-					// PingBack送信先が見つからない場合スキップ
-					if ($pingback === false) continue;
-
-					// PingBackで送信する内容
-					$request = new XmlRpcRequest();
-					$request->setMethod('pingback.ping');
-					$request->setParams(array($source_uri, $target_uri));
-
-					// 例外を取得
-					try {
-						// PingBack送信先に接続
-						$client = new XmlRpcClient($pingback);
-						// 送信
-						$client->doRequest($request);
-					} catch (Zend\XmlRpc\Client\Exception\FaultException $e) {
-						$err[] = $e;
-					}
-					$err[] = '-----'."\n";
-				}
-			}
-			unset($client, $request);
-		}
-
-		return $err;
 	}
 }

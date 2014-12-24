@@ -1,7 +1,7 @@
 <?php
 /**
  * PukiWiki Advance - Yet another WikiWikiWeb clone.
- * $Id: init.php,v 1.57.15 2014/03/21 09:06:00 Logue Exp $
+ * $Id: init.php,v 1.57.16 2014/12/24 23:36:00 Logue Exp $
  * Copyright (C)
  *   2010-2014 PukiWiki Advance Developers Team
  *   2005-2009 PukiWiki Plus! Team
@@ -25,7 +25,7 @@ use Zend\I18n\Translator\Translator;
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
 define('S_VERSION', 'v 2.0.0');
-define('S_REVSION', '20140917');
+define('S_REVSION', '20141224');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
 	' Copyright &#169; 2010-2014' .
@@ -304,7 +304,7 @@ $die = array();
 
 foreach(array('DATA_DIR', 'DIFF_DIR', 'BACKUP_DIR', 'CACHE_DIR') as $dir){
 	if (! is_writable(constant($dir)))
-		$die[] = sprintf($_string,$dir);
+		$die[] = sprintf($_string['not_writable'],$dir);
 }
 
 /////////////////////////////////////////////////

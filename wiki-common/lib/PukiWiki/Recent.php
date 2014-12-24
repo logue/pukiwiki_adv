@@ -5,10 +5,10 @@
  * @package   PukiWiki
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @copyright 2012-2014 PukiWiki Advance Developers Team
  * @create    2012/12/31
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Recent.php,v 1.0.0 2013/09/02 22:57:00 Logue Exp $
+ * @version   $Id: Recent.php,v 1.0.1 2014/12/24 23:03:00 Logue Exp $
  **/
 
 namespace PukiWiki;
@@ -44,13 +44,7 @@ class Recent{
 	 * フィードの説明文の長さ
 	 */
 	const FEED_ENTRY_DESCRIPTION_LENGTH = 256;
-	/**
-	 * PubSubHubbubの送信先
-	 */
-	private static $pubsubhub_uris = array(
-		'http://pubsubhubbub.appspot.com',
-		'http://pubsubhubbub.superfeedr.com'
-	);
+	
 	/**
 	 * 最終更新のキャッシュを取得
 	 * @param boolean $force キャッシュを再生成する
@@ -79,10 +73,14 @@ class Recent{
 		// ページ一覧からファイルの更新日時を取得
 		$recent_pages = array();
 		foreach($pages as $page){
-			if ($page !== $whatsnew){
-				$wiki = Factory::Wiki($page);
-				 if (! $wiki->isHidden() ) $recent_pages[$page] = $wiki->time();
+			if ($page === $whatsnew) {
+				continue;
 			}
+			$wiki = Factory::Wiki($page);
+			if ($wiki->isHidden() ){
+				continue;
+			}
+			$recent_pages[$page] = $wiki->time();
 		}
 		// 更新日時順にソート
 		arsort($recent_pages, SORT_NUMERIC);
@@ -92,12 +90,11 @@ class Recent{
 			unset($recent_pages[$key]);
 			$_recent[$key] = $value;
 		}
-		$recent_pages = & $_recent;
 
 		// Save to recent cache data
-		$cache['wiki']->setItem(self::RECENT_CACHE_NAME, $recent_pages);
+		$cache['wiki']->setItem(self::RECENT_CACHE_NAME, $_recent);
 
-		return $recent_pages;
+		return $_recent;
 	}
 	/**
 	 * 最終更新のキャッシュを更新
@@ -112,7 +109,6 @@ class Recent{
 		if (empty($page) || $page === $whatsnew) return;
 
 		// 削除フラグが立っている場合、削除履歴を付ける
-		
 		if ($is_deleted){
 			self::updateRecentDeleted($page);
 		}
@@ -170,6 +166,7 @@ class Recent{
 		// 新たに削除されるページ名
 		$_page = '[[' .  str_replace('&#39;', '\'', Utility::htmlsc($page)) . ']]';
 
+		// 削除履歴ページ
 		$delated_wiki = FileFactory::Wiki($whatsdeleted);
 		
 		$lines = array();
@@ -266,7 +263,7 @@ class Recent{
 				$feed->setFeedLink(Router::get_cmd_uri('feed').'&type=atom', 'atom');
 				$feed->setFeedLink(Router::get_cmd_uri('feed'), 'rss');
 				// PubSubHubbubの送信
-				foreach (self::$pubsubhub_uris as $uri){
+				foreach (Ping::$pubsubhubbub_server as $uri){
 					$feed->addHub($uri);
 				}
 			}else{

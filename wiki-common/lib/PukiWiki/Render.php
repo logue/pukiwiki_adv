@@ -8,7 +8,7 @@
  * @copyright 2012-2014 PukiWiki Advance Developers Team
  * @create    2012/12/18
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Render.php,v 1.0.0 2014/03/12 20:12:00 Logue Exp $
+ * @version   $Id: Render.php,v 1.0.1 2014/12/24 23:27:00 Logue Exp $
  */
 
 namespace PukiWiki;
@@ -138,7 +138,7 @@ class Render{
 			break;
 			case 'xml':
 				$content_type = 'application/xml';
-				$content = '<?xml version="1.0" encoding="UTF-8" ?>'."\n".'<response>' . "\n" . 
+				$content = '<' . '?xml version="1.0" encoding="UTF-8" ?' . '>'."\n".'<response>' . "\n" . 
 				'<title>' . $this->title . '</title>' . "\n" . 
 				'<body><![CDATA[' . $this->body . ']]></body>' . "\n" .
 				'<process_time>' . Time::getTakeTime() . '</process_time>' . "\n" . '</response>';
@@ -432,7 +432,11 @@ class Render{
 				if (isset($fb)){
 					$meta_tags[] = array('property' => 'fb:app_id', 'content' => $fb->getAppId());
 				}
+			}else{
+				// プラグイン動作時はインデックスを付けない
+				$meta_tags[] = array('name' => 'robots', 'content' => 'NOINDEX,NOFOLLOW');
 			}
+
 			// Linkタグの生成
 			// scriptタグと異なり、順番が変わっても処理への影響がない。
 			// http://www.w3schools.com/html5/tag_link.asp
@@ -451,7 +455,11 @@ class Render{
 				array('rel'=>'search',			'href'=>$_LINK['search'],	'type'=>'text/html',	'title'=>$_LANG['skin']['search']),
 				array('rel'=>'shortcut icon',	'href'=>isset($conf['shortcut_icon']) ? $conf['shortcut_icon'] : WWW_HOME . 'favicon.ico'),
 				array('rel'=>'sidebar',			'href'=>$_LINK['side'],		'type'=>'text/html',	'title'=>$_LANG['skin']['side']),
-				array('rel'=>'sitemap',			'href'=>$_LINK['sitemap'],	'type'=>'application/xml')
+				array('rel'=>'sitemap',			'href'=>$_LINK['sitemap'],	'type'=>'application/xml'),
+				
+				// Pubsubhubbub
+				array('rel'=>'hub',			'href'=>'http://pubsubhubbub.appspot.com/'),
+				array('rel'=>'self',			'href'=>$_LINK['atom'],		'type'=>'application/atom+xml')
 			);
 		}
 
@@ -541,6 +549,7 @@ class Render{
 
 				'sitemap'       => Router::get_resolve_uri('list',    null, 'full',   array('type'=>'sitemap')),
 				'rss'           => Router::get_resolve_uri('feed', null, 'full'),
+				'atom'          => Router::get_resolve_uri('feed', null, 'full', array('type'=>'atom')),
 
 				'read'          => Router::get_resolve_uri('read', $_page),
 				'reload'        => Router::get_resolve_uri('read', $_page, 'full'),

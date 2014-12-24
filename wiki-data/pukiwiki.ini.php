@@ -1,8 +1,8 @@
 <?php
 // PukiWiki Advance - Yet another WikiWikiWeb clone
-// $Id: pukiwiki.ini.php,v 1.149.54 2012/08/24 17:07:00 Logue Exp $
+// $Id: pukiwiki.ini.php,v 1.149.54 2014/12/23 23:37:00 Logue Exp $
 // Copyright (C)
-//   2010-2012 PukiWiki Advance Developers Team
+//   2010-2014 PukiWiki Advance Developers Team
 //   2005-2009 PukiWiki Plus! Team
 //   2002-2007 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
@@ -323,6 +323,10 @@ $akismet_api_key = '';
 // 2: on
 //    IGNORE is not having a look displayed.
 $referer = 2;
+
+/////////////////////////////////////////////////
+// Pingback Service
+$use_pingback = false;
 
 /////////////////////////////////////////////////
 // _Disable_ WikiName auto-linking

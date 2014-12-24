@@ -8,7 +8,7 @@
  * @copyright 2012-2014 PukiWiki Advance Developers Team
  * @create    2012/12/31
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Utility.php,v 1.0.1 2014/01/21 11:29:00 Logue Exp $
+ * @version   $Id: Utility.php,v 1.0.2 2014/12/24 23:33:00 Logue Exp $
  **/
 
 namespace PukiWiki;
@@ -110,6 +110,7 @@ class Utility{
 		$get    = $request->getQuery();
 		$post   = $request->getPost();
 		$cookie = $request->getCookie();
+		$vars   = array();
 
 		if (strlen($get->toString()) > self::MAX_QUERY_STRING_LENGTH) {
 			// Something nasty attack?
@@ -120,7 +121,7 @@ class Utility{
 		if (count($get) === 0){
 			// Queryがない場合
 			$get->set('page', $defaultpage);
-		}else if (count($get) === 1 && array_values((array)$get)[0] === ''){
+		}else if (count($get) === 1 && empty(array_values((array)$get)[0])){
 			// 配列の長さが1で最初の配列に値が存在しない場合はキーをページ名とする。
 			$k = trim(array_keys((array)$get)[0]);
 			$get->set('page', rawurldecode($_SERVER['QUERY_STRING']));
@@ -135,13 +136,12 @@ class Utility{
 		} else {
 			$vars = array_merge((array)$get, (array)$post); // Considered reliable than $_REQUEST
 		}
-		
 
 		if (!isset($vars['cmd'])){
 			$vars['cmd'] = 'read';
 		}
 
-		if (!empty($vars['page']) && preg_match(Wiki::INVALIED_PAGENAME_PATTERN, $vars['page'])){
+		if (isset($vars['page']) && preg_match(Wiki::INVALIED_PAGENAME_PATTERN, $vars['page'])){
 			// ページ名チェック
 			self::dump('suspicious');
 			die('Invalid page name.');
@@ -309,9 +309,9 @@ class Utility{
 		if ($_spam) {
 
 			if (isset($spam['method'][$_cmd])) {
-				$_method = & $spam['method'][$_cmd];
+				$_method = $spam['method'][$_cmd];
 			} else if (isset($spam['method']['_default'])) {
-				$_method = & $spam['method']['_default'];
+				$_method = $spam['method']['_default'];
 			} else {
 				$_method = array();
 			}
@@ -704,7 +704,7 @@ class Utility{
 		$body[] = '<script type="text/javascript">/' .'* <![CDATA *' . '/';
 		$body[] = 'var GOOG_FIXURL_LANG = (navigator.language || null).slice(0,2), GOOG_FIXURL_SITE = location.host;';
 		$body[] = '/' . '* ]]> *' . '/</script>';
-		$body[] = '<script type="text/javascript" src="http://linkhelp.clients.google.com/tbproxy/lh/wm/fixurl.js"></script>';
+		$body[] = '<script type="text/javascript" src="//linkhelp.clients.google.com/tbproxy/lh/wm/fixurl.js"></script>';
 		new Render('Page not found', join("\n",$body), Response::STATUS_CODE_404);
 	}
 	/**
@@ -903,10 +903,10 @@ class Utility{
 				$ret[] = '<input type="checkbox" name="notimestamp" id="_edit_form_notimestamp" value="true"' . (isset($vars['notimestamp']) ? ' checked="checked"' : null) . ' />';
 				$ret[] = '<label for="_edit_form_notimestamp">' . $_button['notchangetimestamp'] . '</label>';
 				$ret[] = '</div>';
-			//	$ret[] = '<div class="checkbox">';
-			//	$ret[] = '<input type="checkbox" name="ping" id="_edit_form_ping" value="true"' . (isset($vars['ping']) ? ' checked="checked"' : null) . ' />';
-			//	$ret[] = '<label for="_edit_form_ping">' . $_button['send_ping'] . '</label>';
-			//	$ret[] = '</div>';
+				$ret[] = '<div class="checkbox">';
+				$ret[] = '<input type="checkbox" name="ping" id="_edit_form_ping" value="true"' . (isset($vars['ping']) ? ' checked="checked"' : null) . ' />';
+				$ret[] = '<label for="_edit_form_ping">' . $_button['send_ping'] . '</label>';
+				$ret[] = '</div>';
 			//	$ret[] = '<div class="checkbox">';
 			//	$ret[] = '<input type="checkbox" name="tweet" id="_edit_form_tweet" value="true"' . (isset($vars['tweet']) ? ' checked="checked"' : null) . ' />';
 			//	$ret[] = '<label for="_edit_form_tweet"><span class="fa  fa-twitter"></span></label>';
@@ -919,10 +919,10 @@ class Utility{
 			// 管理人のパス入力
 			if ($notimeupdate === 2 && Auth::check_role('role_contents_admin')) {
 				$ret[] = '<div class="form-group">';
-				//$ret[] = '<div class="input-group">';
-				//$ret[] = '<span class="input-group-addon"><span class="fa fa-key"></span></span>';
+				$ret[] = '<div class="input-group">';
+				$ret[] = '<span class="input-group-addon"><span class="fa fa-key"></span></span>';
 				$ret[] = '<input type="password" name="pass" class="form-control" size="12" placeholder="Password" />';
-				//$ret[] = '</div>';
+				$ret[] = '</div>';
 				$ret[] = '</div>';
 			}
 			$ret[] = '<button type="submit" class="btn btn-warning" name="cancel" accesskey="c"><span class="fa fa-ban"></span>' . $_button['cancel'] . '</button>';

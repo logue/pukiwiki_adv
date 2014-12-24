@@ -5,10 +5,10 @@
  * @package   PukiWiki\File
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @copyright 2012-2014 PukiWiki Advance Developers Team
  * @create    2012/12/18
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: File.php,v 1.0.0 2013/01/29 19:54:00 Logue Exp $
+ * @version   $Id: File.php,v 1.0.1 2014/12/24 23:32:00 Logue Exp $
  */
 
 namespace PukiWiki\File;
@@ -39,7 +39,11 @@ abstract class AbstractFile extends SplFileInfo{
 	/**
 	 * デフォルトのファイルのパーミッション
 	 */
-	const FILE_PERMISSION = 0644;
+	const FILE_PERMISSION = 0666;
+	/**
+	 * デフォルトのディレクトリのパーミッション
+	 */
+	const DIRECTORY_PERMISSION = 0777;
 	/**
 	 * データーの整形を行う
 	 */
@@ -428,13 +432,16 @@ abstract class AbstractFile extends SplFileInfo{
 		if ($this->has()) return false;
 
 		$dirname = dirname($this->filename);	// ファイルのディレクトリ名
+/*
 		// 階層指定かつ親が存在しなければ再帰
-		if (strpos($dirname, '/') && !file_exists(dirname($dirname))) {
+		if (strpos($dirname, DIRECTORY_SEPARATOR) && !file_exists(dirname($dirname))) {
 			// 親でエラーになったら自分の処理はスキップ
 			if ($this->mkdir_r(dirname($dirname)) === false) return false;
 		}
+*/
 		if (is_dir($dirname)) return;
-		return mkdir($dirname);
+
+		return mkdir($dirname, self::DIRECTORY_PERMISSION, true);
 	}
 	/**
 	 * エイリアス：読み込み
