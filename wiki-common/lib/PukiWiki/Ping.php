@@ -96,7 +96,7 @@ class Ping{
 	 * Pubsubhubbub送信
 	 */
 	public function sendPubsubhubbub(){
-		$publisher = new Zend\Feed\PubSubHubbub\Publisher;
+		$publisher = new Publisher;
 		$publisher->addHubUrls($this->pubsubhubbub_server);
 		$publisher->addUpdatedTopicUrls(array(
 			$this->wiki->uri()
