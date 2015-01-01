@@ -129,19 +129,21 @@ class Ping{
 	 */
 	public function sendWeblogUpdatesPing(){
 		global $site_name;
+		
+		$err = array();
 
 		$request = new XmlRpcRequest();
 		$request->setMethod('weblogUpdates.ping');
 		$request->setParams(array($site_name, Router::get_script_absuri(), $this->wiki->uri()));
 
 		// 送信
-		foreach ($this->ping_server as $uri){
+		foreach ($this->weblog_updates_ping_server as $uri){
 			try {
 				// Pingサーバーに接続
 				$client = new XmlRpcClient($uri);
 				// Pingの送信
 				$client->doRequest($request);
-			} catch (Zend\XmlRpc\Client\Exception\FaultException $e) {
+			} catch (\Zend\XmlRpc\Client\Exception\FaultException $e) {
 				$err[] = $e;
 			}
 		}
