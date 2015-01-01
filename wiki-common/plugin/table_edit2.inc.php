@@ -534,7 +534,7 @@ class TableEdit2Indicate
 		$this->page = $page;
 		$this->count = $count;
 	}
-	protected function open_close( $mode, $edit )
+	public function open_close( $mode, $edit )
 	{
 		$button_name = array(
 			'lock' => T_('Locked'),
