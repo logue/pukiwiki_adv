@@ -40,7 +40,7 @@ function plugin_tooltip_init()
 function plugin_tooltip_action()
 {
 	global $vars;
-	$term = $vars['q'];
+	$term = isset($vars['q']) ? $vars['q'] : null;
 	if (trim($term) == '') { exit; }
 	
 	$glossary = Glossary::getGlossary($term);

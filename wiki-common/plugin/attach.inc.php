@@ -267,7 +267,7 @@ function attach_upload($page, $pass = NULL)
 
 		// 無効な文字が含まれている
 		if (preg_match(PLUGIN_ATTACH_ILLEGAL_CHARS_PATTERN, $file)){
-			$msgs[$file] = $_strings['illegal_chars'];
+			$msgs[$file] = $_string['illegal_chars'];
 			continue;
 		}
 
@@ -358,7 +358,7 @@ function attach_gettext($path, $lock=FALSE)
 
 function attach_doupload($file, $page, $pass=NULL, $temp)
 {
-	global $_attach_messages, $_strings;
+	global $_attach_messages, $_string;
 	global $notify, $notify_subject, $notify_exclude, $spam;
 
 	$filename = Utility::encode($page).'_'.Utility::encode($file);

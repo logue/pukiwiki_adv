@@ -903,10 +903,10 @@ class Utility{
 				$ret[] = '<input type="checkbox" name="notimestamp" id="_edit_form_notimestamp" value="true"' . (isset($vars['notimestamp']) ? ' checked="checked"' : null) . ' />';
 				$ret[] = '<label for="_edit_form_notimestamp">' . $_button['notchangetimestamp'] . '</label>';
 				$ret[] = '</div>';
-				$ret[] = '<div class="checkbox">';
-				$ret[] = '<input type="checkbox" name="ping" id="_edit_form_ping" value="true"' . (isset($vars['ping']) ? ' checked="checked"' : null) . ' />';
-				$ret[] = '<label for="_edit_form_ping">' . $_button['send_ping'] . '</label>';
-				$ret[] = '</div>';
+			//	$ret[] = '<div class="checkbox">';
+			//	$ret[] = '<input type="checkbox" name="ping" id="_edit_form_ping" value="true"' . (isset($vars['ping']) ? ' checked="checked"' : null) . ' />';
+			//	$ret[] = '<label for="_edit_form_ping">' . $_button['send_ping'] . '</label>';
+			//	$ret[] = '</div>';
 			//	$ret[] = '<div class="checkbox">';
 			//	$ret[] = '<input type="checkbox" name="tweet" id="_edit_form_tweet" value="true"' . (isset($vars['tweet']) ? ' checked="checked"' : null) . ' />';
 			//	$ret[] = '<label for="_edit_form_tweet"><span class="fa  fa-twitter"></span></label>';

@@ -171,6 +171,10 @@ function bb2_install() {
 	global $bb2_db;
 	$settings = bb2_read_settings();
 
+	if (!file_exists(BB2_DB_FILE)){
+		touch(BB2_DB_FILE);
+	}
+
 	if (! $bb2_db = new \PDO('sqlite:'.BB2_DB_FILE)) {
 		die("DB Connection Failed.");
 	}

@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: legend.inc.php,v 1.0.2 2011/02/05 11:00:00 Logue Exp $
+// $Id: legend.inc.php,v 1.0.3 2015/01/04 21:41:00 Logue Exp $
 //
 // Legend plugin
 
@@ -27,11 +27,13 @@ function plugin_legend_convert()
 
 	// FIXME:
 	// class, style で指定可能であったとしても、ブラウザで正しく処理できるのは、align しかなさそう
-	$align = (empty($parm['align'])) ? '' : ' class="pull-'.$parm['align'].'"';
-	return '<fieldset>'."\n".
-		'<legend$align>' . $parm['title'] . '</legend>'."\n" . 
-		RendererFactory::factory($data) . 
-		'</fieldset>'."\n";
+	$align = empty($parm['align']) ? '' : ' class="pull-' . $parm['align'] . '"';
+	return join("\n", array(
+		'<fieldset' . $align . '>',
+		'<legend>' . $parm['title'] . '</legend>',
+		RendererFactory::factory($data),
+		'</fieldset>'
+	));
 
 }
 

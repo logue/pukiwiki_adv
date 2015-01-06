@@ -18,6 +18,12 @@ use PukiWiki\Utility;
  * アドレス生成クラス
  */
 class Router{
+	/**
+	 * 初期化
+	 * @param string $init_uri
+	 * @param integer $get_init_value
+	 * @return string
+	 */
 	private static function init($init_uri = '',$get_init_value=0){
 		global $script_directory_index, $absolute_uri;
 		static $script;
@@ -100,10 +106,10 @@ class Router{
 		// Set automatically
 		$msg	 = 'get_script_absuri() failed: Please set [$script or $script_abs] at INI_FILE manually';
 
-		$uri  = ( self::is_ssl() ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'];
+		$uri  = ( self::is_ssl() ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'];	// ここのプロトコルは、//でもいい気がする。（RFC 3986参照）
 		if(strpos($uri,':') === FALSE) {
 			// :が含まれていた場合
-			$uri .= ($_SERVER['SERVER_PORT'] == 80 || $_SERVER['SERVER_PORT'] == 443) ? '' : ':' . $_SERVER['SERVER_PORT'];  // port
+			$uri .= ($_SERVER['SERVER_PORT'] == 80) ? '' : ':' . $_SERVER['SERVER_PORT'];  // port 443はSSLとは限らないので削除
 		}
 
 		// SCRIPT_NAME が'/'で始まっていない場合(cgiなど) REQUEST_URIを使ってみる
@@ -264,7 +270,11 @@ class Router{
 	private static function is_ssl(){
 		// ポート番号はアテにならないので判定には使わない
 		if (defined('FORCE_SSL')) return true;
-
+		
+		// CloudFlare
+		if ( isset( $_SERVER['HTTP_CF_VISITOR'] ) && strpos( $_SERVER['HTTP_CF_VISITOR'], 'https' ) !== false ) {
+			$_SERVER['HTTPS'] = 'on';
+		}
 		// 一般的なSSL判定
 		if (isset($_SERVER['HTTPS'])){
 			return $_SERVER['HTTPS'] === 'on';
@@ -280,10 +290,7 @@ class Router{
 		if (isset($_SERVER['HTTP_X_FORWARDED_PROTO'])){
 			return $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https';
 		}
-		// CloudFlare
-		if (isset($_SERVER['HTTP_CF_VISITOR'])){
-			return $_SERVER['HTTP_CF_VISITOR'] === '{"scheme":"https"}';	// これでいいのか？
-		}
+		
 		// さくらの共有サーバー
 		if (isset($_SERVER['HTTP_X_SAKURA_FORWARDED_FOR'])){
 			return true;

@@ -5,10 +5,10 @@
  * @package   PukiWiki
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2014 PukiWiki Advance Developers Team
+ * @copyright 2014-2015 PukiWiki Advance Developers Team
  * @create    2014/12/24
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Ping.php,v 1.0.0 2014/12/24 23:28:00 Logue Exp $
+ * @version   $Id: Ping.php,v 1.0.2 2015/01/06 21:11:00 Logue Exp $
  **/
 namespace PukiWiki;
 
@@ -25,9 +25,13 @@ use Zend\XmlRpc\Request as XmlRpcRequest;
  */
 class Ping{
 	/**
+	 * Ping送信の最小インターバル（1時間）
+	 */
+	const PING_INTERVAL = 360;
+	/**
 	 * weblogUpdates ping
 	 */
-	public $weblog_updates_ping_server = array(
+	protected $weblog_updates_ping_server = array(
 		'http://rpc.weblogs.com/',
 		'http://ping.feedburner.com/',
 		'http://blogsearch.google.com/ping/RPC2'
@@ -36,13 +40,20 @@ class Ping{
 	 * PubSubHubbubの送信先
 	 * https://code.google.com/p/pubsubhubbub/
 	 */
-	public $pubsubhubbub_server = array(
+	protected $pubsubhubbub_server = array(
 		'https://pubsubhubbub.appspot.com',
 		'https://pubsubhubbub.superfeedr.com'
 	);
+	/**
+	 * Wikiオブジェクト
+	 */
+	private $wiki;
+	/**
+	 * コンストラクタ
+	 * @param $page ページ名
+	 */
 	public function __construct($page){
 		$this->wiki = Factory::Wiki($page);
-		if (!$this->wiki->isReadable()) return;
 	}
 	/**
 	 * Ping送信
@@ -50,14 +61,29 @@ class Ping{
 	public function send(){
 		global $use_pingback;
 
+		// 読み取り不可のページの場合処理しない
+		if (!$this->wiki->isReadable()){
+			return;
+		}
+
+		// 連続更新時に何度もPingを送信しないようにする
+		if (! UTIME - $this->wiki->time() > self::PING_INTERVAL){
+			return;
+		}
+
+		// Pubsubhubbub送信
 		$this->sendPubsubhubbub();
+
+		// WeblogUpdatesPingの送信
 		$this->sendWeblogUpdatesPing();
-		if ($use_pingback === true) {
+
+		// PingBackを送信
+		if (isset($use_pingback) && $use_pingback === true) {
 			$this->sendPingBack();
 		}
 	}
 	/**
-	 * WeblogUpdatesサーバーを設定
+	 * WeblogUpdatesサーバーを設定（※仕様が決まっていない）
 	 * @param array or string $host ホスト名
 	 */
 	public function setWeblogUpdatesServer($host){
@@ -75,7 +101,7 @@ class Ping{
 		return $this->weblog_updates_ping_server;
 	}
 	/**
-	 * Pubsubhubbubサーバーを設定
+	 * Pubsubhubbubサーバーを設定（※仕様が決まっていない）
 	 * @param array or string $host ホスト名
 	 */
 	public function setPubsubhubbubServer($host){
@@ -95,9 +121,12 @@ class Ping{
 	/**
 	 * Pubsubhubbub送信
 	 */
-	public function sendPubsubhubbub(){
-		$publisher = new Zend\Feed\PubSubHubbub\Publisher;
+	protected function sendPubsubhubbub(){
+		// Pubsubhubbub発行オブジェクトを生成
+		$publisher = new Publisher();
+		// Pubsubhubbubを送るサーバーをセット
 		$publisher->addHubUrls($this->pubsubhubbub_server);
+		// ページをセット
 		$publisher->addUpdatedTopicUrls(array(
 			$this->wiki->uri()
 		));
@@ -116,7 +145,7 @@ class Ping{
 	}
 /*
 	public function recievePubsubhubbub(){
-		$subscriber = new Zend\Feed\Pubsubhubbub\Subscriber;
+		$subscriber = new Subscriber;
 		$subscriber->addHubUrl();
 		$subscriber->setTopicUrl(Router::get_resolve_uri('feed',null,null,array('type'=>'rss'));
 		// 未実装
@@ -127,30 +156,34 @@ class Ping{
 	/**
 	 * WeblogUpdatesPingの送信
 	 */
-	public function sendWeblogUpdatesPing(){
+	protected function sendWeblogUpdatesPing(){
 		global $site_name;
 
+		// XMLRpcリクエストオブジェクトを生成
 		$request = new XmlRpcRequest();
+		// weblogUpdates.pingをセット
 		$request->setMethod('weblogUpdates.ping');
+		// 送るパラメータ
 		$request->setParams(array($site_name, Router::get_script_absuri(), $this->wiki->uri()));
 
 		// 送信
-		foreach ($this->ping_server as $uri){
+		foreach ($this->weblog_updates_ping_server as $uri){
 			try {
 				// Pingサーバーに接続
 				$client = new XmlRpcClient($uri);
 				// Pingの送信
 				$client->doRequest($request);
-			} catch (Zend\XmlRpc\Client\Exception\FaultException $e) {
+			} catch (\Zend\XmlRpc\Client\Exception\FaultException $e) {
 				$err[] = $e;
 			}
+			unset($client);
 		}
 		return $err;
 	}
 	/**
 	 * PingBackを送信
 	 */
-	public function sendPingBack(){
+	protected function sendPingBack(){
 		$err = array();
 		$links = array();
 		// Wikiのソースのアドレスを取得
@@ -161,24 +194,27 @@ class Ping{
 		// 重複を削除
 		$target_uris = array_unique($links[0]);
 		foreach ($target_uris as $target_uri){
+			// 初期値
 			$pingback = false;
+
 			// ターゲットとなるURL接続
 			$client = new Client($target_uri);
-			// HEADメソッドでヘッダーのみ取得
+			// HEADメソッドで接続し、ヘッダーのみ取得
 			$client->setMethod(Request::METHOD_HEAD);
+
 			// 返り値を取得
-			
-			try{
-				$response = $client->send();
+			$response = $client->send();
+			// アクセス失敗
+			if (!$response->isSuccess()){
+				continue;
+			}
 
-				// アクセス失敗
-				if (!$response->isSuccess()) continue;
+			// 返り値のヘッダーからPingBackのURIを取得
+			$pingback = $response->getHeaders()->get('x-pingback');
 
-				// ヘッダーからPingBackのURIを取得
-				$pingback = $response->getHeaders()->get('x-pingback');
-
-				// x-pingbackヘッダーがない場合
-				if ($pingback === false){
+			// x-pingbackヘッダーがない場合（このへんの処理は重そう）
+			if ($pingback === false){
+				try{
 					// GETでアクセスしてコンテンツを取得し、linkタグを探す。
 					$client->setMethod(Request::METHOD_GET);
 					// 返り値を取得
@@ -187,12 +223,15 @@ class Ping{
 					if (preg_match('<link rel="pingback" href="([^"]+)" ?/?>', $response->getBody(), $matches) !== false){
 						$pingback = isset($matches[1]) ? $matches[1] : null;
 					}
+				}catch(Exception $e){
+					$err[] = $e;
 				}
-			}catch(Exception $e){
-				$err[] = $e;
 			}
 			// PingBack送信先が見つからない場合スキップ
-			if ($pingback === false) continue;
+			if ($pingback === false){
+				continue;
+			}
+			unset($client, $response);
 
 			// PingBackで送信する内容
 			$request = new XmlRpcRequest();
@@ -205,7 +244,7 @@ class Ping{
 				$client = new XmlRpcClient($pingback);
 				// 送信
 				$client->doRequest($request);
-			} catch (Zend\XmlRpc\Client\Exception\FaultException $e) {
+			} catch (\Zend\XmlRpc\Client\Exception\FaultException $e) {
 				$err[] = $e;
 			}
 			$err[] = '-----'."\n";
