@@ -380,7 +380,7 @@ $.fn.bsbutton = bootstrapButton;
 				var $this = $(this),
 					href = $this.attr('href');
 
-				$this.on('click', function(){
+				$this.off('click').on('click', function(){
 					return false;
 				});
 
@@ -501,7 +501,7 @@ $.fn.bsbutton = bootstrapButton;
 				}
 
 				// Register a 'submit' event listener on the form to perform the AJAX POST
-				$form.find('button').on('click',function(e){
+				$form.find('button').off('click').on('click',function(e){
 					e.preventDefault();
 
 					if ($form.children('input[type="file"]').val() === ''){
@@ -556,7 +556,7 @@ $.fn.bsbutton = bootstrapButton;
 			dom.find('.plugin-region-title').before($button);
 			$('.plugin-region-body').hide();
 
-			$('.region-btn').on('click',function(){
+			$('.region-btn').off('click').on('click',function(){
 				var $this = $(this),
 					$body = $this.next().next();
 
@@ -622,7 +622,7 @@ $.fn.bsbutton = bootstrapButton;
 			// 外部リンクアイコン
 			$('.fa-external-link, .fa-external-link-square').each(function(){
 				var $this = $(this);
-				$this.on('click',function(){
+				$this.off('click').on('click',function(){
 					window.open($this.parent().attr('href'));
 					return false;
 				});
@@ -637,9 +637,9 @@ $.fn.bsbutton = bootstrapButton;
 
 				if (!href || $this.data('ajax') === false){
 					return;
-				}else if (href === $('link[rel="canonical"]').attr('href')){
+				}else if (href === $('link[rel="canonical"]').attr('href') && $.query.get('cmd') === 'read'){
 					// クイックリロード
-					$this.on('click', function(){
+					$this.off('click').on('click', function(){
 						//
 						$.ajax({
 							dataType: 'xml',
@@ -668,7 +668,7 @@ $.fn.bsbutton = bootstrapButton;
 						return false;
 					});
 				}else if (isExternal) {
-					$this.on('click',function(){
+					$this.off('click').on('click',function(){
 						if (rel.match(/noreferer/)){
 							// リファラーを消す
 							if (ie){
@@ -729,7 +729,7 @@ $.fn.bsbutton = bootstrapButton;
 						// アンカースクロールを無効化判定
 						if (disable_scrolling === false){
 							// アンカースクロール
-							$this.on('click', function(){
+							$this.off('click').on('click', function(){
 								var $body;
 								if ($(window).scrollTop() === 0) {
 									// スクロールが0の時エラーになる問題をごまかす
@@ -794,7 +794,7 @@ $.fn.bsbutton = bootstrapButton;
 							}
 
 							// ダイアログ描画処理
-							$this.on('click', function(){
+							$this.off('click').on('click', function(){
 								params.ajax = 'json';
 								self.ajax_dialog(params,prefix,function(){
 									if ((params.cmd == 'attach' && params.pcmd.match(/upload|info/i)) || params.cmd.match(/attachref|read|backup/i) && params.age !== ''){
@@ -835,7 +835,7 @@ $.fn.bsbutton = bootstrapButton;
 				// 「トップに戻る」ボタンにイベント割り当て
 
 				$('#back-top a')
-					.on('click', function(){
+					.off('click').on('click', function(){
 						$('html,body').animate({scrollTop: 0}, 1000);
 						return false;
 					})
@@ -957,7 +957,7 @@ $.fn.bsbutton = bootstrapButton;
 					'<div class="ui-widget-overlay"></div>'+
 					'<div id="loading-activity"></div>'+
 				'</div>')
-					.on('click',function(){
+					.off('click').on('click',function(){
 						$(this).fadeOut();
 						return false;
 					})
@@ -977,7 +977,7 @@ $.fn.bsbutton = bootstrapButton;
 					speed: 1,
 					zIndex: 9999
 				})
-				.on('click',function(){
+				.off('click').on('click',function(){
 					$loading.fadeOut();
 				})
 			;
@@ -1215,7 +1215,7 @@ $.fn.bsbutton = bootstrapButton;
 				}).html(emoji_widget);
 
 				// イベントの割り当て
-				$('#emoji').children('ul').children('li').on('click',function(){
+				$('#emoji').children('ul').children('li').off('click').on('click',function(){
 					var str = $msg.getSelection().text, v = '&('+$(this).attr('name')+');';
 
 					$msg.focus();
@@ -1252,7 +1252,7 @@ $.fn.bsbutton = bootstrapButton;
 				}).html(color_widget);
 
 				// イベントの割り当て
-				$('#color_palette').children('ul').children('li').on('cliock',function(){
+				$('#color_palette').children('ul').children('li').off('click').on('click',function(){
 					var ret, str = $msg.getSelection().text, v = $(this).attr('name');
 
 					if (str === ''){
@@ -1285,7 +1285,7 @@ $.fn.bsbutton = bootstrapButton;
 			}
 
 			// ここから、イベント割り当て
-			$('.insert').on('click',function(){
+			$('.insert').off('click').on('click',function(){
 				var ret = '', v = $(this).attr('name');
 
 				switch (v){
@@ -1322,7 +1322,7 @@ $.fn.bsbutton = bootstrapButton;
 				return false;
 			});
 
-			$('.replace').on('click', function(){
+			$('.replace').off('click').on('click', function(){
 				var ret = '', str = $msg.getSelection().text, v = $(this).attr('name');
 
 				if (str === ''){
@@ -1625,7 +1625,7 @@ $.fn.bsbutton = bootstrapButton;
 			});
 
 			// ボタンをクリックした時のイベント
-			$form.find('button').on('click',function(e){
+			$form.find('button').off('click').on('click',function(e){
 				e.preventDefault();
 
 				var $this = $(this),
@@ -1846,7 +1846,7 @@ $.fn.bsbutton = bootstrapButton;
 				'<h1><a href="#">'+$('#title').text()+'</a><abbr title="Table of Contents">[TOC]</abbr></h1>',
 				lis.replace(/href/g,'tabindex="1" href')
 			].join(''))
-				.on('click',function(){
+				.off('click').on('click',function(){
 					self._hideToc();
 				}
 			);
@@ -1857,7 +1857,7 @@ $.fn.bsbutton = bootstrapButton;
 			$(toc_bg)
 				.addClass('ui-widget-overlay')
 				.css('display','none')
-				.on('click',function(){
+				.off('click').on('click',function(){
 					self._hideToc();
 				}
 			);
@@ -1865,7 +1865,7 @@ $.fn.bsbutton = bootstrapButton;
 
 			this.calcObj(this.toc,300);
 
-			$('.icon-toc').on('click', function(elem){
+			$('.icon-toc').off('click').on('click', function(elem){
 				if ($('#'+self.toc.id).hide()){
 					self._dispToc(elem,this,false);
 				}else{
@@ -1873,7 +1873,7 @@ $.fn.bsbutton = bootstrapButton;
 				}
 			}).css('display','inline-block');
 
-			$('#' + this.toc.id + ' *').on('click', function(){
+			$('#' + this.toc.id + ' *').off('click').on('click', function(){
 				self._hideToc();
 			});
 
