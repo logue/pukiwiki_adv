@@ -158,6 +158,8 @@ class Ping{
 	 */
 	protected function sendWeblogUpdatesPing(){
 		global $site_name;
+		
+		$err = array();
 
 		// XMLRpcリクエストオブジェクトを生成
 		$request = new XmlRpcRequest();
