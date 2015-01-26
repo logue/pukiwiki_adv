@@ -108,9 +108,9 @@ $.fn.bsbutton = bootstrapButton;
 			if (DEBUG){
 				$('#pkwk-info ul').append(
 					'<li>JavaScript framework:' + 
-					'<a href="http://modernizr.com/">Modernizr</a>: <var>'+Modernizr._version+'</var> / ' +
-					'<a href="http://jquery.com/">jQuery</a>: <var>'+$.fn.jquery+'</var> / '+
-					'<a href="http://jqueryui.com">jQuery UI</a>: <var>'+$.ui.version+ '</var>.</li>');
+					'<a href="//modernizr.com/">Modernizr</a>: <var>'+Modernizr._version+'</var> / ' +
+					'<a href="//jquery.com/">jQuery</a>: <var>'+$.fn.jquery+'</var> / '+
+					'<a href="//jqueryui.com">jQuery UI</a>: <var>'+$.ui.version+ '</var>.</li>');
 			}
 
 			var self = this;
@@ -191,7 +191,7 @@ $.fn.bsbutton = bootstrapButton;
 				// http://b.hatena.ne.jp/guide/bbutton
 				'hatena' : {
 					use : true,
-					dom : '<a href="//b.hatena.ne.jp/entry/" class="hatena-bookmark-button" data-hatena-bookmark-layout="standard-balloon">Hatena</a>',
+					dom : '<a href="//b.hatena.ne.jp/entry/" data-hatena-bookmark-layout="standard-balloon"><img src="//b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a>',
 					script : '//b.st-hatena.com/js/bookmark_button.js'
 				},
 				// Mixi

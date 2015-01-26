@@ -5,10 +5,10 @@
  * @package   PukiWiki
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2012-2014 PukiWiki Advance Developers Team
+ * @copyright 2012-2015 PukiWiki Advance Developers Team
  * @create    2012/12/18
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Render.php,v 1.0.1 2014/12/24 23:27:00 Logue Exp $
+ * @version   $Id: Render.php,v 1.0.1 2015/01/26 21:12:00 Logue Exp $
  */
 
 namespace PukiWiki;
@@ -42,24 +42,24 @@ class Render{
 	/**
 	 * jQueryのバージョン
 	 */
-	const JQUERY_VER = '2.1.1';
-	//const JQUERY_VER = '1.11.1';
+	const JQUERY_VER = '2.1.3';
+	//const JQUERY_VER = '1.11.2';
 	/**
 	 * jQuery UIのバージョン
 	 */
-	const JQUERY_UI_VER = '1.11.1';
+	const JQUERY_UI_VER = '1.11.2';
 	/**
 	 * jQuery Mobileのバージョン
 	 */
-	const JQUERY_MOBILE_VER = '1.4.4';
+	const JQUERY_MOBILE_VER = '1.4.5';
 	/**
 	 * Twitter Bootstrapのバージョン
 	 */
-	const TWITTER_BOOTSTRAP_VER = '3.3.1';
+	const TWITTER_BOOTSTRAP_VER = '3.3.2';
 	/**
 	 * Font Awesomeのバージョン
 	 */
-	const FONT_AWESOME_VER = '4.2.0';
+	const FONT_AWESOME_VER = '4.3.0';
 	/**
 	 * スキンスクリプト（未圧縮）
 	 */
