@@ -1,7 +1,7 @@
 /*!
  * PukiWiki Advance - Yet another WikiWikiWeb clone.
  * Pukiwiki skin script for jQuery
- * Copyright (c)2010-2014 PukiWiki Advance Developer Team
+ * Copyright (c)2010-2015 PukiWiki Advance Developer Team
  *			  2010	  Logue <http://logue.be/> All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -380,7 +380,7 @@ $.fn.bsbutton = bootstrapButton;
 				var $this = $(this),
 					href = $this.attr('href');
 
-				$this.off('click').on('click', function(){
+				$this.on('click', function(){
 					return false;
 				});
 
