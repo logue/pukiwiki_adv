@@ -25,7 +25,7 @@ class Router{
 	 * @return string
 	 */
 	private static function init($init_uri = '',$get_init_value=0){
-		global $script_directory_index, $absolute_uri;
+		global /* $script_directory_index ,*/ $absolute_uri;
 		static $script;
 
 		if ( empty($init_uri) ) {
@@ -43,6 +43,8 @@ class Router{
 		if (! self::is_reluri($init_uri) && ! is_url($init_uri, TRUE)) Utility::dieMessage('$script: Invalid URI');
 		$script = $init_uri;
 
+		/*
+		// PukiWiki AdvanceではFileクラス側でファイル一覧キャッシュを自動生成するため不要
 		// Cut filename or not
 		if (isset($script_directory_index)) {
 			if (! file_exists($script_directory_index))
@@ -52,6 +54,7 @@ class Router{
 			if (preg_match('#^(.+/)' . preg_quote($script_directory_index, '#') . '$#',
 				$script, $matches)) $script = $matches[1];
 		}
+		*/
 
 		return $absolute_uri ? self::get_script_absuri() : $script;
 	}
@@ -166,12 +169,22 @@ class Router{
 	 * @param string $fragment アンカーを指定
 	 * @return string
 	 */
-	public static function get_resolve_uri($cmd='read', $page=null, $path_reference='rel', $query=array(), $fragment=null)
+	public static function get_resolve_uri($cmd='read', $page=null, $path_reference='rel', $query=array('cmd'=>'read'), $fragment=null)
 	{
 		global $static_url, $url_suffix;
 
 		$path = empty($path_reference) ? 'rel' : $path_reference;
 		$ret = self::get_script_uri($path);
+
+		// $queryが時々string型になるのでそれの修正
+		if (is_string($query) && !empty($query)){
+			$q = array(
+				'cmd' => 'read',
+				'page' => $query
+			);
+			// あまりいい実装ではない
+			$query = $q;
+		}
 
 		if (empty($cmd) || $cmd === 'read') {
 		// Apacheは、:が含まれるアドレスを正確に処理できない
