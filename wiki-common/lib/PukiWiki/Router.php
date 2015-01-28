@@ -177,16 +177,12 @@ class Router{
 		$ret = self::get_script_uri($path);
 
 		// $queryが時々string型になるのでそれの修正
-		if (is_string($query) && !empty($query)){
-			$q = array(
-				'cmd' => 'read',
-				'page' => $query
-			);
-			// あまりいい実装ではない
-			$query = $q;
+		if (!empty($query) && is_string($query)){
+			$page = $query;
+			$query = array();
 		}
 
-		if (empty($cmd) || $cmd === 'read') {
+		if (empty($cmd) || $cmd === 'read' ) {
 		// Apacheは、:が含まれるアドレスを正確に処理できない
 			// https://issues.apache.org/bugzilla/show_bug.cgi?id=41441
 			if ($static_url === 1 && 
