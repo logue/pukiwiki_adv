@@ -3,7 +3,7 @@
  * Language judgment (言語判定)
  *
  * @copyright   Copyright &copy; 2005-2006,2008, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: lang.php,v 0.27.3 2012/05/20 09:29:00 Logue Exp $
+ * @version     $Id: lang.php,v 0.27.4 2015/02/06 22:07:00 Logue Exp $
  *
  */
 
@@ -51,7 +51,6 @@ class Lang {
 		global $language_considering_setting_level;
 		global $language;
 		global $public_holiday_guest_view;
-		global $translator;
 
 		$language = self::getLanguage($language_considering_setting_level);
 
@@ -130,7 +129,7 @@ class Lang {
 		mb_language( self::getMbLanguage($lang) );
 
 		mb_internal_encoding('UTF-8');
-		ini_set('mbstring.http_input', 'pass');
+		// ini_set('mbstring.http_input', 'pass'); // deprecated
 		mb_http_output('pass');
 		mb_detect_order('auto');
 	}
