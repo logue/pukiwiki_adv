@@ -1,9 +1,9 @@
 <?php
 /**
  * PukiWiki Advance - Yet another WikiWikiWeb clone.
- * $Id: edit.inc.php,v 1.49.46 2014/03/24 9:42:00 Logue Exp $
+ * $Id: edit.inc.php,v 1.49.47 2015/02/26 9:42:00 Logue Exp $
  * Copyright (C)
- *   2010-2014 PukiWiki Advance Developers Team
+ *   2010-2015 PukiWiki Advance Developers Team
  *   2005-2009 PukiWiki Plus! Team
  *   2001-2007,2011 PukiWiki Developers Team
  * License: GPL v2 or (at your option) any later version
@@ -270,25 +270,25 @@ function plugin_edit_write()
 			: rtrim($vars['original']) . "\n\n" . $vars['msg'];
 	}
 
-	// Delete "#freeze" command for form edit.
-	$vars['msg'] = preg_replace('/^#freeze\s*$/im', '', $vars['msg']);
-	$msg = & $vars['msg']; // Reference
-
 	$retvars = array();
 
-	// Action?
-	if ($add) {
-		// Compat: add plugin and adding contents
-		$postdata = isset($vars['add_top']) && $vars['add_top']
-			? $msg . "\n\n" . $oldpagesrc
-			: $oldpagesrc . "\n\n" . $msg;
-	} else {
-		// Edit or Remove
-		$postdata = & $msg;
-	}
-
-	// NULL POSTING, OR removing existing page
-	if (empty($postdata)) {
+	if (isset($vars['msg']) && !empty($vars['msg'])) {
+		// Delete "#freeze" command for form edit.
+		$vars['msg'] = preg_replace('/^#freeze\s*$/im', '', $vars['msg']);
+		$msg = $vars['msg']; // Reference
+		
+		// Action?
+		if ($add) {
+			// Compat: add plugin and adding contents
+			$postdata = isset($vars['add_top']) && $vars['add_top']
+				? $msg . "\n\n" . $oldpagesrc
+				: $oldpagesrc . "\n\n" . $msg;
+		} else {
+			// Edit or Remove
+			$postdata = & $msg;
+		}
+	}else{
+		// CAPTCHAが有効なときで、ページを削除しようとした時、$vars['msg']は空になる。
 		$wiki->set('');
 		$retvars['msg'] = sprintf($_msg_edit['title_deleted'], Utility::htmlsc($page));
 		$retvars['body'] = '<p class="alert alert-success">' . sprintf($_msg_edit['title_deleted'], Utility::htmlsc($page)) . '</p>';

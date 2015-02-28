@@ -59,19 +59,7 @@ $.fn.bsbutton = bootstrapButton;
 		var D1 = new Date();
 	}
 
-	// Detect IE
-	var ie = (function (){
-		var v = 3,
-		div = document.createElement('div'),
-		all = div.getElementsByTagName('i');
-		while (
-			div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
-			all[0]
-		){};
-		return v > 4 ? v : undefined;
-	}());
-
-	var isMobile = navigator.userAgent.match(/iphone|ipod|ipad|android/i) ? true : false;
+	var isMobile = navigator.userAgent.match(/ip[hone|od|ad]|android/i) ? true : false;
 
 	// オーバーライド用
 	var pkwkInit = [], pkwkBeforeInit = [], pkwkUnload = [], pkwkBeforeUnload = [], pkwkAjaxLoad = [];
@@ -671,16 +659,7 @@ $.fn.bsbutton = bootstrapButton;
 					$this.off('click').on('click',function(){
 						if (rel.match(/noreferer/)){
 							// リファラーを消す
-							if (ie){
-								// for IE
-								var subwin = window.open('','','location=yes, menubar=yes, toolbar=yes, status=yes, resizable=yes, scrollbars=yes,'),
-									d = subwin.document;
-								d.open();
-								d.write('<meta http-equiv="refresh" content="0;url='+href+'" />');
-								d.close();
-							} else if ( !href.match(/data:text\/html;/)){
-
-								// for Safari,Chrome,Firefox
+							if ( ! href.match(/data:text\/html;/)){
 								var dataUri ='data:text/html;charset=utf-8,'+encodeURIComponent(
 									'<html><head><script type="text/javascript"><!--'+"\n"+
 									'document.write(\'<meta http-equiv="refresh" content="0;url='+href+'" />\');'+"\n"+

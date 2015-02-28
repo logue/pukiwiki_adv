@@ -109,7 +109,7 @@ class Router{
 		// Set automatically
 		$msg	 = 'get_script_absuri() failed: Please set [$script or $script_abs] at INI_FILE manually';
 
-		$uri  = ( self::is_ssl() ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'];	// ここのプロトコルは、//でもいい気がする。（RFC 3986参照）
+		$uri  = ( self::is_ssl() ? 'https://' : '//') . $_SERVER['HTTP_HOST'];	// ここのプロトコルは、//でもいい気がする。（RFC 3986参照）
 		if(strpos($uri,':') === FALSE) {
 			// :が含まれていた場合
 			$uri .= ($_SERVER['SERVER_PORT'] == 80) ? '' : ':' . $_SERVER['SERVER_PORT'];  // port 443はSSLとは限らないので削除

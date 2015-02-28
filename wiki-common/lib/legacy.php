@@ -689,6 +689,7 @@ define('PKWK_CIDR_NETWORK_REGEX', '/^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(?:\/([
 /*
  * is_requestable($uri)
  */
+/*
 function is_requestable($uri)
 {
 	$arr1 = parse_url(get_script_absuri());
@@ -706,7 +707,7 @@ function is_requestable($uri)
 
 	return FALSE;
 }
-
+*/
 // Check if the $host is in the specified network(s)
 function in_the_net($networks = array(), $host = '')
 {

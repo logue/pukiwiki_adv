@@ -8,7 +8,7 @@
  * @copyright 2012-2015 PukiWiki Advance Developers Team
  * @create    2012/12/18
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Render.php,v 1.0.1 2015/01/26 21:12:00 Logue Exp $
+ * @version   $Id: Render.php,v 1.0.1 2015/02/27 21:32:00 Logue Exp $
  */
 
 namespace PukiWiki;
@@ -124,6 +124,7 @@ class Render{
 		global $vars, $lastmod;
 		$this->page = isset($vars['page']) ? $vars['page'] : null;
 		$this->ajax = isset($vars['ajax']) ? $vars['ajax'] : null;
+		$this->cmd = isset($vars['cmd']) ? $vars['cmd'] : 'read';	// ※通常は空にならない
 		$this->wiki = !empty($this->page) ? Factory::Wiki($this->page) : null;
 		$this->title = $title;
 		$this->body = $body;
@@ -168,28 +169,36 @@ class Render{
 	 * @return string
 	 */
 	public function getContent(){
-		global $_LINK, $info, $vars, $_LANG;
+		global $_LINK, $info, $_LANG;
 		global $site_name, $newtitle, $modifier, $modifierlink, $menubar, $sidebar, $headarea, $footarea, $navigation;
 
 		$body = $this->body;
 
+		// Linkタグ
 		$_LINK = self::getLinkSet($this->page);
 
 		// ページをコンストラクト
 		$view = new View(PLUS_THEME);
 
-		$view->is_page = isset($vars['page']);
-		$view->is_read = isset($vars['cmd']) && $vars['cmd'] === 'read';
-		$view->is_freeze = isset($vars['page']) ? Factory::Wiki($vars['page'])->isFreezed() : false;
+		// ページ名が指定されているか
+		$view->is_page = isset($this->page);
+		// readプラグイン（通常時動作）か？
+		$view->is_read = $this->cmd === 'read';
+		// ページが凍結されているか
+		$view->is_freeze = isset($this->page) ? Factory::Wiki($this->page)->isFreezed() : false;
 
-		if ($vars['cmd'] === 'read'){
+		if ($this->cmd === 'read'){
+			// ページを読み込む場合
 			global $adminpass, $_string, $menubar, $sidebar;
+			
+			// パスワードがデフォルトのままだった時に警告を出す
 			if ($adminpass == '{x-php-md5}1a1dc91c907325c69271ddf0c944bc72' || $adminpass == '' ){
 				$body = '<p class="alert alert-danger"><span class="fa fa-exclamation-triangle"></span>'.
 					'<strong>'.$_string['warning'].'</strong> '.$_string['changeadminpass'].'</p>'."\n".
 					$body;
 			}
 
+			// デバッグモード時に記載
 			if (DEBUG === true && ! empty($info)){
 				$body = '<div class="panel panel-info" id="pkwk-info">'.
 						'<div class="panel-heading"><span class="fa fa-info-circle"></span>'.$_string['debugmode'].'</div>'."\n".
@@ -198,16 +207,16 @@ class Render{
 						'</ul></div></div>'."\n\n".$body;
 			}
 			// リファラーを保存
-			if ($this->page !== null) Factory::Referer($this->page)->set();
+			Factory::Referer($this->page)->set();
 
+			// 最終更新日
 			$view->lastmodified = '<time datetime="'.Time::getZoneTimeDate('c',$this->wiki->time()).'">'.Time::getZoneTimeDate('D, d M Y H:i:s T', $this->wiki->time()) . ' ' . $this->wiki->passage().'</time>';
-
 			// ページの添付ファイル
 			$view->attaches = $this->getAttaches();
 			// 関連リンク
 			$view->related = $this->getRelated();
 
-			// ノート
+			// 注釈
 			global $foot_explain;
 			ksort($foot_explain, SORT_NUMERIC);
 			$notes = ! empty($foot_explain) ? '<ul>'.join("\n", $foot_explain).'</ul>' : '';
@@ -215,36 +224,36 @@ class Render{
 			// 検索語句をハイライト
 			if (isset($vars['word'])){
 				$notes = self::hilightWord($vars['word'],$notes);
-				$body = '<p class="alert alert-info">' . $_string['word'] . '<var>' . Utility::htmlsc($vars['word']) . '</var></p>'."\n".'<hr />'."\n".self::hilightWord($vars['word'], $body);
+				$body = '<p class="alert alert-info">' . $_string['word'] . '<var>' . Utility::htmlsc($vars['word']) . '</var></p>' . "\n" .
+					'<hr />' . "\n" . self::hilightWord($vars['word'], $body);
 			}
 			$view->notes = $notes;
-		}
 
-		// モードによって、3カラム、2カラムを切り替える。
-		if ($vars['cmd'] === 'read') {
+			// モードによって、3カラム、2カラムを切り替える。
 			$view->menubar = Factory::Wiki($menubar)->has() ? PluginRenderer::executePluginBlock('menu') : null;
 			if ( Factory::Wiki($sidebar)->has()){
+				// サイドバーが定義されている場合３カラム
 				$view->sidebar = Factory::Wiki($sidebar)->has() ? PluginRenderer::executePluginBlock('side') : null;
 				$view->colums = View::CLASS_THREE_COLUMS;
 			}else{
 				$view->colums = View::CLASS_TWO_COLUMS;
 			}
-		}else{
-			$view->colums = View::CLASS_NO_COLUMS;
-		}
-		
-		// ステータスアイコン
-		$view->status = '';
-		if ($this->wiki || $vars['cmd'] === 'read') {
-			
+
+			// ステータスアイコン
 			if ($this->wiki->isFreezed()){
+				// 錠前マーク（フリーズされてる）
 				$view->status = '<span class="fa fa-lock" title="Freezed"></span>';
 			}else if (!$this->wiki->isEditable()){
+				// 駐禁マーク（編集できない）
 				$view->status = '<span class="fa fa-ban" title="Not Editable"></span>';
 			}else{
+				// 鉛筆マーク（編集できる）
 				$view->status = '<span class="fa fa-pencil-square" title="Editable"></span>';
 			}
 		}else{
+			// プラグインを実行する場合、大抵の場合メニューバーやサイドバーを表示しない
+			$view->colums = View::CLASS_NO_COLUMS;
+			// ステータスアイコンを歯車にする
 			$view->status = '<span class="fa fa-cog" title="Function mode"></span>';
 		}
 
@@ -288,6 +297,8 @@ class Render{
 		$view->proc_time = $this->getProcessTime();
 		// メモリ使用量
 		$view->memory = $this->getMemoryUsage();
+		
+		// このへんにViewオブジェクトのキャッシュ処理を入れれば大幅に速くなるが・・・。
 
 		return $view->__toString();
 	}
@@ -389,7 +400,7 @@ class Render{
 	 * @return string
 	 */
 	private function getHead($conf){
-		global $vars, $nofollow, $google_analytics, $google_api_key, $google_site_verification, $yahoo_site_explorer_id, $bing_webmaster_tool, $shortcut_icon, $modifier, $modifierlink;
+		global $vars, $google_analytics, $google_api_key, $google_site_verification, $yahoo_site_explorer_id, $bing_webmaster_tool, $shortcut_icon, $modifier, $modifierlink;
 		$meta_tags[] = array('charset'=>constant('SOURCE_ENCODING'));
 		// $meta_tags[] = array('http-equiv'=>'x-dns-prefetch-control','content'=>'on');
 		if (IS_MOBILE){
@@ -405,11 +416,7 @@ class Render{
 			// Bing（MSN）アクセス解析
 			(!empty($bing_webmaster_tool)) ?		$meta_tags[] = array('name' => 'msvalidate.01',				'content' => $bing_webmaster_tool) : null;
 
-			if ($nofollow && $vars['cmd'] === 'read'){
-				$meta_tags[] = array('name' => 'robots', 'content' => 'NOINDEX,NOFOLLOW');
-			}
-
-			if (!empty($this->wiki) && $vars['cmd'] === 'read'){
+			if ($this->cmd === 'read'){
 				global $keywords, $description, $site_name, $site_logo;
 				// 要約
 				$desc = !empty($description) ? $description : $this->wiki->description();
@@ -432,9 +439,9 @@ class Render{
 				if (isset($fb)){
 					$meta_tags[] = array('property' => 'fb:app_id', 'content' => $fb->getAppId());
 				}
-			}else{
-				// プラグイン動作時はインデックスを付けない
-				$meta_tags[] = array('name' => 'robots', 'content' => 'NOINDEX,NOFOLLOW');
+			} else if ($this->cmd !== 'list'){
+				// Listプラグイン以外はロボットにキャッシュさせない
+				$meta_tags[] = array('name' => 'robots', 'content' => 'noindex,nofollow,noarchive,noodp,noydir');
 			}
 
 			// Linkタグの生成

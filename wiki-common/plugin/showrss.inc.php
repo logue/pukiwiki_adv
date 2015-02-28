@@ -89,8 +89,8 @@ function plugin_showrss_convert()
 	if (! is_url($uri))
 		return '<p class="alert alert-warning">#showrss: Seems not URI: <var>' . htmlsc($uri) . '</var></p>' . "\n";
 
-	if (! is_requestable($uri))
-		return '<p class="alert alert-warning">#showrss: Prohibit fetching RSS from my server.</p>' . "\n";
+	//if (! is_requestable($uri))
+	//	return '<p class="alert alert-warning">#showrss: Prohibit fetching RSS from my server.</p>' . "\n";
 
 	list($rss, $time, $reason) = plugin_showrss_get_rss($uri, $cachehour);
 	if (!$rss) return '<p class="alert alert-warning">#showrss: '.$reason.'</p>' . "\n";

@@ -33,7 +33,6 @@
 	"require": {
 		"php": ">=5.4.0",
 		"aferrandini/phpqrcode": "1.*",
-		"facebook/php-sdk": "3.*",
 		"logue/igo-php":"*",
 		"zendframework/zend-Serializer": "2.*",
 		"zendframework/zend-cache": "2.*",
