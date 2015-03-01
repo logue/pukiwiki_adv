@@ -346,14 +346,14 @@ var pukiwiki = {};
 	$(document).ready(function(){
 		var filename = 'jquery.mobile-' + JQUERY_MOBILE_VER + (DEBUG ? '' : '.min');
 		if (JQUERY_MOBILE_VER !== 'latest'){
-			$("head").prepend('<link rel="stylesheet" href="http://code.jquery.com/mobile/'+JQUERY_MOBILE_VER+'/'+filename+'.css" />');
-			$.getScript('http://code.jquery.com/mobile/'+JQUERY_MOBILE_VER+'/'+filename+'.js', function(){
+			$("head").prepend('<link rel="stylesheet" href="//code.jquery.com/mobile/'+JQUERY_MOBILE_VER+'/'+filename+'.css" />');
+			$.getScript('//code.jquery.com/mobile/'+JQUERY_MOBILE_VER+'/'+filename+'.js', function(){
 				$('html').fadeIn('fast');	// スクリプトとCSSが読み込まれた段階で、ページを表示。
 				$('html').css('display','block');	// Firefox対策
 			});
 		}else{
-			$("head").prepend('<link rel="stylesheet" href="http://code.jquery.com/mobile/latest/jquery.mobile.css" />');
-			$.getScript('http://code.jquery.com/mobile/latest/jquery.mobile.js', function(){
+			$("head").prepend('<link rel="stylesheet" href="//code.jquery.com/mobile/latest/jquery.mobile.css" />');
+			$.getScript('//code.jquery.com/mobile/latest/jquery.mobile.js', function(){
 				$('html').fadeIn('fast');	// スクリプトとCSSが読み込まれた段階で、ページを表示。
 				$('html').css('display','block');	// Firefox対策
 			});
