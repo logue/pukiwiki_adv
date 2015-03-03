@@ -143,11 +143,20 @@ function plugin_edit_realview()
 		$postdata = drop_submit(RendererFactory::factory($postdata));
 	}
 
-	$headers = Header::getHeaders('application/json');
-	Header::writeResponse($headers, 200, Json::encode(array(
-		'data'			=> $postdata,
-		'taketime'		=> Time::getTakeTime()
-	)));
+	if (isset($vars['ajax']) && $vars['ajax'] === 'xml'){
+		$headers = Header::getHeaders('application/xml');
+		$content = '<' . '?xml version="1.0" encoding="UTF-8" ?' . '>'."\n".'<response>' . "\n" . 
+			'<title>' . $this->title . '</title>' . "\n" . 
+			'<body><![CDATA[' . $this->body . ']]></body>' . "\n" .
+			'<process_time>' . Time::getTakeTime() . '</process_time>' . "\n" . '</response>';
+		Header::writeResponse($headers, 200, $content);
+	}else{
+		$headers = Header::getHeaders('application/json');
+		Header::writeResponse($headers, 200, Json::encode(array(
+			'data'			=> $postdata,
+			'taketime'		=> Time::getTakeTime()
+		)));
+	}
 	exit;
 }
 
@@ -216,9 +225,9 @@ function plugin_edit_inline()
 	if (!empty($args[0])) {
 		$page = $args[0];
 	}
-	
+
 	if (empty($page)) return '';
-	
+
 	$wiki = Factory::Wiki($page);
 
 	if (!$fixed_heading_edited || $wiki->isFreezed() || Auth::check_role('readonly')) {

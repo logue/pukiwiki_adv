@@ -16,7 +16,7 @@ namespace PukiWiki;
 use Exception;
 use PukiWiki\Auth\Auth;
 use PukiWiki\Backup;
-use PukiWiki\Diff\Diff;
+use PukiWiki\Diff\LineDiff;
 use PukiWiki\File\AttachFile;
 use PukiWiki\File\FileFactory;
 use PukiWiki\File\FileUtility;
@@ -64,13 +64,14 @@ class Wiki{
 	/**
 	 * ページ名
 	 */
-	public $page;
+	public $page = null;
 	/**
 	 * 見出しID
 	 */
 	public $id = null;
 	/**
 	 * コンストラクタ
+	 * @param string $page ページ名
 	 */
 	public function __construct($page){
 		if (!is_string($page)){
@@ -415,7 +416,9 @@ class Wiki{
 		$oldpostdata = self::has() ? self::get(TRUE) : '';
 
 		// 差分を生成（ここでの差分データーはAkismetでも使う）
-		$diff = new Diff($postdata, $oldpostdata);
+		// $diff = new Diff($postdata, $oldpostdata);
+		$diffobj = new LineDiff();
+		$diffdata = $diffobj->str_compare($oldpostdata, $postdata);
 
 		// ログイン済みもしくは、自動更新されるページである
 		$has_not_permission = Auth::check_role('role_contents_admin');
@@ -515,8 +518,6 @@ class Wiki{
 			);
 		}
 
-		// 差分を取得
-		$diffdata = $diff->getDiff();
 		// add client info to diff
 		// $diffdata[] = '// IP:"'. REMOTE_ADDR . '" TIME:"' . UTIME . '" REFERER:"' . $referer . '" USER_AGENT:"' . $user_agent. "\n";
 
