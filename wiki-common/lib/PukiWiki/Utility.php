@@ -44,6 +44,10 @@ class Utility{
 	 */
 	const MAX_QUERY_STRING_LENGTH = 640; // bytes
 	/**
+	 * テキストの整形ルールページ
+	 */
+	const RULE_PAGENAME = 'FormatRule';
+	/**
 	 * ブラックリストに保存
 	 */
 	const SAVE_BLACKLIST = true;
@@ -932,10 +936,9 @@ class Utility{
 
 		if (isset($vars['help'])) {
 			// テキストの整形ルールを表示
-			global $rule_page;
-			$rule_wiki = Factory::Wiki($rule_page);
+			$rule_wiki = Factory::Wiki(self::RULE_PAGENAME);
 			$ret[] = '<hr />';
-			$ret[] =  $rule_wiki->has() ?  $rule_wiki->render() : '<p class="alert alert-warning">Sorry, page \'' . Utility::htmlsc($rule_page) .'\' unavailable.</p>';
+			$ret[] =  $rule_wiki->has() ? $rule_wiki->render() : '<p class="alert alert-warning">Sorry, page \'' . Utility::htmlsc($rule_page) .'\' unavailable.</p>';
 		} else {
 			$ret[] = '<ul><li><a href="' . Factory::Wiki($page)->uri('edit',array('help'=>'true')) . '" id="FormatRule">' . $_string['help'] . '</a></li></ul>';
 		}
