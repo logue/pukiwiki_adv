@@ -1,9 +1,9 @@
 <?php
 /**
  * PukiWiki Advance - Yet another WikiWikiWeb clone.
- * $Id: init.php,v 1.57.16 2014/12/24 23:36:00 Logue Exp $
+ * $Id: init.php,v 1.57.17 2015/01/26 21:50:00 Logue Exp $
  * Copyright (C)
- *   2010-2014 PukiWiki Advance Developers Team
+ *   2010-2015 PukiWiki Advance Developers Team
  *   2005-2009 PukiWiki Plus! Team
  *   2002-2007,2009,2011 PukiWiki Developers Team
  *   2001-2002 Originally written by yu-ji
@@ -25,12 +25,12 @@ use Zend\I18n\Translator\Translator;
 // PukiWiki version / Copyright / License
 define('S_APPNAME', 'PukiWiki Advance');
 define('S_VERSION', 'v 2.0.0');
-define('S_REVSION', '20141224');
+define('S_REVSION', '20150305');
 define('S_COPYRIGHT',
 	'<strong>'.S_APPNAME.' ' . S_VERSION . '</strong>' .
-	' Copyright &#169; 2010-2014' .
+	' Copyright &#169; 2010-2015' .
 	' <a href="http://pukiwiki.logue.be/" rel="external">PukiWiki Advance Developers Team</a>.<br />' .
-	' Licensed under the <a href="http://www.gnu.org/licenses/gpl-2.0.html" rel="external">GPLv2</a>.' .
+	' Licensed under the <a href="http://www.gnu.org/licenses/gpl-2.0.html" rel="external">GPLv2</a> or Later.' .
 	' Based on <a href="http://pukiwiki.cafelounge.net/plus/" rel="external">"PukiWiki Plus! i18n"</a>'
 );
 
@@ -41,12 +41,9 @@ define('GENERATOR', S_APPNAME.' '.S_VERSION);
 define('UTIME',time());
 define('MUTIME',Time::getMicroTime());
 
-// Compat and suppress notices
-$HTTP_SERVER_VARS = array();
-
 foreach (array('SCRIPT_NAME', 'SERVER_ADMIN', 'SERVER_NAME', 'SERVER_SOFTWARE') as $key) {
-	define($key, isset($_SERVER[$key]) ? $_SERVER[$key] : '');
-	unset(${$key}, $_SERVER[$key], $HTTP_SERVER_VARS[$key]);
+	define($key, isset($_SERVER[$key]) ? $_SERVER[$key] : null);
+	unset(${$key}, $_SERVER[$key]);
 }
 
 define('REMOTE_ADDR', isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR']);
@@ -125,6 +122,8 @@ foreach (array('pukiwiki.ini.php', 'auth.ini.php', 'server.ini.php') as $file){
 	if (empty($path)) continue;
 	require($path);
 }
+unset($file, $path);
+
 defined('DATA_DIR')			or define('DATA_DIR',		DATA_HOME . 'wiki/'     );	// Latest wiki texts
 defined('DIFF_DIR')			or define('DIFF_DIR',		DATA_HOME . 'diff/'     );	// Latest diffs
 defined('BACKUP_DIR')		or define('BACKUP_DIR',		DATA_HOME . 'backup/'   );	// Backups
@@ -183,8 +182,6 @@ defined('SORT_NATURAL') or define('SORT_NATURAL', SORT_LOCALE_STRING);
 /////////////////////////////////////////////////
 // Init grobal variables
 
-global $foot_explain, $related, $info, $meta_tags, $link_tags, $js_tags, $js_blocks, $css_blocks, $js_vars, $_SKIN;
-
 $foot_explain = array();	// Footnotes
 $related      = array();	// Related pages
 $head_tags    = array();	// XHTML tags in <head></head> (Obsolete in Adv.)
@@ -200,8 +197,8 @@ $css_blocks   = array();	// Inline styleseets(<style>/*<![CDATA[*/ ... /*]]>*/</
 $js_vars      = array();	// JavaScript initial value.
 $_SKIN        = array();
 
-$info[] = '<a href="http://php.net/">PHP</a> <var>'.PHP_VERSION.'</var> is running as <var>'.php_sapi_name().'</var> mode. / Powerd by <var>'.getenv('SERVER_SOFTWARE').'</var>.';
-$info[] = 'Using <a href="http://framework.zend.com/">Zend Framework</a> ver.<var>' . Zend\Version\Version::VERSION.'</var>.';
+$info[] = '<a href="http://php.net/" rel="external">PHP</a> <var>'.PHP_VERSION.'</var> is running as <var>'.php_sapi_name().'</var> mode. / Powerd by <var>'.getenv('SERVER_SOFTWARE').'</var>.';
+$info[] = 'Using <a href="http://framework.zend.com/" rel="external">Zend Framework</a> ver.<var>' . Zend\Version\Version::VERSION.'</var>.';
 // Initilaize Session
 $session = new Zend\Session\Container(PKWK_WIKI_NAMESPACE);
 
@@ -211,6 +208,9 @@ $session = new Zend\Session\Container(PKWK_WIKI_NAMESPACE);
 // Initilalize Cache
 //
 // 使用するキャッシュストレージを選択
+// Filesystem以外動作チェックはしていません。自己責任で変更してください。
+// 例：Apc, Dba, Filesystem, Memcached, Memory, Redis, WinCache, XCache, ZendServerDisk, ZendServerShm
+// http://framework.zend.com/manual/current/en/modules/zend.cache.storage.adapter.html
 $cache_adapter = 'Filesystem';
 /*
 if (!isset($cache_adapter)){
@@ -270,7 +270,8 @@ $info[] = 'Cache system using <var>'.$cache_adapter.'</var>.';
 
 
 /////////////////////////////////////////////////
-// I18N
+// 他言語化設定
+// 
 Lang::setLanguage();
 Time::init();
 
@@ -302,22 +303,22 @@ if (isset($script)) {
 // ディレクトリのチェック
 $die = array();
 
-foreach(array('DATA_DIR', 'DIFF_DIR', 'BACKUP_DIR', 'CACHE_DIR') as $dir){
-	if (! is_writable(constant($dir)))
+foreach(array('DATA_DIR', 'DIFF_DIR', 'BACKUP_DIR', 'CACHE_DIR') as $d){
+	$dir = constant($d);
+	if (! is_dir($dir)){
+		mkdir($dir);
+		chmod($dir, 0755);
+	}
+	if (! is_writable($dir)){
 		$die[] = sprintf($_string['not_writable'],$dir);
+	}
 }
-
-/////////////////////////////////////////////////
-// 必須のページが存在しなければ、空のファイルを作成する
-foreach(array($defaultpage, $whatsnew) as $page){
-	$wiki = Factory::Wiki($page);
-	if (! $wiki->has() ) $wiki->wiki->touch();
-	unset($wiki);
-}
+unset($d, $dir);
 
 /////////////////////////////////////////////////
 // QUERY_STRINGを取得
-$vars = Utility::parseArguments();
+
+$vars = Utility::parseArguments();	// ここの処理はそのうち全部書き直し
 
 /////////////////////////////////////////////////
 // 初期設定(その他のグローバル変数)
@@ -334,7 +335,7 @@ if (IS_MOBILE === true) {
 }else{
 	define('SKIN_FILE', PLUS_THEME);
 }
-
+/*
 if ( isset($auth_api['facebook']) ){
 	if (extension_loaded('curl')){
 		$fb = new FaceBook($auth_api['facebook']);
@@ -363,22 +364,7 @@ if ( isset($auth_api['facebook']) ){
 		$info[] = T_('Could not to load Facebook. This function needs <code>curl</code> extention.');
 	}
 }
-
-if (DEBUG) {
-	$exclude_plugin = array();
-	global $mecab_path;
-	if (file_exists($mecab_path)){
-		$info[] = 'Mecab is enabled. (It will not work in XAMPP,but not a malfunction....)';
-		if (extension_loaded('mecab')){
-			$info[] = 'Mecab is module mode.';
-		}else{
-			$info[] = 'Mecab is stdio mode. Please concider to install <a href="https://github.com/rsky/php-mecab">php-mecab</a> in your server.';
-		}
-	}else{
-		$info[] = 'Mecab is disabled. If you installed, please check mecab path.';
-	}
-}
-
+*/
 /////////////////////////////////////////////////
 // Execute Plugin.
 
@@ -386,7 +372,6 @@ if (DEBUG) {
 if (isset($auth_api['remoteip']['use']) && $auth_api['remoteip']['use']) {
 	PluginRenderer::executePluginInline('remoteip');
 }
-
 
 // プラグインのaction命令を実行
 $cmd = strtolower($vars['cmd']);
@@ -402,10 +387,16 @@ if ($is_protect) {
 }
 if (!empty($cmd)){
 	if (! PluginRenderer::hasPluginMethod($cmd, 'action')) {
-		Utility::dieMessage(sprintf($_string['plugin_not_implemented'],Utility::htmlsc($cmd)), 501);
+		// プラグインにactionが定義されてない場合
+		Utility::dieMessage(sprintf($_string['plugin_not_implemented'], Utility::htmlsc($cmd)), 501);
 	}else{
+		// プラグインのactionを実行する。
+		// 帰り値：array('title', 'body', 'http_code');
 		$retvars = PluginRenderer::executePluginAction($cmd);
 	}
+}else{
+	// 空欄の場合readとみなす。
+	$cmd = 'read';
 }
 
 if ($is_protect) {
@@ -414,15 +405,19 @@ if ($is_protect) {
 	PluginRenderer::executePluginBlock('protect');
 	die('<var>PLUS_PROTECT_MODE</var> is set.');
 }
-// Set Home
+
+///////////////////////////////////////
+// Page output
+
 $auth_key = Auth::get_user_info();
+$base = $defaultpage;
 if (!empty($auth_key['home']) && isset($vars['page']) && ($vars['page'] == $defaultpage || $vars['page'] == $auth_key['home'])){
+	// ログイン時のホームページを基準とする（実際はあまり使われてないが）
 	$base = $defaultpage = $auth_key['home'];
 }else{
 	$base = isset($vars['page']) ? $vars['page'] : $defaultpage;
 }
-///////////////////////////////////////
-// Page output
+
 $s_base =  Utility::htmlsc(Utility::stripBracket($base));
 if (isset($retvars['msg']) && !empty($retvars['msg']) ) {
 	$title = str_replace('$1', $s_base, $retvars['msg']);
@@ -437,45 +432,28 @@ $http_code = isset($retvars['http_code']) ? $retvars['http_code'] : 200;
 if (isset($retvars['body']) && !empty($retvars['body'])) {
 	$body = $retvars['body'];
 } else {
-	if (! is_page($base)) {
+	if (! Factory::Wiki($base)->isValied()) {
 		$base  = $defaultpage;
 		$title = $s_base;
 		$page  = Factory::Wiki($base)->link('related');
 	}
-
-	$vars['cmd']  = 'read';
-	$vars['page'] = $base;
-
 	if (empty($vars['page'])) die('page is missing!');
-	global $fixed_heading_edited;
-	$wiki = Factory::Wiki($vars['page']);
 
-	// Virtual action plugin(partedit).
-	// NOTE: Check wiki source only.(*NOT* call convert_html() function)
-	$lines = $wiki->get();
-	while (! empty($lines)) {
-		$line = array_shift($lines);
-		if (preg_match("/^\#(partedit)(?:\((.*)\))?/", $line, $matches)) {
-			if ( !isset($matches[2]) || empty($matches[2]) ) {
-				$fixed_heading_edited = ($fixed_heading_edited ? 0:1);
-			} else if ( $matches[2] == 'on') {
-				$fixed_heading_edited = 1;
-			} else if ( $matches[2] == 'off') {
-				$fixed_heading_edited = 0;
-			}
-		}
-	}
-
-	$body = $wiki->render();
-	
 	LogFactory::factory('check',$vars['page'])->set();
 }
 
 if ($vars['cmd'] === 'read'){
+	$body = Factory::Wiki($vars['page'])->render();
 	LogFactory::factory('browse',$vars['page'])->set();
 }
 
+// ページを描画
 new PukiWiki\Render($title, $body, $http_code);
+unset($title, $body, $http_code);
+exit;
+// ここまで。
+
+/**************************************************************************************************/
 
 /** よく使うグローバル関数 **/
 // gettext to Zend gettext emulator
