@@ -32,21 +32,25 @@ class Diff{
 	 * @param array $b 新しいデーター
 	 */
 	public function __construct(/* array */$a, /* array */$b){
-		$this->a = is_array($a) ? $a : explode("\n", $a);
-		$this->b = is_array($a) ? $b : explode("\n", $b);
+		$this->a = is_array($a) ? $a : $this->str2array($a);
+		$this->b = is_array($b) ? $b : $this->str2array($b);
 		$this->m = count($this->a);
 		$this->n = count($this->b);
+		$this->editdis = 0;
 
 		if ($this->m >= $this->n){
-			$this->a = is_array($b) ? $b : explode("\n", $b);
-			$this->b = is_array($a) ? $a : explode("\n", $a);
+			$this->a = is_array($b) ? $b : $this->str2array($b);
+			$this->b = is_array($a) ? $a : $this->str2array($a);
 			$this->m = count($this->b);
 			$this->n = count($this->a);
 			$this->reverse = true;
 		}
 		self::compose();
 	}
-
+	
+	public function getEditdis () {
+		return $this->editdis;
+	}
 	private function compose(){
 		$p = -1;
 		$delta  = $this->n - $this->m;
@@ -58,13 +62,13 @@ class Diff{
 		do {
 			++$p;
 			for ($k=-$p; $k<=$delta-1; ++$k) {
-				$fp[$k+$offset] = self::snake($k, $fp[$k-1+$offset]+1, $fp[$k+1+$offset]);
+				$fp[$k+$offset] = $this->snake($k, $fp[$k-1+$offset]+1, $fp[$k+1+$offset]);
 			}
 			for ($k=$delta+$p; $k>=$delta+1; --$k) {
-				$fp[$k+$offset] = self::snake($k, $fp[$k-1+$offset]+1, $fp[$k+1+$offset]);
+				$fp[$k+$offset] = $this->snake($k, $fp[$k-1+$offset]+1, $fp[$k+1+$offset]);
 			}
-			$fp[$delta+$offset] = self::snake($delta, $fp[$delta-1+$offset]+1, $fp[$delta+1+$offset]);
-		} while($fp[$delta+$offset] !== $this->n);
+			$fp[$delta+$offset] = $this->snake($delta, $fp[$delta-1+$offset]+1, $fp[$delta+1+$offset]);
+		} while($fp[$delta+$offset] < $this->n);
 
 		$this->editdis = $delta + 2 * $p;
 
@@ -141,6 +145,12 @@ class Diff{
 				unset($str);
 			}
 		}
+	}
+	private function str2array($input){
+		// 改行コードをLFにする。
+		$str = str_replace(array(chr(0x0d) . chr(0x0a), chr(0x0d), chr(0x0a)), "\n", $input);
+		// \nで分割
+		return explode("\n",$str);
 	}
 	public function getEditDistance(){
 		return $this->editdis;

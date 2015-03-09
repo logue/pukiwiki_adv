@@ -28,7 +28,7 @@ use Zend\Http\Response;
  * 添付ファイル管理クラス
  */
 class Attach{
-	public $files, $logfile;
+	public $files, $logfile, $path;
 	/**
 	 * 添付ファイルのMIMEタイプの定義ページ名
 	 */
@@ -63,8 +63,9 @@ class Attach{
 		$this->filename = $filename;
 		$this->age = $age;
 		$attaches = $this->wiki->attach(false);
-		$this->files = $attaches[$filename];
+		$this->files = $attaches[$filename];	// ファイルのバックアップ一覧
 		$this->update = false;	// ステータスの更新フラグ
+		$this->path = AttachFile::$dir . $this->files[$this->age];	// ファイルのパス
 
 		// ログファイルが存在しない場合
 		if (!isset($this->files['log'])){
@@ -101,7 +102,7 @@ class Attach{
 	 * @return string
 	 */
 	public function get(){
-		$fileinfo = new File(AttachFile::$dir . $this->files[$this->age]);
+		$fileinfo = new File($this->path);
 		return $fileinfo->get();
 	}
 	/**
@@ -115,7 +116,7 @@ class Attach{
 	 * ファイルをセットする
 	 */
 	public function set($content, $keeptimestamp = false){
-		$fileinfo = new File(AttachFile::$dir . $this->files[$this->age]);
+		$fileinfo = new File($this->path);
 		$this->status['count'][$this->age]++;
 		$this->update = true;
 		return $fileinfo->set($content, $keeptimestamp);
@@ -227,7 +228,7 @@ class Attach{
 		// ステータスコード
 		$status_code = Response::STATUS_CODE_200;
 
-		$file = new File(AttachFile::$dir . $this->files[$this->age]);
+		$file = new File($this->path);
 
 		if (! ($file->has() && $file->isReadable())) {
 			Header::writeResponse($header, $status_code, $buffer);
@@ -328,7 +329,7 @@ class Attach{
 		$role_contents_admin = Auth::check_role('role_contents_admin');
 		$msg_require = ($role_contents_admin) ? $_attach_messages['msg_require'] : '';
 
-		$file = AttachFile::$dir . $this->files[$this->age];
+		$file = $this->path;
 
 		$ret[] = empty($err) ? '' : '<p class="error error-warning">' . $_attach_messages[$err] . '</p>';
 
@@ -479,7 +480,7 @@ class Attach{
 			return $mimetype;
 		}
 
-		$f = new File(AttachFile::$dir . $this->files[$this->age]);
+		$f = new File($this->path);
 		try {
 			// @をつけると処理が重いのでtry-catch文を使う
 			$size = getimagesize($f->getRealPath());
@@ -600,7 +601,7 @@ class Attach{
 		$ret = array();
 		// サムネイル（JPEG、TIFFのみ）
 		if (extension_loaded('exif') && extension_loaded('gd')){
-			$file = AttachFile::$dir . $this->files[$this->age];
+			$file = $this->path;
 			$image_type = exif_imagetype($file);
 			if ($image_type === IMAGETYPE_JPEG || $image_type === IMAGETYPE_TIFF_II || $image_type === IMAGETYPE_TIFF_MM ) {
 				$exif = exif_read_data($file);
@@ -626,14 +627,14 @@ class Attach{
 	 * ファイルサイズ
 	 */
 	public function getSize(){
-		$fileinfo = new File(AttachFile::$dir . $this->files[$this->age]);
+		$fileinfo = new File($this->path);
 		return  sprintf('%01.1f', round($fileinfo->getSize()/1024, 1)) . 'KB';
 	}
 	/**
 	 * 更新日時
 	 */
 	public function getDate(){
-		$fileinfo = new File(AttachFile::$dir . $this->files[$this->age]);
+		$fileinfo = new File($this->path);
 		return Time::getZoneTimeDate('Y/m/d H:i:s', $fileinfo->getMTime());
 	}
 }

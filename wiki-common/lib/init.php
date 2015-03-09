@@ -394,9 +394,6 @@ if (!empty($cmd)){
 		// 帰り値：array('title', 'body', 'http_code');
 		$retvars = PluginRenderer::executePluginAction($cmd);
 	}
-}else{
-	// 空欄の場合readとみなす。
-	$cmd = 'read';
 }
 
 if ($is_protect) {
@@ -437,13 +434,17 @@ if (isset($retvars['body']) && !empty($retvars['body'])) {
 		$title = $s_base;
 		$page  = Factory::Wiki($base)->link('related');
 	}
-	if (empty($vars['page'])) die('page is missing!');
+	$vars['cmd']  = 'read';
+	$vars['page'] = $base;
 
+	if (empty($vars['page'])) die('page is missing!');
+	
+	$body = Factory::Wiki($vars['page'])->render();
+	
 	LogFactory::factory('check',$vars['page'])->set();
 }
 
 if ($vars['cmd'] === 'read'){
-	$body = Factory::Wiki($vars['page'])->render();
 	LogFactory::factory('browse',$vars['page'])->set();
 }
 

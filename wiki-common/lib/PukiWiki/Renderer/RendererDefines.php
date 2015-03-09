@@ -65,7 +65,7 @@ class RendererDefines{
 	/**
 	 * imgタグに展開する拡張子のパターン
 	 */
-	const IMAGE_EXTENTION_PATTERN = '/\.(gif|png|bmp|jpe?g|svg?z|webp)$/i';
+	const IMAGE_EXTENTION_PATTERN = '/\.(gif|png|bmp|jpe?g|svg?z|webp|ico)$/i';
 	/**
 	 * audioタグで展開する拡張子のパターン
 	 */

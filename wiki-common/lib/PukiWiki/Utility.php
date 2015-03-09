@@ -382,15 +382,23 @@ class Utility{
 	}
 	/**
 	 * 相対指定のページ名から全ページ名を取得
-	 * @param string $name
-	 * @param string $refer
-	 * @return string
+	 * @param string $name 名前の入力値
+	 * @param string $refer 引用元のページ名
+	 * @return string ページのフルパス
 	 */
-	public static function getPageName($name, $refer) {
-		global $defaultpage;
+	public static function getPageName($name = null, $refer = null) {
+		global $defaultpage, $vars;
+		
+		if (empty($refer) && isset($vars['page']) && !empty($vars['page'])){
+			// 引用元が指定されていない場合、外部変数からのページ名を引用元とする
+			$refer = $vars['page'];
+		}
 
 		// 'Here'
-		if (empty($name) || $name === './') return $refer;
+		if (empty($name) || $name === './'){
+			// ページ名が指定されてない場合、引用元のページ名を返す
+			return $refer;
+		}
 
 		// Absolute path
 		if ($name{0} === '/') {
@@ -400,6 +408,7 @@ class Utility{
 
 		// Relative path from 'Here'
 		if (substr($name, 0, 2) === './') {
+			// 同一ディレクトリ
 			$arrn    = preg_split('#/#', $name, -1, PREG_SPLIT_NO_EMPTY);
 			$arrn[0] = $refer;
 			return join('/', $arrn);
@@ -407,13 +416,16 @@ class Utility{
 
 		// Relative path from dirname()
 		if (substr($name, 0, 3) === '../') {
+			// 上の階層
 			$arrn = preg_split('#/#', $name,  -1, PREG_SPLIT_NO_EMPTY);
 			$arrp = preg_split('#/#', $refer, -1, PREG_SPLIT_NO_EMPTY);
 
-			while (! empty($arrn) && $arrn[0] == '..') {
+			// 改装を遡る
+			while (! empty($arrn) && $arrn[0] === '..') {
 				array_shift($arrn);
 				array_pop($arrp);
 			}
+			// ディレクトリを結合する
 			$name = ! empty($arrp) ? join('/', array_merge($arrp, $arrn)) :
 				(! empty($arrn) ? $defaultpage . '/' . join('/', $arrn) : $defaultpage);
 		}
@@ -793,7 +805,7 @@ class Utility{
 		$html[] = '<html>';
 		$html[] = '<head>';
 		$html[] = '<meta charset="utf-8">';
-		$html[] = '<meta name="robots" content="NOINDEX,NOFOLLOW" />';
+		$html[] = '<meta name="robots" content="noindex,nofollow,noarchive,noodp,noydir" />';
 		if (!DEBUG){
 			$html[] = '<meta http-equiv="refresh" content="'.$time.'; URL='.$s_url.'" />';
 		}

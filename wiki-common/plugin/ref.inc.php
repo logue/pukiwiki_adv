@@ -15,7 +15,9 @@ use \SplFileObject;
 use PukiWiki\Attach;
 use PukiWiki\Renderer\Header;
 use PukiWiki\Renderer\Inline\Inline;
+use PukiWiki\Renderer\Inline\InterWikiName;
 use PukiWiki\Renderer\RendererDefines;
+use PukiWiki\Router;
 use PukiWiki\Text\Rules;
 use PukiWiki\Utility;
 use Zend\Http\Response;
@@ -28,13 +30,6 @@ define('PLUGIN_REF_DEFAULT_ALIGN', 'left'); // 'left', 'center', 'right', 'justi
 
 // NOT RECOMMENDED: getimagesize($uri) for proper width/height
 define('PLUGIN_REF_URL_GET_IMAGE_SIZE', FALSE); // FALSE, TRUE
-
-// DANGER, DO NOT USE THIS: Allow direct access to UPLOAD_DIR
-define('PLUGIN_REF_DIRECT_ACCESS', FALSE); // FALSE or TRUE
-// - This is NOT option for acceralation but old and compatible.
-// - Apache: UPLOAD_DIR/.htaccess will prohibit this usage.
-// - Browsers: This usage contains any proper mime-type, so
-//   some ones will not show proper result. And may cause XSS.
 
 /////////////////////////////////////////////////
 
@@ -73,14 +68,22 @@ function plugin_ref_convert()
 		return '<div class="alert alert-warning">' . Utility::htmlsc('#ref(): ERROR: No _body') . '</div>' . "\n";
 	}
 
-	$class = '';
-	if (isset($params['around'])) {
-		$class .= ($params['_align'] == 'right') ? 'pull-right' : 'pull-left';
+	$class = array();
+	if ($params['around']) {
+		$class[] = ($params['_align'] == 'right') ? 'pull-right' : 'pull-left';
 	} else {
-		$class .= 'text-' . $params['_align'];
+		$class[] = 'text-' . $params['_align'];
+	}
+	if ($params['rounded']){
+		$class[] = ' img-rounded';
+	}else if ($params['circle']){
+		$class[] = ' img-circle';
+	}
+	if ($params['thumbnail']){
+		$class[] = ' img-thumbnail';
 	}
 
-	return '<figure class="'.$class.'">'.$params['_body'].'</figure>'."\n";
+	return '<figure class="'.join(' ', $class).'">'.$params['_body'].'</figure>'."\n";
 }
 
 // Common function
@@ -95,8 +98,7 @@ function plugin_ref_body($args)
 		'left'   => FALSE, // Align
 		'center' => FALSE, //      Align
 		'right'  => FALSE, //           Align
-//		'wrap'   => FALSE, // Wrap the output with table ...
-//		'nowrap' => FALSE, //   or not
+		'justify'=> FALSE, // A   l   i   g   n
 		'around' => FALSE, // Text wrap around or not
 		'noicon' => FALSE, // Suppress showing icon
 		'noimg'  => FALSE, // Suppress showing image
@@ -105,27 +107,46 @@ function plugin_ref_body($args)
 		'zoom'   => FALSE, // Lock image width/height ratio as the original said
 
 		// Adv.
-		'borderd'   => FALSE,   // 枠をつける
 		'rounded'   => FALSE,   // 角を丸くする
 		'circle'    => FALSE,   // 丸い画像にする
-		'novideo'  => FALSE,    // ビデオを展開しない
-		'noaudio'  => FALSE,    // 音声を展開しない
+		'thumbnail' => FALSE,   // 枠をつける
+		'novideo'   => FALSE,    // ビデオを展開しない
+		'noaudio'   => FALSE,    // 音声を展開しない
 
 		// Flags and values
 		'_align' => PLUGIN_REF_DEFAULT_ALIGN,
-		'_size'  => FALSE, // Image size specified
-		//'_w'     => 0,     // Width
-		//'_h'     => 0,     // Height
-		//'_%'     => 0,     // Percentage
-		//'_title' => null,  // Reserved
-		//'_body   => null,  // Reserved
+		'_size'  => True, // Image size specified
+		'_w'     => 0,     // Width
+		'_h'     => 0,     // Height
+		'_%'     => 0,     // Percentage
+		'_title' => null,  // Reserved
+		'_body'  => null,  // Reserved
 		'_error' => null,  // Reserved,
 		'_class' => ''
 	);
 
 	// [Page_name/maybe-separated-with/slashes/]AttachedFileName.sfx or URI
-	$name    = array_shift($args);
-	$is_url  = Utility::isUri($name);
+	$name    = array_shift($args);	// ファイル名
+	
+	
+	// 第一引数が InterWiki か
+	if(Utility::isInterWiki($name)) {
+		preg_match('/^' . RendererDefines::INTERWIKINAME_PATTERN . '$/', $name, $intermatch);
+		$intername = $intermatch[2];
+		$interparam = $intermatch[3];
+		$interurl = InterWikiName::getInterWikiUrl($intername,$interparam);
+		if ($interurl !== FALSE) {
+			$name = $interurl;
+		}
+	}
+	$is_url  = Utility::isUri($name);	// アドレスか？
+	
+	// 画像
+	$seems_image = (! $params['noimg'] && preg_match(RendererDefines::IMAGE_EXTENTION_PATTERN, $name));
+	// ビデオ
+	$seems_video = (! $params['novideo'] && preg_match(RendererDefines::VIDEO_EXTENTION_PATTERN, $name));
+	// 音声
+	$seems_audio = (! $params['noaudio'] && preg_match(RendererDefines::AUDIO_EXTENTION_PATTERN, $name));
 
 	$file    = ''; // Path to the attached file
 	$is_file = FALSE;
@@ -184,21 +205,28 @@ function plugin_ref_body($args)
 		$a = new Attach($page, $name);
 
 		if (! $a->has()) {
-			$params['_error'] = 'File not found: "' .
-				$name . '" at page "' . $page . '"';
+			$params['_error'] = 'File not found: "' . Utility::htmlsc($name) . '" at page "' . Utility::htmlsc($page) . '"';
 			return $params;
 		}
 	}
-
-	// パラメータを取得
-	$params = ref_check_args($args, $params);
-
-	// 画像
-	$seems_image = (! isset($params['noimg']) && preg_match(RendererDefines::IMAGE_EXTENTION_PATTERN, $name));
-	// ビデオ
-	$seems_video = (! isset($params['novideo']) && preg_match(RendererDefines::VIDEO_EXTENTION_PATTERN, $name));
-	// 音声
-	$seems_audio = (! isset($params['noaudio']) && preg_match(RendererDefines::AUDIO_EXTENTION_PATTERN, $name));
+	
+	
+	
+	// 残りの引数の処理
+	if (! empty($args)) {
+		$keys = array_keys($params);
+		$params['_done'] = false;
+		foreach($args as $val) {
+			list($_key, $_val) = array_pad(explode(':', $val, 2), 2, TRUE);
+			$_key = trim(strtolower($_key));
+			if (is_string($_val)) $_val = trim($_val);
+			if (in_array($_key, $keys) && $params['_done'] !== TRUE) {
+				$params[$_key] = $_val;    // Exist keys
+			} elseif ($val != '') {
+				$params['_args'][] = $val; // Not exist keys, in '_args'
+			}
+		}
+	}
 
 	$width = $height = 0;
 	$url   = $url2   = '';
@@ -215,36 +243,50 @@ function plugin_ref_body($args)
 		}
 		$matches = array();
 		$params['_title'] = preg_match('#([^/]+)$#', $url, $matches) ? $matches[1] : $url;
-
-		if ($seems_image && PLUGIN_REF_URL_GET_IMAGE_SIZE && (bool)ini_get('allow_url_fopen')) {
-			// PLUGIN_REF_URL_GET_IMAGE_SIZEが有効でかつallow_url_fopenが使用可能の場合、HTTP越しに画像サイズを取得する
-			$size = @getimagesize($name);
-			if (is_array($size)) {
-				$width  = $size[0];
-				$height = $size[1];
-			}
-		}
 	} else {
+		// Wikiの添付ファイルの場合
 		// Count downloads with attach plugin
-		$url = get_cmd_uri('attach', null, null, array('refer'=>$page, 'openfile'=>$name));
+		$url = Router::get_cmd_uri('attach', null, null, array('refer'=>$page, 'openfile'=>$name));
 		$url2 = '';
 		$params['_title'] = $name;
 
 		if ($seems_image || $seems_video || $seems_audio) {
 			// URI for in-line image output
 			$url2 = $url;
-			if (PLUGIN_REF_DIRECT_ACCESS) {
-				$url = $file; // Try direct-access, if possible
-			} else {
-				// With ref plugin (faster than attach)
-				$url = get_cmd_uri('ref', $page, null, array('src'=>$name));
-			}
+
+			// With ref plugin (faster than attach)
+			$url = Router::get_cmd_uri('ref', $page, null, array('src'=>$name));
+
 			if ($seems_image) {
-				$size = @getimagesize($file);
+				// 画像の場合は、getimagesizeでサイズを読み取る
+				$size = getimagesize($a->path);
 				if (is_array($size)) {
-					$width  = $size[0];
-					$height = $size[1];
+					$params['_w'] = $size[0];
+					$params['_h'] = $size[1];
 				}
+			}
+		}
+	}
+	
+	// 拡張パラメータをチェック
+	if (! empty($params['_args'])) {
+		$_title = array();
+		foreach ($params['_args'] as $arg) {
+			if (preg_match('/^([0-9]+)x([0-9]+)$/', $arg, $matches)) {
+				$params['_size'] = TRUE;
+				$params['_w'] = $matches[1];
+				$params['_h'] = $matches[2];
+			} else if (preg_match('/^([0-9.]+)%$/', $arg, $matches) && $matches[1] > 0) {
+				$params['_%'] = $matches[1];
+			} else {
+				$_title[] = $arg;
+			}
+		}
+		foreach (array('right', 'left', 'center') as $align) {
+			if (isset($params[$align])) {
+				$params['_align'] = $align;
+				unset($params[$align]);
+				break;
 			}
 		}
 	}
@@ -252,38 +294,48 @@ function plugin_ref_body($args)
 	$s_title = isset($params['_title']) ? Inline::setLineRules(Utility::htmlsc($params['_title'])) : '';
 	$s_info  = '';
 
-	if ($seems_image) {
-		// 画像
+	if ($seems_image || $seems_video) {
+		// 指定されたサイズを使用する
 		
-		if (ref_check_size($width, $height, $params) && isset($params['_w']) && isset($params['_h'])) {
-			// サイズ
-			$s_info = 'width="'  . Utility::htmlsc($params['_w']) .
-			        '" height="' . Utility::htmlsc($params['_h']) . '" ';
+		$info = '';
+		if ($width === 0 && $height === 0) {
+			$width  = $params['_w'];
+			$height = $params['_h'];
 		}
-		$body = '<img src="' . $url   . '" ' .
-			'alt="'      . $s_title . '" ' .
-			'title="'    . $s_title . '" ' .
-			'class="'    . $params['_class'] . '" ' .
-			$s_info . '/>';
-		if (! isset($params['nolink']) && $url2) {
-			$params['_body'] =
-				'<a href="' . $url2 . '" title="' . $s_title . '"'. ((IS_MOBILE) ? ' data-ajax="false"' : '') . '>' . "\n" .
-				$body . "\n" . '</a>';
-		} else {
-			$params['_body'] = $body;
+	
+		if ($params['_size']) {
+			if ($params['zoom']) {
+				$_w = $params['_w'] ? $width  / $params['_w'] : 0;
+				$_h = $params['_h'] ? $height / $params['_h'] : 0;
+				$zoom = max($_w, $_h);
+				if ($zoom) {
+					$width  = (int)($width  / $zoom);
+					$height = (int)($height / $zoom);
+				}
+			} else {
+				$width  = $params['_w'] ? $params['_w'] : $width;
+				$height = $params['_h'] ? $params['_h'] : $height;
+			}
 		}
-	} else if ($seems_video) {
-		// ビデオ
-		if (ref_check_size($width, $height, $params) &&
-		    isset($params['_w']) && isset($params['_h'])) {
-			$s_info = 'width="'  . Utility::htmlsc($params['_w']) .
-			        '" height="' . Utility::htmlsc($params['_h']) . '" ';
+		if ($params['_%']) {
+			$width  = (int)($width  * $params['_%'] / 100);
+			$height = (int)($height * $params['_%'] / 100);
 		}
-		$body = '<video src="' . $url   . '" ' .
-			'alt="'      . $s_title . '" ' .
-			'title="'    . $s_title . '" ' .
-			'class="'    . $params['_class'] . '" ' .
-			$s_info . '/>';
+		$info = $width && $height ? 'width="' . $width . '" height="' . $height .'" ' : '';
+		
+		if ($seems_image) {
+			$body = '<img src="' . $url   . '" ' .
+				'alt="'      . $s_title . '" ' .
+				'title="'    . $s_title . '" ' .
+				'class="'    . $params['_class'] . '" ' .
+				$info . '/>';
+		}else if ($seems_video) {
+			$body = '<video src="' . $url   . '" ' .
+				'alt="'      . $s_title . '" ' .
+				'title="'    . $s_title . '" ' .
+				'class="'    . $params['_class'] . '" ' .
+				$s_info . '/>';
+		}
 		if (! isset($params['nolink']) && $url2) {
 			$params['_body'] =
 				'<a href="' . $url2 . '" title="' . $s_title . '"'. ((IS_MOBILE) ? ' data-ajax="false"' : '') . '>' . "\n" .
@@ -315,108 +367,6 @@ function plugin_ref_body($args)
 	}
 
 	return $params;
-}
-
-function ref_check_args($args, $params)
-{
-	if (! is_array($args) || ! is_array($params)) return;
-
-	$_args   = array();
-	$_title  = array();
-	$matches = array();
-
-	if (isset($_args['rounded'])){
-		$params['_class'] = 'img-rounded';
-	}else if (isset($_args['circle'])){
-		$params['_class'] = 'img-circle';
-	}
-	if (isset($_args['thumbnail'])){
-		$params['_class'] .= ' img-thumbnail';
-	}
-
-	foreach ($args as $arg) {
-		$hit = FALSE;
-		if (! empty($arg) && ! preg_match('/^_/', $arg)) {
-			$larg = strtolower($arg);
-			foreach (array_keys($params) as $key) {
-				if (strpos($key, $larg) === 0) {
-					$hit          = TRUE;
-					$params[$key] = TRUE;
-					break;
-				}
-			}
-		}
-		if (! $hit) $_args[] = $arg;
-	}
-	
-
-	foreach ($_args as $arg) {
-		if (preg_match('/^([0-9]+)x([0-9]+)$/', $arg, $matches)) {
-			$params['_size'] = TRUE;
-			$params['_w']    = intval($matches[1]);
-			$params['_h']    = intval($matches[2]);
-		} else if (preg_match('/^([0-9.]+)%$/', $arg, $matches) && $matches[1] > 0) {
-			$params['_%']    = intval($matches[1]);
-		} else {
-			$_title[] = $arg;
-		}
-	}
-	unset($_args);
-	$params['_title'] = join(',', $_title);
-	unset($_title);
-	foreach(array_keys($params) as $key) {
-		if (! preg_match('/^_/', $key) && empty($params[$key])) {
-			unset($params[$key]);
-		}
-	}
-
-	foreach (array('right', 'left', 'center') as $align) {
-		if (isset($params[$align])) {
-			$params['_align'] = $align;
-			unset($params[$align]);
-			break;
-		}
-	}
-	
-	return $params;
-}
-
-function ref_check_size($width = 0, $height = 0, & $params)
-{
-	if (! is_array($params)) return FALSE;
-
-	$width   = intval($width);
-	$height  = intval($height);
-	$_width  = isset($params['_w']) ? intval($params['_w']) : 0;
-	$_height = isset($params['_h']) ? intval($params['_h']) : 0;
-
-	if (isset($params['_size'])) {
-		if ($width == 0 && $height == 0) {
-			$width  = $_width;
-			$height = $_height;
-		} else if (isset($params['zoom'])) {
-			$_w = $_width  ? $width  / $_width  : 0;
-			$_h = $_height ? $height / $_height : 0;
-			$zoom = max($_w, $_h);
-			if ($zoom) {
-				$width  = $width  / $zoom;
-				$height = $height / $zoom;
-			}
-		} else {
-			$width  = $_width  ? $_width  : $width;
-			$height = $_height ? $_height : $height;
-		}
-	}
-
-	if (isset($params['_%'])) {
-		$width  = $width  * $params['_%'] / 100;
-		$height = $height * $params['_%'] / 100;
-	}
-
-	$params['_w'] = intval($width);
-	$params['_h'] = intval($height);
-
-	return ($params['_w'] && $params['_h']);
 }
 
 // Output an image (fast, non-logging <==> attach plugin)

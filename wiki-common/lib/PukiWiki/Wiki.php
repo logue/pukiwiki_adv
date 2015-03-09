@@ -16,6 +16,7 @@ namespace PukiWiki;
 use Exception;
 use PukiWiki\Auth\Auth;
 use PukiWiki\Backup;
+use PukiWiki\Diff\Diff;
 use PukiWiki\Diff\LineDiff;
 use PukiWiki\File\AttachFile;
 use PukiWiki\File\FileFactory;
@@ -416,7 +417,7 @@ class Wiki{
 		$oldpostdata = self::has() ? self::get(TRUE) : '';
 
 		// 差分を生成（ここでの差分データーはAkismetでも使う）
-		// $diff = new Diff($postdata, $oldpostdata);
+		$diff = new Diff($oldpostdata, $postdata);
 		$diffobj = new LineDiff();
 		$diffdata = $diffobj->str_compare($oldpostdata, $postdata);
 

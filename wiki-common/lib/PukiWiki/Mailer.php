@@ -5,10 +5,10 @@
  * @package   PukiWiki\Mailer
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2013 PukiWiki Advance Developers Team
+ * @copyright 2013,2015 PukiWiki Advance Developers Team
  * @create    2013/03/15
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Mail.php,v 1.0.0 2013/03/15 17:55:00 Logue Exp $
+ * @version   $Id: Mail.php,v 1.0.1 2015/03/09 00:31:00 Logue Exp $
  */
  
 namespace PukiWiki;
@@ -60,7 +60,7 @@ class Mailer{
 			}
 			unset($summary);
 		}
-		self::sendMail($notify_from, $notify_to, $subject, $message);
+		self::send($notify_from, $notify_to, $subject, $message);
 	}
 	/**
 	 * メールを送信する
