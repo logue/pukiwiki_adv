@@ -1,17 +1,17 @@
 <?php
 /**
  * PukiWiki Advance - Yet another WikiWikiWeb clone.
- * $Id: gs2.css.php,v 2.0 2014/03/19 13:16:00 Logue Exp $
+ * $Id: gs2.css.php,v 2.0.1 2015/03/11 20:28:00 Logue Exp $
  * 
  * Copyright (C)
- *   2011-2014 PukiWiki Advance Developers Team
+ *   2011-2015 PukiWiki Advance Developers Team
  * based on "GS2" v1.5.3
  *   by yiza < http://www.yiza.net/ >
  */
 ini_set('zlib.output_compression', 'Off');
 
 $expire = isset($_GET['expire'])   ? (int)$_GET['expire'] * 86400	: '604800';	// Default is 7 days.
-$gs2_color = isset($_GET['color']) ? $_GET['color'] : 'blue';
+$gs2_color = isset($_GET['color']) ? htmlspecialchars($_GET['color'], 'UTF-8', ENT_QUOTES) : 'blue';
 
 $ini = parse_ini_file('./color/'.$gs2_color.'.ini');
 

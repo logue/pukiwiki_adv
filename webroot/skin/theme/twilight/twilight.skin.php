@@ -3,12 +3,11 @@
  * PukiWiki Advance - Yet another WikiWikiWeb clone.
  *
  * Twilight v 1.0 
- * by fuyuka88 < https://github.com/fuyuka88 >
+ * by fuyuka88 < https://github.com/fuyukoma/ >
  * Modified by Logue
  *
- * $Id: default.skin.php,v 1.0.0 2014/08/31 0:10:00 Logue Exp $
+ * $Id: default.skin.php,v 1.0.1 2015/03/31 20:29:00 Logue Exp $
  */
-global $vars;
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $this->lang; ?>">
