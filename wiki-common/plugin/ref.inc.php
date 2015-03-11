@@ -282,12 +282,12 @@ function plugin_ref_body($args)
 				$_title[] = $arg;
 			}
 		}
-		foreach (array('right', 'left', 'center') as $align) {
-			if (isset($params[$align])) {
-				$params['_align'] = $align;
-				unset($params[$align]);
-				break;
-			}
+	}
+	foreach (array('right', 'left', 'center', 'justify') as $align) {
+		if (isset($params[$align])) {
+			$params['_align'] = $align;
+			unset($params[$align]);
+			break;
 		}
 	}
 
