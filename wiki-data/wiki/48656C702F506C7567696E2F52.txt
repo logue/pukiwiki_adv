@@ -61,7 +61,7 @@
 &color(blue){URL};
 [,&color(blue){ページ名};]
 {,
-[&color(blue){left};|&color(blue){center};|&color(blue){right};],
+[&color(blue){left};|&color(blue){center};|&color(blue){right};|&color(blue){justify};],
 [&color(blue){wrap};|&color(blue){nowrap};],
 [&color(blue){around};],
 [&color(blue){noicon};],
@@ -69,7 +69,9 @@
 [&color(blue){nolink};],
 [&color(blue){zoom};],
 [&color(blue){999x999};],
-[&color(blue){999%};]
+[&color(blue){999%};],
+[&color(blue){thumbnail};]
+[&color(blue){round};|&color(blue){circle};],
 }
 [,&color(blue){タイトル};]
 '')''
@@ -89,12 +91,12 @@
 [,&color(blue){タイトル};]
 '');''
 :概要|
-~'#attach'でページに添付されたファイルを指定位置に展開します。添付ファイルが画像の場合は画像を表示し、それ以外の場合はダウンロード用のリンクを表示します。
+~'#attach'でページに添付されたファイルを指定位置に展開します。添付ファイルが画像（jpeg, jpg, gif, png, webp, ico, bmp）の場合は画像を表示し、動画（mp4, ogm, webm）の場合videoタグで貼り付け、音声（m4a, wav, mp3, ogg）の場合シークバー、それ以外の場合はダウンロード用のリンクを表示します。
 :引数|
 ~添付ファイル名にはページに添付したファイル名を指定します（省略時はエラーとなります）。別ページ名/添付ファイル名とする事で別ページの添付ファイルも指定できます。
 ~ページ名にはファイルを添付したページをWikiNameかBracketNameで指定します。このオプションは最初(添付ファイル名の次)に記述してください。省略時は設置したページです。
 ~パラメータにはファイルの展開方法を指定できます。
---left|center|right − 表示時の位置を指定します。省略時はleft(変更可)です。
+--left|center|right|justify − 表示時の位置を指定します。省略時はleft(変更可)です。aroundの場合、centerとjustifyは無視されます。
 --wrap|nowrap − テーブルタグで囲む/囲まないの指定を行います。省略時はnowrap(変更可)です。
 --around − テキストの回り込みを可能とします。省略時は回り込みを行いません。
 --noicon − ファイルが画像以外の場合に表示されるアイコンを表示しません。省略時は表示します。
@@ -104,13 +106,13 @@
 --999x999 − サイズを指定します(幅x高さ)。省略時は拡大率あるいは対象画像のサイズに従います。
 --999% − サイズを指定(拡大率)します。省略時は100%です、
 --タイトル − 上記以外のパラメータは画像の代替文字列、リンクのタイトル属性として使用されます。ページ名やパラメータに見える文字列を使用するときは、#ref(hoge.png,,zoom)のようにタイトルの前にカンマを余分に入れます。
+--thumbnail - 周りに枠を付けます。
+--round|circle - 角丸の設定をします。
 :プラグイン内設定|~
 --PLUGIN_REF_USAGE　引数未指定時に表示されるヘルプ
 --PLUGIN_REF_IMAGE　マッチ時に指定ファイルを画像とみなす正規表現
 --FILE_ICON　アイコンイメージのファイル
---REF_DEFAULT_ALIGN　left,center,right省略時の表示位置
---REF_WRAP_TABLE　wrap,nowrap省略時にテーブルタグで囲むか
---REF_URL_GETIMAGESIZE　URL指定時に画像サイズを取得するか
+--REF_DEFAULT_ALIGN　left,center,right,justify省略時の表示位置
 :備考|
 ~aroundで行った回り込み指定を解除するには clearプラグイン、あるいはimgプラグインを使用して下さい。
 ~"ほげ"という別ページの添付ファイル"fuga.jpg"をインラインプラグイン形式で参照する場合、下記２通りの記述方法が存在します。
@@ -120,9 +122,9 @@
 いずれの記述方法であっても一般的な動作は同じですが、いわゆるバナー画像のように表示した画像が別ページへのリンクとなるよう以下の指定をした場合、
  (1)  [[&ref(ほげ/fuga.jpg,nolink,ウェブ名);>ウェブのURL]]
  (2)  [[&ref(fuga.jpg,[[ほげ]],nolink,ウェブ名);>ウェブのURL]]
-(1)の記述方法は期待通りの動作をしますが、(2)の記述方法ではうまくリンクされません。
-
-
+(1)の記述方法は期待通りの動作をしますが、(2)の記述方法ではうまくリンクされません。~
+InterWikiNameで別Wikiの添付ファイルを貼り付けることもできます。（リンク先のWikiが許可している場合のみ）
+ #ref(adv.:FrontPage/pukiwiki_adv.png)
 *region [#GQwhi6b]
 :種別|
 ~ブロック型プラグイン
@@ -242,19 +244,6 @@
 :備考|
 Wikiの規模によっては途中で503が出ることがありますが、それまでに実行した置き換えは引き継がれます。
 
-*rss [#iaac8b70]
-:種別|
-~コマンド
-:重要度|
-~★☆☆☆☆
-:書式|
-~''?cmd=rss''
-~''#rss''
-:概要|
-~RecentChangesをRSS(RDF Site Summary)0.91に変換して出力します。
-:備考|
-~RSSはサイトの要約を提供するのに使われるXMLフォーマットです。
-
 
 *ruby [#u3fad1fe]
 :種別|
@@ -272,6 +261,3 @@ Wikiの規模によっては途中で503が出ることがありますが、そ�
 :引数|
 ~ルビには表示するルビを指定します。
 ~対象文字列にはルビがふられる文字列を指定します。
-:備考|
-~XHTML 1.1のルビに対応したブラウザでないと、ルビとして表示されません。IE5.5/6では表示できます。Netscape 7/Mozillaでは[[XHTML Ruby Support:http://white.sakura.ne.jp/~piro/xul/_rubysupport.html]]を組み込めば表示できます。
-~ルビに対応していないブラウザではルビをふる文字列の直後にルビが( )に入れられて表示されます。

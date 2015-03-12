@@ -156,6 +156,10 @@ function plugin_ref_body($args)
 			$params['_error'] = 'UPLOAD_DIR is not found.';
 			return $params;
 		}
+		// ページ名が空の時は処理しない
+		if (empty($page)){
+			return '';
+		}
 
 		$matches = array();
 		if (preg_match('#^(.+)/([^/]+)$#', $name, $matches)) {
@@ -209,8 +213,6 @@ function plugin_ref_body($args)
 			return $params;
 		}
 	}
-	
-	
 	
 	// 残りの引数の処理
 	if (! empty($args)) {
