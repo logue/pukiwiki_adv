@@ -11,4 +11,4 @@ RIGHT:yesterday: &color(green){&counter(yesterday);};
 RIGHT:now: &color(green){&online();};
 
 ----
-&edit(MenuBar,noicon){Edit:MenuBar};
+&edit(MenuBar);

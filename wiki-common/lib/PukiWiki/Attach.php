@@ -63,7 +63,7 @@ class Attach{
 		$this->filename = $filename;
 		$this->age = $age;
 		$attaches = $this->wiki->attach(false);
-		$this->files = $attaches[$filename];	// ファイルのバックアップ一覧
+		$this->files = isset($attaches[$filename]) ? $attaches[$filename] : null;	// ファイルのバックアップ一覧
 		$this->update = false;	// ステータスの更新フラグ
 		$this->path = AttachFile::$dir . $this->files[$this->age];	// ファイルのパス
 

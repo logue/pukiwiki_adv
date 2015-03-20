@@ -141,17 +141,20 @@ class Utility{
 			$vars = array_merge((array)$get, (array)$post); // Considered reliable than $_REQUEST
 		}
 
+//		var_dump($vars);
+//		die;
+
 		if (!isset($vars['cmd'])){
 			$vars['cmd'] = 'read';
 		}
 
-		if (isset($vars['page']) && preg_match(Wiki::INVALIED_PAGENAME_PATTERN, $vars['page'])){
+		if (isset($vars['page']) && is_string($vars['page']) && preg_match(Wiki::INVALIED_PAGENAME_PATTERN, $vars['page']) === false){
 			// ページ名チェック
 			self::dump('suspicious');
 			die('Invalid page name.');
 		}
 
-		if (!preg_match(PluginRenderer::PLUGIN_NAME_PATTERN, $vars['cmd']) !== FALSE){
+		if (is_string($vars['cmd']) && preg_match(PluginRenderer::PLUGIN_NAME_PATTERN, $vars['cmd']) === false){
 			// 入力チェック: cmdの文字列は英数字以外ありえない
 			self::dump('suspicious');
 			die(sprintf('Plugin name %s is invalied or too long! (less than 64 chars)', $vars['cmd']));
