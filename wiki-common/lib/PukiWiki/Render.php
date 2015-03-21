@@ -47,7 +47,7 @@ class Render{
 	/**
 	 * jQuery UIのバージョン
 	 */
-	const JQUERY_UI_VER = '1.11.2';
+	const JQUERY_UI_VER = '1.11.4';
 	/**
 	 * jQuery Mobileのバージョン
 	 */
@@ -55,7 +55,7 @@ class Render{
 	/**
 	 * Twitter Bootstrapのバージョン
 	 */
-	const TWITTER_BOOTSTRAP_VER = '3.3.2';
+	const TWITTER_BOOTSTRAP_VER = '3.3.4';
 	/**
 	 * Font Awesomeのバージョン
 	 */
