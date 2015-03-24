@@ -7,7 +7,7 @@
 		}
     ],
 	"description": "PukiWiki Advance",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"keywords": [
 		"pukiwiki",
 		"pukiwiki adv",
@@ -62,7 +62,6 @@
 		"zendframework/zendxml":"*"
 	},
 	"suggest":{
-		"ext-curl" : "Facebook needs the CURL PHP extension.",
 		"ext-gd" : "for thumbnail.",
 		"ext-intl" : "for i18n use."
 	},
