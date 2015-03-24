@@ -231,7 +231,6 @@ class Attach{
 		$file = new File($this->path);
 
 		if (! ($file->has() && $file->isReadable())) {
-			Header::writeResponse($header, $status_code, $buffer);
 			$response->setStatusCode(Response::STATUS_CODE_404);
 			header($response->renderStatusLine());
 			echo 'File not found.';
@@ -245,45 +244,79 @@ class Attach{
 		// ファイルを一応ロック
 		$f->flock(LOCK_SH);
 		// ファイルサイズ
-		$filesize = $f->getSize();
+		$size = $f->getSize();
 		// ファイルの残量
 		$rest = 0;
+		// 開始位置
+		$start = 0;
+		// 終了位置
+		$end = $filesize - 1;
 		// 分割転送する場合のブロックサイズ
-		$blocksize = 4096;
+		$blocksize = 1024 * 8;
+		
+		header("Accept-Ranges: 0-$length");	// オイオイ
 
 		if ( isset($_SERVER['HTTP_RANGE']) ){
+			$c_start = $start;
+			$c_end   = $end;
+
 			// 環境変数HTTP_RANGEから全データー量と転送済みのデーター量を取得する
-			list($toss, $range) = explode('=', $_SERVER['HTTP_RANGE']);
-			list($range_start, $range_end) = explode('-', $range);
-			
-			$range_end = $filesize - 1;
-			$length = $filesize - $range_start;
-			if ($range_start > 0){
-				// 206 Partial Content
-				$status_code = STATUS_CODE_206;
-				// Content Rangeヘッダーを付加
-				$header['Content-Range'] = 'bytes ' . $range . '/' . $filesize;
+			list(, $range) = explode('=', $_SERVER['HTTP_RANGE'], 2);
+			list($start, $end) = explode('-', $range);
+
+			$size = $filesize - 1;
+			$length = $range_end - $range_start + 1; // (rangeは0から始まる数なので)
+
+			if (strpos($range, ',') !== false) {;
+				// 416 Requested Range Not Satisfiable
+				$status_code = Response::STATUS_CODE_416;
+			}else{
+				if ($range == '-') {
+					$c_start = $size - substr($range, 1);
+				}else{
+					$range  = explode('-', $range);
+					$c_start = $range[0];
+					$c_end   = (isset($range[1]) && is_numeric($range[1])) ? $range[1] : $size;
+				}
+				$c_end = ($c_end > $end) ? $end : $c_end;
+				if ($c_start > $c_end || $c_start > $size - 1 || $c_end >= $size) {
+					// 416 Requested Range Not Satisfiable
+					$status_code = Response::STATUS_CODE_416;
+				}else{
+					$start  = $c_start;
+					$end    = $c_end;
+					$length = $end - $start + 1;
+					// 転送済みのファイルの長さの分だけポインタを進める
+					$f->fseek($start);
+					// 206 Partial Content
+					$status_code = Response::STATUS_CODE_206;
+				}
 			}
-			// 転送済みのファイルの長さの分だけポインタを進める
+			$header['Content-Range'] = 'bytes ' . $start . '-' . $end . '/' . $size;
+			
 			$f->fseek($length);
 			// 出力完了位置
 			$rest = $range_end - $range_start + 1;
 
 			// ファイルを出力
-			$readsize = 0;
-			while (!$f->eof() && $rest > 0) {
-				if ($blocksize > $rest) {
-					$readsize = $rest;
+			$buffer = $blocksize;
+			while(!$f->feof() && ($p = $f->ftell()) <= $end) {
+
+				if ($p + $buffer > $end) {
+				    $buffer = $end - $p + 1;
 				}
-				echo $f->fgets();
-				$rest -= $readsize;
+				set_time_limit(0);
+				echo $f->fread($buffer);
+				flush();
 			}
 		}else{
-			while (!$f->eof()) {
-				echo $f->fgets();
-			}
+			$f->fpassthru();
 		}
+		// ロック解除
 		$f->flock(LOCK_SH);
+		// ファイルを閉じる
+		$f = null;
+
 		$buffer = ob_get_clean();
 
 		$mime = self::getMime();

@@ -110,8 +110,9 @@ function plugin_ref_body($args)
 		'rounded'   => FALSE,   // 角を丸くする
 		'circle'    => FALSE,   // 丸い画像にする
 		'thumbnail' => FALSE,   // 枠をつける
-		'novideo'   => FALSE,    // ビデオを展開しない
-		'noaudio'   => FALSE,    // 音声を展開しない
+		'novideo'   => FALSE,   // ビデオを展開しない
+		'noaudio'   => FALSE,   // 音声を展開しない
+		'autoplay'  => FALSE,   // 自動再生する
 
 		// Flags and values
 		'_align' => PLUGIN_REF_DEFAULT_ALIGN,
@@ -336,7 +337,7 @@ function plugin_ref_body($args)
 				'alt="'      . $s_title . '" ' .
 				'title="'    . $s_title . '" ' .
 				'class="'    . $params['_class'] . '" ' .
-				$s_info . '/>';
+				$s_info . ' controls="controls" preload="auto">' . ;
 		}
 		if (! isset($params['nolink']) && $url2) {
 			$params['_body'] =
@@ -350,11 +351,11 @@ function plugin_ref_body($args)
 		$body = '<audio src="' . $url   . '" ' .
 			'alt="'      . $s_title . '" ' .
 			'title="'    . $s_title . '" ' .
-			'class="'    . $params['_class'] . '" />';
+			'class="'    . $params['_class'] . '" controls="controls" preload="auto" />';
 		if (! isset($params['nolink']) && $url2) {
 			$params['_body'] =
 				'<a href="' . $url2 . '" title="' . $s_title . '"'. ((IS_MOBILE) ? ' data-ajax="false"' : '') . '>' . "\n" .
-				$body . "\n" . '</a>';
+				(isset($params['noicon']) ? '' : '<span class="fa fa-music"></span>') . $body . "\n" . '</a>';
 		} else {
 			$params['_body'] = $body;
 		}
@@ -365,7 +366,7 @@ function plugin_ref_body($args)
 				' ' . sprintf('%01.1f', round(filesize($file) / 1024, 1)) . 'KB');
 		}
 		$params['_body'] = '<a href="' . $url . '" title="' . $s_info . '"'. ((IS_MOBILE) ? ' data-ajax="false"' : '') . '>' .
-			(isset($params['noicon']) ? '' : '<span class="fa fa-download"></span>') . $s_title . '</a>';
+			(isset($params['noicon']) ? '' : '<span class="fa fa-paperclip"></span>') . $s_title . '</a>';
 	}
 
 	return $params;
@@ -374,7 +375,7 @@ function plugin_ref_body($args)
 // Output an image (fast, non-logging <==> attach plugin)
 function plugin_ref_action()
 {
-	global $vars, $use_sendfile_header;
+	global $vars;
 
 	$usage = 'Usage: cmd=ref&amp;page=page_name&amp;src=attached_image_name';
 
