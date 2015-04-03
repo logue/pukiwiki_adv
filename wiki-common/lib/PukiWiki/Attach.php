@@ -244,7 +244,7 @@ class Attach{
 		// ファイルを一応ロック
 		$f->flock(LOCK_SH);
 		// ファイルサイズ
-		$size = $f->getSize();
+		$filesize = $f->getSize();
 		// ファイルの残量
 		$rest = 0;
 		// 開始位置
@@ -254,7 +254,7 @@ class Attach{
 		// 分割転送する場合のブロックサイズ
 		$blocksize = 1024 * 8;
 		
-		header("Accept-Ranges: 0-$length");	// オイオイ
+		header('Accept-Ranges: bytes');	// オイオイ
 
 		if ( isset($_SERVER['HTTP_RANGE']) ){
 			$c_start = $start;
@@ -312,6 +312,9 @@ class Attach{
 		}else{
 			$f->fpassthru();
 		}
+		
+		$mtime = $f->getMTime();
+		
 		// ロック解除
 		$f->flock(LOCK_SH);
 		// ファイルを閉じる
@@ -325,7 +328,7 @@ class Attach{
 
 		$filename = mb_convert_encoding($this->filename, 'UTF-8', 'auto');
 		// ヘッダー出力
-		$header = Header::getHeaders($content_type, $f->getMTime());
+		$header = Header::getHeaders($content_type, $mtime);
 
 		// attach系プラグインから読み取るときはattachment、refなど埋め込み系プラグインから読み取るときはinline
 		$disposition = $vars['cmd'] === 'attach' ? 'attachment' : 'inline';
