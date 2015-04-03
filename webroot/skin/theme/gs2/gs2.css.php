@@ -11,7 +11,7 @@
 ini_set('zlib.output_compression', 'Off');
 
 $expire = isset($_GET['expire'])   ? (int)$_GET['expire'] * 86400	: '604800';	// Default is 7 days.
-$gs2_color = isset($_GET['color']) ? htmlspecialchars($_GET['color'], 'UTF-8', ENT_QUOTES) : 'blue';
+$gs2_color = isset($_GET['color']) ? htmlspecialchars($_GET['color'], ENT_QUOTES, 'UTF-8') : 'blue';
 
 $ini = parse_ini_file('./color/'.$gs2_color.'.ini');
 
