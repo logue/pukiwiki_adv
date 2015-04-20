@@ -32,11 +32,11 @@ use Zend\Json\Json;
 
 defined('PLUGIN_ATTACH_ILLEGAL_CHARS_PATTERN')	or define('PLUGIN_ATTACH_ILLEGAL_CHARS_PATTERN', '/[%|=|&|?|#|\r|\n|\0|\@|\t|;|\$|+|\\|\[|\]|\||^|{|}]/');		// default: 4MB
 
-defined('PLUGIN_ATTACH_UPLOAD_MAX_FILESIZE')	or define('PLUGIN_ATTACH_UPLOAD_MAX_FILESIZE', '4M');		// default: 4MB
+defined('PLUGIN_ATTACH_UPLOAD_MAX_FILESIZE')	or define('PLUGIN_ATTACH_UPLOAD_MAX_FILESIZE', '16M');		// default: 16MB
 ini_set('upload_max_filesize', PLUGIN_ATTACH_UPLOAD_MAX_FILESIZE);
 
 // Max file size for upload on script of PukiWikiX_FILESIZE
-defined('PLUGIN_ATTACH_MAX_FILESIZE')		or define('PLUGIN_ATTACH_MAX_FILESIZE', (2048 * 1024));		// default: 1MB
+defined('PLUGIN_ATTACH_MAX_FILESIZE')		or define('PLUGIN_ATTACH_MAX_FILESIZE', 16777216);		// default: 16MB
 
 // 管理者だけが添付ファイルをアップロードできるようにする
 defined('PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY')	or define('PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY', FALSE);		// FALSE or TRUE
@@ -98,6 +98,7 @@ function plugin_attach_init()
 			'msg_unfreeze'	=> T_('Unfreeze file.'),
 			'msg_renamed'	=> T_('The file has been renamed'),
 			'msg_isfreeze'	=> T_('File is frozen.'),
+			'msg_notfreeze'	=> T_('File is not frozen.'),
 			'msg_rename'	=> T_('Rename'),
 			'msg_newname'	=> T_('New file name'),
 			'msg_require'	=> T_('(require administrator password)'),
@@ -191,7 +192,7 @@ function plugin_attach_action()
 	$refer = isset($vars['refer']) ? $vars['refer'] : NULL;
 	$pass  = isset($vars['pass'])  ? $vars['pass']  : NULL;
 	$page  = isset($vars['page'])  ? $vars['page']  : $refer;
-	
+
 	if (!empty($page)){
 		$wiki = Factory::Wiki($page);
 
@@ -209,7 +210,6 @@ function plugin_attach_action()
 	
 
 	if(in_array($pcmd, array('delete', 'freeze', 'unfreeze'))) {
-		// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
 		if (Auth::check_role('readonly')) Utility::dieMessage( $_string['error_prohibit'] );
 	}
 
@@ -241,13 +241,25 @@ function attach_upload($page, $pass = NULL)
 	// if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
 	if (Auth::check_role('readonly')) Utility::dieMessage($_string['error_prohibit']);
 
-	$wiki = Factory::Wiki($page);
 	$msgs = array();
 
-	if (empty($page)) Utility::dieMessage('#attach: page name is missing.');
+	if (empty($page)){
+		// 添付先のページが空
+		return array(
+			'result' => FALSE,
+			'msg' => '#attach: page name is missing.'
+		);
+	}
 	
-	if (! $wiki->isValied()) { Utility::dieMessage($_attach_messages['err_nopage']); }
-	
+	$wiki = Factory::Wiki($page);
+
+	if (! $wiki->isValied()) {
+		return array(
+			'result' => FALSE,
+			'msg' => $_attach_messages['err_nopage']
+		);
+	}
+
 	if ($pass !== TRUE) {
 		if (! $wiki->isEditable()){
 			return array(
@@ -565,13 +577,49 @@ function attach_is_compress($type,$compress=1)
 function attach_info($err = '')
 {
 	global $vars, $_attach_messages;
+	
+	foreach (array('refer', 'file', 'pass') as $var){
+		${$var} = isset($vars[$var]) ? $vars[$var] : null;
+	}
 
+	if (empty($refer)){
+		// 呼び出し元のページが空の場合エラー
+		return array('msg'=>'Page name is undefined.');
+	}
+
+	// ageが空白の時は0とする
 	$age = isset($vars['age']) ? $vars['age'] : 0;
 
-	$obj = new Attach($vars['refer'], $vars['file'], $age);
-	return $obj->has($age) ?
+	// Wikiオブジェクト
+	$wiki = Factory::Wiki($refer);
+
+	if (! $wiki->has()){
+		// 呼び出し元のページが削除されている状態で
+		// そのページに貼り付けられたファイルを削除しようとエラー。
+		// ※オリジナルとは異なる動作になる
+		return array('msg'=>'Page is not exsists.');
+	}
+
+	if (! $wiki->isValied()) {
+		// 無効なページ
+		return array('msg' => $_attach_messages['err_nopage']);
+	}
+
+	if (! $wiki->isReadable()){
+		// ページが凍結されていたり認証がかかっているなどで編集できない場合
+		return array('msg'=>'Page is not readable.');
+	}
+
+	// Attachオブジェクトを生成
+	$obj = new Attach($refer, $file, $age);
+
+	if (! $obj->has()){
+		// ファイルが存在しない
+		return array('msg'=>sprintf($_attach_messages['err_notfound'], Utility::htmlsc($refer)));
+	}
+	return $obj->has() ?
 		$obj->info($err) :
-		array('msg'=>$_attach_messages['err_notfound']);
+		array('msg'=>$_attach_messages['err_notfound'], 'http_code' => 404);
 }
 
 // 削除
@@ -579,22 +627,49 @@ function attach_delete()
 {
 	global $vars, $_attach_messages;
 
-	foreach (array('refer', 'file', 'age', 'pass') as $var)
-		${$var} = isset($vars[$var]) ? $vars[$var] : '';
-
-	if (is_freeze($refer) || ! is_editable($refer))
-		return array('msg'=>$_attach_messages['err_noparm']);
-
-	$obj = new AttachFile($refer, $file, $age);
-	if (! $obj->has())
-		return array('msg'=>$_attach_messages['err_notfound']);
-
-	if (PLUGIN_ATTACH_USE_CACHE){
-		global $cache;
-		$cache['wiki']->removeItem(PLUGIN_ATTACH_CACHE_PREFIX.md5($refer));
+	foreach (array('refer', 'file', 'pass') as $var){
+		${$var} = isset($vars[$var]) ? $vars[$var] : null;
 	}
 
-	return $obj->delete($pass);
+	if (empty($refer)){
+		// 呼び出し元のページが空の場合エラー
+		return array('msg'=>'Page name is undefined.');
+	}
+
+	// ageが空白の時は0とする
+	$age = isset($vars['age']) ? $vars['age'] : 0;
+
+	// Wikiオブジェクト
+	$wiki = Factory::Wiki($refer);
+
+	if (! $wiki->has()){
+		// 呼び出し元のページが削除されている状態で
+		// そのページに貼り付けられたファイルを削除しようとエラー。
+		// ※オリジナルとは異なる動作になる
+		return array('msg'=>'Page is not exsists.');
+	}
+
+	if (! $wiki->isValied()) {
+		// 無効なページ
+		return array('msg' => $_attach_messages['err_nopage']);
+	}
+
+	if (! $wiki->isEditable()){
+		// ページが凍結されていたり認証がかかっているなどで編集できない場合
+		return array('msg'=>'Page is not editable.');
+	}
+
+	// Attachオブジェクトを生成
+	$obj = new Attach($refer, $file, $age);
+
+	if (! $obj->has()){
+		// ファイルが存在しない
+		return array('msg'=>sprintf($_attach_messages['err_notfound'], Utility::htmlsc($refer)));
+	}
+
+	return $obj->delete($pass) ?
+		array('msg'=>sprintf($_attach_messages['msg_deleted'], Utility::htmlsc($refer))) :
+		array('msg'=>$_attach_messages['err_delete']);
 }
 
 // 凍結
@@ -602,18 +677,60 @@ function attach_freeze($freeze)
 {
 	global $vars, $_attach_messages;
 
-	foreach (array('refer', 'file', 'age', 'pass') as $var) {
-		${$var} = isset($vars[$var]) ? $vars[$var] : '';
+	foreach (array('refer', 'file', 'pass') as $var) {
+		${$var} = isset($vars[$var]) ? $vars[$var] : null;
 	}
 
-	if (is_freeze($refer) || ! is_editable($refer)) {
-		return array('msg'=>$_attach_messages['err_noparm']);
-	} else {
-		$obj = new Attach($refer, $file, $age);
-		return $obj->has() ?
-			$obj->freeze($freeze, $pass) :
-			array('msg'=>$_attach_messages['err_notfound']);
+	if (empty($refer)){
+		// 呼び出し元のページが空の場合エラー
+		return array('msg'=>'Page name is undefined.');
 	}
+
+	// ageが空白の時は0とする
+	$age = isset($vars['age']) ? $vars['age'] : 0;
+
+	// Wikiオブジェクト
+	$wiki = Factory::Wiki($refer);
+
+	if (! $wiki->has()){
+		// 呼び出し元のページが削除されている状態で
+		// そのページに貼り付けられたファイルを凍結させようとするとエラー。
+		// ※オリジナルとは異なる動作になる
+		return array('msg'=>'Page is not exsists.');
+	}
+
+	if (! $wiki->isValied()) {
+		// 無効なページ
+		return array('msg' => $_attach_messages['err_nopage']);
+	}
+
+	if (! $wiki->isEditable()){
+		// ページが凍結されていたり認証がかかっているなどで編集できない場合
+		return array('msg'=>'Page is not editable.');
+	}
+
+	// Attachオブジェクトを生成
+	$obj = new Attach($refer, $file, $age);
+
+	if (! $obj->has()){
+		// ファイルが存在しない
+		return array('msg'=>sprintf($_attach_messages['err_notfound'], Utility::htmlsc($refer)));
+	}
+	
+	if ($freeze){
+		// 凍結させるときのメッセージ
+		$msg = $_attach_messages['msg_freezed'];
+		$err = $_attach_messages['msg_isfreeze'];
+	}else{
+		// 凍結解除させるときのメッセージ
+		$msg = $_attach_messages['msg_unfreezed'];
+		$err = $_attach_messages['msg_notfreeze'];
+	}
+	
+	// ファイル凍結処理
+	return $obj->freeze($freeze, $pass) ?
+		array('msg'=>$msg) :
+		array('msg'=>$err);
 }
 
 // リネーム
@@ -621,19 +738,55 @@ function attach_rename()
 {
 	global $vars, $_attach_messages;
 
-	foreach (array('refer', 'file', 'age', 'pass', 'newname') as $var) {
-		${$var} = isset($vars[$var]) ? $vars[$var] : '';
+	foreach (array('refer', 'file', 'pass', 'newname') as $var) {
+		${$var} = isset($vars[$var]) ? $vars[$var] : null;
 	}
 
-	if (is_freeze($refer) || ! is_editable($refer)) {
-		return array('msg'=>$_attach_messages['err_noparm']);
+	if (empty($refer)){
+		// 呼び出し元のページが空の場合エラー
+		return array('msg'=>'Page name is undefined.');
 	}
+
+	// ageが空白の時は0とする
+	$age = isset($vars['age']) ? $vars['age'] : 0;
+
+	// Wikiオブジェクト
+	$wiki = Factory::Wiki($refer);
+
+	if (! $wiki->has()){
+		// 呼び出し元のページが削除されている状態で
+		// そのページに貼り付けられたファイルを凍結させようとするとエラー。
+		// ※オリジナルとは異なる動作になる
+		return array('msg'=>'Page is not exsists.');
+	}
+
+	if (! $wiki->isValied()) {
+		// 無効なページ
+		return array('msg' => $_attach_messages['err_nopage']);
+	}
+
+	if (! $wiki->isEditable()){
+		// ページが凍結されていたり認証がかかっているなどで編集できない場合
+		return array('msg'=>'Page is not editable.');
+	}
+
 	$obj = new Attach($refer, $file, $age);
-	if (! $obj->has())
-		return array('msg'=>$_attach_messages['err_notfound']);
+	
+	if (! $obj->has()){
+		// ファイルが存在しない
+		return array('msg'=>sprintf($_attach_messages['err_notfound'], Utility::htmlsc($refer)));
+	}
 
-	cache_timestamp_touch('attach');
-	return $obj->rename($pass, $newname);
+	if ($obj->rename($pass, $newname)){
+		// リネームに成功した
+		
+		// 添付ファイルキャッシュを更新
+		cache_timestamp_touch('attach');
+		return array('msg'=>$_attach_messages['msg_renamed']);
+	}
+
+	// リネームできなかった
+	return array('msg'=>$_attach_messages['err_rename']);
 }
 
 // ダウンロード
@@ -641,15 +794,17 @@ function attach_open()
 {
 	global $vars, $_attach_messages;
 
-	foreach (array('refer', 'file', 'age') as $var) {
-		${$var} = isset($vars[$var]) ? $vars[$var] : '';
+	foreach (array('refer', 'file') as $var) {
+		${$var} = isset($vars[$var]) ? $vars[$var] : null;
 	}
+
 	$age = isset($vars['age']) ? $vars['age'] : 0;
+
 	$obj = new Attach($vars['refer'], $vars['file'], $age);
 
 	return $obj->has() ?
 		$obj->render() :
-		array('msg'=>$_attach_messages['err_notfound']);
+		array('msg'=>$_attach_messages['err_notfound'],'http_code'=>404);	// 404エラーを出力
 }
 
 // 一覧取得

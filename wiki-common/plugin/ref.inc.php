@@ -72,15 +72,15 @@ function plugin_ref_convert()
 	if ($params['around']) {
 		$class[] = ($params['_align'] == 'right') ? 'pull-right' : 'pull-left';
 	} else {
-		$class[] = 'text-' . $params['_align'];
+//		$class[] = 'text-' . $params['_align'];
 	}
 	if ($params['rounded']){
-		$class[] = ' img-rounded';
+		$class[] = 'img-rounded';
 	}else if ($params['circle']){
-		$class[] = ' img-circle';
+		$class[] = 'img-circle';
 	}
 	if ($params['thumbnail']){
-		$class[] = ' img-thumbnail';
+		$class[] = 'img-thumbnail';
 	}
 
 	return '<figure class="'.join(' ', $class).'">'.$params['_body'].'</figure>'."\n";
@@ -262,7 +262,7 @@ function plugin_ref_body($args)
 
 			if ($seems_image) {
 				// 画像の場合は、getimagesizeでサイズを読み取る
-				$size = getimagesize($a->path);
+				$size = getimagesize($a->basename);
 				if (is_array($size)) {
 					$params['_w'] = $size[0];
 					$params['_h'] = $size[1];
@@ -272,6 +272,8 @@ function plugin_ref_body($args)
 	}
 	
 	// 拡張パラメータをチェック
+	
+	
 	if (! empty($params['_args'])) {
 		$_title = array();
 		foreach ($params['_args'] as $arg) {
@@ -285,6 +287,7 @@ function plugin_ref_body($args)
 				$_title[] = $arg;
 			}
 		}
+
 	}
 	foreach (array('right', 'left', 'center', 'justify') as $align) {
 		if (isset($params[$align])) {
@@ -337,7 +340,7 @@ function plugin_ref_body($args)
 				'alt="'      . $s_title . '" ' .
 				'title="'    . $s_title . '" ' .
 				'class="'    . $params['_class'] . '" ' .
-				$s_info . ' controls="controls" preload="auto">' . ;
+				$s_info . ' controls="controls" preload="auto">';
 		}
 		if (! isset($params['nolink']) && $url2) {
 			$params['_body'] =
