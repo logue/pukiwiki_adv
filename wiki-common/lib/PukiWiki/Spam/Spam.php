@@ -657,7 +657,7 @@ class Spam{
 	/**
 	 * Freeing memories
 	 */
-	function spam_dispose()
+	static function spam_dispose()
 	{
 		self::get_blocklist(NULL);
 		SpamPickup::whois_responsibility(NULL);

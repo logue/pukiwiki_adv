@@ -228,10 +228,10 @@ class Attach{
 			// バックアップ
 			do {
 				$age = ++$this->status['age'];
-			} while (file_exists($this->basename . '.' . $this->age+1));
+			} while (file_exists($this->basename . '.' . $this->age));
 
 			// 世代を加算してリネーム
-			if (! rename($this->basename, $this->basename . '.' . $this->age+1)) {
+			if (! rename($this->basename, $this->basename . '.' . $this->age)) {
 				// リネーム失敗？
 				return false;
 			}
@@ -642,7 +642,7 @@ class Attach{
 			return $mimetype;
 		}
 		
-		return preg_replace("/ [^ ]*/", "", trim(shell_exec('file -bi '.escapeshellcmd($path))));
+		//return preg_replace("/ [^ ]*/", "", trim(shell_exec('file -bi '.escapeshellcmd($path))));
 
 		$f = new File($this->basename);
 		try {

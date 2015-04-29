@@ -105,7 +105,7 @@ class Utility{
 	 * @return void
 	 */
 	public static function parseArguments(){
-		global $cookie, $get, $post;
+		global $cookie, $get, $post, $method;
 		global $defaultpage;
 
 		$request  = new Request();
@@ -114,6 +114,7 @@ class Utility{
 		$get    = $request->getQuery();
 		$post   = $request->getPost();
 		$cookie = $request->getCookie();
+		$method = $request->getMethod();
 		$vars   = array();
 
 		if (strlen($get->toString()) > self::MAX_QUERY_STRING_LENGTH) {
@@ -178,7 +179,7 @@ class Utility{
 		// 環境変数のチェック
 		self::checkEnv($request->getEnv());
 
-		switch ($request->getMethod()){
+		switch ($method){
 			case Request::METHOD_POST:
 				self::spamCheck($vars['cmd']);
 				break;
@@ -291,7 +292,7 @@ class Utility{
 	 * @param string $cmd 動作
 	 */
 	public static function spamCheck($cmd){
-		global $spam, $vars;
+		global $spam, $vars, $method;
 
 		// Adjustment
 		$_spam = !empty($spam);
@@ -334,7 +335,7 @@ class Utility{
 					unset($_vars[$key]);
 				}
 			} else {
-				$_vars = & $vars;
+				$_vars = $vars;
 			}
 			Spam::pkwk_spamfilter($method . ' to #' . $_cmd, $_page, $_vars, $_method, $exitmode);
 		}
