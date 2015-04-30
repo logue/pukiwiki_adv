@@ -5,10 +5,10 @@
  * @package   PukiWiki
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2013-2014 PukiWiki Advance Developers Team
+ * @copyright 2013-2015 PukiWiki Advance Developers Team
  * @create    2013/03/11
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: PluginRenderer.php,v 1.0.4 2014/07/05 20:54:00 Logue Exp $
+ * @version   $Id: PluginRenderer.php,v 1.0.5 2015/04/30 21:31:00 Logue Exp $
  **/
  
 namespace PukiWiki\Renderer;
@@ -264,7 +264,11 @@ class PluginRenderer{
 	public static function executePluginInit($name)
 	{
 		static $done, $checked;
+		
+		// 一部のページで存在しないプラグインの初期化が実行される問題の修正
+		if (!isset(self::$plugins[$name])) return;
 
+		// 初期化済みの場合
 		if (self::$plugins[$name]['init']) return;
 
 		// 多言語化
