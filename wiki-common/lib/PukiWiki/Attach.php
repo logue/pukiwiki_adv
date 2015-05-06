@@ -281,53 +281,34 @@ class Attach{
 	 */
 	public function render(){
 		global $vars;
-		/*
-		$response = new Response();
 
-		// ステータスコード
-		$status_code = Response::STATUS_CODE_200;
+		$file = $this->basename;
+		
+		// レジューム可能なファイルダウンロード
+		// https://gist.github.com/codler/3906826
 
-		$file = new File($this->path);
+		$fp = fopen($file, 'rb');
+		
+		if ($fp) {
+			$size   = filesize($file); // File size
+			$length = $size;           // Content length
+			$start  = 0;               // Start byte
+			$end    = $size - 1;       // End byte
 
-		if (! ($file->has() && $file->isReadable())) {
-			$response->setStatusCode(Response::STATUS_CODE_404);
-			header($response->renderStatusLine());
-			echo 'File not found.';
-			exit;
-		}
+			header('Content-type: '.self::getMime());
+			header("Accept-Ranges: 0-$length");
+			if (isset($_SERVER['HTTP_RANGE'])) {
 
-		// ファイルの読み込み
-		$f = $file->openFile('rb');
-		// ファイルの内容をGZ圧縮してバッファに保存
-		ob_start('ob_gzhandler');
-		// ファイルを一応ロック
-		$f->flock(LOCK_SH);
-		// ファイルサイズ
-		$size = $f->getSize();
-		// ファイルの残量
-		$rest = 0;
-		// 開始位置
-		$start = 0;
-		// 終了位置
-		$end = $size - 1;
+				$c_start = $start;
+				$c_end   = $end;
 
-		flush();
-
-		if ( isset($_SERVER['HTTP_RANGE']) ){
-			$c_start = $start;
-			$c_end   = $end;
-
-			// 環境変数HTTP_RANGEから全データー量と転送済みのデーター量を取得する
-			list(, $range) = explode('=', $_SERVER['HTTP_RANGE'], 2);
-			list($start, $end) = explode('-', $range);
-
-			if (strpos($range, ',') !== false) {;
-				//header('HTTP/1.1 416 Requested Range Not Satisfiable');
-				//header("Content-Range: bytes $start-$end/$size");
-				//exit;
-				$status_code = Response::STATUS_CODE_416;
-			}else{
-				if ($range === '-') {
+				list(, $range) = explode('=', $_SERVER['HTTP_RANGE'], 2);
+				if (strpos($range, ',') !== false) {
+					header('HTTP/1.1 416 Requested Range Not Satisfiable');
+					header("Content-Range: bytes $start-$end/$size");
+					exit;
+				}
+				if ($range == '-') {
 					$c_start = $size - substr($range, 1);
 				}else{
 					$range  = explode('-', $range);
@@ -336,150 +317,45 @@ class Attach{
 				}
 				$c_end = ($c_end > $end) ? $end : $c_end;
 				if ($c_start > $c_end || $c_start > $size - 1 || $c_end >= $size) {
-					//header('HTTP/1.1 416 Requested Range Not Satisfiable');
-					//header("Content-Range: bytes $start-$end/$size");
-					//exit;
-					$status_code = Response::STATUS_CODE_416;
-				}else{
-					$start  = $c_start;
-					$end    = $c_end;
-					$length = $end - $start + 1;
-					// 転送済みのファイルの長さの分だけポインタを進める
-					$f->fseek($start);
-					// 206 Partial Content
-					$status_code = Response::STATUS_CODE_206;
+					header('HTTP/1.1 416 Requested Range Not Satisfiable');
+					header("Content-Range: bytes $start-$end/$size");
+					exit;
 				}
+				$start  = $c_start;
+				$end    = $c_end;
+				$length = $end - $start + 1;
+				fseek($fp, $start);
+				header('HTTP/1.1 206 Partial Content');
 			}
-			$f->fseek($length);
 
-			$block = self::PARTIAL_BUFFER_SIZE;
-			// ファイルを出力
-			while(!$f->feof() && ($p = $f->ftell()) <= $end) {
-				if ($p + self::PARTIAL_BUFFER_SIZE > $end) {
-				    $block = $end - $p + 1;
+			header('Content-Range: bytes ' . $start . '-' . $end . '/' . $size);
+			header('Content-Length: ' . $length);
+			// attach系プラグインから読み取るときはattachment、refなど埋め込み系プラグインから読み取るときはinline
+			$disposition = $vars['cmd'] === 'attach' ? 'attachment' : 'inline';
+			
+			// 添付ファイルダウンロードで日本語ファイル名が文字化けする
+			// http://pukiwiki.sourceforge.jp/dev/?BugTrack2%2F354
+			// http://d.hatena.ne.jp/scientre/20140123/http_attachment_filename
+			if (preg_match('/\bMSIE\b|\bSafari [12345]\b/', getenv('HTTP_USER_AGENT'))) {
+				header('Content-Disposition: ' . $disposition . '; filename="' .
+					mb_convert_encoding($this->filename, 'Shift_JIS', 'UTF-8') . '"');
+			}
+			else {
+				header('Content-Disposition: ' . $disposition . '; filename*=UTF-8\'\'' . rawurlencode($this->filename));
+			}
+
+			$buffer = 1024 * 8;
+			while(!feof($fp) && ($p = ftell($fp)) <= $end) {
+				if ($p + $buffer > $end) {
+					$buffer = $end - $p + 1;
 				}
-				echo $f->fread($block);
+				set_time_limit(0);
+				echo fread($fp, $buffer);
+				flush();
 			}
-		}else{
-			$f->fpassthru();
+
+			fclose($fp);
 		}
-		// ロック解除
-		$f->flock(LOCK_SH);
-
-		$buffer = ob_get_clean();
-		
-		$mime = self::getMime();
-
-		// HTMLの場合、ダウンロードとする
-		$content_type = $mime == 'text/html' ? self::DEFAULT_MIME_TYPE : $mime;
-		
-		// ヘッダー出力
-		$header = Header::getHeaders($content_type, $f->getMTime());
-		
-		if ($end !== 0 && $start !== $end){
-			$header['Accept-Ranges'] = '0-'.$size;
-			$header['Content-Range'] = 'bytes ' . $start . '-' . $end . '/' . $size;
-			$header['Content-Length'] = $end - $start +1;
-		}else{
-			$header['Content-Length'] = $size;
-		}
-
-		$filename = mb_convert_encoding($this->filename, 'UTF-8', 'auto');
-
-		// ファイルを閉じる
-		$f = null;
-
-		// attach系プラグインから読み取るときはattachment、refなど埋め込み系プラグインから読み取るときはinline
-		//$disposition = $vars['cmd'] === 'attach' ? 'attachment' : 'inline';
-		$disposition = 'attachment';
-		
-		// 添付ファイルダウンロードで日本語ファイル名が文字化けする
-		// http://pukiwiki.sourceforge.jp/dev/?BugTrack2%2F354
-		$header['Content-Disposition'] = $disposition . '; filename="' . $this->filename . '"; filename*=utf-8\'\'' . rawurlencode($this->filename);
-
-		$header['X-Sendfile'] = $file->getRealPath();
-		
-		// 読み込み回数のカウンタを更新
-		
-		if ($this->age === 0){
-			// レジュームやキャッシュからの場合もカウントされるがこの実装でいいのだろうか？
-			$this->status['count'][0]++;
-			$this->updateStatus();
-		}
-
-		// 出力
-		Header::writeResponse($header, $status_code, $buffer);
-
-		exit;
-*/
-		$file = $this->basename;
-		$fp = fopen($file, 'rb');
-
-		$size   = filesize($file); // File size
-		$length = $size;           // Content length
-		$start  = 0;               // Start byte
-		$end    = $size - 1;       // End byte
-
-		header('Content-type: '.self::getMime());
-		header("Accept-Ranges: 0-$length");
-		if (isset($_SERVER['HTTP_RANGE'])) {
-
-			$c_start = $start;
-			$c_end   = $end;
-
-			list(, $range) = explode('=', $_SERVER['HTTP_RANGE'], 2);
-			if (strpos($range, ',') !== false) {
-				header('HTTP/1.1 416 Requested Range Not Satisfiable');
-				header("Content-Range: bytes $start-$end/$size");
-				exit;
-			}
-			if ($range == '-') {
-				$c_start = $size - substr($range, 1);
-			}else{
-				$range  = explode('-', $range);
-				$c_start = $range[0];
-				$c_end   = (isset($range[1]) && is_numeric($range[1])) ? $range[1] : $size;
-			}
-			$c_end = ($c_end > $end) ? $end : $c_end;
-			if ($c_start > $c_end || $c_start > $size - 1 || $c_end >= $size) {
-				header('HTTP/1.1 416 Requested Range Not Satisfiable');
-				header("Content-Range: bytes $start-$end/$size");
-				exit;
-			}
-			$start  = $c_start;
-			$end    = $c_end;
-			$length = $end - $start + 1;
-			fseek($fp, $start);
-			header('HTTP/1.1 206 Partial Content');
-		}
-
-		header('Content-Range: bytes ' . $start . '-' . $end . '/' . $size);
-		header('Content-Length: ' . $length);
-		// attach系プラグインから読み取るときはattachment、refなど埋め込み系プラグインから読み取るときはinline
-		$disposition = $vars['cmd'] === 'attach' ? 'attachment' : 'inline';
-		
-		// 添付ファイルダウンロードで日本語ファイル名が文字化けする
-		// http://pukiwiki.sourceforge.jp/dev/?BugTrack2%2F354
-		// http://d.hatena.ne.jp/scientre/20140123/http_attachment_filename
-		if (preg_match('/\bMSIE\b|\bSafari [12345]\b/', getenv('HTTP_USER_AGENT'))) {
-			header('Content-Disposition: ' . $disposition . '; filename="' .
-				mb_convert_encoding($this->filename, 'Shift_JIS', 'UTF-8') . '"');
-		}
-		else {
-			header('Content-Disposition: ' . $disposition . '; filename*=UTF-8\'\'' . rawurlencode($this->filename));
-		}
-
-		$buffer = 1024 * 8;
-		while(!feof($fp) && ($p = ftell($fp)) <= $end) {
-			if ($p + $buffer > $end) {
-				$buffer = $end - $p + 1;
-			}
-			set_time_limit(0);
-			echo fread($fp, $buffer);
-			flush();
-		}
-
-		fclose($fp);
 		exit();
 	}
 	/**

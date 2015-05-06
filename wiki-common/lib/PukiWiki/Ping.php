@@ -40,7 +40,7 @@ class Ping{
 	 * PubSubHubbubの送信先
 	 * https://code.google.com/p/pubsubhubbub/
 	 */
-	public $pubsubhubbub_server = array(
+	public static $pubsubhubbub_server = array(
 		'https://pubsubhubbub.appspot.com',
 		'https://pubsubhubbub.superfeedr.com'
 	);
