@@ -106,9 +106,9 @@ class Ping{
 	 */
 	public function setPubsubhubbubServer($host){
 		if (is_array($host)){
-			$this->pubsubhubbub_server = $host;
+			self::$pubsubhubbub_server = $host;
 		}else{
-			$this->pubsubhubbub_server[] = $host;
+			self::$pubsubhubbub_server[] = $host;
 		}
 	}
 	/**
@@ -116,7 +116,7 @@ class Ping{
 	 * @return array
 	 */
 	public function getPubsubhubbubServer(){
-		return $this->pubsubhubbub_server;
+		return self::$pubsubhubbub_server;
 	}
 	/**
 	 * Pubsubhubbub送信
@@ -125,7 +125,7 @@ class Ping{
 		// Pubsubhubbub発行オブジェクトを生成
 		$publisher = new Publisher();
 		// Pubsubhubbubを送るサーバーをセット
-		$publisher->addHubUrls($this->pubsubhubbub_server);
+		$publisher->addHubUrls(self::$pubsubhubbub_server);
 		// ページをセット
 		$publisher->addUpdatedTopicUrls(array(
 			$this->wiki->uri()

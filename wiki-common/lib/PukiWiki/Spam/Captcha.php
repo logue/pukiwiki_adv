@@ -5,10 +5,10 @@
  * @package   PukiWiki\Spam
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2013 PukiWiki Advance Developers Team
+ * @copyright 2013-2015 PukiWiki Advance Developers Team
  * @create    2013/02/03
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Captcha.php,v 1.0.1 2014/09/02 20:19:00 Logue Exp $
+ * @version   $Id: Captcha.php,v 1.0.3 2015/05/12 19:55:00 Logue Exp $
  **/
 
 namespace PukiWiki\Spam;
@@ -37,6 +37,8 @@ class Captcha{
 	const CAPTCHA_TIMEOUT = 120;	// 2分間
 	// CAPTCHA認証の入力文字数
 	const CAPTCHA_WORD_LENGTH = 6;
+	// reCAPTCHAのテーマ（https://developers.google.com/recaptcha/old/docs/customization）
+	const RECAPTCHA_THEME = 'clean';
 
 	/**
 	 * CAPTCHAチェック
@@ -79,16 +81,15 @@ class Captcha{
 			// 念のためcaptcha認証済みセッションを削除
 			$session->offsetUnset($session_name);
 			// reCaptchaの設定をオーバーライド
-			$captcha->setOption('lang',substr(LANG,0,2));
-			$captcha->setOption('theme','clean');
+			// 言語設定
+			$captcha->setOption('lang', substr(LANG,0,2));
+			// テーマ
+			$captcha->setOption('theme', self::RECAPTCHA_THEME);
 			$form = $captcha->getHTML();
 		}else{
 			// reCaptchaを使わない場合
-			static $captcha_dir;
-			if (empty($captcha_dir)){
-				$captcha_dir = realpath(CACHE_DIR . self::CAPTCHA_IMAGE_DIR_NAME) . DIRECTORY_SEPARATOR;
-			}
-			
+			$captcha_dir = realpath(CACHE_DIR . self::CAPTCHA_IMAGE_DIR_NAME) . DIRECTORY_SEPARATOR;
+
 			if (isset($vars['challenge_field']) && isset($vars['response_field'] )){
 				// Captchaチェック処理
 				if ($session->offsetGet(self::CAPTCHA_SESSION_PREFIX . $vars['response_field']) === strtolower($vars['challenge_field'])) {
@@ -121,10 +122,16 @@ class Captcha{
 				// GDが使える場合、画像認証にする
 				self::mkdir_r($captcha_dir);
 				// 古い画像を削除する
-				$di = new DirectoryIterator($captcha_dir );
+				$di = new DirectoryIterator($captcha_dir);
 				foreach ($di as $f){
-					if (!$f->isFile()) continue;
-					if (time() - $f->getMTime() > self::CAPTCHA_TIMEOUT) unlink($f->getRealPath());
+					if (!$f->isFile()){
+						// ファイルでない
+						continue;
+					}
+					if (time() - $f->getMTime() > self::CAPTCHA_TIMEOUT){
+						// タイムアウト時間よりも古いファイルは削除する
+						unlink($f->getRealPath());
+					}
 				}
 				
 /*
@@ -192,7 +199,7 @@ class Captcha{
 		// ストアされている値を出力
 		foreach ($vars as $key=>$value){
 			if ($key === 'ajax') continue;
-			$ret[] = !empty($value) ? '<input type="hidden" name="' . $key . '" value="' . Utility::htmlsc($value) . '" />' : null;
+			$ret[] = '<input type="hidden" name="' . $key . '" value="' . (!empty($value) ? Utility::htmlsc($value) : '') . '" />';
 		}
 		$ret[] = '<div class="input-group">';
 		// CAPTCHAフォームを出力
