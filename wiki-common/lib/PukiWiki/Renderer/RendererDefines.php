@@ -5,10 +5,10 @@
  * @package   PukiWiki\Renderer
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2012-2014 PukiWiki Advance Developers Team
+ * @copyright 2012-2015 PukiWiki Advance Developers Team
  * @create    2012/12/18
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: RendererDefines.php,v 1.0.0 2014/01/30 14:43:00 Logue Exp $
+ * @version   $Id: RendererDefines.php,v 1.0.1 2015/05/20 18:57:00 Logue Exp $
  */
 namespace PukiWiki\Renderer;
 
@@ -74,6 +74,10 @@ class RendererDefines{
 	 * videoタグで展開する拡張子のパターン
 	 */
 	const VIDEO_EXTENTION_PATTERN = '/\.(mp4|webm)$/i';
+	/**
+	 * ノートのアイコン
+	 */
+	const FOOTNOTE_ANCHOR_ICON = '<span class="glyphicon glyphicon-pushpin"></span>';
 }
 
 /* End of file RendererDefines.php */

@@ -219,7 +219,7 @@ class Render{
 			// 注釈
 			global $foot_explain;
 			ksort($foot_explain, SORT_NUMERIC);
-			$notes = ! empty($foot_explain) ? '<ul>'.join("\n", $foot_explain).'</ul>' : '';
+			$notes = count($foot_explain) !== 0 ? '<ul>'.join("\n", $foot_explain).'</ul>' : '';
 
 			// 検索語句をハイライト
 			if (isset($vars['word'])){
@@ -755,9 +755,8 @@ class Render{
 				$fileinfo = new AttachFile($this->page, $filename);
 				$exists = true;
 				if (!$fileinfo->has()) continue;
-			//	$logfileinfo = new AttachFile($this->page, $filename, 'log');
-			//	var_dump($logfileinfo->filename);
-			//	$count = $logfileinfo->has() ? $logfileinfo->head(0) : '0';
+				$logfileinfo = new AttachFile($this->page, $filename, 'log');
+				$count = $logfileinfo->has() ? $logfileinfo->head(1) : '0';
 				
 				$ret[] = '<dd><a href="' . 
 					Router::get_cmd_uri('attach', null, null, array('pcmd'=>'open','refer'=>$this->page, 'age'=>0, 'openfile'=>$filename)) .

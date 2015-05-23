@@ -30,7 +30,7 @@ class InlineFactory{
 		if (!isset(self::$converter)) self::$converter = new InlineConverter();
 		$clone = self::$converter->getClone(self::$converter);
 
-		return $clone->convert($string, !isset($vars['page']) ? $page : $vars['page']);
+		return $clone->convert($string, isset($vars['page']) ? $vars['page'] : $page );
 	}
 }
 

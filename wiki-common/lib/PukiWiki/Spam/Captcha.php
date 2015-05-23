@@ -32,7 +32,7 @@ class Captcha{
 	// CAPTCHA画像のフォント（GDを使用する場合）
 	const CAPTCHA_IMAGE_FONT = 'fonts/Vera.ttf';
 	// CAPTCHA画像の一時保存先（GDを使用する場合）
-	const CAPTCHA_IMAGE_DIR_NAME = 'captcha/';
+	const CAPTCHA_IMAGE_DIR_NAME = 'captcha';
 	// CAPTCHA認証の有効期間
 	const CAPTCHA_TIMEOUT = 120;	// 2分間
 	// CAPTCHA認証の入力文字数
@@ -88,7 +88,9 @@ class Captcha{
 			$form = $captcha->getHTML();
 		}else{
 			// reCaptchaを使わない場合
-			$captcha_dir = realpath(CACHE_DIR . self::CAPTCHA_IMAGE_DIR_NAME) . DIRECTORY_SEPARATOR;
+			$captcha_dir = CACHE_DIR . self::CAPTCHA_IMAGE_DIR_NAME . DIRECTORY_SEPARATOR;
+			
+			self::mkdir_r($captcha_dir);
 
 			if (isset($vars['challenge_field']) && isset($vars['response_field'] )){
 				// Captchaチェック処理
@@ -118,11 +120,17 @@ class Captcha{
 			}
 			// 念のためcaptcha認証済みセッションを削除
 			$session->offsetUnset($session_name);
+			// GDが使える場合、画像認証にする
 			if (extension_loaded('gd')) {
-				// GDが使える場合、画像認証にする
-				self::mkdir_r($captcha_dir);
+				// フォルダが存在しない場合作成を試みる
+				if (! file_exists($captcha_dir)) {
+					mkdir($captcha_dir);
+					chmod(0777, $captcha_dir);
+				}
+				
 				// 古い画像を削除する
 				$di = new DirectoryIterator($captcha_dir);
+				
 				foreach ($di as $f){
 					if (!$f->isFile()){
 						// ファイルでない
@@ -155,7 +163,7 @@ class Captcha{
 				));
 				$captcha->generate();
 				// cache_refプラグインを用いて画像を表示
-				$form = '<img src="' . Router::get_cmd_uri('cache_ref', null,null,array('src'=> self::CAPTCHA_IMAGE_DIR_NAME . $captcha->getId().'.png')) . '" height="' . $captcha->getHeight() . '" width="' . $captcha->getWidth() . '" alt="' . Utility::htmlsc($captcha->getImgAlt()) . '" /><br />'."\n";	// 画像を取得
+				$form = '<img src="' . Router::get_cmd_uri('cache_ref', null,null,array('src'=> self::CAPTCHA_IMAGE_DIR_NAME . '/' . $captcha->getId().'.png')) . '" height="' . $captcha->getHeight() . '" width="' . $captcha->getWidth() . '" alt="' . Utility::htmlsc($captcha->getImgAlt()) . '" /><br />'."\n";	// 画像を取得
 			}else{
 				// GDがない場合アスキーアート
 				$captcha = new Figlet(array(

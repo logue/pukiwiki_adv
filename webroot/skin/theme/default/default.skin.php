@@ -50,7 +50,7 @@
 						<section id="body">
 							<?php echo $this->body."\n" ?>
 						</section>
-<?php if (!empty($notes)) { ?>
+<?php if (!empty($this->notes)) { ?>
 						<hr />
 						<!-- * Note * -->
 						<aside id="note" role="note">

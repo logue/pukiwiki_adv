@@ -54,6 +54,8 @@ class InlineConverter
 	 * 結果
 	 */
 	private $result;
+	
+	private static $clone_func;
 
 	/**
 	 * コンストラクタ
@@ -85,7 +87,7 @@ class InlineConverter
 			$pattern   = $converter->getPattern();
 			if ($pattern === FALSE) continue;
 
-			$patterns[] = '(' . $pattern . ')';
+			$patterns[] = '(' . "\n" . $pattern . "\n" . ')';
 			$this->converters[$start] = $converter;
 			$start += $converter->getCount();
 			++$start;
@@ -143,7 +145,7 @@ class InlineConverter
 	 */
 	protected function replace($arr)
 	{
-		$obj = self::getConverter($arr);
+		$obj = $this->getConverter($arr);
 
 		$this->result[] = ($obj !== NULL && $obj->setPattern($arr, $this->page) !== FALSE) ?
 			$obj->__toString() : Inline::setLineRules(Utility::htmlsc($arr[0]));
@@ -161,7 +163,7 @@ class InlineConverter
 		$matches = $arr = array();
 		preg_match_all('/' . $this->pattern . '/x', $string, $matches, PREG_SET_ORDER);
 		foreach ($matches as $match) {
-			$obj = self::getConverter($match);
+			$obj = $this->getConverter($match);
 			if ($obj->setPattern($match, $page) !== FALSE) {
 				$arr[] = $this->getClone($obj);
 				if ( !empty($obj->body) )
