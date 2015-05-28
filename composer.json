@@ -32,6 +32,7 @@
 	},
 	"require": {
 		"php": ">=5.4.0",
+		"ext-sqlite" : "*",
 		"aferrandini/phpqrcode": "1.*",
 		"logue/igo-php":"*",
 		"zendframework/zend-Serializer": "2.*",

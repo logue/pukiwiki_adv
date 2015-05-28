@@ -99,7 +99,7 @@ class Note extends Inline
 		return parent::setParam($page, $name, $body);
 	}
 
-	public function toString()
+	public function __toString()
 	{
 		return $this->name;
 	}
