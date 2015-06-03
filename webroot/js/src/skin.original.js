@@ -1128,6 +1128,7 @@ $.fn.bsbutton = bootstrapButton;
 						}
 
 					}else if ( $this.is('[title]')){
+						glossaries[text] = $this.attr('title');
 						return $this.attr('title');
 					}
 				}

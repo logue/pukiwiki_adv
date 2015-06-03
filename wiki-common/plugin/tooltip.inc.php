@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////
 // PukiWiki - Yet another WikiWikiWeb clone.
 //
-// $Id: tooltip.inc.php,v 0.6.5 2011/02/05 12:45:00 Logue Exp $
+// $Id: tooltip.inc.php,v 0.6.6 2015/06/02 00:19:00 Logue Exp $
 //
 /* 
 *プラグイン tooltip
@@ -40,9 +40,8 @@ function plugin_tooltip_init()
 function plugin_tooltip_action()
 {
 	global $vars;
-	$term = isset($vars['q']) ? $vars['q'] : null;
-	if (trim($term) == '') { exit; }
-	
+	$term = isset($vars['q']) ? trim($vars['q']) : null;
+	if (empty($term)) { exit; }
 	$glossary = Glossary::getGlossary($term);
 	$glossary_lastmod = Glossary::getGlossaryTime();	// なんども通信するのを防ぐためlastmodを出力
 	if ($glossary == FALSE) { exit; }
@@ -52,15 +51,13 @@ function plugin_tooltip_action()
 }
 
 //========================================================
-function plugin_tooltip_inline()
+function plugin_tooltip_inline($args)
 {
 	$args = func_get_args();
 	$glossary  = array_pop($args);
 	$term      = array_shift($args);
-//	$glossary_page = count($args) ? array_shift($args) : '';
-	$glossary_page = '';
 
-	if ( $glossary == '' ){
+	if (empty($glossary)){
 		$glossary = Glossary::getGlossary($term);
 		// $debug .= "B=$glossary/";
 		if ( $glossary === FALSE ) {
@@ -73,19 +70,22 @@ function plugin_tooltip_inline()
 	$page = Utility::stripBracket($term);
 		
 	$wiki = Factory::Wiki($page);
-	if ( $wiki->isValied() ) {
-		return '<abbr class="glossary" title="$s_glossary' . $wiki->passage(true,false). '"><a href="' . $wiki->uri() . '">' . $term . '</a></abbr>';
+	if ( $wiki->isValied() && $wiki->isReadable()) {
+		return '<abbr class="glossary" title="' . $s_glossary . ' ' . $wiki->passage(false,false) . '"><a href="' . $wiki->uri() . '">' . $term . '</a></abbr>';
 	}
-	return '<dfn class="glossary" title="' . $s_glossary . '">' . $term . '</dfn>';
+
+	return '<abbr title="' . $s_glossary . '">' . $term . '</abbr>';
 }
 //========================================================
 function plugin_tooltip_get_page_title($term)
 {
 	$page = strip_bracket($term);
-	if ( ! is_page($page) ) return FALSE;
-	$src = get_source($page);
+	$wiki = Factory::Wiki($page);
+	
+	if ( ! $wiki->has($page) ) return FALSE;
+	
 	$ct = 0;
-	foreach ( $src as $line ) {
+	foreach ( $wiki->get() as $line ) {
 		if ( $ct ++ > 99 ) break;
 		if ( preg_match('/^\*{1,3}(.*)\[#[A-Za-z0-9][\w\-]+\].*$/', $line, $match) ){
 			return trim($match[1]);
