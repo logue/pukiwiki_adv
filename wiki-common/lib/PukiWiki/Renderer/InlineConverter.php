@@ -5,10 +5,10 @@
  * @package   PukiWiki\Renderer
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2012-2013 PukiWiki Advance Developers Team
+ * @copyright 2012-2013,2015 PukiWiki Advance Developers Team
  * @create    2012/12/18
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: InlineConverter.php,v 1.0.0 2013/01/29 19:54:00 Logue Exp $
+ * @version   $Id: InlineConverter.php,v 1.0.1 2015/06/09 19:54:00 Logue Exp $
  */
 
 namespace PukiWiki\Renderer;
@@ -114,7 +114,10 @@ class InlineConverter
 		static $clone_func;
 
 		if (! isset($clone_func)) {
-			$clone_func = create_function('$a', 'return clone $a;');
+			$clone_func = function($a){
+				return clone $a;
+			};
+
 		}
 		return $clone_func($obj);
 	}
@@ -128,7 +131,15 @@ class InlineConverter
 	{
 		$this->page   = $page;
 		$this->result = array();
-		$string = preg_replace_callback('/' . $this->pattern . '/x', array($this, 'replace'), $string);
+
+		$string = preg_replace_callback('/' . $this->pattern . '/x', function($arr){
+			$obj = $this->getConverter($arr);
+
+			$this->result[] = ($obj !== NULL && $obj->setPattern($arr, $this->page) !== FALSE) ?
+				$obj->__toString() : Inline::setLineRules(Utility::htmlsc($arr[0]));
+
+			return "\x08"; // Add a mark into latest processed part
+		}, $string);
 
 		$arr = explode("\x08", Inline::setLineRules(Utility::htmlsc($string)));
 		$retval = null;
@@ -137,20 +148,6 @@ class InlineConverter
 			$retval .= str_replace('\\$$', '$$', array_shift($arr)) . array_shift($this->result);
 		}
 		return trim($retval);
-	}
-	/**
-	 * 置き換え
-	 * @param array $arr
-	 * @return string
-	 */
-	protected function replace($arr)
-	{
-		$obj = $this->getConverter($arr);
-
-		$this->result[] = ($obj !== NULL && $obj->setPattern($arr, $this->page) !== FALSE) ?
-			$obj->__toString() : Inline::setLineRules(Utility::htmlsc($arr[0]));
-
-		return "\x08"; // Add a mark into latest processed part
 	}
 	/**
 	 * オブジェクトを取得
@@ -166,8 +163,9 @@ class InlineConverter
 			$obj = $this->getConverter($match);
 			if ($obj->setPattern($match, $page) !== FALSE) {
 				$arr[] = $this->getClone($obj);
-				if ( !empty($obj->body) )
+				if ( !empty($obj->body) ){
 					$arr = array_merge($arr, $this->getObjects($obj->body, $page));
+				}
 			}
 		}
 		return $arr;
@@ -180,8 +178,9 @@ class InlineConverter
 	private function getConverter($arr)
 	{
 		foreach (array_keys($this->converters) as $start) {
-			if (isset($arr[$start]) && $arr[$start] === $arr[0])
+			if (isset($arr[$start]) && $arr[$start] === $arr[0]){
 				return $this->converters[$start];
+			}
 		}
 		return NULL;
 	}

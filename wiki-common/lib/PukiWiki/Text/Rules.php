@@ -5,10 +5,10 @@
  * @package   PukiWiki\Text
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2013 PukiWiki Advance Developers Team
+ * @copyright 2013,2015 PukiWiki Advance Developers Team
  * @create    2013/02/02
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Rule.php,v 1.5.0 2013/11/14 18:05:00 Logue Exp $
+ * @version   $Id: Rule.php,v 1.5.1 2015/06/09 20:46:00 Logue Exp $
  **/
 
 namespace PukiWiki\Text;
@@ -840,9 +840,10 @@ class Rules{
 		static $patternf, $replacef;
 		if (!isset($patternf)) {
 			$rules = self::init();
-			$patternf = array_map(create_function('$a','return "/$a/";'), array_keys($rules['filter']));
+			$patternf = array_map(function($a){
+				return '/' . $a .'/';
+			}, array_keys($rules['filter']));
 			$replacef = array_values($rules['filter']);
-			unset($filter_rules);
 		}
 		return preg_replace($patternf, $replacef, $str);
 	}

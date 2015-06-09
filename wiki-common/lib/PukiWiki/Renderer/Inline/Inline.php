@@ -5,10 +5,10 @@
  * @package   PukiWiki\Renderer\Inline
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2012-2014 PukiWiki Advance Developers Team
+ * @copyright 2012-2015 PukiWiki Advance Developers Team
  * @create    2012/12/18
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Inline.php,v 1.0.1 2014/03/17 19:25:00 Logue Exp $
+ * @version   $Id: Inline.php,v 1.0.2 2015/06/09 20:44:00 Logue Exp $
  */
 
 namespace PukiWiki\Renderer\Inline;
@@ -90,8 +90,9 @@ abstract class Inline
 		$this->body = $body;
 		$this->type = $type;
 		if (! empty($alias) ) {
-			if ($converter === NULL)
+			if ($converter === NULL){
 				$converter = new InlineConverter(array('InlinePlugin'));
+			}
 
 			$alias = $converter->convert($alias, $page);
 
@@ -111,8 +112,9 @@ abstract class Inline
 		$line_rules = Rules::getLineRules();
 
 		if (! isset($pattern)) {
-			$pattern = array_map(create_function('$a',
-				'return \'/\' . $a . \'/\';'), array_keys($line_rules));
+			$pattern = array_map(function($a){
+				return '/' . $a . '/';
+			}, array_keys($line_rules));
 			$replace = array_values($line_rules);
 			unset($line_rules);
 		}

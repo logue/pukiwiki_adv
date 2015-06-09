@@ -1,8 +1,8 @@
 <?php
 // PukiWiki Advance.
-// $Id: referer.inc.php,v 1.10.17 2014/12/24 23:37:00 Logue Exp $
+// $Id: referer.inc.php,v 1.10.18 2015/06/09 20:47:00 Logue Exp $
 // Copyright (C)
-//   2010-2014 PukiWiki Advance DevelopersTeam.
+//   2010-2015 PukiWiki Advance DevelopersTeam.
 //   2007      PukiWiki Plus! Team
 //   2003,2005-2008 Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
 // License: GPL
@@ -167,7 +167,9 @@ function plugin_referer_body($data)
 	$sort_last = '0d';
 	$sort_1st  = '1d';
 	$sort_ctr  = '2d';
-		usort($data, create_function('$a,$b', 'return $b[0] - $a[0];'));
+		usort($data,function($a,$b){
+			return $b[0] - $a[0];
+		});
 		$arrow_last = $_referer_msg['msg_Chr_darr'];
 		$sort_last = '0a';
 
@@ -265,10 +267,11 @@ function plugin_referer_set_color()
 		unset($config);
 
 		$matches = array();
-		foreach ($pconfig_color as $x)
-			$color[$x[0]] = htmlsc(
+		foreach ($pconfig_color as $x){
+			$color[$x[0]] = Utility::htmlsc(
 				preg_match('/BGCOLOR\(([^)]+)\)/si', $x[1], $matches) ?
 					$matches[1] : $x[1]);
+		}
 	}
 	return $color;
 }
@@ -285,9 +288,11 @@ function plugin_referer_ignore_check($url)
 		unset($config);
 	}
 
-	foreach ($ignore_url as $x)
-		if (strpos($url, $x) !== FALSE)
+	foreach ($ignore_url as $x){
+		if (strpos($url, $x) !== FALSE){
 			return 1;
+		}
+	}
 	return 0;
 }
 
@@ -296,7 +301,7 @@ function plugin_referer_searchkeylist($data, $max){
 	$data = searchkeylist_analysis($data);
 
 	// 0:検索キー 1:参照カウンタ
-	usort($data,create_function('$a,$b','return $b[1] - $a[1];'));
+        usort($data,function($a,$b){return $b[1] - $a[1];});
 	$data = searchkeylist_print($data,$max);
 
 	return (empty($data)) ? '<p class="alert alert-warning">'.$_referer_msg['msg_no_data'].'</p>' : $data;
@@ -349,7 +354,7 @@ function searchkeylist_analysis($data)
 	$i = 0;
 	foreach ($sum as $key=>$val)
 	{
-		if ($key !== ''){
+		if (!empty($key)){
 			$rc[$i][0] = $key;	// 検索キー
 			$rc[$i][1] = $val;	// 参照カウンタ
 			$i++;
@@ -402,12 +407,11 @@ function searchkeylist_print($data,$max)
 	$ctr = 0;
 	foreach ($data as $x)
 	{
-		if (SKEYLIST_MIN_COUNTER > $x[1]) continue;
-		if ( !strcasecmp('utf-8',SOURCE_ENCODING) ) {
-			$key = $x[0];
-		} else {
-			$key = mb_convert_encoding($x[0],'utf-8',SOURCE_ENCODING);
+		if (SKEYLIST_MIN_COUNTER > $x[1]){
+			continue;
 		}
+		$key = !strcasecmp('utf-8',SOURCE_ENCODING) ? $x[0] : mb_convert_encoding($x[0],'utf-8',SOURCE_ENCODING);
+
 		$rc[] = '<li><a href="' . SKEYLIST_SEARCH_URL.rawurlencode($key).'" rel="nofollow noreferer external">'.$x[0].'</a> <var>('.$x[1].')</var></li>';
 		$ctr++;
 	}
@@ -421,7 +425,7 @@ function plugin_referer_mutual($data, $max){
 	global $_referer_msg;
 	$data = linklist_analysis($data);
 	// 0:検索キー 1:参照カウンタ
-	usort($data,create_function('$a,$b','return $b[1] - $a[1];'));
+	usort($data,function($a,$b){return $b[1] - $a[1];});
 	$data = linklist_print($data,$max,0);
 	return (empty($data)) ? '<p class="alert alert-warning">' . $_referer_msg['msg_no_data'] . '</p>' : $data;
 }
@@ -517,7 +521,9 @@ function linklist_print($data,$max,$title)
 		$data = array_splice($data,0,$max);
 	}
 	$i = count($data);
-	if ($i == 0) return;
+	if ($i == 0){
+		return;
+	}
 
 	$rc = '';
 	if ($title)

@@ -8,7 +8,7 @@
  * @copyright Copyright &copy; 2005-2006,2008 Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
  * @create    2013/02/12
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: AcceptLanguage.php,v 1.0.0 2013/02/12 17:28:00 Logue Exp $
+ * @version   $Id: AcceptLanguage.php,v 1.0.1 2015/06/09 20:43:00 Logue Exp $
  **/
 
 namespace PukiWiki\Lang;
@@ -270,14 +270,16 @@ class AcceptLanguage
 	public static function getRemoteAddr()
 	{
 		$ip = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
-		if (empty($ip)) return '';
+		if (empty($ip)){
+			return '';
+		}
 		
 		$host = gethostbyaddr($ip);
 		if ($ip == $host) return '';
 		$x = strtolower( substr( $host,strrpos($host, '.') + 1 ) );
-		if (isset($this->flag[$x]))
+		if (isset($this->flag[$x])){
 			return self::splitStr($this->flag[$x], FALSE, FALSE);
-                return '';
+		}
 	}
 
 	/*
@@ -304,9 +306,13 @@ class AcceptLanguage
 			}
 		}
 		if ($sort) {
-			uasort($rc,create_function('$a,$b','return ($a[1] == $b[1]) ? 0 : (($a[1] > $b[1]) ? -1 : 1);'));
+			uasort($rc,function($a,$b){
+				return ($a[1] == $b[1]) ? 0 : (($a[1] > $b[1]) ? -1 : 1);
+			});
 			// usort: 比較結果が等しい場合、 配列の順番は定義されない
-			usort($rc,create_function('$a,$b','return ($a[1] == $b[1]) ? 0 : (($a[1] > $b[1]) ? -1 : 1);'));
+			usort($rc,function($a,$b){
+				return ($a[1] == $b[1]) ? 0 : (($a[1] > $b[1]) ? -1 : 1);
+			});
 		}
 		return $rc;
 	}

@@ -8,7 +8,7 @@
  * @copyright 2012-2015 PukiWiki Advance Developers Team
  * @create    2012/12/18
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Render.php,v 1.0.1 2015/02/27 21:32:00 Logue Exp $
+ * @version   $Id: Render.php,v 1.0.2 2015/06/09 20:48:00 Logue Exp $
  */
 
 namespace PukiWiki;
@@ -667,10 +667,9 @@ class Render{
 				'|' . '(' . $pattern . ')' .        // $matches[1]: 検索語句
 				'/sS';
 				// ハイライトさせる関数を生成
-				$decorate_Nth_word = create_function(
-					'$matches',
-					'return isset($matches[1]) ? ' . '\'<mark class="word' .$id .'">\' . $matches[1] . \'</mark>\' : ' . '$matches[0];'
-				);
+				$decorate_Nth_word = function($matches) use($id){
+					return isset($matches[1]) ? '<mark class="word' .$id .'">' . $matches[1] . '</mark>' :  $matches[0];
+                                };
 
 			// 書き換え
 			foreach($contents as $content){

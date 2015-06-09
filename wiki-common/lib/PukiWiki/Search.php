@@ -5,10 +5,10 @@
  * @package   PukiWiki
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2013-2014 PukiWiki Advance Developers Team
+ * @copyright 2013-2015 PukiWiki Advance Developers Team
  * @create    2013/05/23
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Search.php,v 1.0.3 2014/03/10 19:24:00 Logue Exp $
+ * @version   $Id: Search.php,v 1.0.4 2015/06/09 20:48:00 Logue Exp $
  */
 namespace PukiWiki;
 
@@ -28,27 +28,30 @@ class Search{
 	public static function get_search_words($words, $do_escape = FALSE)
 	{
 		static $init, $reading, $pre, $post, $quote = '/';
-
-		$mb_convert_kana = create_function('$str, $option', 'return $str;');
+		$mb_convert_kana = function($str, $option){
+			return $str;
+		};
 
 		if (! isset($init)) {
 			
 			if (LANG === 'ja' && function_exists('mb_convert_kana')) {
-				$mb_convert_kana = create_function('$str, $option',
-					'return mb_convert_kana($str, $option, SOURCE_ENCODING);');
+				$mb_convert_kana = function($str, $option){
+					return mb_convert_kana($str, $option, SOURCE_ENCODING);
+				};
 			}else if (LANG === 'ko'){
-				$mb_convert_kana = create_function('$str, $option',
-					'return PukiWiki\Text\Hangul::toChosung($str);');
+				$mb_convert_kana = function($str, $option){
+					return PukiWiki\Text\Hangul::toChosung($str);
+				};
 			}else if (LANG === 'zh'){
-				$mb_convert_kana = create_function('$str, $option',
-					'return PukiWiki\Text\PinYin::toKana($str);');
-
+				$mb_convert_kana = function($str, $option){
+					return PukiWiki\Text\PinYin::toKana($str);
+				};
 			}
 			$pre = $post = '';
 			$init = TRUE;
 		}
 
-		if (! is_array($words)) $words = array($words);
+                if (! is_array($words)){ $words = array($words);}
 
 		// Generate regex for the words
 		$regex = array();
