@@ -209,16 +209,18 @@ class Wiki{
 	 * 読み込み可能かをチェック（メッセージを表示する）
 	 */
 	public function checkReadable($authenticate = false){
+		global $_string;
 		if (! self::isReadable($authenticate)){
-			Utility::dieMessage('You have not permisson to read this page.',403);
+			Utility::dieMessage($_string['not_readable'],403);
 		}
 	}
 	/**
 	 * 編集可能かをチェック（メッセージを表示する）
 	 */
 	public function checkEditable($authenticate = false){
+		global $_string;
 		if (! self::isEditable($authenticate)){
-			Utility::dieMessage('You have not permisson to edit this page.',403);
+			Utility::dieMessage($_string['not_editable'],403);
 		}
 	}
 
@@ -440,7 +442,7 @@ class Wiki{
 				$listed = $ip_filter->checkHost();
 				if ($listed !== false){
 					Utility::dump('dnsbl');
-					Utility::dieMessage(sprintf($_strings['blacklisted'],$listed), $_title['prohibit'], 400);
+					Utility::dieMessage(sprintf($_strings['prohibit_dnsbl'],$listed), $_title['prohibit'], 400);
 				}
 			}
 
@@ -449,13 +451,13 @@ class Wiki{
 				$reason = self::checkUriBl($diff);
 				if ($reason !== false){
 					Utility::dump($reason);
-					Utility::dieMessage('Writing was limited by URIBL (Blocking SPAM).', $_title['prohibit'], 400);
+					Utility::dieMessage($_strings['prohibit_uribl'], $_title['prohibit'], 400);
 				}
 			}
 			// 匿名プロクシ
 			if ($use_spam_check['page_write_proxy'] && ProxyChecker::is_proxy()) {
 				Utility::dump('proxy');
-				Utility::dieMessage('Writing was limited by PROXY (Blocking SPAM).', $_title['prohibit'], 400);
+				Utility::dieMessage($_strings['prohibit_proxy'], $_title['prohibit'], 400);
 			}
 
 			// Akismet
@@ -487,7 +489,7 @@ class Wiki{
 
 					if($akismet->isSpam($akismet_post)){
 						Utility::dump('akismet');
-						Utility::dieMessage('Writing was limited by Akismet (Blocking SPAM).', $_title['prohibit'], 400);
+						Utility::dieMessage($_strings['prohibit_akismet'], $_title['prohibit'], 400);
 					}
 				}else{
 					Utility::dieMessage('Akismet API key does not valied.', 500);

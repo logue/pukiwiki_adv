@@ -891,8 +891,10 @@ $.fn.bsbutton = bootstrapButton;
 					document.location.reload();
 				}
 				dialog_option.title = $.i18n('dialog','error');
+				content = data.responseText;
 			}).
 			always(function(data){
+				
 				if (typeof(parse) === 'function') { data = parse(data); }
 				// スクリプトタグを無効化
 				if (typeof(data) !== 'null' && data.body){
@@ -901,29 +903,30 @@ $.fn.bsbutton = bootstrapButton;
 				}else if (data.status === 401 || data.status === 403){
 					content = '<p class="alert alert-warning" id="ajax-error"><span class="fa fa-warning"></span>'+$.i18n('dialog','error_auth')+'</p>';
 				}else if (status === 'error'){
-					content = '<p class="alert alert-warning" id="ajax-error"><span class="fa fa-warning"></span>'+$.i18n('dialog','error_page')+'</p>';					
+					content = '<p class="alert alert-warning" id="ajax-error"><span class="fa fa-warning"></span>'+$.i18n('dialog','error_page')+'</p>';
 				}else{
 					content = '<p class="alert alert-warning"><span class="fa fa-warning"></span>Data is Null!</p>';
 					dialog_option.title = $.i18n('dialog','error');
 				}
 				container.html(content).dialog(dialog_option);
 				$('*[role="tooltip"]').remove();	// ツールチップが消えないことがあるので・・・
-/*
+
 				if (data.status !== 200){
 					try{
+						/*
 						$('#ajax-error').after([
 							'<div class="alert alert-info">',
 							'<ul>',
 							'<li>readyState:'+data.readyState+'</li>',
-	//						'<li>responseText:'+data.responseText+'</li>',
 							'<li>status:'+data.status+'</li>',
 							'<li>statusText:'+data.statusText+'</li>',
 							'</ul>',
 							'</div>'
 						].join("\n"));
+						*/
 					}catch(e){}
 				}
-*/
+
 			});
 		},
 		blockUI : function(){
@@ -1742,14 +1745,16 @@ $.fn.bsbutton = bootstrapButton;
 							// そうでない場合は、CAPTCHAが表示される・・・ハズ。
 						}).
 						fail(function(data, status){
-							console.log(data);
+							$('.window').dialog('close');
 							if (DEBUG) {
 								console.error(data, status);
 								if ($('#debug-window').length === 0) $(document.body).append('<div id="debug-window"></div>');
-								$('#debug-window').dialog({
-									modal: true,
-									content: data.statusText
+								$('#debug-window').html(data.responseText).dialog({
+									title: $.i18n('dialog','error'),
+									modal: true
 								});
+							}else{
+								console.error(data.responseText);
 							}
 							alert($.i18n('pukiwiki','error'));
 						}).

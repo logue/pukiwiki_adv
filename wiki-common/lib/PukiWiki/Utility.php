@@ -654,9 +654,9 @@ class Utility{
 			$body[] = '<p>[ ';
 			if ( isset($vars['page']) && !empty($vars['page']) ){
 				$body[] = '<a href="' . Factory::Wiki($vars['page'])->uri() .'">'.$_button['back'].'</a> | ';
-				$body[] = '<a href="' . Router::get_cmd_uri('edit',$vars['page']) . '">Try to edit this page</a> | ';
+				$body[] = '<a href="' . Router::get_cmd_uri('edit',$vars['page']) . '">'.$_button['return_home'].'</a> | ';
 			}
-			$body[] = '<a href="' . Router::get_cmd_uri() . '">Return to FrontPage</a> ]</p>';
+			$body[] = '<a href="' . Router::get_cmd_uri() . '">'.$_button['try_edit'].'</a> ]</p>';
 		}
 		$body[] = '<p class="alert alert-warning"><span class="fa fa-ban"></span> <strong>' . $_title['error'] . '</strong>';
 		$body[] = PKWK_WARNING !== true || empty($msg) ? $msg = $_string['error_msg'] : $msg;
@@ -704,18 +704,18 @@ class Utility{
 	 * @return void
 	 */
 	public static function notFound(){
-		global $vars, $_button;
+		global $vars, $_button, $_title, $_string;
 		$body[] = '<p>[ ';
 		if ( isset($vars['page']) && !empty($vars['page']) ){
 			$body[] = '<a href="' . Factory::Wiki($vars['page'])->uri() .'">'.$_button['back'].'</a> | ';
-			$body[] = '<a href="' . Router::get_cmd_uri('edit',$vars['page']) . '">Try to edit this page</a> | ';
+			$body[] = '<a href="' . Router::get_cmd_uri('edit',$vars['page']) . '">'.$_button['try_edit'].'</a> | ';
 		}
 		$body[] = '<a href="' . Router::get_cmd_uri() . '">Return to FrontPage</a> ]</p>';
-		$body[] = '<p class="alert alert-warning"><span class="fa fa-info-sign"></span> <strong>Page not found</strong>';
-		$body[] = 'Sorry, but the page you were trying to view does not exist or deleted.';
+		$body[] = '<p class="alert alert-warning"><span class="fa fa-info-sign"></span> <strong>' . $_title['page_not_found'] . '</strong>';
+		$body[] = $_string['not_found1'];
 		if ( isset($vars['page']) && !empty($vars['page']) ){
 			$body[] = '<br />' . "\n" . sprintf(
-				'Please check <a href="%1s" rel="nofollow">backups</a> or <a href="%2s" rel="nofollow">create page</a>.',
+				$_string['not_found2'],
 				Router::get_cmd_uri('backup',$vars['page']),
 				Router::get_cmd_uri('edit',$vars['page'])
 			);
@@ -735,6 +735,7 @@ class Utility{
 	 * @return void
 	 */
 	public static function redirect($url = '', $time = 0){
+		global $_string, $_title, $vars;
 		$response = new Response();
 
 		// URLが空の場合、ページのアドレスか、スクリプトのアドレスを返す
@@ -759,14 +760,14 @@ class Utility{
 			$html[] = '<meta http-equiv="refresh" content="'.$time.'; URL='.$s_url.'" />';
 		}
 		$html[] = '<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/' . Render::TWITTER_BOOTSTRAP_VER . '/css/bootstrap.min.css" type="text/css" />';
-		$html[] = '<title>301 Moved Permanently</title>';
+		$html[] = '<title>' . $_title['redirect'] . '</title>';
 		$html[] = '</head>';
 		$html[] = '<body>';
 		$html[] = '<div class="container">';
 		$html[] = '<p class="alert alert-success">';
 		$html[] = '<span class="glyphicon glyphicon-info-sign"></span>';
-		$html[] = 'The requested page has moved to a new URL. <br />';
-		$html[] = 'Please click <a href="'.$s_url.'">here</a> if you do not want to move even after a while.';
+		$html[] = $_string['redirect1'] . '<br />';
+		$html[] = sprintf($_string['redirect2'] , $s_url);
 		if (!DEBUG){
 			$html[] = '<br />NOTICE: No auto redirect when Debug mode.';
 		}
@@ -793,6 +794,8 @@ class Utility{
 	 * @return void
 	 */
 	public static function notAuth($realm){
+		global $_string, $_title, $_button, $vars;
+
 		$response = new Response();
 
 		// URLが空の場合、ページのアドレスか、スクリプトのアドレスを返す
@@ -814,17 +817,19 @@ class Utility{
 			$html[] = '<meta http-equiv="refresh" content="'.$time.'; URL='.$s_url.'" />';
 		}
 		$html[] = '<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/' . Render::TWITTER_BOOTSTRAP_VER . '/css/bootstrap.min.css" type="text/css" />';
-		$html[] = '<title>301 Moved Permanently</title>';
+		$html[] = '<title>' . $_title['redirect'] . '</title>';
 		$html[] = '</head>';
 		$html[] = '<body>';
+		$html[] = '<div class="container">';
 		$html[] = '<p class="alert alert-success">';
 		$html[] = '<span class="glyphicon glyphicon-info-sign"></span>';
-		$html[] = 'The requested page has moved to a new URL. <br />';
-		$html[] = 'Please click <a href="'.$s_url.'">here</a> if you do not want to move even after a while.';
+		$html[] = $_string['redirect1'] . '<br />';
+		$html[] = sprintf($_string['redirect2'] , $s_url);
 		if (!DEBUG){
 			$html[] = '<br />NOTICE: No auto redirect when Debug mode.';
 		}
 		$html[] = '</p>';
+		$html[] = '</div>';
 		$html[] = '</body>';
 		$html[] = '</html>';
 		$content = join("\n",$html);
@@ -886,7 +891,7 @@ class Utility{
 			$ret[] = join("\n", $_pages);
 			$ret[] = '</select>';
 			$ret[] = '</div>';
-			$ret[] = '<input type="submit" class="btn btn-default" name="template" value="' . $_button['load'] . '" accesskey="l" />';
+			$ret[] = '<button type="submit" class="btn btn-default" name="template" accesskey="l">' . $_button['load'] . '</button>';
 			$ret[] = '</div>';
 			unset($_s_page, $_w, $_pages);
 		}

@@ -88,11 +88,18 @@ $_string = array(
 
 	// Prohibit messages
 	'error_prohibit'	=> T_('This Wiki is <var>%s</var> mode now. The action which you are trying to do is prohibited.'),
-	'blacklisted'		=> T_('Sorry, Your host is prohibited by <strong>IPBL</storng> (Blocking SPAM).'),
+	'prohibit_dnsbl'	=> T_('Sorry, Your host(<var>%s</var>) is prohibited by <strong>DNSBL</storng> (Blocking SPAM).'),
+	'prohibit_uribl'	=> T_('Sorry, Your host is prohibited by <strong>URIBL</storng> (Blocking SPAM).'),
+	'prohibit_akismet'	=> T_('Sorry, Your host is prohibited by <strong>Akismet</storng> (Blocking SPAM).'),
 	'prohibit_country'	=> T_('Sorry, access from your country is prohibited.'),
+	
+	'prohibit_proxy'	=> T_('Sorry, access via proxy is prohibited.'),
 	'not_readable'		=> T_('You have no permission to read this page.'),
 	'not_editable'		=> T_('You have no permission to edit page or create page.'),
-	
+	'not_found1'		=> T_('Sorry, but the page you were trying to view does not exist or deleted.'),
+	'not_found2'		=> T_('Please check <a href="%1s" rel="nofollow">backups</a> or <a href="%2s" rel="nofollow">create page</a>.'),
+	'redirect1'			=> T_('The requested page has moved to a new URL.'),
+	'redirect2'			=> T_('Please click <a href="%s">here</a> if you do not want to move even after a while.'),
 
 	// Plugin Error messages
 	'plugin_init_error'			=> T_('Plugin init failed: <var>%s</var>'),
@@ -101,7 +108,11 @@ $_string = array(
 	'plugin_encode_error'		=> T_('Incorrect encode. Please use a modern browser.'),
 	'plugin_not_implemented'	=> T_('Plugin <var>%s</var> is not implemented.'),
 	
-	'feed_description' => T_('Recent changes of %s')
+	'feed_description' => T_('Recent changes of %s'),
+	
+	// Captcha
+	'captcha_msg'		=> T_('Please enter the text that appears below.'),
+	'captcha_failure'	=> T_( 'Failed to authenticate.'),
 );
 
 $_button = array(
@@ -119,6 +130,7 @@ $_button = array(
 	'remove'	=> T_('Remove'),
 	'login'		=> T_('Login'),
 	'logout'	=> T_('Logout'),
+	'submit'	=> T_('Submit'),
 
 	// CheckBox labels
 	'notchangetimestamp'	=> T_('Do not change timestamp'),
@@ -144,7 +156,9 @@ $_title = array(
 	'preview'			=> T_('Preview of $1'),
 	'error'				=> T_('Runtime Error'),	// 500
 	'plugin_error'		=> T_('Plugin Error'),
+	'redirect'			=> T_('Moved Permanently'),	// 301
 	'prohibit'			=> T_('Access Prohibited'),	// 403
+	'page_not_found'	=> T_('Page not found'),	// 404
 	'not_implemented'	=> T_('Not Implemented')	// 501
 );
 

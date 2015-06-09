@@ -45,8 +45,8 @@ class Captcha{
 	 * @param boolean $save セッションに保存するか
 	 * @param string $message エラーメッセージの内容
 	 */
-	public static function check($save = true, $message = ''){
-		global $recaptcha_public_key, $recaptcha_private_key, $vars, $session;
+	public static function check($save = true, $message = '', $multipart = false){
+		global $recaptcha_public_key, $recaptcha_private_key, $vars, $session, $_string, $_button;
 
 		// Captchaのセッション名（ticketとリモートホストの加算値。ticketはプログラマーから見てもわからない）
 		$session_name = self::CAPTCHA_SESSION_PREFIX . md5(Utility::getTicket() . REMOTE_ADDR);
@@ -73,7 +73,7 @@ class Captcha{
 				}else{
 					// CAPTCHA認証失敗ログをつける
 					Utility::dump('captcha');
-					$message = 'Failed to authenticate.';
+					$message = $_string['captcha_failure'];
 				}
 				// チャレンジ＆レスポンスデーターを削除
 				unset($vars['recaptcha_challenge_field'], $vars['recaptcha_response_field']);
@@ -113,7 +113,7 @@ class Captcha{
 				}else{
 					// CAPTCHA認証失敗ログをつける
 					Utility::dump('captcha');
-					$message = 'Failed to authenticate.';
+					$message = $_string['captcha_failure'];
 				}
 				// チャレンジ＆レスポンスデーターを削除
 				unset($vars['response_field'], $vars['challenge_field']);
@@ -182,7 +182,13 @@ class Captcha{
 			// captchaの有効期間
 			$session->setExpirationSeconds($response_session, self::CAPTCHA_TIMEOUT);
 			$form .= '<input type="hidden" name="response_field" value="' . $captcha->getId() . '" />' . "\n";
+			$form .= '<div class="input-group">';
+			$form .= '<span class="input-group-addon"><span class="fa fa-key"></span></span>';
 			$form .= '<input type="text" class="form-control" name="challenge_field" maxlength="' . $captcha->getWordLen() . '" size="'.$captcha->getWordLen() . '" />';
+			$form .= '<span class="input-group-btn">';
+			$form .= '<button type="submit" class="btn btn-primary" value="submit">' . $_button['submit'] . '</button>';
+			$form .= '</span>';
+			$form .= '</div>';
 			// $form .= $captcha->getWord();
 		}
 	//	$ret[] = $session->offsetExists($session_name) ? 'true' : 'false';
@@ -200,20 +206,25 @@ class Captcha{
 
 		$ret[] = '<fieldset>';
 		$ret[] = '<legend>CAPTCHA</legend>';
-		$ret[] = '<p>'.T_('Please enter the text that appears below.').'</p>';
+		$ret[] = '<p>'.$_string['captcha_msg'].'</p>';
+		
 		// フォームを出力
 		$ret[] = '<form method="post" action="' . Router::get_script_uri() . '" method="post" class="form-inline">';
 		//unset($vars['ajax']);
 		// ストアされている値を出力
 		foreach ($vars as $key=>$value){
 			if ($key === 'ajax') continue;
+			if (strpos($key, 'attach_file', 0) === 0){
+				// ファイルフォームだった場合。（あまりいい実装ではない）
+				$ret[] = '<input type="file" name="' . $key . '" value="' . (!empty($value) ? Utility::htmlsc($value) : '') . '" class="hidden" />';
+				continue;
+			}
+			
 			$ret[] = '<input type="hidden" name="' . $key . '" value="' . (!empty($value) ? Utility::htmlsc($value) : '') . '" />';
 		}
-		$ret[] = '<div class="input-group">';
+		
 		// CAPTCHAフォームを出力
 		$ret[] = $form;
-		$ret[] = '<input class="btn btn-primary" type="submit" />';
-		$ret[] = '</div>';
 		$ret[] = '</form>';
 		$ret[] = '</fieldset>';
 
