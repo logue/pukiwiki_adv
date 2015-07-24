@@ -8,7 +8,7 @@
  * @copyright 2012-2015 PukiWiki Advance Developers Team
  * @create    2012/12/18
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Render.php,v 1.0.2 2015/06/09 20:48:00 Logue Exp $
+ * @version   $Id: Render.php,v 1.0.3 2015/07/24 19:21:00 Logue Exp $
  */
 
 namespace PukiWiki;
@@ -55,7 +55,7 @@ class Render{
 	/**
 	 * Twitter Bootstrapのバージョン
 	 */
-	const TWITTER_BOOTSTRAP_VER = '3.3.4';
+	const TWITTER_BOOTSTRAP_VER = '3.3.5';
 	/**
 	 * Font Awesomeのバージョン
 	 */
