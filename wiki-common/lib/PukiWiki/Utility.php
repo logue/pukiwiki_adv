@@ -5,10 +5,10 @@
  * @package   PukiWiki
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2012-2014 PukiWiki Advance Developers Team
+ * @copyright 2012-2015 PukiWiki Advance Developers Team
  * @create    2012/12/31
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Utility.php,v 1.0.2 2014/12/24 23:33:00 Logue Exp $
+ * @version   $Id: Utility.php,v 1.0.3 2015/06/25 23:40:00 Logue Exp $
  **/
 
 namespace PukiWiki;
@@ -959,7 +959,7 @@ class Utility{
 			// テキストの整形ルールを表示
 			$rule_wiki = Factory::Wiki(self::RULE_PAGENAME);
 			$ret[] = '<hr />';
-			$ret[] =  $rule_wiki->has() ? $rule_wiki->render() : '<p class="alert alert-warning">Sorry, page \'' . Utility::htmlsc($rule_page) .'\' unavailable.</p>';
+			$ret[] =  $rule_wiki->has() ? $rule_wiki->render() : '<p class="alert alert-warning">Sorry, page \'' . Utility::htmlsc(self::RULE_PAGENAME) .'\' unavailable.</p>';
 		} else {
 			$ret[] = '<ul><li><a href="' . Factory::Wiki($page)->uri('edit',array('help'=>'true')) . '" id="FormatRule">' . $_string['help'] . '</a></li></ul>';
 		}
