@@ -205,7 +205,7 @@ class Attach{
 	 * 削除する
 	 */
 	public function delete($pass){
-		global $notify;
+		global $notify, $notify_subject;
 		if ($this->status['freeze']){
 			// ここではチェックしない
 			return false;
