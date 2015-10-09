@@ -1,0 +1,65 @@
+/* popup toc */
+#poptoc {
+	display: none;
+	font-size: 93%;
+	max-width: 25em;
+	min-width: 18em;
+	opacity: .9;
+	padding: .5em;
+	position: absolute;
+	z-index: 1;
+}
+#poptoc h1 {
+	font-size: small;
+	font-weight: normal;
+	padding: .3em;
+	margin: 0;
+	text-align: center;
+}
+#poptoc h1 a {
+	text-decoration: none;
+}
+#poptoc h1 img {
+	margin-bottom: -3px;
+	margin-right: 2px;
+}
+#poptoc a {
+	color: blue !important;
+	cursor: pointer;
+}
+#poptoc a:hover {
+	text-shadow: none;
+	background-color: #ccc;
+}
+#poptoc h1 {
+	color: navy;
+	background-color: honeydew;
+	font-size: small;
+	font-weight: normal;
+	padding: .3em;
+	margin: 0;
+	text-align: center;
+	border: silver solid 1px;
+	display: block;
+}
+#poptoc h1 a {
+	color:navy;
+	text-decoration:none;
+}
+#poptoc h1 img {
+	margin-bottom:-3px;
+	margin-right: 2px;
+}
+#poptoc .nav {
+	text-indent:0em;
+	border-top:1px gray solid;
+	padding-top:0.2em;
+	text-align:center;
+	white-space: nowrap;
+}
+#poptoc a.here {
+	color: black;
+	background: #EEEEEE;
+	text-decoration: none;
+	border:1px dotted gray;
+}

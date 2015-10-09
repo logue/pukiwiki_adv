@@ -1,0 +1,120 @@
+/* ==|== PukiWiki Adv. Misc classes ========================================= */
+.underline {
+	text-decoration: underline !important;
+}
+.small1 {
+	font-size: 77%;
+}
+.super_index {
+	font-weight: bold;
+	font-size: 77%;
+	vertical-align: super;
+}
+.jumpmenu {
+	font-size: 77%;
+	text-align: right;
+}
+.size1 {
+	font-size: xx-small;
+}
+.size2 {
+	font-size: x-small;
+}
+.size3 {
+	font-size: small;
+}
+.size4 {
+	font-size: medium;
+}
+.size5 {
+	font-size: large;
+}
+.size6 {
+	font-size: x-large;
+}
+.size7 {
+	font-size: xx-large;
+}
+/* html.php/catbody() */
+.word0, .word1,
+
+.word0 {
+	background-color: #FFFF66;
+	text-shadow: none;
+	color: black;
+}
+.word1 {
+	background-color: #A0FFFF;
+	text-shadow: none;
+	color: black;
+}
+.word2 {
+	background-color: #99FF99;
+	text-shadow: none;
+	color: black;
+}
+.word3 {
+	background-color: #FF9999;
+	text-shadow: none;
+	color: black;
+}
+.word4 {
+	background-color: #FF66FF;
+	text-shadow: none;
+	color: black;
+}
+.word5 {
+	background-color: #880000;
+	text-shadow: none;
+	color: white;
+}
+.word6 {
+	background-color: #00AA00;
+	text-shadow: none;
+	color: white;
+}
+.word7 {
+	background-color: #886800;
+	text-shadow: none;
+	color: white;
+}
+.word8 {
+	background-color: #004699;
+	text-shadow: none;
+	color: white;
+}
+.word9 {
+	background-color: #990099;
+	text-shadow: none;
+	color: white;
+}
+/* Note */
+.super_index {
+	color: red;
+	font-weight: bold;
+	vertical-align: super;
+	line-height: 100%;
+}
+.note_super {
+	font-size: 77% !important;
+	color: red !important;
+	font-weight: bold;
+	vertical-align: super;
+	margin-right: .5em;
+}
+/* xdebug */
+.xdebug-error {
+	color: black !important;
+	font-family: monospace !important;
+}
+/* Fix Modernizr cheking dom */
+#modernizr {
+	position: absolute;
+	z-index: -999;
+}
+
+#back-top{
+	position:fixed;
+	bottom:5px;
+	right:5px;
+}

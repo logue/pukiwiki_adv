@@ -32,7 +32,6 @@
 	},
 	"require": {
 		"php": ">=5.4.0",
-		"ext-sqlite" : "*",
 		"aferrandini/phpqrcode": "1.*",
 		"logue/igo-php":"*",
 		"zendframework/zend-Serializer": "2.*",
@@ -61,6 +60,10 @@
 		"zendframework/zendservice-recaptcha":"2.*",
 		"zendframework/zendservice-twitter":"2.*",
 		"zendframework/zendxml":"*"
+	},
+	"devDependencies": {
+		"gulp": "3.*",
+		"gulp-notify": "*"
 	},
 	"suggest":{
 		"ext-gd" : "for thumbnail.",

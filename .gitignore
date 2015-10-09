@@ -2,3 +2,6 @@
 /vendor/
 /wiki-data/cache/
 /wiki-common/cache/
+
+/node_modules
+/npm-debug.log

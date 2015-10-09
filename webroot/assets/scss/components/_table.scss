@@ -1,0 +1,47 @@
+/* Table Tags */
+.table_wrapper {
+	text-align: center;
+}
+.table {
+	padding: 0;
+	border: 0;
+	text-align: left;
+	border-collapse: separate;
+	border-spacing: 1px;
+	background-color: darkgray;
+	min-width:30%;
+	width:auto;
+}
+.table-bordered>thead>tr>th, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>tbody>tr>td, .table-bordered>tfoot>tr>td {
+	border:none;
+}
+.table_center {
+	margin: 0 auto;
+}
+.table_left {
+	margin:auto auto auto 0;
+}
+.table_right {
+	margin:auto 0 auto auto;
+}
+.table th {
+	background-color: silver;
+	padding: 5px;
+	margin: 1px;
+	white-space: nowrap;
+	text-align: center;
+}
+.table td {
+	padding: 5px;
+	margin: 1px;
+	vertical-align: top;
+}
+.table td.blank-cell {
+	background-color: lightgrey;
+}
+.table tr:nth-child(even) td {
+	background-color:white;
+}
+.table tr:nth-child(odd) td {
+	background-color:whitesmoke;
+}

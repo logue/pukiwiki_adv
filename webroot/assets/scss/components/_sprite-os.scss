@@ -1,0 +1,426 @@
+/* ==|== os classes ======================================================== */
+.os {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	background-image:inline-image('plugin/os.png');
+	background-position: -1000px -1000px;
+	background-repeat: no-repeat;
+	text-shadow:none;
+	color: transparent;
+}
+.os-aix {
+	background-position: 0 0;
+	width: 16px;
+	height: 16px;
+}
+.os-amigaos {
+	background-position: -17px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-apple {
+	background-position: -34px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-atari {
+	background-position: -51px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-beos {
+	background-position: -68px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-blackberry {
+	background-position: -85px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-bsd {
+	background-position: -102px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-bsddflybsd {
+	background-position: -119px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-bsdfreebsd {
+	background-position: -136px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-bsdi {
+	background-position: -153px 0;
+	width: 14px;
+	height: 14px;
+}
+.os-bsdkfreebsd {
+	background-position: -168px 0;
+	width: 15px;
+	height: 16px;
+}
+.os-bsdnetbsd {
+	background-position: -184px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-bsdopenbsd {
+	background-position: -201px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-commodore {
+	background-position: -218px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-cpm {
+	background-position: -235px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-debian {
+	background-position: -252px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-digital {
+	background-position: -269px 0;
+	width: 14px;
+	height: 14px;
+}
+.os-dos {
+	background-position: -284px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-dreamcast {
+	background-position: -301px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-freebsd {
+	background-position: -318px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-gnu {
+	background-position: -335px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-hpux {
+	background-position: -352px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-ibm {
+	background-position: -369px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-imode {
+	background-position: -386px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-inferno {
+	background-position: -403px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-ios {
+	background-position: -420px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-iphone {
+	background-position: -437px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-irix {
+	background-position: -454px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-j2me {
+	background-position: -471px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-java {
+	background-position: -488px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-kfreebsd {
+	background-position: -505px 0;
+	width: 15px;
+	height: 16px;
+}
+.os-linux {
+	background-position: -521px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-linuxandroid {
+	background-position: -538px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-linuxasplinux {
+	background-position: -555px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-linuxcentos {
+	background-position: -572px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-linuxdebian {
+	background-position: -589px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-linuxfedora {
+	background-position: -606px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-linuxgentoo {
+	background-position: -623px 0;
+	width: 15px;
+	height: 16px;
+}
+.os-linuxmandr {
+	background-position: -639px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-linuxpclinuxos {
+	background-position: -656px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-linuxredhat {
+	background-position: -673px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-linuxsuse {
+	background-position: -690px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-linuxubuntu {
+	background-position: -707px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-linuxvine {
+	background-position: -724px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-linuxzenwalk {
+	background-position: -741px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-mac {
+	background-position: -758px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-macintosh {
+	background-position: -775px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-macosx {
+	background-position: -792px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-netbsd {
+	background-position: -809px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-netware {
+	background-position: -826px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-next {
+	background-position: -843px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-openbsd {
+	background-position: -860px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-os2 {
+	background-position: -877px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-osf {
+	background-position: -894px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-palmos {
+	background-position: -911px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-psp {
+	background-position: -928px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-qnx {
+	background-position: -945px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-riscos {
+	background-position: -962px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-sco {
+	background-position: -979px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-sunos {
+	background-position: -996px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-syllable {
+	background-position: -1013px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-symbian {
+	background-position: -1030px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-unix {
+	background-position: -1047px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-unknown {
+	background-position: -1064px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-vms {
+	background-position: -1081px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-webtv {
+	background-position: -1098px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-wii {
+	background-position: -1115px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-win {
+	background-position: -1132px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-win16 {
+	background-position: -1149px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-win2000 {
+	background-position: -1166px 0;
+	width: 16px;
+	height: 15px;
+}
+.os-win2003 {
+	background-position: -1183px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-win2008 {
+	background-position: -1200px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-win7 {
+	background-position: -1217px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-win95 {
+	background-position: -1234px 0;
+	width: 16px;
+	height: 14px;
+}
+.os-win98 {
+	background-position: -1251px 0;
+	width: 16px;
+	height: 14px;
+}
+.os-wince {
+	background-position: -1268px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-winlong {
+	background-position: -1285px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-winme {
+	background-position: -1302px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-winnt {
+	background-position: -1319px 0;
+	width: 16px;
+	height: 14px;
+}
+.os-winunknown {
+	background-position: -1336px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-winvista {
+	background-position: -1353px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-winxbox {
+	background-position: -1370px 0;
+	width: 16px;
+	height: 16px;
+}
+.os-winxp {
+	background-position: -1387px 0;
+	width: 16px;
+	height: 16px;
+}

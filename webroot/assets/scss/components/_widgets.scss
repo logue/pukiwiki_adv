@@ -1,0 +1,109 @@
+/* ==|== PukiWiki Generic Widgets =========================================== */
+/* Tooltip */
+[role=tooltip] p {
+	margin: 0px;
+	padding: 0px;
+}
+/* WAI-ARIA */
+ul[role=tablist] {
+	margin: 0 auto;
+	text-align: center;
+	padding: 0;
+	list-style: none;
+}
+li[role=tab] {
+	display: inline;
+	padding: 0 .25em;
+}
+.no-js ul[role=tablist] {
+	width: 75%;
+}
+.no-js li[role=tab] {
+	font-weight: bold;
+}
+.no-js li[role=tab]:after {
+	content: '| ';
+	font-weight: normal;
+}
+.no-js li[role=tab]:last-child:after {
+	content: '';
+}
+.js fieldset[role=tabpanel] {
+	border: 0;
+	margin: 0;
+	padding: 1em 1.4em;
+}
+.js [role=tabpanel] legend {
+	display: none;
+}
+
+.tocpic {
+	display: inline;
+	cursor: pointer;
+}
+/* for realedit.js */
+#realview {
+	resize: vertical;
+	overflow-y: scroll;
+}
+/* jQueryUI BlockUI */
+#loading {
+	display:none;
+	cursor:progress;
+}
+.pkwk_widget {
+	padding: 2px;
+	margin: 0;
+	line-height: 100%;
+	list-style: none;
+}
+.pkwk_widget .ui-progressbar {
+	height: 20px;
+	padding:0 !important;
+}
+.pkwk_widget .ui-state-default, .pkwk_widget .ui-widget-content {
+	padding: 2px;
+	min-width: 18px;
+	min-height: 18px;
+}
+.pkwk_widget li {
+	cursor: pointer;
+	float: left;
+	text-align: center;
+	margin: 2px 0;
+	font-size: 93%;
+}
+.pkwk_widget .ui-corner-left {
+	margin-left: 2px;
+}
+.pkwk_widget .ui-corner-right {
+	margin-right: 2px;
+}
+.pkwk_widget .ui-corner-all {
+	margin: 2px;
+}
+/* palette */
+.color {
+	display: inline-block;
+	width: 8px;
+	height: 8px;
+	line-height: 100%;
+	color: transparent;
+}
+#colors.pkwk_widget li {
+	margin: 0;
+}
+
+/* social */
+.social {
+	list-style: none;
+}
+.social li {
+	display: block;
+	padding: 0 0.1em;
+	float: left;
+}
+.fb-comments {
+	width: 650px;
+	padding-left: 3em;
+}

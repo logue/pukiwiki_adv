@@ -1,0 +1,310 @@
+/* ==|== PukiWiki Adv. Standard Plugin classes ============================== */
+/* aname.inc.php */
+.anchor_super {
+	height: 8px;
+	font-size: 8px !important;
+	vertical-align: super;
+}
+/* amazon.inc.php */
+.amazon_img {
+	margin: 16px 10px 8px 8px;
+	text-align: center;
+}
+.amazon_imgetc {
+	margin: 0 8px 8px 8px;
+	text-align:center;
+}
+.amazon_sub {
+	font-size: 93%;
+}
+.amazon_avail {
+	margin-left: 150px;
+	font-size: 93%;
+}
+.amazon_td {
+	text-align: center;
+	word-wrap: break-word;
+}
+.amazon_tbl {
+	width: 160px;
+	font-size: 93%;
+	text-align: center;
+}
+/* attach.inc.php / related.inc.php */
+#attach, #related {
+	display: block;
+	float: none;
+}
+#attach dl, #related dl {
+	margin: 0 1%;
+	display: block;
+}
+#attach dl dt, #related dl dt {
+	display: inline;
+	font-weight: normal;
+	margin: .1em .25em;
+}
+#attach dl dd, #related dl dd {
+	display: inline;
+	margin: .1em .25em;
+}
+.attach_info dl {
+	float: left;
+	display: block;
+	overflow: visible;
+}
+.attach_info_image {
+	right: 1em;
+	position: absolute;
+	z-index: -1;
+}
+/* backup.inc.php */
+.add_block, .remove_block {
+	display: block;
+}
+.add_word, .add_block {
+	background-color: #FFFF66;
+}
+.remove_word, .remove_block {
+	background-color: #A0FFFF;
+}
+/* calendar.inc.php */
+.style_calendar {
+	width: 13em;
+}
+.style_calendar a {
+	text-decoration: none;
+}
+.style_calendar a:hover {
+	background-color: transparent;
+}
+.style_calendar a st rong {
+	text-decoration:underline;
+}
+.style_calendar td, .style_calendar th {
+	text-align: center;
+	font-size: 85%;
+}
+.style_calendar_navi {
+	display: block;
+	text-align: center;
+	list-style-image: none;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.style_calendar_title {
+	display: inline;
+	float: none;
+}
+.style_calendar_prev {
+	display: inline;
+	float: left;
+	text-align: left;
+}
+.style_calendar_next {
+	display: inline;
+	float: right;
+	text-align: right;
+}
+.style_calendar .style_calendar_day {
+	background-color:ghostwhite;
+}
+.style_calendar .style_calendar_today {
+	background-color: lightyellow;
+}
+.style_calendar .style_calendar_sat {
+	background-color: aliceblue;
+}
+.style_calendar .style_calendar_sun, .style_calendar .style_calendar_holiday {
+	background-color: lavenderblush;
+}
+/* week text color */
+.week_sat {
+	color: blue;
+}
+.week_day {
+	color: black;
+}
+.week_sun, .week_holiday {
+	color: red;
+}
+/* Fix English calendar week label */
+:lang(en) .style_calendar_week {
+	font-family:monospace !important;
+	padding: .5em .2em;
+}
+.style_calendar_post p {
+	padding: .25em 1em;
+}
+.style_calendar_post nav {
+	display: none;
+}
+/* calendar_viewer.inc.php */
+.style_calendar_viewer {
+	float: left;
+	width: 15em;
+}
+.style_calendar_post {
+	margin-left: 15em;
+}
+/* color.inc.php */
+.wikicolor {
+	text-shadow:none;
+}
+/* counter.inc.php */
+.counter {
+	font-size: 77%;
+}
+/* diff.inc.php */
+.diff_added {
+	color: blue;
+}
+.diff_removed {
+	color: red;
+}
+/* include.inc.php */
+.side_label {
+	text-align:center;
+}
+/* navibar.inc.php / toolbar.inc.php / topicpath.inc.php / list.inc.php / logview.inc.php / multilang.inc.php */
+.navibar ul, .toolbar ul, .multilang ul, .page_initial ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: inline;
+}
+.navibar ul:before {
+	content: '[ ';
+}
+.navibar ul:after {
+	content: ' ]';
+}
+.navibar li, .toolbar li, .multilang li, .page_initial li {
+	display: inline;
+}
+.navibar li:not(:last-of-type):after, .page_initial li:not(:last-of-type):after {
+	content: ' | ';
+}
+.toolbar ul {
+	margin: 0 .2em;
+}
+.toolbar li {
+	margin: 1px;
+}
+.toolbar li a:hover {
+	text-decoration: none !important;
+}
+.page_initial ul {
+	margin: 0 auto;
+	text-align:center;
+	width:75%;
+	display:block;
+}
+.list_pages, .referer_searchkey_list {
+	column-count: 2;
+	-moz-column-count: 2;
+	-webkit-column-count: 2;
+	-o-column-count: 2;
+	-ms-column-count: 2;
+}
+@media only screen and (min-width : 800px) {
+.list_pages, .referer_searchkey_list {
+	column-count: 3;
+	-moz-column-count: 3;
+	-webkit-column-count: 3;
+	-o-column-count: 3;
+	-ms-column-count: 3;
+}
+}
+@media only screen and (min-width : 1280px) {
+.list_pages, .referer_searchkey_list {
+	column-count: 4;
+	-moz-column-count: 4;
+	-webkit-column-count: 4;
+	-o-column-count: 4;
+	-ms-column-count: 4;
+}
+}
+/* new.inc.php */
+.comment_date {
+	font-size: x-small;
+}
+.new1 {
+	color:red;
+	background-color: transparent;
+	font-size: x-small;
+}
+.new5 {
+	color:green;
+	background-color: transparent;
+	font-size: xx-small;
+}
+/* note */
+#note ul {
+	list-style: none;
+}
+/* ref.inc.php */
+.img_margin {
+	margin: 0 32px;
+}
+/* suckerfish.inc.php */
+.sf-menu, .sf-menu * {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.sf-menu {
+	line-height: 1;
+}
+.sf-menu ul {
+	position: absolute;
+	top: -999em;
+}
+.sf-menu ul li {
+	width: 100%;
+}
+.sf-menu li:hover {
+	visibility: inherit; /* fixes IE7 'sticky bug' */
+}
+.sf-menu li {
+	float: left;
+	position: relative;
+}
+.sf-menu li:hover ul, .sf-menu li.sfHover ul {
+	left: 0;
+	z-index: 99;
+}
+.sf-menu li:hover li ul, .sf-menu li.sfHover li ul {
+	top: -999em;
+}
+.sf-menu li li:hover ul, .sf-menu li li.sfHover ul {
+	top: 0;
+}
+.sf-menu li li:hover li ul, .sf-menu li li.sfHover li ul {
+	top: -999em;
+}
+.sf-menu li li li:hover ul, .sf-menu li li li.sfHover ul {
+	top: 0;
+}
+
+/* tooltip.inc.php */
+[aria-describedby='tooltip'], [aria-describedby='linktip'] {
+ border-bottom: 1px dotted;
+ cursor: help;
+}
+/* vote.inc.php */
+.vote_table {
+	width:auto;
+}
+.vote_choise_td {
+	padding:0 1em;
+}
+.vote_count_td {
+	text-align:right;
+	padding-right:1em;
+}
+.vote_form_td {
+	padding:.1em;
+	text-align:center;
+}

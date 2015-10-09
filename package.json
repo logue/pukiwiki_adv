@@ -1,0 +1,52 @@
+{
+  "name": "PukiWiki_Adv",
+  "version": "2.1.0-alpha",
+  "description": "Yet another WikiWikiWeb clone.",
+  "main": "bower.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "dependencies": {
+    "autosize": "^3.0.12",
+    "bootstrap": "^3.3.5",
+    "del": "^2.0.2",
+    "js-cookie": "2.0.3"
+  },
+  "devDependencies": {
+    "browserify": "^11.2.0",
+    "gulp": "^3.9.0",
+    "gulp-bower": "0.0.10",
+    "gulp-bower-files": "^0.2.7",
+    "gulp-composer": "^0.1.0",
+    "gulp-css-url-adjuster": "^0.2.3",
+    "gulp-filter": "^3.0.1",
+    "gulp-install": "^0.5.0",
+    "gulp-notify": "^2.2.0",
+    "gulp-ruby-sass": "^2.0.3",
+    "gulp-sourcemaps": "^1.6.0",
+    "main-bower-files": "^2.9.0",
+    "vinyl-source-stream": "^1.1.0"
+  },
+  "scripts": {
+    "start": "gulp",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/logue/pukiwiki_adv.git"
+  },
+  "keywords": [
+    "wiki",
+    "pukiwiki"
+  ],
+  "author": {
+    "name": "Logue",
+    "url": "http://logue.be/",
+    "email": "logue@hotmail.co.jp"
+  },
+  "license": "GPL-2.0+",
+  "homepage": "http://pukiwiki.logue.be/",
+  "bugs": {
+    "url": "https://github.com/logue/pukiwiki_adv/issues"
+  }
+}

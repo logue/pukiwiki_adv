@@ -1,0 +1,48 @@
+/* ==|== PukiWiki Advance Standard Font Set ================================= */
+blockquote p {
+	font-size:100%;
+}
+textarea, select, option, input, var, pre, code, pre > *  {
+	font-family: monospace !important;
+}
+fieldset {
+	border: 1px silver solid;
+	border-radius:.5em;
+	padding:.5em;
+	margin:1em;
+}
+legend {
+	text-indent:.5em;
+}
+label {
+	cursor: pointer;
+}
+figure {
+	padding: 0 auto;
+}
+ins, del {
+	font: inherit !important;
+}
+a img {
+	vertical-align:bottom;
+	background-color:transparent !important;
+}
+
+/* Week and Month */
+.style_week, .style_month {
+	border: none !important;
+}
+
+::-webkit-input-placeholder, ::-moz-placeholder {
+ color: grey;
+}
+summary {
+	display:block;
+}
+iframe, object {
+	background-color: transparent;
+	border: none;
+	margin: 0;
+	padding: 0;
+	overflow: visible;
+}
