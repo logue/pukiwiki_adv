@@ -230,14 +230,20 @@ class Render{
 			$view->notes = $notes;
 
 			// モードによって、3カラム、2カラムを切り替える。
-			$view->menubar = Factory::Wiki($menubar)->has() ? PluginRenderer::executePluginBlock('menu') : null;
-			if ( Factory::Wiki($sidebar)->has()){
-				// サイドバーが定義されている場合３カラム
-				$view->sidebar = Factory::Wiki($sidebar)->has() ? PluginRenderer::executePluginBlock('side') : null;
-				$view->colums = View::CLASS_THREE_COLUMS;
-			}else{
+			$isExistSideBar = Factory::Wiki($sidebar)->has();
+
+			// #nomenubarが指定されると$menubarはnullになる
+			if(empty($menubar) && !$isExistSideBar) {
+				$view->colums = View::CLASS_NO_COLUMS;
+			}elseif(empty($menubar) || !$isExistSideBar){
 				$view->colums = View::CLASS_TWO_COLUMS;
+			}else{
+				$view->colums = View::CLASS_THREE_COLUMS;
 			}
+
+			$view->menubar = !empty($menubar) && Factory::Wiki($menubar)->has() ? PluginRenderer::executePluginBlock('menu') : null;
+
+			$view->sidebar = $isExistSideBar ? PluginRenderer::executePluginBlock('side') : null;
 
 			// ステータスアイコン
 			if ($this->wiki->isFreezed()){
