@@ -425,7 +425,7 @@ class Render{
 			if ($this->cmd === 'read'){
 				global $keywords, $description, $site_name, $site_logo;
 				// 要約
-				$desc = !empty($description) ? $description : $this->wiki->description();
+				$desc = !empty($description) ? $description : $this->wiki->description(256, $this->body);
 				$meta_tags[] = array('name' => 'description', 'content' => $desc);
 				// キーワード
 				if (!empty($keywords)){ $meta_tags[] =  array('name' => 'keywords', 'content' => $keywords); }

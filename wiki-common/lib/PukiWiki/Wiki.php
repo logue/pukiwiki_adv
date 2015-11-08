@@ -120,7 +120,7 @@ class Wiki{
 
 		// 「編集時に認証する」が有効になっていない
 		if (!$edit_auth) return true;
-		
+
 		// ユーザ別の権限を読む
 		if (Auth::auth($this->page, 'edit', $authenticate)) return true;
 
@@ -190,7 +190,7 @@ class Wiki{
 	 */
 	public function isSpecial(){
 		global $navigation,$whatsnew,$whatsdeleted,$interwiki,$menubar,$sidebar,$headarea,$footarea;
-		
+
 		return preg_match('/['.
 			$navigation     . '|' . // Navigation
 			$whatsnew       . '|' . // RecentChanges
@@ -330,20 +330,23 @@ class Wiki{
 		$pg_passage = $quote ? '('.$this->wiki->passage().')' : $this->wiki->passage();
 		return $use_tag ? '<small class="passage">' . $pg_passage . '</small>' : $pg_passage;
 	}
-	/**
-	 * 要約を出力
-	 * @param boolean $use_tag タグでくくる
-	 * @param boolean $quote ()でくくる
-	 * @return string
-	 */
-	public function description($length = 256){
-		$source = $this->get();
+
+    /**
+     * 要約を出力
+     * @param int $length 要約長さ
+     * @param string $source 要約元(htmlを期待)空の場合はページを生成
+     * @return string 要約済みの文章
+     */
+	public function description($length = 256, $source = ""){
+		if(empty($source)) {
+			$source = $this->get();
+		}
 		// ブロック型プラグイン(#～)削除
 //		$source = preg_replace("/^\#.*$/",'',$source);
 		// インライン型プラグイン・文字参照(&～;)削除
 		$source = preg_replace("/\&.*\;/",'',$source);
 		// 変換してタグを削除
-		$desc = Utility::stripHtmlTags(RendererFactory::factory($source));
+        $desc = strip_tags($source);
 		// 長さ調整
 		if ($length !== 0) $desc = mb_strimwidth($desc, 0, $length, '...');
 		// 改行を<br />タグに変換して出力
@@ -436,7 +439,7 @@ class Wiki{
 				Utility::dump();
 				Utility::dieMessage('Writing was limited. (Blocking SPAM)');
 			}
-			
+
 			if (isset($use_spam_check['page_remote_addr']) && $use_spam_check['page_remote_addr'] !== 0) {
 				// DNSBLチェック
 				$listed = $ip_filter->checkHost();
@@ -476,7 +479,7 @@ class Wiki{
 						'comment_author' => isset($vars['name']) ? $vars['name'] : 'Anonymous',
 						'comment_content' => $postdata
 					);
-					
+
 				//	if ($use_spam_check['akismet'] === 1){
 				//		// 差分のみをAkismetに渡す
 				//		foreach ($diff->getSes() as $key=>$line){
