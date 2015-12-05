@@ -1,8 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: tracker.inc.php,v 1.124.16 2012/08/28 20:01:00 Logue Exp $
+// $Id: tracker.inc.php,v 1.124.17 2015/12/06 00:23:00 Logue Exp $
 // Copyright (C)
-//     2010-2012 PukiWiki Advance Developers Team
+//     2010-2012,2015 PukiWiki Advance Developers Team
 //     2004-2009 PukiWiki Plus! Team
 //     2003-2005, 2007 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
@@ -878,7 +878,7 @@ class Tracker_field_preview extends Tracker_field
 		$s_title  = Utility::htmlsc($this->title);
 
 		return <<<EOD
-<button class="btn btn-default" name="preview" value="true"><span class="fa fa-eye"></span>$s_title</button>
+<button class="btn btn-secondary" name="preview" value="true"><span class="fa fa-eye"></span>$s_title</button>
 EOD;
 	}
 }

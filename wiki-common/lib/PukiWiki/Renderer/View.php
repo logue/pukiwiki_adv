@@ -5,10 +5,10 @@
  * @package   PukiWiki
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2012-2014 PukiWiki Advance Developers Team
+ * @copyright 2012-2015 PukiWiki Advance Developers Team
  * @create    2012/12/18
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: View.php,v 1.0.0 2014/01/30 14:49:00 Logue Exp $
+ * @version   $Id: View.php,v 1.0.1 2015/12/06 14:49:00 Logue Exp $
  */
 namespace PukiWiki\Renderer;
 
@@ -44,14 +44,6 @@ class View{
 	 */
 	public $conf = array(
 		/**
-		 * Bootswatchのテーマ
-		 */
-		'bootswatch'     => false,
-		/**
-		 * jQuery UIのテーマ
-		 */
-		'ui_theme'      => 'redmond',
-		/**
 		 * アドレスの代わりにパスを表示
 		 */
 		'topicpath'     => true,
@@ -85,8 +77,6 @@ class View{
 		$this->_vars = array();
 		$this->_theme = !IS_MOBILE ? $theme : 'mobile';
 		$this->colums = self::CLASS_NO_COLUMS;
-		// テーマディレクトリへの相対パス
-		$this->path =  SKIN_URI . THEME_PLUS_NAME . $this->_theme . '/';
 		$this->conf = array_merge($this->conf, self::loader('ini'));
 	}
 	/**
@@ -180,21 +170,15 @@ class View{
 			$html[] = '</html>';
 			return join("\n",$html);
 		}
-	
-		$cond = array(
-			ROOT_URI . SKIN_DIR . THEME_PLUS_NAME . $this->_theme . '/',
-			ROOT_URI . EXT_SKIN_DIR . THEME_PLUS_NAME . $this->_theme . '/'
-		);
 
-		$file = basepagename($this->_theme) . '.' . $type . '.php';
+		// テーマファイルを読み込む
+		$file = DATA_HOME . 'theme/' . $this->_theme . '/' . basepagename($this->_theme) . '.' . $type . '.php';
 
-		foreach($cond as $dir){
-			if (file_exists($dir.$file) && is_readable($dir.$file)){
-				// スキンを読み込み;
-				return include $dir . $file;
-			}
+		if (file_exists($file) && is_readable($file)){
+			return include $file;
 		}
-		die('View: Could not load to Theme file.');
+
+		die(sprintf('View: Could not load to Theme file: <var>%s</var>', $file));
 		
 		return array();
 	}

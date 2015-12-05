@@ -6,8 +6,8 @@
  * Thanks: To reimy, t, Ynak, WikiRoom, upk, 水橋希 and PukiWiki Developers Team.
  *
  * @copyright   Copyright &copy; 2009, Katsumi Saito <jo1upk@users.sourceforge.net>
- *              Copyright &copy; 2010-2012,2014 PukiWiki Advance Developers Team
- * @version	 $Id: amazon.inc.php,v 3.0.4 2014/03/11 20:10:00 Logue Exp $
+ *              Copyright &copy; 2010-2012,2014-2015 PukiWiki Advance Developers Team
+ * @version	 $Id: amazon.inc.php,v 3.0.5 2015/12/06 00:19:00 Logue Exp $
  * See Aloso	http://d.hatena.ne.jp/mokehehe/20090526/productadvertisingapi
  *
  */
@@ -242,7 +242,7 @@ function amazon_make_review_page()
 	</div>
 	<div class="form-group">
 		<div class="col-md-offset-2 col-md-10">
-			<input type="submit" class="btn btn-default" value="{$_amazon_msg['msg_ReviewEdit']}" />
+			<input type="submit" class="btn btn-secondary" value="{$_amazon_msg['msg_ReviewEdit']}" />
 		</div>
 	</div>
 </form>

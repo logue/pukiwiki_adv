@@ -41,8 +41,8 @@
 
 	// An array of filesystem paths or importers which should be searched for Sass templates imported with the @import directive.
 	"includePaths": [
-		'./vendor/bower_components/bootstrap/scss',
-		'./vendor/bower_components/fontawesome/scss'
+		'./webroot/bower_components/bootstrap/scss',
+		'./webroot/bower_components/fontawesome/scss'
 	],
 
 	// A array of ruby libraries, require them before running Sass.

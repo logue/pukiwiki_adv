@@ -2,7 +2,7 @@
 //
 //	guiedit - PukiWiki Plugin
 //
-//	$Id: guiedit.inc.php,v 1.64.4 2010/09/03 16:57:00 Logue Exp $
+//	$Id: guiedit.inc.php,v 1.64.5 2015/12/06 00:21:00 Logue Exp $
 //
 //	License:
 //	  GNU General Public License Version 2 or later (GPL)
@@ -12,7 +12,7 @@
 //	PukiWiki : Copyright (C) 2001-2006 PukiWiki Developers Team
 //	FCKeditor : Copyright (C) 2003-2008 Frederico Caldeira Knabben
 //	PukiWiki Plus! : Copyright (C) 2009 Katsumi Saito
-//	PukiWiki Advance : Copyright (C) 2010,2014 PukiWiki Advance Developers Team
+//	PukiWiki Advance : Copyright (C) 2010,2014-2015 PukiWiki Advance Developers Team
 
 defined('GUIEDIT_CONF_PATH')  or define('GUIEDIT_CONF_PATH',  'guiedit/');
 defined('GUIEDIT_FULL_SIZE') or define('GUIEDIT_FULL_SIZE', 0);
@@ -350,7 +350,7 @@ EOD;
 		<textarea name="msg" id="editor"></textarea>
 		<div class="pull-left">
 		<button type="submit" name="write"   accesskey="s" class="btn btn-primary">{$_button['update']}</button>
-		<button type="button" name="preview" accesskey="p" class="btn btn-default">{$_button['preview']}</button>
+		<button type="button" name="preview" accesskey="p" class="btn btn-secondary">{$_button['preview']}</button>
 		$add_notimestamp
 		</div>
 	</form>

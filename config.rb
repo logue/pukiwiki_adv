@@ -2,15 +2,15 @@ require 'compass/import-once/activate'
 # Require any additional compass plugins here.
 
 http_path = "webroot"
-css_dir = "webroot/css"
-sass_dir = "assets/scss"
-images_dir = "assets/images"
-javascripts_dir = "assets/js"
-fonts_dir = "webroot/fonts"
+css_dir = "./webroot/assets/css"
+sass_dir = "./webroot/sources/scss"
+images_dir = "./webroot/sources/images"
+javascripts_dir = "./webroot/assets/js"
+fonts_dir = "./webroot/assets/fonts"
 
 additional_import_paths = [
-	'vendor/bower_components/bootstrap/scss',
-	'vendor/bower_components/fontawesome/scss'
+	'./webroot/sources/bower_components/bootstrap/scss',
+	'./webroot/sources/bower_components/fontawesome/scss'
 ]
 sass_options = {:unix_newlines => true}
 output_style = :compressed

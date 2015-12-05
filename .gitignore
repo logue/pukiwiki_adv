@@ -1,8 +1,12 @@
+.DS_Store
+Thumbs.db
+
 /nbproject/private/
 /vendor/
 /wiki-data/cache/
 /wiki-common/cache/
 
+bower_components
 *.log
 node_modules
 build

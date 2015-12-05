@@ -1,6 +1,6 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: memo.inc.php,v 1.17.4 2011/02/05 11:05:00 Logue Exp $
+// $Id: memo.inc.php,v 1.17.5 2015/12/04 00:22:00 Logue Exp $
 //
 // Memo box plugin
 
@@ -107,7 +107,7 @@ function plugin_memo_convert()
 		$_submit = '';
 	} else {
 		$_script = get_script_uri();;
-		$_submit = '<input type="submit" name="memo" value="' . T_('update') . '" class="btn btn-default"/>';
+		$_submit = '<input type="submit" name="memo" value="' . T_('update') . '" class="btn btn-secondary"/>';
 	}
 
 	$s_page   = Utility::htmlsc($vars['page']);

@@ -1,8 +1,8 @@
 'use strict';
+
 // 使用するプラグイン
 var
 	bower = require('gulp-bower'),
-	browserify = require ('browserify'),
 	compass = require('gulp-compass'),
 	composer = require('gulp-composer'),
 	concat = require('gulp-concat'),
@@ -11,6 +11,7 @@ var
 	gulpFilter = require('gulp-filter'),
 	install = require("gulp-install"),
 	notify = require("gulp-notify"),
+	modernizr = require('gulp-modernizr'),
 	plumber = require("gulp-plumber"),
 	rename = require('gulp-rename'),
 	sass = require('gulp-ruby-sass'),
@@ -18,11 +19,12 @@ var
 ;
 // 初期設定
 var config = {
-	jsSrcPath: './webroot/js/src',
-	jsPath: './webroot/js',
-	scssPath: './assets/scss',
-	cssPath: './webroot/css',
-	bowerDir: './vendor/bower_components'
+	jsSrcPath: './webroot/sources/js/',
+	jsPath: './webroot/assets/js/',
+	scssPath: './webroot/sources/scss/',
+	cssPath: './webroot/assets/css/',
+	fontsPath: './webroot/assets/fonts/',
+	bowerDir: './webroot/sources/bower_components/'
 }
 
 gulp.task('bower', function() {
@@ -31,7 +33,7 @@ gulp.task('bower', function() {
 });
 
 gulp.task('clean', function (cb) {
-	return del('./webroot/css');
+	return del('./webroot/assets');
 });
 
 gulp.task('setup', ['clean'], function () {
@@ -42,10 +44,11 @@ gulp.task('setup', ['clean'], function () {
 
 // JavaScriptを結合
 gulp.task('js.concat', function() {
-	return gulp.src(config.jsSrcPath + '/*.js')
+	return gulp.src(config.jsSrcPath + '*.js')
 		.pipe(plumber())
 		.pipe(concat('pukiwiki.js'))
-		.pipe(gulp.dest(config.jsPath);
+		.pipe(gulp.dest(config.jsPath))
+	;
 });
 // JavaScriptを圧縮
 gulp.task('js.uglify', ['js.concat'], function() { 
@@ -53,15 +56,27 @@ gulp.task('js.uglify', ['js.concat'], function() {
 		.pipe(plumber())
 		.pipe(uglify({preserveComments: 'some'}))
 		.pipe(rename('pukiwiki.min.js'))
-		.pipe(gulp.dest(config.jsPath));
+		.pipe(gulp.dest(config.jsPath))
+	;
 });
+
+// Modernizrの自動処理（出来上がったソースからModernizr使用箇所を自動的に抜き出して専用のModernizrを出力する）
+gulp.task('js.modernizr', function() {
+	gulp.src(config.jsSrcPath + '*.js')
+		.pipe(modernizr())
+//		.pipe(uglify())
+		.pipe(gulp.dest(config.jsPath))
+	;
+})
+
 // JavaScript関係の処理
-gulp.task('js', ['js.concat', 'js.uglify']);
+gulp.task('js', ['js.concat', 'js.uglify', 'js.modernizr']);
+
 
 // アイコンフォント
 gulp.task('icons', function() {
-	return gulp.src(config.bowerDir + '/fontawesome/fonts/**.*')
-		.pipe(gulp.dest('./webroot/fonts'))
+	return gulp.src(config.bowerDir + 'fontawesome/fonts/**.*')
+		.pipe(gulp.dest(config.fontsPath))
 		.on('error', notify.onError(function (error) {
 			return 'Error: ' + error.message;
 		}))
@@ -70,11 +85,11 @@ gulp.task('icons', function() {
 
 // スタイルシートの更新
 gulp.task('css', function(){
-	gulp.src(config.scssPath + '/**/*.scss')
+	gulp.src(config.scssPath + '**/*.scss')
 		.pipe(compass({
 			config_file: 'config.rb',
 			comments: false,
-			css: './webroot/css',
+			css: config.cssPath,
 			sass: config.scssPath
 		}))
 		.on('error', function(err) {
