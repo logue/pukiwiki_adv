@@ -44,7 +44,7 @@ class DiffFile extends AbstractFile{
 	 * @param string $str
 	 */
 	public function set($diffdata = '', $keeptimestamp = false){
-		global $notify, $notify_diff_only;
+		global $notify, $notify_diff_only, $notify_subject;
 		// 差分を作成
 		//$diff = new Diff(WikiFactory::Wiki($this->page)->source(true), explode("\n",$postdata));
 		//$str = $diff->getDiff();
