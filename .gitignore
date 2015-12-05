@@ -3,5 +3,15 @@
 /wiki-data/cache/
 /wiki-common/cache/
 
-/node_modules
-/npm-debug.log
+*.log
+node_modules
+build
+*.node
+components
+coverage
+*.orig
+.idea
+sandbox
+test/out-fixtures/*
+test/watch-*.txt
+gulp.1

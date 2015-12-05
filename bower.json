@@ -1,0 +1,32 @@
+{
+	"name": "PukiWiki Advance",
+	"version": "2.1.0-alpha",
+	"dependencies": {
+		"bootstrap": "4.*",
+		"fontawesome" : "4.*",
+		"jquery": "~2.*"
+	},
+	"overrides": {
+		"fontawesome": {
+			"main" : [
+				"**/*.min.css",
+				"**/Font*",
+				"**/*webfont*"
+			]
+		},
+		"bootstrap": {
+			"main" : [
+				"dist/**/*.min.js",
+				"dist/**/*.min.css"
+			]
+		},
+		"jquery": {
+			"main" : "**/*.min.js"
+		}
+	},
+	"scripts": {
+		"compile": [
+			"bower install"
+		]
+	}
+}

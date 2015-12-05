@@ -8,7 +8,6 @@
   },
   "dependencies": {
     "autosize": "^3.0.12",
-    "bootstrap": "^3.3.5",
     "del": "^2.0.2",
     "js-cookie": "2.0.3"
   },
@@ -22,6 +21,8 @@
     "gulp-filter": "^3.0.1",
     "gulp-install": "^0.5.0",
     "gulp-notify": "^2.2.0",
+    "gulp-plumber": "^1.0.1",
+    "gulp-rename": "^1.2.2",
     "gulp-ruby-sass": "^2.0.3",
     "gulp-sourcemaps": "^1.6.0",
     "main-bower-files": "^2.9.0",

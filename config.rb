@@ -2,11 +2,11 @@ require 'compass/import-once/activate'
 # Require any additional compass plugins here.
 
 http_path = "webroot"
-css_dir = "webroot/assets/css"
-sass_dir = "webroot/assets/scss"
-images_dir = "webroot/assets/images"
-javascripts_dir = "webroot/assets/js"
-fonts_dir = "webroot/assets/fonts"
+css_dir = "webroot/css"
+sass_dir = "assets/scss"
+images_dir = "assets/images"
+javascripts_dir = "assets/js"
+fonts_dir = "webroot/fonts"
 
 additional_import_paths = [
 	'vendor/bower_components/bootstrap/scss',
