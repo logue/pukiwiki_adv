@@ -172,9 +172,12 @@ class Recent{
 		$lines = array();
 
 		// 削除履歴を確認する
-		foreach ($delated_wiki->get() as $line) {
-			if (preg_match('/^-(.+) - (\[\[.+\]\])$/', $line, $matches)) {
-				$lines[$matches[2]] = $line;
+		$deletedLines = $delated_wiki->get();
+		if(is_array( $deletedLines)) {
+			foreach ($deletedLines as $line) {
+				if (preg_match('/^-(.+) - (\[\[.+\]\])$/', $line, $matches)) {
+					$lines[$matches[2]] = $line;
+				}
 			}
 		}
 
