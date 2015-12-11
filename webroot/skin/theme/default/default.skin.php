@@ -38,7 +38,7 @@
 			</header>
 <!-- *** End Header *** -->
 
-			<?php echo !empty($view->navigation) ? $view->navigation : $this->navibar . '<hr />'; ?>
+			<?php echo !empty($this->navigation) ? $this->navigation : $this->navibar . '<hr />'; ?>
 
 			<div id="wrapper" class="clearfix">
 <!-- Center -->
