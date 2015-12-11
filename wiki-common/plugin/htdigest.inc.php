@@ -3,7 +3,7 @@
  * htdigest plugin.
  *
  * @copyright   Copyright &copy; 2006-2007, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: htdigest.inc.php,v 0.9.1 2010/12/26 17:11:00 Logue Exp $
+ * @version     $Id: htdigest.inc.php,v 0.9.2 2015/12/06 00:21:00 Logue Exp $
  *
  * $A1 = md5($data['username'] . ':' . $realm . ':' . $auth_users[$data['username']]);
  */
@@ -249,7 +249,7 @@ $x = <<<EOD
 				<td><input type="text" name="hash_view" size="80" $disabled /></td>
 			</tr>
 			<tr>
-				<td colspan="2"><input type="submit" class="btn btn-default" name="submit" value="{$_htdigest_msg['Update']}" disabled="disabled" /></td>
+				<td colspan="2"><input type="submit" class="btn btn-secondary" name="submit" value="{$_htdigest_msg['Update']}" disabled="disabled" /></td>
 			</tr>
 		</table>
 	</form>
@@ -270,7 +270,7 @@ function htdigest_get_hash($username,$p_realm='')
 	if (!($fd = fopen(HTDIGEST_FILE,'r'))) return '';
 
 	while ($data = @fgets($fd, 4096)) {
-		$field = split(':', trim($data));
+		$field = explode(':', trim($data));
 		if ($field[0] == $username && $field[1] == $p_realm) {
 			fclose($fd);
 			return $field[2];
@@ -326,7 +326,7 @@ function htdigest_save($username,$p_realm,$hash,$role)
 
 	$sw = FALSE;
 	foreach($lines as $no=>$line) {
-		$field = split(':', trim($line));
+		$field = explode(':', trim($line));
 		if ($field[0] == $username && $field[1] == $p_realm) {
 			if ($field[2] == $decrypted_hash) {
 				return $_htdigest_msg['msg_not_update'];

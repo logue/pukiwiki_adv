@@ -8,7 +8,7 @@
  * @copyright 2014-2015 PukiWiki Advance Developers Team
  * @create    2014/01/23
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Attach.php,v 1.0.3 2015/04/19 16:12:00 Logue Exp $
+ * @version   $Id: Attach.php,v 1.0.4 2015/12/06 00:24:00 Logue Exp $
  */
 
 namespace PukiWiki;
@@ -205,7 +205,7 @@ class Attach{
 	 * 削除する
 	 */
 	public function delete($pass){
-		global $notify;
+		global $notify, $notify_subject;
 		if ($this->status['freeze']){
 			// ここではチェックしない
 			return false;
@@ -490,7 +490,7 @@ class Attach{
 		$info = $count = '';
 		if ($showinfo) {
 			$info = '<a href="' . Router::get_cmd_uri('attach', null, null, array('pcmd'=>'info','refer'=>$this->page, 'file'=>$this->filename)) .
-				'" class="btn btn-default btn-xs" title="' . str_replace('$1', rawurlencode($this->filename), $_attach_messages['msg_info']) . '">' .
+				'" class="btn btn-secondary btn-xs" title="' . str_replace('$1', rawurlencode($this->filename), $_attach_messages['msg_info']) . '">' .
 				'<span class="fa fa-info"></span></a>';
 
 			if ($this->isFreezed()) $info .= ' <span class="fa fa-lock"></span>';

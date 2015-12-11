@@ -8,7 +8,7 @@
  * @copyright 2012-2015 PukiWiki Advance Developers Team
  * @create    2012/12/18
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Render.php,v 1.0.3 2015/07/24 19:21:00 Logue Exp $
+ * @version   $Id: Render.php,v 1.0.4 2015/12/06 00:32:00 Logue Exp $
  */
 
 namespace PukiWiki;
@@ -178,7 +178,7 @@ class Render{
 		$_LINK = self::getLinkSet($this->page);
 
 		// ページをコンストラクト
-		$view = new View(PLUS_THEME);
+		$view = new View(THEME_NAME);
 
 		// ページ名が指定されているか
 		$view->is_page = isset($this->page);
@@ -315,25 +315,6 @@ class Render{
 	private function getJs(){
 		global $vars, $js_tags, $js_blocks, $google_analytics;
 
-		if (self::USE_CDN) {
-			// JavaScriptフレームワーク設定
-			// jQueryUI Official CDN
-			// http://code.jquery.com/
-			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'//'.self::JQUERY_CDN.'/jquery-'.self::JQUERY_VER.'.min.js', 'defer'=>'defer');
-			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'//'.self::JQUERY_CDN.'/ui/'.self::JQUERY_UI_VER.'/jquery-ui.min.js', 'defer'=>'defer');
-
-			// Bootstrap
-			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'//'.self::BOOTSTRAP_CDN . '/bootstrap/' . self::TWITTER_BOOTSTRAP_VER . '/js/bootstrap.min.js', 'defer'=>'defer' );
-		}else{
-			// JavaScriptフレームワーク設定
-			// jQueryUI Official CDN
-			// http://code.jquery.com/
-			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>COMMON_URI . 'js/jquery-'.self::JQUERY_VER . '.min.js', 'defer'=>'defer');
-			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>COMMON_URI . 'js/jquery-ui.min.js', 'defer'=>'defer');
-
-			// Bootstrap
-			$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>COMMON_URI . 'js/bootstrap.min.js', 'defer'=>'defer' );
-		}
 		// JS用初期設定
 		$js_init = array(
 			'DEBUG'         => constant('DEBUG'),
@@ -342,8 +323,7 @@ class Render{
 			'JS_URI'        => constant('JS_URI'),
 			'LANG'          => constant('LANG'),
 			'SCRIPT'        => Router::get_script_absuri(),
-			'SKIN_DIR'      => constant('SKIN_DIR'),
-			'THEME_NAME'    => constant('PLUS_THEME'),
+			'THEME_NAME'    => constant('THEME_NAME'),
 			'COMMON_URI'    => self::USE_CDN ? false : constant('COMMON_URI'),
 		);
 
@@ -376,18 +356,12 @@ class Render{
 
 		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'locale.js', 'defer'=>'defer' );
 
-//		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.( DEBUG ? 'codemirror/lib/codemirror.js' : 'js.php?file=codemirror/lib/codemirror.min'), 'defer'=>'defer' );
-
 //		$js_vars[] = 'var pukiwiki = {};';
 		foreach( $js_init as $key=>$val){
 			$js_vars[] = 'var '.$key.' = ' . (!empty($val) ? '"'.$val.'"' : 'false') .';';
 		}
 		array_unshift($pkwk_head_js,array('type'=>'text/javascript', 'content'=>join($js_vars,"\n")));
 		unset($js_var, $key, $val);
-
-		// MathJax
-//		$pkwk_head_js[] = array('type'=>'text/x-mathjax-config', 'content'=>MathJax::MATHJAX_CONF);
-//		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>MathJax::MATHJAX_URL );
 
 		$script_tags = self::tag_helper('script',$pkwk_head_js) . self::tag_helper('script',$js_tags);
 		$script_tags .= !empty($js_blocks) ? self::tag_helper('script',array(array('type'=>'text/javascript', 'content'=>join("\n",$js_blocks)))) : '';
@@ -476,6 +450,7 @@ class Render{
 			);
 		}
 
+/*
 		if (self::USE_CDN){
 			// DNS prefetching
 			// http://html5boilerplate.com/docs/DNS-Prefetching/
@@ -536,6 +511,9 @@ class Render{
 		}else{
 			$link_tags[] = array('rel'=>'stylesheet', 'href'=>COMMON_URI . 'css/font-awesome.min.css', 'type'=>'text/css');
 		}
+*/
+		$link_tags[] = array('rel'=>'stylesheet', 'href'=> CSS_URI . 'pukiwiki.css', 'type'=>'text/css');
+
 		return
 			self::tag_helper('meta',$meta_tags) .
 			self::tag_helper('link',$link_tags) .

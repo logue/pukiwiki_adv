@@ -1,7 +1,7 @@
 <?php
 
 // table_edit2.inc.php, 3.1+calc0.6+func0.3 2009/11/19 taru        plugin
-// Modified by PukiWiki Adv. Team 2012
+// Modified by PukiWiki Adv. Team 2012,2015
 use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
 use PukiWiki\Router;
@@ -571,7 +571,7 @@ class TableEdit2Indicate
 		$ret[] = '<div class="pull-right" id="TableEdit2TableNumber' . $this->count . '">';
 		$ret[] = '<a href="' . 
 			Router::get_cmd_uri('table_edit2', null, null , array('refer'=>$this->page, 'table_mod'=>$table_mod, 'table_num'=>$this->count, 'encode_hint'=>PKWK_ENCODING_HINT)) . 
-				'" class="btn btn-default" nofollow="nofollow" data-ajax="false" title="' . $button_name[$table_mod] . '"><span class="fa fa-' . $table_mod . '"></span></a>';
+				'" class="btn btn-secondary" nofollow="nofollow" data-ajax="false" title="' . $button_name[$table_mod] . '"><span class="fa fa-' . $table_mod . '"></span></a>';
 		$ret[] = $this->set_csv;
 		$ret[] = '</div>';
 		$ret[] = '<div class="clearfix"></div>';

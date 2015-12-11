@@ -3,7 +3,7 @@
  * adm_auth_wkgrp Plugin.
  *
  * @copyright   Copyright &copy; 2009, Katsumi Saito <katsumi@jo1upk.ymt.prug.or.jp>
- * @version     $Id: adm_auth_wkgrp.inc.php,v 0.1.2 2011/04/03 09:42:00 Logue Exp $
+ * @version     $Id: adm_auth_wkgrp.inc.php,v 0.1.3 2015/12/06 00:19:00 Logue Exp $
  *
  */
 
@@ -78,7 +78,7 @@ EOD;
 <form action="$script" method="post" class="adm_auth_wkgrp_form">
 	<input type="hidden" name="cmd" value="adm_auth_wkgrp" />
 	<input type="hidden" name="pcmd" value="gen" />
-	<input type="submit" class="btn btn-default" value="{$_adm_auth_wkgrp_msg['btn_gen']}" />
+	<input type="submit" class="btn btn-secondary" value="{$_adm_auth_wkgrp_msg['btn_gen']}" />
 	$guide_msg
 </form>
 
@@ -290,7 +290,7 @@ function adm_auth_wkgrp_add_btn()
 	return <<<EOD
 <form action="$script" method="post" class="form_adm_auth_wkgrp_add">
 	<input type="hidden" name="cmd" value="adm_auth_wkgrp" />
-	<input type="submit" class="btn btn-default" value="{$_adm_auth_wkgrp_msg['btn_auth_wkgrp']}" />
+	<input type="submit" class="btn btn-secondary" value="{$_adm_auth_wkgrp_msg['btn_auth_wkgrp']}" />
 </form>
 
 EOD;

@@ -23,24 +23,18 @@
 
 var pukiwiki = {};
 
-// BootstrapとjQueryUIの競合解消
-var bootstrapTooltip = $.fn.tooltip.noConflict();
-$.fn.bstooltip = bootstrapTooltip;
-var bootstrapButton = $.fn.button.noConflict();
-$.fn.bsbutton = bootstrapButton;
-
 // Bigscope
 (function ($, Modernizr, window, document) {
 	'use strict';
 
 	// Avoid `console` errors in browsers that lack a console.
 	var method;
-	var noop = function noop() {};
+	var noop = function () {};
 	var methods = [
 		'assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error',
 		'exception', 'group', 'groupCollapsed', 'groupEnd', 'info', 'log',
 		'markTimeline', 'profile', 'profileEnd', 'table', 'time', 'timeEnd',
-		'timeStamp', 'trace', 'warn'
+		'timeline', 'timelineEnd', 'timeStamp', 'trace', 'warn'
 	];
 	var length = methods.length;
 	var console = (window.console = window.console || {});
@@ -65,7 +59,6 @@ $.fn.bsbutton = bootstrapButton;
 	var pkwkInit = [], pkwkBeforeInit = [], pkwkUnload = [], pkwkBeforeUnload = [], pkwkAjaxLoad = [];
 
 	if (!$) { throw "pukiwiki: jQuery does not included."; }
-	if (!$.ui) { throw "pukiwiki: jQueryUI does not included."; }
 
 	var $body = $(document.body);
 
@@ -540,7 +533,7 @@ $.fn.bsbutton = bootstrapButton;
 		setRegion :function(prefix){
 			var dom = (prefix) ? $(prefix).find('.plugin-region') : $('.plugin-region');
 
-			var $button = $('<button class="btn btn-default btn-xs pull-left region-btn"><small class="fa fa-plus"></small></button>');
+			var $button = $('<button class="btn btn-secondary btn-xs pull-left region-btn"><small class="fa fa-plus"></small></button>');
 			dom.find('.plugin-region-title').before($button);
 			$('.plugin-region-body').hide();
 
@@ -1152,26 +1145,26 @@ $.fn.bsbutton = bootstrapButton;
 			$('.assistant').html([
 				'<div class="btn-toolbar" role="toolbar">',
 					'<div class="btn-group">',
-						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','bold')+'" name="b"><span class="fa fa-bold"></span></button>',
-						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','italic')+'" name="i"><span class="fa fa-italic"></span></button>',
-						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','strike')+'" name="s"><span class="fa fa-strikethrough"></span></button>',
-						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','underline')+'" name="u"><span class="fa fa-underline"></span></button>',
-						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','code')+'" name="code"><span class="fa fa-code"></span></button>',
-						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','quote')+'" name="q"><span class="fa fa-quote-left"></span></button>',
+						'<button class="btn btn-secondary btn-sm replace" title="'+$.i18n('editor','bold')+'" name="b"><span class="fa fa-bold"></span></button>',
+						'<button class="btn btn-secondary btn-sm replace" title="'+$.i18n('editor','italic')+'" name="i"><span class="fa fa-italic"></span></button>',
+						'<button class="btn btn-secondary btn-sm replace" title="'+$.i18n('editor','strike')+'" name="s"><span class="fa fa-strikethrough"></span></button>',
+						'<button class="btn btn-secondary btn-sm replace" title="'+$.i18n('editor','underline')+'" name="u"><span class="fa fa-underline"></span></button>',
+						'<button class="btn btn-secondary btn-sm replace" title="'+$.i18n('editor','code')+'" name="code"><span class="fa fa-code"></span></button>',
+						'<button class="btn btn-secondary btn-sm replace" title="'+$.i18n('editor','quote')+'" name="q"><span class="fa fa-quote-left"></span></button>',
 					'</div>',
 					'<div class="btn-group">',
-						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','link')+'" name="url"><span class="fa fa-link" role="button"></span></button>',
-						'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','size')+'" name="size"><span class="fa fa-text-height" role="button"></span></button>',
-						'<button class="btn btn-default btn-sm insert" title="'+$.i18n('editor','color')+'" name="color">color</button>',
+						'<button class="btn btn-secondary btn-sm replace" title="'+$.i18n('editor','link')+'" name="url"><span class="fa fa-link" role="button"></span></button>',
+						'<button class="btn btn-secondary btn-sm replace" title="'+$.i18n('editor','size')+'" name="size"><span class="fa fa-text-height" role="button"></span></button>',
+						'<button class="btn btn-secondary btn-sm insert" title="'+$.i18n('editor','color')+'" name="color">color</button>',
 					'</div>',
 					'<div class="btn-group">',
-						'<button class="btn btn-default btn-sm insert" title="'+$.i18n('editor','emoji')+'" name="emoji"><span class="fa fa-smile-o"></span></button>',
-						'<button class="btn btn-default btn-sm insert" title="'+$.i18n('editor','breakline')+'" name="br">⏎</button>',
+						'<button class="btn btn-secondary btn-sm insert" title="'+$.i18n('editor','emoji')+'" name="emoji"><span class="fa fa-smile-o"></span></button>',
+						'<button class="btn btn-secondary btn-sm insert" title="'+$.i18n('editor','breakline')+'" name="br">⏎</button>',
 					'</div>',
-					'<button class="btn btn-default btn-sm replace" title="'+$.i18n('editor','ncr')+'" name="ncr">&amp;#</button>',
-					'<button class="btn btn-default btn-sm insert" title="'+$.i18n('editor','hint')+'" name="help"><span class="fa fa-question-circle"></span></button>',
-					(!normal && Modernizr.localstorage) ? '<button class="btn btn-default btn-sm insert" title="'+$.i18n('editor','flush')+'" name="flush"><span class="fa fa-trash-o"></span></button>': null,
-					!normal ? '<button class="btn btn-default btn-sm disabled pull-right hidden" id="indicator"><span class="fa fa-refresh fa-spin"></span></button>' : null,
+					'<button class="btn btn-secondary btn-sm replace" title="'+$.i18n('editor','ncr')+'" name="ncr">&amp;#</button>',
+					'<button class="btn btn-secondary btn-sm insert" title="'+$.i18n('editor','hint')+'" name="help"><span class="fa fa-question-circle"></span></button>',
+					(!normal && Modernizr.localstorage) ? '<button class="btn btn-secondary btn-sm insert" title="'+$.i18n('editor','flush')+'" name="flush"><span class="fa fa-trash-o"></span></button>': null,
+					!normal ? '<button class="btn btn-secondary btn-sm disabled pull-right hidden" id="indicator"><span class="fa fa-refresh fa-spin"></span></button>' : null,
 				'</div>'
 			].join("\n"));
 
@@ -1182,7 +1175,7 @@ $.fn.bsbutton = bootstrapButton;
 				emoji_widget = '<ul class="ui-widget pkwk_widget ui-helper-clearfix">';
 				for(i = 0, len = this.assistant_setting.emoji.length; i < len ; i++ ){
 					var name =  this.assistant_setting.emoji[i];
-					emoji_widget += '<li class="btn btn-default btn-xs" title="'+name+'" name="'+name+'"><span class="emoji emoji-'+name+'"></span></li>';
+					emoji_widget += '<li class="btn btn-secondary btn-xs" title="'+name+'" name="'+name+'"><span class="emoji emoji-'+name+'"></span></li>';
 				}
 
 				emoji_widget += '</ul>';
@@ -1220,7 +1213,7 @@ $.fn.bsbutton = bootstrapButton;
 				color_widget = '<ul class="ui-widget pkwk_widget ui-helper-clearfix" id="colors">';
 				for(i = 0, len =  this.assistant_setting.color.length; i < len ; i++ ){
 					var color = this.assistant_setting.color[i];
-					color_widget += '<li class="btn btn-default btn-xs" title="'+color+'" name="'+color+'"><span class="emoji" style="background-color:'+color+';"></span></li>';
+					color_widget += '<li class="btn btn-secondary btn-xs" title="'+color+'" name="'+color+'"><span class="emoji" style="background-color:'+color+';"></span></li>';
 					j++;
 				}
 				color_widget += '</ul>';
@@ -1532,7 +1525,7 @@ $.fn.bsbutton = bootstrapButton;
 			}
 
 			// 差分ボタン
-			$form.find('button[name="write"]').after('<button type="submit" name="diff" class="btn btn-default" accesskey="d"><span class="fa fa-eye-slash"></span>' + $.i18n('editor','diff') + '</button>');
+			$form.find('button[name="write"]').after('<button type="submit" name="diff" class="btn btn-secondary" accesskey="d"><span class="fa fa-eye-slash"></span>' + $.i18n('editor','diff') + '</button>');
 
 			// 簡易差分表示用ダイアログ
 			$body.append('<div id="diff"><pre>'+htmlsc($original.val())+'</pre></div>');

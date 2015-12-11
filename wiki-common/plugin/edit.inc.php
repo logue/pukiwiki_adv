@@ -1,7 +1,7 @@
 <?php
 /**
  * PukiWiki Advance - Yet another WikiWikiWeb clone.
- * $Id: edit.inc.php,v 1.49.47 2015/02/26 9:42:00 Logue Exp $
+ * $Id: edit.inc.php,v 1.49.48 2015/12/06 00:21:00 Logue Exp $
  * Copyright (C)
  *   2010-2015 PukiWiki Advance Developers Team
  *   2005-2009 PukiWiki Plus! Team
@@ -193,10 +193,10 @@ function plugin_edit_preview()
 		}
 	}
 
-	$body = $_edit_msg['msg_preview'] . '<br />' . "\n";
+	$body = '<p class="alert alert-info">' . $_edit_msg['msg_preview'] . '<br />' . "\n";
 	if ($postdata == '')
 		$body .= '<strong>' . $_edit_msg['msg_preview_delete'] . '</strong>';
-	$body .= '<br />' . "\n";
+	$body .= '</p>' . "\n";
 
 	if ($postdata) {
 		$postdata = Rules::make_str_rules($postdata);
@@ -206,7 +206,7 @@ function plugin_edit_preview()
 	}
 	$body .= Utility::editForm($page, $vars['msg'], $vars['digest'], FALSE);
 
-	return array('msg'=>$_msg_edit['title_preview'], 'body'=>$body);
+	return array('msg'=>sprintf($_edit_msg['title_preview'], $page), 'body'=>$body);
 }
 
 // Inline: Show edit (or unfreeze text) link

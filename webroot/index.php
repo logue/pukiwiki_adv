@@ -25,7 +25,7 @@ define('PKWK_WARNING', true);
 
 // PukiWiki Adv. THEME (NOT compatible as Original and Plus! skin)
 // ex.  cloudwalk, classic, xxxlogue, whiteflow, gs2, wikiwikiadv, squawker, 180wiki, twilight
-define('PLUS_THEME',	'default');
+define('THEME_NAME',	'plus');
 
 define('ROOT_URI', dirname(__FILE__).DIRECTORY_SEPARATOR);
 

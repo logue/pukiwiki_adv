@@ -1,0 +1,326 @@
+/* ==|== browser classes ====================================================== */
+.browser {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	background-image:inline-image('plugin/browser.png');
+	background-position: -1000px -1000px;
+	background-repeat: no-repeat;
+	text-shadow:none;
+	color: transparent;
+}
+.browser-abilon {
+	background-position: 0 0;
+}
+.browser-adobe {
+	background-position: -17px 0;
+}
+.browser-akregator {
+	background-position: -34px 0;
+}
+.browser-alcatel {
+	background-position: -51px 0;
+}
+.browser-amaya {
+	background-position: -68px 0;
+}
+.browser-amigavoyager {
+	background-position: -85px 0;
+}
+.browser-analogx {
+	background-position: -102px 0;
+}
+.browser-android {
+	background-position: -119px 0;
+}
+.browser-apt {
+	background-position: -136px 0;
+}
+.browser-avant {
+	background-position: -153px 0;
+}
+.browser-aweb {
+	background-position: -170px 0;
+}
+.browser-bpftp {
+	background-position: -187px 0;
+}
+.browser-bytel {
+	background-position: -204px 0;
+}
+.browser-chimera {
+	background-position: -221px 0;
+}
+.browser-chrome {
+	background-position: -238px 0;
+}
+.browser-cyberdog {
+	background-position: -255px 0;
+}
+.browser-da {
+	background-position: -272px 0;
+}
+.browser-dillo {
+	background-position: -289px 0;
+}
+.browser-doris {
+	background-position: -306px 0;
+}
+.browser-dreamcast {
+	background-position: -323px 0;
+}
+.browser-ecatch {
+	background-position: -340px 0;
+}
+.browser-encompass {
+	background-position: -357px 0;
+}
+.browser-epiphany {
+	background-position: -374px 0;
+}
+.browser-ericsson {
+	background-position: -391px 0;
+}
+.browser-feeddemon {
+	background-position: -408px 0;
+}
+.browser-feedreader {
+	background-position: -425px 0;
+}
+.browser-firefox {
+	background-position: -442px 0;
+}
+.browser-flashget {
+	background-position: -459px 0;
+}
+.browser-flock {
+	background-position: -476px 0;
+}
+.browser-fpexpress {
+	background-position: -493px 0;
+}
+.browser-fresco {
+	background-position: -510px 0;
+}
+.browser-freshdownload {
+	background-position: -525px 0;
+}
+.browser-frontpage {
+	background-position: -542px 0;
+}
+.browser-galeon {
+	background-position: -559px 0;
+}
+.browser-getright {
+	background-position: -576px 0;
+}
+.browser-gnome {
+	background-position: -593px 0;
+}
+.browser-gnus {
+	background-position: -610px 0;
+}
+.browser-gozilla {
+	background-position: -627px 0;
+}
+.browser-hotjava {
+	background-position: -644px 0;
+}
+.browser-httrack {
+	background-position: -661px 0;
+}
+.browser-ibrowse {
+	background-position: -678px 0;
+}
+.browser-icab {
+	background-position: -695px 0;
+}
+.browser-icecat {
+	background-position: -712px 0;
+}
+.browser-iceweasel {
+	background-position: -729px 0;
+}
+.browser-java {
+	background-position: -746px 0;
+}
+.browser-jetbrains_omea {
+	background-position: -763px 0;
+}
+.browser-kmeleon {
+	background-position: -780px 0;
+}
+.browser-konqueror {
+	background-position: -797px 0;
+}
+.browser-leechget {
+	background-position: -814px 0;
+}
+.browser-lg {
+	background-position: -831px 0;
+}
+.browser-lotusnotes {
+	background-position: -848px 0;
+}
+.browser-lynx {
+	background-position: -865px 0;
+}
+.browser-macweb {
+	background-position: -882px 0;
+}
+.browser-mediaplayer {
+	background-position: -899px 0;
+}
+.browser-motorola {
+	background-position: -916px 0;
+}
+.browser-mozilla {
+	background-position: -933px 0;
+}
+.browser-mplayer {
+	background-position: -950px 0;
+}
+.browser-msie {
+	background-position: -967px 0;
+}
+.browser-multizilla {
+	background-position: -984px 0;
+}
+.browser-ncsa_mosaic {
+	background-position: -1001px 0;
+}
+.browser-neon {
+	background-position: -1018px 0;
+}
+.browser-netnewswire {
+	background-position: -1035px 0;
+}
+.browser-netpositive {
+	background-position: -1052px 0;
+}
+.browser-netscape {
+	background-position: -1069px 0;
+}
+.browser-netshow {
+	background-position: -1086px 0;
+}
+.browser-newsfire {
+	background-position: -1103px 0;
+}
+.browser-newsgator {
+	background-position: -1120px 0;
+}
+.browser-newzcrawler {
+	background-position: -1137px 0;
+}
+.browser-nokia {
+	background-position: -1154px 0;
+}
+.browser-notavailable {
+	background-position: -1171px 0;
+}
+.browser-omniweb {
+	background-position: -1186px 0;
+}
+.browser-opera {
+	background-position: -1203px 0;
+}
+.browser-panasonic {
+	background-position: -1220px 0;
+}
+.browser-pdaphone {
+	background-position: -1237px 0;
+}
+.browser-philips {
+	background-position: -1254px 0;
+}
+.browser-phoenix {
+	background-position: -1271px 0;
+}
+.browser-pluck {
+	background-position: -1288px 0;
+}
+.browser-pulpfiction {
+	background-position: -1305px 0;
+}
+.browser-real {
+	background-position: -1322px 0;
+}
+.browser-rss {
+	background-position: -1339px 0;
+}
+.browser-rssbandit {
+	background-position: -1356px 0;
+}
+.browser-rssowl {
+	background-position: -1373px 0;
+}
+.browser-rssreader {
+	background-position: -1390px 0;
+}
+.browser-rssxpress {
+	background-position: -1407px 0;
+}
+.browser-safari {
+	background-position: -1424px 0;
+}
+.browser-sagem {
+	background-position: -1441px 0;
+}
+.browser-samsung {
+	background-position: -1458px 0;
+}
+.browser-seamonkey {
+	background-position: -1475px 0;
+}
+.browser-sharp {
+	background-position: -1492px 0;
+}
+.browser-sharpreader {
+	background-position: -1509px 0;
+}
+.browser-shrook {
+	background-position: -1526px 0;
+}
+.browser-siemens {
+	background-position: -1543px 0;
+}
+.browser-sony {
+	background-position: -1560px 0;
+}
+.browser-staroffice {
+	background-position: -1577px 0;
+}
+.browser-subversion {
+	background-position: -1594px 0;
+}
+.browser-teleport {
+	background-position: -1611px 0;
+}
+.browser-trium {
+	background-position: -1628px 0;
+}
+.browser-unknown {
+	background-position: -1645px 0;
+}
+.browser-w3c {
+	background-position: -1662px 0;
+}
+.browser-webcopier {
+	background-position: -1679px 0;
+}
+.browser-webreaper {
+	background-position: -1696px 0;
+}
+.browser-webtv {
+	background-position: -1713px 0;
+}
+.browser-webzip {
+	background-position: -1730px 0;
+}
+.browser-winxbox {
+	background-position: -1747px 0;
+}
+.browser-wizz {
+	background-position: -1764px 0;
+}

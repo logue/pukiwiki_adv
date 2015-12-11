@@ -1,0 +1,233 @@
+/*!
+ * PukiWiki Plus! skin for PukiWiki Advance
+ * Original version written by miko and upk.
+ * Adv version by Logue.
+ *
+ * $Id: green.scss, v2.0.0 2015/12/05 22:12:00 Logue Exp $
+ */
+
+@charset "UTF-8";
+@namespace url(http://www.w3.org/1999/xhtml);
+
+@import 'plus';
+
+::-moz-selection{
+	background: Teal;
+	color:#fff;
+	text-shadow: none;
+}
+::selection {
+	background:Teal;
+	color:#fff;
+	text-shadow: none;
+}
+
+body{
+	color:#223333;
+	background-color:white;
+}
+
+a:not(.btn):not([role="presentation"]){
+	-webkit-tap-highlight-color: #5EFF99;
+}
+
+a:not(.btn):not([role="presentation"]):active{
+	color:#215dc6;
+	background-color:#CCEEDD;
+}
+
+a:not(.btn):not([role="presentation"]):visited{
+	color:#a63d21;
+	background-color:inherit;
+}
+
+a:not(.btn):not([role="presentation"]):hover{
+	color:#215dc6;
+	background-color:#CCEEDD;
+}
+
+#hgroup h1{
+	color:#00cc00;
+}
+
+h1, h2{
+	border-color:#ffffff #ffffff #999999 mediumseagreen;
+}
+
+h3{
+	border-color:#ffffff #ffffff #999999 mediumaquamarine;
+}
+
+h4, h5, h6{
+	border-color:#f8fff8 #f8fff8 #999999 lightgreen;
+}
+
+dt{
+	color: #336633;
+}
+
+pre{
+	border-top:#DDEEDD 1px solid;
+	border-bottom:#889988 1px solid;
+	border-left:#DDEEDD 1px solid;
+	border-right:#889988 1px solid;
+	background-color:#F0FFF8;
+	background-image: -ms-linear-gradient(top, #F0FFF8, #e5fff3);
+	background-image: -moz-linear-gradient(top, #F0FFF8, #e5fff3);
+	background-image: -webkit-linear-gradient(top, #F0FFF8, #e5fff3);
+}
+
+blockquote{
+	border: 1px solid #99FFCC;
+	box-shadow: 0 1px 6px #ccffe5;
+}
+
+hr{
+	border-color: #333333;
+}
+
+.table{
+	background-color:#ccddd5;
+}
+.table th{
+	background-color:#EEEEEE;
+}
+.table tr td.blank-cell{
+	background-color:#E3F6EA;
+}
+.table tr:nth-child(even) td{
+	background-color:#EFfff5;
+}
+.table thead td,
+.table tfoot td {
+	background-color:#D0E0D8;
+}
+.table thead th,
+.table tfoot th {
+	background-color:#E0F0E8;
+}
+
+.noexists{
+	color:inherit;
+	background-color:#FFFACC;
+}
+
+.super_index
+{
+	color:#DD3333;
+	background-color:inherit;
+}
+
+a.note_super
+{
+	color:#DD3333;
+	background-color:inherit;
+}
+
+fieldset {
+	border: 1px darkseagreen solid;
+}
+
+::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+}
+
+::-webkit-scrollbar-track {
+	background: whitesmoke;
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	border-radius: 10px;
+}
+
+
+::-webkit-scrollbar-thumb {
+	background: #DDFFF0;
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	border-radius: 10px;
+}
+
+/* Layout */
+#main_wrapper, #menubar, #sidebar{
+	background-color: #EEFFFC;
+}
+
+/** MenuBar/SideBar *******************************************************************************/
+
+
+#menubar h2, #menubar h3, #menubar h4, #menubar h5,
+#sidebar h2, #sidebar h3, #sidebar h4, #sidebar h5{
+	border: 1px #99FFCC solid;
+	background-color: #DDFFF0;
+	text-shadow: 0 0 2px #b2dbff, 0px 2px 0 white;
+	background-image: -ms-linear-gradient(top, #DDFFF0, #ccffe7);
+	background-image: -moz-linear-gradient(top, #DDFFF0, #ccffe7);
+	background-image: -webkit-linear-gradient(top, #DDFFF0, #ccffe7);
+}
+
+/* Plugin *****************************************************************************************/
+/* backup.inc.php */
+.add_word, .add_block{
+	background-color:#FFFF66;
+}
+
+.remove_word, .remove_block{
+	background-color:#A0FFFF;
+}
+
+/* calendar.inc.php */
+.style_calendar {
+	background-color:#E0E0E0 !important;
+}
+.style_calendar_top {
+	background-color:#EEFFF5 !important;
+}
+.style_calendar_today {
+	background-color:#EEFFF5 !important;
+}
+.style_calendar_sat {
+	background-color:#DDE5FF !important;
+}
+.style_calendar_sun, .style_calendar_holiday {
+	background-color:#FFEEEE !important;
+}
+.style_calendar_blank {
+
+}
+.style_calendar_day {
+
+}
+.style_calendar_week {
+	background-color:#DDEEE5;
+}
+
+.style_calendar tbody .style_td:hover{
+	background-color: #DDFFFF !important;
+}
+
+/* suckerfish.inc.php */
+.sf-menu {
+	color: white !important;
+	background-color: MediumSeaGreen;
+	border-color: Teal;
+}
+
+.sf-menu ul{
+	background-color: MediumSeaGreen;
+	border-color: Teal;
+}
+
+.sf-menu li {
+	border-color: MediumSeaGreen;
+}
+
+.sf-menu li:hover, .sf-menu li.sfHover{
+	color: DarkSlateGray !important;
+	background-color: mediumaquamarine;
+	border-color: white;
+}
+
+.sf-menu li ul li:hover, .sf-menu li ul li.sfHover,
+.sf-menu a:focus, .sf-menu a:hover, .sf-menu a:active {
+	color: DarkSlateGray !important;
+	background-color: mediumaquamarine;
+}

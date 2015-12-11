@@ -8,7 +8,7 @@
  * @copyright 2012-2015 PukiWiki Advance Developers Team
  * @create    2012/12/31
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Utility.php,v 1.0.3 2015/06/25 23:40:00 Logue Exp $
+ * @version   $Id: Utility.php,v 1.0.4 2015/12/06 00:32:00 Logue Exp $
  **/
 
 namespace PukiWiki;
@@ -891,7 +891,7 @@ class Utility{
 			$ret[] = join("\n", $_pages);
 			$ret[] = '</select>';
 			$ret[] = '</div>';
-			$ret[] = '<button type="submit" class="btn btn-default" name="template" accesskey="l">' . $_button['load'] . '</button>';
+			$ret[] = '<button type="submit" class="btn btn-secondary" name="template" accesskey="l">' . $_button['load'] . '</button>';
 			$ret[] = '</div>';
 			unset($_s_page, $_w, $_pages);
 		}
@@ -921,7 +921,7 @@ class Utility{
 			// 通常用
 			$ret[] = '<button type="submit" class="btn btn-primary" name="write" accesskey="s"><span class="fa fa-check"></span>' . $_button['update'] . '</button>';
 			$ret[] = isset($vars['add']) ? '<input type="checkbox" name="add_top" value="true"' . (isset($vars['add']) ? ' checked="checked"' : '') . ' /><label for="add_top">' . $_button['addtop'] . '</label>' : null;
-			$ret[] = '<button type="submit" class="btn btn-default" name="preview" accesskey="p"><span class="fa fa-eye"></span>' . $_button['preview'] . '</button>';
+			$ret[] = '<button type="submit" class="btn btn-secondary" name="preview" accesskey="p"><span class="fa fa-eye"></span>' . $_button['preview'] . '</button>';
 			if ($notimeupdate !== 0 && Factory::Wiki($page)->isValied()){
 				// タイムスタンプを更新しないのチェックボックス
 				$ret[] = '<div class="checkbox">';

@@ -1,8 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone.
-// $Id: backup.inc.php,v 1.29.25 2014/12/24 23:14:00 Logue Exp $
+// $Id: backup.inc.php,v 1.29.26 2015/12/06 00:20:00 Logue Exp $
 // Copyright (C)
-//   2010-2014 PukiWiki Advance Developers Team
+//   2010-2015 PukiWiki Advance Developers Team
 //   2008 PukioWikio Developers Team
 //   2005-2008 PukiWiki Plus! Team
 //   2002-2005,2007 PukiWiki Developers Team
@@ -272,7 +272,7 @@ function plugin_backup_get_list($page)
 {
 	global $_backup_messages, $vars, $_button;
 	$retval = array();
-	$retval[] = '<p><a class="btn btn-default" href="'.Router::get_page_uri($page).'">'.$_button['back'].'</a></p>';
+	$retval[] = '<p><a class="btn btn-secondary" href="'.Router::get_page_uri($page).'">'.$_button['back'].'</a></p>';
 
 	$backup = Factory::Backup($page);
 	$backups = $backup->get();

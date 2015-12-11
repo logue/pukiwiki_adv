@@ -107,7 +107,7 @@ function auth_mixi_set_parm($argv)
 		$parm['type'] = $parm['id'] = '';
 	$parm['icon'] = 1;
 	foreach($argv as $arg) {
-		$val = split('=', $arg);
+		$val = explode('=', $arg);
 		if (empty($val[0])) continue;
 		$val[1] = (empty($val[1])) ? htmlspecialchars($val[0]) : htmlspecialchars($val[1]);
 
