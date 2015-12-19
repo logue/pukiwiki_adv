@@ -33,7 +33,7 @@ abstract class Inline
 
 	protected $type;
 	protected $page;
-	protected $name;
+	public $name;
 	protected $body;
 	protected $alias;
 

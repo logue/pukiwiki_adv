@@ -133,7 +133,7 @@ class Relational{
 		$rel_exist = ($rel_old === array());
 
 		$rel_auto = $rel_new = array();
-		foreach (self::getObjects($page, TRUE) as $_obj) {
+		foreach (self::getObjects($page) as $_obj) {
 			if (! isset($_obj->type) || $_obj->type !== 'pagename' || $_obj->name === $page || empty($_obj->name) )
 				continue;
 
