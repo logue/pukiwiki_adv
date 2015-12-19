@@ -15,6 +15,7 @@ use PukiWiki\Wiki;
 use PukiWiki\Factory;
 use PukiWiki\Utility;
 use PukiWiki\Router;
+use PukiWiki\Relational;
 
 define('PLUGIN_RENAME_LOGPAGE', ':RenameLog');
 
@@ -72,7 +73,7 @@ function plugin_rename_action()
 			if (! is_pagename($page)){
 				return plugin_rename_phase1('notvalid');
 			}else if (preg_match(Wiki::INVALIED_PAGENAME_PATTERN, $page)){
-				die_message($_strings['illegal_chars']);
+				die_message($_string['illegal_chars']);
 			}
 		}
 
@@ -86,7 +87,7 @@ function plugin_rename_action()
 		
 		// Check Illigal Chars
 		if (preg_match(Wiki::INVALIED_PAGENAME_PATTERN, $page)){
-			die_message($_strings['illegal_chars']);
+			die_message($_string['illegal_chars']);
 		}
 
 		if (empty($refer)) {
@@ -97,7 +98,7 @@ function plugin_rename_action()
 		} else if (is_cantedit($refer)) {
 			return plugin_rename_phase1('norename', $refer);
 
-		 } else if (!empty($page) || $page === $refer) {
+		 } else if (!empty($page) && $page === $refer) {
 			return plugin_rename_phase2();
 
 		} else if (! is_pagename($page)) {
