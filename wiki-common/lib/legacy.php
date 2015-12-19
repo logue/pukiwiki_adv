@@ -553,9 +553,14 @@ function make_heading(& $str, $strip = TRUE)
 	return Rules::getHeading($str, $strip);
 }
 
+/**
+ * @return bool
+ */
 function pkwk_headers_sent()
 {
-	return Header::checkSent();
+	//未定義
+//	return Header::checkSent();
+	return headers_sent();
 }
 
 function pkwk_common_headers($modified = 0, $expire = 604800){

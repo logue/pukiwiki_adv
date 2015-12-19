@@ -472,15 +472,17 @@ function plugin_rename_get_files($pages)
 	// At this time, collision detection is not implemented
 
 	$wiki->set($postdata);
-
-	cache_timestamp_touch();
+//未定義
+//	cache_timestamp_touch();
 
 	$page = plugin_rename_getvar('page');
 	if ($page == '') $page = PLUGIN_RENAME_LOGPAGE;
 
 	// Redirection
-	pkwk_headers_sent();
-	header('Location: ' . get_page_location_uri($page));
+
+	if(!pkwk_headers_sent()) {
+		header('Location: ' . get_page_location_uri($page));
+	}
 	exit;
 }
 
