@@ -133,19 +133,22 @@ class Relational{
 		$rel_exist = ($rel_old === array());
 
 		$rel_auto = $rel_new = array();
-		foreach (self::getObjects($page, TRUE) as $_obj) {
-			if (! isset($_obj->type) || $_obj->type !== 'pagename' || $_obj->name === $page || empty($_obj->name) )
-				continue;
+		$pages = self::getObjects($page);
+		if (!empty($pages)) {
+			foreach ($pages as $_obj) {
+				if (! isset($_obj->type) || $_obj->type !== 'pagename' || $_obj->name === $page || empty($_obj->name) )
+					continue;
 
-			if ($_obj instanceof AutoLink) { // Not cool though
-				$rel_auto[] = $_obj->name;
-			} else if ($_obj instanceof AutoAlias) {
-				$_alias = AutoAlias::getAutoAliasDict($_obj->name);
-				if (Factory::Wiki($_alias)->isValied()) {
-					$rel_auto[] = $_alias;
+				if ($_obj instanceof AutoLink) { // Not cool though
+					$rel_auto[] = $_obj->name;
+				} else if ($_obj instanceof AutoAlias) {
+					$_alias = AutoAlias::getAutoAliasDict($_obj->name);
+					if (Factory::Wiki($_alias)->isValied()) {
+						$rel_auto[] = $_alias;
+					}
+				} else {
+					$rel_new[]  = $_obj->name;
 				}
-			} else {
-				$rel_new[]  = $_obj->name;
 			}
 		}
 
@@ -308,20 +311,21 @@ class Relational{
 
 	/**
 	 * ページのソースからリンクオブジェクトを取得
-	 * @param type $page
-	 * @return type
+	 * @param string $page
+	 * @return object|null
 	 */
 	private function getObjects($page=''){
 		static $result;
 		if (empty($page)) {
 			unset($result);
-			return;
+			return null;
 		}
 		if (! isset($result[$page]) ){
 			$source = Factory::Wiki($page)->get(false);
 			$result[$page] = ($source !== false) ? $this->links_obj->getObjects(join('', preg_grep('/^(?!\/\/|\s)./', $source)), $page) : null;
+			return $result[$page];
 		}
-		return $result[$page];
+		return null;
 	}
 
 	// もっとマシなSQL文って無い？

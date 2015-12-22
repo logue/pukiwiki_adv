@@ -15,6 +15,7 @@ use PukiWiki\Wiki;
 use PukiWiki\Factory;
 use PukiWiki\Utility;
 use PukiWiki\Router;
+use PukiWiki\Relational;
 
 define('PLUGIN_RENAME_LOGPAGE', ':RenameLog');
 
@@ -72,7 +73,7 @@ function plugin_rename_action()
 			if (! is_pagename($page)){
 				return plugin_rename_phase1('notvalid');
 			}else if (preg_match(Wiki::INVALIED_PAGENAME_PATTERN, $page)){
-				die_message($_strings['illegal_chars']);
+				die_message($_string['illegal_chars']);
 			}
 		}
 
@@ -86,7 +87,7 @@ function plugin_rename_action()
 		
 		// Check Illigal Chars
 		if (preg_match(Wiki::INVALIED_PAGENAME_PATTERN, $page)){
-			die_message($_strings['illegal_chars']);
+			die_message($_string['illegal_chars']);
 		}
 
 		if (empty($refer)) {
@@ -97,7 +98,7 @@ function plugin_rename_action()
 		} else if (is_cantedit($refer)) {
 			return plugin_rename_phase1('norename', $refer);
 
-		 } else if (!empty($page) || $page === $refer) {
+		 } else if (!empty($page) && $page === $refer) {
 			return plugin_rename_phase2();
 
 		} else if (! is_pagename($page)) {
@@ -382,13 +383,12 @@ EOD;
 
 function plugin_rename_get_files($pages)
 {
-	global $log,$trackback,$referer;
+	global $log;
 
 	$files = array();
 	$dirs  = array(BACKUP_DIR, DIFF_DIR, DATA_DIR);
 	if (exist_plugin_convert('attach'))  $dirs[] = UPLOAD_DIR;
 	if (exist_plugin_convert('counter')) $dirs[] = COUNTER_DIR;
-	if ($trackback > 0 || $referer > 0) $dirs[] = TRACKBACK_DIR;
 	foreach(array('update','download','browse') as $log_subdir) {
 		if ($log[$log_subdir]['use']) $dirs[] = LOG_DIR.$log_subdir.'/';
 	}
@@ -472,15 +472,17 @@ function plugin_rename_get_files($pages)
 	// At this time, collision detection is not implemented
 
 	$wiki->set($postdata);
-
-	cache_timestamp_touch();
+//未定義
+//	cache_timestamp_touch();
 
 	$page = plugin_rename_getvar('page');
 	if ($page == '') $page = PLUGIN_RENAME_LOGPAGE;
 
 	// Redirection
-	pkwk_headers_sent();
-	header('Location: ' . get_page_location_uri($page));
+
+	if(!pkwk_headers_sent()) {
+		header('Location: ' . get_page_location_uri($page));
+	}
 	exit;
 }
 
