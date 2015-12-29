@@ -37,9 +37,11 @@ class Xhtml2Wiki
 		$this->protect_data = array();
 		$this->text = '';
 	}
-	
+
 	/**
 	 * 変換メソッド
+	 * @param string $source
+	 * @return mixed|string
 	 */
 	function Convert($source) {
 		$this->body = '';
@@ -60,7 +62,7 @@ class Xhtml2Wiki
 		$body = implode('', $this->body);
 		
 		// 構文補正
-		$body = preg_replace("/___GUIPD(\d+)___/e", '$this->protect_data["$1"-1]', $body);
+		$body = preg_replace_callback("/___GUIPD(\d+)___/", function($m){return $this->protect_data[$m[1]-1];}, $body);
 		$body = preg_replace("/\n\n\n+/", "\n\n", $body);
 		
 		return $body;
@@ -389,9 +391,10 @@ class Xhtml2Wiki
 	function GetTableAttribute($attribute) {
 		$text = '';
 		
-		$pattern = "/rgb\((\d+),\s(\d+),\s(\d+)\)/ie";
-		$attribute = preg_replace($pattern, 'sprintf("#%02x%02x%02x", "$1", "$2", "$3")', $attribute);
-		
+		$pattern = "/rgb\((\d+),\s(\d+),\s(\d+)\)/i";
+//		$attribute = preg_replace($pattern, 'sprintf("#%02x%02x%02x", "$1", "$2", "$3")', $attribute);
+		$attribute = preg_replace_callback($pattern, function($m){sprintf("#%02x%02x%02x", $m[1], $m[2], $m[3]);}, $attribute);
+
 		// 文字サイズ
 		if (preg_match("/font-size:\s?(\d+)px/i", $attribute, $matches)) {
 			$text .= 'SIZE(' . $matches[1] . '):';
