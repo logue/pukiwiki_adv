@@ -98,7 +98,7 @@ function plugin_rename_action()
 		} else if (is_cantedit($refer)) {
 			return plugin_rename_phase1('norename', $refer);
 
-		 } else if (!empty($page) && $page === $refer) {
+		 } else if (empty($page) && is_page($refer)) {
 			return plugin_rename_phase2();
 
 		} else if (! is_pagename($page)) {
@@ -161,6 +161,7 @@ function plugin_rename_phase1($err = '', $page = '')
 	return array(
 		'msg'	=> $_rename_messages['msg_title'],
 		'body'	=> <<<EOD
+{$msg}
 <fieldset>
 	<legend>{$_rename_messages['msg_title']}</legend>
 	<form action="$script" method="post" class="plugin-rename-form">
