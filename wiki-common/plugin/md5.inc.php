@@ -96,14 +96,18 @@ EOD;
 	if ($sha1_enabled) $form .= <<<EOD
 		<div class="radio">
 			<input type="radio" name="scheme" id="_p_md5_sha1" value="x-php-sha1" />
-			<label for="_p_md5_sha1">PHP sha1()</label>
+			<label for="_p_md5_sha1">PHP sha1() !</label>
 		</div>
 EOD;
 
 	$form .= <<<EOD
 		<div class="radio">
 			<input type="radio" name="scheme" id="_p_md5_md5"  value="x-php-md5" />
-			<label for="_p_md5_md5">PHP md5()</label>
+			<label for="_p_md5_md5">PHP md5() !</label>
+		</div>
+		<div class="radio">
+			<input type="radio" name="scheme" id="_p_md5_pwdh" value="x-php-password" />
+			<label for="_p_md5_pwdh">PHP password_hash()</label>
 		</div>
 		<div class="radio">
 			<input type="radio" name="scheme" id="_p_md5_crpt" value="x-php-crypt" />
@@ -114,22 +118,22 @@ EOD;
 	if ($sha1_enabled) $form .= <<<EOD
 		<div class="radio">
 			<input type="radio" name="scheme" id="_p_md5_lssha" value="SSHA" $sha1_checked/>
-			<label for="_p_md5_lssha">LDAP SSHA (sha-1 with a seed) *</label>
+			<label for="_p_md5_lssha">LDAP SSHA (sha-1 with a seed) *!</label>
 		</div>
 		<div class="radio">
 			<input type="radio" name="scheme" id="_p_md5_lsha" value="SHA" />
-			<label for="_p_md5_lsha">LDAP SHA (sha-1)</label>
+			<label for="_p_md5_lsha">LDAP SHA (sha-1) !</label>
 		</div>
 EOD;
 
 	$form .= <<<EOD
 		<div class="radio">
 			<input type="radio" name="scheme" id="_p_md5_lsmd5" value="SMD5" $md5_checked/>
-			<label for="_p_md5_lsmd5">LDAP SMD5 (md5 with a seed) *</label>
+			<label for="_p_md5_lsmd5">LDAP SMD5 (md5 with a seed) *!</label>
 		</div>
 		<div class="radio">
 			<input type="radio" name="scheme" id="_p_md5_lmd5" value="MD5" />
-			<label for="_p_md5_lmd5">LDAP MD5</label>
+			<label for="_p_md5_lmd5">LDAP MD5 !</label>
 		</div>
 		<div class="radio">
 			<input type="radio" name="scheme" id="_p_md5_lcrpt" value="CRYPT" />
@@ -148,6 +152,7 @@ EOD;
 		<input type="submit" class="btn btn-info" value="Compute" />
 	</div>
 	<p>* = Salt enabled</p>
+	<p>! = No longer safe</p>
 </form>
 EOD;
 
