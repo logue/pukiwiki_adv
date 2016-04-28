@@ -187,7 +187,7 @@ function plugin_edit_preview()
 	// Compat: add plugin and adding contents
 	if (isset($vars['add']) && $vars['add']) {
 		if (isset($vars['add_top']) && $vars['add_top']) {
-			$postdata  = $postdata . "\n\n" . $wiki->get(true);
+			$postdata  .= "\n\n" . $wiki->get(true);
 		} else {
 			$postdata  = $wiki->get(true) . "\n\n" . $postdata;
 		}

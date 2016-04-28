@@ -154,7 +154,7 @@ EOD;
 				'refer'			=> $vars['page'],
 				'digest'		=> $digest
 			));
-			$ret = $ret.'<a href="'.$btn_url.'" title="'.$f_btn_text.'">'.$btn_text.'</a>';
+			$ret .= '<a href="'.$btn_url.'" title="'.$f_btn_text.'">'.$btn_text.'</a>';
 		}
 	}
 
@@ -247,7 +247,7 @@ EOD;
 				'refer'			=> $vars['page'],
 				'digest'		=> $digest
 			));
-			$ret = $ret.'<a href="'.$btn_url.'" title="'.$f_btn_text.'"><small><span class="fa fa-paperclip">'.$btn_text.'</span></small></a>';
+			$ret .= '<a href="'.$btn_url.'" title="'.$f_btn_text.'"><small><span class="fa fa-paperclip">'.$btn_text.'</span></small></a>';
 	    }
 	}
 	return $ret;

@@ -303,7 +303,7 @@ abstract class PublicHoliday
 		$t  = $s / 3600.0;
 		$t += $i /60.0;
 		$t += $h;
-		$t  = $t / 24.0;
+		$t /= 24.0;
 
 		$jd += $t;
 		return( $jd );

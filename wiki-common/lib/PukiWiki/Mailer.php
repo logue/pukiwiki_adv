@@ -56,7 +56,7 @@ class Mailer{
 			if ($summary_position) {
 				$message = join('', $summary) . $_separator . "\n" . $message;
 			} else {
-				$message = $message . "\n" . $_separator . join('', $summary);
+				$message .= "\n" . $_separator . join('', $summary);
 			}
 			unset($summary);
 		}
