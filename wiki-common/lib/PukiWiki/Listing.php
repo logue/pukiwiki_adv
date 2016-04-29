@@ -92,11 +92,11 @@ class Listing{
 		// ページの索引でソート
 		ksort($ret, SORT_NATURAL);
 
-		foreach ($ret as $initial=>$pages){
+		foreach ($ret as $initial => &$pages){
 			// ページ名の「読み」でソート
-			asort($ret[$initial], SORT_NATURAL);
+			asort($pages, SORT_NATURAL);
 			// 「読み」でソートしたやつを$headingに保存
-			$heading[$type][$initial] = array_keys($ret[$initial]);
+			$heading[$type][$initial] = array_keys($pages);
 		}
 		unset($ret);
 

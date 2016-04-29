@@ -263,8 +263,8 @@ class RootElement extends Element
 	private function comment($matches)
 	{
 		$comments = explode("\n", $matches[0]);
-		foreach ($comments as $key=>$comment) {
-			$comments[$key] = array_shift($this->comments);
+		foreach ($comments as &$comment) {
+			$comment = array_shift($this->comments);
 		}
 		$comment = join("\n", $comments);
 		return '<span class="fa fa-comment" title="' . Utility::htmlsc($comment) . '"></span>';

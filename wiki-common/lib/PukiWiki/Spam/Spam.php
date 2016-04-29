@@ -590,11 +590,11 @@ class Spam{
 		// Shrink per list
 		// From: 'A-1' => array('ie.to')
 		// To:   'A-1' => 'ie.to'
-		foreach($blocked as $list => $lvalue) {
+		foreach($blocked as &$lvalue) {
 			if (is_array($lvalue) &&
 			   count($lvalue) == 1 &&
 			   is_numeric(key($lvalue))) {
-			    $blocked[$list] = current($lvalue);
+				$lvalue = current($lvalue);
 			}
 		}
 
