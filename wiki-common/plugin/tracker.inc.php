@@ -1385,7 +1385,7 @@ class Tracker_list
 		}
 
 		// This column will be the first position , if you click
-		$orders = array($fieldname => $order) + $orders;
+		$orders += array($fieldname => $order);
 
 		$_orders = array();
 		foreach ($orders as $_fieldname => $_order) {
