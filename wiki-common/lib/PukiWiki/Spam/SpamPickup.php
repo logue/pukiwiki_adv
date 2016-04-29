@@ -201,7 +201,7 @@ class SpamPickup{
 		foreach (array_keys($pickups) as $key) {
 			$_key = & $pickups[$key];
 			if (isset($_key['path'], $_key['file'])) {
-				$_key['path'] = $_key['path'] . $_key['file'];
+				$_key['path'] .= $_key['file'];
 				unset($_key['file']);
 			}
 		}
