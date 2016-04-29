@@ -1,11 +1,5 @@
 {
 	"name": "logue/pukiwiki_adv",
-	"repositories": [
-		{
-			"type": "vcs",
-			"url": "https://github.com/logue/pukiwiki_adv"
-		}
-    ],
 	"description": "PukiWiki Advance",
 	"version": "2.0.2",
 	"keywords": [
@@ -42,6 +36,7 @@
 		"zendframework/zend-debug": "2.*",
 		"zendframework/zend-dom": "2.*",
 		"zendframework/zend-feed": "2.*",
+		"zendframework/zend-filter": "2.*",
 		"zendframework/zend-http": "2.*",
 		"zendframework/zend-i18n": "2.*",
 		"zendframework/zend-json": "2.*",
@@ -61,12 +56,8 @@
 		"zendframework/zendservice-twitter":"2.*",
 		"zendframework/zendxml":"*"
 	},
-	"devDependencies": {
-		"gulp": "3.*",
-		"gulp-notify": "*"
-	},
 	"suggest":{
-		"ext-gd" : "for thumbnail.",
+		"ext-gd" : "for thumbnail and captcha use.",
 		"ext-intl" : "for i18n use."
 	},
 	"repositories": [
