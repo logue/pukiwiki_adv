@@ -156,13 +156,16 @@ class Search{
 				}
 			}
 
-			// 通常検索
-			$source = $wiki->get(true);
-			foreach ($keys as $key) {
-				$b_match = preg_match($key, $source);
-				if ($b_type xor $b_match) break; // OR
+			// 通常検索 (ページ名にマッチしない場合)
+			if (!$b_match) {
+				$source = $wiki->get(true);
+				foreach ($keys as $key) {
+					$b_match = preg_match($key, $source);
+					if ($b_type xor $b_match) break; // OR
+				}
+				unset($source, $key);
 			}
-			unset($source, $key);
+
 			// マッチしない場合スキップ
 			if (!$b_match) continue;
 
