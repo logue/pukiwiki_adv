@@ -493,7 +493,7 @@ function attach_doupload($file, $page, $pass=NULL, $temp)
 		foreach ($notify_exclude as $exclude) {
 			$exclude = preg_quote($exclude);
 			if (substr($exclude, -1) == '.')
-				$exclude = $exclude . '*';
+				$exclude .= '*';
 			if (preg_match('/^' . $exclude . '/', get_remoteip())) {
 				$notify_exec = FALSE;
 				break;

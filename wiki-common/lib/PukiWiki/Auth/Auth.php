@@ -110,12 +110,26 @@ class Auth
 		global $adminpass;
 
 		if (! self::check_role('readonly') && isset($adminpass) &&
-			self::hash_compute($pass, $adminpass) === $adminpass) {
+			self::hash_verify($pass, $adminpass)) {
 			return TRUE;
 		}
 		sleep(2);       // Blocking brute force attack
 		return FALSE;
 	}
+
+	/**
+	 * パスフレーズとユーザのパスワードを比較する
+	 * @param string $phrase パスフレーズ（プレーンテキスト）
+	 * @param string $password パスワード（スキームを含むハッシュ値）
+	 * @return bool
+	 */
+	public static function hash_verify($phrase, $password) {
+		if (preg_match('/^{x-php-password}(.*)$/', $password, $matches))
+			return password_verify($phrase, $matches[1]);
+		else
+			return self::hash_compute($phrase, $password) === $password;
+	}
+
 	/**
 	 * ユーザのパスワードを出力する（{スキーム}[ハッシュ化されたパス]）
 	 * @param string $phrase パスフレーズ
@@ -143,6 +157,12 @@ class Auth
 
 		// Compute and add a scheme-prefix
 		switch (strtolower($scheme)) {
+
+			// PHP password_hash()
+			case '{x-php-password}':
+				$hash = ($prefix ? ($canonical ? '{x-php-password}' : $scheme) : '') .
+					password_hash($phrase, PASSWORD_DEFAULT);
+				break;
 
 			// PHP crypt()
 			case '{x-php-crypt}' :
@@ -492,7 +512,7 @@ class Auth
 					}
 				}
 				if (empty($pass) || empty($auth_users[$user][0])) return null; // パスワードが空は除く
-				$login = (self::hash_compute($pass,$auth_users[$user][0]) === $auth_users[$user][0]) ? $user : null;
+				$login = self::hash_verify($pass, $auth_users[$user][0]) ? $user : null;
 				break;
 			case self::AUTH_DIGEST:
 				// Digest認証
@@ -563,7 +583,7 @@ class Auth
 
 		if (empty($user) && empty($pass)) return false;
 		if (empty($auth_users[$user][0])) return false;
-		if ( self::hash_compute($pass, $auth_users[$user][0]) !== $auth_users[$user][0]) return false;
+		if (!self::hash_verify($pass, $auth_users[$user][0])) return false;
 		return true;
 	}
 	/**
@@ -742,7 +762,7 @@ class Auth
 	{
 		global $adminpass;
 		// 管理者パスワードなのかどうか？
-		$temp_admin = self::hash_compute($_SERVER['PHP_AUTH_PW'], $adminpass) !== $adminpass ? false : true;
+		$temp_admin = !self::hash_verify($_SERVER['PHP_AUTH_PW'], $adminpass) ? false : true;
 		if (! $temp_admin && $login == self::TEMP_CONTENTS_ADMIN_NAME) {
 			global $vars;
 			if (isset($vars['pass']) && self::login($vars['pass'])) $temp_admin = true;
