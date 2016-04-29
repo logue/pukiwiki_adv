@@ -4,8 +4,12 @@
 		{
 			"type": "vcs",
 			"url": "https://github.com/logue/pukiwiki_adv"
+		},
+		{
+			"type": "composer",
+			"url": "https://packages.zendframework.com/"
 		}
-    ],
+  ],
 	"description": "PukiWiki Advance",
 	"version": "2.0.2",
 	"keywords": [
@@ -61,18 +65,8 @@
 		"zendframework/zendservice-twitter":"2.*",
 		"zendframework/zendxml":"*"
 	},
-	"devDependencies": {
-		"gulp": "3.*",
-		"gulp-notify": "*"
-	},
 	"suggest":{
 		"ext-gd" : "for thumbnail.",
 		"ext-intl" : "for i18n use."
-	},
-	"repositories": [
-		{
-			"type": "composer",
-			"url": "https://packages.zendframework.com/"
-		}
-	]
+	}
 }
