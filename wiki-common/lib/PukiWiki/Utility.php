@@ -5,10 +5,10 @@
  * @package   PukiWiki
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2012-2015 PukiWiki Advance Developers Team
+ * @copyright 2012-2016 PukiWiki Advance Developers Team
  * @create    2012/12/31
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: Utility.php,v 1.0.4 2015/12/06 00:32:00 Logue Exp $
+ * @version   $Id: Utility.php,v 1.0.4 2016/12/06 15:36:00 Logue Exp $
  **/
 
 namespace PukiWiki;
@@ -654,9 +654,9 @@ class Utility{
 			$body[] = '<p>[ ';
 			if ( isset($vars['page']) && !empty($vars['page']) ){
 				$body[] = '<a href="' . Factory::Wiki($vars['page'])->uri() .'">'.$_button['back'].'</a> | ';
-				$body[] = '<a href="' . Router::get_cmd_uri('edit',$vars['page']) . '">'.$_button['return_home'].'</a> | ';
+				$body[] = '<a href="' . Router::get_cmd_uri('edit',$vars['page']) . '">'.$_button['try_edit'].'</a> | ';
 			}
-			$body[] = '<a href="' . Router::get_cmd_uri() . '">'.$_button['try_edit'].'</a> ]</p>';
+			$body[] = '<a href="' . Router::get_cmd_uri() . '">'.$_button['return_home'].'</a> ]</p>';
 		}
 		$body[] = '<p class="alert alert-warning"><span class="fa fa-ban"></span> <strong>' . $_title['error'] . '</strong>';
 		$body[] = PKWK_WARNING !== true || empty($msg) ? $msg = $_string['error_msg'] : $msg;
