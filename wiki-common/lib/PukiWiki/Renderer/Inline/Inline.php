@@ -31,7 +31,7 @@ abstract class Inline
 	protected $start;   // Origin number of parentheses (0 origin)
 	protected $text;    // Matched string
 
-	protected $type;
+	public $type;
 	protected $page;
 	public $name;
 	protected $body;
