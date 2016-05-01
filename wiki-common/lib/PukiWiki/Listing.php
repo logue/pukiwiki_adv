@@ -115,6 +115,9 @@ class Listing{
 		global $_string;
 		// 一覧の配列を取得
 		$heading = self::getHeadings($type);
+		
+		if ($heading == null) return '<p class="alert alert-success">No match files</p>';
+		
 		$contents = array();
 
 		if (IS_MOBILE) {

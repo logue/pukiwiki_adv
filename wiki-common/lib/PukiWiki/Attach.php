@@ -47,7 +47,7 @@ class Attach{
 	 */
 	const DELETE_ADMIN_ONLY = false;
 	/**
-	 * 管理者だけが添付ファイルを削除できるようにする
+	 * 管理者だけが添付ファイルのバックアップを削除できるようにする
 	 */
 	const DELETE_ADMIN_NOBACKUP = false;
 	/**
@@ -87,7 +87,7 @@ class Attach{
 	 */
 	private $update = false;
 	/**
-	 * 管理情報格納ファイルオブジェクト
+	 * 添付ファイルのログ（実際は管理情報格納ファイル）オブジェクト
 	 */
 	private $logfile;
 	/**
@@ -100,28 +100,33 @@ class Attach{
 	 * @param string $file 添付ファイル名
 	 */
 	public function __construct($page, $filename, $age = 0){
-		if (!isset($page)) Utility::dieMessage('Pagename is missing');
-		if (!isset($filename)) Utility::dieMessage('Filename is missing');
+		if (empty($page)) Utility::dieMessage('Pagename is missing');
+		if (empty($filename)) Utility::dieMessage('Filename is missing');
+		
+		// 初期設定
 		$this->page = $page;
 		$this->filename = $filename;
 		$this->age = (int)$age;
+		// サーバー上のファイル名
 		$this->basename = AttachFile::$dir . Utility::encode($page) . '_' . Utility::encode($filename) . ($this->age !== 0 ? '.'.$this->age : '');
+		// ファイルオブジェクト
 		$this->fileinfo = new File($this->basename);
-		
+		// ページに添付されているファイル一覧
 		$this->files = $this->getAttaches();
-		$this->update = false;	// ステータスの更新フラグ
+		// ステータスの更新フラグ
+		$this->update = false;
 
 		// ログファイルが存在しない場合
 		if (!isset($this->files['log'])){
 			$this->files['log'] = Utility::encode($filename).'.log';
 		}
-
 		$this->logfile = new File(AttachFile::$dir . $this->files['log']);
+
 		// 管理情報を取得
 		if ($this->logfile->has()){;
 			$data = $this->logfile->get();
 			foreach ($this->status as $key=>$value) {
-				$this->status[$key] = chop(array_shift($data));
+				$this->status[$key] = rtrim(array_shift($data));
 			}
 			$this->status['count'] = explode(',', $this->status['count']);
 		}
@@ -267,7 +272,7 @@ class Attach{
 	 */
 	public function freeze($freeze, $pass){
 		if (Auth::check_role('role_contents_admin') && ! Auth::login($pass))
-			return attach_info('err_adminpass');
+			return attach_info('err_adminpass');	// TODO			
 		
 		$this->status['freeze'] = $freeze;
 		$this->update = true;
@@ -344,7 +349,7 @@ class Attach{
 				header('Content-Disposition: ' . $disposition . '; filename*=UTF-8\'\'' . rawurlencode($this->filename));
 			}
 
-			$buffer = 1024 * 8;
+			$buffer = self::PARTIAL_BUFFER_SIZE;
 			while(!feof($fp) && ($p = ftell($fp)) <= $end) {
 				if ($p + $buffer > $end) {
 					$buffer = $end - $p + 1;
@@ -374,10 +379,9 @@ class Attach{
 
 		if (IS_AJAX) {
 			$retval = array('msg'=>sprintf($_attach_messages['btn_info'], Utility::htmlsc($this->filename)));
-			$ret[] = '<div id="attach-info-tabs" class="tabs">';
-			$ret[] = '<ul role="tablist">';
-			$ret[] = '<li role="tab" id="tab1" aria-controls="attach_info"><a href="#attach_info">' . $_attach_messages['msg_info'] . '</a></li>';
-			$ret[] = '<li role="tab" id="tab2" aria-controls="attach_form_edit"><a href="#attach_form_edit">' . $_LANG['skin']['edit'] . '</a></li>';
+			$ret[] = '<ul class="nav nav-tabs">';
+			$ret[] = '<li class="nav-item"><a class="nav-link active" href="#attach_info">' . $_attach_messages['msg_info'] . '</a></li>';
+			$ret[] = '<li class="nav-item"><a class="nav-link" href="#attach_form_edit">' . $_LANG['skin']['edit'] . '</a></li>';
 			$ret[] = '</ul>';
 		}else{
 			$retval = array('msg'=>sprintf($_attach_messages['msg_info'], htmlsc($this->filename)));
@@ -609,7 +613,8 @@ class Attach{
 				'x-lzh-compressed'  => false, // LZH
 				'x-rar-compressed'  => false, // RAR
 				'x-java-archive'    => false, // jar
-				'x-javascript'      => true, // js
+				'javascript'        => true,  // js
+				'css'				=> true, // css
 				'ogg'               => false, // ogg
 				'pdf'               => false, // pdf
 			),
