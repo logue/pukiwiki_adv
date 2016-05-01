@@ -31,7 +31,7 @@ function plugin_guiedit_action()
 {
 	// global $vars, $_title_edit, $load_template_func;
 	global $vars, $load_template_func;
-	global $menubar, $sidebar, $topicpath;
+	global $menubar, $sidebar, $topicpath, $_string;
 
 	// if (PKWK_READONLY) Utility::dieMessage( sprintf($_string['error_prohibit'],'PKWK_READONLY') );
 	if (Auth::check_role('readonly')) Utility::dieMessage(  sprintf($_string['error_prohibit'],'PKWK_READONLY') );
@@ -279,7 +279,7 @@ function plugin_guiedit_edit_form($page, $postdata, $digest = FALSE, $b_template
 		return $body;
 	}
 
-	require_once(GUIEDIT_CONF_PATH . 'guiedit.ini.php');
+//	require_once(GUIEDIT_CONF_PATH . 'guiedit.ini.php');
 
 	//	フォームの値の設定
 	$s_digest    = Utility::htmlsc($digest);
