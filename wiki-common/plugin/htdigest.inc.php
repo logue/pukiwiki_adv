@@ -325,7 +325,7 @@ function htdigest_save($username,$p_realm,$hash,$role)
 	}
 
 	$sw = FALSE;
-	foreach($lines as $no=>$line) {
+	foreach($lines as &$line) {
 		$field = explode(':', trim($line));
 		if ($field[0] == $username && $field[1] == $p_realm) {
 			if ($field[2] == $decrypted_hash) {
@@ -333,7 +333,7 @@ function htdigest_save($username,$p_realm,$hash,$role)
 			}
 
 			$sw = TRUE;
-			$lines[$no] = $field[0].':'.$field[1].':'.$decrypted_hash."\n";
+			$line = $field[0].':'.$field[1].':'.$decrypted_hash."\n";
 			break;
 		}
 	}

@@ -73,12 +73,12 @@ class PluginHtmlinsert
 		$options = $default_options;
 		unset($vars['cmd']);  // pukiwiki reserved key
 		unset($vars['page']); // 
-		foreach ($vars as $key => $val) {
+		foreach ($vars as $key => &$val) {
 			if (isset($options[$key])) {
 				$options[$key] = $val;
-				unset($vars[$key]);
+				unset($val);
 			} else {
-				$vars[$key] = htmlsc($val);
+				$val = htmlsc($val);
 			}
 		}
 		return array($page, $vars, $options);
@@ -227,26 +227,26 @@ class PluginHtmlinsert
 				return;
 			}
 		}
-		foreach ($values as $idx => $value) {
+		foreach ($values as $idx => &$value) {
 			switch ($encs[$idx]) {
 			case 'enc':
-				$values[$idx] = rawurlencode($value);
+				$value = rawurlencode($value);
 				break;
 			case 'utf8':
 				$value = mb_convert_encoding($value, 'UTF-8', SOURCE_ENCODING);
-				$values[$idx] = rawurlencode($value);
+				$value = rawurlencode($value);
 				break;
 			case 'euc':
 				$value = mb_convert_encoding($value, 'EUC', SOURCE_ENCODING);
-				$values[$idx] = rawurlencode($value);
+				$value = rawurlencode($value);
 				break;
 			case 'sjis':
 				$value = mb_convert_encoding($value, 'SJIS', SOURCE_ENCODING);
-				$values[$idx] = rawurlencode($value);
+				$value = rawurlencode($value);
 				break;
 			case 'jis':
 				$value = mb_convert_encoding($value, 'JIS', SOURCE_ENCODING);
-				$values[$idx] = rawurlencode($value);
+				$value = rawurlencode($value);
 				break;
 			case '':
 			case 'raw':

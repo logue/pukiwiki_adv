@@ -126,8 +126,8 @@ class Search{
 
 		// 検索ワードをパース
 		$keys = self::get_search_words(preg_split('/\s+/', $word, -1, PREG_SPLIT_NO_EMPTY));
-		foreach ($keys as $key=>$value)
-			$keys[$key] = '/' . $value . '/S';
+		foreach ($keys as &$value)
+			$value = '/' . $value . '/S';
 
 		// AND:TRUE OR:FALSE
 		$b_type = ($type == 'and');

@@ -207,11 +207,11 @@ class PluginVotex
 					list($votes, $options) = $this->parse_args_inline($args, $this->default_options);
 					if ($options['readonly']) return array(false, false, false, false);
 
-					foreach ($votes as $i => $vote) {
+					foreach ($votes as $i => &$vote) {
 						list($choice, $count) = $vote;
 						if ($i == $choice_id) {
 							++$count;
-							$votes[$i] = array($choice, $count);
+							$vote = array($choice, $count);
 						}
 					}
 					$new_args = $this->restore_args_inline($votes, $options, $this->default_options);
