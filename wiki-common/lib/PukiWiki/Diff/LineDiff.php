@@ -98,7 +98,7 @@ class LineDiff
 			}
 			$fp[$delta] = $this->snake($delta, $fp[$delta - 1], $fp[$delta + 1]);
 			if ($fp[$delta] >= $this->n) {
-				$this->pos = $this->path[$delta]; // Œo˜H‚ğŒˆ’è
+				$this->pos = $this->path[$delta]; // çµŒè·¯ã‚’æ±ºå®š
 				return;
 			}
 		}
@@ -113,13 +113,13 @@ class LineDiff
 			$_k = $k + 1;
 			$y = $y2;
 		}
-		$this->path[$k] = $this->path[$_k];// ‚±‚±‚Ü‚Å‚ÌŒo˜H‚ğƒRƒs[
+		$this->path[$k] = $this->path[$_k];// ã“ã“ã¾ã§ã®çµŒè·¯ã‚’ã‚³ãƒ”ãƒ¼
 		$x = $y - $k;
 		while ((($x + 1) < $this->m) && (($y + 1) < $this->n)
 			and $this->arr1[$x + 1]->compare($this->arr2[$y + 1]))
 		{
 			++$x; ++$y;
-			$this->path[$k][] = array('x'=>$x, 'y'=>$y); // Œo˜H‚ğ’Ç‰Á
+			$this->path[$k][] = array('x'=>$x, 'y'=>$y); // çµŒè·¯ã‚’è¿½åŠ 
 		}
 		return $y;
 	}
@@ -127,7 +127,7 @@ class LineDiff
 	public function toArray()
 	{
 		$arr = array();
-		if ($this->reverse) { // ŒÆ‘§‚Èc
+		if ($this->reverse) { // å§‘æ¯ãªâ€¦
 			$_x = 'y'; $_y = 'x'; $_m = $this->n; $arr1 =& $this->arr2; $arr2 =& $this->arr1;
 		} else {
 			$_x = 'x'; $_y = 'y'; $_m = $this->m; $arr1 =& $this->arr1; $arr2 =& $this->arr2;

@@ -27,28 +27,28 @@ return array(
 	 */
 	'ui_theme'		=> 'redmond',
 	/**
-	 * Bootswatch‚Ìƒe[ƒ}‚ð‘I‘ð
+	 * Bootswatchã®ãƒ†ãƒ¼ãƒžã‚’é¸æŠž
 	 * http://bootswatch.com/
 	 * ameria, cerulean, cosmo, cyborg, flatly, journal, lumen, readable, 
 	 * simplex, slate, spacelab, superhero, united, yeti
 	 */ 
 	'bootswatch' => false,
 
-	// NavibarŒnƒvƒ‰ƒOƒCƒ“‚Å‚àƒAƒCƒRƒ“‚ð•\Ž¦‚·‚é
+	// Navibarç³»ãƒ—ãƒ©ã‚°ã‚¤ãƒ³ã§ã‚‚ã‚¢ã‚¤ã‚³ãƒ³ã‚’è¡¨ç¤ºã™ã‚‹
 	'showicon'		=> false,
 
-	// ƒAƒhƒŒƒX‚Ì‘ã‚í‚è‚ÉƒpƒX‚ð•\Ž¦
+	// ã‚¢ãƒ‰ãƒ¬ã‚¹ã®ä»£ã‚ã‚Šã«ãƒ‘ã‚¹ã‚’è¡¨ç¤º
 	'topicpath'		=> true,
 	
-	// ‰æ‘œÝ’uƒfƒBƒŒƒNƒgƒŠi‚±‚ÌƒfƒBƒŒƒNƒgƒŠ‚©‚ç‚Ì‘Š‘ÎƒpƒXj
+	// ç”»åƒè¨­ç½®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªï¼ˆã“ã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‹ã‚‰ã®ç›¸å¯¾ãƒ‘ã‚¹ï¼‰
 	'image_dir'		=> './image/',
 
-	// L•\Ž¦—Ìˆæ
+	// åºƒå‘Šè¡¨ç¤ºé ˜åŸŸ
 	'adarea'	=> array(
-		// ƒy[ƒW‚Ì‰Eã‚ÌL•\Ž¦—Ìˆæ
+		// ãƒšãƒ¼ã‚¸ã®å³ä¸Šã®åºƒå‘Šè¡¨ç¤ºé ˜åŸŸ
 		'header'	=> <<<EOD
 EOD
-,		// ƒy[ƒW‰º•”‚ÌL•\Ž¦—Ìˆæ
+,		// ãƒšãƒ¼ã‚¸ä¸‹éƒ¨ã®åºƒå‘Šè¡¨ç¤ºé ˜åŸŸ
 		'footer'	=> <<<EOD
 EOD
 	)

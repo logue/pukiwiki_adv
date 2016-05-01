@@ -1,6 +1,6 @@
 <?php
 /**
- * WikiRpcƒT[ƒrƒXƒNƒ‰ƒX
+ * WikiRpcã‚µãƒ¼ãƒ“ã‚¹ã‚¯ãƒ©ã‚¹
  *
  * @package   PukiWiki
  * @access    public
@@ -20,57 +20,57 @@ use PukiWiki\Relational;
 use PukiWiki\Renderer\RendererFactory;
 
 /**
- * WikiRpcƒT[ƒrƒXƒNƒ‰ƒX
- * ŽQlF
- * @http://www.hyuki.com/yukiwiki/wiki.cgi?WikiRPC
- * @http://www.ecyrd.com/JSPWiki/wiki/WikiRPCInterface2
- * @http://trac-hacks.org/wiki/XmlRpcPlugin
- * @https://www.dokuwiki.org/devel:xmlrpc
+ * WikiRpcã‚µãƒ¼ãƒ“ã‚¹ã‚¯ãƒ©ã‚¹
+ * å‚è€ƒï¼š
+ * ã€€http://www.hyuki.com/yukiwiki/wiki.cgi?WikiRPC
+ * ã€€http://www.ecyrd.com/JSPWiki/wiki/WikiRPCInterface2
+ * ã€€http://trac-hacks.org/wiki/XmlRpcPlugin
+ * ã€€https://www.dokuwiki.org/devel:xmlrpc
  *
- * ¦Zend\XmlRpc‚ÌŽd—lãAphpdoc‚ÌƒRƒƒ“ƒg•¶‚ÌÅ‰‚Ìs‚ðà–¾•¶‚Æ‚µ‚Ä•Ô‚·‚½‚ßA
- * @“ú–{Œê‚ªŠÜ‚Ü‚ê‚é‚ÆXMLƒGƒ‰[‚É‚È‚Á‚Ä‚µ‚Ü‚¤B
- * @‚±‚Ì‚½‚ßA‚Qs–Ú‚É“ú–{Œê‚Ìà–¾•¶‚ð“ü‚ê‚éB
+ * â€»Zend\XmlRpcã®ä»•æ§˜ä¸Šã€phpdocã®ã‚³ãƒ¡ãƒ³ãƒˆæ–‡ã®æœ€åˆã®è¡Œã‚’èª¬æ˜Žæ–‡ã¨ã—ã¦è¿”ã™ãŸã‚ã€
+ * ã€€æ—¥æœ¬èªžãŒå«ã¾ã‚Œã‚‹ã¨XMLã‚¨ãƒ©ãƒ¼ã«ãªã£ã¦ã—ã¾ã†ã€‚
+ * ã€€ã“ã®ãŸã‚ã€ï¼’è¡Œç›®ã«æ—¥æœ¬èªžã®èª¬æ˜Žæ–‡ã‚’å…¥ã‚Œã‚‹ã€‚
  */
 class WikiRpc{
 	/**
-	 * WikiRpc‚Ìƒo[ƒWƒ‡ƒ“
+	 * WikiRpcã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³
 	 */
 	const WIKI_RPC_VERSION = 2;
 	/**
-	 * ‘—M‚É¬Œ÷‚µ‚½
+	 * é€ä¿¡ã«æˆåŠŸã—ãŸ
 	 */
 	const RESPONSE_SUCCESS                  = -1;
 	/**
-	 * ‰{——Œ ŒÀ‚È‚µ
+	 * é–²è¦§æ¨©é™ãªã—
 	 */
 	const RESPONSE_PAGE_NOT_READABLE        = 0x0111;
 	/**
-	 * •ÒWŒ ŒÀ‚È‚µ
+	 * ç·¨é›†æ¨©é™ãªã—
 	 */
 	const RESPONSE_PAGE_NOT_EDITABLE        = 0x0112;
 	/**
-	 * ƒy[ƒW‚ªŒ©‚Â‚©‚ç‚È‚¢
+	 * ãƒšãƒ¼ã‚¸ãŒè¦‹ã¤ã‹ã‚‰ãªã„
 	 */
 	const RESPONSE_PAGE_NOT_FOUND           = 0x0121;
 	/**
-	 * ƒy[ƒW–¼‚ª‹ó
+	 * ãƒšãƒ¼ã‚¸åãŒç©º
 	 */
 	const RESPONSE_PAGE_PAGENAME_IS_EMPTY   = 0x0131;
 	/**
-	 * ƒy[ƒW‚Ì“à—e‚ª‹ói–¢Žg—pj
+	 * ãƒšãƒ¼ã‚¸ã®å†…å®¹ãŒç©ºï¼ˆæœªä½¿ç”¨ï¼‰
 	 */
 	const RESPONSE_PAGE_CONTENT_IS_EMPTY    = 0x0132;
 	/**
-	 * “€Œ‹‚³‚ê‚Ä‚¢‚é
+	 * å‡çµã•ã‚Œã¦ã„ã‚‹
 	 */
 	const RESPONSE_PAGE_FREEZED             = 0x0133;
 	/**
-	 * ƒAƒNƒZƒX‹‘”Û
+	 * ã‚¢ã‚¯ã‚»ã‚¹æ‹’å¦
 	 */
 	const RESPONSE_FAULT_ACCESS_DENIED      = 0x0031;
 	/**
 	 * Returns 2 with the supported RPC API version.
-	 * ƒTƒ|[ƒg‚µ‚Ä‚¢‚éWikiRpc‚Ìƒo[ƒWƒ‡ƒ“B‚Q‚ð•Ô‚·B
+	 * ã‚µãƒãƒ¼ãƒˆã—ã¦ã„ã‚‹WikiRpcã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã€‚ï¼’ã‚’è¿”ã™ã€‚
 	 * @return int
 	 */
 	public function getRPCVersionSupported(){
@@ -78,8 +78,8 @@ class WikiRpc{
 	}
 	/**
 	 * Returns the permission of the given wikipage
-	 * ƒy[ƒW‚ÌŒ ŒÀ‚ð•Ô‚·B
-	 * @param string ƒy[ƒW–¼
+	 * ãƒšãƒ¼ã‚¸ã®æ¨©é™ã‚’è¿”ã™ã€‚
+	 * @param string ãƒšãƒ¼ã‚¸å
 	 */
 	public function aclCheck($page){
 		$wiki = Factory::Wiki($page);
@@ -87,8 +87,8 @@ class WikiRpc{
 	}
 	/**
 	  * Returns the raw Wiki text for a page.
-	  * ƒy[ƒW‚Ì¶‚ÌƒeƒLƒXƒg‚ð•Ô‚·
-	  * @param string $pagename ƒy[ƒW–¼
+	  * ãƒšãƒ¼ã‚¸ã®ç”Ÿã®ãƒ†ã‚­ã‚¹ãƒˆã‚’è¿”ã™
+	  * @param string $pagename ãƒšãƒ¼ã‚¸å
 	  * @return string
 	  */
 	public function getPage( $page ){
@@ -97,9 +97,9 @@ class WikiRpc{
 	}
 	/**
 	  * Returns the raw Wiki text for a specific revision of a Wiki page.
-	  * ƒy[ƒW‚ÌƒoƒbƒNƒAƒbƒv‚ðŽæ“¾‚·‚é
-	  * @param string $pagename ƒy[ƒW–¼
-	  * @param int $version ”Å
+	  * ãƒšãƒ¼ã‚¸ã®ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ã‚’å–å¾—ã™ã‚‹
+	  * @param string $pagename ãƒšãƒ¼ã‚¸å
+	  * @param int $version ç‰ˆ
 	  * @return string
 	  */
 	public function getPageVersion( $page, $version ){
@@ -108,17 +108,17 @@ class WikiRpc{
 	/**
 	  * Returns the available versions of a Wiki page. The number of pages in the result is controlled via the recent configuration setting. The offset can be used to list earlier versions in the history.
 	  * 
-	  * @param string $pagename ƒy[ƒW–¼
-	  * @param int $version ”Å
+	  * @param string $pagename ãƒšãƒ¼ã‚¸å
+	  * @param int $version ç‰ˆ
 	  * @return string
 	  */
 	public function getPageVersions( $page, $version ){
-		// –¢ŽÀ‘•
+		// æœªå®Ÿè£…
 	}
 	/**
 	  * Returns information about a Wiki page.
-	  * ƒy[ƒW‚Ìî•ñ‚ðŽæ“¾‚·‚é
-	  * @param string $pagename ƒy[ƒW–¼
+	  * ãƒšãƒ¼ã‚¸ã®æƒ…å ±ã‚’å–å¾—ã™ã‚‹
+	  * @param string $pagename ãƒšãƒ¼ã‚¸å
 	  * @return struct
 	  */
 	public function getPageInfo( $page ){
@@ -130,8 +130,8 @@ class WikiRpc{
 	}
 	/**
 	 * Returns the rendered XHTML body of a Wiki page.
-	 * ƒy[ƒW‚ÌÅV”Å‚ÌHTML‚ð•Ô‚·B
-	 * @param string $pagename ƒy[ƒW–¼
+	 * ãƒšãƒ¼ã‚¸ã®æœ€æ–°ç‰ˆã®HTMLã‚’è¿”ã™ã€‚
+	 * @param string $pagename ãƒšãƒ¼ã‚¸å
 	 * @return string
 	 */
 	public function getPageHTML( $pagename ){
@@ -139,9 +139,9 @@ class WikiRpc{
 	}
 	/**
 	 * Returns the rendered HTML of a specific version of a Wiki page.
-	 * ”Å‚ðŽw’è‚µ‚Äƒy[ƒW‚ÌHTML‚ð•Ô‚·B
-	 * @param string $pagename ƒy[ƒW–¼
-	 * @param int $version ”Å
+	 * ç‰ˆã‚’æŒ‡å®šã—ã¦ãƒšãƒ¼ã‚¸ã®HTMLã‚’è¿”ã™ã€‚
+	 * @param string $pagename ãƒšãƒ¼ã‚¸å
+	 * @param int $version ç‰ˆ
 	 * @return string
 	 */
 	public function getPageHTMLVersion( $page, $version ){
@@ -149,10 +149,10 @@ class WikiRpc{
 	}
 	/**
 	  * Saves a Wiki Page.
-	  * ƒy[ƒW‚ð•ÒW‚·‚éB
-	  * @param string $pagename ƒy[ƒW–¼
-	  * @param string $content ƒy[ƒW‚Ì“à—e
-	  * @param struct $attributes ƒ^ƒCƒ€ƒXƒ^ƒ“ƒv‚ðXV‚·‚é‚µ‚È‚¢‚È‚Ç‚Ìƒtƒ‰ƒO‚Ì“ü‚Á‚½ƒIƒuƒWƒFƒNƒg
+	  * ãƒšãƒ¼ã‚¸ã‚’ç·¨é›†ã™ã‚‹ã€‚
+	  * @param string $pagename ãƒšãƒ¼ã‚¸å
+	  * @param string $content ãƒšãƒ¼ã‚¸ã®å†…å®¹
+	  * @param struct $attributes ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—ã‚’æ›´æ–°ã™ã‚‹ã—ãªã„ãªã©ã®ãƒ•ãƒ©ã‚°ã®å…¥ã£ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 	  * @return array
 	  */
 	public function putPage( $pagename, $content, $attributes ){
@@ -166,8 +166,8 @@ class WikiRpc{
 	}
 	/**
 	  * Returns a list of all links contained in a Wiki page.
-	  * ƒy[ƒW“à‚Ì‚·‚×‚Ä‚ÌƒŠƒ“ƒN‚ÌƒŠƒXƒgB
-	  * @param string $pagename ƒy[ƒW–¼
+	  * ãƒšãƒ¼ã‚¸å†…ã®ã™ã¹ã¦ã®ãƒªãƒ³ã‚¯ã®ãƒªã‚¹ãƒˆã€‚
+	  * @param string $pagename ãƒšãƒ¼ã‚¸å
 	  * @return array
 	  */
 	public function listLinks( $pagename ){
@@ -177,7 +177,7 @@ class WikiRpc{
 	}
 	/**
 	  * Returns a list of all Wiki pages in the remote Wiki
-	  * ‘S‚Ä‚Ìƒy[ƒW–¼‚©‚ç‚È‚é”z—ñ‚ð•Ô‚·B
+	  * å…¨ã¦ã®ãƒšãƒ¼ã‚¸åã‹ã‚‰ãªã‚‹é…åˆ—ã‚’è¿”ã™ã€‚
 	  * @return array
 	  */
 	public function getAllPages(){
@@ -185,8 +185,8 @@ class WikiRpc{
 	}
 	/**
 	  * Returns a list of backlinks of a Wiki page.
-	  * ‚±‚Ìƒy[ƒW‚ÉƒŠƒ“ƒN‚µ‚Ä‚¢‚éƒy[ƒW‚Ì”z—ñ‚ð•Ô‚·B
-	  * @param string $pagename ƒy[ƒW–¼
+	  * ã“ã®ãƒšãƒ¼ã‚¸ã«ãƒªãƒ³ã‚¯ã—ã¦ã„ã‚‹ãƒšãƒ¼ã‚¸ã®é…åˆ—ã‚’è¿”ã™ã€‚
+	  * @param string $pagename ãƒšãƒ¼ã‚¸å
 	  * @return array
 	  */
 	public function getBackLinks( $pagename ){
@@ -195,8 +195,8 @@ class WikiRpc{
 	}
 	/**
 	  * Returns a list of recent changes since given timestamp.
-	  * timestampiUTCjˆÈ~‚ÉXV‚³‚ê‚½ƒy[ƒW‚ÌƒŠƒXƒg‚ð“¾‚éB
-	  * @param string $timestamp Žž
+	  * timestampï¼ˆUTCï¼‰ä»¥é™ã«æ›´æ–°ã•ã‚ŒãŸãƒšãƒ¼ã‚¸ã®ãƒªã‚¹ãƒˆã‚’å¾—ã‚‹ã€‚
+	  * @param string $timestamp æ™‚åˆ»
 	  * @return array
 	  */
 	public function getRecentChanges( $timestamp = 0 ){
@@ -210,19 +210,19 @@ class WikiRpc{
 		return $ret;
 	}
 	/**
-	  * ƒo[ƒWƒ‡ƒ“Žw’è”Åƒy[ƒWî•ñB
+	  * ãƒãƒ¼ã‚¸ãƒ§ãƒ³æŒ‡å®šç‰ˆãƒšãƒ¼ã‚¸æƒ…å ±ã€‚
 	  *
-	  * @param string $pagename ƒy[ƒW–¼
-	  * @param int $version ”Å
+	  * @param string $pagename ãƒšãƒ¼ã‚¸å
+	  * @param int $version ç‰ˆ
 	  * @return struct
 	  */
 	public function getPageInfoVersion( $pagename, $version ){
-		// –¢ŽÀ‘•
+		// æœªå®Ÿè£…
 	}
 	/**
 	  * Returns a list of media files
-	  * “Y•tƒtƒ@ƒCƒ‹–¼‚ÌƒŠƒXƒg
-	  * @param string $pagename ƒy[ƒW–¼
+	  * æ·»ä»˜ãƒ•ã‚¡ã‚¤ãƒ«åã®ãƒªã‚¹ãƒˆ
+	  * @param string $pagename ãƒšãƒ¼ã‚¸å
 	  * @return array
 	  */
 	public function listAttachments( $pagename ){
@@ -234,9 +234,9 @@ class WikiRpc{
 	}
 	/**
 	 * Returns the binary data of a media file
-	 * base64ƒGƒ“ƒR[ƒh‚³‚ê‚½“Y•tƒtƒ@ƒCƒ‹‚ð•Ô‚·B
-	 * @param string $page ƒy[ƒW–¼
-	 * @param string $filename ƒtƒ@ƒCƒ‹–¼
+	 * base64ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ã•ã‚ŒãŸæ·»ä»˜ãƒ•ã‚¡ã‚¤ãƒ«ã‚’è¿”ã™ã€‚
+	 * @param string $page ãƒšãƒ¼ã‚¸å
+	 * @param string $filename ãƒ•ã‚¡ã‚¤ãƒ«å
 	 * @return base64
 	 */
 	public function getAttachment( $page, $filename ){
@@ -252,9 +252,9 @@ class WikiRpc{
 	}
 	/**
 	 * Returns information about a media file
-	 * ƒtƒ@ƒCƒ‹‚ÌÚ×î•ñ
-	 * @param string $page ƒy[ƒW–¼
-	 * @param string $filename ƒtƒ@ƒCƒ‹–¼
+	 * ãƒ•ã‚¡ã‚¤ãƒ«ã®è©³ç´°æƒ…å ±
+	 * @param string $page ãƒšãƒ¼ã‚¸å
+	 * @param string $filename ãƒ•ã‚¡ã‚¤ãƒ«å
 	 * @return struct
 	 */
 	public function getAttachmentInfo($page, $filename ){
@@ -279,10 +279,10 @@ class WikiRpc{
 	}
 	/**
 	 * Uploads a file 
-	 * ƒtƒ@ƒCƒ‹‚ð“Y•t‚·‚éB
-	 * @param string $page ƒy[ƒW–¼
-	 * @param string $filename ƒtƒ@ƒCƒ‹–¼
-	 * @param string $data base64•ÏŠ·‚³‚ê‚½ƒf[ƒ^[
+	 * ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ·»ä»˜ã™ã‚‹ã€‚
+	 * @param string $page ãƒšãƒ¼ã‚¸å
+	 * @param string $filename ãƒ•ã‚¡ã‚¤ãƒ«å
+	 * @param string $data base64å¤‰æ›ã•ã‚ŒãŸãƒ‡ãƒ¼ã‚¿ãƒ¼
 	 */
 	public function putAttachment($page, $filename, $data ){
 		$wiki = Factory::Wiki($pagename);
@@ -297,9 +297,9 @@ class WikiRpc{
 	}
 	/**
 	 * Deletes a file. Fails if the file is still referenced from any page in the wiki.
-	 * ƒtƒ@ƒCƒ‹‚ðíœ‚·‚é
-	 * @param string $page ƒy[ƒW–¼
-	 * @param string $filename ƒtƒ@ƒCƒ‹–¼
+	 * ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å‰Šé™¤ã™ã‚‹
+	 * @param string $page ãƒšãƒ¼ã‚¸å
+	 * @param string $filename ãƒ•ã‚¡ã‚¤ãƒ«å
 	 */
 	public function deleteAttachment($page, $filename ){
 		if (!$wiki->isValied() || !$wiki->isEditable()) {
