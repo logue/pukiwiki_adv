@@ -4,7 +4,7 @@
 // Copyright (C) 2012 PukiWiki Advance developers team.
 // License: GPL v2 or (at your option) any later version
 //
-// 流体グリッドシステムプラグイン
+// 豬∽ｽ薙げ繝ｪ繝�繝峨す繧ｹ繝�繝繝励Λ繧ｰ繧､繝ｳ
 // Fluid grid system plugin.
 // This plugin used in conjunction with span.inc.php.
 //

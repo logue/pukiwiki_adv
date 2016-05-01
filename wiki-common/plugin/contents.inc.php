@@ -1,6 +1,6 @@
 <?php
 /**
- * –ÚŽŸƒvƒ‰ƒOƒCƒ“
+ * ç›®æ¬¡ãƒ—ãƒ©ã‚°ã‚¤ãƒ³
  *
  * @package   PukiWiki\Text
  * @access    public

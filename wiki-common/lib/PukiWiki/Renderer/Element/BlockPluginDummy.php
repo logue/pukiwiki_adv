@@ -1,6 +1,6 @@
 <?php
 /**
- * テーブルのセルクラス
+ * 繝�繝ｼ繝悶Ν縺ｮ繧ｻ繝ｫ繧ｯ繝ｩ繧ｹ
  *
  * @package   PukiWiki\Renderer\Element
  * @access    public

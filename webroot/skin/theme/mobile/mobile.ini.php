@@ -11,27 +11,27 @@ defined('IS_MOBILE') or define('IS_MOBILE', true);
 
 return array(
 	/**
-	 * ‚±‚±‚Í•ÏX‚µ‚È‚¢‚Å‚­‚¾‚³‚¢
+	 * ã“ã“ã¯å¤‰æ›´ã—ãªã„ã§ãã ã•ã„
 	 */
 	'showicon' => true,
 	'ui_theme' => null,
 	'default_css' => false,
 	/**
-	 * ƒ‚ƒoƒCƒ‹‚Ìƒe[ƒ}
-	 * default: ƒfƒtƒHƒ‹ƒg
-	 * inverse: ”’•”½“]
+	 * ãƒ¢ãƒã‚¤ãƒ«ã®ãƒ†ãƒ¼ãƒž
+	 * default: ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ
+	 * inverse: ç™½é»’åè»¢
 	 */
 	'mobile_theme' => 'default',
 	/**
-	 * Bootswatch‚Ìƒe[ƒ}iinverse‚ÌŽž‚ÍƒRƒƒ“ƒgƒAƒEƒgj
+	 * Bootswatchã®ãƒ†ãƒ¼ãƒžï¼ˆinverseã®æ™‚ã¯ã‚³ãƒ¡ãƒ³ãƒˆã‚¢ã‚¦ãƒˆï¼‰
 	 */
 	//'bootswatch' => 'slate',
 	/**
-	 * ƒƒjƒ…[‚Å•\Ž¦‚³‚ê‚é€–Ú
+	 * ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã§è¡¨ç¤ºã•ã‚Œã‚‹é …ç›®
 	 */
 	'navibar' => 'top,edit,freeze,diff,backup,upload,reload,new,list,search,recent,help,login',
 	/**
-	 * L•\Ž¦—Ìˆæ
+	 * åºƒå‘Šè¡¨ç¤ºé ˜åŸŸ
 	 */
 	'adarea'	=> <<<EOD
 EOD
