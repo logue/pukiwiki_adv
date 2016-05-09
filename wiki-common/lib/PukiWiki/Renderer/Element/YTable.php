@@ -25,8 +25,8 @@ use PukiWiki\Renderer\InlineFactory;
 class YTable extends Element
 {
 	protected $col;	// Number of columns
-	
-	public $align;
+
+	public $align = 'center';
 
 	// TODO: Seems unable to show literal '==' without tricks.
 	//       But it will be imcompatible.
@@ -94,7 +94,7 @@ class YTable extends Element
 		foreach ($this->elements as $str) {
 			$rows .= "\n" . '<tr>' . $str . '</tr>' . "\n";
 		}
-		$rows = $this->wrap($rows, 'table', ' class="table ' . $this->align . '" data-pagenate="false"');
+		$rows = $this->wrap($rows, 'table', ' class="table table-bordered table_' . $this->align . '" data-pagenate="false"');
 		return $this->wrap($rows, 'div', ' class="table_wrapper"');
 	}
 }
