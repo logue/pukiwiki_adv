@@ -66,7 +66,7 @@ class YTable extends Element
 			$colspan = 1;
 			while (isset($_value[$i + $colspan]) && $_value[$i + $colspan] === FALSE) ++$colspan;
 			$colspan = ($colspan > 1) ? ' colspan="' . $colspan . '"' : '';
-			$text = preg_match("/\s+/", $_value[$i]) ? '' : InlineFactory::factory($_value[$i]);
+			$text = preg_match("/\S+/", $_value[$i]) ? InlineFactory::factory($_value[$i]) : '';
 			$class = ((empty($text) || !preg_match("/\S+/", $text))) ? 'blank-cell' : '';
 			$align = $_align[$i] ? ' style="text-align:' . $_align[$i] . '"' : '';
 			$str[] = '<td class="'.$class.'"' . $align . $colspan . '>' . $text . '</td>';
