@@ -116,9 +116,12 @@ class View{
 	 */
 	public function __toString()
 	{
-		if (empty($this->path)) $this->_theme = '';
+		if (empty($this->path)){
+			$this->_theme = '';
+		}
 		// 出力するHTMLをバッファに書き込み出力
-		ob_start(! DEBUG ? 'ob_gzhandler': null);
+		// ※HHVMではob_gzhandlerをサポートしてないようなので、関数が存在しない場合nullとする。
+		ob_start(! DEBUG || function_exists('ob_gzhandler') ? 'ob_gzhandler' : null );
 		self::loader('skin');
 		return ob_get_clean();
 	}
