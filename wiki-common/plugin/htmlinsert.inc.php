@@ -11,7 +11,7 @@
 
 class PluginHtmlinsert
 {
-	function PluginHtmlinsert()
+	public function __construct()
 	{
 		static $conf = array();
 		if (empty($conf)) $conf = array(
@@ -41,15 +41,15 @@ class PluginHtmlinsert
 	}
 
 	// static
-	var $conf;
-	var $def;
-	var $default_action_options;
-	var $default_options;
+	private $conf;
+	private $def;
+	private $default_action_options;
+	private $default_options;
 	// var
-	var $action_options;
-	var $options;
-	var $error = "";
-	var $plugin = "htmlinsert";
+	private $action_options;
+	private $options;
+	private $error = "";
+	private $plugin = "htmlinsert";
 
 	function action()
 	{
