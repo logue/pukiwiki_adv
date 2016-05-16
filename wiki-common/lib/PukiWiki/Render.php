@@ -42,7 +42,7 @@ class Render{
 	/**
 	 * jQueryのバージョン
 	 */
-	const JQUERY_VER = '2.1.3';
+	const JQUERY_VER = '2.2.3';
 	//const JQUERY_VER = '1.11.2';
 	/**
 	 * jQuery UIのバージョン
@@ -55,11 +55,11 @@ class Render{
 	/**
 	 * Twitter Bootstrapのバージョン
 	 */
-	const TWITTER_BOOTSTRAP_VER = '3.3.5';
+	const TWITTER_BOOTSTRAP_VER = '3.3.6';
 	/**
 	 * Font Awesomeのバージョン
 	 */
-	const FONT_AWESOME_VER = '4.4.0';
+	const FONT_AWESOME_VER = '4.6.3';
 	/**
 	 * スキンスクリプト（未圧縮）
 	 */
@@ -230,14 +230,20 @@ class Render{
 			$view->notes = $notes;
 
 			// モードによって、3カラム、2カラムを切り替える。
-			$view->menubar = Factory::Wiki($menubar)->has() ? PluginRenderer::executePluginBlock('menu') : null;
-			if ( Factory::Wiki($sidebar)->has()){
-				// サイドバーが定義されている場合３カラム
-				$view->sidebar = Factory::Wiki($sidebar)->has() ? PluginRenderer::executePluginBlock('side') : null;
-				$view->colums = View::CLASS_THREE_COLUMS;
-			}else{
+			$isExistSideBar = Factory::Wiki($sidebar)->has();
+
+			// #nomenubarが指定されると$menubarはnullになる
+			if(empty($menubar) && !$isExistSideBar) {
+				$view->colums = View::CLASS_NO_COLUMS;
+			}elseif(empty($menubar) || !$isExistSideBar){
 				$view->colums = View::CLASS_TWO_COLUMS;
+			}else{
+				$view->colums = View::CLASS_THREE_COLUMS;
 			}
+
+			$view->menubar = !empty($menubar) && Factory::Wiki($menubar)->has() ? PluginRenderer::executePluginBlock('menu') : null;
+
+			$view->sidebar = $isExistSideBar ? PluginRenderer::executePluginBlock('side') : null;
 
 			// ステータスアイコン
 			if ($this->wiki->isFreezed()){
@@ -419,7 +425,7 @@ class Render{
 			if ($this->cmd === 'read'){
 				global $keywords, $description, $site_name, $site_logo;
 				// 要約
-				$desc = !empty($description) ? $description : $this->wiki->description();
+				$desc = !empty($description) ? $description : $this->wiki->description(256, $this->body);
 				$meta_tags[] = array('name' => 'description', 'content' => $desc);
 				// キーワード
 				if (!empty($keywords)){ $meta_tags[] =  array('name' => 'keywords', 'content' => $keywords); }
@@ -481,7 +487,7 @@ class Render{
 
 			// Twitter Bootstrap
 			// http://getbootstrap.com/
-			if ($conf['bootswatch'] === false || empty($conf['bootswatch'])){
+			if (isset($conf['bootswatch']) && $conf['bootswatch'] === false || empty($conf['bootswatch'])){
 				$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//' . self::BOOTSTRAP_CDN . '/bootstrap/' . self::TWITTER_BOOTSTRAP_VER . '/css/bootstrap.min.css', 'type'=>'text/css');
 				$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//' . self::BOOTSTRAP_CDN . '/bootstrap/' . self::TWITTER_BOOTSTRAP_VER . '/css/bootstrap-theme.min.css', 'type'=>'text/css', 'id'=>'bootstrap-theme');
 			}else{
@@ -491,7 +497,7 @@ class Render{
 			}
 
 			// jQuery UIのテーマ
-			if (! empty($conf['ui_theme']) && $conf['ui_theme'] !== false){
+			if (isset($conf['ui_theme']) && ! empty($conf['ui_theme']) && $conf['ui_theme'] !== false){
 				$link_tags[] = array('rel'=>'stylesheet', 'href'=>'//code.jquery.com/ui/' . self::JQUERY_UI_VER .'/themes/' . $conf['ui_theme'] . '/jquery-ui.min.css', 'type'=>'text/css', 'id'=>'ui-theme');
 			}
 		}else{

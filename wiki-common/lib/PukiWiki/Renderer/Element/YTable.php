@@ -25,8 +25,8 @@ use PukiWiki\Renderer\InlineFactory;
 class YTable extends Element
 {
 	protected $col;	// Number of columns
-	
-	public $align;
+
+	public $align = 'center';
 
 	// TODO: Seems unable to show literal '==' without tricks.
 	//       But it will be imcompatible.
@@ -66,7 +66,7 @@ class YTable extends Element
 			$colspan = 1;
 			while (isset($_value[$i + $colspan]) && $_value[$i + $colspan] === FALSE) ++$colspan;
 			$colspan = ($colspan > 1) ? ' colspan="' . $colspan . '"' : '';
-			$text = preg_match("/\s+/", $_value[$i]) ? '' : InlineFactory::factory($_value[$i]);
+			$text = preg_match("/\S+/", $_value[$i]) ? InlineFactory::factory($_value[$i]) : '';
 			$class = ((empty($text) || !preg_match("/\S+/", $text))) ? 'blank-cell' : '';
 			$align = $_align[$i] ? ' style="text-align:' . $_align[$i] . '"' : '';
 			$str[] = '<td class="'.$class.'"' . $align . $colspan . '>' . $text . '</td>';
@@ -94,7 +94,7 @@ class YTable extends Element
 		foreach ($this->elements as $str) {
 			$rows .= "\n" . '<tr>' . $str . '</tr>' . "\n";
 		}
-		$rows = $this->wrap($rows, 'table', ' class="table ' . $this->align . '" data-pagenate="false"');
+		$rows = $this->wrap($rows, 'table', ' class="table table-bordered table_' . $this->align . '" data-pagenate="false"');
 		return $this->wrap($rows, 'div', ' class="table_wrapper"');
 	}
 }

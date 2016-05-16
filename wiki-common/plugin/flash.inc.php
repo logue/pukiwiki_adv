@@ -84,10 +84,10 @@ function plugin_flash_convert()
 			if ($prop == 'flashvars'){
 				$flashvars = $match[2];
 				// @ varname =val の形に分解
-				$aryVars   = split('&',$flashvars);
+				$aryVars   = explode('&',$flashvars);
 				for($i=0;$i < count($aryVars); $i++){
 					// @ 名前と値に分解
-					$aryField = split('=',$aryVars[$i]);
+					$aryField = explode('=',$aryVars[$i]);
 					if(count($aryField)==2){
 						// @ 値の部分だけurlエンコード
 						$aryField[1] = urlencode($aryField[1]);
@@ -121,7 +121,7 @@ $param
 <!--[if !IE]>-->
 	<object type="application/x-shockwave-flash" data="$swf" width="$width" height="$height">
 <!--<![endif]-->
-		Error: Flash Player Cannot Installed.
+		<p class="alert alert-warning">Error: Flash Player Cannot Installed.</p>
 <!--[if !IE]>-->
 	</object>
 <!--<![endif]-->

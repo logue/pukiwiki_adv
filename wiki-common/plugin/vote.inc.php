@@ -207,11 +207,11 @@ class PluginVotex
 					list($votes, $options) = $this->parse_args_inline($args, $this->default_options);
 					if ($options['readonly']) return array(false, false, false, false);
 
-					foreach ($votes as $i => $vote) {
+					foreach ($votes as $i => &$vote) {
 						list($choice, $count) = $vote;
 						if ($i == $choice_id) {
 							++$count;
-							$votes[$i] = array($choice, $count);
+							$vote = array($choice, $count);
 						}
 					}
 					$new_args = $this->restore_args_inline($votes, $options, $this->default_options);
@@ -653,7 +653,7 @@ class PluginVotex
 			$form[] = '<tr>' . "\n";
 			$form[] = '<td class="vote_choise_td">' . InlineFactory::factory($choice) . '</td>';
 			$form[] = '<td class="vote_count_td"><var>'  . Utility::htmlsc($count) . '</var></td>';
-			$form[] = ($this->options['readonly']) ? null : '<td class="vote_form_td"><input type="submit" class="btn btn-default" name="' . $this->encode_choice($choice_id) . '" value="' . T_('Vote') . '" /></td>';
+			$form[] = ($this->options['readonly']) ? null : '<td class="vote_form_td"><input type="submit" class="btn btn-secondary" name="' . $this->encode_choice($choice_id) . '" value="' . T_('Vote') . '" /></td>';
 			$form[] = '</tr>';
 		}
 		$form[] = '</tbody>';

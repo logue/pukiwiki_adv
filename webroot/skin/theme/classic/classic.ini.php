@@ -24,18 +24,18 @@ return array(
 	 */
 	'ui_theme'		=> 'redmond',
 	/**
-	 * Bootswatch‚Ìƒe[ƒ}‚ð‘I‘ð
+	 * Bootswatchã®ãƒ†ãƒ¼ãƒžã‚’é¸æŠž
 	 * http://bootswatch.com/
 	 * ameria, cerulean, cosmo, cyborg, flatly, journal, lumen, readable, 
 	 * simplex, slate, spacelab, superhero, united, yeti
 	 */ 
 	'bootswatch' => 'lumen',
 	/**
-	 * ƒAƒhƒŒƒX‚Ì‘ã‚í‚è‚ÉƒpƒX‚ð•\Ž¦
+	 * ã‚¢ãƒ‰ãƒ¬ã‚¹ã®ä»£ã‚ã‚Šã«ãƒ‘ã‚¹ã‚’è¡¨ç¤º
 	 */
 	'topicpath'		=> true,
 	/**
-	 * ƒƒSÝ’è
+	 * ãƒ­ã‚´è¨­å®š
 	 */
 	'logo'=>array(
 		'src'       => IMAGE_URI.'pukiwiki_adv.logo.png',
@@ -44,26 +44,26 @@ return array(
 		'height'    => '80'
 	),
 	/**
-	 * ƒiƒrƒo[ƒvƒ‰ƒOƒCƒ“‚Å‚àƒAƒCƒRƒ“‚ð•\Ž¦‚·‚é
+	 * ãƒŠãƒ“ãƒãƒ¼ãƒ—ãƒ©ã‚°ã‚¤ãƒ³ã§ã‚‚ã‚¢ã‚¤ã‚³ãƒ³ã‚’è¡¨ç¤ºã™ã‚‹
 	 */
 	'showicon' => false,
 	/**
-	 * ƒiƒrƒo[‚Ì€–Ú
-	 * i|‚Å‹æØ‚èj
+	 * ãƒŠãƒ“ãƒãƒ¼ã®é …ç›®
+	 * ï¼ˆ|ã§åŒºåˆ‡ã‚Šï¼‰
 	 */
 	'navibar' => 'top,|,edit,freeze,diff,backup,upload,reload,|,new,list,search,recent,help,|,login',
 	/**
-	 * ƒc[ƒ‹ƒo[‚Ì€–Ú
+	 * ãƒ„ãƒ¼ãƒ«ãƒãƒ¼ã®é …ç›®
 	 */
 	'toolbar' => 'reload,|,new,newsub,edit,freeze,source,diff,upload,copy,rename,|,top,list,search,recent,backup,referer,log,|,help,|,rss',
 	/**
-	 * L•\Ž¦—Ìˆæ
+	 * åºƒå‘Šè¡¨ç¤ºé ˜åŸŸ
 	 */
 	'adarea' => array(
-		// ƒy[ƒW‚Ì‰Eã‚ÌL•\Ž¦—Ìˆæ
+		// ãƒšãƒ¼ã‚¸ã®å³ä¸Šã®åºƒå‘Šè¡¨ç¤ºé ˜åŸŸ
 		'header' => <<<EOD
 EOD
-,		// ƒy[ƒW‰º•”‚ÌL•\Ž¦—Ìˆæ
+,		// ãƒšãƒ¼ã‚¸ä¸‹éƒ¨ã®åºƒå‘Šè¡¨ç¤ºé ˜åŸŸ
 		'footer' => <<<EOD
 EOD
 	)

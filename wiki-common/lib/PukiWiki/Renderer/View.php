@@ -5,10 +5,10 @@
  * @package   PukiWiki
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2012-2014 PukiWiki Advance Developers Team
+ * @copyright 2012-2015 PukiWiki Advance Developers Team
  * @create    2012/12/18
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: View.php,v 1.0.0 2014/01/30 14:49:00 Logue Exp $
+ * @version   $Id: View.php,v 1.0.1 2015/12/06 14:49:00 Logue Exp $
  */
 namespace PukiWiki\Renderer;
 
@@ -126,9 +126,12 @@ class View{
 	 */
 	public function __toString()
 	{
-		if (empty($this->path)) $this->_theme = '';
+		if (empty($this->path)){
+			$this->_theme = '';
+		}
 		// 出力するHTMLをバッファに書き込み出力
-		ob_start(! DEBUG ? 'ob_gzhandler': null);
+		// ※HHVMではob_gzhandlerをサポートしてないようなので、関数が存在しない場合nullとする。
+		ob_start(! DEBUG || function_exists('ob_gzhandler') ? 'ob_gzhandler' : null );
 		self::loader('skin');
 		return ob_get_clean();
 	}

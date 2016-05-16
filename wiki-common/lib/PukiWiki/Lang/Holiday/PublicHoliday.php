@@ -260,7 +260,7 @@ abstract class PublicHoliday
 			$y--;
 			$m += 12;
 		}
-		$d = $y + floor($y/4) - floor($y/100) + floor($y/400) + floor(2.6*$m+1.6) + $d;
+		$d += $y + floor($y/4) - floor($y/100) + floor($y/400) + floor(2.6*$m+1.6);
 		return ($d%7);
 	}
 
@@ -303,7 +303,7 @@ abstract class PublicHoliday
 		$t  = $s / 3600.0;
 		$t += $i /60.0;
 		$t += $h;
-		$t  = $t / 24.0;
+		$t /= 24.0;
 
 		$jd += $t;
 		return( $jd );

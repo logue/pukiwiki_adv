@@ -298,12 +298,12 @@ class SpamUtility{
 		if (! is_array($array)) return $array;
 
 		$tmp = array();
-		foreach($array as $key => $value){
+		foreach($array as &$value){
 			if (is_array($value)) {
-				$array[$key] = self::array_unique_recursive($value);
+				$value = self::array_unique_recursive($value);
 			} else {
 				if (isset($tmp[$value])) {
-					unset($array[$key]);
+					unset($value);
 				} else {
 					$tmp[$value] = TRUE;
 				}

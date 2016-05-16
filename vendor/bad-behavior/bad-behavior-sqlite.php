@@ -88,11 +88,19 @@ function bb2_db_query($query) {
 		$query = 'DELETE FROM `' . $matches[1] . '` WHERE date(`' . $matches[2] . '`) < date(\''. $matches[3] .'\', \'-'.$matches[4].' days\')';
 	}
 	try {
-		return $bb2_db->query($query);
+    	// Connect to the SQLite Database.
+		$bb2_db = new PDO('sqlite:'.BB2_DB_FILE);
+	} catch(Exception $e) {
+		die('connection_unsuccessful: ' . $e->getMessage());
+	}
+	try {
+		$ret = $bb2_db->query($query);
 	} catch( PDOException $ex ) {
 		// DBアクセス時にエラーとなった時
 		throw new Exception('Bad-behavior :' . $query. '<br />' .$ex->getMessage());
 	}
+	$bb2_db = null;
+	return $ret;
 }
 
 // Return all rows in a particular query.
@@ -175,10 +183,14 @@ function bb2_install() {
 		touch(BB2_DB_FILE);
 	}
 
-	if (! $bb2_db = new \PDO('sqlite:'.BB2_DB_FILE)) {
-		die("DB Connection Failed.");
+	try {
+    	// Connect to the SQLite Database.
+		$bb2_db = new PDO('sqlite:'.BB2_DB_FILE);
+	} catch(Exception $e) {
+		die('connection_unsuccessful: ' . $e->getMessage());
 	}
 	$bb2_db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
+	$bb2_db = null;
 
 	$sql = join("\n", array(
 		'CREATE TABLE IF NOT EXISTS `' . $settings['log_table'] . '` (',

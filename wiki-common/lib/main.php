@@ -3,7 +3,7 @@
 // $Id: main.php,v 1.23.30 2012/12/05 23:15:00 Logue Exp $
 //
 // PukiWiki Advance
-//  Copyright (C) 2010-2014 by PukiWiki Advance Team
+//  Copyright (C) 2010-2016 by PukiWiki Advance Team
 //  http://pukiwiki.logue.be/
 //
 // PukiWiki Plus! 1.4.*
@@ -39,7 +39,9 @@
 if (version_compare(phpversion(), '5.4.0', '<')) {
 	throw new RuntimeException('PukiWiki Advance requires PHP version 5.4.0 or newer.');
 }
-
+if (!class_exists('PDO')){
+    throw new RuntimeException('PukiWiki Advance requires PDO class.');
+}
 ini_set('memory_limit', '128M');
 ini_set('real_path_cache_size','64k');
 ini_set('realpath_cache','120');

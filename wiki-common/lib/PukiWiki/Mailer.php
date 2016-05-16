@@ -49,14 +49,14 @@ class Mailer{
 
 		if (! empty($summary)) {
 			$_separator = empty($message) ? '' : self::SUMMRY_SEPARATOR . "\n";
-			foreach($summary as $key => $value) {
-				$summary[$key] = $key . ': ' . $value . "\n";
+			foreach($summary as $key => &$value) {
+				$value = $key . ': ' . $value . "\n";
 			}
 			// Top or Bottom
 			if ($summary_position) {
 				$message = join('', $summary) . $_separator . "\n" . $message;
 			} else {
-				$message = $message . "\n" . $_separator . join('', $summary);
+				$message .= "\n" . $_separator . join('', $summary);
 			}
 			unset($summary);
 		}

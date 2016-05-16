@@ -22,18 +22,18 @@ return array(
 	 */
 	'ui_theme'		=> 'cupertino',
 	/**
-	 * Bootswatch‚Ìƒe[ƒ}‚ğ‘I‘ğ
+	 * Bootswatchã®ãƒ†ãƒ¼ãƒã‚’é¸æŠ
 	 * http://bootswatch.com/
 	 * ameria, cerulean, cosmo, cyborg, flatly, journal, lumen, readable, 
 	 * simplex, slate, spacelab, superhero, united, yeti
 	 */ 
 	'bootswatch' => 'lumen',
 	/**
-	 * NavibarŒnƒvƒ‰ƒOƒCƒ“‚Å‚àƒAƒCƒRƒ“‚ğ•\¦‚·‚é
+	 * Navibarç³»ãƒ—ãƒ©ã‚°ã‚¤ãƒ³ã§ã‚‚ã‚¢ã‚¤ã‚³ãƒ³ã‚’è¡¨ç¤ºã™ã‚‹
 	 */
 	'showicon'		=> true,
 	/**
-	 * ƒAƒhƒŒƒX‚Ì‘ã‚í‚è‚ÉƒpƒX‚ğ•\¦
+	 * ã‚¢ãƒ‰ãƒ¬ã‚¹ã®ä»£ã‚ã‚Šã«ãƒ‘ã‚¹ã‚’è¡¨ç¤º
 	 */
 	'topicpath'		=> true,
 

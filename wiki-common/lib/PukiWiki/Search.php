@@ -20,6 +20,8 @@ use PukiWiki\Utility;
  * 検索クラス
  */
 class Search{
+	private static $init = false;
+	
 	/**
 	 * 検索語句の正規表現を生成
 	 * @param array $words 検索語句
@@ -51,7 +53,9 @@ class Search{
 			$init = TRUE;
 		}
 
-                if (! is_array($words)){ $words = array($words);}
+		if (! is_array($words)){
+			$words = array($words);
+		}
 
 		// Generate regex for the words
 		$regex = array();
@@ -122,8 +126,8 @@ class Search{
 
 		// 検索ワードをパース
 		$keys = self::get_search_words(preg_split('/\s+/', $word, -1, PREG_SPLIT_NO_EMPTY));
-		foreach ($keys as $key=>$value)
-			$keys[$key] = '/' . $value . '/S';
+		foreach ($keys as &$value)
+			$value = '/' . $value . '/S';
 
 		// AND:TRUE OR:FALSE
 		$b_type = ($type == 'and');
@@ -148,21 +152,13 @@ class Search{
 			$b_match = FALSE;
 
 			// ページ名から検索
-			// TODO: ページ名のハイライト
 			if (! $non_format) {
-				foreach ($keys as $key) {
-					$b_match = preg_match($key, $page);
-					if ($b_type xor $b_match) break; // OR
-				}
+				$b_match = self::search_keys($keys, $page, $b_type);
 			}
 
 			// 通常検索
-			$source = $wiki->get(true);
-			foreach ($keys as $key) {
-				$b_match = preg_match($key, $source);
-				if ($b_type xor $b_match) break; // OR
-			}
-			unset($source, $key);
+			$b_match = self::search_keys($keys, $wiki->get(true), $b_type);
+
 			// マッチしない場合スキップ
 			if (!$b_match) continue;
 
@@ -184,5 +180,19 @@ class Search{
 			str_replace('$3', count($pages), $b_type ? $_string['andresult'] : $_string['orresult']))).
 			'</p>'."\n" . 
 			'<div class="list_pages"><ul>' . join("\n", $retval) . '</ul></div>';
+	}
+	/**
+	 * 検索
+	 * @param array $keys 検索ワード
+	 * @param string $source 検索対象
+	 * @return boolean
+	 */
+	private static function search_keys($keys, $source, $b_type = 'AND'){
+		$b_match = false;
+		foreach ($keys as $key) {
+			$b_match = preg_match($key, $source);
+			if ($b_type ^ $b_match) break; // XOR
+		}
+		return $b_match;
 	}
 }

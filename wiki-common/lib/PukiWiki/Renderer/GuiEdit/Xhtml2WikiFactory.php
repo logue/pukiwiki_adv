@@ -1,5 +1,5 @@
 <?php
-namespace PukiWiki\Renderer;
+namespace PukiWiki\Renderer\GuiEdit;
 
 class Xhtml2WikiFactory{
 	public static function factory($source)

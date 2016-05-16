@@ -21,7 +21,7 @@ class MeCab{
 	public $usable = false;
 	public function __construct($mecab_path = ''){
 		if (!extension_loaded('mecab')) {
-			if ( file_exists($mecab_path)){
+			if (!empty($mecab_path) && open_basedir($mecab_path) && file_exists($mecab_path)){
 				$this->mecab_path = $mecab_path;
 				$this->usable = true;
 				//throw new Exception('Mecab is not found or not executable. Please check mecab path: '.$mecab_path);

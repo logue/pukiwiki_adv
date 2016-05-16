@@ -77,8 +77,6 @@ class IpFilter{
 	 * デフォルトのDNSBLリスト（先頭に.入れないこと）
 	 */
 	private $dnsbl_hosts = array(
-		'niku.2ch.net',                     // BBQ (Spamhausも含まれるらしい）
-		'bbx.2ch.net',                      // BBX
 		'all.rbl.jp',                       // rbl.jp
 		'bl.spamcop.net',                   // spamcop.net
 		'dnsbl.tornevall.org',              // Tornevall Networks

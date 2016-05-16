@@ -1,8 +1,8 @@
 <?php
 // PukiWiki Plus! - Yet another WikiWikiWeb clone.
-// $Id: attachref.inc.php,v 0.15.14 2013/09/12 17:06:00 Logue Exp $
+// $Id: attachref.inc.php,v 0.15.15 2015/12/06 00:20:00 Logue Exp $
 // Copyright (C)
-//   2011-2013 PukiWiki Advance Developers Team
+//   2011-2013,2015 PukiWiki Advance Developers Team
 //   2005-2006,2008 PukiWiki Plus! Team
 //   2002-2004 sha
 //
@@ -154,7 +154,7 @@ EOD;
 				'refer'			=> $vars['page'],
 				'digest'		=> $digest
 			));
-			$ret = $ret.'<a href="'.$btn_url.'" title="'.$f_btn_text.'">'.$btn_text.'</a>';
+			$ret .= '<a href="'.$btn_url.'" title="'.$f_btn_text.'">'.$btn_text.'</a>';
 		}
 	}
 
@@ -247,7 +247,7 @@ EOD;
 				'refer'			=> $vars['page'],
 				'digest'		=> $digest
 			));
-			$ret = $ret.'<a href="'.$btn_url.'" title="'.$f_btn_text.'"><small><span class="fa fa-paperclip">'.$btn_text.'</span></small></a>';
+			$ret .= '<a href="'.$btn_url.'" title="'.$f_btn_text.'"><small><span class="fa fa-paperclip">'.$btn_text.'</span></small></a>';
 	    }
 	}
 	return $ret;

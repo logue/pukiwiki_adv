@@ -1,7 +1,8 @@
+<?php
 namespace PukiWiki\Spam;
 
 class Countrty{
-	public function getCountry(){
+	public static function getCountry($allow_countory, $deny_countory){
 		// Block countory via Geolocation
 		$country_code = false;
 		if (isset($_SERVER['HTTP_CF_IPCOUNTRY'])){
@@ -31,26 +32,24 @@ class Countrty{
 
 		if (DEBUG){
 			// 使用可能かをチェック
-			if ( isset($country_code) && !empty($country_code)) {
-				$info[] = 'Your country code from IP is inferred <var>'.$country_code.'</var>.';
-			} else {
-				$info[] = 'Seems Geolocation is not available. <var>$deny_countory</var> value and <var>$allow_countory</var> value is ignoled.';
-			}
+			$info[] = isset($country_code) && !empty($country_code) ?
+				'Your country code from IP is inferred <var>' . $country_code . '</var>.' :
+				'Seems Geolocation is not available. <var>' . $deny_countory . '</var> value and <var>' . $allow_countory . '</var> value is ignoled.';
 		}
 
 		return $country_code;
 	}
-	public function check($allow_countory, $deny_countory){
-		$country = self::getCountry;
+	public static function check($allow_countory, $deny_countory){
+		$country = self::getCountry($allow_countory, $deny_countory);
 		if (DEBUG && $country === false) {
-			$info[] = 'Sorry, Your server does not available Geolocation. <var>$deny_countory</var> value and <var>$allow_countory</var> value is ignoled.';
+			$info[] = 'Sorry, Your server does not available Geolocation. <var>' . $deny_countory . '</var> value and <var>' . $allow_countory . '</var> value is ignoled.';
 		}
 		if (!empty($deny_countory) && in_array($this->country, $deny_countory)) {
-			die('Sorry, access from your country('.$geoip['country_code'].') is prohibited.');
+			die('Sorry, access from your country(' . $geoip['country_code'] . ') is prohibited.');
 			exit;
 		}
 		if (!empty($allow_countory) && !in_array($this->country, $allow_countory)) {
-			die('Sorry, access from your country('.$geoip['country_code'].') is prohibited.');
+			die('Sorry, access from your country(' . $geoip['country_code'] . ') is prohibited.');
 			exit;
 		}
 	}

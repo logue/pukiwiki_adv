@@ -252,7 +252,7 @@ function plugin_pcomment_insert()
 		$count    = count($postdata);
 
 		$digest = isset($vars['digest']) ? $vars['digest'] : '';
-		if (md5(join('', $postdata)) != $digest) {
+		if (md5(join('', $postdata)) !== $digest) {
 			$ret['msg']  = $_string['title_collided'];
 			$ret['body'] = $_string['comment_collided'];
 		}
@@ -273,7 +273,7 @@ function plugin_pcomment_insert()
 			while ($end_position < $count) {
 				$matches = array();
 				if (preg_match('/^(\-{1,2})(?!\-)(.*)$/', $postdata[$end_position++], $matches)
-					&& md5($matches[2]) == $reply_hash)
+					&& md5($matches[2]) === $reply_hash)
 				{
 					$b_reply = TRUE;
 					$level   = strlen($matches[1]) + 1;

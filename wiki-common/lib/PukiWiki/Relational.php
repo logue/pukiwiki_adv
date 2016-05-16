@@ -60,30 +60,25 @@ class Relational{
 			'database' => CACHE_DIR . self::LINKS_DB_FILENAME
 		));
 		// データーベースを初期化
-		$s = $this->adapter->query('CREATE TABLE IF NOT EXISTS "rel" ("page" TEXT UNIQUE NOT NULL, "data" TEXT)');
-		$s->execute();
-		$s = $this->adapter->query('CREATE TABLE IF NOT EXISTS "ref" ("page" TEXT UNIQUE NOT NULL, "data" TEXT)');
-		$s->execute();
-		unset($s);
+		$this->adapter->query('CREATE TABLE IF NOT EXISTS `rel` (`page` TEXT UNIQUE NOT NULL, `data` TEXT)', Adapter::QUERY_MODE_EXECUTE);
+		$this->adapter->query('CREATE TABLE IF NOT EXISTS `ref` (`page` TEXT UNIQUE NOT NULL, `data` TEXT)', Adapter::QUERY_MODE_EXECUTE);
 		$this->cache = $cache[self::CACHE_NAMESPACE];
 		$this->links_obj = new InlineConverter(NULL, array('note'));
 		$this->page = $page;
 	}
+
 	/**
 	 * デストラクタ
 	 */
 	public function __destruct(){
 		if (!empty($this->page) && !Factory::Wiki($this->page)->has()) {
 			// ページが削除されている時、関連リンクのデーターも削除
-			$s = $this->adapter->query('DELETE FROM "rel" WHERE "page"=' . $this->adapter->platform->quoteIdentifier($this->page));
-			$s->execute();
-			$s = $this->adapter->query('DELETE FROM "ref" WHERE "page"=' . $this->adapter->platform->quoteIdentifier($this->page));
-			$s->execute();
+			$this->adapter->query('DELETE FROM `rel` WHERE `page` = ?', array($this->page));
+			$this->adapter->query('DELETE FROM `ref` WHERE `page` = ?', array($this->page));
 		}
 		/*
 		// 最適化
-		$s = $this->adapter->query('VACUUM');
-		$s->execute();
+		$this->adapter->query('VACUUM', Adapter::QUERY_MODE_EXECUTE);
 		*/
 	}
 
@@ -102,6 +97,7 @@ class Relational{
 		}
 		return $entries;
 	}
+
 	/**
 	 * リンクされているページ名を取得
 	 * @return array
@@ -133,19 +129,22 @@ class Relational{
 		$rel_exist = ($rel_old === array());
 
 		$rel_auto = $rel_new = array();
-		foreach (self::getObjects($page, TRUE) as $_obj) {
-			if (! isset($_obj->type) || $_obj->type !== 'pagename' || $_obj->name === $page || empty($_obj->name) )
-				continue;
+		$pages = self::getObjects($page);
+		if (!empty($pages)) {
+			foreach ($pages as $_obj) {
+				if (! isset($_obj->type) || $_obj->type !== 'pagename' || $_obj->name === $page || empty($_obj->name) )
+					continue;
 
-			if ($_obj instanceof AutoLink) { // Not cool though
-				$rel_auto[] = $_obj->name;
-			} else if ($_obj instanceof AutoAlias) {
-				$_alias = AutoAlias::getAutoAliasDict($_obj->name);
-				if (Factory::Wiki($_alias)->isValied()) {
-					$rel_auto[] = $_alias;
+				if ($_obj instanceof AutoLink) { // Not cool though
+					$rel_auto[] = $_obj->name;
+				} else if ($_obj instanceof AutoAlias) {
+					$_alias = AutoAlias::getAutoAliasDict($_obj->name);
+					if (Factory::Wiki($_alias)->isValied()) {
+						$rel_auto[] = $_alias;
+					}
+				} else {
+					$rel_new[]  = $_obj->name;
 				}
-			} else {
-				$rel_new[]  = $_obj->name;
 			}
 		}
 
@@ -196,10 +195,8 @@ class Relational{
 	 */
 	public function init() {
 		// Init database
-		$s = $this->adapter->query('DELETE FROM rel');
-		$s->execute();
-		$s = $this->adapter->query('DELETE FROM ref');
-		$s->execute();
+		$this->adapter->query('DELETE FROM rel', Adapter::QUERY_MODE_EXECUTE);
+		$this->adapter->query('DELETE FROM ref', Adapter::QUERY_MODE_EXECUTE);
 
 		$ref   = array(); // Reference from
 		foreach (Listing::pages('wiki') as $_page) {
@@ -242,8 +239,7 @@ class Relational{
 		unset($ref_page,$ref_auto);
 
 		// 最適化
-		$s = $this->adapter->query('VACUUM');
-		$s->execute();
+		$this->adapter->query('VACUUM', Adapter::QUERY_MODE_EXECUTE);
 	}
 
 	/**
@@ -308,20 +304,21 @@ class Relational{
 
 	/**
 	 * ページのソースからリンクオブジェクトを取得
-	 * @param type $page
-	 * @return type
+	 * @param string $page
+	 * @return object|null
 	 */
 	private function getObjects($page=''){
 		static $result;
 		if (empty($page)) {
 			unset($result);
-			return;
+			return null;
 		}
 		if (! isset($result[$page]) ){
 			$source = Factory::Wiki($page)->get(false);
 			$result[$page] = ($source !== false) ? $this->links_obj->getObjects(join('', preg_grep('/^(?!\/\/|\s)./', $source)), $page) : null;
+			return $result[$page];
 		}
-		return $result[$page];
+		return null;
 	}
 
 	// もっとマシなSQL文って無い？
@@ -331,51 +328,38 @@ class Relational{
 	 * @param string $page ページ名
 	 */
 	private function setRel($page, $rel){
-		$req = $this->adapter->query(
-			'INSERT OR REPLACE INTO "rel" ("page", "data") VALUES (' .
-				$this->adapter->platform->quoteIdentifier($page) . ','.
-				$this->adapter->platform->quoteIdentifier(join("\n", array_unique($rel))).
-			')'
-		);
-		$req->execute();
+		$this->adapter->query('INSERT OR REPLACE INTO `rel` (`page`, `data`) VALUES (?, ?)', array($page, join("\n", array_unique($rel))));
 	}
+
 	/**
 	 * Relを取得
 	 * @param string $page ページ名
+	 * @return array
 	 */
 	private function getRel($page){
-		$req = $this->adapter->query(
-			'SELECT "data" FROM "rel" WHERE "page"=' . $this->adapter->platform->quoteIdentifier($page)
-		);
-		$results = $req->execute();
+		$results = $this->adapter->query('SELECT `data` FROM `rel` WHERE `page` = ?', array($page));
 		foreach ($results as $value) {
 			$ret = $value['data'];
 		}
 
 		return !empty($ret) ? explode("\n", $ret) : array();
 	}
+
 	/**
 	 * Refをセット
 	 * @param string $page ページ名
 	 */
 	private function setRef($page, $ref){
-		$req = $this->adapter->query(
-			'INSERT OR REPLACE INTO "ref" ("page", "data") VALUES (' .
-				$this->adapter->platform->quoteIdentifier($page) . ','.
-				$this->adapter->platform->quoteIdentifier(join("\n", array_unique($ref))) .
-			')'
-		);
-		$req->execute();
+		$this->adapter->query('INSERT OR REPLACE INTO `ref` (`page`, `data`) VALUES (?, ?)', array($page, join("\n", array_unique($ref))));
 	}
+
 	/**
 	 * Refを取得
 	 * @param string $page ページ名
+	 * @return array
 	 */
 	private function getRef($page){
-		$req = $this->adapter->query(
-			'SELECT "data" FROM "rel" WHERE "page"=' . $this->adapter->platform->quoteIdentifier($page)
-		);
-		$results = $req->execute();
+		$results = $this->adapter->query('SELECT `data` FROM `rel` WHERE `page` = ?', array($page));
 		foreach ($results as $value) {
 			$ret = $value['data'];
 		}

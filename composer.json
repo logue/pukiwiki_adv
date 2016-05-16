@@ -1,13 +1,7 @@
 {
 	"name": "logue/pukiwiki_adv",
-	"repositories": [
-		{
-			"type": "vcs",
-			"url": "https://github.com/logue/pukiwiki_adv"
-		}
-    ],
 	"description": "PukiWiki Advance",
-	"version": "2.0.1",
+	"version": "2.0.3",
 	"keywords": [
 		"pukiwiki",
 		"pukiwiki adv",
@@ -32,7 +26,6 @@
 	},
 	"require": {
 		"php": ">=5.4.0",
-		"ext-sqlite" : "*",
 		"aferrandini/phpqrcode": "1.*",
 		"logue/igo-php":"*",
 		"zendframework/zend-Serializer": "2.*",
@@ -43,6 +36,7 @@
 		"zendframework/zend-debug": "2.*",
 		"zendframework/zend-dom": "2.*",
 		"zendframework/zend-feed": "2.*",
+		"zendframework/zend-filter": "2.*",
 		"zendframework/zend-http": "2.*",
 		"zendframework/zend-i18n": "2.*",
 		"zendframework/zend-json": "2.*",
@@ -63,7 +57,7 @@
 		"zendframework/zendxml":"*"
 	},
 	"suggest":{
-		"ext-gd" : "for thumbnail.",
+		"ext-gd" : "for thumbnail and captcha use.",
 		"ext-intl" : "for i18n use."
 	},
 	"repositories": [
