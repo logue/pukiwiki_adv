@@ -1,8 +1,8 @@
 <?php
 // PukiWiki - Yet another WikiWikiWeb clone
-// $Id: ref.inc.php,v 1.56.6 2014/03/09 19:11:00 Logue Exp $
+// $Id: ref.inc.php,v 1.56.7 2016/06/18 13:57:00 Logue Exp $
 // Copyright (C)
-//   2010-2012, 2015 PukiWiki Advance Developers Team
+//   2010-2012, 2015-2016 PukiWiki Advance Developers Team
 //   2002-2006, 2011 PukiWiki Developers Team
 //   2001-2002 Originally written by yu-ji
 // License: GPL v2 or (at your option) any later version
@@ -10,8 +10,6 @@
 // Image refernce plugin
 // Include an attached image-file as an inline-image
 
-use \SplFileInfo;
-use \SplFileObject;
 use PukiWiki\Attach;
 use PukiWiki\Renderer\Header;
 use PukiWiki\Renderer\Inline\Inline;
@@ -196,7 +194,7 @@ function plugin_ref_body($args)
 				} else {
 					// Because of possibility of race condition, in the future
 					$params['_error'] =
-						'The style ref(filename,pagename) is ambiguous ' .
+						'The style &amp;ref(filename,pagename) is ambiguous ' .
 						'and become obsolete. ' .
 						'Please try ref(pagename/filename)';
 				}
