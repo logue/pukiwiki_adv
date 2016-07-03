@@ -124,7 +124,8 @@ class RootElement extends Element
 
 			// Heading
 			if ($head === '*') {
-				$this->insert(new Heading($this, $line));
+				$heading = new Heading($this, $line);
+				$this->insert($heading);
 				continue;
 			}
 
@@ -237,7 +238,8 @@ class RootElement extends Element
 		//var_dump($text, $id, $level);
 
 		// Add 'page contents' link to its heading
-		$this->contents_last = $this->contents_last->add(new ContentsList($_text, $level, $id));
+		$contents = new ContentsList($_text, $level, $id);
+		$this->contents_last = $this->contents_last->add($contents);
 
 		// Add heding
 		return array($_text . $anchor, $this->count > 1 ? "\n" . $top : '', $autoid);
