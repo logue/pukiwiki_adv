@@ -35,7 +35,9 @@ class ListContainer extends Element
 		$this->level = min(3, strspn($text, $head));
 		$text = ltrim(substr($text, $this->level));
 
-		parent::insert(new ListElement($this->level, $tag2));
+		$element = new ListElement($this->level, $tag2);
+
+		parent::insert($element);
 		if ( !empty($text) )
 			$this->last = $this->last->insert(ElementFactory::factory('InlineElement', null, $text));
 	}
