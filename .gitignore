@@ -1,6 +1,7 @@
 .DS_Store
 Thumbs.db
 
+/.sass-cache/
 /nbproject/private/
 /vendor/
 /wiki-data/cache/
