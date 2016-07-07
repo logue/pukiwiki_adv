@@ -5,10 +5,10 @@
  * @package   PukiWiki\Renderer\Element
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2013 PukiWiki Advance Developers Team
+ * @copyright 2013,2016 PukiWiki Advance Developers Team
  * @create    2013/01/26
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: RootElement.php,v 1.0.0 2013/02/12 15:13:00 Logue Exp $
+ * @version   $Id: RootElement.php,v 1.0.1 2016/07/07 18:06:00 Logue Exp $
  */
 
 namespace PukiWiki\Renderer\Element;
@@ -85,7 +85,8 @@ class RootElement extends Element
 
 			if (preg_match('/^(LEFT|CENTER|RIGHT|JUSTIFY):(.*)$/', $line, $matches)) {
 				// <div style="text-align:...">
-				$this->last = $this->last->add(new Align(strtolower($matches[1])));
+				$align = new Align(strtolower($matches[1]));
+				$this->last = $this->last->add($align);
 				if (empty($matches[2])) continue;
 				$line = $matches[2];
 			}
@@ -100,7 +101,8 @@ class RootElement extends Element
 
 			// Horizontal Rule
 			if (substr($line, 0, 4) == '----') {
-				$this->insert(new HRule($this, $line));
+				$hrule = new HRule($this, $line);
+				$this->insert($hrule);
 				continue;
 			}
 
@@ -131,13 +133,15 @@ class RootElement extends Element
 
 			// Pre
 			if ($head === ' ' || $head === "\t") {
-				$this->last = $this->last->add(new Pre($this, $line));
+				$pre = new Pre($this, $line);
+				$this->last = $this->last->add($pre);
 				continue;
 			}
 
 			// CPre (Plus!)
 			if (substr($line,0,2) === '# ' or substr($line,0,2) == "#\t") {
-				$this->last = $this->last->add(new SharpPre($this,$line));
+				$sharppre = new SharpPre($this,$line);
+				$this->last = $this->last->add($sharppr);
 				continue;
 			}
 
@@ -198,7 +202,8 @@ class RootElement extends Element
 							$next_line = preg_replace("/[\r\n]*$/", '', array_shift($lines)) ;
 							$line .= "\n" . ' ' . $next_line;
 						}
-						$this->last  = $this->last->add(new BlockPlugin(array(null, 'mathjax', $line)));
+						$mathjax = new BlockPlugin(array(null, 'mathjax', $line));
+						$this->last  = $this->last->add($mathjax);
 						continue;
 					}
 				}

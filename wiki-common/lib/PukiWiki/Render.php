@@ -42,7 +42,7 @@ class Render{
 	/**
 	 * jQueryのバージョン
 	 */
-	const JQUERY_VER = '2.1.3';
+	const JQUERY_VER = '3.0.0';
 	//const JQUERY_VER = '1.11.2';
 	/**
 	 * jQuery UIのバージョン
@@ -248,19 +248,19 @@ class Render{
 			// ステータスアイコン
 			if ($this->wiki->isFreezed()){
 				// 錠前マーク（フリーズされてる）
-				$view->status = '<span class="fa fa-lock" title="Freezed"></span>';
+				$view->status = '<i class="fa fa-lock" title="Freezed" aria-hidden="true"></i>';
 			}else if (!$this->wiki->isEditable()){
 				// 駐禁マーク（編集できない）
-				$view->status = '<span class="fa fa-ban" title="Not Editable"></span>';
+				$view->status = '<i class="fa fa-ban" title="Not Editable" aria-hidden="true"></i>';
 			}else{
 				// 鉛筆マーク（編集できる）
-				$view->status = '<span class="fa fa-pencil-square" title="Editable"></span>';
+				$view->status = '<i class="fa fa-pencil-square" title="Editable" aria-hidden="true"></i>';
 			}
 		}else{
 			// プラグインを実行する場合、大抵の場合メニューバーやサイドバーを表示しない
 			$view->colums = View::CLASS_NO_COLUMS;
 			// ステータスアイコンを歯車にする
-			$view->status = '<span class="fa fa-cog" title="Function mode"></span>';
+			$view->status = '<i class="fa fa-cog" title="Function mode" aria-hidden="true"></i>';
 		}
 
 		// ナビバー
@@ -355,6 +355,7 @@ class Render{
 		}
 
 		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>JS_URI.'locale.js', 'defer'=>'defer' );
+		$pkwk_head_js[] = array('type'=>'text/javascript', 'src'=>'/assets/js/app.js', 'defer'=>'defer' );
 
 //		$js_vars[] = 'var pukiwiki = {};';
 		foreach( $js_init as $key=>$val){

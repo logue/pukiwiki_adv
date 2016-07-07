@@ -5,10 +5,10 @@
  * @package   PukiWiki\Renderer
  * @access    public
  * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2012-2015 PukiWiki Advance Developers Team
+ * @copyright 2012-2016 PukiWiki Advance Developers Team
  * @create    2012/12/18
  * @license   GPL v2 or (at your option) any later version
- * @version   $Id: RendererDefines.php,v 1.0.1 2015/05/20 18:57:00 Logue Exp $
+ * @version   $Id: RendererDefines.php,v 1.0.1 2016/07/07 17:27:00 Logue Exp $
  */
 namespace PukiWiki\Renderer;
 
@@ -37,27 +37,27 @@ class RendererDefines{
 	/**
 	 * 内部リンクのアイコン
 	 */
-	const INTERNAL_LINK_ICON = '<span class="fa fa-external-link-square" title="Internal Link"></span>';
+	const INTERNAL_LINK_ICON = '<i class="fa fa-external-link-square" title="Internal Link" aria-hidden="true"></i>';
 	/**
 	 * 外部リンクのアイコン
 	 */
-	const EXTERNAL_LINK_ICON = '<span class="fa fa-external-link" title="External Link"></span>';
+	const EXTERNAL_LINK_ICON = '<i class="fa fa-external-link" title="External Link" aria-hidden="true"></i>';
 	/**
 	 * メールリンクのアイコン
 	 */
-	const MAILTO_ICON = '<span class="fa fa-envelope" title="mailto:"></span>';
+	const MAILTO_ICON = '<i class="fa fa-envelope" title="mailto:" aria-hidden="true"></i>';
 	/**
 	 * 電話番号リンクのアイコン
 	 */
-	const TELEPHONE_ICON = '<span class="fa fa-phone" title="tel:"></span>';
+	const TELEPHONE_ICON = '<i class="fa fa-phone" title="tel:" aria-hidden="true"></i>';
 	/**
 	 * InterWikiNameのアイコン
 	 */
-	const INTERWIKINAME_ICON = '<span class="fa fa-globe" title="InterWikiName"></span>';
+	const INTERWIKINAME_ICON = '<i class="fa fa-globe" title="InterWikiName" aria-hidden="true"></i>';
 	/**
 	 * 部分編集リンクのアイコン
 	 */
-	const PARTIAL_EDIT_LINK_ICON = '<span class="fa fa-pencil" title="Edit here"></span>';
+	const PARTIAL_EDIT_LINK_ICON = '<i class="fa fa-pencil" title="Edit here" aria-hidden="true"></i>';
 	/**
 	 * 見つからないページのリンク
 	 */
@@ -77,7 +77,7 @@ class RendererDefines{
 	/**
 	 * ノートのアイコン
 	 */
-	const FOOTNOTE_ANCHOR_ICON = '<span class="glyphicon glyphicon-pushpin"></span>';
+	const FOOTNOTE_ANCHOR_ICON = '<i class="fa fa-thumb-tack" aria-hidden="true"></i>';
 }
 
 /* End of file RendererDefines.php */

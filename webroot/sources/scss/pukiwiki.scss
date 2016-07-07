@@ -24,16 +24,11 @@
 @import "bootstrap";
 @import "font-awesome";
 
-/*!
- * PukiWiki base stylesheet start
- */
 @import 'components/browser';
 @import 'components/table';
 @import 'components/tweeks';
 @import 'components/plugin';
-/*!
- * PukiWiki widgets stylesheet start
- */
+
 @import 'components/widgets';
 @import 'components/widgets-dataTables';
 @import 'components/widgets-google-search';

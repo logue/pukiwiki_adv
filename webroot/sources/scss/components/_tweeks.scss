@@ -1,13 +1,4 @@
 /* ==|== Tweek Tags ========================================================= */
-/* Fix italic font */
-i, em, cite, q {
-	font-style: normal;
-	-webkit-transform: skewX(-15deg);
-	-moz-transform: skewX(-15deg);
-	-ms-transform: skewX(-15deg);
-	-o-transform: skewX(-15deg);
-	transform: skewX(-15deg);
-}
 /* Fix Gecko Ruby Tag */
 .gecko ruby {
 	display: inline-table !important;

@@ -1,7 +1,7 @@
 <?php
 
 // table_edit2.inc.php, 3.1+calc0.6+func0.3 2009/11/19 taru        plugin
-// Modified by PukiWiki Adv. Team 2012,2015
+// Modified by PukiWiki Adv. Team 2012,2015,2016
 use PukiWiki\Auth\Auth;
 use PukiWiki\Factory;
 use PukiWiki\Router;
@@ -39,7 +39,6 @@ function plugin_table_edit2_convert()
 	$wiki = Factory::Wiki($page);
 	$count = $number[$page]++;
 	$r_page = rawurlencode($page);
-	if (! function_exists('_')) table_edit2_message();
 
 	// 初期設定
 	$opt = array(
@@ -1029,7 +1028,6 @@ function plugin_table_edit2_inline()
 		'table_sub_num' => '',
 		'cell_count' => '',
 		);
-	if (! function_exists('_')) table_edit2_message();
 	
 	$s_table_edit = T_('edit');
 	$s_table_add  = T_('addition');
@@ -1091,8 +1089,6 @@ function plugin_table_edit2_action()
 	$table_sub_num_chk = 1;		//td
 	$setting = 0;
 	$import = $export = $csv_cancel = 0;
-
-	if (! function_exists('_')) table_edit2_message();
 	
 	$edit_mod = isset($vars['edit_mod']) ? $vars['edit_mod'] : '';
 
