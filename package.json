@@ -7,33 +7,43 @@
     "doc": "doc"
   },
   "devDependencies": {
-    "browserify": "^11.2.0",
-    "del": "^2.1.0",
-    "gulp": "^3.9.0",
-    "gulp-bower": "0.0.10",
+    "browserify": "^13.*.*",
+    "del": "^2.2.*",
+    "gulp": "^3.9.1",
+    "gulp-bower": "0.0.*",
     "gulp-bower-files": "^0.2.7",
     "gulp-compass": "^2.1.0",
-    "gulp-composer": "^0.1.0",
-    "gulp-concat": "^2.6.0",
-    "gulp-filter": "^3.0.1",
-    "gulp-install": "^0.5.0",
-    "gulp-modernizr": "0.0.0",
-    "gulp-notify": "^2.2.0",
-    "gulp-plumber": "^1.0.1",
-    "gulp-rename": "^1.2.2",
-    "gulp-ruby-sass": "^2.0.3",
-    "gulp-sourcemaps": "^1.6.0",
-    "gulp-uglify": "^1.5.1",
-    "main-bower-files": "^2.9.0",
-    "vinyl-source-stream": "^1.1.0"
+    "gulp-composer": "^0.4.*",
+    "gulp-concat": "^2.6.*",
+    "gulp-filter": "^4.0.*",
+    "gulp-install": "^0.6.*",
+    "gulp-modernizr": "1.0.0-alpha",
+    "gulp-notify": "^2.2.*",
+    "gulp-plumber": "^1.1.*",
+    "gulp-rename": "^1.2.*",
+    "gulp-ruby-sass": "^2.0.*",
+    "gulp-sourcemaps": "^1.6.*",
+    "gulp-uglify": "^1.5.*",
+    "licensify": "^3.1.2",
+    "main-bower-files": "^2.13.*",
+    "vinyl-source-stream": "^1.1.*"
   },
   "scripts": {
     "start": "gulp",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:js": "browserify ./webroot/source/js/app.js -t babelify --outfile ./webroot/assets/js/app.js"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/logue/pukiwiki_adv.git"
+  },
+  "browserify": {
+    "transform": [
+      "browserify-shim"
+    ]
+  },
+  "browserify-shim": {
+    "jquery": "$"
   },
   "keywords": [
     "wiki",

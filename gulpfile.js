@@ -2,7 +2,9 @@
 
 // 使用するプラグイン
 var
+	babelify = require("babelify"),
 	bower = require('gulp-bower'),
+	browserify = require("browserify"),
 	compass = require('gulp-compass'),
 	composer = require('gulp-composer'),
 	concat = require('gulp-concat'),
@@ -10,11 +12,12 @@ var
 	gulp = require('gulp'),
 	gulpFilter = require('gulp-filter'),
 	install = require("gulp-install"),
-	notify = require("gulp-notify"),
 	modernizr = require('gulp-modernizr'),
+	notify = require("gulp-notify"),
 	plumber = require("gulp-plumber"),
 	rename = require('gulp-rename'),
 	sass = require('gulp-ruby-sass'),
+	source = require("vinyl-source-stream"),
 	uglify = require("gulp-uglify")
 ;
 // 初期設定
@@ -42,20 +45,15 @@ gulp.task('setup', ['clean'], function () {
 	;
 });
 
-// JavaScriptを結合
-gulp.task('js.concat', function() {
-	return gulp.src(config.jsSrcPath + '*.js')
-		.pipe(plumber())
-		.pipe(concat('pukiwiki.js'))
-		.pipe(gulp.dest(config.jsPath))
-	;
-});
 // JavaScriptを圧縮
-gulp.task('js.uglify', ['js.concat'], function() { 
-	return gulp.src(config.jsPath + 'pukiwiki.js')
+gulp.task('js.uglify', function() { 
+	return gulp.src(config.jsSrcPath + 'app.js')
 		.pipe(plumber())
-		.pipe(uglify({preserveComments: 'some'}))
-		.pipe(rename('pukiwiki.min.js'))
+		.pipe(uglify({
+			preserveComments: 'some',
+			preserveComments: 'license'	// ライセンスを残す
+		}))
+		.pipe(rename('app.min.js'))
 		.pipe(gulp.dest(config.jsPath))
 	;
 });
@@ -69,9 +67,25 @@ gulp.task('js.modernizr', function() {
 	;
 })
 
-// JavaScript関係の処理
-gulp.task('js', ['js.concat', 'js.uglify', 'js.modernizr']);
+// ES6で書かれたjsを通常のjsに変換
+gulp.task('js.babelify', function () {
+	browserify({
+		entries: "./webroot/sources/js/app.js",
+		extensions: [".js"]
+	})
+	.plugin('licensify')
+	.transform(babelify, {presets: ['es2015']})
+	.bundle()
+	.on("error", function (err) {
+		console.log("Error : " + err.message);
+		this.emit("end");
+	})
+	.pipe(source("app.js"))
+	.pipe(gulp.dest("./webroot/assets/js"));
+});
 
+// JavaScript関係の処理
+gulp.task('js', ['js.babelify', 'js.uglify', 'js.modernizr']);
 
 // アイコンフォント
 gulp.task('icons', function() {
@@ -105,8 +119,8 @@ gulp.task('watch', function() {
 });
 
 // Composerを実行
-gulp.task('composer', function () {
-	composer();
-});
+gulp.task("composer", function () {
+	composer({ "self-install": false });
+})
 
-gulp.task('default', ['composer','icons', 'css', 'js']);
+gulp.task('default', ['icons', 'css', 'js']);

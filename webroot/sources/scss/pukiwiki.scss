@@ -2,7 +2,7 @@
  * PukiWiki Advance - Yet another WikiWikiWeb clone.
  * PukiWiki Advance Standard Stylesheet set
  *
- * Copyright (c)2010-2015 PukiWiki Advance Developer Team <http://pukiwiki.logue.be/>
+ * Copyright (c)2010-2016 PukiWiki Advance Developer Team <http://pukiwiki.logue.be/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,11 +24,16 @@
 @import "bootstrap";
 @import "font-awesome";
 
+/*!
+ * PukiWiki base stylesheet start
+ */
 @import 'components/browser';
 @import 'components/table';
 @import 'components/tweeks';
 @import 'components/plugin';
-
+/*!
+ * PukiWiki widgets stylesheet start
+ */
 @import 'components/widgets';
 @import 'components/widgets-dataTables';
 @import 'components/widgets-google-search';

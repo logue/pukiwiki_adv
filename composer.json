@@ -65,5 +65,11 @@
 			"type": "composer",
 			"url": "https://packages.zendframework.com/"
 		}
-	]
+	],
+	"scripts": {
+		"post-update-cmd": [
+			"composer dump-autoload -o",
+			"gulp"
+		]
+	}
 }

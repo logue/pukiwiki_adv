@@ -4,12 +4,11 @@
   "dependencies": {
     "autosize": "~3.*",
     "bootstrap": "~4.*",
+    "js-cookie": "2.1.*",
     "fontawesome": "~4.*",
-    "jquery": "~2.*",
+    "jquery": "~3.*",
     "jquery-form": "~3.*",
     "jquery-mobile": "~1.4.*",
-    "jquery-ui": "~1.11.*",
-    "jquery.cookie": "~1.*",
     "jquery.taboverride": "4.0.0",
     "modernizr": "~3.*",
     "superfish": "~1.*"
