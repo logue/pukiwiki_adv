@@ -46,7 +46,7 @@ class Element
 	{
 		if (gettype($obj) === 'object'){
 			$obj->setParent($this);
-			$this->elements[] = & $obj;
+			$this->elements[] = $obj;
 
 			$this->last = & $obj->last;
 		}
