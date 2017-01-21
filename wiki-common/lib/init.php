@@ -361,6 +361,16 @@ if ( isset($auth_api['facebook']) ){
 	}
 }
 */
+
+///////////////////////////////////////
+// HHVM hack
+
+if (!function_exists('ob_gzhandler')) {
+	function ob_gzhandler ($buffer, $mode) {
+		return FALSE;
+	}
+}
+
 /////////////////////////////////////////////////
 // Execute Plugin.
 
