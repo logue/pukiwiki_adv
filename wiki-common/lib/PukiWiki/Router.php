@@ -169,7 +169,7 @@ class Router{
 	 * @param string $fragment アンカーを指定
 	 * @return string
 	 */
-	public static function get_resolve_uri($cmd='read', $page=null, $path_reference='rel', $query=array('cmd'=>'read'), $fragment=null)
+	public static function get_resolve_uri($cmd='read', $page=null, $path_reference='rel', $query=array('cmd'=>'read', 'page' => null), $fragment=null)
 	{
 		global $static_url, $url_suffix;
 
@@ -179,7 +179,7 @@ class Router{
 		// $queryが時々string型になるのでそれの修正
 		if (!empty($query) && is_string($query)){
 			$page = $query;
-			$query = array();
+			$query = array('cmd'=>'read', 'page' => $page);
 		}
 
 		if (empty($cmd) || $cmd === 'read' ) {
@@ -192,10 +192,7 @@ class Router{
 				$ret .= '?' . rawurlencode($page);
 			}
 		}else{
-			$query['cmd'] = $cmd;
-			if (! empty($page)) {
-				$query['page'] = $page;
-			}
+			$query = array('cmd' => $cmd, 'page' => $page);
 			$ret .= '?' . http_build_query($query);
 		}
 

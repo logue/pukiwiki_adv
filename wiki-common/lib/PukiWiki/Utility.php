@@ -170,10 +170,10 @@ class Utility{
 			// 全体を見てコード検出すると、機種依存文字や、妙なバイナリ
 			// コードが混入した場合に、コード検出に失敗する恐れがある。
 			$encode = mb_detect_encoding($vars['encode_hint']);
-			mb_convert_variables(SOURCE_ENCODING, $encode, $vars);
+			// mb_convert_variables(SOURCE_ENCODING, $encode, $vars);
 		} else {
 			// 全部まとめて、自動検出／変換
-			mb_convert_variables(SOURCE_ENCODING, 'auto', $vars);
+			// mb_convert_variables(SOURCE_ENCODING, 'auto', $vars);
 		}
 
 		// 環境変数のチェック
